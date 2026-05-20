@@ -23,6 +23,7 @@ import {
 
 import { BarcodeInput } from '@/components/BarcodeInput';
 import { BottomPopUp } from '@/components/BottomPopUp';
+import { useCameraPermissions } from '@/components/CameraView';
 import {
   type FoodDetailsNutritionSectionMode,
   FoodNutritionSectionCard,
@@ -37,7 +38,6 @@ import {
 import { ServingSizeSelector } from '@/components/ServingSizeSelector';
 import { Button } from '@/components/theme/Button';
 import { TextInput } from '@/components/theme/TextInput';
-import { useSmartCamera } from '@/context/SmartCameraContext';
 import type { MicrosData } from '@/database/models';
 import { FoodService } from '@/database/services';
 import {
@@ -78,6 +78,8 @@ import {
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { mapUSDANutritient } from '@/utils/usdaMapper';
 
+import { BarcodeCameraModal } from './BarcodeCameraModal';
+
 type ScannedFoodDetailsModalProps = {
   visible: boolean;
   onClose: () => void;
@@ -116,7 +118,8 @@ export function ScannedFoodDetailsModal({
   );
   const decimalSeparator = useMemo(() => getDecimalSeparator(locale), [locale]);
   const { intuitiveEatingMode, alwaysAllowFoodEditing } = useSettings();
-  const { openCamera } = useSmartCamera();
+  const [permission, requestPermission] = useCameraPermissions();
+  const [isBarcodeScannerVisible, setIsBarcodeScannerVisible] = useState(false);
   const [amount, setAmount] = useState(100);
   const [editedOverrides, setEditedOverrides] = useState<{
     name?: string;
@@ -1059,16 +1062,7 @@ export function ScannedFoodDetailsModal({
                 setEditForm((prev) => (prev ? { ...prev, barcode: text } : null))
               }
               placeholder={t('food.foodDetails.barcodePlaceholder')}
-              onScanPress={() =>
-                // TODO: open the BarcodeCameraModal instead
-                openCamera({
-                  mode: 'barcode-scan',
-                  hideCameraModePicker: true,
-                  showBarcodeTextSearch: true,
-                  onBarcodeScanned: (data) =>
-                    setEditForm((prev) => (prev ? { ...prev, barcode: data } : null)),
-                })
-              }
+              onScanPress={() => setIsBarcodeScannerVisible(true)}
             />
 
             <TextInput
@@ -1181,6 +1175,18 @@ export function ScannedFoodDetailsModal({
           </KeyboardAvoidingView>
         ) : null}
       </BottomPopUp>
+      {isBarcodeScannerVisible ? (
+        <BarcodeCameraModal
+          visible={isBarcodeScannerVisible}
+          onClose={() => setIsBarcodeScannerVisible(false)}
+          onBarcodeScanned={(data) =>
+            setEditForm((prev) => (prev ? { ...prev, barcode: data } : null))
+          }
+          showBarcodeTextSearch={true}
+          permissionGranted={permission?.granted ?? null}
+          onRequestPermission={requestPermission}
+        />
+      ) : null}
     </>
   );
 }

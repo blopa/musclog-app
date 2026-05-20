@@ -37,13 +37,13 @@ import { useTranslation } from 'react-i18next';
 import { Image, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { BarcodeInput } from '@/components/BarcodeInput';
+import { useCameraPermissions } from '@/components/CameraView';
 import { FilterTabs } from '@/components/FilterTabs';
 import { MacroInput } from '@/components/MacroInput';
 import { Button } from '@/components/theme/Button';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
-import { useSmartCamera } from '@/context/SmartCameraContext';
 import type { MealType } from '@/database/models';
 import Food from '@/database/models/Food';
 import FoodPortion from '@/database/models/FoodPortion';
@@ -63,6 +63,7 @@ import {
 import { showSnackbar } from '@/utils/snackbarService';
 import { getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
 
+import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { FoodMealTrackingDetailsModal } from './FoodMealTrackingDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
 import { PortionSizesPickerModal } from './PortionSizesPickerModal';
@@ -88,7 +89,8 @@ export default function CreateCustomFoodModal({
 }: NewCustomFoodModalProps) {
   const theme = useTheme();
   const { units } = useSettings();
-  const { openCamera } = useSmartCamera();
+  const [permission, requestPermission] = useCameraPermissions();
+  const [isBarcodeScannerVisible, setIsBarcodeScannerVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [createdFood, setCreatedFood] = useState<Food | null>(null);
   const [isFoodDetailsVisible, setIsFoodDetailsVisible] = useState(false);
@@ -282,13 +284,7 @@ export default function CreateCustomFoodModal({
   };
 
   const openBarcodeScanner = () => {
-    // TODO: open the BarcodeCameraModal instead
-    openCamera({
-      mode: 'barcode-scan',
-      hideCameraModePicker: true,
-      showBarcodeTextSearch: true,
-      onBarcodeScanned: (data) => setBarcode(data),
-    });
+    setIsBarcodeScannerVisible(true);
   };
 
   const handlePickImage = async () => {
@@ -631,426 +627,438 @@ export default function CreateCustomFoodModal({
   ];
 
   return (
-    <FullScreenModal
-      visible={visible}
-      onClose={onClose}
-      title={t('food.newCustomFood.title')}
-      footer={
-        <Button
-          label={t('common.save')}
-          variant="gradientCta"
-          size="md"
-          width="full"
-          disabled={isSaveDisabled || isSaving}
-          loading={isSaving}
-          icon={PlusCircle}
-          onPress={handleSave}
-        />
-      }
-    >
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="gap-6 px-4 pb-40 pt-6">
-          {/* Food Name */}
-          <TextInput
-            label={t('food.newCustomFood.foodName')}
-            value={foodName}
-            onChangeText={setFoodName}
-            placeholder={t('food.newCustomFood.foodNamePlaceholder')}
-            icon={<Pencil size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
-            required
+    <>
+      <FullScreenModal
+        visible={visible}
+        onClose={onClose}
+        title={t('food.newCustomFood.title')}
+        footer={
+          <Button
+            label={t('common.save')}
+            variant="gradientCta"
+            size="md"
+            width="full"
+            disabled={isSaveDisabled || isSaving}
+            loading={isSaving}
+            icon={PlusCircle}
+            onPress={handleSave}
           />
-
-          <BarcodeInput
-            label={t('food.newCustomFood.barcode')}
-            value={barcode}
-            onChangeText={setBarcode}
-            placeholder={t('food.newCustomFood.barcodePlaceholder')}
-            onScanPress={openBarcodeScanner}
-          />
-
-          {/* Brand */}
-          <TextInput
-            label={t('food.newCustomFood.brand')}
-            value={brand}
-            onChangeText={setBrand}
-            placeholder={t('food.newCustomFood.brandPlaceholder')}
-            icon={<Cookie size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
-          />
-
-          {/* Description */}
-          <TextInput
-            label={t('food.newCustomFood.description')}
-            value={description}
-            onChangeText={setDescription}
-            placeholder={t('food.newCustomFood.descriptionPlaceholder')}
-            icon={<AlignLeft size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
-            multiline
-          />
-
-          {/* Food Photo */}
-          <View>
-            <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
-              {t('common.photo')}
-            </Text>
-            {imageUrl ? (
-              <View className="relative h-48 w-full overflow-hidden rounded-2xl">
-                <Image source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover" />
-                <View className="absolute bottom-2 right-2 flex-row gap-2">
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel={t('food.newCustomFood.addPhoto')}
-                    onPress={handlePickImage}
-                    style={{
-                      width: 40,
-                      height: 40,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: theme.borderRadius.lg,
-                      backgroundColor: theme.colors.background.overlay,
-                      borderWidth: theme.borderWidth.thin,
-                      borderColor: theme.colors.border.default,
-                    }}
-                  >
-                    <Camera size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
-                  </Pressable>
-                  <Pressable
-                    accessibilityRole="button"
-                    accessibilityLabel={t('common.delete')}
-                    onPress={handleRemoveImage}
-                    style={{
-                      width: 40,
-                      height: 40,
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      borderRadius: theme.borderRadius.lg,
-                      backgroundColor: theme.colors.background.overlay,
-                      borderWidth: theme.borderWidth.thin,
-                      borderColor: theme.colors.border.default,
-                    }}
-                  >
-                    <Trash2 size={theme.iconSize.sm} color={theme.colors.status.error} />
-                  </Pressable>
-                </View>
-              </View>
-            ) : (
-              <Pressable
-                accessibilityRole="button"
-                accessibilityLabel={t('food.newCustomFood.addPhoto')}
-                onPress={handlePickImage}
-                className="h-32 w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/10 bg-white/5"
-              >
-                <Camera size={theme.iconSize.xl} color={theme.colors.text.tertiary} />
-                <Text className="mt-2 text-sm text-text-tertiary">
-                  {t('food.newCustomFood.addPhoto')}
-                </Text>
-              </Pressable>
-            )}
-          </View>
-
-          {/* Favorite Toggle */}
-          <ToggleInput
-            items={[
-              {
-                key: 'favorite',
-                label: t('food.newCustomFood.addToFavorites'),
-                icon: (
-                  <Heart
-                    size={theme.iconSize.md}
-                    color={isFavorite ? theme.colors.status.red400 : theme.colors.text.tertiary}
-                    fill={isFavorite ? theme.colors.status.red400 : 'transparent'}
-                  />
-                ),
-                value: isFavorite,
-                onValueChange: setIsFavorite,
-              },
-            ]}
-          />
-
-          {/* Portion Sizes */}
-          <View>
-            <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
-              {t('food.foodDetails.serving')}
-            </Text>
-            <FilterTabs
-              tabs={[
-                { id: 'per_100g', label: t('food.portions.100g') },
-                {
-                  id: 'per_serving',
-                  label: t('food.foodDetails.perServing'),
-                },
-              ]}
-              activeTab={nutritionBasis}
-              onTabChange={(id) => setNutritionBasis(id as 'per_100g' | 'per_serving')}
-              showContainer={false}
-            />
-          </View>
-
-          {nutritionBasis === 'per_serving' ? (
+        }
+      >
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+          <View className="gap-6 px-4 pb-40 pt-6">
+            {/* Food Name */}
             <TextInput
-              label={t('food.foodDetails.servingName')}
-              value={servingName}
-              onChangeText={setServingName}
-              placeholder={t('food.foodDetails.servingNamePlaceholder')}
+              label={t('food.newCustomFood.foodName')}
+              value={foodName}
+              onChangeText={setFoodName}
+              placeholder={t('food.newCustomFood.foodNamePlaceholder')}
+              icon={<Pencil size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
+              required
             />
-          ) : null}
 
-          <View>
-            <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
-              {t('food.newCustomFood.portionSizes')}
-            </Text>
-            {isLoadingPortions ? (
-              <SkeletonLoader width="100%" height={56} borderRadius={theme.borderRadius.lg} />
-            ) : (
-              <View
-                style={{
-                  gap: theme.spacing.gap.base,
-                }}
-              >
-                {selectedPortionsOrdered.length === 0 ? (
-                  <Text className="mb-1 ml-1 text-sm text-text-tertiary">
-                    {t('food.newCustomFood.selectPortionSizes')}
-                  </Text>
-                ) : null}
-                {selectedPortionsOrdered.map((portion) => {
-                  const IconComponent = getFoodPortionIconComponent(portion.icon) ?? Scale;
-                  const displayWeight =
-                    portion.gramWeight != null ? gramsToDisplay(portion.gramWeight, units) : null;
-                  const gramsLabel =
-                    displayWeight != null ? formatInteger(Math.round(displayWeight)) : null;
-                  const massUnit = getMassUnitLabel(units);
-                  return (
-                    <View
-                      key={portion.id}
+            <BarcodeInput
+              label={t('food.newCustomFood.barcode')}
+              value={barcode}
+              onChangeText={setBarcode}
+              placeholder={t('food.newCustomFood.barcodePlaceholder')}
+              onScanPress={openBarcodeScanner}
+            />
+
+            {/* Brand */}
+            <TextInput
+              label={t('food.newCustomFood.brand')}
+              value={brand}
+              onChangeText={setBrand}
+              placeholder={t('food.newCustomFood.brandPlaceholder')}
+              icon={<Cookie size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
+            />
+
+            {/* Description */}
+            <TextInput
+              label={t('food.newCustomFood.description')}
+              value={description}
+              onChangeText={setDescription}
+              placeholder={t('food.newCustomFood.descriptionPlaceholder')}
+              icon={<AlignLeft size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
+              multiline
+            />
+
+            {/* Food Photo */}
+            <View>
+              <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
+                {t('common.photo')}
+              </Text>
+              {imageUrl ? (
+                <View className="relative h-48 w-full overflow-hidden rounded-2xl">
+                  <Image source={{ uri: imageUrl }} className="h-full w-full" resizeMode="cover" />
+                  <View className="absolute bottom-2 right-2 flex-row gap-2">
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={t('food.newCustomFood.addPhoto')}
+                      onPress={handlePickImage}
                       style={{
-                        flexDirection: 'row',
+                        width: 40,
+                        height: 40,
                         alignItems: 'center',
+                        justifyContent: 'center',
                         borderRadius: theme.borderRadius.lg,
-                        borderWidth: 1,
-                        borderColor: theme.colors.background.white20,
-                        backgroundColor: theme.colors.background.secondary,
-                        paddingHorizontal: theme.spacing.padding.md,
-                        paddingVertical: theme.spacing.padding.sm,
-                        gap: theme.spacing.gap.sm,
+                        backgroundColor: theme.colors.background.overlay,
+                        borderWidth: theme.borderWidth.thin,
+                        borderColor: theme.colors.border.default,
                       }}
                     >
+                      <Camera size={theme.iconSize.sm} color={theme.colors.accent.secondary} />
+                    </Pressable>
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={t('common.delete')}
+                      onPress={handleRemoveImage}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: theme.borderRadius.lg,
+                        backgroundColor: theme.colors.background.overlay,
+                        borderWidth: theme.borderWidth.thin,
+                        borderColor: theme.colors.border.default,
+                      }}
+                    >
+                      <Trash2 size={theme.iconSize.sm} color={theme.colors.status.error} />
+                    </Pressable>
+                  </View>
+                </View>
+              ) : (
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={t('food.newCustomFood.addPhoto')}
+                  onPress={handlePickImage}
+                  className="h-32 w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/10 bg-white/5"
+                >
+                  <Camera size={theme.iconSize.xl} color={theme.colors.text.tertiary} />
+                  <Text className="mt-2 text-sm text-text-tertiary">
+                    {t('food.newCustomFood.addPhoto')}
+                  </Text>
+                </Pressable>
+              )}
+            </View>
+
+            {/* Favorite Toggle */}
+            <ToggleInput
+              items={[
+                {
+                  key: 'favorite',
+                  label: t('food.newCustomFood.addToFavorites'),
+                  icon: (
+                    <Heart
+                      size={theme.iconSize.md}
+                      color={isFavorite ? theme.colors.status.red400 : theme.colors.text.tertiary}
+                      fill={isFavorite ? theme.colors.status.red400 : 'transparent'}
+                    />
+                  ),
+                  value: isFavorite,
+                  onValueChange: setIsFavorite,
+                },
+              ]}
+            />
+
+            {/* Portion Sizes */}
+            <View>
+              <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
+                {t('food.foodDetails.serving')}
+              </Text>
+              <FilterTabs
+                tabs={[
+                  { id: 'per_100g', label: t('food.portions.100g') },
+                  {
+                    id: 'per_serving',
+                    label: t('food.foodDetails.perServing'),
+                  },
+                ]}
+                activeTab={nutritionBasis}
+                onTabChange={(id) => setNutritionBasis(id as 'per_100g' | 'per_serving')}
+                showContainer={false}
+              />
+            </View>
+
+            {nutritionBasis === 'per_serving' ? (
+              <TextInput
+                label={t('food.foodDetails.servingName')}
+                value={servingName}
+                onChangeText={setServingName}
+                placeholder={t('food.foodDetails.servingNamePlaceholder')}
+              />
+            ) : null}
+
+            <View>
+              <Text className="mb-2 ml-1 text-sm font-medium text-text-secondary">
+                {t('food.newCustomFood.portionSizes')}
+              </Text>
+              {isLoadingPortions ? (
+                <SkeletonLoader width="100%" height={56} borderRadius={theme.borderRadius.lg} />
+              ) : (
+                <View
+                  style={{
+                    gap: theme.spacing.gap.base,
+                  }}
+                >
+                  {selectedPortionsOrdered.length === 0 ? (
+                    <Text className="mb-1 ml-1 text-sm text-text-tertiary">
+                      {t('food.newCustomFood.selectPortionSizes')}
+                    </Text>
+                  ) : null}
+                  {selectedPortionsOrdered.map((portion) => {
+                    const IconComponent = getFoodPortionIconComponent(portion.icon) ?? Scale;
+                    const displayWeight =
+                      portion.gramWeight != null ? gramsToDisplay(portion.gramWeight, units) : null;
+                    const gramsLabel =
+                      displayWeight != null ? formatInteger(Math.round(displayWeight)) : null;
+                    const massUnit = getMassUnitLabel(units);
+                    return (
                       <View
+                        key={portion.id}
                         style={{
-                          width: 44,
-                          height: 44,
-                          flexShrink: 0,
-                          borderRadius: theme.borderRadius.md,
-                          backgroundColor: theme.colors.accent.primary10,
+                          flexDirection: 'row',
                           alignItems: 'center',
-                          justifyContent: 'center',
+                          borderRadius: theme.borderRadius.lg,
+                          borderWidth: 1,
+                          borderColor: theme.colors.background.white20,
+                          backgroundColor: theme.colors.background.secondary,
+                          paddingHorizontal: theme.spacing.padding.md,
+                          paddingVertical: theme.spacing.padding.sm,
+                          gap: theme.spacing.gap.sm,
                         }}
                       >
-                        <IconComponent
-                          size={theme.iconSize.md}
-                          color={theme.colors.accent.primary}
-                        />
-                      </View>
-                      <Text
-                        className="min-w-0 flex-1 text-base font-medium text-text-primary"
-                        numberOfLines={2}
-                      >
-                        {portion.name}
-                      </Text>
-                      <View
-                        style={{
-                          flexShrink: 0,
-                          borderRadius: theme.borderRadius.full,
-                          backgroundColor: theme.colors.status.emerald,
-                          paddingHorizontal: theme.spacing.padding.sm,
-                          paddingVertical: theme.spacing.padding.xs,
-                        }}
-                      >
-                        <Text
+                        <View
                           style={{
-                            fontSize: theme.typography.fontSize.sm,
-                            fontWeight: theme.typography.fontWeight.semibold,
-                            color: theme.colors.text.white,
+                            width: 44,
+                            height: 44,
+                            flexShrink: 0,
+                            borderRadius: theme.borderRadius.md,
+                            backgroundColor: theme.colors.accent.primary10,
+                            alignItems: 'center',
+                            justifyContent: 'center',
                           }}
                         >
-                          {displayWeight != null
-                            ? `(${gramsLabel}${massUnit})`
-                            : t('food.foodDetails.namedServing')}
+                          <IconComponent
+                            size={theme.iconSize.md}
+                            color={theme.colors.accent.primary}
+                          />
+                        </View>
+                        <Text
+                          className="min-w-0 flex-1 text-base font-medium text-text-primary"
+                          numberOfLines={2}
+                        >
+                          {portion.name}
                         </Text>
+                        <View
+                          style={{
+                            flexShrink: 0,
+                            borderRadius: theme.borderRadius.full,
+                            backgroundColor: theme.colors.status.emerald,
+                            paddingHorizontal: theme.spacing.padding.sm,
+                            paddingVertical: theme.spacing.padding.xs,
+                          }}
+                        >
+                          <Text
+                            style={{
+                              fontSize: theme.typography.fontSize.sm,
+                              fontWeight: theme.typography.fontWeight.semibold,
+                              color: theme.colors.text.white,
+                            }}
+                          >
+                            {displayWeight != null
+                              ? `(${gramsLabel}${massUnit})`
+                              : t('food.foodDetails.namedServing')}
+                          </Text>
+                        </View>
+                        <Pressable
+                          accessibilityRole="button"
+                          accessibilityLabel={t('food.newCustomFood.removePortion')}
+                          hitSlop={12}
+                          style={{ flexShrink: 0 }}
+                          onPress={() => handleRemovePortion(portion.id)}
+                        >
+                          <X size={theme.iconSize.md} color={theme.colors.text.tertiary} />
+                        </Pressable>
                       </View>
-                      <Pressable
-                        accessibilityRole="button"
-                        accessibilityLabel={t('food.newCustomFood.removePortion')}
-                        hitSlop={12}
-                        style={{ flexShrink: 0 }}
-                        onPress={() => handleRemovePortion(portion.id)}
-                      >
-                        <X size={theme.iconSize.md} color={theme.colors.text.tertiary} />
-                      </Pressable>
-                    </View>
-                  );
-                })}
-                <Button
-                  variant="dashed"
-                  width="full"
-                  size="sm"
-                  icon={Plus}
-                  disabled={isLoadingPortions}
-                  onPress={() => setShowPortionPicker(true)}
-                  label={
-                    selectedPortionIds.length === 0
-                      ? t('food.newCustomFood.addPortionSizes')
-                      : t('food.newCustomFood.addAnotherPortion')
-                  }
-                />
-              </View>
-            )}
-          </View>
-
-          {/* Macronutrients Header */}
-          <View className="flex-row items-center gap-2">
-            <BarChart size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-            <Text className="text-xl font-bold text-text-primary">
-              {t('food.newCustomFood.macronutrients')}
-            </Text>
-          </View>
-
-          {/* Calories */}
-          <MacroInput
-            label={t('food.newCustomFood.calories')}
-            value={calories}
-            onChange={(value) => handleNumericChange(value, setCalories)}
-            allowDecimals
-            topRightElement={
-              <View
-                className="rounded-full px-2"
-                style={{
-                  paddingVertical: theme.spacing.padding.xsHalf,
-                  backgroundColor: theme.colors.accent.primary10,
-                }}
-              >
-                <Text className="text-xs font-medium text-accent-primary">
-                  {t('food.common.kcal')}
-                </Text>
-              </View>
-            }
-            variant="default"
-            size="full"
-          />
-
-          {/* Macro Grid */}
-          <View className="flex-row flex-wrap gap-4">
-            <MacroInput
-              label={t('food.newCustomFood.protein')}
-              value={protein}
-              onChange={(value) => handleNumericChange(value, setProtein)}
-              allowDecimals
-              topRightElement={
-                <Dumbbell size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
-              }
-              variant="success"
-              size="half"
-            />
-            <MacroInput
-              label={t('food.newCustomFood.carbs')}
-              value={carbs}
-              onChange={(value) => handleNumericChange(value, setCarbs)}
-              allowDecimals
-              topRightElement={
-                <Cookie size={theme.iconSize.sm} color={theme.colors.status.amber} />
-              }
-              variant="warning"
-              size="half"
-            />
-            <MacroInput
-              label={t('food.newCustomFood.fat')}
-              value={fat}
-              onChange={(value) => handleNumericChange(value, setFat)}
-              allowDecimals
-              topRightElement={
-                <Droplet size={theme.iconSize.sm} color={theme.colors.status.red400} />
-              }
-              variant="error"
-              size="half"
-            />
-            <MacroInput
-              label={t('food.newCustomFood.fiber')}
-              value={fiber}
-              onChange={(value) => handleNumericChange(value, setFiber)}
-              allowDecimals
-              topRightElement={
-                <Leaf size={theme.iconSize.sm} color={theme.colors.status.purple400} />
-              }
-              variant="accent"
-              size="half"
-            />
-          </View>
-
-          {/* Micronutrients Accordion */}
-          <View>
-            <Pressable
-              className="flex-row items-center justify-between py-4"
-              onPress={() => setMicroOpen(!microOpen)}
-            >
-              <View className="flex-row items-center gap-2">
-                <FlaskConical size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-                <Text className="text-xl font-bold text-text-primary">
-                  {t('food.newCustomFood.micronutrients')}
-                </Text>
-              </View>
-              <ChevronDown
-                size={theme.iconSize.lg}
-                color={theme.colors.text.tertiary}
-                style={{
-                  transform: [{ rotate: microOpen ? '180deg' : '0deg' }],
-                }}
-              />
-            </Pressable>
-
-            {microOpen ? (
-              <View className="flex-row flex-wrap gap-4">
-                {micronutrientsData.map((nutrient) => (
-                  <MacroInput
-                    key={nutrient.key}
-                    label={nutrient.label}
-                    value={nutrient.value}
-                    onChange={(value: string) => handleMicronutrientChange(nutrient.key, value)}
-                    allowDecimals
-                    topRightElement={
-                      <nutrient.icon size={theme.iconSize.sm} color={nutrient.iconColor} />
+                    );
+                  })}
+                  <Button
+                    variant="dashed"
+                    width="full"
+                    size="sm"
+                    icon={Plus}
+                    disabled={isLoadingPortions}
+                    onPress={() => setShowPortionPicker(true)}
+                    label={
+                      selectedPortionIds.length === 0
+                        ? t('food.newCustomFood.addPortionSizes')
+                        : t('food.newCustomFood.addAnotherPortion')
                     }
-                    variant={nutrient.variant}
-                    size="half"
                   />
-                ))}
-              </View>
-            ) : null}
+                </View>
+              )}
+            </View>
+
+            {/* Macronutrients Header */}
+            <View className="flex-row items-center gap-2">
+              <BarChart size={theme.iconSize.lg} color={theme.colors.accent.primary} />
+              <Text className="text-xl font-bold text-text-primary">
+                {t('food.newCustomFood.macronutrients')}
+              </Text>
+            </View>
+
+            {/* Calories */}
+            <MacroInput
+              label={t('food.newCustomFood.calories')}
+              value={calories}
+              onChange={(value) => handleNumericChange(value, setCalories)}
+              allowDecimals
+              topRightElement={
+                <View
+                  className="rounded-full px-2"
+                  style={{
+                    paddingVertical: theme.spacing.padding.xsHalf,
+                    backgroundColor: theme.colors.accent.primary10,
+                  }}
+                >
+                  <Text className="text-xs font-medium text-accent-primary">
+                    {t('food.common.kcal')}
+                  </Text>
+                </View>
+              }
+              variant="default"
+              size="full"
+            />
+
+            {/* Macro Grid */}
+            <View className="flex-row flex-wrap gap-4">
+              <MacroInput
+                label={t('food.newCustomFood.protein')}
+                value={protein}
+                onChange={(value) => handleNumericChange(value, setProtein)}
+                allowDecimals
+                topRightElement={
+                  <Dumbbell size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
+                }
+                variant="success"
+                size="half"
+              />
+              <MacroInput
+                label={t('food.newCustomFood.carbs')}
+                value={carbs}
+                onChange={(value) => handleNumericChange(value, setCarbs)}
+                allowDecimals
+                topRightElement={
+                  <Cookie size={theme.iconSize.sm} color={theme.colors.status.amber} />
+                }
+                variant="warning"
+                size="half"
+              />
+              <MacroInput
+                label={t('food.newCustomFood.fat')}
+                value={fat}
+                onChange={(value) => handleNumericChange(value, setFat)}
+                allowDecimals
+                topRightElement={
+                  <Droplet size={theme.iconSize.sm} color={theme.colors.status.red400} />
+                }
+                variant="error"
+                size="half"
+              />
+              <MacroInput
+                label={t('food.newCustomFood.fiber')}
+                value={fiber}
+                onChange={(value) => handleNumericChange(value, setFiber)}
+                allowDecimals
+                topRightElement={
+                  <Leaf size={theme.iconSize.sm} color={theme.colors.status.purple400} />
+                }
+                variant="accent"
+                size="half"
+              />
+            </View>
+
+            {/* Micronutrients Accordion */}
+            <View>
+              <Pressable
+                className="flex-row items-center justify-between py-4"
+                onPress={() => setMicroOpen(!microOpen)}
+              >
+                <View className="flex-row items-center gap-2">
+                  <FlaskConical size={theme.iconSize.lg} color={theme.colors.accent.primary} />
+                  <Text className="text-xl font-bold text-text-primary">
+                    {t('food.newCustomFood.micronutrients')}
+                  </Text>
+                </View>
+                <ChevronDown
+                  size={theme.iconSize.lg}
+                  color={theme.colors.text.tertiary}
+                  style={{
+                    transform: [{ rotate: microOpen ? '180deg' : '0deg' }],
+                  }}
+                />
+              </Pressable>
+
+              {microOpen ? (
+                <View className="flex-row flex-wrap gap-4">
+                  {micronutrientsData.map((nutrient) => (
+                    <MacroInput
+                      key={nutrient.key}
+                      label={nutrient.label}
+                      value={nutrient.value}
+                      onChange={(value: string) => handleMicronutrientChange(nutrient.key, value)}
+                      allowDecimals
+                      topRightElement={
+                        <nutrient.icon size={theme.iconSize.sm} color={nutrient.iconColor} />
+                      }
+                      variant={nutrient.variant}
+                      size="half"
+                    />
+                  ))}
+                </View>
+              ) : null}
+            </View>
           </View>
-        </View>
-      </ScrollView>
-      {isFoodDetailsVisible && createdFood ? (
-        <FoodMealTrackingDetailsModal
-          visible={isFoodDetailsVisible}
-          onClose={() => {
-            setIsFoodDetailsVisible(false);
-            setCreatedFood(null);
-            // After closing the details modal, close the create modal as well
-            onClose();
+        </ScrollView>
+        {isFoodDetailsVisible && createdFood ? (
+          <FoodMealTrackingDetailsModal
+            visible={isFoodDetailsVisible}
+            onClose={() => {
+              setIsFoodDetailsVisible(false);
+              setCreatedFood(null);
+              // After closing the details modal, close the create modal as well
+              onClose();
+            }}
+            food={createdFood}
+            isAiEnabled={isAiEnabled}
+            initialMealType={initialMealType}
+          />
+        ) : null}
+        <PortionSizesPickerModal
+          visible={showPortionPicker}
+          onClose={() => setShowPortionPicker(false)}
+          ownerType="food"
+          onConfirm={async (selectedIds) => {
+            setSelectedPortionIds(selectedIds);
+            await refreshPortions();
+            setShowPortionPicker(false);
           }}
-          food={createdFood}
-          isAiEnabled={isAiEnabled}
-          initialMealType={initialMealType}
+          selectedIds={selectedPortionIds}
+        />
+      </FullScreenModal>
+      {isBarcodeScannerVisible ? (
+        <BarcodeCameraModal
+          visible={isBarcodeScannerVisible}
+          onClose={() => setIsBarcodeScannerVisible(false)}
+          onBarcodeScanned={(data) => setBarcode(data)}
+          showBarcodeTextSearch={true}
+          permissionGranted={permission?.granted ?? null}
+          onRequestPermission={requestPermission}
         />
       ) : null}
-      <PortionSizesPickerModal
-        visible={showPortionPicker}
-        onClose={() => setShowPortionPicker(false)}
-        ownerType="food"
-        onConfirm={async (selectedIds) => {
-          setSelectedPortionIds(selectedIds);
-          await refreshPortions();
-          setShowPortionPicker(false);
-        }}
-        selectedIds={selectedPortionIds}
-      />
-    </FullScreenModal>
+    </>
   );
 }
