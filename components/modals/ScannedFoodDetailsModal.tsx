@@ -22,6 +22,7 @@ import {
 } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
+import { BarcodeInput } from '@/components/BarcodeInput';
 import {
   type FoodDetailsNutritionSectionMode,
   FoodNutritionSectionCard,
@@ -1051,39 +1052,23 @@ export function ScannedFoodDetailsModal({
               icon={<Edit3 size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
             />
 
-            <View className="relative">
-              <TextInput
-                label={t('food.foodDetails.barcode')}
-                value={editForm.barcode}
-                onChangeText={(text) =>
-                  setEditForm((prev) => (prev ? { ...prev, barcode: text } : null))
-                }
-                placeholder={t('food.foodDetails.barcodePlaceholder')}
-                keyboardType="numeric"
-              />
-              <Pressable
-                className="absolute right-2 items-center justify-center rounded-lg"
-                style={{
-                  ...(Platform.OS !== 'web'
-                    ? { top: theme.size['14'] / 2 }
-                    : { top: theme.size['18'] / 2 }),
-                  width: theme.size['10'],
-                  height: theme.size['10'],
-                  backgroundColor: theme.colors.accent.primary10,
-                }}
-                onPress={() =>
-                  openCamera({
-                    mode: 'barcode-scan',
-                    hideCameraModePicker: true,
-                    showBarcodeTextSearch: true,
-                    onBarcodeScanned: (data) =>
-                      setEditForm((prev) => (prev ? { ...prev, barcode: data } : null)),
-                  })
-                }
-              >
-                <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
-              </Pressable>
-            </View>
+            <BarcodeInput
+              label={t('food.foodDetails.barcode')}
+              value={editForm.barcode}
+              onChangeText={(text) =>
+                setEditForm((prev) => (prev ? { ...prev, barcode: text } : null))
+              }
+              placeholder={t('food.foodDetails.barcodePlaceholder')}
+              onScanPress={() =>
+                openCamera({
+                  mode: 'barcode-scan',
+                  hideCameraModePicker: true,
+                  showBarcodeTextSearch: true,
+                  onBarcodeScanned: (data) =>
+                    setEditForm((prev) => (prev ? { ...prev, barcode: data } : null)),
+                })
+              }
+            />
 
             <TextInput
               label={t('food.foodDetails.description')}
