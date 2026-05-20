@@ -37,6 +37,7 @@ import { TextInput } from '@/components/theme/TextInput';
 import type { Units } from '@/constants/settings';
 import { useSmartCamera } from '@/context/SmartCameraContext';
 import { useSnackbar } from '@/context/SnackbarContext';
+import { database } from '@/database';
 import type { DecryptedNutritionLogSnapshot, MealType, MicrosData } from '@/database/models';
 import Food from '@/database/models/Food';
 import FoodPortion from '@/database/models/FoodPortion';
@@ -1714,6 +1715,7 @@ export function FoodMealTrackingDetailsModal({
     { id: 'other', label: t('food.meals.other') },
   ];
 
+  // TODO: move this and other helper functions to it's own hook
   const handleAddFood = useCallback(async () => {
     setIsAddingFood(true);
     // Small delay to allow React to render the loading state before closing
@@ -1874,10 +1876,23 @@ export function FoodMealTrackingDetailsModal({
           pendingFoodUpdates.calories = nutritionalData.calories;
         }
 
-        if (Object.keys(pendingFoodUpdates).length > 0) {
-          await foodData!.update((record: any) => {
-            for (const [key, value] of Object.entries(pendingFoodUpdates)) {
-              record[key] = value;
+        const shouldPersistFoodUpdates =
+          Object.keys(pendingFoodUpdates).length > 0 || (isFavorite && !foodData!.isFavorite);
+
+        if (shouldPersistFoodUpdates) {
+          await database.write(async () => {
+            if (Object.keys(pendingFoodUpdates).length > 0) {
+              await foodData!.update((record: any) => {
+                for (const [key, value] of Object.entries(pendingFoodUpdates)) {
+                  record[key] = value;
+                }
+              });
+            }
+
+            if (isFavorite && !foodData!.isFavorite) {
+              await foodData!.update((record: any) => {
+                record.isFavorite = true;
+              });
             }
           });
         }
@@ -1889,20 +1904,8 @@ export function FoodMealTrackingDetailsModal({
           selectedMeal,
           servingSize
         );
-        let foodUpdatePromise = null;
 
-        // Update favorite status if needed
-        if (isFavorite && !foodData!.isFavorite) {
-          foodUpdatePromise = foodData!.update((record: any) => {
-            record.isFavorite = true;
-          });
-        }
-
-        await Promise.all([
-          logFoodPromise,
-          foodUpdatePromise,
-          new Promise((resolve) => setTimeout(resolve, 100)),
-        ]);
+        await Promise.all([logFoodPromise, new Promise((resolve) => setTimeout(resolve, 100))]);
 
         // Call the original callback if provided
         onAddFood?.({
