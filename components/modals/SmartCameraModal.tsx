@@ -1,4 +1,4 @@
-import type { CameraView as CameraViewType } from 'expo-camera';
+import type { CameraView as CameraViewType, PermissionResponse } from 'expo-camera';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -30,7 +30,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { CameraProcessingIndicator } from '@/components/CameraProcessingIndicator';
-import { CameraView, useCameraPermissions } from '@/components/CameraView';
+import { CameraView } from '@/components/CameraView';
 import { type MealType } from '@/database/models';
 import { NutritionService } from '@/database/services';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -134,6 +134,8 @@ const getContextIconColor = (
 type CameraModalProps = {
   visible: boolean;
   onClose: () => void;
+  permission: PermissionResponse | null;
+  requestPermission: () => Promise<PermissionResponse>;
   mode?: CameraMode;
   hideCameraModePicker?: boolean;
   isAiEnabled?: boolean;
@@ -243,6 +245,8 @@ function BarcodeTextSearchSheet({
 export default function SmartCameraModal({
   visible,
   onClose,
+  permission,
+  requestPermission,
   mode = 'barcode-scan',
   hideCameraModePicker = false,
   isAiEnabled = true,
@@ -260,7 +264,8 @@ export default function SmartCameraModal({
   const { height: screenHeight } = useWindowDimensions();
   const isSmallScreen = screenHeight < SMALL_SCREEN_HEIGHT;
   const cameraMaxHeight = screenHeight * (isSmallScreen ? 0.48 : 0.6);
-  const [permission, requestPermission] = useCameraPermissions();
+
+  const [isModalReady, setIsModalReady] = useState(false);
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [cameraMode, setCameraMode] = useState<CameraMode>(
     getSafeCameraMode(mode, isAiEnabled, isAIVisionEnabled)
@@ -404,6 +409,7 @@ export default function SmartCameraModal({
 
   useEffect(() => {
     if (!visible) {
+      setIsModalReady(false);
       setIsContextModalVisible(false);
       setIsBarcodeTextSearchModalVisible(false);
       setIsFoodDetailsModalVisible(false);
@@ -415,12 +421,12 @@ export default function SmartCameraModal({
     }
   }, [visible]);
 
-  // Request camera permission on mount
+  // Request camera permission when modal is ready and permission is not granted
   useEffect(() => {
-    if (!permission?.granted) {
+    if (isModalReady && permission?.status === 'undetermined') {
       requestPermission();
     }
-  }, [permission, requestPermission]);
+  }, [isModalReady, permission?.status, requestPermission]);
 
   // Handle automatic barcode detection
   const handleBarcodeScanned = useCallback(
@@ -964,66 +970,42 @@ export default function SmartCameraModal({
     return null;
   }
 
-  if (!permission) {
-    return (
-      <FullScreenModal
-        visible={visible}
-        onClose={handleClose}
-        title={t('camera.title')}
-        scrollable={false}
-        showHeader={false}
-      >
-        <View
-          className="flex-1 items-center justify-center"
-          style={{ backgroundColor: theme.colors.text.black }}
-        >
-          <Text style={{ color: theme.colors.text.white }}>
-            {t('food.aiCamera.requestingPermission')}
-          </Text>
-        </View>
-      </FullScreenModal>
-    );
-  }
-
-  if (!permission.granted) {
-    return (
-      <FullScreenModal
-        visible={visible}
-        onClose={handleClose}
-        title={t('camera.title')}
-        scrollable={false}
-        showHeader={false}
-      >
-        <View
-          className="flex-1 items-center justify-center px-6"
-          style={{ backgroundColor: theme.colors.text.black }}
-        >
-          <Text className="mb-4 text-center text-lg" style={{ color: theme.colors.text.white }}>
-            {t('food.aiCamera.permissionRequired')}
-          </Text>
-          <Pressable onPress={requestPermission} className="rounded-xl bg-accent-primary px-6 py-3">
-            <Text className="font-semibold" style={{ color: theme.colors.text.black }}>
-              {t('food.aiCamera.grantPermission')}
-            </Text>
-          </Pressable>
-        </View>
-      </FullScreenModal>
-    );
-  }
-
   return (
     <FullScreenModal
       visible={visible}
       onClose={handleClose}
+      onShow={() => setIsModalReady(true)}
       title={t('camera.title')}
       scrollable={false}
       showHeader={false}
     >
       <View className="flex-1" style={{ backgroundColor: theme.colors.text.black }}>
-        <SystemBars style="light" />
-        <SafeAreaView className="flex-1" edges={['top']}>
-          {/* Camera Background — unmount camera when Food Not Found modal is open so feed stops */}
-          <View className="absolute inset-0">
+        {!permission ? (
+          <View className="flex-1 items-center justify-center">
+            <Text style={{ color: theme.colors.text.white }}>
+              {t('food.aiCamera.requestingPermission')}
+            </Text>
+          </View>
+        ) : !permission.granted ? (
+          <View className="flex-1 items-center justify-center px-6">
+            <Text className="mb-4 text-center text-lg" style={{ color: theme.colors.text.white }}>
+              {t('food.aiCamera.permissionRequired')}
+            </Text>
+            <Pressable
+              onPress={requestPermission}
+              className="rounded-xl bg-accent-primary px-6 py-3"
+            >
+              <Text className="font-semibold" style={{ color: theme.colors.text.black }}>
+                {t('food.aiCamera.grantPermission')}
+              </Text>
+            </Pressable>
+          </View>
+        ) : (
+          <>
+            <SystemBars style="light" />
+            <SafeAreaView className="flex-1" edges={['top']}>
+              {/* Camera Background — unmount camera when Food Not Found modal is open so feed stops */}
+              <View className="absolute inset-0">
             {isCameraActive ? (
               <CameraView
                 key={`camera-${cameraResumeKey}`}
@@ -1154,11 +1136,11 @@ export default function SmartCameraModal({
             </Text>
           </View>
 
-          {/* Bottom Controls */}
-          <View
-            className="relative z-20 px-4 pt-4"
-            style={{ paddingBottom: isSmallScreen ? 16 : 40 }}
-          >
+              {/* Bottom Controls */}
+              <View
+                className="relative z-20 px-4 pt-4"
+                style={{ paddingBottom: isSmallScreen ? 16 : 40 }}
+              >
             {/* Mode Selector — only show when more than one mode is available */}
             {!hideCameraModePicker && isAiEnabled ? (
               <View
@@ -1324,47 +1306,49 @@ export default function SmartCameraModal({
               </View>
             ) : null}
 
-            {/* Camera Controls */}
-            <View className="flex-row items-center justify-between px-2">
-              <Pressable
-                className="h-12 w-12 items-center justify-center rounded-lg active:scale-95"
-                style={{
-                  backgroundColor: theme.colors.background.darkGray50,
-                  borderWidth: theme.borderWidth.thin,
-                  borderColor: theme.colors.background.white20,
-                }}
-                onPress={handleGalleryPress}
-              >
-                <Images size={theme.iconSize.lg} color={theme.colors.text.primary} />
-              </Pressable>
+                {/* Camera Controls */}
+                <View className="flex-row items-center justify-between px-2">
+                  <Pressable
+                    className="h-12 w-12 items-center justify-center rounded-lg active:scale-95"
+                    style={{
+                      backgroundColor: theme.colors.background.darkGray50,
+                      borderWidth: theme.borderWidth.thin,
+                      borderColor: theme.colors.background.white20,
+                    }}
+                    onPress={handleGalleryPress}
+                  >
+                    <Images size={theme.iconSize.lg} color={theme.colors.text.primary} />
+                  </Pressable>
 
-              {/* Shutter Button */}
-              <Pressable
-                onPress={handleTakePicture}
-                className="h-20 w-20 items-center justify-center rounded-full active:scale-95"
-                style={{
-                  borderWidth: theme.borderWidth.thick,
-                  borderColor: theme.colors.text.white,
-                }}
-              >
-                <View
-                  className="absolute inset-0 rounded-full"
-                  style={{
-                    borderWidth: theme.borderWidth.thin,
-                    borderColor: theme.colors.background.black20,
-                  }}
-                />
-                <View
-                  className="h-16 w-16 rounded-full bg-white"
-                  style={{ backgroundColor: theme.colors.text.white }}
-                />
-              </Pressable>
+                  {/* Shutter Button */}
+                  <Pressable
+                    onPress={handleTakePicture}
+                    className="h-20 w-20 items-center justify-center rounded-full active:scale-95"
+                    style={{
+                      borderWidth: theme.borderWidth.thick,
+                      borderColor: theme.colors.text.white,
+                    }}
+                  >
+                    <View
+                      className="absolute inset-0 rounded-full"
+                      style={{
+                        borderWidth: theme.borderWidth.thin,
+                        borderColor: theme.colors.background.black20,
+                      }}
+                    />
+                    <View
+                      className="h-16 w-16 rounded-full bg-white"
+                      style={{ backgroundColor: theme.colors.text.white }}
+                    />
+                  </Pressable>
 
-              {/* Barcode text search or AI context button */}
-              {bottomRightControl}
-            </View>
-          </View>
-        </SafeAreaView>
+                  {/* Barcode text search or AI context button */}
+                  {bottomRightControl}
+                </View>
+              </View>
+            </SafeAreaView>
+          </>
+        )}
 
         {/* Context Modal */}
         {isContextModalVisible ? (

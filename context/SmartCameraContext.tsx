@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react';
 
+import { useCameraPermissions } from '@/components/CameraView';
 import SmartCameraModal, { type CameraMode } from '@/components/modals/SmartCameraModal';
 import type { MealType } from '@/database/models';
 import { useSettings } from '@/hooks/useSettings';
@@ -32,6 +33,7 @@ const SmartCameraContext = createContext<SmartCameraContextType | undefined>(und
 
 export function SmartCameraProvider({ children }: { children: ReactNode }) {
   const { isAiConfigured, isAiMealPhotoEnabled, useOcrBeforeAi } = useSettings();
+  const [permission, requestPermission] = useCameraPermissions();
   const [isVisible, setIsVisible] = useState(false);
   const [cameraMode, setCameraMode] = useState<CameraMode>('barcode-scan');
   const [hideCameraModePicker, setHideCameraModePicker] = useState(false);
@@ -74,6 +76,8 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
         <SmartCameraModal
           visible={isVisible}
           onClose={handleCameraModalClose}
+          permission={permission}
+          requestPermission={requestPermission}
           mode={cameraMode}
           hideCameraModePicker={hideCameraModePicker}
           isAiEnabled={onBarcodeScannedRef.current ? false : isAiConfigured}
