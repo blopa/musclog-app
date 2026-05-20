@@ -261,6 +261,7 @@ export default function SmartCameraModal({
   const isSmallScreen = screenHeight < SMALL_SCREEN_HEIGHT;
   const cameraMaxHeight = screenHeight * (isSmallScreen ? 0.48 : 0.6);
   const [permission, requestPermission] = useCameraPermissions();
+  const [isModalReady, setIsModalReady] = useState(false);
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [cameraMode, setCameraMode] = useState<CameraMode>(
     getSafeCameraMode(mode, isAiEnabled, isAIVisionEnabled)
@@ -404,6 +405,7 @@ export default function SmartCameraModal({
 
   useEffect(() => {
     if (!visible) {
+      setIsModalReady(false);
       setIsContextModalVisible(false);
       setIsBarcodeTextSearchModalVisible(false);
       setIsFoodDetailsModalVisible(false);
@@ -415,12 +417,12 @@ export default function SmartCameraModal({
     }
   }, [visible]);
 
-  // Request camera permission on mount
+  // Request camera permission when modal is ready and permission is not granted
   useEffect(() => {
-    if (!permission?.granted) {
+    if (isModalReady && permission?.status === 'undetermined') {
       requestPermission();
     }
-  }, [permission, requestPermission]);
+  }, [isModalReady, permission?.status, requestPermission]);
 
   // Handle automatic barcode detection
   const handleBarcodeScanned = useCallback(
@@ -969,6 +971,7 @@ export default function SmartCameraModal({
       <FullScreenModal
         visible={visible}
         onClose={handleClose}
+        onShow={() => setIsModalReady(true)}
         title={t('camera.title')}
         scrollable={false}
         showHeader={false}
@@ -990,6 +993,7 @@ export default function SmartCameraModal({
       <FullScreenModal
         visible={visible}
         onClose={handleClose}
+        onShow={() => setIsModalReady(true)}
         title={t('camera.title')}
         scrollable={false}
         showHeader={false}
@@ -1015,6 +1019,7 @@ export default function SmartCameraModal({
     <FullScreenModal
       visible={visible}
       onClose={handleClose}
+      onShow={() => setIsModalReady(true)}
       title={t('camera.title')}
       scrollable={false}
       showHeader={false}
