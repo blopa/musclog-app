@@ -8,6 +8,7 @@ import {
   Pressable,
   ScrollView,
   Text,
+  TextInput as RNTextInput,
   TouchableWithoutFeedback, // it's deprecated, but using Pressable instead causes a gap below the modal on mobile
   View,
 } from 'react-native';
@@ -101,7 +102,6 @@ export function BottomPopUp({
   };
 
   const slideAnim = useRef(new Animated.Value(theme.size['300'])).current; // Start off-screen
-  /** Lifts the sheet when the keyboard opens so focused inputs stay visible (half keyboard height). */
   const [keyboardBottomLift, setKeyboardBottomLift] = useState(0);
 
   useEffect(() => {
@@ -118,9 +118,25 @@ export function BottomPopUp({
     const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
     const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
 
-    const onShow = (e: { endCoordinates: { height: number } }) => {
-      setKeyboardBottomLift(Math.max(0, e.endCoordinates.height) / 2);
+    const onShow = (e: { endCoordinates: { screenY: number; height: number } }) => {
+      // screenY is the keyboard's top edge in absolute screen coordinates — same space
+      // as measureInWindow, so no window-vs-screen height mismatch on Android.
+      const keyboardTop = e.endCoordinates.screenY;
+      type InputRef = { measureInWindow: (cb: (x: number, y: number, w: number, h: number) => void) => void };
+      const focusedInput = RNTextInput.State.currentlyFocusedInput() as InputRef | null;
+
+      if (!focusedInput) {
+        setKeyboardBottomLift(e.endCoordinates.height);
+        return;
+      }
+
+      focusedInput.measureInWindow((_x, y, _w, h) => {
+        const inputBottom = y + h;
+        // Only lift as much as needed to clear the keyboard, plus 16px breathing room.
+        setKeyboardBottomLift(Math.max(0, inputBottom - keyboardTop + 16));
+      });
     };
+
     const onHide = () => setKeyboardBottomLift(0);
 
     const showSub = Keyboard.addListener(showEvent, onShow);
