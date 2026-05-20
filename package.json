@@ -1,6 +1,6 @@
 {
   "name": "musclog",
-  "version": "2.7.13",
+  "version": "2.7.16",
   "engines": {
     "node": "24.x"
   },
@@ -194,7 +194,7 @@
     "@types/crypto-js": "4.2.2",
     "@types/isomorphic-fetch": "0.0.39",
     "@types/jest": "29.5.14",
-    "@types/react": "19.2.14",
+    "@types/react": "19.2.15",
     "@types/react-dom": "~19.2.3",
     "chroma-js": "^3.2.0",
     "eas-cli": "18.13.1",
