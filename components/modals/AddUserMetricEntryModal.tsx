@@ -2,6 +2,7 @@ import { CheckCircle, Minus, Plus } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { MoodSelectorCard } from '@/components/cards/MoodSelectorCard';
@@ -439,7 +440,7 @@ export default function AddUserMetricEntryModal({
     >
       <View className="flex-1">
         {/* Content */}
-        <ScrollView className="flex-1 px-4 pb-12" showsVerticalScrollIndicator={false}>
+        <KeyboardAwareScrollView className="flex-1 px-4 pb-12" showsVerticalScrollIndicator={false} bottomOffset={16}>
           <View className="h-4" />
           <View style={{ gap: theme.spacing.gap['2xl'] }}>
             {/* Metric Selector */}
@@ -490,7 +491,7 @@ export default function AddUserMetricEntryModal({
             <MoodSelectorCard value={mood} onChange={setMood} />
           </View>
           <View style={{ height: theme.spacing.padding['3xl'] * 2 }} />
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </View>
 
       {/* Date Picker Modal */}

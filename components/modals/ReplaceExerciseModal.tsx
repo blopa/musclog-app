@@ -2,6 +2,7 @@ import { Dumbbell, Repeat, Search } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, TextInput, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { FilterTabs } from '@/components/FilterTabs';
@@ -181,7 +182,7 @@ export function ReplaceExerciseModal({
         </View>
 
         {/* Scrollable: Exercise list only */}
-        <ScrollView
+        <KeyboardAwareScrollView
           style={{ flex: 1 }}
           showsVerticalScrollIndicator={true}
           keyboardShouldPersistTaps="handled"
@@ -189,6 +190,7 @@ export function ReplaceExerciseModal({
             paddingBottom: theme.spacing.padding.xl,
             paddingTop: theme.spacing.padding.sm,
           }}
+          bottomOffset={16}
         >
           {isLoading && displayList.length === 0 ? (
             <View className="items-center justify-center py-8">
@@ -247,7 +249,7 @@ export function ReplaceExerciseModal({
               ) : null}
             </>
           )}
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </View>
     </BottomPopUpMenu>
   );

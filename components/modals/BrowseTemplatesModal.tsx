@@ -4,7 +4,8 @@ import type { TFunction } from 'i18next';
 import { Search } from 'lucide-react-native';
 import { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { FilterTabs } from '@/components/FilterTabs';
@@ -282,7 +283,7 @@ export function BrowseTemplatesModal({
       title={t('workouts.browseTemplatesModal.title')}
       scrollable={false}
     >
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <KeyboardAwareScrollView className="flex-1" showsVerticalScrollIndicator={false} bottomOffset={16}>
         <View className="bg-bg-primary px-4 pb-4 pt-6">
           {/* Search Bar */}
           <View className="mb-5">
@@ -316,7 +317,7 @@ export function BrowseTemplatesModal({
 
         {/* Template List */}
         <View className="gap-2 px-4 py-4 pb-28">{filteredTemplates.map(renderTemplateCard)}</View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
       {children}
     </FullScreenModal>
