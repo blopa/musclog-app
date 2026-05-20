@@ -34,6 +34,15 @@
     "lowFuelingMessage": "Você consumiu apenas {{carbs}}g de carboidratos nas últimas {{hours}} horas. Estoques de glicogênio podem estar baixos. Em sessões futuras, tente consumir mais carboidratos antes do treino. Um lanche rápido agora ainda pode ajudar no seu desempenho.",
     "fullyFueledMessage": "Você consumiu {{carbs}}g de carboidratos nas últimas {{hours}} horas. Você está totalmente abastecido e pronto para o treino!",
     "missingDataTitle": "Problema com Dados da Sessão",
-    "viewOverview": "Ver Visão Geral"
+    "missingDataDescription": "Não foi possível carregar o exercício atual. Verifique o resumo ou finalize a sessão.",
+    "viewOverview": "Ver Visão Geral",
+    "startTracking": "Iniciar Rastreamento",
+    "stopTracking": "Parar Rastreamento",
+    "tracking": "Rastreando",
+    "trackingSaved": "Rastreamento salvo ({{count}} amostras)",
+    "sensorConnected": "Conectado a {{name}}",
+    "sensorDisconnectedTracking": "Sensor desconectado — dados de rastreamento descartados",
+    "sensorDisconnected": "Sensor desconectado",
+    "disconnect": "Desconectar"
   }
 }

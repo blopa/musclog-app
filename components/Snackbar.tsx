@@ -3,15 +3,14 @@ import { useRef } from 'react';
 import { Animated, PanResponder, Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
+import type { SnackbarOptions } from '@/utils/snackbarService';
 
 export type SnackbarType = {
   id: number;
   type: 'success' | 'error';
   message: string;
-  subtitle?: string;
   action: string;
-  onAction?: () => void;
-};
+} & Pick<SnackbarOptions, 'subtitle' | 'onAction' | 'secondaryAction' | 'onSecondaryAction'>;
 
 type SnackbarProps = {
   snackbar: SnackbarType;
@@ -69,6 +68,11 @@ export function Snackbar({ snackbar, onDismiss }: SnackbarProps) {
 
   const isSuccess = snackbar.type === 'success';
 
+  const handleActionPress = (callback?: () => void) => {
+    callback?.();
+    onDismiss(snackbar.id);
+  };
+
   return (
     <Animated.View
       {...panResponder.panHandlers}
@@ -115,28 +119,39 @@ export function Snackbar({ snackbar, onDismiss }: SnackbarProps) {
         </View>
 
         {/* Action Button */}
-        <Pressable
-          onPress={() => {
-            if (snackbar.onAction) {
-              snackbar.onAction();
-            }
+        <View className="flex-shrink-0 flex-row flex-wrap items-center justify-end gap-2">
+          {snackbar.secondaryAction ? (
+            <Pressable
+              onPress={() => handleActionPress(snackbar.onSecondaryAction)}
+              className="rounded-lg px-3 py-1"
+              style={{
+                backgroundColor: 'transparent',
+                opacity: 0.82,
+              }}
+            >
+              <Text className="text-sm font-medium" style={{ color: theme.colors.text.white }}>
+                {snackbar.secondaryAction}
+              </Text>
+            </Pressable>
+          ) : null}
 
-            onDismiss(snackbar.id);
-          }}
-          className="flex-shrink-0 rounded-lg px-3 py-1"
-          style={{
-            backgroundColor: 'transparent',
-          }}
-        >
-          <Text
-            className="text-sm font-bold"
+          <Pressable
+            onPress={() => handleActionPress(snackbar.onAction)}
+            className="rounded-lg px-3 py-1"
             style={{
-              color: isSuccess ? theme.colors.status.success : theme.colors.status.error,
+              backgroundColor: 'transparent',
             }}
           >
-            {snackbar.action}
-          </Text>
-        </Pressable>
+            <Text
+              className="text-sm font-bold"
+              style={{
+                color: isSuccess ? theme.colors.status.success : theme.colors.status.error,
+              }}
+            >
+              {snackbar.action}
+            </Text>
+          </Pressable>
+        </View>
       </View>
     </Animated.View>
   );

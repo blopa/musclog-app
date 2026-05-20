@@ -2,6 +2,7 @@ import type { Model } from '@nozbe/watermelondb';
 
 import type { DataLogModalVariant } from '@/components/modals/DataLogModal';
 import type { Units } from '@/constants/settings';
+import type { EquipmentType, MechanicType } from '@/database/models';
 import type UserMetric from '@/database/models/UserMetric';
 import {
   ChatService,
@@ -58,15 +59,27 @@ const EQUIPMENT_TYPES = [
   'dumbbell',
   'barbell',
   'bodyweight',
-  'machine',
+  'plate_machine',
   'cable',
   'kettlebell',
+  'cardio',
+  'smith_machine',
+  'medicine_ball',
+  'pneumatic_machine',
   'resistance_band',
   'other',
-] as const;
+] as EquipmentType[];
 
 // Mechanic types for Exercise
-const MECHANIC_TYPES = ['compound', 'isolation'] as const;
+const MECHANIC_TYPES = [
+  'compound',
+  'isolation',
+  'cardio',
+  'mobility',
+  'stretching',
+  'plyometric',
+  'other',
+] as MechanicType[];
 
 // User metric types
 const USER_METRIC_TYPES = [

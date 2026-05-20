@@ -22,10 +22,19 @@
     "database",
     "hooks",
     "lang",
+    "modules",
     "services",
     "types",
     "utils",
     "widgets"
   ],
-  "exclude": ["node_modules", "babel.config.js", "metro.config.js", "tailwind.config.js"]
+  "exclude": [
+    "node_modules",
+    "babel.config.js",
+    "metro.config.js",
+    "tailwind.config.js",
+    "training-data/.venv",
+    "training-data/output/model.js",
+    "utils/repCountingModel.js"
+  ]
 }

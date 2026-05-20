@@ -33,7 +33,16 @@
     "fuelingInsight": "Информация о питании",
     "lowFuelingMessage": "За последние {{hours}} часов вы употребили лишь {{carbs}}г углеводов. Запасы гликогена могут быть низкими. В будущих сессиях старайтесь употреблять больше углеводов перед тренировкой. Небольшой перекус сейчас также может помочь.",
     "fullyFueledMessage": "За последние {{hours}} часов вы употребили {{carbs}}г углеводов. Вы полностью заправлены и готовы к отличной тренировке!",
-    "missingDataTitle": "Problema com dados da sessão",
-    "viewOverview": "Ver visão geral"
+    "missingDataTitle": "Проблема с данными сессии",
+    "missingDataDescription": "Не удалось загрузить текущее упражнение. Проверьте обзор или завершите сессию.",
+    "viewOverview": "Посмотреть обзор",
+    "startTracking": "Начать трекинг",
+    "stopTracking": "Остановить трекинг",
+    "tracking": "Трекинг",
+    "trackingSaved": "Трекинг сохранён ({{count}} сэмплов)",
+    "sensorConnected": "Подключено к {{name}}",
+    "sensorDisconnectedTracking": "Сенсор отключён — данные трекинга удалены",
+    "sensorDisconnected": "Сенсор отключён",
+    "disconnect": "Отключить"
   }
 }

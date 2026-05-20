@@ -8,6 +8,8 @@ import SavedForLaterItem from '@/database/models/SavedForLaterItem';
 import { localDayStartMs } from '@/utils/calendarDate';
 import { widgetEvents } from '@/utils/widgetEvents';
 
+import { REPAIR_DESCRIPTORS, retryAfterRepair } from './DatabaseRepairService';
+
 function triggerWidgetUpdate(): void {
   widgetEvents.emitNutritionWidgetUpdate();
 }
@@ -25,77 +27,136 @@ export class SavedForLaterService {
     percentage: number = 100,
     note?: string
   ): Promise<SavedForLaterGroup> {
-    const encryptedNote = await encryptOptionalString(note);
+    return this.saveGroupForLaterInternal(
+      logs,
+      name,
+      originalMealType,
+      originalDate,
+      percentage,
+      note
+    );
+  }
 
-    return await database.write(async () => {
-      const now = Date.now();
-      const saveFactor = Math.min(percentage, 100) / 100;
-      const remainFactor = 1 - saveFactor;
+  private static async saveGroupForLaterInternal(
+    logs: NutritionLog[],
+    name: string,
+    originalMealType: MealType,
+    originalDate: number,
+    percentage: number = 100,
+    note?: string,
+    repairAttempted = false
+  ): Promise<SavedForLaterGroup> {
+    try {
+      const encryptedNote = await encryptOptionalString(note);
 
-      // 1. Prepare the group
-      const group = database
-        .get<SavedForLaterGroup>('saved_for_later_groups')
-        .prepareCreate((record) => {
-          record.name = name;
-          record.noteRaw = encryptedNote || undefined;
-          record.originalMealType = originalMealType;
-          record.originalDate = originalDate;
-          record.createdAt = now;
-          record.updatedAt = now;
-        });
+      return await database.write(async () => {
+        const now = Date.now();
+        const saveFactor = Math.min(percentage, 100) / 100;
+        const remainFactor = 1 - saveFactor;
 
-      // 2. Create items for each log, scaled to the saved percentage
-      const itemsPrepared = logs.map((log) =>
-        database.get<SavedForLaterItem>('saved_for_later_items').prepareCreate((item) => {
-          item.groupId = group.id;
-          item.foodId = log.foodId;
-          item.amount = log.amount * saveFactor;
-          item.portionId = log.portionId || undefined;
-          item.loggedFoodNameRaw = log.loggedFoodNameRaw || undefined;
-          item.loggedCaloriesRaw = log.loggedCaloriesRaw || '';
-          item.loggedProteinRaw = log.loggedProteinRaw || '';
-          item.loggedCarbsRaw = log.loggedCarbsRaw || '';
-          item.loggedFatRaw = log.loggedFatRaw || '';
-          item.loggedFiberRaw = log.loggedFiberRaw || '';
-          item.loggedMicrosRaw = log.loggedMicrosRaw || undefined;
-          item.loggedMealName = log.loggedMealName || undefined;
-          item.originalGroupId = log.groupId || undefined;
-          item.createdAt = now;
-          item.updatedAt = now;
-        })
-      );
+        // 1. Prepare the group
+        const group = database
+          .get<SavedForLaterGroup>('saved_for_later_groups')
+          .prepareCreate((record) => {
+            record.name = name;
+            record.noteRaw = encryptedNote || undefined;
+            record.originalMealType = originalMealType;
+            record.originalDate = originalDate;
+            record.createdAt = now;
+            record.updatedAt = now;
+          });
 
-      // 3. For a full save (100%), delete originals; for partial, reduce their amounts
-      const logsToProcess =
-        remainFactor <= 0
-          ? logs.map((log) =>
-              log.prepareUpdate((record) => {
-                record.deletedAt = now;
-                record.updatedAt = now;
-              })
-            )
-          : logs.map((log) =>
-              log.prepareUpdate((record) => {
-                record.amount = log.amount * remainFactor;
-                record.updatedAt = now;
-              })
-            );
+        // 2. Create items for each log, scaled to the saved percentage
+        const itemsPrepared = logs.map((log) =>
+          database.get<SavedForLaterItem>('saved_for_later_items').prepareCreate((item) => {
+            item.groupId = group.id;
+            item.foodId = log.foodId;
+            item.amount = log.amount * saveFactor;
+            item.portionId = log.portionId || undefined;
+            item.loggedFoodNameRaw = log.loggedFoodNameRaw || undefined;
+            item.loggedCaloriesRaw = log.loggedCaloriesRaw || '';
+            item.loggedProteinRaw = log.loggedProteinRaw || '';
+            item.loggedCarbsRaw = log.loggedCarbsRaw || '';
+            item.loggedFatRaw = log.loggedFatRaw || '';
+            item.loggedFiberRaw = log.loggedFiberRaw || '';
+            item.loggedMicrosRaw = log.loggedMicrosRaw || undefined;
+            item.loggedMealName = log.loggedMealName || undefined;
+            item.originalGroupId = log.groupId || undefined;
+            item.createdAt = now;
+            item.updatedAt = now;
+          })
+        );
 
-      await database.batch(group, ...itemsPrepared, ...logsToProcess);
+        // 3. For a full save (100%), delete originals; for partial, reduce their amounts
+        const logsToProcess =
+          remainFactor <= 0
+            ? logs.map((log) =>
+                log.prepareUpdate((record) => {
+                  record.deletedAt = now;
+                  record.updatedAt = now;
+                })
+              )
+            : logs.map((log) =>
+                log.prepareUpdate((record) => {
+                  record.amount = log.amount * remainFactor;
+                  record.updatedAt = now;
+                })
+              );
 
-      triggerWidgetUpdate();
-      return group;
-    });
+        await database.batch(group, ...itemsPrepared, ...logsToProcess);
+
+        triggerWidgetUpdate();
+        return group;
+      });
+    } catch (error) {
+      if (!repairAttempted) {
+        const repaired = await retryAfterRepair(error, REPAIR_DESCRIPTORS.savedForLater, () =>
+          this.saveGroupForLaterInternal(
+            logs,
+            name,
+            originalMealType,
+            originalDate,
+            percentage,
+            note,
+            true
+          )
+        );
+
+        if (repaired) {
+          return repaired;
+        }
+      }
+      throw error;
+    }
   }
 
   /**
    * Get all saved for later groups, ordered by creation date (newest first).
    */
   static async getAllGroups(): Promise<SavedForLaterGroup[]> {
-    return await database
-      .get<SavedForLaterGroup>('saved_for_later_groups')
-      .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.desc))
-      .fetch();
+    return this.getAllGroupsInternal();
+  }
+
+  private static async getAllGroupsInternal(
+    repairAttempted = false
+  ): Promise<SavedForLaterGroup[]> {
+    try {
+      return await database
+        .get<SavedForLaterGroup>('saved_for_later_groups')
+        .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.desc))
+        .fetch();
+    } catch (error) {
+      if (!repairAttempted) {
+        const repaired = await retryAfterRepair(error, REPAIR_DESCRIPTORS.savedForLater, () =>
+          this.getAllGroupsInternal(true)
+        );
+
+        if (repaired) {
+          return repaired;
+        }
+      }
+      throw error;
+    }
   }
 
   /**
@@ -105,13 +166,32 @@ export class SavedForLaterService {
     group: SavedForLaterGroup;
     items: SavedForLaterItem[];
   }> {
-    const group = await database.get<SavedForLaterGroup>('saved_for_later_groups').find(groupId);
-    const items = await database
-      .get<SavedForLaterItem>('saved_for_later_items')
-      .query(Q.where('group_id', groupId), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
+    return this.getGroupWithItemsInternal(groupId);
+  }
 
-    return { group, items };
+  private static async getGroupWithItemsInternal(
+    groupId: string,
+    repairAttempted = false
+  ): Promise<{ group: SavedForLaterGroup; items: SavedForLaterItem[] }> {
+    try {
+      const group = await database.get<SavedForLaterGroup>('saved_for_later_groups').find(groupId);
+      const items = await database
+        .get<SavedForLaterItem>('saved_for_later_items')
+        .query(Q.where('group_id', groupId), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+      return { group, items };
+    } catch (error) {
+      if (!repairAttempted) {
+        const repaired = await retryAfterRepair(error, REPAIR_DESCRIPTORS.savedForLater, () =>
+          this.getGroupWithItemsInternal(groupId, true)
+        );
+
+        if (repaired) {
+          return repaired;
+        }
+      }
+      throw error;
+    }
   }
 
   /**

@@ -1,5 +1,20 @@
 import { Platform } from 'react-native';
 
+export const EXPORT_PLATFORMS = ['android', 'ios', 'web'] as const;
+
+export type ExportPlatform = (typeof EXPORT_PLATFORMS)[number];
+
+export function getExportPlatform(): ExportPlatform {
+  return Platform.OS as ExportPlatform;
+}
+
+export function isSameExportPlatform(
+  exportPlatform: unknown,
+  currentPlatform: ExportPlatform = getExportPlatform()
+): boolean {
+  return typeof exportPlatform === 'string' && exportPlatform === currentPlatform;
+}
+
 /**
  * Detects if the current environment is the static export phase of the web build.
  * During static export, Expo runs the code in a Node.js environment (often via JSDOM).

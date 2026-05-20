@@ -21,7 +21,117 @@
       "demoEyebrow": "Instant preview",
       "demoTitle": "Try the web demo",
       "demoDescription": "Open a browser-based preview of the app and explore the experience before downloading.",
-      "demoButton": "Open web demo"
+      "demoButton": "Open web demo",
+      "carousel": {
+        "eyebrow": "App preview",
+        "title": "A quick look inside Musclog",
+        "description": "Swipe through a few real screens from the app to see the nutrition, workout, and progress flows in action.",
+        "prev": "Previous screenshot",
+        "next": "Next screenshot",
+        "goToSlide": "Show screenshot {{index}}",
+        "slides": {
+          "nutrition": {
+            "title": "Nutrition dashboard",
+            "description": "Track calories, macros, and quick actions at a glance.",
+            "alt": "Musclog nutrition dashboard screenshot"
+          },
+          "home": {
+            "title": "Home overview",
+            "description": "See your day, recent foods, and training shortcuts in one place.",
+            "alt": "Musclog home overview screenshot"
+          },
+          "restTimer": {
+            "title": "Rest timer",
+            "description": "Keep your sets moving with a focused rest countdown.",
+            "alt": "Musclog rest timer screenshot"
+          },
+          "mealLogging": {
+            "title": "Meal logging",
+            "description": "Log meals and servings with a nutrition-first workflow.",
+            "alt": "Musclog meal logging screenshot"
+          },
+          "progress": {
+            "title": "Progress insights",
+            "description": "Review body metrics and trends that make change easier to spot.",
+            "alt": "Musclog progress insights screenshot"
+          },
+          "workouts": {
+            "title": "Workout library",
+            "description": "Browse and launch your training plans from one place.",
+            "alt": "Musclog workout library screenshot"
+          }
+        }
+      }
+    },
+    "screenshots": {
+      "eyebrow": "Screenshot reel",
+      "title": "See Musclog in motion",
+      "description": "A slow scrolling preview of real app screens. Hover to pause and click any card to open it larger.",
+      "hint": "Hover to pause, click to zoom",
+      "openSlide": "Open screenshot",
+      "modalAriaLabel": "Musclog screenshot preview",
+      "modalEyebrow": "Screenshot preview",
+      "modalDetails": "What you're seeing",
+      "close": "Close",
+      "previous": "Previous screenshot",
+      "next": "Next screenshot",
+      "slides": {
+        "home": {
+          "title": "Home overview",
+          "description": "Daily dashboard, recent foods, and quick training shortcuts in one place.",
+          "alt": "Musclog home overview screenshot"
+        },
+        "restTimer": {
+          "title": "Rest timer",
+          "description": "A focused countdown between sets.",
+          "alt": "Musclog rest timer screenshot"
+        },
+        "completeSet": {
+          "title": "Complete set",
+          "description": "Finish the set and move straight to the next action.",
+          "alt": "Musclog complete set screenshot"
+        },
+        "mealLogging": {
+          "title": "Meal logging",
+          "description": "Log meals and servings with a nutrition-first workflow.",
+          "alt": "Musclog meal logging screenshot"
+        },
+        "chatCoach": {
+          "title": "Coach chat",
+          "description": "Ask Loggy about macros, training, or meal ideas.",
+          "alt": "Musclog coach chat screenshot"
+        },
+        "chatCoach2": {
+          "title": "Coach workout advice",
+          "description": "Get tailored exercise suggestions and recovery tips from your AI coach.",
+          "alt": "Musclog coach workout advice screenshot"
+        },
+        "bodyMetrics": {
+          "title": "Body metrics",
+          "description": "Review weight trends and body composition insights.",
+          "alt": "Musclog body metrics screenshot"
+        },
+        "workouts": {
+          "title": "Workout library",
+          "description": "Browse and launch your training plans from one place.",
+          "alt": "Musclog workout library screenshot"
+        },
+        "createWorkout": {
+          "title": "Create workout",
+          "description": "Start a routine from scratch or with AI.",
+          "alt": "Musclog create workout screenshot"
+        },
+        "today": {
+          "title": "Today's nutrition",
+          "description": "See calories and macros for the day at a glance.",
+          "alt": "Musclog today's nutrition screenshot"
+        },
+        "settings": {
+          "title": "Local data settings",
+          "description": "Manage exports, imports, and local data controls.",
+          "alt": "Musclog local data settings screenshot"
+        }
+      }
     },
     "features": {
       "title": "Built for Performance & Privacy",
@@ -138,6 +248,7 @@
       "progress": "Progress",
       "github": "GitHub",
       "download": "Download Now",
+      "exercises": "Exercises",
       "language": "Language"
     },
     "progress": {
@@ -695,6 +806,22 @@
         "maintenance": "MAINTENANCE",
         "calorieSurplus": "CALORIE SURPLUS",
         "calorieDeficit": "CALORIE DEFICIT"
+      }
+    },
+    "exercises": {
+      "eyebrow": "EXERCISE LIBRARY",
+      "pageTitle": "Explore Every Exercise",
+      "pageDescription": "Browse our full collection of exercises — filter by muscle group, mechanic, or search by name.",
+      "customNote": "These are the exercises bundled with the app. You can also create your own custom exercises directly inside Musclog.",
+      "searchPlaceholder": "Search exercises...",
+      "filterAll": "All",
+      "clearFilters": "Clear filters",
+      "noResults": "No exercises match your filters.",
+      "showing": "Showing {{count}} exercises",
+      "stat": {
+        "exercises": "Exercises",
+        "muscleGroups": "Muscle Groups",
+        "equipment": "Equipment Types"
       }
     },
     "faq": {

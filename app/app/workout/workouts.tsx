@@ -130,6 +130,7 @@ export default function WorkoutsScreen() {
   const {
     template: previewTemplate,
     templateSets: previewTemplateSets,
+    templateExercises: previewTemplateExercises,
     exercises: previewExercises,
     isLoading: isLoadingPreview,
   } = useWorkoutTemplateDetails(previewTemplateId);
@@ -848,6 +849,7 @@ export default function WorkoutsScreen() {
         isPreview={true}
         workoutTemplate={previewTemplate || undefined}
         templateSets={previewTemplateSets}
+        templateExercises={previewTemplateExercises}
         exercises={previewExercises}
         onStartWorkout={handleStartWorkoutFromPreview}
       />

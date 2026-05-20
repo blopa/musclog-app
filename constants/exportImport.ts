@@ -8,6 +8,11 @@ import {
 /** AsyncStorage keys that must not be included in the backup (device-specific or session-only). */
 export const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([ENCRYPTION_KEY, TEMP_NUTRITION_PLAN]);
 
+export const WEB_BACKUP_DATA_PREFIX = 'musclog_backup_data_';
+
+/** AsyncStorage key prefixes that must not be included in the backup. */
+export const ASYNC_STORAGE_EXCLUDED_PREFIXES = [WEB_BACKUP_DATA_PREFIX];
+
 /** Table names in dependency order for restore (parents before children). */
 export const RESTORE_ORDER: string[] = [
   // Independent master tables
@@ -16,6 +21,7 @@ export const RESTORE_ORDER: string[] = [
   'foods',
   'food_portions',
   'supplements',
+  'ble_devices',
   'meals',
   'workout_templates',
   'settings',

@@ -1,4 +1,3 @@
-import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import type { TFunction } from 'i18next';
 import {
   AlertTriangle,
@@ -47,6 +46,7 @@ import Meal from '@/database/models/Meal';
 import { FoodPortionService, NutritionService } from '@/database/services';
 import { useFavoriteFoods } from '@/hooks/useFavoriteFoods';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useMeals, type UseMealsResultBasic } from '@/hooks/useMeals';
 import useNutritionLogs from '@/hooks/useNutritionLogs';
 import { useSettings } from '@/hooks/useSettings';
@@ -504,19 +504,7 @@ export function FoodSearchModal({
     debounceMs: 600,
   });
 
-  // Keep screen awake while searching external APIs to prevent the phone from
-  // turning off the screen and killing network requests
-  useEffect(() => {
-    if (isLoadingAPI) {
-      activateKeepAwakeAsync('food-search-api').catch(() => {});
-    } else {
-      deactivateKeepAwake('food-search-api').catch(() => {});
-    }
-
-    return () => {
-      deactivateKeepAwake('food-search-api').catch(() => {});
-    };
-  }, [isLoadingAPI]);
+  useKeepScreenAwake('food-search-api', visible && isLoadingAPI);
 
   const [showCancelSearch, setShowCancelSearch] = useState(false);
 

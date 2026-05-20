@@ -2,7 +2,7 @@
   "expo": {
     "name": "Musclog - Lift, Log, Repeat",
     "slug": "logger",
-    "version": "2.7.9",
+    "version": "2.8.0",
     "scheme": "com.werules.logger",
     "userInterfaceStyle": "automatic",
     "platforms": ["ios", "android", "web"],
@@ -15,12 +15,14 @@
       "baseUrl": "/"
     },
     "plugins": [
+      "./plugins/withCameraEagerInit",
       [
         "./plugins/withGradleVersion",
         {
           "version": "8.13"
         }
       ],
+      "./plugins/withGradleJvmArgs",
       "expo-system-ui",
       "react-native-edge-to-edge",
       "expo-localization",
@@ -72,9 +74,6 @@
                 "version": "8.0.0"
               }
             ]
-          },
-          "gradleProperties": {
-            "org.gradle.jvmargs": "-Xmx4g -XX:MaxMetaspaceSize=1g -Dkotlin.daemon.jvm.options=-Xmx2g"
           }
         }
       ],
@@ -120,7 +119,16 @@
         }
       ],
       "expo-secure-store",
-      "@sentry/react-native"
+      "@sentry/react-native",
+      [
+        "react-native-ble-plx",
+        {
+          "isBackgroundEnabled": false,
+          "modes": ["central"],
+          "neverForLocation": true,
+          "bluetoothAlwaysPermission": "Allow $(BUNDLE_ID) to use Bluetooth to connect to fitness sensors"
+        }
+      ]
     ],
     "orientation": "default",
     "icon": "./assets/icon.png",
@@ -134,7 +142,7 @@
       "backgroundColor": "#091310",
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
-      "buildNumber": "237",
+      "buildNumber": "245",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Allow Musclog to access your photos to select food images and exercise demonstrations.",
         "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use Face ID.",
@@ -144,7 +152,7 @@
     "android": {
       "softwareKeyboardLayoutMode": "resize",
       "package": "com.werules.logger",
-      "versionCode": 237,
+      "versionCode": 245,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0a1f1a"

@@ -115,7 +115,21 @@ describe('utils/snackbarService', () => {
         const options = {
           subtitle: 'Subtitle text',
           action: 'Retry',
+          secondaryAction: 'Dismiss',
           duration: 5000,
+        };
+
+        showSnackbar('error', 'Error message', options);
+
+        expect(mockSnackbarFunction).toHaveBeenCalledWith('error', 'Error message', options);
+      });
+
+      it('should call registered function with secondary action callback options', () => {
+        const options = {
+          action: 'Retry',
+          onAction: jest.fn(),
+          secondaryAction: 'Cancel',
+          onSecondaryAction: jest.fn(),
         };
 
         showSnackbar('error', 'Error message', options);

@@ -331,6 +331,37 @@
     "appBehaviorSettings": {
       "title": "App Preferences",
       "subtitle": "Workout, nutrition & chart preferences"
+    },
+    "bleDevices": {
+      "title": "Manage Sensors",
+      "subtitle": "Save and reconnect to your WitMotion BLE sensors",
+      "savedSensors": "Saved Sensors",
+      "noSavedSensors": "No saved sensors yet",
+      "noSavedSensorsHint": "Scan below to find and save a sensor",
+      "scanButton": "Scan for Sensors",
+      "stopScanButton": "Stop Scan",
+      "scanning": "Scanning...",
+      "foundSensors": "Found Sensors",
+      "saveSensor": "Save",
+      "connectButton": "Connect",
+      "disconnectButton": "Disconnect",
+      "connecting": "Connecting...",
+      "connected": "Connected",
+      "saved": "Saved",
+      "renameButton": "Rename",
+      "renameTitle": "Rename Sensor",
+      "removeButton": "Remove",
+      "removeConfirm": "Remove {{name}} from saved sensors?",
+      "lastConnected": "Last connected {{time}}",
+      "neverConnected": "Never connected",
+      "permissionDenied": "Bluetooth permission denied. Please allow Bluetooth access to scan for sensors.",
+      "previewDataButton": "Preview Data",
+      "previewTitle": "Sensor Preview",
+      "previewAngle": "Angle",
+      "previewAccel": "Accel",
+      "previewGyro": "Gyro",
+      "previewWaiting": "Waiting for data...",
+      "previewDisconnected": "Sensor not connected"
     }
   }
 }

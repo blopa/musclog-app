@@ -1001,21 +1001,27 @@ export class MigrationService {
     if (lowerType.includes('dumbbell') || lowerType.includes('dumbell')) {
       return 'dumbbell';
     }
+
     if (lowerType.includes('barbell') || lowerType.includes('bar')) {
       return 'barbell';
     }
+
     if (lowerType.includes('machine')) {
-      return 'machine';
+      return 'plate_machine';
     }
+
     if (lowerType.includes('cable')) {
       return 'cable';
     }
+
     if (lowerType.includes('kettlebell') || lowerType.includes('kettle')) {
       return 'kettlebell';
     }
+
     if (lowerType.includes('band') || lowerType.includes('resistance')) {
       return 'resistance_band';
     }
+
     if (lowerType.includes('bodyweight') || lowerType.includes('body')) {
       return 'bodyweight';
     }
@@ -1024,7 +1030,7 @@ export class MigrationService {
   }
 
   /**
-   * Determine mechanic type based on exercise type and muscle group
+   * TODO: Deprecate this function
    */
   private determineMechanicType(type: string, muscleGroup: string): 'compound' | 'isolation' {
     if (!type || !muscleGroup) {
@@ -1068,9 +1074,11 @@ export class MigrationService {
     if (lowerType.includes('squat') || lowerType.includes('deadlift')) {
       return 1.5;
     }
+
     if (lowerType.includes('bench') || lowerType.includes('press')) {
       return 1.3;
     }
+
     if (lowerType.includes('row') || lowerType.includes('pull')) {
       return 1.2;
     }
@@ -1079,9 +1087,11 @@ export class MigrationService {
     if (lowerMuscleGroup.includes('biceps') || lowerMuscleGroup.includes('triceps')) {
       return 0.8;
     }
+
     if (lowerMuscleGroup.includes('abs') || lowerMuscleGroup.includes('core')) {
       return 0.7;
     }
+
     if (lowerMuscleGroup.includes('calves') || lowerMuscleGroup.includes('forearms')) {
       return 0.6;
     }
@@ -1102,16 +1112,20 @@ export class MigrationService {
         if (hour >= 5 && hour < 11) {
           return 'breakfast';
         }
+
         if (hour >= 11 && hour < 14) {
           return 'lunch';
         }
+
         if (hour >= 14 && hour < 21) {
           return 'dinner';
         }
+
         if (hour >= 21 || hour < 5) {
           return 'snack';
         }
       }
+
       return 'other';
     }
 
@@ -1140,12 +1154,15 @@ export class MigrationService {
     if (lowerMealType.includes('breakfast')) {
       return 'breakfast';
     }
+
     if (lowerMealType.includes('lunch')) {
       return 'lunch';
     }
+
     if (lowerMealType.includes('dinner')) {
       return 'dinner';
     }
+
     if (lowerMealType.includes('snack')) {
       return 'snack';
     }
@@ -1543,6 +1560,7 @@ export class MigrationService {
       if (typeof parsed === 'number') {
         return parsed;
       }
+
       if (typeof parsed === 'object' && parsed.total) {
         return parsed.total;
       }
@@ -1589,6 +1607,7 @@ export class MigrationService {
     if (lowerGoals.includes('lose') && lowerGoals.includes('weight')) {
       return 'weight_loss';
     }
+
     if (lowerGoals.includes('cut') || lowerGoals.includes('shred') || lowerGoals.includes('lean')) {
       return 'weight_loss';
     }
@@ -1631,6 +1650,7 @@ export class MigrationService {
     if (lowerGoals.includes('maintain') && lowerGoals.includes('weight')) {
       return 'general';
     }
+
     if (
       lowerGoals.includes('fitness') ||
       lowerGoals.includes('health') ||
@@ -1650,6 +1670,7 @@ export class MigrationService {
     if (this.genderReverseMap) {
       return this.genderReverseMap;
     }
+
     const map = new Map<string, 'male' | 'female' | 'other'>();
     const genderKeys: [string, 'male' | 'female' | 'other'][] = [
       ['onboarding.personalInfo.gender.male', 'male'],
@@ -1676,6 +1697,7 @@ export class MigrationService {
         }
       }
     }
+
     this.genderReverseMap = map;
     return map;
   }
@@ -2260,6 +2282,7 @@ export class MigrationService {
       if (a.isAiGenerated && !b.isAiGenerated) {
         return -1;
       }
+
       if (!a.isAiGenerated && b.isAiGenerated) {
         return 1;
       }
@@ -2287,15 +2310,19 @@ export class MigrationService {
     if (food.brand) {
       score += 2;
     }
+
     if (food.barcode) {
       score += 3;
     }
+
     if (food.micros && Object.keys(food.micros).length > 0) {
       score += 2;
     }
+
     if (food.fiber > 0) {
       score += 1;
     }
+
     if (food.source === 'user') {
       score += 1;
     } // Prefer user-entered over unknown

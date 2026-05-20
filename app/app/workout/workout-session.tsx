@@ -4,8 +4,10 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { TFunction } from 'i18next';
 import {
   BarChart3,
+  Bluetooth,
   CheckCircle,
   ChevronLeft,
+  Circle,
   Clock,
   Dumbbell,
   Edit,
@@ -50,12 +52,15 @@ import { Button } from '@/components/theme/Button';
 import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
 import { WorkoutActionButton } from '@/components/WorkoutActionButton';
 import { WorkoutTimeTracker } from '@/components/WorkoutTimeTracker';
+import { useSnackbar } from '@/context/SnackbarContext';
 import { database } from '@/database';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import { BleDeviceService } from '@/database/services/BleDeviceService';
 import { useActiveWorkout } from '@/hooks/useActiveWorkout';
 import { useExerciseImageSource } from '@/hooks/useExerciseImageSource';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
 import { useSettings } from '@/hooks/useSettings';
@@ -63,12 +68,19 @@ import { useTheme } from '@/hooks/useTheme';
 import { useWorkoutFeedback } from '@/hooks/useWorkoutFeedback';
 import { useWorkoutFueling } from '@/hooks/useWorkoutFueling';
 import i18n from '@/lang/lang';
+import { useWitMotion, witMotionClient } from '@/modules/witmotion-ble';
 import { NotificationService } from '@/services/NotificationService';
 import {
   clearActiveWorkoutLogId,
   getDismissedInsights,
   setInsightDismissed,
 } from '@/utils/activeWorkoutStorage';
+import {
+  appendBleWorkoutSamplesToNdjsonFile,
+  type BleWorkoutSample,
+  createBleWorkoutTrackingTempFile,
+  saveBleWorkoutFile,
+} from '@/utils/bleWorkoutDataStorage';
 import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
@@ -79,6 +91,7 @@ import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { handleError } from '@/utils/handleError';
 import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
+import { generateUUID } from '@/utils/uuid';
 import { formatDuration } from '@/utils/workout';
 
 // Helper function to get hormonal insight text based on current phase
@@ -175,6 +188,7 @@ function BlankWorkoutStats({
 export default function WorkoutSessionScreen() {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
+  useKeepScreenAwake('workout-session');
   const { formatDecimal, formatInteger } = useFormatAppNumber();
   const router = useRouter();
   const params = useLocalSearchParams<{
@@ -204,6 +218,7 @@ export default function WorkoutSessionScreen() {
     workoutLog,
     sets,
     exercises,
+    logExercises: activeLogExercises,
     currentSetData,
     progress,
     isLoading,
@@ -291,6 +306,38 @@ export default function WorkoutSessionScreen() {
   const [isNotesExpanded, setIsNotesExpanded] = useState(false);
   const [isHormonalInsightDismissed, setIsHormonalInsightDismissed] = useState(false);
   const [isFuelingInsightDismissed, setIsFuelingInsightDismissed] = useState(false);
+
+  // BLE sensor tracking
+  const wit = useWitMotion();
+  const { showSnackbar } = useSnackbar();
+  const [isTracking, setIsTracking] = useState(false);
+  const [isStopTrackingSaving, setIsStopTrackingSaving] = useState(false);
+  const [isTrackingBlinkOn, setIsTrackingBlinkOn] = useState(true);
+  const isTrackingRef = useRef(false);
+  const trackingTempFileRef = useRef<ReturnType<typeof createBleWorkoutTrackingTempFile> | null>(
+    null
+  );
+  const trackingSampleCountRef = useRef(0);
+  const trackingStartedAtRef = useRef<number | null>(null);
+  const unsubscribeBatchRef = useRef<(() => void) | null>(null);
+  const hasAttemptedAutoConnect = useRef(false);
+  // Initialize to current state so remounts while connected don't re-show the snackbar.
+  const wasConnectedRef = useRef(wit.isConnected);
+
+  useEffect(() => {
+    if (!isTracking) {
+      setIsTrackingBlinkOn(true);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setIsTrackingBlinkOn((current) => !current);
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [isTracking]);
 
   // Load dismissed insights from storage
   useEffect(() => {
@@ -419,6 +466,195 @@ export default function WorkoutSessionScreen() {
     ).length;
     return done === logSets.length;
   }, []);
+
+  const clearTrackingTempFile = useCallback(() => {
+    const tempFile = trackingTempFileRef.current;
+    trackingTempFileRef.current = null;
+
+    if (!tempFile) {
+      return;
+    }
+
+    try {
+      tempFile.parentDirectory.delete();
+      return;
+    } catch {
+      // Fall through and try deleting the file itself.
+    }
+
+    try {
+      tempFile.delete();
+    } catch {
+      // Best-effort cleanup only.
+    }
+  }, []);
+
+  // Stop tracking and discard data (used on disconnect and set/workout transitions).
+  const discardTracking = useCallback(() => {
+    if (!isTrackingRef.current) {
+      return;
+    }
+
+    setIsTracking(false);
+    isTrackingRef.current = false;
+    unsubscribeBatchRef.current?.();
+    unsubscribeBatchRef.current = null;
+    trackingSampleCountRef.current = 0;
+    trackingStartedAtRef.current = null;
+    clearTrackingTempFile();
+  }, [clearTrackingTempFile]);
+
+  // Stop tracking and save the collected data to a local JSON file.
+  const stopTrackingAndSave = useCallback(async () => {
+    if (!isTrackingRef.current) {
+      return;
+    }
+
+    const sampleCount = trackingSampleCountRef.current;
+    const tempFile = trackingTempFileRef.current;
+    const startedAt = trackingStartedAtRef.current;
+
+    setIsTracking(false);
+    isTrackingRef.current = false;
+    unsubscribeBatchRef.current?.();
+    unsubscribeBatchRef.current = null;
+    trackingSampleCountRef.current = 0;
+    trackingStartedAtRef.current = null;
+
+    if (sampleCount === 0 || !tempFile || !currentSetData || !workoutLog || !wit.connectedDevice) {
+      clearTrackingTempFile();
+      return;
+    }
+
+    try {
+      await saveBleWorkoutFile({
+        version: 1,
+        workoutLogId: workoutLog.id,
+        exerciseName: currentSetData.exercise.name ?? '',
+        muscleGroup: currentSetData.exercise.muscleGroup ?? '',
+        equipmentType: currentSetData.exercise.equipmentType ?? '',
+        mechanicType: currentSetData.exercise.mechanicType ?? '',
+        setNumber: currentSetData.setNumber,
+        reps,
+        deviceId: wit.connectedDevice.id,
+        deviceDisplayName: wit.connectedDevice.name,
+        startedAt: new Date(startedAt ?? Date.now()).toISOString(),
+        stoppedAt: new Date().toISOString(),
+        sampleCount,
+        samplesFile: tempFile,
+      });
+      trackingTempFileRef.current = null;
+      showSnackbar('success', t('workoutSession.trackingSaved', { count: sampleCount }));
+    } catch (err) {
+      handleError(err, 'workout-session.stopTrackingAndSave');
+    }
+  }, [
+    clearTrackingTempFile,
+    currentSetData,
+    workoutLog,
+    reps,
+    wit.connectedDevice,
+    showSnackbar,
+    t,
+  ]);
+
+  const handleStartTracking = useCallback(() => {
+    if (isTrackingRef.current) {
+      return;
+    }
+
+    try {
+      clearTrackingTempFile();
+      const tempFile = createBleWorkoutTrackingTempFile(generateUUID());
+      trackingTempFileRef.current = tempFile;
+      trackingSampleCountRef.current = 0;
+      trackingStartedAtRef.current = Date.now();
+      setIsTracking(true);
+      isTrackingRef.current = true;
+
+      unsubscribeBatchRef.current?.();
+      unsubscribeBatchRef.current = witMotionClient.onBatch((batch) => {
+        const samples: BleWorkoutSample[] = [];
+
+        for (const packet of batch.packets) {
+          if (packet.kind === 'motion') {
+            samples.push({
+              timestamp: packet.timestamp,
+              accel: { ...packet.accel },
+              gyro: { ...packet.gyro },
+              angle: { ...packet.angle },
+            });
+          }
+        }
+
+        if (samples.length === 0) {
+          return;
+        }
+
+        trackingSampleCountRef.current += samples.length;
+        appendBleWorkoutSamplesToNdjsonFile(tempFile, samples);
+      });
+    } catch (err) {
+      handleError(err, 'workout-session.handleStartTracking');
+    }
+  }, [clearTrackingTempFile]);
+
+  // Auto-connect to the most recently connected saved device when the workout starts.
+  useEffect(() => {
+    if (hasAttemptedAutoConnect.current || wit.isConnected || !workoutLogId) {
+      return;
+    }
+
+    hasAttemptedAutoConnect.current = true;
+    void BleDeviceService.getAll().then((devices) => {
+      const device = devices[0];
+      if (!device) {
+        return;
+      }
+
+      void witMotionClient.connect(device.deviceId).catch(() => {
+        // Sensor not nearby — silently ignore
+      });
+    });
+  }, [workoutLogId, wit.isConnected]);
+
+  // Watch for connection state changes — show snackbar on connect/disconnect.
+  useEffect(() => {
+    if (wit.isConnected && !wasConnectedRef.current) {
+      wasConnectedRef.current = true;
+      const name = wit.connectedDevice?.name ?? '';
+      showSnackbar('success', t('workoutSession.sensorConnected', { name }), {
+        duration: 20_000,
+        secondaryAction: t('workoutSession.disconnect'),
+        onSecondaryAction: () => void wit.disconnect(),
+      });
+    } else if (!wit.isConnected && wasConnectedRef.current) {
+      wasConnectedRef.current = false;
+
+      if (isTrackingRef.current) {
+        discardTracking();
+        showSnackbar('error', t('workoutSession.sensorDisconnectedTracking'), {
+          duration: 0,
+        });
+      } else {
+        showSnackbar('error', t('workoutSession.sensorDisconnected'), {
+          duration: 3_000,
+        });
+      }
+    }
+  }, [wit.isConnected, wit.connectedDevice, showSnackbar, t, wit.disconnect, discardTracking, wit]);
+
+  // Discard tracking when the active set changes (after rest timer / exercise transition).
+  useEffect(() => {
+    discardTracking();
+  }, [currentSetData?.set.id, discardTracking]);
+
+  // Clean up on workout end or unmount.
+  useEffect(() => {
+    return () => {
+      discardTracking();
+    };
+  }, [discardTracking]);
 
   const handleCompleteSet = async (data: {
     rpe: number;
@@ -823,12 +1059,9 @@ export default function WorkoutSessionScreen() {
         <View className="flex-1 items-center justify-center px-6">
           <ErrorStateCard
             icon={Dumbbell}
-            title={t('workoutSession.missingDataTitle', 'Session Data Issue')}
-            description={t(
-              'workoutSession.missingDataDescription',
-              'Could not load the current exercise. Check the overview or finish the session.'
-            )}
-            buttonLabel={t('workoutSession.viewOverview', 'View Overview')}
+            title={t('workoutSession.missingDataTitle')}
+            description={t('workoutSession.missingDataDescription')}
+            buttonLabel={t('workoutSession.viewOverview')}
             onButtonPress={() => setIsWorkoutOverviewModalVisible(true)}
           />
         </View>
@@ -1054,6 +1287,47 @@ export default function WorkoutSessionScreen() {
               />
             </View>
 
+            {/* Sensor tracking row — only visible when a BLE device is connected */}
+            {wit.isConnected ? (
+              <View className="mb-4 gap-3">
+                {isTracking || isStopTrackingSaving ? (
+                  <Button
+                    label={t('workoutSession.stopTracking')}
+                    icon={
+                      <Circle
+                        size={theme.iconSize.sm}
+                        color={theme.colors.rose.brand}
+                        fill={theme.colors.rose.brand}
+                        opacity={isTrackingBlinkOn ? 1 : 0.25}
+                      />
+                    }
+                    size="md"
+                    width="full"
+                    variant="secondary"
+                    loading={isStopTrackingSaving}
+                    disabled={isStopTrackingSaving}
+                    onPress={async () => {
+                      setIsStopTrackingSaving(true);
+                      try {
+                        await stopTrackingAndSave();
+                      } finally {
+                        setIsStopTrackingSaving(false);
+                      }
+                    }}
+                  />
+                ) : (
+                  <Button
+                    label={t('workoutSession.startTracking')}
+                    icon={Bluetooth}
+                    size="md"
+                    width="full"
+                    variant="secondary"
+                    onPress={handleStartTracking}
+                  />
+                )}
+              </View>
+            ) : null}
+
             {/* Complete Button */}
             <Button
               label={t('workoutSession.completeSet')}
@@ -1215,6 +1489,7 @@ export default function WorkoutSessionScreen() {
             workoutLog={workoutLog}
             sets={sets}
             exercises={exercises}
+            logExercises={activeLogExercises}
             currentSetOrder={progress.currentSetOrder}
           />
         ) : null}

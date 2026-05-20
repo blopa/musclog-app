@@ -209,7 +209,13 @@ export function StepperInlineInput({
                 color: theme.colors.text.white,
               }}
               returnKeyType="done"
-              selectTextOnFocus
+              selectTextOnFocus={Platform.OS === 'ios'}
+              onFocus={() => {
+                onFocus?.();
+                if (Platform.OS === 'android') {
+                  inputRef.current?.setSelection(0, inputValue?.length ?? 0);
+                }
+              }}
             />
             {unit ? (
               <Text

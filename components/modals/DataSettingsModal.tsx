@@ -3,6 +3,7 @@ import {
   Activity,
   AlertTriangle,
   Apple,
+  Bluetooth,
   CalendarCheck,
   ChevronRight,
   Coffee,
@@ -33,6 +34,7 @@ import { clearAllAppData } from '@/utils/clearAppData';
 import { exportDatabase, importDatabase } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 
+import { BleWorkoutDataModal } from './BleWorkoutDataModal';
 import { CenteredModal } from './CenteredModal';
 import { ConfirmationModal } from './ConfirmationModal';
 import {
@@ -260,6 +262,7 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
   const [showNutritionGoalsModal, setShowNutritionGoalsModal] = useState(false);
   const [showNutritionCheckinsModal, setShowNutritionCheckinsModal] = useState(false);
   const [showChatMessagesModal, setShowChatMessagesModal] = useState(false);
+  const [showBleWorkoutDataModal, setShowBleWorkoutDataModal] = useState(false);
 
   return (
     <FullScreenModal
@@ -340,6 +343,29 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
                 onValueChange: onRequireExportEncryptionToggle,
               },
             ]}
+          />
+        </View>
+
+        {/* Sensor Data Section */}
+        <View>
+          <Text
+            className="mb-2 px-5 text-xs font-bold uppercase tracking-wider"
+            style={{ color: theme.colors.text.secondary }}
+          >
+            {t('bleWorkoutData.sectionTitle')}
+          </Text>
+          <SettingsCard
+            icon={<Bluetooth size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+            iconContainerStyle={{
+              width: theme.size['16'],
+              height: theme.size['16'],
+              borderRadius: theme.borderRadius.sm,
+              backgroundColor: theme.colors.accent.primary20,
+            }}
+            title={t('bleWorkoutData.title')}
+            subtitle={t('bleWorkoutData.subtitle')}
+            onPress={() => setShowBleWorkoutDataModal(true)}
+            rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
           />
         </View>
 
@@ -794,6 +820,10 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
       <LocalBackupsModal
         visible={localBackupsModalVisible}
         onClose={() => setLocalBackupsModalVisible(false)}
+      />
+      <BleWorkoutDataModal
+        visible={showBleWorkoutDataModal}
+        onClose={() => setShowBleWorkoutDataModal(false)}
       />
       <ConfirmationModal
         visible={advancedDataConfirmModalVisible}

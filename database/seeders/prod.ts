@@ -22,6 +22,7 @@ import {
 } from '@/database/services';
 import i18n, { AVAILABLE_LANGUAGES, EN_US } from '@/lang/lang';
 import { getEncryptionKey } from '@/utils/encryption';
+import { getDefaultUnits } from '@/utils/units';
 
 export type InitProgressPhase = 'seeding' | 'migrating';
 
@@ -357,6 +358,13 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
 
     await SettingsService.setLanguage(deviceLanguage);
     console.log(`Set language to: ${deviceLanguage}`);
+
+    // Detect device units preference and persist it explicitly so the DB always has
+    // a unit_system row. Without this, importing a backup that lacks the row would
+    // silently fall back to getDefaultUnits() — returning 'imperial' for US browsers
+    // even when the user intended metric.
+    const defaultUnits = getDefaultUnits();
+    await SettingsService.setUnits(defaultUnits);
 
     // 7. Seed USDA foundation foods from CSV
     await seedUSDAFoundationFoods();

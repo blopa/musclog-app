@@ -21,6 +21,7 @@ import {
   getNextSetInEffectiveOrder,
 } from '@/utils/workoutSupersetOrder';
 
+import { DatabaseRepairService, REPAIR_DESCRIPTORS } from './DatabaseRepairService';
 import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
 import { UserService } from './UserService';
@@ -34,10 +35,45 @@ export type EnrichedWorkoutLogSet = WorkoutLogSet & {
 };
 
 export class WorkoutService {
+  private static async retryAfterWorkoutRepair<T>(
+    error: unknown,
+    retry: () => Promise<T>
+  ): Promise<T | null> {
+    const repair = await DatabaseRepairService.repairIfNeeded(
+      error,
+      REPAIR_DESCRIPTORS.workoutLogs
+    );
+
+    if (!repair.attempted || (!repair.reindexed && repair.deletedRootIds.length === 0)) {
+      return null;
+    }
+
+    if (repair.deletedRootIds.length > 0) {
+      const activeId = await getActiveWorkoutLogId();
+      if (activeId && repair.deletedRootIds.includes(activeId)) {
+        await clearActiveWorkoutLogId();
+      }
+    }
+
+    try {
+      return await retry();
+    } catch (retryError) {
+      handleError(retryError, 'WorkoutService.retryAfterWorkoutRepair');
+      return null;
+    }
+  }
+
   /**
    * Start a workout from a template (deep copy operation)
    */
   static async startWorkoutFromTemplate(templateId: string): Promise<WorkoutLog> {
+    return this.startWorkoutFromTemplateInternal(templateId);
+  }
+
+  private static async startWorkoutFromTemplateInternal(
+    templateId: string,
+    repairAttempted = false
+  ): Promise<WorkoutLog> {
     try {
       const template = await database.get<WorkoutTemplate>('workout_templates').find(templateId);
 
@@ -72,6 +108,16 @@ export class WorkoutService {
 
       return workoutLog;
     } catch (error) {
+      if (!repairAttempted) {
+        const repaired = await this.retryAfterWorkoutRepair(error, () =>
+          this.startWorkoutFromTemplateInternal(templateId, true)
+        );
+
+        if (repaired) {
+          return repaired;
+        }
+      }
+
       if (error instanceof Error) {
         throw new Error(`Failed to start workout: ${error.message}`);
       }
@@ -86,6 +132,14 @@ export class WorkoutService {
   static async startFreeWorkout(
     workoutName: string = 'Free Training',
     externalId?: string
+  ): Promise<WorkoutLog> {
+    return this.startFreeWorkoutInternal(workoutName, externalId);
+  }
+
+  private static async startFreeWorkoutInternal(
+    workoutName: string = 'Free Training',
+    externalId?: string,
+    repairAttempted = false
   ): Promise<WorkoutLog> {
     try {
       const activeWorkoutLogId = await getActiveWorkoutLogId();
@@ -125,6 +179,16 @@ export class WorkoutService {
       await setActiveWorkoutLogId(workoutLog.id);
       return workoutLog;
     } catch (error) {
+      if (!repairAttempted) {
+        const repaired = await this.retryAfterWorkoutRepair(error, () =>
+          this.startFreeWorkoutInternal(workoutName, externalId, true)
+        );
+
+        if (repaired) {
+          return repaired;
+        }
+      }
+
       if (error instanceof Error) {
         throw new Error(`Failed to start free workout: ${error.message}`);
       }
@@ -137,6 +201,12 @@ export class WorkoutService {
    * Uses AsyncStorage to track the active workout
    */
   static async getActiveWorkout(): Promise<WorkoutLog | null> {
+    return this.getActiveWorkoutInternal();
+  }
+
+  private static async getActiveWorkoutInternal(
+    repairAttempted = false
+  ): Promise<WorkoutLog | null> {
     const activeWorkoutLogId = await getActiveWorkoutLogId();
     if (!activeWorkoutLogId) {
       return null;
@@ -154,6 +224,16 @@ export class WorkoutService {
 
       return workoutLog;
     } catch (error) {
+      if (!repairAttempted) {
+        const repaired = await this.retryAfterWorkoutRepair(error, () =>
+          this.getActiveWorkoutInternal(true)
+        );
+
+        if (repaired !== null) {
+          return repaired;
+        }
+      }
+
       // Workout doesn't exist, clear from storage
       await clearActiveWorkoutLogId();
       return null;
@@ -167,6 +247,15 @@ export class WorkoutService {
     timeframe?: { startDate: number; endDate: number },
     limit?: number,
     offset?: number
+  ): Promise<WorkoutLog[]> {
+    return this.getWorkoutHistoryInternal(timeframe, limit, offset);
+  }
+
+  private static async getWorkoutHistoryInternal(
+    timeframe?: { startDate: number; endDate: number },
+    limit?: number,
+    offset?: number,
+    repairAttempted = false
   ): Promise<WorkoutLog[]> {
     let query = database
       .get<WorkoutLog>('workout_logs')
@@ -194,7 +283,20 @@ export class WorkoutService {
       }
     }
 
-    return await query.fetch();
+    try {
+      return await query.fetch();
+    } catch (error) {
+      if (!repairAttempted) {
+        const repaired = await this.retryAfterWorkoutRepair(error, () =>
+          this.getWorkoutHistoryInternal(timeframe, limit, offset, true)
+        );
+        if (repaired) {
+          return repaired;
+        }
+      }
+
+      throw error;
+    }
   }
 
   /**
@@ -204,6 +306,14 @@ export class WorkoutService {
   static async getWorkoutLogsByWorkoutName(
     workoutName: string,
     limit?: number
+  ): Promise<WorkoutLog[]> {
+    return this.getWorkoutLogsByWorkoutNameInternal(workoutName, limit);
+  }
+
+  private static async getWorkoutLogsByWorkoutNameInternal(
+    workoutName: string,
+    limit?: number,
+    repairAttempted = false
   ): Promise<WorkoutLog[]> {
     let query = database
       .get<WorkoutLog>('workout_logs')
@@ -218,7 +328,20 @@ export class WorkoutService {
       query = query.extend(Q.take(limit));
     }
 
-    return await query.fetch();
+    try {
+      return await query.fetch();
+    } catch (error) {
+      if (!repairAttempted) {
+        const repaired = await this.retryAfterWorkoutRepair(error, () =>
+          this.getWorkoutLogsByWorkoutNameInternal(workoutName, limit, true)
+        );
+        if (repaired) {
+          return repaired;
+        }
+      }
+
+      throw error;
+    }
   }
 
   /**
@@ -250,6 +373,16 @@ export class WorkoutService {
    * Complete a workout and run analytics
    */
   static async completeWorkout(workoutLogId: string): Promise<{
+    workoutLog: WorkoutLog;
+    personalRecords: Awaited<ReturnType<typeof WorkoutAnalytics.detectPersonalRecords>>;
+  }> {
+    return await this.completeWorkoutInternal(workoutLogId);
+  }
+
+  private static async completeWorkoutInternal(
+    workoutLogId: string,
+    repairAttempted = false
+  ): Promise<{
     workoutLog: WorkoutLog;
     personalRecords: Awaited<ReturnType<typeof WorkoutAnalytics.detectPersonalRecords>>;
   }> {
@@ -406,6 +539,16 @@ export class WorkoutService {
         personalRecords,
       };
     } catch (error) {
+      if (!repairAttempted) {
+        const repaired = await this.retryAfterWorkoutRepair(error, () =>
+          this.completeWorkoutInternal(workoutLogId, true)
+        );
+
+        if (repaired) {
+          return repaired;
+        }
+      }
+
       if (error instanceof Error) {
         throw new Error(`Failed to complete workout: ${error.message}`);
       }
@@ -512,59 +655,85 @@ export class WorkoutService {
     exercises: Exercise[];
     logExercises: WorkoutLogExercise[];
   }> {
-    const workoutLog = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
+    return this.getWorkoutWithDetailsInternal(workoutLogId);
+  }
 
-    if (workoutLog.deletedAt) {
-      throw new Error('Workout log has been deleted');
+  private static async getWorkoutWithDetailsInternal(
+    workoutLogId: string,
+    repairAttempted = false
+  ): Promise<{
+    workoutLog: WorkoutLog;
+    sets: EnrichedWorkoutLogSet[];
+    exercises: Exercise[];
+    logExercises: WorkoutLogExercise[];
+  }> {
+    try {
+      const workoutLog = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
+
+      if (workoutLog.deletedAt) {
+        throw new Error('Workout log has been deleted');
+      }
+
+      const logExercises = await database
+        .get<WorkoutLogExercise>('workout_log_exercises')
+        .query(
+          Q.where('workout_log_id', workoutLogId),
+          Q.where('deleted_at', Q.eq(null)),
+          Q.sortBy('exercise_order', Q.asc)
+        )
+        .fetch();
+
+      const logExerciseIds = logExercises.map((le) => le.id);
+      const rawSets =
+        logExerciseIds.length > 0
+          ? await database
+              .get<WorkoutLogSet>('workout_log_sets')
+              .query(
+                Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
+                Q.where('deleted_at', Q.eq(null)),
+                Q.sortBy('set_order', Q.asc)
+              )
+              .fetch()
+          : [];
+
+      const sets = WorkoutService.buildEnrichedSetsFromRecords(
+        logExercises.map((le) => ({
+          id: le.id,
+          exerciseId: le.exerciseId,
+          groupId: le.groupId,
+          notes: le.notes,
+        })),
+        rawSets
+      );
+
+      const exerciseIds = [...new Set(logExercises.map((le) => le.exerciseId))].filter(Boolean);
+      const exercises =
+        exerciseIds.length > 0
+          ? await database
+              .get<Exercise>('exercises')
+              .query(Q.where('id', Q.oneOf(exerciseIds)), Q.where('deleted_at', Q.eq(null)))
+              .fetch()
+          : [];
+
+      return {
+        workoutLog,
+        sets,
+        exercises,
+        logExercises,
+      };
+    } catch (error) {
+      if (!repairAttempted) {
+        const repaired = await this.retryAfterWorkoutRepair(error, () =>
+          this.getWorkoutWithDetailsInternal(workoutLogId, true)
+        );
+
+        if (repaired) {
+          return repaired;
+        }
+      }
+
+      throw error;
     }
-
-    const logExercises = await database
-      .get<WorkoutLogExercise>('workout_log_exercises')
-      .query(
-        Q.where('workout_log_id', workoutLogId),
-        Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('exercise_order', Q.asc)
-      )
-      .fetch();
-
-    const logExerciseIds = logExercises.map((le) => le.id);
-    const rawSets =
-      logExerciseIds.length > 0
-        ? await database
-            .get<WorkoutLogSet>('workout_log_sets')
-            .query(
-              Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
-              Q.where('deleted_at', Q.eq(null)),
-              Q.sortBy('set_order', Q.asc)
-            )
-            .fetch()
-        : [];
-
-    const sets = WorkoutService.buildEnrichedSetsFromRecords(
-      logExercises.map((le) => ({
-        id: le.id,
-        exerciseId: le.exerciseId,
-        groupId: le.groupId,
-        notes: le.notes,
-      })),
-      rawSets
-    );
-
-    const exerciseIds = [...new Set(logExercises.map((le) => le.exerciseId))].filter(Boolean);
-    const exercises =
-      exerciseIds.length > 0
-        ? await database
-            .get<Exercise>('exercises')
-            .query(Q.where('id', Q.oneOf(exerciseIds)), Q.where('deleted_at', Q.eq(null)))
-            .fetch()
-        : [];
-
-    return {
-      workoutLog,
-      sets,
-      exercises,
-      logExercises,
-    };
   }
 
   /**

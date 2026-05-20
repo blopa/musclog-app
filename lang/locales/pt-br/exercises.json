@@ -163,11 +163,14 @@
     "equipmentTypes": {
       "medicine_ball": "Bola de Medicina",
       "smith_machine": "Máquina Smith",
+      "pneumatic_machine": "Máquina Pneumática",
+      "plate_machine": "Máquina de Anilhas",
       "dumbbell": "Haltere",
       "barbell": "Barra",
       "bodyweight": "Peso Corporal",
       "machine": "Máquina",
-      "cable": "Cabo",
+      "cable": "Cabo / Carga de Tijolinho",
+      "cardio": "Cardio",
       "kettlebell": "Kettlebell",
       "resistance_band": "Faixa de Resistência",
       "other": "Outro",
@@ -176,7 +179,10 @@
         "barbell": "Barra longa com pesos",
         "bodyweight": "Nenhum equipamento necessário",
         "machine": "Máquina de exercícios",
-        "cable": "Sistema de polia",
+        "cable": "Máquinas com uma pilha de pesos embutida e um pino. Elas têm resistência constante e frequentemente produzem um pico nítido no acelerômetro (um 'clanc') se os pesos tocarem o fundo ao final da repetição.",
+        "plate_machine": "Máquinas onde você carrega anilhas físicas em um suporte (como um leg press clássico de 45 graus). Elas operam em um arco fixo ou alavanca, criando curvas de movimento muito suaves e previsíveis.",
+        "smith_machine": "Uma barra travada em hastes-guia verticais ou ligeiramente inclinadas. Como a barra não pode balançar para frente, para trás, para a esquerda ou para a direita, os dados do giroscópio mostrarão quase zero oscilação horizontal em comparação com uma barra livre.",
+        "pneumatic_machine": "Máquinas de cabo acionadas por compressores de ar (como Keiser) ou motores digitais (como Tonal). Elas têm inércia zero — se você parar de empurrar, o peso para de se mover — resultando em padrões de aceleração e desaceleração muito distintos.",
         "kettlebell": "Peso em forma de bola com cabo",
         "resistance_band": "Faixas elásticas de resistência",
         "other": "Outro equipamento"
@@ -184,7 +190,12 @@
     },
     "mechanicTypes": {
       "compound": "Composto",
-      "isolation": "Isolamento"
+      "isolation": "Isolamento",
+      "cardio": "Cardio",
+      "mobility": "Mobilidade",
+      "stretching": "Alongamento",
+      "plyometric": "Pliométrico",
+      "other": "Outro"
     },
     "units": {
       "kg": "kg",

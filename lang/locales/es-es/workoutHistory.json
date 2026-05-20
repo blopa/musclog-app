@@ -10,6 +10,9 @@
     "startThisWorkout": "Iniciar este entrenamiento",
     "noExercisesYet": "Aún no hay ejercicios",
     "exercise": "Ejercicio {{number}}",
-    "set": "Serie {{number}}"
+    "set": "Serie {{number}}",
+    "share": "Compartir",
+    "shareDescription": "Compartir estos detalles del entrenamiento",
+    "shareFailed": "No se pudieron compartir los detalles del entrenamiento. Inténtalo de nuevo."
   }
 }

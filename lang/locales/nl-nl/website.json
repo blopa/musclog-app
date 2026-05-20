@@ -21,7 +21,117 @@
       "demoEyebrow": "Directe preview",
       "demoTitle": "Probeer de webdemo",
       "demoDescription": "Open een browserpreview van de app en verken de ervaring voordat u downloadt.",
-      "demoButton": "Open webdemo"
+      "demoButton": "Open webdemo",
+      "carousel": {
+        "eyebrow": "App-voorvertoning",
+        "title": "Een snelle blik in Musclog",
+        "description": "Veeg door een paar echte schermen van de app om de voedings-, trainings- en voortgangsflows in actie te zien.",
+        "prev": "Vorige screenshot",
+        "next": "Volgende screenshot",
+        "goToSlide": "Toon screenshot {{index}}",
+        "slides": {
+          "nutrition": {
+            "title": "Voedingsdashboard",
+            "description": "Volg calorieën, macro's en snelle acties in één oogopslag.",
+            "alt": "Screenshot van het voedingsdashboard van Musclog"
+          },
+          "home": {
+            "title": "Overzicht",
+            "description": "Bekijk uw dag, recente voedingsmiddelen en trainingssnelkoppelingen op één plek.",
+            "alt": "Screenshot van het overzicht van Musclog"
+          },
+          "restTimer": {
+            "title": "Rusttimer",
+            "description": "Houd uw sets gaande met een gerichte aftelling.",
+            "alt": "Screenshot van de rusttimer van Musclog"
+          },
+          "mealLogging": {
+            "title": "Maaltijdlog",
+            "description": "Log maaltijden en porties met een voedingsgerichte workflow.",
+            "alt": "Screenshot van de maaltijdlog van Musclog"
+          },
+          "progress": {
+            "title": "Voortgangsinzichten",
+            "description": "Bekijk lichaamsmetingen en trends die verandering makkelijker zichtbaar maken.",
+            "alt": "Screenshot van de voortgangsinzichten van Musclog"
+          },
+          "workouts": {
+            "title": "Workoutbibliotheek",
+            "description": "Blader door en start uw trainingsplannen op één plek.",
+            "alt": "Screenshot van de workoutbibliotheek van Musclog"
+          }
+        }
+      }
+    },
+    "screenshots": {
+      "eyebrow": "Screenshotreeks",
+      "title": "Zie Musclog in beweging",
+      "description": "Een trage weergave van echte app-schermen. Beweeg erover om te pauzeren en klik op een kaart om deze groter te openen.",
+      "hint": "Beweeg om te pauzeren, klik om te vergroten",
+      "openSlide": "Screenshot openen",
+      "modalAriaLabel": "Musclog screenshotvoorbeeld",
+      "modalEyebrow": "Screenshotvoorbeeld",
+      "modalDetails": "Wat u ziet",
+      "close": "Sluiten",
+      "previous": "Vorige screenshot",
+      "next": "Volgende screenshot",
+      "slides": {
+        "home": {
+          "title": "Overzicht",
+          "description": "Dagpaneel, recente voedingsmiddelen en snelle trainingssnelkoppelingen op één plek.",
+          "alt": "Screenshot van het Musclog-overzicht"
+        },
+        "restTimer": {
+          "title": "Rusttimer",
+          "description": "Een gerichte aftelling tussen sets.",
+          "alt": "Screenshot van de Musclog rusttimer"
+        },
+        "completeSet": {
+          "title": "Set voltooid",
+          "description": "Rond de set af en ga direct door naar de volgende actie.",
+          "alt": "Screenshot van een voltooide set in Musclog"
+        },
+        "mealLogging": {
+          "title": "Maaltijdlog",
+          "description": "Log maaltijden en porties met een workflow die op voeding is gericht.",
+          "alt": "Screenshot van de maaltijdlog van Musclog"
+        },
+        "chatCoach": {
+          "title": "Coach-chat",
+          "description": "Vraag Loggy over macro's, training of maaltijdideeën.",
+          "alt": "Screenshot van de coach-chat van Musclog"
+        },
+        "chatCoach2": {
+          "title": "Trainingadvies van coach",
+          "description": "Ontvang gepersonaliseerde oefensuggesties en hersteltips van je AI-coach.",
+          "alt": "Screenshot van trainingadvies van de coach van Musclog"
+        },
+        "bodyMetrics": {
+          "title": "Lichaamsmetingen",
+          "description": "Bekijk gewichtstrends en inzichten in lichaamssamenstelling.",
+          "alt": "Screenshot van lichaamsmetingen in Musclog"
+        },
+        "workouts": {
+          "title": "Workoutbibliotheek",
+          "description": "Blader door en start uw trainingsplannen op één plek.",
+          "alt": "Screenshot van de workoutbibliotheek van Musclog"
+        },
+        "createWorkout": {
+          "title": "Workout maken",
+          "description": "Begin een routine vanaf nul of met AI.",
+          "alt": "Screenshot van workout maken in Musclog"
+        },
+        "today": {
+          "title": "Voeding van vandaag",
+          "description": "Bekijk calorieën en macro's van vandaag in een oogopslag.",
+          "alt": "Screenshot van de voeding van vandaag in Musclog"
+        },
+        "settings": {
+          "title": "Lokale data-instellingen",
+          "description": "Beheer exports, imports en lokale datacontroles.",
+          "alt": "Screenshot van lokale data-instellingen in Musclog"
+        }
+      }
     },
     "features": {
       "title": "Gebouwd voor Prestatie & Privacy",
@@ -138,6 +248,7 @@
       "progress": "Voortgang",
       "github": "GitHub",
       "download": "Nu Downloaden",
+      "exercises": "Oefeningen",
       "language": "Taal"
     },
     "progress": {
@@ -697,6 +808,22 @@
         "calorieDeficit": "CALORIETEKORT"
       }
     },
+    "exercises": {
+      "eyebrow": "OEFENINGEN BIBLIOTHEEK",
+      "pageTitle": "Verken Elke Oefening",
+      "pageDescription": "Blader door onze volledige collectie oefeningen — filter op spiergroep, type of zoek op naam.",
+      "customNote": "Dit zijn de oefeningen die bij de app worden geleverd. Je kunt ook je eigen aangepaste oefeningen aanmaken rechtstreeks in Musclog.",
+      "searchPlaceholder": "Zoek oefeningen...",
+      "filterAll": "Alle",
+      "clearFilters": "Filters wissen",
+      "noResults": "Geen oefeningen komen overeen met je filters.",
+      "showing": "{{count}} oefeningen weergegeven",
+      "stat": {
+        "exercises": "Oefeningen",
+        "muscleGroups": "Spiergroepen",
+        "equipment": "Uitrustingstypen"
+      }
+    },
     "faq": {
       "pageTitle": "FAQ & Wetenschap — Musclog",
       "badge": "Evidence-Based",
@@ -996,7 +1123,10 @@
                   "label": "Epley (1985)",
                   "url": "https://en.wikipedia.org/wiki/One-repetition_maximum#cite_note-7"
                 },
-                { "label": "Lander (1985)", "url": "https://www.vcalc.com/wiki/landers-formula" },
+                {
+                  "label": "Lander (1985)",
+                  "url": "https://www.vcalc.com/wiki/landers-formula"
+                },
                 {
                   "label": "Lombardi (1989)",
                   "url": "https://www.vcalc.com/wiki/lombardi-one-1-rep-maximum"
@@ -1009,7 +1139,10 @@
                   "label": "O'Connor et al. (1989)",
                   "url": "https://www.vcalc.com/wiki/oconner-et-al"
                 },
-                { "label": "Wathen (1994)", "url": "https://www.vcalc.com/wiki/wathen-formula" }
+                {
+                  "label": "Wathen (1994)",
+                  "url": "https://www.vcalc.com/wiki/wathen-formula"
+                }
               ]
             },
             {

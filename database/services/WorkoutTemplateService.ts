@@ -3,12 +3,10 @@ import convert from 'convert';
 import { Dumbbell, User } from 'lucide-react-native';
 
 import type { RawWorkoutTemplate } from '@/components/modals/BrowseTemplatesModal';
-import { UNITS_SETTING_TYPE } from '@/constants/settings';
 import { DEFAULT_WORKOUT_TYPE } from '@/constants/workoutTypes';
 import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import Schedule from '@/database/models/Schedule';
-import Setting from '@/database/models/Setting';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
@@ -23,6 +21,11 @@ import { getWeightUnit } from '@/utils/units';
 import { indexToDayName, WEEKDAY_NAMES } from '@/utils/workout';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
+import {
+  DatabaseRepairService,
+  REPAIR_DESCRIPTORS,
+  retryAfterRepair,
+} from './DatabaseRepairService';
 import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
 import { UserService } from './UserService';
@@ -69,36 +72,61 @@ export class WorkoutTemplateService {
     sets: WorkoutTemplateSet[];
     schedule: Schedule[];
   }> {
-    const template = await database.get<WorkoutTemplate>('workout_templates').find(templateId);
+    return this.getTemplateWithDetailsInternal(templateId);
+  }
 
-    const templateExercises = await database
-      .get<WorkoutTemplateExercise>('workout_template_exercises')
-      .query(
-        Q.where('template_id', templateId),
-        Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('exercise_order', Q.asc)
-      )
-      .fetch();
+  private static async getTemplateWithDetailsInternal(
+    templateId: string,
+    repairAttempted = false
+  ): Promise<{
+    template: WorkoutTemplate;
+    templateExercises: WorkoutTemplateExercise[];
+    sets: WorkoutTemplateSet[];
+    schedule: Schedule[];
+  }> {
+    try {
+      const template = await database.get<WorkoutTemplate>('workout_templates').find(templateId);
 
-    const templateExerciseIds = templateExercises.map((te) => te.id);
-    const sets =
-      templateExerciseIds.length > 0
-        ? await database
-            .get<WorkoutTemplateSet>('workout_template_sets')
-            .query(
-              Q.where('template_exercise_id', Q.oneOf(templateExerciseIds)),
-              Q.where('deleted_at', Q.eq(null)),
-              Q.sortBy('set_order', Q.asc)
-            )
-            .fetch()
-        : [];
+      const templateExercises = await database
+        .get<WorkoutTemplateExercise>('workout_template_exercises')
+        .query(
+          Q.where('template_id', templateId),
+          Q.where('deleted_at', Q.eq(null)),
+          Q.sortBy('exercise_order', Q.asc)
+        )
+        .fetch();
 
-    const schedule = await database
-      .get<Schedule>('schedules')
-      .query(Q.where('template_id', templateId), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
+      const templateExerciseIds = templateExercises.map((te) => te.id);
+      const sets =
+        templateExerciseIds.length > 0
+          ? await database
+              .get<WorkoutTemplateSet>('workout_template_sets')
+              .query(
+                Q.where('template_exercise_id', Q.oneOf(templateExerciseIds)),
+                Q.where('deleted_at', Q.eq(null)),
+                Q.sortBy('set_order', Q.asc)
+              )
+              .fetch()
+          : [];
 
-    return { template, templateExercises, sets, schedule };
+      const schedule = await database
+        .get<Schedule>('schedules')
+        .query(Q.where('template_id', templateId), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      return { template, templateExercises, sets, schedule };
+    } catch (error) {
+      if (!repairAttempted) {
+        const repaired = await retryAfterRepair(error, REPAIR_DESCRIPTORS.workoutTemplates, () =>
+          this.getTemplateWithDetailsInternal(templateId, true)
+        );
+
+        if (repaired) {
+          return repaired;
+        }
+      }
+      throw error;
+    }
   }
 
   /**
@@ -1177,44 +1205,62 @@ export class WorkoutTemplateService {
    * Delete workout template (soft delete)
    */
   static async deleteTemplate(id: string): Promise<void> {
-    return await database.write(async (writer) => {
-      const template = await database.get<WorkoutTemplate>('workout_templates').find(id);
-      await writer.callWriter(() => template.markAsDeleted());
+    return this.deleteTemplateInternal(id);
+  }
 
-      const templateExercises = await database
-        .get<WorkoutTemplateExercise>('workout_template_exercises')
-        .query(Q.where('template_id', id), Q.where('deleted_at', Q.eq(null)))
-        .fetch();
+  private static async deleteTemplateInternal(id: string, repairAttempted = false): Promise<void> {
+    try {
+      return await database.write(async (writer) => {
+        const template = await database.get<WorkoutTemplate>('workout_templates').find(id);
+        await writer.callWriter(() => template.markAsDeleted());
 
-      const templateExerciseIds = templateExercises.map((te) => te.id);
-
-      if (templateExerciseIds.length > 0) {
-        const sets = await database
-          .get<WorkoutTemplateSet>('workout_template_sets')
-          .query(
-            Q.where('template_exercise_id', Q.oneOf(templateExerciseIds)),
-            Q.where('deleted_at', Q.eq(null))
-          )
+        const templateExercises = await database
+          .get<WorkoutTemplateExercise>('workout_template_exercises')
+          .query(Q.where('template_id', id), Q.where('deleted_at', Q.eq(null)))
           .fetch();
 
-        for (const set of sets) {
-          await writer.callWriter(() => set.markAsDeleted());
+        const templateExerciseIds = templateExercises.map((te) => te.id);
+
+        if (templateExerciseIds.length > 0) {
+          const sets = await database
+            .get<WorkoutTemplateSet>('workout_template_sets')
+            .query(
+              Q.where('template_exercise_id', Q.oneOf(templateExerciseIds)),
+              Q.where('deleted_at', Q.eq(null))
+            )
+            .fetch();
+
+          for (const set of sets) {
+            await writer.callWriter(() => set.markAsDeleted());
+          }
+        }
+
+        for (const te of templateExercises) {
+          await writer.callWriter(() => te.markAsDeleted());
+        }
+
+        const schedules = await database
+          .get<Schedule>('schedules')
+          .query(Q.where('template_id', id), Q.where('deleted_at', Q.eq(null)))
+          .fetch();
+
+        for (const schedule of schedules) {
+          await writer.callWriter(() => schedule.markAsDeleted());
+        }
+      });
+    } catch (error) {
+      if (!repairAttempted) {
+        const repair = await DatabaseRepairService.repairIfNeeded(
+          error,
+          REPAIR_DESCRIPTORS.workoutTemplates
+        );
+
+        if (repair.attempted && (repair.reindexed || repair.deletedRootIds.length > 0)) {
+          return this.deleteTemplateInternal(id, true);
         }
       }
-
-      for (const te of templateExercises) {
-        await writer.callWriter(() => te.markAsDeleted());
-      }
-
-      const schedules = await database
-        .get<Schedule>('schedules')
-        .query(Q.where('template_id', id), Q.where('deleted_at', Q.eq(null)))
-        .fetch();
-
-      for (const schedule of schedules) {
-        await writer.callWriter(() => schedule.markAsDeleted());
-      }
-    });
+      throw error;
+    }
   }
 
   /**

@@ -1809,26 +1809,76 @@ export function FoodMealTrackingDetailsModal({
       if (food || localFood) {
         const foodData = food || localFood;
 
-        // If localFood has no name but we have API product details, update it before logging
-        // so NutritionService.logFood reads the correct name from the food record
         const effectivePdForName = refetchedProductDetails ?? productDetails;
+        const pendingFoodUpdates: Record<string, unknown> = {};
+
+        // Apply user edits (name, barcode, description, macros, micros) to the persisted food record
+        if (editedOverrides) {
+          if (editedOverrides.name != null) {
+            pendingFoodUpdates.name = editedOverrides.name;
+          }
+
+          if (editedOverrides.barcode != null) {
+            pendingFoodUpdates.barcode = editedOverrides.barcode;
+          }
+
+          if (editedOverrides.description != null) {
+            pendingFoodUpdates.description = editedOverrides.description;
+          }
+
+          if (editedOverrides.calories != null) {
+            pendingFoodUpdates.calories = editedOverrides.calories;
+          }
+
+          if (editedOverrides.protein != null) {
+            pendingFoodUpdates.protein = editedOverrides.protein;
+          }
+
+          if (editedOverrides.carbs != null) {
+            pendingFoodUpdates.carbs = editedOverrides.carbs;
+          }
+
+          if (editedOverrides.fat != null) {
+            pendingFoodUpdates.fat = editedOverrides.fat;
+          }
+
+          if (editedOverrides.fiber != null) {
+            pendingFoodUpdates.fiber = editedOverrides.fiber;
+          }
+
+          if (editedOverrides.micros != null) {
+            pendingFoodUpdates.micros = effectiveMicrosPer100g;
+          }
+        }
+
+        // If localFood has no name and no name override, try to fill from API details
+        // so NutritionService.logFood reads the correct name from the food record
         if (
           localFood &&
           !localFood.name?.trim() &&
+          pendingFoodUpdates.name == null &&
           isSuccessFoodDetailProductState(effectivePdForName)
         ) {
           const { name: correctName, found } = getProductName(effectivePdForName);
           if (found) {
-            await localFood.update((record: any) => {
-              record.name = correctName;
-            });
+            pendingFoodUpdates.name = correctName;
           }
         }
 
         // Persist inferred per-100g calories so logFood snapshot matches the modal (Food row was 0 kcal).
-        if (toFiniteMacro(foodData!.calories) <= 0 && toFiniteMacro(nutritionalData.calories) > 0) {
+        if (
+          toFiniteMacro(foodData!.calories) <= 0 &&
+          toFiniteMacro(nutritionalData.calories) > 0 &&
+          pendingFoodUpdates.calories == null
+        ) {
+          pendingFoodUpdates.calories = nutritionalData.calories;
+        }
+
+        if (Object.keys(pendingFoodUpdates).length > 0) {
           await foodData!.update((record: any) => {
-            record.calories = nutritionalData.calories;
+            for (const [key, value] of Object.entries(pendingFoodUpdates)) {
+              record[key] = value;
+            }
           });
         }
 

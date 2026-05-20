@@ -14,7 +14,10 @@ import {
   Smartphone,
   Sparkles,
   TrendingUp,
+  X,
 } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
 import { StoreButtons } from '@/components/website/StoreButtons';
@@ -30,26 +33,29 @@ const BRAND_GREEN_BRIGHT = '#00FFA3';
 const BODY_TEXT = '#D1D5DB';
 const BODY_TEXT_SOFT = '#9CA3AF';
 
-export function GlowOrb({
-  className = '',
-  color = 'primary',
-}: {
-  className?: string;
-  color?: 'primary' | 'accent' | 'cyan';
-}) {
-  const colorMap = {
-    primary: 'from-primary/20 via-primary/5',
-    accent: 'from-emerald-500/20 via-emerald-500/5',
-    cyan: 'from-cyan-500/15 via-cyan-500/5',
-  };
+function withExpoBaseUrl(path: string): string {
+  if (/^https?:\/\//i.test(path)) {
+    return path;
+  }
 
-  return (
-    <div
-      className={`bg-gradient-radial absolute rounded-full blur-3xl ${colorMap[color]} to-transparent ${className}`}
-      aria-hidden="true"
-    />
-  );
+  const base = process.env.EXPO_BASE_URL;
+  if (base == null || base === '') {
+    return path;
+  }
+
+  const basePath = String(base).replace(/^\/+|\/+$/g, '');
+  const normalized = path.startsWith('/') ? path : `/${path}`;
+  if (normalized === `/${basePath}` || normalized.startsWith(`/${basePath}/`)) {
+    return normalized;
+  }
+
+  return `/${basePath}${normalized}`;
 }
+
+const STATIC_IMAGE = (filename: string) => withExpoBaseUrl(`/images/${filename}`);
+const PHONE_SCREENSHOT = (filename: string) => STATIC_IMAGE(`phone/${filename}`);
+const HERO_APP_SCREENSHOT = STATIC_IMAGE('app-screenshot.png');
+const HERO_AVATAR = STATIC_IMAGE('user-avatar.jpg');
 
 export function CTA() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.cta' });
@@ -298,6 +304,407 @@ export function Features() {
   );
 }
 
+export function ScreenshotShowcase() {
+  const { t } = useTranslation(undefined, { keyPrefix: 'website.screenshots' });
+  const [isPaused, setIsPaused] = useState(false);
+  const [activeModalIndex, setActiveModalIndex] = useState<number | null>(null);
+  const [isMobileModal, setIsMobileModal] = useState(false);
+
+  const slides = [
+    {
+      src: PHONE_SCREENSHOT('screenshot-1.png'),
+      title: t('slides.home.title'),
+      description: t('slides.home.description'),
+      alt: t('slides.home.alt'),
+    },
+    {
+      src: PHONE_SCREENSHOT('screenshot-13.png'),
+      title: t('slides.chatCoach2.title'),
+      description: t('slides.chatCoach2.description'),
+      alt: t('slides.chatCoach2.alt'),
+    },
+    {
+      src: PHONE_SCREENSHOT('screenshot-3.png'),
+      title: t('slides.workouts.title'),
+      description: t('slides.workouts.description'),
+      alt: t('slides.workouts.alt'),
+    },
+    {
+      src: PHONE_SCREENSHOT('screenshot-14.png'),
+      title: t('slides.mealLogging.title'),
+      description: t('slides.mealLogging.description'),
+      alt: t('slides.mealLogging.alt'),
+    },
+    {
+      src: PHONE_SCREENSHOT('screenshot-2.png'),
+      title: t('slides.today.title'),
+      description: t('slides.today.description'),
+      alt: t('slides.today.alt'),
+    },
+    {
+      src: PHONE_SCREENSHOT('screenshot-5.png'),
+      title: t('slides.bodyMetrics.title'),
+      description: t('slides.bodyMetrics.description'),
+      alt: t('slides.bodyMetrics.alt'),
+    },
+    {
+      src: PHONE_SCREENSHOT('screenshot-8.png'),
+      title: t('slides.settings.title'),
+      description: t('slides.settings.description'),
+      alt: t('slides.settings.alt'),
+    },
+    {
+      src: PHONE_SCREENSHOT('screenshot-10.png'),
+      title: t('slides.restTimer.title'),
+      description: t('slides.restTimer.description'),
+      alt: t('slides.restTimer.alt'),
+    },
+  ];
+
+  useEffect(() => {
+    if (activeModalIndex === null) {
+      return undefined;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setActiveModalIndex(null);
+        return;
+      }
+
+      if (event.key === 'ArrowLeft') {
+        setActiveModalIndex((currentIndex) => {
+          if (currentIndex === null) {
+            return currentIndex;
+          }
+
+          return (currentIndex - 1 + slides.length) % slides.length;
+        });
+      }
+
+      if (event.key === 'ArrowRight') {
+        setActiveModalIndex((currentIndex) => {
+          if (currentIndex === null) {
+            return currentIndex;
+          }
+
+          return (currentIndex + 1) % slides.length;
+        });
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [activeModalIndex, slides.length]);
+
+  useEffect(() => {
+    const updateIsMobileModal = () => {
+      setIsMobileModal(window.innerWidth < 768);
+    };
+
+    updateIsMobileModal();
+    window.addEventListener('resize', updateIsMobileModal);
+
+    return () => window.removeEventListener('resize', updateIsMobileModal);
+  }, []);
+
+  const isTrackPaused = isPaused || activeModalIndex !== null;
+
+  return (
+    <section className="relative overflow-hidden py-16 md:py-20">
+      <SectionBackground variant="dots" />
+      <div
+        className="pointer-events-none absolute left-1/2 top-[50%] h-[520px] w-[980px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[160px]"
+        style={{
+          background:
+            'radial-gradient(circle, rgba(0,255,163,0.14) 0%, rgba(34,197,94,0.10) 34%, rgba(0,0,0,0) 74%)',
+        }}
+        aria-hidden="true"
+      />
+
+      <style>{`
+        @keyframes musclog-screenshot-marquee {
+          from { transform: translate3d(0, 0, 0); }
+          to { transform: translate3d(-50%, 0, 0); }
+        }
+      `}</style>
+
+      <div className="container relative z-10 mx-auto px-4">
+        <div className="mb-10 flex flex-col gap-4 md:mb-12 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-2xl space-y-3">
+            <p
+              className="text-xs font-bold uppercase tracking-[0.32em]"
+              style={{ color: BRAND_GREEN_BRIGHT }}
+            >
+              {t('eyebrow')}
+            </p>
+            <h2 className="text-balance text-3xl font-extrabold text-white md:text-4xl">
+              {t('title')}
+            </h2>
+            <p
+              className="text-balance text-base leading-7 md:text-lg"
+              style={{ color: BODY_TEXT_SOFT }}
+            >
+              {t('description')}
+            </p>
+          </div>
+
+          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white/80 backdrop-blur-sm">
+            <span
+              className="h-2 w-2 rounded-full"
+              style={{
+                backgroundColor: BRAND_GREEN_BRIGHT,
+                boxShadow: '0 0 14px rgba(0,255,163,0.8)',
+              }}
+            />
+            {t('hint')}
+          </div>
+        </div>
+
+        <div
+          className="relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-[linear-gradient(180deg,rgba(6,14,12,0.95)_0%,rgba(4,10,9,0.92)_100%)] p-4 shadow-[0_32px_90px_rgba(0,0,0,0.48)] md:p-6"
+          style={{ backdropFilter: 'blur(16px)' }}
+        >
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-[#050c0a] to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-[#050c0a] to-transparent" />
+
+          <div
+            className="relative overflow-hidden py-2"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+            onFocusCapture={() => setIsPaused(true)}
+            onBlurCapture={() => setIsPaused(false)}
+          >
+            <div
+              className="flex w-max will-change-transform"
+              style={{
+                animation: 'musclog-screenshot-marquee 68s linear infinite',
+                animationPlayState: isTrackPaused ? 'paused' : 'running',
+              }}
+            >
+              {[0, 1].map((loopIndex) => (
+                <div key={loopIndex} className="flex shrink-0 gap-5 pr-5">
+                  {slides.map((slide, index) => (
+                    <button
+                      key={`${loopIndex}-${slide.alt}`}
+                      type="button"
+                      onClick={() => setActiveModalIndex(index)}
+                      aria-label={`${t('openSlide')} ${slide.title}`}
+                      className="group flex w-[180px] shrink-0 flex-col text-left sm:w-[200px] md:w-[220px]"
+                    >
+                      <div
+                        className="rounded-[2rem] border border-white/10 bg-black/35 p-2 shadow-[0_18px_48px_rgba(0,0,0,0.34)] transition-transform duration-300 group-hover:-translate-y-1 group-hover:border-white/20"
+                        style={{
+                          boxShadow:
+                            '0 18px 48px rgba(0,0,0,0.34), 0 0 0 1px rgba(255,255,255,0.02)',
+                        }}
+                      >
+                        <div className="overflow-hidden rounded-[1.5rem] bg-[#04110b]">
+                          <img
+                            src={slide.src}
+                            alt={slide.alt}
+                            className="aspect-[537/1165] w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.015]"
+                            loading={loopIndex === 0 && index < 3 ? 'eager' : 'lazy'}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="px-1 pt-3">
+                        <p className="text-sm font-bold text-white">{slide.title}</p>
+                        <p className="mt-1 text-xs leading-5 text-slate-400">{slide.description}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {activeModalIndex !== null && isMobileModal && typeof document !== 'undefined'
+        ? createPortal(
+            <div
+              className="fixed inset-0 z-[220] flex items-center justify-center bg-black/90 p-3 backdrop-blur-md"
+              onClick={() => setActiveModalIndex(null)}
+            >
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-label={t('modalAriaLabel')}
+                className="relative flex h-full w-full items-center justify-center"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <button
+                  type="button"
+                  onClick={() => setActiveModalIndex(null)}
+                  aria-label={t('close')}
+                  className="absolute right-3 top-3 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-black/60 text-white shadow-[0_12px_30px_rgba(0,0,0,0.35)]"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+
+                <img
+                  src={slides[activeModalIndex].src}
+                  alt={slides[activeModalIndex].alt}
+                  className="max-h-[calc(100dvh-1.5rem)] w-full max-w-[calc(100vw-1.5rem)] object-contain"
+                />
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
+
+      {activeModalIndex !== null && !isMobileModal && typeof document !== 'undefined'
+        ? createPortal(
+            <div
+              className="fixed inset-0 z-[220] flex items-center justify-center bg-black/70 p-4 backdrop-blur-md"
+              onClick={() => setActiveModalIndex(null)}
+            >
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-label={t('modalAriaLabel')}
+                className="relative flex max-h-[calc(100dvh-2rem)] w-full max-w-4xl flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(8,16,14,0.98)_0%,rgba(5,10,9,0.96)_100%)] shadow-[0_30px_90px_rgba(0,0,0,0.6)]"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <div className="flex items-start justify-between gap-4 border-b border-white/10 p-4 md:p-5">
+                  <div className="space-y-1">
+                    <p
+                      className="text-xs font-bold uppercase tracking-[0.3em]"
+                      style={{ color: BRAND_GREEN_BRIGHT }}
+                    >
+                      {t('modalEyebrow')}
+                    </p>
+                    <h3 className="text-xl font-extrabold text-white md:text-2xl">
+                      {slides[activeModalIndex].title}
+                    </h3>
+                    <p className="max-w-2xl text-sm leading-6 text-slate-400">
+                      {slides[activeModalIndex].description}
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setActiveModalIndex(null)}
+                    aria-label={t('close')}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:border-white/20 hover:bg-white/10"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <div className="grid min-h-0 flex-1 gap-0 overflow-y-auto lg:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)] lg:overflow-hidden">
+                  <div className="relative flex min-h-0 flex-col bg-black/30 p-4 md:p-6">
+                    <div className="flex items-center justify-between pb-4">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setActiveModalIndex((currentIndex) =>
+                            currentIndex === null
+                              ? 0
+                              : (currentIndex - 1 + slides.length) % slides.length
+                          )
+                        }
+                        aria-label={t('previous')}
+                        className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:border-white/20 hover:bg-white/10"
+                      >
+                        <ArrowRight className="h-4 w-4 rotate-180" />
+                      </button>
+
+                      <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white/70">
+                        {activeModalIndex + 1} / {slides.length}
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setActiveModalIndex((currentIndex) =>
+                            currentIndex === null ? 0 : (currentIndex + 1) % slides.length
+                          )
+                        }
+                        aria-label={t('next')}
+                        className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:border-white/20 hover:bg-white/10"
+                      >
+                        <ArrowRight className="h-4 w-4" />
+                      </button>
+                    </div>
+
+                    <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#04110b] shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
+                      <img
+                        src={slides[activeModalIndex].src}
+                        alt={slides[activeModalIndex].alt}
+                        className="h-auto max-h-[72vh] w-full max-w-[32rem] object-contain"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="border-t border-white/10 bg-white/[0.03] p-4 md:border-l md:border-t-0 md:p-6 lg:overflow-y-auto">
+                    <div className="space-y-4">
+                      <div>
+                        <p
+                          className="text-xs font-bold uppercase tracking-[0.28em]"
+                          style={{ color: BRAND_GREEN_BRIGHT }}
+                        >
+                          {t('modalDetails')}
+                        </p>
+                      </div>
+
+                      <div className="rounded-[1.25rem] border border-white/10 bg-black/20 p-4">
+                        <p className="text-sm font-semibold text-white">
+                          {slides[activeModalIndex].title}
+                        </p>
+                        <p className="mt-2 text-sm leading-6 text-slate-400">
+                          {slides[activeModalIndex].description}
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2">
+                        {slides.map((slide, index) => {
+                          const isActive = index === activeModalIndex;
+
+                          return (
+                            <button
+                              key={slide.alt}
+                              type="button"
+                              onClick={() => setActiveModalIndex(index)}
+                              aria-label={`${t('openSlide')} ${slide.title}`}
+                              className="overflow-hidden rounded-xl border transition-all"
+                              style={{
+                                borderColor: isActive
+                                  ? BRAND_GREEN_BRIGHT
+                                  : 'rgba(255,255,255,0.08)',
+                                boxShadow: isActive ? '0 0 0 1px rgba(0,255,163,0.24)' : 'none',
+                              }}
+                            >
+                              <img
+                                src={slide.src}
+                                alt={slide.alt}
+                                className="aspect-[537/1165] w-full object-cover object-top"
+                              />
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
+    </section>
+  );
+}
+
 export function Testimonial() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.testimonial' });
 
@@ -321,7 +728,7 @@ export function Testimonial() {
           <div className="flex flex-col items-center gap-3">
             <div className="bg-secondary border-primary/30 h-14 w-14 overflow-hidden rounded-full border-2">
               <img
-                src="/images/user-avatar.jpg"
+                src={HERO_AVATAR}
                 alt={t('author')}
                 width={56}
                 height={56}
@@ -574,7 +981,7 @@ export function Hero() {
                 >
                   <div className="overflow-hidden rounded-[2rem]">
                     <img
-                      src="/images/app-screenshot.png"
+                      src={HERO_APP_SCREENSHOT}
                       alt="Musclog app screenshot"
                       width={320}
                       height={640}
@@ -619,6 +1026,7 @@ export default function Home() {
         <Hero />
         <Features />
         <FeatureGrid />
+        <ScreenshotShowcase />
         <Stats />
         <HowItWorks />
         <Testimonial />

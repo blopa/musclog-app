@@ -21,7 +21,117 @@
       "demoEyebrow": "Prévia instantânea",
       "demoTitle": "Experimente a demo web",
       "demoDescription": "Abra uma prévia do app no navegador e explore a experiência antes de baixar.",
-      "demoButton": "Abrir demo web"
+      "demoButton": "Abrir demo web",
+      "carousel": {
+        "eyebrow": "Prévia do app",
+        "title": "Uma olhada rápida dentro do Musclog",
+        "description": "Passe por algumas telas reais do app para ver os fluxos de nutrição, treino e progresso em ação.",
+        "prev": "Captura anterior",
+        "next": "Próxima captura",
+        "goToSlide": "Mostrar captura {{index}}",
+        "slides": {
+          "nutrition": {
+            "title": "Painel de nutrição",
+            "description": "Acompanhe calorias, macros e ações rápidas de relance.",
+            "alt": "Captura do painel de nutrição do Musclog"
+          },
+          "home": {
+            "title": "Visão geral",
+            "description": "Veja seu dia, alimentos recentes e atalhos de treino em um só lugar.",
+            "alt": "Captura da visão geral do Musclog"
+          },
+          "restTimer": {
+            "title": "Cronômetro de descanso",
+            "description": "Mantenha suas séries fluindo com uma contagem regressiva focada.",
+            "alt": "Captura do cronômetro de descanso do Musclog"
+          },
+          "mealLogging": {
+            "title": "Registro de refeições",
+            "description": "Registre refeições e porções com um fluxo centrado em nutrição.",
+            "alt": "Captura do registro de refeições do Musclog"
+          },
+          "progress": {
+            "title": "Insights de progresso",
+            "description": "Revise métricas corporais e tendências que tornam a mudança mais fácil de perceber.",
+            "alt": "Captura dos insights de progresso do Musclog"
+          },
+          "workouts": {
+            "title": "Biblioteca de treinos",
+            "description": "Navegue e inicie seus planos de treino em um só lugar.",
+            "alt": "Captura da biblioteca de treinos do Musclog"
+          }
+        }
+      }
+    },
+    "screenshots": {
+      "eyebrow": "Carrossel de capturas",
+      "title": "Veja o Musclog em movimento",
+      "description": "Uma visualização lenta de telas reais do app. Passe o mouse para pausar e clique em qualquer cartão para abrir ampliado.",
+      "hint": "Passe o mouse para pausar, clique para ampliar",
+      "openSlide": "Abrir captura",
+      "modalAriaLabel": "Prévia de capturas do Musclog",
+      "modalEyebrow": "Prévia de capturas",
+      "modalDetails": "O que você está vendo",
+      "close": "Fechar",
+      "previous": "Captura anterior",
+      "next": "Próxima captura",
+      "slides": {
+        "home": {
+          "title": "Visão geral",
+          "description": "Painel do dia, alimentos recentes e atalhos de treino em um só lugar.",
+          "alt": "Captura da visão geral do Musclog"
+        },
+        "restTimer": {
+          "title": "Cronômetro de descanso",
+          "description": "Uma contagem regressiva focada entre séries.",
+          "alt": "Captura do cronômetro de descanso do Musclog"
+        },
+        "completeSet": {
+          "title": "Série concluída",
+          "description": "Finalize a série e siga direto para a próxima ação.",
+          "alt": "Captura de série concluída do Musclog"
+        },
+        "mealLogging": {
+          "title": "Registro de refeições",
+          "description": "Registre refeições e porções com um fluxo centrado em nutrição.",
+          "alt": "Captura do registro de refeições do Musclog"
+        },
+        "chatCoach": {
+          "title": "Chat com o coach",
+          "description": "Pergunte ao Loggy sobre macros, treino ou ideias de refeições.",
+          "alt": "Captura do chat com o coach do Musclog"
+        },
+        "chatCoach2": {
+          "title": "Conselho de treino do coach",
+          "description": "Receba sugestões de exercícios e dicas de recuperação do seu coach de IA.",
+          "alt": "Captura de conselho de treino do coach do Musclog"
+        },
+        "bodyMetrics": {
+          "title": "Métricas corporais",
+          "description": "Revise tendências de peso e percepções de composição corporal.",
+          "alt": "Captura de métricas corporais do Musclog"
+        },
+        "workouts": {
+          "title": "Biblioteca de treinos",
+          "description": "Navegue e inicie seus planos de treino em um só lugar.",
+          "alt": "Captura da biblioteca de treinos do Musclog"
+        },
+        "createWorkout": {
+          "title": "Criar treino",
+          "description": "Comece uma rotina do zero ou com IA.",
+          "alt": "Captura de criar treino no Musclog"
+        },
+        "today": {
+          "title": "Nutrição de hoje",
+          "description": "Veja calorias e macros do dia de relance.",
+          "alt": "Captura da nutrição de hoje do Musclog"
+        },
+        "settings": {
+          "title": "Configurações de dados locais",
+          "description": "Gerencie exportações, importações e controles de dados locais.",
+          "alt": "Captura das configurações de dados locais do Musclog"
+        }
+      }
     },
     "features": {
       "title": "Construído para Performance e Privacidade",
@@ -138,6 +248,7 @@
       "progress": "Progresso",
       "github": "GitHub",
       "download": "Baixar Agora",
+      "exercises": "Exercícios",
       "language": "Idioma"
     },
     "progress": {
@@ -697,6 +808,22 @@
         "calorieDeficit": "DÉFICIT CALÓRICO"
       }
     },
+    "exercises": {
+      "eyebrow": "BIBLIOTECA DE EXERCÍCIOS",
+      "pageTitle": "Explore Cada Exercício",
+      "pageDescription": "Navegue pela nossa coleção completa de exercícios — filtre por grupo muscular, tipo ou busque por nome.",
+      "customNote": "Estes são os exercícios incluídos com o app. Você também pode criar seus próprios exercícios personalizados diretamente no Musclog.",
+      "searchPlaceholder": "Buscar exercícios...",
+      "filterAll": "Todos",
+      "clearFilters": "Limpar filtros",
+      "noResults": "Nenhum exercício corresponde aos seus filtros.",
+      "showing": "Mostrando {{count}} exercícios",
+      "stat": {
+        "exercises": "Exercícios",
+        "muscleGroups": "Grupos Musculares",
+        "equipment": "Tipos de Equipamento"
+      }
+    },
     "faq": {
       "pageTitle": "FAQ & Ciência — Musclog",
       "badge": "Baseado em Evidências",
@@ -1000,7 +1127,10 @@
                   "label": "Epley (1985)",
                   "url": "https://en.wikipedia.org/wiki/One-repetition_maximum#cite_note-7"
                 },
-                { "label": "Lander (1985)", "url": "https://www.vcalc.com/wiki/landers-formula" },
+                {
+                  "label": "Lander (1985)",
+                  "url": "https://www.vcalc.com/wiki/landers-formula"
+                },
                 {
                   "label": "Lombardi (1989)",
                   "url": "https://www.vcalc.com/wiki/lombardi-one-1-rep-maximum"
@@ -1013,7 +1143,10 @@
                   "label": "O'Connor et al. (1989)",
                   "url": "https://www.vcalc.com/wiki/oconner-et-al"
                 },
-                { "label": "Wathen (1994)", "url": "https://www.vcalc.com/wiki/wathen-formula" }
+                {
+                  "label": "Wathen (1994)",
+                  "url": "https://www.vcalc.com/wiki/wathen-formula"
+                }
               ]
             },
             {

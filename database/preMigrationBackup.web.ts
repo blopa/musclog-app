@@ -15,6 +15,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { CURRENT_DATABASE_VERSION } from '@/constants/database';
+import { WEB_BACKUP_DATA_PREFIX } from '@/constants/exportImport';
 import { isStaticExport } from '@/constants/platform';
 import { handleError } from '@/utils/handleError';
 
@@ -24,7 +25,6 @@ import type { BackupFileMeta } from './preMigrationBackup';
 export type { BackupFileMeta };
 
 const WEB_BACKUPS_KEY = 'musclog_pre_migration_backups_v1';
-const WEB_BACKUP_DATA_PREFIX = 'musclog_backup_data_';
 const WEB_LAST_VERSION_KEY = 'musclog_last_db_version';
 const MAX_BACKUPS = 3;
 

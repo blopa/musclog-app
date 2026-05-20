@@ -1,0 +1,11 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# Generated output — re-created by train.py
+output/features.csv
+output/model.pkl
+recordings/*

@@ -16,6 +16,7 @@ import { WorkoutTimeTracker } from '@/components/WorkoutTimeTracker';
 import { isStaticExport } from '@/constants/platform';
 import { WorkoutService } from '@/database/services';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { useWorkoutSessionState } from '@/hooks/useWorkoutSessionState';
@@ -33,6 +34,7 @@ import { getWeightUnitI18nKey } from '@/utils/units';
 export default function RestTimerScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
+  useKeepScreenAwake('workout-rest-timer');
   const router = useRouter();
   const params = useLocalSearchParams<{ workoutLogId?: string; completedSetOrder?: string }>();
   const { units } = useSettings();

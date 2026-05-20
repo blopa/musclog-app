@@ -6,11 +6,24 @@ import { ScrollView as GHScrollView } from 'react-native-gesture-handler';
 import type { FoodLabels } from '@/database/models/Food';
 import { useTheme } from '@/hooks/useTheme';
 
+import {
+  hasNutritionQualityData,
+  isHighFiberFood,
+  isHighProteinFood,
+  normalizeNutritionQualityScore,
+  type NutritionQualityInput,
+  type NutritionQualityScore,
+} from './nutritionQuality';
+
 type NutritionQualityDataProps = {
-  nutriScore?: string;
-  ecoScore?: string;
+  nutriScore?: NutritionQualityInput['nutriScore'];
+  ecoScore?: NutritionQualityInput['ecoScore'];
   novaGroup?: number;
-  labels?: FoodLabels;
+  labels?: NutritionQualityInput['labels'];
+  protein?: number;
+  carbs?: number;
+  fiber?: number;
+  calories?: number;
 };
 
 // iOS: RNGH ScrollView fights SwipeToReturnWrapper's pan gesture; RN's native UIScrollView wins correctly.
@@ -37,9 +50,11 @@ const LABEL_KEYS: { key: keyof FoodLabels; translationKey: string }[] = [
   { key: 'vegetarian', translationKey: 'food.logDetails.labelVegetarian' },
   { key: 'palmOilFree', translationKey: 'food.logDetails.labelPalmOilFree' },
   { key: 'fairTrade', translationKey: 'food.logDetails.labelFairTrade' },
+  { key: 'highProtein', translationKey: 'food.logDetails.labelHighProtein' },
+  { key: 'highFiber', translationKey: 'food.logDetails.labelHighFiber' },
 ];
 
-function ScoreCard({ label, score }: { label: string; score: string }) {
+function ScoreCard({ label, score }: { label: string; score: NutritionQualityScore }) {
   const theme = useTheme();
   const colors = GRADE_COLORS[score.toLowerCase()] ?? { bg: '#6B8070', text: '#ffffff' };
 
@@ -187,12 +202,32 @@ export function NutritionQualityData({
   ecoScore,
   novaGroup,
   labels,
+  protein,
+  carbs,
+  fiber,
+  calories,
 }: NutritionQualityDataProps) {
   const { t } = useTranslation();
 
-  const activeLabels = LABEL_KEYS.filter(({ key }) => labels?.[key] === true);
-  const hasScores = !!nutriScore || !!ecoScore;
-  const hasData = hasScores || novaGroup != null || activeLabels.length > 0;
+  const normalizedNutriScore = normalizeNutritionQualityScore(nutriScore);
+  const normalizedEcoScore = normalizeNutritionQualityScore(ecoScore);
+  const computedHighProtein =
+    protein != null && calories != null && isHighProteinFood(protein, calories);
+  const computedHighFiber =
+    carbs != null && fiber != null && calories != null && isHighFiberFood(carbs, fiber, calories);
+  const resolvedLabels = {
+    ...labels,
+    highProtein: labels?.highProtein === true || computedHighProtein,
+    highFiber: labels?.highFiber === true || computedHighFiber,
+  };
+  const activeLabels = LABEL_KEYS.filter(({ key }) => resolvedLabels?.[key] === true);
+  const hasScores = normalizedNutriScore != null || normalizedEcoScore != null;
+  const hasData = hasNutritionQualityData({
+    nutriScore,
+    ecoScore,
+    novaGroup,
+    labels: resolvedLabels,
+  });
 
   if (!hasData) {
     return null;
@@ -209,10 +244,12 @@ export function NutritionQualityData({
     <View className="mt-3 gap-3">
       {hasScores ? (
         <View className="flex-row gap-3">
-          {nutriScore ? (
-            <ScoreCard label={t('food.logDetails.nutriScore')} score={nutriScore} />
+          {normalizedNutriScore ? (
+            <ScoreCard label={t('food.logDetails.nutriScore')} score={normalizedNutriScore} />
           ) : null}
-          {ecoScore ? <ScoreCard label={t('food.logDetails.ecoScore')} score={ecoScore} /> : null}
+          {normalizedEcoScore ? (
+            <ScoreCard label={t('food.logDetails.ecoScore')} score={normalizedEcoScore} />
+          ) : null}
         </View>
       ) : null}
 

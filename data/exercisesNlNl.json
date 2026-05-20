@@ -913,5 +913,80 @@
     "name": "Suitcase Carry",
     "description": "Lopen met één gewicht aan je zijde om zijwaartse buiging te weerstaan.",
     "exerciseIndex": 183
+  },
+  {
+    "name": "Zittende Chest Press Machine",
+    "description": "Een zittende borstspieroefening uitgevoerd op een machine.",
+    "exerciseIndex": 184
+  },
+  {
+    "name": "Vlakke Dumbbell Bench Press",
+    "description": "Een horizontale borstpress op een vlakke bank met dumbbells, zodat beide armen onafhankelijk kunnen bewegen.",
+    "exerciseIndex": 185
+  },
+  {
+    "name": "Hip Thrust Machine",
+    "description": "Een bilspiergerichte machinebeweging waarbij je de heupen tegen vaste weerstand omhoog drukt.",
+    "exerciseIndex": 186
+  },
+  {
+    "name": "Unilaterale Leg Extension Machine",
+    "description": "Een eenbenige leg extension die telkens één quadriceps isoleert.",
+    "exerciseIndex": 187
+  },
+  {
+    "name": "Unilaterale Leg Curl Machine",
+    "description": "Een eenbenige leg curl die telkens één hamstring isoleert.",
+    "exerciseIndex": 188
+  },
+  {
+    "name": "Oblique Crunch Machine",
+    "description": "Een crunch machine die de romp roteert of juist scheef belast om de schuine buikspieren te benadrukken.",
+    "exerciseIndex": 189
+  },
+  {
+    "name": "Unilaterale Roeimachine",
+    "description": "Een roeimachine met één arm waarmee je elke kant van je rug apart traint.",
+    "exerciseIndex": 190
+  },
+  {
+    "name": "Unilaterale High Row Machine",
+    "description": "Een high row machine met één arm die de bovenrug en achterste schouders benadrukt.",
+    "exerciseIndex": 191
+  },
+  {
+    "name": "Unilaterale Shoulder Press Machine",
+    "description": "Een shoulder press machine met één arm voor gecontroleerd bovenhands drukken per zijde.",
+    "exerciseIndex": 192
+  },
+  {
+    "name": "Belt Squat Machine",
+    "description": "Een squatvariant waarbij de heupen via een riem worden belast in plaats van de stang op de schouders.",
+    "exerciseIndex": 193
+  },
+  {
+    "name": "Hamstring Curl Machine",
+    "description": "Een tweefunctionele machine die wisselt tussen hamstring curls en leg extensions.",
+    "exerciseIndex": 194
+  },
+  {
+    "name": "Loopband",
+    "description": "Een cardiotoestel om te wandelen, joggen of hardlopen op een bewegende band.",
+    "exerciseIndex": 195
+  },
+  {
+    "name": "Medicijnbal Slam",
+    "description": "Een explosieve worp naar beneden die de core, schouders en heupen traint.",
+    "exerciseIndex": 196
+  },
+  {
+    "name": "Swiss Ball Crunch",
+    "description": "Een crunch op een stabiliteitsbal voor meer bewegingsuitslag en extra corebelasting.",
+    "exerciseIndex": 197
+  },
+  {
+    "name": "Bosu Ball Squat",
+    "description": "Een squat op het instabiele oppervlak van een bosu ball om balans en controle te trainen.",
+    "exerciseIndex": 198
   }
 ]

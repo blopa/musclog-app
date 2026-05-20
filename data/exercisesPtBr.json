@@ -913,5 +913,80 @@
     "name": "Caminhada de Mala",
     "description": "Exercício para o core segurando um haltere ou kettlebell de um lado enquanto caminha, resistindo à flexão lateral.",
     "exerciseIndex": 183
+  },
+  {
+    "name": "Máquina de Chest Press Sentado",
+    "description": "Um exercício de chest press sentado realizado em uma máquina.",
+    "exerciseIndex": 184
+  },
+  {
+    "name": "Supino reto com halteres",
+    "description": "Um press horizontal de peito feito em um banco reto com halteres, permitindo que cada braço se mova de forma independente.",
+    "exerciseIndex": 185
+  },
+  {
+    "name": "Máquina de hip thrust",
+    "description": "Um movimento focado em glúteos que eleva o quadril contra uma resistência fixa.",
+    "exerciseIndex": 186
+  },
+  {
+    "name": "Máquina unilateral de extensão de pernas",
+    "description": "Uma extensão de pernas com uma só perna que isola um quadríceps de cada vez.",
+    "exerciseIndex": 187
+  },
+  {
+    "name": "Máquina unilateral de flexão de pernas",
+    "description": "Uma flexão de pernas com uma só perna que isola um posterior de coxa de cada vez.",
+    "exerciseIndex": 188
+  },
+  {
+    "name": "Máquina de crunch oblíquo",
+    "description": "Um crunch na máquina que gira ou inclina o tronco para enfatizar os oblíquos.",
+    "exerciseIndex": 189
+  },
+  {
+    "name": "Máquina unilateral de remada",
+    "description": "Uma máquina de remada com um braço para treinar cada lado das costas separadamente.",
+    "exerciseIndex": 190
+  },
+  {
+    "name": "Máquina unilateral de remada alta",
+    "description": "Uma máquina de remada alta com um braço que enfatiza a parte superior das costas e os deltoides posteriores.",
+    "exerciseIndex": 191
+  },
+  {
+    "name": "Máquina unilateral de desenvolvimento de ombros",
+    "description": "Uma máquina de desenvolvimento de ombros com um braço para empurrar acima da cabeça de forma controlada.",
+    "exerciseIndex": 192
+  },
+  {
+    "name": "Máquina de belt squat",
+    "description": "Uma variação de agachamento que carrega o quadril por meio de um cinto em vez de apoiar a barra nos ombros.",
+    "exerciseIndex": 193
+  },
+  {
+    "name": "Máquina de flexão de pernas",
+    "description": "Uma máquina dupla que alterna entre flexão de pernas e extensão de pernas.",
+    "exerciseIndex": 194
+  },
+  {
+    "name": "Esteira",
+    "description": "Um aparelho de cardio para caminhar, trotar ou correr em uma faixa móvel.",
+    "exerciseIndex": 195
+  },
+  {
+    "name": "Arremesso de medicine ball",
+    "description": "Um movimento explosivo de lançamento para baixo que trabalha core, ombros e quadris.",
+    "exerciseIndex": 196
+  },
+  {
+    "name": "Crunch na swiss ball",
+    "description": "Um crunch sobre uma bola de estabilidade para aumentar a amplitude e a demanda do core.",
+    "exerciseIndex": 197
+  },
+  {
+    "name": "Agachamento na bosu",
+    "description": "Um agachamento sobre a superfície instável de uma bosu para desafiar equilíbrio e controle.",
+    "exerciseIndex": 198
   }
 ]

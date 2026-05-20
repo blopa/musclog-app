@@ -1,4 +1,3 @@
-import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { WifiOff } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
@@ -15,6 +14,7 @@ import {
   WorkoutAnalytics,
   WorkoutService,
 } from '@/database/services';
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -50,18 +50,7 @@ export default function WorkoutSummaryScreen() {
   const [error, setError] = useState<string | null>(null);
   const [isFeedbackLoading, setIsFeedbackLoading] = useState(false);
 
-  // Keep screen awake during AI workout feedback generation
-  useEffect(() => {
-    if (isFeedbackLoading) {
-      activateKeepAwakeAsync('workout-feedback').catch(() => {});
-    } else {
-      deactivateKeepAwake('workout-feedback').catch(() => {});
-    }
-
-    return () => {
-      deactivateKeepAwake('workout-feedback').catch(() => {});
-    };
-  }, [isFeedbackLoading]);
+  useKeepScreenAwake('workout-feedback', isFeedbackLoading);
 
   useEffect(() => {
     const loadWorkoutData = async () => {

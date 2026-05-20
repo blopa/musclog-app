@@ -10,7 +10,14 @@ const noRelativeImportPaths = require('eslint-plugin-no-relative-import-paths');
 module.exports = defineConfig([
   expoConfig,
   {
-    ignores: ['dist/*', 'coverage/**', 'app/test/**'],
+    ignores: [
+      'dist/*',
+      'coverage/**',
+      'app/test/**',
+      'training-data/.venv/**',
+      'training-data/output/model.js',
+      'utils/repCountingModel.js',
+    ],
   },
   {
     plugins: {

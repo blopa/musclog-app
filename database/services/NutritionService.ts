@@ -22,6 +22,12 @@ import { handleError } from '@/utils/handleError';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { widgetEvents } from '@/utils/widgetEvents';
 
+import {
+  DatabaseRepairService,
+  REPAIR_DESCRIPTORS,
+  retryAfterRepair,
+} from './DatabaseRepairService';
+
 function triggerWidgetUpdate(): void {
   widgetEvents.emitNutritionWidgetUpdate();
 }
@@ -131,105 +137,179 @@ export class NutritionService {
     groupId?: string,
     loggedMealName?: string
   ): Promise<NutritionLog> {
-    const dateTimestamp = localDayStartMs(date);
+    return this.logFoodInternal(
+      foodId,
+      date,
+      mealType,
+      amount,
+      portionId,
+      externalId,
+      groupId,
+      loggedMealName
+    );
+  }
 
-    const log = await database.write(async () => {
-      const food = await database.get<Food>('foods').find(foodId);
-      const now = Date.now();
-      let resolvedPortionId = portionId;
-      if (!resolvedPortionId && food.resolvedNutritionBasis === 'per_serving') {
-        const defaultPortion = await food.getDefaultPortionAsync();
-        resolvedPortionId = defaultPortion?.id;
-      }
-      const encrypted = await encryptNutritionLogSnapshot({
-        loggedFoodName: food.name ?? undefined,
-        loggedCalories: food.calories ?? 0,
-        loggedProtein: food.protein ?? 0,
-        loggedCarbs: food.carbs ?? 0,
-        loggedFat: food.fat ?? 0,
-        loggedFiber: food.fiber ?? 0,
-        loggedMicros: food.micros,
-      });
+  private static async logFoodInternal(
+    foodId: string,
+    date: Date,
+    mealType: MealType,
+    amount: number,
+    portionId?: string,
+    externalId?: string,
+    groupId?: string,
+    loggedMealName?: string,
+    repairAttempted = false
+  ): Promise<NutritionLog> {
+    try {
+      const dateTimestamp = localDayStartMs(date);
 
-      return await database.get<NutritionLog>('nutrition_logs').create((record) => {
-        record.foodId = foodId;
-        record.externalId = externalId;
-        record.date = dateTimestamp;
-        record.type = mealType;
-        record.amount = amount;
-        record.portionId = resolvedPortionId;
-        record.loggedFoodNameRaw = encrypted.loggedFoodName;
-        record.loggedCaloriesRaw = encrypted.loggedCalories;
-        record.loggedProteinRaw = encrypted.loggedProtein;
-        record.loggedCarbsRaw = encrypted.loggedCarbs;
-        record.loggedFatRaw = encrypted.loggedFat;
-        record.loggedFiberRaw = encrypted.loggedFiber;
-        record.loggedMicrosRaw = encrypted.loggedMicrosJson;
-        record.loggedNutriscore = food.nutriscore ?? undefined;
-        record.loggedEcoscore = food.ecoscore ?? undefined;
-        record.loggedNovaGroup = food.novaGroup ?? undefined;
-        record.snapshotBasis = food.resolvedNutritionBasis;
-        record.groupId = groupId;
-        record.loggedMealName = loggedMealName;
-        record.createdAt = now;
-        record.updatedAt = now;
-      });
-    });
-
-    if (Platform.OS === 'android') {
-      triggerWidgetUpdate();
-    }
-
-    // Health Connect / Apple Health (user-entered only — health-sourced records
-    // already have externalId set and must not be written back to avoid an echo loop).
-    if ((Platform.OS === 'android' || Platform.OS === 'ios') && !externalId) {
-      const [nutrients, snapshot] = await Promise.all([
-        log.getNutrients(),
-        log.getDecryptedSnapshot(),
-      ]);
-
-      const hcId = await writeNutritionLogToHealthConnect({
-        logId: log.id,
-        date: dateTimestamp,
-        mealType,
-        foodName: snapshot.loggedFoodName ?? '',
-        calories: nutrients.calories,
-        protein: nutrients.protein,
-        carbs: nutrients.carbs,
-        fat: nutrients.fat,
-        fiber: nutrients.fiber,
-      }).catch((err) => {
-        handleError(err, 'NutritionService.addNutritionLog.healthConnect');
-      });
-
-      if (hcId) {
-        await database.write(async () => {
-          await log.update((record) => {
-            record.externalId = hcId;
-          });
+      const log = await database.write(async () => {
+        const food = await database.get<Food>('foods').find(foodId);
+        const now = Date.now();
+        let resolvedPortionId = portionId;
+        if (!resolvedPortionId && food.resolvedNutritionBasis === 'per_serving') {
+          const defaultPortion = await food.getDefaultPortionAsync();
+          resolvedPortionId = defaultPortion?.id;
+        }
+        const encrypted = await encryptNutritionLogSnapshot({
+          loggedFoodName: food.name ?? undefined,
+          loggedCalories: food.calories ?? 0,
+          loggedProtein: food.protein ?? 0,
+          loggedCarbs: food.carbs ?? 0,
+          loggedFat: food.fat ?? 0,
+          loggedFiber: food.fiber ?? 0,
+          loggedMicros: food.micros,
         });
-      }
-    }
 
-    return log;
+        return await database.get<NutritionLog>('nutrition_logs').create((record) => {
+          record.foodId = foodId;
+          record.externalId = externalId;
+          record.date = dateTimestamp;
+          record.type = mealType;
+          record.amount = amount;
+          record.portionId = resolvedPortionId;
+          record.loggedFoodNameRaw = encrypted.loggedFoodName;
+          record.loggedCaloriesRaw = encrypted.loggedCalories;
+          record.loggedProteinRaw = encrypted.loggedProtein;
+          record.loggedCarbsRaw = encrypted.loggedCarbs;
+          record.loggedFatRaw = encrypted.loggedFat;
+          record.loggedFiberRaw = encrypted.loggedFiber;
+          record.loggedMicrosRaw = encrypted.loggedMicrosJson;
+          record.loggedNutriscore = food.nutriscore ?? undefined;
+          record.loggedEcoscore = food.ecoscore ?? undefined;
+          record.loggedNovaGroup = food.novaGroup ?? undefined;
+          record.snapshotBasis = food.resolvedNutritionBasis;
+          record.groupId = groupId;
+          record.loggedMealName = loggedMealName;
+          record.createdAt = now;
+          record.updatedAt = now;
+        });
+      });
+
+      if (Platform.OS === 'android') {
+        triggerWidgetUpdate();
+      }
+
+      // Health Connect / Apple Health (user-entered only — health-sourced records
+      // already have externalId set and must not be written back to avoid an echo loop).
+      if ((Platform.OS === 'android' || Platform.OS === 'ios') && !externalId) {
+        const [nutrients, snapshot] = await Promise.all([
+          log.getNutrients(),
+          log.getDecryptedSnapshot(),
+        ]);
+
+        const hcId = await writeNutritionLogToHealthConnect({
+          logId: log.id,
+          date: dateTimestamp,
+          mealType,
+          foodName: snapshot.loggedFoodName ?? '',
+          calories: nutrients.calories,
+          protein: nutrients.protein,
+          carbs: nutrients.carbs,
+          fat: nutrients.fat,
+          fiber: nutrients.fiber,
+        }).catch((err) => {
+          handleError(err, 'NutritionService.addNutritionLog.healthConnect');
+        });
+
+        if (hcId) {
+          await database.write(async () => {
+            await log.update((record) => {
+              record.externalId = hcId;
+            });
+          });
+        }
+      }
+
+      return log;
+    } catch (error) {
+      if (!repairAttempted) {
+        // logFood reads from `foods` and `food_food_portions` before writing to
+        // `nutrition_logs`, so corruption in either group can cause this to fail.
+        // Repair both in parallel and retry if either had effect.
+        const [nutritionRepair, foodsRepair] = await Promise.all([
+          DatabaseRepairService.repairIfNeeded(error, REPAIR_DESCRIPTORS.nutritionLogs),
+          DatabaseRepairService.repairIfNeeded(error, REPAIR_DESCRIPTORS.foods),
+        ]);
+        const anyEffect =
+          (nutritionRepair.attempted &&
+            (nutritionRepair.reindexed || nutritionRepair.deletedRootIds.length > 0)) ||
+          (foodsRepair.attempted &&
+            (foodsRepair.reindexed || foodsRepair.deletedRootIds.length > 0));
+        if (anyEffect) {
+          return this.logFoodInternal(
+            foodId,
+            date,
+            mealType,
+            amount,
+            portionId,
+            externalId,
+            groupId,
+            loggedMealName,
+            true
+          );
+        }
+      }
+      throw error;
+    }
   }
 
   /**
    * Get all nutrition logs for a specific date
    */
   static async getNutritionLogsForDate(date: Date): Promise<NutritionLog[]> {
+    return this.getNutritionLogsForDateInternal(date);
+  }
+
+  private static async getNutritionLogsForDateInternal(
+    date: Date,
+    repairAttempted = false
+  ): Promise<NutritionLog[]> {
     const dateTimestamp = localDayStartMs(date);
     const maxInclusive = localDayClosedRangeMaxMs(date);
 
-    return await retryOnResetError(() =>
-      database
-        .get<NutritionLog>('nutrition_logs')
-        .query(
-          Q.where('deleted_at', Q.eq(null)),
-          Q.where('date', Q.between(dateTimestamp, maxInclusive))
-        )
-        .fetch()
-    );
+    try {
+      return await retryOnResetError(() =>
+        database
+          .get<NutritionLog>('nutrition_logs')
+          .query(
+            Q.where('deleted_at', Q.eq(null)),
+            Q.where('date', Q.between(dateTimestamp, maxInclusive))
+          )
+          .fetch()
+      );
+    } catch (error) {
+      if (!repairAttempted) {
+        const repaired = await retryAfterRepair(error, REPAIR_DESCRIPTORS.nutritionLogs, () =>
+          this.getNutritionLogsForDateInternal(date, true)
+        );
+
+        if (repaired) {
+          return repaired;
+        }
+      }
+      throw error;
+    }
   }
 
   /**
@@ -476,11 +556,31 @@ export class NutritionService {
    * Delete nutrition log
    */
   static async deleteNutritionLog(id: string): Promise<void> {
-    const log = await database.get<NutritionLog>('nutrition_logs').find(id);
-    // markAsDeleted is a @writer method, so it already manages its own write transaction
-    await log.markAsDeleted();
+    return this.deleteNutritionLogInternal(id);
+  }
 
-    triggerWidgetUpdate();
+  private static async deleteNutritionLogInternal(
+    id: string,
+    repairAttempted = false
+  ): Promise<void> {
+    try {
+      const log = await database.get<NutritionLog>('nutrition_logs').find(id);
+      // markAsDeleted is a @writer method, so it already manages its own write transaction
+      await log.markAsDeleted();
+      triggerWidgetUpdate();
+    } catch (error) {
+      if (!repairAttempted) {
+        const repair = await DatabaseRepairService.repairIfNeeded(
+          error,
+          REPAIR_DESCRIPTORS.nutritionLogs
+        );
+
+        if (repair.attempted && (repair.reindexed || repair.deletedRootIds.length > 0)) {
+          return this.deleteNutritionLogInternal(id, true);
+        }
+      }
+      throw error;
+    }
   }
 
   /**

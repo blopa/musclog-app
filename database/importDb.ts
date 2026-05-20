@@ -1,4 +1,6 @@
+import { Q } from '@nozbe/watermelondb';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
 import { ASYNC_STORAGE_EXCLUDED_KEYS, RESTORE_ORDER } from '@/constants/exportImport';
 import {
@@ -6,6 +8,8 @@ import {
   ONBOARDING_COMPLETED,
   ONBOARDING_VERSION,
 } from '@/constants/misc';
+import { getExportPlatform, isSameExportPlatform } from '@/constants/platform';
+import { UNITS_SETTING_TYPE } from '@/constants/settings';
 import { reloadApp } from '@/utils/app';
 import { decrypt } from '@/utils/encryption';
 import { handleError } from '@/utils/handleError';
@@ -67,6 +71,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
   }
 
   const dbData: ExportDump = validationResult.data as ExportDump;
+  const importBleDevices = isSameExportPlatform(dbData._exportPlatform, getExportPlatform());
 
   // Only clear AsyncStorage if the imported data contains async storage data
   const asyncStorageData = dbData._async_storage_;
@@ -90,11 +95,27 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     }
   };
 
+  // Capture the current unit_system value before wiping the database.
+  // Backups from Android users who never explicitly changed units won't include a
+  // unit_system row (setUnits() is only called on explicit change). Without this
+  // snapshot, the app falls back to getDefaultUnits() after import, which returns
+  // 'imperial' for US-locale browsers even when the user was on metric.
+  const preWipeUnitsRows = await database
+    .get('settings')
+    .query(Q.where('type', UNITS_SETTING_TYPE), Q.where('deleted_at', Q.eq(null)))
+    .fetch();
+  const preWipeUnitsValue: string =
+    preWipeUnitsRows.length > 0 ? (preWipeUnitsRows[0] as any).value : '0';
+
   // Phase 1: Prepare create operations.
   // Reads and async encryption happen here so the write blocks stay synchronous-safe.
   const createOperations: any[] = [];
 
   for (const tableName of RESTORE_ORDER) {
+    if (tableName === 'ble_devices' && !importBleDevices) {
+      continue;
+    }
+
     const collection = database.get(tableName as any);
 
     // Access table data using type assertion since tableName is dynamic
@@ -209,12 +230,53 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
               continue;
             }
 
+            let assignValue = value;
+            if (key.endsWith('_json')) {
+              // @json properties may be named without the "_json" suffix (e.g. micros_json → micros),
+              // so the camelCase setter path silently misses. Write _raw directly instead.
+              // _raw must hold a JSON *string* (WatermelonDB stringifies before _setRaw),
+              // so stringify objects coming from web exports that already hold parsed values.
+              if (typeof value === 'string' && value) {
+                try {
+                  JSON.parse(value); // validate — keep as string
+                  assignValue = value;
+                } catch {
+                  assignValue = null;
+                }
+              } else if (value !== null && value !== undefined && typeof value === 'object') {
+                assignValue = JSON.stringify(value);
+              } else {
+                assignValue = null;
+              }
+
+              rec._raw[key] = assignValue;
+              continue;
+            }
+
             const camel = key.replace(/_([a-z0-9])/g, (_, c) => c.toUpperCase());
-            (rec as any)[camel] = value;
+            (rec as any)[camel] = assignValue;
           }
         })
       );
     }
+  }
+
+  // If the backup doesn't include an active unit_system row, inject one using the
+  // pre-wipe value so the app doesn't silently switch units after import.
+  const settingsRows = Array.isArray((dbData as any).settings) ? (dbData as any).settings : [];
+  const backupHasUnitSystem = settingsRows.some(
+    (row: any) => row.type === UNITS_SETTING_TYPE && row.deleted_at == null
+  );
+  if (!backupHasUnitSystem) {
+    const now = Date.now();
+    createOperations.push(
+      database.get('settings').prepareCreate((rec: any) => {
+        rec.type = UNITS_SETTING_TYPE;
+        rec.value = preWipeUnitsValue;
+        rec.createdAt = now;
+        rec.updatedAt = now;
+      })
+    );
   }
 
   // Phase 1.5: Create a pre-restore backup of the current database.
@@ -236,7 +298,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
   // Phase 3: Populate the fresh database with the backup data.
   if (createOperations.length > 0) {
     await database.write(async () => {
-      await database.batch(...createOperations);
+      await database.batch(createOperations);
     });
   }
 
@@ -259,7 +321,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
       const now = Date.now();
       await database.write(async () => {
         await database.batch(
-          ...workoutLogs.map((log: any) =>
+          workoutLogs.map((log: any) =>
             log.prepareUpdate((l: any) => {
               l.totalVolume = null;
               l.updatedAt = now;
@@ -287,6 +349,18 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
       // TODO: we might not want to force it to be the current version
       [ONBOARDING_VERSION, CURRENT_ONBOARDING_VERSION],
     ]);
+  }
+
+  // On web, force Loki to persist to IndexedDB before triggering a page reload.
+  // LokiJS autosaves every 500ms; if the reload fires before the first autosave
+  // the just-imported data disappears from IDB and the app boots with an empty DB.
+  if (Platform.OS === 'web') {
+    const loki = (database.adapter as any)._driver?.loki;
+    if (loki) {
+      await new Promise<void>((resolve) => {
+        loki.saveDatabase(() => resolve());
+      });
+    }
   }
 
   // Reload the app after importing is complete

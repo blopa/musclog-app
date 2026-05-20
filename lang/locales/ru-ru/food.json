@@ -26,7 +26,9 @@
       "labelVegan": "Веганский",
       "labelVegetarian": "Вегетарианский",
       "labelPalmOilFree": "Без пальмового масла",
-      "labelFairTrade": "Справедливая торговля"
+      "labelFairTrade": "Справедливая торговля",
+      "labelHighProtein": "Высокобелковый",
+      "labelHighFiber": "С высоким содержанием клетчатки"
     },
     "manageFoodLibrary": {
       "deleteFoodWarning": "Вы уверены, что хотите удалить этот продукт? Это действие нельзя отменить.",

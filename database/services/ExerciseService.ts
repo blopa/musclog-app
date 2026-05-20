@@ -14,11 +14,27 @@ import { buildExerciseCloudUrl } from '@/utils/exerciseImage';
 
 import { MuscleService } from './MuscleService';
 
+const EXERCISE_JSON_MUSCLE_GROUPS = [
+  'abdomen',
+  'arms',
+  'back',
+  'chest',
+  'core',
+  'full_body',
+  'glutes',
+  'legs',
+  'shoulders',
+] as const;
+
+type ExerciseJsonMuscleGroup = (typeof EXERCISE_JSON_MUSCLE_GROUPS)[number];
+
 interface ExerciseJsonData {
+  exerciseIndex: number;
   name: string;
   description: string;
-  muscleGroup: string;
-  type: 'compound' | 'isolation' | 'machine' | 'bodyweight' | 'cardio' | 'plyometric';
+  muscleGroup: ExerciseJsonMuscleGroup;
+  equipmentType: EquipmentType;
+  mechanicType: MechanicType;
   targetMuscles?: string[];
   loadMultiplier?: number;
 }
@@ -34,10 +50,12 @@ function buildMergedExercisesJson(locale: keyof typeof EXERCISES_JSON): Exercise
     }
 
     result.push({
+      exerciseIndex: localeEntry.exerciseIndex,
       name: localeEntry.name,
       description: localeEntry.description,
-      muscleGroup: data.muscleGroup,
-      type: data.type as ExerciseJsonData['type'],
+      muscleGroup: data.muscleGroup as ExerciseJsonMuscleGroup,
+      equipmentType: data.equipmentType as EquipmentType,
+      mechanicType: data.mechanicType as MechanicType,
       targetMuscles: data.targetMuscles,
       loadMultiplier: data.loadMultiplier,
     });
@@ -386,51 +404,6 @@ export class ExerciseService {
   }
 
   /**
-   * Maps JSON exercise type to Exercise model fields
-   */
-  private static mapExerciseType(type: ExerciseJsonData['type']): {
-    mechanicType: MechanicType;
-    equipmentType: EquipmentType;
-  } {
-    let mechanicType: MechanicType = 'compound';
-    let equipmentType: EquipmentType;
-
-    switch (type) {
-      case 'compound':
-        mechanicType = 'compound';
-        // Try to infer equipment from name (will default to barbell)
-        equipmentType = 'barbell';
-        break;
-      case 'isolation':
-        mechanicType = 'isolation';
-        // Try to infer equipment from name (will default to dumbbell for isolation)
-        equipmentType = 'dumbbell';
-        break;
-      case 'machine':
-        mechanicType = 'compound'; // Machine exercises can be compound or isolation, default to compound
-        equipmentType = 'machine';
-        break;
-      case 'bodyweight':
-        mechanicType = 'compound'; // Bodyweight exercises can be compound or isolation, default to compound
-        equipmentType = 'bodyweight';
-        break;
-      case 'cardio':
-        mechanicType = 'compound';
-        equipmentType = 'other'; // Cardio exercises don't have specific equipment type
-        break;
-      case 'plyometric':
-        mechanicType = 'compound';
-        equipmentType = 'other';
-        break;
-      default:
-        mechanicType = 'compound';
-        equipmentType = 'barbell';
-    }
-
-    return { mechanicType, equipmentType };
-  }
-
-  /**
    * Infers equipment type from exercise name
    * This is a helper to improve accuracy of equipment type mapping
    */
@@ -453,7 +426,7 @@ export class ExerciseService {
       return 'kettlebell' as EquipmentType;
     }
     if (lowerName.includes('machine') || lowerName.includes(' smith')) {
-      return 'machine' as EquipmentType;
+      return 'plate_machine' as EquipmentType;
     }
 
     return defaultEquipment;
@@ -483,10 +456,11 @@ export class ExerciseService {
       // prepareCreate assigns IDs synchronously — collect both exercises and junction records
       const exercisesToCreate = filteredData.map((exerciseData) => {
         const jsonIndex = exercisesJson.indexOf(exerciseData);
-        const { mechanicType, equipmentType: defaultEquipment } = this.mapExerciseType(
-          exerciseData.type as ExerciseJsonData['type']
+        const mechanicType = exerciseData.mechanicType;
+        const equipmentType = this.inferEquipmentFromName(
+          exerciseData.name,
+          exerciseData.equipmentType
         );
-        const equipmentType = this.inferEquipmentFromName(exerciseData.name, defaultEquipment);
 
         return database.get<Exercise>('exercises').prepareCreate((exercise) => {
           exercise.name = exerciseData.name;
@@ -743,12 +717,11 @@ export class ExerciseService {
     // prepareCreate assigns IDs synchronously
     const prepared = missing.map((data) => {
       const jsonIndex = exercisesJson.indexOf(data);
-      const { mechanicType, equipmentType: defaultEquipment } = this.mapExerciseType(
-        data.type as ExerciseJsonData['type']
-      );
-      const equipmentType = this.inferEquipmentFromName(data.name, defaultEquipment);
+      const mechanicType = data.mechanicType;
+      const equipmentType = this.inferEquipmentFromName(data.name, data.equipmentType);
 
       return database.get<Exercise>('exercises').prepareCreate((exercise) => {
+        exercise._raw.id = String(data.exerciseIndex);
         exercise.name = data.name;
         exercise.description = data.description;
         exercise.muscleGroup = data.muscleGroup as MuscleGroup;

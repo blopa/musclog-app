@@ -2,7 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
-import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import type { TFunction } from 'i18next';
@@ -65,6 +64,7 @@ import { useUnreadChat } from '@/context/UnreadChatContext';
 import { ChatService, MuscleService, WorkoutService } from '@/database/services';
 import { AI_COACH_AVATAR, type ExtendedIMessage, useChatMessages } from '@/hooks/useChatMessages';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useTheme } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
@@ -715,19 +715,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     }
   }, [pendingIntention, attachedImage]);
 
-  // Keep screen awake while sending AI messages to prevent the phone from
-  // turning off the screen and killing network requests
-  useEffect(() => {
-    if (isSending) {
-      activateKeepAwakeAsync('coach-chat-sending').catch(() => {});
-    } else {
-      deactivateKeepAwake('coach-chat-sending').catch(() => {});
-    }
-
-    return () => {
-      deactivateKeepAwake('coach-chat-sending').catch(() => {});
-    };
-  }, [isSending]);
+  useKeepScreenAwake('coach-chat-sending', visible && isSending);
 
   useEffect(() => {
     if (!visible) {

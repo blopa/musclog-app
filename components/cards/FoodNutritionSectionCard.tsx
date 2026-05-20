@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
-import type { FoodLabels } from '@/database/models/Food';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { addOpacityToHex } from '@/theme';
@@ -13,6 +12,12 @@ import { blurFilter } from '@/utils/blurFilter';
 import { FoodInfoCard } from './FoodInfoCard';
 import { InfoCard } from './InfoCard';
 import { IngredientListModal, MealIngredient } from './IngredientListModal';
+import {
+  hasNutritionQualityData,
+  isHighFiberFood,
+  isHighProteinFood,
+  type NutritionQualityInput,
+} from './nutritionQuality';
 import { NutritionQualityData } from './NutritionQualityData';
 
 export type { MealIngredient };
@@ -46,13 +51,6 @@ export type FoodDetailsNutritionSectionMode =
   | 'externalProduct'
   | null;
 
-type NutritionQuality = {
-  nutriScore?: string;
-  ecoScore?: string;
-  novaGroup?: number;
-  labels?: FoodLabels;
-};
-
 type FoodNutritionSectionProps = {
   food: FoodData;
   canEdit: boolean;
@@ -63,6 +61,7 @@ type FoodNutritionSectionProps = {
   servingSize: number;
   servingBasis?: 'per_100g' | 'per_serving';
   isLoadingDetails: boolean;
+  protein?: number;
   onTryAnotherSource?: () => void;
   isRefetchingSource?: boolean;
   /** After alternate sources were tried with no usable data — show edit-only message, no "try another" link. */
@@ -75,7 +74,7 @@ type FoodNutritionSectionProps = {
   showName?: boolean;
   useQualityAccordion?: boolean;
   ingredients?: MealIngredient[];
-  nutritionQuality?: NutritionQuality;
+  nutritionQuality?: NutritionQualityInput;
 };
 
 export function FoodNutritionSectionCard({
@@ -87,6 +86,7 @@ export function FoodNutritionSectionCard({
   servingSize,
   servingBasis = 'per_100g',
   isLoadingDetails,
+  protein,
   showIncompleteWarning = false,
   onTryAnotherSource,
   isRefetchingSource = false,
@@ -105,6 +105,18 @@ export function FoodNutritionSectionCard({
   const [nutritionExpanded, setNutritionExpanded] = useState(false);
 
   const scaleFactor = servingBasis === 'per_serving' ? servingSize : servingSize / 100;
+  const highProtein = isHighProteinFood(protein ?? food.protein, food.calories);
+  const highFiber = isHighFiberFood(
+    food.carbs,
+    (nutritionalData.fiber ?? 0) * scaleFactor,
+    food.calories
+  );
+
+  const resolvedLabels = {
+    ...nutritionQuality?.labels,
+    highProtein: nutritionQuality?.labels?.highProtein === true || highProtein,
+    highFiber: nutritionQuality?.labels?.highFiber === true || highFiber,
+  };
 
   const showAdditionalNutrition =
     mode !== 'meal' &&
@@ -116,6 +128,28 @@ export function FoodNutritionSectionCard({
       (nutritionalData.potassium ?? 0) > 0 ||
       (nutritionalData.magnesium ?? 0) > 0 ||
       (nutritionalData.zinc ?? 0) > 0);
+  const hasQualityData =
+    (nutritionQuality != null &&
+      hasNutritionQualityData({
+        ...nutritionQuality,
+        labels: resolvedLabels,
+      })) ||
+    highProtein ||
+    highFiber;
+  const hasExpandableNutritionContent = showAdditionalNutrition || hasQualityData;
+
+  const microCount = [
+    nutritionalData.fiber > 0,
+    (nutritionalData.sugar ?? 0) > 0,
+    nutritionalData.saturatedFat > 0,
+    nutritionalData.sodium > 0,
+    (nutritionalData.alcohol ?? 0) > 0,
+    (nutritionalData.potassium ?? 0) > 0,
+    (nutritionalData.magnesium ?? 0) > 0,
+    (nutritionalData.zinc ?? 0) > 0,
+  ].filter(Boolean).length;
+
+  const effectivelyUseAccordion = useQualityAccordion && (hasQualityData || microCount > 2);
 
   const showLoadingOnly = isLoadingDetails && (mode === 'externalProduct' || mode === null);
 
@@ -238,17 +272,21 @@ export function FoodNutritionSectionCard({
       <View>
         <View
           style={
-            useQualityAccordion && !nutritionExpanded
+            effectivelyUseAccordion && !nutritionExpanded
               ? { maxHeight: 110, overflow: 'hidden' }
               : undefined
           }
         >
-          {nutritionQuality ? (
+          {nutritionQuality || highProtein || highFiber ? (
             <NutritionQualityData
-              nutriScore={nutritionQuality.nutriScore}
-              ecoScore={nutritionQuality.ecoScore}
-              novaGroup={nutritionQuality.novaGroup}
-              labels={nutritionQuality.labels}
+              nutriScore={nutritionQuality?.nutriScore}
+              ecoScore={nutritionQuality?.ecoScore}
+              novaGroup={nutritionQuality?.novaGroup}
+              labels={resolvedLabels}
+              protein={protein ?? food.protein}
+              carbs={food.carbs}
+              fiber={nutritionalData.fiber}
+              calories={food.calories}
             />
           ) : null}
 
@@ -410,9 +448,7 @@ export function FoodNutritionSectionCard({
           ) : null}
         </View>
 
-        {useQualityAccordion &&
-        !nutritionExpanded &&
-        (nutritionQuality || showAdditionalNutrition || showLoadingOnly) ? (
+        {effectivelyUseAccordion && !nutritionExpanded && hasExpandableNutritionContent ? (
           <>
             <LinearGradient
               colors={[

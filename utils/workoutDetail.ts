@@ -25,7 +25,7 @@ import { getWorkoutIcon } from './workoutHistory';
 export type WorkoutSet = Pick<WorkoutLogSet, 'reps' | 'repsInReserve'> & {
   setNumber: number;
   weight: string; // Formatted weight string
-  partial: string; // Formatted difficulty level
+  partial: string; // Formatted partial reps count
   isHighlighted: boolean;
 };
 
@@ -192,7 +192,9 @@ export async function transformWorkoutToDetailData(
   locale: Locale,
   theme: Theme,
   /** `Intl` / `formatApp*` locale string (e.g. i18n.resolvedLanguage), not date-fns Locale */
-  appNumberLocale: string
+  appNumberLocale: string,
+  /** exercise_order-sorted list of exerciseIds from workout_log_exercises */
+  orderedExerciseIds?: string[]
 ): Promise<WorkoutDetailData> {
   const exerciseMap = new Map<string, Exercise>();
   exercises.forEach((ex) => exerciseMap.set(ex.id, ex));
@@ -232,44 +234,50 @@ export async function transformWorkoutToDetailData(
     });
   });
 
-  const workoutExercises: WorkoutExercise[] = Array.from(setsByExercise.entries()).map(
-    ([exerciseId, exerciseSets]) => {
-      const exercise = exerciseMap.get(exerciseId);
-      if (!exercise) {
-        throw new Error(`Exercise ${exerciseId} not found`);
-      }
+  const exerciseEntries = orderedExerciseIds
+    ? [...setsByExercise.entries()].sort(
+        (a, b) =>
+          (orderedExerciseIds.indexOf(a[0]) + 1 || Infinity) -
+          (orderedExerciseIds.indexOf(b[0]) + 1 || Infinity)
+      )
+    : [...setsByExercise.entries()];
 
-      const isBodyweight = exercise.equipmentType?.toLowerCase().includes('bodyweight') || false;
-
-      const iconData = getWorkoutIcon(theme, exercise.name ?? '');
-      const sortedSets = exerciseSets.sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0));
-
-      const workoutSets: WorkoutSet[] = sortedSets.map((set, index) => {
-        const isHighlighted = prSetIds.has(set.id);
-        return {
-          setNumber: index + 1,
-          weight: formatWeight(set.weight ?? 0, isBodyweight, t, units, appNumberLocale),
-          reps: set.reps ?? 0,
-          partial: (set.difficultyLevel ?? 0) > 0 ? (set.difficultyLevel ?? 0).toString() : '-',
-          repsInReserve: set.repsInReserve ?? 0,
-          isHighlighted,
-        };
-      });
-
-      const timeSpent = exerciseSets.length * 2;
-
-      return {
-        id: exerciseId,
-        name: exercise.name ?? '',
-        muscleGroup: exercise.muscleGroup ?? null,
-        timeSpent,
-        iconColor: iconData.iconBgColor,
-        iconBgColor: iconData.iconBgOpacity,
-        icon: iconData.icon,
-        sets: workoutSets,
-      };
+  const workoutExercises: WorkoutExercise[] = exerciseEntries.map(([exerciseId, exerciseSets]) => {
+    const exercise = exerciseMap.get(exerciseId);
+    if (!exercise) {
+      throw new Error(`Exercise ${exerciseId} not found`);
     }
-  );
+
+    const isBodyweight = exercise.equipmentType?.toLowerCase().includes('bodyweight') || false;
+
+    const iconData = getWorkoutIcon(theme, exercise.name ?? '');
+    const sortedSets = exerciseSets.sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0));
+
+    const workoutSets: WorkoutSet[] = sortedSets.map((set, index) => {
+      const isHighlighted = prSetIds.has(set.id);
+      return {
+        setNumber: index + 1,
+        weight: formatWeight(set.weight ?? 0, isBodyweight, t, units, appNumberLocale),
+        reps: set.reps ?? 0,
+        partial: (set.partials ?? 0) > 0 ? (set.partials ?? 0).toString() : '-',
+        repsInReserve: set.repsInReserve ?? 0,
+        isHighlighted,
+      };
+    });
+
+    const timeSpent = exerciseSets.length * 2;
+
+    return {
+      id: exerciseId,
+      name: exercise.name ?? '',
+      muscleGroup: exercise.muscleGroup ?? null,
+      timeSpent,
+      iconColor: iconData.iconBgColor,
+      iconBgColor: iconData.iconBgOpacity,
+      icon: iconData.icon,
+      sets: workoutSets,
+    };
+  });
 
   const durationMinutes =
     workoutLog.completedAt && workoutLog.startedAt

@@ -1,7 +1,6 @@
 import type { CameraView as CameraViewType } from 'expo-camera';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
-import { activateKeepAwakeAsync, deactivateKeepAwake } from 'expo-keep-awake';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { TFunction } from 'i18next';
 import {
@@ -31,10 +30,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { CameraProcessingIndicator } from '@/components/CameraProcessingIndicator';
-import { CameraView, useCameraPermissions } from '@/components/CameraView';
+import { CameraView } from '@/components/CameraView';
 import { type MealType } from '@/database/models';
 import { NutritionService } from '@/database/services';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useTheme } from '@/hooks/useTheme';
 import AiService from '@/services/AiService';
 import { recognizeText as ocrRecognizeText } from '@/services/OcrService';
@@ -152,6 +152,10 @@ type CameraModalProps = {
    * food-not-found flows are bypassed entirely. The parent owns what to do with the barcode value.
    */
   onBarcodeScanned?: (data: string) => void;
+  /** Camera permission state managed by SmartCameraContext. null = still checking. */
+  permissionGranted: boolean | null;
+  /** Request camera permission — called when user taps "Grant Permission". */
+  onRequestPermission: () => void;
 };
 
 type BarcodeTextSearchSheetProps = {
@@ -253,6 +257,8 @@ export default function SmartCameraModal({
   mealTypeForLog,
   onOpenFoodSearch,
   onBarcodeScanned,
+  permissionGranted,
+  onRequestPermission,
 }: CameraModalProps) {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
@@ -260,7 +266,6 @@ export default function SmartCameraModal({
   const { height: screenHeight } = useWindowDimensions();
   const isSmallScreen = screenHeight < SMALL_SCREEN_HEIGHT;
   const cameraMaxHeight = screenHeight * (isSmallScreen ? 0.48 : 0.6);
-  const [permission, requestPermission] = useCameraPermissions();
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [cameraMode, setCameraMode] = useState<CameraMode>(
     getSafeCameraMode(mode, isAiEnabled, isAIVisionEnabled)
@@ -400,19 +405,7 @@ export default function SmartCameraModal({
     return () => pulse.stop();
   }, [pulseAnim]);
 
-  // Keep screen awake during AI processing or barcode searching to prevent
-  // the phone from turning off the screen and killing network requests
-  useEffect(() => {
-    if (isProcessingAi || isSearchingBarcode) {
-      activateKeepAwakeAsync('smart-camera-processing').catch(() => {});
-    } else {
-      deactivateKeepAwake('smart-camera-processing').catch(() => {});
-    }
-
-    return () => {
-      deactivateKeepAwake('smart-camera-processing').catch(() => {});
-    };
-  }, [isProcessingAi, isSearchingBarcode]);
+  useKeepScreenAwake('smart-camera-processing', visible && (isProcessingAi || isSearchingBarcode));
 
   useEffect(() => {
     if (!visible) {
@@ -426,13 +419,6 @@ export default function SmartCameraModal({
       setIsFoodNotFoundModalVisible(false);
     }
   }, [visible]);
-
-  // Request camera permission on mount
-  useEffect(() => {
-    if (!permission) {
-      requestPermission();
-    }
-  }, [permission, requestPermission]);
 
   // Handle automatic barcode detection
   const handleBarcodeScanned = useCallback(
@@ -976,7 +962,7 @@ export default function SmartCameraModal({
     return null;
   }
 
-  if (!permission) {
+  if (permissionGranted === null) {
     return (
       <FullScreenModal
         visible={visible}
@@ -997,7 +983,7 @@ export default function SmartCameraModal({
     );
   }
 
-  if (!permission.granted) {
+  if (!permissionGranted) {
     return (
       <FullScreenModal
         visible={visible}
@@ -1013,7 +999,10 @@ export default function SmartCameraModal({
           <Text className="mb-4 text-center text-lg" style={{ color: theme.colors.text.white }}>
             {t('food.aiCamera.permissionRequired')}
           </Text>
-          <Pressable onPress={requestPermission} className="rounded-xl bg-accent-primary px-6 py-3">
+          <Pressable
+            onPress={onRequestPermission}
+            className="rounded-xl bg-accent-primary px-6 py-3"
+          >
             <Text className="font-semibold" style={{ color: theme.colors.text.black }}>
               {t('food.aiCamera.grantPermission')}
             </Text>

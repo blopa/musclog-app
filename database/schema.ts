@@ -13,9 +13,9 @@ export const schema = appSchema({
         { name: 'name', type: 'string' },
         { name: 'description', type: 'string' },
         { name: 'image_url', type: 'string', isOptional: true },
-        { name: 'muscle_group', type: 'string', isIndexed: true },
-        { name: 'equipment_type', type: 'string', isIndexed: true }, // Dumbbell, Barbell, Bodyweight
-        { name: 'mechanic_type', type: 'string' }, // 'compound' or 'isolation'
+        { name: 'muscle_group', type: 'string', isIndexed: true }, // muscleGroup from JSON
+        { name: 'equipment_type', type: 'string', isIndexed: true }, // Dumbbell, Barbell, Bodyweight, etc
+        { name: 'mechanic_type', type: 'string' }, // 'compound', 'isolation', etc
         { name: 'source', type: 'string', isOptional: true }, // 'app' or 'user'
         { name: 'load_multiplier', type: 'number' }, // Load multiplier for volume calculations
         { name: 'order_index', type: 'number', isOptional: true }, // JSON order for app exercises
@@ -567,7 +567,7 @@ export const schema = appSchema({
 
     // Canonical muscle catalogue (seeded from bundled data)
     tableSchema({
-      name: 'muscles',
+      name: 'muscles', // targetMuscles from JSON
       columns: [
         { name: 'name', type: 'string', isIndexed: true }, // snake_case key, e.g. 'triceps'
         { name: 'muscle_group', type: 'string', isIndexed: true }, // e.g. 'arms', 'chest'
@@ -586,6 +586,20 @@ export const schema = appSchema({
         { name: 'muscle_id', type: 'string', isIndexed: true },
         // 'primary' | 'secondary' — defaults to 'primary' until the JSON distinguishes them
         { name: 'role', type: 'string' },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // Saved BLE sensor devices (app-level "pairing")
+    tableSchema({
+      name: 'ble_devices',
+      columns: [
+        { name: 'device_id', type: 'string', isIndexed: true },
+        { name: 'name', type: 'string' },
+        { name: 'nickname', type: 'string', isOptional: true },
+        { name: 'last_connected_at', type: 'number', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

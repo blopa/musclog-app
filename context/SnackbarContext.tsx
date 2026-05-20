@@ -14,20 +14,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Snackbar, type SnackbarType } from '@/components/Snackbar';
 import { Modal } from '@/components/theme/Modal';
 import { useTheme } from '@/hooks/useTheme';
-import { registerSnackbarService, unregisterSnackbarService } from '@/utils/snackbarService';
+import {
+  registerSnackbarService,
+  type SnackbarOptions,
+  unregisterSnackbarService,
+} from '@/utils/snackbarService';
 import { useWebBottomDockLayerStyle } from '@/utils/webPhoneFrame';
 
 type SnackbarContextType = {
-  showSnackbar: (
-    type: 'success' | 'error',
-    message: string,
-    options?: {
-      subtitle?: string;
-      action?: string;
-      onAction?: () => void;
-      duration?: number;
-    }
-  ) => void;
+  showSnackbar: (type: 'success' | 'error', message: string, options?: SnackbarOptions) => void;
   dismissSnackbar: (id: number) => void;
 };
 
@@ -40,16 +35,7 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
   const theme = useTheme();
 
   const showSnackbar = useCallback(
-    (
-      type: 'success' | 'error',
-      message: string,
-      options?: {
-        subtitle?: string;
-        action?: string;
-        onAction?: () => void;
-        duration?: number;
-      }
-    ) => {
+    (type: 'success' | 'error', message: string, options?: SnackbarOptions) => {
       const id = Date.now();
       const duration = options?.duration ?? 2000;
 
@@ -60,6 +46,8 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
         subtitle: options?.subtitle,
         action: options?.action ?? t('snackbar.ok'),
         onAction: options?.onAction,
+        secondaryAction: options?.secondaryAction,
+        onSecondaryAction: options?.onSecondaryAction,
       };
 
       setSnackbars((prev) => [...prev, newSnackbar]);

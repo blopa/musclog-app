@@ -14,6 +14,8 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
 import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ExpoReactHostFactory
 
+import androidx.camera.lifecycle.ProcessCameraProvider
+
 class MainApplication : Application(), ReactApplication {
 
   override val reactHost: ReactHost by lazy {
@@ -29,6 +31,7 @@ class MainApplication : Application(), ReactApplication {
 
   override fun onCreate() {
     super.onCreate()
+    ProcessCameraProvider.getInstance(this).addListener({}, mainExecutor)
     DefaultNewArchitectureEntryPoint.releaseLevel = try {
       ReleaseLevel.valueOf(BuildConfig.REACT_NATIVE_RELEASE_LEVEL.uppercase())
     } catch (e: IllegalArgumentException) {

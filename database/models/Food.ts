@@ -60,6 +60,8 @@ export interface FoodLabels {
   vegetarian?: boolean;
   palmOilFree?: boolean;
   fairTrade?: boolean;
+  highProtein?: boolean;
+  highFiber?: boolean;
 }
 
 export default class Food extends Model {
@@ -152,6 +154,8 @@ export default class Food extends Model {
         vegetarian: typeof data.vegetarian === 'boolean' ? data.vegetarian : undefined,
         palmOilFree: typeof data.palmOilFree === 'boolean' ? data.palmOilFree : undefined,
         fairTrade: typeof data.fairTrade === 'boolean' ? data.fairTrade : undefined,
+        highProtein: typeof data.highProtein === 'boolean' ? data.highProtein : undefined,
+        highFiber: typeof data.highFiber === 'boolean' ? data.highFiber : undefined,
       };
     }
 
