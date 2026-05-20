@@ -13,8 +13,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -517,15 +515,19 @@ export function ScannedFoodDetailsModal({
     if (editedOverrides?.description != null) {
       return editedOverrides.description.trim();
     }
+
     if ((effectiveProductDetails as any)?.source === 'musclog') {
       return (effectiveProductDetails as any).product?.description || '';
     }
+
     if ((effectiveProductDetails as any)?.source === 'usda') {
       return (effectiveProductDetails as any).product?.ingredients || '';
     }
+
     if (isSuccessFoodDetailProductState(effectiveProductDetails)) {
       return (effectiveProductDetails.product as any)?.ingredients_text || '';
     }
+
     return '';
   }, [editedOverrides?.description, effectiveProductDetails]);
 
@@ -1041,10 +1043,7 @@ export function ScannedFoodDetailsModal({
         }
       >
         {editForm ? (
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            className="gap-5"
-          >
+          <View className="gap-5">
             <TextInput
               label={t('food.foodDetails.foodName')}
               value={editForm.name}
@@ -1172,7 +1171,7 @@ export function ScannedFoodDetailsModal({
                 )
               }
             />
-          </KeyboardAvoidingView>
+          </View>
         ) : null}
       </BottomPopUp>
       {isBarcodeScannerVisible ? (

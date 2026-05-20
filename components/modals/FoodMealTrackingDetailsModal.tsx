@@ -13,7 +13,7 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { KeyboardAwareScrollViewRef } from 'react-native-keyboard-controller';
 
 import { BarcodeInput } from '@/components/BarcodeInput';
@@ -2602,10 +2602,7 @@ export function FoodMealTrackingDetailsModal({
           }
         >
           {editForm ? (
-            <KeyboardAvoidingView
-              behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-              className="gap-5"
-            >
+            <View className="gap-5">
               {/* Food Name - same style as CreateCustomFoodModal */}
               <TextInput
                 label={t('food.foodDetails.foodName')}
@@ -2736,7 +2733,7 @@ export function FoodMealTrackingDetailsModal({
                   )
                 }
               />
-            </KeyboardAvoidingView>
+            </View>
           ) : null}
         </BottomPopUp>
       </FullScreenModal>

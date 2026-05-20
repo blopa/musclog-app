@@ -2,15 +2,12 @@ import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
   Pressable,
-  ScrollView,
   Text,
   TextInput,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useTheme } from '@/hooks/useTheme';
@@ -35,7 +32,6 @@ export function ImportNutritionModal({
 }: ImportNutritionModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const insets = useSafeAreaInsets();
   const [rawText, setRawText] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -87,12 +83,7 @@ export function ImportNutritionModal({
       title={t('nutrition.importNutrition')}
       scrollable={false}
     >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1"
-        style={{ paddingBottom: insets.bottom }}
-      >
-        <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
+      <KeyboardAwareScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }} bottomOffset={16}>
           <View className="flex-1 px-4 py-6">
             {/* Instructions */}
             <Text className="mb-4 text-sm text-text-secondary">
@@ -130,7 +121,7 @@ export function ImportNutritionModal({
               })}
             </Text>
           </View>
-        </ScrollView>
+      </KeyboardAwareScrollView>
 
         {/* Action Buttons */}
         <View className="border-t px-4 py-4" style={{ borderColor: theme.colors.border.light }}>
@@ -174,7 +165,6 @@ export function ImportNutritionModal({
             </Text>
           </Pressable>
         </View>
-      </KeyboardAvoidingView>
     </FullScreenModal>
   );
 }
