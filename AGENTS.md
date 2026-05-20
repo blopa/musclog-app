@@ -98,6 +98,10 @@ This repository serves two distinct purposes that share the same Expo Router pro
   - Use absolute positioning for axis labels to maintain consistency across platforms.
   - Use `ChartTooltipContext` (`context/ChartTooltipContext.tsx`) for coordinated tooltip behavior.
 - **Segments**: Use `SegmentedControl` for mode switching (e.g., 7D/30D/90D).
+- **Keyboard avoidance**: Any screen or modal that contains a `TextInput` (or any input component wrapping one) inside a scroll container **must** use `KeyboardAwareScrollView` from `react-native-keyboard-controller` instead of RN's plain `ScrollView`. `KeyboardProvider` is already mounted at the app root (`app/app/_layout.tsx`). Two patterns to apply:
+  - **Full-screen layouts / screens** (`FullScreenModal` with `scrollable={true}`, plain screens): replace the outermost `ScrollView` with `KeyboardAwareScrollView` and add `bottomOffset={16}`.
+  - **Bottom sheets** (`BottomPopUp`): the sheet itself lifts via `marginBottom` in `BottomPopUp.tsx` — no extra work needed for the default `scrollable={true}` case. If you use `scrollable={false}` and add your own inner `ScrollView` with inputs, replace that inner `ScrollView` with `KeyboardAwareScrollView bottomOffset={16}` (see `EditPastWorkoutDataModal.tsx` as an example).
+  - Never use RN's `KeyboardAvoidingView` for new code — it has known issues with edge-to-edge on Android (Expo SDK 54+).
 
 ### AI & LLM Integration
 
