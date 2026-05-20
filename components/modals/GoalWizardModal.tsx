@@ -9,7 +9,8 @@ import {
 } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { InfoCard } from '@/components/cards/InfoCard';
 import { type NutritionGoals } from '@/components/NutritionGoalsBody';
@@ -659,10 +660,11 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
           <ActivityIndicator size="large" color={theme.colors.accent.primary} />
         </View>
       ) : (
-        <ScrollView
+        <KeyboardAwareScrollView
           style={{ flex: 1 }}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ padding: 20, paddingBottom: 32 }}
+          bottomOffset={16}
         >
           {/* Progress bar */}
           <View
@@ -718,7 +720,7 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
 
           {/* Step content */}
           {renderStepContent()}
-        </ScrollView>
+        </KeyboardAwareScrollView>
       )}
     </FullScreenModal>
   );

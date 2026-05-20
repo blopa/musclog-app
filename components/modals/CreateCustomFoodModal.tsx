@@ -34,7 +34,8 @@ import {
 } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { Image, Pressable, Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BarcodeInput } from '@/components/BarcodeInput';
 import { useCameraPermissions } from '@/components/CameraView';
@@ -631,6 +632,7 @@ export default function CreateCustomFoodModal({
       <FullScreenModal
         visible={visible}
         onClose={onClose}
+        scrollable={false}
         title={t('food.newCustomFood.title')}
         footer={
           <Button
@@ -645,7 +647,7 @@ export default function CreateCustomFoodModal({
           />
         }
       >
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <KeyboardAwareScrollView className="flex-1" showsVerticalScrollIndicator={false} bottomOffset={16}>
           <View className="gap-6 px-4 pb-40 pt-6">
             {/* Food Name */}
             <TextInput
@@ -1022,7 +1024,7 @@ export default function CreateCustomFoodModal({
               ) : null}
             </View>
           </View>
-        </ScrollView>
+        </KeyboardAwareScrollView>
         {isFoodDetailsVisible && createdFood ? (
           <FoodMealTrackingDetailsModal
             visible={isFoodDetailsVisible}
