@@ -282,6 +282,7 @@ export default function CreateCustomFoodModal({
   };
 
   const openBarcodeScanner = () => {
+    // TODO: open the BarcodeCameraModal instead
     openCamera({
       mode: 'barcode-scan',
       hideCameraModePicker: true,

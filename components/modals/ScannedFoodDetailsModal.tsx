@@ -1060,6 +1060,7 @@ export function ScannedFoodDetailsModal({
               }
               placeholder={t('food.foodDetails.barcodePlaceholder')}
               onScanPress={() =>
+                // TODO: open the BarcodeCameraModal instead
                 openCamera({
                   mode: 'barcode-scan',
                   hideCameraModePicker: true,
