@@ -3,7 +3,8 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Dumbbell, Plus, Repeat, Search, Target, WifiOff } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { WorkoutCard } from '@/components/cards/WorkoutCard';
@@ -290,7 +291,7 @@ export default function WorkoutsScreen() {
   return (
     <MasterLayout>
       <View className="flex-1">
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <KeyboardAwareScrollView className="flex-1" showsVerticalScrollIndicator={false} bottomOffset={16}>
           {/* Header */}
           <View className="px-4 py-6">
             <View className="flex-row items-center justify-between">
@@ -566,7 +567,7 @@ export default function WorkoutsScreen() {
             ) : null}
           </View>
           <View className="h-32" />
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </View>
 
       {/* Workout Details Menu */}

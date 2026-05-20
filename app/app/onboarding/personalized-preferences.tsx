@@ -3,7 +3,8 @@ import { useRouter } from 'expo-router';
 import { Check, User, Users } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
@@ -65,10 +66,11 @@ export default function PersonalizedPreferencesScreen() {
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
         <QuickSetupProgressBar current={1} total={9} />
 
-        <ScrollView
+        <KeyboardAwareScrollView
           className="flex-1"
           contentContainerStyle={{ paddingBottom: 120 }}
           showsVerticalScrollIndicator={false}
+          bottomOffset={16}
         >
           <View className="px-6 pt-6">
             {/* Title */}
@@ -222,7 +224,7 @@ export default function PersonalizedPreferencesScreen() {
               })}
             </View>
           </View>
-        </ScrollView>
+        </KeyboardAwareScrollView>
 
         <BottomButtonWrapper>
           <Button

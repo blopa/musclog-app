@@ -1,6 +1,7 @@
 import { ArrowLeft, Calendar, Clock, Search, User } from 'lucide-react-native';
 import { useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MacroInput } from '@/components/MacroInput';
@@ -98,7 +99,7 @@ export default function InputsTestScreen() {
         </Text>
       </View>
 
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <KeyboardAwareScrollView className="flex-1" showsVerticalScrollIndicator={false} bottomOffset={16}>
         {/* Title Section */}
         <View className="px-6 pb-2 pt-6">
           <Text
@@ -350,7 +351,7 @@ export default function InputsTestScreen() {
         </TestSection>
 
         <View className="h-8" />
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 }

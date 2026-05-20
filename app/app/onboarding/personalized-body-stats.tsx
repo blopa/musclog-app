@@ -2,7 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
@@ -197,10 +198,11 @@ export default function PersonalizedBodyStatsScreen() {
       <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
         <QuickSetupProgressBar current={5} total={9} />
 
-        <ScrollView
+        <KeyboardAwareScrollView
           className="flex-1"
           contentContainerStyle={{ paddingBottom: 120 }}
           showsVerticalScrollIndicator={false}
+          bottomOffset={16}
         >
           <View className="gap-6 px-6 pt-6">
             <View>
@@ -349,7 +351,7 @@ export default function PersonalizedBodyStatsScreen() {
               </View>
             </View>
           </View>
-        </ScrollView>
+        </KeyboardAwareScrollView>
 
         <BottomButtonWrapper>
           {isSaving ? (
