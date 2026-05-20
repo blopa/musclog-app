@@ -272,7 +272,11 @@ export default function ExercisesModal({
       title={t('exercises.title')}
       scrollable={false}
     >
-      <KeyboardAwareScrollView className="flex-1 px-4 pb-32" showsVerticalScrollIndicator={false} bottomOffset={16}>
+      <KeyboardAwareScrollView
+        className="flex-1 px-4 pb-32"
+        showsVerticalScrollIndicator={false}
+        bottomOffset={16}
+      >
         <View className="py-3">
           {/* Search Input (themed) */}
           <View className="py-3">

@@ -440,7 +440,11 @@ export default function AddUserMetricEntryModal({
     >
       <View className="flex-1">
         {/* Content */}
-        <KeyboardAwareScrollView className="flex-1 px-4 pb-12" showsVerticalScrollIndicator={false} bottomOffset={16}>
+        <KeyboardAwareScrollView
+          className="flex-1 px-4 pb-12"
+          showsVerticalScrollIndicator={false}
+          bottomOffset={16}
+        >
           <View className="h-4" />
           <View style={{ gap: theme.spacing.gap['2xl'] }}>
             {/* Metric Selector */}

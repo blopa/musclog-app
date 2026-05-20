@@ -11,13 +11,7 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  ActivityIndicator,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { BarcodeInput } from '@/components/BarcodeInput';
 import { BottomPopUp } from '@/components/BottomPopUp';

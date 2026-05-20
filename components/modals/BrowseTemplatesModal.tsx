@@ -283,7 +283,11 @@ export function BrowseTemplatesModal({
       title={t('workouts.browseTemplatesModal.title')}
       scrollable={false}
     >
-      <KeyboardAwareScrollView className="flex-1" showsVerticalScrollIndicator={false} bottomOffset={16}>
+      <KeyboardAwareScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        bottomOffset={16}
+      >
         <View className="bg-bg-primary px-4 pb-4 pt-6">
           {/* Search Bar */}
           <View className="mb-5">

@@ -476,9 +476,9 @@ export function GenericEditModal({
           <Text className="text-base text-text-secondary">{t('common.loading')}</Text>
         </View>
       ) : (
-        <ScrollView className="px-4 py-6">
+        <KeyboardAwareScrollView className="px-4 py-6" bottomOffset={16}>
           <View className="gap-6">{fields.map((field) => renderField(field))}</View>
-        </ScrollView>
+        </KeyboardAwareScrollView>
       )}
     </FullScreenModal>
   );

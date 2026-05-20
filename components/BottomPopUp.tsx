@@ -122,7 +122,9 @@ export function BottomPopUp({
       // screenY is the keyboard's top edge in absolute screen coordinates — same space
       // as measureInWindow, so no window-vs-screen height mismatch on Android.
       const keyboardTop = e.endCoordinates.screenY;
-      type InputRef = { measureInWindow: (cb: (x: number, y: number, w: number, h: number) => void) => void };
+      type InputRef = {
+        measureInWindow: (cb: (x: number, y: number, w: number, h: number) => void) => void;
+      };
       const focusedInput = RNTextInput.State.currentlyFocusedInput() as InputRef | null;
 
       if (!focusedInput) {

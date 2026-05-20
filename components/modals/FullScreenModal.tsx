@@ -2,7 +2,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowLeft } from 'lucide-react-native';
 import { ReactNode, RefObject, useRef } from 'react';
 import { Platform, Pressable, Text, View } from 'react-native';
-import { KeyboardAwareScrollView, KeyboardAwareScrollViewRef } from 'react-native-keyboard-controller';
+import {
+  KeyboardAwareScrollView,
+  KeyboardAwareScrollViewRef,
+} from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';

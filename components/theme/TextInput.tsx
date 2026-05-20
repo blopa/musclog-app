@@ -2,11 +2,11 @@ import classNames from 'classnames';
 import { forwardRef, ReactNode, useImperativeHandle, useMemo, useRef } from 'react';
 import {
   Animated,
+  type InputModeOptions,
   Platform,
   Text,
   TextInput as RNTextInput,
   View,
-  type InputModeOptions,
 } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';

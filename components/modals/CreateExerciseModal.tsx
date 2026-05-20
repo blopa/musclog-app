@@ -187,7 +187,11 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
         />
       }
     >
-      <KeyboardAwareScrollView className="flex-1" showsVerticalScrollIndicator={false} bottomOffset={16}>
+      <KeyboardAwareScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        bottomOffset={16}
+      >
         <View className="px-4 py-2" style={{ gap: theme.spacing.gap.xl }}>
           {/* Exercise Name */}
           <View>

@@ -99,7 +99,11 @@ export default function InputsTestScreen() {
         </Text>
       </View>
 
-      <KeyboardAwareScrollView className="flex-1" showsVerticalScrollIndicator={false} bottomOffset={16}>
+      <KeyboardAwareScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        bottomOffset={16}
+      >
         {/* Title Section */}
         <View className="px-6 pb-2 pt-6">
           <Text

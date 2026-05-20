@@ -647,7 +647,11 @@ export default function CreateCustomFoodModal({
           />
         }
       >
-        <KeyboardAwareScrollView className="flex-1" showsVerticalScrollIndicator={false} bottomOffset={16}>
+        <KeyboardAwareScrollView
+          className="flex-1"
+          showsVerticalScrollIndicator={false}
+          bottomOffset={16}
+        >
           <View className="gap-6 px-4 pb-40 pt-6">
             {/* Food Name */}
             <TextInput

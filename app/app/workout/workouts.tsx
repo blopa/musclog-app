@@ -291,7 +291,11 @@ export default function WorkoutsScreen() {
   return (
     <MasterLayout>
       <View className="flex-1">
-        <KeyboardAwareScrollView className="flex-1" showsVerticalScrollIndicator={false} bottomOffset={16}>
+        <KeyboardAwareScrollView
+          className="flex-1"
+          showsVerticalScrollIndicator={false}
+          bottomOffset={16}
+        >
           {/* Header */}
           <View className="px-4 py-6">
             <View className="flex-row items-center justify-between">

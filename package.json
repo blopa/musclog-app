@@ -163,6 +163,7 @@
     "react-native-css-interop": "^0.2.4",
     "react-native-device-info": "15.0.2",
     "react-native-edge-to-edge": "^1.8.1",
+    "react-native-fast-confetti": "^1.1.2",
     "react-native-gesture-handler": "~2.30.0",
     "react-native-get-random-values": "~1.11.0",
     "react-native-gifted-chat": "3.3.3",
