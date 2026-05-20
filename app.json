@@ -15,7 +15,6 @@
       "baseUrl": "/"
     },
     "plugins": [
-      "./plugins/withCameraEagerInit",
       [
         "./plugins/withGradleVersion",
         {

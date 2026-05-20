@@ -29,7 +29,6 @@ class MainApplication : Application(), ReactApplication {
 
   override fun onCreate() {
     super.onCreate()
-    try { Class.forName("androidx.camera.lifecycle.ProcessCameraProvider").getMethod("getInstance", android.content.Context::class.java).invoke(null, this) } catch (_: Throwable) {}
     DefaultNewArchitectureEntryPoint.releaseLevel = try {
       ReleaseLevel.valueOf(BuildConfig.REACT_NATIVE_RELEASE_LEVEL.uppercase())
     } catch (e: IllegalArgumentException) {
