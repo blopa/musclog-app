@@ -25,7 +25,7 @@ import { getWorkoutIcon } from './workoutHistory';
 export type WorkoutSet = Pick<WorkoutLogSet, 'reps' | 'repsInReserve'> & {
   setNumber: number;
   weight: string; // Formatted weight string
-  partial: string; // Formatted difficulty level
+  partial: string; // Formatted partial reps count
   isHighlighted: boolean;
 };
 
@@ -259,7 +259,7 @@ export async function transformWorkoutToDetailData(
         setNumber: index + 1,
         weight: formatWeight(set.weight ?? 0, isBodyweight, t, units, appNumberLocale),
         reps: set.reps ?? 0,
-        partial: (set.difficultyLevel ?? 0) > 0 ? (set.difficultyLevel ?? 0).toString() : '-',
+        partial: (set.partials ?? 0) > 0 ? (set.partials ?? 0).toString() : '-',
         repsInReserve: set.repsInReserve ?? 0,
         isHighlighted,
       };
