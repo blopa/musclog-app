@@ -12,12 +12,18 @@
  *   3. This initialization competes with every other native module (WatermelonDB,
  *      Health Connect, MLKit-OCR, Sentry) that is also initializing at the same time.
  *
- * This plugin patches MainApplication.kt to call ProcessCameraProvider.getInstance()
- * inside Application.onCreate(). That fires before React Native even starts loading,
- * so CameraX warms up in the background while the JS bundle is being parsed. By the
- * time useCameraPermissions() fires (at boot, via SmartCameraContext), the CameraX
- * heavy-lift is already done and ExpoCamera's TurboModule initialization completes
- * in <100ms instead of ~10s.
+ * This plugin patches MainApplication.kt to invoke ProcessCameraProvider.getInstance()
+ * via reflection inside Application.onCreate(). That fires before React Native even
+ * starts loading, so CameraX warms up in the background while the JS bundle is being
+ * parsed. By the time useCameraPermissions() fires (at boot, via SmartCameraContext),
+ * the CameraX heavy-lift is already done and ExpoCamera's TurboModule initialization
+ * completes in <100ms instead of ~10s.
+ *
+ * Reflection is used deliberately: ProcessCameraProvider.getInstance() returns a
+ * ListenableFuture, and that type is only a transitive (non-exposed) compile dep of
+ * expo-camera — so calling it directly causes "Cannot access class 'ListenableFuture'"
+ * at compile time. Reflection sidesteps the classpath issue entirely; the class is
+ * always present at runtime via expo-camera's transitive deps.
  *
  * This is especially important for the home-screen widget flow, where the app cold-
  * starts directly into the camera.
@@ -36,11 +42,12 @@
 
 const { withMainApplication } = require('@expo/config-plugins');
 
-const IMPORT = 'import androidx.camera.lifecycle.ProcessCameraProvider';
-
-// Fire-and-forget: addListener with an empty Runnable so we don't block onCreate().
-// mainExecutor is a Context extension property available on API 28+ (minSdk for this app).
-const PREWARM_CALL = 'ProcessCameraProvider.getInstance(this).addListener({}, mainExecutor)';
+// Reflection-based pre-warm: no import needed, no extra compile-time deps.
+// ProcessCameraProvider is always present at runtime via expo-camera's transitive deps.
+const PREWARM_CALL =
+  'try { Class.forName("androidx.camera.lifecycle.ProcessCameraProvider")' +
+  '.getMethod("getInstance", android.content.Context::class.java)' +
+  '.invoke(null, this) } catch (_: Throwable) {}';
 
 module.exports = function withCameraEagerInit(config) {
   return withMainApplication(config, (config) => {
@@ -49,12 +56,6 @@ module.exports = function withCameraEagerInit(config) {
     // Idempotency guard — safe to run on every prebuild.
     if (contents.includes(PREWARM_CALL)) {
       return config;
-    }
-
-    // Insert the CameraX import right before the class declaration so it lands
-    // after all existing imports and before any class-level declarations.
-    if (!contents.includes(IMPORT)) {
-      contents = contents.replace(/^(class MainApplication)/m, `${IMPORT}\n\n$1`);
     }
 
     // Insert the pre-warm call immediately after super.onCreate(), preserving
