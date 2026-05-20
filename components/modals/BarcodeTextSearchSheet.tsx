@@ -23,6 +23,7 @@ export function BarcodeTextSearchSheet({
 }: BarcodeTextSearchSheetProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const sanitizedValue = value.replace(/\D/g, '');
 
   return (
     <BottomPopUp
@@ -59,11 +60,12 @@ export function BarcodeTextSearchSheet({
             }}
             placeholder={t('food.aiCamera.barcodeTextSearchPlaceholder')}
             placeholderTextColor={theme.colors.background.white20}
-            value={value}
-            onChangeText={onChangeText}
+            value={sanitizedValue}
+            onChangeText={(text) => onChangeText(text.replace(/\D/g, ''))}
             autoCapitalize="none"
             autoCorrect={false}
-            keyboardType="default"
+            inputMode="numeric"
+            keyboardType="numeric"
             returnKeyType="search"
             onSubmitEditing={onSubmit}
           />

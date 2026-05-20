@@ -10,7 +10,6 @@ type BarcodeInputProps = {
   value: string;
   onChangeText: (text: string) => void;
   placeholder?: string;
-  keyboardType?: 'default' | 'email-address' | 'numeric';
   onScanPress: () => void;
 };
 
@@ -19,20 +18,21 @@ export function BarcodeInput({
   value,
   onChangeText,
   placeholder,
-  keyboardType = 'numeric',
   onScanPress,
 }: BarcodeInputProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const sanitizedValue = value.replace(/\D/g, '');
 
   return (
     <View className="relative">
       <TextInput
         label={label}
-        value={value}
-        onChangeText={onChangeText}
+        value={sanitizedValue}
+        onChangeText={(text) => onChangeText(text.replace(/\D/g, ''))}
         placeholder={placeholder}
-        keyboardType={keyboardType}
+        inputMode="numeric"
+        keyboardType="numeric"
       />
       <Pressable
         accessibilityRole="button"
