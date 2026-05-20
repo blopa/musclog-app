@@ -1,7 +1,8 @@
 import { ChevronDown, ChevronUp, Plus as PlusIcon, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import Animated, { LinearTransition } from 'react-native-reanimated';
 
 import { GenericCard } from '@/components/cards/GenericCard';
@@ -309,10 +310,11 @@ export default function EditPastWorkoutDataModal({
       scrollable={false}
       headerRight={headerRight}
     >
-      <ScrollView
+      <KeyboardAwareScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{ padding: theme.spacing.padding.base }}
         showsVerticalScrollIndicator={false}
+        bottomOffset={16}
       >
         {sets.map((item, index) => (
           <Animated.View
@@ -339,7 +341,7 @@ export default function EditPastWorkoutDataModal({
             icon={<PlusIcon size={theme.iconSize.sm} color={theme.colors.background.workoutIcon} />}
           />
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </FullScreenModal>
   );
 }
