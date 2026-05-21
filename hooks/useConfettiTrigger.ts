@@ -7,12 +7,19 @@ export function useConfettiTrigger() {
   const [showConfetti, setShowConfetti] = useState(false);
 
   const triggerConfetti = useCallback(
-    (activity: ConfettiActivity) => {
+    (activity: ConfettiActivity, delay?: number) => {
       const isFirst = !completedActivities[activity];
       completeActivity(activity);
       if (isFirst) {
-        setShowConfetti(true);
-        setTimeout(() => setShowConfetti(false), 5000);
+        const activate = () => {
+          setShowConfetti(true);
+          setTimeout(() => setShowConfetti(false), 5000);
+        };
+        if (delay) {
+          setTimeout(activate, delay);
+        } else {
+          activate();
+        }
       }
     },
     [completeActivity, completedActivities]

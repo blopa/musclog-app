@@ -164,8 +164,8 @@ export function FullScreenModal({
             ) : null}
           </View>
         </SwipeToReturnWrapper>
-        {showConfetti ? <ConfettiOverlay /> : null}
       </SafeAreaView>
+      {showConfetti ? <ConfettiOverlay /> : null}
     </Modal>
   );
 }

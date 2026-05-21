@@ -226,14 +226,14 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
         await NutritionGoalService.regenerateCheckins(savedGoalId);
       }
 
-      await triggerConfetti(ConfettiActivity.FIRST_MANUAL_NUTRITION_GOAL);
-
       if (refreshNutritionRef.current) {
         await refreshNutritionRef.current();
       }
 
       setNutritionGoalsModalVisible(false);
       setPendingWizardPrefill(null);
+      // Delay so confetti fires after NutritionGoalsModal close animation (~300ms)
+      triggerConfetti(ConfettiActivity.FIRST_MANUAL_NUTRITION_GOAL, 350);
     } catch (error) {
       handleError(error, 'GoalsManagementModal.handleSaveNutritionGoals', {
         snackbarMessage: t('errors.somethingWentWrong'),
@@ -245,7 +245,8 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
     try {
       await ExerciseGoalService.saveGoal(data);
       setExerciseGoalCreationModalVisible(false);
-      await triggerConfetti(ConfettiActivity.FIRST_FITNESS_GOAL);
+      // Delay so confetti fires after ExerciseGoalCreationModal close animation (~300ms)
+      triggerConfetti(ConfettiActivity.FIRST_FITNESS_GOAL, 350);
     } catch (error) {
       console.error('Error saving exercise goal:', error);
       showSnackbar('error', t('errors.somethingWentWrong'));
