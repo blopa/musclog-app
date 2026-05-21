@@ -18,6 +18,8 @@ export enum ConfettiActivity {
 interface ConfettiInteractionsContextType {
   completedActivities: Record<string, boolean>;
   completeActivity: (activity: ConfettiActivity) => Promise<boolean>;
+  isConfettiActive: boolean;
+  triggerConfetti: (activity: ConfettiActivity, delay?: number) => Promise<void>;
 }
 
 const ConfettiInteractionsContext = createContext<ConfettiInteractionsContextType | undefined>(
@@ -36,6 +38,7 @@ export const ConfettiInteractionsProvider: React.FC<{ children: React.ReactNode 
   children,
 }) => {
   const [completedActivities, setCompletedActivities] = useState<Record<string, boolean>>({});
+  const [isConfettiActive, setIsConfettiActive] = useState(false);
 
   useEffect(() => {
     const loadState = async () => {
@@ -79,8 +82,31 @@ export const ConfettiInteractionsProvider: React.FC<{ children: React.ReactNode 
     [completedActivities]
   );
 
+  const triggerConfetti = useCallback(
+    async (activity: ConfettiActivity, delay?: number) => {
+      const isFirst = !completedActivities[activity];
+      await completeActivity(activity);
+
+      if (isFirst) {
+        const activate = () => {
+          setIsConfettiActive(true);
+          setTimeout(() => setIsConfettiActive(false), 5000);
+        };
+
+        if (delay) {
+          setTimeout(activate, delay);
+        } else {
+          activate();
+        }
+      }
+    },
+    [completeActivity, completedActivities]
+  );
+
   return (
-    <ConfettiInteractionsContext.Provider value={{ completedActivities, completeActivity }}>
+    <ConfettiInteractionsContext.Provider
+      value={{ completedActivities, completeActivity, isConfettiActive, triggerConfetti }}
+    >
       {children}
     </ConfettiInteractionsContext.Provider>
   );

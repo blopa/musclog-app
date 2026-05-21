@@ -28,7 +28,6 @@ import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { TextInput } from '@/components/theme/TextInput';
 import { WorkoutDetailsMenu } from '@/components/WorkoutDetailsMenu';
-import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useSnackbar } from '@/context/SnackbarContext';
@@ -295,7 +294,6 @@ export default function WorkoutsScreen() {
 
   return (
     <MasterLayout>
-      {showConfetti ? <ConfettiOverlay /> : null}
       <View className="flex-1">
         <KeyboardAwareScrollView
           className="flex-1"

@@ -36,7 +36,6 @@ import { WorkoutFoodEmptyState } from '@/components/WorkoutFoodEmptyState';
 import { isStaticExport } from '@/constants/platform';
 import { type CameraMode, useSmartCamera } from '@/context/SmartCameraContext';
 import { type MealType } from '@/database/models';
-import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { NutritionGoalService } from '@/database/services';
@@ -346,7 +345,6 @@ export default function HomeScreen() {
 
   return (
     <MasterLayout>
-      {showConfetti ? <ConfettiOverlay /> : null}
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View className="flex-row items-center justify-between px-4 py-6">

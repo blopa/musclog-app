@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
 import { CameraView } from '@/components/CameraView';
-import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { type MealType } from '@/database/models';
@@ -837,7 +836,6 @@ export default function SmartCameraModal({
           initialDate={logDate}
         />
       ) : null}
-      {showConfetti ? <ConfettiOverlay /> : null}
     </>
   );
 }
