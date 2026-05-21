@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+
+import ConfettiOverlay from '@/components/ConfettiOverlay';
 
 import { ONBOARDING_COMPLETED } from '@/constants/misc';
 
@@ -92,68 +93,3 @@ export const ConfettiInteractionsProvider: React.FC<{ children: React.ReactNode 
     </ConfettiInteractionsContext.Provider>
   );
 };
-
-const ConfettiOverlay = ({ onAnimationEnd }: { onAnimationEnd: () => void }) => {
-  if (Platform.OS === 'web') {
-    return <WebConfettiFallback onAnimationEnd={onAnimationEnd} />;
-  }
-
-  // Native implementation using react-native-fast-confetti
-  try {
-    const { Confetti } = require('react-native-fast-confetti');
-    return (
-      <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-        <Confetti autoplay={true} onAnimationEnd={onAnimationEnd} />
-      </View>
-    );
-  } catch (e) {
-    console.error('Failed to load react-native-fast-confetti', e);
-    // Silent fallback if it fails to load
-    return null;
-  }
-};
-
-const WebConfettiFallback = ({ onAnimationEnd }: { onAnimationEnd: () => void }) => {
-  // Since we don't want to add new dependencies, we'll use a simple visual cue
-  useEffect(() => {
-    const timer = setTimeout(onAnimationEnd, 3000);
-    return () => clearTimeout(timer);
-  }, [onAnimationEnd]);
-
-  return (
-    <View
-      pointerEvents="none"
-      style={[
-        StyleSheet.absoluteFill,
-        styles.webOverlay,
-        {
-          justifyContent: 'center',
-          alignItems: 'center',
-        },
-      ]}
-    >
-      <View
-        style={{
-          paddingHorizontal: 20,
-          paddingVertical: 10,
-          backgroundColor: 'rgba(255, 255, 255, 0.9)',
-          borderRadius: 20,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.25,
-          shadowRadius: 3.84,
-          elevation: 5,
-        }}
-      >
-        <Text style={{ fontSize: 24, fontWeight: 'bold' }}>🎉</Text>
-      </View>
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
-  webOverlay: {
-    zIndex: 9999,
-    backgroundColor: 'transparent',
-  },
-});
