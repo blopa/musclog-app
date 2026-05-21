@@ -22,6 +22,7 @@ import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import i18n from '@/lang/lang';
+import { ConfettiActivity, useConfettiInteractions } from '@/context/ConfettiInteractionsContext';
 import AiService from '@/services/AiService';
 import { trackMeal } from '@/utils/coachAI';
 import { handleError } from '@/utils/handleError';
@@ -102,6 +103,7 @@ type MyMealsModalProps = {
 export default function MyMealsModal({ visible, onClose, initialMealType }: MyMealsModalProps) {
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
+  const { completeActivity } = useConfettiInteractions();
   const theme = useTheme();
   const { formatRoundedDecimal } = useFormatAppNumber();
   const { shareText } = useNativeShareText();
@@ -326,6 +328,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
           true
         );
 
+        completeActivity(ConfettiActivity.FIRST_MEAL_CREATED);
         await refresh();
         showSnackbar('success', t('meals.generateAI.successMessage'));
       } catch (error) {

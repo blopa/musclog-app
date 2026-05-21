@@ -8,6 +8,7 @@ import { useSnackbar } from '@/context/SnackbarContext';
 import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import { WorkoutTemplateService } from '@/database/services';
+import { ConfettiActivity, useConfettiInteractions } from '@/context/ConfettiInteractionsContext';
 import { handleError } from '@/utils/handleError';
 import {
   createExerciseOption,
@@ -47,6 +48,7 @@ export interface AddExerciseData {
 export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormParams = {}) {
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
+  const { completeActivity } = useConfettiInteractions();
   const { units } = useSettings();
   const theme = useTheme();
   const isEditMode = !!templateId;
@@ -192,6 +194,10 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
         exercises: exercisesInWorkout,
         selectedDays,
       });
+
+      if (!isEditMode) {
+        completeActivity(ConfettiActivity.FIRST_WORKOUT_CREATED);
+      }
 
       onSaveSuccess?.();
     } catch (error) {

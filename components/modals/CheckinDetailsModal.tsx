@@ -25,6 +25,7 @@ import {
   isDynamicNutritionGoalValid,
   normalizeNutritionGoalTargetWeight,
 } from '@/utils/nutritionGoalHelpers';
+import { ConfettiActivity, useConfettiInteractions } from '@/context/ConfettiInteractionsContext';
 import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
@@ -40,6 +41,7 @@ type CheckinModalProps = {
 export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { completeActivity } = useConfettiInteractions();
   const { goal: currentGoal } = useCurrentNutritionGoal();
   const { units, intuitiveEatingMode } = useSettings();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
@@ -148,6 +150,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
         isDynamic: goals.isDynamic ?? false,
       });
       await NutritionGoalService.regenerateCheckins(newGoal.id);
+      completeActivity(ConfettiActivity.FIRST_MANUAL_NUTRITION_GOAL);
 
       onClose();
     } catch (e) {

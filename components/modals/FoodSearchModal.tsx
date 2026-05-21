@@ -56,6 +56,7 @@ import { useYesterdayMealData } from '@/hooks/useYesterdayMealData';
 import { blurFilter } from '@/utils/blurFilter';
 import { localCalendarDayDate } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
+import { ConfettiActivity, useConfettiInteractions } from '@/context/ConfettiInteractionsContext';
 import { resolveRoundedPer100gCaloriesForDisplay } from '@/utils/inferCaloriesFromMacros';
 import { gramsToDisplay } from '@/utils/unitConversion';
 import { getMassUnitI18nKey } from '@/utils/units';
@@ -344,6 +345,7 @@ export function FoodSearchModal({
   const { formatInteger } = useFormatAppNumber();
   const { showSnackbar } = useSnackbar();
   const { foodSearchSource, intuitiveEatingMode, units } = useSettings();
+  const { completeActivity } = useConfettiInteractions();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchSessionIcon, setSearchSessionIcon] = useState<LucideIcon>(pickRandomFoodIcon);
   const [activeFilter, setActiveFilter] = useState('all');
@@ -918,6 +920,7 @@ export function FoodSearchModal({
       onFoodSelect?.({} as FoodItem);
       onFoodTracked?.();
       onClose();
+      completeActivity(ConfettiActivity.FIRST_NUTRITION_LOG);
       showSnackbar('success', t('foodSearch.sameAsYesterdaySuccess'));
     } catch (err) {
       handleError(err, 'FoodSearchModal.handleSameAsYesterday', {

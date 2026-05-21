@@ -58,6 +58,7 @@ import { saveBase64ImageToFile } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 import { processMealPlanResponse } from '@/utils/nutritionAI';
 import { calculateNutritionPlan, eatingPhaseToWeightGoal } from '@/utils/nutritionCalculator';
+import { ConfettiActivity, useConfettiInteractions } from '@/context/ConfettiInteractionsContext';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { generateUUID } from '@/utils/uuid';
 import { buildWorkoutCompletedSummaryForLLM, processWorkoutPlanResponse } from '@/utils/workoutAI';
@@ -234,6 +235,7 @@ export function useChatMessages(
   conversationContext: 'general' | 'exercise' | 'nutrition' = 'general'
 ): UseChatMessagesResult {
   const { t } = useTranslation();
+  const { completeActivity } = useConfettiInteractions();
   const [messages, setMessages] = useState<ExtendedIMessage[]>([]);
   const [pendingCoachMessage, setPendingCoachMessage] = useState<ExtendedIMessage | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -927,7 +929,7 @@ export function useChatMessages(
         });
       }
 
-      const record = rawMessagesRef.current.find((r) => r.id === messageId);
+      completeActivity(ConfettiActivity.FIRST_NUTRITION_LOG);
       if (record?.payloadJson) {
         const payload = JSON.parse(record.payloadJson) as ChatMessagePayload;
         if (isTrackMealPayload(payload)) {

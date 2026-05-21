@@ -76,6 +76,7 @@ import {
 } from '@/utils/externalFoodProduct';
 import { formatAppRoundedDecimal } from '@/utils/formatAppNumber';
 import { formatDisplayGrams } from '@/utils/formatDisplayWeight';
+import { ConfettiActivity, useConfettiInteractions } from '@/context/ConfettiInteractionsContext';
 import { handleError } from '@/utils/handleError';
 import {
   applyInferredCaloriesFromMacrosIfNeeded,
@@ -234,6 +235,7 @@ export function FoodMealTrackingDetailsModal({
   const decimalSeparator = useMemo(() => getDecimalSeparator(locale), [locale]);
   const { showSnackbar } = useSnackbar();
   const { units, alwaysAllowFoodEditing, intuitiveEatingMode } = useSettings();
+  const { completeActivity } = useConfettiInteractions();
   const [permission, requestPermission] = useCameraPermissions();
   const [isBarcodeScannerVisible, setIsBarcodeScannerVisible] = useState(false);
   const scrollViewRef = useRef<KeyboardAwareScrollViewRef>(null);
@@ -1763,6 +1765,7 @@ export function FoodMealTrackingDetailsModal({
 
           onClose();
           onFoodTracked?.();
+          completeActivity(ConfettiActivity.FIRST_NUTRITION_LOG);
 
           showSnackbar('success', t('food.foodDetails.successMessage'));
         } catch (err) {
@@ -1919,6 +1922,7 @@ export function FoodMealTrackingDetailsModal({
 
         onClose();
         onFoodTracked?.();
+        completeActivity(ConfettiActivity.FIRST_NUTRITION_LOG);
 
         showSnackbar('success', t('food.foodDetails.successMessage'));
         return;
@@ -2106,6 +2110,7 @@ export function FoodMealTrackingDetailsModal({
 
       onClose();
       onFoodTracked?.();
+      completeActivity(ConfettiActivity.FIRST_NUTRITION_LOG);
 
       showSnackbar('success', t('food.foodDetails.successMessage'));
     } catch (error) {

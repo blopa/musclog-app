@@ -16,6 +16,7 @@ import { FoodPortionService, MealService } from '@/database/services';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { ConfettiActivity, useConfettiInteractions } from '@/context/ConfettiInteractionsContext';
 import { handleError } from '@/utils/handleError';
 import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
 
@@ -98,6 +99,7 @@ export default function DynamicMealCreatorModal({
   const { t } = useTranslation();
   const theme = useTheme();
   const { showSnackbar } = useSnackbar();
+  const { completeActivity } = useConfettiInteractions();
   const { formatRoundedDecimal } = useFormatAppNumber();
   const { units } = useSettings();
 
@@ -254,6 +256,7 @@ export default function DynamicMealCreatorModal({
 
       await syncMealPortion(savedMeal);
       showSnackbar('success', t('meals.dynamicCreator.savedSuccess'));
+      completeActivity(ConfettiActivity.FIRST_MEAL_CREATED);
       onSaved();
     } catch (error) {
       handleError(error, 'DynamicMealCreatorModal.handleFinishAndSave', {

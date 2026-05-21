@@ -28,6 +28,7 @@ import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { TextInput } from '@/components/theme/TextInput';
 import { WorkoutDetailsMenu } from '@/components/WorkoutDetailsMenu';
+import { ConfettiActivity, useConfettiInteractions } from '@/context/ConfettiInteractionsContext';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { database, WorkoutLog, WorkoutTemplate } from '@/database';
 import { WorkoutService, WorkoutTemplateService } from '@/database/services';
@@ -43,6 +44,7 @@ import { handleError } from '@/utils/handleError';
 export default function WorkoutsScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { completeActivity } = useConfettiInteractions();
   const router = useRouter();
   const params = useLocalSearchParams<{ previewTemplateId?: string }>();
   const { isAiConfigured } = useSettings();
@@ -248,6 +250,7 @@ export default function WorkoutsScreen() {
         const workoutLog = await WorkoutService.startWorkoutFromTemplate(templateId);
         setSelectedWorkoutLogId(workoutLog.id);
         setIsWorkoutOverviewVisible(true);
+        completeActivity(ConfettiActivity.FIRST_WORKOUT_CREATED);
       } catch (err) {
         handleError(err, 'workouts.handleStartWorkout', {
           snackbarMessage: t('errors.somethingWentWrong'),
@@ -637,6 +640,7 @@ export default function WorkoutsScreen() {
             const workoutLog = await WorkoutService.startFreeWorkout(t('freeTraining.workoutName'));
             setIsCreateOptionsVisible(false);
             router.navigate(`/app/workout/workout-session?workoutLogId=${workoutLog.id}`);
+            completeActivity(ConfettiActivity.FIRST_WORKOUT_CREATED);
           } catch (err) {
             console.error('Error starting free workout:', err);
             showSnackbar('error', err instanceof Error ? err.message : t('common.error'));

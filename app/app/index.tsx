@@ -36,6 +36,7 @@ import { WorkoutFoodEmptyState } from '@/components/WorkoutFoodEmptyState';
 import { isStaticExport } from '@/constants/platform';
 import { type CameraMode, useSmartCamera } from '@/context/SmartCameraContext';
 import { type MealType } from '@/database/models';
+import { ConfettiActivity, useConfettiInteractions } from '@/context/ConfettiInteractionsContext';
 import { NutritionGoalService } from '@/database/services';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
@@ -89,6 +90,7 @@ export default function HomeScreen() {
   const { isAiConfigured, intuitiveEatingMode, nutritionDisplay } = useSettings();
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
+  const { completeActivity } = useConfettiInteractions();
 
   const pathname = usePathname();
   const navigationState = useRootNavigationState();
@@ -256,6 +258,7 @@ export default function HomeScreen() {
         const savedGoal = await NutritionGoalService.saveGoals(nutritionGoalsToInput(goals));
         await NutritionGoalService.regenerateCheckins(savedGoal.id);
         setIsNutritionGoalsVisible(false);
+        completeActivity(ConfettiActivity.FIRST_MANUAL_NUTRITION_GOAL);
       } catch (error) {
         await handleError(error, 'index.saveNutritionGoals', {
           snackbarMessage: t('errors.somethingWentWrong'),
@@ -317,8 +320,12 @@ export default function HomeScreen() {
       return;
     }
 
-    runEntryOnboardingRedirect(router, 'app.index.web', '/app');
-  }, [navigationState?.key, router]);
+    runEntryOnboardingRedirect(router, 'app.index.web', '/app').then((redirected) => {
+      if (!redirected) {
+        completeActivity(ConfettiActivity.ONBOARDING_CONFIRMED);
+      }
+    });
+  }, [navigationState?.key, router, completeActivity]);
 
   // Handle widget deep link when app is already running (warm start)
   useEffect(() => {
