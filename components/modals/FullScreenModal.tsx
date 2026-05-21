@@ -9,6 +9,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
+import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { SwipeToReturnWrapper } from '@/components/SwipeToReturnWrapper';
 import { Modal } from '@/components/theme/Modal';
 import { useTheme } from '@/hooks/useTheme';
@@ -28,6 +29,7 @@ type FullScreenModalProps = {
   showHeader?: boolean;
   closable?: boolean;
   scrollViewRef?: RefObject<KeyboardAwareScrollViewRef | null>;
+  showConfetti?: boolean;
 };
 
 export function FullScreenModal({
@@ -44,6 +46,7 @@ export function FullScreenModal({
   showHeader = true,
   closable = true,
   scrollViewRef,
+  showConfetti = false,
 }: FullScreenModalProps) {
   const theme = useTheme();
   const webModalStyle = useWebModalLayerStyle({ variant: 'fullscreen' });
@@ -161,6 +164,7 @@ export function FullScreenModal({
             ) : null}
           </View>
         </SwipeToReturnWrapper>
+        {showConfetti ? <ConfettiOverlay /> : null}
       </SafeAreaView>
     </Modal>
   );

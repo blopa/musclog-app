@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
-import { ConfettiActivity, useConfettiInteractions } from '@/context/ConfettiInteractionsContext';
+import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
+import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import NutritionGoal from '@/database/models/NutritionGoal';
 import { ExerciseGoalService, NutritionGoalService } from '@/database/services';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
@@ -43,7 +44,7 @@ interface GoalsManagementModalProps {
 
 export default function GoalsManagementModal({ visible, onClose, tab }: GoalsManagementModalProps) {
   const { t } = useTranslation();
-  const { completeActivity } = useConfettiInteractions();
+  const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const { disableMinimumCalories, useBfForCalculations } = useSettings();
   const [activeTab, setActiveTab] = useState<'nutrition' | 'fitness'>('nutrition');
   const [creationMethodModalVisible, setCreationMethodModalVisible] = useState(false);
@@ -223,8 +224,9 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
         }
 
         await NutritionGoalService.regenerateCheckins(savedGoalId);
-        completeActivity(ConfettiActivity.FIRST_MANUAL_NUTRITION_GOAL);
       }
+
+      await triggerConfetti(ConfettiActivity.FIRST_MANUAL_NUTRITION_GOAL);
 
       if (refreshNutritionRef.current) {
         await refreshNutritionRef.current();
@@ -243,7 +245,7 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
     try {
       await ExerciseGoalService.saveGoal(data);
       setExerciseGoalCreationModalVisible(false);
-      completeActivity(ConfettiActivity.FIRST_FITNESS_GOAL);
+      await triggerConfetti(ConfettiActivity.FIRST_FITNESS_GOAL);
     } catch (error) {
       console.error('Error saving exercise goal:', error);
       showSnackbar('error', t('errors.somethingWentWrong'));
@@ -329,6 +331,7 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
         />
       }
       scrollable={false}
+      showConfetti={showConfetti}
     >
       <View className="flex-row border-b border-border-light px-4">
         <Pressable

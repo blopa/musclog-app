@@ -663,6 +663,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     markMealAsTracked,
     clearIntention,
     setPendingIntention: setHookPendingIntention,
+    showConfetti,
   } = useChatMessages(conversationContext);
 
   const { clearUnreadCount } = useUnreadChat();
@@ -1457,6 +1458,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       title={t('coach.title')}
       headerRight={headerRight}
       scrollable={false}
+      showConfetti={showConfetti}
     >
       <View className="flex-1 bg-bg-primary">
         <View

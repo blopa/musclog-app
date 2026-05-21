@@ -56,7 +56,8 @@ import { useYesterdayMealData } from '@/hooks/useYesterdayMealData';
 import { blurFilter } from '@/utils/blurFilter';
 import { localCalendarDayDate } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
-import { ConfettiActivity, useConfettiInteractions } from '@/context/ConfettiInteractionsContext';
+import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
+import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { resolveRoundedPer100gCaloriesForDisplay } from '@/utils/inferCaloriesFromMacros';
 import { gramsToDisplay } from '@/utils/unitConversion';
 import { getMassUnitI18nKey } from '@/utils/units';
@@ -345,7 +346,7 @@ export function FoodSearchModal({
   const { formatInteger } = useFormatAppNumber();
   const { showSnackbar } = useSnackbar();
   const { foodSearchSource, intuitiveEatingMode, units } = useSettings();
-  const { completeActivity } = useConfettiInteractions();
+  const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchSessionIcon, setSearchSessionIcon] = useState<LucideIcon>(pickRandomFoodIcon);
   const [activeFilter, setActiveFilter] = useState('all');
@@ -919,8 +920,8 @@ export function FoodSearchModal({
       }
       onFoodSelect?.({} as FoodItem);
       onFoodTracked?.();
+      triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG);
       onClose();
-      completeActivity(ConfettiActivity.FIRST_NUTRITION_LOG);
       showSnackbar('success', t('foodSearch.sameAsYesterdaySuccess'));
     } catch (err) {
       handleError(err, 'FoodSearchModal.handleSameAsYesterday', {
@@ -944,6 +945,7 @@ export function FoodSearchModal({
       <FullScreenModal
         visible={visible}
         onClose={onClose}
+        showConfetti={showConfetti}
         title={t('food.meals.addFoodTo', {
           meal: mealType
             ? t(`food.meals.${mealType === 'snack' ? 'snacks' : mealType}`)

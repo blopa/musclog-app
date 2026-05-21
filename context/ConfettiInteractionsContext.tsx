@@ -1,8 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
-import ConfettiOverlay from '@/components/ConfettiOverlay';
-
 import { ONBOARDING_COMPLETED } from '@/constants/misc';
 
 const STORAGE_KEY = 'confetti_interactions_state';
@@ -19,7 +17,7 @@ export enum ConfettiActivity {
 
 interface ConfettiInteractionsContextType {
   completedActivities: Record<string, boolean>;
-  completeActivity: (activity: ConfettiActivity) => Promise<void>;
+  completeActivity: (activity: ConfettiActivity) => Promise<boolean>;
 }
 
 const ConfettiInteractionsContext = createContext<ConfettiInteractionsContextType | undefined>(
@@ -38,7 +36,6 @@ export const ConfettiInteractionsProvider: React.FC<{ children: React.ReactNode 
   children,
 }) => {
   const [completedActivities, setCompletedActivities] = useState<Record<string, boolean>>({});
-  const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
     const loadState = async () => {
@@ -63,14 +60,13 @@ export const ConfettiInteractionsProvider: React.FC<{ children: React.ReactNode 
   }, []);
 
   const completeActivity = useCallback(
-    async (activity: ConfettiActivity) => {
+    async (activity: ConfettiActivity): Promise<boolean> => {
       if (completedActivities[activity]) {
-        return;
+        return false;
       }
 
       const newState = { ...completedActivities, [activity]: true };
       setCompletedActivities(newState);
-      setShowConfetti(true);
 
       try {
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
@@ -78,10 +74,7 @@ export const ConfettiInteractionsProvider: React.FC<{ children: React.ReactNode 
         console.error('Failed to save confetti interactions state', e);
       }
 
-      // Hide confetti after some time (5 seconds should be enough for the animation)
-      setTimeout(() => {
-        setShowConfetti(false);
-      }, 5000);
+      return true;
     },
     [completedActivities]
   );
@@ -89,7 +82,6 @@ export const ConfettiInteractionsProvider: React.FC<{ children: React.ReactNode 
   return (
     <ConfettiInteractionsContext.Provider value={{ completedActivities, completeActivity }}>
       {children}
-      {showConfetti && <ConfettiOverlay onAnimationEnd={() => setShowConfetti(false)} />}
     </ConfettiInteractionsContext.Provider>
   );
 };

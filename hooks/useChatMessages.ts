@@ -58,7 +58,8 @@ import { saveBase64ImageToFile } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 import { processMealPlanResponse } from '@/utils/nutritionAI';
 import { calculateNutritionPlan, eatingPhaseToWeightGoal } from '@/utils/nutritionCalculator';
-import { ConfettiActivity, useConfettiInteractions } from '@/context/ConfettiInteractionsContext';
+import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
+import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { generateUUID } from '@/utils/uuid';
 import { buildWorkoutCompletedSummaryForLLM, processWorkoutPlanResponse } from '@/utils/workoutAI';
@@ -229,13 +230,14 @@ export type UseChatMessagesResult = {
   ) => Promise<void>;
   clearIntention: () => Promise<void>;
   setPendingIntention: (intention: string | null) => void;
+  showConfetti: boolean;
 };
 
 export function useChatMessages(
   conversationContext: 'general' | 'exercise' | 'nutrition' = 'general'
 ): UseChatMessagesResult {
   const { t } = useTranslation();
-  const { completeActivity } = useConfettiInteractions();
+  const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const [messages, setMessages] = useState<ExtendedIMessage[]>([]);
   const [pendingCoachMessage, setPendingCoachMessage] = useState<ExtendedIMessage | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -929,9 +931,9 @@ export function useChatMessages(
         });
       }
 
-      completeActivity(ConfettiActivity.FIRST_NUTRITION_LOG);
-      if (record?.payloadJson) {
-        const payload = JSON.parse(record.payloadJson) as ChatMessagePayload;
+      triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG);
+      if (msgRecord?.payloadJson) {
+        const payload = JSON.parse(msgRecord.payloadJson) as ChatMessagePayload;
         if (isTrackMealPayload(payload)) {
           const updated: TrackMealPayload = {
             ...payload,
@@ -1003,5 +1005,6 @@ export function useChatMessages(
     setPendingIntention: (intention: string | null) => {
       setPendingIntention(intention);
     },
+    showConfetti,
   };
 }

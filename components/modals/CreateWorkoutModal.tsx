@@ -70,6 +70,7 @@ export default function CreateWorkoutModal({
     handleSave,
     handleExerciseOrderChange,
     handleDeleteExercises,
+    showConfetti,
   } = useWorkoutForm({ templateId, onSaveSuccess: onClose });
 
   const workoutInsightOptions = [
@@ -99,6 +100,7 @@ export default function CreateWorkoutModal({
       onClose={onClose}
       title={isEditMode ? t('createWorkout.editTitle') : t('createWorkout.title')}
       scrollable={false}
+      showConfetti={showConfetti}
       footer={
         <Button
           label={t('createWorkout.save')}

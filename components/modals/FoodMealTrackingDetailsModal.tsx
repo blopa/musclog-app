@@ -76,7 +76,8 @@ import {
 } from '@/utils/externalFoodProduct';
 import { formatAppRoundedDecimal } from '@/utils/formatAppNumber';
 import { formatDisplayGrams } from '@/utils/formatDisplayWeight';
-import { ConfettiActivity, useConfettiInteractions } from '@/context/ConfettiInteractionsContext';
+import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
+import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { handleError } from '@/utils/handleError';
 import {
   applyInferredCaloriesFromMacrosIfNeeded,
@@ -235,7 +236,7 @@ export function FoodMealTrackingDetailsModal({
   const decimalSeparator = useMemo(() => getDecimalSeparator(locale), [locale]);
   const { showSnackbar } = useSnackbar();
   const { units, alwaysAllowFoodEditing, intuitiveEatingMode } = useSettings();
-  const { completeActivity } = useConfettiInteractions();
+  const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const [permission, requestPermission] = useCameraPermissions();
   const [isBarcodeScannerVisible, setIsBarcodeScannerVisible] = useState(false);
   const scrollViewRef = useRef<KeyboardAwareScrollViewRef>(null);
@@ -1765,7 +1766,7 @@ export function FoodMealTrackingDetailsModal({
 
           onClose();
           onFoodTracked?.();
-          completeActivity(ConfettiActivity.FIRST_NUTRITION_LOG);
+          triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG);
 
           showSnackbar('success', t('food.foodDetails.successMessage'));
         } catch (err) {
@@ -1922,7 +1923,7 @@ export function FoodMealTrackingDetailsModal({
 
         onClose();
         onFoodTracked?.();
-        completeActivity(ConfettiActivity.FIRST_NUTRITION_LOG);
+        triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG);
 
         showSnackbar('success', t('food.foodDetails.successMessage'));
         return;
@@ -2110,7 +2111,7 @@ export function FoodMealTrackingDetailsModal({
 
       onClose();
       onFoodTracked?.();
-      completeActivity(ConfettiActivity.FIRST_NUTRITION_LOG);
+      triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG);
 
       showSnackbar('success', t('food.foodDetails.successMessage'));
     } catch (error) {
@@ -2389,6 +2390,7 @@ export function FoodMealTrackingDetailsModal({
         title={meal ? t('food.foodDetails.mealTitle') : t('food.foodDetails.foodTitle')}
         scrollable={true}
         scrollViewRef={scrollViewRef}
+        showConfetti={showConfetti}
         headerRight={
           mode !== 'meal' ? (
             <Pressable

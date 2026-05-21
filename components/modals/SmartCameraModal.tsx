@@ -6,7 +6,9 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
 import { CameraView } from '@/components/CameraView';
-import { ConfettiActivity, useConfettiInteractions } from '@/context/ConfettiInteractionsContext';
+import ConfettiOverlay from '@/components/ConfettiOverlay';
+import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
+import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { type MealType } from '@/database/models';
 import { NutritionService } from '@/database/services';
 import { useBarcodeScanner } from '@/hooks/useBarcodeScanner';
@@ -138,7 +140,7 @@ export default function SmartCameraModal({
 }: CameraModalProps) {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
-  const { completeActivity } = useConfettiInteractions();
+  const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const { formatRoundedDecimal } = useFormatAppNumber();
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [cameraMode, setCameraMode] = useState<CameraMode>(
@@ -545,7 +547,7 @@ export default function SmartCameraModal({
         );
 
         showSnackbar('success', t('food.aiCamera.mealLoggedSuccess'));
-        completeActivity(ConfettiActivity.FIRST_NUTRITION_LOG);
+        triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG);
         setIsLogMealModalVisible(false);
         setSelectedMealForLogging(null);
         setAiIngredients(undefined);
@@ -835,6 +837,7 @@ export default function SmartCameraModal({
           initialDate={logDate}
         />
       ) : null}
+      {showConfetti ? <ConfettiOverlay /> : null}
     </>
   );
 }
