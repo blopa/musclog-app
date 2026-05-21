@@ -3,6 +3,8 @@ import { Modal as RNModal } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { initialWindowMetrics, SafeAreaProvider } from 'react-native-safe-area-context';
 
+import GlobalConfetti from '@/components/GlobalConfetti';
+
 export type ShellAwareModalProps = {
   visible: boolean;
   children: ReactNode;
@@ -38,7 +40,10 @@ export function Modal({
           - SafeAreaProvider: needed so SafeAreaView/useSafeAreaInsets returns
             real insets instead of zero, preventing content behind the status bar. */}
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <SafeAreaProvider initialMetrics={initialWindowMetrics}>{children}</SafeAreaProvider>
+        <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+          {children}
+          <GlobalConfetti nativeOnly />
+        </SafeAreaProvider>
       </GestureHandlerRootView>
     </RNModal>
   );

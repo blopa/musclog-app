@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react';
 import { Modal as RNModal } from 'react-native';
 
+import GlobalConfetti from '@/components/GlobalConfetti';
+
 export type ShellAwareModalProps = {
   visible: boolean;
   children: ReactNode;
@@ -30,6 +32,7 @@ export function Modal({
       statusBarTranslucent={statusBarTranslucent}
     >
       {children}
+      <GlobalConfetti nativeOnly />
     </RNModal>
   );
 }

@@ -9,9 +9,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
-import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { SwipeToReturnWrapper } from '@/components/SwipeToReturnWrapper';
-import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { Modal } from '@/components/theme/Modal';
 import { useTheme } from '@/hooks/useTheme';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
@@ -51,7 +49,6 @@ export function FullScreenModal({
 }: FullScreenModalProps) {
   const theme = useTheme();
   const webModalStyle = useWebModalLayerStyle({ variant: 'fullscreen' });
-  const { showConfetti: globalShowConfetti } = useConfettiTrigger();
 
   // Force remount of Modal when visibility changes to prevent "ghost" native window
   // that captures touches. See: https://github.com/facebook/react-native/issues/29455
@@ -167,7 +164,6 @@ export function FullScreenModal({
           </View>
         </SwipeToReturnWrapper>
       </SafeAreaView>
-      {showConfetti || globalShowConfetti ? <ConfettiOverlay /> : null}
     </Modal>
   );
 }
