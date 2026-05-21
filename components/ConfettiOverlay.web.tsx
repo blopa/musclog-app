@@ -1,5 +1,5 @@
 import confetti from 'canvas-confetti';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 const ConfettiOverlay = () => {
   useEffect(() => {
