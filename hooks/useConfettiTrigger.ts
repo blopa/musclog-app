@@ -3,14 +3,16 @@ import { useCallback, useState } from 'react';
 import { ConfettiActivity, useConfettiInteractions } from '@/context/ConfettiInteractionsContext';
 
 export function useConfettiTrigger() {
-  const { completeActivity, completedActivities } = useConfettiInteractions();
+  const { completeActivity } = useConfettiInteractions();
   const [showConfetti, setShowConfetti] = useState(false);
 
   const triggerConfetti = useCallback(
     (activity: ConfettiActivity, delay?: number) => {
-      const isFirst = !completedActivities[activity];
-      completeActivity(activity);
-      if (isFirst) {
+      completeActivity(activity).then((isFirst) => {
+        if (!isFirst) {
+          return;
+        }
+
         const activate = () => {
           setShowConfetti(true);
           setTimeout(() => setShowConfetti(false), 5000);
@@ -20,9 +22,9 @@ export function useConfettiTrigger() {
         } else {
           activate();
         }
-      }
+      });
     },
-    [completeActivity, completedActivities]
+    [completeActivity]
   );
 
   return { triggerConfetti, showConfetti };
