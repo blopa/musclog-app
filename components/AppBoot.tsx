@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 
 import { isStaticExport } from '@/constants/platform';
-import { waitForDbReady } from '@/database/dbReady';
 import {
   ExerciseService,
   FoodPortionService,
@@ -31,7 +30,7 @@ import {
  * One-time and boot-time data fixes, sync, and native services that are not
  * tied to a specific screen. Renders nothing.
  */
-export function Migrations() {
+export function AppBoot() {
   const segments = useSegments();
   const { language } = useSettings();
 
