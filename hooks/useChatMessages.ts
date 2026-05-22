@@ -11,6 +11,7 @@ import {
   NUTRITION_CHECK,
   TRACK_MEAL,
 } from '@/constants/chat';
+import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { type MealType } from '@/database/models';
 import ChatMessage, {
   type ChatMessagePayload,
@@ -34,6 +35,7 @@ import {
   UserMetricService,
   UserService,
 } from '@/database/services';
+import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import AiService from '@/services/AiService';
 import {
   formatLocalCalendarDayIso,
@@ -58,8 +60,6 @@ import { saveBase64ImageToFile } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 import { processMealPlanResponse } from '@/utils/nutritionAI';
 import { calculateNutritionPlan, eatingPhaseToWeightGoal } from '@/utils/nutritionCalculator';
-import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
-import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { generateUUID } from '@/utils/uuid';
 import { buildWorkoutCompletedSummaryForLLM, processWorkoutPlanResponse } from '@/utils/workoutAI';

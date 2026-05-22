@@ -1,13 +1,24 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { focusManager } from '@tanstack/react-query';
 import { useSegments } from 'expo-router';
 import { useEffect } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 
+import { ONBOARDING_COMPLETED } from '@/constants/misc';
 import { isStaticExport } from '@/constants/platform';
 import {
+  ALL_CONFETTI_ACTIVITIES,
+  CONFETTI_ALL_DONE_SENTINEL,
+  CONFETTI_INTERACTIONS_KEY,
+  ConfettiActivity,
+} from '@/context/ConfettiInteractionsContext';
+import { waitForDbReady } from '@/database/dbReady';
+import {
+  ExerciseGoalService,
   ExerciseService,
   FoodPortionService,
   FoodService,
+  MealService,
   MuscleService,
   NutritionGoalService,
   NutritionService,
@@ -271,6 +282,73 @@ export function AppBoot() {
     const subscription = addNotificationResponseReceivedListener(handleNotificationResponse);
 
     return () => subscription.remove();
+  }, []);
+
+  // One-time migration for users upgrading from a build that predates the confetti feature.
+  // When the key is absent and onboarding is already done, we inspect the DB to determine
+  // which activities the user has already performed so we don't show stale confetti.
+  useEffect(() => {
+    if (isStaticExport) {
+      return;
+    }
+
+    const migrateConfettiInteractions = async () => {
+      try {
+        const [stored, onboardingDone] = await Promise.all([
+          AsyncStorage.getItem(CONFETTI_INTERACTIONS_KEY),
+          AsyncStorage.getItem(ONBOARDING_COMPLETED),
+        ]);
+
+        if (stored !== null || onboardingDone !== 'true') {
+          // Key already written (seeder or previous migration run), or fresh install
+          // (seeder will seed it) — nothing to do.
+          return;
+        }
+
+        await waitForDbReady();
+
+        const [nutritionLogs, nutritionGoals, exerciseGoals, workoutHistory, meals] =
+          await Promise.all([
+            NutritionService.getNutritionLogsPaginated(1, 0),
+            NutritionGoalService.getHistory(1),
+            ExerciseGoalService.getGoalHistory(1, 0),
+            WorkoutService.getWorkoutHistory(undefined, 1, 0),
+            MealService.getMealsPaginated(1, 0),
+          ]);
+
+        const done = new Set<string>([
+          ConfettiActivity.ONBOARDING_COMPLETED,
+          ConfettiActivity.ONBOARDING_CONFIRMED,
+        ]);
+
+        if (nutritionLogs.length > 0) {
+          done.add(ConfettiActivity.FIRST_NUTRITION_LOG);
+        }
+        if (nutritionGoals.length > 0) {
+          done.add(ConfettiActivity.FIRST_MANUAL_NUTRITION_GOAL);
+        }
+        if (exerciseGoals.length > 0) {
+          done.add(ConfettiActivity.FIRST_FITNESS_GOAL);
+        }
+        if (workoutHistory.length > 0) {
+          done.add(ConfettiActivity.FIRST_WORKOUT_CREATED);
+        }
+        if (meals.length > 0) {
+          done.add(ConfettiActivity.FIRST_MEAL_CREATED);
+        }
+
+        const pending = ALL_CONFETTI_ACTIVITIES.filter((a) => !done.has(a));
+
+        await AsyncStorage.setItem(
+          CONFETTI_INTERACTIONS_KEY,
+          pending.length === 0 ? CONFETTI_ALL_DONE_SENTINEL : JSON.stringify(pending)
+        );
+      } catch (err) {
+        console.warn('[AppBoot] Failed to migrate confetti interactions state:', err);
+      }
+    };
+
+    void migrateConfettiInteractions();
   }, []);
 
   useEffect(() => {

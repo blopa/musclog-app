@@ -6,9 +6,9 @@ import { Pressable, Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
-import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import NutritionGoal from '@/database/models/NutritionGoal';
 import { ExerciseGoalService, NutritionGoalService } from '@/database/services';
+import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useSettings } from '@/hooks/useSettings';

@@ -4,11 +4,11 @@ import { useTranslation } from 'react-i18next';
 import type { SelectorOption } from '@/components/theme/OptionsMultiSelector/utils';
 import type { WorkoutType } from '@/constants/workoutTypes';
 import { DEFAULT_WORKOUT_TYPE, isWorkoutType } from '@/constants/workoutTypes';
+import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import { WorkoutTemplateService } from '@/database/services';
-import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { handleError } from '@/utils/handleError';
 import {

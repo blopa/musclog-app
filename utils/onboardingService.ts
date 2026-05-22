@@ -1,17 +1,17 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
-  ConfettiActivity,
-  CONFETTI_INTERACTIONS_KEY,
-  CONFETTI_ALL_DONE_SENTINEL,
-} from '@/context/ConfettiInteractionsContext';
-import {
   CURRENT_ONBOARDING_VERSION,
   ONBOARDING_COMPLETED,
   ONBOARDING_CURRENT_STEP,
   ONBOARDING_VERSION,
   TEMP_NUTRITION_PLAN,
 } from '@/constants/misc';
+import {
+  CONFETTI_ALL_DONE_SENTINEL,
+  CONFETTI_INTERACTIONS_KEY,
+  ConfettiActivity,
+} from '@/context/ConfettiInteractionsContext';
 
 export interface OnboardingStatus {
   completed: boolean;

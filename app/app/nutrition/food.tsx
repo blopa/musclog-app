@@ -17,12 +17,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
-import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { DailySummaryCard } from '@/components/cards/DailySummaryCard/DailySummaryCard';
 import { FoodItemCard } from '@/components/cards/FoodItemCard';
 import { MealGroupCard } from '@/components/cards/MealGroupCard';
 import { useCoach } from '@/components/CoachContext';
+import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { DailySummaryBottomMenu } from '@/components/DailySummaryBottomMenu';
 import { DateNavigator } from '@/components/DateNavigator';
 import { MasterLayout } from '@/components/MasterLayout';
@@ -48,6 +48,7 @@ import { Button } from '@/components/theme/Button';
 import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { useSmartCamera } from '@/context/SmartCameraContext';
 import { useSnackbar } from '@/context/SnackbarContext';
 import Food from '@/database/models/Food';
@@ -61,11 +62,10 @@ import {
   scaleMealNutritionLogsToTotalGrams,
   SettingsService,
 } from '@/database/services';
-import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
+import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
-import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import AiService from '@/services/AiService';

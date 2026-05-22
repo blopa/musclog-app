@@ -70,23 +70,15 @@ export const ConfettiInteractionsProvider: React.FC<{ children: React.ReactNode 
         }
 
         if (stored === null) {
-          // Key absent: existing user who predates this feature.
-          // Distinguish by checking if onboarding was already completed.
           const onboardingDone = await AsyncStorage.getItem(ONBOARDING_COMPLETED);
-          if (onboardingDone === 'true') {
-            // Existing user upgrading without the seeded key: give them all non-onboarding
-            // activities so they can still receive confetti for first workout/meal/goal etc.
-            const pending = new Set(
-              ALL_CONFETTI_ACTIVITIES.filter((a) => !ONBOARDING_ACTIVITIES.has(a as ConfettiActivity))
-            );
-            pendingRef.current = pending;
-            await AsyncStorage.setItem(CONFETTI_INTERACTIONS_KEY, JSON.stringify([...pending]));
-          } else {
-            // Seeder hasn't run yet or key was never written; treat as all done.
-            pendingRef.current = new Set();
-            await AsyncStorage.setItem(CONFETTI_INTERACTIONS_KEY, CONFETTI_ALL_DONE_SENTINEL);
+          if (onboardingDone !== 'true') {
+            // Fresh install (seeder hasn't written the key yet): prime all activities in memory
+            // so confetti fires correctly during onboarding. Do NOT write to storage — the
+            // seeder will do that once it finishes seeding.
+            pendingRef.current = new Set(ALL_CONFETTI_ACTIVITIES);
           }
-
+          // Existing user upgrading (onboarding done, key absent): AppBoot.tsx runs the DB
+          // migration and writes the key. Keep pendingRef empty for this boot.
           return;
         }
 

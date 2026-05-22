@@ -6,6 +6,7 @@ import { ActivityIndicator, Text, View } from 'react-native';
 import { GenericCard } from '@/components/cards/GenericCard';
 import { BarChart, type BarChartDataPoint } from '@/components/charts/BarChart';
 import { Button } from '@/components/theme/Button';
+import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { EatingPhase } from '@/database/models';
 import type NutritionCheckin from '@/database/models/NutritionCheckin';
 import { NutritionGoalService, UserMetricService } from '@/database/services';
@@ -13,6 +14,7 @@ import {
   CheckinMetrics,
   NutritionCheckinService,
 } from '@/database/services/NutritionCheckinService';
+import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -25,8 +27,6 @@ import {
   isDynamicNutritionGoalValid,
   normalizeNutritionGoalTargetWeight,
 } from '@/utils/nutritionGoalHelpers';
-import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
-import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
