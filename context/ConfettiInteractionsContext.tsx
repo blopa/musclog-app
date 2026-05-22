@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 import { ONBOARDING_COMPLETED } from '@/constants/misc';
 
 export const CONFETTI_INTERACTIONS_KEY = 'confetti_interactions_state';
+export const CONFETTI_ALL_DONE_SENTINEL = '0';
 
 export enum ConfettiActivity {
   ONBOARDING_COMPLETED = 'onboarding_completed',
@@ -62,8 +63,14 @@ export const ConfettiInteractionsProvider: React.FC<{ children: React.ReactNode 
       try {
         const stored = await AsyncStorage.getItem(CONFETTI_INTERACTIONS_KEY);
 
+        // Fast path: sentinel means all activities have been celebrated.
+        if (stored === CONFETTI_ALL_DONE_SENTINEL) {
+          pendingRef.current = new Set();
+          return;
+        }
+
         if (stored === null) {
-          // Key absent: either an existing user who predates this feature, or all activities done.
+          // Key absent: existing user who predates this feature.
           // Distinguish by checking if onboarding was already completed.
           const onboardingDone = await AsyncStorage.getItem(ONBOARDING_COMPLETED);
           if (onboardingDone === 'true') {
@@ -75,8 +82,9 @@ export const ConfettiInteractionsProvider: React.FC<{ children: React.ReactNode 
             pendingRef.current = pending;
             await AsyncStorage.setItem(CONFETTI_INTERACTIONS_KEY, JSON.stringify([...pending]));
           } else {
-            // Fresh install that finished seeding (all activities done) or no activities remain.
+            // Seeder hasn't run yet or key was never written; treat as all done.
             pendingRef.current = new Set();
+            await AsyncStorage.setItem(CONFETTI_INTERACTIONS_KEY, CONFETTI_ALL_DONE_SENTINEL);
           }
 
           return;
@@ -101,7 +109,7 @@ export const ConfettiInteractionsProvider: React.FC<{ children: React.ReactNode 
 
             if (changed) {
               if (pending.size === 0) {
-                await AsyncStorage.removeItem(CONFETTI_INTERACTIONS_KEY);
+                await AsyncStorage.setItem(CONFETTI_INTERACTIONS_KEY, CONFETTI_ALL_DONE_SENTINEL);
               } else {
                 await AsyncStorage.setItem(CONFETTI_INTERACTIONS_KEY, JSON.stringify([...pending]));
               }
@@ -121,7 +129,7 @@ export const ConfettiInteractionsProvider: React.FC<{ children: React.ReactNode 
           pendingRef.current = pending;
 
           if (pending.size === 0) {
-            await AsyncStorage.removeItem(CONFETTI_INTERACTIONS_KEY);
+            await AsyncStorage.setItem(CONFETTI_INTERACTIONS_KEY, CONFETTI_ALL_DONE_SENTINEL);
           } else {
             await AsyncStorage.setItem(CONFETTI_INTERACTIONS_KEY, JSON.stringify([...pending]));
           }
@@ -158,7 +166,7 @@ export const ConfettiInteractionsProvider: React.FC<{ children: React.ReactNode 
 
       try {
         if (pending.size === 0) {
-          await AsyncStorage.removeItem(CONFETTI_INTERACTIONS_KEY);
+          await AsyncStorage.setItem(CONFETTI_INTERACTIONS_KEY, CONFETTI_ALL_DONE_SENTINEL);
         } else {
           await AsyncStorage.setItem(CONFETTI_INTERACTIONS_KEY, JSON.stringify([...pending]));
         }

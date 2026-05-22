@@ -1,6 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { ConfettiActivity, CONFETTI_INTERACTIONS_KEY } from '@/context/ConfettiInteractionsContext';
+import {
+  ConfettiActivity,
+  CONFETTI_INTERACTIONS_KEY,
+  CONFETTI_ALL_DONE_SENTINEL,
+} from '@/context/ConfettiInteractionsContext';
 import {
   CURRENT_ONBOARDING_VERSION,
   ONBOARDING_COMPLETED,
@@ -65,7 +69,7 @@ export const setOnboardingCompleted = async (
       if (Array.isArray(parsed)) {
         const pending = parsed.filter((a: string) => a !== ConfettiActivity.ONBOARDING_COMPLETED);
         if (pending.length === 0) {
-          await AsyncStorage.removeItem(CONFETTI_INTERACTIONS_KEY);
+          await AsyncStorage.setItem(CONFETTI_INTERACTIONS_KEY, CONFETTI_ALL_DONE_SENTINEL);
         } else {
           await AsyncStorage.setItem(CONFETTI_INTERACTIONS_KEY, JSON.stringify(pending));
         }
