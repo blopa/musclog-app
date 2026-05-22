@@ -112,6 +112,8 @@ type FoodSearchModalProps = {
   onFoodSelect?: (food: FoodItem) => void;
   /** Called when food(s) have been tracked so the parent can refresh logs (e.g. daily nutrition list). */
   onFoodTracked?: () => void;
+  /** Called before closing when a nutrition log is tracked for the first time, so the parent can trigger confetti. */
+  onFirstNutritionLog?: () => void;
   /** When false, the "Try AI Camera" option in FoodNotFoundModal is hidden. Defaults to true. */
   isAiEnabled?: boolean;
 };
@@ -337,6 +339,7 @@ export function FoodSearchModal({
   onBarcodeScanPress,
   onFoodSelect,
   onFoodTracked,
+  onFirstNutritionLog,
   isAiEnabled = true,
 }: FoodSearchModalProps) {
   const theme = useTheme();
@@ -916,6 +919,7 @@ export function FoodSearchModal({
         );
       }
       onFoodSelect?.({} as FoodItem);
+      onFirstNutritionLog?.();
       onFoodTracked?.();
       onClose();
       showSnackbar('success', t('foodSearch.sameAsYesterdaySuccess'));
@@ -1586,6 +1590,7 @@ export function FoodSearchModal({
               setIsFoodDetailsVisible(false);
               setSelectedFood(null);
             }}
+            onNutritionLogTracked={onFirstNutritionLog}
             onFoodTracked={() => {
               setSearchQuery('');
               onFoodTracked?.();
@@ -1619,6 +1624,7 @@ export function FoodSearchModal({
               setIsMealDetailsVisible(false);
               setSelectedMeal(null);
             }}
+            onNutritionLogTracked={onFirstNutritionLog}
             onFoodTracked={() => {
               setSearchQuery('');
               onFoodTracked?.();

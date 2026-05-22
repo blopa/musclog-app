@@ -109,6 +109,10 @@ type CreateMealModalProps = {
   initialFoods?: { food: Food; amount: number }[];
   /** For quickTrack mode: pre-selected meal type instead of defaulting to 'lunch'. */
   initialMealType?: MealType;
+  /** Called before closing when a nutrition log is tracked for the first time. */
+  onFirstNutritionLog?: () => void;
+  /** Called before closing when a meal is created for the first time. */
+  onFirstMealCreated?: () => void;
 };
 
 async function buildIngredientFromFood(
@@ -174,6 +178,8 @@ export function CreateMealModal({
   onTracked,
   initialFoods,
   initialMealType = 'lunch',
+  onFirstNutritionLog,
+  onFirstMealCreated,
 }: CreateMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -539,6 +545,10 @@ export function CreateMealModal({
         );
       }
       onTracked?.();
+      onFirstNutritionLog?.();
+      if (saveToMyMeals) {
+        onFirstMealCreated?.();
+      }
       onClose();
       showSnackbar('success', t('food.quickTrackMeal.successMessage'));
     } catch (error) {
@@ -642,6 +652,8 @@ export function CreateMealModal({
 
         await syncMealPortion(savedMeal);
       }
+
+      onFirstMealCreated?.();
 
       // Callback to refresh meals list
       onSave?.();

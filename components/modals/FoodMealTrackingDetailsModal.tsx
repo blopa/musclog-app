@@ -200,6 +200,8 @@ type FoodDetailsModalProps = {
   onBarcodeLookupComplete?: () => void;
   /** Called when food was successfully tracked (e.g. so parent can close camera modal). */
   onFoodTracked?: () => void;
+  /** Called before closing when a nutrition log is tracked for the first time, so the parent can trigger confetti. */
+  onNutritionLogTracked?: () => void;
   /** When false, the "Try AI Camera" option in FoodNotFoundModal is hidden. Defaults to true. */
   isAiEnabled?: boolean;
   /** When true, show an edit control so the user can correct name, barcode, and macros (e.g. for AI-sourced data). */
@@ -222,6 +224,7 @@ export function FoodMealTrackingDetailsModal({
   foodLog,
   onBarcodeLookupComplete,
   onFoodTracked,
+  onNutritionLogTracked,
   isAiEnabled = true,
   canEdit = false,
 }: FoodDetailsModalProps) {
@@ -1761,6 +1764,7 @@ export function FoodMealTrackingDetailsModal({
           // Call callback if provided
           onLogMeal?.({ meal: selectedMeal, date: selectedDate });
 
+          onNutritionLogTracked?.();
           onClose();
           onFoodTracked?.();
 
@@ -1917,6 +1921,7 @@ export function FoodMealTrackingDetailsModal({
           date: selectedDate,
         });
 
+        onNutritionLogTracked?.();
         onClose();
         onFoodTracked?.();
 
@@ -2104,6 +2109,7 @@ export function FoodMealTrackingDetailsModal({
         date: selectedDate,
       });
 
+      onNutritionLogTracked?.();
       onClose();
       onFoodTracked?.();
 

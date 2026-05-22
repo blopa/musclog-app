@@ -22,6 +22,8 @@ import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import i18n from '@/lang/lang';
+import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
+import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import AiService from '@/services/AiService';
 import { trackMeal } from '@/utils/coachAI';
 import { handleError } from '@/utils/handleError';
@@ -102,6 +104,7 @@ type MyMealsModalProps = {
 export default function MyMealsModal({ visible, onClose, initialMealType }: MyMealsModalProps) {
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
+  const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const theme = useTheme();
   const { formatRoundedDecimal } = useFormatAppNumber();
   const { shareText } = useNativeShareText();
@@ -326,6 +329,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
           true
         );
 
+        triggerConfetti(ConfettiActivity.FIRST_MEAL_CREATED);
         await refresh();
         showSnackbar('success', t('meals.generateAI.successMessage'));
       } catch (error) {
@@ -472,6 +476,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
       visible={visible}
       onClose={onClose}
       title={t('meals.title')}
+      showConfetti={showConfetti}
       closable={!isGeneratingMealAI}
       headerRight={
         <MenuButton
@@ -609,6 +614,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
           <DynamicMealCreatorModal
             visible={dynamicMealCreatorVisible}
             onClose={() => setDynamicMealCreatorVisible(false)}
+            onFirstMealCreated={() => triggerConfetti(ConfettiActivity.FIRST_MEAL_CREATED)}
             onSaved={() => {
               refresh();
               setDynamicMealCreatorVisible(false);
@@ -684,6 +690,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
               setSelectedMealForLogging(null);
             }}
             onLogMeal={handleLogMeal}
+            onNutritionLogTracked={() => triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG)}
             isAiEnabled={isAiConfigured}
             initialMealType={initialMealType}
           />

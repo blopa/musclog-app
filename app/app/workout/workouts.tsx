@@ -28,6 +28,9 @@ import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { TextInput } from '@/components/theme/TextInput';
 import { WorkoutDetailsMenu } from '@/components/WorkoutDetailsMenu';
+import ConfettiOverlay from '@/components/ConfettiOverlay';
+import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
+import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { database, WorkoutLog, WorkoutTemplate } from '@/database';
 import { WorkoutService, WorkoutTemplateService } from '@/database/services';
@@ -43,6 +46,7 @@ import { handleError } from '@/utils/handleError';
 export default function WorkoutsScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const router = useRouter();
   const params = useLocalSearchParams<{ previewTemplateId?: string }>();
   const { isAiConfigured } = useSettings();
@@ -248,6 +252,7 @@ export default function WorkoutsScreen() {
         const workoutLog = await WorkoutService.startWorkoutFromTemplate(templateId);
         setSelectedWorkoutLogId(workoutLog.id);
         setIsWorkoutOverviewVisible(true);
+        triggerConfetti(ConfettiActivity.FIRST_WORKOUT_CREATED);
       } catch (err) {
         handleError(err, 'workouts.handleStartWorkout', {
           snackbarMessage: t('errors.somethingWentWrong'),
@@ -290,6 +295,7 @@ export default function WorkoutsScreen() {
 
   return (
     <MasterLayout>
+      {showConfetti ? <ConfettiOverlay /> : null}
       <View className="flex-1">
         <KeyboardAwareScrollView
           className="flex-1"
@@ -637,6 +643,7 @@ export default function WorkoutsScreen() {
             const workoutLog = await WorkoutService.startFreeWorkout(t('freeTraining.workoutName'));
             setIsCreateOptionsVisible(false);
             router.navigate(`/app/workout/workout-session?workoutLogId=${workoutLog.id}`);
+            triggerConfetti(ConfettiActivity.FIRST_WORKOUT_CREATED);
           } catch (err) {
             console.error('Error starting free workout:', err);
             showSnackbar('error', err instanceof Error ? err.message : t('common.error'));

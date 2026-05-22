@@ -36,6 +36,9 @@ import { WorkoutFoodEmptyState } from '@/components/WorkoutFoodEmptyState';
 import { isStaticExport } from '@/constants/platform';
 import { type CameraMode, useSmartCamera } from '@/context/SmartCameraContext';
 import { type MealType } from '@/database/models';
+import ConfettiOverlay from '@/components/ConfettiOverlay';
+import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
+import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { NutritionGoalService } from '@/database/services';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
@@ -89,6 +92,7 @@ export default function HomeScreen() {
   const { isAiConfigured, intuitiveEatingMode, nutritionDisplay } = useSettings();
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
+  const { triggerConfetti, showConfetti } = useConfettiTrigger();
 
   const pathname = usePathname();
   const navigationState = useRootNavigationState();
@@ -256,6 +260,7 @@ export default function HomeScreen() {
         const savedGoal = await NutritionGoalService.saveGoals(nutritionGoalsToInput(goals));
         await NutritionGoalService.regenerateCheckins(savedGoal.id);
         setIsNutritionGoalsVisible(false);
+        triggerConfetti(ConfettiActivity.FIRST_MANUAL_NUTRITION_GOAL);
       } catch (error) {
         await handleError(error, 'index.saveNutritionGoals', {
           snackbarMessage: t('errors.somethingWentWrong'),
@@ -317,8 +322,12 @@ export default function HomeScreen() {
       return;
     }
 
-    runEntryOnboardingRedirect(router, 'app.index.web', '/app');
-  }, [navigationState?.key, router]);
+    runEntryOnboardingRedirect(router, 'app.index.web', '/app').then((redirected) => {
+      if (!redirected) {
+        triggerConfetti(ConfettiActivity.ONBOARDING_CONFIRMED);
+      }
+    });
+  }, [navigationState?.key, router, triggerConfetti]);
 
   // Handle widget deep link when app is already running (warm start)
   useEffect(() => {
@@ -337,6 +346,7 @@ export default function HomeScreen() {
 
   return (
     <MasterLayout>
+      {showConfetti ? <ConfettiOverlay /> : null}
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View className="flex-row items-center justify-between px-4 py-6">
@@ -764,6 +774,7 @@ export default function HomeScreen() {
         initialTab={foodSearchInitialTab}
         onCreatePress={handleFoodSearchCreatePress}
         onBarcodeScanPress={handleFoodSearchBarcodePress}
+        onFirstNutritionLog={() => triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG)}
         isAiEnabled={isAiConfigured}
       />
 

@@ -21,6 +21,7 @@ import { ErrorFallbackScreen } from '@/components/ErrorFallbackScreen';
 import { LanguageInitializer } from '@/components/LanguageInitializer';
 import { MenstrualCycleProvider } from '@/components/MenstrualCycleContext';
 import { isStaticExport } from '@/constants/platform';
+import { ConfettiInteractionsProvider } from '@/context/ConfettiInteractionsContext';
 import { SettingsProvider } from '@/context/SettingsContext';
 import { SmartCameraProvider } from '@/context/SmartCameraContext';
 import { SnackbarProvider } from '@/context/SnackbarContext';
@@ -133,19 +134,21 @@ function RootLayout() {
                 )}
               >
                 <SettingsProvider>
-                  <MenstrualCycleProvider>
-                    <ThemeProvider>
-                      <UnreadChatProvider>
-                        <SnackbarProvider>
-                          <SmartCameraProvider>
-                            <CoachProvider>
-                              <AppContent />
-                            </CoachProvider>
-                          </SmartCameraProvider>
-                        </SnackbarProvider>
-                      </UnreadChatProvider>
-                    </ThemeProvider>
-                  </MenstrualCycleProvider>
+                  <ConfettiInteractionsProvider>
+                    <MenstrualCycleProvider>
+                      <ThemeProvider>
+                        <UnreadChatProvider>
+                          <SnackbarProvider>
+                            <SmartCameraProvider>
+                              <CoachProvider>
+                                <AppContent />
+                              </CoachProvider>
+                            </SmartCameraProvider>
+                          </SnackbarProvider>
+                        </UnreadChatProvider>
+                      </ThemeProvider>
+                    </MenstrualCycleProvider>
+                  </ConfettiInteractionsProvider>
                 </SettingsProvider>
               </Sentry.ErrorBoundary>
             </SafeAreaProvider>

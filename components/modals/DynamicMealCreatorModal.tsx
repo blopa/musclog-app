@@ -88,12 +88,15 @@ type DynamicMealCreatorModalProps = {
   visible: boolean;
   onClose: () => void;
   onSaved: () => void;
+  /** Called before closing when a meal is created for the first time, so the parent can trigger confetti. */
+  onFirstMealCreated?: () => void;
 };
 
 export default function DynamicMealCreatorModal({
   visible,
   onClose,
   onSaved,
+  onFirstMealCreated,
 }: DynamicMealCreatorModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -254,6 +257,7 @@ export default function DynamicMealCreatorModal({
 
       await syncMealPortion(savedMeal);
       showSnackbar('success', t('meals.dynamicCreator.savedSuccess'));
+      onFirstMealCreated?.();
       onSaved();
     } catch (error) {
       handleError(error, 'DynamicMealCreatorModal.handleFinishAndSave', {
