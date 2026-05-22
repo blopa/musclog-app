@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
+import { ConfettiActivity, CONFETTI_INTERACTIONS_KEY } from '@/context/ConfettiInteractionsContext';
 import {
   CURRENT_ONBOARDING_VERSION,
   ONBOARDING_COMPLETED,
@@ -57,15 +57,19 @@ export const setOnboardingCompleted = async (
 
   await AsyncStorage.multiRemove([ONBOARDING_CURRENT_STEP, TEMP_NUTRITION_PLAN]);
 
-  // Mark confetti activity as done, but don't show it yet (it's handled by the landing screen logic or similar)
-  // Actually, we can just save it here, and the context will pick it up.
+  // Remove ONBOARDING_COMPLETED from pending confetti activities (new subtractive model).
   try {
-    const STORAGE_KEY = 'confetti_interactions_state';
-    const stored = await AsyncStorage.getItem(STORAGE_KEY);
-    const state = stored ? JSON.parse(stored) : {};
-    if (!state[ConfettiActivity.ONBOARDING_COMPLETED]) {
-      state[ConfettiActivity.ONBOARDING_COMPLETED] = true;
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    const stored = await AsyncStorage.getItem(CONFETTI_INTERACTIONS_KEY);
+    if (stored !== null) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) {
+        const pending = parsed.filter((a: string) => a !== ConfettiActivity.ONBOARDING_COMPLETED);
+        if (pending.length === 0) {
+          await AsyncStorage.removeItem(CONFETTI_INTERACTIONS_KEY);
+        } else {
+          await AsyncStorage.setItem(CONFETTI_INTERACTIONS_KEY, JSON.stringify(pending));
+        }
+      }
     }
   } catch (e) {
     console.warn('Failed to mark onboarding confetti as completed', e);

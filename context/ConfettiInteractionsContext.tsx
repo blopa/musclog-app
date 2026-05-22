@@ -3,7 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 
 import { ONBOARDING_COMPLETED } from '@/constants/misc';
 
-const STORAGE_KEY = 'confetti_interactions_state';
+export const CONFETTI_INTERACTIONS_KEY = 'confetti_interactions_state';
 
 export enum ConfettiActivity {
   ONBOARDING_COMPLETED = 'onboarding_completed',
@@ -15,8 +15,14 @@ export enum ConfettiActivity {
   ONBOARDING_CONFIRMED = 'onboarding_confirmed',
 }
 
+export const ALL_CONFETTI_ACTIVITIES = Object.values(ConfettiActivity);
+
+const ONBOARDING_ACTIVITIES = new Set([
+  ConfettiActivity.ONBOARDING_COMPLETED,
+  ConfettiActivity.ONBOARDING_CONFIRMED,
+]);
+
 interface ConfettiInteractionsContextType {
-  completedActivities: Record<string, boolean>;
   completeActivity: (activity: ConfettiActivity) => Promise<boolean>;
 }
 
@@ -35,8 +41,8 @@ export const useConfettiInteractions = () => {
 export const ConfettiInteractionsProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [completedActivities, setCompletedActivities] = useState<Record<string, boolean>>({});
-  const completedActivitiesRef = useRef(completedActivities);
+  // null = not yet loaded; Set = loaded (may be empty = all done)
+  const pendingRef = useRef<Set<string> | null>(null);
   const isMountedRef = useRef(true);
   const [loadStateGate] = useState(() => {
     let resolve!: () => void;
@@ -54,23 +60,77 @@ export const ConfettiInteractionsProvider: React.FC<{ children: React.ReactNode 
 
     const loadState = async () => {
       try {
-        const stored = await AsyncStorage.getItem(STORAGE_KEY);
-        let state = stored ? JSON.parse(stored) : {};
+        const stored = await AsyncStorage.getItem(CONFETTI_INTERACTIONS_KEY);
 
-        // If onboarding was already completed before this feature was added,
-        // mark it as confirmed so we don't show confetti to existing users.
-        const onboardingDone = await AsyncStorage.getItem(ONBOARDING_COMPLETED);
-        if (onboardingDone === 'true' && !state[ConfettiActivity.ONBOARDING_CONFIRMED]) {
-          state = { ...state, [ConfettiActivity.ONBOARDING_CONFIRMED]: true };
-          await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        if (stored === null) {
+          // Key absent: either an existing user who predates this feature, or all activities done.
+          // Distinguish by checking if onboarding was already completed.
+          const onboardingDone = await AsyncStorage.getItem(ONBOARDING_COMPLETED);
+          if (onboardingDone === 'true') {
+            // Existing user upgrading without the seeded key: give them all non-onboarding
+            // activities so they can still receive confetti for first workout/meal/goal etc.
+            const pending = new Set(
+              ALL_CONFETTI_ACTIVITIES.filter((a) => !ONBOARDING_ACTIVITIES.has(a as ConfettiActivity))
+            );
+            pendingRef.current = pending;
+            await AsyncStorage.setItem(CONFETTI_INTERACTIONS_KEY, JSON.stringify([...pending]));
+          } else {
+            // Fresh install that finished seeding (all activities done) or no activities remain.
+            pendingRef.current = new Set();
+          }
+
+          return;
         }
 
-        completedActivitiesRef.current = state;
-        if (isMountedRef.current) {
-          setCompletedActivities(state);
+        const parsed = JSON.parse(stored);
+
+        if (Array.isArray(parsed)) {
+          // New format: array of pending activity strings.
+          const pending = new Set<string>(parsed);
+
+          // If onboarding is already done, onboarding confetti should not be pending.
+          const onboardingDone = await AsyncStorage.getItem(ONBOARDING_COMPLETED);
+          if (onboardingDone === 'true') {
+            let changed = false;
+            for (const a of ONBOARDING_ACTIVITIES) {
+              if (pending.has(a)) {
+                pending.delete(a);
+                changed = true;
+              }
+            }
+
+            if (changed) {
+              if (pending.size === 0) {
+                await AsyncStorage.removeItem(CONFETTI_INTERACTIONS_KEY);
+              } else {
+                await AsyncStorage.setItem(CONFETTI_INTERACTIONS_KEY, JSON.stringify([...pending]));
+              }
+            }
+          }
+
+          pendingRef.current = pending;
+        } else if (typeof parsed === 'object' && parsed !== null) {
+          // Old format: { [activity]: true } dict of *completed* activities.
+          // Migrate: pending = all activities NOT marked true in the old dict.
+          const completed = new Set(
+            Object.entries(parsed as Record<string, unknown>)
+              .filter(([, v]) => v === true)
+              .map(([k]) => k)
+          );
+          const pending = new Set(ALL_CONFETTI_ACTIVITIES.filter((a) => !completed.has(a)));
+          pendingRef.current = pending;
+
+          if (pending.size === 0) {
+            await AsyncStorage.removeItem(CONFETTI_INTERACTIONS_KEY);
+          } else {
+            await AsyncStorage.setItem(CONFETTI_INTERACTIONS_KEY, JSON.stringify([...pending]));
+          }
+        } else {
+          pendingRef.current = new Set();
         }
       } catch (e) {
         console.error('Failed to load confetti interactions state', e);
+        pendingRef.current = new Set();
       } finally {
         loadStateGate.resolve();
       }
@@ -87,19 +147,21 @@ export const ConfettiInteractionsProvider: React.FC<{ children: React.ReactNode 
     async (activity: ConfettiActivity): Promise<boolean> => {
       await loadStateGate.promise;
 
-      const currentActivities = completedActivitiesRef.current;
-      if (currentActivities[activity]) {
+      const pending = pendingRef.current;
+
+      // Fast path: nothing pending.
+      if (!pending || pending.size === 0 || !pending.has(activity)) {
         return false;
       }
 
-      const newState = { ...currentActivities, [activity]: true };
-      completedActivitiesRef.current = newState;
-      if (isMountedRef.current) {
-        setCompletedActivities(newState);
-      }
+      pending.delete(activity);
 
       try {
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
+        if (pending.size === 0) {
+          await AsyncStorage.removeItem(CONFETTI_INTERACTIONS_KEY);
+        } else {
+          await AsyncStorage.setItem(CONFETTI_INTERACTIONS_KEY, JSON.stringify([...pending]));
+        }
       } catch (e) {
         console.error('Failed to save confetti interactions state', e);
       }
@@ -110,7 +172,7 @@ export const ConfettiInteractionsProvider: React.FC<{ children: React.ReactNode 
   );
 
   return (
-    <ConfettiInteractionsContext.Provider value={{ completedActivities, completeActivity }}>
+    <ConfettiInteractionsContext.Provider value={{ completeActivity }}>
       {children}
     </ConfettiInteractionsContext.Provider>
   );
