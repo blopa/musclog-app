@@ -122,17 +122,16 @@ export function BottomPopUp({
       // screenY is the keyboard's top edge in absolute screen coordinates — same space
       // as measureInWindow, so no window-vs-screen height mismatch on Android.
       const keyboardTop = e.endCoordinates.screenY;
-      type InputRef = {
-        measureInWindow: (cb: (x: number, y: number, w: number, h: number) => void) => void;
-      };
-      const focusedInput = RNTextInput.State.currentlyFocusedInput() as InputRef | null;
+      const focusedInput = RNTextInput.State.currentlyFocusedInput();
 
       if (!focusedInput) {
         setKeyboardBottomLift(e.endCoordinates.height);
         return;
       }
 
-      focusedInput.measureInWindow((_x, y, _w, h) => {
+      // measureInWindow is available on the native host ref at runtime;
+      // RN's declared instance type doesn't expose it directly.
+      (focusedInput as any).measureInWindow((_x: number, y: number, _w: number, h: number) => {
         const inputBottom = y + h;
         // Only lift as much as needed to clear the keyboard, plus 16px breathing room.
         setKeyboardBottomLift(Math.max(0, inputBottom - keyboardTop + 16));

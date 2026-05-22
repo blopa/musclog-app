@@ -20,7 +20,7 @@ export async function runEntryOnboardingRedirect(
   router: Router,
   errorContext: string,
   currentPath?: string
-): Promise<boolean> {
+): Promise<boolean | null> {
   try {
     const completed = await isOnboardingCompleted();
 
@@ -46,6 +46,6 @@ export async function runEntryOnboardingRedirect(
   } catch (error) {
     handleError(error, `${errorContext}.checkOnboardingStatus`);
     replaceIfNeeded(router, currentPath, '/app');
-    return false;
+    return null;
   }
 }

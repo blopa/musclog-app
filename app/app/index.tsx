@@ -323,7 +323,9 @@ export default function HomeScreen() {
     }
 
     runEntryOnboardingRedirect(router, 'app.index.web', '/app').then((redirected) => {
-      if (!redirected) {
+      // redirected === false means onboarding is confirmed complete (not an error-driven redirect).
+      // triggerConfetti is deduplication-safe: it's a no-op once the activity is already celebrated.
+      if (redirected === false) {
         triggerConfetti(ConfettiActivity.ONBOARDING_CONFIRMED);
       }
     });
