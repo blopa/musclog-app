@@ -3,6 +3,10 @@ import * as Localization from 'expo-localization';
 import { Platform } from 'react-native';
 
 import { ENCRYPTION_KEY, SEEDING_COMPLETE_KEY } from '@/constants/database';
+import {
+  ALL_CONFETTI_ACTIVITIES,
+  CONFETTI_INTERACTIONS_KEY,
+} from '@/context/ConfettiInteractionsContext';
 import usdaFoundationFoodsData from '@/data/usda_foundation_foods.json';
 import { database } from '@/database/database-instance';
 import { markDbReady } from '@/database/dbReady';
@@ -269,6 +273,9 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
 
     // Clear async storage
     await clearAsyncStorage();
+
+    // Seed all confetti interactions as pending (subtractive model: activities are removed as completed)
+    await AsyncStorage.setItem(CONFETTI_INTERACTIONS_KEY, JSON.stringify(ALL_CONFETTI_ACTIVITIES));
 
     // Ensure encryption key exists before any encrypted writes (seeding/migration)
     await getEncryptionKey();

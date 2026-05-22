@@ -4,10 +4,12 @@ import { useTranslation } from 'react-i18next';
 import type { SelectorOption } from '@/components/theme/OptionsMultiSelector/utils';
 import type { WorkoutType } from '@/constants/workoutTypes';
 import { DEFAULT_WORKOUT_TYPE, isWorkoutType } from '@/constants/workoutTypes';
+import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import { WorkoutTemplateService } from '@/database/services';
+import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { handleError } from '@/utils/handleError';
 import {
   createExerciseOption,
@@ -47,6 +49,7 @@ export interface AddExerciseData {
 export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormParams = {}) {
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
+  const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const { units } = useSettings();
   const theme = useTheme();
   const isEditMode = !!templateId;
@@ -193,6 +196,10 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
         selectedDays,
       });
 
+      if (!isEditMode) {
+        triggerConfetti(ConfettiActivity.FIRST_WORKOUT_CREATED);
+      }
+
       onSaveSuccess?.();
     } catch (error) {
       await handleError(error, 'useWorkoutForm.saveTemplate', {
@@ -312,5 +319,6 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
     handleExerciseOrderChange,
     handleDeleteExercises,
     handleUpdateExerciseNotes,
+    showConfetti,
   };
 }

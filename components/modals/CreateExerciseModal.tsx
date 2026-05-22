@@ -2,7 +2,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { Camera, Check, ChevronDown, Dumbbell, Link } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { Image, Pressable, Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { Button } from '@/components/theme/Button';
@@ -173,6 +174,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
       visible={visible}
       onClose={onClose}
       title={t('exercises.createExercise.title')}
+      scrollable={false}
       footer={
         <Button
           label={t('exercises.createExercise.createButton')}
@@ -185,7 +187,11 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
         />
       }
     >
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <KeyboardAwareScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        bottomOffset={16}
+      >
         <View className="px-4 py-2" style={{ gap: theme.spacing.gap.xl }}>
           {/* Exercise Name */}
           <View>
@@ -361,7 +367,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
             ) : null}
           </View>
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
       {/* Primary Muscle Picker */}
       <BottomPopUpMenu

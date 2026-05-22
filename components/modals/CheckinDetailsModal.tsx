@@ -6,6 +6,7 @@ import { ActivityIndicator, Text, View } from 'react-native';
 import { GenericCard } from '@/components/cards/GenericCard';
 import { BarChart, type BarChartDataPoint } from '@/components/charts/BarChart';
 import { Button } from '@/components/theme/Button';
+import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { EatingPhase } from '@/database/models';
 import type NutritionCheckin from '@/database/models/NutritionCheckin';
 import { NutritionGoalService, UserMetricService } from '@/database/services';
@@ -13,6 +14,7 @@ import {
   CheckinMetrics,
   NutritionCheckinService,
 } from '@/database/services/NutritionCheckinService';
+import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -40,6 +42,7 @@ type CheckinModalProps = {
 export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const { goal: currentGoal } = useCurrentNutritionGoal();
   const { units, intuitiveEatingMode } = useSettings();
   const { formatDecimal, formatInteger } = useFormatAppNumber();
@@ -148,7 +151,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
         isDynamic: goals.isDynamic ?? false,
       });
       await NutritionGoalService.regenerateCheckins(newGoal.id);
-
+      triggerConfetti(ConfettiActivity.FIRST_MANUAL_NUTRITION_GOAL);
       onClose();
     } catch (e) {
       handleError(e, 'CheckinDetailsModal.handleSave', {
@@ -212,6 +215,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
       visible={visible}
       onClose={onClose}
       title={t('nutrition.checkin.title')}
+      showConfetti={showConfetti}
       footer={
         <>
           <Button

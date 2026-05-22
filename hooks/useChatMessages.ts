@@ -11,6 +11,7 @@ import {
   NUTRITION_CHECK,
   TRACK_MEAL,
 } from '@/constants/chat';
+import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { type MealType } from '@/database/models';
 import ChatMessage, {
   type ChatMessagePayload,
@@ -34,6 +35,7 @@ import {
   UserMetricService,
   UserService,
 } from '@/database/services';
+import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import AiService from '@/services/AiService';
 import {
   formatLocalCalendarDayIso,
@@ -228,12 +230,14 @@ export type UseChatMessagesResult = {
   ) => Promise<void>;
   clearIntention: () => Promise<void>;
   setPendingIntention: (intention: string | null) => void;
+  showConfetti: boolean;
 };
 
 export function useChatMessages(
   conversationContext: 'general' | 'exercise' | 'nutrition' = 'general'
 ): UseChatMessagesResult {
   const { t } = useTranslation();
+  const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const [messages, setMessages] = useState<ExtendedIMessage[]>([]);
   const [pendingCoachMessage, setPendingCoachMessage] = useState<ExtendedIMessage | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -927,9 +931,9 @@ export function useChatMessages(
         });
       }
 
-      const record = rawMessagesRef.current.find((r) => r.id === messageId);
-      if (record?.payloadJson) {
-        const payload = JSON.parse(record.payloadJson) as ChatMessagePayload;
+      triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG);
+      if (msgRecord?.payloadJson) {
+        const payload = JSON.parse(msgRecord.payloadJson) as ChatMessagePayload;
         if (isTrackMealPayload(payload)) {
           const updated: TrackMealPayload = {
             ...payload,
@@ -1001,5 +1005,6 @@ export function useChatMessages(
     setPendingIntention: (intention: string | null) => {
       setPendingIntention(intention);
     },
+    showConfetti,
   };
 }

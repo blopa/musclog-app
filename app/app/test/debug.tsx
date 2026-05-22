@@ -4,7 +4,8 @@ import { useRouter } from 'expo-router';
 import { ArrowRight, ChevronRight, Database, Plus, RefreshCw, Trash2 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Platform, Pressable, Text, TextInput, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { MasterLayout } from '@/components/MasterLayout';
 import { MigrationSection } from '@/components/MigrationSection';
@@ -555,7 +556,11 @@ export default function DebugTestScreen() {
 
   return (
     <MasterLayout>
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <KeyboardAwareScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        bottomOffset={16}
+      >
         <View className="gap-6 p-4">
           <View>
             <Text className="mb-2 text-2xl font-bold text-text-primary">Database Test</Text>
@@ -1057,7 +1062,7 @@ export default function DebugTestScreen() {
             )}
           </View>
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
     </MasterLayout>
   );
 }

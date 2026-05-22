@@ -2,7 +2,8 @@ import { Q } from '@nozbe/watermelondb';
 import { Activity, ChevronRight, Dumbbell, Footprints, Search } from 'lucide-react-native';
 import { ComponentType, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { Image, Pressable, Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { Accordion } from '@/components/theme/Accordion';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
@@ -271,7 +272,11 @@ export default function ExercisesModal({
       title={t('exercises.title')}
       scrollable={false}
     >
-      <ScrollView className="flex-1 px-4 pb-32" showsVerticalScrollIndicator={false}>
+      <KeyboardAwareScrollView
+        className="flex-1 px-4 pb-32"
+        showsVerticalScrollIndicator={false}
+        bottomOffset={16}
+      >
         <View className="py-3">
           {/* Search Input (themed) */}
           <View className="py-3">
@@ -354,7 +359,7 @@ export default function ExercisesModal({
               );
             })
         )}
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
       <ViewExerciseModal
         visible={viewExerciseId !== null}

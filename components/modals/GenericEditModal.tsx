@@ -1,7 +1,8 @@
 import { Check, ChevronDown, Circle } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { Button } from '@/components/theme/Button';
@@ -455,6 +456,7 @@ export function GenericEditModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
+      scrollable={false}
       title={title}
       footer={
         <Button
@@ -474,9 +476,9 @@ export function GenericEditModal({
           <Text className="text-base text-text-secondary">{t('common.loading')}</Text>
         </View>
       ) : (
-        <ScrollView className="px-4 py-6">
+        <KeyboardAwareScrollView className="px-4 py-6" bottomOffset={16}>
           <View className="gap-6">{fields.map((field) => renderField(field))}</View>
-        </ScrollView>
+        </KeyboardAwareScrollView>
       )}
     </FullScreenModal>
   );

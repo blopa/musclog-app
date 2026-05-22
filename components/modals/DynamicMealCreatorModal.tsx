@@ -2,6 +2,7 @@ import { Trash2 } from 'lucide-react-native';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { MealNutritionHighlightCard } from '@/components/cards/MealNutritionHighlightCard';
 import { FilterTabs } from '@/components/FilterTabs';
@@ -87,12 +88,15 @@ type DynamicMealCreatorModalProps = {
   visible: boolean;
   onClose: () => void;
   onSaved: () => void;
+  /** Called before closing when a meal is created for the first time, so the parent can trigger confetti. */
+  onFirstMealCreated?: () => void;
 };
 
 export default function DynamicMealCreatorModal({
   visible,
   onClose,
   onSaved,
+  onFirstMealCreated,
 }: DynamicMealCreatorModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -253,6 +257,7 @@ export default function DynamicMealCreatorModal({
 
       await syncMealPortion(savedMeal);
       showSnackbar('success', t('meals.dynamicCreator.savedSuccess'));
+      onFirstMealCreated?.();
       onSaved();
     } catch (error) {
       handleError(error, 'DynamicMealCreatorModal.handleFinishAndSave', {
@@ -309,6 +314,7 @@ export default function DynamicMealCreatorModal({
       <FullScreenModal
         visible={visible}
         onClose={handleClose}
+        scrollable={false}
         title={
           step === 'save'
             ? t('meals.dynamicCreator.saveMealTitle')
@@ -394,10 +400,11 @@ export default function DynamicMealCreatorModal({
             </View>
           </View>
         ) : (
-          <ScrollView
+          <KeyboardAwareScrollView
             className="flex-1"
             contentContainerStyle={{ padding: theme.spacing.padding.xl, gap: theme.spacing.gap.xl }}
             showsVerticalScrollIndicator={false}
+            bottomOffset={16}
           >
             {/* Nutrition recap */}
             <MealNutritionHighlightCard
@@ -531,7 +538,7 @@ export default function DynamicMealCreatorModal({
             </View>
             {/* Bottom spacing for footer */}
             <View style={{ height: theme.size['20'] }} />
-          </ScrollView>
+          </KeyboardAwareScrollView>
         )}
       </FullScreenModal>
 

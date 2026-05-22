@@ -1,6 +1,13 @@
 import classNames from 'classnames';
 import { forwardRef, ReactNode, useImperativeHandle, useMemo, useRef } from 'react';
-import { Animated, Platform, Text, TextInput as RNTextInput, View } from 'react-native';
+import {
+  Animated,
+  type InputModeOptions,
+  Platform,
+  Text,
+  TextInput as RNTextInput,
+  View,
+} from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 
@@ -10,6 +17,7 @@ type TestInputProps = {
   onChangeText: (text: string) => void;
   placeholder?: string;
   keyboardType?: 'default' | 'email-address' | 'numeric';
+  inputMode?: InputModeOptions;
   icon?: ReactNode;
   secureTextEntry?: boolean;
   required?: boolean;
@@ -35,6 +43,7 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
       value,
       onChangeText,
       placeholder,
+      inputMode,
       keyboardType = 'default',
       icon,
       secureTextEntry,
@@ -121,6 +130,7 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
               placeholderTextColor={theme.colors.text.tertiary}
               value={value}
               onChangeText={onChangeText}
+              inputMode={inputMode}
               keyboardType={keyboardType}
               secureTextEntry={secureTextEntry}
               onFocus={() => {
@@ -171,6 +181,7 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
               placeholderTextColor={theme.colors.text.tertiary}
               value={value}
               onChangeText={onChangeText}
+              inputMode={inputMode}
               keyboardType={keyboardType}
               secureTextEntry={secureTextEntry}
               onFocus={() => {

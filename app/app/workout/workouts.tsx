@@ -3,10 +3,12 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Dumbbell, Plus, Repeat, Search, Target, WifiOff } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { WorkoutCard } from '@/components/cards/WorkoutCard';
+import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { FilterTabs } from '@/components/FilterTabs';
 import { GradientText } from '@/components/GradientText';
 import { MasterLayout } from '@/components/MasterLayout';
@@ -27,9 +29,11 @@ import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { TextInput } from '@/components/theme/TextInput';
 import { WorkoutDetailsMenu } from '@/components/WorkoutDetailsMenu';
+import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { database, WorkoutLog, WorkoutTemplate } from '@/database';
 import { WorkoutService, WorkoutTemplateService } from '@/database/services';
+import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -42,6 +46,7 @@ import { handleError } from '@/utils/handleError';
 export default function WorkoutsScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const router = useRouter();
   const params = useLocalSearchParams<{ previewTemplateId?: string }>();
   const { isAiConfigured } = useSettings();
@@ -247,6 +252,7 @@ export default function WorkoutsScreen() {
         const workoutLog = await WorkoutService.startWorkoutFromTemplate(templateId);
         setSelectedWorkoutLogId(workoutLog.id);
         setIsWorkoutOverviewVisible(true);
+        triggerConfetti(ConfettiActivity.FIRST_WORKOUT_CREATED);
       } catch (err) {
         handleError(err, 'workouts.handleStartWorkout', {
           snackbarMessage: t('errors.somethingWentWrong'),
@@ -289,8 +295,13 @@ export default function WorkoutsScreen() {
 
   return (
     <MasterLayout>
+      {showConfetti ? <ConfettiOverlay /> : null}
       <View className="flex-1">
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <KeyboardAwareScrollView
+          className="flex-1"
+          showsVerticalScrollIndicator={false}
+          bottomOffset={16}
+        >
           {/* Header */}
           <View className="px-4 py-6">
             <View className="flex-row items-center justify-between">
@@ -566,7 +577,7 @@ export default function WorkoutsScreen() {
             ) : null}
           </View>
           <View className="h-32" />
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </View>
 
       {/* Workout Details Menu */}
@@ -632,6 +643,7 @@ export default function WorkoutsScreen() {
             const workoutLog = await WorkoutService.startFreeWorkout(t('freeTraining.workoutName'));
             setIsCreateOptionsVisible(false);
             router.navigate(`/app/workout/workout-session?workoutLogId=${workoutLog.id}`);
+            triggerConfetti(ConfettiActivity.FIRST_WORKOUT_CREATED);
           } catch (err) {
             console.error('Error starting free workout:', err);
             showSnackbar('error', err instanceof Error ? err.message : t('common.error'));

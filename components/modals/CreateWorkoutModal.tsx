@@ -2,6 +2,7 @@ import { Plus, PlusSquare, Sparkles } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { Button } from '@/components/theme/Button';
 import DashedButton from '@/components/theme/DashedButton';
@@ -69,6 +70,7 @@ export default function CreateWorkoutModal({
     handleSave,
     handleExerciseOrderChange,
     handleDeleteExercises,
+    showConfetti,
   } = useWorkoutForm({ templateId, onSaveSuccess: onClose });
 
   const workoutInsightOptions = [
@@ -98,6 +100,7 @@ export default function CreateWorkoutModal({
       onClose={onClose}
       title={isEditMode ? t('createWorkout.editTitle') : t('createWorkout.title')}
       scrollable={false}
+      showConfetti={showConfetti}
       footer={
         <Button
           label={t('createWorkout.save')}
@@ -138,13 +141,14 @@ export default function CreateWorkoutModal({
         />
       </View>
       <View style={{ height: theme.size.md }} />
-      <ScrollView
+      <KeyboardAwareScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           paddingHorizontal: theme.spacing.padding.base,
           paddingBottom: theme.size['120'],
         }}
+        bottomOffset={16}
       >
         {/* Essentials Section */}
         <View style={{ marginBottom: theme.spacing.gap.xl }}>
@@ -503,7 +507,7 @@ export default function CreateWorkoutModal({
             )}
           </View>
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
       {addExerciseVisible ? (
         <AddExerciseModal
           visible={addExerciseVisible}

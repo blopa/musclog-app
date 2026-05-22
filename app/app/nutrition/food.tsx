@@ -22,6 +22,7 @@ import { DailySummaryCard } from '@/components/cards/DailySummaryCard/DailySumma
 import { FoodItemCard } from '@/components/cards/FoodItemCard';
 import { MealGroupCard } from '@/components/cards/MealGroupCard';
 import { useCoach } from '@/components/CoachContext';
+import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { DailySummaryBottomMenu } from '@/components/DailySummaryBottomMenu';
 import { DateNavigator } from '@/components/DateNavigator';
 import { MasterLayout } from '@/components/MasterLayout';
@@ -47,6 +48,7 @@ import { Button } from '@/components/theme/Button';
 import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { useSmartCamera } from '@/context/SmartCameraContext';
 import { useSnackbar } from '@/context/SnackbarContext';
 import Food from '@/database/models/Food';
@@ -60,6 +62,7 @@ import {
   scaleMealNutritionLogsToTotalGrams,
   SettingsService,
 } from '@/database/services';
+import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -117,6 +120,7 @@ export default function FoodScreen() {
   const { t } = useTranslation();
   const { formatInteger, locale: appLocale } = useFormatAppNumber();
   const { units, isAiConfigured, intuitiveEatingMode, nutritionDisplay } = useSettings();
+  const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const { openCoach } = useCoach();
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
@@ -1990,6 +1994,8 @@ export default function FoodScreen() {
           refresh();
           setIsQuickTrackMealModalVisible(false);
         }}
+        onFirstNutritionLog={() => triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG)}
+        onFirstMealCreated={() => triggerConfetti(ConfettiActivity.FIRST_MEAL_CREATED)}
       />
       {/* Create Meal Modal (prefilled from current meal foods) */}
       <CreateMealModal
@@ -2008,6 +2014,7 @@ export default function FoodScreen() {
           setSelectedFoodItem(null);
         }}
         initialFoods={createMealInitialFoods}
+        onFirstMealCreated={() => triggerConfetti(ConfettiActivity.FIRST_MEAL_CREATED)}
       />
 
       {/* My Meals Modal */}
@@ -2034,6 +2041,7 @@ export default function FoodScreen() {
         logDate={selectedDate}
         initialTab={foodSearchInitialTab}
         onFoodTracked={refresh}
+        onFirstNutritionLog={() => triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG)}
         onCreatePress={() => {
           // Open CreateCustomFoodModal
           setIsFoodSearchModalVisible(false);
@@ -2293,6 +2301,7 @@ export default function FoodScreen() {
         initialServingSize={
           selectedFoodItem && isDuplicateMode ? selectedFoodItem.gramWeight : undefined
         }
+        onNutritionLogTracked={() => triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG)}
         onAddFood={async (_data) => {
           try {
             await refresh();
@@ -2473,6 +2482,7 @@ export default function FoodScreen() {
         variant="destructive"
         isLoading={isDeleteMealGroupLoading}
       />
+      {showConfetti ? <ConfettiOverlay /> : null}
     </MasterLayout>
   );
 }

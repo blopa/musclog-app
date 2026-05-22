@@ -1,7 +1,8 @@
 import { Check, PlusCircle, ScanLine } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { Button } from '@/components/theme/Button';
 import { StepperInput } from '@/components/theme/StepperInput';
@@ -376,9 +377,10 @@ export function AddFoodItemToMealModal({
     );
   } else {
     resultsContent = (
-      <ScrollView
+      <KeyboardAwareScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ gap: theme.spacing.gap.md }}
+        bottomOffset={16}
       >
         {foods.map((food) => (
           <FoodResultCard
@@ -411,7 +413,7 @@ export function AddFoodItemToMealModal({
           </View>
         ) : null}
         <View style={{ height: theme.size['100'] }} />
-      </ScrollView>
+      </KeyboardAwareScrollView>
     );
   }
 
@@ -419,6 +421,7 @@ export function AddFoodItemToMealModal({
     <FullScreenModal
       visible={visible}
       onClose={onClose}
+      scrollable={false}
       title={t('food.addFoodItemToMeal.title')}
       headerRight={
         <Text

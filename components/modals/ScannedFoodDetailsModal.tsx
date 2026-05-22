@@ -11,17 +11,11 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 
+import { BarcodeInput } from '@/components/BarcodeInput';
 import { BottomPopUp } from '@/components/BottomPopUp';
+import { useCameraPermissions } from '@/components/CameraView';
 import {
   type FoodDetailsNutritionSectionMode,
   FoodNutritionSectionCard,
@@ -36,7 +30,6 @@ import {
 import { ServingSizeSelector } from '@/components/ServingSizeSelector';
 import { Button } from '@/components/theme/Button';
 import { TextInput } from '@/components/theme/TextInput';
-import { useSmartCamera } from '@/context/SmartCameraContext';
 import type { MicrosData } from '@/database/models';
 import { FoodService } from '@/database/services';
 import {
@@ -77,6 +70,8 @@ import {
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { mapUSDANutritient } from '@/utils/usdaMapper';
 
+import { BarcodeCameraModal } from './BarcodeCameraModal';
+
 type ScannedFoodDetailsModalProps = {
   visible: boolean;
   onClose: () => void;
@@ -115,7 +110,8 @@ export function ScannedFoodDetailsModal({
   );
   const decimalSeparator = useMemo(() => getDecimalSeparator(locale), [locale]);
   const { intuitiveEatingMode, alwaysAllowFoodEditing } = useSettings();
-  const { openCamera } = useSmartCamera();
+  const [permission, requestPermission] = useCameraPermissions();
+  const [isBarcodeScannerVisible, setIsBarcodeScannerVisible] = useState(false);
   const [amount, setAmount] = useState(100);
   const [editedOverrides, setEditedOverrides] = useState<{
     name?: string;
@@ -513,15 +509,19 @@ export function ScannedFoodDetailsModal({
     if (editedOverrides?.description != null) {
       return editedOverrides.description.trim();
     }
+
     if ((effectiveProductDetails as any)?.source === 'musclog') {
       return (effectiveProductDetails as any).product?.description || '';
     }
+
     if ((effectiveProductDetails as any)?.source === 'usda') {
       return (effectiveProductDetails as any).product?.ingredients || '';
     }
+
     if (isSuccessFoodDetailProductState(effectiveProductDetails)) {
       return (effectiveProductDetails.product as any)?.ingredients_text || '';
     }
+
     return '';
   }, [editedOverrides?.description, effectiveProductDetails]);
 
@@ -1037,10 +1037,7 @@ export function ScannedFoodDetailsModal({
         }
       >
         {editForm ? (
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            className="gap-5"
-          >
+          <View className="gap-5">
             <TextInput
               label={t('food.foodDetails.foodName')}
               value={editForm.name}
@@ -1051,39 +1048,15 @@ export function ScannedFoodDetailsModal({
               icon={<Edit3 size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
             />
 
-            <View className="relative">
-              <TextInput
-                label={t('food.foodDetails.barcode')}
-                value={editForm.barcode}
-                onChangeText={(text) =>
-                  setEditForm((prev) => (prev ? { ...prev, barcode: text } : null))
-                }
-                placeholder={t('food.foodDetails.barcodePlaceholder')}
-                keyboardType="numeric"
-              />
-              <Pressable
-                className="absolute right-2 items-center justify-center rounded-lg"
-                style={{
-                  ...(Platform.OS !== 'web'
-                    ? { top: theme.size['14'] / 2 }
-                    : { top: theme.size['18'] / 2 }),
-                  width: theme.size['10'],
-                  height: theme.size['10'],
-                  backgroundColor: theme.colors.accent.primary10,
-                }}
-                onPress={() =>
-                  openCamera({
-                    mode: 'barcode-scan',
-                    hideCameraModePicker: true,
-                    showBarcodeTextSearch: true,
-                    onBarcodeScanned: (data) =>
-                      setEditForm((prev) => (prev ? { ...prev, barcode: data } : null)),
-                  })
-                }
-              >
-                <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
-              </Pressable>
-            </View>
+            <BarcodeInput
+              label={t('food.foodDetails.barcode')}
+              value={editForm.barcode}
+              onChangeText={(text) =>
+                setEditForm((prev) => (prev ? { ...prev, barcode: text } : null))
+              }
+              placeholder={t('food.foodDetails.barcodePlaceholder')}
+              onScanPress={() => setIsBarcodeScannerVisible(true)}
+            />
 
             <TextInput
               label={t('food.foodDetails.description')}
@@ -1192,9 +1165,21 @@ export function ScannedFoodDetailsModal({
                 )
               }
             />
-          </KeyboardAvoidingView>
+          </View>
         ) : null}
       </BottomPopUp>
+      {isBarcodeScannerVisible ? (
+        <BarcodeCameraModal
+          visible={isBarcodeScannerVisible}
+          onClose={() => setIsBarcodeScannerVisible(false)}
+          onBarcodeScanned={(data) =>
+            setEditForm((prev) => (prev ? { ...prev, barcode: data } : null))
+          }
+          showBarcodeTextSearch={true}
+          permissionGranted={permission?.granted ?? null}
+          onRequestPermission={requestPermission}
+        />
+      ) : null}
     </>
   );
 }

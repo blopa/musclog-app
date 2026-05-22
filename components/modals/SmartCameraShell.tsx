@@ -1,0 +1,463 @@
+import { LinearGradient } from 'expo-linear-gradient';
+import type { TFunction } from 'i18next';
+import {
+  FileText,
+  Images,
+  Lightbulb,
+  LightbulbOff,
+  ScanBarcode,
+  Sparkles,
+  X,
+} from 'lucide-react-native';
+import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { SystemBars } from 'react-native-edge-to-edge';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { CameraProcessingIndicator } from '@/components/CameraProcessingIndicator';
+import { useTheme } from '@/hooks/useTheme';
+
+import { FullScreenModal } from './FullScreenModal';
+import type { CameraMode } from './SmartCameraModal';
+
+const SMALL_SCREEN_HEIGHT = 700;
+
+const getCameraInstructionText = (cameraMode: CameraMode, t: TFunction): string => {
+  switch (cameraMode) {
+    case 'ai-meal-photo':
+      return t('food.aiCamera.mealInstruction');
+    case 'ai-label-scan':
+      return t('food.aiCamera.labelInstruction');
+    case 'barcode-scan':
+      return t('food.aiCamera.barcodeAutoInstruction');
+    default:
+      return '';
+  }
+};
+
+type SmartCameraShellProps = {
+  visible: boolean;
+  onClose: () => void;
+  permissionGranted: boolean | null;
+  onRequestPermission: () => void;
+  /** The live camera view (or dark placeholder) rendered in the background. */
+  cameraSlot: ReactNode;
+  /** Shows the processing overlay when true. */
+  isLoading: boolean;
+  cameraMode: CameraMode;
+  flashEnabled: boolean;
+  onFlashToggle: () => void;
+  onGalleryPress: () => void;
+  onShutterPress: () => void;
+  /** Slot for the bottom-right control button (text search, AI context, or empty). */
+  bottomRightControl?: ReactNode;
+  /** When true, renders the three-tab mode picker. */
+  showModePicker?: boolean;
+  isAiEnabled?: boolean;
+  isAIVisionEnabled?: boolean;
+  onModeChange?: (mode: CameraMode) => void;
+};
+
+export function SmartCameraShell({
+  visible,
+  onClose,
+  permissionGranted,
+  onRequestPermission,
+  cameraSlot,
+  isLoading,
+  cameraMode,
+  flashEnabled,
+  onFlashToggle,
+  onGalleryPress,
+  onShutterPress,
+  bottomRightControl,
+  showModePicker = false,
+  isAiEnabled = false,
+  isAIVisionEnabled = false,
+  onModeChange,
+}: SmartCameraShellProps) {
+  const theme = useTheme();
+  const { t } = useTranslation();
+  const { height: screenHeight } = useWindowDimensions();
+  const isSmallScreen = screenHeight < SMALL_SCREEN_HEIGHT;
+  const cameraMaxHeight = screenHeight * (isSmallScreen ? 0.48 : 0.6);
+
+  if (permissionGranted === null) {
+    return (
+      <FullScreenModal
+        visible={visible}
+        onClose={onClose}
+        title={t('camera.title')}
+        scrollable={false}
+        showHeader={false}
+      >
+        <View
+          className="flex-1 items-center justify-center"
+          style={{ backgroundColor: theme.colors.text.black }}
+        >
+          <Text style={{ color: theme.colors.text.white }}>
+            {t('food.aiCamera.requestingPermission')}
+          </Text>
+        </View>
+      </FullScreenModal>
+    );
+  }
+
+  if (!permissionGranted) {
+    return (
+      <FullScreenModal
+        visible={visible}
+        onClose={onClose}
+        title={t('camera.title')}
+        scrollable={false}
+        showHeader={false}
+      >
+        <View
+          className="flex-1 items-center justify-center px-6"
+          style={{ backgroundColor: theme.colors.text.black }}
+        >
+          <Text className="mb-4 text-center text-lg" style={{ color: theme.colors.text.white }}>
+            {t('food.aiCamera.permissionRequired')}
+          </Text>
+          <Pressable
+            onPress={onRequestPermission}
+            className="rounded-xl bg-accent-primary px-6 py-3"
+          >
+            <Text className="font-semibold" style={{ color: theme.colors.text.black }}>
+              {t('food.aiCamera.grantPermission')}
+            </Text>
+          </Pressable>
+        </View>
+      </FullScreenModal>
+    );
+  }
+
+  return (
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={t('camera.title')}
+      scrollable={false}
+      showHeader={false}
+    >
+      <View className="flex-1" style={{ backgroundColor: theme.colors.text.black }}>
+        <SystemBars style="light" />
+        <SafeAreaView className="flex-1" edges={['top']}>
+          {/* Camera Background */}
+          <View className="absolute inset-0">
+            {cameraSlot}
+            {/* Gradient Overlay */}
+            <LinearGradient
+              colors={theme.colors.gradients.cameraOverlay}
+              locations={[0, 0.5, 1]}
+              style={StyleSheet.absoluteFill}
+            />
+          </View>
+
+          {/* Header */}
+          <View className="relative z-20 flex-row items-center justify-between px-4 pb-2 pt-4">
+            <Pressable
+              onPress={onClose}
+              className="h-10 w-10 items-center justify-center rounded-full"
+              style={{
+                backgroundColor: theme.colors.background.darkGray,
+                borderWidth: theme.borderWidth.thin,
+                borderColor: theme.colors.background.white10,
+              }}
+            >
+              <X size={theme.iconSize.lg} color={theme.colors.text.primary} />
+            </Pressable>
+
+            <Pressable
+              onPress={onFlashToggle}
+              className="h-10 w-10 items-center justify-center rounded-full"
+              style={{
+                backgroundColor: theme.colors.background.darkGray,
+                borderWidth: theme.borderWidth.thin,
+                borderColor: theme.colors.background.white10,
+              }}
+            >
+              {flashEnabled ? (
+                <Lightbulb size={theme.iconSize.lg} color={theme.colors.text.primary} />
+              ) : (
+                <LightbulbOff size={theme.iconSize.lg} color={theme.colors.text.primary} />
+              )}
+            </Pressable>
+          </View>
+
+          {/* Loading Overlay */}
+          {isLoading ? (
+            <View
+              className="absolute inset-0 z-30"
+              style={{ backgroundColor: theme.colors.overlay.black90 }}
+            >
+              <CameraProcessingIndicator cameraMode={cameraMode} />
+            </View>
+          ) : null}
+
+          {/* Main Content - Camera Frame */}
+          <View className="relative z-10 flex-1 items-center justify-center px-6">
+            <View
+              className="relative w-full rounded-2xl"
+              style={{
+                aspectRatio: theme.aspectRatio.portrait,
+                maxHeight: cameraMaxHeight,
+                borderWidth: theme.borderWidth.thin,
+                borderColor: theme.colors.background.white20,
+                overflow: 'visible',
+              }}
+            >
+              {/* Corner Markers */}
+              <View
+                className="absolute -left-1 -top-1 h-8 w-8 rounded-tl-lg border-l-2 border-t-2"
+                style={{ borderColor: theme.colors.accent.primary }}
+              />
+              <View
+                className="absolute -right-1 -top-1 h-8 w-8 rounded-tr-lg border-r-2 border-t-2"
+                style={{ borderColor: theme.colors.accent.primary }}
+              />
+              <View
+                className="absolute -bottom-1 -left-1 h-8 w-8 rounded-bl-lg border-b-2 border-l-2"
+                style={{ borderColor: theme.colors.accent.primary }}
+              />
+              <View
+                className="absolute -bottom-1 -right-1 h-8 w-8 rounded-br-lg border-b-2 border-r-2"
+                style={{ borderColor: theme.colors.accent.primary }}
+              />
+
+              {/* Center Line */}
+              <View
+                className="absolute left-0 right-0"
+                style={{
+                  top: '50%',
+                  height: theme.borderWidth.thin,
+                  backgroundColor: theme.colors.accent.primary40,
+                }}
+              />
+            </View>
+
+            {/* Instruction Text */}
+            <Text
+              className="text-center text-sm font-medium drop-shadow-md"
+              style={{ color: theme.colors.overlay.white90, marginTop: isSmallScreen ? 8 : 24 }}
+            >
+              {getCameraInstructionText(cameraMode, t)}
+            </Text>
+          </View>
+
+          {/* Bottom Controls */}
+          <View
+            className="relative z-20 px-4 pt-4"
+            style={{ paddingBottom: isSmallScreen ? 16 : 40 }}
+          >
+            {/* Mode Selector */}
+            {showModePicker && isAiEnabled ? (
+              <View
+                className={isSmallScreen ? 'mb-3 w-full items-center' : 'mb-6 w-full items-center'}
+              >
+                <View
+                  className="w-full max-w-sm flex-row items-stretch justify-between rounded-2xl p-1.5"
+                  style={{
+                    backgroundColor: theme.colors.background.darkGray90,
+                    borderWidth: theme.borderWidth.thin,
+                    borderColor: theme.colors.background.white10,
+                  }}
+                >
+                  {/* Barcode Scan */}
+                  <Pressable
+                    onPress={() => onModeChange?.('barcode-scan')}
+                    className="flex-1 rounded-xl px-2"
+                    style={[
+                      { overflow: 'hidden', paddingVertical: isSmallScreen ? 8 : 10 },
+                      cameraMode === 'barcode-scan' ? { backgroundColor: 'transparent' } : {},
+                    ]}
+                  >
+                    {cameraMode === 'barcode-scan' ? (
+                      <LinearGradient
+                        colors={theme.colors.gradients.cta}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          borderRadius: theme.borderRadius.md,
+                          overflow: 'hidden',
+                        }}
+                      />
+                    ) : null}
+                    <View className="flex-row items-center justify-center gap-1.5">
+                      <ScanBarcode
+                        size={theme.iconSize.md}
+                        color={
+                          cameraMode === 'barcode-scan'
+                            ? theme.colors.text.white
+                            : theme.colors.text.secondary
+                        }
+                      />
+                      {!isSmallScreen ? (
+                        <Text
+                          className="font-bold uppercase tracking-wide"
+                          style={{
+                            fontSize: theme.typography.fontSize.xs,
+                            color:
+                              cameraMode === 'barcode-scan'
+                                ? theme.colors.text.white
+                                : theme.colors.text.secondary,
+                          }}
+                        >
+                          {t('food.aiCamera.modes.barcodeScan')}
+                        </Text>
+                      ) : null}
+                    </View>
+                  </Pressable>
+
+                  {/* AI Label Scan */}
+                  {isAiEnabled ? (
+                    <Pressable
+                      onPress={() => onModeChange?.('ai-label-scan')}
+                      className="flex-1 rounded-xl px-2"
+                      style={[
+                        { overflow: 'hidden', paddingVertical: isSmallScreen ? 8 : 10 },
+                        cameraMode === 'ai-label-scan' ? { backgroundColor: 'transparent' } : {},
+                      ]}
+                    >
+                      {cameraMode === 'ai-label-scan' ? (
+                        <LinearGradient
+                          colors={theme.colors.gradients.cta}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 1 }}
+                          className="absolute inset-0"
+                          style={{
+                            borderRadius: theme.borderRadius.md,
+                            overflow: 'hidden',
+                          }}
+                        />
+                      ) : null}
+                      <View className="flex-row items-center justify-center gap-1.5">
+                        <FileText
+                          size={theme.iconSize.md}
+                          color={
+                            cameraMode === 'ai-label-scan'
+                              ? theme.colors.text.white
+                              : theme.colors.text.secondary
+                          }
+                        />
+                        {!isSmallScreen ? (
+                          <Text
+                            className="font-bold uppercase tracking-wide"
+                            style={{
+                              fontSize: theme.typography.fontSize.xs,
+                              color:
+                                cameraMode === 'ai-label-scan'
+                                  ? theme.colors.text.white
+                                  : theme.colors.text.secondary,
+                            }}
+                          >
+                            {t('food.aiCamera.modes.labelScan')}
+                          </Text>
+                        ) : null}
+                      </View>
+                    </Pressable>
+                  ) : null}
+
+                  {/* AI Meal Photo */}
+                  {isAiEnabled && isAIVisionEnabled ? (
+                    <Pressable
+                      onPress={() => onModeChange?.('ai-meal-photo')}
+                      className="flex-1 rounded-xl px-2"
+                      style={[
+                        { overflow: 'hidden', paddingVertical: isSmallScreen ? 8 : 10 },
+                        cameraMode === 'ai-meal-photo' ? { backgroundColor: 'transparent' } : {},
+                      ]}
+                    >
+                      {cameraMode === 'ai-meal-photo' ? (
+                        <LinearGradient
+                          colors={theme.colors.gradients.cta}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 1 }}
+                          className="absolute inset-0"
+                          style={{
+                            borderRadius: theme.borderRadius.md,
+                            overflow: 'hidden',
+                          }}
+                        />
+                      ) : null}
+                      <View className="flex-row items-center justify-center gap-1.5">
+                        <Sparkles
+                          size={theme.iconSize.md}
+                          color={
+                            cameraMode === 'ai-meal-photo'
+                              ? theme.colors.text.white
+                              : theme.colors.text.secondary
+                          }
+                        />
+                        {!isSmallScreen ? (
+                          <Text
+                            className="font-bold uppercase tracking-wide"
+                            style={{
+                              fontSize: theme.typography.fontSize.xs,
+                              color:
+                                cameraMode === 'ai-meal-photo'
+                                  ? theme.colors.text.white
+                                  : theme.colors.text.secondary,
+                            }}
+                          >
+                            {t('food.aiCamera.modes.mealPhoto')}
+                          </Text>
+                        ) : null}
+                      </View>
+                    </Pressable>
+                  ) : null}
+                </View>
+              </View>
+            ) : null}
+
+            {/* Camera Controls */}
+            <View className="flex-row items-center justify-between px-2">
+              <Pressable
+                className="h-12 w-12 items-center justify-center rounded-lg active:scale-95"
+                style={{
+                  backgroundColor: theme.colors.background.darkGray50,
+                  borderWidth: theme.borderWidth.thin,
+                  borderColor: theme.colors.background.white20,
+                }}
+                onPress={onGalleryPress}
+              >
+                <Images size={theme.iconSize.lg} color={theme.colors.text.primary} />
+              </Pressable>
+
+              {/* Shutter Button */}
+              <Pressable
+                onPress={onShutterPress}
+                className="h-20 w-20 items-center justify-center rounded-full active:scale-95"
+                style={{
+                  borderWidth: theme.borderWidth.thick,
+                  borderColor: theme.colors.text.white,
+                }}
+              >
+                <View
+                  className="absolute inset-0 rounded-full"
+                  style={{
+                    borderWidth: theme.borderWidth.thin,
+                    borderColor: theme.colors.background.black20,
+                  }}
+                />
+                <View
+                  className="h-16 w-16 rounded-full bg-white"
+                  style={{ backgroundColor: theme.colors.text.white }}
+                />
+              </Pressable>
+
+              {/* Bottom-right control slot */}
+              {bottomRightControl ?? <View className="h-12 w-12" />}
+            </View>
+          </View>
+        </SafeAreaView>
+      </View>
+    </FullScreenModal>
+  );
+}

@@ -14,6 +14,7 @@ import { HomeMoodPrompt } from '@/components/cards/HomeMoodPrompt';
 import { HomeSupplementPrompt } from '@/components/cards/HomeSupplementPrompt';
 import { HomeWaterPrompt } from '@/components/cards/HomeWaterPrompt';
 import { useCoach } from '@/components/CoachContext';
+import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { DailySummaryBottomMenu } from '@/components/DailySummaryBottomMenu';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AddFoodModal } from '@/components/modals/AddFoodModal';
@@ -34,9 +35,11 @@ import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '@/components/WorkoutFoodEmptyState';
 import { isStaticExport } from '@/constants/platform';
+import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { type CameraMode, useSmartCamera } from '@/context/SmartCameraContext';
 import { type MealType } from '@/database/models';
 import { NutritionGoalService } from '@/database/services';
+import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
@@ -89,6 +92,7 @@ export default function HomeScreen() {
   const { isAiConfigured, intuitiveEatingMode, nutritionDisplay } = useSettings();
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
+  const { triggerConfetti, showConfetti } = useConfettiTrigger();
 
   const pathname = usePathname();
   const navigationState = useRootNavigationState();
@@ -256,6 +260,7 @@ export default function HomeScreen() {
         const savedGoal = await NutritionGoalService.saveGoals(nutritionGoalsToInput(goals));
         await NutritionGoalService.regenerateCheckins(savedGoal.id);
         setIsNutritionGoalsVisible(false);
+        triggerConfetti(ConfettiActivity.FIRST_MANUAL_NUTRITION_GOAL);
       } catch (error) {
         await handleError(error, 'index.saveNutritionGoals', {
           snackbarMessage: t('errors.somethingWentWrong'),
@@ -317,8 +322,14 @@ export default function HomeScreen() {
       return;
     }
 
-    runEntryOnboardingRedirect(router, 'app.index.web', '/app');
-  }, [navigationState?.key, router]);
+    runEntryOnboardingRedirect(router, 'app.index.web', '/app').then((redirected) => {
+      // redirected === false means onboarding is confirmed complete (not an error-driven redirect).
+      // triggerConfetti is deduplication-safe: it's a no-op once the activity is already celebrated.
+      if (redirected === false) {
+        triggerConfetti(ConfettiActivity.ONBOARDING_CONFIRMED);
+      }
+    });
+  }, [navigationState?.key, router, triggerConfetti]);
 
   // Handle widget deep link when app is already running (warm start)
   useEffect(() => {
@@ -337,6 +348,7 @@ export default function HomeScreen() {
 
   return (
     <MasterLayout>
+      {showConfetti ? <ConfettiOverlay /> : null}
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View className="flex-row items-center justify-between px-4 py-6">
@@ -764,6 +776,7 @@ export default function HomeScreen() {
         initialTab={foodSearchInitialTab}
         onCreatePress={handleFoodSearchCreatePress}
         onBarcodeScanPress={handleFoodSearchBarcodePress}
+        onFirstNutritionLog={() => triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG)}
         isAiEnabled={isAiConfigured}
       />
 

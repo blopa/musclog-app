@@ -10,13 +10,15 @@ import {
   Pencil,
   PlusCircle,
   RefreshCcwDot,
-  ScanLine,
 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
+import { KeyboardAwareScrollViewRef } from 'react-native-keyboard-controller';
 
+import { BarcodeInput } from '@/components/BarcodeInput';
 import { BottomPopUp } from '@/components/BottomPopUp';
+import { useCameraPermissions } from '@/components/CameraView';
 import {
   type FoodDetailsNutritionSectionMode,
   FoodNutritionSectionCard,
@@ -35,8 +37,8 @@ import { Button } from '@/components/theme/Button';
 import { StepperInput } from '@/components/theme/StepperInput';
 import { TextInput } from '@/components/theme/TextInput';
 import type { Units } from '@/constants/settings';
-import { useSmartCamera } from '@/context/SmartCameraContext';
 import { useSnackbar } from '@/context/SnackbarContext';
+import { database } from '@/database';
 import type { DecryptedNutritionLogSnapshot, MealType, MicrosData } from '@/database/models';
 import Food from '@/database/models/Food';
 import FoodPortion from '@/database/models/FoodPortion';
@@ -98,6 +100,7 @@ import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { getMassUnitLabel } from '@/utils/unitConversion';
 import { mapUSDAFoodToUnified, mapUSDANutritient } from '@/utils/usdaMapper';
 
+import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 import { FoodNotFoundModal } from './FoodNotFoundModal';
@@ -197,6 +200,8 @@ type FoodDetailsModalProps = {
   onBarcodeLookupComplete?: () => void;
   /** Called when food was successfully tracked (e.g. so parent can close camera modal). */
   onFoodTracked?: () => void;
+  /** Called before closing when a nutrition log is tracked for the first time, so the parent can trigger confetti. */
+  onNutritionLogTracked?: () => void;
   /** When false, the "Try AI Camera" option in FoodNotFoundModal is hidden. Defaults to true. */
   isAiEnabled?: boolean;
   /** When true, show an edit control so the user can correct name, barcode, and macros (e.g. for AI-sourced data). */
@@ -219,6 +224,7 @@ export function FoodMealTrackingDetailsModal({
   foodLog,
   onBarcodeLookupComplete,
   onFoodTracked,
+  onNutritionLogTracked,
   isAiEnabled = true,
   canEdit = false,
 }: FoodDetailsModalProps) {
@@ -231,8 +237,9 @@ export function FoodMealTrackingDetailsModal({
   const decimalSeparator = useMemo(() => getDecimalSeparator(locale), [locale]);
   const { showSnackbar } = useSnackbar();
   const { units, alwaysAllowFoodEditing, intuitiveEatingMode } = useSettings();
-  const { openCamera } = useSmartCamera();
-  const scrollViewRef = useRef<ScrollView>(null);
+  const [permission, requestPermission] = useCameraPermissions();
+  const [isBarcodeScannerVisible, setIsBarcodeScannerVisible] = useState(false);
+  const scrollViewRef = useRef<KeyboardAwareScrollViewRef>(null);
 
   // Infer meal type from current time of day when no initialMealType is passed
   const inferMealTypeFromTime = (): MealType => {
@@ -1714,6 +1721,7 @@ export function FoodMealTrackingDetailsModal({
     { id: 'other', label: t('food.meals.other') },
   ];
 
+  // TODO: move this and other helper functions to it's own hook
   const handleAddFood = useCallback(async () => {
     setIsAddingFood(true);
     // Small delay to allow React to render the loading state before closing
@@ -1756,6 +1764,7 @@ export function FoodMealTrackingDetailsModal({
           // Call callback if provided
           onLogMeal?.({ meal: selectedMeal, date: selectedDate });
 
+          onNutritionLogTracked?.();
           onClose();
           onFoodTracked?.();
 
@@ -1874,10 +1883,23 @@ export function FoodMealTrackingDetailsModal({
           pendingFoodUpdates.calories = nutritionalData.calories;
         }
 
-        if (Object.keys(pendingFoodUpdates).length > 0) {
-          await foodData!.update((record: any) => {
-            for (const [key, value] of Object.entries(pendingFoodUpdates)) {
-              record[key] = value;
+        const shouldPersistFoodUpdates =
+          Object.keys(pendingFoodUpdates).length > 0 || (isFavorite && !foodData!.isFavorite);
+
+        if (shouldPersistFoodUpdates) {
+          await database.write(async () => {
+            if (Object.keys(pendingFoodUpdates).length > 0) {
+              await foodData!.update((record: any) => {
+                for (const [key, value] of Object.entries(pendingFoodUpdates)) {
+                  record[key] = value;
+                }
+              });
+            }
+
+            if (isFavorite && !foodData!.isFavorite) {
+              await foodData!.update((record: any) => {
+                record.isFavorite = true;
+              });
             }
           });
         }
@@ -1889,20 +1911,8 @@ export function FoodMealTrackingDetailsModal({
           selectedMeal,
           servingSize
         );
-        let foodUpdatePromise = null;
 
-        // Update favorite status if needed
-        if (isFavorite && !foodData!.isFavorite) {
-          foodUpdatePromise = foodData!.update((record: any) => {
-            record.isFavorite = true;
-          });
-        }
-
-        await Promise.all([
-          logFoodPromise,
-          foodUpdatePromise,
-          new Promise((resolve) => setTimeout(resolve, 100)),
-        ]);
+        await Promise.all([logFoodPromise, new Promise((resolve) => setTimeout(resolve, 100))]);
 
         // Call the original callback if provided
         onAddFood?.({
@@ -1911,6 +1921,7 @@ export function FoodMealTrackingDetailsModal({
           date: selectedDate,
         });
 
+        onNutritionLogTracked?.();
         onClose();
         onFoodTracked?.();
 
@@ -2098,6 +2109,7 @@ export function FoodMealTrackingDetailsModal({
         date: selectedDate,
       });
 
+      onNutritionLogTracked?.();
       onClose();
       onFoodTracked?.();
 
@@ -2371,395 +2383,378 @@ export function FoodMealTrackingDetailsModal({
   const actionLabel = getActionLabel();
 
   return (
-    <FullScreenModal
-      visible={isFoodDetailsModalVisible}
-      onClose={onClose}
-      title={meal ? t('food.foodDetails.mealTitle') : t('food.foodDetails.foodTitle')}
-      scrollable={true}
-      scrollViewRef={scrollViewRef}
-      headerRight={
-        mode !== 'meal' ? (
-          <Pressable
-            onPress={() => setIsFavorite(!isFavorite)}
-            className="flex-row items-center gap-1"
-          >
-            <BookmarkPlus
-              size={theme.iconSize.sm}
-              color={theme.colors.accent.primary}
-              fill={isFavorite ? theme.colors.accent.primary : 'none'}
+    <>
+      <FullScreenModal
+        visible={isFoodDetailsModalVisible}
+        onClose={onClose}
+        title={meal ? t('food.foodDetails.mealTitle') : t('food.foodDetails.foodTitle')}
+        scrollable={true}
+        scrollViewRef={scrollViewRef}
+        headerRight={
+          mode !== 'meal' ? (
+            <Pressable
+              onPress={() => setIsFavorite(!isFavorite)}
+              className="flex-row items-center gap-1"
+            >
+              <BookmarkPlus
+                size={theme.iconSize.sm}
+                color={theme.colors.accent.primary}
+                fill={isFavorite ? theme.colors.accent.primary : 'none'}
+              />
+              <Text className="text-sm font-medium text-accent-primary">
+                {t('food.foodDetails.addFavorite')}
+              </Text>
+            </Pressable>
+          ) : (
+            <Pressable
+              onPress={() => setIsFavorite(!isFavorite)}
+              className="flex-row items-center gap-1"
+            >
+              <BookmarkPlus
+                size={theme.iconSize.sm}
+                color={theme.colors.accent.primary}
+                fill={isFavorite ? theme.colors.accent.primary : 'none'}
+              />
+              <Text className="text-sm font-medium text-accent-primary">
+                {t('food.foodDetails.addFavorite')}
+              </Text>
+            </Pressable>
+          )
+        }
+        footer={
+          <View className="pb-6">
+            <Button
+              label={actionLabel}
+              icon={foodLog ? RefreshCcwDot : PlusCircle}
+              variant="gradientCta"
+              size="sm"
+              width="full"
+              onPress={handleAddFood}
+              disabled={
+                isAddingFood ||
+                (mode === 'meal' && mealAmountGrams < (resolvedMealServingMode ? 0.5 : 1)) ||
+                (isLoadingDetails && (mode === 'externalProduct' || mode === null)) ||
+                (isLoadingMealNutrients && mode === 'meal')
+              }
+              loading={isAddingFood}
             />
-            <Text className="text-sm font-medium text-accent-primary">
-              {t('food.foodDetails.addFavorite')}
-            </Text>
-          </Pressable>
-        ) : (
-          <Pressable
-            onPress={() => setIsFavorite(!isFavorite)}
-            className="flex-row items-center gap-1"
-          >
-            <BookmarkPlus
-              size={theme.iconSize.sm}
-              color={theme.colors.accent.primary}
-              fill={isFavorite ? theme.colors.accent.primary : 'none'}
-            />
-            <Text className="text-sm font-medium text-accent-primary">
-              {t('food.foodDetails.addFavorite')}
-            </Text>
-          </Pressable>
-        )
-      }
-      footer={
-        <View className="pb-6">
-          <Button
-            label={actionLabel}
-            icon={foodLog ? RefreshCcwDot : PlusCircle}
-            variant="gradientCta"
-            size="sm"
-            width="full"
-            onPress={handleAddFood}
-            disabled={
-              isAddingFood ||
-              (mode === 'meal' && mealAmountGrams < (resolvedMealServingMode ? 0.5 : 1)) ||
-              (isLoadingDetails && (mode === 'externalProduct' || mode === null)) ||
-              (isLoadingMealNutrients && mode === 'meal')
+          </View>
+        }
+      >
+        <View className="flex-1 px-4 pb-6">
+          <FoodNutritionSectionCard
+            nutritionQuality={nutritionQuality}
+            food={scaledFood}
+            canEdit={localCanEdit || hasNoNutrition}
+            mode={mode}
+            showIncompleteWarning={hasNoNutrition}
+            onEditPress={handleOpenEditPopUp}
+            nutritionalData={nutritionalData}
+            servingSize={servingSize}
+            servingBasis={resolvedFoodServingMode ? 'per_serving' : 'per_100g'}
+            isLoadingDetails={isLoadingDetails}
+            onTryAnotherSource={
+              hasAllZeroMacros && !alternateSourceLookupFailed ? handleTryAnotherSource : undefined
             }
-            loading={isAddingFood}
+            isRefetchingSource={isRefetchingSource}
+            alternateSourceNotFound={alternateSourceLookupFailed ? hasAllZeroMacros : false}
+            caloriesTooLowWarning={
+              showCaloriesTooLowWarning
+                ? {
+                    inferredCalories: roundToDecimalPlaces(inferredCaloriesPer100g, 2),
+                    onAccept: handleAcceptInferredCalories,
+                  }
+                : undefined
+            }
+            intuitiveMode={intuitiveEatingMode}
+            ingredients={mode === 'meal' ? mealIngredientLabels : undefined}
           />
-        </View>
-      }
-    >
-      <View className="flex-1 px-4 pb-6">
-        <FoodNutritionSectionCard
-          nutritionQuality={nutritionQuality}
-          food={scaledFood}
-          canEdit={localCanEdit || hasNoNutrition}
-          mode={mode}
-          showIncompleteWarning={hasNoNutrition}
-          onEditPress={handleOpenEditPopUp}
-          nutritionalData={nutritionalData}
-          servingSize={servingSize}
-          servingBasis={resolvedFoodServingMode ? 'per_serving' : 'per_100g'}
-          isLoadingDetails={isLoadingDetails}
-          onTryAnotherSource={
-            hasAllZeroMacros && !alternateSourceLookupFailed ? handleTryAnotherSource : undefined
-          }
-          isRefetchingSource={isRefetchingSource}
-          alternateSourceNotFound={alternateSourceLookupFailed ? hasAllZeroMacros : false}
-          caloriesTooLowWarning={
-            showCaloriesTooLowWarning
-              ? {
-                  inferredCalories: roundToDecimalPlaces(inferredCaloriesPer100g, 2),
-                  onAccept: handleAcceptInferredCalories,
-                }
-              : undefined
-          }
-          intuitiveMode={intuitiveEatingMode}
-          ingredients={mode === 'meal' ? mealIngredientLabels : undefined}
-        />
 
-        {/* Form Sections */}
-        <View className="mt-6 gap-6">
-          {/* Same serving size input for both food and meal (editable, same UX) */}
-          {mode !== 'meal' ? (
-            resolvedFoodServingMode ? (
+          {/* Form Sections */}
+          <View className="mt-6 gap-6">
+            {/* Same serving size input for both food and meal (editable, same UX) */}
+            {mode !== 'meal' ? (
+              resolvedFoodServingMode ? (
+                <View className="rounded-2xl border border-border-light bg-bg-card p-4">
+                  <StepperInput
+                    label={t('food.foodDetails.servings')}
+                    value={servingSize}
+                    step={0.5}
+                    maxFractionDigits={2}
+                    onIncrement={() => setServingSize((prev) => prev + 0.5)}
+                    onDecrement={() => setServingSize((prev) => Math.max(0.5, prev - 0.5))}
+                    onChangeValue={setServingSize}
+                    unit={servingUnitLabel || t('food.foodDetails.serving')}
+                  />
+                </View>
+              ) : (
+                <ServingSizeSelector
+                  value={servingSize}
+                  onChange={setServingSize}
+                  food={food || localFood || undefined}
+                  productServingSize={parsedProductServingSize}
+                  productMeasures={parsedProductMeasures}
+                  showPortionSelector={Boolean(food || localFood)}
+                />
+              )
+            ) : resolvedMealServingMode ? (
               <View className="rounded-2xl border border-border-light bg-bg-card p-4">
                 <StepperInput
                   label={t('food.foodDetails.servings')}
-                  value={servingSize}
+                  value={mealAmountGrams}
                   step={0.5}
                   maxFractionDigits={2}
-                  onIncrement={() => setServingSize((prev) => prev + 0.5)}
-                  onDecrement={() => setServingSize((prev) => Math.max(0.5, prev - 0.5))}
-                  onChangeValue={setServingSize}
-                  onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+                  onIncrement={() => setMealAmountGrams((prev) => prev + 0.5)}
+                  onDecrement={() => setMealAmountGrams((prev) => Math.max(0.5, prev - 0.5))}
+                  onChangeValue={setMealAmountGrams}
                   unit={servingUnitLabel || t('food.foodDetails.serving')}
                 />
               </View>
             ) : (
               <ServingSizeSelector
-                value={servingSize}
-                onChange={setServingSize}
-                food={food || localFood || undefined}
-                onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
-                productServingSize={parsedProductServingSize}
-                productMeasures={parsedProductMeasures}
-                showPortionSelector={Boolean(food || localFood)}
-              />
-            )
-          ) : resolvedMealServingMode ? (
-            <View className="rounded-2xl border border-border-light bg-bg-card p-4">
-              <StepperInput
-                label={t('food.foodDetails.servings')}
                 value={mealAmountGrams}
-                step={0.5}
-                maxFractionDigits={2}
-                onIncrement={() => setMealAmountGrams((prev) => prev + 0.5)}
-                onDecrement={() => setMealAmountGrams((prev) => Math.max(0.5, prev - 0.5))}
-                onChangeValue={setMealAmountGrams}
-                onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
-                unit={servingUnitLabel || t('food.foodDetails.serving')}
+                onChange={(v) => setMealAmountGrams(Math.round(v))}
+                quickSizes={
+                  totalMealGrams > 0
+                    ? [
+                        { label: '½×', value: Math.round(totalMealGrams * 0.5) },
+                        { label: '1×', value: totalMealGrams },
+                        { label: '1½×', value: Math.round(totalMealGrams * 1.5) },
+                        { label: '2×', value: totalMealGrams * 2 },
+                      ]
+                    : []
+                }
+              />
+            )}
+
+            {/* Meal Selection */}
+            <View>
+              <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-text-secondary">
+                {t('food.foodDetails.meal')}
+              </Text>
+              <FilterTabs
+                tabs={mealTabs}
+                activeTab={selectedMeal}
+                onTabChange={(tabId) => setSelectedMeal(tabId as MealType)}
+                showContainer={false}
+                scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}
               />
             </View>
-          ) : (
-            <ServingSizeSelector
-              value={mealAmountGrams}
-              onChange={(v) => setMealAmountGrams(Math.round(v))}
-              onFocus={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
-              quickSizes={
-                totalMealGrams > 0
-                  ? [
-                      { label: '½×', value: Math.round(totalMealGrams * 0.5) },
-                      { label: '1×', value: totalMealGrams },
-                      { label: '1½×', value: Math.round(totalMealGrams * 1.5) },
-                      { label: '2×', value: totalMealGrams * 2 },
-                    ]
-                  : []
-              }
-            />
-          )}
 
-          {/* Meal Selection */}
-          <View>
-            <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-text-secondary">
-              {t('food.foodDetails.meal')}
-            </Text>
-            <FilterTabs
-              tabs={mealTabs}
-              activeTab={selectedMeal}
-              onTabChange={(tabId) => setSelectedMeal(tabId as MealType)}
-              showContainer={false}
-              scrollViewContentContainerStyle={{ paddingHorizontal: theme.spacing.padding.zero }}
+            <DatePickerInput
+              selectedDate={selectedDate}
+              onPress={() => setIsDatePickerVisible(true)}
+              variant="default"
+            />
+
+            <TimePickerInput
+              selectedTime={selectedTime}
+              onPress={() => setIsTimePickerVisible(true)}
+              variant="default"
             />
           </View>
-
-          <DatePickerInput
-            selectedDate={selectedDate}
-            onPress={() => setIsDatePickerVisible(true)}
-            variant="default"
-          />
-
-          <TimePickerInput
-            selectedTime={selectedTime}
-            onPress={() => setIsTimePickerVisible(true)}
-            variant="default"
-          />
         </View>
-      </View>
 
-      {/* footer is handled by FullScreenModal */}
+        {/* footer is handled by FullScreenModal */}
 
-      {/* Date Picker Modal */}
-      {isDatePickerVisible ? (
-        <DatePickerModal
-          visible={isDatePickerVisible}
-          onClose={() => setIsDatePickerVisible(false)}
-          selectedDate={selectedDate}
-          onDateSelect={(date) => {
-            setSelectedDate(localCalendarDayDate(date));
-            setIsDatePickerVisible(false);
+        {/* Date Picker Modal */}
+        {isDatePickerVisible ? (
+          <DatePickerModal
+            visible={isDatePickerVisible}
+            onClose={() => setIsDatePickerVisible(false)}
+            selectedDate={selectedDate}
+            onDateSelect={(date) => {
+              setSelectedDate(localCalendarDayDate(date));
+              setIsDatePickerVisible(false);
+            }}
+          />
+        ) : null}
+
+        <TimePickerModal
+          visible={isTimePickerVisible}
+          onClose={() => setIsTimePickerVisible(false)}
+          selectedTime={selectedTime}
+          title={t('timePicker.selectTime')}
+          onTimeSelect={(time) => {
+            setSelectedTime(time);
+            setIsTimePristine(false);
           }}
         />
-      ) : null}
-
-      <TimePickerModal
-        visible={isTimePickerVisible}
-        onClose={() => setIsTimePickerVisible(false)}
-        selectedTime={selectedTime}
-        title={t('timePicker.selectTime')}
-        onTimeSelect={(time) => {
-          setSelectedTime(time);
-          setIsTimePristine(false);
-        }}
-      />
-      <BottomPopUp
-        visible={isEditPopUpVisible ? editForm !== null : false}
-        onClose={() => {
-          setIsEditPopUpVisible(false);
-          setEditForm(null);
-          setEditMicroOpen(false);
-        }}
-        title={t('food.foodDetails.editFoodInfo')}
-        subtitle={t('food.foodDetails.editFoodInfoSubtitle')}
-        headerIcon={
-          <View
-            className="h-10 w-10 items-center justify-center rounded-full"
-            style={{ backgroundColor: theme.colors.status.purple20 }}
-          >
-            <Edit3 size={theme.iconSize.md} color={theme.colors.accent.primary} />
-          </View>
-        }
-        footer={
-          <Button
-            label={t('common.save')}
-            variant="gradientCta"
-            size="sm"
-            width="full"
-            onPress={handleSaveEditPopUp}
-          />
-        }
-      >
-        {editForm ? (
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-            className="gap-5"
-          >
-            {/* Food Name - same style as CreateCustomFoodModal */}
-            <TextInput
-              label={t('food.foodDetails.foodName')}
-              value={editForm.name}
-              onChangeText={(text) =>
-                setEditForm((prev) => (prev ? { ...prev, name: text } : null))
-              }
-              placeholder={t('food.foodDetails.foodNamePlaceholder')}
-              icon={<Pencil size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
+        <BottomPopUp
+          visible={isEditPopUpVisible ? editForm !== null : false}
+          onClose={() => {
+            setIsEditPopUpVisible(false);
+            setEditForm(null);
+            setEditMicroOpen(false);
+          }}
+          title={t('food.foodDetails.editFoodInfo')}
+          subtitle={t('food.foodDetails.editFoodInfoSubtitle')}
+          headerIcon={
+            <View
+              className="h-10 w-10 items-center justify-center rounded-full"
+              style={{ backgroundColor: theme.colors.status.purple20 }}
+            >
+              <Edit3 size={theme.iconSize.md} color={theme.colors.accent.primary} />
+            </View>
+          }
+          footer={
+            <Button
+              label={t('common.save')}
+              variant="gradientCta"
+              size="sm"
+              width="full"
+              onPress={handleSaveEditPopUp}
             />
-
-            {/* Barcode - same layout as CreateCustomFoodModal with scan icon */}
-            <View className="relative">
+          }
+        >
+          {editForm ? (
+            <View className="gap-5">
+              {/* Food Name - same style as CreateCustomFoodModal */}
               <TextInput
+                label={t('food.foodDetails.foodName')}
+                value={editForm.name}
+                onChangeText={(text) =>
+                  setEditForm((prev) => (prev ? { ...prev, name: text } : null))
+                }
+                placeholder={t('food.foodDetails.foodNamePlaceholder')}
+                icon={<Pencil size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
+              />
+
+              {/* Barcode - same layout as CreateCustomFoodModal with scan icon */}
+              <BarcodeInput
                 label={t('food.foodDetails.barcode')}
                 value={editForm.barcode}
                 onChangeText={(text) =>
                   setEditForm((prev) => (prev ? { ...prev, barcode: text } : null))
                 }
                 placeholder={t('food.foodDetails.barcodePlaceholder')}
-                keyboardType="numeric"
+                onScanPress={() => setIsBarcodeScannerVisible(true)}
               />
-              <Pressable
-                className="absolute right-2 items-center justify-center rounded-lg"
-                style={{
-                  ...(Platform.OS !== 'web'
-                    ? { top: theme.size['14'] / 2 }
-                    : { top: theme.size['18'] / 2 }),
-                  width: theme.size['10'],
-                  height: theme.size['10'],
-                  backgroundColor: theme.colors.accent.primary10,
-                }}
-                onPress={() =>
-                  openCamera({
-                    mode: 'barcode-scan',
-                    hideCameraModePicker: true,
-                    showBarcodeTextSearch: true,
-                    onBarcodeScanned: (data) =>
-                      setEditForm((prev) => (prev ? { ...prev, barcode: data } : null)),
-                  })
+
+              {/* Description */}
+              <TextInput
+                label={t('food.foodDetails.description')}
+                value={editForm.description}
+                onChangeText={(text) =>
+                  setEditForm((prev) => (prev ? { ...prev, description: text } : null))
                 }
-              >
-                <ScanLine size={theme.iconSize.md} color={theme.colors.accent.primary} />
-              </Pressable>
-            </View>
+                placeholder={t('food.foodDetails.descriptionPlaceholder')}
+                icon={<AlignLeft size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
+                multiline
+              />
 
-            {/* Description */}
-            <TextInput
-              label={t('food.foodDetails.description')}
-              value={editForm.description}
-              onChangeText={(text) =>
-                setEditForm((prev) => (prev ? { ...prev, description: text } : null))
-              }
-              placeholder={t('food.foodDetails.descriptionPlaceholder')}
-              icon={<AlignLeft size={theme.iconSize.md} color={theme.colors.text.tertiary} />}
-              multiline
-            />
+              {/* Macronutrients - card layout like CreateCustomFoodModal */}
+              <View className="flex-row items-center gap-2">
+                <BarChart size={theme.iconSize.lg} color={theme.colors.accent.primary} />
+                <Text className="text-xl font-bold text-text-primary">
+                  {t('food.newCustomFood.macronutrients')}
+                </Text>
+              </View>
 
-            {/* Macronutrients - card layout like CreateCustomFoodModal */}
-            <View className="flex-row items-center gap-2">
-              <BarChart size={theme.iconSize.lg} color={theme.colors.accent.primary} />
-              <Text className="text-xl font-bold text-text-primary">
-                {t('food.newCustomFood.macronutrients')}
+              <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
+                {t('food.foodDetails.macrosPer100g')}
               </Text>
+
+              <MacroInput
+                label={t('food.newCustomFood.calories')}
+                value={editForm.calories}
+                onChange={handleEditFormNumericChange('calories')}
+                allowDecimals
+                topRightElement={
+                  <View
+                    className="rounded-full px-2"
+                    style={{
+                      paddingVertical: theme.spacing.padding.xsHalf,
+                      backgroundColor: theme.colors.accent.primary10,
+                    }}
+                  >
+                    <Text className="text-xs font-medium text-accent-primary">
+                      {t('food.common.kcal')}
+                    </Text>
+                  </View>
+                }
+                variant="default"
+                size="full"
+              />
+
+              <View className="flex-row flex-wrap gap-4">
+                <MacroInput
+                  label={t('food.newCustomFood.protein')}
+                  value={editForm.protein}
+                  onChange={handleEditFormNumericChange('protein')}
+                  allowDecimals
+                  topRightElement={
+                    <Dumbbell size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
+                  }
+                  variant="success"
+                  size="half"
+                />
+                <MacroInput
+                  label={t('food.newCustomFood.carbs')}
+                  value={editForm.carbs}
+                  onChange={handleEditFormNumericChange('carbs')}
+                  allowDecimals
+                  topRightElement={
+                    <Cookie size={theme.iconSize.sm} color={theme.colors.status.amber} />
+                  }
+                  variant="warning"
+                  size="half"
+                />
+                <MacroInput
+                  label={t('food.newCustomFood.fat')}
+                  value={editForm.fat}
+                  onChange={handleEditFormNumericChange('fat')}
+                  allowDecimals
+                  topRightElement={
+                    <Droplet size={theme.iconSize.sm} color={theme.colors.status.red400} />
+                  }
+                  variant="error"
+                  size="half"
+                />
+                <MacroInput
+                  label={t('food.macros.fiber')}
+                  value={editForm.fiber}
+                  onChange={handleEditFormNumericChange('fiber')}
+                  allowDecimals
+                  topRightElement={
+                    <Leaf size={theme.iconSize.sm} color={theme.colors.status.emerald} />
+                  }
+                  variant="success"
+                  size="half"
+                />
+              </View>
+              <MicronutrientsExpandableSection
+                microOpen={editMicroOpen}
+                onToggleMicro={() => setEditMicroOpen((o) => !o)}
+                values={editForm.micronutrients}
+                decimalSeparator={decimalSeparator}
+                onMicronutrientChange={(key, value) =>
+                  setEditForm((prev) =>
+                    prev
+                      ? {
+                          ...prev,
+                          micronutrients: { ...prev.micronutrients, [key]: value },
+                        }
+                      : null
+                  )
+                }
+              />
             </View>
-
-            <Text className="text-xs font-bold uppercase tracking-widest text-text-secondary">
-              {t('food.foodDetails.macrosPer100g')}
-            </Text>
-
-            <MacroInput
-              label={t('food.newCustomFood.calories')}
-              value={editForm.calories}
-              onChange={handleEditFormNumericChange('calories')}
-              allowDecimals
-              topRightElement={
-                <View
-                  className="rounded-full px-2"
-                  style={{
-                    paddingVertical: theme.spacing.padding.xsHalf,
-                    backgroundColor: theme.colors.accent.primary10,
-                  }}
-                >
-                  <Text className="text-xs font-medium text-accent-primary">
-                    {t('food.common.kcal')}
-                  </Text>
-                </View>
-              }
-              variant="default"
-              size="full"
-            />
-
-            <View className="flex-row flex-wrap gap-4">
-              <MacroInput
-                label={t('food.newCustomFood.protein')}
-                value={editForm.protein}
-                onChange={handleEditFormNumericChange('protein')}
-                allowDecimals
-                topRightElement={
-                  <Dumbbell size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
-                }
-                variant="success"
-                size="half"
-              />
-              <MacroInput
-                label={t('food.newCustomFood.carbs')}
-                value={editForm.carbs}
-                onChange={handleEditFormNumericChange('carbs')}
-                allowDecimals
-                topRightElement={
-                  <Cookie size={theme.iconSize.sm} color={theme.colors.status.amber} />
-                }
-                variant="warning"
-                size="half"
-              />
-              <MacroInput
-                label={t('food.newCustomFood.fat')}
-                value={editForm.fat}
-                onChange={handleEditFormNumericChange('fat')}
-                allowDecimals
-                topRightElement={
-                  <Droplet size={theme.iconSize.sm} color={theme.colors.status.red400} />
-                }
-                variant="error"
-                size="half"
-              />
-              <MacroInput
-                label={t('food.macros.fiber')}
-                value={editForm.fiber}
-                onChange={handleEditFormNumericChange('fiber')}
-                allowDecimals
-                topRightElement={
-                  <Leaf size={theme.iconSize.sm} color={theme.colors.status.emerald} />
-                }
-                variant="success"
-                size="half"
-              />
-            </View>
-            <MicronutrientsExpandableSection
-              microOpen={editMicroOpen}
-              onToggleMicro={() => setEditMicroOpen((o) => !o)}
-              values={editForm.micronutrients}
-              decimalSeparator={decimalSeparator}
-              onMicronutrientChange={(key, value) =>
-                setEditForm((prev) =>
-                  prev
-                    ? {
-                        ...prev,
-                        micronutrients: { ...prev.micronutrients, [key]: value },
-                      }
-                    : null
-                )
-              }
-            />
-          </KeyboardAvoidingView>
-        ) : null}
-      </BottomPopUp>
-    </FullScreenModal>
+          ) : null}
+        </BottomPopUp>
+      </FullScreenModal>
+      {isBarcodeScannerVisible ? (
+        <BarcodeCameraModal
+          visible={isBarcodeScannerVisible}
+          onClose={() => setIsBarcodeScannerVisible(false)}
+          onBarcodeScanned={(data) =>
+            setEditForm((prev) => (prev ? { ...prev, barcode: data } : null))
+          }
+          showBarcodeTextSearch={true}
+          permissionGranted={permission?.granted ?? null}
+          onRequestPermission={requestPermission}
+        />
+      ) : null}
+    </>
   );
 }

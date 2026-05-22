@@ -7,6 +7,11 @@ import {
   ONBOARDING_VERSION,
   TEMP_NUTRITION_PLAN,
 } from '@/constants/misc';
+import {
+  CONFETTI_ALL_DONE_SENTINEL,
+  CONFETTI_INTERACTIONS_KEY,
+  ConfettiActivity,
+} from '@/context/ConfettiInteractionsContext';
 
 export interface OnboardingStatus {
   completed: boolean;
@@ -55,6 +60,24 @@ export const setOnboardingCompleted = async (
   ]);
 
   await AsyncStorage.multiRemove([ONBOARDING_CURRENT_STEP, TEMP_NUTRITION_PLAN]);
+
+  // Remove ONBOARDING_COMPLETED from pending confetti activities (new subtractive model).
+  try {
+    const stored = await AsyncStorage.getItem(CONFETTI_INTERACTIONS_KEY);
+    if (stored !== null) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed)) {
+        const pending = parsed.filter((a: string) => a !== ConfettiActivity.ONBOARDING_COMPLETED);
+        if (pending.length === 0) {
+          await AsyncStorage.setItem(CONFETTI_INTERACTIONS_KEY, CONFETTI_ALL_DONE_SENTINEL);
+        } else {
+          await AsyncStorage.setItem(CONFETTI_INTERACTIONS_KEY, JSON.stringify(pending));
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to mark onboarding confetti as completed', e);
+  }
 };
 
 /**

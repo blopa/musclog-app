@@ -1,10 +1,15 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowLeft } from 'lucide-react-native';
 import { ReactNode, RefObject, useRef } from 'react';
-import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { Platform, Pressable, Text, View } from 'react-native';
+import {
+  KeyboardAwareScrollView,
+  KeyboardAwareScrollViewRef,
+} from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
+import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { SwipeToReturnWrapper } from '@/components/SwipeToReturnWrapper';
 import { Modal } from '@/components/theme/Modal';
 import { useTheme } from '@/hooks/useTheme';
@@ -23,7 +28,8 @@ type FullScreenModalProps = {
   withGradient?: boolean;
   showHeader?: boolean;
   closable?: boolean;
-  scrollViewRef?: RefObject<ScrollView | null>;
+  scrollViewRef?: RefObject<KeyboardAwareScrollViewRef | null>;
+  showConfetti?: boolean;
 };
 
 export function FullScreenModal({
@@ -40,6 +46,7 @@ export function FullScreenModal({
   showHeader = true,
   closable = true,
   scrollViewRef,
+  showConfetti = false,
 }: FullScreenModalProps) {
   const theme = useTheme();
   const webModalStyle = useWebModalLayerStyle({ variant: 'fullscreen' });
@@ -130,7 +137,7 @@ export function FullScreenModal({
           {/* Content area */}
           <View className="flex-1" pointerEvents="box-none">
             {scrollable ? (
-              <ScrollView
+              <KeyboardAwareScrollView
                 ref={scrollViewRef}
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
@@ -138,9 +145,10 @@ export function FullScreenModal({
                 contentContainerStyle={{
                   paddingBottom: footer ? theme.spacing.padding['4xl'] : theme.spacing.padding.lg,
                 }}
+                bottomOffset={16}
               >
                 {children}
-              </ScrollView>
+              </KeyboardAwareScrollView>
             ) : (
               <View className="flex-1" pointerEvents="auto">
                 {children}
@@ -157,6 +165,7 @@ export function FullScreenModal({
           </View>
         </SwipeToReturnWrapper>
       </SafeAreaView>
+      {showConfetti ? <ConfettiOverlay /> : null}
     </Modal>
   );
 }

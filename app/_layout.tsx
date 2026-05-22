@@ -1,12 +1,12 @@
 import { Slot } from 'expo-router';
 
-import { Migrations } from '@/components/Migrations';
+import { AppBoot } from '@/components/AppBoot';
 import { SettingsProvider } from '@/context/SettingsContext';
 
 export default function RootLayout() {
   return (
     <SettingsProvider>
-      <Migrations />
+      <AppBoot />
       <Slot />
     </SettingsProvider>
   );

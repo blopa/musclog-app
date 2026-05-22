@@ -88,7 +88,7 @@ This repository serves two distinct purposes that share the same Expo Router pro
 - **Avoid Deadlocks**: Never nest `database.write()` calls. Methods decorated with `@writer` should not be called from within another write block.
 - **Web Compatibility**: On web, `unsafeResetDatabase()` must also be wrapped in a write block.
 - **JSON Fields**: Use the `@json` decorator for complex object fields (e.g., `@json('micros_json')`, `@json('week_days_json')`). Keep a plaintext date field alongside encrypted fields when the date is needed for DB queries.
-- **Boot-time DB-ready gate**: `seedProductionData()` calls `unsafeResetDatabase()` on a fresh install, which temporarily swaps the real adapter for an `ErrorAdapter` that throws `"Cannot call database.adapter.underlyingAdapter while the database is being reset"` on any query. Any code that runs at app startup (e.g. inside a `useEffect` in `Migrations.tsx`) and touches the DB **must** await `waitForDbReady()` from `database/dbReady.ts` before issuing queries. `seedProductionData()` calls `markDbReady()` when it finishes (both the fast-path and the full reset+seed path).
+- **Boot-time DB-ready gate**: `seedProductionData()` calls `unsafeResetDatabase()` on a fresh install, which temporarily swaps the real adapter for an `ErrorAdapter` that throws `"Cannot call database.adapter.underlyingAdapter while the database is being reset"` on any query. Any code that runs at app startup (e.g. inside a `useEffect` in `AppBoot.tsx`) and touches the DB **must** await `waitForDbReady()` from `database/dbReady.ts` before issuing queries. `seedProductionData()` calls `markDbReady()` when it finishes (both the fast-path and the full reset+seed path).
 
 ### Component Design
 
@@ -98,6 +98,10 @@ This repository serves two distinct purposes that share the same Expo Router pro
   - Use absolute positioning for axis labels to maintain consistency across platforms.
   - Use `ChartTooltipContext` (`context/ChartTooltipContext.tsx`) for coordinated tooltip behavior.
 - **Segments**: Use `SegmentedControl` for mode switching (e.g., 7D/30D/90D).
+- **Keyboard avoidance**: Any screen or modal that contains a `TextInput` (or any input component wrapping one) inside a scroll container **must** use `KeyboardAwareScrollView` from `react-native-keyboard-controller` instead of RN's plain `ScrollView`. `KeyboardProvider` is already mounted at the app root (`app/app/_layout.tsx`). Two patterns to apply:
+  - **Full-screen layouts / screens** (`FullScreenModal` with `scrollable={true}`, plain screens): replace the outermost `ScrollView` with `KeyboardAwareScrollView` and add `bottomOffset={16}`.
+  - **Bottom sheets** (`BottomPopUp`): the sheet itself lifts via `marginBottom` in `BottomPopUp.tsx` — no extra work needed for the default `scrollable={true}` case. If you use `scrollable={false}` and add your own inner `ScrollView` with inputs, replace that inner `ScrollView` with `KeyboardAwareScrollView bottomOffset={16}` (see `EditPastWorkoutDataModal.tsx` as an example).
+  - Never use RN's `KeyboardAvoidingView` for new code — it has known issues with edge-to-edge on Android (Expo SDK 54+).
 
 ### AI & LLM Integration
 

@@ -3,7 +3,8 @@ import { Q } from '@nozbe/watermelondb';
 import type { TFunction } from 'i18next';
 import { type ComponentProps, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { GenericCard } from '@/components/cards/GenericCard';
@@ -1394,9 +1395,9 @@ export function DataLogModal({
       onClose={onClose}
       title={translations.title}
       headerRight={renderHeaderRight()}
-      scrollable
+      scrollable={false}
     >
-      <ScrollView className="mt-6 flex flex-col gap-3 px-4">
+      <KeyboardAwareScrollView className="mt-6 flex flex-col gap-3 px-4" bottomOffset={16}>
         {/* Search Bar */}
         <View className="relative">
           <TextInput
@@ -1495,7 +1496,7 @@ export function DataLogModal({
             </Text>
           </View>
         ) : null}
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
       <BottomPopUpMenu
         visible={showMenu}
