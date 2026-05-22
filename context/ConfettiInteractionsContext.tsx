@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 import { ONBOARDING_COMPLETED } from '@/constants/misc';
 
@@ -36,8 +36,22 @@ export const ConfettiInteractionsProvider: React.FC<{ children: React.ReactNode 
   children,
 }) => {
   const [completedActivities, setCompletedActivities] = useState<Record<string, boolean>>({});
+  const completedActivitiesRef = useRef(completedActivities);
+  const isMountedRef = useRef(true);
+  const [loadStateGate] = useState(() => {
+    let resolve!: () => void;
+
+    return {
+      promise: new Promise<void>((promiseResolve) => {
+        resolve = promiseResolve;
+      }),
+      resolve,
+    };
+  });
 
   useEffect(() => {
+    isMountedRef.current = true;
+
     const loadState = async () => {
       try {
         const stored = await AsyncStorage.getItem(STORAGE_KEY);
@@ -51,22 +65,38 @@ export const ConfettiInteractionsProvider: React.FC<{ children: React.ReactNode 
           await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         }
 
-        setCompletedActivities(state);
+        completedActivitiesRef.current = state;
+        if (isMountedRef.current) {
+          setCompletedActivities(state);
+        }
       } catch (e) {
         console.error('Failed to load confetti interactions state', e);
+      } finally {
+        loadStateGate.resolve();
       }
     };
-    loadState();
-  }, []);
+
+    void loadState();
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, [loadStateGate]);
 
   const completeActivity = useCallback(
     async (activity: ConfettiActivity): Promise<boolean> => {
-      if (completedActivities[activity]) {
+      await loadStateGate.promise;
+
+      const currentActivities = completedActivitiesRef.current;
+      if (currentActivities[activity]) {
         return false;
       }
 
-      const newState = { ...completedActivities, [activity]: true };
-      setCompletedActivities(newState);
+      const newState = { ...currentActivities, [activity]: true };
+      completedActivitiesRef.current = newState;
+      if (isMountedRef.current) {
+        setCompletedActivities(newState);
+      }
 
       try {
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
@@ -76,7 +106,7 @@ export const ConfettiInteractionsProvider: React.FC<{ children: React.ReactNode 
 
       return true;
     },
-    [completedActivities]
+    [loadStateGate]
   );
 
   return (
