@@ -39,8 +39,6 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
-import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
-import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { blurFilter } from '@/utils/blurFilter';
 import { localCalendarDayDate } from '@/utils/calendarDate';
 import { deleteMealImage, saveMealImage } from '@/utils/file';
@@ -111,6 +109,10 @@ type CreateMealModalProps = {
   initialFoods?: { food: Food; amount: number }[];
   /** For quickTrack mode: pre-selected meal type instead of defaulting to 'lunch'. */
   initialMealType?: MealType;
+  /** Called before closing when a nutrition log is tracked for the first time. */
+  onFirstNutritionLog?: () => void;
+  /** Called before closing when a meal is created for the first time. */
+  onFirstMealCreated?: () => void;
 };
 
 async function buildIngredientFromFood(
@@ -176,12 +178,13 @@ export function CreateMealModal({
   onTracked,
   initialFoods,
   initialMealType = 'lunch',
+  onFirstNutritionLog,
+  onFirstMealCreated,
 }: CreateMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
   const { units, intuitiveEatingMode } = useSettings();
-  const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const massUnit = getMassUnitLabel(units);
   const stepDisplay = units === 'imperial' ? 0.5 : 10;
   const stepAmount = units === 'imperial' ? displayToGrams(0.5, units) : 10;
@@ -542,9 +545,9 @@ export function CreateMealModal({
         );
       }
       onTracked?.();
-      triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG);
+      onFirstNutritionLog?.();
       if (saveToMyMeals) {
-        triggerConfetti(ConfettiActivity.FIRST_MEAL_CREATED);
+        onFirstMealCreated?.();
       }
       onClose();
       showSnackbar('success', t('food.quickTrackMeal.successMessage'));
@@ -650,7 +653,7 @@ export function CreateMealModal({
         await syncMealPortion(savedMeal);
       }
 
-      triggerConfetti(ConfettiActivity.FIRST_MEAL_CREATED);
+      onFirstMealCreated?.();
 
       // Callback to refresh meals list
       onSave?.();
@@ -735,7 +738,6 @@ export function CreateMealModal({
       visible={visible}
       onClose={onClose}
       title={getTitle()}
-      showConfetti={showConfetti}
       headerRight={
         !isQuickTrack && meal ? (
           <MenuButton size="md" className="p-2" onPress={() => setMealOptionsMenuVisible(true)} />

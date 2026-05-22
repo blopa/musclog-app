@@ -56,8 +56,6 @@ import { useYesterdayMealData } from '@/hooks/useYesterdayMealData';
 import { blurFilter } from '@/utils/blurFilter';
 import { localCalendarDayDate } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
-import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
-import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { resolveRoundedPer100gCaloriesForDisplay } from '@/utils/inferCaloriesFromMacros';
 import { gramsToDisplay } from '@/utils/unitConversion';
 import { getMassUnitI18nKey } from '@/utils/units';
@@ -114,6 +112,8 @@ type FoodSearchModalProps = {
   onFoodSelect?: (food: FoodItem) => void;
   /** Called when food(s) have been tracked so the parent can refresh logs (e.g. daily nutrition list). */
   onFoodTracked?: () => void;
+  /** Called before closing when a nutrition log is tracked for the first time, so the parent can trigger confetti. */
+  onFirstNutritionLog?: () => void;
   /** When false, the "Try AI Camera" option in FoodNotFoundModal is hidden. Defaults to true. */
   isAiEnabled?: boolean;
 };
@@ -339,6 +339,7 @@ export function FoodSearchModal({
   onBarcodeScanPress,
   onFoodSelect,
   onFoodTracked,
+  onFirstNutritionLog,
   isAiEnabled = true,
 }: FoodSearchModalProps) {
   const theme = useTheme();
@@ -346,7 +347,6 @@ export function FoodSearchModal({
   const { formatInteger } = useFormatAppNumber();
   const { showSnackbar } = useSnackbar();
   const { foodSearchSource, intuitiveEatingMode, units } = useSettings();
-  const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchSessionIcon, setSearchSessionIcon] = useState<LucideIcon>(pickRandomFoodIcon);
   const [activeFilter, setActiveFilter] = useState('all');
@@ -919,8 +919,8 @@ export function FoodSearchModal({
         );
       }
       onFoodSelect?.({} as FoodItem);
+      onFirstNutritionLog?.();
       onFoodTracked?.();
-      triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG);
       onClose();
       showSnackbar('success', t('foodSearch.sameAsYesterdaySuccess'));
     } catch (err) {
@@ -945,7 +945,6 @@ export function FoodSearchModal({
       <FullScreenModal
         visible={visible}
         onClose={onClose}
-        showConfetti={showConfetti}
         title={t('food.meals.addFoodTo', {
           meal: mealType
             ? t(`food.meals.${mealType === 'snack' ? 'snacks' : mealType}`)
@@ -1591,6 +1590,7 @@ export function FoodSearchModal({
               setIsFoodDetailsVisible(false);
               setSelectedFood(null);
             }}
+            onNutritionLogTracked={onFirstNutritionLog}
             onFoodTracked={() => {
               setSearchQuery('');
               onFoodTracked?.();
@@ -1624,6 +1624,7 @@ export function FoodSearchModal({
               setIsMealDetailsVisible(false);
               setSelectedMeal(null);
             }}
+            onNutritionLogTracked={onFirstNutritionLog}
             onFoodTracked={() => {
               setSearchQuery('');
               onFoodTracked?.();

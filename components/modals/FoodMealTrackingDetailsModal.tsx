@@ -76,8 +76,6 @@ import {
 } from '@/utils/externalFoodProduct';
 import { formatAppRoundedDecimal } from '@/utils/formatAppNumber';
 import { formatDisplayGrams } from '@/utils/formatDisplayWeight';
-import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
-import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { handleError } from '@/utils/handleError';
 import {
   applyInferredCaloriesFromMacrosIfNeeded,
@@ -202,6 +200,8 @@ type FoodDetailsModalProps = {
   onBarcodeLookupComplete?: () => void;
   /** Called when food was successfully tracked (e.g. so parent can close camera modal). */
   onFoodTracked?: () => void;
+  /** Called before closing when a nutrition log is tracked for the first time, so the parent can trigger confetti. */
+  onNutritionLogTracked?: () => void;
   /** When false, the "Try AI Camera" option in FoodNotFoundModal is hidden. Defaults to true. */
   isAiEnabled?: boolean;
   /** When true, show an edit control so the user can correct name, barcode, and macros (e.g. for AI-sourced data). */
@@ -224,6 +224,7 @@ export function FoodMealTrackingDetailsModal({
   foodLog,
   onBarcodeLookupComplete,
   onFoodTracked,
+  onNutritionLogTracked,
   isAiEnabled = true,
   canEdit = false,
 }: FoodDetailsModalProps) {
@@ -236,7 +237,6 @@ export function FoodMealTrackingDetailsModal({
   const decimalSeparator = useMemo(() => getDecimalSeparator(locale), [locale]);
   const { showSnackbar } = useSnackbar();
   const { units, alwaysAllowFoodEditing, intuitiveEatingMode } = useSettings();
-  const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const [permission, requestPermission] = useCameraPermissions();
   const [isBarcodeScannerVisible, setIsBarcodeScannerVisible] = useState(false);
   const scrollViewRef = useRef<KeyboardAwareScrollViewRef>(null);
@@ -1764,9 +1764,9 @@ export function FoodMealTrackingDetailsModal({
           // Call callback if provided
           onLogMeal?.({ meal: selectedMeal, date: selectedDate });
 
+          onNutritionLogTracked?.();
           onClose();
           onFoodTracked?.();
-          triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG);
 
           showSnackbar('success', t('food.foodDetails.successMessage'));
         } catch (err) {
@@ -1921,9 +1921,9 @@ export function FoodMealTrackingDetailsModal({
           date: selectedDate,
         });
 
+        onNutritionLogTracked?.();
         onClose();
         onFoodTracked?.();
-        triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG);
 
         showSnackbar('success', t('food.foodDetails.successMessage'));
         return;
@@ -2109,9 +2109,9 @@ export function FoodMealTrackingDetailsModal({
         date: selectedDate,
       });
 
+      onNutritionLogTracked?.();
       onClose();
       onFoodTracked?.();
-      triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG);
 
       showSnackbar('success', t('food.foodDetails.successMessage'));
     } catch (error) {
@@ -2390,7 +2390,6 @@ export function FoodMealTrackingDetailsModal({
         title={meal ? t('food.foodDetails.mealTitle') : t('food.foodDetails.foodTitle')}
         scrollable={true}
         scrollViewRef={scrollViewRef}
-        showConfetti={showConfetti}
         headerRight={
           mode !== 'meal' ? (
             <Pressable

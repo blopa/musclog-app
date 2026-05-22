@@ -16,8 +16,6 @@ import { FoodPortionService, MealService } from '@/database/services';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
-import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
-import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { handleError } from '@/utils/handleError';
 import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
 
@@ -90,17 +88,19 @@ type DynamicMealCreatorModalProps = {
   visible: boolean;
   onClose: () => void;
   onSaved: () => void;
+  /** Called before closing when a meal is created for the first time, so the parent can trigger confetti. */
+  onFirstMealCreated?: () => void;
 };
 
 export default function DynamicMealCreatorModal({
   visible,
   onClose,
   onSaved,
+  onFirstMealCreated,
 }: DynamicMealCreatorModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const { showSnackbar } = useSnackbar();
-  const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const { formatRoundedDecimal } = useFormatAppNumber();
   const { units } = useSettings();
 
@@ -257,7 +257,7 @@ export default function DynamicMealCreatorModal({
 
       await syncMealPortion(savedMeal);
       showSnackbar('success', t('meals.dynamicCreator.savedSuccess'));
-      triggerConfetti(ConfettiActivity.FIRST_MEAL_CREATED);
+      onFirstMealCreated?.();
       onSaved();
     } catch (error) {
       handleError(error, 'DynamicMealCreatorModal.handleFinishAndSave', {
@@ -315,7 +315,6 @@ export default function DynamicMealCreatorModal({
         visible={visible}
         onClose={handleClose}
         scrollable={false}
-        showConfetti={showConfetti}
         title={
           step === 'save'
             ? t('meals.dynamicCreator.saveMealTitle')

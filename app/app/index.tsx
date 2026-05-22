@@ -774,6 +774,7 @@ export default function HomeScreen() {
         initialTab={foodSearchInitialTab}
         onCreatePress={handleFoodSearchCreatePress}
         onBarcodeScanPress={handleFoodSearchBarcodePress}
+        onFirstNutritionLog={() => triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG)}
         isAiEnabled={isAiConfigured}
       />
 

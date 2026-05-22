@@ -614,6 +614,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
           <DynamicMealCreatorModal
             visible={dynamicMealCreatorVisible}
             onClose={() => setDynamicMealCreatorVisible(false)}
+            onFirstMealCreated={() => triggerConfetti(ConfettiActivity.FIRST_MEAL_CREATED)}
             onSaved={() => {
               refresh();
               setDynamicMealCreatorVisible(false);
@@ -689,6 +690,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
               setSelectedMealForLogging(null);
             }}
             onLogMeal={handleLogMeal}
+            onNutritionLogTracked={() => triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG)}
             isAiEnabled={isAiConfigured}
             initialMealType={initialMealType}
           />
