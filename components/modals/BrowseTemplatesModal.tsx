@@ -1,4 +1,4 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import MaterialIcons from "@react-native-vector-icons/material-icons/static";
 import { LinearGradient } from 'expo-linear-gradient';
 import type { TFunction } from 'i18next';
 import { Search } from 'lucide-react-native';

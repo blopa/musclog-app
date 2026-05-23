@@ -1,4 +1,4 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import MaterialIcons from "@react-native-vector-icons/material-icons/static";
 import { ChevronDown } from 'lucide-react-native';
 import type { ComponentProps } from 'react';
 import { useState } from 'react';
