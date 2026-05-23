@@ -2,66 +2,26 @@
 /* eslint-disable no-undef */
 
 /**
- * Copies static website images into public/ so dev and export serve them at /images/...
- * and /musclog-app/images/... when experiments.baseUrl is set.
- * The public/musclog-app folder is gitignored; run via prestart or before web/export.
+ * Keeps the ignored `public/musclog-app/images` path as a symlink mirror of the
+ * tracked `public/images` tree so dev and export serve the same files at
+ * /images/... and /musclog-app/images/... when experiments.baseUrl is set.
  */
 const fs = require('fs');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..');
-const publicImageDirs = [
-  path.join(root, 'public', 'images'),
-  path.join(root, 'public', 'musclog-app', 'images'),
-];
-
-const staticFiles = [
-  { src: path.join(root, 'assets', 'phone-wrapper.png'), destName: 'phone-wrapper.png' },
-  { src: path.join(root, 'assets', 'download-qrcode.png'), destName: 'download-qrcode.png' },
-  { src: path.join(root, 'assets', 'app-screenshot.png'), destName: 'app-screenshot.png' },
-  { src: path.join(root, 'assets', 'user-avatar.jpg'), destName: 'user-avatar.jpg' },
-];
-
-const screenshotDir = path.join(root, 'screenshots', 'phone');
-const screenshotFiles = fs.existsSync(screenshotDir)
-  ? fs
-      .readdirSync(screenshotDir)
-      .filter((file) => file.endsWith('.png'))
-      .map((file) => ({
-        src: path.join(screenshotDir, file),
-        destName: path.join('phone', file),
-      }))
-  : [];
-
-const exercisesDir = path.join(root, 'assets', 'exercises');
-const exerciseFiles = fs.existsSync(exercisesDir)
-  ? fs
-      .readdirSync(exercisesDir)
-      .filter((file) => file.endsWith('.png') || file.endsWith('.jpg'))
-      .map((file) => ({
-        src: path.join(exercisesDir, file),
-        destName: path.join('exercises', file),
-      }))
-  : [];
-
-const filesToSync = staticFiles.concat(screenshotFiles).concat(exerciseFiles);
+const trackedImagesDir = path.join(root, 'public', 'images');
+const mirroredImagesDir = path.join(root, 'public', 'musclog-app', 'images');
 
 function main() {
-  publicImageDirs.forEach((dir) => fs.mkdirSync(dir, { recursive: true }));
+  fs.mkdirSync(path.dirname(mirroredImagesDir), { recursive: true });
 
-  filesToSync.forEach(({ src, destName }) => {
-    if (!fs.existsSync(src)) {
-      console.warn('[sync-web-images] Skip: source not found:', src);
-      return;
-    }
+  if (fs.existsSync(mirroredImagesDir)) {
+    fs.rmSync(mirroredImagesDir, { recursive: true, force: true });
+  }
 
-    publicImageDirs.forEach((destDir) => {
-      const dest = path.join(destDir, destName);
-      fs.mkdirSync(path.dirname(dest), { recursive: true });
-      fs.copyFileSync(src, dest);
-      console.log('[sync-web-images]', path.relative(root, dest));
-    });
-  });
+  fs.symlinkSync(path.relative(path.dirname(mirroredImagesDir), trackedImagesDir), mirroredImagesDir, 'dir');
+  console.log('[sync-web-images]', path.relative(root, mirroredImagesDir), '->', path.relative(path.dirname(mirroredImagesDir), trackedImagesDir));
 }
 
 main();

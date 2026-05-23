@@ -11,9 +11,9 @@ import ruRuWebsite from '@/lang/locales/ru-ru/website.json';
  * Root HTML runs only in Node (static render). Use `public/` static files
  * (https://docs.expo.dev/router/web/static-rendering/#static-files). Avoid `public/assets/`.
  *
- * With experiments.baseUrl `/musclog-app`, the images must be served at
- * `/musclog-app/images/...`. `scripts/sync-web-images.js` copies the
- * website images into both `public/images/` and `public/musclog-app/images/`.
+ * `public/images/` is the tracked source of truth, and
+ * `scripts/sync-web-images.js` keeps `public/musclog-app/images/` as a
+ * symlink mirror so `/musclog-app/images/...` resolves correctly.
  */
 const PHONE_FRAME_SRC = '/images/phone-wrapper.png';
 const GOOGLE_PLAY_QR_CODE = '/images/download-qrcode.png';
