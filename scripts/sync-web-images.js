@@ -51,7 +51,7 @@ function main() {
 
   filesToSync.forEach(({ src, destName }) => {
     if (!fs.existsSync(src)) {
-      console.warn('[sync-web-phone-frame] Skip: source not found:', src);
+      console.warn('[sync-web-images] Skip: source not found:', src);
       return;
     }
 
@@ -59,7 +59,7 @@ function main() {
       const dest = path.join(destDir, destName);
       fs.mkdirSync(path.dirname(dest), { recursive: true });
       fs.copyFileSync(src, dest);
-      console.log('[sync-web-phone-frame]', path.relative(root, dest));
+      console.log('[sync-web-images]', path.relative(root, dest));
     });
   });
 }
