@@ -498,6 +498,16 @@ export default function Privacy() {
               </p>
             </section>
 
+            {/* Anonymous Crash Reporting Fallback */}
+            <section>
+              <h2 className="mb-3 text-xl font-semibold" style={{ color: BRAND_GREEN_BRIGHT }}>
+                {t('sections.errorReportingFallback.title')}
+              </h2>
+              <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+                {t('sections.errorReportingFallback.content')}
+              </p>
+            </section>
+
             {/* Website Analytics */}
             <section>
               <h2 className="mb-3 text-xl font-semibold" style={{ color: BRAND_GREEN_BRIGHT }}>

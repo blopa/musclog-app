@@ -1,9 +1,11 @@
 import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite';
+import * as Sentry from '@sentry/react-native';
 import { documentDirectory } from 'expo-file-system/legacy';
 import { openDatabaseSync } from 'expo-sqlite';
 import { Platform } from 'react-native';
 
 import { DATABASE_NAME } from '@/constants/database';
+import { initializeSentry } from '@/sentry-init';
 
 import { migrations } from './migrations';
 import { createPreMigrationBackup } from './preMigrationBackup';
@@ -51,8 +53,19 @@ export default new SQLiteAdapter({
         }
       );
     },
-    onError: () => {
-      console.warn('[SQLiteMigration] Migration failed');
+    onError: (error: Error) => {
+      console.warn('[SQLiteMigration] Migration failed', error);
+      // Bypass the DB-dependent consent check: the DB just failed so querying it
+      // would trigger a spurious "Database Error" dialog. initializeSentry() is
+      // idempotent and safe to call here without touching the DB.
+      initializeSentry();
+      Sentry.captureException(error, {
+        data: {
+          context: 'SQLiteMigration.onError',
+          fromVersion: currentDbVersion,
+          toVersion: schema.version,
+        },
+      });
     },
     onSuccess: () => {
       console.log('[SQLiteMigration] Migration completed');

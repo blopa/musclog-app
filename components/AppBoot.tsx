@@ -12,7 +12,7 @@ import {
   CONFETTI_INTERACTIONS_KEY,
   ConfettiActivity,
 } from '@/context/ConfettiInteractionsContext';
-import { waitForDbReady } from '@/database/dbReady';
+import { markDbReady, waitForDbReady } from '@/database/dbReady';
 import {
   ExerciseGoalService,
   ExerciseService,
@@ -45,6 +45,65 @@ export function AppBoot() {
   const segments = useSegments();
   const { language } = useSettings();
 
+  // Probe for WatermelonDB JSI driver readiness and call markDbReady() once the driver is
+  // registered. This is needed for upgrading users: seedProductionData() (which calls
+  // markDbReady()) only runs on new installs via the onboarding landing page, so upgrading
+  // users would otherwise leave waitForDbReady() hanging forever.
+  //
+  // For new installs (onboarding not yet completed), we skip the probe — seedProductionData()
+  // will call markDbReady() after seeding completes.
+  //
+  // On web/static export we mark ready immediately since there is no JSI adapter.
+  useEffect(() => {
+    if (isStaticExport) {
+      markDbReady();
+      return;
+    }
+
+    let cancelled = false;
+
+    const probe = async () => {
+      const onboardingDone = await AsyncStorage.getItem(ONBOARDING_COMPLETED);
+      if (onboardingDone !== 'true') {
+        return;
+      }
+
+      for (let attempt = 0; attempt < 20 && !cancelled; attempt++) {
+        try {
+          await SettingsService.getAnonymousBugReport();
+          if (!cancelled) {
+            markDbReady();
+          }
+
+          return;
+        } catch (err: unknown) {
+          const msg = err instanceof Error ? err.message : String(err);
+          if (msg.includes('No driver with tag')) {
+            await new Promise<void>((resolve) => setTimeout(resolve, 200));
+            continue;
+          }
+          // Any other error means the JSI driver is registered — mark ready.
+          if (!cancelled) {
+            markDbReady();
+          }
+
+          return;
+        }
+      }
+
+      // Exhausted retries — unblock the app to avoid a permanent freeze.
+      if (!cancelled) {
+        markDbReady();
+      }
+    };
+
+    void probe();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   // Fix negative fiber values in nutrition_goals, foods, and nutrition_logs by clamping to zero.
   // nutrition_logs fiber is encrypted so all non-deleted logs are fetched and decrypted in JS.
   useEffect(() => {
@@ -52,17 +111,30 @@ export function AppBoot() {
       return;
     }
 
-    NutritionGoalService.fixNegativeFiber().catch((err) =>
-      console.warn('[NutritionGoalService] fixNegativeFiber error:', err)
-    );
+    let cancelled = false;
 
-    FoodService.fixNegativeFiber().catch((err) =>
-      console.warn('[FoodService] fixNegativeFiber error:', err)
-    );
+    void (async () => {
+      await waitForDbReady();
+      if (cancelled) {
+        return;
+      }
 
-    NutritionService.fixNegativeFiber().catch((err) =>
-      console.warn('[NutritionService] fixNegativeFiber error:', err)
-    );
+      await Promise.all([
+        NutritionGoalService.fixNegativeFiber().catch((err) =>
+          console.warn('[NutritionGoalService] fixNegativeFiber error:', err)
+        ),
+        FoodService.fixNegativeFiber().catch((err) =>
+          console.warn('[FoodService] fixNegativeFiber error:', err)
+        ),
+        NutritionService.fixNegativeFiber().catch((err) =>
+          console.warn('[NutritionService] fixNegativeFiber error:', err)
+        ),
+      ]);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Prune orphaned workout insights dismissal state when leaving the workout domain.
@@ -86,9 +158,22 @@ export function AppBoot() {
       return;
     }
 
-    ExerciseService.backfillExerciseSources().catch((err) =>
-      console.warn('[ExerciseService] backfillExerciseSources error:', err)
-    );
+    let cancelled = false;
+
+    void (async () => {
+      await waitForDbReady();
+      if (cancelled) {
+        return;
+      }
+
+      await ExerciseService.backfillExerciseSources().catch((err) =>
+        console.warn('[ExerciseService] backfillExerciseSources error:', err)
+      );
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Backfill the food_portion `source` field on web only. Native/SQLite handles
@@ -99,9 +184,22 @@ export function AppBoot() {
       return;
     }
 
-    FoodPortionService.backfillPortionSources().catch((err) =>
-      console.warn('[FoodPortionService] backfillPortionSources error:', err)
-    );
+    let cancelled = false;
+
+    void (async () => {
+      await waitForDbReady();
+      if (cancelled) {
+        return;
+      }
+
+      await FoodPortionService.backfillPortionSources().catch((err) =>
+        console.warn('[FoodPortionService] backfillPortionSources error:', err)
+      );
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Fix food_portion rows saved as raw i18n keys (e.g. "food.portions.tbsp") instead of labels.
@@ -117,6 +215,10 @@ export function AppBoot() {
         if (i18n.language !== language) {
           await i18n.changeLanguage(language);
         }
+        if (cancelled) {
+          return;
+        }
+        await waitForDbReady();
         if (cancelled) {
           return;
         }
@@ -139,9 +241,28 @@ export function AppBoot() {
       return;
     }
 
-    ExerciseService.syncAppExercises()
-      .then(() => ExerciseService.syncExerciseMultipliers())
-      .catch((err) => console.warn('[ExerciseService] syncAppExercises/Multipliers error:', err));
+    let cancelled = false;
+
+    void (async () => {
+      await waitForDbReady();
+      if (cancelled) {
+        return;
+      }
+
+      try {
+        await ExerciseService.syncAppExercises();
+        if (cancelled) {
+          return;
+        }
+        await ExerciseService.syncExerciseMultipliers();
+      } catch (err) {
+        console.warn('[ExerciseService] syncAppExercises/Multipliers error:', err);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Backfill order_index for existing app exercises on every boot.
@@ -151,9 +272,22 @@ export function AppBoot() {
       return;
     }
 
-    ExerciseService.backfillExerciseOrderIndex().catch((err) =>
-      console.warn('[ExerciseService] backfillExerciseOrderIndex error:', err)
-    );
+    let cancelled = false;
+
+    void (async () => {
+      await waitForDbReady();
+      if (cancelled) {
+        return;
+      }
+
+      await ExerciseService.backfillExerciseOrderIndex().catch((err) =>
+        console.warn('[ExerciseService] backfillExerciseOrderIndex error:', err)
+      );
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Backfill exercise-muscle links for users upgrading to v11. Runs on every
@@ -161,18 +295,30 @@ export function AppBoot() {
   // hit this path, but seedProductionData already called backfillExerciseMuscles
   // during setup — the no-op exit path costs only two DB reads.
   //
-  // No waitForDbReady() here: upgrading users never trigger unsafeResetDatabase,
-  // so there is no ErrorAdapter race. Consistent with syncAppExercises above.
-  // On a fresh install the rare ErrorAdapter error is caught and logged; the
-  // backfill already ran inside seedProductionData by that point anyway.
+  // This now waits for the boot DB gate so the upgrade path never races the
+  // seeding/migration window. On a fresh install the effect simply runs after
+  // seedProductionData() resolves and marks the DB ready.
   useEffect(() => {
     if (isStaticExport) {
       return;
     }
 
-    MuscleService.backfillExerciseMuscles().catch((err) =>
-      console.warn('[MuscleService] backfillExerciseMuscles error:', err)
-    );
+    let cancelled = false;
+
+    void (async () => {
+      await waitForDbReady();
+      if (cancelled) {
+        return;
+      }
+
+      await MuscleService.backfillExerciseMuscles().catch((err) =>
+        console.warn('[MuscleService] backfillExerciseMuscles error:', err)
+      );
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Web fallback for the v7 migration: replace file:// exercise image URIs with
@@ -183,9 +329,22 @@ export function AppBoot() {
       return;
     }
 
-    ExerciseService.migrateExerciseImageUrlsToCloud().catch((err) =>
-      console.warn('[ExerciseService] migrateExerciseImageUrlsToCloud error:', err)
-    );
+    let cancelled = false;
+
+    void (async () => {
+      await waitForDbReady();
+      if (cancelled) {
+        return;
+      }
+
+      await ExerciseService.migrateExerciseImageUrlsToCloud().catch((err) =>
+        console.warn('[ExerciseService] migrateExerciseImageUrlsToCloud error:', err)
+      );
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Backfill totalVolume for workout logs that have NULL after the v3 migration.
@@ -195,9 +354,22 @@ export function AppBoot() {
       return;
     }
 
-    WorkoutService.backfillNullTotalVolumes().catch((err) =>
-      console.warn('[WorkoutService] backfillNullTotalVolumes error:', err)
-    );
+    let cancelled = false;
+
+    void (async () => {
+      await waitForDbReady();
+      if (cancelled) {
+        return;
+      }
+
+      await WorkoutService.backfillNullTotalVolumes().catch((err) =>
+        console.warn('[WorkoutService] backfillNullTotalVolumes error:', err)
+      );
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Encrypt any API keys that were stored as plaintext before this migration was introduced.
@@ -207,9 +379,22 @@ export function AppBoot() {
       return;
     }
 
-    SettingsService.migrateApiKeysToEncrypted().catch((err) =>
-      console.warn('[SettingsService] migrateApiKeysToEncrypted error:', err)
-    );
+    let cancelled = false;
+
+    void (async () => {
+      await waitForDbReady();
+      if (cancelled) {
+        return;
+      }
+
+      await SettingsService.migrateApiKeysToEncrypted().catch((err) =>
+        console.warn('[SettingsService] migrateApiKeysToEncrypted error:', err)
+      );
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // One-time migration: enable require-export-encryption by default.
@@ -219,9 +404,22 @@ export function AppBoot() {
       return;
     }
 
-    SettingsService.migrateRequireExportEncryptionDefault().catch((err) =>
-      console.warn('[SettingsService] migrateRequireExportEncryptionDefault error:', err)
-    );
+    let cancelled = false;
+
+    void (async () => {
+      await waitForDbReady();
+      if (cancelled) {
+        return;
+      }
+
+      await SettingsService.migrateRequireExportEncryptionDefault().catch((err) =>
+        console.warn('[SettingsService] migrateRequireExportEncryptionDefault error:', err)
+      );
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Boot-time tasks (native: Android + iOS, all run in parallel)
@@ -239,23 +437,27 @@ export function AppBoot() {
 
     const notificationInit = NotificationService.configure()
       .then(async () => {
-        NotificationService.scheduleWorkoutReminders();
-        NotificationService.scheduleNutritionOverview();
-        NotificationService.scheduleMenstrualCycleNotifications();
-        NotificationService.scheduleCheckinNotifications();
-
         // Dismiss any orphaned workout notification from a previous killed session
         const activeWorkoutLogId = await getActiveWorkoutLogId();
         if (!activeWorkoutLogId) {
           NotificationService.dismissActiveWorkoutNotification();
         }
+
+        await waitForDbReady();
+
+        NotificationService.scheduleWorkoutReminders();
+        NotificationService.scheduleNutritionOverview();
+        NotificationService.scheduleMenstrualCycleNotifications();
+        NotificationService.scheduleCheckinNotifications();
       })
       .catch((err) => console.warn('[NotificationService] Init error:', err));
 
     Promise.all([
-      healthDataSyncService
-        .syncFromHealthPlatform({ lookbackDays: 7 })
-        .catch((err) => console.warn('[boot sync] Health platform sync error:', err)),
+      waitForDbReady().then(() =>
+        healthDataSyncService
+          .syncFromHealthPlatform({ lookbackDays: 7 })
+          .catch((err) => console.warn('[boot sync] Health platform sync error:', err))
+      ),
       configureDailyTasks().catch((err) =>
         console.warn('[configureDailyTasks] Startup error:', err)
       ),
