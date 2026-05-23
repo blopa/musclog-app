@@ -37,6 +37,11 @@ import {
   handleNotificationResponse,
 } from '@/utils/notifications';
 
+const DB_RESET_RACE_ERRORS = [
+  'No driver with tag',
+  'Cannot call database.adapter.underlyingAdapter while the database is being reset',
+];
+
 /**
  * One-time and boot-time data fixes, sync, and native services that are not
  * tied to a specific screen. Renders nothing.
@@ -78,7 +83,7 @@ export function AppBoot() {
           return;
         } catch (err: unknown) {
           const msg = err instanceof Error ? err.message : String(err);
-          if (msg.includes('No driver with tag')) {
+          if (DB_RESET_RACE_ERRORS.some((needle) => msg.includes(needle))) {
             await new Promise<void>((resolve) => setTimeout(resolve, 200));
             continue;
           }
