@@ -68,7 +68,7 @@ export function AppBoot() {
         return;
       }
 
-      for (let attempt = 0; attempt < 20 && !cancelled; attempt++) {
+      for (let attempt = 0; attempt < 500 && !cancelled; attempt++) {
         try {
           await SettingsService.getAnonymousBugReport();
           if (!cancelled) {
