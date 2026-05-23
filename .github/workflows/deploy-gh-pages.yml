@@ -44,6 +44,8 @@ jobs:
 
       - name: Copy static images to dist
         run: |
+          rm -rf dist/images dist/musclog-app/images
+          mkdir -p dist/images dist/musclog-app/images
           cp -rL public/images/. dist/images/
           cp -rL public/musclog-app/images/. dist/musclog-app/images/
 
