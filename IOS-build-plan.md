@@ -225,7 +225,7 @@ npx expo install react-native-nitro-modules
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
       "buildNumber": "178",
-      "deploymentTarget": "16.0",
+      "deploymentTarget": "17.0",
       "infoPlist": {
         "NSHealthShareUsageDescription": "Musclog reads your health data to sync workouts, nutrition, weight, and body measurements for comprehensive fitness tracking.",
         "NSHealthUpdateUsageDescription": "Musclog writes your workout sessions, nutrition logs, and body metrics to Apple Health to keep all your health data in sync.",
@@ -283,7 +283,7 @@ npx expo install react-native-nitro-modules
             "minSdkVersion": 26
           },
           "ios": {
-            "deploymentTarget": "16.0"
+            "deploymentTarget": "17.0"
           },
           "gradleProperties": {
             "org.gradle.jvmargs": "-Xmx4g -XX:MaxMetaspaceSize=1g -Dkotlin.daemon.jvm.options=-Xmx2g"
