@@ -927,10 +927,11 @@ export default function ExerciseGoalCreationModal({
     </View>
   );
 
-  const footer = (() => {
+  const footer = useMemo(() => {
     if (step === 'type') {
       return null;
     }
+
     if (step === 'summary') {
       return (
         <View style={{ width: '100%', gap: 12 }}>
@@ -951,6 +952,7 @@ export default function ExerciseGoalCreationModal({
         </View>
       );
     }
+
     return (
       <View className="flex-row gap-3">
         <Button label={t('common.back')} variant="outline" width="flex-1" onPress={handleBack} />
@@ -963,7 +965,7 @@ export default function ExerciseGoalCreationModal({
         />
       </View>
     );
-  })();
+  }, [handleBack, handleNext, handleSave, selectedExercise, step, t]);
 
   return (
     <FullScreenModal

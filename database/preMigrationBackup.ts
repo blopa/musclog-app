@@ -28,7 +28,7 @@ function normalizeVersion(value: unknown): number | null {
   if (typeof value === 'number' && Number.isFinite(value)) {
     return value;
   }
-  if (typeof value === 'string') {
+  if (typeof value === 'string' && value.trim() !== '') {
     const parsed = Number(value);
     if (Number.isFinite(parsed)) {
       return parsed;
@@ -37,60 +37,56 @@ function normalizeVersion(value: unknown): number | null {
   return null;
 }
 
-function getVersions(event: unknown): { fromVersion: number | null; toVersion: number | null } {
-  const payload = (event as MigrationEventShape | undefined) ?? {};
-  const fromVersion = normalizeVersion(payload.fromVersion ?? payload.from);
-  const toVersion = normalizeVersion(payload.toVersion ?? payload.to ?? payload.databaseVersion);
-  return { fromVersion, toVersion };
+function getVersions(event?: unknown) {
+  const payload = (event as MigrationEventShape) || {};
+  return {
+    fromVersion: normalizeVersion(payload.fromVersion ?? payload.from),
+    toVersion: normalizeVersion(payload.toVersion ?? payload.to ?? payload.databaseVersion),
+  };
 }
 
-function formatVersion(value: number | null): string {
-  return value == null ? 'unknown' : String(value);
-}
+const formatVersion = (value: number | null): string => (value == null ? 'unknown' : String(value));
 
-export function getWebBackupContent(hash: string): string | null {
+export function getWebBackupContent(_hash: string): string | null {
   return null;
 }
 
 export async function getStoredBackups(): Promise<BackupFileMeta[]> {
-  const raw = await AsyncStorage.getItem(PRE_MIGRATION_BACKUPS_KEY);
-  if (!raw) {
-    return [];
-  }
-
   try {
-    const parsed = JSON.parse(raw);
+    const raw = await AsyncStorage.getItem(PRE_MIGRATION_BACKUPS_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+
     if (!Array.isArray(parsed)) {
       return [];
     }
 
     return parsed.filter(
       (item): item is BackupFileMeta =>
-        typeof item === 'object' &&
         item !== null &&
-        typeof (item as BackupFileMeta).uri === 'string' &&
-        typeof (item as BackupFileMeta).createdAt === 'string'
+        typeof item === 'object' &&
+        typeof (item as Record<string, unknown>).uri === 'string' &&
+        typeof (item as Record<string, unknown>).createdAt === 'string'
     );
   } catch {
     return [];
   }
 }
 
-async function writeStoredBackups(backups: BackupFileMeta[]): Promise<void> {
-  await AsyncStorage.setItem(PRE_MIGRATION_BACKUPS_KEY, JSON.stringify(backups));
-}
+const writeStoredBackups = (backups: BackupFileMeta[]) =>
+  AsyncStorage.setItem(PRE_MIGRATION_BACKUPS_KEY, JSON.stringify(backups));
 
-export async function deleteBackup(uri: string): Promise<void> {
-  const backups = await getStoredBackups();
-  const next = backups.filter((b) => b.uri !== uri);
-
+const safeDelete = async (uri: string) => {
   try {
     await deleteAsync(uri, { idempotent: true });
   } catch (error) {
-    console.error('[PreMigrationBackup] Failed to delete file:', error);
+    console.error(`[PreMigrationBackup] Failed to delete file ${uri}:`, error);
   }
+};
 
-  await writeStoredBackups(next);
+export async function deleteBackup(uri: string): Promise<void> {
+  const backups = await getStoredBackups();
+  await safeDelete(uri);
+  await writeStoredBackups(backups.filter((b) => b.uri !== uri));
 }
 
 async function pruneOldBackups(backups: BackupFileMeta[]): Promise<BackupFileMeta[]> {
@@ -101,17 +97,31 @@ async function pruneOldBackups(backups: BackupFileMeta[]): Promise<BackupFileMet
   const keep = backups.slice(0, PRE_MIGRATION_BACKUPS_MAX_FILES);
   const remove = backups.slice(PRE_MIGRATION_BACKUPS_MAX_FILES);
 
-  await Promise.all(
-    remove.map(async (file) => {
-      try {
-        await deleteAsync(file.uri, { idempotent: true });
-      } catch {
-        // best-effort cleanup
-      }
-    })
-  );
-
+  await Promise.all(remove.map((file) => safeDelete(file.uri)));
   return keep;
+}
+
+async function executeBackup(
+  nameInfix: string,
+  fromVersion: number | null = null,
+  toVersion: number | null = null
+): Promise<string> {
+  if (!cacheDirectory) {
+    throw new Error('Cache directory is not available');
+  }
+
+  const jsonString = await dumpDatabase();
+  const createdAt = new Date().toISOString();
+  const timestamp = createdAt.replace(/[:.]/g, '-').slice(0, 19);
+  const uri = `${cacheDirectory}${timestamp}-${nameInfix}.json`;
+
+  await writeAsStringAsync(uri, jsonString);
+
+  const existing = await getStoredBackups();
+  const next = await pruneOldBackups([{ uri, createdAt, fromVersion, toVersion }, ...existing]);
+  await writeStoredBackups(next);
+
+  return uri;
 }
 
 /**
@@ -127,30 +137,7 @@ export async function runWebPreMigrationBackupIfNeeded(): Promise<void> {}
  */
 export async function createPreRestoreBackup(): Promise<void> {
   try {
-    if (!cacheDirectory) {
-      throw new Error('Cache directory is not available');
-    }
-
-    const jsonString = await dumpDatabase();
-    const createdAt = new Date().toISOString();
-    const timestamp = createdAt.replace(/[:.]/g, '-').slice(0, 19);
-    const fileName = `${timestamp}-pre-restore.json`;
-    const uri = `${cacheDirectory}${fileName}`;
-
-    await writeAsStringAsync(uri, jsonString);
-
-    const existing = await getStoredBackups();
-    const next = await pruneOldBackups([
-      {
-        uri,
-        createdAt,
-        fromVersion: null,
-        toVersion: null,
-      },
-      ...existing,
-    ]);
-    await writeStoredBackups(next);
-
+    const uri = await executeBackup('pre-restore');
     console.log(`[PreRestoreBackup] Created: ${uri}`);
   } catch (error) {
     console.error('[PreRestoreBackup] Failed to create backup:', error);
@@ -173,42 +160,21 @@ export function createPreMigrationBackup(event?: unknown): Promise<void> {
     return inFlightBackup;
   }
 
-  inFlightBackup = (async () => {
-    try {
-      if (!cacheDirectory) {
-        throw new Error('Cache directory is not available');
-      }
+  async function performBackup() {
+    const infix = `pre-migration-v${formatVersion(fromVersion)}-to-v${formatVersion(toVersion)}`;
+    const uri = await executeBackup(infix, fromVersion, toVersion);
+    completedBackupSignature = signature;
+    console.log(`[PreMigrationBackup] Created: ${uri}`);
+  }
 
-      const jsonString = await dumpDatabase();
-
-      const createdAt = new Date().toISOString();
-      const timestamp = createdAt.replace(/[:.]/g, '-').slice(0, 19);
-      const fileName = `${timestamp}-pre-migration-v${formatVersion(fromVersion)}-to-v${formatVersion(toVersion)}.json`;
-      const uri = `${cacheDirectory}${fileName}`;
-
-      await writeAsStringAsync(uri, jsonString);
-
-      const existing = await getStoredBackups();
-      const next = await pruneOldBackups([
-        {
-          uri,
-          createdAt,
-          fromVersion,
-          toVersion,
-        },
-        ...existing,
-      ]);
-      await writeStoredBackups(next);
-
-      completedBackupSignature = signature;
-      console.log(`[PreMigrationBackup] Created: ${uri}`);
-    } catch (error) {
+  inFlightBackup = performBackup()
+    .catch((error) => {
       console.error('[PreMigrationBackup] Failed to create backup:', error);
       handleError(error, 'database.preMigrationBackup');
-    } finally {
+    })
+    .finally(() => {
       inFlightBackup = null;
-    }
-  })();
+    });
 
   return inFlightBackup;
 }

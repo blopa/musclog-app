@@ -505,7 +505,8 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
   const renderTargetDateStep = () => {
     const estimatedDate = calculateEstimatedTargetDate();
     const displayDate = targetDate ?? estimatedDate ?? addMonths(new Date(), 3);
-    const targetDateWarning = (() => {
+
+    const getTargetDateWarning = () => {
       if (goalType !== 'lose' || currentWeightKg == null || targetDate == null) {
         return null;
       }
@@ -533,7 +534,9 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
             year: 'numeric',
           }) ?? null,
       };
-    })();
+    };
+
+    const targetDateWarning = getTargetDateWarning();
 
     return (
       <View style={{ gap: 12 }}>

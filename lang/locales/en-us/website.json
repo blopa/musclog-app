@@ -566,6 +566,10 @@
           "title": "Google Play Store Data Safety Labels",
           "content": "Our data safety labels on the Google Play Store are meticulously aligned with the disclosures provided in this privacy policy. We are committed to maintaining a high standard of transparency and ensuring full compliance with all Google Play Store requirements and guidelines. The data collected is strictly utilized to provide or enhance the functionality and features of your application. This data usage is confined to improving user experience and application performance, and under no circumstances is it used for any purposes outside this scope, such as marketing or selling to third parties. Access to any user data is strictly regulated and can only occur after obtaining explicit consent from the user."
         },
+        "errorReportingFallback": {
+          "title": "Anonymous Crash Reporting — Database Failure Exception",
+          "content": "Musclog lets you opt in or out of anonymous bug reports through the app settings. That preference is stored locally in your device's database. In the rare event of a critical database failure — for example, when a database migration fails to complete — the app cannot access the local database to read your preference. In this specific circumstance only, Musclog will send one anonymous crash report to our error-tracking service (Sentry) to help us identify and fix the issue. The report contains no personal data: only the type of error, the database schema version numbers (before and after the failed migration), your device model, and your app version. This exception exists solely to surface critical failures that would otherwise be invisible to us, and does not affect normal operation."
+        },
         "analytics": {
           "title": "Website Analytics",
           "content1": "This website uses Vercel Web Analytics, a cookieless and privacy-first analytics service. It collects no personal identifiers and uses no cookies — visitors are identified only by an anonymous hash that resets every 24 hours. No consent is required for this tool under the ePrivacy Directive.",
