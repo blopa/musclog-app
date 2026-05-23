@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, View } from 'react-native';
 
 import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
+import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { WorkoutSummaryCelebration } from '@/components/WorkoutSummaryCelebration';
 import { useUnreadChat } from '@/context/UnreadChatContext';
 import type { WorkoutCompletedPayload } from '@/database/models/ChatMessage';
@@ -49,6 +50,7 @@ export default function WorkoutSummaryScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFeedbackLoading, setIsFeedbackLoading] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   useKeepScreenAwake('workout-feedback', isFeedbackLoading);
 
@@ -189,6 +191,7 @@ export default function WorkoutSummaryScreen() {
 
         setUnreadCount((prev) => prev + 1);
 
+        setShowConfetti(true);
         setIsLoading(false);
       } catch (err) {
         console.error('Error loading workout summary:', err);
@@ -288,16 +291,19 @@ export default function WorkoutSummaryScreen() {
   }
 
   return (
-    <WorkoutSummaryCelebration
-      onGoHome={handleGoHome}
-      onShareSummary={handleShareSummary}
-      onGetFeedback={handleGetFeedback}
-      isGetFeedbackLoading={isFeedbackLoading}
-      totalTime={totalTime}
-      volume={volume}
-      personalRecords={personalRecords}
-      caloriesBurned={caloriesBurned}
-      goalProgress={goalProgress}
-    />
+    <>
+      <WorkoutSummaryCelebration
+        onGoHome={handleGoHome}
+        onShareSummary={handleShareSummary}
+        onGetFeedback={handleGetFeedback}
+        isGetFeedbackLoading={isFeedbackLoading}
+        totalTime={totalTime}
+        volume={volume}
+        personalRecords={personalRecords}
+        caloriesBurned={caloriesBurned}
+        goalProgress={goalProgress}
+      />
+      {showConfetti && <ConfettiOverlay />}
+    </>
   );
 }
