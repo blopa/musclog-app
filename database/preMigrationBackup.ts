@@ -173,7 +173,7 @@ export function createPreMigrationBackup(event?: unknown): Promise<void> {
     return inFlightBackup;
   }
 
-  inFlightBackup = (async () => {
+  const runBackup = async () => {
     try {
       if (!cacheDirectory) {
         throw new Error('Cache directory is not available');
@@ -208,7 +208,9 @@ export function createPreMigrationBackup(event?: unknown): Promise<void> {
     } finally {
       inFlightBackup = null;
     }
-  })();
+  };
+
+  inFlightBackup = runBackup();
 
   return inFlightBackup;
 }

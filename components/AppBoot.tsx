@@ -113,7 +113,7 @@ export function AppBoot() {
 
     let cancelled = false;
 
-    void (async () => {
+    const fixNegativeFiber = async () => {
       await waitForDbReady();
       if (cancelled) {
         return;
@@ -130,7 +130,9 @@ export function AppBoot() {
           console.warn('[NutritionService] fixNegativeFiber error:', err)
         ),
       ]);
-    })();
+    };
+
+    void fixNegativeFiber();
 
     return () => {
       cancelled = true;
@@ -160,7 +162,7 @@ export function AppBoot() {
 
     let cancelled = false;
 
-    void (async () => {
+    const backfillExerciseSources = async () => {
       await waitForDbReady();
       if (cancelled) {
         return;
@@ -169,7 +171,9 @@ export function AppBoot() {
       await ExerciseService.backfillExerciseSources().catch((err) =>
         console.warn('[ExerciseService] backfillExerciseSources error:', err)
       );
-    })();
+    };
+
+    void backfillExerciseSources();
 
     return () => {
       cancelled = true;
@@ -186,7 +190,7 @@ export function AppBoot() {
 
     let cancelled = false;
 
-    void (async () => {
+    const backfillPortionSources = async () => {
       await waitForDbReady();
       if (cancelled) {
         return;
@@ -195,7 +199,9 @@ export function AppBoot() {
       await FoodPortionService.backfillPortionSources().catch((err) =>
         console.warn('[FoodPortionService] backfillPortionSources error:', err)
       );
-    })();
+    };
+
+    void backfillPortionSources();
 
     return () => {
       cancelled = true;
@@ -210,7 +216,7 @@ export function AppBoot() {
 
     let cancelled = false;
 
-    (async () => {
+    const fixPortionNames = async () => {
       try {
         if (i18n.language !== language) {
           await i18n.changeLanguage(language);
@@ -226,7 +232,9 @@ export function AppBoot() {
       } catch (err) {
         console.warn('[FoodPortionService] fixPortionNamesStoredAsI18nKeys error:', err);
       }
-    })();
+    };
+
+    void fixPortionNames();
 
     return () => {
       cancelled = true;
@@ -243,7 +251,7 @@ export function AppBoot() {
 
     let cancelled = false;
 
-    void (async () => {
+    const syncExercises = async () => {
       await waitForDbReady();
       if (cancelled) {
         return;
@@ -258,7 +266,9 @@ export function AppBoot() {
       } catch (err) {
         console.warn('[ExerciseService] syncAppExercises/Multipliers error:', err);
       }
-    })();
+    };
+
+    void syncExercises();
 
     return () => {
       cancelled = true;
@@ -274,7 +284,7 @@ export function AppBoot() {
 
     let cancelled = false;
 
-    void (async () => {
+    const backfillExerciseOrderIndex = async () => {
       await waitForDbReady();
       if (cancelled) {
         return;
@@ -283,7 +293,9 @@ export function AppBoot() {
       await ExerciseService.backfillExerciseOrderIndex().catch((err) =>
         console.warn('[ExerciseService] backfillExerciseOrderIndex error:', err)
       );
-    })();
+    };
+
+    void backfillExerciseOrderIndex();
 
     return () => {
       cancelled = true;
@@ -305,7 +317,7 @@ export function AppBoot() {
 
     let cancelled = false;
 
-    void (async () => {
+    const backfillExerciseMuscles = async () => {
       await waitForDbReady();
       if (cancelled) {
         return;
@@ -314,7 +326,9 @@ export function AppBoot() {
       await MuscleService.backfillExerciseMuscles().catch((err) =>
         console.warn('[MuscleService] backfillExerciseMuscles error:', err)
       );
-    })();
+    };
+
+    void backfillExerciseMuscles();
 
     return () => {
       cancelled = true;
@@ -331,7 +345,7 @@ export function AppBoot() {
 
     let cancelled = false;
 
-    void (async () => {
+    const migrateExerciseImageUrls = async () => {
       await waitForDbReady();
       if (cancelled) {
         return;
@@ -340,7 +354,9 @@ export function AppBoot() {
       await ExerciseService.migrateExerciseImageUrlsToCloud().catch((err) =>
         console.warn('[ExerciseService] migrateExerciseImageUrlsToCloud error:', err)
       );
-    })();
+    };
+
+    void migrateExerciseImageUrls();
 
     return () => {
       cancelled = true;
@@ -356,7 +372,7 @@ export function AppBoot() {
 
     let cancelled = false;
 
-    void (async () => {
+    const backfillNullTotalVolumes = async () => {
       await waitForDbReady();
       if (cancelled) {
         return;
@@ -365,7 +381,9 @@ export function AppBoot() {
       await WorkoutService.backfillNullTotalVolumes().catch((err) =>
         console.warn('[WorkoutService] backfillNullTotalVolumes error:', err)
       );
-    })();
+    };
+
+    void backfillNullTotalVolumes();
 
     return () => {
       cancelled = true;
@@ -381,7 +399,7 @@ export function AppBoot() {
 
     let cancelled = false;
 
-    void (async () => {
+    const migrateApiKeysToEncrypted = async () => {
       await waitForDbReady();
       if (cancelled) {
         return;
@@ -390,7 +408,9 @@ export function AppBoot() {
       await SettingsService.migrateApiKeysToEncrypted().catch((err) =>
         console.warn('[SettingsService] migrateApiKeysToEncrypted error:', err)
       );
-    })();
+    };
+
+    void migrateApiKeysToEncrypted();
 
     return () => {
       cancelled = true;
@@ -406,7 +426,7 @@ export function AppBoot() {
 
     let cancelled = false;
 
-    void (async () => {
+    const migrateRequireExportEncryptionDefault = async () => {
       await waitForDbReady();
       if (cancelled) {
         return;
@@ -415,7 +435,9 @@ export function AppBoot() {
       await SettingsService.migrateRequireExportEncryptionDefault().catch((err) =>
         console.warn('[SettingsService] migrateRequireExportEncryptionDefault error:', err)
       );
-    })();
+    };
+
+    void migrateRequireExportEncryptionDefault();
 
     return () => {
       cancelled = true;
