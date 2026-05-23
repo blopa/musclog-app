@@ -12,7 +12,7 @@ import ruRuWebsite from '@/lang/locales/ru-ru/website.json';
  * (https://docs.expo.dev/router/web/static-rendering/#static-files). Avoid `public/assets/`.
  *
  * With experiments.baseUrl `/musclog-app`, the images must be served at
- * `/musclog-app/images/...`. `scripts/sync-web-phone-frame.js` copies the
+ * `/musclog-app/images/...`. `scripts/sync-web-images.js` copies the
  * website images into both `public/images/` and `public/musclog-app/images/`.
  */
 const PHONE_FRAME_SRC = '/images/phone-wrapper.png';

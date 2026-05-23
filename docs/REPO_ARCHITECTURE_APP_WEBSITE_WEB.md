@@ -260,9 +260,9 @@ Examples:
 
 - [`constants/platform.ts`](/home/pablo/Documents/Projects/musclog/musclog-new/constants/platform.ts) exposes `isStaticExport` so startup logic can skip browser-only or DB-heavy side effects during export.
 - `app/+html.tsx` is written to run in the static-rendered HTML phase.
-- [`package.json`](/home/pablo/Documents/Projects/musclog/musclog-new/package.json) includes `prestart` and `web` scripts that run `scripts/sync-web-phone-frame.js`.
+- [`package.json`](/home/pablo/Documents/Projects/musclog/musclog-new/package.json) includes `prestart` and `web` scripts that run `scripts/sync-web-images.js`.
 
-That `sync-web-phone-frame.js` step exists because the phone frame asset used by the desktop web wrapper has to be copied into the exported/public web path before serving/building.
+That `sync-web-images.js` step exists because the phone frame asset used by the desktop web wrapper has to be copied into the exported/public web path before serving/building.
 
 ## Native-Specific Behavior Still Lives Here Too
 

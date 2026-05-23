@@ -42,6 +42,11 @@ jobs:
           npm run build-android-web
           touch dist/.nojekyll
 
+      - name: Copy static images to dist
+        run: |
+          cp -r public/images/. dist/images/
+          cp -r public/musclog-app/images/. dist/musclog-app/images/
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
