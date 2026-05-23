@@ -1,8 +1,9 @@
-import MaterialIcons from "@react-native-vector-icons/material-icons/static";
+import MaterialIcons from '@react-native-vector-icons/material-icons/static';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { TFunction } from 'i18next';
 import { Search } from 'lucide-react-native';
-import { ReactNode, useState } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
@@ -23,8 +24,10 @@ type WorkoutTemplate = {
   duration: string;
   exercises: string;
   sets: string;
-  icon: keyof typeof MaterialIcons.glyphMap;
+  icon: MaterialIconName;
 };
+
+type MaterialIconName = ComponentProps<typeof MaterialIcons>['name'];
 
 // Raw template type as found in workoutTemplatesEnUS.json
 export type RawWorkoutTemplate = {
@@ -103,7 +106,7 @@ const getNormalizedTemplates = (t: TFunction) => {
         ? t('workouts.browseTemplatesModal.stats.setsQty', { count: totalSets })
         : '';
 
-      const iconKey = (item.icon || 'fitness-center') as keyof typeof MaterialIcons.glyphMap;
+      const iconKey = (item.icon || 'fitness-center') as MaterialIconName;
 
       const id = `template-${idx}-${title.replace(/\s+/g, '-').toLowerCase()}`;
 

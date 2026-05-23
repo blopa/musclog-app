@@ -14,10 +14,23 @@ module.exports = defineConfig([
       'dist/*',
       'coverage/**',
       'app/test/**',
+      '**/__tests__/**',
+      '**/*.test.ts',
+      '**/*.test.tsx',
+      '**/*.spec.ts',
+      '**/*.spec.tsx',
       'training-data/.venv/**',
       'training-data/output/model.js',
       'utils/repCountingModel.js',
     ],
+  },
+  {
+    files: ['jest.setup.js'],
+    languageOptions: {
+      globals: {
+        jest: 'readonly',
+      },
+    },
   },
   {
     plugins: {
@@ -58,6 +71,14 @@ module.exports = defineConfig([
         'warn',
         // { enableDangerousAutofixThisMayCauseInfiniteLoops: true },
       ],
+      'react-hooks/set-state-in-effect': 'warn',
+      'react-hooks/set-state-in-render': 'warn',
+      'react-hooks/immutability': 'warn',
+      'react-hooks/error-boundaries': 'warn',
+      'react-hooks/preserve-manual-memoization': 'warn',
+      'react-hooks/purity': 'warn',
+      'react-hooks/refs': 'warn',
+      'react-hooks/static-components': 'warn',
     },
   },
   {

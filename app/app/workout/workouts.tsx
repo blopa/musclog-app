@@ -1,5 +1,5 @@
-import { useFocusEffect } from "expo-router/react-navigation";
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useFocusEffect } from 'expo-router/react-navigation';
 import { Dumbbell, Plus, Repeat, Search, Target, WifiOff } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

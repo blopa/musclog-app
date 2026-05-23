@@ -138,7 +138,7 @@ export async function saveExerciseImage(tempUri: string, existingUri?: string): 
   // Copy from the temporary picker URI to the permanent destination
   const srcFile = new File(tempUri);
   const destFile = new File(exercisesDir, filename);
-  srcFile.copy(destFile);
+  srcFile.copySync(destFile);
 
   // Remove the old file if one was provided (best-effort; ignore errors)
   if (existingUri) {
@@ -178,7 +178,7 @@ export async function saveMealImage(tempUri: string, existingUri?: string): Prom
   // Copy from the temporary picker URI to the permanent destination
   const srcFile = new File(tempUri);
   const destFile = new File(mealsDir, filename);
-  srcFile.copy(destFile);
+  srcFile.copySync(destFile);
 
   // Remove the old file if one was provided (best-effort; ignore errors)
   if (existingUri) {
@@ -213,7 +213,7 @@ export async function saveFoodImage(tempUri: string, existingUri?: string): Prom
 
   const srcFile = new File(tempUri);
   const destFile = new File(foodsDir, filename);
-  srcFile.copy(destFile);
+  srcFile.copySync(destFile);
 
   if (existingUri) {
     try {

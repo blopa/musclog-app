@@ -20,8 +20,17 @@ function main() {
     fs.rmSync(mirroredImagesDir, { recursive: true, force: true });
   }
 
-  fs.symlinkSync(path.relative(path.dirname(mirroredImagesDir), trackedImagesDir), mirroredImagesDir, 'dir');
-  console.log('[sync-web-images]', path.relative(root, mirroredImagesDir), '->', path.relative(path.dirname(mirroredImagesDir), trackedImagesDir));
+  fs.symlinkSync(
+    path.relative(path.dirname(mirroredImagesDir), trackedImagesDir),
+    mirroredImagesDir,
+    'dir'
+  );
+  console.log(
+    '[sync-web-images]',
+    path.relative(root, mirroredImagesDir),
+    '->',
+    path.relative(path.dirname(mirroredImagesDir), trackedImagesDir)
+  );
 }
 
 main();

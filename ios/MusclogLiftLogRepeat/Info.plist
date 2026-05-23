@@ -77,6 +77,10 @@
     </array>
     <key>RCTRootViewBackgroundColor</key>
     <integer>4278784784</integer>
+    <key>UIAppFonts</key>
+    <array>
+      <string>MaterialIcons.ttf</string>
+    </array>
     <key>UIBackgroundModes</key>
     <array>
       <string>fetch</string>

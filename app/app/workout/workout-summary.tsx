@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, View } from 'react-native';
 
-import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
+import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
 import { WorkoutSummaryCelebration } from '@/components/WorkoutSummaryCelebration';
 import { useUnreadChat } from '@/context/UnreadChatContext';
 import type { WorkoutCompletedPayload } from '@/database/models/ChatMessage';
@@ -303,7 +303,7 @@ export default function WorkoutSummaryScreen() {
         caloriesBurned={caloriesBurned}
         goalProgress={goalProgress}
       />
-      {showConfetti && <ConfettiOverlay />}
+      {showConfetti ? <ConfettiOverlay /> : null}
     </>
   );
 }

@@ -1,7 +1,9 @@
-import type { Router } from 'expo-router';
+import type { useRouter } from 'expo-router';
 
 import { handleError } from '@/utils/handleError';
 import { getCurrentOnboardingStep, isOnboardingCompleted } from '@/utils/onboardingService';
+
+type Router = ReturnType<typeof useRouter>;
 
 function normalizePath(path: string): string {
   const [pathname] = path.split('?');
