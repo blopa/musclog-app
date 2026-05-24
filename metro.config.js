@@ -12,6 +12,7 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
       type: 'sourceFile',
     };
   }
+
   return context.resolveRequest(context, moduleName, platform);
 };
 
