@@ -4,10 +4,10 @@ import { field, writer } from '@nozbe/watermelondb/decorators';
 export default class Supplement extends Model {
   static table = 'supplements';
 
-  @field('name') name!: string;
-  @field('has_reminder') hasReminder!: boolean;
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('name') declare name: string;
+  @field('has_reminder') declare hasReminder: boolean;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 
   @writer

@@ -114,13 +114,13 @@ export default class ChatMessage extends Model {
     // No relationships defined for chat messages currently
   };
 
-  @field('sender') sender!: ChatSender;
-  @field('message') message!: string;
-  @field('message_type') messageType!: ChatMessageType;
-  @field('context') context!: ChatMessageContext;
+  @field('sender') declare sender: ChatSender;
+  @field('message') declare message: string;
+  @field('message_type') declare messageType: ChatMessageType;
+  @field('context') declare context: ChatMessageContext;
   @field('payload_json') payloadJson?: string;
   @field('summarized_message') summarizedMessage?: string;
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 }

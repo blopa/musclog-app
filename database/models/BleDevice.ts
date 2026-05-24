@@ -4,12 +4,12 @@ import { field, writer } from '@nozbe/watermelondb/decorators';
 export default class BleDevice extends Model {
   static table = 'ble_devices';
 
-  @field('device_id') deviceId!: string;
-  @field('name') name!: string;
+  @field('device_id') declare deviceId: string;
+  @field('name') declare name: string;
   @field('nickname') nickname?: string;
   @field('last_connected_at') lastConnectedAt?: number;
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 
   get displayName(): string {

@@ -12,16 +12,16 @@ export default class SavedForLaterGroup extends Model {
     saved_for_later_items: { type: 'has_many' as const, foreignKey: 'group_id' },
   };
 
-  @field('name') name!: string;
+  @field('name') declare name: string;
   @field('note') noteRaw?: string;
-  @field('original_meal_type') originalMealType!: string;
-  @field('original_date') originalDate!: number;
+  @field('original_meal_type') declare originalMealType: string;
+  @field('original_date') declare originalDate: number;
 
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 
-  @children('saved_for_later_items') items!: Query<SavedForLaterItem>;
+  @children('saved_for_later_items') declare items: Query<SavedForLaterItem>;
 
   async getNote(): Promise<string> {
     return decryptOptionalString(this.noteRaw);

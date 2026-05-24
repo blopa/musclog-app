@@ -11,7 +11,7 @@ export default class FoodPortion extends Model {
     nutrition_logs: { type: 'has_many' as const, foreignKey: 'portion_id' },
   };
 
-  @field('name') name!: string; // e.g., "Slice", "Cup", "Bowl"
+  @field('name') declare name: string; // e.g., "Slice", "Cup", "Bowl"
   @field('gram_weight') gramWeight?: number; // How many grams is this portion?
   @field('icon') icon?: string; // e.g., 'droplet', 'scale', 'egg', 'cup'
   /** `'basic'` = seeded common portions; `'custom'` = item-created. */
@@ -21,11 +21,11 @@ export default class FoodPortion extends Model {
   @field('owner_type') ownerType?: string; // 'food' | 'meal'
   @field('owner_id') ownerId?: string;
 
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 
-  @children('food_food_portions') foodFoodPortions!: any; // Query<FoodFoodPortion>
+  @children('food_food_portions') declare foodFoodPortions: any; // Query<FoodFoodPortion>
 
   get resolvedKind(): 'mass' | 'named' {
     return this.kind === 'named' ? 'named' : 'mass';

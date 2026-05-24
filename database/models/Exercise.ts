@@ -54,21 +54,21 @@ export default class Exercise extends Model {
     workout_log_exercises: { type: 'has_many' as const, foreignKey: 'exercise_id' },
   };
 
-  @field('name') name!: string;
-  @field('description') description!: string;
+  @field('name') declare name: string;
+  @field('description') declare description: string;
   @field('image_url') imageUrl?: string;
-  @field('muscle_group') muscleGroup!: MuscleGroup;
-  @field('equipment_type') equipmentType!: EquipmentType;
-  @field('mechanic_type') mechanicType!: MechanicType;
+  @field('muscle_group') declare muscleGroup: MuscleGroup;
+  @field('equipment_type') declare equipmentType: EquipmentType;
+  @field('mechanic_type') declare mechanicType: MechanicType;
   @field('source') source?: ExerciseSource;
-  @field('load_multiplier') loadMultiplier!: number;
+  @field('load_multiplier') declare loadMultiplier: number;
   @field('order_index') orderIndex?: number;
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 
-  @children('workout_template_exercises') templateExercises!: Query<WorkoutTemplateExercise>;
-  @children('workout_log_exercises') logExercises!: Query<WorkoutLogExercise>;
+  @children('workout_template_exercises') declare templateExercises: Query<WorkoutTemplateExercise>;
+  @children('workout_log_exercises') declare logExercises: Query<WorkoutLogExercise>;
 
   @writer
   async markAsDeleted(): Promise<void> {

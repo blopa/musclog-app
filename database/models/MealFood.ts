@@ -16,17 +16,17 @@ export default class MealFood extends Model {
     food_portions: { type: 'belongs_to' as const, key: 'portion_id' },
   };
 
-  @field('meal_id') mealId!: string;
-  @field('food_id') foodId!: string;
-  @field('amount') amount!: number; // How much of the food
+  @field('meal_id') declare mealId: string;
+  @field('food_id') declare foodId: string;
+  @field('amount') declare amount: number; // How much of the food
   @field('portion_id') portionId?: string; // If null, assume base unit (grams)
 
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 
-  @relation('meals', 'meal_id') meal!: Meal;
-  @relation('foods', 'food_id') food!: Food;
+  @relation('meals', 'meal_id') declare meal: Meal;
+  @relation('foods', 'food_id') declare food: Food;
   @relation('food_portions', 'portion_id') portion?: FoodPortion;
 
   @writer

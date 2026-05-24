@@ -17,15 +17,15 @@ export interface MenstrualCycleUpdate {
 export default class MenstrualCycle extends Model {
   static table = 'menstrual_cycles';
 
-  @field('avg_cycle_length') avgCycleLength!: number;
-  @field('avg_period_duration') avgPeriodDuration!: number;
-  @field('use_hormonal_birth_control') useHormonalBirthControl!: boolean;
+  @field('avg_cycle_length') declare avgCycleLength: number;
+  @field('avg_period_duration') declare avgPeriodDuration: number;
+  @field('use_hormonal_birth_control') declare useHormonalBirthControl: boolean;
   @field('birth_control_type') birthControlType?: BirthControlType;
-  @field('last_period_start_date') lastPeriodStartDate!: number;
+  @field('last_period_start_date') declare lastPeriodStartDate: number;
   @field('sync_goal') syncGoal?: SyncGoal;
-  @field('is_active') isActive!: boolean;
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('is_active') declare isActive: boolean;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 
   @writer

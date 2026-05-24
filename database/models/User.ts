@@ -29,21 +29,21 @@ export interface UserProfileUpdate {
 export default class User extends Model {
   static table = 'users';
 
-  @field('full_name') fullName!: string;
+  @field('full_name') declare fullName: string;
   @field('email') email?: string;
-  @field('date_of_birth') dateOfBirth!: number;
-  @field('gender') gender!: Gender;
-  @field('fitness_goal') fitnessGoal!: FitnessGoal;
+  @field('date_of_birth') declare dateOfBirth: number;
+  @field('gender') declare gender: Gender;
+  @field('fitness_goal') declare fitnessGoal: FitnessGoal;
   @field('weight_goal') weightGoal?: WeightGoal; // optional for backward compatibility
-  @field('activity_level') activityLevel!: number;
-  @field('lifting_experience') liftingExperience!: LiftingExperience;
+  @field('activity_level') declare activityLevel: number;
+  @field('lifting_experience') declare liftingExperience: LiftingExperience;
   @field('avatar_icon') avatarIcon?: AvatarIcon;
   @field('avatar_color') avatarColor?: AvatarColor;
-  @field('sync_id') syncId!: string;
+  @field('sync_id') declare syncId: string;
   @field('external_account_id') externalAccountId?: string;
   @field('external_account_provider') externalAccountProvider?: string;
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 
   /**

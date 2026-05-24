@@ -19,12 +19,12 @@ export default class Schedule extends Model {
     workout_templates: { type: 'belongs_to' as const, key: 'template_id' },
   };
 
-  @field('template_id') templateId!: string;
-  @field('day_of_week') dayOfWeek!: DayOfWeek;
+  @field('template_id') declare templateId: string;
+  @field('day_of_week') declare dayOfWeek: DayOfWeek;
   @field('reminder_time') reminderTime?: string;
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 
-  @relation('workout_templates', 'template_id') template!: WorkoutTemplate;
+  @relation('workout_templates', 'template_id') declare template: WorkoutTemplate;
 }
