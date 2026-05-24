@@ -3,8 +3,9 @@
 Segment-and-Score rep counting trainer.
 
 Instead of predicting rep count for a whole recording (regression), this pipeline:
-  1. Normalises each recording to a 1D canonical signal via PCA on Euler angles,
-     making the model orientation-agnostic regardless of how the phone is held.
+  1. Selects the best 1D canonical signal from 10 candidate axes (3 Euler angles,
+     3 accelerometer components, 3 gyroscope components, 1 acc magnitude) by
+     spectral concentration in the rep-frequency band.
   2. Over-segments the signal into candidate rep-segments using low-threshold
      peak detection — deliberately capturing more segments than actual reps.
   3. Pseudo-labels each segment as rep (1) or noise (0) using the recording's
@@ -95,6 +96,7 @@ _SEG_SIGNAL_FEATURES = [
     "position_frac",        # normalised time position [0, 1]; setup/unrack cluster near edges
     "neighbour_amp_ratio",  # amplitude / mean(immediate neighbours' amplitudes)
     "set_number",
+    "spectral_entropy",     # Shannon entropy of segment PSD; low = concentrated/rep-like
 ]
 _SEG_CATEGORICAL_FEATURES = (
     [f"muscle_{g}"   for g in MUSCLE_GROUPS]
@@ -178,6 +180,8 @@ def preprocess_to_1d(samples: list) -> tuple:
                     for s in samples], dtype=float)
     acc = np.array([[s["accel"]["x"],  s["accel"]["y"],  s["accel"]["z"]]
                     for s in samples], dtype=float)
+    gyr = np.array([[s["gyro"]["x"],   s["gyro"]["y"],   s["gyro"]["z"]]
+                    for s in samples], dtype=float)
 
     n   = len(ts)
     sr  = n / ((ts[-1] - ts[0]) / 1000.0)
@@ -189,7 +193,7 @@ def preprocess_to_1d(samples: list) -> tuple:
     best_sig:   np.ndarray = None
     best_score: float      = -1.0
 
-    for arr in (ang_uw, acc):
+    for arr in (ang_uw, acc, gyr):
         for i in range(3):
             sm  = savgol_filter(arr[:, i], window_length=win, polyorder=2)
             bp  = _bandpass(sm, sr)
@@ -200,6 +204,17 @@ def preprocess_to_1d(samples: list) -> tuple:
             if score > best_score:
                 best_score = score
                 best_sig   = bp
+
+    # 10th candidate: orientation-agnostic accelerometer magnitude
+    acc_r = np.sqrt(np.sum(acc ** 2, axis=1))
+    sm    = savgol_filter(acc_r, window_length=win, polyorder=2)
+    bp    = _bandpass(sm, sr)
+    rng   = float(bp.max() - bp.min())
+    if rng >= 1e-4:
+        score = _spectral_score(bp, sr)
+        if score > best_score:
+            best_score = score
+            best_sig   = bp
 
     if best_sig is None:
         # Absolute fallback: bandpass angle-z (will yield a flat / empty signal)
@@ -347,6 +362,15 @@ def extract_segment_features(
             nb_amps.append(float(nb_chunk.max() - nb_chunk.min()))
     neighbour_amp_ratio = amplitude / (float(np.mean(nb_amps)) + 1e-6) if nb_amps else 1.0
 
+    # Spectral entropy of the segment (low = concentrated/rep-like, high = noisy)
+    # chunk is already bandpass-filtered so this measures power concentration in the rep band
+    if len(chunk) >= 4:
+        power_seg = np.abs(rfft(chunk)) ** 2
+        p_pdf     = power_seg / (power_seg.sum() + 1e-10)
+        spectral_entropy = float(-np.sum(p_pdf * np.log(p_pdf + 1e-10)))
+    else:
+        spectral_entropy = 0.0
+
     feats: dict = {
         "amplitude":            amplitude,
         "duration_ms":          duration_ms,
@@ -358,6 +382,7 @@ def extract_segment_features(
         "position_frac":        position_frac,
         "neighbour_amp_ratio":  neighbour_amp_ratio,
         "set_number":           float(metadata.get("setNumber") or 1),
+        "spectral_entropy":     spectral_entropy,
     }
 
     # One-hot categorical features

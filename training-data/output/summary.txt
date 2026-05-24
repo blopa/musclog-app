@@ -1,20 +1,20 @@
 Training summary (Segment-and-Score)
 ========================================
 Recordings     : 21
-Total segments : 412
+Total segments : 499
 Rep segments   : 205
-Noise segments : 207
+Noise segments : 294
 
 LOOCV — Segment-level:
-  Precision : 0.77
+  Precision : 0.71
   Recall    : 0.80
-  F1        : 0.78
+  F1        : 0.75
 
 LOOCV — Recording-level:
-  MAE         : 3.48
-  Exact match : 7/21 (33%)
+  MAE         : 4.67
+  Exact match : 4/21 (19%)
 
-Feature order (41 features):
+Feature order (42 features):
    0: amplitude
    1: duration_ms
    2: energy
@@ -25,34 +25,35 @@ Feature order (41 features):
    7: position_frac
    8: neighbour_amp_ratio
    9: set_number
-  10: muscle_abdomen
-  11: muscle_arms
-  12: muscle_back
-  13: muscle_chest
-  14: muscle_core
-  15: muscle_full_body
-  16: muscle_glutes
-  17: muscle_legs
-  18: muscle_shoulders
-  19: muscle_unknown
-  20: equip_barbell
-  21: equip_bodyweight
-  22: equip_cable
-  23: equip_cardio
-  24: equip_dumbbell
-  25: equip_kettlebell
-  26: equip_machine
-  27: equip_other
-  28: equip_plate_machine
-  29: equip_pneumatic_machine
-  30: equip_resistance_band
-  31: equip_smith_machine
-  32: equip_unknown
-  33: mechanic_cardio
-  34: mechanic_compound
-  35: mechanic_isolation
-  36: mechanic_mobility
-  37: mechanic_other
-  38: mechanic_plyometric
-  39: mechanic_stretching
-  40: mechanic_unknown
+  10: spectral_entropy
+  11: muscle_abdomen
+  12: muscle_arms
+  13: muscle_back
+  14: muscle_chest
+  15: muscle_core
+  16: muscle_full_body
+  17: muscle_glutes
+  18: muscle_legs
+  19: muscle_shoulders
+  20: muscle_unknown
+  21: equip_barbell
+  22: equip_bodyweight
+  23: equip_cable
+  24: equip_cardio
+  25: equip_dumbbell
+  26: equip_kettlebell
+  27: equip_machine
+  28: equip_other
+  29: equip_plate_machine
+  30: equip_pneumatic_machine
+  31: equip_resistance_band
+  32: equip_smith_machine
+  33: equip_unknown
+  34: mechanic_cardio
+  35: mechanic_compound
+  36: mechanic_isolation
+  37: mechanic_mobility
+  38: mechanic_other
+  39: mechanic_plyometric
+  40: mechanic_stretching
+  41: mechanic_unknown
