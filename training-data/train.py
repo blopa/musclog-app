@@ -108,7 +108,25 @@ SEGMENT_FEATURE_COLS = _SEG_SIGNAL_FEATURES + _SEG_CATEGORICAL_FEATURES
 # Step 1 — Preprocessing: best-axis bandpass → 1D canonical signal
 # ---------------------------------------------------------------------------
 
-# Rep-frequency bandpass bounds — human reps are 0.1–3 Hz (3–60 s/rep)
+# Bandpass bounds for the rep-frequency band.
+#
+# These are universal physiological constraints — NOT derived from any specific
+# user's data and NOT demographic (they apply equally to all ages, genders, and
+# body types):
+#
+#   _BP_LO_HZ = 0.10  →  10 s/rep  (6 reps/min) — the Superslow protocol and
+#                         extreme powerlifting tempos sit right at this edge.
+#                         Even the slowest controlled 5-count eccentric (5 s
+#                         down) produces a 0.1 Hz cycle.
+#
+#   _BP_HI_HZ = 3.00  →  333 ms/rep  (180 reps/min) — maximum for any loaded
+#                         voluntary movement; only unweighted plyometrics reach
+#                         this ceiling.
+#
+# Note: lowering _BP_LO_HZ (e.g. to 0.02 Hz to "adapt" to recording length)
+# lets slow drift compete in the spectral-score axis selection and causes the
+# wrong sensor axis to be chosen.  If you need to support reps slower than
+# 10 s/rep, lower _BP_LO_HZ to 0.05 and re-evaluate segmentation quality.
 _BP_LO_HZ = 0.10
 _BP_HI_HZ = 3.00
 
@@ -125,9 +143,8 @@ def _bandpass(sig: np.ndarray, sr: float) -> np.ndarray:
 
 def _spectral_score(sig: np.ndarray, sr: float) -> float:
     """
-    Fraction of rep-band (0.1–3 Hz) power held by the single dominant frequency.
-    High score = periodic signal (good for rep detection).
-    Low score  = broadband noise or DC-dominated signal.
+    Fraction of rep-band power at the single dominant frequency.
+    High score = periodic signal.  Low score = broadband noise or DC-dominated.
     """
     freqs  = rfftfreq(len(sig), d=1.0 / sr)
     power  = np.abs(rfft(sig)) ** 2
