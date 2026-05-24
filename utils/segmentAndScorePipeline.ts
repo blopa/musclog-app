@@ -10,6 +10,9 @@
  *   5. detectPhases      — analytical split at the turning point → Phase A / Phase B timing + speed.
  */
 
+import mlMax from 'ml-array-max';
+import mlMin from 'ml-array-min';
+
 import { classifySegment } from './repCountingModel';
 
 // ─── Band-pass bounds (see train.py for rationale) ───────────────────────────
@@ -110,14 +113,6 @@ interface Segment {
 }
 
 // ─── Array helpers ────────────────────────────────────────────────────────────
-
-function arrMax(arr: number[]): number {
-  return arr.reduce((a, b) => (b > a ? b : a), -Infinity);
-}
-
-function arrMin(arr: number[]): number {
-  return arr.reduce((a, b) => (b < a ? b : a), Infinity);
-}
 
 function arrArgMax(arr: number[]): number {
   let best = 0;
@@ -337,7 +332,7 @@ function preprocessTo1d(samples: MotionSample[]): { signal1d: number[]; timestam
   for (const axisValues of [...angAxes, ...accAxes]) {
     const sm = smoothEMA(axisValues, alpha);
     const bp = filtfilt(b, a, sm);
-    const rng = arrMax(bp) - arrMin(bp);
+    const rng = mlMax(bp) - mlMin(bp);
     if (rng < 1e-4) {
       continue;
     }
@@ -408,7 +403,7 @@ function findPeaksLocal(signal: number[], minProminence: number, minDist: number
 }
 
 function overSegment(signal1d: number[], timestamps: number[]): Segment[] {
-  const sigRange = arrMax(signal1d) - arrMin(signal1d);
+  const sigRange = mlMax(signal1d) - mlMin(signal1d);
   if (sigRange < 1e-3) {
     return [];
   }
@@ -485,12 +480,12 @@ function extractFeatures(
 ): number[] {
   const { startIdx: si, endIdx: ei, turningIdx: ti, startTs, endTs } = seg;
   const chunk = signal1d.slice(si, ei + 1);
-  const amplitude = arrMax(chunk) - arrMin(chunk);
+  const amplitude = mlMax(chunk) - mlMin(chunk);
   const durationMs = endTs - startTs;
   const avgDtS = durationMs / 1000 / Math.max(1, chunk.length - 1);
   const energy = chunk.reduce((acc, v) => acc + v * v, 0) * avgDtS;
 
-  const globalRange = Math.max(arrMax(signal1d) - arrMin(signal1d), 1e-9);
+  const globalRange = Math.max(mlMax(signal1d) - mlMin(signal1d), 1e-9);
 
   // Prominence of the turning point (simplified global approximation)
   let prominence: number;
@@ -555,7 +550,7 @@ function extractFeatures(
     if (nbIdx >= 0 && nbIdx < allSegs.length) {
       const nb = allSegs[nbIdx];
       const nbChunk = signal1d.slice(nb.startIdx, nb.endIdx + 1);
-      nbAmps.push(arrMax(nbChunk) - arrMin(nbChunk));
+      nbAmps.push(mlMax(nbChunk) - mlMin(nbChunk));
     }
   }
 
