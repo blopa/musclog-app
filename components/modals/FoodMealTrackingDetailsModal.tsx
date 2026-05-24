@@ -1321,7 +1321,7 @@ export function FoodMealTrackingDetailsModal({
   ]);
 
   // Get product name from meal, barcode lookup, search result, local food, or log snapshot
-  const getFoodMealName = useCallback(() => {
+  const getFoodMealName = () => {
     if (editedOverrides?.name != null && editedOverrides.name.trim() !== '') {
       return editedOverrides.name.trim();
     }
@@ -1352,17 +1352,7 @@ export function FoodMealTrackingDetailsModal({
     }
 
     return t('food.unknownFood');
-  }, [
-    editedOverrides?.name,
-    productDetails,
-    refetchedProductDetails,
-    productFromSearch,
-    food,
-    localFood,
-    foodLogDecrypted,
-    meal,
-    t,
-  ]);
+  };
 
   // Get product category/brand from meal, barcode lookup, search result, or local food
   const getProductCategory = useCallback(() => {

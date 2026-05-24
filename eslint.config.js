@@ -74,7 +74,7 @@ module.exports = defineConfig([
       'react-hooks/set-state-in-render': 'warn',
       'react-hooks/immutability': 'warn',
       'react-hooks/error-boundaries': 'warn',
-      'react-hooks/preserve-manual-memoization': 'warn',
+      'react-hooks/preserve-manual-memoization': 'error',
       'react-hooks/purity': 'error',
       'react-hooks/refs': 'warn',
       'react-hooks/static-components': 'error',

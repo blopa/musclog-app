@@ -276,7 +276,7 @@ export function WorkoutSessionHistoryModal({
     return sets.filter((set) => (set.difficultyLevel ?? 0) > 0).length;
   }, [isPreview, sets]);
 
-  const shareDuration = useMemo(() => {
+  const shareDuration = (() => {
     if (isPreview || !workoutLog?.startedAt) {
       return null;
     }
@@ -299,16 +299,9 @@ export function WorkoutSessionHistoryModal({
       2,
       '0'
     )}:${String(sessionTime.seconds).padStart(2, '0')}`;
-  }, [
-    isPreview,
-    sessionTime.hours,
-    sessionTime.minutes,
-    sessionTime.seconds,
-    workoutLog?.completedAt,
-    workoutLog?.startedAt,
-  ]);
+  })(); // TODO: do not use IIFE, but also do not use useMemo
 
-  const shareMessage = useMemo(() => {
+  const shareMessage = (() => {
     const lines: string[] = [
       isPreview ? t('workoutHistory.previewTitle') : t('workoutHistory.title'),
       '',
@@ -371,22 +364,7 @@ export function WorkoutSessionHistoryModal({
     }
 
     return lines.join('\n').trimEnd();
-  }, [
-    completedSetsCount,
-    exerciseDataList,
-    formatInteger,
-    formatNumber,
-    isPreview,
-    locale,
-    shareDuration,
-    t,
-    totalVolumeDisplay,
-    weightUnitKey,
-    workoutLog?.completedAt,
-    workoutLog?.startedAt,
-    workoutTemplate?.description,
-    workoutName,
-  ]);
+  })(); // TODO: do not use IIFE, but also do not use useMemo
 
   const handleShare = useCallback(async () => {
     if (isSharing) {

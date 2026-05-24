@@ -188,7 +188,7 @@ export default function RestTimerScreen() {
   }, [isLoading, completedSet, initialRestTime]);
 
   // Navigate after rest: skip exercise-transition when next set is in same superset group
-  const navigateToNextScreen = useCallback(async () => {
+  const navigateToNextScreen = async () => {
     await clearRestTimerEndAt();
 
     if (!workoutLogId) {
@@ -221,7 +221,7 @@ export default function RestTimerScreen() {
     router.replace(
       `/app/workout/workout-session?workoutLogId=${workoutLogId}&exerciseId=${nextSet.exercise.id}`
     );
-  }, [completedSet, nextSet, router, workoutLogId]);
+  };
 
   // Wall-clock countdown: recalculates remaining time from endAtRef on every tick.
   // Survives app backgrounding because it uses Date.now() instead of state decrement.
