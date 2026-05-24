@@ -32,6 +32,7 @@ const WORKOUT_LOG_SET_COLUMNS = [
   'set_type',
   'set_order',
   'deleted_at',
+  'rep_data_json',
 ] as const;
 
 export type WorkoutSessionProgress = {

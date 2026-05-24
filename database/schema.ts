@@ -179,6 +179,7 @@ export const schema = appSchema({
         { name: 'difficulty_level', type: 'number' }, // 1-10 (RPE)
         { name: 'set_type', type: 'string' }, // 'normal' | 'warmup' | 'failure' | 'drop_set' | 'myo_rep'
         { name: 'set_order', type: 'number' },
+        { name: 'rep_data_json', type: 'string', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
