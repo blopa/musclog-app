@@ -36,7 +36,7 @@ export function WebModalShellProvider({ children }: { children: ReactNode }) {
     if (parent != null) {
       const h = parent.clientHeight;
       if (h > 0 && hostElement.offsetHeight === 0) {
-        hostElement.style.minHeight = `${h}px`;
+        hostElement.style.setProperty('min-height', `${h}px`);
       }
     }
   }, [hostElement]);

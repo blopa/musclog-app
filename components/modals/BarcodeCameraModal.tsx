@@ -50,6 +50,7 @@ export function BarcodeCameraModal({
   const [barcodeTextSearchValue, setBarcodeTextSearchValue] = useState('');
 
   const barcode = useBarcodeScanner({ visible, onBarcodeScanned, onClose });
+  const { isSearchingBarcodeRef } = barcode;
 
   useEffect(() => {
     if (!visible) {
@@ -70,9 +71,9 @@ export function BarcodeCameraModal({
   useKeepScreenAwake('barcode-camera-processing', visible && barcode.isSearchingBarcode);
 
   const handleClose = useCallback(() => {
-    barcode.isSearchingBarcodeRef.current = false;
+    isSearchingBarcodeRef.current = false;
     onClose();
-  }, [barcode.isSearchingBarcodeRef, onClose]);
+  }, [isSearchingBarcodeRef, onClose]);
 
   const handleFlashToggle = useCallback(() => {
     setFlashEnabled((prev) => !prev);
@@ -158,7 +159,7 @@ export function BarcodeCameraModal({
   );
 
   if (!visible) {
-    barcode.isSearchingBarcodeRef.current = false;
+    isSearchingBarcodeRef.current = false;
     return null;
   }
 

@@ -175,6 +175,7 @@ export default function SmartCameraModal({
   const shouldShowBarcodeTextSearch = showBarcodeTextSearch && cameraMode === 'barcode-scan';
 
   const barcode = useBarcodeScanner({ visible, onBarcodeScanned, onClose });
+  const { isSearchingBarcodeRef } = barcode;
 
   const isFoodDetailsModalVisible = barcode.detectedBarcode !== null || productFromAiLabel !== null;
 
@@ -457,9 +458,9 @@ export default function SmartCameraModal({
   }, [cameraMode, t, processAiPhoto, barcode]);
 
   const handleClose = useCallback(() => {
-    barcode.isSearchingBarcodeRef.current = false;
+    isSearchingBarcodeRef.current = false;
     onClose();
-  }, [barcode.isSearchingBarcodeRef, onClose]);
+  }, [isSearchingBarcodeRef, onClose]);
 
   const handleFlashToggle = useCallback(() => {
     setFlashEnabled((prev) => !prev);
@@ -682,7 +683,7 @@ export default function SmartCameraModal({
   }
 
   if (!visible) {
-    barcode.isSearchingBarcodeRef.current = false;
+    isSearchingBarcodeRef.current = false;
     return null;
   }
 

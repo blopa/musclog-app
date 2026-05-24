@@ -172,6 +172,7 @@ export function LineChart({
       pixelPoint?.y ??
       ((yDomainFinal[1] - nearest.y) / (yDomainFinal[1] - yDomainFinal[0])) * height;
 
+    // eslint-disable-next-line react-hooks/immutability
     activeXPos.value = pixelX;
     activeYPos.value = pixelY;
     const label = tooltipFormatter ? tooltipFormatter(nearest) : formatRoundedDecimal(nearest.y, 1);

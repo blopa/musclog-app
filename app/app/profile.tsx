@@ -216,7 +216,12 @@ export default function ProfileScreen() {
   // BMI stat
   if (metrics?.weight !== undefined && metrics?.height !== undefined) {
     // Calculate BMI and get status using helper function
-    const bmiResult = calculateBMIWithStatus(metrics.weight, metrics.height, weightUnit, heightUnit);
+    const bmiResult = calculateBMIWithStatus(
+      metrics.weight,
+      metrics.height,
+      weightUnit,
+      heightUnit
+    );
     const calculatedBMI = bmiResult.bmi;
     const bmiStatusKey = bmiResult.statusKey;
     stats.push({

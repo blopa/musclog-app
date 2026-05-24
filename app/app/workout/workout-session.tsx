@@ -270,6 +270,8 @@ export default function WorkoutSessionScreen() {
 
   const { completeWorkout, submitFeedback } = useWorkoutFeedback();
 
+  const [isSessionFeedbackModalVisible, setIsSessionFeedbackModalVisible] = useState(false);
+
   // When navigated from rest-timer/rest-over after "Finish workout", show feedback modal
   useEffect(() => {
     if (params.showFeedback === '1' && workoutLog && !isLoading) {
@@ -289,7 +291,6 @@ export default function WorkoutSessionScreen() {
   const [isSkipSetModalVisible, setIsSkipSetModalVisible] = useState(false);
   const [isReplaceExerciseModalVisible, setIsReplaceExerciseModalVisible] = useState(false);
   const [isHistoryModalVisible, setIsHistoryModalVisible] = useState(false);
-  const [isSessionFeedbackModalVisible, setIsSessionFeedbackModalVisible] = useState(false);
   const [isWorkoutOverviewModalVisible, setIsWorkoutOverviewModalVisible] = useState(false);
   const [isAddExerciseToSessionModalVisible, setIsAddExerciseToSessionModalVisible] =
     useState(false);

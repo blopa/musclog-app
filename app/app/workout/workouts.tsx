@@ -50,6 +50,7 @@ export default function WorkoutsScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ previewTemplateId?: string }>();
   const { isAiConfigured } = useSettings();
+  const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
 
   // Open template preview when navigating from ViewExerciseModal (e.g. "Workouts using this")
   useEffect(() => {
@@ -88,7 +89,6 @@ export default function WorkoutsScreen() {
     templateId: string;
     title: string;
   } | null>(null);
-  const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
   const isPreviewModalVisible = previewTemplateId !== null;
   const [searchQuery, setSearchQuery] = useState('');
   const [interruptedWorkoutLog, setInterruptedWorkoutLog] = useState<WorkoutLog | null>(null);

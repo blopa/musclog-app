@@ -72,7 +72,7 @@ module.exports = defineConfig([
       ],
       'react-hooks/set-state-in-effect': 'warn',
       'react-hooks/set-state-in-render': 'warn',
-      'react-hooks/immutability': 'warn',
+      'react-hooks/immutability': 'error',
       'react-hooks/error-boundaries': 'error',
       'react-hooks/preserve-manual-memoization': 'error',
       'react-hooks/purity': 'error',
