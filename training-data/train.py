@@ -361,17 +361,18 @@ def main():
     X_all = df[FEATURE_COLS].values
     y_all = df["rep_count"].values
 
-    use_rf   = mae_rf <= mae_gb
-    best_name = "Random Forest" if use_rf else "Gradient Boosting"
-    print(f"\n── Best model: {best_name} (LOOCV MAE = {min(mae_rf, mae_gb):.2f}) ─────")
-
-    if use_rf:
-        final = RandomForestRegressor(n_estimators=100, max_depth=4, random_state=42)
-    else:
-        final = GradientBoostingRegressor(
-            n_estimators=100, max_depth=3, learning_rate=0.1, random_state=42
-        )
+    # We always use Random Forest for the final export because m2cgen doesn't
+    # support Gradient Boosting in JavaScript.
+    final = RandomForestRegressor(n_estimators=100, max_depth=4, random_state=42)
     final.fit(X_all, y_all)
+
+    best_name = "Random Forest" if mae_rf <= mae_gb else "Gradient Boosting"
+    print(f"\n── Comparison: {best_name} performed best (MAE {min(mae_rf, mae_gb):.2f}) ──")
+    if best_name == "Gradient Boosting":
+        print(f"   NOTE: Bypassing {best_name} for export; using Random Forest")
+        print(f"         to ensure parity between Python and JavaScript (m2cgen).")
+    else:
+        print(f"   Using {best_name} for export.")
 
     # ── Feature importances ─────────────────────────────────────────────────
     print("\n── Feature importances ────────────────────────────────────────")
@@ -387,16 +388,8 @@ def main():
     print(f"\n── Saved → output/model.pkl")
 
     # ── Export to JavaScript (for future app integration) ───────────────────
-    # m2cgen only supports Random Forest; fall back to it for the JS export
-    # when Gradient Boosting won the comparison.
-    js_model = final
-    js_model_name = best_name
-    if not use_rf:
-        js_model = RandomForestRegressor(n_estimators=100, max_depth=4, random_state=42)
-        js_model.fit(X_all, y_all)
-        js_model_name = f"Random Forest (JS fallback; pkl uses {best_name})"
-
-    raw_js = m2c.export_to_javascript(js_model, function_name="predictRepCount")
+    # m2cgen only supports Random Forest.
+    raw_js = m2c.export_to_javascript(final, function_name="predictRepCount")
 
     # Minify: strip indentation + blank lines, collapse to a single line.
     # The output is treated like a binary — not meant to be edited by hand.
@@ -411,21 +404,31 @@ def main():
         + minified
         + "\nexport{predictRepCount};\n"
     )
-    print(f"── Saved → output/model.js  ({js_model_name})")
+    print(f"── Saved → output/model.js")
 
     # ── Summary report ──────────────────────────────────────────────────────
-    best_mae   = min(mae_rf, mae_gb)
-    best_preds = rf_preds if use_rf else gb_preds
-    exact      = sum(1 for t, p in zip(rf_actuals if use_rf else gb_actuals, best_preds) if t == p)
+    # Metrics refer to the Random Forest model which is actually used in the app
+    exact = sum(1 for t, p in zip(rf_actuals, rf_preds) if t == p)
 
     summary = [
         "Training summary",
         "=" * 40,
         f"Recordings:   {len(df)}",
-        f"Best model:   {best_name}",
-        f"LOOCV MAE:    {best_mae:.2f}",
+        f"Active model: Random Forest",
+        f"LOOCV MAE:    {mae_rf:.2f}",
         f"Exact match:  {exact}/{len(df)} ({100*exact/len(df):.0f}%)",
         "",
+    ]
+
+    if best_name == "Gradient Boosting":
+        summary += [
+            f"Note: {best_name} performed better in CV (MAE {mae_gb:.2f}),",
+            "but Random Forest was selected for export to ensure",
+            "cross-platform compatibility with JavaScript (m2cgen).",
+            "",
+        ]
+
+    summary += [
         "Feature order for inference (input array index → name):",
         *[f"  {i:>2}: {name}" for i, name in enumerate(FEATURE_COLS)],
     ]
