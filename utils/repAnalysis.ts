@@ -64,6 +64,9 @@ const REP_ACCEL_Z_DOUBLET_GAP_MS = 500;
 // reliable proxy for the exercise half-amplitude, enabling IQR trailing trim.
 const REP_MEDH_REPRESENTATIVE_RATIO = 2;
 
+const RECONCILE_MIN_PEAK_GAP_MS = 300;
+const RECONCILE_MAX_SEEK_ITERATIONS = 30;
+
 // Original floor-based median (upper median for even-length arrays)
 function floorMedian(values: number[]): number {
   if (values.length === 0) {
@@ -589,4 +592,148 @@ export function analyzeRecordedReps(samples: MotionSample[]): RepAnalysisSummary
     sampleCount: samples.length,
     durationMs: Math.max(0, samples[samples.length - 1].timestamp - samples[0].timestamp),
   };
+}
+
+export interface ReconciledRepResult {
+  repCount: number;
+  repDurationsMs: number[];
+}
+
+/**
+ * Uses the ML model's rep count as ground truth and bends the peak detector to
+ * match it, producing a per-rep duration array as a byproduct.
+ *
+ * Three-stage reconciliation:
+ *   1. Target seek  — binary-search the peak threshold until the detector finds
+ *      exactly mlRepCount peaks.
+ *   2. Amplitude pruning — if the seek overshoots, keep the N tallest peaks.
+ *   3. Outlier splitting — if the seek undershoots, split the longest inter-peak
+ *      gaps until the duration count reaches mlRepCount − 1.
+ */
+export function reconcileRepCounts(
+  samples: MotionSample[],
+  mlRepCount: number
+): ReconciledRepResult {
+  const target = Math.max(0, Math.round(mlRepCount));
+
+  if (samples.length < 10 || target === 0) {
+    return { repCount: target, repDurationsMs: [] };
+  }
+
+  const n = samples.length;
+  const timestamps = samples.map((s) => s.timestamp);
+  const angX = samples.map((s) => s.angle.x);
+  const angY = samples.map((s) => s.angle.y);
+
+  // Dominant axis — same selection as analyzeRecordedReps
+  const rawValues = mlMax(angX) - mlMin(angX) >= mlMax(angY) - mlMin(angY) ? angX : angY;
+
+  // EMA smooth → subtract first-20 baseline
+  const smoothed = smoothEma(rawValues, REP_ANGLE_SMOOTH_ALPHA);
+  const baseline = floorMedian(smoothed.slice(0, Math.min(20, n)));
+  const centeredRaw = smoothed.map((v) => v - baseline);
+  const signalRangeRaw = mlMax(centeredRaw) - mlMin(centeredRaw);
+
+  // Linear detrend when gyro drift dominates (same 65 % threshold as analyzeRecordedReps)
+  const driftWindow = Math.min(20, Math.floor(n * 0.05));
+  const startMean = centeredRaw.slice(0, driftWindow).reduce((s, v) => s + v, 0) / driftWindow;
+  const endMean = centeredRaw.slice(-driftWindow).reduce((s, v) => s + v, 0) / driftWindow;
+  const driftRatio = signalRangeRaw > 0 ? Math.abs(endMean - startMean) / signalRangeRaw : 0;
+  const centered = driftRatio >= 0.65 ? detrendLinear(centeredRaw) : centeredRaw;
+
+  const signalMin = mlMin(centered);
+  const signalMax = mlMax(centered);
+  const signalRange = signalMax - signalMin;
+
+  if (signalRange === 0) {
+    return { repCount: target, repDurationsMs: [] };
+  }
+
+  // Positive-peak finder on the already-processed signal.
+  // thresholdFraction ∈ [0, 1]: 0 = find nearly every peak, 1 = find nothing.
+  function findPeaks(thresholdFraction: number): Array<[number, number]> {
+    const threshold = signalMin + signalRange * thresholdFraction;
+    const result: Array<[number, number]> = [];
+    let lastPeakMs: number | null = null;
+
+    for (let i = 1; i < centered.length - 1; i++) {
+      const isPeak = centered[i] > centered[i - 1] && centered[i] >= centered[i + 1];
+      const gapMs = lastPeakMs === null ? Infinity : timestamps[i] - lastPeakMs;
+
+      if (isPeak && centered[i] > threshold && gapMs >= RECONCILE_MIN_PEAK_GAP_MS) {
+        result.push([timestamps[i], centered[i]]);
+        lastPeakMs = timestamps[i];
+      }
+    }
+
+    return result;
+  }
+
+  // Stage 1: binary search — raise/lower threshold until peak count hits target.
+  let lo = 0.0;
+  let hi = 1.0;
+  let bestPeaks = findPeaks(0.0);
+
+  for (let iter = 0; iter < RECONCILE_MAX_SEEK_ITERATIONS; iter++) {
+    const mid = (lo + hi) / 2;
+    const peaks = findPeaks(mid);
+
+    if (peaks.length === target) {
+      bestPeaks = peaks;
+      break;
+    }
+
+    if (peaks.length > target) {
+      lo = mid; // too many peaks → raise threshold to suppress minor ones
+    } else {
+      hi = mid; // too few peaks → lower threshold to surface smaller ones
+    }
+
+    if (Math.abs(peaks.length - target) < Math.abs(bestPeaks.length - target)) {
+      bestPeaks = peaks;
+    }
+  }
+
+  // Stage 2: amplitude pruning — if we still have more peaks than target, keep
+  // the N tallest (they are most likely to be genuine reps), then re-sort by time.
+  if (bestPeaks.length > target) {
+    bestPeaks = [...bestPeaks]
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, target)
+      .sort((a, b) => a[0] - b[0]);
+  }
+
+  const peakTimestamps = bestPeaks.map(([ts]) => ts);
+
+  if (peakTimestamps.length < 2) {
+    return { repCount: target, repDurationsMs: [] };
+  }
+
+  // Inter-peak durations: N peaks → N−1 gaps
+  const rawDurations = peakTimestamps.slice(1).map((ts, i) => ts - peakTimestamps[i]);
+
+  // Stage 3: outlier splitting — if the seek couldn't reach target, we're short
+  // by (target − peakCount) peaks, which means (target − peakCount) missing gaps.
+  // Split the longest gap repeatedly until the duration array is the right size.
+  const missingGaps = target - bestPeaks.length; // = (target−1) − rawDurations.length
+
+  if (missingGaps > 0) {
+    const durations = [...rawDurations];
+
+    for (let m = 0; m < missingGaps; m++) {
+      let maxIdx = 0;
+      for (let i = 1; i < durations.length; i++) {
+        if (durations[i] > durations[maxIdx]) {
+          maxIdx = i;
+        }
+      }
+
+      const half = durations[maxIdx] / 2;
+      durations.splice(maxIdx, 1, half, half);
+    }
+
+    return { repCount: target, repDurationsMs: durations };
+  }
+
+  return { repCount: target, repDurationsMs: rawDurations };
 }
