@@ -17,28 +17,28 @@ export default class SavedForLaterItem extends Model {
     food_portions: { type: 'belongs_to' as const, key: 'portion_id' },
   };
 
-  @field('group_id') groupId!: string;
+  @field('group_id') declare groupId: string;
   @field('food_id') foodId?: string;
-  @field('amount') amount!: number;
+  @field('amount') declare amount: number;
   @field('portion_id') portionId?: string;
 
   @field('logged_food_name') loggedFoodNameRaw?: string;
-  @field('logged_calories') loggedCaloriesRaw!: string;
-  @field('logged_protein') loggedProteinRaw!: string;
-  @field('logged_carbs') loggedCarbsRaw!: string;
-  @field('logged_fat') loggedFatRaw!: string;
-  @field('logged_fiber') loggedFiberRaw!: string;
+  @field('logged_calories') declare loggedCaloriesRaw: string;
+  @field('logged_protein') declare loggedProteinRaw: string;
+  @field('logged_carbs') declare loggedCarbsRaw: string;
+  @field('logged_fat') declare loggedFatRaw: string;
+  @field('logged_fiber') declare loggedFiberRaw: string;
   @field('logged_micros_json') loggedMicrosRaw?: string;
 
   @field('logged_meal_name') loggedMealName?: string;
   @field('original_group_id') originalGroupId?: string;
 
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 
-  @relation('saved_for_later_groups', 'group_id') group!: SavedForLaterGroup;
-  @relation('foods', 'food_id') food!: Food;
+  @relation('saved_for_later_groups', 'group_id') declare group: SavedForLaterGroup;
+  @relation('foods', 'food_id') declare food: Food;
   @relation('food_portions', 'portion_id') portion?: FoodPortion;
 
   async getDecryptedSnapshot() {

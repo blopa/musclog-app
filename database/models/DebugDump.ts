@@ -6,11 +6,11 @@ export type DebugDumpDirection = 'request' | 'response';
 export default class DebugDump extends Model {
   static table = 'debug_dump';
 
-  @field('provider') provider!: string;
-  @field('direction') direction!: DebugDumpDirection;
-  @field('operation') operation!: string;
-  @field('payload_json') payloadJson!: string;
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('provider') declare provider: string;
+  @field('direction') declare direction: DebugDumpDirection;
+  @field('operation') declare operation: string;
+  @field('payload_json') declare payloadJson: string;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 }

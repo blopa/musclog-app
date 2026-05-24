@@ -35,12 +35,12 @@ export default class NutritionLog extends Model {
     food_portions: { type: 'belongs_to' as const, key: 'portion_id' },
   };
 
-  @field('food_id') foodId!: string;
+  @field('food_id') declare foodId: string;
   @field('external_id') externalId?: string;
-  @field('date') date!: number; // Midnight timestamp for the day
-  @field('type') type!: MealType; // 'breakfast', 'lunch', 'dinner', 'snack', 'other'
+  @field('date') declare date: number; // Midnight timestamp for the day
+  @field('type') declare type: MealType; // 'breakfast', 'lunch', 'dinner', 'snack', 'other'
 
-  @field('amount') amount!: number; // Quantity eaten
+  @field('amount') declare amount: number; // Quantity eaten
   @field('portion_id') portionId?: string; // Unit used (e.g., linked to food_portions)
 
   // Encrypted at rest (ciphertext in DB)
@@ -59,11 +59,11 @@ export default class NutritionLog extends Model {
   @field('group_id') groupId?: string;
   @field('logged_meal_name') loggedMealName?: string;
 
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 
-  @relation('foods', 'food_id') food!: Food;
+  @relation('foods', 'food_id') declare food: Food;
   @relation('food_portions', 'portion_id') portion?: FoodPortion;
 
   @writer

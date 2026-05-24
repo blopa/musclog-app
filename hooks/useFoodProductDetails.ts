@@ -1,5 +1,4 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetch } from 'expo/fetch';
 
 import { isSuccessStatus } from '@/types/guards/openFoodFacts';
 import type { ProductState } from '@/types/openFoodFacts';
@@ -42,11 +41,11 @@ async function raceToSuccess(
  * on React Native because it hangs on Android.
  *
  * That client uses openapi-fetch, which calls fetch(new Request(url, init)). On Android,
- * expo/fetch does not handle the Request object correctly and the promise never resolves.
+ * that path has historically been problematic, so we stick to direct URL fetch calls here.
  * See: https://github.com/expo/expo/issues/43193 (and related Request/URL input handling).
  *
- * Once expo/fetch properly supports Request (and URL) input on Android, we can switch
- * back to: new OpenFoodFacts(fetch).getProductV3(barcode) and remove fetchProductByBarcode below.
+ * Once the Request-based path is fully reliable on Android, we can switch back to:
+ * new OpenFoodFacts(fetch).getProductV3(barcode) and remove fetchProductByBarcode below.
  */
 const OFF_API_BASE = 'https://world.openfoodfacts.org';
 const PRODUCT_V3_PATH = '/api/v3/product';

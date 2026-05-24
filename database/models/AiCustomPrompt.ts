@@ -7,12 +7,12 @@ export type AiCustomPromptType = 'system' | 'memory';
 export default class AiCustomPrompt extends Model {
   static table = 'ai_custom_prompts';
 
-  @field('name') name!: string;
-  @field('content') content!: string;
-  @field('context') context!: AiCustomPromptContext;
-  @field('type') type!: AiCustomPromptType;
-  @field('is_active') isActive!: boolean;
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('name') declare name: string;
+  @field('content') declare content: string;
+  @field('context') declare context: AiCustomPromptContext;
+  @field('type') declare type: AiCustomPromptType;
+  @field('is_active') declare isActive: boolean;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 }

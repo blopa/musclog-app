@@ -12,16 +12,16 @@ export default class MealFoodPortion extends Model {
     food_portions: { type: 'belongs_to' as const, key: 'food_portion_id' },
   };
 
-  @field('meal_id') mealId!: string;
-  @field('food_portion_id') foodPortionId!: string;
-  @field('is_default') isDefault!: boolean;
+  @field('meal_id') declare mealId: string;
+  @field('food_portion_id') declare foodPortionId: string;
+  @field('is_default') declare isDefault: boolean;
 
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 
-  @relation('meals', 'meal_id') meal!: Meal;
-  @relation('food_portions', 'food_portion_id') foodPortion!: FoodPortion;
+  @relation('meals', 'meal_id') declare meal: Meal;
+  @relation('food_portions', 'food_portion_id') declare foodPortion: FoodPortion;
 
   @writer
   async markAsDeleted(): Promise<void> {

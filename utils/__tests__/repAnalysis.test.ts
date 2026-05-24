@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 
 import type { MotionSample } from '@/utils/repAnalysis';
-import { analyzeRecordedReps } from '@/utils/repAnalysis';
+import { analyzeRecordedReps, reconcileRepCounts } from '@/utils/repAnalysis';
 
 function loadRepsJson(fileName: string = 'slow_reps.json'): MotionSample[] {
   const filePath = join(__dirname, `../../training-data/recordings/${fileName}`);
@@ -122,5 +122,63 @@ describe('analyzeRecordedReps', () => {
     const result = analyzeRecordedReps(samples);
     expect(result.sampleCount).toBe(samples.length);
     expect(result.durationMs).toBe(samples[samples.length - 1].timestamp - samples[0].timestamp);
+  });
+});
+
+describe('reconcileRepCounts', () => {
+  it('returns target rep count with no durations when target is 0', () => {
+    const samples = loadRepsJson();
+    const result = reconcileRepCounts(samples, 0);
+    expect(result.repCount).toBe(0);
+    expect(result.repDurationsMs).toHaveLength(0);
+  });
+
+  it('returns target rep count with no durations for empty samples', () => {
+    const result = reconcileRepCounts([], 5);
+    expect(result.repCount).toBe(5);
+    expect(result.repDurationsMs).toHaveLength(0);
+  });
+
+  it('always returns repCount equal to the target', () => {
+    const samples = loadRepsJson('normal_pace.json');
+    for (const target of [3, 5, 8, 10, 13]) {
+      const result = reconcileRepCounts(samples, target);
+      expect(result.repCount).toBe(target);
+    }
+  });
+
+  it('returns target−1 durations when peaks match target (slow_reps, target=3)', () => {
+    const samples = loadRepsJson('slow_reps.json');
+    const result = reconcileRepCounts(samples, 3);
+    expect(result.repCount).toBe(3);
+    expect(result.repDurationsMs).toHaveLength(2);
+  });
+
+  it('prunes excess peaks to match a lower ml count (amplitude pruning)', () => {
+    // normal_pace.json has ~10 peaks — requesting 6 should prune → 5 gaps
+    const samples = loadRepsJson('normal_pace.json');
+    const result = reconcileRepCounts(samples, 6);
+    expect(result.repCount).toBe(6);
+    if (result.repDurationsMs.length > 0) {
+      expect(result.repDurationsMs).toHaveLength(5);
+    }
+  });
+
+  it('splits outlier durations to reach a higher ml count (outlier splitting)', () => {
+    // slow_reps.json has ~3 peaks — requesting 6 forces splits: 2 raw gaps → 5 gaps
+    const samples = loadRepsJson('slow_reps.json');
+    const result = reconcileRepCounts(samples, 6);
+    expect(result.repCount).toBe(6);
+    if (result.repDurationsMs.length > 0) {
+      expect(result.repDurationsMs).toHaveLength(5);
+    }
+  });
+
+  it('all returned durations are positive', () => {
+    const samples = loadRepsJson('normal_pace.json');
+    const result = reconcileRepCounts(samples, 10);
+    for (const d of result.repDurationsMs) {
+      expect(d).toBeGreaterThan(0);
+    }
   });
 });

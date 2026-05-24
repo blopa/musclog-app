@@ -1,5 +1,5 @@
-import { MaterialIcons } from '@expo/vector-icons';
 import { Q } from '@nozbe/watermelondb';
+import MaterialIcons from '@react-native-vector-icons/material-icons/static';
 import type { TFunction } from 'i18next';
 import { type ComponentProps, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';

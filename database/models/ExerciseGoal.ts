@@ -12,30 +12,30 @@ export type ExerciseGoalType =
 export default class ExerciseGoal extends Model {
   static table = 'exercise_goals';
 
-  @field('exercise_id') exerciseId!: string | null;
-  @field('exercise_name_snapshot') exerciseNameSnapshot!: string | null;
-  @field('goal_type') goalType!: ExerciseGoalType;
+  @field('exercise_id') declare exerciseId: string | null;
+  @field('exercise_name_snapshot') declare exerciseNameSnapshot: string | null;
+  @field('goal_type') declare goalType: ExerciseGoalType;
 
   // 1RM fields
-  @field('target_weight') targetWeight!: number | null;
-  @field('baseline_1rm') baseline1rm!: number | null;
+  @field('target_weight') declare targetWeight: number | null;
+  @field('baseline_1rm') declare baseline1rm: number | null;
 
   // Consistency fields
-  @field('target_sessions_per_week') targetSessionsPerWeek!: number | null;
+  @field('target_sessions_per_week') declare targetSessionsPerWeek: number | null;
 
   // Future cardio fields (TBA)
-  @field('target_steps_per_day') targetStepsPerDay!: number | null;
-  @field('target_distance_m') targetDistanceM!: number | null;
-  @field('target_duration_s') targetDurationS!: number | null;
-  @field('target_pace_ms_per_m') targetPaceMsPerM!: number | null;
+  @field('target_steps_per_day') declare targetStepsPerDay: number | null;
+  @field('target_distance_m') declare targetDistanceM: number | null;
+  @field('target_duration_s') declare targetDurationS: number | null;
+  @field('target_pace_ms_per_m') declare targetPaceMsPerM: number | null;
 
   // Shared
-  @field('target_date') targetDate!: string | null;
-  @field('notes') notes!: string | null;
-  @field('effective_until') effectiveUntil!: number | null;
+  @field('target_date') declare targetDate: string | null;
+  @field('notes') declare notes: string | null;
+  @field('effective_until') declare effectiveUntil: number | null;
 
-  @date('created_at') createdAt!: Date;
-  @date('updated_at') updatedAt!: Date;
+  @date('created_at') declare createdAt: Date;
+  @date('updated_at') declare updatedAt: Date;
   @field('deleted_at') deletedAt?: number;
 
   // Helper: Is this goal currently active?

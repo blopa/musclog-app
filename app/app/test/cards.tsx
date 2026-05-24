@@ -12,7 +12,7 @@ import {
   UtensilsCrossed,
   Zap,
 } from 'lucide-react-native';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Animated, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -55,7 +55,8 @@ import { TestSection } from './components/TestSection';
 
 export default function CardsTestScreen() {
   const theme = useTheme();
-  const rotationAnim = React.useRef(new Animated.Value(0)).current;
+  const rotationAnim = useMemo(() => new Animated.Value(0), []);
+
   return (
     <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
       {/* Header */}

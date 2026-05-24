@@ -41,6 +41,24 @@ const exerciseMuscleSteps = [
 const migrationV18 = {
   toVersion: 18,
   steps: [
+    // Defensive repair for the old v8/v9 split: some installs have user_version=8
+    // but never received the old v9 step that created exercise_goals (old v8 and
+    // old v9 were merged into new v8, so users already at old v8 skip new v8).
+    // Using raw SQL with IF NOT EXISTS so this is a no-op for healthy DBs.
+    // Column list mirrors WatermelonDB's encodeCreateTable format (names only, no types).
+    unsafeExecuteSql(
+      'CREATE TABLE IF NOT EXISTS "exercise_goals" ("id" primary key, "_changed", "_status", "exercise_id", "exercise_name_snapshot", "goal_type", "target_weight", "baseline_1rm", "target_sessions_per_week", "target_steps_per_day", "target_distance_m", "target_duration_s", "target_pace_ms_per_m", "target_date", "notes", "effective_until", "created_at", "updated_at", "deleted_at");'
+    ),
+    unsafeExecuteSql(
+      'CREATE INDEX IF NOT EXISTS "exercise_goals__status" ON "exercise_goals" ("_status");'
+    ),
+    unsafeExecuteSql(
+      'CREATE INDEX IF NOT EXISTS exercise_goals_exercise_id ON exercise_goals(exercise_id);'
+    ),
+    unsafeExecuteSql(
+      'CREATE INDEX IF NOT EXISTS exercise_goals_goal_type ON exercise_goals(goal_type);'
+    ),
+
     // --- Phase 1: Reassign IDs to sequential integers ordered by created_at ---
     // Pre-compute the mapping from old UUID → new sequential ID ordered by created_at.
     // Using rowid as tiebreaker for exercises sharing the same created_at timestamp.

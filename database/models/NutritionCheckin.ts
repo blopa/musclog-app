@@ -12,16 +12,16 @@ export default class NutritionCheckin extends Model {
     nutrition_goals: { type: 'belongs_to' as const, key: 'nutrition_goal_id' },
   };
 
-  @field('nutrition_goal_id') nutritionGoalId!: string;
-  @field('checkin_date') checkinDate!: number;
-  @field('target_weight') targetWeight!: number;
+  @field('nutrition_goal_id') declare nutritionGoalId: string;
+  @field('checkin_date') declare checkinDate: number;
+  @field('target_weight') declare targetWeight: number;
   @field('target_body_fat') targetBodyFat?: number | null;
   @field('target_bmi') targetBmi?: number | null;
   @field('target_ffmi') targetFfmi?: number | null;
   @field('status') status?: CheckinStatus;
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 
-  @relation('nutrition_goals', 'nutrition_goal_id') nutritionGoal!: NutritionGoal;
+  @relation('nutrition_goals', 'nutrition_goal_id') declare nutritionGoal: NutritionGoal;
 }

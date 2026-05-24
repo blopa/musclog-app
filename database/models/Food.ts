@@ -73,19 +73,19 @@ export default class Food extends Model {
     meal_foods: { type: 'has_many' as const, foreignKey: 'food_id' },
   };
 
-  @field('is_ai_generated') isAiGenerated!: boolean;
-  @field('name') name!: string;
+  @field('is_ai_generated') declare isAiGenerated: boolean;
+  @field('name') declare name: string;
   @field('brand') brand?: string;
   @field('barcode') barcode?: string;
   @field('description') description?: string;
   @field('external_id') externalId?: string;
 
   // Macros per standard serving (usually 100g or 1 serving)
-  @field('calories') calories!: number;
-  @field('protein') protein!: number;
-  @field('carbs') carbs!: number;
-  @field('fat') fat!: number;
-  @field('fiber') fiber!: number;
+  @field('calories') declare calories: number;
+  @field('protein') declare protein: number;
+  @field('carbs') declare carbs: number;
+  @field('fat') declare fat: number;
+  @field('fiber') declare fiber: number;
   @field('nutriscore') nutriscore?: string;
   @field('ecoscore') ecoscore?: string;
   @field('nova_group') novaGroup?: number;
@@ -163,18 +163,18 @@ export default class Food extends Model {
   })
   labels?: FoodLabels;
 
-  @field('is_favorite') isFavorite!: boolean;
+  @field('is_favorite') declare isFavorite: boolean;
   @field('source') source?: string; // 'user', 'usda', 'ai', 'openfood', 'foundation'
   @field('image_url') imageUrl?: string; // URL to product image
   @field('nutrition_basis') nutritionBasis?: FoodNutritionBasis;
 
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 
-  @children('food_food_portions') foodPortions!: Query<any>; // FoodFoodPortion
-  @children('nutrition_logs') nutritionLogs!: Query<NutritionLog>;
-  @children('meal_foods') mealFoods!: Query<MealFood>;
+  @children('food_food_portions') declare foodPortions: Query<any>; // FoodFoodPortion
+  @children('nutrition_logs') declare nutritionLogs: Query<NutritionLog>;
+  @children('meal_foods') declare mealFoods: Query<MealFood>;
 
   @writer
   async markAsDeleted(): Promise<void> {

@@ -481,21 +481,24 @@ export default function FoodScreen() {
   const [mealGroupImageUrls, setMealGroupImageUrls] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    const allGroupIds = new Set<string>();
-    for (const groups of Object.values(mealGroupsByType)) {
-      for (const group of groups) {
-        allGroupIds.add(group.groupId);
-      }
-    }
-
-    if (allGroupIds.size === 0) {
-      setMealGroupImageUrls({});
-      return;
-    }
-
     let isMounted = true;
 
     async function loadMealGroupImageUrls() {
+      const allGroupIds = new Set<string>();
+      for (const groups of Object.values(mealGroupsByType)) {
+        for (const group of groups) {
+          allGroupIds.add(group.groupId);
+        }
+      }
+
+      if (allGroupIds.size === 0) {
+        if (isMounted) {
+          setMealGroupImageUrls({});
+        }
+
+        return;
+      }
+
       const results = await Promise.all(
         [...allGroupIds].map(async (id) => {
           const url = await MealService.getMealImageUrl(id);

@@ -10,21 +10,21 @@ export default class WorkoutLogSet extends Model {
     workout_log_exercises: { type: 'belongs_to' as const, key: 'log_exercise_id' },
   };
 
-  @field('log_exercise_id') logExerciseId!: string;
-  @field('reps') reps!: number;
-  @field('weight') weight!: number;
+  @field('log_exercise_id') declare logExerciseId: string;
+  @field('reps') declare reps: number;
+  @field('weight') declare weight: number;
   @field('partials') partials?: number;
-  @field('rest_time_after') restTimeAfter!: number;
-  @field('reps_in_reserve') repsInReserve!: number;
+  @field('rest_time_after') declare restTimeAfter: number;
+  @field('reps_in_reserve') declare repsInReserve: number;
   @field('is_skipped') isSkipped?: boolean;
-  @field('difficulty_level') difficultyLevel!: number;
-  @field('set_type') setType!: string;
-  @field('set_order') setOrder!: number;
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('difficulty_level') declare difficultyLevel: number;
+  @field('set_type') declare setType: string;
+  @field('set_order') declare setOrder: number;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 
-  @relation('workout_log_exercises', 'log_exercise_id') logExercise!: WorkoutLogExercise;
+  @relation('workout_log_exercises', 'log_exercise_id') declare logExercise: WorkoutLogExercise;
 
   get isValidDifficultyLevel(): boolean {
     if (this.isSkipped && this.difficultyLevel === 0) {

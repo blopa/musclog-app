@@ -1,5 +1,5 @@
-import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import MaterialIcons from '@react-native-vector-icons/material-icons/static';
 import convert from 'convert';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';

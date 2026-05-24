@@ -18,8 +18,8 @@ export default class WorkoutLog extends Model {
 
   @field('template_id') templateId?: string;
   @field('external_id') externalId?: string;
-  @field('workout_name') workoutName!: string;
-  @field('started_at') startedAt!: number;
+  @field('workout_name') declare workoutName: string;
+  @field('started_at') declare startedAt: number;
   @field('completed_at') completedAt?: number;
   @field('total_volume') totalVolume?: number;
   @field('calories_burned') caloriesBurned?: number;
@@ -27,11 +27,11 @@ export default class WorkoutLog extends Model {
   @field('type') type?: string;
   @field('exhaustion_level') exhaustionLevel?: number;
   @field('workout_score') workoutScore?: number;
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 
-  @children('workout_log_exercises') logExercises!: Query<WorkoutLogExercise>;
+  @children('workout_log_exercises') declare logExercises: Query<WorkoutLogExercise>;
   @relation('workout_templates', 'template_id') template?: WorkoutTemplate;
 
   async getAllSets(): Promise<WorkoutLogSet[]> {

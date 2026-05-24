@@ -16,21 +16,21 @@ export default class WorkoutLogExercise extends Model {
     workout_log_sets: { type: 'has_many' as const, foreignKey: 'log_exercise_id' },
   };
 
-  @field('workout_log_id') workoutLogId!: string;
-  @field('exercise_id') exerciseId!: string;
+  @field('workout_log_id') declare workoutLogId: string;
+  @field('exercise_id') declare exerciseId: string;
   @field('template_exercise_id') templateExerciseId?: string;
   @field('notes') notes?: string;
-  @field('exercise_order') exerciseOrder!: number;
+  @field('exercise_order') declare exerciseOrder: number;
   @field('group_id') groupId?: string;
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 
-  @relation('workout_logs', 'workout_log_id') workoutLog!: WorkoutLog;
-  @relation('exercises', 'exercise_id') exercise!: Exercise;
+  @relation('workout_logs', 'workout_log_id') declare workoutLog: WorkoutLog;
+  @relation('exercises', 'exercise_id') declare exercise: Exercise;
   @relation('workout_template_exercises', 'template_exercise_id')
   templateExercise?: WorkoutTemplateExercise;
-  @children('workout_log_sets') sets!: Query<WorkoutLogSet>;
+  @children('workout_log_sets') declare sets: Query<WorkoutLogSet>;
 
   @writer
   async markAsDeleted(): Promise<void> {

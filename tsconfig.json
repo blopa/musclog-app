@@ -3,6 +3,7 @@
   "compilerOptions": {
     "strict": true,
     "skipLibCheck": true,
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
@@ -33,6 +34,11 @@
     "babel.config.js",
     "metro.config.js",
     "tailwind.config.js",
+    "**/__tests__/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
     "training-data/.venv",
     "training-data/output/model.js",
     "utils/repCountingModel.js"

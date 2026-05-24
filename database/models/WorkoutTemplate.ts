@@ -19,7 +19,7 @@ export default class WorkoutTemplate extends Model {
     workout_logs: { type: 'has_many' as const, foreignKey: 'template_id' },
   };
 
-  @field('name') name!: string;
+  @field('name') declare name: string;
   @field('description') description?: string;
   @field('workout_insights_type') workoutInsightsType?: string;
   @field('icon') icon?: string;
@@ -44,14 +44,14 @@ export default class WorkoutTemplate extends Model {
     return [...new Set(data)].sort((a, b) => a - b);
   })
   weekDaysJson?: number[];
-  @field('is_archived') isArchived!: boolean;
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('is_archived') declare isArchived: boolean;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 
-  @children('workout_template_exercises') templateExercises!: Query<WorkoutTemplateExercise>;
-  @children('schedules') schedules!: Query<Schedule>;
-  @children('workout_logs') workoutLogs!: Query<WorkoutLog>;
+  @children('workout_template_exercises') declare templateExercises: Query<WorkoutTemplateExercise>;
+  @children('schedules') declare schedules: Query<Schedule>;
+  @children('workout_logs') declare workoutLogs: Query<WorkoutLog>;
 
   @writer
   async startWorkout(): Promise<WorkoutLog> {

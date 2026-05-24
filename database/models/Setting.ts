@@ -28,9 +28,9 @@ export type SettingType =
 export default class Setting extends Model {
   static table = 'settings';
 
-  @field('type') type!: SettingType;
-  @field('value') value!: string;
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('type') declare type: SettingType;
+  @field('value') declare value: string;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 }

@@ -16,8 +16,8 @@ import { MasterLayout } from '@/components/MasterLayout';
 import { Button } from '@/components/theme/Button';
 import type { WitMotionVector3 } from '@/modules/witmotion-ble';
 import { useWitMotion, witMotionClient } from '@/modules/witmotion-ble';
-import type { RepAnalysisSummary } from '@/utils/repAnalysis';
-import { analyzeRecordedReps } from '@/utils/repAnalysis';
+import type { ReconciledRepResult, RepAnalysisSummary } from '@/utils/repAnalysis';
+import { analyzeRecordedReps, reconcileRepCounts } from '@/utils/repAnalysis';
 import { extractRepCountingFeatures } from '@/utils/repCountingFeatures';
 import { predictRepCount } from '@/utils/repCountingModel';
 
@@ -462,6 +462,7 @@ export default function WitMotionTestScreen() {
   const [recordingStatus, setRecordingStatus] = useState<'idle' | 'recording' | 'analyzed'>('idle');
   const [analysisSummary, setAnalysisSummary] = useState<RepAnalysisSummary | null>(null);
   const [mlRepCount, setMlRepCount] = useState<number | null>(null);
+  const [reconciledResult, setReconciledResult] = useState<ReconciledRepResult | null>(null);
   const [recordedSampleCount, setRecordedSampleCount] = useState(0);
   const [debugDataStatus, setDebugDataStatus] = useState('No saved debug files yet');
   const [isSavingDebugData, setIsSavingDebugData] = useState(false);
@@ -695,9 +696,12 @@ export default function WitMotionTestScreen() {
     try {
       const features = extractRepCountingFeatures(samples);
       const raw = predictRepCount(features) as number;
-      setMlRepCount(Math.round(raw));
+      const rounded = Math.round(raw);
+      setMlRepCount(rounded);
+      setReconciledResult(reconcileRepCounts(samples, rounded));
     } catch {
       setMlRepCount(null);
+      setReconciledResult(null);
     }
 
     setRecordingStatus('analyzed');
@@ -787,6 +791,7 @@ export default function WitMotionTestScreen() {
     setRecordingStatus('idle');
     setAnalysisSummary(null);
     setMlRepCount(null);
+    setReconciledResult(null);
     setRecordedSampleCount(0);
     setDebugDataStatus('Recording cleared');
     setLiveFeature(0);
@@ -913,6 +918,24 @@ export default function WitMotionTestScreen() {
             <Text className="mt-2 text-center text-xs text-text-tertiary">
               {recordingFooterText}
             </Text>
+
+            {reconciledResult && reconciledResult.repDurationsMs.length > 0 ? (
+              <View className="mt-4">
+                <Text className="mb-2 text-xs font-bold uppercase tracking-wider text-text-tertiary">
+                  Rep durations (ML-reconciled)
+                </Text>
+                <View className="flex-row flex-wrap gap-2">
+                  {reconciledResult.repDurationsMs.map((dur, i) => (
+                    <View key={i} className="rounded-lg bg-bg-primary px-3 py-2">
+                      <Text className="text-center text-xs text-text-tertiary">#{i + 1}</Text>
+                      <Text className="text-center font-bold text-text-primary">
+                        {(dur / 1000).toFixed(2)}s
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            ) : null}
           </View>
 
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">

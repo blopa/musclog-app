@@ -45,19 +45,19 @@ export type UserMetricType =
 export default class UserMetric extends Model {
   static table = 'user_metrics';
 
-  @field('type') type!: UserMetricType;
+  @field('type') declare type: UserMetricType;
   @field('external_id') externalId?: string;
   @field('supplement_id') supplementId?: string;
-  @field('value') valueRaw!: string;
+  @field('value') declare valueRaw: string;
   @field('unit') unitRaw?: string;
-  @field('date') date!: number;
-  @field('timezone') timezone!: string;
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('date') declare date: number;
+  @field('timezone') declare timezone: string;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 
   // Relation to notes
-  @children('user_metrics_notes') notes!: any[];
+  @children('user_metrics_notes') declare notes: any[];
 
   @writer
   async markAsDeleted(): Promise<void> {

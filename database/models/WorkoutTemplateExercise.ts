@@ -14,18 +14,18 @@ export default class WorkoutTemplateExercise extends Model {
     workout_template_sets: { type: 'has_many' as const, foreignKey: 'template_exercise_id' },
   };
 
-  @field('template_id') templateId!: string;
-  @field('exercise_id') exerciseId!: string;
+  @field('template_id') declare templateId: string;
+  @field('exercise_id') declare exerciseId: string;
   @field('notes') notes?: string;
-  @field('exercise_order') exerciseOrder!: number;
+  @field('exercise_order') declare exerciseOrder: number;
   @field('group_id') groupId?: string;
-  @field('created_at') createdAt!: number;
-  @field('updated_at') updatedAt!: number;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 
-  @relation('workout_templates', 'template_id') template!: WorkoutTemplate;
-  @relation('exercises', 'exercise_id') exercise!: Exercise;
-  @children('workout_template_sets') sets!: Query<WorkoutTemplateSet>;
+  @relation('workout_templates', 'template_id') declare template: WorkoutTemplate;
+  @relation('exercises', 'exercise_id') declare exercise: Exercise;
+  @children('workout_template_sets') declare sets: Query<WorkoutTemplateSet>;
 
   @writer
   async markAsDeleted(): Promise<void> {
