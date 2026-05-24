@@ -156,8 +156,8 @@ export default function BodyMetricsHistoryModal({
 
   // Calculate date range based on selected period
   const dateRange = useMemo(() => {
-    const endDate = Date.now();
     const today = new Date();
+    const endDate = today.getTime();
     let startDate = endDate;
     if (selectedPeriod === '30D') {
       startDate = localDayKeyPlusCalendarDaysFromNow(-30);

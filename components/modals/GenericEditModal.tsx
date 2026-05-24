@@ -372,7 +372,7 @@ export function GenericEditModal({
       case 'date': {
         const dateField = field;
         // Convert timestamp to Date object, or use current date as default
-        const timestamp = (value as number) ?? Date.now();
+        const timestamp = (value as number) ?? new Date().getTime();
         const dateValue = new Date(timestamp);
 
         return (

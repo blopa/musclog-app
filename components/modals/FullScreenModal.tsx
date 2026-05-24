@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowLeft } from 'lucide-react-native';
-import { ReactNode, RefObject, useRef } from 'react';
+import { ReactNode, RefObject, useLayoutEffect, useRef, useState } from 'react';
 import { Platform, Pressable, Text, View } from 'react-native';
 import {
   KeyboardAwareScrollView,
@@ -53,13 +53,16 @@ export function FullScreenModal({
 
   // Force remount of Modal when visibility changes to prevent "ghost" native window
   // that captures touches. See: https://github.com/facebook/react-native/issues/29455
-  const modalKeyRef = useRef<string>('modal-hidden');
-  if (visible && modalKeyRef.current === 'modal-hidden') {
-    // Only regenerate key when transitioning from hidden to visible
-    modalKeyRef.current = `modal-${Date.now()}`;
-  } else if (!visible) {
-    modalKeyRef.current = 'modal-hidden';
-  }
+  const [modalInstance, setModalInstance] = useState(0);
+  const wasVisibleRef = useRef(visible);
+
+  useLayoutEffect(() => {
+    if (visible && !wasVisibleRef.current) {
+      setModalInstance((current) => current + 1);
+    }
+
+    wasVisibleRef.current = visible;
+  }, [visible]);
 
   // Web-specific ScrollView styles to prevent browser gestures
   const webScrollViewStyle =
@@ -72,7 +75,7 @@ export function FullScreenModal({
 
   return (
     <Modal
-      key={Platform.OS !== 'web' ? modalKeyRef.current : undefined}
+      key={Platform.OS !== 'web' ? `modal-${modalInstance}` : undefined}
       visible={visible}
       transparent={false}
       animationType="slide"
