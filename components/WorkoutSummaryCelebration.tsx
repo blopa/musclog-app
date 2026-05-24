@@ -1,5 +1,5 @@
 import { Home, MessageCircle, Trophy } from 'lucide-react-native';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -39,8 +39,8 @@ export function WorkoutSummaryCelebration({
   const theme = useTheme();
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-  const glowAnim1 = useRef(new Animated.Value(0.6)).current;
-  const glowAnim2 = useRef(new Animated.Value(0.6)).current;
+  const [glowAnim1] = useState(() => new Animated.Value(0.6));
+  const [glowAnim2] = useState(() => new Animated.Value(0.6));
 
   useEffect(() => {
     // Glow pulse animations

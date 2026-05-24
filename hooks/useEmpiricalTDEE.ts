@@ -274,8 +274,7 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
       result.tdee = calculatedTdee || fallbackValue;
     } catch (err) {
       console.error('Error calculating TDEE:', err);
-      result.calculationError =
-        err instanceof Error ? err.message : 'Failed to calculate TDEE';
+      result.calculationError = err instanceof Error ? err.message : 'Failed to calculate TDEE';
       result.tdee = fallbackValue;
     }
 

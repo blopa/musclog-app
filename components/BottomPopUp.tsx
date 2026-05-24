@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { X } from 'lucide-react-native';
-import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import {
   Animated,
   Keyboard,
@@ -101,7 +101,7 @@ export function BottomPopUp({
     );
   };
 
-  const slideAnim = useRef(new Animated.Value(theme.size['300'])).current; // Start off-screen
+  const [slideAnim] = useState(() => new Animated.Value(theme.size['300']));
   const [keyboardBottomLift, setKeyboardBottomLift] = useState(0);
 
   useEffect(() => {

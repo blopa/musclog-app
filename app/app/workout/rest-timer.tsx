@@ -98,7 +98,7 @@ export default function RestTimerScreen() {
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);
   const [isWorkoutOverviewModalVisible, setIsWorkoutOverviewModalVisible] = useState(false);
-  const rotationAnim = useRef(new Animated.Value(0)).current;
+  const [rotationAnim] = useState(() => new Animated.Value(0));
   const countdownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   // Wall-clock timestamp (ms) when the rest period should end.
   // Stored in a ref so interval callbacks always read the latest value without re-creating the interval.

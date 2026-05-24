@@ -1,5 +1,5 @@
 import { format } from 'date-fns';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
@@ -65,9 +65,11 @@ export function NutritionGoalsTabContent({
     visible,
   });
 
-  if (refreshRef) {
-    refreshRef.current = refresh;
-  }
+  useEffect(() => {
+    if (refreshRef) {
+      refreshRef.current = refresh;
+    }
+  }, [refresh, refreshRef]);
 
   const currentGoal = useMemo<CurrentGoal | null>(() => {
     if (!current) {

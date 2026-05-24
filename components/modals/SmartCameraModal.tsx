@@ -255,8 +255,9 @@ export default function SmartCameraModal({
       setIsFoodSearchModalVisible(false);
       setIsLogMealModalVisible(false);
       setProductFromAiLabel(null);
+      isSearchingBarcodeRef.current = false;
     }
-  }, [visible]);
+  }, [visible, isSearchingBarcodeRef]);
 
   useKeepScreenAwake(
     'smart-camera-processing',
@@ -683,7 +684,6 @@ export default function SmartCameraModal({
   }
 
   if (!visible) {
-    isSearchingBarcodeRef.current = false;
     return null;
   }
 

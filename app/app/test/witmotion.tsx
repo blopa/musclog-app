@@ -468,6 +468,7 @@ export default function WitMotionTestScreen() {
   const [isLoadingStoredDebugFiles, setIsLoadingStoredDebugFiles] = useState(false);
 
   const anchorAngleRef = useRef<{ x: number; y: number; z: number } | null>(null);
+  const [anchorAngle, setAnchorAngle] = useState<{ x: number; y: number; z: number } | null>(null);
   const currentAngleRef = useRef<{ x: number; y: number; z: number } | null>(null);
   const liveFeatureRef = useRef({
     smoothMag: 0,
@@ -680,6 +681,7 @@ export default function WitMotionTestScreen() {
       angleBufRef,
       rawAccelBufRef
     );
+    setAnchorAngle(anchorAngleRef.current);
   }, []);
 
   const handleStopRecording = useCallback(async () => {
@@ -768,6 +770,7 @@ export default function WitMotionTestScreen() {
       angleBufRef,
       rawAccelBufRef
     );
+    setAnchorAngle(anchorAngleRef.current);
   }, []);
 
   const handleResetReps = useCallback(() => {
@@ -1090,9 +1093,7 @@ export default function WitMotionTestScreen() {
             </View>
             <Text className="mb-3 text-xs text-text-tertiary">
               Pitch now: {valueOrDash(wit.liveData.angle?.y, 1)}°
-              {anchorAngleRef.current != null
-                ? `  anchor: ${anchorAngleRef.current.y.toFixed(1)}°`
-                : '  (no anchor set)'}
+              {anchorAngle != null ? `  anchor: ${anchorAngle.y.toFixed(1)}°` : '  (no anchor set)'}
             </Text>
             {angleData.length > 1 ? (
               <SignedChart

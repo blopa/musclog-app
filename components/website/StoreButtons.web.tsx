@@ -164,8 +164,26 @@ function QRCodeCard({
 export function StoreButtons() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.storeButtons' });
   const [isQrOpen, setIsQrOpen] = useState(false);
+  const [qrPopoverPos, setQrPopoverPos] = useState({ top: 0, left: 16 });
   const qrButtonRef = useRef<HTMLDivElement>(null);
   const qrPopoverRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isQrOpen) {
+      return;
+    }
+
+    if (qrButtonRef.current) {
+      const rect = qrButtonRef.current.getBoundingClientRect();
+      setQrPopoverPos({
+        top: rect.bottom + 12,
+        left: Math.min(
+          Math.max(rect.left - 180, 16),
+          window.innerWidth - 16 - Math.min(window.innerWidth - 32, 480)
+        ),
+      });
+    }
+  }, [isQrOpen]);
 
   useEffect(() => {
     if (!isQrOpen) {
@@ -241,15 +259,8 @@ export function StoreButtons() {
                 aria-labelledby="store-qr-popover-title"
                 className="border-white/12 fixed z-[170] w-[min(calc(100vw-2rem),30rem)] rounded-3xl border bg-[rgba(7,13,12,0.97)] p-5 shadow-2xl backdrop-blur-xl"
                 style={{
-                  top: qrButtonRef.current
-                    ? qrButtonRef.current.getBoundingClientRect().bottom + 12
-                    : 0,
-                  left: qrButtonRef.current
-                    ? Math.min(
-                        Math.max(qrButtonRef.current.getBoundingClientRect().left - 180, 16),
-                        window.innerWidth - 16 - Math.min(window.innerWidth - 32, 480)
-                      )
-                    : 16,
+                  top: qrPopoverPos.top,
+                  left: qrPopoverPos.left,
                 }}
               >
                 <div className="mb-4 flex items-start justify-between gap-4">

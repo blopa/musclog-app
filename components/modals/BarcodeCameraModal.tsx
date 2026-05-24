@@ -56,8 +56,9 @@ export function BarcodeCameraModal({
     if (!visible) {
       setIsBarcodeTextSearchModalVisible(false);
       setBarcodeTextSearchValue('');
+      isSearchingBarcodeRef.current = false;
     }
-  }, [visible]);
+  }, [visible, isSearchingBarcodeRef]);
 
   const isFoodDetailsModalVisible = barcode.detectedBarcode !== null;
 
@@ -159,7 +160,6 @@ export function BarcodeCameraModal({
   );
 
   if (!visible) {
-    isSearchingBarcodeRef.current = false;
     return null;
   }
 

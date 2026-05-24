@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { Flag, Save, Trash2, X } from 'lucide-react-native';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, Platform, Pressable, Text, View } from 'react-native';
 
@@ -24,8 +24,8 @@ export function EndWorkoutModal({
 }: EndWorkoutModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const scaleAnim = useRef(new Animated.Value(0)).current;
-  const opacityAnim = useRef(new Animated.Value(0)).current;
+  const [scaleAnim] = useState(() => new Animated.Value(0));
+  const [opacityAnim] = useState(() => new Animated.Value(0));
   const [isSaving, setIsSaving] = useState(false);
   const [isDiscarding, setIsDiscarding] = useState(false);
   const isBusy = isSaving || isDiscarding;
