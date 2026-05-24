@@ -10,6 +10,7 @@
     "screenshots-portrait": "npm run build-android-web && npm run playwright-runner --project=portrait-6.7",
     "typecheck": "tsc --noEmit --skipLibCheck",
     "lint:eslint": "eslint .",
+    "lint:eslint-errors": "eslint . --quiet",
     "lint:eslint-fix": "eslint . --fix",
     "lint:all": "git add . && npm run lint:eslint-fix && npm run format && npm run prebuild:cross-platform && npm run typecheck",
     "lint:some": "git add . && npm run lint:eslint-fix && npm run format && npm run typecheck",
