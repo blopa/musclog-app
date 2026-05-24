@@ -1,4 +1,3 @@
-/* eslint-env node */
 /**
  * require-sub-modal-cleanup
  *

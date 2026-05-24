@@ -1,7 +1,7 @@
 import type { LucideIcon } from 'lucide-react-native';
 import { Activity, Dumbbell, Flame, Heart, Target, Trophy, Zap } from 'lucide-react-native';
 
-const WORKOUT_ICON_MAP: Record<string, LucideIcon> = {
+export const WORKOUT_ICON_MAP: Record<string, LucideIcon> = {
   dumbbell: Dumbbell,
   target: Target,
   zap: Zap,
