@@ -2,7 +2,7 @@
  * Feature extraction for the ML rep-counting model (repCountingModel.js).
  *
  * Mirrors training-data/train.py extract_features() exactly so the input
- * vector fed to predictRepCount() matches what the model was trained on.
+ * vector fed to classifySegment() matches what the model was trained on.
  *
  * Input order (45 features):
  *   0  duration_ms

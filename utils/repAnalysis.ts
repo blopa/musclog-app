@@ -1,3 +1,5 @@
+/** THIS FILE IS DEPRECATED AND FOR DEBUGGING USE ONLY **/
+
 import mlMax from 'ml-array-max';
 import mlMin from 'ml-array-min';
 import { PCA } from 'ml-pca';
@@ -651,9 +653,9 @@ export function reconcileRepCounts(
 
   // Positive-peak finder on the already-processed signal.
   // thresholdFraction ∈ [0, 1]: 0 = find nearly every peak, 1 = find nothing.
-  function findPeaks(thresholdFraction: number): Array<[number, number]> {
+  function findPeaks(thresholdFraction: number): [number, number][] {
     const threshold = signalMin + signalRange * thresholdFraction;
-    const result: Array<[number, number]> = [];
+    const result: [number, number][] = [];
     let lastPeakMs: number | null = null;
 
     for (let i = 1; i < centered.length - 1; i++) {
