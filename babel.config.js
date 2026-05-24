@@ -13,7 +13,10 @@ module.exports = function (api) {
         // isTSX:true is safe here; the codebase uses `as` casts, not legacy `<T>foo` assertions.
         test: (filename) => filename != null && /\.tsx?$/.test(filename),
         plugins: [
-          ['@babel/plugin-transform-typescript', { allowDeclareFields: true, allowNamespaces: true, isTSX: true }],
+          [
+            '@babel/plugin-transform-typescript',
+            { allowDeclareFields: true, allowNamespaces: true, isTSX: true },
+          ],
           ['@babel/plugin-proposal-decorators', { legacy: true }],
           ['@babel/plugin-transform-class-properties', { loose: true }],
           ['@babel/plugin-transform-private-methods', { loose: true }],
