@@ -65,6 +65,10 @@ const MECHANIC_TYPES = [
   'unknown',
 ];
 
+// ─── Chart payload constants ──────────────────────────────────────────────────
+// Same logic as visualize_loocv.py: 10 pts per predicted rep, floored here.
+const CHART_MIN_SIGNAL_POINTS = 50;
+
 // ─── Public types ─────────────────────────────────────────────────────────────
 
 export interface MotionSample {
@@ -93,11 +97,34 @@ export interface PerRepResult {
   classifierConfidence: number;
 }
 
+export interface BleSetChartRepAnnotation {
+  startS: number;
+  turningS: number;
+  endS: number;
+  phaseADurationMs: number;
+  phaseBDurationMs: number;
+  phaseASpeedDps: number;
+  phaseBSpeedDps: number;
+  confidence: number;
+}
+
+export interface BleSetChartPayload {
+  /** Downsampled preprocessed 1D signal — x in seconds from start, y in signal units */
+  signal: { x: number; y: number }[];
+  reps: BleSetChartRepAnnotation[];
+  yMin: number;
+  yMax: number;
+  durationS: number;
+  /** Approximate JSON byte size of this payload */
+  sizeBytes: number;
+}
+
 export interface SegmentAndScoreResult {
   predictedReps: number;
   candidateSegments: number;
   classifiedAsRep: number;
   reps: PerRepResult[];
+  chartPayload?: BleSetChartPayload;
   error?: string;
 }
 
@@ -617,6 +644,67 @@ function detectPhases(seg: Segment, signal1d: number[], timestamps: number[]) {
   };
 }
 
+// ─── Chart payload builder ────────────────────────────────────────────────────
+
+function buildBleSetChartPayload(
+  signal1d: number[],
+  timestamps: number[],
+  repPairs: { seg: Segment; conf: number }[],
+  reps: PerRepResult[]
+): BleSetChartPayload {
+  const n = signal1d.length;
+  const recStart = timestamps[0];
+  const durationS = (timestamps[n - 1] - recStart) / 1000;
+
+  // 10 pts per predicted rep, floored at CHART_MIN_SIGNAL_POINTS
+  const maxPts = Math.max(repPairs.length * 10, CHART_MIN_SIGNAL_POINTS);
+  const step = Math.max(1, Math.floor(n / maxPts));
+
+  const signal: { x: number; y: number }[] = [];
+  for (let i = 0; i < n; i += step) {
+    signal.push({
+      x: +((timestamps[i] - recStart) / 1000).toFixed(3),
+      y: +signal1d[i].toFixed(3),
+    });
+  }
+
+  let yMin = signal1d[0];
+  let yMax = signal1d[0];
+  for (let i = 1; i < n; i++) {
+    if (signal1d[i] < yMin) {
+      yMin = signal1d[i];
+    }
+
+    if (signal1d[i] > yMax) {
+      yMax = signal1d[i];
+    }
+  }
+
+  const repAnnotations: BleSetChartRepAnnotation[] = repPairs.map(({ seg, conf }, i) => ({
+    startS: +((seg.startTs - recStart) / 1000).toFixed(3),
+    turningS: +((seg.turningTs - recStart) / 1000).toFixed(3),
+    endS: +((seg.endTs - recStart) / 1000).toFixed(3),
+    phaseADurationMs: reps[i]?.phaseADurationMs ?? 0,
+    phaseBDurationMs: reps[i]?.phaseBDurationMs ?? 0,
+    phaseASpeedDps: reps[i]?.phaseASpeedDps ?? 0,
+    phaseBSpeedDps: reps[i]?.phaseBSpeedDps ?? 0,
+    confidence: +conf.toFixed(3),
+  }));
+
+  const payloadWithoutSize = {
+    signal,
+    reps: repAnnotations,
+    yMin: +yMin.toFixed(3),
+    yMax: +yMax.toFixed(3),
+    durationS: +durationS.toFixed(2),
+  };
+
+  return {
+    ...payloadWithoutSize,
+    sizeBytes: JSON.stringify(payloadWithoutSize).length,
+  };
+}
+
 // ─── Main pipeline ─────────────────────────────────────────────────────────────
 
 export function segmentAndScore(
@@ -676,5 +764,6 @@ export function segmentAndScore(
     candidateSegments: allSegs.length,
     classifiedAsRep: reps.length,
     reps,
+    chartPayload: buildBleSetChartPayload(signal1d, timestamps, repPairs, reps),
   };
 }

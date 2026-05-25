@@ -10,13 +10,17 @@ import {
 import * as Sharing from 'expo-sharing';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import Svg, { Line as SvgLine, Polyline, Text as SvgText } from 'react-native-svg';
+import Svg, { Line as SvgLine, Polyline, Rect as SvgRect, Text as SvgText } from 'react-native-svg';
 
 import { MasterLayout } from '@/components/MasterLayout';
 import { Button } from '@/components/theme/Button';
 import type { WitMotionVector3 } from '@/modules/witmotion-ble';
 import { useWitMotion, witMotionClient } from '@/modules/witmotion-ble';
-import type { PerRepResult, SegmentAndScoreResult } from '@/utils/segmentAndScorePipeline';
+import type {
+  BleSetChartPayload,
+  PerRepResult,
+  SegmentAndScoreResult,
+} from '@/utils/segmentAndScorePipeline';
 import { segmentAndScore } from '@/utils/segmentAndScorePipeline';
 
 function valueOrDash(value: number | null | undefined, digits = 2) {
@@ -430,6 +434,101 @@ function RangeChart({ series, minY, maxY }: RangeChartProps) {
           ) : null;
         })}
       </Svg>
+    </View>
+  );
+}
+
+function CompressedSignalChart({ payload }: { payload: BleSetChartPayload }) {
+  const WIDTH = 320;
+  const HEIGHT = 160;
+  const PAD_LEFT = 36;
+  const PAD_RIGHT = 8;
+  const PAD_TOP = 8;
+  const PAD_BOTTOM = 20;
+  const innerW = WIDTH - PAD_LEFT - PAD_RIGHT;
+  const innerH = HEIGHT - PAD_TOP - PAD_BOTTOM;
+
+  const { signal, reps, yMin, yMax, durationS, sizeBytes } = payload;
+  const span = Math.max(yMax - yMin, 1e-6);
+
+  const toX = (s: number) => PAD_LEFT + (s / Math.max(durationS, 1e-6)) * innerW;
+  const toY = (v: number) =>
+    Math.max(PAD_TOP, Math.min(PAD_TOP + innerH, PAD_TOP + ((yMax - v) / span) * innerH));
+
+  const points = signal.map(({ x, y }) => `${toX(x).toFixed(1)},${toY(y).toFixed(1)}`).join(' ');
+
+  const zeroY = yMin < 0 && yMax > 0 ? toY(0) : null;
+  const kbLabel = (sizeBytes / 1024).toFixed(1);
+
+  return (
+    <View>
+      <View className="overflow-hidden rounded-lg border border-border-light bg-bg-primary">
+        <Svg width={WIDTH} height={HEIGHT}>
+          {reps.map((rep, i) => {
+            const x1 = toX(rep.startS);
+            const x2 = toX(rep.turningS);
+            const x3 = toX(rep.endS);
+            return (
+              <>
+                <SvgRect
+                  key={`a${i}`}
+                  x={x1}
+                  y={PAD_TOP}
+                  width={Math.max(0, x2 - x1)}
+                  height={innerH}
+                  fill="rgba(56,189,248,0.18)"
+                />
+                <SvgRect
+                  key={`b${i}`}
+                  x={x2}
+                  y={PAD_TOP}
+                  width={Math.max(0, x3 - x2)}
+                  height={innerH}
+                  fill="rgba(167,139,250,0.18)"
+                />
+              </>
+            );
+          })}
+          {zeroY !== null ? (
+            <SvgLine
+              x1={PAD_LEFT}
+              y1={zeroY}
+              x2={WIDTH - PAD_RIGHT}
+              y2={zeroY}
+              stroke="#444"
+              strokeWidth={1}
+              strokeDasharray="4,4"
+            />
+          ) : null}
+          {points ? (
+            <Polyline points={points} fill="none" stroke="#38bdf8" strokeWidth={1.5} />
+          ) : null}
+          <SvgText x={PAD_LEFT - 4} y={PAD_TOP + 8} fontSize={9} fill="#888" textAnchor="end">
+            {yMax.toFixed(1)}
+          </SvgText>
+          <SvgText x={PAD_LEFT - 4} y={PAD_TOP + innerH} fontSize={9} fill="#888" textAnchor="end">
+            {yMin.toFixed(1)}
+          </SvgText>
+          <SvgText x={WIDTH - PAD_RIGHT} y={HEIGHT - 4} fontSize={9} fill="#888" textAnchor="end">
+            {durationS.toFixed(1)}s
+          </SvgText>
+        </Svg>
+      </View>
+      <View className="mt-2 flex-row flex-wrap gap-3">
+        <Text className="text-xs" style={{ color: '#34d399' }}>
+          {kbLabel} KB compressed
+        </Text>
+        <Text className="text-xs text-text-tertiary">{signal.length} pts</Text>
+        <Text className="text-xs text-text-tertiary">{reps.length} reps</Text>
+        <View className="flex-row items-center gap-1">
+          <View style={{ width: 8, height: 8, backgroundColor: 'rgba(56,189,248,0.7)' }} />
+          <Text className="text-xs text-text-tertiary">Phase A</Text>
+        </View>
+        <View className="flex-row items-center gap-1">
+          <View style={{ width: 8, height: 8, backgroundColor: 'rgba(167,139,250,0.7)' }} />
+          <Text className="text-xs text-text-tertiary">Phase B</Text>
+        </View>
+      </View>
     </View>
   );
 }
@@ -997,6 +1096,17 @@ export default function WitMotionTestScreen() {
               </View>
             ) : null}
           </View>
+
+          {pipelineResult?.chartPayload ? (
+            <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
+              <Text className="mb-1 font-bold text-text-primary">Compressed signal</Text>
+              <Text className="mb-3 text-xs text-text-tertiary">
+                Preprocessed 1D signal · {pipelineResult.chartPayload.signal.length} pts stored
+                instead of {recordedSampleCount} raw samples
+              </Text>
+              <CompressedSignalChart payload={pipelineResult.chartPayload} />
+            </View>
+          ) : null}
 
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
             <Text className="mb-2 text-xs font-bold uppercase tracking-wider text-text-tertiary">

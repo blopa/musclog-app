@@ -142,7 +142,10 @@ export async function fetchMusclogProductByBarcode(
   }
 }
 
-export async function fetchUSDAProductById(fdcId: string | number, signal?: AbortSignal): Promise<any> {
+export async function fetchUSDAProductById(
+  fdcId: string | number,
+  signal?: AbortSignal
+): Promise<any> {
   const apiKey = process.env.EXPO_PUBLIC_USDA_API_KEY || '';
   const url = `https://api.nal.usda.gov/fdc/v1/food/${fdcId}?api_key=${apiKey}`;
 
