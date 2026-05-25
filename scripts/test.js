@@ -75,6 +75,11 @@ async function runRobustBarcoder() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: searchTerm, dataType: ['Branded'], pageSize: SEARCH_LIMIT }),
       });
+
+      if (!res.ok) {
+        throw new Error(`USDA API error: ${res.status}`);
+      }
+
       const result = await res.json();
 
       if (result.foods) {

@@ -306,7 +306,7 @@ export function useUnifiedFoodSearch({
     refetch: retryUSDA,
   } = useQuery({
     queryKey: ['food-search-usda', debouncedSearchTerm, usdaOffset],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       if (!includeAPI || !includeUSDA || !debouncedSearchTerm || debouncedSearchTerm.length < 2) {
         return [];
       }
@@ -315,7 +315,7 @@ export function useUnifiedFoodSearch({
       const pageNumber = Math.floor(usdaOffset / usdaLimit) + 1;
       const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(debouncedSearchTerm)}&pageSize=${usdaLimit}&pageNumber=${pageNumber}&api_key=${apiKey}`;
 
-      const response = await fetch(url);
+      const response = await fetch(url, { signal });
 
       if (!response.ok) {
         throw new Error('Failed to fetch from USDA');
