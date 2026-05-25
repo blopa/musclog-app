@@ -35,6 +35,14 @@ This will:
 python predict.py recordings/deadlift.json
 ```
 
+## Downloading recordings from Google Drive
+
+```bash
+python download_recordings.py
+```
+
+This fetches all JSON files from the shared Google Drive folder and writes them into `recordings/`, replacing any existing files with the same name. Local-only files are left untouched.
+
 ## Adding new recordings
 
 1. Copy the JSON file into `recordings/`
