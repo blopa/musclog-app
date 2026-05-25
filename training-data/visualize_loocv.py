@@ -51,7 +51,7 @@ OUTPUT_HTML_DIR = ROOT / "output" / "html"
 # Max signal points stored in the compressed chart payload.
 # Lower = smaller payload; 200 pts is still visually indistinguishable
 # from the full signal for a 30–60 s set at 100 Hz.
-CHART_MAX_SIGNAL_POINTS = 200
+CHART_MAX_SIGNAL_POINTS = 100
 
 
 # ---------------------------------------------------------------------------
