@@ -174,19 +174,37 @@ def build_compressed_chart_payload(
     Build the minimal payload needed to render the set chart in-app.
 
     Instead of storing all 9 raw channels at 100 Hz (~2 MB per set), only
-    the preprocessed 1D signal is kept, downsampled to CHART_MAX_SIGNAL_POINTS.
+    the preprocessed 1D signal is kept, downsampled to CHART_MIN_SIGNAL_POINTS.
+    To focus the compressed view on the actual reps, the signal is first trimmed
+    to the span from the first predicted rep start to the last predicted rep end.
     Segment annotations and per-rep phase points are already inherently compact
     (a few dozen numbers total).  This dict is what would be persisted in the
     app database alongside the rep count.
     """
-    n         = len(signal_1d)
-    rec_start = float(timestamps[0])
+    n = len(signal_1d)
+    predicted_pairs = sorted(predicted_pairs, key=lambda x: x[0]["start_ts"])
+
+    if predicted_pairs:
+        # Trim the compressed payload to the predicted rep window so flat
+        # setup/unrack regions do not consume chart space.
+        first_seg = predicted_pairs[0][0]
+        last_seg  = predicted_pairs[-1][0]
+        start_idx = int(first_seg["start_idx"])
+        end_idx   = int(last_seg["end_idx"]) + 1
+        signal_view    = signal_1d[start_idx:end_idx]
+        timestamps_view = timestamps[start_idx:end_idx]
+    else:
+        signal_view    = signal_1d
+        timestamps_view = timestamps
+
+    rec_start = float(timestamps_view[0])
+    rec_end   = float(timestamps_view[-1])
 
     # Downsampled signal — 10 pts per predicted rep, floored at CHART_MIN_SIGNAL_POINTS
     max_pts = max(len(predicted_pairs) * 10, CHART_MIN_SIGNAL_POINTS)
-    step    = max(1, n // max_pts)
-    xs      = ((timestamps[::step] - timestamps[0]) / 1000).round(3).tolist()
-    ys      = signal_1d[::step].round(3).tolist()
+    step    = max(1, len(signal_view) // max_pts)
+    xs      = ((timestamps_view[::step] - rec_start) / 1000).round(3).tolist()
+    ys      = signal_view[::step].round(3).tolist()
 
     # Segment colour annotations ─────────────────────────────────────────────
     pred_set = {id(s) for s, _ in predicted_pairs}
@@ -197,12 +215,14 @@ def build_compressed_chart_payload(
             "color": _color(seg.get("is_rep", 0), id(seg) in pred_set),
         }
         for seg in labeled_segs
+        if seg["end_ts"] >= rec_start and seg["start_ts"] <= rec_end
     ]
 
     # Turning-point markers ──────────────────────────────────────────────────
     turnings = [
         round((seg["turning_ts"] - rec_start) / 1000, 3)
         for seg, _ in predicted_pairs
+        if seg["turning_ts"] >= rec_start and seg["turning_ts"] <= rec_end
     ]
 
     # Phase reconstruction — 3 key points per half-rep, null breaks the line
@@ -210,6 +230,8 @@ def build_compressed_chart_payload(
     phase_b_pts: list = []
     for seg, _ in predicted_pairs:
         si, ti, ei = seg["start_idx"], seg["turning_idx"], seg["end_idx"]
+        if timestamps[ei] < rec_start or timestamps[si] > rec_end:
+            continue
         ts_si = round((float(timestamps[si]) - rec_start) / 1000, 3)
         ts_ti = round((float(timestamps[ti]) - rec_start) / 1000, 3)
         ts_ei = round((float(timestamps[ei]) - rec_start) / 1000, 3)
@@ -232,6 +254,7 @@ def build_compressed_chart_payload(
         "yBounds":  {"min": y_min, "max": y_max},
         # ── provenance (not rendered, just informational) ──────────────────
         "signalPoints": len(xs),
+        "trimmedSamples": len(signal_view),
         "origSamples":  n,
     }
 
