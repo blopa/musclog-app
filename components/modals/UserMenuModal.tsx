@@ -16,7 +16,6 @@ import {
   ActivityIndicator,
   Image,
   ImageSourcePropType,
-  InteractionManager,
   Platform,
   Pressable,
   Text,
@@ -102,8 +101,7 @@ export function UserMenuModal({
     (itemKey: string, navigateFn: () => void) => {
       setLoadingItem(itemKey);
       navigateFn();
-      // Use InteractionManager to wait for navigation transition to complete
-      InteractionManager.runAfterInteractions(() => {
+      requestIdleCallback(() => {
         onClose();
         setLoadingItem(null);
       });

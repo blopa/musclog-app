@@ -1,8 +1,8 @@
 import { Stack, useRouter } from 'expo-router';
 import { RefreshCw, Ruler, Scale, Utensils } from 'lucide-react-native';
-import { useEffect, useRef, useState } from 'react';
+import { startTransition, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, InteractionManager, ScrollView, View } from 'react-native';
+import { ActivityIndicator, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
@@ -86,20 +86,15 @@ export default function ProgressScreen() {
       return;
     }
 
-    // Wrap in a local IIFE so setState calls are not "directly" in the effect body
-    const task = () => {
-      setChartPhase(1);
-      return InteractionManager.runAfterInteractions(() => {
-        setChartPhase(2);
-        const t1 = setTimeout(() => setChartPhase(3), 400);
-        phaseTimersRef.current.push(t1);
-      });
-    };
-
-    task();
+    startTransition(() => setChartPhase(1));
+    const idleId = requestIdleCallback(() => {
+      setChartPhase(2);
+      const t1 = setTimeout(() => setChartPhase(3), 400);
+      phaseTimersRef.current.push(t1);
+    });
 
     return () => {
-      task.cancel();
+      cancelIdleCallback(idleId);
       phaseTimersRef.current.forEach(clearTimeout);
     };
   }, [isLoading]);

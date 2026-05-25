@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { InteractionManager } from 'react-native';
 
 /**
  * Returns `false` on the first render, then `true` after pending interactions
@@ -14,10 +13,10 @@ export function useDeferredContent(): boolean {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    const task = InteractionManager.runAfterInteractions(() => {
+    const id = requestIdleCallback(() => {
       setIsReady(true);
     });
-    return () => task.cancel();
+    return () => cancelIdleCallback(id);
   }, []);
 
   return isReady;
