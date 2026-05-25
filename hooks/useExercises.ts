@@ -345,7 +345,10 @@ export function useExercises({
     if (!enableReactivity || !visible) {
       // Still load initial data even if reactivity is disabled
       if (visible) {
-        loadInitialExercises();
+        const run = () => {
+          void loadInitialExercises();
+        };
+        run();
       }
       return;
     }
@@ -377,7 +380,10 @@ export function useExercises({
     });
 
     // Load initial data
-    loadInitialExercises();
+    const runInit = () => {
+      void loadInitialExercises();
+    };
+    runInit();
 
     return () => subscription.unsubscribe();
   }, [

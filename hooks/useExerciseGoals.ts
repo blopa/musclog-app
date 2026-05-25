@@ -106,11 +106,17 @@ export function useExerciseGoals({
   // Subscribe to changes
   useEffect(() => {
     if (!visible) {
-      setIsLoading(false);
+      const stopLoading = () => {
+        setIsLoading(false);
+      };
+      stopLoading();
       return;
     }
 
-    loadInitial();
+    const run = () => {
+      void loadInitial();
+    };
+    run();
 
     // Subscribe to exercise_goals table changes
     const query = database

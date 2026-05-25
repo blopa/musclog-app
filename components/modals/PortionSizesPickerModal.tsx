@@ -96,7 +96,10 @@ export function PortionSizesPickerModal({
 
   useEffect(() => {
     if (!visible) {
-      setCreateModalVisible(false);
+      const reset = () => {
+        setCreateModalVisible(false);
+      };
+      reset();
     }
   }, [visible]);
 
@@ -118,7 +121,10 @@ export function PortionSizesPickerModal({
 
   // Sync localSelectedIds when selectedIds prop changes
   useEffect(() => {
-    setLocalSelectedIds(selectedIds);
+    const sync = () => {
+      setLocalSelectedIds(selectedIds);
+    };
+    sync();
   }, [selectedIds]);
 
   // Portions are already ordered newest-first (see FoodPortionService.getPortionsPaginated)

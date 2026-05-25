@@ -66,18 +66,24 @@ export function TrackSavedForLaterFoodMealModal({
   const isBusy = isLoading || isSubmitting;
 
   useEffect(() => {
-    if (visible) {
-      setTargetDate(localCalendarDayDate(sourceDate));
-      setTargetMealType(sourceMealType);
-      setSplitPercentage(50);
-    } else {
-      setIsSubmitting(false);
-    }
+    const syncOrReset = () => {
+      if (visible) {
+        setTargetDate(localCalendarDayDate(sourceDate));
+        setTargetMealType(sourceMealType);
+        setSplitPercentage(50);
+      } else {
+        setIsSubmitting(false);
+      }
+    };
+    syncOrReset();
   }, [visible, sourceDate, sourceMealType]);
 
   useEffect(() => {
     if (!visible) {
-      setIsDatePickerVisible(false);
+      const reset = () => {
+        setIsDatePickerVisible(false);
+      };
+      reset();
     }
   }, [visible]);
 

@@ -247,11 +247,14 @@ export function useMeals({
     if (!enableReactivity || !visible) {
       // Still load initial data even if reactivity is disabled
       if (visible) {
-        if (mode === 'with-foods') {
-          loadMealWithFoods();
-        } else {
-          loadInitialMeals();
-        }
+        const run = () => {
+          if (mode === 'with-foods') {
+            void loadMealWithFoods();
+          } else {
+            void loadInitialMeals();
+          }
+        };
+        run();
       }
       return;
     }
@@ -279,7 +282,10 @@ export function useMeals({
     });
 
     // Load initial data
-    refresh();
+    const runInit = () => {
+      void refresh();
+    };
+    runInit();
 
     return () => subscription.unsubscribe();
   }, [

@@ -241,21 +241,27 @@ export default function SmartCameraModal({
   // Update camera mode when mode prop changes
   useEffect(() => {
     if (mode) {
-      const safeMode = getSafeCameraMode(mode, isAiEnabled, isAIVisionEnabled);
-      setCameraMode(safeMode);
+      const syncMode = () => {
+        const safeMode = getSafeCameraMode(mode, isAiEnabled, isAIVisionEnabled);
+        setCameraMode(safeMode);
+      };
+      syncMode();
     }
   }, [mode, isAiEnabled, isAIVisionEnabled]);
 
   useEffect(() => {
     if (!visible) {
-      setIsContextModalVisible(false);
-      setIsBarcodeTextSearchModalVisible(false);
-      setIsAddFoodModalVisible(false);
-      setIsNewCustomFoodModalVisible(false);
-      setIsFoodSearchModalVisible(false);
-      setIsLogMealModalVisible(false);
-      setProductFromAiLabel(null);
-      isSearchingBarcodeRef.current = false;
+      const reset = () => {
+        setIsContextModalVisible(false);
+        setIsBarcodeTextSearchModalVisible(false);
+        setIsAddFoodModalVisible(false);
+        setIsNewCustomFoodModalVisible(false);
+        setIsFoodSearchModalVisible(false);
+        setIsLogMealModalVisible(false);
+        setProductFromAiLabel(null);
+        isSearchingBarcodeRef.current = false;
+      };
+      reset();
     }
   }, [visible, isSearchingBarcodeRef]);
 

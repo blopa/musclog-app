@@ -84,7 +84,10 @@ export default function EditWorkoutMetadataModal({
       });
 
       if (isMounted) {
-        setExerciseOptions(options);
+        const setOptions = () => {
+          setExerciseOptions(options);
+        };
+        setOptions();
       }
     }
 
@@ -102,7 +105,10 @@ export default function EditWorkoutMetadataModal({
 
   useEffect(() => {
     if (!visible) {
-      setPickerConfig((prev) => ({ ...prev, visible: false }));
+      const reset = () => {
+        setPickerConfig((prev) => ({ ...prev, visible: false }));
+      };
+      reset();
     }
   }, [visible]);
 

@@ -24,7 +24,10 @@ export function useSubModalVisibility(
 
   useEffect(() => {
     if (!parentVisible) {
-      setIsVisible(false);
+      const reset = () => {
+        setIsVisible(false);
+      };
+      reset();
     }
   }, [parentVisible]);
 

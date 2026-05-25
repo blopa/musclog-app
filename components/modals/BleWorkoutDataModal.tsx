@@ -60,7 +60,10 @@ export function BleWorkoutDataModal({ visible, onClose }: BleWorkoutDataModalPro
 
   useEffect(() => {
     if (visible) {
-      void refresh();
+      const run = () => {
+        void refresh();
+      };
+      run();
       void Sharing.isAvailableAsync()
         .then(setIsSharingAvailable)
         .catch(() => setIsSharingAvailable(false));

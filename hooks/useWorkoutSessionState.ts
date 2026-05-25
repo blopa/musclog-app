@@ -96,22 +96,15 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
 
   useEffect(() => {
     if (!workoutLogId) {
-      setWorkoutLog(null);
-      setLogExercises([]);
-      setSets([]);
-      setExercises([]);
-      setCurrentSet(null);
-      setNextSet(null);
-      setPreviousSet(null);
-      setProgress({ totalSets: 0, completedSets: 0, currentSetOrder: null, isComplete: false });
-      setError(null);
-      setIsLoading(false);
       return;
     }
 
     const logId = workoutLogId;
-    setError(null);
-    setIsLoading(true);
+    const initState = () => {
+      setError(null);
+      setIsLoading(true);
+    };
+    initState();
 
     const logQuery = database
       .get<WorkoutLog>('workout_logs')
@@ -386,17 +379,20 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
     );
   }, [workoutLogId]);
 
+  const active = !!workoutLogId;
   return {
-    workoutLog,
-    logExercises,
-    sets,
-    exercises,
-    currentSet,
-    nextSet,
-    previousSet,
-    progress,
-    isLoading,
-    error,
+    workoutLog: active ? workoutLog : null,
+    logExercises: active ? logExercises : [],
+    sets: active ? sets : [],
+    exercises: active ? exercises : [],
+    currentSet: active ? currentSet : null,
+    nextSet: active ? nextSet : null,
+    previousSet: active ? previousSet : null,
+    progress: active
+      ? progress
+      : { totalSets: 0, completedSets: 0, currentSetOrder: null, isComplete: false },
+    isLoading: active ? isLoading : false,
+    error: active ? error : null,
     refresh,
   };
 }

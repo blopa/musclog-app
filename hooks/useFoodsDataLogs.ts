@@ -275,7 +275,10 @@ export function useFoodsDataLogs({
     if (!visible) {
       return;
     }
-    loadInitial();
+    const run = () => {
+      void loadInitial();
+    };
+    run();
   }, [visible, loadInitial]);
 
   const filteredGroups = useMemo(

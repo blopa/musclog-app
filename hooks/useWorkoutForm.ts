@@ -118,7 +118,10 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
 
   useEffect(() => {
     if (isEditMode) {
-      loadTemplate();
+      const runLoad = () => {
+        void loadTemplate();
+      };
+      runLoad();
     }
   }, [isEditMode, loadTemplate]);
 

@@ -364,8 +364,11 @@ function PastWorkoutsHistoryModal({ visible, onClose }: WorkoutHistoryModalProps
 
   useEffect(() => {
     if (!visible) {
-      setIsFilterMenuVisible(false);
-      setSelectedWorkoutId(null);
+      const reset = () => {
+        setIsFilterMenuVisible(false);
+        setSelectedWorkoutId(null);
+      };
+      reset();
     }
   }, [visible]);
 

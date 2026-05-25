@@ -54,8 +54,11 @@ export function BarcodeCameraModal({
 
   useEffect(() => {
     if (!visible) {
-      setIsBarcodeTextSearchModalVisible(false);
-      setBarcodeTextSearchValue('');
+      const reset = () => {
+        setIsBarcodeTextSearchModalVisible(false);
+        setBarcodeTextSearchValue('');
+      };
+      reset();
       isSearchingBarcodeRef.current = false;
     }
   }, [visible, isSearchingBarcodeRef]);

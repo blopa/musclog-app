@@ -60,17 +60,14 @@ export function useWorkoutTemplateDetails(templateId: string | null) {
 
   useEffect(() => {
     if (!templateId) {
-      setTemplate(null);
-      setTemplateExercises([]);
-      setTemplateSets([]);
-      setExercises([]);
-      setError(null);
-      setIsLoading(false);
       return;
     }
 
-    setError(null);
-    setIsLoading(true);
+    const initState = () => {
+      setError(null);
+      setIsLoading(true);
+    };
+    initState();
 
     const templateQuery = database
       .get<WorkoutTemplate>('workout_templates')
@@ -163,12 +160,13 @@ export function useWorkoutTemplateDetails(templateId: string | null) {
     return () => subscription.unsubscribe();
   }, [templateId]);
 
+  const active = !!templateId;
   return {
-    template,
-    templateExercises,
-    templateSets,
-    exercises,
-    isLoading,
-    error,
+    template: active ? template : null,
+    templateExercises: active ? templateExercises : [],
+    templateSets: active ? templateSets : [],
+    exercises: active ? exercises : [],
+    isLoading: active ? isLoading : false,
+    error: active ? error : null,
   };
 }

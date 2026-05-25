@@ -54,14 +54,20 @@ export function GenericEditModal({
   // Reset form when modal opens or initialValues change
   useEffect(() => {
     if (visible) {
-      setFormValues(initialValues);
+      const syncValues = () => {
+        setFormValues(initialValues);
+      };
+      syncValues();
     }
   }, [visible, initialValues]);
 
   useEffect(() => {
     if (!visible) {
-      setDatePickerVisible(false);
-      setSelectMenuVisible(false);
+      const reset = () => {
+        setDatePickerVisible(false);
+        setSelectMenuVisible(false);
+      };
+      reset();
     }
   }, [visible]);
 

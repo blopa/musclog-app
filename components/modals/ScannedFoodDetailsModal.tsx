@@ -157,20 +157,26 @@ export function ScannedFoodDetailsModal({
   );
 
   useEffect(() => {
-    setLocalCanEdit(alwaysAllowFoodEditing);
+    const syncEdit = () => {
+      setLocalCanEdit(alwaysAllowFoodEditing);
+    };
+    syncEdit();
   }, [alwaysAllowFoodEditing]);
 
   useEffect(() => {
     if (!visible) {
-      setAmount(100);
-      setEditedOverrides(null);
-      setIsEditPopUpVisible(false);
-      setEditMicroOpen(false);
-      setEditForm(null);
-      setRefetchedProductDetails(null);
-      setIsRefetchingSource(false);
-      setLocalCanEdit(alwaysAllowFoodEditing);
-      setAlternateSourceLookupFailed(false);
+      const reset = () => {
+        setAmount(100);
+        setEditedOverrides(null);
+        setIsEditPopUpVisible(false);
+        setEditMicroOpen(false);
+        setEditForm(null);
+        setRefetchedProductDetails(null);
+        setIsRefetchingSource(false);
+        setLocalCanEdit(alwaysAllowFoodEditing);
+        setAlternateSourceLookupFailed(false);
+      };
+      reset();
     }
   }, [visible, alwaysAllowFoodEditing]);
 

@@ -225,25 +225,33 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
   // Reset selection, drop-set, and notes when modal opens
   useEffect(() => {
     if (visible) {
-      setSelectedExerciseId(null);
+      const reset = () => {
+        setSelectedExerciseId(null);
+        setSetType('normal');
+        setIsSetTypePickerVisible(false);
+        setNotes('');
+      };
+
+      reset();
       selectedExerciseIdRef.current = null;
-      setSetType('normal');
-      setIsSetTypePickerVisible(false);
-      setNotes('');
     }
   }, [visible]);
 
   // Update selected exercise when active muscle changes - clear selection if it doesn't exist in new group
   useEffect(() => {
     const currentGroupExercises = exercises[activeMuscle];
+    const clearSelection = () => {
+      setSelectedExerciseId(null);
+    };
+
     if (currentGroupExercises.length > 0 && selectedExerciseId) {
       // Clear selection if it doesn't exist in the new group
       const exerciseExists = currentGroupExercises.some((ex) => ex.id === selectedExerciseId);
       if (!exerciseExists) {
-        setSelectedExerciseId(null);
+        clearSelection();
       }
     } else if (currentGroupExercises.length === 0) {
-      setSelectedExerciseId(null);
+      clearSelection();
     }
     // Only run when activeMuscle or exercises change, not when selectedExerciseId changes
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -157,27 +157,33 @@ export default function ExerciseGoalCreationModal({
 
   useEffect(() => {
     if (!visible) {
-      setStep('type');
-      setGoalType('1rm');
-      setSelectedExercise(null);
-      setTargetWeightDisplay(units === 'imperial' ? '225' : '100');
-      setSessionsPerWeek(3);
-      setTargetDate(null);
-      setHasManuallySetTargetDate(false);
-      setNotes('');
-      setExerciseDataPoints([]);
-      setCurrent1RM(null);
-      setActiveMuscle('all');
-      setSearchQuery('');
+      const reset = () => {
+        setStep('type');
+        setGoalType('1rm');
+        setSelectedExercise(null);
+        setTargetWeightDisplay(units === 'imperial' ? '225' : '100');
+        setSessionsPerWeek(3);
+        setTargetDate(null);
+        setHasManuallySetTargetDate(false);
+        setNotes('');
+        setExerciseDataPoints([]);
+        setCurrent1RM(null);
+        setActiveMuscle('all');
+        setSearchQuery('');
+      };
+      reset();
       return;
     }
   }, [visible, units]);
 
   useEffect(() => {
     if (selectedExercise && goalType === '1rm') {
-      setIsLoadingHistory(true);
-      setTargetDate(null);
-      setHasManuallySetTargetDate(false);
+      const initLoading = () => {
+        setIsLoadingHistory(true);
+        setTargetDate(null);
+        setHasManuallySetTargetDate(false);
+      };
+      initLoading();
       Promise.all([
         WorkoutAnalytics.getProgressiveOverloadData(selectedExercise.id),
         WorkoutAnalytics.getRecentFirstSetAverage1RM(selectedExercise.id),
@@ -247,19 +253,22 @@ export default function ExerciseGoalCreationModal({
       userGender,
     });
 
-    if (proj.projectedDate) {
-      setTargetDate(proj.projectedDate);
-    } else {
-      setTargetDate(
-        estimateConservativeTargetDate(
-          current1RM,
-          targetKg,
-          bodyWeight,
-          selectedExercise.loadMultiplier ?? 1.0,
-          userGender
-        )
-      );
-    }
+    const setDate = () => {
+      if (proj.projectedDate) {
+        setTargetDate(proj.projectedDate);
+      } else {
+        setTargetDate(
+          estimateConservativeTargetDate(
+            current1RM,
+            targetKg,
+            bodyWeight,
+            selectedExercise.loadMultiplier ?? 1.0,
+            userGender
+          )
+        );
+      }
+    };
+    setDate();
   }, [
     targetWeightDisplay,
     selectedExercise,

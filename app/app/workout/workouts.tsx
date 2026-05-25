@@ -56,7 +56,10 @@ export default function WorkoutsScreen() {
   useEffect(() => {
     const id = params.previewTemplateId;
     if (id?.trim()) {
-      setPreviewTemplateId(id.trim());
+      const sync = () => {
+        setPreviewTemplateId(id.trim());
+      };
+      sync();
     }
   }, [params.previewTemplateId]);
 

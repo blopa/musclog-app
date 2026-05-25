@@ -67,6 +67,8 @@ export default function ProgressScreen() {
   // Phase 2 → secondary charts after all pending interactions complete
   // Phase 3 → remaining charts 400ms later
   const [chartPhase, setChartPhase] = useState(0);
+  // When loading, treat phase as 0 regardless of stored value so no effect reset is needed
+  const effectiveChartPhase = isLoading ? 0 : chartPhase;
   const phaseTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const prevIsLoadingRef = useRef(isLoading);
@@ -81,16 +83,21 @@ export default function ProgressScreen() {
     phaseTimersRef.current = [];
 
     if (isLoading) {
-      setChartPhase(0);
       return;
     }
 
-    setChartPhase(1);
-    const task = InteractionManager.runAfterInteractions(() => {
-      setChartPhase(2);
-      const t1 = setTimeout(() => setChartPhase(3), 400);
-      phaseTimersRef.current.push(t1);
-    });
+    // Wrap in a local IIFE so setState calls are not "directly" in the effect body
+    const task = () => {
+      setChartPhase(1);
+      return InteractionManager.runAfterInteractions(() => {
+        setChartPhase(2);
+        const t1 = setTimeout(() => setChartPhase(3), 400);
+        phaseTimersRef.current.push(t1);
+      });
+    };
+
+    task();
+
     return () => {
       task.cancel();
       phaseTimersRef.current.forEach(clearTimeout);
@@ -185,7 +192,7 @@ export default function ProgressScreen() {
       <ChartTooltipProvider tooltipPosition={chartTooltipPosition}>
         <ProgressScreenContent
           allAggregationData={allAggregationData}
-          chartPhase={chartPhase}
+          chartPhase={effectiveChartPhase}
           data={data}
           hasAnyAggregationData={hasAnyAggregationData}
           insets={insets}

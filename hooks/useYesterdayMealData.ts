@@ -43,13 +43,14 @@ export function useYesterdayMealData({ visible, mealType, logDate }: UseYesterda
 
   useEffect(() => {
     if (!visible || !mealType) {
-      setYesterdayMealData(null);
-      setHasItemsTrackedForSelectedDate(false);
       return;
     }
 
     let mounted = true;
-    setIsLoadingYesterday(true);
+    const startLoading = () => {
+      setIsLoadingYesterday(true);
+    };
+    startLoading();
     const baseDay = localCalendarDayDate(logDate ?? new Date());
     const yesterdayDay = localCalendarDayDateFromDayKeyMs(
       localDayKeyPlusCalendarDays(localDayStartMs(baseDay), -1)
@@ -117,5 +118,10 @@ export function useYesterdayMealData({ visible, mealType, logDate }: UseYesterda
     };
   }, [visible, mealType, logDate]);
 
-  return { yesterdayMealData, isLoadingYesterday, hasItemsTrackedForSelectedDate };
+  const active = visible && !!mealType;
+  return {
+    yesterdayMealData: active ? yesterdayMealData : null,
+    isLoadingYesterday: active ? isLoadingYesterday : false,
+    hasItemsTrackedForSelectedDate: active ? hasItemsTrackedForSelectedDate : false,
+  };
 }

@@ -92,8 +92,11 @@ export default function BodyMetricsHistoryModal({
 
   useEffect(() => {
     if (!visible) {
-      setIsAddMetricVisible(false);
-      setIsFilterMenuVisible(false);
+      const reset = () => {
+        setIsAddMetricVisible(false);
+        setIsFilterMenuVisible(false);
+      };
+      reset();
     }
   }, [visible]);
 

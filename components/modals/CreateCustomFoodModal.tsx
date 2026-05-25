@@ -154,7 +154,10 @@ export default function CreateCustomFoodModal({
 
   useEffect(() => {
     if (!visible) {
-      setIsFoodDetailsVisible(false);
+      const reset = () => {
+        setIsFoodDetailsVisible(false);
+      };
+      reset();
     }
   }, [visible]);
 

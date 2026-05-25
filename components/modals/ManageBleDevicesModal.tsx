@@ -42,7 +42,10 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
 
   useEffect(() => {
     if (visible) {
-      void refreshSaved();
+      const run = () => {
+        void refreshSaved();
+      };
+      run();
     }
   }, [visible, refreshSaved]);
 

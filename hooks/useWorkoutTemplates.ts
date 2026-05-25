@@ -257,7 +257,10 @@ export function useWorkoutTemplates({
     if (!enableReactivity || !visible) {
       // Still load initial data even if reactivity is disabled
       if (visible) {
-        loadInitialTemplates();
+        const run = () => {
+          void loadInitialTemplates();
+        };
+        run();
       }
       return;
     }
@@ -281,7 +284,10 @@ export function useWorkoutTemplates({
     });
 
     // Load initial data
-    loadInitialTemplates();
+    const runInit = () => {
+      void loadInitialTemplates();
+    };
+    runInit();
 
     return () => subscription.unsubscribe();
   }, [mode, enableReactivity, visible, getAll, scope, loadInitialTemplates]);

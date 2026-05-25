@@ -396,35 +396,38 @@ export function NutritionGoalsBody({
   }, [eatingPhase]);
 
   useEffect(() => {
-    setTotalCalories(initialGoals.totalCalories);
-    setProtein(initialGoals.protein);
-    setCarbs(initialGoals.carbs);
-    setFats(initialGoals.fats);
-    setFiber(initialGoals.fiber);
-    setEatingPhase(initialGoals.eatingPhase);
-    setTargetWeight(
-      initialGoals.targetWeight != null ? kgToDisplay(initialGoals.targetWeight, units) : null
-    );
-    setTargetBodyFat(initialGoals.targetBodyFat ?? null);
-    setTargetBMI(initialGoals.targetBMI ?? null);
-    setTargetFFMI(initialGoals.targetFFMI ?? null);
-    setTargetDate(initialGoals.targetDate ?? null);
-    setGoalStartDate(initialGoals.goalStartDate ?? defaultGoalStartDate);
-    setIsDynamic(initialGoals.isDynamic ?? false);
-    setDynamicPreview(null);
-    setIsResolvingDynamicPreview(false);
-    didAutofillDynamicTargetWeight.current = false;
-    setCalorieInputValue(initialGoals.totalCalories.toString());
-    preciseMacros.current = {
-      protein: initialGoals.protein,
-      carbs: initialGoals.carbs,
-      fats: initialGoals.fats,
-      fiber: initialGoals.fiber,
+    const syncInitialGoals = () => {
+      setTotalCalories(initialGoals.totalCalories);
+      setProtein(initialGoals.protein);
+      setCarbs(initialGoals.carbs);
+      setFats(initialGoals.fats);
+      setFiber(initialGoals.fiber);
+      setEatingPhase(initialGoals.eatingPhase);
+      setTargetWeight(
+        initialGoals.targetWeight != null ? kgToDisplay(initialGoals.targetWeight, units) : null
+      );
+      setTargetBodyFat(initialGoals.targetBodyFat ?? null);
+      setTargetBMI(initialGoals.targetBMI ?? null);
+      setTargetFFMI(initialGoals.targetFFMI ?? null);
+      setTargetDate(initialGoals.targetDate ?? null);
+      setGoalStartDate(initialGoals.goalStartDate ?? defaultGoalStartDate);
+      setIsDynamic(initialGoals.isDynamic ?? false);
+      setDynamicPreview(null);
+      setIsResolvingDynamicPreview(false);
+      didAutofillDynamicTargetWeight.current = false;
+      setCalorieInputValue(initialGoals.totalCalories.toString());
+      preciseMacros.current = {
+        protein: initialGoals.protein,
+        carbs: initialGoals.carbs,
+        fats: initialGoals.fats,
+        fiber: initialGoals.fiber,
+      };
+      macrosArePristine.current = true;
+      previousEatingPhase.current = initialGoals.eatingPhase;
+      isManualCalorieUpdate.current = false;
+      syncMacroRatios();
     };
-    macrosArePristine.current = true;
-    previousEatingPhase.current = initialGoals.eatingPhase;
-    isManualCalorieUpdate.current = false;
-    syncMacroRatios();
+    syncInitialGoals();
   }, [
     defaultGoalStartDate,
     initialGoals.carbs,
@@ -447,17 +450,20 @@ export function NutritionGoalsBody({
   // When dynamic mode is turned on, ensure target weight is set (it's required for dynamic goals).
   // Prefer the user's actual current weight; fall back to the generic default only if unavailable.
   useEffect(() => {
-    if (isDynamic && targetWeight === null) {
-      const fallbackKg = latestWeightKg ?? defaultTargetWeightKg;
-      didAutofillDynamicTargetWeight.current = true;
-      setTargetWeight(kgToDisplay(fallbackKg, units));
-      return;
-    }
+    const syncWeight = () => {
+      if (isDynamic && targetWeight === null) {
+        const fallbackKg = latestWeightKg ?? defaultTargetWeightKg;
+        didAutofillDynamicTargetWeight.current = true;
+        setTargetWeight(kgToDisplay(fallbackKg, units));
+        return;
+      }
 
-    if (isDynamic && latestWeightKg != null && didAutofillDynamicTargetWeight.current) {
-      setTargetWeight(kgToDisplay(latestWeightKg, units));
-      didAutofillDynamicTargetWeight.current = false;
-    }
+      if (isDynamic && latestWeightKg != null && didAutofillDynamicTargetWeight.current) {
+        setTargetWeight(kgToDisplay(latestWeightKg, units));
+        didAutofillDynamicTargetWeight.current = false;
+      }
+    };
+    syncWeight();
   }, [isDynamic, targetWeight, latestWeightKg, units]);
 
   // Load user's height once on mount so we can derive BMI and FFMI
@@ -585,13 +591,16 @@ export function NutritionGoalsBody({
       };
 
       isManualCalorieUpdate.current = true;
-      setTotalCalories(finalCalories);
-      setProtein(macros.protein);
-      setCarbs(macros.carbs);
-      setFats(macros.fats);
-      setFiber(fiberValue);
-      setCalorieInputValue(finalCalories.toString());
-      syncMacroRatios();
+      const applyMacros = () => {
+        setTotalCalories(finalCalories);
+        setProtein(macros.protein);
+        setCarbs(macros.carbs);
+        setFats(macros.fats);
+        setFiber(fiberValue);
+        setCalorieInputValue(finalCalories.toString());
+        syncMacroRatios();
+      };
+      applyMacros();
     } catch {
       // ignore
     }
@@ -713,7 +722,10 @@ export function NutritionGoalsBody({
   // Calorie input sync
   useEffect(() => {
     if (!isCalorieEditing) {
-      setCalorieInputValue(totalCalories.toString());
+      const sync = () => {
+        setCalorieInputValue(totalCalories.toString());
+      };
+      sync();
     }
   }, [totalCalories, isCalorieEditing]);
 
@@ -743,13 +755,16 @@ export function NutritionGoalsBody({
     if (userHeightM === null || targetWeight === null) {
       return;
     }
-    setTargetBMI((prev) => {
-      if (prev === null) {
-        return prev;
-      }
-      const weightKg = displayToKg(targetWeight, units);
-      return bmiFromWeightAndHeightM(weightKg, userHeightM);
-    });
+    const recalcBmi = () => {
+      setTargetBMI((prev) => {
+        if (prev === null) {
+          return prev;
+        }
+        const weightKg = displayToKg(targetWeight, units);
+        return bmiFromWeightAndHeightM(weightKg, userHeightM);
+      });
+    };
+    recalcBmi();
   }, [targetWeight, userHeightM, units]);
 
   // Auto-recalculate FFMI when target weight or body fat changes (only while FFMI is active and body fat is set)
@@ -757,39 +772,45 @@ export function NutritionGoalsBody({
     if (userHeightM === null || targetWeight === null || !targetBodyFat) {
       return;
     }
-    setTargetFFMI((prev) => {
-      if (prev === null) {
-        return prev;
-      }
-      const weightKg = displayToKg(targetWeight, units);
-      return ffmiFromWeightHeightAndBodyFat(weightKg, userHeightM, targetBodyFat);
-    });
+    const recalcFfmi = () => {
+      setTargetFFMI((prev) => {
+        if (prev === null) {
+          return prev;
+        }
+        const weightKg = displayToKg(targetWeight, units);
+        return ffmiFromWeightHeightAndBodyFat(weightKg, userHeightM, targetBodyFat);
+      });
+    };
+    recalcFfmi();
   }, [targetWeight, targetBodyFat, userHeightM, units]);
 
   // If the eating phase changes to a lower-max (e.g. bulk -> cut), clamp current macro values
   // so they never exceed the allowed maximum for the selected phase.
   useEffect(() => {
-    setProtein((curr) => {
-      const next = Math.min(curr, macroMax.protein);
-      preciseMacros.current.protein = next;
-      return next;
-    });
-    setCarbs((curr) => {
-      const next = Math.min(curr, macroMax.carbs);
-      preciseMacros.current.carbs = next;
-      return next;
-    });
-    setFats((curr) => {
-      const next = Math.min(curr, macroMax.fats);
-      preciseMacros.current.fats = next;
-      return next;
-    });
-    setFiber((curr) => {
-      const next = Math.min(curr, macroMax.fiber);
-      preciseMacros.current.fiber = next;
-      return next;
-    });
-    syncMacroRatios();
+    const clampMacros = () => {
+      setProtein((curr) => {
+        const next = Math.min(curr, macroMax.protein);
+        preciseMacros.current.protein = next;
+        return next;
+      });
+      setCarbs((curr) => {
+        const next = Math.min(curr, macroMax.carbs);
+        preciseMacros.current.carbs = next;
+        return next;
+      });
+      setFats((curr) => {
+        const next = Math.min(curr, macroMax.fats);
+        preciseMacros.current.fats = next;
+        return next;
+      });
+      setFiber((curr) => {
+        const next = Math.min(curr, macroMax.fiber);
+        preciseMacros.current.fiber = next;
+        return next;
+      });
+      syncMacroRatios();
+    };
+    clampMacros();
   }, [macroMax.protein, macroMax.carbs, macroMax.fats, macroMax.fiber, syncMacroRatios]);
 
   const isDynamicValid = isDynamicNutritionGoalValid({
@@ -800,13 +821,19 @@ export function NutritionGoalsBody({
 
   useEffect(() => {
     if (!isDynamic || !isDynamicValid || targetWeight == null || targetDate == null) {
-      setDynamicPreview(null);
-      setIsResolvingDynamicPreview(false);
+      const clear = () => {
+        setDynamicPreview(null);
+        setIsResolvingDynamicPreview(false);
+      };
+      clear();
       return;
     }
 
     let cancelled = false;
-    setIsResolvingDynamicPreview(true);
+    const startResolving = () => {
+      setIsResolvingDynamicPreview(true);
+    };
+    startResolving();
 
     resolveDynamicGoalPreview(
       {

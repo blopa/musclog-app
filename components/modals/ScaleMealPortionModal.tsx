@@ -60,11 +60,14 @@ export function ScaleMealPortionModal({
   }, [initialTotalGrams, targetGrams, mealNutrients]);
 
   useEffect(() => {
-    if (visible) {
-      setTargetGrams(initialTotalGrams);
-    } else {
-      setIsSubmitting(false);
-    }
+    const syncOrReset = () => {
+      if (visible) {
+        setTargetGrams(initialTotalGrams);
+      } else {
+        setIsSubmitting(false);
+      }
+    };
+    syncOrReset();
   }, [visible, initialTotalGrams]);
 
   const handleConfirm = async () => {

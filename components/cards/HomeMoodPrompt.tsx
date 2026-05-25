@@ -42,7 +42,10 @@ export function HomeMoodPrompt({ onVisibilityChange }: HomeMoodPromptProps) {
     const shouldBeVisible = !isLoading && showDailyMoodPrompt && !hasMoodToday && !isDismissed;
 
     if (shouldBeVisible) {
-      setIsActuallyVisible(true);
+      const show = () => {
+        setIsActuallyVisible(true);
+      };
+      show();
       opacity.value = withTiming(1, { duration: 400 });
       height.value = withSpring(MAX_HEIGHT, { damping: 20, stiffness: 90 });
       marginBottom.value = withTiming(24, { duration: 400 }); // 24 is mb-6

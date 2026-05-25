@@ -21,9 +21,12 @@ export function useBarcodeScanner({ visible, onBarcodeScanned, onClose }: UseBar
 
   useEffect(() => {
     if (!visible) {
-      setIsSearchingBarcode(false);
-      setDetectedBarcode(null);
-      setIsFoodNotFoundModalVisible(false);
+      const reset = () => {
+        setIsSearchingBarcode(false);
+        setDetectedBarcode(null);
+        setIsFoodNotFoundModalVisible(false);
+      };
+      reset();
       isSearchingBarcodeRef.current = false;
     }
   }, [visible]);

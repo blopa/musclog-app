@@ -33,17 +33,20 @@ export function AiCustomPromptEditModal({
   const [isActive, setIsActive] = useState(true);
 
   useEffect(() => {
-    if (prompt) {
-      setName(prompt.name);
-      setContent(prompt.content);
-      setContext(prompt.context ?? 'general');
-      setIsActive(prompt.isActive);
-    } else {
-      setName('');
-      setContent('');
-      setContext('general');
-      setIsActive(true);
-    }
+    const syncFromPrompt = () => {
+      if (prompt) {
+        setName(prompt.name);
+        setContent(prompt.content);
+        setContext(prompt.context ?? 'general');
+        setIsActive(prompt.isActive);
+      } else {
+        setName('');
+        setContent('');
+        setContext('general');
+        setIsActive(true);
+      }
+    };
+    syncFromPrompt();
   }, [prompt, visible]);
 
   const handleSave = async () => {

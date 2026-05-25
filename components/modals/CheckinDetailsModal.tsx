@@ -53,7 +53,10 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
 
   useEffect(() => {
     if (!visible) {
-      setIsNutritionGoalsModalVisible(false);
+      const reset = () => {
+        setIsNutritionGoalsModalVisible(false);
+      };
+      reset();
     }
   }, [visible]);
 

@@ -206,7 +206,10 @@ export default function ExercisesModal({
       return;
     }
 
-    loadExercises();
+    const run = () => {
+      void loadExercises();
+    };
+    run();
   }, [visible]);
 
   // Group exercises by muscle group

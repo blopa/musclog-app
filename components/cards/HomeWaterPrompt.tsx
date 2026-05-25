@@ -107,7 +107,10 @@ export function HomeWaterPrompt({
       proposedWaterIntakeLiters > 0;
 
     if (shouldBeVisible) {
-      setIsActuallyVisible(true);
+      const show = () => {
+        setIsActuallyVisible(true);
+      };
+      show();
       opacity.value = withTiming(1, { duration: 400 });
       height.value = withSpring(220, { damping: 20, stiffness: 90 });
       marginBottom.value = withTiming(24, { duration: 400 });

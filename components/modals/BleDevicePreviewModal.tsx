@@ -39,13 +39,19 @@ export function BleDevicePreviewModal({ visible, onClose }: BleDevicePreviewModa
     if (visible) {
       return;
     }
-    setBuffer([]);
+    const reset = () => {
+      setBuffer([]);
+    };
+    reset();
     counterRef.current = 0;
     lastRenderRef.current = 0;
   }, [visible]);
 
   useEffect(() => {
-    setBuffer([]);
+    const reset = () => {
+      setBuffer([]);
+    };
+    reset();
     counterRef.current = 0;
     lastRenderRef.current = 0;
   }, [mode]);

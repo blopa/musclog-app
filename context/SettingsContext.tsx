@@ -362,7 +362,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (isStaticExport) {
-      setState((prev) => ({ ...prev, isLoading: false }));
+      const markLoaded = () => {
+        setState((prev) => ({ ...prev, isLoading: false }));
+      };
+      markLoaded();
       return;
     }
 

@@ -88,14 +88,17 @@ export function ReplaceExerciseModal({
   const [selectedExercise, setSelectedExercise] = useState<string>('');
 
   useEffect(() => {
-    if (displayList.length === 0) {
-      setSelectedExercise('');
-      return;
-    }
-    const ids = new Set(displayList.map((e) => e.id));
-    if (!ids.has(selectedExercise)) {
-      setSelectedExercise(displayList[0].id);
-    }
+    const syncSelection = () => {
+      if (displayList.length === 0) {
+        setSelectedExercise('');
+        return;
+      }
+      const ids = new Set(displayList.map((e) => e.id));
+      if (!ids.has(selectedExercise)) {
+        setSelectedExercise(displayList[0].id);
+      }
+    };
+    syncSelection();
   }, [displayList, selectedExercise]);
 
   const MUSCLE_GROUP_TABS = [

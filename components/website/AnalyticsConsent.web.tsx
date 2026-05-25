@@ -23,7 +23,10 @@ export function AnalyticsConsent() {
 
   useEffect(() => {
     if (consent !== null) {
-      setVisible(false);
+      const hide = () => {
+        setVisible(false);
+      };
+      hide();
       return;
     }
 

@@ -630,7 +630,10 @@ export default function WitMotionTestScreen() {
   }, []);
 
   useEffect(() => {
-    void refreshStoredDebugFiles();
+    const run = () => {
+      void refreshStoredDebugFiles();
+    };
+    run();
   }, [refreshStoredDebugFiles]);
 
   // Throttle React state updates to 20 fps

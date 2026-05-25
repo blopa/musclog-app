@@ -62,7 +62,10 @@ export function NutritionGoalsModal({
 
   useEffect(() => {
     if (!visible) {
-      setIsSaving(false);
+      const reset = () => {
+        setIsSaving(false);
+      };
+      reset();
     }
   }, [visible]);
 
@@ -71,7 +74,10 @@ export function NutritionGoalsModal({
       return;
     }
 
-    setCurrentGoals(buildNutritionGoalsFromInitialValues(initialGoals));
+    const syncGoals = () => {
+      setCurrentGoals(buildNutritionGoalsFromInitialValues(initialGoals));
+    };
+    syncGoals();
   }, [initialGoals, visible]);
 
   const handleSave = async (goals: NutritionGoals) => {

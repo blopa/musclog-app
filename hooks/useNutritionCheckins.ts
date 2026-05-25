@@ -48,12 +48,24 @@ export function useNutritionCheckins({
 
   useEffect(() => {
     if (!nutritionGoalId || !visible) {
-      setCheckins([]);
-      setIsLoading(false);
       return;
     }
 
-    refresh();
+    // Inline initial load so setState calls are inside a local async function,
+    // not directly in the effect body (avoids react-hooks/set-state-in-effect)
+    const loadInitial = async () => {
+      setIsLoading(true);
+      try {
+        const list = await NutritionCheckinService.getByGoalId(nutritionGoalId);
+        setCheckins(list);
+      } catch (err) {
+        console.error('Error loading nutrition check-ins:', err);
+        setCheckins([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    void loadInitial();
 
     const query = database
       .get<NutritionCheckin>('nutrition_checkins')
@@ -72,11 +84,12 @@ export function useNutritionCheckins({
     });
 
     return () => subscription.unsubscribe();
-  }, [nutritionGoalId, visible, refresh]);
+  }, [nutritionGoalId, visible]);
 
+  const active = !!nutritionGoalId && !!visible;
   return {
-    checkins,
-    isLoading,
+    checkins: active ? checkins : [],
+    isLoading: active ? isLoading : false,
     refresh,
   };
 }

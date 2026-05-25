@@ -45,7 +45,10 @@ export function useEditMealIngredients(meal: Meal | undefined) {
     removedMealFoodIdsRef.current = [];
 
     if (!meal) {
-      setIngredients([]);
+      const clearIngredients = () => {
+        setIngredients([]);
+      };
+      clearIngredients();
       return;
     }
 

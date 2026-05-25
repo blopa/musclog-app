@@ -168,10 +168,13 @@ export function HeightPickerModal({
 
   useEffect(() => {
     if (visible) {
-      const idx = totalInchesToPickerIndices(totalInches || 67);
-      setFeetIndex(idx.feetIndex);
-      setInchesIndex(idx.inchesIndex);
-      setPickerKey((k) => k + 1);
+      const syncPicker = () => {
+        const idx = totalInchesToPickerIndices(totalInches || 67);
+        setFeetIndex(idx.feetIndex);
+        setInchesIndex(idx.inchesIndex);
+        setPickerKey((k) => k + 1);
+      };
+      syncPicker();
     }
   }, [visible, totalInches]);
 

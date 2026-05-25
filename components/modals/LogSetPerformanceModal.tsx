@@ -94,11 +94,14 @@ export function LogSetPerformanceModal({
   // Update local state when props change
   useEffect(() => {
     if (visible) {
-      setWeight(initialWeight);
-      setReps(initialReps);
-      setPartials(typeof initialPartials === 'number' ? initialPartials : 0);
-      setRepsInReserve(initialRepsInReserve);
-      setRpe(initialRpe);
+      const syncValues = () => {
+        setWeight(initialWeight);
+        setReps(initialReps);
+        setPartials(typeof initialPartials === 'number' ? initialPartials : 0);
+        setRepsInReserve(initialRepsInReserve);
+        setRpe(initialRpe);
+      };
+      syncValues();
     }
   }, [visible, initialWeight, initialReps, initialPartials, initialRepsInReserve, initialRpe]);
 

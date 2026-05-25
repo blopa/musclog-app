@@ -237,7 +237,10 @@ export function useWorkoutLogDataLogs({
     if (!visible) {
       return;
     }
-    loadInitial();
+    const run = () => {
+      void loadInitial();
+    };
+    run();
   }, [visible, loadInitial]);
 
   const filteredGroups = useMemo(

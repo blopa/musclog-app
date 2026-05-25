@@ -96,14 +96,17 @@ export function useUnifiedFoodSearch({
 
     if (!searchTerm || searchTerm.trim().length < 2) {
       prevDebouncedRef.current = '';
-      setDebouncedSearchTerm('');
-      setApiCompleted(false);
-      setUsdaCompleted(false);
-      setFirstResolvedApi(null);
-      setApiOffset(0);
-      setUsdaOffset(0);
-      setAccumulatedApiResults([]);
-      setAccumulatedUsdaResults([]);
+      const resetSearch = () => {
+        setDebouncedSearchTerm('');
+        setApiCompleted(false);
+        setUsdaCompleted(false);
+        setFirstResolvedApi(null);
+        setApiOffset(0);
+        setUsdaOffset(0);
+        setAccumulatedApiResults([]);
+        setAccumulatedUsdaResults([]);
+      };
+      resetSearch();
       return;
     }
 
@@ -331,39 +334,45 @@ export function useUnifiedFoodSearch({
 
   // Accumulate API results when new page is loaded
   useEffect(() => {
-    if (isApiSuccess && apiPageResults.length > 0) {
-      if (apiOffset === 0) {
-        // First page - replace accumulated results
-        setAccumulatedApiResults(apiPageResults);
-        setFirstResolvedApi((prev) => prev ?? 'openfood');
-      } else {
-        // Additional pages - append to accumulated results
-        setAccumulatedApiResults((prev) => [...prev, ...apiPageResults]);
+    const updateApiResults = () => {
+      if (isApiSuccess && apiPageResults.length > 0) {
+        if (apiOffset === 0) {
+          // First page - replace accumulated results
+          setAccumulatedApiResults(apiPageResults);
+          setFirstResolvedApi((prev) => prev ?? 'openfood');
+        } else {
+          // Additional pages - append to accumulated results
+          setAccumulatedApiResults((prev) => [...prev, ...apiPageResults]);
+        }
+        setIsLoadingMoreAPI(false);
       }
-      setIsLoadingMoreAPI(false);
-    }
 
-    // Track when API completes (for initial load)
-    if ((isApiSuccess || apiError) && !isLoadingAPI) {
-      setApiCompleted(true);
-    }
+      // Track when API completes (for initial load)
+      if ((isApiSuccess || apiError) && !isLoadingAPI) {
+        setApiCompleted(true);
+      }
+    };
+    updateApiResults();
   }, [isApiSuccess, apiError, apiPageResults, apiOffset, isLoadingAPI]);
 
   // Accumulate USDA results
   useEffect(() => {
-    if (isUsdaSuccess && usdaPageResults.length > 0) {
-      if (usdaOffset === 0) {
-        setAccumulatedUsdaResults(usdaPageResults);
-        setFirstResolvedApi((prev) => prev ?? 'usda');
-      } else {
-        setAccumulatedUsdaResults((prev) => [...prev, ...usdaPageResults]);
+    const updateUsdaResults = () => {
+      if (isUsdaSuccess && usdaPageResults.length > 0) {
+        if (usdaOffset === 0) {
+          setAccumulatedUsdaResults(usdaPageResults);
+          setFirstResolvedApi((prev) => prev ?? 'usda');
+        } else {
+          setAccumulatedUsdaResults((prev) => [...prev, ...usdaPageResults]);
+        }
+        setIsLoadingMoreUSDA(false);
       }
-      setIsLoadingMoreUSDA(false);
-    }
 
-    if ((isUsdaSuccess || usdaError) && !isLoadingUSDA) {
-      setUsdaCompleted(true);
-    }
+      if ((isUsdaSuccess || usdaError) && !isLoadingUSDA) {
+        setUsdaCompleted(true);
+      }
+    };
+    updateUsdaResults();
   }, [isUsdaSuccess, usdaError, usdaPageResults, usdaOffset, isLoadingUSDA]);
 
   // Convert local foods to unified format

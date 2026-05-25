@@ -102,13 +102,9 @@ export function BottomPopUp({
   };
 
   const [slideAnim] = useState(() => new Animated.Value(theme.size['300']));
-  const [keyboardBottomLift, setKeyboardBottomLift] = useState(0);
-
-  useEffect(() => {
-    if (!visible) {
-      setKeyboardBottomLift(0);
-    }
-  }, [visible]);
+  const [rawKeyboardBottomLift, setKeyboardBottomLift] = useState(0);
+  // Derive: when the sheet is not visible the lift is always 0
+  const keyboardBottomLift = visible ? rawKeyboardBottomLift : 0;
 
   useEffect(() => {
     if (Platform.OS === 'web' || !visible) {

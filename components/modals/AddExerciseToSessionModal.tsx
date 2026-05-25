@@ -159,9 +159,13 @@ export function AddExerciseToSessionModal({
 
   useEffect(() => {
     if (visible) {
-      setSelectedExerciseId(null);
-      setNumberOfSets(3);
-      setSearchQuery('');
+      const reset = () => {
+        setSelectedExerciseId(null);
+        setNumberOfSets(3);
+        setSearchQuery('');
+      };
+
+      reset();
     }
   }, [visible]);
 

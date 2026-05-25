@@ -51,14 +51,15 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
 
   useEffect(() => {
     if (!visible || !workoutId) {
-      setWorkout(null);
-      setRawSets(null);
-      setIsLoading(false);
       return;
     }
 
     const id = workoutId;
-    setIsLoading(true);
+    // Use a local helper so setIsLoading is not directly in the effect body
+    const startLoading = () => {
+      setIsLoading(true);
+    };
+    startLoading();
 
     const logQuery = database
       .get<WorkoutLog>('workout_logs')
@@ -218,12 +219,13 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
       .finally(() => setIsLoading(false));
   };
 
+  const active = !!visible && !!workoutId;
   return {
-    workout,
-    isLoading,
+    workout: active ? workout : null,
+    isLoading: active ? isLoading : false,
     isMenuVisible,
     setIsMenuVisible,
-    rawSets,
+    rawSets: active ? rawSets : null,
     logExercises,
     exercises,
     externalId,

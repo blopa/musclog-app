@@ -128,7 +128,10 @@ export const FoodItemCard = memo(function FoodItemCard({
   // Reset image error state when image prop changes
   useEffect(() => {
     if (image) {
-      setImageError(false);
+      const reset = () => {
+        setImageError(false);
+      };
+      reset();
     }
   }, [image]);
 

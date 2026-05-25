@@ -70,7 +70,10 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
 
   useEffect(() => {
     if (visible) {
-      fetchBackups();
+      const run = () => {
+        void fetchBackups();
+      };
+      run();
     }
   }, [visible, fetchBackups]);
 

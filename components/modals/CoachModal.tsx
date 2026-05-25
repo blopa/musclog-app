@@ -712,7 +712,10 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
   // Ensure attached image is cleared if intention is no longer Track Meal
   useEffect(() => {
     if (pendingIntention !== TRACK_MEAL && attachedImage) {
-      setAttachedImage(null);
+      const clearImage = () => {
+        setAttachedImage(null);
+      };
+      clearImage();
     }
   }, [pendingIntention, attachedImage]);
 
@@ -720,14 +723,17 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
 
   useEffect(() => {
     if (!visible) {
-      setSelectedWorkoutId(null);
-      setIsMusclesModalVisible(false);
-      setMusclesModalGroups([]);
-      setIsMenuVisible(false);
-      setSelectedMessage(null);
-      setIsClearHistoryModalVisible(false);
-      setIsDeleteMessageModalVisible(false);
-      setMessageToDelete(null);
+      const reset = () => {
+        setSelectedWorkoutId(null);
+        setIsMusclesModalVisible(false);
+        setMusclesModalGroups([]);
+        setIsMenuVisible(false);
+        setSelectedMessage(null);
+        setIsClearHistoryModalVisible(false);
+        setIsDeleteMessageModalVisible(false);
+        setMessageToDelete(null);
+      };
+      reset();
     }
   }, [visible]);
 

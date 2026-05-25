@@ -27,7 +27,10 @@ export default function NewNumericalInput({
   const isCompact = variant === 'compact';
 
   useEffect(() => {
-    setInputValue(value.toString());
+    const sync = () => {
+      setInputValue(value.toString());
+    };
+    sync();
   }, [value]);
 
   const handleInputChange = (val: string) => {

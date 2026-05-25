@@ -68,8 +68,11 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    setCachedCameraPermissionGranted(permission.granted);
-    setCachedPermissionGrantedState(permission.granted);
+    const persist = () => {
+      setCachedCameraPermissionGranted(permission.granted);
+      setCachedPermissionGrantedState(permission.granted);
+    };
+    persist();
   }, [permission]);
 
   // Backfill optimistic state from AsyncStorage if the synchronous read returned null

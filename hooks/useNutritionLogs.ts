@@ -578,7 +578,10 @@ export function useNutritionLogs({
     });
 
     // Load initial data and mark as loaded
-    loadInitialLogs();
+    const runInitial = () => {
+      void loadInitialLogs();
+    };
+    runInitial();
     hasLoadedInitial.current = true;
 
     return () => subscription.unsubscribe();

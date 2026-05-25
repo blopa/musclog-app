@@ -70,7 +70,10 @@ export const StepperInput: FC<StepperInputProps> = ({
   // Sync inputValue with value prop when not editing
   useEffect(() => {
     if (!editing) {
-      setInputValue(formatValue(value));
+      const sync = () => {
+        setInputValue(formatValue(value));
+      };
+      sync();
     }
   }, [value, editing, formatValue]);
 

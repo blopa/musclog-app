@@ -18,35 +18,35 @@ export function useExerciseImageSource(imageUrl: string | null | undefined): Ima
   const [source, setSource] = useState<ImageSourcePropType>(FALLBACK_EXERCISE_IMAGE);
 
   useEffect(() => {
-    if (!imageUrl?.trim()) {
-      setSource(FALLBACK_EXERCISE_IMAGE);
-      return;
-    }
+    const resolve = (): (() => void) | void => {
+      if (!imageUrl?.trim()) {
+        setSource(FALLBACK_EXERCISE_IMAGE);
+        return;
+      }
 
-    if (imageUrl.startsWith('file://')) {
+      if (imageUrl.startsWith('file://')) {
+        setSource({ uri: imageUrl });
+        return;
+      }
+
+      if (imageUrl.startsWith('http')) {
+        let cancelled = false;
+        getCachedExerciseImageUri(imageUrl).then((cachedUri) => {
+          if (cancelled) {
+            return;
+          }
+          setSource(cachedUri ? { uri: cachedUri } : FALLBACK_EXERCISE_IMAGE);
+        });
+        return () => {
+          cancelled = true;
+        };
+      }
+
+      // Fallback for any other scheme
       setSource({ uri: imageUrl });
-      return;
-    }
+    };
 
-    if (imageUrl.startsWith('http')) {
-      let cancelled = false;
-      getCachedExerciseImageUri(imageUrl).then((cachedUri) => {
-        if (cancelled) {
-          return;
-        }
-        if (cachedUri) {
-          setSource({ uri: cachedUri });
-        } else {
-          setSource(FALLBACK_EXERCISE_IMAGE);
-        }
-      });
-      return () => {
-        cancelled = true;
-      };
-    }
-
-    // Fallback for any other scheme
-    setSource({ uri: imageUrl });
+    return resolve();
   }, [imageUrl]);
 
   return source;
