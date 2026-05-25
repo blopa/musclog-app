@@ -9,6 +9,72 @@ type GroupActionButtonProps = {
   allSelectedInSameGroup: boolean;
 };
 
+type ActionIconProps = {
+  color: string;
+  theme: ReturnType<typeof useTheme>;
+};
+
+const ActionIcon = ({ color, theme }: ActionIconProps) => (
+  <View
+    style={{
+      width: theme.iconSize.sm + 2,
+      height: theme.iconSize.sm + 2,
+      justifyContent: 'center',
+      alignItems: 'center',
+      gap: theme.spacing.gap.xs,
+    }}
+  >
+    <View style={{ flexDirection: 'row', gap: theme.size.xs }}>
+      <View
+        style={{
+          width: theme.size.xs,
+          height: theme.size.xs,
+          borderRadius: theme.borderRadius['2'],
+          backgroundColor: color,
+          opacity: theme.colors.opacity.medium,
+        }}
+      />
+      <View
+        style={{
+          width: theme.size.xs,
+          height: theme.size.xs,
+          borderRadius: theme.borderRadius['2'],
+          backgroundColor: color,
+          opacity: theme.colors.opacity.medium,
+        }}
+      />
+    </View>
+    <View
+      style={{
+        width: theme.size.base,
+        height: theme.size['2'] / 4,
+        backgroundColor: color,
+        borderRadius: theme.borderRadius['2'],
+      }}
+    />
+    <View style={{ flexDirection: 'row', gap: theme.size.xs }}>
+      <View
+        style={{
+          width: theme.size.xs,
+          height: theme.size.xs,
+          borderRadius: theme.borderRadius['2'],
+          backgroundColor: color,
+          opacity: theme.colors.opacity.medium,
+        }}
+      />
+      <View
+        style={{
+          width: theme.size.xs,
+          height: theme.size.xs,
+          borderRadius: theme.borderRadius['2'],
+          backgroundColor: color,
+          opacity: theme.colors.opacity.medium,
+        }}
+      />
+    </View>
+  </View>
+);
+
 export const GroupActionButton: FC<GroupActionButtonProps> = ({
   onPress,
   allSelectedInSameGroup,
@@ -21,68 +87,6 @@ export const GroupActionButton: FC<GroupActionButtonProps> = ({
     ? theme.colors.status.errorSolid
     : theme.colors.status.emeraldSolid;
   const borderColor = isUngroup ? theme.colors.status.redDark : theme.colors.status.emeraldDark;
-
-  // Custom icon to match the image (4 dots with a horizontal line)
-  const ActionIcon = ({ color }: { color: string }) => (
-    <View
-      style={{
-        width: theme.iconSize.sm + 2,
-        height: theme.iconSize.sm + 2,
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: theme.spacing.gap.xs,
-      }}
-    >
-      <View style={{ flexDirection: 'row', gap: theme.size.xs }}>
-        <View
-          style={{
-            width: theme.size.xs,
-            height: theme.size.xs,
-            borderRadius: theme.borderRadius['2'],
-            backgroundColor: color,
-            opacity: theme.colors.opacity.medium,
-          }}
-        />
-        <View
-          style={{
-            width: theme.size.xs,
-            height: theme.size.xs,
-            borderRadius: theme.borderRadius['2'],
-            backgroundColor: color,
-            opacity: theme.colors.opacity.medium,
-          }}
-        />
-      </View>
-      <View
-        style={{
-          width: theme.size.base,
-          height: theme.size['2'] / 4,
-          backgroundColor: color,
-          borderRadius: theme.borderRadius['2'],
-        }}
-      />
-      <View style={{ flexDirection: 'row', gap: theme.size.xs }}>
-        <View
-          style={{
-            width: theme.size.xs,
-            height: theme.size.xs,
-            borderRadius: theme.borderRadius['2'],
-            backgroundColor: color,
-            opacity: theme.colors.opacity.medium,
-          }}
-        />
-        <View
-          style={{
-            width: theme.size.xs,
-            height: theme.size.xs,
-            borderRadius: theme.borderRadius['2'],
-            backgroundColor: color,
-            opacity: theme.colors.opacity.medium,
-          }}
-        />
-      </View>
-    </View>
-  );
 
   return (
     <View
@@ -118,7 +122,7 @@ export const GroupActionButton: FC<GroupActionButtonProps> = ({
             gap: theme.spacing.gap.sm,
           }}
         >
-          <ActionIcon color={theme.colors.text.white} />
+          <ActionIcon color={theme.colors.text.white} theme={theme} />
           <Text
             style={{
               color: theme.colors.text.white,

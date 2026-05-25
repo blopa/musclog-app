@@ -314,8 +314,10 @@ export default function FoodScreen() {
   }, []);
 
   useEffect(() => {
-    checkSavedMeals();
-  }, [checkSavedMeals]);
+    SavedForLaterService.hasAnyGroups()
+      .then((hasGroups) => setHasSavedForLaterItems(hasGroups))
+      .catch((error) => console.error('Error checking saved meals:', error));
+  }, []);
 
   useEffect(() => {
     let cancelled = false;

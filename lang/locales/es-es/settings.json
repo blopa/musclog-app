@@ -361,7 +361,10 @@
       "previewAccel": "Accel",
       "previewGyro": "Gyro",
       "previewWaiting": "Waiting for data...",
-      "previewDisconnected": "Sensor not connected"
+      "previewDisconnected": "Sensor not connected",
+      "recordingSettings": "Ajustes de grabación",
+      "generateChartPayload": "Generar datos de gráfico",
+      "generateChartPayloadSubtitle": "Incluir datos de señal y anotaciones de repeticiones para mostrar en el gráfico después de cada serie"
     }
   }
 }

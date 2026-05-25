@@ -64,10 +64,13 @@ export function PastWorkoutsHistoryFilterMenu({
   // Reset to initial filters when modal opens or initialFilters change
   useEffect(() => {
     if (visible && initialFilters) {
-      setSelectedWorkoutType(initialFilters.workoutType || 'all');
-      setSelectedDateRange(initialFilters.dateRange || '30');
-      setSelectedMuscleGroups(initialFilters.muscleGroups || []);
-      setMinDuration(initialFilters.minDuration || 0);
+      const syncFilters = () => {
+        setSelectedWorkoutType(initialFilters.workoutType || 'all');
+        setSelectedDateRange(initialFilters.dateRange || '30');
+        setSelectedMuscleGroups(initialFilters.muscleGroups || []);
+        setMinDuration(initialFilters.minDuration || 0);
+      };
+      syncFilters();
     }
   }, [visible, initialFilters]);
 

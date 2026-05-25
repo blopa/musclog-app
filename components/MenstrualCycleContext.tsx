@@ -44,12 +44,12 @@ const MenstrualCycleContext = createContext<MenstrualCycleContextType | undefine
 
 export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
   const [cycle, setCycle] = useState<any | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // isStaticExport is a build-time constant — no async loading on static export
+  const [isLoading, setIsLoading] = useState(!isStaticExport);
   const [updateTick, setUpdateTick] = useState(0);
 
   useEffect(() => {
     if (isStaticExport) {
-      setIsLoading(false);
       return;
     }
 

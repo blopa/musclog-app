@@ -385,7 +385,10 @@ export function useWorkoutHistory({
   // React to filter changes
   useEffect(() => {
     if (visible && groupByMonth) {
-      loadInitialWorkouts();
+      const run = () => {
+        void loadInitialWorkouts();
+      };
+      run();
     }
   }, [visible, workoutFilters, loadInitialWorkouts, groupByMonth]);
 
@@ -394,7 +397,10 @@ export function useWorkoutHistory({
     if (!enableReactivity || !visible) {
       // Still load initial data even if reactivity is disabled
       if (visible) {
-        loadInitialWorkouts();
+        const run = () => {
+          void loadInitialWorkouts();
+        };
+        run();
       }
       return;
     }
@@ -418,7 +424,10 @@ export function useWorkoutHistory({
     });
 
     // Load initial data
-    loadInitialWorkouts();
+    const runInit = () => {
+      void loadInitialWorkouts();
+    };
+    runInit();
 
     return () => subscription.unsubscribe();
   }, [enableReactivity, visible, loadInitialWorkouts]);

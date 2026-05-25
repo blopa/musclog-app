@@ -86,13 +86,16 @@ export function SavedForLaterModal({
   };
 
   useEffect(() => {
-    if (visible) {
-      fetchGroups();
-    } else {
-      setIsMenuVisible(false);
-      setIsDeleteConfirmationVisible(false);
-      setIsTrackModalVisible(false);
-    }
+    const syncOrReset = () => {
+      if (visible) {
+        fetchGroups();
+      } else {
+        setIsMenuVisible(false);
+        setIsDeleteConfirmationVisible(false);
+        setIsTrackModalVisible(false);
+      }
+    };
+    syncOrReset();
   }, [visible]);
 
   const handleTrackPress = () => {

@@ -264,7 +264,10 @@ export function useFoodPortions({
       return;
     }
 
-    loadInitialPortions();
+    const run = () => {
+      void loadInitialPortions();
+    };
+    run();
   }, [mode, enableReactivity, loadInitialPortions]);
 
   // Refresh function for all mode

@@ -293,7 +293,10 @@ export function FoodMealTrackingDetailsModal({
   // Ensure modal opens immediately if we have enough data from search
   useEffect(() => {
     if (!isFoodDetailsModalVisible && (!!productFromSearch || !!meal || !!food || !!foodLog)) {
-      setIsFoodDetailsModalVisible(true);
+      const show = () => {
+        setIsFoodDetailsModalVisible(true);
+      };
+      show();
     }
   }, [productFromSearch, isFoodDetailsModalVisible, meal, food, foodLog]);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -381,24 +384,33 @@ export function FoodMealTrackingDetailsModal({
 
   // Sync localCanEdit when the canEdit prop changes or alwaysAllowFoodEditing changes.
   useEffect(() => {
-    if (alwaysAllowFoodEditing && mode !== 'meal') {
-      setLocalCanEdit(true);
-    } else {
-      setLocalCanEdit(canEdit);
-    }
+    const sync = () => {
+      if (alwaysAllowFoodEditing && mode !== 'meal') {
+        setLocalCanEdit(true);
+      } else {
+        setLocalCanEdit(canEdit);
+      }
+    };
+    sync();
   }, [canEdit, alwaysAllowFoodEditing, mode]);
 
   // When opening in "add" mode (not editing a log), apply initialDate from parent (e.g. food screen).
   useEffect(() => {
     if (visible && initialDate && !foodLog) {
-      setSelectedDate(localCalendarDayDate(new Date(initialDate)));
+      const sync = () => {
+        setSelectedDate(localCalendarDayDate(new Date(initialDate)));
+      };
+      sync();
     }
   }, [visible, initialDate, foodLog]);
 
   // When opening in duplicate mode, apply initial serving size
   useEffect(() => {
     if (visible && initialServingSize && !foodLog) {
-      setServingSize(initialServingSize);
+      const sync = () => {
+        setServingSize(initialServingSize);
+      };
+      sync();
     }
   }, [visible, initialServingSize, foodLog]);
 
@@ -415,19 +427,25 @@ export function FoodMealTrackingDetailsModal({
       selectedDate.getMonth() === today.getMonth() &&
       selectedDate.getDate() === today.getDate();
 
-    if (isToday) {
-      setSelectedTime(new Date());
-    } else {
-      setSelectedTime(getMealDefaultTime(selectedMeal, selectedDate));
-    }
+    const syncTime = () => {
+      if (isToday) {
+        setSelectedTime(new Date());
+      } else {
+        setSelectedTime(getMealDefaultTime(selectedMeal, selectedDate));
+      }
+    };
+    syncTime();
   }, [selectedDate, selectedMeal, isTimePristine]);
 
   // Check local database for food with barcode first
   useEffect(() => {
     // Reset checking state when barcode changes
-    setHasCheckedLocalFood(false);
-    setLocalFood(null);
-    setMatchedPortion(null); // Reset matched portion
+    const resetBarcodeState = () => {
+      setHasCheckedLocalFood(false);
+      setLocalFood(null);
+      setMatchedPortion(null); // Reset matched portion
+    };
+    resetBarcodeState();
 
     const checkLocalFood = async () => {
       if (barcode && !food && !meal && !productFromSearch) {
@@ -570,44 +588,47 @@ export function FoodMealTrackingDetailsModal({
   }, [productDetails, productFromSearch, food, localFood, matchServingSizeToPortion]);
 
   useEffect(() => {
-    if (meal) {
-      // Meal mode: load nutrients and show details
-      setIsFoodDetailsModalVisible(true);
-      setIsFavorite(meal.isFavorite);
-      return;
-    }
-
-    if (food) {
-      // Local food already available, show details
-      setIsFoodDetailsModalVisible(true);
-      return;
-    }
-
-    if (localFood) {
-      // Local food found by barcode lookup, show details
-      setIsFoodDetailsModalVisible(true);
-      setIsFavorite(localFood.isFavorite);
-      return;
-    }
-
-    const nutriments = productFromSearch ? getNutrimentsWithFallback(productFromSearch) : null;
-    const isUSDASearchResult = productFromSearch?.source === 'usda';
-
-    // Use preloaded search result (no network fetch) – fixes Android modal not opening
-    if (getProductName(productFromSearch).found && (nutriments || isUSDASearchResult)) {
-      setIsFoodDetailsModalVisible(true);
-      onBarcodeLookupComplete?.();
-      return;
-    }
-
-    if (productDetails) {
-      if (!isSuccessStatus(productDetails?.status) && !productFromSearch && !food && !meal) {
-        setIsFoodNotFoundModalVisible(true);
-      } else if (isSuccessStatus(productDetails?.status)) {
+    const resolveVisibility = () => {
+      if (meal) {
+        // Meal mode: load nutrients and show details
         setIsFoodDetailsModalVisible(true);
+        setIsFavorite(meal.isFavorite);
+        return;
       }
-      onBarcodeLookupComplete?.();
-    }
+
+      if (food) {
+        // Local food already available, show details
+        setIsFoodDetailsModalVisible(true);
+        return;
+      }
+
+      if (localFood) {
+        // Local food found by barcode lookup, show details
+        setIsFoodDetailsModalVisible(true);
+        setIsFavorite(localFood.isFavorite);
+        return;
+      }
+
+      const nutriments = productFromSearch ? getNutrimentsWithFallback(productFromSearch) : null;
+      const isUSDASearchResult = productFromSearch?.source === 'usda';
+
+      // Use preloaded search result (no network fetch) – fixes Android modal not opening
+      if (getProductName(productFromSearch).found && (nutriments || isUSDASearchResult)) {
+        setIsFoodDetailsModalVisible(true);
+        onBarcodeLookupComplete?.();
+        return;
+      }
+
+      if (productDetails) {
+        if (!isSuccessStatus(productDetails?.status) && !productFromSearch && !food && !meal) {
+          setIsFoodNotFoundModalVisible(true);
+        } else if (isSuccessStatus(productDetails?.status)) {
+          setIsFoodDetailsModalVisible(true);
+        }
+        onBarcodeLookupComplete?.();
+      }
+    };
+    resolveVisibility();
   }, [
     productDetails,
     productFromSearch,
@@ -622,10 +643,13 @@ export function FoodMealTrackingDetailsModal({
   // Load meal nutrients and total grams when meal is provided
   useEffect(() => {
     if (!meal) {
-      setMealNutrients(null);
-      setMealIngredientLabels([]);
-      setTotalMealGrams(0);
-      setMealAmountGrams(0);
+      const reset = () => {
+        setMealNutrients(null);
+        setMealIngredientLabels([]);
+        setTotalMealGrams(0);
+        setMealAmountGrams(0);
+      };
+      reset();
       return;
     }
 
@@ -706,30 +730,48 @@ export function FoodMealTrackingDetailsModal({
   // If we are given a foodLog, initialize edit mode values from it and load decrypted snapshot
   useEffect(() => {
     if (!foodLog) {
-      setFoodLogDecrypted(null);
+      const clear = () => {
+        setFoodLogDecrypted(null);
+      };
+      clear();
       return;
     }
 
-    setIsFoodDetailsModalVisible(true);
+    const showModal = () => {
+      setIsFoodDetailsModalVisible(true);
+    };
+    showModal();
 
-    try {
-      setSelectedMeal(foodLog.type || 'other');
-    } catch (e) {
-      setSelectedMeal('lunch');
-    }
+    const setMeal = () => {
+      try {
+        setSelectedMeal(foodLog.type || 'other');
+      } catch (e) {
+        setSelectedMeal('lunch');
+      }
+    };
+    setMeal();
 
-    try {
-      setSelectedDate(localCalendarDayDateFromDayKeyMs(foodLog.date));
-    } catch (e) {
-      setSelectedDate(localCalendarDayDate(new Date()));
-    }
+    const setDate = () => {
+      try {
+        setSelectedDate(localCalendarDayDateFromDayKeyMs(foodLog.date));
+      } catch (e) {
+        setSelectedDate(localCalendarDayDate(new Date()));
+      }
+    };
+    setDate();
 
-    try {
-      setSelectedTime(new Date(foodLog.createdAt));
-    } catch (e) {
-      setSelectedTime(new Date());
-    }
-    setIsTimePristine(false);
+    const setTime = () => {
+      try {
+        setSelectedTime(new Date(foodLog.createdAt));
+      } catch (e) {
+        setSelectedTime(new Date());
+      }
+    };
+    setTime();
+    const markTimePristine = () => {
+      setIsTimePristine(false);
+    };
+    markTimePristine();
 
     let cancelled = false;
     foodLog.getDecryptedSnapshot().then((snap: DecryptedNutritionLogSnapshot) => {
@@ -1321,7 +1363,7 @@ export function FoodMealTrackingDetailsModal({
   ]);
 
   // Get product name from meal, barcode lookup, search result, local food, or log snapshot
-  const getFoodMealName = useCallback(() => {
+  const getFoodMealName = () => {
     if (editedOverrides?.name != null && editedOverrides.name.trim() !== '') {
       return editedOverrides.name.trim();
     }
@@ -1352,17 +1394,7 @@ export function FoodMealTrackingDetailsModal({
     }
 
     return t('food.unknownFood');
-  }, [
-    editedOverrides?.name,
-    productDetails,
-    refetchedProductDetails,
-    productFromSearch,
-    food,
-    localFood,
-    foodLogDecrypted,
-    meal,
-    t,
-  ]);
+  };
 
   // Get product category/brand from meal, barcode lookup, search result, or local food
   const getProductCategory = useCallback(() => {
@@ -2336,17 +2368,20 @@ export function FoodMealTrackingDetailsModal({
   // Reset matched portion and edit overrides when modal closes
   useEffect(() => {
     if (!visible) {
-      setMatchedPortion(null);
-      setEditedOverrides(null);
-      setIsEditPopUpVisible(false);
-      setEditMicroOpen(false);
-      setRefetchedProductDetails(null);
-      setIsRefetchingSource(false);
-      setAlternateSourceLookupFailed(false);
-      setLocalCanEdit(canEdit);
-      hasInitializedServingSizeRef.current = false;
-      setSelectedTime(new Date());
-      setIsTimePristine(true);
+      const reset = () => {
+        setMatchedPortion(null);
+        setEditedOverrides(null);
+        setIsEditPopUpVisible(false);
+        setEditMicroOpen(false);
+        setRefetchedProductDetails(null);
+        setIsRefetchingSource(false);
+        setAlternateSourceLookupFailed(false);
+        setLocalCanEdit(canEdit);
+        hasInitializedServingSizeRef.current = false;
+        setSelectedTime(new Date());
+        setIsTimePristine(true);
+      };
+      reset();
     }
   }, [visible, canEdit]);
 

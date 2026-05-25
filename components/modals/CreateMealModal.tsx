@@ -244,20 +244,26 @@ export function CreateMealModal({
   };
 
   useEffect(() => {
-    setMealName(meal?.name ?? '');
-    setMealDescription(meal?.description ?? '');
-    setImageUrl(meal?.imageUrl ?? undefined);
-    setPreparedWeightGrams(meal?.preparedWeightGrams ?? undefined);
-    setNutritionBasis(meal?.nutritionBasis ?? 'per_recipe');
-    setRecipeServingsCount(meal?.recipeServingsCount ?? 1);
-    setDefaultPortionName(meal?.defaultPortionName ?? '');
-    setServingGrams(meal?.servingGrams ?? 100);
+    const syncFromMeal = () => {
+      setMealName(meal?.name ?? '');
+      setMealDescription(meal?.description ?? '');
+      setImageUrl(meal?.imageUrl ?? undefined);
+      setPreparedWeightGrams(meal?.preparedWeightGrams ?? undefined);
+      setNutritionBasis(meal?.nutritionBasis ?? 'per_recipe');
+      setRecipeServingsCount(meal?.recipeServingsCount ?? 1);
+      setDefaultPortionName(meal?.defaultPortionName ?? '');
+      setServingGrams(meal?.servingGrams ?? 100);
+    };
+    syncFromMeal();
   }, [meal]);
 
   useEffect(() => {
     if (!visible) {
-      setMealOptionsMenuVisible(false);
-      setDeleteMealConfirmVisible(false);
+      const reset = () => {
+        setMealOptionsMenuVisible(false);
+        setDeleteMealConfirmVisible(false);
+      };
+      reset();
     }
   }, [visible]);
 
@@ -295,7 +301,10 @@ export function CreateMealModal({
 
   useEffect(() => {
     if (visible && isQuickTrack && logDate) {
-      setSelectedDate(localCalendarDayDate(logDate));
+      const syncDate = () => {
+        setSelectedDate(localCalendarDayDate(logDate));
+      };
+      syncDate();
     }
   }, [visible, isQuickTrack, logDate]);
 
@@ -351,12 +360,14 @@ export function CreateMealModal({
       return;
     }
 
-    if (nutritionBasis === 'per_recipe') {
-      setMealAmountGrams(referenceMealGrams);
-      return;
-    }
-
-    setMealAmountGrams(1);
+    const syncAmount = () => {
+      if (nutritionBasis === 'per_recipe') {
+        setMealAmountGrams(referenceMealGrams);
+      } else {
+        setMealAmountGrams(1);
+      }
+    };
+    syncAmount();
   }, [isQuickTrack, nutritionBasis, referenceMealGrams]);
 
   const quickTrackScale = useMemo(() => {

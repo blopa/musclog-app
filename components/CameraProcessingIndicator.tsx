@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, Text, View } from 'react-native';
 import { Path, Svg } from 'react-native-svg';
@@ -12,8 +12,8 @@ export const CameraProcessingIndicator = ({
 }) => {
   const theme = useTheme();
   const { t } = useTranslation();
-  const spinAnim = useRef(new Animated.Value(0)).current;
-  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const [spinAnim] = useState(() => new Animated.Value(0));
+  const [pulseAnim] = useState(() => new Animated.Value(1));
 
   const getProcessingText = useCallback(() => {
     switch (cameraMode) {

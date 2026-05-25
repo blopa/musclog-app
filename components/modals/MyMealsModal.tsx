@@ -132,15 +132,18 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
 
   useEffect(() => {
     if (!visible) {
-      setAddMealModalVisible(false);
-      setCreateMealModalVisible(false);
-      setDynamicMealCreatorVisible(false);
-      setLogMealModalVisible(false);
-      setSelectedMealForLogging(null);
-      setMenuMealId(null);
-      setEditMealId(null);
-      setDeleteMealId(null);
-      setGenerateMealContextVisible(false);
+      const reset = () => {
+        setAddMealModalVisible(false);
+        setCreateMealModalVisible(false);
+        setDynamicMealCreatorVisible(false);
+        setLogMealModalVisible(false);
+        setSelectedMealForLogging(null);
+        setMenuMealId(null);
+        setEditMealId(null);
+        setDeleteMealId(null);
+        setGenerateMealContextVisible(false);
+      };
+      reset();
     }
   }, [visible]);
 

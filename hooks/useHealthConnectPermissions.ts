@@ -204,14 +204,20 @@ export const useHealthConnectPermissions = (): UseHealthConnectResult => {
   // Auto-initialize on mount (iOS + Android)
   useEffect(() => {
     if (Platform.OS === 'ios' || Platform.OS === 'android') {
-      initialize();
+      const run = () => {
+        void initialize();
+      };
+      run();
     }
   }, [initialize]);
 
   // Check permissions when initialized
   useEffect(() => {
     if (isInitialized) {
-      checkPermissions();
+      const run = () => {
+        void checkPermissions();
+      };
+      run();
     }
   }, [isInitialized, checkPermissions]);
 

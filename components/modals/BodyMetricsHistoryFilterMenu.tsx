@@ -45,8 +45,11 @@ export function BodyMetricsHistoryFilterMenu({
 
   useEffect(() => {
     if (visible && initialFilters) {
-      setSortOrder(initialFilters.sortOrder);
-      setTrend(initialFilters.trend);
+      const syncFilters = () => {
+        setSortOrder(initialFilters.sortOrder);
+        setTrend(initialFilters.trend);
+      };
+      syncFilters();
     }
   }, [visible, initialFilters]);
 

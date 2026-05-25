@@ -1,5 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import { DEFAULT_BATCH_SIZE } from '@/constants/database';
 import { database } from '@/database';
@@ -505,7 +505,9 @@ export function useNutritionLogs({
 
   // Ref to hold the latest refresh function to avoid dependency issues
   const refreshRef = useRef(refresh);
-  refreshRef.current = refresh;
+  useLayoutEffect(() => {
+    refreshRef.current = refresh;
+  });
 
   // Track if we've already loaded initial data to prevent duplicate calls
   const hasLoadedInitial = useRef(false);
@@ -576,7 +578,10 @@ export function useNutritionLogs({
     });
 
     // Load initial data and mark as loaded
-    loadInitialLogs();
+    const runInitial = () => {
+      void loadInitialLogs();
+    };
+    runInitial();
     hasLoadedInitial.current = true;
 
     return () => subscription.unsubscribe();

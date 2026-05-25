@@ -5,8 +5,10 @@ import { Text, TextInput, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { Button } from '@/components/theme/Button';
+import { ToggleInput } from '@/components/theme/ToggleInput';
 import BleDevice from '@/database/models/BleDevice';
 import { BleDeviceService } from '@/database/services/BleDeviceService';
+import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
 import type { WitMotionDevice } from '@/modules/witmotion-ble';
@@ -25,6 +27,8 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
   const { t } = useTranslation();
   const theme = useTheme();
   const wit = useWitMotion();
+  const { bleGenerateChartPayload, handleBleGenerateChartPayloadChange, flushAllPendingChanges } =
+    useDebouncedSettings(500);
 
   const [savedDevices, setSavedDevices] = useState<BleDevice[]>([]);
   const [connectingId, setConnectingId] = useState<string | null>(null);
@@ -42,7 +46,10 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
 
   useEffect(() => {
     if (visible) {
-      void refreshSaved();
+      const run = () => {
+        void refreshSaved();
+      };
+      run();
     }
   }, [visible, refreshSaved]);
 
@@ -117,6 +124,12 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
     setConfirmRemoveDevice(null);
     await refreshSaved();
   }, [confirmRemoveDevice, wit, refreshSaved, setConfirmRemoveVisible]);
+
+  useEffect(() => {
+    if (!visible) {
+      void flushAllPendingChanges();
+    }
+  }, [visible, flushAllPendingChanges]);
 
   const handleScanPress = useCallback(async () => {
     if (wit.isScanning) {
@@ -285,6 +298,24 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
               })}
             </View>
           )}
+        </View>
+
+        {/* ── Recording settings ──────────────────────── */}
+        <View>
+          <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-text-tertiary">
+            {t('settings.bleDevices.recordingSettings')}
+          </Text>
+          <ToggleInput
+            items={[
+              {
+                key: 'ble-generate-chart-payload',
+                label: t('settings.bleDevices.generateChartPayload'),
+                subtitle: t('settings.bleDevices.generateChartPayloadSubtitle'),
+                value: bleGenerateChartPayload,
+                onValueChange: handleBleGenerateChartPayloadChange,
+              },
+            ]}
+          />
         </View>
 
         {/* ── Discover new sensors ────────────────────── */}

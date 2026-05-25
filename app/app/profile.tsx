@@ -148,139 +148,126 @@ export default function ProfileScreen() {
   }, [syncNow]);
 
   // Transform metrics and user data into stats array format
-  const stats = useMemo(() => {
-    const statsArray: {
-      id: string;
-      titleKey: string;
-      value: string;
-      unit?: string;
-      change?: string;
-      changeType?: 'positive' | 'negative' | 'warning';
-      status?: string;
-      statusColor?: string;
-      icon:
-        | typeof TrendingUp
-        | typeof TrendingDown
-        | typeof CheckCircle
-        | typeof User
-        | typeof Activity
-        | typeof Heart
-        | typeof Ruler;
-      iconColor: string;
-    }[] = [];
+  const stats: {
+    id: string;
+    titleKey: string;
+    value: string;
+    unit?: string;
+    change?: string;
+    changeType?: 'positive' | 'negative' | 'warning';
+    status?: string;
+    statusColor?: string;
+    icon:
+      | typeof TrendingUp
+      | typeof TrendingDown
+      | typeof CheckCircle
+      | typeof User
+      | typeof Activity
+      | typeof Heart
+      | typeof Ruler;
+    iconColor: string;
+  }[] = [];
 
-    // Weight stat
-    if (metrics?.weight !== undefined) {
-      const weightGoal = dbUser?.weightGoal ?? 'maintain';
-      const isGainPhase = weightGoal === 'gain';
-      const isLosePhase = weightGoal === 'lose';
+  // Weight stat
+  if (metrics?.weight !== undefined) {
+    const weightGoal = dbUser?.weightGoal ?? 'maintain';
+    const isGainPhase = weightGoal === 'gain';
+    const isLosePhase = weightGoal === 'lose';
 
-      statsArray.push({
-        id: 'weight',
-        titleKey: 'profile.stats.weight',
-        value: formatDecimal(metrics.weight, 1),
-        unit: weightUnit,
-        icon: getTrendIcon(isGainPhase, isLosePhase),
-        iconColor: getWeightTrendColor(isGainPhase, isLosePhase, theme),
-      });
-    }
+    stats.push({
+      id: 'weight',
+      titleKey: 'profile.stats.weight',
+      value: formatDecimal(metrics.weight, 1),
+      unit: weightUnit,
+      icon: getTrendIcon(isGainPhase, isLosePhase),
+      iconColor: getWeightTrendColor(isGainPhase, isLosePhase, theme),
+    });
+  }
 
-    // Height stat
-    if (metrics?.height !== undefined) {
-      statsArray.push({
-        id: 'height',
-        titleKey: 'profile.stats.height',
-        value: formatInteger(Math.round(metrics.height)),
-        unit: heightUnit,
-        status: 'Verified',
-        icon: Ruler,
-        iconColor: theme.colors.text.secondary,
-      });
-    }
+  // Height stat
+  if (metrics?.height !== undefined) {
+    stats.push({
+      id: 'height',
+      titleKey: 'profile.stats.height',
+      value: formatInteger(Math.round(metrics.height)),
+      unit: heightUnit,
+      status: 'Verified',
+      icon: Ruler,
+      iconColor: theme.colors.text.secondary,
+    });
+  }
 
-    // Body fat stat
-    if (metrics?.bodyFat !== undefined) {
-      const weightGoal = dbUser?.weightGoal ?? 'maintain';
-      const isGainPhase = weightGoal === 'gain';
-      const isLosePhase = weightGoal === 'lose';
+  // Body fat stat
+  if (metrics?.bodyFat !== undefined) {
+    const weightGoal = dbUser?.weightGoal ?? 'maintain';
+    const isGainPhase = weightGoal === 'gain';
+    const isLosePhase = weightGoal === 'lose';
 
-      statsArray.push({
-        id: 'bodyFat',
-        titleKey: 'profile.stats.bodyFat',
-        value: formatDecimal(metrics.bodyFat, 1),
-        unit: '%',
-        icon: getTrendIcon(isGainPhase, isLosePhase),
-        iconColor: getBodyFatTrendColor(isGainPhase, isLosePhase, theme),
-      });
-    }
+    stats.push({
+      id: 'bodyFat',
+      titleKey: 'profile.stats.bodyFat',
+      value: formatDecimal(metrics.bodyFat, 1),
+      unit: '%',
+      icon: getTrendIcon(isGainPhase, isLosePhase),
+      iconColor: getBodyFatTrendColor(isGainPhase, isLosePhase, theme),
+    });
+  }
 
-    // BMI stat
-    if (metrics?.weight !== undefined && metrics?.height !== undefined) {
-      // Calculate BMI and get status using helper function
-      const bmiResult = calculateBMIWithStatus(
-        metrics.weight,
-        metrics.height,
-        weightUnit,
-        heightUnit
-      );
-      const calculatedBMI = bmiResult.bmi;
-      const bmiStatusKey = bmiResult.statusKey;
-      statsArray.push({
-        id: 'bmi',
-        titleKey: 'profile.stats.bmi',
-        value: formatDecimal(calculatedBMI, 1),
-        status: t(bmiStatusKey),
-        statusColor: theme.colors.status.info,
-        icon: Activity,
-        iconColor: theme.colors.status.info,
-      });
-    }
+  // BMI stat
+  if (metrics?.weight !== undefined && metrics?.height !== undefined) {
+    // Calculate BMI and get status using helper function
+    const bmiResult = calculateBMIWithStatus(
+      metrics.weight,
+      metrics.height,
+      weightUnit,
+      heightUnit
+    );
+    const calculatedBMI = bmiResult.bmi;
+    const bmiStatusKey = bmiResult.statusKey;
+    stats.push({
+      id: 'bmi',
+      titleKey: 'profile.stats.bmi',
+      value: formatDecimal(calculatedBMI, 1),
+      status: t(bmiStatusKey),
+      statusColor: theme.colors.status.info,
+      icon: Activity,
+      iconColor: theme.colors.status.info,
+    });
+  }
 
-    // Age stat (from user)
-    if (dbUser) {
-      statsArray.push({
-        id: 'age',
-        titleKey: 'profile.stats.age',
-        value: dbUser.getAge().toString(),
-        icon: Heart,
-        iconColor: theme.colors.text.secondary,
-      });
-    }
+  // Age stat (from user)
+  if (dbUser) {
+    stats.push({
+      id: 'age',
+      titleKey: 'profile.stats.age',
+      value: dbUser.getAge().toString(),
+      icon: Heart,
+      iconColor: theme.colors.text.secondary,
+    });
+  }
 
-    // Gender stat (from user)
-    if (dbUser) {
-      const genderKey = getGenderKey(dbUser.gender);
+  // Gender stat (from user)
+  if (dbUser) {
+    const genderKey = getGenderKey(dbUser.gender);
 
-      statsArray.push({
-        id: 'gender',
-        titleKey: 'profile.stats.gender',
-        value: t(genderKey),
-        icon: User,
-        iconColor: theme.colors.text.secondary,
-      });
-    }
-
-    return statsArray;
-  }, [
-    metrics?.weight,
-    metrics?.height,
-    metrics?.bodyFat,
-    dbUser,
-    weightUnit,
-    heightUnit,
-    t,
-    theme,
-    formatDecimal,
-    formatInteger,
-  ]);
+    stats.push({
+      id: 'gender',
+      titleKey: 'profile.stats.gender',
+      value: t(genderKey),
+      icon: User,
+      iconColor: theme.colors.text.secondary,
+    });
+  }
 
   const getStatUnit = (stat: (typeof stats)[0]) => {
     if (stat.id === 'weight') {
       return weightUnit;
     }
+
     if (stat.id === 'height') {
       return heightUnit;
     }
+
     return stat.unit;
   };
 

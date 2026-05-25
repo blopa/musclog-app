@@ -96,6 +96,8 @@ import { EnrichedWorkoutLogSet, ExerciseService, WorkoutService } from '@/databa
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 
+const TEST_WORKOUT_METADATA_NOW = Date.now();
+
 export default function ModalsTestScreen() {
   // Menstrual cycle data for CycleSettingsModal
   const { cycle } = useMenstrualCycle();
@@ -2112,8 +2114,8 @@ export default function ModalsTestScreen() {
       <EditWorkoutMetadataModal
         visible={isEditWorkoutMetadataVisible}
         onClose={() => setIsEditWorkoutMetadataVisible(false)}
-        initialStartedAt={Date.now() - 3600000}
-        initialCompletedAt={Date.now()}
+        initialStartedAt={TEST_WORKOUT_METADATA_NOW - 3600000}
+        initialCompletedAt={TEST_WORKOUT_METADATA_NOW}
         onSave={(data) => {
           console.log('Metadata saved:', data);
           setIsEditWorkoutMetadataVisible(false);

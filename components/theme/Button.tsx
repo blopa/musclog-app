@@ -390,46 +390,29 @@ export function Button({
     if (isValidElement(Icon)) {
       iconElement = Icon;
     } else if (typeof Icon === 'function') {
-      // Try rendering as a component first
       const Comp = Icon as any;
-      try {
-        const compEl = iconBgColor ? (
-          <View
-            className="h-8 w-8 items-center justify-center rounded-full"
-            style={{ backgroundColor: iconBgColor }}
-          >
-            <Comp size={iconSize} color={finalIconColor} />
-          </View>
-        ) : (
-          <Comp size={config.iconSize} color={iconColor} />
-        );
-        iconElement = compEl;
-      } catch (e) {
-        // Fallback: treat as render prop
-        try {
-          const rendered = (Icon as any)({ size: iconSize, color: finalIconColor });
-          iconElement = rendered;
-        } catch (e2) {
-          iconElement = null;
-        }
-      }
+      iconElement = iconBgColor ? (
+        <View
+          className="h-8 w-8 items-center justify-center rounded-full"
+          style={{ backgroundColor: iconBgColor }}
+        >
+          <Comp size={iconSize} color={finalIconColor} />
+        </View>
+      ) : (
+        <Comp size={config.iconSize} color={iconColor} />
+      );
     } else if (typeof Icon === 'object' && (Icon as any).render) {
-      // Handle forwardRef exotic components (they are objects with a `render` property)
       const Comp = Icon as any;
-      try {
-        iconElement = iconBgColor ? (
-          <View
-            className="h-8 w-8 items-center justify-center rounded-full"
-            style={{ backgroundColor: iconBgColor }}
-          >
-            <Comp size={iconSize} color={finalIconColor} />
-          </View>
-        ) : (
-          <Comp size={config.iconSize} color={iconColor} />
-        );
-      } catch (e) {
-        iconElement = null;
-      }
+      iconElement = iconBgColor ? (
+        <View
+          className="h-8 w-8 items-center justify-center rounded-full"
+          style={{ backgroundColor: iconBgColor }}
+        >
+          <Comp size={iconSize} color={finalIconColor} />
+        </View>
+      ) : (
+        <Comp size={config.iconSize} color={iconColor} />
+      );
     } else {
       // Unknown type, attempt to render directly
       iconElement = Icon as ReactNode;

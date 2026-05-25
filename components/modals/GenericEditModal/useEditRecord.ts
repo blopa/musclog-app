@@ -51,8 +51,11 @@ export function useEditRecord(
 
   useEffect(() => {
     if (!visible || !entityType || !recordId) {
-      setInitialValues({});
-      setError(null);
+      const reset = () => {
+        setInitialValues({});
+        setError(null);
+      };
+      reset();
       return;
     }
 

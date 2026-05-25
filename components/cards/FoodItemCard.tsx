@@ -86,6 +86,14 @@ const MacroItem = ({
   );
 };
 
+const MEAL_ICON_MAP = {
+  breakfast: EggFried,
+  lunch: Soup,
+  dinner: UtensilsCrossed,
+  snack: Apple,
+  other: Coffee,
+} as const;
+
 export const FoodItemCard = memo(function FoodItemCard({
   name,
   description,
@@ -105,26 +113,7 @@ export const FoodItemCard = memo(function FoodItemCard({
   const { t } = useTranslation();
   const { units } = useSettings();
   const [imageError, setImageError] = useState(false);
-
-  // Helper function to get the appropriate icon based on meal type
-  const getMealIcon = () => {
-    switch (mealType) {
-      case 'breakfast':
-        return EggFried;
-      case 'lunch':
-        return Soup;
-      case 'dinner':
-        return UtensilsCrossed;
-      case 'snack':
-        return Apple;
-      case 'other':
-        return Coffee;
-      default:
-        return UtensilsCrossed;
-    }
-  };
-
-  const MealIcon = getMealIcon();
+  const MealIcon = mealType ? (MEAL_ICON_MAP[mealType] ?? UtensilsCrossed) : UtensilsCrossed;
 
   const p = protein ?? 0;
   const c = carbs ?? 0;
@@ -139,7 +128,10 @@ export const FoodItemCard = memo(function FoodItemCard({
   // Reset image error state when image prop changes
   useEffect(() => {
     if (image) {
-      setImageError(false);
+      const reset = () => {
+        setImageError(false);
+      };
+      reset();
     }
   }, [image]);
 

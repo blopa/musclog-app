@@ -1,4 +1,3 @@
-/* eslint-env node */
 const { defineConfig } = require('eslint/config');
 const expoConfig = require('eslint-config-expo/flat');
 
@@ -71,14 +70,14 @@ module.exports = defineConfig([
         'warn',
         // { enableDangerousAutofixThisMayCauseInfiniteLoops: true },
       ],
-      'react-hooks/set-state-in-effect': 'warn',
-      'react-hooks/set-state-in-render': 'warn',
-      'react-hooks/immutability': 'warn',
-      'react-hooks/error-boundaries': 'warn',
-      'react-hooks/preserve-manual-memoization': 'warn',
-      'react-hooks/purity': 'warn',
-      'react-hooks/refs': 'warn',
-      'react-hooks/static-components': 'warn',
+      'react-hooks/set-state-in-effect': 'error',
+      'react-hooks/set-state-in-render': 'error',
+      'react-hooks/immutability': 'error',
+      'react-hooks/error-boundaries': 'error',
+      'react-hooks/preserve-manual-memoization': 'error',
+      'react-hooks/purity': 'error',
+      'react-hooks/refs': 'error',
+      'react-hooks/static-components': 'error',
     },
   },
   {

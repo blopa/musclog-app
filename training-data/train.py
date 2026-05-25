@@ -1,24 +1,33 @@
 #!/usr/bin/env python3
 """
-Rep counting model trainer.
+Segment-and-Score rep counting trainer.
 
-Reads labeled motion recordings, extracts signal features, trains two
-model types side-by-side, evaluates both with leave-one-out cross-
-validation (the right strategy for small datasets), then exports the
-better one to JavaScript via m2cgen.
+Instead of predicting rep count for a whole recording (regression), this pipeline:
+  1. Selects the best 1D canonical signal from 10 candidate axes (3 Euler angles,
+     3 accelerometer components, 3 gyroscope components, 1 acc magnitude) by
+     spectral concentration in the rep-frequency band.
+  2. Over-segments the signal into candidate rep-segments using low-threshold
+     peak detection — deliberately capturing more segments than actual reps.
+  3. Pseudo-labels each segment as rep (1) or noise (0) using the recording's
+     known total rep count as the only required label.
+  4. Trains a RandomForestClassifier on per-segment features.
+  5. Exports the classifier to JavaScript via m2cgen for on-device inference.
+
+At inference time (predict.py) the classifier scores each candidate segment;
+those above 0.5 are counted as reps, and their boundaries feed an analytical
+phase-detection step that measures Phase A / Phase B speed without any labels.
 
 Usage:
     python train.py
 
 Input:
-    labels.csv          — ground truth: filename + rep_count
-    recordings/*.json   — motion sensor recordings
+    recordings/*.json  — motion recordings with a 'reps' field
 
 Output:
-    output/features.csv — extracted feature matrix (for inspection)
-    output/model.pkl    — trained sklearn model  (used by predict.py)
-    output/model.js     — same model as a JS function (for app later)
-    output/summary.txt  — evaluation report
+    output/features.csv  — per-segment feature matrix (for inspection)
+    output/model.pkl     — trained classifier  (used by predict.py)
+    output/model.js      — same classifier as a JS function  (for app)
+    output/summary.txt   — evaluation report
 """
 
 import json
@@ -30,32 +39,34 @@ import numpy as np
 import pandas as pd
 from scipy import signal as scipy_signal
 from scipy.fft import rfft, rfftfreq
-from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
-from sklearn.metrics import mean_absolute_error
-from sklearn.model_selection import LeaveOneOut
+from scipy.signal import butter, filtfilt, savgol_filter
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import (
+    f1_score,
+    mean_absolute_error,
+    precision_score,
+    recall_score,
+)
+from sklearn.model_selection import LeaveOneGroupOut
 import m2cgen as m2c
 
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-ROOT = Path(__file__).parent
+ROOT           = Path(__file__).parent
 RECORDINGS_DIR = ROOT / "recordings"
-OUTPUT_DIR = ROOT / "output"
+OUTPUT_DIR     = ROOT / "output"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 # ---------------------------------------------------------------------------
-# Signal-processing constants — kept in sync with the app's repAnalysis.ts
+# Over-segmentation constants
 # ---------------------------------------------------------------------------
-SMOOTH_ALPHA = 0.15        # EMA smoothing factor
-PEAK_THRESHOLD_FRAC = 0.30 # minimum peak height as fraction of signal range
-MIN_PEAK_GAP_MS = 300      # minimum time between peaks (ms)
-FFT_MIN_HZ = 0.2           # lower bound for human movement frequency
-FFT_MAX_HZ = 3.0           # upper bound for human movement frequency
+OVER_SEG_PROMINENCE_FRAC = 0.03  # 3 % of signal range — deliberately sensitive
+MIN_SEG_DURATION_MS      = 300   # discard sub-300 ms micro-movements
+MIN_HALF_REP_MS          = 150   # minimum half-rep (sets peak/valley min_distance)
 
 # ---------------------------------------------------------------------------
-# Categorical metadata — fixed lists so the one-hot feature vector size is
-# always the same regardless of which exercises appear in a training run.
-# "unknown" is a valid value for recordings where the exercise isn't identified.
+# Categorical metadata — fixed lists so the feature vector size never changes
 # ---------------------------------------------------------------------------
 MUSCLE_GROUPS = sorted([
     "abdomen", "arms", "back", "chest", "core",
@@ -72,367 +83,607 @@ MECHANIC_TYPES = sorted([
 ])
 
 # ---------------------------------------------------------------------------
-# Feature names — order matters: this list defines the model's input vector.
-# Signal features come first; one-hot categoricals follow.
+# Feature names — defines the segment-level input vector (order matters)
 # ---------------------------------------------------------------------------
-_SIGNAL_FEATURES = [
-    "duration_ms",           # total recording length
-    "sample_rate_hz",        # sensor sampling rate
-    "dominant_range_deg",    # full range of the main angle axis (x or y)
-    "nondominant_range_deg", # range of the other angle axis
-    "drift_ratio",           # gyro drift: how much the signal drifts end-to-end
-    "peak_count",            # number of peaks detected in the angle signal
-    "valley_count",          # number of valleys detected
-    "median_half_amp_deg",   # typical peak-to-valley distance (half a rep)
-    "std_half_amp_deg",      # variability of half-amplitudes
-    "dominant_freq_hz",      # main oscillation frequency from FFT
-    "freq_est_reps",         # dominant_freq_hz × duration_s (frequency-based rep estimate)
-    "zero_crossing_count",   # number of zero-crossings (≈ 2 × rep count for clean signals)
-    "accel_z_range",         # range of vertical acceleration (important for cable machines)
-    "accel_z_peak_count",    # peaks in vertical acceleration
-    "is_angle_flat",         # 1 if angle barely moves (cable/stack machine indicator)
-    "set_number",            # which set in the exercise (higher → more fatigue → slower/fewer reps)
+_SEG_SIGNAL_FEATURES = [
+    "amplitude",            # peak-to-trough range within the segment
+    "duration_ms",          # segment duration (start → end)
+    "energy",               # integral of squared signal × avg_dt
+    "prominence",           # prominence of the turning point in the 1D signal
+    "relative_amplitude",   # amplitude / recording's full 1D signal range
+    "relative_duration",    # duration_ms / median segment duration
+    "temporal_regularity",  # 1 / (1 + CV of inter-segment intervals); higher = more rhythmic
+    "position_frac",        # normalised time position [0, 1]; setup/unrack cluster near edges
+    "neighbour_amp_ratio",  # amplitude / mean(immediate neighbours' amplitudes)
+    "set_number",
+    "spectral_entropy",     # Shannon entropy of segment PSD; low = concentrated/rep-like
 ]
-_CATEGORICAL_FEATURES = (
-    [f"muscle_{g}" for g in MUSCLE_GROUPS]      # one-hot: muscle group
-    + [f"equip_{t}" for t in EQUIPMENT_TYPES]   # one-hot: equipment type
-    + [f"mechanic_{t}" for t in MECHANIC_TYPES] # one-hot: mechanic type
+_SEG_CATEGORICAL_FEATURES = (
+    [f"muscle_{g}"   for g in MUSCLE_GROUPS]
+    + [f"equip_{t}"  for t in EQUIPMENT_TYPES]
+    + [f"mechanic_{t}" for t in MECHANIC_TYPES]
 )
-FEATURE_COLS = _SIGNAL_FEATURES + _CATEGORICAL_FEATURES
+SEGMENT_FEATURE_COLS = _SEG_SIGNAL_FEATURES + _SEG_CATEGORICAL_FEATURES
 
 
 # ---------------------------------------------------------------------------
-# Helpers
+# Step 1 — Preprocessing: best-axis bandpass → 1D canonical signal
 # ---------------------------------------------------------------------------
-def smooth_ema(values: np.ndarray, alpha: float) -> np.ndarray:
-    out = np.empty_like(values, dtype=float)
-    out[0] = values[0]
-    for i in range(1, len(values)):
-        out[i] = alpha * values[i] + (1 - alpha) * out[i - 1]
-    return out
+
+# Bandpass bounds for the rep-frequency band.
+#
+# These are universal physiological constraints — NOT derived from any specific
+# user's data and NOT demographic (they apply equally to all ages, genders, and
+# body types):
+#
+#   _BP_LO_HZ = 0.10  →  10 s/rep  (6 reps/min) — the Superslow protocol and
+#                         extreme powerlifting tempos sit right at this edge.
+#                         Even the slowest controlled 5-count eccentric (5 s
+#                         down) produces a 0.1 Hz cycle.
+#
+#   _BP_HI_HZ = 3.00  →  333 ms/rep  (180 reps/min) — maximum for any loaded
+#                         voluntary movement; only unweighted plyometrics reach
+#                         this ceiling.
+#
+# Note: lowering _BP_LO_HZ (e.g. to 0.02 Hz to "adapt" to recording length)
+# lets slow drift compete in the spectral-score axis selection and causes the
+# wrong sensor axis to be chosen.  If you need to support reps slower than
+# 10 s/rep, lower _BP_LO_HZ to 0.05 and re-evaluate segmentation quality.
+_BP_LO_HZ = 0.10
+_BP_HI_HZ = 3.00
 
 
-# ---------------------------------------------------------------------------
-# Feature extraction
-# ---------------------------------------------------------------------------
-def extract_features(samples: list) -> dict:
+def _bandpass(sig: np.ndarray, sr: float) -> np.ndarray:
+    nyq = sr / 2.0
+    lo  = _BP_LO_HZ / nyq
+    hi  = min(_BP_HI_HZ / nyq, 0.99)
+    if lo >= hi:
+        return sig
+    b, a = butter(2, [lo, hi], btype="band")
+    return filtfilt(b, a, sig)
+
+
+def _spectral_score(sig: np.ndarray, sr: float) -> float:
     """
-    Turn a raw list of motion samples into a fixed-size numeric feature vector.
-
-    Each sample is expected to have the shape:
-        { timestamp, accel: {x,y,z}, gyro: {x,y,z}, angle: {x,y,z} }
+    Fraction of rep-band power at the single dominant frequency.
+    High score = periodic signal.  Low score = broadband noise or DC-dominated.
     """
-    n = len(samples)
-    if n < 10:
-        raise ValueError(f"Recording too short ({n} samples)")
+    freqs  = rfftfreq(len(sig), d=1.0 / sr)
+    power  = np.abs(rfft(sig)) ** 2
+    mask   = (freqs >= _BP_LO_HZ) & (freqs <= _BP_HI_HZ)
+    if not mask.any():
+        return 0.0
+    peak_power  = float(power[mask].max())
+    total_power = float(power[mask].sum()) + 1e-10
+    return peak_power / total_power
 
-    ts    = np.array([s["timestamp"]  for s in samples], dtype=float)
-    az    = np.array([s["accel"]["z"] for s in samples], dtype=float)
-    ang_x = np.array([s["angle"]["x"] for s in samples], dtype=float)
-    ang_y = np.array([s["angle"]["y"] for s in samples], dtype=float)
 
-    duration_ms = float(ts[-1] - ts[0])
-    duration_s  = duration_ms / 1000.0
-    sample_rate = n / duration_s if duration_s > 0 else 0.0
+def preprocess_to_1d(samples: list) -> tuple:
+    """
+    Select the single best signal axis for rep detection and bandpass-filter it.
 
-    # ── Dominant angle axis (whichever has the larger range) ────────────────
-    rx = float(ang_x.max() - ang_x.min())
-    ry = float(ang_y.max() - ang_y.min())
-    dominant_raw      = ang_x if rx >= ry else ang_y
-    dominant_range    = max(rx, ry)
-    nondominant_range = min(rx, ry)
+    For each of the 6 raw axes (3 Euler-angle + 3 accelerometer):
+      1. Unwrap Euler angles to handle ±180° discontinuities (hip-hinge, bicep curls).
+      2. Savitzky-Golay smooth (~0.5 % window).
+      3. Butterworth bandpass 0.1–3 Hz to remove drift and high-freq noise.
+      4. Score by spectral concentration: fraction of rep-band power at the dominant
+         frequency. A clean rep signal scores high; broadband noise scores low.
 
-    # ── EMA smooth → subtract floor-median of first 20 samples ─────────────
-    smoothed     = smooth_ema(dominant_raw, SMOOTH_ALPHA)
-    baseline     = float(np.median(smoothed[: min(20, n)]))
-    centered     = smoothed - baseline
-    signal_range = float(centered.max() - centered.min())
+    The axis with the highest spectral score is selected.  This reliably picks
+    angle axes for exercises with clear rotation (bench press, deadlift, squat)
+    and accel axes when angle data is flat (lat pulldown, cable exercises).
 
-    # ── Gyro drift: compare start window vs end window ─────────────────────
-    window      = max(1, min(20, int(n * 0.05)))
-    drift       = float(abs(centered[-window:].mean() - centered[:window].mean()))
-    drift_ratio = drift / signal_range if signal_range > 0 else 0.0
+    Returns (signal_1d: ndarray, timestamps: ndarray).
+    """
+    ts  = np.array([s["timestamp"]   for s in samples], dtype=float)
+    ang = np.array([[s["angle"]["x"],  s["angle"]["y"],  s["angle"]["z"]]
+                    for s in samples], dtype=float)
+    acc = np.array([[s["accel"]["x"],  s["accel"]["y"],  s["accel"]["z"]]
+                    for s in samples], dtype=float)
+    gyr = np.array([[s["gyro"]["x"],   s["gyro"]["y"],   s["gyro"]["z"]]
+                    for s in samples], dtype=float)
 
-    # ── Peak / valley detection on the angle signal ─────────────────────────
-    peak_count = valley_count = 0
-    median_half_amp = std_half_amp = 0.0
+    n   = len(ts)
+    sr  = n / ((ts[-1] - ts[0]) / 1000.0)
+    win = max(5, (int(n * 0.005) // 2) * 2 + 1)  # ~0.5 % of samples, odd
 
-    if signal_range > 0:
-        min_gap      = max(1, int(sample_rate * MIN_PEAK_GAP_MS / 1000))
-        pk_min_h     = float(centered.min() + signal_range * PEAK_THRESHOLD_FRAC)
-        vl_min_h     = float(-centered.max() + signal_range * PEAK_THRESHOLD_FRAC)
+    # Unwrap Euler angles per axis to remove ±180° jumps
+    ang_uw = np.degrees(np.unwrap(np.radians(ang), axis=0))
 
-        peaks,   _ = scipy_signal.find_peaks(centered,  height=pk_min_h, distance=min_gap)
-        valleys, _ = scipy_signal.find_peaks(-centered, height=vl_min_h, distance=min_gap)
+    best_sig:   np.ndarray = None
+    best_score: float      = -1.0
 
-        peak_count   = len(peaks)
-        valley_count = len(valleys)
+    for arr in (ang_uw, acc, gyr):
+        for i in range(3):
+            sm  = savgol_filter(arr[:, i], window_length=win, polyorder=2)
+            bp  = _bandpass(sm, sr)
+            rng = float(bp.max() - bp.min())
+            if rng < 1e-4:
+                continue
+            score = _spectral_score(bp, sr)
+            if score > best_score:
+                best_score = score
+                best_sig   = bp
 
-        if peak_count > 0 and valley_count > 0:
-            pairs     = min(peak_count, valley_count)
-            half_amps = np.abs(centered[peaks[:pairs]] - centered[valleys[:pairs]])
-            median_half_amp = float(np.median(half_amps))
-            std_half_amp    = float(np.std(half_amps))
+    # 10th candidate: orientation-agnostic accelerometer magnitude
+    acc_r = np.sqrt(np.sum(acc ** 2, axis=1))
+    sm    = savgol_filter(acc_r, window_length=win, polyorder=2)
+    bp    = _bandpass(sm, sr)
+    rng   = float(bp.max() - bp.min())
+    if rng >= 1e-4:
+        score = _spectral_score(bp, sr)
+        if score > best_score:
+            best_score = score
+            best_sig   = bp
 
-    # ── FFT: find dominant frequency in the human-movement range (0.2–3 Hz) ─
-    dominant_freq_hz = 0.0
-    freq_est_reps    = 0.0
+    if best_sig is None:
+        # Absolute fallback: bandpass angle-z (will yield a flat / empty signal)
+        sm       = savgol_filter(ang_uw[:, 2], window_length=win, polyorder=2)
+        best_sig = _bandpass(sm, sr)
 
-    if n > 10 and sample_rate > 0:
-        freqs   = rfftfreq(n, d=1.0 / sample_rate)
-        fft_mag = np.abs(rfft(centered))
-        mask    = (freqs >= FFT_MIN_HZ) & (freqs <= FFT_MAX_HZ)
-        if mask.any():
-            dominant_freq_hz = float(freqs[mask][np.argmax(fft_mag[mask])])
-            freq_est_reps    = dominant_freq_hz * duration_s
+    return best_sig, ts
 
-    # ── Zero crossings ──────────────────────────────────────────────────────
-    zero_crossing_count = int(np.sum(np.diff(np.sign(centered)) != 0))
 
-    # ── Accel Z (vertical axis — the key signal for cable/stack machines) ───
-    az_smoothed = smooth_ema(az, SMOOTH_ALPHA)
-    az_baseline = float(np.median(az_smoothed[: min(20, n)]))
-    az_centered = az_smoothed - az_baseline
-    az_range    = float(az.max() - az.min())
-    az_sig_rng  = float(az_centered.max() - az_centered.min())
-    az_peak_count = 0
+# ---------------------------------------------------------------------------
+# Step 2 — Over-segmentation: full-rep candidate segments
+# ---------------------------------------------------------------------------
 
-    if az_sig_rng > 0:
-        az_pk_min = float(az_centered.min() + az_sig_rng * PEAK_THRESHOLD_FRAC)
-        az_gap    = max(1, int(sample_rate * 0.1))
-        az_pks, _ = scipy_signal.find_peaks(az_centered, height=az_pk_min, distance=az_gap)
-        az_peak_count = len(az_pks)
+def over_segment(signal_1d: np.ndarray, timestamps: np.ndarray) -> list:
+    """
+    Slice the 1D signal into candidate full-rep segments.
 
-    return {
-        "duration_ms":           duration_ms,
-        "sample_rate_hz":        sample_rate,
-        "dominant_range_deg":    dominant_range,
-        "nondominant_range_deg": nondominant_range,
-        "drift_ratio":           drift_ratio,
-        "peak_count":            float(peak_count),
-        "valley_count":          float(valley_count),
-        "median_half_amp_deg":   median_half_amp,
-        "std_half_amp_deg":      std_half_amp,
-        "dominant_freq_hz":      dominant_freq_hz,
-        "freq_est_reps":         freq_est_reps,
-        "zero_crossing_count":   float(zero_crossing_count),
-        "accel_z_range":         az_range,
-        "accel_z_peak_count":    float(az_peak_count),
-        "is_angle_flat":         1.0 if dominant_range <= 5.0 else 0.0,
+    Strategy: find all valleys (local minima) and all peaks (local maxima)
+    with a low prominence threshold. Build two segment sets — valley-to-valley
+    and peak-to-peak — and return whichever has more segments (more over-
+    segmented), breaking ties by lower duration CV (more consistent = better).
+
+    Each segment dict contains:
+        start_idx, turning_idx, end_idx  — sample indices
+        start_ts,  turning_ts,  end_ts   — timestamps (ms)
+    """
+    sig_range = float(signal_1d.max() - signal_1d.min())
+    if sig_range < 1e-3:
+        return []
+
+    rec_duration_s = (float(timestamps[-1]) - float(timestamps[0])) / 1000.0
+    sample_rate    = len(timestamps) / max(rec_duration_s, 1e-6)
+    min_prom       = sig_range * OVER_SEG_PROMINENCE_FRAC
+    min_dist       = max(1, int(sample_rate * MIN_HALF_REP_MS / 1000.0))
+
+    peaks,   _ = scipy_signal.find_peaks( signal_1d, prominence=min_prom, distance=min_dist)
+    valleys, _ = scipy_signal.find_peaks(-signal_1d, prominence=min_prom, distance=min_dist)
+
+    def build_segs(boundaries: np.ndarray, valley_boundaries: bool) -> list:
+        segs = []
+        for i in range(len(boundaries) - 1):
+            s_idx = int(boundaries[i])
+            e_idx = int(boundaries[i + 1])
+            if timestamps[e_idx] - timestamps[s_idx] < MIN_SEG_DURATION_MS:
+                continue
+            chunk    = signal_1d[s_idx : e_idx + 1]
+            # The internal turning point is the peak (if boundaries are valleys)
+            # or the trough (if boundaries are peaks)
+            turn_rel = int(np.argmax(chunk)) if valley_boundaries else int(np.argmin(chunk))
+            turn_idx = s_idx + turn_rel
+            segs.append({
+                "start_idx":   s_idx,
+                "turning_idx": turn_idx,
+                "end_idx":     e_idx,
+                "start_ts":    float(timestamps[s_idx]),
+                "turning_ts":  float(timestamps[turn_idx]),
+                "end_ts":      float(timestamps[e_idx]),
+            })
+        return segs
+
+    segs_v = build_segs(valleys, valley_boundaries=True)
+    segs_p = build_segs(peaks,   valley_boundaries=False)
+
+    def duration_cv(segs: list) -> float:
+        if len(segs) < 2:
+            return np.inf
+        durs = np.array([s["end_ts"] - s["start_ts"] for s in segs])
+        return float(np.std(durs) / (np.mean(durs) + 1e-6))
+
+    if len(segs_v) > len(segs_p):
+        return segs_v
+    if len(segs_p) > len(segs_v):
+        return segs_p
+    return segs_v if duration_cv(segs_v) <= duration_cv(segs_p) else segs_p
+
+
+# ---------------------------------------------------------------------------
+# Step 3 — Per-segment feature extraction
+# ---------------------------------------------------------------------------
+
+def extract_segment_features(
+    seg_idx:    int,
+    seg:        dict,
+    signal_1d:  np.ndarray,
+    timestamps: np.ndarray,
+    all_segs:   list,
+    metadata:   dict,
+) -> dict:
+    """
+    Compute the fixed-size feature vector for one candidate segment.
+
+    `seg_idx`  — position of `seg` in `all_segs` (avoids O(n) list search)
+    `all_segs` — full list of candidate segments for this recording (context)
+    `metadata` — dict with keys: muscleGroup, equipmentType, mechanicType, setNumber
+    """
+    s = seg["start_idx"]
+    e = seg["end_idx"]
+    t = seg["turning_idx"]
+
+    chunk       = signal_1d[s : e + 1]
+    amplitude   = float(chunk.max() - chunk.min())
+    duration_ms = float(timestamps[e] - timestamps[s])
+    avg_dt_s    = (duration_ms / 1000.0) / max(1, len(chunk) - 1)
+    energy      = float(np.sum(chunk ** 2) * avg_dt_s)
+
+    global_range = float(signal_1d.max() - signal_1d.min()) or 1.0
+
+    # Prominence of the internal turning point in the full 1D signal context
+    try:
+        if signal_1d[t] >= signal_1d[s]:          # turning point is a peak
+            prom = float(scipy_signal.peak_prominences(signal_1d, [t])[0][0])
+        else:                                       # turning point is a trough
+            prom = float(scipy_signal.peak_prominences(-signal_1d, [t])[0][0])
+    except Exception:
+        prom = amplitude  # fallback
+
+    # Context features derived from all candidate segments in this recording
+    durations = [float(sg["end_ts"] - sg["start_ts"]) for sg in all_segs]
+    med_dur   = float(np.median(durations)) or 1.0
+
+    rel_amp = amplitude   / global_range
+    rel_dur = duration_ms / med_dur
+
+    # Temporal regularity: inverse of the coefficient of variation of
+    # inter-segment start intervals. A rhythmic set of reps has low CV → high score.
+    if len(all_segs) > 2:
+        starts    = np.array([float(sg["start_ts"]) for sg in all_segs])
+        intervals = np.diff(starts)
+        cv_iv     = float(np.std(intervals) / (np.mean(intervals) + 1e-6))
+        temporal_regularity = 1.0 / (1.0 + cv_iv)
+    else:
+        temporal_regularity = 0.5
+
+    # Normalised time position [0, 1]; setup and unrack events cluster near 0 or 1
+    rec_start = float(timestamps[0])
+    rec_end   = float(timestamps[-1])
+    position_frac = (seg["start_ts"] - rec_start) / max(1.0, rec_end - rec_start)
+
+    # Amplitude relative to immediate neighbours
+    nb_amps = []
+    for nb_idx in (seg_idx - 1, seg_idx + 1):
+        if 0 <= nb_idx < len(all_segs):
+            nb = all_segs[nb_idx]
+            nb_chunk = signal_1d[nb["start_idx"] : nb["end_idx"] + 1]
+            nb_amps.append(float(nb_chunk.max() - nb_chunk.min()))
+    neighbour_amp_ratio = amplitude / (float(np.mean(nb_amps)) + 1e-6) if nb_amps else 1.0
+
+    # Spectral entropy of the segment (low = concentrated/rep-like, high = noisy)
+    # chunk is already bandpass-filtered so this measures power concentration in the rep band
+    if len(chunk) >= 4:
+        power_seg = np.abs(rfft(chunk)) ** 2
+        p_pdf     = power_seg / (power_seg.sum() + 1e-10)
+        spectral_entropy = float(-np.sum(p_pdf * np.log(p_pdf + 1e-10)))
+    else:
+        spectral_entropy = 0.0
+
+    feats: dict = {
+        "amplitude":            amplitude,
+        "duration_ms":          duration_ms,
+        "energy":               energy,
+        "prominence":           prom,
+        "relative_amplitude":   rel_amp,
+        "relative_duration":    rel_dur,
+        "temporal_regularity":  temporal_regularity,
+        "position_frac":        position_frac,
+        "neighbour_amp_ratio":  neighbour_amp_ratio,
+        "set_number":           float(metadata.get("setNumber") or 1),
+        "spectral_entropy":     spectral_entropy,
     }
 
-
-# ---------------------------------------------------------------------------
-# Dataset builder
-# ---------------------------------------------------------------------------
-def build_categorical_features(feats: dict, mg: str, eq: str, mt: str) -> None:
-    """Add one-hot categorical features to feats in-place."""
-    mg = mg.strip().lower() if mg else "unknown"
-    eq = eq.strip().lower() if eq else "unknown"
-    mt = mt.strip().lower() if mt else "unknown"
-
-    if mg not in MUSCLE_GROUPS:
-        mg = "unknown"
-    if eq not in EQUIPMENT_TYPES:
-        eq = "unknown"
-    if mt not in MECHANIC_TYPES:
-        mt = "unknown"
+    # One-hot categorical features
+    mg = str(metadata.get("muscleGroup")   or "unknown").strip().lower()
+    eq = str(metadata.get("equipmentType") or "unknown").strip().lower()
+    mt = str(metadata.get("mechanicType")  or "unknown").strip().lower()
+    if mg not in MUSCLE_GROUPS:   mg = "unknown"
+    if eq not in EQUIPMENT_TYPES: eq = "unknown"
+    if mt not in MECHANIC_TYPES:  mt = "unknown"
 
     for g in MUSCLE_GROUPS:
         feats[f"muscle_{g}"] = 1.0 if mg == g else 0.0
-    for t in EQUIPMENT_TYPES:
-        feats[f"equip_{t}"] = 1.0 if eq == t else 0.0
-    for t in MECHANIC_TYPES:
-        feats[f"mechanic_{t}"] = 1.0 if mt == t else 0.0
+    for t_ in EQUIPMENT_TYPES:
+        feats[f"equip_{t_}"] = 1.0 if eq == t_ else 0.0
+    for t_ in MECHANIC_TYPES:
+        feats[f"mechanic_{t_}"] = 1.0 if mt == t_ else 0.0
+
+    return feats
 
 
-def build_dataset() -> pd.DataFrame:
-    rows = []
+# ---------------------------------------------------------------------------
+# Step 4 — Pseudo-labelling
+# ---------------------------------------------------------------------------
+
+def pseudo_label_segments(segments: list, n_reps: int) -> list:
+    """
+    Assign is_rep=1 to the top n_reps segments and is_rep=0 to the rest.
+
+    Ranking score = amplitude × sqrt(energy) × temporal_consistency,
+    where temporal_consistency rewards segments whose duration is close to
+    the median — genuine reps in a set tend to be similarly paced.
+
+    Returns None if the segmenter produced fewer candidates than known reps
+    (cannot safely pseudo-label in that case).
+    """
+    if not segments or len(segments) < n_reps:
+        return None
+
+    durations = [sg["end_ts"] - sg["start_ts"] for sg in segments]
+    med_dur   = float(np.median(durations)) or 1.0
+
+    for seg in segments:
+        dur = seg["end_ts"] - seg["start_ts"]
+        tc  = 1.0 / (1.0 + abs(dur - med_dur) / med_dur)
+        seg["pseudo_score"] = seg["amplitude"] * np.sqrt(seg["energy"] + 1e-6) * tc
+
+    ranked = sorted(segments, key=lambda sg: -sg["pseudo_score"])
+    for i, seg in enumerate(ranked):
+        seg["is_rep"] = 1 if i < n_reps else 0
+
+    return segments
+
+
+# ---------------------------------------------------------------------------
+# Step 5 — Dataset builder
+# ---------------------------------------------------------------------------
+
+def build_segment_dataset() -> pd.DataFrame:
+    """
+    Iterate all recordings, pseudo-label segments, extract features.
+    Returns a DataFrame where each row is one candidate segment.
+    """
+    rows             = []
+    skipped_noreps   = 0
+    skipped_under    = 0
 
     for path in sorted(RECORDINGS_DIR.glob("*.json")):
         with open(path) as f:
             data = json.load(f)
 
         if "reps" not in data:
-            print(f"  WARNING: {path.name} has no 'reps' field — skipping")
+            skipped_noreps += 1
+            print(f"  SKIP (no reps field): {path.name}")
+            continue
+
+        n_reps  = int(data["reps"])
+        samples = data.get("samples", [])
+
+        if len(samples) < 20:
+            print(f"  SKIP (too short — {len(samples)} samples): {path.name}")
             continue
 
         try:
-            feats = extract_features(data["samples"])
-            feats["set_number"] = float(data.get("setNumber") or 1)
-            build_categorical_features(
-                feats,
-                str(data.get("muscleGroup") or "unknown"),
-                str(data.get("equipmentType") or "unknown"),
-                str(data.get("mechanicType") or "unknown"),
-            )
-            feats["filename"]  = path.name
-            feats["rep_count"] = int(data["reps"])
-            rows.append(feats)
-        except Exception as e:
-            print(f"  ERROR {path.name}: {e}")
+            signal_1d, timestamps = preprocess_to_1d(samples)
+            segs = over_segment(signal_1d, timestamps)
+        except Exception as exc:
+            print(f"  ERROR preprocess/segment {path.name}: {exc}")
+            continue
 
+        if not segs:
+            print(f"  SKIP (no segments found): {path.name}")
+            continue
+
+        # Annotate each segment with amplitude + energy (needed for pseudo-labelling)
+        for seg in segs:
+            chunk          = signal_1d[seg["start_idx"] : seg["end_idx"] + 1]
+            seg["amplitude"] = float(chunk.max() - chunk.min())
+            dur            = float(timestamps[seg["end_idx"]] - timestamps[seg["start_idx"]])
+            avg_dt         = (dur / 1000.0) / max(1, len(chunk) - 1)
+            seg["energy"]  = float(np.sum(chunk ** 2) * avg_dt)
+
+        labeled = pseudo_label_segments(segs, n_reps)
+        if labeled is None:
+            skipped_under += 1
+            print(f"  SKIP (under-segmented: {len(segs)} segs < {n_reps} reps): {path.name}")
+            continue
+
+        print(f"  {path.name}: {n_reps} reps, {len(segs)} candidate segments "
+              f"({sum(1 for sg in labeled if sg['is_rep'])} labeled rep, "
+              f"{sum(1 for sg in labeled if not sg['is_rep'])} noise)")
+
+        metadata = {
+            "muscleGroup":   data.get("muscleGroup"),
+            "equipmentType": data.get("equipmentType"),
+            "mechanicType":  data.get("mechanicType"),
+            "setNumber":     data.get("setNumber"),
+        }
+
+        for idx, seg in enumerate(labeled):
+            try:
+                feats = extract_segment_features(
+                    idx, seg, signal_1d, timestamps, labeled, metadata
+                )
+                feats["is_rep"]       = int(seg["is_rep"])
+                feats["recording_id"] = path.name
+                rows.append(feats)
+            except Exception as exc:
+                print(f"  ERROR features {path.name} seg {idx}: {exc}")
+
+    print(f"\n  Under-segmented (skipped): {skipped_under}")
+    print(f"  No reps label   (skipped): {skipped_noreps}")
     return pd.DataFrame(rows)
 
 
 # ---------------------------------------------------------------------------
-# Evaluation
+# Evaluation: leave-one-recording-out cross-validation
 # ---------------------------------------------------------------------------
-def loocv(df: pd.DataFrame, model_cls, **kwargs) -> tuple[list, list]:
-    """Leave-one-out cross-validation. Returns (predictions, actuals)."""
-    X = df[FEATURE_COLS].values
-    y = df["rep_count"].values
-    preds, actuals = [], []
 
-    for train_idx, test_idx in LeaveOneOut().split(X):
-        m = model_cls(**kwargs)
-        m.fit(X[train_idx], y[train_idx])
-        preds.append(round(float(m.predict(X[test_idx])[0])))
-        actuals.append(int(y[test_idx[0]]))
+def loocv_by_recording(df: pd.DataFrame) -> tuple:
+    """
+    Leave-one-recording-out CV using LeaveOneGroupOut.
 
-    return preds, actuals
+    Each fold holds out all segments from one recording so the classifier
+    never sees correlated segments (from the same movement) at test time.
 
+    Returns:
+        seg_preds, seg_true           — segment-level binary predictions / labels
+        rec_preds, rec_actual, rec_names — recording-level rep counts
+    """
+    X      = df[SEGMENT_FEATURE_COLS].values
+    y      = df["is_rep"].values
+    groups = df["recording_id"].values
 
-def print_results(preds, actuals, filenames, label) -> float:
-    col = 42
-    print(f"\n{'─' * (col + 20)}")
-    print(f"  {label}  —  Leave-One-Out CV")
-    print(f"{'─' * (col + 20)}")
-    print(f"  {'Recording':<{col}} {'True':>5} {'Pred':>5} {'Err':>5}")
-    print(f"  {'─' * col} {'─'*5} {'─'*5} {'─'*5}")
+    seg_preds, seg_true   = [], []
+    rec_preds, rec_actual = [], []
+    rec_names             = []
 
-    for fn, true, pred in zip(filenames, actuals, preds):
-        err    = pred - true
-        marker = "  !" if err != 0 else ""
-        print(f"  {fn:<{col}} {true:>5} {pred:>5} {err:>+5}{marker}")
+    logo = LeaveOneGroupOut()
+    for train_idx, test_idx in logo.split(X, y, groups):
+        clf = RandomForestClassifier(
+            n_estimators=200, max_depth=6,
+            class_weight="balanced", random_state=42,
+        )
+        clf.fit(X[train_idx], y[train_idx])
 
-    mae   = mean_absolute_error(actuals, preds)
-    exact = sum(1 for t, p in zip(actuals, preds) if t == p)
-    print(f"\n  MAE:         {mae:.2f}")
-    print(f"  Exact match: {exact}/{len(actuals)}  ({100 * exact / len(actuals):.0f}%)")
-    return mae
+        probs     = clf.predict_proba(X[test_idx])[:, 1]
+        preds_seg = (probs > 0.5).astype(int)
+        seg_preds.extend(preds_seg.tolist())
+        seg_true.extend(y[test_idx].tolist())
+
+        test_groups = groups[test_idx]
+        for rec in np.unique(test_groups):
+            mask = test_groups == rec
+            rec_preds.append(int(preds_seg[mask].sum()))
+            rec_actual.append(int(y[test_idx][mask].sum()))
+            rec_names.append(rec)
+
+    return seg_preds, seg_true, rec_preds, rec_actual, rec_names
 
 
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
-def main():
-    print("\n── Loading dataset ────────────────────────────────────────────")
-    df = build_dataset()
-    print(f"  {len(df)} recordings loaded")
 
-    if len(df) < 5:
-        sys.exit("Need at least 5 recordings. Add more to recordings/ and labels.csv.")
+def main() -> None:
+    print("\n── Building segment dataset ────────────────────────────────────")
+    df = build_segment_dataset()
 
-    # ── Categorical coverage report ─────────────────────────────────────────
-    n_known_mg = int((df["muscle_unknown"] == 0).sum())
-    n_known_eq = int((df["equip_unknown"]  == 0).sum())
-    n_known_mt = int((df["mechanic_unknown"] == 0).sum())
-    print(f"  muscle_group labeled: {n_known_mg}/{len(df)}  "
-          f"({'%.0f' % (100*n_known_mg/len(df))}%)")
-    print(f"  equipment_type labeled: {n_known_eq}/{len(df)}  "
-          f"({'%.0f' % (100*n_known_eq/len(df))}%)")
-    print(f"  mechanic_type labeled: {n_known_mt}/{len(df)}  "
-          f"({'%.0f' % (100*n_known_mt/len(df))}%)")
-    if n_known_mg < len(df) * 0.7 or n_known_eq < len(df) * 0.7 or n_known_mt < len(df) * 0.7:
-        print("  NOTE: fewer than 70% of recordings have categorical labels.")
-        print("        Fill in metadata in labels.csv as you")
-        print("        add more recordings — the model will improve noticeably.\n")
+    if len(df) == 0:
+        sys.exit("No segments generated. Check that recordings/*.json have a 'reps' field.")
+
+    n_recs  = df["recording_id"].nunique()
+    n_rep   = int((df["is_rep"] == 1).sum())
+    n_noise = int((df["is_rep"] == 0).sum())
+
+    print(f"\n  Total segments : {len(df)}")
+    print(f"  Recordings     : {n_recs}")
+    print(f"  Rep segments   : {n_rep}")
+    print(f"  Noise segments : {n_noise}")
+
+    if len(df) < 10:
+        sys.exit("Need at least 10 labeled segments. Add more recordings.")
 
     df.to_csv(OUTPUT_DIR / "features.csv", index=False)
-    print(f"  Feature matrix saved → output/features.csv")
+    print("  Feature matrix saved → output/features.csv")
 
-    filenames = df["filename"].tolist()
+    # ── Leave-one-recording-out CV ──────────────────────────────────────
+    print("\n── Leave-one-recording-out CV ──────────────────────────────────")
+    seg_preds, seg_true, rec_preds, rec_actual, rec_names = loocv_by_recording(df)
 
-    # ── Compare two model families ──────────────────────────────────────────
-    rf_preds, rf_actuals = loocv(
-        df, RandomForestRegressor,
-        n_estimators=100, max_depth=4, random_state=42,
+    prec = precision_score(seg_true, seg_preds, zero_division=0)
+    rec  = recall_score(seg_true,    seg_preds, zero_division=0)
+    f1   = f1_score(seg_true,        seg_preds, zero_division=0)
+
+    print(f"\n  Segment-level:")
+    print(f"    Precision : {prec:.2f}")
+    print(f"    Recall    : {rec:.2f}")
+    print(f"    F1        : {f1:.2f}")
+
+    col = 44
+    print(f"\n  Recording-level:")
+    print(f"  {'Recording':<{col}} {'True':>5} {'Pred':>5} {'Err':>5}")
+    print(f"  {'─'*col} {'─'*5} {'─'*5} {'─'*5}")
+    for name, true, pred in zip(rec_names, rec_actual, rec_preds):
+        err    = pred - true
+        marker = "  !" if err != 0 else ""
+        print(f"  {name:<{col}} {true:>5} {pred:>5} {err:>+5}{marker}")
+
+    mae   = mean_absolute_error(rec_actual, rec_preds)
+    exact = sum(1 for t, p in zip(rec_actual, rec_preds) if t == p)
+    print(f"\n  MAE:         {mae:.2f}")
+    print(f"  Exact match: {exact}/{len(rec_actual)}  ({100*exact/len(rec_actual):.0f}%)")
+
+    # ── Train final classifier on ALL data ──────────────────────────────
+    print("\n── Training final classifier on all data ───────────────────────")
+    X_all = df[SEGMENT_FEATURE_COLS].values
+    y_all = df["is_rep"].values
+
+    clf = RandomForestClassifier(
+        n_estimators=200, max_depth=6,
+        class_weight="balanced", random_state=42,
     )
-    mae_rf = print_results(rf_preds, rf_actuals, filenames, "Random Forest (depth=4)")
+    clf.fit(X_all, y_all)
 
-    gb_preds, gb_actuals = loocv(
-        df, GradientBoostingRegressor,
-        n_estimators=100, max_depth=3, learning_rate=0.1, random_state=42,
+    # ── Feature importances ─────────────────────────────────────────────
+    print("\n── Feature importances (top 15) ────────────────────────────────")
+    ranked = sorted(
+        zip(SEGMENT_FEATURE_COLS, clf.feature_importances_), key=lambda x: -x[1]
     )
-    mae_gb = print_results(gb_preds, gb_actuals, filenames, "Gradient Boosting (depth=3)")
+    for feat, imp in ranked[:15]:
+        bar = "█" * int(imp * 60)
+        print(f"  {feat:<32} {imp:.3f}  {bar}")
 
-    # ── Train final model on ALL data ───────────────────────────────────────
-    X_all = df[FEATURE_COLS].values
-    y_all = df["rep_count"].values
-
-    # We always use Random Forest for the final export because m2cgen doesn't
-    # support Gradient Boosting in JavaScript.
-    final = RandomForestRegressor(n_estimators=100, max_depth=4, random_state=42)
-    final.fit(X_all, y_all)
-
-    best_name = "Random Forest" if mae_rf <= mae_gb else "Gradient Boosting"
-    print(f"\n── Comparison: {best_name} performed best (MAE {min(mae_rf, mae_gb):.2f}) ──")
-    if best_name == "Gradient Boosting":
-        print(f"   NOTE: Bypassing {best_name} for export; using Random Forest")
-        print(f"         to ensure parity between Python and JavaScript (m2cgen).")
-    else:
-        print(f"   Using {best_name} for export.")
-
-    # ── Feature importances ─────────────────────────────────────────────────
-    print("\n── Feature importances ────────────────────────────────────────")
-    ranked = sorted(zip(FEATURE_COLS, final.feature_importances_), key=lambda x: -x[1])
-    for feat, imp in ranked:
-        bar = "█" * int(imp * 50)
-        print(f"  {feat:<30} {imp:.3f}  {bar}")
-
-    # ── Save Python model (used by predict.py) ──────────────────────────────
+    # ── Save model.pkl ──────────────────────────────────────────────────
     pkl_path = OUTPUT_DIR / "model.pkl"
     with open(pkl_path, "wb") as f:
-        pickle.dump({"model": final, "feature_cols": FEATURE_COLS}, f)
+        pickle.dump({"model": clf, "feature_cols": SEGMENT_FEATURE_COLS}, f)
     print(f"\n── Saved → output/model.pkl")
 
-    # ── Export to JavaScript (for future app integration) ───────────────────
-    # m2cgen only supports Random Forest.
-    raw_js = m2c.export_to_javascript(final, function_name="predictRepCount")
-
-    # Minify: strip indentation + blank lines, collapse to a single line.
-    # The output is treated like a binary — not meant to be edited by hand.
+    # ── Export to JavaScript ────────────────────────────────────────────
+    raw_js   = m2c.export_to_javascript(clf, function_name="classifySegment")
     minified = " ".join(line.strip() for line in raw_js.splitlines() if line.strip())
+    feat_list = ", ".join(SEGMENT_FEATURE_COLS)
 
-    feature_list = ", ".join(FEATURE_COLS)
     js_path = OUTPUT_DIR / "model.js"
     js_path.write_text(
         "// @ts-nocheck\n"
         "/* eslint-disable */\n"
-        f"/* auto-generated by train.py — do not edit. input order: {feature_list} */\n"
+        "/*\n"
+        " * auto-generated by train.py — do not edit.\n"
+        " * classifySegment(input) returns [prob_noise, prob_rep].\n"
+        " * Usage: classifySegment(features)[1] > 0.5  →  is a real rep.\n"
+        f" * Input order ({len(SEGMENT_FEATURE_COLS)} features): {feat_list}\n"
+        " */\n"
         + minified
-        + "\nexport{predictRepCount};\n"
+        + "\nexport{classifySegment};\n"
     )
     print(f"── Saved → output/model.js")
 
-    # ── Summary report ──────────────────────────────────────────────────────
-    # Metrics refer to the Random Forest model which is actually used in the app
-    exact = sum(1 for t, p in zip(rf_actuals, rf_preds) if t == p)
-
-    summary = [
-        "Training summary",
+    # ── Summary report ──────────────────────────────────────────────────
+    summary_lines = [
+        "Training summary (Segment-and-Score)",
         "=" * 40,
-        f"Recordings:   {len(df)}",
-        f"Active model: Random Forest",
-        f"LOOCV MAE:    {mae_rf:.2f}",
-        f"Exact match:  {exact}/{len(df)} ({100*exact/len(df):.0f}%)",
+        f"Recordings     : {n_recs}",
+        f"Total segments : {len(df)}",
+        f"Rep segments   : {n_rep}",
+        f"Noise segments : {n_noise}",
         "",
+        "LOOCV — Segment-level:",
+        f"  Precision : {prec:.2f}",
+        f"  Recall    : {rec:.2f}",
+        f"  F1        : {f1:.2f}",
+        "",
+        "LOOCV — Recording-level:",
+        f"  MAE         : {mae:.2f}",
+        f"  Exact match : {exact}/{len(rec_actual)} ({100*exact/len(rec_actual):.0f}%)",
+        "",
+        f"Feature order ({len(SEGMENT_FEATURE_COLS)} features):",
+        *[f"  {i:>2}: {name}" for i, name in enumerate(SEGMENT_FEATURE_COLS)],
     ]
-
-    if best_name == "Gradient Boosting":
-        summary += [
-            f"Note: {best_name} performed better in CV (MAE {mae_gb:.2f}),",
-            "but Random Forest was selected for export to ensure",
-            "cross-platform compatibility with JavaScript (m2cgen).",
-            "",
-        ]
-
-    summary += [
-        "Feature order for inference (input array index → name):",
-        *[f"  {i:>2}: {name}" for i, name in enumerate(FEATURE_COLS)],
-    ]
-    (OUTPUT_DIR / "summary.txt").write_text("\n".join(summary))
+    (OUTPUT_DIR / "summary.txt").write_text("\n".join(summary_lines))
     print(f"── Saved → output/summary.txt\n")
 
 

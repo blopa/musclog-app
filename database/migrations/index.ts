@@ -17,6 +17,7 @@ import migrationV15 from '@/database/migrations/2026/05/migration-v15';
 import migrationV16 from '@/database/migrations/2026/05/migration-v16';
 import migrationV17 from '@/database/migrations/2026/05/migration-v17';
 import migrationV18 from '@/database/migrations/2026/05/migration-v18';
+import migrationV19 from '@/database/migrations/2026/05/migration-v19';
 
 export const migrations = schemaMigrations({
   migrations: [
@@ -84,5 +85,7 @@ export const migrations = schemaMigrations({
     // ordered by created_at. Updates all referencing tables (exercise_goals,
     // exercise_muscles, workout_template_exercises, workout_log_exercises).
     migrationV18,
+    // Version 19: Add rep counting columns to workout_log_sets (rep_data_json)
+    migrationV19,
   ],
 });

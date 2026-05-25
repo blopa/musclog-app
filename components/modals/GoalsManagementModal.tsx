@@ -64,16 +64,19 @@ export default function GoalsManagementModal({ visible, onClose, tab }: GoalsMan
   const refreshNutritionRef = useRef<(() => Promise<void>) | undefined>(undefined);
 
   useEffect(() => {
-    if (visible) {
-      setActiveTab(tab);
-    } else {
-      setCreationMethodModalVisible(false);
-      setWizardModalVisible(false);
-      setNutritionGoalsModalVisible(false);
-      setExerciseGoalCreationModalVisible(false);
-      setConfirmDeleteVisible(false);
-      setSelectedGoal(null);
-    }
+    const syncTabOrReset = () => {
+      if (visible) {
+        setActiveTab(tab);
+      } else {
+        setCreationMethodModalVisible(false);
+        setWizardModalVisible(false);
+        setNutritionGoalsModalVisible(false);
+        setExerciseGoalCreationModalVisible(false);
+        setConfirmDeleteVisible(false);
+        setSelectedGoal(null);
+      }
+    };
+    syncTabOrReset();
   }, [visible, tab]);
 
   const nutritionGoalResult = useCurrentNutritionGoal({

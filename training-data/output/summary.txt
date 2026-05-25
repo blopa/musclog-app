@@ -1,55 +1,59 @@
-Training summary
+Training summary (Segment-and-Score)
 ========================================
-Recordings:   23
-Best model:   Gradient Boosting
-LOOCV MAE:    1.35
-Exact match:  9/23 (39%)
+Recordings     : 21
+Total segments : 499
+Rep segments   : 205
+Noise segments : 294
 
-Feature order for inference (input array index → name):
-   0: duration_ms
-   1: sample_rate_hz
-   2: dominant_range_deg
-   3: nondominant_range_deg
-   4: drift_ratio
-   5: peak_count
-   6: valley_count
-   7: median_half_amp_deg
-   8: std_half_amp_deg
-   9: dominant_freq_hz
-  10: freq_est_reps
-  11: zero_crossing_count
-  12: accel_z_range
-  13: accel_z_peak_count
-  14: is_angle_flat
-  15: set_number
-  16: muscle_abdomen
-  17: muscle_arms
-  18: muscle_back
-  19: muscle_chest
-  20: muscle_core
-  21: muscle_full_body
-  22: muscle_glutes
-  23: muscle_legs
-  24: muscle_shoulders
-  25: muscle_unknown
-  26: equip_barbell
-  27: equip_bodyweight
-  28: equip_cable
-  29: equip_cardio
-  30: equip_dumbbell
-  31: equip_kettlebell
-  32: equip_machine
-  33: equip_other
-  34: equip_plate_machine
-  35: equip_pneumatic_machine
-  36: equip_resistance_band
-  37: equip_smith_machine
-  38: equip_unknown
-  39: mechanic_cardio
-  40: mechanic_compound
-  41: mechanic_isolation
-  42: mechanic_mobility
-  43: mechanic_other
-  44: mechanic_plyometric
-  45: mechanic_stretching
-  46: mechanic_unknown
+LOOCV — Segment-level:
+  Precision : 0.71
+  Recall    : 0.80
+  F1        : 0.75
+
+LOOCV — Recording-level:
+  MAE         : 4.67
+  Exact match : 4/21 (19%)
+
+Feature order (42 features):
+   0: amplitude
+   1: duration_ms
+   2: energy
+   3: prominence
+   4: relative_amplitude
+   5: relative_duration
+   6: temporal_regularity
+   7: position_frac
+   8: neighbour_amp_ratio
+   9: set_number
+  10: spectral_entropy
+  11: muscle_abdomen
+  12: muscle_arms
+  13: muscle_back
+  14: muscle_chest
+  15: muscle_core
+  16: muscle_full_body
+  17: muscle_glutes
+  18: muscle_legs
+  19: muscle_shoulders
+  20: muscle_unknown
+  21: equip_barbell
+  22: equip_bodyweight
+  23: equip_cable
+  24: equip_cardio
+  25: equip_dumbbell
+  26: equip_kettlebell
+  27: equip_machine
+  28: equip_other
+  29: equip_plate_machine
+  30: equip_pneumatic_machine
+  31: equip_resistance_band
+  32: equip_smith_machine
+  33: equip_unknown
+  34: mechanic_cardio
+  35: mechanic_compound
+  36: mechanic_isolation
+  37: mechanic_mobility
+  38: mechanic_other
+  39: mechanic_plyometric
+  40: mechanic_stretching
+  41: mechanic_unknown

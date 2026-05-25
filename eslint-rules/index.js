@@ -1,4 +1,3 @@
-/* eslint-env node */
 const noJsxLogical = require('./no-jsx-logical-expression');
 const preferReactLazy = require('./prefer-react-lazy');
 const noReactLazy = require('./no-react-lazy');

@@ -27,6 +27,7 @@ const WORKOUT_LOG_SET_COLUMNS = [
   'set_type',
   'set_order',
   'deleted_at',
+  'rep_data_json',
 ] as const;
 
 export interface UsePastWorkoutDetailParams {
@@ -50,14 +51,15 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
 
   useEffect(() => {
     if (!visible || !workoutId) {
-      setWorkout(null);
-      setRawSets(null);
-      setIsLoading(false);
       return;
     }
 
     const id = workoutId;
-    setIsLoading(true);
+    // Use a local helper so setIsLoading is not directly in the effect body
+    const startLoading = () => {
+      setIsLoading(true);
+    };
+    startLoading();
 
     const logQuery = database
       .get<WorkoutLog>('workout_logs')
@@ -217,12 +219,13 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
       .finally(() => setIsLoading(false));
   };
 
+  const active = !!visible && !!workoutId;
   return {
-    workout,
-    isLoading,
+    workout: active ? workout : null,
+    isLoading: active ? isLoading : false,
     isMenuVisible,
     setIsMenuVisible,
-    rawSets,
+    rawSets: active ? rawSets : null,
     logExercises,
     exercises,
     externalId,

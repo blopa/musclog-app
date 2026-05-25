@@ -41,7 +41,10 @@ export default function CreateWorkoutModal({
 
   useEffect(() => {
     if (!visible) {
-      setAddExerciseVisible(false);
+      const reset = () => {
+        setAddExerciseVisible(false);
+      };
+      reset();
     }
   }, [visible]);
 

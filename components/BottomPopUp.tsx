@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { X } from 'lucide-react-native';
-import React, { ReactNode, useEffect, useRef, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import {
   Animated,
   Keyboard,
@@ -101,14 +101,10 @@ export function BottomPopUp({
     );
   };
 
-  const slideAnim = useRef(new Animated.Value(theme.size['300'])).current; // Start off-screen
-  const [keyboardBottomLift, setKeyboardBottomLift] = useState(0);
-
-  useEffect(() => {
-    if (!visible) {
-      setKeyboardBottomLift(0);
-    }
-  }, [visible]);
+  const [slideAnim] = useState(() => new Animated.Value(theme.size['300']));
+  const [rawKeyboardBottomLift, setKeyboardBottomLift] = useState(0);
+  // Derive: when the sheet is not visible the lift is always 0
+  const keyboardBottomLift = visible ? rawKeyboardBottomLift : 0;
 
   useEffect(() => {
     if (Platform.OS === 'web' || !visible) {

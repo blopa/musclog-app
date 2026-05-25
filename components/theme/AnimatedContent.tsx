@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Animated, type ViewStyle } from 'react-native';
 
 type AnimatedContentProps = {
@@ -8,8 +8,8 @@ type AnimatedContentProps = {
 };
 
 export function AnimatedContent({ children, style, delay = 0 }: AnimatedContentProps) {
-  const opacity = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(10)).current;
+  const [opacity] = useState(() => new Animated.Value(0));
+  const [translateY] = useState(() => new Animated.Value(10));
 
   useEffect(() => {
     Animated.parallel([

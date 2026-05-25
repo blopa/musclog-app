@@ -43,10 +43,13 @@ export function EditSetDetailsModal({
   // Reset values when modal opens
   useEffect(() => {
     if (visible) {
-      setWeight(initialWeight);
-      setReps(initialReps);
-      setPartials(initialPartials);
-      setRepsInReserve(showRir ? initialRepsInReserve : 0);
+      const syncValues = () => {
+        setWeight(initialWeight);
+        setReps(initialReps);
+        setPartials(initialPartials);
+        setRepsInReserve(showRir ? initialRepsInReserve : 0);
+      };
+      syncValues();
     }
   }, [visible, initialWeight, initialReps, initialPartials, initialRepsInReserve, showRir]);
 

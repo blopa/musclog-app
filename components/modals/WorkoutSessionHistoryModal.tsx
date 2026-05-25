@@ -276,11 +276,8 @@ export function WorkoutSessionHistoryModal({
     return sets.filter((set) => (set.difficultyLevel ?? 0) > 0).length;
   }, [isPreview, sets]);
 
-  const shareDuration = useMemo(() => {
-    if (isPreview || !workoutLog?.startedAt) {
-      return null;
-    }
-
+  let shareDuration: string | null = null;
+  if (!isPreview && workoutLog?.startedAt) {
     if (workoutLog.completedAt) {
       const elapsedSeconds = Math.max(
         0,
@@ -289,104 +286,74 @@ export function WorkoutSessionHistoryModal({
       const hours = Math.floor(elapsedSeconds / 3600);
       const minutes = Math.floor((elapsedSeconds % 3600) / 60);
       const seconds = elapsedSeconds % 60;
-
-      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(
-        seconds
-      ).padStart(2, '0')}`;
+      shareDuration = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    } else {
+      shareDuration = `${String(sessionTime.hours).padStart(2, '0')}:${String(sessionTime.minutes).padStart(2, '0')}:${String(sessionTime.seconds).padStart(2, '0')}`;
     }
+  }
 
-    return `${String(sessionTime.hours).padStart(2, '0')}:${String(sessionTime.minutes).padStart(
-      2,
-      '0'
-    )}:${String(sessionTime.seconds).padStart(2, '0')}`;
-  }, [
-    isPreview,
-    sessionTime.hours,
-    sessionTime.minutes,
-    sessionTime.seconds,
-    workoutLog?.completedAt,
-    workoutLog?.startedAt,
-  ]);
-
-  const shareMessage = useMemo(() => {
-    const lines: string[] = [
-      isPreview ? t('workoutHistory.previewTitle') : t('workoutHistory.title'),
-      '',
-      workoutName,
-    ];
-
-    const previewDescription = isPreview ? workoutTemplate?.description?.trim() : null;
-    if (previewDescription) {
-      lines.push(previewDescription);
-      lines.push('');
-    }
-
-    if (workoutLog?.startedAt) {
-      const startedAt = new Intl.DateTimeFormat(locale, {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-      }).format(new Date(workoutLog.startedAt));
-      lines.push(`${t('workoutDetail.startTime')}: ${startedAt}`);
-    }
-
-    if (!isPreview && workoutLog?.completedAt) {
-      const completedAt = new Intl.DateTimeFormat(locale, {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-      }).format(new Date(workoutLog.completedAt));
-      lines.push(`${t('workoutDetail.endTime')}: ${completedAt}`);
-    }
-
-    if (shareDuration) {
-      lines.push(`${t('workoutHistory.duration')}: ${shareDuration}`);
-    }
-
-    lines.push(`${t('workoutDetail.volume')}: ${totalVolumeDisplay} ${t(weightUnitKey)}`);
-
-    if (!isPreview) {
-      lines.push(`${t('workoutHistory.setsDone')}: ${formatInteger(completedSetsCount)}`);
-    }
-
-    if (exerciseDataList.length > 0) {
-      lines.push(
-        t('workoutDetail.exercisesCount', { count: formatInteger(exerciseDataList.length) })
-      );
-    }
-
-    if (exerciseDataList.length > 0) {
-      lines.push('');
-      exerciseDataList.forEach((exercise) => {
-        lines.push(
-          `${t('workoutHistory.exercise', { number: exercise.exerciseNumber })}: ${exercise.name}`
-        );
-        exercise.sets.forEach((set) => {
-          lines.push(
-            `  ${t('workoutHistory.set', { number: set.setNumber })}: ${formatNumber(set.weight, {
-              maximumFractionDigits: 1,
-            })} ${t(weightUnitKey)} × ${formatInteger(set.reps)}`
-          );
-        });
-        lines.push('');
-      });
-    }
-
-    return lines.join('\n').trimEnd();
-  }, [
-    completedSetsCount,
-    exerciseDataList,
-    formatInteger,
-    formatNumber,
-    isPreview,
-    locale,
-    shareDuration,
-    t,
-    totalVolumeDisplay,
-    weightUnitKey,
-    workoutLog?.completedAt,
-    workoutLog?.startedAt,
-    workoutTemplate?.description,
+  const shareMessageLines: string[] = [
+    isPreview ? t('workoutHistory.previewTitle') : t('workoutHistory.title'),
+    '',
     workoutName,
-  ]);
+  ];
+
+  const previewDescription = isPreview ? workoutTemplate?.description?.trim() : null;
+  if (previewDescription) {
+    shareMessageLines.push(previewDescription);
+    shareMessageLines.push('');
+  }
+
+  if (workoutLog?.startedAt) {
+    const startedAt = new Intl.DateTimeFormat(locale, {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }).format(new Date(workoutLog.startedAt));
+    shareMessageLines.push(`${t('workoutDetail.startTime')}: ${startedAt}`);
+  }
+
+  if (!isPreview && workoutLog?.completedAt) {
+    const completedAt = new Intl.DateTimeFormat(locale, {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+    }).format(new Date(workoutLog.completedAt));
+    shareMessageLines.push(`${t('workoutDetail.endTime')}: ${completedAt}`);
+  }
+
+  if (shareDuration) {
+    shareMessageLines.push(`${t('workoutHistory.duration')}: ${shareDuration}`);
+  }
+
+  shareMessageLines.push(`${t('workoutDetail.volume')}: ${totalVolumeDisplay} ${t(weightUnitKey)}`);
+
+  if (!isPreview) {
+    shareMessageLines.push(`${t('workoutHistory.setsDone')}: ${formatInteger(completedSetsCount)}`);
+  }
+
+  if (exerciseDataList.length > 0) {
+    shareMessageLines.push(
+      t('workoutDetail.exercisesCount', { count: formatInteger(exerciseDataList.length) })
+    );
+  }
+
+  if (exerciseDataList.length > 0) {
+    shareMessageLines.push('');
+    exerciseDataList.forEach((exercise) => {
+      shareMessageLines.push(
+        `${t('workoutHistory.exercise', { number: exercise.exerciseNumber })}: ${exercise.name}`
+      );
+      exercise.sets.forEach((set) => {
+        shareMessageLines.push(
+          `  ${t('workoutHistory.set', { number: set.setNumber })}: ${formatNumber(set.weight, {
+            maximumFractionDigits: 1,
+          })} ${t(weightUnitKey)} × ${formatInteger(set.reps)}`
+        );
+      });
+      shareMessageLines.push('');
+    });
+  }
+
+  const shareMessage = shareMessageLines.join('\n').trimEnd();
 
   const handleShare = useCallback(async () => {
     if (isSharing) {

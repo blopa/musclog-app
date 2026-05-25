@@ -282,13 +282,19 @@ export function AISettingsModal({
     if (!visible || Platform.OS !== 'ios') {
       return;
     }
-    void reloadOnDeviceAiState();
+    const reload = () => {
+      void reloadOnDeviceAiState();
+    };
+    reload();
   }, [visible, reloadOnDeviceAiState]);
 
   // Flush pending settings changes when modal closes
   useEffect(() => {
     if (!visible) {
-      flushAllPendingChanges();
+      const flush = () => {
+        flushAllPendingChanges();
+      };
+      flush();
     }
   }, [visible, flushAllPendingChanges]);
 
@@ -324,11 +330,14 @@ export function AISettingsModal({
 
   // Sync local state when props change (e.g., when modal opens with saved values)
   useEffect(() => {
-    setLocalGeminiApiKey(googleGeminiApiKey);
-    setLocalOpenAiApiKey(openAiApiKey);
-    setLocalStateLlmApiKey(localLlmApiKey);
-    setLocalStateLlmModel(localLlmModel);
-    setLocalStateLlmBaseUrl(localLlmBaseUrl);
+    const sync = () => {
+      setLocalGeminiApiKey(googleGeminiApiKey);
+      setLocalOpenAiApiKey(openAiApiKey);
+      setLocalStateLlmApiKey(localLlmApiKey);
+      setLocalStateLlmModel(localLlmModel);
+      setLocalStateLlmBaseUrl(localLlmBaseUrl);
+    };
+    sync();
   }, [googleGeminiApiKey, openAiApiKey, localLlmApiKey, localLlmModel, localLlmBaseUrl]);
 
   const geminiToggleItems = [

@@ -60,26 +60,29 @@ export function useActiveWorkout(workoutLogId?: string) {
 
   // Resolve active workout when no workoutLogId provided
   useEffect(() => {
-    if (workoutLogId) {
-      setResolvedLogId(workoutLogId);
-      setNoActiveError(null);
-      return;
-    }
+    const doResolve = () => {
+      if (workoutLogId) {
+        setResolvedLogId(workoutLogId);
+        setNoActiveError(null);
+        return;
+      }
 
-    setNoActiveError(null);
-    WorkoutService.getActiveWorkout()
-      .then((active) => {
-        setResolvedLogId(active?.id ?? null);
-        if (!active) {
-          setNoActiveError('No active workout found');
-        }
-      })
-      .catch((err) => {
-        console.error('Error getting active workout:', err);
-        handleError(err, 'useActiveWorkout.getActiveWorkout');
-        setResolvedLogId(null);
-        setNoActiveError(err instanceof Error ? err.message : 'Failed to get active workout');
-      });
+      setNoActiveError(null);
+      WorkoutService.getActiveWorkout()
+        .then((active) => {
+          setResolvedLogId(active?.id ?? null);
+          if (!active) {
+            setNoActiveError('No active workout found');
+          }
+        })
+        .catch((err) => {
+          console.error('Error getting active workout:', err);
+          handleError(err, 'useActiveWorkout.getActiveWorkout');
+          setResolvedLogId(null);
+          setNoActiveError(err instanceof Error ? err.message : 'Failed to get active workout');
+        });
+    };
+    doResolve();
   }, [workoutLogId]);
 
   const isLoading =

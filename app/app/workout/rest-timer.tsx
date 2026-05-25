@@ -98,7 +98,7 @@ export default function RestTimerScreen() {
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);
   const [isWorkoutOverviewModalVisible, setIsWorkoutOverviewModalVisible] = useState(false);
-  const rotationAnim = useRef(new Animated.Value(0)).current;
+  const [rotationAnim] = useState(() => new Animated.Value(0));
   const countdownIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   // Wall-clock timestamp (ms) when the rest period should end.
   // Stored in a ref so interval callbacks always read the latest value without re-creating the interval.
@@ -125,6 +125,42 @@ export default function RestTimerScreen() {
   };
 
   const error = getRestTimerError();
+
+  // Navigate after rest: skip exercise-transition when next set is in same superset group
+  const navigateToNextScreen = useCallback(async () => {
+    await clearRestTimerEndAt();
+
+    if (!workoutLogId) {
+      router.back();
+      return;
+    }
+
+    if (!nextSet) {
+      router.replace(`/app/workout/workout-session?workoutLogId=${workoutLogId}`);
+      return;
+    }
+
+    const sameSupersetGroup =
+      completedSet &&
+      nextSet.set.groupId &&
+      completedSet.set.groupId &&
+      nextSet.set.groupId === completedSet.set.groupId;
+
+    const differentExercise = completedSet && nextSet.exercise.id !== completedSet.exercise.id;
+
+    // Only show exercise-transition when switching to a different exercise that is NOT in the same superset
+    if (differentExercise && !sameSupersetGroup) {
+      router.replace(
+        `/app/workout/exercise-transition?workoutLogId=${workoutLogId}&completedExerciseId=${completedSet.exercise.id}&nextExerciseId=${nextSet.exercise.id}`
+      );
+
+      return;
+    }
+
+    router.replace(
+      `/app/workout/workout-session?workoutLogId=${workoutLogId}&exerciseId=${nextSet.exercise.id}`
+    );
+  }, [completedSet, nextSet, router, workoutLogId]);
 
   // Resolve rest timer from AsyncStorage (resumed session) or calculate fresh from the completed set.
   // Uses wall-clock end timestamp so the countdown is immune to app backgrounding.
@@ -186,42 +222,6 @@ export default function RestTimerScreen() {
       NotificationService.cancelRestTimerNotification();
     };
   }, [isLoading, completedSet, initialRestTime]);
-
-  // Navigate after rest: skip exercise-transition when next set is in same superset group
-  const navigateToNextScreen = useCallback(async () => {
-    await clearRestTimerEndAt();
-
-    if (!workoutLogId) {
-      router.back();
-      return;
-    }
-
-    if (!nextSet) {
-      router.replace(`/app/workout/workout-session?workoutLogId=${workoutLogId}`);
-      return;
-    }
-
-    const sameSupersetGroup =
-      completedSet &&
-      nextSet.set.groupId &&
-      completedSet.set.groupId &&
-      nextSet.set.groupId === completedSet.set.groupId;
-
-    const differentExercise = completedSet && nextSet.exercise.id !== completedSet.exercise.id;
-
-    // Only show exercise-transition when switching to a different exercise that is NOT in the same superset
-    if (differentExercise && !sameSupersetGroup) {
-      router.replace(
-        `/app/workout/exercise-transition?workoutLogId=${workoutLogId}&completedExerciseId=${completedSet.exercise.id}&nextExerciseId=${nextSet.exercise.id}`
-      );
-
-      return;
-    }
-
-    router.replace(
-      `/app/workout/workout-session?workoutLogId=${workoutLogId}&exerciseId=${nextSet.exercise.id}`
-    );
-  }, [completedSet, nextSet, router, workoutLogId]);
 
   // Wall-clock countdown: recalculates remaining time from endAtRef on every tick.
   // Survives app backgrounding because it uses Date.now() instead of state decrement.

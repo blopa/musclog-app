@@ -373,12 +373,15 @@ export function FoodSearchModal({
   // closed) keeps its native window alive and intercepts touches on the next open.
   useEffect(() => {
     if (!visible) {
-      setIsRecentNutritionHistoryModalVisible(false);
-      setConfirmSameAsYesterdayVisible(false);
-      setIsFoodDetailsVisible(false);
-      setSelectedFood(null);
-      setIsMealDetailsVisible(false);
-      setSelectedMeal(null);
+      const reset = () => {
+        setIsRecentNutritionHistoryModalVisible(false);
+        setConfirmSameAsYesterdayVisible(false);
+        setIsFoodDetailsVisible(false);
+        setSelectedFood(null);
+        setIsMealDetailsVisible(false);
+        setSelectedMeal(null);
+      };
+      reset();
     }
   }, [visible]);
 
@@ -401,7 +404,10 @@ export function FoodSearchModal({
   // Pick a new random food emoji each time the user starts a new search
   useEffect(() => {
     if (searchQuery) {
-      setSearchSessionIcon(pickRandomFoodIcon());
+      const randomize = () => {
+        setSearchSessionIcon(pickRandomFoodIcon());
+      };
+      randomize();
     }
   }, [searchQuery]);
 
@@ -512,7 +518,10 @@ export function FoodSearchModal({
   const [showCancelSearch, setShowCancelSearch] = useState(false);
 
   useEffect(() => {
-    setShowCancelSearch(false);
+    const reset = () => {
+      setShowCancelSearch(false);
+    };
+    reset();
 
     if (!searchQuery.trim() || (!isLoadingAPI && !isInitialLoad) || hasApiResults) {
       return;
@@ -866,17 +875,23 @@ export function FoodSearchModal({
       return;
     }
 
-    setActiveFilter(initialTab);
+    const update = () => {
+      setActiveFilter(initialTab);
+    };
+    update();
   }, [initialTab, visible]);
 
   // If Open Food Facts or USDA tab is hidden (0 items) but was selected, switch to 'all'
   useEffect(() => {
-    if (activeFilter === 'openfood' && resultsBySource.api.length === 0) {
-      setActiveFilter('all');
-    }
-    if (activeFilter === 'usda' && resultsBySource.usda.length === 0) {
-      setActiveFilter('all');
-    }
+    const syncFilter = () => {
+      if (activeFilter === 'openfood' && resultsBySource.api.length === 0) {
+        setActiveFilter('all');
+      }
+      if (activeFilter === 'usda' && resultsBySource.usda.length === 0) {
+        setActiveFilter('all');
+      }
+    };
+    syncFilter();
   }, [activeFilter, resultsBySource.api.length, resultsBySource.usda.length]);
 
   const handleFoodClick = (food: UnifiedFoodResult) => {

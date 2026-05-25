@@ -192,7 +192,10 @@ export function useCurrentNutritionGoal({
         });
     };
 
-    setIsLoadingCurrent(true);
+    const startLoading = () => {
+      setIsLoadingCurrent(true);
+    };
+    startLoading();
     fetchGoalForDate();
 
     if (!enableReactivity) {
@@ -303,7 +306,10 @@ export function useCurrentNutritionGoal({
     }
 
     if (!goal?.isDynamic) {
-      setResolvedMacros(null);
+      const clearMacros = () => {
+        setResolvedMacros(null);
+      };
+      clearMacros();
       return;
     }
 
@@ -334,7 +340,10 @@ export function useCurrentNutritionGoal({
     if (!enableReactivity || !visible) {
       // Still load initial data even if reactivity is disabled
       if (visible) {
-        loadInitialGoals();
+        const run = () => {
+          void loadInitialGoals();
+        };
+        run();
       }
       return;
     }
@@ -357,7 +366,10 @@ export function useCurrentNutritionGoal({
     });
 
     // Load initial data
-    loadInitialGoals();
+    const runInit = () => {
+      void loadInitialGoals();
+    };
+    runInit();
 
     return () => subscription.unsubscribe();
   }, [mode, enableReactivity, visible, loadInitialGoals]);
@@ -446,7 +458,10 @@ export function useCurrentNutritionGoal({
     }
 
     if (!currentGoal?.isDynamic) {
-      setCurrentGoalResolvedMacros(null);
+      const clearMacros = () => {
+        setCurrentGoalResolvedMacros(null);
+      };
+      clearMacros();
       return;
     }
 

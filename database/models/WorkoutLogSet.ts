@@ -1,7 +1,19 @@
 import { Model } from '@nozbe/watermelondb';
-import { field, relation, writer } from '@nozbe/watermelondb/decorators';
+import { field, json, relation, writer } from '@nozbe/watermelondb/decorators';
 
 import WorkoutLogExercise from './WorkoutLogExercise';
+
+export type RepPhaseData = {
+  index: number;
+  start_ms: number;
+  end_ms: number;
+  duration_ms: number;
+  phase_a_duration_ms: number;
+  phase_b_duration_ms: number;
+  phase_a_speed_dps: number;
+  phase_b_speed_dps: number;
+  classifier_confidence: number;
+};
 
 export default class WorkoutLogSet extends Model {
   static table = 'workout_log_sets';
@@ -20,6 +32,7 @@ export default class WorkoutLogSet extends Model {
   @field('difficulty_level') declare difficultyLevel: number;
   @field('set_type') declare setType: string;
   @field('set_order') declare setOrder: number;
+  @json('rep_data_json', (val) => val ?? null) declare repDataJson: RepPhaseData[] | null;
   @field('created_at') declare createdAt: number;
   @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;

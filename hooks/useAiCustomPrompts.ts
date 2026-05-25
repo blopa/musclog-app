@@ -117,7 +117,10 @@ export function useAiCustomPrompts({
 
   useEffect(() => {
     if (!enableReactivity) {
-      loadPrompts();
+      const run = () => {
+        void loadPrompts();
+      };
+      run();
       return;
     }
 

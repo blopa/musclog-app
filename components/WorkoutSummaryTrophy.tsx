@@ -1,16 +1,16 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { Star, Trophy } from 'lucide-react-native';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Animated, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 
 export function WorkoutSummaryTrophy() {
   const theme = useTheme();
-  const floatAnim = useRef(new Animated.Value(0)).current;
-  const star1Anim = useRef(new Animated.Value(1)).current;
-  const star2Anim = useRef(new Animated.Value(1)).current;
-  const star3Anim = useRef(new Animated.Value(1)).current;
+  const [floatAnim] = useState(() => new Animated.Value(0));
+  const [star1Anim] = useState(() => new Animated.Value(1));
+  const [star2Anim] = useState(() => new Animated.Value(1));
+  const [star3Anim] = useState(() => new Animated.Value(1));
 
   useEffect(() => {
     // Floating animation for trophy

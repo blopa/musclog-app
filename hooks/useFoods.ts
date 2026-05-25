@@ -167,7 +167,10 @@ export function useFoods({
     if (!enableReactivity || !visible) {
       // Still load initial data even if reactivity is disabled
       if (visible) {
-        loadInitialFoods();
+        const run = () => {
+          void loadInitialFoods();
+        };
+        run();
       }
       return;
     }
@@ -203,7 +206,10 @@ export function useFoods({
     });
 
     // Load initial data
-    loadInitialFoods();
+    const runInit = () => {
+      void loadInitialFoods();
+    };
+    runInit();
 
     return () => subscription.unsubscribe();
   }, [enableReactivity, visible, mode, brand, source, sortBy, sortOrder, loadInitialFoods]);

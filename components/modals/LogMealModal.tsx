@@ -82,20 +82,29 @@ export function LogMealModal({
 
   useEffect(() => {
     if (visible) {
-      setPortionGrams(referenceGrams);
+      const syncGrams = () => {
+        setPortionGrams(referenceGrams);
+      };
+      syncGrams();
     }
   }, [visible, referenceGrams]);
 
   useEffect(() => {
     if (visible) {
-      setSelectedDate(localCalendarDayDate(initialDate ?? new Date()));
-      setSelectedMealType(initialMealType ?? 'lunch');
+      const syncDateTime = () => {
+        setSelectedDate(localCalendarDayDate(initialDate ?? new Date()));
+        setSelectedMealType(initialMealType ?? 'lunch');
+      };
+      syncDateTime();
     }
   }, [visible, initialDate, initialMealType]);
 
   useEffect(() => {
     if (!visible) {
-      setShowDatePicker(false);
+      const reset = () => {
+        setShowDatePicker(false);
+      };
+      reset();
     }
   }, [visible]);
 

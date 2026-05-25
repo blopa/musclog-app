@@ -32,9 +32,12 @@ export function AiCustomPromptsModal({ visible, onClose }: AiCustomPromptsModalP
 
   useEffect(() => {
     if (!visible) {
-      setEditingPrompt(null);
-      setIsAddModalVisible(false);
-      setPromptToDelete(null);
+      const reset = () => {
+        setEditingPrompt(null);
+        setIsAddModalVisible(false);
+        setPromptToDelete(null);
+      };
+      reset();
     }
   }, [visible]);
 

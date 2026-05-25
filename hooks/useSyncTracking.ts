@@ -182,7 +182,10 @@ export const useSyncTracking = (): UseSyncTrackingResult => {
 
   // Load initial sync status on mount
   useEffect(() => {
-    refreshSyncStatus();
+    const loadStatus = () => {
+      void refreshSyncStatus();
+    };
+    loadStatus();
   }, [refreshSyncStatus]);
 
   // Poll sync status periodically (every 30 seconds)

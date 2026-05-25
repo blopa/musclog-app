@@ -92,8 +92,11 @@ export default function BodyMetricsHistoryModal({
 
   useEffect(() => {
     if (!visible) {
-      setIsAddMetricVisible(false);
-      setIsFilterMenuVisible(false);
+      const reset = () => {
+        setIsAddMetricVisible(false);
+        setIsFilterMenuVisible(false);
+      };
+      reset();
     }
   }, [visible]);
 
@@ -156,8 +159,8 @@ export default function BodyMetricsHistoryModal({
 
   // Calculate date range based on selected period
   const dateRange = useMemo(() => {
-    const endDate = Date.now();
     const today = new Date();
+    const endDate = today.getTime();
     let startDate = endDate;
     if (selectedPeriod === '30D') {
       startDate = localDayKeyPlusCalendarDaysFromNow(-30);

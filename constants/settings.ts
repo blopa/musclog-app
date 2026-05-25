@@ -202,6 +202,12 @@ export const MAX_AI_MEMORIES_SETTING_TYPE = 'max_ai_memories';
 export const USE_THINKING_MODE_SETTING_TYPE = 'use_thinking_mode';
 
 /**
+ * Setting type for generating WitMotion chart payloads.
+ * value: 'true' | 'false'.
+ */
+export const BLE_GENERATE_CHART_PAYLOAD_SETTING_TYPE = 'ble_generate_chart_payload';
+
+/**
  * Setting type for showing the daily mood prompt on the home screen.
  * value: 'true' | 'false'.
  */

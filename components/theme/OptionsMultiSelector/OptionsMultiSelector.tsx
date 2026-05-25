@@ -50,7 +50,10 @@ export function OptionsMultiSelector<T extends string | number>({
 
   // Update orderedOptions when options prop changes, ensuring groups are contiguous
   useEffect(() => {
-    setOrderedOptions(normalizeGroups(options));
+    const sync = () => {
+      setOrderedOptions(normalizeGroups(options));
+    };
+    sync();
   }, [options]);
 
   const isSelected = (id: T) => selectedIds.includes(id);

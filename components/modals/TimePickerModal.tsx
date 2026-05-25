@@ -157,10 +157,13 @@ export function TimePickerModal({
 
   useEffect(() => {
     if (visible) {
-      setHourIndex(toHour12(selectedTime) - 1);
-      setMinuteIndex(selectedTime.getMinutes());
-      setAmPm(toPeriod(selectedTime));
-      setPickerKey((k) => k + 1);
+      const syncTime = () => {
+        setHourIndex(toHour12(selectedTime) - 1);
+        setMinuteIndex(selectedTime.getMinutes());
+        setAmPm(toPeriod(selectedTime));
+        setPickerKey((k) => k + 1);
+      };
+      syncTime();
     }
   }, [visible, selectedTime]);
 

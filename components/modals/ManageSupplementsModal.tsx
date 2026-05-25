@@ -52,26 +52,35 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
 
   useEffect(() => {
     if (visible) {
-      void loadSupplements();
+      const run = () => {
+        void loadSupplements();
+      };
+      run();
     }
   }, [visible, loadSupplements]);
 
   useEffect(() => {
     if (!isEditorVisible) {
-      setName('');
-      setHasReminder(true);
-      setEditingSupplement(null);
-      setIsSaving(false);
+      const reset = () => {
+        setName('');
+        setHasReminder(true);
+        setEditingSupplement(null);
+        setIsSaving(false);
+      };
+      reset();
       return;
     }
 
-    if (editingSupplement) {
-      setName(editingSupplement.name);
-      setHasReminder(editingSupplement.hasReminder);
-    } else {
-      setName('');
-      setHasReminder(true);
-    }
+    const syncEditor = () => {
+      if (editingSupplement) {
+        setName(editingSupplement.name);
+        setHasReminder(editingSupplement.hasReminder);
+      } else {
+        setName('');
+        setHasReminder(true);
+      }
+    };
+    syncEditor();
   }, [editingSupplement, isEditorVisible]);
 
   const openCreateModal = () => {

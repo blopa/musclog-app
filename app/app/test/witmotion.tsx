@@ -10,16 +10,19 @@ import {
 import * as Sharing from 'expo-sharing';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import Svg, { Line as SvgLine, Polyline, Text as SvgText } from 'react-native-svg';
+import Svg, { Line as SvgLine, Polyline, Rect as SvgRect, Text as SvgText } from 'react-native-svg';
 
 import { MasterLayout } from '@/components/MasterLayout';
 import { Button } from '@/components/theme/Button';
+import { SettingsService } from '@/database/services';
 import type { WitMotionVector3 } from '@/modules/witmotion-ble';
 import { useWitMotion, witMotionClient } from '@/modules/witmotion-ble';
-import type { ReconciledRepResult, RepAnalysisSummary } from '@/utils/repAnalysis';
-import { analyzeRecordedReps, reconcileRepCounts } from '@/utils/repAnalysis';
-import { extractRepCountingFeatures } from '@/utils/repCountingFeatures';
-import { predictRepCount } from '@/utils/repCountingModel';
+import type {
+  BleSetChartPayload,
+  PerRepResult,
+  SegmentAndScoreResult,
+} from '@/utils/segmentAndScorePipeline';
+import { segmentAndScore } from '@/utils/segmentAndScorePipeline';
 
 function valueOrDash(value: number | null | undefined, digits = 2) {
   if (value === null || value === undefined) {
@@ -60,7 +63,7 @@ interface DebugMotionFile {
   startedAt: string;
   stoppedAt?: string;
   sampleCount: number;
-  analysis?: RepAnalysisSummary;
+  analysis?: SegmentAndScoreResult;
   samples: RecordedMotionSample[];
 }
 
@@ -253,7 +256,7 @@ function buildDebugMotionFile(
   samples: RecordedMotionSample[],
   startedAtMs: number,
   stoppedAtMs: number | null,
-  analysis?: RepAnalysisSummary
+  analysis?: SegmentAndScoreResult
 ): DebugMotionFile {
   return {
     version: 1,
@@ -436,6 +439,101 @@ function RangeChart({ series, minY, maxY }: RangeChartProps) {
   );
 }
 
+function CompressedSignalChart({ payload }: { payload: BleSetChartPayload }) {
+  const WIDTH = 320;
+  const HEIGHT = 160;
+  const PAD_LEFT = 36;
+  const PAD_RIGHT = 8;
+  const PAD_TOP = 8;
+  const PAD_BOTTOM = 20;
+  const innerW = WIDTH - PAD_LEFT - PAD_RIGHT;
+  const innerH = HEIGHT - PAD_TOP - PAD_BOTTOM;
+
+  const { signal, reps, yMin, yMax, durationS, sizeBytes } = payload;
+  const span = Math.max(yMax - yMin, 1e-6);
+
+  const toX = (s: number) => PAD_LEFT + (s / Math.max(durationS, 1e-6)) * innerW;
+  const toY = (v: number) =>
+    Math.max(PAD_TOP, Math.min(PAD_TOP + innerH, PAD_TOP + ((yMax - v) / span) * innerH));
+
+  const points = signal.map(({ x, y }) => `${toX(x).toFixed(1)},${toY(y).toFixed(1)}`).join(' ');
+
+  const zeroY = yMin < 0 && yMax > 0 ? toY(0) : null;
+  const kbLabel = (sizeBytes / 1024).toFixed(1);
+
+  return (
+    <View>
+      <View className="overflow-hidden rounded-lg border border-border-light bg-bg-primary">
+        <Svg width={WIDTH} height={HEIGHT}>
+          {reps.map((rep, i) => {
+            const x1 = toX(rep.startS);
+            const x2 = toX(rep.turningS);
+            const x3 = toX(rep.endS);
+            return (
+              <>
+                <SvgRect
+                  key={`a${i}`}
+                  x={x1}
+                  y={PAD_TOP}
+                  width={Math.max(0, x2 - x1)}
+                  height={innerH}
+                  fill="rgba(56,189,248,0.18)"
+                />
+                <SvgRect
+                  key={`b${i}`}
+                  x={x2}
+                  y={PAD_TOP}
+                  width={Math.max(0, x3 - x2)}
+                  height={innerH}
+                  fill="rgba(167,139,250,0.18)"
+                />
+              </>
+            );
+          })}
+          {zeroY !== null ? (
+            <SvgLine
+              x1={PAD_LEFT}
+              y1={zeroY}
+              x2={WIDTH - PAD_RIGHT}
+              y2={zeroY}
+              stroke="#444"
+              strokeWidth={1}
+              strokeDasharray="4,4"
+            />
+          ) : null}
+          {points ? (
+            <Polyline points={points} fill="none" stroke="#38bdf8" strokeWidth={1.5} />
+          ) : null}
+          <SvgText x={PAD_LEFT - 4} y={PAD_TOP + 8} fontSize={9} fill="#888" textAnchor="end">
+            {yMax.toFixed(1)}
+          </SvgText>
+          <SvgText x={PAD_LEFT - 4} y={PAD_TOP + innerH} fontSize={9} fill="#888" textAnchor="end">
+            {yMin.toFixed(1)}
+          </SvgText>
+          <SvgText x={WIDTH - PAD_RIGHT} y={HEIGHT - 4} fontSize={9} fill="#888" textAnchor="end">
+            {durationS.toFixed(1)}s
+          </SvgText>
+        </Svg>
+      </View>
+      <View className="mt-2 flex-row flex-wrap gap-3">
+        <Text className="text-xs" style={{ color: '#34d399' }}>
+          {kbLabel} KB compressed
+        </Text>
+        <Text className="text-xs text-text-tertiary">{signal.length} pts</Text>
+        <Text className="text-xs text-text-tertiary">{reps.length} reps</Text>
+        <View className="flex-row items-center gap-1">
+          <View style={{ width: 8, height: 8, backgroundColor: 'rgba(56,189,248,0.7)' }} />
+          <Text className="text-xs text-text-tertiary">Phase A</Text>
+        </View>
+        <View className="flex-row items-center gap-1">
+          <View style={{ width: 8, height: 8, backgroundColor: 'rgba(167,139,250,0.7)' }} />
+          <Text className="text-xs text-text-tertiary">Phase B</Text>
+        </View>
+      </View>
+    </View>
+  );
+}
+
 export default function WitMotionTestScreen() {
   const wit = useWitMotion();
   const requestPermissions = wit.requestPermissions;
@@ -460,9 +558,7 @@ export default function WitMotionTestScreen() {
   const recordingActiveRef = useRef(false);
   const recordingStartedAtRef = useRef<number | null>(null);
   const [recordingStatus, setRecordingStatus] = useState<'idle' | 'recording' | 'analyzed'>('idle');
-  const [analysisSummary, setAnalysisSummary] = useState<RepAnalysisSummary | null>(null);
-  const [mlRepCount, setMlRepCount] = useState<number | null>(null);
-  const [reconciledResult, setReconciledResult] = useState<ReconciledRepResult | null>(null);
+  const [pipelineResult, setPipelineResult] = useState<SegmentAndScoreResult | null>(null);
   const [recordedSampleCount, setRecordedSampleCount] = useState(0);
   const [debugDataStatus, setDebugDataStatus] = useState('No saved debug files yet');
   const [isSavingDebugData, setIsSavingDebugData] = useState(false);
@@ -472,6 +568,7 @@ export default function WitMotionTestScreen() {
   const [isLoadingStoredDebugFiles, setIsLoadingStoredDebugFiles] = useState(false);
 
   const anchorAngleRef = useRef<{ x: number; y: number; z: number } | null>(null);
+  const [anchorAngle, setAnchorAngle] = useState<{ x: number; y: number; z: number } | null>(null);
   const currentAngleRef = useRef<{ x: number; y: number; z: number } | null>(null);
   const liveFeatureRef = useRef({
     smoothMag: 0,
@@ -633,7 +730,10 @@ export default function WitMotionTestScreen() {
   }, []);
 
   useEffect(() => {
-    void refreshStoredDebugFiles();
+    const run = () => {
+      void refreshStoredDebugFiles();
+    };
+    run();
   }, [refreshStoredDebugFiles]);
 
   // Throttle React state updates to 20 fps
@@ -660,7 +760,7 @@ export default function WitMotionTestScreen() {
     recordingActiveRef.current = true;
     recordedMotionRef.current = [];
     recordingStartedAtRef.current = Date.now();
-    setAnalysisSummary(null);
+    setPipelineResult(null);
     setRecordedSampleCount(0);
     setRecordingStatus('recording');
     setDebugDataStatus('Recording... a new JSON file will be saved when you stop');
@@ -684,25 +784,26 @@ export default function WitMotionTestScreen() {
       angleBufRef,
       rawAccelBufRef
     );
+    setAnchorAngle(anchorAngleRef.current);
   }, []);
 
   const handleStopRecording = useCallback(async () => {
     recordingActiveRef.current = false;
     const samples = [...recordedMotionRef.current];
     recordedMotionRef.current = [];
-    const summary = analyzeRecordedReps(samples);
-    setAnalysisSummary(summary);
 
+    let generatePayload = false;
     try {
-      const features = extractRepCountingFeatures(samples);
-      const raw = predictRepCount(features) as number;
-      const rounded = Math.round(raw);
-      setMlRepCount(rounded);
-      setReconciledResult(reconcileRepCounts(samples, rounded));
-    } catch {
-      setMlRepCount(null);
-      setReconciledResult(null);
+      generatePayload = await SettingsService.getBleGenerateChartPayload();
+    } catch (error) {
+      console.warn(
+        '[witmotion] Failed to read payload generation setting, defaulting to false:',
+        error
+      );
     }
+
+    const result = segmentAndScore(samples, {}, generatePayload);
+    setPipelineResult(result);
 
     setRecordingStatus('analyzed');
 
@@ -716,7 +817,7 @@ export default function WitMotionTestScreen() {
     try {
       const startedAtMs = recordingStartedAtRef.current ?? samples[0]?.timestamp ?? Date.now();
       const stoppedAtMs = samples[samples.length - 1]?.timestamp ?? Date.now();
-      const payload = buildDebugMotionFile(samples, startedAtMs, stoppedAtMs, summary);
+      const payload = buildDebugMotionFile(samples, startedAtMs, stoppedAtMs, result);
       const fileName = buildDebugMotionFileName(startedAtMs, stoppedAtMs, samples.length);
       const fileUri = joinUri(directoryUri, fileName);
       await writeAsStringAsync(fileUri, JSON.stringify(payload, null, 2));
@@ -782,6 +883,7 @@ export default function WitMotionTestScreen() {
       angleBufRef,
       rawAccelBufRef
     );
+    setAnchorAngle(anchorAngleRef.current);
   }, []);
 
   const handleResetReps = useCallback(() => {
@@ -789,9 +891,7 @@ export default function WitMotionTestScreen() {
     recordedMotionRef.current = [];
     recordingStartedAtRef.current = null;
     setRecordingStatus('idle');
-    setAnalysisSummary(null);
-    setMlRepCount(null);
-    setReconciledResult(null);
+    setPipelineResult(null);
     setRecordedSampleCount(0);
     setDebugDataStatus('Recording cleared');
     setLiveFeature(0);
@@ -820,11 +920,11 @@ export default function WitMotionTestScreen() {
   } else if (recordingStatus === 'analyzed') {
     recordingColor = '#60a5fa';
     recordingLabel = '● DONE';
-    recordingFooterText = analysisSummary
-      ? `Analysis used ${analysisSummary.sampleCount} samples over ${(analysisSummary.durationMs / 1000).toFixed(1)} s`
+    recordingFooterText = pipelineResult
+      ? `${pipelineResult.predictedReps} reps · ${pipelineResult.candidateSegments} candidates · ${recordedSampleCount} samples`
       : 'Recording finished';
   }
-  const repCount = analysisSummary?.repCount ?? 0;
+  const repCount = pipelineResult?.predictedReps ?? 0;
 
   return (
     <MasterLayout>
@@ -890,53 +990,134 @@ export default function WitMotionTestScreen() {
               <Text className="font-bold text-text-primary">{storedDebugFiles.length}</Text>
             </Text>
 
-            {/* Rep counts — algorithmic + ML side by side */}
-            <View className="flex-row items-end justify-around">
-              <View className="flex-1 items-center">
-                <Text
-                  className="font-bold text-text-primary"
-                  style={{ fontSize: 80, lineHeight: 84 }}
-                >
-                  {repCount}
+            {/* Rep count */}
+            <View className="items-center">
+              <Text
+                className="font-bold text-text-primary"
+                style={{ fontSize: 80, lineHeight: 84 }}
+              >
+                {repCount}
+              </Text>
+              <Text className="text-xs uppercase tracking-widest text-text-tertiary">reps</Text>
+              {pipelineResult ? (
+                <Text className="mt-1 text-xs text-text-tertiary">
+                  {pipelineResult.candidateSegments} candidates · {pipelineResult.classifiedAsRep}{' '}
+                  classified
+                  {pipelineResult.error ? `  ⚠ ${pipelineResult.error}` : ''}
                 </Text>
-                <Text className="text-xs uppercase tracking-widest text-text-tertiary">
-                  algorithm
-                </Text>
-              </View>
-              <View className="flex-1 items-center">
-                <Text
-                  className="font-bold text-text-secondary"
-                  style={{ fontSize: 80, lineHeight: 84 }}
-                >
-                  {mlRepCount ?? '—'}
-                </Text>
-                <Text className="text-xs uppercase tracking-widest text-text-tertiary">
-                  ml model
-                </Text>
-              </View>
+              ) : null}
             </View>
             <Text className="mt-2 text-center text-xs text-text-tertiary">
               {recordingFooterText}
             </Text>
 
-            {reconciledResult && reconciledResult.repDurationsMs.length > 0 ? (
+            {/* Per-rep breakdown table */}
+            {pipelineResult && pipelineResult.reps.length > 0 ? (
               <View className="mt-4">
                 <Text className="mb-2 text-xs font-bold uppercase tracking-wider text-text-tertiary">
-                  Rep durations (ML-reconciled)
+                  Per-rep breakdown
                 </Text>
-                <View className="flex-row flex-wrap gap-2">
-                  {reconciledResult.repDurationsMs.map((dur, i) => (
-                    <View key={i} className="rounded-lg bg-bg-primary px-3 py-2">
-                      <Text className="text-center text-xs text-text-tertiary">#{i + 1}</Text>
-                      <Text className="text-center font-bold text-text-primary">
-                        {(dur / 1000).toFixed(2)}s
-                      </Text>
-                    </View>
+
+                {/* Header row */}
+                <View className="mb-1 flex-row gap-1">
+                  {['#', 'Total', 'Ph A', 'Ph B', 'Spd A', 'Spd B', 'Conf'].map((h) => (
+                    <Text
+                      key={h}
+                      className="text-center text-xs font-bold text-text-tertiary"
+                      style={{ flex: h === '#' ? 0.5 : 1 }}
+                    >
+                      {h}
+                    </Text>
                   ))}
                 </View>
+
+                {pipelineResult.reps.map((rep: PerRepResult) => (
+                  <View
+                    key={rep.index}
+                    className="mb-1 flex-row gap-1 rounded-md bg-bg-primary px-2 py-2"
+                  >
+                    <Text
+                      className="text-center text-xs font-bold text-text-primary"
+                      style={{ flex: 0.5 }}
+                    >
+                      {rep.index}
+                    </Text>
+                    <Text className="text-center text-xs text-text-primary" style={{ flex: 1 }}>
+                      {(rep.durationMs / 1000).toFixed(2)}s
+                    </Text>
+                    <Text className="text-center text-xs text-text-secondary" style={{ flex: 1 }}>
+                      {(rep.phaseADurationMs / 1000).toFixed(2)}s
+                    </Text>
+                    <Text className="text-center text-xs text-text-secondary" style={{ flex: 1 }}>
+                      {(rep.phaseBDurationMs / 1000).toFixed(2)}s
+                    </Text>
+                    <Text className="text-center text-xs text-text-tertiary" style={{ flex: 1 }}>
+                      {rep.phaseASpeedDps.toFixed(1)}
+                    </Text>
+                    <Text className="text-center text-xs text-text-tertiary" style={{ flex: 1 }}>
+                      {rep.phaseBSpeedDps.toFixed(1)}
+                    </Text>
+                    <Text className="text-center text-xs text-text-tertiary" style={{ flex: 1 }}>
+                      {rep.classifierConfidence.toFixed(2)}
+                    </Text>
+                  </View>
+                ))}
+
+                {/* Averages row */}
+                {(() => {
+                  const reps = pipelineResult.reps;
+                  const avg = (fn: (r: PerRepResult) => number) =>
+                    reps.reduce((s, r) => s + fn(r), 0) / reps.length;
+                  return (
+                    <View className="mt-1 flex-row gap-1 rounded-md bg-bg-overlay px-2 py-2">
+                      <Text
+                        className="text-center text-xs font-bold text-text-tertiary"
+                        style={{ flex: 0.5 }}
+                      >
+                        avg
+                      </Text>
+                      <Text className="text-center text-xs text-text-tertiary" style={{ flex: 1 }}>
+                        {(avg((r) => r.durationMs) / 1000).toFixed(2)}s
+                      </Text>
+                      <Text className="text-center text-xs text-text-tertiary" style={{ flex: 1 }}>
+                        {(avg((r) => r.phaseADurationMs) / 1000).toFixed(2)}s
+                      </Text>
+                      <Text className="text-center text-xs text-text-tertiary" style={{ flex: 1 }}>
+                        {(avg((r) => r.phaseBDurationMs) / 1000).toFixed(2)}s
+                      </Text>
+                      <Text className="text-center text-xs text-text-tertiary" style={{ flex: 1 }}>
+                        {avg((r) => r.phaseASpeedDps).toFixed(1)}
+                      </Text>
+                      <Text className="text-center text-xs text-text-tertiary" style={{ flex: 1 }}>
+                        {avg((r) => r.phaseBSpeedDps).toFixed(1)}
+                      </Text>
+                      <Text className="text-center text-xs text-text-tertiary" style={{ flex: 1 }}>
+                        {avg((r) => r.classifierConfidence).toFixed(2)}
+                      </Text>
+                    </View>
+                  );
+                })()}
+
+                <Text className="mt-2 text-xs text-text-tertiary">
+                  TUT:{' '}
+                  {(pipelineResult.reps.reduce((s, r) => s + r.durationMs, 0) / 1000).toFixed(1)}s
+                  total · Speed in °/s · Ph A/B split at turning point (concentric/eccentric
+                  unlabeled)
+                </Text>
               </View>
             ) : null}
           </View>
+
+          {pipelineResult?.chartPayload ? (
+            <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
+              <Text className="mb-1 font-bold text-text-primary">Compressed signal</Text>
+              <Text className="mb-3 text-xs text-text-tertiary">
+                Preprocessed 1D signal · {pipelineResult.chartPayload.signal.length} pts stored
+                instead of {recordedSampleCount} raw samples
+              </Text>
+              <CompressedSignalChart payload={pipelineResult.chartPayload} />
+            </View>
+          ) : null}
 
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">
             <Text className="mb-2 text-xs font-bold uppercase tracking-wider text-text-tertiary">
@@ -1036,9 +1217,7 @@ export default function WitMotionTestScreen() {
             </View>
             <Text className="mb-3 text-xs text-text-tertiary">
               Pitch now: {valueOrDash(wit.liveData.angle?.y, 1)}°
-              {anchorAngleRef.current != null
-                ? `  anchor: ${anchorAngleRef.current.y.toFixed(1)}°`
-                : '  (no anchor set)'}
+              {anchorAngle != null ? `  anchor: ${anchorAngle.y.toFixed(1)}°` : '  (no anchor set)'}
             </Text>
             {angleData.length > 1 ? (
               <SignedChart
@@ -1228,10 +1407,10 @@ export default function WitMotionTestScreen() {
               <View className="gap-3">
                 {storedDebugFiles.map((file) => {
                   const savedAtLabel = formatDebugDateTime(file.stoppedAt ?? file.startedAt);
-                  const repLabel = file.analysis ? `${file.analysis.repCount} reps` : 'No analysis';
-                  const durationSeconds = file.analysis
-                    ? Math.max(0, file.analysis.durationMs / 1000)
-                    : null;
+                  const repLabel = file.analysis
+                    ? `${file.analysis.predictedReps} reps`
+                    : 'No analysis';
+                  const durationSeconds: number | null = null;
 
                   return (
                     <View
@@ -1244,7 +1423,9 @@ export default function WitMotionTestScreen() {
                         </Text>
                         <Text className="text-xs text-text-tertiary">
                           {savedAtLabel} · {file.sampleCount} samples · {repLabel}
-                          {durationSeconds !== null ? ` · ${durationSeconds.toFixed(1)} s` : ''}
+                          {durationSeconds != null
+                            ? ` · ${(durationSeconds as number).toFixed(1)} s`
+                            : ''}
                         </Text>
                       </View>
                       <View className="flex-row flex-wrap gap-2">

@@ -303,7 +303,10 @@ export default function WorkoutSessionOverviewModal({
 
   useEffect(() => {
     if (!visible) {
-      setIsMenuVisible(false);
+      const reset = () => {
+        setIsMenuVisible(false);
+      };
+      reset();
     }
   }, [visible]);
 

@@ -1,8 +1,8 @@
 import { Stack, useRouter } from 'expo-router';
 import { RefreshCw, Ruler, Scale, Utensils } from 'lucide-react-native';
-import { useEffect, useRef, useState } from 'react';
+import { startTransition, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, InteractionManager, ScrollView, View } from 'react-native';
+import { ActivityIndicator, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
@@ -67,6 +67,8 @@ export default function ProgressScreen() {
   // Phase 2 → secondary charts after all pending interactions complete
   // Phase 3 → remaining charts 400ms later
   const [chartPhase, setChartPhase] = useState(0);
+  // When loading, treat phase as 0 regardless of stored value so no effect reset is needed
+  const effectiveChartPhase = isLoading ? 0 : chartPhase;
   const phaseTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const prevIsLoadingRef = useRef(isLoading);
@@ -81,18 +83,18 @@ export default function ProgressScreen() {
     phaseTimersRef.current = [];
 
     if (isLoading) {
-      setChartPhase(0);
       return;
     }
 
-    setChartPhase(1);
-    const task = InteractionManager.runAfterInteractions(() => {
+    startTransition(() => setChartPhase(1));
+    const idleId = requestIdleCallback(() => {
       setChartPhase(2);
       const t1 = setTimeout(() => setChartPhase(3), 400);
       phaseTimersRef.current.push(t1);
     });
+
     return () => {
-      task.cancel();
+      cancelIdleCallback(idleId);
       phaseTimersRef.current.forEach(clearTimeout);
     };
   }, [isLoading]);
@@ -185,7 +187,7 @@ export default function ProgressScreen() {
       <ChartTooltipProvider tooltipPosition={chartTooltipPosition}>
         <ProgressScreenContent
           allAggregationData={allAggregationData}
-          chartPhase={chartPhase}
+          chartPhase={effectiveChartPhase}
           data={data}
           hasAnyAggregationData={hasAnyAggregationData}
           insets={insets}

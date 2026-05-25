@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 /* eslint-disable no-undef */
-/* eslint-env node */
 const { ESLint } = require('eslint');
 const fs = require('fs');
 const path = require('path');

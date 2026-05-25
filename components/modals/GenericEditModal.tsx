@@ -54,14 +54,20 @@ export function GenericEditModal({
   // Reset form when modal opens or initialValues change
   useEffect(() => {
     if (visible) {
-      setFormValues(initialValues);
+      const syncValues = () => {
+        setFormValues(initialValues);
+      };
+      syncValues();
     }
   }, [visible, initialValues]);
 
   useEffect(() => {
     if (!visible) {
-      setDatePickerVisible(false);
-      setSelectMenuVisible(false);
+      const reset = () => {
+        setDatePickerVisible(false);
+        setSelectMenuVisible(false);
+      };
+      reset();
     }
   }, [visible]);
 
@@ -372,7 +378,7 @@ export function GenericEditModal({
       case 'date': {
         const dateField = field;
         // Convert timestamp to Date object, or use current date as default
-        const timestamp = (value as number) ?? Date.now();
+        const timestamp = (value as number) ?? new Date().getTime();
         const dateValue = new Date(timestamp);
 
         return (

@@ -53,8 +53,11 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
   // Reset to initial date or today whenever the modal opens
   useEffect(() => {
     if (visible) {
-      setSelectedDate(localCalendarDayDate(initialDate || new Date()));
-      resetForm(); // Reset form fields when modal opens
+      const syncState = () => {
+        setSelectedDate(localCalendarDayDate(initialDate || new Date()));
+        resetForm();
+      };
+      syncState();
     }
   }, [visible, initialDate]);
 

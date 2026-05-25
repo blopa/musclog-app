@@ -175,6 +175,7 @@ export default function SmartCameraModal({
   const shouldShowBarcodeTextSearch = showBarcodeTextSearch && cameraMode === 'barcode-scan';
 
   const barcode = useBarcodeScanner({ visible, onBarcodeScanned, onClose });
+  const { isSearchingBarcodeRef } = barcode;
 
   const isFoodDetailsModalVisible = barcode.detectedBarcode !== null || productFromAiLabel !== null;
 
@@ -240,22 +241,29 @@ export default function SmartCameraModal({
   // Update camera mode when mode prop changes
   useEffect(() => {
     if (mode) {
-      const safeMode = getSafeCameraMode(mode, isAiEnabled, isAIVisionEnabled);
-      setCameraMode(safeMode);
+      const syncMode = () => {
+        const safeMode = getSafeCameraMode(mode, isAiEnabled, isAIVisionEnabled);
+        setCameraMode(safeMode);
+      };
+      syncMode();
     }
   }, [mode, isAiEnabled, isAIVisionEnabled]);
 
   useEffect(() => {
     if (!visible) {
-      setIsContextModalVisible(false);
-      setIsBarcodeTextSearchModalVisible(false);
-      setIsAddFoodModalVisible(false);
-      setIsNewCustomFoodModalVisible(false);
-      setIsFoodSearchModalVisible(false);
-      setIsLogMealModalVisible(false);
-      setProductFromAiLabel(null);
+      const reset = () => {
+        setIsContextModalVisible(false);
+        setIsBarcodeTextSearchModalVisible(false);
+        setIsAddFoodModalVisible(false);
+        setIsNewCustomFoodModalVisible(false);
+        setIsFoodSearchModalVisible(false);
+        setIsLogMealModalVisible(false);
+        setProductFromAiLabel(null);
+        isSearchingBarcodeRef.current = false;
+      };
+      reset();
     }
-  }, [visible]);
+  }, [visible, isSearchingBarcodeRef]);
 
   useKeepScreenAwake(
     'smart-camera-processing',
@@ -457,9 +465,9 @@ export default function SmartCameraModal({
   }, [cameraMode, t, processAiPhoto, barcode]);
 
   const handleClose = useCallback(() => {
-    barcode.isSearchingBarcodeRef.current = false;
+    isSearchingBarcodeRef.current = false;
     onClose();
-  }, [barcode.isSearchingBarcodeRef, onClose]);
+  }, [isSearchingBarcodeRef, onClose]);
 
   const handleFlashToggle = useCallback(() => {
     setFlashEnabled((prev) => !prev);
@@ -682,7 +690,6 @@ export default function SmartCameraModal({
   }
 
   if (!visible) {
-    barcode.isSearchingBarcodeRef.current = false;
     return null;
   }
 

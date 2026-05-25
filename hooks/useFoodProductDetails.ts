@@ -142,15 +142,19 @@ export async function fetchMusclogProductByBarcode(
   }
 }
 
-export async function fetchUSDAProductById(fdcId: string | number): Promise<any> {
+export async function fetchUSDAProductById(
+  fdcId: string | number,
+  signal?: AbortSignal
+): Promise<any> {
   const apiKey = process.env.EXPO_PUBLIC_USDA_API_KEY || '';
   const url = `https://api.nal.usda.gov/fdc/v1/food/${fdcId}?api_key=${apiKey}`;
 
   try {
-    const res = await fetch(url);
+    const res = await fetch(url, { signal });
     if (!res.ok) {
       return null;
     }
+
     return await res.json();
   } catch (e) {
     console.error('Error fetching USDA product by ID:', e);

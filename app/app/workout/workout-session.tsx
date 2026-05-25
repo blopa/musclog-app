@@ -270,12 +270,13 @@ export default function WorkoutSessionScreen() {
 
   const { completeWorkout, submitFeedback } = useWorkoutFeedback();
 
-  // When navigated from rest-timer/rest-over after "Finish workout", show feedback modal
-  useEffect(() => {
-    if (params.showFeedback === '1' && workoutLog && !isLoading) {
-      setIsSessionFeedbackModalVisible(true);
-    }
-  }, [params.showFeedback, isLoading, workoutLog]);
+  const [isSessionFeedbackExplicitlyOpen, setIsSessionFeedbackExplicitlyOpen] = useState(false);
+  // Derive: show when explicitly opened OR when navigated here with showFeedback=1 and data ready
+  const isSessionFeedbackModalVisible =
+    isSessionFeedbackExplicitlyOpen || (params.showFeedback === '1' && !!workoutLog && !isLoading);
+  const setIsSessionFeedbackModalVisible = (open: boolean) => {
+    setIsSessionFeedbackExplicitlyOpen(open);
+  };
 
   const [weight, setWeight] = useState(0);
   const [reps, setReps] = useState(0);
@@ -289,7 +290,6 @@ export default function WorkoutSessionScreen() {
   const [isSkipSetModalVisible, setIsSkipSetModalVisible] = useState(false);
   const [isReplaceExerciseModalVisible, setIsReplaceExerciseModalVisible] = useState(false);
   const [isHistoryModalVisible, setIsHistoryModalVisible] = useState(false);
-  const [isSessionFeedbackModalVisible, setIsSessionFeedbackModalVisible] = useState(false);
   const [isWorkoutOverviewModalVisible, setIsWorkoutOverviewModalVisible] = useState(false);
   const [isAddExerciseToSessionModalVisible, setIsAddExerciseToSessionModalVisible] =
     useState(false);
@@ -301,6 +301,8 @@ export default function WorkoutSessionScreen() {
     exerciseImageUrl?: string | null;
     equipmentType?: string | null;
   } | null>(null);
+  // Derive: only show the completed-exercise modal when the workout is actually complete
+  const effectiveCompletedExerciseForModal = isWorkoutComplete() ? completedExerciseForModal : null;
   const hasShownFreeSessionCompleteModalRef = useRef(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isNotesExpanded, setIsNotesExpanded] = useState(false);
@@ -312,7 +314,9 @@ export default function WorkoutSessionScreen() {
   const { showSnackbar } = useSnackbar();
   const [isTracking, setIsTracking] = useState(false);
   const [isStopTrackingSaving, setIsStopTrackingSaving] = useState(false);
-  const [isTrackingBlinkOn, setIsTrackingBlinkOn] = useState(true);
+  const [blinkState, setBlinkState] = useState(true);
+  // When not tracking the indicator is always solid; when tracking it alternates
+  const isTrackingBlinkOn = !isTracking || blinkState;
   const isTrackingRef = useRef(false);
   const trackingTempFileRef = useRef<ReturnType<typeof createBleWorkoutTrackingTempFile> | null>(
     null
@@ -326,12 +330,11 @@ export default function WorkoutSessionScreen() {
 
   useEffect(() => {
     if (!isTracking) {
-      setIsTrackingBlinkOn(true);
       return;
     }
 
     const interval = setInterval(() => {
-      setIsTrackingBlinkOn((current) => !current);
+      setBlinkState((current) => !current);
     }, 1000);
 
     return () => {
@@ -351,16 +354,19 @@ export default function WorkoutSessionScreen() {
 
   // Update weight/reps when current set changes (weight in display unit)
   useEffect(() => {
-    if (currentSetData) {
-      const weightKg = currentSetData.set.weight ?? 0;
-      setWeight(kgToDisplay(weightKg, units));
-      setReps(currentSetData.set.reps ?? 0);
-      setPartials(currentSetData.set.partials || 0);
-      setRepsInReserve(currentSetData.set.repsInReserve ?? 0);
-      setIsStatsDataLoaded(true);
-    } else {
-      setIsStatsDataLoaded(false);
-    }
+    const syncFormInputs = () => {
+      if (currentSetData) {
+        const weightKg = currentSetData.set.weight ?? 0;
+        setWeight(kgToDisplay(weightKg, units));
+        setReps(currentSetData.set.reps ?? 0);
+        setPartials(currentSetData.set.partials || 0);
+        setRepsInReserve(currentSetData.set.repsInReserve ?? 0);
+        setIsStatsDataLoaded(true);
+      } else {
+        setIsStatsDataLoaded(false);
+      }
+    };
+    syncFormInputs();
   }, [currentSetData, units]);
 
   // Redirect if no active workout
@@ -378,7 +384,6 @@ export default function WorkoutSessionScreen() {
 
     if (!isWorkoutComplete()) {
       hasShownFreeSessionCompleteModalRef.current = false;
-      setCompletedExerciseForModal(null);
       return;
     }
 
@@ -404,21 +409,24 @@ export default function WorkoutSessionScreen() {
       const byOrder = [...sets].sort((a, b) => (b.setOrder ?? 0) - (a.setOrder ?? 0));
       const lastSet = byOrder[0];
 
-      if (lastSet) {
-        const exercise = exercises.find((e) => e.id === lastSet.exerciseId);
-        setCompletedExerciseForModal({
-          exerciseId: lastSet.exerciseId ?? '',
-          exerciseName: exercise?.name ?? '',
-          exerciseImageUrl: exercise?.imageUrl ?? null,
-          equipmentType: exercise?.equipmentType ?? null,
-        });
-        setIsFreeSessionCompleteModalVisible(true);
-        hasShownFreeSessionCompleteModalRef.current = true;
-      } else {
-        // Fallback for empty/weird states
-        setIsAddExerciseToSessionModalVisible(true);
-        hasShownFreeSessionCompleteModalRef.current = true;
-      }
+      const showCompletionModal = () => {
+        if (lastSet) {
+          const exercise = exercises.find((e) => e.id === lastSet.exerciseId);
+          setCompletedExerciseForModal({
+            exerciseId: lastSet.exerciseId ?? '',
+            exerciseName: exercise?.name ?? '',
+            exerciseImageUrl: exercise?.imageUrl ?? null,
+            equipmentType: exercise?.equipmentType ?? null,
+          });
+          setIsFreeSessionCompleteModalVisible(true);
+          hasShownFreeSessionCompleteModalRef.current = true;
+        } else {
+          // Fallback for empty/weird states
+          setIsAddExerciseToSessionModalVisible(true);
+          hasShownFreeSessionCompleteModalRef.current = true;
+        }
+      };
+      showCompletionModal();
     }
   }, [
     isLoading,
@@ -1527,7 +1535,7 @@ export default function WorkoutSessionScreen() {
               setIsAddExerciseToSessionModalVisible(false);
               setIsAddExerciseButtonLoading(false);
               // Re-show completion modal if we're still in that state and cancelled adding
-              if (completedExerciseForModal && isWorkoutComplete()) {
+              if (effectiveCompletedExerciseForModal) {
                 setIsFreeSessionCompleteModalVisible(true);
               }
             }}
@@ -1537,19 +1545,19 @@ export default function WorkoutSessionScreen() {
           />
         ) : null}
 
-        {completedExerciseForModal ? (
+        {effectiveCompletedExerciseForModal ? (
           <FreeSessionExerciseCompleteModal
             visible={isFreeSessionCompleteModalVisible}
             onClose={() => {
               setIsFreeSessionCompleteModalVisible(false);
               setCompletedExerciseForModal(null);
             }}
-            exerciseName={completedExerciseForModal.exerciseName}
+            exerciseName={effectiveCompletedExerciseForModal.exerciseName}
             sets={sets}
-            exerciseId={completedExerciseForModal.exerciseId}
+            exerciseId={effectiveCompletedExerciseForModal.exerciseId}
             units={units}
-            exerciseImageUrl={completedExerciseForModal.exerciseImageUrl}
-            equipmentType={completedExerciseForModal.equipmentType}
+            exerciseImageUrl={effectiveCompletedExerciseForModal.exerciseImageUrl}
+            equipmentType={effectiveCompletedExerciseForModal.equipmentType}
             onAddNextExercise={() => {
               setIsFreeSessionCompleteModalVisible(false);
               // Keep completedExerciseForModal so we can return to it if adding is cancelled

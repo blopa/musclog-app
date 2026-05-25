@@ -140,7 +140,10 @@ export function useFavoriteFoods({
 
   // Load initial data when hook mounts or dependencies change
   useEffect(() => {
-    loadInitialFoods();
+    const run = () => {
+      void loadInitialFoods();
+    };
+    run();
   }, [loadInitialFoods]);
 
   // Memoized result

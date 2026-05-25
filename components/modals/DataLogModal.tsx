@@ -605,18 +605,21 @@ export function DataLogModal({
 
   useEffect(() => {
     if (!visible) {
-      setShowMenu(false);
-      setShowCreateMenu(false);
-      setDeleteModalVisible(false);
-      setEditModalVisible(false);
-      setPastWorkoutDetailVisible(false);
-      setCreateMealModalVisible(false);
-      setCreateFoodModalVisible(false);
-      setCreateExerciseModalVisible(false);
-      setCreateFoodPortionModalVisible(false);
-      setCreateWorkoutModalVisible(false);
-      setCreateWorkoutOptionsModalVisible(false);
-      setCreateGenericModalVisible(false);
+      const reset = () => {
+        setShowMenu(false);
+        setShowCreateMenu(false);
+        setDeleteModalVisible(false);
+        setEditModalVisible(false);
+        setPastWorkoutDetailVisible(false);
+        setCreateMealModalVisible(false);
+        setCreateFoodModalVisible(false);
+        setCreateExerciseModalVisible(false);
+        setCreateFoodPortionModalVisible(false);
+        setCreateWorkoutModalVisible(false);
+        setCreateWorkoutOptionsModalVisible(false);
+        setCreateGenericModalVisible(false);
+      };
+      reset();
     }
   }, [visible]);
 

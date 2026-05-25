@@ -41,7 +41,10 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
 
   // Sync local baseline state when the goal instance changes (e.g. modal opens)
   useEffect(() => {
-    setCurrentBaseline1rm(goal.baseline1rm ?? null);
+    const syncBaseline = () => {
+      setCurrentBaseline1rm(goal.baseline1rm ?? null);
+    };
+    syncBaseline();
   }, [goal.id, goal.baseline1rm]);
 
   const loadData = useCallback(async () => {
@@ -95,7 +98,10 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
 
   // Initial load
   useEffect(() => {
-    loadData();
+    const run = () => {
+      void loadData();
+    };
+    run();
   }, [loadData]);
 
   // Reactive subscription: re-run whenever relevant tables change

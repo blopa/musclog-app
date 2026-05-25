@@ -42,7 +42,7 @@ export default function RestOverScreen() {
   const workoutLogId = params.workoutLogId;
   const nextSetOrder = params.nextSetOrder ? parseInt(params.nextSetOrder, 10) : null;
 
-  const pulseAnim = useRef(new Animated.Value(0.3)).current;
+  const [pulseAnim] = useState(() => new Animated.Value(0.3));
   const [isOptionsModalVisible, setIsOptionsModalVisible] = useState(false);
   const [isWorkoutOverviewModalVisible, setIsWorkoutOverviewModalVisible] = useState(false);
   const [isEndWorkoutModalVisible, setIsEndWorkoutModalVisible] = useState(false);

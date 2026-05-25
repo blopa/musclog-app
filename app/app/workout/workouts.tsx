@@ -50,12 +50,16 @@ export default function WorkoutsScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ previewTemplateId?: string }>();
   const { isAiConfigured } = useSettings();
+  const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
 
   // Open template preview when navigating from ViewExerciseModal (e.g. "Workouts using this")
   useEffect(() => {
     const id = params.previewTemplateId;
     if (id?.trim()) {
-      setPreviewTemplateId(id.trim());
+      const sync = () => {
+        setPreviewTemplateId(id.trim());
+      };
+      sync();
     }
   }, [params.previewTemplateId]);
 
@@ -88,7 +92,6 @@ export default function WorkoutsScreen() {
     templateId: string;
     title: string;
   } | null>(null);
-  const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
   const isPreviewModalVisible = previewTemplateId !== null;
   const [searchQuery, setSearchQuery] = useState('');
   const [interruptedWorkoutLog, setInterruptedWorkoutLog] = useState<WorkoutLog | null>(null);
@@ -263,23 +266,20 @@ export default function WorkoutsScreen() {
   );
 
   // Helper function to open preview modal (now synchronous!)
-  const handlePreviewWorkout = useCallback(
-    (templateId: string) => {
-      // Verify template exists in already loaded templates
-      const templateMetadata = templates.find((t) => t.id === templateId);
-      if (!templateMetadata) {
-        showSnackbar('error', t('common.error'));
-        return;
-      }
+  const handlePreviewWorkout = (templateId: string) => {
+    // Verify template exists in already loaded templates
+    const templateMetadata = templates.find((t) => t.id === templateId);
+    if (!templateMetadata) {
+      showSnackbar('error', t('common.error'));
+      return;
+    }
 
-      setIsMenuVisible(false);
-      setPreviewTemplateId(templateId);
-    },
-    [templates, showSnackbar, t]
-  );
+    setIsMenuVisible(false);
+    setPreviewTemplateId(templateId);
+  };
 
   // Helper function to start workout from preview
-  const handleStartWorkoutFromPreview = useCallback(async () => {
+  const handleStartWorkoutFromPreview = async () => {
     if (!previewTemplateId) {
       return;
     }
@@ -291,7 +291,7 @@ export default function WorkoutsScreen() {
       console.error('Error starting workout from preview:', err);
       showSnackbar('error', t('common.error'));
     }
-  }, [previewTemplateId, handleStartWorkout, showSnackbar, t]);
+  };
 
   return (
     <MasterLayout>

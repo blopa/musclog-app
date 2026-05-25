@@ -163,8 +163,11 @@ export default function ViewExerciseModal({
       return;
     }
 
-    setIsLoadingData(true);
-    loadExercise();
+    const startLoad = () => {
+      setIsLoadingData(true);
+      loadExercise();
+    };
+    startLoad();
   }, [visible, resolvedId, loadExercise]);
 
   useEffect(() => {
@@ -172,7 +175,10 @@ export default function ViewExerciseModal({
       return;
     }
 
-    loadStatsAndWorkouts(exercise);
+    const runLoad = () => {
+      loadStatsAndWorkouts(exercise);
+    };
+    runLoad();
   }, [exercise, exercise?.id, loadStatsAndWorkouts]);
 
   const backgroundImage = useExerciseImageSource(exercise?.imageUrl);

@@ -198,14 +198,14 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
   const { useBfForCalculations } = useSettings();
   const [historicalData, setHistoricalData] = useState<HistoricalNutritionParams | null>(null);
   const [historicalLoading, setHistoricalLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [historicalError, setHistoricalError] = useState<string | null>(null);
 
   // Fetch historical nutrition data
   useEffect(() => {
     const fetchHistoricalData = async () => {
       try {
         setHistoricalLoading(true);
-        setError(null);
+        setHistoricalError(null);
 
         const data = await getHistoricalNutritionParamsCustom({
           lookbackDays,
@@ -216,7 +216,7 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
         setHistoricalData(data);
       } catch (err) {
         console.error('Error fetching historical nutrition data:', err);
-        setError(err instanceof Error ? err.message : 'Failed to fetch historical data');
+        setHistoricalError(err instanceof Error ? err.message : 'Failed to fetch historical data');
         setHistoricalData(null);
       } finally {
         setHistoricalLoading(false);
@@ -227,11 +227,12 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
   }, [lookbackDays, minNutritionDays, useWeeklyAverages]);
 
   // Calculate TDEE when data is available
-  const { tdee, usedEmpiricalData } = useMemo(() => {
+  const { tdee, usedEmpiricalData, calculationError } = useMemo(() => {
     // Default result
     const result = {
       tdee: fallbackValue,
       usedEmpiricalData: false,
+      calculationError: null as string | null,
     };
 
     // Check if we have required user and metrics data
@@ -273,7 +274,7 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
       result.tdee = calculatedTdee || fallbackValue;
     } catch (err) {
       console.error('Error calculating TDEE:', err);
-      setError(err instanceof Error ? err.message : 'Failed to calculate TDEE');
+      result.calculationError = err instanceof Error ? err.message : 'Failed to calculate TDEE';
       result.tdee = fallbackValue;
     }
 
@@ -290,6 +291,7 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
   ]);
 
   const isLoading = userLoading || metricsLoading || historicalLoading;
+  const error = historicalError ?? calculationError;
 
   return {
     tdee,

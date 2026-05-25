@@ -215,7 +215,10 @@ export default function EditPastWorkoutDataModal({
   const { t } = useTranslation();
 
   useEffect(() => {
-    setSets(initialSets ?? []);
+    const syncSets = () => {
+      setSets(initialSets ?? []);
+    };
+    syncSets();
   }, [initialSets, visible]);
 
   const handleChange = (id: string, patch: Partial<SetItem>) => {

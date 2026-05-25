@@ -505,12 +505,15 @@ export default function PastWorkoutDetailModal({
 
   useEffect(() => {
     if (!visible) {
-      setIsEditModalVisible(false);
-      setIsEditMetadataVisible(false);
-      setIsPreviewModalVisible(false);
-      setIsMusclesModalVisible(false);
-      setEditingExerciseId(null);
-      setIsMenuVisible(false);
+      const reset = () => {
+        setIsEditModalVisible(false);
+        setIsEditMetadataVisible(false);
+        setIsPreviewModalVisible(false);
+        setIsMusclesModalVisible(false);
+        setEditingExerciseId(null);
+        setIsMenuVisible(false);
+      };
+      reset();
     }
   }, [visible, setIsMenuVisible]);
 

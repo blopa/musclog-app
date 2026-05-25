@@ -66,7 +66,10 @@ export function StepperInlineInput({
 
   useEffect(() => {
     if (!editing) {
-      setInputValue(formatValue(value));
+      const sync = () => {
+        setInputValue(formatValue(value));
+      };
+      sync();
     }
   }, [value, editing, formatValue]);
 

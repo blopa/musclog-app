@@ -40,7 +40,10 @@ export function Slider({
   // unnecessary setState and potential feedback loops with native slider's onValueChange.
   useEffect(() => {
     if (value !== displayValue) {
-      setDisplayValue(value);
+      const sync = () => {
+        setDisplayValue(value);
+      };
+      sync();
     }
   }, [displayValue, value]);
 

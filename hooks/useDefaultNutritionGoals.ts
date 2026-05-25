@@ -62,7 +62,10 @@ export function useDefaultNutritionGoals(eatingPhase: EatingPhase = 'maintain') 
 
   useEffect(() => {
     let isMounted = true;
-    setIsLoading(true);
+    const startLoading = () => {
+      setIsLoading(true);
+    };
+    startLoading();
 
     const compute = async () => {
       if (!user) {

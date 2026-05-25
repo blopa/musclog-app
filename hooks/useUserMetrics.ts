@@ -350,7 +350,10 @@ export function useUserMetrics({
     if (!enableReactivity || !visible) {
       // Still load initial data even if reactivity is disabled
       if (visible) {
-        loadInitialMetrics();
+        const run = () => {
+          void loadInitialMetrics();
+        };
+        run();
       }
       return;
     }
@@ -382,7 +385,10 @@ export function useUserMetrics({
     });
 
     // Load initial data
-    loadInitialMetrics();
+    const runInit = () => {
+      void loadInitialMetrics();
+    };
+    runInit();
 
     return () => subscription.unsubscribe();
   }, [mode, enableReactivity, visible, metricType, dateRange, loadInitialMetrics]);

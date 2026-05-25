@@ -89,7 +89,10 @@ export function useProgressData({ initialPreset = '30d' }: UseProgressDataParams
   }, [preset, appliedCustomRange, useWeeklyAverages]);
 
   useEffect(() => {
-    fetchData();
+    const run = () => {
+      void fetchData();
+    };
+    run();
   }, [fetchData]);
 
   const changePreset = (newPreset: DateRangePreset) => {

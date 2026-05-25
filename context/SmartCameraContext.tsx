@@ -47,6 +47,7 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
   const [mealTypeForLog, setMealTypeForLog] = useState<MealType | undefined>(undefined);
   const [showBarcodeTextSearch, setShowBarcodeTextSearch] = useState(false);
   const onBarcodeScannedRef = useRef<((data: string) => void) | undefined>(undefined);
+  const [hasBarcodeCallback, setHasBarcodeCallback] = useState(false);
 
   // Permission lives here so useCameraPermissions() runs at app boot (context always
   // mounts) rather than when the user first opens the camera. This pays the ~10s
@@ -67,8 +68,11 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    setCachedCameraPermissionGranted(permission.granted);
-    setCachedPermissionGrantedState(permission.granted);
+    const persist = () => {
+      setCachedCameraPermissionGranted(permission.granted);
+      setCachedPermissionGrantedState(permission.granted);
+    };
+    persist();
   }, [permission]);
 
   // Backfill optimistic state from AsyncStorage if the synchronous read returned null
@@ -114,6 +118,7 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
     setMealTypeForLog(options?.mealType);
     setShowBarcodeTextSearch(options?.showBarcodeTextSearch ?? false);
     onBarcodeScannedRef.current = options?.onBarcodeScanned;
+    setHasBarcodeCallback(!!options?.onBarcodeScanned);
     setIsVisible(true);
   }, []);
 
@@ -122,6 +127,7 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
     setMealTypeForLog(undefined);
     setShowBarcodeTextSearch(false);
     onBarcodeScannedRef.current = undefined;
+    setHasBarcodeCallback(false);
   }, []);
 
   const setCurrentDate = useCallback((date: Date | undefined) => {
@@ -137,7 +143,7 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
   return (
     <SmartCameraContext.Provider value={value}>
       {children}
-      {isVisible && onBarcodeScannedRef.current ? (
+      {isVisible && hasBarcodeCallback ? (
         <BarcodeCameraModal
           visible={isVisible}
           onClose={handleCameraModalClose}
@@ -149,7 +155,7 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
           onRequestPermission={requestPermission}
         />
       ) : null}
-      {isVisible && !onBarcodeScannedRef.current ? (
+      {isVisible && !hasBarcodeCallback ? (
         <SmartCameraModal
           visible={isVisible}
           onClose={handleCameraModalClose}

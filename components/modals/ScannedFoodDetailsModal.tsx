@@ -157,20 +157,26 @@ export function ScannedFoodDetailsModal({
   );
 
   useEffect(() => {
-    setLocalCanEdit(alwaysAllowFoodEditing);
+    const syncEdit = () => {
+      setLocalCanEdit(alwaysAllowFoodEditing);
+    };
+    syncEdit();
   }, [alwaysAllowFoodEditing]);
 
   useEffect(() => {
     if (!visible) {
-      setAmount(100);
-      setEditedOverrides(null);
-      setIsEditPopUpVisible(false);
-      setEditMicroOpen(false);
-      setEditForm(null);
-      setRefetchedProductDetails(null);
-      setIsRefetchingSource(false);
-      setLocalCanEdit(alwaysAllowFoodEditing);
-      setAlternateSourceLookupFailed(false);
+      const reset = () => {
+        setAmount(100);
+        setEditedOverrides(null);
+        setIsEditPopUpVisible(false);
+        setEditMicroOpen(false);
+        setEditForm(null);
+        setRefetchedProductDetails(null);
+        setIsRefetchingSource(false);
+        setLocalCanEdit(alwaysAllowFoodEditing);
+        setAlternateSourceLookupFailed(false);
+      };
+      reset();
     }
   }, [visible, alwaysAllowFoodEditing]);
 
@@ -441,6 +447,7 @@ export function ScannedFoodDetailsModal({
     if (currentSource !== 'openfood' || !isSuccessFoodDetailProductState(effectiveProductDetails)) {
       return false;
     }
+
     const product = effectiveProductDetails.product;
     return (
       product.no_nutrition_data === 'on' ||
@@ -450,33 +457,40 @@ export function ScannedFoodDetailsModal({
     );
   }, [currentSource, effectiveProductDetails]);
 
-  const getCurrentName = useCallback(() => {
+  const getCurrentName = () => {
     if (editedOverrides?.name?.trim()) {
       return editedOverrides.name.trim();
     }
+
     if (isSuccessFoodDetailProductState(effectiveProductDetails)) {
       return getProductName(effectiveProductDetails);
     }
+
     if ((effectiveProductDetails as any)?.source === 'musclog') {
       return (effectiveProductDetails as any).product?.name || t('food.unknownFood');
     }
+
     if ((effectiveProductDetails as any)?.source === 'usda') {
       return (effectiveProductDetails as any).product?.description || t('food.unknownFood');
     }
+
     return t('food.unknownFood');
-  }, [editedOverrides?.name, effectiveProductDetails, t]);
+  };
 
   const getCurrentBrand = useCallback(() => {
     if ((effectiveProductDetails as any)?.source === 'musclog') {
       return (effectiveProductDetails as any).product?.brand || '';
     }
+
     if ((effectiveProductDetails as any)?.source === 'usda') {
       const product = (effectiveProductDetails as any).product;
       return product?.brandOwner || product?.brandName || '';
     }
+
     if (isSuccessFoodDetailProductState(effectiveProductDetails)) {
       return effectiveProductDetails.product?.brands || '';
     }
+
     return '';
   }, [effectiveProductDetails]);
 
@@ -484,6 +498,7 @@ export function ScannedFoodDetailsModal({
     if ((effectiveProductDetails as any)?.source === 'musclog') {
       return (effectiveProductDetails as any).product?.brand || t('food.generic');
     }
+
     if ((effectiveProductDetails as any)?.source === 'usda') {
       const product = (effectiveProductDetails as any).product;
       const brand = product?.brandOwner || product?.brandName;
@@ -491,8 +506,10 @@ export function ScannedFoodDetailsModal({
       if (brand && category) {
         return `${brand} • ${category}`;
       }
+
       return brand || category || t('food.generic');
     }
+
     if (isSuccessFoodDetailProductState(effectiveProductDetails)) {
       const product = effectiveProductDetails.product;
       const brand = product?.brands;
@@ -500,12 +517,14 @@ export function ScannedFoodDetailsModal({
       if (brand && categories) {
         return `${brand} • ${categories}`;
       }
+
       return brand || categories || t('food.generic');
     }
+
     return t('food.generic');
   }, [effectiveProductDetails, t]);
 
-  const getCurrentDescription = useCallback(() => {
+  const getCurrentDescription = () => {
     if (editedOverrides?.description != null) {
       return editedOverrides.description.trim();
     }
@@ -523,7 +542,7 @@ export function ScannedFoodDetailsModal({
     }
 
     return '';
-  }, [editedOverrides?.description, effectiveProductDetails]);
+  };
 
   const parsedProductServingSize = useMemo(() => {
     if (!isScannedProductSuccess) {
@@ -555,10 +574,12 @@ export function ScannedFoodDetailsModal({
       if (!p.gramWeight || p.gramWeight <= 0) {
         continue;
       }
+
       const name = p.portionDescription || p.modifier;
       if (!name) {
         continue;
       }
+
       if (!result.some((r) => r.gramWeight === p.gramWeight)) {
         result.push({ name, gramWeight: p.gramWeight });
       }
@@ -708,6 +729,7 @@ export function ScannedFoodDetailsModal({
         if (!r) {
           return false;
         }
+
         const macros = parseCoreMacrosFromAlternateSource(r);
         return macros !== null && !areCoreMacrosEffectivelyZero(macros);
       });
@@ -756,6 +778,7 @@ export function ScannedFoodDetailsModal({
             if (currentSource) {
               record.source = currentSource;
             }
+
             const bp = (effectiveProductDetails as any)?.product;
             if (bp) {
               if (typeof bp.nutriscore_grade === 'string' && bp.nutriscore_grade) {

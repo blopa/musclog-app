@@ -151,61 +151,6 @@ export default function ExercisesModal({
     }
   };
 
-  // Load exercises from database only when modal becomes visible
-  useEffect(() => {
-    if (!visible) {
-      return;
-    }
-
-    loadExercises();
-  }, [visible]);
-
-  // Group exercises by muscle group
-  const exercisesByGroup = useMemo(() => {
-    const grouped: Record<string, ExerciseData[]> = {};
-    exercises.forEach((exercise) => {
-      const group = exercise.muscleGroup;
-      if (!grouped[group]) {
-        grouped[group] = [];
-      }
-      grouped[group].push(exercise);
-    });
-    return grouped;
-  }, [exercises]);
-
-  // Filter exercises based on search
-  const filteredExercisesByGroup = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return exercisesByGroup;
-    }
-
-    const filtered: Record<string, ExerciseData[]> = {};
-    Object.keys(exercisesByGroup).forEach((group) => {
-      const filteredInGroup = exercisesByGroup[group].filter((exercise) =>
-        exercise.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      if (filteredInGroup.length > 0) {
-        filtered[group] = filteredInGroup;
-      }
-    });
-    return filtered;
-  }, [exercisesByGroup, searchQuery]);
-
-  const toggleAccordion = (group: string) => {
-    setOpenAccordions((prev) => ({
-      ...prev,
-      [group]: !prev[group],
-    }));
-  };
-
-  const handleExercisePress = (exercise: ExerciseData) => {
-    if (onSelectExercise) {
-      onSelectExercise(exercise);
-      return;
-    }
-    setViewExerciseId(exercise.id);
-  };
-
   const loadExercises = async () => {
     try {
       setIsLoading(true);
@@ -253,6 +198,69 @@ export default function ExercisesModal({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Load exercises from database only when modal becomes visible
+  useEffect(() => {
+    if (!visible) {
+      return;
+    }
+
+    const run = () => {
+      void loadExercises();
+    };
+    run();
+  }, [visible]);
+
+  // Group exercises by muscle group
+  const exercisesByGroup = useMemo(() => {
+    const grouped: Record<string, ExerciseData[]> = {};
+    exercises.forEach((exercise) => {
+      const group = exercise.muscleGroup;
+      if (!grouped[group]) {
+        grouped[group] = [];
+      }
+
+      grouped[group].push(exercise);
+    });
+
+    return grouped;
+  }, [exercises]);
+
+  // Filter exercises based on search
+  const filteredExercisesByGroup = useMemo(() => {
+    if (!searchQuery.trim()) {
+      return exercisesByGroup;
+    }
+
+    const filtered: Record<string, ExerciseData[]> = {};
+    Object.keys(exercisesByGroup).forEach((group) => {
+      const filteredInGroup = exercisesByGroup[group].filter((exercise) =>
+        exercise.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+      if (filteredInGroup.length > 0) {
+        filtered[group] = filteredInGroup;
+      }
+    });
+
+    return filtered;
+  }, [exercisesByGroup, searchQuery]);
+
+  const toggleAccordion = (group: string) => {
+    setOpenAccordions((prev) => ({
+      ...prev,
+      [group]: !prev[group],
+    }));
+  };
+
+  const handleExercisePress = (exercise: ExerciseData) => {
+    if (onSelectExercise) {
+      onSelectExercise(exercise);
+      return;
+    }
+
+    setViewExerciseId(exercise.id);
   };
 
   const handleViewExerciseClose = () => {

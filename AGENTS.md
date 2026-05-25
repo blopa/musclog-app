@@ -1,5 +1,11 @@
 # Musclog Guide
 
+## Expo Skills
+
+@.claude/skills/expo-tailwind-setup/SKILL.md
+@.claude/skills/native-data-fetching/SKILL.md
+@.claude/skills/upgrading-expo/SKILL.md
+
 ## Build and Development Commands
 
 - `npm start`: Start Expo development server

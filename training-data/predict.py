@@ -1,11 +1,24 @@
 #!/usr/bin/env python3
 """
-Predict the rep count for a single recording and reconcile with the peak
-detector to produce per-rep duration estimates.
+Predict rep count and per-rep phase details for a single recording.
+
+Full pipeline:
+  1. preprocess_to_1d()  — PCA on Euler angles → 1D canonical signal
+  2. over_segment()       — candidate full-rep segments
+  3. Classify each segment with the trained RandomForestClassifier
+  4. Count surviving segments (prob_rep > 0.5) → predicted rep count
+  5. detect_phases()      — analytical phase split within each rep
+                            Phase A = start → turning point (one direction)
+                            Phase B = turning point → end  (return direction)
+                            Speed   = angular displacement / duration (deg/s)
+
+No additional labels are needed beyond what was used for training.
 
 Usage:
     python predict.py recordings/deadlift.json
-    python predict.py /path/to/any_recording.json
+    python predict.py /path/to/any_recording.json  [--json]
+
+Add --json to print the full result as JSON.
 
 Requires output/model.pkl — run train.py first.
 """
@@ -16,130 +29,68 @@ import sys
 from pathlib import Path
 
 import numpy as np
-from scipy.signal import detrend as scipy_detrend
 
 ROOT = Path(__file__).parent
 
-RECONCILE_MIN_PEAK_GAP_MS = 300
-RECONCILE_MAX_SEEK_ITERATIONS = 30
 
+# ---------------------------------------------------------------------------
+# Phase detection (analytical — no ML)
+# ---------------------------------------------------------------------------
 
-def reconcile_rep_counts(samples: list, ml_rep_count: int) -> dict:
+def detect_phases(seg: dict, signal_1d: np.ndarray, timestamps: np.ndarray) -> dict:
     """
-    Uses the ML rep count as ground truth and bends a simple peak detector to
-    match it, producing per-rep duration estimates as a by-product.
+    Split one rep segment into two directional phases at its turning point.
 
-    Mirrors the three-stage logic in repAnalysis.ts reconcileRepCounts():
-      1. Target seek   — binary-search the peak-height threshold until the
-                         detector finds exactly ml_rep_count peaks.
-      2. Amplitude pruning — if the seek overshoots, keep the N tallest peaks.
-      3. Outlier splitting — if the seek undershoots, split the longest
-                             inter-peak gap until the duration array is full.
+    The `turning_idx` stored in the segment is already the internal peak
+    or trough found by over_segment(), i.e. the exact moment the movement
+    reverses direction.
 
-    Returns {"rep_count": int, "rep_durations_ms": list[float]}.
+    Phase A = start_idx → turning_idx  (first direction of motion)
+    Phase B = turning_idx → end_idx    (return direction)
+
+    Speed is reported in deg/s (angular displacement / duration).
+
+    Note: without a calibration recording, Phase A and Phase B are unlabeled
+    directionally. A future calibration step can resolve which is concentric
+    vs eccentric by determining which direction of the PCA signal corresponds
+    to "lifting against gravity".
     """
-    from train import smooth_ema, SMOOTH_ALPHA
+    s = seg["start_idx"]
+    t = seg["turning_idx"]
+    e = seg["end_idx"]
 
-    target = max(0, round(ml_rep_count))
+    phase_a_ms = float(timestamps[t] - timestamps[s])
+    phase_b_ms = float(timestamps[e] - timestamps[t])
+    disp_a     = abs(float(signal_1d[t] - signal_1d[s]))
+    disp_b     = abs(float(signal_1d[e] - signal_1d[t]))
 
-    if len(samples) < 10 or target == 0:
-        return {"rep_count": target, "rep_durations_ms": []}
+    phase_a_dps = disp_a / (phase_a_ms / 1000.0) if phase_a_ms > 0.0 else 0.0
+    phase_b_dps = disp_b / (phase_b_ms / 1000.0) if phase_b_ms > 0.0 else 0.0
 
-    n     = len(samples)
-    ts    = np.array([s["timestamp"]  for s in samples], dtype=float)
-    ang_x = np.array([s["angle"]["x"] for s in samples], dtype=float)
-    ang_y = np.array([s["angle"]["y"] for s in samples], dtype=float)
+    return {
+        "phase_a_duration_ms": round(phase_a_ms, 1),
+        "phase_b_duration_ms": round(phase_b_ms, 1),
+        "phase_a_speed_dps":   round(phase_a_dps, 2),
+        "phase_b_speed_dps":   round(phase_b_dps, 2),
+    }
 
-    # Dominant angle axis — same selection rule as train.py / repAnalysis.ts
-    rx  = float(ang_x.max() - ang_x.min())
-    ry  = float(ang_y.max() - ang_y.min())
-    raw = ang_x if rx >= ry else ang_y
 
-    # EMA smooth → subtract median of first 20 samples as baseline
-    smoothed     = smooth_ema(raw, SMOOTH_ALPHA)
-    baseline     = float(np.median(smoothed[: min(20, n)]))
-    centered_raw = smoothed - baseline
-    sig_range_raw = float(centered_raw.max() - centered_raw.min())
+# ---------------------------------------------------------------------------
+# Full prediction pipeline
+# ---------------------------------------------------------------------------
 
-    # Linear detrend when gyro drift dominates (same 65 % threshold as repAnalysis.ts)
-    drift_window = max(1, min(20, int(n * 0.05)))
-    drift_ratio  = (
-        abs(centered_raw[-drift_window:].mean() - centered_raw[:drift_window].mean())
-        / sig_range_raw
-        if sig_range_raw > 0
-        else 0.0
+def predict_recording(recording_path: Path) -> dict:
+    """
+    Load a recording JSON, run the full Segment-and-Score pipeline, and
+    return a result dict with predicted rep count and per-rep phase detail.
+    """
+    sys.path.insert(0, str(ROOT))
+    from train import (
+        SEGMENT_FEATURE_COLS,
+        extract_segment_features,
+        over_segment,
+        preprocess_to_1d,
     )
-    centered = scipy_detrend(centered_raw, type="linear") if drift_ratio >= 0.65 else centered_raw
-
-    sig_min   = float(centered.min())
-    sig_max   = float(centered.max())
-    sig_range = sig_max - sig_min
-
-    if sig_range == 0:
-        return {"rep_count": target, "rep_durations_ms": []}
-
-    def find_peaks_at(threshold_fraction: float) -> list:
-        threshold = sig_min + sig_range * threshold_fraction
-        peaks: list = []
-        last_ts = -np.inf
-        for i in range(1, n - 1):
-            is_peak = centered[i] > centered[i - 1] and centered[i] >= centered[i + 1]
-            if is_peak and centered[i] > threshold and ts[i] - last_ts >= RECONCILE_MIN_PEAK_GAP_MS:
-                peaks.append((float(ts[i]), float(centered[i])))
-                last_ts = ts[i]
-        return peaks
-
-    # Stage 1: binary search on threshold fraction ∈ [0, 1]
-    lo, hi    = 0.0, 1.0
-    best_peaks = find_peaks_at(0.0)
-
-    for _ in range(RECONCILE_MAX_SEEK_ITERATIONS):
-        mid   = (lo + hi) / 2
-        peaks = find_peaks_at(mid)
-
-        if len(peaks) == target:
-            best_peaks = peaks
-            break
-
-        if len(peaks) > target:
-            lo = mid   # too many → raise threshold to suppress minor peaks
-        else:
-            hi = mid   # too few  → lower threshold to surface smaller ones
-
-        if abs(len(peaks) - target) < abs(len(best_peaks) - target):
-            best_peaks = peaks
-
-    # Stage 2: amplitude pruning — keep the N tallest peaks, re-sort by time
-    if len(best_peaks) > target:
-        best_peaks = sorted(best_peaks, key=lambda p: -p[1])[:target]
-        best_peaks = sorted(best_peaks, key=lambda p:  p[0])
-
-    peak_ts = [p[0] for p in best_peaks]
-
-    if len(peak_ts) < 2:
-        return {"rep_count": target, "rep_durations_ms": []}
-
-    raw_durations = [peak_ts[i + 1] - peak_ts[i] for i in range(len(peak_ts) - 1)]
-
-    # Stage 3: outlier splitting — split longest gap until duration count is right
-    missing_gaps = target - len(best_peaks)   # = (target−1) − len(raw_durations)
-    durations    = list(raw_durations)
-
-    for _ in range(missing_gaps):
-        max_idx = max(range(len(durations)), key=lambda i: durations[i])
-        half    = durations[max_idx] / 2
-        durations[max_idx : max_idx + 1] = [half, half]
-
-    return {"rep_count": target, "rep_durations_ms": durations}
-
-
-def main():
-    if len(sys.argv) < 2:
-        sys.exit("Usage: python predict.py <path-to-recording.json>")
-
-    recording_path = Path(sys.argv[1])
-    if not recording_path.exists():
-        sys.exit(f"File not found: {recording_path}")
 
     pkl_path = ROOT / "output" / "model.pkl"
     if not pkl_path.exists():
@@ -150,53 +101,173 @@ def main():
     model        = bundle["model"]
     feature_cols = bundle["feature_cols"]
 
-    sys.path.insert(0, str(ROOT))
-    from train import extract_features, build_categorical_features
-
     with open(recording_path) as f:
         data = json.load(f)
 
-    samples = data["samples"]
-    feats   = extract_features(samples)
-    feats["set_number"] = float(data.get("setNumber") or 1)
-    build_categorical_features(
-        feats,
-        str(data.get("muscleGroup")  or "unknown"),
-        str(data.get("equipmentType") or "unknown"),
-        str(data.get("mechanicType")  or "unknown"),
-    )
+    samples  = data.get("samples", [])
+    metadata = {
+        "muscleGroup":   data.get("muscleGroup"),
+        "equipmentType": data.get("equipmentType"),
+        "mechanicType":  data.get("mechanicType"),
+        "setNumber":     data.get("setNumber"),
+    }
 
-    x            = [[feats.get(col, 0.0) for col in feature_cols]]
-    raw_pred     = float(model.predict(x)[0])
-    rounded_pred = round(raw_pred)
+    if len(samples) < 20:
+        return {
+            "recording":          recording_path.name,
+            "predicted_reps":     0,
+            "candidate_segments": 0,
+            "classified_as_rep":  0,
+            "reps":               [],
+            "error":              f"recording too short ({len(samples)} samples)",
+        }
 
-    print(f"\nRecording : {recording_path.name}")
-    print(f"Samples   : {len(samples)}")
-    print(f"Duration  : {feats['duration_ms'] / 1000:.1f}s")
-    print(f"ML model  : {rounded_pred} reps  (raw: {raw_pred:.2f})")
+    signal_1d, timestamps = preprocess_to_1d(samples)
+    all_segs              = over_segment(signal_1d, timestamps)
+
+    if not all_segs:
+        return {
+            "recording":          recording_path.name,
+            "predicted_reps":     0,
+            "candidate_segments": 0,
+            "classified_as_rep":  0,
+            "reps":               [],
+            "error":              "no segments found in signal (motion too small?)",
+        }
+
+    # Annotate segments with amplitude + energy (required by extract_segment_features)
+    for seg in all_segs:
+        chunk          = signal_1d[seg["start_idx"] : seg["end_idx"] + 1]
+        seg["amplitude"] = float(chunk.max() - chunk.min())
+        dur            = float(timestamps[seg["end_idx"]] - timestamps[seg["start_idx"]])
+        avg_dt         = (dur / 1000.0) / max(1, len(chunk) - 1)
+        seg["energy"]  = float(np.sum(chunk ** 2) * avg_dt)
+
+    # Extract features and classify each segment
+    feature_matrix = []
+    for idx, seg in enumerate(all_segs):
+        feats = extract_segment_features(idx, seg, signal_1d, timestamps, all_segs, metadata)
+        feature_matrix.append([feats.get(col, 0.0) for col in feature_cols])
+
+    probs        = model.predict_proba(np.array(feature_matrix))[:, 1]
+    rep_pairs    = [(seg, float(p)) for seg, p in zip(all_segs, probs) if p > 0.5]
+
+    # Sort surviving reps chronologically
+    rep_pairs.sort(key=lambda x: x[0]["start_ts"])
+
+    rec_start   = float(timestamps[0])
+    reps_detail = []
+    for i, (seg, conf) in enumerate(rep_pairs, 1):
+        phases     = detect_phases(seg, signal_1d, timestamps)
+        dur_ms     = float(seg["end_ts"] - seg["start_ts"])
+        reps_detail.append({
+            "index":               i,
+            "start_ms":            round(seg["start_ts"] - rec_start, 1),
+            "end_ms":              round(seg["end_ts"]   - rec_start, 1),
+            "duration_ms":         round(dur_ms, 1),
+            **phases,
+            "classifier_confidence": round(conf, 3),
+        })
+
+    result: dict = {
+        "recording":          recording_path.name,
+        "predicted_reps":     len(reps_detail),
+        "candidate_segments": len(all_segs),
+        "classified_as_rep":  len(reps_detail),
+        "reps":               reps_detail,
+    }
 
     if "reps" in data:
-        true_count = int(data["reps"])
-        err        = rounded_pred - true_count
-        print(f"Ground truth: {true_count} reps  (error: {err:+d})")
+        true_count               = int(data["reps"])
+        result["ground_truth_reps"] = true_count
+        result["count_error"]    = len(reps_detail) - true_count
 
-    # Reconcile ML count with the peak detector → per-rep durations
-    result = reconcile_rep_counts(samples, rounded_pred)
-    durs   = result["rep_durations_ms"]
+    return result
 
-    if durs:
-        avg  = sum(durs) / len(durs)
-        total = sum(durs)
-        print(f"\nPer-rep durations (ML-reconciled):")
-        for i, d in enumerate(durs, 1):
-            bar = "█" * int(d / 500)   # one block per 0.5 s
-            print(f"  Rep {i:>2}: {d / 1000:5.2f}s  {bar}")
-        print(f"\n  Avg : {avg  / 1000:.2f}s")
-        print(f"  Total working time: {total / 1000:.1f}s")
-    else:
-        print("\n  (signal too flat to compute rep durations)")
 
+# ---------------------------------------------------------------------------
+# CLI output
+# ---------------------------------------------------------------------------
+
+def _print_result(result: dict, n_samples: int) -> None:
+    print(f"\nRecording         : {result['recording']}")
+    print(f"Samples           : {n_samples}")
+    print(f"Candidate segments: {result['candidate_segments']}")
+    print(f"Classified as rep : {result['classified_as_rep']}")
+    print(f"Predicted reps    : {result['predicted_reps']}")
+
+    if "ground_truth_reps" in result:
+        err = result["count_error"]
+        print(f"Ground truth reps : {result['ground_truth_reps']}  (error: {err:+d})")
+
+    if "error" in result:
+        print(f"\nNote: {result['error']}")
+
+    reps = result.get("reps", [])
+    if not reps:
+        print("\n  No reps detected.")
+        return
+
+    print(f"\nPer-rep breakdown:")
+    hdr = f"  {'Rep':>4}  {'Total':>8}  {'Phase A':>8}  {'Phase B':>8}  "
+    hdr += f"{'spd A':>8}  {'spd B':>8}  {'Conf':>6}"
+    sep = "  " + "─" * (len(hdr) - 2)
+    print(hdr)
+    print(sep)
+
+    for r in reps:
+        print(
+            f"  {r['index']:>4}"
+            f"  {r['duration_ms']/1000:>7.2f}s"
+            f"  {r['phase_a_duration_ms']/1000:>7.2f}s"
+            f"  {r['phase_b_duration_ms']/1000:>7.2f}s"
+            f"  {r['phase_a_speed_dps']:>7.1f}°/s"
+            f"  {r['phase_b_speed_dps']:>7.1f}°/s"
+            f"  {r['classifier_confidence']:>6.2f}"
+        )
+
+    durations  = [r["duration_ms"] for r in reps]
+    phase_a_ms = [r["phase_a_duration_ms"] for r in reps]
+    phase_b_ms = [r["phase_b_duration_ms"] for r in reps]
+    spd_a      = [r["phase_a_speed_dps"] for r in reps]
+    spd_b      = [r["phase_b_speed_dps"] for r in reps]
+    n          = len(reps)
+
+    print(f"\n  Averages:")
+    print(f"    Total duration : {sum(durations)/n/1000:.2f}s")
+    print(f"    Phase A        : {sum(phase_a_ms)/n/1000:.2f}s  "
+          f"({sum(spd_a)/n:.1f}°/s avg)")
+    print(f"    Phase B        : {sum(phase_b_ms)/n/1000:.2f}s  "
+          f"({sum(spd_b)/n:.1f}°/s avg)")
+    print(f"    Total TUT      : {sum(durations)/1000:.1f}s")
     print()
+
+
+def main() -> None:
+    args = sys.argv[1:]
+    if not args or args[0] in ("-h", "--help"):
+        sys.exit("Usage: python predict.py <recording.json> [--json]")
+
+    as_json        = "--json" in args
+    recording_args = [a for a in args if not a.startswith("-")]
+
+    if not recording_args:
+        sys.exit("Usage: python predict.py <recording.json> [--json]")
+
+    recording_path = Path(recording_args[0])
+    if not recording_path.exists():
+        sys.exit(f"File not found: {recording_path}")
+
+    with open(recording_path) as f:
+        data = json.load(f)
+    n_samples = len(data.get("samples", []))
+
+    result = predict_recording(recording_path)
+
+    if as_json:
+        print(json.dumps(result, indent=2))
+    else:
+        _print_result(result, n_samples)
 
 
 if __name__ == "__main__":

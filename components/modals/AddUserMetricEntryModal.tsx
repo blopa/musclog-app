@@ -120,16 +120,22 @@ export default function AddUserMetricEntryModal({
   // Reset weight/height to display-unit defaults when modal opens or units change
   useEffect(() => {
     if (visible) {
-      setWeight(units === 'imperial' ? kgToDisplay(DEFAULT_WEIGHT_KG, units) : DEFAULT_WEIGHT_KG);
-      setHeight(units === 'imperial' ? cmToDisplay(DEFAULT_HEIGHT_CM, units) : DEFAULT_HEIGHT_CM);
-      setNote(''); // Reset note when modal opens
+      const syncDefaults = () => {
+        setWeight(units === 'imperial' ? kgToDisplay(DEFAULT_WEIGHT_KG, units) : DEFAULT_WEIGHT_KG);
+        setHeight(units === 'imperial' ? cmToDisplay(DEFAULT_HEIGHT_CM, units) : DEFAULT_HEIGHT_CM);
+        setNote('');
+      };
+      syncDefaults();
     }
   }, [visible, units]);
 
   useEffect(() => {
     if (!visible) {
-      setIsDatePickerVisible(false);
-      setIsTimePickerVisible(false);
+      const reset = () => {
+        setIsDatePickerVisible(false);
+        setIsTimePickerVisible(false);
+      };
+      reset();
     }
   }, [visible]);
 

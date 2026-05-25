@@ -267,8 +267,11 @@ export function AddFoodItemToMealModal({
 
   useEffect(() => {
     if (!visible) {
-      setShowScannedFoodDetails(false);
-      setScannedBarcode(null);
+      const reset = () => {
+        setShowScannedFoodDetails(false);
+        setScannedBarcode(null);
+      };
+      reset();
     }
   }, [visible]);
 

@@ -36,12 +36,15 @@ export function SaveForLaterPortionModal({
   const isBusy = isLoading || isSubmitting;
 
   useEffect(() => {
-    if (visible) {
-      setPercentage(100);
-      setNote('');
-    } else {
-      setIsSubmitting(false);
-    }
+    const syncOrReset = () => {
+      if (visible) {
+        setPercentage(100);
+        setNote('');
+      } else {
+        setIsSubmitting(false);
+      }
+    };
+    syncOrReset();
   }, [visible]);
 
   const handleConfirm = async () => {

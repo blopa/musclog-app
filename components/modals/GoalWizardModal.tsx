@@ -170,15 +170,21 @@ export function GoalWizardModal({ visible, onClose, onComplete }: GoalWizardModa
   useEffect(() => {
     if (!visible) {
       // Reset when closed
-      setCurrentStepIndex(0);
-      setGoalType(null);
-      setGoalWeightDisplay(defaultWeightDisplay);
-      setTargetDate(null);
-      setHasManuallySetTargetDate(false);
+      const reset = () => {
+        setCurrentStepIndex(0);
+        setGoalType(null);
+        setGoalWeightDisplay(defaultWeightDisplay);
+        setTargetDate(null);
+        setHasManuallySetTargetDate(false);
+      };
+      reset();
       return;
     }
 
-    setIsLoadingWeight(true);
+    const startLoad = () => {
+      setIsLoadingWeight(true);
+    };
+    startLoad();
     Promise.all([
       UserMetricService.getUserBodyWeightKgForVolume(),
       UserMetricService.getLatest('body_fat'),

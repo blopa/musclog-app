@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import type { ProgressionMode, ThemeOption } from '@/constants/settings';
 import { SettingsService } from '@/database/services/SettingsService';
@@ -31,6 +31,7 @@ export function useDebouncedSettings(debounceMs = 200) {
   // Keys that have a pending debounced write. While a key is here the sync
   // effect will not overwrite the optimistic local value with the DB value.
   const pendingKeysRef = useRef<Set<string>>(new Set());
+  const [hasPendingChanges, setHasPendingChanges] = useState(false);
 
   // One timeout handle per setting key.
   const timeoutRefs = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
@@ -42,58 +43,61 @@ export function useDebouncedSettings(debounceMs = 200) {
   // --- Initialization ---
   // Populate localSettings from the DB on first load (once isLoading clears).
   const initialized = useRef(false);
-  if (!initialized.current && !actualSettings.isLoading) {
-    initialized.current = true;
-    const keys: (keyof typeof actualSettings)[] = [
-      'theme',
-      'connectHealthData',
-      'readHealthData',
-      'writeHealthData',
-      'anonymousBugReport',
-      'enableGoogleGemini',
-      'enableOpenAi',
-      'enableLocalLlm',
-      'dailyNutritionInsights',
-      'workoutInsights',
-      'notifications',
-      'notificationsWorkoutReminders',
-      'notificationsActiveWorkout',
-      'notificationsNutritionOverview',
-      'notificationsMenstrualCycle',
-      'notificationsRestTimer',
-      'notificationsWorkoutDuration',
-      'useOcrBeforeAi',
-      'useOnDeviceAi',
-      'useMusclogFreeTier',
-      'sendFoundationFoodsToLlm',
-      'useThinkingMode',
-      'units',
-      'foodSearchSource',
-      'conversationContext',
-      'chartTooltipPosition',
-      'language',
-      'maxAiMemories',
-      'showDailyMoodPrompt',
-      'showDailyWaterPrompt',
-      'showDailySupplementPrompt',
-      'alwaysAllowFoodEditing',
-      'showWeightPrediction',
-      'requireExportEncryption',
-      'disableMinimumCalories',
-      'useBfForCalculations',
-      'intuitiveEatingMode',
-      'progressionMode',
-      'advancedDataManagement',
-    ];
+  useLayoutEffect(() => {
+    if (!initialized.current && !actualSettings.isLoading) {
+      initialized.current = true;
+      const keys: (keyof typeof actualSettings)[] = [
+        'theme',
+        'connectHealthData',
+        'readHealthData',
+        'writeHealthData',
+        'anonymousBugReport',
+        'enableGoogleGemini',
+        'enableOpenAi',
+        'enableLocalLlm',
+        'dailyNutritionInsights',
+        'workoutInsights',
+        'notifications',
+        'notificationsWorkoutReminders',
+        'notificationsActiveWorkout',
+        'notificationsNutritionOverview',
+        'notificationsMenstrualCycle',
+        'notificationsRestTimer',
+        'notificationsWorkoutDuration',
+        'useOcrBeforeAi',
+        'useOnDeviceAi',
+        'useMusclogFreeTier',
+        'sendFoundationFoodsToLlm',
+        'useThinkingMode',
+        'units',
+        'foodSearchSource',
+        'conversationContext',
+        'chartTooltipPosition',
+        'language',
+        'maxAiMemories',
+        'showDailyMoodPrompt',
+        'showDailyWaterPrompt',
+        'showDailySupplementPrompt',
+        'alwaysAllowFoodEditing',
+        'showWeightPrediction',
+        'requireExportEncryption',
+        'disableMinimumCalories',
+        'useBfForCalculations',
+        'intuitiveEatingMode',
+        'progressionMode',
+        'advancedDataManagement',
+        'bleGenerateChartPayload',
+      ];
 
-    const initial: Record<string, SettingValue> = {};
-    for (const k of keys) {
-      if (actualSettings[k] !== undefined) {
-        initial[k] = actualSettings[k] as SettingValue;
+      const initial: Record<string, SettingValue> = {};
+      for (const k of keys) {
+        if (actualSettings[k] !== undefined) {
+          initial[k] = actualSettings[k] as SettingValue;
+        }
       }
+      setLocalSettings(initial);
     }
-    setLocalSettings(initial);
-  }
+  }, [actualSettings]);
 
   // --- DB → local sync (runs after render, never during render) ---
   // Only syncs keys that do NOT have a pending write, so an actualSettings
@@ -129,6 +133,7 @@ export function useDebouncedSettings(debounceMs = 200) {
 
         // 2. Mark as pending so the sync effect leaves it alone.
         pendingKeysRef.current.add(settingKey);
+        setHasPendingChanges(true);
         pendingValuesRef.current[settingKey] = newValue;
 
         // 3. Reset the debounce timer for this key.
@@ -148,6 +153,7 @@ export function useDebouncedSettings(debounceMs = 200) {
             })
             .finally(() => {
               pendingKeysRef.current.delete(settingKey);
+              setHasPendingChanges(pendingKeysRef.current.size > 0);
             });
         }, debounceMs);
       },
@@ -237,6 +243,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       }));
 
       pendingKeysRef.current.add('useOnDeviceAi');
+      setHasPendingChanges(true);
       pendingValuesRef.current['useOnDeviceAi'] = newValue;
 
       if (newValue) {
@@ -254,7 +261,10 @@ export function useDebouncedSettings(debounceMs = 200) {
           delete pendingValuesRef.current[key];
           save()
             .catch((e) => console.error(`[useDebouncedSettings] Error saving ${key}:`, e))
-            .finally(() => pendingKeysRef.current.delete(key));
+            .finally(() => {
+              pendingKeysRef.current.delete(key);
+              setHasPendingChanges(pendingKeysRef.current.size > 0);
+            });
         }, debounceMs);
       };
 
@@ -339,6 +349,10 @@ export function useDebouncedSettings(debounceMs = 200) {
   const handleAdvancedDataManagementChange = createSettingHandler<boolean>(
     'advancedDataManagement',
     SettingsService.setAdvancedDataManagement
+  );
+  const handleBleGenerateChartPayloadChange = createSettingHandler<boolean>(
+    'bleGenerateChartPayload',
+    SettingsService.setBleGenerateChartPayload
   );
 
   // --- Flush (for when the modal closes before the timer fires) ---
@@ -472,11 +486,15 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'advancedDataManagement':
             await SettingsService.setAdvancedDataManagement(value as boolean);
             break;
+          case 'bleGenerateChartPayload':
+            await SettingsService.setBleGenerateChartPayload(value as boolean);
+            break;
         }
       } catch (error) {
         console.error(`[useDebouncedSettings] Error flushing ${settingKey}:`, error);
       } finally {
         pendingKeysRef.current.delete(settingKey);
+        setHasPendingChanges(pendingKeysRef.current.size > 0);
       }
     }
   }, []);
@@ -563,6 +581,8 @@ export function useDebouncedSettings(debounceMs = 200) {
       (localSettings.progressionMode as ProgressionMode) ?? actualSettings.progressionMode,
     advancedDataManagement:
       (localSettings.advancedDataManagement as boolean) ?? actualSettings.advancedDataManagement,
+    bleGenerateChartPayload:
+      (localSettings.bleGenerateChartPayload as boolean) ?? actualSettings.bleGenerateChartPayload,
 
     // Confirmed DB values
     actualTheme: actualSettings.theme,
@@ -610,10 +630,11 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleIntuitiveEatingModeChange,
     handleProgressionModeChange,
     handleAdvancedDataManagementChange,
+    handleBleGenerateChartPayloadChange,
 
     // Utilities
     flushAllPendingChanges,
     cleanup,
-    hasPendingChanges: pendingKeysRef.current.size > 0,
+    hasPendingChanges,
   };
 }

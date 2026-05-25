@@ -69,14 +69,17 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
   // Reset form when modal closes
   useEffect(() => {
     if (!visible) {
-      setExerciseName('');
-      setPrimaryMuscle(null);
-      setSecondaryMuscles([]);
-      setIsBodyweightOnly(false);
-      setImageUri(undefined);
-      setVideoUrl('');
-      setShowVideoInput(false);
-      setIsCreating(false);
+      const reset = () => {
+        setExerciseName('');
+        setPrimaryMuscle(null);
+        setSecondaryMuscles([]);
+        setIsBodyweightOnly(false);
+        setImageUri(undefined);
+        setVideoUrl('');
+        setShowVideoInput(false);
+        setIsCreating(false);
+      };
+      reset();
     }
   }, [visible]);
 

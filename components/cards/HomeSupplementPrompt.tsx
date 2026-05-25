@@ -49,8 +49,11 @@ export function HomeSupplementPrompt({
       resolvingSupplementId &&
       !pendingSupplements.some((supplement) => supplement.id === resolvingSupplementId)
     ) {
-      setResolvingSupplementId(null);
-      setIsSaving(false);
+      const reset = () => {
+        setResolvingSupplementId(null);
+        setIsSaving(false);
+      };
+      reset();
     }
   }, [pendingSupplements, resolvingSupplementId]);
 
@@ -67,7 +70,10 @@ export function HomeSupplementPrompt({
       resolvingSupplementId == null;
 
     if (shouldBeVisible) {
-      setIsActuallyVisible(true);
+      const show = () => {
+        setIsActuallyVisible(true);
+      };
+      show();
       opacity.value = withTiming(1, { duration: 400 });
       height.value = withSpring(220, { damping: 20, stiffness: 90 });
       marginBottom.value = withTiming(24, { duration: 400 });

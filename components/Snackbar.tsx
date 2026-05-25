@@ -1,5 +1,5 @@
 import { AlertTriangle, CheckCircle } from 'lucide-react-native';
-import { useRef } from 'react';
+import { useState } from 'react';
 import { Animated, PanResponder, Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -19,23 +19,20 @@ type SnackbarProps = {
 
 export function Snackbar({ snackbar, onDismiss }: SnackbarProps) {
   const theme = useTheme();
-  const pan = useRef(new Animated.ValueXY()).current;
-  const opacity = useRef(new Animated.Value(1)).current;
-
-  const panResponder = useRef(
+  const [pan] = useState(() => new Animated.ValueXY());
+  const [opacity] = useState(() => new Animated.Value(1));
+  const [panResponder] = useState(() =>
     PanResponder.create({
       onMoveShouldSetPanResponder: (_, gestureState) => {
         return Math.abs(gestureState.dx) > 5;
       },
       onPanResponderMove: (_, gestureState) => {
         pan.setValue({ x: gestureState.dx, y: 0 });
-        // Update opacity based on swipe distance
         const newOpacity = 1 - Math.abs(gestureState.dx) / 200;
         opacity.setValue(Math.max(0, Math.min(1, newOpacity)));
       },
       onPanResponderRelease: (_, gestureState) => {
         if (Math.abs(gestureState.dx) > 100) {
-          // Swipe threshold met - dismiss
           Animated.parallel([
             Animated.timing(pan.x, {
               toValue: gestureState.dx > 0 ? 400 : -400,
@@ -49,7 +46,6 @@ export function Snackbar({ snackbar, onDismiss }: SnackbarProps) {
             }),
           ]).start(() => onDismiss(snackbar.id));
         } else {
-          // Snap back to position
           Animated.parallel([
             Animated.spring(pan, {
               toValue: { x: 0, y: 0 },
@@ -64,7 +60,7 @@ export function Snackbar({ snackbar, onDismiss }: SnackbarProps) {
         }
       },
     })
-  ).current;
+  );
 
   const isSuccess = snackbar.type === 'success';
 

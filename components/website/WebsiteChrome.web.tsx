@@ -37,6 +37,7 @@ export function DownloadModal({
   const { t } = useTranslation(undefined, { keyPrefix: 'website.cta' });
   const [isOpen, setIsOpen] = useState(false);
   const [popoverHeight, setPopoverHeight] = useState(0);
+  const [triggerRect, setTriggerRect] = useState<DOMRect | null>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
   const popoverContentRef = useRef<HTMLDivElement>(null);
 
@@ -75,11 +76,15 @@ export function DownloadModal({
   }, [isOpen]);
 
   useEffect(() => {
-    if (!isOpen || !popoverContentRef.current) {
+    if (!isOpen) {
       return;
     }
 
-    setPopoverHeight(popoverContentRef.current.getBoundingClientRect().height);
+    setTriggerRect(triggerRef.current?.getBoundingClientRect() ?? null);
+
+    if (popoverContentRef.current) {
+      setPopoverHeight(popoverContentRef.current.getBoundingClientRect().height);
+    }
   }, [isOpen]);
 
   const buttonClasses = {
@@ -93,7 +98,6 @@ export function DownloadModal({
     white: 'left-1/2 -translate-x-1/2',
   };
 
-  const triggerRect = triggerRef.current?.getBoundingClientRect();
   const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 0;
   const modalWidth = Math.min(Math.max(viewportWidth - 32, 0), 384);
   const centeredLeft =
