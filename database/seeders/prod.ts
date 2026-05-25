@@ -419,6 +419,9 @@ export async function seedProductionData(options?: SeedProductionDataOptions): P
     await SettingsService.setUseMusclogFreeTier(false);
     console.log('Set default Musclog free tier to false');
 
+    await SettingsService.setBleGenerateChartPayload(false);
+    console.log(`Set default WitMotion chart payload generation to 'false'}`);
+
     if (Platform.OS === 'ios') {
       await SettingsService.setUseOnDeviceAi(true);
       console.log('Set default use on-device AI (Apple Intelligence) to true on iOS');

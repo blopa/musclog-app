@@ -4,6 +4,7 @@ import {
   ADVANCED_DATA_MANAGEMENT_SETTING_TYPE,
   ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
+  BLE_GENERATE_CHART_PAYLOAD_SETTING_TYPE,
   CHART_TOOLTIP_POSITION_SETTING_TYPE,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
   CONVERSATION_CONTEXT,
@@ -396,6 +397,13 @@ export class SettingsService {
   }
 
   /**
+   * Upsert the WitMotion chart payload generation setting
+   */
+  static async setBleGenerateChartPayload(value: boolean) {
+    await SettingsService.setBooleanSetting(BLE_GENERATE_CHART_PAYLOAD_SETTING_TYPE, value);
+  }
+
+  /**
    * Upsert the language setting
    */
   static async setLanguage(language: string) {
@@ -505,6 +513,10 @@ export class SettingsService {
 
   static async getDumpLlmRequests(): Promise<boolean> {
     return SettingsService.getBooleanSetting(DUMP_LLM_REQUESTS_SETTING_TYPE, false);
+  }
+
+  static async getBleGenerateChartPayload(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(BLE_GENERATE_CHART_PAYLOAD_SETTING_TYPE, false);
   }
 
   static async getDailyNutritionInsights(): Promise<boolean> {

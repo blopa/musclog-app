@@ -14,6 +14,7 @@ import Svg, { Line as SvgLine, Polyline, Rect as SvgRect, Text as SvgText } from
 
 import { MasterLayout } from '@/components/MasterLayout';
 import { Button } from '@/components/theme/Button';
+import { SettingsService } from '@/database/services';
 import type { WitMotionVector3 } from '@/modules/witmotion-ble';
 import { useWitMotion, witMotionClient } from '@/modules/witmotion-ble';
 import type {
@@ -791,7 +792,17 @@ export default function WitMotionTestScreen() {
     const samples = [...recordedMotionRef.current];
     recordedMotionRef.current = [];
 
-    const result = segmentAndScore(samples);
+    let generatePayload = false;
+    try {
+      generatePayload = await SettingsService.getBleGenerateChartPayload();
+    } catch (error) {
+      console.warn(
+        '[witmotion] Failed to read payload generation setting, defaulting to false:',
+        error
+      );
+    }
+
+    const result = segmentAndScore(samples, {}, generatePayload);
     setPipelineResult(result);
 
     setRecordingStatus('analyzed');

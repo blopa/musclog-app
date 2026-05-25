@@ -760,12 +760,15 @@ export function segmentAndScore(
     };
   });
 
+  const chartPayload = generatePayload
+    ? buildBleSetChartPayload(signal1d, timestamps, repPairs, reps)
+    : undefined;
+
   return {
     predictedReps: reps.length,
     candidateSegments: allSegs.length,
     classifiedAsRep: reps.length,
     reps,
-    // TODO: use generatePayload flag to generate this or not - also add an app config to enable/disable generating this data - set as disabled by default in prod.ts
-    chartPayload: buildBleSetChartPayload(signal1d, timestamps, repPairs, reps),
+    chartPayload,
   };
 }

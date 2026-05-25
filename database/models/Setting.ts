@@ -21,6 +21,7 @@ export type SettingType =
   | 'use_musclog_free_tier'
   | 'musclog_gateway_anonymous_id'
   | 'dump_llm_requests'
+  | 'ble_generate_chart_payload'
   | 'chart_tooltip_position'
   | 'nutrition_display'
   | 'other';
