@@ -9,3 +9,4 @@ env/
 output/features.csv
 output/model.pkl
 recordings/*
+output/html/*
