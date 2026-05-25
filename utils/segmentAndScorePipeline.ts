@@ -709,7 +709,8 @@ function buildBleSetChartPayload(
 
 export function segmentAndScore(
   samples: MotionSample[],
-  metadata: RecordingMetadata = {}
+  metadata: RecordingMetadata = {},
+  generatePayload: boolean = false
 ): SegmentAndScoreResult {
   if (samples.length < 20) {
     return {
@@ -764,6 +765,7 @@ export function segmentAndScore(
     candidateSegments: allSegs.length,
     classifiedAsRep: reps.length,
     reps,
+    // TODO: use generatePayload flag to generate this or not - also add an app config to enable/disable generating this data - set as disabled by default in prod.ts
     chartPayload: buildBleSetChartPayload(signal1d, timestamps, repPairs, reps),
   };
 }
