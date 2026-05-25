@@ -34,6 +34,10 @@ export interface BleWorkoutFile {
   startedAt: string;
   stoppedAt: string;
   sampleCount: number;
+  userHeightCm?: number;
+  userAgeYears?: number;
+  userGender?: string;
+  userWeightKg?: number;
   samples: BleWorkoutSample[];
 }
 
@@ -103,9 +107,26 @@ function buildMetadataHeader(data: Omit<BleWorkoutFile, 'samples'>): string {
     `  "deviceDisplayName": ${JSON.stringify(data.deviceDisplayName)},`,
     `  "startedAt": ${JSON.stringify(data.startedAt)},`,
     `  "stoppedAt": ${JSON.stringify(data.stoppedAt)},`,
-    `  "sampleCount": ${data.sampleCount},`,
-    `  "samples": [`
+    `  "sampleCount": ${data.sampleCount},`
   );
+
+  if (data.userHeightCm != null) {
+    lines.push(`  "userHeightCm": ${data.userHeightCm},`);
+  }
+
+  if (data.userAgeYears != null) {
+    lines.push(`  "userAgeYears": ${data.userAgeYears},`);
+  }
+
+  if (data.userGender != null) {
+    lines.push(`  "userGender": ${JSON.stringify(data.userGender)},`);
+  }
+
+  if (data.userWeightKg != null) {
+    lines.push(`  "userWeightKg": ${data.userWeightKg},`);
+  }
+
+  lines.push(`  "samples": [`);
 
   return `${lines.join('\n')}\n`;
 }

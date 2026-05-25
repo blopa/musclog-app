@@ -57,6 +57,9 @@ import { database } from '@/database';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import { BleDeviceService } from '@/database/services/BleDeviceService';
+import { UserMetricService } from '@/database/services/UserMetricService';
+import { UserService } from '@/database/services/UserService';
+import { localDayHalfOpenRange } from '@/utils/calendarDate';
 import { useActiveWorkout } from '@/hooks/useActiveWorkout';
 import { useExerciseImageSource } from '@/hooks/useExerciseImageSource';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -535,6 +538,46 @@ export default function WorkoutSessionScreen() {
     }
 
     try {
+      const stoppedAt = new Date();
+
+      // Collect user biometrics to enrich the recording.
+      let userHeightCm: number | undefined;
+      let userAgeYears: number | undefined;
+      let userGender: string | undefined;
+      let userWeightKg: number | undefined;
+
+      try {
+        const [heightMetric, user, weightMetric] = await Promise.all([
+          UserMetricService.getLatest('height'),
+          UserService.getCurrentUser(),
+          UserMetricService.getLatest('weight'),
+        ]);
+
+        if (heightMetric) {
+          const { value } = await heightMetric.getDecrypted();
+          userHeightCm = value;
+        }
+
+        if (user?.dateOfBirth) {
+          const ageMsAtStop = stoppedAt.getTime() - user.dateOfBirth;
+          userAgeYears = Math.floor(ageMsAtStop / (365.25 * 24 * 60 * 60 * 1000));
+        }
+
+        if (user?.gender) {
+          userGender = user.gender;
+        }
+
+        if (weightMetric) {
+          const { start, nextStart } = localDayHalfOpenRange(stoppedAt);
+          if (weightMetric.date >= start && weightMetric.date < nextStart) {
+            const { value } = await weightMetric.getDecrypted();
+            userWeightKg = value;
+          }
+        }
+      } catch {
+        // Non-fatal — biometrics are best-effort enrichment.
+      }
+
       await saveBleWorkoutFile({
         version: 1,
         workoutLogId: workoutLog.id,
@@ -547,8 +590,12 @@ export default function WorkoutSessionScreen() {
         deviceId: wit.connectedDevice.id,
         deviceDisplayName: wit.connectedDevice.name,
         startedAt: new Date(startedAt ?? Date.now()).toISOString(),
-        stoppedAt: new Date().toISOString(),
+        stoppedAt: stoppedAt.toISOString(),
         sampleCount,
+        userHeightCm,
+        userAgeYears,
+        userGender,
+        userWeightKg,
         samplesFile: tempFile,
       });
       trackingTempFileRef.current = null;
