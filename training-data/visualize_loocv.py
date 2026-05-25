@@ -48,10 +48,7 @@ from predict import detect_phases
 
 OUTPUT_HTML_DIR = ROOT / "output" / "html"
 
-# Max signal points stored in the compressed chart payload.
-# Lower = smaller payload; 200 pts is still visually indistinguishable
-# from the full signal for a 30–60 s set at 100 Hz.
-CHART_MAX_SIGNAL_POINTS = 100
+CHART_MIN_SIGNAL_POINTS = 50  # floor so 0-rep recordings still get a visible line
 
 
 # ---------------------------------------------------------------------------
@@ -185,10 +182,11 @@ def build_compressed_chart_payload(
     n         = len(signal_1d)
     rec_start = float(timestamps[0])
 
-    # Downsampled signal ─────────────────────────────────────────────────────
-    step = max(1, n // CHART_MAX_SIGNAL_POINTS)
-    xs   = ((timestamps[::step] - timestamps[0]) / 1000).round(3).tolist()
-    ys   = signal_1d[::step].round(3).tolist()
+    # Downsampled signal — 10 pts per predicted rep, floored at CHART_MIN_SIGNAL_POINTS
+    max_pts = max(len(predicted_pairs) * 10, CHART_MIN_SIGNAL_POINTS)
+    step    = max(1, n // max_pts)
+    xs      = ((timestamps[::step] - timestamps[0]) / 1000).round(3).tolist()
+    ys      = signal_1d[::step].round(3).tolist()
 
     # Segment colour annotations ─────────────────────────────────────────────
     pred_set = {id(s) for s, _ in predicted_pairs}
