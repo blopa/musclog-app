@@ -48,6 +48,11 @@ from predict import detect_phases
 
 OUTPUT_HTML_DIR = ROOT / "output" / "html"
 
+# Max signal points stored in the compressed chart payload.
+# Lower = smaller payload; 200 pts is still visually indistinguishable
+# from the full signal for a 30–60 s set at 100 Hz.
+CHART_MAX_SIGNAL_POINTS = 200
+
 
 # ---------------------------------------------------------------------------
 # LOOCV model training
@@ -162,6 +167,77 @@ def _color(pseudo_rep: int, predicted: bool) -> str:
     return "rgba(156,163,175,0.08)"
 
 
+def build_compressed_chart_payload(
+    signal_1d: np.ndarray,
+    timestamps: np.ndarray,
+    labeled_segs: list,
+    predicted_pairs: list,
+) -> dict:
+    """
+    Build the minimal payload needed to render the set chart in-app.
+
+    Instead of storing all 9 raw channels at 100 Hz (~2 MB per set), only
+    the preprocessed 1D signal is kept, downsampled to CHART_MAX_SIGNAL_POINTS.
+    Segment annotations and per-rep phase points are already inherently compact
+    (a few dozen numbers total).  This dict is what would be persisted in the
+    app database alongside the rep count.
+    """
+    n         = len(signal_1d)
+    rec_start = float(timestamps[0])
+
+    # Downsampled signal ─────────────────────────────────────────────────────
+    step = max(1, n // CHART_MAX_SIGNAL_POINTS)
+    xs   = ((timestamps[::step] - timestamps[0]) / 1000).round(3).tolist()
+    ys   = signal_1d[::step].round(3).tolist()
+
+    # Segment colour annotations ─────────────────────────────────────────────
+    pred_set = {id(s) for s, _ in predicted_pairs}
+    segments = [
+        {
+            "xs":    round((seg["start_ts"] - rec_start) / 1000, 3),
+            "xe":    round((seg["end_ts"]   - rec_start) / 1000, 3),
+            "color": _color(seg.get("is_rep", 0), id(seg) in pred_set),
+        }
+        for seg in labeled_segs
+    ]
+
+    # Turning-point markers ──────────────────────────────────────────────────
+    turnings = [
+        round((seg["turning_ts"] - rec_start) / 1000, 3)
+        for seg, _ in predicted_pairs
+    ]
+
+    # Phase reconstruction — 3 key points per half-rep, null breaks the line
+    phase_a_pts: list = []
+    phase_b_pts: list = []
+    for seg, _ in predicted_pairs:
+        si, ti, ei = seg["start_idx"], seg["turning_idx"], seg["end_idx"]
+        ts_si = round((float(timestamps[si]) - rec_start) / 1000, 3)
+        ts_ti = round((float(timestamps[ti]) - rec_start) / 1000, 3)
+        ts_ei = round((float(timestamps[ei]) - rec_start) / 1000, 3)
+        y_si  = round(float(signal_1d[si]), 3)
+        y_ti  = round(float(signal_1d[ti]), 3)
+        y_ei  = round(float(signal_1d[ei]), 3)
+        phase_a_pts.extend([{"x": ts_si, "y": y_si}, {"x": ts_ti, "y": y_ti}, {"x": ts_ti, "y": None}])
+        phase_b_pts.extend([{"x": ts_ti, "y": y_ti}, {"x": ts_ei, "y": y_ei}, {"x": ts_ei, "y": None}])
+
+    # Y-axis bounds ──────────────────────────────────────────────────────────
+    y_min = round(float(signal_1d.min()), 3)
+    y_max = round(float(signal_1d.max()), 3)
+
+    return {
+        "signal":   {"x": xs, "y": ys},
+        "segments": segments,
+        "turnings": turnings,
+        "phaseA":   phase_a_pts,
+        "phaseB":   phase_b_pts,
+        "yBounds":  {"min": y_min, "max": y_max},
+        # ── provenance (not rendered, just informational) ──────────────────
+        "signalPoints": len(xs),
+        "origSamples":  n,
+    }
+
+
 def generate_html(
     rec_name: str,
     data: dict,
@@ -169,6 +245,7 @@ def generate_html(
     timestamps: np.ndarray,
     labeled_segs: list,       # all candidate segments, each has 'is_rep' flag
     predicted_pairs: list,    # [(seg, confidence), …] — only predicted reps
+    orig_file_kb: float = 0.0,
 ) -> str:
     gt = int(data.get("reps", 0))
     pred = len(predicted_pairs)
@@ -180,7 +257,32 @@ def generate_html(
     set_num  = data.get("setNumber",     1)
     dur_s    = (float(timestamps[-1]) - float(timestamps[0])) / 1000.0
 
-    rec_start = float(timestamps[0])
+    # ── Compressed chart payload ─────────────────────────────────────────
+    # What would be stored in the app DB — preprocessed 1D signal at
+    # CHART_MAX_SIGNAL_POINTS pts plus compact annotations.
+    payload       = build_compressed_chart_payload(signal_1d, timestamps, labeled_segs, predicted_pairs)
+    payload_json  = json.dumps(payload, separators=(",", ":"))
+    compressed_kb = len(payload_json.encode()) / 1024
+
+    # Compressed signal (200 pts)
+    xs_comp  = payload["signal"]["x"]
+    ys_comp  = payload["signal"]["y"]
+    seg_data = payload["segments"]
+    turnings = payload["turnings"]
+    phase_a_pts = payload["phaseA"]
+    phase_b_pts = payload["phaseB"]
+    y_min    = payload["yBounds"]["min"]
+    y_max    = payload["yBounds"]["max"]
+
+    # Full signal (≤1000 pts) — for visual comparison only
+    n         = len(signal_1d)
+    step_full = max(1, n // 1000)
+    xs_full   = ((timestamps[::step_full] - timestamps[0]) / 1000).tolist()
+    ys_full   = signal_1d[::step_full].tolist()
+    full_pts_kb = len(json.dumps({"x": xs_full, "y": ys_full}, separators=(",", ":")).encode()) / 1024
+
+    # Shared y-axis bounds (same scale on both charts)
+    y_pad = round((y_max - y_min) * 0.08, 3)
 
     # ── Per-rep phase detail ─────────────────────────────────────────────
     reps_detail = []
@@ -195,46 +297,6 @@ def generate_html(
             "spdB":  round(phases["phase_b_speed_dps"], 1),
             "conf":  round(conf, 3),
         })
-
-    # ── Signal downsampled for chart (≤1 000 pts) ────────────────────────
-    n     = len(signal_1d)
-    step  = max(1, n // 1000)
-    xs    = ((timestamps[::step] - timestamps[0]) / 1000).tolist()
-    ys    = signal_1d[::step].tolist()
-
-    # ── Segment annotations ──────────────────────────────────────────────
-    pred_set = {id(s) for s, _ in predicted_pairs}
-    seg_data = []
-    for seg in labeled_segs:
-        seg_data.append({
-            "xs":    round((seg["start_ts"]   - rec_start) / 1000, 3),
-            "xe":    round((seg["end_ts"]     - rec_start) / 1000, 3),
-            "color": _color(seg.get("is_rep", 0), id(seg) in pred_set),
-        })
-
-    turnings = [round((seg["turning_ts"] - rec_start) / 1000, 3) for seg, _ in predicted_pairs]
-
-    # ── Reconstructed signal from predicted reps ─────────────────────────
-    # Phase A (start → turning) and Phase B (turning → end) drawn as
-    # separate piecewise-linear segments so they can be coloured differently.
-    # Null values break the line between reps.
-    phase_a_pts = []
-    phase_b_pts = []
-    for seg, _ in predicted_pairs:
-        si, ti, ei = seg["start_idx"], seg["turning_idx"], seg["end_idx"]
-        ts_si = round((float(timestamps[si]) - rec_start) / 1000, 3)
-        ts_ti = round((float(timestamps[ti]) - rec_start) / 1000, 3)
-        ts_ei = round((float(timestamps[ei]) - rec_start) / 1000, 3)
-        y_si  = round(float(signal_1d[si]), 3)
-        y_ti  = round(float(signal_1d[ti]), 3)
-        y_ei  = round(float(signal_1d[ei]), 3)
-        phase_a_pts.extend([{"x": ts_si, "y": y_si}, {"x": ts_ti, "y": y_ti}, {"x": ts_ti, "y": None}])
-        phase_b_pts.extend([{"x": ts_ti, "y": y_ti}, {"x": ts_ei, "y": y_ei}, {"x": ts_ei, "y": None}])
-
-    # Shared y-axis bounds so both signal charts use the same scale
-    y_min = round(float(signal_1d.min()), 3)
-    y_max = round(float(signal_1d.max()), 3)
-    y_pad = round((y_max - y_min) * 0.08, 3)
 
     # ── Averages ─────────────────────────────────────────────────────────
     if reps_detail:
@@ -364,12 +426,13 @@ def generate_html(
   </div>"""
 
     # Serialise everything for JS
-    signal_json   = json.dumps({"x": xs, "y": ys})
-    seg_json      = json.dumps(seg_data)
-    turning_json  = json.dumps(turnings)
-    recon_a_json  = json.dumps(phase_a_pts)
-    recon_b_json  = json.dumps(phase_b_pts)
-    y_axis_json   = json.dumps({"min": y_min - y_pad, "max": y_max + y_pad})
+    signal_full_json = json.dumps({"x": xs_full, "y": ys_full})
+    signal_comp_json = json.dumps({"x": xs_comp, "y": ys_comp})
+    seg_json         = json.dumps(seg_data)
+    turning_json     = json.dumps(turnings)
+    recon_a_json     = json.dumps(phase_a_pts)
+    recon_b_json     = json.dumps(phase_b_pts)
+    y_axis_json      = json.dumps({"min": y_min - y_pad, "max": y_max + y_pad})
 
     tut_stat = ""
     if reps_detail:
@@ -465,6 +528,9 @@ def generate_html(
     <span class="badge">Set {set_num}</span>
     <span class="badge">{n} samples · {dur_s:.1f}s</span>
     <span class="badge">{len(labeled_segs)} candidates</span>
+    <span class="badge" title="Compressed payload used for chart rendering (preprocessed 1D signal at {payload['signalPoints']} pts + annotations). Full raw file: {orig_file_kb:.1f} KB." style="color:#34d399;border-color:#34d399">
+      chart data: {compressed_kb:.1f} KB{f" ({100*compressed_kb/orig_file_kb:.2f}% of {orig_file_kb:.0f} KB raw)" if orig_file_kb else ""}
+    </span>
   </div>
 
   <div class="stats">
@@ -483,65 +549,82 @@ def generate_html(
     {tut_stat}
   </div>
 
-  <div class="card">
-    <h3>Preprocessed 1D signal — raw sensor data</h3>
-    <p style="font-size:0.75rem;color:#64748b;margin-bottom:0.75rem">
-      Best axis selected by spectral concentration score, bandpass-filtered 0.1–3 Hz.
-      Coloured regions show candidate segments; dashed yellow lines mark turning points of predicted reps.
-    </p>
-    <div class="chart-wrap" style="height:180px">
-      <canvas id="sigChart"></canvas>
+  <p style="font-size:0.75rem;color:#64748b;margin-bottom:0.75rem">
+    Best axis selected by spectral concentration score, bandpass-filtered 0.1–3 Hz.
+    Coloured regions show candidate segments; dashed yellow lines mark turning points of predicted reps.
+  </p>
+  <div class="two-col" style="margin-bottom:0.5rem">
+    <div class="card" style="margin-bottom:0">
+      <h3>Full signal — {len(xs_full)} pts · {full_pts_kb:.1f} KB</h3>
+      <div class="chart-wrap" style="height:180px">
+        <canvas id="sigChartFull"></canvas>
+      </div>
     </div>
-    <div class="legend">
-      <div class="legend-item">
-        <div class="legend-dot" style="background:rgba(34,197,94,0.5)"></div>True positive
+    <div class="card" style="margin-bottom:0;border-color:#34d399">
+      <h3 style="color:#34d399">Compressed — {len(xs_comp)} pts · {compressed_kb:.1f} KB
+        <span style="font-weight:400;color:#64748b">
+          ({100*compressed_kb/orig_file_kb:.2f}% of {orig_file_kb:.0f} KB raw file)
+        </span>
+      </h3>
+      <div class="chart-wrap" style="height:180px">
+        <canvas id="sigChartComp"></canvas>
       </div>
-      <div class="legend-item">
-        <div class="legend-dot" style="background:rgba(251,146,60,0.6)"></div>False negative (missed)
-      </div>
-      <div class="legend-item">
-        <div class="legend-dot" style="background:rgba(239,68,68,0.6)"></div>False positive (phantom)
-      </div>
-      <div class="legend-item">
-        <div class="legend-dot" style="background:rgba(156,163,175,0.3)"></div>Noise candidate
-      </div>
-      <div class="legend-item">
-        <div class="legend-dot" style="background:rgba(251,191,36,0.55);height:2px;border-radius:0"></div>Turning point
-      </div>
+    </div>
+  </div>
+  <div class="legend" style="margin-bottom:1.25rem">
+    <div class="legend-item">
+      <div class="legend-dot" style="background:rgba(34,197,94,0.5)"></div>True positive
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:rgba(251,146,60,0.6)"></div>False negative (missed)
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:rgba(239,68,68,0.6)"></div>False positive (phantom)
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:rgba(156,163,175,0.3)"></div>Noise candidate
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:rgba(251,191,36,0.55);height:2px;border-radius:0"></div>Turning point
     </div>
   </div>
   <script>
   {_CHART_JS_PLUGIN}
   {_CHART_DEFAULTS}
   (function() {{
-    const SIG   = {signal_json};
-    const SEGS  = {seg_json};
-    const TURNS = {turning_json};
-    const Y     = {y_axis_json};
-    const pts   = SIG.x.map((x, i) => ({{ x, y: SIG.y[i] }}));
-    new Chart(document.getElementById('sigChart'), {{
-      type: 'scatter',
-      _segData: {{ segments: SEGS, turnings: TURNS }},
-      data: {{
-        datasets: [{{
-          data: pts,
-          showLine:    true,
-          borderColor: '#38bdf8',
-          borderWidth: 1.5,
-          pointRadius: 0,
-          tension:     0,
-        }}],
-      }},
-      options: {{
-        responsive: true, maintainAspectRatio: false,
-        animation: false,
-        plugins: {{ legend: {{ display: false }}, tooltip: {{ enabled: false }} }},
-        scales: {{
-          x: {{ type: 'linear', ticks: {{ color: '#64748b', callback: v => v.toFixed(0) + 's' }} }},
-          y: {{ min: Y.min, max: Y.max, title: {{ display: true, text: 'signal (°)', color: '#64748b' }}, ticks: {{ color: '#64748b' }} }},
+    const SIG_FULL = {signal_full_json};
+    const SIG_COMP = {signal_comp_json};
+    const SEGS     = {seg_json};
+    const TURNS    = {turning_json};
+    const Y        = {y_axis_json};
+    const scatterOpts = (canvasId, sig) => {{
+      const pts = sig.x.map((x, i) => ({{ x, y: sig.y[i] }}));
+      new Chart(document.getElementById(canvasId), {{
+        type: 'scatter',
+        _segData: {{ segments: SEGS, turnings: TURNS }},
+        data: {{
+          datasets: [{{
+            data: pts,
+            showLine:    true,
+            borderColor: '#38bdf8',
+            borderWidth: 1.5,
+            pointRadius: 0,
+            tension:     0,
+          }}],
         }},
-      }},
-    }});
+        options: {{
+          responsive: true, maintainAspectRatio: false,
+          animation: false,
+          plugins: {{ legend: {{ display: false }}, tooltip: {{ enabled: false }} }},
+          scales: {{
+            x: {{ type: 'linear', ticks: {{ color: '#64748b', callback: v => v.toFixed(0) + 's' }} }},
+            y: {{ min: Y.min, max: Y.max, title: {{ display: true, text: 'signal (°)', color: '#64748b' }}, ticks: {{ color: '#64748b' }} }},
+          }},
+        }},
+      }});
+    }};
+    scatterOpts('sigChartFull', SIG_FULL);
+    scatterOpts('sigChartComp', SIG_COMP);
   }})();
   </script>
 
@@ -648,6 +731,7 @@ def main() -> None:
         print(f"  {rec_name} … ", end="", flush=True)
 
         rec_path = ROOT / "recordings" / rec_name
+        orig_file_kb = rec_path.stat().st_size / 1024
         with open(rec_path) as f:
             data = json.load(f)
 
@@ -699,7 +783,8 @@ def main() -> None:
         print(f"true={n_reps}  pred={pred_count}{marker}")
 
         html = generate_html(
-            rec_name, data, signal_1d, timestamps, labeled, predicted_pairs
+            rec_name, data, signal_1d, timestamps, labeled, predicted_pairs,
+            orig_file_kb=orig_file_kb,
         )
         html_filename = rec_name.replace(".json", ".html")
         (OUTPUT_HTML_DIR / html_filename).write_text(html, encoding="utf-8")
