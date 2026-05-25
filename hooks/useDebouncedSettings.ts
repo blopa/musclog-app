@@ -86,6 +86,7 @@ export function useDebouncedSettings(debounceMs = 200) {
         'intuitiveEatingMode',
         'progressionMode',
         'advancedDataManagement',
+        'bleGenerateChartPayload',
       ];
 
       const initial: Record<string, SettingValue> = {};
@@ -349,6 +350,10 @@ export function useDebouncedSettings(debounceMs = 200) {
     'advancedDataManagement',
     SettingsService.setAdvancedDataManagement
   );
+  const handleBleGenerateChartPayloadChange = createSettingHandler<boolean>(
+    'bleGenerateChartPayload',
+    SettingsService.setBleGenerateChartPayload
+  );
 
   // --- Flush (for when the modal closes before the timer fires) ---
   const flushAllPendingChanges = useCallback(async () => {
@@ -481,6 +486,9 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'advancedDataManagement':
             await SettingsService.setAdvancedDataManagement(value as boolean);
             break;
+          case 'bleGenerateChartPayload':
+            await SettingsService.setBleGenerateChartPayload(value as boolean);
+            break;
         }
       } catch (error) {
         console.error(`[useDebouncedSettings] Error flushing ${settingKey}:`, error);
@@ -573,6 +581,8 @@ export function useDebouncedSettings(debounceMs = 200) {
       (localSettings.progressionMode as ProgressionMode) ?? actualSettings.progressionMode,
     advancedDataManagement:
       (localSettings.advancedDataManagement as boolean) ?? actualSettings.advancedDataManagement,
+    bleGenerateChartPayload:
+      (localSettings.bleGenerateChartPayload as boolean) ?? actualSettings.bleGenerateChartPayload,
 
     // Confirmed DB values
     actualTheme: actualSettings.theme,
@@ -620,6 +630,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleIntuitiveEatingModeChange,
     handleProgressionModeChange,
     handleAdvancedDataManagementChange,
+    handleBleGenerateChartPayloadChange,
 
     // Utilities
     flushAllPendingChanges,

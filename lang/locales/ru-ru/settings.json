@@ -361,7 +361,10 @@
       "previewAccel": "Accel",
       "previewGyro": "Gyro",
       "previewWaiting": "Waiting for data...",
-      "previewDisconnected": "Sensor not connected"
+      "previewDisconnected": "Sensor not connected",
+      "recordingSettings": "Настройки записи",
+      "generateChartPayload": "Генерировать данные графика",
+      "generateChartPayloadSubtitle": "Включить данные сигнала и аннотации повторений для отображения на графике после каждого подхода"
     }
   }
 }

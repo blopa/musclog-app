@@ -109,6 +109,13 @@ tr:hover td { background: #0f172a; }
 .legend { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.65rem; font-size: 0.72rem; }
 .legend-item { display: flex; align-items: center; gap: 0.35rem; color: #94a3b8; }
 .legend-dot { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+.download-btn {
+  appearance: none; border: 1px solid #34d399; background: #0f172a; color: #34d399;
+  border-radius: 0.5rem; padding: 0.45rem 0.7rem; font-size: 0.72rem;
+  font-weight: 600; cursor: pointer; white-space: nowrap; transition: background 0.15s ease, color 0.15s ease;
+}
+.download-btn:hover { background: rgba(52,211,153,0.12); color: #86efac; }
+.download-btn:active { transform: translateY(1px); }
 @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
 """
 
@@ -284,6 +291,7 @@ def generate_html(
     payload       = build_compressed_chart_payload(signal_1d, timestamps, labeled_segs, predicted_pairs)
     payload_json  = json.dumps(payload, separators=(",", ":"))
     compressed_kb = len(payload_json.encode()) / 1024
+    download_name = f"{Path(rec_name).stem}-compressed.json"
 
     # Compressed signal (200 pts)
     xs_comp  = payload["signal"]["x"]
@@ -582,11 +590,14 @@ def generate_html(
       </div>
     </div>
     <div class="card" style="margin-bottom:0;border-color:#34d399">
-      <h3 style="color:#34d399">Compressed — {len(xs_comp)} pts · {compressed_kb:.1f} KB
-        <span style="font-weight:400;color:#64748b">
-          ({100*compressed_kb/orig_file_kb:.2f}% of {orig_file_kb:.0f} KB raw file)
-        </span>
-      </h3>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:0.75rem;margin-bottom:0.75rem;flex-wrap:wrap">
+        <h3 style="color:#34d399;margin-bottom:0">Compressed — {len(xs_comp)} pts · {compressed_kb:.1f} KB
+          <span style="font-weight:400;color:#64748b">
+            ({100*compressed_kb/orig_file_kb:.2f}% of {orig_file_kb:.0f} KB raw file)
+          </span>
+        </h3>
+        <button type="button" class="download-btn" onclick="downloadCompressedJson()">Download JSON</button>
+      </div>
       <div class="chart-wrap" style="height:180px">
         <canvas id="sigChartComp"></canvas>
       </div>
@@ -612,6 +623,19 @@ def generate_html(
   <script>
   {_CHART_JS_PLUGIN}
   {_CHART_DEFAULTS}
+  const COMPRESSED_PAYLOAD = {payload_json};
+  const COMPRESSED_FILENAME = {json.dumps(download_name)};
+  function downloadCompressedJson() {{
+    const blob = new Blob([JSON.stringify(COMPRESSED_PAYLOAD, null, 2)], {{ type: 'application/json' }});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = COMPRESSED_FILENAME;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }}
   (function() {{
     const SIG_FULL = {signal_full_json};
     const SIG_COMP = {signal_comp_json};

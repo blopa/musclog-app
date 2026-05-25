@@ -7,6 +7,7 @@ import {
   ADVANCED_DATA_MANAGEMENT_SETTING_TYPE,
   ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
   ANONYMOUS_BUG_REPORT_SETTING_TYPE,
+  BLE_GENERATE_CHART_PAYLOAD_SETTING_TYPE,
   CHART_TOOLTIP_POSITION_SETTING_TYPE,
   type ChartTooltipPosition,
   CONNECT_HEALTH_DATA_SETTING_TYPE,
@@ -118,6 +119,7 @@ type SettingsState = {
   progressionMode: ProgressionMode;
   nutritionDisplay: string;
   advancedDataManagement: boolean;
+  bleGenerateChartPayload: boolean;
   isLoading: boolean;
 };
 
@@ -172,6 +174,7 @@ const DEFAULT_STATE: SettingsState = {
   progressionMode: 'reps_first',
   nutritionDisplay: '11111',
   advancedDataManagement: false,
+  bleGenerateChartPayload: false,
   isLoading: true,
 };
 
@@ -293,6 +296,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     progressionMode,
     nutritionDisplay: getString(map, NUTRITION_DISPLAY_SETTING_TYPE, '11111'),
     advancedDataManagement: getBoolean(map, ADVANCED_DATA_MANAGEMENT_SETTING_TYPE, false),
+    bleGenerateChartPayload: getBoolean(map, BLE_GENERATE_CHART_PAYLOAD_SETTING_TYPE, false),
     isLoading: false,
   };
 }
@@ -348,6 +352,7 @@ export type SettingsContextType = UseSettingsResult & {
   progressionMode: ProgressionMode;
   nutritionDisplay: string;
   advancedDataManagement: boolean;
+  bleGenerateChartPayload: boolean;
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
