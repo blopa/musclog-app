@@ -193,7 +193,7 @@ export default function Root({ children }: PropsWithChildren) {
       <body className="expo-web-body">
         {/* Desktop-only landing panel — hidden on mobile via CSS */}
         <div className="expo-web-landing">
-          <div className="expo-web-landing-brand">
+          <a href={withExpoBaseUrl('/')} className="expo-web-landing-brand">
             <svg
               className="expo-web-landing-logo"
               width="36"
@@ -209,7 +209,7 @@ export default function Root({ children }: PropsWithChildren) {
               <rect x="7" y="10.5" width="10" height="3" rx="0.8" />
             </svg>
             <span className="expo-web-landing-name">Musclog</span>
-          </div>
+          </a>
           <p className="expo-web-landing-tagline" data-landing-i18n="tagline">
             AI-powered fitness &amp; nutrition tracking — free &amp; open source.
           </p>

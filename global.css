@@ -198,6 +198,12 @@ html.hide-desktop-wrapper .expo-web-app-shell {
 		align-items: center;
 		gap: 12px;
 		color: #34d399;
+		text-decoration: none;
+		transition: opacity 0.15s ease;
+	}
+
+	.expo-web-landing-brand:hover {
+		opacity: 0.8;
 	}
 
 	.expo-web-landing-name {

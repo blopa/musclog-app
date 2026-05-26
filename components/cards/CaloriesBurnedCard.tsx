@@ -119,11 +119,7 @@ export function CaloriesBurnedCard() {
                 {t('progress.caloriesBurnedToday')}
               </Text>
             </View>
-            <Pressable
-              onPress={() => setModalVisible(true)}
-              hitSlop={12}
-              style={{ padding: 4 }}
-            >
+            <Pressable onPress={() => setModalVisible(true)} hitSlop={12} style={{ padding: 4 }}>
               <Info size={16} color={theme.colors.text.secondary} />
             </Pressable>
           </View>
