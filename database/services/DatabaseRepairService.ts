@@ -10,6 +10,7 @@ import {
   type TableGroupDescriptor,
 } from '@/constants/database';
 import { database } from '@/database/database-instance';
+import { deleteBleDataPointsFiles } from '@/utils/bleWorkoutDataStorage';
 import { handleError } from '@/utils/handleError';
 
 export type { ChildSpec, TableGroupDescriptor }; // TODO: is this necessary?
@@ -257,10 +258,13 @@ async function reindexTables(tableNames: readonly string[]): Promise<boolean> {
 
 // Recursively soft-deletes children (depth-first) then the parent record.
 // Must be called from within an open database.write() block.
+// When collectByTable is provided, each deleted record's ID is appended to the
+// corresponding table entry so callers can do post-write cleanup (e.g. files).
 async function cascadeMarkDeleted(
   writer: Parameters<Parameters<typeof database.write>[0]>[0],
   records: Model[],
-  childSpecs: ChildSpec[]
+  childSpecs: ChildSpec[],
+  collectByTable?: Map<string, string[]>
 ): Promise<void> {
   for (const record of records) {
     for (const spec of childSpecs) {
@@ -269,7 +273,17 @@ async function cascadeMarkDeleted(
         .query(Q.where(spec.fkColumn, record.id), Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
-      await cascadeMarkDeleted(writer, children, spec.children ?? []);
+      await cascadeMarkDeleted(writer, children, spec.children ?? [], collectByTable);
+    }
+
+    if (collectByTable) {
+      const table = (record.constructor as typeof Model).table;
+      const arr = collectByTable.get(table);
+      if (arr) {
+        arr.push(record.id);
+      } else {
+        collectByTable.set(table, [record.id]);
+      }
     }
 
     await writer.callWriter(() => record.markAsDeleted());
@@ -293,6 +307,7 @@ async function softDeleteRootRecords(
   // fails mid-tree the entire transaction rolls back, leaving that root's
   // graph untouched rather than in a partially-deleted state.
   for (const rootId of uniqueIds) {
+    const collectByTable = new Map<string, string[]>();
     try {
       await database.write(async (writer) => {
         const rootRecord = await database.get<Model>(descriptor.rootTable).find(rootId);
@@ -303,12 +318,15 @@ async function softDeleteRootRecords(
             .query(Q.where(childSpec.fkColumn, rootId), Q.where('deleted_at', Q.eq(null)))
             .fetch();
 
-          await cascadeMarkDeleted(writer, children, childSpec.children ?? []);
+          await cascadeMarkDeleted(writer, children, childSpec.children ?? [], collectByTable);
         }
 
         await writer.callWriter(() => rootRecord.markAsDeleted());
       });
       deletedIds.push(rootId);
+
+      const deletedSetIds = collectByTable.get('workout_log_sets') ?? [];
+      void deleteBleDataPointsFiles(deletedSetIds).catch(() => {});
     } catch (error) {
       handleError(error, 'DatabaseRepairService.softDeleteRootRecords');
       // Log and continue — don't let one failed deletion abort the rest.
