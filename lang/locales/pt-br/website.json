@@ -1257,6 +1257,72 @@
               ]
             },
             {
+              "question": "Como a estimativa de «Calorias queimadas hoje» é calculada?",
+              "answer": "A estimativa em tempo real de calorias queimadas usa um modelo ponderado pelo ritmo circadiano, em vez de uma simples divisão linear do seu TDEE ao longo de 24 horas. Pesquisas em câmaras metabólicas e biologia circadiana mostram que o gasto energético não é uniforme ao longo do dia — ele segue um pronunciado ritmo de 24 horas impulsionado pelo relógio biológico interno, postura, horário das refeições (efeito térmico dos alimentos, TEF) e atividade física espontânea (NEAT).",
+              "table": {
+                "head": ["Bloco de tempo", "% do TDEE", "Fator principal"],
+                "rows": [
+                  [
+                    "23:00 – 03:00",
+                    "~9,5 %",
+                    "Início do sono, retirada simpática, SMR em 85–95 % do BMR"
+                  ],
+                  [
+                    "03:00 – 07:00",
+                    "~8,5 %",
+                    "Nadir circadiano (~05:00), menor temperatura corporal e REE"
+                  ],
+                  [
+                    "07:00 – 11:00",
+                    "~19,5 %",
+                    "Elevação postural ao acordar (+10 %), pico de TEF matinal"
+                  ],
+                  [
+                    "11:00 – 15:00",
+                    "~22,5 %",
+                    "TEF do almoço, NEAT diurno e movimentação ocupacional"
+                  ],
+                  [
+                    "15:00 – 19:00",
+                    "~25 %",
+                    "Pico circadiano de REE (~17:00), pico de temperatura corporal"
+                  ],
+                  [
+                    "19:00 – 23:00",
+                    "~15 %",
+                    "Desaceleração vespertina, TEF do jantar reduzido, temperatura corporal em queda"
+                  ]
+                ]
+              },
+              "answer2": "Cada bloco tem quatro horas (240 minutos). Como o bloco 23:00–03:00 cruza a meia-noite, o aplicativo o divide em dois segmentos contíguos (00:00–03:00 e 23:00–24:00) para que o cálculo permaneça ancorado à meia-noite local. Calorias acumuladas hoje = Σ (minutos decorridos em cada segmento completo ou parcial × taxa do bloco × TDEE). O rótulo da fase metabólica atual (ex.: «Pico Circadiano») reflete qual bloco está ativo no momento.",
+              "citations": [
+                {
+                  "label": "Bo et al. (2015) — Meal timing & diet-induced thermogenesis — IJO",
+                  "url": "https://doi.org/10.1038/ijo.2015.138"
+                },
+                {
+                  "label": "Manini (2010) — Energy expenditure and aging — Ageing Res Rev",
+                  "url": "https://doi.org/10.1016/j.arr.2009.08.002"
+                },
+                {
+                  "label": "Morris et al. (2015) — Circadian system & morning/evening TEF difference — Obesity",
+                  "url": "https://doi.org/10.1002/oby.21189"
+                },
+                {
+                  "label": "Poggiogalle et al. (2018) — Circadian regulation of energy metabolism — Metabolism",
+                  "url": "https://doi.org/10.1016/j.metabol.2017.11.017"
+                },
+                {
+                  "label": "Ruddick-Collins et al. (2021) — Circadian RMR rhythms & thermic effect of food — JCEM",
+                  "url": "https://doi.org/10.1210/clinem/dgab654"
+                },
+                {
+                  "label": "Sharma & Kavuru (2010) — Sleep and metabolism overview — Int J Endocrinol",
+                  "url": "https://doi.org/10.1155/2010/270832"
+                }
+              ]
+            },
+            {
               "question": "Como a recomendação diária de ingestão de água é calculada?",
               "answer": "A recomendação de água escala linearmente com o TDEE a uma taxa de 0,75 ml por kcal de gasto energético diário. Isso é derivado de duas diretrizes que convergem de forma independente:",
               "bullets": [
