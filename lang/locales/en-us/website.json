@@ -498,6 +498,12 @@
             "and": "and"
           }
         },
+        "trainingData": {
+          "title": "Voluntary Training Data Contribution",
+          "content1": "As part of its workout tracking functionality, the Musclog app may generate local sensor recording files on your device. These files are stored exclusively on your device and are never uploaded, synced, or transmitted to any server automatically — there is no opt-in or opt-out toggle, and no automatic data sharing of any kind.",
+          "content2": "If you would like to contribute your data to help improve Musclog's fitness tracking models, you may share these files manually — for example, by email or through a cloud storage service such as Google Drive. There is no in-app mechanism for this; any sharing is entirely at your own initiative and discretion.",
+          "content3": "Data you voluntarily share in this way may be used to train, test, and improve machine learning models. The resulting model may be released publicly as open-source software. By choosing to share your data, you acknowledge that it may become part of a publicly accessible dataset, and you grant permission for it to be copied, stored, processed, and distributed as part of the model development process. You should only share data that you have the right to share and that you are comfortable making publicly available."
+        },
         "useOfData": {
           "title": "Use of Your Personal Data",
           "items": [

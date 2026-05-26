@@ -498,6 +498,12 @@
             "and": "e"
           }
         },
+        "trainingData": {
+          "title": "Contribuição Voluntária de Dados de Treinamento",
+          "content1": "Como parte de sua funcionalidade de acompanhamento de treinos, o aplicativo Musclog pode gerar arquivos de gravação de sensores locais no seu dispositivo. Esses arquivos são armazenados exclusivamente no seu dispositivo e nunca são enviados, sincronizados ou transmitidos automaticamente para nenhum servidor — não há botão de ativação ou desativação, nem qualquer tipo de compartilhamento automático de dados.",
+          "content2": "Se você quiser contribuir com seus dados para ajudar a melhorar os modelos de acompanhamento do Musclog, poderá compartilhar esses arquivos manualmente — por exemplo, por e-mail ou por meio de um serviço de armazenamento em nuvem como o Google Drive. Não há mecanismo dentro do aplicativo para isso; qualquer compartilhamento é inteiramente por sua própria iniciativa e critério.",
+          "content3": "Os dados que você compartilhar voluntariamente desta forma poderão ser usados para treinar, testar e melhorar modelos de aprendizado de máquina. O modelo resultante poderá ser disponibilizado publicamente como software de código aberto. Ao optar por compartilhar seus dados, você reconhece que eles podem se tornar parte de um conjunto de dados publicamente acessível e concede permissão para que sejam copiados, armazenados, processados e distribuídos como parte do processo de desenvolvimento do modelo. Você só deve compartilhar dados que tem o direito de compartilhar e com os quais se sinta confortável em tornar publicamente disponíveis."
+        },
         "useOfData": {
           "title": "Uso de seus Dados Pessoais",
           "items": [

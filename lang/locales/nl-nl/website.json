@@ -498,6 +498,12 @@
             "and": "en"
           }
         },
+        "trainingData": {
+          "title": "Vrijwillige Bijdrage van Trainingsdata",
+          "content1": "Als onderdeel van de functionaliteit voor het bijhouden van trainingen kan de Musclog-app lokale sensoropnamebestanden op uw apparaat aanmaken. Deze bestanden worden uitsluitend op uw apparaat opgeslagen en worden nooit automatisch geüpload, gesynchroniseerd of verzonden naar een server — er is geen aan/uit-schakelaar en er is geen automatisch delen van gegevens.",
+          "content2": "Als u uw gegevens wilt bijdragen om de trackingmodellen van Musclog te helpen verbeteren, kunt u deze bestanden handmatig delen — bijvoorbeeld via e-mail of via een cloudopslagdienst zoals Google Drive. Er is geen mechanisme in de app hiervoor; elk delen is geheel op uw eigen initiatief en naar uw eigen goeddunken.",
+          "content3": "Gegevens die u op deze manier vrijwillig deelt, kunnen worden gebruikt om machine learning-modellen te trainen, testen en verbeteren. Het resulterende model kan openbaar worden vrijgegeven als open-sourcesoftware. Door te kiezen om uw gegevens te delen, erkent u dat deze onderdeel kunnen worden van een publiek toegankelijke dataset en verleent u toestemming voor kopiëren, opslaan, verwerken en distribueren als onderdeel van het modelontwikkelingsproces. U mag alleen gegevens delen waarvoor u het recht heeft om te delen en die u bereid bent openbaar beschikbaar te stellen."
+        },
         "useOfData": {
           "title": "Gebruik van uw Persoonsgegevens",
           "items": [
