@@ -358,6 +358,142 @@ export async function saveBleWorkoutFile(data: BleWorkoutFileInput): Promise<str
   return uri;
 }
 
+export const BLE_DATA_POINTS_PER_REP = 10;
+export const BLE_DATA_POINTS_MIN = 50;
+
+const BLE_COMPRESS_CHUNK_BYTES = 65_536;
+
+/**
+ * Reads the `sampleCount` field from the metadata header of a `ble_*.json` file
+ * by scanning the first few chunks — no need to load the full file.
+ */
+function readSampleCountFromBleFile(file: File): number {
+  const handle = file.open();
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  try {
+    while (buffer.length < 4096) {
+      const bytes = handle.readBytes(BLE_COMPRESS_CHUNK_BYTES);
+      if (bytes.length === 0) {
+        break;
+      }
+
+      buffer += decoder.decode(bytes, { stream: true });
+
+      const match = /"sampleCount"\s*:\s*(\d+)/.exec(buffer);
+      if (match) {
+        return parseInt(match[1], 10);
+      }
+    }
+  } finally {
+    handle.close();
+  }
+
+  return 0;
+}
+
+/**
+ * Streams through a `ble_*.json` file and writes every `step`-th sample line
+ * to `outFile` as a JSON array, chunked to avoid loading all samples into RAM.
+ */
+async function streamDownsampledSamples(
+  source: File,
+  outFile: File,
+  step: number
+): Promise<void> {
+  const handle = source.open();
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let inSamples = false;
+  let sampleIndex = 0;
+  let wroteAny = false;
+
+  outFile.write('[', { append: false });
+
+  const processLine = (rawLine: string) => {
+    const t = rawLine.trimStart();
+
+    if (!inSamples) {
+      if (t.startsWith('"samples"')) {
+        inSamples = true;
+      }
+
+      return;
+    }
+
+    if (!t.startsWith('{')) {
+      return;
+    }
+
+    if (sampleIndex % step === 0) {
+      // Strip trailing comma that appendNdjsonFileToJsonArray may have added.
+      const sampleJson = t.endsWith(',') ? t.slice(0, -1) : t;
+      outFile.write(`${wroteAny ? ',' : ''}\n  ${sampleJson}`, { append: true });
+      wroteAny = true;
+    }
+
+    sampleIndex++;
+  };
+
+  try {
+    while (true) {
+      const bytes = handle.readBytes(BLE_COMPRESS_CHUNK_BYTES);
+      if (bytes.length === 0) {
+        break;
+      }
+
+      buffer += decoder.decode(bytes, { stream: true });
+
+      const lines = buffer.split('\n');
+      buffer = lines.pop() ?? '';
+
+      for (const line of lines) {
+        processLine(line);
+      }
+
+      // Yield to the event loop between chunks so we don't block the UI thread.
+      await new Promise<void>((r) => setTimeout(r, 0));
+    }
+
+    buffer += decoder.decode();
+    for (const line of buffer.split('\n')) {
+      processLine(line);
+    }
+  } finally {
+    handle.close();
+  }
+
+  outFile.write('\n]', { append: true });
+}
+
+/**
+ * Reads an existing `ble_*.json` file, downsamples its samples array to
+ * `max(reps * BLE_DATA_POINTS_PER_REP, BLE_DATA_POINTS_MIN)` points using
+ * uniform stride, and writes the result to `data_points_<setId>.json`.
+ * Runs in chunks to avoid loading the full file into RAM.
+ */
+export async function compressRawToDataPoints(
+  bleFileUri: string,
+  setId: string,
+  reps: number
+): Promise<string> {
+  const dir = await ensureBleWorkoutDataDir();
+  if (!dir) {
+    throw new Error('BLE workout data directory unavailable');
+  }
+
+  const sourceFile = new File(bleFileUri);
+  const sampleCount = readSampleCountFromBleFile(sourceFile);
+  const maxPts = Math.max(reps * BLE_DATA_POINTS_PER_REP, BLE_DATA_POINTS_MIN);
+  const step = Math.max(1, Math.floor(sampleCount / maxPts));
+
+  const outUri = `${dir}data_points_${setId}.json`;
+  const outFile = new File(outUri);
+  await streamDownsampledSamples(sourceFile, outFile, step);
+  return outUri;
+}
+
 export function isBleWorkoutFile(value: unknown): value is BleWorkoutFile {
   if (typeof value !== 'object' || value === null) {
     return false;

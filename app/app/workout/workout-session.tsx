@@ -80,6 +80,7 @@ import {
 import {
   appendBleWorkoutSamplesToNdjsonFile,
   type BleWorkoutSample,
+  compressRawToDataPoints,
   createBleWorkoutTrackingTempFile,
   saveBleWorkoutFile,
 } from '@/utils/bleWorkoutDataStorage';
@@ -199,7 +200,7 @@ export default function WorkoutSessionScreen() {
     exerciseId?: string;
     showFeedback?: string;
   }>();
-  const { units } = useSettings();
+  const { units, bleGenerateChartPayload } = useSettings();
   const {
     intensityMultiplier,
     currentPhase,
@@ -328,6 +329,7 @@ export default function WorkoutSessionScreen() {
   const trackingStartedAtRef = useRef<number | null>(null);
   const unsubscribeBatchRef = useRef<(() => void) | null>(null);
   const hasAttemptedAutoConnect = useRef(false);
+  const pendingRawBleFileUriRef = useRef<string | null>(null);
   // Initialize to current state so remounts while connected don't re-show the snackbar.
   const wasConnectedRef = useRef(wit.isConnected);
 
@@ -512,6 +514,7 @@ export default function WorkoutSessionScreen() {
     unsubscribeBatchRef.current = null;
     trackingSampleCountRef.current = 0;
     trackingStartedAtRef.current = null;
+    pendingRawBleFileUriRef.current = null;
     clearTrackingTempFile();
   }, [clearTrackingTempFile]);
 
@@ -578,7 +581,7 @@ export default function WorkoutSessionScreen() {
         // Non-fatal — biometrics are best-effort enrichment.
       }
 
-      await saveBleWorkoutFile({
+      const bleFileUri = await saveBleWorkoutFile({
         version: 1,
         workoutLogId: workoutLog.id,
         exerciseName: currentSetData.exercise.name ?? '',
@@ -599,11 +602,17 @@ export default function WorkoutSessionScreen() {
         samplesFile: tempFile,
       });
       trackingTempFileRef.current = null;
+
+      if (bleGenerateChartPayload && sampleCount >= 20) {
+        pendingRawBleFileUriRef.current = bleFileUri;
+      }
+
       showSnackbar('success', t('workoutSession.trackingSaved', { count: sampleCount }));
     } catch (err) {
       handleError(err, 'workout-session.stopTrackingAndSave');
     }
   }, [
+    bleGenerateChartPayload,
     clearTrackingTempFile,
     currentSetData,
     workoutLog,
@@ -623,6 +632,7 @@ export default function WorkoutSessionScreen() {
       const tempFile = createBleWorkoutTrackingTempFile(generateUUID());
       trackingTempFileRef.current = tempFile;
       trackingSampleCountRef.current = 0;
+      pendingRawBleFileUriRef.current = null;
       trackingStartedAtRef.current = Date.now();
       setIsTracking(true);
       isTrackingRef.current = true;
@@ -722,6 +732,10 @@ export default function WorkoutSessionScreen() {
       return;
     }
 
+    if (isTrackingRef.current) {
+      await stopTrackingAndSave();
+    }
+
     try {
       setIsSaving(true);
       // Small delay to allow React to render the loading state before closing
@@ -733,7 +747,8 @@ export default function WorkoutSessionScreen() {
           : 60;
       const completedSetOrder = currentSetData.set.setOrder ?? 0;
 
-      await workoutLog.updateSet(currentSetData.set.id, {
+      const completedSetId = currentSetData.set.id;
+      await workoutLog.updateSet(completedSetId, {
         difficultyLevel: data.rpe,
         weight: displayToKg(data.weight, units),
         reps: data.reps,
@@ -741,6 +756,12 @@ export default function WorkoutSessionScreen() {
         repsInReserve: data.repsInReserve,
         restTimeAfter: restTime,
       });
+
+      const rawBleFileUri = pendingRawBleFileUriRef.current;
+      pendingRawBleFileUriRef.current = null;
+      if (bleGenerateChartPayload && rawBleFileUri && data.reps > 0) {
+        void compressRawToDataPoints(rawBleFileUri, completedSetId, data.reps).catch(() => {});
+      }
 
       // Check from DB if all sets are now done (state from refresh() may not be updated yet)
       const allSetsDone = await checkAllSetsDoneFromDb(workoutLog.id);
