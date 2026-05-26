@@ -277,7 +277,9 @@ function ProgressScreenContent({
               {/* Phase 1: primary chart — renders immediately on load */}
               {chartPhase >= 1 ? (
                 <>
-                  <CaloriesBurnedCard />
+                  <View style={{ marginTop: 16, marginBottom: 16 }}>
+                    <CaloriesBurnedCard />
+                  </View>
                   <BodyMetricsCharts
                     weightHistory={data?.weightHistory || []}
                     fatHistory={data?.fatHistory || []}

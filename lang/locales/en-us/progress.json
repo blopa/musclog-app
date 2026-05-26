@@ -9,6 +9,32 @@
     "caloriesBurnedToday": "Calories Burned Today",
     "caloriesBurnedSubtitle": "Based on TDEE of {{tdee}} kcal/day",
     "caloriesBurnedProgress": "{{percent}}% of day elapsed",
+    "circadianModal": {
+      "title": "Calorie Burn Science",
+      "subtitle": "Circadian metabolic model · Live",
+      "liveCounter": "BURNED TODAY · LIVE",
+      "perHour": "kcal / hr",
+      "perMinute": "kcal / min",
+      "perSecond": "kcal / sec",
+      "allPhases": "24-hour breakdown",
+      "scienceNote": "Based on metabolic chamber and circadian biology research. Percentages are midpoints of published ranges for a typical adult with a standard sleep schedule and light daytime activity. Your actual burn varies with exercise, meal timing, and individual physiology.",
+      "phaseTime": {
+        "earlySlеep": "11 PM – 3 AM",
+        "nadir": "3 AM – 7 AM",
+        "morning": "7 AM – 11 AM",
+        "midday": "11 AM – 3 PM",
+        "peak": "3 PM – 7 PM",
+        "evening": "7 PM – 11 PM"
+      },
+      "phaseDesc": {
+        "earlySlеep": "Sleep onset and early sleep. Sympathetic withdrawal and falling core temperature drop your sleeping metabolic rate to roughly 85–95% of waking BMR.",
+        "nadir": "Biological low point. Core body temperature and resting energy expenditure hit their 24-hour minimum around 5 AM, aligned with the circadian nadir.",
+        "morning": "Sharp metabolic rise on waking. Simply being upright adds ~10% to your baseline. Morning TEF is at its daily peak — up to 2.5× stronger than an identical evening meal.",
+        "midday": "Metabolism is sustained near its daily high. Lunch triggers another TEF spike, and spontaneous movement (NEAT) from desk work or light tasks keeps output steady.",
+        "peak": "Circadian REE peak around 5 PM — roughly 10% above the early-morning nadir even at complete rest. Structured exercise in this window amplifies the burn significantly.",
+        "evening": "Dinner TEF is significantly blunted compared to morning. As your biological clock begins cooling core temperature and winding down sympathetic tone, metabolism slides back toward its nocturnal baseline."
+      }
+    },
     "circadianPhase": {
       "earlySlеep": "Early Sleep",
       "nadir": "Biological Nadir",
