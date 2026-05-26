@@ -43,6 +43,7 @@
     "region_chest": "Chest",
     "region_core": "Core",
     "region_legs": "Legs",
-    "region_shoulders": "Shoulders"
+    "region_shoulders": "Shoulders",
+    "repMotion": "Rep Motion"
   }
 }

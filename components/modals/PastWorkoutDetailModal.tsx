@@ -39,7 +39,7 @@ import EditPastWorkoutDataModal from './EditPastWorkoutDataModal';
 import EditWorkoutMetadataModal from './EditWorkoutMetadataModal';
 import { FullScreenModal } from './FullScreenModal';
 import { PastWorkoutBottomMenu } from './PastWorkoutBottomMenu';
-import { WorkoutMusclesModal } from './WorkoutMusclesModal';
+import { type ExerciseSetRef, WorkoutMusclesModal } from './WorkoutMusclesModal';
 import { WorkoutSessionHistoryModal } from './WorkoutSessionHistoryModal';
 
 // Component: Workout Summary Card
@@ -468,6 +468,7 @@ export default function PastWorkoutDetailModal({
   const [isPreviewModalVisible, setIsPreviewModalVisible] = useState(false);
   const [isMusclesModalVisible, setIsMusclesModalVisible] = useState(false);
   const [musclesModalGroups, setMusclesModalGroups] = useState<string[]>([]);
+  const [musclesModalSets, setMusclesModalSets] = useState<ExerciseSetRef[]>([]);
   const [allWorkoutMuscles, setAllWorkoutMuscles] = useState<string[]>([]);
 
   useEffect(() => {
@@ -741,6 +742,11 @@ export default function PastWorkoutDetailModal({
               console.warn('[PastWorkoutDetailModal] getMusclesForExercise error:', err);
               setMusclesModalGroups([]);
             }
+            const sets = (rawSets ?? [])
+              .filter((s) => s.exerciseId === exerciseId)
+              .sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0))
+              .map((s, idx) => ({ id: s.id, setNumber: idx + 1 }));
+            setMusclesModalSets(sets);
             setIsMusclesModalVisible(true);
           }}
           onClose={onClose}
@@ -881,8 +887,12 @@ export default function PastWorkoutDetailModal({
 
       <WorkoutMusclesModal
         visible={isMusclesModalVisible}
-        onClose={() => setIsMusclesModalVisible(false)}
+        onClose={() => {
+          setIsMusclesModalVisible(false);
+          setMusclesModalSets([]);
+        }}
         muscleGroups={musclesModalGroups}
+        exerciseSets={musclesModalSets}
       />
     </FullScreenModal>
   );

@@ -397,11 +397,7 @@ function readSampleCountFromBleFile(file: File): number {
  * Streams through a `ble_*.json` file and writes every `step`-th sample line
  * to `outFile` as a JSON array, chunked to avoid loading all samples into RAM.
  */
-async function streamDownsampledSamples(
-  source: File,
-  outFile: File,
-  step: number
-): Promise<void> {
+async function streamDownsampledSamples(source: File, outFile: File, step: number): Promise<void> {
   const handle = source.open();
   const decoder = new TextDecoder();
   let buffer = '';
@@ -494,13 +490,35 @@ export async function compressRawToDataPoints(
   return outUri;
 }
 
+export async function readBleDataPointsFile(setId: string): Promise<BleWorkoutSample[] | null> {
+  const dir = getDataDirectoryUri();
+  if (!dir) {
+    return null;
+  }
+
+  try {
+    const uri = `${dir}data_points_${setId}.json`;
+    const info = await getInfoAsync(uri);
+    if (!info.exists) {
+      return null;
+    }
+
+    const content = await readAsStringAsync(uri);
+    return JSON.parse(content) as BleWorkoutSample[];
+  } catch {
+    return null;
+  }
+}
+
 export async function deleteBleDataPointsFiles(setIds: string[]): Promise<void> {
   const dir = getDataDirectoryUri();
   if (!dir || setIds.length === 0) {
     return;
   }
 
-  await Promise.all(setIds.map((id) => deleteAsync(`${dir}data_points_${id}.json`, { idempotent: true })));
+  await Promise.all(
+    setIds.map((id) => deleteAsync(`${dir}data_points_${id}.json`, { idempotent: true }))
+  );
 }
 
 export function isBleWorkoutFile(value: unknown): value is BleWorkoutFile {
