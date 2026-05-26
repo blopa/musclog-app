@@ -9,4 +9,5 @@ env/
 output/features.csv
 output/model.pkl
 recordings/*
+!recordings/PRIVACY.md
 output/html/*

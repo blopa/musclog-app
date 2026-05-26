@@ -498,6 +498,12 @@
             "and": "en"
           }
         },
+        "trainingData": {
+          "title": "Vrijwillige Bijdrage van Trainingsdata",
+          "content1": "Als u een WT9011DCL BLE-sensorapparaat bezit, het verbindt met de app en gebruikt om uw herhalingen bij te houden, zal Musclog lokale sensoropnamebestanden op uw apparaat aanmaken. Deze bestanden worden alleen aangemaakt wanneer dit specifieke apparaat actief wordt gebruikt voor het bijhouden van herhalingen. Ze worden uitsluitend op uw apparaat opgeslagen en worden nooit automatisch geüpload, gesynchroniseerd of verzonden naar een server — er is geen aan/uit-schakelaar en er is geen automatisch delen van gegevens.",
+          "content2": "Als u uw gegevens wilt bijdragen om de trackingmodellen van Musclog te helpen verbeteren, kunt u deze bestanden handmatig delen — bijvoorbeeld via e-mail of via een cloudopslagdienst zoals Google Drive. Er is geen mechanisme in de app hiervoor; elk delen is geheel op uw eigen initiatief en naar uw eigen goeddunken.",
+          "content3": "Gegevens die u op deze manier vrijwillig deelt, kunnen worden gebruikt om machine learning-modellen te trainen, testen en verbeteren. Het resulterende model kan openbaar worden vrijgegeven als open-sourcesoftware. Door te kiezen om uw gegevens te delen, erkent u dat deze onderdeel kunnen worden van een publiek toegankelijke dataset en verleent u toestemming voor kopiëren, opslaan, verwerken en distribueren als onderdeel van het modelontwikkelingsproces. U mag alleen gegevens delen waarvoor u het recht heeft om te delen en die u bereid bent openbaar beschikbaar te stellen."
+        },
         "useOfData": {
           "title": "Gebruik van uw Persoonsgegevens",
           "items": [
@@ -1249,6 +1255,68 @@
                 {
                   "label": "Hall et al. (NIH) — Dynamic energy balance model (20–30 kcal/kg range)",
                   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3880593/"
+                }
+              ]
+            },
+            {
+              "question": "Hoe wordt de schatting van «Vandaag verbrand» berekend?",
+              "answer": "De realtime schatting van calorieverbranding gebruikt een circadiaans gewogen model, in plaats van een eenvoudige lineaire verdeling van je TDEE over 24 uur. Metabole kameraonderzoek en circadiaanse biologie tonen aan dat het energieverbruik niet uniform is gedurende de dag — het volgt een uitgesproken 24-uursritme dat wordt aangedreven door je interne biologische klok, houding, maaltijdtiming (thermisch effect van voedsel, TEF) en spontane fysieke activiteit (NEAT).",
+              "table": {
+                "head": ["Tijdblok", "% van TDEE", "Primaire factor"],
+                "rows": [
+                  [
+                    "23:00 – 03:00",
+                    "~9,5 %",
+                    "Slaapinductie, sympathische terugtrekking, SMR op 85–95 % van BMR"
+                  ],
+                  [
+                    "03:00 – 07:00",
+                    "~8,5 %",
+                    "Circadiaans nadir (~05:00), laagste kerntemperatuur en REE"
+                  ],
+                  [
+                    "07:00 – 11:00",
+                    "~19,5 %",
+                    "Houdingsstijging bij ontwaken (+10 %), piek ochtend-TEF"
+                  ],
+                  [
+                    "11:00 – 15:00",
+                    "~22,5 %",
+                    "Lunch-TEF, overdag NEAT en werkgerelateerde beweging"
+                  ],
+                  ["15:00 – 19:00", "~25 %", "Circadiaanse REE-piek (~17:00), kerntemperatuurpiek"],
+                  [
+                    "19:00 – 23:00",
+                    "~15 %",
+                    "Avondwinddown, gedempt diner-TEF, dalende kerntemperatuur"
+                  ]
+                ]
+              },
+              "answer2": "Elk blok is vier uur (240 minuten). Omdat het 23:00–03:00-blok middernacht overlapt, splitst de app het in twee aaneengesloten segmenten (00:00–03:00 en 23:00–24:00) zodat de berekening verankerd blijft aan lokale middernacht. Vandaag geaccumuleerde calorieën = Σ (verstreken minuten in elk voltooid of gedeeltelijk segment × bloksnelheid × TDEE). Het huidige metabole faselabel (bijv. «Circadiaanse Piek») geeft aan welk blok momenteel actief is.",
+              "citations": [
+                {
+                  "label": "Bo et al. (2015) — Meal timing & diet-induced thermogenesis — IJO",
+                  "url": "https://doi.org/10.1038/ijo.2015.138"
+                },
+                {
+                  "label": "Manini (2010) — Energy expenditure and aging — Ageing Res Rev",
+                  "url": "https://doi.org/10.1016/j.arr.2009.08.002"
+                },
+                {
+                  "label": "Morris et al. (2015) — Circadian system & morning/evening TEF difference — Obesity",
+                  "url": "https://doi.org/10.1002/oby.21189"
+                },
+                {
+                  "label": "Poggiogalle et al. (2018) — Circadian regulation of energy metabolism — Metabolism",
+                  "url": "https://doi.org/10.1016/j.metabol.2017.11.017"
+                },
+                {
+                  "label": "Ruddick-Collins et al. (2021) — Circadian RMR rhythms & thermic effect of food — JCEM",
+                  "url": "https://doi.org/10.1210/clinem/dgab654"
+                },
+                {
+                  "label": "Sharma & Kavuru (2010) — Sleep and metabolism overview — Int J Endocrinol",
+                  "url": "https://doi.org/10.1155/2010/270832"
                 }
               ]
             },

@@ -6,6 +6,43 @@
     "averageIntakeCarbs": "Carboidratos",
     "averageIntakeFat": "Gordura",
     "averageIntakeFiber": "Fibra",
+    "caloriesBurnedToday": "Calorias Queimadas Hoje",
+    "caloriesBurnedSubtitle": "Baseado no TDEE de {{tdee}} kcal/dia",
+    "caloriesBurnedProgress": "{{percent}}% do dia passou",
+    "circadianModal": {
+      "title": "Ciência da Queima de Calorias",
+      "subtitle": "Modelo metabólico circadiano · Ao vivo",
+      "liveCounter": "QUEIMADAS HOJE · AO VIVO",
+      "perHour": "kcal / h",
+      "perMinute": "kcal / min",
+      "perSecond": "kcal / seg",
+      "allPhases": "Distribuição em 24 horas",
+      "scienceNote": "Baseado em pesquisas de câmara metabólica e biologia circadiana. As porcentagens são pontos médios das faixas publicadas para um adulto típico com horário de sono padrão e atividade diurna leve. Sua queima real varia conforme exercício, horário das refeições e fisiologia individual.",
+      "phaseTime": {
+        "earlySlеep": "23h – 3h",
+        "nadir": "3h – 7h",
+        "morning": "7h – 11h",
+        "midday": "11h – 15h",
+        "peak": "15h – 19h",
+        "evening": "19h – 23h"
+      },
+      "phaseDesc": {
+        "earlySlеep": "Início e fase inicial do sono. A retirada simpática e a queda da temperatura corporal reduzem a taxa metabólica de repouso para cerca de 85–95% do BMR acordado.",
+        "nadir": "Ponto mínimo biológico. A temperatura corporal central e o gasto energético em repouso atingem seu mínimo em 24 horas por volta das 5h, alinhados ao nadir circadiano.",
+        "morning": "Aumento metabólico acentuado ao acordar. Apenas ficar em pé adiciona ~10% à linha de base. O efeito térmico do café da manhã é até 2,5× mais forte do que uma refeição noturna idêntica.",
+        "midday": "O metabolismo é mantido próximo ao seu pico diário. O almoço provoca mais um pico de efeito térmico, e o movimento espontâneo (NEAT) de trabalho leve mantém o gasto constante.",
+        "peak": "Pico circadiano do gasto energético em repouso por volta das 17h — cerca de 10% acima do nadir matutino, mesmo em repouso completo. Exercícios estruturados nessa janela amplificam significativamente a queima.",
+        "evening": "O efeito térmico do jantar é significativamente reduzido em comparação ao café da manhã. À medida que o relógio biológico começa a resfriar a temperatura corporal, o metabolismo retorna à linha de base noturna."
+      }
+    },
+    "circadianPhase": {
+      "earlySlеep": "Sono Inicial",
+      "nadir": "Nadir Biológico",
+      "morning": "Atividade Matinal",
+      "midday": "Pico do Meio-Dia",
+      "peak": "Pico Circadiano",
+      "evening": "Relaxamento Noturno"
+    },
     "metabolicSummary": "Resumo Metabólico",
     "currentTdee": "TDEE Atual",
     "basedOnRecentActivity": "BASEADO EM ATIVIDADE RECENTE E NUTRIÇÃO",

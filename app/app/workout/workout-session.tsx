@@ -57,6 +57,8 @@ import { database } from '@/database';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import { BleDeviceService } from '@/database/services/BleDeviceService';
+import { UserMetricService } from '@/database/services/UserMetricService';
+import { UserService } from '@/database/services/UserService';
 import { useActiveWorkout } from '@/hooks/useActiveWorkout';
 import { useExerciseImageSource } from '@/hooks/useExerciseImageSource';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -78,9 +80,11 @@ import {
 import {
   appendBleWorkoutSamplesToNdjsonFile,
   type BleWorkoutSample,
+  compressRawToDataPoints,
   createBleWorkoutTrackingTempFile,
   saveBleWorkoutFile,
 } from '@/utils/bleWorkoutDataStorage';
+import { localDayHalfOpenRange } from '@/utils/calendarDate';
 import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
@@ -196,7 +200,7 @@ export default function WorkoutSessionScreen() {
     exerciseId?: string;
     showFeedback?: string;
   }>();
-  const { units } = useSettings();
+  const { units, bleGenerateChartPayload } = useSettings();
   const {
     intensityMultiplier,
     currentPhase,
@@ -325,6 +329,7 @@ export default function WorkoutSessionScreen() {
   const trackingStartedAtRef = useRef<number | null>(null);
   const unsubscribeBatchRef = useRef<(() => void) | null>(null);
   const hasAttemptedAutoConnect = useRef(false);
+  const pendingRawBleFileUriRef = useRef<string | null>(null);
   // Initialize to current state so remounts while connected don't re-show the snackbar.
   const wasConnectedRef = useRef(wit.isConnected);
 
@@ -509,6 +514,7 @@ export default function WorkoutSessionScreen() {
     unsubscribeBatchRef.current = null;
     trackingSampleCountRef.current = 0;
     trackingStartedAtRef.current = null;
+    pendingRawBleFileUriRef.current = null;
     clearTrackingTempFile();
   }, [clearTrackingTempFile]);
 
@@ -535,7 +541,47 @@ export default function WorkoutSessionScreen() {
     }
 
     try {
-      await saveBleWorkoutFile({
+      const stoppedAt = new Date();
+
+      // Collect user biometrics to enrich the recording.
+      let userHeightCm: number | undefined;
+      let userAgeYears: number | undefined;
+      let userGender: string | undefined;
+      let userWeightKg: number | undefined;
+
+      try {
+        const [heightMetric, user, weightMetric] = await Promise.all([
+          UserMetricService.getLatest('height'),
+          UserService.getCurrentUser(),
+          UserMetricService.getLatest('weight'),
+        ]);
+
+        if (heightMetric) {
+          const { value } = await heightMetric.getDecrypted();
+          userHeightCm = value;
+        }
+
+        if (user?.dateOfBirth) {
+          const ageMsAtStop = stoppedAt.getTime() - user.dateOfBirth;
+          userAgeYears = Math.floor(ageMsAtStop / (365.25 * 24 * 60 * 60 * 1000));
+        }
+
+        if (user?.gender) {
+          userGender = user.gender;
+        }
+
+        if (weightMetric) {
+          const { start, nextStart } = localDayHalfOpenRange(stoppedAt);
+          if (weightMetric.date >= start && weightMetric.date < nextStart) {
+            const { value } = await weightMetric.getDecrypted();
+            userWeightKg = value;
+          }
+        }
+      } catch {
+        // Non-fatal — biometrics are best-effort enrichment.
+      }
+
+      const bleFileUri = await saveBleWorkoutFile({
         version: 1,
         workoutLogId: workoutLog.id,
         exerciseName: currentSetData.exercise.name ?? '',
@@ -547,16 +593,26 @@ export default function WorkoutSessionScreen() {
         deviceId: wit.connectedDevice.id,
         deviceDisplayName: wit.connectedDevice.name,
         startedAt: new Date(startedAt ?? Date.now()).toISOString(),
-        stoppedAt: new Date().toISOString(),
+        stoppedAt: stoppedAt.toISOString(),
         sampleCount,
+        userHeightCm,
+        userAgeYears,
+        userGender,
+        userWeightKg,
         samplesFile: tempFile,
       });
       trackingTempFileRef.current = null;
+
+      if (bleGenerateChartPayload && sampleCount >= 20) {
+        pendingRawBleFileUriRef.current = bleFileUri;
+      }
+
       showSnackbar('success', t('workoutSession.trackingSaved', { count: sampleCount }));
     } catch (err) {
       handleError(err, 'workout-session.stopTrackingAndSave');
     }
   }, [
+    bleGenerateChartPayload,
     clearTrackingTempFile,
     currentSetData,
     workoutLog,
@@ -576,6 +632,7 @@ export default function WorkoutSessionScreen() {
       const tempFile = createBleWorkoutTrackingTempFile(generateUUID());
       trackingTempFileRef.current = tempFile;
       trackingSampleCountRef.current = 0;
+      pendingRawBleFileUriRef.current = null;
       trackingStartedAtRef.current = Date.now();
       setIsTracking(true);
       isTrackingRef.current = true;
@@ -675,6 +732,10 @@ export default function WorkoutSessionScreen() {
       return;
     }
 
+    if (isTrackingRef.current) {
+      await stopTrackingAndSave();
+    }
+
     try {
       setIsSaving(true);
       // Small delay to allow React to render the loading state before closing
@@ -686,7 +747,8 @@ export default function WorkoutSessionScreen() {
           : 60;
       const completedSetOrder = currentSetData.set.setOrder ?? 0;
 
-      await workoutLog.updateSet(currentSetData.set.id, {
+      const completedSetId = currentSetData.set.id;
+      await workoutLog.updateSet(completedSetId, {
         difficultyLevel: data.rpe,
         weight: displayToKg(data.weight, units),
         reps: data.reps,
@@ -694,6 +756,12 @@ export default function WorkoutSessionScreen() {
         repsInReserve: data.repsInReserve,
         restTimeAfter: restTime,
       });
+
+      const rawBleFileUri = pendingRawBleFileUriRef.current;
+      pendingRawBleFileUriRef.current = null;
+      if (bleGenerateChartPayload && rawBleFileUri && data.reps > 0) {
+        void compressRawToDataPoints(rawBleFileUri, completedSetId, data.reps).catch(() => {});
+      }
 
       // Check from DB if all sets are now done (state from refresh() may not be updated yet)
       const allSetsDone = await checkAllSetsDoneFromDb(workoutLog.id);

@@ -6,6 +6,43 @@
     "averageIntakeCarbs": "Koolhydraten",
     "averageIntakeFat": "Vet",
     "averageIntakeFiber": "Vezels",
+    "caloriesBurnedToday": "Vandaag Verbrande Calorieën",
+    "caloriesBurnedSubtitle": "Gebaseerd op TDEE van {{tdee}} kcal/dag",
+    "caloriesBurnedProgress": "{{percent}}% van de dag verstreken",
+    "circadianModal": {
+      "title": "Wetenschap achter Calorieënverbranding",
+      "subtitle": "Circadiaans metabolisch model · Live",
+      "liveCounter": "VANDAAG VERBRAND · LIVE",
+      "perHour": "kcal / uur",
+      "perMinute": "kcal / min",
+      "perSecond": "kcal / sec",
+      "allPhases": "24-uursverdeling",
+      "scienceNote": "Gebaseerd op onderzoek in metabolische kamers en circadiane biologie. Percentages zijn middelpunten van gepubliceerde ranges voor een typische volwassene met een normaal slaapschema en lichte dagactiviteit. Je werkelijke verbranding varieert met beweging, maaltijdtijden en individuele fysiologie.",
+      "phaseTime": {
+        "earlySlеep": "23u – 3u",
+        "nadir": "3u – 7u",
+        "morning": "7u – 11u",
+        "midday": "11u – 15u",
+        "peak": "15u – 19u",
+        "evening": "19u – 23u"
+      },
+      "phaseDesc": {
+        "earlySlеep": "Slaaponset en vroege slaap. Sympathische terugtrekking en dalende lichaamstemperatuur verlagen je slapende metabolisch tarief naar ongeveer 85–95% van het wakende BMR.",
+        "nadir": "Biologisch dieptepunt. Kerntemperatuur en rustenergieverbruik bereiken hun 24-uurs minimum rond 5u, in lijn met het circadiane nadir.",
+        "morning": "Scherpe metabolische stijging bij het wakker worden. Rechtop staan voegt ~10% toe aan je basislijn. Het thermisch effect van ontbijt is tot 2,5× sterker dan een identieke avondmaaltijd.",
+        "midday": "Metabolisme blijft nabij het dagelijkse hoogtepunt. De lunch triggert een nieuwe TEF-piek en spontane beweging (NEAT) houdt de output stabiel.",
+        "peak": "Circadiaans REE-hoogtepunt rond 17u — ongeveer 10% boven het vroege ochtendnadir, zelfs in volledig rust. Gestructureerde beweging in dit venster versterkt de verbranding aanzienlijk.",
+        "evening": "Het thermisch effect van het avondeten is aanzienlijk gedempt ten opzichte van de ochtend. Terwijl de biologische klok de kerntemperatuur begint te koelen, daalt het metabolisme terug naar de nachtelijke basislijn."
+      }
+    },
+    "circadianPhase": {
+      "earlySlеep": "Vroege Slaap",
+      "nadir": "Biologisch Nadir",
+      "morning": "Ochtendactiviteit",
+      "midday": "Middagpiek",
+      "peak": "Circadiaanse Piek",
+      "evening": "Avondontspanning"
+    },
     "metabolicSummary": "Metabolische samenvatting",
     "currentTdee": "Huidige TDEE",
     "basedOnRecentActivity": "GEBASEERD OP RECENTE ACTIVITEIT & VOEDING",

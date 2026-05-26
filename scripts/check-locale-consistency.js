@@ -26,7 +26,16 @@ function extractKeys(obj, prefix = '') {
   for (const [key, value] of Object.entries(obj)) {
     const fullKey = prefix ? `${prefix}.${key}` : key;
 
-    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+    if (Array.isArray(value)) {
+      value.forEach((item, index) => {
+        const itemKey = `${fullKey}[${index}]`;
+        if (typeof item === 'object' && item !== null) {
+          keys.push(...extractKeys(item, itemKey));
+        } else {
+          keys.push(itemKey);
+        }
+      });
+    } else if (typeof value === 'object' && value !== null) {
       keys.push(...extractKeys(value, fullKey));
     } else {
       keys.push(fullKey);

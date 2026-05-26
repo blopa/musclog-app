@@ -370,6 +370,22 @@ export default function Privacy() {
               </div>
             </section>
 
+            {/* Voluntary Training Data Contribution */}
+            <section>
+              <h2 className="mb-3 text-xl font-semibold" style={{ color: BRAND_GREEN_BRIGHT }}>
+                {t('sections.trainingData.title')}
+              </h2>
+              <p className="mb-4 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+                {t('sections.trainingData.content1')}
+              </p>
+              <p className="mb-4 leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+                {t('sections.trainingData.content2')}
+              </p>
+              <p className="leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+                {t('sections.trainingData.content3')}
+              </p>
+            </section>
+
             {/* Use of Your Personal Data */}
             <section>
               <h2 className="mb-3 text-xl font-semibold" style={{ color: BRAND_GREEN_BRIGHT }}>

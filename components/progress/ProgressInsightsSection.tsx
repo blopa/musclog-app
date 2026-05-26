@@ -31,7 +31,7 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
   const avg = insights.averageIntake;
 
   return (
-    <View className="mb-4">
+    <View>
       {avg ? (
         <GenericCard variant="card" containerStyle={{ marginBottom: 16 }}>
           <View className="p-2">
@@ -137,23 +137,25 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
         </GenericCard>
       ) : null}
 
-      <GenericCard variant="card" containerStyle={{ marginBottom: 16 }}>
-        <View className="p-2">
-          <Text className="mb-2 ml-2 mt-2 text-sm font-bold text-text-primary">
-            {t('progress.bodyFatGoalWeights')}
-          </Text>
-          <View className="flex-row flex-wrap">
-            {[5, 10, 15, 20].map((bf) => (
-              <View key={bf} className="flex-1 items-center justify-center p-2">
-                <Text className="text-[10px] text-text-tertiary">{bf}%</Text>
-                <Text className="text-lg font-bold text-text-primary">
-                  {formatDecimal((insights.targetWeights as any)[`bf${bf}`], 1)}
-                </Text>
-              </View>
-            ))}
+      {insights.targetWeights.bf5 !== 0 ? (
+        <GenericCard variant="card" containerStyle={{ marginBottom: 16 }}>
+          <View className="p-2">
+            <Text className="mb-2 ml-2 mt-2 text-sm font-bold text-text-primary">
+              {t('progress.bodyFatGoalWeights')}
+            </Text>
+            <View className="flex-row flex-wrap">
+              {[5, 10, 15, 20].map((bf) => (
+                <View key={bf} className="flex-1 items-center justify-center p-2">
+                  <Text className="text-[10px] text-text-tertiary">{bf}%</Text>
+                  <Text className="text-lg font-bold text-text-primary">
+                    {formatDecimal((insights.targetWeights as any)[`bf${bf}`], 1)}
+                  </Text>
+                </View>
+              ))}
+            </View>
           </View>
-        </View>
-      </GenericCard>
+        </GenericCard>
+      ) : null}
     </View>
   );
 }
