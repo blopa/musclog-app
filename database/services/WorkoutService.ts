@@ -14,6 +14,7 @@ import {
   getActiveWorkoutLogId,
   setActiveWorkoutLogId,
 } from '@/utils/activeWorkoutStorage';
+import { deleteBleDataPointsFiles } from '@/utils/bleWorkoutDataStorage';
 import { handleError } from '@/utils/handleError';
 import { calculateWorkoutKcal, type MWEMInput } from '@/utils/workoutEnergyCalculator';
 import {
@@ -904,6 +905,10 @@ export class WorkoutService {
         }
       });
 
+      if (deletedSetIds && deletedSetIds.length > 0) {
+        void deleteBleDataPointsFiles(deletedSetIds).catch(() => {});
+      }
+
       const bodyWeightKg = await UserMetricService.getUserBodyWeightKgForVolume();
       const finalTotal = await workoutLog.calculateVolume(bodyWeightKg);
       return { workoutLogId, totalVolume: finalTotal };
@@ -1117,7 +1122,9 @@ export class WorkoutService {
    * Delete workout log (soft delete)
    */
   static async deleteWorkoutLog(id: string): Promise<void> {
-    return await database.write(async (writer) => {
+    const deletedSetIds: string[] = [];
+
+    await database.write(async (writer) => {
       const workoutLog = await database.get<WorkoutLog>('workout_logs').find(id);
       // Use callWriter to avoid nested writes since markAsDeleted is a @writer method
       await writer.callWriter(() => workoutLog.markAsDeleted());
@@ -1135,12 +1142,15 @@ export class WorkoutService {
           .fetch();
 
         for (const set of sets) {
+          deletedSetIds.push(set.id);
           await writer.callWriter(() => set.markAsDeleted());
         }
 
         await writer.callWriter(() => logExercise.markAsDeleted());
       }
     });
+
+    void deleteBleDataPointsFiles(deletedSetIds).catch(() => {});
   }
 
   /**

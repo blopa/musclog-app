@@ -494,6 +494,15 @@ export async function compressRawToDataPoints(
   return outUri;
 }
 
+export async function deleteBleDataPointsFiles(setIds: string[]): Promise<void> {
+  const dir = getDataDirectoryUri();
+  if (!dir || setIds.length === 0) {
+    return;
+  }
+
+  await Promise.all(setIds.map((id) => deleteAsync(`${dir}data_points_${id}.json`, { idempotent: true })));
+}
+
 export function isBleWorkoutFile(value: unknown): value is BleWorkoutFile {
   if (typeof value !== 'object' || value === null) {
     return false;
