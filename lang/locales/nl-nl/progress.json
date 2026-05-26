@@ -6,6 +6,17 @@
     "averageIntakeCarbs": "Koolhydraten",
     "averageIntakeFat": "Vet",
     "averageIntakeFiber": "Vezels",
+    "caloriesBurnedToday": "Vandaag Verbrande Calorieën",
+    "caloriesBurnedSubtitle": "Gebaseerd op TDEE van {{tdee}} kcal/dag",
+    "caloriesBurnedProgress": "{{percent}}% van de dag verstreken",
+    "circadianPhase": {
+      "earlySlеep": "Vroege Slaap",
+      "nadir": "Biologisch Nadir",
+      "morning": "Ochtendactiviteit",
+      "midday": "Middagpiek",
+      "peak": "Circadiaanse Piek",
+      "evening": "Avondontspanning"
+    },
     "metabolicSummary": "Metabolische samenvatting",
     "currentTdee": "Huidige TDEE",
     "basedOnRecentActivity": "GEBASEERD OP RECENTE ACTIVITEIT & VOEDING",

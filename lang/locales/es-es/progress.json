@@ -6,6 +6,17 @@
     "averageIntakeCarbs": "Carbos",
     "averageIntakeFat": "Grasa",
     "averageIntakeFiber": "Fibra",
+    "caloriesBurnedToday": "Calorías Quemadas Hoy",
+    "caloriesBurnedSubtitle": "Basado en TDEE de {{tdee}} kcal/día",
+    "caloriesBurnedProgress": "{{percent}}% del día transcurrido",
+    "circadianPhase": {
+      "earlySlеep": "Sueño Temprano",
+      "nadir": "Nadir Biológico",
+      "morning": "Actividad Matutina",
+      "midday": "Pico del Mediodía",
+      "peak": "Pico Circadiano",
+      "evening": "Relajación Nocturna"
+    },
     "metabolicSummary": "Resumen Metabólico",
     "currentTdee": "TDEE Actual",
     "basedOnRecentActivity": "BASADO EN ACTIVIDAD Y NUTRICIÓN RECIENTES",

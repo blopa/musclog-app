@@ -6,6 +6,17 @@
     "averageIntakeCarbs": "Углеводы",
     "averageIntakeFat": "Жиры",
     "averageIntakeFiber": "Клетчатка",
+    "caloriesBurnedToday": "Сожжено калорий сегодня",
+    "caloriesBurnedSubtitle": "На основе TDEE {{tdee}} ккал/день",
+    "caloriesBurnedProgress": "{{percent}}% дня прошло",
+    "circadianPhase": {
+      "earlySlеep": "Ранний сон",
+      "nadir": "Биологический минимум",
+      "morning": "Утренняя активность",
+      "midday": "Дневной пик",
+      "peak": "Циркадный пик",
+      "evening": "Вечернее расслабление"
+    },
     "metabolicSummary": "Метаболическая сводка",
     "currentTdee": "Текущий TDEE",
     "basedOnRecentActivity": "НА ОСНОВЕ НЕДАВНЕЙ АКТИВНОСТИ И ПИТАНИЯ",

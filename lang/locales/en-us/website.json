@@ -1249,6 +1249,60 @@
               ]
             },
             {
+              "question": "How is the \"Calories Burned Today\" estimate calculated?",
+              "answer": "The real-time calorie burn estimate uses a circadian-weighted model rather than a simple linear division of your TDEE across 24 hours. Metabolic chamber and circadian biology research shows that energy expenditure is not uniform throughout the day — it follows a pronounced 24-hour rhythm driven by your internal biological clock, posture, meal timing (thermic effect of food, TEF), and spontaneous physical activity (NEAT).",
+              "table": {
+                "head": ["Time Block", "% of TDEE", "Primary Driver"],
+                "rows": [
+                  [
+                    "11 PM – 3 AM",
+                    "~9.5 %",
+                    "Sleep onset, sympathetic withdrawal, SMR at 85–95 % of BMR"
+                  ],
+                  [
+                    "3 AM – 7 AM",
+                    "~8.5 %",
+                    "Circadian nadir (~5 AM), lowest core temperature and REE"
+                  ],
+                  ["7 AM – 11 AM", "~19.5 %", "Waking posture rise (+10 %), peak morning TEF"],
+                  ["11 AM – 3 PM", "~22.5 %", "Lunch TEF, daytime NEAT and occupational movement"],
+                  ["3 PM – 7 PM", "~25 %", "Circadian REE peak (~5 PM), core temperature peak"],
+                  [
+                    "7 PM – 11 PM",
+                    "~15 %",
+                    "Evening wind-down, blunted dinner TEF, cooling core temperature"
+                  ]
+                ]
+              },
+              "answer2": "Each block is four hours (240 minutes). Since the 11 PM–3 AM block straddles midnight, the app splits it into two contiguous segments (00:00–03:00 and 23:00–24:00) so the calculation stays anchored to local midnight. Calories accumulated so far today = Σ (elapsed minutes in each completed or partial segment × block rate × TDEE). The current metabolic phase label (e.g. \"Circadian Peak\") reflects which block is active right now.",
+              "citations": [
+                {
+                  "label": "Bo et al. (2015) — Meal timing & diet-induced thermogenesis — IJO",
+                  "url": "https://doi.org/10.1038/ijo.2015.138"
+                },
+                {
+                  "label": "Manini (2010) — Energy expenditure and aging — Ageing Res Rev",
+                  "url": "https://doi.org/10.1016/j.arr.2009.08.002"
+                },
+                {
+                  "label": "Morris et al. (2015) — Circadian system & morning/evening TEF difference — Obesity",
+                  "url": "https://doi.org/10.1002/oby.21189"
+                },
+                {
+                  "label": "Poggiogalle et al. (2018) — Circadian regulation of energy metabolism — Metabolism",
+                  "url": "https://doi.org/10.1016/j.metabol.2017.11.017"
+                },
+                {
+                  "label": "Ruddick-Collins et al. (2021) — Circadian RMR rhythms & thermic effect of food — JCEM",
+                  "url": "https://doi.org/10.1210/clinem/dgab654"
+                },
+                {
+                  "label": "Sharma & Kavuru (2010) — Sleep and metabolism overview — Int J Endocrinol",
+                  "url": "https://doi.org/10.1155/2010/270832"
+                }
+              ]
+            },
+            {
               "question": "How is the daily water intake recommendation calculated?",
               "answer": "Water recommendation scales linearly with TDEE at a ratio of 0.75 ml per kcal of daily energy expenditure. This is derived from two independently converging guidelines:",
               "bullets": [

@@ -6,6 +6,7 @@ import { ActivityIndicator, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
+import { CaloriesBurnedCard } from '@/components/cards/CaloriesBurnedCard';
 import { LineChart } from '@/components/charts/LineChart';
 import { MasterLayout } from '@/components/MasterLayout';
 import { DataSettingsModal } from '@/components/modals/DataSettingsModal';
@@ -275,12 +276,15 @@ function ProgressScreenContent({
 
               {/* Phase 1: primary chart — renders immediately on load */}
               {chartPhase >= 1 ? (
-                <BodyMetricsCharts
-                  weightHistory={data?.weightHistory || []}
-                  fatHistory={data?.fatHistory || []}
-                  ffmiHistory={data?.ffmiHistory || []}
-                  units={units}
-                />
+                <>
+                  <CaloriesBurnedCard />
+                  <BodyMetricsCharts
+                    weightHistory={data?.weightHistory || []}
+                    fatHistory={data?.fatHistory || []}
+                    ffmiHistory={data?.ffmiHistory || []}
+                    units={units}
+                  />
+                </>
               ) : null}
 
               {/* Phase 2: secondary charts — rendered after interactions complete */}
