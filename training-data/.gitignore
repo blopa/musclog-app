@@ -11,3 +11,4 @@ output/model.pkl
 recordings/*
 !recordings/PRIVACY.md
 output/html/*
+output/markers/*

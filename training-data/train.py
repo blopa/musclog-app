@@ -436,6 +436,46 @@ def pseudo_label_segments(segments: list, n_reps: int) -> list:
     return segments
 
 
+def label_segments_from_markers(segments: list, rep_markers: list) -> list:
+    """
+    Assign is_rep=1 to the segment with the highest time-overlap (IoU) for
+    each manual rep marker. Segments not matched to any marker get is_rep=0.
+
+    Each marker must have keys startMs and endMs (absolute ms timestamps
+    matching the samples[i].timestamp field).
+    """
+    for seg in segments:
+        seg["is_rep"] = 0
+
+    claimed: set = set()
+
+    for marker in rep_markers:
+        m_start = float(marker["startMs"])
+        m_end   = float(marker["endMs"])
+        m_dur   = m_end - m_start
+
+        best_idx = None
+        best_iou = 0.0
+
+        for i, seg in enumerate(segments):
+            if i in claimed:
+                continue
+            overlap = max(0.0, min(seg["end_ts"], m_end) - max(seg["start_ts"], m_start))
+            if overlap == 0.0:
+                continue
+            s_dur = seg["end_ts"] - seg["start_ts"]
+            iou   = overlap / (s_dur + m_dur - overlap + 1e-6)
+            if iou > best_iou:
+                best_iou = iou
+                best_idx = i
+
+        if best_idx is not None and best_iou > 0.05:
+            segments[best_idx]["is_rep"] = 1
+            claimed.add(best_idx)
+
+    return segments
+
+
 # ---------------------------------------------------------------------------
 # Step 5 — Dataset builder
 # ---------------------------------------------------------------------------
@@ -486,16 +526,22 @@ def build_segment_dataset() -> tuple:
             avg_dt         = (dur / 1000.0) / max(1, len(chunk) - 1)
             seg["energy"]  = float(np.sum(chunk ** 2) * avg_dt)
 
-        labeled = pseudo_label_segments(segs, n_reps)
-        if labeled is None:
-            skipped_under += 1
-            skipped_under_list.append({"name": path.name, "n_segs": len(segs), "n_reps": n_reps})
-            print(f"  SKIP (under-segmented: {len(segs)} segs < {n_reps} reps): {path.name}")
-            continue
+        rep_markers = data.get("repMarkers")
+        if rep_markers:
+            labeled    = label_segments_from_markers(segs, rep_markers)
+            label_src  = f"manual ({len(rep_markers)} markers)"
+        else:
+            labeled = pseudo_label_segments(segs, n_reps)
+            if labeled is None:
+                skipped_under += 1
+                skipped_under_list.append({"name": path.name, "n_segs": len(segs), "n_reps": n_reps})
+                print(f"  SKIP (under-segmented: {len(segs)} segs < {n_reps} reps): {path.name}")
+                continue
+            label_src = "pseudo"
 
         print(f"  {path.name}: {n_reps} reps, {len(segs)} candidate segments "
               f"({sum(1 for sg in labeled if sg['is_rep'])} labeled rep, "
-              f"{sum(1 for sg in labeled if not sg['is_rep'])} noise)")
+              f"{sum(1 for sg in labeled if not sg['is_rep'])} noise) [{label_src}]")
 
         metadata = {
             "muscleGroup":   data.get("muscleGroup"),
