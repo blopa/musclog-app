@@ -36,6 +36,11 @@ function ExercisePickerModal({
   const theme = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
 
+  const handleClose = useCallback(() => {
+    setSearchQuery('');
+    onClose();
+  }, [onClose]);
+
   const { exercises, isLoading, isLoadingMore, hasMore, loadMore } = useExercises({
     visible,
     enableReactivity: true,
@@ -46,12 +51,13 @@ function ExercisePickerModal({
     batchSize: 20,
   });
 
-  useEffect(() => {
-    if (!visible) {setSearchQuery('');}
-  }, [visible]);
-
   return (
-    <FullScreenModal visible={visible} onClose={onClose} title="Select Exercise" scrollable={true}>
+    <FullScreenModal
+      visible={visible}
+      onClose={handleClose}
+      title="Select Exercise"
+      scrollable={true}
+    >
       <View className="px-4 py-3">
         <View className="mb-4 flex-row items-center gap-2 rounded-lg border border-border-light bg-bg-card px-3">
           <Search size={theme.iconSize.md} color={theme.colors.text.tertiary} />
@@ -117,7 +123,9 @@ interface RecordingEntry {
 
 function formatElapsed(ms: number): string {
   const totalSecs = Math.floor(ms / 1000);
-  const m = Math.floor(totalSecs / 60).toString().padStart(2, '0');
+  const m = Math.floor(totalSecs / 60)
+    .toString()
+    .padStart(2, '0');
   const s = (totalSecs % 60).toString().padStart(2, '0');
   return `${m}:${s}`;
 }
@@ -141,6 +149,7 @@ export default function RepsRecordingScreen() {
   const capturedExerciseRef = useRef<Exercise | null>(null);
 
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
+  const [capturedExerciseName, setCapturedExerciseName] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [elapsedMs, setElapsedMs] = useState(0);
   const [isExercisePickerVisible, setIsExercisePickerVisible] = useState(false);
@@ -157,7 +166,9 @@ export default function RepsRecordingScreen() {
 
   // Elapsed timer — independent 1s interval, no BLE involvement
   useEffect(() => {
-    if (!isRecording) {return;}
+    if (!isRecording) {
+      return;
+    }
     const id = setInterval(() => {
       if (startedAtRef.current !== null) {
         setElapsedMs(Date.now() - startedAtRef.current);
@@ -174,7 +185,9 @@ export default function RepsRecordingScreen() {
   const handleEnableCamera = useCallback(async () => {
     if (!cameraPermission?.granted) {
       const result = await requestCameraPermission();
-      if (!result.granted) {return;}
+      if (!result.granted) {
+        return;
+      }
     }
     setIsCameraEnabled(true);
   }, [cameraPermission?.granted, requestCameraPermission]);
@@ -188,6 +201,7 @@ export default function RepsRecordingScreen() {
     sampleCountRef.current = 0;
     capturedDeviceRef.current = null;
     capturedExerciseRef.current = null;
+    setCapturedExerciseName('');
     recordingPromiseRef.current = null;
     unsubscribeBatchRef.current?.();
     unsubscribeBatchRef.current = null;
@@ -208,8 +222,12 @@ export default function RepsRecordingScreen() {
   }, []);
 
   const handleStart = useCallback(async () => {
-    if (!wit.isConnected || !selectedExercise || !cameraRef.current) {return;}
-    if (recordingRef.current) {return;}
+    if (!wit.isConnected || !selectedExercise || !cameraRef.current) {
+      return;
+    }
+    if (recordingRef.current) {
+      return;
+    }
 
     try {
       const tempFile = createBleWorkoutTrackingTempFile(generateUUID());
@@ -220,6 +238,7 @@ export default function RepsRecordingScreen() {
         ? { id: wit.connectedDevice.id, name: wit.connectedDevice.name }
         : null;
       capturedExerciseRef.current = selectedExercise;
+      setCapturedExerciseName(selectedExercise.name ?? '');
       startedAtRef.current = Date.now();
       stoppedAtRef.current = null;
       recordingRef.current = true;
@@ -230,7 +249,9 @@ export default function RepsRecordingScreen() {
       unsubscribeBatchRef.current = witMotionClient.onBatch((batch) => {
         const samples: BleWorkoutSample[] = [];
         for (const packet of batch.packets) {
-          if (packet.kind !== 'motion') {continue;}
+          if (packet.kind !== 'motion') {
+            continue;
+          }
           samples.push({
             timestamp: packet.timestamp,
             accel: { ...packet.accel },
@@ -255,7 +276,9 @@ export default function RepsRecordingScreen() {
   }, [selectedExercise, wit.connectedDevice, wit.isConnected]);
 
   const handleStop = useCallback(async () => {
-    if (!recordingRef.current) {return;}
+    if (!recordingRef.current) {
+      return;
+    }
     recordingRef.current = false;
     stoppedAtRef.current = Date.now();
 
@@ -280,7 +303,9 @@ export default function RepsRecordingScreen() {
 
   const handleSave = useCallback(async () => {
     const reps = parseInt(repsInput, 10);
-    if (isNaN(reps) || reps < 0) {return;}
+    if (isNaN(reps) || reps < 0) {
+      return;
+    }
 
     const exercise = capturedExerciseRef.current;
     const device = capturedDeviceRef.current;
@@ -289,7 +314,14 @@ export default function RepsRecordingScreen() {
     const stoppedAt = stoppedAtRef.current;
     const sampleCount = sampleCountRef.current;
 
-    if (!videoUri || !exercise || !device || !tempFile || startedAt === null || stoppedAt === null) {
+    if (
+      !videoUri ||
+      !exercise ||
+      !device ||
+      !tempFile ||
+      startedAt === null ||
+      stoppedAt === null
+    ) {
       showSnackbar('error', 'Missing recording data');
       return;
     }
@@ -356,8 +388,12 @@ export default function RepsRecordingScreen() {
     wit.isConnected && selectedExercise !== null && !isSaving && isCameraEnabled && !isRecording;
 
   const statusColor = useMemo(() => {
-    if (wit.status === 'connected') {return theme.colors.status.success;}
-    if (wit.status === 'error') {return theme.colors.status.error;}
+    if (wit.status === 'connected') {
+      return theme.colors.status.success;
+    }
+    if (wit.status === 'error') {
+      return theme.colors.status.error;
+    }
     return theme.colors.status.warning;
   }, [wit.status, theme]);
 
@@ -433,7 +469,9 @@ export default function RepsRecordingScreen() {
                     onPress={() => void wit.connect(device)}
                     className="flex-row items-center justify-between rounded-lg bg-bg-card p-3"
                   >
-                    <Text className="font-medium text-text-primary">{device.name ?? 'Unknown'}</Text>
+                    <Text className="font-medium text-text-primary">
+                      {device.name ?? 'Unknown'}
+                    </Text>
                     <Text className="text-xs text-text-tertiary">{device.id}</Text>
                   </Pressable>
                 ))}
@@ -452,7 +490,13 @@ export default function RepsRecordingScreen() {
         <GenericCard variant="default">
           <View className="gap-3 p-4">
             <Text className="font-semibold text-text-primary">Exercise</Text>
-            <Text className={selectedExercise ? 'text-base text-text-primary' : 'text-base italic text-text-tertiary'}>
+            <Text
+              className={
+                selectedExercise
+                  ? 'text-base text-text-primary'
+                  : 'text-base italic text-text-tertiary'
+              }
+            >
               {selectedExercise?.name ?? 'No exercise selected'}
             </Text>
             <Button
@@ -489,13 +533,19 @@ export default function RepsRecordingScreen() {
             )}
 
             {!wit.isConnected ? (
-              <Text className="text-xs text-text-tertiary">Connect a BLE device to enable recording</Text>
+              <Text className="text-xs text-text-tertiary">
+                Connect a BLE device to enable recording
+              </Text>
             ) : null}
             {!selectedExercise && wit.isConnected ? (
-              <Text className="text-xs text-text-tertiary">Select an exercise to enable recording</Text>
+              <Text className="text-xs text-text-tertiary">
+                Select an exercise to enable recording
+              </Text>
             ) : null}
             {!isCameraEnabled && wit.isConnected && selectedExercise ? (
-              <Text className="text-xs text-text-tertiary">Enable the camera below to start recording</Text>
+              <Text className="text-xs text-text-tertiary">
+                Enable the camera below to start recording
+              </Text>
             ) : null}
           </View>
         </GenericCard>
@@ -548,7 +598,9 @@ export default function RepsRecordingScreen() {
                 <Text className="font-semibold" style={{ color: theme.colors.accent.primary }}>
                   Enable Camera
                 </Text>
-                <Text className="text-xs text-text-tertiary">Tap to activate — off to save battery</Text>
+                <Text className="text-xs text-text-tertiary">
+                  Tap to activate — off to save battery
+                </Text>
               </Pressable>
             )}
 
@@ -603,7 +655,10 @@ export default function RepsRecordingScreen() {
         </GenericCard>
       </ScrollView>
 
-      <BleDevicePreviewModal visible={isPreviewVisible} onClose={() => setIsPreviewVisible(false)} />
+      <BleDevicePreviewModal
+        visible={isPreviewVisible}
+        onClose={() => setIsPreviewVisible(false)}
+      />
 
       <ExercisePickerModal
         visible={isExercisePickerVisible}
@@ -640,7 +695,7 @@ export default function RepsRecordingScreen() {
       >
         <View className="flex-1 justify-center gap-6 p-6">
           <Text className="text-center text-text-secondary">
-            {capturedExerciseRef.current?.name ?? selectedExercise?.name ?? ''}
+            {capturedExerciseName || selectedExercise?.name || ''}
           </Text>
           <TextInput
             value={repsInput}
