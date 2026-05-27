@@ -216,11 +216,16 @@ export function WorkoutSessionHistoryModal({
             reps: set.reps ?? 0,
             partials: set.partials || 0,
             isCurrent,
+            isSkipped: set.isSkipped ?? false,
           };
         });
 
         // Calculate set progress (100% if completed, 0% if not started, partial if current)
         const setProgress = exerciseSets.map((set) => {
+          if (set.isSkipped) {
+            return 0;
+          }
+
           if ((set.difficultyLevel ?? 0) > 0) {
             return 100; // Completed
           } else if (set.setOrder === currentSetOrder) {
@@ -249,6 +254,8 @@ export function WorkoutSessionHistoryModal({
     templateSets,
     sets,
     exercises,
+    logExercises,
+    templateExercises,
     currentSetOrder,
     units,
   ]);
