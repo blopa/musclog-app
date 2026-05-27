@@ -4,7 +4,9 @@ import { copyAsync, makeDirectoryAsync, writeAsStringAsync } from 'expo-file-sys
 import * as IntentLauncher from 'expo-intent-launcher';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   AppState,
+  FlatList,
   Modal,
   PermissionsAndroid,
   Pressable,
@@ -15,13 +17,11 @@ import {
 } from 'react-native';
 
 import { MasterLayout } from '@/components/MasterLayout';
-import type { ExerciseData } from '@/components/modals/ExercisesModal';
-import ExercisesModal from '@/components/modals/ExercisesModal';
 import { Button } from '@/components/theme/Button';
 import type Exercise from '@/database/models/Exercise';
-import { ExerciseService } from '@/database/services/ExerciseService';
 import type { WitMotionVector3 } from '@/modules/witmotion-ble';
 import { useWitMotion, witMotionClient } from '@/modules/witmotion-ble';
+import { useExercises } from '@/hooks/useExercises';
 import { showSnackbar } from '@/utils/snackbarService';
 
 const EXTERNAL_STORAGE_BASE = 'file:///storage/emulated/0/musclog/';
@@ -64,17 +64,33 @@ export default function RepsRecordingScreen() {
   const recordingPromiseRef = useRef<Promise<{ uri: string } | undefined> | null>(null);
 
   const [storagePermissionGranted, setStoragePermissionGranted] = useState(false);
-  const [selectedExercise, setSelectedExercise] = useState<ExerciseData | null>(null);
-  const [fullExercise, setFullExercise] = useState<Exercise | null>(null);
+  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [sampleCount, setSampleCount] = useState(0);
   const [elapsedMs, setElapsedMs] = useState(0);
-  const [isExerciseModalVisible, setIsExerciseModalVisible] = useState(false);
+  const [isExercisePickerVisible, setIsExercisePickerVisible] = useState(false);
+  const [exerciseSearch, setExerciseSearch] = useState('');
   const [isRepsDialogVisible, setIsRepsDialogVisible] = useState(false);
   const [repsInput, setRepsInput] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [videoUri, setVideoUri] = useState<string | null>(null);
   const [recordings, setRecordings] = useState<RecordingEntry[]>([]);
+
+  const {
+    exercises,
+    isLoading: isLoadingExercises,
+    isLoadingMore,
+    hasMore,
+    loadMore,
+  } = useExercises({
+    visible: isExercisePickerVisible,
+    searchTerm: exerciseSearch.trim() || undefined,
+    initialLimit: 20,
+    batchSize: 20,
+    enableReactivity: false,
+    sortBy: 'name',
+    sortOrder: 'asc',
+  });
 
   const checkStoragePermission = useCallback(async () => {
     const granted = await PermissionsAndroid.check(MANAGE_EXTERNAL_STORAGE);
@@ -158,11 +174,15 @@ export default function RepsRecordingScreen() {
     );
   }, []);
 
-  const handleExerciseSelect = useCallback(async (exercise: ExerciseData) => {
+  const handleExerciseSelect = useCallback((exercise: Exercise) => {
     setSelectedExercise(exercise);
-    setIsExerciseModalVisible(false);
-    const full = await ExerciseService.getExerciseById(exercise.id);
-    setFullExercise(full);
+    setIsExercisePickerVisible(false);
+    setExerciseSearch('');
+  }, []);
+
+  const handleOpenExercisePicker = useCallback(() => {
+    setExerciseSearch('');
+    setIsExercisePickerVisible(true);
   }, []);
 
   const handleStart = useCallback(async () => {
@@ -201,7 +221,7 @@ export default function RepsRecordingScreen() {
       showSnackbar('error', 'Storage permission required — tap Grant Access');
       return;
     }
-    if (!videoUri || !fullExercise || !wit.connectedDevice) {
+    if (!videoUri || !selectedExercise || !wit.connectedDevice) {
       return;
     }
     setIsSaving(true);
@@ -214,11 +234,11 @@ export default function RepsRecordingScreen() {
       const data = {
         version: 1,
         sessionId,
-        exerciseId: fullExercise.id,
-        exerciseName: fullExercise.name,
-        muscleGroup: fullExercise.muscleGroup,
-        equipmentType: fullExercise.equipmentType,
-        mechanicType: fullExercise.mechanicType,
+        exerciseId: selectedExercise.id,
+        exerciseName: selectedExercise.name,
+        muscleGroup: selectedExercise.muscleGroup,
+        equipmentType: selectedExercise.equipmentType,
+        mechanicType: selectedExercise.mechanicType,
         reps,
         deviceId: wit.connectedDevice.id,
         deviceDisplayName: wit.connectedDevice.name,
@@ -232,7 +252,7 @@ export default function RepsRecordingScreen() {
         ...prev,
         {
           sessionId,
-          exerciseName: fullExercise.name ?? selectedExercise?.name ?? '',
+          exerciseName: selectedExercise.name ?? '',
           reps,
           timestamp: new Date().toISOString(),
         },
@@ -246,14 +266,7 @@ export default function RepsRecordingScreen() {
     } finally {
       setIsSaving(false);
     }
-  }, [
-    repsInput,
-    storagePermissionGranted,
-    videoUri,
-    fullExercise,
-    wit.connectedDevice,
-    selectedExercise,
-  ]);
+  }, [repsInput, storagePermissionGranted, videoUri, selectedExercise, wit.connectedDevice]);
 
   const canStart = wit.isConnected && selectedExercise !== null && !isSaving;
 
@@ -375,11 +388,7 @@ export default function RepsRecordingScreen() {
             {selectedExercise?.name ?? 'No exercise selected'}
           </Text>
 
-          <Button
-            label="Select Exercise"
-            onPress={() => setIsExerciseModalVisible(true)}
-            variant="secondary"
-          />
+          <Button label="Select Exercise" onPress={handleOpenExercisePicker} variant="secondary" />
 
           <Button
             label={isRecording ? '■  STOP' : '●  START'}
@@ -468,12 +477,101 @@ export default function RepsRecordingScreen() {
         </View>
       </ScrollView>
 
-      {/* Exercises Modal */}
-      <ExercisesModal
-        visible={isExerciseModalVisible}
-        onClose={() => setIsExerciseModalVisible(false)}
-        onSelectExercise={(ex) => void handleExerciseSelect(ex)}
-      />
+      {/* Exercise Picker Modal */}
+      <Modal
+        visible={isExercisePickerVisible}
+        animationType="slide"
+        onRequestClose={() => setIsExercisePickerVisible(false)}
+      >
+        <View style={{ flex: 1, backgroundColor: '#0d0d0d' }}>
+          {/* Header */}
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              padding: 16,
+              paddingTop: 56,
+              gap: 12,
+              borderBottomWidth: 1,
+              borderBottomColor: '#222',
+            }}
+          >
+            <TextInput
+              value={exerciseSearch}
+              onChangeText={setExerciseSearch}
+              placeholder="Search exercises…"
+              placeholderTextColor="#555"
+              style={{
+                flex: 1,
+                backgroundColor: '#1a1a1a',
+                color: '#fff',
+                borderRadius: 10,
+                paddingHorizontal: 14,
+                paddingVertical: 10,
+                fontSize: 15,
+                borderWidth: 1,
+                borderColor: '#333',
+              }}
+              autoFocus
+              returnKeyType="search"
+            />
+            <Pressable
+              onPress={() => setIsExercisePickerVisible(false)}
+              style={{ paddingHorizontal: 8, paddingVertical: 10 }}
+            >
+              <Text style={{ color: '#4caf50', fontSize: 15, fontWeight: '600' }}>Cancel</Text>
+            </Pressable>
+          </View>
+
+          {/* Exercise list */}
+          {isLoadingExercises ? (
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+              <ActivityIndicator size="large" color="#4caf50" />
+            </View>
+          ) : (
+            <FlatList
+              data={exercises}
+              keyExtractor={(item) => item.id}
+              keyboardShouldPersistTaps="handled"
+              renderItem={({ item }) => (
+                <Pressable
+                  onPress={() => handleExerciseSelect(item)}
+                  style={({ pressed }) => ({
+                    backgroundColor: pressed ? '#1e3a2f' : 'transparent',
+                    paddingHorizontal: 16,
+                    paddingVertical: 14,
+                    borderBottomWidth: 1,
+                    borderBottomColor: '#1a1a1a',
+                  })}
+                >
+                  <Text style={{ color: '#fff', fontSize: 15 }}>{item.name}</Text>
+                  <Text style={{ color: '#666', fontSize: 12, marginTop: 2 }}>
+                    {item.muscleGroup} · {item.equipmentType}
+                  </Text>
+                </Pressable>
+              )}
+              ListEmptyComponent={
+                <View style={{ alignItems: 'center', paddingTop: 60 }}>
+                  <Text style={{ color: '#555', fontSize: 14 }}>No exercises found</Text>
+                </View>
+              }
+              ListFooterComponent={
+                hasMore ? (
+                  <View style={{ padding: 16 }}>
+                    <Button
+                      label={isLoadingMore ? 'Loading…' : 'Load more'}
+                      onPress={() => void loadMore()}
+                      variant="outline"
+                      disabled={isLoadingMore}
+                      loading={isLoadingMore}
+                    />
+                  </View>
+                ) : null
+              }
+            />
+          )}
+        </View>
+      </Modal>
 
       {/* Reps Dialog */}
       <Modal visible={isRepsDialogVisible} transparent animationType="fade">
@@ -531,6 +629,7 @@ export default function RepsRecordingScreen() {
           </View>
         </View>
       </Modal>
+      <View pointerEvents="none" style={{ height: 160 }} />
     </MasterLayout>
   );
 }
