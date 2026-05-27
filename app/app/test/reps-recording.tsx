@@ -10,7 +10,6 @@ import {
 import * as IntentLauncher from 'expo-intent-launcher';
 import { Bluetooth, Camera, Circle, Search } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { WitMotionState } from '@/modules/witmotion-ble';
 import {
   ActivityIndicator,
   AppState,
@@ -30,20 +29,22 @@ import { Button } from '@/components/theme/Button';
 import type Exercise from '@/database/models/Exercise';
 import { useExercises } from '@/hooks/useExercises';
 import { useTheme } from '@/hooks/useTheme';
+import type { WitMotionState } from '@/modules/witmotion-ble';
 import { witMotionClient } from '@/modules/witmotion-ble';
+import {
+  appendBleWorkoutSamplesToNdjsonFile,
+  type BleWorkoutSample,
+  createBleWorkoutTrackingTempFile,
+} from '@/utils/bleWorkoutDataStorage';
+import { showSnackbar } from '@/utils/snackbarService';
+import { generateUUID } from '@/utils/uuid';
 
-// Subscribes ONLY to connection-relevant fields. Ignores liveData/packetCount that change at 100Hz.
-// useWitMotion() re-renders at 100Hz because the full snapshot changes on every BLE batch,
-// which causes "Maximum update depth exceeded" and locks the UI.
+// Polls connection state at 500ms — zero involvement in the 100Hz BLE data stream.
+// Using witMotionClient.subscribe() fires 100 times/sec from native callbacks, which
+// starves the JS thread and makes buttons unresponsive.
 type ConnectionSnapshot = Pick<
   WitMotionState,
-  | 'status'
-  | 'bleState'
-  | 'isScanning'
-  | 'isConnected'
-  | 'connectedDevice'
-  | 'discoveredDevices'
-  | 'error'
+  'status' | 'bleState' | 'isScanning' | 'isConnected' | 'connectedDevice' | 'discoveredDevices' | 'error'
 >;
 
 function readConnectionSnapshot(): ConnectionSnapshot {
@@ -63,9 +64,9 @@ function useWitConnection() {
   const [snap, setSnap] = useState<ConnectionSnapshot>(readConnectionSnapshot);
 
   useEffect(() => {
-    return witMotionClient.subscribe(() => {
-      const next = readConnectionSnapshot();
+    const id = setInterval(() => {
       setSnap((prev) => {
+        const next = readConnectionSnapshot();
         if (
           prev.status === next.status &&
           prev.bleState === next.bleState &&
@@ -76,24 +77,18 @@ function useWitConnection() {
           prev.discoveredDevices.length === next.discoveredDevices.length &&
           prev.discoveredDevices.every((d, i) => d.id === next.discoveredDevices[i]?.id)
         ) {
-          return prev; // bail out — no React update
+          return prev;
         }
         return next;
       });
-    });
+    }, 500);
+    return () => clearInterval(id);
   }, []);
 
   return snap;
 }
-import {
-  appendBleWorkoutSamplesToNdjsonFile,
-  type BleWorkoutSample,
-  createBleWorkoutTrackingTempFile,
-} from '@/utils/bleWorkoutDataStorage';
-import { showSnackbar } from '@/utils/snackbarService';
-import { generateUUID } from '@/utils/uuid';
 
-// Isolated component so its useExercises re-renders don't affect the parent's 100Hz BLE re-renders
+// Isolated component — useExercises re-renders don't affect the parent screen
 function ExercisePickerModal({
   visible,
   onClose,
@@ -190,36 +185,34 @@ interface RecordingEntry {
 
 function formatElapsed(ms: number): string {
   const totalSecs = Math.floor(ms / 1000);
-  const m = Math.floor(totalSecs / 60)
-    .toString()
-    .padStart(2, '0');
+  const m = Math.floor(totalSecs / 60).toString().padStart(2, '0');
   const s = (totalSecs % 60).toString().padStart(2, '0');
   return `${m}:${s}`;
 }
 
 export default function RepsRecordingScreen() {
   const theme = useTheme();
-  // Custom connection-only subscription — IGNORES the 100Hz liveData stream
+  // Polls connection state every 500ms — no 100Hz subscriptions here
   const wit = useWitConnection();
 
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
-  // Camera mounted ONLY on demand — viewfinder is a major battery/heat sink
   const [isCameraEnabled, setIsCameraEnabled] = useState(false);
 
-  // Refs that should not trigger re-renders (mirrors workout-session.tsx tracking refs)
+  // All recording state in refs — zero React updates from BLE data
   const cameraRef = useRef<CameraViewType>(null);
   const recordingRef = useRef(false);
   const tempFileRef = useRef<File | null>(null);
-  const sampleCountRef = useRef(0);
   const startedAtRef = useRef<number | null>(null);
   const stoppedAtRef = useRef<number | null>(null);
   const recordingPromiseRef = useRef<Promise<{ uri: string } | undefined> | null>(null);
   const unsubscribeBatchRef = useRef<(() => void) | null>(null);
+  // Captured at recording start so save doesn't depend on live connection state
+  const capturedDeviceRef = useRef<{ id: string; name: string } | null>(null);
+  const capturedExerciseRef = useRef<Exercise | null>(null);
 
   const [storagePermissionGranted, setStoragePermissionGranted] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [isRecording, setIsRecording] = useState(false);
-  const [sampleCount, setSampleCount] = useState(0);
   const [elapsedMs, setElapsedMs] = useState(0);
   const [isExercisePickerVisible, setIsExercisePickerVisible] = useState(false);
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
@@ -234,12 +227,10 @@ export default function RepsRecordingScreen() {
     setStoragePermissionGranted(granted);
   }, []);
 
-  // BLE permissions on mount
   useEffect(() => {
     void witMotionClient.requestPermissions();
   }, []);
 
-  // Storage permission on mount + AppState active (user grants via system settings)
   useEffect(() => {
     void checkStoragePermission();
     const sub = AppState.addEventListener('change', (next) => {
@@ -248,14 +239,7 @@ export default function RepsRecordingScreen() {
     return () => sub.remove();
   }, [checkStoragePermission]);
 
-  // Sample count display ticker — only while recording, reads ref into state
-  useEffect(() => {
-    if (!isRecording) return;
-    const id = setInterval(() => setSampleCount(sampleCountRef.current), 250);
-    return () => clearInterval(id);
-  }, [isRecording]);
-
-  // Elapsed timer — only while recording
+  // Elapsed timer — independent 1s interval, no BLE involvement
   useEffect(() => {
     if (!isRecording) return;
     const id = setInterval(() => {
@@ -286,20 +270,23 @@ export default function RepsRecordingScreen() {
     setIsCameraEnabled(true);
   }, [cameraPermission?.granted, requestCameraPermission]);
 
-  // Mirrors workout-session.tsx handleStartTracking — sets refs, subscribes onBatch with file streaming
   const handleStart = useCallback(async () => {
-    if (!wit.isConnected || !selectedExercise || !cameraRef.current) return;
+    const snapshot = witMotionClient.getSnapshot();
+    if (!snapshot.isConnected || !selectedExercise || !cameraRef.current) return;
     if (recordingRef.current) return;
 
     try {
       const tempFile = createBleWorkoutTrackingTempFile(generateUUID());
       tempFileRef.current = tempFile;
-      sampleCountRef.current = 0;
+      // Capture device + exercise at start — save doesn't depend on live state
+      capturedDeviceRef.current = snapshot.connectedDevice
+        ? { id: snapshot.connectedDevice.id, name: snapshot.connectedDevice.name }
+        : null;
+      capturedExerciseRef.current = selectedExercise;
       startedAtRef.current = Date.now();
       stoppedAtRef.current = null;
       recordingRef.current = true;
       setIsRecording(true);
-      setSampleCount(0);
       setElapsedMs(0);
 
       unsubscribeBatchRef.current?.();
@@ -314,9 +301,9 @@ export default function RepsRecordingScreen() {
             angle: { ...packet.angle },
           });
         }
-        if (samples.length === 0) return;
-        sampleCountRef.current += samples.length;
-        appendBleWorkoutSamplesToNdjsonFile(tempFile, samples);
+        if (samples.length > 0) {
+          appendBleWorkoutSamplesToNdjsonFile(tempFile, samples);
+        }
       });
 
       // Do NOT await — resolves only after stopRecording()
@@ -326,7 +313,7 @@ export default function RepsRecordingScreen() {
       recordingRef.current = false;
       setIsRecording(false);
     }
-  }, [wit.isConnected, selectedExercise]);
+  }, [selectedExercise]);
 
   const handleStop = useCallback(async () => {
     if (!recordingRef.current) return;
@@ -363,11 +350,13 @@ export default function RepsRecordingScreen() {
       showSnackbar('error', 'Storage permission required — tap Grant Access');
       return;
     }
-    if (!videoUri || !selectedExercise || !wit.connectedDevice) return;
 
+    const exercise = capturedExerciseRef.current;
+    const device = capturedDeviceRef.current;
     const tempFile = tempFileRef.current;
-    if (!tempFile) {
-      showSnackbar('error', 'No BLE data recorded');
+
+    if (!videoUri || !exercise || !device || !tempFile) {
+      showSnackbar('error', 'Missing recording data');
       return;
     }
 
@@ -388,14 +377,14 @@ export default function RepsRecordingScreen() {
       const data = {
         version: 1,
         sessionId,
-        exerciseId: selectedExercise.id,
-        exerciseName: selectedExercise.name,
-        muscleGroup: selectedExercise.muscleGroup,
-        equipmentType: selectedExercise.equipmentType,
-        mechanicType: selectedExercise.mechanicType,
+        exerciseId: exercise.id,
+        exerciseName: exercise.name,
+        muscleGroup: exercise.muscleGroup,
+        equipmentType: exercise.equipmentType,
+        mechanicType: exercise.mechanicType,
         reps,
-        deviceId: wit.connectedDevice.id,
-        deviceDisplayName: wit.connectedDevice.name,
+        deviceId: device.id,
+        deviceDisplayName: device.name,
         startedAt: new Date(startedAtRef.current!).toISOString(),
         stoppedAt: new Date(stoppedAtRef.current!).toISOString(),
         sampleCount: samples.length,
@@ -408,7 +397,7 @@ export default function RepsRecordingScreen() {
         ...prev,
         {
           sessionId,
-          exerciseName: selectedExercise.name ?? '',
+          exerciseName: exercise.name ?? '',
           reps,
           timestamp: new Date().toISOString(),
         },
@@ -422,16 +411,8 @@ export default function RepsRecordingScreen() {
     } finally {
       setIsSaving(false);
     }
-  }, [
-    repsInput,
-    storagePermissionGranted,
-    videoUri,
-    selectedExercise,
-    wit.connectedDevice,
-    cleanupTempFile,
-  ]);
+  }, [repsInput, storagePermissionGranted, videoUri, cleanupTempFile]);
 
-  // Clean up subscription on unmount
   useEffect(() => {
     return () => {
       unsubscribeBatchRef.current?.();
@@ -461,17 +442,10 @@ export default function RepsRecordingScreen() {
           </Text>
         </View>
 
-        {/* Storage permission banner */}
         {!storagePermissionGranted ? (
           <GenericCard variant="default">
-            <View
-              className="gap-3 p-4"
-              style={{ backgroundColor: theme.colors.status.warning + '1A' }}
-            >
-              <Text
-                className="text-sm font-semibold"
-                style={{ color: theme.colors.status.warning }}
-              >
+            <View className="gap-3 p-4" style={{ backgroundColor: theme.colors.status.warning + '1A' }}>
+              <Text className="text-sm font-semibold" style={{ color: theme.colors.status.warning }}>
                 External storage access required to save recordings
               </Text>
               <Button
@@ -484,7 +458,7 @@ export default function RepsRecordingScreen() {
           </GenericCard>
         ) : null}
 
-        {/* BLE Sensor card */}
+        {/* BLE Sensor */}
         <GenericCard variant="default">
           <View className="gap-3 p-4">
             <View className="flex-row items-center gap-3">
@@ -543,9 +517,7 @@ export default function RepsRecordingScreen() {
                     onPress={() => void witMotionClient.connect(device)}
                     className="flex-row items-center justify-between rounded-lg bg-bg-card p-3"
                   >
-                    <Text className="font-medium text-text-primary">
-                      {device.name ?? 'Unknown'}
-                    </Text>
+                    <Text className="font-medium text-text-primary">{device.name ?? 'Unknown'}</Text>
                     <Text className="text-xs text-text-tertiary">{device.id}</Text>
                   </Pressable>
                 ))}
@@ -564,13 +536,7 @@ export default function RepsRecordingScreen() {
         <GenericCard variant="default">
           <View className="gap-3 p-4">
             <Text className="font-semibold text-text-primary">Exercise</Text>
-            <Text
-              className={
-                selectedExercise
-                  ? 'text-base text-text-primary'
-                  : 'text-base italic text-text-tertiary'
-              }
-            >
+            <Text className={selectedExercise ? 'text-base text-text-primary' : 'text-base italic text-text-tertiary'}>
               {selectedExercise?.name ?? 'No exercise selected'}
             </Text>
             <Button
@@ -607,19 +573,13 @@ export default function RepsRecordingScreen() {
             )}
 
             {!wit.isConnected ? (
-              <Text className="text-xs text-text-tertiary">
-                Connect a BLE device to enable recording
-              </Text>
+              <Text className="text-xs text-text-tertiary">Connect a BLE device to enable recording</Text>
             ) : null}
             {!selectedExercise && wit.isConnected ? (
-              <Text className="text-xs text-text-tertiary">
-                Select an exercise to enable recording
-              </Text>
+              <Text className="text-xs text-text-tertiary">Select an exercise to enable recording</Text>
             ) : null}
             {!isCameraEnabled && wit.isConnected && selectedExercise ? (
-              <Text className="text-xs text-text-tertiary">
-                Enable the camera below to start recording
-              </Text>
+              <Text className="text-xs text-text-tertiary">Enable the camera below to start recording</Text>
             ) : null}
           </View>
         </GenericCard>
@@ -672,9 +632,7 @@ export default function RepsRecordingScreen() {
                 <Text className="font-semibold" style={{ color: theme.colors.accent.primary }}>
                   Enable Camera
                 </Text>
-                <Text className="text-xs text-text-tertiary">
-                  Tap to activate — off to save battery
-                </Text>
+                <Text className="text-xs text-text-tertiary">Tap to activate — off to save battery</Text>
               </Pressable>
             )}
 
@@ -682,9 +640,6 @@ export default function RepsRecordingScreen() {
               <View className="flex-row items-center gap-4 rounded-lg bg-bg-card p-3">
                 <Text className="font-bold" style={{ color: theme.colors.status.error }}>
                   ● REC
-                </Text>
-                <Text className="text-text-secondary" style={{ fontVariant: ['tabular-nums'] }}>
-                  {sampleCount} samples
                 </Text>
                 <Text className="text-text-secondary" style={{ fontVariant: ['tabular-nums'] }}>
                   {formatElapsed(elapsedMs)}
@@ -716,8 +671,7 @@ export default function RepsRecordingScreen() {
                     style={{ color: theme.colors.text.muted }}
                     numberOfLines={1}
                   >
-                    {EXTERNAL_STORAGE_BASE}
-                    {r.sessionId}/
+                    {EXTERNAL_STORAGE_BASE}{r.sessionId}/
                   </Text>
                 </View>
               ))
@@ -726,20 +680,14 @@ export default function RepsRecordingScreen() {
         </GenericCard>
       </ScrollView>
 
-      {/* Preview modal — same pattern as ManageBleDevicesModal: always rendered, visibility controlled */}
-      <BleDevicePreviewModal
-        visible={isPreviewVisible}
-        onClose={() => setIsPreviewVisible(false)}
-      />
+      <BleDevicePreviewModal visible={isPreviewVisible} onClose={() => setIsPreviewVisible(false)} />
 
-      {/* Exercise Picker — isolated component so BLE 100Hz re-renders don't affect it */}
       <ExercisePickerModal
         visible={isExercisePickerVisible}
         onClose={() => setIsExercisePickerVisible(false)}
         onSelect={handleExerciseSelect}
       />
 
-      {/* Reps Dialog */}
       <FullScreenModal
         visible={isRepsDialogVisible}
         onClose={() => setIsRepsDialogVisible(false)}
@@ -768,7 +716,9 @@ export default function RepsRecordingScreen() {
         }
       >
         <View className="flex-1 justify-center gap-6 p-6">
-          <Text className="text-center text-text-secondary">{selectedExercise?.name ?? ''}</Text>
+          <Text className="text-center text-text-secondary">
+            {capturedExerciseRef.current?.name ?? selectedExercise?.name ?? ''}
+          </Text>
           <TextInput
             value={repsInput}
             onChangeText={setRepsInput}
@@ -790,6 +740,7 @@ export default function RepsRecordingScreen() {
           />
         </View>
       </FullScreenModal>
+
       <View pointerEvents="none" style={{ height: 120 }} />
     </MasterLayout>
   );
