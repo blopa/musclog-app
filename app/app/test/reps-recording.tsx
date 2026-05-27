@@ -22,7 +22,7 @@ import { BleDevicePreviewModal } from '@/components/modals/BleDevicePreviewModal
 import { Button } from '@/components/theme/Button';
 import type Exercise from '@/database/models/Exercise';
 import { useExercises } from '@/hooks/useExercises';
-import { useWitMotionScanner, witMotionClient } from '@/modules/witmotion-ble';
+import { witMotionClient } from '@/modules/witmotion-ble';
 import {
   appendBleWorkoutSamplesToNdjsonFile,
   type BleWorkoutSample,
@@ -52,16 +52,67 @@ function formatElapsed(ms: number): string {
   return `${m}:${s}`;
 }
 
+// CRITICAL: do NOT subscribe to witMotionClient — it emits at 100Hz (every BLE packet),
+// and even with a same-reference setState bailout, the listener firing from a native
+// callback bypasses React's event batching and floods the scheduler, freezing the UI
+// and triggering "Maximum update depth exceeded" in unrelated timer hooks across the app.
+// Instead, poll the snapshot every 500ms. Connection state changes are rare (user-driven),
+// so a 500ms delay is invisible — and React stays completely decoupled from the 100Hz storm.
+function useBleConnection() {
+  const readConn = useCallback(() => {
+    const s = witMotionClient.getSnapshot();
+    return {
+      connectedDevice: s.connectedDevice,
+      status: s.status,
+      bleState: s.bleState,
+      discoveredDevices: s.discoveredDevices,
+      isScanning: s.isScanning,
+      error: s.error,
+    };
+  }, []);
+
+  const [conn, setConn] = useState(readConn);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      const next = readConn();
+      setConn((prev) => {
+        if (
+          prev.status === next.status &&
+          prev.bleState === next.bleState &&
+          prev.isScanning === next.isScanning &&
+          prev.error === next.error &&
+          prev.connectedDevice?.id === next.connectedDevice?.id &&
+          prev.discoveredDevices.length === next.discoveredDevices.length
+        ) {
+          return prev;
+        }
+        return next;
+      });
+    }, 500);
+    return () => clearInterval(id);
+  }, [readConn]);
+
+  return {
+    ...conn,
+    requestPermissions: witMotionClient.requestPermissions,
+    startScan: witMotionClient.startScan,
+    stopScan: witMotionClient.stopScan,
+    connect: witMotionClient.connect,
+    disconnect: witMotionClient.disconnect,
+  };
+}
+
 export default function RepsRecordingScreen() {
-  // Use the scanner subset — omits liveData so BLE packets don't re-render this screen
-  const scanner = useWitMotionScanner();
+  const scanner = useBleConnection();
   const isConnected = !!scanner.connectedDevice;
 
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
+  // Camera is NOT mounted by default — running the viewfinder continuously is expensive
+  const [isCameraEnabled, setIsCameraEnabled] = useState(false);
 
   const cameraRef = useRef<CameraViewType>(null);
   const recordingRef = useRef(false);
-  // Stream samples to NDJSON file — no in-memory accumulation
   const tempFileRef = useRef<File | null>(null);
   const sampleCountRef = useRef(0);
   const startedAtRef = useRef<number | null>(null);
@@ -112,8 +163,8 @@ export default function RepsRecordingScreen() {
 
   // BLE permissions on mount
   useEffect(() => {
-    void scanner.requestPermissions();
-  }, [scanner.requestPermissions]);
+    void witMotionClient.requestPermissions();
+  }, []);
 
   // Storage permission on mount + AppState active
   useEffect(() => {
@@ -185,9 +236,15 @@ export default function RepsRecordingScreen() {
     setIsExercisePickerVisible(true);
   }, []);
 
+  const handleEnableCamera = useCallback(async () => {
+    if (!cameraPermission?.granted) {
+      await requestCameraPermission();
+    }
+    setIsCameraEnabled(true);
+  }, [cameraPermission?.granted, requestCameraPermission]);
+
   const handleStart = useCallback(async () => {
     if (!isConnected || !selectedExercise || !cameraRef.current) return;
-    // Create fresh NDJSON temp file for this set
     const tempFile = createBleWorkoutTrackingTempFile(generateUUID());
     tempFileRef.current = tempFile;
     sampleCountRef.current = 0;
@@ -237,7 +294,6 @@ export default function RepsRecordingScreen() {
 
     setIsSaving(true);
     try {
-      // Read NDJSON from disk and parse into array at save time (not during recording)
       const ndjsonContent = await readAsStringAsync(tempFile.uri);
       const samples = ndjsonContent
         .trim()
@@ -284,7 +340,7 @@ export default function RepsRecordingScreen() {
     }
   }, [repsInput, storagePermissionGranted, videoUri, selectedExercise, scanner.connectedDevice, cleanupTempFile]);
 
-  const canStart = isConnected && selectedExercise !== null && !isSaving;
+  const canStart = isConnected && selectedExercise !== null && !isSaving && isCameraEnabled;
 
   return (
     <MasterLayout>
@@ -351,7 +407,6 @@ export default function RepsRecordingScreen() {
             </View>
           </View>
 
-          {/* Discovered devices */}
           {scanner.discoveredDevices.length > 0 ? (
             <View style={{ gap: 4 }}>
               <Text style={{ color: '#888', fontSize: 11 }}>Discovered devices</Text>
@@ -416,30 +471,59 @@ export default function RepsRecordingScreen() {
           {!selectedExercise && isConnected ? (
             <Text style={{ color: '#888', fontSize: 11 }}>Select an exercise to enable recording</Text>
           ) : null}
+          {!isCameraEnabled && isConnected && selectedExercise ? (
+            <Text style={{ color: '#888', fontSize: 11 }}>Enable the camera below to start recording</Text>
+          ) : null}
         </View>
 
-        {/* Camera Preview */}
+        {/* Camera */}
         <View style={{ backgroundColor: '#111', borderRadius: 12, padding: 14, gap: 10 }}>
-          <Text style={{ color: '#fff', fontWeight: '700', fontSize: 15 }}>Camera</Text>
-
-          <View style={{ height: 300, borderRadius: 10, overflow: 'hidden', backgroundColor: '#000' }}>
-            {cameraPermission?.granted ? (
-              <CameraView
-                ref={cameraRef}
-                style={{ flex: 1 }}
-                mode="video"
-                facing="back"
-                videoQuality="720p"
-              />
-            ) : (
-              <Pressable
-                onPress={() => void requestCameraPermission()}
-                style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
-              >
-                <Text style={{ color: '#aaa' }}>Tap to grant camera permission</Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Text style={{ color: '#fff', fontWeight: '700', fontSize: 15 }}>Camera</Text>
+            {isCameraEnabled && !isRecording ? (
+              <Pressable onPress={() => setIsCameraEnabled(false)}>
+                <Text style={{ color: '#888', fontSize: 12 }}>Disable</Text>
               </Pressable>
-            )}
+            ) : null}
           </View>
+
+          {isCameraEnabled ? (
+            <View style={{ height: 300, borderRadius: 10, overflow: 'hidden', backgroundColor: '#000' }}>
+              {cameraPermission?.granted ? (
+                <CameraView
+                  ref={cameraRef}
+                  style={{ flex: 1 }}
+                  mode="video"
+                  facing="back"
+                  videoQuality="720p"
+                />
+              ) : (
+                <Pressable
+                  onPress={() => void requestCameraPermission()}
+                  style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <Text style={{ color: '#aaa' }}>Tap to grant camera permission</Text>
+                </Pressable>
+              )}
+            </View>
+          ) : (
+            <Pressable
+              onPress={() => void handleEnableCamera()}
+              style={{
+                height: 120,
+                borderRadius: 10,
+                borderWidth: 1,
+                borderColor: '#333',
+                borderStyle: 'dashed',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+              }}
+            >
+              <Text style={{ color: '#4caf50', fontSize: 15, fontWeight: '600' }}>Enable Camera</Text>
+              <Text style={{ color: '#555', fontSize: 11 }}>Tap to activate — camera is off to save battery</Text>
+            </Pressable>
+          )}
 
           {isRecording ? (
             <View style={{ flexDirection: 'row', gap: 16, alignItems: 'center' }}>
@@ -498,7 +582,6 @@ export default function RepsRecordingScreen() {
         onRequestClose={() => setIsExercisePickerVisible(false)}
       >
         <View style={{ flex: 1, backgroundColor: '#0d0d0d' }}>
-          {/* Header */}
           <View
             style={{
               flexDirection: 'row',
@@ -537,7 +620,6 @@ export default function RepsRecordingScreen() {
             </Pressable>
           </View>
 
-          {/* Exercise list */}
           {isLoadingExercises ? (
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
               <ActivityIndicator size="large" color="#4caf50" />
