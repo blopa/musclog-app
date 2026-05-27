@@ -78,7 +78,10 @@ export function SetRow({ set, isPreview = false, weightUnitSuffix }: SetRowProps
 
       {/* Weight */}
       <View className="flex-1 items-center">
-        <Text className="text-base font-bold tabular-nums" style={{ color: valueColor, textDecorationLine: textDecoration }}>
+        <Text
+          className="text-base font-bold tabular-nums"
+          style={{ color: valueColor, textDecorationLine: textDecoration }}
+        >
           {set.weight}
           {weightUnitSuffix ?? ''}
         </Text>
@@ -86,7 +89,10 @@ export function SetRow({ set, isPreview = false, weightUnitSuffix }: SetRowProps
 
       {/* Reps */}
       <View className="flex-1 items-center">
-        <Text className="text-base font-bold tabular-nums" style={{ color: valueColor, textDecorationLine: textDecoration }}>
+        <Text
+          className="text-base font-bold tabular-nums"
+          style={{ color: valueColor, textDecorationLine: textDecoration }}
+        >
           {set.reps}
         </Text>
       </View>

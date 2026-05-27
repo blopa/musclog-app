@@ -183,7 +183,9 @@ export function ExerciseItem({
                       style={{
                         color: labelColor,
                         fontWeight: isCurrent ? 'bold' : 'normal',
-                        textDecorationLine: isSkipped ? ('line-through' as const) : ('none' as const),
+                        textDecorationLine: isSkipped
+                          ? ('line-through' as const)
+                          : ('none' as const),
                       }}
                     >
                       {t('workoutHistory.set', { number: index + 1 })}
