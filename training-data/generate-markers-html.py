@@ -150,21 +150,27 @@ var status  = document.getElementById('status');
 
 btnMark.addEventListener('click', function() {
   if (state === 'idle') {
-    state = 'waiting_end';
-    btnMark.classList.add('active');
-    btnMark.textContent = '✕ Cancel';
-    status.textContent = 'Click the START of a rep on the chart.';
+    enterMarkingMode();
   } else {
-    cancelPending();
+    exitMarkingMode();
   }
 });
 
-function cancelPending() {
+function enterMarkingMode() {
+  state        = 'waiting_start';
+  pendingStart = null;
+  btnMark.classList.add('active');
+  btnMark.textContent = '✕ Stop marking';
+  status.textContent  = 'Click the START of rep ' + (markers.length + 1) + ' on the chart.';
+  Plotly.relayout('chart', { shapes: markerShapes() });
+}
+
+function exitMarkingMode() {
   state        = 'idle';
   pendingStart = null;
   btnMark.classList.remove('active');
-  btnMark.textContent = '▶ Mark rep';
-  status.textContent  = 'Click "Mark rep", then click the start of a rep on the chart.';
+  btnMark.textContent = '▶ Mark reps';
+  status.textContent  = 'Click "Mark reps" to start annotating.';
   Plotly.relayout('chart', { shapes: markerShapes() });
 }
 
@@ -173,10 +179,10 @@ document.getElementById('chart').on('plotly_click', function(data) {
   var xSec = data.points[0].x;
   var xMs  = xSec * 1000 + t0;
 
-  if (state === 'waiting_end') {
+  if (state === 'waiting_start') {
     pendingStart = xMs;
-    state        = 'waiting_end2';
-    status.textContent = 'Now click the END of that rep.';
+    state        = 'waiting_end';
+    status.textContent = 'Now click the END of rep ' + (markers.length + 1) + '.';
     var shapes = markerShapes();
     shapes.push({
       type: 'line', xref: 'x', yref: 'paper',
@@ -187,16 +193,17 @@ document.getElementById('chart').on('plotly_click', function(data) {
     return;
   }
 
-  if (state === 'waiting_end2') {
+  if (state === 'waiting_end') {
     var startMs = pendingStart;
     var endMs   = xMs;
     if (endMs < startMs) { var tmp = startMs; startMs = endMs; endMs = tmp; }
     markers.push({ startMs: Math.round(startMs), endMs: Math.round(endMs) });
     markers.sort(function(a, b) { return a.startMs - b.startMs; });
-    cancelPending();
+    pendingStart = null;
+    state        = 'waiting_start';
     renderTable();
     Plotly.relayout('chart', { shapes: markerShapes() });
-    status.textContent = 'Marker added — ' + markers.length + ' / ' + EXPECTED_REPS + ' reps marked.';
+    status.textContent = markers.length + ' / ' + EXPECTED_REPS + ' reps marked. Click START of next rep.';
   }
 });
 
@@ -225,6 +232,11 @@ function deleteMarker(i) {
 document.getElementById('btn-undo').addEventListener('click', function() {
   if (!markers.length) return;
   markers.pop();
+  pendingStart = null;
+  if (state !== 'idle') {
+    state = 'waiting_start';
+    status.textContent = 'Undone. Click START of rep ' + (markers.length + 1) + '.';
+  }
   renderTable();
   Plotly.relayout('chart', { shapes: markerShapes() });
 });
@@ -233,6 +245,11 @@ document.getElementById('btn-clear').addEventListener('click', function() {
   if (!markers.length) return;
   if (!confirm('Clear all markers?')) return;
   markers = [];
+  pendingStart = null;
+  if (state !== 'idle') {
+    state = 'waiting_start';
+    status.textContent = 'Cleared. Click START of rep 1.';
+  }
   renderTable();
   Plotly.relayout('chart', { shapes: markerShapes() });
 });
@@ -260,7 +277,7 @@ document.getElementById('btn-dl-full').addEventListener('click', function() {
 renderTable();
 if (markers.length) {
   Plotly.relayout('chart', { shapes: markerShapes() });
-  status.textContent = markers.length + ' existing markers loaded.';
+  status.textContent = markers.length + ' existing markers loaded. Click "Mark reps" to add more.';
 }
 </script>
 </body>
