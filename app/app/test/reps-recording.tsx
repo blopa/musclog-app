@@ -10,6 +10,7 @@ import {
 import * as IntentLauncher from 'expo-intent-launcher';
 import { Bluetooth, Camera, Circle, Search } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import type { WitMotionState } from '@/modules/witmotion-ble';
 import {
   ActivityIndicator,
   AppState,
@@ -29,7 +30,61 @@ import { Button } from '@/components/theme/Button';
 import type Exercise from '@/database/models/Exercise';
 import { useExercises } from '@/hooks/useExercises';
 import { useTheme } from '@/hooks/useTheme';
-import { useWitMotion, witMotionClient } from '@/modules/witmotion-ble';
+import { witMotionClient } from '@/modules/witmotion-ble';
+
+// Subscribes ONLY to connection-relevant fields. Ignores liveData/packetCount that change at 100Hz.
+// useWitMotion() re-renders at 100Hz because the full snapshot changes on every BLE batch,
+// which causes "Maximum update depth exceeded" and locks the UI.
+type ConnectionSnapshot = Pick<
+  WitMotionState,
+  | 'status'
+  | 'bleState'
+  | 'isScanning'
+  | 'isConnected'
+  | 'connectedDevice'
+  | 'discoveredDevices'
+  | 'error'
+>;
+
+function readConnectionSnapshot(): ConnectionSnapshot {
+  const s = witMotionClient.getSnapshot();
+  return {
+    status: s.status,
+    bleState: s.bleState,
+    isScanning: s.isScanning,
+    isConnected: s.isConnected,
+    connectedDevice: s.connectedDevice,
+    discoveredDevices: s.discoveredDevices,
+    error: s.error,
+  };
+}
+
+function useWitConnection() {
+  const [snap, setSnap] = useState<ConnectionSnapshot>(readConnectionSnapshot);
+
+  useEffect(() => {
+    return witMotionClient.subscribe(() => {
+      const next = readConnectionSnapshot();
+      setSnap((prev) => {
+        if (
+          prev.status === next.status &&
+          prev.bleState === next.bleState &&
+          prev.isScanning === next.isScanning &&
+          prev.isConnected === next.isConnected &&
+          prev.error === next.error &&
+          prev.connectedDevice?.id === next.connectedDevice?.id &&
+          prev.discoveredDevices.length === next.discoveredDevices.length &&
+          prev.discoveredDevices.every((d, i) => d.id === next.discoveredDevices[i]?.id)
+        ) {
+          return prev; // bail out — no React update
+        }
+        return next;
+      });
+    });
+  }, []);
+
+  return snap;
+}
 import {
   appendBleWorkoutSamplesToNdjsonFile,
   type BleWorkoutSample,
@@ -144,8 +199,8 @@ function formatElapsed(ms: number): string {
 
 export default function RepsRecordingScreen() {
   const theme = useTheme();
-  // Same pattern as workout-session.tsx — useWitMotion() directly
-  const wit = useWitMotion();
+  // Custom connection-only subscription — IGNORES the 100Hz liveData stream
+  const wit = useWitConnection();
 
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   // Camera mounted ONLY on demand — viewfinder is a major battery/heat sink
@@ -181,8 +236,7 @@ export default function RepsRecordingScreen() {
 
   // BLE permissions on mount
   useEffect(() => {
-    void wit.requestPermissions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    void witMotionClient.requestPermissions();
   }, []);
 
   // Storage permission on mount + AppState active (user grants via system settings)
@@ -452,7 +506,7 @@ export default function RepsRecordingScreen() {
                 variant="secondary"
                 loading={wit.isScanning}
                 disabled={wit.isScanning || wit.isConnected}
-                onPress={() => void wit.startScan()}
+                onPress={() => void witMotionClient.startScan()}
               />
               {wit.isConnected ? (
                 <>
@@ -460,7 +514,7 @@ export default function RepsRecordingScreen() {
                     label="Disconnect"
                     size="xs"
                     variant="discard"
-                    onPress={() => void wit.disconnect()}
+                    onPress={() => void witMotionClient.disconnect()}
                   />
                   <Button
                     label="Preview Data"
@@ -486,7 +540,7 @@ export default function RepsRecordingScreen() {
                 {wit.discoveredDevices.map((device) => (
                   <Pressable
                     key={device.id}
-                    onPress={() => void wit.connect(device)}
+                    onPress={() => void witMotionClient.connect(device)}
                     className="flex-row items-center justify-between rounded-lg bg-bg-card p-3"
                   >
                     <Text className="font-medium text-text-primary">
