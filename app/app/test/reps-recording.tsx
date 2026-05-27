@@ -1,25 +1,9 @@
 import type { CameraView as CameraViewType } from 'expo-camera';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import type { File } from 'expo-file-system';
-import {
-  copyAsync,
-  makeDirectoryAsync,
-  readAsStringAsync,
-  writeAsStringAsync,
-} from 'expo-file-system/legacy';
-import * as IntentLauncher from 'expo-intent-launcher';
+import { copyAsync } from 'expo-file-system/legacy';
 import { Bluetooth, Camera, Circle, Search } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  AppState,
-  PermissionsAndroid,
-  Pressable,
-  ScrollView,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { MasterLayout } from '@/components/MasterLayout';
@@ -29,64 +13,15 @@ import { Button } from '@/components/theme/Button';
 import type Exercise from '@/database/models/Exercise';
 import { useExercises } from '@/hooks/useExercises';
 import { useTheme } from '@/hooks/useTheme';
-import type { WitMotionState } from '@/modules/witmotion-ble';
-import { witMotionClient } from '@/modules/witmotion-ble';
+import { useWitMotion, witMotionClient } from '@/modules/witmotion-ble';
 import {
   appendBleWorkoutSamplesToNdjsonFile,
   type BleWorkoutSample,
   createBleWorkoutTrackingTempFile,
+  saveBleWorkoutFile,
 } from '@/utils/bleWorkoutDataStorage';
 import { showSnackbar } from '@/utils/snackbarService';
 import { generateUUID } from '@/utils/uuid';
-
-// Polls connection state at 500ms — zero involvement in the 100Hz BLE data stream.
-// Using witMotionClient.subscribe() fires 100 times/sec from native callbacks, which
-// starves the JS thread and makes buttons unresponsive.
-type ConnectionSnapshot = Pick<
-  WitMotionState,
-  'status' | 'bleState' | 'isScanning' | 'isConnected' | 'connectedDevice' | 'discoveredDevices' | 'error'
->;
-
-function readConnectionSnapshot(): ConnectionSnapshot {
-  const s = witMotionClient.getSnapshot();
-  return {
-    status: s.status,
-    bleState: s.bleState,
-    isScanning: s.isScanning,
-    isConnected: s.isConnected,
-    connectedDevice: s.connectedDevice,
-    discoveredDevices: s.discoveredDevices,
-    error: s.error,
-  };
-}
-
-function useWitConnection() {
-  const [snap, setSnap] = useState<ConnectionSnapshot>(readConnectionSnapshot);
-
-  useEffect(() => {
-    const id = setInterval(() => {
-      setSnap((prev) => {
-        const next = readConnectionSnapshot();
-        if (
-          prev.status === next.status &&
-          prev.bleState === next.bleState &&
-          prev.isScanning === next.isScanning &&
-          prev.isConnected === next.isConnected &&
-          prev.error === next.error &&
-          prev.connectedDevice?.id === next.connectedDevice?.id &&
-          prev.discoveredDevices.length === next.discoveredDevices.length &&
-          prev.discoveredDevices.every((d, i) => d.id === next.discoveredDevices[i]?.id)
-        ) {
-          return prev;
-        }
-        return next;
-      });
-    }, 500);
-    return () => clearInterval(id);
-  }, []);
-
-  return snap;
-}
 
 // Isolated component — useExercises re-renders don't affect the parent screen
 function ExercisePickerModal({
@@ -112,7 +47,7 @@ function ExercisePickerModal({
   });
 
   useEffect(() => {
-    if (!visible) setSearchQuery('');
+    if (!visible) {setSearchQuery('');}
   }, [visible]);
 
   return (
@@ -171,16 +106,13 @@ function ExercisePickerModal({
   );
 }
 
-const EXTERNAL_STORAGE_BASE = 'file:///storage/emulated/0/musclog/';
-const MANAGE_EXTERNAL_STORAGE = 'android.permission.MANAGE_EXTERNAL_STORAGE' as Parameters<
-  typeof PermissionsAndroid.check
->[0];
-
 interface RecordingEntry {
-  sessionId: string;
+  id: string;
   exerciseName: string;
   reps: number;
   timestamp: string;
+  jsonUri: string;
+  videoUri: string;
 }
 
 function formatElapsed(ms: number): string {
@@ -192,25 +124,22 @@ function formatElapsed(ms: number): string {
 
 export default function RepsRecordingScreen() {
   const theme = useTheme();
-  // Polls connection state every 500ms — no 100Hz subscriptions here
-  const wit = useWitConnection();
+  const wit = useWitMotion();
 
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const [isCameraEnabled, setIsCameraEnabled] = useState(false);
 
-  // All recording state in refs — zero React updates from BLE data
   const cameraRef = useRef<CameraViewType>(null);
   const recordingRef = useRef(false);
-  const tempFileRef = useRef<File | null>(null);
+  const tempFileRef = useRef<ReturnType<typeof createBleWorkoutTrackingTempFile> | null>(null);
   const startedAtRef = useRef<number | null>(null);
   const stoppedAtRef = useRef<number | null>(null);
   const recordingPromiseRef = useRef<Promise<{ uri: string } | undefined> | null>(null);
   const unsubscribeBatchRef = useRef<(() => void) | null>(null);
-  // Captured at recording start so save doesn't depend on live connection state
+  const sampleCountRef = useRef(0);
   const capturedDeviceRef = useRef<{ id: string; name: string } | null>(null);
   const capturedExerciseRef = useRef<Exercise | null>(null);
 
-  const [storagePermissionGranted, setStoragePermissionGranted] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [elapsedMs, setElapsedMs] = useState(0);
@@ -222,26 +151,13 @@ export default function RepsRecordingScreen() {
   const [videoUri, setVideoUri] = useState<string | null>(null);
   const [recordings, setRecordings] = useState<RecordingEntry[]>([]);
 
-  const checkStoragePermission = useCallback(async () => {
-    const granted = await PermissionsAndroid.check(MANAGE_EXTERNAL_STORAGE);
-    setStoragePermissionGranted(granted);
-  }, []);
-
   useEffect(() => {
-    void witMotionClient.requestPermissions();
-  }, []);
-
-  useEffect(() => {
-    void checkStoragePermission();
-    const sub = AppState.addEventListener('change', (next) => {
-      if (next === 'active') void checkStoragePermission();
-    });
-    return () => sub.remove();
-  }, [checkStoragePermission]);
+    void wit.requestPermissions();
+  }, [wit.requestPermissions]);
 
   // Elapsed timer — independent 1s interval, no BLE involvement
   useEffect(() => {
-    if (!isRecording) return;
+    if (!isRecording) {return;}
     const id = setInterval(() => {
       if (startedAtRef.current !== null) {
         setElapsedMs(Date.now() - startedAtRef.current);
@@ -249,13 +165,6 @@ export default function RepsRecordingScreen() {
     }, 1000);
     return () => clearInterval(id);
   }, [isRecording]);
-
-  const handleGrantStorage = useCallback(async () => {
-    await IntentLauncher.startActivityAsync(
-      'android.settings.MANAGE_APP_ALL_FILES_ACCESS_PERMISSION',
-      { data: 'package:com.werules.logger' }
-    );
-  }, []);
 
   const handleExerciseSelect = useCallback((exercise: Exercise) => {
     setSelectedExercise(exercise);
@@ -265,22 +174,50 @@ export default function RepsRecordingScreen() {
   const handleEnableCamera = useCallback(async () => {
     if (!cameraPermission?.granted) {
       const result = await requestCameraPermission();
-      if (!result.granted) return;
+      if (!result.granted) {return;}
     }
     setIsCameraEnabled(true);
   }, [cameraPermission?.granted, requestCameraPermission]);
 
+  const clearCapturedRecordingRefs = useCallback((deleteTempFile: boolean) => {
+    const tempFile = tempFileRef.current;
+
+    tempFileRef.current = null;
+    startedAtRef.current = null;
+    stoppedAtRef.current = null;
+    sampleCountRef.current = 0;
+    capturedDeviceRef.current = null;
+    capturedExerciseRef.current = null;
+    recordingPromiseRef.current = null;
+    unsubscribeBatchRef.current?.();
+    unsubscribeBatchRef.current = null;
+
+    if (!deleteTempFile || !tempFile) {
+      return;
+    }
+
+    try {
+      tempFile.parentDirectory.delete();
+    } catch {
+      try {
+        tempFile.delete();
+      } catch {
+        // Best-effort cleanup only.
+      }
+    }
+  }, []);
+
   const handleStart = useCallback(async () => {
-    const snapshot = witMotionClient.getSnapshot();
-    if (!snapshot.isConnected || !selectedExercise || !cameraRef.current) return;
-    if (recordingRef.current) return;
+    if (!wit.isConnected || !selectedExercise || !cameraRef.current) {return;}
+    if (recordingRef.current) {return;}
 
     try {
       const tempFile = createBleWorkoutTrackingTempFile(generateUUID());
       tempFileRef.current = tempFile;
+      sampleCountRef.current = 0;
       // Capture device + exercise at start — save doesn't depend on live state
-      capturedDeviceRef.current = snapshot.connectedDevice
-        ? { id: snapshot.connectedDevice.id, name: snapshot.connectedDevice.name }
+      capturedDeviceRef.current = wit.connectedDevice
+        ? { id: wit.connectedDevice.id, name: wit.connectedDevice.name }
         : null;
       capturedExerciseRef.current = selectedExercise;
       startedAtRef.current = Date.now();
@@ -293,7 +230,7 @@ export default function RepsRecordingScreen() {
       unsubscribeBatchRef.current = witMotionClient.onBatch((batch) => {
         const samples: BleWorkoutSample[] = [];
         for (const packet of batch.packets) {
-          if (packet.kind !== 'motion') continue;
+          if (packet.kind !== 'motion') {continue;}
           samples.push({
             timestamp: packet.timestamp,
             accel: { ...packet.accel },
@@ -302,6 +239,7 @@ export default function RepsRecordingScreen() {
           });
         }
         if (samples.length > 0) {
+          sampleCountRef.current += samples.length;
           appendBleWorkoutSamplesToNdjsonFile(tempFile, samples);
         }
       });
@@ -312,11 +250,12 @@ export default function RepsRecordingScreen() {
       console.error('[reps-recording] handleStart error:', err);
       recordingRef.current = false;
       setIsRecording(false);
+      clearCapturedRecordingRefs(true);
     }
-  }, [selectedExercise]);
+  }, [selectedExercise, wit.connectedDevice, wit.isConnected]);
 
   const handleStop = useCallback(async () => {
-    if (!recordingRef.current) return;
+    if (!recordingRef.current) {return;}
     recordingRef.current = false;
     stoppedAtRef.current = Date.now();
 
@@ -327,105 +266,98 @@ export default function RepsRecordingScreen() {
     const result = await recordingPromiseRef.current;
     recordingPromiseRef.current = null;
     setIsRecording(false);
-    setVideoUri(result?.uri ?? null);
+    if (!result?.uri) {
+      setVideoUri(null);
+      clearCapturedRecordingRefs(true);
+      showSnackbar('error', 'Failed to capture video');
+      return;
+    }
+
+    setVideoUri(result.uri);
     setRepsInput('');
     setIsRepsDialogVisible(true);
-  }, []);
-
-  const cleanupTempFile = useCallback(() => {
-    const f = tempFileRef.current;
-    tempFileRef.current = null;
-    if (!f) return;
-    try {
-      f.parentDirectory.delete();
-    } catch {
-      // best-effort
-    }
-  }, []);
+  }, [clearCapturedRecordingRefs]);
 
   const handleSave = useCallback(async () => {
     const reps = parseInt(repsInput, 10);
-    if (isNaN(reps) || reps < 0) return;
-    if (!storagePermissionGranted) {
-      showSnackbar('error', 'Storage permission required — tap Grant Access');
-      return;
-    }
+    if (isNaN(reps) || reps < 0) {return;}
 
     const exercise = capturedExerciseRef.current;
     const device = capturedDeviceRef.current;
     const tempFile = tempFileRef.current;
+    const startedAt = startedAtRef.current;
+    const stoppedAt = stoppedAtRef.current;
+    const sampleCount = sampleCountRef.current;
 
-    if (!videoUri || !exercise || !device || !tempFile) {
+    if (!videoUri || !exercise || !device || !tempFile || startedAt === null || stoppedAt === null) {
       showSnackbar('error', 'Missing recording data');
       return;
     }
 
     setIsSaving(true);
     try {
-      const ndjsonContent = await readAsStringAsync(tempFile.uri);
-      const samples = ndjsonContent
-        .trim()
-        .split('\n')
-        .filter((line) => line.trim())
-        .map((line) => JSON.parse(line) as BleWorkoutSample);
-
-      const sessionId = Math.random().toString(36).slice(2, 10);
-      const baseDir = `${EXTERNAL_STORAGE_BASE}${sessionId}/`;
-      await makeDirectoryAsync(baseDir, { intermediates: true });
-      await copyAsync({ from: videoUri, to: `${baseDir}video.mp4` });
-
-      const data = {
+      const savedJsonUri = await saveBleWorkoutFile({
         version: 1,
-        sessionId,
-        exerciseId: exercise.id,
-        exerciseName: exercise.name,
-        muscleGroup: exercise.muscleGroup,
-        equipmentType: exercise.equipmentType,
-        mechanicType: exercise.mechanicType,
+        workoutLogId: generateUUID(),
+        exerciseName: exercise.name ?? '',
+        muscleGroup: exercise.muscleGroup ?? '',
+        equipmentType: exercise.equipmentType ?? '',
+        mechanicType: exercise.mechanicType ?? '',
+        setNumber: 1,
         reps,
         deviceId: device.id,
         deviceDisplayName: device.name,
-        startedAt: new Date(startedAtRef.current!).toISOString(),
-        stoppedAt: new Date(stoppedAtRef.current!).toISOString(),
-        sampleCount: samples.length,
-        samples,
-      };
-      await writeAsStringAsync(`${baseDir}data.json`, JSON.stringify(data, null, 2));
+        startedAt: new Date(startedAt).toISOString(),
+        stoppedAt: new Date(stoppedAt).toISOString(),
+        sampleCount,
+        samplesFile: tempFile,
+      });
 
-      cleanupTempFile();
+      const savedVideoUri = savedJsonUri.replace(/\.json$/i, '.mp4');
+      await copyAsync({ from: videoUri, to: savedVideoUri });
+
       setRecordings((prev) => [
         ...prev,
         {
-          sessionId,
+          id: savedJsonUri.slice(savedJsonUri.lastIndexOf('/') + 1).replace(/\.json$/i, ''),
           exerciseName: exercise.name ?? '',
           reps,
           timestamp: new Date().toISOString(),
+          jsonUri: savedJsonUri,
+          videoUri: savedVideoUri,
         },
       ]);
       setIsRepsDialogVisible(false);
       setVideoUri(null);
-      showSnackbar('success', `Saved ${sessionId} — ${reps} reps, ${samples.length} samples`);
+      setRepsInput('');
+      clearCapturedRecordingRefs(false);
+      showSnackbar('success', `Saved recording — ${reps} reps, ${sampleCount} samples`);
     } catch (err) {
       console.error('[reps-recording] save error:', err);
       showSnackbar('error', 'Failed to save recording');
     } finally {
       setIsSaving(false);
     }
-  }, [repsInput, storagePermissionGranted, videoUri, cleanupTempFile]);
+  }, [clearCapturedRecordingRefs, repsInput, videoUri]);
+
+  const handleDismissRepsDialog = useCallback(() => {
+    setIsRepsDialogVisible(false);
+    setVideoUri(null);
+    clearCapturedRecordingRefs(true);
+  }, [clearCapturedRecordingRefs]);
 
   useEffect(() => {
     return () => {
-      unsubscribeBatchRef.current?.();
-      unsubscribeBatchRef.current = null;
+      clearCapturedRecordingRefs(true);
     };
-  }, []);
+  }, [clearCapturedRecordingRefs]);
 
   const canStart =
     wit.isConnected && selectedExercise !== null && !isSaving && isCameraEnabled && !isRecording;
 
   const statusColor = useMemo(() => {
-    if (wit.status === 'connected') return theme.colors.status.success;
-    if (wit.status === 'error') return theme.colors.status.error;
+    if (wit.status === 'connected') {return theme.colors.status.success;}
+    if (wit.status === 'error') {return theme.colors.status.error;}
     return theme.colors.status.warning;
   }, [wit.status, theme]);
 
@@ -441,22 +373,6 @@ export default function RepsRecordingScreen() {
             Training data collector — BLE + video synchronized
           </Text>
         </View>
-
-        {!storagePermissionGranted ? (
-          <GenericCard variant="default">
-            <View className="gap-3 p-4" style={{ backgroundColor: theme.colors.status.warning + '1A' }}>
-              <Text className="text-sm font-semibold" style={{ color: theme.colors.status.warning }}>
-                External storage access required to save recordings
-              </Text>
-              <Button
-                label="Grant Access"
-                size="sm"
-                variant="secondary"
-                onPress={() => void handleGrantStorage()}
-              />
-            </View>
-          </GenericCard>
-        ) : null}
 
         {/* BLE Sensor */}
         <GenericCard variant="default">
@@ -480,7 +396,7 @@ export default function RepsRecordingScreen() {
                 variant="secondary"
                 loading={wit.isScanning}
                 disabled={wit.isScanning || wit.isConnected}
-                onPress={() => void witMotionClient.startScan()}
+                onPress={() => void wit.startScan()}
               />
               {wit.isConnected ? (
                 <>
@@ -488,7 +404,7 @@ export default function RepsRecordingScreen() {
                     label="Disconnect"
                     size="xs"
                     variant="discard"
-                    onPress={() => void witMotionClient.disconnect()}
+                    onPress={() => void wit.disconnect()}
                   />
                   <Button
                     label="Preview Data"
@@ -514,7 +430,7 @@ export default function RepsRecordingScreen() {
                 {wit.discoveredDevices.map((device) => (
                   <Pressable
                     key={device.id}
-                    onPress={() => void witMotionClient.connect(device)}
+                    onPress={() => void wit.connect(device)}
                     className="flex-row items-center justify-between rounded-lg bg-bg-card p-3"
                   >
                     <Text className="font-medium text-text-primary">{device.name ?? 'Unknown'}</Text>
@@ -659,19 +575,26 @@ export default function RepsRecordingScreen() {
               <Text className="text-sm text-text-tertiary">No recordings yet</Text>
             ) : (
               recordings.map((r) => (
-                <View key={r.sessionId} className="rounded-lg bg-bg-card p-3">
+                <View key={r.id} className="rounded-lg bg-bg-card p-3">
                   <Text className="font-semibold text-text-primary">
                     {r.exerciseName} — {r.reps} reps
                   </Text>
                   <Text className="text-xs text-text-tertiary">
-                    {new Date(r.timestamp).toLocaleTimeString()} · {r.sessionId}
+                    {new Date(r.timestamp).toLocaleTimeString()} · {r.id}
                   </Text>
                   <Text
                     className="mt-1 text-xs"
                     style={{ color: theme.colors.text.muted }}
                     numberOfLines={1}
                   >
-                    {EXTERNAL_STORAGE_BASE}{r.sessionId}/
+                    JSON: {r.jsonUri}
+                  </Text>
+                  <Text
+                    className="mt-1 text-xs"
+                    style={{ color: theme.colors.text.muted }}
+                    numberOfLines={1}
+                  >
+                    Video: {r.videoUri}
                   </Text>
                 </View>
               ))
@@ -690,7 +613,7 @@ export default function RepsRecordingScreen() {
 
       <FullScreenModal
         visible={isRepsDialogVisible}
-        onClose={() => setIsRepsDialogVisible(false)}
+        onClose={handleDismissRepsDialog}
         title="How many reps?"
         scrollable={false}
         footer={
@@ -709,7 +632,7 @@ export default function RepsRecordingScreen() {
               size="md"
               width="full"
               variant="secondary"
-              onPress={() => setIsRepsDialogVisible(false)}
+              onPress={handleDismissRepsDialog}
               disabled={isSaving}
             />
           </View>
