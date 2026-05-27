@@ -28,6 +28,7 @@
     "update-reps-model": "cd training-data && .venv/bin/python train.py && cd .. && npm run sync-ml-model",
     "generate-training-html": "cd training-data && .venv/bin/python visualize_loocv.py",
     "download-training-data": "cd training-data && .venv/bin/python download_recordings.py",
+    "generate-markers-html": "cd training-data && .venv/bin/python generate-markers-html.py",
     "postinstall": "patch-package",
     "prestart": "node scripts/sync-web-images.js",
     "start": "expo start",
