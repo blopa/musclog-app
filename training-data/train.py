@@ -440,14 +440,16 @@ def pseudo_label_segments(segments: list, n_reps: int) -> list:
 # Step 5 — Dataset builder
 # ---------------------------------------------------------------------------
 
-def build_segment_dataset() -> pd.DataFrame:
+def build_segment_dataset() -> tuple:
     """
     Iterate all recordings, pseudo-label segments, extract features.
-    Returns a DataFrame where each row is one candidate segment.
+    Returns (DataFrame where each row is one candidate segment,
+             list of skipped-under-segmented dicts with keys: name, n_segs, n_reps).
     """
     rows             = []
     skipped_noreps   = 0
     skipped_under    = 0
+    skipped_under_list: list = []
 
     for path in sorted(RECORDINGS_DIR.glob("*.json")):
         with open(path) as f:
@@ -487,6 +489,7 @@ def build_segment_dataset() -> pd.DataFrame:
         labeled = pseudo_label_segments(segs, n_reps)
         if labeled is None:
             skipped_under += 1
+            skipped_under_list.append({"name": path.name, "n_segs": len(segs), "n_reps": n_reps})
             print(f"  SKIP (under-segmented: {len(segs)} segs < {n_reps} reps): {path.name}")
             continue
 
@@ -514,7 +517,7 @@ def build_segment_dataset() -> pd.DataFrame:
 
     print(f"\n  Under-segmented (skipped): {skipped_under}")
     print(f"  No reps label   (skipped): {skipped_noreps}")
-    return pd.DataFrame(rows)
+    return pd.DataFrame(rows), skipped_under_list
 
 
 # ---------------------------------------------------------------------------
@@ -569,7 +572,7 @@ def loocv_by_recording(df: pd.DataFrame) -> tuple:
 
 def main() -> None:
     print("\n── Building segment dataset ────────────────────────────────────")
-    df = build_segment_dataset()
+    df, skipped_under_list = build_segment_dataset()
 
     if len(df) == 0:
         sys.exit("No segments generated. Check that recordings/*.json have a 'reps' field.")
@@ -615,6 +618,57 @@ def main() -> None:
     exact = sum(1 for t, p in zip(rec_actual, rec_preds) if t == p)
     print(f"\n  MAE:         {mae:.2f}")
     print(f"  Exact match: {exact}/{len(rec_actual)}  ({100*exact/len(rec_actual):.0f}%)")
+
+    # ── Suspicious recordings report ────────────────────────────────────
+    seg_counts = df.groupby("recording_id").size()
+    rep_counts = df.groupby("recording_id")["is_rep"].sum()
+    seg_rep_ratio = seg_counts / rep_counts.replace(0, 1)
+
+    HIGH_RATIO  = 3.5   # too many noise candidates → unreliable pseudo-labels
+    LOW_RATIO   = 1.3   # barely over-segmented → model has little room to separate
+    LOOCV_ERR   = 3     # absolute LOOCV error threshold
+
+    sus_lines = []
+
+    sus_noisy = seg_rep_ratio[seg_rep_ratio > HIGH_RATIO].sort_values(ascending=False)
+    if len(sus_noisy):
+        sus_lines.append("── High candidate:rep ratio (> {:.1f}x) — unreliable pseudo-labels ──".format(HIGH_RATIO))
+        for rid, ratio in sus_noisy.items():
+            n_segs = int(seg_counts[rid])
+            n_reps = int(rep_counts[rid])
+            sus_lines.append(f"  {rid}  ({n_segs} segs / {n_reps} reps = {ratio:.1f}x)")
+
+    sus_sparse = seg_rep_ratio[seg_rep_ratio < LOW_RATIO].sort_values()
+    if len(sus_sparse):
+        sus_lines.append("\n── Low candidate:rep ratio (< {:.1f}x) — barely over-segmented ──".format(LOW_RATIO))
+        for rid, ratio in sus_sparse.items():
+            n_segs = int(seg_counts[rid])
+            n_reps = int(rep_counts[rid])
+            sus_lines.append(f"  {rid}  ({n_segs} segs / {n_reps} reps = {ratio:.1f}x)")
+
+    loocv_errors = [
+        (name, true, pred, abs(pred - true))
+        for name, true, pred in zip(rec_names, rec_actual, rec_preds)
+        if abs(pred - true) >= LOOCV_ERR
+    ]
+    loocv_errors.sort(key=lambda x: -x[3])
+    if loocv_errors:
+        sus_lines.append(f"\n── Large LOOCV error (|err| >= {LOOCV_ERR}) ──")
+        for name, true, pred, err in loocv_errors:
+            sus_lines.append(f"  {name}  true={true}  pred={pred}  err={pred - true:+d}")
+
+    if skipped_under_list:
+        sus_lines.append("\n── Skipped (under-segmented) ──")
+        for s in skipped_under_list:
+            sus_lines.append(f"  {s['name']}  ({s['n_segs']} segs < {s['n_reps']} reps)")
+
+    sus_path = OUTPUT_DIR / "sus_data.txt"
+    if sus_lines:
+        sus_path.write_text("\n".join(sus_lines) + "\n")
+        print(f"\n── Suspicious recordings → output/sus_data.txt ({len(sus_noisy) + len(sus_sparse) + len(loocv_errors) + len(skipped_under_list)} flagged)")
+    else:
+        sus_path.write_text("No suspicious recordings detected.\n")
+        print("\n── No suspicious recordings detected.")
 
     # ── Train final classifier on ALL data ──────────────────────────────
     print("\n── Training final classifier on all data ───────────────────────")
