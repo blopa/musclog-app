@@ -13,7 +13,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   AppState,
-  FlatList,
   PermissionsAndroid,
   Pressable,
   ScrollView,
@@ -38,6 +37,89 @@ import {
 } from '@/utils/bleWorkoutDataStorage';
 import { showSnackbar } from '@/utils/snackbarService';
 import { generateUUID } from '@/utils/uuid';
+
+// Isolated component so its useExercises re-renders don't affect the parent's 100Hz BLE re-renders
+function ExercisePickerModal({
+  visible,
+  onClose,
+  onSelect,
+}: {
+  visible: boolean;
+  onClose: () => void;
+  onSelect: (exercise: Exercise) => void;
+}) {
+  const theme = useTheme();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const { exercises, isLoading, isLoadingMore, hasMore, loadMore } = useExercises({
+    visible,
+    enableReactivity: true,
+    sortBy: 'name',
+    sortOrder: 'asc',
+    searchTerm: searchQuery.trim() || undefined,
+    initialLimit: 20,
+    batchSize: 20,
+  });
+
+  useEffect(() => {
+    if (!visible) setSearchQuery('');
+  }, [visible]);
+
+  return (
+    <FullScreenModal visible={visible} onClose={onClose} title="Select Exercise" scrollable={true}>
+      <View className="px-4 py-3">
+        <View className="mb-4 flex-row items-center gap-2 rounded-lg border border-border-light bg-bg-card px-3">
+          <Search size={theme.iconSize.md} color={theme.colors.text.tertiary} />
+          <TextInput
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder="Search exercises…"
+            placeholderTextColor={theme.colors.text.tertiary}
+            returnKeyType="search"
+            style={{ flex: 1, paddingVertical: 12, color: theme.colors.text.primary }}
+          />
+        </View>
+
+        {isLoading && exercises.length === 0 ? (
+          <View className="items-center justify-center py-16">
+            <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+          </View>
+        ) : exercises.length === 0 ? (
+          <View className="items-center justify-center py-16">
+            <Text className="text-text-tertiary">No exercises found</Text>
+          </View>
+        ) : (
+          <>
+            {exercises.map((item) => (
+              <Pressable
+                key={item.id}
+                onPress={() => onSelect(item)}
+                className="border-b border-border-light py-3"
+              >
+                <Text className="font-medium text-text-primary">{item.name}</Text>
+                <Text className="mt-0.5 text-xs text-text-tertiary">
+                  {item.muscleGroup} · {item.equipmentType}
+                </Text>
+              </Pressable>
+            ))}
+            {hasMore ? (
+              <View className="py-4">
+                <Button
+                  label={isLoadingMore ? 'Loading…' : 'Load more'}
+                  size="sm"
+                  variant="secondary"
+                  onPress={() => void loadMore()}
+                  disabled={isLoadingMore}
+                  loading={isLoadingMore}
+                />
+              </View>
+            ) : null}
+          </>
+        )}
+      </View>
+    </FullScreenModal>
+  );
+}
 
 const EXTERNAL_STORAGE_BASE = 'file:///storage/emulated/0/musclog/';
 const MANAGE_EXTERNAL_STORAGE = 'android.permission.MANAGE_EXTERNAL_STORAGE' as Parameters<
@@ -85,29 +167,12 @@ export default function RepsRecordingScreen() {
   const [sampleCount, setSampleCount] = useState(0);
   const [elapsedMs, setElapsedMs] = useState(0);
   const [isExercisePickerVisible, setIsExercisePickerVisible] = useState(false);
-  const [exerciseSearch, setExerciseSearch] = useState('');
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
   const [isRepsDialogVisible, setIsRepsDialogVisible] = useState(false);
   const [repsInput, setRepsInput] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [videoUri, setVideoUri] = useState<string | null>(null);
   const [recordings, setRecordings] = useState<RecordingEntry[]>([]);
-
-  const {
-    exercises,
-    isLoading: isLoadingExercises,
-    isLoadingMore,
-    hasMore,
-    loadMore,
-  } = useExercises({
-    visible: isExercisePickerVisible,
-    searchTerm: exerciseSearch.trim() || undefined,
-    initialLimit: 20,
-    batchSize: 20,
-    enableReactivity: false,
-    sortBy: 'name',
-    sortOrder: 'asc',
-  });
 
   const checkStoragePermission = useCallback(async () => {
     const granted = await PermissionsAndroid.check(MANAGE_EXTERNAL_STORAGE);
@@ -157,7 +222,6 @@ export default function RepsRecordingScreen() {
   const handleExerciseSelect = useCallback((exercise: Exercise) => {
     setSelectedExercise(exercise);
     setIsExercisePickerVisible(false);
-    setExerciseSearch('');
   }, []);
 
   const handleEnableCamera = useCallback(async () => {
@@ -614,70 +678,12 @@ export default function RepsRecordingScreen() {
         onClose={() => setIsPreviewVisible(false)}
       />
 
-      {/* Exercise Picker — FullScreenModal for app-consistent styling */}
-      <FullScreenModal
+      {/* Exercise Picker — isolated component so BLE 100Hz re-renders don't affect it */}
+      <ExercisePickerModal
         visible={isExercisePickerVisible}
         onClose={() => setIsExercisePickerVisible(false)}
-        title="Select Exercise"
-        scrollable={false}
-      >
-        <View className="flex-1 gap-3 p-4">
-          <View className="flex-row items-center gap-2 rounded-lg border border-border-light bg-bg-card px-3">
-            <Search size={theme.iconSize.md} color={theme.colors.text.tertiary} />
-            <TextInput
-              value={exerciseSearch}
-              onChangeText={setExerciseSearch}
-              placeholder="Search exercises…"
-              placeholderTextColor={theme.colors.text.tertiary}
-              className="flex-1 py-3 text-text-primary"
-              style={{ color: theme.colors.text.primary }}
-              returnKeyType="search"
-            />
-          </View>
-          {isLoadingExercises ? (
-            <View className="flex-1 items-center justify-center">
-              <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-            </View>
-          ) : (
-            <FlatList
-              data={exercises}
-              keyExtractor={(item) => item.id}
-              keyboardShouldPersistTaps="handled"
-              contentContainerStyle={{ paddingBottom: 24 }}
-              renderItem={({ item }) => (
-                <Pressable
-                  onPress={() => handleExerciseSelect(item)}
-                  className="border-b border-border-light px-1 py-3"
-                >
-                  <Text className="font-medium text-text-primary">{item.name}</Text>
-                  <Text className="mt-0.5 text-xs text-text-tertiary">
-                    {item.muscleGroup} · {item.equipmentType}
-                  </Text>
-                </Pressable>
-              )}
-              ListEmptyComponent={
-                <View className="items-center pt-12">
-                  <Text className="text-text-tertiary">No exercises found</Text>
-                </View>
-              }
-              ListFooterComponent={
-                hasMore ? (
-                  <View className="p-4">
-                    <Button
-                      label={isLoadingMore ? 'Loading…' : 'Load more'}
-                      size="sm"
-                      variant="secondary"
-                      onPress={() => void loadMore()}
-                      disabled={isLoadingMore}
-                      loading={isLoadingMore}
-                    />
-                  </View>
-                ) : null
-              }
-            />
-          )}
-        </View>
-      </FullScreenModal>
+        onSelect={handleExerciseSelect}
+      />
 
       {/* Reps Dialog */}
       <FullScreenModal
