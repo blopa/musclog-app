@@ -1,6 +1,7 @@
 import type { CameraView as CameraViewType } from 'expo-camera';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { copyAsync, makeDirectoryAsync, writeAsStringAsync } from 'expo-file-system/legacy';
+import type { File } from 'expo-file-system';
+import { copyAsync, makeDirectoryAsync, readAsStringAsync, writeAsStringAsync } from 'expo-file-system/legacy';
 import * as IntentLauncher from 'expo-intent-launcher';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -17,24 +18,23 @@ import {
 } from 'react-native';
 
 import { MasterLayout } from '@/components/MasterLayout';
+import { BleDevicePreviewModal } from '@/components/modals/BleDevicePreviewModal';
 import { Button } from '@/components/theme/Button';
 import type Exercise from '@/database/models/Exercise';
-import type { WitMotionVector3 } from '@/modules/witmotion-ble';
-import { useWitMotion, witMotionClient } from '@/modules/witmotion-ble';
 import { useExercises } from '@/hooks/useExercises';
+import { useWitMotionScanner, witMotionClient } from '@/modules/witmotion-ble';
+import {
+  appendBleWorkoutSamplesToNdjsonFile,
+  type BleWorkoutSample,
+  createBleWorkoutTrackingTempFile,
+} from '@/utils/bleWorkoutDataStorage';
 import { showSnackbar } from '@/utils/snackbarService';
+import { generateUUID } from '@/utils/uuid';
 
 const EXTERNAL_STORAGE_BASE = 'file:///storage/emulated/0/musclog/';
 const MANAGE_EXTERNAL_STORAGE = 'android.permission.MANAGE_EXTERNAL_STORAGE' as Parameters<
   typeof PermissionsAndroid.check
 >[0];
-
-interface MotionSample {
-  timestamp: number;
-  accel: WitMotionVector3;
-  gyro: WitMotionVector3;
-  angle: WitMotionVector3;
-}
 
 interface RecordingEntry {
   sessionId: string;
@@ -53,12 +53,17 @@ function formatElapsed(ms: number): string {
 }
 
 export default function RepsRecordingScreen() {
-  const wit = useWitMotion();
+  // Use the scanner subset — omits liveData so BLE packets don't re-render this screen
+  const scanner = useWitMotionScanner();
+  const isConnected = !!scanner.connectedDevice;
+
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
 
   const cameraRef = useRef<CameraViewType>(null);
   const recordingRef = useRef(false);
-  const samplesRef = useRef<MotionSample[]>([]);
+  // Stream samples to NDJSON file — no in-memory accumulation
+  const tempFileRef = useRef<File | null>(null);
+  const sampleCountRef = useRef(0);
   const startedAtRef = useRef<number | null>(null);
   const stoppedAtRef = useRef<number | null>(null);
   const recordingPromiseRef = useRef<Promise<{ uri: string } | undefined> | null>(null);
@@ -70,6 +75,7 @@ export default function RepsRecordingScreen() {
   const [elapsedMs, setElapsedMs] = useState(0);
   const [isExercisePickerVisible, setIsExercisePickerVisible] = useState(false);
   const [exerciseSearch, setExerciseSearch] = useState('');
+  const [isPreviewVisible, setIsPreviewVisible] = useState(false);
   const [isRepsDialogVisible, setIsRepsDialogVisible] = useState(false);
   const [repsInput, setRepsInput] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -106,18 +112,14 @@ export default function RepsRecordingScreen() {
 
   // BLE permissions on mount
   useEffect(() => {
-    void wit.requestPermissions();
-  }, [wit.requestPermissions]);
+    void scanner.requestPermissions();
+  }, [scanner.requestPermissions]);
 
   // Storage permission on mount + AppState active
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      void checkStoragePermission();
-    }, 0);
+    const timeout = setTimeout(() => void checkStoragePermission(), 0);
     const sub = AppState.addEventListener('change', (next) => {
-      if (next === 'active') {
-        void checkStoragePermission();
-      }
+      if (next === 'active') void checkStoragePermission();
     });
     return () => {
       clearTimeout(timeout);
@@ -125,40 +127,38 @@ export default function RepsRecordingScreen() {
     };
   }, [checkStoragePermission]);
 
-  // BLE batch subscription — always active, writes only when recording
+  // BLE batch subscription — streams directly to file, never touches React state
   useEffect(() => {
     return witMotionClient.onBatch((batch) => {
-      if (!recordingRef.current) {
+      if (!recordingRef.current || !tempFileRef.current) {
         return;
       }
+      const samples: BleWorkoutSample[] = [];
       for (const packet of batch.packets) {
-        if (packet.kind !== 'motion') {
-          continue;
-        }
-        samplesRef.current.push({
+        if (packet.kind !== 'motion') continue;
+        samples.push({
           timestamp: packet.timestamp,
           accel: { x: packet.accel.x, y: packet.accel.y, z: packet.accel.z },
           gyro: { x: packet.gyro.x, y: packet.gyro.y, z: packet.gyro.z },
           angle: { x: packet.angle.x, y: packet.angle.y, z: packet.angle.z },
         });
       }
+      if (samples.length === 0) return;
+      sampleCountRef.current += samples.length;
+      appendBleWorkoutSamplesToNdjsonFile(tempFileRef.current, samples);
     });
   }, []);
 
-  // Sample count display ticker — only while recording
+  // Sample count display ticker — only while recording, reads from ref
   useEffect(() => {
-    if (!isRecording) {
-      return;
-    }
-    const id = setInterval(() => setSampleCount(samplesRef.current.length), 200);
+    if (!isRecording) return;
+    const id = setInterval(() => setSampleCount(sampleCountRef.current), 200);
     return () => clearInterval(id);
   }, [isRecording]);
 
   // Elapsed timer — only while recording
   useEffect(() => {
-    if (!isRecording) {
-      return;
-    }
+    if (!isRecording) return;
     const id = setInterval(() => {
       if (startedAtRef.current !== null) {
         setElapsedMs(Date.now() - startedAtRef.current);
@@ -186,10 +186,11 @@ export default function RepsRecordingScreen() {
   }, []);
 
   const handleStart = useCallback(async () => {
-    if (!wit.isConnected || !selectedExercise || !cameraRef.current) {
-      return;
-    }
-    samplesRef.current = [];
+    if (!isConnected || !selectedExercise || !cameraRef.current) return;
+    // Create fresh NDJSON temp file for this set
+    const tempFile = createBleWorkoutTrackingTempFile(generateUUID());
+    tempFileRef.current = tempFile;
+    sampleCountRef.current = 0;
     startedAtRef.current = Date.now();
     stoppedAtRef.current = null;
     recordingRef.current = true;
@@ -198,7 +199,7 @@ export default function RepsRecordingScreen() {
     setElapsedMs(0);
     // Do NOT await — resolves only after stopRecording()
     recordingPromiseRef.current = cameraRef.current.recordAsync({ maxDuration: 600 });
-  }, [wit.isConnected, selectedExercise]);
+  }, [isConnected, selectedExercise]);
 
   const handleStop = useCallback(async () => {
     recordingRef.current = false;
@@ -212,25 +213,43 @@ export default function RepsRecordingScreen() {
     setIsRepsDialogVisible(true);
   }, []);
 
+  const cleanupTempFile = useCallback(() => {
+    const f = tempFileRef.current;
+    tempFileRef.current = null;
+    if (!f) return;
+    try { f.parentDirectory.delete(); } catch { /* best-effort */ }
+  }, []);
+
   const handleSave = useCallback(async () => {
     const reps = parseInt(repsInput, 10);
-    if (isNaN(reps) || reps < 0) {
-      return;
-    }
+    if (isNaN(reps) || reps < 0) return;
     if (!storagePermissionGranted) {
       showSnackbar('error', 'Storage permission required — tap Grant Access');
       return;
     }
-    if (!videoUri || !selectedExercise || !wit.connectedDevice) {
+    if (!videoUri || !selectedExercise || !scanner.connectedDevice) return;
+
+    const tempFile = tempFileRef.current;
+    if (!tempFile) {
+      showSnackbar('error', 'No BLE data recorded');
       return;
     }
+
     setIsSaving(true);
     try {
+      // Read NDJSON from disk and parse into array at save time (not during recording)
+      const ndjsonContent = await readAsStringAsync(tempFile.uri);
+      const samples = ndjsonContent
+        .trim()
+        .split('\n')
+        .filter((line) => line.trim())
+        .map((line) => JSON.parse(line) as BleWorkoutSample);
+
       const sessionId = Math.random().toString(36).slice(2, 10);
       const baseDir = `${EXTERNAL_STORAGE_BASE}${sessionId}/`;
       await makeDirectoryAsync(baseDir, { intermediates: true });
       await copyAsync({ from: videoUri, to: `${baseDir}video.mp4` });
-      const samples = samplesRef.current;
+
       const data = {
         version: 1,
         sessionId,
@@ -240,22 +259,19 @@ export default function RepsRecordingScreen() {
         equipmentType: selectedExercise.equipmentType,
         mechanicType: selectedExercise.mechanicType,
         reps,
-        deviceId: wit.connectedDevice.id,
-        deviceDisplayName: wit.connectedDevice.name,
+        deviceId: scanner.connectedDevice.id,
+        deviceDisplayName: scanner.connectedDevice.name,
         startedAt: new Date(startedAtRef.current!).toISOString(),
         stoppedAt: new Date(stoppedAtRef.current!).toISOString(),
         sampleCount: samples.length,
         samples,
       };
       await writeAsStringAsync(`${baseDir}data.json`, JSON.stringify(data, null, 2));
+
+      cleanupTempFile();
       setRecordings((prev) => [
         ...prev,
-        {
-          sessionId,
-          exerciseName: selectedExercise.name ?? '',
-          reps,
-          timestamp: new Date().toISOString(),
-        },
+        { sessionId, exerciseName: selectedExercise.name ?? '', reps, timestamp: new Date().toISOString() },
       ]);
       setIsRepsDialogVisible(false);
       setVideoUri(null);
@@ -266,9 +282,9 @@ export default function RepsRecordingScreen() {
     } finally {
       setIsSaving(false);
     }
-  }, [repsInput, storagePermissionGranted, videoUri, selectedExercise, wit.connectedDevice]);
+  }, [repsInput, storagePermissionGranted, videoUri, selectedExercise, scanner.connectedDevice, cleanupTempFile]);
 
-  const canStart = wit.isConnected && selectedExercise !== null && !isSaving;
+  const canStart = isConnected && selectedExercise !== null && !isSaving;
 
   return (
     <MasterLayout>
@@ -286,11 +302,7 @@ export default function RepsRecordingScreen() {
             <Text style={{ color: '#ffd700', fontWeight: '600' }}>
               External storage access required to save recordings
             </Text>
-            <Button
-              label="Grant Access"
-              onPress={() => void handleGrantStorage()}
-              variant="outline"
-            />
+            <Button label="Grant Access" onPress={() => void handleGrantStorage()} variant="outline" />
           </View>
         ) : null}
 
@@ -304,49 +316,49 @@ export default function RepsRecordingScreen() {
               <Text
                 style={{
                   color:
-                    wit.status === 'connected'
+                    scanner.status === 'connected'
                       ? '#4caf50'
-                      : wit.status === 'error'
+                      : scanner.status === 'error'
                         ? '#f44336'
                         : '#ffaa00',
                   fontWeight: '600',
                 }}
               >
-                {wit.status}
+                {scanner.status}
               </Text>
             </Text>
             <Text style={{ color: '#aaa', fontSize: 12 }}>
-              BT: <Text style={{ color: '#ccc' }}>{wit.bleState}</Text>
+              BT: <Text style={{ color: '#ccc' }}>{scanner.bleState}</Text>
             </Text>
           </View>
 
           <View style={{ flexDirection: 'row', gap: 8 }}>
             <View style={{ flex: 1 }}>
               <Button
-                label={wit.isScanning ? 'Scanning…' : 'Scan'}
-                onPress={() => void wit.startScan()}
-                disabled={wit.isScanning || wit.isConnected}
+                label={scanner.isScanning ? 'Scanning…' : 'Scan'}
+                onPress={() => void scanner.startScan()}
+                disabled={scanner.isScanning || isConnected}
                 variant="outline"
               />
             </View>
             <View style={{ flex: 1 }}>
               <Button
                 label="Disconnect"
-                onPress={() => void wit.disconnect()}
-                disabled={!wit.isConnected}
+                onPress={() => void scanner.disconnect()}
+                disabled={!isConnected}
                 variant="discard"
               />
             </View>
           </View>
 
           {/* Discovered devices */}
-          {wit.discoveredDevices.length > 0 ? (
+          {scanner.discoveredDevices.length > 0 ? (
             <View style={{ gap: 4 }}>
               <Text style={{ color: '#888', fontSize: 11 }}>Discovered devices</Text>
-              {wit.discoveredDevices.map((device) => (
+              {scanner.discoveredDevices.map((device) => (
                 <Pressable
                   key={device.id}
-                  onPress={() => void wit.connect(device)}
+                  onPress={() => void scanner.connect(device)}
                   style={({ pressed }) => ({
                     backgroundColor: pressed ? '#1e3a2f' : '#1a1a1a',
                     borderRadius: 8,
@@ -363,20 +375,21 @@ export default function RepsRecordingScreen() {
             </View>
           ) : null}
 
-          {/* Live data preview */}
-          {wit.liveData.accel ? (
-            <Text style={{ color: '#4caf50', fontSize: 11, fontVariant: ['tabular-nums'] }}>
-              accel x={wit.liveData.accel.x.toFixed(3)} y={wit.liveData.accel.y.toFixed(3)} z=
-              {wit.liveData.accel.z.toFixed(3)}
-            </Text>
-          ) : (
-            <Text style={{ color: '#555', fontSize: 11 }}>No live data</Text>
-          )}
+          {scanner.connectedDevice ? (
+            <View style={{ gap: 6 }}>
+              <Text style={{ color: '#aaa', fontSize: 11 }}>
+                Connected: {scanner.connectedDevice.name} ({scanner.connectedDevice.id})
+              </Text>
+              <Button
+                label="Preview Live Data"
+                onPress={() => setIsPreviewVisible(true)}
+                variant="secondary"
+              />
+            </View>
+          ) : null}
 
-          {wit.connectedDevice ? (
-            <Text style={{ color: '#aaa', fontSize: 11 }}>
-              Connected: {wit.connectedDevice.name} ({wit.connectedDevice.id})
-            </Text>
+          {scanner.error ? (
+            <Text style={{ color: '#f44336', fontSize: 11 }}>{scanner.error}</Text>
           ) : null}
         </View>
 
@@ -397,15 +410,11 @@ export default function RepsRecordingScreen() {
             variant={isRecording ? 'discard' : 'accent'}
           />
 
-          {!wit.isConnected ? (
-            <Text style={{ color: '#888', fontSize: 11 }}>
-              Connect a BLE device to enable recording
-            </Text>
+          {!isConnected ? (
+            <Text style={{ color: '#888', fontSize: 11 }}>Connect a BLE device to enable recording</Text>
           ) : null}
-          {!selectedExercise && wit.isConnected ? (
-            <Text style={{ color: '#888', fontSize: 11 }}>
-              Select an exercise to enable recording
-            </Text>
+          {!selectedExercise && isConnected ? (
+            <Text style={{ color: '#888', fontSize: 11 }}>Select an exercise to enable recording</Text>
           ) : null}
         </View>
 
@@ -413,9 +422,7 @@ export default function RepsRecordingScreen() {
         <View style={{ backgroundColor: '#111', borderRadius: 12, padding: 14, gap: 10 }}>
           <Text style={{ color: '#fff', fontWeight: '700', fontSize: 15 }}>Camera</Text>
 
-          <View
-            style={{ height: 300, borderRadius: 10, overflow: 'hidden', backgroundColor: '#000' }}
-          >
+          <View style={{ height: 300, borderRadius: 10, overflow: 'hidden', backgroundColor: '#000' }}>
             {cameraPermission?.granted ? (
               <CameraView
                 ref={cameraRef}
@@ -468,14 +475,21 @@ export default function RepsRecordingScreen() {
                   {new Date(r.timestamp).toLocaleTimeString()} · {r.sessionId}
                 </Text>
                 <Text style={{ color: '#555', fontSize: 10 }} numberOfLines={1}>
-                  {EXTERNAL_STORAGE_BASE}
-                  {r.sessionId}/
+                  {EXTERNAL_STORAGE_BASE}{r.sessionId}/
                 </Text>
               </View>
             ))
           )}
         </View>
       </ScrollView>
+
+      {/* Live data preview modal — only rendered when open */}
+      {isPreviewVisible ? (
+        <BleDevicePreviewModal
+          visible={isPreviewVisible}
+          onClose={() => setIsPreviewVisible(false)}
+        />
+      ) : null}
 
       {/* Exercise Picker Modal */}
       <Modal
@@ -594,7 +608,6 @@ export default function RepsRecordingScreen() {
             }}
           >
             <Text style={{ color: '#fff', fontSize: 18, fontWeight: '700' }}>How many reps?</Text>
-
             <TextInput
               value={repsInput}
               onChangeText={setRepsInput}
@@ -614,12 +627,7 @@ export default function RepsRecordingScreen() {
               }}
               autoFocus
             />
-
-            <Button
-              label="Save"
-              onPress={() => void handleSave()}
-              disabled={isSaving || !repsInput}
-            />
+            <Button label="Save" onPress={() => void handleSave()} disabled={isSaving || !repsInput} />
             <Button
               label="Cancel"
               onPress={() => setIsRepsDialogVisible(false)}
