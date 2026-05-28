@@ -318,9 +318,9 @@ export default function RepsRecordingScreen() {
       recordingPromiseRef.current = null;
 
       const result = await Promise.race([
-        recordingPromise,
+        recordingPromise?.catch(() => undefined),
         new Promise<{ uri: string } | undefined>((resolve) =>
-          setTimeout(() => resolve(undefined), 5000)
+          setTimeout(() => resolve(undefined), 30_000)
         ),
       ]);
 
