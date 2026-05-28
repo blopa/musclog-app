@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { AlertCircle, Bluetooth, BluetoothOff } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,6 +26,7 @@ interface ManageBleDevicesModalProps {
 
 export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModalProps) {
   const { t } = useTranslation();
+  const router = useRouter();
   const theme = useTheme();
   const wit = useWitMotion();
   const { bleGenerateChartPayload, handleBleGenerateChartPayloadChange, flushAllPendingChanges } =
@@ -81,6 +83,11 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
   const handleDisconnect = useCallback(async () => {
     await wit.disconnect();
   }, [wit]);
+
+  const handleOpenRepsRecording = useCallback(() => {
+    onClose();
+    router.navigate('/app/test/reps-recording');
+  }, [onClose, router]);
 
   const handleStartRename = useCallback((device: BleDevice) => {
     setRenamingDevice(device);
@@ -265,6 +272,12 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
                               size="xs"
                               variant="secondary"
                               onPress={() => setPreviewVisible(true)}
+                            />
+                            <Button
+                              label={t('settings.bleDevices.repsRecordingButton')}
+                              size="xs"
+                              variant="accent"
+                              onPress={handleOpenRepsRecording}
                             />
                           </>
                         ) : (

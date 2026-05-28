@@ -362,6 +362,7 @@
       "previewGyro": "Gyro",
       "previewWaiting": "Waiting for data...",
       "previewDisconnected": "Sensor not connected",
+      "repsRecordingButton": "Открыть запись повторений",
       "recordingSettings": "Настройки записи",
       "generateChartPayload": "Генерировать данные графика",
       "generateChartPayloadSubtitle": "Включить данные сигнала и аннотации повторений для отображения на графике после каждого подхода"
