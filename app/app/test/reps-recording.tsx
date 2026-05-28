@@ -1,5 +1,5 @@
 import type { CameraView as CameraViewType } from 'expo-camera';
-import { CameraView, useCameraPermissions } from 'expo-camera';
+import { CameraView, useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
 import { copyAsync } from 'expo-file-system/legacy';
 import { Bluetooth, Camera, Circle, FolderLock, Search } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -144,6 +144,7 @@ export default function RepsRecordingScreen() {
   const wit = useWitMotion();
 
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
+  const [micPermission, requestMicPermission] = useMicrophonePermissions();
   const [isCameraEnabled, setIsCameraEnabled] = useState(false);
 
   const cameraRef = useRef<CameraViewType>(null);
@@ -197,8 +198,20 @@ export default function RepsRecordingScreen() {
         return;
       }
     }
+
+    if (!micPermission?.granted) {
+      const result = await requestMicPermission();
+      if (!result.granted) {
+        return;
+      }
+    }
     setIsCameraEnabled(true);
-  }, [cameraPermission?.granted, requestCameraPermission]);
+  }, [
+    cameraPermission?.granted,
+    micPermission?.granted,
+    requestCameraPermission,
+    requestMicPermission,
+  ]);
 
   const clearCapturedRecordingRefs = useCallback((deleteTempFile: boolean) => {
     const tempFile = tempFileRef.current;
@@ -319,8 +332,10 @@ export default function RepsRecordingScreen() {
       // recordAsync() can reject (device-specific camera errors) or hang without
       // resolving (known expo-camera iOS issue, and Android backgrounding bugs).
       // Race against a generous timeout so the UI never gets stuck.
+      let cameraError: string | null = null;
       const result = await Promise.race([
         recordingPromise?.catch((err: unknown) => {
+          cameraError = err instanceof Error ? err.message : String(err);
           console.error('[reps-recording] recordAsync rejected:', err);
           return undefined;
         }),
@@ -333,7 +348,8 @@ export default function RepsRecordingScreen() {
 
       if (!result?.uri) {
         clearCapturedRecordingRefs(true);
-        showSnackbar('error', 'Camera returned no video — try again');
+        const reason = cameraError ?? (result === undefined ? 'timed out' : 'no URI returned');
+        showSnackbar('error', `Camera error: ${reason}`);
         return;
       }
 
