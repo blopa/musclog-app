@@ -1,11 +1,8 @@
-import * as FileSystem from 'expo-file-system';
-import { EncodingType, readAsStringAsync } from 'expo-file-system/legacy';
+import { EncodingType, readAsStringAsync, StorageAccessFramework } from 'expo-file-system/legacy';
 import { Platform } from 'react-native';
 
-const { StorageAccessFramework } = FileSystem;
-
 export async function requestDirectoryPermission() {
-  if (Platform.OS !== 'android' || !StorageAccessFramework) {
+  if (Platform.OS !== 'android') {
     return null;
   }
 
@@ -24,9 +21,15 @@ export async function requestDirectoryPermission() {
 export async function saveToSaf(
   directoryUri: string,
   folderName: string,
-  files: { name: string; mimeType: string; content?: string; sourceUri?: string; isBinary?: boolean }[]
+  files: {
+    name: string;
+    mimeType: string;
+    content?: string;
+    sourceUri?: string;
+    isBinary?: boolean;
+  }[]
 ) {
-  if (Platform.OS !== 'android' || !StorageAccessFramework) {
+  if (Platform.OS !== 'android') {
     return null;
   }
 

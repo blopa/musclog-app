@@ -389,7 +389,7 @@ export default function RepsRecordingScreen() {
           ]);
         } catch (safErr) {
           console.error('[reps-recording] SAF export error:', safErr);
-          showSnackbar('warning', 'Saved locally but failed to export to musclog folder');
+          showSnackbar('error', 'Saved locally but failed to export to musclog folder');
         }
       }
 
