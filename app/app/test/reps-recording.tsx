@@ -1,9 +1,10 @@
 import type { CameraView as CameraViewType } from 'expo-camera';
 import { CameraView, useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
+import { File } from 'expo-file-system';
 import { copyAsync } from 'expo-file-system/legacy';
 import * as SecureStore from 'expo-secure-store';
 import * as Sharing from 'expo-sharing';
-import { Bluetooth, Camera, Circle, FolderLock, Search } from 'lucide-react-native';
+import { Bluetooth, Camera, Circle, FolderLock, Search, Trash2 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -18,6 +19,7 @@ import {
 import { GenericCard } from '@/components/cards/GenericCard';
 import { MasterLayout } from '@/components/MasterLayout';
 import { BleDevicePreviewModal } from '@/components/modals/BleDevicePreviewModal';
+import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { FullScreenModal } from '@/components/modals/FullScreenModal';
 import { Button } from '@/components/theme/Button';
 import type Exercise from '@/database/models/Exercise';
@@ -173,6 +175,8 @@ export default function RepsRecordingScreen() {
   const [isSharing, setIsSharing] = useState(false);
   const [recordings, setRecordings] = useState<RecordingEntry[]>([]);
   const [safDirectoryUri, setSafDirectoryUri] = useState<string | null>(null);
+  const [recordingPendingDelete, setRecordingPendingDelete] = useState<RecordingEntry | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     void wit.requestPermissions();
@@ -296,6 +300,29 @@ export default function RepsRecordingScreen() {
       setIsSharing(false);
     }
   }, [recordings]);
+
+  const handleConfirmDelete = useCallback(async () => {
+    const target = recordingPendingDelete;
+    if (!target) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      for (const uri of [target.jsonUri, target.videoUri]) {
+        try {
+          new File(uri).delete();
+        } catch (err) {
+          // File may already be gone — log and continue so the row still gets removed.
+          console.warn('[reps-recording] failed to delete file', uri, err);
+        }
+      }
+      setRecordings((prev) => prev.filter((r) => r.id !== target.id));
+      setRecordingPendingDelete(null);
+    } finally {
+      setIsDeleting(false);
+    }
+  }, [recordingPendingDelete]);
 
   const handleStart = useCallback(async () => {
     if (!wit.isConnected || !selectedExercise || !cameraRef.current) {
@@ -437,18 +464,8 @@ export default function RepsRecordingScreen() {
       if (safDirectoryUri) {
         try {
           await saveToSaf(safDirectoryUri, sessionId, [
-            {
-              name: 'data.json',
-              mimeType: 'application/json',
-              sourceUri: savedJsonUri,
-              isBinary: false,
-            },
-            {
-              name: 'video.mp4',
-              mimeType: 'video/mp4',
-              sourceUri: savedVideoUri,
-              isBinary: true,
-            },
+            { name: 'data.json', mimeType: 'application/json', sourceUri: savedJsonUri },
+            { name: 'video.mp4', mimeType: 'video/mp4', sourceUri: savedVideoUri },
           ]);
         } catch (safErr) {
           console.error('[reps-recording] SAF export error:', safErr);
@@ -785,27 +802,36 @@ export default function RepsRecordingScreen() {
               <Text className="text-sm text-text-tertiary">No recordings yet</Text>
             ) : (
               recordings.map((r) => (
-                <View key={r.id} className="rounded-lg bg-bg-card p-3">
-                  <Text className="font-semibold text-text-primary">
-                    {r.exerciseName} — {r.reps} reps
-                  </Text>
-                  <Text className="text-xs text-text-tertiary">
-                    {new Date(r.timestamp).toLocaleTimeString()} · {r.id}
-                  </Text>
-                  <Text
-                    className="mt-1 text-xs"
-                    style={{ color: theme.colors.text.muted }}
-                    numberOfLines={1}
+                <View key={r.id} className="flex-row items-start gap-3 rounded-lg bg-bg-card p-3">
+                  <View className="flex-1">
+                    <Text className="font-semibold text-text-primary">
+                      {r.exerciseName} — {r.reps} reps
+                    </Text>
+                    <Text className="text-xs text-text-tertiary">
+                      {new Date(r.timestamp).toLocaleTimeString()} · {r.id}
+                    </Text>
+                    <Text
+                      className="mt-1 text-xs"
+                      style={{ color: theme.colors.text.muted }}
+                      numberOfLines={1}
+                    >
+                      JSON: {r.jsonUri}
+                    </Text>
+                    <Text
+                      className="mt-1 text-xs"
+                      style={{ color: theme.colors.text.muted }}
+                      numberOfLines={1}
+                    >
+                      Video: {r.videoUri}
+                    </Text>
+                  </View>
+                  <Pressable
+                    onPress={() => setRecordingPendingDelete(r)}
+                    hitSlop={8}
+                    accessibilityLabel="Delete recording"
                   >
-                    JSON: {r.jsonUri}
-                  </Text>
-                  <Text
-                    className="mt-1 text-xs"
-                    style={{ color: theme.colors.text.muted }}
-                    numberOfLines={1}
-                  >
-                    Video: {r.videoUri}
-                  </Text>
+                    <Trash2 size={theme.iconSize.md} color={theme.colors.status.error} />
+                  </Pressable>
                 </View>
               ))
             )}
@@ -822,6 +848,25 @@ export default function RepsRecordingScreen() {
         visible={isExercisePickerVisible}
         onClose={() => setIsExercisePickerVisible(false)}
         onSelect={handleExerciseSelect}
+      />
+
+      <ConfirmationModal
+        visible={recordingPendingDelete !== null}
+        onClose={() => {
+          if (!isDeleting) {
+            setRecordingPendingDelete(null);
+          }
+        }}
+        onConfirm={handleConfirmDelete}
+        title="Delete recording?"
+        message={
+          recordingPendingDelete
+            ? `This will permanently delete the JSON and video for "${recordingPendingDelete.exerciseName} — ${recordingPendingDelete.reps} reps" from your device.`
+            : ''
+        }
+        confirmLabel="Delete"
+        variant="destructive"
+        isLoading={isDeleting}
       />
 
       <View pointerEvents="none" style={{ height: 120 }} />
