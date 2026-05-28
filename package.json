@@ -31,6 +31,7 @@
     "generate-training-html": "cd training-data && .venv/bin/python visualize_loocv.py",
     "download-training-data": "cd training-data && .venv/bin/python download_recordings.py",
     "generate-markers-html": "cd training-data && .venv/bin/python generate-markers-html.py",
+    "generate-video-markers": "cd training-data && .venv/bin/python generate-video-markers.py",
     "postinstall": "patch-package",
     "prestart": "node scripts/sync-web-images.js",
     "start": "expo start",

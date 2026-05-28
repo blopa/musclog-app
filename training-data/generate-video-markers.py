@@ -52,10 +52,11 @@ TEMPLATE = """\
   body { font-family: system-ui, sans-serif; background: #0f0f0f; color: #e0e0e0; padding: 16px; max-width: 1400px; margin: 0 auto; }
   h1 { font-size: 16px; font-weight: 600; margin-bottom: 4px; color: #f0f0f0; }
   .meta { font-size: 12px; color: #6b7280; margin-bottom: 12px; }
-  .top-row { display: flex; gap: 16px; margin-bottom: 12px; align-items: flex-start; flex-wrap: wrap; }
+  .top-row { display: flex; gap: 16px; margin-bottom: 12px; align-items: stretch; flex-wrap: wrap; }
   .video-wrap { flex: 0 0 auto; }
-  video { display: block; max-width: 520px; width: 100%; border-radius: 8px; background: #000; }
-  .controls { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 220px; }
+  video { display: block; max-width: 380px; width: 100%; border-radius: 8px; background: #000; }
+  .right-col { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 300px; }
+  .controls { display: flex; flex-direction: column; gap: 8px; }
   .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
   button { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; transition: opacity .15s; }
   button:hover:not(:disabled) { opacity: 0.8; }
@@ -69,7 +70,7 @@ TEMPLATE = """\
   .shortcut { font-size: 11px; opacity: 0.65; }
   hr.divider { border: none; border-top: 1px solid #1f2937; margin: 2px 0; }
   .status { font-size: 13px; color: #fbbf24; padding: 4px 0; min-height: 22px; }
-  #chart { width: 100%; height: 380px; border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+  #chart { width: 100%; flex: 1; min-height: 280px; border-radius: 8px; overflow: hidden; }
   .section-title { font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: .05em; margin: 12px 0 6px; }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
   th { text-align: left; padding: 6px 10px; background: #1a1f2b; color: #6b7280; font-weight: 500; border-bottom: 1px solid #1f2937; }
@@ -90,29 +91,30 @@ TEMPLATE = """\
   <div class="video-wrap">
     <video id="video" controls preload="metadata" src="__VIDEO_SRC__"></video>
   </div>
-  <div class="controls">
-    <div class="btn-group">
-      <button id="btn-start">▶ Mark Start <span class="shortcut">[S]</span></button>
-      <button id="btn-end" disabled>■ Mark End <span class="shortcut">[E]</span></button>
+  <div class="right-col">
+    <div class="controls">
+      <div class="btn-group">
+        <button id="btn-start">▶ Mark Start <span class="shortcut">[S]</span></button>
+        <button id="btn-end" disabled>■ Mark End <span class="shortcut">[E]</span></button>
+      </div>
+      <hr class="divider">
+      <div class="status" id="status">Press S to mark rep start at current video time.</div>
+      <hr class="divider">
+      <div class="btn-group">
+        <button id="btn-undo">↩ Undo</button>
+        <button id="btn-clear">✕ Clear all</button>
+      </div>
+      <hr class="divider">
+      <div class="btn-group">
+        <button id="btn-dl-markers">⬇ repMarkers.json</button>
+      </div>
+      <div class="btn-group">
+        <button id="btn-dl-full">⬇ Full updated JSON</button>
+      </div>
     </div>
-    <hr class="divider">
-    <div class="status" id="status">Press S to mark rep start at current video time.</div>
-    <hr class="divider">
-    <div class="btn-group">
-      <button id="btn-undo">↩ Undo</button>
-      <button id="btn-clear">✕ Clear all</button>
-    </div>
-    <hr class="divider">
-    <div class="btn-group">
-      <button id="btn-dl-markers">⬇ repMarkers.json</button>
-    </div>
-    <div class="btn-group">
-      <button id="btn-dl-full">⬇ Full updated JSON</button>
-    </div>
+    <div id="chart"></div>
   </div>
 </div>
-
-<div id="chart"></div>
 
 <div class="section-title">Markers — <span id="marker-count">0</span> / __EXPECTED_REPS__ reps</div>
 <table>
