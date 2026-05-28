@@ -3,9 +3,9 @@
 Generate interactive HTML pages for manually annotating rep boundaries.
 
 For each recording in raw-data/*.json:
-  1. Extracts the same 1D canonical signal that train.py uses.
+  1. Plots all 9 raw sensor channels (accel/gyro/angle × x/y/z).
   2. Generates a standalone HTML page with an interactive chart.
-  3. The chart lets you click to mark rep start/end boundaries.
+  3. Use the legend to toggle channels on/off; click to mark rep start/end.
   4. Download buttons export repMarkers JSON or the full updated JSON.
 
 Output:
@@ -23,7 +23,7 @@ from pathlib import Path
 
 import numpy as np
 
-from train import preprocess_to_1d, RECORDINGS_DIR, OUTPUT_DIR
+from train import RECORDINGS_DIR, OUTPUT_DIR
 
 MARKERS_DIR = OUTPUT_DIR / "markers"
 MARKERS_DIR.mkdir(exist_ok=True)
@@ -96,7 +96,7 @@ TEMPLATE = """\
 
 <script>
 const TIMESTAMPS     = __TIMESTAMPS__;
-const SIGNAL         = __SIGNAL__;
+const CHANNELS       = __CHANNELS__;   // { "accel.x": [...], "accel.y": [...], ... }
 const FILENAME       = __FILENAME__;
 const RAW_DATA       = __RAW_DATA__;
 const EXPECTED_REPS  = __EXPECTED_REPS__;
@@ -126,19 +126,43 @@ var layout = {
   plot_bgcolor:  '#0d1117',
   font:   { color: '#c9d1d9', size: 12 },
   margin: { t: 12, b: 40, l: 50, r: 20 },
-  xaxis:  { title: 'Time (s)', gridcolor: '#1f2937', zeroline: false },
-  yaxis:  { title: 'Signal',   gridcolor: '#1f2937', zeroline: false },
+  xaxis:  { title: 'Time (s)',  gridcolor: '#1f2937', zeroline: false },
+  yaxis:  { title: 'Raw value', gridcolor: '#1f2937', zeroline: true,
+            zerolinecolor: '#374151' },
   shapes: markerShapes(),
-  hovermode: 'x',
+  hovermode: 'x unified',
+  legend: { orientation: 'h', y: -0.18 },
 };
 
-Plotly.newPlot('chart', [{
-  x: tRelSec, y: SIGNAL,
-  type: 'scatter', mode: 'lines',
-  line: { color: '#58a6ff', width: 1.5 },
-  name: 'signal',
-  hovertemplate: 't=%{x:.3f}s<extra></extra>',
-}], layout, { responsive: true, displayModeBar: false });
+// One trace per raw channel — toggle with the legend.
+// Defaults: angle.{x,y,z} visible; accel/gyro hidden but available.
+var CHANNEL_ORDER = [
+  ['angle.x', '#f97316', true],
+  ['angle.y', '#fbbf24', true],
+  ['angle.z', '#a3e635', true],
+  ['accel.x', '#60a5fa', 'legendonly'],
+  ['accel.y', '#818cf8', 'legendonly'],
+  ['accel.z', '#a78bfa', 'legendonly'],
+  ['gyro.x',  '#f472b6', 'legendonly'],
+  ['gyro.y',  '#fb7185', 'legendonly'],
+  ['gyro.z',  '#fca5a5', 'legendonly'],
+];
+
+var traces = CHANNEL_ORDER.map(function(entry) {
+  var name = entry[0], color = entry[1], visible = entry[2];
+  return {
+    x: tRelSec,
+    y: CHANNELS[name],
+    type: 'scatter',
+    mode: 'lines',
+    line: { color: color, width: 1.2 },
+    name: name,
+    visible: visible,
+    hovertemplate: name + '=%{y:.4f}<extra></extra>',
+  };
+});
+
+Plotly.newPlot('chart', traces, layout, { responsive: true, displayModeBar: true });
 
 // ── State machine ───────────────────────────────────────────────────────────
 
@@ -322,24 +346,33 @@ def generate_html(path: Path) -> dict:
         print(f"  SKIP (too short — {len(samples)} samples): {path.name}")
         return {"name": path.name, "status": "too_short", "n_reps": n_reps, "n_markers": 0}
 
-    try:
-        signal_1d, timestamps = preprocess_to_1d(samples)
-    except Exception as exc:
-        print(f"  ERROR ({exc}): {path.name}")
-        return {"name": path.name, "status": "error", "n_reps": n_reps, "n_markers": 0}
+    # Sort by timestamp — BLE batches occasionally arrive slightly out of order,
+    # so without sorting Plotly would draw small visual zig-zags between adjacent
+    # samples. This is a display-only sort; the raw values themselves are untouched.
+    samples_sorted = sorted(samples, key=lambda s: s["timestamp"])
+    timestamps_full = np.array([s["timestamp"] for s in samples_sorted], dtype=float)
 
     existing_markers = data.get("repMarkers", [])
 
     # Downsample to at most 4000 points for reasonable HTML file size while
     # keeping enough resolution to click accurately on rep boundaries.
     MAX_POINTS = 4000
-    if len(signal_1d) > MAX_POINTS:
-        idx       = np.round(np.linspace(0, len(signal_1d) - 1, MAX_POINTS)).astype(int)
-        signal_1d = signal_1d[idx]
-        timestamps = timestamps[idx]
+    if len(samples_sorted) > MAX_POINTS:
+        idx = np.round(np.linspace(0, len(samples_sorted) - 1, MAX_POINTS)).astype(int)
+        samples_keep = [samples_sorted[i] for i in idx]
+        timestamps = timestamps_full[idx]
+    else:
+        samples_keep = samples_sorted
+        timestamps = timestamps_full
 
-    ts_list  = [round(float(t), 1) for t in timestamps]
-    sig_list = [round(float(v), 6) for v in signal_1d]
+    # Extract each raw channel — no filter, no smoothing, no projection.
+    channels = {
+        f"{kind}.{axis}": [round(float(s[kind][axis]), 6) for s in samples_keep]
+        for kind in ("accel", "gyro", "angle")
+        for axis in ("x", "y", "z")
+    }
+
+    ts_list = [round(float(t), 1) for t in timestamps]
 
     title = path.name
     meta  = _meta_str(data)
@@ -349,7 +382,7 @@ def generate_html(path: Path) -> dict:
     html = html.replace("__META__",            meta)
     html = html.replace("__EXPECTED_REPS__",   str(n_reps))
     html = html.replace("__TIMESTAMPS__",      json.dumps(ts_list))
-    html = html.replace("__SIGNAL__",          json.dumps(sig_list))
+    html = html.replace("__CHANNELS__",        json.dumps(channels))
     html = html.replace("__FILENAME__",        json.dumps(path.name))
     html = html.replace("__RAW_DATA__",        json.dumps(data))
     html = html.replace("__EXISTING_MARKERS__",json.dumps(existing_markers))

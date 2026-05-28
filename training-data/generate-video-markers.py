@@ -4,7 +4,7 @@ Generate video-synced interactive HTML pages for annotating rep boundaries.
 
 For each subfolder in recordings/:
   1. Finds the .json recording and .mp4 video file.
-  2. Extracts the same 1D canonical signal that train.py uses.
+  2. Plots all 9 raw sensor channels (accel/gyro/angle × x/y/z) — no filter, no PCA.
   3. Generates a standalone index.html with a synced video player + Plotly chart.
 
 Workflow:
@@ -31,7 +31,6 @@ SCRIPT_DIR = Path(__file__).parent
 RECORDINGS_DIR = SCRIPT_DIR / "recordings"
 
 sys.path.insert(0, str(SCRIPT_DIR))
-from train import preprocess_to_1d  # noqa: E402  (local import after path setup)
 
 MAX_POINTS = 4000  # downsample chart data for reasonable HTML file size
 
@@ -126,15 +125,20 @@ TEMPLATE = """\
 
 <script>
 const TIMESTAMPS      = __TIMESTAMPS__;
-const SIGNAL          = __SIGNAL__;
+const CHANNELS        = __CHANNELS__;   // { "accel.x": [...], "accel.y": [...], ... }
 const FILENAME        = __FILENAME__;
 const RAW_DATA        = __RAW_DATA__;
 const EXPECTED_REPS   = __EXPECTED_REPS__;
 const DATA_DURATION_S = __DATA_DURATION_S__;
+const STARTED_AT_MS   = __STARTED_AT_MS__;   // wall-clock ms of handleStart on phone
 
 let markers = __EXISTING_MARKERS__;
 
-const t0      = TIMESTAMPS[0];
+// Use the phone's handleStart wall-clock time as chart t=0 so that the chart
+// aligns with the video (which also starts capturing right after handleStart).
+// Samples collected slightly before handleStart (BLE buffer pre-roll) will
+// appear at negative times and are safe to ignore.
+const t0      = STARTED_AT_MS;
 const tRelSec = TIMESTAMPS.map(t => (t - t0) / 1000);
 
 const video    = document.getElementById('video');
@@ -185,19 +189,43 @@ const layout = {
   plot_bgcolor:  '#0d1117',
   font:   { color: '#c9d1d9', size: 12 },
   margin: { t: 12, b: 40, l: 50, r: 20 },
-  xaxis:  { title: 'Time (s)', gridcolor: '#1f2937', zeroline: false },
-  yaxis:  { title: 'Signal',   gridcolor: '#1f2937', zeroline: false },
+  xaxis:  { title: 'Time (s)',  gridcolor: '#1f2937', zeroline: false },
+  yaxis:  { title: 'Raw value', gridcolor: '#1f2937', zeroline: true,
+            zerolinecolor: '#374151' },
   shapes: allShapes(),
-  hovermode: 'x',
+  hovermode: 'x unified',
+  legend: { orientation: 'h', y: -0.18 },
 };
 
-Plotly.newPlot('chart', [{
-  x: tRelSec, y: SIGNAL,
-  type: 'scatter', mode: 'lines',
-  line: { color: '#58a6ff', width: 1.5 },
-  name: 'signal',
-  hovertemplate: 't=%{x:.3f}s<extra></extra>',
-}], layout, { responsive: true, displayModeBar: false });
+// One trace per raw channel — toggle with the legend.
+// Defaults: angle.{x,y,z} visible; accel/gyro hidden but available.
+const CHANNEL_ORDER = [
+  ['angle.x', '#f97316', true],
+  ['angle.y', '#fbbf24', true],
+  ['angle.z', '#a3e635', true],
+  ['accel.x', '#60a5fa', 'legendonly'],
+  ['accel.y', '#818cf8', 'legendonly'],
+  ['accel.z', '#a78bfa', 'legendonly'],
+  ['gyro.x',  '#f472b6', 'legendonly'],
+  ['gyro.y',  '#fb7185', 'legendonly'],
+  ['gyro.z',  '#fca5a5', 'legendonly'],
+];
+
+const traces = CHANNEL_ORDER.map(function(entry) {
+  const name = entry[0], color = entry[1], visible = entry[2];
+  return {
+    x: tRelSec,
+    y: CHANNELS[name],
+    type: 'scatter',
+    mode: 'lines',
+    line: { color: color, width: 1.2 },
+    name: name,
+    visible: visible,
+    hovertemplate: name + '=%{y:.4f}<extra></extra>',
+  };
+});
+
+Plotly.newPlot('chart', traces, layout, { responsive: true, displayModeBar: true });
 
 // Chart click → seek video
 document.getElementById('chart').on('plotly_click', function(data) {
@@ -429,22 +457,43 @@ def generate_html(folder: Path) -> dict:
         print(f"  SKIP (too short — {len(samples)} samples): {folder.name}")
         return {"name": folder.name, "status": "too_short", "n_reps": n_reps, "n_markers": 0}
 
-    try:
-        signal_1d, timestamps = preprocess_to_1d(samples)
-    except Exception as exc:
-        print(f"  ERROR ({exc}): {folder.name}")
-        return {"name": folder.name, "status": "error", "n_reps": n_reps, "n_markers": 0}
+    # Sort by timestamp — BLE batches occasionally arrive slightly out of order,
+    # so without sorting Plotly would draw small visual zig-zags between adjacent
+    # samples. Display-only sort; values themselves are untouched.
+    samples_sorted  = sorted(samples, key=lambda s: s["timestamp"])
+    timestamps_full = np.array([s["timestamp"] for s in samples_sorted], dtype=float)
 
     existing_markers = data.get("repMarkers", [])
 
-    if len(signal_1d) > MAX_POINTS:
-        idx        = np.round(np.linspace(0, len(signal_1d) - 1, MAX_POINTS)).astype(int)
-        signal_1d  = signal_1d[idx]
-        timestamps = timestamps[idx]
+    if len(samples_sorted) > MAX_POINTS:
+        idx          = np.round(np.linspace(0, len(samples_sorted) - 1, MAX_POINTS)).astype(int)
+        samples_keep = [samples_sorted[i] for i in idx]
+        timestamps   = timestamps_full[idx]
+    else:
+        samples_keep = samples_sorted
+        timestamps   = timestamps_full
+
+    # Extract each raw channel — no filter, no smoothing, no projection.
+    channels = {
+        f"{kind}.{axis}": [round(float(s[kind][axis]), 6) for s in samples_keep]
+        for kind in ("accel", "gyro", "angle")
+        for axis in ("x", "y", "z")
+    }
 
     ts_list       = [round(float(t), 1) for t in timestamps]
-    sig_list      = [round(float(v), 6) for v in signal_1d]
     data_duration = round((timestamps[-1] - timestamps[0]) / 1000.0, 3)
+
+    # Wall-clock ms of when handleStart fired on the phone — used as chart t=0
+    # so the chart aligns with the video. Falls back to first sample timestamp
+    # if the field is missing (older recordings).
+    started_at_str = data.get("startedAt")
+    if started_at_str:
+        from datetime import datetime
+        started_at_ms = int(
+            datetime.fromisoformat(started_at_str.replace("Z", "+00:00")).timestamp() * 1000
+        )
+    else:
+        started_at_ms = int(timestamps[0])
 
     title = json_path.name
     meta  = _meta_str(data)
@@ -455,11 +504,12 @@ def generate_html(folder: Path) -> dict:
     html = html.replace("__VIDEO_SRC__",        mp4_path.name)
     html = html.replace("__EXPECTED_REPS__",    str(n_reps))
     html = html.replace("__TIMESTAMPS__",       json.dumps(ts_list))
-    html = html.replace("__SIGNAL__",           json.dumps(sig_list))
+    html = html.replace("__CHANNELS__",         json.dumps(channels))
     html = html.replace("__FILENAME__",         json.dumps(json_path.name))
     html = html.replace("__RAW_DATA__",         json.dumps(data))
     html = html.replace("__EXISTING_MARKERS__", json.dumps(existing_markers))
     html = html.replace("__DATA_DURATION_S__",  str(data_duration))
+    html = html.replace("__STARTED_AT_MS__",    str(started_at_ms))
 
     out_path = folder / "index.html"
     out_path.write_text(html, encoding="utf-8")

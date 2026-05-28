@@ -348,6 +348,12 @@ export default function RepsRecordingScreen() {
       setIsRecording(true);
       setElapsedMs(0);
 
+      // Capture start time once outside the closure so the batch handler
+      // can drop pre-roll samples — the first batch after subscribe contains
+      // packets the native module buffered before this call ran, which would
+      // shift the chart's t=0 earlier than the video's t=0.
+      const recordingStartedAtMs = startedAtRef.current;
+
       unsubscribeBatchRef.current?.();
       unsubscribeBatchRef.current = witMotionClient.onBatch((batch) => {
         const samples: BleWorkoutSample[] = [];
@@ -355,6 +361,11 @@ export default function RepsRecordingScreen() {
           if (packet.kind !== 'motion') {
             continue;
           }
+
+          if (packet.timestamp < recordingStartedAtMs) {
+            continue;
+          }
+
           samples.push({
             timestamp: packet.timestamp,
             accel: { ...packet.accel },
@@ -362,6 +373,7 @@ export default function RepsRecordingScreen() {
             angle: { ...packet.angle },
           });
         }
+
         if (samples.length > 0) {
           sampleCountRef.current += samples.length;
           appendBleWorkoutSamplesToNdjsonFile(tempFile, samples);
