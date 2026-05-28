@@ -3,7 +3,15 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { copyAsync } from 'expo-file-system/legacy';
 import { Bluetooth, Camera, Circle, FolderLock, Search } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { MasterLayout } from '@/components/MasterLayout';
@@ -441,13 +449,15 @@ export default function RepsRecordingScreen() {
               Training data collector — BLE + video synchronized
             </Text>
           </View>
-          <Button
-            variant="secondary"
-            size="sm"
-            icon={<FolderLock size={theme.iconSize.sm} color={theme.colors.text.secondary} />}
-            onPress={() => void handleRequestSafPermission()}
-            label={safDirectoryUri ? 'Permission OK' : 'Grant Permission'}
-          />
+          {Platform.OS === 'android' ? (
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={<FolderLock size={theme.iconSize.sm} color={theme.colors.text.secondary} />}
+              onPress={() => void handleRequestSafPermission()}
+              label={safDirectoryUri ? 'Permission OK' : 'Grant Permission'}
+            />
+          ) : null}
         </View>
 
         {/* BLE Sensor */}
