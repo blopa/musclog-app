@@ -21,7 +21,7 @@ Usage:
     python train.py
 
 Input:
-    recordings/*.json  — motion recordings with a 'reps' field
+    raw-data/*.json  — motion recordings with a 'reps' field
 
 Output:
     output/features.csv  — per-segment feature matrix (for inspection)
@@ -54,7 +54,7 @@ import m2cgen as m2c
 # Paths
 # ---------------------------------------------------------------------------
 ROOT           = Path(__file__).parent
-RECORDINGS_DIR = ROOT / "recordings"
+RECORDINGS_DIR = ROOT / "raw-data"
 OUTPUT_DIR     = ROOT / "output"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
@@ -436,18 +436,60 @@ def pseudo_label_segments(segments: list, n_reps: int) -> list:
     return segments
 
 
+def label_segments_from_markers(segments: list, rep_markers: list) -> list:
+    """
+    Assign is_rep=1 to the segment with the highest time-overlap (IoU) for
+    each manual rep marker. Segments not matched to any marker get is_rep=0.
+
+    Each marker must have keys startMs and endMs (absolute ms timestamps
+    matching the samples[i].timestamp field).
+    """
+    for seg in segments:
+        seg["is_rep"] = 0
+
+    claimed: set = set()
+
+    for marker in rep_markers:
+        m_start = float(marker["startMs"])
+        m_end   = float(marker["endMs"])
+        m_dur   = m_end - m_start
+
+        best_idx = None
+        best_iou = 0.0
+
+        for i, seg in enumerate(segments):
+            if i in claimed:
+                continue
+            overlap = max(0.0, min(seg["end_ts"], m_end) - max(seg["start_ts"], m_start))
+            if overlap == 0.0:
+                continue
+            s_dur = seg["end_ts"] - seg["start_ts"]
+            iou   = overlap / (s_dur + m_dur - overlap + 1e-6)
+            if iou > best_iou:
+                best_iou = iou
+                best_idx = i
+
+        if best_idx is not None and best_iou > 0.05:
+            segments[best_idx]["is_rep"] = 1
+            claimed.add(best_idx)
+
+    return segments
+
+
 # ---------------------------------------------------------------------------
 # Step 5 — Dataset builder
 # ---------------------------------------------------------------------------
 
-def build_segment_dataset() -> pd.DataFrame:
+def build_segment_dataset() -> tuple:
     """
     Iterate all recordings, pseudo-label segments, extract features.
-    Returns a DataFrame where each row is one candidate segment.
+    Returns (DataFrame where each row is one candidate segment,
+             list of skipped-under-segmented dicts with keys: name, n_segs, n_reps).
     """
     rows             = []
     skipped_noreps   = 0
     skipped_under    = 0
+    skipped_under_list: list = []
 
     for path in sorted(RECORDINGS_DIR.glob("*.json")):
         with open(path) as f:
@@ -484,15 +526,22 @@ def build_segment_dataset() -> pd.DataFrame:
             avg_dt         = (dur / 1000.0) / max(1, len(chunk) - 1)
             seg["energy"]  = float(np.sum(chunk ** 2) * avg_dt)
 
-        labeled = pseudo_label_segments(segs, n_reps)
-        if labeled is None:
-            skipped_under += 1
-            print(f"  SKIP (under-segmented: {len(segs)} segs < {n_reps} reps): {path.name}")
-            continue
+        rep_markers = data.get("repMarkers")
+        if rep_markers:
+            labeled    = label_segments_from_markers(segs, rep_markers)
+            label_src  = f"manual ({len(rep_markers)} markers)"
+        else:
+            labeled = pseudo_label_segments(segs, n_reps)
+            if labeled is None:
+                skipped_under += 1
+                skipped_under_list.append({"name": path.name, "n_segs": len(segs), "n_reps": n_reps})
+                print(f"  SKIP (under-segmented: {len(segs)} segs < {n_reps} reps): {path.name}")
+                continue
+            label_src = "pseudo"
 
         print(f"  {path.name}: {n_reps} reps, {len(segs)} candidate segments "
               f"({sum(1 for sg in labeled if sg['is_rep'])} labeled rep, "
-              f"{sum(1 for sg in labeled if not sg['is_rep'])} noise)")
+              f"{sum(1 for sg in labeled if not sg['is_rep'])} noise) [{label_src}]")
 
         metadata = {
             "muscleGroup":   data.get("muscleGroup"),
@@ -514,7 +563,7 @@ def build_segment_dataset() -> pd.DataFrame:
 
     print(f"\n  Under-segmented (skipped): {skipped_under}")
     print(f"  No reps label   (skipped): {skipped_noreps}")
-    return pd.DataFrame(rows)
+    return pd.DataFrame(rows), skipped_under_list
 
 
 # ---------------------------------------------------------------------------
@@ -569,10 +618,10 @@ def loocv_by_recording(df: pd.DataFrame) -> tuple:
 
 def main() -> None:
     print("\n── Building segment dataset ────────────────────────────────────")
-    df = build_segment_dataset()
+    df, skipped_under_list = build_segment_dataset()
 
     if len(df) == 0:
-        sys.exit("No segments generated. Check that recordings/*.json have a 'reps' field.")
+        sys.exit("No segments generated. Check that raw-data/*.json have a 'reps' field.")
 
     n_recs  = df["recording_id"].nunique()
     n_rep   = int((df["is_rep"] == 1).sum())
@@ -615,6 +664,57 @@ def main() -> None:
     exact = sum(1 for t, p in zip(rec_actual, rec_preds) if t == p)
     print(f"\n  MAE:         {mae:.2f}")
     print(f"  Exact match: {exact}/{len(rec_actual)}  ({100*exact/len(rec_actual):.0f}%)")
+
+    # ── Suspicious recordings report ────────────────────────────────────
+    seg_counts = df.groupby("recording_id").size()
+    rep_counts = df.groupby("recording_id")["is_rep"].sum()
+    seg_rep_ratio = seg_counts / rep_counts.replace(0, 1)
+
+    HIGH_RATIO  = 3.5   # too many noise candidates → unreliable pseudo-labels
+    LOW_RATIO   = 1.3   # barely over-segmented → model has little room to separate
+    LOOCV_ERR   = 3     # absolute LOOCV error threshold
+
+    sus_lines = []
+
+    sus_noisy = seg_rep_ratio[seg_rep_ratio > HIGH_RATIO].sort_values(ascending=False)
+    if len(sus_noisy):
+        sus_lines.append("── High candidate:rep ratio (> {:.1f}x) — unreliable pseudo-labels ──".format(HIGH_RATIO))
+        for rid, ratio in sus_noisy.items():
+            n_segs = int(seg_counts[rid])
+            n_reps = int(rep_counts[rid])
+            sus_lines.append(f"  {rid}  ({n_segs} segs / {n_reps} reps = {ratio:.1f}x)")
+
+    sus_sparse = seg_rep_ratio[seg_rep_ratio < LOW_RATIO].sort_values()
+    if len(sus_sparse):
+        sus_lines.append("\n── Low candidate:rep ratio (< {:.1f}x) — barely over-segmented ──".format(LOW_RATIO))
+        for rid, ratio in sus_sparse.items():
+            n_segs = int(seg_counts[rid])
+            n_reps = int(rep_counts[rid])
+            sus_lines.append(f"  {rid}  ({n_segs} segs / {n_reps} reps = {ratio:.1f}x)")
+
+    loocv_errors = [
+        (name, true, pred, abs(pred - true))
+        for name, true, pred in zip(rec_names, rec_actual, rec_preds)
+        if abs(pred - true) >= LOOCV_ERR
+    ]
+    loocv_errors.sort(key=lambda x: -x[3])
+    if loocv_errors:
+        sus_lines.append(f"\n── Large LOOCV error (|err| >= {LOOCV_ERR}) ──")
+        for name, true, pred, err in loocv_errors:
+            sus_lines.append(f"  {name}  true={true}  pred={pred}  err={pred - true:+d}")
+
+    if skipped_under_list:
+        sus_lines.append("\n── Skipped (under-segmented) ──")
+        for s in skipped_under_list:
+            sus_lines.append(f"  {s['name']}  ({s['n_segs']} segs < {s['n_reps']} reps)")
+
+    sus_path = OUTPUT_DIR / "sus_data.txt"
+    if sus_lines:
+        sus_path.write_text("\n".join(sus_lines) + "\n")
+        print(f"\n── Suspicious recordings → output/sus_data.txt ({len(sus_noisy) + len(sus_sparse) + len(loocv_errors) + len(skipped_under_list)} flagged)")
+    else:
+        sus_path.write_text("No suspicious recordings detected.\n")
+        print("\n── No suspicious recordings detected.")
 
     # ── Train final classifier on ALL data ──────────────────────────────
     print("\n── Training final classifier on all data ───────────────────────")

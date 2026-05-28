@@ -34,7 +34,7 @@ export function ExerciseItem({
 }: ExerciseItemProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const hasCurrentSet = exercise.sets.some((set) => set.isCurrent);
+  const hasCurrentSet = exercise.sets.some((set) => set.isCurrent && !set.isSkipped);
 
   return (
     <View className="relative mb-6">
@@ -153,7 +153,15 @@ export function ExerciseItem({
               }}
             >
               {exercise.setProgress.map((progress, index) => {
-                const isCurrent = exercise.sets[index]?.isCurrent;
+                const isSkipped = exercise.sets[index]?.isSkipped ?? false;
+                const isCurrent = (exercise.sets[index]?.isCurrent ?? false) && !isSkipped;
+                let labelColor = theme.colors.text.tertiary;
+                if (isSkipped) {
+                  labelColor = theme.colors.text.tertiary;
+                } else if (isCurrent) {
+                  labelColor = theme.colors.accent.primary;
+                }
+
                 return (
                   <View key={index} className="flex-1 gap-1">
                     <View
@@ -173,8 +181,11 @@ export function ExerciseItem({
                     <Text
                       className="text-xs"
                       style={{
-                        color: isCurrent ? theme.colors.accent.primary : theme.colors.text.tertiary,
+                        color: labelColor,
                         fontWeight: isCurrent ? 'bold' : 'normal',
+                        textDecorationLine: isSkipped
+                          ? ('line-through' as const)
+                          : ('none' as const),
                       }}
                     >
                       {t('workoutHistory.set', { number: index + 1 })}

@@ -1,0 +1,38 @@
+── High candidate:rep ratio (> 3.5x) — unreliable pseudo-labels ──
+  ble_cable_face_pull_set1_2026-05-18T20-11-58-376Z_spz6.json  (58 segs / 10 reps = 5.8x)
+  ble_pec_fly_machine_set1_2026-05-18T20-49-39-242Z_fdib.json  (33 segs / 6 reps = 5.5x)
+  legpress.json  (47 segs / 10 reps = 4.7x)
+  ble_seated_row_set2_2026-05-18T20-24-04-213Z_z8sr.json  (45 segs / 10 reps = 4.5x)
+  barbell_back_squat.json  (37 segs / 10 reps = 3.7x)
+  cable_lateral_raises.json  (47 segs / 13 reps = 3.6x)
+
+── Low candidate:rep ratio (< 1.3x) — barely over-segmented ──
+  ble_seated_row_set1_2026-05-18T20-20-52-574Z_7ui5.json  (10 segs / 10 reps = 1.0x)
+  ble_cable_face_pull_set2_2026-05-18T20-15-03-940Z_6wbv.json  (11 segs / 10 reps = 1.1x)
+  chest_supported_row.json  (11 segs / 10 reps = 1.1x)
+  ble_chest_press_machine_set1_2026-05-18T20-37-08-900Z_98gi.json  (12 segs / 10 reps = 1.2x)
+  ble_lat_pulldown_set2_2026-05-18T20-32-27-414Z_3sq7.json  (6 segs / 5 reps = 1.2x)
+  pushups.json  (12 segs / 10 reps = 1.2x)
+
+── Large LOOCV error (|err| >= 3) ──
+  ble_cable_face_pull_set1_2026-05-18T20-11-58-376Z_spz6.json  true=10  pred=25  err=+15
+  ble_seated_row_set2_2026-05-18T20-24-04-213Z_z8sr.json  true=10  pred=20  err=+10
+  deadlift.json  true=10  pred=20  err=+10
+  ble_cable_face_pull_set2_2026-05-18T20-15-03-940Z_6wbv.json  true=10  pred=2  err=-8
+  ble_cable_bicep_curl_set2_2026-05-18T20-07-23-538Z_8y56.json  true=10  pred=3  err=-7
+  ble_seated_row_set1_2026-05-18T20-20-52-574Z_7ui5.json  true=10  pred=3  err=-7
+  ble_machine_shoulder_press_set2_2026-05-26T20-27-03-298Z_xlwt.json  true=10  pred=4  err=-6
+  ble_tricep_overhead_extension_set1_2026-05-26T20-32-04-046Z_f14z.json  true=12  pred=6  err=-6
+  ble_tricep_overhead_extension_set2_2026-05-26T20-35-28-179Z_ji0u.json  true=8  pred=14  err=+6
+  barbell_bicep_curls.json  true=13  pred=18  err=+5
+  ble_machine_shoulder_press_set1_2026-05-26T20-21-32-832Z_7nt7.json  true=8  pred=3  err=-5
+  ble_tricep_overhead_extension_set1_2026-05-26T20-39-06-456Z_ot6z.json  true=10  pred=5  err=-5
+  barbell_back_squat.json  true=10  pred=13  err=+3
+  ble_lat_pulldown_set1_2026-05-18T20-30-46-520Z_veft.json  true=8  pred=11  err=+3
+  ble_pec_fly_machine_set1_2026-05-18T20-49-39-242Z_fdib.json  true=6  pred=9  err=+3
+  cable_lateral_raises.json  true=13  pred=16  err=+3
+  legpress.json  true=10  pred=7  err=-3
+
+── Skipped (under-segmented) ──
+  ble_cable_bicep_curl_set1_2026-05-18T20-04-09-979Z_dq7u.json  (12 segs < 18 reps)
+  machine_calf_raises.json  (2 segs < 10 reps)

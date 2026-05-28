@@ -1,18 +1,18 @@
 Training summary (Segment-and-Score)
 ========================================
-Recordings     : 21
-Total segments : 499
-Rep segments   : 205
-Noise segments : 294
+Recordings     : 30
+Total segments : 720
+Rep segments   : 293
+Noise segments : 427
 
 LOOCV — Segment-level:
-  Precision : 0.71
-  Recall    : 0.80
-  F1        : 0.75
+  Precision : 0.75
+  Recall    : 0.77
+  F1        : 0.76
 
 LOOCV — Recording-level:
-  MAE         : 4.67
-  Exact match : 4/21 (19%)
+  MAE         : 3.83
+  Exact match : 4/30 (13%)
 
 Feature order (42 features):
    0: amplitude

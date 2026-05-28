@@ -1,0 +1,9 @@
+// doesnt seems like the data is correct, I dont see any peaks
+ble_machine_shoulder_press_set2_2026-05-26T20-27-03-298Z_xlwt
+ble_machine_shoulder_press_set1_2026-05-26T20-21-32-832Z_7nt7
+
+// same for this one, no peaks, but might be because this exercise is weird
+ble_tricep_overhead_extension_set1_2026-05-26T20-32-04-046Z_f14z
+ble_tricep_overhead_extension_set1_2026-05-26T20-39-06-456Z_ot6z
+ble_tricep_overhead_extension_set2_2026-05-26T20-35-28-179Z_ji0u
+

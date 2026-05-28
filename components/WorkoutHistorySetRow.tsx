@@ -10,6 +10,7 @@ import { useTheme } from '@/hooks/useTheme';
 export type SetData = Pick<WorkoutLogSet, 'weight' | 'reps' | 'partials'> & {
   setNumber: number;
   isCurrent?: boolean;
+  isSkipped?: boolean;
 };
 
 type SetRowProps = {
@@ -22,6 +23,24 @@ type SetRowProps = {
 export function SetRow({ set, isPreview = false, weightUnitSuffix }: SetRowProps) {
   const theme = useTheme();
   const isCurrent = set.isCurrent;
+  const isSkipped = set.isSkipped ?? false;
+  const isHighlighted = isCurrent && !isSkipped;
+  const setNumberColor = isHighlighted ? theme.colors.text.black : theme.colors.text.secondary;
+  const textDecoration = isSkipped ? ('line-through' as const) : ('none' as const);
+  let valueColor = theme.colors.text.secondary;
+  if (isSkipped) {
+    valueColor = theme.colors.text.tertiary;
+  } else if (isHighlighted) {
+    valueColor = theme.colors.text.primary;
+  }
+
+  const hasPartials = (set.partials ?? 0) > 0;
+  let partialColor = theme.colors.text.tertiary;
+  if (isSkipped) {
+    partialColor = theme.colors.text.tertiary;
+  } else if (hasPartials) {
+    partialColor = theme.colors.accent.primary;
+  }
 
   return (
     <View
@@ -29,9 +48,10 @@ export function SetRow({ set, isPreview = false, weightUnitSuffix }: SetRowProps
       style={{
         paddingVertical: theme.spacing.padding['1half'], // 6px
         borderRadius: theme.borderRadius.sm,
-        backgroundColor: isCurrent ? theme.colors.accent.primary10 : 'transparent',
-        borderWidth: isCurrent ? theme.borderWidth.thin : 0,
-        borderColor: isCurrent ? theme.colors.accent.primary20 : 'transparent',
+        backgroundColor: isHighlighted ? theme.colors.accent.primary10 : 'transparent',
+        borderWidth: isHighlighted ? theme.borderWidth.thin : 0,
+        borderColor: isHighlighted ? theme.colors.accent.primary20 : 'transparent',
+        opacity: isSkipped ? 0.7 : 1,
       }}
     >
       {/* Set Number */}
@@ -39,7 +59,7 @@ export function SetRow({ set, isPreview = false, weightUnitSuffix }: SetRowProps
         <View
           className="h-5 w-5 items-center justify-center rounded-full"
           style={{
-            backgroundColor: isCurrent
+            backgroundColor: isHighlighted
               ? theme.colors.accent.primary
               : theme.colors.background.overlay,
           }}
@@ -47,7 +67,8 @@ export function SetRow({ set, isPreview = false, weightUnitSuffix }: SetRowProps
           <Text
             className="text-xs font-bold"
             style={{
-              color: isCurrent ? theme.colors.text.black : theme.colors.text.secondary,
+              color: setNumberColor,
+              textDecorationLine: textDecoration,
             }}
           >
             {set.setNumber}
@@ -59,9 +80,7 @@ export function SetRow({ set, isPreview = false, weightUnitSuffix }: SetRowProps
       <View className="flex-1 items-center">
         <Text
           className="text-base font-bold tabular-nums"
-          style={{
-            color: isCurrent ? theme.colors.text.primary : theme.colors.text.secondary,
-          }}
+          style={{ color: valueColor, textDecorationLine: textDecoration }}
         >
           {set.weight}
           {weightUnitSuffix ?? ''}
@@ -72,9 +91,7 @@ export function SetRow({ set, isPreview = false, weightUnitSuffix }: SetRowProps
       <View className="flex-1 items-center">
         <Text
           className="text-base font-bold tabular-nums"
-          style={{
-            color: isCurrent ? theme.colors.text.primary : theme.colors.text.secondary,
-          }}
+          style={{ color: valueColor, textDecorationLine: textDecoration }}
         >
           {set.reps}
         </Text>
@@ -86,12 +103,12 @@ export function SetRow({ set, isPreview = false, weightUnitSuffix }: SetRowProps
           <Text
             className="text-sm tabular-nums"
             style={{
-              color:
-                (set.partials ?? 0) > 0 ? theme.colors.accent.primary : theme.colors.text.tertiary,
+              color: partialColor,
               fontWeight:
-                (set.partials ?? 0) > 0
+                !isSkipped && (set.partials ?? 0) > 0
                   ? theme.typography.fontWeight.bold
                   : theme.typography.fontWeight.normal,
+              textDecorationLine: textDecoration,
             }}
           >
             {(set.partials ?? 0) > 0 ? `+${set.partials}` : '-'}

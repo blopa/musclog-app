@@ -1,4 +1,4 @@
-import { Directory, File } from 'expo-file-system';
+import { Directory, File, FileMode } from 'expo-file-system';
 import {
   cacheDirectory,
   deleteAsync,
@@ -221,7 +221,7 @@ export function appendBleWorkoutSamplesToNdjsonFile(file: File, samples: BleWork
 }
 
 function appendNdjsonFileToJsonArray(sourceFile: File, destinationFile: File): void {
-  const handle = sourceFile.open();
+  const handle = sourceFile.open(FileMode.ReadOnly);
   const decoder = new TextDecoder();
   let buffer = '';
   let wroteAnySample = false;
@@ -368,7 +368,7 @@ const BLE_COMPRESS_CHUNK_BYTES = 65_536;
  * by scanning the first few chunks — no need to load the full file.
  */
 function readSampleCountFromBleFile(file: File): number {
-  const handle = file.open();
+  const handle = file.open(FileMode.ReadOnly);
   const decoder = new TextDecoder();
   let buffer = '';
 
