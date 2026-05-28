@@ -362,6 +362,7 @@
       "previewGyro": "Gyro",
       "previewWaiting": "Waiting for data...",
       "previewDisconnected": "Sensor not connected",
+      "repsRecordingButton": "Reps-opname openen",
       "recordingSettings": "Opname-instellingen",
       "generateChartPayload": "Grafiekgegevens genereren",
       "generateChartPayloadSubtitle": "Signaal- en herhalingsannotatiegegevens opnemen voor grafiekweergave na elke set"

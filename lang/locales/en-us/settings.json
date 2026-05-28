@@ -362,6 +362,7 @@
       "previewGyro": "Gyro",
       "previewWaiting": "Waiting for data...",
       "previewDisconnected": "Sensor not connected",
+      "repsRecordingButton": "Open Reps Recording",
       "recordingSettings": "Recording Settings",
       "generateChartPayload": "Generate Chart Data",
       "generateChartPayloadSubtitle": "Include signal and rep annotation data for chart display after each set"

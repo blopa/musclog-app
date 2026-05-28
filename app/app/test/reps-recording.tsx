@@ -1,13 +1,25 @@
 import type { CameraView as CameraViewType } from 'expo-camera';
-import { CameraView, useCameraPermissions } from 'expo-camera';
+import { CameraView, useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
+import { File } from 'expo-file-system';
 import { copyAsync } from 'expo-file-system/legacy';
-import { Bluetooth, Camera, Circle, Search } from 'lucide-react-native';
+import * as SecureStore from 'expo-secure-store';
+import * as Sharing from 'expo-sharing';
+import { Bluetooth, Camera, Circle, FolderLock, Search, Trash2 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { MasterLayout } from '@/components/MasterLayout';
 import { BleDevicePreviewModal } from '@/components/modals/BleDevicePreviewModal';
+import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { FullScreenModal } from '@/components/modals/FullScreenModal';
 import { Button } from '@/components/theme/Button';
 import type Exercise from '@/database/models/Exercise';
@@ -18,8 +30,11 @@ import {
   appendBleWorkoutSamplesToNdjsonFile,
   type BleWorkoutSample,
   createBleWorkoutTrackingTempFile,
+  createBleWorkoutZipFile,
+  deleteBleWorkoutArchiveFile,
   saveBleWorkoutFile,
 } from '@/utils/bleWorkoutDataStorage';
+import { requestDirectoryPermission, saveToSaf } from '@/utils/safStorage';
 import { showSnackbar } from '@/utils/snackbarService';
 import { generateUUID } from '@/utils/uuid';
 
@@ -135,6 +150,7 @@ export default function RepsRecordingScreen() {
   const wit = useWitMotion();
 
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
+  const [micPermission, requestMicPermission] = useMicrophonePermissions();
   const [isCameraEnabled, setIsCameraEnabled] = useState(false);
 
   const cameraRef = useRef<CameraViewType>(null);
@@ -154,15 +170,27 @@ export default function RepsRecordingScreen() {
   const [elapsedMs, setElapsedMs] = useState(0);
   const [isExercisePickerVisible, setIsExercisePickerVisible] = useState(false);
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
-  const [isRepsDialogVisible, setIsRepsDialogVisible] = useState(false);
-  const [repsInput, setRepsInput] = useState('');
+  const [repsInput, setRepsInput] = useState('10');
   const [isSaving, setIsSaving] = useState(false);
-  const [videoUri, setVideoUri] = useState<string | null>(null);
+  const [isSharing, setIsSharing] = useState(false);
   const [recordings, setRecordings] = useState<RecordingEntry[]>([]);
+  const [safDirectoryUri, setSafDirectoryUri] = useState<string | null>(null);
+  const [recordingPendingDelete, setRecordingPendingDelete] = useState<RecordingEntry | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     void wit.requestPermissions();
   }, [wit.requestPermissions]);
+
+  // Restore the previously-granted SAF directory URI so the user doesn't have
+  // to re-grant permission after every app restart or rebuild.
+  useEffect(() => {
+    void SecureStore.getItemAsync('reps_recording_saf_dir_uri').then((stored) => {
+      if (stored) {
+        setSafDirectoryUri(stored);
+      }
+    });
+  }, []);
 
   // Elapsed timer — independent 1s interval, no BLE involvement
   useEffect(() => {
@@ -189,8 +217,20 @@ export default function RepsRecordingScreen() {
         return;
       }
     }
+
+    if (!micPermission?.granted) {
+      const result = await requestMicPermission();
+      if (!result.granted) {
+        return;
+      }
+    }
     setIsCameraEnabled(true);
-  }, [cameraPermission?.granted, requestCameraPermission]);
+  }, [
+    cameraPermission?.granted,
+    micPermission?.granted,
+    requestCameraPermission,
+    requestMicPermission,
+  ]);
 
   const clearCapturedRecordingRefs = useCallback((deleteTempFile: boolean) => {
     const tempFile = tempFileRef.current;
@@ -221,6 +261,69 @@ export default function RepsRecordingScreen() {
     }
   }, []);
 
+  const handleRequestSafPermission = useCallback(async () => {
+    try {
+      const uri = await requestDirectoryPermission();
+      if (uri) {
+        setSafDirectoryUri(uri);
+        await SecureStore.setItemAsync('reps_recording_saf_dir_uri', uri);
+        showSnackbar('success', 'Storage permission granted');
+      }
+    } catch (err) {
+      console.error('[reps-recording] SAF permission error:', err);
+      showSnackbar('error', 'Failed to get storage permission');
+    }
+  }, []);
+
+  const handleShareSession = useCallback(async () => {
+    if (recordings.length === 0) {
+      return;
+    }
+
+    setIsSharing(true);
+    let zipUri: string | null = null;
+    try {
+      const allUris = recordings.flatMap((r) => [r.jsonUri, r.videoUri]);
+      zipUri = await createBleWorkoutZipFile(allUris);
+      await Sharing.shareAsync(zipUri, {
+        mimeType: 'application/zip',
+        dialogTitle: 'Share session recordings',
+      });
+    } catch (err) {
+      console.error('[reps-recording] share error:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      showSnackbar('error', `Share failed: ${message}`);
+    } finally {
+      if (zipUri) {
+        void deleteBleWorkoutArchiveFile(zipUri);
+      }
+      setIsSharing(false);
+    }
+  }, [recordings]);
+
+  const handleConfirmDelete = useCallback(async () => {
+    const target = recordingPendingDelete;
+    if (!target) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      for (const uri of [target.jsonUri, target.videoUri]) {
+        try {
+          new File(uri).delete();
+        } catch (err) {
+          // File may already be gone — log and continue so the row still gets removed.
+          console.warn('[reps-recording] failed to delete file', uri, err);
+        }
+      }
+      setRecordings((prev) => prev.filter((r) => r.id !== target.id));
+      setRecordingPendingDelete(null);
+    } finally {
+      setIsDeleting(false);
+    }
+  }, [recordingPendingDelete]);
+
   const handleStart = useCallback(async () => {
     if (!wit.isConnected || !selectedExercise || !cameraRef.current) {
       return;
@@ -245,6 +348,12 @@ export default function RepsRecordingScreen() {
       setIsRecording(true);
       setElapsedMs(0);
 
+      // Capture start time once outside the closure so the batch handler
+      // can drop pre-roll samples — the first batch after subscribe contains
+      // packets the native module buffered before this call ran, which would
+      // shift the chart's t=0 earlier than the video's t=0.
+      const recordingStartedAtMs = startedAtRef.current;
+
       unsubscribeBatchRef.current?.();
       unsubscribeBatchRef.current = witMotionClient.onBatch((batch) => {
         const samples: BleWorkoutSample[] = [];
@@ -252,6 +361,11 @@ export default function RepsRecordingScreen() {
           if (packet.kind !== 'motion') {
             continue;
           }
+
+          if (packet.timestamp < recordingStartedAtMs) {
+            continue;
+          }
+
           samples.push({
             timestamp: packet.timestamp,
             accel: { ...packet.accel },
@@ -259,6 +373,7 @@ export default function RepsRecordingScreen() {
             angle: { ...packet.angle },
           });
         }
+
         if (samples.length > 0) {
           sampleCountRef.current += samples.length;
           appendBleWorkoutSamplesToNdjsonFile(tempFile, samples);
@@ -279,58 +394,67 @@ export default function RepsRecordingScreen() {
     if (!recordingRef.current) {
       return;
     }
-    recordingRef.current = false;
-    stoppedAtRef.current = Date.now();
 
-    unsubscribeBatchRef.current?.();
-    unsubscribeBatchRef.current = null;
-
-    cameraRef.current?.stopRecording();
-    const result = await recordingPromiseRef.current;
-    recordingPromiseRef.current = null;
-    setIsRecording(false);
-    if (!result?.uri) {
-      setVideoUri(null);
-      clearCapturedRecordingRefs(true);
-      showSnackbar('error', 'Failed to capture video');
-      return;
-    }
-
-    setVideoUri(result.uri);
-    setRepsInput('');
-    setIsRepsDialogVisible(true);
-  }, [clearCapturedRecordingRefs]);
-
-  const handleSave = useCallback(async () => {
-    const reps = parseInt(repsInput, 10);
-    if (isNaN(reps) || reps < 0) {
-      return;
-    }
-
-    const exercise = capturedExerciseRef.current;
-    const device = capturedDeviceRef.current;
-    const tempFile = tempFileRef.current;
-    const startedAt = startedAtRef.current;
-    const stoppedAt = stoppedAtRef.current;
-    const sampleCount = sampleCountRef.current;
-
-    if (
-      !videoUri ||
-      !exercise ||
-      !device ||
-      !tempFile ||
-      startedAt === null ||
-      stoppedAt === null
-    ) {
-      showSnackbar('error', 'Missing recording data');
-      return;
-    }
-
-    setIsSaving(true);
     try {
+      setIsSaving(true);
+      recordingRef.current = false;
+      stoppedAtRef.current = Date.now();
+
+      unsubscribeBatchRef.current?.();
+      unsubscribeBatchRef.current = null;
+
+      const recordingPromise = recordingPromiseRef.current;
+      recordingPromiseRef.current = null;
+
+      if (cameraRef.current) {
+        cameraRef.current.stopRecording();
+      }
+
+      // recordAsync() can reject (device-specific camera errors) or hang without
+      // resolving (known expo-camera iOS issue, and Android backgrounding bugs).
+      // Race against a generous timeout so the UI never gets stuck.
+      let cameraError: string | null = null;
+      const result = await Promise.race([
+        recordingPromise?.catch((err: unknown) => {
+          cameraError = err instanceof Error ? err.message : String(err);
+          console.error('[reps-recording] recordAsync rejected:', err);
+          return undefined;
+        }),
+        new Promise<{ uri: string } | undefined>((resolve) =>
+          setTimeout(() => resolve(undefined), 30_000)
+        ),
+      ]);
+
+      setIsRecording(false);
+
+      if (!result?.uri) {
+        clearCapturedRecordingRefs(true);
+        const reason = cameraError ?? (result === undefined ? 'timed out' : 'no URI returned');
+        showSnackbar('error', `Camera error: ${reason}`);
+        return;
+      }
+
+      // Handle Save immediately now
+      const reps = parseInt(repsInput, 10) || 0;
+      const exercise = capturedExerciseRef.current;
+      const device = capturedDeviceRef.current;
+      const tempFile = tempFileRef.current;
+      const startedAt = startedAtRef.current;
+      const stoppedAt = stoppedAtRef.current;
+      const sampleCount = sampleCountRef.current;
+
+      if (!exercise || !device || !tempFile || startedAt === null || stoppedAt === null) {
+        showSnackbar('error', 'Missing recording data');
+        clearCapturedRecordingRefs(true);
+        return;
+      }
+
+      const sessionId = generateUUID();
+      const workoutLogId = generateUUID();
+
       const savedJsonUri = await saveBleWorkoutFile({
         version: 1,
-        workoutLogId: generateUUID(),
+        workoutLogId,
         exerciseName: exercise.name ?? '',
         muscleGroup: exercise.muscleGroup ?? '',
         equipmentType: exercise.equipmentType ?? '',
@@ -346,12 +470,26 @@ export default function RepsRecordingScreen() {
       });
 
       const savedVideoUri = savedJsonUri.replace(/\.json$/i, '.mp4');
-      await copyAsync({ from: videoUri, to: savedVideoUri });
+      await copyAsync({ from: result.uri, to: savedVideoUri });
+
+      // SAF Export
+      if (safDirectoryUri) {
+        try {
+          await saveToSaf(safDirectoryUri, sessionId, [
+            { name: 'data.json', mimeType: 'application/json', sourceUri: savedJsonUri },
+            { name: 'video.mp4', mimeType: 'video/mp4', sourceUri: savedVideoUri },
+          ]);
+        } catch (safErr) {
+          console.error('[reps-recording] SAF export error:', safErr);
+          const safMessage = safErr instanceof Error ? safErr.message : String(safErr);
+          showSnackbar('error', `Saved locally — SAF export failed: ${safMessage}`);
+        }
+      }
 
       setRecordings((prev) => [
         ...prev,
         {
-          id: savedJsonUri.slice(savedJsonUri.lastIndexOf('/') + 1).replace(/\.json$/i, ''),
+          id: sessionId,
           exerciseName: exercise.name ?? '',
           reps,
           timestamp: new Date().toISOString(),
@@ -359,24 +497,20 @@ export default function RepsRecordingScreen() {
           videoUri: savedVideoUri,
         },
       ]);
-      setIsRepsDialogVisible(false);
-      setVideoUri(null);
-      setRepsInput('');
+
       clearCapturedRecordingRefs(false);
-      showSnackbar('success', `Saved recording — ${reps} reps, ${sampleCount} samples`);
+      showSnackbar('success', `Saved — ${reps} reps, ${sampleCount} samples`);
     } catch (err) {
-      console.error('[reps-recording] save error:', err);
-      showSnackbar('error', 'Failed to save recording');
+      console.error('[reps-recording] handleStop error:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      showSnackbar('error', `Save failed: ${message}`);
+      setIsRecording(false);
+      recordingRef.current = false;
+      clearCapturedRecordingRefs(true);
     } finally {
       setIsSaving(false);
     }
-  }, [clearCapturedRecordingRefs, repsInput, videoUri]);
-
-  const handleDismissRepsDialog = useCallback(() => {
-    setIsRepsDialogVisible(false);
-    setVideoUri(null);
-    clearCapturedRecordingRefs(true);
-  }, [clearCapturedRecordingRefs]);
+  }, [clearCapturedRecordingRefs, repsInput, safDirectoryUri]);
 
   useEffect(() => {
     return () => {
@@ -403,11 +537,22 @@ export default function RepsRecordingScreen() {
         className="flex-1 bg-bg-primary"
         contentContainerStyle={{ padding: 16, gap: 16, paddingBottom: 80 }}
       >
-        <View>
-          <Text className="text-2xl font-bold text-text-primary">Reps Recording</Text>
-          <Text className="mt-1 text-xs text-text-tertiary">
-            Training data collector — BLE + video synchronized
-          </Text>
+        <View className="flex-row items-center justify-between">
+          <View>
+            <Text className="text-2xl font-bold text-text-primary">Reps Recording</Text>
+            <Text className="mt-1 text-xs text-text-tertiary">
+              Training data collector — BLE + video synchronized
+            </Text>
+          </View>
+          {Platform.OS === 'android' ? (
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={<FolderLock size={theme.iconSize.sm} color={theme.colors.text.secondary} />}
+              onPress={() => void handleRequestSafPermission()}
+              label={safDirectoryUri ? 'Permission OK' : 'Grant Permission'}
+            />
+          ) : null}
         </View>
 
         {/* BLE Sensor */}
@@ -499,12 +644,40 @@ export default function RepsRecordingScreen() {
             >
               {selectedExercise?.name ?? 'No exercise selected'}
             </Text>
-            <Button
-              label="Select Exercise"
-              size="sm"
-              variant="secondary"
-              onPress={() => setIsExercisePickerVisible(true)}
-            />
+
+            <View className="flex-row items-center gap-3">
+              <View className="flex-1">
+                <Button
+                  label="Select Exercise"
+                  size="sm"
+                  width="full"
+                  variant="secondary"
+                  onPress={() => setIsExercisePickerVisible(true)}
+                />
+              </View>
+              <View style={{ width: 80 }}>
+                <TextInput
+                  value={repsInput}
+                  onChangeText={setRepsInput}
+                  keyboardType="number-pad"
+                  placeholder="Reps"
+                  placeholderTextColor={theme.colors.text.tertiary}
+                  style={{
+                    backgroundColor: theme.colors.background.card,
+                    color: theme.colors.text.primary,
+                    borderRadius: theme.borderRadius.md,
+                    paddingHorizontal: 12,
+                    paddingVertical: 8,
+                    fontSize: 16,
+                    fontWeight: '600',
+                    textAlign: 'center',
+                    borderWidth: 1,
+                    borderColor: theme.colors.border.light,
+                    height: 36,
+                  }}
+                />
+              </View>
+            </View>
 
             {isRecording ? (
               <Button
@@ -512,6 +685,8 @@ export default function RepsRecordingScreen() {
                 size="md"
                 width="full"
                 variant="discard"
+                loading={isSaving}
+                disabled={isSaving}
                 icon={
                   <Circle
                     size={theme.iconSize.sm}
@@ -620,34 +795,55 @@ export default function RepsRecordingScreen() {
         {/* This Session */}
         <GenericCard variant="default">
           <View className="gap-2 p-4">
-            <Text className="font-semibold text-text-primary">
-              This Session ({recordings.length})
-            </Text>
+            <View className="flex-row items-center justify-between">
+              <Text className="font-semibold text-text-primary">
+                This Session ({recordings.length})
+              </Text>
+              {recordings.length > 0 ? (
+                <Button
+                  label="Share All"
+                  size="xs"
+                  variant="secondary"
+                  loading={isSharing}
+                  disabled={isSharing}
+                  onPress={() => void handleShareSession()}
+                />
+              ) : null}
+            </View>
             {recordings.length === 0 ? (
               <Text className="text-sm text-text-tertiary">No recordings yet</Text>
             ) : (
               recordings.map((r) => (
-                <View key={r.id} className="rounded-lg bg-bg-card p-3">
-                  <Text className="font-semibold text-text-primary">
-                    {r.exerciseName} — {r.reps} reps
-                  </Text>
-                  <Text className="text-xs text-text-tertiary">
-                    {new Date(r.timestamp).toLocaleTimeString()} · {r.id}
-                  </Text>
-                  <Text
-                    className="mt-1 text-xs"
-                    style={{ color: theme.colors.text.muted }}
-                    numberOfLines={1}
+                <View key={r.id} className="flex-row items-start gap-3 rounded-lg bg-bg-card p-3">
+                  <View className="flex-1">
+                    <Text className="font-semibold text-text-primary">
+                      {r.exerciseName} — {r.reps} reps
+                    </Text>
+                    <Text className="text-xs text-text-tertiary">
+                      {new Date(r.timestamp).toLocaleTimeString()} · {r.id}
+                    </Text>
+                    <Text
+                      className="mt-1 text-xs"
+                      style={{ color: theme.colors.text.muted }}
+                      numberOfLines={1}
+                    >
+                      JSON: {r.jsonUri}
+                    </Text>
+                    <Text
+                      className="mt-1 text-xs"
+                      style={{ color: theme.colors.text.muted }}
+                      numberOfLines={1}
+                    >
+                      Video: {r.videoUri}
+                    </Text>
+                  </View>
+                  <Pressable
+                    onPress={() => setRecordingPendingDelete(r)}
+                    hitSlop={8}
+                    accessibilityLabel="Delete recording"
                   >
-                    JSON: {r.jsonUri}
-                  </Text>
-                  <Text
-                    className="mt-1 text-xs"
-                    style={{ color: theme.colors.text.muted }}
-                    numberOfLines={1}
-                  >
-                    Video: {r.videoUri}
-                  </Text>
+                    <Trash2 size={theme.iconSize.md} color={theme.colors.status.error} />
+                  </Pressable>
                 </View>
               ))
             )}
@@ -666,58 +862,24 @@ export default function RepsRecordingScreen() {
         onSelect={handleExerciseSelect}
       />
 
-      <FullScreenModal
-        visible={isRepsDialogVisible}
-        onClose={handleDismissRepsDialog}
-        title="How many reps?"
-        scrollable={false}
-        footer={
-          <View className="gap-2">
-            <Button
-              label="Save"
-              size="md"
-              width="full"
-              variant="accent"
-              onPress={() => void handleSave()}
-              disabled={isSaving || !repsInput}
-              loading={isSaving}
-            />
-            <Button
-              label="Cancel"
-              size="md"
-              width="full"
-              variant="secondary"
-              onPress={handleDismissRepsDialog}
-              disabled={isSaving}
-            />
-          </View>
+      <ConfirmationModal
+        visible={recordingPendingDelete !== null}
+        onClose={() => {
+          if (!isDeleting) {
+            setRecordingPendingDelete(null);
+          }
+        }}
+        onConfirm={handleConfirmDelete}
+        title="Delete recording?"
+        message={
+          recordingPendingDelete
+            ? `This will permanently delete the JSON and video for "${recordingPendingDelete.exerciseName} — ${recordingPendingDelete.reps} reps" from your device.`
+            : ''
         }
-      >
-        <View className="flex-1 justify-center gap-6 p-6">
-          <Text className="text-center text-text-secondary">
-            {capturedExerciseName || selectedExercise?.name || ''}
-          </Text>
-          <TextInput
-            value={repsInput}
-            onChangeText={setRepsInput}
-            keyboardType="number-pad"
-            placeholder="e.g. 10"
-            placeholderTextColor={theme.colors.text.tertiary}
-            autoFocus
-            style={{
-              backgroundColor: theme.colors.background.card,
-              color: theme.colors.text.primary,
-              borderRadius: theme.borderRadius.lg,
-              padding: 14,
-              fontSize: 24,
-              fontWeight: '600',
-              textAlign: 'center',
-              borderWidth: 1,
-              borderColor: theme.colors.border.light,
-            }}
-          />
-        </View>
-      </FullScreenModal>
+        confirmLabel="Delete"
+        variant="destructive"
+        isLoading={isDeleting}
+      />
 
       <View pointerEvents="none" style={{ height: 120 }} />
     </MasterLayout>

@@ -23,7 +23,7 @@ python train.py
 
 This will:
 
-1. Load all labeled recordings from `recordings/` and `labels.csv`
+1. Load all labeled recordings from `raw-data/` and `labels.csv`
 2. Extract signal features from each JSON file
 3. Train two models (Random Forest and Gradient Boosting) and compare them
 4. Print a leave-one-out cross-validation report for both
@@ -32,7 +32,7 @@ This will:
 ## Predict on a new recording
 
 ```bash
-python predict.py recordings/deadlift.json
+python predict.py raw-data/deadlift.json
 ```
 
 ## Downloading recordings from Google Drive
@@ -41,11 +41,11 @@ python predict.py recordings/deadlift.json
 python download_recordings.py
 ```
 
-This fetches all JSON files from the shared Google Drive folder and writes them into `recordings/`, replacing any existing files with the same name. Local-only files are left untouched.
+This fetches all JSON files from the shared Google Drive folder and writes them into `raw-data/`, replacing any existing files with the same name. Local-only files are left untouched.
 
 ## Adding new recordings
 
-1. Copy the JSON file into `recordings/`
+1. Copy the JSON file into `raw-data/`
 2. Re-run `python train.py`
 
 The trainer reads `reps`, `muscleGroup`, `equipmentType`, and `mechanicType` directly from each JSON. No CSV needed. Files without a `reps` field are skipped with a warning.
