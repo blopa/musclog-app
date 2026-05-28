@@ -309,16 +309,21 @@ export default function RepsRecordingScreen() {
       unsubscribeBatchRef.current?.();
       unsubscribeBatchRef.current = null;
 
+      const recordingPromise = recordingPromiseRef.current;
+      recordingPromiseRef.current = null;
+
       if (cameraRef.current) {
         cameraRef.current.stopRecording();
       }
 
-      // Wait for the recording promise to resolve, but with a timeout just in case
-      const recordingPromise = recordingPromiseRef.current;
-      recordingPromiseRef.current = null;
-
+      // recordAsync() can reject (device-specific camera errors) or hang without
+      // resolving (known expo-camera iOS issue, and Android backgrounding bugs).
+      // Race against a generous timeout so the UI never gets stuck.
       const result = await Promise.race([
-        recordingPromise?.catch(() => undefined),
+        recordingPromise?.catch((err: unknown) => {
+          console.error('[reps-recording] recordAsync rejected:', err);
+          return undefined;
+        }),
         new Promise<{ uri: string } | undefined>((resolve) =>
           setTimeout(() => resolve(undefined), 30_000)
         ),
@@ -328,7 +333,7 @@ export default function RepsRecordingScreen() {
 
       if (!result?.uri) {
         clearCapturedRecordingRefs(true);
-        showSnackbar('error', 'Failed to capture video');
+        showSnackbar('error', 'Camera returned no video — try again');
         return;
       }
 
@@ -389,7 +394,8 @@ export default function RepsRecordingScreen() {
           ]);
         } catch (safErr) {
           console.error('[reps-recording] SAF export error:', safErr);
-          showSnackbar('error', 'Saved locally but failed to export to musclog folder');
+          const safMessage = safErr instanceof Error ? safErr.message : String(safErr);
+          showSnackbar('error', `Saved locally — SAF export failed: ${safMessage}`);
         }
       }
 
@@ -409,9 +415,11 @@ export default function RepsRecordingScreen() {
       showSnackbar('success', `Saved — ${reps} reps, ${sampleCount} samples`);
     } catch (err) {
       console.error('[reps-recording] handleStop error:', err);
-      showSnackbar('error', 'Failed to stop or save recording');
+      const message = err instanceof Error ? err.message : String(err);
+      showSnackbar('error', `Save failed: ${message}`);
       setIsRecording(false);
       recordingRef.current = false;
+      clearCapturedRecordingRefs(true);
     } finally {
       setIsSaving(false);
     }
