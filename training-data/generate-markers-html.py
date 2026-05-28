@@ -3,10 +3,13 @@
 Generate interactive HTML pages for manually annotating rep boundaries.
 
 For each recording in raw-data/*.json:
-  1. Plots all 9 raw sensor channels (accel/gyro/angle × x/y/z).
-  2. Generates a standalone HTML page with an interactive chart.
-  3. Use the legend to toggle channels on/off; click to mark rep start/end.
-  4. Download buttons export repMarkers JSON or the full updated JSON.
+  1. Computes world-frame position (X/Y/Z, metres) by dead-reckoning the IMU
+     samples with ZUPT drift correction (see ble_dead_reckoning.py).
+  2. Plots the 3 position channels by default + 9 raw sensor channels available
+     via the legend toggle.
+  3. Generates a standalone HTML page with an interactive chart.
+  4. Use the legend to toggle channels on/off; click to mark rep start/end.
+  5. Download buttons export repMarkers JSON or the full updated JSON.
 
 Output:
     output/markers/<recording_name>.html   — one interactive page per recording
@@ -24,6 +27,7 @@ from pathlib import Path
 import numpy as np
 
 from train import RECORDINGS_DIR, OUTPUT_DIR
+from ble_dead_reckoning import compute_position
 
 MARKERS_DIR = OUTPUT_DIR / "markers"
 MARKERS_DIR.mkdir(exist_ok=True)
@@ -134,12 +138,16 @@ var layout = {
   legend: { orientation: 'h', y: -0.18 },
 };
 
-// One trace per raw channel — toggle with the legend.
-// Defaults: angle.{x,y,z} visible; accel/gyro hidden but available.
+// One trace per channel — toggle with the legend.
+// Defaults: dead-reckoned world-frame position (X/Y/Z metres) visible;
+// raw accel/gyro/angle hidden but available.
 var CHANNEL_ORDER = [
-  ['angle.x', '#f97316', true],
-  ['angle.y', '#fbbf24', true],
-  ['angle.z', '#a3e635', true],
+  ['pos.x (m)', '#f97316', true],
+  ['pos.y (m)', '#fbbf24', true],
+  ['pos.z (m)', '#a3e635', true],
+  ['angle.x', '#fb923c', 'legendonly'],
+  ['angle.y', '#facc15', 'legendonly'],
+  ['angle.z', '#84cc16', 'legendonly'],
   ['accel.x', '#60a5fa', 'legendonly'],
   ['accel.y', '#818cf8', 'legendonly'],
   ['accel.z', '#a78bfa', 'legendonly'],
@@ -350,27 +358,39 @@ def generate_html(path: Path) -> dict:
     # so without sorting Plotly would draw small visual zig-zags between adjacent
     # samples. This is a display-only sort; the raw values themselves are untouched.
     samples_sorted = sorted(samples, key=lambda s: s["timestamp"])
-    timestamps_full = np.array([s["timestamp"] for s in samples_sorted], dtype=float)
 
     existing_markers = data.get("repMarkers", [])
+
+    # Run the full dead-reckoning pipeline on every sample (need full sample rate
+    # for accurate integration), then downsample the result for the chart.
+    dr = compute_position(samples_sorted)
+    timestamps_full = dr["timestamps_ms"]
+    position_full   = dr["position_m"]   # (N, 3)
 
     # Downsample to at most 4000 points for reasonable HTML file size while
     # keeping enough resolution to click accurately on rep boundaries.
     MAX_POINTS = 4000
     if len(samples_sorted) > MAX_POINTS:
-        idx = np.round(np.linspace(0, len(samples_sorted) - 1, MAX_POINTS)).astype(int)
-        samples_keep = [samples_sorted[i] for i in idx]
-        timestamps = timestamps_full[idx]
+        idx           = np.round(np.linspace(0, len(samples_sorted) - 1, MAX_POINTS)).astype(int)
+        samples_keep  = [samples_sorted[i] for i in idx]
+        timestamps    = timestamps_full[idx]
+        position_keep = position_full[idx]
     else:
-        samples_keep = samples_sorted
-        timestamps = timestamps_full
+        samples_keep  = samples_sorted
+        timestamps    = timestamps_full
+        position_keep = position_full
 
-    # Extract each raw channel — no filter, no smoothing, no projection.
+    # Channels for the chart: dead-reckoned position + all raw sensor axes.
     channels = {
-        f"{kind}.{axis}": [round(float(s[kind][axis]), 6) for s in samples_keep]
-        for kind in ("accel", "gyro", "angle")
-        for axis in ("x", "y", "z")
+        "pos.x (m)": [round(float(v), 6) for v in position_keep[:, 0]],
+        "pos.y (m)": [round(float(v), 6) for v in position_keep[:, 1]],
+        "pos.z (m)": [round(float(v), 6) for v in position_keep[:, 2]],
     }
+    for kind in ("accel", "gyro", "angle"):
+        for axis in ("x", "y", "z"):
+            channels[f"{kind}.{axis}"] = [
+                round(float(s[kind][axis]), 6) for s in samples_keep
+            ]
 
     ts_list = [round(float(t), 1) for t in timestamps]
 
