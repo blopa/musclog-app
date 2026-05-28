@@ -79,6 +79,7 @@ TEMPLATE = """\
   .del-btn { color: #f87171; cursor: pointer; background: none; border: none; font-size: 15px; padding: 0 2px; line-height: 1; }
   a.back { display: inline-block; margin-bottom: 12px; font-size: 12px; color: #4b7bec; text-decoration: none; }
   a.back:hover { text-decoration: underline; }
+  #timing-warning { display: none; background: #451a03; border: 1px solid #92400e; color: #fdba74; border-radius: 6px; padding: 8px 12px; font-size: 13px; margin-bottom: 12px; }
 </style>
 </head>
 <body>
@@ -86,6 +87,7 @@ TEMPLATE = """\
 <a class="back" href="../index.html">← back to recordings</a>
 <h1>__TITLE__</h1>
 <div class="meta">__META__</div>
+<div id="timing-warning"></div>
 
 <div class="top-row">
   <div class="video-wrap">
@@ -123,11 +125,12 @@ TEMPLATE = """\
 </table>
 
 <script>
-const TIMESTAMPS    = __TIMESTAMPS__;
-const SIGNAL        = __SIGNAL__;
-const FILENAME      = __FILENAME__;
-const RAW_DATA      = __RAW_DATA__;
-const EXPECTED_REPS = __EXPECTED_REPS__;
+const TIMESTAMPS      = __TIMESTAMPS__;
+const SIGNAL          = __SIGNAL__;
+const FILENAME        = __FILENAME__;
+const RAW_DATA        = __RAW_DATA__;
+const EXPECTED_REPS   = __EXPECTED_REPS__;
+const DATA_DURATION_S = __DATA_DURATION_S__;
 
 let markers = __EXISTING_MARKERS__;
 
@@ -201,6 +204,23 @@ document.getElementById('chart').on('plotly_click', function(data) {
   const xSec = data.points[0].x;
   video.currentTime = Math.max(0, xSec);
   video.pause();
+});
+
+// Timing mismatch warning
+video.addEventListener('loadedmetadata', function() {
+  const videoDur = video.duration;
+  const diff = Math.abs(videoDur - DATA_DURATION_S);
+  const pct  = diff / Math.max(videoDur, DATA_DURATION_S) * 100;
+  if (diff > 0.5 && pct > 3) {
+    const longer  = videoDur > DATA_DURATION_S ? 'video' : 'sensor data';
+    const shorter = videoDur > DATA_DURATION_S ? 'sensor data' : 'video';
+    const warn    = document.getElementById('timing-warning');
+    warn.textContent = '⚠️ Timing mismatch: '
+      + longer  + ' is ' + diff.toFixed(2) + 's longer than ' + shorter
+      + ' (video: ' + videoDur.toFixed(2) + 's, sensor data: ' + DATA_DURATION_S.toFixed(2) + 's). '
+      + 'Chart x-axis is based on sensor timestamps — video position may drift from the signal over time.';
+    warn.style.display = 'block';
+  }
 });
 
 // Video timeupdate → move orange cursor on chart (~20 fps throttle)
@@ -422,8 +442,9 @@ def generate_html(folder: Path) -> dict:
         signal_1d  = signal_1d[idx]
         timestamps = timestamps[idx]
 
-    ts_list  = [round(float(t), 1) for t in timestamps]
-    sig_list = [round(float(v), 6) for v in signal_1d]
+    ts_list       = [round(float(t), 1) for t in timestamps]
+    sig_list      = [round(float(v), 6) for v in signal_1d]
+    data_duration = round((timestamps[-1] - timestamps[0]) / 1000.0, 3)
 
     title = json_path.name
     meta  = _meta_str(data)
@@ -438,6 +459,7 @@ def generate_html(folder: Path) -> dict:
     html = html.replace("__FILENAME__",         json.dumps(json_path.name))
     html = html.replace("__RAW_DATA__",         json.dumps(data))
     html = html.replace("__EXISTING_MARKERS__", json.dumps(existing_markers))
+    html = html.replace("__DATA_DURATION_S__",  str(data_duration))
 
     out_path = folder / "index.html"
     out_path.write_text(html, encoding="utf-8")
