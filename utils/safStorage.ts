@@ -13,7 +13,9 @@ function streamCopyToSaf(sourceUri: string, safDestUri: string): void {
   try {
     while (true) {
       const chunk = sourceHandle.readBytes(SAF_COPY_CHUNK_BYTES);
-      if (chunk.length === 0) break;
+      if (chunk.length === 0) {
+        break;
+      }
       destHandle.writeBytes(chunk);
     }
   } finally {

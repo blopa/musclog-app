@@ -2,6 +2,7 @@ import type { CameraView as CameraViewType } from 'expo-camera';
 import { CameraView, useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
 import { copyAsync } from 'expo-file-system/legacy';
 import * as SecureStore from 'expo-secure-store';
+import * as Sharing from 'expo-sharing';
 import { Bluetooth, Camera, Circle, FolderLock, Search } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -27,6 +28,8 @@ import {
   appendBleWorkoutSamplesToNdjsonFile,
   type BleWorkoutSample,
   createBleWorkoutTrackingTempFile,
+  createBleWorkoutZipFile,
+  deleteBleWorkoutArchiveFile,
   saveBleWorkoutFile,
 } from '@/utils/bleWorkoutDataStorage';
 import { requestDirectoryPermission, saveToSaf } from '@/utils/safStorage';
@@ -167,6 +170,7 @@ export default function RepsRecordingScreen() {
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
   const [repsInput, setRepsInput] = useState('10');
   const [isSaving, setIsSaving] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
   const [recordings, setRecordings] = useState<RecordingEntry[]>([]);
   const [safDirectoryUri, setSafDirectoryUri] = useState<string | null>(null);
 
@@ -178,7 +182,9 @@ export default function RepsRecordingScreen() {
   // to re-grant permission after every app restart or rebuild.
   useEffect(() => {
     void SecureStore.getItemAsync('reps_recording_saf_dir_uri').then((stored) => {
-      if (stored) setSafDirectoryUri(stored);
+      if (stored) {
+        setSafDirectoryUri(stored);
+      }
     });
   }, []);
 
@@ -264,6 +270,32 @@ export default function RepsRecordingScreen() {
       showSnackbar('error', 'Failed to get storage permission');
     }
   }, []);
+
+  const handleShareSession = useCallback(async () => {
+    if (recordings.length === 0) {
+      return;
+    }
+
+    setIsSharing(true);
+    let zipUri: string | null = null;
+    try {
+      const allUris = recordings.flatMap((r) => [r.jsonUri, r.videoUri]);
+      zipUri = await createBleWorkoutZipFile(allUris);
+      await Sharing.shareAsync(zipUri, {
+        mimeType: 'application/zip',
+        dialogTitle: 'Share session recordings',
+      });
+    } catch (err) {
+      console.error('[reps-recording] share error:', err);
+      const message = err instanceof Error ? err.message : String(err);
+      showSnackbar('error', `Share failed: ${message}`);
+    } finally {
+      if (zipUri) {
+        void deleteBleWorkoutArchiveFile(zipUri);
+      }
+      setIsSharing(false);
+    }
+  }, [recordings]);
 
   const handleStart = useCallback(async () => {
     if (!wit.isConnected || !selectedExercise || !cameraRef.current) {
@@ -734,9 +766,21 @@ export default function RepsRecordingScreen() {
         {/* This Session */}
         <GenericCard variant="default">
           <View className="gap-2 p-4">
-            <Text className="font-semibold text-text-primary">
-              This Session ({recordings.length})
-            </Text>
+            <View className="flex-row items-center justify-between">
+              <Text className="font-semibold text-text-primary">
+                This Session ({recordings.length})
+              </Text>
+              {recordings.length > 0 ? (
+                <Button
+                  label="Share All"
+                  size="xs"
+                  variant="secondary"
+                  loading={isSharing}
+                  disabled={isSharing}
+                  onPress={() => void handleShareSession()}
+                />
+              ) : null}
+            </View>
             {recordings.length === 0 ? (
               <Text className="text-sm text-text-tertiary">No recordings yet</Text>
             ) : (
