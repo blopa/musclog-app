@@ -1,6 +1,7 @@
 import type { CameraView as CameraViewType } from 'expo-camera';
 import { CameraView, useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
 import { copyAsync } from 'expo-file-system/legacy';
+import * as SecureStore from 'expo-secure-store';
 import { Bluetooth, Camera, Circle, FolderLock, Search } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -173,6 +174,14 @@ export default function RepsRecordingScreen() {
     void wit.requestPermissions();
   }, [wit.requestPermissions]);
 
+  // Restore the previously-granted SAF directory URI so the user doesn't have
+  // to re-grant permission after every app restart or rebuild.
+  useEffect(() => {
+    void SecureStore.getItemAsync('reps_recording_saf_dir_uri').then((stored) => {
+      if (stored) setSafDirectoryUri(stored);
+    });
+  }, []);
+
   // Elapsed timer — independent 1s interval, no BLE involvement
   useEffect(() => {
     if (!isRecording) {
@@ -247,6 +256,7 @@ export default function RepsRecordingScreen() {
       const uri = await requestDirectoryPermission();
       if (uri) {
         setSafDirectoryUri(uri);
+        await SecureStore.setItemAsync('reps_recording_saf_dir_uri', uri);
         showSnackbar('success', 'Storage permission granted');
       }
     } catch (err) {

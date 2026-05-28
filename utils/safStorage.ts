@@ -1,5 +1,26 @@
+import { File, FileMode } from 'expo-file-system';
 import { EncodingType, readAsStringAsync, StorageAccessFramework } from 'expo-file-system/legacy';
 import { Platform } from 'react-native';
+
+const SAF_COPY_CHUNK_BYTES = 1024 * 1024; // 1 MB per chunk — no full-file load into memory
+
+// Streams a file:// source into an already-created SAF content:// destination.
+// The new FileHandle API routes SAF document URIs through ContentResolver so both
+// ends can be driven with readBytes/writeBytes without allocating the whole file.
+function streamCopyToSaf(sourceUri: string, safDestUri: string): void {
+  const sourceHandle = new File(sourceUri).open(FileMode.ReadOnly);
+  const destHandle = new File(safDestUri).open(FileMode.WriteOnly);
+  try {
+    while (true) {
+      const chunk = sourceHandle.readBytes(SAF_COPY_CHUNK_BYTES);
+      if (chunk.length === 0) break;
+      destHandle.writeBytes(chunk);
+    }
+  } finally {
+    sourceHandle.close();
+    destHandle.close();
+  }
+}
 
 export async function requestDirectoryPermission() {
   if (Platform.OS !== 'android') {
@@ -13,7 +34,7 @@ export async function requestDirectoryPermission() {
     }
   } catch (err) {
     console.error('[safStorage] requestDirectoryPermission error:', err);
-    throw err; // Re-throw so the caller can show the error snackbar
+    throw err;
   }
   return null;
 }
@@ -33,7 +54,6 @@ export async function saveToSaf(
     return null;
   }
 
-  // 1. Create the session folder
   const sessionDirUri = await StorageAccessFramework.makeDirectoryAsync(directoryUri, folderName);
 
   for (const file of files) {
@@ -49,14 +69,17 @@ export async function saveToSaf(
           encoding: EncodingType.UTF8,
         });
       } else if (file.sourceUri) {
-        const encoding = file.isBinary ? EncodingType.Base64 : EncodingType.UTF8;
-        const content = await readAsStringAsync(file.sourceUri, { encoding });
-        await StorageAccessFramework.writeAsStringAsync(fileUri, content, { encoding });
+        if (file.isBinary) {
+          streamCopyToSaf(file.sourceUri, fileUri);
+        } else {
+          const content = await readAsStringAsync(file.sourceUri, { encoding: EncodingType.UTF8 });
+          await StorageAccessFramework.writeAsStringAsync(fileUri, content, {
+            encoding: EncodingType.UTF8,
+          });
+        }
       }
     } catch (err) {
       console.error(`[safStorage] Failed to save file ${file.name}:`, err);
-      // Continue with other files if one fails? Or throw?
-      // Let's throw for now to be safe
       throw err;
     }
   }
