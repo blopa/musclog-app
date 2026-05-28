@@ -775,7 +775,7 @@ def main() -> None:
     for rec_name in recordings:
         print(f"  {rec_name} … ", end="", flush=True)
 
-        rec_path = ROOT / "recordings" / rec_name
+        rec_path = ROOT / "raw-data" / rec_name
         orig_file_kb = rec_path.stat().st_size / 1024
         with open(rec_path) as f:
             data = json.load(f)

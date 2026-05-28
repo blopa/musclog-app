@@ -1,5 +1,5 @@
 # Vendored Python virtualenv used for training data helpers
 training-data/.venv
-training-data/recordings/
+training-data/raw-data/
 training-data/output/model.js
 utils/repCountingModel.js

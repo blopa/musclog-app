@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Download all JSON files from the shared Google Drive folder into recordings/."""
+"""Download all JSON files from the shared Google Drive folder into raw-data/."""
 
 import os
 import shutil
@@ -9,7 +9,7 @@ import gdown
 
 FOLDER_ID = "1dtBGDm68UXQWdFa_P_ZU30_Tdffl4MEE"
 FOLDER_URL = f"https://drive.google.com/drive/folders/{FOLDER_ID}"
-DEST_DIR = os.path.join(os.path.dirname(__file__), "recordings")
+DEST_DIR = os.path.join(os.path.dirname(__file__), "raw-data")
 
 
 def main():

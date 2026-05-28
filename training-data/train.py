@@ -21,7 +21,7 @@ Usage:
     python train.py
 
 Input:
-    recordings/*.json  — motion recordings with a 'reps' field
+    raw-data/*.json  — motion recordings with a 'reps' field
 
 Output:
     output/features.csv  — per-segment feature matrix (for inspection)
@@ -54,7 +54,7 @@ import m2cgen as m2c
 # Paths
 # ---------------------------------------------------------------------------
 ROOT           = Path(__file__).parent
-RECORDINGS_DIR = ROOT / "recordings"
+RECORDINGS_DIR = ROOT / "raw-data"
 OUTPUT_DIR     = ROOT / "output"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
@@ -621,7 +621,7 @@ def main() -> None:
     df, skipped_under_list = build_segment_dataset()
 
     if len(df) == 0:
-        sys.exit("No segments generated. Check that recordings/*.json have a 'reps' field.")
+        sys.exit("No segments generated. Check that raw-data/*.json have a 'reps' field.")
 
     n_recs  = df["recording_id"].nunique()
     n_rep   = int((df["is_rep"] == 1).sum())

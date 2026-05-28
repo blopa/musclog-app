@@ -15,7 +15,7 @@ Full pipeline:
 No additional labels are needed beyond what was used for training.
 
 Usage:
-    python predict.py recordings/deadlift.json
+    python predict.py raw-data/deadlift.json
     python predict.py /path/to/any_recording.json  [--json]
 
 Add --json to print the full result as JSON.

@@ -2,7 +2,7 @@
 """
 Generate interactive HTML pages for manually annotating rep boundaries.
 
-For each recording in recordings/*.json:
+For each recording in raw-data/*.json:
   1. Extracts the same 1D canonical signal that train.py uses.
   2. Generates a standalone HTML page with an interactive chart.
   3. The chart lets you click to mark rep start/end boundaries.
@@ -416,7 +416,7 @@ def generate_index(summaries: list) -> None:
 </head>
 <body>
 <h1>Rep Marker Index</h1>
-<p>Click a recording to open its marker editor. Download the full updated JSON and replace the original file in recordings/.</p>
+<p>Click a recording to open its marker editor. Download the full updated JSON and replace the original file in raw-data/.</p>
 <table>
   <thead><tr><th>Recording</th><th>Info</th><th>Reps</th><th>Markers</th></tr></thead>
   <tbody>{''.join(rows)}</tbody>
