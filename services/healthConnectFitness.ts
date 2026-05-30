@@ -5,7 +5,6 @@
  * Sync behaviour per record type:
  *  - New HC record (externalId not in local DB) → create UserMetric with externalId
  *  - Existing HC record (externalId found locally) → update if value changed
- *  - Local HC-sourced record whose externalId is gone from HC window → soft-delete
  *  - Local user-entered records (external_id IS NULL) → never touched
  */
 
@@ -29,6 +28,7 @@ import { healthConnectService } from './healthConnect';
 import { RETRY_CONFIG } from './healthConnectErrors';
 import {
   DataValidator,
+  HC_TO_APP_METRIC_MAP,
   HealthDataTransformer,
   HeightConverter,
   MetricType,
@@ -277,13 +277,29 @@ async function syncDailySteps(timeRange: {
 }): Promise<Pick<FitnessSyncCounts, 'totalRead' | 'written' | 'updated'>> {
   const counts = { totalRead: 0, written: 0, updated: 0 };
 
-  const hcResult = await healthConnectService.readRecords('Steps', {
-    operator: 'between',
+  const stepsTimeRangeFilter = {
+    operator: 'between' as const,
     startTime: TimestampConverter.unixToIso(timeRange.startTime),
     endTime: TimestampConverter.unixToIso(timeRange.endTime),
-  });
+  };
+  const STEPS_MAX_PAGES = 100;
+  const allHcRecords: any[] = [];
+  let stepsPageToken: string | undefined;
+  let stepsPageCount = 0;
+  let stepsResult = await healthConnectService.readRecords('Steps', stepsTimeRangeFilter);
 
-  const hcRecords = hcResult.records ?? [];
+  do {
+    allHcRecords.push(...(stepsResult.records ?? []));
+    stepsPageToken = stepsResult.pageToken;
+    stepsPageCount++;
+    if (stepsPageToken && stepsPageCount < STEPS_MAX_PAGES) {
+      stepsResult = await healthConnectService.readRecords('Steps', stepsTimeRangeFilter, {
+        pageToken: stepsPageToken,
+      });
+    }
+  } while (stepsPageToken && stepsPageCount < STEPS_MAX_PAGES);
+
+  const hcRecords = allHcRecords;
   counts.totalRead = hcRecords.length;
 
   // Aggregate step counts by local calendar day (midnight ms)
@@ -403,31 +419,32 @@ async function syncOneMetricType(
     skipped: 0,
   };
 
-  // 1. Read from Health Connect with paging
-  const hcRecords: any[] = [];
+  // 1. Read from Health Connect (paginated – HC returns max 1000 per call)
+  const timeRangeFilter = {
+    operator: 'between' as const,
+    startTime: TimestampConverter.unixToIso(timeRange.startTime),
+    endTime: TimestampConverter.unixToIso(timeRange.endTime),
+  };
+  const MAX_PAGES = 100;
+  const allHcRecords: any[] = [];
   let pageToken: string | undefined;
+  let pageCount = 0;
+  let hcResult = await healthConnectService.readRecords(hcType, timeRangeFilter);
 
   do {
-    const hcResult = await healthConnectService.readRecords(hcType, {
-      operator: 'between',
-      startTime: TimestampConverter.unixToIso(timeRange.startTime),
-      endTime: TimestampConverter.unixToIso(timeRange.endTime),
-      // @ts-ignore
-      pageToken,
-    });
-
-    if (hcResult.records) {
-      hcRecords.push(...hcResult.records);
+    allHcRecords.push(...(hcResult.records ?? []));
+    pageToken = hcResult.pageToken;
+    pageCount++;
+    if (pageToken && pageCount < MAX_PAGES) {
+      hcResult = await healthConnectService.readRecords(hcType, timeRangeFilter, { pageToken });
     }
-    // @ts-ignore
-    pageToken = hcResult.nextPageToken;
-  } while (pageToken);
+  } while (pageToken && pageCount < MAX_PAGES);
 
-  counts.totalRead = hcRecords.length;
+  counts.totalRead = allHcRecords.length;
 
   // 2. Transform + validate → Map<externalId, TransformedMetric>
   const hcMap = new Map<string, TransformedMetric>();
-  for (const hcRecord of hcRecords) {
+  for (const hcRecord of allHcRecords) {
     try {
       const transformed = transformer(hcRecord);
       if (!skipValidation) {
@@ -445,22 +462,25 @@ async function syncOneMetricType(
     }
   }
 
-  if (hcMap.size === 0 && hcRecords.length === 0) {
-    // Nothing from HC in this window – still need to delete orphans below
+  // 3. Load local HC-sourced metrics for this type in the window.
+  // Use HC_TO_APP_METRIC_MAP so the query works even when hcMap is empty
+  // (avoids the Q.oneOf([]) invalid-SQL crash).
+  const expectedMetricType = HC_TO_APP_METRIC_MAP[hcType as string];
+  if (!expectedMetricType) {
+    return counts;
   }
 
-  // 3. Load local HC-sourced metrics for this type in the window
   const localMetrics = await database
     .get<UserMetric>('user_metrics')
     .query(
-      Q.where('type', Q.oneOf(Array.from(new Set([...hcMap.values()].map((r) => r.type))))),
+      Q.where('type', expectedMetricType as string),
+      Q.where('external_id', Q.notEq(null)),
       Q.where('deleted_at', Q.eq(null)),
       Q.where('date', Q.gte(timeRange.startTime)),
       Q.where('date', Q.lte(timeRange.endTime))
     )
     .fetch();
 
-  // Separate HC-sourced (have externalId) from user-entered (no externalId)
   const localByExternalId = new Map<string, UserMetric>();
   for (const m of localMetrics) {
     if (m.externalId) {
@@ -468,9 +488,11 @@ async function syncOneMetricType(
     }
   }
 
+  const HC_INDEXING_GRACE_MS = 30 * 60 * 1000; // 30 min — newly-written records may not be indexed yet
+
   // 4. Reconcile in a single write transaction
+  const now = Date.now();
   await database.write(async () => {
-    const now = Date.now();
 
     for (const [externalId, record] of hcMap.entries()) {
       const existing = localByExternalId.get(externalId);
@@ -514,10 +536,25 @@ async function syncOneMetricType(
       }
     }
 
-    // [DATA LOSS PREVENTION]
-    // We NO LONGER soft-delete local records just because they are missing from the
-    // current HC sync window. An incomplete response (e.g. paging issues or transient API errors)
-    // could wipe user history.
+    // Soft-delete local HC-sourced metrics no longer present in HC.
+    // Two guards before deleting:
+    //  1. HC must have returned at least one record — an empty response is suspicious
+    //     (permissions revoked mid-sync, transient HC error) and should not wipe local data.
+    //  2. Grace period — records created recently may not be indexed by HC yet.
+    if (allHcRecords.length > 0) {
+      for (const [localExternalId, localMetric] of localByExternalId.entries()) {
+        if (!hcMap.has(localExternalId)) {
+          if (now - (localMetric.createdAt ?? 0) < HC_INDEXING_GRACE_MS) {
+            continue;
+          }
+          await localMetric.update((m) => {
+            m.deletedAt = now;
+            m.updatedAt = now;
+          });
+          counts.deleted++;
+        }
+      }
+    }
   });
 
   return counts;

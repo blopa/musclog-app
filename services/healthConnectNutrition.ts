@@ -14,7 +14,7 @@
  * Sync behaviour:
  *  - New HC record → create NutritionLog (+ sentinel Food if needed)
  *  - Existing HC record, data changed → update snapshot + updated_at
- *  - Local HC-sourced log not in HC response for the window → soft-delete
+ *  - Local user-entered logs (external_id IS NULL) → never touched
  */
 
 import { Q } from '@nozbe/watermelondb';
@@ -276,27 +276,30 @@ async function syncNutritionOnce(timeRange: {
     skipped: 0,
   };
 
-  // 1. Read from Health Connect with paging
-  const hcRecords: any[] = [];
+  // 1. Read from Health Connect (paginated – HC returns max 1000 per call)
+  const timeRangeFilter = {
+    operator: 'between' as const,
+    startTime: TimestampConverter.unixToIso(timeRange.startTime),
+    endTime: TimestampConverter.unixToIso(timeRange.endTime),
+  };
+  const MAX_PAGES = 100;
+  const allHcRecords: any[] = [];
   let pageToken: string | undefined;
+  let pageCount = 0;
+  let hcResult = await healthConnectService.readRecords('Nutrition', timeRangeFilter);
 
   do {
-    const hcResult = await healthConnectService.readRecords('Nutrition', {
-      operator: 'between',
-      startTime: TimestampConverter.unixToIso(timeRange.startTime),
-      endTime: TimestampConverter.unixToIso(timeRange.endTime),
-      // @ts-ignore - react-native-health-connect supports pageToken but it's not in the TS definitions yet
-      pageToken,
-    });
-
-    if (hcResult.records) {
-      hcRecords.push(...hcResult.records);
+    allHcRecords.push(...(hcResult.records ?? []));
+    pageToken = hcResult.pageToken;
+    pageCount++;
+    if (pageToken && pageCount < MAX_PAGES) {
+      hcResult = await healthConnectService.readRecords('Nutrition', timeRangeFilter, {
+        pageToken,
+      });
     }
-    // @ts-ignore
-    pageToken = hcResult.nextPageToken;
-  } while (pageToken);
+  } while (pageToken && pageCount < MAX_PAGES);
 
-  counts.totalRead = hcRecords.length;
+  counts.totalRead = allHcRecords.length;
 
   // 2. Build map of HC records keyed by externalId
   type HCNutritionEntry = {
@@ -312,7 +315,7 @@ async function syncNutritionOnce(timeRange: {
   };
 
   const hcMap = new Map<string, HCNutritionEntry>();
-  for (const rec of hcRecords) {
+  for (const rec of allHcRecords) {
     const externalId: string | undefined = rec.metadata?.id;
     if (!externalId) {
       counts.skipped++;
@@ -350,6 +353,8 @@ async function syncNutritionOnce(timeRange: {
   }
 
   // 4. Reconcile in a single write transaction
+  const HC_INDEXING_GRACE_MS = 30 * 60 * 1000;
+
   await database.write(async () => {
     const now = Date.now();
     const sentinelFood = await getOrCreateSentinelFood();
@@ -396,7 +401,7 @@ async function syncNutritionOnce(timeRange: {
           Math.abs((snapshot.loggedFiber ?? 0) - entry.fiber) > 0.01 ||
           existing.type !== entry.mealType ||
           existing.date !== entry.date ||
-          existing.amount !== 100; // Also reset amount if it was mutated locally (fix for macro doubling)
+          existing.amount !== 100;
 
         if (changed) {
           const encrypted = await encryptNutritionLogSnapshot({
@@ -411,7 +416,7 @@ async function syncNutritionOnce(timeRange: {
           await existing.update((log) => {
             log.date = entry.date;
             log.type = entry.mealType;
-            log.amount = 100; // Force normalization to grams for HC-sourced logs (fix for macro doubling)
+            log.amount = 100;
             log.loggedFoodNameRaw = encrypted.loggedFoodName;
             log.loggedCaloriesRaw = encrypted.loggedCalories;
             log.loggedProteinRaw = encrypted.loggedProtein;
@@ -426,11 +431,25 @@ async function syncNutritionOnce(timeRange: {
       }
     }
 
-    // [DATA LOSS PREVENTION]
-    // We NO LONGER soft-delete local records just because they are missing from the
-    // current HC sync window. An incomplete response (e.g. paging issues or transient API errors)
-    // could wipe user history. If we really need deletion sync in the future, we should
-    // use the explicit HC Changes API instead.
+    // Soft-delete local HC-sourced logs no longer present in HC.
+    // Two guards before deleting:
+    //  1. HC must have returned at least one record — an empty response is suspicious
+    //     (permissions revoked mid-sync, transient HC error) and should not wipe local data.
+    //  2. Grace period — records created recently may not be indexed by HC yet.
+    if (allHcRecords.length > 0) {
+      for (const [localExternalId, localLog] of localByExternalId.entries()) {
+        if (!hcMap.has(localExternalId)) {
+          if (now - (localLog.createdAt ?? 0) < HC_INDEXING_GRACE_MS) {
+            continue;
+          }
+          await localLog.update((log) => {
+            log.deletedAt = now;
+            log.updatedAt = now;
+          });
+          counts.deleted++;
+        }
+      }
+    }
   });
 
   return counts;

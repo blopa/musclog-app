@@ -7,7 +7,12 @@ import {
 import { database } from '@/database';
 import Setting from '@/database/models/Setting';
 import i18n from '@/lang/lang';
-import { localDayClosedRangeMaxMs, localDayStartMs } from '@/utils/calendarDate';
+import {
+  localCalendarDayDateFromDayKeyMs,
+  localDayClosedRangeMaxMs,
+  localDayKeyPlusCalendarDaysFromNow,
+  localDayStartMs,
+} from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 
 import { healthConnectService } from './healthConnect';
@@ -227,13 +232,15 @@ class HealthDataSyncService {
         );
       }
 
-      // Calculate time range - align with local midnight to avoid record slippage
+      // Calculate time range aligned to local calendar day boundaries (DST-safe)
       const now = new Date();
-      const endTime = localDayClosedRangeMaxMs(now);
-      const startTimeMs = localDayStartMs(
-        new Date(now.getTime() - lookbackDays * 24 * 60 * 60 * 1000)
+      const startCal = localCalendarDayDateFromDayKeyMs(
+        localDayKeyPlusCalendarDaysFromNow(-lookbackDays)
       );
-      const timeRange = { startTime: startTimeMs, endTime };
+      const timeRange = {
+        startTime: localDayStartMs(startCal),
+        endTime: localDayClosedRangeMaxMs(now),
+      };
 
       // Sync fitness metrics (Height, Weight, BodyFat, etc.)
       try {

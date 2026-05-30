@@ -33,10 +33,11 @@ During the investigation, a secondary data corruption bug was found:
 
 The following fixes have been implemented to restore data integrity and prevent future loss:
 
-1.  **Data Retention Priority**: The auto-deletion loop has been removed from all sync services. Musclog now favors data retention over absolute parity. If a record is missing from a sync response, it is ignored rather than deleted.
-2.  **Full Paging Implementation**: Both nutrition and fitness sync on Android now utilize a `do...while` loop with `pageToken` to ensure 100% of records are retrieved from Health Connect.
-3.  **Amount Normalization**: Synced updates now force the `amount` field to 100g, ensuring that snapshots containing absolute values are correctly interpreted without double-scaling.
-4.  **Sync Window Alignment**: Sync windows are now strictly aligned to local midnight (`localDayStartMs` to `localDayClosedRangeMaxMs`) to prevent record slippage caused by timezone offsets during the sync calculation.
+1.  **Empty Response Circuit Breaker**: The app now requires the platform to return at least one record before it considers performing any local deletions. This prevents wipes if permissions are revoked mid-sync or if the platform returns a transient empty list.
+2.  **Indexing Grace Period**: A 30-minute grace period has been added. Musclog will no longer delete a local record if it was created within the last 30 minutes, even if it's missing from the health sync response. This accounts for platform indexing latency.
+3.  **Full Paging Implementation**: Both nutrition and fitness sync on Android now utilize a robust `do...while` loop with `pageToken` and a `MAX_PAGES` safety limit to ensure 100% of records are retrieved.
+4.  **Amount Normalization**: Synced updates now force the `amount` field to 100g, ensuring that snapshots containing absolute values are correctly interpreted without double-scaling.
+5.  **Sync Window Alignment**: Sync windows are now strictly aligned to local calendar days using DST-safe date math, preventing record slippage at the window boundaries.
 
 ## 4. Conclusion
-The "vanishing data" was not caused by database corruption, but by an overly aggressive synchronization algorithm that interpreted API limitations as deletion signals. The implemented changes pivot the app to a "Local First" integrity model, where Musclog remains the definitive owner of its data unless a user explicitly deletes it within the app.
+The "vanishing data" was not caused by database corruption, but by an overly aggressive synchronization algorithm that interpreted API limitations as deletion signals. The implemented changes preserve the "Parity Sync" feature while introducing multiple safety checks to ensure user data remains the ultimate priority.
