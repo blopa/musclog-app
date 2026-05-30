@@ -28,6 +28,7 @@ import { healthConnectService } from './healthConnect';
 import { RETRY_CONFIG } from './healthConnectErrors';
 import {
   DataValidator,
+  HC_TO_APP_METRIC_MAP,
   HealthDataTransformer,
   HeightConverter,
   MetricType,
@@ -461,16 +462,18 @@ async function syncOneMetricType(
     }
   }
 
-  if (hcMap.size === 0) {
+  // 3. Load local HC-sourced metrics for this type in the window.
+  // Use HC_TO_APP_METRIC_MAP so the query works even when hcMap is empty
+  // (avoids the Q.oneOf([]) invalid-SQL crash).
+  const expectedMetricType = HC_TO_APP_METRIC_MAP[hcType as string];
+  if (!expectedMetricType) {
     return counts;
   }
 
-  // 3. Load local HC-sourced metrics for this type in the window
-  const uniqueTypes = Array.from(new Set([...hcMap.values()].map((r) => r.type)));
   const localMetrics = await database
     .get<UserMetric>('user_metrics')
     .query(
-      Q.where('type', Q.oneOf(uniqueTypes)),
+      Q.where('type', expectedMetricType as string),
       Q.where('external_id', Q.notEq(null)),
       Q.where('deleted_at', Q.eq(null)),
       Q.where('date', Q.gte(timeRange.startTime)),
@@ -485,9 +488,11 @@ async function syncOneMetricType(
     }
   }
 
+  const HC_INDEXING_GRACE_MS = 30 * 60 * 1000; // 30 min — newly-written records may not be indexed yet
+
   // 4. Reconcile in a single write transaction
+  const now = Date.now();
   await database.write(async () => {
-    const now = Date.now();
 
     for (const [externalId, record] of hcMap.entries()) {
       const existing = localByExternalId.get(externalId);
@@ -531,6 +536,20 @@ async function syncOneMetricType(
       }
     }
 
+    // Soft-delete local HC-sourced metrics no longer present in HC.
+    // Skip records created within the grace period — HC may not have indexed them yet.
+    for (const [localExternalId, localMetric] of localByExternalId.entries()) {
+      if (!hcMap.has(localExternalId)) {
+        if (now - (localMetric.createdAt ?? 0) < HC_INDEXING_GRACE_MS) {
+          continue;
+        }
+        await localMetric.update((m) => {
+          m.deletedAt = now;
+          m.updatedAt = now;
+        });
+        counts.deleted++;
+      }
+    }
   });
 
   return counts;

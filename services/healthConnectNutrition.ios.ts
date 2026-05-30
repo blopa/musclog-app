@@ -366,6 +366,8 @@ async function syncNutritionOnce(timeRange: {
     }
   }
 
+  const HC_INDEXING_GRACE_MS = 30 * 60 * 1000;
+
   await database.write(async () => {
     const now = Date.now();
     const sentinelFood = await getOrCreateSentinelFood();
@@ -440,6 +442,18 @@ async function syncNutritionOnce(timeRange: {
       }
     }
 
+    for (const [localExternalId, localLog] of localByExternalId.entries()) {
+      if (!hcMap.has(localExternalId)) {
+        if (now - (localLog.createdAt ?? 0) < HC_INDEXING_GRACE_MS) {
+          continue;
+        }
+        await localLog.update((log) => {
+          log.deletedAt = now;
+          log.updatedAt = now;
+        });
+        counts.deleted++;
+      }
+    }
   });
 
   return counts;
