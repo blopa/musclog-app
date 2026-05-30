@@ -442,16 +442,18 @@ async function syncNutritionOnce(timeRange: {
       }
     }
 
-    for (const [localExternalId, localLog] of localByExternalId.entries()) {
-      if (!hcMap.has(localExternalId)) {
-        if (now - (localLog.createdAt ?? 0) < HC_INDEXING_GRACE_MS) {
-          continue;
+    if (correlations.length > 0) {
+      for (const [localExternalId, localLog] of localByExternalId.entries()) {
+        if (!hcMap.has(localExternalId)) {
+          if (now - (localLog.createdAt ?? 0) < HC_INDEXING_GRACE_MS) {
+            continue;
+          }
+          await localLog.update((log) => {
+            log.deletedAt = now;
+            log.updatedAt = now;
+          });
+          counts.deleted++;
         }
-        await localLog.update((log) => {
-          log.deletedAt = now;
-          log.updatedAt = now;
-        });
-        counts.deleted++;
       }
     }
   });

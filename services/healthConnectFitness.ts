@@ -537,17 +537,22 @@ async function syncOneMetricType(
     }
 
     // Soft-delete local HC-sourced metrics no longer present in HC.
-    // Skip records created within the grace period — HC may not have indexed them yet.
-    for (const [localExternalId, localMetric] of localByExternalId.entries()) {
-      if (!hcMap.has(localExternalId)) {
-        if (now - (localMetric.createdAt ?? 0) < HC_INDEXING_GRACE_MS) {
-          continue;
+    // Two guards before deleting:
+    //  1. HC must have returned at least one record — an empty response is suspicious
+    //     (permissions revoked mid-sync, transient HC error) and should not wipe local data.
+    //  2. Grace period — records created recently may not be indexed by HC yet.
+    if (allHcRecords.length > 0) {
+      for (const [localExternalId, localMetric] of localByExternalId.entries()) {
+        if (!hcMap.has(localExternalId)) {
+          if (now - (localMetric.createdAt ?? 0) < HC_INDEXING_GRACE_MS) {
+            continue;
+          }
+          await localMetric.update((m) => {
+            m.deletedAt = now;
+            m.updatedAt = now;
+          });
+          counts.deleted++;
         }
-        await localMetric.update((m) => {
-          m.deletedAt = now;
-          m.updatedAt = now;
-        });
-        counts.deleted++;
       }
     }
   });
