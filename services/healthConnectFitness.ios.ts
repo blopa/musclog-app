@@ -452,6 +452,8 @@ async function syncOneMetricType(
     }
   }
 
+  const HC_INDEXING_GRACE_MS = 30 * 60 * 1000;
+
   await database.write(async () => {
     const now = Date.now();
 
@@ -495,13 +497,18 @@ async function syncOneMetricType(
       }
     }
 
-    for (const [localExternalId, localMetric] of localByExternalId.entries()) {
-      if (!hkMap.has(localExternalId)) {
-        await localMetric.update((m) => {
-          m.deletedAt = now;
-          m.updatedAt = now;
-        });
-        counts.deleted++;
+    if (samples.length > 0) {
+      for (const [localExternalId, localMetric] of localByExternalId.entries()) {
+        if (!hkMap.has(localExternalId)) {
+          if (now - (localMetric.createdAt ?? 0) < HC_INDEXING_GRACE_MS) {
+            continue;
+          }
+          await localMetric.update((m) => {
+            m.deletedAt = now;
+            m.updatedAt = now;
+          });
+          counts.deleted++;
+        }
       }
     }
   });
