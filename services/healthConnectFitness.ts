@@ -403,14 +403,26 @@ async function syncOneMetricType(
     skipped: 0,
   };
 
-  // 1. Read from Health Connect
-  const hcResult = await healthConnectService.readRecords(hcType, {
-    operator: 'between',
-    startTime: TimestampConverter.unixToIso(timeRange.startTime),
-    endTime: TimestampConverter.unixToIso(timeRange.endTime),
-  });
+  // 1. Read from Health Connect with paging
+  const hcRecords: any[] = [];
+  let pageToken: string | undefined;
 
-  const hcRecords = hcResult.records ?? [];
+  do {
+    const hcResult = await healthConnectService.readRecords(hcType, {
+      operator: 'between',
+      startTime: TimestampConverter.unixToIso(timeRange.startTime),
+      endTime: TimestampConverter.unixToIso(timeRange.endTime),
+      // @ts-ignore
+      pageToken,
+    });
+
+    if (hcResult.records) {
+      hcRecords.push(...hcResult.records);
+    }
+    // @ts-ignore
+    pageToken = hcResult.nextPageToken;
+  } while (pageToken);
+
   counts.totalRead = hcRecords.length;
 
   // 2. Transform + validate → Map<externalId, TransformedMetric>
@@ -502,16 +514,10 @@ async function syncOneMetricType(
       }
     }
 
-    // DELETE local HC-sourced records not present in HC response
-    for (const [localExternalId, localMetric] of localByExternalId.entries()) {
-      if (!hcMap.has(localExternalId)) {
-        await localMetric.update((m) => {
-          m.deletedAt = now;
-          m.updatedAt = now;
-        });
-        counts.deleted++;
-      }
-    }
+    // [DATA LOSS PREVENTION]
+    // We NO LONGER soft-delete local records just because they are missing from the
+    // current HC sync window. An incomplete response (e.g. paging issues or transient API errors)
+    // could wipe user history.
   });
 
   return counts;

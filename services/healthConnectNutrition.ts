@@ -276,14 +276,26 @@ async function syncNutritionOnce(timeRange: {
     skipped: 0,
   };
 
-  // 1. Read from Health Connect
-  const hcResult = await healthConnectService.readRecords('Nutrition', {
-    operator: 'between',
-    startTime: TimestampConverter.unixToIso(timeRange.startTime),
-    endTime: TimestampConverter.unixToIso(timeRange.endTime),
-  });
+  // 1. Read from Health Connect with paging
+  const hcRecords: any[] = [];
+  let pageToken: string | undefined;
 
-  const hcRecords = hcResult.records ?? [];
+  do {
+    const hcResult = await healthConnectService.readRecords('Nutrition', {
+      operator: 'between',
+      startTime: TimestampConverter.unixToIso(timeRange.startTime),
+      endTime: TimestampConverter.unixToIso(timeRange.endTime),
+      // @ts-ignore - react-native-health-connect supports pageToken but it's not in the TS definitions yet
+      pageToken,
+    });
+
+    if (hcResult.records) {
+      hcRecords.push(...hcResult.records);
+    }
+    // @ts-ignore
+    pageToken = hcResult.nextPageToken;
+  } while (pageToken);
+
   counts.totalRead = hcRecords.length;
 
   // 2. Build map of HC records keyed by externalId
@@ -383,7 +395,8 @@ async function syncNutritionOnce(timeRange: {
           Math.abs((snapshot.loggedFat ?? 0) - entry.fat) > 0.01 ||
           Math.abs((snapshot.loggedFiber ?? 0) - entry.fiber) > 0.01 ||
           existing.type !== entry.mealType ||
-          existing.date !== entry.date;
+          existing.date !== entry.date ||
+          existing.amount !== 100; // Also reset amount if it was mutated locally (fix for macro doubling)
 
         if (changed) {
           const encrypted = await encryptNutritionLogSnapshot({
@@ -398,6 +411,7 @@ async function syncNutritionOnce(timeRange: {
           await existing.update((log) => {
             log.date = entry.date;
             log.type = entry.mealType;
+            log.amount = 100; // Force normalization to grams for HC-sourced logs (fix for macro doubling)
             log.loggedFoodNameRaw = encrypted.loggedFoodName;
             log.loggedCaloriesRaw = encrypted.loggedCalories;
             log.loggedProteinRaw = encrypted.loggedProtein;
@@ -412,16 +426,11 @@ async function syncNutritionOnce(timeRange: {
       }
     }
 
-    // SOFT-DELETE local HC-sourced logs not present in HC response
-    for (const [localExternalId, localLog] of localByExternalId.entries()) {
-      if (!hcMap.has(localExternalId)) {
-        await localLog.update((log) => {
-          log.deletedAt = now;
-          log.updatedAt = now;
-        });
-        counts.deleted++;
-      }
-    }
+    // [DATA LOSS PREVENTION]
+    // We NO LONGER soft-delete local records just because they are missing from the
+    // current HC sync window. An incomplete response (e.g. paging issues or transient API errors)
+    // could wipe user history. If we really need deletion sync in the future, we should
+    // use the explicit HC Changes API instead.
   });
 
   return counts;
