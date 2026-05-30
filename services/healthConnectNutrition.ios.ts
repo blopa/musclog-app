@@ -409,7 +409,8 @@ async function syncNutritionOnce(timeRange: {
           Math.abs((snapshot.loggedFat ?? 0) - entry.fat) > 0.01 ||
           Math.abs((snapshot.loggedFiber ?? 0) - entry.fiber) > 0.01 ||
           existing.type !== entry.mealType ||
-          existing.date !== entry.date;
+          existing.date !== entry.date ||
+          existing.amount !== 100;
 
         if (changed) {
           const encrypted = await encryptNutritionLogSnapshot({
@@ -424,6 +425,7 @@ async function syncNutritionOnce(timeRange: {
           await existing.update((log) => {
             log.date = entry.date;
             log.type = entry.mealType;
+            log.amount = 100;
             log.loggedFoodNameRaw = encrypted.loggedFoodName;
             log.loggedCaloriesRaw = encrypted.loggedCalories;
             log.loggedProteinRaw = encrypted.loggedProtein;
@@ -438,15 +440,6 @@ async function syncNutritionOnce(timeRange: {
       }
     }
 
-    for (const [localExternalId, localLog] of localByExternalId.entries()) {
-      if (!hcMap.has(localExternalId)) {
-        await localLog.update((log) => {
-          log.deletedAt = now;
-          log.updatedAt = now;
-        });
-        counts.deleted++;
-      }
-    }
   });
 
   return counts;

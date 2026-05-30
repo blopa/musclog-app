@@ -5,7 +5,6 @@
  * Sync behaviour per record type:
  *  - New HC record (externalId not in local DB) → create UserMetric with externalId
  *  - Existing HC record (externalId found locally) → update if value changed
- *  - Local HC-sourced record whose externalId is gone from HC window → soft-delete
  *  - Local user-entered records (external_id IS NULL) → never touched
  */
 
@@ -277,13 +276,29 @@ async function syncDailySteps(timeRange: {
 }): Promise<Pick<FitnessSyncCounts, 'totalRead' | 'written' | 'updated'>> {
   const counts = { totalRead: 0, written: 0, updated: 0 };
 
-  const hcResult = await healthConnectService.readRecords('Steps', {
-    operator: 'between',
+  const stepsTimeRangeFilter = {
+    operator: 'between' as const,
     startTime: TimestampConverter.unixToIso(timeRange.startTime),
     endTime: TimestampConverter.unixToIso(timeRange.endTime),
-  });
+  };
+  const STEPS_MAX_PAGES = 100;
+  const allHcRecords: any[] = [];
+  let stepsPageToken: string | undefined;
+  let stepsPageCount = 0;
+  let stepsResult = await healthConnectService.readRecords('Steps', stepsTimeRangeFilter);
 
-  const hcRecords = hcResult.records ?? [];
+  do {
+    allHcRecords.push(...(stepsResult.records ?? []));
+    stepsPageToken = stepsResult.pageToken;
+    stepsPageCount++;
+    if (stepsPageToken && stepsPageCount < STEPS_MAX_PAGES) {
+      stepsResult = await healthConnectService.readRecords('Steps', stepsTimeRangeFilter, {
+        pageToken: stepsPageToken,
+      });
+    }
+  } while (stepsPageToken && stepsPageCount < STEPS_MAX_PAGES);
+
+  const hcRecords = allHcRecords;
   counts.totalRead = hcRecords.length;
 
   // Aggregate step counts by local calendar day (midnight ms)
@@ -403,19 +418,32 @@ async function syncOneMetricType(
     skipped: 0,
   };
 
-  // 1. Read from Health Connect
-  const hcResult = await healthConnectService.readRecords(hcType, {
-    operator: 'between',
+  // 1. Read from Health Connect (paginated – HC returns max 1000 per call)
+  const timeRangeFilter = {
+    operator: 'between' as const,
     startTime: TimestampConverter.unixToIso(timeRange.startTime),
     endTime: TimestampConverter.unixToIso(timeRange.endTime),
-  });
+  };
+  const MAX_PAGES = 100;
+  const allHcRecords: any[] = [];
+  let pageToken: string | undefined;
+  let pageCount = 0;
+  let hcResult = await healthConnectService.readRecords(hcType, timeRangeFilter);
 
-  const hcRecords = hcResult.records ?? [];
-  counts.totalRead = hcRecords.length;
+  do {
+    allHcRecords.push(...(hcResult.records ?? []));
+    pageToken = hcResult.pageToken;
+    pageCount++;
+    if (pageToken && pageCount < MAX_PAGES) {
+      hcResult = await healthConnectService.readRecords(hcType, timeRangeFilter, { pageToken });
+    }
+  } while (pageToken && pageCount < MAX_PAGES);
+
+  counts.totalRead = allHcRecords.length;
 
   // 2. Transform + validate → Map<externalId, TransformedMetric>
   const hcMap = new Map<string, TransformedMetric>();
-  for (const hcRecord of hcRecords) {
+  for (const hcRecord of allHcRecords) {
     try {
       const transformed = transformer(hcRecord);
       if (!skipValidation) {
@@ -433,22 +461,23 @@ async function syncOneMetricType(
     }
   }
 
-  if (hcMap.size === 0 && hcRecords.length === 0) {
-    // Nothing from HC in this window – still need to delete orphans below
+  if (hcMap.size === 0) {
+    return counts;
   }
 
   // 3. Load local HC-sourced metrics for this type in the window
+  const uniqueTypes = Array.from(new Set([...hcMap.values()].map((r) => r.type)));
   const localMetrics = await database
     .get<UserMetric>('user_metrics')
     .query(
-      Q.where('type', Q.oneOf(Array.from(new Set([...hcMap.values()].map((r) => r.type))))),
+      Q.where('type', Q.oneOf(uniqueTypes)),
+      Q.where('external_id', Q.notEq(null)),
       Q.where('deleted_at', Q.eq(null)),
       Q.where('date', Q.gte(timeRange.startTime)),
       Q.where('date', Q.lte(timeRange.endTime))
     )
     .fetch();
 
-  // Separate HC-sourced (have externalId) from user-entered (no externalId)
   const localByExternalId = new Map<string, UserMetric>();
   for (const m of localMetrics) {
     if (m.externalId) {
@@ -502,16 +531,6 @@ async function syncOneMetricType(
       }
     }
 
-    // DELETE local HC-sourced records not present in HC response
-    for (const [localExternalId, localMetric] of localByExternalId.entries()) {
-      if (!hcMap.has(localExternalId)) {
-        await localMetric.update((m) => {
-          m.deletedAt = now;
-          m.updatedAt = now;
-        });
-        counts.deleted++;
-      }
-    }
   });
 
   return counts;

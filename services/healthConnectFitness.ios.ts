@@ -495,15 +495,6 @@ async function syncOneMetricType(
       }
     }
 
-    for (const [localExternalId, localMetric] of localByExternalId.entries()) {
-      if (!hkMap.has(localExternalId)) {
-        await localMetric.update((m) => {
-          m.deletedAt = now;
-          m.updatedAt = now;
-        });
-        counts.deleted++;
-      }
-    }
   });
 
   return counts;
