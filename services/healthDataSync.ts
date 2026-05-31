@@ -7,14 +7,14 @@ import {
 import { database } from '@/database';
 import Setting from '@/database/models/Setting';
 import i18n from '@/lang/lang';
-import { handleError } from '@/utils/handleError';
-
 import {
   localCalendarDayDateFromDayKeyMs,
   localDayClosedRangeMaxMs,
   localDayKeyPlusCalendarDaysFromNow,
   localDayStartMs,
 } from '@/utils/calendarDate';
+import { handleError } from '@/utils/handleError';
+
 import { healthConnectService } from './healthConnect';
 import {
   HealthConnectError,

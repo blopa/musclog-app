@@ -134,6 +134,7 @@
     "expo-linking": "~56.0.13",
     "expo-local-authentication": "~56.0.4",
     "expo-localization": "~56.0.6",
+    "expo-modules-core": "~56.0.14",
     "expo-notifications": "~56.0.15",
     "expo-router": "~56.2.8",
     "expo-screen-orientation": "~56.0.5",

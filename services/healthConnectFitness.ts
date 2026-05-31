@@ -493,7 +493,6 @@ async function syncOneMetricType(
   // 4. Reconcile in a single write transaction
   const now = Date.now();
   await database.write(async () => {
-
     for (const [externalId, record] of hcMap.entries()) {
       const existing = localByExternalId.get(externalId);
 
