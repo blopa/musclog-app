@@ -1,4 +1,4 @@
-import { LegacyEventEmitter, requireOptionalNativeModule } from 'expo-modules-core';
+import { type EventEmitterType, requireOptionalNativeModule } from 'expo';
 import { Platform } from 'react-native';
 
 import type {
@@ -35,10 +35,17 @@ const DEFAULT_STATE: WitMotionState = {
   error: null,
 };
 
-const nativeModule =
-  Platform.OS === 'web' ? null : requireOptionalNativeModule<WitMotionNativeModule>('WitMotionBle');
+type WitMotionBleEvents = {
+  onStateChanged: (nextState: WitMotionState) => void;
+  onDataBatch: (batch: WitMotionDataBatch) => void;
+};
 
-const emitter = nativeModule ? new LegacyEventEmitter(nativeModule as any) : null;
+type WitMotionBleModule = WitMotionNativeModule & EventEmitterType<WitMotionBleEvents>;
+
+const nativeModule =
+  Platform.OS === 'web' ? null : requireOptionalNativeModule<WitMotionBleModule>('WitMotionBle');
+
+const emitter = nativeModule;
 
 function cloneDevice(device: WitMotionDevice | null): WitMotionDevice | null {
   if (!device) {
