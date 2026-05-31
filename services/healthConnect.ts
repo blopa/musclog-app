@@ -358,11 +358,12 @@ class HealthConnectService {
   }
 
   /**
-   * Read records from Health Connect
+   * Read records from Health Connect (supports pagination via pageToken).
    */
   async readRecords<T extends RecordType>(
     recordType: T,
-    timeRangeFilter: TimeRangeFilter
+    timeRangeFilter: TimeRangeFilter,
+    options: { pageToken?: string; pageSize?: number } = {}
   ): Promise<ReadRecordsResult<T>> {
     try {
       await this.ensureInitialized();
@@ -378,6 +379,8 @@ class HealthConnectService {
 
       const result = await readRecords(recordType, {
         timeRangeFilter,
+        ...(options.pageToken ? { pageToken: options.pageToken } : {}),
+        ...(options.pageSize ? { pageSize: options.pageSize } : {}),
       });
       return result as ReadRecordsResult<T>;
     } catch (error) {
