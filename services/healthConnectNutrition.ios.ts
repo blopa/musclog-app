@@ -366,6 +366,8 @@ async function syncNutritionOnce(timeRange: {
     }
   }
 
+  const HC_INDEXING_GRACE_MS = 30 * 60 * 1000;
+
   await database.write(async () => {
     const now = Date.now();
     const sentinelFood = await getOrCreateSentinelFood();
@@ -409,7 +411,8 @@ async function syncNutritionOnce(timeRange: {
           Math.abs((snapshot.loggedFat ?? 0) - entry.fat) > 0.01 ||
           Math.abs((snapshot.loggedFiber ?? 0) - entry.fiber) > 0.01 ||
           existing.type !== entry.mealType ||
-          existing.date !== entry.date;
+          existing.date !== entry.date ||
+          existing.amount !== 100;
 
         if (changed) {
           const encrypted = await encryptNutritionLogSnapshot({
@@ -424,6 +427,7 @@ async function syncNutritionOnce(timeRange: {
           await existing.update((log) => {
             log.date = entry.date;
             log.type = entry.mealType;
+            log.amount = 100;
             log.loggedFoodNameRaw = encrypted.loggedFoodName;
             log.loggedCaloriesRaw = encrypted.loggedCalories;
             log.loggedProteinRaw = encrypted.loggedProtein;
@@ -438,13 +442,18 @@ async function syncNutritionOnce(timeRange: {
       }
     }
 
-    for (const [localExternalId, localLog] of localByExternalId.entries()) {
-      if (!hcMap.has(localExternalId)) {
-        await localLog.update((log) => {
-          log.deletedAt = now;
-          log.updatedAt = now;
-        });
-        counts.deleted++;
+    if (correlations.length > 0) {
+      for (const [localExternalId, localLog] of localByExternalId.entries()) {
+        if (!hcMap.has(localExternalId)) {
+          if (now - (localLog.createdAt ?? 0) < HC_INDEXING_GRACE_MS) {
+            continue;
+          }
+          await localLog.update((log) => {
+            log.deletedAt = now;
+            log.updatedAt = now;
+          });
+          counts.deleted++;
+        }
       }
     }
   });
