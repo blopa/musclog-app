@@ -35,6 +35,7 @@
     "postinstall": "patch-package",
     "prestart": "node scripts/sync-web-images.js",
     "start": "expo start",
+    "eas-login": "eas login --browser",
     "prestart-clear": "node scripts/sync-web-images.js",
     "start-clear": "expo start --clear",
     "reset-project": "node ./scripts/reset-project.js",
