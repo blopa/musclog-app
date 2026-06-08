@@ -2,9 +2,8 @@ import type { CameraView as CameraViewType } from 'expo-camera';
 import { CameraView, useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
 import { File } from 'expo-file-system';
 import { copyAsync } from 'expo-file-system/legacy';
-import * as SecureStore from 'expo-secure-store';
 import * as Sharing from 'expo-sharing';
-import { Bluetooth, Camera, Circle, FolderLock, Search, Trash2 } from 'lucide-react-native';
+import { Bluetooth, Camera, Circle, Search, Trash2 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -34,7 +33,6 @@ import {
   deleteBleWorkoutArchiveFile,
   saveBleWorkoutFile,
 } from '@/utils/bleWorkoutDataStorage';
-import { requestDirectoryPermission, saveToSaf } from '@/utils/safStorage';
 import { showSnackbar } from '@/utils/snackbarService';
 import { generateUUID } from '@/utils/uuid';
 
@@ -174,23 +172,12 @@ export default function RepsRecordingScreen() {
   const [isSaving, setIsSaving] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
   const [recordings, setRecordings] = useState<RecordingEntry[]>([]);
-  const [safDirectoryUri, setSafDirectoryUri] = useState<string | null>(null);
   const [recordingPendingDelete, setRecordingPendingDelete] = useState<RecordingEntry | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     void wit.requestPermissions();
   }, [wit.requestPermissions]);
-
-  // Restore the previously-granted SAF directory URI so the user doesn't have
-  // to re-grant permission after every app restart or rebuild.
-  useEffect(() => {
-    void SecureStore.getItemAsync('reps_recording_saf_dir_uri').then((stored) => {
-      if (stored) {
-        setSafDirectoryUri(stored);
-      }
-    });
-  }, []);
 
   // Elapsed timer — independent 1s interval, no BLE involvement
   useEffect(() => {
@@ -258,20 +245,6 @@ export default function RepsRecordingScreen() {
       } catch {
         // Best-effort cleanup only.
       }
-    }
-  }, []);
-
-  const handleRequestSafPermission = useCallback(async () => {
-    try {
-      const uri = await requestDirectoryPermission();
-      if (uri) {
-        setSafDirectoryUri(uri);
-        await SecureStore.setItemAsync('reps_recording_saf_dir_uri', uri);
-        showSnackbar('success', 'Storage permission granted');
-      }
-    } catch (err) {
-      console.error('[reps-recording] SAF permission error:', err);
-      showSnackbar('error', 'Failed to get storage permission');
     }
   }, []);
 
@@ -472,20 +445,6 @@ export default function RepsRecordingScreen() {
       const savedVideoUri = savedJsonUri.replace(/\.json$/i, '.mp4');
       await copyAsync({ from: result.uri, to: savedVideoUri });
 
-      // SAF Export
-      if (safDirectoryUri) {
-        try {
-          await saveToSaf(safDirectoryUri, sessionId, [
-            { name: 'data.json', mimeType: 'application/json', sourceUri: savedJsonUri },
-            { name: 'video.mp4', mimeType: 'video/mp4', sourceUri: savedVideoUri },
-          ]);
-        } catch (safErr) {
-          console.error('[reps-recording] SAF export error:', safErr);
-          const safMessage = safErr instanceof Error ? safErr.message : String(safErr);
-          showSnackbar('error', `Saved locally — SAF export failed: ${safMessage}`);
-        }
-      }
-
       setRecordings((prev) => [
         ...prev,
         {
@@ -510,7 +469,7 @@ export default function RepsRecordingScreen() {
     } finally {
       setIsSaving(false);
     }
-  }, [clearCapturedRecordingRefs, repsInput, safDirectoryUri]);
+  }, [clearCapturedRecordingRefs, repsInput]);
 
   useEffect(() => {
     return () => {
@@ -544,15 +503,6 @@ export default function RepsRecordingScreen() {
               Training data collector — BLE + video synchronized
             </Text>
           </View>
-          {Platform.OS === 'android' ? (
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={<FolderLock size={theme.iconSize.sm} color={theme.colors.text.secondary} />}
-              onPress={() => void handleRequestSafPermission()}
-              label={safDirectoryUri ? 'Permission OK' : 'Grant Permission'}
-            />
-          ) : null}
         </View>
 
         {/* BLE Sensor */}
