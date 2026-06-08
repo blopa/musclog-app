@@ -78,14 +78,14 @@ Only applies when `ios/` and/or `android/` directories exist:
 
 ## Deprecated Packages
 
-| Old Package            | Replacement                                           |
-| ---------------------- | ----------------------------------------------------- |
-| `expo-av`              | `expo-audio` and `expo-video`                         |
-| `expo-permissions`     | Individual package permission APIs                    |
-| `@expo/vector-icons`   | `expo-symbols` (for SF Symbols)                       |
-| `AsyncStorage`         | `expo-sqlite/localStorage/install`                    |
-| `expo-app-loading`     | `expo-splash-screen`                                  |
-| `expo-linear-gradient` | `experimental_backgroundImage` + CSS gradients        |
+| Old Package            | Replacement                                    |
+| ---------------------- | ---------------------------------------------- |
+| `expo-av`              | `expo-audio` and `expo-video`                  |
+| `expo-permissions`     | Individual package permission APIs             |
+| `@expo/vector-icons`   | `expo-symbols` (for SF Symbols)                |
+| `AsyncStorage`         | `expo-sqlite/localStorage/install`             |
+| `expo-app-loading`     | `expo-splash-screen`                           |
+| `expo-linear-gradient` | `experimental_backgroundImage` + CSS gradients |
 
 When migrating deprecated packages, update all code usage before removing the old package.
 

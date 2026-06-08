@@ -132,6 +132,13 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
         continue;
       }
 
+      if (typeof raw.timezone === 'string' && raw.timezone) {
+        // Older exports may store IANA names. Resolve once at the row's own instant
+        // so every restore path consumes the same fixed "±HH:MM" offset value.
+        const instantMs = Number(raw.started_at ?? raw.date ?? raw.created_at ?? Date.now());
+        raw.timezone = normalizeTimezoneToOffset(raw.timezone, new Date(instantMs));
+      }
+
       if (tableName === 'workout_templates') {
         const newVal = raw.workout_insights_type;
         const oldVal = raw.volume_calculation_type ?? raw.volumeCalculationType;
@@ -150,11 +157,6 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
         const value = Number(raw.value);
         const unit = raw.unit != null ? String(raw.unit) : '';
         const date = Number(raw.date);
-        // Older exports store timezone as an IANA zone name; normalize to "±HH:MM" offset.
-        const timezone = normalizeTimezoneToOffset(
-          raw.timezone != null ? String(raw.timezone) : '',
-          new Date(date)
-        );
         const supplementId = raw.supplement_id != null ? String(raw.supplement_id) : undefined;
         const encrypted = await encryptUserMetricFields({ value, unit, date });
         createOperations.push(
@@ -165,7 +167,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
             rec.valueRaw = encrypted.value;
             rec.unitRaw = encrypted.unit;
             rec.date = date;
-            rec.timezone = timezone;
+            rec.timezone = raw.timezone != null ? String(raw.timezone) : '';
             rec.createdAt = Number(raw.created_at);
             rec.updatedAt = Number(raw.updated_at);
             if (raw.deleted_at != null) {
@@ -207,11 +209,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
             rec.loggedFiberRaw = encrypted.loggedFiber;
             rec.loggedMicrosRaw = encrypted.loggedMicrosJson;
             rec.date = Number(raw.date);
-            // Older exports store timezone as an IANA zone name; normalize to "±HH:MM" offset.
-            rec.timezone =
-              raw.timezone != null
-                ? normalizeTimezoneToOffset(String(raw.timezone), new Date(Number(raw.date)))
-                : undefined;
+            rec.timezone = raw.timezone != null ? String(raw.timezone) : undefined;
             rec.createdAt = Number(raw.created_at);
             rec.updatedAt = Number(raw.updated_at);
             if (raw.deleted_at != null) {
@@ -237,16 +235,6 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
 
             const value = raw[key];
             if (value === undefined) {
-              continue;
-            }
-
-            if (key === 'timezone' && typeof value === 'string' && value) {
-              // Older exports store timezone as an IANA zone name; normalize to the app's
-              // "±HH:MM" offset format, resolved at the row's own instant (started_at for
-              // workout logs, falling back to date/created_at). Covers any timezone-bearing
-              // table restored via this generic path (e.g. workout_logs).
-              const instantMs = Number(raw.started_at ?? raw.date ?? raw.created_at ?? Date.now());
-              (rec as any).timezone = normalizeTimezoneToOffset(value, new Date(instantMs));
               continue;
             }
 

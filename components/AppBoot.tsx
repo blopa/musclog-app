@@ -43,6 +43,89 @@ const DB_RESET_RACE_ERRORS = [
   'Cannot call database.adapter.underlyingAdapter while the database is being reset',
 ];
 
+// All one-shot idempotent DB migrations that run on every boot, collected here so the
+// per-task boilerplate (waitForDbReady, cancellation, catch+warn) lives in one place.
+// Entries with webOnly: true run only on the LokiJS (web) adapter path, where the
+// corresponding SQLite migration step is a no-op; all others run on every platform.
+type BootMigration = { tag: string; webOnly?: boolean; run: () => Promise<unknown> };
+
+const BOOT_MIGRATIONS: BootMigration[] = [
+  {
+    // Fix negative fiber values stored in nutrition_goals, foods, and nutrition_logs.
+    // Each sub-task catches independently so one failure doesn't cancel the others.
+    tag: 'fixNegativeFiber',
+    run: () =>
+      Promise.all([
+        NutritionGoalService.fixNegativeFiber().catch((err) =>
+          console.warn('[NutritionGoalService] fixNegativeFiber error:', err)
+        ),
+        FoodService.fixNegativeFiber().catch((err) =>
+          console.warn('[FoodService] fixNegativeFiber error:', err)
+        ),
+        NutritionService.fixNegativeFiber().catch((err) =>
+          console.warn('[NutritionService] fixNegativeFiber error:', err)
+        ),
+      ]),
+  },
+  {
+    // LokiJS (web) silently ignores the v2 schema unsafeExecuteSql step.
+    tag: 'ExerciseService.backfillExerciseSources',
+    webOnly: true,
+    run: () => ExerciseService.backfillExerciseSources(),
+  },
+  {
+    // LokiJS (web) silently ignores the v3 schema unsafeExecuteSql step.
+    tag: 'FoodPortionService.backfillPortionSources',
+    webOnly: true,
+    run: () => FoodPortionService.backfillPortionSources(),
+  },
+  {
+    // Seed exercises from the bundled JSON missing from the DB with source='app'.
+    // Sequential: multipliers depend on syncAppExercises completing first.
+    tag: 'ExerciseService.syncAppExercises',
+    run: async () => {
+      await ExerciseService.syncAppExercises();
+      await ExerciseService.syncExerciseMultipliers();
+    },
+  },
+  {
+    // Ensure app exercises appear in the same order as the bundled JSON file.
+    tag: 'ExerciseService.backfillExerciseOrderIndex',
+    run: () => ExerciseService.backfillExerciseOrderIndex(),
+  },
+  {
+    // Backfill exercise-muscle links for users upgrading to v11.
+    tag: 'MuscleService.backfillExerciseMuscles',
+    run: () => MuscleService.backfillExerciseMuscles(),
+  },
+  {
+    // LokiJS (web) silently ignores the v7 schema unsafeExecuteSql step.
+    tag: 'ExerciseService.migrateExerciseImageUrlsToCloud',
+    webOnly: true,
+    run: () => ExerciseService.migrateExerciseImageUrlsToCloud(),
+  },
+  {
+    // Backfill totalVolume for workout logs that have NULL after the v3 migration.
+    tag: 'WorkoutService.backfillNullTotalVolumes',
+    run: () => WorkoutService.backfillNullTotalVolumes(),
+  },
+  {
+    // Convert legacy user_metrics.timezone IANA names to "±HH:MM" offset format (v20).
+    tag: 'UserMetricService.backfillTimezoneOffsets',
+    run: () => UserMetricService.backfillTimezoneOffsets(),
+  },
+  {
+    // Encrypt API keys that were stored as plaintext before this migration was introduced.
+    tag: 'SettingsService.migrateApiKeysToEncrypted',
+    run: () => SettingsService.migrateApiKeysToEncrypted(),
+  },
+  {
+    // Enable require-export-encryption by default for users who never explicitly set it.
+    tag: 'SettingsService.migrateRequireExportEncryptionDefault',
+    run: () => SettingsService.migrateRequireExportEncryptionDefault(),
+  },
+];
+
 /**
  * One-time and boot-time data fixes, sync, and native services that are not
  * tied to a specific screen. Renders nothing.
@@ -110,8 +193,8 @@ export function AppBoot() {
     };
   }, []);
 
-  // Fix negative fiber values in nutrition_goals, foods, and nutrition_logs by clamping to zero.
-  // nutrition_logs fiber is encrypted so all non-deleted logs are fetched and decrypted in JS.
+  // Run all idempotent boot migrations in parallel after the DB is ready.
+  // See BOOT_MIGRATIONS above for the full list and rationale per entry.
   useEffect(() => {
     if (isStaticExport) {
       return;
@@ -119,26 +202,20 @@ export function AppBoot() {
 
     let cancelled = false;
 
-    const fixNegativeFiber = async () => {
+    const runBootMigrations = async () => {
       await waitForDbReady();
       if (cancelled) {
         return;
       }
 
-      await Promise.all([
-        NutritionGoalService.fixNegativeFiber().catch((err) =>
-          console.warn('[NutritionGoalService] fixNegativeFiber error:', err)
-        ),
-        FoodService.fixNegativeFiber().catch((err) =>
-          console.warn('[FoodService] fixNegativeFiber error:', err)
-        ),
-        NutritionService.fixNegativeFiber().catch((err) =>
-          console.warn('[NutritionService] fixNegativeFiber error:', err)
-        ),
-      ]);
+      await Promise.all(
+        BOOT_MIGRATIONS.filter((m) => !m.webOnly || Platform.OS === 'web').map((m) =>
+          m.run().catch((err) => console.warn(`[AppBoot] ${m.tag} error:`, err))
+        )
+      );
     };
 
-    void fixNegativeFiber();
+    void runBootMigrations();
 
     return () => {
       cancelled = true;
@@ -157,62 +234,6 @@ export function AppBoot() {
       pruneWorkoutInsights().catch((err) => console.warn('[WorkoutInsights] Pruning error:', err));
     }
   }, [segments]);
-
-  // Backfill the exercise `source` field on web only. Native/SQLite handles
-  // this via unsafeExecuteSql in the v2 schema migration; LokiJS (web) silently
-  // ignores that step, so we run the JS equivalent here instead.
-  useEffect(() => {
-    if (Platform.OS !== 'web' || isStaticExport) {
-      return;
-    }
-
-    let cancelled = false;
-
-    const backfillExerciseSources = async () => {
-      await waitForDbReady();
-      if (cancelled) {
-        return;
-      }
-
-      await ExerciseService.backfillExerciseSources().catch((err) =>
-        console.warn('[ExerciseService] backfillExerciseSources error:', err)
-      );
-    };
-
-    void backfillExerciseSources();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // Backfill the food_portion `source` field on web only. Native/SQLite handles
-  // this via unsafeExecuteSql in the v3 schema migration; LokiJS (web) silently
-  // ignores that step, so we run the JS equivalent here instead.
-  useEffect(() => {
-    if (Platform.OS !== 'web' || isStaticExport) {
-      return;
-    }
-
-    let cancelled = false;
-
-    const backfillPortionSources = async () => {
-      await waitForDbReady();
-      if (cancelled) {
-        return;
-      }
-
-      await FoodPortionService.backfillPortionSources().catch((err) =>
-        console.warn('[FoodPortionService] backfillPortionSources error:', err)
-      );
-    };
-
-    void backfillPortionSources();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   // Fix food_portion rows saved as raw i18n keys (e.g. "food.portions.tbsp") instead of labels.
   useEffect(() => {
@@ -246,237 +267,6 @@ export function AppBoot() {
       cancelled = true;
     };
   }, [language]);
-
-  // Sync app exercises on every boot: seeds any exercises that are in the
-  // bundled JSON but missing from the DB with source='app'. This is a no-op
-  // on most boots once the DB is up to date.
-  useEffect(() => {
-    if (isStaticExport) {
-      return;
-    }
-
-    let cancelled = false;
-
-    const syncExercises = async () => {
-      await waitForDbReady();
-      if (cancelled) {
-        return;
-      }
-
-      try {
-        await ExerciseService.syncAppExercises();
-        if (cancelled) {
-          return;
-        }
-        await ExerciseService.syncExerciseMultipliers();
-      } catch (err) {
-        console.warn('[ExerciseService] syncAppExercises/Multipliers error:', err);
-      }
-    };
-
-    void syncExercises();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // Backfill order_index for existing app exercises on every boot.
-  // Ensures app exercises appear in the same order as the JSON file.
-  useEffect(() => {
-    if (isStaticExport) {
-      return;
-    }
-
-    let cancelled = false;
-
-    const backfillExerciseOrderIndex = async () => {
-      await waitForDbReady();
-      if (cancelled) {
-        return;
-      }
-
-      await ExerciseService.backfillExerciseOrderIndex().catch((err) =>
-        console.warn('[ExerciseService] backfillExerciseOrderIndex error:', err)
-      );
-    };
-
-    void backfillExerciseOrderIndex();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // Backfill exercise-muscle links for users upgrading to v11. Runs on every
-  // boot but is a cheap no-op once all exercises are linked. New installs also
-  // hit this path, but seedProductionData already called backfillExerciseMuscles
-  // during setup — the no-op exit path costs only two DB reads.
-  //
-  // This now waits for the boot DB gate so the upgrade path never races the
-  // seeding/migration window. On a fresh install the effect simply runs after
-  // seedProductionData() resolves and marks the DB ready.
-  useEffect(() => {
-    if (isStaticExport) {
-      return;
-    }
-
-    let cancelled = false;
-
-    const backfillExerciseMuscles = async () => {
-      await waitForDbReady();
-      if (cancelled) {
-        return;
-      }
-
-      await MuscleService.backfillExerciseMuscles().catch((err) =>
-        console.warn('[MuscleService] backfillExerciseMuscles error:', err)
-      );
-    };
-
-    void backfillExerciseMuscles();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // Web fallback for the v7 migration: replace file:// exercise image URIs with
-  // cloud URLs. LokiJS (web) silently ignores unsafeExecuteSql, so we run the
-  // equivalent JS logic here. No-op when there is nothing to migrate.
-  useEffect(() => {
-    if (Platform.OS !== 'web' || isStaticExport) {
-      return;
-    }
-
-    let cancelled = false;
-
-    const migrateExerciseImageUrls = async () => {
-      await waitForDbReady();
-      if (cancelled) {
-        return;
-      }
-
-      await ExerciseService.migrateExerciseImageUrlsToCloud().catch((err) =>
-        console.warn('[ExerciseService] migrateExerciseImageUrlsToCloud error:', err)
-      );
-    };
-
-    void migrateExerciseImageUrls();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // Backfill totalVolume for workout logs that have NULL after the v3 migration.
-  // Runs once per boot but exits immediately when there is nothing to do.
-  useEffect(() => {
-    if (isStaticExport) {
-      return;
-    }
-
-    let cancelled = false;
-
-    const backfillNullTotalVolumes = async () => {
-      await waitForDbReady();
-      if (cancelled) {
-        return;
-      }
-
-      await WorkoutService.backfillNullTotalVolumes().catch((err) =>
-        console.warn('[WorkoutService] backfillNullTotalVolumes error:', err)
-      );
-    };
-
-    void backfillNullTotalVolumes();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // Convert legacy user_metrics.timezone values from IANA zone names to the app's "±HH:MM"
-  // offset format (paired with the v20 migration). DST-aware, so it can't run as SQL.
-  // Runs once per boot but exits immediately when there is nothing to convert.
-  useEffect(() => {
-    if (isStaticExport) {
-      return;
-    }
-
-    let cancelled = false;
-
-    const backfillTimezoneOffsets = async () => {
-      await waitForDbReady();
-      if (cancelled) {
-        return;
-      }
-
-      await UserMetricService.backfillTimezoneOffsets().catch((err) =>
-        console.warn('[UserMetricService] backfillTimezoneOffsets error:', err)
-      );
-    };
-
-    void backfillTimezoneOffsets();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // Encrypt any API keys that were stored as plaintext before this migration was introduced.
-  // Idempotent: already-encrypted keys are detected and left untouched.
-  useEffect(() => {
-    if (isStaticExport) {
-      return;
-    }
-
-    let cancelled = false;
-
-    const migrateApiKeysToEncrypted = async () => {
-      await waitForDbReady();
-      if (cancelled) {
-        return;
-      }
-
-      await SettingsService.migrateApiKeysToEncrypted().catch((err) =>
-        console.warn('[SettingsService] migrateApiKeysToEncrypted error:', err)
-      );
-    };
-
-    void migrateApiKeysToEncrypted();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // One-time migration: enable require-export-encryption by default.
-  // No-op if the user has already explicitly configured this setting.
-  useEffect(() => {
-    if (isStaticExport) {
-      return;
-    }
-
-    let cancelled = false;
-
-    const migrateRequireExportEncryptionDefault = async () => {
-      await waitForDbReady();
-      if (cancelled) {
-        return;
-      }
-
-      await SettingsService.migrateRequireExportEncryptionDefault().catch((err) =>
-        console.warn('[SettingsService] migrateRequireExportEncryptionDefault error:', err)
-      );
-    };
-
-    void migrateRequireExportEncryptionDefault();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   // Boot-time tasks (native: Android + iOS, all run in parallel)
   //
