@@ -224,7 +224,6 @@ export class UserMetricService {
           type: plain.type,
           value: plain.value,
           date: plain.date,
-          timezone: plain.timezone,
         }).catch((err) => {
           handleError(err, 'UserMetricService.saveUserMetric.healthConnect');
         });
