@@ -16,6 +16,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTodayMood } from '@/hooks/useTodayMood';
 import { localDayStartMs } from '@/utils/calendarDate';
 import { showSnackbar } from '@/utils/snackbarService';
+import { getCurrentTimezone } from '@/utils/timezone';
 
 import { MoodSelectorCard } from './MoodSelectorCard';
 
@@ -82,7 +83,7 @@ export function HomeMoodPrompt({ onVisibilityChange }: HomeMoodPromptProps) {
 
     try {
       const dateTimestamp = localDayStartMs(new Date());
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const timezone = getCurrentTimezone();
 
       await UserMetricService.createMetric({
         type: 'mood',

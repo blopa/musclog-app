@@ -18,6 +18,7 @@ import migrationV16 from '@/database/migrations/2026/05/migration-v16';
 import migrationV17 from '@/database/migrations/2026/05/migration-v17';
 import migrationV18 from '@/database/migrations/2026/05/migration-v18';
 import migrationV19 from '@/database/migrations/2026/05/migration-v19';
+import migrationV20 from '@/database/migrations/2026/06/migration-v20';
 
 export const migrations = schemaMigrations({
   migrations: [
@@ -87,5 +88,9 @@ export const migrations = schemaMigrations({
     migrationV18,
     // Version 19: Add rep counting columns to workout_log_sets (rep_data_json)
     migrationV19,
+    // Version 20: Add timezone column to nutrition_logs and workout_logs.
+    // Legacy user_metrics.timezone IANA values are converted to offset format by the
+    // boot-time backfill UserMetricService.backfillTimezoneOffsets() (DST-aware, can't be SQL).
+    migrationV20,
   ],
 });

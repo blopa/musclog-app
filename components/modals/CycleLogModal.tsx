@@ -12,6 +12,7 @@ import {
 } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import { showSnackbar } from '@/utils/snackbarService';
+import { getCurrentTimezone } from '@/utils/timezone';
 
 import { CenteredModal } from './CenteredModal';
 import { DatePickerInput } from './DatePickerInput';
@@ -110,7 +111,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
     setIsSaving(true);
     try {
       const dateTimestamp = localDayStartMs(selectedDate);
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const timezone = getCurrentTimezone();
 
       if (flow !== null) {
         if (existingFlowId) {

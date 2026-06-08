@@ -22,6 +22,7 @@ import {
   MuscleService,
   NutritionGoalService,
   NutritionService,
+  UserMetricService,
   WorkoutService,
 } from '@/database/services';
 import { SettingsService } from '@/database/services/SettingsService';
@@ -389,6 +390,34 @@ export function AppBoot() {
     };
 
     void backfillNullTotalVolumes();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // Convert legacy user_metrics.timezone values from IANA zone names to the app's "±HH:MM"
+  // offset format (paired with the v20 migration). DST-aware, so it can't run as SQL.
+  // Runs once per boot but exits immediately when there is nothing to convert.
+  useEffect(() => {
+    if (isStaticExport) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const backfillTimezoneOffsets = async () => {
+      await waitForDbReady();
+      if (cancelled) {
+        return;
+      }
+
+      await UserMetricService.backfillTimezoneOffsets().catch((err) =>
+        console.warn('[UserMetricService] backfillTimezoneOffsets error:', err)
+      );
+    };
+
+    void backfillTimezoneOffsets();
 
     return () => {
       cancelled = true;

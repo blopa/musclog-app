@@ -36,6 +36,7 @@ import {
   UserService,
 } from '@/database/services';
 import { localDayStartMs } from '@/utils/calendarDate';
+import { getCurrentTimezone } from '@/utils/timezone';
 import { calculateWorkoutVolume } from '@/utils/workoutCalculator';
 
 /** Assumed user body weight (kg) for seeded workout volume (bodyweight exercises). */
@@ -838,7 +839,7 @@ async function seedWorkoutHistory(): Promise<{ created: number }> {
   let created = 0;
 
   try {
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const timezone = getCurrentTimezone();
     await database.write(async () => {
       // Get some exercises to use in workouts
       const exercises = await database.get<Exercise>('exercises').query().fetch();
@@ -1270,7 +1271,7 @@ async function seedUserMetrics(): Promise<{ created: number }> {
 
   try {
     await database.write(async () => {
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const timezone = getCurrentTimezone();
 
       // Local calendar day start (matches app convention / NutritionService queries)
       const daysAgo = (days: number): number => localDayStartMs(subDays(new Date(), days));

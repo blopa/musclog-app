@@ -6,6 +6,7 @@ import NutritionLog, { MealType } from '@/database/models/NutritionLog';
 import SavedForLaterGroup from '@/database/models/SavedForLaterGroup';
 import SavedForLaterItem from '@/database/models/SavedForLaterItem';
 import { localDayStartMs } from '@/utils/calendarDate';
+import { getCurrentTimezone } from '@/utils/timezone';
 import { widgetEvents } from '@/utils/widgetEvents';
 
 import { REPAIR_DESCRIPTORS, retryAfterRepair } from './DatabaseRepairService';
@@ -225,6 +226,7 @@ export class SavedForLaterService {
         database.get<NutritionLog>('nutrition_logs').prepareCreate((log) => {
           log.foodId = item.foodId!;
           log.date = dateTimestamp;
+          log.timezone = getCurrentTimezone();
           log.type = targetMealType;
           log.amount = item.amount;
           log.portionId = item.portionId;

@@ -3,6 +3,7 @@ import convert from 'convert';
 import type { Units } from '@/constants/settings';
 import i18n from '@/lang/lang';
 import { formatAppDecimal, formatAppInteger } from '@/utils/formatAppNumber';
+import { getCurrentTimezone } from '@/utils/timezone';
 import { cmToDisplay, kgToDisplay } from '@/utils/unitConversion';
 
 import { HealthConnectError, HealthConnectErrorCode } from './healthConnectErrors';
@@ -245,10 +246,10 @@ export class TimestampConverter {
   }
 
   /**
-   * Get timezone string (e.g., "America/New_York")
+   * Get the current device UTC offset as a "±HH:MM" string (e.g. "-05:00").
    */
   static getTimezone(): string {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone;
+    return getCurrentTimezone();
   }
 
   /**

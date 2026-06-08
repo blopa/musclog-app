@@ -7,6 +7,7 @@ import { encryptUserMetricFields } from '@/database/encryptionHelpers';
 import UserMetric, { type UserMetricType } from '@/database/models/UserMetric';
 import { writeUserMetricToHealthConnect } from '@/services/healthConnectFitness';
 import { handleError } from '@/utils/handleError';
+import { ianaZoneToTimezoneAt, isTimezoneOffset } from '@/utils/timezone';
 
 import { REPAIR_DESCRIPTORS, retryAfterRepair } from './DatabaseRepairService';
 
@@ -313,5 +314,55 @@ export class UserMetricService {
     const metric = await database.get<UserMetric>('user_metrics').find(id);
     // markAsDeleted is a @writer method, so it already manages its own write transaction
     await metric.markAsDeleted();
+  }
+
+  /**
+   * One-time backfill: convert legacy `user_metrics.timezone` values stored as IANA zone
+   * names (e.g. "America/New_York") to the app's "±HH:MM" offset format. The conversion is
+   * DST-aware — each row is resolved at its own `date` — so it can't be done in SQL and runs
+   * here as an idempotent boot-time backfill (rows already in offset form are skipped).
+   * Pairs with the v20 migration; see database/migrations/2026/06/migration-v20.ts.
+   */
+  static async backfillTimezoneOffsets(): Promise<void> {
+    // Legacy values are always either an IANA zone name (canonical IANA always contains a
+    // "/", e.g. "America/New_York") or the "UTC"/"GMT" fallbacks. Filtering to those means
+    // the query returns nothing once every row is in offset form, so re-runs stay cheap.
+    const metrics = await database
+      .get<UserMetric>('user_metrics')
+      .query(
+        Q.or(
+          Q.where('timezone', Q.like('%/%')),
+          Q.where('timezone', 'UTC'),
+          Q.where('timezone', 'GMT')
+        )
+      )
+      .fetch();
+
+    const updates = metrics
+      .map((metric) => {
+        const current = metric.timezone;
+        if (!current || isTimezoneOffset(current)) {
+          return null;
+        }
+        const offset = ianaZoneToTimezoneAt(current, new Date(metric.date));
+        return offset && offset !== current ? { metric, offset } : null;
+      })
+      .filter((update): update is { metric: UserMetric; offset: string } => update !== null);
+
+    if (updates.length === 0) {
+      return;
+    }
+
+    const now = Date.now();
+    await database.write(async () => {
+      await database.batch(
+        ...updates.map(({ metric, offset }) =>
+          metric.prepareUpdate((record) => {
+            record.timezone = offset;
+            record.updatedAt = now;
+          })
+        )
+      );
+    });
   }
 }
