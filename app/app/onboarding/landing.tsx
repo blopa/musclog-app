@@ -91,7 +91,11 @@ export default function LandingScreen() {
     };
 
     initializeApp();
-  }, [router, showSnackbar, t]);
+    // Run exactly once on mount. Seeding writes the device language, which flips i18n.language
+    // and changes the identity of `t`; including `t` (or other unstable values) here would
+    // restart seeding mid-flight and reset the database concurrently. See seedProductionData().
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleImportConfirm = useCallback(async () => {
     setLoading(true);
