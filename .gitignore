@@ -89,6 +89,7 @@ devenv.local.yaml
 .claude
 
 !.claude/skills/
+!.claude/skills/*
 
 # pre-commit
 .pre-commit-config.yaml
