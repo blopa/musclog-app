@@ -5,14 +5,22 @@ import { database } from '@/database';
 import NutritionGoal, { type EatingPhase } from '@/database/models/NutritionGoal';
 import { localDayKeyPlusCalendarDays, localDayStartFromUtcMs } from '@/utils/calendarDate';
 import {
+  calculateNutritionPlan,
+  eatingPhaseToWeightGoal,
+  generateWeeklyCheckins,
+} from '@/utils/nutritionCalculator';
+import {
   isDynamicNutritionGoalValid,
   normalizeNutritionGoalTargetWeight,
 } from '@/utils/nutritionGoalHelpers';
 import { getCurrentTimezone } from '@/utils/timezone';
+import { storedHeightToCm, storedWeightToKg } from '@/utils/unitConversion';
 import { widgetEvents } from '@/utils/widgetEvents';
 
 import { REPAIR_DESCRIPTORS, retryAfterRepair } from './DatabaseRepairService';
 import { NutritionCheckinService } from './NutritionCheckinService';
+import { SettingsService } from './SettingsService';
+import { UserService } from './UserService';
 
 function triggerWidgetUpdate(): void {
   widgetEvents.emitNutritionWidgetUpdate();
@@ -326,8 +334,6 @@ export class NutritionGoalService {
       throw new Error('Cannot regenerate check-ins for a deleted goal');
     }
 
-    // TODO: do not use dynamic import
-    const { UserService } = require('./UserService');
     const user = await UserService.getCurrentUser();
 
     if (!user) {
@@ -374,15 +380,6 @@ export class NutritionGoalService {
       .fetch();
 
     if (heightMetric.length > 0 && weightMetric.length > 0) {
-      // TODO: do not use dynamic import
-      const {
-        calculateNutritionPlan,
-        eatingPhaseToWeightGoal,
-        generateWeeklyCheckins,
-      } = require('../../utils/nutritionCalculator');
-      const { storedWeightToKg, storedHeightToCm } = require('../../utils/unitConversion');
-      const { SettingsService } = require('./SettingsService');
-
       const heightDecrypted = await (heightMetric[0] as any).getDecrypted();
       const weightDecrypted = await (weightMetric[0] as any).getDecrypted();
       const bodyFatDecrypted =
