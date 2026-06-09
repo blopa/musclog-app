@@ -68,7 +68,6 @@ import {
   localCalendarDayDateFromDayKeyMs,
   localDayStartMs,
 } from '@/utils/calendarDate';
-import { parseTimezoneOffsetMinutes } from '@/utils/timezone';
 import {
   getProductBarcodeFromSearchProduct,
   inferBarcodeNutritionSource,
@@ -98,6 +97,7 @@ import {
 } from '@/utils/openFoodFactsMapper';
 import { getProductName } from '@/utils/productName';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
+import { parseTimezoneOffsetMinutes } from '@/utils/timezone';
 import { getMassUnitLabel } from '@/utils/unitConversion';
 import { mapUSDAFoodToUnified, mapUSDANutritient } from '@/utils/usdaMapper';
 

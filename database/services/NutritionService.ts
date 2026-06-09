@@ -14,7 +14,6 @@ import { MealService } from '@/database/services/MealService';
 import i18n from '@/lang/lang';
 import { writeNutritionLogToHealthConnect } from '@/services/healthConnectNutrition';
 import {
-  localDayStartFromUtcMs,
   localDayStartMs,
   MS_PER_SOLAR_DAY,
   TIMEZONE_QUERY_BUFFER_MS,
@@ -732,6 +731,7 @@ export class NutritionService {
         ...logs.map((log) =>
           log.prepareUpdate((record) => {
             record.date = dateTimestamp;
+            record.timezone = getCurrentTimezone();
             record.type = targetMealType;
             record.updatedAt = now;
           })
@@ -825,9 +825,15 @@ export class NutritionService {
     }
 
     // We take a larger batch to find unique food IDs up to the requested limit.
-    const recentLogs = await query
-      .extend(Q.sortBy('created_at', Q.desc), Q.take(limit * 5))
-      .fetch();
+    let recentLogs = await query.extend(Q.sortBy('created_at', Q.desc), Q.take(limit * 5)).fetch();
+
+    // Post-filter to the exact target day when a date was provided.
+    if (date) {
+      const targetKey = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+      recentLogs = recentLogs.filter(
+        (log) => utcNormalizedDayKey(log.date, log.timezone) === targetKey
+      );
+    }
 
     // Keep the most recent log per food ID (already sorted desc, so first occurrence wins).
     const mostRecentLogByFoodId = new Map<string, NutritionLog>();
@@ -895,7 +901,15 @@ export class NutritionService {
       );
     }
 
-    const recentLogs = await query.extend(Q.sortBy('created_at', Q.desc), Q.take(limit)).fetch();
+    let recentLogs = await query.extend(Q.sortBy('created_at', Q.desc), Q.take(limit)).fetch();
+
+    // Post-filter to the exact target day when a date was provided.
+    if (date) {
+      const targetKey = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+      recentLogs = recentLogs.filter(
+        (log) => utcNormalizedDayKey(log.date, log.timezone) === targetKey
+      );
+    }
 
     const resolved = await Promise.all(
       recentLogs.map(async (log) => {
@@ -1048,14 +1062,15 @@ export class NutritionService {
     }
 
     const uniqueDayStarts = [
-      ...new Set(logs.map((log) => localDayStartFromUtcMs(log.date ?? 0))),
+      ...new Set(logs.map((log) => utcNormalizedDayKey(log.date ?? 0, log.timezone))),
     ].sort((a, b) => b - a);
 
     let streak = 0;
-    const expectedStart = localDayStartMs(new Date());
+    const now = new Date();
+    const todayKey = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
 
-    for (const dayStart of uniqueDayStarts) {
-      const diff = differenceInCalendarDays(new Date(expectedStart), new Date(dayStart));
+    for (const dayKey of uniqueDayStarts) {
+      const diff = Math.round((todayKey - dayKey) / MS_PER_SOLAR_DAY);
       if (diff === streak) {
         streak++;
       } else {
@@ -1085,8 +1100,8 @@ export class NutritionService {
         log.amount = originalLog.amount;
         log.portionId = originalLog.portionId;
         log.type = originalLog.type;
-        log.date = localDayStartFromUtcMs(originalLog.date);
-        log.timezone = getCurrentTimezone();
+        log.date = originalLog.date;
+        log.timezone = originalLog.timezone;
         log.loggedFoodNameRaw = originalLog.loggedFoodNameRaw;
         log.loggedCaloriesRaw = originalLog.loggedCaloriesRaw ?? '';
         log.loggedProteinRaw = originalLog.loggedProteinRaw ?? '';

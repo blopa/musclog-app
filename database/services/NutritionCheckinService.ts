@@ -6,7 +6,12 @@ import type { CheckinStatus } from '@/database/models/NutritionCheckin';
 import type NutritionLog from '@/database/models/NutritionLog';
 import type UserMetric from '@/database/models/UserMetric';
 import type WorkoutLog from '@/database/models/WorkoutLog';
-import { dayStartInTimezone, MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
+import {
+  dayStartInTimezone,
+  MS_PER_SOLAR_DAY,
+  TIMEZONE_QUERY_BUFFER_MS,
+  utcNormalizedDayKey,
+} from '@/utils/calendarDate';
 import { getCurrentTimezone } from '@/utils/timezone';
 
 export interface NutritionCheckinInput {
@@ -99,16 +104,29 @@ export class NutritionCheckinService {
       total: allCheckins.length,
     };
 
-    // Fetch weight metrics for current period
-    const weightMetrics = await database
+    // Compute UTC-normalized day keys for the period bounds so we can post-filter
+    // metrics/logs that were recorded in different timezones.
+    const periodStartKey = utcNormalizedDayKey(periodStart, tz);
+    const periodEndKey = utcNormalizedDayKey(periodEnd, tz);
+
+    // Fetch weight metrics for current period (widened ±14 h, post-filter by exact day key).
+    const weightMetricsRaw = await database
       .get<UserMetric>('user_metrics')
       .query(
         Q.where('type', 'weight'),
-        Q.where('date', Q.between(periodStart, periodEnd)),
+        Q.where(
+          'date',
+          Q.between(periodStart - TIMEZONE_QUERY_BUFFER_MS, periodEnd + TIMEZONE_QUERY_BUFFER_MS)
+        ),
         Q.where('deleted_at', Q.eq(null)),
         Q.sortBy('date', Q.asc)
       )
       .fetch();
+
+    const weightMetrics = weightMetricsRaw.filter((m) => {
+      const key = utcNormalizedDayKey(m.date, m.timezone);
+      return key >= periodStartKey && key < periodEndKey;
+    });
 
     // Build daily weights array (7 slots, one per day)
     const dailyWeights: number[] = Array(7).fill(0);
@@ -130,15 +148,23 @@ export class NutritionCheckinService {
 
     const trend = avgWeight - checkin.targetWeight;
 
-    // Fetch body fat metrics for current period
-    const bodyFatMetrics = await database
+    // Fetch body fat metrics for current period (widened ±14 h, post-filter by exact day key).
+    const bodyFatMetricsRaw = await database
       .get<UserMetric>('user_metrics')
       .query(
         Q.where('type', 'body_fat'),
-        Q.where('date', Q.between(periodStart, periodEnd)),
+        Q.where(
+          'date',
+          Q.between(periodStart - TIMEZONE_QUERY_BUFFER_MS, periodEnd + TIMEZONE_QUERY_BUFFER_MS)
+        ),
         Q.where('deleted_at', Q.eq(null))
       )
       .fetch();
+
+    const bodyFatMetrics = bodyFatMetricsRaw.filter((m) => {
+      const key = utcNormalizedDayKey(m.date, m.timezone);
+      return key >= periodStartKey && key < periodEndKey;
+    });
 
     let avgBodyFat: number | null = null;
     if (bodyFatMetrics.length > 0) {
@@ -148,11 +174,22 @@ export class NutritionCheckinService {
       avgBodyFat = bodyFatValues.reduce((a: number, b: number) => a + b, 0) / bodyFatValues.length;
     }
 
-    // Fetch nutrition logs for current period
-    const nutritionLogs = await database
+    // Fetch nutrition logs for current period (widened ±14 h, post-filter by exact day key).
+    const nutritionLogsRaw = await database
       .get<NutritionLog>('nutrition_logs')
-      .query(Q.where('date', Q.between(periodStart, periodEnd)), Q.where('deleted_at', Q.eq(null)))
+      .query(
+        Q.where(
+          'date',
+          Q.between(periodStart - TIMEZONE_QUERY_BUFFER_MS, periodEnd + TIMEZONE_QUERY_BUFFER_MS)
+        ),
+        Q.where('deleted_at', Q.eq(null))
+      )
       .fetch();
+
+    const nutritionLogs = nutritionLogsRaw.filter((log) => {
+      const key = utcNormalizedDayKey(log.date, log.timezone);
+      return key >= periodStartKey && key < periodEndKey;
+    });
 
     // Group nutrition logs by day and sum calories per day
     const caloriesByDay = new Map<number, number>();

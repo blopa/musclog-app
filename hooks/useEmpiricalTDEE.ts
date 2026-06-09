@@ -2,9 +2,10 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { NutritionService, UserMetricService } from '@/database/services';
 import {
-  localCalendarWeekIndexSince,
   localDayKeyPlusCalendarDays,
   localDayStartMs,
+  MS_PER_SOLAR_DAY,
+  utcNormalizedDayKey,
 } from '@/utils/calendarDate';
 import { calculateTDEE } from '@/utils/nutritionCalculator';
 import { storedWeightToKg } from '@/utils/unitConversion';
@@ -20,33 +21,43 @@ function average(values: number[]): number {
   return values.reduce((a, b) => a + b, 0) / values.length;
 }
 
+function utcWeekIndex(utcDayKey: number, utcStartKey: number): number {
+  return Math.floor((utcDayKey - utcStartKey) / (7 * MS_PER_SOLAR_DAY));
+}
+
 function bucketByWeek(
-  points: { date: number; valueKg: number }[],
-  startTs: number
-): Map<number, { date: number; valueKg: number }[]> {
-  const map = new Map<number, { date: number; valueKg: number }[]>();
+  points: { date: number; timezone?: string | null; valueKg: number }[],
+  utcStartKey: number
+): Map<number, { date: number; timezone?: string | null; valueKg: number }[]> {
+  const map = new Map<number, { date: number; timezone?: string | null; valueKg: number }[]>();
   for (const p of points) {
-    const w = localCalendarWeekIndexSince(p.date, startTs);
+    const dayKey = utcNormalizedDayKey(p.date, p.timezone);
+    const w = utcWeekIndex(dayKey, utcStartKey);
     if (!map.has(w)) {
       map.set(w, []);
     }
+
     map.get(w)!.push(p);
   }
+
   return map;
 }
 
 function bucketByWeekBodyFat(
-  points: { date: number; value: number }[],
-  startTs: number
-): Map<number, { date: number; value: number }[]> {
-  const map = new Map<number, { date: number; value: number }[]>();
+  points: { date: number; timezone?: string | null; value: number }[],
+  utcStartKey: number
+): Map<number, { date: number; timezone?: string | null; value: number }[]> {
+  const map = new Map<number, { date: number; timezone?: string | null; value: number }[]>();
   for (const p of points) {
-    const w = localCalendarWeekIndexSince(p.date, startTs);
+    const dayKey = utcNormalizedDayKey(p.date, p.timezone);
+    const w = utcWeekIndex(dayKey, utcStartKey);
     if (!map.has(w)) {
       map.set(w, []);
     }
+
     map.get(w)!.push(p);
   }
+
   return map;
 }
 
