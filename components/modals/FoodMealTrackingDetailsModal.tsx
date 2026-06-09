@@ -68,6 +68,7 @@ import {
   localCalendarDayDateFromDayKeyMs,
   localDayStartMs,
 } from '@/utils/calendarDate';
+import { parseTimezoneOffsetMinutes } from '@/utils/timezone';
 import {
   getProductBarcodeFromSearchProduct,
   inferBarcodeNutritionSource,
@@ -762,7 +763,18 @@ export function FoodMealTrackingDetailsModal({
 
     const setTime = () => {
       try {
-        setSelectedTime(new Date(foodLog.createdAt));
+        const recordingOffsetMinutes = foodLog.timezone
+          ? parseTimezoneOffsetMinutes(foodLog.timezone)
+          : null;
+        if (recordingOffsetMinutes !== null) {
+          // Shift createdAt so the device-local picker shows the recording-timezone time.
+          // e.g. 18:00 UTC logged in +04:00 → display as 22:00 on a +02:00 device.
+          const deviceOffsetMinutes = -new Date().getTimezoneOffset();
+          const adjustmentMs = (recordingOffsetMinutes - deviceOffsetMinutes) * 60000;
+          setSelectedTime(new Date(foodLog.createdAt + adjustmentMs));
+        } else {
+          setSelectedTime(new Date(foodLog.createdAt));
+        }
       } catch (e) {
         setSelectedTime(new Date());
       }
