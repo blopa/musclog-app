@@ -14,6 +14,7 @@ export default class NutritionCheckin extends Model {
 
   @field('nutrition_goal_id') declare nutritionGoalId: string;
   @field('checkin_date') declare checkinDate: number;
+  @field('timezone') timezone?: string;
   @field('target_weight') declare targetWeight: number;
   @field('target_body_fat') targetBodyFat?: number | null;
   @field('target_bmi') targetBmi?: number | null;

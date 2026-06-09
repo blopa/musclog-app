@@ -23,6 +23,7 @@ import {
   NutritionGoalService,
   NutritionService,
   UserMetricService,
+  TimezoneMigrationService,
   WorkoutService,
 } from '@/database/services';
 import { SettingsService } from '@/database/services/SettingsService';
@@ -113,6 +114,11 @@ const BOOT_MIGRATIONS: BootMigration[] = [
     // Convert legacy user_metrics.timezone IANA names to "±HH:MM" offset format (v20).
     tag: 'UserMetricService.backfillTimezoneOffsets',
     run: () => UserMetricService.backfillTimezoneOffsets(),
+  },
+  {
+    // Backfill missing timezone columns in newly updated tables (v21).
+    tag: 'TimezoneMigrationService.backfillMissingTimezones',
+    run: () => TimezoneMigrationService.backfillMissingTimezones(),
   },
   {
     // Encrypt API keys that were stored as plaintext before this migration was introduced.

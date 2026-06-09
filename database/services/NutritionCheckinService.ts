@@ -7,7 +7,11 @@ import type { CheckinStatus } from '@/database/models/NutritionCheckin';
 import type NutritionLog from '@/database/models/NutritionLog';
 import type UserMetric from '@/database/models/UserMetric';
 import type WorkoutLog from '@/database/models/WorkoutLog';
-import { localDayKeyPlusCalendarDays, localDayStartFromUtcMs } from '@/utils/calendarDate';
+import {
+  dayStartInTimezone,
+  localDayKeyPlusCalendarDays,
+  localDayStartFromUtcMs,
+} from '@/utils/calendarDate';
 
 export interface NutritionCheckinInput {
   checkinDate: number;
@@ -82,7 +86,7 @@ export class NutritionCheckinService {
    * Compute metrics for a check-in based on logs from the 7 days ending on checkinDate.
    */
   static async getCheckinMetrics(checkin: NutritionCheckin): Promise<CheckinMetrics> {
-    const periodEnd = localDayStartFromUtcMs(checkin.checkinDate);
+    const periodEnd = dayStartInTimezone(checkin.checkinDate, checkin.timezone ?? undefined);
     const periodStart = localDayKeyPlusCalendarDays(periodEnd, -7);
     const prevPeriodStart = localDayKeyPlusCalendarDays(periodEnd, -14);
 
@@ -111,10 +115,8 @@ export class NutritionCheckinService {
     for (const metric of weightMetrics) {
       const { value } = await metric.getDecrypted();
       decryptedWeights.push(value);
-      const dayIndex = differenceInCalendarDays(
-        new Date(localDayStartFromUtcMs(metric.date)),
-        new Date(localDayStartFromUtcMs(periodStart))
-      );
+      const mDay = dayStartInTimezone(metric.date, metric.timezone);
+      const dayIndex = differenceInCalendarDays(new Date(mDay), new Date(periodStart));
       if (dayIndex >= 0 && dayIndex < 7) {
         dailyWeights[dayIndex] = value;
       }
@@ -155,7 +157,7 @@ export class NutritionCheckinService {
     const caloriesByDay = new Map<number, number>();
     for (const log of nutritionLogs) {
       const snapshot = await log.getDecryptedSnapshot();
-      const dayKey = localDayStartFromUtcMs(log.date);
+      const dayKey = dayStartInTimezone(log.date, log.timezone ?? undefined);
       caloriesByDay.set(dayKey, (caloriesByDay.get(dayKey) ?? 0) + (snapshot.loggedCalories ?? 0));
     }
 

@@ -31,6 +31,7 @@ export default class ExerciseGoal extends Model {
 
   // Shared
   @field('target_date') declare targetDate: string | null;
+  @field('timezone') timezone?: string;
   @field('notes') declare notes: string | null;
   @field('effective_until') declare effectiveUntil: number | null;
 
@@ -40,6 +41,6 @@ export default class ExerciseGoal extends Model {
 
   // Helper: Is this goal currently active?
   get isActive(): boolean {
-    return this.effectiveUntil === null && !this.deletedAt;
+    return this.effectiveUntil === null && !!this.deletedAt;
   }
 }

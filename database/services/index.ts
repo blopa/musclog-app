@@ -41,6 +41,7 @@ export { NutritionGoalService } from './NutritionGoalService';
 export { ProgressService } from './ProgressService';
 export { SettingsService } from './SettingsService';
 export { SupplementService } from './SupplementService';
+export { TimezoneMigrationService } from './TimezoneMigrationService';
 export { UserMetricService } from './UserMetricService';
 export { UserService } from './UserService';
 export { WorkoutAnalytics } from './WorkoutAnalytics';

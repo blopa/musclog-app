@@ -187,11 +187,47 @@ export function localDayKeyPlusCalendarDaysFromNow(deltaDays: number): number {
 }
 
 /**
+ * Resolves the instant `ms` to the start of the calendar day it fell on in `timezone`.
+ * Defaults to device local timezone if `timezone` (±HH:MM) is omitted.
+ */
+export function dayStartInTimezone(ms: number, timezone?: string): number {
+  if (!timezone || !/^[+-]\d{2}:\d{2}$/.test(timezone)) {
+    return localDayStartFromUtcMs(ms);
+  }
+
+  const sign = timezone[0] === '+' ? 1 : -1;
+  const hours = parseInt(timezone.slice(1, 3), 10);
+  const minutes = parseInt(timezone.slice(4, 6), 10);
+  const offsetMs = sign * (hours * 3600000 + minutes * 60000);
+
+  // shift the UTC instant to the local time, find midnight, then shift back to UTC
+  const localMs = ms + offsetMs;
+  const localDate = new Date(localMs);
+  const localMidnight =
+    Date.UTC(
+      localDate.getUTCFullYear(),
+      localDate.getUTCMonth(),
+      localDate.getUTCDate(),
+      0,
+      0,
+      0,
+      0
+    ) - offsetMs;
+
+  return localMidnight;
+}
+
+/**
  * True if both values fall on the same local calendar day.
  * Accepts a `Date` or a stored day key / instant in milliseconds.
+ * `aTimezone` is the offset (±HH:MM) of the instant `a`.
  */
-export function isSameLocalCalendarDay(a: Date | number, b: Date | number): boolean {
-  const ta = typeof a === 'number' ? localDayStartFromUtcMs(a) : localDayStartMs(a);
+export function isSameLocalCalendarDay(
+  a: Date | number,
+  b: Date | number,
+  aTimezone?: string
+): boolean {
+  const ta = typeof a === 'number' ? dayStartInTimezone(a, aTimezone) : localDayStartMs(a);
   const tb = typeof b === 'number' ? localDayStartFromUtcMs(b) : localDayStartMs(b);
   return ta === tb;
 }
