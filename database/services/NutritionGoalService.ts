@@ -48,6 +48,7 @@ export interface NutritionGoalInput {
   targetBMI?: number | null;
   targetFFMI?: number | null;
   targetDate?: number | null;
+  timezone?: string;
   isDynamic?: boolean;
 }
 
@@ -169,7 +170,7 @@ export class NutritionGoalService {
         r.fats = data.fats;
         r.fiber = data.fiber;
         r.eatingPhase = data.eatingPhase;
-        r.timezone = getCurrentTimezone();
+        r.timezone = data.timezone ?? getCurrentTimezone();
         r.targetWeight = normalizedTargetWeight ?? 0;
         r.targetBodyFat = data.targetBodyFat ?? null;
         r.targetBmi = data.targetBMI ?? null;
@@ -303,6 +304,10 @@ export class NutritionGoalService {
           record.targetDate = updates.targetDate ?? null;
         }
 
+        if (updates.timezone !== undefined) {
+          record.timezone = updates.timezone;
+        }
+
         if (updates.isDynamic !== undefined) {
           record.isDynamic = updates.isDynamic;
         }
@@ -417,7 +422,11 @@ export class NutritionGoalService {
       );
 
       if (checkins.length > 0) {
-        await NutritionCheckinService.createBatch(goalId, checkins);
+        const timezone = goal.timezone ?? getCurrentTimezone();
+        await NutritionCheckinService.createBatch(
+          goalId,
+          checkins.map((checkin) => ({ ...checkin, timezone }))
+        );
       }
     }
   }
@@ -468,7 +477,7 @@ export class NutritionGoalService {
         r.fats = data.fats;
         r.fiber = data.fiber;
         r.eatingPhase = data.eatingPhase;
-        r.timezone = getCurrentTimezone();
+        r.timezone = data.timezone ?? getCurrentTimezone();
         r.targetWeight = normalizedTargetWeight ?? 0;
         r.targetBodyFat = data.targetBodyFat ?? null;
         r.targetBmi = data.targetBMI ?? null;

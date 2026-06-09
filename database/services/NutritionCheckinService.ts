@@ -16,6 +16,7 @@ export interface NutritionCheckinInput {
   targetBmi?: number | null;
   targetFfmi?: number | null;
   status?: CheckinStatus;
+  timezone?: string;
 }
 
 export interface CheckinMetrics {
@@ -243,7 +244,7 @@ export class NutritionCheckinService {
       return await database.get<NutritionCheckin>('nutrition_checkins').create((r) => {
         r.nutritionGoalId = nutritionGoalId;
         r.checkinDate = data.checkinDate;
-        r.timezone = getCurrentTimezone();
+        r.timezone = data.timezone ?? getCurrentTimezone();
         r.targetWeight = data.targetWeight;
         r.targetBodyFat = data.targetBodyFat ?? null;
         r.targetBmi = data.targetBmi ?? null;
@@ -268,14 +269,14 @@ export class NutritionCheckinService {
 
     return await database.write(async () => {
       const now = Date.now();
-      const timezone = getCurrentTimezone();
+      const fallbackTimezone = getCurrentTimezone();
       const collection = database.get<NutritionCheckin>('nutrition_checkins');
 
       const preparedRecords = checkins.map((data) =>
         collection.prepareCreate((r) => {
           r.nutritionGoalId = nutritionGoalId;
           r.checkinDate = data.checkinDate;
-          r.timezone = timezone;
+          r.timezone = data.timezone ?? fallbackTimezone;
           r.targetWeight = data.targetWeight;
           r.targetBodyFat = data.targetBodyFat ?? null;
           r.targetBmi = data.targetBmi ?? null;
@@ -309,21 +310,31 @@ export class NutritionCheckinService {
         if (updates.checkinDate !== undefined) {
           record.checkinDate = updates.checkinDate;
         }
+
         if (updates.targetWeight !== undefined) {
           record.targetWeight = updates.targetWeight;
         }
+
         if (updates.targetBodyFat !== undefined) {
           record.targetBodyFat = updates.targetBodyFat;
         }
+
         if (updates.targetBmi !== undefined) {
           record.targetBmi = updates.targetBmi;
         }
+
         if (updates.targetFfmi !== undefined) {
           record.targetFfmi = updates.targetFfmi;
         }
+
         if (updates.status !== undefined) {
           record.status = updates.status;
         }
+
+        if (updates.timezone !== undefined) {
+          record.timezone = updates.timezone;
+        }
+
         record.updatedAt = Date.now();
       });
 

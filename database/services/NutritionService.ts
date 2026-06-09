@@ -542,6 +542,7 @@ export class NutritionService {
       amount?: number;
       mealType?: MealType;
       portionId?: string;
+      timezone?: string;
     }
   ): Promise<NutritionLog> {
     const updatedLog = await database.write(async () => {
@@ -555,12 +556,19 @@ export class NutritionService {
         if (updates.amount !== undefined) {
           record.amount = updates.amount;
         }
+
         if (updates.mealType !== undefined) {
           record.type = updates.mealType;
         }
+
         if (updates.portionId !== undefined) {
           record.portionId = updates.portionId;
         }
+
+        if (updates.timezone !== undefined) {
+          record.timezone = updates.timezone;
+        }
+
         record.updatedAt = Date.now();
       });
 

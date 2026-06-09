@@ -277,6 +277,7 @@ export class UserMetricService {
       unit?: string;
       note?: string;
       date?: number;
+      timezone?: string;
       type?: UserMetricType | string;
     }
   ): Promise<UserMetric> {
@@ -303,12 +304,19 @@ export class UserMetricService {
           record.valueRaw = encrypted.value;
           record.unitRaw = encrypted.unit;
         }
+
         if (updates.date !== undefined) {
           record.date = updates.date;
         }
+
+        if (updates.timezone !== undefined) {
+          record.timezone = updates.timezone;
+        }
+
         if (updates.type !== undefined) {
           record.type = updates.type as UserMetricType;
         }
+
         record.updatedAt = Date.now();
       });
 

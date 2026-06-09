@@ -14,6 +14,7 @@ import {
   NutritionGoalService,
   NutritionService,
   UserMetricService,
+  WorkoutService,
   WorkoutTemplateService,
 } from '@/database/services';
 import { localDayStartFromUtcMs } from '@/utils/calendarDate';
@@ -118,6 +119,14 @@ const EATING_PHASES = ['cut', 'maintain', 'bulk'] as const;
 
 // Checkin statuses for Nutrition Checkin
 const CHECKIN_STATUSES = ['pending', 'ahead', 'onTrack', 'behind'] as const;
+
+const TIMEZONE_FIELD: EditFieldConfig = {
+  type: 'text',
+  key: 'timezone',
+  label: 'common.timezone',
+  placeholder: 'common.timezonePlaceholder',
+  required: true,
+};
 
 /**
  * Get edit field configuration for a given entity type.
@@ -254,6 +263,7 @@ export function getEditFields(entityType: DataLogModalVariant, units?: Units): E
           label: 'bodyMetrics.addEntry.date',
           required: true,
         },
+        TIMEZONE_FIELD,
       ];
 
     case 'workoutTemplate':
@@ -376,7 +386,11 @@ export function getEditFields(entityType: DataLogModalVariant, units?: Units): E
             label: `food.meals.${type === 'snack' ? 'snacks' : type}`,
           })),
         },
+        TIMEZONE_FIELD,
       ];
+
+    case 'workoutLog':
+      return [TIMEZONE_FIELD];
 
     case 'nutritionGoal':
       return [
@@ -480,6 +494,7 @@ export function getEditFields(entityType: DataLogModalVariant, units?: Units): E
           clearLabel: 'goalsManagement.manageGoalData.targetDate.clear',
           unsetPlaceholder: 'goalsManagement.manageGoalData.targetDate.notSet',
         },
+        TIMEZONE_FIELD,
       ];
 
     case 'chatMessage':
@@ -502,6 +517,7 @@ export function getEditFields(entityType: DataLogModalVariant, units?: Units): E
           label: 'goalsManagement.manageCheckinData.checkinDate',
           required: true,
         },
+        TIMEZONE_FIELD,
         {
           type: 'select',
           key: 'status',
@@ -590,6 +606,7 @@ export async function getInitialValues(
         type: recordAny.type ?? 'weight',
         value: decrypted.value ?? 0,
         date: decrypted.date ?? Date.now(),
+        timezone: recordAny.timezone ?? getCurrentTimezone(),
       };
     }
 
@@ -617,6 +634,12 @@ export async function getInitialValues(
       return {
         amount: recordAny.amount ?? 0,
         mealType: recordAny.type ?? 'breakfast',
+        timezone: recordAny.timezone ?? getCurrentTimezone(),
+      };
+
+    case 'workoutLog':
+      return {
+        timezone: recordAny.timezone ?? getCurrentTimezone(),
       };
 
     case 'nutritionGoal':
@@ -633,6 +656,7 @@ export async function getInitialValues(
         targetBMI: recordAny.targetBmi ?? undefined,
         targetFFMI: recordAny.targetFfmi ?? undefined,
         targetDate: recordAny.targetDate ?? null,
+        timezone: recordAny.timezone ?? getCurrentTimezone(),
       };
 
     case 'chatMessage':
@@ -648,6 +672,7 @@ export async function getInitialValues(
         targetBodyFat: recordAny.targetBodyFat ?? undefined,
         targetBmi: recordAny.targetBmi ?? undefined,
         targetFfmi: recordAny.targetFfmi ?? undefined,
+        timezone: recordAny.timezone ?? getCurrentTimezone(),
       };
 
     default:
@@ -720,6 +745,7 @@ export async function saveRecord(
         value,
         unit,
         date: values.date as number | undefined,
+        timezone: String(values.timezone ?? '').trim(),
       });
       break;
     }
@@ -753,7 +779,14 @@ export async function saveRecord(
       await NutritionService.updateNutritionLog(recordId, {
         amount: values.amount as number | undefined,
         mealType: values.mealType as any,
+        timezone: String(values.timezone ?? '').trim(),
         // Note: portionId editing would require fetching available portions, deferred for now
+      });
+      break;
+
+    case 'workoutLog':
+      await WorkoutService.updateWorkoutMetadata(recordId, {
+        timezone: String(values.timezone ?? '').trim(),
       });
       break;
 
@@ -781,6 +814,7 @@ export async function saveRecord(
             values.targetDate !== undefined
               ? ((values.targetDate as number | null | undefined) ?? null)
               : undefined,
+          timezone: String(values.timezone ?? '').trim(),
         },
         true
       );
@@ -804,6 +838,7 @@ export async function saveRecord(
         targetBodyFat: values.targetBodyFat as number | undefined,
         targetBmi: values.targetBmi as number | undefined,
         targetFfmi: values.targetFfmi as number | undefined,
+        timezone: String(values.timezone ?? '').trim(),
       });
       break;
     }
@@ -861,7 +896,7 @@ export function getCreateInitialValues(
       return { message: '', sender: 'user', context: 'general' };
 
     case 'userMetric':
-      return { type: 'weight', value: 0, date: Date.now() };
+      return { type: 'weight', value: 0, date: Date.now(), timezone: getCurrentTimezone() };
 
     case 'nutritionGoal':
       return {
@@ -877,6 +912,7 @@ export function getCreateInitialValues(
         targetBMI: undefined,
         targetFFMI: undefined,
         targetDate: null,
+        timezone: getCurrentTimezone(),
       };
 
     case 'nutritionCheckin':
@@ -887,6 +923,7 @@ export function getCreateInitialValues(
         targetBodyFat: undefined,
         targetBmi: undefined,
         targetFfmi: undefined,
+        timezone: getCurrentTimezone(),
       };
 
     case 'meal':
@@ -967,7 +1004,7 @@ export async function createRecord(
         value,
         unit,
         date: localDayStartFromUtcMs(rawDate),
-        timezone: getCurrentTimezone(),
+        timezone: String(values.timezone ?? getCurrentTimezone()).trim(),
       });
       break;
     }
@@ -991,6 +1028,7 @@ export async function createRecord(
         targetBMI: values.targetBMI as number | undefined,
         targetFFMI: values.targetFFMI as number | undefined,
         targetDate: (values.targetDate as number | null | undefined) ?? null,
+        timezone: String(values.timezone ?? getCurrentTimezone()).trim(),
       });
 
       await NutritionGoalService.regenerateCheckins(savedGoal.id);
@@ -1015,6 +1053,7 @@ export async function createRecord(
         targetBodyFat: values.targetBodyFat as number | undefined,
         targetBmi: values.targetBmi as number | undefined,
         targetFfmi: values.targetFfmi as number | undefined,
+        timezone: String(values.timezone ?? getCurrentTimezone()).trim(),
       });
       break;
     }
