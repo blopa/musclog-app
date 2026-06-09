@@ -508,7 +508,7 @@ export class ProgressService {
   ): Promise<WorkoutVolumePoint[]> {
     return logs
       .map((log) => ({
-        date: log.startedAt ?? 0,
+        date: this.getWorkoutLogDayKey(log),
         volume: log.totalVolume ?? 0,
       }))
       .sort((a, b) => a.date - b.date);
@@ -851,6 +851,10 @@ export class ProgressService {
     return date; // daily — already a UTC midnight key
   }
 
+  private static getWorkoutLogDayKey(log: WorkoutLog): number {
+    return utcNormalizedDayKey(log.startedAt ?? 0, log.timezone);
+  }
+
   private static calculateCorrelationHistory(
     workoutVolumeHistory: WorkoutVolumePoint[],
     nutritionDaily: DailyNutrition[],
@@ -977,7 +981,7 @@ export class ProgressService {
       }
 
       const workoutsInPeriod = workoutLogs.filter((wl) => {
-        const start = this.getStartOfAggregation(wl.startedAt || 0, aggregation);
+        const start = this.getStartOfAggregation(this.getWorkoutLogDayKey(wl), aggregation);
         return start === dayTs;
       });
 
@@ -1019,7 +1023,7 @@ export class ProgressService {
     >();
 
     for (const wl of workoutLogs) {
-      const start = this.getStartOfAggregation(wl.startedAt || 0, aggregation);
+      const start = this.getStartOfAggregation(this.getWorkoutLogDayKey(wl), aggregation);
       const existing = groupedData.get(start) || {
         volume: 0,
         exhaustion: 0,
@@ -1107,7 +1111,7 @@ export class ProgressService {
     const groupedMuscleVol = new Map<number, Record<string, number>>();
 
     for (const log of workoutLogs) {
-      const start = this.getStartOfAggregation(log.startedAt || 0, aggregation);
+      const start = this.getStartOfAggregation(this.getWorkoutLogDayKey(log), aggregation);
       const muscleGroupVolume = groupedMuscleVol.get(start) || {};
       const logExs = allLogExercises.filter((le) => le.workoutLogId === log.id);
       for (const le of logExs) {

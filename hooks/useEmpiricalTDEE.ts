@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { NutritionService, UserMetricService } from '@/database/services';
 import {
+  localDayClosedRangeMaxMs,
   localDayKeyPlusCalendarDays,
   localDayStartMs,
   MS_PER_SOLAR_DAY,
@@ -84,11 +85,19 @@ async function getHistoricalNutritionParamsCustom(options: {
   } = options;
 
   const endDayStartTs = localDayStartMs(asOfDate);
+  const endMetricTs = localDayClosedRangeMaxMs(asOfDate);
   const inclusiveRangeEndDate = new Date(endDayStartTs);
   const startTs = localDayKeyPlusCalendarDays(endDayStartTs, -lookbackDays);
   const startOfRange = new Date(startTs);
 
-  const dateRange = { startDate: startTs, endDate: endDayStartTs };
+  const startTsDate = new Date(startTs);
+  const utcStartKey = Date.UTC(
+    startTsDate.getFullYear(),
+    startTsDate.getMonth(),
+    startTsDate.getDate()
+  );
+
+  const dateRange = { startDate: startTs, endDate: endMetricTs };
 
   const [weightMetrics, bodyFatMetrics, rangeNutrients, nutritionLogs] = await Promise.all([
     UserMetricService.getMetricsHistory('weight', dateRange),
@@ -97,7 +106,9 @@ async function getHistoricalNutritionParamsCustom(options: {
     NutritionService.getNutritionLogsForDateRange(startOfRange, inclusiveRangeEndDate),
   ]);
 
-  const distinctDaysWithNutrition = new Set(nutritionLogs.map((log) => log.date)).size;
+  const distinctDaysWithNutrition = new Set(
+    nutritionLogs.map((log) => utcNormalizedDayKey(log.date, log.timezone))
+  ).size;
   if (distinctDaysWithNutrition < minNutritionDays || rangeNutrients.calories <= 0) {
     return null;
   }
@@ -106,11 +117,14 @@ async function getHistoricalNutritionParamsCustom(options: {
     weightMetrics.map(async (m) => {
       const d = await m.getDecrypted();
       const valueKg = storedWeightToKg(d.value, d.unit);
-      return { date: m.date, valueKg };
+      return { date: m.date, timezone: m.timezone, valueKg };
     })
   );
 
-  weightWithDecrypted.sort((a, b) => a.date - b.date);
+  weightWithDecrypted.sort(
+    (a, b) => utcNormalizedDayKey(a.date, a.timezone) - utcNormalizedDayKey(b.date, b.timezone)
+  );
+
   if (weightWithDecrypted.length < 2) {
     return null;
   }
@@ -119,11 +133,12 @@ async function getHistoricalNutritionParamsCustom(options: {
   let finalWeight: number;
 
   if (useWeeklyAverages) {
-    const weightByWeek = bucketByWeek(weightWithDecrypted, startTs);
+    const weightByWeek = bucketByWeek(weightWithDecrypted, utcStartKey);
     const weekIndices = Array.from(weightByWeek.keys()).sort((a, b) => a - b);
     if (weekIndices.length < 2) {
       return null;
     }
+
     initialWeight = average(weightByWeek.get(weekIndices[0])!.map((x) => x.valueKg));
     finalWeight = average(
       weightByWeek.get(weekIndices[weekIndices.length - 1])!.map((x) => x.valueKg)
@@ -140,12 +155,15 @@ async function getHistoricalNutritionParamsCustom(options: {
     const bodyFatWithDecrypted = await Promise.all(
       bodyFatMetrics.map(async (m) => {
         const d = await m.getDecrypted();
-        return { date: m.date, value: d.value };
+        return { date: m.date, timezone: m.timezone, value: d.value };
       })
     );
-    bodyFatWithDecrypted.sort((a, b) => a.date - b.date);
+    bodyFatWithDecrypted.sort(
+      (a, b) => utcNormalizedDayKey(a.date, a.timezone) - utcNormalizedDayKey(b.date, b.timezone)
+    );
+
     if (useWeeklyAverages) {
-      const bodyFatByWeek = bucketByWeekBodyFat(bodyFatWithDecrypted, startTs);
+      const bodyFatByWeek = bucketByWeekBodyFat(bodyFatWithDecrypted, utcStartKey);
       const weekIndices = Array.from(bodyFatByWeek.keys()).sort((a, b) => a - b);
       if (weekIndices.length >= 2) {
         initialFatPercent = average(bodyFatByWeek.get(weekIndices[0])!.map((x) => x.value));

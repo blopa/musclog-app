@@ -89,18 +89,20 @@ export class UserMetricService {
     type: UserMetricType | string,
     maxDate: number
   ): Promise<UserMetric | null> {
+    const maxKey = utcNormalizedDayKey(maxDate, null);
     const metrics = await database
       .get<UserMetric>('user_metrics')
       .query(
         Q.where('type', type),
         Q.where('deleted_at', Q.eq(null)),
-        Q.where('date', Q.lte(maxDate)),
+        Q.where('date', Q.lte(maxDate + TIMEZONE_QUERY_BUFFER_MS)),
         Q.sortBy('date', Q.desc),
-        Q.sortBy('updated_at', Q.desc),
-        Q.take(1)
+        Q.sortBy('updated_at', Q.desc)
       )
       .fetch();
-    return metrics[0] ?? null;
+    return (
+      metrics.find((metric) => utcNormalizedDayKey(metric.date, metric.timezone) <= maxKey) ?? null
+    );
   }
 
   /**

@@ -6,12 +6,7 @@ import { database } from '@/database';
 import Food from '@/database/models/Food';
 import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
 import { NutritionService } from '@/database/services';
-import {
-  localDayStartMs,
-  localNextDayStartMsFromDate,
-  MS_PER_SOLAR_DAY,
-  TIMEZONE_QUERY_BUFFER_MS,
-} from '@/utils/calendarDate';
+import { MS_PER_SOLAR_DAY, TIMEZONE_QUERY_BUFFER_MS } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 
 // Hook parameters
@@ -541,8 +536,10 @@ export function useNutritionLogs({
       const nextStart = targetKey + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS;
       query = query.extend(Q.where('date', Q.gte(start)), Q.where('date', Q.lt(nextStart)));
     } else if (mode === 'range' && startDate && endDate) {
-      const startTimestamp = localDayStartMs(startDate) - TIMEZONE_QUERY_BUFFER_MS;
-      const endTimestamp = localNextDayStartMsFromDate(endDate) + TIMEZONE_QUERY_BUFFER_MS;
+      const startKey = Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+      const endKey = Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+      const startTimestamp = startKey - TIMEZONE_QUERY_BUFFER_MS;
+      const endTimestamp = endKey + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS;
       query = query.extend(
         Q.where('date', Q.gte(startTimestamp)),
         Q.where('date', Q.lt(endTimestamp))

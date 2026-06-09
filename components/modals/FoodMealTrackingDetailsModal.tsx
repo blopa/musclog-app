@@ -163,6 +163,10 @@ function getMealDefaultTime(mealType: MealType, date: Date): Date {
   return d;
 }
 
+function formatTimezoneLabel(timezone?: string): string | undefined {
+  return timezone ? `UTC${timezone}` : undefined;
+}
+
 function areCoreMacrosEffectivelyZero(data: {
   calories?: unknown;
   protein?: unknown;
@@ -769,7 +773,7 @@ export function FoodMealTrackingDetailsModal({
         if (recordingOffsetMinutes !== null) {
           // Shift createdAt so the device-local picker shows the recording-timezone time.
           // e.g. 18:00 UTC logged in +04:00 → display as 22:00 on a +02:00 device.
-          const deviceOffsetMinutes = -new Date().getTimezoneOffset();
+          const deviceOffsetMinutes = -new Date(foodLog.createdAt).getTimezoneOffset();
           const adjustmentMs = (recordingOffsetMinutes - deviceOffsetMinutes) * 60000;
           setSelectedTime(new Date(foodLog.createdAt + adjustmentMs));
         } else {
@@ -2598,7 +2602,7 @@ export function FoodMealTrackingDetailsModal({
               selectedTime={selectedTime}
               onPress={() => setIsTimePickerVisible(true)}
               variant="default"
-              timezoneLabel={foodLog?.timezone ?? undefined}
+              timezoneLabel={formatTimezoneLabel(foodLog?.timezone)}
             />
           </View>
         </View>
