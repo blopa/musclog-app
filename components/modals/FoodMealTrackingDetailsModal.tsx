@@ -64,9 +64,9 @@ import {
   isSuccessStatus,
 } from '@/types/guards/openFoodFacts';
 import {
+  calendarDateFromRecordDay,
+  dayKeyForCalendarDateInTimezone,
   localCalendarDayDate,
-  localCalendarDayDateFromDayKeyMs,
-  localDayStartMs,
 } from '@/utils/calendarDate';
 import {
   getProductBarcodeFromSearchProduct,
@@ -758,7 +758,7 @@ export function FoodMealTrackingDetailsModal({
 
     const setDate = () => {
       try {
-        setSelectedDate(localCalendarDayDateFromDayKeyMs(foodLog.date));
+        setSelectedDate(calendarDateFromRecordDay(foodLog.date, foodLog.timezone));
       } catch (e) {
         setSelectedDate(localCalendarDayDate(new Date()));
       }
@@ -1831,19 +1831,15 @@ export function FoodMealTrackingDetailsModal({
       // If editing an existing food log, update it instead of creating a new one
       if (foodLog) {
         try {
-          const dateTimestamp = localDayStartMs(selectedDate);
-
-          const updates: Promise<unknown>[] = [
-            foodLog.updateAmount(servingSize),
-            foodLog.updateMealType(selectedMeal),
-            foodLog.updateDate(dateTimestamp),
-          ];
-
-          if (!resolvedFoodServingMode) {
-            updates.push(foodLog.updatePortion(undefined));
-          }
-
-          await Promise.all(updates);
+          const timezone = foodLog.timezone;
+          const dateTimestamp = dayKeyForCalendarDateInTimezone(selectedDate, timezone);
+          await foodLog.updateTrackingDetails({
+            amount: servingSize,
+            date: dateTimestamp,
+            mealType: selectedMeal,
+            portionId: resolvedFoodServingMode ? foodLog.portionId : undefined,
+            timezone,
+          });
 
           // Call callback if provided
           onAddFood?.({ servingSize, meal: selectedMeal, date: selectedDate });

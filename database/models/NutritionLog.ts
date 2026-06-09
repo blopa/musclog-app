@@ -107,6 +107,27 @@ export default class NutritionLog extends Model {
     });
   }
 
+  @writer
+  async updateTrackingDetails(data: {
+    amount: number;
+    date: number;
+    mealType: MealType;
+    portionId?: string;
+    timezone?: string;
+  }): Promise<void> {
+    await this.update((record) => {
+      record.amount = data.amount;
+      record.date = data.date;
+      record.type = data.mealType;
+      record.portionId = data.portionId;
+      if (data.timezone !== undefined) {
+        record.timezone = data.timezone;
+      }
+
+      record.updatedAt = Date.now();
+    });
+  }
+
   /** Decrypt snapshot fields (logged_*). Use this for display and calculations. */
   async getDecryptedSnapshot(): Promise<DecryptedNutritionLogSnapshot> {
     const [

@@ -142,7 +142,7 @@ export class UserMetricService {
         );
       }
 
-      if (limit !== undefined && limit > 0) {
+      if (!dateRange && limit !== undefined && limit > 0) {
         if (offset !== undefined && offset > 0) {
           query = query.extend(Q.skip(offset), Q.take(limit));
         } else {
@@ -155,10 +155,17 @@ export class UserMetricService {
       if (dateRange) {
         const startKey = utcNormalizedDayKey(dateRange.startDate, null);
         const endKey = utcNormalizedDayKey(dateRange.endDate, null);
-        return raw.filter((m) => {
+        const filtered = raw.filter((m) => {
           const key = utcNormalizedDayKey(m.date, m.timezone);
           return key >= startKey && key <= endKey;
         });
+
+        if (limit !== undefined && limit > 0) {
+          const start = offset && offset > 0 ? offset : 0;
+          return filtered.slice(start, start + limit);
+        }
+
+        return filtered;
       }
 
       return raw;

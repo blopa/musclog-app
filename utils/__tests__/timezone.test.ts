@@ -1,6 +1,11 @@
-import { utcNormalizedDayKey } from '@/utils/calendarDate';
+import {
+  calendarDateFromRecordDay,
+  dayKeyForCalendarDateInTimezone,
+  utcNormalizedDayKey,
+} from '@/utils/calendarDate';
 import {
   getCurrentTimezone,
+  getTimezoneAt,
   ianaZoneToTimezoneAt,
   isTimezoneOffset,
   normalizeTimezoneToOffset,
@@ -131,6 +136,20 @@ describe('getCurrentTimezone', () => {
   });
 });
 
+describe('getTimezoneAt', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('uses the offset from the provided date, not the current instant', () => {
+    const spy = jest.spyOn(Date.prototype, 'getTimezoneOffset');
+    spy.mockReturnValueOnce(300);
+    expect(getTimezoneAt(new Date('2025-01-15T12:00:00Z'))).toBe('-05:00');
+    spy.mockReturnValueOnce(240);
+    expect(getTimezoneAt(new Date('2025-07-15T12:00:00Z'))).toBe('-04:00');
+  });
+});
+
 describe('utcNormalizedDayKey', () => {
   // Jan 15 2025 00:00 UTC+1 (Amsterdam) stored as Jan 14 23:00 UTC
   const amsterdamJan15Date = Date.UTC(2025, 0, 14, 23, 0, 0); // 1736895600000
@@ -170,11 +189,10 @@ describe('utcNormalizedDayKey', () => {
   });
 
   it('falls back to device-local date when timezone is null', () => {
-    // The test env is set to America/New_York (UTC-5 in January).
-    // Jan 14 23:00 UTC is Jan 14 18:00 New York → normalized to Jan 14 UTC midnight.
+    // Null timezone intentionally falls back to the host/device local calendar date.
     const result = utcNormalizedDayKey(amsterdamJan15Date, null);
-    const jan14UtcMidnight = Date.UTC(2025, 0, 14);
-    expect(result).toBe(jan14UtcMidnight);
+    const local = new Date(amsterdamJan15Date);
+    expect(result).toBe(Date.UTC(local.getFullYear(), local.getMonth(), local.getDate()));
   });
 
   it('handles arbitrary timestamps within a day (not just midnight)', () => {
@@ -185,5 +203,27 @@ describe('utcNormalizedDayKey', () => {
     // 11:50 PM Amsterdam Jan 15 = Jan 15 22:50 UTC
     const amsterdamJan15LateNight = Date.UTC(2025, 0, 15, 22, 50, 0);
     expect(utcNormalizedDayKey(amsterdamJan15LateNight, '+01:00')).toBe(jan15UtcMidnight);
+  });
+});
+
+describe('record calendar day helpers', () => {
+  it('creates picker-safe local dates from a stored record timezone', () => {
+    const amsterdamJan15Date = Date.UTC(2025, 0, 14, 23, 0, 0);
+    const pickerDate = calendarDateFromRecordDay(amsterdamJan15Date, '+01:00');
+
+    expect(pickerDate.getFullYear()).toBe(2025);
+    expect(pickerDate.getMonth()).toBe(0);
+    expect(pickerDate.getDate()).toBe(15);
+  });
+
+  it('round-trips a picker calendar date back to the same timezone-specific day key', () => {
+    const pickerDate = new Date(2025, 0, 15);
+
+    expect(dayKeyForCalendarDateInTimezone(pickerDate, '+01:00')).toBe(
+      Date.UTC(2025, 0, 14, 23, 0, 0)
+    );
+    expect(dayKeyForCalendarDateInTimezone(pickerDate, '-03:00')).toBe(
+      Date.UTC(2025, 0, 15, 3, 0, 0)
+    );
   });
 });

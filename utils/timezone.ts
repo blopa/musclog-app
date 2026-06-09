@@ -15,6 +15,16 @@ export function getCurrentTimezone(): string {
 }
 
 /**
+ * UTC offset for the device-local timezone at a specific instant/date.
+ * Use for future calendar-day records so DST-sensitive offsets are captured for
+ * the day being stored, not for "now".
+ */
+export function getTimezoneAt(date: Date | number): string {
+  const d = typeof date === 'number' ? new Date(date) : date;
+  return offsetMinutesToTimezone(-d.getTimezoneOffset());
+}
+
+/**
  * Format a UTC offset given in minutes east of UTC as a "±HH:MM" string.
  * e.g. -300 → "-05:00", 330 → "+05:30", 0 → "+00:00".
  */

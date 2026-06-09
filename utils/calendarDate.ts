@@ -266,6 +266,38 @@ export function utcNormalizedDayKey(
 }
 
 /**
+ * Converts a stored `(recordDate, timezone)` day pair into a device-local Date
+ * carrying the same calendar fields. This is intended for date-picker state,
+ * where the picker expects local `Date` objects but the stored day belongs to
+ * the record's captured offset.
+ */
+export function calendarDateFromRecordDay(
+  recordDate: number,
+  timezone: string | null | undefined
+): Date {
+  const dayKey = utcNormalizedDayKey(recordDate, timezone);
+  const d = new Date(dayKey);
+  return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+}
+
+/**
+ * Builds the stored midnight timestamp for `date` in a fixed offset timezone.
+ * Falls back to the device-local day key when the timezone is missing/invalid.
+ */
+export function dayKeyForCalendarDateInTimezone(
+  date: Date,
+  timezone: string | null | undefined
+): number {
+  const offsetMinutes = timezone ? parseTimezoneOffsetMinutes(timezone) : null;
+  if (offsetMinutes === null) {
+    return localDayStartMs(date);
+  }
+
+  const offsetMs = offsetMinutes * 60000;
+  return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - offsetMs;
+}
+
+/**
  * Formats a UTC-normalized day key (from {@link utcNormalizedDayKey}) as a locale-aware
  * numeric month/day string. Always uses `timeZone: 'UTC'` so the displayed date matches
  * the original recording timezone, not the viewer's current device timezone.

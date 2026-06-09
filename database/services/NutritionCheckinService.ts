@@ -12,7 +12,7 @@ import {
   TIMEZONE_QUERY_BUFFER_MS,
   utcNormalizedDayKey,
 } from '@/utils/calendarDate';
-import { getCurrentTimezone } from '@/utils/timezone';
+import { getTimezoneAt } from '@/utils/timezone';
 
 export interface NutritionCheckinInput {
   checkinDate: number;
@@ -281,7 +281,7 @@ export class NutritionCheckinService {
       return await database.get<NutritionCheckin>('nutrition_checkins').create((r) => {
         r.nutritionGoalId = nutritionGoalId;
         r.checkinDate = data.checkinDate;
-        r.timezone = data.timezone ?? getCurrentTimezone();
+        r.timezone = data.timezone ?? getTimezoneAt(data.checkinDate);
         r.targetWeight = data.targetWeight;
         r.targetBodyFat = data.targetBodyFat ?? null;
         r.targetBmi = data.targetBmi ?? null;
@@ -306,14 +306,13 @@ export class NutritionCheckinService {
 
     return await database.write(async () => {
       const now = Date.now();
-      const fallbackTimezone = getCurrentTimezone();
       const collection = database.get<NutritionCheckin>('nutrition_checkins');
 
       const preparedRecords = checkins.map((data) =>
         collection.prepareCreate((r) => {
           r.nutritionGoalId = nutritionGoalId;
           r.checkinDate = data.checkinDate;
-          r.timezone = data.timezone ?? fallbackTimezone;
+          r.timezone = data.timezone ?? getTimezoneAt(data.checkinDate);
           r.targetWeight = data.targetWeight;
           r.targetBodyFat = data.targetBodyFat ?? null;
           r.targetBmi = data.targetBmi ?? null;

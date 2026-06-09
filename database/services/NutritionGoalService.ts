@@ -13,7 +13,7 @@ import {
   isDynamicNutritionGoalValid,
   normalizeNutritionGoalTargetWeight,
 } from '@/utils/nutritionGoalHelpers';
-import { getCurrentTimezone } from '@/utils/timezone';
+import { getCurrentTimezone, getTimezoneAt } from '@/utils/timezone';
 import { storedHeightToCm, storedWeightToKg } from '@/utils/unitConversion';
 import { widgetEvents } from '@/utils/widgetEvents';
 
@@ -422,11 +422,7 @@ export class NutritionGoalService {
       );
 
       if (checkins.length > 0) {
-        const timezone = goal.timezone ?? getCurrentTimezone();
-        await NutritionCheckinService.createBatch(
-          goalId,
-          checkins.map((checkin) => ({ ...checkin, timezone }))
-        );
+        await NutritionCheckinService.createBatch(goalId, checkins);
       }
     }
   }
@@ -477,7 +473,7 @@ export class NutritionGoalService {
         r.fats = data.fats;
         r.fiber = data.fiber;
         r.eatingPhase = data.eatingPhase;
-        r.timezone = data.timezone ?? getCurrentTimezone();
+        r.timezone = data.timezone ?? getTimezoneAt(startDate);
         r.targetWeight = normalizedTargetWeight ?? 0;
         r.targetBodyFat = data.targetBodyFat ?? null;
         r.targetBmi = data.targetBMI ?? null;
