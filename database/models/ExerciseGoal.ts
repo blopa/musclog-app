@@ -41,6 +41,6 @@ export default class ExerciseGoal extends Model {
 
   // Helper: Is this goal currently active?
   get isActive(): boolean {
-    return this.effectiveUntil === null && !!this.deletedAt;
+    return this.effectiveUntil === null && !this.deletedAt;
   }
 }

@@ -22,8 +22,8 @@ import {
   MuscleService,
   NutritionGoalService,
   NutritionService,
-  UserMetricService,
   TimezoneMigrationService,
+  UserMetricService,
   WorkoutService,
 } from '@/database/services';
 import { SettingsService } from '@/database/services/SettingsService';

@@ -54,6 +54,7 @@ export const schema = appSchema({
 
         // Shared
         { name: 'target_date', type: 'string', isOptional: true }, // ISO date string, user-overridable
+        { name: 'timezone', type: 'string', isOptional: true },
         { name: 'notes', type: 'string', isOptional: true },
 
         // Snapshot-based history (same pattern as nutrition_goals)
@@ -402,6 +403,7 @@ export const schema = appSchema({
         { name: 'use_hormonal_birth_control', type: 'boolean' },
         { name: 'birth_control_type', type: 'string', isOptional: true }, // 'pill', 'iud', etc.
         { name: 'last_period_start_date', type: 'number' }, // The "Anchor Date"
+        { name: 'timezone', type: 'string', isOptional: true },
         { name: 'sync_goal', type: 'string', isOptional: true }, // 'performance', 'symptoms', 'energy'
         { name: 'is_active', type: 'boolean' }, // Allow users to turn tracking off
         { name: 'created_at', type: 'number' },
@@ -474,6 +476,7 @@ export const schema = appSchema({
         { name: 'target_bmi', type: 'number', isOptional: true },
         { name: 'target_ffmi', type: 'number', isOptional: true },
         { name: 'target_date', type: 'number', isOptional: true },
+        { name: 'timezone', type: 'string', isOptional: true },
         { name: 'effective_until', type: 'number', isOptional: true },
         { name: 'is_dynamic', type: 'boolean', isOptional: true },
         { name: 'created_at', type: 'number' },
@@ -488,6 +491,7 @@ export const schema = appSchema({
       columns: [
         { name: 'nutrition_goal_id', type: 'string', isIndexed: true },
         { name: 'checkin_date', type: 'number', isIndexed: true },
+        { name: 'timezone', type: 'string', isOptional: true },
         { name: 'target_weight', type: 'number' },
         { name: 'target_body_fat', type: 'number', isOptional: true },
         { name: 'target_bmi', type: 'number', isOptional: true },
@@ -523,6 +527,7 @@ export const schema = appSchema({
         { name: 'note', type: 'string', isOptional: true },
         { name: 'original_meal_type', type: 'string' },
         { name: 'original_date', type: 'number' },
+        { name: 'timezone', type: 'string', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

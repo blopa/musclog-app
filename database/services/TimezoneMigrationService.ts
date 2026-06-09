@@ -6,7 +6,6 @@ import MenstrualCycle from '@/database/models/MenstrualCycle';
 import NutritionCheckin from '@/database/models/NutritionCheckin';
 import NutritionGoal from '@/database/models/NutritionGoal';
 import SavedForLaterGroup from '@/database/models/SavedForLaterGroup';
-import { isTimezoneOffset } from '@/utils/timezone';
 import { getCurrentTimezone } from '@/utils/timezone';
 
 export class TimezoneMigrationService {
@@ -15,41 +14,44 @@ export class TimezoneMigrationService {
    * timezone offset. Uses the current device timezone as a best-effort fallback.
    */
   static async backfillMissingTimezones(): Promise<void> {
+    const [cycles, checkins, savedGroups, nutritionGoals, exerciseGoals] = await Promise.all([
+      database
+        .get<MenstrualCycle>('menstrual_cycles')
+        .query(Q.where('timezone', Q.eq(null)))
+        .fetch(),
+      database
+        .get<NutritionCheckin>('nutrition_checkins')
+        .query(Q.where('timezone', Q.eq(null)))
+        .fetch(),
+      database
+        .get<SavedForLaterGroup>('saved_for_later_groups')
+        .query(Q.where('timezone', Q.eq(null)))
+        .fetch(),
+      database
+        .get<NutritionGoal>('nutrition_goals')
+        .query(Q.where('timezone', Q.eq(null)))
+        .fetch(),
+      database
+        .get<ExerciseGoal>('exercise_goals')
+        .query(Q.where('timezone', Q.eq(null)))
+        .fetch(),
+    ]);
+
+    const total =
+      cycles.length +
+      checkins.length +
+      savedGroups.length +
+      nutritionGoals.length +
+      exerciseGoals.length;
+    if (total === 0) {
+      return;
+    }
+
     const fallback = getCurrentTimezone();
     const now = Date.now();
 
     await database.write(async () => {
-      // 1. Menstrual Cycles
-      const cycles = await database
-        .get<MenstrualCycle>('menstrual_cycles')
-        .query(Q.where('timezone', Q.eq(null)))
-        .fetch();
-
-      // 2. Nutrition Checkins
-      const checkins = await database
-        .get<NutritionCheckin>('nutrition_checkins')
-        .query(Q.where('timezone', Q.eq(null)))
-        .fetch();
-
-      // 3. Saved For Later Groups
-      const savedGroups = await database
-        .get<SavedForLaterGroup>('saved_for_later_groups')
-        .query(Q.where('timezone', Q.eq(null)))
-        .fetch();
-
-      // 4. Nutrition Goals
-      const nutritionGoals = await database
-        .get<NutritionGoal>('nutrition_goals')
-        .query(Q.where('timezone', Q.eq(null)))
-        .fetch();
-
-      // 5. Exercise Goals
-      const exerciseGoals = await database
-        .get<ExerciseGoal>('exercise_goals')
-        .query(Q.where('timezone', Q.eq(null)))
-        .fetch();
-
-      const batches = [
+      await database.batch(
         ...cycles.map((c) =>
           c.prepareUpdate((r) => {
             r.timezone = fallback;
@@ -79,12 +81,8 @@ export class TimezoneMigrationService {
             r.timezone = fallback;
             r.updatedAt = new Date(now);
           })
-        ),
-      ];
-
-      if (batches.length > 0) {
-        await database.batch(...batches);
-      }
+        )
+      );
     });
   }
 }

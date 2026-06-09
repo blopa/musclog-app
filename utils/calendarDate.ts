@@ -200,7 +200,6 @@ export function dayStartInTimezone(ms: number, timezone?: string): number {
   const minutes = parseInt(timezone.slice(4, 6), 10);
   const offsetMs = sign * (hours * 3600000 + minutes * 60000);
 
-  // shift the UTC instant to the local time, find midnight, then shift back to UTC
   const localMs = ms + offsetMs;
   const localDate = new Date(localMs);
   const localMidnight =
@@ -218,9 +217,9 @@ export function dayStartInTimezone(ms: number, timezone?: string): number {
 }
 
 /**
- * True if both values fall on the same local calendar day.
+ * True if both values fall on the same calendar day.
  * Accepts a `Date` or a stored day key / instant in milliseconds.
- * `aTimezone` is the offset (±HH:MM) of the instant `a`.
+ * `aTimezone` is the stored offset (±HH:MM) for `a`; `b` is always resolved in device-local time.
  */
 export function isSameLocalCalendarDay(
   a: Date | number,

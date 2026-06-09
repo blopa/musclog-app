@@ -19,6 +19,7 @@ import migrationV17 from '@/database/migrations/2026/05/migration-v17';
 import migrationV18 from '@/database/migrations/2026/05/migration-v18';
 import migrationV19 from '@/database/migrations/2026/05/migration-v19';
 import migrationV20 from '@/database/migrations/2026/06/migration-v20';
+import migrationV21 from '@/database/migrations/2026/06/migration-v21';
 
 export const migrations = schemaMigrations({
   migrations: [
@@ -92,5 +93,9 @@ export const migrations = schemaMigrations({
     // Legacy user_metrics.timezone IANA values are converted to offset format by the
     // boot-time backfill UserMetricService.backfillTimezoneOffsets() (DST-aware, can't be SQL).
     migrationV20,
+    // Version 21: Add timezone column to menstrual_cycles, nutrition_checkins,
+    // saved_for_later_groups, nutrition_goals, and exercise_goals.
+    // Null rows are filled by the boot-time backfill TimezoneMigrationService.backfillMissingTimezones().
+    migrationV21,
   ],
 });
