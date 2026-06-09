@@ -2598,6 +2598,7 @@ export function FoodMealTrackingDetailsModal({
               selectedTime={selectedTime}
               onPress={() => setIsTimePickerVisible(true)}
               variant="default"
+              timezoneLabel={foodLog?.timezone ?? undefined}
             />
           </View>
         </View>
