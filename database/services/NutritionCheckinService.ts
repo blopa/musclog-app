@@ -1,5 +1,4 @@
 import { Q } from '@nozbe/watermelondb';
-import { differenceInCalendarDays } from 'date-fns';
 
 import { database } from '@/database/database-instance';
 import type NutritionCheckin from '@/database/models/NutritionCheckin';
@@ -7,11 +6,8 @@ import type { CheckinStatus } from '@/database/models/NutritionCheckin';
 import type NutritionLog from '@/database/models/NutritionLog';
 import type UserMetric from '@/database/models/UserMetric';
 import type WorkoutLog from '@/database/models/WorkoutLog';
-import {
-  dayStartInTimezone,
-  localDayKeyPlusCalendarDays,
-  localDayStartFromUtcMs,
-} from '@/utils/calendarDate';
+import { dayStartInTimezone, MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
+import { getCurrentTimezone } from '@/utils/timezone';
 
 export interface NutritionCheckinInput {
   checkinDate: number;
@@ -86,9 +82,13 @@ export class NutritionCheckinService {
    * Compute metrics for a check-in based on logs from the 7 days ending on checkinDate.
    */
   static async getCheckinMetrics(checkin: NutritionCheckin): Promise<CheckinMetrics> {
-    const periodEnd = dayStartInTimezone(checkin.checkinDate, checkin.timezone ?? undefined);
-    const periodStart = localDayKeyPlusCalendarDays(periodEnd, -7);
-    const prevPeriodStart = localDayKeyPlusCalendarDays(periodEnd, -14);
+    // Resolve the whole 7-day window in the check-in's own timezone frame so day
+    // boundaries and bucketing stay in a single reference frame. The stored offset is
+    // fixed (no DST), so each calendar day is exactly MS_PER_SOLAR_DAY apart.
+    const tz = checkin.timezone;
+    const periodEnd = dayStartInTimezone(checkin.checkinDate, tz);
+    const periodStart = periodEnd - 7 * MS_PER_SOLAR_DAY;
+    const prevPeriodStart = periodEnd - 14 * MS_PER_SOLAR_DAY;
 
     // Fetch all check-ins for the same goal to compute weekInfo
     const allCheckins = await NutritionCheckinService.getByGoalId(checkin.nutritionGoalId);
@@ -115,8 +115,8 @@ export class NutritionCheckinService {
     for (const metric of weightMetrics) {
       const { value } = await metric.getDecrypted();
       decryptedWeights.push(value);
-      const mDay = dayStartInTimezone(metric.date, metric.timezone);
-      const dayIndex = differenceInCalendarDays(new Date(mDay), new Date(periodStart));
+      const mDay = dayStartInTimezone(metric.date, tz);
+      const dayIndex = Math.round((mDay - periodStart) / MS_PER_SOLAR_DAY);
       if (dayIndex >= 0 && dayIndex < 7) {
         dailyWeights[dayIndex] = value;
       }
@@ -157,7 +157,7 @@ export class NutritionCheckinService {
     const caloriesByDay = new Map<number, number>();
     for (const log of nutritionLogs) {
       const snapshot = await log.getDecryptedSnapshot();
-      const dayKey = dayStartInTimezone(log.date, log.timezone ?? undefined);
+      const dayKey = dayStartInTimezone(log.date, tz);
       caloriesByDay.set(dayKey, (caloriesByDay.get(dayKey) ?? 0) + (snapshot.loggedCalories ?? 0));
     }
 
@@ -243,6 +243,7 @@ export class NutritionCheckinService {
       return await database.get<NutritionCheckin>('nutrition_checkins').create((r) => {
         r.nutritionGoalId = nutritionGoalId;
         r.checkinDate = data.checkinDate;
+        r.timezone = getCurrentTimezone();
         r.targetWeight = data.targetWeight;
         r.targetBodyFat = data.targetBodyFat ?? null;
         r.targetBmi = data.targetBmi ?? null;
@@ -267,12 +268,14 @@ export class NutritionCheckinService {
 
     return await database.write(async () => {
       const now = Date.now();
+      const timezone = getCurrentTimezone();
       const collection = database.get<NutritionCheckin>('nutrition_checkins');
 
       const preparedRecords = checkins.map((data) =>
         collection.prepareCreate((r) => {
           r.nutritionGoalId = nutritionGoalId;
           r.checkinDate = data.checkinDate;
+          r.timezone = timezone;
           r.targetWeight = data.targetWeight;
           r.targetBodyFat = data.targetBodyFat ?? null;
           r.targetBmi = data.targetBmi ?? null;

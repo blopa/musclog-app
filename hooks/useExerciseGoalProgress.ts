@@ -52,7 +52,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
 
     try {
       if (goal.goalType === '1rm' && goal.exerciseId) {
-        const goalCreatedAt = goal.createdAt.getTime();
+        const goalCreatedAt = goal.createdAt;
         const [filteredData, performed1RMDate, recentAverage, bw, exercise, user] =
           await Promise.all([
             WorkoutAnalytics.getProgressiveOverloadData(goal.exerciseId, {

@@ -80,6 +80,22 @@ export function isTimezoneOffset(value: string): boolean {
 }
 
 /**
+ * Parse a "±HH:MM" offset string into minutes east of UTC — the inverse of
+ * {@link offsetMinutesToTimezone}. Returns null when `value` is not a valid offset.
+ * e.g. "-05:00" → -300, "+05:30" → 330, "+00:00" → 0.
+ */
+export function parseTimezoneOffsetMinutes(value: string): number | null {
+  if (!isTimezoneOffset(value)) {
+    return null;
+  }
+
+  const sign = value[0] === '-' ? -1 : 1;
+  const hours = parseInt(value.slice(1, 3), 10);
+  const minutes = parseInt(value.slice(4, 6), 10);
+  return sign * (hours * 60 + minutes);
+}
+
+/**
  * Normalize a stored or imported timezone value to the app's "±HH:MM" offset format. Values
  * already in offset form are returned unchanged; IANA zone names (e.g. "America/New_York") are
  * resolved to the offset in effect at `atDate` (DST-aware). Empty or unresolvable values are

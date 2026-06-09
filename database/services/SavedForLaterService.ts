@@ -63,6 +63,7 @@ export class SavedForLaterService {
             record.noteRaw = encryptedNote || undefined;
             record.originalMealType = originalMealType;
             record.originalDate = originalDate;
+            record.timezone = getCurrentTimezone();
             record.createdAt = now;
             record.updatedAt = now;
           });

@@ -8,6 +8,7 @@ import {
   isDynamicNutritionGoalValid,
   normalizeNutritionGoalTargetWeight,
 } from '@/utils/nutritionGoalHelpers';
+import { getCurrentTimezone } from '@/utils/timezone';
 import { widgetEvents } from '@/utils/widgetEvents';
 
 import { REPAIR_DESCRIPTORS, retryAfterRepair } from './DatabaseRepairService';
@@ -160,6 +161,7 @@ export class NutritionGoalService {
         r.fats = data.fats;
         r.fiber = data.fiber;
         r.eatingPhase = data.eatingPhase;
+        r.timezone = getCurrentTimezone();
         r.targetWeight = normalizedTargetWeight ?? 0;
         r.targetBodyFat = data.targetBodyFat ?? null;
         r.targetBmi = data.targetBMI ?? null;
@@ -469,6 +471,7 @@ export class NutritionGoalService {
         r.fats = data.fats;
         r.fiber = data.fiber;
         r.eatingPhase = data.eatingPhase;
+        r.timezone = getCurrentTimezone();
         r.targetWeight = normalizedTargetWeight ?? 0;
         r.targetBodyFat = data.targetBodyFat ?? null;
         r.targetBmi = data.targetBMI ?? null;

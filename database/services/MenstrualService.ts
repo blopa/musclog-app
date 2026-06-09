@@ -11,7 +11,7 @@ export class MenstrualService {
    * Calculates the current cycle day (1-indexed)
    */
   static getCycleDay(cycle: MenstrualCycle): number {
-    const anchorDay = dayStartInTimezone(cycle.lastPeriodStartDate, cycle.timezone ?? undefined);
+    const anchorDay = dayStartInTimezone(cycle.lastPeriodStartDate, cycle.timezone);
     const currentDay = localDayStartFromUtcMs(Date.now());
 
     const diffDays = Math.max(

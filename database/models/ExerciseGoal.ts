@@ -1,5 +1,5 @@
 import { Model } from '@nozbe/watermelondb';
-import { date, field } from '@nozbe/watermelondb/decorators';
+import { field } from '@nozbe/watermelondb/decorators';
 
 export type ExerciseGoalType =
   | '1rm'
@@ -35,8 +35,8 @@ export default class ExerciseGoal extends Model {
   @field('notes') declare notes: string | null;
   @field('effective_until') declare effectiveUntil: number | null;
 
-  @date('created_at') declare createdAt: Date;
-  @date('updated_at') declare updatedAt: Date;
+  @field('created_at') declare createdAt: number;
+  @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 
   // Helper: Is this goal currently active?

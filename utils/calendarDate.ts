@@ -27,6 +27,8 @@
 import type { Locale } from 'date-fns';
 import { addDays, differenceInCalendarDays, format, getYear, parseISO, startOfDay } from 'date-fns';
 
+import { parseTimezoneOffsetMinutes } from '@/utils/timezone';
+
 /**
  * Mean solar day length in milliseconds (24h). Use for **approximate** durations between
  * instants (e.g. coarse spacing, tests). Do **not** use for calendar day boundaries,
@@ -191,43 +193,30 @@ export function localDayKeyPlusCalendarDaysFromNow(deltaDays: number): number {
  * Defaults to device local timezone if `timezone` (±HH:MM) is omitted.
  */
 export function dayStartInTimezone(ms: number, timezone?: string): number {
-  if (!timezone || !/^[+-]\d{2}:\d{2}$/.test(timezone)) {
+  const offsetMinutes = timezone ? parseTimezoneOffsetMinutes(timezone) : null;
+  if (offsetMinutes === null) {
     return localDayStartFromUtcMs(ms);
   }
 
-  const sign = timezone[0] === '+' ? 1 : -1;
-  const hours = parseInt(timezone.slice(1, 3), 10);
-  const minutes = parseInt(timezone.slice(4, 6), 10);
-  const offsetMs = sign * (hours * 3600000 + minutes * 60000);
-
-  const localMs = ms + offsetMs;
-  const localDate = new Date(localMs);
-  const localMidnight =
-    Date.UTC(
-      localDate.getUTCFullYear(),
-      localDate.getUTCMonth(),
-      localDate.getUTCDate(),
-      0,
-      0,
-      0,
-      0
-    ) - offsetMs;
-
-  return localMidnight;
+  const offsetMs = offsetMinutes * 60000;
+  const local = new Date(ms + offsetMs);
+  return Date.UTC(local.getUTCFullYear(), local.getUTCMonth(), local.getUTCDate()) - offsetMs;
 }
 
 /**
  * True if both values fall on the same calendar day.
  * Accepts a `Date` or a stored day key / instant in milliseconds.
- * `aTimezone` is the stored offset (±HH:MM) for `a`; `b` is always resolved in device-local time.
+ * Pass the stored UTC offset (±HH:MM) for each side to compare in their respective timezones;
+ * omit to compare in device-local time.
  */
 export function isSameLocalCalendarDay(
   a: Date | number,
   b: Date | number,
-  aTimezone?: string
+  aTimezone?: string,
+  bTimezone?: string
 ): boolean {
   const ta = typeof a === 'number' ? dayStartInTimezone(a, aTimezone) : localDayStartMs(a);
-  const tb = typeof b === 'number' ? localDayStartFromUtcMs(b) : localDayStartMs(b);
+  const tb = typeof b === 'number' ? dayStartInTimezone(b, bTimezone) : localDayStartMs(b);
   return ta === tb;
 }
 

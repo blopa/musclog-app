@@ -5,6 +5,7 @@ import MenstrualCycle, {
   type BirthControlType,
   type SyncGoal,
 } from '@/database/models/MenstrualCycle';
+import { getCurrentTimezone } from '@/utils/timezone';
 
 /**
  * Repository for MenstrualCycle queries
@@ -41,6 +42,7 @@ export class MenstrualCycleRepository {
         cycle.useHormonalBirthControl = data.useHormonalBirthControl ?? false;
         cycle.birthControlType = data.birthControlType as BirthControlType | undefined;
         cycle.lastPeriodStartDate = data.lastPeriodStartDate ?? now;
+        cycle.timezone = getCurrentTimezone();
         cycle.syncGoal = data.syncGoal;
         cycle.isActive = true;
         cycle.createdAt = now;
