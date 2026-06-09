@@ -14,9 +14,11 @@ import { MealService } from '@/database/services/MealService';
 import i18n from '@/lang/lang';
 import { writeNutritionLogToHealthConnect } from '@/services/healthConnectNutrition';
 import {
-  localDayClosedRangeMaxMs,
   localDayStartFromUtcMs,
   localDayStartMs,
+  MS_PER_SOLAR_DAY,
+  TIMEZONE_QUERY_BUFFER_MS,
+  utcNormalizedDayKey,
 } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
@@ -287,19 +289,23 @@ export class NutritionService {
     date: Date,
     repairAttempted = false
   ): Promise<NutritionLog[]> {
-    const dateTimestamp = localDayStartMs(date);
-    const maxInclusive = localDayClosedRangeMaxMs(date);
+    const targetKey = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+    const start = targetKey - TIMEZONE_QUERY_BUFFER_MS;
+    const end = targetKey + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS;
 
     try {
-      return await retryOnResetError(() =>
+      const raw = await retryOnResetError(() =>
         database
           .get<NutritionLog>('nutrition_logs')
           .query(
             Q.where('deleted_at', Q.eq(null)),
-            Q.where('date', Q.between(dateTimestamp, maxInclusive))
+            Q.where('date', Q.gte(start)),
+            Q.where('date', Q.lt(end))
           )
           .fetch()
       );
+
+      return raw.filter((log) => utcNormalizedDayKey(log.date, log.timezone) === targetKey);
     } catch (error) {
       if (!repairAttempted) {
         const repaired = await retryAfterRepair(error, REPAIR_DESCRIPTORS.nutritionLogs, () =>
@@ -345,35 +351,47 @@ export class NutritionService {
     startDate: Date,
     endDate: Date
   ): Promise<NutritionLog[]> {
-    const startTimestamp = localDayStartMs(startDate);
-    const maxInclusive = localDayClosedRangeMaxMs(endDate);
+    const startKey = Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+    const endKey = Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
+    const start = startKey - TIMEZONE_QUERY_BUFFER_MS;
+    const end = endKey + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS;
 
-    return await retryOnResetError(() =>
+    const raw = await retryOnResetError(() =>
       database
         .get<NutritionLog>('nutrition_logs')
         .query(
           Q.where('deleted_at', Q.eq(null)),
-          Q.where('date', Q.between(startTimestamp, maxInclusive))
+          Q.where('date', Q.gte(start)),
+          Q.where('date', Q.lt(end))
         )
         .fetch()
     );
+
+    return raw.filter((log) => {
+      const key = utcNormalizedDayKey(log.date, log.timezone);
+      return key >= startKey && key <= endKey;
+    });
   }
 
   /**
    * Get nutrition logs for a specific meal type on a date
    */
   static async getNutritionLogsForMeal(date: Date, mealType: MealType): Promise<NutritionLog[]> {
-    const dateTimestamp = localDayStartMs(date);
-    const maxInclusive = localDayClosedRangeMaxMs(date);
+    const targetKey = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+    const start = targetKey - TIMEZONE_QUERY_BUFFER_MS;
+    const end = targetKey + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS;
 
-    return await database
+    const raw = await database
       .get<NutritionLog>('nutrition_logs')
       .query(
         Q.where('deleted_at', Q.eq(null)),
-        Q.where('date', Q.between(dateTimestamp, maxInclusive)),
+        Q.where('date', Q.gte(start)),
+        Q.where('date', Q.lt(end)),
         Q.where('type', mealType)
       )
       .fetch();
+
+    return raw.filter((log) => utcNormalizedDayKey(log.date, log.timezone) === targetKey);
   }
 
   /**
@@ -787,9 +805,11 @@ export class NutritionService {
       .query(Q.where('deleted_at', Q.eq(null)));
 
     if (date) {
-      const dateTimestamp = localDayStartMs(date);
-      const maxInclusive = localDayClosedRangeMaxMs(date);
-      query = query.extend(Q.where('date', Q.between(dateTimestamp, maxInclusive)));
+      const targetKey = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+      query = query.extend(
+        Q.where('date', Q.gte(targetKey - TIMEZONE_QUERY_BUFFER_MS)),
+        Q.where('date', Q.lt(targetKey + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS))
+      );
     }
 
     if (mealType) {
@@ -860,9 +880,11 @@ export class NutritionService {
       .query(Q.where('deleted_at', Q.eq(null)));
 
     if (date) {
-      const dateTimestamp = localDayStartMs(date);
-      const maxInclusive = localDayClosedRangeMaxMs(date);
-      query = query.extend(Q.where('date', Q.between(dateTimestamp, maxInclusive)));
+      const targetKey = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+      query = query.extend(
+        Q.where('date', Q.gte(targetKey - TIMEZONE_QUERY_BUFFER_MS)),
+        Q.where('date', Q.lt(targetKey + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS))
+      );
     }
 
     const recentLogs = await query.extend(Q.sortBy('created_at', Q.desc), Q.take(limit)).fetch();

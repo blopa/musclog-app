@@ -231,3 +231,49 @@ export function localCalendarWeekIndexSince(dateTs: number, rangeStartDayTs: num
   const b = localDayStartFromUtcMs(rangeStartDayTs);
   return Math.floor(differenceInCalendarDays(new Date(a), new Date(b)) / 7);
 }
+
+/**
+ * Buffer added to both ends of a date-range DB query to capture records stored in any
+ * timezone (UTC−14 to UTC+14). After widening, always post-filter with
+ * {@link utcNormalizedDayKey} so records are counted on their original calendar day.
+ */
+export const TIMEZONE_QUERY_BUFFER_MS = 14 * 60 * 60 * 1000; // 14 hours
+
+/**
+ * Converts a stored `(recordDate, timezone)` pair to a UTC-midnight value representing
+ * the calendar date the user **experienced** when the record was created.
+ *
+ * Example: Amsterdam (+01:00) log stored as Jan 14 23:00 UTC → returns Jan 15 00:00 UTC.
+ * Example: Brazil (−03:00) log stored as Jan 15 03:00 UTC   → returns Jan 15 00:00 UTC.
+ *
+ * Because the result is a UTC midnight, format it with `{ timeZone: 'UTC' }` (or
+ * {@link formatUtcNormalizedDayIntl}) to display "Jan 15" correctly on any device.
+ * Falls back to device-local calendar date when `timezone` is null/undefined.
+ */
+export function utcNormalizedDayKey(
+  recordDate: number,
+  timezone: string | null | undefined
+): number {
+  const offsetMinutes = timezone ? parseTimezoneOffsetMinutes(timezone) : null;
+  if (offsetMinutes === null) {
+    const d = new Date(recordDate);
+    return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
+  const offsetMs = offsetMinutes * 60000;
+  const shifted = new Date(recordDate + offsetMs);
+  return Date.UTC(shifted.getUTCFullYear(), shifted.getUTCMonth(), shifted.getUTCDate());
+}
+
+/**
+ * Formats a UTC-normalized day key (from {@link utcNormalizedDayKey}) as a locale-aware
+ * numeric month/day string. Always uses `timeZone: 'UTC'` so the displayed date matches
+ * the original recording timezone, not the viewer's current device timezone.
+ */
+export function formatUtcNormalizedDayIntl(dayKeyMs: number, localeTag: string): string {
+  return new Intl.DateTimeFormat(localeTag, {
+    day: 'numeric',
+    month: 'numeric',
+    timeZone: 'UTC',
+  }).format(dayKeyMs);
+}

@@ -1,3 +1,4 @@
+import { utcNormalizedDayKey } from '@/utils/calendarDate';
 import {
   getCurrentTimezone,
   ianaZoneToTimezoneAt,
@@ -127,5 +128,62 @@ describe('getCurrentTimezone', () => {
 
   it('returns a valid offset string on the real host', () => {
     expect(isTimezoneOffset(getCurrentTimezone())).toBe(true);
+  });
+});
+
+describe('utcNormalizedDayKey', () => {
+  // Jan 15 2025 00:00 UTC+1 (Amsterdam) stored as Jan 14 23:00 UTC
+  const amsterdamJan15Date = Date.UTC(2025, 0, 14, 23, 0, 0); // 1736895600000
+
+  // Jan 15 2025 00:00 UTC-3 (Brazil) stored as Jan 15 03:00 UTC
+  const brazilJan15Date = Date.UTC(2025, 0, 15, 3, 0, 0); // 1736913600000
+
+  // Jan 15 2025 00:00 UTC+0 stored as Jan 15 00:00 UTC
+  const utcJan15Date = Date.UTC(2025, 0, 15, 0, 0, 0); // 1736899200000
+
+  const jan15UtcMidnight = Date.UTC(2025, 0, 15); // expected normalized key
+
+  it('normalizes Amsterdam +01:00 Jan 15 date to Jan 15 UTC midnight', () => {
+    expect(utcNormalizedDayKey(amsterdamJan15Date, '+01:00')).toBe(jan15UtcMidnight);
+  });
+
+  it('normalizes Brazil -03:00 Jan 15 date to Jan 15 UTC midnight', () => {
+    expect(utcNormalizedDayKey(brazilJan15Date, '-03:00')).toBe(jan15UtcMidnight);
+  });
+
+  it('normalizes UTC +00:00 Jan 15 date to Jan 15 UTC midnight', () => {
+    expect(utcNormalizedDayKey(utcJan15Date, '+00:00')).toBe(jan15UtcMidnight);
+  });
+
+  it('Amsterdam and Brazil Jan 15 logs produce the same normalized key', () => {
+    expect(utcNormalizedDayKey(amsterdamJan15Date, '+01:00')).toBe(
+      utcNormalizedDayKey(brazilJan15Date, '-03:00')
+    );
+  });
+
+  it('correctly distinguishes consecutive days', () => {
+    // Jan 16 Amsterdam: Jan 15 23:00 UTC
+    const amsterdamJan16Date = Date.UTC(2025, 0, 15, 23, 0, 0);
+    const jan16UtcMidnight = Date.UTC(2025, 0, 16);
+    expect(utcNormalizedDayKey(amsterdamJan16Date, '+01:00')).toBe(jan16UtcMidnight);
+    expect(utcNormalizedDayKey(amsterdamJan16Date, '+01:00')).not.toBe(jan15UtcMidnight);
+  });
+
+  it('falls back to device-local date when timezone is null', () => {
+    // The test env is set to America/New_York (UTC-5 in January).
+    // Jan 14 23:00 UTC is Jan 14 18:00 New York → normalized to Jan 14 UTC midnight.
+    const result = utcNormalizedDayKey(amsterdamJan15Date, null);
+    const jan14UtcMidnight = Date.UTC(2025, 0, 14);
+    expect(result).toBe(jan14UtcMidnight);
+  });
+
+  it('handles arbitrary timestamps within a day (not just midnight)', () => {
+    // 8 AM Amsterdam Jan 15 = Jan 15 07:00 UTC
+    const amsterdamJan15Morning = Date.UTC(2025, 0, 15, 7, 0, 0);
+    expect(utcNormalizedDayKey(amsterdamJan15Morning, '+01:00')).toBe(jan15UtcMidnight);
+
+    // 11:50 PM Amsterdam Jan 15 = Jan 15 22:50 UTC
+    const amsterdamJan15LateNight = Date.UTC(2025, 0, 15, 22, 50, 0);
+    expect(utcNormalizedDayKey(amsterdamJan15LateNight, '+01:00')).toBe(jan15UtcMidnight);
   });
 });

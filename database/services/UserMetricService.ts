@@ -6,6 +6,7 @@ import { database } from '@/database/database-instance';
 import { encryptUserMetricFields } from '@/database/encryptionHelpers';
 import UserMetric, { type UserMetricType } from '@/database/models/UserMetric';
 import { writeUserMetricToHealthConnect } from '@/services/healthConnectFitness';
+import { TIMEZONE_QUERY_BUFFER_MS, utcNormalizedDayKey } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import { ianaZoneToTimezoneAt, isTimezoneOffset } from '@/utils/timezone';
 
@@ -131,9 +132,11 @@ export class UserMetricService {
       }
 
       if (dateRange) {
+        // Widen the DB range by ±14 h to capture records stored in any timezone.
+        // Post-filter below trims to the exact UTC-normalized day bounds.
         query = query.extend(
-          Q.where('date', Q.gte(dateRange.startDate)),
-          Q.where('date', Q.lte(dateRange.endDate))
+          Q.where('date', Q.gte(dateRange.startDate - TIMEZONE_QUERY_BUFFER_MS)),
+          Q.where('date', Q.lte(dateRange.endDate + TIMEZONE_QUERY_BUFFER_MS))
         );
       }
 
@@ -144,7 +147,19 @@ export class UserMetricService {
           query = query.extend(Q.take(limit));
         }
       }
-      return await query.fetch();
+
+      const raw = await query.fetch();
+
+      if (dateRange) {
+        const startKey = utcNormalizedDayKey(dateRange.startDate, null);
+        const endKey = utcNormalizedDayKey(dateRange.endDate, null);
+        return raw.filter((m) => {
+          const key = utcNormalizedDayKey(m.date, m.timezone);
+          return key >= startKey && key <= endKey;
+        });
+      }
+
+      return raw;
     } catch (error) {
       if (!repairAttempted) {
         const repaired = await retryAfterRepair(error, REPAIR_DESCRIPTORS.userMetrics, () =>

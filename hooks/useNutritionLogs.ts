@@ -7,9 +7,10 @@ import Food from '@/database/models/Food';
 import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
 import { NutritionService } from '@/database/services';
 import {
-  localDayHalfOpenRange,
   localDayStartMs,
   localNextDayStartMsFromDate,
+  MS_PER_SOLAR_DAY,
+  TIMEZONE_QUERY_BUFFER_MS,
 } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 
@@ -531,19 +532,25 @@ export function useNutritionLogs({
       .get<NutritionLog>('nutrition_logs')
       .query(Q.where('deleted_at', Q.eq(null)));
 
-    // Add mode-specific filters to avoid unnecessary re-renders
+    // Add mode-specific filters to avoid unnecessary re-renders.
+    // Use a ±14 h buffer around the UTC-normalized day boundary so records stored
+    // in any timezone are included. The actual fetch (loadInitialLogs) post-filters.
     if (mode === 'daily' && date) {
-      const { start, nextStart } = localDayHalfOpenRange(date);
+      const targetKey = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+      const start = targetKey - TIMEZONE_QUERY_BUFFER_MS;
+      const nextStart = targetKey + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS;
       query = query.extend(Q.where('date', Q.gte(start)), Q.where('date', Q.lt(nextStart)));
     } else if (mode === 'range' && startDate && endDate) {
-      const startTimestamp = localDayStartMs(startDate);
-      const endTimestamp = localNextDayStartMsFromDate(endDate);
+      const startTimestamp = localDayStartMs(startDate) - TIMEZONE_QUERY_BUFFER_MS;
+      const endTimestamp = localNextDayStartMsFromDate(endDate) + TIMEZONE_QUERY_BUFFER_MS;
       query = query.extend(
         Q.where('date', Q.gte(startTimestamp)),
         Q.where('date', Q.lt(endTimestamp))
       );
     } else if (mode === 'meal-type' && date && mealType) {
-      const { start, nextStart } = localDayHalfOpenRange(date);
+      const targetKey = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+      const start = targetKey - TIMEZONE_QUERY_BUFFER_MS;
+      const nextStart = targetKey + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS;
       query = query.extend(
         Q.where('date', Q.gte(start)),
         Q.where('date', Q.lt(nextStart)),
@@ -551,7 +558,9 @@ export function useNutritionLogs({
       );
     } else if (mode === 'recent' || mode === 'recent-logs') {
       if (date) {
-        const { start, nextStart } = localDayHalfOpenRange(date);
+        const targetKey = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+        const start = targetKey - TIMEZONE_QUERY_BUFFER_MS;
+        const nextStart = targetKey + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS;
         query = query.extend(Q.where('date', Q.gte(start)), Q.where('date', Q.lt(nextStart)));
       }
     } else {

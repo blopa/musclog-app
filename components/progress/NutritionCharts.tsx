@@ -15,7 +15,7 @@ import {
 import { DailyNutrition, MetricPoint } from '@/database/services/ProgressService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
-import { formatLocalCalendarMonthDayNumericIntl } from '@/utils/calendarDate';
+import { formatUtcNormalizedDayIntl } from '@/utils/calendarDate';
 import { getXAxisLabels } from '@/utils/chartUtils';
 
 import { ProgressChartSection } from './ProgressChartSection';
@@ -119,7 +119,7 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
     () =>
       getXAxisLabels(
         nutritionHistory.map((d) => ({ x: d.date })),
-        (x) => formatLocalCalendarMonthDayNumericIntl(x, i18n.language)
+        (x) => formatUtcNormalizedDayIntl(x, i18n.language)
       ),
     [nutritionHistory, i18n.language]
   );
