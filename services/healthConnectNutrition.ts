@@ -34,6 +34,7 @@ import Setting from '@/database/models/Setting';
 import { FoodPortionService } from '@/database/services';
 import { localDayStartMs } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
+import { getCurrentTimezone, offsetMinutesToTimezone } from '@/utils/timezone';
 
 import { healthConnectService } from './healthConnect';
 import { RETRY_CONFIG } from './healthConnectErrors';
@@ -178,6 +179,23 @@ function mapMealType(hcMealType: number | undefined): MealType {
 }
 
 /**
+ * Extract the UTC offset a record was logged at from a Health Connect record, as a
+ * "±HH:MM" string. HC attaches it as `startZoneOffset` ({ id, totalSeconds }); we use
+ * `totalSeconds` so the result is in the app's canonical offset format. This preserves
+ * the wall-clock offset at logging time, so a meal logged a week ago in another zone
+ * keeps its original offset after import. Returns undefined when the record carries no
+ * offset (caller falls back to the current device offset).
+ */
+function extractHcRecordTimezone(rec: any): string | undefined {
+  const totalSeconds: unknown =
+    rec?.startZoneOffset?.totalSeconds ?? rec?.endZoneOffset?.totalSeconds;
+  if (typeof totalSeconds === 'number' && Number.isFinite(totalSeconds)) {
+    return offsetMinutesToTimezone(Math.round(totalSeconds / 60));
+  }
+  return undefined;
+}
+
+/**
  * Find-or-create the sentinel Food record used as food_id for all HC nutrition logs.
  * Must be called inside a database.write() transaction.
  */
@@ -312,6 +330,7 @@ async function syncNutritionOnce(timeRange: {
     carbs: number;
     fat: number;
     fiber: number;
+    timezone: string;
   };
 
   const hcMap = new Map<string, HCNutritionEntry>();
@@ -331,6 +350,7 @@ async function syncNutritionOnce(timeRange: {
       carbs: Math.max(0, rec.totalCarbohydrate?.inGrams ?? 0),
       fat: Math.max(0, rec.totalFat?.inGrams ?? 0),
       fiber: Math.max(0, rec.dietaryFiber?.inGrams ?? 0),
+      timezone: extractHcRecordTimezone(rec) ?? getCurrentTimezone(),
     });
   }
 
@@ -386,6 +406,7 @@ async function syncNutritionOnce(timeRange: {
           log.loggedFatRaw = encrypted.loggedFat;
           log.loggedFiberRaw = encrypted.loggedFiber;
           log.loggedMicrosRaw = encrypted.loggedMicrosJson;
+          log.timezone = entry.timezone;
           log.createdAt = now;
           log.updatedAt = now;
         });
@@ -424,6 +445,7 @@ async function syncNutritionOnce(timeRange: {
             log.loggedFatRaw = encrypted.loggedFat;
             log.loggedFiberRaw = encrypted.loggedFiber;
             log.loggedMicrosRaw = encrypted.loggedMicrosJson;
+            log.timezone = entry.timezone;
             log.updatedAt = now;
           });
           counts.updated++;

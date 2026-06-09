@@ -20,6 +20,7 @@ import {
 } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
+import { getCurrentTimezone } from '@/utils/timezone';
 import { widgetEvents } from '@/utils/widgetEvents';
 
 import {
@@ -185,6 +186,7 @@ export class NutritionService {
           record.foodId = foodId;
           record.externalId = externalId;
           record.date = dateTimestamp;
+          record.timezone = getCurrentTimezone();
           record.type = mealType;
           record.amount = amount;
           record.portionId = resolvedPortionId;
@@ -661,6 +663,7 @@ export class NutritionService {
           database.get<NutritionLog>('nutrition_logs').prepareCreate((record) => {
             record.foodId = log.foodId;
             record.date = dateTimestamp;
+            record.timezone = getCurrentTimezone();
             record.type = targetMealType;
             record.amount = log.amount;
             record.portionId = log.portionId;
@@ -736,6 +739,7 @@ export class NutritionService {
           database.get<NutritionLog>('nutrition_logs').prepareCreate((record) => {
             record.foodId = log.foodId;
             record.date = dateTimestamp;
+            record.timezone = getCurrentTimezone();
             record.type = targetMealType;
             record.amount = log.amount * splitRatio;
             record.portionId = log.portionId;
@@ -1052,6 +1056,7 @@ export class NutritionService {
         log.portionId = originalLog.portionId;
         log.type = originalLog.type;
         log.date = localDayStartFromUtcMs(originalLog.date);
+        log.timezone = getCurrentTimezone();
         log.loggedFoodNameRaw = originalLog.loggedFoodNameRaw;
         log.loggedCaloriesRaw = originalLog.loggedCaloriesRaw ?? '';
         log.loggedProteinRaw = originalLog.loggedProteinRaw ?? '';
@@ -1149,6 +1154,7 @@ export class NutritionService {
       return await database.get<NutritionLog>('nutrition_logs').create((record) => {
         record.foodId = tempFood.id;
         record.date = dateTimestamp;
+        record.timezone = getCurrentTimezone();
         record.type = mealType;
         record.amount = amount;
         record.loggedFoodNameRaw = encrypted.loggedFoodName;
@@ -1279,6 +1285,7 @@ export class NutritionService {
             const log = await database.get<NutritionLog>('nutrition_logs').create((record) => {
               record.foodId = food.id;
               record.date = dateTimestamp;
+              record.timezone = getCurrentTimezone();
               record.type = mealType;
               record.amount = ingredient.grams;
               record.loggedFoodNameRaw = encrypted.loggedFoodName;
@@ -1338,6 +1345,7 @@ export class NutritionService {
         const log = await database.get<NutritionLog>('nutrition_logs').create((record) => {
           record.foodId = tempFood.id;
           record.date = dateTimestamp;
+          record.timezone = getCurrentTimezone();
           record.type = mealType;
           record.amount = ingredient.grams;
           record.loggedFoodNameRaw = encrypted.loggedFoodName;

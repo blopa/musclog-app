@@ -13,6 +13,7 @@ import { UNITS_SETTING_TYPE } from '@/constants/settings';
 import { reloadApp } from '@/utils/app';
 import { decrypt } from '@/utils/encryption';
 import { handleError } from '@/utils/handleError';
+import { normalizeTimezoneToOffset } from '@/utils/timezone';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
 import { database } from './database-instance';
@@ -131,6 +132,13 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
         continue;
       }
 
+      if (typeof raw.timezone === 'string' && raw.timezone) {
+        // Older exports may store IANA names. Resolve once at the row's own instant
+        // so every restore path consumes the same fixed "±HH:MM" offset value.
+        const instantMs = Number(raw.started_at ?? raw.date ?? raw.created_at ?? Date.now());
+        raw.timezone = normalizeTimezoneToOffset(raw.timezone, new Date(instantMs));
+      }
+
       if (tableName === 'workout_templates') {
         const newVal = raw.workout_insights_type;
         const oldVal = raw.volume_calculation_type ?? raw.volumeCalculationType;
@@ -149,7 +157,6 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
         const value = Number(raw.value);
         const unit = raw.unit != null ? String(raw.unit) : '';
         const date = Number(raw.date);
-        const timezone = raw.timezone != null ? String(raw.timezone) : '';
         const supplementId = raw.supplement_id != null ? String(raw.supplement_id) : undefined;
         const encrypted = await encryptUserMetricFields({ value, unit, date });
         createOperations.push(
@@ -160,7 +167,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
             rec.valueRaw = encrypted.value;
             rec.unitRaw = encrypted.unit;
             rec.date = date;
-            rec.timezone = timezone;
+            rec.timezone = raw.timezone != null ? String(raw.timezone) : '';
             rec.createdAt = Number(raw.created_at);
             rec.updatedAt = Number(raw.updated_at);
             if (raw.deleted_at != null) {
@@ -202,6 +209,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
             rec.loggedFiberRaw = encrypted.loggedFiber;
             rec.loggedMicrosRaw = encrypted.loggedMicrosJson;
             rec.date = Number(raw.date);
+            rec.timezone = raw.timezone != null ? String(raw.timezone) : undefined;
             rec.createdAt = Number(raw.created_at);
             rec.updatedAt = Number(raw.updated_at);
             if (raw.deleted_at != null) {

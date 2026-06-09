@@ -11,21 +11,25 @@ Check the diff against main, and remove all AI-generated slop introduced in this
 ## What to Remove & Fix
 
 ### 1. Surface-Level Slop
-- **State-the-Obvious Comments:** Remove "polite" comments that explain *what* the code is doing (e.g., `// Fetch user data`) rather than *why*. Code should be self-documenting.
+
+- **State-the-Obvious Comments:** Remove "polite" comments that explain _what_ the code is doing (e.g., `// Fetch user data`) rather than _why_. Code should be self-documenting.
 - **Type Escapes:** Remove unnecessary `as any` casts, blind non-null assertions (`!`), or hallucinated TypeScript interfaces that over-specify unused fields.
 - **Div Soup:** Remove useless wrapper `<div>` tags or non-semantic HTML used where proper semantic tags or React Fragments (`<>`) should be used.
 
 ### 2. Defensive & Error Handling Slop
+
 - **Swallowed Errors:** Remove generic `try/catch` blocks that just `console.log(error)` and fail silently. Errors should either be properly handled, thrown to an Error Boundary, or reported to a telemetry service.
 - **Band-Aid Guard Clauses:** Remove naive boolean gating (e.g., `if (!data) return null;`) that hides upstream data pipeline issues unless explicitly intended for loading states.
 
 ### 3. React & Hook Anti-Patterns
+
 - **Derived State `useEffect`s:** Remove `useEffect` blocks used solely to update one state variable based on another. Calculate these derived values directly during the render phase.
 - **Over-Optimization Spam:** Strip out useless `useCallback` and `useMemo` wrappers around simple functions or primitive values.
 - **Improper `useRef`:** Remove refs that are mutated directly during the render phase or used needlessly where standard controlled state should exist.
 - **Stale Closures:** Fix empty dependency arrays `[]` in `useEffect`s that reference state variables inside timers or intervals.
 
 ### 4. Memory & Performance Killers
+
 - **Inline Reference Nukes:** Extract inline objects or functions passed directly into Context API Providers (`value={{...}}`) or React Native `FlatList` props (`renderItem={() => ...}`).
 - **Missing Cleanups:** Ensure any `useEffect` containing API fetches or event listeners includes proper cleanup functions (e.g., `AbortController`, `removeEventListener`) to prevent memory leaks on unmount.
 

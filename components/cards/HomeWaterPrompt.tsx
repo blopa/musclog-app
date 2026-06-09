@@ -19,6 +19,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { localDayStartMs } from '@/utils/calendarDate';
 import { getProposedDailyWaterIntake } from '@/utils/nutritionCalculator';
 import { showSnackbar } from '@/utils/snackbarService';
+import { getCurrentTimezone } from '@/utils/timezone';
 
 import { GenericCard } from './GenericCard';
 
@@ -170,7 +171,7 @@ export function HomeWaterPrompt({
           type: 'water',
           value,
           date: dayStartMs,
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          timezone: getCurrentTimezone(),
         }),
         SettingsService.setLastHomeWaterPromptAnsweredDay(dayStartMs),
       ]);

@@ -137,6 +137,7 @@ export const schema = appSchema({
         { name: 'workout_name', type: 'string' }, // We save the name here so it's permanent
         { name: 'started_at', type: 'number', isIndexed: true },
         { name: 'completed_at', type: 'number', isOptional: true },
+        { name: 'timezone', type: 'string', isOptional: true }, // UTC offset captured when the session was started (e.g. "-05:00")
         { name: 'total_volume', type: 'number', isOptional: true },
         { name: 'calories_burned', type: 'number', isOptional: true },
         { name: 'icon', type: 'string', isOptional: true },
@@ -343,6 +344,7 @@ export const schema = appSchema({
         { name: 'logged_meal_name', type: 'string', isOptional: true }, // Display name for the meal group
 
         { name: 'date', type: 'number', isIndexed: true }, // Not encrypted (for querying/sorting)
+        { name: 'timezone', type: 'string', isOptional: true }, // UTC offset captured when the food was logged (e.g. "-05:00")
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -361,7 +363,7 @@ export const schema = appSchema({
         { name: 'value', type: 'string' }, // isEncrypted: true
         { name: 'unit', type: 'string', isOptional: true }, // isEncrypted: true
         { name: 'date', type: 'number', isIndexed: true }, // Not encrypted (for querying/sorting)
-        { name: 'timezone', type: 'string' },
+        { name: 'timezone', type: 'string' }, // UTC offset captured when the record was written (e.g. "-05:00")
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

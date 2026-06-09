@@ -18,6 +18,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useTodayMood } from '@/hooks/useTodayMood';
 import { localDayStartMs } from '@/utils/calendarDate';
 import { showSnackbar } from '@/utils/snackbarService';
+import { getCurrentTimezone } from '@/utils/timezone';
 
 import { GenericCard } from './GenericCard';
 
@@ -124,7 +125,7 @@ export function HomeSupplementPrompt({
         note: currentSupplement.name,
         supplementId: currentSupplement.id,
         date: localDayStartMs(new Date()),
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timezone: getCurrentTimezone(),
       });
 
       showSnackbar('success', t('bodyMetrics.addEntry.saveSuccess'));

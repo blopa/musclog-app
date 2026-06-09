@@ -2,6 +2,7 @@ import { Model, Q, Query } from '@nozbe/watermelondb';
 import { children, field, json, writer } from '@nozbe/watermelondb/decorators';
 
 import { DEFAULT_WORKOUT_TYPE } from '@/constants/workoutTypes';
+import { getCurrentTimezone } from '@/utils/timezone';
 
 import Schedule from './Schedule';
 import WorkoutLog from './WorkoutLog';
@@ -69,6 +70,7 @@ export default class WorkoutTemplate extends Model {
       log.type = this.type ?? DEFAULT_WORKOUT_TYPE;
       log.icon = this.icon ?? undefined;
       log.startedAt = now;
+      log.timezone = getCurrentTimezone();
       log.exhaustionLevel = undefined;
       log.workoutScore = undefined;
       log.createdAt = now;

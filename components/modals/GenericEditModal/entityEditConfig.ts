@@ -17,6 +17,7 @@ import {
   WorkoutTemplateService,
 } from '@/database/services';
 import { localDayStartFromUtcMs } from '@/utils/calendarDate';
+import { getCurrentTimezone } from '@/utils/timezone';
 import {
   displayToCm,
   displayToGrams,
@@ -966,7 +967,7 @@ export async function createRecord(
         value,
         unit,
         date: localDayStartFromUtcMs(rawDate),
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timezone: getCurrentTimezone(),
       });
       break;
     }

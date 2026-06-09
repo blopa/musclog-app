@@ -1,6 +1,6 @@
 export const DEFAULT_BATCH_SIZE = 5;
 
-export const CURRENT_DATABASE_VERSION = 19;
+export const CURRENT_DATABASE_VERSION = 20;
 
 export const SEEDING_COMPLETE_KEY = 'seeding_complete';
 export const ENCRYPTION_KEY = 'encryptionKey';

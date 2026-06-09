@@ -95,7 +95,6 @@ export interface UserMetricWriteParams {
   type: string; // UserMetricType
   value: number; // in app-native units (kg, cm, %, etc.)
   date: number; // unix ms
-  timezone: string;
 }
 
 /**
@@ -141,7 +140,6 @@ export async function writeUserMetricToHealthConnect(
           recordType: 'Weight' as const,
           weight: { value: params.value, unit: 'kilograms' as const },
           time,
-          zoneOffset: params.timezone,
           metadata,
         };
         break;
@@ -150,7 +148,6 @@ export async function writeUserMetricToHealthConnect(
           recordType: 'Height' as const,
           height: { value: HeightConverter.cmToMeters(params.value), unit: 'meters' as const },
           time,
-          zoneOffset: params.timezone,
           metadata,
         };
         break;
@@ -159,7 +156,6 @@ export async function writeUserMetricToHealthConnect(
           recordType: 'BodyFat' as const,
           percentage: params.value,
           time,
-          zoneOffset: params.timezone,
           metadata,
         };
         break;
@@ -168,7 +164,6 @@ export async function writeUserMetricToHealthConnect(
           recordType: 'LeanBodyMass' as const,
           mass: { value: params.value, unit: 'kilograms' as const },
           time,
-          zoneOffset: params.timezone,
           metadata,
         };
         break;

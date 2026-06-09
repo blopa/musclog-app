@@ -24,6 +24,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
 import { calculateNutritionPlan } from '@/utils/nutritionCalculator';
+import { getCurrentTimezone } from '@/utils/timezone';
 import { displayToCm, displayToKg } from '@/utils/unitConversion';
 import { getHeightUnit, getWeightUnit } from '@/utils/units';
 import { getDefaultUsernameForGender } from '@/utils/usernameUtils';
@@ -98,7 +99,7 @@ export default function QuickBodyStatsScreen() {
       const weightKg = displayToKg(weightValue, units);
       const heightCm = displayToCm(heightValue, units);
       const now = Date.now();
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const timezone = getCurrentTimezone();
 
       // Save user metrics
       await Promise.all([
