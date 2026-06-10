@@ -14,10 +14,10 @@ import { MealService } from '@/database/services/MealService';
 import i18n from '@/lang/lang';
 import { writeNutritionLogToHealthConnect } from '@/services/healthConnectNutrition';
 import {
-  isUtcDayKeyInRange,
+  dayKeyRange,
+  dayKeyRangeForLocalDate,
   MS_PER_SOLAR_DAY,
   timeOfDayMsInTimezone,
-  timezoneWidenedBounds,
   utcDayKeyFromLocalDate,
   utcNormalizedDayKey,
   withCurrentTimeOnDay,
@@ -292,8 +292,7 @@ export class NutritionService {
     date: Date,
     repairAttempted = false
   ): Promise<NutritionLog[]> {
-    const targetKey = utcDayKeyFromLocalDate(date);
-    const { lowerMs, upperMs } = timezoneWidenedBounds(targetKey, targetKey);
+    const range = dayKeyRangeForLocalDate(date);
 
     try {
       const raw = await retryOnResetError(() =>
@@ -301,13 +300,13 @@ export class NutritionService {
           .get<NutritionLog>('nutrition_logs')
           .query(
             Q.where('deleted_at', Q.eq(null)),
-            Q.where('date', Q.gte(lowerMs)),
-            Q.where('date', Q.lt(upperMs))
+            Q.where('date', Q.gte(range.lowerMs)),
+            Q.where('date', Q.lt(range.upperMs))
           )
           .fetch()
       );
 
-      return raw.filter((log) => isUtcDayKeyInRange(log.date, log.timezone, targetKey, targetKey));
+      return raw.filter((log) => range.matches(log.date, log.timezone));
     } catch (error) {
       if (!repairAttempted) {
         const repaired = await retryAfterRepair(error, REPAIR_DESCRIPTORS.nutritionLogs, () =>
@@ -353,42 +352,39 @@ export class NutritionService {
     startDate: Date,
     endDate: Date
   ): Promise<NutritionLog[]> {
-    const startKey = utcDayKeyFromLocalDate(startDate);
-    const endKey = utcDayKeyFromLocalDate(endDate);
-    const { lowerMs, upperMs } = timezoneWidenedBounds(startKey, endKey);
+    const range = dayKeyRange(utcDayKeyFromLocalDate(startDate), utcDayKeyFromLocalDate(endDate));
 
     const raw = await retryOnResetError(() =>
       database
         .get<NutritionLog>('nutrition_logs')
         .query(
           Q.where('deleted_at', Q.eq(null)),
-          Q.where('date', Q.gte(lowerMs)),
-          Q.where('date', Q.lt(upperMs))
+          Q.where('date', Q.gte(range.lowerMs)),
+          Q.where('date', Q.lt(range.upperMs))
         )
         .fetch()
     );
 
-    return raw.filter((log) => isUtcDayKeyInRange(log.date, log.timezone, startKey, endKey));
+    return raw.filter((log) => range.matches(log.date, log.timezone));
   }
 
   /**
    * Get nutrition logs for a specific meal type on a date
    */
   static async getNutritionLogsForMeal(date: Date, mealType: MealType): Promise<NutritionLog[]> {
-    const targetKey = utcDayKeyFromLocalDate(date);
-    const { lowerMs, upperMs } = timezoneWidenedBounds(targetKey, targetKey);
+    const range = dayKeyRangeForLocalDate(date);
 
     const raw = await database
       .get<NutritionLog>('nutrition_logs')
       .query(
         Q.where('deleted_at', Q.eq(null)),
-        Q.where('date', Q.gte(lowerMs)),
-        Q.where('date', Q.lt(upperMs)),
+        Q.where('date', Q.gte(range.lowerMs)),
+        Q.where('date', Q.lt(range.upperMs)),
         Q.where('type', mealType)
       )
       .fetch();
 
-    return raw.filter((log) => isUtcDayKeyInRange(log.date, log.timezone, targetKey, targetKey));
+    return raw.filter((log) => range.matches(log.date, log.timezone));
   }
 
   /**
@@ -809,14 +805,16 @@ export class NutritionService {
     mealType?: MealType
   ): Promise<{ food: Food; lastGramWeight: number }[]> {
     // If a date is provided, limit recent logs to that date (today by default).
-    const targetKey = date ? utcDayKeyFromLocalDate(date) : null;
+    const range = date ? dayKeyRangeForLocalDate(date) : null;
     let query = database
       .get<NutritionLog>('nutrition_logs')
       .query(Q.where('deleted_at', Q.eq(null)));
 
-    if (targetKey !== null) {
-      const { lowerMs, upperMs } = timezoneWidenedBounds(targetKey, targetKey);
-      query = query.extend(Q.where('date', Q.gte(lowerMs)), Q.where('date', Q.lt(upperMs)));
+    if (range) {
+      query = query.extend(
+        Q.where('date', Q.gte(range.lowerMs)),
+        Q.where('date', Q.lt(range.upperMs))
+      );
     }
 
     if (mealType) {
@@ -827,10 +825,8 @@ export class NutritionService {
     let recentLogs = await query.extend(Q.sortBy('created_at', Q.desc), Q.take(limit * 5)).fetch();
 
     // Post-filter to the exact target day when a date was provided.
-    if (targetKey !== null) {
-      recentLogs = recentLogs.filter((log) =>
-        isUtcDayKeyInRange(log.date, log.timezone, targetKey, targetKey)
-      );
+    if (range) {
+      recentLogs = recentLogs.filter((log) => range.matches(log.date, log.timezone));
     }
 
     // Keep the most recent log per food ID (already sorted desc, so first occurrence wins).
@@ -887,23 +883,23 @@ export class NutritionService {
     }[]
   > {
     // If a date is provided, limit recent logs to that date (today by default).
-    const targetKey = date ? utcDayKeyFromLocalDate(date) : null;
+    const range = date ? dayKeyRangeForLocalDate(date) : null;
     let query = database
       .get<NutritionLog>('nutrition_logs')
       .query(Q.where('deleted_at', Q.eq(null)));
 
-    if (targetKey !== null) {
-      const { lowerMs, upperMs } = timezoneWidenedBounds(targetKey, targetKey);
-      query = query.extend(Q.where('date', Q.gte(lowerMs)), Q.where('date', Q.lt(upperMs)));
+    if (range) {
+      query = query.extend(
+        Q.where('date', Q.gte(range.lowerMs)),
+        Q.where('date', Q.lt(range.upperMs))
+      );
     }
 
     let recentLogs = await query.extend(Q.sortBy('created_at', Q.desc), Q.take(limit)).fetch();
 
     // Post-filter to the exact target day when a date was provided.
-    if (targetKey !== null) {
-      recentLogs = recentLogs.filter((log) =>
-        isUtcDayKeyInRange(log.date, log.timezone, targetKey, targetKey)
-      );
+    if (range) {
+      recentLogs = recentLogs.filter((log) => range.matches(log.date, log.timezone));
     }
 
     const resolved = await Promise.all(

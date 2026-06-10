@@ -12,12 +12,12 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import i18n from '@/lang/lang';
 import {
+  formatTimeInTimezone,
   formatUtcNormalizedDayIntl,
   MS_PER_SOLAR_DAY,
   utcNormalizedDayKey,
 } from '@/utils/calendarDate';
 import { formatDisplayGrams } from '@/utils/formatDisplayWeight';
-import { parseTimezoneOffsetMinutes } from '@/utils/timezone';
 import { getMassUnitLabel } from '@/utils/unitConversion';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -66,16 +66,8 @@ function formatLogDateTime(
   localeTag: string,
   t: TFunction
 ): string {
-  // Format time in the recording timezone: shift timestamp by the stored offset, then display as UTC.
-  // This avoids relying on Intl fixed-offset timezone support (not universal on older Android).
-  const offsetMinutes = timezone ? parseTimezoneOffsetMinutes(timezone) : null;
-  const displayDate =
-    offsetMinutes !== null ? new Date(createdAt + offsetMinutes * 60000) : new Date(createdAt);
-  const timeStr = new Intl.DateTimeFormat(localeTag, {
-    hour: 'numeric',
-    minute: '2-digit',
-    timeZone: offsetMinutes !== null ? 'UTC' : undefined,
-  }).format(displayDate);
+  // Format the time as it appeared on the recording-timezone wall clock.
+  const timeStr = formatTimeInTimezone(createdAt, timezone, localeTag);
 
   // Compare day keys so "today/yesterday" reflects the recording calendar day,
   // not the viewer's device interpretation of createdAt.

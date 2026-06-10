@@ -7,10 +7,9 @@ import type NutritionLog from '@/database/models/NutritionLog';
 import type UserMetric from '@/database/models/UserMetric';
 import type WorkoutLog from '@/database/models/WorkoutLog';
 import {
+  dayKeyRange,
   dayStartInTimezone,
-  isUtcDayKeyInRange,
   MS_PER_SOLAR_DAY,
-  timezoneWidenedBounds,
   utcNormalizedDayKey,
 } from '@/utils/calendarDate';
 import { getTimezoneAt } from '@/utils/timezone';
@@ -115,26 +114,22 @@ export class NutritionCheckinService {
     };
 
     // DB bounds for the [periodStartKey, periodEndKey) window, widened ±14 h to capture records
-    // stored in any timezone; the post-filters below trim back to the exact day window.
-    const { lowerMs, upperMs } = timezoneWidenedBounds(periodStartKey, periodEndKey);
-    const inPeriod = (recordDate: number, timezone: string | null | undefined): boolean =>
-      isUtcDayKeyInRange(recordDate, timezone, periodStartKey, periodEndKey, {
-        inclusiveEnd: false,
-      });
+    // stored in any timezone; `range.matches` trims the overscan back to the exact day window.
+    const range = dayKeyRange(periodStartKey, periodEndKey, { inclusiveEnd: false });
 
     // Fetch weight metrics for current period.
     const weightMetricsRaw = await database
       .get<UserMetric>('user_metrics')
       .query(
         Q.where('type', 'weight'),
-        Q.where('date', Q.gte(lowerMs)),
-        Q.where('date', Q.lt(upperMs)),
+        Q.where('date', Q.gte(range.lowerMs)),
+        Q.where('date', Q.lt(range.upperMs)),
         Q.where('deleted_at', Q.eq(null)),
         Q.sortBy('date', Q.asc)
       )
       .fetch();
 
-    const weightMetrics = weightMetricsRaw.filter((m) => inPeriod(m.date, m.timezone));
+    const weightMetrics = weightMetricsRaw.filter((m) => range.matches(m.date, m.timezone));
 
     // Build daily weights array (7 slots, one per day)
     const dailyWeights: number[] = Array(7).fill(0);
@@ -160,13 +155,13 @@ export class NutritionCheckinService {
       .get<UserMetric>('user_metrics')
       .query(
         Q.where('type', 'body_fat'),
-        Q.where('date', Q.gte(lowerMs)),
-        Q.where('date', Q.lt(upperMs)),
+        Q.where('date', Q.gte(range.lowerMs)),
+        Q.where('date', Q.lt(range.upperMs)),
         Q.where('deleted_at', Q.eq(null))
       )
       .fetch();
 
-    const bodyFatMetrics = bodyFatMetricsRaw.filter((m) => inPeriod(m.date, m.timezone));
+    const bodyFatMetrics = bodyFatMetricsRaw.filter((m) => range.matches(m.date, m.timezone));
 
     let avgBodyFat: number | null = null;
     if (bodyFatMetrics.length > 0) {
@@ -180,13 +175,13 @@ export class NutritionCheckinService {
     const nutritionLogsRaw = await database
       .get<NutritionLog>('nutrition_logs')
       .query(
-        Q.where('date', Q.gte(lowerMs)),
-        Q.where('date', Q.lt(upperMs)),
+        Q.where('date', Q.gte(range.lowerMs)),
+        Q.where('date', Q.lt(range.upperMs)),
         Q.where('deleted_at', Q.eq(null))
       )
       .fetch();
 
-    const nutritionLogs = nutritionLogsRaw.filter((log) => inPeriod(log.date, log.timezone));
+    const nutritionLogs = nutritionLogsRaw.filter((log) => range.matches(log.date, log.timezone));
 
     // Group nutrition logs by day and sum calories per day, keyed by the log's own timezone.
     const caloriesByDay = new Map<number, number>();

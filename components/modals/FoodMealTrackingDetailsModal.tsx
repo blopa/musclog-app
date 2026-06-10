@@ -68,6 +68,7 @@ import {
   combineLocalDateAndTime,
   instantForDateTimeInTimezone,
   localCalendarDayDate,
+  wallClockDateInTimezone,
 } from '@/utils/calendarDate';
 import {
   getProductBarcodeFromSearchProduct,
@@ -98,7 +99,6 @@ import {
 } from '@/utils/openFoodFactsMapper';
 import { getProductName } from '@/utils/productName';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
-import { parseTimezoneOffsetMinutes } from '@/utils/timezone';
 import { getMassUnitLabel } from '@/utils/unitConversion';
 import { mapUSDAFoodToUnified, mapUSDANutritient } from '@/utils/usdaMapper';
 
@@ -760,19 +760,9 @@ export function FoodMealTrackingDetailsModal({
 
     const setTime = () => {
       try {
-        const recordingOffsetMinutes = foodLog.timezone
-          ? parseTimezoneOffsetMinutes(foodLog.timezone)
-          : null;
-        if (recordingOffsetMinutes !== null) {
-          // Shift the consumed datetime so the device-local picker shows the
-          // recording-timezone time. e.g. 18:00 UTC logged in +04:00 → display
-          // as 22:00 on a +02:00 device.
-          const deviceOffsetMinutes = -new Date(foodLog.date).getTimezoneOffset();
-          const adjustmentMs = (recordingOffsetMinutes - deviceOffsetMinutes) * 60000;
-          setSelectedTime(new Date(foodLog.date + adjustmentMs));
-        } else {
-          setSelectedTime(new Date(foodLog.date));
-        }
+        // Seed the picker so it shows the recording-timezone wall clock, not the
+        // device's reinterpretation of the consumed instant.
+        setSelectedTime(wallClockDateInTimezone(foodLog.date, foodLog.timezone));
       } catch (e) {
         setSelectedTime(new Date());
       }

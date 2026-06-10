@@ -318,6 +318,42 @@ export function isUtcDayKeyInRange(
 }
 
 /**
+ * Day-key range query descriptor: the widened DB bounds ({@link timezoneWidenedBounds})
+ * and the matching post-filter predicate ({@link isUtcDayKeyInRange}), derived from the
+ * **same** `[startKey, endKey]`. Bundling both halves makes the widen-then-trim contract
+ * impossible to break — there's no way to widen on one window and filter on another.
+ *
+ * Build clauses with `Q.where('date', Q.gte(lowerMs))` + `Q.where('date', Q.lt(upperMs))`
+ * (upper bound exclusive), then `raw.filter((r) => matches(r.date, r.timezone))`. For a
+ * single target day, pass the same value for `startKey` and `endKey`.
+ */
+export interface DayKeyRange {
+  lowerMs: number;
+  upperMs: number;
+  matches: (recordDate: number, timezone?: string | null) => boolean;
+}
+
+export function dayKeyRange(
+  startKey: number,
+  endKey: number,
+  opts?: { inclusiveEnd?: boolean }
+): DayKeyRange {
+  const { lowerMs, upperMs } = timezoneWidenedBounds(startKey, endKey);
+  return {
+    lowerMs,
+    upperMs,
+    matches: (recordDate, timezone) =>
+      isUtcDayKeyInRange(recordDate, timezone, startKey, endKey, opts),
+  };
+}
+
+/** {@link dayKeyRange} for a single device-local picked day (the common diary case). */
+export function dayKeyRangeForLocalDate(date: Date): DayKeyRange {
+  const key = utcDayKeyFromLocalDate(date);
+  return dayKeyRange(key, key);
+}
+
+/**
  * Rolling 7-day bucket index in UTC-normalized-key space: 0 for `utcStartKey`'s week,
  * 1 for the next block of 7 days, etc. Both arguments must be UTC-midnight day keys
  * (from {@link utcNormalizedDayKey} / {@link utcDayKeyFromLocalDate}). Shared by the
@@ -452,6 +488,43 @@ export function timeOfDayMsInTimezone(ms: number, timezone?: string | null): num
 
   const offsetMs = offsetMinutes * 60000;
   return (((ms + offsetMs) % MS_PER_SOLAR_DAY) + MS_PER_SOLAR_DAY) % MS_PER_SOLAR_DAY;
+}
+
+/**
+ * A device-local `Date` that **renders** (via local `getHours`/`getMinutes`/… or
+ * date-fns `format`) as the wall-clock time that instant `ms` had in `timezone`.
+ * Use to seed time pickers / formatters that read local fields but must show a
+ * record's original recording-timezone time. Falls back to `new Date(ms)` when the
+ * timezone is missing/invalid.
+ */
+export function wallClockDateInTimezone(ms: number, timezone?: string | null): Date {
+  const recordingOffset = timezone ? parseTimezoneOffsetMinutes(timezone) : null;
+  if (recordingOffset === null) {
+    return new Date(ms);
+  }
+
+  const deviceOffset = -new Date(ms).getTimezoneOffset();
+  return new Date(ms + (recordingOffset - deviceOffset) * 60000);
+}
+
+/**
+ * Locale-aware time-of-day of instant `ms` as it appeared on the wall clock in
+ * `timezone`. Shifts by the stored offset and renders as UTC so it doesn't depend on
+ * Intl fixed-offset zone support (unreliable on older Android). Falls back to
+ * device-local time when the timezone is missing/invalid.
+ */
+export function formatTimeInTimezone(
+  ms: number,
+  timezone: string | null | undefined,
+  localeTag: string
+): string {
+  const offsetMinutes = timezone ? parseTimezoneOffsetMinutes(timezone) : null;
+  const displayDate = offsetMinutes !== null ? new Date(ms + offsetMinutes * 60000) : new Date(ms);
+  return new Intl.DateTimeFormat(localeTag, {
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZone: offsetMinutes !== null ? 'UTC' : undefined,
+  }).format(displayDate);
 }
 
 /**

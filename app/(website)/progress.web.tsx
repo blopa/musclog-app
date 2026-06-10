@@ -35,7 +35,7 @@ import type {
 } from '@/database/services/ProgressService';
 import { useProgressData } from '@/hooks/useProgressData';
 import { useSettings } from '@/hooks/useSettings';
-import { formatLocalCalendarMonthDayNumericIntl } from '@/utils/calendarDate';
+import { formatUtcNormalizedDayIntl } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 
 const BRAND_GREEN = '#22C55E';
@@ -110,7 +110,9 @@ function formatNumber(locale: string, value: number, maximumFractionDigits = 1) 
 }
 
 function formatDateLabel(locale: string, value: number) {
-  return formatLocalCalendarMonthDayNumericIntl(value, locale);
+  // ProgressService date points are UTC-normalized day keys (so a record lands on the
+  // calendar day it was recorded, in any timezone) — format them as UTC to match native.
+  return formatUtcNormalizedDayIntl(value, locale);
 }
 
 function getSummaryCounts(data: ProgressData | null) {
