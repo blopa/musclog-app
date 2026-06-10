@@ -37,7 +37,7 @@ export default class NutritionLog extends Model {
 
   @field('food_id') declare foodId: string;
   @field('external_id') externalId?: string;
-  @field('date') declare date: number; // Midnight timestamp for the day
+  @field('date') declare date: number; // Consumed datetime (day + time-of-day) ms; day-grouping via utcNormalizedDayKey
   @field('timezone') timezone?: string; // UTC offset captured when logged (e.g. "-05:00")
   @field('type') declare type: MealType; // 'breakfast', 'lunch', 'dinner', 'snack', 'other'
 
@@ -103,6 +103,27 @@ export default class NutritionLog extends Model {
   async updateDate(date: number): Promise<void> {
     await this.update((record) => {
       record.date = date;
+      record.updatedAt = Date.now();
+    });
+  }
+
+  @writer
+  async updateTrackingDetails(data: {
+    amount: number;
+    date: number;
+    mealType: MealType;
+    portionId?: string;
+    timezone?: string;
+  }): Promise<void> {
+    await this.update((record) => {
+      record.amount = data.amount;
+      record.date = data.date;
+      record.type = data.mealType;
+      record.portionId = data.portionId;
+      if (data.timezone !== undefined) {
+        record.timezone = data.timezone;
+      }
+
       record.updatedAt = Date.now();
     });
   }

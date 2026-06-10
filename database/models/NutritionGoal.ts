@@ -23,6 +23,7 @@ export default class NutritionGoal extends Model {
   @field('target_bmi') targetBmi?: number | null;
   @field('target_ffmi') targetFfmi?: number | null;
   @field('target_date') targetDate?: number | null;
+  @field('timezone') timezone?: string;
   @field('effective_until') effectiveUntil?: number | null;
   @field('is_dynamic') declare isDynamic: boolean;
   @field('created_at') declare createdAt: number;

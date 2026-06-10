@@ -100,6 +100,7 @@
       "encryptionPhrasePlaceholderRequired": "Digite uma frase para criptografar o backup",
       "decryptionPhrasePlaceholder": "Digite a frase se o backup foi criptografado",
       "encryptionPhraseRequired": "Uma frase de criptografia é necessária para exportar. Por favor, insira uma.",
+      "includeDeletedRecords": "Incluir registros excluídos",
       "requireExportEncryption": "Exigir Criptografia na Exportação",
       "requireExportEncryptionSubtitle": "Sempre exigir uma frase de criptografia ao exportar dados",
       "disableEncryptionConfirmTitle": "Desativar Requisito de Criptografia?",

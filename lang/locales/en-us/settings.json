@@ -100,6 +100,7 @@
       "encryptionPhrasePlaceholderRequired": "Enter a phrase to encrypt the backup",
       "decryptionPhrasePlaceholder": "Enter phrase if backup was encrypted",
       "encryptionPhraseRequired": "An encryption phrase is required to export. Please enter one.",
+      "includeDeletedRecords": "Include deleted records",
       "requireExportEncryption": "Require Export Encryption",
       "requireExportEncryptionSubtitle": "Always require an encryption phrase when exporting data",
       "disableEncryptionConfirmTitle": "Disable Encryption Requirement?",

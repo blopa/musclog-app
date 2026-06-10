@@ -32,6 +32,7 @@
       "weightLbs": "Gewicht (lbs)",
       "restSec": "Rust (sec)"
     },
+    "repMotion": "Herhalingsbeweging",
     "musclesWorked": "Getrainde spieren",
     "frontMuscles": "Voor",
     "backMuscles": "Achter",

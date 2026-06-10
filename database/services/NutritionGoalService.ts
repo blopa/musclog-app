@@ -3,15 +3,25 @@ import { endOfDay } from 'date-fns';
 
 import { database } from '@/database';
 import NutritionGoal, { type EatingPhase } from '@/database/models/NutritionGoal';
+import type UserMetric from '@/database/models/UserMetric';
 import { localDayKeyPlusCalendarDays, localDayStartFromUtcMs } from '@/utils/calendarDate';
+import {
+  calculateNutritionPlan,
+  eatingPhaseToWeightGoal,
+  generateWeeklyCheckins,
+} from '@/utils/nutritionCalculator';
 import {
   isDynamicNutritionGoalValid,
   normalizeNutritionGoalTargetWeight,
 } from '@/utils/nutritionGoalHelpers';
+import { getCurrentTimezone, getTimezoneAt } from '@/utils/timezone';
+import { storedHeightToCm, storedWeightToKg } from '@/utils/unitConversion';
 import { widgetEvents } from '@/utils/widgetEvents';
 
 import { REPAIR_DESCRIPTORS, retryAfterRepair } from './DatabaseRepairService';
 import { NutritionCheckinService } from './NutritionCheckinService';
+import { SettingsService } from './SettingsService';
+import { UserService } from './UserService';
 
 function triggerWidgetUpdate(): void {
   widgetEvents.emitNutritionWidgetUpdate();
@@ -39,6 +49,7 @@ export interface NutritionGoalInput {
   targetBMI?: number | null;
   targetFFMI?: number | null;
   targetDate?: number | null;
+  timezone?: string;
   isDynamic?: boolean;
 }
 
@@ -160,6 +171,7 @@ export class NutritionGoalService {
         r.fats = data.fats;
         r.fiber = data.fiber;
         r.eatingPhase = data.eatingPhase;
+        r.timezone = data.timezone ?? getCurrentTimezone();
         r.targetWeight = normalizedTargetWeight ?? 0;
         r.targetBodyFat = data.targetBodyFat ?? null;
         r.targetBmi = data.targetBMI ?? null;
@@ -293,6 +305,10 @@ export class NutritionGoalService {
           record.targetDate = updates.targetDate ?? null;
         }
 
+        if (updates.timezone !== undefined) {
+          record.timezone = updates.timezone;
+        }
+
         if (updates.isDynamic !== undefined) {
           record.isDynamic = updates.isDynamic;
         }
@@ -324,8 +340,6 @@ export class NutritionGoalService {
       throw new Error('Cannot regenerate check-ins for a deleted goal');
     }
 
-    // TODO: do not use dynamic import
-    const { UserService } = require('./UserService');
     const user = await UserService.getCurrentUser();
 
     if (!user) {
@@ -336,7 +350,7 @@ export class NutritionGoalService {
 
     // Fetch metrics active at the time the goal was created
     const heightMetric = await database
-      .get('user_metrics')
+      .get<UserMetric>('user_metrics')
       .query(
         Q.where('type', 'height'),
         Q.where('deleted_at', Q.eq(null)),
@@ -348,7 +362,7 @@ export class NutritionGoalService {
       .fetch();
 
     const weightMetric = await database
-      .get('user_metrics')
+      .get<UserMetric>('user_metrics')
       .query(
         Q.where('type', 'weight'),
         Q.where('deleted_at', Q.eq(null)),
@@ -360,7 +374,7 @@ export class NutritionGoalService {
       .fetch();
 
     const bodyFatMetric = await database
-      .get('user_metrics')
+      .get<UserMetric>('user_metrics')
       .query(
         Q.where('type', 'body_fat'),
         Q.where('deleted_at', Q.eq(null)),
@@ -372,19 +386,10 @@ export class NutritionGoalService {
       .fetch();
 
     if (heightMetric.length > 0 && weightMetric.length > 0) {
-      // TODO: do not use dynamic import
-      const {
-        calculateNutritionPlan,
-        eatingPhaseToWeightGoal,
-        generateWeeklyCheckins,
-      } = require('../../utils/nutritionCalculator');
-      const { storedWeightToKg, storedHeightToCm } = require('../../utils/unitConversion');
-      const { SettingsService } = require('./SettingsService');
-
-      const heightDecrypted = await (heightMetric[0] as any).getDecrypted();
-      const weightDecrypted = await (weightMetric[0] as any).getDecrypted();
+      const heightDecrypted = await heightMetric[0].getDecrypted();
+      const weightDecrypted = await weightMetric[0].getDecrypted();
       const bodyFatDecrypted =
-        bodyFatMetric.length > 0 ? await (bodyFatMetric[0] as any).getDecrypted() : null;
+        bodyFatMetric.length > 0 ? await bodyFatMetric[0].getDecrypted() : null;
 
       const weightKg = storedWeightToKg(weightDecrypted.value, weightDecrypted.unit);
       const heightCm = storedHeightToCm(heightDecrypted.value, heightDecrypted.unit);
@@ -469,6 +474,7 @@ export class NutritionGoalService {
         r.fats = data.fats;
         r.fiber = data.fiber;
         r.eatingPhase = data.eatingPhase;
+        r.timezone = data.timezone ?? getTimezoneAt(startDate);
         r.targetWeight = normalizedTargetWeight ?? 0;
         r.targetBodyFat = data.targetBodyFat ?? null;
         r.targetBmi = data.targetBMI ?? null;

@@ -32,6 +32,7 @@
       "weightLbs": "Вес (фунты)",
       "restSec": "Отдых (сек)"
     },
+    "repMotion": "Движение повтора",
     "musclesWorked": "Задействованные мышцы",
     "frontMuscles": "Передние",
     "backMuscles": "Задние",

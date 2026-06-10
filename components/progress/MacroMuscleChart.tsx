@@ -6,7 +6,7 @@ import { AreaChart } from '@/components/charts/AreaChart';
 import { MacroMusclePoint, TimeAggregation } from '@/database/services/ProgressService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
-import { formatLocalCalendarMonthDayNumericIntl } from '@/utils/calendarDate';
+import { formatUtcNormalizedDayIntl } from '@/utils/calendarDate';
 import { getXAxisLabels, getYAxisLabels } from '@/utils/chartUtils';
 import { getMuscleGroupTranslationKey } from '@/utils/exerciseTranslation';
 
@@ -54,7 +54,7 @@ export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
 
   const xAxisLabels = getXAxisLabels(
     data.map((d) => ({ x: d.date })),
-    (x) => formatLocalCalendarMonthDayNumericIntl(x, i18n.language)
+    (x) => formatUtcNormalizedDayIntl(x, i18n.language)
   );
 
   const maxY = Math.max(...data.map((d) => d.protein + d.carbs + d.fat), 1) * 1.1;

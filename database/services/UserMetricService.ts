@@ -3,13 +3,26 @@ import convert from 'convert';
 import { Platform } from 'react-native';
 
 import { database } from '@/database/database-instance';
+import { dayRangeClauses } from '@/database/dayKeyQuery';
 import { encryptUserMetricFields } from '@/database/encryptionHelpers';
 import UserMetric, { type UserMetricType } from '@/database/models/UserMetric';
 import { writeUserMetricToHealthConnect } from '@/services/healthConnectFitness';
+import {
+  dayKeyRange,
+  MS_PER_SOLAR_DAY,
+  TIMEZONE_QUERY_BUFFER_MS,
+  utcNormalizedDayKey,
+} from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import { ianaZoneToTimezoneAt, isTimezoneOffset } from '@/utils/timezone';
 
 import { REPAIR_DESCRIPTORS, retryAfterRepair } from './DatabaseRepairService';
+
+// A record's UTC-normalized day key K relates to its stored instant `date` by
+// K ∈ (date − MAX_KEY_BELOW_DATE_MS, date + TIMEZONE_QUERY_BUFFER_MS] for offsets in
+// UTC−14…UTC+14: the key sits at most 14 h above the instant, and less than 24 h + 14 h
+// below it.
+const MAX_KEY_BELOW_DATE_MS = MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS;
 
 export class UserMetricService {
   /**
@@ -88,18 +101,66 @@ export class UserMetricService {
     type: UserMetricType | string,
     maxDate: number
   ): Promise<UserMetric | null> {
-    const metrics = await database
+    const maxKey = utcNormalizedDayKey(maxDate, null);
+
+    // From the K-vs-date relation (see MAX_KEY_BELOW_DATE_MS): rows with
+    // date ≤ maxKey − 14 h always qualify (K ≤ maxKey), and rows with
+    // date > maxKey + 38 h never do. The anchor is the newest row guaranteed to
+    // qualify; only rows close enough to beat (or tie) it can be the true answer.
+    const [anchor] = await database
       .get<UserMetric>('user_metrics')
       .query(
         Q.where('type', type),
         Q.where('deleted_at', Q.eq(null)),
-        Q.where('date', Q.lte(maxDate)),
+        Q.where('date', Q.lte(maxKey - TIMEZONE_QUERY_BUFFER_MS)),
         Q.sortBy('date', Q.desc),
         Q.sortBy('updated_at', Q.desc),
         Q.take(1)
       )
       .fetch();
-    return metrics[0] ?? null;
+
+    // Candidates that can match or beat the anchor's normalized key. The fetch is
+    // bounded without any row-count heuristic: between the anchor and maxKey − 14 h
+    // there are no rows (the anchor is the newest one below that line), so this
+    // reads at most ~2 days' worth of records around each end.
+    const candidateClauses = [
+      Q.where('type', type),
+      Q.where('deleted_at', Q.eq(null)),
+      Q.where('date', Q.lte(maxKey + MAX_KEY_BELOW_DATE_MS)),
+    ];
+    if (anchor) {
+      candidateClauses.push(
+        Q.where('date', Q.gt(anchor.date - MAX_KEY_BELOW_DATE_MS - TIMEZONE_QUERY_BUFFER_MS))
+      );
+    }
+
+    const candidates = await database
+      .get<UserMetric>('user_metrics')
+      .query(...candidateClauses)
+      .fetch();
+
+    // Across mixed timezones a smaller raw `date` can normalize to a LATER calendar day, so the
+    // DB's date order is not the normalized-key order. Pick the true latest by normalized
+    // day key, breaking ties on updated_at (most recently written wins). The anchor itself is
+    // inside the candidate window, so it competes here too.
+    let best: UserMetric | null = null;
+    let bestKey = -Infinity;
+    for (const metric of candidates) {
+      const key = utcNormalizedDayKey(metric.date, metric.timezone);
+      if (key > maxKey) {
+        continue;
+      }
+
+      if (
+        key > bestKey ||
+        (key === bestKey && best !== null && metric.updatedAt > best.updatedAt)
+      ) {
+        best = metric;
+        bestKey = key;
+      }
+    }
+
+    return best;
   }
 
   /**
@@ -130,21 +191,39 @@ export class UserMetricService {
         query = query.extend(Q.where('type', type));
       }
 
-      if (dateRange) {
-        query = query.extend(
-          Q.where('date', Q.gte(dateRange.startDate)),
-          Q.where('date', Q.lte(dateRange.endDate))
-        );
+      // Day-range queries are normalized to UTC day keys, then widened by ±14 h so records
+      // stored in any timezone are captured and post-filtered back to the exact day bounds.
+      const range = dateRange
+        ? dayKeyRange(
+            utcNormalizedDayKey(dateRange.startDate, null),
+            utcNormalizedDayKey(dateRange.endDate, null)
+          )
+        : null;
+
+      if (range) {
+        query = query.extend(...dayRangeClauses(range));
+      } else if (limit !== undefined && limit > 0) {
+        // Pagination can only be pushed to the DB when there is no day-range post-filter.
+        query =
+          offset && offset > 0
+            ? query.extend(Q.skip(offset), Q.take(limit))
+            : query.extend(Q.take(limit));
       }
 
-      if (limit !== undefined && limit > 0) {
-        if (offset !== undefined && offset > 0) {
-          query = query.extend(Q.skip(offset), Q.take(limit));
-        } else {
-          query = query.extend(Q.take(limit));
+      const raw = await query.fetch();
+
+      if (range) {
+        const filtered = range.filterRecords(raw);
+
+        if (limit !== undefined && limit > 0) {
+          const start = offset && offset > 0 ? offset : 0;
+          return filtered.slice(start, start + limit);
         }
+
+        return filtered;
       }
-      return await query.fetch();
+
+      return raw;
     } catch (error) {
       if (!repairAttempted) {
         const repaired = await retryAfterRepair(error, REPAIR_DESCRIPTORS.userMetrics, () =>
@@ -262,6 +341,7 @@ export class UserMetricService {
       unit?: string;
       note?: string;
       date?: number;
+      timezone?: string;
       type?: UserMetricType | string;
     }
   ): Promise<UserMetric> {
@@ -288,12 +368,19 @@ export class UserMetricService {
           record.valueRaw = encrypted.value;
           record.unitRaw = encrypted.unit;
         }
+
         if (updates.date !== undefined) {
           record.date = updates.date;
         }
+
+        if (updates.timezone !== undefined) {
+          record.timezone = updates.timezone;
+        }
+
         if (updates.type !== undefined) {
           record.type = updates.type as UserMetricType;
         }
+
         record.updatedAt = Date.now();
       });
 

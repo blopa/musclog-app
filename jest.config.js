@@ -27,7 +27,8 @@ module.exports = {
     {
       ...baseConfig,
       displayName: 'node',
-      preset: 'react-native',
+      // RN 0.85 moved the Jest preset out of the react-native package.
+      preset: '@react-native/jest-preset',
       testEnvironment: 'node',
       testMatch: ['**/__tests__/**/*.test.ts', '!**/hooks/**/*.test.ts'],
       setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],

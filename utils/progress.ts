@@ -1,4 +1,4 @@
-import { localDayStartFromUtcMs, MS_PER_SOLAR_DAY } from './calendarDate';
+import { MS_PER_SOLAR_DAY } from './calendarDate';
 
 export interface MetricPoint {
   date: number;
@@ -19,6 +19,9 @@ export interface EmpiricalTDEEWindow {
  * Calculates the tracking window and anchor values for empirical TDEE.
  * It prioritizes days where both weight and body fat are recorded.
  * If > 14 such days exist, it uses weekly averages (first/last 7 days) to smooth fluctuations.
+ *
+ * NOTE: MetricPoint.date values are expected to be UTC-normalized day keys
+ * (from decryptMetricPoints). Do NOT call localDayStartFromUtcMs on them.
  */
 export function calculateEmpiricalTDEEWindow(
   weightPoints: MetricPoint[],
@@ -26,16 +29,15 @@ export function calculateEmpiricalTDEEWindow(
   startDate: number,
   endDate: number
 ): EmpiricalTDEEWindow {
+  // p.date is already a UTC-midnight key — use it directly as the day key.
   const weightByDay = new Map<number, number>();
   for (const p of weightPoints) {
-    const day = localDayStartFromUtcMs(p.date);
-    weightByDay.set(day, p.value);
+    weightByDay.set(p.date, p.value);
   }
 
   const fatByDay = new Map<number, number>();
   for (const p of fatPoints) {
-    const day = localDayStartFromUtcMs(p.date);
-    fatByDay.set(day, p.value);
+    fatByDay.set(p.date, p.value);
   }
 
   const commonDays = Array.from(weightByDay.keys())

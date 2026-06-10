@@ -25,7 +25,7 @@ export function ExerciseGoalHistoryCard({ goal, isLast = false }: ExerciseGoalHi
   const weightUnitKey = getWeightUnitI18nKey(units);
   const targetWeightDisplay = formatDisplayWeightKg(locale, units, goal.targetWeight ?? 0);
 
-  const dateRange = `${goal.createdAt.toLocaleDateString(locale, {
+  const dateRange = `${new Date(goal.createdAt).toLocaleDateString(locale, {
     month: 'short',
     year: 'numeric',
   })} - ${

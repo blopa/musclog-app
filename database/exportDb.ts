@@ -45,6 +45,10 @@ export type ExportDump = {
   [tableName: string]: unknown;
 };
 
+type DumpDatabaseOptions = {
+  includeDeletedRecords?: boolean;
+};
+
 /**
  * Dump the entire database to a JSON-serializable object using a raw SQLite connection.
  * This avoids going through the WatermelonDB singleton, making it safe to call before
@@ -52,7 +56,11 @@ export type ExportDump = {
  * Encrypted fields in user_metrics and nutrition_logs are exported decrypted so the backup
  * is device-independent. API key settings are excluded.
  */
-export async function dumpDatabase(encryptionPhrase?: string): Promise<string> {
+export async function dumpDatabase(
+  encryptionPhrase?: string,
+  options: DumpDatabaseOptions = {}
+): Promise<string> {
+  const includeDeletedRecords = options.includeDeletedRecords ?? true;
   const db = openDatabaseSync(`${DATABASE_NAME}.db`, { useNewConnection: true }, wdbDir());
 
   try {
@@ -73,10 +81,12 @@ export async function dumpDatabase(encryptionPhrase?: string): Promise<string> {
         continue;
       }
 
-      // _status = 'deleted' are WatermelonDB soft-deleted rows; exclude them to match
-      // what collection.query().fetch() returns.
+      // Optionally include WatermelonDB-internal deleted rows (`_status = 'deleted'`)
+      // so exports can be used to investigate data that disappeared from normal
+      // queries. Restore skips those rows to avoid resurrecting deleted records.
+      const deletedRecordsClause = includeDeletedRecords ? '' : " WHERE _status != 'deleted'";
       const rows = (await db.getAllAsync(
-        `SELECT * FROM ${quoteIdentifier(tableName)} WHERE _status != 'deleted';`
+        `SELECT * FROM ${quoteIdentifier(tableName)}${deletedRecordsClause};`
       )) as Record<string, unknown>[];
 
       if (tableName === 'settings') {

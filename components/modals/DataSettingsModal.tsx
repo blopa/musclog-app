@@ -25,6 +25,7 @@ import { Text, View } from 'react-native';
 import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
 import { SettingsCard } from '@/components/cards/SettingsCard';
 import { Button } from '@/components/theme/Button';
+import { CheckRadioBox } from '@/components/theme/CheckRadioBox';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { useSnackbar } from '@/context/SnackbarContext';
@@ -84,6 +85,7 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
   const [importModalVisible, setImportModalVisible] = useState(false);
   const [encryptionPhrase, setEncryptionPhrase] = useState('');
   const [decryptionPhrase, setDecryptionPhrase] = useState('');
+  const [includeDeletedRecords, setIncludeDeletedRecords] = useState(true);
   const [loading, setLoading] = useState(false);
   const [localBackupsModalVisible, setLocalBackupsModalVisible] = useState(false);
 
@@ -102,9 +104,10 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
     }
     setLoading(true);
     try {
-      await exportDatabase(encryptionPhrase || undefined);
+      await exportDatabase(encryptionPhrase || undefined, { includeDeletedRecords });
       setExportModalVisible(false);
       setEncryptionPhrase('');
+      setIncludeDeletedRecords(true);
     } catch (err) {
       handleError(err, 'AdvancedSettingsModal.handleExportConfirm', {
         snackbarMessage: t('settings.advancedSettings.exportFailedMessage'),
@@ -112,7 +115,7 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
     } finally {
       setLoading(false);
     }
-  }, [encryptionPhrase, debouncedRequireExportEncryption, t, showSnackbar]);
+  }, [encryptionPhrase, includeDeletedRecords, debouncedRequireExportEncryption, t, showSnackbar]);
 
   const handleImportConfirm = useCallback(async () => {
     setLoading(true);
@@ -289,7 +292,10 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
             }}
             title={t('settings.advancedSettings.exportFitnessData')}
             subtitle={t('settings.advancedSettings.exportFitnessDataSubtitle')}
-            onPress={() => setExportModalVisible(true)}
+            onPress={() => {
+              setIncludeDeletedRecords(true);
+              setExportModalVisible(true);
+            }}
             rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
           />
           <SettingsCard
@@ -608,6 +614,7 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
           if (!loading) {
             setExportModalVisible(false);
             setEncryptionPhrase('');
+            setIncludeDeletedRecords(true);
           }
         }}
         title={t('settings.advancedSettings.confirmExport')}
@@ -626,6 +633,7 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
               onPress={() => {
                 setExportModalVisible(false);
                 setEncryptionPhrase('');
+                setIncludeDeletedRecords(true);
               }}
               disabled={loading}
             />
@@ -656,6 +664,12 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
                 : t('settings.advancedSettings.encryptionPhrasePlaceholder')
             }
             secureTextEntry
+          />
+          <CheckRadioBox
+            label={t('settings.advancedSettings.includeDeletedRecords')}
+            value={includeDeletedRecords}
+            onValueChange={setIncludeDeletedRecords}
+            type="checkbox"
           />
         </View>
       </CenteredModal>

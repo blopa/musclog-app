@@ -32,6 +32,7 @@
       "weightLbs": "Peso (lbs)",
       "restSec": "Descanso (seg)"
     },
+    "repMotion": "Movimiento de repetición",
     "musclesWorked": "Músculos Trabajados",
     "frontMuscles": "Frontal",
     "backMuscles": "Trasero",

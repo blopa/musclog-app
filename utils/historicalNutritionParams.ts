@@ -1,10 +1,12 @@
 import { NutritionService, UserMetricService } from '@/database/services';
 
 import {
-  localCalendarWeekIndexSince,
+  bucketPointsByUtcWeek,
   localDayClosedRangeMaxMs,
   localDayKeyPlusCalendarDays,
   localDayStartMs,
+  utcDayKeyFromLocalDate,
+  utcNormalizedDayKey,
 } from './calendarDate';
 import { storedWeightToKg } from './unitConversion';
 
@@ -19,38 +21,6 @@ function average(values: number[]): number {
   return values.reduce((a, b) => a + b, 0) / values.length;
 }
 
-function bucketByWeek(
-  points: { date: number; valueKg: number }[],
-  startTs: number
-): Map<number, { date: number; valueKg: number }[]> {
-  const map = new Map<number, { date: number; valueKg: number }[]>();
-  for (const p of points) {
-    const w = localCalendarWeekIndexSince(p.date, startTs);
-    if (!map.has(w)) {
-      map.set(w, []);
-    }
-    map.get(w)!.push(p);
-  }
-
-  return map;
-}
-
-function bucketByWeekBodyFat(
-  points: { date: number; value: number }[],
-  startTs: number
-): Map<number, { date: number; value: number }[]> {
-  const map = new Map<number, { date: number; value: number }[]>();
-  for (const p of points) {
-    const w = localCalendarWeekIndexSince(p.date, startTs);
-    if (!map.has(w)) {
-      map.set(w, []);
-    }
-    map.get(w)!.push(p);
-  }
-
-  return map;
-}
-
 export interface HistoricalNutritionParams {
   historicalTotalCalories: number;
   historicalTotalDays: number;
@@ -61,10 +31,10 @@ export interface HistoricalNutritionParams {
 }
 
 /**
- * Fetches historical nutrition and body metrics for the last 30 days and returns
+ * Fetches historical nutrition and body metrics for the lookback window and returns
  * params suitable for calculateNutritionPlan (empirical TDEE). Returns null when
- * there is insufficient data (fewer than 2 weight entries, or fewer than 7 days
- * with nutrition logs, or zero total calories).
+ * there is insufficient data (fewer than 2 weight entries, or fewer than
+ * `minNutritionDays` days with nutrition logs, or zero total calories).
  *
  * Data is read from the local DB only (user_metrics + nutrition_logs); may have
  * been synced from Health Connect or entered manually.
@@ -72,16 +42,27 @@ export interface HistoricalNutritionParams {
 export async function getHistoricalNutritionParams(options: {
   asOfDate?: Date;
   useWeeklyAverages?: boolean;
+  /** Days to look back. Defaults to {@link HISTORICAL_NUTRITION_LOOKBACK_DAYS}. */
+  lookbackDays?: number;
+  /** Minimum distinct days with nutrition logs required. Defaults to 7. */
+  minNutritionDays?: number;
 }): Promise<HistoricalNutritionParams | null> {
-  const { asOfDate = new Date(), useWeeklyAverages = true } = options;
+  const {
+    asOfDate = new Date(),
+    useWeeklyAverages = true,
+    lookbackDays = HISTORICAL_NUTRITION_LOOKBACK_DAYS,
+    minNutritionDays = MIN_DAYS_WITH_NUTRITION,
+  } = options;
 
   /** Inclusive calendar-day end for the lookback window (local midnight of `asOfDate`). */
   const endDayStartTs = localDayStartMs(asOfDate);
   const endMetricTs = localDayClosedRangeMaxMs(asOfDate);
   /** `Date` at local start of `asOfDate` — {@link NutritionService.getRangeNutrients} uses calendar components. */
   const inclusiveRangeEndDate = new Date(endDayStartTs);
-  const startTs = localDayKeyPlusCalendarDays(endDayStartTs, -HISTORICAL_NUTRITION_LOOKBACK_DAYS);
+  const startTs = localDayKeyPlusCalendarDays(endDayStartTs, -lookbackDays);
   const startOfRange = new Date(startTs);
+
+  const utcStartKey = utcDayKeyFromLocalDate(new Date(startTs));
 
   const dateRange = { startDate: startTs, endDate: endMetricTs };
 
@@ -92,8 +73,10 @@ export async function getHistoricalNutritionParams(options: {
     NutritionService.getNutritionLogsForDateRange(startOfRange, inclusiveRangeEndDate),
   ]);
 
-  const distinctDaysWithNutrition = new Set(nutritionLogs.map((log) => log.date)).size;
-  if (distinctDaysWithNutrition < MIN_DAYS_WITH_NUTRITION || rangeNutrients.calories <= 0) {
+  const distinctDaysWithNutrition = new Set(
+    nutritionLogs.map((log) => utcNormalizedDayKey(log.date, log.timezone))
+  ).size;
+  if (distinctDaysWithNutrition < minNutritionDays || rangeNutrients.calories <= 0) {
     return null;
   }
 
@@ -101,11 +84,15 @@ export async function getHistoricalNutritionParams(options: {
     weightMetrics.map(async (m) => {
       const d = await m.getDecrypted();
       const valueKg = storedWeightToKg(d.value, d.unit);
-      return { date: m.date, valueKg };
+      return { date: m.date, timezone: m.timezone, valueKg };
     })
   );
 
-  weightWithDecrypted.sort((a, b) => a.date - b.date);
+  // Order by the calendar day each record was experienced in (its own timezone), not by raw
+  // stored instant — across mixed timezones a smaller instant can belong to a later day.
+  weightWithDecrypted.sort(
+    (a, b) => utcNormalizedDayKey(a.date, a.timezone) - utcNormalizedDayKey(b.date, b.timezone)
+  );
   if (weightWithDecrypted.length < 2) {
     return null;
   }
@@ -114,11 +101,12 @@ export async function getHistoricalNutritionParams(options: {
   let finalWeight: number;
 
   if (useWeeklyAverages) {
-    const weightByWeek = bucketByWeek(weightWithDecrypted, startTs);
+    const weightByWeek = bucketPointsByUtcWeek(weightWithDecrypted, utcStartKey);
     const weekIndices = Array.from(weightByWeek.keys()).sort((a, b) => a - b);
     if (weekIndices.length < 2) {
       return null;
     }
+
     initialWeight = average(weightByWeek.get(weekIndices[0])!.map((x) => x.valueKg));
     finalWeight = average(
       weightByWeek.get(weekIndices[weekIndices.length - 1])!.map((x) => x.valueKg)
@@ -135,13 +123,15 @@ export async function getHistoricalNutritionParams(options: {
     const bodyFatWithDecrypted = await Promise.all(
       bodyFatMetrics.map(async (m) => {
         const d = await m.getDecrypted();
-        return { date: m.date, value: d.value };
+        return { date: m.date, timezone: m.timezone, value: d.value };
       })
     );
 
-    bodyFatWithDecrypted.sort((a, b) => a.date - b.date);
+    bodyFatWithDecrypted.sort(
+      (a, b) => utcNormalizedDayKey(a.date, a.timezone) - utcNormalizedDayKey(b.date, b.timezone)
+    );
     if (useWeeklyAverages) {
-      const bodyFatByWeek = bucketByWeekBodyFat(bodyFatWithDecrypted, startTs);
+      const bodyFatByWeek = bucketPointsByUtcWeek(bodyFatWithDecrypted, utcStartKey);
       const weekIndices = Array.from(bodyFatByWeek.keys()).sort((a, b) => a - b);
       if (weekIndices.length >= 2) {
         initialFatPercent = average(bodyFatByWeek.get(weekIndices[0])!.map((x) => x.value));
@@ -160,7 +150,7 @@ export async function getHistoricalNutritionParams(options: {
 
   return {
     historicalTotalCalories: Math.round(rangeNutrients.calories),
-    historicalTotalDays: HISTORICAL_NUTRITION_LOOKBACK_DAYS,
+    historicalTotalDays: lookbackDays,
     historicalInitialWeightKg: initialWeight,
     historicalFinalWeightKg: finalWeight,
     ...(initialFatPercent !== undefined && { historicalInitialFatPercent: initialFatPercent }),

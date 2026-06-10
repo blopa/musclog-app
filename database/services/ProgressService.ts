@@ -10,7 +10,7 @@ import UserMetric, { UserMetricType } from '@/database/models/UserMetric';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
-import { localDayStartFromUtcMs, localDayStartMs, MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
+import { localDayStartMs, MS_PER_SOLAR_DAY, utcNormalizedDayKey } from '@/utils/calendarDate';
 import {
   calculateBMR,
   calculateBMRKatchMcArdle,
@@ -404,7 +404,8 @@ export class ProgressService {
             value = cmToDisplay(d.value, 'imperial');
           }
         }
-        return { date: m.date, value };
+
+        return { date: utcNormalizedDayKey(m.date, m.timezone), value };
       })
     );
     return points.sort((a, b) => a.date - b.date);
@@ -429,7 +430,7 @@ export class ProgressService {
           (trimmedNote ? `legacy:${trimmedNote.toLowerCase()}` : `legacy:${metric.id}`);
 
         return {
-          date: metric.date,
+          date: utcNormalizedDayKey(metric.date, metric.timezone),
           value: decrypted.value,
           supplementId,
           supplementName,
@@ -445,7 +446,7 @@ export class ProgressService {
 
     for (const log of logs) {
       const nutrients = await log.getNutrients();
-      const date = localDayStartFromUtcMs(log.date);
+      const date = utcNormalizedDayKey(log.date, log.timezone);
       const existing = dailyMap.get(date) || {
         date,
         calories: 0,
@@ -507,7 +508,7 @@ export class ProgressService {
   ): Promise<WorkoutVolumePoint[]> {
     return logs
       .map((log) => ({
-        date: log.startedAt ?? 0,
+        date: this.getWorkoutLogDayKey(log),
         volume: log.totalVolume ?? 0,
       }))
       .sort((a, b) => a.date - b.date);
@@ -688,11 +689,9 @@ export class ProgressService {
     // Only include calories within the period covered by the measurements.
     // We use [start, end) interval for calories because the final weight measurement
     // is typically taken at the start of the final day.
-    const empiricalStartKey = localDayStartFromUtcMs(empiricalStart);
-    const empiricalEndKey = localDayStartFromUtcMs(empiricalEnd);
-
+    // empiricalStart/End are already UTC-normalized day keys (from decryptMetricPoints).
     const empiricalCalories = nutritionDaily
-      .filter((n) => n.date >= empiricalStartKey && n.date < empiricalEndKey)
+      .filter((n) => n.date >= empiricalStart && n.date < empiricalEnd)
       .reduce((acc, curr) => acc + curr.calories, 0);
 
     if (isImperial) {
@@ -836,15 +835,24 @@ export class ProgressService {
   }
 
   private static getStartOfAggregation(date: number, aggregation: TimeAggregation): number {
-    const d = new Date(localDayStartFromUtcMs(date));
+    // date is a UTC-normalized day key (midnight UTC). Use UTC accessors so the result
+    // is the same on every device timezone.
+    const d = new Date(date);
     if (aggregation === 'weekly') {
-      const day = d.getDay();
-      const diff = d.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
-      d.setDate(diff);
-    } else if (aggregation === 'monthly') {
-      d.setDate(1);
+      const day = d.getUTCDay(); // 0 = Sunday
+      const diff = day === 0 ? -6 : 1 - day; // Monday start
+      return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + diff);
     }
-    return localDayStartMs(d);
+
+    if (aggregation === 'monthly') {
+      return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1);
+    }
+
+    return date; // daily — already a UTC midnight key
+  }
+
+  private static getWorkoutLogDayKey(log: WorkoutLog): number {
+    return utcNormalizedDayKey(log.startedAt ?? 0, log.timezone);
   }
 
   private static calculateCorrelationHistory(
@@ -973,7 +981,7 @@ export class ProgressService {
       }
 
       const workoutsInPeriod = workoutLogs.filter((wl) => {
-        const start = this.getStartOfAggregation(wl.startedAt || 0, aggregation);
+        const start = this.getStartOfAggregation(this.getWorkoutLogDayKey(wl), aggregation);
         return start === dayTs;
       });
 
@@ -1015,7 +1023,7 @@ export class ProgressService {
     >();
 
     for (const wl of workoutLogs) {
-      const start = this.getStartOfAggregation(wl.startedAt || 0, aggregation);
+      const start = this.getStartOfAggregation(this.getWorkoutLogDayKey(wl), aggregation);
       const existing = groupedData.get(start) || {
         volume: 0,
         exhaustion: 0,
@@ -1103,7 +1111,7 @@ export class ProgressService {
     const groupedMuscleVol = new Map<number, Record<string, number>>();
 
     for (const log of workoutLogs) {
-      const start = this.getStartOfAggregation(log.startedAt || 0, aggregation);
+      const start = this.getStartOfAggregation(this.getWorkoutLogDayKey(log), aggregation);
       const muscleGroupVolume = groupedMuscleVol.get(start) || {};
       const logExs = allLogExercises.filter((le) => le.workoutLogId === log.id);
       for (const le of logExs) {

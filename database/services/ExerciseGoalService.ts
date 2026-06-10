@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 
 import { database } from '@/database/database-instance';
 import ExerciseGoal, { type ExerciseGoalType } from '@/database/models/ExerciseGoal';
+import { getCurrentTimezone } from '@/utils/timezone';
 
 /**
  * Input for creating or updating an ExerciseGoal.
@@ -111,14 +112,14 @@ export class ExerciseGoalService {
       if (existingGoalToSupersede) {
         await existingGoalToSupersede.update((record) => {
           record.effectiveUntil = now;
-          record.updatedAt = new Date(now);
+          record.updatedAt = now;
         });
       }
 
       for (const goal of existingConsistencyGoals) {
         await goal.update((record) => {
           record.effectiveUntil = now;
-          record.updatedAt = new Date(now);
+          record.updatedAt = now;
         });
       }
 
@@ -135,10 +136,11 @@ export class ExerciseGoalService {
         record.targetDurationS = data.targetDurationS ?? null;
         record.targetPaceMsPerM = data.targetPaceMsPerM ?? null;
         record.targetDate = data.targetDate ?? null;
+        record.timezone = getCurrentTimezone();
         record.notes = data.notes ?? null;
         record.effectiveUntil = null;
-        record.createdAt = new Date(now);
-        record.updatedAt = new Date(now);
+        record.createdAt = now;
+        record.updatedAt = now;
       });
     });
   }
@@ -167,7 +169,7 @@ export class ExerciseGoalService {
         if (updates.notes !== undefined) {
           record.notes = updates.notes ?? null;
         }
-        record.updatedAt = new Date();
+        record.updatedAt = Date.now();
       });
 
       return goal;
@@ -199,7 +201,7 @@ export class ExerciseGoalService {
       }
       await goal.update((record) => {
         record.baseline1rm = baseline1rm;
-        record.updatedAt = new Date();
+        record.updatedAt = Date.now();
       });
       return goal;
     });
@@ -210,7 +212,7 @@ export class ExerciseGoalService {
       const goal = await database.get<ExerciseGoal>('exercise_goals').find(id);
 
       const wasActive = goal.effectiveUntil === null;
-      const goalCreatedAt = goal.createdAt.getTime();
+      const goalCreatedAt = goal.createdAt;
       const goalType = goal.goalType;
       const exerciseId = goal.exerciseId;
 
@@ -249,7 +251,7 @@ export class ExerciseGoalService {
         if (previousGoals.length > 0) {
           await previousGoals[0].update((record) => {
             record.effectiveUntil = null;
-            record.updatedAt = new Date();
+            record.updatedAt = Date.now();
           });
         }
       }

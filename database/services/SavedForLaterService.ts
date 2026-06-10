@@ -5,7 +5,7 @@ import { encryptOptionalString } from '@/database/encryptionHelpers';
 import NutritionLog, { MealType } from '@/database/models/NutritionLog';
 import SavedForLaterGroup from '@/database/models/SavedForLaterGroup';
 import SavedForLaterItem from '@/database/models/SavedForLaterItem';
-import { localDayStartMs } from '@/utils/calendarDate';
+import { consumedDateTimeOnDay } from '@/utils/calendarDate';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { widgetEvents } from '@/utils/widgetEvents';
 
@@ -63,6 +63,7 @@ export class SavedForLaterService {
             record.noteRaw = encryptedNote || undefined;
             record.originalMealType = originalMealType;
             record.originalDate = originalDate;
+            record.timezone = getCurrentTimezone();
             record.createdAt = now;
             record.updatedAt = now;
           });
@@ -215,7 +216,7 @@ export class SavedForLaterService {
     targetDate: Date,
     targetMealType: MealType
   ): Promise<void> {
-    const dateTimestamp = localDayStartMs(targetDate);
+    const consumed = consumedDateTimeOnDay(targetDate);
     const { group, items } = await this.getGroupWithItems(groupId);
 
     await database.write(async () => {
@@ -225,8 +226,8 @@ export class SavedForLaterService {
       const logsPrepared = items.map((item) =>
         database.get<NutritionLog>('nutrition_logs').prepareCreate((log) => {
           log.foodId = item.foodId!;
-          log.date = dateTimestamp;
-          log.timezone = getCurrentTimezone();
+          log.date = consumed.timestamp;
+          log.timezone = consumed.timezone;
           log.type = targetMealType;
           log.amount = item.amount;
           log.portionId = item.portionId;

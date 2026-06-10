@@ -15,6 +15,16 @@ export function getCurrentTimezone(): string {
 }
 
 /**
+ * UTC offset for the device-local timezone at a specific instant/date.
+ * Use for future calendar-day records so DST-sensitive offsets are captured for
+ * the day being stored, not for "now".
+ */
+export function getTimezoneAt(date: Date | number): string {
+  const d = typeof date === 'number' ? new Date(date) : date;
+  return offsetMinutesToTimezone(-d.getTimezoneOffset());
+}
+
+/**
  * Format a UTC offset given in minutes east of UTC as a "±HH:MM" string.
  * e.g. -300 → "-05:00", 330 → "+05:30", 0 → "+00:00".
  */
@@ -77,6 +87,22 @@ export function ianaZoneToTimezoneAt(ianaZone: string, date: Date): string | und
  */
 export function isTimezoneOffset(value: string): boolean {
   return /^[+-]\d{2}:\d{2}$/.test(value);
+}
+
+/**
+ * Parse a "±HH:MM" offset string into minutes east of UTC — the inverse of
+ * {@link offsetMinutesToTimezone}. Returns null when `value` is not a valid offset.
+ * e.g. "-05:00" → -300, "+05:30" → 330, "+00:00" → 0.
+ */
+export function parseTimezoneOffsetMinutes(value: string): number | null {
+  if (!isTimezoneOffset(value)) {
+    return null;
+  }
+
+  const sign = value[0] === '-' ? -1 : 1;
+  const hours = parseInt(value.slice(1, 3), 10);
+  const minutes = parseInt(value.slice(4, 6), 10);
+  return sign * (hours * 60 + minutes);
 }
 
 /**

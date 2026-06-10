@@ -3,14 +3,11 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 
 import { DEFAULT_BATCH_SIZE } from '@/constants/database';
 import { database } from '@/database';
+import { dayRangeClauses } from '@/database/dayKeyQuery';
 import Food from '@/database/models/Food';
 import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
 import { NutritionService } from '@/database/services';
-import {
-  localDayHalfOpenRange,
-  localDayStartMs,
-  localNextDayStartMsFromDate,
-} from '@/utils/calendarDate';
+import { dayKeyRange, dayKeyRangeForLocalDate, utcDayKeyFromLocalDate } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 
 // Hook parameters
@@ -531,28 +528,25 @@ export function useNutritionLogs({
       .get<NutritionLog>('nutrition_logs')
       .query(Q.where('deleted_at', Q.eq(null)));
 
-    // Add mode-specific filters to avoid unnecessary re-renders
+    // Add mode-specific filters to avoid unnecessary re-renders.
+    // dayKeyRange pads the UTC-normalized day boundary by ±14 h so records stored in any
+    // timezone are included. The actual fetch (loadInitialLogs) post-filters by exact day.
     if (mode === 'daily' && date) {
-      const { start, nextStart } = localDayHalfOpenRange(date);
-      query = query.extend(Q.where('date', Q.gte(start)), Q.where('date', Q.lt(nextStart)));
+      query = query.extend(...dayRangeClauses(dayKeyRangeForLocalDate(date)));
     } else if (mode === 'range' && startDate && endDate) {
-      const startTimestamp = localDayStartMs(startDate);
-      const endTimestamp = localNextDayStartMsFromDate(endDate);
       query = query.extend(
-        Q.where('date', Q.gte(startTimestamp)),
-        Q.where('date', Q.lt(endTimestamp))
+        ...dayRangeClauses(
+          dayKeyRange(utcDayKeyFromLocalDate(startDate), utcDayKeyFromLocalDate(endDate))
+        )
       );
     } else if (mode === 'meal-type' && date && mealType) {
-      const { start, nextStart } = localDayHalfOpenRange(date);
       query = query.extend(
-        Q.where('date', Q.gte(start)),
-        Q.where('date', Q.lt(nextStart)),
+        ...dayRangeClauses(dayKeyRangeForLocalDate(date)),
         Q.where('type', mealType)
       );
     } else if (mode === 'recent' || mode === 'recent-logs') {
       if (date) {
-        const { start, nextStart } = localDayHalfOpenRange(date);
-        query = query.extend(Q.where('date', Q.gte(start)), Q.where('date', Q.lt(nextStart)));
+        query = query.extend(...dayRangeClauses(dayKeyRangeForLocalDate(date)));
       }
     } else {
       // For basic mode, don't observe at all to avoid infinite loops during onboarding

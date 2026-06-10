@@ -1,6 +1,6 @@
 {
   "name": "musclog",
-  "version": "2.8.15",
+  "version": "2.9.0",
   "engines": {
     "node": "24.x"
   },
@@ -204,6 +204,7 @@
     "@babel/plugin-transform-runtime": "^7.29.7",
     "@babel/plugin-transform-typescript": "^7.29.7",
     "@playwright/test": "^1.60.0",
+    "@react-native/jest-preset": "^0.85.3",
     "@testing-library/react": "16.3.2",
     "@types/canvas-confetti": "^1.9.0",
     "@types/crypto-js": "4.2.2",
@@ -222,7 +223,7 @@
     "jest-environment-jsdom": "^30.4.1",
     "npm-check-updates": "^22.2.3",
     "patch-package": "^8.0.1",
-    "prettier": "3.8.3",
+    "prettier": "3.8.4",
     "prettier-plugin-tailwindcss": "0.8.0",
     "tailwindcss": "3.4.19",
     "typescript": "~6.0.3"
