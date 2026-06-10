@@ -7,6 +7,7 @@ import { Platform } from 'react-native';
 import { DATABASE_NAME } from '@/constants/database';
 import { initializeSentry } from '@/sentry-init';
 
+import { captureBootDbFileStats } from './dbBootStats';
 import { migrations } from './migrations';
 import { createPreMigrationBackup } from './preMigrationBackup';
 import { schema } from './schema';
@@ -30,6 +31,10 @@ function readCurrentDbVersion(): number | null {
     return null;
   }
 }
+
+// Must run before readCurrentDbVersion(): closing that connection checkpoints
+// the WAL, and we need the pre-checkpoint WAL size for loss diagnostics.
+captureBootDbFileStats();
 
 const currentDbVersion = readCurrentDbVersion();
 

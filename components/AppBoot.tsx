@@ -12,6 +12,7 @@ import {
   CONFETTI_INTERACTIONS_KEY,
   ConfettiActivity,
 } from '@/context/ConfettiInteractionsContext';
+import { checkpointDbOnAppBackground, startDbDurabilityMonitoring } from '@/database/dbDurability';
 import { markDbReady, waitForDbReady } from '@/database/dbReady';
 import {
   ExerciseGoalService,
@@ -471,6 +472,10 @@ export function AppBoot() {
       })
       .catch((err) => captureBootException(err, 'NotificationService.bootInit'));
 
+    // Detects between-session nutrition-log loss and keeps the count baseline
+    // fresh; the actual WAL-flush mitigation runs on AppState 'background' below.
+    startDbDurabilityMonitoring();
+
     Promise.all([
       waitForDbReady().then(() =>
         healthDataSyncService
@@ -580,6 +585,13 @@ export function AppBoot() {
     function onAppStateChange(status: AppStateStatus) {
       if (Platform.OS !== 'web') {
         focusManager.setFocused(status === 'active');
+
+        if (status === 'background') {
+          // Flush the SQLite WAL into the main DB file while the process is
+          // still alive — a later kill (memory pressure, "close all") must not
+          // be able to drop this session's committed writes.
+          void checkpointDbOnAppBackground();
+        }
       }
     }
 

@@ -17,6 +17,7 @@ import { normalizeTimezoneToOffset } from '@/utils/timezone';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
 import { database } from './database-instance';
+import { updateNutritionLogCountBaseline } from './dbDurability';
 import { encryptNutritionLogSnapshot, encryptUserMetricFields } from './encryptionHelpers';
 import { createPreRestoreBackup } from './preMigrationBackup';
 import { validateExportDump, type ValidationResult } from './schemaToZod';
@@ -376,6 +377,11 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
       });
     }
   }
+
+  // The restored AsyncStorage may contain a stale durability baseline from the
+  // backup; re-anchor it to the restored row count so the next boot's loss
+  // detector doesn't fire a false "nutrition logs lost" report.
+  await updateNutritionLogCountBaseline();
 
   // Reload the app after importing is complete
   await reloadApp();
