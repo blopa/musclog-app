@@ -211,19 +211,12 @@ export function dayStartInTimezone(ms: number, timezone?: string): number {
 }
 
 /**
- * True if both values fall on the same calendar day.
+ * True if both values fall on the same local calendar day.
  * Accepts a `Date` or a stored day key / instant in milliseconds.
- * Pass the stored UTC offset (±HH:MM) for each side to compare in their respective timezones;
- * omit to compare in device-local time.
  */
-export function isSameLocalCalendarDay(
-  a: Date | number,
-  b: Date | number,
-  aTimezone?: string,
-  bTimezone?: string
-): boolean {
-  const ta = typeof a === 'number' ? dayStartInTimezone(a, aTimezone) : localDayStartMs(a);
-  const tb = typeof b === 'number' ? dayStartInTimezone(b, bTimezone) : localDayStartMs(b);
+export function isSameLocalCalendarDay(a: Date | number, b: Date | number): boolean {
+  const ta = typeof a === 'number' ? localDayStartFromUtcMs(a) : localDayStartMs(a);
+  const tb = typeof b === 'number' ? localDayStartFromUtcMs(b) : localDayStartMs(b);
   return ta === tb;
 }
 
@@ -282,55 +275,26 @@ export function utcDayKeyFromLocalDate(date: Date): number {
 }
 
 /**
- * DB query bounds that capture every record whose UTC-normalized day key falls in
- * `[startKey, endKey]`, regardless of the timezone it was stored in. The window is
- * widened by {@link TIMEZONE_QUERY_BUFFER_MS} on both ends to cover UTC−14…UTC+14, so
- * `endKey` must still be a day **key** (UTC midnight), not an inclusive end-of-day value.
+ * Day-key range query descriptor: widened DB bounds plus the matching post-filter,
+ * derived from the **same** `[startKey, endKey]`. Bundling both halves makes the
+ * widen-then-trim contract impossible to break — there's no way to widen on one
+ * window and filter on another. This is the only public entry point for
+ * timezone-aware day-range reads; the widen and trim halves are intentionally
+ * not exported separately.
  *
- * Always pair the result with {@link isUtcDayKeyInRange} to trim the overscan back to
- * the exact day range. Use `Q.gte(lowerMs)` + `Q.lt(upperMs)` (the upper bound is exclusive).
- */
-export function timezoneWidenedBounds(
-  startKey: number,
-  endKey: number
-): { lowerMs: number; upperMs: number } {
-  return {
-    lowerMs: startKey - TIMEZONE_QUERY_BUFFER_MS,
-    upperMs: endKey + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS,
-  };
-}
-
-/**
- * Post-filter predicate for the overscan produced by {@link timezoneWidenedBounds}: true
- * when a record's UTC-normalized day key (from its own stored `timezone`) lands in
- * `[startKey, endKey]`. Pass `inclusiveEnd: false` for half-open `[startKey, endKey)`
- * ranges. For a single target day, pass the same value for `startKey` and `endKey`.
- */
-export function isUtcDayKeyInRange(
-  recordDate: number,
-  timezone: string | null | undefined,
-  startKey: number,
-  endKey: number,
-  { inclusiveEnd = true }: { inclusiveEnd?: boolean } = {}
-): boolean {
-  const key = utcNormalizedDayKey(recordDate, timezone);
-  return key >= startKey && (inclusiveEnd ? key <= endKey : key < endKey);
-}
-
-/**
- * Day-key range query descriptor: the widened DB bounds ({@link timezoneWidenedBounds})
- * and the matching post-filter predicate ({@link isUtcDayKeyInRange}), derived from the
- * **same** `[startKey, endKey]`. Bundling both halves makes the widen-then-trim contract
- * impossible to break — there's no way to widen on one window and filter on another.
- *
- * Build clauses with `Q.where('date', Q.gte(lowerMs))` + `Q.where('date', Q.lt(upperMs))`
- * (upper bound exclusive), then `raw.filter((r) => matches(r.date, r.timezone))`. For a
- * single target day, pass the same value for `startKey` and `endKey`.
+ * `lowerMs`/`upperMs` are widened by {@link TIMEZONE_QUERY_BUFFER_MS} on both ends to
+ * capture records stored in any timezone (UTC−14…UTC+14). Build DB clauses with
+ * `dayRangeClauses` from `database/dayKeyQuery.ts` (or `Q.gte(lowerMs)` + `Q.lt(upperMs)`
+ * — the upper bound is exclusive), then trim the overscan with `filterRecords` (or
+ * `matches` per record). For a single target day, pass the same value for `startKey`
+ * and `endKey`; pass `inclusiveEnd: false` for half-open `[startKey, endKey)` ranges.
  */
 export interface DayKeyRange {
   lowerMs: number;
   upperMs: number;
   matches: (recordDate: number, timezone?: string | null) => boolean;
+  /** Trim a widened fetch back to the exact day range, by each record's own timezone. */
+  filterRecords: <T extends { date: number; timezone?: string | null }>(records: T[]) => T[];
 }
 
 export function dayKeyRange(
@@ -338,12 +302,17 @@ export function dayKeyRange(
   endKey: number,
   opts?: { inclusiveEnd?: boolean }
 ): DayKeyRange {
-  const { lowerMs, upperMs } = timezoneWidenedBounds(startKey, endKey);
+  const inclusiveEnd = opts?.inclusiveEnd ?? true;
+  const matches = (recordDate: number, timezone?: string | null): boolean => {
+    const key = utcNormalizedDayKey(recordDate, timezone);
+    return key >= startKey && (inclusiveEnd ? key <= endKey : key < endKey);
+  };
+
   return {
-    lowerMs,
-    upperMs,
-    matches: (recordDate, timezone) =>
-      isUtcDayKeyInRange(recordDate, timezone, startKey, endKey, opts),
+    lowerMs: startKey - TIMEZONE_QUERY_BUFFER_MS,
+    upperMs: endKey + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS,
+    matches,
+    filterRecords: (records) => records.filter((r) => matches(r.date, r.timezone)),
   };
 }
 

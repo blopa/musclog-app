@@ -3,6 +3,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 
 import { DEFAULT_BATCH_SIZE } from '@/constants/database';
 import { database } from '@/database';
+import { dayRangeClauses } from '@/database/dayKeyQuery';
 import Food from '@/database/models/Food';
 import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
 import { NutritionService } from '@/database/services';
@@ -530,27 +531,22 @@ export function useNutritionLogs({
     // Add mode-specific filters to avoid unnecessary re-renders.
     // dayKeyRange pads the UTC-normalized day boundary by ±14 h so records stored in any
     // timezone are included. The actual fetch (loadInitialLogs) post-filters by exact day.
-    const dateClauses = ({ lowerMs, upperMs }: { lowerMs: number; upperMs: number }) => [
-      Q.where('date', Q.gte(lowerMs)),
-      Q.where('date', Q.lt(upperMs)),
-    ];
-
     if (mode === 'daily' && date) {
-      query = query.extend(...dateClauses(dayKeyRangeForLocalDate(date)));
+      query = query.extend(...dayRangeClauses(dayKeyRangeForLocalDate(date)));
     } else if (mode === 'range' && startDate && endDate) {
       query = query.extend(
-        ...dateClauses(
+        ...dayRangeClauses(
           dayKeyRange(utcDayKeyFromLocalDate(startDate), utcDayKeyFromLocalDate(endDate))
         )
       );
     } else if (mode === 'meal-type' && date && mealType) {
       query = query.extend(
-        ...dateClauses(dayKeyRangeForLocalDate(date)),
+        ...dayRangeClauses(dayKeyRangeForLocalDate(date)),
         Q.where('type', mealType)
       );
     } else if (mode === 'recent' || mode === 'recent-logs') {
       if (date) {
-        query = query.extend(...dateClauses(dayKeyRangeForLocalDate(date)));
+        query = query.extend(...dayRangeClauses(dayKeyRangeForLocalDate(date)));
       }
     } else {
       // For basic mode, don't observe at all to avoid infinite loops during onboarding

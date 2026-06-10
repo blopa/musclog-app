@@ -3,6 +3,7 @@ import { differenceInCalendarDays } from 'date-fns';
 import { Platform } from 'react-native';
 
 import { database } from '@/database';
+import { dayRangeClauses } from '@/database/dayKeyQuery';
 import {
   decryptNumber,
   encryptNumber,
@@ -17,7 +18,6 @@ import {
   dayKeyRange,
   dayKeyRangeForLocalDate,
   MS_PER_SOLAR_DAY,
-  timeOfDayMsInTimezone,
   utcDayKeyFromLocalDate,
   utcNormalizedDayKey,
   withCurrentTimeOnDay,
@@ -298,15 +298,11 @@ export class NutritionService {
       const raw = await retryOnResetError(() =>
         database
           .get<NutritionLog>('nutrition_logs')
-          .query(
-            Q.where('deleted_at', Q.eq(null)),
-            Q.where('date', Q.gte(range.lowerMs)),
-            Q.where('date', Q.lt(range.upperMs))
-          )
+          .query(Q.where('deleted_at', Q.eq(null)), ...dayRangeClauses(range))
           .fetch()
       );
 
-      return raw.filter((log) => range.matches(log.date, log.timezone));
+      return range.filterRecords(raw);
     } catch (error) {
       if (!repairAttempted) {
         const repaired = await retryAfterRepair(error, REPAIR_DESCRIPTORS.nutritionLogs, () =>
@@ -357,15 +353,11 @@ export class NutritionService {
     const raw = await retryOnResetError(() =>
       database
         .get<NutritionLog>('nutrition_logs')
-        .query(
-          Q.where('deleted_at', Q.eq(null)),
-          Q.where('date', Q.gte(range.lowerMs)),
-          Q.where('date', Q.lt(range.upperMs))
-        )
+        .query(Q.where('deleted_at', Q.eq(null)), ...dayRangeClauses(range))
         .fetch()
     );
 
-    return raw.filter((log) => range.matches(log.date, log.timezone));
+    return range.filterRecords(raw);
   }
 
   /**
@@ -378,13 +370,12 @@ export class NutritionService {
       .get<NutritionLog>('nutrition_logs')
       .query(
         Q.where('deleted_at', Q.eq(null)),
-        Q.where('date', Q.gte(range.lowerMs)),
-        Q.where('date', Q.lt(range.upperMs)),
+        ...dayRangeClauses(range),
         Q.where('type', mealType)
       )
       .fetch();
 
-    return raw.filter((log) => range.matches(log.date, log.timezone));
+    return range.filterRecords(raw);
   }
 
   /**
@@ -808,10 +799,7 @@ export class NutritionService {
       .query(Q.where('deleted_at', Q.eq(null)));
 
     if (range) {
-      query = query.extend(
-        Q.where('date', Q.gte(range.lowerMs)),
-        Q.where('date', Q.lt(range.upperMs))
-      );
+      query = query.extend(...dayRangeClauses(range));
     }
 
     if (mealType) {
@@ -822,7 +810,7 @@ export class NutritionService {
     let recentLogs = await query.extend(Q.sortBy('created_at', Q.desc), Q.take(limit * 5)).fetch();
 
     if (range) {
-      recentLogs = recentLogs.filter((log) => range.matches(log.date, log.timezone));
+      recentLogs = range.filterRecords(recentLogs);
     }
 
     // Keep the most recent log per food ID (already sorted desc, so first occurrence wins).
@@ -885,16 +873,13 @@ export class NutritionService {
       .query(Q.where('deleted_at', Q.eq(null)));
 
     if (range) {
-      query = query.extend(
-        Q.where('date', Q.gte(range.lowerMs)),
-        Q.where('date', Q.lt(range.upperMs))
-      );
+      query = query.extend(...dayRangeClauses(range));
     }
 
     let recentLogs = await query.extend(Q.sortBy('created_at', Q.desc), Q.take(limit)).fetch();
 
     if (range) {
-      recentLogs = recentLogs.filter((log) => range.matches(log.date, log.timezone));
+      recentLogs = range.filterRecords(recentLogs);
     }
 
     const resolved = await Promise.all(
@@ -1480,48 +1465,4 @@ export class NutritionService {
     });
   }
 
-  /**
-   * One-time backfill for the `date` field gaining a time-of-day component.
-   * Legacy rows stored `date` at local midnight (a day key). For those, preserve
-   * the user-picked calendar day but stamp it with the time-of-day from
-   * `created_at` (best-effort). Rows that already carry a non-midnight time are
-   * skipped, so this is idempotent across boots.
-   */
-  static async backfillConsumedTimeFromCreatedAt(): Promise<void> {
-    const logs = await database
-      .get<NutritionLog>('nutrition_logs')
-      .query(Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-
-    const updates = logs
-      .map((log) => {
-        if (timeOfDayMsInTimezone(log.date, log.timezone) !== 0) {
-          return null;
-        }
-
-        const timeOfDayMs = timeOfDayMsInTimezone(log.createdAt, log.timezone);
-        if (timeOfDayMs === 0) {
-          return null;
-        }
-
-        return { log, newDate: log.date + timeOfDayMs };
-      })
-      .filter((u): u is { log: NutritionLog; newDate: number } => u !== null);
-
-    if (updates.length === 0) {
-      return;
-    }
-
-    const now = Date.now();
-    await database.write(async () => {
-      await database.batch(
-        ...updates.map(({ log, newDate }) =>
-          log.prepareUpdate((r) => {
-            r.date = newDate;
-            r.updatedAt = now;
-          })
-        )
-      );
-    });
-  }
 }

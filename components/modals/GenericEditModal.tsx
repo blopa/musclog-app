@@ -15,7 +15,6 @@ import { useTheme } from '@/hooks/useTheme';
 import { localDayStartMs } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import { showSnackbar } from '@/utils/snackbarService';
-import { isTimezoneOffset } from '@/utils/timezone';
 
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
@@ -84,10 +83,12 @@ export function GenericEditModal({
     fields.some((field) => field.key === 'eatingPhase');
 
   const validateForm = (): boolean => {
-    const timezone = formValues.timezone;
-    if (typeof timezone === 'string' && !isTimezoneOffset(timezone.trim())) {
-      showSnackbar('error', t('common.invalidTimezone'));
-      return false;
+    for (const field of fields) {
+      const error = field.validate?.(formValues[field.key]);
+      if (error) {
+        showSnackbar('error', t(error));
+        return false;
+      }
     }
 
     if (isNutritionGoalForm && formValues.isDynamic) {

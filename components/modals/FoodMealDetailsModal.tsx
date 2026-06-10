@@ -15,6 +15,7 @@ import {
   formatTimeInTimezone,
   formatUtcNormalizedDayIntl,
   MS_PER_SOLAR_DAY,
+  utcDayKeyFromLocalDate,
   utcNormalizedDayKey,
 } from '@/utils/calendarDate';
 import { formatDisplayGrams } from '@/utils/formatDisplayWeight';
@@ -72,8 +73,7 @@ function formatLogDateTime(
   // Compare day keys so "today/yesterday" reflects the recording calendar day,
   // not the viewer's device interpretation of createdAt.
   const logDayKey = utcNormalizedDayKey(logDate, timezone);
-  const now = new Date();
-  const todayKey = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const todayKey = utcDayKeyFromLocalDate(new Date());
   const yesterdayKey = todayKey - MS_PER_SOLAR_DAY;
 
   if (logDayKey === todayKey) {

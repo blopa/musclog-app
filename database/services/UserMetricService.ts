@@ -3,19 +3,26 @@ import convert from 'convert';
 import { Platform } from 'react-native';
 
 import { database } from '@/database/database-instance';
+import { dayRangeClauses } from '@/database/dayKeyQuery';
 import { encryptUserMetricFields } from '@/database/encryptionHelpers';
 import UserMetric, { type UserMetricType } from '@/database/models/UserMetric';
 import { writeUserMetricToHealthConnect } from '@/services/healthConnectFitness';
-import { dayKeyRange, TIMEZONE_QUERY_BUFFER_MS, utcNormalizedDayKey } from '@/utils/calendarDate';
+import {
+  dayKeyRange,
+  MS_PER_SOLAR_DAY,
+  TIMEZONE_QUERY_BUFFER_MS,
+  utcNormalizedDayKey,
+} from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import { ianaZoneToTimezoneAt, isTimezoneOffset } from '@/utils/timezone';
 
 import { REPAIR_DESCRIPTORS, retryAfterRepair } from './DatabaseRepairService';
 
-// Upper bound on rows scanned by getLatestOnOrBefore. Only rows whose normalized day key
-// overshoots the target (inside the ±14 h timezone buffer) need skipping; this many is far
-// more than any user logs for a single metric type within a ~28 h window.
-const LATEST_ON_OR_BEFORE_SCAN_LIMIT = 64;
+// A record's UTC-normalized day key K relates to its stored instant `date` by
+// K ∈ (date − MAX_KEY_BELOW_DATE_MS, date + TIMEZONE_QUERY_BUFFER_MS] for offsets in
+// UTC−14…UTC+14: the key sits at most 14 h above the instant, and less than 24 h + 14 h
+// below it.
+const MAX_KEY_BELOW_DATE_MS = MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS;
 
 export class UserMetricService {
   /**
@@ -95,29 +102,50 @@ export class UserMetricService {
     maxDate: number
   ): Promise<UserMetric | null> {
     const maxKey = utcNormalizedDayKey(maxDate, null);
-    // Widen the upper bound by +14 h so records stored in any timezone are seen, then take a
-    // small bounded batch in date-desc order. We only need to consider rows whose normalized key
-    // overshoots maxKey (records inside the ±14 h buffer above it); no realistic user logs more
-    // than LATEST_ON_OR_BEFORE_SCAN_LIMIT metrics of one type within that window, so the true
-    // latest is in this batch. This keeps the read bounded instead of scanning history.
-    const metrics = await database
+
+    // From the K-vs-date relation (see MAX_KEY_BELOW_DATE_MS): rows with
+    // date ≤ maxKey − 14 h always qualify (K ≤ maxKey), and rows with
+    // date > maxKey + 38 h never do. The anchor is the newest row guaranteed to
+    // qualify; only rows close enough to beat (or tie) it can be the true answer.
+    const [anchor] = await database
       .get<UserMetric>('user_metrics')
       .query(
         Q.where('type', type),
         Q.where('deleted_at', Q.eq(null)),
-        Q.where('date', Q.lte(maxDate + TIMEZONE_QUERY_BUFFER_MS)),
+        Q.where('date', Q.lte(maxKey - TIMEZONE_QUERY_BUFFER_MS)),
         Q.sortBy('date', Q.desc),
         Q.sortBy('updated_at', Q.desc),
-        Q.take(LATEST_ON_OR_BEFORE_SCAN_LIMIT)
+        Q.take(1)
       )
       .fetch();
 
+    // Candidates that can match or beat the anchor's normalized key. The fetch is
+    // bounded without any row-count heuristic: between the anchor and maxKey − 14 h
+    // there are no rows (the anchor is the newest one below that line), so this
+    // reads at most ~2 days' worth of records around each end.
+    const candidateClauses = [
+      Q.where('type', type),
+      Q.where('deleted_at', Q.eq(null)),
+      Q.where('date', Q.lte(maxKey + MAX_KEY_BELOW_DATE_MS)),
+    ];
+    if (anchor) {
+      candidateClauses.push(
+        Q.where('date', Q.gt(anchor.date - MAX_KEY_BELOW_DATE_MS - TIMEZONE_QUERY_BUFFER_MS))
+      );
+    }
+
+    const candidates = await database
+      .get<UserMetric>('user_metrics')
+      .query(...candidateClauses)
+      .fetch();
+
     // Across mixed timezones a smaller raw `date` can normalize to a LATER calendar day, so the
-    // DB's date-desc order is not the normalized-key order. Pick the true latest by normalized
-    // day key, breaking ties on updated_at (most recently written wins).
+    // DB's date order is not the normalized-key order. Pick the true latest by normalized
+    // day key, breaking ties on updated_at (most recently written wins). The anchor itself is
+    // inside the candidate window, so it competes here too.
     let best: UserMetric | null = null;
     let bestKey = -Infinity;
-    for (const metric of metrics) {
+    for (const metric of candidates) {
       const key = utcNormalizedDayKey(metric.date, metric.timezone);
       if (key > maxKey) {
         continue;
@@ -173,10 +201,7 @@ export class UserMetricService {
         : null;
 
       if (range) {
-        query = query.extend(
-          Q.where('date', Q.gte(range.lowerMs)),
-          Q.where('date', Q.lt(range.upperMs))
-        );
+        query = query.extend(...dayRangeClauses(range));
       } else if (limit !== undefined && limit > 0) {
         // Pagination can only be pushed to the DB when there is no day-range post-filter.
         query =
@@ -188,7 +213,7 @@ export class UserMetricService {
       const raw = await query.fetch();
 
       if (range) {
-        const filtered = raw.filter((m) => range.matches(m.date, m.timezone));
+        const filtered = range.filterRecords(raw);
 
         if (limit !== undefined && limit > 0) {
           const start = offset && offset > 0 ? offset : 0;

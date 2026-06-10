@@ -18,7 +18,7 @@ import {
   WorkoutTemplateService,
 } from '@/database/services';
 import { localDayStartFromUtcMs } from '@/utils/calendarDate';
-import { getCurrentTimezone } from '@/utils/timezone';
+import { getCurrentTimezone, isTimezoneOffset } from '@/utils/timezone';
 import {
   displayToCm,
   displayToGrams,
@@ -120,20 +120,26 @@ const EATING_PHASES = ['cut', 'maintain', 'bulk'] as const;
 // Checkin statuses for Nutrition Checkin
 const CHECKIN_STATUSES = ['pending', 'ahead', 'onTrack', 'behind'] as const;
 
+// Only attached to entities whose stored timezone is actually read back (nutrition
+// logs, user metrics, workout logs, nutrition check-ins) — entities that merely
+// capture the offset at creation time must not expose it as an editable field.
 const TIMEZONE_FIELD: EditFieldConfig = {
   type: 'text',
   key: 'timezone',
   label: 'common.timezone',
   placeholder: 'common.timezonePlaceholder',
   required: true,
+  validate: (value) =>
+    typeof value === 'string' && isTimezoneOffset(value.trim()) ? null : 'common.invalidTimezone',
 };
 
 /**
- * Normalize a raw timezone form value into the trimmed `±HH:MM` string the services expect.
- * Pass the current device offset as `fallback` for create flows where the field may be unset.
+ * Normalize a raw timezone form value into the trimmed `±HH:MM` string the services
+ * expect, preserving "not provided": `undefined` stays `undefined` so partial-update
+ * services skip the field instead of writing an empty string.
  */
-function coerceTimezoneInput(value: unknown, fallback = ''): string {
-  return String(value ?? fallback).trim();
+function coerceTimezoneInput(value: unknown): string | undefined {
+  return value === undefined ? undefined : String(value).trim();
 }
 
 /**
@@ -502,7 +508,6 @@ export function getEditFields(entityType: DataLogModalVariant, units?: Units): E
           clearLabel: 'goalsManagement.manageGoalData.targetDate.clear',
           unsetPlaceholder: 'goalsManagement.manageGoalData.targetDate.notSet',
         },
-        TIMEZONE_FIELD,
       ];
 
     case 'chatMessage':
@@ -664,7 +669,6 @@ export async function getInitialValues(
         targetBMI: recordAny.targetBmi ?? undefined,
         targetFFMI: recordAny.targetFfmi ?? undefined,
         targetDate: recordAny.targetDate ?? null,
-        timezone: recordAny.timezone ?? getCurrentTimezone(),
       };
 
     case 'chatMessage':
@@ -822,7 +826,6 @@ export async function saveRecord(
             values.targetDate !== undefined
               ? ((values.targetDate as number | null | undefined) ?? null)
               : undefined,
-          timezone: coerceTimezoneInput(values.timezone),
         },
         true
       );
@@ -920,7 +923,6 @@ export function getCreateInitialValues(
         targetBMI: undefined,
         targetFFMI: undefined,
         targetDate: null,
-        timezone: getCurrentTimezone(),
       };
 
     case 'nutritionCheckin':
@@ -1012,7 +1014,7 @@ export async function createRecord(
         value,
         unit,
         date: localDayStartFromUtcMs(rawDate),
-        timezone: coerceTimezoneInput(values.timezone, getCurrentTimezone()),
+        timezone: coerceTimezoneInput(values.timezone) ?? getCurrentTimezone(),
       });
       break;
     }
@@ -1036,7 +1038,6 @@ export async function createRecord(
         targetBMI: values.targetBMI as number | undefined,
         targetFFMI: values.targetFFMI as number | undefined,
         targetDate: (values.targetDate as number | null | undefined) ?? null,
-        timezone: coerceTimezoneInput(values.timezone, getCurrentTimezone()),
       });
 
       await NutritionGoalService.regenerateCheckins(savedGoal.id);
@@ -1061,7 +1062,7 @@ export async function createRecord(
         targetBodyFat: values.targetBodyFat as number | undefined,
         targetBmi: values.targetBmi as number | undefined,
         targetFfmi: values.targetFfmi as number | undefined,
-        timezone: coerceTimezoneInput(values.timezone, getCurrentTimezone()),
+        timezone: coerceTimezoneInput(values.timezone) ?? getCurrentTimezone(),
       });
       break;
     }

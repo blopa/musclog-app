@@ -3,12 +3,11 @@ import {
   calendarDateFromRecordDay,
   combineLocalDateAndTime,
   dayKeyForCalendarDateInTimezone,
+  dayKeyRange,
   instantForDateTimeInTimezone,
-  isUtcDayKeyInRange,
   MS_PER_SOLAR_DAY,
   timeOfDayMsInTimezone,
   TIMEZONE_QUERY_BUFFER_MS,
-  timezoneWidenedBounds,
   utcDayKeyFromLocalDate,
   utcNormalizedDayKey,
   utcWeekIndex,
@@ -316,46 +315,54 @@ describe('utcDayKeyFromLocalDate', () => {
   });
 });
 
-describe('timezoneWidenedBounds', () => {
-  it('pads a single-day key window by ±14 h around the [start, end+1day) range', () => {
-    const key = Date.UTC(2025, 0, 15);
-    const { lowerMs, upperMs } = timezoneWidenedBounds(key, key);
-    expect(lowerMs).toBe(key - TIMEZONE_QUERY_BUFFER_MS);
-    expect(upperMs).toBe(key + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS);
-  });
-
-  it('captures records stored in the extreme UTC−14…UTC+14 offsets for the target day', () => {
-    const key = Date.UTC(2025, 0, 15);
-    const { lowerMs, upperMs } = timezoneWidenedBounds(key, key);
-    // Stored date for a Jan 15 record = key − offset; offsets span [−14h, +14h].
-    const farEastStored = key - 14 * 60 * 60 * 1000; // +14:00
-    const farWestStored = key + 14 * 60 * 60 * 1000; // −14:00
-    expect(farEastStored).toBeGreaterThanOrEqual(lowerMs);
-    expect(farWestStored).toBeLessThan(upperMs);
-  });
-});
-
-describe('isUtcDayKeyInRange', () => {
+describe('dayKeyRange', () => {
   const jan15 = Date.UTC(2025, 0, 15);
   const jan16 = Date.UTC(2025, 0, 16);
   // Amsterdam (+01:00) Jan 16 stored as Jan 15 23:00 UTC — within the ±14 h overscan of Jan 15.
   const amsterdamJan16 = Date.UTC(2025, 0, 15, 23, 0, 0);
 
+  it('pads a single-day key window by ±14 h around the [start, end+1day) range', () => {
+    const { lowerMs, upperMs } = dayKeyRange(jan15, jan15);
+    expect(lowerMs).toBe(jan15 - TIMEZONE_QUERY_BUFFER_MS);
+    expect(upperMs).toBe(jan15 + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS);
+  });
+
+  it('captures records stored in the extreme UTC−14…UTC+14 offsets for the target day', () => {
+    const { lowerMs, upperMs } = dayKeyRange(jan15, jan15);
+    // Stored date for a Jan 15 record = key − offset; offsets span [−14h, +14h].
+    const farEastStored = jan15 - 14 * 60 * 60 * 1000; // +14:00
+    const farWestStored = jan15 + 14 * 60 * 60 * 1000; // −14:00
+    expect(farEastStored).toBeGreaterThanOrEqual(lowerMs);
+    expect(farWestStored).toBeLessThan(upperMs);
+  });
+
   it('matches a record on the exact single target day (inclusive default)', () => {
-    expect(isUtcDayKeyInRange(Date.UTC(2025, 0, 14, 23, 0, 0), '+01:00', jan15, jan15)).toBe(true);
+    expect(dayKeyRange(jan15, jan15).matches(Date.UTC(2025, 0, 14, 23, 0, 0), '+01:00')).toBe(
+      true
+    );
   });
 
   it('rejects an overscanned next-day record that the widened query would also return', () => {
-    expect(isUtcDayKeyInRange(amsterdamJan16, '+01:00', jan15, jan15)).toBe(false);
+    expect(dayKeyRange(jan15, jan15).matches(amsterdamJan16, '+01:00')).toBe(false);
   });
 
   it('honors inclusiveEnd: false (half-open) vs true (closed) on the end bound', () => {
-    expect(
-      isUtcDayKeyInRange(amsterdamJan16, '+01:00', jan15, jan16, { inclusiveEnd: false })
-    ).toBe(false);
-    expect(isUtcDayKeyInRange(amsterdamJan16, '+01:00', jan15, jan16, { inclusiveEnd: true })).toBe(
+    expect(dayKeyRange(jan15, jan16, { inclusiveEnd: false }).matches(amsterdamJan16, '+01:00')).toBe(
+      false
+    );
+    expect(dayKeyRange(jan15, jan16, { inclusiveEnd: true }).matches(amsterdamJan16, '+01:00')).toBe(
       true
     );
+  });
+
+  it('filterRecords trims a widened fetch back to the exact day by each record’s timezone', () => {
+    const range = dayKeyRange(jan15, jan15);
+    const records = [
+      { date: Date.UTC(2025, 0, 14, 23, 0, 0), timezone: '+01:00' }, // Amsterdam Jan 15 — keep
+      { date: amsterdamJan16, timezone: '+01:00' }, // Amsterdam Jan 16 — drop
+      { date: Date.UTC(2025, 0, 15, 3, 0, 0), timezone: '-03:00' }, // Brazil Jan 15 — keep
+    ];
+    expect(range.filterRecords(records)).toEqual([records[0], records[2]]);
   });
 });
 

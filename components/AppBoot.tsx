@@ -48,7 +48,12 @@ const DB_RESET_RACE_ERRORS = [
 // per-task boilerplate (waitForDbReady, cancellation, catch+warn) lives in one place.
 // Entries with webOnly: true run only on the LokiJS (web) adapter path, where the
 // corresponding SQLite migration step is a no-op; all others run on every platform.
-type BootMigration = { tag: string; webOnly?: boolean; run: () => Promise<unknown> };
+// Entries with runOnce: true persist a completion marker after the first successful
+// run and are skipped on subsequent boots — required when re-running could clobber
+// data the user has since edited, and an optimization for full-table scans.
+type BootMigration = { tag: string; webOnly?: boolean; runOnce?: boolean; run: () => Promise<unknown> };
+
+const bootMigrationDoneKey = (tag: string) => `boot_migration_done:${tag}`;
 
 const BOOT_MIGRATIONS: BootMigration[] = [
   {
@@ -123,8 +128,11 @@ const BOOT_MIGRATIONS: BootMigration[] = [
   {
     // Backfill consumed time-of-day into nutrition_logs.date (was stored at local
     // midnight) from each row's created_at, preserving the original calendar day.
-    tag: 'NutritionService.backfillConsumedTimeFromCreatedAt',
-    run: () => NutritionService.backfillConsumedTimeFromCreatedAt(),
+    // runOnce: a midnight `date` can now be a deliberate user pick via the time
+    // picker, so re-running would silently shift user-chosen times.
+    tag: 'TimezoneMigrationService.backfillConsumedTimeFromCreatedAt',
+    runOnce: true,
+    run: () => TimezoneMigrationService.backfillConsumedTimeFromCreatedAt(),
   },
   {
     // Encrypt API keys that were stored as plaintext before this migration was introduced.
@@ -221,9 +229,22 @@ export function AppBoot() {
       }
 
       await Promise.all(
-        BOOT_MIGRATIONS.filter((m) => !m.webOnly || Platform.OS === 'web').map((m) =>
-          m.run().catch((err) => console.warn(`[AppBoot] ${m.tag} error:`, err))
-        )
+        BOOT_MIGRATIONS.filter((m) => !m.webOnly || Platform.OS === 'web').map(async (m) => {
+          try {
+            if (m.runOnce && (await AsyncStorage.getItem(bootMigrationDoneKey(m.tag)))) {
+              return;
+            }
+
+            await m.run();
+
+            // Marked done only after success so failed runs retry on the next boot.
+            if (m.runOnce) {
+              await AsyncStorage.setItem(bootMigrationDoneKey(m.tag), '1');
+            }
+          } catch (err) {
+            console.warn(`[AppBoot] ${m.tag} error:`, err);
+          }
+        })
       );
     };
 

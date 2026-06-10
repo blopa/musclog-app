@@ -1,6 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 
 import { database } from '@/database/database-instance';
+import { dayRangeClauses } from '@/database/dayKeyQuery';
 import type NutritionCheckin from '@/database/models/NutritionCheckin';
 import type { CheckinStatus } from '@/database/models/NutritionCheckin';
 import type NutritionLog from '@/database/models/NutritionLog';
@@ -99,7 +100,7 @@ export class NutritionCheckinService {
     const periodStart = periodEnd - 7 * MS_PER_SOLAR_DAY;
     const prevPeriodStart = periodEnd - 14 * MS_PER_SOLAR_DAY;
 
-    const periodEndKey = utcNormalizedDayKey(periodEnd, tz);
+    const periodEndKey = utcNormalizedDayKey(checkin.checkinDate, tz);
     const periodStartKey = periodEndKey - 7 * MS_PER_SOLAR_DAY;
 
     const dayIndexInPeriod = (recordDate: number, timezone: string | null | undefined): number =>
@@ -121,14 +122,13 @@ export class NutritionCheckinService {
       .get<UserMetric>('user_metrics')
       .query(
         Q.where('type', 'weight'),
-        Q.where('date', Q.gte(range.lowerMs)),
-        Q.where('date', Q.lt(range.upperMs)),
+        ...dayRangeClauses(range),
         Q.where('deleted_at', Q.eq(null)),
         Q.sortBy('date', Q.asc)
       )
       .fetch();
 
-    const weightMetrics = weightMetricsRaw.filter((m) => range.matches(m.date, m.timezone));
+    const weightMetrics = range.filterRecords(weightMetricsRaw);
 
     // Build daily weights array (7 slots, one per day)
     const dailyWeights: number[] = Array(7).fill(0);
@@ -153,13 +153,12 @@ export class NutritionCheckinService {
       .get<UserMetric>('user_metrics')
       .query(
         Q.where('type', 'body_fat'),
-        Q.where('date', Q.gte(range.lowerMs)),
-        Q.where('date', Q.lt(range.upperMs)),
+        ...dayRangeClauses(range),
         Q.where('deleted_at', Q.eq(null))
       )
       .fetch();
 
-    const bodyFatMetrics = bodyFatMetricsRaw.filter((m) => range.matches(m.date, m.timezone));
+    const bodyFatMetrics = range.filterRecords(bodyFatMetricsRaw);
 
     let avgBodyFat: number | null = null;
     if (bodyFatMetrics.length > 0) {
@@ -171,14 +170,10 @@ export class NutritionCheckinService {
 
     const nutritionLogsRaw = await database
       .get<NutritionLog>('nutrition_logs')
-      .query(
-        Q.where('date', Q.gte(range.lowerMs)),
-        Q.where('date', Q.lt(range.upperMs)),
-        Q.where('deleted_at', Q.eq(null))
-      )
+      .query(...dayRangeClauses(range), Q.where('deleted_at', Q.eq(null)))
       .fetch();
 
-    const nutritionLogs = nutritionLogsRaw.filter((log) => range.matches(log.date, log.timezone));
+    const nutritionLogs = range.filterRecords(nutritionLogsRaw);
 
     // Group nutrition logs by day and sum calories per day, keyed by the log's own timezone.
     const caloriesByDay = new Map<number, number>();
