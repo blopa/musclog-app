@@ -4,7 +4,7 @@ import { documentDirectory } from 'expo-file-system/legacy';
 import { openDatabaseSync } from 'expo-sqlite';
 import { Platform } from 'react-native';
 
-import { DATABASE_NAME } from '@/constants/database';
+import { DATABASE_NAME, SHOULD_SAVE_DB_SNAPSHOT } from '@/constants/database';
 import { database } from '@/database/database-instance';
 import type NutritionLog from '@/database/models/NutritionLog';
 import { initializeSentry } from '@/sentry-init';
@@ -139,17 +139,19 @@ export function startDbDurabilityMonitoring(): void {
       await waitForDbReady();
       dbIsReady = true;
 
-      await reportNutritionLogLossIfAny();
+      if (SHOULD_SAVE_DB_SNAPSHOT) {
+        await reportNutritionLogLossIfAny();
 
-      let debounce: ReturnType<typeof setTimeout> | null = null;
-      database.withChangesForTables(['nutrition_logs']).subscribe(() => {
-        if (debounce) {
-          clearTimeout(debounce);
-        }
-        debounce = setTimeout(() => {
-          void updateNutritionLogCountBaseline();
-        }, BASELINE_UPDATE_DEBOUNCE_MS);
-      });
+        let debounce: ReturnType<typeof setTimeout> | null = null;
+        database.withChangesForTables(['nutrition_logs']).subscribe(() => {
+          if (debounce) {
+            clearTimeout(debounce);
+          }
+          debounce = setTimeout(() => {
+            void updateNutritionLogCountBaseline();
+          }, BASELINE_UPDATE_DEBOUNCE_MS);
+        });
+      }
     } catch (error) {
       handleError(error, 'dbDurability.startDbDurabilityMonitoring');
     }
@@ -166,7 +168,9 @@ export async function checkpointDbOnAppBackground(): Promise<void> {
   }
 
   await checkpointWalToMainDbFile();
-  await updateNutritionLogCountBaseline();
+  if (SHOULD_SAVE_DB_SNAPSHOT) {
+    await updateNutritionLogCountBaseline();
+  }
 }
 
 async function reportNutritionLogLossIfAny(): Promise<void> {
