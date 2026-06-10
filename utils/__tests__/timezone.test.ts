@@ -337,9 +337,7 @@ describe('dayKeyRange', () => {
   });
 
   it('matches a record on the exact single target day (inclusive default)', () => {
-    expect(dayKeyRange(jan15, jan15).matches(Date.UTC(2025, 0, 14, 23, 0, 0), '+01:00')).toBe(
-      true
-    );
+    expect(dayKeyRange(jan15, jan15).matches(Date.UTC(2025, 0, 14, 23, 0, 0), '+01:00')).toBe(true);
   });
 
   it('rejects an overscanned next-day record that the widened query would also return', () => {
@@ -347,12 +345,12 @@ describe('dayKeyRange', () => {
   });
 
   it('honors inclusiveEnd: false (half-open) vs true (closed) on the end bound', () => {
-    expect(dayKeyRange(jan15, jan16, { inclusiveEnd: false }).matches(amsterdamJan16, '+01:00')).toBe(
-      false
-    );
-    expect(dayKeyRange(jan15, jan16, { inclusiveEnd: true }).matches(amsterdamJan16, '+01:00')).toBe(
-      true
-    );
+    expect(
+      dayKeyRange(jan15, jan16, { inclusiveEnd: false }).matches(amsterdamJan16, '+01:00')
+    ).toBe(false);
+    expect(
+      dayKeyRange(jan15, jan16, { inclusiveEnd: true }).matches(amsterdamJan16, '+01:00')
+    ).toBe(true);
   });
 
   it('filterRecords trims a widened fetch back to the exact day by each record’s timezone', () => {

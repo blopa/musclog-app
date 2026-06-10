@@ -132,6 +132,12 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
         continue;
       }
 
+      // Exports include WatermelonDB's internal tombstones for diagnostics.
+      // Restoring them would resurrect records the local database considers deleted.
+      if (raw._status === 'deleted') {
+        continue;
+      }
+
       if (typeof raw.timezone === 'string' && raw.timezone) {
         // Older exports may store IANA names. Resolve once at the row's own instant
         // so every restore path consumes the same fixed "±HH:MM" offset value.

@@ -4,6 +4,10 @@ import { dumpDatabase } from '@/database/exportDb';
 import { restoreDatabase } from '@/database/importDb';
 import { getWebBackupContent } from '@/database/preMigrationBackup';
 
+type ExportDatabaseOptions = {
+  includeDeletedRecords?: boolean;
+};
+
 function getExportFileName(): string {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
   return `${timestamp}-musclog-export.json`;
@@ -50,8 +54,11 @@ export async function downloadFile(uri: string, fileName?: string): Promise<void
   a.click();
 }
 
-export async function exportDatabase(encryptionPhrase?: string): Promise<void> {
-  const dbDump = await dumpDatabase(encryptionPhrase);
+export async function exportDatabase(
+  encryptionPhrase?: string,
+  options: ExportDatabaseOptions = {}
+): Promise<void> {
+  const dbDump = await dumpDatabase(encryptionPhrase, options);
   const fileName = getExportFileName();
   const blob = new Blob([dbDump], { type: 'application/json' });
   const url = URL.createObjectURL(blob);

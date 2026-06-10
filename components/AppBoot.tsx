@@ -51,7 +51,12 @@ const DB_RESET_RACE_ERRORS = [
 // Entries with runOnce: true persist a completion marker after the first successful
 // run and are skipped on subsequent boots — required when re-running could clobber
 // data the user has since edited, and an optimization for full-table scans.
-type BootMigration = { tag: string; webOnly?: boolean; runOnce?: boolean; run: () => Promise<unknown> };
+type BootMigration = {
+  tag: string;
+  webOnly?: boolean;
+  runOnce?: boolean;
+  run: () => Promise<unknown>;
+};
 
 const bootMigrationDoneKey = (tag: string) => `boot_migration_done:${tag}`;
 

@@ -1464,5 +1464,4 @@ export class NutritionService {
       );
     });
   }
-
 }

@@ -22,6 +22,10 @@ type ReadingOptions = NonNullable<Parameters<typeof readAsStringAsync>[1]>;
 
 export { detectBarcodes };
 
+type ExportDatabaseOptions = {
+  includeDeletedRecords?: boolean;
+};
+
 function getExportFileName(): string {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
   return `${timestamp}-musclog-export.json`;
@@ -36,9 +40,12 @@ export async function downloadFile(uri: string, fileName?: string): Promise<void
   }
 }
 
-export async function exportDatabase(encryptionPhrase?: string): Promise<void> {
+export async function exportDatabase(
+  encryptionPhrase?: string,
+  options: ExportDatabaseOptions = {}
+): Promise<void> {
   try {
-    const dbDump = await dumpDatabase(encryptionPhrase);
+    const dbDump = await dumpDatabase(encryptionPhrase, options);
     if (!cacheDirectory) {
       throw new Error('Cache directory is not available');
     }

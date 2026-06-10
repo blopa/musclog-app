@@ -11,12 +11,15 @@ import { getExportPlatform } from '@/constants/platform';
 import { encrypt } from '@/utils/encryption';
 
 import { database } from './database-instance';
-import type NutritionLog from './models/NutritionLog';
-import type UserMetric from './models/UserMetric';
+import { decryptJson, decryptNumber, decryptOptionalString } from './encryptionHelpers';
 
 export type ExportDump = {
   _exportVersion: number;
   [tableName: string]: unknown;
+};
+
+type DumpDatabaseOptions = {
+  includeDeletedRecords?: boolean;
 };
 
 function getRawRow(record: { _raw?: unknown }): Record<string, unknown> {
@@ -28,12 +31,35 @@ function getRawRow(record: { _raw?: unknown }): Record<string, unknown> {
   return { ...raw };
 }
 
+function stripLokiMetadata(row: Record<string, unknown>): Record<string, unknown> {
+  const raw = { ...row };
+  delete raw.$loki;
+  delete raw.meta;
+  return raw;
+}
+
+function getRawRowsFromLoki(tableName: string): Record<string, unknown>[] | null {
+  const adapter = database.adapter as any;
+  const loki = adapter?.underlyingAdapter?._driver?.loki ?? adapter?._driver?.loki;
+  const collection = loki?.getCollection?.(tableName);
+
+  if (!collection?.data) {
+    return null;
+  }
+
+  return collection.data.map((row: Record<string, unknown>) => stripLokiMetadata(row));
+}
+
 /**
  * Dump the entire database to a JSON-serializable object.
  * Encrypted fields in user_metrics and nutrition_logs are exported decrypted so the backup is device-independent.
  * API key settings are excluded.
  */
-export async function dumpDatabase(encryptionPhrase?: string): Promise<string> {
+export async function dumpDatabase(
+  encryptionPhrase?: string,
+  options: DumpDatabaseOptions = {}
+): Promise<string> {
+  const includeDeletedRecords = options.includeDeletedRecords ?? true;
   const dbData: ExportDump = {
     _exportVersion: CURRENT_DATABASE_VERSION,
     _exportPlatform: getExportPlatform(),
@@ -42,68 +68,74 @@ export async function dumpDatabase(encryptionPhrase?: string): Promise<string> {
   for (const tableName of RESTORE_ORDER) {
     const collection = database.get(tableName as any);
     const records = await collection.query().fetch();
+    // WatermelonDB's query API filters out internal tombstones (`_status = 'deleted'`).
+    // When requested, read Loki directly so exports can preserve those rows.
+    const rows = includeDeletedRecords
+      ? (getRawRowsFromLoki(tableName) ?? records.map((r) => getRawRow(r)))
+      : records.map((r) => getRawRow(r));
 
     if (tableName === 'settings') {
-      const rows = records as { _raw?: Record<string, unknown>; type?: string }[];
-      dbData.settings = rows
-        .filter((r) => {
-          const raw = r._raw ?? r;
-          const type = (raw as Record<string, unknown>).type;
-          return !SETTINGS_EXCLUDED_TYPES.includes(String(type));
-        })
-        .map((r) => getRawRow(r));
+      dbData.settings = rows.filter((row) => !SETTINGS_EXCLUDED_TYPES.includes(String(row.type)));
       continue;
     }
 
     if (tableName === 'user_metrics') {
-      const rows: Record<string, unknown>[] = [];
-      for (const record of records as UserMetric[]) {
-        const raw = getRawRow(record);
-        const decrypted = await record.getDecrypted();
+      const decryptedRows: Record<string, unknown>[] = [];
+      for (const raw of rows) {
+        const [value, unit] = await Promise.all([
+          decryptNumber(raw.value as string | undefined),
+          decryptOptionalString(raw.unit as string | undefined),
+        ]);
         const row: Record<string, unknown> = {
           ...raw,
-          value: decrypted.value,
-          unit: decrypted.unit ?? '',
+          value,
+          unit: unit ?? '',
           _decrypted: true,
         };
-        delete (row as Record<string, unknown>).valueRaw;
-        delete (row as Record<string, unknown>).unitRaw;
-        rows.push(row);
+        decryptedRows.push(row);
       }
-      dbData.user_metrics = rows;
+      dbData.user_metrics = decryptedRows;
       continue;
     }
 
     if (tableName === 'nutrition_logs') {
-      const rows: Record<string, unknown>[] = [];
-      for (const record of records as NutritionLog[]) {
-        const raw = getRawRow(record);
-        const snapshot = await record.getDecryptedSnapshot();
+      const decryptedRows: Record<string, unknown>[] = [];
+      for (const raw of rows) {
+        const [
+          logged_food_name,
+          logged_calories,
+          logged_protein,
+          logged_carbs,
+          logged_fat,
+          logged_fiber,
+          micros,
+        ] = await Promise.all([
+          decryptOptionalString(raw.logged_food_name as string | undefined),
+          decryptNumber(raw.logged_calories as string | undefined),
+          decryptNumber(raw.logged_protein as string | undefined),
+          decryptNumber(raw.logged_carbs as string | undefined),
+          decryptNumber(raw.logged_fat as string | undefined),
+          decryptNumber(raw.logged_fiber as string | undefined),
+          decryptJson(raw.logged_micros_json as string | undefined),
+        ]);
         const row: Record<string, unknown> = {
           ...raw,
-          logged_food_name: snapshot.loggedFoodName ?? '',
-          logged_calories: snapshot.loggedCalories,
-          logged_protein: snapshot.loggedProtein,
-          logged_carbs: snapshot.loggedCarbs,
-          logged_fat: snapshot.loggedFat,
-          logged_fiber: snapshot.loggedFiber,
-          logged_micros_json: snapshot.loggedMicros ? JSON.stringify(snapshot.loggedMicros) : '',
+          logged_food_name: logged_food_name ?? '',
+          logged_calories,
+          logged_protein,
+          logged_carbs,
+          logged_fat,
+          logged_fiber,
+          logged_micros_json: Object.keys(micros).length > 0 ? JSON.stringify(micros) : '',
           _decrypted: true,
         };
-        delete (row as Record<string, unknown>).loggedFoodNameRaw;
-        delete (row as Record<string, unknown>).loggedCaloriesRaw;
-        delete (row as Record<string, unknown>).loggedProteinRaw;
-        delete (row as Record<string, unknown>).loggedCarbsRaw;
-        delete (row as Record<string, unknown>).loggedFatRaw;
-        delete (row as Record<string, unknown>).loggedFiberRaw;
-        delete (row as Record<string, unknown>).loggedMicrosRaw;
-        rows.push(row);
+        decryptedRows.push(row);
       }
-      dbData.nutrition_logs = rows;
+      dbData.nutrition_logs = decryptedRows;
       continue;
     }
 
-    dbData[tableName] = records.map((r) => getRawRow(r));
+    dbData[tableName] = rows;
   }
 
   // Dump AsyncStorage (exclude device-specific and session-only keys)
