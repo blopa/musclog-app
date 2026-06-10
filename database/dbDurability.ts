@@ -1,16 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Sentry from '@sentry/react-native';
-import { documentDirectory } from 'expo-file-system/legacy';
 import { openDatabaseSync } from 'expo-sqlite';
 import { Platform } from 'react-native';
 
 import { DATABASE_NAME, SHOULD_SAVE_DB_SNAPSHOT } from '@/constants/database';
 import { database } from '@/database/database-instance';
 import type NutritionLog from '@/database/models/NutritionLog';
-import { initializeSentry } from '@/sentry-init';
 import { handleError } from '@/utils/handleError';
+import { captureMessage } from '@/utils/sentry';
 
 import { getBootDbFileStats } from './dbBootStats';
+import { wdbDir } from './dbPath';
 import { waitForDbReady } from './dbReady';
 
 /**
@@ -35,11 +34,6 @@ type CountBaseline = {
   count: number;
   at: number;
 };
-
-function wdbDir(): string {
-  const base = (documentDirectory ?? '').replace(/^file:\/\//, '').replace(/\/$/, '');
-  return Platform.OS === 'android' ? base.replace(/\/files$/, '') : base;
-}
 
 // 'jsi' or 'asynchronous' (bridge fallback). The fallback adapter has weaker
 // durability (Android SQLiteDatabase WAL without synchronous=FULL), so loss
@@ -170,31 +164,19 @@ async function reportNutritionLogLossIfAny(): Promise<void> {
   try {
     const baseline = await readBaseline();
     const actual = await countNutritionLogs();
-    const bootFileStats = getBootDbFileStats();
-    const adapterMode = getAdapterDispatcherType();
-
-    Sentry.addBreadcrumb({
-      category: 'db.durability',
-      message: 'boot db stats',
-      data: {
-        nutritionLogCount: actual,
-        baselineCount: baseline?.count ?? null,
-        adapterMode,
-        ...bootFileStats,
-      },
-    });
 
     if (baseline && actual < baseline.count) {
-      initializeSentry();
-      Sentry.captureMessage('Nutrition logs lost between sessions', {
+      // captureMessage checks the anonymous-bug-report consent setting before
+      // sending; the DB is ready at this point so the check is reliable.
+      await captureMessage('Nutrition logs lost between sessions', {
         level: 'error',
         extra: {
           expectedCount: baseline.count,
           actualCount: actual,
           lostRows: baseline.count - actual,
           baselineAt: new Date(baseline.at).toISOString(),
-          adapterMode,
-          bootFileStats,
+          adapterMode: getAdapterDispatcherType(),
+          bootFileStats: getBootDbFileStats(),
         },
       });
     }

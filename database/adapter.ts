@@ -1,21 +1,15 @@
 import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite';
 import * as Sentry from '@sentry/react-native';
-import { documentDirectory } from 'expo-file-system/legacy';
 import { openDatabaseSync } from 'expo-sqlite';
-import { Platform } from 'react-native';
 
 import { DATABASE_NAME } from '@/constants/database';
 import { initializeSentry } from '@/sentry-init';
 
 import { captureBootDbFileStats } from './dbBootStats';
+import { wdbDir } from './dbPath';
 import { migrations } from './migrations';
 import { createPreMigrationBackup } from './preMigrationBackup';
 import { schema } from './schema';
-
-function wdbDir(): string {
-  const base = (documentDirectory ?? '').replace(/^file:\/\//, '').replace(/\/$/, '');
-  return Platform.OS === 'android' ? base.replace(/\/files$/, '') : base;
-}
 
 function readCurrentDbVersion(): number | null {
   try {

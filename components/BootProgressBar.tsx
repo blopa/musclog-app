@@ -1,17 +1,18 @@
 import { Text, View } from 'react-native';
 
 import i18n from '@/lang/lang';
-import { BootProgressState } from '@/utils/bootProgress';
+import { colors } from '@/theme.tokens';
+import { useBootProgress } from '@/utils/bootProgress';
 
-type BootProgressBarProps = {
-  progress: BootProgressState;
-};
+/**
+ * Absolute-positioned progress bar shown near the bottom of the screen while
+ * boot migrations run. Renders nothing once boot progress completes.
+ * Colors come from theme.tokens (not theme.ts) so this stays importable
+ * before the database layer loads.
+ */
+export function BootProgressBar() {
+  const progress = useBootProgress();
 
-export const BOOT_PROGRESS_ACCENT_COLOR = '#10b981';
-const BOOT_PROGRESS_TRACK_COLOR = '#1c3829';
-const BOOT_PROGRESS_TEXT_COLOR = '#587068';
-
-export function BootProgressBar({ progress }: BootProgressBarProps) {
   if (!progress.active || progress.total <= 0) {
     return null;
   }
@@ -24,35 +25,46 @@ export function BootProgressBar({ progress }: BootProgressBarProps) {
   }).format(ratio);
 
   return (
-    <View style={{ width: '70%', maxWidth: 280, alignItems: 'center' }}>
-      <View
-        style={{
-          width: '100%',
-          height: 6,
-          borderRadius: 999,
-          overflow: 'hidden',
-          backgroundColor: BOOT_PROGRESS_TRACK_COLOR,
-        }}
-      >
+    <View
+      pointerEvents="none"
+      style={{
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: 36,
+        alignItems: 'center',
+      }}
+    >
+      <View style={{ width: '70%', maxWidth: 280, alignItems: 'center' }}>
         <View
           style={{
-            width: `${ratio * 100}%`,
-            height: '100%',
+            width: '100%',
+            height: 6,
             borderRadius: 999,
-            backgroundColor: BOOT_PROGRESS_ACCENT_COLOR,
+            overflow: 'hidden',
+            backgroundColor: colors.darkViridian,
           }}
-        />
+        >
+          <View
+            style={{
+              width: `${ratio * 100}%`,
+              height: '100%',
+              borderRadius: 999,
+              backgroundColor: colors.jade,
+            }}
+          />
+        </View>
+        <Text
+          style={{
+            marginTop: 8,
+            color: colors.gray500,
+            fontSize: 12,
+            fontWeight: '600',
+          }}
+        >
+          {percent}
+        </Text>
       </View>
-      <Text
-        style={{
-          marginTop: 8,
-          color: BOOT_PROGRESS_TEXT_COLOR,
-          fontSize: 12,
-          fontWeight: '600',
-        }}
-      >
-        {percent}
-      </Text>
     </View>
   );
 }

@@ -1,6 +1,7 @@
 import { ActivityIndicator, Image, Text, View } from 'react-native';
 
-import { BOOT_PROGRESS_ACCENT_COLOR } from '@/components/BootProgressBar';
+// theme.tokens (not theme.ts) so this stays importable before the database layer loads.
+import { colors } from '@/theme.tokens';
 
 export function SplashLoading() {
   return (
@@ -10,7 +11,7 @@ export function SplashLoading() {
       <Text className="mt-1.5 text-xs uppercase tracking-widest text-text-muted">
         Lift, Log, Repeat
       </Text>
-      <ActivityIndicator size="small" color={BOOT_PROGRESS_ACCENT_COLOR} className="mt-12" />
+      <ActivityIndicator size="small" color={colors.jade} className="mt-12" />
     </View>
   );
 }

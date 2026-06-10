@@ -1,8 +1,9 @@
 import { File } from 'expo-file-system';
-import { documentDirectory } from 'expo-file-system/legacy';
 import { Platform } from 'react-native';
 
 import { DATABASE_NAME } from '@/constants/database';
+
+import { wdbDir } from './dbPath';
 
 export type DbBootFileStats = {
   dbBytes: number | null;
@@ -12,11 +13,6 @@ export type DbBootFileStats = {
 };
 
 let bootFileStats: DbBootFileStats | null = null;
-
-function wdbDir(): string {
-  const base = (documentDirectory ?? '').replace(/^file:\/\//, '').replace(/\/$/, '');
-  return Platform.OS === 'android' ? base.replace(/\/files$/, '') : base;
-}
 
 function fileSize(path: string): number | null {
   try {
