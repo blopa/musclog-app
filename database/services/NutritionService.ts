@@ -15,11 +15,12 @@ import i18n from '@/lang/lang';
 import { writeNutritionLogToHealthConnect } from '@/services/healthConnectNutrition';
 import {
   isUtcDayKeyInRange,
-  localDayStartMs,
   MS_PER_SOLAR_DAY,
+  timeOfDayMsInTimezone,
   timezoneWidenedBounds,
   utcDayKeyFromLocalDate,
   utcNormalizedDayKey,
+  withCurrentTimeOnDay,
 } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
@@ -165,7 +166,8 @@ export class NutritionService {
     repairAttempted = false
   ): Promise<NutritionLog> {
     try {
-      const dateTimestamp = localDayStartMs(date);
+      // `date` carries the consumed datetime (day + time) supplied by the caller.
+      const dateTimestamp = date.getTime();
 
       const log = await database.write(async () => {
         const food = await database.get<Food>('foods').find(foodId);
@@ -675,7 +677,8 @@ export class NutritionService {
     targetDate: Date,
     targetMealType: MealType
   ): Promise<void> {
-    const dateTimestamp = localDayStartMs(targetDate);
+    // Only a target day is known here, so stamp it with the current time-of-day.
+    const dateTimestamp = withCurrentTimeOnDay(targetDate).getTime();
 
     await database.write(async () => {
       const now = Date.now();
@@ -719,7 +722,8 @@ export class NutritionService {
     targetDate: Date,
     targetMealType: MealType
   ): Promise<void> {
-    const dateTimestamp = localDayStartMs(targetDate);
+    // Only a target day is known here, so stamp it with the current time-of-day.
+    const dateTimestamp = withCurrentTimeOnDay(targetDate).getTime();
 
     await database.write(async () => {
       const now = Date.now();
@@ -751,7 +755,8 @@ export class NutritionService {
   ): Promise<void> {
     const splitRatio = splitPercentage / 100;
     const remainRatio = 1 - splitRatio;
-    const dateTimestamp = localDayStartMs(targetDate);
+    // Only a target day is known here, so stamp it with the current time-of-day.
+    const dateTimestamp = withCurrentTimeOnDay(targetDate).getTime();
 
     await database.write(async () => {
       const now = Date.now();
@@ -1127,13 +1132,15 @@ export class NutritionService {
     amount: number = 100, // Default to 100g for custom meals
     options?: { groupId?: string; loggedMealName?: string }
   ): Promise<NutritionLog> {
-    const dateTimestamp = localDayStartMs(date);
+    // Only a target day is known here, so stamp it with the current time-of-day.
+    const datedTime = withCurrentTimeOnDay(date);
+    const dateTimestamp = datedTime.getTime();
 
     // If foodId is provided, log directly using the existing food
     if (mealData.foodId) {
       return await NutritionService.logFood(
         mealData.foodId,
-        date,
+        datedTime,
         mealType,
         amount,
         undefined,
@@ -1295,7 +1302,8 @@ export class NutritionService {
     mealType: MealType,
     options?: { groupId?: string; loggedMealName?: string; imageUrl?: string }
   ): Promise<NutritionLog[]> {
-    const dateTimestamp = localDayStartMs(date);
+    // Only a target day is known here, so stamp it with the current time-of-day.
+    const dateTimestamp = withCurrentTimeOnDay(date).getTime();
     const now = Date.now();
 
     const logs = await database.write(async () => {
@@ -1477,6 +1485,52 @@ export class NutritionService {
         ...negativeFiberLogs.map((log) =>
           log.prepareUpdate((r) => {
             r.loggedFiberRaw = zeroFiber;
+            r.updatedAt = now;
+          })
+        )
+      );
+    });
+  }
+
+  /**
+   * One-time backfill for the `date` field gaining a time-of-day component.
+   * Legacy rows stored `date` at local midnight (a day key). For those, preserve
+   * the user-picked calendar day but stamp it with the time-of-day from
+   * `created_at` (best-effort). Rows that already carry a non-midnight time are
+   * skipped, so this is idempotent across boots.
+   */
+  static async backfillConsumedTimeFromCreatedAt(): Promise<void> {
+    const logs = await database
+      .get<NutritionLog>('nutrition_logs')
+      .query(Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    const updates = logs
+      .map((log) => {
+        // Already has a time-of-day → migrated or natively timestamped; skip.
+        if (timeOfDayMsInTimezone(log.date, log.timezone) !== 0) {
+          return null;
+        }
+
+        const timeOfDayMs = timeOfDayMsInTimezone(log.createdAt, log.timezone);
+        if (timeOfDayMs === 0) {
+          return null;
+        }
+
+        return { log, newDate: log.date + timeOfDayMs };
+      })
+      .filter((u): u is { log: NutritionLog; newDate: number } => u !== null);
+
+    if (updates.length === 0) {
+      return;
+    }
+
+    const now = Date.now();
+    await database.write(async () => {
+      await database.batch(
+        ...updates.map(({ log, newDate }) =>
+          log.prepareUpdate((r) => {
+            r.date = newDate;
             r.updatedAt = now;
           })
         )

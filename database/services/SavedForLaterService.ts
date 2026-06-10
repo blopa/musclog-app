@@ -5,7 +5,7 @@ import { encryptOptionalString } from '@/database/encryptionHelpers';
 import NutritionLog, { MealType } from '@/database/models/NutritionLog';
 import SavedForLaterGroup from '@/database/models/SavedForLaterGroup';
 import SavedForLaterItem from '@/database/models/SavedForLaterItem';
-import { localDayStartMs } from '@/utils/calendarDate';
+import { withCurrentTimeOnDay } from '@/utils/calendarDate';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { widgetEvents } from '@/utils/widgetEvents';
 
@@ -216,7 +216,8 @@ export class SavedForLaterService {
     targetDate: Date,
     targetMealType: MealType
   ): Promise<void> {
-    const dateTimestamp = localDayStartMs(targetDate);
+    // Only a target day is known here, so stamp it with the current time-of-day.
+    const dateTimestamp = withCurrentTimeOnDay(targetDate).getTime();
     const { group, items } = await this.getGroupWithItems(groupId);
 
     await database.write(async () => {

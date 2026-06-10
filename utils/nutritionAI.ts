@@ -4,7 +4,7 @@ import { database } from '@/database';
 import Food from '@/database/models/Food';
 import { FoodService, MealService, NutritionService } from '@/database/services';
 
-import { localCalendarDayDate } from './calendarDate';
+import { localCalendarDayDate, withCurrentTimeOnDay } from './calendarDate';
 import type { GenerateMealPlanResponse, MacroEstimate, NutritionEntry } from './coachAI';
 import { roundToDecimalPlaces } from './roundDecimal';
 
@@ -71,7 +71,8 @@ export async function processParsedNutritionEntries(
     sugar?: number;
   }[]
 > {
-  const day = localCalendarDayDate(date);
+  // Non-interactive AI logging: stamp the chosen day with the current time.
+  const day = withCurrentTimeOnDay(localCalendarDayDate(date));
 
   const results = [];
 

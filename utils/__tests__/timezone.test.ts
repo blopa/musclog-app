@@ -1,9 +1,12 @@
 import {
   bucketPointsByUtcWeek,
   calendarDateFromRecordDay,
+  combineLocalDateAndTime,
   dayKeyForCalendarDateInTimezone,
+  instantForDateTimeInTimezone,
   isUtcDayKeyInRange,
   MS_PER_SOLAR_DAY,
+  timeOfDayMsInTimezone,
   TIMEZONE_QUERY_BUFFER_MS,
   timezoneWidenedBounds,
   utcDayKeyFromLocalDate,
@@ -231,6 +234,71 @@ describe('record calendar day helpers', () => {
     );
     expect(dayKeyForCalendarDateInTimezone(pickerDate, '-03:00')).toBe(
       Date.UTC(2025, 0, 15, 3, 0, 0)
+    );
+  });
+});
+
+describe('combineLocalDateAndTime', () => {
+  it('takes the calendar day from the first arg and the time-of-day from the second', () => {
+    const day = new Date(2025, 0, 15, 23, 59, 59); // Jan 15, time should be ignored
+    const time = new Date(2030, 6, 1, 8, 30, 15); // 08:30:15, date should be ignored
+    const combined = combineLocalDateAndTime(day, time);
+
+    expect(combined.getFullYear()).toBe(2025);
+    expect(combined.getMonth()).toBe(0);
+    expect(combined.getDate()).toBe(15);
+    expect(combined.getHours()).toBe(8);
+    expect(combined.getMinutes()).toBe(30);
+    expect(combined.getSeconds()).toBe(15);
+  });
+});
+
+describe('instantForDateTimeInTimezone', () => {
+  it('anchors picked day + time to a fixed offset (Amsterdam +01:00)', () => {
+    const day = new Date(2025, 0, 15); // Jan 15 (local components only)
+    const time = new Date(2025, 0, 15, 8, 0, 0); // 08:00
+    // 08:00 on Jan 15 at +01:00 → 07:00 UTC.
+    expect(instantForDateTimeInTimezone(day, time, '+01:00')).toBe(Date.UTC(2025, 0, 15, 7, 0, 0));
+  });
+
+  it('stores a time-of-day that leaves the UTC-normalized calendar day unchanged', () => {
+    const day = new Date(2025, 0, 15);
+    const midday = new Date(2025, 0, 15, 14, 35, 0);
+    const lateNight = new Date(2025, 0, 15, 23, 50, 0);
+
+    const expectedKey = dayKeyForCalendarDateInTimezone(day, '+01:00'); // the day key
+    const normalizedKey = utcDayKeyFromLocalDate(day);
+
+    // Both the legacy midnight key and a real time-of-day normalize to the same calendar day.
+    expect(utcNormalizedDayKey(expectedKey, '+01:00')).toBe(normalizedKey);
+    expect(utcNormalizedDayKey(instantForDateTimeInTimezone(day, midday, '+01:00'), '+01:00')).toBe(
+      normalizedKey
+    );
+    expect(
+      utcNormalizedDayKey(instantForDateTimeInTimezone(day, lateNight, '+01:00'), '+01:00')
+    ).toBe(normalizedKey);
+  });
+});
+
+describe('timeOfDayMsInTimezone', () => {
+  it('returns 0 for a stored local-midnight day key (Amsterdam +01:00)', () => {
+    // Jan 15 00:00 +01:00 stored as Jan 14 23:00 UTC.
+    expect(timeOfDayMsInTimezone(Date.UTC(2025, 0, 14, 23, 0, 0), '+01:00')).toBe(0);
+  });
+
+  it('returns the elapsed ms since the zone-local midnight for a real time', () => {
+    // 08:30 +01:00 → 8h30m past local midnight.
+    expect(timeOfDayMsInTimezone(Date.UTC(2025, 0, 15, 7, 30, 0), '+01:00')).toBe(
+      (8 * 60 + 30) * 60 * 1000
+    );
+  });
+
+  it('is always within [0, one day)', () => {
+    expect(
+      timeOfDayMsInTimezone(Date.UTC(2025, 0, 15, 22, 50, 0), '-03:00')
+    ).toBeGreaterThanOrEqual(0);
+    expect(timeOfDayMsInTimezone(Date.UTC(2025, 0, 15, 22, 50, 0), '-03:00')).toBeLessThan(
+      MS_PER_SOLAR_DAY
     );
   });
 });

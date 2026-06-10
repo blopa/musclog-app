@@ -54,7 +54,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { type UnifiedFoodResult, useUnifiedFoodSearch } from '@/hooks/useUnifiedFoodSearch';
 import { useYesterdayMealData } from '@/hooks/useYesterdayMealData';
 import { blurFilter } from '@/utils/blurFilter';
-import { localCalendarDayDate } from '@/utils/calendarDate';
+import { localCalendarDayDate, withCurrentTimeOnDay } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import { resolveRoundedPer100gCaloriesForDisplay } from '@/utils/inferCaloriesFromMacros';
 import { gramsToDisplay } from '@/utils/unitConversion';
@@ -921,7 +921,8 @@ export function FoodSearchModal({
 
     // TypeScript: assign to const to narrow the type after the guard check
     const currentMealType: MealType = mealType;
-    const targetDate = localCalendarDayDate(logDate ?? new Date());
+    // Non-interactive quick-add: stamp the chosen day with the current time.
+    const targetDate = withCurrentTimeOnDay(localCalendarDayDate(logDate ?? new Date()));
     setIsAddingSameAsYesterday(true);
     try {
       for (const log of yesterdayMealData.logs) {

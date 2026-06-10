@@ -27,7 +27,6 @@ import FoodFoodPortion from '@/database/models/FoodFoodPortion';
 import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
 import Setting from '@/database/models/Setting';
 import { FoodPortionService } from '@/database/services';
-import { localDayStartMs } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import { getCurrentTimezone, ianaZoneToTimezoneAt } from '@/utils/timezone';
 
@@ -348,7 +347,7 @@ async function syncNutritionOnce(timeRange: {
 
     hcMap.set(externalId, {
       externalId,
-      date: localDayStartMs(startDate),
+      date: startDate.getTime(),
       mealType: mapMealType(mealRaw),
       foodName: nameRaw ?? HC_SENTINEL_FOOD_NAME,
       calories: Math.max(0, calories),

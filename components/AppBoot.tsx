@@ -121,6 +121,12 @@ const BOOT_MIGRATIONS: BootMigration[] = [
     run: () => TimezoneMigrationService.backfillMissingTimezones(),
   },
   {
+    // Backfill consumed time-of-day into nutrition_logs.date (was stored at local
+    // midnight) from each row's created_at, preserving the original calendar day.
+    tag: 'NutritionService.backfillConsumedTimeFromCreatedAt',
+    run: () => NutritionService.backfillConsumedTimeFromCreatedAt(),
+  },
+  {
     // Encrypt API keys that were stored as plaintext before this migration was introduced.
     tag: 'SettingsService.migrateApiKeysToEncrypted',
     run: () => SettingsService.migrateApiKeysToEncrypted(),

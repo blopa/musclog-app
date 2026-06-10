@@ -383,6 +383,78 @@ export function dayKeyForCalendarDateInTimezone(
 }
 
 /**
+ * Combines the calendar day of `dayDate` with the wall-clock time of `timeDate`
+ * into a single device-local `Date`. Used when a record's stored timestamp must
+ * carry the actual time-of-day a thing happened (e.g. nutrition_logs.date), not
+ * just the calendar day. Unlike a day key, the time-of-day is preserved.
+ */
+export function combineLocalDateAndTime(dayDate: Date, timeDate: Date): Date {
+  return new Date(
+    dayDate.getFullYear(),
+    dayDate.getMonth(),
+    dayDate.getDate(),
+    timeDate.getHours(),
+    timeDate.getMinutes(),
+    timeDate.getSeconds()
+  );
+}
+
+/**
+ * Time-aware sibling of {@link dayKeyForCalendarDateInTimezone}: builds the stored
+ * instant for the calendar day of `dayDate` at the wall-clock time of `timeDate`,
+ * anchored to a fixed offset timezone. Falls back to a device-local combine when
+ * the timezone is missing/invalid. Because it adds a within-day time-of-day, the
+ * UTC-normalized day key (see {@link utcNormalizedDayKey}) is unchanged.
+ */
+export function instantForDateTimeInTimezone(
+  dayDate: Date,
+  timeDate: Date,
+  timezone: string | null | undefined
+): number {
+  const offsetMinutes = timezone ? parseTimezoneOffsetMinutes(timezone) : null;
+  if (offsetMinutes === null) {
+    return combineLocalDateAndTime(dayDate, timeDate).getTime();
+  }
+
+  const offsetMs = offsetMinutes * 60000;
+  return (
+    Date.UTC(
+      dayDate.getFullYear(),
+      dayDate.getMonth(),
+      dayDate.getDate(),
+      timeDate.getHours(),
+      timeDate.getMinutes(),
+      timeDate.getSeconds()
+    ) - offsetMs
+  );
+}
+
+/**
+ * Returns the calendar day of `dayDate` stamped with the **current** device-local
+ * time-of-day. Used by non-interactive callers that only have a target day but
+ * should record "now" as the time (e.g. applying a saved group to a chosen day).
+ */
+export function withCurrentTimeOnDay(dayDate: Date): Date {
+  return combineLocalDateAndTime(dayDate, new Date());
+}
+
+/**
+ * Milliseconds elapsed since the start of the calendar day that `ms` falls on, in
+ * the record's `timezone` (device-local when omitted). Always in `[0, 86_400_000)`.
+ * A return of `0` means `ms` sits exactly on local midnight — used to detect legacy
+ * day-key timestamps that carry no time-of-day.
+ */
+export function timeOfDayMsInTimezone(ms: number, timezone?: string | null): number {
+  const offsetMinutes = timezone ? parseTimezoneOffsetMinutes(timezone) : null;
+  if (offsetMinutes === null) {
+    return ms - localDayStartFromUtcMs(ms);
+  }
+
+  const offsetMs = offsetMinutes * 60000;
+  return (((ms + offsetMs) % MS_PER_SOLAR_DAY) + MS_PER_SOLAR_DAY) % MS_PER_SOLAR_DAY;
+}
+
+/**
  * Formats a UTC-normalized day key (from {@link utcNormalizedDayKey}) as a locale-aware
  * numeric month/day string. Always uses `timeZone: 'UTC'` so the displayed date matches
  * the original recording timezone, not the viewer's current device timezone.

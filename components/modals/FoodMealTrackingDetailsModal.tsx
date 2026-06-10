@@ -65,7 +65,8 @@ import {
 } from '@/types/guards/openFoodFacts';
 import {
   calendarDateFromRecordDay,
-  dayKeyForCalendarDateInTimezone,
+  combineLocalDateAndTime,
+  instantForDateTimeInTimezone,
   localCalendarDayDate,
 } from '@/utils/calendarDate';
 import {
@@ -141,6 +142,7 @@ function computeMealScaleFactor(
   return totalMealGrams > 0 ? Math.max(0.01, effectiveMealAmountGrams) / totalMealGrams : 1;
 }
 
+// TODO: why not being used anymore?
 function getMealDefaultTime(mealType: MealType, date: Date): Date {
   const d = new Date(date);
   switch (mealType) {
@@ -419,25 +421,16 @@ export function FoodMealTrackingDetailsModal({
     }
   }, [visible, initialServingSize, foodLog]);
 
-  // Keep selected time in sync with selected date and meal when the user hasn't manually picked a time.
-  // If the date is today, show current time ("now"); if it's another day, use a meal-type default.
+  // Prefill the time with the current time until the user manually picks one —
+  // even when back/future-dating to another day. The stored `date` carries the
+  // picked day + this time.
   useEffect(() => {
     if (!isTimePristine) {
       return;
     }
 
-    const today = new Date();
-    const isToday =
-      selectedDate.getFullYear() === today.getFullYear() &&
-      selectedDate.getMonth() === today.getMonth() &&
-      selectedDate.getDate() === today.getDate();
-
     const syncTime = () => {
-      if (isToday) {
-        setSelectedTime(new Date());
-      } else {
-        setSelectedTime(getMealDefaultTime(selectedMeal, selectedDate));
-      }
+      setSelectedTime(new Date());
     };
     syncTime();
   }, [selectedDate, selectedMeal, isTimePristine]);
@@ -771,13 +764,14 @@ export function FoodMealTrackingDetailsModal({
           ? parseTimezoneOffsetMinutes(foodLog.timezone)
           : null;
         if (recordingOffsetMinutes !== null) {
-          // Shift createdAt so the device-local picker shows the recording-timezone time.
-          // e.g. 18:00 UTC logged in +04:00 → display as 22:00 on a +02:00 device.
-          const deviceOffsetMinutes = -new Date(foodLog.createdAt).getTimezoneOffset();
+          // Shift the consumed datetime so the device-local picker shows the
+          // recording-timezone time. e.g. 18:00 UTC logged in +04:00 → display
+          // as 22:00 on a +02:00 device.
+          const deviceOffsetMinutes = -new Date(foodLog.date).getTimezoneOffset();
           const adjustmentMs = (recordingOffsetMinutes - deviceOffsetMinutes) * 60000;
-          setSelectedTime(new Date(foodLog.createdAt + adjustmentMs));
+          setSelectedTime(new Date(foodLog.date + adjustmentMs));
         } else {
-          setSelectedTime(new Date(foodLog.createdAt));
+          setSelectedTime(new Date(foodLog.date));
         }
       } catch (e) {
         setSelectedTime(new Date());
@@ -1776,6 +1770,9 @@ export function FoodMealTrackingDetailsModal({
     await new Promise((resolve) => setTimeout(resolve, 1));
 
     try {
+      // The stored `date` carries the consumed datetime: picked day + picked time.
+      const loggedDateTime = combineLocalDateAndTime(selectedDate, selectedTime);
+
       // Handle meal logging
       if (meal) {
         try {
@@ -1792,7 +1789,7 @@ export function FoodMealTrackingDetailsModal({
           for (const mealFood of mealWithFoods.foods) {
             await NutritionService.logFood(
               mealFood.foodId,
-              selectedDate,
+              loggedDateTime,
               selectedMeal,
               mealFood.amount * mealScaleFactor,
               mealFood.portionId,
@@ -1832,7 +1829,9 @@ export function FoodMealTrackingDetailsModal({
       if (foodLog) {
         try {
           const timezone = foodLog.timezone;
-          const dateTimestamp = dayKeyForCalendarDateInTimezone(selectedDate, timezone);
+          // Store the consumed datetime: picked day + picked time, anchored to the
+          // record's recording timezone.
+          const dateTimestamp = instantForDateTimeInTimezone(selectedDate, selectedTime, timezone);
           await foodLog.updateTrackingDetails({
             amount: servingSize,
             date: dateTimestamp,
@@ -1951,7 +1950,7 @@ export function FoodMealTrackingDetailsModal({
         // Create nutrition log with local food
         const logFoodPromise = NutritionService.logFood(
           foodData!.id,
-          selectedDate,
+          loggedDateTime,
           selectedMeal,
           servingSize
         );
@@ -2020,7 +2019,7 @@ export function FoodMealTrackingDetailsModal({
 
         const logFoodPromise = NutritionService.logFood(
           newFood.id,
-          selectedDate,
+          loggedDateTime,
           selectedMeal as MealType,
           servingSize
         );
@@ -2076,7 +2075,7 @@ export function FoodMealTrackingDetailsModal({
         // Create nutrition log
         const logFoodPromise = NutritionService.logFood(
           newFood.id,
-          selectedDate,
+          loggedDateTime,
           selectedMeal as MealType,
           servingSize
         );
@@ -2139,7 +2138,7 @@ export function FoodMealTrackingDetailsModal({
       // Create nutrition log
       const logFoodPromise = NutritionService.logFood(
         newFood.id,
-        selectedDate,
+        loggedDateTime,
         selectedMeal as MealType,
         servingSize
       );
@@ -2184,6 +2183,7 @@ export function FoodMealTrackingDetailsModal({
     isFavorite,
     matchedPortion,
     selectedDate,
+    selectedTime,
     selectedMeal,
     servingSize,
     onAddFood,

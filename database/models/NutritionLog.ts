@@ -37,7 +37,7 @@ export default class NutritionLog extends Model {
 
   @field('food_id') declare foodId: string;
   @field('external_id') externalId?: string;
-  @field('date') declare date: number; // Midnight timestamp for the day
+  @field('date') declare date: number; // Consumed datetime (day + time-of-day) ms; day-grouping via utcNormalizedDayKey
   @field('timezone') timezone?: string; // UTC offset captured when logged (e.g. "-05:00")
   @field('type') declare type: MealType; // 'breakfast', 'lunch', 'dinner', 'snack', 'other'
 
