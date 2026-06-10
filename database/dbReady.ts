@@ -21,13 +21,24 @@
  *   await waitForDbReady();
  */
 
+let _isReady = false;
 let _resolve!: () => void;
 const _dbReadyPromise = new Promise<void>((resolve) => {
   _resolve = resolve;
 });
 
 /** Call this once after seedProductionData() has fully completed. */
-export const markDbReady = (): void => _resolve();
+export const markDbReady = (): void => {
+  if (_isReady) {
+    return;
+  }
+
+  _isReady = true;
+  _resolve();
+};
 
 /** Await this before any boot-time DB access to avoid the reset race. */
 export const waitForDbReady = (): Promise<void> => _dbReadyPromise;
+
+/** Synchronous check for callers that need to defer optional work until DB reads are safe. */
+export const isDbReady = (): boolean => _isReady;

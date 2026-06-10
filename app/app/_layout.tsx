@@ -15,6 +15,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
+import { AppDbReadyGate } from '@/components/AppDbReadyGate';
 import { CoachProvider } from '@/components/CoachContext';
 import { DocumentTitle } from '@/components/DocumentTitle';
 import { ErrorFallbackScreen } from '@/components/ErrorFallbackScreen';
@@ -133,23 +134,25 @@ function RootLayout() {
                   />
                 )}
               >
-                <SettingsProvider>
-                  <ConfettiInteractionsProvider>
-                    <MenstrualCycleProvider>
-                      <ThemeProvider>
-                        <UnreadChatProvider>
-                          <SnackbarProvider>
-                            <SmartCameraProvider>
-                              <CoachProvider>
-                                <AppContent />
-                              </CoachProvider>
-                            </SmartCameraProvider>
-                          </SnackbarProvider>
-                        </UnreadChatProvider>
-                      </ThemeProvider>
-                    </MenstrualCycleProvider>
-                  </ConfettiInteractionsProvider>
-                </SettingsProvider>
+                <AppDbReadyGate>
+                  <SettingsProvider>
+                    <ConfettiInteractionsProvider>
+                      <MenstrualCycleProvider>
+                        <ThemeProvider>
+                          <UnreadChatProvider>
+                            <SnackbarProvider>
+                              <SmartCameraProvider>
+                                <CoachProvider>
+                                  <AppContent />
+                                </CoachProvider>
+                              </SmartCameraProvider>
+                            </SnackbarProvider>
+                          </UnreadChatProvider>
+                        </ThemeProvider>
+                      </MenstrualCycleProvider>
+                    </ConfettiInteractionsProvider>
+                  </SettingsProvider>
+                </AppDbReadyGate>
               </Sentry.ErrorBoundary>
             </SafeAreaProvider>
           </QueryClientProvider>

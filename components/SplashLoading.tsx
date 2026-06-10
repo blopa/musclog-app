@@ -1,6 +1,6 @@
 import { ActivityIndicator, Image, Text, View } from 'react-native';
 
-import { getColor } from '@/theme';
+import { BOOT_PROGRESS_ACCENT_COLOR } from '@/components/BootProgressBar';
 
 export function SplashLoading() {
   return (
@@ -10,7 +10,7 @@ export function SplashLoading() {
       <Text className="mt-1.5 text-xs uppercase tracking-widest text-text-muted">
         Lift, Log, Repeat
       </Text>
-      <ActivityIndicator size="small" color={getColor('accent.primary')} className="mt-12" />
+      <ActivityIndicator size="small" color={BOOT_PROGRESS_ACCENT_COLOR} className="mt-12" />
     </View>
   );
 }

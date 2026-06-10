@@ -27,11 +27,16 @@ import {
   WorkoutService,
 } from '@/database/services';
 import { SettingsService } from '@/database/services/SettingsService';
-import { useSettings } from '@/hooks/useSettings';
 import i18n from '@/lang/lang';
 import { healthDataSyncService } from '@/services/healthDataSync';
 import { NotificationService } from '@/services/NotificationService';
 import { getActiveWorkoutLogId, pruneWorkoutInsights } from '@/utils/activeWorkoutStorage';
+import { captureBootException } from '@/utils/bootErrorReporting';
+import {
+  beginBootProgress,
+  completeBootProgressStep,
+  finishBootProgress,
+} from '@/utils/bootProgress';
 import { configureDailyTasks } from '@/utils/configureDailyTasks';
 import {
   addNotificationResponseReceivedListener,
@@ -43,6 +48,18 @@ const DB_RESET_RACE_ERRORS = [
   'No driver with tag',
   'Cannot call database.adapter.underlyingAdapter while the database is being reset',
 ];
+const DB_READY_PROBE_SLOW_REPORT_MS = 15_000;
+const DB_READY_PROBE_MAX_ELAPSED_MS = 45_000;
+const BOOT_MIGRATION_SLOW_REPORT_MS = 30_000;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isDbReadyRetryableError(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err);
+  return DB_RESET_RACE_ERRORS.some((needle) => msg.includes(needle));
+}
 
 // All one-shot idempotent DB migrations that run on every boot, collected here so the
 // per-task boilerplate (waitForDbReady, cancellation, catch+warn) lives in one place.
@@ -82,13 +99,13 @@ const BOOT_MIGRATIONS: BootMigration[] = [
     run: () =>
       Promise.all([
         NutritionGoalService.fixNegativeFiber().catch((err) =>
-          console.warn('[NutritionGoalService] fixNegativeFiber error:', err)
+          captureBootException(err, 'NutritionGoalService.fixNegativeFiber')
         ),
         FoodService.fixNegativeFiber().catch((err) =>
-          console.warn('[FoodService] fixNegativeFiber error:', err)
+          captureBootException(err, 'FoodService.fixNegativeFiber')
         ),
         NutritionService.fixNegativeFiber().catch((err) =>
-          console.warn('[NutritionService] fixNegativeFiber error:', err)
+          captureBootException(err, 'NutritionService.fixNegativeFiber')
         ),
       ]),
   },
@@ -165,23 +182,158 @@ const BOOT_MIGRATIONS: BootMigration[] = [
   },
 ];
 
+function getActiveBootMigrations(): BootMigration[] {
+  return BOOT_MIGRATIONS.filter((m) => !m.webOnly || Platform.OS === 'web');
+}
+
+async function waitForExistingDbReady(cancelled: () => boolean): Promise<void> {
+  const startedAt = Date.now();
+  let attempt = 0;
+  let settled = false;
+  let slowTimer: ReturnType<typeof setTimeout> | undefined;
+  let watchdogTimer: ReturnType<typeof setTimeout> | undefined;
+
+  return new Promise<void>((resolve) => {
+    const finish = () => {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      if (slowTimer) {
+        clearTimeout(slowTimer);
+      }
+      if (watchdogTimer) {
+        clearTimeout(watchdogTimer);
+      }
+      resolve();
+    };
+
+    slowTimer = setTimeout(() => {
+      if (settled || cancelled()) {
+        return;
+      }
+
+      captureBootException(
+        new Error('DB-ready probe is still waiting'),
+        'AppBoot.dbReadyProbe.slow',
+        {
+          attempt,
+          elapsedMs: Date.now() - startedAt,
+        }
+      );
+    }, DB_READY_PROBE_SLOW_REPORT_MS);
+
+    watchdogTimer = setTimeout(() => {
+      if (settled || cancelled()) {
+        return;
+      }
+
+      captureBootException(
+        new Error('DB-ready probe watchdog elapsed'),
+        'AppBoot.dbReadyProbe.watchdog',
+        {
+          attempt,
+          elapsedMs: Date.now() - startedAt,
+        }
+      );
+      finish();
+    }, DB_READY_PROBE_MAX_ELAPSED_MS);
+
+    const probe = async () => {
+      while (!settled && !cancelled() && attempt < 500) {
+        try {
+          await SettingsService.getAnonymousBugReport();
+          finish();
+          return;
+        } catch (err: unknown) {
+          if (settled || cancelled()) {
+            return;
+          }
+
+          const elapsedMs = Date.now() - startedAt;
+          if (isDbReadyRetryableError(err) && elapsedMs < DB_READY_PROBE_MAX_ELAPSED_MS) {
+            attempt += 1;
+            await sleep(200);
+            continue;
+          }
+
+          captureBootException(err, 'AppBoot.dbReadyProbe', {
+            attempt,
+            elapsedMs,
+            retryable: isDbReadyRetryableError(err),
+          });
+          finish();
+          return;
+        }
+      }
+
+      if (!settled && !cancelled()) {
+        captureBootException(
+          new Error('DB-ready probe exhausted retries'),
+          'AppBoot.dbReadyProbe.exhausted',
+          {
+            attempt,
+            elapsedMs: Date.now() - startedAt,
+          }
+        );
+        finish();
+      }
+    };
+
+    void probe();
+  });
+}
+
+async function runBootMigration(m: BootMigration): Promise<void> {
+  const startedAt = Date.now();
+  const slowTimer = setTimeout(() => {
+    captureBootException(
+      new Error('Boot migration is still running'),
+      'AppBoot.bootMigration.slow',
+      {
+        tag: m.tag,
+        elapsedMs: Date.now() - startedAt,
+      }
+    );
+  }, BOOT_MIGRATION_SLOW_REPORT_MS);
+
+  try {
+    if (m.runOnce && (await AsyncStorage.getItem(bootMigrationDoneKey(m.tag)))) {
+      return;
+    }
+
+    const cutoffMs = m.runOnce ? await getRunOnceMigrationCutoff(m.tag) : Date.now();
+    await m.run(cutoffMs);
+
+    // Marked done only after success so failed runs retry on the next boot.
+    if (m.runOnce) {
+      await AsyncStorage.setItem(bootMigrationDoneKey(m.tag), '1');
+      await AsyncStorage.removeItem(bootMigrationCutoffKey(m.tag));
+    }
+  } catch (err) {
+    captureBootException(err, 'AppBoot.bootMigration', {
+      tag: m.tag,
+      runOnce: m.runOnce === true,
+      webOnly: m.webOnly === true,
+    });
+  } finally {
+    clearTimeout(slowTimer);
+    completeBootProgressStep();
+  }
+}
+
 /**
  * One-time and boot-time data fixes, sync, and native services that are not
  * tied to a specific screen. Renders nothing.
  */
 export function AppBoot() {
   const segments = useSegments();
-  const { language } = useSettings();
 
-  // Probe for WatermelonDB JSI driver readiness and call markDbReady() once the driver is
-  // registered. This is needed for upgrading users: seedProductionData() (which calls
-  // markDbReady()) only runs on new installs via the onboarding landing page, so upgrading
-  // users would otherwise leave waitForDbReady() hanging forever.
-  //
-  // For new installs (onboarding not yet completed), we skip the probe — seedProductionData()
-  // will call markDbReady() after seeding completes.
-  //
-  // On web/static export we mark ready immediately since there is no JSI adapter.
+  // Owns the DB-ready handoff and the idempotent boot migrations as one sequence.
+  // Upgrading users need a readiness probe because seedProductionData() only runs
+  // from onboarding. Fresh installs wait for that seeding path to mark DB-ready,
+  // then run the same boot migrations.
   useEffect(() => {
     if (isStaticExport) {
       markDbReady();
@@ -190,89 +342,46 @@ export function AppBoot() {
 
     let cancelled = false;
 
-    const probe = async () => {
-      const onboardingDone = await AsyncStorage.getItem(ONBOARDING_COMPLETED);
-      if (onboardingDone !== 'true') {
-        return;
-      }
+    const runDatabaseBootSequence = async () => {
+      try {
+        const migrations = getActiveBootMigrations();
+        const onboardingDone = await AsyncStorage.getItem(ONBOARDING_COMPLETED);
 
-      for (let attempt = 0; attempt < 500 && !cancelled; attempt++) {
-        try {
-          await SettingsService.getAnonymousBugReport();
-          if (!cancelled) {
-            markDbReady();
+        if (onboardingDone === 'true') {
+          beginBootProgress(1 + migrations.length);
+          await waitForExistingDbReady(() => cancelled);
+          if (cancelled) {
+            return;
           }
 
-          return;
-        } catch (err: unknown) {
-          const msg = err instanceof Error ? err.message : String(err);
-          if (DB_RESET_RACE_ERRORS.some((needle) => msg.includes(needle))) {
-            await new Promise<void>((resolve) => setTimeout(resolve, 200));
-            continue;
-          }
-          // Any other error means the JSI driver is registered — mark ready.
-          if (!cancelled) {
-            markDbReady();
+          completeBootProgressStep();
+          markDbReady();
+        } else {
+          await waitForDbReady();
+          if (cancelled) {
+            return;
           }
 
-          return;
+          beginBootProgress(migrations.length);
         }
-      }
 
-      // Exhausted retries — unblock the app to avoid a permanent freeze.
-      if (!cancelled) {
+        await Promise.all(migrations.map((m) => runBootMigration(m)));
+
+        if (!cancelled) {
+          finishBootProgress();
+        }
+      } catch (err) {
+        captureBootException(err, 'AppBoot.databaseBootSequence');
         markDbReady();
+        finishBootProgress();
       }
     };
 
-    void probe();
+    void runDatabaseBootSequence();
 
     return () => {
       cancelled = true;
-    };
-  }, []);
-
-  // Run all idempotent boot migrations in parallel after the DB is ready.
-  // See BOOT_MIGRATIONS above for the full list and rationale per entry.
-  useEffect(() => {
-    if (isStaticExport) {
-      return;
-    }
-
-    let cancelled = false;
-
-    const runBootMigrations = async () => {
-      await waitForDbReady();
-      if (cancelled) {
-        return;
-      }
-
-      await Promise.all(
-        BOOT_MIGRATIONS.filter((m) => !m.webOnly || Platform.OS === 'web').map(async (m) => {
-          try {
-            if (m.runOnce && (await AsyncStorage.getItem(bootMigrationDoneKey(m.tag)))) {
-              return;
-            }
-
-            const cutoffMs = m.runOnce ? await getRunOnceMigrationCutoff(m.tag) : Date.now();
-            await m.run(cutoffMs);
-
-            // Marked done only after success so failed runs retry on the next boot.
-            if (m.runOnce) {
-              await AsyncStorage.setItem(bootMigrationDoneKey(m.tag), '1');
-              await AsyncStorage.removeItem(bootMigrationCutoffKey(m.tag));
-            }
-          } catch (err) {
-            console.warn(`[AppBoot] ${m.tag} error:`, err);
-          }
-        })
-      );
-    };
-
-    void runBootMigrations();
-
-    return () => {
-      cancelled = true;
+      finishBootProgress();
     };
   }, []);
 
@@ -285,13 +394,15 @@ export function AppBoot() {
 
     const isInsideWorkoutDomain = segments[0] === 'workout';
     if (!isInsideWorkoutDomain) {
-      pruneWorkoutInsights().catch((err) => console.warn('[WorkoutInsights] Pruning error:', err));
+      pruneWorkoutInsights().catch((err) =>
+        captureBootException(err, 'WorkoutInsights.pruneOrphans')
+      );
     }
   }, [segments]);
 
   // Fix food_portion rows saved as raw i18n keys (e.g. "food.portions.tbsp") instead of labels.
   useEffect(() => {
-    if (!language || isStaticExport) {
+    if (isStaticExport) {
       return;
     }
 
@@ -299,19 +410,27 @@ export function AppBoot() {
 
     const fixPortionNames = async () => {
       try {
-        if (i18n.language !== language) {
-          await i18n.changeLanguage(language);
-        }
-        if (cancelled) {
-          return;
-        }
         await waitForDbReady();
         if (cancelled) {
           return;
         }
+
+        const language = await SettingsService.getLanguage();
+        if (!language || cancelled) {
+          return;
+        }
+
+        if (i18n.language !== language) {
+          await i18n.changeLanguage(language);
+        }
+
+        if (cancelled) {
+          return;
+        }
+
         await FoodPortionService.fixPortionNamesStoredAsI18nKeys();
       } catch (err) {
-        console.warn('[FoodPortionService] fixPortionNamesStoredAsI18nKeys error:', err);
+        captureBootException(err, 'FoodPortionService.fixPortionNamesStoredAsI18nKeys');
       }
     };
 
@@ -320,7 +439,7 @@ export function AppBoot() {
     return () => {
       cancelled = true;
     };
-  }, [language]);
+  }, []);
 
   // Boot-time tasks (native: Android + iOS, all run in parallel)
   //
@@ -350,16 +469,16 @@ export function AppBoot() {
         NotificationService.scheduleMenstrualCycleNotifications();
         NotificationService.scheduleCheckinNotifications();
       })
-      .catch((err) => console.warn('[NotificationService] Init error:', err));
+      .catch((err) => captureBootException(err, 'NotificationService.bootInit'));
 
     Promise.all([
       waitForDbReady().then(() =>
         healthDataSyncService
           .syncFromHealthPlatform({ lookbackDays: 7 })
-          .catch((err) => console.warn('[boot sync] Health platform sync error:', err))
+          .catch((err) => captureBootException(err, 'HealthDataSync.bootSync'))
       ),
       configureDailyTasks().catch((err) =>
-        console.warn('[configureDailyTasks] Startup error:', err)
+        captureBootException(err, 'configureDailyTasks.bootStartup')
       ),
       notificationInit,
     ]);
@@ -377,9 +496,7 @@ export function AppBoot() {
           handleNotificationResponse(response);
         }
       })
-      .catch((err: unknown) =>
-        console.warn('[NotificationService] Cold-start response error:', err)
-      );
+      .catch((err: unknown) => captureBootException(err, 'NotificationService.coldStartResponse'));
 
     const subscription = addNotificationResponseReceivedListener(handleNotificationResponse);
 
@@ -446,7 +563,7 @@ export function AppBoot() {
           pending.length === 0 ? CONFETTI_ALL_DONE_SENTINEL : JSON.stringify(pending)
         );
       } catch (err) {
-        console.warn('[AppBoot] Failed to migrate confetti interactions state:', err);
+        captureBootException(err, 'AppBoot.migrateConfettiInteractions');
       }
     };
 

@@ -1,13 +1,20 @@
 import { Slot } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
 
-import { AppBoot } from '@/components/AppBoot';
-import { SettingsProvider } from '@/context/SettingsContext';
+import { BootProgressOverlay } from '@/components/BootProgressOverlay';
+import { DeferredAppBoot } from '@/components/DeferredAppBoot';
 
 export default function RootLayout() {
+  useEffect(() => {
+    void SplashScreen.hideAsync().catch(() => {});
+  }, []);
+
   return (
-    <SettingsProvider>
-      <AppBoot />
+    <>
+      <DeferredAppBoot />
       <Slot />
-    </SettingsProvider>
+      <BootProgressOverlay />
+    </>
   );
 }
