@@ -12,15 +12,11 @@ import { migrations } from './migrations';
 import { createPreMigrationBackup } from './preMigrationBackup';
 import { schema } from './schema';
 
-// Returns the directory where WatermelonDB's JSI adapter stores its database.
-// See exportDb.ts wdbDir() for the full explanation.
 function wdbDir(): string {
   const base = (documentDirectory ?? '').replace(/^file:\/\//, '').replace(/\/$/, '');
   return Platform.OS === 'android' ? base.replace(/\/files$/, '') : base;
 }
 
-// Read the current DB version before WatermelonDB opens its connection, so we
-// can pass accurate fromVersion/toVersion to the pre-migration backup.
 function readCurrentDbVersion(): number | null {
   try {
     const db = openDatabaseSync(`${DATABASE_NAME}.db`, undefined, wdbDir());
@@ -60,9 +56,6 @@ export default new SQLiteAdapter({
     },
     onError: (error: Error) => {
       console.warn('[SQLiteMigration] Migration failed', error);
-      // Bypass the DB-dependent consent check: the DB just failed so querying it
-      // would trigger a spurious "Database Error" dialog. initializeSentry() is
-      // idempotent and safe to call here without touching the DB.
       initializeSentry();
       Sentry.captureException(error, {
         data: {

@@ -18,10 +18,17 @@ import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
 import { database } from './database-instance';
 import { updateNutritionLogCountBaseline } from './dbDurability';
-import { encryptNutritionLogSnapshot, encryptUserMetricFields } from './encryptionHelpers';
+import {
+  decryptJson,
+  decryptNumber,
+  decryptOptionalString,
+  encryptNutritionLogSnapshot,
+  encryptOptionalString,
+  encryptUserMetricFields,
+} from './encryptionHelpers';
 import { createPreRestoreBackup } from './preMigrationBackup';
 import { validateExportDump, type ValidationResult } from './schemaToZod';
-import { ExerciseService, FoodPortionService } from './services';
+import { ExerciseService, FoodPortionService, MuscleService } from './services';
 
 export type ExportDump = {
   _exportVersion: number;
@@ -31,7 +38,8 @@ export type ExportDump = {
 /**
  * Restore the database from a dump string (full replace).
  * Decrypts with optional phrase, then clears and repopulates tables in dependency order.
- * Re-encrypts user_metrics and nutrition_logs using the current device key.
+ * Re-encrypts user_metrics, nutrition_logs, saved_for_later_groups and
+ * saved_for_later_items using the current device key.
  * Original record IDs from the backup are preserved exactly.
  */
 export async function restoreDatabase(dump: string, decryptionPhrase?: string): Promise<void> {
@@ -170,6 +178,10 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
           collection.prepareCreate((rec: any) => {
             rec._raw.id = oldId;
             rec.type = raw.type;
+            if (raw.external_id != null) {
+              rec.externalId = String(raw.external_id);
+            }
+
             rec.supplementId = supplementId;
             rec.valueRaw = encrypted.value;
             rec.unitRaw = encrypted.unit;
@@ -245,6 +257,119 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
               rec.loggedNovaGroup = Number(raw.logged_nova_group);
             }
 
+            rec.createdAt = Number(raw.created_at);
+            rec.updatedAt = Number(raw.updated_at);
+            if (raw.deleted_at != null) {
+              rec.deletedAt = Number(raw.deleted_at);
+            }
+          })
+        );
+        continue;
+      }
+
+      if (tableName === 'saved_for_later_groups') {
+        // Exports with _decrypted hold a plaintext note; older exports hold ciphertext
+        // from the source device — try to decrypt it (works for same-device restores).
+        let notePlain: string | undefined;
+        if (raw._decrypted === true) {
+          notePlain = raw.note != null ? String(raw.note) : undefined;
+        } else {
+          try {
+            notePlain = (await decryptOptionalString(raw.note as string | undefined)) || undefined;
+          } catch {
+            notePlain = undefined;
+          }
+        }
+        const noteRaw = await encryptOptionalString(notePlain);
+        createOperations.push(
+          collection.prepareCreate((rec: any) => {
+            rec._raw.id = oldId;
+            rec.name = String(raw.name ?? '');
+            rec.noteRaw = noteRaw || undefined;
+            rec.originalMealType = String(raw.original_meal_type ?? 'other');
+            rec.originalDate = Number(raw.original_date);
+            rec.timezone = raw.timezone != null ? String(raw.timezone) : undefined;
+            rec.createdAt = Number(raw.created_at);
+            rec.updatedAt = Number(raw.updated_at);
+            if (raw.deleted_at != null) {
+              rec.deletedAt = Number(raw.deleted_at);
+            }
+          })
+        );
+        continue;
+      }
+
+      if (tableName === 'saved_for_later_items') {
+        // Same plaintext-vs-ciphertext handling as saved_for_later_groups above.
+        let snapshot: Parameters<typeof encryptNutritionLogSnapshot>[0];
+        if (raw._decrypted === true) {
+          snapshot = {
+            loggedFoodName: raw.logged_food_name != null ? String(raw.logged_food_name) : undefined,
+            loggedCalories: Number(raw.logged_calories ?? 0),
+            loggedProtein: Number(raw.logged_protein ?? 0),
+            loggedCarbs: Number(raw.logged_carbs ?? 0),
+            loggedFat: Number(raw.logged_fat ?? 0),
+            loggedFiber: Number(raw.logged_fiber ?? 0),
+            loggedMicros:
+              typeof raw.logged_micros_json === 'string' && raw.logged_micros_json
+                ? parseMicrosJson(raw.logged_micros_json)
+                : undefined,
+          };
+        } else {
+          try {
+            const [name, calories, protein, carbs, fat, fiber, micros] = await Promise.all([
+              decryptOptionalString(raw.logged_food_name as string | undefined),
+              decryptNumber(raw.logged_calories as string | undefined),
+              decryptNumber(raw.logged_protein as string | undefined),
+              decryptNumber(raw.logged_carbs as string | undefined),
+              decryptNumber(raw.logged_fat as string | undefined),
+              decryptNumber(raw.logged_fiber as string | undefined),
+              decryptJson(raw.logged_micros_json as string | undefined),
+            ]);
+            snapshot = {
+              loggedFoodName: name || undefined,
+              loggedCalories: calories,
+              loggedProtein: protein,
+              loggedCarbs: carbs,
+              loggedFat: fat,
+              loggedFiber: fiber,
+              loggedMicros: Object.keys(micros).length > 0 ? micros : undefined,
+            };
+          } catch {
+            snapshot = {
+              loggedCalories: 0,
+              loggedProtein: 0,
+              loggedCarbs: 0,
+              loggedFat: 0,
+              loggedFiber: 0,
+            };
+          }
+        }
+        const encrypted = await encryptNutritionLogSnapshot(snapshot);
+        createOperations.push(
+          collection.prepareCreate((rec: any) => {
+            rec._raw.id = oldId;
+            rec.groupId = String(raw.group_id ?? '');
+            if (raw.food_id != null) {
+              rec.foodId = String(raw.food_id);
+            }
+            rec.amount = Number(raw.amount);
+            if (raw.portion_id != null) {
+              rec.portionId = String(raw.portion_id);
+            }
+            rec.loggedFoodNameRaw = encrypted.loggedFoodName;
+            rec.loggedCaloriesRaw = encrypted.loggedCalories;
+            rec.loggedProteinRaw = encrypted.loggedProtein;
+            rec.loggedCarbsRaw = encrypted.loggedCarbs;
+            rec.loggedFatRaw = encrypted.loggedFat;
+            rec.loggedFiberRaw = encrypted.loggedFiber;
+            rec.loggedMicrosRaw = encrypted.loggedMicrosJson;
+            if (raw.logged_meal_name != null) {
+              rec.loggedMealName = String(raw.logged_meal_name);
+            }
+            if (raw.original_group_id != null) {
+              rec.originalGroupId = String(raw.original_group_id);
+            }
             rec.createdAt = Number(raw.created_at);
             rec.updatedAt = Number(raw.updated_at);
             if (raw.deleted_at != null) {
@@ -344,6 +469,14 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
       await database.batch(createOperations);
     });
   }
+
+  // Rebuild the muscle catalogue and app-exercise muscle links. Backups created
+  // before muscles/exercise_muscles were added to RESTORE_ORDER don't contain them,
+  // and the boot-time seeder is skipped after restore (SEEDING_COMPLETE_KEY is
+  // restored as 'true'), so without this the tables would stay empty forever.
+  // Both calls are idempotent, so running them on newer backups is a no-op.
+  const muscleNameToId = await MuscleService.seedMuscles();
+  await MuscleService.backfillExerciseMuscles(muscleNameToId);
 
   // Backfill exercises.source for backups created before export version 2 (when
   // the source column didn't exist yet). Safe no-op if all rows already have a value.

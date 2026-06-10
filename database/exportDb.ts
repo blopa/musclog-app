@@ -53,8 +53,9 @@ type DumpDatabaseOptions = {
  * Dump the entire database to a JSON-serializable object using a raw SQLite connection.
  * This avoids going through the WatermelonDB singleton, making it safe to call before
  * or during WatermelonDB migrations (e.g. from preMigrationBackup).
- * Encrypted fields in user_metrics and nutrition_logs are exported decrypted so the backup
- * is device-independent. API key settings are excluded.
+ * Encrypted fields in user_metrics, nutrition_logs, saved_for_later_groups and
+ * saved_for_later_items are exported decrypted so the backup is device-independent.
+ * API key settings are excluded.
  */
 export async function dumpDatabase(
   encryptionPhrase?: string,
@@ -109,7 +110,7 @@ export async function dumpDatabase(
         continue;
       }
 
-      if (tableName === 'nutrition_logs') {
+      if (tableName === 'nutrition_logs' || tableName === 'saved_for_later_items') {
         const decryptedRows = await Promise.all(
           rows.map(async (row) => {
             const [
@@ -142,7 +143,20 @@ export async function dumpDatabase(
             };
           })
         );
-        dbData.nutrition_logs = decryptedRows;
+        dbData[tableName] = decryptedRows;
+        continue;
+      }
+
+      if (tableName === 'saved_for_later_groups') {
+        const decryptedRows = await Promise.all(
+          rows.map(async (row) => ({
+            ...row,
+            note: (await decryptOptionalString(row.note as string | undefined)) || '',
+            _decrypted: true,
+          }))
+        );
+
+        dbData.saved_for_later_groups = decryptedRows;
         continue;
       }
 

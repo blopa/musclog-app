@@ -62,13 +62,6 @@ function isDbReadyRetryableError(err: unknown): boolean {
   return DB_RESET_RACE_ERRORS.some((needle) => msg.includes(needle));
 }
 
-// All one-shot idempotent DB migrations that run on every boot, collected here so the
-// per-task boilerplate (waitForDbReady, cancellation, catch+warn) lives in one place.
-// Entries with webOnly: true run only on the LokiJS (web) adapter path, where the
-// corresponding SQLite migration step is a no-op; all others run on every platform.
-// Entries with runOnce: true persist a completion marker after the first successful
-// run and are skipped on subsequent boots — required when re-running could clobber
-// data the user has since edited, and an optimization for full-table scans.
 type BootMigration = {
   tag: string;
   webOnly?: boolean;
@@ -94,8 +87,6 @@ async function getRunOnceMigrationCutoff(tag: string): Promise<number> {
 
 const BOOT_MIGRATIONS: BootMigration[] = [
   {
-    // Fix negative fiber values stored in nutrition_goals, foods, and nutrition_logs.
-    // Each sub-task catches independently so one failure doesn't cancel the others.
     tag: 'fixNegativeFiber',
     run: () =>
       Promise.all([
@@ -111,20 +102,16 @@ const BOOT_MIGRATIONS: BootMigration[] = [
       ]),
   },
   {
-    // LokiJS (web) silently ignores the v2 schema unsafeExecuteSql step.
     tag: 'ExerciseService.backfillExerciseSources',
     webOnly: true,
     run: () => ExerciseService.backfillExerciseSources(),
   },
   {
-    // LokiJS (web) silently ignores the v3 schema unsafeExecuteSql step.
     tag: 'FoodPortionService.backfillPortionSources',
     webOnly: true,
     run: () => FoodPortionService.backfillPortionSources(),
   },
   {
-    // Seed exercises from the bundled JSON missing from the DB with source='app'.
-    // Sequential: multipliers depend on syncAppExercises completing first.
     tag: 'ExerciseService.syncAppExercises',
     run: async () => {
       await ExerciseService.syncAppExercises();
@@ -132,52 +119,40 @@ const BOOT_MIGRATIONS: BootMigration[] = [
     },
   },
   {
-    // Ensure app exercises appear in the same order as the bundled JSON file.
     tag: 'ExerciseService.backfillExerciseOrderIndex',
     run: () => ExerciseService.backfillExerciseOrderIndex(),
   },
   {
-    // Backfill exercise-muscle links for users upgrading to v11.
     tag: 'MuscleService.backfillExerciseMuscles',
     run: () => MuscleService.backfillExerciseMuscles(),
   },
   {
-    // LokiJS (web) silently ignores the v7 schema unsafeExecuteSql step.
     tag: 'ExerciseService.migrateExerciseImageUrlsToCloud',
     webOnly: true,
     run: () => ExerciseService.migrateExerciseImageUrlsToCloud(),
   },
   {
-    // Backfill totalVolume for workout logs that have NULL after the v3 migration.
     tag: 'WorkoutService.backfillNullTotalVolumes',
     run: () => WorkoutService.backfillNullTotalVolumes(),
   },
   {
-    // Convert legacy user_metrics.timezone IANA names to "±HH:MM" offset format (v20).
     tag: 'UserMetricService.backfillTimezoneOffsets',
     run: () => UserMetricService.backfillTimezoneOffsets(),
   },
   {
-    // Backfill missing timezone columns in newly updated tables (v21).
     tag: 'TimezoneMigrationService.backfillMissingTimezones',
     run: () => TimezoneMigrationService.backfillMissingTimezones(),
   },
   {
-    // Backfill consumed time-of-day into nutrition_logs.date (was stored at local
-    // midnight) from each row's created_at, preserving the original calendar day.
-    // runOnce: a persisted cutoff excludes newly created deliberate-midnight rows,
-    // and completion is marked only after a successful run.
     tag: 'TimezoneMigrationService.backfillConsumedTimeFromCreatedAt',
     runOnce: true,
     run: (cutoffMs) => TimezoneMigrationService.backfillConsumedTimeFromCreatedAt(cutoffMs),
   },
   {
-    // Encrypt API keys that were stored as plaintext before this migration was introduced.
     tag: 'SettingsService.migrateApiKeysToEncrypted',
     run: () => SettingsService.migrateApiKeysToEncrypted(),
   },
   {
-    // Enable require-export-encryption by default for users who never explicitly set it.
     tag: 'SettingsService.migrateRequireExportEncryptionDefault',
     run: () => SettingsService.migrateRequireExportEncryptionDefault(),
   },
@@ -307,7 +282,6 @@ async function runBootMigration(m: BootMigration): Promise<void> {
     const cutoffMs = m.runOnce ? await getRunOnceMigrationCutoff(m.tag) : Date.now();
     await m.run(cutoffMs);
 
-    // Marked done only after success so failed runs retry on the next boot.
     if (m.runOnce) {
       await AsyncStorage.setItem(bootMigrationDoneKey(m.tag), '1');
       await AsyncStorage.removeItem(bootMigrationCutoffKey(m.tag));
@@ -324,17 +298,9 @@ async function runBootMigration(m: BootMigration): Promise<void> {
   }
 }
 
-/**
- * One-time and boot-time data fixes, sync, and native services that are not
- * tied to a specific screen. Renders nothing.
- */
 export function AppBoot() {
   const segments = useSegments();
 
-  // Owns the DB-ready handoff and the idempotent boot migrations as one sequence.
-  // Upgrading users need a readiness probe because seedProductionData() only runs
-  // from onboarding. Fresh installs wait for that seeding path to mark DB-ready,
-  // then run the same boot migrations.
   useEffect(() => {
     if (isStaticExport) {
       markDbReady();
@@ -386,8 +352,6 @@ export function AppBoot() {
     };
   }, []);
 
-  // Prune orphaned workout insights dismissal state when leaving the workout domain.
-  // This prevents accumulation of old keys if the app is killed or navigates away.
   useEffect(() => {
     if (isStaticExport) {
       return;
@@ -401,7 +365,6 @@ export function AppBoot() {
     }
   }, [segments]);
 
-  // Fix food_portion rows saved as raw i18n keys (e.g. "food.portions.tbsp") instead of labels.
   useEffect(() => {
     if (isStaticExport) {
       return;
@@ -442,14 +405,6 @@ export function AppBoot() {
     };
   }, []);
 
-  // Boot-time tasks (native: Android + iOS, all run in parallel)
-  //
-  // IMPORTANT — DB-ready race: this effect fires at mount, which is before (or
-  // concurrent with) seedProductionData() in app/onboarding/landing.tsx.
-  // On a fresh install, seedProductionData() calls unsafeResetDatabase(), which
-  // temporarily replaces the SQLite adapter with an ErrorAdapter that throws on
-  // any query. Any boot task that touches the DB (e.g. configureDailyTasks) must
-  // await waitForDbReady() from database/dbReady.ts before issuing queries.
   useEffect(() => {
     if (Platform.OS === 'web' || isStaticExport) {
       return;
@@ -457,7 +412,6 @@ export function AppBoot() {
 
     const notificationInit = NotificationService.configure()
       .then(async () => {
-        // Dismiss any orphaned workout notification from a previous killed session
         const activeWorkoutLogId = await getActiveWorkoutLogId();
         if (!activeWorkoutLogId) {
           NotificationService.dismissActiveWorkoutNotification();
@@ -472,8 +426,6 @@ export function AppBoot() {
       })
       .catch((err) => captureBootException(err, 'NotificationService.bootInit'));
 
-    // Detects between-session nutrition-log loss and keeps the count baseline
-    // fresh; the actual WAL-flush mitigation runs on AppState 'background' below.
     startDbDurabilityMonitoring();
 
     Promise.all([
@@ -494,7 +446,6 @@ export function AppBoot() {
       return;
     }
 
-    // Handle cold-start: app opened by tapping a notification
     getLastNotificationResponseAsync()
       .then((response) => {
         if (response) {
@@ -508,9 +459,6 @@ export function AppBoot() {
     return () => subscription.remove();
   }, []);
 
-  // One-time migration for users upgrading from a build that predates the confetti feature.
-  // When the key is absent and onboarding is already done, we inspect the DB to determine
-  // which activities the user has already performed so we don't show stale confetti.
   useEffect(() => {
     if (isStaticExport) {
       return;
@@ -524,8 +472,6 @@ export function AppBoot() {
         ]);
 
         if (stored !== null || onboardingDone !== 'true') {
-          // Key already written (seeder or previous migration run), or fresh install
-          // (seeder will seed it) — nothing to do.
           return;
         }
 
@@ -580,16 +526,11 @@ export function AppBoot() {
       return;
     }
 
-    // Setup Focus Management for Mobile
-    // This ensures TanStack Query knows when the app is active/foregrounded
     function onAppStateChange(status: AppStateStatus) {
       if (Platform.OS !== 'web') {
         focusManager.setFocused(status === 'active');
 
         if (status === 'background') {
-          // Flush the SQLite WAL into the main DB file while the process is
-          // still alive — a later kill (memory pressure, "close all") must not
-          // be able to drop this session's committed writes.
           void checkpointDbOnAppBackground();
         }
       }

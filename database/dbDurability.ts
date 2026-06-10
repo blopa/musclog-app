@@ -36,8 +36,6 @@ type CountBaseline = {
   at: number;
 };
 
-// Returns the directory where WatermelonDB's JSI adapter stores its database.
-// See exportDb.ts wdbDir() for the full explanation.
 function wdbDir(): string {
   const base = (documentDirectory ?? '').replace(/^file:\/\//, '').replace(/\/$/, '');
   return Platform.OS === 'android' ? base.replace(/\/files$/, '') : base;
@@ -157,11 +155,6 @@ export function startDbDurabilityMonitoring(): void {
     }
   })();
 }
-
-/**
- * Wire to AppState 'background'. Checkpointing here is the actual mitigation:
- * after it, a process kill can no longer drop the session's committed writes.
- */
 export async function checkpointDbOnAppBackground(): Promise<void> {
   if (!dbIsReady) {
     return;
@@ -192,8 +185,6 @@ async function reportNutritionLogLossIfAny(): Promise<void> {
     });
 
     if (baseline && actual < baseline.count) {
-      // Bypass the DB-dependent consent check, same as adapter.ts onError:
-      // this event is the whole point of the monitoring and must not be lost.
       initializeSentry();
       Sentry.captureMessage('Nutrition logs lost between sessions', {
         level: 'error',

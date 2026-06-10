@@ -5,6 +5,7 @@ import { View } from 'react-native';
 
 import { BootProgressOverlay } from '@/components/BootProgressOverlay';
 import { DeferredAppBoot } from '@/components/DeferredAppBoot';
+import { captureBootException } from '@/utils/bootErrorReporting';
 
 SplashScreen.setOptions({
   duration: 180,
@@ -13,7 +14,9 @@ SplashScreen.setOptions({
 
 export default function RootLayout() {
   useEffect(() => {
-    void SplashScreen.hideAsync().catch(() => {});
+    void SplashScreen.hideAsync().catch((error) =>
+      captureBootException(error, 'RootLayout.hideSplashScreen')
+    );
   }, []);
 
   return (

@@ -1,5 +1,6 @@
 import { isStaticExport } from '@/constants/platform';
 import { isDbReady, waitForDbReady } from '@/database/dbReady';
+import { captureException } from '@/utils/sentry';
 
 type BootErrorData = Record<string, string | number | boolean | null | undefined>;
 
@@ -23,7 +24,6 @@ async function captureBootExceptionWhenDbReady(
       await waitForDbReady();
     }
 
-    const { captureException } = await import('@/utils/sentry');
     await captureException(error, {
       data: {
         context,
@@ -31,6 +31,6 @@ async function captureBootExceptionWhenDbReady(
       },
     });
   } catch (sentryError) {
-    console.warn('[Sentry] Failed to capture boot exception:', sentryError);
+    console.warn('[bootErrorReporting] Failed to capture boot exception', sentryError);
   }
 }

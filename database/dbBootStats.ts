@@ -13,8 +13,6 @@ export type DbBootFileStats = {
 
 let bootFileStats: DbBootFileStats | null = null;
 
-// Returns the directory where WatermelonDB's JSI adapter stores its database.
-// See exportDb.ts wdbDir() for the full explanation.
 function wdbDir(): string {
   const base = (documentDirectory ?? '').replace(/^file:\/\//, '').replace(/\/$/, '');
   return Platform.OS === 'android' ? base.replace(/\/files$/, '') : base;
