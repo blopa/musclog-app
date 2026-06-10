@@ -217,6 +217,34 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
             rec.loggedMicrosRaw = encrypted.loggedMicrosJson;
             rec.date = Number(raw.date);
             rec.timezone = raw.timezone != null ? String(raw.timezone) : undefined;
+            if (raw.group_id != null) {
+              rec.groupId = String(raw.group_id);
+            }
+
+            if (raw.logged_meal_name != null) {
+              rec.loggedMealName = String(raw.logged_meal_name);
+            }
+
+            if (raw.external_id != null) {
+              rec.externalId = String(raw.external_id);
+            }
+
+            if (raw.snapshot_basis != null) {
+              rec.snapshotBasis = String(raw.snapshot_basis);
+            }
+
+            if (raw.logged_nutriscore != null) {
+              rec.loggedNutriscore = String(raw.logged_nutriscore);
+            }
+
+            if (raw.logged_ecoscore != null) {
+              rec.loggedEcoscore = String(raw.logged_ecoscore);
+            }
+
+            if (raw.logged_nova_group != null) {
+              rec.loggedNovaGroup = Number(raw.logged_nova_group);
+            }
+
             rec.createdAt = Number(raw.created_at);
             rec.updatedAt = Number(raw.updated_at);
             if (raw.deleted_at != null) {
