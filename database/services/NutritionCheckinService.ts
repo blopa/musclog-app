@@ -117,7 +117,6 @@ export class NutritionCheckinService {
     // stored in any timezone; `range.matches` trims the overscan back to the exact day window.
     const range = dayKeyRange(periodStartKey, periodEndKey, { inclusiveEnd: false });
 
-    // Fetch weight metrics for current period.
     const weightMetricsRaw = await database
       .get<UserMetric>('user_metrics')
       .query(
@@ -150,7 +149,6 @@ export class NutritionCheckinService {
 
     const trend = avgWeight - checkin.targetWeight;
 
-    // Fetch body fat metrics for current period.
     const bodyFatMetricsRaw = await database
       .get<UserMetric>('user_metrics')
       .query(
@@ -171,7 +169,6 @@ export class NutritionCheckinService {
       avgBodyFat = bodyFatValues.reduce((a: number, b: number) => a + b, 0) / bodyFatValues.length;
     }
 
-    // Fetch nutrition logs for current period.
     const nutritionLogsRaw = await database
       .get<NutritionLog>('nutrition_logs')
       .query(

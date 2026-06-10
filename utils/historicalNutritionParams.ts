@@ -53,7 +53,6 @@ export async function getHistoricalNutritionParams(options: {
   const startTs = localDayKeyPlusCalendarDays(endDayStartTs, -HISTORICAL_NUTRITION_LOOKBACK_DAYS);
   const startOfRange = new Date(startTs);
 
-  // UTC-normalized start key for week bucketing (device-local midnight → UTC midnight).
   const utcStartKey = utcDayKeyFromLocalDate(new Date(startTs));
 
   const dateRange = { startDate: startTs, endDate: endMetricTs };

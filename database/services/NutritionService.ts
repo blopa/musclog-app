@@ -673,7 +673,6 @@ export class NutritionService {
     targetDate: Date,
     targetMealType: MealType
   ): Promise<void> {
-    // Only a target day is known here, so stamp it with the current time-of-day.
     const dateTimestamp = withCurrentTimeOnDay(targetDate).getTime();
 
     await database.write(async () => {
@@ -718,7 +717,6 @@ export class NutritionService {
     targetDate: Date,
     targetMealType: MealType
   ): Promise<void> {
-    // Only a target day is known here, so stamp it with the current time-of-day.
     const dateTimestamp = withCurrentTimeOnDay(targetDate).getTime();
 
     await database.write(async () => {
@@ -751,7 +749,6 @@ export class NutritionService {
   ): Promise<void> {
     const splitRatio = splitPercentage / 100;
     const remainRatio = 1 - splitRatio;
-    // Only a target day is known here, so stamp it with the current time-of-day.
     const dateTimestamp = withCurrentTimeOnDay(targetDate).getTime();
 
     await database.write(async () => {
@@ -824,7 +821,6 @@ export class NutritionService {
     // We take a larger batch to find unique food IDs up to the requested limit.
     let recentLogs = await query.extend(Q.sortBy('created_at', Q.desc), Q.take(limit * 5)).fetch();
 
-    // Post-filter to the exact target day when a date was provided.
     if (range) {
       recentLogs = recentLogs.filter((log) => range.matches(log.date, log.timezone));
     }
@@ -897,7 +893,6 @@ export class NutritionService {
 
     let recentLogs = await query.extend(Q.sortBy('created_at', Q.desc), Q.take(limit)).fetch();
 
-    // Post-filter to the exact target day when a date was provided.
     if (range) {
       recentLogs = recentLogs.filter((log) => range.matches(log.date, log.timezone));
     }
@@ -1128,11 +1123,9 @@ export class NutritionService {
     amount: number = 100, // Default to 100g for custom meals
     options?: { groupId?: string; loggedMealName?: string }
   ): Promise<NutritionLog> {
-    // Only a target day is known here, so stamp it with the current time-of-day.
     const datedTime = withCurrentTimeOnDay(date);
     const dateTimestamp = datedTime.getTime();
 
-    // If foodId is provided, log directly using the existing food
     if (mealData.foodId) {
       return await NutritionService.logFood(
         mealData.foodId,
@@ -1298,7 +1291,6 @@ export class NutritionService {
     mealType: MealType,
     options?: { groupId?: string; loggedMealName?: string; imageUrl?: string }
   ): Promise<NutritionLog[]> {
-    // Only a target day is known here, so stamp it with the current time-of-day.
     const dateTimestamp = withCurrentTimeOnDay(date).getTime();
     const now = Date.now();
 
@@ -1503,7 +1495,6 @@ export class NutritionService {
 
     const updates = logs
       .map((log) => {
-        // Already has a time-of-day → migrated or natively timestamped; skip.
         if (timeOfDayMsInTimezone(log.date, log.timezone) !== 0) {
           return null;
         }

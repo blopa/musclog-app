@@ -2,7 +2,7 @@ import type { Model } from '@nozbe/watermelondb';
 
 import type { DataLogModalVariant } from '@/components/modals/DataLogModal';
 import type { Units } from '@/constants/settings';
-import type { EquipmentType, MechanicType } from '@/database/models';
+import type { EquipmentType, MealType, MechanicType } from '@/database/models';
 import type UserMetric from '@/database/models/UserMetric';
 import {
   ChatService,
@@ -786,7 +786,7 @@ export async function saveRecord(
     case 'nutrition_log':
       await NutritionService.updateNutritionLog(recordId, {
         amount: values.amount as number | undefined,
-        mealType: values.mealType as any,
+        mealType: values.mealType as MealType | undefined,
         timezone: coerceTimezoneInput(values.timezone),
         // Note: portionId editing would require fetching available portions, deferred for now
       });

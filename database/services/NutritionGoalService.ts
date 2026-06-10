@@ -3,6 +3,7 @@ import { endOfDay } from 'date-fns';
 
 import { database } from '@/database';
 import NutritionGoal, { type EatingPhase } from '@/database/models/NutritionGoal';
+import type UserMetric from '@/database/models/UserMetric';
 import { localDayKeyPlusCalendarDays, localDayStartFromUtcMs } from '@/utils/calendarDate';
 import {
   calculateNutritionPlan,
@@ -349,7 +350,7 @@ export class NutritionGoalService {
 
     // Fetch metrics active at the time the goal was created
     const heightMetric = await database
-      .get('user_metrics')
+      .get<UserMetric>('user_metrics')
       .query(
         Q.where('type', 'height'),
         Q.where('deleted_at', Q.eq(null)),
@@ -361,7 +362,7 @@ export class NutritionGoalService {
       .fetch();
 
     const weightMetric = await database
-      .get('user_metrics')
+      .get<UserMetric>('user_metrics')
       .query(
         Q.where('type', 'weight'),
         Q.where('deleted_at', Q.eq(null)),
@@ -373,7 +374,7 @@ export class NutritionGoalService {
       .fetch();
 
     const bodyFatMetric = await database
-      .get('user_metrics')
+      .get<UserMetric>('user_metrics')
       .query(
         Q.where('type', 'body_fat'),
         Q.where('deleted_at', Q.eq(null)),
@@ -385,10 +386,10 @@ export class NutritionGoalService {
       .fetch();
 
     if (heightMetric.length > 0 && weightMetric.length > 0) {
-      const heightDecrypted = await (heightMetric[0] as any).getDecrypted();
-      const weightDecrypted = await (weightMetric[0] as any).getDecrypted();
+      const heightDecrypted = await heightMetric[0].getDecrypted();
+      const weightDecrypted = await weightMetric[0].getDecrypted();
       const bodyFatDecrypted =
-        bodyFatMetric.length > 0 ? await (bodyFatMetric[0] as any).getDecrypted() : null;
+        bodyFatMetric.length > 0 ? await bodyFatMetric[0].getDecrypted() : null;
 
       const weightKg = storedWeightToKg(weightDecrypted.value, weightDecrypted.unit);
       const heightCm = storedHeightToCm(heightDecrypted.value, heightDecrypted.unit);
