@@ -6,11 +6,21 @@ import { database } from '@/database/database-instance';
 import { encryptUserMetricFields } from '@/database/encryptionHelpers';
 import UserMetric, { type UserMetricType } from '@/database/models/UserMetric';
 import { writeUserMetricToHealthConnect } from '@/services/healthConnectFitness';
-import { TIMEZONE_QUERY_BUFFER_MS, utcNormalizedDayKey } from '@/utils/calendarDate';
+import {
+  isUtcDayKeyInRange,
+  TIMEZONE_QUERY_BUFFER_MS,
+  timezoneWidenedBounds,
+  utcNormalizedDayKey,
+} from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import { ianaZoneToTimezoneAt, isTimezoneOffset } from '@/utils/timezone';
 
 import { REPAIR_DESCRIPTORS, retryAfterRepair } from './DatabaseRepairService';
+
+// Upper bound on rows scanned by getLatestOnOrBefore. Only rows whose normalized day key
+// overshoots the target (inside the ±14 h timezone buffer) need skipping; this many is far
+// more than any user logs for a single metric type within a ~28 h window.
+const LATEST_ON_OR_BEFORE_SCAN_LIMIT = 64;
 
 export class UserMetricService {
   /**
@@ -90,6 +100,11 @@ export class UserMetricService {
     maxDate: number
   ): Promise<UserMetric | null> {
     const maxKey = utcNormalizedDayKey(maxDate, null);
+    // Widen the upper bound by +14 h so records stored in any timezone are seen, then take a
+    // small bounded batch in date-desc order. We only need to skip rows whose normalized key
+    // overshoots maxKey (records inside the ±14 h buffer above it); no realistic user logs more
+    // than LATEST_ON_OR_BEFORE_SCAN_LIMIT metrics of one type within that window, so the first
+    // in-range row is the true latest. This keeps the read bounded instead of scanning history.
     const metrics = await database
       .get<UserMetric>('user_metrics')
       .query(
@@ -97,7 +112,8 @@ export class UserMetricService {
         Q.where('deleted_at', Q.eq(null)),
         Q.where('date', Q.lte(maxDate + TIMEZONE_QUERY_BUFFER_MS)),
         Q.sortBy('date', Q.desc),
-        Q.sortBy('updated_at', Q.desc)
+        Q.sortBy('updated_at', Q.desc),
+        Q.take(LATEST_ON_OR_BEFORE_SCAN_LIMIT)
       )
       .fetch();
     return (
@@ -133,32 +149,28 @@ export class UserMetricService {
         query = query.extend(Q.where('type', type));
       }
 
-      if (dateRange) {
-        // Widen the DB range by ±14 h to capture records stored in any timezone.
-        // Post-filter below trims to the exact UTC-normalized day bounds.
-        query = query.extend(
-          Q.where('date', Q.gte(dateRange.startDate - TIMEZONE_QUERY_BUFFER_MS)),
-          Q.where('date', Q.lte(dateRange.endDate + TIMEZONE_QUERY_BUFFER_MS))
-        );
-      }
+      // Day-range queries are normalized to UTC day keys, then widened by ±14 h so records
+      // stored in any timezone are captured and post-filtered back to the exact day bounds.
+      const startKey = dateRange ? utcNormalizedDayKey(dateRange.startDate, null) : null;
+      const endKey = dateRange ? utcNormalizedDayKey(dateRange.endDate, null) : null;
 
-      if (!dateRange && limit !== undefined && limit > 0) {
-        if (offset !== undefined && offset > 0) {
-          query = query.extend(Q.skip(offset), Q.take(limit));
-        } else {
-          query = query.extend(Q.take(limit));
-        }
+      if (startKey !== null && endKey !== null) {
+        const { lowerMs, upperMs } = timezoneWidenedBounds(startKey, endKey);
+        query = query.extend(Q.where('date', Q.gte(lowerMs)), Q.where('date', Q.lt(upperMs)));
+      } else if (limit !== undefined && limit > 0) {
+        // Pagination can only be pushed to the DB when there is no day-range post-filter.
+        query =
+          offset && offset > 0
+            ? query.extend(Q.skip(offset), Q.take(limit))
+            : query.extend(Q.take(limit));
       }
 
       const raw = await query.fetch();
 
-      if (dateRange) {
-        const startKey = utcNormalizedDayKey(dateRange.startDate, null);
-        const endKey = utcNormalizedDayKey(dateRange.endDate, null);
-        const filtered = raw.filter((m) => {
-          const key = utcNormalizedDayKey(m.date, m.timezone);
-          return key >= startKey && key <= endKey;
-        });
+      if (startKey !== null && endKey !== null) {
+        const filtered = raw.filter((m) =>
+          isUtcDayKeyInRange(m.date, m.timezone, startKey, endKey)
+        );
 
         if (limit !== undefined && limit > 0) {
           const start = offset && offset > 0 ? offset : 0;

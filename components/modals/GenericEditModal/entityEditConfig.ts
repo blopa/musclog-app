@@ -129,6 +129,14 @@ const TIMEZONE_FIELD: EditFieldConfig = {
 };
 
 /**
+ * Normalize a raw timezone form value into the trimmed `±HH:MM` string the services expect.
+ * Pass the current device offset as `fallback` for create flows where the field may be unset.
+ */
+function coerceTimezoneInput(value: unknown, fallback = ''): string {
+  return String(value ?? fallback).trim();
+}
+
+/**
  * Get edit field configuration for a given entity type.
  * @param entityType The entity type to get fields for.
  * @param units Optional user unit system, used to show correct unit labels (kg vs lbs, cm vs in).
@@ -745,7 +753,7 @@ export async function saveRecord(
         value,
         unit,
         date: values.date as number | undefined,
-        timezone: String(values.timezone ?? '').trim(),
+        timezone: coerceTimezoneInput(values.timezone),
       });
       break;
     }
@@ -779,14 +787,14 @@ export async function saveRecord(
       await NutritionService.updateNutritionLog(recordId, {
         amount: values.amount as number | undefined,
         mealType: values.mealType as any,
-        timezone: String(values.timezone ?? '').trim(),
+        timezone: coerceTimezoneInput(values.timezone),
         // Note: portionId editing would require fetching available portions, deferred for now
       });
       break;
 
     case 'workoutLog':
       await WorkoutService.updateWorkoutMetadata(recordId, {
-        timezone: String(values.timezone ?? '').trim(),
+        timezone: coerceTimezoneInput(values.timezone),
       });
       break;
 
@@ -814,7 +822,7 @@ export async function saveRecord(
             values.targetDate !== undefined
               ? ((values.targetDate as number | null | undefined) ?? null)
               : undefined,
-          timezone: String(values.timezone ?? '').trim(),
+          timezone: coerceTimezoneInput(values.timezone),
         },
         true
       );
@@ -838,7 +846,7 @@ export async function saveRecord(
         targetBodyFat: values.targetBodyFat as number | undefined,
         targetBmi: values.targetBmi as number | undefined,
         targetFfmi: values.targetFfmi as number | undefined,
-        timezone: String(values.timezone ?? '').trim(),
+        timezone: coerceTimezoneInput(values.timezone),
       });
       break;
     }
@@ -1004,7 +1012,7 @@ export async function createRecord(
         value,
         unit,
         date: localDayStartFromUtcMs(rawDate),
-        timezone: String(values.timezone ?? getCurrentTimezone()).trim(),
+        timezone: coerceTimezoneInput(values.timezone, getCurrentTimezone()),
       });
       break;
     }
@@ -1028,7 +1036,7 @@ export async function createRecord(
         targetBMI: values.targetBMI as number | undefined,
         targetFFMI: values.targetFFMI as number | undefined,
         targetDate: (values.targetDate as number | null | undefined) ?? null,
-        timezone: String(values.timezone ?? getCurrentTimezone()).trim(),
+        timezone: coerceTimezoneInput(values.timezone, getCurrentTimezone()),
       });
 
       await NutritionGoalService.regenerateCheckins(savedGoal.id);
@@ -1053,7 +1061,7 @@ export async function createRecord(
         targetBodyFat: values.targetBodyFat as number | undefined,
         targetBmi: values.targetBmi as number | undefined,
         targetFfmi: values.targetFfmi as number | undefined,
-        timezone: String(values.timezone ?? getCurrentTimezone()).trim(),
+        timezone: coerceTimezoneInput(values.timezone, getCurrentTimezone()),
       });
       break;
     }

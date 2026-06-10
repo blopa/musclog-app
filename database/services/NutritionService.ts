@@ -14,9 +14,11 @@ import { MealService } from '@/database/services/MealService';
 import i18n from '@/lang/lang';
 import { writeNutritionLogToHealthConnect } from '@/services/healthConnectNutrition';
 import {
+  isUtcDayKeyInRange,
   localDayStartMs,
   MS_PER_SOLAR_DAY,
-  TIMEZONE_QUERY_BUFFER_MS,
+  timezoneWidenedBounds,
+  utcDayKeyFromLocalDate,
   utcNormalizedDayKey,
 } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
@@ -288,9 +290,8 @@ export class NutritionService {
     date: Date,
     repairAttempted = false
   ): Promise<NutritionLog[]> {
-    const targetKey = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
-    const start = targetKey - TIMEZONE_QUERY_BUFFER_MS;
-    const end = targetKey + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS;
+    const targetKey = utcDayKeyFromLocalDate(date);
+    const { lowerMs, upperMs } = timezoneWidenedBounds(targetKey, targetKey);
 
     try {
       const raw = await retryOnResetError(() =>
@@ -298,13 +299,13 @@ export class NutritionService {
           .get<NutritionLog>('nutrition_logs')
           .query(
             Q.where('deleted_at', Q.eq(null)),
-            Q.where('date', Q.gte(start)),
-            Q.where('date', Q.lt(end))
+            Q.where('date', Q.gte(lowerMs)),
+            Q.where('date', Q.lt(upperMs))
           )
           .fetch()
       );
 
-      return raw.filter((log) => utcNormalizedDayKey(log.date, log.timezone) === targetKey);
+      return raw.filter((log) => isUtcDayKeyInRange(log.date, log.timezone, targetKey, targetKey));
     } catch (error) {
       if (!repairAttempted) {
         const repaired = await retryAfterRepair(error, REPAIR_DESCRIPTORS.nutritionLogs, () =>
@@ -350,47 +351,42 @@ export class NutritionService {
     startDate: Date,
     endDate: Date
   ): Promise<NutritionLog[]> {
-    const startKey = Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-    const endKey = Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
-    const start = startKey - TIMEZONE_QUERY_BUFFER_MS;
-    const end = endKey + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS;
+    const startKey = utcDayKeyFromLocalDate(startDate);
+    const endKey = utcDayKeyFromLocalDate(endDate);
+    const { lowerMs, upperMs } = timezoneWidenedBounds(startKey, endKey);
 
     const raw = await retryOnResetError(() =>
       database
         .get<NutritionLog>('nutrition_logs')
         .query(
           Q.where('deleted_at', Q.eq(null)),
-          Q.where('date', Q.gte(start)),
-          Q.where('date', Q.lt(end))
+          Q.where('date', Q.gte(lowerMs)),
+          Q.where('date', Q.lt(upperMs))
         )
         .fetch()
     );
 
-    return raw.filter((log) => {
-      const key = utcNormalizedDayKey(log.date, log.timezone);
-      return key >= startKey && key <= endKey;
-    });
+    return raw.filter((log) => isUtcDayKeyInRange(log.date, log.timezone, startKey, endKey));
   }
 
   /**
    * Get nutrition logs for a specific meal type on a date
    */
   static async getNutritionLogsForMeal(date: Date, mealType: MealType): Promise<NutritionLog[]> {
-    const targetKey = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
-    const start = targetKey - TIMEZONE_QUERY_BUFFER_MS;
-    const end = targetKey + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS;
+    const targetKey = utcDayKeyFromLocalDate(date);
+    const { lowerMs, upperMs } = timezoneWidenedBounds(targetKey, targetKey);
 
     const raw = await database
       .get<NutritionLog>('nutrition_logs')
       .query(
         Q.where('deleted_at', Q.eq(null)),
-        Q.where('date', Q.gte(start)),
-        Q.where('date', Q.lt(end)),
+        Q.where('date', Q.gte(lowerMs)),
+        Q.where('date', Q.lt(upperMs)),
         Q.where('type', mealType)
       )
       .fetch();
 
-    return raw.filter((log) => utcNormalizedDayKey(log.date, log.timezone) === targetKey);
+    return raw.filter((log) => isUtcDayKeyInRange(log.date, log.timezone, targetKey, targetKey));
   }
 
   /**
@@ -808,16 +804,14 @@ export class NutritionService {
     mealType?: MealType
   ): Promise<{ food: Food; lastGramWeight: number }[]> {
     // If a date is provided, limit recent logs to that date (today by default).
+    const targetKey = date ? utcDayKeyFromLocalDate(date) : null;
     let query = database
       .get<NutritionLog>('nutrition_logs')
       .query(Q.where('deleted_at', Q.eq(null)));
 
-    if (date) {
-      const targetKey = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
-      query = query.extend(
-        Q.where('date', Q.gte(targetKey - TIMEZONE_QUERY_BUFFER_MS)),
-        Q.where('date', Q.lt(targetKey + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS))
-      );
+    if (targetKey !== null) {
+      const { lowerMs, upperMs } = timezoneWidenedBounds(targetKey, targetKey);
+      query = query.extend(Q.where('date', Q.gte(lowerMs)), Q.where('date', Q.lt(upperMs)));
     }
 
     if (mealType) {
@@ -828,10 +822,9 @@ export class NutritionService {
     let recentLogs = await query.extend(Q.sortBy('created_at', Q.desc), Q.take(limit * 5)).fetch();
 
     // Post-filter to the exact target day when a date was provided.
-    if (date) {
-      const targetKey = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
-      recentLogs = recentLogs.filter(
-        (log) => utcNormalizedDayKey(log.date, log.timezone) === targetKey
+    if (targetKey !== null) {
+      recentLogs = recentLogs.filter((log) =>
+        isUtcDayKeyInRange(log.date, log.timezone, targetKey, targetKey)
       );
     }
 
@@ -889,25 +882,22 @@ export class NutritionService {
     }[]
   > {
     // If a date is provided, limit recent logs to that date (today by default).
+    const targetKey = date ? utcDayKeyFromLocalDate(date) : null;
     let query = database
       .get<NutritionLog>('nutrition_logs')
       .query(Q.where('deleted_at', Q.eq(null)));
 
-    if (date) {
-      const targetKey = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
-      query = query.extend(
-        Q.where('date', Q.gte(targetKey - TIMEZONE_QUERY_BUFFER_MS)),
-        Q.where('date', Q.lt(targetKey + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS))
-      );
+    if (targetKey !== null) {
+      const { lowerMs, upperMs } = timezoneWidenedBounds(targetKey, targetKey);
+      query = query.extend(Q.where('date', Q.gte(lowerMs)), Q.where('date', Q.lt(upperMs)));
     }
 
     let recentLogs = await query.extend(Q.sortBy('created_at', Q.desc), Q.take(limit)).fetch();
 
     // Post-filter to the exact target day when a date was provided.
-    if (date) {
-      const targetKey = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
-      recentLogs = recentLogs.filter(
-        (log) => utcNormalizedDayKey(log.date, log.timezone) === targetKey
+    if (targetKey !== null) {
+      recentLogs = recentLogs.filter((log) =>
+        isUtcDayKeyInRange(log.date, log.timezone, targetKey, targetKey)
       );
     }
 
@@ -1066,8 +1056,7 @@ export class NutritionService {
     ].sort((a, b) => b - a);
 
     let streak = 0;
-    const now = new Date();
-    const todayKey = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+    const todayKey = utcDayKeyFromLocalDate(new Date());
 
     for (const dayKey of uniqueDayStarts) {
       const diff = Math.round((todayKey - dayKey) / MS_PER_SOLAR_DAY);

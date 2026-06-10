@@ -1,7 +1,14 @@
 import {
+  bucketPointsByUtcWeek,
   calendarDateFromRecordDay,
   dayKeyForCalendarDateInTimezone,
+  isUtcDayKeyInRange,
+  MS_PER_SOLAR_DAY,
+  TIMEZONE_QUERY_BUFFER_MS,
+  timezoneWidenedBounds,
+  utcDayKeyFromLocalDate,
   utcNormalizedDayKey,
+  utcWeekIndex,
 } from '@/utils/calendarDate';
 import {
   getCurrentTimezone,
@@ -225,5 +232,83 @@ describe('record calendar day helpers', () => {
     expect(dayKeyForCalendarDateInTimezone(pickerDate, '-03:00')).toBe(
       Date.UTC(2025, 0, 15, 3, 0, 0)
     );
+  });
+});
+
+describe('utcDayKeyFromLocalDate', () => {
+  it('returns the UTC midnight key for the picked local calendar day', () => {
+    expect(utcDayKeyFromLocalDate(new Date(2025, 0, 15, 18, 30))).toBe(Date.UTC(2025, 0, 15));
+  });
+
+  it('anchors the same key that utcNormalizedDayKey produces for a record on that day', () => {
+    // A picker for Jan 15 must compare equal to a record on Jan 15 in any timezone.
+    const picked = utcDayKeyFromLocalDate(new Date(2025, 0, 15));
+    expect(utcNormalizedDayKey(Date.UTC(2025, 0, 14, 23, 0, 0), '+01:00')).toBe(picked);
+    expect(utcNormalizedDayKey(Date.UTC(2025, 0, 15, 3, 0, 0), '-03:00')).toBe(picked);
+  });
+});
+
+describe('timezoneWidenedBounds', () => {
+  it('pads a single-day key window by ±14 h around the [start, end+1day) range', () => {
+    const key = Date.UTC(2025, 0, 15);
+    const { lowerMs, upperMs } = timezoneWidenedBounds(key, key);
+    expect(lowerMs).toBe(key - TIMEZONE_QUERY_BUFFER_MS);
+    expect(upperMs).toBe(key + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS);
+  });
+
+  it('captures records stored in the extreme UTC−14…UTC+14 offsets for the target day', () => {
+    const key = Date.UTC(2025, 0, 15);
+    const { lowerMs, upperMs } = timezoneWidenedBounds(key, key);
+    // Stored date for a Jan 15 record = key − offset; offsets span [−14h, +14h].
+    const farEastStored = key - 14 * 60 * 60 * 1000; // +14:00
+    const farWestStored = key + 14 * 60 * 60 * 1000; // −14:00
+    expect(farEastStored).toBeGreaterThanOrEqual(lowerMs);
+    expect(farWestStored).toBeLessThan(upperMs);
+  });
+});
+
+describe('isUtcDayKeyInRange', () => {
+  const jan15 = Date.UTC(2025, 0, 15);
+  const jan16 = Date.UTC(2025, 0, 16);
+  // Amsterdam (+01:00) Jan 16 stored as Jan 15 23:00 UTC — within the ±14 h overscan of Jan 15.
+  const amsterdamJan16 = Date.UTC(2025, 0, 15, 23, 0, 0);
+
+  it('matches a record on the exact single target day (inclusive default)', () => {
+    expect(isUtcDayKeyInRange(Date.UTC(2025, 0, 14, 23, 0, 0), '+01:00', jan15, jan15)).toBe(true);
+  });
+
+  it('rejects an overscanned next-day record that the widened query would also return', () => {
+    expect(isUtcDayKeyInRange(amsterdamJan16, '+01:00', jan15, jan15)).toBe(false);
+  });
+
+  it('honors inclusiveEnd: false (half-open) vs true (closed) on the end bound', () => {
+    expect(
+      isUtcDayKeyInRange(amsterdamJan16, '+01:00', jan15, jan16, { inclusiveEnd: false })
+    ).toBe(false);
+    expect(isUtcDayKeyInRange(amsterdamJan16, '+01:00', jan15, jan16, { inclusiveEnd: true })).toBe(
+      true
+    );
+  });
+});
+
+describe('utcWeekIndex / bucketPointsByUtcWeek', () => {
+  const startKey = Date.UTC(2025, 0, 1);
+
+  it('assigns rolling 7-day bucket indices from the start key', () => {
+    expect(utcWeekIndex(Date.UTC(2025, 0, 1), startKey)).toBe(0);
+    expect(utcWeekIndex(Date.UTC(2025, 0, 7), startKey)).toBe(0);
+    expect(utcWeekIndex(Date.UTC(2025, 0, 8), startKey)).toBe(1);
+  });
+
+  it('buckets points by each record’s OWN timezone, not a shared frame', () => {
+    // Both points are Jan 8 for their own user, so both belong to week 1 — even though one is
+    // stored just before and one just after the Jan 8 UTC midnight.
+    const points = [
+      { date: Date.UTC(2025, 0, 7, 23, 0, 0), timezone: '+01:00', valueKg: 80 }, // Amsterdam Jan 8
+      { date: Date.UTC(2025, 0, 8, 3, 0, 0), timezone: '-03:00', valueKg: 82 }, // Brazil Jan 8
+    ];
+    const buckets = bucketPointsByUtcWeek(points, startKey);
+    expect([...buckets.keys()]).toEqual([1]);
+    expect(buckets.get(1)).toHaveLength(2);
   });
 });

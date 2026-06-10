@@ -6,7 +6,7 @@ import { database } from '@/database';
 import Food from '@/database/models/Food';
 import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
 import { NutritionService } from '@/database/services';
-import { MS_PER_SOLAR_DAY, TIMEZONE_QUERY_BUFFER_MS } from '@/utils/calendarDate';
+import { timezoneWidenedBounds, utcDayKeyFromLocalDate } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 
 // Hook parameters
@@ -528,37 +528,31 @@ export function useNutritionLogs({
       .query(Q.where('deleted_at', Q.eq(null)));
 
     // Add mode-specific filters to avoid unnecessary re-renders.
-    // Use a ±14 h buffer around the UTC-normalized day boundary so records stored
-    // in any timezone are included. The actual fetch (loadInitialLogs) post-filters.
+    // timezoneWidenedBounds pads the UTC-normalized day boundary by ±14 h so records stored
+    // in any timezone are included. The actual fetch (loadInitialLogs) post-filters by exact day.
     if (mode === 'daily' && date) {
-      const targetKey = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
-      const start = targetKey - TIMEZONE_QUERY_BUFFER_MS;
-      const nextStart = targetKey + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS;
-      query = query.extend(Q.where('date', Q.gte(start)), Q.where('date', Q.lt(nextStart)));
+      const targetKey = utcDayKeyFromLocalDate(date);
+      const { lowerMs, upperMs } = timezoneWidenedBounds(targetKey, targetKey);
+      query = query.extend(Q.where('date', Q.gte(lowerMs)), Q.where('date', Q.lt(upperMs)));
     } else if (mode === 'range' && startDate && endDate) {
-      const startKey = Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-      const endKey = Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
-      const startTimestamp = startKey - TIMEZONE_QUERY_BUFFER_MS;
-      const endTimestamp = endKey + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS;
-      query = query.extend(
-        Q.where('date', Q.gte(startTimestamp)),
-        Q.where('date', Q.lt(endTimestamp))
+      const { lowerMs, upperMs } = timezoneWidenedBounds(
+        utcDayKeyFromLocalDate(startDate),
+        utcDayKeyFromLocalDate(endDate)
       );
+      query = query.extend(Q.where('date', Q.gte(lowerMs)), Q.where('date', Q.lt(upperMs)));
     } else if (mode === 'meal-type' && date && mealType) {
-      const targetKey = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
-      const start = targetKey - TIMEZONE_QUERY_BUFFER_MS;
-      const nextStart = targetKey + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS;
+      const targetKey = utcDayKeyFromLocalDate(date);
+      const { lowerMs, upperMs } = timezoneWidenedBounds(targetKey, targetKey);
       query = query.extend(
-        Q.where('date', Q.gte(start)),
-        Q.where('date', Q.lt(nextStart)),
+        Q.where('date', Q.gte(lowerMs)),
+        Q.where('date', Q.lt(upperMs)),
         Q.where('type', mealType)
       );
     } else if (mode === 'recent' || mode === 'recent-logs') {
       if (date) {
-        const targetKey = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
-        const start = targetKey - TIMEZONE_QUERY_BUFFER_MS;
-        const nextStart = targetKey + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS;
-        query = query.extend(Q.where('date', Q.gte(start)), Q.where('date', Q.lt(nextStart)));
+        const targetKey = utcDayKeyFromLocalDate(date);
+        const { lowerMs, upperMs } = timezoneWidenedBounds(targetKey, targetKey);
+        query = query.extend(Q.where('date', Q.gte(lowerMs)), Q.where('date', Q.lt(upperMs)));
       }
     } else {
       // For basic mode, don't observe at all to avoid infinite loops during onboarding

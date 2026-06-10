@@ -189,8 +189,15 @@ export function localDayKeyPlusCalendarDaysFromNow(deltaDays: number): number {
 }
 
 /**
- * Resolves the instant `ms` to the start of the calendar day it fell on in `timezone`.
- * Defaults to device local timezone if `timezone` (±HH:MM) is omitted.
+ * Resolves the instant `ms` to the **stored** midnight of the calendar day it fell on in
+ * `timezone` (i.e. the actual epoch ms of local midnight = UTC midnight − offset). Defaults
+ * to device local timezone if `timezone` (±HH:MM) is omitted.
+ *
+ * Contrast with {@link utcNormalizedDayKey}, which returns the **offset-removed** UTC midnight
+ * (a comparable key across timezones). The two differ by exactly the offset: use
+ * `utcNormalizedDayKey` whenever you compare/bucket records that may come from different
+ * timezones, and `dayStartInTimezone` only when you need an instant in the stored frame
+ * (e.g. computing DB query bounds, or same-day comparison in a single fixed timezone).
  */
 export function dayStartInTimezone(ms: number, timezone?: string): number {
   const offsetMinutes = timezone ? parseTimezoneOffsetMinutes(timezone) : null;
@@ -263,6 +270,84 @@ export function utcNormalizedDayKey(
   const offsetMs = offsetMinutes * 60000;
   const shifted = new Date(recordDate + offsetMs);
   return Date.UTC(shifted.getUTCFullYear(), shifted.getUTCMonth(), shifted.getUTCDate());
+}
+
+/**
+ * UTC-midnight key for the calendar day a device-local `Date` represents (the day the
+ * user picked in a date picker). This is the inverse anchor of {@link utcNormalizedDayKey}:
+ * use it to turn a picked `Date` into the same comparable key space as stored records.
+ */
+export function utcDayKeyFromLocalDate(date: Date): number {
+  return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+/**
+ * DB query bounds that capture every record whose UTC-normalized day key falls in
+ * `[startKey, endKey]`, regardless of the timezone it was stored in. The window is
+ * widened by {@link TIMEZONE_QUERY_BUFFER_MS} on both ends to cover UTC−14…UTC+14, so
+ * `endKey` must still be a day **key** (UTC midnight), not an inclusive end-of-day value.
+ *
+ * Always pair the result with {@link isUtcDayKeyInRange} to trim the overscan back to
+ * the exact day range. Use `Q.gte(lowerMs)` + `Q.lt(upperMs)` (the upper bound is exclusive).
+ */
+export function timezoneWidenedBounds(
+  startKey: number,
+  endKey: number
+): { lowerMs: number; upperMs: number } {
+  return {
+    lowerMs: startKey - TIMEZONE_QUERY_BUFFER_MS,
+    upperMs: endKey + MS_PER_SOLAR_DAY + TIMEZONE_QUERY_BUFFER_MS,
+  };
+}
+
+/**
+ * Post-filter predicate for the overscan produced by {@link timezoneWidenedBounds}: true
+ * when a record's UTC-normalized day key (from its own stored `timezone`) lands in
+ * `[startKey, endKey]`. Pass `inclusiveEnd: false` for half-open `[startKey, endKey)`
+ * ranges. For a single target day, pass the same value for `startKey` and `endKey`.
+ */
+export function isUtcDayKeyInRange(
+  recordDate: number,
+  timezone: string | null | undefined,
+  startKey: number,
+  endKey: number,
+  { inclusiveEnd = true }: { inclusiveEnd?: boolean } = {}
+): boolean {
+  const key = utcNormalizedDayKey(recordDate, timezone);
+  return key >= startKey && (inclusiveEnd ? key <= endKey : key < endKey);
+}
+
+/**
+ * Rolling 7-day bucket index in UTC-normalized-key space: 0 for `utcStartKey`'s week,
+ * 1 for the next block of 7 days, etc. Both arguments must be UTC-midnight day keys
+ * (from {@link utcNormalizedDayKey} / {@link utcDayKeyFromLocalDate}). Shared by the
+ * empirical-TDEE and historical-nutrition weekly-average bucketing.
+ */
+export function utcWeekIndex(utcDayKey: number, utcStartKey: number): number {
+  return Math.floor((utcDayKey - utcStartKey) / (7 * MS_PER_SOLAR_DAY));
+}
+
+/**
+ * Groups dated points into rolling 7-day buckets keyed by {@link utcWeekIndex}, normalizing
+ * each point's `date` by its own stored `timezone`. Shared by the empirical-TDEE and
+ * historical-nutrition weekly-average paths (weight, body-fat, …).
+ */
+export function bucketPointsByUtcWeek<T extends { date: number; timezone?: string | null }>(
+  points: T[],
+  utcStartKey: number
+): Map<number, T[]> {
+  const map = new Map<number, T[]>();
+  for (const p of points) {
+    const week = utcWeekIndex(utcNormalizedDayKey(p.date, p.timezone), utcStartKey);
+    const bucket = map.get(week);
+    if (bucket) {
+      bucket.push(p);
+    } else {
+      map.set(week, [p]);
+    }
+  }
+
+  return map;
 }
 
 /**

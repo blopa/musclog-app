@@ -70,9 +70,9 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import AiService from '@/services/AiService';
 import {
+  calendarDateFromRecordDay,
   formatLocalCalendarDayIso,
   localCalendarDayDate,
-  localCalendarDayDateFromDayKeyMs,
 } from '@/utils/calendarDate';
 import { getMealCritique } from '@/utils/coachAI';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
@@ -2225,7 +2225,7 @@ export default function FoodScreen() {
         sourceMealType={selectedFoodItem?.log.type || 'breakfast'}
         sourceDate={
           selectedFoodItem
-            ? localCalendarDayDateFromDayKeyMs(selectedFoodItem.log.date)
+            ? calendarDateFromRecordDay(selectedFoodItem.log.date, selectedFoodItem.log.timezone)
             : selectedDate
         }
         isLoading={isFoodMoveLoading}
@@ -2244,7 +2244,7 @@ export default function FoodScreen() {
         sourceMealType={selectedFoodItem?.log.type || 'breakfast'}
         sourceDate={
           selectedFoodItem
-            ? localCalendarDayDateFromDayKeyMs(selectedFoodItem.log.date)
+            ? calendarDateFromRecordDay(selectedFoodItem.log.date, selectedFoodItem.log.timezone)
             : selectedDate
         }
         isLoading={isFoodSplitLoading}
@@ -2300,7 +2300,7 @@ export default function FoodScreen() {
         }
         initialDate={
           selectedFoodItem && isDuplicateMode
-            ? localCalendarDayDateFromDayKeyMs(selectedFoodItem.log.date)
+            ? calendarDateFromRecordDay(selectedFoodItem.log.date, selectedFoodItem.log.timezone)
             : undefined
         }
         initialServingSize={
