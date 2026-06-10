@@ -61,17 +61,15 @@ function getMealTypeLabel(mealType: MealType, t: TFunction): string {
 }
 
 function formatLogDateTime(
-  createdAt: number,
   logDate: number,
   timezone: string | null | undefined,
   localeTag: string,
   t: TFunction
 ): string {
   // Format the time as it appeared on the recording-timezone wall clock.
-  const timeStr = formatTimeInTimezone(createdAt, timezone, localeTag);
+  const timeStr = formatTimeInTimezone(logDate, timezone, localeTag);
 
-  // Compare day keys so "today/yesterday" reflects the recording calendar day,
-  // not the viewer's device interpretation of createdAt.
+  // Compare day keys so "today/yesterday" reflects the recording calendar day.
   const logDayKey = utcNormalizedDayKey(logDate, timezone);
   const todayKey = utcDayKeyFromLocalDate(new Date());
   const yesterdayKey = todayKey - MS_PER_SOLAR_DAY;
@@ -131,7 +129,7 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
   const massUnit = getMassUnitLabel(units);
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const formattedGrams = formatDisplayGrams(locale, units, gramWeight);
-  const dateTimeLabel = formatLogDateTime(log.createdAt, log.date, log.timezone, locale, t);
+  const dateTimeLabel = formatLogDateTime(log.date, log.timezone, locale, t);
 
   const nutriScore = log.loggedNutriscore || food?.nutriscore;
   const ecoScore = log.loggedEcoscore || food?.ecoscore;

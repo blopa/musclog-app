@@ -33,7 +33,7 @@ import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
 import Setting from '@/database/models/Setting';
 import { FoodPortionService } from '@/database/services';
 import { handleError } from '@/utils/handleError';
-import { getCurrentTimezone, offsetMinutesToTimezone } from '@/utils/timezone';
+import { getTimezoneAt, offsetMinutesToTimezone } from '@/utils/timezone';
 
 import { healthConnectService } from './healthConnect';
 import { RETRY_CONFIG } from './healthConnectErrors';
@@ -183,7 +183,7 @@ function mapMealType(hcMealType: number | undefined): MealType {
  * `totalSeconds` so the result is in the app's canonical offset format. This preserves
  * the wall-clock offset at logging time, so a meal logged a week ago in another zone
  * keeps its original offset after import. Returns undefined when the record carries no
- * offset (caller falls back to the current device offset).
+ * offset (caller falls back to the device offset at the sample instant).
  */
 function extractHcRecordTimezone(rec: any): string | undefined {
   const totalSeconds: unknown =
@@ -349,7 +349,7 @@ async function syncNutritionOnce(timeRange: {
       carbs: Math.max(0, rec.totalCarbohydrate?.inGrams ?? 0),
       fat: Math.max(0, rec.totalFat?.inGrams ?? 0),
       fiber: Math.max(0, rec.dietaryFiber?.inGrams ?? 0),
-      timezone: extractHcRecordTimezone(rec) ?? getCurrentTimezone(),
+      timezone: extractHcRecordTimezone(rec) ?? getTimezoneAt(new Date(rec.startTime)),
     });
   }
 

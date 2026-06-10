@@ -59,14 +59,13 @@ export class TimezoneMigrationService {
    * `created_at` (best-effort).
    *
    * Must run exactly once (gated via `runOnce` in AppBoot): now that the time
-   * picker ships, a midnight `date` can be a deliberate user choice, so re-running
-   * would corrupt it. The midnight check below only narrows the one-shot pass to
-   * rows that actually look legacy.
+   * picker ships, a midnight `date` can be a deliberate user choice, so the caller
+   * passes a persisted cutoff to exclude rows created after the first attempt began.
    */
-  static async backfillConsumedTimeFromCreatedAt(): Promise<void> {
+  static async backfillConsumedTimeFromCreatedAt(cutoffMs: number = Date.now()): Promise<void> {
     const logs = await database
       .get<NutritionLog>('nutrition_logs')
-      .query(Q.where('deleted_at', Q.eq(null)))
+      .query(Q.where('deleted_at', Q.eq(null)), Q.where('created_at', Q.lte(cutoffMs)))
       .fetch();
 
     const updates = logs

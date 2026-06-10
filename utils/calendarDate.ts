@@ -1,9 +1,12 @@
 /**
  * Calendar "day key" convention for the app:
  *
- * Stored numeric timestamps that represent a calendar day (nutrition_logs.date,
- * progress-style day keys, diary pickers) are **start of that calendar day in the
- * device local timezone** — same idea as DateNavigator / DatePickerModal.
+ * Stored numeric timestamps that represent a calendar day (progress-style day keys,
+ * diary pickers, birthdays, etc.) are **start of that calendar day in the device
+ * local timezone** — same idea as DateNavigator / DatePickerModal.
+ *
+ * `nutrition_logs.date` is different: it stores the consumed datetime (day plus
+ * time-of-day). Use `utcNormalizedDayKey(log.date, log.timezone)` for diary grouping.
  *
  * Use {@link formatLocalCalendarDayIso} for yyyy-MM-dd strings (APIs, filenames, canonical DOB in forms).
  * Use {@link formatLocalCalendarMonthDayNumericIntl} / {@link formatLocalCalendarDayNumericIntl} with a
@@ -27,7 +30,7 @@
 import type { Locale } from 'date-fns';
 import { addDays, differenceInCalendarDays, format, getYear, parseISO, startOfDay } from 'date-fns';
 
-import { parseTimezoneOffsetMinutes } from '@/utils/timezone';
+import { getTimezoneAt, parseTimezoneOffsetMinutes } from '@/utils/timezone';
 
 /**
  * Mean solar day length in milliseconds (24h). Use for **approximate** durations between
@@ -402,6 +405,37 @@ export function combineLocalDateAndTime(dayDate: Date, timeDate: Date): Date {
     timeDate.getMinutes(),
     timeDate.getSeconds()
   );
+}
+
+export type ConsumedDateTime = {
+  date: Date;
+  timestamp: number;
+  timezone: string;
+};
+
+/**
+ * Canonical value for records whose `date` stores a consumed/event datetime.
+ * The timestamp and offset are computed together so day bucketing later sees a
+ * matched `(date, timezone)` pair, including DST-sensitive backdated entries.
+ */
+export function consumedDateTimeFromDate(date: Date): ConsumedDateTime {
+  const consumedAt = new Date(date.getTime());
+  return {
+    date: consumedAt,
+    timestamp: consumedAt.getTime(),
+    timezone: getTimezoneAt(consumedAt),
+  };
+}
+
+/**
+ * Builds a consumed datetime on `dayDate` using `timeDate`'s wall-clock time
+ * (current time by default), with the timezone captured at that resulting instant.
+ */
+export function consumedDateTimeOnDay(
+  dayDate: Date,
+  timeDate: Date = new Date()
+): ConsumedDateTime {
+  return consumedDateTimeFromDate(combineLocalDateAndTime(dayDate, timeDate));
 }
 
 /**

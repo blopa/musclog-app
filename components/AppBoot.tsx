@@ -55,10 +55,24 @@ type BootMigration = {
   tag: string;
   webOnly?: boolean;
   runOnce?: boolean;
-  run: () => Promise<unknown>;
+  run: (cutoffMs: number) => Promise<unknown>;
 };
 
 const bootMigrationDoneKey = (tag: string) => `boot_migration_done:${tag}`;
+const bootMigrationCutoffKey = (tag: string) => `boot_migration_cutoff:${tag}`;
+
+async function getRunOnceMigrationCutoff(tag: string): Promise<number> {
+  const key = bootMigrationCutoffKey(tag);
+  const existing = await AsyncStorage.getItem(key);
+  const parsed = existing ? Number(existing) : NaN;
+  if (Number.isFinite(parsed) && parsed > 0) {
+    return parsed;
+  }
+
+  const cutoff = Date.now();
+  await AsyncStorage.setItem(key, String(cutoff));
+  return cutoff;
+}
 
 const BOOT_MIGRATIONS: BootMigration[] = [
   {
@@ -133,11 +147,11 @@ const BOOT_MIGRATIONS: BootMigration[] = [
   {
     // Backfill consumed time-of-day into nutrition_logs.date (was stored at local
     // midnight) from each row's created_at, preserving the original calendar day.
-    // runOnce: a midnight `date` can now be a deliberate user pick via the time
-    // picker, so re-running would silently shift user-chosen times.
+    // runOnce: a persisted cutoff excludes newly created deliberate-midnight rows,
+    // and completion is marked only after a successful run.
     tag: 'TimezoneMigrationService.backfillConsumedTimeFromCreatedAt',
     runOnce: true,
-    run: () => TimezoneMigrationService.backfillConsumedTimeFromCreatedAt(),
+    run: (cutoffMs) => TimezoneMigrationService.backfillConsumedTimeFromCreatedAt(cutoffMs),
   },
   {
     // Encrypt API keys that were stored as plaintext before this migration was introduced.
@@ -240,11 +254,13 @@ export function AppBoot() {
               return;
             }
 
-            await m.run();
+            const cutoffMs = m.runOnce ? await getRunOnceMigrationCutoff(m.tag) : Date.now();
+            await m.run(cutoffMs);
 
             // Marked done only after success so failed runs retry on the next boot.
             if (m.runOnce) {
               await AsyncStorage.setItem(bootMigrationDoneKey(m.tag), '1');
+              await AsyncStorage.removeItem(bootMigrationCutoffKey(m.tag));
             }
           } catch (err) {
             console.warn(`[AppBoot] ${m.tag} error:`, err);

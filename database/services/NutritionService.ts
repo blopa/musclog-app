@@ -15,16 +15,16 @@ import { MealService } from '@/database/services/MealService';
 import i18n from '@/lang/lang';
 import { writeNutritionLogToHealthConnect } from '@/services/healthConnectNutrition';
 import {
+  consumedDateTimeFromDate,
+  consumedDateTimeOnDay,
   dayKeyRange,
   dayKeyRangeForLocalDate,
   MS_PER_SOLAR_DAY,
   utcDayKeyFromLocalDate,
   utcNormalizedDayKey,
-  withCurrentTimeOnDay,
 } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
-import { getCurrentTimezone } from '@/utils/timezone';
 import { widgetEvents } from '@/utils/widgetEvents';
 
 import {
@@ -166,8 +166,7 @@ export class NutritionService {
     repairAttempted = false
   ): Promise<NutritionLog> {
     try {
-      // `date` carries the consumed datetime (day + time) supplied by the caller.
-      const dateTimestamp = date.getTime();
+      const consumed = consumedDateTimeFromDate(date);
 
       const log = await database.write(async () => {
         const food = await database.get<Food>('foods').find(foodId);
@@ -190,8 +189,8 @@ export class NutritionService {
         return await database.get<NutritionLog>('nutrition_logs').create((record) => {
           record.foodId = foodId;
           record.externalId = externalId;
-          record.date = dateTimestamp;
-          record.timezone = getCurrentTimezone();
+          record.date = consumed.timestamp;
+          record.timezone = consumed.timezone;
           record.type = mealType;
           record.amount = amount;
           record.portionId = resolvedPortionId;
@@ -227,7 +226,7 @@ export class NutritionService {
 
         const hcId = await writeNutritionLogToHealthConnect({
           logId: log.id,
-          date: dateTimestamp,
+          date: consumed.timestamp,
           mealType,
           foodName: snapshot.loggedFoodName ?? '',
           calories: nutrients.calories,
@@ -664,7 +663,7 @@ export class NutritionService {
     targetDate: Date,
     targetMealType: MealType
   ): Promise<void> {
-    const dateTimestamp = withCurrentTimeOnDay(targetDate).getTime();
+    const consumed = consumedDateTimeOnDay(targetDate);
 
     await database.write(async () => {
       const now = Date.now();
@@ -672,8 +671,8 @@ export class NutritionService {
         ...logs.map((log) =>
           database.get<NutritionLog>('nutrition_logs').prepareCreate((record) => {
             record.foodId = log.foodId;
-            record.date = dateTimestamp;
-            record.timezone = getCurrentTimezone();
+            record.date = consumed.timestamp;
+            record.timezone = consumed.timezone;
             record.type = targetMealType;
             record.amount = log.amount;
             record.portionId = log.portionId;
@@ -708,15 +707,15 @@ export class NutritionService {
     targetDate: Date,
     targetMealType: MealType
   ): Promise<void> {
-    const dateTimestamp = withCurrentTimeOnDay(targetDate).getTime();
+    const consumed = consumedDateTimeOnDay(targetDate);
 
     await database.write(async () => {
       const now = Date.now();
       await database.batch(
         ...logs.map((log) =>
           log.prepareUpdate((record) => {
-            record.date = dateTimestamp;
-            record.timezone = getCurrentTimezone();
+            record.date = consumed.timestamp;
+            record.timezone = consumed.timezone;
             record.type = targetMealType;
             record.updatedAt = now;
           })
@@ -740,7 +739,7 @@ export class NutritionService {
   ): Promise<void> {
     const splitRatio = splitPercentage / 100;
     const remainRatio = 1 - splitRatio;
-    const dateTimestamp = withCurrentTimeOnDay(targetDate).getTime();
+    const consumed = consumedDateTimeOnDay(targetDate);
 
     await database.write(async () => {
       const now = Date.now();
@@ -749,8 +748,8 @@ export class NutritionService {
         ...logs.map((log) =>
           database.get<NutritionLog>('nutrition_logs').prepareCreate((record) => {
             record.foodId = log.foodId;
-            record.date = dateTimestamp;
-            record.timezone = getCurrentTimezone();
+            record.date = consumed.timestamp;
+            record.timezone = consumed.timezone;
             record.type = targetMealType;
             record.amount = log.amount * splitRatio;
             record.portionId = log.portionId;
@@ -806,8 +805,10 @@ export class NutritionService {
       query = query.extend(Q.where('type', mealType));
     }
 
-    // We take a larger batch to find unique food IDs up to the requested limit.
-    let recentLogs = await query.extend(Q.sortBy('created_at', Q.desc), Q.take(limit * 5)).fetch();
+    // Day-range queries must trim timezone overscan before limiting; otherwise adjacent-day
+    // rows can consume the DB-side take() window and hide valid logs for the requested day.
+    const sortedQuery = query.extend(Q.sortBy('created_at', Q.desc));
+    let recentLogs = await (range ? sortedQuery : sortedQuery.extend(Q.take(limit * 5))).fetch();
 
     if (range) {
       recentLogs = range.filterRecords(recentLogs);
@@ -876,10 +877,11 @@ export class NutritionService {
       query = query.extend(...dayRangeClauses(range));
     }
 
-    let recentLogs = await query.extend(Q.sortBy('created_at', Q.desc), Q.take(limit)).fetch();
+    const sortedQuery = query.extend(Q.sortBy('created_at', Q.desc));
+    let recentLogs = await (range ? sortedQuery : sortedQuery.extend(Q.take(limit))).fetch();
 
     if (range) {
-      recentLogs = range.filterRecords(recentLogs);
+      recentLogs = range.filterRecords(recentLogs).slice(0, limit);
     }
 
     const resolved = await Promise.all(
@@ -1108,13 +1110,12 @@ export class NutritionService {
     amount: number = 100, // Default to 100g for custom meals
     options?: { groupId?: string; loggedMealName?: string }
   ): Promise<NutritionLog> {
-    const datedTime = withCurrentTimeOnDay(date);
-    const dateTimestamp = datedTime.getTime();
+    const consumed = consumedDateTimeOnDay(date);
 
     if (mealData.foodId) {
       return await NutritionService.logFood(
         mealData.foodId,
-        datedTime,
+        consumed.date,
         mealType,
         amount,
         undefined,
@@ -1168,8 +1169,8 @@ export class NutritionService {
 
       return await database.get<NutritionLog>('nutrition_logs').create((record) => {
         record.foodId = tempFood.id;
-        record.date = dateTimestamp;
-        record.timezone = getCurrentTimezone();
+        record.date = consumed.timestamp;
+        record.timezone = consumed.timezone;
         record.type = mealType;
         record.amount = amount;
         record.loggedFoodNameRaw = encrypted.loggedFoodName;
@@ -1199,7 +1200,7 @@ export class NutritionService {
 
       await writeNutritionLogToHealthConnect({
         logId: log.id,
-        date: dateTimestamp,
+        date: consumed.timestamp,
         mealType,
         foodName: snapshot.loggedFoodName ?? '',
         calories: nutrients.calories,
@@ -1276,7 +1277,7 @@ export class NutritionService {
     mealType: MealType,
     options?: { groupId?: string; loggedMealName?: string; imageUrl?: string }
   ): Promise<NutritionLog[]> {
-    const dateTimestamp = withCurrentTimeOnDay(date).getTime();
+    const consumed = consumedDateTimeOnDay(date);
     const now = Date.now();
 
     const logs = await database.write(async () => {
@@ -1299,8 +1300,8 @@ export class NutritionService {
 
             const log = await database.get<NutritionLog>('nutrition_logs').create((record) => {
               record.foodId = food.id;
-              record.date = dateTimestamp;
-              record.timezone = getCurrentTimezone();
+              record.date = consumed.timestamp;
+              record.timezone = consumed.timezone;
               record.type = mealType;
               record.amount = ingredient.grams;
               record.loggedFoodNameRaw = encrypted.loggedFoodName;
@@ -1359,8 +1360,8 @@ export class NutritionService {
 
         const log = await database.get<NutritionLog>('nutrition_logs').create((record) => {
           record.foodId = tempFood.id;
-          record.date = dateTimestamp;
-          record.timezone = getCurrentTimezone();
+          record.date = consumed.timestamp;
+          record.timezone = consumed.timezone;
           record.type = mealType;
           record.amount = ingredient.grams;
           record.loggedFoodNameRaw = encrypted.loggedFoodName;
@@ -1411,7 +1412,7 @@ export class NutritionService {
 
           await writeNutritionLogToHealthConnect({
             logId: log.id,
-            date: dateTimestamp,
+            date: consumed.timestamp,
             mealType,
             foodName: snapshot.loggedFoodName ?? '',
             calories: nutrients.calories,

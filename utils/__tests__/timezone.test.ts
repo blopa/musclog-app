@@ -2,6 +2,8 @@ import {
   bucketPointsByUtcWeek,
   calendarDateFromRecordDay,
   combineLocalDateAndTime,
+  consumedDateTimeFromDate,
+  consumedDateTimeOnDay,
   dayKeyForCalendarDateInTimezone,
   dayKeyRange,
   instantForDateTimeInTimezone,
@@ -249,6 +251,38 @@ describe('combineLocalDateAndTime', () => {
     expect(combined.getHours()).toBe(8);
     expect(combined.getMinutes()).toBe(30);
     expect(combined.getSeconds()).toBe(15);
+  });
+});
+
+describe('consumed datetime helpers', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('pairs a consumed timestamp with the offset at that timestamp', () => {
+    jest.spyOn(Date.prototype, 'getTimezoneOffset').mockReturnValue(300);
+    const date = new Date(2025, 6, 15, 8, 30, 0);
+    const consumed = consumedDateTimeFromDate(date);
+
+    expect(consumed.date).not.toBe(date);
+    expect(consumed.date.getTime()).toBe(date.getTime());
+    expect(consumed.timestamp).toBe(date.getTime());
+    expect(consumed.timezone).toBe('-05:00');
+  });
+
+  it('combines a target day and wall-clock time before capturing the offset', () => {
+    jest.spyOn(Date.prototype, 'getTimezoneOffset').mockReturnValue(-120);
+    const day = new Date(2025, 0, 15, 23, 59, 0);
+    const time = new Date(2030, 6, 1, 8, 45, 0);
+    const consumed = consumedDateTimeOnDay(day, time);
+
+    expect(consumed.date.getFullYear()).toBe(2025);
+    expect(consumed.date.getMonth()).toBe(0);
+    expect(consumed.date.getDate()).toBe(15);
+    expect(consumed.date.getHours()).toBe(8);
+    expect(consumed.date.getMinutes()).toBe(45);
+    expect(consumed.timestamp).toBe(consumed.date.getTime());
+    expect(consumed.timezone).toBe('+02:00');
   });
 });
 

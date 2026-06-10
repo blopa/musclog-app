@@ -28,7 +28,7 @@ import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
 import Setting from '@/database/models/Setting';
 import { FoodPortionService } from '@/database/services';
 import { handleError } from '@/utils/handleError';
-import { getCurrentTimezone, ianaZoneToTimezoneAt } from '@/utils/timezone';
+import { getTimezoneAt, ianaZoneToTimezoneAt } from '@/utils/timezone';
 
 import { RETRY_CONFIG } from './healthConnectErrors';
 
@@ -343,7 +343,7 @@ async function syncNutritionOnce(timeRange: {
     const startDate = new Date(corr.startDate);
     const tzRaw = (corr.metadata as { HKTimeZone?: string })?.HKTimeZone;
     const timezone =
-      (tzRaw ? ianaZoneToTimezoneAt(tzRaw, startDate) : undefined) ?? getCurrentTimezone();
+      (tzRaw ? ianaZoneToTimezoneAt(tzRaw, startDate) : undefined) ?? getTimezoneAt(startDate);
 
     hcMap.set(externalId, {
       externalId,
