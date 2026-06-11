@@ -164,101 +164,66 @@ function getActiveBootMigrations(): BootMigration[] {
 
 async function waitForExistingDbReady(cancelled: () => boolean): Promise<void> {
   const startedAt = Date.now();
+  const elapsed = () => Date.now() - startedAt;
   let attempt = 0;
-  let settled = false;
-  let slowTimer: ReturnType<typeof setTimeout> | undefined;
-  let watchdogTimer: ReturnType<typeof setTimeout> | undefined;
 
-  return new Promise<void>((resolve) => {
-    const finish = () => {
-      if (settled) {
-        return;
-      }
-
-      settled = true;
-      if (slowTimer) {
-        clearTimeout(slowTimer);
-      }
-      if (watchdogTimer) {
-        clearTimeout(watchdogTimer);
-      }
-      resolve();
-    };
-
-    slowTimer = setTimeout(() => {
-      if (settled || cancelled()) {
-        return;
-      }
-
+  const slowTimer = setTimeout(() => {
+    if (!cancelled()) {
       captureBootException(
         new Error('DB-ready probe is still waiting'),
         'AppBoot.dbReadyProbe.slow',
-        {
-          attempt,
-          elapsedMs: Date.now() - startedAt,
-        }
+        { attempt, elapsedMs: elapsed() }
       );
-    }, DB_READY_PROBE_SLOW_REPORT_MS);
+    }
+  }, DB_READY_PROBE_SLOW_REPORT_MS);
 
-    watchdogTimer = setTimeout(() => {
-      if (settled || cancelled()) {
+  const probe = async (): Promise<void> => {
+    while (!cancelled()) {
+      try {
+        await SettingsService.getAnonymousBugReport();
+        return;
+      } catch (err: unknown) {
+        if (cancelled()) {
+          return;
+        }
+
+        if (isDbReadyRetryableError(err) && elapsed() < DB_READY_PROBE_MAX_ELAPSED_MS) {
+          attempt += 1;
+          await sleep(200);
+          continue;
+        }
+
+        captureBootException(err, 'AppBoot.dbReadyProbe', {
+          attempt,
+          elapsedMs: elapsed(),
+          retryable: isDbReadyRetryableError(err),
+        });
         return;
       }
+    }
+  };
 
-      captureBootException(
-        new Error('DB-ready probe watchdog elapsed'),
-        'AppBoot.dbReadyProbe.watchdog',
-        {
-          attempt,
-          elapsedMs: Date.now() - startedAt,
-        }
-      );
-      finish();
-    }, DB_READY_PROBE_MAX_ELAPSED_MS);
-
-    const probe = async () => {
-      while (!settled && !cancelled() && attempt < 500) {
-        try {
-          await SettingsService.getAnonymousBugReport();
-          finish();
-          return;
-        } catch (err: unknown) {
-          if (settled || cancelled()) {
-            return;
-          }
-
-          const elapsedMs = Date.now() - startedAt;
-          if (isDbReadyRetryableError(err) && elapsedMs < DB_READY_PROBE_MAX_ELAPSED_MS) {
-            attempt += 1;
-            await sleep(200);
-            continue;
-          }
-
-          captureBootException(err, 'AppBoot.dbReadyProbe', {
-            attempt,
-            elapsedMs,
-            retryable: isDbReadyRetryableError(err),
-          });
-          finish();
-          return;
-        }
-      }
-
-      if (!settled && !cancelled()) {
+  // The watchdog unblocks boot if the probe query hangs without ever rejecting.
+  let watchdogTimer: ReturnType<typeof setTimeout> | undefined;
+  const watchdog = new Promise<void>((resolve) => {
+    watchdogTimer = setTimeout(() => {
+      if (!cancelled()) {
         captureBootException(
-          new Error('DB-ready probe exhausted retries'),
-          'AppBoot.dbReadyProbe.exhausted',
-          {
-            attempt,
-            elapsedMs: Date.now() - startedAt,
-          }
+          new Error('DB-ready probe watchdog elapsed'),
+          'AppBoot.dbReadyProbe.watchdog',
+          { attempt, elapsedMs: elapsed() }
         );
-        finish();
       }
-    };
-
-    void probe();
+      resolve();
+    }, DB_READY_PROBE_MAX_ELAPSED_MS);
   });
+
+  try {
+    await Promise.race([probe(), watchdog]);
+  } finally {
+    clearTimeout(slowTimer);
+    clearTimeout(watchdogTimer);
+  }
 }
 
 async function runBootMigration(m: BootMigration): Promise<void> {
