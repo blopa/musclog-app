@@ -189,7 +189,7 @@ export function FeatureGrid() {
               }}
             >
               <div
-                className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-colors group-hover:bg-white/10"
+                className="group-hover:bg-white/10 mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-colors"
                 style={{ backgroundColor: 'rgba(34, 197, 94, 0.12)' }}
               >
                 <feature.icon className="h-6 w-6" color={BRAND_GREEN_BRIGHT} />
@@ -500,7 +500,7 @@ export function ScreenshotShowcase() {
                       className="group flex w-[180px] shrink-0 flex-col text-left sm:w-[200px] md:w-[220px]"
                     >
                       <div
-                        className="rounded-[2rem] border border-white/10 bg-black/35 p-2 shadow-[0_18px_48px_rgba(0,0,0,0.34)] transition-transform duration-300 group-hover:-translate-y-1 group-hover:border-white/20"
+                        className="group-hover:-translate-y-1 group-hover:border-white/20 rounded-[2rem] border border-white/10 bg-black/35 p-2 shadow-[0_18px_48px_rgba(0,0,0,0.34)] transition-transform duration-300"
                         style={{
                           boxShadow:
                             '0 18px 48px rgba(0,0,0,0.34), 0 0 0 1px rgba(255,255,255,0.02)',
@@ -510,7 +510,7 @@ export function ScreenshotShowcase() {
                           <img
                             src={slide.src}
                             alt={slide.alt}
-                            className="aspect-[537/1165] w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.015]"
+                            className="group-hover:scale-[1.015] aspect-[537/1165] w-full object-cover object-top transition-transform duration-500"
                             loading={loopIndex === 0 && index < 3 ? 'eager' : 'lazy'}
                           />
                         </div>

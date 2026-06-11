@@ -5,8 +5,10 @@ import { colors } from '@/theme.tokens';
 import { useBootProgress } from '@/utils/bootProgress';
 
 /**
- * Absolute-positioned progress bar shown near the bottom of the screen while
- * boot migrations run. Renders nothing once boot progress completes.
+ * Absolute-positioned progress bar anchored near the bottom of the splash
+ * loading screen while boot migrations run. Only rendered inside
+ * SplashLoading, so it disappears with the splash once the app is ready,
+ * even if migrations are still finishing in the background.
  * Colors come from theme.tokens (not theme.ts) so this stays importable
  * before the database layer loads.
  */
