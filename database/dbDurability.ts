@@ -1,16 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { openDatabaseSync } from 'expo-sqlite';
+import * as Sentry from '@sentry/react-native';
 import { Platform } from 'react-native';
 
-import { DATABASE_NAME, SHOULD_SAVE_DB_SNAPSHOT } from '@/constants/database';
+import { SHOULD_SAVE_DB_SNAPSHOT } from '@/constants/database';
 import { database } from '@/database/database-instance';
 import type NutritionLog from '@/database/models/NutritionLog';
 import { handleError } from '@/utils/handleError';
 import { captureMessage } from '@/utils/sentry';
 
 import { getBootDbFileStats } from './dbBootStats';
-import { wdbDir } from './dbPath';
 import { waitForDbReady } from './dbReady';
+import { rawQueryViaWatermelon } from './wmdbRaw';
 
 /**
  * Field incident (June 2026): nutrition logs that were visibly saved during a
@@ -82,33 +82,47 @@ export async function updateNutritionLogCountBaseline(): Promise<void> {
   }
 }
 
+type CheckpointRow = { busy?: unknown; log?: unknown; checkpointed?: unknown };
+
+async function runCheckpoint(mode: 'FULL' | 'TRUNCATE'): Promise<CheckpointRow> {
+  const rows = await rawQueryViaWatermelon(`PRAGMA wal_checkpoint(${mode});`);
+  return (rows[0] ?? {}) as CheckpointRow;
+}
+
 /**
  * Forces SQLite to move all committed WAL frames into the main database file.
- * Uses a separate raw connection so it works regardless of the WatermelonDB
- * adapter mode (JSI or bridge fallback).
+ *
+ * Must run through WatermelonDB's own connection: it works in both adapter
+ * modes (JSI / bridge), it never opens-and-closes a second SQLite library on
+ * the file (which unlinks the WAL — see wmdbRaw.ts), and because it uses the
+ * live connection it even rescues frames sitting in an already-unlinked WAL by
+ * copying them into the still-linked main DB file.
  */
 export async function checkpointWalToMainDbFile(): Promise<void> {
   if (Platform.OS === 'web') {
     return;
   }
 
-  const dir = wdbDir();
-  if (!dir) {
-    return;
-  }
-
-  let db: ReturnType<typeof openDatabaseSync> | null = null;
   try {
-    db = openDatabaseSync(`${DATABASE_NAME}.db`, { useNewConnection: true }, dir);
-    await db.getAllAsync('PRAGMA wal_checkpoint(TRUNCATE);');
+    let result = await runCheckpoint('TRUNCATE');
+    // busy=1 means readers blocked the checkpoint and frames may remain in the
+    // WAL; FULL waits for writers but not for the WAL-restart step, so it can
+    // still make progress where TRUNCATE could not.
+    if (Number(result.busy) === 1) {
+      result = await runCheckpoint('FULL');
+    }
+
+    Sentry.addBreadcrumb({
+      category: 'db.durability',
+      message: 'wal checkpoint',
+      data: {
+        busy: result.busy ?? null,
+        log: result.log ?? null,
+        checkpointed: result.checkpointed ?? null,
+      },
+    });
   } catch (error) {
     handleError(error, 'dbDurability.checkpointWalToMainDbFile');
-  } finally {
-    try {
-      db?.closeSync();
-    } catch {
-      // best effort
-    }
   }
 }
 
@@ -130,6 +144,11 @@ export function startDbDurabilityMonitoring(): void {
     try {
       await waitForDbReady();
       dbIsReady = true;
+
+      // Rescue checkpoint: if a boot-time raw connection (pre-migration backup)
+      // unlinked the WAL under the live connection, this persists everything
+      // committed so far into the main DB file before any loss can occur.
+      await checkpointWalToMainDbFile();
 
       if (SHOULD_SAVE_DB_SNAPSHOT) {
         await reportNutritionLogLossIfAny();

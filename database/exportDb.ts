@@ -14,6 +14,7 @@ import { handleError } from '@/utils/handleError';
 
 import { wdbDir } from './dbPath';
 import { decryptJson, decryptNumber, decryptOptionalString } from './encryptionHelpers';
+import { type RawQueryRunner, rawQueryViaWatermelon } from './wmdbRaw';
 
 function quoteIdentifier(identifier: string): string {
   return `"${identifier.replace(/"/g, '""')}"`;
@@ -26,12 +27,38 @@ export type ExportDump = {
 
 type DumpDatabaseOptions = {
   includeDeletedRecords?: boolean;
+  /**
+   * How table rows are read. Defaults to WatermelonDB's own connection, which
+   * is the only safe option while the app is running (a second SQLite library
+   * closing its connection unlinks the WAL — see wmdbRaw.ts). Only the
+   * pre-migration backup passes an expo-sqlite runner, because WatermelonDB
+   * cannot serve queries mid-migration.
+   */
+  queryRunner?: RawQueryRunner;
+  /** Called after the dump finishes when the runner owns a connection to close. */
+  closeQueryRunner?: () => void;
 };
 
 /**
- * Dump the entire database to a JSON-serializable object using a raw SQLite connection.
- * This avoids going through the WatermelonDB singleton, making it safe to call before
- * or during WatermelonDB migrations (e.g. from preMigrationBackup).
+ * Creates a query runner backed by a raw expo-sqlite connection. ONLY safe
+ * when WatermelonDB's connection is not (yet) open — i.e. the pre-migration
+ * backup; everywhere else use the default WatermelonDB-backed runner.
+ */
+export function createExpoSqliteQueryRunner(): {
+  runQuery: RawQueryRunner;
+  close: () => void;
+} {
+  const db = openDatabaseSync(`${DATABASE_NAME}.db`, { useNewConnection: true }, wdbDir());
+  return {
+    runQuery: (sql, args = []) => db.getAllAsync(sql, args) as Promise<Record<string, unknown>[]>,
+    close: () => db.closeSync(),
+  };
+}
+
+/**
+ * Dump the entire database to a JSON-serializable object using raw SQL against
+ * whatever tables actually exist (schema-independent), executed through
+ * WatermelonDB's own connection by default.
  * Encrypted fields in user_metrics, nutrition_logs, saved_for_later_groups and
  * saved_for_later_items are exported decrypted so the backup is device-independent.
  * API key settings are excluded.
@@ -41,12 +68,12 @@ export async function dumpDatabase(
   options: DumpDatabaseOptions = {}
 ): Promise<string> {
   const includeDeletedRecords = options.includeDeletedRecords ?? true;
-  const db = openDatabaseSync(`${DATABASE_NAME}.db`, { useNewConnection: true }, wdbDir());
+  const runQuery = options.queryRunner ?? rawQueryViaWatermelon;
 
   try {
     // Discover tables that actually exist — essential when called pre-migration,
     // where new tables added by the pending migration don't exist yet.
-    const tableRows = (await db.getAllAsync(
+    const tableRows = (await runQuery(
       "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
     )) as { name: string }[];
     const existingTables = new Set(tableRows.map((r) => r.name));
@@ -65,9 +92,9 @@ export async function dumpDatabase(
       // so exports can be used to investigate data that disappeared from normal
       // queries. Restore skips those rows to avoid resurrecting deleted records.
       const deletedRecordsClause = includeDeletedRecords ? '' : " WHERE _status != 'deleted'";
-      const rows = (await db.getAllAsync(
+      const rows = await runQuery(
         `SELECT * FROM ${quoteIdentifier(tableName)}${deletedRecordsClause};`
-      )) as Record<string, unknown>[];
+      );
 
       if (tableName === 'settings') {
         dbData.settings = rows.filter((row) => !SETTINGS_EXCLUDED_TYPES.includes(String(row.type)));
@@ -170,6 +197,6 @@ export async function dumpDatabase(
     await handleError(err, 'dumpDatabase');
     throw err;
   } finally {
-    db.closeSync();
+    options.closeQueryRunner?.();
   }
 }

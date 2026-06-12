@@ -3,7 +3,7 @@ import { cacheDirectory, deleteAsync, writeAsStringAsync } from 'expo-file-syste
 
 import { handleError } from '@/utils/handleError';
 
-import { dumpDatabase } from './exportDb';
+import { createExpoSqliteQueryRunner, dumpDatabase } from './exportDb';
 
 const PRE_MIGRATION_BACKUPS_KEY = 'pre_migration_backups_v1';
 const PRE_MIGRATION_BACKUPS_MAX_FILES = 3;
@@ -103,13 +103,25 @@ async function pruneOldBackups(backups: BackupFileMeta[]): Promise<BackupFileMet
 async function executeBackup(
   nameInfix: string,
   fromVersion: number | null = null,
-  toVersion: number | null = null
+  toVersion: number | null = null,
+  options: { useRawConnection?: boolean } = {}
 ): Promise<string> {
   if (!cacheDirectory) {
     throw new Error('Cache directory is not available');
   }
 
-  const jsonString = await dumpDatabase();
+  // Pre-migration backups must read via a raw expo-sqlite connection: they run
+  // while WatermelonDB is mid-migration and cannot serve queries. This is the
+  // only mid-session raw connection left in the app — its close can unlink the
+  // live WAL (see wmdbRaw.ts), which is accepted because migrations are rare
+  // and the boot rescue checkpoint in dbDurability.ts persists any affected
+  // frames right after the DB becomes ready. Every other dump goes through
+  // WatermelonDB's own connection.
+  const raw = options.useRawConnection ? createExpoSqliteQueryRunner() : null;
+  const jsonString = await dumpDatabase(undefined, {
+    queryRunner: raw?.runQuery,
+    closeQueryRunner: raw?.close,
+  });
   const createdAt = new Date().toISOString();
   const timestamp = createdAt.replace(/[:.]/g, '-').slice(0, 19);
   const uri = `${cacheDirectory}${timestamp}-${nameInfix}.json`;
@@ -161,7 +173,7 @@ export function createPreMigrationBackup(event?: unknown): Promise<void> {
 
   async function performBackup() {
     const infix = `pre-migration-v${formatVersion(fromVersion)}-to-v${formatVersion(toVersion)}`;
-    const uri = await executeBackup(infix, fromVersion, toVersion);
+    const uri = await executeBackup(infix, fromVersion, toVersion, { useRawConnection: true });
     completedBackupSignature = signature;
     console.log(`[PreMigrationBackup] Created: ${uri}`);
   }

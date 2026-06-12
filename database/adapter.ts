@@ -11,6 +11,16 @@ import { migrations } from './migrations';
 import { createPreMigrationBackup } from './preMigrationBackup';
 import { schema } from './schema';
 
+// Read the current DB version before WatermelonDB opens its connection, so we
+// can pass accurate fromVersion/toVersion to the pre-migration backup.
+//
+// SAFETY: this is one of only two places allowed to open expo-sqlite on
+// musclog.db (the other is the pre-migration backup). It is safe ONLY because
+// it opens and closes during module evaluation, before `new SQLiteAdapter` is
+// constructed and before the lazy native driver opens its connection. Closing
+// an expo-sqlite connection while WatermelonDB's connection is live unlinks
+// the WAL beneath it and loses subsequent commits on process kill — see
+// database/wmdbRaw.ts. Never call this after boot.
 function readCurrentDbVersion(): number | null {
   try {
     const db = openDatabaseSync(`${DATABASE_NAME}.db`, undefined, wdbDir());
