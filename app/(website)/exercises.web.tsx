@@ -146,7 +146,7 @@ function ExerciseCard({
             src={EXERCISE_IMAGE(exercise.exerciseIndex)}
             alt={localizedName}
             loading="lazy"
-            className="group-hover:scale-105 h-full w-full object-contain p-4 transition-transform duration-300"
+            className="h-full w-full object-contain p-4 transition-transform duration-300 group-hover:scale-105"
             onError={() => setImgError(true)}
           />
         ) : (
