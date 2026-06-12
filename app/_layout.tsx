@@ -3,7 +3,6 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { View } from 'react-native';
 
-import { BootProgressBar } from '@/components/BootProgressBar';
 import { DeferredAppBoot } from '@/components/DeferredAppBoot';
 import { captureBootException } from '@/utils/bootErrorReporting';
 
@@ -23,7 +22,6 @@ export default function RootLayout() {
     <View style={{ flex: 1, backgroundColor: '#0a1f1a' }}>
       <DeferredAppBoot />
       <Slot />
-      <BootProgressBar />
     </View>
   );
 }

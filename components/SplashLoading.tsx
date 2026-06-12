@@ -1,5 +1,6 @@
 import { ActivityIndicator, Image, Text, View } from 'react-native';
 
+import { BootProgressBar } from '@/components/BootProgressBar';
 // theme.tokens (not theme.ts) so this stays importable before the database layer loads.
 import { colors } from '@/theme.tokens';
 
@@ -12,6 +13,7 @@ export function SplashLoading() {
         Lift, Log, Repeat
       </Text>
       <ActivityIndicator size="small" color={colors.jade} className="mt-12" />
+      <BootProgressBar />
     </View>
   );
 }
