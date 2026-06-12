@@ -12,6 +12,7 @@ import {
   CONFETTI_INTERACTIONS_KEY,
   ConfettiActivity,
 } from '@/context/ConfettiInteractionsContext';
+import { checkpointDbOnAppBackground, startDbDurabilityMonitoring } from '@/database/dbDurability';
 import { markDbReady, waitForDbReady } from '@/database/dbReady';
 import {
   ExerciseGoalService,
@@ -27,11 +28,16 @@ import {
   WorkoutService,
 } from '@/database/services';
 import { SettingsService } from '@/database/services/SettingsService';
-import { useSettings } from '@/hooks/useSettings';
 import i18n from '@/lang/lang';
 import { healthDataSyncService } from '@/services/healthDataSync';
 import { NotificationService } from '@/services/NotificationService';
 import { getActiveWorkoutLogId, pruneWorkoutInsights } from '@/utils/activeWorkoutStorage';
+import { captureBootException } from '@/utils/bootErrorReporting';
+import {
+  beginBootProgress,
+  completeBootProgressStep,
+  finishBootProgress,
+} from '@/utils/bootProgress';
 import { configureDailyTasks } from '@/utils/configureDailyTasks';
 import {
   addNotificationResponseReceivedListener,
@@ -43,14 +49,19 @@ const DB_RESET_RACE_ERRORS = [
   'No driver with tag',
   'Cannot call database.adapter.underlyingAdapter while the database is being reset',
 ];
+const DB_READY_PROBE_SLOW_REPORT_MS = 15_000;
+const DB_READY_PROBE_MAX_ELAPSED_MS = 45_000;
+const BOOT_MIGRATION_SLOW_REPORT_MS = 30_000;
 
-// All one-shot idempotent DB migrations that run on every boot, collected here so the
-// per-task boilerplate (waitForDbReady, cancellation, catch+warn) lives in one place.
-// Entries with webOnly: true run only on the LokiJS (web) adapter path, where the
-// corresponding SQLite migration step is a no-op; all others run on every platform.
-// Entries with runOnce: true persist a completion marker after the first successful
-// run and are skipped on subsequent boots — required when re-running could clobber
-// data the user has since edited, and an optimization for full-table scans.
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isDbReadyRetryableError(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err);
+  return DB_RESET_RACE_ERRORS.some((needle) => msg.includes(needle));
+}
+
 type BootMigration = {
   tag: string;
   webOnly?: boolean;
@@ -76,37 +87,31 @@ async function getRunOnceMigrationCutoff(tag: string): Promise<number> {
 
 const BOOT_MIGRATIONS: BootMigration[] = [
   {
-    // Fix negative fiber values stored in nutrition_goals, foods, and nutrition_logs.
-    // Each sub-task catches independently so one failure doesn't cancel the others.
     tag: 'fixNegativeFiber',
     run: () =>
       Promise.all([
         NutritionGoalService.fixNegativeFiber().catch((err) =>
-          console.warn('[NutritionGoalService] fixNegativeFiber error:', err)
+          captureBootException(err, 'NutritionGoalService.fixNegativeFiber')
         ),
         FoodService.fixNegativeFiber().catch((err) =>
-          console.warn('[FoodService] fixNegativeFiber error:', err)
+          captureBootException(err, 'FoodService.fixNegativeFiber')
         ),
         NutritionService.fixNegativeFiber().catch((err) =>
-          console.warn('[NutritionService] fixNegativeFiber error:', err)
+          captureBootException(err, 'NutritionService.fixNegativeFiber')
         ),
       ]),
   },
   {
-    // LokiJS (web) silently ignores the v2 schema unsafeExecuteSql step.
     tag: 'ExerciseService.backfillExerciseSources',
     webOnly: true,
     run: () => ExerciseService.backfillExerciseSources(),
   },
   {
-    // LokiJS (web) silently ignores the v3 schema unsafeExecuteSql step.
     tag: 'FoodPortionService.backfillPortionSources',
     webOnly: true,
     run: () => FoodPortionService.backfillPortionSources(),
   },
   {
-    // Seed exercises from the bundled JSON missing from the DB with source='app'.
-    // Sequential: multipliers depend on syncAppExercises completing first.
     tag: 'ExerciseService.syncAppExercises',
     run: async () => {
       await ExerciseService.syncAppExercises();
@@ -114,74 +119,153 @@ const BOOT_MIGRATIONS: BootMigration[] = [
     },
   },
   {
-    // Ensure app exercises appear in the same order as the bundled JSON file.
     tag: 'ExerciseService.backfillExerciseOrderIndex',
     run: () => ExerciseService.backfillExerciseOrderIndex(),
   },
   {
-    // Backfill exercise-muscle links for users upgrading to v11.
     tag: 'MuscleService.backfillExerciseMuscles',
     run: () => MuscleService.backfillExerciseMuscles(),
   },
   {
-    // LokiJS (web) silently ignores the v7 schema unsafeExecuteSql step.
     tag: 'ExerciseService.migrateExerciseImageUrlsToCloud',
     webOnly: true,
     run: () => ExerciseService.migrateExerciseImageUrlsToCloud(),
   },
   {
-    // Backfill totalVolume for workout logs that have NULL after the v3 migration.
     tag: 'WorkoutService.backfillNullTotalVolumes',
     run: () => WorkoutService.backfillNullTotalVolumes(),
   },
   {
-    // Convert legacy user_metrics.timezone IANA names to "±HH:MM" offset format (v20).
     tag: 'UserMetricService.backfillTimezoneOffsets',
     run: () => UserMetricService.backfillTimezoneOffsets(),
   },
   {
-    // Backfill missing timezone columns in newly updated tables (v21).
     tag: 'TimezoneMigrationService.backfillMissingTimezones',
     run: () => TimezoneMigrationService.backfillMissingTimezones(),
   },
   {
-    // Backfill consumed time-of-day into nutrition_logs.date (was stored at local
-    // midnight) from each row's created_at, preserving the original calendar day.
-    // runOnce: a persisted cutoff excludes newly created deliberate-midnight rows,
-    // and completion is marked only after a successful run.
     tag: 'TimezoneMigrationService.backfillConsumedTimeFromCreatedAt',
     runOnce: true,
     run: (cutoffMs) => TimezoneMigrationService.backfillConsumedTimeFromCreatedAt(cutoffMs),
   },
   {
-    // Encrypt API keys that were stored as plaintext before this migration was introduced.
     tag: 'SettingsService.migrateApiKeysToEncrypted',
     run: () => SettingsService.migrateApiKeysToEncrypted(),
   },
   {
-    // Enable require-export-encryption by default for users who never explicitly set it.
     tag: 'SettingsService.migrateRequireExportEncryptionDefault',
     run: () => SettingsService.migrateRequireExportEncryptionDefault(),
   },
 ];
 
-/**
- * One-time and boot-time data fixes, sync, and native services that are not
- * tied to a specific screen. Renders nothing.
- */
+function getActiveBootMigrations(): BootMigration[] {
+  return BOOT_MIGRATIONS.filter((m) => !m.webOnly || Platform.OS === 'web');
+}
+
+async function waitForExistingDbReady(cancelled: () => boolean): Promise<void> {
+  const startedAt = Date.now();
+  const elapsed = () => Date.now() - startedAt;
+  let attempt = 0;
+
+  const slowTimer = setTimeout(() => {
+    if (!cancelled()) {
+      captureBootException(
+        new Error('DB-ready probe is still waiting'),
+        'AppBoot.dbReadyProbe.slow',
+        { attempt, elapsedMs: elapsed() }
+      );
+    }
+  }, DB_READY_PROBE_SLOW_REPORT_MS);
+
+  const probe = async (): Promise<void> => {
+    while (!cancelled()) {
+      try {
+        await SettingsService.getAnonymousBugReport();
+        return;
+      } catch (err: unknown) {
+        if (cancelled()) {
+          return;
+        }
+
+        if (isDbReadyRetryableError(err) && elapsed() < DB_READY_PROBE_MAX_ELAPSED_MS) {
+          attempt += 1;
+          await sleep(200);
+          continue;
+        }
+
+        captureBootException(err, 'AppBoot.dbReadyProbe', {
+          attempt,
+          elapsedMs: elapsed(),
+          retryable: isDbReadyRetryableError(err),
+        });
+        return;
+      }
+    }
+  };
+
+  // The watchdog unblocks boot if the probe query hangs without ever rejecting.
+  let watchdogTimer: ReturnType<typeof setTimeout> | undefined;
+  const watchdog = new Promise<void>((resolve) => {
+    watchdogTimer = setTimeout(() => {
+      if (!cancelled()) {
+        captureBootException(
+          new Error('DB-ready probe watchdog elapsed'),
+          'AppBoot.dbReadyProbe.watchdog',
+          { attempt, elapsedMs: elapsed() }
+        );
+      }
+      resolve();
+    }, DB_READY_PROBE_MAX_ELAPSED_MS);
+  });
+
+  try {
+    await Promise.race([probe(), watchdog]);
+  } finally {
+    clearTimeout(slowTimer);
+    clearTimeout(watchdogTimer);
+  }
+}
+
+async function runBootMigration(m: BootMigration): Promise<void> {
+  const startedAt = Date.now();
+  const slowTimer = setTimeout(() => {
+    captureBootException(
+      new Error('Boot migration is still running'),
+      'AppBoot.bootMigration.slow',
+      {
+        tag: m.tag,
+        elapsedMs: Date.now() - startedAt,
+      }
+    );
+  }, BOOT_MIGRATION_SLOW_REPORT_MS);
+
+  try {
+    if (m.runOnce && (await AsyncStorage.getItem(bootMigrationDoneKey(m.tag)))) {
+      return;
+    }
+
+    const cutoffMs = m.runOnce ? await getRunOnceMigrationCutoff(m.tag) : Date.now();
+    await m.run(cutoffMs);
+
+    if (m.runOnce) {
+      await AsyncStorage.setItem(bootMigrationDoneKey(m.tag), '1');
+      await AsyncStorage.removeItem(bootMigrationCutoffKey(m.tag));
+    }
+  } catch (err) {
+    captureBootException(err, 'AppBoot.bootMigration', {
+      tag: m.tag,
+      runOnce: m.runOnce === true,
+      webOnly: m.webOnly === true,
+    });
+  } finally {
+    clearTimeout(slowTimer);
+    completeBootProgressStep();
+  }
+}
+
 export function AppBoot() {
   const segments = useSegments();
-  const { language } = useSettings();
 
-  // Probe for WatermelonDB JSI driver readiness and call markDbReady() once the driver is
-  // registered. This is needed for upgrading users: seedProductionData() (which calls
-  // markDbReady()) only runs on new installs via the onboarding landing page, so upgrading
-  // users would otherwise leave waitForDbReady() hanging forever.
-  //
-  // For new installs (onboarding not yet completed), we skip the probe — seedProductionData()
-  // will call markDbReady() after seeding completes.
-  //
-  // On web/static export we mark ready immediately since there is no JSI adapter.
   useEffect(() => {
     if (isStaticExport) {
       markDbReady();
@@ -190,94 +274,49 @@ export function AppBoot() {
 
     let cancelled = false;
 
-    const probe = async () => {
-      const onboardingDone = await AsyncStorage.getItem(ONBOARDING_COMPLETED);
-      if (onboardingDone !== 'true') {
-        return;
-      }
+    const runDatabaseBootSequence = async () => {
+      try {
+        const migrations = getActiveBootMigrations();
+        const onboardingDone = await AsyncStorage.getItem(ONBOARDING_COMPLETED);
 
-      for (let attempt = 0; attempt < 500 && !cancelled; attempt++) {
-        try {
-          await SettingsService.getAnonymousBugReport();
-          if (!cancelled) {
-            markDbReady();
+        if (onboardingDone === 'true') {
+          beginBootProgress(1 + migrations.length);
+          await waitForExistingDbReady(() => cancelled);
+          if (cancelled) {
+            return;
           }
 
-          return;
-        } catch (err: unknown) {
-          const msg = err instanceof Error ? err.message : String(err);
-          if (DB_RESET_RACE_ERRORS.some((needle) => msg.includes(needle))) {
-            await new Promise<void>((resolve) => setTimeout(resolve, 200));
-            continue;
-          }
-          // Any other error means the JSI driver is registered — mark ready.
-          if (!cancelled) {
-            markDbReady();
+          completeBootProgressStep();
+          markDbReady();
+        } else {
+          await waitForDbReady();
+          if (cancelled) {
+            return;
           }
 
-          return;
+          beginBootProgress(migrations.length);
         }
-      }
 
-      // Exhausted retries — unblock the app to avoid a permanent freeze.
-      if (!cancelled) {
+        await Promise.all(migrations.map((m) => runBootMigration(m)));
+
+        if (!cancelled) {
+          finishBootProgress();
+        }
+      } catch (err) {
+        captureBootException(err, 'AppBoot.databaseBootSequence');
         markDbReady();
+        finishBootProgress();
       }
     };
 
-    void probe();
+    void runDatabaseBootSequence();
 
     return () => {
       cancelled = true;
+      finishBootProgress();
     };
   }, []);
 
-  // Run all idempotent boot migrations in parallel after the DB is ready.
-  // See BOOT_MIGRATIONS above for the full list and rationale per entry.
-  useEffect(() => {
-    if (isStaticExport) {
-      return;
-    }
-
-    let cancelled = false;
-
-    const runBootMigrations = async () => {
-      await waitForDbReady();
-      if (cancelled) {
-        return;
-      }
-
-      await Promise.all(
-        BOOT_MIGRATIONS.filter((m) => !m.webOnly || Platform.OS === 'web').map(async (m) => {
-          try {
-            if (m.runOnce && (await AsyncStorage.getItem(bootMigrationDoneKey(m.tag)))) {
-              return;
-            }
-
-            const cutoffMs = m.runOnce ? await getRunOnceMigrationCutoff(m.tag) : Date.now();
-            await m.run(cutoffMs);
-
-            // Marked done only after success so failed runs retry on the next boot.
-            if (m.runOnce) {
-              await AsyncStorage.setItem(bootMigrationDoneKey(m.tag), '1');
-              await AsyncStorage.removeItem(bootMigrationCutoffKey(m.tag));
-            }
-          } catch (err) {
-            console.warn(`[AppBoot] ${m.tag} error:`, err);
-          }
-        })
-      );
-    };
-
-    void runBootMigrations();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  // Prune orphaned workout insights dismissal state when leaving the workout domain.
-  // This prevents accumulation of old keys if the app is killed or navigates away.
   useEffect(() => {
     if (isStaticExport) {
       return;
@@ -285,13 +324,14 @@ export function AppBoot() {
 
     const isInsideWorkoutDomain = segments[0] === 'workout';
     if (!isInsideWorkoutDomain) {
-      pruneWorkoutInsights().catch((err) => console.warn('[WorkoutInsights] Pruning error:', err));
+      pruneWorkoutInsights().catch((err) =>
+        captureBootException(err, 'WorkoutInsights.pruneOrphans')
+      );
     }
   }, [segments]);
 
-  // Fix food_portion rows saved as raw i18n keys (e.g. "food.portions.tbsp") instead of labels.
   useEffect(() => {
-    if (!language || isStaticExport) {
+    if (isStaticExport) {
       return;
     }
 
@@ -299,19 +339,27 @@ export function AppBoot() {
 
     const fixPortionNames = async () => {
       try {
-        if (i18n.language !== language) {
-          await i18n.changeLanguage(language);
-        }
-        if (cancelled) {
-          return;
-        }
         await waitForDbReady();
         if (cancelled) {
           return;
         }
+
+        const language = await SettingsService.getLanguage();
+        if (!language || cancelled) {
+          return;
+        }
+
+        if (i18n.language !== language) {
+          await i18n.changeLanguage(language);
+        }
+
+        if (cancelled) {
+          return;
+        }
+
         await FoodPortionService.fixPortionNamesStoredAsI18nKeys();
       } catch (err) {
-        console.warn('[FoodPortionService] fixPortionNamesStoredAsI18nKeys error:', err);
+        captureBootException(err, 'FoodPortionService.fixPortionNamesStoredAsI18nKeys');
       }
     };
 
@@ -320,16 +368,8 @@ export function AppBoot() {
     return () => {
       cancelled = true;
     };
-  }, [language]);
+  }, []);
 
-  // Boot-time tasks (native: Android + iOS, all run in parallel)
-  //
-  // IMPORTANT — DB-ready race: this effect fires at mount, which is before (or
-  // concurrent with) seedProductionData() in app/onboarding/landing.tsx.
-  // On a fresh install, seedProductionData() calls unsafeResetDatabase(), which
-  // temporarily replaces the SQLite adapter with an ErrorAdapter that throws on
-  // any query. Any boot task that touches the DB (e.g. configureDailyTasks) must
-  // await waitForDbReady() from database/dbReady.ts before issuing queries.
   useEffect(() => {
     if (Platform.OS === 'web' || isStaticExport) {
       return;
@@ -337,7 +377,6 @@ export function AppBoot() {
 
     const notificationInit = NotificationService.configure()
       .then(async () => {
-        // Dismiss any orphaned workout notification from a previous killed session
         const activeWorkoutLogId = await getActiveWorkoutLogId();
         if (!activeWorkoutLogId) {
           NotificationService.dismissActiveWorkoutNotification();
@@ -350,16 +389,18 @@ export function AppBoot() {
         NotificationService.scheduleMenstrualCycleNotifications();
         NotificationService.scheduleCheckinNotifications();
       })
-      .catch((err) => console.warn('[NotificationService] Init error:', err));
+      .catch((err) => captureBootException(err, 'NotificationService.bootInit'));
+
+    startDbDurabilityMonitoring();
 
     Promise.all([
       waitForDbReady().then(() =>
         healthDataSyncService
           .syncFromHealthPlatform({ lookbackDays: 7 })
-          .catch((err) => console.warn('[boot sync] Health platform sync error:', err))
+          .catch((err) => captureBootException(err, 'HealthDataSync.bootSync'))
       ),
       configureDailyTasks().catch((err) =>
-        console.warn('[configureDailyTasks] Startup error:', err)
+        captureBootException(err, 'configureDailyTasks.bootStartup')
       ),
       notificationInit,
     ]);
@@ -370,25 +411,19 @@ export function AppBoot() {
       return;
     }
 
-    // Handle cold-start: app opened by tapping a notification
     getLastNotificationResponseAsync()
       .then((response) => {
         if (response) {
           handleNotificationResponse(response);
         }
       })
-      .catch((err: unknown) =>
-        console.warn('[NotificationService] Cold-start response error:', err)
-      );
+      .catch((err: unknown) => captureBootException(err, 'NotificationService.coldStartResponse'));
 
     const subscription = addNotificationResponseReceivedListener(handleNotificationResponse);
 
     return () => subscription.remove();
   }, []);
 
-  // One-time migration for users upgrading from a build that predates the confetti feature.
-  // When the key is absent and onboarding is already done, we inspect the DB to determine
-  // which activities the user has already performed so we don't show stale confetti.
   useEffect(() => {
     if (isStaticExport) {
       return;
@@ -402,8 +437,6 @@ export function AppBoot() {
         ]);
 
         if (stored !== null || onboardingDone !== 'true') {
-          // Key already written (seeder or previous migration run), or fresh install
-          // (seeder will seed it) — nothing to do.
           return;
         }
 
@@ -446,7 +479,7 @@ export function AppBoot() {
           pending.length === 0 ? CONFETTI_ALL_DONE_SENTINEL : JSON.stringify(pending)
         );
       } catch (err) {
-        console.warn('[AppBoot] Failed to migrate confetti interactions state:', err);
+        captureBootException(err, 'AppBoot.migrateConfettiInteractions');
       }
     };
 
@@ -458,11 +491,13 @@ export function AppBoot() {
       return;
     }
 
-    // Setup Focus Management for Mobile
-    // This ensures TanStack Query knows when the app is active/foregrounded
     function onAppStateChange(status: AppStateStatus) {
       if (Platform.OS !== 'web') {
         focusManager.setFocused(status === 'active');
+
+        if (status === 'background') {
+          void checkpointDbOnAppBackground();
+        }
       }
     }
 

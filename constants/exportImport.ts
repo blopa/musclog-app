@@ -16,6 +16,7 @@ export const ASYNC_STORAGE_EXCLUDED_PREFIXES = [WEB_BACKUP_DATA_PREFIX];
 /** Table names in dependency order for restore (parents before children). */
 export const RESTORE_ORDER: string[] = [
   // Independent master tables
+  'muscles',
   'exercises',
   'users',
   'foods',
@@ -32,8 +33,12 @@ export const RESTORE_ORDER: string[] = [
   'workout_template_exercises',
   'workout_template_sets',
 
+  // Exercise junction tables
+  'exercise_muscles',
+
   // Food/Meal junction tables
   'food_food_portions',
+  'meal_food_portions',
   'meal_foods',
 
   // Goal and tracking tables

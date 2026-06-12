@@ -1,5 +1,4 @@
 import { Model, Q } from '@nozbe/watermelondb';
-import { documentDirectory } from 'expo-file-system/legacy';
 import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 import { Platform } from 'react-native';
 
@@ -10,6 +9,7 @@ import {
   type TableGroupDescriptor,
 } from '@/constants/database';
 import { database } from '@/database/database-instance';
+import { wdbDir } from '@/database/dbPath';
 import { deleteBleDataPointsFiles } from '@/utils/bleWorkoutDataStorage';
 import { handleError } from '@/utils/handleError';
 
@@ -94,11 +94,6 @@ function isLikelyCorruptionError(error: unknown): boolean {
     'database or disk is full',
     'code 522',
   ].some((needle) => message.includes(needle));
-}
-
-function wdbDir(): string {
-  const base = (documentDirectory ?? '').replace(/^file:\/\//, '').replace(/\/$/, '');
-  return Platform.OS === 'android' ? base.replace(/\/files$/, '') : base;
 }
 
 function openRawDatabase(): SQLiteDatabase | null {

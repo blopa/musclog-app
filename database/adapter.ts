@@ -1,25 +1,16 @@
 import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite';
 import * as Sentry from '@sentry/react-native';
-import { documentDirectory } from 'expo-file-system/legacy';
 import { openDatabaseSync } from 'expo-sqlite';
-import { Platform } from 'react-native';
 
 import { DATABASE_NAME } from '@/constants/database';
 import { initializeSentry } from '@/sentry-init';
 
+import { captureBootDbFileStats } from './dbBootStats';
+import { wdbDir } from './dbPath';
 import { migrations } from './migrations';
 import { createPreMigrationBackup } from './preMigrationBackup';
 import { schema } from './schema';
 
-// Returns the directory where WatermelonDB's JSI adapter stores its database.
-// See exportDb.ts wdbDir() for the full explanation.
-function wdbDir(): string {
-  const base = (documentDirectory ?? '').replace(/^file:\/\//, '').replace(/\/$/, '');
-  return Platform.OS === 'android' ? base.replace(/\/files$/, '') : base;
-}
-
-// Read the current DB version before WatermelonDB opens its connection, so we
-// can pass accurate fromVersion/toVersion to the pre-migration backup.
 function readCurrentDbVersion(): number | null {
   try {
     const db = openDatabaseSync(`${DATABASE_NAME}.db`, undefined, wdbDir());
@@ -30,6 +21,10 @@ function readCurrentDbVersion(): number | null {
     return null;
   }
 }
+
+// Must run before readCurrentDbVersion(): closing that connection checkpoints
+// the WAL, and we need the pre-checkpoint WAL size for loss diagnostics.
+captureBootDbFileStats();
 
 const currentDbVersion = readCurrentDbVersion();
 
@@ -55,9 +50,6 @@ export default new SQLiteAdapter({
     },
     onError: (error: Error) => {
       console.warn('[SQLiteMigration] Migration failed', error);
-      // Bypass the DB-dependent consent check: the DB just failed so querying it
-      // would trigger a spurious "Database Error" dialog. initializeSentry() is
-      // idempotent and safe to call here without touching the DB.
       initializeSentry();
       Sentry.captureException(error, {
         data: {

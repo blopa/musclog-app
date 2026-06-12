@@ -52,7 +52,8 @@ function getRawRowsFromLoki(tableName: string): Record<string, unknown>[] | null
 
 /**
  * Dump the entire database to a JSON-serializable object.
- * Encrypted fields in user_metrics and nutrition_logs are exported decrypted so the backup is device-independent.
+ * Encrypted fields in user_metrics, nutrition_logs, saved_for_later_groups and
+ * saved_for_later_items are exported decrypted so the backup is device-independent.
  * API key settings are excluded.
  */
 export async function dumpDatabase(
@@ -98,7 +99,7 @@ export async function dumpDatabase(
       continue;
     }
 
-    if (tableName === 'nutrition_logs') {
+    if (tableName === 'nutrition_logs' || tableName === 'saved_for_later_items') {
       const decryptedRows: Record<string, unknown>[] = [];
       for (const raw of rows) {
         const [
@@ -131,7 +132,21 @@ export async function dumpDatabase(
         };
         decryptedRows.push(row);
       }
-      dbData.nutrition_logs = decryptedRows;
+      dbData[tableName] = decryptedRows;
+      continue;
+    }
+
+    if (tableName === 'saved_for_later_groups') {
+      const decryptedRows: Record<string, unknown>[] = [];
+      for (const raw of rows) {
+        decryptedRows.push({
+          ...raw,
+          note: (await decryptOptionalString(raw.note as string | undefined)) || '',
+          _decrypted: true,
+        });
+      }
+
+      dbData.saved_for_later_groups = decryptedRows;
       continue;
     }
 

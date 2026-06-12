@@ -1,7 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { documentDirectory } from 'expo-file-system/legacy';
 import { openDatabaseSync } from 'expo-sqlite';
-import { Platform } from 'react-native';
 
 import { CURRENT_DATABASE_VERSION, DATABASE_NAME } from '@/constants/database';
 import {
@@ -14,27 +12,8 @@ import { getExportPlatform } from '@/constants/platform';
 import { encrypt } from '@/utils/encryption';
 import { handleError } from '@/utils/handleError';
 
+import { wdbDir } from './dbPath';
 import { decryptJson, decryptNumber, decryptOptionalString } from './encryptionHelpers';
-
-/**
- * Returns the directory where WatermelonDB's JSI adapter stores its database file.
- *
- * WatermelonDB does NOT use expo-sqlite's default directory. Its native path logic is:
- *   Android (JSIInstaller.java): context.getDatabasePath(name+".db").getPath().replace("/databases","")
- *             → <appDataRoot>/musclog.db  (i.e. one level above expo-sqlite's files/SQLite/)
- *   iOS (DatabasePlatformIOS.mm): NSDocumentDirectory/name.db
- *             → <Documents>/musclog.db  (expo-sqlite would use <Documents>/SQLite/musclog)
- *
- * The database filename is always `${DATABASE_NAME}.db` (WatermelonDB appends ".db" itself).
- */
-function wdbDir(): string {
-  // documentDirectory:  Android → 'file:///data/user/0/<pkg>/files/'
-  //                     iOS    → 'file:///var/mobile/.../Documents/'
-  const base = (documentDirectory ?? '').replace(/^file:\/\//, '').replace(/\/$/, '');
-  // Android: WatermelonDB stores in the app-data root (parent of 'files/')
-  // iOS:     WatermelonDB stores directly in Documents (same dir, no SQLite/ subdir)
-  return Platform.OS === 'android' ? base.replace(/\/files$/, '') : base;
-}
 
 function quoteIdentifier(identifier: string): string {
   return `"${identifier.replace(/"/g, '""')}"`;
@@ -53,8 +32,9 @@ type DumpDatabaseOptions = {
  * Dump the entire database to a JSON-serializable object using a raw SQLite connection.
  * This avoids going through the WatermelonDB singleton, making it safe to call before
  * or during WatermelonDB migrations (e.g. from preMigrationBackup).
- * Encrypted fields in user_metrics and nutrition_logs are exported decrypted so the backup
- * is device-independent. API key settings are excluded.
+ * Encrypted fields in user_metrics, nutrition_logs, saved_for_later_groups and
+ * saved_for_later_items are exported decrypted so the backup is device-independent.
+ * API key settings are excluded.
  */
 export async function dumpDatabase(
   encryptionPhrase?: string,
@@ -109,7 +89,7 @@ export async function dumpDatabase(
         continue;
       }
 
-      if (tableName === 'nutrition_logs') {
+      if (tableName === 'nutrition_logs' || tableName === 'saved_for_later_items') {
         const decryptedRows = await Promise.all(
           rows.map(async (row) => {
             const [
@@ -142,7 +122,20 @@ export async function dumpDatabase(
             };
           })
         );
-        dbData.nutrition_logs = decryptedRows;
+        dbData[tableName] = decryptedRows;
+        continue;
+      }
+
+      if (tableName === 'saved_for_later_groups') {
+        const decryptedRows = await Promise.all(
+          rows.map(async (row) => ({
+            ...row,
+            note: (await decryptOptionalString(row.note as string | undefined)) || '',
+            _decrypted: true,
+          }))
+        );
+
+        dbData.saved_for_later_groups = decryptedRows;
         continue;
       }
 
