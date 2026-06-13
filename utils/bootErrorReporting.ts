@@ -20,7 +20,10 @@ async function captureBootExceptionWhenDbReady(
   data?: BootErrorData
 ): Promise<void> {
   try {
-    await waitForDbReady();
+    // Wait for DB-ready so the consent read inside captureException isn't racing
+    // the reset window — but swallow a rejection: a failed boot must still report
+    // itself. captureException handles a broken DB on its own (reports anyway).
+    await waitForDbReady().catch(() => {});
 
     await captureException(error, {
       data: {
