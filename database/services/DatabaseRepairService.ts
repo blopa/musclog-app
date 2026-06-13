@@ -7,7 +7,11 @@ import {
   type TableGroupDescriptor,
 } from '@/constants/database';
 import { database } from '@/database/database-instance';
-import { type RawQueryRunner, rawQueryViaWatermelon } from '@/database/wmdbRaw';
+// All raw reads here go through WatermelonDB's own connection: opening a
+// second SQLite library on the file and closing it would unlink the live WAL
+// (see wmdbRaw.ts). Corruption errors are per-statement, so the connection
+// itself remains usable for these queries.
+import { rawQueryViaWatermelon } from '@/database/wmdbRaw';
 import { deleteBleDataPointsFiles } from '@/utils/bleWorkoutDataStorage';
 import { handleError } from '@/utils/handleError';
 
@@ -125,12 +129,11 @@ function parseIntegrityIssue(table: string, message: string): IntegrityIssue {
 // Those rows are still returned — attributed to the root table with no rowId —
 // so the caller knows repair is needed even if we can't resolve a specific record.
 async function collectIntegrityIssues(
-  runQuery: RawQueryRunner,
   watchedTables: ReadonlySet<string>,
   rootTable: string
 ): Promise<IntegrityIssue[]> {
   try {
-    const rows = await runQuery('PRAGMA integrity_check;');
+    const rows = await rawQueryViaWatermelon('PRAGMA integrity_check;');
     const issues: IntegrityIssue[] = [];
 
     for (const row of rows) {
@@ -164,12 +167,11 @@ async function collectIntegrityIssues(
 }
 
 async function querySingleValue(
-  runQuery: RawQueryRunner,
   sql: string,
   args: (string | number | boolean | null)[]
 ): Promise<string | null> {
   try {
-    const rows = await runQuery(sql, args);
+    const rows = await rawQueryViaWatermelon(sql, args);
     return readSingleColumnValue(rows[0]);
   } catch {
     return null;
@@ -177,7 +179,6 @@ async function querySingleValue(
 }
 
 async function resolveRootIdsFromIssues(
-  runQuery: RawQueryRunner,
   issues: IntegrityIssue[],
   chains: Map<string, LookupStep[]>
 ): Promise<string[]> {
@@ -198,7 +199,6 @@ async function resolveRootIdsFromIssues(
 
     for (const step of chain) {
       const result = await querySingleValue(
-        runQuery,
         `SELECT ${step.selectCol} FROM ${step.table} WHERE ${step.whereCol} = ? LIMIT 1`,
         [currentValue]
       );
@@ -352,33 +352,23 @@ async function runRepair(
     return result;
   }
 
-  // All reads go through WatermelonDB's own connection: opening a second
-  // SQLite library on the file and closing it would unlink the live WAL (see
-  // wmdbRaw.ts). Corruption errors are per-statement, so the connection itself
-  // remains usable for these raw queries.
-  const runQuery = rawQueryViaWatermelon;
-
   const tables = allTablesInDescriptor(descriptor);
   const watchedTables = new Set(tables);
   const chains = buildResolutionChains(descriptor);
 
-  const initialIssues = await collectIntegrityIssues(runQuery, watchedTables, descriptor.rootTable);
+  const initialIssues = await collectIntegrityIssues(watchedTables, descriptor.rootTable);
   result.issues = initialIssues;
 
   result.reindexed = await reindexTables(tables);
 
-  const postReindexIssues = await collectIntegrityIssues(
-    runQuery,
-    watchedTables,
-    descriptor.rootTable
-  );
+  const postReindexIssues = await collectIntegrityIssues(watchedTables, descriptor.rootTable);
   if (postReindexIssues.length === 0) {
     result.repaired = true;
     return result;
   }
 
   // postReindexIssues.length > 0 is guaranteed here.
-  const rootIdsToDelete = await resolveRootIdsFromIssues(runQuery, postReindexIssues, chains);
+  const rootIdsToDelete = await resolveRootIdsFromIssues(postReindexIssues, chains);
 
   if (rootIdsToDelete.length === 0) {
     return result;
@@ -388,7 +378,7 @@ async function runRepair(
 
   result.reindexed = (await reindexTables(tables)) || result.reindexed;
 
-  const finalIssues = await collectIntegrityIssues(runQuery, watchedTables, descriptor.rootTable);
+  const finalIssues = await collectIntegrityIssues(watchedTables, descriptor.rootTable);
   result.repaired = finalIssues.length === 0;
   result.issues = finalIssues.length > 0 ? finalIssues : postReindexIssues;
 

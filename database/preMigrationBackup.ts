@@ -1,9 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { cacheDirectory, deleteAsync, writeAsStringAsync } from 'expo-file-system/legacy';
+import { openDatabaseSync } from 'expo-sqlite';
 
+import { DATABASE_NAME } from '@/constants/database';
 import { handleError } from '@/utils/handleError';
 
-import { createExpoSqliteQueryRunner, dumpDatabase } from './exportDb';
+import { wdbDir } from './dbPath';
+import { dumpDatabase } from './exportDb';
+import type { RawQueryRunner } from './wmdbRaw';
 
 const PRE_MIGRATION_BACKUPS_KEY = 'pre_migration_backups_v1';
 const PRE_MIGRATION_BACKUPS_MAX_FILES = 3;
@@ -104,24 +108,13 @@ async function executeBackup(
   nameInfix: string,
   fromVersion: number | null = null,
   toVersion: number | null = null,
-  options: { useRawConnection?: boolean } = {}
+  queryRunner?: RawQueryRunner
 ): Promise<string> {
   if (!cacheDirectory) {
     throw new Error('Cache directory is not available');
   }
 
-  // Pre-migration backups must read via a raw expo-sqlite connection: they run
-  // while WatermelonDB is mid-migration and cannot serve queries. This is the
-  // only mid-session raw connection left in the app — its close can unlink the
-  // live WAL (see wmdbRaw.ts), which is accepted because migrations are rare
-  // and the boot rescue checkpoint in dbDurability.ts persists any affected
-  // frames right after the DB becomes ready. Every other dump goes through
-  // WatermelonDB's own connection.
-  const raw = options.useRawConnection ? createExpoSqliteQueryRunner() : null;
-  const jsonString = await dumpDatabase(undefined, {
-    queryRunner: raw?.runQuery,
-    closeQueryRunner: raw?.close,
-  });
+  const jsonString = await dumpDatabase(undefined, { queryRunner });
   const createdAt = new Date().toISOString();
   const timestamp = createdAt.replace(/[:.]/g, '-').slice(0, 19);
   const uri = `${cacheDirectory}${timestamp}-${nameInfix}.json`;
@@ -173,9 +166,29 @@ export function createPreMigrationBackup(event?: unknown): Promise<void> {
 
   async function performBackup() {
     const infix = `pre-migration-v${formatVersion(fromVersion)}-to-v${formatVersion(toVersion)}`;
-    const uri = await executeBackup(infix, fromVersion, toVersion, { useRawConnection: true });
-    completedBackupSignature = signature;
-    console.log(`[PreMigrationBackup] Created: ${uri}`);
+
+    // Pre-migration backups read via a raw expo-sqlite connection: they run
+    // while WatermelonDB is mid-migration and cannot serve queries. This is
+    // the only mid-session raw connection left in the app — its close can
+    // unlink the live WAL (see wmdbRaw.ts), which is accepted because
+    // migrations are rare and the boot rescue checkpoint in dbDurability.ts
+    // persists any affected frames right after the DB becomes ready. Every
+    // other dump goes through WatermelonDB's own connection.
+    const db = openDatabaseSync(`${DATABASE_NAME}.db`, { useNewConnection: true }, wdbDir());
+    const runQuery: RawQueryRunner = (sql, args = []) =>
+      db.getAllAsync(sql, args) as Promise<Record<string, unknown>[]>;
+
+    try {
+      const uri = await executeBackup(infix, fromVersion, toVersion, runQuery);
+      completedBackupSignature = signature;
+      console.log(`[PreMigrationBackup] Created: ${uri}`);
+    } finally {
+      try {
+        db.closeSync();
+      } catch {
+        // best effort
+      }
+    }
   }
 
   inFlightBackup = performBackup()

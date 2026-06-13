@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { openDatabaseSync } from 'expo-sqlite';
 
-import { CURRENT_DATABASE_VERSION, DATABASE_NAME } from '@/constants/database';
+import { CURRENT_DATABASE_VERSION } from '@/constants/database';
 import {
   ASYNC_STORAGE_EXCLUDED_KEYS,
   ASYNC_STORAGE_EXCLUDED_PREFIXES,
@@ -12,7 +11,6 @@ import { getExportPlatform } from '@/constants/platform';
 import { encrypt } from '@/utils/encryption';
 import { handleError } from '@/utils/handleError';
 
-import { wdbDir } from './dbPath';
 import { decryptJson, decryptNumber, decryptOptionalString } from './encryptionHelpers';
 import { type RawQueryRunner, rawQueryViaWatermelon } from './wmdbRaw';
 
@@ -32,28 +30,11 @@ type DumpDatabaseOptions = {
    * is the only safe option while the app is running (a second SQLite library
    * closing its connection unlinks the WAL — see wmdbRaw.ts). Only the
    * pre-migration backup passes an expo-sqlite runner, because WatermelonDB
-   * cannot serve queries mid-migration.
+   * cannot serve queries mid-migration; that caller owns the connection and
+   * its close.
    */
   queryRunner?: RawQueryRunner;
-  /** Called after the dump finishes when the runner owns a connection to close. */
-  closeQueryRunner?: () => void;
 };
-
-/**
- * Creates a query runner backed by a raw expo-sqlite connection. ONLY safe
- * when WatermelonDB's connection is not (yet) open — i.e. the pre-migration
- * backup; everywhere else use the default WatermelonDB-backed runner.
- */
-export function createExpoSqliteQueryRunner(): {
-  runQuery: RawQueryRunner;
-  close: () => void;
-} {
-  const db = openDatabaseSync(`${DATABASE_NAME}.db`, { useNewConnection: true }, wdbDir());
-  return {
-    runQuery: (sql, args = []) => db.getAllAsync(sql, args) as Promise<Record<string, unknown>[]>,
-    close: () => db.closeSync(),
-  };
-}
 
 /**
  * Dump the entire database to a JSON-serializable object using raw SQL against
@@ -196,7 +177,5 @@ export async function dumpDatabase(
   } catch (err) {
     await handleError(err, 'dumpDatabase');
     throw err;
-  } finally {
-    options.closeQueryRunner?.();
   }
 }
