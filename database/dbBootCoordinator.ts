@@ -197,6 +197,8 @@ async function waitForExistingDbReady(cancelled: Cancelled): Promise<void> {
           );
         }
 
+        // A non reset-race error won't clear by waiting, so stop probing and let
+        // boot proceed to markDbReady rather than blocking the app indefinitely.
         captureBootException(err, 'AppBoot.dbReadyProbe', {
           attempt,
           elapsedMs: elapsed(),

@@ -6,7 +6,12 @@ import { DATABASE_NAME } from '@/constants/database';
 import { RESTORE_ORDER } from '@/constants/exportImport';
 
 import { wdbDir } from './dbPath';
-import { type CapturedTableRows, dumpRowsToJson } from './exportDbCore';
+import {
+  type CapturedTableRows,
+  dumpRowsToJson,
+  LIST_USER_TABLES_SQL,
+  selectAllRowsSql,
+} from './exportDbCore';
 
 const PRE_MIGRATION_BACKUPS_KEY = 'pre_migration_backups_v1';
 const PRE_MIGRATION_BACKUPS_MAX_FILES = 3;
@@ -18,45 +23,10 @@ export type BackupFileMeta = {
   toVersion: number | null;
 };
 
-type MigrationEventShape = {
-  from?: number;
-  to?: number;
-  fromVersion?: number;
-  toVersion?: number;
-  databaseVersion?: number;
-};
-
-function normalizeVersion(value: unknown): number | null {
-  if (typeof value === 'number' && Number.isFinite(value)) {
-    return value;
-  }
-  if (typeof value === 'string' && value.trim() !== '') {
-    const parsed = Number(value);
-    if (Number.isFinite(parsed)) {
-      return parsed;
-    }
-  }
-  return null;
-}
-
-function getVersions(event?: unknown) {
-  const payload = (event as MigrationEventShape) || {};
-  return {
-    fromVersion: normalizeVersion(payload.fromVersion ?? payload.from),
-    toVersion: normalizeVersion(payload.toVersion ?? payload.to ?? payload.databaseVersion),
-  };
-}
-
 const formatVersion = (value: number | null): string => (value == null ? 'unknown' : String(value));
 
-function quoteIdentifier(identifier: string): string {
-  return `"${identifier.replace(/"/g, '""')}"`;
-}
-
 function readCapturedRowsSync(db: SQLiteDatabase): CapturedTableRows {
-  const tableRows = db.getAllSync<{ name: string }>(
-    "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
-  );
+  const tableRows = db.getAllSync<{ name: string }>(LIST_USER_TABLES_SQL);
   const existingTables = new Set(tableRows.map((row) => row.name));
   const capturedRows: CapturedTableRows = {};
 
@@ -65,9 +35,7 @@ function readCapturedRowsSync(db: SQLiteDatabase): CapturedTableRows {
       continue;
     }
 
-    capturedRows[tableName] = db.getAllSync<Record<string, unknown>>(
-      `SELECT * FROM ${quoteIdentifier(tableName)};`
-    );
+    capturedRows[tableName] = db.getAllSync<Record<string, unknown>>(selectAllRowsSql(tableName));
   }
 
   return capturedRows;
@@ -254,15 +222,4 @@ export function preparePreMigrationBackupBeforeAdapter(toVersion: number): numbe
       // best effort
     }
   }
-}
-
-export function createPreMigrationBackup(event?: unknown): Promise<void> {
-  const { fromVersion, toVersion } = getVersions(event);
-  if (fromVersion != null && toVersion != null) {
-    console.warn(
-      '[PreMigrationBackup] Ignoring migration-event backup request; native backups are captured before adapter initialization.'
-    );
-  }
-
-  return waitForPreMigrationBackup();
 }

@@ -2,8 +2,7 @@
 
 ## Context
 
-The native adapter (`database/adapter.ts`) has `migrationEvents.onStart` which fires
-`createPreMigrationBackup()` before any migration SQL runs. The web adapter
+The native adapter (`database/adapter.ts`) has `migrationEvents.onStart`. The web adapter
 (`database/adapter.web.ts`) uses LokiJS which has no equivalent migration event hook.
 
 Additionally, both `exportDb.ts` (native) and `exportDb.web.ts` (web) should avoid

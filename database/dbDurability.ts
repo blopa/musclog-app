@@ -40,9 +40,12 @@ type CountBaseline = {
 // reports must record which one the session ran on.
 function getAdapterDispatcherType(): string {
   try {
+    // Best-effort read of a private WatermelonDB field; guarded so a future
+    // internals change degrades the breadcrumb to 'unknown' instead of throwing.
     const adapter = database.adapter as unknown as {
       underlyingAdapter?: { _dispatcherType?: string };
     };
+
     return adapter.underlyingAdapter?._dispatcherType ?? 'unknown';
   } catch {
     return 'unknown';

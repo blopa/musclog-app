@@ -110,12 +110,6 @@ export async function deleteBackup(uri: string): Promise<void> {
   saveBackupIndex(next);
 }
 
-/**
- * No-op on web: LokiJS adapter has no migrationEvents hooks.
- * Use runWebPreMigrationBackupIfNeeded() instead.
- */
-export async function createPreMigrationBackup(_event?: unknown): Promise<void> {}
-
 export async function waitForPreMigrationBackup(): Promise<void> {}
 
 /**

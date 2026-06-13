@@ -39,8 +39,21 @@ type DumpRowsOptions = {
   exportVersion?: number;
 };
 
-function quoteIdentifier(identifier: string): string {
+/** SQL to list user tables (excludes SQLite-internal tables). */
+export const LIST_USER_TABLES_SQL =
+  "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';";
+
+export function quoteIdentifier(identifier: string): string {
   return `"${identifier.replace(/"/g, '""')}"`;
+}
+
+/**
+ * SELECT-all for a table. Optionally excludes WatermelonDB tombstones
+ * (`_status = 'deleted'`) so restore can't resurrect deleted records.
+ */
+export function selectAllRowsSql(tableName: string, includeDeletedRecords = true): string {
+  const deletedRecordsClause = includeDeletedRecords ? '' : " WHERE _status != 'deleted'";
+  return `SELECT * FROM ${quoteIdentifier(tableName)}${deletedRecordsClause};`;
 }
 
 async function addAsyncStorageDump(dbData: ExportDump): Promise<void> {
@@ -143,9 +156,7 @@ export async function dumpDatabaseWithQueryRunner(
   options: DumpDatabaseOptions = {}
 ): Promise<string> {
   const includeDeletedRecords = options.includeDeletedRecords ?? true;
-  const tableRows = (await queryRunner(
-    "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
-  )) as { name: string }[];
+  const tableRows = (await queryRunner(LIST_USER_TABLES_SQL)) as { name: string }[];
   const existingTables = new Set(tableRows.map((row) => row.name));
   const capturedRows: CapturedTableRows = {};
 
@@ -154,10 +165,7 @@ export async function dumpDatabaseWithQueryRunner(
       continue;
     }
 
-    const deletedRecordsClause = includeDeletedRecords ? '' : " WHERE _status != 'deleted'";
-    capturedRows[tableName] = await queryRunner(
-      `SELECT * FROM ${quoteIdentifier(tableName)}${deletedRecordsClause};`
-    );
+    capturedRows[tableName] = await queryRunner(selectAllRowsSql(tableName, includeDeletedRecords));
   }
 
   return dumpRowsToJson(capturedRows, encryptionPhrase, {

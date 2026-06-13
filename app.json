@@ -30,7 +30,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#0a1f1a",
+          "backgroundColor": "#0c1a13",
           "image": "./assets/splash.png",
           "imageWidth": 200
         }
@@ -158,7 +158,7 @@
       "versionCode": 266,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0a1f1a"
+        "backgroundColor": "#0c1a13"
       },
       "permissions": [
         "android.permission.INTERNET",
