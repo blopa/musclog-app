@@ -19,13 +19,11 @@ import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 import { database } from './database-instance';
 import { updateNutritionLogCountBaseline } from './dbDurability';
 import {
-  decryptNutritionLogSnapshotRow,
   encryptNutritionLogSnapshot,
   encryptOptionalString,
   encryptUserMetricFields,
   type NutritionLogSnapshotPlain,
   readPlainNutritionLogSnapshotRow,
-  readSavedForLaterGroupNote,
 } from './encryptionHelpers';
 import { createPreRestoreBackup } from './preMigrationBackup';
 import { validateExportDump, type ValidationResult } from './schemaToZod';
@@ -38,26 +36,40 @@ export type ExportDump = {
 
 type ImportRow = Record<string, unknown>;
 
-const ZERO_NUTRITION_LOG_SNAPSHOT: NutritionLogSnapshotPlain = {
-  loggedCalories: 0,
-  loggedProtein: 0,
-  loggedCarbs: 0,
-  loggedFat: 0,
-  loggedFiber: 0,
-};
+const NUTRITION_SNAPSHOT_NUMBER_KEYS = [
+  'logged_calories',
+  'logged_protein',
+  'logged_carbs',
+  'logged_fat',
+  'logged_fiber',
+] as const;
+
+function isPlainNutritionSnapshotRow(raw: ImportRow): boolean {
+  return NUTRITION_SNAPSHOT_NUMBER_KEYS.every((key) => typeof raw[key] === 'number');
+}
+
+function assertDecryptedSavedForLaterRow(raw: ImportRow, tableName: string, oldId: string): void {
+  if (raw._decrypted === true || isPlainNutritionSnapshotRow(raw)) {
+    return;
+  }
+
+  throw new Error(
+    `${tableName} row ${oldId} contains encrypted snapshot fields. Export the backup again with a version that decrypts saved-for-later rows before restoring.`
+  );
+}
 
 async function prepareSavedForLaterGroupCreate(
   collection: any,
   raw: ImportRow,
   oldId: string
 ): Promise<any> {
-  let notePlain: string | undefined;
-  try {
-    notePlain = (await readSavedForLaterGroupNote(raw)) || undefined;
-  } catch {
-    notePlain = undefined;
+  if (raw.note != null && raw.note !== '' && raw._decrypted !== true) {
+    throw new Error(
+      `saved_for_later_groups row ${oldId} contains an encrypted note. Export the backup again with a version that decrypts saved-for-later rows before restoring.`
+    );
   }
 
+  const notePlain = raw.note != null ? String(raw.note) || undefined : undefined;
   const noteRaw = await encryptOptionalString(notePlain);
   return collection.prepareCreate((rec: any) => {
     rec._raw.id = oldId;
@@ -74,16 +86,9 @@ async function prepareSavedForLaterGroupCreate(
   });
 }
 
-async function readSavedForLaterItemSnapshot(raw: ImportRow): Promise<NutritionLogSnapshotPlain> {
-  if (raw._decrypted === true) {
-    return readPlainNutritionLogSnapshotRow(raw);
-  }
-
-  try {
-    return await decryptNutritionLogSnapshotRow(raw);
-  } catch {
-    return ZERO_NUTRITION_LOG_SNAPSHOT;
-  }
+function readSavedForLaterItemSnapshot(raw: ImportRow, oldId: string): NutritionLogSnapshotPlain {
+  assertDecryptedSavedForLaterRow(raw, 'saved_for_later_items', oldId);
+  return readPlainNutritionLogSnapshotRow(raw);
 }
 
 async function prepareSavedForLaterItemCreate(
@@ -91,7 +96,7 @@ async function prepareSavedForLaterItemCreate(
   raw: ImportRow,
   oldId: string
 ): Promise<any> {
-  const snapshot = await readSavedForLaterItemSnapshot(raw);
+  const snapshot = readSavedForLaterItemSnapshot(raw, oldId);
   const encrypted = await encryptNutritionLogSnapshot(snapshot);
   return collection.prepareCreate((rec: any) => {
     rec._raw.id = oldId;
@@ -99,10 +104,12 @@ async function prepareSavedForLaterItemCreate(
     if (raw.food_id != null) {
       rec.foodId = String(raw.food_id);
     }
+
     rec.amount = Number(raw.amount);
     if (raw.portion_id != null) {
       rec.portionId = String(raw.portion_id);
     }
+
     rec.loggedFoodNameRaw = encrypted.loggedFoodName;
     rec.loggedCaloriesRaw = encrypted.loggedCalories;
     rec.loggedProteinRaw = encrypted.loggedProtein;
@@ -113,9 +120,11 @@ async function prepareSavedForLaterItemCreate(
     if (raw.logged_meal_name != null) {
       rec.loggedMealName = String(raw.logged_meal_name);
     }
+
     if (raw.original_group_id != null) {
       rec.originalGroupId = String(raw.original_group_id);
     }
+
     rec.createdAt = Number(raw.created_at);
     rec.updatedAt = Number(raw.updated_at);
     if (raw.deleted_at != null) {
