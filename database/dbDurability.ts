@@ -25,6 +25,8 @@ import { rawQueryViaWatermelon } from './wmdbRaw';
  *     Sentry when a boot finds fewer rows than the previous session left,
  *     including the adapter mode and the pre-open WAL file sizes captured in
  *     dbBootStats.ts.
+ *
+ * Full root-cause write-up: docs/DATABASE_DURABILITY.md.
  */
 
 const NUTRITION_LOG_COUNT_BASELINE_KEY = 'nutrition_log_count_baseline_v1';

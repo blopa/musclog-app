@@ -23,6 +23,9 @@ export type ExportDump = {
   [tableName: string]: unknown;
 };
 
+// A function that runs raw SQL and returns rows. Inject the WatermelonDB-backed
+// runner (rawQueryViaWatermelon) for any live path — never an expo-sqlite
+// connection to musclog.db while the app is running (see docs/DATABASE_DURABILITY.md).
 export type RawQueryRunner = (
   sql: string,
   args?: (string | number | boolean | null)[]
