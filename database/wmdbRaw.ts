@@ -17,7 +17,7 @@ import type { RawQueryRunner } from './exportDbCore';
  * Any raw SQL that must run while the app is up therefore goes through this
  * helper. Opening expo-sqlite on musclog.db is only safe in the native
  * pre-adapter path (preparePreMigrationBackupBeforeAdapter in
- * preMigrationBackup.ts), before WatermelonDB has opened the file.
+ * preMigrationCapture.ts), before WatermelonDB has opened the file.
  */
 // 'settings' only satisfies the adapter's validateTable check; the SQL is arbitrary.
 export const rawQueryViaWatermelon: RawQueryRunner = (sql, args = []) =>
