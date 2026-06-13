@@ -4,7 +4,6 @@ import { useSegments } from 'expo-router';
 import { useEffect } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 
-import { ONBOARDING_COMPLETED } from '@/constants/misc';
 import { isStaticExport } from '@/constants/platform';
 import {
   ALL_CONFETTI_ACTIVITIES,
@@ -12,19 +11,14 @@ import {
   CONFETTI_INTERACTIONS_KEY,
   ConfettiActivity,
 } from '@/context/ConfettiInteractionsContext';
-import { checkpointDbOnAppBackground, startDbDurabilityMonitoring } from '@/database/dbDurability';
-import { markDbReady, waitForDbReady } from '@/database/dbReady';
+import { runDatabaseBootSequence, stopDatabaseBootProgress } from '@/database/dbBootCoordinator';
+import { waitForDbReady } from '@/database/dbReady';
 import {
   ExerciseGoalService,
-  ExerciseService,
   FoodPortionService,
-  FoodService,
   MealService,
-  MuscleService,
   NutritionGoalService,
   NutritionService,
-  TimezoneMigrationService,
-  UserMetricService,
   WorkoutService,
 } from '@/database/services';
 import { SettingsService } from '@/database/services/SettingsService';
@@ -33,287 +27,25 @@ import { healthDataSyncService } from '@/services/healthDataSync';
 import { NotificationService } from '@/services/NotificationService';
 import { getActiveWorkoutLogId, pruneWorkoutInsights } from '@/utils/activeWorkoutStorage';
 import { captureBootException } from '@/utils/bootErrorReporting';
-import {
-  beginBootProgress,
-  completeBootProgressStep,
-  finishBootProgress,
-} from '@/utils/bootProgress';
 import { configureDailyTasks } from '@/utils/configureDailyTasks';
 import {
   addNotificationResponseReceivedListener,
   getLastNotificationResponseAsync,
   handleNotificationResponse,
 } from '@/utils/notifications';
-
-const DB_RESET_RACE_ERRORS = [
-  'No driver with tag',
-  'Cannot call database.adapter.underlyingAdapter while the database is being reset',
-];
-const DB_READY_PROBE_SLOW_REPORT_MS = 15_000;
-const DB_READY_PROBE_MAX_ELAPSED_MS = 45_000;
-const BOOT_MIGRATION_SLOW_REPORT_MS = 30_000;
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function isDbReadyRetryableError(err: unknown): boolean {
-  const msg = err instanceof Error ? err.message : String(err);
-  return DB_RESET_RACE_ERRORS.some((needle) => msg.includes(needle));
-}
-
-type BootMigration = {
-  tag: string;
-  webOnly?: boolean;
-  runOnce?: boolean;
-  run: (cutoffMs: number) => Promise<unknown>;
-};
-
-const bootMigrationDoneKey = (tag: string) => `boot_migration_done:${tag}`;
-const bootMigrationCutoffKey = (tag: string) => `boot_migration_cutoff:${tag}`;
-
-async function getRunOnceMigrationCutoff(tag: string): Promise<number> {
-  const key = bootMigrationCutoffKey(tag);
-  const existing = await AsyncStorage.getItem(key);
-  const parsed = existing ? Number(existing) : NaN;
-  if (Number.isFinite(parsed) && parsed > 0) {
-    return parsed;
-  }
-
-  const cutoff = Date.now();
-  await AsyncStorage.setItem(key, String(cutoff));
-  return cutoff;
-}
-
-const BOOT_MIGRATIONS: BootMigration[] = [
-  {
-    tag: 'fixNegativeFiber',
-    run: () =>
-      Promise.all([
-        NutritionGoalService.fixNegativeFiber().catch((err) =>
-          captureBootException(err, 'NutritionGoalService.fixNegativeFiber')
-        ),
-        FoodService.fixNegativeFiber().catch((err) =>
-          captureBootException(err, 'FoodService.fixNegativeFiber')
-        ),
-        NutritionService.fixNegativeFiber().catch((err) =>
-          captureBootException(err, 'NutritionService.fixNegativeFiber')
-        ),
-      ]),
-  },
-  {
-    tag: 'ExerciseService.backfillExerciseSources',
-    webOnly: true,
-    run: () => ExerciseService.backfillExerciseSources(),
-  },
-  {
-    tag: 'FoodPortionService.backfillPortionSources',
-    webOnly: true,
-    run: () => FoodPortionService.backfillPortionSources(),
-  },
-  {
-    tag: 'ExerciseService.syncAppExercises',
-    run: async () => {
-      await ExerciseService.syncAppExercises();
-      await ExerciseService.syncExerciseMultipliers();
-    },
-  },
-  {
-    tag: 'ExerciseService.backfillExerciseOrderIndex',
-    run: () => ExerciseService.backfillExerciseOrderIndex(),
-  },
-  {
-    tag: 'MuscleService.backfillExerciseMuscles',
-    run: () => MuscleService.backfillExerciseMuscles(),
-  },
-  {
-    tag: 'ExerciseService.migrateExerciseImageUrlsToCloud',
-    webOnly: true,
-    run: () => ExerciseService.migrateExerciseImageUrlsToCloud(),
-  },
-  {
-    tag: 'WorkoutService.backfillNullTotalVolumes',
-    run: () => WorkoutService.backfillNullTotalVolumes(),
-  },
-  {
-    tag: 'UserMetricService.backfillTimezoneOffsets',
-    run: () => UserMetricService.backfillTimezoneOffsets(),
-  },
-  {
-    tag: 'TimezoneMigrationService.backfillMissingTimezones',
-    run: () => TimezoneMigrationService.backfillMissingTimezones(),
-  },
-  {
-    tag: 'TimezoneMigrationService.backfillConsumedTimeFromCreatedAt',
-    runOnce: true,
-    run: (cutoffMs) => TimezoneMigrationService.backfillConsumedTimeFromCreatedAt(cutoffMs),
-  },
-  {
-    tag: 'SettingsService.migrateApiKeysToEncrypted',
-    run: () => SettingsService.migrateApiKeysToEncrypted(),
-  },
-  {
-    tag: 'SettingsService.migrateRequireExportEncryptionDefault',
-    run: () => SettingsService.migrateRequireExportEncryptionDefault(),
-  },
-];
-
-function getActiveBootMigrations(): BootMigration[] {
-  return BOOT_MIGRATIONS.filter((m) => !m.webOnly || Platform.OS === 'web');
-}
-
-async function waitForExistingDbReady(cancelled: () => boolean): Promise<void> {
-  const startedAt = Date.now();
-  const elapsed = () => Date.now() - startedAt;
-  let attempt = 0;
-
-  const slowTimer = setTimeout(() => {
-    if (!cancelled()) {
-      captureBootException(
-        new Error('DB-ready probe is still waiting'),
-        'AppBoot.dbReadyProbe.slow',
-        { attempt, elapsedMs: elapsed() }
-      );
-    }
-  }, DB_READY_PROBE_SLOW_REPORT_MS);
-
-  const probe = async (): Promise<void> => {
-    while (!cancelled()) {
-      try {
-        await SettingsService.getAnonymousBugReport();
-        return;
-      } catch (err: unknown) {
-        if (cancelled()) {
-          return;
-        }
-
-        if (isDbReadyRetryableError(err) && elapsed() < DB_READY_PROBE_MAX_ELAPSED_MS) {
-          attempt += 1;
-          await sleep(200);
-          continue;
-        }
-
-        captureBootException(err, 'AppBoot.dbReadyProbe', {
-          attempt,
-          elapsedMs: elapsed(),
-          retryable: isDbReadyRetryableError(err),
-        });
-        return;
-      }
-    }
-  };
-
-  // The watchdog unblocks boot if the probe query hangs without ever rejecting.
-  let watchdogTimer: ReturnType<typeof setTimeout> | undefined;
-  const watchdog = new Promise<void>((resolve) => {
-    watchdogTimer = setTimeout(() => {
-      if (!cancelled()) {
-        captureBootException(
-          new Error('DB-ready probe watchdog elapsed'),
-          'AppBoot.dbReadyProbe.watchdog',
-          { attempt, elapsedMs: elapsed() }
-        );
-      }
-      resolve();
-    }, DB_READY_PROBE_MAX_ELAPSED_MS);
-  });
-
-  try {
-    await Promise.race([probe(), watchdog]);
-  } finally {
-    clearTimeout(slowTimer);
-    clearTimeout(watchdogTimer);
-  }
-}
-
-async function runBootMigration(m: BootMigration): Promise<void> {
-  const startedAt = Date.now();
-  const slowTimer = setTimeout(() => {
-    captureBootException(
-      new Error('Boot migration is still running'),
-      'AppBoot.bootMigration.slow',
-      {
-        tag: m.tag,
-        elapsedMs: Date.now() - startedAt,
-      }
-    );
-  }, BOOT_MIGRATION_SLOW_REPORT_MS);
-
-  try {
-    if (m.runOnce && (await AsyncStorage.getItem(bootMigrationDoneKey(m.tag)))) {
-      return;
-    }
-
-    const cutoffMs = m.runOnce ? await getRunOnceMigrationCutoff(m.tag) : Date.now();
-    await m.run(cutoffMs);
-
-    if (m.runOnce) {
-      await AsyncStorage.setItem(bootMigrationDoneKey(m.tag), '1');
-      await AsyncStorage.removeItem(bootMigrationCutoffKey(m.tag));
-    }
-  } catch (err) {
-    captureBootException(err, 'AppBoot.bootMigration', {
-      tag: m.tag,
-      runOnce: m.runOnce === true,
-      webOnly: m.webOnly === true,
-    });
-  } finally {
-    clearTimeout(slowTimer);
-    completeBootProgressStep();
-  }
-}
+import { isOnboardingCompleted } from '@/utils/onboardingService';
 
 export function AppBoot() {
   const segments = useSegments();
 
   useEffect(() => {
-    if (isStaticExport) {
-      markDbReady();
-      return;
-    }
-
     let cancelled = false;
 
-    const runDatabaseBootSequence = async () => {
-      try {
-        const migrations = getActiveBootMigrations();
-        const onboardingDone = await AsyncStorage.getItem(ONBOARDING_COMPLETED);
-
-        if (onboardingDone === 'true') {
-          beginBootProgress(1 + migrations.length);
-          await waitForExistingDbReady(() => cancelled);
-          if (cancelled) {
-            return;
-          }
-
-          completeBootProgressStep();
-          markDbReady();
-        } else {
-          await waitForDbReady();
-          if (cancelled) {
-            return;
-          }
-
-          beginBootProgress(migrations.length);
-        }
-
-        await Promise.all(migrations.map((m) => runBootMigration(m)));
-
-        if (!cancelled) {
-          finishBootProgress();
-        }
-      } catch (err) {
-        captureBootException(err, 'AppBoot.databaseBootSequence');
-        markDbReady();
-        finishBootProgress();
-      }
-    };
-
-    void runDatabaseBootSequence();
+    void runDatabaseBootSequence(() => cancelled);
 
     return () => {
       cancelled = true;
-      finishBootProgress();
+      stopDatabaseBootProgress();
     };
   }, []);
 
@@ -391,9 +123,7 @@ export function AppBoot() {
       })
       .catch((err) => captureBootException(err, 'NotificationService.bootInit'));
 
-    startDbDurabilityMonitoring();
-
-    Promise.all([
+    void Promise.all([
       waitForDbReady().then(() =>
         healthDataSyncService
           .syncFromHealthPlatform({ lookbackDays: 7 })
@@ -403,7 +133,7 @@ export function AppBoot() {
         captureBootException(err, 'configureDailyTasks.bootStartup')
       ),
       notificationInit,
-    ]);
+    ]).catch((err) => captureBootException(err, 'AppBoot.nativeBootTasks'));
   }, []);
 
   useEffect(() => {
@@ -433,10 +163,10 @@ export function AppBoot() {
       try {
         const [stored, onboardingDone] = await Promise.all([
           AsyncStorage.getItem(CONFETTI_INTERACTIONS_KEY),
-          AsyncStorage.getItem(ONBOARDING_COMPLETED),
+          isOnboardingCompleted(),
         ]);
 
-        if (stored !== null || onboardingDone !== 'true') {
+        if (stored !== null || !onboardingDone) {
           return;
         }
 
@@ -494,10 +224,6 @@ export function AppBoot() {
     function onAppStateChange(status: AppStateStatus) {
       if (Platform.OS !== 'web') {
         focusManager.setFocused(status === 'active');
-
-        if (status === 'background') {
-          void checkpointDbOnAppBackground();
-        }
       }
     }
 

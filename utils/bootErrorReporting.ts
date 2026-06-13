@@ -1,5 +1,5 @@
 import { isStaticExport } from '@/constants/platform';
-import { isDbReady, waitForDbReady } from '@/database/dbReady';
+import { waitForDbReady } from '@/database/dbReady';
 import { captureException } from '@/utils/sentry';
 
 type BootErrorData = Record<string, string | number | boolean | null | undefined>;
@@ -20,9 +20,10 @@ async function captureBootExceptionWhenDbReady(
   data?: BootErrorData
 ): Promise<void> {
   try {
-    if (!isDbReady()) {
-      await waitForDbReady();
-    }
+    // Wait for DB-ready so the consent read inside captureException isn't racing
+    // the reset window — but swallow a rejection: a failed boot must still report
+    // itself. captureException handles a broken DB on its own (reports anyway).
+    await waitForDbReady().catch(() => {});
 
     await captureException(error, {
       data: {

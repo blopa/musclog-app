@@ -1,193 +1,111 @@
-# Plan: Web Pre-Migration Backup
+# Pre-Migration Backup (Native + Web)
 
-## Context
+> **Status: implemented.** This document describes how pre-migration backups
+> actually work today. It supersedes the original plan, which proposed a bare
+> LokiJS instance + browser-download approach for web — that approach was not
+> taken. The web path stores backups in `localStorage` (surfaced by
+> `LocalBackupsModal`), and both platforms share one serializer.
 
-The native adapter (`database/adapter.ts`) has `migrationEvents.onStart` which fires
-`createPreMigrationBackup()` before any migration SQL runs. The web adapter
-(`database/adapter.web.ts`) uses LokiJS which has no equivalent migration event hook.
+## Why a pre-migration backup exists
 
-Additionally, both `exportDb.ts` (native) and `exportDb.web.ts` (web) should avoid
-going through the WatermelonDB singleton during a pre-migration backup — once WatermelonDB
-calls `setUp()` internally it immediately runs pending migrations, so there is no safe
-window to read data through it.
+A schema migration can fail or corrupt data. Capturing a full JSON snapshot of
+the database immediately before the migration runs gives the user a restore
+point. Backups are best-effort: a failure to create one never blocks the
+migration or the app.
 
-This plan covers how to add a web pre-migration backup without triggering migrations, and
-what changes `exportDb.web.ts` requires to support raw reads.
+## The hard constraint that shapes the native design
 
----
+`expo-sqlite` and WatermelonDB bundle **separate** SQLite libraries. POSIX
+advisory locks never conflict between connections of the same process, so when
+an `expo-sqlite` connection to `musclog.db` **closes**, it concludes it is the
+last connection, checkpoints, and unlinks the `-wal`/`-shm` files out from under
+WatermelonDB's live connection — silently losing any commits WatermelonDB made
+into the now-unlinked WAL when the process is later killed (June 2026 field
+incident). See `database/wmdbRaw.ts` and the "Raw SQL" rule in `AGENTS.md`.
 
-## LokiJS Storage Internals (Verified)
+The consequence: a raw `expo-sqlite` read of `musclog.db` is **only** safe
+before WatermelonDB opens the file. That is exactly the pre-migration window, so
+the native capture runs there and nowhere else.
 
-These are the concrete facts needed for implementation:
+## Native: pre-adapter synchronous capture
 
-| Detail                     | Value                                                                        |
-| -------------------------- | ---------------------------------------------------------------------------- |
-| LokiJS package             | `@nozbe/lokijs` (v1.5.12-wmelon6)                                            |
-| IndexedDB database name    | `"musclog"` (from `adapter.web.ts`)                                          |
-| IndexedDB object store     | `"LokiIncrementalData"` (hardcoded in `IncrementalIndexedDBAdapter`)         |
-| Schema version key         | `_loki_schema_version` stored in the `local_storage` Loki collection         |
-| Migration trigger          | `_databaseVersion < schema.version` in `DatabaseDriver.js`                   |
-| Data format per collection | Array of plain objects (same snake_case column names as SQLite `_raw`)       |
-| LokiJS-internal fields     | `$loki` (row id) and `meta` (timestamps) — must be stripped from export rows |
+`database/preMigrationCapture.ts` is the **only** module allowed to open
+`musclog.db` with `expo-sqlite`, and it is imported solely by
+`database/adapter.ts` at module-eval time, before `new SQLiteAdapter`:
 
-When `useIncrementalIndexedDB: false` (i.e. `isStaticExport: true`), LokiJS does not
-persist to IndexedDB at all — the database is fully in-memory and reset on each page
-load. No backup is needed for that case.
+1. `preparePreMigrationBackupBeforeAdapter(toVersion)` opens a raw connection and
+   reads `PRAGMA user_version` (`fromVersion`).
+2. If `0 < fromVersion < toVersion`, it captures every table in `RESTORE_ORDER`
+   **synchronously** (`db.getAllSync`) into memory. Sync is required: the
+   snapshot must finish before the adapter opens the file and the migration
+   starts mutating it. This is bounded to migration boots only.
+3. It hands the rows to `persistCapturedPreMigrationBackup()` (in
+   `preMigrationBackup.ts`), then closes the raw connection. `adapter.ts`'s
+   `migrationEvents.onStart` is a deliberate no-op — never open `expo-sqlite`
+   from a migration callback.
 
----
+`persistCapturedPreMigrationBackup` is fire-and-forget at module-eval, so the
+in-flight promise is tracked and awaited via `waitForPreMigrationBackup()` before
+the boot sequence proceeds (see `database/dbBootCoordinator.ts`). It serializes
+the captured rows with `dumpRowsToJson` and writes
+`pre-migration-v{from}-to-v{to}.json` to the cache directory, tracking the file
+in the `pre_migration_backups_v1` AsyncStorage index (kept to the 3 most recent).
 
-## Approach: Bare Loki Instance + App-Level Guard
+`database/preMigrationBackup.ts` itself imports **no** `expo-sqlite` — keeping
+the dangerous open isolated in `preMigrationCapture.ts` makes the invariant
+structural rather than advisory.
 
-### Why not hook into the adapter/database-instance?
+## Web: localStorage snapshot via WatermelonDB
 
-`adapter.web.ts` and `database-instance.ts` both run synchronously at module import
-time. WatermelonDB calls `setUp()` (and therefore migrations) asynchronously but
-immediately after the `Database` object is constructed. There is no exposed callback
-between construction and migration run — adding one would require forking WatermelonDB.
+Web has no pre-adapter window (LokiJS has no migration-event hook), but it does
+not need one: **LokiJS schema migrations only create new empty collections — they
+never modify existing rows**, and `dumpDatabase()` queues on WatermelonDB until
+its async `setUp()` (including migration) completes. So a dump taken at any point
+during startup captures the correct user data.
 
-### Solution: App-level async guard before any database use
+`runWebPreMigrationBackupIfNeeded()` in `database/preMigrationBackup.web.ts`
+(called from the web root layout before DB-touching components render):
 
-1. Call `runWebPreMigrationBackupIfNeeded()` from the app's root layout **before** any
-   component that touches the database is rendered.
-2. The root layout shows a loading screen until the check resolves.
-3. Only then does the normal app render begin — which triggers WatermelonDB init and
-   migrations.
+1. Skips entirely on static export (no IndexedDB persistence).
+2. Compares the `musclog_last_db_version` localStorage marker against
+   `CURRENT_DATABASE_VERSION`. Fresh install (no marker) just records the version;
+   already-current is a no-op.
+3. On a version bump, calls `dumpDatabase()` (web), computes a SHA-256 content
+   hash, and stores the JSON under `localStorage[<WEB_BACKUP_DATA_PREFIX><hash>]`
+   plus a metadata entry in the `musclog_pre_migration_backups_v1` index (kept to
+   3, with quota-exceeded fallback that clears older backups). Backups are
+   surfaced for restore/export/delete by `LocalBackupsModal`.
+4. Always advances the stored version in `finally`, so a failed dump doesn't
+   retry forever.
 
-This is the same pattern used for other async startup tasks (e.g. seeding, health
-permission requests).
+## Shared serialization core
 
----
+Both platforms converge on `dumpRowsToJson` in `database/exportDbCore.ts`, which
+takes a `CapturedTableRows` map and produces the export JSON: it applies the
+`settings` exclusion list, decrypts `user_metrics` / `nutrition_logs` /
+`saved_for_later_*` fields via `database/encryptionHelpers.ts`, appends the
+filtered AsyncStorage dump, and optionally encrypts with a passphrase. The only
+difference between callers is **how rows are captured**:
 
-## Files to Create / Modify
+| Caller                           | Row source                                                          |
+| -------------------------------- | ------------------------------------------------------------------- |
+| Native live export / pre-restore | `dumpDatabaseWithQueryRunner` → `rawQueryViaWatermelon` (live WMDB) |
+| Native pre-migration             | `preMigrationCapture.ts` raw `expo-sqlite` (pre-adapter, sync)      |
+| Web (all paths)                  | `exportDb.web.ts` reads LokiJS rows (`getRawRowsFromLoki`)          |
 
-### New: `database/preMigrationBackup.web.ts`
-
-Exports:
-
-```
-runWebPreMigrationBackupIfNeeded(): Promise<void>
-```
-
-**Implementation steps:**
-
-1. **Guard for static exports**: If `isStaticExport` is true, return immediately (no
-   IndexedDB persistence, nothing to back up).
-
-2. **Version check via bare Loki**:
-
-   ```
-   import Loki from '@nozbe/lokijs';
-   import IncrementalIndexedDBAdapter from '@nozbe/lokijs/src/incremental-indexeddb-adapter';
-
-   const adapter = new IncrementalIndexedDBAdapter();
-   const loki = new Loki('musclog', { adapter, autosave: false });
-   await new Promise((resolve) => loki.loadDatabase({}, resolve));
-
-   const schemaVersion = loki
-     .getCollection('local_storage')
-     ?.by('key', '_loki_schema_version')
-     ?.value ?? null;
-   ```
-
-3. **Skip if no migration needed**: If `schemaVersion === null` (fresh install) or
-   `Number(schemaVersion) >= CURRENT_DATABASE_VERSION`, return.
-
-4. **Dump data from bare Loki** (reuse helper — see `exportDb.web.ts` changes below):
-
-   ```
-   const jsonString = await dumpDatabaseFromLoki(loki);
-   ```
-
-5. **Trigger browser download**:
-
-   ```
-   const blob = new Blob([jsonString], { type: 'application/json' });
-   const url = URL.createObjectURL(blob);
-   const a = document.createElement('a');
-   a.href = url;
-   a.download = `pre-migration-v${schemaVersion}-to-v${CURRENT_DATABASE_VERSION}.json`;
-   a.click();
-   URL.revokeObjectURL(url);
-   ```
-
-6. Store a record in `localStorage` (not AsyncStorage — too early for RN) noting the
-   backup was done for this version pair, to avoid re-downloading on refresh.
-
----
-
-### Update: `database/exportDb.web.ts`
-
-Add and export a new function:
-
-```
-dumpDatabaseFromLoki(loki: LokiConstructor): Promise<string>
-```
-
-This is the raw-Loki equivalent of `dumpDatabase()`:
-
-1. For each table in `RESTORE_ORDER`:
-   - `const col = loki.getCollection(tableName)` — skip if null (table doesn't exist yet)
-   - `const rows = col.find()` — returns all LokiJS records
-   - Strip LokiJS internal fields from each row: `const { $loki, meta, ...row } = record`
-   - Filter `_status === 'deleted'` rows (WatermelonDB soft-deletes)
-2. Apply same special-casing as native `exportDb.ts`:
-   - **`settings`**: filter out `SETTINGS_EXCLUDED_TYPES`
-   - **`user_metrics`**: decrypt `value` + `unit` via `decryptNumber`/`decryptOptionalString`
-   - **`nutrition_logs`**: decrypt all 7 encrypted columns; re-stringify `logged_micros_json`
-
-3. AsyncStorage dump (same as current — `getAllKeys`, filter exclusions, `multiGet`)
-
-4. Return `JSON.stringify(dbData, null, 2)` (optionally encrypted if `encryptionPhrase`
-   is passed — same as current `dumpDatabase`)
-
-The existing `dumpDatabase(encryptionPhrase?)` in `exportDb.web.ts` (used for
-user-triggered exports) can keep using WatermelonDB — by the time a user taps "Export"
-the database is already fully initialized and post-migration. **Do not change the
-existing `dumpDatabase` function.**
-
----
-
-### Update: `app/_layout.tsx` (or `app/_layout.web.tsx`)
-
-In the root layout's startup effect (before any database-touching components render):
-
-```typescript
-import { runWebPreMigrationBackupIfNeeded } from '@/database/preMigrationBackup';
-
-// In the root layout component, before rendering children:
-const [dbReady, setDbReady] = useState(false);
-
-useEffect(() => {
-  runWebPreMigrationBackupIfNeeded().finally(() => setDbReady(true));
-}, []);
-
-if (!dbReady) return <SplashScreen />;
-```
-
-If a `.web.tsx` layout split already exists or is preferred, add this only there to avoid
-any native impact.
-
----
-
-## Edge Cases
-
-| Case                                                    | Behaviour                                                                                      |
-| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| Static export (`isStaticExport: true`)                  | Skip entirely — no IndexedDB, no data to back up                                               |
-| Fresh install (no `_loki_schema_version`)               | Skip — no pre-existing data                                                                    |
-| User already backed up this version pair                | Skip (check `localStorage` guard key)                                                          |
-| Backup download blocked by browser                      | Log warning; proceed with migration anyway (backup is best-effort, like native)                |
-| `useIncrementalIndexedDB: false` with non-static export | Currently not possible in config, but if added later: adapt to use `LokiMemoryAdapter` instead |
-
----
+This is why the export format is identical across native export, web export, and
+either platform's pre-migration backup, and why a backup taken on one platform
+restores on the other.
 
 ## Verification
 
-1. In browser DevTools, manually set `_loki_schema_version` in the `LokiIncrementalData`
-   IDB store to a value less than `CURRENT_DATABASE_VERSION`, then reload — browser
-   should auto-download a `.json` backup before the app finishes loading.
-2. Confirm the downloaded JSON matches the format produced by a manual Settings → Export
-   on native (same keys, decrypted values, no API keys in settings).
-3. Import the backup file on native via Settings → Import — data should restore correctly.
-4. Confirm user-triggered web export (Settings → Export on web) still works and produces
-   the same format.
+1. Native: bump `CURRENT_DATABASE_VERSION`, add a migration, install over an old
+   build → confirm a `pre-migration-v{from}-to-v{to}.json` appears in the cache
+   index and `LocalBackupsModal` lists it; confirm the durability "rescue
+   checkpoint" at boot (see `dbDurability.ts`) leaves the `-wal` intact.
+2. Web: set `musclog_last_db_version` in localStorage below
+   `CURRENT_DATABASE_VERSION`, reload → confirm a hashed backup entry is written
+   and listed in `LocalBackupsModal`.
+3. Cross-platform: import a web-created backup on native (and vice versa) — data
+   restores correctly, with no API keys in `settings` and decrypted metric/log
+   values.

@@ -4,6 +4,8 @@ import { useEffect } from 'react';
 import { View } from 'react-native';
 
 import { DeferredAppBoot } from '@/components/DeferredAppBoot';
+// theme.tokens (not theme.ts) so this stays importable before the database layer loads.
+import { colors } from '@/theme.tokens';
 import { captureBootException } from '@/utils/bootErrorReporting';
 
 SplashScreen.setOptions({
@@ -19,7 +21,7 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#0a1f1a' }}>
+    <View style={{ flex: 1, backgroundColor: colors.darkMint }}>
       <DeferredAppBoot />
       <Slot />
     </View>

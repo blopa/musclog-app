@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 import { useEffect, useState } from 'react';
 
+import { markDbReadyFailed } from '@/database/dbReady';
 import { captureBootException } from '@/utils/bootErrorReporting';
 
 /**
@@ -19,7 +20,10 @@ export function DeferredAppBoot() {
           setBoot(() => mod.AppBoot);
         }
       })
-      .catch((err) => captureBootException(err, 'AppBoot.deferredLoad'));
+      .catch((err) => {
+        markDbReadyFailed(err);
+        captureBootException(err, 'AppBoot.deferredLoad');
+      });
 
     return () => {
       mounted = false;

@@ -19,12 +19,13 @@ import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 import { database } from './database-instance';
 import { updateNutritionLogCountBaseline } from './dbDurability';
 import {
-  decryptJson,
-  decryptNumber,
-  decryptOptionalString,
+  decryptNutritionLogSnapshotRow,
   encryptNutritionLogSnapshot,
   encryptOptionalString,
   encryptUserMetricFields,
+  type NutritionLogSnapshotPlain,
+  readPlainNutritionLogSnapshotRow,
+  readSavedForLaterGroupNote,
 } from './encryptionHelpers';
 import { createPreRestoreBackup } from './preMigrationBackup';
 import { validateExportDump, type ValidationResult } from './schemaToZod';
@@ -34,6 +35,92 @@ export type ExportDump = {
   _exportVersion: number;
   [tableName: string]: unknown;
 };
+
+type ImportRow = Record<string, unknown>;
+
+const NUTRITION_SNAPSHOT_NUMBER_KEYS = [
+  'logged_calories',
+  'logged_protein',
+  'logged_carbs',
+  'logged_fat',
+  'logged_fiber',
+] as const;
+
+function isPlainNutritionSnapshotRow(raw: ImportRow): boolean {
+  return NUTRITION_SNAPSHOT_NUMBER_KEYS.every((key) => typeof raw[key] === 'number');
+}
+
+async function prepareSavedForLaterGroupCreate(
+  collection: any,
+  raw: ImportRow,
+  oldId: string
+): Promise<any> {
+  const notePlain = await readSavedForLaterGroupNote(raw);
+  const noteRaw = await encryptOptionalString(notePlain);
+  return collection.prepareCreate((rec: any) => {
+    rec._raw.id = oldId;
+    rec.name = String(raw.name ?? '');
+    rec.noteRaw = noteRaw || undefined;
+    rec.originalMealType = String(raw.original_meal_type ?? 'other');
+    rec.originalDate = Number(raw.original_date);
+    rec.timezone = raw.timezone != null ? String(raw.timezone) : undefined;
+    rec.createdAt = Number(raw.created_at);
+    rec.updatedAt = Number(raw.updated_at);
+    if (raw.deleted_at != null) {
+      rec.deletedAt = Number(raw.deleted_at);
+    }
+  });
+}
+
+async function readSavedForLaterItemSnapshot(raw: ImportRow): Promise<NutritionLogSnapshotPlain> {
+  if (raw._decrypted === true || isPlainNutritionSnapshotRow(raw)) {
+    return readPlainNutritionLogSnapshotRow(raw);
+  }
+
+  return decryptNutritionLogSnapshotRow(raw);
+}
+
+async function prepareSavedForLaterItemCreate(
+  collection: any,
+  raw: ImportRow,
+  oldId: string
+): Promise<any> {
+  const snapshot = await readSavedForLaterItemSnapshot(raw);
+  const encrypted = await encryptNutritionLogSnapshot(snapshot);
+  return collection.prepareCreate((rec: any) => {
+    rec._raw.id = oldId;
+    rec.groupId = String(raw.group_id ?? '');
+    if (raw.food_id != null) {
+      rec.foodId = String(raw.food_id);
+    }
+
+    rec.amount = Number(raw.amount);
+    if (raw.portion_id != null) {
+      rec.portionId = String(raw.portion_id);
+    }
+
+    rec.loggedFoodNameRaw = encrypted.loggedFoodName;
+    rec.loggedCaloriesRaw = encrypted.loggedCalories;
+    rec.loggedProteinRaw = encrypted.loggedProtein;
+    rec.loggedCarbsRaw = encrypted.loggedCarbs;
+    rec.loggedFatRaw = encrypted.loggedFat;
+    rec.loggedFiberRaw = encrypted.loggedFiber;
+    rec.loggedMicrosRaw = encrypted.loggedMicrosJson;
+    if (raw.logged_meal_name != null) {
+      rec.loggedMealName = String(raw.logged_meal_name);
+    }
+
+    if (raw.original_group_id != null) {
+      rec.originalGroupId = String(raw.original_group_id);
+    }
+
+    rec.createdAt = Number(raw.created_at);
+    rec.updatedAt = Number(raw.updated_at);
+    if (raw.deleted_at != null) {
+      rec.deletedAt = Number(raw.deleted_at);
+    }
+  });
+}
 
 /**
  * Restore the database from a dump string (full replace).
@@ -95,15 +182,6 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
       await AsyncStorage.multiSet(toRestore);
     }
   }
-
-  const parseMicrosJson = (microsJson: string): any | undefined => {
-    try {
-      const parsed = JSON.parse(microsJson);
-      return typeof parsed === 'object' && parsed !== null ? parsed : undefined;
-    } catch {
-      return undefined;
-    }
-  };
 
   // Capture the current unit_system value before wiping the database.
   // Backups from Android users who never explicitly changed units won't include a
@@ -200,18 +278,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
       if (tableName === 'nutrition_logs') {
         const foodId = raw.food_id as string;
         const portionId = raw.portion_id != null ? (raw.portion_id as string) : undefined;
-        const snapshot = {
-          loggedFoodName: raw.logged_food_name != null ? String(raw.logged_food_name) : undefined,
-          loggedCalories: Number(raw.logged_calories ?? 0),
-          loggedProtein: Number(raw.logged_protein ?? 0),
-          loggedCarbs: Number(raw.logged_carbs ?? 0),
-          loggedFat: Number(raw.logged_fat ?? 0),
-          loggedFiber: Number(raw.logged_fiber ?? 0),
-          loggedMicros:
-            typeof raw.logged_micros_json === 'string' && raw.logged_micros_json
-              ? parseMicrosJson(raw.logged_micros_json)
-              : undefined,
-        };
+        const snapshot = readPlainNutritionLogSnapshotRow(raw);
         const encrypted = await encryptNutritionLogSnapshot(snapshot);
         createOperations.push(
           collection.prepareCreate((rec: any) => {
@@ -268,115 +335,12 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
       }
 
       if (tableName === 'saved_for_later_groups') {
-        // Exports with _decrypted hold a plaintext note; older exports hold ciphertext
-        // from the source device — try to decrypt it (works for same-device restores).
-        let notePlain: string | undefined;
-        if (raw._decrypted === true) {
-          notePlain = raw.note != null ? String(raw.note) : undefined;
-        } else {
-          try {
-            notePlain = (await decryptOptionalString(raw.note as string | undefined)) || undefined;
-          } catch {
-            notePlain = undefined;
-          }
-        }
-        const noteRaw = await encryptOptionalString(notePlain);
-        createOperations.push(
-          collection.prepareCreate((rec: any) => {
-            rec._raw.id = oldId;
-            rec.name = String(raw.name ?? '');
-            rec.noteRaw = noteRaw || undefined;
-            rec.originalMealType = String(raw.original_meal_type ?? 'other');
-            rec.originalDate = Number(raw.original_date);
-            rec.timezone = raw.timezone != null ? String(raw.timezone) : undefined;
-            rec.createdAt = Number(raw.created_at);
-            rec.updatedAt = Number(raw.updated_at);
-            if (raw.deleted_at != null) {
-              rec.deletedAt = Number(raw.deleted_at);
-            }
-          })
-        );
+        createOperations.push(await prepareSavedForLaterGroupCreate(collection, raw, oldId));
         continue;
       }
 
       if (tableName === 'saved_for_later_items') {
-        // Same plaintext-vs-ciphertext handling as saved_for_later_groups above.
-        let snapshot: Parameters<typeof encryptNutritionLogSnapshot>[0];
-        if (raw._decrypted === true) {
-          snapshot = {
-            loggedFoodName: raw.logged_food_name != null ? String(raw.logged_food_name) : undefined,
-            loggedCalories: Number(raw.logged_calories ?? 0),
-            loggedProtein: Number(raw.logged_protein ?? 0),
-            loggedCarbs: Number(raw.logged_carbs ?? 0),
-            loggedFat: Number(raw.logged_fat ?? 0),
-            loggedFiber: Number(raw.logged_fiber ?? 0),
-            loggedMicros:
-              typeof raw.logged_micros_json === 'string' && raw.logged_micros_json
-                ? parseMicrosJson(raw.logged_micros_json)
-                : undefined,
-          };
-        } else {
-          try {
-            const [name, calories, protein, carbs, fat, fiber, micros] = await Promise.all([
-              decryptOptionalString(raw.logged_food_name as string | undefined),
-              decryptNumber(raw.logged_calories as string | undefined),
-              decryptNumber(raw.logged_protein as string | undefined),
-              decryptNumber(raw.logged_carbs as string | undefined),
-              decryptNumber(raw.logged_fat as string | undefined),
-              decryptNumber(raw.logged_fiber as string | undefined),
-              decryptJson(raw.logged_micros_json as string | undefined),
-            ]);
-            snapshot = {
-              loggedFoodName: name || undefined,
-              loggedCalories: calories,
-              loggedProtein: protein,
-              loggedCarbs: carbs,
-              loggedFat: fat,
-              loggedFiber: fiber,
-              loggedMicros: Object.keys(micros).length > 0 ? micros : undefined,
-            };
-          } catch {
-            snapshot = {
-              loggedCalories: 0,
-              loggedProtein: 0,
-              loggedCarbs: 0,
-              loggedFat: 0,
-              loggedFiber: 0,
-            };
-          }
-        }
-        const encrypted = await encryptNutritionLogSnapshot(snapshot);
-        createOperations.push(
-          collection.prepareCreate((rec: any) => {
-            rec._raw.id = oldId;
-            rec.groupId = String(raw.group_id ?? '');
-            if (raw.food_id != null) {
-              rec.foodId = String(raw.food_id);
-            }
-            rec.amount = Number(raw.amount);
-            if (raw.portion_id != null) {
-              rec.portionId = String(raw.portion_id);
-            }
-            rec.loggedFoodNameRaw = encrypted.loggedFoodName;
-            rec.loggedCaloriesRaw = encrypted.loggedCalories;
-            rec.loggedProteinRaw = encrypted.loggedProtein;
-            rec.loggedCarbsRaw = encrypted.loggedCarbs;
-            rec.loggedFatRaw = encrypted.loggedFat;
-            rec.loggedFiberRaw = encrypted.loggedFiber;
-            rec.loggedMicrosRaw = encrypted.loggedMicrosJson;
-            if (raw.logged_meal_name != null) {
-              rec.loggedMealName = String(raw.logged_meal_name);
-            }
-            if (raw.original_group_id != null) {
-              rec.originalGroupId = String(raw.original_group_id);
-            }
-            rec.createdAt = Number(raw.created_at);
-            rec.updatedAt = Number(raw.updated_at);
-            if (raw.deleted_at != null) {
-              rec.deletedAt = Number(raw.deleted_at);
-            }
-          })
-        );
+        createOperations.push(await prepareSavedForLaterItemCreate(collection, raw, oldId));
         continue;
       }
 

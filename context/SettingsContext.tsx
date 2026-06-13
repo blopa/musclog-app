@@ -64,6 +64,7 @@ import {
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '@/constants/settings';
 import { database } from '@/database';
+import { waitForDbReady } from '@/database/dbReady';
 import Setting from '@/database/models/Setting';
 import { SettingsService } from '@/database/services/SettingsService';
 import { getDefaultUnits, getHeightUnit, getWeightUnit } from '@/utils/units';
@@ -359,6 +360,7 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<SettingsState>(DEFAULT_STATE);
+  const [canReadSettingsDb, setCanReadSettingsDb] = useState(false);
   const [decryptedApiKeys, setDecryptedApiKeys] = useState({
     googleGeminiApiKey: '',
     openAiApiKey: '',
@@ -374,26 +376,52 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const query = database.get<Setting>('settings').query(Q.where('deleted_at', Q.eq(null)));
-    const subscription = query.observeWithColumns(['value']).subscribe({
-      next: (settings) => {
-        const map = buildSettingsMap(settings);
-        setState((prev) => {
-          const next = deriveStateFromMap(map);
-          const keys = Object.keys(next) as (keyof SettingsState)[];
-          const hasChanged = keys.some((k) => prev[k] !== next[k]);
-          return hasChanged ? next : prev;
-        });
-      },
-      error: () => setState((prev) => ({ ...prev, isLoading: false })),
-    });
+    let cancelled = false;
+    let subscription: { unsubscribe: () => void } | undefined;
 
-    return () => subscription.unsubscribe();
+    async function subscribeWhenDbReady() {
+      try {
+        await waitForDbReady();
+        if (cancelled) {
+          return;
+        }
+
+        setCanReadSettingsDb(true);
+        const query = database.get<Setting>('settings').query(Q.where('deleted_at', Q.eq(null)));
+        subscription = query.observeWithColumns(['value']).subscribe({
+          next: (settings) => {
+            const map = buildSettingsMap(settings);
+            setState((prev) => {
+              const next = deriveStateFromMap(map);
+              const keys = Object.keys(next) as (keyof SettingsState)[];
+              const hasChanged = keys.some((k) => prev[k] !== next[k]);
+              return hasChanged ? next : prev;
+            });
+          },
+          error: () => {
+            if (!cancelled) {
+              setState((prev) => ({ ...prev, isLoading: false }));
+            }
+          },
+        });
+      } catch {
+        if (!cancelled) {
+          setState((prev) => ({ ...prev, isLoading: false }));
+        }
+      }
+    }
+
+    void subscribeWhenDbReady();
+
+    return () => {
+      cancelled = true;
+      subscription?.unsubscribe();
+    };
   }, []);
 
   // Decrypt API keys whenever the raw DB value changes (raw may be ciphertext or legacy plaintext).
   useEffect(() => {
-    if (state.isLoading) {
+    if (state.isLoading || !canReadSettingsDb) {
       return;
     }
 
@@ -417,7 +445,13 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [state.googleGeminiApiKey, state.openAiApiKey, state.localLlmApiKey, state.isLoading]);
+  }, [
+    state.googleGeminiApiKey,
+    state.openAiApiKey,
+    state.localLlmApiKey,
+    state.isLoading,
+    canReadSettingsDb,
+  ]);
 
   const isAiConfigured = useMemo(() => {
     return (
