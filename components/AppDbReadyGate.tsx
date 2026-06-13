@@ -18,6 +18,8 @@ export function AppDbReadyGate({ children }: { children: ReactNode }) {
 
     const waitForCompletedUserDb = async () => {
       try {
+        // Completed users wait here while AppBoot proves the DB is usable; new
+        // installs must render so seedProductionData can finish and mark ready.
         if (await isOnboardingCompleted()) {
           await waitForDbReady();
         }

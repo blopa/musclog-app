@@ -26,9 +26,9 @@ function fileSize(path: string): number | null {
 /**
  * Captures the on-disk sizes of the SQLite database and its WAL/SHM siblings.
  *
- * Must be called from adapter.ts BEFORE readCurrentDbVersion() opens the first
- * raw connection: closing that connection checkpoints the WAL, so this is the
- * only moment the previous session's un-checkpointed WAL size is observable.
+ * Must be called from adapter.ts BEFORE preparePreMigrationBackupBeforeAdapter()
+ * opens the first raw connection: closing that connection checkpoints the WAL,
+ * so this is the only moment the previous session's un-checkpointed WAL size is observable.
  * A large `walBytes` here followed by missing rows is direct evidence of the
  * WAL tail being lost between sessions (field incident: nutrition logs
  * vanishing after the app process was killed).

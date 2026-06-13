@@ -1,6 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 
 import { database } from './database-instance';
+import type { RawQueryRunner } from './exportDbCore';
 
 /**
  * Runs raw SQL through WatermelonDB's OWN connection — never expo-sqlite.
@@ -14,16 +15,10 @@ import { database } from './database-instance';
  * moment the process is killed (field incident: lost nutrition logs, June 2026).
  *
  * Any raw SQL that must run while the app is up therefore goes through this
- * helper. Opening expo-sqlite on musclog.db is only safe at boot, strictly
- * before the adapter's first operation (see readCurrentDbVersion in adapter.ts)
- * or mid-migration when WatermelonDB cannot serve queries (see
- * createPreMigrationBackup).
+ * helper. Opening expo-sqlite on musclog.db is only safe in the native
+ * pre-adapter path (preparePreMigrationBackupBeforeAdapter in
+ * preMigrationBackup.ts), before WatermelonDB has opened the file.
  */
-export type RawQueryRunner = (
-  sql: string,
-  args?: (string | number | boolean | null)[]
-) => Promise<Record<string, unknown>[]>;
-
 // 'settings' only satisfies the adapter's validateTable check; the SQL is arbitrary.
 export const rawQueryViaWatermelon: RawQueryRunner = (sql, args = []) =>
   database.get('settings').query(Q.unsafeSqlQuery(sql, args)).unsafeFetchRaw();

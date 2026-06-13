@@ -4,7 +4,6 @@ import { useSegments } from 'expo-router';
 import { useEffect } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 
-import { ONBOARDING_COMPLETED } from '@/constants/misc';
 import { isStaticExport } from '@/constants/platform';
 import {
   ALL_CONFETTI_ACTIVITIES,
@@ -12,7 +11,7 @@ import {
   CONFETTI_INTERACTIONS_KEY,
   ConfettiActivity,
 } from '@/context/ConfettiInteractionsContext';
-import { checkpointDbOnAppBackground, startDbDurabilityMonitoring } from '@/database/dbDurability';
+import { startDbDurabilityMonitoring } from '@/database/dbDurability';
 import { markDbReady, waitForDbReady } from '@/database/dbReady';
 import {
   ExerciseGoalService,
@@ -44,6 +43,7 @@ import {
   getLastNotificationResponseAsync,
   handleNotificationResponse,
 } from '@/utils/notifications';
+import { isOnboardingCompleted } from '@/utils/onboardingService';
 
 const DB_RESET_RACE_ERRORS = [
   'No driver with tag',
@@ -85,6 +85,10 @@ async function getRunOnceMigrationCutoff(tag: string): Promise<number> {
   return cutoff;
 }
 
+// Native WatermelonDB schema migrations can miss web/LokiJS data rewrites, so
+// webOnly boot migrations cover those platform-specific gaps after boot.
+// runOnce migrations record a stable cutoff because repeating them later could
+// overwrite user-edited data with stale historical assumptions.
 const BOOT_MIGRATIONS: BootMigration[] = [
   {
     tag: 'fixNegativeFiber',
@@ -103,11 +107,13 @@ const BOOT_MIGRATIONS: BootMigration[] = [
   },
   {
     tag: 'ExerciseService.backfillExerciseSources',
+    // Watermelon's native SQL migration covered SQLite; LokiJS needs boot-time data repair.
     webOnly: true,
     run: () => ExerciseService.backfillExerciseSources(),
   },
   {
     tag: 'FoodPortionService.backfillPortionSources',
+    // Watermelon's native SQL migration covered SQLite; LokiJS needs boot-time data repair.
     webOnly: true,
     run: () => FoodPortionService.backfillPortionSources(),
   },
@@ -128,6 +134,7 @@ const BOOT_MIGRATIONS: BootMigration[] = [
   },
   {
     tag: 'ExerciseService.migrateExerciseImageUrlsToCloud',
+    // Web skipped the native migration path that rewrites bundled image URLs.
     webOnly: true,
     run: () => ExerciseService.migrateExerciseImageUrlsToCloud(),
   },
@@ -145,6 +152,7 @@ const BOOT_MIGRATIONS: BootMigration[] = [
   },
   {
     tag: 'TimezoneMigrationService.backfillConsumedTimeFromCreatedAt',
+    // Use the first-run cutoff so future edits are never re-derived from created_at.
     runOnce: true,
     run: (cutoffMs) => TimezoneMigrationService.backfillConsumedTimeFromCreatedAt(cutoffMs),
   },
@@ -277,10 +285,13 @@ export function AppBoot() {
     const runDatabaseBootSequence = async () => {
       try {
         const migrations = getActiveBootMigrations();
-        const onboardingDone = await AsyncStorage.getItem(ONBOARDING_COMPLETED);
+        const onboardingDone = await isOnboardingCompleted();
 
-        if (onboardingDone === 'true') {
+        if (onboardingDone) {
           beginBootProgress(1 + migrations.length);
+          // Completed users may boot while the production seed reset is still
+          // swapping adapters; probe before marking ready. New installs render
+          // AppDbReadyGate immediately because seeding lives inside that gated tree.
           await waitForExistingDbReady(() => cancelled);
           if (cancelled) {
             return;
@@ -289,6 +300,7 @@ export function AppBoot() {
           completeBootProgressStep();
           markDbReady();
         } else {
+          // New installs are unblocked by AppDbReadyGate/seedProductionData calling markDbReady().
           await waitForDbReady();
           if (cancelled) {
             return;
@@ -392,6 +404,7 @@ export function AppBoot() {
       .catch((err) => captureBootException(err, 'NotificationService.bootInit'));
 
     startDbDurabilityMonitoring();
+    // dbDurability owns its AppState listener so WAL checkpointing stays with the durability policy.
 
     Promise.all([
       waitForDbReady().then(() =>
@@ -433,10 +446,10 @@ export function AppBoot() {
       try {
         const [stored, onboardingDone] = await Promise.all([
           AsyncStorage.getItem(CONFETTI_INTERACTIONS_KEY),
-          AsyncStorage.getItem(ONBOARDING_COMPLETED),
+          isOnboardingCompleted(),
         ]);
 
-        if (stored !== null || onboardingDone !== 'true') {
+        if (stored !== null || !onboardingDone) {
           return;
         }
 
@@ -494,10 +507,6 @@ export function AppBoot() {
     function onAppStateChange(status: AppStateStatus) {
       if (Platform.OS !== 'web') {
         focusManager.setFocused(status === 'active');
-
-        if (status === 'background') {
-          void checkpointDbOnAppBackground();
-        }
       }
     }
 

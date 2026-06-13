@@ -1,13 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { cacheDirectory, deleteAsync, writeAsStringAsync } from 'expo-file-system/legacy';
-import { openDatabaseSync } from 'expo-sqlite';
+import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 
 import { DATABASE_NAME } from '@/constants/database';
-import { handleError } from '@/utils/handleError';
+import { RESTORE_ORDER } from '@/constants/exportImport';
 
 import { wdbDir } from './dbPath';
-import { dumpDatabase } from './exportDb';
-import type { RawQueryRunner } from './wmdbRaw';
+import { type CapturedTableRows, dumpRowsToJson } from './exportDbCore';
 
 const PRE_MIGRATION_BACKUPS_KEY = 'pre_migration_backups_v1';
 const PRE_MIGRATION_BACKUPS_MAX_FILES = 3;
@@ -49,6 +48,40 @@ function getVersions(event?: unknown) {
 }
 
 const formatVersion = (value: number | null): string => (value == null ? 'unknown' : String(value));
+
+function quoteIdentifier(identifier: string): string {
+  return `"${identifier.replace(/"/g, '""')}"`;
+}
+
+function readCapturedRowsSync(db: SQLiteDatabase): CapturedTableRows {
+  const tableRows = db.getAllSync<{ name: string }>(
+    "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
+  );
+  const existingTables = new Set(tableRows.map((row) => row.name));
+  const capturedRows: CapturedTableRows = {};
+
+  for (const tableName of RESTORE_ORDER) {
+    if (!existingTables.has(tableName)) {
+      continue;
+    }
+
+    capturedRows[tableName] = db.getAllSync<Record<string, unknown>>(
+      `SELECT * FROM ${quoteIdentifier(tableName)};`
+    );
+  }
+
+  return capturedRows;
+}
+
+async function reportBackupError(error: unknown, context: string): Promise<void> {
+  try {
+    const { handleError } = await import('../utils/handleError');
+    await handleError(error, context);
+  } catch {
+    // The backup path runs during boot; console output is safer than creating a
+    // hard dependency on the DB-backed Sentry consent path.
+  }
+}
 
 export function getWebBackupContent(_hash: string): string | null {
   return null;
@@ -108,18 +141,18 @@ async function executeBackup(
   nameInfix: string,
   fromVersion: number | null = null,
   toVersion: number | null = null,
-  queryRunner?: RawQueryRunner
+  jsonString?: string
 ): Promise<string> {
   if (!cacheDirectory) {
     throw new Error('Cache directory is not available');
   }
 
-  const jsonString = await dumpDatabase(undefined, { queryRunner });
+  const backupJson = jsonString ?? (await createLiveBackupJson());
   const createdAt = new Date().toISOString();
   const timestamp = createdAt.replace(/[:.]/g, '-').slice(0, 19);
   const uri = `${cacheDirectory}${timestamp}-${nameInfix}.json`;
 
-  await writeAsStringAsync(uri, jsonString);
+  await writeAsStringAsync(uri, backupJson);
 
   const existing = await getStoredBackups();
   const next = await pruneOldBackups([{ uri, createdAt, fromVersion, toVersion }, ...existing]);
@@ -128,10 +161,15 @@ async function executeBackup(
   return uri;
 }
 
+async function createLiveBackupJson(): Promise<string> {
+  const { dumpDatabase } = await import('./exportDb');
+  return dumpDatabase();
+}
+
 /**
- * No-op on native: the backup is triggered via migrationEvents.onStart in
- * adapter.ts, not through this entry point. On web this function is replaced
- * by the real implementation in preMigrationBackup.web.ts.
+ * No-op on native: pre-migration rows are captured in adapter.ts before the
+ * WatermelonDB adapter opens SQLite. On web this function is replaced by the
+ * real implementation in preMigrationBackup.web.ts.
  */
 export async function runWebPreMigrationBackupIfNeeded(): Promise<void> {}
 
@@ -145,15 +183,18 @@ export async function createPreRestoreBackup(): Promise<void> {
     console.log(`[PreRestoreBackup] Created: ${uri}`);
   } catch (error) {
     console.error('[PreRestoreBackup] Failed to create backup:', error);
-    handleError(error, 'database.preRestoreBackup');
+    await reportBackupError(error, 'database.preRestoreBackup');
   }
 }
 
 let inFlightBackup: Promise<void> | null = null;
 let completedBackupSignature: string | null = null;
 
-export function createPreMigrationBackup(event?: unknown): Promise<void> {
-  const { fromVersion, toVersion } = getVersions(event);
+function persistCapturedPreMigrationBackup(
+  capturedRows: CapturedTableRows,
+  fromVersion: number,
+  toVersion: number
+): Promise<void> {
   const signature = `${formatVersion(fromVersion)}->${formatVersion(toVersion)}`;
 
   if (completedBackupSignature === signature) {
@@ -166,39 +207,58 @@ export function createPreMigrationBackup(event?: unknown): Promise<void> {
 
   async function performBackup() {
     const infix = `pre-migration-v${formatVersion(fromVersion)}-to-v${formatVersion(toVersion)}`;
-
-    // Pre-migration backups read via a raw expo-sqlite connection: they run
-    // while WatermelonDB is mid-migration and cannot serve queries. This is
-    // the only mid-session raw connection left in the app — its close can
-    // unlink the live WAL (see wmdbRaw.ts), which is accepted because
-    // migrations are rare and the boot rescue checkpoint in dbDurability.ts
-    // persists any affected frames right after the DB becomes ready. Every
-    // other dump goes through WatermelonDB's own connection.
-    const db = openDatabaseSync(`${DATABASE_NAME}.db`, { useNewConnection: true }, wdbDir());
-    const runQuery: RawQueryRunner = (sql, args = []) =>
-      db.getAllAsync(sql, args) as Promise<Record<string, unknown>[]>;
-
-    try {
-      const uri = await executeBackup(infix, fromVersion, toVersion, runQuery);
-      completedBackupSignature = signature;
-      console.log(`[PreMigrationBackup] Created: ${uri}`);
-    } finally {
-      try {
-        db.closeSync();
-      } catch {
-        // best effort
-      }
-    }
+    const jsonString = await dumpRowsToJson(capturedRows, undefined, {
+      exportVersion: fromVersion,
+    });
+    const uri = await executeBackup(infix, fromVersion, toVersion, jsonString);
+    completedBackupSignature = signature;
+    console.log(`[PreMigrationBackup] Created: ${uri}`);
   }
 
   inFlightBackup = performBackup()
     .catch((error) => {
       console.error('[PreMigrationBackup] Failed to create backup:', error);
-      handleError(error, 'database.preMigrationBackup');
+      void reportBackupError(error, 'database.preMigrationBackup');
     })
     .finally(() => {
       inFlightBackup = null;
     });
 
   return inFlightBackup;
+}
+
+export function preparePreMigrationBackupBeforeAdapter(toVersion: number): number | null {
+  let db: SQLiteDatabase | null = null;
+  try {
+    db = openDatabaseSync(`${DATABASE_NAME}.db`, undefined, wdbDir());
+    const result = db.getFirstSync<{ user_version: number }>('PRAGMA user_version');
+    const fromVersion = result?.user_version ?? null;
+
+    if (fromVersion != null && fromVersion > 0 && fromVersion < toVersion) {
+      const capturedRows = readCapturedRowsSync(db);
+      void persistCapturedPreMigrationBackup(capturedRows, fromVersion, toVersion);
+    }
+
+    return fromVersion;
+  } catch (error) {
+    console.warn('[PreMigrationBackup] Failed to inspect database before adapter init:', error);
+    return null;
+  } finally {
+    try {
+      db?.closeSync();
+    } catch {
+      // best effort
+    }
+  }
+}
+
+export function createPreMigrationBackup(event?: unknown): Promise<void> {
+  const { fromVersion, toVersion } = getVersions(event);
+  if (fromVersion != null && toVersion != null) {
+    console.warn(
+      '[PreMigrationBackup] Ignoring migration-event backup request; native backups are captured before adapter initialization.'
+    );
+  }
+
+  return inFlightBackup ?? Promise.resolve();
 }

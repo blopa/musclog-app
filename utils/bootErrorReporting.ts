@@ -1,5 +1,5 @@
 import { isStaticExport } from '@/constants/platform';
-import { isDbReady, waitForDbReady } from '@/database/dbReady';
+import { waitForDbReady } from '@/database/dbReady';
 import { captureException } from '@/utils/sentry';
 
 type BootErrorData = Record<string, string | number | boolean | null | undefined>;
@@ -20,9 +20,7 @@ async function captureBootExceptionWhenDbReady(
   data?: BootErrorData
 ): Promise<void> {
   try {
-    if (!isDbReady()) {
-      await waitForDbReady();
-    }
+    await waitForDbReady();
 
     await captureException(error, {
       data: {

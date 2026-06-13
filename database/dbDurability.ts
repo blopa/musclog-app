@@ -1,15 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Sentry from '@sentry/react-native';
-import { Platform } from 'react-native';
+import { AppState, Platform } from 'react-native';
 
-import { SHOULD_SAVE_DB_SNAPSHOT } from '@/constants/database';
+import { ENABLE_DB_LOSS_DETECTION } from '@/constants/database';
 import { database } from '@/database/database-instance';
 import type NutritionLog from '@/database/models/NutritionLog';
 import { handleError } from '@/utils/handleError';
 import { captureMessage } from '@/utils/sentry';
 
 import { getBootDbFileStats } from './dbBootStats';
-import { waitForDbReady } from './dbReady';
+import { isDbReady, waitForDbReady } from './dbReady';
 import { rawQueryViaWatermelon } from './wmdbRaw';
 
 /**
@@ -127,7 +127,17 @@ export async function checkpointWalToMainDbFile(): Promise<void> {
 }
 
 let monitoringStarted = false;
-let dbIsReady = false;
+
+async function checkpointDbForBackgrounding(): Promise<void> {
+  if (!isDbReady()) {
+    return;
+  }
+
+  await checkpointWalToMainDbFile();
+  if (ENABLE_DB_LOSS_DETECTION) {
+    await updateNutritionLogCountBaseline();
+  }
+}
 
 /**
  * Call once at app boot (native only). Reports any between-session loss, then
@@ -140,17 +150,23 @@ export function startDbDurabilityMonitoring(): void {
 
   monitoringStarted = true;
 
+  AppState.addEventListener('change', (status) => {
+    if (status === 'background') {
+      void checkpointDbForBackgrounding();
+    }
+  });
+
+  // TODO: avoid using IIFE
   void (async () => {
     try {
       await waitForDbReady();
-      dbIsReady = true;
 
       // Rescue checkpoint: if a boot-time raw connection (pre-migration backup)
       // unlinked the WAL under the live connection, this persists everything
       // committed so far into the main DB file before any loss can occur.
       await checkpointWalToMainDbFile();
 
-      if (SHOULD_SAVE_DB_SNAPSHOT) {
+      if (ENABLE_DB_LOSS_DETECTION) {
         await reportNutritionLogLossIfAny();
 
         let debounce: ReturnType<typeof setTimeout> | null = null;
@@ -167,16 +183,6 @@ export function startDbDurabilityMonitoring(): void {
       handleError(error, 'dbDurability.startDbDurabilityMonitoring');
     }
   })();
-}
-export async function checkpointDbOnAppBackground(): Promise<void> {
-  if (!dbIsReady) {
-    return;
-  }
-
-  await checkpointWalToMainDbFile();
-  if (SHOULD_SAVE_DB_SNAPSHOT) {
-    await updateNutritionLogCountBaseline();
-  }
 }
 
 async function reportNutritionLogLossIfAny(): Promise<void> {
