@@ -1,17 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { cacheDirectory, deleteAsync, writeAsStringAsync } from 'expo-file-system/legacy';
-import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 
-import { DATABASE_NAME } from '@/constants/database';
-import { RESTORE_ORDER } from '@/constants/exportImport';
-
-import { wdbDir } from './dbPath';
-import {
-  type CapturedTableRows,
-  dumpRowsToJson,
-  LIST_USER_TABLES_SQL,
-  selectAllRowsSql,
-} from './exportDbCore';
+import { type CapturedTableRows, dumpRowsToJson } from './exportDbCore';
 
 const PRE_MIGRATION_BACKUPS_KEY = 'pre_migration_backups_v1';
 const PRE_MIGRATION_BACKUPS_MAX_FILES = 3;
@@ -24,22 +14,6 @@ export type BackupFileMeta = {
 };
 
 const formatVersion = (value: number | null): string => (value == null ? 'unknown' : String(value));
-
-function readCapturedRowsSync(db: SQLiteDatabase): CapturedTableRows {
-  const tableRows = db.getAllSync<{ name: string }>(LIST_USER_TABLES_SQL);
-  const existingTables = new Set(tableRows.map((row) => row.name));
-  const capturedRows: CapturedTableRows = {};
-
-  for (const tableName of RESTORE_ORDER) {
-    if (!existingTables.has(tableName)) {
-      continue;
-    }
-
-    capturedRows[tableName] = db.getAllSync<Record<string, unknown>>(selectAllRowsSql(tableName));
-  }
-
-  return capturedRows;
-}
 
 async function reportBackupError(error: unknown, context: string): Promise<void> {
   try {
@@ -158,7 +132,11 @@ export async function createPreRestoreBackup(): Promise<void> {
 let inFlightBackup: Promise<void> | null = null;
 let completedBackupSignature: string | null = null;
 
-function persistCapturedPreMigrationBackup(
+// Called from preMigrationCapture.ts (the pre-adapter path) with the rows it
+// captured synchronously; persists them asynchronously. Fire-and-forget at
+// module-eval time, so the in-flight promise is tracked here and awaited via
+// waitForPreMigrationBackup() before boot proceeds.
+export function persistCapturedPreMigrationBackup(
   capturedRows: CapturedTableRows,
   fromVersion: number,
   toVersion: number
@@ -178,6 +156,7 @@ function persistCapturedPreMigrationBackup(
     const jsonString = await dumpRowsToJson(capturedRows, undefined, {
       exportVersion: fromVersion,
     });
+
     const uri = await executeBackup(infix, fromVersion, toVersion, jsonString);
     completedBackupSignature = signature;
     console.log(`[PreMigrationBackup] Created: ${uri}`);
@@ -197,29 +176,4 @@ function persistCapturedPreMigrationBackup(
 
 export function waitForPreMigrationBackup(): Promise<void> {
   return inFlightBackup ?? Promise.resolve();
-}
-
-export function preparePreMigrationBackupBeforeAdapter(toVersion: number): number | null {
-  let db: SQLiteDatabase | null = null;
-  try {
-    db = openDatabaseSync(`${DATABASE_NAME}.db`, undefined, wdbDir());
-    const result = db.getFirstSync<{ user_version: number }>('PRAGMA user_version');
-    const fromVersion = result?.user_version ?? null;
-
-    if (fromVersion != null && fromVersion > 0 && fromVersion < toVersion) {
-      const capturedRows = readCapturedRowsSync(db);
-      persistCapturedPreMigrationBackup(capturedRows, fromVersion, toVersion);
-    }
-
-    return fromVersion;
-  } catch (error) {
-    console.warn('[PreMigrationBackup] Failed to inspect database before adapter init:', error);
-    return null;
-  } finally {
-    try {
-      db?.closeSync();
-    } catch {
-      // best effort
-    }
-  }
 }

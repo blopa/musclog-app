@@ -6,7 +6,7 @@ import { initializeSentry } from '@/sentry-init';
 
 import { captureBootDbFileStats } from './dbBootStats';
 import { migrations } from './migrations';
-import { preparePreMigrationBackupBeforeAdapter } from './preMigrationBackup';
+import { preparePreMigrationBackupBeforeAdapter } from './preMigrationCapture';
 import { schema } from './schema';
 
 // Capture WAL/SHM diagnostics, then capture any needed pre-migration backup
