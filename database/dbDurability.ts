@@ -139,6 +139,34 @@ async function checkpointDbForBackgrounding(): Promise<void> {
   }
 }
 
+async function initializeDbDurabilityMonitoring(): Promise<void> {
+  try {
+    await waitForDbReady();
+
+    // Rescue checkpoint: if a boot-time raw connection (pre-migration backup)
+    // unlinked the WAL under the live connection, this persists everything
+    // committed so far into the main DB file before any loss can occur.
+    await checkpointWalToMainDbFile();
+
+    if (ENABLE_DB_LOSS_DETECTION) {
+      await reportNutritionLogLossIfAny();
+
+      let debounce: ReturnType<typeof setTimeout> | null = null;
+      database.withChangesForTables(['nutrition_logs']).subscribe(() => {
+        if (debounce) {
+          clearTimeout(debounce);
+        }
+
+        debounce = setTimeout(() => {
+          void updateNutritionLogCountBaseline();
+        }, BASELINE_UPDATE_DEBOUNCE_MS);
+      });
+    }
+  } catch (error) {
+    handleError(error, 'dbDurability.startDbDurabilityMonitoring');
+  }
+}
+
 /**
  * Call once at app boot (native only). Reports any between-session loss, then
  * keeps the count baseline fresh as nutrition logs change.
@@ -156,33 +184,7 @@ export function startDbDurabilityMonitoring(): void {
     }
   });
 
-  // TODO: avoid using IIFE
-  void (async () => {
-    try {
-      await waitForDbReady();
-
-      // Rescue checkpoint: if a boot-time raw connection (pre-migration backup)
-      // unlinked the WAL under the live connection, this persists everything
-      // committed so far into the main DB file before any loss can occur.
-      await checkpointWalToMainDbFile();
-
-      if (ENABLE_DB_LOSS_DETECTION) {
-        await reportNutritionLogLossIfAny();
-
-        let debounce: ReturnType<typeof setTimeout> | null = null;
-        database.withChangesForTables(['nutrition_logs']).subscribe(() => {
-          if (debounce) {
-            clearTimeout(debounce);
-          }
-          debounce = setTimeout(() => {
-            void updateNutritionLogCountBaseline();
-          }, BASELINE_UPDATE_DEBOUNCE_MS);
-        });
-      }
-    } catch (error) {
-      handleError(error, 'dbDurability.startDbDurabilityMonitoring');
-    }
-  })();
+  void initializeDbDurabilityMonitoring();
 }
 
 async function reportNutritionLogLossIfAny(): Promise<void> {
