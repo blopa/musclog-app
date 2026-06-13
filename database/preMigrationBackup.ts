@@ -227,6 +227,10 @@ function persistCapturedPreMigrationBackup(
   return inFlightBackup;
 }
 
+export function waitForPreMigrationBackup(): Promise<void> {
+  return inFlightBackup ?? Promise.resolve();
+}
+
 export function preparePreMigrationBackupBeforeAdapter(toVersion: number): number | null {
   let db: SQLiteDatabase | null = null;
   try {
@@ -236,7 +240,7 @@ export function preparePreMigrationBackupBeforeAdapter(toVersion: number): numbe
 
     if (fromVersion != null && fromVersion > 0 && fromVersion < toVersion) {
       const capturedRows = readCapturedRowsSync(db);
-      void persistCapturedPreMigrationBackup(capturedRows, fromVersion, toVersion);
+      persistCapturedPreMigrationBackup(capturedRows, fromVersion, toVersion);
     }
 
     return fromVersion;
@@ -260,5 +264,5 @@ export function createPreMigrationBackup(event?: unknown): Promise<void> {
     );
   }
 
-  return inFlightBackup ?? Promise.resolve();
+  return waitForPreMigrationBackup();
 }

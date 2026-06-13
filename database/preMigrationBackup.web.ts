@@ -116,6 +116,8 @@ export async function deleteBackup(uri: string): Promise<void> {
  */
 export async function createPreMigrationBackup(_event?: unknown): Promise<void> {}
 
+export async function waitForPreMigrationBackup(): Promise<void> {}
+
 /**
  * Create a backup before restoring a database dump on Web.
  * Stores the current database content in localStorage.

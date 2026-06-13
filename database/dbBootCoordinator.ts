@@ -4,6 +4,7 @@ import { Platform } from 'react-native';
 import { isStaticExport } from '@/constants/platform';
 import { startDbDurabilityMonitoring } from '@/database/dbDurability';
 import { isDbReady, markDbReady, markDbReadyFailed, waitForDbReady } from '@/database/dbReady';
+import { waitForPreMigrationBackup } from '@/database/preMigrationBackup';
 import {
   ExerciseService,
   FoodPortionService,
@@ -152,6 +153,11 @@ function getActiveBootMigrations(): BootMigration[] {
 }
 
 async function waitForExistingDbReady(cancelled: Cancelled): Promise<void> {
+  await waitForPreMigrationBackup();
+  if (cancelled()) {
+    return;
+  }
+
   const startedAt = Date.now();
   const elapsed = () => Date.now() - startedAt;
   let attempt = 0;
