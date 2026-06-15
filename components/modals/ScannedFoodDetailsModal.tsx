@@ -60,7 +60,7 @@ import {
   parseLocalizedDecimalString,
   sanitizeLocalizedDecimalInput,
 } from '@/utils/localizedDecimalInput';
-import { getMusclogNutritionPer100g } from '@/utils/musclogProduct';
+import { getMusclogNutritionPer100g, getMusclogQualityScores } from '@/utils/musclogProduct';
 import {
   extractLabelsFromOFFProduct,
   getNutrimentsWithFallback,
@@ -781,21 +781,36 @@ export function ScannedFoodDetailsModal({
 
             const bp = (effectiveProductDetails as any)?.product;
             if (bp) {
-              if (typeof bp.nutriscore_grade === 'string' && bp.nutriscore_grade) {
-                record.nutriscore = bp.nutriscore_grade.toLowerCase();
-              }
+              if ((effectiveProductDetails as any).source === 'musclog') {
+                const { nutriscore, novaGroup, labels } = getMusclogQualityScores(bp);
+                if (nutriscore != null) {
+                  record.nutriscore = nutriscore;
+                }
 
-              if (typeof bp.ecoscore_grade === 'string' && bp.ecoscore_grade) {
-                record.ecoscore = bp.ecoscore_grade.toLowerCase();
-              }
+                if (novaGroup != null) {
+                  record.novaGroup = novaGroup;
+                }
 
-              if (typeof bp.nova_group === 'number') {
-                record.novaGroup = bp.nova_group;
-              }
+                if (labels != null) {
+                  record.labels = labels;
+                }
+              } else {
+                if (typeof bp.nutriscore_grade === 'string' && bp.nutriscore_grade) {
+                  record.nutriscore = bp.nutriscore_grade.toLowerCase();
+                }
 
-              const extractedLabels = extractLabelsFromOFFProduct(bp);
-              if (extractedLabels != null) {
-                record.labels = extractedLabels;
+                if (typeof bp.ecoscore_grade === 'string' && bp.ecoscore_grade) {
+                  record.ecoscore = bp.ecoscore_grade.toLowerCase();
+                }
+
+                if (typeof bp.nova_group === 'number') {
+                  record.novaGroup = bp.nova_group;
+                }
+
+                const extractedLabels = extractLabelsFromOFFProduct(bp);
+                if (extractedLabels != null) {
+                  record.labels = extractedLabels;
+                }
               }
             }
           });
@@ -845,6 +860,8 @@ export function ScannedFoodDetailsModal({
           description: getCurrentDescription(),
         };
 
+        const { nutriscore, novaGroup, labels } = getMusclogQualityScores(baseProduct);
+
         const newFood = await FoodService.createFromMusclogProduct(
           musclogProduct,
           {
@@ -857,6 +874,9 @@ export function ScannedFoodDetailsModal({
             saturatedFat: nutritionalData.saturatedFat,
             sodium: nutritionalData.sodium,
             micros: effectiveMicrosPer100g,
+            nutriscore,
+            novaGroup,
+            labels,
           },
           saveBarcode
         );

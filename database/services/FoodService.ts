@@ -201,6 +201,9 @@ export class FoodService {
       sodium?: number;
       micros?: MicrosData;
       isFavorite?: boolean;
+      nutriscore?: string;
+      novaGroup?: number;
+      labels?: FoodLabels;
     },
     barcode?: string
   ): Promise<Food> {
@@ -243,6 +246,19 @@ export class FoodService {
         food.isFavorite = nutritionData.isFavorite ?? false;
         food.source = 'musclog';
         food.nutritionBasis = 'per_100g';
+
+        if (nutritionData.nutriscore != null) {
+          food.nutriscore = nutritionData.nutriscore;
+        }
+
+        if (nutritionData.novaGroup != null) {
+          food.novaGroup = nutritionData.novaGroup;
+        }
+
+        if (nutritionData.labels != null) {
+          food.labels = nutritionData.labels;
+        }
+
         food.createdAt = now;
         food.updatedAt = now;
       });
