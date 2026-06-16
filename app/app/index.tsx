@@ -485,7 +485,6 @@ export default function HomeScreen() {
                 workoutsThisWeek={workoutsThisWeek}
                 weeklyGoal={weeklyGoal}
                 streakDays={macroStreak}
-                streakLabel={t('weeklyStreakCard.trackingMacros')}
                 bestStreakDays={bestMacroStreak}
                 bestStreakLabel={t('weeklyStreakCard.bestStreak')}
                 onCreateWorkoutGoalPress={handleOpenFitnessGoalsManagement}

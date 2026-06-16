@@ -104,14 +104,12 @@ export default function CardsTestScreen() {
             workoutsThisWeek={5}
             weeklyGoal={6}
             streakDays={56}
-            streakLabel="Tracking macros"
             bestStreakDays={82}
             bestStreakLabel="Best streak"
           />
           <WeeklyStreakCard
             workoutsThisWeek={5}
             streakDays={56}
-            streakLabel="Tracking macros"
             bestStreakDays={82}
             bestStreakLabel="Best streak"
             onCreateWorkoutGoalPress={() => {}}

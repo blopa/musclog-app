@@ -1,4 +1,6 @@
-import { Flame, Trophy } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Trophy } from 'lucide-react-native';
+import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
@@ -12,7 +14,6 @@ type WeeklyStreakCardProps = {
   workoutsThisWeek: number;
   weeklyGoal?: number | null;
   streakDays: number;
-  streakLabel: string;
   bestStreakDays: number;
   bestStreakLabel: string;
   onCreateWorkoutGoalPress?: () => void;
@@ -22,7 +23,6 @@ export function WeeklyStreakCard({
   workoutsThisWeek,
   weeklyGoal,
   streakDays,
-  streakLabel,
   bestStreakDays,
   bestStreakLabel,
   onCreateWorkoutGoalPress,
@@ -31,116 +31,161 @@ export function WeeklyStreakCard({
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
 
-  const dots =
-    weeklyGoal != null && weeklyGoal > 0
-      ? Array.from({ length: weeklyGoal }, (_, index) => index < workoutsThisWeek)
-      : [];
-  const footerSlotStyle = { height: 34 };
+  const hasWorkoutGoal = weeklyGoal != null && weeklyGoal > 0;
+  const dots = hasWorkoutGoal
+    ? Array.from({ length: weeklyGoal }, (_, index) => index < workoutsThisWeek)
+    : [];
+  const bestStreakDaysLabel = t('weeklyStreakCard.days', {
+    value: formatInteger(bestStreakDays),
+  });
+  const dotSize = 16;
 
   return (
-    <GenericCard variant="default">
-      <View className="flex-row items-stretch">
-        {/* Workouts this week */}
-        <View className="flex-1 justify-between px-4 py-3.5">
-          <View>
-            <View className="flex-row items-center gap-2">
-              <Flame
-                size={theme.iconSize['3xl']}
-                color={theme.colors.status.warning}
-                fill={theme.colors.status.warning}
-              />
+    <GenericCard variant="default" containerStyle={theme.shadows.lg}>
+      <View className="flex-row items-stretch" style={{ minHeight: 126 }}>
+        <View className="flex-1 justify-center px-5 py-4">
+          {hasWorkoutGoal ? (
+            <>
               <Text
-                className="font-extrabold leading-none"
+                className="font-medium text-text-primary"
+                numberOfLines={2}
+                adjustsFontSizeToFit
+                minimumFontScale={0.78}
                 style={{
-                  color: theme.colors.status.warning,
-                  fontSize: theme.typography.fontSize['40'],
+                  fontSize: theme.typography.fontSize.xl,
+                  lineHeight: 26,
                 }}
               >
-                {formatInteger(workoutsThisWeek)}
+                <Text className="font-extrabold">{formatInteger(workoutsThisWeek)}</Text>
+                {` ${t('weeklyStreakCard.workoutsThisWeek')}`}
               </Text>
-            </View>
-            <Text
-              className="mt-0.5 text-sm font-bold leading-tight text-text-primary"
-              numberOfLines={2}
-            >
-              {t('weeklyStreakCard.workoutsThisWeek')}
-            </Text>
-          </View>
-          {dots.length > 0 ? (
-            <View className="mt-2 flex-row items-center gap-1.5" style={footerSlotStyle}>
-              {dots.map((filled, index) => (
-                <View
-                  className="h-2 w-2 rounded-full"
-                  key={index}
-                  style={{
-                    backgroundColor: filled
-                      ? theme.colors.status.warning
-                      : theme.colors.background.white10,
-                  }}
-                />
-              ))}
-            </View>
+
+              <View className="mt-4 h-6 flex-row items-center">
+                {dots.map((filled, index) => (
+                  <Fragment key={index}>
+                    {index > 0 ? (
+                      <View
+                        className="flex-1"
+                        style={{
+                          backgroundColor: filled
+                            ? theme.colors.status.emerald30
+                            : theme.colors.background.white10,
+                          height: theme.borderWidth.thin,
+                        }}
+                      />
+                    ) : null}
+                    <View
+                      style={{
+                        width: dotSize,
+                        height: dotSize,
+                        borderRadius: dotSize / 2,
+                        backgroundColor: filled
+                          ? theme.colors.accent.primary
+                          : theme.colors.background.white10,
+                        shadowColor: theme.colors.accent.primary,
+                        shadowOffset: { width: 0, height: 0 },
+                        shadowOpacity: filled ? 0.45 : 0,
+                        shadowRadius: filled ? 8 : 0,
+                        elevation: filled ? 3 : 0,
+                      }}
+                    />
+                  </Fragment>
+                ))}
+              </View>
+            </>
           ) : onCreateWorkoutGoalPress ? (
-            <View className="mt-2 justify-center" style={footerSlotStyle}>
+            <View className="mt-2 justify-center">
               <Button
                 label={t('weeklyStreakCard.setWeeklyGoal')}
                 onPress={onCreateWorkoutGoalPress}
-                size="xs"
-                variant="secondary"
+                size="sm"
+                variant="accent"
                 width="full"
               />
             </View>
           ) : (
-            <View className="mt-2" style={footerSlotStyle} />
+            <Text
+              className="font-medium text-text-primary"
+              numberOfLines={2}
+              adjustsFontSizeToFit
+              minimumFontScale={0.78}
+              style={{
+                fontSize: theme.typography.fontSize.xl,
+                lineHeight: 26,
+              }}
+            >
+              <Text className="font-extrabold">{formatInteger(workoutsThisWeek)}</Text>
+              {` ${t('weeklyStreakCard.workoutsThisWeek')}`}
+            </Text>
           )}
         </View>
 
-        {/* Divider */}
-        <View className="my-3.5 w-px" style={{ backgroundColor: theme.colors.border.default }} />
+        <View className="my-5 w-px" style={{ backgroundColor: theme.colors.border.default }} />
 
-        {/* Streak */}
-        <View className="flex-1 justify-between px-4 py-3.5">
-          <View>
+        <View className="flex-1 justify-center px-4 py-4">
+          <View className="flex-row items-baseline gap-1.5">
             <Text
-              className="font-extrabold leading-none"
+              className="font-extrabold text-text-primary"
+              numberOfLines={1}
               style={{
-                color: theme.colors.accent.primary,
-                fontSize: theme.typography.fontSize['40'],
+                flexShrink: 0,
+                fontSize: theme.typography.fontSize['4xl'],
+                lineHeight: 40,
               }}
             >
               {formatInteger(streakDays)}
             </Text>
-            <Text className="mt-0.5 text-sm font-bold leading-tight text-text-primary">
-              {t('weeklyStreakCard.dayStreak')}
-            </Text>
             <Text
-              className="mt-px text-xs font-semibold"
+              className="min-w-0 flex-1 font-extrabold text-text-primary"
               numberOfLines={1}
-              style={{ color: theme.colors.accent.primary }}
+              adjustsFontSizeToFit
+              minimumFontScale={0.7}
+              style={{
+                fontSize: theme.typography.fontSize.xl,
+                lineHeight: 25,
+              }}
             >
-              {streakLabel}
+              {t('weeklyStreakCard.dayStreak')}
             </Text>
           </View>
 
-          <View
-            className="mt-2 flex-row items-center gap-1.5 rounded-lg px-2.5"
-            style={{
-              ...footerSlotStyle,
-              backgroundColor: theme.colors.background.white5,
-              borderColor: theme.colors.border.default,
-              borderWidth: theme.borderWidth.thin,
-            }}
-          >
-            <Trophy size={theme.iconSize.sm} color={theme.colors.status.amber} />
-            <Text
-              className="min-w-0 flex-1 text-xs font-medium text-text-secondary"
-              numberOfLines={1}
+          <View className="mt-3 h-8 flex-row items-center gap-1.5">
+            <Trophy
+              size={theme.iconSize.lg}
+              color={theme.colors.accent.primary}
+              fill={theme.colors.accent.primary}
+              strokeWidth={theme.strokeWidth.medium}
+            />
+            <View
+              className="min-w-0 flex-1 flex-row items-center rounded-md px-2.5"
+              style={{
+                height: 30,
+                backgroundColor: theme.colors.status.emerald20,
+              }}
             >
-              {bestStreakLabel}
-            </Text>
-            <Text className="text-xs font-bold text-text-primary" numberOfLines={1}>
-              {t('weeklyStreakCard.days', { value: formatInteger(bestStreakDays) })}
-            </Text>
+              <Text
+                className="min-w-0 flex-1 text-text-secondary"
+                numberOfLines={1}
+                style={{
+                  fontSize: theme.typography.fontSize.xs,
+                  fontWeight: theme.typography.fontWeight.semibold,
+                }}
+              >
+                {bestStreakLabel}:
+              </Text>
+              <Text
+                className="ml-1 font-bold text-text-primary"
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.75}
+                style={{
+                  flexShrink: 0,
+                  fontSize: theme.typography.fontSize.xs,
+                }}
+              >
+                {bestStreakDaysLabel}
+              </Text>
+            </View>
           </View>
         </View>
       </View>
