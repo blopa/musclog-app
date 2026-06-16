@@ -2,6 +2,7 @@ import { Flame, Trophy } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { Button } from '@/components/theme/Button';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -14,6 +15,7 @@ type WeeklyStreakCardProps = {
   streakLabel: string;
   bestStreakDays: number;
   bestStreakLabel: string;
+  onCreateWorkoutGoalPress?: () => void;
 };
 
 export function WeeklyStreakCard({
@@ -23,6 +25,7 @@ export function WeeklyStreakCard({
   streakLabel,
   bestStreakDays,
   bestStreakLabel,
+  onCreateWorkoutGoalPress,
 }: WeeklyStreakCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -37,11 +40,12 @@ export function WeeklyStreakCard({
     <GenericCard variant="default">
       <View className="flex-row items-stretch">
         {/* Workouts this week */}
-        <View className="flex-1 flex-row items-center gap-3 p-5">
+        <View className="flex-1 flex-row items-start gap-3 p-5">
           <Flame
             size={theme.iconSize['4xl']}
             color={theme.colors.status.warning}
             fill={theme.colors.status.warning}
+            style={{ marginTop: 10 }}
           />
           <View className="flex-1">
             <Text
@@ -69,6 +73,16 @@ export function WeeklyStreakCard({
                     }}
                   />
                 ))}
+              </View>
+            ) : onCreateWorkoutGoalPress ? (
+              <View className="mt-3">
+                <Button
+                  label={t('weeklyStreakCard.setWeeklyGoal')}
+                  onPress={onCreateWorkoutGoalPress}
+                  size="xs"
+                  variant="secondary"
+                  width="full"
+                />
               </View>
             ) : null}
           </View>
@@ -99,20 +113,23 @@ export function WeeklyStreakCard({
           </Text>
 
           <View
-            className="mt-3 flex-row items-center gap-2 rounded-xl p-2.5"
+            className="mt-3 h-9 flex-row items-center gap-2 rounded-xl px-3"
             style={{
               backgroundColor: theme.colors.background.white5,
               borderColor: theme.colors.border.default,
               borderWidth: theme.borderWidth.thin,
             }}
           >
-            <Trophy size={theme.iconSize.lg} color={theme.colors.status.amber} />
-            <View className="flex-1">
-              <Text className="text-xs font-medium text-text-secondary">{bestStreakLabel}</Text>
-              <Text className="text-sm font-bold text-text-primary">
-                {t('weeklyStreakCard.days', { value: formatInteger(bestStreakDays) })}
-              </Text>
-            </View>
+            <Trophy size={theme.iconSize.md} color={theme.colors.status.amber} />
+            <Text
+              className="min-w-0 flex-1 text-xs font-medium text-text-secondary"
+              numberOfLines={1}
+            >
+              {bestStreakLabel}
+            </Text>
+            <Text className="text-sm font-bold text-text-primary" numberOfLines={1}>
+              {t('weeklyStreakCard.days', { value: formatInteger(bestStreakDays) })}
+            </Text>
           </View>
         </View>
       </View>

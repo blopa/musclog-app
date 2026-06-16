@@ -4,6 +4,7 @@
     "dayStreak": "dagen reeks",
     "days": "{{value}} dagen",
     "trackingMacros": "Macro's bijhouden",
-    "bestStreak": "Beste reeks"
+    "bestStreak": "Beste reeks",
+    "setWeeklyGoal": "Doel instellen"
   }
 }

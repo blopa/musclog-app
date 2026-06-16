@@ -82,6 +82,13 @@ function drainPendingWidgetAction(
 // No notification system yet, so leave it like this for now
 const SHOW_NOTIFICATIONS = false;
 
+const GOALS_MANAGEMENT_TAB = {
+  FITNESS: 'fitness',
+  NUTRITION: 'nutrition',
+} as const;
+
+type GoalsManagementTab = (typeof GOALS_MANAGEMENT_TAB)[keyof typeof GOALS_MANAGEMENT_TAB];
+
 export default function HomeScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -189,6 +196,7 @@ export default function HomeScreen() {
   const [isMyMealsVisible, setIsMyMealsVisible] = useState(false);
   const [isDailySummaryMenuVisible, setIsDailySummaryMenuVisible] = useState(false);
   const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
+  const [goalsManagementTab, setGoalsManagementTab] = useState<GoalsManagementTab>('nutrition');
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
   const [isMoodPromptVisible, setIsMoodPromptVisible] = useState(false);
   const [isWaterPromptVisible, setIsWaterPromptVisible] = useState(false);
@@ -234,6 +242,19 @@ export default function HomeScreen() {
   const handleCloseGoalsManagement = useCallback(() => setIsGoalsManagementModalVisible(false), []);
   const handleCloseCreateCustomFood = useCallback(() => setIsCreateCustomFoodVisible(false), []);
   const handleCloseWorkoutDetail = useCallback(() => setSelectedWorkoutId(undefined), []);
+
+  const handleOpenGoalsManagement = useCallback((tab: GoalsManagementTab) => {
+    setGoalsManagementTab(tab);
+    setIsGoalsManagementModalVisible(true);
+  }, []);
+
+  const handleOpenNutritionGoalsManagement = useCallback(() => {
+    handleOpenGoalsManagement(GOALS_MANAGEMENT_TAB.NUTRITION);
+  }, [handleOpenGoalsManagement]);
+
+  const handleOpenFitnessGoalsManagement = useCallback(() => {
+    handleOpenGoalsManagement(GOALS_MANAGEMENT_TAB.FITNESS);
+  }, [handleOpenGoalsManagement]);
 
   // Memoize modal action handlers
   const handleMealTypeSelect = useCallback((mealType: MealType) => {
@@ -467,6 +488,7 @@ export default function HomeScreen() {
                 streakLabel={t('weeklyStreakCard.trackingMacros')}
                 bestStreakDays={bestMacroStreak}
                 bestStreakLabel={t('weeklyStreakCard.bestStreak')}
+                onCreateWorkoutGoalPress={handleOpenFitnessGoalsManagement}
               />
             </AnimatedContent>
           ) : nutritionGoal ? (
@@ -815,7 +837,7 @@ export default function HomeScreen() {
         visible={isDailySummaryMenuVisible}
         onClose={handleCloseDailySummaryMenu}
         onEditCurrentGoalPress={() => setIsEditCurrentGoalVisible(true)}
-        onGoalsManagementPress={() => setIsGoalsManagementModalVisible(true)}
+        onGoalsManagementPress={handleOpenNutritionGoalsManagement}
         showEditCurrentGoal={currentNutritionGoal != null}
       />
 
@@ -823,7 +845,7 @@ export default function HomeScreen() {
       <GoalsManagementModal
         visible={isGoalsManagementModalVisible}
         onClose={handleCloseGoalsManagement}
-        tab="nutrition"
+        tab={goalsManagementTab}
       />
 
       {/* Create Custom Food Modal */}

@@ -4,6 +4,7 @@
     "dayStreak": "dias de sequência",
     "days": "{{value}} dias",
     "trackingMacros": "Registrando macros",
-    "bestStreak": "Melhor sequência"
+    "bestStreak": "Melhor sequência",
+    "setWeeklyGoal": "Definir meta"
   }
 }
