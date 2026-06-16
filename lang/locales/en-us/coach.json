@@ -84,10 +84,16 @@
     },
     "menu": {
       "title": "Chat options",
+      "quickSettings": "Quick settings",
+      "quickSettingsDesc": "Adjust AI thinking, image handling, and history sent to the AI.",
       "clearHistory": "Clear chat history",
       "clearHistoryDesc": "Delete all messages in this conversation context.",
       "shareHistory": "Share chat history",
       "shareHistoryDesc": "Export this whole conversation as plain text."
+    },
+    "quickSettings": {
+      "title": "Quick settings",
+      "subtitle": "Adjust how Loggy thinks and what context it receives."
     },
     "confirmClear": {
       "title": "Clear chat history?",

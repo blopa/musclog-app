@@ -84,10 +84,16 @@
     },
     "menu": {
       "title": "Chatopties",
+      "quickSettings": "Snelle instellingen",
+      "quickSettingsDesc": "Pas het redeneren van de AI, beeldverwerking en de geschiedenis die naar de AI wordt verzonden aan.",
       "clearHistory": "Chatgeschiedenis wissen",
       "clearHistoryDesc": "Verwijder alle berichten in deze gesprekcontext.",
       "shareHistory": "Chatgeschiedenis delen",
       "shareHistoryDesc": "Exporteer dit hele gesprek als platte tekst."
+    },
+    "quickSettings": {
+      "title": "Snelle instellingen",
+      "subtitle": "Pas aan hoe Loggy denkt en welke context het ontvangt."
     },
     "confirmClear": {
       "title": "Chatgeschiedenis wissen?",

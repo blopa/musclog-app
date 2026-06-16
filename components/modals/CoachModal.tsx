@@ -14,6 +14,7 @@ import {
   PlusCircle,
   Send as SendIcon,
   Share2,
+  SlidersHorizontal,
   Trash2,
   TrendingUp,
   UtensilsCrossed,
@@ -74,6 +75,7 @@ import { createThumbnail, pickDocument } from '@/utils/file';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { handleError } from '@/utils/handleError';
 
+import { CoachQuickSettingsModal } from './CoachQuickSettingsModal';
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 import { LogMealModal } from './LogMealModal';
@@ -688,6 +690,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
   } | null>(null);
   const [attachedImage, setAttachedImage] = useState<{ uri: string; base64: string } | null>(null);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [isQuickSettingsVisible, setIsQuickSettingsVisible] = useState(false);
   const [isClearHistoryModalVisible, setIsClearHistoryModalVisible] = useState(false);
   const [isClearingHistory, setIsClearingHistory] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState<ExtendedIMessage | null>(null);
@@ -728,6 +731,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
         setIsMusclesModalVisible(false);
         setMusclesModalGroups([]);
         setIsMenuVisible(false);
+        setIsQuickSettingsVisible(false);
         setSelectedMessage(null);
         setIsClearHistoryModalVisible(false);
         setIsDeleteMessageModalVisible(false);
@@ -1086,6 +1090,11 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     setIsClearHistoryModalVisible(true);
   }, []);
 
+  const handleQuickSettingsPress = useCallback(() => {
+    setIsMenuVisible(false);
+    setIsQuickSettingsVisible(true);
+  }, []);
+
   const handleConfirmClearHistory = useCallback(async () => {
     setIsClearingHistory(true);
     await flushLoadingPaint();
@@ -1124,6 +1133,14 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
   const headerMenuItems: BottomPopUpMenuItem[] = useMemo(
     () => [
       {
+        icon: SlidersHorizontal,
+        iconColor: theme.colors.accent.primary,
+        iconBgColor: theme.colors.accent.primary10,
+        title: t('coach.menu.quickSettings'),
+        description: t('coach.menu.quickSettingsDesc'),
+        onPress: handleQuickSettingsPress,
+      },
+      {
         icon: Share2,
         iconColor: theme.colors.text.primary,
         iconBgColor: theme.colors.background.iconDarker,
@@ -1144,8 +1161,11 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     ],
     [
       handleClearHistoryPress,
+      handleQuickSettingsPress,
       handleShareHistory,
       t,
+      theme.colors.accent.primary,
+      theme.colors.accent.primary10,
       theme.colors.background.iconDarker,
       theme.colors.status.error10,
       theme.colors.status.error50,
@@ -1611,6 +1631,11 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
         onClose={() => setIsMenuVisible(false)}
         title={t('coach.menu.title')}
         items={headerMenuItems}
+      />
+
+      <CoachQuickSettingsModal
+        visible={isQuickSettingsVisible}
+        onClose={() => setIsQuickSettingsVisible(false)}
       />
 
       <BottomPopUpMenu
