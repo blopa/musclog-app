@@ -9,7 +9,7 @@ import { GenericCard } from './GenericCard';
 
 type WeeklyStreakCardProps = {
   workoutsThisWeek: number;
-  weeklyGoal?: number;
+  weeklyGoal: number;
   streakDays: number;
   streakLabel: string;
   bestStreakDays: number;
@@ -18,7 +18,7 @@ type WeeklyStreakCardProps = {
 
 export function WeeklyStreakCard({
   workoutsThisWeek,
-  weeklyGoal = 6,
+  weeklyGoal,
   streakDays,
   streakLabel,
   bestStreakDays,

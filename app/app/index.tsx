@@ -8,12 +8,12 @@ import { AppState, Platform, Pressable, ScrollView, Text, View } from 'react-nat
 import { ActionButton } from '@/components/ActionButton';
 import { DailySummaryCard } from '@/components/cards/DailySummaryCard/DailySummaryCard';
 import { DailySummaryEmptyState } from '@/components/cards/DailySummaryCard/DailySummaryEmptyState';
-import { WeeklyStreakCard } from '@/components/cards/WeeklyStreakCard';
 import { DetailedItemCard } from '@/components/cards/DetailedItemCard';
 import { FoodItemCard } from '@/components/cards/FoodItemCard';
 import { HomeMoodPrompt } from '@/components/cards/HomeMoodPrompt';
 import { HomeSupplementPrompt } from '@/components/cards/HomeSupplementPrompt';
 import { HomeWaterPrompt } from '@/components/cards/HomeWaterPrompt';
+import { WeeklyStreakCard } from '@/components/cards/WeeklyStreakCard';
 import { useCoach } from '@/components/CoachContext';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { DailySummaryBottomMenu } from '@/components/DailySummaryBottomMenu';
@@ -50,6 +50,7 @@ import { useNutritionLogs } from '@/hooks/useNutritionLogs';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { useUser } from '@/hooks/useUser';
+import { useWeeklyWorkoutProgress } from '@/hooks/useWeeklyWorkoutProgress';
 import { useWorkoutHistory } from '@/hooks/useWorkoutHistory';
 import packageJson from '@/package.json';
 import { isProduction } from '@/utils/app';
@@ -101,6 +102,14 @@ export default function HomeScreen() {
   const navigationState = useRootNavigationState();
 
   const [today, setToday] = useState(() => localCalendarDayDate(new Date()));
+  const {
+    workoutsThisWeek,
+    weeklyGoal,
+    isLoading: isLoadingWeeklyWorkoutProgress,
+  } = useWeeklyWorkoutProgress({
+    date: today,
+    visible: homeSummaryCard === 'weekly_streak',
+  });
 
   useEffect(() => {
     if (isStaticExport) {
@@ -139,6 +148,11 @@ export default function HomeScreen() {
     nutritionGoal,
     isLoading: isLoadingNutritionSummary,
   } = useDailyNutritionSummary({ date: today });
+
+  const isLoadingHomeSummaryCard =
+    homeSummaryCard === 'weekly_streak'
+      ? isLoadingWeeklyWorkoutProgress
+      : isLoadingNutritionSummary;
 
   const weeklyRange = useMemo(() => {
     const end = new Date(today);
@@ -442,14 +456,13 @@ export default function HomeScreen() {
 
         {/* Daily Summary Card */}
         <View className="mb-6 px-4">
-          {isLoadingNutritionSummary ? (
+          {isLoadingHomeSummaryCard ? (
             <SkeletonLoader width="100%" height={180} borderRadius={16} />
           ) : homeSummaryCard === 'weekly_streak' ? (
             <AnimatedContent>
-              {/* TODO: workoutsThisWeek / weeklyGoal still use mocked values */}
               <WeeklyStreakCard
-                workoutsThisWeek={5}
-                weeklyGoal={6}
+                workoutsThisWeek={workoutsThisWeek}
+                weeklyGoal={weeklyGoal}
                 streakDays={macroStreak}
                 streakLabel={t('weeklyStreakCard.trackingMacros')}
                 bestStreakDays={bestMacroStreak}
