@@ -61,10 +61,10 @@ export function WeeklyStreakCard({
               {t('weeklyStreakCard.workoutsThisWeek')}
             </Text>
             {dots.length > 0 ? (
-              <View className="mt-3 flex-row gap-1.5">
+              <View className="mt-3 h-9 flex-row items-center gap-2">
                 {dots.map((filled, index) => (
                   <View
-                    className="h-1.5 w-1.5 rounded-full"
+                    className="h-2.5 w-2.5 rounded-full"
                     key={index}
                     style={{
                       backgroundColor: filled
