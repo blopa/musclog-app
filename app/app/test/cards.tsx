@@ -44,6 +44,7 @@ import { SelectedExerciseCard } from '@/components/cards/SelectedExerciseCard';
 import { SettingsCard } from '@/components/cards/SettingsCard';
 import { StatCard } from '@/components/cards/StatCard';
 import { TdeeCard } from '@/components/cards/TdeeCard';
+import { WeeklyStreakCard } from '@/components/cards/WeeklyStreakCard';
 import { WorkoutCard } from '@/components/cards/WorkoutCard';
 import { WorkoutStatCard } from '@/components/cards/WorkoutStatCard';
 import { WorkoutSummaryStatsCard } from '@/components/cards/WorkoutSummaryStatsCard';
@@ -96,6 +97,17 @@ export default function CardsTestScreen() {
             <Text className="mb-2 text-text-primary">Progress: 0 (Empty)</Text>
             <RestTimer restTime={0} initialRestTime={90} rotationAnim={rotationAnim} />
           </View>
+        </TestSection>
+
+        <TestSection title="Weekly Streak" subtitle="Workouts this week and tracking streak">
+          <WeeklyStreakCard
+            workoutsThisWeek={5}
+            weeklyGoal={6}
+            streakDays={56}
+            streakLabel="Tracking macros"
+            bestStreakDays={82}
+            bestStreakLabel="Best streak"
+          />
         </TestSection>
 
         <TestSection title="Featured Workout" subtitle="Highlight your workouts">

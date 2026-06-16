@@ -18,6 +18,8 @@ import {
   type FoodSearchSource,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
+  HOME_SUMMARY_CARD_SETTING_TYPE,
+  type HomeSummaryCard,
   INTUITIVE_EATING_MODE_SETTING_TYPE,
   LANGUAGE_SETTING_TYPE,
   LAST_HOME_WATER_PROMPT_ANSWERED_DAY_SETTING_TYPE,
@@ -728,6 +730,24 @@ export class SettingsService {
    */
   static async setProgressionMode(mode: ProgressionMode) {
     await SettingsService.setStringSetting(PROGRESSION_MODE_SETTING_TYPE, mode);
+  }
+
+  /**
+   * Get which summary card to show on the home screen ('daily_summary' | 'weekly_streak').
+   * Defaults to 'daily_summary'.
+   */
+  static async getHomeSummaryCard(): Promise<HomeSummaryCard> {
+    return (await SettingsService.getStringSetting(
+      HOME_SUMMARY_CARD_SETTING_TYPE,
+      'daily_summary'
+    )) as HomeSummaryCard;
+  }
+
+  /**
+   * Upsert which summary card to show on the home screen ('daily_summary' | 'weekly_streak')
+   */
+  static async setHomeSummaryCard(card: HomeSummaryCard) {
+    await SettingsService.setStringSetting(HOME_SUMMARY_CARD_SETTING_TYPE, card);
   }
 
   /**

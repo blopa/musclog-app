@@ -309,6 +309,12 @@ export const NUTRITION_LOG_HISTORY_DAYS_SETTING_TYPE = 'nutrition_log_history_da
  */
 export const WORKOUT_HISTORY_DAYS_SETTING_TYPE = 'workout_history_days';
 
+/**
+ * Setting type for which summary card to show on the home screen.
+ * value: 'daily_summary' | 'weekly_streak'. Default: 'daily_summary'.
+ */
+export const HOME_SUMMARY_CARD_SETTING_TYPE = 'home_summary_card';
+
 export const USE_MUSCLOG_FREE_TIER_SETTING_TYPE = 'use_musclog_free_tier';
 export const MUSCLOG_GATEWAY_ANONYMOUS_ID_SETTING_TYPE = 'musclog_gateway_anonymous_id';
 export const DUMP_LLM_REQUESTS_SETTING_TYPE = 'dump_llm_requests';
@@ -331,6 +337,7 @@ export type FoodSource = 'user' | 'usda' | 'ai' | 'openfood' | 'foundation' | 'm
 export type ChartTooltipPosition = 'left' | 'right';
 export type NutritionLogHistoryDays = 'none' | '7' | '30' | '60' | '90';
 export type WorkoutHistoryDays = 'none' | '7' | '30' | '60' | '90';
+export type HomeSummaryCard = 'daily_summary' | 'weekly_streak';
 
 export type UseSettingsResult = {
   units: Units;
@@ -357,4 +364,5 @@ export type UseSettingsResult = {
   nutritionDisplay: string;
   nutritionLogHistoryDays: NutritionLogHistoryDays;
   workoutHistoryDays: WorkoutHistoryDays;
+  homeSummaryCard: HomeSummaryCard;
 };

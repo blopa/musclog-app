@@ -8,6 +8,7 @@ import { AppState, Platform, Pressable, ScrollView, Text, View } from 'react-nat
 import { ActionButton } from '@/components/ActionButton';
 import { DailySummaryCard } from '@/components/cards/DailySummaryCard/DailySummaryCard';
 import { DailySummaryEmptyState } from '@/components/cards/DailySummaryCard/DailySummaryEmptyState';
+import { WeeklyStreakCard } from '@/components/cards/WeeklyStreakCard';
 import { DetailedItemCard } from '@/components/cards/DetailedItemCard';
 import { FoodItemCard } from '@/components/cards/FoodItemCard';
 import { HomeMoodPrompt } from '@/components/cards/HomeMoodPrompt';
@@ -44,6 +45,7 @@ import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useEmpiricalTDEE } from '@/hooks/useEmpiricalTDEE';
+import { useMacroStreak } from '@/hooks/useMacroStreak';
 import { useNutritionLogs } from '@/hooks/useNutritionLogs';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -89,7 +91,8 @@ export default function HomeScreen() {
   const { tdee: currentTdee } = useEmpiricalTDEE({
     fallbackValue: planData?.tdee ?? nutritionGoalsDefaults.totalCalories,
   });
-  const { isAiConfigured, intuitiveEatingMode, nutritionDisplay } = useSettings();
+  const { isAiConfigured, intuitiveEatingMode, nutritionDisplay, homeSummaryCard } = useSettings();
+  const { currentStreak: macroStreak, bestStreak: bestMacroStreak } = useMacroStreak();
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
@@ -441,6 +444,18 @@ export default function HomeScreen() {
         <View className="mb-6 px-4">
           {isLoadingNutritionSummary ? (
             <SkeletonLoader width="100%" height={180} borderRadius={16} />
+          ) : homeSummaryCard === 'weekly_streak' ? (
+            <AnimatedContent>
+              {/* TODO: workoutsThisWeek / weeklyGoal still use mocked values */}
+              <WeeklyStreakCard
+                workoutsThisWeek={5}
+                weeklyGoal={6}
+                streakDays={macroStreak}
+                streakLabel={t('weeklyStreakCard.trackingMacros')}
+                bestStreakDays={bestMacroStreak}
+                bestStreakLabel={t('weeklyStreakCard.bestStreak')}
+              />
+            </AnimatedContent>
           ) : nutritionGoal ? (
             <AnimatedContent>
               <DailySummaryCard

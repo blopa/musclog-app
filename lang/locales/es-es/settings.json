@@ -385,6 +385,22 @@
       "recordingSettings": "Ajustes de grabación",
       "generateChartPayload": "Generar datos de gráfico",
       "generateChartPayloadSubtitle": "Incluir datos de señal y anotaciones de repeticiones para mostrar en el gráfico después de cada serie"
+    },
+    "homeSummaryCard": {
+      "sectionTitle": "Tarjeta de resumen de inicio",
+      "sectionSubtitle": "Elige qué tarjeta aparece en la parte superior de tu pantalla de inicio.",
+      "popupTitle": "Tarjeta de resumen de inicio",
+      "popupSubtitle": "Selecciona una tarjeta para mostrar",
+      "options": {
+        "daily_summary": {
+          "label": "Resumen diario",
+          "description": "Calorías y macros del día"
+        },
+        "weekly_streak": {
+          "label": "Racha semanal",
+          "description": "Entrenamientos de esta semana y tu racha de registro"
+        }
+      }
     }
   }
 }

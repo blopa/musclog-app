@@ -1054,6 +1054,42 @@ export class NutritionService {
   }
 
   /**
+   * Count the longest run of consecutive calendar days with at least one logged food,
+   * walking backwards from **yesterday** (the current day is intentionally excluded) until
+   * the first day without any log.
+   *
+   * Day boundaries are timezone-aware: each log is normalized to the calendar day the user
+   * experienced via {@link utcNormalizedDayKey} (re-applying the log's stored timezone offset),
+   * and "today" is the device-local calendar day. Back-filled past days and long gaps are not
+   * tracked — only the unbroken streak ending at yesterday counts.
+   */
+  static async getMacroLoggingStreak(): Promise<number> {
+    const logs = await database
+      .get<NutritionLog>('nutrition_logs')
+      .query(Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    if (logs.length === 0) {
+      return 0;
+    }
+
+    const loggedDayKeys = new Set(
+      logs.map((log) => utcNormalizedDayKey(log.date ?? 0, log.timezone))
+    );
+
+    const todayKey = utcDayKeyFromLocalDate(new Date());
+    let streak = 0;
+    // Start at yesterday so the current (possibly incomplete) day never affects the streak.
+    let cursor = todayKey - MS_PER_SOLAR_DAY;
+    while (loggedDayKeys.has(cursor)) {
+      streak++;
+      cursor -= MS_PER_SOLAR_DAY;
+    }
+
+    return streak;
+  }
+
+  /**
    * Duplicate nutrition log (create a copy)
    */
   static async duplicateNutritionLog(id: string): Promise<NutritionLog> {

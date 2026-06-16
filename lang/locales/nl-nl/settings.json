@@ -385,6 +385,22 @@
       "recordingSettings": "Opname-instellingen",
       "generateChartPayload": "Grafiekgegevens genereren",
       "generateChartPayloadSubtitle": "Signaal- en herhalingsannotatiegegevens opnemen voor grafiekweergave na elke set"
+    },
+    "homeSummaryCard": {
+      "sectionTitle": "Startscherm-overzichtskaart",
+      "sectionSubtitle": "Kies welke kaart bovenaan je startscherm verschijnt.",
+      "popupTitle": "Startscherm-overzichtskaart",
+      "popupSubtitle": "Selecteer een kaart om weer te geven",
+      "options": {
+        "daily_summary": {
+          "label": "Dagoverzicht",
+          "description": "Calorieën en macro's voor de dag"
+        },
+        "weekly_streak": {
+          "label": "Wekelijkse reeks",
+          "description": "Trainingen deze week en je bijhoudreeks"
+        }
+      }
     }
   }
 }

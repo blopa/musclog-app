@@ -385,6 +385,22 @@
       "recordingSettings": "Recording Settings",
       "generateChartPayload": "Generate Chart Data",
       "generateChartPayloadSubtitle": "Include signal and rep annotation data for chart display after each set"
+    },
+    "homeSummaryCard": {
+      "sectionTitle": "Home Summary Card",
+      "sectionSubtitle": "Choose which card appears at the top of your home screen.",
+      "popupTitle": "Home Summary Card",
+      "popupSubtitle": "Select a card to display",
+      "options": {
+        "daily_summary": {
+          "label": "Daily Summary",
+          "description": "Calories and macros for the day"
+        },
+        "weekly_streak": {
+          "label": "Weekly Streak",
+          "description": "Workouts this week and your tracking streak"
+        }
+      }
     }
   }
 }

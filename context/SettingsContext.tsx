@@ -21,6 +21,8 @@ import {
   type FoodSearchSource,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
+  HOME_SUMMARY_CARD_SETTING_TYPE,
+  type HomeSummaryCard,
   INTUITIVE_EATING_MODE_SETTING_TYPE,
   LANGUAGE_SETTING_TYPE,
   LOCAL_LLM_API_KEY_SETTING_TYPE,
@@ -127,6 +129,7 @@ type SettingsState = {
   bleGenerateChartPayload: boolean;
   nutritionLogHistoryDays: NutritionLogHistoryDays;
   workoutHistoryDays: WorkoutHistoryDays;
+  homeSummaryCard: HomeSummaryCard;
   isLoading: boolean;
 };
 
@@ -184,6 +187,7 @@ const DEFAULT_STATE: SettingsState = {
   bleGenerateChartPayload: false,
   nutritionLogHistoryDays: 'none',
   workoutHistoryDays: 'none',
+  homeSummaryCard: 'daily_summary',
   isLoading: true,
 };
 
@@ -250,6 +254,9 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
   const rawProgressionMode = getString(map, PROGRESSION_MODE_SETTING_TYPE);
   const progressionMode: ProgressionMode =
     rawProgressionMode === 'weight_first' ? 'weight_first' : 'reps_first';
+  const rawHomeSummaryCard = getString(map, HOME_SUMMARY_CARD_SETTING_TYPE);
+  const homeSummaryCard: HomeSummaryCard =
+    rawHomeSummaryCard === 'weekly_streak' ? 'weekly_streak' : 'daily_summary';
 
   return {
     language,
@@ -310,6 +317,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     bleGenerateChartPayload: getBoolean(map, BLE_GENERATE_CHART_PAYLOAD_SETTING_TYPE, false),
     nutritionLogHistoryDays: (rawNutritionLogHistoryDays as NutritionLogHistoryDays) || 'none',
     workoutHistoryDays: (rawWorkoutHistoryDays as WorkoutHistoryDays) || 'none',
+    homeSummaryCard,
     isLoading: false,
   };
 }
@@ -366,6 +374,7 @@ export type SettingsContextType = UseSettingsResult & {
   nutritionDisplay: string;
   advancedDataManagement: boolean;
   bleGenerateChartPayload: boolean;
+  homeSummaryCard: HomeSummaryCard;
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
