@@ -62,7 +62,9 @@ import {
   USE_ON_DEVICE_AI_SETTING_TYPE,
   USE_THINKING_MODE_SETTING_TYPE,
   type UseSettingsResult,
+  WORKOUT_HISTORY_DAYS_SETTING_TYPE,
   WORKOUT_INSIGHTS_SETTING_TYPE,
+  type WorkoutHistoryDays,
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '@/constants/settings';
 import { database } from '@/database';
@@ -124,6 +126,7 @@ type SettingsState = {
   advancedDataManagement: boolean;
   bleGenerateChartPayload: boolean;
   nutritionLogHistoryDays: NutritionLogHistoryDays;
+  workoutHistoryDays: WorkoutHistoryDays;
   isLoading: boolean;
 };
 
@@ -180,6 +183,7 @@ const DEFAULT_STATE: SettingsState = {
   advancedDataManagement: false,
   bleGenerateChartPayload: false,
   nutritionLogHistoryDays: 'none',
+  workoutHistoryDays: 'none',
   isLoading: true,
 };
 
@@ -238,6 +242,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
   const rawNavSlot3 = getString(map, NAV_SLOT_3_SETTING_TYPE);
   const rawFoodSearchSource = getString(map, FOOD_SEARCH_SOURCE_SETTING_TYPE);
   const rawNutritionLogHistoryDays = getString(map, NUTRITION_LOG_HISTORY_DAYS_SETTING_TYPE);
+  const rawWorkoutHistoryDays = getString(map, WORKOUT_HISTORY_DAYS_SETTING_TYPE);
   const rawConversationContext = getString(map, CONVERSATION_CONTEXT);
   const rawChartTooltipPosition = getString(map, CHART_TOOLTIP_POSITION_SETTING_TYPE);
   const language = getString(map, LANGUAGE_SETTING_TYPE, 'en-US');
@@ -304,6 +309,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     advancedDataManagement: getBoolean(map, ADVANCED_DATA_MANAGEMENT_SETTING_TYPE, false),
     bleGenerateChartPayload: getBoolean(map, BLE_GENERATE_CHART_PAYLOAD_SETTING_TYPE, false),
     nutritionLogHistoryDays: (rawNutritionLogHistoryDays as NutritionLogHistoryDays) || 'none',
+    workoutHistoryDays: (rawWorkoutHistoryDays as WorkoutHistoryDays) || 'none',
     isLoading: false,
   };
 }

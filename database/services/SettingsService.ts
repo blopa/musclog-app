@@ -58,7 +58,9 @@ import {
   USE_OCR_BEFORE_AI_SETTING_TYPE,
   USE_ON_DEVICE_AI_SETTING_TYPE,
   USE_THINKING_MODE_SETTING_TYPE,
+  WORKOUT_HISTORY_DAYS_SETTING_TYPE,
   WORKOUT_INSIGHTS_SETTING_TYPE,
+  type WorkoutHistoryDays,
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '@/constants/settings';
 import { database } from '@/database/database-instance';
@@ -544,6 +546,13 @@ export class SettingsService {
   }
 
   /**
+   * Upsert the workout history days setting ('none' | '7' | '30' | '60' | '90')
+   */
+  static async setWorkoutHistoryDays(days: WorkoutHistoryDays) {
+    await SettingsService.setStringSetting(WORKOUT_HISTORY_DAYS_SETTING_TYPE, days);
+  }
+
+  /**
    * Upsert the chart tooltip position setting ('left' | 'right')
    */
   static async setChartTooltipPosition(position: 'left' | 'right') {
@@ -767,6 +776,17 @@ export class SettingsService {
       NUTRITION_LOG_HISTORY_DAYS_SETTING_TYPE,
       'none'
     )) as NutritionLogHistoryDays;
+  }
+
+  /**
+   * Get the workout history days setting.
+   * Defaults to 'none' if not set.
+   */
+  static async getWorkoutHistoryDays(): Promise<WorkoutHistoryDays> {
+    return (await SettingsService.getStringSetting(
+      WORKOUT_HISTORY_DAYS_SETTING_TYPE,
+      'none'
+    )) as WorkoutHistoryDays;
   }
 
   // --- Private helpers ---

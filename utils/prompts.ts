@@ -91,6 +91,46 @@ function formatNutritionLogTime(ms: number, timezone?: string): string {
 }
 
 /**
+ * Hard cap on how many workouts are sent to the LLM via
+ * {@link getWorkoutLogHistoryPrompt}, regardless of the configured day range.
+ * Keeps the prompt bounded for users who train daily on the longer (60/90 day) settings.
+ */
+const WORKOUT_HISTORY_MAX_WORKOUTS = 60;
+
+type WorkoutHistorySet = {
+  weight: string;
+  reps: number;
+};
+
+type WorkoutHistoryExercise = {
+  name: string;
+  sets: WorkoutHistorySet[];
+};
+
+type WorkoutHistoryItem = {
+  name: string;
+  duration: string;
+  volume: string;
+  exercises: WorkoutHistoryExercise[];
+};
+
+/** Local-calendar MM/DD/YY for the day an instant `ms` falls on (device timezone). */
+function formatLocalMmDdYy(ms: number): string {
+  const d = new Date(ms);
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  const yy = String(d.getFullYear() % 100).padStart(2, '0');
+  return `${mm}/${dd}/${yy}`;
+}
+
+/** Compact weight label in the user's unit, e.g. "200kg" / "82.5kg" / "441lbs". */
+function formatWorkoutWeight(kg: number, units: Units): string {
+  const display = kgToDisplay(kg, units);
+  const rounded = Math.round(display * 10) / 10;
+  return `${rounded}${getWeightUnit(units)}`;
+}
+
+/**
  * Base system prompt for Loggy persona
  */
 /**
@@ -697,6 +737,112 @@ export const getNutritionLogHistoryPrompt = async (): Promise<string> => {
 };
 
 /**
+ * Compact workout history for the AI coach, gated by
+ * `SettingsService.getWorkoutHistoryDays()` ('none' disables this entirely).
+ * Each workout lists its name, duration, total volume, and exercises with their
+ * sets ({ weight, reps }), grouped by local calendar day (MM/DD/YY, oldest first).
+ * Weights are formatted in the user's unit. Returns '' when the setting is 'none'
+ * or there is no workout history to send.
+ */
+export const getWorkoutLogHistoryPrompt = async (): Promise<string> => {
+  try {
+    const daysSetting = await SettingsService.getWorkoutHistoryDays();
+    if (daysSetting === 'none') {
+      return '';
+    }
+
+    const days = parseInt(daysSetting, 10) || 0;
+    if (days <= 0) {
+      return '';
+    }
+
+    const units = await SettingsService.getUnits();
+    const now = new Date();
+    const startTs = localDayStartMs(localCalendarDayPlusDays(now, -(days - 1)));
+    const endTs = localDayClosedRangeMaxMs(now);
+
+    const logs = await WorkoutService.getWorkoutHistory({ startDate: startTs, endDate: endTs });
+    if (logs.length === 0) {
+      return '';
+    }
+
+    // getWorkoutHistory returns newest-first; keep the most recent workouts within the cap.
+    const cappedLogs = logs.slice(0, WORKOUT_HISTORY_MAX_WORKOUTS);
+
+    const grouped: Record<string, WorkoutHistoryItem[]> = {};
+    // Build oldest-first so each day's list and the day ordering read chronologically.
+    for (const log of [...cappedLogs].reverse()) {
+      try {
+        const details = await WorkoutService.getWorkoutWithDetails(log.id);
+        const { workoutLog, sets, exercises } = details;
+        const exerciseMap = new Map(exercises.map((ex) => [ex.id, ex]));
+
+        const exercisesByName = new Map<string, WorkoutHistorySet[]>();
+        for (const set of sets) {
+          const exercise = exerciseMap.get(set.exerciseId ?? '');
+          if (!exercise) {
+            continue;
+          }
+
+          const name = exercise.name ?? 'Unknown';
+          if (!exercisesByName.has(name)) {
+            exercisesByName.set(name, []);
+          }
+
+          exercisesByName.get(name)!.push({
+            weight: formatWorkoutWeight(set.weight ?? 0, units),
+            reps: set.reps ?? 0,
+          });
+        }
+
+        if (exercisesByName.size === 0) {
+          continue;
+        }
+
+        const durationMin = workoutLog.completedAt
+          ? Math.round((workoutLog.completedAt - workoutLog.startedAt) / 60000)
+          : 0;
+
+        const item: WorkoutHistoryItem = {
+          name: workoutLog.workoutName,
+          duration: `${durationMin}min`,
+          volume: formatWorkoutWeight(workoutLog.totalVolume ?? 0, units),
+          exercises: Array.from(exercisesByName.entries()).map(([name, exSets]) => ({
+            name,
+            sets: exSets,
+          })),
+        };
+
+        const dayKey = formatLocalMmDdYy(workoutLog.startedAt);
+        if (!grouped[dayKey]) {
+          grouped[dayKey] = [];
+        }
+        grouped[dayKey].push(item);
+      } catch (error) {
+        console.error('[prompts] Error building workout history entry:', error);
+        continue;
+      }
+    }
+
+    if (Object.keys(grouped).length === 0) {
+      return '';
+    }
+
+    return [
+      "The user's recent workout history, grouped by day (MM/DD/YY, oldest first). " +
+        'Each workout has its name, duration, total volume, and exercises with their sets ' +
+        `(weight and reps). Weights are in the user's preferred unit (${getWeightUnit(units)}).`,
+      '```json',
+      JSON.stringify(grouped),
+      '```',
+    ].join('\n');
+  } catch (error) {
+    console.error('[prompts] Error fetching workout history:', error);
+    return '';
+  }
+};
+
+/**
  * Full chat system message with user context and recent workouts
  * Call this on chat session init to build the system message
  * Note: eatingPhase needs to be fetched from NutritionGoal separately
@@ -793,6 +939,14 @@ export const getChatMessagePromptContent = async (
     const nutritionHistoryPrompt = await getNutritionLogHistoryPrompt();
     if (nutritionHistoryPrompt) {
       contextSections.push('## Nutrition Log History', nutritionHistoryPrompt);
+    }
+  }
+
+  // Add workout history, only for the exercise chat context and only when enabled.
+  if (context === 'exercise') {
+    const workoutHistoryPrompt = await getWorkoutLogHistoryPrompt();
+    if (workoutHistoryPrompt) {
+      contextSections.push('## Workout History', workoutHistoryPrompt);
     }
   }
 

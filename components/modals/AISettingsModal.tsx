@@ -22,7 +22,7 @@ import { SecretInput } from '@/components/theme/SecretInput';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { GEMINI_MODELS, OPENAI_MODELS } from '@/constants/ai';
-import { type NutritionLogHistoryDays } from '@/constants/settings';
+import { type NutritionLogHistoryDays, type WorkoutHistoryDays } from '@/constants/settings';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { isOnDeviceAiAvailable, isOnDeviceAiCapable } from '@/utils/onDeviceAi';
@@ -235,6 +235,7 @@ export function AISettingsModal({
   const [isOnDeviceCapable, setIsOnDeviceCapable] = useState(false);
   const [isOnDeviceReady, setIsOnDeviceReady] = useState(false);
   const [nutritionLogHistoryMenuVisible, setNutritionLogHistoryMenuVisible] = useState(false);
+  const [workoutHistoryMenuVisible, setWorkoutHistoryMenuVisible] = useState(false);
 
   // Use debounced settings for instant UI updates
   const {
@@ -262,6 +263,8 @@ export function AISettingsModal({
     handleMaxAiMemoriesChange,
     nutritionLogHistoryDays: debouncedNutritionLogHistoryDays,
     handleNutritionLogHistoryDaysChange,
+    workoutHistoryDays: debouncedWorkoutHistoryDays,
+    handleWorkoutHistoryDaysChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
 
@@ -500,6 +503,27 @@ export function AISettingsModal({
       onPress: () => handleNutritionLogHistoryDaysChange(option),
     })
   );
+
+  const workoutHistoryOptions: WorkoutHistoryDays[] = ['none', '7', '30', '60', '90'];
+  const workoutHistoryLabels: Record<WorkoutHistoryDays, string> = {
+    none: t('settings.aiSettings.workoutHistoryDaysNone'),
+    '7': t('settings.aiSettings.workoutHistoryDays7'),
+    '30': t('settings.aiSettings.workoutHistoryDays30'),
+    '60': t('settings.aiSettings.workoutHistoryDays60'),
+    '90': t('settings.aiSettings.workoutHistoryDays90'),
+  };
+
+  const workoutHistoryMenuItems: BottomPopUpMenuItem[] = workoutHistoryOptions.map((option) => ({
+    icon: Dumbbell,
+    iconColor: theme.colors.accent.primary,
+    iconBgColor: theme.colors.accent.primary10,
+    title: workoutHistoryLabels[option],
+    description:
+      option === 'none'
+        ? t('settings.aiSettings.workoutHistoryDaysNoneDescription')
+        : t('settings.aiSettings.workoutHistoryDaysOptionDescription', { days: option }),
+    onPress: () => handleWorkoutHistoryDaysChange(option),
+  }));
 
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.aiSettings.title')}>
@@ -756,6 +780,25 @@ export function AISettingsModal({
               {t('settings.aiSettings.nutritionLogHistoryDaysSubtitle')}
             </Text>
           </View>
+          <View
+            className="rounded-lg border bg-bg-card p-4"
+            style={{
+              borderColor: theme.colors.border.light,
+              borderWidth: theme.borderWidth.thin,
+            }}
+          >
+            <Text className="mb-3 text-sm font-medium text-text-secondary">
+              {t('settings.aiSettings.workoutHistoryDays')}
+            </Text>
+            <PickerButton
+              label={workoutHistoryLabels[debouncedWorkoutHistoryDays ?? 'none']}
+              icon={<Dumbbell size={theme.iconSize.lg} color={theme.colors.text.secondary} />}
+              onPress={() => setWorkoutHistoryMenuVisible(true)}
+            />
+            <Text className="mt-3 text-xs text-text-secondary">
+              {t('settings.aiSettings.workoutHistoryDaysSubtitle')}
+            </Text>
+          </View>
         </View>
 
         {/* Image Processing Section */}
@@ -891,6 +934,14 @@ export function AISettingsModal({
           title={t('settings.aiSettings.nutritionLogHistoryDays')}
           subtitle={t('settings.aiSettings.nutritionLogHistoryDaysSubtitle')}
           items={nutritionLogHistoryMenuItems}
+        />
+
+        <BottomPopUpMenu
+          visible={workoutHistoryMenuVisible}
+          onClose={() => setWorkoutHistoryMenuVisible(false)}
+          title={t('settings.aiSettings.workoutHistoryDays')}
+          subtitle={t('settings.aiSettings.workoutHistoryDaysSubtitle')}
+          items={workoutHistoryMenuItems}
         />
       </View>
 
