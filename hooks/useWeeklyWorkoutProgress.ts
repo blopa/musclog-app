@@ -3,15 +3,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { database } from '@/database';
 import type ExerciseGoal from '@/database/models/ExerciseGoal';
-import type Schedule from '@/database/models/Schedule';
 import type WorkoutLog from '@/database/models/WorkoutLog';
-import type WorkoutTemplate from '@/database/models/WorkoutTemplate';
-import { ExerciseGoalService, WorkoutService, WorkoutTemplateService } from '@/database/services';
+import { ExerciseGoalService, WorkoutService } from '@/database/services';
 import { handleError } from '@/utils/handleError';
 
 type WeeklyWorkoutProgress = {
   workoutsThisWeek: number;
-  weeklyGoal: number;
+  weeklyGoal: number | null;
   isLoading: boolean;
 };
 
@@ -26,7 +24,7 @@ export function useWeeklyWorkoutProgress({
 }: UseWeeklyWorkoutProgressParams = {}): WeeklyWorkoutProgress {
   const [progress, setProgress] = useState<WeeklyWorkoutProgress>({
     workoutsThisWeek: 0,
-    weeklyGoal: 0,
+    weeklyGoal: null,
     isLoading: true,
   });
 
@@ -35,15 +33,14 @@ export function useWeeklyWorkoutProgress({
   const loadProgress = useCallback(async () => {
     try {
       const progressDate = new Date(dateTime);
-      const [workoutsThisWeek, consistencyGoal, scheduledSessionsPerWeek] = await Promise.all([
+      const [workoutsThisWeek, consistencyGoal] = await Promise.all([
         WorkoutService.getRollingWeeklyCompletedWorkoutCount(progressDate),
         ExerciseGoalService.getActiveConsistencyGoal(),
-        WorkoutTemplateService.getScheduledSessionsPerWeek(),
       ]);
 
       setProgress({
         workoutsThisWeek,
-        weeklyGoal: consistencyGoal?.targetSessionsPerWeek ?? scheduledSessionsPerWeek,
+        weeklyGoal: consistencyGoal?.targetSessionsPerWeek ?? null,
         isLoading: false,
       });
     } catch (error) {
@@ -96,22 +93,6 @@ export function useWeeklyWorkoutProgress({
         .subscribe({
           next: scheduleReload,
           error: (err: Error) => console.error('useWeeklyWorkoutProgress goals error:', err),
-        }),
-      database
-        .get<WorkoutTemplate>('workout_templates')
-        .query(Q.where('deleted_at', Q.eq(null)))
-        .observe()
-        .subscribe({
-          next: scheduleReload,
-          error: (err: Error) => console.error('useWeeklyWorkoutProgress templates error:', err),
-        }),
-      database
-        .get<Schedule>('schedules')
-        .query(Q.where('deleted_at', Q.eq(null)))
-        .observe()
-        .subscribe({
-          next: scheduleReload,
-          error: (err: Error) => console.error('useWeeklyWorkoutProgress schedules error:', err),
         }),
     ];
 

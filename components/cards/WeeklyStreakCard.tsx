@@ -9,7 +9,7 @@ import { GenericCard } from './GenericCard';
 
 type WeeklyStreakCardProps = {
   workoutsThisWeek: number;
-  weeklyGoal: number;
+  weeklyGoal?: number | null;
   streakDays: number;
   streakLabel: string;
   bestStreakDays: number;
@@ -28,7 +28,10 @@ export function WeeklyStreakCard({
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
 
-  const dots = Array.from({ length: weeklyGoal }, (_, index) => index < workoutsThisWeek);
+  const dots =
+    weeklyGoal != null && weeklyGoal > 0
+      ? Array.from({ length: weeklyGoal }, (_, index) => index < workoutsThisWeek)
+      : [];
 
   return (
     <GenericCard variant="default">
@@ -53,19 +56,21 @@ export function WeeklyStreakCard({
             <Text className="mt-1 text-base font-bold leading-tight text-text-primary">
               {t('weeklyStreakCard.workoutsThisWeek')}
             </Text>
-            <View className="mt-3 flex-row gap-1.5">
-              {dots.map((filled, index) => (
-                <View
-                  className="h-1.5 w-1.5 rounded-full"
-                  key={index}
-                  style={{
-                    backgroundColor: filled
-                      ? theme.colors.status.warning
-                      : theme.colors.background.white10,
-                  }}
-                />
-              ))}
-            </View>
+            {dots.length > 0 ? (
+              <View className="mt-3 flex-row gap-1.5">
+                {dots.map((filled, index) => (
+                  <View
+                    className="h-1.5 w-1.5 rounded-full"
+                    key={index}
+                    style={{
+                      backgroundColor: filled
+                        ? theme.colors.status.warning
+                        : theme.colors.background.white10,
+                    }}
+                  />
+                ))}
+              </View>
+            ) : null}
           </View>
         </View>
 

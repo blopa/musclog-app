@@ -18,7 +18,6 @@ import i18n from '@/lang/lang';
 import { getTheme } from '@/theme';
 import { handleError } from '@/utils/handleError';
 import { getWeightUnit } from '@/utils/units';
-import { countScheduledSessionsPerWeek } from '@/utils/weeklyWorkoutProgress';
 import { indexToDayName, WEEKDAY_NAMES } from '@/utils/workout';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
@@ -531,28 +530,6 @@ export class WorkoutTemplateService {
       }
     }
     return await query.fetch();
-  }
-
-  static async getScheduledSessionsPerWeek(): Promise<number> {
-    const templates = await WorkoutTemplateRepository.getActive().fetch();
-
-    const templateIdsNeedingScheduleFallback = templates
-      .filter((template) => !template.weekDaysJson || template.weekDaysJson.length === 0)
-      .map((template) => template.id);
-
-    if (templateIdsNeedingScheduleFallback.length === 0) {
-      return countScheduledSessionsPerWeek(templates, []);
-    }
-
-    const schedules = await database
-      .get<Schedule>('schedules')
-      .query(
-        Q.where('template_id', Q.oneOf(templateIdsNeedingScheduleFallback)),
-        Q.where('deleted_at', Q.eq(null))
-      )
-      .fetch();
-
-    return countScheduledSessionsPerWeek(templates, schedules);
   }
 
   /**
