@@ -73,6 +73,7 @@ import { database } from '@/database';
 import { waitForDbReady } from '@/database/dbReady';
 import Setting from '@/database/models/Setting';
 import { SettingsService } from '@/database/services/SettingsService';
+import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
 import { getDefaultUnits, getHeightUnit, getWeightUnit } from '@/utils/units';
 
 type SettingsState = {
@@ -475,8 +476,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   ]);
 
   const isAiConfigured = useMemo(() => {
+    const useMusclogGateway = effectiveUseMusclogGateway(state.useMusclogFreeTier);
+
     return (
-      state.useMusclogFreeTier ||
+      useMusclogGateway ||
       state.useOnDeviceAi ||
       (state.enableLocalLlm && state.localLlmBaseUrl.trim() !== '') ||
       (state.enableGoogleGemini && decryptedApiKeys.googleGeminiApiKey.trim() !== '') ||
@@ -497,7 +500,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   // On-device (Apple Intelligence) doesn't support image analysis, so photo features are disabled
   // when it would be the active provider.
   const isAiMealPhotoEnabled = useMemo(() => {
-    if (state.useMusclogFreeTier) {
+    if (effectiveUseMusclogGateway(state.useMusclogFreeTier)) {
       return true;
     }
 

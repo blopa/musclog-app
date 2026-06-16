@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
-import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
+import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { Button } from '@/components/theme/Button';
 import { PickerButton } from '@/components/theme/PickerButton';
 import { ToggleInput } from '@/components/theme/ToggleInput';
@@ -13,6 +13,12 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { handleError } from '@/utils/handleError';
 
+import {
+  buildNutritionLogHistoryMenuItems,
+  buildWorkoutHistoryMenuItems,
+  getNutritionLogHistoryLabels,
+  getWorkoutHistoryLabels,
+} from './aiHistorySettings';
 import { FullScreenModal } from './FullScreenModal';
 
 type CoachQuickSettingsModalProps = {
@@ -66,55 +72,26 @@ export function CoachQuickSettingsModal({ visible, onClose }: CoachQuickSettings
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
-  const nutritionLogHistoryOptions: NutritionLogHistoryDays[] = ['none', '7', '30', '60', '90'];
-  const nutritionLogHistoryLabels: Record<NutritionLogHistoryDays, string> = {
-    none: t('settings.aiSettings.nutritionLogHistoryDaysNone'),
-    '7': t('settings.aiSettings.nutritionLogHistoryDays7'),
-    '30': t('settings.aiSettings.nutritionLogHistoryDays30'),
-    '60': t('settings.aiSettings.nutritionLogHistoryDays60'),
-    '90': t('settings.aiSettings.nutritionLogHistoryDays90'),
-  };
-
-  const nutritionLogHistoryMenuItems: BottomPopUpMenuItem[] = nutritionLogHistoryOptions.map(
-    (option) => ({
-      icon: CalendarRange,
-      iconColor: theme.colors.accent.primary,
-      iconBgColor: theme.colors.accent.primary10,
-      title: nutritionLogHistoryLabels[option],
-      description:
-        option === 'none'
-          ? t('settings.aiSettings.nutritionLogHistoryDaysNoneDescription')
-          : t('settings.aiSettings.nutritionLogHistoryDaysOptionDescription', { days: option }),
-      onPress: () => {
-        setNutritionLogHistoryDays(option);
-        setNutritionLogHistoryMenuVisible(false);
-      },
-    })
-  );
-
-  const workoutHistoryOptions: WorkoutHistoryDays[] = ['none', '7', '30', '60', '90'];
-  const workoutHistoryLabels: Record<WorkoutHistoryDays, string> = {
-    none: t('settings.aiSettings.workoutHistoryDaysNone'),
-    '7': t('settings.aiSettings.workoutHistoryDays7'),
-    '30': t('settings.aiSettings.workoutHistoryDays30'),
-    '60': t('settings.aiSettings.workoutHistoryDays60'),
-    '90': t('settings.aiSettings.workoutHistoryDays90'),
-  };
-
-  const workoutHistoryMenuItems: BottomPopUpMenuItem[] = workoutHistoryOptions.map((option) => ({
-    icon: Dumbbell,
+  const nutritionLogHistoryLabels = getNutritionLogHistoryLabels(t);
+  const nutritionLogHistoryMenuItems = buildNutritionLogHistoryMenuItems({
+    t,
     iconColor: theme.colors.accent.primary,
     iconBgColor: theme.colors.accent.primary10,
-    title: workoutHistoryLabels[option],
-    description:
-      option === 'none'
-        ? t('settings.aiSettings.workoutHistoryDaysNoneDescription')
-        : t('settings.aiSettings.workoutHistoryDaysOptionDescription', { days: option }),
-    onPress: () => {
+    onSelect: (option) => {
+      setNutritionLogHistoryDays(option);
+      setNutritionLogHistoryMenuVisible(false);
+    },
+  });
+  const workoutHistoryLabels = getWorkoutHistoryLabels(t);
+  const workoutHistoryMenuItems = buildWorkoutHistoryMenuItems({
+    t,
+    iconColor: theme.colors.accent.primary,
+    iconBgColor: theme.colors.accent.primary10,
+    onSelect: (option) => {
       setWorkoutHistoryDays(option);
       setWorkoutHistoryMenuVisible(false);
     },
-  }));
+  });
 
   const toggleItems = [
     {
@@ -193,14 +170,14 @@ export function CoachQuickSettingsModal({ visible, onClose }: CoachQuickSettings
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await Promise.all([
-        SettingsService.setUseThinkingMode(useThinkingMode),
-        SettingsService.setSendFoundationFoodsToLlm(sendFoundationFoodsToLlm),
-        SettingsService.setNutritionLogHistoryDays(nutritionLogHistoryDays),
-        SettingsService.setWorkoutHistoryDays(workoutHistoryDays),
+      await SettingsService.setCoachQuickSettings({
+        useThinkingMode,
+        sendFoundationFoodsToLlm,
+        nutritionLogHistoryDays,
+        workoutHistoryDays,
         // OCR is hidden / managed automatically while Apple Intelligence is on.
-        ...(useOnDeviceAi ? [] : [SettingsService.setUseOcrBeforeAi(useOcrBeforeAi)]),
-      ]);
+        ...(useOnDeviceAi ? {} : { useOcrBeforeAi }),
+      });
       onClose();
     } catch (err) {
       handleError(err, 'CoachQuickSettingsModal.handleSave', {

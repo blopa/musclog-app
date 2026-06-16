@@ -1063,7 +1063,7 @@ export class NutritionService {
    * and "today" is the device-local calendar day. Back-filled past days and long gaps are not
    * tracked — only the unbroken streak ending at yesterday counts.
    */
-  static async getMacroLoggingStreak(): Promise<number> {
+  static async getMacroLoggingStreak(date: Date = new Date()): Promise<number> {
     const logs = await database
       .get<NutritionLog>('nutrition_logs')
       .query(Q.where('deleted_at', Q.eq(null)))
@@ -1077,7 +1077,7 @@ export class NutritionService {
       logs.map((log) => utcNormalizedDayKey(log.date ?? 0, log.timezone))
     );
 
-    const todayKey = utcDayKeyFromLocalDate(new Date());
+    const todayKey = utcDayKeyFromLocalDate(date);
     let streak = 0;
     // Start at yesterday so the current (possibly incomplete) day never affects the streak.
     let cursor = todayKey - MS_PER_SOLAR_DAY;

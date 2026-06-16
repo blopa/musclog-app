@@ -60,7 +60,10 @@ import {
   parseLocalizedDecimalString,
   sanitizeLocalizedDecimalInput,
 } from '@/utils/localizedDecimalInput';
-import { getMusclogNutritionPer100g, getMusclogQualityScores } from '@/utils/musclogProduct';
+import {
+  applyMusclogQualityToFoodRecord,
+  getMusclogNutritionPer100g,
+} from '@/utils/musclogProduct';
 import {
   extractLabelsFromOFFProduct,
   getNutrimentsWithFallback,
@@ -782,18 +785,7 @@ export function ScannedFoodDetailsModal({
             const bp = (effectiveProductDetails as any)?.product;
             if (bp) {
               if ((effectiveProductDetails as any).source === 'musclog') {
-                const { nutriscore, novaGroup, labels } = getMusclogQualityScores(bp);
-                if (nutriscore != null) {
-                  record.nutriscore = nutriscore;
-                }
-
-                if (novaGroup != null) {
-                  record.novaGroup = novaGroup;
-                }
-
-                if (labels != null) {
-                  record.labels = labels;
-                }
+                applyMusclogQualityToFoodRecord(record, bp);
               } else {
                 if (typeof bp.nutriscore_grade === 'string' && bp.nutriscore_grade) {
                   record.nutriscore = bp.nutriscore_grade.toLowerCase();
@@ -860,8 +852,6 @@ export function ScannedFoodDetailsModal({
           description: getCurrentDescription(),
         };
 
-        const { nutriscore, novaGroup, labels } = getMusclogQualityScores(baseProduct);
-
         const newFood = await FoodService.createFromMusclogProduct(
           musclogProduct,
           {
@@ -874,9 +864,6 @@ export function ScannedFoodDetailsModal({
             saturatedFat: nutritionalData.saturatedFat,
             sodium: nutritionalData.sodium,
             micros: effectiveMicrosPer100g,
-            nutriscore,
-            novaGroup,
-            labels,
           },
           saveBarcode
         );

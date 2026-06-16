@@ -13,6 +13,7 @@ import { UNITS_SETTING_TYPE } from '@/constants/settings';
 import { reloadApp } from '@/utils/app';
 import { decrypt } from '@/utils/encryption';
 import { handleError } from '@/utils/handleError';
+import { isMusclogGatewayAvailable } from '@/utils/musclogGatewayAvailability';
 import { normalizeTimezoneToOffset } from '@/utils/timezone';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
@@ -508,9 +509,9 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
   // detector doesn't fire a false "nutrition logs lost" report.
   await updateNutritionLogCountBaseline();
 
-  // Musclog Free Tier is not offered on web (CORS/quota constraints); force it off
-  // regardless of what the imported backup contained.
-  if (Platform.OS === 'web') {
+  // Musclog Free Tier is not offered in every runtime; force it off when the
+  // imported backup came from a runtime where the gateway was available.
+  if (!isMusclogGatewayAvailable()) {
     await SettingsService.setUseMusclogFreeTier(false);
   }
 

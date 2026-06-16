@@ -89,7 +89,7 @@ import {
   parseLocalizedDecimalString,
   sanitizeLocalizedDecimalInput,
 } from '@/utils/localizedDecimalInput';
-import { getMusclogNutritionPer100g, getMusclogQualityScores } from '@/utils/musclogProduct';
+import { getMusclogDisplayQuality, getMusclogNutritionPer100g } from '@/utils/musclogProduct';
 import {
   extractLabelsFromOFFProduct,
   getNutrimentsFromV3Nutrition,
@@ -1251,14 +1251,7 @@ export function FoodMealTrackingDetailsModal({
       isSuccessFoodDetailProductState(effectiveDetails) &&
       (effectiveDetails as any).source === 'musclog'
     ) {
-      const { nutriscore, novaGroup, labels } = getMusclogQualityScores(
-        (effectiveDetails as any).product
-      );
-      if (nutriscore == null && novaGroup == null && labels == null) {
-        return undefined;
-      }
-
-      return { nutriScore: nutriscore, ecoScore: undefined, novaGroup, labels };
+      return getMusclogDisplayQuality((effectiveDetails as any).product);
     }
 
     if (
@@ -2001,7 +1994,6 @@ export function FoodMealTrackingDetailsModal({
       // Musclog handle
       if ((productDetails as any)?.source === 'musclog') {
         const musclogProduct = (productDetails as any).product;
-        const { nutriscore, novaGroup, labels } = getMusclogQualityScores(musclogProduct);
         const newFood = await FoodService.createFromMusclogProduct(
           musclogProduct,
           {
@@ -2011,9 +2003,6 @@ export function FoodMealTrackingDetailsModal({
             fat: nutritionalData.fat,
             fiber: nutritionalData.fiber,
             isFavorite: isFavorite,
-            nutriscore,
-            novaGroup,
-            labels,
           },
           barcode ?? undefined
         );

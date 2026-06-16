@@ -71,6 +71,19 @@ import Setting, { type SettingType } from '@/database/models/Setting';
 import { decryptDatabaseValue } from '@/utils/encryption';
 import { getDefaultUnits } from '@/utils/units';
 
+type SettingValueUpdate = {
+  type: string;
+  value: string;
+};
+
+type CoachQuickSettingsUpdate = {
+  useThinkingMode: boolean;
+  sendFoundationFoodsToLlm: boolean;
+  nutritionLogHistoryDays: NutritionLogHistoryDays;
+  workoutHistoryDays: WorkoutHistoryDays;
+  useOcrBeforeAi?: boolean;
+};
+
 export class SettingsService {
   /**
    * Get the current units setting ('metric' | 'imperial').
@@ -396,6 +409,39 @@ export class SettingsService {
    */
   static async setUseThinkingMode(value: boolean) {
     await SettingsService.setBooleanSetting(USE_THINKING_MODE_SETTING_TYPE, value);
+  }
+
+  /**
+   * Persist the coach quick settings together so the modal cannot leave a partial update.
+   */
+  static async setCoachQuickSettings(settings: CoachQuickSettingsUpdate) {
+    const updates: SettingValueUpdate[] = [
+      {
+        type: USE_THINKING_MODE_SETTING_TYPE,
+        value: settings.useThinkingMode.toString(),
+      },
+      {
+        type: SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
+        value: settings.sendFoundationFoodsToLlm.toString(),
+      },
+      {
+        type: NUTRITION_LOG_HISTORY_DAYS_SETTING_TYPE,
+        value: settings.nutritionLogHistoryDays,
+      },
+      {
+        type: WORKOUT_HISTORY_DAYS_SETTING_TYPE,
+        value: settings.workoutHistoryDays,
+      },
+    ];
+
+    if (settings.useOcrBeforeAi !== undefined) {
+      updates.push({
+        type: USE_OCR_BEFORE_AI_SETTING_TYPE,
+        value: settings.useOcrBeforeAi.toString(),
+      });
+    }
+
+    await SettingsService.setSettingValues(updates);
   }
 
   static async setDumpLlmRequests(value: boolean) {
@@ -849,44 +895,7 @@ export class SettingsService {
    * Helper method to upsert boolean settings
    */
   private static async setBooleanSetting(type: string, value: boolean) {
-    const now = Date.now();
-
-    const existingSetting = await database
-      .get<Setting>('settings')
-      .query(Q.where('type', type), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-
-    await database.write(async () => {
-      if (existingSetting.length > 0) {
-        // Find the most recent setting
-        const mostRecent = existingSetting.reduce((latest, current) =>
-          current.updatedAt > latest.updatedAt ? current : latest
-        );
-
-        await mostRecent.update((setting) => {
-          setting.value = value.toString();
-          setting.updatedAt = now;
-        });
-
-        // Clean up any duplicate settings
-        if (existingSetting.length > 1) {
-          for (const setting of existingSetting) {
-            if (setting.id !== mostRecent.id) {
-              await setting.update((s) => {
-                s.deletedAt = now;
-              });
-            }
-          }
-        }
-      } else {
-        await database.get<Setting>('settings').create((setting) => {
-          setting.type = type as SettingType;
-          setting.value = value.toString();
-          setting.createdAt = now;
-          setting.updatedAt = now;
-        });
-      }
-    });
+    await SettingsService.setSettingValues([{ type, value: value.toString() }]);
   }
 
   /**
@@ -1066,23 +1075,57 @@ export class SettingsService {
    * Helper method to upsert string settings
    */
   private static async setStringSetting(type: string, value: string) {
-    const now = Date.now();
+    await SettingsService.setSettingValues([{ type, value }]);
+  }
 
-    const existingSetting = await database
-      .get<Setting>('settings')
-      .query(Q.where('type', type), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
+  private static async setSettingValues(updates: SettingValueUpdate[]) {
+    const now = Date.now();
+    const dedupedUpdates = Array.from(
+      updates
+        .reduce(
+          (map, update) => map.set(update.type, update),
+          new Map<string, SettingValueUpdate>()
+        )
+        .values()
+    );
+
+    const existingByType = await Promise.all(
+      dedupedUpdates.map(async (update) => ({
+        update,
+        existingSettings: await database
+          .get<Setting>('settings')
+          .query(Q.where('type', update.type), Q.where('deleted_at', Q.eq(null)))
+          .fetch(),
+      }))
+    );
 
     await database.write(async () => {
-      if (existingSetting.length > 0) {
-        await existingSetting[0].update((setting) => {
-          setting.value = value;
-          setting.updatedAt = now;
-        });
-      } else {
+      for (const { update, existingSettings } of existingByType) {
+        if (existingSettings.length > 0) {
+          const mostRecent = existingSettings.reduce((latest, current) =>
+            current.updatedAt > latest.updatedAt ? current : latest
+          );
+
+          await mostRecent.update((setting) => {
+            setting.value = update.value;
+            setting.updatedAt = now;
+          });
+
+          if (existingSettings.length > 1) {
+            for (const setting of existingSettings) {
+              if (setting.id !== mostRecent.id) {
+                await setting.update((s) => {
+                  s.deletedAt = now;
+                });
+              }
+            }
+          }
+          continue;
+        }
+
         await database.get<Setting>('settings').create((setting) => {
-          setting.type = type as SettingType;
-          setting.value = value;
+          setting.type = update.type as SettingType;
+          setting.value = update.value;
           setting.createdAt = now;
           setting.updatedAt = now;
         });

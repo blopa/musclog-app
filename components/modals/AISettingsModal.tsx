@@ -22,13 +22,21 @@ import { SecretInput } from '@/components/theme/SecretInput';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { GEMINI_MODELS, OPENAI_MODELS } from '@/constants/ai';
-import { type NutritionLogHistoryDays, type WorkoutHistoryDays } from '@/constants/settings';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useTheme } from '@/hooks/useTheme';
-import { isProduction } from '@/utils/app';
+import {
+  effectiveUseMusclogGateway,
+  isMusclogGatewayAvailable,
+} from '@/utils/musclogGatewayAvailability';
 import { isOnDeviceAiAvailable, isOnDeviceAiCapable } from '@/utils/onDeviceAi';
 
 import { AiCustomPromptsModal } from './AiCustomPromptsModal';
+import {
+  buildNutritionLogHistoryMenuItems,
+  buildWorkoutHistoryMenuItems,
+  getNutritionLogHistoryLabels,
+  getWorkoutHistoryLabels,
+} from './aiHistorySettings';
 import { FullScreenModal } from './FullScreenModal';
 
 type AIIntegrationCardProps = {
@@ -268,6 +276,8 @@ export function AISettingsModal({
     handleWorkoutHistoryDaysChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
+  const musclogGatewayAvailable = isMusclogGatewayAvailable();
+  const useMusclogGateway = effectiveUseMusclogGateway(debouncedUseMusclogFreeTier);
 
   const reloadOnDeviceAiState = useCallback(async () => {
     if (Platform.OS !== 'ios') {
@@ -482,55 +492,26 @@ export function AISettingsModal({
     onPress: () => onOpenAiModelPress?.(model.model),
   }));
 
-  const nutritionLogHistoryOptions: NutritionLogHistoryDays[] = ['none', '7', '30', '60', '90'];
-  const nutritionLogHistoryLabels: Record<NutritionLogHistoryDays, string> = {
-    none: t('settings.aiSettings.nutritionLogHistoryDaysNone'),
-    '7': t('settings.aiSettings.nutritionLogHistoryDays7'),
-    '30': t('settings.aiSettings.nutritionLogHistoryDays30'),
-    '60': t('settings.aiSettings.nutritionLogHistoryDays60'),
-    '90': t('settings.aiSettings.nutritionLogHistoryDays90'),
-  };
-
-  const nutritionLogHistoryMenuItems: BottomPopUpMenuItem[] = nutritionLogHistoryOptions.map(
-    (option) => ({
-      icon: CalendarRange,
-      iconColor: theme.colors.accent.primary,
-      iconBgColor: theme.colors.accent.primary10,
-      title: nutritionLogHistoryLabels[option],
-      description:
-        option === 'none'
-          ? t('settings.aiSettings.nutritionLogHistoryDaysNoneDescription')
-          : t('settings.aiSettings.nutritionLogHistoryDaysOptionDescription', { days: option }),
-      onPress: () => handleNutritionLogHistoryDaysChange(option),
-    })
-  );
-
-  const workoutHistoryOptions: WorkoutHistoryDays[] = ['none', '7', '30', '60', '90'];
-  const workoutHistoryLabels: Record<WorkoutHistoryDays, string> = {
-    none: t('settings.aiSettings.workoutHistoryDaysNone'),
-    '7': t('settings.aiSettings.workoutHistoryDays7'),
-    '30': t('settings.aiSettings.workoutHistoryDays30'),
-    '60': t('settings.aiSettings.workoutHistoryDays60'),
-    '90': t('settings.aiSettings.workoutHistoryDays90'),
-  };
-
-  const workoutHistoryMenuItems: BottomPopUpMenuItem[] = workoutHistoryOptions.map((option) => ({
-    icon: Dumbbell,
+  const nutritionLogHistoryLabels = getNutritionLogHistoryLabels(t);
+  const nutritionLogHistoryMenuItems = buildNutritionLogHistoryMenuItems({
+    t,
     iconColor: theme.colors.accent.primary,
     iconBgColor: theme.colors.accent.primary10,
-    title: workoutHistoryLabels[option],
-    description:
-      option === 'none'
-        ? t('settings.aiSettings.workoutHistoryDaysNoneDescription')
-        : t('settings.aiSettings.workoutHistoryDaysOptionDescription', { days: option }),
-    onPress: () => handleWorkoutHistoryDaysChange(option),
-  }));
+    onSelect: handleNutritionLogHistoryDaysChange,
+  });
+  const workoutHistoryLabels = getWorkoutHistoryLabels(t);
+  const workoutHistoryMenuItems = buildWorkoutHistoryMenuItems({
+    t,
+    iconColor: theme.colors.accent.primary,
+    iconBgColor: theme.colors.accent.primary10,
+    onSelect: handleWorkoutHistoryDaysChange,
+  });
 
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.aiSettings.title')}>
       <View className="gap-6 px-4 py-6" style={{ minHeight: '100%' }}>
         {/* Musclog Free Tier Section — hidden on web production builds (CORS/quota constraints) */}
-        {Platform.OS !== 'web' || !isProduction() ? (
+        {musclogGatewayAvailable ? (
           <View className="gap-3">
             <Text
               className="px-5 text-xs font-bold uppercase tracking-wider"
@@ -549,7 +530,7 @@ export function AISettingsModal({
                 },
               ]}
             />
-            {debouncedUseMusclogFreeTier ? (
+            {useMusclogGateway ? (
               <Text className="px-5 text-xs" style={{ color: theme.colors.text.tertiary }}>
                 {t('settings.aiSettings.musclogFreeTier.activeNote')}
               </Text>
@@ -559,8 +540,8 @@ export function AISettingsModal({
 
         {/* Provider sections (dimmed when free tier is active) */}
         <View
-          style={{ opacity: debouncedUseMusclogFreeTier ? 0.4 : 1 }}
-          pointerEvents={debouncedUseMusclogFreeTier ? 'none' : 'auto'}
+          style={{ opacity: useMusclogGateway ? 0.4 : 1 }}
+          pointerEvents={useMusclogGateway ? 'none' : 'auto'}
         >
           <View className="gap-6">
             {/* Google Gemini Integration Section */}

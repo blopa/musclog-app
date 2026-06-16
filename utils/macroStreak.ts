@@ -46,15 +46,15 @@ async function readState(): Promise<MacroStreakState | null> {
  * The best streak is only ever grown here, never recomputed historically — matching the
  * "replace it when the current streak is bigger" rule.
  */
-export async function getMacroStreak(): Promise<MacroStreak> {
-  const todayKey = utcDayKeyFromLocalDate(new Date());
+export async function getMacroStreak(date: Date = new Date()): Promise<MacroStreak> {
+  const todayKey = utcDayKeyFromLocalDate(date);
   const stored = await readState();
 
   if (stored && stored.computedDayKey === todayKey) {
     return { currentStreak: stored.currentStreak, bestStreak: stored.bestStreak };
   }
 
-  const currentStreak = await NutritionService.getMacroLoggingStreak();
+  const currentStreak = await NutritionService.getMacroLoggingStreak(date);
   const bestStreak = Math.max(stored?.bestStreak ?? 0, currentStreak);
 
   const nextState: MacroStreakState = { computedDayKey: todayKey, currentStreak, bestStreak };
