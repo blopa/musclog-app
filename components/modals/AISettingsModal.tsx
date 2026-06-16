@@ -25,6 +25,7 @@ import { GEMINI_MODELS, OPENAI_MODELS } from '@/constants/ai';
 import { type NutritionLogHistoryDays, type WorkoutHistoryDays } from '@/constants/settings';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { isProduction } from '@/utils/app';
 import { isOnDeviceAiAvailable, isOnDeviceAiCapable } from '@/utils/onDeviceAi';
 
 import { AiCustomPromptsModal } from './AiCustomPromptsModal';
@@ -528,31 +529,33 @@ export function AISettingsModal({
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.aiSettings.title')}>
       <View className="gap-6 px-4 py-6" style={{ minHeight: '100%' }}>
-        {/* Musclog Free Tier Section */}
-        <View className="gap-3">
-          <Text
-            className="px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.accent.primary }}
-          >
-            {t('settings.aiSettings.musclogFreeTier.sectionTitle')}
-          </Text>
-          <ToggleInput
-            items={[
-              {
-                key: 'use-musclog-free-tier',
-                label: t('settings.aiSettings.musclogFreeTier.toggle'),
-                subtitle: t('settings.aiSettings.musclogFreeTier.toggleSubtitle'),
-                value: debouncedUseMusclogFreeTier,
-                onValueChange: handleUseMusclogFreeTierChange,
-              },
-            ]}
-          />
-          {debouncedUseMusclogFreeTier ? (
-            <Text className="px-5 text-xs" style={{ color: theme.colors.text.tertiary }}>
-              {t('settings.aiSettings.musclogFreeTier.activeNote')}
+        {/* Musclog Free Tier Section — hidden on web production builds (CORS/quota constraints) */}
+        {Platform.OS !== 'web' || !isProduction() ? (
+          <View className="gap-3">
+            <Text
+              className="px-5 text-xs font-bold uppercase tracking-wider"
+              style={{ color: theme.colors.accent.primary }}
+            >
+              {t('settings.aiSettings.musclogFreeTier.sectionTitle')}
             </Text>
-          ) : null}
-        </View>
+            <ToggleInput
+              items={[
+                {
+                  key: 'use-musclog-free-tier',
+                  label: t('settings.aiSettings.musclogFreeTier.toggle'),
+                  subtitle: t('settings.aiSettings.musclogFreeTier.toggleSubtitle'),
+                  value: debouncedUseMusclogFreeTier,
+                  onValueChange: handleUseMusclogFreeTierChange,
+                },
+              ]}
+            />
+            {debouncedUseMusclogFreeTier ? (
+              <Text className="px-5 text-xs" style={{ color: theme.colors.text.tertiary }}>
+                {t('settings.aiSettings.musclogFreeTier.activeNote')}
+              </Text>
+            ) : null}
+          </View>
+        ) : null}
 
         {/* Provider sections (dimmed when free tier is active) */}
         <View

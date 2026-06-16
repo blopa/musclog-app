@@ -29,7 +29,7 @@ import {
 } from './encryptionHelpers';
 import { createPreRestoreBackup } from './preMigrationBackup';
 import { validateExportDump, type ValidationResult } from './schemaToZod';
-import { ExerciseService, FoodPortionService, MuscleService } from './services';
+import { ExerciseService, FoodPortionService, MuscleService, SettingsService } from './services';
 
 export type ExportDump = {
   _exportVersion: number;
@@ -507,6 +507,12 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
   // backup; re-anchor it to the restored row count so the next boot's loss
   // detector doesn't fire a false "nutrition logs lost" report.
   await updateNutritionLogCountBaseline();
+
+  // Musclog Free Tier is not offered on web (CORS/quota constraints); force it off
+  // regardless of what the imported backup contained.
+  if (Platform.OS === 'web') {
+    await SettingsService.setUseMusclogFreeTier(false);
+  }
 
   // Reload the app after importing is complete
   await reloadApp();
