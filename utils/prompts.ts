@@ -37,7 +37,6 @@ import { getWeightUnit } from './units';
 
 export const WORDS_SOFT_LIMIT = 100;
 export const BE_CONCISE_PROMPT = `Be concise and limit your message to ${WORDS_SOFT_LIMIT} words.`;
-export { getNutritionLogHistoryPrompt, getWorkoutLogHistoryPrompt } from './coachPromptHistory';
 
 /**
  * Type for nutrition log entries returned by NutritionService.getRecentNutritionLogs
@@ -570,10 +569,13 @@ export const getChatMessagePromptContent = async (
   // Enhanced Apple Intelligence handling with semantic chunking
   if (provider === 'on-device' || isSmallModel(provider)) {
     const recentLogs = await WorkoutService.getWorkoutHistory(undefined, 4);
-    const nutritionHistoryDays =
-      context === 'nutrition' ? await SettingsService.getNutritionLogHistoryDays() : 'none';
-    const nutritionLogs =
-      nutritionHistoryDays !== 'none' ? await NutritionService.getRecentNutritionLogs(7) : [];
+    // Small models have a tight context window, so we cap nutrition history at a fixed 7 days
+    // here regardless of the configured day count — only the on/off ('none') choice is honored.
+    const includeNutritionHistory =
+      context === 'nutrition' && (await SettingsService.getNutritionLogHistoryDays()) !== 'none';
+    const nutritionLogs = includeNutritionHistory
+      ? await NutritionService.getRecentNutritionLogs(7)
+      : [];
 
     // Use semantic chunking for Apple Intelligence
     const optimizedContext = await getAppleIntelligenceContext(recentLogs, nutritionLogs, language);

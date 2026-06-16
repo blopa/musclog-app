@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { Trophy } from 'lucide-react-native';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -40,60 +39,27 @@ export function WeeklyStreakCard({
   });
   const dotSize = 16;
 
+  const workoutsThisWeekText = (
+    <Text
+      className="font-medium text-text-primary"
+      numberOfLines={2}
+      adjustsFontSizeToFit
+      minimumFontScale={0.78}
+      style={{
+        fontSize: theme.typography.fontSize.xl,
+        lineHeight: 26,
+      }}
+    >
+      <Text className="font-extrabold">{formatInteger(workoutsThisWeek)}</Text>
+      {` ${t('weeklyStreakCard.workoutsThisWeek')}`}
+    </Text>
+  );
+
   return (
     <GenericCard variant="default" containerStyle={theme.shadows.lg}>
       <View className="flex-row items-stretch" style={{ minHeight: 126 }}>
         <View className="flex-1 justify-center px-5 py-4">
-          {hasWorkoutGoal ? (
-            <>
-              <Text
-                className="font-medium text-text-primary"
-                numberOfLines={2}
-                adjustsFontSizeToFit
-                minimumFontScale={0.78}
-                style={{
-                  fontSize: theme.typography.fontSize.xl,
-                  lineHeight: 26,
-                }}
-              >
-                <Text className="font-extrabold">{formatInteger(workoutsThisWeek)}</Text>
-                {` ${t('weeklyStreakCard.workoutsThisWeek')}`}
-              </Text>
-
-              <View className="mt-4 h-6 flex-row items-center">
-                {dots.map((filled, index) => (
-                  <Fragment key={index}>
-                    {index > 0 ? (
-                      <View
-                        className="flex-1"
-                        style={{
-                          backgroundColor: filled
-                            ? theme.colors.status.emerald30
-                            : theme.colors.background.white10,
-                          height: theme.borderWidth.thin,
-                        }}
-                      />
-                    ) : null}
-                    <View
-                      style={{
-                        width: dotSize,
-                        height: dotSize,
-                        borderRadius: dotSize / 2,
-                        backgroundColor: filled
-                          ? theme.colors.accent.primary
-                          : theme.colors.background.white10,
-                        shadowColor: theme.colors.accent.primary,
-                        shadowOffset: { width: 0, height: 0 },
-                        shadowOpacity: filled ? 0.45 : 0,
-                        shadowRadius: filled ? 8 : 0,
-                        elevation: filled ? 3 : 0,
-                      }}
-                    />
-                  </Fragment>
-                ))}
-              </View>
-            </>
-          ) : onCreateWorkoutGoalPress ? (
+          {!hasWorkoutGoal && onCreateWorkoutGoalPress ? (
             <View className="mt-2 justify-center">
               <Button
                 label={t('weeklyStreakCard.setWeeklyGoal')}
@@ -104,19 +70,44 @@ export function WeeklyStreakCard({
               />
             </View>
           ) : (
-            <Text
-              className="font-medium text-text-primary"
-              numberOfLines={2}
-              adjustsFontSizeToFit
-              minimumFontScale={0.78}
-              style={{
-                fontSize: theme.typography.fontSize.xl,
-                lineHeight: 26,
-              }}
-            >
-              <Text className="font-extrabold">{formatInteger(workoutsThisWeek)}</Text>
-              {` ${t('weeklyStreakCard.workoutsThisWeek')}`}
-            </Text>
+            <>
+              {workoutsThisWeekText}
+
+              {hasWorkoutGoal ? (
+                <View className="mt-4 h-6 flex-row items-center">
+                  {dots.map((filled, index) => (
+                    <Fragment key={index}>
+                      {index > 0 ? (
+                        <View
+                          className="flex-1"
+                          style={{
+                            backgroundColor: filled
+                              ? theme.colors.status.emerald30
+                              : theme.colors.background.white10,
+                            height: theme.borderWidth.thin,
+                          }}
+                        />
+                      ) : null}
+                      <View
+                        style={{
+                          width: dotSize,
+                          height: dotSize,
+                          borderRadius: dotSize / 2,
+                          backgroundColor: filled
+                            ? theme.colors.accent.primary
+                            : theme.colors.background.white10,
+                          shadowColor: theme.colors.accent.primary,
+                          shadowOffset: { width: 0, height: 0 },
+                          shadowOpacity: filled ? 0.45 : 0,
+                          shadowRadius: filled ? 8 : 0,
+                          elevation: filled ? 3 : 0,
+                        }}
+                      />
+                    </Fragment>
+                  ))}
+                </View>
+              ) : null}
+            </>
           )}
         </View>
 

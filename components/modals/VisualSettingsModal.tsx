@@ -105,6 +105,8 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     await SettingsService.setHomeSummaryCard(card);
   };
 
+  const HomeSummaryCardIcon = HOME_SUMMARY_CARD_ICON[homeSummaryCard];
+
   const handleMacrosChange = async (ids: MacroKey[]) => {
     setSelectedMacros(ids);
     await SettingsService.setNutritionDisplay(selectedToBinary(ids));
@@ -241,10 +243,9 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             {t('settings.homeSummaryCard.sectionSubtitle')}
           </Text>
           <PickerButton
-            icon={(() => {
-              const Icon = HOME_SUMMARY_CARD_ICON[homeSummaryCard];
-              return <Icon size={theme.iconSize.md} color={theme.colors.accent.primary} />;
-            })()}
+            icon={
+              <HomeSummaryCardIcon size={theme.iconSize.md} color={theme.colors.accent.primary} />
+            }
             label={t(`settings.homeSummaryCard.options.${homeSummaryCard}.label`)}
             onPress={() => setHomeCardPopupVisible(true)}
           />

@@ -1062,6 +1062,11 @@ export class NutritionService {
    * experienced via {@link utcNormalizedDayKey} (re-applying the log's stored timezone offset),
    * and "today" is the device-local calendar day. Back-filled past days and long gaps are not
    * tracked — only the unbroken streak ending at yesterday counts.
+   *
+   * This scans every non-deleted log into a day-key Set. Because back-dated logs can extend a
+   * streak arbitrarily far into the past, the scan can't be safely bounded by a date window, so
+   * we rely on the caller-side once-per-local-day cache in `utils/macroStreak.ts` to keep the
+   * full read off the hot path.
    */
   static async getMacroLoggingStreak(date: Date = new Date()): Promise<number> {
     const logs = await database

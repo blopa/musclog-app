@@ -1,7 +1,6 @@
 import {
   Apple,
   Bot,
-  CalendarRange,
   ChevronDown,
   ChevronRight,
   Cpu,
@@ -17,7 +16,6 @@ import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPo
 import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
 import { Button } from '@/components/theme/Button';
 import NewNumericalInput from '@/components/theme/NewNumericalInput';
-import { PickerButton } from '@/components/theme/PickerButton';
 import { SecretInput } from '@/components/theme/SecretInput';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
@@ -31,12 +29,7 @@ import {
 import { isOnDeviceAiAvailable, isOnDeviceAiCapable } from '@/utils/onDeviceAi';
 
 import { AiCustomPromptsModal } from './AiCustomPromptsModal';
-import {
-  buildNutritionLogHistoryMenuItems,
-  buildWorkoutHistoryMenuItems,
-  getNutritionLogHistoryLabels,
-  getWorkoutHistoryLabels,
-} from './aiHistorySettings';
+import { HistoryPickerField } from './aiHistorySettings';
 import { FullScreenModal } from './FullScreenModal';
 
 type AIIntegrationCardProps = {
@@ -243,8 +236,6 @@ export function AISettingsModal({
 
   const [isOnDeviceCapable, setIsOnDeviceCapable] = useState(false);
   const [isOnDeviceReady, setIsOnDeviceReady] = useState(false);
-  const [nutritionLogHistoryMenuVisible, setNutritionLogHistoryMenuVisible] = useState(false);
-  const [workoutHistoryMenuVisible, setWorkoutHistoryMenuVisible] = useState(false);
 
   // Use debounced settings for instant UI updates
   const {
@@ -492,21 +483,6 @@ export function AISettingsModal({
     onPress: () => onOpenAiModelPress?.(model.model),
   }));
 
-  const nutritionLogHistoryLabels = getNutritionLogHistoryLabels(t);
-  const nutritionLogHistoryMenuItems = buildNutritionLogHistoryMenuItems({
-    t,
-    iconColor: theme.colors.accent.primary,
-    iconBgColor: theme.colors.accent.primary10,
-    onSelect: handleNutritionLogHistoryDaysChange,
-  });
-  const workoutHistoryLabels = getWorkoutHistoryLabels(t);
-  const workoutHistoryMenuItems = buildWorkoutHistoryMenuItems({
-    t,
-    iconColor: theme.colors.accent.primary,
-    iconBgColor: theme.colors.accent.primary10,
-    onSelect: handleWorkoutHistoryDaysChange,
-  });
-
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.aiSettings.title')}>
       <View className="gap-6 px-4 py-6" style={{ minHeight: '100%' }}>
@@ -745,44 +721,16 @@ export function AISettingsModal({
               {t('settings.aiSettings.maxAiMemoriesSubtitle')}
             </Text>
           </View>
-          <View
-            className="rounded-lg border bg-bg-card p-4"
-            style={{
-              borderColor: theme.colors.border.light,
-              borderWidth: theme.borderWidth.thin,
-            }}
-          >
-            <Text className="mb-3 text-sm font-medium text-text-secondary">
-              {t('settings.aiSettings.nutritionLogHistoryDays')}
-            </Text>
-            <PickerButton
-              label={nutritionLogHistoryLabels[debouncedNutritionLogHistoryDays ?? 'none']}
-              icon={<CalendarRange size={theme.iconSize.lg} color={theme.colors.text.secondary} />}
-              onPress={() => setNutritionLogHistoryMenuVisible(true)}
-            />
-            <Text className="mt-3 text-xs text-text-secondary">
-              {t('settings.aiSettings.nutritionLogHistoryDaysSubtitle')}
-            </Text>
-          </View>
-          <View
-            className="rounded-lg border bg-bg-card p-4"
-            style={{
-              borderColor: theme.colors.border.light,
-              borderWidth: theme.borderWidth.thin,
-            }}
-          >
-            <Text className="mb-3 text-sm font-medium text-text-secondary">
-              {t('settings.aiSettings.workoutHistoryDays')}
-            </Text>
-            <PickerButton
-              label={workoutHistoryLabels[debouncedWorkoutHistoryDays ?? 'none']}
-              icon={<Dumbbell size={theme.iconSize.lg} color={theme.colors.text.secondary} />}
-              onPress={() => setWorkoutHistoryMenuVisible(true)}
-            />
-            <Text className="mt-3 text-xs text-text-secondary">
-              {t('settings.aiSettings.workoutHistoryDaysSubtitle')}
-            </Text>
-          </View>
+          <HistoryPickerField
+            kind="nutrition"
+            value={debouncedNutritionLogHistoryDays ?? 'none'}
+            onChange={handleNutritionLogHistoryDaysChange}
+          />
+          <HistoryPickerField
+            kind="workout"
+            value={debouncedWorkoutHistoryDays ?? 'none'}
+            onChange={handleWorkoutHistoryDaysChange}
+          />
         </View>
 
         {/* Image Processing Section */}
@@ -910,22 +858,6 @@ export function AISettingsModal({
           title={t('settings.aiSettings.selectOpenAiModel')}
           subtitle={t('settings.aiSettings.selectOpenAiModelSubtitle')}
           items={openAiModelMenuItems}
-        />
-
-        <BottomPopUpMenu
-          visible={nutritionLogHistoryMenuVisible}
-          onClose={() => setNutritionLogHistoryMenuVisible(false)}
-          title={t('settings.aiSettings.nutritionLogHistoryDays')}
-          subtitle={t('settings.aiSettings.nutritionLogHistoryDaysSubtitle')}
-          items={nutritionLogHistoryMenuItems}
-        />
-
-        <BottomPopUpMenu
-          visible={workoutHistoryMenuVisible}
-          onClose={() => setWorkoutHistoryMenuVisible(false)}
-          title={t('settings.aiSettings.workoutHistoryDays')}
-          subtitle={t('settings.aiSettings.workoutHistoryDaysSubtitle')}
-          items={workoutHistoryMenuItems}
         />
       </View>
 

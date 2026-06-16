@@ -1,11 +1,9 @@
-import { Apple, CalendarRange, Cpu, Dumbbell, ScanText } from 'lucide-react-native';
+import { Apple, Cpu, ScanText } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 
-import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { Button } from '@/components/theme/Button';
-import { PickerButton } from '@/components/theme/PickerButton';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { type NutritionLogHistoryDays, type WorkoutHistoryDays } from '@/constants/settings';
 import { SettingsService } from '@/database/services/SettingsService';
@@ -13,12 +11,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { handleError } from '@/utils/handleError';
 
-import {
-  buildNutritionLogHistoryMenuItems,
-  buildWorkoutHistoryMenuItems,
-  getNutritionLogHistoryLabels,
-  getWorkoutHistoryLabels,
-} from './aiHistorySettings';
+import { HistoryPickerField } from './aiHistorySettings';
 import { FullScreenModal } from './FullScreenModal';
 
 type CoachQuickSettingsModalProps = {
@@ -47,8 +40,6 @@ export function CoachQuickSettingsModal({ visible, onClose }: CoachQuickSettings
     useState<NutritionLogHistoryDays>('none');
   const [workoutHistoryDays, setWorkoutHistoryDays] = useState<WorkoutHistoryDays>('none');
 
-  const [nutritionLogHistoryMenuVisible, setNutritionLogHistoryMenuVisible] = useState(false);
-  const [workoutHistoryMenuVisible, setWorkoutHistoryMenuVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   // Apple Intelligence (on-device AI) forces OCR on and disables foundation foods,
@@ -59,6 +50,8 @@ export function CoachQuickSettingsModal({ visible, onClose }: CoachQuickSettings
   // Cancel reliably discards edits and Save starts from the persisted values.
   useEffect(() => {
     if (visible) {
+      // Wrapped in a function (not called directly in the effect body) to satisfy
+      // react-hooks/set-state-in-effect — this is a deliberate snapshot-on-open.
       const snapshot = () => {
         setUseThinkingMode(settings.useThinkingMode);
         setUseOcrBeforeAi(settings.useOcrBeforeAi);
@@ -71,27 +64,6 @@ export function CoachQuickSettingsModal({ visible, onClose }: CoachQuickSettings
     // Intentionally only re-run when visibility changes — we want a snapshot at open.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
-
-  const nutritionLogHistoryLabels = getNutritionLogHistoryLabels(t);
-  const nutritionLogHistoryMenuItems = buildNutritionLogHistoryMenuItems({
-    t,
-    iconColor: theme.colors.accent.primary,
-    iconBgColor: theme.colors.accent.primary10,
-    onSelect: (option) => {
-      setNutritionLogHistoryDays(option);
-      setNutritionLogHistoryMenuVisible(false);
-    },
-  });
-  const workoutHistoryLabels = getWorkoutHistoryLabels(t);
-  const workoutHistoryMenuItems = buildWorkoutHistoryMenuItems({
-    t,
-    iconColor: theme.colors.accent.primary,
-    iconBgColor: theme.colors.accent.primary10,
-    onSelect: (option) => {
-      setWorkoutHistoryDays(option);
-      setWorkoutHistoryMenuVisible(false);
-    },
-  });
 
   const toggleItems = [
     {
@@ -223,63 +195,18 @@ export function CoachQuickSettingsModal({ visible, onClose }: CoachQuickSettings
         </View>
 
         <View className="gap-3">
-          <View
-            className="rounded-lg border bg-bg-card p-4"
-            style={{
-              borderColor: theme.colors.border.light,
-              borderWidth: theme.borderWidth.thin,
-            }}
-          >
-            <Text className="mb-3 text-sm font-medium text-text-secondary">
-              {t('settings.aiSettings.nutritionLogHistoryDays')}
-            </Text>
-            <PickerButton
-              label={nutritionLogHistoryLabels[nutritionLogHistoryDays]}
-              icon={<CalendarRange size={theme.iconSize.lg} color={theme.colors.text.secondary} />}
-              onPress={() => setNutritionLogHistoryMenuVisible(true)}
-            />
-            <Text className="mt-3 text-xs text-text-secondary">
-              {t('settings.aiSettings.nutritionLogHistoryDaysSubtitle')}
-            </Text>
-          </View>
-
-          <View
-            className="rounded-lg border bg-bg-card p-4"
-            style={{
-              borderColor: theme.colors.border.light,
-              borderWidth: theme.borderWidth.thin,
-            }}
-          >
-            <Text className="mb-3 text-sm font-medium text-text-secondary">
-              {t('settings.aiSettings.workoutHistoryDays')}
-            </Text>
-            <PickerButton
-              label={workoutHistoryLabels[workoutHistoryDays]}
-              icon={<Dumbbell size={theme.iconSize.lg} color={theme.colors.text.secondary} />}
-              onPress={() => setWorkoutHistoryMenuVisible(true)}
-            />
-            <Text className="mt-3 text-xs text-text-secondary">
-              {t('settings.aiSettings.workoutHistoryDaysSubtitle')}
-            </Text>
-          </View>
+          <HistoryPickerField
+            kind="nutrition"
+            value={nutritionLogHistoryDays}
+            onChange={(value) => setNutritionLogHistoryDays(value as NutritionLogHistoryDays)}
+          />
+          <HistoryPickerField
+            kind="workout"
+            value={workoutHistoryDays}
+            onChange={(value) => setWorkoutHistoryDays(value as WorkoutHistoryDays)}
+          />
         </View>
       </View>
-
-      <BottomPopUpMenu
-        visible={nutritionLogHistoryMenuVisible}
-        onClose={() => setNutritionLogHistoryMenuVisible(false)}
-        title={t('settings.aiSettings.nutritionLogHistoryDays')}
-        subtitle={t('settings.aiSettings.nutritionLogHistoryDaysSubtitle')}
-        items={nutritionLogHistoryMenuItems}
-      />
-
-      <BottomPopUpMenu
-        visible={workoutHistoryMenuVisible}
-        onClose={() => setWorkoutHistoryMenuVisible(false)}
-        title={t('settings.aiSettings.workoutHistoryDays')}
-        subtitle={t('settings.aiSettings.workoutHistoryDaysSubtitle')}
-        items={workoutHistoryMenuItems}
-      />
     </FullScreenModal>
   );
 }
