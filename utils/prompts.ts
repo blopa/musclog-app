@@ -22,10 +22,13 @@ import i18n from '@/lang/lang';
 
 import {
   formatLocalCalendarDayIso,
+  localCalendarDayPlusDays,
   localDayClosedRangeMaxMs,
   localDayStartFromUtcMs,
   localDayStartMs,
   parseLocalCalendarDate,
+  utcNormalizedDayKey,
+  wallClockDateInTimezone,
 } from './calendarDate';
 import { resolveDailyMacros } from './dynamicNutritionTarget';
 import { formatAppInteger } from './formatAppNumber';
@@ -57,6 +60,35 @@ export type NutritionHistoryEntry = {
   gramWeight: number;
   displayName: string;
 };
+
+/**
+ * Hard cap on how many nutrition log entries are sent to the LLM via
+ * {@link getNutritionLogHistoryPrompt}, regardless of the configured day range.
+ * Keeps the prompt bounded for heavy loggers on the longer (60/90 day) settings.
+ */
+const NUTRITION_LOG_HISTORY_MAX_ENTRIES = 250;
+
+type NutritionLogHistoryItem = {
+  name: string;
+  kcal: number;
+  p: string;
+  c: string;
+  f: string;
+  time: string;
+};
+
+function formatNutritionLogDayKey(dayKeyMs: number): string {
+  const d = new Date(dayKeyMs);
+  const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(d.getUTCDate()).padStart(2, '0');
+  const yy = String(d.getUTCFullYear() % 100).padStart(2, '0');
+  return `${mm}/${dd}/${yy}`;
+}
+
+function formatNutritionLogTime(ms: number, timezone?: string): string {
+  const wallClock = wallClockDateInTimezone(ms, timezone);
+  return `${String(wallClock.getHours()).padStart(2, '0')}:${String(wallClock.getMinutes()).padStart(2, '0')}`;
+}
 
 /**
  * Base system prompt for Loggy persona
@@ -553,6 +585,118 @@ async function buildWorkoutSummaryJson(
 }
 
 /**
+ * Compact nutrition log history for the AI coach, gated by
+ * `SettingsService.getNutritionLogHistoryDays()` ('none' disables this entirely).
+ * Entries sharing a `group_id` (a saved/AI-generated meal) are merged into one
+ * item with summed macros, matching how the diary groups them for the user.
+ * Returns '' when the setting is 'none' or there is no nutrition history to send.
+ */
+export const getNutritionLogHistoryPrompt = async (): Promise<string> => {
+  try {
+    const daysSetting = await SettingsService.getNutritionLogHistoryDays();
+    if (daysSetting === 'none') {
+      return '';
+    }
+
+    const days = parseInt(daysSetting, 10) || 0;
+    if (days <= 0) {
+      return '';
+    }
+
+    const endDate = new Date();
+    const startDate = localCalendarDayPlusDays(endDate, -(days - 1));
+    const logs = await NutritionService.getNutritionLogsForDateRange(startDate, endDate);
+
+    if (logs.length === 0) {
+      return '';
+    }
+
+    type Bucket = {
+      dayKey: number;
+      name: string;
+      timestamp: number;
+      timezone?: string;
+      calories: number;
+      protein: number;
+      carbs: number;
+      fat: number;
+    };
+
+    const buckets = new Map<string, Bucket>();
+
+    for (const log of logs) {
+      const nutrients = await log.getNutrients();
+      const dayKey = utcNormalizedDayKey(log.date, log.timezone);
+      const bucketKey = log.groupId ? `g:${dayKey}:${log.groupId}` : `l:${log.id}`;
+      const existing = buckets.get(bucketKey);
+
+      if (existing) {
+        existing.calories += nutrients.calories;
+        existing.protein += nutrients.protein;
+        existing.carbs += nutrients.carbs;
+        existing.fat += nutrients.fat;
+        existing.timestamp = Math.min(existing.timestamp, log.date);
+      } else {
+        const name = log.groupId
+          ? log.loggedMealName || (await log.getDisplayName())
+          : await log.getDisplayName();
+
+        buckets.set(bucketKey, {
+          dayKey,
+          name,
+          timestamp: log.date,
+          timezone: log.timezone,
+          calories: nutrients.calories,
+          protein: nutrients.protein,
+          carbs: nutrients.carbs,
+          fat: nutrients.fat,
+        });
+      }
+    }
+
+    // Keep the most recent entries first, then cap to the token budget.
+    const entries = Array.from(buckets.values())
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .slice(0, NUTRITION_LOG_HISTORY_MAX_ENTRIES);
+
+    if (entries.length === 0) {
+      return '';
+    }
+
+    const dayOrder = Array.from(new Set(entries.map((entry) => entry.dayKey))).sort(
+      (a, b) => a - b
+    );
+
+    const grouped: Record<string, NutritionLogHistoryItem[]> = {};
+    for (const dayKey of dayOrder) {
+      const dayEntries = entries
+        .filter((entry) => entry.dayKey === dayKey)
+        .sort((a, b) => a.timestamp - b.timestamp);
+
+      grouped[formatNutritionLogDayKey(dayKey)] = dayEntries.map((entry) => ({
+        name: entry.name,
+        kcal: Math.round(entry.calories),
+        p: `${Math.round(entry.protein)}g`,
+        c: `${Math.round(entry.carbs)}g`,
+        f: `${Math.round(entry.fat)}g`,
+        time: formatNutritionLogTime(entry.timestamp, entry.timezone),
+      }));
+    }
+
+    return [
+      "The user's recent nutrition log history, grouped by day (MM/DD/YY, oldest first). " +
+        'kcal=calories, p=protein, c=carbs (includes fiber), f=fat, time=24h local time logged.',
+      '```json',
+      JSON.stringify(grouped),
+      '```',
+    ].join('\n');
+  } catch (error) {
+    console.error('[prompts] Error fetching nutrition log history:', error);
+    return '';
+  }
+};
+
+/**
  * Full chat system message with user context and recent workouts
  * Call this on chat session init to build the system message
  * Note: eatingPhase needs to be fetched from NutritionGoal separately
@@ -568,8 +712,10 @@ export const getChatMessagePromptContent = async (
   // Enhanced Apple Intelligence handling with semantic chunking
   if (provider === 'on-device' || isSmallModel(provider)) {
     const recentLogs = await WorkoutService.getWorkoutHistory(undefined, 4);
+    const nutritionHistoryDays =
+      context === 'nutrition' ? await SettingsService.getNutritionLogHistoryDays() : 'none';
     const nutritionLogs =
-      context === 'nutrition' ? await NutritionService.getRecentNutritionLogs(7) : [];
+      nutritionHistoryDays !== 'none' ? await NutritionService.getRecentNutritionLogs(7) : [];
 
     // Use semantic chunking for Apple Intelligence
     const optimizedContext = await getAppleIntelligenceContext(recentLogs, nutritionLogs, language);
@@ -640,6 +786,14 @@ export const getChatMessagePromptContent = async (
       '```',
       "All weights are in the user's preferred unit (kg or lbs)."
     );
+  }
+
+  // Add nutrition log history, only for the nutrition chat context and only when enabled.
+  if (context === 'nutrition') {
+    const nutritionHistoryPrompt = await getNutritionLogHistoryPrompt();
+    if (nutritionHistoryPrompt) {
+      contextSections.push('## Nutrition Log History', nutritionHistoryPrompt);
+    }
   }
 
   contextSections.push('The following content is a conversation between the user and Loggy...');
