@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-import type { ProgressionMode, ThemeOption } from '@/constants/settings';
+import type { NutritionLogHistoryDays, ProgressionMode, ThemeOption } from '@/constants/settings';
 import { SettingsService } from '@/database/services/SettingsService';
 
 import { useSettings } from './useSettings';
@@ -87,6 +87,7 @@ export function useDebouncedSettings(debounceMs = 200) {
         'progressionMode',
         'advancedDataManagement',
         'bleGenerateChartPayload',
+        'nutritionLogHistoryDays',
       ];
 
       const initial: Record<string, SettingValue> = {};
@@ -354,6 +355,10 @@ export function useDebouncedSettings(debounceMs = 200) {
     'bleGenerateChartPayload',
     SettingsService.setBleGenerateChartPayload
   );
+  const handleNutritionLogHistoryDaysChange = createSettingHandler<NutritionLogHistoryDays>(
+    'nutritionLogHistoryDays',
+    SettingsService.setNutritionLogHistoryDays
+  );
 
   // --- Flush (for when the modal closes before the timer fires) ---
   const flushAllPendingChanges = useCallback(async () => {
@@ -489,6 +494,9 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'bleGenerateChartPayload':
             await SettingsService.setBleGenerateChartPayload(value as boolean);
             break;
+          case 'nutritionLogHistoryDays':
+            await SettingsService.setNutritionLogHistoryDays(value as NutritionLogHistoryDays);
+            break;
         }
       } catch (error) {
         console.error(`[useDebouncedSettings] Error flushing ${settingKey}:`, error);
@@ -583,6 +591,9 @@ export function useDebouncedSettings(debounceMs = 200) {
       (localSettings.advancedDataManagement as boolean) ?? actualSettings.advancedDataManagement,
     bleGenerateChartPayload:
       (localSettings.bleGenerateChartPayload as boolean) ?? actualSettings.bleGenerateChartPayload,
+    nutritionLogHistoryDays:
+      (localSettings.nutritionLogHistoryDays as NutritionLogHistoryDays) ??
+      actualSettings.nutritionLogHistoryDays,
 
     // Confirmed DB values
     actualTheme: actualSettings.theme,
@@ -631,6 +642,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleProgressionModeChange,
     handleAdvancedDataManagementChange,
     handleBleGenerateChartPayloadChange,
+    handleNutritionLogHistoryDaysChange,
 
     // Utilities
     flushAllPendingChanges,

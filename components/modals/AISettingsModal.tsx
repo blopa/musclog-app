@@ -1,6 +1,7 @@
 import {
   Apple,
   Bot,
+  CalendarRange,
   ChevronDown,
   ChevronRight,
   Cpu,
@@ -16,10 +17,12 @@ import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPo
 import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
 import { Button } from '@/components/theme/Button';
 import NewNumericalInput from '@/components/theme/NewNumericalInput';
+import { PickerButton } from '@/components/theme/PickerButton';
 import { SecretInput } from '@/components/theme/SecretInput';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { GEMINI_MODELS, OPENAI_MODELS } from '@/constants/ai';
+import { type NutritionLogHistoryDays } from '@/constants/settings';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { isOnDeviceAiAvailable, isOnDeviceAiCapable } from '@/utils/onDeviceAi';
@@ -231,6 +234,7 @@ export function AISettingsModal({
 
   const [isOnDeviceCapable, setIsOnDeviceCapable] = useState(false);
   const [isOnDeviceReady, setIsOnDeviceReady] = useState(false);
+  const [nutritionLogHistoryMenuVisible, setNutritionLogHistoryMenuVisible] = useState(false);
 
   // Use debounced settings for instant UI updates
   const {
@@ -256,6 +260,8 @@ export function AISettingsModal({
     handleUseThinkingModeChange,
     maxAiMemories: debouncedMaxAiMemories,
     handleMaxAiMemoriesChange,
+    nutritionLogHistoryDays: debouncedNutritionLogHistoryDays,
+    handleNutritionLogHistoryDaysChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
 
@@ -471,6 +477,29 @@ export function AISettingsModal({
     description: `OpenAI ${model.model}`,
     onPress: () => onOpenAiModelPress?.(model.model),
   }));
+
+  const nutritionLogHistoryOptions: NutritionLogHistoryDays[] = ['none', '7', '30', '60', '90'];
+  const nutritionLogHistoryLabels: Record<NutritionLogHistoryDays, string> = {
+    none: t('settings.aiSettings.nutritionLogHistoryDaysNone'),
+    '7': t('settings.aiSettings.nutritionLogHistoryDays7'),
+    '30': t('settings.aiSettings.nutritionLogHistoryDays30'),
+    '60': t('settings.aiSettings.nutritionLogHistoryDays60'),
+    '90': t('settings.aiSettings.nutritionLogHistoryDays90'),
+  };
+
+  const nutritionLogHistoryMenuItems: BottomPopUpMenuItem[] = nutritionLogHistoryOptions.map(
+    (option) => ({
+      icon: CalendarRange,
+      iconColor: theme.colors.accent.primary,
+      iconBgColor: theme.colors.accent.primary10,
+      title: nutritionLogHistoryLabels[option],
+      description:
+        option === 'none'
+          ? t('settings.aiSettings.nutritionLogHistoryDaysNoneDescription')
+          : t('settings.aiSettings.nutritionLogHistoryDaysOptionDescription', { days: option }),
+      onPress: () => handleNutritionLogHistoryDaysChange(option),
+    })
+  );
 
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.aiSettings.title')}>
@@ -708,6 +737,25 @@ export function AISettingsModal({
               {t('settings.aiSettings.maxAiMemoriesSubtitle')}
             </Text>
           </View>
+          <View
+            className="rounded-lg border bg-bg-card p-4"
+            style={{
+              borderColor: theme.colors.border.light,
+              borderWidth: theme.borderWidth.thin,
+            }}
+          >
+            <Text className="mb-3 text-sm font-medium text-text-secondary">
+              {t('settings.aiSettings.nutritionLogHistoryDays')}
+            </Text>
+            <PickerButton
+              label={nutritionLogHistoryLabels[debouncedNutritionLogHistoryDays ?? 'none']}
+              icon={<CalendarRange size={theme.iconSize.lg} color={theme.colors.text.secondary} />}
+              onPress={() => setNutritionLogHistoryMenuVisible(true)}
+            />
+            <Text className="mt-3 text-xs text-text-secondary">
+              {t('settings.aiSettings.nutritionLogHistoryDaysSubtitle')}
+            </Text>
+          </View>
         </View>
 
         {/* Image Processing Section */}
@@ -835,6 +883,14 @@ export function AISettingsModal({
           title={t('settings.aiSettings.selectOpenAiModel')}
           subtitle={t('settings.aiSettings.selectOpenAiModelSubtitle')}
           items={openAiModelMenuItems}
+        />
+
+        <BottomPopUpMenu
+          visible={nutritionLogHistoryMenuVisible}
+          onClose={() => setNutritionLogHistoryMenuVisible(false)}
+          title={t('settings.aiSettings.nutritionLogHistoryDays')}
+          subtitle={t('settings.aiSettings.nutritionLogHistoryDaysSubtitle')}
+          items={nutritionLogHistoryMenuItems}
         />
       </View>
 

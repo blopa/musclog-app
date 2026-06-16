@@ -39,6 +39,8 @@ import {
   NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE,
   NOTIFICATIONS_WORKOUT_REMINDERS_SETTING_TYPE,
   NUTRITION_DISPLAY_SETTING_TYPE,
+  NUTRITION_LOG_HISTORY_DAYS_SETTING_TYPE,
+  type NutritionLogHistoryDays,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
   PROGRESSION_MODE_SETTING_TYPE,
@@ -121,6 +123,7 @@ type SettingsState = {
   nutritionDisplay: string;
   advancedDataManagement: boolean;
   bleGenerateChartPayload: boolean;
+  nutritionLogHistoryDays: NutritionLogHistoryDays;
   isLoading: boolean;
 };
 
@@ -176,6 +179,7 @@ const DEFAULT_STATE: SettingsState = {
   nutritionDisplay: '11111',
   advancedDataManagement: false,
   bleGenerateChartPayload: false,
+  nutritionLogHistoryDays: 'none',
   isLoading: true,
 };
 
@@ -233,6 +237,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
   const rawNavSlot2 = getString(map, NAV_SLOT_2_SETTING_TYPE);
   const rawNavSlot3 = getString(map, NAV_SLOT_3_SETTING_TYPE);
   const rawFoodSearchSource = getString(map, FOOD_SEARCH_SOURCE_SETTING_TYPE);
+  const rawNutritionLogHistoryDays = getString(map, NUTRITION_LOG_HISTORY_DAYS_SETTING_TYPE);
   const rawConversationContext = getString(map, CONVERSATION_CONTEXT);
   const rawChartTooltipPosition = getString(map, CHART_TOOLTIP_POSITION_SETTING_TYPE);
   const language = getString(map, LANGUAGE_SETTING_TYPE, 'en-US');
@@ -298,6 +303,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     nutritionDisplay: getString(map, NUTRITION_DISPLAY_SETTING_TYPE, '11111'),
     advancedDataManagement: getBoolean(map, ADVANCED_DATA_MANAGEMENT_SETTING_TYPE, false),
     bleGenerateChartPayload: getBoolean(map, BLE_GENERATE_CHART_PAYLOAD_SETTING_TYPE, false),
+    nutritionLogHistoryDays: (rawNutritionLogHistoryDays as NutritionLogHistoryDays) || 'none',
     isLoading: false,
   };
 }

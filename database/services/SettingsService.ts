@@ -38,6 +38,8 @@ import {
   NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE,
   NOTIFICATIONS_WORKOUT_REMINDERS_SETTING_TYPE,
   NUTRITION_DISPLAY_SETTING_TYPE,
+  NUTRITION_LOG_HISTORY_DAYS_SETTING_TYPE,
+  type NutritionLogHistoryDays,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
   PROGRESSION_MODE_SETTING_TYPE,
@@ -535,6 +537,13 @@ export class SettingsService {
   }
 
   /**
+   * Upsert the nutrition log history days setting ('none' | '7' | '30' | '60' | '90')
+   */
+  static async setNutritionLogHistoryDays(days: NutritionLogHistoryDays) {
+    await SettingsService.setStringSetting(NUTRITION_LOG_HISTORY_DAYS_SETTING_TYPE, days);
+  }
+
+  /**
    * Upsert the chart tooltip position setting ('left' | 'right')
    */
   static async setChartTooltipPosition(position: 'left' | 'right') {
@@ -747,6 +756,17 @@ export class SettingsService {
       FOOD_SEARCH_SOURCE_SETTING_TYPE,
       'both'
     )) as FoodSearchSource;
+  }
+
+  /**
+   * Get the nutrition log history days setting.
+   * Defaults to 'none' if not set.
+   */
+  static async getNutritionLogHistoryDays(): Promise<NutritionLogHistoryDays> {
+    return (await SettingsService.getStringSetting(
+      NUTRITION_LOG_HISTORY_DAYS_SETTING_TYPE,
+      'none'
+    )) as NutritionLogHistoryDays;
   }
 
   // --- Private helpers ---

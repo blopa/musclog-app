@@ -447,6 +447,9 @@ async function runSeedProductionData(options?: SeedProductionDataOptions): Promi
     await SettingsService.setBleGenerateChartPayload(false);
     console.log(`Set default WitMotion chart payload generation to 'false'}`);
 
+    await SettingsService.setNutritionLogHistoryDays('none');
+    console.log('Set default nutrition log history days sent to LLM to none');
+
     if (Platform.OS === 'ios') {
       await SettingsService.setUseOnDeviceAi(true);
       console.log('Set default use on-device AI (Apple Intelligence) to true on iOS');
