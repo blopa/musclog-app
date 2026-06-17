@@ -6,7 +6,8 @@ in the arm64 slice so the simulator linker accepts it.
 """
 import struct, subprocess, os, sys, tempfile
 
-FRAMEWORK = "../ios/Pods/MLImage/Frameworks/MLImage.framework/MLImage"
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+FRAMEWORK = os.path.join(ROOT, "ios/Pods/MLImage/Frameworks/MLImage.framework/MLImage")
 LC_BUILD_VERSION = 0x32  # 50 in decimal
 PLATFORM_IOS = 2
 PLATFORM_IOSSIMULATOR = 7

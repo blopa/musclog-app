@@ -6,17 +6,19 @@ in the arm64 slice so the simulator linker accepts the objects.
 """
 import struct, subprocess, os, sys, tempfile, glob
 
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
 # List of MLKit frameworks to patch
 FRAMEWORKS = [
-    "../ios/Pods/MLKitCommon/Frameworks/MLKitCommon.framework/MLKitCommon",
-    "../ios/Pods/MLKitBarcodeScanning/Frameworks/MLKitBarcodeScanning.framework/MLKitBarcodeScanning",
-    "../ios/Pods/MLKitVision/Frameworks/MLKitVision.framework/MLKitVision",
-    "../ios/Pods/MLKitTextRecognition/Frameworks/MLKitTextRecognition.framework/MLKitTextRecognition",
-    "../ios/Pods/MLKitTextRecognitionCommon/Frameworks/MLKitTextRecognitionCommon.framework/MLKitTextRecognitionCommon",
-    "../ios/Pods/MLKitTextRecognitionChinese/Frameworks/MLKitTextRecognitionChinese.framework/MLKitTextRecognitionChinese",
-    "../ios/Pods/MLKitTextRecognitionDevanagari/Frameworks/MLKitTextRecognitionDevanagari.framework/MLKitTextRecognitionDevanagari",
-    "../ios/Pods/MLKitTextRecognitionJapanese/Frameworks/MLKitTextRecognitionJapanese.framework/MLKitTextRecognitionJapanese",
-    "../ios/Pods/MLKitTextRecognitionKorean/Frameworks/MLKitTextRecognitionKorean.framework/MLKitTextRecognitionKorean",
+    os.path.join(ROOT, "ios/Pods/MLKitCommon/Frameworks/MLKitCommon.framework/MLKitCommon"),
+    os.path.join(ROOT, "ios/Pods/MLKitBarcodeScanning/Frameworks/MLKitBarcodeScanning.framework/MLKitBarcodeScanning"),
+    os.path.join(ROOT, "ios/Pods/MLKitVision/Frameworks/MLKitVision.framework/MLKitVision"),
+    os.path.join(ROOT, "ios/Pods/MLKitTextRecognition/Frameworks/MLKitTextRecognition.framework/MLKitTextRecognition"),
+    os.path.join(ROOT, "ios/Pods/MLKitTextRecognitionCommon/Frameworks/MLKitTextRecognitionCommon.framework/MLKitTextRecognitionCommon"),
+    os.path.join(ROOT, "ios/Pods/MLKitTextRecognitionChinese/Frameworks/MLKitTextRecognitionChinese.framework/MLKitTextRecognitionChinese"),
+    os.path.join(ROOT, "ios/Pods/MLKitTextRecognitionDevanagari/Frameworks/MLKitTextRecognitionDevanagari.framework/MLKitTextRecognitionDevanagari"),
+    os.path.join(ROOT, "ios/Pods/MLKitTextRecognitionJapanese/Frameworks/MLKitTextRecognitionJapanese.framework/MLKitTextRecognitionJapanese"),
+    os.path.join(ROOT, "ios/Pods/MLKitTextRecognitionKorean/Frameworks/MLKitTextRecognitionKorean.framework/MLKitTextRecognitionKorean"),
 ]
 
 LC_VERSION_MIN_IPHONEOS = 0x25

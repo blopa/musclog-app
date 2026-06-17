@@ -62,5 +62,70 @@ target 'MusclogLiftLogRepeat' do
       :mac_catalyst_enabled => false,
       :ccache_enabled => ccache_enabled?(podfile_properties),
     )
+
+    # BEGIN Musclog iOS simulator build fix
+    # WHY DO WE NEED THIS?
+    #
+    # Google ML Kit and OpenCV still publish pods that exclude arm64 for iOS
+    # simulator builds, but Apple Silicon iOS 26 simulators need arm64. This is
+    # only for local Apple Silicon development builds; EAS/CI and non-arm64
+    # hosts should use the normal pod settings.
+    require 'rbconfig'
+
+    simulator_fix_host_os = RbConfig::CONFIG['host_os']
+    simulator_fix_host_arch = `uname -m`.strip
+    simulator_fix_local_dev = ENV['EAS_BUILD'].nil? &&
+      ENV['CI'].nil? &&
+      ENV['MUSCLOG_IOS_SIMULATOR_BUILD_FIX'] != '0'
+    simulator_fix_apple_silicon = simulator_fix_host_os.include?('darwin') &&
+      ['arm64', 'arm64e'].include?(simulator_fix_host_arch)
+    simulator_fix_needed = [
+      'Pods/OpenCV/opencv2.framework',
+      'Pods/MLImage/Frameworks/MLImage.framework',
+      'Pods/MLKitCommon/Frameworks/MLKitCommon.framework',
+    ].any? { |pod_path| File.exist?(File.join(__dir__, pod_path)) }
+
+    if simulator_fix_local_dev && simulator_fix_apple_silicon && simulator_fix_needed
+      Pod::UI.puts("[Musclog simulator fix] Applying local Apple Silicon iOS simulator patches")
+
+      installer.pods_project.targets.each do |target|
+        target.build_configurations.each do |config|
+          config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = ''
+        end
+      end
+
+      installer.aggregate_targets.each do |aggregate_target|
+        aggregate_target.xcconfigs.each do |_, xcconfig|
+          xcconfig.attributes['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = ''
+        end
+      end
+
+      Dir.glob(File.join(__dir__, 'Pods', 'Target Support Files', '**', '*.xcconfig')).each do |xcconfig_path|
+        contents = File.read(xcconfig_path)
+        next unless contents.include?('EXCLUDED_ARCHS[sdk=iphonesimulator*] = arm64')
+
+        File.write(
+          xcconfig_path,
+          contents.gsub(/^EXCLUDED_ARCHS\[sdk=iphonesimulator\*\] = arm64\n/, '')
+        )
+      end
+
+      [
+        'scripts/fix_opencv_simulator.py',
+        'scripts/fix_mlimage_simulator.py',
+        'scripts/fix_mlkit_simulator.py',
+      ].each do |script|
+        script_path = File.expand_path("../#{script}", __dir__)
+        unless File.exist?(script_path)
+          Pod::UI.warn("[Musclog simulator fix] Missing #{script}")
+          next
+        end
+
+        system('python3', script_path) || Pod::UI.warn("[Musclog simulator fix] #{script} failed")
+      end
+    else
+      Pod::UI.puts("[Musclog simulator fix] Skipped; host/env/pods do not require it")
+    end
+    # END Musclog iOS simulator build fix
   end
 end

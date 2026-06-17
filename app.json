@@ -22,6 +22,7 @@
         }
       ],
       "./plugins/withGradleJvmArgs",
+      "./plugins/withIosSimulatorBuildFix",
       "expo-system-ui",
       "react-native-edge-to-edge",
       "expo-localization",
