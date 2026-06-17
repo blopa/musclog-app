@@ -4,7 +4,9 @@ import { isSuccessStatus } from '@/types/guards/openFoodFacts';
 import type { ProductState } from '@/types/openFoodFacts';
 import {
   areCoreMacrosEffectivelyZero,
+  type BarcodeNutritionSource,
   parseCoreMacrosFromAlternateSource,
+  type ProductDetailsQueryData,
 } from '@/utils/externalFoodProduct';
 
 import { useSettings } from './useSettings';
@@ -58,12 +60,6 @@ const REQUEST_TIMEOUT_MS = 20_000;
 type ProductV3Result =
   | { data: ProductState; error?: undefined }
   | { data?: undefined; error: { message: string } };
-
-/** Response type for useFoodProductDetails (success, error, or null when disabled). */
-export type ProductDetailsQueryData =
-  | ProductState
-  | { status: 'error'; error: { message: string } }
-  | null;
 
 export async function fetchOFFProductByBarcode(
   barcode: string,
@@ -165,9 +161,6 @@ export async function fetchUSDAProductById(
     return null;
   }
 }
-
-/** Mirrors the return of {@link inferBarcodeNutritionSource} in `@/utils/externalFoodProduct`. */
-type BarcodeNutritionSource = 'openfood' | 'usda' | 'musclog' | null;
 
 /**
  * Cross-source barcode lookup behind the "try another source" flow. Fetches every provider

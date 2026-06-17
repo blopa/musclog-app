@@ -43,7 +43,7 @@ import Meal from '@/database/models/Meal';
 import { FoodPortionService, FoodService, MealService } from '@/database/services';
 import { useFoodEditForm } from '@/hooks/useFoodEditForm';
 import { useFoodMealTrackingActions } from '@/hooks/useFoodMealTrackingActions';
-import { type ProductDetailsQueryData, useFoodProductDetails } from '@/hooks/useFoodProductDetails';
+import { useFoodProductDetails } from '@/hooks/useFoodProductDetails';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import {
@@ -60,6 +60,7 @@ import {
   areCoreMacrosEffectivelyZero,
   getProductBarcodeFromSearchProduct,
   parseServingSizeFromProduct,
+  type ProductDetailsQueryData,
 } from '@/utils/externalFoodProduct';
 import { formatAppRoundedDecimal } from '@/utils/formatAppNumber';
 import { formatDisplayGrams } from '@/utils/formatDisplayWeight';
@@ -1766,38 +1767,50 @@ export function FoodMealTrackingDetailsModal({
 
   const { handleAddFood, handleFoodNotFoundClose, handleTryAnotherSource } =
     useFoodMealTrackingActions({
-      meal,
-      food,
-      foodLog,
-      localFood,
-      barcode,
-      productFromSearch,
-      productDetails,
-      refetchedProductDetails,
-      selectedDate,
-      selectedTime,
-      selectedMeal,
-      servingSize,
-      isFavorite,
-      matchedPortion,
-      editedOverrides,
-      mealScaleFactor,
-      resolvedFoodServingMode,
-      nutritionalData,
-      effectiveMicrosPer100g,
-      setIsAddingFood,
-      setIsFoodNotFoundModalVisible,
-      setIsRefetchingSource,
-      setRefetchedProductDetails,
-      setAlternateSourceLookupFailed,
-      setLocalCanEdit,
-      onAddFood,
-      onLogMeal,
-      onClose,
-      onFoodTracked,
-      onNutritionLogTracked,
-      showSnackbar,
-      t,
+      target: {
+        meal,
+        food,
+        foodLog,
+        localFood,
+        barcode,
+        productFromSearch,
+        productDetails,
+        refetchedProductDetails,
+        matchedPortion,
+      },
+      selection: {
+        selectedDate,
+        selectedTime,
+        selectedMeal,
+        servingSize,
+        isFavorite,
+        mealScaleFactor,
+        resolvedFoodServingMode,
+      },
+      nutrition: {
+        nutritionalData,
+        effectiveMicrosPer100g,
+        editedOverrides,
+      },
+      setters: {
+        setIsAddingFood,
+        setIsFoodNotFoundModalVisible,
+        setIsRefetchingSource,
+        setRefetchedProductDetails,
+        setAlternateSourceLookupFailed,
+        setLocalCanEdit,
+      },
+      callbacks: {
+        onAddFood,
+        onLogMeal,
+        onClose,
+        onFoodTracked,
+        onNutritionLogTracked,
+      },
+      feedback: {
+        showSnackbar,
+        t,
+      },
     });
 
   // Reset matched portion and edit overrides when modal closes

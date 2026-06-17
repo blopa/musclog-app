@@ -4,25 +4,14 @@ import {
   type MicronutrientFormStrings,
   parseMicronutrientFormStringsToPartial,
 } from '@/components/MicronutrientsExpandableSection';
-import type { MicrosData } from '@/database/models';
+import type { EditedFoodOverrides } from '@/types/foodEditing';
 import {
   parseLocalizedDecimalString,
   sanitizeLocalizedDecimalInput,
 } from '@/utils/localizedDecimalInput';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 
-/** User edits to a food/product: name, barcode, description, per-100g macros and micros. */
-export type EditedOverrides = {
-  name?: string;
-  barcode?: string;
-  description?: string;
-  calories?: number;
-  protein?: number;
-  carbs?: number;
-  fat?: number;
-  fiber?: number;
-  micros?: Partial<MicrosData>;
-};
+export type EditedOverrides = EditedFoodOverrides;
 
 /** String-backed form state for the edit pop-up (localized decimals, free-form text). */
 export type EditFormState = {

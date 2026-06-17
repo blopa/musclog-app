@@ -1,5 +1,5 @@
-import type { ProductDetailsQueryData } from '@/hooks/useFoodProductDetails';
 import { isSuccessFoodDetailProductState } from '@/types/guards/openFoodFacts';
+import type { ProductState } from '@/types/openFoodFacts';
 import { toFiniteMacro } from '@/utils/inferCaloriesFromMacros';
 import { getMusclogNutritionPer100g } from '@/utils/musclogProduct';
 import {
@@ -9,10 +9,19 @@ import {
 } from '@/utils/openFoodFactsMapper';
 import { mapUSDANutritient } from '@/utils/usdaMapper';
 
+export type ExternalFoodProductSource = 'openfood' | 'usda' | 'musclog';
+export type BarcodeNutritionSource = ExternalFoodProductSource | null;
+
+export type ProductDetailsQueryData =
+  | ProductState
+  | { status: 'success'; source: 'usda' | 'musclog'; product: any }
+  | { status: 'error'; error: { message: string } }
+  | null;
+
 export function inferBarcodeNutritionSource(
   details: ProductDetailsQueryData | null | undefined,
   productFromSearch: any
-): 'openfood' | 'usda' | 'musclog' | null {
+): BarcodeNutritionSource {
   const explicit = (details as any)?.source ?? productFromSearch?.source;
   if (explicit === 'usda') {
     return 'usda';

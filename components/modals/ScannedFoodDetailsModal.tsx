@@ -11,7 +11,7 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import { BarcodeInput } from '@/components/BarcodeInput';
 import { BottomPopUp } from '@/components/BottomPopUp';
@@ -31,11 +31,7 @@ import { TextInput } from '@/components/theme/TextInput';
 import type { MicrosData } from '@/database/models';
 import { FoodService } from '@/database/services';
 import { useFoodEditForm } from '@/hooks/useFoodEditForm';
-import {
-  findAlternateBarcodeSource,
-  type ProductDetailsQueryData,
-  useFoodProductDetails,
-} from '@/hooks/useFoodProductDetails';
+import { findAlternateBarcodeSource, useFoodProductDetails } from '@/hooks/useFoodProductDetails';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { isSuccessFoodDetailProductState } from '@/types/guards/openFoodFacts';
@@ -44,6 +40,7 @@ import {
   getProductBarcodeFromSearchProduct,
   inferBarcodeNutritionSource,
   parseServingSizeFromProduct,
+  type ProductDetailsQueryData,
 } from '@/utils/externalFoodProduct';
 import { formatAppRoundedDecimal } from '@/utils/formatAppNumber';
 import { handleError } from '@/utils/handleError';
