@@ -7,6 +7,7 @@ import { MetricPoint } from '@/database/services/ProgressService';
 import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
+import { formatUtcNormalizedDayIntl } from '@/utils/calendarDate';
 import { getXAxisLabels, getYAxisLabels } from '@/utils/chartUtils';
 
 import { ProgressChartSection } from './ProgressChartSection';
@@ -24,10 +25,11 @@ export function BodyMetricsCharts({
   ffmiHistory,
   units,
 }: BodyMetricsChartsProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const dateFnsLocale = useDateFnsLocale();
   const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
+  const formatDay = (x: number) => formatUtcNormalizedDayIntl(x, i18n.language);
 
   const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
 
@@ -57,7 +59,7 @@ export function BodyMetricsCharts({
             tooltipFormatter={(p) => `${formatRoundedDecimal(p.y, 1)} ${weightLabel}`}
             xAxisLabels={getXAxisLabels(
               weightHistory.map((p) => ({ x: p.date })),
-              undefined,
+              formatDay,
               dateFnsLocale
             )}
           />
@@ -88,7 +90,7 @@ export function BodyMetricsCharts({
             tooltipFormatter={(p) => `${formatRoundedDecimal(p.y, 1)}%`}
             xAxisLabels={getXAxisLabels(
               fatHistory.map((p) => ({ x: p.date })),
-              undefined,
+              formatDay,
               dateFnsLocale
             )}
           />
@@ -116,7 +118,7 @@ export function BodyMetricsCharts({
             tooltipFormatter={(p) => formatRoundedDecimal(p.y, 1)}
             xAxisLabels={getXAxisLabels(
               ffmiHistory.map((p) => ({ x: p.date })),
-              undefined,
+              formatDay,
               dateFnsLocale
             )}
           />

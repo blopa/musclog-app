@@ -26,8 +26,8 @@ const WebCameraView = ({
     },
     onDecodeResult: (result) => {
       onBarcodeScanned?.({
-        data: result.getText(),
-        type: result.getBarcodeFormat().toString(),
+        data: result.rawValue,
+        type: result.format.toString(),
       });
     },
   });

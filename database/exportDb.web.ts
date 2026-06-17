@@ -1,23 +1,14 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import { CURRENT_DATABASE_VERSION } from '@/constants/database';
-import {
-  ASYNC_STORAGE_EXCLUDED_KEYS,
-  ASYNC_STORAGE_EXCLUDED_PREFIXES,
-  RESTORE_ORDER,
-  SETTINGS_EXCLUDED_TYPES,
-} from '@/constants/exportImport';
-import { getExportPlatform } from '@/constants/platform';
-import { encrypt } from '@/utils/encryption';
+import { RESTORE_ORDER } from '@/constants/exportImport';
 
 import { database } from './database-instance';
-import type NutritionLog from './models/NutritionLog';
-import type UserMetric from './models/UserMetric';
+import {
+  type CapturedTableRows,
+  type DumpDatabaseOptions,
+  dumpRowsToJson,
+  type ExportDump,
+} from './exportDbCore';
 
-export type ExportDump = {
-  _exportVersion: number;
-  [tableName: string]: unknown;
-};
+export type { ExportDump };
 
 function getRawRow(record: { _raw?: unknown }): Record<string, unknown> {
   const raw = (record as { _raw?: Record<string, unknown> })._raw;
@@ -28,106 +19,49 @@ function getRawRow(record: { _raw?: unknown }): Record<string, unknown> {
   return { ...raw };
 }
 
+function stripLokiMetadata(row: Record<string, unknown>): Record<string, unknown> {
+  const raw = { ...row };
+  delete raw.$loki;
+  delete raw.meta;
+  return raw;
+}
+
+function getRawRowsFromLoki(tableName: string): Record<string, unknown>[] | null {
+  const adapter = database.adapter as any;
+  const loki = adapter?.underlyingAdapter?._driver?.loki ?? adapter?._driver?.loki;
+  const collection = loki?.getCollection?.(tableName);
+
+  if (!collection?.data) {
+    return null;
+  }
+
+  return collection.data.map((row: Record<string, unknown>) => stripLokiMetadata(row));
+}
+
 /**
  * Dump the entire database to a JSON-serializable object.
- * Encrypted fields in user_metrics and nutrition_logs are exported decrypted so the backup is device-independent.
+ * Encrypted fields in user_metrics, nutrition_logs, saved_for_later_groups and
+ * saved_for_later_items are exported decrypted so the backup is device-independent.
  * API key settings are excluded.
  */
-export async function dumpDatabase(encryptionPhrase?: string): Promise<string> {
-  const dbData: ExportDump = {
-    _exportVersion: CURRENT_DATABASE_VERSION,
-    _exportPlatform: getExportPlatform(),
-  };
+export async function dumpDatabase(
+  encryptionPhrase?: string,
+  options: DumpDatabaseOptions = {}
+): Promise<string> {
+  const includeDeletedRecords = options.includeDeletedRecords ?? true;
+  const capturedRows: CapturedTableRows = {};
 
   for (const tableName of RESTORE_ORDER) {
     const collection = database.get(tableName as any);
     const records = await collection.query().fetch();
+    // WatermelonDB's query API filters out internal tombstones (`_status = 'deleted'`).
+    // When requested, read Loki directly so exports can preserve those rows.
+    const rows = includeDeletedRecords
+      ? (getRawRowsFromLoki(tableName) ?? records.map((r) => getRawRow(r)))
+      : records.map((r) => getRawRow(r));
 
-    if (tableName === 'settings') {
-      const rows = records as { _raw?: Record<string, unknown>; type?: string }[];
-      dbData.settings = rows
-        .filter((r) => {
-          const raw = r._raw ?? r;
-          const type = (raw as Record<string, unknown>).type;
-          return !SETTINGS_EXCLUDED_TYPES.includes(String(type));
-        })
-        .map((r) => getRawRow(r));
-      continue;
-    }
-
-    if (tableName === 'user_metrics') {
-      const rows: Record<string, unknown>[] = [];
-      for (const record of records as UserMetric[]) {
-        const raw = getRawRow(record);
-        const decrypted = await record.getDecrypted();
-        const row: Record<string, unknown> = {
-          ...raw,
-          value: decrypted.value,
-          unit: decrypted.unit ?? '',
-          _decrypted: true,
-        };
-        delete (row as Record<string, unknown>).valueRaw;
-        delete (row as Record<string, unknown>).unitRaw;
-        rows.push(row);
-      }
-      dbData.user_metrics = rows;
-      continue;
-    }
-
-    if (tableName === 'nutrition_logs') {
-      const rows: Record<string, unknown>[] = [];
-      for (const record of records as NutritionLog[]) {
-        const raw = getRawRow(record);
-        const snapshot = await record.getDecryptedSnapshot();
-        const row: Record<string, unknown> = {
-          ...raw,
-          logged_food_name: snapshot.loggedFoodName ?? '',
-          logged_calories: snapshot.loggedCalories,
-          logged_protein: snapshot.loggedProtein,
-          logged_carbs: snapshot.loggedCarbs,
-          logged_fat: snapshot.loggedFat,
-          logged_fiber: snapshot.loggedFiber,
-          logged_micros_json: snapshot.loggedMicros ? JSON.stringify(snapshot.loggedMicros) : '',
-          _decrypted: true,
-        };
-        delete (row as Record<string, unknown>).loggedFoodNameRaw;
-        delete (row as Record<string, unknown>).loggedCaloriesRaw;
-        delete (row as Record<string, unknown>).loggedProteinRaw;
-        delete (row as Record<string, unknown>).loggedCarbsRaw;
-        delete (row as Record<string, unknown>).loggedFatRaw;
-        delete (row as Record<string, unknown>).loggedFiberRaw;
-        delete (row as Record<string, unknown>).loggedMicrosRaw;
-        rows.push(row);
-      }
-      dbData.nutrition_logs = rows;
-      continue;
-    }
-
-    dbData[tableName] = records.map((r) => getRawRow(r));
+    capturedRows[tableName] = rows;
   }
 
-  // Dump AsyncStorage (exclude device-specific and session-only keys)
-  const allKeys = await AsyncStorage.getAllKeys();
-  const keysToBackup = allKeys.filter(
-    (k) =>
-      !ASYNC_STORAGE_EXCLUDED_KEYS.has(k) &&
-      !ASYNC_STORAGE_EXCLUDED_PREFIXES.some((p) => k.startsWith(p))
-  );
-
-  if (keysToBackup.length > 0) {
-    const pairs = await AsyncStorage.multiGet(keysToBackup);
-    const asyncStorageData: Record<string, string | null> = {};
-    for (const [key, value] of pairs) {
-      asyncStorageData[key] = value;
-    }
-
-    dbData._async_storage_ = asyncStorageData;
-  }
-
-  let jsonString = JSON.stringify(dbData, null, 2);
-  if (encryptionPhrase && encryptionPhrase.trim()) {
-    jsonString = await encrypt(jsonString, encryptionPhrase.trim());
-  }
-
-  return jsonString;
+  return dumpRowsToJson(capturedRows, encryptionPhrase, options);
 }

@@ -27,8 +27,8 @@ import FoodFoodPortion from '@/database/models/FoodFoodPortion';
 import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
 import Setting from '@/database/models/Setting';
 import { FoodPortionService } from '@/database/services';
-import { localDayStartMs } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
+import { getTimezoneAt, ianaZoneToTimezoneAt } from '@/utils/timezone';
 
 import { RETRY_CONFIG } from './healthConnectErrors';
 
@@ -321,6 +321,7 @@ async function syncNutritionOnce(timeRange: {
     carbs: number;
     fat: number;
     fiber: number;
+    timezone: string;
   };
 
   const hcMap = new Map<string, Entry>();
@@ -335,10 +336,18 @@ async function syncNutritionOnce(timeRange: {
 
     const mealRaw = (corr.metadata as { HKFoodMeal?: number })?.HKFoodMeal;
     const nameRaw = (corr.metadata as { HKFoodType?: string })?.HKFoodType;
+    // HealthKit's standard HKMetadataKeyTimeZone (value "HKTimeZone") holds the IANA zone
+    // the sample was recorded in, when the writing app set it. Resolve it to the UTC offset
+    // at the sample's instant so it matches the app's offset format and preserves the
+    // original offset for backfilled cross-timezone data instead of the device's now-offset.
+    const startDate = new Date(corr.startDate);
+    const tzRaw = (corr.metadata as { HKTimeZone?: string })?.HKTimeZone;
+    const timezone =
+      (tzRaw ? ianaZoneToTimezoneAt(tzRaw, startDate) : undefined) ?? getTimezoneAt(startDate);
 
     hcMap.set(externalId, {
       externalId,
-      date: localDayStartMs(new Date(corr.startDate)),
+      date: startDate.getTime(),
       mealType: mapMealType(mealRaw),
       foodName: nameRaw ?? HC_SENTINEL_FOOD_NAME,
       calories: Math.max(0, calories),
@@ -346,6 +355,7 @@ async function syncNutritionOnce(timeRange: {
       carbs: Math.max(0, carbs),
       fat: Math.max(0, fat),
       fiber: Math.max(0, fiber),
+      timezone,
     });
   }
 
@@ -398,6 +408,7 @@ async function syncNutritionOnce(timeRange: {
           log.loggedFatRaw = encrypted.loggedFat;
           log.loggedFiberRaw = encrypted.loggedFiber;
           log.loggedMicrosRaw = encrypted.loggedMicrosJson;
+          log.timezone = entry.timezone;
           log.createdAt = now;
           log.updatedAt = now;
         });
@@ -435,6 +446,7 @@ async function syncNutritionOnce(timeRange: {
             log.loggedFatRaw = encrypted.loggedFat;
             log.loggedFiberRaw = encrypted.loggedFiber;
             log.loggedMicrosRaw = encrypted.loggedMicrosJson;
+            log.timezone = entry.timezone;
             log.updatedAt = now;
           });
           counts.updated++;

@@ -4,6 +4,11 @@ type BaseFieldConfig = {
   label: string; // Can be i18n key or plain string
   required?: boolean;
   hidden?: boolean;
+  /**
+   * Field-level validation run on save. Return an i18n key (or plain message) to
+   * block the save with that error, or null when the value is valid.
+   */
+  validate?: (value: unknown) => string | null;
 };
 
 // Text field config

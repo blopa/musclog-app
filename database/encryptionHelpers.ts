@@ -10,15 +10,146 @@ import {
   getEncryptionKey,
 } from '@/utils/encryption';
 
+export type NutritionLogSnapshotPlain = {
+  loggedFoodName?: string;
+  loggedCalories: number;
+  loggedProtein: number;
+  loggedCarbs: number;
+  loggedFat: number;
+  loggedFiber: number;
+  loggedMicros?: Record<string, number | undefined>;
+};
+
+export type NutritionLogSnapshotExportFields = {
+  logged_food_name: string;
+  logged_calories: number;
+  logged_protein: number;
+  logged_carbs: number;
+  logged_fat: number;
+  logged_fiber: number;
+  logged_micros_json: string;
+  _decrypted: true;
+};
+
+function parsePlainMicrosJson(value: unknown): Record<string, number> | undefined {
+  if (value == null || value === '') {
+    return undefined;
+  }
+
+  if (typeof value === 'object') {
+    const out: Record<string, number> = {};
+    for (const [key, raw] of Object.entries(value as Record<string, unknown>)) {
+      if (typeof raw === 'number' && !Number.isNaN(raw)) {
+        out[key] = raw;
+      }
+    }
+
+    return Object.keys(out).length > 0 ? out : undefined;
+  }
+
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+
+  try {
+    const parsed = JSON.parse(value);
+    if (typeof parsed !== 'object' || parsed === null) {
+      return undefined;
+    }
+
+    const out: Record<string, number> = {};
+    for (const [key, raw] of Object.entries(parsed as Record<string, unknown>)) {
+      if (typeof raw === 'number' && !Number.isNaN(raw)) {
+        out[key] = raw;
+      }
+    }
+
+    return Object.keys(out).length > 0 ? out : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export function readPlainNutritionLogSnapshotRow(
+  row: Record<string, unknown>
+): NutritionLogSnapshotPlain {
+  return {
+    loggedFoodName: row.logged_food_name != null ? String(row.logged_food_name) : undefined,
+    loggedCalories: Number(row.logged_calories ?? 0),
+    loggedProtein: Number(row.logged_protein ?? 0),
+    loggedCarbs: Number(row.logged_carbs ?? 0),
+    loggedFat: Number(row.logged_fat ?? 0),
+    loggedFiber: Number(row.logged_fiber ?? 0),
+    loggedMicros: parsePlainMicrosJson(row.logged_micros_json),
+  };
+}
+
+export async function decryptNutritionLogSnapshotRow(
+  row: Record<string, unknown>
+): Promise<NutritionLogSnapshotPlain> {
+  const [
+    loggedFoodName,
+    loggedCalories,
+    loggedProtein,
+    loggedCarbs,
+    loggedFat,
+    loggedFiber,
+    micros,
+  ] = await Promise.all([
+    decryptOptionalString(row.logged_food_name as string | undefined),
+    decryptNumber(row.logged_calories as string | undefined),
+    decryptNumber(row.logged_protein as string | undefined),
+    decryptNumber(row.logged_carbs as string | undefined),
+    decryptNumber(row.logged_fat as string | undefined),
+    decryptNumber(row.logged_fiber as string | undefined),
+    decryptJson(row.logged_micros_json as string | undefined),
+  ]);
+
+  return {
+    loggedFoodName: loggedFoodName || undefined,
+    loggedCalories,
+    loggedProtein,
+    loggedCarbs,
+    loggedFat,
+    loggedFiber,
+    loggedMicros: Object.keys(micros).length > 0 ? micros : undefined,
+  };
+}
+
+export function nutritionLogSnapshotToExportFields(
+  snapshot: NutritionLogSnapshotPlain
+): NutritionLogSnapshotExportFields {
+  return {
+    logged_food_name: snapshot.loggedFoodName ?? '',
+    logged_calories: snapshot.loggedCalories,
+    logged_protein: snapshot.loggedProtein,
+    logged_carbs: snapshot.loggedCarbs,
+    logged_fat: snapshot.loggedFat,
+    logged_fiber: snapshot.loggedFiber,
+    logged_micros_json: snapshot.loggedMicros ? JSON.stringify(snapshot.loggedMicros) : '',
+    _decrypted: true,
+  };
+}
+
+export async function readSavedForLaterGroupNote(row: Record<string, unknown>): Promise<string> {
+  if (row._decrypted === true) {
+    return row.note != null ? String(row.note) : '';
+  }
+
+  return decryptOptionalString(row.note as string | undefined);
+}
+
 /** Encrypt a string (optional). Empty/undefined returns ''. */
 export async function encryptOptionalString(value: string | undefined | null): Promise<string> {
   if (value === undefined || value === null) {
     return '';
   }
+
   const trimmed = String(value).trim();
   if (!trimmed) {
     return '';
   }
+
   return encryptDatabaseValue(trimmed);
 }
 
@@ -27,6 +158,7 @@ export async function decryptOptionalString(cipher: string | undefined | null): 
   if (!cipher || !String(cipher).trim()) {
     return '';
   }
+
   return decryptDatabaseValue(cipher);
 }
 
@@ -55,6 +187,7 @@ export async function decryptNumber(cipher: string | undefined | null): Promise<
       return n;
     }
   }
+
   // Legacy: value may be stored as plain number string (e.g. after schema migration)
   const asNum = parseFloat(trimmed);
   return Number.isNaN(asNum) ? 0 : asNum;
@@ -77,6 +210,7 @@ export async function encryptJson(
   if (value === undefined || value === null || Object.keys(value).length === 0) {
     return '';
   }
+
   const text = JSON.stringify(value);
   return encryptDatabaseValue(text);
 }
@@ -88,6 +222,7 @@ export async function decryptJson(
   if (!cipher || String(cipher).trim() === '') {
     return {};
   }
+
   const trimmed = String(cipher).trim();
   const tryParse = (s: string): Record<string, number> => {
     try {
@@ -107,23 +242,17 @@ export async function decryptJson(
       return {};
     }
   };
+
   const decrypted = await decryptDatabaseValue(cipher);
   if (decrypted && decrypted.trim()) {
     return tryParse(decrypted);
   }
+
   return tryParse(trimmed);
 }
 
 /** Batch-encrypt nutrition log snapshot for create/update. */
-export async function encryptNutritionLogSnapshot(plain: {
-  loggedFoodName?: string;
-  loggedCalories: number;
-  loggedProtein: number;
-  loggedCarbs: number;
-  loggedFat: number;
-  loggedFiber: number;
-  loggedMicros?: Record<string, number | undefined>;
-}): Promise<{
+export async function encryptNutritionLogSnapshot(plain: NutritionLogSnapshotPlain): Promise<{
   loggedFoodName: string;
   loggedCalories: string;
   loggedProtein: string;
@@ -149,6 +278,7 @@ export async function encryptNutritionLogSnapshot(plain: {
     encryptNumber(plain.loggedFiber),
     encryptJson(plain.loggedMicros),
   ]);
+
   return {
     loggedFoodName,
     loggedCalories,

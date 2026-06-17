@@ -4,6 +4,8 @@ const { withNativeWind } = require('nativewind/metro');
 
 const config = getSentryExpoConfig(__dirname);
 
+config.resolver.assetExts = [...(config.resolver.assetExts ?? []), 'wasm'];
+
 // Sharp is a Node-only native module; stub it so Metro never tries to load it.
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   if (moduleName === 'sharp' || moduleName.startsWith('sharp/')) {

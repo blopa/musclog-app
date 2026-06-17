@@ -1,4 +1,3 @@
-import { format, isToday, isYesterday } from 'date-fns';
 import { TFunction } from 'i18next';
 import { Clock, LucideScale, Utensils } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +11,13 @@ import NutritionLog from '@/database/models/NutritionLog';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import i18n from '@/lang/lang';
+import {
+  formatTimeInTimezone,
+  formatUtcNormalizedDayIntl,
+  MS_PER_SOLAR_DAY,
+  utcDayKeyFromLocalDate,
+  utcNormalizedDayKey,
+} from '@/utils/calendarDate';
 import { formatDisplayGrams } from '@/utils/formatDisplayWeight';
 import { getMassUnitLabel } from '@/utils/unitConversion';
 
@@ -54,16 +60,29 @@ function getMealTypeLabel(mealType: MealType, t: TFunction): string {
   }
 }
 
-function formatLogDateTime(createdAt: number, t: ReturnType<typeof useTranslation>['t']): string {
-  const date = new Date(createdAt);
-  const timeStr = format(date, 'h:mm a');
-  if (isToday(date)) {
+function formatLogDateTime(
+  logDate: number,
+  timezone: string | null | undefined,
+  localeTag: string,
+  t: TFunction
+): string {
+  // Format the time as it appeared on the recording-timezone wall clock.
+  const timeStr = formatTimeInTimezone(logDate, timezone, localeTag);
+
+  // Compare day keys so "today/yesterday" reflects the recording calendar day.
+  const logDayKey = utcNormalizedDayKey(logDate, timezone);
+  const todayKey = utcDayKeyFromLocalDate(new Date());
+  const yesterdayKey = todayKey - MS_PER_SOLAR_DAY;
+
+  if (logDayKey === todayKey) {
     return `${t('food.header.today')}, ${timeStr}`;
   }
-  if (isYesterday(date)) {
+
+  if (logDayKey === yesterdayKey) {
     return `${t('common.yesterday')}, ${timeStr}`;
   }
-  return `${format(date, 'MMM d')}, ${timeStr}`;
+
+  return `${formatUtcNormalizedDayIntl(logDayKey, localeTag)}, ${timeStr}`;
 }
 
 export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetailsModalProps) {
@@ -110,7 +129,7 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
   const massUnit = getMassUnitLabel(units);
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const formattedGrams = formatDisplayGrams(locale, units, gramWeight);
-  const dateTimeLabel = formatLogDateTime(log.createdAt, t);
+  const dateTimeLabel = formatLogDateTime(log.date, log.timezone, locale, t);
 
   const nutriScore = log.loggedNutriscore || food?.nutriscore;
   const ecoScore = log.loggedEcoscore || food?.ecoscore;

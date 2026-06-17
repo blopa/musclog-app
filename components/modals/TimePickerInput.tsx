@@ -14,6 +14,8 @@ export type TimePickerInputProps = {
   /** When omitted, the label uses `food.foodDetails.time`. Ignored if `hideLabel` is true. */
   label?: string;
   hideLabel?: boolean;
+  /** Override the timezone subtitle (e.g. pass the stored log timezone instead of the device's). */
+  timezoneLabel?: string;
   /**
    * `default` — full padding and icon sizes (e.g. food log details).
    * `compact` — tighter row (e.g. nested / secondary fields).
@@ -48,6 +50,7 @@ export function TimePickerInput({
   className,
   embedded = false,
   showClearButton = false,
+  timezoneLabel,
 }: TimePickerInputProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -128,9 +131,10 @@ export function TimePickerInput({
                         : format(selectedTime, 'p', { locale: dateFnsLocale })}
                     </Text>
                     <Text className="text-xs text-text-secondary">
-                      {matchesNow
-                        ? format(selectedTime, 'p', { locale: dateFnsLocale })
-                        : format(selectedTime, 'zzzz', { locale: dateFnsLocale })}
+                      {timezoneLabel ??
+                        (matchesNow
+                          ? format(selectedTime, 'p', { locale: dateFnsLocale })
+                          : format(selectedTime, 'zzzz', { locale: dateFnsLocale }))}
                     </Text>
                   </>
                 )}

@@ -34,6 +34,7 @@ import { isProduction } from '@/utils/app';
 import { localDayStartFromUtcMs, localDayStartMs } from '@/utils/calendarDate';
 import { decryptDatabaseValue } from '@/utils/encryption';
 import { handleError } from '@/utils/handleError';
+import { getCurrentTimezone } from '@/utils/timezone';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
 /** Step keys for progress reporting during migration (for landing screen copy). */
@@ -409,7 +410,7 @@ export class MigrationService {
                   newMetric.valueRaw = encrypted.value;
                   newMetric.unitRaw = encrypted.unit;
                   newMetric.date = dateTimestamp;
-                  newMetric.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+                  newMetric.timezone = getCurrentTimezone();
                   newMetric.createdAt = baseTimestamp;
                   newMetric.updatedAt = baseTimestamp;
                   newMetric.deletedAt = oldMetric.deletedAt

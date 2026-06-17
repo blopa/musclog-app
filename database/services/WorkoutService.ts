@@ -16,6 +16,7 @@ import {
 } from '@/utils/activeWorkoutStorage';
 import { deleteBleDataPointsFiles } from '@/utils/bleWorkoutDataStorage';
 import { handleError } from '@/utils/handleError';
+import { getCurrentTimezone } from '@/utils/timezone';
 import { calculateWorkoutKcal, type MWEMInput } from '@/utils/workoutEnergyCalculator';
 import {
   getFirstUnloggedInEffectiveOrder,
@@ -168,6 +169,7 @@ export class WorkoutService {
           log.externalId = externalId;
           log.type = 'free';
           log.startedAt = now;
+          log.timezone = getCurrentTimezone();
           log.completedAt = undefined;
           log.totalVolume = undefined;
           log.exhaustionLevel = undefined;
@@ -926,7 +928,7 @@ export class WorkoutService {
    */
   static async updateWorkoutMetadata(
     workoutLogId: string,
-    data: { startedAt?: number; completedAt?: number }
+    data: { startedAt?: number; completedAt?: number; timezone?: string }
   ): Promise<void> {
     try {
       const workoutLog = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
@@ -940,9 +942,15 @@ export class WorkoutService {
           if (data.startedAt !== undefined) {
             log.startedAt = data.startedAt;
           }
+
           if (data.completedAt !== undefined) {
             log.completedAt = data.completedAt;
           }
+
+          if (data.timezone !== undefined) {
+            log.timezone = data.timezone;
+          }
+
           log.updatedAt = Date.now();
         });
       });
@@ -1183,6 +1191,7 @@ export class WorkoutService {
         log.type = originalLog.type;
         log.icon = originalLog.icon ?? undefined;
         log.startedAt = now;
+        log.timezone = getCurrentTimezone();
         log.completedAt = undefined; // Not completed yet
         log.totalVolume = 0;
         log.exhaustionLevel = undefined;

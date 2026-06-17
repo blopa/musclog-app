@@ -100,6 +100,7 @@
       "encryptionPhrasePlaceholderRequired": "Voer een wachtwoord in om de back-up te versleutelen",
       "decryptionPhrasePlaceholder": "Voer wachtwoord in als back-up versleuteld was",
       "encryptionPhraseRequired": "Een wachtwoord voor versleuteling is vereist om te exporteren. Voer er een in.",
+      "includeDeletedRecords": "Verwijderde records opnemen",
       "requireExportEncryption": "Versleuteling bij export verplichten",
       "requireExportEncryptionSubtitle": "Altijd een wachtwoord voor versleuteling vereisen bij het exporteren van gegevens",
       "disableEncryptionConfirmTitle": "Versleutelingsplicht uitschakelen?",

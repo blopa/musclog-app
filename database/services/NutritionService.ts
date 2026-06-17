@@ -3,6 +3,7 @@ import { differenceInCalendarDays } from 'date-fns';
 import { Platform } from 'react-native';
 
 import { database } from '@/database';
+import { dayRangeClauses } from '@/database/dayKeyQuery';
 import {
   decryptNumber,
   encryptNumber,
@@ -14,9 +15,13 @@ import { MealService } from '@/database/services/MealService';
 import i18n from '@/lang/lang';
 import { writeNutritionLogToHealthConnect } from '@/services/healthConnectNutrition';
 import {
-  localDayClosedRangeMaxMs,
-  localDayStartFromUtcMs,
-  localDayStartMs,
+  consumedDateTimeFromDate,
+  consumedDateTimeOnDay,
+  dayKeyRange,
+  dayKeyRangeForLocalDate,
+  MS_PER_SOLAR_DAY,
+  utcDayKeyFromLocalDate,
+  utcNormalizedDayKey,
 } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
@@ -161,7 +166,7 @@ export class NutritionService {
     repairAttempted = false
   ): Promise<NutritionLog> {
     try {
-      const dateTimestamp = localDayStartMs(date);
+      const consumed = consumedDateTimeFromDate(date);
 
       const log = await database.write(async () => {
         const food = await database.get<Food>('foods').find(foodId);
@@ -184,7 +189,8 @@ export class NutritionService {
         return await database.get<NutritionLog>('nutrition_logs').create((record) => {
           record.foodId = foodId;
           record.externalId = externalId;
-          record.date = dateTimestamp;
+          record.date = consumed.timestamp;
+          record.timezone = consumed.timezone;
           record.type = mealType;
           record.amount = amount;
           record.portionId = resolvedPortionId;
@@ -220,7 +226,7 @@ export class NutritionService {
 
         const hcId = await writeNutritionLogToHealthConnect({
           logId: log.id,
-          date: dateTimestamp,
+          date: consumed.timestamp,
           mealType,
           foodName: snapshot.loggedFoodName ?? '',
           calories: nutrients.calories,
@@ -285,19 +291,17 @@ export class NutritionService {
     date: Date,
     repairAttempted = false
   ): Promise<NutritionLog[]> {
-    const dateTimestamp = localDayStartMs(date);
-    const maxInclusive = localDayClosedRangeMaxMs(date);
+    const range = dayKeyRangeForLocalDate(date);
 
     try {
-      return await retryOnResetError(() =>
+      const raw = await retryOnResetError(() =>
         database
           .get<NutritionLog>('nutrition_logs')
-          .query(
-            Q.where('deleted_at', Q.eq(null)),
-            Q.where('date', Q.between(dateTimestamp, maxInclusive))
-          )
+          .query(Q.where('deleted_at', Q.eq(null)), ...dayRangeClauses(range))
           .fetch()
       );
+
+      return range.filterRecords(raw);
     } catch (error) {
       if (!repairAttempted) {
         const repaired = await retryAfterRepair(error, REPAIR_DESCRIPTORS.nutritionLogs, () =>
@@ -343,35 +347,34 @@ export class NutritionService {
     startDate: Date,
     endDate: Date
   ): Promise<NutritionLog[]> {
-    const startTimestamp = localDayStartMs(startDate);
-    const maxInclusive = localDayClosedRangeMaxMs(endDate);
+    const range = dayKeyRange(utcDayKeyFromLocalDate(startDate), utcDayKeyFromLocalDate(endDate));
 
-    return await retryOnResetError(() =>
+    const raw = await retryOnResetError(() =>
       database
         .get<NutritionLog>('nutrition_logs')
-        .query(
-          Q.where('deleted_at', Q.eq(null)),
-          Q.where('date', Q.between(startTimestamp, maxInclusive))
-        )
+        .query(Q.where('deleted_at', Q.eq(null)), ...dayRangeClauses(range))
         .fetch()
     );
+
+    return range.filterRecords(raw);
   }
 
   /**
    * Get nutrition logs for a specific meal type on a date
    */
   static async getNutritionLogsForMeal(date: Date, mealType: MealType): Promise<NutritionLog[]> {
-    const dateTimestamp = localDayStartMs(date);
-    const maxInclusive = localDayClosedRangeMaxMs(date);
+    const range = dayKeyRangeForLocalDate(date);
 
-    return await database
+    const raw = await database
       .get<NutritionLog>('nutrition_logs')
       .query(
         Q.where('deleted_at', Q.eq(null)),
-        Q.where('date', Q.between(dateTimestamp, maxInclusive)),
+        ...dayRangeClauses(range),
         Q.where('type', mealType)
       )
       .fetch();
+
+    return range.filterRecords(raw);
   }
 
   /**
@@ -522,6 +525,7 @@ export class NutritionService {
       amount?: number;
       mealType?: MealType;
       portionId?: string;
+      timezone?: string;
     }
   ): Promise<NutritionLog> {
     const updatedLog = await database.write(async () => {
@@ -535,12 +539,19 @@ export class NutritionService {
         if (updates.amount !== undefined) {
           record.amount = updates.amount;
         }
+
         if (updates.mealType !== undefined) {
           record.type = updates.mealType;
         }
+
         if (updates.portionId !== undefined) {
           record.portionId = updates.portionId;
         }
+
+        if (updates.timezone !== undefined) {
+          record.timezone = updates.timezone;
+        }
+
         record.updatedAt = Date.now();
       });
 
@@ -652,7 +663,7 @@ export class NutritionService {
     targetDate: Date,
     targetMealType: MealType
   ): Promise<void> {
-    const dateTimestamp = localDayStartMs(targetDate);
+    const consumed = consumedDateTimeOnDay(targetDate);
 
     await database.write(async () => {
       const now = Date.now();
@@ -660,7 +671,8 @@ export class NutritionService {
         ...logs.map((log) =>
           database.get<NutritionLog>('nutrition_logs').prepareCreate((record) => {
             record.foodId = log.foodId;
-            record.date = dateTimestamp;
+            record.date = consumed.timestamp;
+            record.timezone = consumed.timezone;
             record.type = targetMealType;
             record.amount = log.amount;
             record.portionId = log.portionId;
@@ -695,14 +707,15 @@ export class NutritionService {
     targetDate: Date,
     targetMealType: MealType
   ): Promise<void> {
-    const dateTimestamp = localDayStartMs(targetDate);
+    const consumed = consumedDateTimeOnDay(targetDate);
 
     await database.write(async () => {
       const now = Date.now();
       await database.batch(
         ...logs.map((log) =>
           log.prepareUpdate((record) => {
-            record.date = dateTimestamp;
+            record.date = consumed.timestamp;
+            record.timezone = consumed.timezone;
             record.type = targetMealType;
             record.updatedAt = now;
           })
@@ -726,7 +739,7 @@ export class NutritionService {
   ): Promise<void> {
     const splitRatio = splitPercentage / 100;
     const remainRatio = 1 - splitRatio;
-    const dateTimestamp = localDayStartMs(targetDate);
+    const consumed = consumedDateTimeOnDay(targetDate);
 
     await database.write(async () => {
       const now = Date.now();
@@ -735,7 +748,8 @@ export class NutritionService {
         ...logs.map((log) =>
           database.get<NutritionLog>('nutrition_logs').prepareCreate((record) => {
             record.foodId = log.foodId;
-            record.date = dateTimestamp;
+            record.date = consumed.timestamp;
+            record.timezone = consumed.timezone;
             record.type = targetMealType;
             record.amount = log.amount * splitRatio;
             record.portionId = log.portionId;
@@ -778,24 +792,27 @@ export class NutritionService {
     mealType?: MealType
   ): Promise<{ food: Food; lastGramWeight: number }[]> {
     // If a date is provided, limit recent logs to that date (today by default).
+    const range = date ? dayKeyRangeForLocalDate(date) : null;
     let query = database
       .get<NutritionLog>('nutrition_logs')
       .query(Q.where('deleted_at', Q.eq(null)));
 
-    if (date) {
-      const dateTimestamp = localDayStartMs(date);
-      const maxInclusive = localDayClosedRangeMaxMs(date);
-      query = query.extend(Q.where('date', Q.between(dateTimestamp, maxInclusive)));
+    if (range) {
+      query = query.extend(...dayRangeClauses(range));
     }
 
     if (mealType) {
       query = query.extend(Q.where('type', mealType));
     }
 
-    // We take a larger batch to find unique food IDs up to the requested limit.
-    const recentLogs = await query
-      .extend(Q.sortBy('created_at', Q.desc), Q.take(limit * 5))
-      .fetch();
+    // Day-range queries must trim timezone overscan before limiting; otherwise adjacent-day
+    // rows can consume the DB-side take() window and hide valid logs for the requested day.
+    const sortedQuery = query.extend(Q.sortBy('created_at', Q.desc));
+    let recentLogs = await (range ? sortedQuery : sortedQuery.extend(Q.take(limit * 5))).fetch();
+
+    if (range) {
+      recentLogs = range.filterRecords(recentLogs);
+    }
 
     // Keep the most recent log per food ID (already sorted desc, so first occurrence wins).
     const mostRecentLogByFoodId = new Map<string, NutritionLog>();
@@ -851,17 +868,21 @@ export class NutritionService {
     }[]
   > {
     // If a date is provided, limit recent logs to that date (today by default).
+    const range = date ? dayKeyRangeForLocalDate(date) : null;
     let query = database
       .get<NutritionLog>('nutrition_logs')
       .query(Q.where('deleted_at', Q.eq(null)));
 
-    if (date) {
-      const dateTimestamp = localDayStartMs(date);
-      const maxInclusive = localDayClosedRangeMaxMs(date);
-      query = query.extend(Q.where('date', Q.between(dateTimestamp, maxInclusive)));
+    if (range) {
+      query = query.extend(...dayRangeClauses(range));
     }
 
-    const recentLogs = await query.extend(Q.sortBy('created_at', Q.desc), Q.take(limit)).fetch();
+    const sortedQuery = query.extend(Q.sortBy('created_at', Q.desc));
+    let recentLogs = await (range ? sortedQuery : sortedQuery.extend(Q.take(limit))).fetch();
+
+    if (range) {
+      recentLogs = range.filterRecords(recentLogs).slice(0, limit);
+    }
 
     const resolved = await Promise.all(
       recentLogs.map(async (log) => {
@@ -1014,14 +1035,14 @@ export class NutritionService {
     }
 
     const uniqueDayStarts = [
-      ...new Set(logs.map((log) => localDayStartFromUtcMs(log.date ?? 0))),
+      ...new Set(logs.map((log) => utcNormalizedDayKey(log.date ?? 0, log.timezone))),
     ].sort((a, b) => b - a);
 
     let streak = 0;
-    const expectedStart = localDayStartMs(new Date());
+    const todayKey = utcDayKeyFromLocalDate(new Date());
 
-    for (const dayStart of uniqueDayStarts) {
-      const diff = differenceInCalendarDays(new Date(expectedStart), new Date(dayStart));
+    for (const dayKey of uniqueDayStarts) {
+      const diff = Math.round((todayKey - dayKey) / MS_PER_SOLAR_DAY);
       if (diff === streak) {
         streak++;
       } else {
@@ -1051,7 +1072,8 @@ export class NutritionService {
         log.amount = originalLog.amount;
         log.portionId = originalLog.portionId;
         log.type = originalLog.type;
-        log.date = localDayStartFromUtcMs(originalLog.date);
+        log.date = originalLog.date;
+        log.timezone = originalLog.timezone;
         log.loggedFoodNameRaw = originalLog.loggedFoodNameRaw;
         log.loggedCaloriesRaw = originalLog.loggedCaloriesRaw ?? '';
         log.loggedProteinRaw = originalLog.loggedProteinRaw ?? '';
@@ -1088,13 +1110,12 @@ export class NutritionService {
     amount: number = 100, // Default to 100g for custom meals
     options?: { groupId?: string; loggedMealName?: string }
   ): Promise<NutritionLog> {
-    const dateTimestamp = localDayStartMs(date);
+    const consumed = consumedDateTimeOnDay(date);
 
-    // If foodId is provided, log directly using the existing food
     if (mealData.foodId) {
       return await NutritionService.logFood(
         mealData.foodId,
-        date,
+        consumed.date,
         mealType,
         amount,
         undefined,
@@ -1148,7 +1169,8 @@ export class NutritionService {
 
       return await database.get<NutritionLog>('nutrition_logs').create((record) => {
         record.foodId = tempFood.id;
-        record.date = dateTimestamp;
+        record.date = consumed.timestamp;
+        record.timezone = consumed.timezone;
         record.type = mealType;
         record.amount = amount;
         record.loggedFoodNameRaw = encrypted.loggedFoodName;
@@ -1178,7 +1200,7 @@ export class NutritionService {
 
       await writeNutritionLogToHealthConnect({
         logId: log.id,
-        date: dateTimestamp,
+        date: consumed.timestamp,
         mealType,
         foodName: snapshot.loggedFoodName ?? '',
         calories: nutrients.calories,
@@ -1255,7 +1277,7 @@ export class NutritionService {
     mealType: MealType,
     options?: { groupId?: string; loggedMealName?: string; imageUrl?: string }
   ): Promise<NutritionLog[]> {
-    const dateTimestamp = localDayStartMs(date);
+    const consumed = consumedDateTimeOnDay(date);
     const now = Date.now();
 
     const logs = await database.write(async () => {
@@ -1278,7 +1300,8 @@ export class NutritionService {
 
             const log = await database.get<NutritionLog>('nutrition_logs').create((record) => {
               record.foodId = food.id;
-              record.date = dateTimestamp;
+              record.date = consumed.timestamp;
+              record.timezone = consumed.timezone;
               record.type = mealType;
               record.amount = ingredient.grams;
               record.loggedFoodNameRaw = encrypted.loggedFoodName;
@@ -1337,7 +1360,8 @@ export class NutritionService {
 
         const log = await database.get<NutritionLog>('nutrition_logs').create((record) => {
           record.foodId = tempFood.id;
-          record.date = dateTimestamp;
+          record.date = consumed.timestamp;
+          record.timezone = consumed.timezone;
           record.type = mealType;
           record.amount = ingredient.grams;
           record.loggedFoodNameRaw = encrypted.loggedFoodName;
@@ -1388,7 +1412,7 @@ export class NutritionService {
 
           await writeNutritionLogToHealthConnect({
             logId: log.id,
-            date: dateTimestamp,
+            date: consumed.timestamp,
             mealType,
             foodName: snapshot.loggedFoodName ?? '',
             calories: nutrients.calories,

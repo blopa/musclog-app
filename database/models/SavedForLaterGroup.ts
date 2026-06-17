@@ -16,6 +16,7 @@ export default class SavedForLaterGroup extends Model {
   @field('note') noteRaw?: string;
   @field('original_meal_type') declare originalMealType: string;
   @field('original_date') declare originalDate: number;
+  @field('timezone') timezone?: string;
 
   @field('created_at') declare createdAt: number;
   @field('updated_at') declare updatedAt: number;

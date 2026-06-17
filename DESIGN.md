@@ -12,7 +12,7 @@ Musclog uses a rich palette of greens and teals, complemented by semantic colors
 ### 2.1 Primary & Surface
 
 - **Performance Gradient**: Indigo 600 (`#4f46e5`) to Emerald 400 (`#34d399` / `#29e08e`). Used for primary actions, success states, and progress markers.
-- **Primary Background** (`#0a1f1a`): Main app background (swampGreen).
+- **Primary Background** (`#0c1a13`): Main app background (swampGreen).
 - **Card Surface** (`#141a17`): Secondary surface for cards and sections (charcoalGreen).
 - **Elevated Surface** (`#1a2420`): Higher priority cards (gunmetalGreen).
 

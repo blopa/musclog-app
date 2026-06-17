@@ -22,6 +22,7 @@ export default class MenstrualCycle extends Model {
   @field('use_hormonal_birth_control') declare useHormonalBirthControl: boolean;
   @field('birth_control_type') birthControlType?: BirthControlType;
   @field('last_period_start_date') declare lastPeriodStartDate: number;
+  @field('timezone') timezone?: string;
   @field('sync_goal') syncGoal?: SyncGoal;
   @field('is_active') declare isActive: boolean;
   @field('created_at') declare createdAt: number;

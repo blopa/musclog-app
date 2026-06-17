@@ -11,6 +11,7 @@ import {
   localDayStartMsFromIsoDateOnly,
   parseLocalCalendarDate,
 } from './calendarDate';
+import { getCurrentTimezone } from './timezone';
 import {
   cmToDisplay,
   displayToCm,
@@ -178,7 +179,7 @@ export async function persistFitnessDetails(data: FitnessDetails): Promise<void>
   const dayStart = localDayStartMs(new Date());
   const now = Date.now();
   const dayEnd = localDayClosedRangeMaxMs(new Date());
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const timezone = getCurrentTimezone();
 
   if (data.weight && parseFloat(data.weight) > 0) {
     const weightValueKg = displayToKg(parseFloat(data.weight), data.units);

@@ -19,6 +19,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
+import { getCurrentTimezone } from '@/utils/timezone';
 import { cmToDisplay, displayToCm, displayToKg, kgToDisplay } from '@/utils/unitConversion';
 
 import { DatePickerInput } from './DatePickerInput';
@@ -176,7 +177,7 @@ export default function AddUserMetricEntryModal({
     setIsSaving(true);
     try {
       const now = Date.now();
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const timezone = getCurrentTimezone();
 
       const dateTimestamp = localDayStartMs(selectedDate);
 

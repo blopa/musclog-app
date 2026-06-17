@@ -1,0 +1,72 @@
+import { Text, View } from 'react-native';
+
+import i18n from '@/lang/lang';
+import { colors } from '@/theme.tokens';
+import { useBootProgress } from '@/utils/bootProgress';
+
+/**
+ * Absolute-positioned progress bar anchored near the bottom of the splash
+ * loading screen while boot migrations run. Only rendered inside
+ * SplashLoading, so it disappears with the splash once the app is ready,
+ * even if migrations are still finishing in the background.
+ * Colors come from theme.tokens (not theme.ts) so this stays importable
+ * before the database layer loads.
+ */
+export function BootProgressBar() {
+  const progress = useBootProgress();
+
+  if (!progress.active || progress.total <= 0) {
+    return null;
+  }
+
+  const ratio = Math.min(1, Math.max(0, progress.completed / progress.total));
+  const locale = i18n.resolvedLanguage ?? i18n.language;
+  const percent = new Intl.NumberFormat(locale, {
+    style: 'percent',
+    maximumFractionDigits: 0,
+  }).format(ratio);
+
+  return (
+    <View
+      pointerEvents="none"
+      style={{
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: 36,
+        alignItems: 'center',
+      }}
+    >
+      <View style={{ width: '70%', maxWidth: 280, alignItems: 'center' }}>
+        <View
+          style={{
+            width: '100%',
+            height: 6,
+            borderRadius: 999,
+            overflow: 'hidden',
+            backgroundColor: colors.darkViridian,
+          }}
+        >
+          <View
+            style={{
+              width: `${ratio * 100}%`,
+              height: '100%',
+              borderRadius: 999,
+              backgroundColor: colors.jade,
+            }}
+          />
+        </View>
+        <Text
+          style={{
+            marginTop: 8,
+            color: colors.gray500,
+            fontSize: 12,
+            fontWeight: '600',
+          }}
+        >
+          {percent}
+        </Text>
+      </View>
+    </View>
+  );
+}

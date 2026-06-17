@@ -42,6 +42,13 @@ const ENCRYPTED_NUMBER_FIELDS: Record<string, string[]> = {
     'logged_fat',
     'logged_fiber',
   ],
+  saved_for_later_items: [
+    'logged_calories',
+    'logged_protein',
+    'logged_carbs',
+    'logged_fat',
+    'logged_fiber',
+  ],
 };
 
 /**

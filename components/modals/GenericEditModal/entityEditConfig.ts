@@ -2,7 +2,7 @@ import type { Model } from '@nozbe/watermelondb';
 
 import type { DataLogModalVariant } from '@/components/modals/DataLogModal';
 import type { Units } from '@/constants/settings';
-import type { EquipmentType, MechanicType } from '@/database/models';
+import type { EquipmentType, MealType, MechanicType } from '@/database/models';
 import type UserMetric from '@/database/models/UserMetric';
 import {
   ChatService,
@@ -14,9 +14,11 @@ import {
   NutritionGoalService,
   NutritionService,
   UserMetricService,
+  WorkoutService,
   WorkoutTemplateService,
 } from '@/database/services';
 import { localDayStartFromUtcMs } from '@/utils/calendarDate';
+import { getCurrentTimezone, isTimezoneOffset } from '@/utils/timezone';
 import {
   displayToCm,
   displayToGrams,
@@ -117,6 +119,28 @@ const EATING_PHASES = ['cut', 'maintain', 'bulk'] as const;
 
 // Checkin statuses for Nutrition Checkin
 const CHECKIN_STATUSES = ['pending', 'ahead', 'onTrack', 'behind'] as const;
+
+// Only attached to entities whose stored timezone is actually read back (nutrition
+// logs, user metrics, workout logs, nutrition check-ins) — entities that merely
+// capture the offset at creation time must not expose it as an editable field.
+const TIMEZONE_FIELD: EditFieldConfig = {
+  type: 'text',
+  key: 'timezone',
+  label: 'common.timezone',
+  placeholder: 'common.timezonePlaceholder',
+  required: true,
+  validate: (value) =>
+    typeof value === 'string' && isTimezoneOffset(value.trim()) ? null : 'common.invalidTimezone',
+};
+
+/**
+ * Normalize a raw timezone form value into the trimmed `±HH:MM` string the services
+ * expect, preserving "not provided": `undefined` stays `undefined` so partial-update
+ * services skip the field instead of writing an empty string.
+ */
+function coerceTimezoneInput(value: unknown): string | undefined {
+  return value === undefined ? undefined : String(value).trim();
+}
 
 /**
  * Get edit field configuration for a given entity type.
@@ -253,6 +277,7 @@ export function getEditFields(entityType: DataLogModalVariant, units?: Units): E
           label: 'bodyMetrics.addEntry.date',
           required: true,
         },
+        TIMEZONE_FIELD,
       ];
 
     case 'workoutTemplate':
@@ -375,7 +400,11 @@ export function getEditFields(entityType: DataLogModalVariant, units?: Units): E
             label: `food.meals.${type === 'snack' ? 'snacks' : type}`,
           })),
         },
+        TIMEZONE_FIELD,
       ];
+
+    case 'workoutLog':
+      return [TIMEZONE_FIELD];
 
     case 'nutritionGoal':
       return [
@@ -501,6 +530,7 @@ export function getEditFields(entityType: DataLogModalVariant, units?: Units): E
           label: 'goalsManagement.manageCheckinData.checkinDate',
           required: true,
         },
+        TIMEZONE_FIELD,
         {
           type: 'select',
           key: 'status',
@@ -589,6 +619,7 @@ export async function getInitialValues(
         type: recordAny.type ?? 'weight',
         value: decrypted.value ?? 0,
         date: decrypted.date ?? Date.now(),
+        timezone: recordAny.timezone ?? getCurrentTimezone(),
       };
     }
 
@@ -616,6 +647,12 @@ export async function getInitialValues(
       return {
         amount: recordAny.amount ?? 0,
         mealType: recordAny.type ?? 'breakfast',
+        timezone: recordAny.timezone ?? getCurrentTimezone(),
+      };
+
+    case 'workoutLog':
+      return {
+        timezone: recordAny.timezone ?? getCurrentTimezone(),
       };
 
     case 'nutritionGoal':
@@ -647,6 +684,7 @@ export async function getInitialValues(
         targetBodyFat: recordAny.targetBodyFat ?? undefined,
         targetBmi: recordAny.targetBmi ?? undefined,
         targetFfmi: recordAny.targetFfmi ?? undefined,
+        timezone: recordAny.timezone ?? getCurrentTimezone(),
       };
 
     default:
@@ -719,6 +757,7 @@ export async function saveRecord(
         value,
         unit,
         date: values.date as number | undefined,
+        timezone: coerceTimezoneInput(values.timezone),
       });
       break;
     }
@@ -751,8 +790,15 @@ export async function saveRecord(
     case 'nutrition_log':
       await NutritionService.updateNutritionLog(recordId, {
         amount: values.amount as number | undefined,
-        mealType: values.mealType as any,
+        mealType: values.mealType as MealType | undefined,
+        timezone: coerceTimezoneInput(values.timezone),
         // Note: portionId editing would require fetching available portions, deferred for now
+      });
+      break;
+
+    case 'workoutLog':
+      await WorkoutService.updateWorkoutMetadata(recordId, {
+        timezone: coerceTimezoneInput(values.timezone),
       });
       break;
 
@@ -803,6 +849,7 @@ export async function saveRecord(
         targetBodyFat: values.targetBodyFat as number | undefined,
         targetBmi: values.targetBmi as number | undefined,
         targetFfmi: values.targetFfmi as number | undefined,
+        timezone: coerceTimezoneInput(values.timezone),
       });
       break;
     }
@@ -860,7 +907,7 @@ export function getCreateInitialValues(
       return { message: '', sender: 'user', context: 'general' };
 
     case 'userMetric':
-      return { type: 'weight', value: 0, date: Date.now() };
+      return { type: 'weight', value: 0, date: Date.now(), timezone: getCurrentTimezone() };
 
     case 'nutritionGoal':
       return {
@@ -886,6 +933,7 @@ export function getCreateInitialValues(
         targetBodyFat: undefined,
         targetBmi: undefined,
         targetFfmi: undefined,
+        timezone: getCurrentTimezone(),
       };
 
     case 'meal':
@@ -966,7 +1014,7 @@ export async function createRecord(
         value,
         unit,
         date: localDayStartFromUtcMs(rawDate),
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timezone: coerceTimezoneInput(values.timezone) ?? getCurrentTimezone(),
       });
       break;
     }
@@ -1014,6 +1062,7 @@ export async function createRecord(
         targetBodyFat: values.targetBodyFat as number | undefined,
         targetBmi: values.targetBmi as number | undefined,
         targetFfmi: values.targetFfmi as number | undefined,
+        timezone: coerceTimezoneInput(values.timezone) ?? getCurrentTimezone(),
       });
       break;
     }

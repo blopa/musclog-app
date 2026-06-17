@@ -30,6 +30,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
 import { calculateNutritionPlan } from '@/utils/nutritionCalculator';
 import { setCurrentOnboardingStep } from '@/utils/onboardingService';
+import { getCurrentTimezone } from '@/utils/timezone';
 import { displayToCm, displayToKg } from '@/utils/unitConversion';
 import { getHeightUnit, getWeightUnit } from '@/utils/units';
 import { getDefaultUsernameForGender } from '@/utils/usernameUtils';
@@ -107,7 +108,7 @@ export default function PersonalizedBodyStatsScreen() {
       const weightKg = displayToKg(weightValue, units);
       const heightCm = displayToCm(heightValue, units);
       const now = Date.now();
-      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const timezone = getCurrentTimezone();
 
       await Promise.all([
         UserMetricService.createMetric({

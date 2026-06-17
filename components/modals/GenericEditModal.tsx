@@ -83,6 +83,14 @@ export function GenericEditModal({
     fields.some((field) => field.key === 'eatingPhase');
 
   const validateForm = (): boolean => {
+    for (const field of fields) {
+      const error = field.validate?.(formValues[field.key]);
+      if (error) {
+        showSnackbar('error', t(error));
+        return false;
+      }
+    }
+
     if (isNutritionGoalForm && formValues.isDynamic) {
       const targetWeight = formValues.targetWeight;
       const hasTargetWeight =
@@ -482,7 +490,14 @@ export function GenericEditModal({
           <Text className="text-base text-text-secondary">{t('common.loading')}</Text>
         </View>
       ) : (
-        <KeyboardAwareScrollView className="px-4 py-6" bottomOffset={16}>
+        <KeyboardAwareScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{
+            paddingHorizontal: theme.spacing.padding.base,
+            paddingVertical: theme.spacing.padding['6'],
+          }}
+          bottomOffset={16}
+        >
           <View className="gap-6">{fields.map((field) => renderField(field))}</View>
         </KeyboardAwareScrollView>
       )}

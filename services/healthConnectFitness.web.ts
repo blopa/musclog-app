@@ -11,7 +11,6 @@ export interface UserMetricWriteParams {
   type: string;
   value: number;
   date: number;
-  timezone: string;
 }
 
 export async function writeUserMetricToHealthConnect(

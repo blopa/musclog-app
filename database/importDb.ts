@@ -13,23 +13,120 @@ import { UNITS_SETTING_TYPE } from '@/constants/settings';
 import { reloadApp } from '@/utils/app';
 import { decrypt } from '@/utils/encryption';
 import { handleError } from '@/utils/handleError';
+import { normalizeTimezoneToOffset } from '@/utils/timezone';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
 import { database } from './database-instance';
-import { encryptNutritionLogSnapshot, encryptUserMetricFields } from './encryptionHelpers';
+import { updateNutritionLogCountBaseline } from './dbDurability';
+import {
+  decryptNutritionLogSnapshotRow,
+  encryptNutritionLogSnapshot,
+  encryptOptionalString,
+  encryptUserMetricFields,
+  type NutritionLogSnapshotPlain,
+  readPlainNutritionLogSnapshotRow,
+  readSavedForLaterGroupNote,
+} from './encryptionHelpers';
 import { createPreRestoreBackup } from './preMigrationBackup';
 import { validateExportDump, type ValidationResult } from './schemaToZod';
-import { ExerciseService, FoodPortionService } from './services';
+import { ExerciseService, FoodPortionService, MuscleService } from './services';
 
 export type ExportDump = {
   _exportVersion: number;
   [tableName: string]: unknown;
 };
 
+type ImportRow = Record<string, unknown>;
+
+const NUTRITION_SNAPSHOT_NUMBER_KEYS = [
+  'logged_calories',
+  'logged_protein',
+  'logged_carbs',
+  'logged_fat',
+  'logged_fiber',
+] as const;
+
+function isPlainNutritionSnapshotRow(raw: ImportRow): boolean {
+  return NUTRITION_SNAPSHOT_NUMBER_KEYS.every((key) => typeof raw[key] === 'number');
+}
+
+async function prepareSavedForLaterGroupCreate(
+  collection: any,
+  raw: ImportRow,
+  oldId: string
+): Promise<any> {
+  const notePlain = await readSavedForLaterGroupNote(raw);
+  const noteRaw = await encryptOptionalString(notePlain);
+  return collection.prepareCreate((rec: any) => {
+    rec._raw.id = oldId;
+    rec.name = String(raw.name ?? '');
+    rec.noteRaw = noteRaw || undefined;
+    rec.originalMealType = String(raw.original_meal_type ?? 'other');
+    rec.originalDate = Number(raw.original_date);
+    rec.timezone = raw.timezone != null ? String(raw.timezone) : undefined;
+    rec.createdAt = Number(raw.created_at);
+    rec.updatedAt = Number(raw.updated_at);
+    if (raw.deleted_at != null) {
+      rec.deletedAt = Number(raw.deleted_at);
+    }
+  });
+}
+
+async function readSavedForLaterItemSnapshot(raw: ImportRow): Promise<NutritionLogSnapshotPlain> {
+  if (raw._decrypted === true || isPlainNutritionSnapshotRow(raw)) {
+    return readPlainNutritionLogSnapshotRow(raw);
+  }
+
+  return decryptNutritionLogSnapshotRow(raw);
+}
+
+async function prepareSavedForLaterItemCreate(
+  collection: any,
+  raw: ImportRow,
+  oldId: string
+): Promise<any> {
+  const snapshot = await readSavedForLaterItemSnapshot(raw);
+  const encrypted = await encryptNutritionLogSnapshot(snapshot);
+  return collection.prepareCreate((rec: any) => {
+    rec._raw.id = oldId;
+    rec.groupId = String(raw.group_id ?? '');
+    if (raw.food_id != null) {
+      rec.foodId = String(raw.food_id);
+    }
+
+    rec.amount = Number(raw.amount);
+    if (raw.portion_id != null) {
+      rec.portionId = String(raw.portion_id);
+    }
+
+    rec.loggedFoodNameRaw = encrypted.loggedFoodName;
+    rec.loggedCaloriesRaw = encrypted.loggedCalories;
+    rec.loggedProteinRaw = encrypted.loggedProtein;
+    rec.loggedCarbsRaw = encrypted.loggedCarbs;
+    rec.loggedFatRaw = encrypted.loggedFat;
+    rec.loggedFiberRaw = encrypted.loggedFiber;
+    rec.loggedMicrosRaw = encrypted.loggedMicrosJson;
+    if (raw.logged_meal_name != null) {
+      rec.loggedMealName = String(raw.logged_meal_name);
+    }
+
+    if (raw.original_group_id != null) {
+      rec.originalGroupId = String(raw.original_group_id);
+    }
+
+    rec.createdAt = Number(raw.created_at);
+    rec.updatedAt = Number(raw.updated_at);
+    if (raw.deleted_at != null) {
+      rec.deletedAt = Number(raw.deleted_at);
+    }
+  });
+}
+
 /**
  * Restore the database from a dump string (full replace).
  * Decrypts with optional phrase, then clears and repopulates tables in dependency order.
- * Re-encrypts user_metrics and nutrition_logs using the current device key.
+ * Re-encrypts user_metrics, nutrition_logs, saved_for_later_groups and
+ * saved_for_later_items using the current device key.
  * Original record IDs from the backup are preserved exactly.
  */
 export async function restoreDatabase(dump: string, decryptionPhrase?: string): Promise<void> {
@@ -86,15 +183,6 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     }
   }
 
-  const parseMicrosJson = (microsJson: string): any | undefined => {
-    try {
-      const parsed = JSON.parse(microsJson);
-      return typeof parsed === 'object' && parsed !== null ? parsed : undefined;
-    } catch {
-      return undefined;
-    }
-  };
-
   // Capture the current unit_system value before wiping the database.
   // Backups from Android users who never explicitly changed units won't include a
   // unit_system row (setUnits() is only called on explicit change). Without this
@@ -131,6 +219,19 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
         continue;
       }
 
+      // Exports include WatermelonDB's internal tombstones for diagnostics.
+      // Restoring them would resurrect records the local database considers deleted.
+      if (raw._status === 'deleted') {
+        continue;
+      }
+
+      if (typeof raw.timezone === 'string' && raw.timezone) {
+        // Older exports may store IANA names. Resolve once at the row's own instant
+        // so every restore path consumes the same fixed "±HH:MM" offset value.
+        const instantMs = Number(raw.started_at ?? raw.date ?? raw.created_at ?? Date.now());
+        raw.timezone = normalizeTimezoneToOffset(raw.timezone, new Date(instantMs));
+      }
+
       if (tableName === 'workout_templates') {
         const newVal = raw.workout_insights_type;
         const oldVal = raw.volume_calculation_type ?? raw.volumeCalculationType;
@@ -149,18 +250,21 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
         const value = Number(raw.value);
         const unit = raw.unit != null ? String(raw.unit) : '';
         const date = Number(raw.date);
-        const timezone = raw.timezone != null ? String(raw.timezone) : '';
         const supplementId = raw.supplement_id != null ? String(raw.supplement_id) : undefined;
         const encrypted = await encryptUserMetricFields({ value, unit, date });
         createOperations.push(
           collection.prepareCreate((rec: any) => {
             rec._raw.id = oldId;
             rec.type = raw.type;
+            if (raw.external_id != null) {
+              rec.externalId = String(raw.external_id);
+            }
+
             rec.supplementId = supplementId;
             rec.valueRaw = encrypted.value;
             rec.unitRaw = encrypted.unit;
             rec.date = date;
-            rec.timezone = timezone;
+            rec.timezone = raw.timezone != null ? String(raw.timezone) : '';
             rec.createdAt = Number(raw.created_at);
             rec.updatedAt = Number(raw.updated_at);
             if (raw.deleted_at != null) {
@@ -174,18 +278,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
       if (tableName === 'nutrition_logs') {
         const foodId = raw.food_id as string;
         const portionId = raw.portion_id != null ? (raw.portion_id as string) : undefined;
-        const snapshot = {
-          loggedFoodName: raw.logged_food_name != null ? String(raw.logged_food_name) : undefined,
-          loggedCalories: Number(raw.logged_calories ?? 0),
-          loggedProtein: Number(raw.logged_protein ?? 0),
-          loggedCarbs: Number(raw.logged_carbs ?? 0),
-          loggedFat: Number(raw.logged_fat ?? 0),
-          loggedFiber: Number(raw.logged_fiber ?? 0),
-          loggedMicros:
-            typeof raw.logged_micros_json === 'string' && raw.logged_micros_json
-              ? parseMicrosJson(raw.logged_micros_json)
-              : undefined,
-        };
+        const snapshot = readPlainNutritionLogSnapshotRow(raw);
         const encrypted = await encryptNutritionLogSnapshot(snapshot);
         createOperations.push(
           collection.prepareCreate((rec: any) => {
@@ -202,6 +295,35 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
             rec.loggedFiberRaw = encrypted.loggedFiber;
             rec.loggedMicrosRaw = encrypted.loggedMicrosJson;
             rec.date = Number(raw.date);
+            rec.timezone = raw.timezone != null ? String(raw.timezone) : undefined;
+            if (raw.group_id != null) {
+              rec.groupId = String(raw.group_id);
+            }
+
+            if (raw.logged_meal_name != null) {
+              rec.loggedMealName = String(raw.logged_meal_name);
+            }
+
+            if (raw.external_id != null) {
+              rec.externalId = String(raw.external_id);
+            }
+
+            if (raw.snapshot_basis != null) {
+              rec.snapshotBasis = String(raw.snapshot_basis);
+            }
+
+            if (raw.logged_nutriscore != null) {
+              rec.loggedNutriscore = String(raw.logged_nutriscore);
+            }
+
+            if (raw.logged_ecoscore != null) {
+              rec.loggedEcoscore = String(raw.logged_ecoscore);
+            }
+
+            if (raw.logged_nova_group != null) {
+              rec.loggedNovaGroup = Number(raw.logged_nova_group);
+            }
+
             rec.createdAt = Number(raw.created_at);
             rec.updatedAt = Number(raw.updated_at);
             if (raw.deleted_at != null) {
@@ -209,6 +331,16 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
             }
           })
         );
+        continue;
+      }
+
+      if (tableName === 'saved_for_later_groups') {
+        createOperations.push(await prepareSavedForLaterGroupCreate(collection, raw, oldId));
+        continue;
+      }
+
+      if (tableName === 'saved_for_later_items') {
+        createOperations.push(await prepareSavedForLaterItemCreate(collection, raw, oldId));
         continue;
       }
 
@@ -302,6 +434,14 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     });
   }
 
+  // Rebuild the muscle catalogue and app-exercise muscle links. Backups created
+  // before muscles/exercise_muscles were added to RESTORE_ORDER don't contain them,
+  // and the boot-time seeder is skipped after restore (SEEDING_COMPLETE_KEY is
+  // restored as 'true'), so without this the tables would stay empty forever.
+  // Both calls are idempotent, so running them on newer backups is a no-op.
+  const muscleNameToId = await MuscleService.seedMuscles();
+  await MuscleService.backfillExerciseMuscles(muscleNameToId);
+
   // Backfill exercises.source for backups created before export version 2 (when
   // the source column didn't exist yet). Safe no-op if all rows already have a value.
   if (dbData._exportVersion < 2) {
@@ -362,6 +502,11 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
       });
     }
   }
+
+  // The restored AsyncStorage may contain a stale durability baseline from the
+  // backup; re-anchor it to the restored row count so the next boot's loss
+  // detector doesn't fire a false "nutrition logs lost" report.
+  await updateNutritionLogCountBaseline();
 
   // Reload the app after importing is complete
   await reloadApp();

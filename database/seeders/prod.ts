@@ -210,14 +210,39 @@ async function seedUSDAFoundationFoods(): Promise<void> {
 }
 
 /**
+ *
+ * Re-entrancy guard: this function calls `unsafeResetDatabase()` (which swaps in an
+ * ErrorAdapter) and only sets the SEEDING_COMPLETE_KEY flag at the very end. If a second
+ * call starts while the first is still running, it would reset the database out from under
+ * the first run, causing "Cannot call database.adapter.underlyingAdapter while the database
+ * is being reset". This happens in practice because seeding writes the device language, which
+ * flips `i18n.language` and re-runs the onboarding effect that called us. We dedupe concurrent
+ * calls onto a single shared promise so the reset only ever happens once.
+ */
+let inFlightSeed: Promise<boolean> | null = null;
+
+export function seedProductionData(options?: SeedProductionDataOptions): Promise<boolean> {
+  if (inFlightSeed) {
+    return inFlightSeed;
+  }
+
+  inFlightSeed = runSeedProductionData(options).finally(() => {
+    inFlightSeed = null;
+  });
+
+  return inFlightSeed;
+}
+
+/**
  * Seed production data
  * This seeds only the common food portions and exercises that will be available in the production app
  * Foods are NOT seeded in production - users will add them as needed via the app
  *
  * Order: seed common portions and exercises first, then run migration from the old database.
  * Migration reuses existing exercises by name (only adds old exercises that are not already seeded).
+ *
  */
-export async function seedProductionData(options?: SeedProductionDataOptions): Promise<boolean> {
+async function runSeedProductionData(options?: SeedProductionDataOptions): Promise<boolean> {
   const onProgress = options?.onProgress;
 
   try {

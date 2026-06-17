@@ -643,7 +643,6 @@ export default function WorkoutsScreen() {
             const workoutLog = await WorkoutService.startFreeWorkout(t('freeTraining.workoutName'));
             setIsCreateOptionsVisible(false);
             router.navigate(`/app/workout/workout-session?workoutLogId=${workoutLog.id}`);
-            triggerConfetti(ConfettiActivity.FIRST_WORKOUT_CREATED);
           } catch (err) {
             console.error('Error starting free workout:', err);
             showSnackbar('error', err instanceof Error ? err.message : t('common.error'));

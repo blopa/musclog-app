@@ -21,6 +21,7 @@ export default class WorkoutLog extends Model {
   @field('workout_name') declare workoutName: string;
   @field('started_at') declare startedAt: number;
   @field('completed_at') completedAt?: number;
+  @field('timezone') timezone?: string; // UTC offset captured when the session was started (e.g. "-05:00")
   @field('total_volume') totalVolume?: number;
   @field('calories_burned') caloriesBurned?: number;
   @field('icon') icon?: string;

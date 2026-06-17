@@ -40,7 +40,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
 import { blurFilter } from '@/utils/blurFilter';
-import { localCalendarDayDate } from '@/utils/calendarDate';
+import { localCalendarDayDate, withCurrentTimeOnDay } from '@/utils/calendarDate';
 import { deleteMealImage, saveMealImage } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
@@ -546,10 +546,13 @@ export function CreateMealModal({
         await syncMealPortion(savedMeal);
       }
 
+      // Non-interactive quick-track: stamp the chosen day with the current time
+      // (shared across ingredients so they group at the same instant).
+      const loggedDateTime = withCurrentTimeOnDay(selectedDate);
       for (const ing of ingredients) {
         await NutritionService.logFood(
           ing.foodId,
-          selectedDate,
+          loggedDateTime,
           selectedMealType,
           ing.amount * quickTrackScale,
           undefined
