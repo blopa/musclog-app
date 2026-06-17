@@ -2,7 +2,6 @@
   "expo.jsEngine": "hermes",
   "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
   "expo.inlineModules.watchedDirectories": "[]",
-  "expo.inlineModules.xcodeProjectTargets": "{\"mainTarget\":\"MusclogLiftLogRepeat\",\"targets\":[]}",
   "ios.deploymentTarget": "17.0",
   "ios.forceStaticLinking": "[]",
   "apple.extraPods": "[{\"name\":\"GoogleMLKit/MLKitCore\",\"version\":\"8.0.0\"},{\"name\":\"GoogleMLKit/BarcodeScanning\",\"version\":\"8.0.0\"}]",
