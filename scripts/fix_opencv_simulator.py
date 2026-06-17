@@ -6,7 +6,8 @@ so the simulator linker accepts the objects.
 """
 import struct, subprocess, os, sys, tempfile
 
-FRAMEWORK = "../ios/Pods/OpenCV/opencv2.framework/Versions/A/opencv2"
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+FRAMEWORK = os.path.join(ROOT, "ios/Pods/OpenCV/opencv2.framework/Versions/A/opencv2")
 LC_VERSION_MIN_IPHONEOS = 0x25
 PATCHED_CMD = 0x35
 MH_MAGIC_64 = 0xfeedfacf
