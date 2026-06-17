@@ -17,6 +17,7 @@ import {
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { MasterLayout } from '@/components/MasterLayout';
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { BleDevicePreviewModal } from '@/components/modals/BleDevicePreviewModal';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { FullScreenModal } from '@/components/modals/FullScreenModal';
@@ -166,6 +167,8 @@ export default function RepsRecordingScreen() {
   const [capturedExerciseName, setCapturedExerciseName] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [elapsedMs, setElapsedMs] = useState(0);
+
+  useKeepScreenAwake('reps-recording', isRecording);
   const [isExercisePickerVisible, setIsExercisePickerVisible] = useState(false);
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
   const [repsInput, setRepsInput] = useState('10');
