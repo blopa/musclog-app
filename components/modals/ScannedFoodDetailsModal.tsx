@@ -60,7 +60,10 @@ import {
   parseLocalizedDecimalString,
   sanitizeLocalizedDecimalInput,
 } from '@/utils/localizedDecimalInput';
-import { getMusclogNutritionPer100g } from '@/utils/musclogProduct';
+import {
+  applyMusclogQualityToFoodRecord,
+  getMusclogNutritionPer100g,
+} from '@/utils/musclogProduct';
 import {
   extractLabelsFromOFFProduct,
   getNutrimentsWithFallback,
@@ -781,21 +784,25 @@ export function ScannedFoodDetailsModal({
 
             const bp = (effectiveProductDetails as any)?.product;
             if (bp) {
-              if (typeof bp.nutriscore_grade === 'string' && bp.nutriscore_grade) {
-                record.nutriscore = bp.nutriscore_grade.toLowerCase();
-              }
+              if ((effectiveProductDetails as any).source === 'musclog') {
+                applyMusclogQualityToFoodRecord(record, bp);
+              } else {
+                if (typeof bp.nutriscore_grade === 'string' && bp.nutriscore_grade) {
+                  record.nutriscore = bp.nutriscore_grade.toLowerCase();
+                }
 
-              if (typeof bp.ecoscore_grade === 'string' && bp.ecoscore_grade) {
-                record.ecoscore = bp.ecoscore_grade.toLowerCase();
-              }
+                if (typeof bp.ecoscore_grade === 'string' && bp.ecoscore_grade) {
+                  record.ecoscore = bp.ecoscore_grade.toLowerCase();
+                }
 
-              if (typeof bp.nova_group === 'number') {
-                record.novaGroup = bp.nova_group;
-              }
+                if (typeof bp.nova_group === 'number') {
+                  record.novaGroup = bp.nova_group;
+                }
 
-              const extractedLabels = extractLabelsFromOFFProduct(bp);
-              if (extractedLabels != null) {
-                record.labels = extractedLabels;
+                const extractedLabels = extractLabelsFromOFFProduct(bp);
+                if (extractedLabels != null) {
+                  record.labels = extractedLabels;
+                }
               }
             }
           });

@@ -84,10 +84,16 @@
     },
     "menu": {
       "title": "Opciones de chat",
+      "quickSettings": "Ajustes rápidos",
+      "quickSettingsDesc": "Ajusta el razonamiento de la IA, el manejo de imágenes y el historial enviado a la IA.",
       "clearHistory": "Borrar historial de chat",
       "clearHistoryDesc": "Eliminar todos los mensajes en este contexto de conversación.",
       "shareHistory": "Compartir historial de chat",
       "shareHistoryDesc": "Exportar toda esta conversación como texto sin formato."
+    },
+    "quickSettings": {
+      "title": "Ajustes rápidos",
+      "subtitle": "Ajusta cómo razona Loggy y qué contexto recibe."
     },
     "confirmClear": {
       "title": "¿Borrar historial de chat?",

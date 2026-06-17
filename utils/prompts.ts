@@ -27,6 +27,7 @@ import {
   localDayStartMs,
   parseLocalCalendarDate,
 } from './calendarDate';
+import { getNutritionLogHistoryPrompt, getWorkoutLogHistoryPrompt } from './coachPromptHistory';
 import { resolveDailyMacros } from './dynamicNutritionTarget';
 import { formatAppInteger } from './formatAppNumber';
 import { formatDisplayWeightKg } from './formatDisplayWeight';
@@ -568,8 +569,13 @@ export const getChatMessagePromptContent = async (
   // Enhanced Apple Intelligence handling with semantic chunking
   if (provider === 'on-device' || isSmallModel(provider)) {
     const recentLogs = await WorkoutService.getWorkoutHistory(undefined, 4);
-    const nutritionLogs =
-      context === 'nutrition' ? await NutritionService.getRecentNutritionLogs(7) : [];
+    // Small models have a tight context window, so we cap nutrition history at a fixed 7 days
+    // here regardless of the configured day count — only the on/off ('none') choice is honored.
+    const includeNutritionHistory =
+      context === 'nutrition' && (await SettingsService.getNutritionLogHistoryDays()) !== 'none';
+    const nutritionLogs = includeNutritionHistory
+      ? await NutritionService.getRecentNutritionLogs(7)
+      : [];
 
     // Use semantic chunking for Apple Intelligence
     const optimizedContext = await getAppleIntelligenceContext(recentLogs, nutritionLogs, language);
@@ -640,6 +646,22 @@ export const getChatMessagePromptContent = async (
       '```',
       "All weights are in the user's preferred unit (kg or lbs)."
     );
+  }
+
+  // Add nutrition log history, only for the nutrition chat context and only when enabled.
+  if (context === 'nutrition') {
+    const nutritionHistoryPrompt = await getNutritionLogHistoryPrompt();
+    if (nutritionHistoryPrompt) {
+      contextSections.push('## Nutrition Log History', nutritionHistoryPrompt);
+    }
+  }
+
+  // Add workout history, only for the exercise chat context and only when enabled.
+  if (context === 'exercise') {
+    const workoutHistoryPrompt = await getWorkoutLogHistoryPrompt();
+    if (workoutHistoryPrompt) {
+      contextSections.push('## Workout History', workoutHistoryPrompt);
+    }
   }
 
   contextSections.push('The following content is a conversation between the user and Loggy...');

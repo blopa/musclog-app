@@ -17,6 +17,7 @@ import {
 import { deleteBleDataPointsFiles } from '@/utils/bleWorkoutDataStorage';
 import { handleError } from '@/utils/handleError';
 import { getCurrentTimezone } from '@/utils/timezone';
+import { getRollingWeeklyWorkoutRange } from '@/utils/weeklyWorkoutProgress';
 import { calculateWorkoutKcal, type MWEMInput } from '@/utils/workoutEnergyCalculator';
 import {
   getFirstUnloggedInEffectiveOrder,
@@ -252,6 +253,28 @@ export class WorkoutService {
     offset?: number
   ): Promise<WorkoutLog[]> {
     return this.getWorkoutHistoryInternal(timeframe, limit, offset);
+  }
+
+  static async getCompletedWorkoutCount(timeframe?: {
+    startDate: number;
+    endDate: number;
+  }): Promise<number> {
+    let query = database
+      .get<WorkoutLog>('workout_logs')
+      .query(Q.where('completed_at', Q.notEq(null)), Q.where('deleted_at', Q.eq(null)));
+
+    if (timeframe) {
+      query = query.extend(
+        Q.where('completed_at', Q.gte(timeframe.startDate)),
+        Q.where('completed_at', Q.lte(timeframe.endDate))
+      );
+    }
+
+    return await query.fetchCount();
+  }
+
+  static async getRollingWeeklyCompletedWorkoutCount(date: Date = new Date()): Promise<number> {
+    return await this.getCompletedWorkoutCount(getRollingWeeklyWorkoutRange(date));
   }
 
   private static async getWorkoutHistoryInternal(

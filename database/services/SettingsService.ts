@@ -18,6 +18,8 @@ import {
   type FoodSearchSource,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
+  HOME_SUMMARY_CARD_SETTING_TYPE,
+  type HomeSummaryCard,
   INTUITIVE_EATING_MODE_SETTING_TYPE,
   LANGUAGE_SETTING_TYPE,
   LAST_HOME_WATER_PROMPT_ANSWERED_DAY_SETTING_TYPE,
@@ -38,6 +40,8 @@ import {
   NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE,
   NOTIFICATIONS_WORKOUT_REMINDERS_SETTING_TYPE,
   NUTRITION_DISPLAY_SETTING_TYPE,
+  NUTRITION_LOG_HISTORY_DAYS_SETTING_TYPE,
+  type NutritionLogHistoryDays,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
   PROGRESSION_MODE_SETTING_TYPE,
@@ -56,7 +60,9 @@ import {
   USE_OCR_BEFORE_AI_SETTING_TYPE,
   USE_ON_DEVICE_AI_SETTING_TYPE,
   USE_THINKING_MODE_SETTING_TYPE,
+  WORKOUT_HISTORY_DAYS_SETTING_TYPE,
   WORKOUT_INSIGHTS_SETTING_TYPE,
+  type WorkoutHistoryDays,
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '@/constants/settings';
 import { database } from '@/database/database-instance';
@@ -64,6 +70,19 @@ import { encryptOptionalString } from '@/database/encryptionHelpers';
 import Setting, { type SettingType } from '@/database/models/Setting';
 import { decryptDatabaseValue } from '@/utils/encryption';
 import { getDefaultUnits } from '@/utils/units';
+
+type SettingValueUpdate = {
+  type: string;
+  value: string;
+};
+
+type CoachQuickSettingsUpdate = {
+  useThinkingMode: boolean;
+  sendFoundationFoodsToLlm: boolean;
+  nutritionLogHistoryDays: NutritionLogHistoryDays;
+  workoutHistoryDays: WorkoutHistoryDays;
+  useOcrBeforeAi?: boolean;
+};
 
 export class SettingsService {
   /**
@@ -392,6 +411,39 @@ export class SettingsService {
     await SettingsService.setBooleanSetting(USE_THINKING_MODE_SETTING_TYPE, value);
   }
 
+  /**
+   * Persist the coach quick settings together so the modal cannot leave a partial update.
+   */
+  static async setCoachQuickSettings(settings: CoachQuickSettingsUpdate) {
+    const updates: SettingValueUpdate[] = [
+      {
+        type: USE_THINKING_MODE_SETTING_TYPE,
+        value: settings.useThinkingMode.toString(),
+      },
+      {
+        type: SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE,
+        value: settings.sendFoundationFoodsToLlm.toString(),
+      },
+      {
+        type: NUTRITION_LOG_HISTORY_DAYS_SETTING_TYPE,
+        value: settings.nutritionLogHistoryDays,
+      },
+      {
+        type: WORKOUT_HISTORY_DAYS_SETTING_TYPE,
+        value: settings.workoutHistoryDays,
+      },
+    ];
+
+    if (settings.useOcrBeforeAi !== undefined) {
+      updates.push({
+        type: USE_OCR_BEFORE_AI_SETTING_TYPE,
+        value: settings.useOcrBeforeAi.toString(),
+      });
+    }
+
+    await SettingsService.setSettingValues(updates);
+  }
+
   static async setDumpLlmRequests(value: boolean) {
     await SettingsService.setBooleanSetting(DUMP_LLM_REQUESTS_SETTING_TYPE, value);
   }
@@ -532,6 +584,20 @@ export class SettingsService {
    */
   static async setFoodSearchSource(source: FoodSearchSource) {
     await SettingsService.setStringSetting(FOOD_SEARCH_SOURCE_SETTING_TYPE, source);
+  }
+
+  /**
+   * Upsert the nutrition log history days setting ('none' | '7' | '30' | '60' | '90')
+   */
+  static async setNutritionLogHistoryDays(days: NutritionLogHistoryDays) {
+    await SettingsService.setStringSetting(NUTRITION_LOG_HISTORY_DAYS_SETTING_TYPE, days);
+  }
+
+  /**
+   * Upsert the workout history days setting ('none' | '7' | '30' | '60' | '90')
+   */
+  static async setWorkoutHistoryDays(days: WorkoutHistoryDays) {
+    await SettingsService.setStringSetting(WORKOUT_HISTORY_DAYS_SETTING_TYPE, days);
   }
 
   /**
@@ -713,6 +779,24 @@ export class SettingsService {
   }
 
   /**
+   * Get which summary card to show on the home screen ('daily_summary' | 'weekly_streak').
+   * Defaults to 'daily_summary'.
+   */
+  static async getHomeSummaryCard(): Promise<HomeSummaryCard> {
+    return (await SettingsService.getStringSetting(
+      HOME_SUMMARY_CARD_SETTING_TYPE,
+      'daily_summary'
+    )) as HomeSummaryCard;
+  }
+
+  /**
+   * Upsert which summary card to show on the home screen ('daily_summary' | 'weekly_streak')
+   */
+  static async setHomeSummaryCard(card: HomeSummaryCard) {
+    await SettingsService.setStringSetting(HOME_SUMMARY_CARD_SETTING_TYPE, card);
+  }
+
+  /**
    * Upsert the nutrition display setting.
    * Binary string of length 5: positions 0-4 map to carbs, protein, fats, fiber, alcohol.
    * '1' = visible, '0' = hidden. Default: '11111'.
@@ -747,6 +831,28 @@ export class SettingsService {
       FOOD_SEARCH_SOURCE_SETTING_TYPE,
       'both'
     )) as FoodSearchSource;
+  }
+
+  /**
+   * Get the nutrition log history days setting.
+   * Defaults to 'none' if not set.
+   */
+  static async getNutritionLogHistoryDays(): Promise<NutritionLogHistoryDays> {
+    return (await SettingsService.getStringSetting(
+      NUTRITION_LOG_HISTORY_DAYS_SETTING_TYPE,
+      'none'
+    )) as NutritionLogHistoryDays;
+  }
+
+  /**
+   * Get the workout history days setting.
+   * Defaults to 'none' if not set.
+   */
+  static async getWorkoutHistoryDays(): Promise<WorkoutHistoryDays> {
+    return (await SettingsService.getStringSetting(
+      WORKOUT_HISTORY_DAYS_SETTING_TYPE,
+      'none'
+    )) as WorkoutHistoryDays;
   }
 
   // --- Private helpers ---
@@ -789,44 +895,7 @@ export class SettingsService {
    * Helper method to upsert boolean settings
    */
   private static async setBooleanSetting(type: string, value: boolean) {
-    const now = Date.now();
-
-    const existingSetting = await database
-      .get<Setting>('settings')
-      .query(Q.where('type', type), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-
-    await database.write(async () => {
-      if (existingSetting.length > 0) {
-        // Find the most recent setting
-        const mostRecent = existingSetting.reduce((latest, current) =>
-          current.updatedAt > latest.updatedAt ? current : latest
-        );
-
-        await mostRecent.update((setting) => {
-          setting.value = value.toString();
-          setting.updatedAt = now;
-        });
-
-        // Clean up any duplicate settings
-        if (existingSetting.length > 1) {
-          for (const setting of existingSetting) {
-            if (setting.id !== mostRecent.id) {
-              await setting.update((s) => {
-                s.deletedAt = now;
-              });
-            }
-          }
-        }
-      } else {
-        await database.get<Setting>('settings').create((setting) => {
-          setting.type = type as SettingType;
-          setting.value = value.toString();
-          setting.createdAt = now;
-          setting.updatedAt = now;
-        });
-      }
-    });
+    await SettingsService.setSettingValues([{ type, value: value.toString() }]);
   }
 
   /**
@@ -1006,23 +1075,57 @@ export class SettingsService {
    * Helper method to upsert string settings
    */
   private static async setStringSetting(type: string, value: string) {
-    const now = Date.now();
+    await SettingsService.setSettingValues([{ type, value }]);
+  }
 
-    const existingSetting = await database
-      .get<Setting>('settings')
-      .query(Q.where('type', type), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
+  private static async setSettingValues(updates: SettingValueUpdate[]) {
+    const now = Date.now();
+    const dedupedUpdates = Array.from(
+      updates
+        .reduce(
+          (map, update) => map.set(update.type, update),
+          new Map<string, SettingValueUpdate>()
+        )
+        .values()
+    );
+
+    const existingByType = await Promise.all(
+      dedupedUpdates.map(async (update) => ({
+        update,
+        existingSettings: await database
+          .get<Setting>('settings')
+          .query(Q.where('type', update.type), Q.where('deleted_at', Q.eq(null)))
+          .fetch(),
+      }))
+    );
 
     await database.write(async () => {
-      if (existingSetting.length > 0) {
-        await existingSetting[0].update((setting) => {
-          setting.value = value;
-          setting.updatedAt = now;
-        });
-      } else {
+      for (const { update, existingSettings } of existingByType) {
+        if (existingSettings.length > 0) {
+          const mostRecent = existingSettings.reduce((latest, current) =>
+            current.updatedAt > latest.updatedAt ? current : latest
+          );
+
+          await mostRecent.update((setting) => {
+            setting.value = update.value;
+            setting.updatedAt = now;
+          });
+
+          if (existingSettings.length > 1) {
+            for (const setting of existingSettings) {
+              if (setting.id !== mostRecent.id) {
+                await setting.update((s) => {
+                  s.deletedAt = now;
+                });
+              }
+            }
+          }
+          continue;
+        }
+
         await database.get<Setting>('settings').create((setting) => {
-          setting.type = type as SettingType;
-          setting.value = value;
+          setting.type = update.type as SettingType;
+          setting.value = update.value;
           setting.createdAt = now;
           setting.updatedAt = now;
         });

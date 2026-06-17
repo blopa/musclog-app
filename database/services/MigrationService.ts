@@ -114,6 +114,10 @@ export class MigrationService {
     try {
       console.log('Opening old database...');
 
+      // EXEMPT from the "never open expo-sqlite on musclog.db" rule: this is the
+      // LEGACY pre-WatermelonDB database (a different file WatermelonDB never
+      // touches), so there is no shared-file WAL/lock conflict. Never point this
+      // at musclog.db. See docs/DATABASE_DURABILITY.md.
       this.oldDB = openDatabaseSync('workoutLoggerDatabase.db', {
         enableChangeListener: true,
         useNewConnection: true,

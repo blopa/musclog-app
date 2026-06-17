@@ -11,6 +11,12 @@ import { Platform } from 'react-native';
  *             → <Documents>/musclog.db  (expo-sqlite would use <Documents>/SQLite/musclog)
  *
  * The database filename is always `${DATABASE_NAME}.db` (WatermelonDB appends ".db" itself).
+ *
+ * ⚠️ DANGER: do NOT use this to open `musclog.db` with expo-sqlite while the app
+ * is running. A second SQLite library closing its connection unlinks the live
+ * WAL and silently loses committed data (see docs/DATABASE_DURABILITY.md). The
+ * only sanctioned raw open is the pre-adapter capture in preMigrationCapture.ts;
+ * everywhere else use rawQueryViaWatermelon (database/wmdbRaw.ts).
  */
 export function wdbDir(): string {
   // documentDirectory:  Android → 'file:///data/user/0/<pkg>/files/'

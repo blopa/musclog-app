@@ -1,0 +1,9 @@
+{
+  "weeklyStreakCard": {
+    "workoutsThisWeek": "workouts this week",
+    "dayStreak": "day streak",
+    "days": "{{value}} days",
+    "bestStreak": "Best streak",
+    "setWeeklyGoal": "Set goal"
+  }
+}

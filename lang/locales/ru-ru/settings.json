@@ -252,9 +252,27 @@
       "promptContextExercise": "Тренировка",
       "memorySettings": "НАСТРОЙКИ ПАМЯТИ",
       "useThinkingMode": "Использовать режим размышления",
-      "useThinkingModeSubtitle": "Разрешить провайдерам ИИ использовать более глубокое рассуждение, если поддерживается",
+      "useThinkingModeSubtitle": "Разрешить провайдерам ИИ использовать более глубокое рассуждение, если поддерживается. Это потребляет больше токенов и может увеличить стоимость.",
       "maxAiMemories": "Макс. воспоминаний ИИ",
       "maxAiMemoriesSubtitle": "Количество предыдущих сообщений для запоминания в разговорах",
+      "nutritionLogHistoryDays": "История дневника питания, отправляемая в ИИ",
+      "nutritionLogHistoryDaysSubtitle": "Сколько дней истории дневника питания отправлять в ИИ как контекст. Отправка большего количества дней расходует больше токенов.",
+      "nutritionLogHistoryDaysNone": "Нет",
+      "nutritionLogHistoryDays7": "7 дней",
+      "nutritionLogHistoryDays30": "30 дней",
+      "nutritionLogHistoryDays60": "60 дней",
+      "nutritionLogHistoryDays90": "90 дней",
+      "nutritionLogHistoryDaysNoneDescription": "Не отправлять историю дневника питания в ИИ",
+      "nutritionLogHistoryDaysOptionDescription": "Отправлять последние {{days}} дней дневника питания в ИИ",
+      "workoutHistoryDays": "История тренировок, отправляемая в ИИ",
+      "workoutHistoryDaysSubtitle": "Сколько дней прошлых тренировок отправлять в ИИ при общении в режиме «Фитнес». Отправка большего количества дней расходует больше токенов.",
+      "workoutHistoryDaysNone": "Нет",
+      "workoutHistoryDays7": "7 дней",
+      "workoutHistoryDays30": "30 дней",
+      "workoutHistoryDays60": "60 дней",
+      "workoutHistoryDays90": "90 дней",
+      "workoutHistoryDaysNoneDescription": "Не отправлять историю тренировок в ИИ",
+      "workoutHistoryDaysOptionDescription": "Отправлять последние {{days}} дней тренировок в ИИ",
       "onDeviceAi": {
         "sectionTitle": "APPLE INTELLIGENCE",
         "toggle": "Использовать Apple Intelligence",
@@ -367,6 +385,22 @@
       "recordingSettings": "Настройки записи",
       "generateChartPayload": "Генерировать данные графика",
       "generateChartPayloadSubtitle": "Включить данные сигнала и аннотации повторений для отображения на графике после каждого подхода"
+    },
+    "homeSummaryCard": {
+      "sectionTitle": "Карточка сводки на главном экране",
+      "sectionSubtitle": "Выберите, какая карточка отображается вверху главного экрана.",
+      "popupTitle": "Карточка сводки на главном экране",
+      "popupSubtitle": "Выберите карточку для отображения",
+      "options": {
+        "daily_summary": {
+          "label": "Дневная сводка",
+          "description": "Калории и макросы за день"
+        },
+        "weekly_streak": {
+          "label": "Недельная серия",
+          "description": "Тренировки на этой неделе и ваша серия отслеживания"
+        }
+      }
     }
   }
 }

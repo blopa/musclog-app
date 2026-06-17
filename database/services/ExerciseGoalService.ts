@@ -40,6 +40,24 @@ export class ExerciseGoalService {
   }
 
   /**
+   * Get the active workout consistency goal, if the user has one.
+   */
+  static async getActiveConsistencyGoal(): Promise<ExerciseGoal | null> {
+    const goals = await database
+      .get<ExerciseGoal>('exercise_goals')
+      .query(
+        Q.where('goal_type', 'consistency'),
+        Q.where('effective_until', Q.eq(null)),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('created_at', Q.desc),
+        Q.take(1)
+      )
+      .fetch();
+
+    return goals[0] ?? null;
+  }
+
+  /**
    * Get active goal for a specific exercise + type combination
    */
   static async getActiveGoalForExercise(

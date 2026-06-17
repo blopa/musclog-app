@@ -1,13 +1,11 @@
 import * as ExpoLinking from 'expo-linking';
 import { usePathname, useRootNavigationState, useRouter } from 'expo-router';
 import { Bell, Clock, Flame, Plus, Trophy } from 'lucide-react-native';
-import { createElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { createElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppState, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { ActionButton } from '@/components/ActionButton';
-import { DailySummaryCard } from '@/components/cards/DailySummaryCard/DailySummaryCard';
-import { DailySummaryEmptyState } from '@/components/cards/DailySummaryCard/DailySummaryEmptyState';
 import { DetailedItemCard } from '@/components/cards/DetailedItemCard';
 import { FoodItemCard } from '@/components/cards/FoodItemCard';
 import { HomeMoodPrompt } from '@/components/cards/HomeMoodPrompt';
@@ -16,6 +14,8 @@ import { HomeWaterPrompt } from '@/components/cards/HomeWaterPrompt';
 import { useCoach } from '@/components/CoachContext';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { DailySummaryBottomMenu } from '@/components/DailySummaryBottomMenu';
+import { DailyHomeSummary } from '@/components/home/DailyHomeSummary';
+import { WeeklyHomeSummary } from '@/components/home/WeeklyHomeSummary';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AddFoodModal } from '@/components/modals/AddFoodModal';
 import CreateCustomFoodModal from '@/components/modals/CreateCustomFoodModal';
@@ -31,7 +31,6 @@ import { UserMenuModal } from '@/components/modals/UserMenuModal';
 import ShowMoreButton from '@/components/ShowMoreButton';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import DashedButton from '@/components/theme/DashedButton';
-import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '@/components/WorkoutFoodEmptyState';
 import { isStaticExport } from '@/constants/platform';
@@ -41,7 +40,6 @@ import { type MealType } from '@/database/models';
 import { NutritionGoalService } from '@/database/services';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
-import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useEmpiricalTDEE } from '@/hooks/useEmpiricalTDEE';
 import { useNutritionLogs } from '@/hooks/useNutritionLogs';
@@ -79,6 +77,13 @@ function drainPendingWidgetAction(
 // No notification system yet, so leave it like this for now
 const SHOW_NOTIFICATIONS = false;
 
+const GOALS_MANAGEMENT_TAB = {
+  FITNESS: 'fitness',
+  NUTRITION: 'nutrition',
+} as const;
+
+type GoalsManagementTab = (typeof GOALS_MANAGEMENT_TAB)[keyof typeof GOALS_MANAGEMENT_TAB];
+
 export default function HomeScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -89,7 +94,7 @@ export default function HomeScreen() {
   const { tdee: currentTdee } = useEmpiricalTDEE({
     fallbackValue: planData?.tdee ?? nutritionGoalsDefaults.totalCalories,
   });
-  const { isAiConfigured, intuitiveEatingMode, nutritionDisplay } = useSettings();
+  const { isAiConfigured, intuitiveEatingMode, nutritionDisplay, homeSummaryCard } = useSettings();
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
@@ -129,28 +134,6 @@ export default function HomeScreen() {
     };
   }, [openCamera]);
 
-  const {
-    calories: dailyCalories,
-    macros: dailyMacros,
-    secondaryNutrients: dailySecondaryNutrients,
-    nutritionGoal,
-    isLoading: isLoadingNutritionSummary,
-  } = useDailyNutritionSummary({ date: today });
-
-  const weeklyRange = useMemo(() => {
-    const end = new Date(today);
-    end.setDate(end.getDate() - 1); // yesterday — exclude today (may be incomplete)
-    const start = new Date(today);
-    start.setDate(start.getDate() - 7); // 7 complete days before today
-    return { start, end };
-  }, [today]);
-
-  const { rangeNutrients: weeklyNutrients } = useNutritionLogs({
-    mode: 'range',
-    startDate: weeklyRange.start,
-    endDate: weeklyRange.end,
-  });
-
   // Get recent foods for display (limit to today's logs)
   const { recentNutritionLogs, isLoading: isLoadingRecentFoods } = useNutritionLogs({
     mode: 'recent-logs',
@@ -172,6 +155,7 @@ export default function HomeScreen() {
   const [isMyMealsVisible, setIsMyMealsVisible] = useState(false);
   const [isDailySummaryMenuVisible, setIsDailySummaryMenuVisible] = useState(false);
   const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
+  const [goalsManagementTab, setGoalsManagementTab] = useState<GoalsManagementTab>('nutrition');
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
   const [isMoodPromptVisible, setIsMoodPromptVisible] = useState(false);
   const [isWaterPromptVisible, setIsWaterPromptVisible] = useState(false);
@@ -217,6 +201,19 @@ export default function HomeScreen() {
   const handleCloseGoalsManagement = useCallback(() => setIsGoalsManagementModalVisible(false), []);
   const handleCloseCreateCustomFood = useCallback(() => setIsCreateCustomFoodVisible(false), []);
   const handleCloseWorkoutDetail = useCallback(() => setSelectedWorkoutId(undefined), []);
+
+  const handleOpenGoalsManagement = useCallback((tab: GoalsManagementTab) => {
+    setGoalsManagementTab(tab);
+    setIsGoalsManagementModalVisible(true);
+  }, []);
+
+  const handleOpenNutritionGoalsManagement = useCallback(() => {
+    handleOpenGoalsManagement(GOALS_MANAGEMENT_TAB.NUTRITION);
+  }, [handleOpenGoalsManagement]);
+
+  const handleOpenFitnessGoalsManagement = useCallback(() => {
+    handleOpenGoalsManagement(GOALS_MANAGEMENT_TAB.FITNESS);
+  }, [handleOpenGoalsManagement]);
 
   // Memoize modal action handlers
   const handleMealTypeSelect = useCallback((mealType: MealType) => {
@@ -439,61 +436,19 @@ export default function HomeScreen() {
 
         {/* Daily Summary Card */}
         <View className="mb-6 px-4">
-          {isLoadingNutritionSummary ? (
-            <SkeletonLoader width="100%" height={180} borderRadius={16} />
-          ) : nutritionGoal ? (
-            <AnimatedContent>
-              <DailySummaryCard
-                calories={{
-                  consumed: dailyCalories.consumed,
-                  remaining: dailyCalories.remaining,
-                  goal: dailyCalories.goal,
-                }}
-                macros={{
-                  protein: {
-                    value: dailyMacros.protein.value,
-                    goal: dailyMacros.protein.goal,
-                  },
-                  carbs: {
-                    value: dailyMacros.carbs.value,
-                    goal: dailyMacros.carbs.goal,
-                  },
-                  fats: {
-                    value: dailyMacros.fat.value,
-                    goal: dailyMacros.fat.goal,
-                  },
-                  fiber: {
-                    value: dailyMacros.fiber.value,
-                    goal: dailyMacros.fiber.goal,
-                  },
-                }}
-                secondaryNutrients={dailySecondaryNutrients}
-                intuitiveMode={intuitiveEatingMode}
-                nutritionDisplay={nutritionDisplay}
-                weeklyAverages={
-                  weeklyNutrients?.dailyAverages
-                    ? {
-                        calories: weeklyNutrients.dailyAverages.calories,
-                        protein: weeklyNutrients.dailyAverages.protein,
-                        carbs: weeklyNutrients.dailyAverages.carbs,
-                        fats: weeklyNutrients.dailyAverages.fat,
-                        fiber: weeklyNutrients.dailyAverages.fiber,
-                      }
-                    : undefined
-                }
-                menuButton={
-                  <MenuButton
-                    onPress={() => setIsDailySummaryMenuVisible(true)}
-                    size="sm"
-                    color={theme.colors.text.primary}
-                  />
-                }
-              />
-            </AnimatedContent>
+          {homeSummaryCard === 'weekly_streak' ? (
+            <WeeklyHomeSummary
+              date={today}
+              onCreateWorkoutGoalPress={handleOpenFitnessGoalsManagement}
+            />
           ) : (
-            <AnimatedContent>
-              <DailySummaryEmptyState onSetGoals={() => setIsNutritionGoalsVisible(true)} />
-            </AnimatedContent>
+            <DailyHomeSummary
+              date={today}
+              intuitiveEatingMode={intuitiveEatingMode}
+              nutritionDisplay={nutritionDisplay}
+              onOpenMenu={() => setIsDailySummaryMenuVisible(true)}
+              onSetGoals={() => setIsNutritionGoalsVisible(true)}
+            />
           )}
         </View>
 
@@ -787,7 +742,7 @@ export default function HomeScreen() {
         visible={isDailySummaryMenuVisible}
         onClose={handleCloseDailySummaryMenu}
         onEditCurrentGoalPress={() => setIsEditCurrentGoalVisible(true)}
-        onGoalsManagementPress={() => setIsGoalsManagementModalVisible(true)}
+        onGoalsManagementPress={handleOpenNutritionGoalsManagement}
         showEditCurrentGoal={currentNutritionGoal != null}
       />
 
@@ -795,7 +750,7 @@ export default function HomeScreen() {
       <GoalsManagementModal
         visible={isGoalsManagementModalVisible}
         onClose={handleCloseGoalsManagement}
-        tab="nutrition"
+        tab={goalsManagementTab}
       />
 
       {/* Create Custom Food Modal */}

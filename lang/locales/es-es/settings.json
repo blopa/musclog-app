@@ -252,9 +252,27 @@
       "promptContextExercise": "Ejercicio",
       "memorySettings": "AJUSTES DE MEMORIA",
       "useThinkingMode": "Usar modo de razonamiento",
-      "useThinkingModeSubtitle": "Permitir que los proveedores de IA usen razonamiento más profundo cuando sea compatible",
+      "useThinkingModeSubtitle": "Permitir que los proveedores de IA usen razonamiento más profundo cuando sea compatible. Esto consume más tokens y puede aumentar el costo.",
       "maxAiMemories": "Máximo de Memorias de IA",
       "maxAiMemoriesSubtitle": "Número de mensajes anteriores que se recordarán en las conversaciones",
+      "nutritionLogHistoryDays": "Historial de registro de nutrición enviado a la IA",
+      "nutritionLogHistoryDaysSubtitle": "Cuántos días de registros de nutrición pasados enviar a la IA como contexto. Enviar más días consume más tokens.",
+      "nutritionLogHistoryDaysNone": "Ninguno",
+      "nutritionLogHistoryDays7": "7 días",
+      "nutritionLogHistoryDays30": "30 días",
+      "nutritionLogHistoryDays60": "60 días",
+      "nutritionLogHistoryDays90": "90 días",
+      "nutritionLogHistoryDaysNoneDescription": "No enviar historial de registro de nutrición a la IA",
+      "nutritionLogHistoryDaysOptionDescription": "Enviar los últimos {{days}} días de registros de nutrición a la IA",
+      "workoutHistoryDays": "Historial de entrenamientos enviado a la IA",
+      "workoutHistoryDaysSubtitle": "Cuántos días de entrenamientos anteriores enviar a la IA al chatear en modo Fitness. Enviar más días consume más tokens.",
+      "workoutHistoryDaysNone": "Ninguno",
+      "workoutHistoryDays7": "7 días",
+      "workoutHistoryDays30": "30 días",
+      "workoutHistoryDays60": "60 días",
+      "workoutHistoryDays90": "90 días",
+      "workoutHistoryDaysNoneDescription": "No enviar historial de entrenamientos a la IA",
+      "workoutHistoryDaysOptionDescription": "Enviar los últimos {{days}} días de entrenamientos a la IA",
       "onDeviceAi": {
         "sectionTitle": "APPLE INTELLIGENCE",
         "toggle": "Usar Apple Intelligence",
@@ -367,6 +385,22 @@
       "recordingSettings": "Ajustes de grabación",
       "generateChartPayload": "Generar datos de gráfico",
       "generateChartPayloadSubtitle": "Incluir datos de señal y anotaciones de repeticiones para mostrar en el gráfico después de cada serie"
+    },
+    "homeSummaryCard": {
+      "sectionTitle": "Tarjeta de resumen de inicio",
+      "sectionSubtitle": "Elige qué tarjeta aparece en la parte superior de tu pantalla de inicio.",
+      "popupTitle": "Tarjeta de resumen de inicio",
+      "popupSubtitle": "Selecciona una tarjeta para mostrar",
+      "options": {
+        "daily_summary": {
+          "label": "Resumen diario",
+          "description": "Calorías y macros del día"
+        },
+        "weekly_streak": {
+          "label": "Racha semanal",
+          "description": "Entrenamientos de esta semana y tu racha de registro"
+        }
+      }
     }
   }
 }

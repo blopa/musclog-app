@@ -19,5 +19,12 @@ export const CURRENT_USER_SYNC_ID = 'currentUserSyncId';
 
 export const UNREAD_CHAT_MESSAGES_COUNT = 'unreadChatMessages';
 
+/**
+ * AsyncStorage key for the cached macro-logging streak state.
+ * Stores JSON `{ computedDayKey, currentStreak, bestStreak }` so the streak is recomputed
+ * at most once per local calendar day. See `utils/macroStreak.ts`.
+ */
+export const MACRO_STREAK_STATE = 'macroStreakState';
+
 /** Public donation page (F-Droid and web “Support the Project” link only). */
 export const SUPPORT_PROJECT_DONATION_URL = 'https://musclog.app/donate';

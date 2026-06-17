@@ -252,9 +252,27 @@
       "promptContextExercise": "Exercise",
       "memorySettings": "MEMORY SETTINGS",
       "useThinkingMode": "Use Thinking Mode",
-      "useThinkingModeSubtitle": "Allow AI providers to use deeper reasoning when supported",
+      "useThinkingModeSubtitle": "Allow AI providers to use deeper reasoning when supported. This uses more tokens and may increase cost.",
       "maxAiMemories": "Max AI Memories",
       "maxAiMemoriesSubtitle": "Number of previous messages to remember in conversations",
+      "nutritionLogHistoryDays": "Nutrition Log History Sent to AI",
+      "nutritionLogHistoryDaysSubtitle": "How many days of past nutrition logs to send to the AI for context. Sending more days uses more tokens.",
+      "nutritionLogHistoryDaysNone": "None",
+      "nutritionLogHistoryDays7": "7 days",
+      "nutritionLogHistoryDays30": "30 days",
+      "nutritionLogHistoryDays60": "60 days",
+      "nutritionLogHistoryDays90": "90 days",
+      "nutritionLogHistoryDaysNoneDescription": "Don't send nutrition log history to the AI",
+      "nutritionLogHistoryDaysOptionDescription": "Send the last {{days}} days of nutrition logs to the AI",
+      "workoutHistoryDays": "Workout History Sent to AI",
+      "workoutHistoryDaysSubtitle": "How many days of past workouts to send to the AI when chatting in Fitness mode. Sending more days uses more tokens.",
+      "workoutHistoryDaysNone": "None",
+      "workoutHistoryDays7": "7 days",
+      "workoutHistoryDays30": "30 days",
+      "workoutHistoryDays60": "60 days",
+      "workoutHistoryDays90": "90 days",
+      "workoutHistoryDaysNoneDescription": "Don't send workout history to the AI",
+      "workoutHistoryDaysOptionDescription": "Send the last {{days}} days of workouts to the AI",
       "onDeviceAi": {
         "sectionTitle": "APPLE INTELLIGENCE",
         "toggle": "Use Apple Intelligence",
@@ -367,6 +385,22 @@
       "recordingSettings": "Recording Settings",
       "generateChartPayload": "Generate Chart Data",
       "generateChartPayloadSubtitle": "Include signal and rep annotation data for chart display after each set"
+    },
+    "homeSummaryCard": {
+      "sectionTitle": "Home Summary Card",
+      "sectionSubtitle": "Choose which card appears at the top of your home screen.",
+      "popupTitle": "Home Summary Card",
+      "popupSubtitle": "Select a card to display",
+      "options": {
+        "daily_summary": {
+          "label": "Daily Summary",
+          "description": "Calories and macros for the day"
+        },
+        "weekly_streak": {
+          "label": "Weekly Streak",
+          "description": "Workouts this week and your tracking streak"
+        }
+      }
     }
   }
 }

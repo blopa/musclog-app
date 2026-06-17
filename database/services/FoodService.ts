@@ -7,6 +7,7 @@ import FoodFoodPortion from '@/database/models/FoodFoodPortion';
 import FoodPortion from '@/database/models/FoodPortion';
 import MealFood from '@/database/models/MealFood';
 import { ProductV3 } from '@/types/openFoodFacts';
+import { getMusclogQualityScores, type MusclogProduct } from '@/utils/musclogProduct';
 import { getProductName } from '@/utils/openFoodFactsMapper';
 
 import { FoodPortionService } from './FoodPortionService';
@@ -189,7 +190,7 @@ export class FoodService {
    * Create a food entry from a Musclog API product
    */
   static async createFromMusclogProduct(
-    product: { name: string; brand?: string; [key: string]: any },
+    product: MusclogProduct & { name: string; description?: string; [key: string]: any },
     nutritionData: {
       calories: number;
       protein: number;
@@ -211,6 +212,7 @@ export class FoodService {
       'basic',
       { kind: 'mass', scope: 'global' }
     );
+    const quality = getMusclogQualityScores(product);
 
     return await database.write(async () => {
       const now = Date.now();
@@ -243,6 +245,21 @@ export class FoodService {
         food.isFavorite = nutritionData.isFavorite ?? false;
         food.source = 'musclog';
         food.nutritionBasis = 'per_100g';
+
+        const { nutriscore, novaGroup, labels } = quality;
+
+        if (nutriscore != null) {
+          food.nutriscore = nutriscore;
+        }
+
+        if (novaGroup != null) {
+          food.novaGroup = novaGroup;
+        }
+
+        if (labels != null) {
+          food.labels = labels;
+        }
+
         food.createdAt = now;
         food.updatedAt = now;
       });

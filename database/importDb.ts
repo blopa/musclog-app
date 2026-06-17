@@ -13,6 +13,7 @@ import { UNITS_SETTING_TYPE } from '@/constants/settings';
 import { reloadApp } from '@/utils/app';
 import { decrypt } from '@/utils/encryption';
 import { handleError } from '@/utils/handleError';
+import { isMusclogGatewayAvailable } from '@/utils/musclogGatewayAvailability';
 import { normalizeTimezoneToOffset } from '@/utils/timezone';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
@@ -29,7 +30,7 @@ import {
 } from './encryptionHelpers';
 import { createPreRestoreBackup } from './preMigrationBackup';
 import { validateExportDump, type ValidationResult } from './schemaToZod';
-import { ExerciseService, FoodPortionService, MuscleService } from './services';
+import { ExerciseService, FoodPortionService, MuscleService, SettingsService } from './services';
 
 export type ExportDump = {
   _exportVersion: number;
@@ -507,6 +508,12 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
   // backup; re-anchor it to the restored row count so the next boot's loss
   // detector doesn't fire a false "nutrition logs lost" report.
   await updateNutritionLogCountBaseline();
+
+  // Musclog Free Tier is not offered in every runtime; force it off when the
+  // imported backup came from a runtime where the gateway was available.
+  if (!isMusclogGatewayAvailable()) {
+    await SettingsService.setUseMusclogFreeTier(false);
+  }
 
   // Reload the app after importing is complete
   await reloadApp();

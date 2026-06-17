@@ -89,7 +89,7 @@ import {
   parseLocalizedDecimalString,
   sanitizeLocalizedDecimalInput,
 } from '@/utils/localizedDecimalInput';
-import { getMusclogNutritionPer100g } from '@/utils/musclogProduct';
+import { getMusclogDisplayQuality, getMusclogNutritionPer100g } from '@/utils/musclogProduct';
 import {
   extractLabelsFromOFFProduct,
   getNutrimentsFromV3Nutrition,
@@ -1246,6 +1246,14 @@ export function FoodMealTrackingDetailsModal({
     }
 
     const effectiveDetails = refetchedProductDetails ?? productDetails;
+
+    if (
+      isSuccessFoodDetailProductState(effectiveDetails) &&
+      (effectiveDetails as any).source === 'musclog'
+    ) {
+      return getMusclogDisplayQuality((effectiveDetails as any).product);
+    }
+
     if (
       isSuccessFoodDetailProductState(effectiveDetails) &&
       (effectiveDetails as any).source !== 'usda'

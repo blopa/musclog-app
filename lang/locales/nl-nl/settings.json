@@ -252,9 +252,27 @@
       "promptContextExercise": "Oefening",
       "memorySettings": "GEHEUGENINSTELLINGEN",
       "useThinkingMode": "Denkmodus gebruiken",
-      "useThinkingModeSubtitle": "Laat AI-providers diepere redenering gebruiken wanneer dit wordt ondersteund",
+      "useThinkingModeSubtitle": "Laat AI-providers diepere redenering gebruiken wanneer dit wordt ondersteund. Dit verbruikt meer tokens en kan de kosten verhogen.",
       "maxAiMemories": "Max AI-herinneringen",
       "maxAiMemoriesSubtitle": "Aantal vorige berichten om te onthouden in gesprekken",
+      "nutritionLogHistoryDays": "Voedingsloggeschiedenis verzonden naar AI",
+      "nutritionLogHistoryDaysSubtitle": "Hoeveel dagen aan eerdere voedingslogs naar de AI worden verzonden als context. Meer dagen verzenden gebruikt meer tokens.",
+      "nutritionLogHistoryDaysNone": "Geen",
+      "nutritionLogHistoryDays7": "7 dagen",
+      "nutritionLogHistoryDays30": "30 dagen",
+      "nutritionLogHistoryDays60": "60 dagen",
+      "nutritionLogHistoryDays90": "90 dagen",
+      "nutritionLogHistoryDaysNoneDescription": "Geen voedingsloggeschiedenis naar de AI verzenden",
+      "nutritionLogHistoryDaysOptionDescription": "Stuur de laatste {{days}} dagen aan voedingslogs naar de AI",
+      "workoutHistoryDays": "Trainingsgeschiedenis verzonden naar AI",
+      "workoutHistoryDaysSubtitle": "Hoeveel dagen aan eerdere trainingen naar de AI worden verzonden bij chatten in Fitnessmodus. Meer dagen verzenden gebruikt meer tokens.",
+      "workoutHistoryDaysNone": "Geen",
+      "workoutHistoryDays7": "7 dagen",
+      "workoutHistoryDays30": "30 dagen",
+      "workoutHistoryDays60": "60 dagen",
+      "workoutHistoryDays90": "90 dagen",
+      "workoutHistoryDaysNoneDescription": "Geen trainingsgeschiedenis naar de AI verzenden",
+      "workoutHistoryDaysOptionDescription": "Stuur de laatste {{days}} dagen aan trainingen naar de AI",
       "onDeviceAi": {
         "sectionTitle": "APPLE INTELLIGENCE",
         "toggle": "Apple Intelligence gebruiken",
@@ -367,6 +385,22 @@
       "recordingSettings": "Opname-instellingen",
       "generateChartPayload": "Grafiekgegevens genereren",
       "generateChartPayloadSubtitle": "Signaal- en herhalingsannotatiegegevens opnemen voor grafiekweergave na elke set"
+    },
+    "homeSummaryCard": {
+      "sectionTitle": "Startscherm-overzichtskaart",
+      "sectionSubtitle": "Kies welke kaart bovenaan je startscherm verschijnt.",
+      "popupTitle": "Startscherm-overzichtskaart",
+      "popupSubtitle": "Selecteer een kaart om weer te geven",
+      "options": {
+        "daily_summary": {
+          "label": "Dagoverzicht",
+          "description": "Calorieën en macro's voor de dag"
+        },
+        "weekly_streak": {
+          "label": "Wekelijkse reeks",
+          "description": "Trainingen deze week en je bijhoudreeks"
+        }
+      }
     }
   }
 }

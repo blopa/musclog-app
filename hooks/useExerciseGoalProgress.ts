@@ -4,15 +4,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import type ExerciseGoal from '@/database/models/ExerciseGoal';
-import WorkoutLog from '@/database/models/WorkoutLog';
 import {
   ExerciseGoalService,
   UserMetricService,
   UserService,
   WorkoutAnalytics,
+  WorkoutService,
 } from '@/database/services';
 import type { ProgressiveOverloadDataPoint } from '@/database/services/WorkoutAnalytics';
-import { localDayStartMs } from '@/utils/calendarDate';
 import { projectGoal, type ProjectionResult } from '@/utils/exerciseGoalProjection';
 
 interface UseExerciseGoalProgressResult {
@@ -79,14 +78,7 @@ export function useExerciseGoalProgress(goal: ExerciseGoal): UseExerciseGoalProg
         setLoadMultiplier(exercise.loadMultiplier ?? 1.0);
         setUserGender(user?.gender ?? 'other');
       } else if (goal.goalType === 'consistency') {
-        const now = new Date();
-        const weekStartMs = localDayStartMs(now) - 6 * 86_400_000;
-
-        const count = await database
-          .get<WorkoutLog>('workout_logs')
-          .query(Q.where('completed_at', Q.gte(weekStartMs)), Q.where('deleted_at', Q.eq(null)))
-          .fetchCount();
-
+        const count = await WorkoutService.getRollingWeeklyCompletedWorkoutCount();
         setSessionsThisWeek(count);
       }
     } catch (err) {

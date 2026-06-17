@@ -297,6 +297,24 @@ export const NUTRITION_DISPLAY_SETTING_TYPE = 'nutrition_display';
  */
 export const USE_ON_DEVICE_AI_SETTING_TYPE = 'use_on_device_ai';
 
+/**
+ * Setting type for how many days of nutrition log history to send to the LLM.
+ * value: 'none' | '7' | '30' | '60' | '90'.
+ */
+export const NUTRITION_LOG_HISTORY_DAYS_SETTING_TYPE = 'nutrition_log_history_days';
+
+/**
+ * Setting type for how many days of workout history to send to the LLM.
+ * value: 'none' | '7' | '30' | '60' | '90'.
+ */
+export const WORKOUT_HISTORY_DAYS_SETTING_TYPE = 'workout_history_days';
+
+/**
+ * Setting type for which summary card to show on the home screen.
+ * value: 'daily_summary' | 'weekly_streak'. Default: 'daily_summary'.
+ */
+export const HOME_SUMMARY_CARD_SETTING_TYPE = 'home_summary_card';
+
 export const USE_MUSCLOG_FREE_TIER_SETTING_TYPE = 'use_musclog_free_tier';
 export const MUSCLOG_GATEWAY_ANONYMOUS_ID_SETTING_TYPE = 'musclog_gateway_anonymous_id';
 export const DUMP_LLM_REQUESTS_SETTING_TYPE = 'dump_llm_requests';
@@ -317,6 +335,9 @@ export type ProgressionMode = 'reps_first' | 'weight_first';
 export type FoodSearchSource = 'both' | 'openfood' | 'usda' | 'musclog' | 'none';
 export type FoodSource = 'user' | 'usda' | 'ai' | 'openfood' | 'foundation' | 'musclog';
 export type ChartTooltipPosition = 'left' | 'right';
+export type NutritionLogHistoryDays = 'none' | '7' | '30' | '60' | '90';
+export type WorkoutHistoryDays = 'none' | '7' | '30' | '60' | '90';
+export type HomeSummaryCard = 'daily_summary' | 'weekly_streak';
 
 export type UseSettingsResult = {
   units: Units;
@@ -341,4 +362,7 @@ export type UseSettingsResult = {
   progressionMode: ProgressionMode;
   /** 5-char binary string: positions 0-4 = carbs, protein, fats, fiber, alcohol. '1'=visible. */
   nutritionDisplay: string;
+  nutritionLogHistoryDays: NutritionLogHistoryDays;
+  workoutHistoryDays: WorkoutHistoryDays;
+  homeSummaryCard: HomeSummaryCard;
 };

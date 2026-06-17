@@ -21,6 +21,8 @@ import {
   type FoodSearchSource,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
+  HOME_SUMMARY_CARD_SETTING_TYPE,
+  type HomeSummaryCard,
   INTUITIVE_EATING_MODE_SETTING_TYPE,
   LANGUAGE_SETTING_TYPE,
   LOCAL_LLM_API_KEY_SETTING_TYPE,
@@ -39,6 +41,8 @@ import {
   NOTIFICATIONS_WORKOUT_DURATION_SETTING_TYPE,
   NOTIFICATIONS_WORKOUT_REMINDERS_SETTING_TYPE,
   NUTRITION_DISPLAY_SETTING_TYPE,
+  NUTRITION_LOG_HISTORY_DAYS_SETTING_TYPE,
+  type NutritionLogHistoryDays,
   OPENAI_API_KEY_SETTING_TYPE,
   OPENAI_MODEL_SETTING_TYPE,
   PROGRESSION_MODE_SETTING_TYPE,
@@ -60,13 +64,16 @@ import {
   USE_ON_DEVICE_AI_SETTING_TYPE,
   USE_THINKING_MODE_SETTING_TYPE,
   type UseSettingsResult,
+  WORKOUT_HISTORY_DAYS_SETTING_TYPE,
   WORKOUT_INSIGHTS_SETTING_TYPE,
+  type WorkoutHistoryDays,
   WRITE_HEALTH_DATA_SETTING_TYPE,
 } from '@/constants/settings';
 import { database } from '@/database';
 import { waitForDbReady } from '@/database/dbReady';
 import Setting from '@/database/models/Setting';
 import { SettingsService } from '@/database/services/SettingsService';
+import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
 import { getDefaultUnits, getHeightUnit, getWeightUnit } from '@/utils/units';
 
 type SettingsState = {
@@ -121,6 +128,9 @@ type SettingsState = {
   nutritionDisplay: string;
   advancedDataManagement: boolean;
   bleGenerateChartPayload: boolean;
+  nutritionLogHistoryDays: NutritionLogHistoryDays;
+  workoutHistoryDays: WorkoutHistoryDays;
+  homeSummaryCard: HomeSummaryCard;
   isLoading: boolean;
 };
 
@@ -176,6 +186,9 @@ const DEFAULT_STATE: SettingsState = {
   nutritionDisplay: '11111',
   advancedDataManagement: false,
   bleGenerateChartPayload: false,
+  nutritionLogHistoryDays: 'none',
+  workoutHistoryDays: 'none',
+  homeSummaryCard: 'daily_summary',
   isLoading: true,
 };
 
@@ -233,6 +246,8 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
   const rawNavSlot2 = getString(map, NAV_SLOT_2_SETTING_TYPE);
   const rawNavSlot3 = getString(map, NAV_SLOT_3_SETTING_TYPE);
   const rawFoodSearchSource = getString(map, FOOD_SEARCH_SOURCE_SETTING_TYPE);
+  const rawNutritionLogHistoryDays = getString(map, NUTRITION_LOG_HISTORY_DAYS_SETTING_TYPE);
+  const rawWorkoutHistoryDays = getString(map, WORKOUT_HISTORY_DAYS_SETTING_TYPE);
   const rawConversationContext = getString(map, CONVERSATION_CONTEXT);
   const rawChartTooltipPosition = getString(map, CHART_TOOLTIP_POSITION_SETTING_TYPE);
   const language = getString(map, LANGUAGE_SETTING_TYPE, 'en-US');
@@ -240,6 +255,9 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
   const rawProgressionMode = getString(map, PROGRESSION_MODE_SETTING_TYPE);
   const progressionMode: ProgressionMode =
     rawProgressionMode === 'weight_first' ? 'weight_first' : 'reps_first';
+  const rawHomeSummaryCard = getString(map, HOME_SUMMARY_CARD_SETTING_TYPE);
+  const homeSummaryCard: HomeSummaryCard =
+    rawHomeSummaryCard === 'weekly_streak' ? 'weekly_streak' : 'daily_summary';
 
   return {
     language,
@@ -298,6 +316,9 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     nutritionDisplay: getString(map, NUTRITION_DISPLAY_SETTING_TYPE, '11111'),
     advancedDataManagement: getBoolean(map, ADVANCED_DATA_MANAGEMENT_SETTING_TYPE, false),
     bleGenerateChartPayload: getBoolean(map, BLE_GENERATE_CHART_PAYLOAD_SETTING_TYPE, false),
+    nutritionLogHistoryDays: (rawNutritionLogHistoryDays as NutritionLogHistoryDays) || 'none',
+    workoutHistoryDays: (rawWorkoutHistoryDays as WorkoutHistoryDays) || 'none',
+    homeSummaryCard,
     isLoading: false,
   };
 }
@@ -354,6 +375,7 @@ export type SettingsContextType = UseSettingsResult & {
   nutritionDisplay: string;
   advancedDataManagement: boolean;
   bleGenerateChartPayload: boolean;
+  homeSummaryCard: HomeSummaryCard;
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -454,8 +476,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   ]);
 
   const isAiConfigured = useMemo(() => {
+    const useMusclogGateway = effectiveUseMusclogGateway(state.useMusclogFreeTier);
+
     return (
-      state.useMusclogFreeTier ||
+      useMusclogGateway ||
       state.useOnDeviceAi ||
       (state.enableLocalLlm && state.localLlmBaseUrl.trim() !== '') ||
       (state.enableGoogleGemini && decryptedApiKeys.googleGeminiApiKey.trim() !== '') ||
@@ -476,7 +500,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   // On-device (Apple Intelligence) doesn't support image analysis, so photo features are disabled
   // when it would be the active provider.
   const isAiMealPhotoEnabled = useMemo(() => {
-    if (state.useMusclogFreeTier) {
+    if (effectiveUseMusclogGateway(state.useMusclogFreeTier)) {
       return true;
     }
 

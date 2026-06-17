@@ -22,9 +22,14 @@ import { ToggleInput } from '@/components/theme/ToggleInput';
 import { GEMINI_MODELS, OPENAI_MODELS } from '@/constants/ai';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useTheme } from '@/hooks/useTheme';
+import {
+  effectiveUseMusclogGateway,
+  isMusclogGatewayAvailable,
+} from '@/utils/musclogGatewayAvailability';
 import { isOnDeviceAiAvailable, isOnDeviceAiCapable } from '@/utils/onDeviceAi';
 
 import { AiCustomPromptsModal } from './AiCustomPromptsModal';
+import { HistoryPickerField } from './aiHistorySettings';
 import { FullScreenModal } from './FullScreenModal';
 
 type AIIntegrationCardProps = {
@@ -256,8 +261,14 @@ export function AISettingsModal({
     handleUseThinkingModeChange,
     maxAiMemories: debouncedMaxAiMemories,
     handleMaxAiMemoriesChange,
+    nutritionLogHistoryDays: debouncedNutritionLogHistoryDays,
+    handleNutritionLogHistoryDaysChange,
+    workoutHistoryDays: debouncedWorkoutHistoryDays,
+    handleWorkoutHistoryDaysChange,
     flushAllPendingChanges,
   } = useDebouncedSettings(500);
+  const musclogGatewayAvailable = isMusclogGatewayAvailable();
+  const useMusclogGateway = effectiveUseMusclogGateway(debouncedUseMusclogFreeTier);
 
   const reloadOnDeviceAiState = useCallback(async () => {
     if (Platform.OS !== 'ios') {
@@ -475,36 +486,38 @@ export function AISettingsModal({
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.aiSettings.title')}>
       <View className="gap-6 px-4 py-6" style={{ minHeight: '100%' }}>
-        {/* Musclog Free Tier Section */}
-        <View className="gap-3">
-          <Text
-            className="px-5 text-xs font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.accent.primary }}
-          >
-            {t('settings.aiSettings.musclogFreeTier.sectionTitle')}
-          </Text>
-          <ToggleInput
-            items={[
-              {
-                key: 'use-musclog-free-tier',
-                label: t('settings.aiSettings.musclogFreeTier.toggle'),
-                subtitle: t('settings.aiSettings.musclogFreeTier.toggleSubtitle'),
-                value: debouncedUseMusclogFreeTier,
-                onValueChange: handleUseMusclogFreeTierChange,
-              },
-            ]}
-          />
-          {debouncedUseMusclogFreeTier ? (
-            <Text className="px-5 text-xs" style={{ color: theme.colors.text.tertiary }}>
-              {t('settings.aiSettings.musclogFreeTier.activeNote')}
+        {/* Musclog Free Tier Section — hidden on web production builds (CORS/quota constraints) */}
+        {musclogGatewayAvailable ? (
+          <View className="gap-3">
+            <Text
+              className="px-5 text-xs font-bold uppercase tracking-wider"
+              style={{ color: theme.colors.accent.primary }}
+            >
+              {t('settings.aiSettings.musclogFreeTier.sectionTitle')}
             </Text>
-          ) : null}
-        </View>
+            <ToggleInput
+              items={[
+                {
+                  key: 'use-musclog-free-tier',
+                  label: t('settings.aiSettings.musclogFreeTier.toggle'),
+                  subtitle: t('settings.aiSettings.musclogFreeTier.toggleSubtitle'),
+                  value: debouncedUseMusclogFreeTier,
+                  onValueChange: handleUseMusclogFreeTierChange,
+                },
+              ]}
+            />
+            {useMusclogGateway ? (
+              <Text className="px-5 text-xs" style={{ color: theme.colors.text.tertiary }}>
+                {t('settings.aiSettings.musclogFreeTier.activeNote')}
+              </Text>
+            ) : null}
+          </View>
+        ) : null}
 
         {/* Provider sections (dimmed when free tier is active) */}
         <View
-          style={{ opacity: debouncedUseMusclogFreeTier ? 0.4 : 1 }}
-          pointerEvents={debouncedUseMusclogFreeTier ? 'none' : 'auto'}
+          style={{ opacity: useMusclogGateway ? 0.4 : 1 }}
+          pointerEvents={useMusclogGateway ? 'none' : 'auto'}
         >
           <View className="gap-6">
             {/* Google Gemini Integration Section */}
@@ -708,6 +721,16 @@ export function AISettingsModal({
               {t('settings.aiSettings.maxAiMemoriesSubtitle')}
             </Text>
           </View>
+          <HistoryPickerField
+            kind="nutrition"
+            value={debouncedNutritionLogHistoryDays ?? 'none'}
+            onChange={handleNutritionLogHistoryDaysChange}
+          />
+          <HistoryPickerField
+            kind="workout"
+            value={debouncedWorkoutHistoryDays ?? 'none'}
+            onChange={handleWorkoutHistoryDaysChange}
+          />
         </View>
 
         {/* Image Processing Section */}

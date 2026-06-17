@@ -5,6 +5,8 @@ import {
   ClipboardCheck,
   Droplets,
   Dumbbell,
+  Flame,
+  LayoutGrid,
   Leaf,
   MessageSquare,
   Settings,
@@ -21,7 +23,7 @@ import { BottomPopUp } from '@/components/BottomPopUp';
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/OptionsMultiSelector';
 import { PickerButton } from '@/components/theme/PickerButton';
-import type { NavItemKey } from '@/constants/settings';
+import type { HomeSummaryCard, NavItemKey } from '@/constants/settings';
 import SettingsService from '@/database/services/SettingsService';
 import { useNavigationItems } from '@/hooks/useNavigationItems';
 import { useTheme } from '@/hooks/useTheme';
@@ -58,6 +60,14 @@ const MACRO_ICON: Record<MacroKey, typeof Wheat> = {
   alcohol: Wine,
 };
 
+/** Home summary card options and their icons. */
+const HOME_SUMMARY_CARD_OPTIONS = ['daily_summary', 'weekly_streak'] as const;
+
+const HOME_SUMMARY_CARD_ICON: Record<HomeSummaryCard, typeof LayoutGrid> = {
+  daily_summary: LayoutGrid,
+  weekly_streak: Flame,
+};
+
 /** Convert a 5-char binary string to an array of visible macro keys. */
 function binaryToSelected(binary: string): MacroKey[] {
   return MACRO_KEYS.filter((_, i) => binary[i] === '1');
@@ -76,6 +86,8 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   const [activeSlot, setActiveSlot] = useState<SlotNumber | null>(null);
   const [macrosPopupVisible, setMacrosPopupVisible] = useState(false);
   const [selectedMacros, setSelectedMacros] = useState<MacroKey[]>([...MACRO_KEYS]);
+  const [homeCardPopupVisible, setHomeCardPopupVisible] = useState(false);
+  const [homeSummaryCard, setHomeSummaryCard] = useState<HomeSummaryCard>('daily_summary');
 
   useEffect(() => {
     if (!visible) {
@@ -84,7 +96,16 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     SettingsService.getNutritionDisplay().then((binary) => {
       setSelectedMacros(binaryToSelected(binary));
     });
+    SettingsService.getHomeSummaryCard().then(setHomeSummaryCard);
   }, [visible]);
+
+  const handleHomeSummaryCardChange = async (card: HomeSummaryCard) => {
+    setHomeSummaryCard(card);
+    setHomeCardPopupVisible(false);
+    await SettingsService.setHomeSummaryCard(card);
+  };
+
+  const HomeSummaryCardIcon = HOME_SUMMARY_CARD_ICON[homeSummaryCard];
 
   const handleMacrosChange = async (ids: MacroKey[]) => {
     setSelectedMacros(ids);
@@ -209,6 +230,26 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             onPress={() => setMacrosPopupVisible(true)}
           />
         </View>
+
+        <View
+          style={{
+            marginHorizontal: theme.spacing.padding.base,
+          }}
+        >
+          <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
+            {t('settings.homeSummaryCard.sectionTitle')}
+          </Text>
+          <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+            {t('settings.homeSummaryCard.sectionSubtitle')}
+          </Text>
+          <PickerButton
+            icon={
+              <HomeSummaryCardIcon size={theme.iconSize.md} color={theme.colors.accent.primary} />
+            }
+            label={t(`settings.homeSummaryCard.options.${homeSummaryCard}.label`)}
+            onPress={() => setHomeCardPopupVisible(true)}
+          />
+        </View>
       </View>
       <BottomPopUp
         visible={macrosPopupVisible}
@@ -237,6 +278,20 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
         title={activeSlot !== null ? slotLabels[activeSlot] : ''}
         subtitle={t('settings.visualSettings.selectItem')}
         items={menuItems}
+      />
+      <BottomPopUpMenu
+        visible={homeCardPopupVisible}
+        onClose={() => setHomeCardPopupVisible(false)}
+        title={t('settings.homeSummaryCard.popupTitle')}
+        subtitle={t('settings.homeSummaryCard.popupSubtitle')}
+        items={HOME_SUMMARY_CARD_OPTIONS.map((card) => ({
+          icon: HOME_SUMMARY_CARD_ICON[card],
+          iconColor: theme.colors.accent.primary,
+          iconBgColor: theme.colors.background.iconDark,
+          title: t(`settings.homeSummaryCard.options.${card}.label`),
+          description: t(`settings.homeSummaryCard.options.${card}.description`),
+          onPress: () => handleHomeSummaryCardChange(card),
+        }))}
       />
     </FullScreenModal>
   );
