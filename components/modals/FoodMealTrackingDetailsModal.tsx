@@ -27,10 +27,8 @@ import { MealIngredient } from '@/components/cards/MealNutritionHighlightCard';
 import { FilterTabs } from '@/components/FilterTabs';
 import { MacroInput } from '@/components/MacroInput';
 import {
-  type MicronutrientFormStrings,
   micronutrientFormStringsFromMicros,
   MicronutrientsExpandableSection,
-  parseMicronutrientFormStringsToPartial,
 } from '@/components/MicronutrientsExpandableSection';
 import { ServingSizeSelector } from '@/components/ServingSizeSelector';
 import { Button } from '@/components/theme/Button';
@@ -38,24 +36,14 @@ import { StepperInput } from '@/components/theme/StepperInput';
 import { TextInput } from '@/components/theme/TextInput';
 import type { Units } from '@/constants/settings';
 import { useSnackbar } from '@/context/SnackbarContext';
-import { database } from '@/database';
 import type { DecryptedNutritionLogSnapshot, MealType, MicrosData } from '@/database/models';
 import Food from '@/database/models/Food';
 import FoodPortion from '@/database/models/FoodPortion';
 import Meal from '@/database/models/Meal';
-import {
-  FoodPortionService,
-  FoodService,
-  MealService,
-  NutritionService,
-} from '@/database/services';
-import {
-  fetchMusclogProductByBarcode,
-  fetchOFFProductByBarcode,
-  fetchUSDAProductByBarcode,
-  type ProductDetailsQueryData,
-  useFoodProductDetails,
-} from '@/hooks/useFoodProductDetails';
+import { FoodPortionService, FoodService, MealService } from '@/database/services';
+import { useFoodEditForm } from '@/hooks/useFoodEditForm';
+import { useFoodMealTrackingActions } from '@/hooks/useFoodMealTrackingActions';
+import { type ProductDetailsQueryData, useFoodProductDetails } from '@/hooks/useFoodProductDetails';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import {
@@ -65,30 +53,22 @@ import {
 } from '@/types/guards/openFoodFacts';
 import {
   calendarDateFromRecordDay,
-  combineLocalDateAndTime,
-  instantForDateTimeInTimezone,
   localCalendarDayDate,
   wallClockDateInTimezone,
 } from '@/utils/calendarDate';
 import {
+  areCoreMacrosEffectivelyZero,
   getProductBarcodeFromSearchProduct,
-  inferBarcodeNutritionSource,
-  parseCoreMacrosFromAlternateSource,
   parseServingSizeFromProduct,
 } from '@/utils/externalFoodProduct';
 import { formatAppRoundedDecimal } from '@/utils/formatAppNumber';
 import { formatDisplayGrams } from '@/utils/formatDisplayWeight';
-import { handleError } from '@/utils/handleError';
 import {
   applyInferredCaloriesFromMacrosIfNeeded,
   inferCaloriesFromMacrosPer100g,
   toFiniteMacro,
 } from '@/utils/inferCaloriesFromMacros';
-import {
-  getDecimalSeparator,
-  parseLocalizedDecimalString,
-  sanitizeLocalizedDecimalInput,
-} from '@/utils/localizedDecimalInput';
+import { getDecimalSeparator } from '@/utils/localizedDecimalInput';
 import { getMusclogDisplayQuality, getMusclogNutritionPer100g } from '@/utils/musclogProduct';
 import {
   extractLabelsFromOFFProduct,
@@ -167,23 +147,6 @@ function getMealDefaultTime(mealType: MealType, date: Date): Date {
 
 function formatTimezoneLabel(timezone?: string): string | undefined {
   return timezone ? `UTC${timezone}` : undefined;
-}
-
-function areCoreMacrosEffectivelyZero(data: {
-  calories?: unknown;
-  protein?: unknown;
-  carbs?: unknown;
-  fat?: unknown;
-  fiber?: unknown;
-}): boolean {
-  const eps = 1e-6;
-  return (
-    Math.abs(toFiniteMacro(data.calories)) < eps &&
-    Math.abs(toFiniteMacro(data.protein)) < eps &&
-    Math.abs(toFiniteMacro(data.carbs)) < eps &&
-    Math.abs(toFiniteMacro(data.fat)) < eps &&
-    Math.abs(toFiniteMacro(data.fiber)) < eps
-  );
 }
 
 type FoodDetailsModalProps = {
@@ -325,20 +288,6 @@ export function FoodMealTrackingDetailsModal({
   const [localFood, setLocalFood] = useState<Food | null>(null);
   const [hasCheckedLocalFood, setHasCheckedLocalFood] = useState(false);
   const [matchedPortion, setMatchedPortion] = useState<FoodPortion | null>(null); // Store matched portion for new foods
-  /** User edits to AI-sourced product (name, barcode, description, per-100g macros). */
-  const [editedOverrides, setEditedOverrides] = useState<{
-    name?: string;
-    barcode?: string;
-    description?: string;
-    calories?: number;
-    protein?: number;
-    carbs?: number;
-    fat?: number;
-    fiber?: number;
-    micros?: Partial<MicrosData>;
-  } | null>(null);
-  const [isEditPopUpVisible, setIsEditPopUpVisible] = useState(false);
-  const [editMicroOpen, setEditMicroOpen] = useState(false);
   /** Holds product data fetched from an alternate source when the primary source had zero macros. */
   const [refetchedProductDetails, setRefetchedProductDetails] =
     useState<ProductDetailsQueryData | null>(null);
@@ -348,17 +297,6 @@ export function FoodMealTrackingDetailsModal({
   const [localCanEdit, setLocalCanEdit] = useState(canEdit);
   /** After "try another source" runs and no provider returns usable macros — show edit-only banner, hide retry. */
   const [alternateSourceLookupFailed, setAlternateSourceLookupFailed] = useState(false);
-  const [editForm, setEditForm] = useState<{
-    name: string;
-    barcode: string;
-    description: string;
-    calories: string;
-    protein: string;
-    carbs: string;
-    fat: string;
-    fiber: string;
-    micronutrients: MicronutrientFormStrings;
-  } | null>(null);
 
   // How the modal was opened: meal / log / local Food row vs. external catalog (barcode or preloaded search product).
   const getMode = (): FoodDetailsNutritionSectionMode => {
@@ -1171,14 +1109,6 @@ export function FoodMealTrackingDetailsModal({
     return out;
   }, [food, localFood, foodLog, foodLogDecrypted, rawNutritionalData]);
 
-  const effectiveMicrosPer100g = useMemo(
-    () => ({
-      ...baseMicrosPer100g,
-      ...(editedOverrides?.micros ?? {}),
-    }),
-    [baseMicrosPer100g, editedOverrides?.micros]
-  );
-
   // Compute inferred calories from macros for warning display
   const inferredCaloriesPer100g = useMemo(() => {
     return inferCaloriesFromMacrosPer100g(
@@ -1195,6 +1125,30 @@ export function FoodMealTrackingDetailsModal({
     rawNutritionalData.fiber,
     rawNutritionalData.alcohol,
   ]);
+
+  // Edit-pop-up state + shared edit handlers (overrides feed the derived nutrition below).
+  const {
+    editedOverrides,
+    editForm,
+    setEditForm,
+    isEditPopUpVisible,
+    editMicroOpen,
+    setEditMicroOpen,
+    openEditPopUp,
+    closeEditPopUp,
+    saveEditPopUp: handleSaveEditPopUp,
+    acceptInferredCalories: handleAcceptInferredCalories,
+    handleEditFormNumericChange,
+    reset: resetEditForm,
+  } = useFoodEditForm({ decimalSeparator, inferredCaloriesPer100g });
+
+  const effectiveMicrosPer100g = useMemo(
+    () => ({
+      ...baseMicrosPer100g,
+      ...(editedOverrides?.micros ?? {}),
+    }),
+    [baseMicrosPer100g, editedOverrides?.micros]
+  );
 
   const showCaloriesTooLowWarning = useMemo(() => {
     const rawCal = toFiniteMacro(rawNutritionalData.calories);
@@ -1761,431 +1715,7 @@ export function FoodMealTrackingDetailsModal({
     { id: 'other', label: t('food.meals.other') },
   ];
 
-  // TODO: move this and other helper functions to it's own hook
-  const handleAddFood = useCallback(async () => {
-    setIsAddingFood(true);
-    // Small delay to allow React to render the loading state before closing
-    await new Promise((resolve) => setTimeout(resolve, 1));
-
-    try {
-      // The stored `date` carries the consumed datetime: picked day + picked time.
-      const loggedDateTime = combineLocalDateAndTime(selectedDate, selectedTime);
-
-      if (meal) {
-        try {
-          const mealWithFoods = await MealService.getMealWithFoods(meal.id);
-
-          if (!mealWithFoods) {
-            throw new Error('Failed to get meal foods');
-          }
-
-          // Log each food in the meal, scaled by (amount in g / total meal g)
-          const mealGroupId = meal.id;
-          const mealGroupName = meal.name ?? undefined;
-          for (const mealFood of mealWithFoods.foods) {
-            await NutritionService.logFood(
-              mealFood.foodId,
-              loggedDateTime,
-              selectedMeal,
-              mealFood.amount * mealScaleFactor,
-              mealFood.portionId,
-              undefined,
-              mealGroupId,
-              mealGroupName
-            );
-          }
-
-          // Update favorite status if needed
-          if (isFavorite && !meal.isFavorite) {
-            await MealService.toggleMealFavorite(meal.id);
-          } else if (!isFavorite && meal.isFavorite) {
-            await MealService.toggleMealFavorite(meal.id);
-          }
-
-          onLogMeal?.({ meal: selectedMeal, date: selectedDate });
-
-          onNutritionLogTracked?.();
-          onClose();
-          onFoodTracked?.();
-
-          showSnackbar('success', t('food.foodDetails.successMessage'));
-        } catch (err) {
-          handleError(err, 'FoodMealTrackingDetailsModal.handleAddFood', {
-            snackbarMessage: t('food.foodDetails.errorMessage'),
-          });
-        } finally {
-          setIsAddingFood(false);
-        }
-
-        return;
-      }
-
-      // If editing an existing food log, update it instead of creating a new one
-      if (foodLog) {
-        try {
-          const timezone = foodLog.timezone;
-          // Store the consumed datetime: picked day + picked time, anchored to the
-          // record's recording timezone.
-          const dateTimestamp = instantForDateTimeInTimezone(selectedDate, selectedTime, timezone);
-          await foodLog.updateTrackingDetails({
-            amount: servingSize,
-            date: dateTimestamp,
-            mealType: selectedMeal,
-            portionId: resolvedFoodServingMode ? foodLog.portionId : undefined,
-            timezone,
-          });
-
-          onAddFood?.({ servingSize, meal: selectedMeal, date: selectedDate });
-
-          onClose();
-          onFoodTracked?.();
-
-          showSnackbar('success', t('food.foodDetails.successMessage'));
-        } catch (err) {
-          handleError(err, 'FoodMealTrackingDetailsModal.handleAddFood', {
-            snackbarMessage: t('food.foodDetails.errorMessage'),
-          });
-        } finally {
-          setIsAddingFood(false);
-        }
-
-        return;
-      }
-      const foodData = food ?? localFood;
-      if (foodData) {
-        const effectivePdForName = refetchedProductDetails ?? productDetails;
-        const pendingFoodUpdates: Record<string, unknown> = {};
-
-        // Apply user edits (name, barcode, description, macros, micros) to the persisted food record
-        if (editedOverrides) {
-          if (editedOverrides.name != null) {
-            pendingFoodUpdates.name = editedOverrides.name;
-          }
-
-          if (editedOverrides.barcode != null) {
-            pendingFoodUpdates.barcode = editedOverrides.barcode;
-          }
-
-          if (editedOverrides.description != null) {
-            pendingFoodUpdates.description = editedOverrides.description;
-          }
-
-          if (editedOverrides.calories != null) {
-            pendingFoodUpdates.calories = editedOverrides.calories;
-          }
-
-          if (editedOverrides.protein != null) {
-            pendingFoodUpdates.protein = editedOverrides.protein;
-          }
-
-          if (editedOverrides.carbs != null) {
-            pendingFoodUpdates.carbs = editedOverrides.carbs;
-          }
-
-          if (editedOverrides.fat != null) {
-            pendingFoodUpdates.fat = editedOverrides.fat;
-          }
-
-          if (editedOverrides.fiber != null) {
-            pendingFoodUpdates.fiber = editedOverrides.fiber;
-          }
-
-          if (editedOverrides.micros != null) {
-            pendingFoodUpdates.micros = effectiveMicrosPer100g;
-          }
-        }
-
-        // If localFood has no name and no name override, try to fill from API details
-        // so NutritionService.logFood reads the correct name from the food record
-        if (
-          localFood &&
-          !localFood.name?.trim() &&
-          pendingFoodUpdates.name == null &&
-          isSuccessFoodDetailProductState(effectivePdForName)
-        ) {
-          const { name: correctName, found } = getProductName(effectivePdForName);
-          if (found) {
-            pendingFoodUpdates.name = correctName;
-          }
-        }
-
-        // Persist inferred per-100g calories so logFood snapshot matches the modal (Food row was 0 kcal).
-        if (
-          toFiniteMacro(foodData.calories) <= 0 &&
-          toFiniteMacro(nutritionalData.calories) > 0 &&
-          pendingFoodUpdates.calories == null
-        ) {
-          pendingFoodUpdates.calories = nutritionalData.calories;
-        }
-
-        const shouldPersistFoodUpdates =
-          Object.keys(pendingFoodUpdates).length > 0 || (isFavorite && !foodData.isFavorite);
-
-        if (shouldPersistFoodUpdates) {
-          await database.write(async () => {
-            if (Object.keys(pendingFoodUpdates).length > 0) {
-              await foodData.update((record: any) => {
-                for (const [key, value] of Object.entries(pendingFoodUpdates)) {
-                  record[key] = value;
-                }
-              });
-            }
-
-            if (isFavorite && !foodData.isFavorite) {
-              await foodData.update((record: any) => {
-                record.isFavorite = true;
-              });
-            }
-          });
-        }
-
-        const logFoodPromise = NutritionService.logFood(
-          foodData.id,
-          loggedDateTime,
-          selectedMeal,
-          servingSize
-        );
-
-        await Promise.all([logFoodPromise, new Promise((resolve) => setTimeout(resolve, 100))]);
-
-        onAddFood?.({
-          servingSize,
-          meal: selectedMeal,
-          date: selectedDate,
-        });
-
-        onNutritionLogTracked?.();
-        onClose();
-        onFoodTracked?.();
-
-        showSnackbar('success', t('food.foodDetails.successMessage'));
-        return;
-      }
-
-      // Handle API food: prefer barcode-fetched details over search results to get micros
-      let productToSave: any =
-        (isSuccessFoodDetailProductState(productDetails) ? productDetails.product : null) ??
-        productFromSearch;
-      if (!productToSave) {
-        throw new Error('Product details not loaded');
-      }
-
-      // Apply user edits (e.g. from AI-sourced data) to name, barcode and description
-      if (editedOverrides) {
-        if (productToSave.fdcId) {
-          productToSave = {
-            ...productToSave,
-            description: editedOverrides.name?.trim() || productToSave.description,
-            gtinUpc: editedOverrides.barcode?.trim() || productToSave.gtinUpc,
-            ingredients: editedOverrides.description?.trim() || productToSave.ingredients,
-          };
-        } else {
-          const codeFromProduct = (productToSave as { code?: string }).code;
-          const fallbackName = getProductName(productToSave).name;
-          productToSave = {
-            ...productToSave,
-            product_name: (editedOverrides.name?.trim() || fallbackName).trim() || fallbackName,
-            code: (editedOverrides.barcode?.trim() || codeFromProduct) ?? '',
-            ingredients_text: editedOverrides.description?.trim() || productToSave.ingredients_text,
-          } as typeof productToSave;
-        }
-      }
-
-      // Musclog handle
-      if ((productDetails as any)?.source === 'musclog') {
-        const musclogProduct = (productDetails as any).product;
-        const newFood = await FoodService.createFromMusclogProduct(
-          musclogProduct,
-          {
-            calories: nutritionalData.calories,
-            protein: nutritionalData.protein,
-            carbs: nutritionalData.carbs,
-            fat: nutritionalData.fat,
-            fiber: nutritionalData.fiber,
-            isFavorite: isFavorite,
-          },
-          barcode ?? undefined
-        );
-
-        const logFoodPromise = NutritionService.logFood(
-          newFood.id,
-          loggedDateTime,
-          selectedMeal as MealType,
-          servingSize
-        );
-
-        await Promise.all([logFoodPromise, new Promise((resolve) => setTimeout(resolve, 100))]);
-
-        onAddFood?.({
-          servingSize,
-          meal: selectedMeal,
-          date: selectedDate,
-        });
-
-        onClose();
-        onFoodTracked?.();
-
-        showSnackbar('success', t('food.foodDetails.successMessage'));
-        return;
-      }
-
-      // USDA handle
-      if (productToSave.fdcId) {
-        const pdForCreate = refetchedProductDetails ?? productDetails;
-        const usdaRawMicros =
-          pdForCreate && (pdForCreate as any)?.product?.foodNutrients
-            ? ((pdForCreate as any).product as any).foodNutrients.reduce((acc: any, n: any) => {
-                const num = n.nutrientNumber || n.number || n.nutrient?.number;
-                if (num) {
-                  acc[num] = n.value ?? n.amount;
-                }
-                return acc;
-              }, {})
-            : {};
-        const newFood = await FoodService.createFromUSDAProduct(
-          productToSave,
-          {
-            calories: nutritionalData.calories,
-            protein: nutritionalData.protein,
-            carbs: nutritionalData.carbs,
-            fat: nutritionalData.fat,
-            fiber: nutritionalData.fiber,
-            sugar: nutritionalData.sugar,
-            saturatedFat: nutritionalData.saturatedFat,
-            sodium: nutritionalData.sodium,
-            micros: {
-              ...usdaRawMicros,
-              ...effectiveMicrosPer100g,
-            },
-            isFavorite: isFavorite,
-          },
-          matchedPortion
-        );
-
-        const logFoodPromise = NutritionService.logFood(
-          newFood.id,
-          loggedDateTime,
-          selectedMeal as MealType,
-          servingSize
-        );
-
-        await Promise.all([logFoodPromise, new Promise((resolve) => setTimeout(resolve, 100))]);
-
-        onAddFood?.({
-          servingSize,
-          meal: selectedMeal,
-          date: selectedDate,
-        });
-
-        onClose();
-        onFoodTracked?.();
-
-        showSnackbar('success', t('food.foodDetails.successMessage'));
-        return;
-      }
-
-      // Save product to local database (search result has same shape as V3 for our usage)
-      const pdForOffCreate = refetchedProductDetails ?? productDetails;
-      const offRawNutriments =
-        pdForOffCreate && (pdForOffCreate as any)?.product?.nutriments
-          ? ((pdForOffCreate as any).product as any).nutriments
-          : {};
-
-      const newFood = await FoodService.createFromV3Product(
-        productToSave,
-        {
-          calories: nutritionalData.calories,
-          protein: nutritionalData.protein,
-          carbs: nutritionalData.carbs,
-          fat: nutritionalData.fat,
-          fiber: nutritionalData.fiber,
-          sugar: nutritionalData.sugar,
-          saturatedFat: nutritionalData.saturatedFat,
-          sodium: nutritionalData.sodium,
-          micros: {
-            ...offRawNutriments,
-            ...effectiveMicrosPer100g,
-          },
-          isFavorite: isFavorite,
-          nutriscore:
-            typeof productToSave.nutriscore_grade === 'string' && productToSave.nutriscore_grade
-              ? productToSave.nutriscore_grade.toLowerCase()
-              : productFromSearch?.nutriscore,
-          ecoscore:
-            typeof productToSave.ecoscore_grade === 'string' && productToSave.ecoscore_grade
-              ? productToSave.ecoscore_grade.toLowerCase()
-              : productFromSearch?.ecoscore,
-          novaGroup:
-            typeof productToSave.nova_group === 'number'
-              ? productToSave.nova_group
-              : productFromSearch?.novaGroup,
-          labels: extractLabelsFromOFFProduct(productToSave) ?? productFromSearch?.labels,
-        },
-        matchedPortion
-      );
-
-      const logFoodPromise = NutritionService.logFood(
-        newFood.id,
-        loggedDateTime,
-        selectedMeal as MealType,
-        servingSize
-      );
-
-      await Promise.all([logFoodPromise, new Promise((resolve) => setTimeout(resolve, 100))]);
-
-      onAddFood?.({
-        servingSize,
-        meal: selectedMeal,
-        date: selectedDate,
-      });
-
-      onNutritionLogTracked?.();
-      onClose();
-      onFoodTracked?.();
-
-      showSnackbar('success', t('food.foodDetails.successMessage'));
-    } catch (error) {
-      handleError(error, 'FoodMealTrackingDetailsModal.handleAddFood 2', {
-        snackbarMessage: t('food.foodDetails.errorMessage'),
-      });
-    } finally {
-      setIsAddingFood(false);
-    }
-  }, [
-    meal,
-    foodLog,
-    food,
-    localFood,
-    productDetails,
-    productFromSearch,
-    editedOverrides,
-    nutritionalData.calories,
-    nutritionalData.protein,
-    nutritionalData.carbs,
-    nutritionalData.fat,
-    nutritionalData.fiber,
-    nutritionalData.sugar,
-    nutritionalData.saturatedFat,
-    nutritionalData.sodium,
-    isFavorite,
-    matchedPortion,
-    selectedDate,
-    selectedTime,
-    selectedMeal,
-    servingSize,
-    onAddFood,
-    onClose,
-    onFoodTracked,
-    showSnackbar,
-    t,
-    onLogMeal,
-    mealScaleFactor,
-    resolvedFoodServingMode,
-    refetchedProductDetails,
-    barcode,
-    effectiveMicrosPer100g,
-  ]);
-
+  // Gathers the modal-specific initial values, then hands off to the shared edit-pop-up state.
   const handleOpenEditPopUp = useCallback(() => {
     const productCode = getProductBarcodeFromSearchProduct(productFromSearch);
 
@@ -2204,7 +1734,7 @@ export function FoodMealTrackingDetailsModal({
       (productFromSearch as any)?.ingredients ??
       '';
 
-    setEditForm({
+    openEditPopUp({
       name: getFoodMealName(),
       barcode: currentBarcode,
       description: currentDescription,
@@ -2215,8 +1745,6 @@ export function FoodMealTrackingDetailsModal({
       fiber: formatAppRoundedDecimal(locale, nutritionalData.fiber, 2),
       micronutrients: micronutrientFormStringsFromMicros(effectiveMicrosPer100g, locale),
     });
-    setEditMicroOpen(false);
-    setIsEditPopUpVisible(true);
   }, [
     productFromSearch,
     editedOverrides?.barcode,
@@ -2233,145 +1761,51 @@ export function FoodMealTrackingDetailsModal({
     nutritionalData.fat,
     nutritionalData.fiber,
     effectiveMicrosPer100g,
+    openEditPopUp,
   ]);
 
-  const handleSaveEditPopUp = useCallback(() => {
-    if (!editForm) {
-      return;
-    }
-    const cal = parseLocalizedDecimalString(editForm.calories, decimalSeparator);
-    const pro = parseLocalizedDecimalString(editForm.protein, decimalSeparator);
-    const carb = parseLocalizedDecimalString(editForm.carbs, decimalSeparator);
-    const f = parseLocalizedDecimalString(editForm.fat, decimalSeparator);
-    const fib = parseLocalizedDecimalString(editForm.fiber, decimalSeparator);
-    setEditedOverrides({
-      name: editForm.name.trim() || undefined,
-      barcode: editForm.barcode.trim() || undefined,
-      description: editForm.description.trim() || undefined,
-      calories: Number.isFinite(cal) ? cal : undefined,
-      protein: Number.isFinite(pro) ? pro : undefined,
-      carbs: Number.isFinite(carb) ? carb : undefined,
-      fat: Number.isFinite(f) ? f : undefined,
-      fiber: Number.isFinite(fib) ? fib : undefined,
-      micros: parseMicronutrientFormStringsToPartial(editForm.micronutrients, decimalSeparator),
+  const { handleAddFood, handleFoodNotFoundClose, handleTryAnotherSource } =
+    useFoodMealTrackingActions({
+      meal,
+      food,
+      foodLog,
+      localFood,
+      barcode,
+      productFromSearch,
+      productDetails,
+      refetchedProductDetails,
+      selectedDate,
+      selectedTime,
+      selectedMeal,
+      servingSize,
+      isFavorite,
+      matchedPortion,
+      editedOverrides,
+      mealScaleFactor,
+      resolvedFoodServingMode,
+      nutritionalData,
+      effectiveMicrosPer100g,
+      setIsAddingFood,
+      setIsFoodNotFoundModalVisible,
+      setIsRefetchingSource,
+      setRefetchedProductDetails,
+      setAlternateSourceLookupFailed,
+      setLocalCanEdit,
+      onAddFood,
+      onLogMeal,
+      onClose,
+      onFoodTracked,
+      onNutritionLogTracked,
+      showSnackbar,
+      t,
     });
-    setEditForm(null);
-    setIsEditPopUpVisible(false);
-  }, [editForm, decimalSeparator]);
-
-  const handleAcceptInferredCalories = useCallback(() => {
-    setEditedOverrides((prev) => ({
-      ...prev,
-      calories: roundToDecimalPlaces(inferredCaloriesPer100g, 2),
-    }));
-  }, [inferredCaloriesPer100g]);
-
-  const handleEditFormNumericChange = useCallback(
-    (field: 'calories' | 'protein' | 'carbs' | 'fat' | 'fiber') => (value: string) => {
-      const numericValue = sanitizeLocalizedDecimalInput(value, decimalSeparator, 2);
-      setEditForm((prev) => (prev ? { ...prev, [field]: numericValue } : null));
-    },
-    [decimalSeparator]
-  );
-
-  // Handlers for FoodNotFoundModal actions — close Food Details modal too so parent can resume camera.
-  const handleTryAiScan = useCallback(() => {
-    setIsFoodNotFoundModalVisible(false);
-    onClose();
-    // Trigger AI scan logic
-  }, [onClose]);
-
-  const handleSearchAgain = useCallback(() => {
-    setIsFoodNotFoundModalVisible(false);
-    onClose();
-    // Trigger search again logic
-  }, [onClose]);
-
-  const handleCreateCustom = useCallback(() => {
-    setIsFoodNotFoundModalVisible(false);
-    onClose();
-    // Trigger create custom food logic
-  }, [onClose]);
-
-  const handleFoodNotFoundClose = useCallback(() => {
-    setIsFoodNotFoundModalVisible(false);
-    onClose();
-  }, [onClose]);
-
-  const handleTryAnotherSource = useCallback(async () => {
-    if (!barcode) {
-      return;
-    }
-
-    setIsRefetchingSource(true);
-
-    const effectiveDetails = refetchedProductDetails ?? productDetails;
-    const currentSource = inferBarcodeNutritionSource(effectiveDetails, productFromSearch);
-
-    try {
-      const attempts: Promise<ProductDetailsQueryData | null>[] = [];
-
-      if (currentSource !== 'openfood') {
-        attempts.push(
-          fetchOFFProductByBarcode(barcode)
-            .then((r) => (r.data && isSuccessStatus(r.data.status) ? r.data : null))
-            .catch(() => null)
-        );
-      }
-      if (currentSource !== 'usda') {
-        attempts.push(
-          fetchUSDAProductByBarcode(barcode)
-            .then((raw) =>
-              raw ? ({ status: 'success', product: raw, source: 'usda' } as any) : null
-            )
-            .catch(() => null)
-        );
-      }
-      if (currentSource !== 'musclog') {
-        attempts.push(
-          fetchMusclogProductByBarcode(barcode)
-            .then((raw) =>
-              raw ? ({ status: 'success', product: raw, source: 'musclog' } as any) : null
-            )
-            .catch(() => null)
-        );
-      }
-
-      const results = await Promise.all(attempts);
-      const withNonZeroMacros = results.filter((r): r is ProductDetailsQueryData => {
-        if (!r) {
-          return false;
-        }
-        const macros = parseCoreMacrosFromAlternateSource(r);
-        return macros !== null && !areCoreMacrosEffectivelyZero(macros);
-      });
-
-      const found = withNonZeroMacros[0] ?? null;
-
-      if (found) {
-        setAlternateSourceLookupFailed(false);
-        setRefetchedProductDetails(found);
-      } else {
-        setAlternateSourceLookupFailed(true);
-        setLocalCanEdit(true);
-      }
-    } catch (error) {
-      handleError(error, 'FoodMealTrackingDetailsModal.handleTryAnotherSource');
-      setAlternateSourceLookupFailed(true);
-      setLocalCanEdit(true);
-    } finally {
-      setIsRefetchingSource(false);
-    }
-  }, [barcode, productDetails, productFromSearch, refetchedProductDetails]);
 
   // Reset matched portion and edit overrides when modal closes
   useEffect(() => {
     if (!visible) {
       const reset = () => {
         setMatchedPortion(null);
-        setEditedOverrides(null);
-        setIsEditPopUpVisible(false);
-        setEditMicroOpen(false);
+        resetEditForm();
         setRefetchedProductDetails(null);
         setIsRefetchingSource(false);
         setAlternateSourceLookupFailed(false);
@@ -2382,7 +1816,7 @@ export function FoodMealTrackingDetailsModal({
       };
       reset();
     }
-  }, [visible, canEdit]);
+  }, [visible, canEdit, resetEditForm]);
 
   if (!visible) {
     return null;
@@ -2393,9 +1827,9 @@ export function FoodMealTrackingDetailsModal({
       <FoodNotFoundModal
         visible={isFoodNotFoundModalVisible}
         onClose={handleFoodNotFoundClose}
-        onTryAiScan={handleTryAiScan}
-        onSearchAgain={handleSearchAgain}
-        onCreateCustom={handleCreateCustom}
+        onTryAiScan={handleFoodNotFoundClose}
+        onSearchAgain={handleFoodNotFoundClose}
+        onCreateCustom={handleFoodNotFoundClose}
         isAiEnabled={isAiEnabled}
       />
     );
@@ -2617,11 +2051,7 @@ export function FoodMealTrackingDetailsModal({
         />
         <BottomPopUp
           visible={isEditPopUpVisible ? editForm !== null : false}
-          onClose={() => {
-            setIsEditPopUpVisible(false);
-            setEditForm(null);
-            setEditMicroOpen(false);
-          }}
+          onClose={closeEditPopUp}
           title={t('food.foodDetails.editFoodInfo')}
           subtitle={t('food.foodDetails.editFoodInfoSubtitle')}
           headerIcon={

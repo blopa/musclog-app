@@ -22,30 +22,27 @@ import {
 } from '@/components/cards/FoodNutritionSectionCard';
 import { MacroInput } from '@/components/MacroInput';
 import {
-  type MicronutrientFormStrings,
   micronutrientFormStringsFromMicros,
   MicronutrientsExpandableSection,
-  parseMicronutrientFormStringsToPartial,
 } from '@/components/MicronutrientsExpandableSection';
 import { ServingSizeSelector } from '@/components/ServingSizeSelector';
 import { Button } from '@/components/theme/Button';
 import { TextInput } from '@/components/theme/TextInput';
 import type { MicrosData } from '@/database/models';
 import { FoodService } from '@/database/services';
+import { useFoodEditForm } from '@/hooks/useFoodEditForm';
 import {
-  fetchMusclogProductByBarcode,
-  fetchOFFProductByBarcode,
-  fetchUSDAProductByBarcode,
+  findAlternateBarcodeSource,
   type ProductDetailsQueryData,
   useFoodProductDetails,
 } from '@/hooks/useFoodProductDetails';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
-import { isSuccessFoodDetailProductState, isSuccessStatus } from '@/types/guards/openFoodFacts';
+import { isSuccessFoodDetailProductState } from '@/types/guards/openFoodFacts';
 import {
+  areCoreMacrosEffectivelyZero,
   getProductBarcodeFromSearchProduct,
   inferBarcodeNutritionSource,
-  parseCoreMacrosFromAlternateSource,
   parseServingSizeFromProduct,
 } from '@/utils/externalFoodProduct';
 import { formatAppRoundedDecimal } from '@/utils/formatAppNumber';
@@ -55,11 +52,7 @@ import {
   inferCaloriesFromMacrosPer100g,
   toFiniteMacro,
 } from '@/utils/inferCaloriesFromMacros';
-import {
-  getDecimalSeparator,
-  parseLocalizedDecimalString,
-  sanitizeLocalizedDecimalInput,
-} from '@/utils/localizedDecimalInput';
+import { getDecimalSeparator } from '@/utils/localizedDecimalInput';
 import {
   applyMusclogQualityToFoodRecord,
   getMusclogNutritionPer100g,
@@ -82,23 +75,6 @@ type ScannedFoodDetailsModalProps = {
   onAddFood?: (food: { food: any; amount: number }) => void;
 };
 
-function areCoreMacrosEffectivelyZero(data: {
-  calories?: unknown;
-  protein?: unknown;
-  carbs?: unknown;
-  fat?: unknown;
-  fiber?: unknown;
-}): boolean {
-  const eps = 1e-6;
-  return (
-    Math.abs(toFiniteMacro(data.calories)) < eps &&
-    Math.abs(toFiniteMacro(data.protein)) < eps &&
-    Math.abs(toFiniteMacro(data.carbs)) < eps &&
-    Math.abs(toFiniteMacro(data.fat)) < eps &&
-    Math.abs(toFiniteMacro(data.fiber)) < eps
-  );
-}
-
 export function ScannedFoodDetailsModal({
   visible,
   onClose,
@@ -116,30 +92,6 @@ export function ScannedFoodDetailsModal({
   const [permission, requestPermission] = useCameraPermissions();
   const [isBarcodeScannerVisible, setIsBarcodeScannerVisible] = useState(false);
   const [amount, setAmount] = useState(100);
-  const [editedOverrides, setEditedOverrides] = useState<{
-    name?: string;
-    barcode?: string;
-    description?: string;
-    calories?: number;
-    protein?: number;
-    carbs?: number;
-    fat?: number;
-    fiber?: number;
-    micros?: Partial<MicrosData>;
-  } | null>(null);
-  const [isEditPopUpVisible, setIsEditPopUpVisible] = useState(false);
-  const [editMicroOpen, setEditMicroOpen] = useState(false);
-  const [editForm, setEditForm] = useState<{
-    name: string;
-    barcode: string;
-    description: string;
-    calories: string;
-    protein: string;
-    carbs: string;
-    fat: string;
-    fiber: string;
-    micronutrients: MicronutrientFormStrings;
-  } | null>(null);
   const [refetchedProductDetails, setRefetchedProductDetails] =
     useState<ProductDetailsQueryData | null>(null);
   const [isRefetchingSource, setIsRefetchingSource] = useState(false);
@@ -165,23 +117,6 @@ export function ScannedFoodDetailsModal({
     };
     syncEdit();
   }, [alwaysAllowFoodEditing]);
-
-  useEffect(() => {
-    if (!visible) {
-      const reset = () => {
-        setAmount(100);
-        setEditedOverrides(null);
-        setIsEditPopUpVisible(false);
-        setEditMicroOpen(false);
-        setEditForm(null);
-        setRefetchedProductDetails(null);
-        setIsRefetchingSource(false);
-        setLocalCanEdit(alwaysAllowFoodEditing);
-        setAlternateSourceLookupFailed(false);
-      };
-      reset();
-    }
-  }, [visible, alwaysAllowFoodEditing]);
 
   const rawNutritionalData = useMemo(() => {
     if ((effectiveProductDetails as any)?.source === 'musclog') {
@@ -362,14 +297,6 @@ export function ScannedFoodDetailsModal({
     return out;
   }, [rawNutritionalData]);
 
-  const effectiveMicrosPer100g = useMemo(
-    () => ({
-      ...baseMicrosPer100g,
-      ...(editedOverrides?.micros ?? {}),
-    }),
-    [baseMicrosPer100g, editedOverrides?.micros]
-  );
-
   const inferredCaloriesPer100g = useMemo(
     () =>
       inferCaloriesFromMacrosPer100g(
@@ -386,6 +313,44 @@ export function ScannedFoodDetailsModal({
       rawNutritionalData.fiber,
       rawNutritionalData.alcohol,
     ]
+  );
+
+  // Edit-pop-up state + shared edit handlers (overrides feed the derived nutrition below).
+  const {
+    editedOverrides,
+    editForm,
+    setEditForm,
+    isEditPopUpVisible,
+    editMicroOpen,
+    setEditMicroOpen,
+    openEditPopUp,
+    closeEditPopUp,
+    saveEditPopUp: handleSaveEditPopUp,
+    acceptInferredCalories: handleAcceptInferredCalories,
+    handleEditFormNumericChange,
+    reset: resetEditForm,
+  } = useFoodEditForm({ decimalSeparator, inferredCaloriesPer100g });
+
+  useEffect(() => {
+    if (!visible) {
+      const reset = () => {
+        setAmount(100);
+        resetEditForm();
+        setRefetchedProductDetails(null);
+        setIsRefetchingSource(false);
+        setLocalCanEdit(alwaysAllowFoodEditing);
+        setAlternateSourceLookupFailed(false);
+      };
+      reset();
+    }
+  }, [visible, alwaysAllowFoodEditing, resetEditForm]);
+
+  const effectiveMicrosPer100g = useMemo(
+    () => ({
+      ...baseMicrosPer100g,
+      ...(editedOverrides?.micros ?? {}),
+    }),
+    [baseMicrosPer100g, editedOverrides?.micros]
   );
 
   const showCaloriesTooLowWarning = useMemo(() => {
@@ -613,13 +578,14 @@ export function ScannedFoodDetailsModal({
     ]
   );
 
+  // Gathers the modal-specific initial values, then hands off to the shared edit-pop-up state.
   const handleOpenEditPopUp = useCallback(() => {
     const productCode = getProductBarcodeFromSearchProduct(
       (effectiveProductDetails as any)?.product
     );
     const currentBarcode = editedOverrides?.barcode ?? barcode ?? productCode ?? '';
 
-    setEditForm({
+    openEditPopUp({
       name: getCurrentName(),
       barcode: currentBarcode,
       description: getCurrentDescription(),
@@ -630,8 +596,6 @@ export function ScannedFoodDetailsModal({
       fiber: formatAppRoundedDecimal(locale, nutritionalData.fiber, 2),
       micronutrients: micronutrientFormStringsFromMicros(effectiveMicrosPer100g, locale),
     });
-    setEditMicroOpen(false);
-    setIsEditPopUpVisible(true);
   }, [
     effectiveProductDetails,
     editedOverrides?.barcode,
@@ -645,48 +609,8 @@ export function ScannedFoodDetailsModal({
     nutritionalData.fat,
     nutritionalData.fiber,
     effectiveMicrosPer100g,
+    openEditPopUp,
   ]);
-
-  const handleSaveEditPopUp = useCallback(() => {
-    if (!editForm) {
-      return;
-    }
-
-    const cal = parseLocalizedDecimalString(editForm.calories, decimalSeparator);
-    const pro = parseLocalizedDecimalString(editForm.protein, decimalSeparator);
-    const carb = parseLocalizedDecimalString(editForm.carbs, decimalSeparator);
-    const f = parseLocalizedDecimalString(editForm.fat, decimalSeparator);
-    const fib = parseLocalizedDecimalString(editForm.fiber, decimalSeparator);
-
-    setEditedOverrides({
-      name: editForm.name.trim() || undefined,
-      barcode: editForm.barcode.trim() || undefined,
-      description: editForm.description.trim() || undefined,
-      calories: Number.isFinite(cal) ? cal : undefined,
-      protein: Number.isFinite(pro) ? pro : undefined,
-      carbs: Number.isFinite(carb) ? carb : undefined,
-      fat: Number.isFinite(f) ? f : undefined,
-      fiber: Number.isFinite(fib) ? fib : undefined,
-      micros: parseMicronutrientFormStringsToPartial(editForm.micronutrients, decimalSeparator),
-    });
-    setEditForm(null);
-    setIsEditPopUpVisible(false);
-  }, [editForm, decimalSeparator]);
-
-  const handleEditFormNumericChange = useCallback(
-    (field: 'calories' | 'protein' | 'carbs' | 'fat' | 'fiber') => (value: string) => {
-      const numericValue = sanitizeLocalizedDecimalInput(value, decimalSeparator, 2);
-      setEditForm((prev) => (prev ? { ...prev, [field]: numericValue } : null));
-    },
-    [decimalSeparator]
-  );
-
-  const handleAcceptInferredCalories = useCallback(() => {
-    setEditedOverrides((prev) => ({
-      ...prev,
-      calories: roundToDecimalPlaces(inferredCaloriesPer100g, 2),
-    }));
-  }, [inferredCaloriesPer100g]);
 
   const handleTryAnotherSource = useCallback(async () => {
     if (!barcode) {
@@ -697,47 +621,7 @@ export function ScannedFoodDetailsModal({
     const source = inferBarcodeNutritionSource(effectiveProductDetails, null);
 
     try {
-      const attempts: Promise<ProductDetailsQueryData | null>[] = [];
-
-      if (source !== 'openfood') {
-        attempts.push(
-          fetchOFFProductByBarcode(barcode)
-            .then((r) => (r.data && isSuccessStatus(r.data.status) ? r.data : null))
-            .catch(() => null)
-        );
-      }
-
-      if (source !== 'usda') {
-        attempts.push(
-          fetchUSDAProductByBarcode(barcode)
-            .then((raw) =>
-              raw ? ({ status: 'success', product: raw, source: 'usda' } as any) : null
-            )
-            .catch(() => null)
-        );
-      }
-
-      if (source !== 'musclog') {
-        attempts.push(
-          fetchMusclogProductByBarcode(barcode)
-            .then((raw) =>
-              raw ? ({ status: 'success', product: raw, source: 'musclog' } as any) : null
-            )
-            .catch(() => null)
-        );
-      }
-
-      const results = await Promise.all(attempts);
-      const withNonZeroMacros = results.filter((r): r is ProductDetailsQueryData => {
-        if (!r) {
-          return false;
-        }
-
-        const macros = parseCoreMacrosFromAlternateSource(r);
-        return macros !== null && !areCoreMacrosEffectivelyZero(macros);
-      });
-
-      const found = withNonZeroMacros[0] ?? null;
+      const found = await findAlternateBarcodeSource(barcode, source);
       if (found) {
         setAlternateSourceLookupFailed(false);
         setRefetchedProductDetails(found);
@@ -1041,11 +925,7 @@ export function ScannedFoodDetailsModal({
 
       <BottomPopUp
         visible={isEditPopUpVisible ? editForm !== null : false}
-        onClose={() => {
-          setIsEditPopUpVisible(false);
-          setEditForm(null);
-          setEditMicroOpen(false);
-        }}
+        onClose={closeEditPopUp}
         title={t('food.foodDetails.editFoodInfo')}
         subtitle={t('food.foodDetails.editFoodInfoSubtitle')}
         headerIcon={

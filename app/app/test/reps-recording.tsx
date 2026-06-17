@@ -17,13 +17,13 @@ import {
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { MasterLayout } from '@/components/MasterLayout';
-import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { BleDevicePreviewModal } from '@/components/modals/BleDevicePreviewModal';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
 import { FullScreenModal } from '@/components/modals/FullScreenModal';
 import { Button } from '@/components/theme/Button';
 import type Exercise from '@/database/models/Exercise';
 import { useExercises } from '@/hooks/useExercises';
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useTheme } from '@/hooks/useTheme';
 import { useWitMotion, witMotionClient } from '@/modules/witmotion-ble';
 import {

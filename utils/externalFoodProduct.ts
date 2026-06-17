@@ -168,3 +168,21 @@ export function parseCoreMacrosFromAlternateSource(state: ProductDetailsQueryDat
     fiber: toFiniteMacro(fiber),
   };
 }
+
+/** True when all of the core macros (calories, protein, carbs, fat, fiber) are effectively zero. */
+export function areCoreMacrosEffectivelyZero(data: {
+  calories?: unknown;
+  protein?: unknown;
+  carbs?: unknown;
+  fat?: unknown;
+  fiber?: unknown;
+}): boolean {
+  const eps = 1e-6;
+  return (
+    Math.abs(toFiniteMacro(data.calories)) < eps &&
+    Math.abs(toFiniteMacro(data.protein)) < eps &&
+    Math.abs(toFiniteMacro(data.carbs)) < eps &&
+    Math.abs(toFiniteMacro(data.fat)) < eps &&
+    Math.abs(toFiniteMacro(data.fiber)) < eps
+  );
+}
