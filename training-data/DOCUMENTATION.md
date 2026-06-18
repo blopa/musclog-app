@@ -24,7 +24,7 @@ inside the app—no server required at prediction time.
    - [Step 1 — Best-Axis Selection & Preprocessing](#step-1--best-axis-selection--preprocessing)
    - [Step 2 — Over-Segmentation](#step-2--over-segmentation)
    - [Step 3 — Feature Extraction](#step-3--feature-extraction)
-   - [Step 4 — Pseudo-Labeling](#step-4--pseudo-labeling)
+   - [Step 4 — Labeling from repMarkers](#step-4--labeling-from-repmarkers)
    - [Step 5 — Training & Export](#step-5--training--export)
    - [Inference — Phase Detection](#inference--phase-detection)
 6. [Evaluation Strategy](#6-evaluation-strategy)
@@ -49,9 +49,11 @@ predicting a total rep count from a whole recording in one shot, this pipeline u
 5. For each surviving rep, analytically detect **Phase A** (lifting direction) and **Phase B** (return direction) and measure speed.
 
 This approach is robust because the classifier operates on local segment features
-rather than global recording statistics, generalises across exercise types through
-categorical one-hot features, and requires only a single label per recording (total
-rep count)—not per-rep boundary annotations.
+rather than global recording statistics, and generalises across exercise types through
+categorical one-hot features. **Every training recording must have `repMarkers`** —
+manually annotated per-rep start/end boundaries. The total rep count is derived
+automatically from the number of markers; no separate `reps` field is needed for
+training.
 
 ---
 
@@ -94,9 +96,9 @@ Every recording is a JSON file with the following top-level fields:
 
 | Field           | Type              | Description |
 |-----------------|-------------------|-------------|
-| `reps`          | `int`             | **Required for training.** Total rep count for this set. |
+| `repMarkers`    | `array`           | **Required for training.** Per-rep start/end boundary annotations. The total rep count is derived from `len(repMarkers)`. See [Labeling Workflow](#7-labeling-workflow). |
 | `samples`       | `array`           | Time-series sensor samples (see below). |
-| `repMarkers`    | `array` (optional)| Manual per-rep boundary annotations (see [Labeling Workflow](#7-labeling-workflow)). |
+| `reps`          | `int` (optional)  | Legacy total rep count. Not used during training. `predict.py` uses it as a fallback ground-truth display value when `repMarkers` is absent. |
 | `muscleGroup`   | `string`          | Primary muscle group (e.g. `"chest"`, `"legs"`). |
 | `equipmentType` | `string`          | Equipment used (e.g. `"barbell"`, `"dumbbell"`). |
 | `mechanicType`  | `string`          | Movement pattern (e.g. `"compound"`, `"isolation"`). |
@@ -142,7 +144,7 @@ cd training-data
 python train.py
 ```
 
-**Inputs:** `raw-data/*.json` — every file with a `reps` field is used.
+**Inputs:** `raw-data/*.json` — every file with a non-empty `repMarkers` field is used. Files without `repMarkers` are skipped.
 
 **Outputs:**
 - `output/features.csv` — Full per-segment feature matrix (useful for manual inspection and debugging).
@@ -170,7 +172,7 @@ training and inference.
 
 **Pipeline executed in `main()`:**
 
-1. `build_segment_dataset()` — iterates all recordings, returns a flat DataFrame.
+1. `build_segment_dataset()` — iterates all recordings with `repMarkers`, returns a flat DataFrame. The total rep count per recording is `len(repMarkers)`.
 2. `loocv_by_recording()` — leave-one-recording-out cross-validation.
 3. Prints recording-level predictions, MAE, exact-match rate.
 4. Writes `sus_data.txt` (noisy ratio > 3.5×, sparse ratio < 1.3×, LOOCV error ≥ 3).
@@ -584,46 +586,24 @@ requires updating the list and retraining.
 
 ---
 
-### Step 4 — Pseudo-Labeling
-
-**Two labeling strategies exist:**
-
-#### Strategy A — Pseudo-labeling (no `repMarkers` in file)
-
-**Function:** `pseudo_label_segments(segments, n_reps)` in `train.py`
-
-Uses only the known total rep count to assign labels. Each segment is scored:
-```
-score = amplitude × √(energy + 1e-6) × temporal_consistency
-```
-where `temporal_consistency = 1 / (1 + |duration - median_duration| / median_duration)`.
-
-This rewards segments that are:
-- Large (high amplitude)
-- Energetic (high energy)
-- Typically paced (duration close to the median for this recording)
-
-The top `n_reps` segments by score are labeled `is_rep=1`; the rest are `is_rep=0`.
-
-**Critical constraint:** If the over-segmenter found *fewer* candidates than the
-known rep count, pseudo-labeling is impossible (we can't assign `n_reps` labels to
-fewer candidates), so the recording is **skipped** entirely and reported in
-`sus_data.txt`.
-
-#### Strategy B — IoU marker matching (file has `repMarkers`)
+### Step 4 — Labeling from repMarkers
 
 **Function:** `label_segments_from_markers(segments, rep_markers)` in `train.py`
 
-For each manual marker `{startMs, endMs}`, finds the candidate segment with the
-highest **Intersection over Union (IoU)** with the marker's time window:
+Every training recording must have a `repMarkers` array. The total rep count is
+derived as `n_reps = len(repMarkers)` — no separate `reps` field is consulted.
+
+For each manual marker `{startMs, endMs}`, the function finds the candidate segment
+with the highest **Intersection over Union (IoU)** with the marker's time window:
 ```
 IoU = overlap / (segment_duration + marker_duration - overlap)
 ```
-The best-matching segment is labeled `is_rep=1` if `IoU > 0.05`, and each segment
-can only be claimed by one marker. Segments not matched to any marker get `is_rep=0`.
+The best-matching segment is labeled `is_rep=1` if `IoU > 0.05`. Each candidate
+segment can only be claimed by one marker (greedy matching). Segments not matched
+to any marker get `is_rep=0`.
 
-**Strategy B is preferred** when available because the labels are directly human-verified
-rather than heuristically inferred from signal characteristics.
+This means labels are always directly human-verified. Recordings without `repMarkers`
+are skipped during dataset building with a `SKIP (no repMarkers)` message.
 
 ---
 
@@ -702,28 +682,30 @@ determine which phase is concentric for a given exercise+device combination.
 
 ## 7. Labeling Workflow
 
-Two tools support annotating per-rep boundaries in `repMarkers`:
+**`repMarkers` is mandatory for all training recordings.** Two tools support
+annotating per-rep boundaries:
 
 **For recordings without video** (`generate-markers-html.py`):
 ```
 raw-data/*.json → output/markers/<name>.html
 ```
-- Open in browser, use "Mark rep" button, click chart at start/end of each rep.
+- Open in browser, use "Mark rep" button, click the chart at the start and end of each rep.
 - Download the full updated JSON and replace the original in `raw-data/`.
-- Rerun `train.py` to use the markers.
+- Rerun `train.py` to incorporate the markers.
 
 **For recordings with video** (`generate-video-markers.py`):
 ```
 recordings/<uuid>/{*.json, *.mp4} → recordings/<uuid>/index.html
 ```
-- Open in browser, use S/E keyboard shortcuts or buttons.
+- Open in browser, use S/E keyboard shortcuts or the "Mark Start" / "Mark End" buttons.
 - Video and chart are time-aligned via `startedAt`.
 - Download the full updated JSON and replace the original in `raw-data/`.
-- Rerun `train.py` to use the markers.
+- Rerun `train.py` to incorporate the markers.
 
-When `repMarkers` is present, `train.py` uses IoU matching (Strategy B) instead of
-pseudo-labeling (Strategy A). This produces more accurate labels and typically
-improves model performance for that recording.
+The video-synced tool is preferred because you can watch the actual movement while
+marking, which gives more accurate IoU overlap between markers and candidate segments.
+Recordings that are added to `raw-data/` without `repMarkers` are silently skipped by
+`train.py`; check the output for `SKIP (no repMarkers)` lines to identify them.
 
 ---
 
@@ -782,12 +764,14 @@ recordings vary wildly in length and content. By operating on fixed-size local
 segments, the classifier sees the same feature space regardless of total recording
 duration or rep count.
 
-**Why pseudo-labels instead of requiring full annotation?**
-Annotating exact rep boundaries in every recording is time-consuming. Pseudo-labeling
-requires only the total count (which is trivially recorded during a workout) and
-produces surprisingly accurate labels because the ranking score (amplitude × energy
-× temporal_consistency) naturally selects genuine reps over setup/unrack noise.
-Per-rep boundary markers are supported as an optional upgrade path via `repMarkers`.
+**Why are `repMarkers` mandatory instead of accepting a total rep count?**
+A total rep count alone cannot distinguish which candidate segments are real reps vs.
+setup/unrack noise when pseudo-labeling fails (e.g., when the over-segmenter produces
+fewer candidates than the known count, or when the amplitude/energy ranking picks the
+wrong segments). Human-verified per-rep boundaries via `repMarkers` guarantee
+correct labels and remove an entire class of silent training errors. The annotation
+tools make this practical: marking rep boundaries in a 30-second set takes under a
+minute, especially with the video-synced tool.
 
 **Why bandpass 0.1–3 Hz specifically?**
 These bounds are physiological constants, not data-derived parameters. 0.1 Hz = 6
@@ -829,8 +813,14 @@ pip install numpy scipy pandas scikit-learn m2cgen ahrs gdown
 # Optional: download latest recordings from shared Drive
 python download_recordings.py
 
+# Annotate any unannotated recordings first (repMarkers required)
+python generate-markers-html.py      # chart-only tool
+python generate-video-markers.py     # video-synced tool (preferred)
+# → copy downloaded updated JSONs back to raw-data/
+
 # Train and export
 python train.py
+# Recordings missing repMarkers are skipped with "SKIP (no repMarkers)"
 # → output/model.pkl
 # → output/model.js   (copy this into the app)
 # → output/summary.txt

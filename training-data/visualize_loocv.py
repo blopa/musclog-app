@@ -40,9 +40,9 @@ from train import (
     SEGMENT_FEATURE_COLS,
     build_segment_dataset,
     extract_segment_features,
+    label_segments_from_markers,
     over_segment,
     preprocess_to_1d,
-    pseudo_label_segments,
 )
 from predict import detect_phases
 
@@ -275,7 +275,7 @@ def generate_html(
     predicted_pairs: list,    # [(seg, confidence), …] — only predicted reps
     orig_file_kb: float = 0.0,
 ) -> str:
-    gt = int(data.get("reps", 0))
+    gt = len(data.get("repMarkers") or []) or int(data.get("reps", 0))
     pred = len(predicted_pairs)
     err  = pred - gt
 
@@ -765,7 +765,7 @@ def main() -> None:
     df = build_segment_dataset()
 
     if len(df) == 0:
-        sys.exit("No segments. Check that recordings have a 'reps' field.")
+        sys.exit("No segments. Check that recordings have a 'repMarkers' field.")
 
     recordings = sorted(df["recording_id"].unique())
     print(f"\n  {len(recordings)} recordings · {len(df)} total segments")
@@ -798,11 +798,12 @@ def main() -> None:
             avg_dt         = (dur / 1000.0) / max(1, len(chunk) - 1)
             seg["energy"]  = float(np.sum(chunk ** 2) * avg_dt)
 
-        n_reps = int(data.get("reps", 0))
-        labeled = pseudo_label_segments(list(all_segs), n_reps)
-        if labeled is None:
-            print("SKIP (under-segmented)")
+        rep_markers = data.get("repMarkers")
+        if not rep_markers:
+            print("SKIP (no repMarkers)")
             continue
+        n_reps  = len(rep_markers)
+        labeled = label_segments_from_markers(list(all_segs), rep_markers)
 
         # Train LOOCV model
         clf = train_excluding(df, rec_name)
