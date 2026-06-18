@@ -11,8 +11,6 @@ import {
 } from '@/utils/localizedDecimalInput';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 
-export type EditedOverrides = EditedFoodOverrides;
-
 /** String-backed form state for the edit pop-up (localized decimals, free-form text). */
 export type EditFormState = {
   name: string;
@@ -46,7 +44,7 @@ export function useFoodEditForm({
   decimalSeparator,
   inferredCaloriesPer100g,
 }: UseFoodEditFormParams) {
-  const [editedOverrides, setEditedOverrides] = useState<EditedOverrides | null>(null);
+  const [editedOverrides, setEditedOverrides] = useState<EditedFoodOverrides | null>(null);
   const [editForm, setEditForm] = useState<EditFormState | null>(null);
   const [isEditPopUpVisible, setIsEditPopUpVisible] = useState(false);
   const [editMicroOpen, setEditMicroOpen] = useState(false);

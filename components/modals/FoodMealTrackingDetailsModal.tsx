@@ -41,6 +41,7 @@ import Food from '@/database/models/Food';
 import FoodPortion from '@/database/models/FoodPortion';
 import Meal from '@/database/models/Meal';
 import { FoodPortionService, FoodService, MealService } from '@/database/services';
+import { useAlternateBarcodeSource } from '@/hooks/useAlternateBarcodeSource';
 import { useFoodEditForm } from '@/hooks/useFoodEditForm';
 import { useFoodMealTrackingActions } from '@/hooks/useFoodMealTrackingActions';
 import { useFoodProductDetails } from '@/hooks/useFoodProductDetails';
@@ -58,9 +59,13 @@ import {
 } from '@/utils/calendarDate';
 import {
   areCoreMacrosEffectivelyZero,
+  EMPTY_PRODUCT_NUTRITION,
   getProductBarcodeFromSearchProduct,
+  inferBarcodeNutritionSource,
+  microsFromNutrition,
+  parseProductNutritionPer100g,
   parseServingSizeFromProduct,
-  type ProductDetailsQueryData,
+  type ProductNutritionPer100g,
 } from '@/utils/externalFoodProduct';
 import { formatAppRoundedDecimal } from '@/utils/formatAppNumber';
 import { formatDisplayGrams } from '@/utils/formatDisplayWeight';
@@ -70,10 +75,9 @@ import {
   toFiniteMacro,
 } from '@/utils/inferCaloriesFromMacros';
 import { getDecimalSeparator } from '@/utils/localizedDecimalInput';
-import { getMusclogDisplayQuality, getMusclogNutritionPer100g } from '@/utils/musclogProduct';
+import { getMusclogDisplayQuality } from '@/utils/musclogProduct';
 import {
   extractLabelsFromOFFProduct,
-  getNutrimentsFromV3Nutrition,
   getNutrimentsWithFallback,
   getNutrimentValue,
   mapOpenFoodFactsProduct,
@@ -121,29 +125,6 @@ function computeMealScaleFactor(
   }
 
   return totalMealGrams > 0 ? Math.max(0.01, effectiveMealAmountGrams) / totalMealGrams : 1;
-}
-
-// TODO: why not being used anymore?
-function getMealDefaultTime(mealType: MealType, date: Date): Date {
-  const d = new Date(date);
-  switch (mealType) {
-    case 'breakfast':
-      d.setHours(8, 0, 0, 0);
-      break;
-    case 'lunch':
-      d.setHours(12, 30, 0, 0);
-      break;
-    case 'dinner':
-      d.setHours(19, 0, 0, 0);
-      break;
-    case 'snack':
-      d.setHours(15, 0, 0, 0);
-      break;
-    default:
-      d.setHours(12, 0, 0, 0);
-  }
-
-  return d;
 }
 
 function formatTimezoneLabel(timezone?: string): string | undefined {
@@ -271,7 +252,6 @@ export function FoodMealTrackingDetailsModal({
     }
   }, [productFromSearch, isFoodDetailsModalVisible, meal, food, foodLog]);
   const [isFavorite, setIsFavorite] = useState(false);
-  const [isAddingFood, setIsAddingFood] = useState(false);
   const [mealNutrients, setMealNutrients] = useState<{
     calories: number;
     protein: number;
@@ -289,15 +269,8 @@ export function FoodMealTrackingDetailsModal({
   const [localFood, setLocalFood] = useState<Food | null>(null);
   const [hasCheckedLocalFood, setHasCheckedLocalFood] = useState(false);
   const [matchedPortion, setMatchedPortion] = useState<FoodPortion | null>(null); // Store matched portion for new foods
-  /** Holds product data fetched from an alternate source when the primary source had zero macros. */
-  const [refetchedProductDetails, setRefetchedProductDetails] =
-    useState<ProductDetailsQueryData | null>(null);
-  /** True while the "try another source" cross-provider fetch is in flight. */
-  const [isRefetchingSource, setIsRefetchingSource] = useState(false);
   /** Local override for canEdit — allows the modal to programmatically enable editing. */
   const [localCanEdit, setLocalCanEdit] = useState(canEdit);
-  /** After "try another source" runs and no provider returns usable macros — show edit-only banner, hide retry. */
-  const [alternateSourceLookupFailed, setAlternateSourceLookupFailed] = useState(false);
 
   // How the modal was opened: meal / log / local Food row vs. external catalog (barcode or preloaded search product).
   const getMode = (): FoodDetailsNutritionSectionMode => {
@@ -429,6 +402,26 @@ export function FoodMealTrackingDetailsModal({
     barcodeForHook,
     usdaIdForHook
   );
+
+  // Once every other provider has been exhausted, fall back to manual editing.
+  const enableEditing = useCallback(() => setLocalCanEdit(true), []);
+
+  // "Try another source" cross-provider lookup + its state cluster (refetched details, in-flight,
+  // exhausted-all-sources). Holds product data fetched from an alternate source when the primary
+  // source had zero macros.
+  const {
+    refetchedProductDetails,
+    isRefetchingSource,
+    alternateSourceLookupFailed,
+    tryAnotherSource: handleTryAnotherSource,
+    reset: resetAlternateSource,
+  } = useAlternateBarcodeSource({
+    barcode,
+    productDetails,
+    productFromSearch,
+    errorContext: 'FoodMealTrackingDetailsModal.handleTryAnotherSource',
+    onExhausted: enableEditing,
+  });
 
   const hasNoNutrition = useMemo(() => {
     const isOpenfoodSource =
@@ -725,18 +718,17 @@ export function FoodMealTrackingDetailsModal({
   }, [foodLog]);
 
   // Extract nutritional data from meal, barcode lookup, local food, or log snapshot
-  const getNutritionalData = useCallback(() => {
+  const getNutritionalData = useCallback((): ProductNutritionPer100g => {
     // If we have a meal, use its nutrients
     if (meal && mealNutrients) {
       return {
+        ...EMPTY_PRODUCT_NUTRITION,
         calories: mealNutrients.calories,
         protein: mealNutrients.protein,
         carbs: mealNutrients.carbs,
         fat: mealNutrients.fat,
         fiber: mealNutrients.fiber,
-        sugar: 0, // Meals don't track sugar separately
-        saturatedFat: 0, // Meals don't track saturated fat separately
-        sodium: 0, // Meals don't track sodium separately
+        // Meals don't track sugar / saturated fat / sodium / trace micros separately.
       };
     }
 
@@ -784,134 +776,9 @@ export function FoodMealTrackingDetailsModal({
     const effectiveProductDetails = refetchedProductDetails ?? productDetails;
 
     if (isSuccessFoodDetailProductState(effectiveProductDetails)) {
-      const product = effectiveProductDetails.product;
-
-      if ((effectiveProductDetails as any).source === 'musclog') {
-        const nutrition = getMusclogNutritionPer100g(product as any);
-        return {
-          calories: nutrition.calories,
-          protein: nutrition.protein,
-          carbs: nutrition.carbs,
-          fat: nutrition.fat,
-          fiber: nutrition.fiber,
-          sugar: nutrition.sugar,
-          saturatedFat: nutrition.saturatedFat,
-          sodium: nutrition.sodium,
-        };
-      }
-
-      if ((effectiveProductDetails as any).source === 'usda') {
-        const nutrients = (product as any).foodNutrients as any[];
-        // USDA Branded foods report nutrients per serving, not per 100g. Normalize to per-100g
-        // so that the modal's scaleFactor (servingSize / 100) produces correct values.
-        const rawServingSize = (product as any).servingSize;
-        const isBranded = (product as any).dataType === 'Branded';
-        const normFactor =
-          isBranded && rawServingSize && rawServingSize > 0 ? 100 / rawServingSize : 1;
-
-        return {
-          calories:
-            (mapUSDANutritient(nutrients, '1008') ??
-              mapUSDANutritient(nutrients, '208') ??
-              mapUSDANutritient(nutrients, 'ENERC_KCAL') ??
-              0) * normFactor,
-          protein:
-            (mapUSDANutritient(nutrients, '1003') ?? mapUSDANutritient(nutrients, '203') ?? 0) *
-            normFactor,
-          carbs:
-            (mapUSDANutritient(nutrients, '1005') ?? mapUSDANutritient(nutrients, '205') ?? 0) *
-            normFactor,
-          fat:
-            (mapUSDANutritient(nutrients, '1004') ?? mapUSDANutritient(nutrients, '204') ?? 0) *
-            normFactor,
-          fiber:
-            (mapUSDANutritient(nutrients, '1079') ?? mapUSDANutritient(nutrients, '291') ?? 0) *
-            normFactor,
-          sugar:
-            (mapUSDANutritient(nutrients, '2000') ??
-              mapUSDANutritient(nutrients, '269') ??
-              mapUSDANutritient(nutrients, 'sugars') ??
-              0) * normFactor,
-          saturatedFat:
-            (mapUSDANutritient(nutrients, '1258') ?? mapUSDANutritient(nutrients, '606') ?? 0) *
-            normFactor,
-          // Sodium is reported in MG by USDA; convert to grams for storage
-          sodium:
-            ((mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0) /
-              1000) *
-            normFactor,
-          alcohol:
-            (mapUSDANutritient(nutrients, '1018') ?? mapUSDANutritient(nutrients, '221') ?? 0) *
-            normFactor,
-          potassium:
-            ((mapUSDANutritient(nutrients, '1092') ?? mapUSDANutritient(nutrients, '306') ?? 0) /
-              1000) *
-            normFactor,
-          magnesium:
-            ((mapUSDANutritient(nutrients, '1090') ?? mapUSDANutritient(nutrients, '304') ?? 0) /
-              1000) *
-            normFactor,
-          zinc:
-            ((mapUSDANutritient(nutrients, '1095') ?? mapUSDANutritient(nutrients, '309') ?? 0) /
-              1000) *
-            normFactor,
-        };
-      }
-
-      const nutrients = getNutrimentsWithFallback(product) || getNutrimentsFromV3Nutrition(product);
-      if (!nutrients) {
-        return {
-          calories: 0,
-          protein: 0,
-          carbs: 0,
-          fat: 0,
-          fiber: 0,
-          sugar: 0,
-          saturatedFat: 0,
-          sodium: 0,
-        };
-      }
-
-      // Map OFF nutriment keys (aligned with NUTRIMENT_PROPERTIES) to display values via getNutrimentValue
-      const offKeys = {
-        calories: 'energy-kcal',
-        protein: 'proteins',
-        carbs: 'carbohydrates',
-        fat: 'fat',
-        sugar: 'sugars',
-        saturatedFat: 'saturated-fat',
-      } as const;
-      const getNum = (key: keyof typeof offKeys) =>
-        (getNutrimentValue(nutrients, offKeys[key]) ?? 0) as number;
-      const directFiber = getNutrimentValue(nutrients, 'fiber');
-      let fiber: number;
-      if (directFiber !== undefined && directFiber >= 0) {
-        fiber = directFiber;
-      } else {
-        const carbsTotal = getNutrimentValue(nutrients, 'carbohydrates-total');
-        const carbs = getNutrimentValue(nutrients, 'carbohydrates');
-        fiber =
-          carbsTotal !== undefined && carbs !== undefined ? Math.max(0, carbsTotal - carbs) : 0;
-      }
-
-      const sodium =
-        getNutrimentValue(nutrients, 'sodium') ?? getNutrimentValue(nutrients, 'salt') ?? 0;
-
-      return {
-        calories: getNum('calories'),
-        protein: getNum('protein'),
-        carbs: getNum('carbs'),
-        fat: getNum('fat'),
-        fiber,
-        sugar: getNum('sugar'),
-        saturatedFat: getNum('saturatedFat'),
-        sodium: Number.isFinite(sodium) ? sodium : 0,
-        // OFF stores minerals in grams per 100g — no unit conversion needed
-        alcohol: getNutrimentValue(nutrients, 'alcohol') ?? 0,
-        potassium: getNutrimentValue(nutrients, 'potassium') ?? 0,
-        magnesium: getNutrimentValue(nutrients, 'magnesium') ?? 0,
-        zinc: getNutrimentValue(nutrients, 'zinc') ?? 0,
-      };
+      const detailsSource =
+        inferBarcodeNutritionSource(effectiveProductDetails, null) ?? 'openfood';
+      return parseProductNutritionPer100g(detailsSource, effectiveProductDetails.product);
     }
 
     if (productFromSearch && productFromSearch.source === 'usda') {
@@ -1077,37 +944,7 @@ export function FoodMealTrackingDetailsModal({
       return { ...foodLogDecrypted.loggedMicros };
     }
 
-    const n = rawNutritionalData;
-    const out: MicrosData = {};
-    if (Number.isFinite(n.sugar)) {
-      out.sugar = n.sugar;
-    }
-
-    if (Number.isFinite(n.saturatedFat)) {
-      out.saturatedFat = n.saturatedFat;
-    }
-
-    if (Number.isFinite(n.sodium)) {
-      out.sodium = n.sodium;
-    }
-
-    if (Number.isFinite(n.alcohol) && (n.alcohol ?? 0) > 0) {
-      out.alcohol = n.alcohol;
-    }
-
-    if (Number.isFinite(n.potassium) && (n.potassium ?? 0) > 0) {
-      out.potassium = n.potassium;
-    }
-
-    if (Number.isFinite(n.magnesium) && (n.magnesium ?? 0) > 0) {
-      out.magnesium = n.magnesium;
-    }
-
-    if (Number.isFinite(n.zinc) && (n.zinc ?? 0) > 0) {
-      out.zinc = n.zinc;
-    }
-
-    return out;
+    return microsFromNutrition(rawNutritionalData);
   }, [food, localFood, foodLog, foodLogDecrypted, rawNutritionalData]);
 
   // Compute inferred calories from macros for warning display
@@ -1765,53 +1602,49 @@ export function FoodMealTrackingDetailsModal({
     openEditPopUp,
   ]);
 
-  const { handleAddFood, handleFoodNotFoundClose, handleTryAnotherSource } =
-    useFoodMealTrackingActions({
-      target: {
-        meal,
-        food,
-        foodLog,
-        localFood,
-        barcode,
-        productFromSearch,
-        productDetails,
-        refetchedProductDetails,
-        matchedPortion,
-      },
-      selection: {
-        selectedDate,
-        selectedTime,
-        selectedMeal,
-        servingSize,
-        isFavorite,
-        mealScaleFactor,
-        resolvedFoodServingMode,
-      },
-      nutrition: {
-        nutritionalData,
-        effectiveMicrosPer100g,
-        editedOverrides,
-      },
-      setters: {
-        setIsAddingFood,
-        setIsFoodNotFoundModalVisible,
-        setIsRefetchingSource,
-        setRefetchedProductDetails,
-        setAlternateSourceLookupFailed,
-        setLocalCanEdit,
-      },
-      callbacks: {
-        onAddFood,
-        onLogMeal,
-        onClose,
-        onFoodTracked,
-        onNutritionLogTracked,
-      },
-      feedback: {
-        showSnackbar,
-        t,
-      },
-    });
+  const { isAddingFood, handleAddFood } = useFoodMealTrackingActions({
+    target: {
+      meal,
+      food,
+      foodLog,
+      localFood,
+      barcode,
+      productFromSearch,
+      productDetails,
+      refetchedProductDetails,
+      matchedPortion,
+    },
+    selection: {
+      selectedDate,
+      selectedTime,
+      selectedMeal,
+      servingSize,
+      isFavorite,
+      mealScaleFactor,
+      resolvedFoodServingMode,
+    },
+    nutrition: {
+      nutritionalData,
+      effectiveMicrosPer100g,
+      editedOverrides,
+    },
+    callbacks: {
+      onAddFood,
+      onLogMeal,
+      onClose,
+      onFoodTracked,
+      onNutritionLogTracked,
+    },
+    feedback: {
+      showSnackbar,
+      t,
+    },
+  });
+
+  const handleFoodNotFoundClose = useCallback(() => {
+    setIsFoodNotFoundModalVisible(false);
+    onClose();
+  }, [onClose]);
 
   // Reset matched portion and edit overrides when modal closes
   useEffect(() => {
@@ -1819,9 +1652,7 @@ export function FoodMealTrackingDetailsModal({
       const reset = () => {
         setMatchedPortion(null);
         resetEditForm();
-        setRefetchedProductDetails(null);
-        setIsRefetchingSource(false);
-        setAlternateSourceLookupFailed(false);
+        resetAlternateSource();
         setLocalCanEdit(canEdit);
         hasInitializedServingSizeRef.current = false;
         setSelectedTime(new Date());
@@ -1829,7 +1660,7 @@ export function FoodMealTrackingDetailsModal({
       };
       reset();
     }
-  }, [visible, canEdit, resetEditForm]);
+  }, [visible, canEdit, resetEditForm, resetAlternateSource]);
 
   if (!visible) {
     return null;

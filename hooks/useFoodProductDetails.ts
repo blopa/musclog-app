@@ -184,7 +184,15 @@ export async function findAlternateBarcodeSource(
   if (currentSource !== 'usda') {
     attempts.push(
       fetchUSDAProductByBarcode(barcode)
-        .then((raw) => (raw ? ({ status: 'success', product: raw, source: 'usda' } as any) : null))
+        .then((raw) =>
+          raw
+            ? ({
+                status: 'success',
+                product: raw,
+                source: 'usda',
+              } satisfies ProductDetailsQueryData)
+            : null
+        )
         .catch(() => null)
     );
   }
@@ -193,7 +201,13 @@ export async function findAlternateBarcodeSource(
     attempts.push(
       fetchMusclogProductByBarcode(barcode)
         .then((raw) =>
-          raw ? ({ status: 'success', product: raw, source: 'musclog' } as any) : null
+          raw
+            ? ({
+                status: 'success',
+                product: raw,
+                source: 'musclog',
+              } satisfies ProductDetailsQueryData)
+            : null
         )
         .catch(() => null)
     );

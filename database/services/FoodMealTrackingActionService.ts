@@ -97,9 +97,32 @@ type FoodUpdatePatch = Partial<
   >
 >;
 
+// External catalog products are heterogeneous across providers (OFF / USDA / musclog) and flow
+// through to FoodService's loosely-typed create methods, so the product itself stays `any`. The
+// shapes below name only the fields this service reads or rewrites, so those assumptions stay visible.
 type ExternalProductForSave = {
   source: ExternalFoodProductSource;
   product: any;
+};
+
+type USDAEditableProduct = {
+  description?: string;
+  gtinUpc?: string;
+  ingredients?: string;
+  [key: string]: unknown;
+};
+
+type MusclogEditableProduct = {
+  name?: string;
+  description?: string;
+  [key: string]: unknown;
+};
+
+type OFFEditableProduct = {
+  product_name?: string;
+  code?: string;
+  ingredients_text?: string;
+  [key: string]: unknown;
 };
 
 type USDANutrient = {
@@ -110,7 +133,43 @@ type USDANutrient = {
   amount?: unknown;
 };
 
+/** Direct (non-micros) food fields a user edit can override on an existing record. */
+const DIRECT_FOOD_OVERRIDE_KEYS = [
+  'name',
+  'barcode',
+  'description',
+  'calories',
+  'protein',
+  'carbs',
+  'fat',
+  'fiber',
+] as const satisfies readonly (keyof EditedFoodOverrides)[];
+
+/** Copies the listed keys whose values are non-null/undefined into a new object. */
+function pickDefined<T extends object, K extends keyof T>(
+  source: T,
+  keys: readonly K[]
+): Partial<Pick<T, K>> {
+  const out: Partial<Pick<T, K>> = {};
+  for (const key of keys) {
+    if (source[key] != null) {
+      out[key] = source[key];
+    }
+  }
+
+  return out;
+}
+
 export class FoodMealTrackingActionService {
+  /**
+   * Single entry point for "add food / log meal" from the food-details modal. The returned
+   * `kind` drives the host callbacks:
+   * - `mealLogged` / `foodLogged` are treated as first-time logs (the caller fires
+   *   `onNutritionLogTracked`, e.g. for the confetti). **Every** external-source creation
+   *   (OFF / USDA / musclog) and existing-food log returns `foodLogged` — this is intentional and
+   *   uniform; earlier per-source branches fired the callback inconsistently.
+   * - `foodLogUpdated` (editing an existing log) is not a first-time log and skips that callback.
+   */
   static async trackFoodOrMeal({
     target,
     selection,
@@ -217,38 +276,7 @@ export class FoodMealTrackingActionService {
     const { editedOverrides, nutritionalData, effectiveMicrosPer100g } = nutrition;
 
     if (editedOverrides) {
-      if (editedOverrides.name != null) {
-        patch.name = editedOverrides.name;
-      }
-
-      if (editedOverrides.barcode != null) {
-        patch.barcode = editedOverrides.barcode;
-      }
-
-      if (editedOverrides.description != null) {
-        patch.description = editedOverrides.description;
-      }
-
-      if (editedOverrides.calories != null) {
-        patch.calories = editedOverrides.calories;
-      }
-
-      if (editedOverrides.protein != null) {
-        patch.protein = editedOverrides.protein;
-      }
-
-      if (editedOverrides.carbs != null) {
-        patch.carbs = editedOverrides.carbs;
-      }
-
-      if (editedOverrides.fat != null) {
-        patch.fat = editedOverrides.fat;
-      }
-
-      if (editedOverrides.fiber != null) {
-        patch.fiber = editedOverrides.fiber;
-      }
-
+      Object.assign(patch, pickDefined(editedOverrides, DIRECT_FOOD_OVERRIDE_KEYS));
       if (editedOverrides.micros != null) {
         patch.micros = effectiveMicrosPer100g;
       }
@@ -397,6 +425,9 @@ export class FoodMealTrackingActionService {
     return 'openfood';
   }
 
+  // Applies the user's name/barcode/description edits onto the raw external product before saving.
+  // All three sources are handled uniformly here, including musclog — earlier code skipped musclog
+  // edits, so editing a musclog product's name/description now persists (intentional).
   private static applyEditedOverridesToExternalProduct(
     source: ExternalFoodProductSource,
     product: any,
@@ -404,35 +435,38 @@ export class FoodMealTrackingActionService {
     fallbackBarcode?: string
   ): any {
     if (!editedOverrides) {
-      return source === 'usda' && fallbackBarcode && !product.gtinUpc
+      const usda = product as USDAEditableProduct;
+      return source === 'usda' && fallbackBarcode && !usda.gtinUpc
         ? { ...product, gtinUpc: fallbackBarcode }
         : product;
     }
 
     if (source === 'usda') {
+      const usda = product as USDAEditableProduct;
       return {
         ...product,
-        description: editedOverrides.name?.trim() || product.description,
-        gtinUpc: editedOverrides.barcode?.trim() || product.gtinUpc || fallbackBarcode,
-        ingredients: editedOverrides.description?.trim() || product.ingredients,
+        description: editedOverrides.name?.trim() || usda.description,
+        gtinUpc: editedOverrides.barcode?.trim() || usda.gtinUpc || fallbackBarcode,
+        ingredients: editedOverrides.description?.trim() || usda.ingredients,
       };
     }
 
     if (source === 'musclog') {
+      const musclog = product as MusclogEditableProduct;
       return {
         ...product,
         name: editedOverrides.name?.trim() || getProductName(product).name,
-        description: editedOverrides.description?.trim() || product.description,
+        description: editedOverrides.description?.trim() || musclog.description,
       };
     }
 
-    const codeFromProduct = (product as { code?: string }).code;
+    const off = product as OFFEditableProduct;
     const fallbackName = getProductName(product).name;
     return {
       ...product,
       product_name: (editedOverrides.name?.trim() || fallbackName).trim() || fallbackName,
-      code: (editedOverrides.barcode?.trim() || codeFromProduct || fallbackBarcode) ?? '',
-      ingredients_text: editedOverrides.description?.trim() || product.ingredients_text,
+      code: (editedOverrides.barcode?.trim() || off.code || fallbackBarcode) ?? '',
+      ingredients_text: editedOverrides.description?.trim() || off.ingredients_text,
     };
   }
 
@@ -454,7 +488,7 @@ export class FoodMealTrackingActionService {
     };
   }
 
-  private static extractUSDARawMicros(product: any): MicrosData {
+  private static extractUSDARawMicros(product: { foodNutrients?: unknown }): MicrosData {
     const nutrients = product?.foodNutrients;
     if (!Array.isArray(nutrients)) {
       return {};
@@ -473,7 +507,7 @@ export class FoodMealTrackingActionService {
     }, {});
   }
 
-  private static extractOFFRawNutriments(product: any): MicrosData {
+  private static extractOFFRawNutriments(product: { nutriments?: unknown }): MicrosData {
     return product?.nutriments && typeof product.nutriments === 'object'
       ? (product.nutriments as MicrosData)
       : {};
@@ -483,11 +517,17 @@ export class FoodMealTrackingActionService {
     return typeof value === 'string' && value ? value.toLowerCase() : undefined;
   }
 
+  /**
+   * Logs the food and floors the action to ~100ms. The delay keeps the modal's loading state from
+   * flashing on a fast write, and gives WatermelonDB's log observers a tick to propagate the new
+   * entry before the host modal closes and the parent screen re-queries.
+   */
   private static async logFoodAndSettle(
     foodId: string,
     selection: FoodMealTrackingActionSelection,
     loggedDateTime: Date
   ): Promise<void> {
+    const MIN_SETTLE_MS = 100;
     await Promise.all([
       NutritionService.logFood(
         foodId,
@@ -495,7 +535,7 @@ export class FoodMealTrackingActionService {
         selection.selectedMeal,
         selection.servingSize
       ),
-      new Promise((resolve) => setTimeout(resolve, 100)),
+      new Promise((resolve) => setTimeout(resolve, MIN_SETTLE_MS)),
     ]);
   }
 }
