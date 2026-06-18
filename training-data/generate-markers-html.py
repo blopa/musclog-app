@@ -5,10 +5,12 @@ Generate interactive HTML pages for manually annotating rep boundaries.
 For each recording in raw-data/*.json:
   1. Computes world-frame position (X/Y/Z, metres) by dead-reckoning the IMU
      samples with ZUPT drift correction (see ble_dead_reckoning.py).
-  2. Plots the 3 position channels by default + 9 raw sensor channels available
-     via the legend toggle.
-  3. Generates a standalone HTML page with an interactive chart.
-  4. Use the legend to toggle channels on/off; click to mark rep start/end.
+  2. Renders two complementary charts so reps are actually visible: orientation
+     (device-fused angle) and acceleration (raw accel + magnitude). Dead-reckoned
+     position is kept on the acceleration chart but hidden — its double
+     integration drifts far enough to bury the rep oscillations.
+  3. Generates a standalone HTML page with both interactive charts.
+  4. Use the legend to toggle channels on/off; click either chart to mark rep start/end.
   5. Download buttons export repMarkers JSON or the full updated JSON.
 
 Output:
@@ -49,7 +51,11 @@ TEMPLATE = """\
   body { font-family: system-ui, sans-serif; background: #0f0f0f; color: #e0e0e0; padding: 16px; max-width: 1200px; margin: 0 auto; }
   h1 { font-size: 16px; font-weight: 600; margin-bottom: 4px; color: #f0f0f0; }
   .meta { font-size: 12px; color: #6b7280; margin-bottom: 12px; }
-  #chart { width: 100%; height: 420px; border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+  .chart-row { display: flex; flex-direction: column; gap: 14px; margin-bottom: 12px; }
+  .chart-panel { display: flex; flex-direction: column; }
+  .chart-panel h2 { font-size: 13px; font-weight: 600; color: #d1d5db; margin: 0 0 1px; }
+  .chart-panel .sub { font-size: 11px; color: #6b7280; margin-bottom: 4px; }
+  .chart-box { width: 100%; height: 360px; border-radius: 8px; overflow: hidden; }
   .controls { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; align-items: center; }
   button { padding: 6px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; transition: opacity .15s; }
   button:hover { opacity: 0.8; }
@@ -79,7 +85,18 @@ TEMPLATE = """\
 <h1>__TITLE__</h1>
 <div class="meta">__META__</div>
 
-<div id="chart"></div>
+<div class="chart-row">
+  <div class="chart-panel">
+    <h2>Orientation (angle)</h2>
+    <div class="sub">device-fused tilt — clearest for rotational lifts</div>
+    <div id="chart-a" class="chart-box"></div>
+  </div>
+  <div class="chart-panel">
+    <h2>Acceleration</h2>
+    <div class="sub">raw accel + |a| — works for any lift; position kept but hidden</div>
+    <div id="chart-b" class="chart-box"></div>
+  </div>
+</div>
 
 <div class="controls">
   <button id="btn-mark">▶ Mark rep</button>

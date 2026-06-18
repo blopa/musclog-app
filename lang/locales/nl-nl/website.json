@@ -1367,7 +1367,11 @@
       "noMarkers": "Nog geen herhalingen gemarkeerd. Druk op S om het begin van een herhaling te markeren.",
       "invalidJson": "Ongeldige JSON: ontbrekend veld \"samples\"",
       "seekHint": "Klik op de grafiek om in de video te zoeken",
-      "keyboardHint": "S = begin markeren · E = einde markeren · Spatie = afspelen/pauzeren"
+      "keyboardHint": "S = begin markeren · E = einde markeren · Spatie = afspelen/pauzeren",
+      "chartOrientationTitle": "Oriëntatie",
+      "chartOrientationSubtitle": "apparaathoek · duidelijkst voor roterende oefeningen",
+      "chartAccelerationTitle": "Versnelling",
+      "chartAccelerationSubtitle": "ruwe versnelling · werkt voor elke oefening"
     }
   }
 }

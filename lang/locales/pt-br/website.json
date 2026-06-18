@@ -1375,7 +1375,11 @@
       "noMarkers": "Nenhuma repetição marcada ainda. Pressione S para marcar o início de uma repetição.",
       "invalidJson": "JSON inválido: campo \"samples\" ausente",
       "seekHint": "Clique no gráfico para navegar no vídeo",
-      "keyboardHint": "S = marcar início · E = marcar fim · Espaço = reproduzir/pausar"
+      "keyboardHint": "S = marcar início · E = marcar fim · Espaço = reproduzir/pausar",
+      "chartOrientationTitle": "Orientação",
+      "chartOrientationSubtitle": "ângulo do dispositivo · mais claro para exercícios rotacionais",
+      "chartAccelerationTitle": "Aceleração",
+      "chartAccelerationSubtitle": "aceleração bruta · funciona para qualquer exercício"
     }
   }
 }

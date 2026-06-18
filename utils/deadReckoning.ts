@@ -35,6 +35,13 @@ export interface DeadReckoningSample {
   timestamp: number;
   accel: { x: number; y: number; z: number };
   gyro: { x: number; y: number; z: number };
+  /**
+   * Device-fused Euler orientation (degrees), as emitted by the WT901. Ignored by
+   * the dead-reckoning math here, but carried through so callers can chart it: it
+   * is drift-corrected on-device and shows reps far more clearly than the
+   * doubly-integrated position for rotational movements.
+   */
+  angle?: { x: number; y: number; z: number };
 }
 
 export interface DeadReckoningResult {

@@ -31,30 +31,60 @@ const INPUT_BORDER = 'rgba(255,255,255,0.12)';
 const ACCENT_YELLOW = '#F59E0B';
 const ACCENT_RED = '#EF4444';
 
-// Channels match the Python tool: dead-reckoned world-frame position (default
-// visible) plus raw accel magnitude (drift-free reference, hidden by default).
-type ChannelKey = 'px' | 'py' | 'pz' | 'accelMag';
+// Two complementary views of the same recording, because doubly-integrated
+// position drifts so far it buries the reps (see the chart panels below):
+//   • Orientation — the device's own drift-corrected Euler angle. Clearest for
+//     rotational lifts (curls, extensions, presses where the wrist rotates).
+//   • Acceleration — raw accel per axis + magnitude. Drift-free and works for
+//     any lift. Dead-reckoned position is kept here but hidden by default.
+type ChannelKey =
+  | 'angleX'
+  | 'angleY'
+  | 'angleZ'
+  | 'accelX'
+  | 'accelY'
+  | 'accelZ'
+  | 'accelMag'
+  | 'px'
+  | 'py'
+  | 'pz';
 
 const CHART_COLORS: Record<ChannelKey, string> = {
   accelMag: '#FFFFFF',
-  px: '#F97316',
-  py: '#FBBF24',
-  pz: '#A3E635',
+  accelX: '#F97316',
+  accelY: '#FBBF24',
+  accelZ: '#A3E635',
+  angleX: '#F97316',
+  angleY: '#FBBF24',
+  angleZ: '#A3E635',
+  // Position uses a separate palette so it stays distinct from accel in chart B.
+  px: '#38BDF8',
+  py: '#A78BFA',
+  pz: '#F472B6',
 };
 
 const CHART_LABELS: Record<ChannelKey, string> = {
   accelMag: 'accel |a|',
+  accelX: 'accel.x',
+  accelY: 'accel.y',
+  accelZ: 'accel.z',
+  angleX: 'angle.x',
+  angleY: 'angle.y',
+  angleZ: 'angle.z',
   px: 'pos.x',
   py: 'pos.y',
   pz: 'pos.z',
 };
 
-const DEFAULT_VISIBLE: Record<ChannelKey, boolean> = {
-  accelMag: false,
-  px: true,
-  py: true,
-  pz: true,
-};
+// Chart A — orientation (degrees). |accel| (g) is offered but hidden by default
+// since it shares the Y axis with degrees and would render as a near-flat line.
+const ORIENTATION_CHANNELS: ChannelKey[] = ['angleX', 'angleY', 'angleZ', 'accelMag'];
+const ORIENTATION_DEFAULT: ChannelKey[] = ['angleX', 'angleY', 'angleZ'];
+
+// Chart B — acceleration (g). Position (metres) is kept for reference but hidden:
+// over a long set its integration drift dwarfs everything else.
+const ACCEL_CHANNELS: ChannelKey[] = ['accelX', 'accelY', 'accelZ', 'accelMag', 'px', 'py', 'pz'];
+const ACCEL_DEFAULT: ChannelKey[] = ['accelX', 'accelY', 'accelZ', 'accelMag'];
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -74,10 +104,8 @@ interface RecordingJson {
 interface ChartData {
   /** Time relative to `startedAtMs` (ms); may start slightly negative (pre-roll). */
   timeMs: number[];
-  px: number[];
-  py: number[];
-  pz: number[];
-  accelMag: number[];
+  /** All plottable series, keyed by channel. */
+  series: Record<ChannelKey, number[]>;
   domainMinMs: number;
   domainMaxMs: number;
   /** Absolute wall-clock anchor (video currentTime 0 == this instant). */
@@ -89,32 +117,47 @@ interface ChartData {
 const MAX_CHART_POINTS = 3000;
 
 function buildChartData(raw: RecordingJson): ChartData {
-  const dr = computePosition(raw.samples);
+  // Sort once so the raw samples line up index-for-index with the dead-reckoning
+  // output (computePosition sorts internally and returns timestamp-sorted arrays).
+  const sorted = raw.samples.slice().sort((a, b) => a.timestamp - b.timestamp);
+  const dr = computePosition(sorted);
   const total = dr.timestampsMs.length;
   const startedAtMs = raw.startedAt ? Date.parse(raw.startedAt) : (dr.timestampsMs[0] ?? 0);
 
   const timeMs: number[] = [];
-  const px: number[] = [];
-  const py: number[] = [];
-  const pz: number[] = [];
-  const accelMag: number[] = [];
+  const series: Record<ChannelKey, number[]> = {
+    accelMag: [],
+    accelX: [],
+    accelY: [],
+    accelZ: [],
+    angleX: [],
+    angleY: [],
+    angleZ: [],
+    px: [],
+    py: [],
+    pz: [],
+  };
 
   const step = Math.max(1, Math.floor(total / MAX_CHART_POINTS));
   for (let i = 0; i < total; i += step) {
+    const s = sorted[i];
     timeMs.push(dr.timestampsMs[i] - startedAtMs);
-    px.push(dr.px[i]);
-    py.push(dr.py[i]);
-    pz.push(dr.pz[i]);
-    accelMag.push(dr.accelMagG[i]);
+    series.px.push(dr.px[i]);
+    series.py.push(dr.py[i]);
+    series.pz.push(dr.pz[i]);
+    series.accelMag.push(dr.accelMagG[i]);
+    series.accelX.push(s.accel.x);
+    series.accelY.push(s.accel.y);
+    series.accelZ.push(s.accel.z);
+    series.angleX.push(s.angle?.x ?? 0);
+    series.angleY.push(s.angle?.y ?? 0);
+    series.angleZ.push(s.angle?.z ?? 0);
   }
 
   return {
-    accelMag,
     domainMaxMs: timeMs[timeMs.length - 1] ?? 0,
     domainMinMs: timeMs[0] ?? 0,
-    px,
-    py,
-    pz,
+    series,
     startedAtMs,
     timeMs,
   };
@@ -129,12 +172,13 @@ function drawChart(
   width: number,
   height: number,
   data: ChartData,
+  channelKeys: ChannelKey[],
   markers: RepMarker[],
   pendingStartMs: number | null,
   cursorMs: number,
   visibleChannels: Record<ChannelKey, boolean>
 ) {
-  const { accelMag, domainMaxMs, domainMinMs, px, py, pz, startedAtMs, timeMs } = data;
+  const { domainMaxMs, domainMinMs, series, startedAtMs, timeMs } = data;
   const pL = PADDING.left;
   const pR = PADDING.right;
   const pT = PADDING.top;
@@ -155,21 +199,14 @@ function drawChart(
     return;
   }
 
-  const channels: { key: ChannelKey; data: number[] }[] = [
-    { data: px, key: 'px' },
-    { data: py, key: 'py' },
-    { data: pz, key: 'pz' },
-    { data: accelMag, key: 'accelMag' },
-  ];
-
   // Y range from visible channels only (shared axis, like the Python chart).
   let yMin = Infinity;
   let yMax = -Infinity;
-  for (const ch of channels) {
-    if (!visibleChannels[ch.key]) {
+  for (const key of channelKeys) {
+    if (!visibleChannels[key]) {
       continue;
     }
-    for (const v of ch.data) {
+    for (const v of series[key]) {
       if (v < yMin) {
         yMin = v;
       }
@@ -231,16 +268,17 @@ function drawChart(
   }
 
   // Channel traces
-  for (const ch of channels) {
-    if (!visibleChannels[ch.key] || !ch.data.length) {
+  for (const key of channelKeys) {
+    const arr = series[key];
+    if (!visibleChannels[key] || !arr.length) {
       continue;
     }
-    ctx.strokeStyle = CHART_COLORS[ch.key];
+    ctx.strokeStyle = CHART_COLORS[key];
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    for (let i = 0; i < ch.data.length; i++) {
+    for (let i = 0; i < arr.length; i++) {
       const x = xForMs(timeMs[i]);
-      const y = yForVal(ch.data[i]);
+      const y = yForVal(arr[i]);
       if (i === 0) {
         ctx.moveTo(x, y);
       } else {
@@ -381,6 +419,175 @@ function DropZone({
   );
 }
 
+// ── Chart panel (one canvas; shares video cursor + markers with siblings) ─────
+
+function ChartPanel({
+  title,
+  subtitle,
+  seekHint,
+  chartData,
+  channelKeys,
+  defaultVisible,
+  markers,
+  pendingStartMs,
+  videoRef,
+}: {
+  title: string;
+  subtitle: string;
+  seekHint: string;
+  chartData: ChartData;
+  channelKeys: ChannelKey[];
+  defaultVisible: ChannelKey[];
+  markers: RepMarker[];
+  pendingStartMs: number | null;
+  videoRef: React.RefObject<HTMLVideoElement | null>;
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const rafRef = useRef<number>(0);
+  const [visible, setVisible] = useState<Record<ChannelKey, boolean>>(() => {
+    const initial = {} as Record<ChannelKey, boolean>;
+    for (const key of channelKeys) {
+      initial[key] = defaultVisible.includes(key);
+    }
+    return initial;
+  });
+
+  const redraw = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      return;
+    }
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      return;
+    }
+    const cursorMs = (videoRef.current?.currentTime ?? 0) * 1000;
+    drawChart(
+      ctx,
+      canvas.width / window.devicePixelRatio,
+      canvas.height / window.devicePixelRatio,
+      chartData,
+      channelKeys,
+      markers,
+      pendingStartMs,
+      cursorMs,
+      visible
+    );
+  }, [chartData, channelKeys, markers, pendingStartMs, visible, videoRef]);
+
+  useEffect(() => {
+    redraw();
+  }, [redraw]);
+
+  // rAF loop drives the cursor during playback.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) {
+      return;
+    }
+    const startLoop = () => {
+      const loop = () => {
+        redraw();
+        rafRef.current = requestAnimationFrame(loop);
+      };
+      rafRef.current = requestAnimationFrame(loop);
+    };
+    const stopLoop = () => {
+      cancelAnimationFrame(rafRef.current);
+      redraw();
+    };
+    video.addEventListener('play', startLoop);
+    video.addEventListener('pause', stopLoop);
+    video.addEventListener('ended', stopLoop);
+    video.addEventListener('seeked', redraw);
+    return () => {
+      video.removeEventListener('play', startLoop);
+      video.removeEventListener('pause', stopLoop);
+      video.removeEventListener('ended', stopLoop);
+      video.removeEventListener('seeked', redraw);
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, [redraw, videoRef]);
+
+  // Keep canvas backing store sized to its CSS box.
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      return;
+    }
+    const observer = new ResizeObserver(() => {
+      const dpr = window.devicePixelRatio;
+      canvas.width = canvas.offsetWidth * dpr;
+      canvas.height = canvas.offsetHeight * dpr;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      redraw();
+    });
+    observer.observe(canvas);
+    return () => observer.disconnect();
+  }, [redraw]);
+
+  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    const video = videoRef.current;
+    if (!canvas || !video) {
+      return;
+    }
+    const rect = canvas.getBoundingClientRect();
+    const fraction =
+      (e.clientX - rect.left - PADDING.left) / (rect.width - PADDING.left - PADDING.right);
+    const span = chartData.domainMaxMs - chartData.domainMinMs;
+    const relMs = chartData.domainMinMs + Math.max(0, Math.min(1, fraction)) * span;
+    video.currentTime = Math.max(0, relMs / 1000);
+  };
+
+  return (
+    <div
+      className="flex flex-col rounded-2xl border p-3"
+      style={{ backgroundColor: CARD_BG, borderColor: CARD_BORDER }}
+    >
+      <div className="mb-1 flex items-baseline gap-2">
+        <span className="text-sm font-bold text-white">{title}</span>
+        <span className="truncate text-xs" style={{ color: MUTED }}>
+          {subtitle}
+        </span>
+      </div>
+      {/* Channel legend */}
+      <div className="mb-2 flex flex-wrap items-center gap-3">
+        {channelKeys.map((ch) => (
+          <button
+            key={ch}
+            type="button"
+            onClick={() => setVisible((prev) => ({ ...prev, [ch]: !prev[ch] }))}
+            className="flex items-center gap-1.5 rounded px-2 py-1 text-xs font-semibold transition-opacity"
+            style={{
+              color: visible[ch] ? CHART_COLORS[ch] : MUTED,
+              opacity: visible[ch] ? 1 : 0.4,
+            }}
+          >
+            <span
+              className="inline-block h-2 w-4 rounded-full"
+              style={{ backgroundColor: CHART_COLORS[ch] }}
+            />
+            {CHART_LABELS[ch]}
+          </button>
+        ))}
+        <span className="ml-auto text-xs" style={{ color: MUTED }}>
+          {seekHint}
+        </span>
+      </div>
+      <canvas
+        ref={canvasRef}
+        onClick={handleCanvasClick}
+        className="w-full cursor-crosshair rounded-xl"
+        style={{ height: 220 }}
+      />
+    </div>
+  );
+}
+
 // ── Main page ───────────────────────────────────────────────────────────────
 
 export default function RepMarkerPage() {
@@ -399,12 +606,7 @@ export default function RepMarkerPage() {
   const [pendingStartMs, setPendingStartMs] = useState<number | null>(null);
   const [markState, setMarkState] = useState<'idle' | 'waitingEnd'>('idle');
 
-  const [visibleChannels, setVisibleChannels] =
-    useState<Record<ChannelKey, boolean>>(DEFAULT_VISIBLE);
-
   const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const rafRef = useRef<number>(0);
   const startedAtMs = chartData?.startedAtMs ?? 0;
 
   // ── File handlers ──────────────────────────────────────────────────────
@@ -487,100 +689,6 @@ export default function RepMarkerPage() {
     setPendingStartMs(null);
     setMarkState('idle');
   };
-
-  // ── Canvas click → seek video ──────────────────────────────────────────
-
-  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
-    const video = videoRef.current;
-    if (!canvas || !video || !chartData) {
-      return;
-    }
-    const rect = canvas.getBoundingClientRect();
-    const fraction =
-      (e.clientX - rect.left - PADDING.left) / (rect.width - PADDING.left - PADDING.right);
-    const span = chartData.domainMaxMs - chartData.domainMinMs;
-    const relMs = chartData.domainMinMs + Math.max(0, Math.min(1, fraction)) * span;
-    video.currentTime = Math.max(0, relMs / 1000);
-  };
-
-  // ── Canvas draw loop ───────────────────────────────────────────────────
-
-  const redraw = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas || !chartData) {
-      return;
-    }
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      return;
-    }
-    const cursorMs = (videoRef.current?.currentTime ?? 0) * 1000;
-    drawChart(
-      ctx,
-      canvas.width / window.devicePixelRatio,
-      canvas.height / window.devicePixelRatio,
-      chartData,
-      markers,
-      pendingStartMs,
-      cursorMs,
-      visibleChannels
-    );
-  }, [chartData, markers, pendingStartMs, visibleChannels]);
-
-  useEffect(() => {
-    redraw();
-  }, [redraw]);
-
-  // rAF loop drives the cursor during playback.
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) {
-      return;
-    }
-    const startLoop = () => {
-      const loop = () => {
-        redraw();
-        rafRef.current = requestAnimationFrame(loop);
-      };
-      rafRef.current = requestAnimationFrame(loop);
-    };
-    const stopLoop = () => {
-      cancelAnimationFrame(rafRef.current);
-      redraw();
-    };
-    video.addEventListener('play', startLoop);
-    video.addEventListener('pause', stopLoop);
-    video.addEventListener('ended', stopLoop);
-    video.addEventListener('seeked', redraw);
-    return () => {
-      video.removeEventListener('play', startLoop);
-      video.removeEventListener('pause', stopLoop);
-      video.removeEventListener('ended', stopLoop);
-      video.removeEventListener('seeked', redraw);
-      cancelAnimationFrame(rafRef.current);
-    };
-  }, [redraw]);
-
-  // Keep canvas backing store sized to its CSS box.
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) {
-      return;
-    }
-    const observer = new ResizeObserver(() => {
-      const dpr = window.devicePixelRatio;
-      canvas.width = canvas.offsetWidth * dpr;
-      canvas.height = canvas.offsetHeight * dpr;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      }
-      redraw();
-    });
-    observer.observe(canvas);
-    return () => observer.disconnect();
-  }, [redraw]);
 
   // ── Keyboard shortcuts ─────────────────────────────────────────────────
 
@@ -694,11 +802,11 @@ export default function RepMarkerPage() {
           {/* ── Editor phase ─────────────────────────────────────────────────── */}
           {phase === 'editor' && chartData ? (
             <div className="flex flex-col gap-4">
-              {/* Top panels: video + chart */}
+              {/* Top panels: video + two complementary charts */}
               <div className="grid gap-4 lg:grid-cols-2">
                 {/* Video player */}
                 <div
-                  className="overflow-hidden rounded-2xl border"
+                  className="self-start overflow-hidden rounded-2xl border"
                   style={{ backgroundColor: '#000', borderColor: CARD_BORDER }}
                 >
                   <video
@@ -715,42 +823,31 @@ export default function RepMarkerPage() {
                   </div>
                 </div>
 
-                {/* Chart */}
-                <div
-                  className="flex flex-col rounded-2xl border p-3"
-                  style={{ backgroundColor: CARD_BG, borderColor: CARD_BORDER }}
-                >
-                  {/* Channel legend */}
-                  <div className="mb-2 flex flex-wrap items-center gap-3">
-                    {(Object.keys(CHART_COLORS) as ChannelKey[]).map((ch) => (
-                      <button
-                        key={ch}
-                        type="button"
-                        onClick={() => setVisibleChannels((prev) => ({ ...prev, [ch]: !prev[ch] }))}
-                        className="flex items-center gap-1.5 rounded px-2 py-1 text-xs font-semibold transition-opacity"
-                        style={{
-                          color: visibleChannels[ch] ? CHART_COLORS[ch] : MUTED,
-                          opacity: visibleChannels[ch] ? 1 : 0.4,
-                        }}
-                      >
-                        <span
-                          className="inline-block h-2 w-4 rounded-full"
-                          style={{ backgroundColor: CHART_COLORS[ch] }}
-                        />
-                        {CHART_LABELS[ch]}
-                      </button>
-                    ))}
-                    <span className="ml-auto text-xs" style={{ color: MUTED }}>
-                      {t('seekHint')}
-                    </span>
-                  </div>
-
-                  {/* Canvas */}
-                  <canvas
-                    ref={canvasRef}
-                    onClick={handleCanvasClick}
-                    className="w-full flex-1 cursor-crosshair rounded-xl"
-                    style={{ height: 280 }}
+                {/* Charts: A = device orientation, B = raw acceleration. Both are
+                    drift-free, so reps show as clear oscillations; integrated
+                    position lives in chart B but is hidden by default. */}
+                <div className="flex flex-col gap-4">
+                  <ChartPanel
+                    title={t('chartOrientationTitle')}
+                    subtitle={t('chartOrientationSubtitle')}
+                    seekHint={t('seekHint')}
+                    chartData={chartData}
+                    channelKeys={ORIENTATION_CHANNELS}
+                    defaultVisible={ORIENTATION_DEFAULT}
+                    markers={markers}
+                    pendingStartMs={pendingStartMs}
+                    videoRef={videoRef}
+                  />
+                  <ChartPanel
+                    title={t('chartAccelerationTitle')}
+                    subtitle={t('chartAccelerationSubtitle')}
+                    seekHint={t('seekHint')}
+                    chartData={chartData}
+                    channelKeys={ACCEL_CHANNELS}
+                    defaultVisible={ACCEL_DEFAULT}
+                    markers={markers}
+                    pendingStartMs={pendingStartMs}
+                    videoRef={videoRef}
                   />
                 </div>
               </div>

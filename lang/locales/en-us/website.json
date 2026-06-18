@@ -1355,7 +1355,11 @@
       "noMarkers": "No reps marked yet. Press S to mark the start of a rep.",
       "invalidJson": "Invalid JSON: missing \"samples\" field",
       "seekHint": "Click chart to seek video",
-      "keyboardHint": "S = mark start · E = mark end · Space = play/pause"
+      "keyboardHint": "S = mark start · E = mark end · Space = play/pause",
+      "chartOrientationTitle": "Orientation",
+      "chartOrientationSubtitle": "device angle · clearest for rotational lifts",
+      "chartAccelerationTitle": "Acceleration",
+      "chartAccelerationSubtitle": "raw accel · works for any lift"
     }
   }
 }
