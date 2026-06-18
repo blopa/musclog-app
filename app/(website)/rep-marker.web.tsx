@@ -15,6 +15,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GridPattern } from '@/components/website/WebsiteBackgrounds';
+import { computePosition, type DeadReckoningSample } from '@/utils/deadReckoning';
 
 // ── Color palette ──────────────────────────────────────────────────────────
 
@@ -30,85 +31,91 @@ const INPUT_BORDER = 'rgba(255,255,255,0.12)';
 const ACCENT_YELLOW = '#F59E0B';
 const ACCENT_RED = '#EF4444';
 
-const CHART_COLORS = {
-  ax: '#60A5FA',
-  ay: '#34D399',
-  az: '#F97316',
-  mag: '#FFFFFF',
+// Channels match the Python tool: dead-reckoned world-frame position (default
+// visible) plus raw accel magnitude (drift-free reference, hidden by default).
+type ChannelKey = 'px' | 'py' | 'pz' | 'accelMag';
+
+const CHART_COLORS: Record<ChannelKey, string> = {
+  accelMag: '#FFFFFF',
+  px: '#F97316',
+  py: '#FBBF24',
+  pz: '#A3E635',
+};
+
+const CHART_LABELS: Record<ChannelKey, string> = {
+  accelMag: 'accel |a|',
+  px: 'pos.x',
+  py: 'pos.y',
+  pz: 'pos.z',
+};
+
+const DEFAULT_VISIBLE: Record<ChannelKey, boolean> = {
+  accelMag: false,
+  px: true,
+  py: true,
+  pz: true,
 };
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
 interface RepMarker {
+  /** Absolute wall-clock milliseconds, matching the Python tool's output. */
   startMs: number;
   endMs: number;
 }
 
-interface Sample {
-  timestamp: number;
-  accel?: { x: number; y: number; z: number };
-  gyro?: { x: number; y: number; z: number };
-  angle?: { x: number; y: number; z: number };
-  [key: string]: unknown;
-}
-
 interface RecordingJson {
-  samples: Sample[];
+  samples: DeadReckoningSample[];
   startedAt?: string;
   repMarkers?: RepMarker[];
   [key: string]: unknown;
 }
 
 interface ChartData {
+  /** Time relative to `startedAtMs` (ms); may start slightly negative (pre-roll). */
   timeMs: number[];
-  ax: number[];
-  ay: number[];
-  az: number[];
-  mag: number[];
-  durationMs: number;
+  px: number[];
+  py: number[];
+  pz: number[];
+  accelMag: number[];
+  domainMinMs: number;
+  domainMaxMs: number;
+  /** Absolute wall-clock anchor (video currentTime 0 == this instant). */
+  startedAtMs: number;
 }
 
 // ── Data processing ─────────────────────────────────────────────────────────
 
 const MAX_CHART_POINTS = 3000;
 
-function processJson(raw: RecordingJson): ChartData {
-  const samples = raw.samples;
-  if (!samples?.length) {
-    return { timeMs: [], ax: [], ay: [], az: [], mag: [], durationMs: 0 };
-  }
+function buildChartData(raw: RecordingJson): ChartData {
+  const dr = computePosition(raw.samples);
+  const total = dr.timestampsMs.length;
+  const startedAtMs = raw.startedAt ? Date.parse(raw.startedAt) : (dr.timestampsMs[0] ?? 0);
 
-  const step = Math.max(1, Math.floor(samples.length / MAX_CHART_POINTS));
-  const downsampled: Sample[] = [];
-  for (let i = 0; i < samples.length; i += step) {
-    downsampled.push(samples[i]);
-  }
-
-  const t0 = downsampled[0].timestamp;
   const timeMs: number[] = [];
-  const ax: number[] = [];
-  const ay: number[] = [];
-  const az: number[] = [];
-  const mag: number[] = [];
+  const px: number[] = [];
+  const py: number[] = [];
+  const pz: number[] = [];
+  const accelMag: number[] = [];
 
-  for (const s of downsampled) {
-    const t = s.timestamp - t0;
-    const aX = s.accel?.x ?? 0;
-    const aY = s.accel?.y ?? 0;
-    const aZ = s.accel?.z ?? 0;
-    timeMs.push(t);
-    ax.push(aX);
-    ay.push(aY);
-    az.push(aZ);
-    mag.push(Math.sqrt(aX * aX + aY * aY + aZ * aZ));
+  const step = Math.max(1, Math.floor(total / MAX_CHART_POINTS));
+  for (let i = 0; i < total; i += step) {
+    timeMs.push(dr.timestampsMs[i] - startedAtMs);
+    px.push(dr.px[i]);
+    py.push(dr.py[i]);
+    pz.push(dr.pz[i]);
+    accelMag.push(dr.accelMagG[i]);
   }
 
   return {
-    ax,
-    ay,
-    az,
-    durationMs: timeMs[timeMs.length - 1] ?? 0,
-    mag,
+    accelMag,
+    domainMaxMs: timeMs[timeMs.length - 1] ?? 0,
+    domainMinMs: timeMs[0] ?? 0,
+    px,
+    py,
+    pz,
+    startedAtMs,
     timeMs,
   };
 }
@@ -125,9 +132,9 @@ function drawChart(
   markers: RepMarker[],
   pendingStartMs: number | null,
   cursorMs: number,
-  visibleChannels: { ax: boolean; ay: boolean; az: boolean; mag: boolean }
+  visibleChannels: Record<ChannelKey, boolean>
 ) {
-  const { ax, ay, az, durationMs, mag, timeMs } = data;
+  const { accelMag, domainMaxMs, domainMinMs, px, py, pz, startedAtMs, timeMs } = data;
   const pL = PADDING.left;
   const pR = PADDING.right;
   const pT = PADDING.top;
@@ -139,7 +146,8 @@ function drawChart(
   ctx.fillStyle = '#0a0a0a';
   ctx.fillRect(0, 0, width, height);
 
-  if (!timeMs.length || durationMs === 0) {
+  const span = domainMaxMs - domainMinMs;
+  if (!timeMs.length || span <= 0) {
     ctx.fillStyle = MUTED;
     ctx.font = '13px system-ui, sans-serif';
     ctx.textAlign = 'center';
@@ -147,75 +155,69 @@ function drawChart(
     return;
   }
 
-  // Determine y range from visible channels
-  const visibleData: number[][] = [];
-  if (visibleChannels.ax) {
-    visibleData.push(ax);
-  }
+  const channels: { key: ChannelKey; data: number[] }[] = [
+    { data: px, key: 'px' },
+    { data: py, key: 'py' },
+    { data: pz, key: 'pz' },
+    { data: accelMag, key: 'accelMag' },
+  ];
 
-  if (visibleChannels.ay) {
-    visibleData.push(ay);
-  }
-
-  if (visibleChannels.az) {
-    visibleData.push(az);
-  }
-
-  if (visibleChannels.mag) {
-    visibleData.push(mag);
-  }
-
+  // Y range from visible channels only (shared axis, like the Python chart).
   let yMin = Infinity;
   let yMax = -Infinity;
-  for (const ch of visibleData) {
-    for (const v of ch) {
+  for (const ch of channels) {
+    if (!visibleChannels[ch.key]) {
+      continue;
+    }
+    for (const v of ch.data) {
       if (v < yMin) {
         yMin = v;
       }
-
       if (v > yMax) {
         yMax = v;
       }
     }
   }
-
+  if (!Number.isFinite(yMin) || !Number.isFinite(yMax)) {
+    yMin = -1;
+    yMax = 1;
+  }
   if (yMin === yMax) {
     yMin -= 1;
     yMax += 1;
   }
   const yRange = yMax - yMin;
 
-  const xForMs = (ms: number) => pL + (ms / durationMs) * chartW;
+  const xForMs = (ms: number) => {
+    const x = pL + ((ms - domainMinMs) / span) * chartW;
+    return Math.max(pL, Math.min(pL + chartW, x));
+  };
   const yForVal = (v: number) => pT + chartH - ((v - yMin) / yRange) * chartH;
 
   // Grid lines
   ctx.strokeStyle = 'rgba(255,255,255,0.05)';
   ctx.lineWidth = 1;
-  const gridCount = 5;
-  for (let i = 0; i <= gridCount; i++) {
-    const y = pT + (chartH * i) / gridCount;
+  for (let i = 0; i <= 5; i++) {
+    const y = pT + (chartH * i) / 5;
     ctx.beginPath();
     ctx.moveTo(pL, y);
     ctx.lineTo(pL + chartW, y);
     ctx.stroke();
   }
 
-  // Time axis labels
+  // Time axis labels (relative seconds)
   ctx.fillStyle = MUTED;
   ctx.font = '10px system-ui, sans-serif';
   ctx.textAlign = 'center';
-  const labelCount = 6;
-  for (let i = 0; i <= labelCount; i++) {
-    const ms = (durationMs * i) / labelCount;
-    const x = xForMs(ms);
-    const secs = (ms / 1000).toFixed(1);
-    ctx.fillText(`${secs}s`, x, height - 4);
+  for (let i = 0; i <= 6; i++) {
+    const ms = domainMinMs + (span * i) / 6;
+    ctx.fillText(`${(ms / 1000).toFixed(1)}s`, xForMs(ms), height - 4);
   }
 
-  // Committed marker regions
+  // Committed marker regions (absolute ms → relative for drawing)
   for (const m of markers) {
-    const x1 = xForMs(m.startMs);
-    const x2 = xForMs(m.endMs);
+    const x1 = xForMs(m.startMs - startedAtMs);
+    const x2 = xForMs(m.endMs - startedAtMs);
     ctx.fillStyle = 'rgba(34,197,94,0.15)';
     ctx.fillRect(x1, pT, x2 - x1, chartH);
     ctx.strokeStyle = 'rgba(34,197,94,0.5)';
@@ -228,20 +230,12 @@ function drawChart(
     ctx.stroke();
   }
 
-  // Draw channels
-  const channelsToDraw: { data: number[]; color: string; visible: boolean }[] = [
-    { color: CHART_COLORS.ax, data: ax, visible: visibleChannels.ax },
-    { color: CHART_COLORS.ay, data: ay, visible: visibleChannels.ay },
-    { color: CHART_COLORS.az, data: az, visible: visibleChannels.az },
-    { color: CHART_COLORS.mag, data: mag, visible: visibleChannels.mag },
-  ];
-
-  for (const ch of channelsToDraw) {
-    if (!ch.visible || !ch.data.length) {
+  // Channel traces
+  for (const ch of channels) {
+    if (!visibleChannels[ch.key] || !ch.data.length) {
       continue;
     }
-
-    ctx.strokeStyle = ch.color;
+    ctx.strokeStyle = CHART_COLORS[ch.key];
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     for (let i = 0; i < ch.data.length; i++) {
@@ -256,7 +250,7 @@ function drawChart(
     ctx.stroke();
   }
 
-  // Pending start line (dashed yellow)
+  // Pending start line (dashed yellow) — relative ms
   if (pendingStartMs !== null) {
     const x = xForMs(pendingStartMs);
     ctx.strokeStyle = ACCENT_YELLOW;
@@ -269,25 +263,24 @@ function drawChart(
     ctx.setLineDash([]);
   }
 
-  // Cursor line (current video time)
-  if (cursorMs >= 0 && cursorMs <= durationMs) {
-    const x = xForMs(cursorMs);
-    ctx.strokeStyle = 'rgba(255,255,255,0.8)';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(x, pT);
-    ctx.lineTo(x, pT + chartH);
-    ctx.stroke();
-  }
+  // Cursor line (current video time, relative ms)
+  const x = xForMs(cursorMs);
+  ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(x, pT);
+  ctx.lineTo(x, pT + chartH);
+  ctx.stroke();
 }
 
-// ── Time formatting ─────────────────────────────────────────────────────────
+// ── Time formatting (relative ms → m:ss.s) ───────────────────────────────────
 
 function fmtMs(ms: number): string {
-  const totalSec = ms / 1000;
+  const sign = ms < 0 ? '-' : '';
+  const totalSec = Math.abs(ms) / 1000;
   const m = Math.floor(totalSec / 60);
   const s = (totalSec % 60).toFixed(1).padStart(4, '0');
-  return `${m}:${s}`;
+  return `${sign}${m}:${s}`;
 }
 
 // ── Drop zone component ─────────────────────────────────────────────────────
@@ -323,6 +316,16 @@ function DropZone({
     }
   };
 
+  const borderColor = (() => {
+    if (error) {
+      return ACCENT_RED;
+    }
+    if (isLoaded) {
+      return BRAND_GREEN;
+    }
+    return dragging ? BRAND_GREEN_BRIGHT : INPUT_BORDER;
+  })();
+
   return (
     <div
       onClick={() => inputRef.current?.click()}
@@ -335,13 +338,7 @@ function DropZone({
       className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed p-8 transition-colors"
       style={{
         backgroundColor: dragging ? 'rgba(0,255,163,0.06)' : CARD_BG,
-        borderColor: error
-          ? ACCENT_RED
-          : isLoaded
-            ? BRAND_GREEN
-            : dragging
-              ? BRAND_GREEN_BRIGHT
-              : INPUT_BORDER,
+        borderColor,
       }}
     >
       <input
@@ -389,10 +386,8 @@ function DropZone({
 export default function RepMarkerPage() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.repMarker' });
 
-  // Phase: 'upload' or 'editor'
   const [phase, setPhase] = useState<'upload' | 'editor'>('upload');
 
-  // File state
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [videoName, setVideoName] = useState('');
   const [jsonData, setJsonData] = useState<RecordingJson | null>(null);
@@ -400,23 +395,17 @@ export default function RepMarkerPage() {
   const [jsonError, setJsonError] = useState('');
   const [chartData, setChartData] = useState<ChartData | null>(null);
 
-  // Marking state
   const [markers, setMarkers] = useState<RepMarker[]>([]);
   const [pendingStartMs, setPendingStartMs] = useState<number | null>(null);
   const [markState, setMarkState] = useState<'idle' | 'waitingEnd'>('idle');
 
-  // Channel visibility
-  const [visibleChannels, setVisibleChannels] = useState({
-    ax: true,
-    ay: true,
-    az: true,
-    mag: true,
-  });
+  const [visibleChannels, setVisibleChannels] =
+    useState<Record<ChannelKey, boolean>>(DEFAULT_VISIBLE);
 
-  // Refs
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number>(0);
+  const startedAtMs = chartData?.startedAtMs ?? 0;
 
   // ── File handlers ──────────────────────────────────────────────────────
 
@@ -427,7 +416,9 @@ export default function RepMarkerPage() {
     const url = URL.createObjectURL(file);
     setVideoUrl(url);
     setVideoName(file.name);
-    checkBothLoaded(url, jsonData);
+    if (jsonData) {
+      setPhase('editor');
+    }
   };
 
   const handleJsonFile = (file: File) => {
@@ -440,36 +431,24 @@ export default function RepMarkerPage() {
           setJsonError(t('invalidJson'));
           return;
         }
+        const cd = buildChartData(parsed);
         setJsonData(parsed);
         setJsonName(file.name);
-        const cd = processJson(parsed);
         setChartData(cd);
-        // Pre-load existing markers
-        if (parsed.repMarkers?.length) {
-          const startedAtMs = parsed.startedAt
-            ? new Date(parsed.startedAt).getTime()
-            : parsed.samples[0].timestamp;
-          const t0 = parsed.samples[0].timestamp;
-          const offset = startedAtMs - t0;
-          setMarkers(
-            parsed.repMarkers.map((m) => ({
-              endMs: m.endMs + offset,
-              startMs: m.startMs + offset,
-            }))
-          );
+        // Existing markers are stored as absolute wall-clock ms (Python format).
+        setMarkers(
+          parsed.repMarkers?.length
+            ? [...parsed.repMarkers].sort((a, b) => a.startMs - b.startMs)
+            : []
+        );
+        if (videoUrl) {
+          setPhase('editor');
         }
-        checkBothLoaded(videoUrl, parsed);
       } catch {
         setJsonError(t('invalidJson'));
       }
     };
     reader.readAsText(file);
-  };
-
-  const checkBothLoaded = (vid: string | null, json: RecordingJson | null) => {
-    if (vid && json) {
-      setPhase('editor');
-    }
   };
 
   // ── Marking actions ────────────────────────────────────────────────────
@@ -479,9 +458,7 @@ export default function RepMarkerPage() {
     if (!video) {
       return;
     }
-
-    const ms = video.currentTime * 1000;
-    setPendingStartMs(ms);
+    setPendingStartMs(video.currentTime * 1000);
     setMarkState('waitingEnd');
   }, []);
 
@@ -490,20 +467,20 @@ export default function RepMarkerPage() {
     if (!video || markState !== 'waitingEnd' || pendingStartMs === null) {
       return;
     }
-
-    const endMs = video.currentTime * 1000;
-    const startMs = pendingStartMs;
-    setMarkers((prev) => [
-      ...prev,
-      startMs <= endMs ? { endMs, startMs } : { endMs: startMs, startMs: endMs },
-    ]);
+    const endRel = video.currentTime * 1000;
+    const startRel = pendingStartMs;
+    const lo = Math.min(startRel, endRel);
+    const hi = Math.max(startRel, endRel);
+    setMarkers((prev) =>
+      [...prev, { endMs: startedAtMs + hi, startMs: startedAtMs + lo }].sort(
+        (a, b) => a.startMs - b.startMs
+      )
+    );
     setPendingStartMs(null);
     setMarkState('idle');
-  }, [markState, pendingStartMs]);
+  }, [markState, pendingStartMs, startedAtMs]);
 
-  const handleUndo = () => {
-    setMarkers((prev) => prev.slice(0, -1));
-  };
+  const handleUndo = () => setMarkers((prev) => prev.slice(0, -1));
 
   const handleClearAll = () => {
     setMarkers([]);
@@ -519,13 +496,12 @@ export default function RepMarkerPage() {
     if (!canvas || !video || !chartData) {
       return;
     }
-
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const chartW = canvas.width - PADDING.left - PADDING.right;
-    const fraction = (x - PADDING.left) / chartW;
-    const seekMs = Math.max(0, Math.min(chartData.durationMs, fraction * chartData.durationMs));
-    video.currentTime = seekMs / 1000;
+    const fraction =
+      (e.clientX - rect.left - PADDING.left) / (rect.width - PADDING.left - PADDING.right);
+    const span = chartData.domainMaxMs - chartData.domainMinMs;
+    const relMs = chartData.domainMinMs + Math.max(0, Math.min(1, fraction)) * span;
+    video.currentTime = Math.max(0, relMs / 1000);
   };
 
   // ── Canvas draw loop ───────────────────────────────────────────────────
@@ -535,17 +511,15 @@ export default function RepMarkerPage() {
     if (!canvas || !chartData) {
       return;
     }
-
     const ctx = canvas.getContext('2d');
     if (!ctx) {
       return;
     }
-
     const cursorMs = (videoRef.current?.currentTime ?? 0) * 1000;
     drawChart(
       ctx,
-      canvas.width,
-      canvas.height,
+      canvas.width / window.devicePixelRatio,
+      canvas.height / window.devicePixelRatio,
       chartData,
       markers,
       pendingStartMs,
@@ -554,18 +528,16 @@ export default function RepMarkerPage() {
     );
   }, [chartData, markers, pendingStartMs, visibleChannels]);
 
-  // Redraw when state changes (not during playback — that's handled by rAF)
   useEffect(() => {
     redraw();
   }, [redraw]);
 
-  // rAF loop for cursor during video playback
+  // rAF loop drives the cursor during playback.
   useEffect(() => {
     const video = videoRef.current;
     if (!video) {
       return;
     }
-
     const startLoop = () => {
       const loop = () => {
         redraw();
@@ -573,37 +545,36 @@ export default function RepMarkerPage() {
       };
       rafRef.current = requestAnimationFrame(loop);
     };
-
     const stopLoop = () => {
       cancelAnimationFrame(rafRef.current);
       redraw();
     };
-
     video.addEventListener('play', startLoop);
     video.addEventListener('pause', stopLoop);
     video.addEventListener('ended', stopLoop);
-
+    video.addEventListener('seeked', redraw);
     return () => {
       video.removeEventListener('play', startLoop);
       video.removeEventListener('pause', stopLoop);
       video.removeEventListener('ended', stopLoop);
+      video.removeEventListener('seeked', redraw);
       cancelAnimationFrame(rafRef.current);
     };
   }, [redraw]);
 
-  // Resize canvas to match container
+  // Keep canvas backing store sized to its CSS box.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) {
       return;
     }
-
     const observer = new ResizeObserver(() => {
-      canvas.width = canvas.offsetWidth * window.devicePixelRatio;
-      canvas.height = canvas.offsetHeight * window.devicePixelRatio;
+      const dpr = window.devicePixelRatio;
+      canvas.width = canvas.offsetWidth * dpr;
+      canvas.height = canvas.offsetHeight * dpr;
       const ctx = canvas.getContext('2d');
       if (ctx) {
-        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       }
       redraw();
     });
@@ -617,13 +588,11 @@ export default function RepMarkerPage() {
     if (phase !== 'editor') {
       return;
     }
-
     const handleKey = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA') {
         return;
       }
-
       if (e.key === 's' || e.key === 'S') {
         e.preventDefault();
         triggerMarkStart();
@@ -634,7 +603,11 @@ export default function RepMarkerPage() {
         e.preventDefault();
         const v = videoRef.current;
         if (v) {
-          v.paused ? v.play() : v.pause();
+          if (v.paused) {
+            void v.play();
+          } else {
+            v.pause();
+          }
         }
       }
     };
@@ -642,27 +615,16 @@ export default function RepMarkerPage() {
     return () => window.removeEventListener('keydown', handleKey);
   }, [phase, triggerMarkStart, triggerMarkEnd]);
 
-  // ── Download JSON ──────────────────────────────────────────────────────
+  // ── Download JSON (full original + repMarkers in absolute ms) ───────────
 
   const handleDownload = () => {
     if (!jsonData) {
       return;
     }
-
-    const startedAtMs = jsonData.startedAt
-      ? new Date(jsonData.startedAt).getTime()
-      : jsonData.samples[0].timestamp;
-    const t0 = jsonData.samples[0].timestamp;
-    const offset = startedAtMs - t0;
-
     const output: RecordingJson = {
       ...jsonData,
-      repMarkers: markers.map((m) => ({
-        endMs: Math.round(m.endMs - offset),
-        startMs: Math.round(m.startMs - offset),
-      })),
+      repMarkers: [...markers].sort((a, b) => a.startMs - b.startMs),
     };
-
     const blob = new Blob([JSON.stringify(output, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -726,13 +688,6 @@ export default function RepMarkerPage() {
                   onFile={handleJsonFile}
                 />
               </div>
-
-              {/* Hint that both are needed */}
-              {(videoUrl || jsonData) && !(videoUrl && jsonData) ? (
-                <p className="mt-4 text-center text-xs" style={{ color: MUTED }}>
-                  {!videoUrl ? t('uploadVideo') : t('uploadJson')} needed to continue
-                </p>
-              ) : null}
             </div>
           ) : null}
 
@@ -767,7 +722,7 @@ export default function RepMarkerPage() {
                 >
                   {/* Channel legend */}
                   <div className="mb-2 flex flex-wrap items-center gap-3">
-                    {(Object.keys(CHART_COLORS) as (keyof typeof CHART_COLORS)[]).map((ch) => (
+                    {(Object.keys(CHART_COLORS) as ChannelKey[]).map((ch) => (
                       <button
                         key={ch}
                         type="button"
@@ -782,7 +737,7 @@ export default function RepMarkerPage() {
                           className="inline-block h-2 w-4 rounded-full"
                           style={{ backgroundColor: CHART_COLORS[ch] }}
                         />
-                        {ch}
+                        {CHART_LABELS[ch]}
                       </button>
                     ))}
                     <span className="ml-auto text-xs" style={{ color: MUTED }}>
@@ -945,10 +900,10 @@ export default function RepMarkerPage() {
                             #{i + 1}
                           </td>
                           <td className="px-4 py-3 font-mono" style={{ color: BODY_TEXT }}>
-                            {fmtMs(m.startMs)}
+                            {fmtMs(m.startMs - startedAtMs)}
                           </td>
                           <td className="px-4 py-3 font-mono" style={{ color: BODY_TEXT }}>
-                            {fmtMs(m.endMs)}
+                            {fmtMs(m.endMs - startedAtMs)}
                           </td>
                           <td className="px-4 py-3 font-mono" style={{ color: BODY_TEXT_SOFT }}>
                             {((m.endMs - m.startMs) / 1000).toFixed(1)}s
@@ -960,19 +915,14 @@ export default function RepMarkerPage() {
                                 setMarkers((prev) => prev.filter((_, idx) => idx !== i))
                               }
                               className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs transition-colors"
-                              style={{
-                                color: MUTED,
-                                border: `1px solid transparent`,
-                              }}
+                              style={{ border: '1px solid transparent', color: MUTED }}
                               onMouseEnter={(e) => {
-                                (e.currentTarget as HTMLButtonElement).style.color = ACCENT_RED;
-                                (e.currentTarget as HTMLButtonElement).style.borderColor =
-                                  'rgba(239,68,68,0.3)';
+                                e.currentTarget.style.color = ACCENT_RED;
+                                e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)';
                               }}
                               onMouseLeave={(e) => {
-                                (e.currentTarget as HTMLButtonElement).style.color = MUTED;
-                                (e.currentTarget as HTMLButtonElement).style.borderColor =
-                                  'transparent';
+                                e.currentTarget.style.color = MUTED;
+                                e.currentTarget.style.borderColor = 'transparent';
                               }}
                             >
                               <Trash2 size={12} color="currentColor" />
