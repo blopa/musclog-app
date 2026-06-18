@@ -1329,6 +1329,37 @@
           ]
         }
       }
+    },
+    "repMarker": {
+      "title": "Rep Marker Tool",
+      "description": "Upload a workout video and sensor JSON to annotate rep boundaries",
+      "uploadVideo": "Upload Video",
+      "uploadJson": "Upload Sensor JSON",
+      "dragDropVideo": "Drag & drop video or click to browse",
+      "dragDropJson": "Drag & drop JSON or click to browse",
+      "videoLoaded": "Video loaded",
+      "jsonLoaded": "JSON loaded",
+      "markStart": "Mark Start",
+      "markEnd": "Mark End",
+      "undo": "Undo",
+      "clearAll": "Clear All",
+      "waitingEnd": "Waiting for end — press E when rep ends",
+      "markerCount_one": "{{count}} rep marked",
+      "markerCount_other": "{{count}} reps marked",
+      "downloadJson": "Download JSON",
+      "repNumber": "Rep",
+      "startTime": "Start",
+      "endTime": "End",
+      "duration": "Duration",
+      "delete": "Delete",
+      "noMarkers": "No reps marked yet. Press S to mark the start of a rep.",
+      "invalidJson": "Invalid JSON: missing \"samples\" field",
+      "seekHint": "Click chart to seek video",
+      "keyboardHint": "S = mark start · E = mark end · Space = play/pause",
+      "chartOrientationTitle": "Orientation",
+      "chartOrientationSubtitle": "device angle · clearest for rotational lifts",
+      "chartAccelerationTitle": "Acceleration",
+      "chartAccelerationSubtitle": "raw accel · works for any lift"
     }
   }
 }

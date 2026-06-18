@@ -11,6 +11,7 @@ export {
 } from './DatabaseRepairService';
 
 // Export all nutrition tracking services
+export { FoodMealTrackingActionService } from './FoodMealTrackingActionService';
 export { FoodPortionService } from './FoodPortionService';
 export { FoodService } from './FoodService';
 export { MealService } from './MealService';

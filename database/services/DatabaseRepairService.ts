@@ -47,6 +47,18 @@ type LookupStep = {
   whereCol: 'rowid' | 'id';
 };
 
+function formatUnknownError(error: unknown): string {
+  if (error instanceof Error) {
+    return `${error.name}: ${error.message}`;
+  }
+
+  if (typeof error === 'string') {
+    return error;
+  }
+
+  return JSON.stringify(error);
+}
+
 function buildResolutionChains(descriptor: TableGroupDescriptor): Map<string, LookupStep[]> {
   const chains = new Map<string, LookupStep[]>();
 
@@ -79,13 +91,7 @@ function buildResolutionChains(descriptor: TableGroupDescriptor): Map<string, Lo
 // ---------------------------------------------------------------------------
 
 function isLikelyCorruptionError(error: unknown): boolean {
-  // TODO: use a util function to avoid having nested ternary
-  const message =
-    error instanceof Error
-      ? `${error.name}: ${error.message}`
-      : typeof error === 'string'
-        ? error
-        : JSON.stringify(error);
+  const message = formatUnknownError(error);
 
   return [
     'SQLITE_IOERR_SHORT_READ',
@@ -160,7 +166,7 @@ async function collectIntegrityIssues(
     return [
       {
         table: rootTable,
-        message: error instanceof Error ? `${error.name}: ${error.message}` : String(error),
+        message: formatUnknownError(error),
       },
     ];
   }

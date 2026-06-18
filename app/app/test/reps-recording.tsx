@@ -23,6 +23,7 @@ import { FullScreenModal } from '@/components/modals/FullScreenModal';
 import { Button } from '@/components/theme/Button';
 import type Exercise from '@/database/models/Exercise';
 import { useExercises } from '@/hooks/useExercises';
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useTheme } from '@/hooks/useTheme';
 import { useWitMotion, witMotionClient } from '@/modules/witmotion-ble';
 import {
@@ -132,7 +133,13 @@ interface RecordingEntry {
   timestamp: string;
   jsonUri: string;
   videoUri: string;
+  videoStoppedEarly: boolean;
+  videoDurationMs: number | null;
 }
+
+type CameraRecordingResult = { uri: string } | undefined;
+
+const CAMERA_RECORDING_STOP_TIMEOUT_MS = 30_000;
 
 function formatElapsed(ms: number): string {
   const totalSecs = Math.floor(ms / 1000);
@@ -161,11 +168,16 @@ export default function RepsRecordingScreen() {
   const sampleCountRef = useRef(0);
   const capturedDeviceRef = useRef<{ id: string; name: string } | null>(null);
   const capturedExerciseRef = useRef<Exercise | null>(null);
+  const cameraStoppedBeforeUserRef = useRef(false);
+  const cameraStoppedAtRef = useRef<number | null>(null);
+  const cameraRecordingErrorRef = useRef<string | null>(null);
 
   const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
   const [capturedExerciseName, setCapturedExerciseName] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [elapsedMs, setElapsedMs] = useState(0);
+
+  useKeepScreenAwake('reps-recording', isRecording);
   const [isExercisePickerVisible, setIsExercisePickerVisible] = useState(false);
   const [isPreviewVisible, setIsPreviewVisible] = useState(false);
   const [repsInput, setRepsInput] = useState('10');
@@ -228,6 +240,9 @@ export default function RepsRecordingScreen() {
     sampleCountRef.current = 0;
     capturedDeviceRef.current = null;
     capturedExerciseRef.current = null;
+    cameraStoppedBeforeUserRef.current = false;
+    cameraStoppedAtRef.current = null;
+    cameraRecordingErrorRef.current = null;
     setCapturedExerciseName('');
     recordingPromiseRef.current = null;
     unsubscribeBatchRef.current?.();
@@ -317,6 +332,9 @@ export default function RepsRecordingScreen() {
       setCapturedExerciseName(selectedExercise.name ?? '');
       startedAtRef.current = Date.now();
       stoppedAtRef.current = null;
+      cameraStoppedBeforeUserRef.current = false;
+      cameraStoppedAtRef.current = null;
+      cameraRecordingErrorRef.current = null;
       recordingRef.current = true;
       setIsRecording(true);
       setElapsedMs(0);
@@ -353,8 +371,39 @@ export default function RepsRecordingScreen() {
         }
       });
 
-      // Do NOT await — resolves only after stopRecording()
-      recordingPromiseRef.current = cameraRef.current.recordAsync({ maxDuration: 600 });
+      // Do NOT await here. Expo resolves this promise when stopRecording() is called,
+      // but also when the native camera source/preview stops or a native limit is hit.
+      const recordingPromise = cameraRef.current.recordAsync();
+      recordingPromiseRef.current = recordingPromise
+        .then((result: CameraRecordingResult) => {
+          const resolvedAt = Date.now();
+          cameraStoppedAtRef.current = resolvedAt;
+
+          if (recordingRef.current) {
+            cameraStoppedBeforeUserRef.current = true;
+            const elapsed = formatElapsed(resolvedAt - recordingStartedAtMs);
+            console.warn('[reps-recording] camera recording stopped before user stop', {
+              elapsed,
+              uri: result?.uri,
+            });
+            showSnackbar('error', `Camera stopped early at ${elapsed}; press STOP to save`);
+          }
+
+          return result;
+        })
+        .catch((err: unknown) => {
+          const message = err instanceof Error ? err.message : String(err);
+          cameraStoppedAtRef.current = Date.now();
+          cameraRecordingErrorRef.current = message;
+          console.error('[reps-recording] recordAsync rejected:', err);
+
+          if (recordingRef.current) {
+            cameraStoppedBeforeUserRef.current = true;
+            showSnackbar('error', `Camera stopped early: ${message}`);
+          }
+
+          return undefined;
+        });
     } catch (err) {
       console.error('[reps-recording] handleStart error:', err);
       recordingRef.current = false;
@@ -372,6 +421,8 @@ export default function RepsRecordingScreen() {
       setIsSaving(true);
       recordingRef.current = false;
       stoppedAtRef.current = Date.now();
+      const cameraStoppedBeforeUser = cameraStoppedBeforeUserRef.current;
+      const cameraStoppedAt = cameraStoppedAtRef.current;
 
       unsubscribeBatchRef.current?.();
       unsubscribeBatchRef.current = null;
@@ -379,22 +430,17 @@ export default function RepsRecordingScreen() {
       const recordingPromise = recordingPromiseRef.current;
       recordingPromiseRef.current = null;
 
-      if (cameraRef.current) {
+      if (cameraRef.current && !cameraStoppedBeforeUser) {
         cameraRef.current.stopRecording();
       }
 
       // recordAsync() can reject (device-specific camera errors) or hang without
       // resolving (known expo-camera iOS issue, and Android backgrounding bugs).
       // Race against a generous timeout so the UI never gets stuck.
-      let cameraError: string | null = null;
       const result = await Promise.race([
-        recordingPromise?.catch((err: unknown) => {
-          cameraError = err instanceof Error ? err.message : String(err);
-          console.error('[reps-recording] recordAsync rejected:', err);
-          return undefined;
-        }),
+        recordingPromise ?? Promise.resolve(undefined),
         new Promise<{ uri: string } | undefined>((resolve) =>
-          setTimeout(() => resolve(undefined), 30_000)
+          setTimeout(() => resolve(undefined), CAMERA_RECORDING_STOP_TIMEOUT_MS)
         ),
       ]);
 
@@ -402,7 +448,9 @@ export default function RepsRecordingScreen() {
 
       if (!result?.uri) {
         clearCapturedRecordingRefs(true);
-        const reason = cameraError ?? (result === undefined ? 'timed out' : 'no URI returned');
+        const reason =
+          cameraRecordingErrorRef.current ??
+          (result === undefined ? 'timed out' : 'no URI returned');
         showSnackbar('error', `Camera error: ${reason}`);
         return;
       }
@@ -444,6 +492,8 @@ export default function RepsRecordingScreen() {
 
       const savedVideoUri = savedJsonUri.replace(/\.json$/i, '.mp4');
       await copyAsync({ from: result.uri, to: savedVideoUri });
+      const videoDurationMs =
+        cameraStoppedAt !== null && startedAt !== null ? cameraStoppedAt - startedAt : null;
 
       setRecordings((prev) => [
         ...prev,
@@ -454,11 +504,18 @@ export default function RepsRecordingScreen() {
           timestamp: new Date().toISOString(),
           jsonUri: savedJsonUri,
           videoUri: savedVideoUri,
+          videoStoppedEarly: cameraStoppedBeforeUser,
+          videoDurationMs,
         },
       ]);
 
       clearCapturedRecordingRefs(false);
-      showSnackbar('success', `Saved — ${reps} reps, ${sampleCount} samples`);
+      showSnackbar(
+        'success',
+        cameraStoppedBeforeUser && videoDurationMs !== null
+          ? `Saved — video stopped at ${formatElapsed(videoDurationMs)}, JSON has ${sampleCount} samples`
+          : `Saved — ${reps} reps, ${sampleCount} samples`
+      );
     } catch (err) {
       console.error('[reps-recording] handleStop error:', err);
       const message = err instanceof Error ? err.message : String(err);
@@ -786,6 +843,14 @@ export default function RepsRecordingScreen() {
                     >
                       Video: {r.videoUri}
                     </Text>
+                    {r.videoStoppedEarly && r.videoDurationMs !== null ? (
+                      <Text
+                        className="mt-1 text-xs font-semibold"
+                        style={{ color: theme.colors.status.warning }}
+                      >
+                        Camera stopped early at {formatElapsed(r.videoDurationMs)}
+                      </Text>
+                    ) : null}
                   </View>
                   <Pressable
                     onPress={() => setRecordingPendingDelete(r)}

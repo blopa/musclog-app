@@ -1341,6 +1341,37 @@
           ]
         }
       }
+    },
+    "repMarker": {
+      "title": "Herhalingsmarkeertool",
+      "description": "Upload een trainingsvideo en sensor-JSON om herhalingsgrenzen te annoteren",
+      "uploadVideo": "Video uploaden",
+      "uploadJson": "Sensor-JSON uploaden",
+      "dragDropVideo": "Versleep of klik om te bladeren",
+      "dragDropJson": "Versleep of klik om te bladeren",
+      "videoLoaded": "Video geladen",
+      "jsonLoaded": "JSON geladen",
+      "markStart": "Begin markeren",
+      "markEnd": "Einde markeren",
+      "undo": "Ongedaan maken",
+      "clearAll": "Alles wissen",
+      "waitingEnd": "Wachten op einde — druk E als de herhaling eindigt",
+      "markerCount_one": "{{count}} herhaling gemarkeerd",
+      "markerCount_other": "{{count}} herhalingen gemarkeerd",
+      "downloadJson": "JSON downloaden",
+      "repNumber": "Herhaling",
+      "startTime": "Begin",
+      "endTime": "Einde",
+      "duration": "Duur",
+      "delete": "Verwijderen",
+      "noMarkers": "Nog geen herhalingen gemarkeerd. Druk op S om het begin van een herhaling te markeren.",
+      "invalidJson": "Ongeldige JSON: ontbrekend veld \"samples\"",
+      "seekHint": "Klik op de grafiek om in de video te zoeken",
+      "keyboardHint": "S = begin markeren · E = einde markeren · Spatie = afspelen/pauzeren",
+      "chartOrientationTitle": "Oriëntatie",
+      "chartOrientationSubtitle": "apparaathoek · duidelijkst voor roterende oefeningen",
+      "chartAccelerationTitle": "Versnelling",
+      "chartAccelerationSubtitle": "ruwe versnelling · werkt voor elke oefening"
     }
   }
 }

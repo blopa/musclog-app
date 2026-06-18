@@ -5,10 +5,12 @@ Generate interactive HTML pages for manually annotating rep boundaries.
 For each recording in raw-data/*.json:
   1. Computes world-frame position (X/Y/Z, metres) by dead-reckoning the IMU
      samples with ZUPT drift correction (see ble_dead_reckoning.py).
-  2. Plots the 3 position channels by default + 9 raw sensor channels available
-     via the legend toggle.
-  3. Generates a standalone HTML page with an interactive chart.
-  4. Use the legend to toggle channels on/off; click to mark rep start/end.
+  2. Renders two complementary charts so reps are actually visible: orientation
+     (device-fused angle) and acceleration (raw accel + magnitude). Dead-reckoned
+     position is kept on the acceleration chart but hidden — its double
+     integration drifts far enough to bury the rep oscillations.
+  3. Generates a standalone HTML page with both interactive charts.
+  4. Use the legend to toggle channels on/off; click either chart to mark rep start/end.
   5. Download buttons export repMarkers JSON or the full updated JSON.
 
 Output:
@@ -49,7 +51,11 @@ TEMPLATE = """\
   body { font-family: system-ui, sans-serif; background: #0f0f0f; color: #e0e0e0; padding: 16px; max-width: 1200px; margin: 0 auto; }
   h1 { font-size: 16px; font-weight: 600; margin-bottom: 4px; color: #f0f0f0; }
   .meta { font-size: 12px; color: #6b7280; margin-bottom: 12px; }
-  #chart { width: 100%; height: 420px; border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+  .chart-row { display: flex; flex-direction: column; gap: 14px; margin-bottom: 12px; }
+  .chart-panel { display: flex; flex-direction: column; }
+  .chart-panel h2 { font-size: 13px; font-weight: 600; color: #d1d5db; margin: 0 0 1px; }
+  .chart-panel .sub { font-size: 11px; color: #6b7280; margin-bottom: 4px; }
+  .chart-box { width: 100%; height: 360px; border-radius: 8px; overflow: hidden; }
   .controls { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; align-items: center; }
   button { padding: 6px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 500; transition: opacity .15s; }
   button:hover { opacity: 0.8; }
@@ -79,7 +85,18 @@ TEMPLATE = """\
 <h1>__TITLE__</h1>
 <div class="meta">__META__</div>
 
-<div id="chart"></div>
+<div class="chart-row">
+  <div class="chart-panel">
+    <h2>Orientation (angle)</h2>
+    <div class="sub">device-fused tilt — clearest for rotational lifts</div>
+    <div id="chart-a" class="chart-box"></div>
+  </div>
+  <div class="chart-panel">
+    <h2>Acceleration</h2>
+    <div class="sub">raw accel + |a| — works for any lift; position kept but hidden</div>
+    <div id="chart-b" class="chart-box"></div>
+  </div>
+</div>
 
 <div class="controls">
   <button id="btn-mark">▶ Mark rep</button>
@@ -125,56 +142,119 @@ function markerShapes() {
   });
 }
 
-var layout = {
-  paper_bgcolor: '#161b22',
-  plot_bgcolor:  '#0d1117',
-  font:   { color: '#c9d1d9', size: 12 },
-  margin: { t: 12, b: 40, l: 50, r: 20 },
-  xaxis:  { title: 'Time (s)',  gridcolor: '#1f2937', zeroline: false },
-  yaxis:  { title: 'Raw value', gridcolor: '#1f2937', zeroline: true,
-            zerolinecolor: '#374151' },
-  shapes: markerShapes(),
-  hovermode: 'x unified',
-  legend: { orientation: 'h', y: -0.18 },
-};
-
-// One trace per channel — toggle with the legend.
-// Defaults: dead-reckoned world-frame position (X/Y/Z metres) visible;
-// raw accel/gyro/angle hidden but available.
-var CHANNEL_ORDER = [
-  ['pos.x (m)', '#f97316', true],
-  ['pos.y (m)', '#fbbf24', true],
-  ['pos.z (m)', '#a3e635', true],
-  ['angle.x', '#fb923c', 'legendonly'],
-  ['angle.y', '#facc15', 'legendonly'],
-  ['angle.z', '#84cc16', 'legendonly'],
-  ['accel.x', '#60a5fa', 'legendonly'],
-  ['accel.y', '#818cf8', 'legendonly'],
-  ['accel.z', '#a78bfa', 'legendonly'],
-  ['gyro.x',  '#f472b6', 'legendonly'],
-  ['gyro.y',  '#fb7185', 'legendonly'],
-  ['gyro.z',  '#fca5a5', 'legendonly'],
-];
-
-var traces = CHANNEL_ORDER.map(function(entry) {
-  var name = entry[0], color = entry[1], visible = entry[2];
+function makeLayout(yTitle) {
   return {
-    x: tRelSec,
-    y: CHANNELS[name],
-    type: 'scatter',
-    mode: 'lines',
-    line: { color: color, width: 1.2 },
-    name: name,
-    visible: visible,
-    hovertemplate: name + '=%{y:.4f}<extra></extra>',
+    paper_bgcolor: '#161b22',
+    plot_bgcolor:  '#0d1117',
+    font:   { color: '#c9d1d9', size: 12 },
+    margin: { t: 12, b: 40, l: 50, r: 20 },
+    xaxis:  { title: 'Time (s)', gridcolor: '#1f2937', zeroline: false },
+    yaxis:  { title: yTitle, gridcolor: '#1f2937', zeroline: true,
+              zerolinecolor: '#374151' },
+    shapes: markerShapes(),
+    hovermode: 'x unified',
+    legend: { orientation: 'h', y: -0.18 },
   };
-});
+}
 
-Plotly.newPlot('chart', traces, layout, { responsive: true, displayModeBar: true });
+// Two complementary charts. Dead-reckoned position (∬ accel) drifts so far over a
+// set that it buries the reps, so it is no longer a default view:
+//   Chart A — device-fused orientation (degrees). Clearest for rotational lifts.
+//             |accel| is offered but hidden (different unit from degrees).
+//   Chart B — raw acceleration (g) + magnitude. Drift-free; position/gyro hidden.
+var CHART_A = {
+  id: 'chart-a',
+  yTitle: 'Angle (deg)',
+  order: [
+    ['angle.x',   '#fb923c', true],
+    ['angle.y',   '#facc15', true],
+    ['angle.z',   '#84cc16', true],
+    ['accel.|a|', '#e5e7eb', 'legendonly'],
+  ],
+};
+var CHART_B = {
+  id: 'chart-b',
+  yTitle: 'Accel (g) / Pos (m)',
+  order: [
+    ['accel.x',   '#60a5fa', true],
+    ['accel.y',   '#818cf8', true],
+    ['accel.z',   '#a78bfa', true],
+    ['accel.|a|', '#e5e7eb', true],
+    ['pos.x (m)', '#f97316', 'legendonly'],
+    ['pos.y (m)', '#fbbf24', 'legendonly'],
+    ['pos.z (m)', '#a3e635', 'legendonly'],
+    ['gyro.x',    '#f472b6', 'legendonly'],
+    ['gyro.y',    '#fb7185', 'legendonly'],
+    ['gyro.z',    '#fca5a5', 'legendonly'],
+  ],
+};
+var CHARTS = [CHART_A, CHART_B];
+
+function buildTraces(order) {
+  return order.map(function(entry) {
+    var name = entry[0], color = entry[1], visible = entry[2];
+    return {
+      x: tRelSec,
+      y: CHANNELS[name],
+      type: 'scatter',
+      mode: 'lines',
+      line: { color: color, width: 1.2 },
+      name: name,
+      visible: visible,
+      hovertemplate: name + '=%{y:.4f}<extra></extra>',
+    };
+  });
+}
+
+function relayoutShapes(shapes) {
+  var nextShapes = shapes || markerShapes();
+  CHARTS.forEach(function(c) {
+    Plotly.relayout(c.id, { shapes: nextShapes });
+  });
+}
+
+function handleChartClick(data) {
+  if (state === 'idle') return;
+  var xSec = data.points[0].x;
+  var xMs  = xSec * 1000 + t0;
+
+  if (state === 'waiting_start') {
+    pendingStart = xMs;
+    state        = 'waiting_end';
+    status.textContent = 'Now click the END of rep ' + (markers.length + 1) + '.';
+    var shapes = markerShapes();
+    shapes.push({
+      type: 'line', xref: 'x', yref: 'paper',
+      x0: xSec, x1: xSec, y0: 0, y1: 1,
+      line: { color: '#fbbf24', width: 2, dash: 'dot' },
+    });
+    relayoutShapes(shapes);
+    return;
+  }
+
+  if (state === 'waiting_end') {
+    var startMs = pendingStart;
+    var endMs   = xMs;
+    if (endMs < startMs) { var tmp = startMs; startMs = endMs; endMs = tmp; }
+    markers.push({ startMs: Math.round(startMs), endMs: Math.round(endMs) });
+    markers.sort(function(a, b) { return a.startMs - b.startMs; });
+    pendingStart = null;
+    state        = 'waiting_start';
+    renderTable();
+    relayoutShapes();
+    status.textContent = markers.length + ' / ' + EXPECTED_REPS + ' reps marked. Click START of next rep.';
+  }
+}
+
+CHARTS.forEach(function(c) {
+  Plotly.newPlot(c.id, buildTraces(c.order), makeLayout(c.yTitle),
+                 { responsive: true, displayModeBar: true });
+  document.getElementById(c.id).on('plotly_click', handleChartClick);
+});
 
 // ── State machine ───────────────────────────────────────────────────────────
 
-var state        = 'idle';  // 'idle' | 'waiting_end'
+var state        = 'idle';  // 'idle' | 'waiting_start' | 'waiting_end'
 var pendingStart = null;
 
 var btnMark = document.getElementById('btn-mark');
@@ -194,7 +274,7 @@ function enterMarkingMode() {
   btnMark.classList.add('active');
   btnMark.textContent = '✕ Stop marking';
   status.textContent  = 'Click the START of rep ' + (markers.length + 1) + ' on the chart.';
-  Plotly.relayout('chart', { shapes: markerShapes() });
+  relayoutShapes();
 }
 
 function exitMarkingMode() {
@@ -203,41 +283,8 @@ function exitMarkingMode() {
   btnMark.classList.remove('active');
   btnMark.textContent = '▶ Mark reps';
   status.textContent  = 'Click "Mark reps" to start annotating.';
-  Plotly.relayout('chart', { shapes: markerShapes() });
+  relayoutShapes();
 }
-
-document.getElementById('chart').on('plotly_click', function(data) {
-  if (state === 'idle') return;
-  var xSec = data.points[0].x;
-  var xMs  = xSec * 1000 + t0;
-
-  if (state === 'waiting_start') {
-    pendingStart = xMs;
-    state        = 'waiting_end';
-    status.textContent = 'Now click the END of rep ' + (markers.length + 1) + '.';
-    var shapes = markerShapes();
-    shapes.push({
-      type: 'line', xref: 'x', yref: 'paper',
-      x0: xSec, x1: xSec, y0: 0, y1: 1,
-      line: { color: '#fbbf24', width: 2, dash: 'dot' },
-    });
-    Plotly.relayout('chart', { shapes: shapes });
-    return;
-  }
-
-  if (state === 'waiting_end') {
-    var startMs = pendingStart;
-    var endMs   = xMs;
-    if (endMs < startMs) { var tmp = startMs; startMs = endMs; endMs = tmp; }
-    markers.push({ startMs: Math.round(startMs), endMs: Math.round(endMs) });
-    markers.sort(function(a, b) { return a.startMs - b.startMs; });
-    pendingStart = null;
-    state        = 'waiting_start';
-    renderTable();
-    Plotly.relayout('chart', { shapes: markerShapes() });
-    status.textContent = markers.length + ' / ' + EXPECTED_REPS + ' reps marked. Click START of next rep.';
-  }
-});
 
 // ── Marker table ────────────────────────────────────────────────────────────
 
@@ -258,7 +305,7 @@ function renderTable() {
 function deleteMarker(i) {
   markers.splice(i, 1);
   renderTable();
-  Plotly.relayout('chart', { shapes: markerShapes() });
+  relayoutShapes();
 }
 
 document.getElementById('btn-undo').addEventListener('click', function() {
@@ -270,7 +317,7 @@ document.getElementById('btn-undo').addEventListener('click', function() {
     status.textContent = 'Undone. Click START of rep ' + (markers.length + 1) + '.';
   }
   renderTable();
-  Plotly.relayout('chart', { shapes: markerShapes() });
+  relayoutShapes();
 });
 
 document.getElementById('btn-clear').addEventListener('click', function() {
@@ -283,7 +330,7 @@ document.getElementById('btn-clear').addEventListener('click', function() {
     status.textContent = 'Cleared. Click START of rep 1.';
   }
   renderTable();
-  Plotly.relayout('chart', { shapes: markerShapes() });
+  relayoutShapes();
 });
 
 // ── Download ────────────────────────────────────────────────────────────────
@@ -308,7 +355,7 @@ document.getElementById('btn-dl-full').addEventListener('click', function() {
 // ── Init ────────────────────────────────────────────────────────────────────
 renderTable();
 if (markers.length) {
-  Plotly.relayout('chart', { shapes: markerShapes() });
+  relayoutShapes();
   status.textContent = markers.length + ' existing markers loaded. Click "Mark reps" to add more.';
 }
 </script>
@@ -391,6 +438,12 @@ def generate_html(path: Path) -> dict:
             channels[f"{kind}.{axis}"] = [
                 round(float(s[kind][axis]), 6) for s in samples_keep
             ]
+
+    # Drift-free acceleration magnitude (g) — the summary trace for chart B.
+    channels["accel.|a|"] = [
+        round(float(np.linalg.norm([s["accel"]["x"], s["accel"]["y"], s["accel"]["z"]])), 6)
+        for s in samples_keep
+    ]
 
     ts_list = [round(float(t), 1) for t in timestamps]
 

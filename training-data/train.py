@@ -404,37 +404,8 @@ def extract_segment_features(
 
 
 # ---------------------------------------------------------------------------
-# Step 4 — Pseudo-labelling
+# Step 4 — Labelling from manual rep markers
 # ---------------------------------------------------------------------------
-
-def pseudo_label_segments(segments: list, n_reps: int) -> list:
-    """
-    Assign is_rep=1 to the top n_reps segments and is_rep=0 to the rest.
-
-    Ranking score = amplitude × sqrt(energy) × temporal_consistency,
-    where temporal_consistency rewards segments whose duration is close to
-    the median — genuine reps in a set tend to be similarly paced.
-
-    Returns None if the segmenter produced fewer candidates than known reps
-    (cannot safely pseudo-label in that case).
-    """
-    if not segments or len(segments) < n_reps:
-        return None
-
-    durations = [sg["end_ts"] - sg["start_ts"] for sg in segments]
-    med_dur   = float(np.median(durations)) or 1.0
-
-    for seg in segments:
-        dur = seg["end_ts"] - seg["start_ts"]
-        tc  = 1.0 / (1.0 + abs(dur - med_dur) / med_dur)
-        seg["pseudo_score"] = seg["amplitude"] * np.sqrt(seg["energy"] + 1e-6) * tc
-
-    ranked = sorted(segments, key=lambda sg: -sg["pseudo_score"])
-    for i, seg in enumerate(ranked):
-        seg["is_rep"] = 1 if i < n_reps else 0
-
-    return segments
-
 
 def label_segments_from_markers(segments: list, rep_markers: list) -> list:
     """
@@ -480,27 +451,28 @@ def label_segments_from_markers(segments: list, rep_markers: list) -> list:
 # Step 5 — Dataset builder
 # ---------------------------------------------------------------------------
 
-def build_segment_dataset() -> tuple:
+def build_segment_dataset() -> pd.DataFrame:
     """
-    Iterate all recordings, pseudo-label segments, extract features.
-    Returns (DataFrame where each row is one candidate segment,
-             list of skipped-under-segmented dicts with keys: name, n_segs, n_reps).
+    Iterate all recordings that have repMarkers, label segments via IoU matching,
+    and extract features. Returns a DataFrame where each row is one candidate segment.
+
+    Recordings without a non-empty 'repMarkers' field are skipped — repMarkers is the
+    only required label; the total rep count is derived from len(repMarkers).
     """
-    rows             = []
-    skipped_noreps   = 0
-    skipped_under    = 0
-    skipped_under_list: list = []
+    rows              = []
+    skipped_nomarkers = 0
 
     for path in sorted(RECORDINGS_DIR.glob("*.json")):
         with open(path) as f:
             data = json.load(f)
 
-        if "reps" not in data:
-            skipped_noreps += 1
-            print(f"  SKIP (no reps field): {path.name}")
+        rep_markers = data.get("repMarkers")
+        if not rep_markers:
+            skipped_nomarkers += 1
+            print(f"  SKIP (no repMarkers): {path.name}")
             continue
 
-        n_reps  = int(data["reps"])
+        n_reps  = len(rep_markers)
         samples = data.get("samples", [])
 
         if len(samples) < 20:
@@ -526,18 +498,8 @@ def build_segment_dataset() -> tuple:
             avg_dt         = (dur / 1000.0) / max(1, len(chunk) - 1)
             seg["energy"]  = float(np.sum(chunk ** 2) * avg_dt)
 
-        rep_markers = data.get("repMarkers")
-        if rep_markers:
-            labeled    = label_segments_from_markers(segs, rep_markers)
-            label_src  = f"manual ({len(rep_markers)} markers)"
-        else:
-            labeled = pseudo_label_segments(segs, n_reps)
-            if labeled is None:
-                skipped_under += 1
-                skipped_under_list.append({"name": path.name, "n_segs": len(segs), "n_reps": n_reps})
-                print(f"  SKIP (under-segmented: {len(segs)} segs < {n_reps} reps): {path.name}")
-                continue
-            label_src = "pseudo"
+        labeled   = label_segments_from_markers(segs, rep_markers)
+        label_src = f"manual ({n_reps} markers)"
 
         print(f"  {path.name}: {n_reps} reps, {len(segs)} candidate segments "
               f"({sum(1 for sg in labeled if sg['is_rep'])} labeled rep, "
@@ -561,9 +523,8 @@ def build_segment_dataset() -> tuple:
             except Exception as exc:
                 print(f"  ERROR features {path.name} seg {idx}: {exc}")
 
-    print(f"\n  Under-segmented (skipped): {skipped_under}")
-    print(f"  No reps label   (skipped): {skipped_noreps}")
-    return pd.DataFrame(rows), skipped_under_list
+    print(f"\n  No repMarkers (skipped): {skipped_nomarkers}")
+    return pd.DataFrame(rows)
 
 
 # ---------------------------------------------------------------------------
@@ -618,10 +579,10 @@ def loocv_by_recording(df: pd.DataFrame) -> tuple:
 
 def main() -> None:
     print("\n── Building segment dataset ────────────────────────────────────")
-    df, skipped_under_list = build_segment_dataset()
+    df = build_segment_dataset()
 
     if len(df) == 0:
-        sys.exit("No segments generated. Check that raw-data/*.json have a 'reps' field.")
+        sys.exit("No segments generated. Check that raw-data/*.json have a 'repMarkers' field.")
 
     n_recs  = df["recording_id"].nunique()
     n_rep   = int((df["is_rep"] == 1).sum())
@@ -703,15 +664,10 @@ def main() -> None:
         for name, true, pred, err in loocv_errors:
             sus_lines.append(f"  {name}  true={true}  pred={pred}  err={pred - true:+d}")
 
-    if skipped_under_list:
-        sus_lines.append("\n── Skipped (under-segmented) ──")
-        for s in skipped_under_list:
-            sus_lines.append(f"  {s['name']}  ({s['n_segs']} segs < {s['n_reps']} reps)")
-
     sus_path = OUTPUT_DIR / "sus_data.txt"
     if sus_lines:
         sus_path.write_text("\n".join(sus_lines) + "\n")
-        print(f"\n── Suspicious recordings → output/sus_data.txt ({len(sus_noisy) + len(sus_sparse) + len(loocv_errors) + len(skipped_under_list)} flagged)")
+        print(f"\n── Suspicious recordings → output/sus_data.txt ({len(sus_noisy) + len(sus_sparse) + len(loocv_errors)} flagged)")
     else:
         sus_path.write_text("No suspicious recordings detected.\n")
         print("\n── No suspicious recordings detected.")

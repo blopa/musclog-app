@@ -11,7 +11,7 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import { BarcodeInput } from '@/components/BarcodeInput';
 import { BottomPopUp } from '@/components/BottomPopUp';
@@ -22,30 +22,27 @@ import {
 } from '@/components/cards/FoodNutritionSectionCard';
 import { MacroInput } from '@/components/MacroInput';
 import {
-  type MicronutrientFormStrings,
   micronutrientFormStringsFromMicros,
   MicronutrientsExpandableSection,
-  parseMicronutrientFormStringsToPartial,
 } from '@/components/MicronutrientsExpandableSection';
 import { ServingSizeSelector } from '@/components/ServingSizeSelector';
 import { Button } from '@/components/theme/Button';
 import { TextInput } from '@/components/theme/TextInput';
 import type { MicrosData } from '@/database/models';
-import { FoodService } from '@/database/services';
-import {
-  fetchMusclogProductByBarcode,
-  fetchOFFProductByBarcode,
-  fetchUSDAProductByBarcode,
-  type ProductDetailsQueryData,
-  useFoodProductDetails,
-} from '@/hooks/useFoodProductDetails';
+import { FoodMealTrackingActionService, FoodService } from '@/database/services';
+import { useAlternateBarcodeSource } from '@/hooks/useAlternateBarcodeSource';
+import { useFoodEditForm } from '@/hooks/useFoodEditForm';
+import { useFoodProductDetails } from '@/hooks/useFoodProductDetails';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
-import { isSuccessFoodDetailProductState, isSuccessStatus } from '@/types/guards/openFoodFacts';
+import { isSuccessFoodDetailProductState } from '@/types/guards/openFoodFacts';
 import {
+  areCoreMacrosEffectivelyZero,
+  EMPTY_PRODUCT_NUTRITION,
   getProductBarcodeFromSearchProduct,
   inferBarcodeNutritionSource,
-  parseCoreMacrosFromAlternateSource,
+  microsFromNutrition,
+  parseProductNutritionPer100g,
   parseServingSizeFromProduct,
 } from '@/utils/externalFoodProduct';
 import { formatAppRoundedDecimal } from '@/utils/formatAppNumber';
@@ -55,23 +52,10 @@ import {
   inferCaloriesFromMacrosPer100g,
   toFiniteMacro,
 } from '@/utils/inferCaloriesFromMacros';
-import {
-  getDecimalSeparator,
-  parseLocalizedDecimalString,
-  sanitizeLocalizedDecimalInput,
-} from '@/utils/localizedDecimalInput';
-import {
-  applyMusclogQualityToFoodRecord,
-  getMusclogNutritionPer100g,
-} from '@/utils/musclogProduct';
-import {
-  extractLabelsFromOFFProduct,
-  getNutrimentsWithFallback,
-  getNutrimentValue,
-  getProductName,
-} from '@/utils/openFoodFactsMapper';
+import { getDecimalSeparator } from '@/utils/localizedDecimalInput';
+import { applyMusclogQualityToFoodRecord } from '@/utils/musclogProduct';
+import { extractLabelsFromOFFProduct, getProductName } from '@/utils/openFoodFactsMapper';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
-import { mapUSDANutritient } from '@/utils/usdaMapper';
 
 import { BarcodeCameraModal } from './BarcodeCameraModal';
 
@@ -81,23 +65,6 @@ type ScannedFoodDetailsModalProps = {
   barcode: string;
   onAddFood?: (food: { food: any; amount: number }) => void;
 };
-
-function areCoreMacrosEffectivelyZero(data: {
-  calories?: unknown;
-  protein?: unknown;
-  carbs?: unknown;
-  fat?: unknown;
-  fiber?: unknown;
-}): boolean {
-  const eps = 1e-6;
-  return (
-    Math.abs(toFiniteMacro(data.calories)) < eps &&
-    Math.abs(toFiniteMacro(data.protein)) < eps &&
-    Math.abs(toFiniteMacro(data.carbs)) < eps &&
-    Math.abs(toFiniteMacro(data.fat)) < eps &&
-    Math.abs(toFiniteMacro(data.fiber)) < eps
-  );
-}
 
 export function ScannedFoodDetailsModal({
   visible,
@@ -116,37 +83,28 @@ export function ScannedFoodDetailsModal({
   const [permission, requestPermission] = useCameraPermissions();
   const [isBarcodeScannerVisible, setIsBarcodeScannerVisible] = useState(false);
   const [amount, setAmount] = useState(100);
-  const [editedOverrides, setEditedOverrides] = useState<{
-    name?: string;
-    barcode?: string;
-    description?: string;
-    calories?: number;
-    protein?: number;
-    carbs?: number;
-    fat?: number;
-    fiber?: number;
-    micros?: Partial<MicrosData>;
-  } | null>(null);
-  const [isEditPopUpVisible, setIsEditPopUpVisible] = useState(false);
-  const [editMicroOpen, setEditMicroOpen] = useState(false);
-  const [editForm, setEditForm] = useState<{
-    name: string;
-    barcode: string;
-    description: string;
-    calories: string;
-    protein: string;
-    carbs: string;
-    fat: string;
-    fiber: string;
-    micronutrients: MicronutrientFormStrings;
-  } | null>(null);
-  const [refetchedProductDetails, setRefetchedProductDetails] =
-    useState<ProductDetailsQueryData | null>(null);
-  const [isRefetchingSource, setIsRefetchingSource] = useState(false);
   const [localCanEdit, setLocalCanEdit] = useState(alwaysAllowFoodEditing);
-  const [alternateSourceLookupFailed, setAlternateSourceLookupFailed] = useState(false);
 
   const { data: productData, isLoading, error } = useFoodProductDetails(barcode);
+
+  // Once every other provider has been exhausted, fall back to manual editing.
+  const enableEditing = useCallback(() => setLocalCanEdit(true), []);
+
+  // "Try another source" cross-provider lookup + its state cluster (refetched details, in-flight,
+  // exhausted-all-sources).
+  const {
+    refetchedProductDetails,
+    isRefetchingSource,
+    alternateSourceLookupFailed,
+    tryAnotherSource: handleTryAnotherSource,
+    reset: resetAlternateSource,
+  } = useAlternateBarcodeSource({
+    barcode,
+    productDetails: productData,
+    errorContext: 'ScannedFoodDetailsModal.handleTryAnotherSource',
+    onExhausted: enableEditing,
+  });
+
   const effectiveProductDetails = refetchedProductDetails ?? productData;
   const currentSource = inferBarcodeNutritionSource(effectiveProductDetails, null);
   const mode: FoodDetailsNutritionSectionMode = 'externalProduct';
@@ -166,162 +124,14 @@ export function ScannedFoodDetailsModal({
     syncEdit();
   }, [alwaysAllowFoodEditing]);
 
-  useEffect(() => {
-    if (!visible) {
-      const reset = () => {
-        setAmount(100);
-        setEditedOverrides(null);
-        setIsEditPopUpVisible(false);
-        setEditMicroOpen(false);
-        setEditForm(null);
-        setRefetchedProductDetails(null);
-        setIsRefetchingSource(false);
-        setLocalCanEdit(alwaysAllowFoodEditing);
-        setAlternateSourceLookupFailed(false);
-      };
-      reset();
-    }
-  }, [visible, alwaysAllowFoodEditing]);
-
   const rawNutritionalData = useMemo(() => {
-    if ((effectiveProductDetails as any)?.source === 'musclog') {
-      const nutrition = getMusclogNutritionPer100g((effectiveProductDetails as any).product);
-      return {
-        calories: nutrition.calories,
-        protein: nutrition.protein,
-        carbs: nutrition.carbs,
-        fat: nutrition.fat,
-        fiber: nutrition.fiber,
-        sugar: nutrition.sugar,
-        saturatedFat: nutrition.saturatedFat,
-        sodium: nutrition.sodium,
-        alcohol: 0,
-        potassium: 0,
-        magnesium: 0,
-        zinc: 0,
-      };
-    }
-
-    if ((effectiveProductDetails as any)?.source === 'usda') {
-      const product = (effectiveProductDetails as any).product;
-      const nutrients = product?.foodNutrients as any[] | undefined;
-      const rawServingSize = product?.servingSize;
-      const isBranded = product?.dataType === 'Branded';
-      const normFactor =
-        isBranded && rawServingSize && rawServingSize > 0 ? 100 / rawServingSize : 1;
-
-      return {
-        calories:
-          (mapUSDANutritient(nutrients, '1008') ??
-            mapUSDANutritient(nutrients, '208') ??
-            mapUSDANutritient(nutrients, 'ENERC_KCAL') ??
-            0) * normFactor,
-        protein:
-          (mapUSDANutritient(nutrients, '1003') ?? mapUSDANutritient(nutrients, '203') ?? 0) *
-          normFactor,
-        carbs:
-          (mapUSDANutritient(nutrients, '1005') ?? mapUSDANutritient(nutrients, '205') ?? 0) *
-          normFactor,
-        fat:
-          (mapUSDANutritient(nutrients, '1004') ?? mapUSDANutritient(nutrients, '204') ?? 0) *
-          normFactor,
-        fiber:
-          (mapUSDANutritient(nutrients, '1079') ?? mapUSDANutritient(nutrients, '291') ?? 0) *
-          normFactor,
-        sugar:
-          (mapUSDANutritient(nutrients, '2000') ??
-            mapUSDANutritient(nutrients, '269') ??
-            mapUSDANutritient(nutrients, 'sugars') ??
-            0) * normFactor,
-        saturatedFat:
-          (mapUSDANutritient(nutrients, '1258') ?? mapUSDANutritient(nutrients, '606') ?? 0) *
-          normFactor,
-        sodium:
-          ((mapUSDANutritient(nutrients, '1093') ?? mapUSDANutritient(nutrients, '307') ?? 0) /
-            1000) *
-          normFactor,
-        alcohol:
-          (mapUSDANutritient(nutrients, '1018') ?? mapUSDANutritient(nutrients, '221') ?? 0) *
-          normFactor,
-        potassium:
-          ((mapUSDANutritient(nutrients, '1092') ?? mapUSDANutritient(nutrients, '306') ?? 0) /
-            1000) *
-          normFactor,
-        magnesium:
-          ((mapUSDANutritient(nutrients, '1090') ?? mapUSDANutritient(nutrients, '304') ?? 0) /
-            1000) *
-          normFactor,
-        zinc:
-          ((mapUSDANutritient(nutrients, '1095') ?? mapUSDANutritient(nutrients, '309') ?? 0) /
-            1000) *
-          normFactor,
-      };
-    }
-
     if (isSuccessFoodDetailProductState(effectiveProductDetails)) {
-      const product = effectiveProductDetails.product;
-      const nutrients = getNutrimentsWithFallback(product);
-      if (!nutrients) {
-        return {
-          calories: 0,
-          protein: 0,
-          carbs: 0,
-          fat: 0,
-          fiber: 0,
-          sugar: 0,
-          saturatedFat: 0,
-          sodium: 0,
-          alcohol: 0,
-          potassium: 0,
-          magnesium: 0,
-          zinc: 0,
-        };
-      }
-
-      const getNum = (key: string) => (getNutrimentValue(nutrients, key) ?? 0) as number;
-      const directFiber = getNutrimentValue(nutrients, 'fiber');
-      let fiber: number;
-      if (directFiber !== undefined && directFiber >= 0) {
-        fiber = directFiber;
-      } else {
-        const carbsTotal = getNutrimentValue(nutrients, 'carbohydrates-total');
-        const carbs = getNutrimentValue(nutrients, 'carbohydrates');
-        fiber =
-          carbsTotal !== undefined && carbs !== undefined ? Math.max(0, carbsTotal - carbs) : 0;
-      }
-      const sodium =
-        getNutrimentValue(nutrients, 'sodium') ?? getNutrimentValue(nutrients, 'salt') ?? 0;
-
-      return {
-        calories: getNum('energy-kcal') || getNum('kcal'),
-        protein: getNum('proteins'),
-        carbs: getNum('carbohydrates'),
-        fat: getNum('fat'),
-        fiber,
-        sugar: getNum('sugars'),
-        saturatedFat: getNum('saturated-fat'),
-        sodium: Number.isFinite(sodium) ? sodium : 0,
-        alcohol: getNum('alcohol'),
-        potassium: getNum('potassium'),
-        magnesium: getNum('magnesium'),
-        zinc: getNum('zinc'),
-      };
+      const detailsSource =
+        inferBarcodeNutritionSource(effectiveProductDetails, null) ?? 'openfood';
+      return parseProductNutritionPer100g(detailsSource, effectiveProductDetails.product);
     }
 
-    return {
-      calories: 0,
-      protein: 0,
-      carbs: 0,
-      fat: 0,
-      fiber: 0,
-      sugar: 0,
-      saturatedFat: 0,
-      sodium: 0,
-      alcohol: 0,
-      potassium: 0,
-      magnesium: 0,
-      zinc: 0,
-    };
+    return { ...EMPTY_PRODUCT_NUTRITION };
   }, [effectiveProductDetails]);
 
   const baseNutritionalData = useMemo(
@@ -329,45 +139,9 @@ export function ScannedFoodDetailsModal({
     [rawNutritionalData]
   );
 
-  const baseMicrosPer100g = useMemo((): MicrosData => {
-    const out: MicrosData = {};
-    if (Number.isFinite(rawNutritionalData.sugar)) {
-      out.sugar = rawNutritionalData.sugar;
-    }
-
-    if (Number.isFinite(rawNutritionalData.saturatedFat)) {
-      out.saturatedFat = rawNutritionalData.saturatedFat;
-    }
-
-    if (Number.isFinite(rawNutritionalData.sodium)) {
-      out.sodium = rawNutritionalData.sodium;
-    }
-
-    if (Number.isFinite(rawNutritionalData.alcohol) && (rawNutritionalData.alcohol ?? 0) > 0) {
-      out.alcohol = rawNutritionalData.alcohol;
-    }
-
-    if (Number.isFinite(rawNutritionalData.potassium) && (rawNutritionalData.potassium ?? 0) > 0) {
-      out.potassium = rawNutritionalData.potassium;
-    }
-
-    if (Number.isFinite(rawNutritionalData.magnesium) && (rawNutritionalData.magnesium ?? 0) > 0) {
-      out.magnesium = rawNutritionalData.magnesium;
-    }
-
-    if (Number.isFinite(rawNutritionalData.zinc) && (rawNutritionalData.zinc ?? 0) > 0) {
-      out.zinc = rawNutritionalData.zinc;
-    }
-
-    return out;
-  }, [rawNutritionalData]);
-
-  const effectiveMicrosPer100g = useMemo(
-    () => ({
-      ...baseMicrosPer100g,
-      ...(editedOverrides?.micros ?? {}),
-    }),
-    [baseMicrosPer100g, editedOverrides?.micros]
+  const baseMicrosPer100g = useMemo(
+    (): MicrosData => microsFromNutrition(rawNutritionalData),
+    [rawNutritionalData]
   );
 
   const inferredCaloriesPer100g = useMemo(
@@ -386,6 +160,42 @@ export function ScannedFoodDetailsModal({
       rawNutritionalData.fiber,
       rawNutritionalData.alcohol,
     ]
+  );
+
+  // Edit-pop-up state + shared edit handlers (overrides feed the derived nutrition below).
+  const {
+    editedOverrides,
+    editForm,
+    setEditForm,
+    isEditPopUpVisible,
+    editMicroOpen,
+    setEditMicroOpen,
+    openEditPopUp,
+    closeEditPopUp,
+    saveEditPopUp: handleSaveEditPopUp,
+    acceptInferredCalories: handleAcceptInferredCalories,
+    handleEditFormNumericChange,
+    reset: resetEditForm,
+  } = useFoodEditForm({ decimalSeparator, inferredCaloriesPer100g });
+
+  useEffect(() => {
+    if (!visible) {
+      const reset = () => {
+        setAmount(100);
+        resetEditForm();
+        resetAlternateSource();
+        setLocalCanEdit(alwaysAllowFoodEditing);
+      };
+      reset();
+    }
+  }, [visible, alwaysAllowFoodEditing, resetEditForm, resetAlternateSource]);
+
+  const effectiveMicrosPer100g = useMemo(
+    () => ({
+      ...baseMicrosPer100g,
+      ...(editedOverrides?.micros ?? {}),
+    }),
+    [baseMicrosPer100g, editedOverrides?.micros]
   );
 
   const showCaloriesTooLowWarning = useMemo(() => {
@@ -613,13 +423,14 @@ export function ScannedFoodDetailsModal({
     ]
   );
 
+  // Gathers the modal-specific initial values, then hands off to the shared edit-pop-up state.
   const handleOpenEditPopUp = useCallback(() => {
     const productCode = getProductBarcodeFromSearchProduct(
       (effectiveProductDetails as any)?.product
     );
     const currentBarcode = editedOverrides?.barcode ?? barcode ?? productCode ?? '';
 
-    setEditForm({
+    openEditPopUp({
       name: getCurrentName(),
       barcode: currentBarcode,
       description: getCurrentDescription(),
@@ -630,8 +441,6 @@ export function ScannedFoodDetailsModal({
       fiber: formatAppRoundedDecimal(locale, nutritionalData.fiber, 2),
       micronutrients: micronutrientFormStringsFromMicros(effectiveMicrosPer100g, locale),
     });
-    setEditMicroOpen(false);
-    setIsEditPopUpVisible(true);
   }, [
     effectiveProductDetails,
     editedOverrides?.barcode,
@@ -645,116 +454,8 @@ export function ScannedFoodDetailsModal({
     nutritionalData.fat,
     nutritionalData.fiber,
     effectiveMicrosPer100g,
+    openEditPopUp,
   ]);
-
-  const handleSaveEditPopUp = useCallback(() => {
-    if (!editForm) {
-      return;
-    }
-
-    const cal = parseLocalizedDecimalString(editForm.calories, decimalSeparator);
-    const pro = parseLocalizedDecimalString(editForm.protein, decimalSeparator);
-    const carb = parseLocalizedDecimalString(editForm.carbs, decimalSeparator);
-    const f = parseLocalizedDecimalString(editForm.fat, decimalSeparator);
-    const fib = parseLocalizedDecimalString(editForm.fiber, decimalSeparator);
-
-    setEditedOverrides({
-      name: editForm.name.trim() || undefined,
-      barcode: editForm.barcode.trim() || undefined,
-      description: editForm.description.trim() || undefined,
-      calories: Number.isFinite(cal) ? cal : undefined,
-      protein: Number.isFinite(pro) ? pro : undefined,
-      carbs: Number.isFinite(carb) ? carb : undefined,
-      fat: Number.isFinite(f) ? f : undefined,
-      fiber: Number.isFinite(fib) ? fib : undefined,
-      micros: parseMicronutrientFormStringsToPartial(editForm.micronutrients, decimalSeparator),
-    });
-    setEditForm(null);
-    setIsEditPopUpVisible(false);
-  }, [editForm, decimalSeparator]);
-
-  const handleEditFormNumericChange = useCallback(
-    (field: 'calories' | 'protein' | 'carbs' | 'fat' | 'fiber') => (value: string) => {
-      const numericValue = sanitizeLocalizedDecimalInput(value, decimalSeparator, 2);
-      setEditForm((prev) => (prev ? { ...prev, [field]: numericValue } : null));
-    },
-    [decimalSeparator]
-  );
-
-  const handleAcceptInferredCalories = useCallback(() => {
-    setEditedOverrides((prev) => ({
-      ...prev,
-      calories: roundToDecimalPlaces(inferredCaloriesPer100g, 2),
-    }));
-  }, [inferredCaloriesPer100g]);
-
-  const handleTryAnotherSource = useCallback(async () => {
-    if (!barcode) {
-      return;
-    }
-
-    setIsRefetchingSource(true);
-    const source = inferBarcodeNutritionSource(effectiveProductDetails, null);
-
-    try {
-      const attempts: Promise<ProductDetailsQueryData | null>[] = [];
-
-      if (source !== 'openfood') {
-        attempts.push(
-          fetchOFFProductByBarcode(barcode)
-            .then((r) => (r.data && isSuccessStatus(r.data.status) ? r.data : null))
-            .catch(() => null)
-        );
-      }
-
-      if (source !== 'usda') {
-        attempts.push(
-          fetchUSDAProductByBarcode(barcode)
-            .then((raw) =>
-              raw ? ({ status: 'success', product: raw, source: 'usda' } as any) : null
-            )
-            .catch(() => null)
-        );
-      }
-
-      if (source !== 'musclog') {
-        attempts.push(
-          fetchMusclogProductByBarcode(barcode)
-            .then((raw) =>
-              raw ? ({ status: 'success', product: raw, source: 'musclog' } as any) : null
-            )
-            .catch(() => null)
-        );
-      }
-
-      const results = await Promise.all(attempts);
-      const withNonZeroMacros = results.filter((r): r is ProductDetailsQueryData => {
-        if (!r) {
-          return false;
-        }
-
-        const macros = parseCoreMacrosFromAlternateSource(r);
-        return macros !== null && !areCoreMacrosEffectivelyZero(macros);
-      });
-
-      const found = withNonZeroMacros[0] ?? null;
-      if (found) {
-        setAlternateSourceLookupFailed(false);
-        setRefetchedProductDetails(found);
-      } else {
-        setAlternateSourceLookupFailed(true);
-        setLocalCanEdit(true);
-      }
-    } catch (fetchError) {
-      handleError(fetchError, 'ScannedFoodDetailsModal.handleTryAnotherSource', {
-        showSnackbar: false,
-      });
-      setAlternateSourceLookupFailed(true);
-      setLocalCanEdit(true);
-    } finally {
-      setIsRefetchingSource(false);
-    }
-  }, [barcode, effectiveProductDetails]);
 
   const handleAddFood = useCallback(async () => {
     if (!isScannedProductSuccess) {
@@ -813,105 +514,23 @@ export function ScannedFoodDetailsModal({
         return;
       }
 
-      if ((effectiveProductDetails as any)?.source === 'usda') {
-        const baseProduct = (effectiveProductDetails as any).product;
-        const usdaProduct = {
-          ...baseProduct,
-          description: editedOverrides?.name?.trim() || baseProduct.description,
-          gtinUpc: saveBarcode || baseProduct.gtinUpc,
-          ingredients: getCurrentDescription() || baseProduct.ingredients,
-        };
+      // New food: route through the canonical creator so the per-source override application,
+      // nutrition payload, and FoodService.createFrom* dispatch stay shared with the track-meal flow.
+      const newFood = await FoodMealTrackingActionService.createFoodFromExternalProduct({
+        productDetails: productData,
+        refetchedProductDetails,
+        barcode,
+        matchedPortion: null,
+        nutrition: {
+          nutritionalData,
+          effectiveMicrosPer100g,
+          editedOverrides,
+        },
+        isFavorite: false,
+      });
 
-        const newFood = await FoodService.createFromUSDAProduct(
-          usdaProduct,
-          {
-            calories: nutritionalData.calories,
-            protein: nutritionalData.protein,
-            carbs: nutritionalData.carbs,
-            fat: nutritionalData.fat,
-            fiber: nutritionalData.fiber,
-            sugar: nutritionalData.sugar,
-            saturatedFat: nutritionalData.saturatedFat,
-            sodium: nutritionalData.sodium,
-            micros: effectiveMicrosPer100g,
-          },
-          null,
-          saveBarcode
-        );
-
-        onAddFood?.({ food: newFood, amount });
-        onClose();
-        return;
-      }
-
-      if ((effectiveProductDetails as any)?.source === 'musclog') {
-        const baseProduct = (effectiveProductDetails as any).product;
-        const musclogProduct = {
-          ...baseProduct,
-          name: getCurrentName(),
-          description: getCurrentDescription(),
-        };
-
-        const newFood = await FoodService.createFromMusclogProduct(
-          musclogProduct,
-          {
-            calories: nutritionalData.calories,
-            protein: nutritionalData.protein,
-            carbs: nutritionalData.carbs,
-            fat: nutritionalData.fat,
-            fiber: nutritionalData.fiber,
-            sugar: nutritionalData.sugar,
-            saturatedFat: nutritionalData.saturatedFat,
-            sodium: nutritionalData.sodium,
-            micros: effectiveMicrosPer100g,
-          },
-          saveBarcode
-        );
-
-        onAddFood?.({ food: newFood, amount });
-        onClose();
-        return;
-      }
-
-      if (isSuccessFoodDetailProductState(effectiveProductDetails)) {
-        const baseProduct = effectiveProductDetails.product as any;
-        const offProduct = {
-          ...baseProduct,
-          product_name: getCurrentName(),
-          code: saveBarcode || baseProduct.code || '',
-          ingredients_text: getCurrentDescription() || baseProduct.ingredients_text,
-        };
-
-        const newFood = await FoodService.createFromV3Product(
-          offProduct,
-          {
-            calories: nutritionalData.calories,
-            protein: nutritionalData.protein,
-            carbs: nutritionalData.carbs,
-            fat: nutritionalData.fat,
-            fiber: nutritionalData.fiber,
-            sugar: nutritionalData.sugar,
-            saturatedFat: nutritionalData.saturatedFat,
-            sodium: nutritionalData.sodium,
-            micros: effectiveMicrosPer100g,
-            nutriscore:
-              typeof baseProduct.nutriscore_grade === 'string' && baseProduct.nutriscore_grade
-                ? baseProduct.nutriscore_grade.toLowerCase()
-                : undefined,
-            ecoscore:
-              typeof baseProduct.ecoscore_grade === 'string' && baseProduct.ecoscore_grade
-                ? baseProduct.ecoscore_grade.toLowerCase()
-                : undefined,
-            novaGroup:
-              typeof baseProduct.nova_group === 'number' ? baseProduct.nova_group : undefined,
-            labels: extractLabelsFromOFFProduct(baseProduct),
-          },
-          null
-        );
-
-        onAddFood?.({ food: newFood, amount });
-        onClose();
-      }
+      onAddFood?.({ food: newFood, amount });
+      onClose();
     } catch (saveError) {
       handleError(saveError, 'ScannedFoodDetailsModal.handleAddFood', {
         showSnackbar: false,
@@ -921,6 +540,7 @@ export function ScannedFoodDetailsModal({
     isScannedProductSuccess,
     editedOverrides,
     barcode,
+    productData,
     refetchedProductDetails,
     getCurrentName,
     getCurrentDescription,
@@ -1041,11 +661,7 @@ export function ScannedFoodDetailsModal({
 
       <BottomPopUp
         visible={isEditPopUpVisible ? editForm !== null : false}
-        onClose={() => {
-          setIsEditPopUpVisible(false);
-          setEditForm(null);
-          setEditMicroOpen(false);
-        }}
+        onClose={closeEditPopUp}
         title={t('food.foodDetails.editFoodInfo')}
         subtitle={t('food.foodDetails.editFoodInfoSubtitle')}
         headerIcon={

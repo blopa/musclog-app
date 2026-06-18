@@ -1349,6 +1349,37 @@
           ]
         }
       }
+    },
+    "repMarker": {
+      "title": "Marcador de repetições",
+      "description": "Faça o upload de um vídeo de treino e um JSON de sensores para anotar os limites das repetições",
+      "uploadVideo": "Enviar vídeo",
+      "uploadJson": "Enviar JSON do sensor",
+      "dragDropVideo": "Arraste ou clique para navegar",
+      "dragDropJson": "Arraste ou clique para navegar",
+      "videoLoaded": "Vídeo carregado",
+      "jsonLoaded": "JSON carregado",
+      "markStart": "Marcar início",
+      "markEnd": "Marcar fim",
+      "undo": "Desfazer",
+      "clearAll": "Limpar tudo",
+      "waitingEnd": "Aguardando o fim — pressione E quando a repetição terminar",
+      "markerCount_one": "{{count}} repetição marcada",
+      "markerCount_other": "{{count}} repetições marcadas",
+      "downloadJson": "Baixar JSON",
+      "repNumber": "Rep",
+      "startTime": "Início",
+      "endTime": "Fim",
+      "duration": "Duração",
+      "delete": "Excluir",
+      "noMarkers": "Nenhuma repetição marcada ainda. Pressione S para marcar o início de uma repetição.",
+      "invalidJson": "JSON inválido: campo \"samples\" ausente",
+      "seekHint": "Clique no gráfico para navegar no vídeo",
+      "keyboardHint": "S = marcar início · E = marcar fim · Espaço = reproduzir/pausar",
+      "chartOrientationTitle": "Orientação",
+      "chartOrientationSubtitle": "ângulo do dispositivo · mais claro para exercícios rotacionais",
+      "chartAccelerationTitle": "Aceleração",
+      "chartAccelerationSubtitle": "aceleração bruta · funciona para qualquer exercício"
     }
   }
 }

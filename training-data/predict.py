@@ -177,10 +177,15 @@ def predict_recording(recording_path: Path) -> dict:
         "reps":               reps_detail,
     }
 
-    if "reps" in data:
-        true_count               = int(data["reps"])
+    rep_markers = data.get("repMarkers")
+    if rep_markers:
+        true_count = len(rep_markers)
         result["ground_truth_reps"] = true_count
-        result["count_error"]    = len(reps_detail) - true_count
+        result["count_error"]       = len(reps_detail) - true_count
+    elif "reps" in data:
+        true_count = int(data["reps"])
+        result["ground_truth_reps"] = true_count
+        result["count_error"]       = len(reps_detail) - true_count
 
     return result
 

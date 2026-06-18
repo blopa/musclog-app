@@ -2,6 +2,12 @@ import { useQuery } from '@tanstack/react-query';
 
 import { isSuccessStatus } from '@/types/guards/openFoodFacts';
 import type { ProductState } from '@/types/openFoodFacts';
+import {
+  areCoreMacrosEffectivelyZero,
+  type BarcodeNutritionSource,
+  parseCoreMacrosFromAlternateSource,
+  type ProductDetailsQueryData,
+} from '@/utils/externalFoodProduct';
 
 import { useSettings } from './useSettings';
 
@@ -54,12 +60,6 @@ const REQUEST_TIMEOUT_MS = 20_000;
 type ProductV3Result =
   | { data: ProductState; error?: undefined }
   | { data?: undefined; error: { message: string } };
-
-/** Response type for useFoodProductDetails (success, error, or null when disabled). */
-export type ProductDetailsQueryData =
-  | ProductState
-  | { status: 'error'; error: { message: string } }
-  | null;
 
 export async function fetchOFFProductByBarcode(
   barcode: string,
@@ -160,6 +160,70 @@ export async function fetchUSDAProductById(
     console.error('Error fetching USDA product by ID:', e);
     return null;
   }
+}
+
+/**
+ * Cross-source barcode lookup behind the "try another source" flow. Fetches every provider
+ * other than {@link currentSource} in parallel and returns the first result whose core macros
+ * are non-zero, or `null` when no other provider yields usable nutrition.
+ */
+export async function findAlternateBarcodeSource(
+  barcode: string,
+  currentSource: BarcodeNutritionSource
+): Promise<ProductDetailsQueryData | null> {
+  const attempts: Promise<ProductDetailsQueryData | null>[] = [];
+
+  if (currentSource !== 'openfood') {
+    attempts.push(
+      fetchOFFProductByBarcode(barcode)
+        .then((r) => (r.data && isSuccessStatus(r.data.status) ? r.data : null))
+        .catch(() => null)
+    );
+  }
+
+  if (currentSource !== 'usda') {
+    attempts.push(
+      fetchUSDAProductByBarcode(barcode)
+        .then((raw) =>
+          raw
+            ? ({
+                status: 'success',
+                product: raw,
+                source: 'usda',
+              } satisfies ProductDetailsQueryData)
+            : null
+        )
+        .catch(() => null)
+    );
+  }
+
+  if (currentSource !== 'musclog') {
+    attempts.push(
+      fetchMusclogProductByBarcode(barcode)
+        .then((raw) =>
+          raw
+            ? ({
+                status: 'success',
+                product: raw,
+                source: 'musclog',
+              } satisfies ProductDetailsQueryData)
+            : null
+        )
+        .catch(() => null)
+    );
+  }
+
+  const results = await Promise.all(attempts);
+  const found = results.find((r): r is ProductDetailsQueryData => {
+    if (!r) {
+      return false;
+    }
+
+    const macros = parseCoreMacrosFromAlternateSource(r);
+    return macros !== null && !areCoreMacrosEffectivelyZero(macros);
+  });
+
+  return found ?? null;
 }
 
 export function useFoodProductDetails(
