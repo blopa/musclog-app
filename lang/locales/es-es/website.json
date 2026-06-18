@@ -1349,6 +1349,33 @@
           ]
         }
       }
+    },
+    "repMarker": {
+      "title": "Herramienta de marcado de repeticiones",
+      "description": "Sube un video de entrenamiento y un JSON de sensores para anotar los límites de las repeticiones",
+      "uploadVideo": "Subir video",
+      "uploadJson": "Subir JSON de sensores",
+      "dragDropVideo": "Arrastra o haz clic para buscar",
+      "dragDropJson": "Arrastra o haz clic para buscar",
+      "videoLoaded": "Video cargado",
+      "jsonLoaded": "JSON cargado",
+      "markStart": "Marcar inicio",
+      "markEnd": "Marcar fin",
+      "undo": "Deshacer",
+      "clearAll": "Borrar todo",
+      "waitingEnd": "Esperando el final — presiona E cuando termine la repetición",
+      "markerCount_one": "{{count}} repetición marcada",
+      "markerCount_other": "{{count}} repeticiones marcadas",
+      "downloadJson": "Descargar JSON",
+      "repNumber": "Rep",
+      "startTime": "Inicio",
+      "endTime": "Fin",
+      "duration": "Duración",
+      "delete": "Eliminar",
+      "noMarkers": "No hay repeticiones marcadas. Presiona S para marcar el inicio de una repetición.",
+      "invalidJson": "JSON inválido: falta el campo \"samples\"",
+      "seekHint": "Haz clic en el gráfico para buscar en el video",
+      "keyboardHint": "S = marcar inicio · E = marcar fin · Espacio = reproducir/pausar"
     }
   }
 }

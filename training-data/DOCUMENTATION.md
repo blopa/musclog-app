@@ -43,7 +43,7 @@ predicting a total rep count from a whole recording in one shot, this pipeline u
 **Segment-and-Score** architecture:
 
 1. Pick the single best sensor axis for this recording.
-2. Slice the signal into many *candidate* rep-shaped segments (deliberately more than the actual rep count).
+2. Slice the signal into many _candidate_ rep-shaped segments (deliberately more than the actual rep count).
 3. Classify each candidate as **real rep** or **noise** using a trained Random Forest.
 4. Count the survivors.
 5. For each surviving rep, analytically detect **Phase A** (lifting direction) and **Phase B** (return direction) and measure speed.
@@ -94,17 +94,17 @@ training-data/
 
 Every recording is a JSON file with the following top-level fields:
 
-| Field           | Type              | Description |
-|-----------------|-------------------|-------------|
-| `repMarkers`    | `array`           | **Required for training.** Per-rep start/end boundary annotations. The total rep count is derived from `len(repMarkers)`. See [Labeling Workflow](#7-labeling-workflow). |
-| `samples`       | `array`           | Time-series sensor samples (see below). |
-| `reps`          | `int` (optional)  | Legacy total rep count. Not used during training. `predict.py` uses it as a fallback ground-truth display value when `repMarkers` is absent. |
-| `muscleGroup`   | `string`          | Primary muscle group (e.g. `"chest"`, `"legs"`). |
-| `equipmentType` | `string`          | Equipment used (e.g. `"barbell"`, `"dumbbell"`). |
-| `mechanicType`  | `string`          | Movement pattern (e.g. `"compound"`, `"isolation"`). |
-| `setNumber`     | `int`             | Which set this is within the workout session. |
-| `exerciseName`  | `string` (optional)| Human-readable exercise name. |
-| `startedAt`     | `string` (optional)| ISO 8601 wall-clock timestamp when recording began on device. Used to align chart with video. |
+| Field           | Type                | Description                                                                                                                                                              |
+| --------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `repMarkers`    | `array`             | **Required for training.** Per-rep start/end boundary annotations. The total rep count is derived from `len(repMarkers)`. See [Labeling Workflow](#7-labeling-workflow). |
+| `samples`       | `array`             | Time-series sensor samples (see below).                                                                                                                                  |
+| `reps`          | `int` (optional)    | Legacy total rep count. Not used during training. `predict.py` uses it as a fallback ground-truth display value when `repMarkers` is absent.                             |
+| `muscleGroup`   | `string`            | Primary muscle group (e.g. `"chest"`, `"legs"`).                                                                                                                         |
+| `equipmentType` | `string`            | Equipment used (e.g. `"barbell"`, `"dumbbell"`).                                                                                                                         |
+| `mechanicType`  | `string`            | Movement pattern (e.g. `"compound"`, `"isolation"`).                                                                                                                     |
+| `setNumber`     | `int`               | Which set this is within the workout session.                                                                                                                            |
+| `exerciseName`  | `string` (optional) | Human-readable exercise name.                                                                                                                                            |
+| `startedAt`     | `string` (optional) | ISO 8601 wall-clock timestamp when recording began on device. Used to align chart with video.                                                                            |
 
 Each element of `samples` has this structure:
 
@@ -112,8 +112,8 @@ Each element of `samples` has this structure:
 {
   "timestamp": 1718000000000,
   "angle": { "x": 12.3, "y": -5.1, "z": 0.8 },
-  "accel": { "x": 0.02, "y": 0.01, "z": 1.00 },
-  "gyro":  { "x": 1.5,  "y": -0.3, "z": 0.1  }
+  "accel": { "x": 0.02, "y": 0.01, "z": 1.0 },
+  "gyro": { "x": 1.5, "y": -0.3, "z": 0.1 }
 }
 ```
 
@@ -139,6 +139,7 @@ Both values are absolute epoch milliseconds matching the `timestamp` field of `s
 **Purpose:** Build and export the rep-segment classifier from all recordings in `raw-data/`.
 
 **Usage:**
+
 ```bash
 cd training-data
 python train.py
@@ -147,6 +148,7 @@ python train.py
 **Inputs:** `raw-data/*.json` — every file with a non-empty `repMarkers` field is used. Files without `repMarkers` are skipped.
 
 **Outputs:**
+
 - `output/features.csv` — Full per-segment feature matrix (useful for manual inspection and debugging).
 - `output/model.pkl` — Python pickle of `{"model": clf, "feature_cols": [...]}`.
 - `output/model.js` — Auto-generated JavaScript function (via `m2cgen`) for app-side inference.
@@ -155,13 +157,13 @@ python train.py
 
 **Key constants:**
 
-| Constant | Default | Meaning |
-|---|---|---|
-| `OVER_SEG_PROMINENCE_FRAC` | `0.03` | Minimum peak/valley prominence as a fraction of signal range. Lower = more segments detected. |
-| `MIN_SEG_DURATION_MS` | `300` | Discard segments shorter than 300 ms (sub-rep micro-movements). |
-| `MIN_HALF_REP_MS` | `150` | Minimum time between adjacent peaks/valleys, used to set `min_distance` in `find_peaks`. |
-| `_BP_LO_HZ` | `0.10` | Bandpass lower bound (corresponds to 10 s/rep — slowest possible controlled movement). |
-| `_BP_HI_HZ` | `3.00` | Bandpass upper bound (corresponds to 333 ms/rep — fastest loaded movement). |
+| Constant                   | Default | Meaning                                                                                       |
+| -------------------------- | ------- | --------------------------------------------------------------------------------------------- |
+| `OVER_SEG_PROMINENCE_FRAC` | `0.03`  | Minimum peak/valley prominence as a fraction of signal range. Lower = more segments detected. |
+| `MIN_SEG_DURATION_MS`      | `300`   | Discard segments shorter than 300 ms (sub-rep micro-movements).                               |
+| `MIN_HALF_REP_MS`          | `150`   | Minimum time between adjacent peaks/valleys, used to set `min_distance` in `find_peaks`.      |
+| `_BP_LO_HZ`                | `0.10`  | Bandpass lower bound (corresponds to 10 s/rep — slowest possible controlled movement).        |
+| `_BP_HI_HZ`                | `3.00`  | Bandpass upper bound (corresponds to 333 ms/rep — fastest loaded movement).                   |
 
 **Categorical feature lists (`MUSCLE_GROUPS`, `EQUIPMENT_TYPES`, `MECHANIC_TYPES`):**
 
@@ -188,6 +190,7 @@ training and inference.
 per-rep phase timing and speed.
 
 **Usage:**
+
 ```bash
 python predict.py raw-data/deadlift.json
 python predict.py raw-data/deadlift.json --json   # structured JSON output
@@ -221,30 +224,30 @@ Per-rep breakdown:
 
 **`predict_recording(recording_path)` return dict keys:**
 
-| Key | Description |
-|-----|-------------|
-| `recording` | Filename |
-| `predicted_reps` | Number of segments classified as real reps |
-| `candidate_segments` | Total segments found by over-segmentation |
-| `classified_as_rep` | Same as `predicted_reps` |
-| `reps` | Array of per-rep dicts (see below) |
-| `ground_truth_reps` | Only present if `reps` field exists in the file |
-| `count_error` | `predicted_reps - ground_truth_reps` (only if ground truth available) |
-| `error` | Human-readable error string (only if something went wrong) |
+| Key                  | Description                                                           |
+| -------------------- | --------------------------------------------------------------------- |
+| `recording`          | Filename                                                              |
+| `predicted_reps`     | Number of segments classified as real reps                            |
+| `candidate_segments` | Total segments found by over-segmentation                             |
+| `classified_as_rep`  | Same as `predicted_reps`                                              |
+| `reps`               | Array of per-rep dicts (see below)                                    |
+| `ground_truth_reps`  | Only present if `reps` field exists in the file                       |
+| `count_error`        | `predicted_reps - ground_truth_reps` (only if ground truth available) |
+| `error`              | Human-readable error string (only if something went wrong)            |
 
 Each element of `reps`:
 
-| Key | Description |
-|-----|-------------|
-| `index` | 1-based rep number (chronological) |
-| `start_ms` | Start time relative to recording start (ms) |
-| `end_ms` | End time relative to recording start (ms) |
-| `duration_ms` | Total rep duration (ms) |
-| `phase_a_duration_ms` | Phase A duration: start → turning point |
-| `phase_b_duration_ms` | Phase B duration: turning point → end |
-| `phase_a_speed_dps` | Phase A angular speed (deg/s) = displacement / duration |
-| `phase_b_speed_dps` | Phase B angular speed (deg/s) |
-| `classifier_confidence` | Random Forest probability of being a real rep (0–1) |
+| Key                     | Description                                             |
+| ----------------------- | ------------------------------------------------------- |
+| `index`                 | 1-based rep number (chronological)                      |
+| `start_ms`              | Start time relative to recording start (ms)             |
+| `end_ms`                | End time relative to recording start (ms)               |
+| `duration_ms`           | Total rep duration (ms)                                 |
+| `phase_a_duration_ms`   | Phase A duration: start → turning point                 |
+| `phase_b_duration_ms`   | Phase B duration: turning point → end                   |
+| `phase_a_speed_dps`     | Phase A angular speed (deg/s) = displacement / duration |
+| `phase_b_speed_dps`     | Phase B angular speed (deg/s)                           |
+| `classifier_confidence` | Random Forest probability of being a real rep (0–1)     |
 
 ---
 
@@ -255,12 +258,14 @@ run the full prediction pipeline on it, and generate a standalone interactive HT
 report showing exactly what the model sees and how it decides.
 
 **Usage:**
+
 ```bash
 cd training-data
 python visualize_loocv.py
 ```
 
 **Outputs:**
+
 - `output/html/<recording_name>.html` — one detailed report per recording.
 - `output/html/index.html` — summary table linking all reports, sorted by absolute error.
 
@@ -288,6 +293,7 @@ exact LOOCV model used to generate predictions for the per-recording HTML page.
 
 **`build_compressed_chart_payload(...)`:** Produces a compact dict that represents
 what would actually be stored in the app database alongside the rep count:
+
 - Trims the signal to the window spanning the first predicted rep start to the last predicted rep end (discards setup/unrack tails).
 - Downsamples to `max(n_reps * 10, 50)` points.
 - Includes segment colour annotations, turning-point timestamps, and Phase A/B reconstructed points (3 key points each, with `null` breaks between reps to prevent line-connecting across gaps).
@@ -302,6 +308,7 @@ what would actually be stored in the app database alongside the rep count:
 in `raw-data/`. No video — useful when only sensor data is available.
 
 **Usage:**
+
 ```bash
 cd training-data
 python generate-markers-html.py              # all recordings
@@ -309,6 +316,7 @@ python generate-markers-html.py bench.json  # specific file(s)
 ```
 
 **Outputs:**
+
 - `output/markers/<recording_name>.html` — one annotation page per recording.
 - `output/markers/index.html` — overview table with annotation status badges.
 
@@ -334,6 +342,7 @@ using uniform index selection (`np.linspace`). The dead-reckoning is run on the
 is downsampled along with the raw channels.
 
 **Index badge logic:**
+
 - **Green `N markers ✓`** — marker count ≥ expected rep count.
 - **Orange `N / M markers`** — partially annotated.
 - **Orange `no markers`** — not yet annotated.
@@ -348,6 +357,7 @@ under `recordings/`. This is the higher-accuracy annotation path because you can
 watch the actual movement while marking.
 
 **Usage:**
+
 ```bash
 cd training-data
 python generate-video-markers.py                       # all subfolders in recordings/
@@ -357,6 +367,7 @@ python generate-video-markers.py recordings/h98h9e8th94/  # specific folder
 **Inputs:** Each subfolder in `recordings/` must contain exactly one `.json` and one `.mp4`.
 
 **Outputs:**
+
 - `recordings/<uuid>/index.html` — one annotation page per recording folder.
 - `recordings/index.html` — overview of all subfolders and their annotation status.
 
@@ -400,6 +411,7 @@ position_m = result["position_m"]  # shape (N, 3)
 **Algorithm overview (6 steps):**
 
 #### Step 1 — Orientation: Madgwick Filter
+
 `ahrs.filters.Madgwick` fuses raw accelerometer (m/s²) and gyroscope (rad/s) data
 to produce a quaternion `q_wxyz` of shape `(N, 4)` at every timestep. The Madgwick
 filter is a computationally efficient gradient-descent-based orientation estimator
@@ -408,6 +420,7 @@ published in 2010, widely used in embedded IMU applications.
 The filter runs at the **estimated sample rate** (`sr_hz = (N-1) / total_duration_s`).
 
 #### Step 2 — Body → World Frame Rotation
+
 The quaternion from step 1 uses `[w, x, y, z]` (Hamilton) convention. scipy's
 `Rotation.from_quat` uses `[x, y, z, w]` convention, so the array is rolled by -1
 position before constructing the rotation. `rotations.apply(accel_g)` transforms
@@ -418,12 +431,14 @@ After rotation, the nominal gravity vector `[0, 0, 1]` g is subtracted to isolat
 linear acceleration. Any remaining DC offset is the bias that step 4 will remove.
 
 #### Step 3 — ZUPT Detection (Zero-Velocity Update)
+
 ZUPT (Zero-Velocity Update) is a classical inertial navigation technique: during
 moments when the sensor is stationary, velocity must be zero by definition, so any
 accumulated velocity error can be reset.
 
 Stationary windows are detected using a **rolling window** (length `zupt_window_s *
 sr_hz`, forced odd) of:
+
 - **Accelerometer magnitude standard deviation** — below `zupt_accel_std_g` (default 0.025 g).
 - **Gyroscope magnitude rolling mean** — below `zupt_gyro_dps` (default 8 deg/s).
 
@@ -433,6 +448,7 @@ helper finds contiguous runs of stationary samples; only runs of at least
 transient noise.
 
 #### Step 4 — Bias Interpolation
+
 For each stationary run, the mean linear acceleration is computed as the **bias
 estimate** for that window. These anchor estimates are then linearly interpolated
 across the full recording using `np.interp`, producing a per-sample bias vector.
@@ -440,11 +456,13 @@ When no stationary windows are found (e.g., constant-motion recordings), the glo
 mean is used as a flat bias.
 
 The debiased linear acceleration in m/s² is:
+
 ```
 linear_acc_ms2 = (accel_world_g - [0,0,1] - accel_bias_g) * G_MS2
 ```
 
 #### Step 5 — Velocity by Trapezoidal Integration + ZUPT Reset
+
 `scipy.integrate.cumulative_trapezoid` integrates `linear_acc_ms2` over time `t_s`
 to produce velocity. After integration, velocity is **hard-zeroed** at all stationary
 samples.
@@ -457,22 +475,23 @@ across each swing, which is the standard "Foxlin correction" used in pedestrian
 dead-reckoning.
 
 #### Step 6 — Position by Trapezoidal Integration
+
 `scipy.integrate.cumulative_trapezoid` integrates the corrected velocity over time
 to produce position in metres. Position starts at `[0, 0, 0]` (the sensor's initial
 location).
 
 **Return dict keys:**
 
-| Key | Shape | Description |
-|-----|-------|-------------|
-| `timestamps_ms` | `(N,)` | Original timestamps |
-| `position_m` | `(N, 3)` | World-frame position in metres |
-| `velocity_ms` | `(N, 3)` | World-frame velocity in m/s |
-| `linear_acc_ms2` | `(N, 3)` | Debiased world-frame linear acceleration in m/s² |
-| `accel_bias_g` | `(N, 3)` | Per-sample estimated accelerometer bias in g |
-| `stationary` | `(N,)` bool | True where the sensor was detected as stationary |
-| `sr_hz` | scalar | Estimated sample rate |
-| `orientation_q` | `(N, 4)` | Quaternion `[w, x, y, z]` at every sample |
+| Key              | Shape       | Description                                      |
+| ---------------- | ----------- | ------------------------------------------------ |
+| `timestamps_ms`  | `(N,)`      | Original timestamps                              |
+| `position_m`     | `(N, 3)`    | World-frame position in metres                   |
+| `velocity_ms`    | `(N, 3)`    | World-frame velocity in m/s                      |
+| `linear_acc_ms2` | `(N, 3)`    | Debiased world-frame linear acceleration in m/s² |
+| `accel_bias_g`   | `(N, 3)`    | Per-sample estimated accelerometer bias in g     |
+| `stationary`     | `(N,)` bool | True where the sensor was detected as stationary |
+| `sr_hz`          | scalar      | Estimated sample rate                            |
+| `orientation_q`  | `(N, 4)`    | Quaternion `[w, x, y, z]` at every sample        |
 
 ---
 
@@ -482,6 +501,7 @@ location).
 `raw-data/` using `gdown`.
 
 **Usage:**
+
 ```bash
 cd training-data
 pip install gdown
@@ -489,6 +509,7 @@ python download_recordings.py
 ```
 
 **What it does:**
+
 1. Downloads the entire Google Drive folder (ID: `1dtBGDm68UXQWdFa_P_ZU30_Tdffl4MEE`) into a temporary directory.
 2. Filters for `.json` files only.
 3. Copies each file into `raw-data/`, overwriting existing files of the same name.
@@ -506,12 +527,14 @@ publicly shared. If the folder permissions change, `gdown` will report an error.
 **Function:** `preprocess_to_1d(samples)` in `train.py`
 
 The sensor provides 10 candidate signals:
+
 - 3 Euler angles (x/y/z) — unwrapped to handle ±180° discontinuities
 - 3 accelerometer components (x/y/z)
 - 3 gyroscope components (x/y/z)
 - 1 accelerometer magnitude √(ax² + ay² + az²) — orientation-agnostic
 
 For **each** of the 10 candidates:
+
 1. **Unwrap** (Euler angles only): `np.degrees(np.unwrap(np.radians(ang), axis=0))` removes ±180° jumps that would appear as large spikes in exercises with wide range of motion (e.g., full hip hinge, bicep curl).
 2. **Savitzky-Golay smooth:** Window = `max(5, ceil(0.5% of samples) | 1)` (forced odd), polynomial order 2. This suppresses high-frequency noise while preserving peak/valley shape better than a simple moving average.
 3. **Butterworth bandpass 0.1–3 Hz:** 2nd-order zero-phase filter (`filtfilt`) that removes slow drift (below 0.1 Hz, e.g., sensor tilting over time) and high-frequency vibration (above 3 Hz). The 0.1–3 Hz band spans all possible human rep speeds from extremely slow (6 reps/min = 0.1 Hz) to maximum speed unloaded plyometrics (180 reps/min = 3 Hz).
@@ -536,6 +559,7 @@ has noise segments to reject. This is achieved by using a **low** peak detection
 threshold (`prominence ≥ 3% of signal range`).
 
 **Algorithm:**
+
 1. Find all **valleys** (local minima) using `scipy.signal.find_peaks(-signal_1d, ...)`.
 2. Find all **peaks** (local maxima) using `scipy.signal.find_peaks(signal_1d, ...)`.
 3. `min_distance` for both = `max(1, sample_rate * 150ms / 1000)` — prevents two turning points within 150 ms of each other (enforces minimum half-rep duration).
@@ -545,6 +569,7 @@ threshold (`prominence ≥ 3% of signal range`).
 7. Choose whichever set (valley-to-valley or peak-to-peak) has **more segments**. If equal, choose the one with lower duration coefficient of variation (CV = std/mean of segment durations), because more consistent durations suggest better-aligned segment boundaries.
 
 Each segment dict stores:
+
 - `start_idx`, `turning_idx`, `end_idx` — sample array indices
 - `start_ts`, `turning_ts`, `end_ts` — timestamps in epoch milliseconds
 
@@ -560,19 +585,19 @@ segment. The full feature vector has **`len(SEGMENT_FEATURE_COLS)`** dimensions
 
 **Signal features:**
 
-| Feature | Formula / Description |
-|---|---|
-| `amplitude` | `max(chunk) - min(chunk)` — absolute peak-to-trough range |
-| `duration_ms` | `timestamps[end] - timestamps[start]` |
-| `energy` | `Σ(chunk² * avg_dt_s)` — integral of squared signal, approximates mechanical work |
-| `prominence` | scipy `peak_prominences` of the turning point in the full 1D signal context. Real reps have prominent turning points; noise segments have subtle ones |
-| `relative_amplitude` | `amplitude / global_range` — normalised within the recording |
-| `relative_duration` | `duration_ms / median_segment_duration` — how this segment compares to typical duration |
-| `temporal_regularity` | `1 / (1 + CV_of_inter_segment_intervals)` — higher = more rhythmic. Computed from all segments in the recording. Ranges 0–1; 0.5 if fewer than 3 segments |
-| `position_frac` | `(start_ts - rec_start) / rec_duration` ∈ [0,1]. Setup and unrack events cluster near 0 and 1; genuine reps cluster in the middle |
-| `neighbour_amp_ratio` | `amplitude / mean(amplitude of adjacent segments)`. A rep that is much larger or smaller than its neighbours is suspicious |
-| `set_number` | From metadata; sets later in a session tend to have different fatigue patterns |
-| `spectral_entropy` | Shannon entropy of the FFT power spectrum of the segment: `-Σ p*log(p)`. Low entropy = most power at one frequency = rep-like. High entropy = broadband = noisy |
+| Feature               | Formula / Description                                                                                                                                           |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `amplitude`           | `max(chunk) - min(chunk)` — absolute peak-to-trough range                                                                                                       |
+| `duration_ms`         | `timestamps[end] - timestamps[start]`                                                                                                                           |
+| `energy`              | `Σ(chunk² * avg_dt_s)` — integral of squared signal, approximates mechanical work                                                                               |
+| `prominence`          | scipy `peak_prominences` of the turning point in the full 1D signal context. Real reps have prominent turning points; noise segments have subtle ones           |
+| `relative_amplitude`  | `amplitude / global_range` — normalised within the recording                                                                                                    |
+| `relative_duration`   | `duration_ms / median_segment_duration` — how this segment compares to typical duration                                                                         |
+| `temporal_regularity` | `1 / (1 + CV_of_inter_segment_intervals)` — higher = more rhythmic. Computed from all segments in the recording. Ranges 0–1; 0.5 if fewer than 3 segments       |
+| `position_frac`       | `(start_ts - rec_start) / rec_duration` ∈ [0,1]. Setup and unrack events cluster near 0 and 1; genuine reps cluster in the middle                               |
+| `neighbour_amp_ratio` | `amplitude / mean(amplitude of adjacent segments)`. A rep that is much larger or smaller than its neighbours is suspicious                                      |
+| `set_number`          | From metadata; sets later in a session tend to have different fatigue patterns                                                                                  |
+| `spectral_entropy`    | Shannon entropy of the FFT power spectrum of the segment: `-Σ p*log(p)`. Low entropy = most power at one frequency = rep-like. High entropy = broadband = noisy |
 
 **Categorical features (one-hot encoded):**
 
@@ -595,9 +620,11 @@ derived as `n_reps = len(repMarkers)` — no separate `reps` field is consulted.
 
 For each manual marker `{startMs, endMs}`, the function finds the candidate segment
 with the highest **Intersection over Union (IoU)** with the marker's time window:
+
 ```
 IoU = overlap / (segment_duration + marker_duration - overlap)
 ```
+
 The best-matching segment is labeled `is_rep=1` if `IoU > 0.05`. Each candidate
 segment can only be claimed by one marker (greedy matching). Segments not matched
 to any marker get `is_rep=0`.
@@ -610,6 +637,7 @@ are skipped during dataset building with a `SKIP (no repMarkers)` message.
 ### Step 5 — Training & Export
 
 **Classifier:** `sklearn.ensemble.RandomForestClassifier`
+
 - `n_estimators=200` — 200 trees; enough for stable importance estimates.
 - `max_depth=6` — shallow trees reduce overfitting to the small training set.
 - `class_weight="balanced"` — compensates for the class imbalance (more noise segments than rep segments in every recording).
@@ -619,11 +647,13 @@ are skipped during dataset building with a `SKIP (no repMarkers)` message.
 `m2cgen.export_to_javascript(clf, function_name="classifySegment")` transpiles the
 entire trained forest into a pure JavaScript function (no external dependencies, no
 WASM). The output is minified (all whitespace collapsed) and wrapped with:
+
 ```js
 // @ts-nocheck
 /* eslint-disable */
 export { classifySegment };
 ```
+
 At runtime: `classifySegment(features)[1] > 0.5` → is a real rep.
 
 The input array must have **exactly `len(SEGMENT_FEATURE_COLS)` elements** in the
@@ -643,6 +673,7 @@ split at its turning point (already identified during over-segmentation) into:
 - **Phase B** (turning point → end): the return direction.
 
 For each phase:
+
 - **Duration** = `timestamps[end] - timestamps[start]` in ms.
 - **Speed** = `|signal[end] - signal[start]| / (duration_ms / 1000)` in deg/s.
 
@@ -663,16 +694,19 @@ determine which phase is concentric for a given exercise+device combination.
 
 **Metrics reported:**
 
-*Segment-level* (binary classification):
+_Segment-level_ (binary classification):
+
 - **Precision** = TP / (TP + FP) — of segments predicted as reps, how many were actually reps?
 - **Recall** = TP / (TP + FN) — of actual rep segments, how many did the model find?
 - **F1** = harmonic mean of Precision and Recall.
 
-*Recording-level* (the end goal — rep count accuracy):
+_Recording-level_ (the end goal — rep count accuracy):
+
 - **MAE** (Mean Absolute Error) = mean of |predicted_count - true_count| across recordings.
 - **Exact match** = fraction of recordings where predicted count equals true count.
 
 **`sus_data.txt` flags:**
+
 - **High candidate:rep ratio (> 3.5×):** Too many noise candidates relative to reps. Pseudo-labels may be unreliable because the ranking score may not separate real reps clearly enough.
 - **Low candidate:rep ratio (< 1.3×):** Barely over-segmented. The model has little room to reject noise; almost every segment must be labeled a rep.
 - **Large LOOCV error (≥ 3):** The held-out model was badly wrong for this recording — worth investigating whether the recording has unusual characteristics.
@@ -686,17 +720,21 @@ determine which phase is concentric for a given exercise+device combination.
 annotating per-rep boundaries:
 
 **For recordings without video** (`generate-markers-html.py`):
+
 ```
 raw-data/*.json → output/markers/<name>.html
 ```
+
 - Open in browser, use "Mark rep" button, click the chart at the start and end of each rep.
 - Download the full updated JSON and replace the original in `raw-data/`.
 - Rerun `train.py` to incorporate the markers.
 
 **For recordings with video** (`generate-video-markers.py`):
+
 ```
 recordings/<uuid>/{*.json, *.mp4} → recordings/<uuid>/index.html
 ```
+
 - Open in browser, use S/E keyboard shortcuts or the "Mark Start" / "Mark End" buttons.
 - Video and chart are time-aligned via `startedAt`.
 - Download the full updated JSON and replace the original in `raw-data/`.
@@ -742,6 +780,7 @@ the app database. Its structure is:
 ```
 
 Key points:
+
 - The signal is **trimmed** to the span `[first_predicted_rep_start, last_predicted_rep_end]` before downsampling, so setup/unrack tails don't waste space.
 - `phaseA` and `phaseB` use **`null` y-values** as line-break markers between reps, so `spanGaps: false` in Chart.js draws each rep as a disconnected segment.
 - `color` values are one of four fixed RGBA strings corresponding to TP/FP/FN/TN (see [Section 4.3](#43-visualize_loocvpy)).
@@ -758,7 +797,7 @@ importances, and exports cleanly to JavaScript via `m2cgen` without needing ONNX
 TensorFlow.js, or any runtime library.
 
 **Why segment-and-score instead of direct regression?**
-Direct regression ("count the reps in this whole recording") cannot localise *where*
+Direct regression ("count the reps in this whole recording") cannot localise _where_
 reps occur, which is required for phase timing. It also generalises poorly because
 recordings vary wildly in length and content. By operating on fixed-size local
 segments, the classifier sees the same feature space regardless of total recording
@@ -864,7 +903,7 @@ depends on where the app imports `classifySegment` from). The function signature
 ```js
 // returns [prob_noise, prob_rep]
 // input: array of length N_FEATURES in the order from SEGMENT_FEATURE_COLS
-classifySegment(features)[1] > 0.5  // → true if real rep
+classifySegment(features)[1] > 0.5; // → true if real rep
 ```
 
 The feature order is printed in `output/summary.txt` and in the header comment of
