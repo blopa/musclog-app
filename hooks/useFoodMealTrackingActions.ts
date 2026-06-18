@@ -12,6 +12,8 @@ type UseFoodMealTrackingActionsParams = {
   target: FoodMealTrackingActionTarget;
   selection: FoodMealTrackingActionSelection;
   nutrition: FoodMealTrackingActionNutrition;
+  /** Context label passed to {@link handleError} when the track action fails. */
+  errorContext: string;
   callbacks: {
     onAddFood?: (data: { servingSize: number; meal: string; date: Date }) => void;
     onLogMeal?: (data: { meal: string; date: Date }) => void;
@@ -33,6 +35,7 @@ export function useFoodMealTrackingActions({
   target,
   selection,
   nutrition,
+  errorContext,
   callbacks,
   feedback,
 }: UseFoodMealTrackingActionsParams) {
@@ -70,13 +73,14 @@ export function useFoodMealTrackingActions({
       onFoodTracked?.();
       showSnackbar('success', t('food.foodDetails.successMessage'));
     } catch (error) {
-      handleError(error, 'FoodMealTrackingDetailsModal.handleAddFood', {
+      handleError(error, errorContext, {
         snackbarMessage: t('food.foodDetails.errorMessage'),
       });
     } finally {
       setIsAddingFood(false);
     }
   }, [
+    errorContext,
     nutrition,
     onAddFood,
     onClose,

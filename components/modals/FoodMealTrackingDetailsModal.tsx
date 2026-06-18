@@ -41,6 +41,7 @@ import Food from '@/database/models/Food';
 import FoodPortion from '@/database/models/FoodPortion';
 import Meal from '@/database/models/Meal';
 import { FoodPortionService, FoodService, MealService } from '@/database/services';
+import type { FoodMealTrackingActionTarget } from '@/database/services/FoodMealTrackingActionService';
 import { useAlternateBarcodeSource } from '@/hooks/useAlternateBarcodeSource';
 import { useFoodEditForm } from '@/hooks/useFoodEditForm';
 import { useFoodMealTrackingActions } from '@/hooks/useFoodMealTrackingActions';
@@ -1602,18 +1603,51 @@ export function FoodMealTrackingDetailsModal({
     openEditPopUp,
   ]);
 
-  const { isAddingFood, handleAddFood } = useFoodMealTrackingActions({
-    target: {
-      meal,
-      food,
-      foodLog,
-      localFood,
-      barcode,
-      productFromSearch,
+  // The dispatch priority (meal > log > existing food > external product) lives here, where the
+  // mode is known, so the service receives a single tagged variant instead of a bag of optionals.
+  const actionTarget = useMemo<FoodMealTrackingActionTarget>(() => {
+    if (meal) {
+      return { kind: 'meal', meal };
+    }
+
+    if (foodLog) {
+      return { kind: 'foodLog', foodLog };
+    }
+
+    const existingFood = food ?? localFood;
+    if (existingFood) {
+      return {
+        kind: 'existingFood',
+        food: existingFood,
+        localFood,
+        productDetails,
+        refetchedProductDetails,
+      };
+    }
+
+    return {
+      kind: 'externalProduct',
       productDetails,
       refetchedProductDetails,
+      productFromSearch,
+      barcode,
       matchedPortion,
-    },
+    };
+  }, [
+    meal,
+    foodLog,
+    food,
+    localFood,
+    productDetails,
+    refetchedProductDetails,
+    productFromSearch,
+    barcode,
+    matchedPortion,
+  ]);
+
+  const { isAddingFood, handleAddFood } = useFoodMealTrackingActions({
+    target: actionTarget,
+    errorContext: 'FoodMealTrackingDetailsModal.handleAddFood',
     selection: {
       selectedDate,
       selectedTime,

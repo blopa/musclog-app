@@ -29,7 +29,7 @@ import { ServingSizeSelector } from '@/components/ServingSizeSelector';
 import { Button } from '@/components/theme/Button';
 import { TextInput } from '@/components/theme/TextInput';
 import type { MicrosData } from '@/database/models';
-import { FoodService } from '@/database/services';
+import { FoodMealTrackingActionService, FoodService } from '@/database/services';
 import { useAlternateBarcodeSource } from '@/hooks/useAlternateBarcodeSource';
 import { useFoodEditForm } from '@/hooks/useFoodEditForm';
 import { useFoodProductDetails } from '@/hooks/useFoodProductDetails';
@@ -514,105 +514,23 @@ export function ScannedFoodDetailsModal({
         return;
       }
 
-      if ((effectiveProductDetails as any)?.source === 'usda') {
-        const baseProduct = (effectiveProductDetails as any).product;
-        const usdaProduct = {
-          ...baseProduct,
-          description: editedOverrides?.name?.trim() || baseProduct.description,
-          gtinUpc: saveBarcode || baseProduct.gtinUpc,
-          ingredients: getCurrentDescription() || baseProduct.ingredients,
-        };
+      // New food: route through the canonical creator so the per-source override application,
+      // nutrition payload, and FoodService.createFrom* dispatch stay shared with the track-meal flow.
+      const newFood = await FoodMealTrackingActionService.createFoodFromExternalProduct({
+        productDetails: productData,
+        refetchedProductDetails,
+        barcode,
+        matchedPortion: null,
+        nutrition: {
+          nutritionalData,
+          effectiveMicrosPer100g,
+          editedOverrides,
+        },
+        isFavorite: false,
+      });
 
-        const newFood = await FoodService.createFromUSDAProduct(
-          usdaProduct,
-          {
-            calories: nutritionalData.calories,
-            protein: nutritionalData.protein,
-            carbs: nutritionalData.carbs,
-            fat: nutritionalData.fat,
-            fiber: nutritionalData.fiber,
-            sugar: nutritionalData.sugar,
-            saturatedFat: nutritionalData.saturatedFat,
-            sodium: nutritionalData.sodium,
-            micros: effectiveMicrosPer100g,
-          },
-          null,
-          saveBarcode
-        );
-
-        onAddFood?.({ food: newFood, amount });
-        onClose();
-        return;
-      }
-
-      if ((effectiveProductDetails as any)?.source === 'musclog') {
-        const baseProduct = (effectiveProductDetails as any).product;
-        const musclogProduct = {
-          ...baseProduct,
-          name: getCurrentName(),
-          description: getCurrentDescription(),
-        };
-
-        const newFood = await FoodService.createFromMusclogProduct(
-          musclogProduct,
-          {
-            calories: nutritionalData.calories,
-            protein: nutritionalData.protein,
-            carbs: nutritionalData.carbs,
-            fat: nutritionalData.fat,
-            fiber: nutritionalData.fiber,
-            sugar: nutritionalData.sugar,
-            saturatedFat: nutritionalData.saturatedFat,
-            sodium: nutritionalData.sodium,
-            micros: effectiveMicrosPer100g,
-          },
-          saveBarcode
-        );
-
-        onAddFood?.({ food: newFood, amount });
-        onClose();
-        return;
-      }
-
-      if (isSuccessFoodDetailProductState(effectiveProductDetails)) {
-        const baseProduct = effectiveProductDetails.product as any;
-        const offProduct = {
-          ...baseProduct,
-          product_name: getCurrentName(),
-          code: saveBarcode || baseProduct.code || '',
-          ingredients_text: getCurrentDescription() || baseProduct.ingredients_text,
-        };
-
-        const newFood = await FoodService.createFromV3Product(
-          offProduct,
-          {
-            calories: nutritionalData.calories,
-            protein: nutritionalData.protein,
-            carbs: nutritionalData.carbs,
-            fat: nutritionalData.fat,
-            fiber: nutritionalData.fiber,
-            sugar: nutritionalData.sugar,
-            saturatedFat: nutritionalData.saturatedFat,
-            sodium: nutritionalData.sodium,
-            micros: effectiveMicrosPer100g,
-            nutriscore:
-              typeof baseProduct.nutriscore_grade === 'string' && baseProduct.nutriscore_grade
-                ? baseProduct.nutriscore_grade.toLowerCase()
-                : undefined,
-            ecoscore:
-              typeof baseProduct.ecoscore_grade === 'string' && baseProduct.ecoscore_grade
-                ? baseProduct.ecoscore_grade.toLowerCase()
-                : undefined,
-            novaGroup:
-              typeof baseProduct.nova_group === 'number' ? baseProduct.nova_group : undefined,
-            labels: extractLabelsFromOFFProduct(baseProduct),
-          },
-          null
-        );
-
-        onAddFood?.({ food: newFood, amount });
-        onClose();
-      }
+      onAddFood?.({ food: newFood, amount });
+      onClose();
     } catch (saveError) {
       handleError(saveError, 'ScannedFoodDetailsModal.handleAddFood', {
         showSnackbar: false,
@@ -622,6 +540,7 @@ export function ScannedFoodDetailsModal({
     isScannedProductSuccess,
     editedOverrides,
     barcode,
+    productData,
     refetchedProductDetails,
     getCurrentName,
     getCurrentDescription,

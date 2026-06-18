@@ -8,8 +8,8 @@ import { isSuccessFoodDetailProductState } from '@/types/guards/openFoodFacts';
 import { combineLocalDateAndTime, instantForDateTimeInTimezone } from '@/utils/calendarDate';
 import {
   type ExternalFoodProductSource,
-  inferBarcodeNutritionSource,
   type ProductDetailsQueryData,
+  resolveExternalFoodSource,
 } from '@/utils/externalFoodProduct';
 import { toFiniteMacro } from '@/utils/inferCaloriesFromMacros';
 import { extractLabelsFromOFFProduct } from '@/utils/openFoodFactsMapper';
@@ -42,17 +42,33 @@ type FoodLogTrackingDetails = {
   }) => Promise<void>;
 };
 
-export type FoodMealTrackingActionTarget = {
-  meal?: Meal | null;
-  food?: Food | null;
-  foodLog?: FoodLogTrackingDetails | null;
-  localFood: Food | null;
-  barcode?: string | null;
-  productFromSearch?: any;
+/** External-catalog product context, shared by the `externalProduct` target and the public creator. */
+type ExternalProductContext = {
   productDetails: ProductDetailsQueryData | null | undefined;
   refetchedProductDetails: ProductDetailsQueryData | null;
+  productFromSearch?: any;
+  barcode?: string | null;
   matchedPortion: FoodPortion | null;
 };
+
+/**
+ * Tagged union of the four ways the food-details modal can resolve an "add" action. The caller
+ * (which already knows the mode) builds exactly one variant, so dispatch in {@link
+ * FoodMealTrackingActionService.trackFoodOrMeal} is total instead of probing a bag of optionals.
+ */
+export type FoodMealTrackingActionTarget =
+  | { kind: 'meal'; meal: Meal }
+  | { kind: 'foodLog'; foodLog: FoodLogTrackingDetails }
+  | {
+      kind: 'existingFood';
+      food: Food;
+      localFood: Food | null;
+      productDetails: ProductDetailsQueryData | null | undefined;
+      refetchedProductDetails: ProductDetailsQueryData | null;
+    }
+  | ({ kind: 'externalProduct' } & ExternalProductContext);
+
+type ExistingFoodTarget = Extract<FoodMealTrackingActionTarget, { kind: 'existingFood' }>;
 
 export type FoodMealTrackingActionSelection = {
   selectedDate: Date;
@@ -74,6 +90,12 @@ export type FoodMealTrackingActionInput = {
   target: FoodMealTrackingActionTarget;
   selection: FoodMealTrackingActionSelection;
   nutrition: FoodMealTrackingActionNutrition;
+};
+
+/** Input for {@link FoodMealTrackingActionService.createFoodFromExternalProduct}. */
+export type CreateFoodFromExternalProductInput = ExternalProductContext & {
+  nutrition: FoodMealTrackingActionNutrition;
+  isFavorite: boolean;
 };
 
 export type FoodMealTrackingActionResult =
@@ -177,26 +199,30 @@ export class FoodMealTrackingActionService {
   }: FoodMealTrackingActionInput): Promise<FoodMealTrackingActionResult> {
     const loggedDateTime = combineLocalDateAndTime(selection.selectedDate, selection.selectedTime);
 
-    if (target.meal) {
-      await this.logMeal(target.meal, selection, loggedDateTime);
-      return { kind: 'mealLogged' };
-    }
+    switch (target.kind) {
+      case 'meal':
+        await this.logMeal(target.meal, selection, loggedDateTime);
+        return { kind: 'mealLogged' };
 
-    if (target.foodLog) {
-      await this.updateFoodLog(target.foodLog, selection);
-      return { kind: 'foodLogUpdated' };
-    }
+      case 'foodLog':
+        await this.updateFoodLog(target.foodLog, selection);
+        return { kind: 'foodLogUpdated' };
 
-    const foodData = target.food ?? target.localFood;
-    if (foodData) {
-      await this.persistExistingFoodUpdates(foodData, target, selection, nutrition);
-      await this.logFoodAndSettle(foodData.id, selection, loggedDateTime);
-      return { kind: 'foodLogged' };
-    }
+      case 'existingFood':
+        await this.persistExistingFoodUpdates(target, selection, nutrition);
+        await this.logFoodAndSettle(target.food.id, selection, loggedDateTime);
+        return { kind: 'foodLogged' };
 
-    const newFood = await this.createExternalFood(target, selection, nutrition);
-    await this.logFoodAndSettle(newFood.id, selection, loggedDateTime);
-    return { kind: 'foodLogged' };
+      case 'externalProduct': {
+        const newFood = await this.createFoodFromExternalProduct({
+          ...target,
+          nutrition,
+          isFavorite: selection.isFavorite,
+        });
+        await this.logFoodAndSettle(newFood.id, selection, loggedDateTime);
+        return { kind: 'foodLogged' };
+      }
+    }
   }
 
   private static async logMeal(
@@ -249,29 +275,28 @@ export class FoodMealTrackingActionService {
   }
 
   private static async persistExistingFoodUpdates(
-    foodData: Food,
-    target: FoodMealTrackingActionTarget,
+    target: ExistingFoodTarget,
     selection: FoodMealTrackingActionSelection,
     nutrition: FoodMealTrackingActionNutrition
   ): Promise<void> {
-    const patch = this.buildExistingFoodPatch(foodData, target, selection, nutrition);
+    const patch = this.buildExistingFoodPatch(target, selection, nutrition);
     if (Object.keys(patch).length === 0) {
       return;
     }
 
     await database.write(async () => {
-      await foodData.update((record) => {
+      await target.food.update((record) => {
         Object.assign(record, patch);
       });
     });
   }
 
   private static buildExistingFoodPatch(
-    foodData: Food,
-    target: FoodMealTrackingActionTarget,
+    target: ExistingFoodTarget,
     selection: FoodMealTrackingActionSelection,
     nutrition: FoodMealTrackingActionNutrition
   ): FoodUpdatePatch {
+    const foodData = target.food;
     const patch: FoodUpdatePatch = {};
     const { editedOverrides, nutritionalData, effectiveMicrosPer100g } = nutrition;
 
@@ -310,18 +335,26 @@ export class FoodMealTrackingActionService {
     return patch;
   }
 
-  private static async createExternalFood(
-    target: FoodMealTrackingActionTarget,
-    selection: FoodMealTrackingActionSelection,
-    nutrition: FoodMealTrackingActionNutrition
+  /**
+   * Canonical "create a `Food` from an external catalog product" path. Used both by the
+   * `externalProduct` track action and directly by the barcode-scanner modal, so the per-source
+   * override application, nutrition payload, and `FoodService.createFrom*` dispatch live in exactly
+   * one place. Does **not** log — the caller decides whether to log the created food.
+   *
+   * Behavior note: the saved product follows the **refetched** source when "try another source" has
+   * run (`refetchedProductDetails ?? productDetails`), so a product refetched from a different
+   * provider is persisted under that provider rather than the original (zero-macro) shell.
+   */
+  static async createFoodFromExternalProduct(
+    input: CreateFoodFromExternalProductInput
   ): Promise<Food> {
-    const externalProduct = this.resolveExternalProductForSave(target);
+    const externalProduct = this.resolveExternalProductForSave(input);
     if (!externalProduct) {
       throw new Error('Product details not loaded');
     }
 
-    const barcodeForSave =
-      nutrition.editedOverrides?.barcode?.trim() || target.barcode || undefined;
+    const { nutrition, isFavorite } = input;
+    const barcodeForSave = nutrition.editedOverrides?.barcode?.trim() || input.barcode || undefined;
     const productToSave = this.applyEditedOverridesToExternalProduct(
       externalProduct.source,
       externalProduct.product,
@@ -332,7 +365,7 @@ export class FoodMealTrackingActionService {
     if (externalProduct.source === 'musclog') {
       return FoodService.createFromMusclogProduct(
         productToSave,
-        this.buildNutritionPayload(nutrition, selection.isFavorite),
+        this.buildNutritionPayload(nutrition, isFavorite),
         barcodeForSave
       );
     }
@@ -341,88 +374,59 @@ export class FoodMealTrackingActionService {
       return FoodService.createFromUSDAProduct(
         productToSave,
         {
-          ...this.buildNutritionPayload(nutrition, selection.isFavorite),
+          ...this.buildNutritionPayload(nutrition, isFavorite),
           micros: {
             ...this.extractUSDARawMicros(productToSave),
             ...nutrition.effectiveMicrosPer100g,
           },
         },
-        target.matchedPortion
+        input.matchedPortion
       );
     }
 
     return FoodService.createFromV3Product(
       productToSave,
       {
-        ...this.buildNutritionPayload(nutrition, selection.isFavorite),
+        ...this.buildNutritionPayload(nutrition, isFavorite),
         micros: {
           ...this.extractOFFRawNutriments(productToSave),
           ...nutrition.effectiveMicrosPer100g,
         },
         nutriscore:
           this.normalizeGrade(productToSave.nutriscore_grade) ??
-          target.productFromSearch?.nutriscore,
+          input.productFromSearch?.nutriscore,
         ecoscore:
-          this.normalizeGrade(productToSave.ecoscore_grade) ?? target.productFromSearch?.ecoscore,
+          this.normalizeGrade(productToSave.ecoscore_grade) ?? input.productFromSearch?.ecoscore,
         novaGroup:
           typeof productToSave.nova_group === 'number'
             ? productToSave.nova_group
-            : target.productFromSearch?.novaGroup,
-        labels: extractLabelsFromOFFProduct(productToSave) ?? target.productFromSearch?.labels,
+            : input.productFromSearch?.novaGroup,
+        labels: extractLabelsFromOFFProduct(productToSave) ?? input.productFromSearch?.labels,
       },
-      target.matchedPortion
+      input.matchedPortion
     );
   }
 
   private static resolveExternalProductForSave(
-    target: FoodMealTrackingActionTarget
+    context: ExternalProductContext
   ): ExternalProductForSave | null {
-    const effectiveDetails = target.refetchedProductDetails ?? target.productDetails;
+    const effectiveDetails = context.refetchedProductDetails ?? context.productDetails;
 
     if (isSuccessFoodDetailProductState(effectiveDetails)) {
-      const product = effectiveDetails.product;
       return {
-        source: this.sourceFromDetailsProduct(effectiveDetails, product),
-        product,
+        source: resolveExternalFoodSource(effectiveDetails, null),
+        product: effectiveDetails.product,
       };
     }
 
-    if (target.productFromSearch) {
+    if (context.productFromSearch) {
       return {
-        source: this.sourceFromSearchProduct(target.productFromSearch),
-        product: target.productFromSearch,
+        source: resolveExternalFoodSource(null, context.productFromSearch),
+        product: context.productFromSearch,
       };
     }
 
     return null;
-  }
-
-  private static sourceFromDetailsProduct(
-    details: ProductDetailsQueryData | null | undefined,
-    product: any
-  ): ExternalFoodProductSource {
-    const source = (details as { source?: unknown } | null | undefined)?.source;
-    if (source === 'usda' || source === 'musclog' || source === 'openfood') {
-      return source;
-    }
-
-    return this.sourceFromProductShape(product);
-  }
-
-  private static sourceFromSearchProduct(product: any): ExternalFoodProductSource {
-    return inferBarcodeNutritionSource(null, product) ?? this.sourceFromProductShape(product);
-  }
-
-  private static sourceFromProductShape(product: any): ExternalFoodProductSource {
-    if (product?.source === 'usda' || product?.fdcId) {
-      return 'usda';
-    }
-
-    if (product?.source === 'musclog') {
-      return 'musclog';
-    }
-
-    return 'openfood';
   }
 
   // Applies the user's name/barcode/description edits onto the raw external product before saving.

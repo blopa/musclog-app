@@ -47,6 +47,34 @@ export function inferBarcodeNutritionSource(
   return null;
 }
 
+/**
+ * Resolves the concrete external source for a product on the **save** path, where a product must be
+ * written under some source. Unlike {@link inferBarcodeNutritionSource} this never returns null: it
+ * extends the inference with a product-shape fallback (USDA `fdcId`, explicit `source` tags) and
+ * defaults to `'openfood'`. Single source of truth for source detection across the food-details
+ * modals and {@link parseCoreMacrosFromAlternateSource}.
+ */
+export function resolveExternalFoodSource(
+  details: ProductDetailsQueryData | null | undefined,
+  productFromSearch: any
+): ExternalFoodProductSource {
+  const inferred = inferBarcodeNutritionSource(details, productFromSearch);
+  if (inferred) {
+    return inferred;
+  }
+
+  const product = (details as any)?.product ?? productFromSearch;
+  if (product?.source === 'usda' || product?.fdcId) {
+    return 'usda';
+  }
+
+  if (product?.source === 'musclog') {
+    return 'musclog';
+  }
+
+  return 'openfood';
+}
+
 export function getProductBarcodeFromSearchProduct(productFromSearch: unknown): string {
   if (!productFromSearch || typeof productFromSearch !== 'object') {
     return '';
@@ -277,7 +305,7 @@ export function parseCoreMacrosFromAlternateSource(state: ProductDetailsQueryDat
     return null;
   }
 
-  const source = inferBarcodeNutritionSource(state, null) ?? 'openfood';
+  const source = resolveExternalFoodSource(state, null);
   const { calories, protein, carbs, fat, fiber } = parseProductNutritionPer100g(
     source,
     state.product
