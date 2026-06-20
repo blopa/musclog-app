@@ -237,6 +237,13 @@ function parseOFFNutritionPer100g(product: any): ProductNutritionPer100g {
     carbs: toFiniteMacro(availableCarbs ?? 0),
     fiber: toFiniteMacro(fiber),
     offCarbsTotal: carbsTotalRaw,
+    energyReconciliation: {
+      // Raw label energy (not the inferred one) so the net-vs-total check stays non-circular.
+      statedKcalPer100g: num('energy-kcal'),
+      protein: num('proteins'),
+      fat: num('fat'),
+      alcohol: num('alcohol'),
+    },
   });
 
   return {

@@ -438,6 +438,13 @@ export function mapOpenFoodFactsProduct(
           carbs: availableCarbs,
           fiber,
           offCarbsTotal: carbsTotalRaw,
+          energyReconciliation: {
+            // Raw label energy (not the inferred one) so the net-vs-total check stays non-circular.
+            statedKcalPer100g: typeof kcal === 'number' ? kcal : 0,
+            protein: protein ?? 0,
+            fat: fat ?? 0,
+            alcohol: getNutrimentValue(nutriments, 'alcohol'),
+          },
         })
       : undefined;
 
