@@ -133,6 +133,10 @@ const BOOT_MIGRATIONS: BootMigration[] = [
     run: () => TimezoneMigrationService.backfillMissingTimezones(),
   },
   {
+    tag: 'TimezoneMigrationService.repairNullTimezoneNutritionLogs',
+    run: () => TimezoneMigrationService.repairNullTimezoneNutritionLogs(),
+  },
+  {
     tag: 'TimezoneMigrationService.backfillConsumedTimeFromCreatedAt',
     // Use the first-run cutoff so future edits are never re-derived from created_at.
     runOnce: true,

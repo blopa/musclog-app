@@ -2,8 +2,13 @@ import { Model, Q } from '@nozbe/watermelondb';
 
 import { database } from '@/database/database-instance';
 import type NutritionLog from '@/database/models/NutritionLog';
-import { timeOfDayMsInTimezone } from '@/utils/calendarDate';
-import { getCurrentTimezone } from '@/utils/timezone';
+import {
+  calendarDateFromRecordDay,
+  instantForDateTimeInTimezone,
+  timeOfDayMsInTimezone,
+  wallClockDateInTimezone,
+} from '@/utils/calendarDate';
+import { getCurrentTimezone, getTimezoneAt } from '@/utils/timezone';
 
 type TimezoneBackfillable = Model & { timezone?: string; updatedAt: number };
 
@@ -15,6 +20,22 @@ const TIMEZONE_BACKFILL_TABLES = [
   'nutrition_goals',
   'exercise_goals',
 ] as const;
+
+function dateWithCreatedAtTimeOfDay(
+  date: number,
+  createdAt: number,
+  timezone: string | null | undefined
+): number | null {
+  if (timeOfDayMsInTimezone(createdAt, timezone) === 0) {
+    return null;
+  }
+
+  return instantForDateTimeInTimezone(
+    calendarDateFromRecordDay(date, timezone),
+    wallClockDateInTimezone(createdAt, timezone),
+    timezone
+  );
+}
 
 export class TimezoneMigrationService {
   /**
@@ -53,6 +74,48 @@ export class TimezoneMigrationService {
   }
 
   /**
+   * Idempotent shape repair for nutrition logs written before `nutrition_logs.timezone`
+   * existed. Uses the device-local offset at each row's stored date as a best-effort
+   * approximation and, for legacy midnight day keys, restores a consumed time-of-day
+   * from `created_at`.
+   */
+  static async repairNullTimezoneNutritionLogs(): Promise<void> {
+    const logs = await database
+      .get<NutritionLog>('nutrition_logs')
+      .query(Q.or(Q.where('timezone', Q.eq(null)), Q.where('timezone', Q.eq(''))))
+      .fetch();
+
+    if (logs.length === 0) {
+      return;
+    }
+
+    const now = Date.now();
+    const updates = logs.map((log) => {
+      const timezone = getTimezoneAt(log.date);
+      const hasConsumedTime = timeOfDayMsInTimezone(log.date, timezone) !== 0;
+      const newDate = hasConsumedTime
+        ? null
+        : dateWithCreatedAtTimeOfDay(log.date, log.createdAt, timezone);
+
+      return { log, timezone, newDate };
+    });
+
+    await database.write(async () => {
+      await database.batch(
+        ...updates.map(({ log, timezone, newDate }) =>
+          log.prepareUpdate((record) => {
+            record.timezone = timezone;
+            if (newDate !== null) {
+              record.date = newDate;
+            }
+            record.updatedAt = now;
+          })
+        )
+      );
+    });
+  }
+
+  /**
    * One-time backfill for `nutrition_logs.date` gaining a time-of-day component.
    * Legacy rows stored `date` at local midnight (a day key). For those, preserve
    * the user-picked calendar day but stamp it with the time-of-day from
@@ -74,12 +137,12 @@ export class TimezoneMigrationService {
           return null;
         }
 
-        const timeOfDayMs = timeOfDayMsInTimezone(log.createdAt, log.timezone);
-        if (timeOfDayMs === 0) {
+        const newDate = dateWithCreatedAtTimeOfDay(log.date, log.createdAt, log.timezone);
+        if (newDate === null) {
           return null;
         }
 
-        return { log, newDate: log.date + timeOfDayMs };
+        return { log, newDate };
       })
       .filter((u): u is { log: NutritionLog; newDate: number } => u !== null);
 

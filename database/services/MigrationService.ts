@@ -31,7 +31,11 @@ import {
 } from '@/database/models';
 import i18n from '@/lang/lang';
 import { isProduction } from '@/utils/app';
-import { localDayStartFromUtcMs, localDayStartMs } from '@/utils/calendarDate';
+import {
+  consumedDateTimeFromDate,
+  consumedDateTimeOnDay,
+  localDayStartFromUtcMs,
+} from '@/utils/calendarDate';
 import { decryptDatabaseValue } from '@/utils/encryption';
 import { handleError } from '@/utils/handleError';
 import { getCurrentTimezone } from '@/utils/timezone';
@@ -880,9 +884,18 @@ export class MigrationService {
         await database.write(async () => {
           await database.get<NutritionLog>('nutrition_logs').create((newLog) => {
             const createdAt = this.convertTimestamp(oldLog.createdAt);
-            newLog.foodId = newFoodId;
             const rawDate = new Date(this.convertTimestamp(oldLog.date));
-            newLog.date = localDayStartMs(rawDate);
+            const rawDateHasTime =
+              rawDate.getHours() !== 0 ||
+              rawDate.getMinutes() !== 0 ||
+              rawDate.getSeconds() !== 0 ||
+              rawDate.getMilliseconds() !== 0;
+            const consumed = rawDateHasTime
+              ? consumedDateTimeFromDate(rawDate)
+              : consumedDateTimeOnDay(rawDate, new Date(createdAt));
+            newLog.foodId = newFoodId;
+            newLog.date = consumed.timestamp;
+            newLog.timezone = consumed.timezone;
             newLog.type = this.mapMealType(mealType, createdAt);
             newLog.amount = amountToStore;
             newLog.portionId = undefined; // Not present in old schema
@@ -894,7 +907,7 @@ export class MigrationService {
             newLog.loggedFiberRaw = encrypted.loggedFiber;
             newLog.loggedMicrosRaw = encrypted.loggedMicrosJson;
             newLog.createdAt = createdAt;
-            newLog.updatedAt = this.convertTimestamp(oldLog.createdAt);
+            newLog.updatedAt = createdAt;
             newLog.deletedAt = oldLog.deletedAt
               ? this.convertTimestamp(oldLog.deletedAt)
               : undefined;

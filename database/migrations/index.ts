@@ -92,6 +92,8 @@ export const migrations = schemaMigrations({
     // Version 20: Add timezone column to nutrition_logs and workout_logs.
     // Legacy user_metrics.timezone IANA values are converted to offset format by the
     // boot-time backfill UserMetricService.backfillTimezoneOffsets() (DST-aware, can't be SQL).
+    // Legacy nutrition_logs null timezones are repaired by
+    // TimezoneMigrationService.repairNullTimezoneNutritionLogs().
     migrationV20,
     // Version 21: Add timezone column to menstrual_cycles, nutrition_checkins,
     // saved_for_later_groups, nutrition_goals, and exercise_goals.

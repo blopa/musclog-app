@@ -35,7 +35,7 @@ import {
   SettingsService,
   UserService,
 } from '@/database/services';
-import { localDayStartMs } from '@/utils/calendarDate';
+import { consumedDateTimeOnDay, localDayStartMs } from '@/utils/calendarDate';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { calculateWorkoutVolume } from '@/utils/workoutCalculator';
 
@@ -1700,7 +1700,21 @@ async function seedNutritionLogsAndGoal(): Promise<{ created: number }> {
       }
     });
 
-    const daysAgo = (days: number): number => localDayStartMs(subDays(new Date(), days));
+    const daysAgo = (days: number): Date => subDays(new Date(), days);
+    const mealTimeHours: Record<string, number> = {
+      breakfast: 8,
+      lunch: 13,
+      dinner: 19,
+      snack: 16,
+      other: 12,
+    };
+
+    const mealTimeForEntry = (mealType: string, index: number): Date => {
+      const time = new Date();
+      const baseHour = mealTimeHours[mealType] ?? 12;
+      time.setHours(baseHour, (index % 2) * 30, 0, 0);
+      return time;
+    };
 
     // Each day rotates through different meal combinations
     const dailyPlans: { name: string; type: string; amount: number }[][] = [
@@ -1767,11 +1781,13 @@ async function seedNutritionLogsAndGoal(): Promise<{ created: number }> {
       for (let i = 0; i < 14; i++) {
         const date = daysAgo(i);
         const plan = dailyPlans[i % dailyPlans.length];
-        for (const entry of plan) {
+        for (const [entryIndex, entry] of plan.entries()) {
           const f = devFoods.get(entry.name);
           if (!f) {
             continue;
           }
+
+          const consumed = consumedDateTimeOnDay(date, mealTimeForEntry(entry.type, entryIndex));
 
           const encrypted = await encryptNutritionLogSnapshot({
             loggedFoodName: f.name ?? 'Unknown',
@@ -1785,7 +1801,8 @@ async function seedNutritionLogsAndGoal(): Promise<{ created: number }> {
 
           await database.get<any>('nutrition_logs').create((log: any) => {
             log.foodId = f.id;
-            log.date = date;
+            log.date = consumed.timestamp;
+            log.timezone = consumed.timezone;
             log.type = entry.type;
             log.amount = entry.amount;
             log.portionId = undefined;
