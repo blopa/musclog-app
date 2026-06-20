@@ -104,13 +104,10 @@ def render_chart_base(
 
     ax = fig.add_subplot(111)
     ax.set_facecolor("#0d1117")
-    ax.tick_params(colors="#c9d1d9", labelsize=9)
+    ax.tick_params(left=False, bottom=False, labelleft=False, labelbottom=False)
     for spine in ax.spines.values():
-        spine.set_edgecolor("#374151")
-    ax.grid(True, color="#1f2937", linewidth=0.5)
-    ax.set_xlabel("Time (s)", color="#c9d1d9", fontsize=9)
-    ax.set_ylabel(config["ylabel"], color="#c9d1d9", fontsize=9)
-    ax.set_title(config["title"], color="#d1d5db", fontsize=10, pad=4)
+        spine.set_visible(False)
+    ax.grid(False)
 
     t_arr  = np.asarray(t_rel_sec)
     t_min  = float(t_arr[0])
@@ -119,24 +116,11 @@ def render_chart_base(
     for name, color in config["channels"]:
         if name in channels:
             ax.plot(t_arr, channels[name],
-                    color=_hex_to_mpl(color), linewidth=0.9, label=name)
-
-    # Rep marker bands (matching the blue from the HTML viewer)
-    for m in rep_markers:
-        x0 = (m["startMs"] - t0) / 1000
-        x1 = (m["endMs"]   - t0) / 1000
-        ax.axvspan(x0, x1, alpha=0.2, color="#2563eb", zorder=0)
+                    color=_hex_to_mpl(color), linewidth=0.9)
 
     ax.set_xlim(t_min, t_max)
 
-    ax.legend(
-        loc="lower center", bbox_to_anchor=(0.5, -0.32),
-        ncol=len(config["channels"]), fontsize=8,
-        facecolor="#1a1f2b", edgecolor="#374151",
-        labelcolor="#c9d1d9", framealpha=0.8,
-    )
-
-    fig.tight_layout(rect=[0, 0.1, 1, 1])
+    fig.tight_layout(rect=[0, 0, 1, 1], pad=0.2)
     fig.canvas.draw()
 
     bbox = ax.get_window_extent(renderer=fig.canvas.get_renderer())
