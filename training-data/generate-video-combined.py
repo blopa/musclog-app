@@ -1,21 +1,22 @@
 #!/usr/bin/env python3
 """
-Combine a recording's video and IMU charts into a single side-by-side video.
+Combine a recording's video and IMU charts into a single video.
 
 For each subfolder in recordings/:
   - Reads the .json sensor data and .mp4 video file.
   - Pre-renders two IMU charts (orientation + acceleration) with rep marker bands.
   - For each video frame, draws an orange cursor on the charts at the matching time.
-  - Composites [orientation chart / video / acceleration chart] stacked vertically.
+  - Overlays charts semi-transparently on the top and bottom of the video frame.
+  - Output size matches the original video dimensions (no extra height added).
   - Writes recordings/<folder>/combined.mp4
 
-Layout:
+Layout (within the original video height):
     ┌────────────────┐
-    │  Orientation   │
-    ├────────────────┤
-    │     video      │
-    ├────────────────┤
-    │  Acceleration  │
+    │  Orientation   │  ← overlaid on top third
+    │                │
+    │ (video frame)  │
+    │                │
+    │  Acceleration  │  ← overlaid on bottom third
     └────────────────┘
 
 Dependencies (add to requirements.txt):
@@ -268,11 +269,12 @@ def process_folder(folder: Path) -> None:
     src_h    = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     n_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-    # Output dimensions — everything is stacked vertically at a common width
-    # (CHART_W). The video is scaled to that width, preserving aspect ratio.
-    out_w    = CHART_W
-    video_h  = int(round(src_h * (CHART_W / src_w))) if src_w else src_h
-    out_h    = CHART_H * len(CHART_CONFIGS) + video_h
+    # Output dimensions — video scaled to CHART_W, charts overlaid within that height.
+    out_w           = CHART_W
+    video_h         = int(round(src_h * (CHART_W / src_w))) if src_w else src_h
+    out_h           = video_h
+    chart_overlay_h = video_h // 3   # each chart occupies ~1/3 of the frame height
+    chart_alpha     = 0.75           # chart opacity (0=invisible, 1=opaque)
 
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
     writer = cv2.VideoWriter(str(out_path), fourcc, src_fps, (out_w, out_h))
@@ -298,10 +300,27 @@ def process_folder(folder: Path) -> None:
             for base, (bbox, t_min, t_max) in zip(chart_bases, chart_metas)
         ]
 
-        # Scale the video frame to the common width, then stack:
-        #   orientation chart / video / acceleration chart
+        # Scale the video frame to the common width
         video_row = cv2.resize(frame, (out_w, video_h))
-        writer.write(np.vstack([chart_panels[0], video_row, chart_panels[1]]))
+
+        # Resize chart panels to overlay height
+        top_chart    = cv2.resize(chart_panels[0], (out_w, chart_overlay_h))
+        bottom_chart = cv2.resize(chart_panels[1], (out_w, chart_overlay_h))
+
+        # Blend orientation chart onto top of the video frame
+        video_row[:chart_overlay_h] = cv2.addWeighted(
+            top_chart, chart_alpha,
+            video_row[:chart_overlay_h], 1.0 - chart_alpha,
+            0,
+        )
+        # Blend acceleration chart onto bottom of the video frame
+        video_row[video_h - chart_overlay_h:] = cv2.addWeighted(
+            bottom_chart, chart_alpha,
+            video_row[video_h - chart_overlay_h:], 1.0 - chart_alpha,
+            0,
+        )
+
+        writer.write(video_row)
         frame_idx += 1
 
         if frame_idx % max(1, n_frames // 20) == 0:
