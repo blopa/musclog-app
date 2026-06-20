@@ -85,11 +85,11 @@ replacing files with the same name while leaving local-only files untouched.
 
 ## Outputs
 
-| File | Description |
-| --- | --- |
-| `output/features.csv` | Generated segment feature matrix |
-| `output/model.pkl` | Trained Python model used by `predict.py` |
-| `output/model.js` | JavaScript classifier for app integration |
-| `output/summary.txt` | Evaluation report from the last training run |
-| `output/sus_data.txt` | Suspicious/noisy recording report |
-| `recordings/<uuid>/combined.mp4` | Optional video plus IMU chart overlay |
+| File                             | Description                                  |
+| -------------------------------- | -------------------------------------------- |
+| `output/features.csv`            | Generated segment feature matrix             |
+| `output/model.pkl`               | Trained Python model used by `predict.py`    |
+| `output/model.js`                | JavaScript classifier for app integration    |
+| `output/summary.txt`             | Evaluation report from the last training run |
+| `output/sus_data.txt`            | Suspicious/noisy recording report            |
+| `recordings/<uuid>/combined.mp4` | Optional video plus IMU chart overlay        |
