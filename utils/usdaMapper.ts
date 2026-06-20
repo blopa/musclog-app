@@ -3,6 +3,7 @@ import { UnifiedFoodResult } from '@/hooks/useUnifiedFoodSearch';
 import i18n from '@/lang/lang';
 import { components } from '@/types/usda-types';
 
+import { totalCarbsForFoodSource } from './carbsConvention';
 import { resolveRoundedPer100gCaloriesForDisplay } from './inferCaloriesFromMacros';
 import { gramsToDisplay } from './unitConversion';
 import { getMassUnitI18nKey } from './units';
@@ -30,6 +31,7 @@ export function mapUSDAFoodToUnified(food: USDAFood, units: Units = 'metric'): U
 
   const rawCalories = mapUSDANutritient(nutrients, '1008') ?? mapUSDANutritient(nutrients, '208');
   const protein = mapUSDANutritient(nutrients, '1003') ?? mapUSDANutritient(nutrients, '203');
+  // USDA nutrient 1005 "Carbohydrate, by difference" already includes fiber (= canonical total).
   const carbs = mapUSDANutritient(nutrients, '1005') ?? mapUSDANutritient(nutrients, '205');
   const fat = mapUSDANutritient(nutrients, '1004') ?? mapUSDANutritient(nutrients, '204');
   const fiber = mapUSDANutritient(nutrients, '1079') ?? mapUSDANutritient(nutrients, '291');
@@ -82,7 +84,10 @@ export function mapUSDAFoodToUnified(food: USDAFood, units: Units = 'metric'): U
     serving_size: servingSize,
     calories: calories !== undefined ? Math.max(0, calories) : undefined,
     protein: protein !== undefined ? Math.max(0, protein) : undefined,
-    carbs: carbs !== undefined ? Math.max(0, carbs) : undefined,
+    carbs:
+      carbs !== undefined
+        ? totalCarbsForFoodSource('usda', { carbs, fiber: fiber ?? 0 })
+        : undefined,
     fat: fat !== undefined ? Math.max(0, fat) : undefined,
     fiber: fiber !== undefined ? Math.max(0, fiber) : undefined,
     source: 'usda',

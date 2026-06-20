@@ -64,7 +64,8 @@ describe('externalFoodProduct nutrition parsing', () => {
       expect(result).toMatchObject({
         calories: 180,
         protein: 9,
-        carbs: 22,
+        // Musclog = EU net carbs (22) normalized to total = 22 + 3 (fiber) = 25.
+        carbs: 25,
         fat: 6,
         fiber: 3,
         sugar: 11,
@@ -153,10 +154,12 @@ describe('externalFoodProduct nutrition parsing', () => {
         },
       };
 
+      // OFF reports net carbs (EU convention) with no `carbohydrates-total`, so carbs are
+      // normalized to canonical total = 18 (net) + 1 (fiber) = 19. See utils/carbsConvention.ts.
       expect(parseCoreMacrosFromAlternateSource(state as any)).toEqual({
         calories: 150,
         protein: 7,
-        carbs: 18,
+        carbs: 19,
         fat: 4,
         fiber: 1,
       });

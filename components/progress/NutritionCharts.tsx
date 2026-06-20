@@ -16,6 +16,7 @@ import { DailyNutrition, MetricPoint } from '@/database/services/ProgressService
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { formatUtcNormalizedDayIntl } from '@/utils/calendarDate';
+import { digestibleCarbs } from '@/utils/carbsConvention';
 import { getXAxisLabels } from '@/utils/chartUtils';
 
 import { ProgressChartSection } from './ProgressChartSection';
@@ -182,7 +183,7 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
               x: d.date,
               segments: [
                 d.protein * CALORIES_FOR_PROTEIN,
-                Math.max(0, d.carbs - d.fiber) * CALORIES_FOR_CARBS,
+                digestibleCarbs(d.carbs, d.fiber) * CALORIES_FOR_CARBS,
                 d.fat * CALORIES_FOR_FAT,
                 d.fiber * CALORIES_FOR_FIBER,
               ],
@@ -230,7 +231,7 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
               x: i,
               segments: [
                 d.protein * CALORIES_FOR_PROTEIN,
-                Math.max(0, d.carbs - d.fiber) * CALORIES_FOR_CARBS,
+                digestibleCarbs(d.carbs, d.fiber) * CALORIES_FOR_CARBS,
                 d.fat * CALORIES_FOR_FAT,
                 d.fiber * CALORIES_FOR_FIBER,
               ],

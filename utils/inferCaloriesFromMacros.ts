@@ -6,6 +6,7 @@ import {
   CALORIES_FOR_PROTEIN,
 } from '@/constants/nutrition';
 
+import { digestibleCarbs } from './carbsConvention';
 import { roundToDecimalPlaces } from './roundDecimal';
 
 /** Coerce API / DB values that may be strings (e.g. "0") into finite numbers for macro comparisons. */
@@ -45,11 +46,11 @@ export function inferCaloriesFromMacrosPer100g(
   const f = Math.max(0, toFiniteMacro(fat));
   const fib = Math.max(0, toFiniteMacro(fiber));
   const alc = Math.max(0, toFiniteMacro(alcohol));
-  const digestibleCarbs = Math.max(0, c - fib);
+  const netCarbs = digestibleCarbs(c, fib);
 
   return (
     CALORIES_FOR_PROTEIN * p +
-    CALORIES_FOR_CARBS * digestibleCarbs +
+    CALORIES_FOR_CARBS * netCarbs +
     CALORIES_FOR_FAT * f +
     CALORIES_FOR_FIBER * fib +
     CALORIES_FOR_ALCOHOL * alc

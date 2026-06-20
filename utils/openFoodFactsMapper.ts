@@ -4,6 +4,7 @@ import { UnifiedFoodResult } from '@/hooks/useUnifiedFoodSearch';
 import i18n from '@/lang/lang';
 import { ProductV3, SearchResultProduct, SuccessFoodProductState } from '@/types/openFoodFacts';
 
+import { totalCarbsForFoodSource } from './carbsConvention';
 import { resolveRoundedPer100gCaloriesForDisplay } from './inferCaloriesFromMacros';
 import { getProductName as _getProductName } from './productName';
 import { gramsToDisplay } from './unitConversion';
@@ -411,25 +412,34 @@ export function mapOpenFoodFactsProduct(
   const rawFat = getNutrimentValue(nutriments, 'fat');
 
   const protein = rawProtein !== undefined ? Math.max(0, rawProtein) : undefined;
-  const carbs = rawCarbs !== undefined ? Math.max(0, rawCarbs) : undefined;
+  // OFF's `carbohydrates` follows the package convention (EU net vs US total); kept raw here for
+  // fiber derivation, then normalized to canonical total carbs below.
+  const availableCarbs = rawCarbs !== undefined ? Math.max(0, rawCarbs) : undefined;
   const fat = rawFat !== undefined ? Math.max(0, rawFat) : undefined;
 
   // Improved fiber extraction with fallback calculation and negative value protection
   const directFiber = getNutrimentValue(nutriments, 'fiber');
+  const carbsTotalRaw = getNutrimentValue(nutriments, 'carbohydrates-total');
   let fiber = 0;
 
   if (directFiber !== undefined) {
     // Use direct fiber value when available and clamp to non-negative
     fiber = Math.max(0, directFiber);
-  } else {
-    // Fallback: calculate from carbohydrates-total - carbohydrates
-    // Only use this if result is positive (some OFF products have inconsistent data)
-    const carbsTotal = getNutrimentValue(nutriments, 'carbohydrates-total');
-    if (carbsTotal !== undefined && carbs !== undefined) {
-      const calculatedFiber = carbsTotal - carbs;
-      fiber = Math.max(0, calculatedFiber); // Clamp to minimum 0 to prevent negative values
-    }
+  } else if (carbsTotalRaw !== undefined && availableCarbs !== undefined) {
+    // Fallback: fiber = total − net carbohydrates. Only use this if positive (some OFF products
+    // have inconsistent data).
+    fiber = Math.max(0, carbsTotalRaw - availableCarbs);
   }
+
+  // Normalize OFF's mixed carbs convention to the app's canonical total (fiber-inclusive).
+  const carbs =
+    availableCarbs !== undefined
+      ? totalCarbsForFoodSource('openfood', {
+          carbs: availableCarbs,
+          fiber,
+          offCarbsTotal: carbsTotalRaw,
+        })
+      : undefined;
 
   const roundedCalories = resolveRoundedPer100gCaloriesForDisplay({
     calories: kcal,

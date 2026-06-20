@@ -1,6 +1,7 @@
 import type { MicrosData } from '@/database/models';
 import { isSuccessFoodDetailProductState } from '@/types/guards/openFoodFacts';
 import type { ProductState } from '@/types/openFoodFacts';
+import { totalCarbsForFoodSource } from '@/utils/carbsConvention';
 import { toFiniteMacro } from '@/utils/inferCaloriesFromMacros';
 import { getMusclogNutritionPer100g } from '@/utils/musclogProduct';
 import {
@@ -186,12 +187,16 @@ function parseUSDANutritionPer100g(product: any): ProductNutritionPer100g {
   const mineralGrams = (...numbers: string[]) =>
     toFiniteMacro((pick(...numbers) / 1000) * normFactor);
 
+  // USDA nutrient 1005 already includes fiber (= canonical total carbs).
+  const carbs = macro('1005', '205');
+  const fiber = macro('1079', '291');
+
   return {
     calories: macro('1008', '208', 'ENERC_KCAL'),
     protein: macro('1003', '203'),
-    carbs: macro('1005', '205'),
+    carbs: totalCarbsForFoodSource('usda', { carbs, fiber }),
     fat: macro('1004', '204'),
-    fiber: macro('1079', '291'),
+    fiber,
     sugar: macro('2000', '269', 'sugars'),
     saturatedFat: macro('1258', '606'),
     sodium: mineralGrams('1093', '307'),
@@ -211,22 +216,33 @@ function parseOFFNutritionPer100g(product: any): ProductNutritionPer100g {
   const num = (key: string) => toFiniteMacro((getNutrimentValue(nutrients, key) ?? 0) as number);
 
   const directFiber = getNutrimentValue(nutrients, 'fiber');
+  const carbsTotalRaw = getNutrimentValue(nutrients, 'carbohydrates-total');
+  const availableCarbs = getNutrimentValue(nutrients, 'carbohydrates');
   let fiber: number;
   if (directFiber !== undefined && directFiber >= 0) {
     fiber = directFiber;
   } else {
-    const carbsTotal = getNutrimentValue(nutrients, 'carbohydrates-total');
-    const carbs = getNutrimentValue(nutrients, 'carbohydrates');
-    fiber = carbsTotal !== undefined && carbs !== undefined ? Math.max(0, carbsTotal - carbs) : 0;
+    // Fallback: fiber = total − net carbohydrates (OFF's `carbohydrates` is the net value here).
+    fiber =
+      carbsTotalRaw !== undefined && availableCarbs !== undefined
+        ? Math.max(0, carbsTotalRaw - availableCarbs)
+        : 0;
   }
 
   const sodium =
     getNutrimentValue(nutrients, 'sodium') ?? getNutrimentValue(nutrients, 'salt') ?? 0;
 
+  // Normalize OFF's mixed carbs convention to the app's canonical total (fiber-inclusive).
+  const carbs = totalCarbsForFoodSource('openfood', {
+    carbs: toFiniteMacro(availableCarbs ?? 0),
+    fiber: toFiniteMacro(fiber),
+    offCarbsTotal: carbsTotalRaw,
+  });
+
   return {
     calories: num('energy-kcal'),
     protein: num('proteins'),
-    carbs: num('carbohydrates'),
+    carbs,
     fat: num('fat'),
     fiber: toFiniteMacro(fiber),
     sugar: num('sugars'),
