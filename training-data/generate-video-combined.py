@@ -6,15 +6,17 @@ For each subfolder in recordings/:
   - Reads the .json sensor data and .mp4 video file.
   - Pre-renders two IMU charts (orientation + acceleration) with rep marker bands.
   - For each video frame, draws an orange cursor on the charts at the matching time.
-  - Composites [video | orientation chart / acceleration chart] side by side.
+  - Composites [orientation chart / video / acceleration chart] stacked vertically.
   - Writes recordings/<folder>/combined.mp4
 
 Layout:
-    ┌──────────────┬────────────────┐
-    │              │  Orientation   │
-    │    video     ├────────────────┤
-    │              │  Acceleration  │
-    └──────────────┴────────────────┘
+    ┌────────────────┐
+    │  Orientation   │
+    ├────────────────┤
+    │     video      │
+    ├────────────────┤
+    │  Acceleration  │
+    └────────────────┘
 
 Dependencies (add to requirements.txt):
     opencv-python
@@ -177,17 +179,6 @@ def draw_cursor(
     return img
 
 
-def pad_height(img: np.ndarray, target_h: int) -> np.ndarray:
-    """Black-pad (or crop) image to exactly target_h rows."""
-    h = img.shape[0]
-    if h == target_h:
-        return img
-    if h > target_h:
-        return img[:target_h]
-    pad = np.zeros((target_h - h, img.shape[1], 3), dtype=np.uint8)
-    return np.vstack([img, pad])
-
-
 # ---------------------------------------------------------------------------
 # Per-folder processing
 # ---------------------------------------------------------------------------
@@ -293,10 +284,11 @@ def process_folder(folder: Path) -> None:
     src_h    = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     n_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-    # Output dimensions
-    right_h = CHART_H * len(CHART_CONFIGS)
-    out_w   = src_w + CHART_W
-    out_h   = max(src_h, right_h)
+    # Output dimensions — everything is stacked vertically at a common width
+    # (CHART_W). The video is scaled to that width, preserving aspect ratio.
+    out_w    = CHART_W
+    video_h  = int(round(src_h * (CHART_W / src_w))) if src_w else src_h
+    out_h    = CHART_H * len(CHART_CONFIGS) + video_h
 
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
     writer = cv2.VideoWriter(str(out_path), fourcc, src_fps, (out_w, out_h))
@@ -316,17 +308,16 @@ def process_folder(folder: Path) -> None:
 
         t_sec = frame_idx / src_fps
 
-        # Draw cursor on each chart and stack vertically into the right panel
+        # Draw cursor on each chart: CHART_CONFIGS = [orientation, acceleration]
         chart_panels = [
             draw_cursor(base, t_sec, bbox, t_min, t_max)
             for base, (bbox, t_min, t_max) in zip(chart_bases, chart_metas)
         ]
-        right = np.vstack(chart_panels)
 
-        video_col = pad_height(frame, out_h)
-        right_col = pad_height(right, out_h)
-
-        writer.write(np.hstack([video_col, right_col]))
+        # Scale the video frame to the common width, then stack:
+        #   orientation chart / video / acceleration chart
+        video_row = cv2.resize(frame, (out_w, video_h))
+        writer.write(np.vstack([chart_panels[0], video_row, chart_panels[1]]))
         frame_idx += 1
 
         if frame_idx % max(1, n_frames // 20) == 0:
