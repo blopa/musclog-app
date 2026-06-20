@@ -2229,7 +2229,7 @@ export class MigrationService {
     // Update all references and delete duplicates
     let totalRemoved = 0;
     for (const [oldFoodId, newFoodId] of foodIdMap) {
-      await database.write(async () => {
+      await database.write(async (writer) => {
         // Update nutrition_logs
         const nutritionLogs = await database
           .get<NutritionLog>('nutrition_logs')
@@ -2266,9 +2266,10 @@ export class MigrationService {
           });
         }
 
-        // Delete the duplicate food
+        // Delete the duplicate food. `Food.markAsDeleted` is a @writer; call it via
+        // callWriter so it joins this transaction instead of nesting a new one.
         const foodToDelete = await database.get<Food>('foods').find(oldFoodId);
-        await foodToDelete.markAsDeleted();
+        await writer.callWriter(() => foodToDelete.markAsDeleted());
         totalRemoved++;
       });
     }

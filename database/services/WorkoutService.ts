@@ -798,13 +798,15 @@ export class WorkoutService {
 
       // Perform direct writes so we can edit sets even if the workout is marked completed.
       // This intentionally bypasses WorkoutLog.updateSet which prevents edits on completed workouts.
-      await database.write(async () => {
+      await database.write(async (writer) => {
         // Delete removed sets
         if (deletedSetIds && deletedSetIds.length > 0) {
           for (const deletedId of deletedSetIds) {
             try {
               const setToDelete = await logSetsCollection.find(deletedId);
-              await setToDelete.markAsDeleted();
+              // `WorkoutLogSet.markAsDeleted` is a @writer; call it via callWriter
+              // so it joins this transaction instead of nesting a new one.
+              await writer.callWriter(() => setToDelete.markAsDeleted());
             } catch (err) {
               console.warn(`Failed to delete set ${deletedId}:`, err);
               handleError(err, 'WorkoutService.updateWorkoutLogExercises.deleteSet');

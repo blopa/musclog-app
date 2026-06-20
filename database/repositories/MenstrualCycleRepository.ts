@@ -54,9 +54,11 @@ export class MenstrualCycleRepository {
   static async deactivateAll(): Promise<void> {
     const activeCycles = await this.getActive().fetch();
 
-    await database.write(async () => {
+    await database.write(async (writer) => {
       for (const cycle of activeCycles) {
-        await cycle.updateCycle({ isActive: false });
+        // `MenstrualCycle.updateCycle` is a @writer; call it via callWriter so it
+        // joins this transaction instead of nesting a new one (which would stall).
+        await writer.callWriter(() => cycle.updateCycle({ isActive: false }));
       }
     });
   }

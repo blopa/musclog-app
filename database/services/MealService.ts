@@ -297,17 +297,17 @@ export class MealService {
    * Update meal food amount
    */
   static async updateMealFoodAmount(mealFoodId: string, amount: number): Promise<MealFood> {
-    return await database.write(async () => {
-      const mealFood = await database.get<MealFood>('meal_foods').find(mealFoodId);
+    // `MealFood.updateAmount` is a @writer (opens its own transaction); calling it
+    // inside database.write() would nest writers and stall the queue.
+    const mealFood = await database.get<MealFood>('meal_foods').find(mealFoodId);
 
-      if (mealFood.deletedAt) {
-        throw new Error('Cannot update deleted meal food');
-      }
+    if (mealFood.deletedAt) {
+      throw new Error('Cannot update deleted meal food');
+    }
 
-      await mealFood.updateAmount(amount);
+    await mealFood.updateAmount(amount);
 
-      return mealFood;
-    });
+    return mealFood;
   }
 
   /**
@@ -330,11 +330,11 @@ export class MealService {
    * Toggle meal favorite status
    */
   static async toggleMealFavorite(mealId: string): Promise<Meal> {
-    return await database.write(async () => {
-      const meal = await database.get<Meal>('meals').find(mealId);
-      await meal.toggleFavorite();
-      return meal;
-    });
+    // `Meal.toggleFavorite` is a @writer (opens its own transaction); calling it
+    // inside database.write() would nest writers and stall the queue.
+    const meal = await database.get<Meal>('meals').find(mealId);
+    await meal.toggleFavorite();
+    return meal;
   }
 
   /**
