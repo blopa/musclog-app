@@ -32,16 +32,12 @@ import json
 import sys
 from pathlib import Path
 
-import numpy as np
-
 SCRIPT_DIR = Path(__file__).parent
 RECORDINGS_DIR = SCRIPT_DIR / "recordings"
 
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from ble_dead_reckoning import compute_position  # noqa: E402
-
-MAX_POINTS = 4000  # downsample chart data for reasonable HTML file size
+from video_recording_data import RecordingPrepError, prepare_video_recording  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # HTML template — uses __PLACEHOLDER__ substitution to avoid f-string escaping
@@ -455,147 +451,45 @@ INDEX_TEMPLATE = """\
 """
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-def _meta_str(data: dict) -> str:
-    parts = []
-    if data.get("exerciseName"):
-        parts.append(data["exerciseName"])
-    if data.get("muscleGroup"):
-        parts.append(f'muscle: {data["muscleGroup"]}')
-    if data.get("equipmentType"):
-        parts.append(f'equip: {data["equipmentType"]}')
-    if data.get("mechanicType"):
-        parts.append(f'mechanic: {data["mechanicType"]}')
-    if data.get("setNumber"):
-        parts.append(f'set {data["setNumber"]}')
-    reps = data.get("reps")
-    if reps is not None:
-        parts.append(f'{reps} reps expected')
-    return "  ·  ".join(parts) if parts else "no metadata"
-
-
-def find_pair(folder: Path):
-    """Return (json_path, mp4_path) from a recording subfolder, or None on error."""
-    json_files = list(folder.glob("*.json"))
-    mp4_files  = list(folder.glob("*.mp4"))
-
-    if not json_files:
-        print(f"  SKIP (no .json): {folder.name}")
-        return None
-    if not mp4_files:
-        print(f"  SKIP (no .mp4): {folder.name}")
-        return None
-    if len(json_files) > 1:
-        print(f"  WARN (multiple .json, using first): {folder.name}")
-    if len(mp4_files) > 1:
-        print(f"  WARN (multiple .mp4, using first): {folder.name}")
-
-    return json_files[0], mp4_files[0]
-
-
 def generate_html(folder: Path) -> dict:
-    pair = find_pair(folder)
-    if pair is None:
-        return {"name": folder.name, "status": "missing_files", "n_reps": 0, "n_markers": 0}
-
-    json_path, mp4_path = pair
-
-    with open(json_path) as f:
-        data = json.load(f)
-
-    samples  = data.get("samples", [])
-    n_reps   = int(data.get("reps", 0))
-
-    if len(samples) < 20:
-        print(f"  SKIP (too short — {len(samples)} samples): {folder.name}")
-        return {"name": folder.name, "status": "too_short", "n_reps": n_reps, "n_markers": 0}
-
-    # Sort by timestamp — BLE batches occasionally arrive slightly out of order,
-    # so without sorting Plotly would draw small visual zig-zags between adjacent
-    # samples. Display-only sort; values themselves are untouched.
-    samples_sorted = sorted(samples, key=lambda s: s["timestamp"])
-
-    existing_markers = data.get("repMarkers", [])
-
-    # Run the full dead-reckoning pipeline on every sample (need full sample rate
-    # for accurate integration), then downsample the result for the chart.
-    dr = compute_position(samples_sorted)
-    timestamps_full = dr["timestamps_ms"]
-    position_full   = dr["position_m"]   # (N, 3)
-
-    if len(samples_sorted) > MAX_POINTS:
-        idx           = np.round(np.linspace(0, len(samples_sorted) - 1, MAX_POINTS)).astype(int)
-        samples_keep  = [samples_sorted[i] for i in idx]
-        timestamps    = timestamps_full[idx]
-        position_keep = position_full[idx]
-    else:
-        samples_keep  = samples_sorted
-        timestamps    = timestamps_full
-        position_keep = position_full
-
-    # Channels for the chart: dead-reckoned position + all raw sensor axes.
-    channels = {
-        "pos.x (m)": [round(float(v), 6) for v in position_keep[:, 0]],
-        "pos.y (m)": [round(float(v), 6) for v in position_keep[:, 1]],
-        "pos.z (m)": [round(float(v), 6) for v in position_keep[:, 2]],
-    }
-    for kind in ("accel", "gyro", "angle"):
-        for axis in ("x", "y", "z"):
-            channels[f"{kind}.{axis}"] = [
-                round(float(s[kind][axis]), 6) for s in samples_keep
-            ]
-
-    # Drift-free acceleration magnitude (g) — the summary trace for chart B.
-    channels["accel.|a|"] = [
-        round(float(np.linalg.norm([s["accel"]["x"], s["accel"]["y"], s["accel"]["z"]])), 6)
-        for s in samples_keep
-    ]
-
-    ts_list       = [round(float(t), 1) for t in timestamps]
-    data_duration = round((timestamps[-1] - timestamps[0]) / 1000.0, 3)
-
-    # Wall-clock ms of when handleStart fired on the phone — used as chart t=0
-    # so the chart aligns with the video. Falls back to first sample timestamp
-    # if the field is missing (older recordings).
-    started_at_str = data.get("startedAt")
-    if started_at_str:
-        from datetime import datetime
-        started_at_ms = int(
-            datetime.fromisoformat(started_at_str.replace("Z", "+00:00")).timestamp() * 1000
-        )
-    else:
-        started_at_ms = int(timestamps[0])
-
-    title = json_path.name
-    meta  = _meta_str(data)
+    try:
+        recording = prepare_video_recording(folder)
+    except RecordingPrepError as err:
+        print(err.message)
+        return {
+            "name": folder.name,
+            "status": err.status,
+            "n_reps": err.n_reps,
+            "n_markers": err.n_markers,
+        }
 
     html = TEMPLATE
-    html = html.replace("__TITLE__",            title)
-    html = html.replace("__META__",             meta)
-    html = html.replace("__VIDEO_SRC__",        mp4_path.name)
-    html = html.replace("__EXPECTED_REPS__",    str(n_reps))
-    html = html.replace("__TIMESTAMPS__",       json.dumps(ts_list))
-    html = html.replace("__CHANNELS__",         json.dumps(channels))
-    html = html.replace("__FILENAME__",         json.dumps(json_path.name))
-    html = html.replace("__RAW_DATA__",         json.dumps(data))
-    html = html.replace("__EXISTING_MARKERS__", json.dumps(existing_markers))
-    html = html.replace("__DATA_DURATION_S__",  str(data_duration))
-    html = html.replace("__STARTED_AT_MS__",    str(started_at_ms))
+    html = html.replace("__TITLE__",            recording.json_path.name)
+    html = html.replace("__META__",             recording.meta)
+    html = html.replace("__VIDEO_SRC__",        recording.mp4_path.name)
+    html = html.replace("__EXPECTED_REPS__",    str(recording.n_reps))
+    html = html.replace("__TIMESTAMPS__",       json.dumps(recording.timestamps_list))
+    html = html.replace("__CHANNELS__",         json.dumps(recording.channels))
+    html = html.replace("__FILENAME__",         json.dumps(recording.json_path.name))
+    html = html.replace("__RAW_DATA__",         json.dumps(recording.data))
+    html = html.replace("__EXISTING_MARKERS__", json.dumps(recording.rep_markers))
+    html = html.replace("__DATA_DURATION_S__",  str(recording.data_duration_s))
+    html = html.replace("__STARTED_AT_MS__",    str(recording.started_at_ms))
 
     out_path = folder / "index.html"
     out_path.write_text(html, encoding="utf-8")
 
-    print(f"  {folder.name}: {n_reps} reps expected, {len(existing_markers)} existing markers → {out_path}")
+    print(
+        f"  {folder.name}: {recording.n_reps} reps expected, "
+        f"{len(recording.rep_markers)} existing markers → {out_path}"
+    )
 
     return {
         "name":      folder.name,
         "status":    "ok",
-        "n_reps":    n_reps,
-        "n_markers": len(existing_markers),
-        "meta":      meta,
+        "n_reps":    recording.n_reps,
+        "n_markers": len(recording.rep_markers),
+        "meta":      recording.meta,
     }
 
 

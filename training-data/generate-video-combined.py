@@ -30,25 +30,25 @@ Usage:
 
 import io
 import sys
-import json
+from pathlib import Path
+
 import numpy as np
 import cv2
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from pathlib import Path
-from datetime import datetime
 
 SCRIPT_DIR     = Path(__file__).parent
 RECORDINGS_DIR = SCRIPT_DIR / "recordings"
 
 sys.path.insert(0, str(SCRIPT_DIR))
-from ble_dead_reckoning import compute_position  # noqa: E402
 
-MAX_POINTS = 4000
+from video_recording_data import RecordingPrepError, prepare_video_recording  # noqa: E402
+
 DPI        = 100
 CHART_W    = 640   # output pixels per chart (width)
 CHART_H    = 360   # output pixels per chart (height)
+OUTPUT_VIDEO_NAME = "combined.mp4"
 
 # Colour palette mirrors the HTML/Plotly charts
 CHART_CONFIGS = [
@@ -114,10 +114,29 @@ def render_chart_base(
     t_min  = float(t_arr[0])
     t_max  = float(t_arr[-1])
 
+    for marker in rep_markers:
+        try:
+            start_sec = (float(marker["startMs"]) - t0) / 1000
+            end_sec = (float(marker["endMs"]) - t0) / 1000
+        except (KeyError, TypeError, ValueError):
+            continue
+        if end_sec < start_sec:
+            start_sec, end_sec = end_sec, start_sec
+        if end_sec < t_min or start_sec > t_max:
+            continue
+        ax.axvspan(
+            max(start_sec, t_min),
+            min(end_sec, t_max),
+            color="#2563eb",
+            alpha=0.20,
+            linewidth=0,
+            zorder=1,
+        )
+
     for name, color in config["channels"]:
         if name in channels:
             ax.plot(t_arr, channels[name],
-                    color=_hex_to_mpl(color), linewidth=0.9)
+                    color=_hex_to_mpl(color), linewidth=0.9, zorder=2)
 
     ax.set_xlim(t_min, t_max)
 
@@ -168,83 +187,15 @@ def draw_cursor(
 # Per-folder processing
 # ---------------------------------------------------------------------------
 
-def find_pair(folder: Path):
-    """Return (json_path, mp4_path) or None if either is missing."""
-    json_files = list(folder.glob("*.json"))
-    mp4_files  = list(folder.glob("*.mp4"))
-    if not json_files:
-        print(f"  SKIP (no .json): {folder.name}")
-        return None
-    if not mp4_files:
-        print(f"  SKIP (no .mp4): {folder.name}")
-        return None
-    if len(json_files) > 1:
-        print(f"  WARN (multiple .json, using first): {folder.name}")
-    if len(mp4_files) > 1:
-        print(f"  WARN (multiple .mp4, using first): {folder.name}")
-    return json_files[0], mp4_files[0]
-
 
 def process_folder(folder: Path) -> None:
-    pair = find_pair(folder)
-    if pair is None:
+    try:
+        recording = prepare_video_recording(folder)
+    except RecordingPrepError as err:
+        print(err.message)
         return
 
-    json_path, mp4_path = pair
-    out_path = folder / "combined.mp4"
-
-    with open(json_path) as f:
-        data = json.load(f)
-
-    samples = data.get("samples", [])
-    if len(samples) < 20:
-        print(f"  SKIP (too short — {len(samples)} samples): {folder.name}")
-        return
-
-    samples_sorted = sorted(samples, key=lambda s: s["timestamp"])
-    rep_markers    = data.get("repMarkers", [])
-
-    # Dead-reckoning
-    dr              = compute_position(samples_sorted)
-    timestamps_full = dr["timestamps_ms"]
-    position_full   = dr["position_m"]   # (N, 3)
-
-    # Downsample for chart rendering
-    if len(samples_sorted) > MAX_POINTS:
-        idx           = np.round(np.linspace(0, len(samples_sorted) - 1, MAX_POINTS)).astype(int)
-        samples_keep  = [samples_sorted[i] for i in idx]
-        timestamps    = timestamps_full[idx]
-        position_keep = position_full[idx]
-    else:
-        samples_keep  = samples_sorted
-        timestamps    = timestamps_full
-        position_keep = position_full
-
-    channels = {
-        "pos.x (m)": [round(float(v), 6) for v in position_keep[:, 0]],
-        "pos.y (m)": [round(float(v), 6) for v in position_keep[:, 1]],
-        "pos.z (m)": [round(float(v), 6) for v in position_keep[:, 2]],
-    }
-    for kind in ("accel", "gyro", "angle"):
-        for axis in ("x", "y", "z"):
-            channels[f"{kind}.{axis}"] = [
-                round(float(s[kind][axis]), 6) for s in samples_keep
-            ]
-    channels["accel.|a|"] = [
-        round(float(np.linalg.norm([s["accel"]["x"], s["accel"]["y"], s["accel"]["z"]])), 6)
-        for s in samples_keep
-    ]
-
-    # t0 = wall-clock ms of recording start → chart x-axis origin = video t=0
-    started_at_str = data.get("startedAt")
-    if started_at_str:
-        t0 = int(
-            datetime.fromisoformat(started_at_str.replace("Z", "+00:00")).timestamp() * 1000
-        )
-    else:
-        t0 = int(timestamps[0])
-
-    t_rel_sec = [(float(t) - t0) / 1000 for t in timestamps]
+    out_path = folder / OUTPUT_VIDEO_NAME
 
     # Pre-render static chart images
     print(f"  Rendering chart bases…", end=" ", flush=True)
@@ -252,16 +203,20 @@ def process_folder(folder: Path) -> None:
     chart_metas = []
     for cfg in CHART_CONFIGS:
         base, bbox, t_min, t_max = render_chart_base(
-            channels, t_rel_sec, rep_markers, t0, cfg
+            recording.channels,
+            recording.t_rel_sec,
+            recording.rep_markers,
+            recording.started_at_ms,
+            cfg,
         )
         chart_bases.append(base)
         chart_metas.append((bbox, t_min, t_max))
     print("done.")
 
     # Open source video
-    cap = cv2.VideoCapture(str(mp4_path))
+    cap = cv2.VideoCapture(str(recording.mp4_path))
     if not cap.isOpened():
-        print(f"  ERROR: cannot open {mp4_path}")
+        print(f"  ERROR: cannot open {recording.mp4_path}")
         return
 
     src_fps  = cap.get(cv2.CAP_PROP_FPS) or 30.0
@@ -269,11 +224,15 @@ def process_folder(folder: Path) -> None:
     src_h    = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     n_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-    # Output dimensions — video scaled to CHART_W, charts overlaid within that height.
-    out_w           = CHART_W
-    video_h         = int(round(src_h * (CHART_W / src_w))) if src_w else src_h
-    out_h           = video_h
-    chart_overlay_h = video_h // 3   # each chart occupies ~1/3 of the frame height
+    if src_w <= 0 or src_h <= 0:
+        print(f"  ERROR: invalid source video dimensions ({src_w}×{src_h})")
+        cap.release()
+        return
+
+    # Keep the source dimensions; charts are overlaid inside the original frame.
+    out_w           = src_w
+    out_h           = src_h
+    chart_overlay_h = max(1, out_h // 3)  # each chart occupies ~1/3 of the frame height
     chart_alpha     = 0.75           # chart opacity (0=invisible, 1=opaque)
 
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
@@ -300,8 +259,10 @@ def process_folder(folder: Path) -> None:
             for base, (bbox, t_min, t_max) in zip(chart_bases, chart_metas)
         ]
 
-        # Scale the video frame to the common width
-        video_row = cv2.resize(frame, (out_w, video_h))
+        if frame.shape[1] != out_w or frame.shape[0] != out_h:
+            video_row = cv2.resize(frame, (out_w, out_h))
+        else:
+            video_row = frame.copy()
 
         # Resize chart panels to overlay height
         top_chart    = cv2.resize(chart_panels[0], (out_w, chart_overlay_h))
@@ -314,9 +275,9 @@ def process_folder(folder: Path) -> None:
             0,
         )
         # Blend acceleration chart onto bottom of the video frame
-        video_row[video_h - chart_overlay_h:] = cv2.addWeighted(
+        video_row[out_h - chart_overlay_h:] = cv2.addWeighted(
             bottom_chart, chart_alpha,
-            video_row[video_h - chart_overlay_h:], 1.0 - chart_alpha,
+            video_row[out_h - chart_overlay_h:], 1.0 - chart_alpha,
             0,
         )
 
