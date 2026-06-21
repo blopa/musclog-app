@@ -169,7 +169,7 @@ gameboy/
 │   └── storage.c/.h      # SRAM layout, load/save, checksum/validation
 ├── data/
 │   └── exercises.c       # bundled exercise names (const, lives in ROM)
-└── Makefile              # wraps lcc invocations + MBC/SRAM flags
+└── tools/                # build helpers (see "Build" below — Node scripts, not a Makefile)
 ```
 
 ### UI building blocks
@@ -182,6 +182,39 @@ gameboy/
   between digits) for weights, reps, and macros.
 - **Charts:** draw bars out of solid tiles at increasing heights; 4 shades is enough for one series.
 - **Sound:** use a sound channel for the rest-timer beep and PR fanfare.
+
+---
+
+## Build (current state — Milestone 1: boot splash)
+
+The first milestone is implemented: a **Game Boy Color** ROM that shows the Musclog logo centered on
+screen. Build it from the repo root with:
+
+```bash
+npm run build-gb        # produces gameboy/build/musclog.gbc
+```
+
+On the **first** run this auto-downloads the GBDK-2020 toolchain into `gameboy/.gbdk/` (gitignored) —
+no system compiler needed. Then it converts the logo to tile data and compiles the ROM. Subsequent
+runs reuse the cached toolchain and are fast. Open the resulting `gameboy/build/musclog.gbc` in a Game
+Boy Color emulator (SameBoy / BGB / mGBA / Emulicious).
+
+What's wired up so far:
+
+- **`scripts/build-gb-rom.mjs`** — orchestrator: ensures GBDK is present, runs `png2asset` on the logo,
+  then `lcc` to build the ROM. CGB-only header (`-Wm-yC`), MBC5+RAM+battery cart type (`-Wm-yt0x1B`,
+  matching the §6 save-RAM roadmap even though the splash doesn't save yet).
+- **`gameboy/tools/fetch-gbdk.mjs`** — downloads/extracts the GBDK-2020 release (platform-aware, pinned
+  fallback version when offline). Also exposed as `npm run gb:setup`.
+- **`gameboy/tools/prepare-logo.mjs`** — converts `assets/icon-pixel.png` → `gameboy/assets/logo.png`
+  (64×64, quantized to 4 colors = one CGB palette) using `sharp`. Output is committed, so the ROM build
+  itself doesn't depend on `sharp`. Re-run with `npm run gb:prepare-logo` if the source icon changes.
+- **`gameboy/src/main.c`** — loads the CGB palette + logo tiles, clears the background to the app's
+  page color (`themeColors.background.primary` = `#091310`, dark obsidian-green) via a second palette,
+  and draws the centered logo. The generated `gameboy/src/logo.c`/`.h` (from `png2asset`) are gitignored.
+
+> **Note:** the cartridge header advertises battery-backed RAM but the RAM-size byte is still `0x00`
+> (no save banks) — that gets set when SRAM persistence lands in Milestones 1b–2.
 
 ---
 

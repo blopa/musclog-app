@@ -1,0 +1,9 @@
+# Downloaded GBDK-2020 toolchain (re-fetched by `npm run build-gb`)
+.gbdk/
+
+# Compiled ROM output and intermediate object files
+build/
+
+# Generated asset source (emitted by png2asset during the build)
+src/logo.c
+src/logo.h
