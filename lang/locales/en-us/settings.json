@@ -144,6 +144,8 @@
       "disableMinimumCaloriesSubtitle": "Allow calorie targets below the default minimums of 1200 / 1500 kcal",
       "useBfForCalculations": "Use Body Fat for Calculations",
       "useBfForCalculationsSubtitle": "Use body fat percentage for calorie and macro calculations",
+      "includeFiberInCarbs": "Carbs Include Fiber",
+      "includeFiberInCarbsSubtitle": "When entering food manually, treat the carbs field as total carbs (fiber included, US labels). Turn off if your labels show net carbs (fiber excluded, EU labels).",
       "disableMinimumCaloriesConfirmTitle": "Disable Minimum Calorie Floor?",
       "disableMinimumCaloriesConfirmMessage": "This removes Musclog's default minimum calorie safeguards and allows targets to go as low as 0 kcal.",
       "disableMinimumCaloriesWarning": "Going below minimum calorie requirements is not recommended and may be unsafe. By enabling this, you confirm that you are acting on your own responsibility, that Musclog does not recommend going below those minimums, and that you understand the risks before proceeding.",

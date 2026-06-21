@@ -144,6 +144,8 @@
       "disableMinimumCaloriesSubtitle": "Sta caloriedoelen toe onder de standaardminimums van 1200 / 1500 kcal",
       "useBfForCalculations": "Vetpercentage gebruiken voor berekeningen",
       "useBfForCalculationsSubtitle": "Lichaamsvetpercentage gebruiken voor calorie- en macroberekeningen",
+      "includeFiberInCarbs": "Koolhydraten bevatten vezels",
+      "includeFiberInCarbsSubtitle": "Bij het handmatig invoeren van voeding wordt het koolhydratenveld als totale koolhydraten behandeld (inclusief vezels, Amerikaanse etiketten). Schakel dit uit als je etiketten netto koolhydraten tonen (exclusief vezels, EU-etiketten).",
       "disableMinimumCaloriesConfirmTitle": "Minimale caloriegrens uitschakelen?",
       "disableMinimumCaloriesConfirmMessage": "Hiermee verwijder je de standaard minimale caloriebeveiliging van Musclog en kunnen doelen zo laag als 0 kcal worden ingesteld.",
       "disableMinimumCaloriesWarning": "Onder de minimale caloriebehoefte gaan wordt niet aanbevolen en kan onveilig zijn. Door dit in te schakelen bevestig je dat je op eigen verantwoordelijkheid handelt, dat Musclog niet aanbeveelt om onder die minimums te gaan, en dat je de risico's begrijpt voordat je doorgaat.",

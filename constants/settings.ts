@@ -184,6 +184,15 @@ export const NAV_SLOT_3_SETTING_TYPE = 'nav_slot_3';
 export const FOOD_SEARCH_SOURCE_SETTING_TYPE = 'food_search_source';
 
 /**
+ * Setting type for whether the manual food-entry "carbs" field already includes fiber (total carbs,
+ * US/FDA label convention) or excludes it (net carbs, EU label convention). The app always stores
+ * total carbs, so when this is false the entered value is converted to total (carbs + fiber).
+ * value: 'true' (includes fiber) | 'false' (excludes fiber).
+ * Seeded from units in prod.ts: imperial → true (US labels), metric → false (EU labels).
+ */
+export const INCLUDE_FIBER_IN_CARBS_SETTING_TYPE = 'include_fiber_in_carbs';
+
+/**
  * Setting type for chart tooltip position preference.
  * value: 'left' | 'right'.
  */

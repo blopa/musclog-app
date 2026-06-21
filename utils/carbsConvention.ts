@@ -47,7 +47,7 @@ import {
 export type CarbsConvention = 'total' | 'net' | 'off-mixed';
 
 /** Food sources the app ingests carbs from. */
-export type FoodSourceForCarbs = 'usda' | 'openfood' | 'musclog';
+export type FoodSourceForCarbs = 'usda' | 'openfood' | 'musclog' | 'ai';
 
 /**
  * Convention each ingested source reports `carbs` in. Change an entry here (one line) if a source's
@@ -61,7 +61,19 @@ export const FOOD_SOURCE_CARBS_CONVENTION: Record<FoodSourceForCarbs, CarbsConve
   openfood: 'off-mixed',
   // Musclog scrapes EU (Dutch) supermarket labels → available carbohydrate (fiber-excluded).
   musclog: 'net',
+  // LLM macro estimates: the prompt's energy note (kcal = 4·carbs + 2·fiber, see utils/prompts.ts)
+  // is the net convention, so the model returns net carbs. Normalize to total before storing.
+  ai: 'net',
 };
+
+/**
+ * Carbs convention for values typed by the user in manual food entry. The user picks, in settings,
+ * whether their "carbs" field already includes fiber (total, the US/FDA label default) or excludes
+ * it (net, the EU label default). See INCLUDE_FIBER_IN_CARBS_SETTING_TYPE.
+ */
+export function manualEntryCarbsConvention(includesFiber: boolean): CarbsConvention {
+  return includesFiber ? 'total' : 'net';
+}
 
 export interface RawCarbsInput {
   /** The source's primary carbohydrate value. */

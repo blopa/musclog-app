@@ -23,6 +23,7 @@ import {
   utcDayKeyFromLocalDate,
   utcNormalizedDayKey,
 } from '@/utils/calendarDate';
+import { totalCarbsForFoodSource } from '@/utils/carbsConvention';
 import { handleError } from '@/utils/handleError';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { widgetEvents } from '@/utils/widgetEvents';
@@ -1172,9 +1173,13 @@ export class NutritionService {
       // Normalize macros to 100g (convention for both Food model and snapshot)
       const normalizedCalories = Math.max(0, (mealData.calories / amount) * 100);
       const normalizedProtein = Math.max(0, (mealData.protein / amount) * 100);
-      const normalizedCarbs = Math.max(0, (mealData.carbs / amount) * 100);
       const normalizedFat = Math.max(0, (mealData.fat / amount) * 100);
       const normalizedFiber = Math.max(0, ((mealData.fiber ?? 0) / amount) * 100);
+      // LLM returns net carbs (see FOOD_SOURCE_CARBS_CONVENTION.ai); store canonical total.
+      const normalizedCarbs = totalCarbsForFoodSource('ai', {
+        carbs: (mealData.carbs / amount) * 100,
+        fiber: normalizedFiber,
+      });
 
       // Create a temporary food entry for the AI-generated meal
       const tempFood = await database.get<Food>('foods').create((food) => {
@@ -1367,6 +1372,12 @@ export class NutritionService {
           }
         }
 
+        // LLM returns net carbs (see FOOD_SOURCE_CARBS_CONVENTION.ai); store canonical total per 100g.
+        const ingredientCarbsPer100g = totalCarbsForFoodSource('ai', {
+          carbs: (ingredient.carbs / ingredient.grams) * 100,
+          fiber: ((ingredient.fiber ?? 0) / ingredient.grams) * 100,
+        });
+
         // Create a temporary food entry for each ingredient
         const tempFood = await database.get<Food>('foods').create((food) => {
           food.isAiGenerated = true;
@@ -1375,7 +1386,7 @@ export class NutritionService {
           food.barcode = undefined;
           food.calories = Math.max(0, (ingredient.calories / ingredient.grams) * 100); // Normalize to 100g
           food.protein = Math.max(0, (ingredient.protein / ingredient.grams) * 100);
-          food.carbs = Math.max(0, (ingredient.carbs / ingredient.grams) * 100);
+          food.carbs = ingredientCarbsPer100g;
           food.fat = Math.max(0, (ingredient.fat / ingredient.grams) * 100);
           food.fiber = Math.max(0, ((ingredient.fiber ?? 0) / ingredient.grams) * 100);
           food.micros = {
@@ -1393,7 +1404,7 @@ export class NutritionService {
           loggedFoodName: ingredient.name,
           loggedCalories: Math.max(0, (ingredient.calories / ingredient.grams) * 100),
           loggedProtein: Math.max(0, (ingredient.protein / ingredient.grams) * 100),
-          loggedCarbs: Math.max(0, (ingredient.carbs / ingredient.grams) * 100),
+          loggedCarbs: ingredientCarbsPer100g,
           loggedFat: Math.max(0, (ingredient.fat / ingredient.grams) * 100),
           loggedFiber: Math.max(0, ((ingredient.fiber ?? 0) / ingredient.grams) * 100),
           loggedMicros: {},

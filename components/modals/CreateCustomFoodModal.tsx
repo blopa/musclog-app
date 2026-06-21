@@ -53,6 +53,7 @@ import { useFoodPortions } from '@/hooks/useFoodPortions';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { manualEntryCarbsConvention, totalCarbsFromSource } from '@/utils/carbsConvention';
 import { deleteFoodImage, saveFoodImage } from '@/utils/file';
 import { getFoodPortionIconComponent } from '@/utils/foodPortionIcons';
 import { handleError } from '@/utils/handleError';
@@ -89,7 +90,7 @@ export default function CreateCustomFoodModal({
   initialMealType,
 }: NewCustomFoodModalProps) {
   const theme = useTheme();
-  const { units } = useSettings();
+  const { units, includeFiberInCarbs } = useSettings();
   const [permission, requestPermission] = useCameraPermissions();
   const [isBarcodeScannerVisible, setIsBarcodeScannerVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -211,12 +212,18 @@ export default function CreateCustomFoodModal({
       setIsSaving(true);
       try {
         // Parse numeric values
+        const parsedFiber = Math.max(0, parseLocalizedDecimalString(fiber, decimalSeparator));
         const nutrition = {
           calories: Math.max(0, parseLocalizedDecimalString(calories, decimalSeparator)),
           protein: Math.max(0, parseLocalizedDecimalString(protein, decimalSeparator)),
-          carbs: Math.max(0, parseLocalizedDecimalString(carbs, decimalSeparator)),
+          // The DB always stores total carbs. The entered value is total or net depending on the
+          // user's "include fiber in carbs" setting; normalize to total before saving.
+          carbs: totalCarbsFromSource(manualEntryCarbsConvention(includeFiberInCarbs), {
+            carbs: Math.max(0, parseLocalizedDecimalString(carbs, decimalSeparator)),
+            fiber: parsedFiber,
+          }),
           fat: Math.max(0, parseLocalizedDecimalString(fat, decimalSeparator)),
-          fiber: Math.max(0, parseLocalizedDecimalString(fiber, decimalSeparator)),
+          fiber: parsedFiber,
         };
 
         // Determine serving amount/unit based on selected portion
@@ -919,6 +926,12 @@ export default function CreateCustomFoodModal({
               </Text>
             </View>
 
+            <Text className="text-sm text-text-secondary">
+              {includeFiberInCarbs
+                ? t('food.newCustomFood.carbsHintTotal')
+                : t('food.newCustomFood.carbsHintNet')}
+            </Text>
+
             {/* Calories */}
             <MacroInput
               label={t('food.newCustomFood.calories')}
@@ -956,7 +969,11 @@ export default function CreateCustomFoodModal({
                 size="half"
               />
               <MacroInput
-                label={t('food.newCustomFood.carbs')}
+                label={
+                  includeFiberInCarbs
+                    ? t('food.newCustomFood.carbsTotal')
+                    : t('food.newCustomFood.carbsNet')
+                }
                 value={carbs}
                 onChange={(value) => handleNumericChange(value, setCarbs)}
                 allowDecimals

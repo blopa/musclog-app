@@ -1,6 +1,7 @@
 import {
   FOOD_SOURCE_CARBS_CONVENTION,
   digestibleCarbs,
+  manualEntryCarbsConvention,
   totalCarbsForFoodSource,
   totalCarbsFromSource,
 } from '@/utils/carbsConvention';
@@ -111,6 +112,7 @@ describe('carbsConvention', () => {
         usda: 'total',
         openfood: 'off-mixed',
         musclog: 'net',
+        ai: 'net',
       });
     });
 
@@ -127,6 +129,30 @@ describe('carbsConvention', () => {
       expect(totalCarbsForFoodSource('openfood', { carbs: 25, fiber: 5 })).toBe(30);
       expect(totalCarbsForFoodSource('openfood', { carbs: 28, fiber: 3, offCarbsTotal: 31 })).toBe(
         31
+      );
+    });
+
+    it('adds fiber for AI estimates (LLM returns net carbs)', () => {
+      // The LLM prompt's energy note is the net convention -> total = 20 + 4 = 24
+      expect(totalCarbsForFoodSource('ai', { carbs: 20, fiber: 4 })).toBe(24);
+    });
+  });
+
+  describe('manualEntryCarbsConvention', () => {
+    it("maps the 'include fiber' setting to total, off to net", () => {
+      expect(manualEntryCarbsConvention(true)).toBe('total');
+      expect(manualEntryCarbsConvention(false)).toBe('net');
+    });
+
+    it('keeps entered carbs as-is when fiber is included (total)', () => {
+      expect(totalCarbsFromSource(manualEntryCarbsConvention(true), { carbs: 30, fiber: 5 })).toBe(
+        30
+      );
+    });
+
+    it('adds fiber when the entered carbs exclude it (net)', () => {
+      expect(totalCarbsFromSource(manualEntryCarbsConvention(false), { carbs: 25, fiber: 5 })).toBe(
+        30
       );
     });
   });

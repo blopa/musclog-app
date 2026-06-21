@@ -25,6 +25,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import i18n from '@/lang/lang';
 import AiService from '@/services/AiService';
+import { totalCarbsForFoodSource } from '@/utils/carbsConvention';
 import { trackMeal } from '@/utils/coachAI';
 import { handleError } from '@/utils/handleError';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
@@ -316,7 +317,13 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
             const food = await FoodService.createCustomFood(ingredient.name, {
               calories: roundToDecimalPlaces((ingredient.kcal / ingredient.grams) * 100),
               protein: roundToDecimalPlaces((ingredient.protein / ingredient.grams) * 100),
-              carbs: roundToDecimalPlaces((ingredient.carbs / ingredient.grams) * 100),
+              // LLM returns net carbs (see FOOD_SOURCE_CARBS_CONVENTION.ai); store canonical total.
+              carbs: roundToDecimalPlaces(
+                totalCarbsForFoodSource('ai', {
+                  carbs: (ingredient.carbs / ingredient.grams) * 100,
+                  fiber: ((ingredient.fiber ?? 0) / ingredient.grams) * 100,
+                })
+              ),
               fat: roundToDecimalPlaces((ingredient.fat / ingredient.grams) * 100),
               fiber: roundToDecimalPlaces(((ingredient.fiber ?? 0) / ingredient.grams) * 100),
             });
