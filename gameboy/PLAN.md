@@ -1,0 +1,290 @@
+# Musclog GB — Game Boy Port (Gimmick)
+
+A feasibility study and technical bootstrap for porting a **stripped-down, manual-only** version of
+Musclog to the original Nintendo Game Boy (DMG) / Game Boy Color (CGB) as a homebrew cartridge.
+
+> **TL;DR — Is it possible?** Yes. The Game Boy is a fully programmable computer with a CPU,
+> 8 KB work RAM, and battery-backed cartridge save RAM. A macro + workout tracker is well within
+> reach. What we lose is everything that depends on the outside world: no internet, no camera,
+> no barcode/OCR, no AI, no Health sync, no cloud. What remains is a self-contained, **manual**
+> logbook — which is exactly what "Lift, Log, Repeat" was at its core.
+
+---
+
+## 1. Hardware reality check
+
+| Resource               | Original Game Boy (DMG)                       | Implication for Musclog GB                                             |
+| ---------------------- | --------------------------------------------- | ---------------------------------------------------------------------- |
+| CPU                    | Sharp LR35902 @ ~4.19 MHz (8-bit)             | Plenty for menus + integer math. No floating point.                    |
+| Work RAM               | 8 KB                                          | Hold the "current session" in RAM, page the rest.                      |
+| Video RAM              | 8 KB                                          | Tile-based text UI only. No bitmaps/photos.                            |
+| Save RAM (cart)        | 8–32 KB SRAM, battery-backed                  | This is our "database". Budget carefully (see §6).                     |
+| Display                | 160×144, 4 shades of gray                     | ~20×18 tiles ≈ 20 chars × 18 rows of text.                             |
+| Input                  | D-pad, A, B, Start, Select                    | All navigation is menu-driven.                                         |
+| Network / Camera / Mic | **None**                                      | No food search, scanning, AI, or sync.                                 |
+| Date/Time clock        | **None on DMG** (RTC only on some MBC3 carts) | Use an MBC3+RTC cart for real timestamps, else a manual "day counter". |
+
+**Key takeaway:** everything is **integer math, tile-based text, and menu navigation**, persisted into a
+small battery-backed SRAM. Treat it like an embedded device, not a phone.
+
+---
+
+## 2. Features we CAN port (manual-only subset)
+
+These map cleanly onto an offline, manual logbook:
+
+### Workout tracking
+
+- Log a workout session: pick exercise(s), enter sets, reps, weight per set
+- Custom exercise list (a fixed library bundled in ROM + a small user-added list in SRAM)
+- Workout templates (save a routine, reload it next time)
+- Rest timer (counts down on-device using the CPU timer; beeps via the sound channels)
+- Session summary: total sets, total reps, total volume (reps × weight, integer math)
+- Workout history: scroll past sessions stored in SRAM
+- Personal record (PR) detection per exercise (heaviest weight / best volume)
+- Volume-over-time as a simple tile-based bar chart
+
+### Nutrition / macro tracking
+
+- Log foods manually: name + calories, protein, carbs, fat, fiber (all integer grams/kcal)
+- Custom food library stored in SRAM (no online database)
+- Daily totals vs. a goal, shown as numbers + a simple progress bar
+- Meal grouping (breakfast / lunch / dinner / snack buckets)
+- Net-carbs handling (carbs − fiber) — pure integer subtraction, same convention as the app
+- Multi-day history (limited by SRAM budget)
+
+### Goals & body metrics
+
+- Set a calorie + macro goal (entered manually)
+- Log body weight per day; show last value and a min/max trend chart
+- Simple TDEE/goal as a stored constant the user sets (no empirical recalculation)
+
+### Settings / UX
+
+- Units toggle (metric/imperial) — display-side integer conversion, store metric internally
+- A "day counter" or RTC-based date for grouping entries
+- Save/erase data (SRAM management)
+
+> **Note on numbers:** the app's locale-aware decimal formatting does **not** port. The Game Boy
+> shows ASCII digits only. Keep everything in whole numbers (round protein to grams, weight to
+> 0.5 kg/lb steps stored as integer tenths) and format by hand.
+
+---
+
+## 3. Features we CANNOT port (and why)
+
+| App feature                                       | Why it can't come along                                                        |
+| ------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Food search (Open Food Facts / USDA / Musclog DB) | No network.                                                                    |
+| Barcode scanning                                  | No camera.                                                                     |
+| AI food photo / OCR / AI Coach (Loggy)            | No camera, no network, no room for an LLM.                                     |
+| Meal/workout plan generation, AI insights         | Requires the LLM.                                                              |
+| Health Connect / HealthKit sync, BLE devices      | No connectivity stack.                                                         |
+| Weekly check-ins with trend analysis              | Doable in spirit, but heavy math/storage; defer.                               |
+| Menstrual cycle predictions                       | Possible as manual logging, but predictions need date math + RTC; defer to v2. |
+| Charts beyond simple bars                         | 4-shade tile display; keep visualizations minimal.                             |
+| Export to JSON/Excel, encryption                  | No filesystem; SRAM only. (Link Cable export is a stretch goal.)               |
+| Multilingual i18n                                 | Bundle one language to save ROM/SRAM; English first.                           |
+
+---
+
+## 4. Technical bootstrap — toolchain choice
+
+There are three realistic paths. **Recommendation: GBDK-2020.**
+
+### Option A — GBDK-2020 (C) ✅ recommended
+
+- **What:** A maintained dev kit built on the SDCC C compiler: compiler, assembler, linker, and a
+  Game Boy hardware API (graphics, input, sound, SRAM). The modern continuation of the classic GBDK.
+- **Why for us:** Musclog GB is logic-heavy (lists, math, menus), not a fast action game. C lets us
+  port data structures and integer logic directly, get running fast, and lean on a broad API plus
+  many open-source sample ROMs.
+- **Trade-off:** SDCC won't match hand-optimized assembly speed, and occasional compiler quirks
+  appear — irrelevant for a menu-driven tracker.
+- **Repo:** <https://github.com/gbdk-2020/gbdk-2020>
+
+### Option B — GB Studio (no-code) ⚠️ probably too constrained
+
+- **What:** Drag-and-drop visual game creator; great for beginners and rapid prototypes.
+- **Why not:** Built around scenes/actors/scripted events for games. Arbitrary data entry, large
+  editable lists, and integer aggregation across many records fight the tool. Good for a mockup,
+  bad for the real data model.
+- **Site:** <https://gb-studio.dev>
+
+### Option C — RGBDS (pure assembly) ⚠️ maximum control, slowest to build
+
+- **What:** The assembler toolchain most commercial-grade homebrew uses; total control over every byte.
+- **Why not (for v1):** We don't need the performance and we'd pay for it in development time. Keep in
+  reserve if a hot path ever needs hand-tuning.
+
+**Decision:** start in **GBDK-2020 (C)**. Drop to RGBDS assembly only for a specific bottleneck.
+
+Resource hubs: [gbdev.io tools guide](https://gbdev.io/guides/tools) ·
+[awesome-gbdev](https://github.com/gbdev/awesome-gbdev) · [gbdev.io resources](https://gbdev.io/resources.html)
+
+---
+
+## 5. Getting started with GBDK-2020
+
+### Install
+
+1. Download the latest GBDK-2020 release for your OS from the
+   [releases page](https://github.com/gbdk-2020/gbdk-2020/releases) and unzip it (it bundles SDCC).
+2. Put `gbdk/bin` on your `PATH` so `lcc` (the compiler driver) is available.
+3. Grab an emulator with good debugging for the dev loop: **Emulicious**, **BGB**, or **SameBoy**.
+
+### Hello, world (build loop)
+
+```c
+// main.c
+#include <gb/gb.h>
+#include <stdio.h>   // GBDK provides a tile-based printf to the background
+
+void main(void) {
+    printf("MUSCLOG GB\n");
+    printf("Lift Log Repeat\n");
+    while (1) {
+        wait_vbl_done();   // sync to ~59.7 Hz frame
+    }
+}
+```
+
+```bash
+lcc -o musclog.gb main.c     # produces a runnable .gb ROM
+```
+
+Open `musclog.gb` in the emulator. That's the entire inner loop: edit C → `lcc` → run ROM.
+
+### Project layout (suggested)
+
+```
+gameboy/
+├── src/
+│   ├── main.c            # boot, top-level menu state machine
+│   ├── ui_text.c/.h      # tile font, menu/list rendering, number formatting
+│   ├── input.c/.h        # debounced D-pad/button handling
+│   ├── workout.c/.h      # exercise library, session logging, PRs, volume
+│   ├── nutrition.c/.h    # food library, daily macro totals, goals
+│   ├── metrics.c/.h      # body weight log
+│   └── storage.c/.h      # SRAM layout, load/save, checksum/validation
+├── data/
+│   └── exercises.c       # bundled exercise names (const, lives in ROM)
+└── Makefile              # wraps lcc invocations + MBC/SRAM flags
+```
+
+### UI building blocks
+
+- **Text:** GBDK ships a tile-based `printf`; for real UI use `gotoxy()`, `puts()`, and a custom font
+  loaded into VRAM. Budget ~20 columns × 18 rows.
+- **Menus:** a state machine. Each screen = a state; D-pad moves a cursor sprite/tile, A confirms,
+  B backs out. This replaces the app's navigation stack.
+- **Number entry:** no keyboard — use a digit-spinner (Up/Down changes a digit, Left/Right moves
+  between digits) for weights, reps, and macros.
+- **Charts:** draw bars out of solid tiles at increasing heights; 4 shades is enough for one series.
+- **Sound:** use a sound channel for the rest-timer beep and PR fanfare.
+
+---
+
+## 6. Persistence — the cartridge "database" (SRAM)
+
+This is the most important architectural piece. The save lives in **battery-backed cartridge SRAM**,
+so we must (a) pick an MBC that has SRAM + battery, (b) declare our save layout, and (c) validate it.
+
+### Cartridge / MBC type
+
+Set the MBC type at link time with `-Wm-yt<hex>`:
+
+- **Type `0x03`** — MBC1 + SRAM + battery (up to 32 KB SRAM). Fine for v1.
+- **Type `0x1B`** — MBC5 + SRAM + battery (more banks). Headroom for history.
+- **Type `0x0F`/`0x10`** — MBC3 **with RTC** if we want a real-time clock for true date stamps.
+
+### Declaring save variables
+
+GBDK keeps SRAM access **write-protected by default**. Put persisted variables in their own
+translation unit and bracket all access with `ENABLE_RAM` / `DISABLE_RAM`:
+
+```c
+// storage.c
+#include <gb/gb.h>
+
+uint16_t saveMagic;          // validity marker
+uint8_t  unitSystem;         // 0 = metric, 1 = imperial
+uint16_t calorieGoal;
+uint8_t  proteinGoal, carbGoal, fatGoal, fiberGoal;
+
+WorkoutEntry workoutLog[MAX_WORKOUTS];   // ring buffer of sessions
+FoodEntry    foodLog[MAX_FOODS];
+uint16_t     bodyWeightLog[MAX_DAYS];    // stored as tenths of a unit
+
+void save_all(void) {
+    ENABLE_RAM;
+    saveMagic = 0x5AFE;      // stamp "valid save"
+    // ...write current state into the SRAM-backed variables...
+    DISABLE_RAM;             // re-protect so a crash can't corrupt the save
+}
+
+uint8_t has_valid_save(void) {
+    uint8_t ok;
+    ENABLE_RAM;
+    ok = (saveMagic == 0x5AFE);
+    DISABLE_RAM;
+    return ok;
+}
+```
+
+Compile that unit so its globals land in SRAM (e.g. `lcc -Wf-ba0 -c -o storage.o storage.c`) and link
+with the MBC flag: `lcc -Wm-yt0x03 -o musclog.gb main.o ... storage.o`.
+
+### Validation
+
+SRAM powers up as garbage on a fresh cart, and there is no "null". Use the **magic-number / checksum**
+trick above: stamp a known value on save, check it on boot. If it's absent, run first-time setup
+(seed the bundled exercise library, defaults). Optionally checksum the whole block to detect a dying
+battery.
+
+### SRAM budget (the hard constraint)
+
+With 8 KB of SRAM, every byte counts. Rough plan:
+
+- Keep food/exercise **names** as short fixed-width strings (e.g. 12 chars) or indices into a
+  ROM-bundled table; don't store long names per log entry.
+- Store records as packed integer structs; reference foods/exercises by **ID**, not by name.
+- Use **ring buffers** with a cap (e.g. last N workouts, last 30 days of macros). Old entries roll off.
+- Move to a 32 KB (MBC1) or multi-bank (MBC5) cart if history needs to grow.
+
+Background on saving: [Larold's "How to Save Data in Game Boy Games"](https://laroldsretrogameyard.com/tutorials/gb/how-to-save-data-in-game-boy-games/)
+· general approach to [GBA/GB backup storage](https://dillonbeliveau.com/2020/06/05/GBA-FLASH.html).
+
+---
+
+## 7. Suggested milestones
+
+1. **Boot + menu skeleton** — title screen, top-level menu, input/state machine, custom font.
+2. **SRAM layout + save/load** — magic number validation, first-run setup, erase-data option.
+3. **Workout logging** — exercise picker, set/rep/weight digit spinners, session summary, save.
+4. **Workout history + PRs** — scrollable list, per-exercise PR detection, volume bar chart.
+5. **Macro logging** — food library CRUD in SRAM, daily totals vs. goal, net-carb math, progress bars.
+6. **Body weight + units** — weight log, metric/imperial display conversion, simple trend chart.
+7. **Polish** — rest-timer beep, PR fanfare, day counter or MBC3 RTC for real dates.
+8. **Stretch goals** — Link Cable data export to a second cart/PC; minimal cycle logging.
+
+---
+
+## 8. Reality of running it
+
+- **Emulator:** any `.gb` ROM runs in Emulicious / BGB / SameBoy / mGBA — zero hardware needed.
+- **Real hardware:** flash the ROM onto an **EverDrive** / EZ-Flash cart (SD-card based) and play on an
+  actual Game Boy, or have a one-off **battery-backed cartridge** produced for the full "save survives
+  power-off" experience.
+
+---
+
+## Sources
+
+- [Choosing tools for Game Boy development — gbdev.io](https://gbdev.io/guides/tools)
+- [GBDK-2020 (GitHub)](https://github.com/gbdk-2020/gbdk-2020)
+- [awesome-gbdev — curated GB dev resources](https://github.com/gbdev/awesome-gbdev)
+- [gbdev.io resources](https://gbdev.io/resources.html)
+- [How to Save Data in Game Boy Games — Larold's Retro Gameyard](https://laroldsretrogameyard.com/tutorials/gb/how-to-save-data-in-game-boy-games/)
+- [Long Live the Nintendo Game Boy — Larold's Retro Gameyard](https://laroldsretrogameyard.com/articles/long-live-the-nintendo-game-boy/)
+- [GameBoy Advance Cartridge Backup Storage — Dillon Beliveau](https://dillonbeliveau.com/2020/06/05/GBA-FLASH.html)
