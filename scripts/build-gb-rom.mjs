@@ -7,7 +7,7 @@
 // Usage: `npm run build-gb`
 
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, statSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -46,16 +46,22 @@ run(png2asset, [
     '-noflip',
 ]);
 
-// 3. Compile + link. -Wm-yC = Game Boy Color only; -Wm-yt0x1B = MBC5 + RAM + battery
-//    (matches the save-RAM roadmap in gameboy/PLAN.md §6, even though the splash doesn't save yet).
+// 3. Compile + link. -Wm-yC = Game Boy Color only; -Wm-yt0x1B = MBC5 + RAM + battery.
+//    -Wm-ya4 sets the RAM-size header to four 8 KB SRAM banks so emulators/flash carts
+//    actually persist the onboarding profile.
 console.log('Compiling ROM ...');
+const cSources = readdirSync(srcDir)
+    .filter((name) => name.endsWith('.c'))
+    .sort()
+    .map((name) => join(srcDir, name));
+
 run(lcc, [
     '-Wm-yC',
     '-Wm-yt0x1B',
+    '-Wm-ya4',
     '-Wm-yn"MUSCLOG"',
     '-o', romPath,
-    join(srcDir, 'main.c'),
-    join(srcDir, 'logo.c'),
+    ...cSources,
 ], gameboyDir);
 
 const sizeKb = (statSync(romPath).size / 1024).toFixed(0);

@@ -160,6 +160,11 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 - Optional Health Connect / HealthKit setup during onboarding
 - AI provider configuration during setup
 
+## Musclog GB Gimmick
+
+- Game Boy Color ROM prototype with first-run onboarding for units, sex, age, height, weight, activity, training level, fitness focus, and weight goal
+- Compact battery-backed SRAM profile save with generated calorie and macro goals
+
 ---
 
 ## Privacy & Data

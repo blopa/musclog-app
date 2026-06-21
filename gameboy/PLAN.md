@@ -176,8 +176,8 @@ gameboy/
 
 - **Text:** GBDK ships a tile-based `printf`; for real UI use `gotoxy()`, `puts()`, and a custom font
   loaded into VRAM. Budget ~20 columns × 18 rows.
-- **Menus:** a state machine. Each screen = a state; D-pad moves a cursor sprite/tile, A confirms,
-  B backs out. This replaces the app's navigation stack.
+- **Menus:** a state machine. Each screen = a state; D-pad moves a cursor sprite/tile, A/Start
+  confirms, B backs out. This replaces the app's navigation stack.
 - **Number entry:** no keyboard — use a digit-spinner (Up/Down changes a digit, Left/Right moves
   between digits) for weights, reps, and macros.
 - **Charts:** draw bars out of solid tiles at increasing heights; 4 shades is enough for one series.
@@ -185,10 +185,11 @@ gameboy/
 
 ---
 
-## Build (current state — Milestone 1: boot splash)
+## Build (current state — Milestone 1b: onboarding + SRAM profile)
 
-The first milestone is implemented: a **Game Boy Color** ROM that shows the Musclog logo centered on
-screen. Build it from the repo root with:
+The first interactive milestone is implemented: a **Game Boy Color** ROM that shows the Musclog logo,
+runs a first-time onboarding flow, generates calorie/macro goals, saves the profile to cartridge SRAM,
+and skips onboarding on later boots when the save checksum is valid. Build it from the repo root with:
 
 ```bash
 npm run build-gb        # produces gameboy/build/musclog.gbc
@@ -202,19 +203,25 @@ Boy Color emulator (SameBoy / BGB / mGBA / Emulicious).
 What's wired up so far:
 
 - **`scripts/build-gb-rom.mjs`** — orchestrator: ensures GBDK is present, runs `png2asset` on the logo,
-  then `lcc` to build the ROM. CGB-only header (`-Wm-yC`), MBC5+RAM+battery cart type (`-Wm-yt0x1B`,
-  matching the §6 save-RAM roadmap even though the splash doesn't save yet).
+  then compiles every `gameboy/src/*.c` file with `lcc`. The ROM is CGB-only (`-Wm-yC`), uses the
+  MBC5+RAM+battery cart type (`-Wm-yt0x1B`), and declares 4 SRAM banks / 32 KB (`-Wm-ya4`).
 - **`gameboy/tools/fetch-gbdk.mjs`** — downloads/extracts the GBDK-2020 release (platform-aware, pinned
   fallback version when offline). Also exposed as `npm run gb:setup`.
 - **`gameboy/tools/prepare-logo.mjs`** — converts `assets/icon-pixel.png` → `gameboy/assets/logo.png`
   (64×64, quantized to 4 colors = one CGB palette) using `sharp`. Output is committed, so the ROM build
   itself doesn't depend on `sharp`. Re-run with `npm run gb:prepare-logo` if the source icon changes.
-- **`gameboy/src/main.c`** — loads the CGB palette + logo tiles, clears the background to the app's
-  page color (`themeColors.background.primary` = `#091310`, dark obsidian-green) via a second palette,
-  and draws the centered logo. The generated `gameboy/src/logo.c`/`.h` (from `png2asset`) are gitignored.
+- **`gameboy/src/main.c`** — splash, text-mode init, save validation, onboarding/home routing, and a
+  simple saved-profile home placeholder. `Select+B` on the home placeholder erases the save and reruns
+  onboarding.
+- **`gameboy/src/onboarding.c`** — first-run flow with a combined unit/sex setup screen, then age,
+  height, weight, activity, training experience, fitness focus, weight goal, generated goal review,
+  and manual macro edits.
+- **`gameboy/src/storage.c`** — SRAM bank 0 persistence with magic/version/checksum validation.
+- **`gameboy/src/nutrition_math.c`** — integer-only Mifflin-style BMR, activity multipliers, calorie
+  adjustments, macro splits, and fiber target generation.
+- **`gameboy/src/ui_text.c` / `input.c`** — tiny text UI helpers and debounced joypad input.
 
-> **Note:** the cartridge header advertises battery-backed RAM but the RAM-size byte is still `0x00`
-> (no save banks) — that gets set when SRAM persistence lands in Milestones 1b–2.
+The generated `gameboy/src/logo.c`/`.h` files are still produced by `png2asset` and gitignored.
 
 ---
 
@@ -233,40 +240,35 @@ Set the MBC type at link time with `-Wm-yt<hex>`:
 
 ### Declaring save variables
 
-GBDK keeps SRAM access **write-protected by default**. Put persisted variables in their own
-translation unit and bracket all access with `ENABLE_RAM` / `DISABLE_RAM`:
+GBDK keeps SRAM access **write-protected by default**. The implemented save lives in SRAM bank 0 via
+`#pragma dataseg DATA_0`, and every load/save brackets access with `ENABLE_RAM` / `DISABLE_RAM`:
 
 ```c
-// storage.c
+// gameboy/src/storage.c
 #include <gb/gb.h>
 
-uint16_t saveMagic;          // validity marker
-uint8_t  unitSystem;         // 0 = metric, 1 = imperial
-uint16_t calorieGoal;
-uint8_t  proteinGoal, carbGoal, fatGoal, fiberGoal;
+#pragma dataseg DATA_0
+static SaveData sram_save;
+#pragma dataseg DATA
 
-WorkoutEntry workoutLog[MAX_WORKOUTS];   // ring buffer of sessions
-FoodEntry    foodLog[MAX_FOODS];
-uint16_t     bodyWeightLog[MAX_DAYS];    // stored as tenths of a unit
+void storage_save(const SaveData *data) {
+    SaveData copy = *data;
+    copy.magic = SAVE_MAGIC;
+    copy.version = SAVE_VERSION;
+    copy.onboarding_complete = 1;
+    copy.checksum = storage_checksum(&copy);
 
-void save_all(void) {
     ENABLE_RAM;
-    saveMagic = 0x5AFE;      // stamp "valid save"
-    // ...write current state into the SRAM-backed variables...
-    DISABLE_RAM;             // re-protect so a crash can't corrupt the save
-}
-
-uint8_t has_valid_save(void) {
-    uint8_t ok;
-    ENABLE_RAM;
-    ok = (saveMagic == 0x5AFE);
+    SWITCH_RAM(0);
+    sram_save = copy;
     DISABLE_RAM;
-    return ok;
 }
 ```
 
-Compile that unit so its globals land in SRAM (e.g. `lcc -Wf-ba0 -c -o storage.o storage.c`) and link
-with the MBC flag: `lcc -Wm-yt0x03 -o musclog.gb main.o ... storage.o`.
+The current `SaveData` block intentionally contains only the first-run profile and goals: units,
+gender, age, height in cm, weight in kg tenths, activity level, lifting experience, fitness focus,
+weight goal, calorie/protein/carbs/fat/fiber targets, and a day counter initialized to zero.
+Metric remains the storage format even when the user enters height/weight in imperial units.
 
 ### Validation
 
@@ -277,7 +279,8 @@ battery.
 
 ### SRAM budget (the hard constraint)
 
-With 8 KB of SRAM, every byte counts. Rough plan:
+The ROM currently declares 32 KB SRAM, but v1 still treats bank 0 as the only database bank and keeps
+the profile block tiny. Rough plan for future data:
 
 - Keep food/exercise **names** as short fixed-width strings (e.g. 12 chars) or indices into a
   ROM-bundled table; don't store long names per log entry.
@@ -292,8 +295,10 @@ Background on saving: [Larold's "How to Save Data in Game Boy Games"](https://la
 
 ## 7. Suggested milestones
 
-1. **Boot + menu skeleton** — title screen, top-level menu, input/state machine, custom font.
-2. **SRAM layout + save/load** — magic number validation, first-run setup, erase-data option.
+1. **Boot + onboarding skeleton** — implemented: splash, text UI, joypad input, first-run setup, and
+   home placeholder.
+2. **SRAM layout + save/load** — implemented: magic/version/checksum validation, 32 KB SRAM header,
+   bank 0 profile save, and erase-data option.
 3. **Workout logging** — exercise picker, set/rep/weight digit spinners, session summary, save.
 4. **Workout history + PRs** — scrollable list, per-exercise PR detection, volume bar chart.
 5. **Macro logging** — food library CRUD in SRAM, daily totals vs. goal, net-carb math, progress bars.
