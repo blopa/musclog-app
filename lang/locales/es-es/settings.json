@@ -144,6 +144,8 @@
       "disableMinimumCaloriesSubtitle": "Permitir objetivos de calorías por debajo de los mínimos predeterminados de 1200 / 1500 kcal",
       "useBfForCalculations": "Usar Grasa Corporal para Cálculos",
       "useBfForCalculationsSubtitle": "Usar el porcentaje de grasa corporal para los cálculos de calorías y macros",
+      "includeFiberInCarbs": "Los carbohidratos incluyen fibra",
+      "includeFiberInCarbsSubtitle": "Al añadir alimentos manualmente, trata el campo de carbohidratos como carbohidratos totales (con fibra, etiquetas de EE. UU.). Desactívalo si tus etiquetas muestran carbohidratos netos (sin fibra, etiquetas de la UE).",
       "disableMinimumCaloriesConfirmTitle": "¿Desactivar el mínimo de calorías?",
       "disableMinimumCaloriesConfirmMessage": "Esto elimina las protecciones mínimas de calorías predeterminadas de Musclog y permite objetivos tan bajos como 0 kcal.",
       "disableMinimumCaloriesWarning": "No se recomienda bajar de los requerimientos mínimos de calorías y puede no ser seguro. Al activar esto, confirmas que actúas bajo tu propia responsabilidad, que Musclog no recomienda bajar de esos mínimos y que entiendes los riesgos antes de continuar.",

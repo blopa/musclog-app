@@ -25,6 +25,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import i18n from '@/lang/lang';
 import AiService from '@/services/AiService';
+import { aiIngredientMacrosPer100g } from '@/utils/carbsConvention';
 import { trackMeal } from '@/utils/coachAI';
 import { handleError } from '@/utils/handleError';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
@@ -313,12 +314,14 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
               }
             }
 
+            // aiIngredientMacrosPer100g normalizes carbs from the LLM's net convention to total.
+            const macros = aiIngredientMacrosPer100g(ingredient);
             const food = await FoodService.createCustomFood(ingredient.name, {
-              calories: roundToDecimalPlaces((ingredient.kcal / ingredient.grams) * 100),
-              protein: roundToDecimalPlaces((ingredient.protein / ingredient.grams) * 100),
-              carbs: roundToDecimalPlaces((ingredient.carbs / ingredient.grams) * 100),
-              fat: roundToDecimalPlaces((ingredient.fat / ingredient.grams) * 100),
-              fiber: roundToDecimalPlaces(((ingredient.fiber ?? 0) / ingredient.grams) * 100),
+              calories: roundToDecimalPlaces(macros.calories),
+              protein: roundToDecimalPlaces(macros.protein),
+              carbs: roundToDecimalPlaces(macros.carbs),
+              fat: roundToDecimalPlaces(macros.fat),
+              fiber: roundToDecimalPlaces(macros.fiber),
             });
             return { foodId: food.id, amount: ingredient.grams };
           })

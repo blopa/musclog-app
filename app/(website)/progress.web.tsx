@@ -36,6 +36,7 @@ import type {
 import { useProgressData } from '@/hooks/useProgressData';
 import { useSettings } from '@/hooks/useSettings';
 import { formatUtcNormalizedDayIntl } from '@/utils/calendarDate';
+import { digestibleCarbs } from '@/utils/carbsConvention';
 import { handleError } from '@/utils/handleError';
 
 const BRAND_GREEN = '#22C55E';
@@ -459,7 +460,7 @@ function MacroComposition({ items, locale }: { items: DailyNutrition[]; locale: 
     <div className="space-y-4">
       {bars.map((item) => {
         const protein = item.protein * CALORIES_FOR_PROTEIN;
-        const carbs = Math.max(0, item.carbs - item.fiber) * CALORIES_FOR_CARBS;
+        const carbs = digestibleCarbs(item.carbs, item.fiber) * CALORIES_FOR_CARBS;
         const fat = item.fat * CALORIES_FOR_FAT;
         const fiber = item.fiber * CALORIES_FOR_FIBER;
         const total = protein + carbs + fat + fiber || 1;

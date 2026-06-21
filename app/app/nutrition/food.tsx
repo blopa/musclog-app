@@ -74,6 +74,7 @@ import {
   formatLocalCalendarDayIso,
   localCalendarDayDate,
 } from '@/utils/calendarDate';
+import { digestibleCarbs } from '@/utils/carbsConvention';
 import { getMealCritique } from '@/utils/coachAI';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { getSimpleServingDisplay } from '@/utils/foodDisplay';
@@ -1553,7 +1554,10 @@ export default function FoodScreen() {
                         goal: effectiveGoalProtein,
                       },
                       carbs: {
-                        value: dailyNutrients?.carbs || 0,
+                        // Digestible/net carbs: the goal is net and fiber has its own bar/goal,
+                        // while food-log carbs include fiber. Show net to compare like-for-like
+                        // (avoids double-counting fiber).
+                        value: digestibleCarbs(dailyNutrients?.carbs, dailyNutrients?.fiber),
                         goal: effectiveGoalCarbs,
                       },
                       fats: {

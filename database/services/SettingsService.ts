@@ -20,6 +20,7 @@ import {
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
   HOME_SUMMARY_CARD_SETTING_TYPE,
   type HomeSummaryCard,
+  INCLUDE_FIBER_IN_CARBS_SETTING_TYPE,
   INTUITIVE_EATING_MODE_SETTING_TYPE,
   LANGUAGE_SETTING_TYPE,
   LAST_HOME_WATER_PROMPT_ANSWERED_DAY_SETTING_TYPE,
@@ -557,6 +558,14 @@ export class SettingsService {
 
   static async getSendFoundationFoodsToLlm(): Promise<boolean> {
     return SettingsService.getBooleanSetting(SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE, true);
+  }
+
+  static async getIncludeFiberInCarbs(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(INCLUDE_FIBER_IN_CARBS_SETTING_TYPE, true);
+  }
+
+  static async setIncludeFiberInCarbs(value: boolean) {
+    await SettingsService.setBooleanSetting(INCLUDE_FIBER_IN_CARBS_SETTING_TYPE, value);
   }
 
   static async getUseThinkingMode(): Promise<boolean> {

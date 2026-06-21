@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
 
+import { digestibleCarbs } from '@/utils/carbsConvention';
+
 import { useCurrentNutritionGoal } from './useCurrentNutritionGoal';
 import { useNutritionLogs } from './useNutritionLogs';
 
@@ -56,7 +58,10 @@ export function useDailyNutritionSummary({
         goal: resolvedMacros?.protein ?? nutritionGoal?.protein ?? 0,
       },
       carbs: {
-        value: Math.round(dailyNutrients.carbs),
+        // Goal carbs are net/digestible (fiber is a separate, additive macro with its own
+        // bar/goal), but food-log carbs are total carbs *including* fiber. Show digestible carbs
+        // so the bar compares like-for-like and doesn't double-count fiber.
+        value: Math.round(digestibleCarbs(dailyNutrients.carbs, dailyNutrients.fiber)),
         goal: resolvedMacros?.carbs ?? nutritionGoal?.carbs ?? 0,
       },
       fat: {

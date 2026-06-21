@@ -10,6 +10,7 @@ import {
   Droplets,
   Dumbbell,
   Pill,
+  Wheat,
 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -52,6 +53,8 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
     handleDisableMinimumCaloriesChange,
     useBfForCalculations: debouncedUseBfForCalculations,
     handleUseBfForCalculationsChange,
+    includeFiberInCarbs: debouncedIncludeFiberInCarbs,
+    handleIncludeFiberInCarbsChange,
     intuitiveEatingMode: debouncedIntuitiveEatingMode,
     handleIntuitiveEatingModeChange,
     progressionMode: debouncedProgressionMode,
@@ -303,6 +306,27 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
       ),
       value: debouncedUseBfForCalculations,
       onValueChange: handleUseBfForCalculationsChange,
+    },
+    {
+      key: 'include-fiber-in-carbs',
+      label: t('settings.advancedSettings.includeFiberInCarbs'),
+      subtitle: t('settings.advancedSettings.includeFiberInCarbsSubtitle'),
+      icon: (
+        <View
+          style={{
+            width: theme.size['10'],
+            height: theme.size['10'],
+            borderRadius: theme.borderRadius.sm,
+            backgroundColor: theme.colors.status.amber20,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Wheat size={theme.iconSize.xl} color={theme.colors.status.amber} />
+        </View>
+      ),
+      value: debouncedIncludeFiberInCarbs,
+      onValueChange: handleIncludeFiberInCarbsChange,
     },
   ];
 

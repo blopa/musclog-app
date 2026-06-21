@@ -31,7 +31,8 @@ import {
 } from '@/database/models';
 import i18n from '@/lang/lang';
 import { isProduction } from '@/utils/app';
-import { localDayStartFromUtcMs, localDayStartMs } from '@/utils/calendarDate';
+import { legacyConsumedDateTime, localDayStartFromUtcMs } from '@/utils/calendarDate';
+import { digestibleCarbs } from '@/utils/carbsConvention';
 import { decryptDatabaseValue } from '@/utils/encryption';
 import { handleError } from '@/utils/handleError';
 import { getCurrentTimezone } from '@/utils/timezone';
@@ -638,7 +639,8 @@ export class MigrationService {
         .fetch();
 
       const logCalFromProtein = protein * CALORIES_FOR_PROTEIN;
-      const logCalFromCarbs = Math.max(0, carbs - 0) * CALORIES_FOR_CARBS; // Fiber unknown here usually
+      // Fiber is unknown here usually, so the legacy log carbs are already the digestible amount.
+      const logCalFromCarbs = digestibleCarbs(carbs, 0) * CALORIES_FOR_CARBS;
       const logCalFromFat = fat * CALORIES_FOR_FAT;
       const logPctProtein = calories > 0 ? logCalFromProtein / calories : 0;
       const logPctCarbs = calories > 0 ? logCalFromCarbs / calories : 0;
@@ -653,7 +655,7 @@ export class MigrationService {
         }
         const foodCalFromProtein = food.protein * CALORIES_FOR_PROTEIN;
         const foodCalFromCarbs =
-          Math.max(0, food.carbs - food.fiber) * CALORIES_FOR_CARBS +
+          digestibleCarbs(food.carbs, food.fiber) * CALORIES_FOR_CARBS +
           food.fiber * CALORIES_FOR_FIBER;
         const foodCalFromFat = food.fat * CALORIES_FOR_FAT;
         const foodPctProtein = foodCalFromProtein / food.calories;
@@ -880,9 +882,11 @@ export class MigrationService {
         await database.write(async () => {
           await database.get<NutritionLog>('nutrition_logs').create((newLog) => {
             const createdAt = this.convertTimestamp(oldLog.createdAt);
-            newLog.foodId = newFoodId;
             const rawDate = new Date(this.convertTimestamp(oldLog.date));
-            newLog.date = localDayStartMs(rawDate);
+            const consumed = legacyConsumedDateTime(rawDate, new Date(createdAt));
+            newLog.foodId = newFoodId;
+            newLog.date = consumed.timestamp;
+            newLog.timezone = consumed.timezone;
             newLog.type = this.mapMealType(mealType, createdAt);
             newLog.amount = amountToStore;
             newLog.portionId = undefined; // Not present in old schema
@@ -894,7 +898,7 @@ export class MigrationService {
             newLog.loggedFiberRaw = encrypted.loggedFiber;
             newLog.loggedMicrosRaw = encrypted.loggedMicrosJson;
             newLog.createdAt = createdAt;
-            newLog.updatedAt = this.convertTimestamp(oldLog.createdAt);
+            newLog.updatedAt = createdAt;
             newLog.deletedAt = oldLog.deletedAt
               ? this.convertTimestamp(oldLog.deletedAt)
               : undefined;
@@ -2216,7 +2220,7 @@ export class MigrationService {
     // Update all references and delete duplicates
     let totalRemoved = 0;
     for (const [oldFoodId, newFoodId] of foodIdMap) {
-      await database.write(async () => {
+      await database.write(async (writer) => {
         // Update nutrition_logs
         const nutritionLogs = await database
           .get<NutritionLog>('nutrition_logs')
@@ -2253,9 +2257,10 @@ export class MigrationService {
           });
         }
 
-        // Delete the duplicate food
+        // Delete the duplicate food. `Food.markAsDeleted` is a @writer; call it via
+        // callWriter so it joins this transaction instead of nesting a new one.
         const foodToDelete = await database.get<Food>('foods').find(oldFoodId);
-        await foodToDelete.markAsDeleted();
+        await writer.callWriter(() => foodToDelete.markAsDeleted());
         totalRemoved++;
       });
     }

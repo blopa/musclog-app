@@ -89,6 +89,7 @@ export function useDebouncedSettings(debounceMs = 200) {
         'disableMinimumCalories',
         'useBfForCalculations',
         'intuitiveEatingMode',
+        'includeFiberInCarbs',
         'progressionMode',
         'advancedDataManagement',
         'bleGenerateChartPayload',
@@ -349,6 +350,10 @@ export function useDebouncedSettings(debounceMs = 200) {
     'intuitiveEatingMode',
     SettingsService.setIntuitiveEatingMode
   );
+  const handleIncludeFiberInCarbsChange = createSettingHandler<boolean>(
+    'includeFiberInCarbs',
+    SettingsService.setIncludeFiberInCarbs
+  );
   const handleProgressionModeChange = createSettingHandler<ProgressionMode>(
     'progressionMode',
     SettingsService.setProgressionMode
@@ -495,6 +500,9 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'intuitiveEatingMode':
             await SettingsService.setIntuitiveEatingMode(value as boolean);
             break;
+          case 'includeFiberInCarbs':
+            await SettingsService.setIncludeFiberInCarbs(value as boolean);
+            break;
           case 'progressionMode':
             await SettingsService.setProgressionMode(value as ProgressionMode);
             break;
@@ -598,6 +606,8 @@ export function useDebouncedSettings(debounceMs = 200) {
       (localSettings.useBfForCalculations as boolean) ?? actualSettings.useBfForCalculations,
     intuitiveEatingMode:
       (localSettings.intuitiveEatingMode as boolean) ?? actualSettings.intuitiveEatingMode,
+    includeFiberInCarbs:
+      (localSettings.includeFiberInCarbs as boolean) ?? actualSettings.includeFiberInCarbs,
     progressionMode:
       (localSettings.progressionMode as ProgressionMode) ?? actualSettings.progressionMode,
     advancedDataManagement:
@@ -654,6 +664,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleDisableMinimumCaloriesChange,
     handleUseBfForCalculationsChange,
     handleIntuitiveEatingModeChange,
+    handleIncludeFiberInCarbsChange,
     handleProgressionModeChange,
     handleAdvancedDataManagementChange,
     handleBleGenerateChartPayloadChange,

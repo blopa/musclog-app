@@ -1,4 +1,5 @@
 import { type FoodLabels } from '@/database/models/Food';
+import { totalCarbsForFoodSource } from '@/utils/carbsConvention';
 
 type NumericLike = number | string | null | undefined;
 
@@ -148,12 +149,17 @@ export function applyMusclogQualityToFoodRecord(
 }
 
 export function getMusclogNutritionPer100g(product: MusclogProduct): MusclogNutritionPer100g {
+  const carbs = parseMusclogNumber(product.carbs);
+  const fiber = parseMusclogNumber(product.fiber);
+
   return {
     calories: parseMusclogNumber(product.kcal ?? product.calories),
     protein: parseMusclogNumber(product.protein),
-    carbs: parseMusclogNumber(product.carbs),
+    // Musclog scrapes EU (Dutch) supermarket labels → "Koolhydraten" is net carbs (fiber-excluded);
+    // normalize to canonical total (= carbs + fiber).
+    carbs: totalCarbsForFoodSource('musclog', { carbs, fiber }),
     fat: parseMusclogNumber(product.fat),
-    fiber: parseMusclogNumber(product.fiber),
+    fiber,
     sugar: parseMusclogNumber(product.other_nutrients?.sugar ?? product.sugar),
     saturatedFat: parseMusclogNumber(
       product.other_nutrients?.saturated_fat ?? product.saturatedFat

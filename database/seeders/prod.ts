@@ -398,6 +398,12 @@ async function runSeedProductionData(options?: SeedProductionDataOptions): Promi
     const defaultUnits = getDefaultUnits();
     await SettingsService.setUnits(defaultUnits);
 
+    // Default the manual-entry carbs convention from units: imperial users read US labels
+    // (Total Carbohydrate includes fiber) → include fiber; metric users read EU labels
+    // (available carbohydrate excludes fiber) → don't. The app always stores total carbs.
+    await SettingsService.setIncludeFiberInCarbs(defaultUnits === 'imperial');
+    console.log(`Set default include-fiber-in-carbs to ${defaultUnits === 'imperial'}`);
+
     // 7. Seed USDA foundation foods from CSV
     await seedUSDAFoundationFoods();
 

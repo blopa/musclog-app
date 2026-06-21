@@ -4,7 +4,8 @@ import { UnifiedFoodResult } from '@/hooks/useUnifiedFoodSearch';
 import i18n from '@/lang/lang';
 import { ProductV3, SearchResultProduct, SuccessFoodProductState } from '@/types/openFoodFacts';
 
-import { resolveRoundedPer100gCaloriesForDisplay } from './inferCaloriesFromMacros';
+import { totalCarbsForFoodSource } from './carbsConvention';
+import { resolveRoundedPer100gCaloriesForDisplay, toFiniteMacro } from './inferCaloriesFromMacros';
 import { getProductName as _getProductName } from './productName';
 import { gramsToDisplay } from './unitConversion';
 import { getMassUnitI18nKey } from './units';
@@ -204,9 +205,17 @@ type NutrimentsWithEstimated = SuccessFoodProductState['product']['nutriments'] 
   isEstimated: boolean;
 };
 
+export type OpenFoodFactsNutritionProduct =
+  | SearchResultProduct
+  | SuccessFoodProductState['product']
+  | (ProductV3 & {
+      nutriments_estimated?: ProductV3['nutriments'];
+      nutrition?: SuccessFoodProductState['product']['nutrition'];
+    });
+
 // Helper function to get nutriments with fallback to nutriments_estimated
 export function getNutrimentsWithFallback(
-  product: SuccessFoodProductState['product'] | SearchResultProduct
+  product: OpenFoodFactsNutritionProduct
 ): NutrimentsWithEstimated | null {
   if (!product?.nutriments && !product?.nutriments_estimated) {
     const v3 = getNutrimentsFromV3Nutrition(product);
@@ -304,22 +313,178 @@ export function getNutrimentValue(nutriments: any, baseName: string): number | u
   return Number.isFinite(num) ? num : undefined;
 }
 
+/**
+ * Resolve OFF per-100g fiber: prefer the direct `fiber` nutriment, otherwise derive it from
+ * `carbohydrates-total − carbohydrates` (OFF's `carbohydrates` is the net value when a separate
+ * total is present). Always non-negative; falls back to 0 when neither path is available.
+ */
+export function resolveOpenFoodFactsFiberPer100g(nutriments: any): number {
+  const directFiber = getNutrimentValue(nutriments, 'fiber');
+  if (directFiber !== undefined) {
+    return Math.max(0, directFiber);
+  }
+
+  const carbsTotal = getNutrimentValue(nutriments, 'carbohydrates-total');
+  const carbs = getNutrimentValue(nutriments, 'carbohydrates');
+  if (carbsTotal !== undefined && carbs !== undefined) {
+    return Math.max(0, carbsTotal - carbs);
+  }
+
+  return 0;
+}
+
 // Map all nutriments to a comprehensive object
-function mapAllNutriments(nutriments: any): Record<string, any> {
-  if (!nutriments) {
+function mapAllNutriments(nutriments: unknown): Record<string, unknown> {
+  if (!nutriments || typeof nutriments !== 'object') {
     return {};
   }
 
-  const mappedNutriments: Record<string, any> = {};
+  const rawNutriments = nutriments as Record<string, unknown>;
+  const mappedNutriments: Record<string, unknown> = {};
 
   // Extract all available nutriments using the properties array
   NUTRIMENT_PROPERTIES.forEach((prop) => {
-    if (nutriments[prop] !== undefined) {
-      mappedNutriments[prop] = nutriments[prop];
+    if (rawNutriments[prop] !== undefined) {
+      mappedNutriments[prop] = rawNutriments[prop];
     }
   });
 
   return mappedNutriments;
+}
+
+export type OpenFoodFactsNutritionPer100g = {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
+  sugar: number;
+  saturatedFat: number;
+  sodium: number;
+  salt: number;
+  alcohol: number;
+  potassium: number;
+  magnesium: number;
+  zinc: number;
+};
+
+export type ParsedOpenFoodFactsNutrition = {
+  nutrition: OpenFoodFactsNutritionPer100g;
+  availability: {
+    calories: boolean;
+    protein: boolean;
+    carbs: boolean;
+    fat: boolean;
+  };
+  allNutriments: Record<string, unknown>;
+  roundedCaloriesForDisplay: number;
+};
+
+// Deliberately distinct from externalFoodProduct's EMPTY_PRODUCT_NUTRITION: this OFF-specific shape
+// carries `salt` (OFF reports salt separately from sodium). Do not "dedupe" them.
+const EMPTY_OPEN_FOOD_FACTS_NUTRITION: OpenFoodFactsNutritionPer100g = {
+  calories: 0,
+  protein: 0,
+  carbs: 0,
+  fat: 0,
+  fiber: 0,
+  sugar: 0,
+  saturatedFat: 0,
+  sodium: 0,
+  salt: 0,
+  alcohol: 0,
+  potassium: 0,
+  magnesium: 0,
+  zinc: 0,
+};
+
+/**
+ * Canonical Open Food Facts nutrient parser. OFF's carbohydrate convention is mixed by region,
+ * so every OFF save/display path must pass through this function before storing or comparing carbs.
+ */
+export function parseOpenFoodFactsNutritionPer100g(
+  product: OpenFoodFactsNutritionProduct
+): ParsedOpenFoodFactsNutrition {
+  const nutriments = getNutrimentsWithFallback(product);
+  if (!nutriments) {
+    return {
+      nutrition: { ...EMPTY_OPEN_FOOD_FACTS_NUTRITION },
+      availability: {
+        calories: false,
+        protein: false,
+        carbs: false,
+        fat: false,
+      },
+      allNutriments: {},
+      roundedCaloriesForDisplay: 0,
+    };
+  }
+
+  const allNutriments = mapAllNutriments(nutriments);
+  const numberFor = (key: string): number => toFiniteMacro(getNutrimentValue(nutriments, key) ?? 0);
+  const rawCalories = getNutrimentValue(nutriments, 'energy-kcal');
+  const rawProtein = getNutrimentValue(nutriments, 'proteins');
+  const rawCarbs = getNutrimentValue(nutriments, 'carbohydrates');
+  const rawFat = getNutrimentValue(nutriments, 'fat');
+
+  const protein = rawProtein !== undefined ? Math.max(0, rawProtein) : 0;
+  const availableCarbs = rawCarbs !== undefined ? Math.max(0, rawCarbs) : undefined;
+  const fat = rawFat !== undefined ? Math.max(0, rawFat) : 0;
+
+  const carbsTotalRaw = getNutrimentValue(nutriments, 'carbohydrates-total');
+  const fiber = resolveOpenFoodFactsFiberPer100g(nutriments);
+
+  const carbs =
+    availableCarbs !== undefined
+      ? totalCarbsForFoodSource('openfood', {
+          carbs: availableCarbs,
+          fiber,
+          offCarbsTotal: carbsTotalRaw,
+          energyReconciliation: {
+            statedKcalPer100g: numberFor('energy-kcal'),
+            protein,
+            fat,
+            alcohol: numberFor('alcohol'),
+          },
+        })
+      : 0;
+
+  const roundedCaloriesForDisplay = resolveRoundedPer100gCaloriesForDisplay({
+    calories: rawCalories,
+    protein: rawProtein !== undefined ? protein : undefined,
+    carbs: availableCarbs !== undefined ? carbs : undefined,
+    fat: rawFat !== undefined ? fat : undefined,
+    fiber,
+  });
+
+  return {
+    nutrition: {
+      calories: numberFor('energy-kcal'),
+      protein,
+      carbs,
+      fat,
+      fiber,
+      sugar: numberFor('sugars'),
+      saturatedFat: numberFor('saturated-fat'),
+      sodium: toFiniteMacro(
+        getNutrimentValue(nutriments, 'sodium') ?? getNutrimentValue(nutriments, 'salt') ?? 0
+      ),
+      salt: numberFor('salt'),
+      alcohol: numberFor('alcohol'),
+      // OFF stores minerals in grams per 100g — no unit conversion needed.
+      potassium: numberFor('potassium'),
+      magnesium: numberFor('magnesium'),
+      zinc: numberFor('zinc'),
+    },
+    availability: {
+      calories: rawCalories !== undefined,
+      protein: rawProtein !== undefined,
+      carbs: availableCarbs !== undefined,
+      fat: rawFat !== undefined,
+    },
+    allNutriments,
+    roundedCaloriesForDisplay,
+  };
 }
 
 // Main function to convert Open Food Facts product to UnifiedFoodResult
@@ -400,89 +565,60 @@ export function mapOpenFoodFactsProduct(
   units: Units = 'metric'
 ): UnifiedFoodResult {
   const nutriments = getNutrimentsWithFallback(product);
-  const kcal = nutriments?.['energy-kcal'];
+  const parsedNutrition = parseOpenFoodFactsNutritionPer100g(product);
+  const { availability, nutrition, allNutriments } = parsedNutrition;
+  const nutrimentValue = (key: string): number | undefined =>
+    nutriments ? getNutrimentValue(nutriments, key) : undefined;
 
-  // Map all comprehensive nutriments
-  const allNutriments = mapAllNutriments(nutriments);
+  const calories =
+    parsedNutrition.roundedCaloriesForDisplay > 0
+      ? parsedNutrition.roundedCaloriesForDisplay
+      : undefined;
+  const protein = availability.protein ? nutrition.protein : undefined;
+  const carbs = availability.carbs ? nutrition.carbs : undefined;
+  const fat = availability.fat ? nutrition.fat : undefined;
+  const fiber = nutrition.fiber;
 
-  // Extract key macronutrients with proper fallback
-  const rawProtein = getNutrimentValue(nutriments, 'proteins');
-  const rawCarbs = getNutrimentValue(nutriments, 'carbohydrates');
-  const rawFat = getNutrimentValue(nutriments, 'fat');
-
-  const protein = rawProtein !== undefined ? Math.max(0, rawProtein) : undefined;
-  const carbs = rawCarbs !== undefined ? Math.max(0, rawCarbs) : undefined;
-  const fat = rawFat !== undefined ? Math.max(0, rawFat) : undefined;
-
-  // Improved fiber extraction with fallback calculation and negative value protection
-  const directFiber = getNutrimentValue(nutriments, 'fiber');
-  let fiber = 0;
-
-  if (directFiber !== undefined) {
-    // Use direct fiber value when available and clamp to non-negative
-    fiber = Math.max(0, directFiber);
-  } else {
-    // Fallback: calculate from carbohydrates-total - carbohydrates
-    // Only use this if result is positive (some OFF products have inconsistent data)
-    const carbsTotal = getNutrimentValue(nutriments, 'carbohydrates-total');
-    if (carbsTotal !== undefined && carbs !== undefined) {
-      const calculatedFiber = carbsTotal - carbs;
-      fiber = Math.max(0, calculatedFiber); // Clamp to minimum 0 to prevent negative values
-    }
-  }
-
-  const roundedCalories = resolveRoundedPer100gCaloriesForDisplay({
-    calories: kcal,
-    protein,
-    carbs,
-    fat,
-    fiber,
-  });
-
-  const calories = roundedCalories > 0 ? roundedCalories : undefined;
-
-  const sugars = getNutrimentValue(nutriments, 'sugars');
-  const saturatedFat = getNutrimentValue(nutriments, 'saturated-fat');
-  const sodium = getNutrimentValue(nutriments, 'sodium');
-  const salt = getNutrimentValue(nutriments, 'salt');
+  const sugars = nutrimentValue('sugars');
+  const saturatedFat = nutrimentValue('saturated-fat');
+  const sodium = nutrimentValue('sodium');
+  const salt = nutrimentValue('salt');
 
   // Extract vitamins and minerals
-  const vitaminA = getNutrimentValue(nutriments, 'vitamin-a');
-  const vitaminC = getNutrimentValue(nutriments, 'vitamin-c');
-  const vitaminE = getNutrimentValue(nutriments, 'vitamin-e');
-  const vitaminK = getNutrimentValue(nutriments, 'vitamin-k');
-  const calcium = getNutrimentValue(nutriments, 'calcium');
-  const iron = getNutrimentValue(nutriments, 'iron');
-  const magnesium = getNutrimentValue(nutriments, 'magnesium');
-  const potassium = getNutrimentValue(nutriments, 'potassium');
-  const zinc = getNutrimentValue(nutriments, 'zinc');
+  const vitaminA = nutrimentValue('vitamin-a');
+  const vitaminC = nutrimentValue('vitamin-c');
+  const vitaminE = nutrimentValue('vitamin-e');
+  const vitaminK = nutrimentValue('vitamin-k');
+  const calcium = nutrimentValue('calcium');
+  const iron = nutrimentValue('iron');
+  const magnesium = nutrimentValue('magnesium');
+  const potassium = nutrimentValue('potassium');
+  const zinc = nutrimentValue('zinc');
 
   // Extract other compounds
-  const cholesterol = getNutrimentValue(nutriments, 'cholesterol');
-  const caffeine = getNutrimentValue(nutriments, 'caffeine');
-  const alcohol = getNutrimentValue(nutriments, 'alcohol');
+  const cholesterol = nutrimentValue('cholesterol');
+  const caffeine = nutrimentValue('caffeine');
+  const alcohol = nutrimentValue('alcohol');
 
   // Extract additional fats
-  const transFat = getNutrimentValue(nutriments, 'trans-fat');
-  const polyunsaturatedFat = getNutrimentValue(nutriments, 'polyunsaturated-fat');
-  const monounsaturatedFat = getNutrimentValue(nutriments, 'monounsaturated-fat');
+  const transFat = nutrimentValue('trans-fat');
+  const polyunsaturatedFat = nutrimentValue('polyunsaturated-fat');
+  const monounsaturatedFat = nutrimentValue('monounsaturated-fat');
 
   // Extract nutrition scores
-  const nutritionScoreFr = getNutrimentValue(nutriments, 'nutrition-score-fr');
-  const nutritionScoreUk = getNutrimentValue(nutriments, 'nutrition-score-uk');
+  const nutritionScoreFr = nutrimentValue('nutrition-score-fr');
+  const nutritionScoreUk = nutrimentValue('nutrition-score-uk');
 
   // Extract ingredient estimates
-  const fruitsVegetablesNutsEstimate = getNutrimentValue(
-    nutriments,
+  const fruitsVegetablesNutsEstimate = nutrimentValue(
     'fruits-vegetables-nuts-estimate-from-ingredients'
   );
-  const fruitsVegetablesLegumesEstimate = getNutrimentValue(
-    nutriments,
+  const fruitsVegetablesLegumesEstimate = nutrimentValue(
     'fruits-vegetables-legumes-estimate-from-ingredients'
   );
 
   // Extract environmental data
-  const carbonFootprint = getNutrimentValue(nutriments, 'carbon-footprint-from-known-ingredients');
+  const carbonFootprint = nutrimentValue('carbon-footprint-from-known-ingredients');
 
   // Extract product scores
   const nutriscoreGrade =

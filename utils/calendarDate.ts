@@ -439,6 +439,26 @@ export function consumedDateTimeOnDay(
 }
 
 /**
+ * Resolves the consumed datetime for a legacy nutrition log being migrated. If the
+ * stored value already carries a wall-clock time-of-day, it is preserved as-is;
+ * otherwise it was a bare midnight day key, so the time-of-day from `fallbackTimeDate`
+ * (typically the row's `created_at`) is stamped onto the day. Mirrors the boot-time
+ * repair in {@link timeOfDayMsInTimezone}-based `TimezoneMigrationService` paths so the
+ * two entry points agree on what "legacy day key" means.
+ */
+export function legacyConsumedDateTime(rawDate: Date, fallbackTimeDate: Date): ConsumedDateTime {
+  const hasTimeOfDay =
+    rawDate.getHours() !== 0 ||
+    rawDate.getMinutes() !== 0 ||
+    rawDate.getSeconds() !== 0 ||
+    rawDate.getMilliseconds() !== 0;
+
+  return hasTimeOfDay
+    ? consumedDateTimeFromDate(rawDate)
+    : consumedDateTimeOnDay(rawDate, fallbackTimeDate);
+}
+
+/**
  * Time-aware sibling of {@link dayKeyForCalendarDateInTimezone}: builds the stored
  * instant for the calendar day of `dayDate` at the wall-clock time of `timeDate`,
  * anchored to a fixed offset timezone. Falls back to a device-local combine when

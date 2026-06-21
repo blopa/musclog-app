@@ -3,8 +3,10 @@ import {
   EMPTY_PRODUCT_NUTRITION,
   microsFromNutrition,
   parseCoreMacrosFromAlternateSource,
+  parsePlainNutrimentsNutritionPer100g,
   parseProductNutritionPer100g,
 } from '@/utils/externalFoodProduct';
+import { mapOpenFoodFactsProduct } from '@/utils/openFoodFactsMapper';
 
 describe('externalFoodProduct nutrition parsing', () => {
   describe('parseProductNutritionPer100g — usda', () => {
@@ -64,7 +66,8 @@ describe('externalFoodProduct nutrition parsing', () => {
       expect(result).toMatchObject({
         calories: 180,
         protein: 9,
-        carbs: 22,
+        // Musclog = EU net carbs (22) normalized to total = 22 + 3 (fiber) = 25.
+        carbs: 25,
         fat: 6,
         fiber: 3,
         sugar: 11,
@@ -110,8 +113,65 @@ describe('externalFoodProduct nutrition parsing', () => {
       expect(parseProductNutritionPer100g('openfood', product).fiber).toBe(5);
     });
 
+    it('keeps _100g carbs as total when the stated energy matches the total interpretation', () => {
+      const product = {
+        nutriments: {
+          'energy-kcal_100g': 100,
+          proteins_100g: 3,
+          carbohydrates_100g: 20,
+          fat_100g: 2,
+          fiber_100g: 5,
+        },
+      };
+
+      expect(parseProductNutritionPer100g('openfood', product).carbs).toBe(20);
+    });
+
     it('returns all-zero nutrition when no nutriments are available', () => {
       expect(parseProductNutritionPer100g('openfood', {})).toEqual(EMPTY_PRODUCT_NUTRITION);
+    });
+  });
+
+  describe('mapOpenFoodFactsProduct', () => {
+    it('uses the shared _100g parser for Open Food Facts display macros', () => {
+      const product = {
+        code: 'off-100g-total',
+        product_name: 'US label product',
+        nutriments: {
+          'energy-kcal_100g': 100,
+          proteins_100g: 3,
+          carbohydrates_100g: 20,
+          fat_100g: 2,
+          fiber_100g: 5,
+        },
+      };
+
+      const result = mapOpenFoodFactsProduct(product as any);
+      expect(result.calories).toBe(100);
+      expect(result.carbs).toBe(20);
+      expect(result.fiber).toBe(5);
+    });
+  });
+
+  describe('parsePlainNutrimentsNutritionPer100g', () => {
+    it('keeps source-less AI label carbs raw instead of applying OFF normalization', () => {
+      const product = {
+        nutriments: {
+          'energy-kcal_100g': 100,
+          proteins_100g: 3,
+          carbohydrates_100g: 20,
+          fat_100g: 2,
+          fiber_100g: 5,
+        },
+      };
+
+      expect(parsePlainNutrimentsNutritionPer100g(product)).toMatchObject({
+        calories: 100,
+        protein: 3,
+        carbs: 20,
+        fat: 2,
+        fiber: 5,
+      });
     });
   });
 
@@ -153,10 +213,12 @@ describe('externalFoodProduct nutrition parsing', () => {
         },
       };
 
+      // OFF reports net carbs (EU convention) with no `carbohydrates-total`, so carbs are
+      // normalized to canonical total = 18 (net) + 1 (fiber) = 19. See utils/carbsConvention.ts.
       expect(parseCoreMacrosFromAlternateSource(state as any)).toEqual({
         calories: 150,
         protein: 7,
-        carbs: 18,
+        carbs: 19,
         fat: 4,
         fiber: 1,
       });

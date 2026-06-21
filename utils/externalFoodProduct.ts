@@ -1,12 +1,15 @@
 import type { MicrosData } from '@/database/models';
 import { isSuccessFoodDetailProductState } from '@/types/guards/openFoodFacts';
 import type { ProductState } from '@/types/openFoodFacts';
+import { totalCarbsForFoodSource } from '@/utils/carbsConvention';
 import { toFiniteMacro } from '@/utils/inferCaloriesFromMacros';
 import { getMusclogNutritionPer100g } from '@/utils/musclogProduct';
 import {
-  getNutrimentsFromV3Nutrition,
   getNutrimentsWithFallback,
   getNutrimentValue,
+  type OpenFoodFactsNutritionProduct,
+  parseOpenFoodFactsNutritionPer100g,
+  resolveOpenFoodFactsFiberPer100g,
 } from '@/utils/openFoodFactsMapper';
 import { mapUSDANutritient } from '@/utils/usdaMapper';
 
@@ -133,6 +136,8 @@ export type ProductNutritionPer100g = {
   zinc: number;
 };
 
+// Deliberately distinct from openFoodFactsMapper's EMPTY_OPEN_FOOD_FACTS_NUTRITION: this shape
+// (ProductNutritionPer100g) is the cross-source product shape and omits `salt`. Do not "dedupe" them.
 export const EMPTY_PRODUCT_NUTRITION: ProductNutritionPer100g = {
   calories: 0,
   protein: 0,
@@ -186,12 +191,16 @@ function parseUSDANutritionPer100g(product: any): ProductNutritionPer100g {
   const mineralGrams = (...numbers: string[]) =>
     toFiniteMacro((pick(...numbers) / 1000) * normFactor);
 
+  // USDA nutrient 1005 already includes fiber (= canonical total carbs).
+  const carbs = macro('1005', '205');
+  const fiber = macro('1079', '291');
+
   return {
     calories: macro('1008', '208', 'ENERC_KCAL'),
     protein: macro('1003', '203'),
-    carbs: macro('1005', '205'),
+    carbs: totalCarbsForFoodSource('usda', { carbs, fiber }),
     fat: macro('1004', '204'),
-    fiber: macro('1079', '291'),
+    fiber,
     sugar: macro('2000', '269', 'sugars'),
     saturatedFat: macro('1258', '606'),
     sodium: mineralGrams('1093', '307'),
@@ -202,37 +211,40 @@ function parseUSDANutritionPer100g(product: any): ProductNutritionPer100g {
   };
 }
 
-function parseOFFNutritionPer100g(product: any): ProductNutritionPer100g {
-  const nutrients = getNutrimentsWithFallback(product) || getNutrimentsFromV3Nutrition(product);
+function parseOFFNutritionPer100g(product: OpenFoodFactsNutritionProduct): ProductNutritionPer100g {
+  // The OFF parser's shape is ProductNutritionPer100g plus `salt`; drop the extra `salt` field so
+  // the result matches the (salt-less) cross-source product shape.
+  const { salt, ...nutrition } = parseOpenFoodFactsNutritionPer100g(product).nutrition;
+  return nutrition;
+}
+
+/**
+ * Parses source-less nutriment blobs that are already in the app's food convention.
+ * Used for synthetic AI-label products, not external catalog ingestion.
+ */
+export function parsePlainNutrimentsNutritionPer100g(
+  product: OpenFoodFactsNutritionProduct
+): ProductNutritionPer100g | null {
+  const nutrients = getNutrimentsWithFallback(product);
   if (!nutrients) {
-    return { ...EMPTY_PRODUCT_NUTRITION };
+    return null;
   }
 
-  const num = (key: string) => toFiniteMacro((getNutrimentValue(nutrients, key) ?? 0) as number);
-
-  const directFiber = getNutrimentValue(nutrients, 'fiber');
-  let fiber: number;
-  if (directFiber !== undefined && directFiber >= 0) {
-    fiber = directFiber;
-  } else {
-    const carbsTotal = getNutrimentValue(nutrients, 'carbohydrates-total');
-    const carbs = getNutrimentValue(nutrients, 'carbohydrates');
-    fiber = carbsTotal !== undefined && carbs !== undefined ? Math.max(0, carbsTotal - carbs) : 0;
-  }
-
-  const sodium =
-    getNutrimentValue(nutrients, 'sodium') ?? getNutrimentValue(nutrients, 'salt') ?? 0;
+  const num = (key: string) => toFiniteMacro(getNutrimentValue(nutrients, key) ?? 0);
+  const fiber = resolveOpenFoodFactsFiberPer100g(nutrients);
 
   return {
-    calories: num('energy-kcal'),
+    ...EMPTY_PRODUCT_NUTRITION,
+    calories: num('energy-kcal') || num('kcal'),
     protein: num('proteins'),
     carbs: num('carbohydrates'),
     fat: num('fat'),
-    fiber: toFiniteMacro(fiber),
+    fiber,
     sugar: num('sugars'),
     saturatedFat: num('saturated-fat'),
-    sodium: toFiniteMacro(sodium),
-    // OFF stores minerals in grams per 100g — no unit conversion needed.
+    sodium: toFiniteMacro(
+      getNutrimentValue(nutrients, 'sodium') ?? getNutrimentValue(nutrients, 'salt') ?? 0
+    ),
     alcohol: num('alcohol'),
     potassium: num('potassium'),
     magnesium: num('magnesium'),

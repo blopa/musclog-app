@@ -133,6 +133,10 @@ const BOOT_MIGRATIONS: BootMigration[] = [
     run: () => TimezoneMigrationService.backfillMissingTimezones(),
   },
   {
+    tag: 'TimezoneMigrationService.repairNullTimezoneNutritionLogs',
+    run: () => TimezoneMigrationService.repairNullTimezoneNutritionLogs(),
+  },
+  {
     tag: 'TimezoneMigrationService.backfillConsumedTimeFromCreatedAt',
     // Use the first-run cutoff so future edits are never re-derived from created_at.
     runOnce: true,
@@ -300,7 +304,22 @@ export async function runDatabaseBootSequence(cancelled: Cancelled): Promise<voi
       beginBootProgress(migrations.length);
     }
 
-    await Promise.all(migrations.map((m) => runBootMigration(m)));
+    // Run boot migrations sequentially in declared order. Several repairs touch
+    // overlapping tables/rows (e.g. fixNegativeFiber vs the timezone repairs on
+    // nutrition_logs/nutrition_goals, and the exercise backfills on the exercises
+    // table), and `backfillConsumedTimeFromCreatedAt` reads the timezone that
+    // `repairNullTimezoneNutritionLogs` writes. Running them concurrently let
+    // separately-loaded model instances clobber each other's column updates
+    // (last-write-wins on stale reads). The array order already encodes these
+    // dependencies, so sequencing is sufficient. `runBootMigration` swallows its
+    // own errors, so one failure does not stop the rest of the chain.
+    for (const m of migrations) {
+      if (cancelled()) {
+        return;
+      }
+
+      await runBootMigration(m);
+    }
 
     if (!cancelled()) {
       finishBootProgress();

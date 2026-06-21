@@ -297,14 +297,17 @@ export class MealService {
    * Update meal food amount
    */
   static async updateMealFoodAmount(mealFoodId: string, amount: number): Promise<MealFood> {
-    return await database.write(async () => {
+    // Keep the deleted-state guard and the write in one transaction so the row can't be
+    // deleted between the check and the update. `MealFood.updateAmount` is a @writer, so it
+    // must join this transaction via callWriter rather than nest a new one (which would stall).
+    return await database.write(async (writer) => {
       const mealFood = await database.get<MealFood>('meal_foods').find(mealFoodId);
 
       if (mealFood.deletedAt) {
         throw new Error('Cannot update deleted meal food');
       }
 
-      await mealFood.updateAmount(amount);
+      await writer.callWriter(() => mealFood.updateAmount(amount));
 
       return mealFood;
     });
@@ -330,11 +333,11 @@ export class MealService {
    * Toggle meal favorite status
    */
   static async toggleMealFavorite(mealId: string): Promise<Meal> {
-    return await database.write(async () => {
-      const meal = await database.get<Meal>('meals').find(mealId);
-      await meal.toggleFavorite();
-      return meal;
-    });
+    // `Meal.toggleFavorite` is a @writer (opens its own transaction); calling it
+    // inside database.write() would nest writers and stall the queue.
+    const meal = await database.get<Meal>('meals').find(mealId);
+    await meal.toggleFavorite();
+    return meal;
   }
 
   /**

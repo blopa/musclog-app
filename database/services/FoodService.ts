@@ -624,11 +624,11 @@ export class FoodService {
    * Toggle favorite status
    */
   static async toggleFavorite(id: string): Promise<Food> {
-    return await database.write(async () => {
-      const food = await database.get<Food>('foods').find(id);
-      await food.toggleFavorite();
-      return food;
-    });
+    // `Food.toggleFavorite` is a @writer (opens its own transaction); calling it
+    // inside database.write() would nest writers and stall the queue.
+    const food = await database.get<Food>('foods').find(id);
+    await food.toggleFavorite();
+    return food;
   }
 
   /**

@@ -5,3 +5,5 @@ scikit-learn
 m2cgen
 gdown
 ahrs
+opencv-python
+matplotlib
