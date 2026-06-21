@@ -135,6 +135,8 @@ export type ProductNutritionPer100g = {
   zinc: number;
 };
 
+// Deliberately distinct from openFoodFactsMapper's EMPTY_OPEN_FOOD_FACTS_NUTRITION: this shape
+// (ProductNutritionPer100g) is the cross-source product shape and omits `salt`. Do not "dedupe" them.
 export const EMPTY_PRODUCT_NUTRITION: ProductNutritionPer100g = {
   calories: 0,
   protein: 0,

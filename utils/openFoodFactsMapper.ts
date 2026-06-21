@@ -360,6 +360,8 @@ export type ParsedOpenFoodFactsNutrition = {
   roundedCaloriesForDisplay: number;
 };
 
+// Deliberately distinct from externalFoodProduct's EMPTY_PRODUCT_NUTRITION: this OFF-specific shape
+// carries `salt` (OFF reports salt separately from sodium). Do not "dedupe" them.
 const EMPTY_OPEN_FOOD_FACTS_NUTRITION: OpenFoodFactsNutritionPer100g = {
   calories: 0,
   protein: 0,

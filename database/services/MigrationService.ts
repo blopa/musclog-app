@@ -31,11 +31,7 @@ import {
 } from '@/database/models';
 import i18n from '@/lang/lang';
 import { isProduction } from '@/utils/app';
-import {
-  consumedDateTimeFromDate,
-  consumedDateTimeOnDay,
-  localDayStartFromUtcMs,
-} from '@/utils/calendarDate';
+import { legacyConsumedDateTime, localDayStartFromUtcMs } from '@/utils/calendarDate';
 import { digestibleCarbs } from '@/utils/carbsConvention';
 import { decryptDatabaseValue } from '@/utils/encryption';
 import { handleError } from '@/utils/handleError';
@@ -887,14 +883,7 @@ export class MigrationService {
           await database.get<NutritionLog>('nutrition_logs').create((newLog) => {
             const createdAt = this.convertTimestamp(oldLog.createdAt);
             const rawDate = new Date(this.convertTimestamp(oldLog.date));
-            const rawDateHasTime =
-              rawDate.getHours() !== 0 ||
-              rawDate.getMinutes() !== 0 ||
-              rawDate.getSeconds() !== 0 ||
-              rawDate.getMilliseconds() !== 0;
-            const consumed = rawDateHasTime
-              ? consumedDateTimeFromDate(rawDate)
-              : consumedDateTimeOnDay(rawDate, new Date(createdAt));
+            const consumed = legacyConsumedDateTime(rawDate, new Date(createdAt));
             newLog.foodId = newFoodId;
             newLog.date = consumed.timestamp;
             newLog.timezone = consumed.timezone;
