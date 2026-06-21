@@ -22,7 +22,7 @@ Musclog to the original Nintendo Game Boy (DMG) / Game Boy Color (CGB) as a home
 | Display                | 160×144, 4 shades of gray                     | ~20×18 tiles ≈ 20 chars × 18 rows of text.                             |
 | Input                  | D-pad, A, B, Start, Select                    | All navigation is menu-driven.                                         |
 | Network / Camera / Mic | **None**                                      | No food search, scanning, AI, or sync.                                 |
-| Date/Time clock        | **None on DMG** (RTC only on some MBC3 carts) | Use an MBC3+RTC cart for real timestamps, else a manual "day counter". |
+| Date/Time clock        | MBC3 RTC (5 registers: sec/min/hr/day-lo/day-hi) | Using MBC3+Timer+RAM+Battery (`0x10`). User sets today's date once; `cal_current_date()` computes current date from `rtc_base_date + elapsed_days`. |
 
 **Key takeaway:** everything is **integer math, tile-based text, and menu navigation**, persisted into a
 small battery-backed SRAM. Treat it like an embedded device, not a phone.
@@ -204,7 +204,7 @@ What's wired up so far:
 
 - **`scripts/build-gb-rom.mjs`** — orchestrator: ensures GBDK is present, runs `png2asset` on the logo,
   then compiles every `gameboy/src/*.c` file with `lcc`. The ROM is CGB-only (`-Wm-yC`), uses the
-  MBC5+RAM+battery cart type (`-Wm-yt0x1B`), and declares 4 SRAM banks / 32 KB (`-Wm-ya4`).
+  MBC3+Timer+RAM+battery cart type (`-Wm-yt0x10`), and declares 4 SRAM banks / 32 KB (`-Wm-ya4`).
 - **`gameboy/tools/fetch-gbdk.mjs`** — downloads/extracts the GBDK-2020 release (platform-aware, pinned
   fallback version when offline). Also exposed as `npm run gb:setup`.
 - **`gameboy/tools/prepare-logo.mjs`** — converts `assets/icon-pixel.png` → `gameboy/assets/logo.png`
@@ -216,7 +216,8 @@ What's wired up so far:
 - **`gameboy/src/onboarding.c`** — first-run flow with a combined unit/sex/activity setup screen,
   then age, height, weight, training experience, fitness focus, weight goal, generated goal review,
   and manual macro edits.
-- **`gameboy/src/database.c`** — SRAM bank 0 persistence with named byte-address constants, bit-packed profile flags, magic/version/checksum validation, and a compact 22-byte save block (down from 31 bytes in the previous flat-struct layout).
+- **`gameboy/src/database.c`** — SRAM bank 0 persistence with named byte-address constants, bit-packed profile flags, magic/version/checksum validation, and a compact 23-byte save block (down from 31 bytes; the extra byte vs the previous 22-byte layout holds the MBC3 RTC calibration date).
+- **`gameboy/src/rtc.c`** — MBC3 RTC hardware access (`rtc_latch`, `rtc_write_days`), calendar arithmetic (`cal_advance`, `cal_compare`, `cal_format`), and the `rtc_setup_date` screen that lets the user pin today's date on first boot or after re-calibration.
 - **`gameboy/src/nutrition_math.c`** — integer-only Mifflin-style BMR, activity multipliers, calorie
   adjustments, macro splits, and fiber target generation.
 - **`gameboy/src/ui_text.c` / `input.c`** — tiny text UI helpers and debounced joypad input.
@@ -232,11 +233,11 @@ so we must (a) pick an MBC that has SRAM + battery, (b) declare our save layout,
 
 ### Cartridge / MBC type
 
-Set the MBC type at link time with `-Wm-yt<hex>`:
+Set the MBC type at link time with `-Wm-yt<hex>`. The project uses **`0x10` (MBC3 + Timer + RAM + battery)**:
 
-- **Type `0x03`** — MBC1 + SRAM + battery (up to 32 KB SRAM). Fine for v1.
-- **Type `0x1B`** — MBC5 + SRAM + battery (more banks). Headroom for history.
-- **Type `0x0F`/`0x10`** — MBC3 **with RTC** if we want a real-time clock for true date stamps.
+- **Type `0x03`** — MBC1 + SRAM + battery (up to 32 KB SRAM). No RTC.
+- **Type `0x1B`** — MBC5 + SRAM + battery (more banks, no RTC). Previously used; replaced.
+- **Type `0x0F`/`0x10`** — MBC3 **with RTC** — `0x0F` has no RAM, `0x10` has RAM + battery. **Currently active.**
 
 ### Declaring save variables
 
@@ -244,19 +245,20 @@ GBDK keeps SRAM access **write-protected by default**. The implemented save live
 `#pragma dataseg DATA_0`, and every load/save brackets access with `ENABLE_RAM` / `DISABLE_RAM`:
 
 ```c
-// gameboy/src/database.c  (replaces storage.c)
+// gameboy/src/database.c
 #include <gb/gb.h>
 
-// Raw 22-byte block in SRAM bank 0; fields accessed via named SRAM_* address constants.
+// Raw 23-byte block in SRAM bank 0; fields accessed via named SRAM_* address constants.
 #pragma dataseg DATA_0
-static uint8_t sram_bank[SRAM_SAVE_SIZE];   /* 22 bytes */
+static uint8_t sram_bank[SRAM_SAVE_SIZE];   /* 23 bytes */
 #pragma dataseg DATA
 
 void db_save(const SaveData *data) {
     // Pack 7 enum/flag fields into 2 bytes (SRAM_FLAGS1 + SRAM_FLAGS2).
     // Store height as 1 byte offset from DB_HEIGHT_CM_MIN (saves 1 byte).
     // Store fiber_goal as 1 byte (max 99 < 256, saves 1 byte).
-    // Total profile block: 22 bytes (was 31).
+    // Store RTC calibration base date as 3 bytes (year-2000, month, day).
+    // Total profile block: 23 bytes (was 31).
     ...
 }
 ```
@@ -299,7 +301,7 @@ Background on saving: [Larold's "How to Save Data in Game Boy Games"](https://la
 4. **Workout history + PRs** — scrollable list, per-exercise PR detection, volume bar chart.
 5. **Macro logging** — food library CRUD in SRAM, daily totals vs. goal, net-carb math, progress bars.
 6. **Body weight + units** — weight log, metric/imperial display conversion, simple trend chart.
-7. **Polish** — rest-timer beep, PR fanfare, day counter or MBC3 RTC for real dates.
+7. **Polish** — rest-timer beep, PR fanfare. Date tracking is already live via MBC3 RTC.
 8. **Stretch goals** — Link Cable data export to a second cart/PC; minimal cycle logging.
 
 ---

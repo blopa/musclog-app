@@ -153,3 +153,132 @@ void ui_draw_value_screen(const char *title, const char *label, const char *valu
     ui_print_center(13u, "LEFT/RIGHT FAST");
     ui_footer("B BACK", "A/ST OK");
 }
+
+void ui_draw_date_picker(const char *title, uint8_t field,
+                         uint16_t year, uint8_t month, uint8_t day) {
+    /*
+     * Layout (rows):
+     *   0  header "MUSCLOG GB"      PAL_HEADER
+     *   2  title (centered)
+     *   3  "--------------------"
+     *   5  hint text
+     *   7  YEAR  field row
+     *   8  MONTH field row
+     *   9  DAY   field row
+     * Footer is NOT drawn here — caller adds it.
+     */
+    const char *labels[3];
+    char        buf[5];
+    uint8_t     i;
+    uint8_t     row;
+    uint8_t     col;
+    uint8_t     pal;
+
+    labels[0] = "YEAR";
+    labels[1] = "MONTH";
+    labels[2] = "DAY";
+
+    ui_title(title);
+    ui_print_center(5u, "UP/DN FIELD  L/R SET");
+
+    for (i = 0u; i != 3u; ++i) {
+        row = (uint8_t)(7u + i);
+        pal = (i == field) ? UI_PAL_SELECTED : UI_PAL_PANEL;
+        ui_fill_attr(0u, row, SCREEN_COLS, 1u, pal);
+
+        ui_print_at(1u, row, (i == field) ? ">" : " ");
+        ui_print_at(3u, row, labels[i]);
+
+        if (i == 0u) {
+            buf[0] = (char)('0' + (year / 1000u) % 10u);
+            buf[1] = (char)('0' + (year / 100u)  % 10u);
+            buf[2] = (char)('0' + (year / 10u)   % 10u);
+            buf[3] = (char)('0' +  year           % 10u);
+            buf[4] = '\0';
+            col = 16u;  /* right-align 4-digit year: 20 - 4 */
+        } else if (i == 1u) {
+            buf[0] = (char)('0' + month / 10u);
+            buf[1] = (char)('0' + month % 10u);
+            buf[2] = '\0';
+            col = 18u;  /* right-align 2-digit month: 20 - 2 */
+        } else {
+            buf[0] = (char)('0' + day / 10u);
+            buf[1] = (char)('0' + day % 10u);
+            buf[2] = '\0';
+            col = 18u;  /* right-align 2-digit day: 20 - 2 */
+        }
+        ui_print_at(col, row, buf);
+    }
+}
+
+void ui_draw_datetime_picker(const char *title, uint8_t field,
+                             uint16_t year, uint8_t month, uint8_t day,
+                             uint8_t hour, uint8_t minute) {
+    /*
+     * Layout (rows):
+     *   0  header "MUSCLOG GB"  PAL_HEADER
+     *   2  title (centered)
+     *   3  "--------------------"
+     *   5  hint text
+     *   7  YEAR   field row
+     *   8  MONTH  field row
+     *   9  DAY    field row
+     *  10  HOUR   field row
+     *  11  MINUTE field row
+     * Footer is NOT drawn here — caller adds it.
+     */
+    const char *labels[5];
+    char        buf[5];
+    uint8_t     i;
+    uint8_t     row;
+    uint8_t     col;
+    uint8_t     pal;
+
+    labels[0] = "YEAR";
+    labels[1] = "MONTH";
+    labels[2] = "DAY";
+    labels[3] = "HOUR";
+    labels[4] = "MINUTE";
+
+    ui_title(title);
+    ui_print_center(5u, "UP/DN FIELD  L/R SET");
+
+    for (i = 0u; i != 5u; ++i) {
+        row = (uint8_t)(7u + i);
+        pal = (i == field) ? UI_PAL_SELECTED : UI_PAL_PANEL;
+        ui_fill_attr(0u, row, SCREEN_COLS, 1u, pal);
+
+        ui_print_at(1u, row, (i == field) ? ">" : " ");
+        ui_print_at(3u, row, labels[i]);
+
+        if (i == 0u) {
+            buf[0] = (char)('0' + (year / 1000u) % 10u);
+            buf[1] = (char)('0' + (year / 100u)  % 10u);
+            buf[2] = (char)('0' + (year / 10u)   % 10u);
+            buf[3] = (char)('0' +  year           % 10u);
+            buf[4] = '\0';
+            col = 16u;
+        } else if (i == 1u) {
+            buf[0] = (char)('0' + month / 10u);
+            buf[1] = (char)('0' + month % 10u);
+            buf[2] = '\0';
+            col = 18u;
+        } else if (i == 2u) {
+            buf[0] = (char)('0' + day / 10u);
+            buf[1] = (char)('0' + day % 10u);
+            buf[2] = '\0';
+            col = 18u;
+        } else if (i == 3u) {
+            buf[0] = (char)('0' + hour / 10u);
+            buf[1] = (char)('0' + hour % 10u);
+            buf[2] = '\0';
+            col = 18u;
+        } else {
+            buf[0] = (char)('0' + minute / 10u);
+            buf[1] = (char)('0' + minute % 10u);
+            buf[2] = '\0';
+            col = 18u;
+        }
+        ui_print_at(col, row, buf);
+    }
+}

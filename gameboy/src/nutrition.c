@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "input.h"
+#include "rtc.h"
 #include "ui_text.h"
 
 /* ── Mock food data (const = ROM) ── */
@@ -66,6 +67,35 @@ static void sum_day_macros(uint8_t day,
     }
 }
 
+/*
+ * Map a CalDate to a mock day index (0=today, 1=yesterday, 2+=empty).
+ * d must be <= today.
+ */
+static uint8_t date_to_mock_idx(CalDate d, CalDate today) {
+    CalDate  cursor;
+    uint16_t diff;
+    uint8_t  dim;
+
+    if (cal_compare(d, today) == 0) return 0u;
+
+    cursor = d;
+    diff   = 0u;
+    while (cal_compare(cursor, today) < 0 && diff < 3u) {
+        dim = cal_days_in_month(cursor.month, cursor.year);
+        cursor.day++;
+        if (cursor.day > dim) {
+            cursor.day = 1u;
+            cursor.month++;
+            if (cursor.month > 12u) {
+                cursor.month = 1u;
+                cursor.year++;
+            }
+        }
+        diff++;
+    }
+    return (uint8_t)(diff < 2u ? diff : 2u);
+}
+
 /* ── Progress bar helpers ── */
 static uint8_t bar_fill(uint16_t tracked, uint16_t goal, uint8_t width) {
     if (goal == 0u || tracked == 0u) return 0u;
@@ -86,10 +116,11 @@ static void draw_bar(uint8_t x, uint8_t y, uint8_t width, uint8_t fill) {
 
 typedef struct NutritionState {
     SaveData *data;
-    uint8_t viewing_day;   /* day index being viewed (0..day_counter) */
-    uint8_t scroll;        /* absolute index of first visible food row */
-    uint8_t focused;       /* offset within visible window (0..FOOD_VISIBLE-1) */
-    uint8_t dirty;
+    CalDate  viewing_date; /* calendar date being viewed */
+    CalDate  today;        /* current date (set once at entry) */
+    uint8_t  scroll;       /* absolute index of first visible food row */
+    uint8_t  focused;      /* offset within visible window (0..FOOD_VISIBLE-1) */
+    uint8_t  dirty;
 } NutritionState;
 
 /*
@@ -125,7 +156,7 @@ static void draw_food_row(uint8_t screen_row, uint8_t day,
  * Full nutrition screen layout (20×18):
  *
  *  Row 0   MUSCLOG GB              ← header (PAL_HEADER)
- *  Row 1   TRACK FOOD      DAY X   ← title + viewed day
+ *  Row 1   TRACK FOOD  MM-DD-YY    ← title + viewed date
  *  Row 2   --------------------
  *  Row 3   CALORIES
  *  Row 4    XXXX / XXXX KCAL
@@ -145,12 +176,16 @@ static void draw_food_row(uint8_t screen_row, uint8_t day,
  */
 static void draw_nutrition(const NutritionState *state) {
     const SaveData *d = state->data;
-    uint8_t day = state->viewing_day;
-    uint8_t count = get_day_food_count(day);
+    uint8_t day;
+    uint8_t count;
     uint8_t i;
     uint16_t cal, pro, carb, fat, fib;
     char buf[22];
+    char date_buf[9];  /* "MM-DD-YY\0" */
 
+    day   = date_to_mock_idx(state->viewing_date, state->today);
+    count = get_day_food_count(day);
+    cal_format(&state->viewing_date, date_buf);
     sum_day_macros(day, &cal, &pro, &carb, &fat, &fib);
 
     ui_clear();
@@ -159,8 +194,7 @@ static void draw_nutrition(const NutritionState *state) {
     ui_fill_attr(0u, 0u, 20u, 1u, UI_PAL_HEADER);
     ui_print_center(0u, "MUSCLOG GB");
     ui_print_at(0u, 1u, "TRACK FOOD");
-    sprintf(buf, "DAY %u", (unsigned int)day);
-    ui_print_at((uint8_t)(19u - (uint8_t)strlen(buf)), 1u, buf);
+    ui_print_at((uint8_t)(19u - (uint8_t)strlen(date_buf)), 1u, date_buf);
     ui_print_at(0u, 2u, "--------------------");
 
     /* Calories */
@@ -202,32 +236,29 @@ static void draw_nutrition(const NutritionState *state) {
         );
     }
 
-    ui_footer("B BACK", "SEL DAY");
+    ui_footer("B BACK", "SEL DATE");
 }
 
 /*
- * Day picker overlay: Left/Right to change day, A/Start to confirm, B to cancel.
- * Updates *viewing_day only on confirm.
+ * Date picker overlay: Y/M/D spinners constrained to <= today.
+ * Updates *viewing_date only on A/Start confirm; B cancels.
  */
-static void nutrition_day_picker(const SaveData *data, uint8_t *viewing_day) {
-    uint8_t pick = *viewing_day;
-    uint8_t dirty = 1u;
-    char buf[14];
+static void nutrition_date_picker(CalDate today, CalDate *viewing_date) {
+    CalDate    pick;
+    uint8_t    field;
+    uint8_t    dirty;
+    uint8_t    going_right;
+    uint8_t    dim;
     InputState input;
+
+    pick  = *viewing_date;
+    field = 0u;
+    dirty = 1u;
 
     input_init(&input);
     while (1) {
         if (dirty) {
-            ui_clear();
-            ui_fill_attr(0u, 0u, 20u, 1u, UI_PAL_HEADER);
-            ui_print_center(0u, "MUSCLOG GB");
-            ui_print_center(2u, "SELECT DAY");
-            ui_print_at(0u, 3u, "--------------------");
-
-            sprintf(buf, "< DAY %u >", (unsigned int)pick);
-            ui_fill_attr(0u, 8u, 20u, 1u, UI_PAL_SELECTED);
-            ui_print_center(8u, buf);
-
+            ui_draw_date_picker("SELECT DATE", field, pick.year, pick.month, pick.day);
             ui_footer("B CANCEL", "A/ST OK");
             dirty = 0u;
         }
@@ -235,19 +266,53 @@ static void nutrition_day_picker(const SaveData *data, uint8_t *viewing_day) {
         wait_vbl_done();
         input_update(&input);
 
-        if (input_pressed(&input, J_B)) return;  /* cancel, leave *viewing_day unchanged */
+        if (input_pressed(&input, J_B)) return;
 
         if (input_pressed(&input, J_A | J_START)) {
-            *viewing_day = pick;
+            *viewing_date = pick;
             return;
         }
 
-        if (input_pressed(&input, J_LEFT) && pick > 0u) {
-            --pick;
+        if (input_pressed(&input, J_UP)) {
+            field = (field == 0u) ? 2u : (uint8_t)(field - 1u);
             dirty = 1u;
         }
-        if (input_pressed(&input, J_RIGHT) && pick < (uint8_t)data->day_counter) {
-            ++pick;
+        if (input_pressed(&input, J_DOWN)) {
+            field = (uint8_t)((field + 1u) % 3u);
+            dirty = 1u;
+        }
+
+        if (input_pressed(&input, J_LEFT | J_RIGHT)) {
+            going_right = input_pressed(&input, J_RIGHT);
+
+            if (field == 0u) {
+                if (going_right) {
+                    pick.year = (uint16_t)(pick.year + 1u);
+                    if (pick.year > today.year) pick.year = today.year;
+                } else {
+                    if (pick.year > 2000u) pick.year = (uint16_t)(pick.year - 1u);
+                }
+                dim = cal_days_in_month(pick.month, pick.year);
+                if (pick.day > dim) pick.day = dim;
+            } else if (field == 1u) {
+                if (going_right) {
+                    pick.month = (pick.month >= 12u) ? 1u : (uint8_t)(pick.month + 1u);
+                } else {
+                    pick.month = (pick.month <= 1u) ? 12u : (uint8_t)(pick.month - 1u);
+                }
+                dim = cal_days_in_month(pick.month, pick.year);
+                if (pick.day > dim) pick.day = dim;
+            } else {
+                dim = cal_days_in_month(pick.month, pick.year);
+                if (going_right) {
+                    pick.day = (pick.day >= dim) ? 1u : (uint8_t)(pick.day + 1u);
+                } else {
+                    pick.day = (pick.day <= 1u) ? dim : (uint8_t)(pick.day - 1u);
+                }
+            }
+
+            /* Clamp to today */
+            if (cal_compare(pick, today) > 0) pick = today;
             dirty = 1u;
         }
     }
@@ -322,13 +387,14 @@ static void show_food_detail(const MockFood *f) {
 void nutrition_track(SaveData *data) {
     NutritionState state;
     InputState input;
-    uint8_t count, abs_idx;
+    uint8_t count, abs_idx, mock_day;
 
-    state.data      = data;
-    state.viewing_day = (uint8_t)data->day_counter;
-    state.scroll    = 0u;
-    state.focused   = 0u;
-    state.dirty     = 1u;
+    state.data         = data;
+    state.today        = cal_current_date(data);
+    state.viewing_date = state.today;
+    state.scroll       = 0u;
+    state.focused      = 0u;
+    state.dirty        = 1u;
 
     input_init(&input);
     while (1) {
@@ -343,21 +409,22 @@ void nutrition_track(SaveData *data) {
         /* B → return to home */
         if (input_pressed(&input, J_B)) return;
 
-        /* Select → day picker */
+        /* Select → date picker */
         if (input_pressed(&input, J_SELECT)) {
-            nutrition_day_picker(data, &state.viewing_day);
+            nutrition_date_picker(state.today, &state.viewing_date);
             state.scroll  = 0u;
             state.focused = 0u;
             state.dirty   = 1u;
             continue;
         }
 
-        count   = get_day_food_count(state.viewing_day);
-        abs_idx = (uint8_t)(state.scroll + state.focused);
+        mock_day = date_to_mock_idx(state.viewing_date, state.today);
+        count    = get_day_food_count(mock_day);
+        abs_idx  = (uint8_t)(state.scroll + state.focused);
 
         /* Start → food detail for the focused item */
         if (input_pressed(&input, J_START) && abs_idx < count) {
-            show_food_detail(get_day_food(state.viewing_day, abs_idx));
+            show_food_detail(get_day_food(mock_day, abs_idx));
             state.dirty = 1u;
             continue;
         }

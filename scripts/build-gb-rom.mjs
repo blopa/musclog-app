@@ -46,7 +46,8 @@ run(png2asset, [
     '-noflip',
 ]);
 
-// 3. Compile + link. -Wm-yC = Game Boy Color only; -Wm-yt0x1B = MBC5 + RAM + battery.
+// 3. Compile + link. -Wm-yC = Game Boy Color only; -Wm-yt0x10 = MBC3 + Timer + RAM + battery.
+//    MBC3 provides the real-time clock (RTC) registers used for calendar date tracking.
 //    -Wm-ya4 sets the RAM-size header to four 8 KB SRAM banks so emulators/flash carts
 //    actually persist the onboarding profile.
 console.log('Compiling ROM ...');
@@ -57,7 +58,7 @@ const cSources = readdirSync(srcDir)
 
 run(lcc, [
     '-Wm-yC',
-    '-Wm-yt0x1B',
+    '-Wm-yt0x10',
     '-Wm-ya4',
     '-Wm-yn"MUSCLOG"',
     '-o', romPath,

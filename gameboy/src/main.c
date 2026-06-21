@@ -7,6 +7,7 @@
 
 #include "database.h"
 #include "input.h"
+#include "rtc.h"
 #include "logo.h"
 #include "nutrition.h"
 #include "onboarding.h"
@@ -190,8 +191,13 @@ static void show_coming_soon(const char *feature) {
 static void draw_home(const HomeState *state) {
     const SaveData *d = state->data;
     char buf[22];
+    char date_buf[9];  /* "MM-DD-YY\0" */
+    CalDate today;
     /* Tracked values are 0 until food/workout logging is implemented. */
     uint16_t cal = 0u, pro = 0u, carb = 0u, fat = 0u, fib = 0u;
+
+    today = cal_current_date(d);
+    cal_format(&today, date_buf);
 
     ui_clear();
 
@@ -200,8 +206,7 @@ static void draw_home(const HomeState *state) {
     ui_print_center(0u, "MUSCLOG GB");
 
     ui_print_at(1u, 1u, "HOME");
-    sprintf(buf, "DAY %u", d->day_counter);
-    ui_print_at((uint8_t)(19u - (uint8_t)strlen(buf)), 1u, buf);
+    ui_print_at((uint8_t)(19u - (uint8_t)strlen(date_buf)), 1u, date_buf);
 
     ui_print_at(0u, 2u, "--------------------");
 

@@ -3,6 +3,7 @@
 #include "database.h"
 #include "input.h"
 #include "nutrition_math.h"
+#include "rtc.h"
 #include "ui_text.h"
 #include "utils.h"
 
@@ -431,6 +432,10 @@ static void handle_accept(OnboardingState *state) {
         case STEP_REVIEW:
             if (state->selected == 0u) {
                 db_save(state->data);
+                /* Ask for current date & time so the MBC3 RTC is calibrated
+                 * before the user reaches the home screen.  The hardware day
+                 * counter then ticks on its own — no software update needed. */
+                rtc_setup_date(state->data);
                 state->done = 1u;
             } else {
                 enter_step(state, STEP_EDIT_CALORIES);
