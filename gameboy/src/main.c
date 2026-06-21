@@ -1,11 +1,13 @@
 #include <gbdk/platform.h>
 #include <gb/gb.h>
 #include <gbdk/console.h>
+#include <gbdk/font.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "input.h"
 #include "logo.h"
+#include "nutrition.h"
 #include "onboarding.h"
 #include "storage.h"
 #include "ui_text.h"
@@ -31,8 +33,28 @@ static const palette_color_t bg_palette[4] = {
 /* A solid tile of color index 0, filled around the logo. In the 2bpp tile format
  * index 0 = both bitplanes clear, so every byte is 0x00. Loaded past the logo tiles;
  * paired with BG_PALETTE so it shows the app background color. */
-#define BLANK_TILE logo_TILE_COUNT
 static const uint8_t blank_tile[16] = { 0 };
+
+/* font_ibm loads 96 tiles (chars 0x20–0x7F). Logo tiles follow immediately after.
+ * BLANK_TILE_SPLASH is the single solid-fill tile loaded after the logo tiles. */
+#define LOGO_TILE_ORIGIN  96u
+#define BLANK_TILE_SPLASH (LOGO_TILE_ORIGIN + logo_TILE_COUNT)
+
+/* Position of the "MUSCLOG" label on the splash screen (row below the logo). */
+#define TEXT_ROW_SPLASH 14u
+#define TEXT_COL_SPLASH  6u  /* (20 - 7) / 2 = 6 */
+
+/* CGB palette 2 for splash text: dark-green bg (index 0) + off-white text (index 3).
+ * font_color(3,0) maps foreground→index 3, background→index 0. */
+static const palette_color_t text_palette[4] = {
+    RGB8(0x0d, 0x4a, 0x2d),
+    RGB8(0x0d, 0x4a, 0x2d),
+    RGB8(0x0d, 0x4a, 0x2d),
+    RGB8(0xf8, 0xff, 0xfa),
+};
+
+/* Attribute bytes (VRAM bank 1) for the 7 "MUSCLOG" text tiles → use palette 2. */
+static const uint8_t text_attrs[7] = {2u, 2u, 2u, 2u, 2u, 2u, 2u};
 
 /* Home-screen action buttons. */
 #define HOME_BTN_FOOD    0u
@@ -46,27 +68,51 @@ typedef struct HomeState {
 
 static void show_splash(void) {
     uint8_t i;
+    uint8_t logo_map_offset[64];
+    font_t ibm_font;
 
     DISPLAY_OFF;
 
-    /* Palette 0 = logo colors; palette 1 = the app background color. */
+    /* Load IBM font first so tiles 0–95 hold the font glyphs.
+     * Logo tiles follow at LOGO_TILE_ORIGIN (96) so they do not overlap. */
+    font_init();
+    font_color(3u, 0u);
+    ibm_font = font_load(font_ibm);
+    font_set(ibm_font);
+    mode(get_mode() | M_NO_SCROLL);
+
+    /* Palette 0 = logo colors; palette 1 = app bg; palette 2 = splash text. */
     set_bkg_palette(0, logo_PALETTE_COUNT, logo_palettes);
-    set_bkg_palette(BG_PALETTE, 1, bg_palette);
-    set_bkg_data(0, logo_TILE_COUNT, logo_tiles);
-    set_bkg_data(BLANK_TILE, 1, blank_tile);
+    set_bkg_palette(BG_PALETTE, 1u, bg_palette);
+    set_bkg_palette(2u, 1u, text_palette);
 
-    /* Clear the whole background to the blank tile on the app-background palette before
-     * drawing the logo, so the area around it is the app's dark-green page color.
-     * The attribute map lives in VRAM bank 1, the tile indices in bank 0. */
+    /* Logo tiles after the font (tile 96+), blank fill tile after logo. */
+    set_bkg_data((uint8_t)LOGO_TILE_ORIGIN, logo_TILE_COUNT, logo_tiles);
+    set_bkg_data((uint8_t)BLANK_TILE_SPLASH, 1u, blank_tile);
+
+    /* Remap logo_map indices to the new tile origin. */
+    for (i = 0u; i != 64u; ++i) {
+        logo_map_offset[i] = logo_map[i] + LOGO_TILE_ORIGIN;
+    }
+
+    /* Clear the whole background: blank fill tile, app-background palette. */
     VBK_REG = 1;
-    init_bkg(BG_PALETTE); /* every tile -> app background palette */
+    init_bkg(BG_PALETTE);
     VBK_REG = 0;
-    init_bkg(BLANK_TILE);
+    init_bkg((uint8_t)BLANK_TILE_SPLASH);
 
+    /* Draw logo tiles. */
     VBK_REG = 1;
     set_bkg_tiles(ORIGIN_X, ORIGIN_Y, logo_TILE_W, logo_TILE_H, logo_map_attributes);
     VBK_REG = 0;
-    set_bkg_tiles(ORIGIN_X, ORIGIN_Y, logo_TILE_W, logo_TILE_H, logo_map);
+    set_bkg_tiles(ORIGIN_X, ORIGIN_Y, logo_TILE_W, logo_TILE_H, logo_map_offset);
+
+    /* Set palette-2 attributes for the "MUSCLOG" text tiles, then write them. */
+    VBK_REG = 1;
+    set_bkg_tiles(TEXT_COL_SPLASH, TEXT_ROW_SPLASH, 7u, 1u, text_attrs);
+    VBK_REG = 0;
+    gotoxy(TEXT_COL_SPLASH, TEXT_ROW_SPLASH);
+    puts("MUSCLOG");
 
     SHOW_BKG;
     DISPLAY_ON;
@@ -227,7 +273,7 @@ static void home_loop(SaveData *data) {
 
         if (input_pressed(&input, J_A | J_START)) {
             if (state.selected == HOME_BTN_FOOD) {
-                show_coming_soon("TRACK FOOD");
+                nutrition_track(data);
             } else {
                 show_coming_soon("START WORKOUT");
             }
