@@ -55,6 +55,8 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 
 ## Key Features
 
+> See [FEATURES.md](FEATURES.md) for the full, detailed feature list.
+
 ### 🏋️ Track Workouts
 
 - Log workouts with sets, reps, and weights
