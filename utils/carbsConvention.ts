@@ -202,3 +202,43 @@ export function totalCarbsForFoodSource(source: FoodSourceForCarbs, input: RawCa
 export function digestibleCarbs(totalCarbs: unknown, fiber: unknown): number {
   return Math.max(0, nonNegative(totalCarbs) - nonNegative(fiber));
 }
+
+/** An AI-estimated meal ingredient: absolute macros for a `grams` portion (`kcal` or `calories`). */
+export interface AiIngredientMacros {
+  grams: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber?: number;
+  calories?: number;
+  kcal?: number;
+}
+
+/** Per-100g macros for an AI ingredient, carbs already normalized to the canonical total. */
+export interface AiIngredientMacrosPer100g {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
+}
+
+/**
+ * Normalize an AI-estimated ingredient's absolute macros to per-100g, converting carbs from the LLM's
+ * net convention to the app's canonical total (see {@link FOOD_SOURCE_CARBS_CONVENTION}.ai). The
+ * single entry point every AI ingestion path must use so the carbs conversion can't be forgotten;
+ * callers apply their own rounding/clamping. Carbs is the only field clamped (by the convention
+ * helper); the rest are returned raw.
+ */
+export function aiIngredientMacrosPer100g(ingredient: AiIngredientMacros): AiIngredientMacrosPer100g {
+  const per100g = (value: number): number => (value / ingredient.grams) * 100;
+  const fiber = per100g(ingredient.fiber ?? 0);
+
+  return {
+    calories: per100g(ingredient.calories ?? ingredient.kcal ?? 0),
+    protein: per100g(ingredient.protein),
+    carbs: totalCarbsForFoodSource('ai', { carbs: per100g(ingredient.carbs), fiber }),
+    fat: per100g(ingredient.fat),
+    fiber,
+  };
+}

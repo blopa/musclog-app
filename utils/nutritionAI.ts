@@ -5,7 +5,7 @@ import Food from '@/database/models/Food';
 import { FoodService, MealService, NutritionService } from '@/database/services';
 
 import { localCalendarDayDate, withCurrentTimeOnDay } from './calendarDate';
-import { totalCarbsForFoodSource } from './carbsConvention';
+import { aiIngredientMacrosPer100g, totalCarbsForFoodSource } from './carbsConvention';
 import type { GenerateMealPlanResponse, MacroEstimate, NutritionEntry } from './coachAI';
 import { roundToDecimalPlaces } from './roundDecimal';
 
@@ -255,18 +255,14 @@ export async function processMealPlanResponse(response: GenerateMealPlanResponse
         if (ingredient.foodId) {
           foodId = ingredient.foodId;
         } else {
+          // aiIngredientMacrosPer100g normalizes carbs from the LLM's net convention to total.
+          const macros = aiIngredientMacrosPer100g(ingredient);
           const food = await FoodService.createCustomFood(ingredient.name, {
-            calories: roundToDecimalPlaces((ingredient.kcal / ingredient.grams) * 100),
-            protein: roundToDecimalPlaces((ingredient.protein / ingredient.grams) * 100),
-            // LLM returns net carbs (see FOOD_SOURCE_CARBS_CONVENTION.ai); store canonical total.
-            carbs: roundToDecimalPlaces(
-              totalCarbsForFoodSource('ai', {
-                carbs: (ingredient.carbs / ingredient.grams) * 100,
-                fiber: ((ingredient.fiber ?? 0) / ingredient.grams) * 100,
-              })
-            ),
-            fat: roundToDecimalPlaces((ingredient.fat / ingredient.grams) * 100),
-            fiber: roundToDecimalPlaces(((ingredient.fiber ?? 0) / ingredient.grams) * 100),
+            calories: roundToDecimalPlaces(macros.calories),
+            protein: roundToDecimalPlaces(macros.protein),
+            carbs: roundToDecimalPlaces(macros.carbs),
+            fat: roundToDecimalPlaces(macros.fat),
+            fiber: roundToDecimalPlaces(macros.fiber),
           });
           foodId = food.id;
         }

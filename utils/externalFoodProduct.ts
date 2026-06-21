@@ -212,22 +212,10 @@ function parseUSDANutritionPer100g(product: any): ProductNutritionPer100g {
 }
 
 function parseOFFNutritionPer100g(product: OpenFoodFactsNutritionProduct): ProductNutritionPer100g {
-  const { nutrition } = parseOpenFoodFactsNutritionPer100g(product);
-  return {
-    ...EMPTY_PRODUCT_NUTRITION,
-    calories: nutrition.calories,
-    protein: nutrition.protein,
-    carbs: nutrition.carbs,
-    fat: nutrition.fat,
-    fiber: nutrition.fiber,
-    sugar: nutrition.sugar,
-    saturatedFat: nutrition.saturatedFat,
-    sodium: nutrition.sodium,
-    alcohol: nutrition.alcohol,
-    potassium: nutrition.potassium,
-    magnesium: nutrition.magnesium,
-    zinc: nutrition.zinc,
-  };
+  // The OFF parser's shape is ProductNutritionPer100g plus `salt`; drop the extra `salt` field so
+  // the result matches the (salt-less) cross-source product shape.
+  const { salt, ...nutrition } = parseOpenFoodFactsNutritionPer100g(product).nutrition;
+  return nutrition;
 }
 
 /**

@@ -23,7 +23,7 @@ import {
   utcDayKeyFromLocalDate,
   utcNormalizedDayKey,
 } from '@/utils/calendarDate';
-import { totalCarbsForFoodSource } from '@/utils/carbsConvention';
+import { aiIngredientMacrosPer100g, totalCarbsForFoodSource } from '@/utils/carbsConvention';
 import { handleError } from '@/utils/handleError';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { widgetEvents } from '@/utils/widgetEvents';
@@ -1372,11 +1372,8 @@ export class NutritionService {
           }
         }
 
-        // LLM returns net carbs (see FOOD_SOURCE_CARBS_CONVENTION.ai); store canonical total per 100g.
-        const ingredientCarbsPer100g = totalCarbsForFoodSource('ai', {
-          carbs: (ingredient.carbs / ingredient.grams) * 100,
-          fiber: ((ingredient.fiber ?? 0) / ingredient.grams) * 100,
-        });
+        // Per-100g macros with carbs normalized from the LLM's net convention to canonical total.
+        const macros = aiIngredientMacrosPer100g(ingredient);
 
         // Create a temporary food entry for each ingredient
         const tempFood = await database.get<Food>('foods').create((food) => {
@@ -1384,11 +1381,11 @@ export class NutritionService {
           food.name = ingredient.name;
           food.brand = undefined;
           food.barcode = undefined;
-          food.calories = Math.max(0, (ingredient.calories / ingredient.grams) * 100); // Normalize to 100g
-          food.protein = Math.max(0, (ingredient.protein / ingredient.grams) * 100);
-          food.carbs = ingredientCarbsPer100g;
-          food.fat = Math.max(0, (ingredient.fat / ingredient.grams) * 100);
-          food.fiber = Math.max(0, ((ingredient.fiber ?? 0) / ingredient.grams) * 100);
+          food.calories = Math.max(0, macros.calories); // Normalize to 100g
+          food.protein = Math.max(0, macros.protein);
+          food.carbs = macros.carbs;
+          food.fat = Math.max(0, macros.fat);
+          food.fiber = Math.max(0, macros.fiber);
           food.micros = {
             sugar: 0,
             sodium: 0,
@@ -1402,11 +1399,11 @@ export class NutritionService {
         // Create encrypted snapshot for the nutrition log (convention is per 100g)
         const encrypted = await encryptNutritionLogSnapshot({
           loggedFoodName: ingredient.name,
-          loggedCalories: Math.max(0, (ingredient.calories / ingredient.grams) * 100),
-          loggedProtein: Math.max(0, (ingredient.protein / ingredient.grams) * 100),
-          loggedCarbs: ingredientCarbsPer100g,
-          loggedFat: Math.max(0, (ingredient.fat / ingredient.grams) * 100),
-          loggedFiber: Math.max(0, ((ingredient.fiber ?? 0) / ingredient.grams) * 100),
+          loggedCalories: Math.max(0, macros.calories),
+          loggedProtein: Math.max(0, macros.protein),
+          loggedCarbs: macros.carbs,
+          loggedFat: Math.max(0, macros.fat),
+          loggedFiber: Math.max(0, macros.fiber),
           loggedMicros: {},
         });
 
