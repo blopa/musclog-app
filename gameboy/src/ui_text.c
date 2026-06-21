@@ -34,9 +34,10 @@ static const palette_color_t ui_palettes[16] = {
 };
 
 static void set_attr_row(uint8_t x, uint8_t y, uint8_t w, uint8_t palette) {
-    uint8_t attrs[20];
+    uint8_t attrs[SCREEN_COLS];
     uint8_t i;
 
+    if (w > SCREEN_COLS) w = SCREEN_COLS;
     for (i = 0u; i != w; ++i) {
         attrs[i] = palette;
     }

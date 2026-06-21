@@ -4,6 +4,7 @@
 #include "nutrition_math.h"
 #include "storage.h"
 #include "ui_text.h"
+#include "utils.h"
 
 #include <gb/gb.h>
 #include <gbdk/console.h>
@@ -26,12 +27,9 @@
 
 typedef enum OnboardingStep {
     STEP_WELCOME,
-    STEP_UNITS,
-    STEP_GENDER,
     STEP_AGE,
     STEP_HEIGHT,
     STEP_WEIGHT,
-    STEP_ACTIVITY,
     STEP_EXPERIENCE,
     STEP_FITNESS,
     STEP_WEIGHT_GOAL,
@@ -43,6 +41,40 @@ typedef enum OnboardingStep {
     STEP_EDIT_FIBER
 } OnboardingStep;
 
+/* Back-pointer for each step: step_prev[step] = where B-button returns. */
+static const OnboardingStep step_prev[] = {
+    STEP_WELCOME,        /* STEP_WELCOME: no back */
+    STEP_WELCOME,        /* STEP_AGE */
+    STEP_AGE,            /* STEP_HEIGHT */
+    STEP_HEIGHT,         /* STEP_WEIGHT */
+    STEP_WEIGHT,         /* STEP_EXPERIENCE */
+    STEP_EXPERIENCE,     /* STEP_FITNESS */
+    STEP_FITNESS,        /* STEP_WEIGHT_GOAL */
+    STEP_WEIGHT_GOAL,    /* STEP_REVIEW */
+    STEP_REVIEW,         /* STEP_EDIT_CALORIES */
+    STEP_EDIT_CALORIES,  /* STEP_EDIT_PROTEIN */
+    STEP_EDIT_PROTEIN,   /* STEP_EDIT_CARBS */
+    STEP_EDIT_CARBS,     /* STEP_EDIT_FAT */
+    STEP_EDIT_FAT,       /* STEP_EDIT_FIBER */
+};
+
+/* Forward-pointer for each step: step_next[step] = where A/Start advances. */
+static const OnboardingStep step_next[] = {
+    STEP_AGE,            /* STEP_WELCOME */
+    STEP_HEIGHT,         /* STEP_AGE */
+    STEP_WEIGHT,         /* STEP_HEIGHT */
+    STEP_EXPERIENCE,     /* STEP_WEIGHT */
+    STEP_FITNESS,        /* STEP_EXPERIENCE */
+    STEP_WEIGHT_GOAL,    /* STEP_FITNESS */
+    STEP_REVIEW,         /* STEP_WEIGHT_GOAL */
+    STEP_REVIEW,         /* STEP_REVIEW: special-cased in handle_accept */
+    STEP_EDIT_PROTEIN,   /* STEP_EDIT_CALORIES */
+    STEP_EDIT_CARBS,     /* STEP_EDIT_PROTEIN */
+    STEP_EDIT_FAT,       /* STEP_EDIT_CARBS */
+    STEP_EDIT_FIBER,     /* STEP_EDIT_FAT */
+    STEP_REVIEW,         /* STEP_EDIT_FIBER */
+};
+
 typedef struct OnboardingState {
     SaveData *data;
     OnboardingStep step;
@@ -53,23 +85,10 @@ typedef struct OnboardingState {
     uint8_t done;
 } OnboardingState;
 
-static const char *activity_options[] = { "LOW", "LIGHT", "MODERATE", "ACTIVE", "VERY ACTIVE" };
 static const char *experience_options[] = { "BEGINNER", "INTERMEDIATE", "ADVANCED" };
 static const char *fitness_options[] = { "MUSCLE", "STRENGTH", "ENDURANCE", "GENERAL" };
 static const char *weight_goal_options[] = { "LOSE", "MAINTAIN", "GAIN" };
 static const char *review_options[] = { "SAVE PROFILE", "EDIT TARGETS" };
-
-static uint8_t clamp_u8(uint8_t value, uint8_t min, uint8_t max) {
-    if (value < min) return min;
-    if (value > max) return max;
-    return value;
-}
-
-static uint16_t clamp_u16(uint16_t value, uint16_t min, uint16_t max) {
-    if (value < min) return min;
-    if (value > max) return max;
-    return value;
-}
 
 static uint8_t cm_to_inches(uint16_t cm) {
     uint16_t inches = (uint16_t)((((uint32_t)cm * 100u) + 127u) / 254u);
@@ -90,22 +109,11 @@ static uint16_t lbs_to_kg_tenths(uint16_t lbs) {
 
 static uint8_t menu_selected_for_step(const OnboardingState *state, OnboardingStep step) {
     switch (step) {
-        case STEP_UNITS:
-            return state->data->units;
-        case STEP_GENDER:
-            return state->data->gender;
-        case STEP_ACTIVITY:
-            return state->data->activity_level > 0u ? (uint8_t)(state->data->activity_level - 1u) : 0u;
-        case STEP_EXPERIENCE:
-            return state->data->lifting_experience;
-        case STEP_FITNESS:
-            return state->data->fitness_focus;
-        case STEP_WEIGHT_GOAL:
-            return state->data->weight_goal;
-        case STEP_REVIEW:
-            return 0u;
-        default:
-            return state->selected;
+        case STEP_EXPERIENCE:   return state->data->lifting_experience;
+        case STEP_FITNESS:      return state->data->fitness_focus;
+        case STEP_WEIGHT_GOAL:  return state->data->weight_goal;
+        case STEP_REVIEW:       return 0u;
+        default:                return state->selected;
     }
 }
 
@@ -116,50 +124,7 @@ static void enter_step(OnboardingState *state, OnboardingStep step) {
 }
 
 static void step_back(OnboardingState *state) {
-    switch (state->step) {
-        case STEP_AGE:
-            enter_step(state, STEP_WELCOME);
-            break;
-        case STEP_HEIGHT:
-            enter_step(state, STEP_AGE);
-            break;
-        case STEP_WEIGHT:
-            enter_step(state, STEP_HEIGHT);
-            break;
-        case STEP_ACTIVITY:
-            enter_step(state, STEP_WEIGHT);
-            break;
-        case STEP_EXPERIENCE:
-            enter_step(state, STEP_WEIGHT);
-            break;
-        case STEP_FITNESS:
-            enter_step(state, STEP_EXPERIENCE);
-            break;
-        case STEP_WEIGHT_GOAL:
-            enter_step(state, STEP_FITNESS);
-            break;
-        case STEP_REVIEW:
-            enter_step(state, STEP_WEIGHT_GOAL);
-            break;
-        case STEP_EDIT_CALORIES:
-            enter_step(state, STEP_REVIEW);
-            break;
-        case STEP_EDIT_PROTEIN:
-            enter_step(state, STEP_EDIT_CALORIES);
-            break;
-        case STEP_EDIT_CARBS:
-            enter_step(state, STEP_EDIT_PROTEIN);
-            break;
-        case STEP_EDIT_FAT:
-            enter_step(state, STEP_EDIT_CARBS);
-            break;
-        case STEP_EDIT_FIBER:
-            enter_step(state, STEP_EDIT_FAT);
-            break;
-        case STEP_WELCOME:
-        default:
-            break;
-    }
+    enter_step(state, step_prev[state->step]);
 }
 
 static const char *gender_label(uint8_t gender) {
@@ -240,21 +205,6 @@ static void format_weight(const OnboardingState *state, char *buffer) {
     }
 }
 
-static void draw_number_screen(const OnboardingState *state) {
-    char value[16];
-
-    if (state->step == STEP_AGE) {
-        sprintf(value, "%u YEARS", state->data->age);
-        ui_draw_value_screen("AGE", "YOUR AGE", value, "UP/DOWN CHANGE");
-    } else if (state->step == STEP_HEIGHT) {
-        format_height(state, value);
-        ui_draw_value_screen("HEIGHT", "YOUR HEIGHT", value, "UP/DOWN CHANGE");
-    } else if (state->step == STEP_WEIGHT) {
-        format_weight(state, value);
-        ui_draw_value_screen("WEIGHT", "YOUR WEIGHT", value, "UP/DOWN CHANGE");
-    }
-}
-
 static void draw_review(const OnboardingState *state) {
     uint8_t i;
     char row[20];
@@ -305,17 +255,23 @@ static void draw_edit_screen(const OnboardingState *state) {
 }
 
 static void render_step(const OnboardingState *state) {
+    char value[16];
+
     switch (state->step) {
         case STEP_WELCOME:
             draw_welcome(state);
             break;
         case STEP_AGE:
-        case STEP_HEIGHT:
-        case STEP_WEIGHT:
-            draw_number_screen(state);
+            sprintf(value, "%u YEARS", state->data->age);
+            ui_draw_value_screen("AGE", "YOUR AGE", value, "UP/DOWN CHANGE");
             break;
-        case STEP_ACTIVITY:
-            ui_draw_menu("ACTIVITY", activity_options, 5u, state->selected);
+        case STEP_HEIGHT:
+            format_height(state, value);
+            ui_draw_value_screen("HEIGHT", "YOUR HEIGHT", value, "UP/DOWN CHANGE");
+            break;
+        case STEP_WEIGHT:
+            format_weight(state, value);
+            ui_draw_value_screen("WEIGHT", "YOUR WEIGHT", value, "UP/DOWN CHANGE");
             break;
         case STEP_EXPERIENCE:
             ui_draw_menu("EXPERIENCE", experience_options, 3u, state->selected);
@@ -378,57 +334,38 @@ static void setup_input(OnboardingState *state, const InputState *input) {
     }
 }
 
-static uint16_t add_clamped_u16(uint16_t value, uint16_t amount, uint16_t max) {
-    if (value > (uint16_t)(max - amount)) return max;
-    return (uint16_t)(value + amount);
+static uint8_t spinner_u8(const InputState *input, uint8_t v, uint8_t small_step, uint8_t large_step, uint8_t mn, uint8_t mx) {
+    if (input_pressed(input, J_UP))    v = add_clamped_u8(v, small_step, mx);
+    if (input_pressed(input, J_DOWN))  v = sub_clamped_u8(v, small_step, mn);
+    if (input_pressed(input, J_RIGHT)) v = add_clamped_u8(v, large_step, mx);
+    if (input_pressed(input, J_LEFT))  v = sub_clamped_u8(v, large_step, mn);
+    return v;
 }
 
-static uint16_t sub_clamped_u16(uint16_t value, uint16_t amount, uint16_t min) {
-    if (value < (uint16_t)(min + amount)) return min;
-    return (uint16_t)(value - amount);
-}
-
-static uint8_t add_clamped_u8(uint8_t value, uint8_t amount, uint8_t max) {
-    if (value > (uint8_t)(max - amount)) return max;
-    return (uint8_t)(value + amount);
-}
-
-static uint8_t sub_clamped_u8(uint8_t value, uint8_t amount, uint8_t min) {
-    if (value < (uint8_t)(min + amount)) return min;
-    return (uint8_t)(value - amount);
+static uint16_t spinner_u16(const InputState *input, uint16_t v, uint16_t small_step, uint16_t large_step, uint16_t mn, uint16_t mx) {
+    if (input_pressed(input, J_UP))    v = add_clamped_u16(v, small_step, mx);
+    if (input_pressed(input, J_DOWN))  v = sub_clamped_u16(v, small_step, mn);
+    if (input_pressed(input, J_RIGHT)) v = add_clamped_u16(v, large_step, mx);
+    if (input_pressed(input, J_LEFT))  v = sub_clamped_u16(v, large_step, mn);
+    return v;
 }
 
 static void spinner_input(OnboardingState *state, const InputState *input) {
     if (state->step == STEP_AGE) {
-        if (input_pressed(input, J_UP)) state->data->age = add_clamped_u8(state->data->age, 1u, AGE_MAX);
-        if (input_pressed(input, J_DOWN)) state->data->age = sub_clamped_u8(state->data->age, 1u, AGE_MIN);
-        if (input_pressed(input, J_RIGHT)) state->data->age = add_clamped_u8(state->data->age, 10u, AGE_MAX);
-        if (input_pressed(input, J_LEFT)) state->data->age = sub_clamped_u8(state->data->age, 10u, AGE_MIN);
+        state->data->age = spinner_u8(input, state->data->age, 1u, 10u, AGE_MIN, AGE_MAX);
     } else if (state->step == STEP_HEIGHT) {
         if (state->data->units == UNITS_IMPERIAL) {
-            if (input_pressed(input, J_UP)) state->height_inches = add_clamped_u8(state->height_inches, 1u, HEIGHT_IN_MAX);
-            if (input_pressed(input, J_DOWN)) state->height_inches = sub_clamped_u8(state->height_inches, 1u, HEIGHT_IN_MIN);
-            if (input_pressed(input, J_RIGHT)) state->height_inches = add_clamped_u8(state->height_inches, 12u, HEIGHT_IN_MAX);
-            if (input_pressed(input, J_LEFT)) state->height_inches = sub_clamped_u8(state->height_inches, 12u, HEIGHT_IN_MIN);
+            state->height_inches = spinner_u8(input, state->height_inches, 1u, 12u, HEIGHT_IN_MIN, HEIGHT_IN_MAX);
             state->data->height_cm = inches_to_cm(state->height_inches);
         } else {
-            if (input_pressed(input, J_UP)) state->data->height_cm = add_clamped_u16(state->data->height_cm, 1u, HEIGHT_CM_MAX);
-            if (input_pressed(input, J_DOWN)) state->data->height_cm = sub_clamped_u16(state->data->height_cm, 1u, HEIGHT_CM_MIN);
-            if (input_pressed(input, J_RIGHT)) state->data->height_cm = add_clamped_u16(state->data->height_cm, 10u, HEIGHT_CM_MAX);
-            if (input_pressed(input, J_LEFT)) state->data->height_cm = sub_clamped_u16(state->data->height_cm, 10u, HEIGHT_CM_MIN);
+            state->data->height_cm = spinner_u16(input, state->data->height_cm, 1u, 10u, HEIGHT_CM_MIN, HEIGHT_CM_MAX);
         }
-    } else if (state->step == STEP_WEIGHT) {
+    } else { /* STEP_WEIGHT */
         if (state->data->units == UNITS_IMPERIAL) {
-            if (input_pressed(input, J_UP)) state->weight_lbs = add_clamped_u16(state->weight_lbs, 1u, WEIGHT_LB_MAX);
-            if (input_pressed(input, J_DOWN)) state->weight_lbs = sub_clamped_u16(state->weight_lbs, 1u, WEIGHT_LB_MIN);
-            if (input_pressed(input, J_RIGHT)) state->weight_lbs = add_clamped_u16(state->weight_lbs, 10u, WEIGHT_LB_MAX);
-            if (input_pressed(input, J_LEFT)) state->weight_lbs = sub_clamped_u16(state->weight_lbs, 10u, WEIGHT_LB_MIN);
+            state->weight_lbs = spinner_u16(input, state->weight_lbs, 1u, 10u, WEIGHT_LB_MIN, WEIGHT_LB_MAX);
             state->data->weight_kg_tenths = lbs_to_kg_tenths(state->weight_lbs);
         } else {
-            if (input_pressed(input, J_UP)) state->data->weight_kg_tenths = add_clamped_u16(state->data->weight_kg_tenths, 5u, WEIGHT_KG_TENTHS_MAX);
-            if (input_pressed(input, J_DOWN)) state->data->weight_kg_tenths = sub_clamped_u16(state->data->weight_kg_tenths, 5u, WEIGHT_KG_TENTHS_MIN);
-            if (input_pressed(input, J_RIGHT)) state->data->weight_kg_tenths = add_clamped_u16(state->data->weight_kg_tenths, 50u, WEIGHT_KG_TENTHS_MAX);
-            if (input_pressed(input, J_LEFT)) state->data->weight_kg_tenths = sub_clamped_u16(state->data->weight_kg_tenths, 50u, WEIGHT_KG_TENTHS_MIN);
+            state->data->weight_kg_tenths = spinner_u16(input, state->data->weight_kg_tenths, 5u, 50u, WEIGHT_KG_TENTHS_MIN, WEIGHT_KG_TENTHS_MAX);
         }
     }
 
@@ -469,10 +406,10 @@ static void edit_goal_input(OnboardingState *state, const InputState *input) {
             return;
     }
 
-    if (input_pressed(input, J_UP)) *value = add_clamped_u16(*value, small, max);
-    if (input_pressed(input, J_DOWN)) *value = sub_clamped_u16(*value, small, min);
+    if (input_pressed(input, J_UP))    *value = add_clamped_u16(*value, small, max);
+    if (input_pressed(input, J_DOWN))  *value = sub_clamped_u16(*value, small, min);
     if (input_pressed(input, J_RIGHT)) *value = add_clamped_u16(*value, large, max);
-    if (input_pressed(input, J_LEFT)) *value = sub_clamped_u16(*value, large, min);
+    if (input_pressed(input, J_LEFT))  *value = sub_clamped_u16(*value, large, min);
 
     if (input_pressed(input, J_UP | J_DOWN | J_LEFT | J_RIGHT)) {
         state->dirty = 1u;
@@ -484,33 +421,16 @@ static void handle_accept(OnboardingState *state) {
         case STEP_WELCOME:
             state->height_inches = cm_to_inches(state->data->height_cm);
             state->weight_lbs = kg_tenths_to_lbs(state->data->weight_kg_tenths);
-            enter_step(state, STEP_AGE);
-            break;
-        case STEP_AGE:
-            enter_step(state, STEP_HEIGHT);
-            break;
-        case STEP_HEIGHT:
-            enter_step(state, STEP_WEIGHT);
-            break;
-        case STEP_WEIGHT:
-            enter_step(state, STEP_EXPERIENCE);
-            break;
-        case STEP_ACTIVITY:
-            state->data->activity_level = (uint8_t)(state->selected + 1u);
-            enter_step(state, STEP_EXPERIENCE);
             break;
         case STEP_EXPERIENCE:
             state->data->lifting_experience = state->selected;
-            enter_step(state, STEP_FITNESS);
             break;
         case STEP_FITNESS:
             state->data->fitness_focus = state->selected;
-            enter_step(state, STEP_WEIGHT_GOAL);
             break;
         case STEP_WEIGHT_GOAL:
             state->data->weight_goal = state->selected;
             nutrition_apply_generated_goals(state->data);
-            enter_step(state, STEP_REVIEW);
             break;
         case STEP_REVIEW:
             if (state->selected == 0u) {
@@ -519,23 +439,11 @@ static void handle_accept(OnboardingState *state) {
             } else {
                 enter_step(state, STEP_EDIT_CALORIES);
             }
-            break;
-        case STEP_EDIT_CALORIES:
-            enter_step(state, STEP_EDIT_PROTEIN);
-            break;
-        case STEP_EDIT_PROTEIN:
-            enter_step(state, STEP_EDIT_CARBS);
-            break;
-        case STEP_EDIT_CARBS:
-            enter_step(state, STEP_EDIT_FAT);
-            break;
-        case STEP_EDIT_FAT:
-            enter_step(state, STEP_EDIT_FIBER);
-            break;
-        case STEP_EDIT_FIBER:
-            enter_step(state, STEP_REVIEW);
+            return;
+        default:
             break;
     }
+    enter_step(state, step_next[state->step]);
 }
 
 static void handle_input(OnboardingState *state, const InputState *input) {
@@ -545,14 +453,8 @@ static void handle_input(OnboardingState *state, const InputState *input) {
     }
 
     switch (state->step) {
-        case STEP_UNITS:
-        case STEP_GENDER:
-            break;
         case STEP_WELCOME:
             setup_input(state, input);
-            break;
-        case STEP_ACTIVITY:
-            menu_input(state, input, 5u);
             break;
         case STEP_EXPERIENCE:
             menu_input(state, input, 3u);

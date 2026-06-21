@@ -5,10 +5,9 @@
 
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { arch, platform, tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import os from 'node:os';
 
 const GBDK_VERSION = '4.5.0'; // pinned fallback when the GitHub API is unreachable
 
@@ -18,12 +17,12 @@ export const lccPath = join(gbdkDir, 'bin', 'lcc');
 
 // Map the host platform/arch to a GBDK release asset name.
 function assetForHost() {
-    const platform = os.platform();
-    const arch = os.arch();
-    if (platform === 'linux') return arch === 'arm64' ? 'gbdk-linux-arm64.tar.gz' : 'gbdk-linux64.tar.gz';
-    if (platform === 'darwin') return arch === 'arm64' ? 'gbdk-macos-arm64.tar.gz' : 'gbdk-macos.tar.gz';
+    const p = platform();
+    const a = arch();
+    if (p === 'linux') return a === 'arm64' ? 'gbdk-linux-arm64.tar.gz' : 'gbdk-linux64.tar.gz';
+    if (p === 'darwin') return a === 'arm64' ? 'gbdk-macos-arm64.tar.gz' : 'gbdk-macos.tar.gz';
     throw new Error(
-        `Unsupported platform "${platform}/${arch}" for auto-download. Install GBDK-2020 manually and ` +
+        `Unsupported platform "${p}/${a}" for auto-download. Install GBDK-2020 manually and ` +
             `extract it into ${gbdkDir} (so that ${lccPath} exists).`
     );
 }

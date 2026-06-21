@@ -1,16 +1,11 @@
 #include "nutrition_math.h"
+#include "utils.h"
 
 #include <stdint.h>
 
 #define KCAL_PROTEIN 4u
 #define KCAL_CARBS 4u
 #define KCAL_FAT 9u
-
-static uint16_t clamp_u16(uint16_t value, uint16_t min, uint16_t max) {
-    if (value < min) return min;
-    if (value > max) return max;
-    return value;
-}
 
 static uint16_t calculate_bmr(const SaveData *data) {
     int32_t bmr;
@@ -24,6 +19,8 @@ static uint16_t calculate_bmr(const SaveData *data) {
         sex_offset = -78;
     }
 
+    /* Mifflin-St Jeor: 10*weight_kg + 6.25*height_cm - 5*age + sex_offset.
+     * weight_kg_tenths = weight_kg * 10, so using it directly gives 10*weight_kg. */
     bmr = (int32_t)data->weight_kg_tenths;
     bmr += (((int32_t)data->height_cm * 625L) + 50L) / 100L;
     bmr -= (int32_t)data->age * 5L;
@@ -123,8 +120,9 @@ void nutrition_apply_generated_goals(SaveData *data) {
     adjusted = (int16_t)tdee + calorie_adjustment(data);
     target = adjusted > 0 ? (uint16_t)adjusted : 0u;
 
-    if (target < minimum_calories(data->gender, bmr)) {
-        target = minimum_calories(data->gender, bmr);
+    {
+        uint16_t min_cal = minimum_calories(data->gender, bmr);
+        if (target < min_cal) target = min_cal;
     }
 
     macro_split(data, &carbs_pct, &protein_pct, &fat_pct);
