@@ -1,7 +1,7 @@
 #ifndef MUSCLOG_NUTRITION_MATH_H
 #define MUSCLOG_NUTRITION_MATH_H
 
-#include "storage.h"
+#include "database.h"
 
 void nutrition_apply_generated_goals(SaveData *data);
 

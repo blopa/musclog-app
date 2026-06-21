@@ -1,8 +1,8 @@
 #include "onboarding.h"
 
+#include "database.h"
 #include "input.h"
 #include "nutrition_math.h"
-#include "storage.h"
 #include "ui_text.h"
 #include "utils.h"
 
@@ -10,20 +10,16 @@
 #include <gbdk/console.h>
 #include <stdio.h>
 
-#define AGE_MIN 13u
-#define AGE_MAX 99u
-#define HEIGHT_CM_MIN 120u
-#define HEIGHT_CM_MAX 230u
+#define AGE_MIN       13u
+#define AGE_MAX       99u
 #define HEIGHT_IN_MIN 47u
 #define HEIGHT_IN_MAX 91u
-#define WEIGHT_KG_TENTHS_MIN 300u
-#define WEIGHT_KG_TENTHS_MAX 2500u
 #define WEIGHT_LB_MIN 66u
 #define WEIGHT_LB_MAX 551u
-#define CAL_MIN 800u
-#define CAL_MAX 6000u
-#define MACRO_MAX 999u
-#define FIBER_MAX 99u
+#define CAL_MIN       800u
+#define CAL_MAX       6000u
+#define MACRO_MAX     999u
+#define FIBER_MAX     99u
 
 typedef enum OnboardingStep {
     STEP_WELCOME,
@@ -358,14 +354,14 @@ static void spinner_input(OnboardingState *state, const InputState *input) {
             state->height_inches = spinner_u8(input, state->height_inches, 1u, 12u, HEIGHT_IN_MIN, HEIGHT_IN_MAX);
             state->data->height_cm = inches_to_cm(state->height_inches);
         } else {
-            state->data->height_cm = spinner_u16(input, state->data->height_cm, 1u, 10u, HEIGHT_CM_MIN, HEIGHT_CM_MAX);
+            state->data->height_cm = spinner_u16(input, state->data->height_cm, 1u, 10u, DB_HEIGHT_CM_MIN, DB_HEIGHT_CM_MAX);
         }
     } else { /* STEP_WEIGHT */
         if (state->data->units == UNITS_IMPERIAL) {
             state->weight_lbs = spinner_u16(input, state->weight_lbs, 1u, 10u, WEIGHT_LB_MIN, WEIGHT_LB_MAX);
             state->data->weight_kg_tenths = lbs_to_kg_tenths(state->weight_lbs);
         } else {
-            state->data->weight_kg_tenths = spinner_u16(input, state->data->weight_kg_tenths, 5u, 50u, WEIGHT_KG_TENTHS_MIN, WEIGHT_KG_TENTHS_MAX);
+            state->data->weight_kg_tenths = spinner_u16(input, state->data->weight_kg_tenths, 5u, 50u, DB_WEIGHT_KG_TENTHS_MIN, DB_WEIGHT_KG_TENTHS_MAX);
         }
     }
 
@@ -434,7 +430,7 @@ static void handle_accept(OnboardingState *state) {
             break;
         case STEP_REVIEW:
             if (state->selected == 0u) {
-                storage_save(state->data);
+                db_save(state->data);
                 state->done = 1u;
             } else {
                 enter_step(state, STEP_EDIT_CALORIES);
@@ -491,7 +487,7 @@ void onboarding_run(SaveData *data) {
     OnboardingState state;
     InputState input;
 
-    storage_init_defaults(data);
+    db_init_defaults(data);
     nutrition_apply_generated_goals(data);
 
     state.data = data;

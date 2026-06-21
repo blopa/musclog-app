@@ -1,0 +1,127 @@
+#ifndef MUSCLOG_DATABASE_H
+#define MUSCLOG_DATABASE_H
+
+#include <stdint.h>
+
+/* ── Save-file header ─────────────────────────────────────────────────────── */
+#define SAVE_MAGIC   0x4D47u  /* 'MG' */
+#define SAVE_VERSION 2u       /* v2: compact packed layout (incompatible with v1) */
+
+/* ── Profile constants ────────────────────────────────────────────────────── */
+#define UNITS_METRIC   0u
+#define UNITS_IMPERIAL 1u
+
+#define GENDER_MALE   0u
+#define GENDER_FEMALE 1u
+#define GENDER_OTHER  2u
+
+#define EXPERIENCE_BEGINNER     0u
+#define EXPERIENCE_INTERMEDIATE 1u
+#define EXPERIENCE_ADVANCED     2u
+
+#define FITNESS_MUSCLE    0u
+#define FITNESS_STRENGTH  1u
+#define FITNESS_ENDURANCE 2u
+#define FITNESS_GENERAL   3u
+
+#define WEIGHT_GOAL_LOSE     0u
+#define WEIGHT_GOAL_MAINTAIN 1u
+#define WEIGHT_GOAL_GAIN     2u
+
+/* ── Spinner/validation bounds (also drive SRAM offset encoding) ──────────── */
+#define DB_HEIGHT_CM_MIN        120u   /* stored as: height_cm - DB_HEIGHT_CM_MIN (1 byte, 0-110) */
+#define DB_HEIGHT_CM_MAX        230u
+#define DB_WEIGHT_KG_TENTHS_MIN 300u   /* stored as: weight_kg_tenths - DB_WEIGHT_KG_TENTHS_MIN */
+#define DB_WEIGHT_KG_TENTHS_MAX 2500u
+
+/* ── SRAM byte-address map ────────────────────────────────────────────────── */
+/*
+ *  Addr  | Bytes | Constant            | Content
+ *  ------|-------|---------------------|-------------------------------------------
+ *  0x00  |   2   | SRAM_MAGIC          | 0x4D47 (lo, hi)
+ *  0x02  |   1   | SRAM_VERSION        | Save format version
+ *  0x03  |   2   | SRAM_CHECKSUM       | 16-bit integrity checksum (lo, hi)
+ *  0x05  |   1   | SRAM_FLAGS1         | [7:6]=experience [5:3]=activity-1 [2:1]=gender [0]=units
+ *  0x06  |   1   | SRAM_FLAGS2         | [4]=onboarding [3:2]=weight_goal [1:0]=fitness_focus
+ *  0x07  |   1   | SRAM_AGE            | Age in years (13-99)
+ *  0x08  |   1   | SRAM_HEIGHT         | height_cm - DB_HEIGHT_CM_MIN (0-110)
+ *  0x09  |   2   | SRAM_WEIGHT         | weight_kg_tenths - DB_WEIGHT_KG_TENTHS_MIN (lo, hi)
+ *  0x0B  |   2   | SRAM_CAL_GOAL       | Calorie goal kcal (lo, hi)
+ *  0x0D  |   2   | SRAM_PROTEIN_GOAL   | Protein goal g (lo, hi)
+ *  0x0F  |   2   | SRAM_CARBS_GOAL     | Carbs goal g (lo, hi)
+ *  0x11  |   2   | SRAM_FAT_GOAL       | Fat goal g (lo, hi)
+ *  0x13  |   1   | SRAM_FIBER_GOAL     | Fiber goal g (0-99)
+ *  0x14  |   2   | SRAM_DAY_COUNTER    | Day counter (lo, hi)
+ *  ------|-------|---------------------|-------------------------------------------
+ *  Total: 22 bytes
+ */
+#define SRAM_MAGIC         0x00u
+#define SRAM_VERSION       0x02u
+#define SRAM_CHECKSUM      0x03u
+#define SRAM_FLAGS1        0x05u
+#define SRAM_FLAGS2        0x06u
+#define SRAM_AGE           0x07u
+#define SRAM_HEIGHT        0x08u
+#define SRAM_WEIGHT        0x09u
+#define SRAM_CAL_GOAL      0x0Bu
+#define SRAM_PROTEIN_GOAL  0x0Du
+#define SRAM_CARBS_GOAL    0x0Fu
+#define SRAM_FAT_GOAL      0x11u
+#define SRAM_FIBER_GOAL    0x13u
+#define SRAM_DAY_COUNTER   0x14u
+#define SRAM_SAVE_SIZE     0x16u  /* 22 bytes — next free address for future data */
+
+/* ── SRAM_FLAGS1 bit layout ───────────────────────────────────────────────── */
+/* bit  0    : units             (UNITS_METRIC=0, UNITS_IMPERIAL=1)           */
+/* bits 2:1  : gender            (GENDER_MALE=0, FEMALE=1, OTHER=2)           */
+/* bits 5:3  : activity_level-1  (stored 0-4; add 1 to decode → levels 1-5)  */
+/* bits 7:6  : lifting_experience (BEGINNER=0, INTERMEDIATE=1, ADVANCED=2)   */
+#define FLAGS1_UNITS_BIT        0u
+#define FLAGS1_GENDER_SHIFT     1u
+#define FLAGS1_ACTIVITY_SHIFT   3u
+#define FLAGS1_EXPERIENCE_SHIFT 6u
+
+/* ── SRAM_FLAGS2 bit layout ───────────────────────────────────────────────── */
+/* bits 1:0  : fitness_focus   (MUSCLE=0, STRENGTH=1, ENDURANCE=2, GENERAL=3) */
+/* bits 3:2  : weight_goal     (LOSE=0, MAINTAIN=1, GAIN=2)                  */
+/* bit  4    : onboarding_complete                                            */
+/* bits 7:5  : reserved                                                       */
+#define FLAGS2_FITNESS_SHIFT      0u
+#define FLAGS2_WEIGHT_GOAL_SHIFT  2u
+#define FLAGS2_ONBOARDING_BIT     4u
+
+/* ── In-memory save record (decoded form used by all game code) ───────────── */
+typedef struct SaveData {
+    uint16_t magic;
+    uint8_t  version;
+    uint16_t checksum;
+    uint8_t  onboarding_complete;
+
+    uint8_t  units;
+    uint8_t  gender;
+    uint8_t  age;
+    uint16_t height_cm;
+    uint16_t weight_kg_tenths;
+
+    uint8_t  activity_level;
+    uint8_t  lifting_experience;
+    uint8_t  fitness_focus;
+    uint8_t  weight_goal;
+
+    uint16_t calorie_goal;
+    uint16_t protein_goal;
+    uint16_t carbs_goal;
+    uint16_t fat_goal;
+    uint16_t fiber_goal;
+
+    uint16_t day_counter;
+} SaveData;
+
+/* ── Public API ───────────────────────────────────────────────────────────── */
+void    db_init_defaults(SaveData *data);
+uint8_t db_is_valid(const SaveData *data);
+uint8_t db_load(SaveData *out);
+void    db_save(const SaveData *data);
+void    db_erase(void);
+
+#endif /* MUSCLOG_DATABASE_H */

@@ -5,11 +5,11 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "database.h"
 #include "input.h"
 #include "logo.h"
 #include "nutrition.h"
 #include "onboarding.h"
-#include "storage.h"
 #include "ui_text.h"
 
 /* The visible background is 20x18 tiles; center the 8x8-tile logo within it. */
@@ -259,7 +259,7 @@ static void home_loop(SaveData *data) {
         input_update(&input);
 
         if ((input.current & J_SELECT) && input_pressed(&input, J_B)) {
-            storage_erase();
+            db_erase();
             onboarding_run(data);
             state.selected = HOME_BTN_FOOD;
             state.dirty = 1u;
@@ -288,7 +288,7 @@ void main(void) {
     show_splash();
     ui_init_text();
 
-    if (!storage_load(&save) || !save.onboarding_complete) {
+    if (!db_load(&save) || !save.onboarding_complete) {
         onboarding_run(&save);
     }
 

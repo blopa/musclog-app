@@ -166,7 +166,7 @@ gameboy/
 │   ├── workout.c/.h      # exercise library, session logging, PRs, volume
 │   ├── nutrition.c/.h    # food library, daily macro totals, goals
 │   ├── metrics.c/.h      # body weight log
-│   └── storage.c/.h      # SRAM layout, load/save, checksum/validation
+│   └── database.c/.h     # SRAM layout, named address constants, load/save, checksum
 ├── data/
 │   └── exercises.c       # bundled exercise names (const, lives in ROM)
 └── tools/                # build helpers (see "Build" below — Node scripts, not a Makefile)
@@ -216,7 +216,7 @@ What's wired up so far:
 - **`gameboy/src/onboarding.c`** — first-run flow with a combined unit/sex/activity setup screen,
   then age, height, weight, training experience, fitness focus, weight goal, generated goal review,
   and manual macro edits.
-- **`gameboy/src/storage.c`** — SRAM bank 0 persistence with magic/version/checksum validation.
+- **`gameboy/src/database.c`** — SRAM bank 0 persistence with named byte-address constants, bit-packed profile flags, magic/version/checksum validation, and a compact 22-byte save block (down from 31 bytes in the previous flat-struct layout).
 - **`gameboy/src/nutrition_math.c`** — integer-only Mifflin-style BMR, activity multipliers, calorie
   adjustments, macro splits, and fiber target generation.
 - **`gameboy/src/ui_text.c` / `input.c`** — tiny text UI helpers and debounced joypad input.
@@ -244,31 +244,27 @@ GBDK keeps SRAM access **write-protected by default**. The implemented save live
 `#pragma dataseg DATA_0`, and every load/save brackets access with `ENABLE_RAM` / `DISABLE_RAM`:
 
 ```c
-// gameboy/src/storage.c
+// gameboy/src/database.c  (replaces storage.c)
 #include <gb/gb.h>
 
+// Raw 22-byte block in SRAM bank 0; fields accessed via named SRAM_* address constants.
 #pragma dataseg DATA_0
-static SaveData sram_save;
+static uint8_t sram_bank[SRAM_SAVE_SIZE];   /* 22 bytes */
 #pragma dataseg DATA
 
-void storage_save(const SaveData *data) {
-    SaveData copy = *data;
-    copy.magic = SAVE_MAGIC;
-    copy.version = SAVE_VERSION;
-    copy.onboarding_complete = 1;
-    copy.checksum = storage_checksum(&copy);
-
-    ENABLE_RAM;
-    SWITCH_RAM(0);
-    sram_save = copy;
-    DISABLE_RAM;
+void db_save(const SaveData *data) {
+    // Pack 7 enum/flag fields into 2 bytes (SRAM_FLAGS1 + SRAM_FLAGS2).
+    // Store height as 1 byte offset from DB_HEIGHT_CM_MIN (saves 1 byte).
+    // Store fiber_goal as 1 byte (max 99 < 256, saves 1 byte).
+    // Total profile block: 22 bytes (was 31).
+    ...
 }
 ```
 
-The current `SaveData` block intentionally contains only the first-run profile and goals: units,
-gender, age, height in cm, weight in kg tenths, activity level, lifting experience, fitness focus,
-weight goal, calorie/protein/carbs/fat/fiber targets, and a day counter initialized to zero.
-Metric remains the storage format even when the user enters height/weight in imperial units.
+`database.h` defines the full SRAM byte-address map with named constants (`SRAM_AGE`,
+`SRAM_HEIGHT`, `SRAM_WEIGHT`, `SRAM_CAL_GOAL`, etc.), bit-field shift/mask constants for
+`SRAM_FLAGS1` and `SRAM_FLAGS2`, and the `SaveData` in-memory struct that all game code uses.
+Metric is always the storage format; the UI converts to imperial for display only.
 
 ### Validation
 
