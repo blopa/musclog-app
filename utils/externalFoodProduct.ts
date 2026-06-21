@@ -9,6 +9,7 @@ import {
   getNutrimentValue,
   type OpenFoodFactsNutritionProduct,
   parseOpenFoodFactsNutritionPer100g,
+  resolveOpenFoodFactsFiberPer100g,
 } from '@/utils/openFoodFactsMapper';
 import { mapUSDANutritient } from '@/utils/usdaMapper';
 
@@ -242,16 +243,7 @@ export function parsePlainNutrimentsNutritionPer100g(
   }
 
   const num = (key: string) => toFiniteMacro(getNutrimentValue(nutrients, key) ?? 0);
-  const directFiber = getNutrimentValue(nutrients, 'fiber');
-  const carbsTotal = getNutrimentValue(nutrients, 'carbohydrates-total');
-  const carbs = getNutrimentValue(nutrients, 'carbohydrates');
-  // TODO: use helper function instead of nested ternary
-  const fiber =
-    directFiber !== undefined
-      ? Math.max(0, directFiber)
-      : carbsTotal !== undefined && carbs !== undefined
-        ? Math.max(0, carbsTotal - carbs)
-        : 0;
+  const fiber = resolveOpenFoodFactsFiberPer100g(nutrients);
 
   return {
     ...EMPTY_PRODUCT_NUTRITION,

@@ -313,6 +313,26 @@ export function getNutrimentValue(nutriments: any, baseName: string): number | u
   return Number.isFinite(num) ? num : undefined;
 }
 
+/**
+ * Resolve OFF per-100g fiber: prefer the direct `fiber` nutriment, otherwise derive it from
+ * `carbohydrates-total − carbohydrates` (OFF's `carbohydrates` is the net value when a separate
+ * total is present). Always non-negative; falls back to 0 when neither path is available.
+ */
+export function resolveOpenFoodFactsFiberPer100g(nutriments: any): number {
+  const directFiber = getNutrimentValue(nutriments, 'fiber');
+  if (directFiber !== undefined) {
+    return Math.max(0, directFiber);
+  }
+
+  const carbsTotal = getNutrimentValue(nutriments, 'carbohydrates-total');
+  const carbs = getNutrimentValue(nutriments, 'carbohydrates');
+  if (carbsTotal !== undefined && carbs !== undefined) {
+    return Math.max(0, carbsTotal - carbs);
+  }
+
+  return 0;
+}
+
 // Map all nutriments to a comprehensive object
 function mapAllNutriments(nutriments: unknown): Record<string, unknown> {
   if (!nutriments || typeof nutriments !== 'object') {
@@ -411,14 +431,8 @@ export function parseOpenFoodFactsNutritionPer100g(
   const availableCarbs = rawCarbs !== undefined ? Math.max(0, rawCarbs) : undefined;
   const fat = rawFat !== undefined ? Math.max(0, rawFat) : 0;
 
-  const directFiber = getNutrimentValue(nutriments, 'fiber');
   const carbsTotalRaw = getNutrimentValue(nutriments, 'carbohydrates-total');
-  const fiber =
-    directFiber !== undefined
-      ? Math.max(0, directFiber)
-      : carbsTotalRaw !== undefined && availableCarbs !== undefined
-        ? Math.max(0, carbsTotalRaw - availableCarbs)
-        : 0;
+  const fiber = resolveOpenFoodFactsFiberPer100g(nutriments);
 
   const carbs =
     availableCarbs !== undefined
