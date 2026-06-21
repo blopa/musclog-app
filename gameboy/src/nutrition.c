@@ -253,6 +253,72 @@ static void nutrition_day_picker(const SaveData *data, uint8_t *viewing_day) {
     }
 }
 
+/*
+ * Food detail screen layout (20×18):
+ *
+ *  Row 0   MUSCLOG GB          ← header
+ *  Row 2   FOOD DETAIL         ← title
+ *  Row 3   --------------------
+ *  Row 5   [   CHICKEN        ] ← name centered, PAL_PANEL
+ *  Row 7   --------------------
+ *  Row 8   CALORIES
+ *  Row 9    580 KCAL
+ *  Row 11  PROTEIN      CARBS
+ *  Row 12   52G          18G
+ *  Row 14  FAT          FIBER
+ *  Row 15   28G           0G
+ *  Row 16  --------------------
+ *  Row 17  B BACK
+ */
+static void show_food_detail(const MockFood *f) {
+    char buf[22];
+    char name[13];
+    uint8_t i, trimlen;
+    InputState input;
+
+    /* Trim trailing spaces from the padded name for centered display */
+    trimlen = 0u;
+    for (i = 0u; i != 12u && f->name[i] != '\0'; ++i) {
+        if (f->name[i] != ' ') trimlen = (uint8_t)(i + 1u);
+    }
+    for (i = 0u; i != trimlen; ++i) name[i] = f->name[i];
+    name[trimlen] = '\0';
+
+    ui_title("FOOD DETAIL");
+
+    ui_fill_attr(0u, 5u, 20u, 1u, UI_PAL_PANEL);
+    ui_print_center(5u, name);
+
+    ui_print_at(0u, 7u, "--------------------");
+
+    ui_print_at(0u, 8u, "CALORIES");
+    sprintf(buf, "%u KCAL", (unsigned int)f->kcal);
+    ui_print_at(1u, 9u, buf);
+
+    ui_print_at(0u, 11u, "PROTEIN");
+    ui_print_at(11u, 11u, "CARBS");
+    sprintf(buf, "%uG", (unsigned int)f->protein);
+    ui_print_at(1u, 12u, buf);
+    sprintf(buf, "%uG", (unsigned int)f->carbs);
+    ui_print_at(12u, 12u, buf);
+
+    ui_print_at(0u, 14u, "FAT");
+    ui_print_at(11u, 14u, "FIBER");
+    sprintf(buf, "%uG", (unsigned int)f->fat);
+    ui_print_at(1u, 15u, buf);
+    sprintf(buf, "%uG", (unsigned int)f->fiber);
+    ui_print_at(12u, 15u, buf);
+
+    ui_footer("B BACK", "");
+
+    input_init(&input);
+    while (1) {
+        wait_vbl_done();
+        input_update(&input);
+        if (input_pressed(&input, J_B | J_A | J_START)) return;
+    }
+}
+
 void nutrition_track(SaveData *data) {
     NutritionState state;
     InputState input;
@@ -288,6 +354,13 @@ void nutrition_track(SaveData *data) {
 
         count   = get_day_food_count(state.viewing_day);
         abs_idx = (uint8_t)(state.scroll + state.focused);
+
+        /* Start → food detail for the focused item */
+        if (input_pressed(&input, J_START) && abs_idx < count) {
+            show_food_detail(get_day_food(state.viewing_day, abs_idx));
+            state.dirty = 1u;
+            continue;
+        }
 
         /* Down: move cursor down through food list */
         if (input_pressed(&input, J_DOWN) && (uint8_t)(abs_idx + 1u) < count) {
