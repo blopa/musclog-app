@@ -230,7 +230,9 @@ export interface AiIngredientMacrosPer100g {
  * callers apply their own rounding/clamping. Carbs is the only field clamped (by the convention
  * helper); the rest are returned raw.
  */
-export function aiIngredientMacrosPer100g(ingredient: AiIngredientMacros): AiIngredientMacrosPer100g {
+export function aiIngredientMacrosPer100g(
+  ingredient: AiIngredientMacros
+): AiIngredientMacrosPer100g {
   const per100g = (value: number): number => (value / ingredient.grams) * 100;
   const fiber = per100g(ingredient.fiber ?? 0);
 
