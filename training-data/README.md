@@ -42,9 +42,9 @@ From the repo root, the matching shortcuts are `npm run generate-markers-html`,
 `npm run generate-video-markers`, and `npm run generate-video-combined`.
 
 The video tools share `video_recording_data.py` for source JSON/MP4 selection,
-sample sorting, dead-reckoning, downsampling, and `startedAt` alignment. Generated
-`combined.mp4` files are ignored when selecting the source video, so the combined
-video generator can be run repeatedly.
+sample sorting, optional dead-reckoning for position charts, downsampling, and
+`startedAt` alignment. Generated `combined.mp4` files are ignored when selecting
+the source video, so the combined video generator can be run repeatedly.
 
 After marking reps, copy the downloaded updated JSON into `raw-data/` before
 training.

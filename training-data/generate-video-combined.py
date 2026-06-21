@@ -190,7 +190,7 @@ def draw_cursor(
 
 def process_folder(folder: Path) -> None:
     try:
-        recording = prepare_video_recording(folder)
+        recording = prepare_video_recording(folder, include_position=False)
     except RecordingPrepError as err:
         print(err.message)
         return

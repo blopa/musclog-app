@@ -64,6 +64,7 @@ import {
   getProductBarcodeFromSearchProduct,
   inferBarcodeNutritionSource,
   microsFromNutrition,
+  parsePlainNutrimentsNutritionPer100g,
   parseProductNutritionPer100g,
   parseServingSizeFromProduct,
   type ProductNutritionPer100g,
@@ -80,7 +81,6 @@ import { getMusclogDisplayQuality } from '@/utils/musclogProduct';
 import {
   extractLabelsFromOFFProduct,
   getNutrimentsWithFallback,
-  getNutrimentValue,
   mapOpenFoodFactsProduct,
 } from '@/utils/openFoodFactsMapper';
 import { getProductName } from '@/utils/productName';
@@ -867,38 +867,9 @@ export function FoodMealTrackingDetailsModal({
 
     // Fallback for AI-sourced products (no or unrecognized source) that carry nutriments directly
     if (productFromSearch) {
-      const nutrients = getNutrimentsWithFallback(productFromSearch);
-      if (nutrients) {
-        const getNum = (key: string) => (getNutrimentValue(nutrients, key) ?? 0) as number;
-        const directFiber = getNutrimentValue(nutrients, 'fiber');
-        let fiber: number;
-
-        if (directFiber !== undefined && directFiber >= 0) {
-          fiber = directFiber;
-        } else {
-          const carbsTotal = getNutrimentValue(nutrients, 'carbohydrates-total');
-          const carbs = getNutrimentValue(nutrients, 'carbohydrates');
-          fiber =
-            carbsTotal !== undefined && carbs !== undefined ? Math.max(0, carbsTotal - carbs) : 0;
-        }
-
-        const sodium =
-          getNutrimentValue(nutrients, 'sodium') ?? getNutrimentValue(nutrients, 'salt') ?? 0;
-
-        return {
-          calories: getNum('energy-kcal') || getNum('kcal'),
-          protein: getNum('proteins'),
-          carbs: getNum('carbohydrates'),
-          fat: getNum('fat'),
-          fiber,
-          sugar: getNum('sugars'),
-          saturatedFat: getNum('saturated-fat'),
-          sodium: Number.isFinite(sodium) ? sodium : 0,
-          alcohol: getNum('alcohol'),
-          potassium: getNum('potassium'),
-          magnesium: getNum('magnesium'),
-          zinc: getNum('zinc'),
-        };
+      const plainNutrition = parsePlainNutrimentsNutritionPer100g(productFromSearch);
+      if (plainNutrition) {
+        return plainNutrition;
       }
     }
 

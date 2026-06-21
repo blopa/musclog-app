@@ -5,9 +5,10 @@ import { totalCarbsForFoodSource } from '@/utils/carbsConvention';
 import { toFiniteMacro } from '@/utils/inferCaloriesFromMacros';
 import { getMusclogNutritionPer100g } from '@/utils/musclogProduct';
 import {
-  getNutrimentsFromV3Nutrition,
   getNutrimentsWithFallback,
   getNutrimentValue,
+  type OpenFoodFactsNutritionProduct,
+  parseOpenFoodFactsNutritionPer100g,
 } from '@/utils/openFoodFactsMapper';
 import { mapUSDANutritient } from '@/utils/usdaMapper';
 
@@ -207,55 +208,61 @@ function parseUSDANutritionPer100g(product: any): ProductNutritionPer100g {
   };
 }
 
-function parseOFFNutritionPer100g(product: any): ProductNutritionPer100g {
-  const nutrients = getNutrimentsWithFallback(product) || getNutrimentsFromV3Nutrition(product);
+function parseOFFNutritionPer100g(product: OpenFoodFactsNutritionProduct): ProductNutritionPer100g {
+  const { nutrition } = parseOpenFoodFactsNutritionPer100g(product);
+  return {
+    ...EMPTY_PRODUCT_NUTRITION,
+    calories: nutrition.calories,
+    protein: nutrition.protein,
+    carbs: nutrition.carbs,
+    fat: nutrition.fat,
+    fiber: nutrition.fiber,
+    sugar: nutrition.sugar,
+    saturatedFat: nutrition.saturatedFat,
+    sodium: nutrition.sodium,
+    alcohol: nutrition.alcohol,
+    potassium: nutrition.potassium,
+    magnesium: nutrition.magnesium,
+    zinc: nutrition.zinc,
+  };
+}
+
+/**
+ * Parses source-less nutriment blobs that are already in the app's food convention.
+ * Used for synthetic AI-label products, not external catalog ingestion.
+ */
+export function parsePlainNutrimentsNutritionPer100g(
+  product: OpenFoodFactsNutritionProduct
+): ProductNutritionPer100g | null {
+  const nutrients = getNutrimentsWithFallback(product);
   if (!nutrients) {
-    return { ...EMPTY_PRODUCT_NUTRITION };
+    return null;
   }
 
-  const num = (key: string) => toFiniteMacro((getNutrimentValue(nutrients, key) ?? 0) as number);
-
+  const num = (key: string) => toFiniteMacro(getNutrimentValue(nutrients, key) ?? 0);
   const directFiber = getNutrimentValue(nutrients, 'fiber');
-  const carbsTotalRaw = getNutrimentValue(nutrients, 'carbohydrates-total');
-  const availableCarbs = getNutrimentValue(nutrients, 'carbohydrates');
-  let fiber: number;
-  if (directFiber !== undefined && directFiber >= 0) {
-    fiber = directFiber;
-  } else {
-    // Fallback: fiber = total − net carbohydrates (OFF's `carbohydrates` is the net value here).
-    fiber =
-      carbsTotalRaw !== undefined && availableCarbs !== undefined
-        ? Math.max(0, carbsTotalRaw - availableCarbs)
+  const carbsTotal = getNutrimentValue(nutrients, 'carbohydrates-total');
+  const carbs = getNutrimentValue(nutrients, 'carbohydrates');
+  // TODO: use helper function instead of nested ternary
+  const fiber =
+    directFiber !== undefined
+      ? Math.max(0, directFiber)
+      : carbsTotal !== undefined && carbs !== undefined
+        ? Math.max(0, carbsTotal - carbs)
         : 0;
-  }
-
-  const sodium =
-    getNutrimentValue(nutrients, 'sodium') ?? getNutrimentValue(nutrients, 'salt') ?? 0;
-
-  // Normalize OFF's mixed carbs convention to the app's canonical total (fiber-inclusive).
-  const carbs = totalCarbsForFoodSource('openfood', {
-    carbs: toFiniteMacro(availableCarbs ?? 0),
-    fiber: toFiniteMacro(fiber),
-    offCarbsTotal: carbsTotalRaw,
-    energyReconciliation: {
-      // Raw label energy (not the inferred one) so the net-vs-total check stays non-circular.
-      statedKcalPer100g: num('energy-kcal'),
-      protein: num('proteins'),
-      fat: num('fat'),
-      alcohol: num('alcohol'),
-    },
-  });
 
   return {
-    calories: num('energy-kcal'),
+    ...EMPTY_PRODUCT_NUTRITION,
+    calories: num('energy-kcal') || num('kcal'),
     protein: num('proteins'),
-    carbs,
+    carbs: num('carbohydrates'),
     fat: num('fat'),
-    fiber: toFiniteMacro(fiber),
+    fiber,
     sugar: num('sugars'),
     saturatedFat: num('saturated-fat'),
-    sodium: toFiniteMacro(sodium),
-    // OFF stores minerals in grams per 100g — no unit conversion needed.
+    sodium: toFiniteMacro(
+      getNutrimentValue(nutrients, 'sodium') ?? getNutrimentValue(nutrients, 'salt') ?? 0
+    ),
     alcohol: num('alcohol'),
     potassium: num('potassium'),
     magnesium: num('magnesium'),

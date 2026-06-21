@@ -7,8 +7,6 @@ from pathlib import Path
 
 import numpy as np
 
-from ble_dead_reckoning import compute_position
-
 MAX_POINTS = 4000
 GENERATED_VIDEO_NAMES = {"combined.mp4"}
 
@@ -100,26 +98,36 @@ def build_chart_channels(
     samples_sorted: list,
     *,
     max_points: int = MAX_POINTS,
+    include_position: bool = True,
 ) -> tuple[np.ndarray, list[float], dict[str, list[float]]]:
-    dr = compute_position(samples_sorted)
-    timestamps_full = dr["timestamps_ms"]
-    position_full = dr["position_m"]
+    timestamps_full = np.asarray([float(s["timestamp"]) for s in samples_sorted])
+    position_full = None
+    if include_position:
+        from ble_dead_reckoning import compute_position
+
+        dr = compute_position(samples_sorted)
+        timestamps_full = dr["timestamps_ms"]
+        position_full = dr["position_m"]
 
     if len(samples_sorted) > max_points:
         idx = np.round(np.linspace(0, len(samples_sorted) - 1, max_points)).astype(int)
         samples_keep = [samples_sorted[i] for i in idx]
         timestamps = timestamps_full[idx]
-        position_keep = position_full[idx]
+        position_keep = position_full[idx] if position_full is not None else None
     else:
         samples_keep = samples_sorted
         timestamps = timestamps_full
         position_keep = position_full
 
-    channels = {
-        "pos.x (m)": [round(float(v), 6) for v in position_keep[:, 0]],
-        "pos.y (m)": [round(float(v), 6) for v in position_keep[:, 1]],
-        "pos.z (m)": [round(float(v), 6) for v in position_keep[:, 2]],
-    }
+    channels = {}
+    if position_keep is not None:
+        channels.update(
+            {
+                "pos.x (m)": [round(float(v), 6) for v in position_keep[:, 0]],
+                "pos.y (m)": [round(float(v), 6) for v in position_keep[:, 1]],
+                "pos.z (m)": [round(float(v), 6) for v in position_keep[:, 2]],
+            }
+        )
     for kind in ("accel", "gyro", "angle"):
         for axis in ("x", "y", "z"):
             channels[f"{kind}.{axis}"] = [
@@ -145,7 +153,11 @@ def started_at_ms_or_first_sample(data: dict, timestamps: np.ndarray) -> int:
     return int(timestamps[0])
 
 
-def prepare_video_recording(folder: Path) -> PreparedVideoRecording:
+def prepare_video_recording(
+    folder: Path,
+    *,
+    include_position: bool = True,
+) -> PreparedVideoRecording:
     pair = find_recording_pair(folder)
 
     with open(pair.json_path) as f:
@@ -164,7 +176,10 @@ def prepare_video_recording(folder: Path) -> PreparedVideoRecording:
         )
 
     samples_sorted = sorted(samples, key=lambda s: s["timestamp"])
-    timestamps, timestamps_list, channels = build_chart_channels(samples_sorted)
+    timestamps, timestamps_list, channels = build_chart_channels(
+        samples_sorted,
+        include_position=include_position,
+    )
     started_at_ms = started_at_ms_or_first_sample(data, timestamps)
 
     return PreparedVideoRecording(

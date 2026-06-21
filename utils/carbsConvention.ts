@@ -9,7 +9,8 @@
  * Per-source conventions (verified against the source standards, June 2026):
  *
  * - **US / Canada (FDA)** — "Total Carbohydrate" is computed *by subtraction* and **includes fiber**;
- *   all carbs (incl. fiber) are counted at 4 kcal/g. 21 CFR 101.9(c)(6):
+ *   the app normalizes this label shape to total carbs before applying its own energy convention.
+ *   21 CFR 101.9(c)(6):
  *   https://www.ecfr.gov/current/title-21/section-101.9
  * - **USDA FoodData Central** — `Carbohydrate, by difference` (nutrient 1005/205) =
  *   `100 − (water + protein + fat + ash + alcohol)`, so it **includes fiber** → already `total`.
@@ -122,7 +123,7 @@ function offEnergyConventionHint(input: RawCarbsInput): 'total' | 'net' | null {
     CALORIES_FOR_FIBER * fiber;
 
   // If `carbs` already includes fiber (total), only carbs−fiber are digestible at 4 kcal/g.
-  const energyIfTotal = base + CALORIES_FOR_CARBS * Math.max(0, carbs - fiber);
+  const energyIfTotal = base + CALORIES_FOR_CARBS * digestibleCarbs(carbs, fiber);
   // If `carbs` excludes fiber (net), all of carbs are digestible and fiber is additive (in `base`).
   const energyIfNet = base + CALORIES_FOR_CARBS * carbs;
 

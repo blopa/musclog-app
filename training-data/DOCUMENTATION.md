@@ -429,8 +429,10 @@ the source video, so rerunning the tool does not consume its previous output.
 - `recordings/<uuid>/combined.mp4` — combined source video + chart overlay.
 
 **Shared preparation:** This script and `generate-video-markers.py` both use
-`video_recording_data.py` for JSON/MP4 pairing, sample sorting, dead-reckoning,
-downsampling, channel construction, and `startedAt` timeline anchoring. Keep new
+`video_recording_data.py` for JSON/MP4 pairing, sample sorting, optional
+dead-reckoning for position channels, downsampling, channel construction, and
+`startedAt` timeline anchoring. Combined video overlays request raw angle/accel
+channels only, while marker pages request position channels too. Keep new
 video-recording tools on that shared path so chart behavior does not drift.
 
 ---
@@ -448,9 +450,9 @@ directly.
 - Exclude generated MP4s such as `combined.mp4` from source selection.
 - Reject ambiguous folders with multiple source JSON or MP4 files.
 - Sort BLE samples by timestamp.
-- Run `ble_dead_reckoning.compute_position()` at full sample rate before chart
-  downsampling.
-- Build the shared chart channel payload and `startedAt`-relative time axis.
+- Build the shared raw chart channel payload and `startedAt`-relative time axis.
+- Run `ble_dead_reckoning.compute_position()` at full sample rate before
+  downsampling only when callers request position channels.
 
 ---
 

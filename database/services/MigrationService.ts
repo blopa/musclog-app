@@ -36,6 +36,7 @@ import {
   consumedDateTimeOnDay,
   localDayStartFromUtcMs,
 } from '@/utils/calendarDate';
+import { digestibleCarbs } from '@/utils/carbsConvention';
 import { decryptDatabaseValue } from '@/utils/encryption';
 import { handleError } from '@/utils/handleError';
 import { getCurrentTimezone } from '@/utils/timezone';
@@ -642,7 +643,8 @@ export class MigrationService {
         .fetch();
 
       const logCalFromProtein = protein * CALORIES_FOR_PROTEIN;
-      const logCalFromCarbs = Math.max(0, carbs - 0) * CALORIES_FOR_CARBS; // Fiber unknown here usually
+      // Fiber is unknown here usually, so the legacy log carbs are already the digestible amount.
+      const logCalFromCarbs = digestibleCarbs(carbs, 0) * CALORIES_FOR_CARBS;
       const logCalFromFat = fat * CALORIES_FOR_FAT;
       const logPctProtein = calories > 0 ? logCalFromProtein / calories : 0;
       const logPctCarbs = calories > 0 ? logCalFromCarbs / calories : 0;
@@ -657,7 +659,7 @@ export class MigrationService {
         }
         const foodCalFromProtein = food.protein * CALORIES_FOR_PROTEIN;
         const foodCalFromCarbs =
-          Math.max(0, food.carbs - food.fiber) * CALORIES_FOR_CARBS +
+          digestibleCarbs(food.carbs, food.fiber) * CALORIES_FOR_CARBS +
           food.fiber * CALORIES_FOR_FIBER;
         const foodCalFromFat = food.fat * CALORIES_FOR_FAT;
         const foodPctProtein = foodCalFromProtein / food.calories;
