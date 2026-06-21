@@ -213,8 +213,8 @@ What's wired up so far:
 - **`gameboy/src/main.c`** — splash, text-mode init, save validation, onboarding/home routing, and a
   simple saved-profile home placeholder. `Select+B` on the home placeholder erases the save and reruns
   onboarding.
-- **`gameboy/src/onboarding.c`** — first-run flow with a combined unit/sex setup screen, then age,
-  height, weight, activity, training experience, fitness focus, weight goal, generated goal review,
+- **`gameboy/src/onboarding.c`** — first-run flow with a combined unit/sex/activity setup screen,
+  then age, height, weight, training experience, fitness focus, weight goal, generated goal review,
   and manual macro edits.
 - **`gameboy/src/storage.c`** — SRAM bank 0 persistence with magic/version/checksum validation.
 - **`gameboy/src/nutrition_math.c`** — integer-only Mifflin-style BMR, activity multipliers, calorie

@@ -130,7 +130,7 @@ static void step_back(OnboardingState *state) {
             enter_step(state, STEP_WEIGHT);
             break;
         case STEP_EXPERIENCE:
-            enter_step(state, STEP_ACTIVITY);
+            enter_step(state, STEP_WEIGHT);
             break;
         case STEP_FITNESS:
             enter_step(state, STEP_EXPERIENCE);
@@ -162,16 +162,41 @@ static void step_back(OnboardingState *state) {
     }
 }
 
-static void draw_gender_row(uint8_t y, uint8_t gender, uint8_t selected) {
-    ui_fill_attr(2u, y, 16u, 1u, selected ? UI_PAL_SELECTED : UI_PAL_PANEL);
+static const char *gender_label(uint8_t gender) {
+    if (gender == GENDER_FEMALE) return "FEMALE";
+    if (gender == GENDER_OTHER) return "OTHER";
+    return "MALE";
+}
 
-    if (gender == GENDER_MALE) {
-        ui_print_at(1u, y, selected ? "|>MALE        (O)|" : "| MALE        ( )|");
-    } else if (gender == GENDER_FEMALE) {
-        ui_print_at(1u, y, selected ? "|>FEMALE      (O)|" : "| FEMALE      ( )|");
-    } else {
-        ui_print_at(1u, y, selected ? "|>OTHER       (O)|" : "| OTHER       ( )|");
+static const char *activity_label(uint8_t activity_level) {
+    switch (activity_level) {
+        case 1u: return "LOW";
+        case 2u: return "LIGHT";
+        case 3u: return "MODERATE";
+        case 4u: return "ACTIVE";
+        case 5u: return "VERY ACTIVE";
+        default: return "LIGHT";
     }
+}
+
+static void draw_box_row(uint8_t y, const char *value, uint8_t focused) {
+    ui_print_at(0u, (uint8_t)(y - 1u), "+------------------+");
+    ui_fill_attr(1u, y, 18u, 1u, focused ? UI_PAL_SELECTED : UI_PAL_PANEL);
+    ui_print_at(0u, y, "|                  |");
+    ui_print_at(1u, y, focused ? ">" : " ");
+    ui_print_at(3u, y, value);
+    ui_print_at(0u, (uint8_t)(y + 1u), "+------------------+");
+}
+
+static void draw_unit_row(const OnboardingState *state) {
+    ui_print_at(0u, 3u, "+------------------+");
+    ui_fill_attr(1u, 4u, 8u, 1u, state->data->units == UNITS_METRIC ? UI_PAL_SELECTED : UI_PAL_PANEL);
+    ui_fill_attr(10u, 4u, 9u, 1u, state->data->units == UNITS_IMPERIAL ? UI_PAL_SELECTED : UI_PAL_PANEL);
+    ui_print_at(0u, 4u, "|        |         |");
+    ui_print_at(state->data->units == UNITS_METRIC ? 1u : 10u, 4u, ">");
+    ui_print_at(2u, 4u, "METRIC");
+    ui_print_at(11u, 4u, "IMP");
+    ui_print_at(0u, 5u, "+------------------+");
 }
 
 static void draw_welcome(const OnboardingState *state) {
@@ -181,23 +206,16 @@ static void draw_welcome(const OnboardingState *state) {
     ui_print_at(1u, 0u, "[#][][]");
     ui_print_at(8u, 0u, "LET'S START");
 
-    ui_print_at(1u, 2u, "UNIT SYSTEM");
-    ui_print_at(1u, 3u, "+------------------+");
-    ui_fill_attr(2u, 4u, 8u, 1u, state->data->units == UNITS_METRIC ? UI_PAL_SELECTED : UI_PAL_PANEL);
-    ui_fill_attr(11u, 4u, 7u, 1u, state->data->units == UNITS_IMPERIAL ? UI_PAL_SELECTED : UI_PAL_PANEL);
-    ui_print_at(1u, 4u, state->data->units == UNITS_METRIC ? "|>METRIC | IMP   |" : "| METRIC |>IMP   |");
-    ui_print_at(1u, 5u, "+------------------+");
+    ui_print_at(0u, 2u, state->selected == 0u ? ">UNIT SYSTEM" : " UNIT SYSTEM");
+    draw_unit_row(state);
 
-    ui_print_at(1u, 7u, "BIOLOGICAL SEX");
-    ui_fill_attr(1u, 8u, 18u, 5u, UI_PAL_PANEL);
-    ui_print_at(1u, 8u, "+------------------+");
-    draw_gender_row(9u, GENDER_MALE, state->data->gender == GENDER_MALE);
-    draw_gender_row(10u, GENDER_FEMALE, state->data->gender == GENDER_FEMALE);
-    draw_gender_row(11u, GENDER_OTHER, state->data->gender == GENDER_OTHER);
-    ui_print_at(1u, 12u, "+------------------+");
+    ui_print_at(0u, 7u, state->selected == 1u ? ">BIOLOGICAL SEX" : " BIOLOGICAL SEX");
+    draw_box_row(9u, gender_label(state->data->gender), state->selected == 1u);
 
-    ui_print_center(14u, "LEFT/RIGHT UNITS");
-    ui_print_center(15u, "UP/DOWN SEX");
+    ui_print_at(0u, 11u, state->selected == 2u ? ">ACTIVITY LEVEL" : " ACTIVITY LEVEL");
+    draw_box_row(13u, activity_label(state->data->activity_level), state->selected == 2u);
+
+    ui_print_center(15u, "UP/DN FIELD  L/R SET");
     ui_footer("", "A/ST NEXT");
 }
 
@@ -250,8 +268,8 @@ static void draw_review(const OnboardingState *state) {
     ui_print_at(1u, 8u, row);
 
     for (i = 0u; i != 2u; ++i) {
-        sprintf(row, "%c %s", i == state->selected ? '>' : ' ', review_options[i]);
-        ui_print_at(1u, (uint8_t)(11u + i), row);
+        ui_print_at(1u, (uint8_t)(11u + i), i == state->selected ? ">" : " ");
+        ui_print_at(3u, (uint8_t)(11u + i), review_options[i]);
     }
 
     ui_footer("B BACK", "A/ST OK");
@@ -300,7 +318,7 @@ static void render_step(const OnboardingState *state) {
             ui_draw_menu("ACTIVITY", activity_options, 5u, state->selected);
             break;
         case STEP_EXPERIENCE:
-            ui_draw_menu("TRAINING", experience_options, 3u, state->selected);
+            ui_draw_menu("EXPERIENCE", experience_options, 3u, state->selected);
             break;
         case STEP_FITNESS:
             ui_draw_menu("FOCUS", fitness_options, 4u, state->selected);
@@ -332,18 +350,30 @@ static void menu_input(OnboardingState *state, const InputState *input, uint8_t 
 }
 
 static void setup_input(OnboardingState *state, const InputState *input) {
-    if (input_pressed(input, J_LEFT | J_RIGHT)) {
-        state->data->units = state->data->units == UNITS_METRIC ? UNITS_IMPERIAL : UNITS_METRIC;
-        state->height_inches = cm_to_inches(state->data->height_cm);
-        state->weight_lbs = kg_tenths_to_lbs(state->data->weight_kg_tenths);
-        state->dirty = 1u;
-    }
-
     if (input_pressed(input, J_UP)) {
-        state->data->gender = state->data->gender == GENDER_MALE ? GENDER_OTHER : (uint8_t)(state->data->gender - 1u);
+        state->selected = state->selected == 0u ? 2u : (uint8_t)(state->selected - 1u);
         state->dirty = 1u;
     } else if (input_pressed(input, J_DOWN)) {
-        state->data->gender = (uint8_t)((state->data->gender + 1u) % 3u);
+        state->selected = (uint8_t)((state->selected + 1u) % 3u);
+        state->dirty = 1u;
+    } else if (input_pressed(input, J_LEFT | J_RIGHT)) {
+        if (state->selected == 0u) {
+            state->data->units = state->data->units == UNITS_METRIC ? UNITS_IMPERIAL : UNITS_METRIC;
+            state->height_inches = cm_to_inches(state->data->height_cm);
+            state->weight_lbs = kg_tenths_to_lbs(state->data->weight_kg_tenths);
+        } else if (state->selected == 1u) {
+            if (input_pressed(input, J_LEFT)) {
+                state->data->gender = state->data->gender == GENDER_MALE ? GENDER_OTHER : (uint8_t)(state->data->gender - 1u);
+            } else {
+                state->data->gender = (uint8_t)((state->data->gender + 1u) % 3u);
+            }
+        } else {
+            if (input_pressed(input, J_LEFT)) {
+                state->data->activity_level = state->data->activity_level <= 1u ? 5u : (uint8_t)(state->data->activity_level - 1u);
+            } else {
+                state->data->activity_level = state->data->activity_level >= 5u ? 1u : (uint8_t)(state->data->activity_level + 1u);
+            }
+        }
         state->dirty = 1u;
     }
 }
@@ -463,7 +493,7 @@ static void handle_accept(OnboardingState *state) {
             enter_step(state, STEP_WEIGHT);
             break;
         case STEP_WEIGHT:
-            enter_step(state, STEP_ACTIVITY);
+            enter_step(state, STEP_EXPERIENCE);
             break;
         case STEP_ACTIVITY:
             state->data->activity_level = (uint8_t)(state->selected + 1u);

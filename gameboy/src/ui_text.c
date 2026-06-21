@@ -135,12 +135,11 @@ void ui_footer(const char *left, const char *right) {
 
 void ui_draw_menu(const char *title, const char **options, uint8_t count, uint8_t selected) {
     uint8_t i;
-    char row[20];
 
     ui_title(title);
     for (i = 0u; i != count; ++i) {
-        sprintf(row, "%c %s", i == selected ? '>' : ' ', options[i]);
-        ui_print_at(1u, (uint8_t)(5u + i), row);
+        ui_print_at(1u, (uint8_t)(5u + i), i == selected ? ">" : " ");
+        ui_print_at(3u, (uint8_t)(5u + i), options[i]);
     }
     ui_footer("B BACK", "A/ST OK");
 }
