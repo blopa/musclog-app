@@ -154,131 +154,113 @@ void ui_draw_value_screen(const char *title, const char *label, const char *valu
     ui_footer("B BACK", "A/ST OK");
 }
 
-void ui_draw_date_picker(const char *title, uint8_t field,
-                         uint16_t year, uint8_t month, uint8_t day) {
-    /*
-     * Layout (rows):
-     *   0  header "MUSCLOG GB"      PAL_HEADER
-     *   2  title (centered)
-     *   3  "--------------------"
-     *   5  hint text
-     *   7  YEAR  field row
-     *   8  MONTH field row
-     *   9  DAY   field row
-     * Footer is NOT drawn here — caller adds it.
-     */
-    const char *labels[3];
-    char        buf[5];
-    uint8_t     i;
-    uint8_t     row;
-    uint8_t     col;
-    uint8_t     pal;
+uint8_t ui_bar_fill(uint16_t tracked, uint16_t goal, uint8_t width) {
+    if (goal == 0u || tracked == 0u) return 0u;
+    if (tracked >= goal) return width;
+    return (uint8_t)(((uint32_t)tracked * width + (uint32_t)(goal >> 1u)) / goal);
+}
 
-    labels[0] = "YEAR";
-    labels[1] = "MONTH";
-    labels[2] = "DAY";
+void ui_draw_bar(uint8_t x, uint8_t y, uint8_t width, uint8_t fill) {
+    if (fill > width) fill = width;
+    if (fill > 0u)
+        ui_fill_attr(x, y, fill, 1u, UI_PAL_SELECTED);
+    if (fill < width)
+        ui_fill_attr((uint8_t)(x + fill), y, (uint8_t)(width - fill), 1u, UI_PAL_PANEL);
+}
+
+/*
+ * Shared renderer for date/datetime picker screens.
+ * Draws the title, hint, and n_fields labelled rows starting at tile row 7.
+ * Each field row shows `labels[i]` on the left and `values[i]` right-aligned
+ * at column `cols[i]`.  The active field is highlighted with UI_PAL_SELECTED.
+ * Footer is NOT drawn here — caller adds it.
+ *
+ * Layout (rows):
+ *   0  header "MUSCLOG GB"  PAL_HEADER
+ *   2  title (centered)
+ *   3  "--------------------"
+ *   5  hint text
+ *   7+ one row per field
+ */
+static void draw_picker_rows(const char *title, uint8_t n_fields, uint8_t active,
+                             const char * const *labels,
+                             const char * const *values,
+                             const uint8_t *cols) {
+    uint8_t i;
+    uint8_t row;
+    uint8_t pal;
 
     ui_title(title);
     ui_print_center(5u, "UP/DN FIELD  L/R SET");
 
-    for (i = 0u; i != 3u; ++i) {
+    for (i = 0u; i != n_fields; ++i) {
         row = (uint8_t)(7u + i);
-        pal = (i == field) ? UI_PAL_SELECTED : UI_PAL_PANEL;
+        pal = (i == active) ? UI_PAL_SELECTED : UI_PAL_PANEL;
         ui_fill_attr(0u, row, SCREEN_COLS, 1u, pal);
-
-        ui_print_at(1u, row, (i == field) ? ">" : " ");
+        ui_print_at(1u, row, (i == active) ? ">" : " ");
         ui_print_at(3u, row, labels[i]);
-
-        if (i == 0u) {
-            buf[0] = (char)('0' + (year / 1000u) % 10u);
-            buf[1] = (char)('0' + (year / 100u)  % 10u);
-            buf[2] = (char)('0' + (year / 10u)   % 10u);
-            buf[3] = (char)('0' +  year           % 10u);
-            buf[4] = '\0';
-            col = 16u;  /* right-align 4-digit year: 20 - 4 */
-        } else if (i == 1u) {
-            buf[0] = (char)('0' + month / 10u);
-            buf[1] = (char)('0' + month % 10u);
-            buf[2] = '\0';
-            col = 18u;  /* right-align 2-digit month: 20 - 2 */
-        } else {
-            buf[0] = (char)('0' + day / 10u);
-            buf[1] = (char)('0' + day % 10u);
-            buf[2] = '\0';
-            col = 18u;  /* right-align 2-digit day: 20 - 2 */
-        }
-        ui_print_at(col, row, buf);
+        ui_print_at(cols[i], row, values[i]);
     }
+}
+
+/* Format a two-digit value (0-99) as "DD\0" into buf (must be >= 3 bytes). */
+static void fmt2(char *buf, uint8_t v) {
+    buf[0] = (char)('0' + v / 10u);
+    buf[1] = (char)('0' + v % 10u);
+    buf[2] = '\0';
+}
+
+void ui_draw_date_picker(const char *title, uint8_t field,
+                         uint16_t year, uint8_t month, uint8_t day) {
+    char year_buf[5];
+    char month_buf[3];
+    char day_buf[3];
+    const char *labels[3];
+    const char *values[3];
+    uint8_t     cols[3];
+
+    year_buf[0] = (char)('0' + (year / 1000u) % 10u);
+    year_buf[1] = (char)('0' + (year / 100u)  % 10u);
+    year_buf[2] = (char)('0' + (year / 10u)   % 10u);
+    year_buf[3] = (char)('0' +  year           % 10u);
+    year_buf[4] = '\0';
+    fmt2(month_buf, month);
+    fmt2(day_buf, day);
+
+    labels[0] = "YEAR";  values[0] = year_buf;  cols[0] = 16u;
+    labels[1] = "MONTH"; values[1] = month_buf; cols[1] = 18u;
+    labels[2] = "DAY";   values[2] = day_buf;   cols[2] = 18u;
+
+    draw_picker_rows(title, 3u, field, labels, values, cols);
 }
 
 void ui_draw_datetime_picker(const char *title, uint8_t field,
                              uint16_t year, uint8_t month, uint8_t day,
                              uint8_t hour, uint8_t minute) {
-    /*
-     * Layout (rows):
-     *   0  header "MUSCLOG GB"  PAL_HEADER
-     *   2  title (centered)
-     *   3  "--------------------"
-     *   5  hint text
-     *   7  YEAR   field row
-     *   8  MONTH  field row
-     *   9  DAY    field row
-     *  10  HOUR   field row
-     *  11  MINUTE field row
-     * Footer is NOT drawn here — caller adds it.
-     */
+    char year_buf[5];
+    char month_buf[3];
+    char day_buf[3];
+    char hour_buf[3];
+    char minute_buf[3];
     const char *labels[5];
-    char        buf[5];
-    uint8_t     i;
-    uint8_t     row;
-    uint8_t     col;
-    uint8_t     pal;
+    const char *values[5];
+    uint8_t     cols[5];
 
-    labels[0] = "YEAR";
-    labels[1] = "MONTH";
-    labels[2] = "DAY";
-    labels[3] = "HOUR";
-    labels[4] = "MINUTE";
+    year_buf[0] = (char)('0' + (year / 1000u) % 10u);
+    year_buf[1] = (char)('0' + (year / 100u)  % 10u);
+    year_buf[2] = (char)('0' + (year / 10u)   % 10u);
+    year_buf[3] = (char)('0' +  year           % 10u);
+    year_buf[4] = '\0';
+    fmt2(month_buf, month);
+    fmt2(day_buf, day);
+    fmt2(hour_buf, hour);
+    fmt2(minute_buf, minute);
 
-    ui_title(title);
-    ui_print_center(5u, "UP/DN FIELD  L/R SET");
+    labels[0] = "YEAR";   values[0] = year_buf;   cols[0] = 16u;
+    labels[1] = "MONTH";  values[1] = month_buf;  cols[1] = 18u;
+    labels[2] = "DAY";    values[2] = day_buf;    cols[2] = 18u;
+    labels[3] = "HOUR";   values[3] = hour_buf;   cols[3] = 18u;
+    labels[4] = "MINUTE"; values[4] = minute_buf; cols[4] = 18u;
 
-    for (i = 0u; i != 5u; ++i) {
-        row = (uint8_t)(7u + i);
-        pal = (i == field) ? UI_PAL_SELECTED : UI_PAL_PANEL;
-        ui_fill_attr(0u, row, SCREEN_COLS, 1u, pal);
-
-        ui_print_at(1u, row, (i == field) ? ">" : " ");
-        ui_print_at(3u, row, labels[i]);
-
-        if (i == 0u) {
-            buf[0] = (char)('0' + (year / 1000u) % 10u);
-            buf[1] = (char)('0' + (year / 100u)  % 10u);
-            buf[2] = (char)('0' + (year / 10u)   % 10u);
-            buf[3] = (char)('0' +  year           % 10u);
-            buf[4] = '\0';
-            col = 16u;
-        } else if (i == 1u) {
-            buf[0] = (char)('0' + month / 10u);
-            buf[1] = (char)('0' + month % 10u);
-            buf[2] = '\0';
-            col = 18u;
-        } else if (i == 2u) {
-            buf[0] = (char)('0' + day / 10u);
-            buf[1] = (char)('0' + day % 10u);
-            buf[2] = '\0';
-            col = 18u;
-        } else if (i == 3u) {
-            buf[0] = (char)('0' + hour / 10u);
-            buf[1] = (char)('0' + hour % 10u);
-            buf[2] = '\0';
-            col = 18u;
-        } else {
-            buf[0] = (char)('0' + minute / 10u);
-            buf[1] = (char)('0' + minute % 10u);
-            buf[2] = '\0';
-            col = 18u;
-        }
-        ui_print_at(col, row, buf);
-    }
+    draw_picker_rows(title, 5u, field, labels, values, cols);
 }

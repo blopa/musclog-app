@@ -131,7 +131,8 @@ uint8_t db_load(SaveData *out) {
 /*
  * db_save — encode SaveData into packed SRAM bytes and write to bank 0.
  *
- * Always stamps onboarding_complete=1 and recomputes the checksum.
+ * Saves data exactly as given; caller is responsible for setting
+ * onboarding_complete before calling. Recomputes the checksum.
  */
 void db_save(const SaveData *data) {
     SaveData stamped;
@@ -142,10 +143,9 @@ void db_save(const SaveData *data) {
     uint8_t  year_ofs;
 
     stamped = *data;
-    stamped.magic               = SAVE_MAGIC;
-    stamped.version             = SAVE_VERSION;
-    stamped.onboarding_complete = 1u;
-    stamped.checksum            = 0u;
+    stamped.magic    = SAVE_MAGIC;
+    stamped.version  = SAVE_VERSION;
+    stamped.checksum = 0u;
     checksum = db_checksum(&stamped);
 
     /* Pack SRAM_FLAGS1: [7:6]=experience [5:3]=activity-1 [2:1]=gender [0]=units */
@@ -158,10 +158,10 @@ void db_save(const SaveData *data) {
 
     /* Pack SRAM_FLAGS2: [5]=rtc_is_set [4]=onboarding [3:2]=weight_goal [1:0]=fitness */
     flags2 = (uint8_t)(
-        ((data->fitness_focus & 3u) << FLAGS2_FITNESS_SHIFT)      |
-        ((data->weight_goal   & 3u) << FLAGS2_WEIGHT_GOAL_SHIFT)   |
-        (1u                         << FLAGS2_ONBOARDING_BIT)      |
-        ((data->rtc_is_set    & 1u) << FLAGS2_RTC_IS_SET_BIT)
+        ((data->fitness_focus        & 3u) << FLAGS2_FITNESS_SHIFT)      |
+        ((data->weight_goal          & 3u) << FLAGS2_WEIGHT_GOAL_SHIFT)   |
+        ((data->onboarding_complete  & 1u) << FLAGS2_ONBOARDING_BIT)     |
+        ((data->rtc_is_set           & 1u) << FLAGS2_RTC_IS_SET_BIT)
     );
 
     weight_off = (uint16_t)(data->weight_kg_tenths - DB_WEIGHT_KG_TENTHS_MIN);

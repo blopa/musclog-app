@@ -140,10 +140,7 @@ CalDate cal_current_date(const SaveData *data) {
     rtc_latch(&rtc);
     elapsed = rtc.days;
     if (rtc.carry) elapsed = (uint16_t)(elapsed + 512u);
-    {
-        CalDate result = cal_advance(data->rtc_base_date, elapsed);
-        return result;
-    }
+    return cal_advance(data->rtc_base_date, elapsed);
 }
 
 /* ── Date+time setup screen ───────────────────────────────────────────────── */

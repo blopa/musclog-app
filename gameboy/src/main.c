@@ -123,23 +123,6 @@ static void show_splash(void) {
     }
 }
 
-/* Return how many of `width` tiles should be filled for a progress bar. */
-static uint8_t bar_fill(uint16_t tracked, uint16_t goal, uint8_t width) {
-    if (goal == 0u || tracked == 0u) return 0u;
-    if (tracked >= goal) return width;
-    return (uint8_t)(((uint32_t)tracked * width + (uint32_t)(goal >> 1u)) / goal);
-}
-
-/* Draw a horizontal progress bar using palette coloring on blank (space) tiles.
- * Must be called after ui_clear() so tiles in the bar row are already spaces. */
-static void draw_bar(uint8_t x, uint8_t y, uint8_t width, uint8_t fill) {
-    if (fill > width) fill = width;
-    if (fill > 0u)
-        ui_fill_attr(x, y, fill, 1u, UI_PAL_SELECTED);
-    if (fill < width)
-        ui_fill_attr((uint8_t)(x + fill), y, (uint8_t)(width - fill), 1u, UI_PAL_PANEL);
-}
-
 /* Draw a full-width action button with a cursor indicator. */
 static void draw_button(uint8_t y, const char *label, uint8_t focused) {
     uint8_t pal = focused ? UI_PAL_SELECTED : UI_PAL_PANEL;
@@ -214,7 +197,7 @@ static void draw_home(const HomeState *state) {
     ui_print_at(1u, 3u, "CALORIES");
     sprintf(buf, "%u / %u KCAL", cal, d->calorie_goal);
     ui_print_at(1u, 4u, buf);
-    draw_bar(1u, 5u, 18u, bar_fill(cal, d->calorie_goal, 18u));
+    ui_draw_bar(1u, 5u, 18u, ui_bar_fill(cal, d->calorie_goal, 18u));
 
     /* ── Protein + Carbs ── */
     ui_print_at(0u, 6u, "PROTEIN");
@@ -223,8 +206,8 @@ static void draw_home(const HomeState *state) {
     ui_print_at(0u, 7u, buf);
     sprintf(buf, "%u/%uG", carb, d->carbs_goal);
     ui_print_at(11u, 7u, buf);
-    draw_bar(0u, 8u, 9u, bar_fill(pro, d->protein_goal, 9u));
-    draw_bar(11u, 8u, 9u, bar_fill(carb, d->carbs_goal, 9u));
+    ui_draw_bar(0u, 8u, 9u, ui_bar_fill(pro, d->protein_goal, 9u));
+    ui_draw_bar(11u, 8u, 9u, ui_bar_fill(carb, d->carbs_goal, 9u));
 
     /* ── Fat + Fiber ── */
     ui_print_at(0u, 9u, "FAT");
@@ -233,8 +216,8 @@ static void draw_home(const HomeState *state) {
     ui_print_at(0u, 10u, buf);
     sprintf(buf, "%u/%uG", fib, d->fiber_goal);
     ui_print_at(11u, 10u, buf);
-    draw_bar(0u, 11u, 9u, bar_fill(fat, d->fat_goal, 9u));
-    draw_bar(11u, 11u, 9u, bar_fill(fib, d->fiber_goal, 9u));
+    ui_draw_bar(0u, 11u, 9u, ui_bar_fill(fat, d->fat_goal, 9u));
+    ui_draw_bar(11u, 11u, 9u, ui_bar_fill(fib, d->fiber_goal, 9u));
 
     ui_print_at(0u, 12u, "--------------------");
 

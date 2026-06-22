@@ -72,43 +72,18 @@ static void sum_day_macros(uint8_t day,
  * d must be <= today.
  */
 static uint8_t date_to_mock_idx(CalDate d, CalDate today) {
-    CalDate  cursor;
-    uint16_t diff;
-    uint8_t  dim;
+    CalDate cursor;
+    uint8_t diff;
 
     if (cal_compare(d, today) == 0) return 0u;
 
     cursor = d;
     diff   = 0u;
     while (cal_compare(cursor, today) < 0 && diff < 3u) {
-        dim = cal_days_in_month(cursor.month, cursor.year);
-        cursor.day++;
-        if (cursor.day > dim) {
-            cursor.day = 1u;
-            cursor.month++;
-            if (cursor.month > 12u) {
-                cursor.month = 1u;
-                cursor.year++;
-            }
-        }
+        cursor = cal_advance(cursor, 1u);
         diff++;
     }
-    return (uint8_t)(diff < 2u ? diff : 2u);
-}
-
-/* ── Progress bar helpers ── */
-static uint8_t bar_fill(uint16_t tracked, uint16_t goal, uint8_t width) {
-    if (goal == 0u || tracked == 0u) return 0u;
-    if (tracked >= goal) return width;
-    return (uint8_t)(((uint32_t)tracked * width + (uint32_t)(goal >> 1u)) / goal);
-}
-
-static void draw_bar(uint8_t x, uint8_t y, uint8_t width, uint8_t fill) {
-    if (fill > width) fill = width;
-    if (fill > 0u)
-        ui_fill_attr(x, y, fill, 1u, UI_PAL_SELECTED);
-    if (fill < width)
-        ui_fill_attr((uint8_t)(x + fill), y, (uint8_t)(width - fill), 1u, UI_PAL_PANEL);
+    return (diff < 2u) ? diff : 2u;
 }
 
 /* ── Screen state ── */
@@ -201,7 +176,7 @@ static void draw_nutrition(const NutritionState *state) {
     ui_print_at(1u, 3u, "CALORIES");
     sprintf(buf, "%u / %u KCAL", (unsigned int)cal, (unsigned int)d->calorie_goal);
     ui_print_at(1u, 4u, buf);
-    draw_bar(1u, 5u, 18u, bar_fill(cal, d->calorie_goal, 18u));
+    ui_draw_bar(1u, 5u, 18u, ui_bar_fill(cal, d->calorie_goal, 18u));
 
     /* Protein + Carbs */
     ui_print_at(0u, 6u, "PROTEIN");
@@ -210,8 +185,8 @@ static void draw_nutrition(const NutritionState *state) {
     ui_print_at(0u, 7u, buf);
     sprintf(buf, "%u/%uG", (unsigned int)carb, (unsigned int)d->carbs_goal);
     ui_print_at(11u, 7u, buf);
-    draw_bar(0u, 8u, 9u, bar_fill(pro, d->protein_goal, 9u));
-    draw_bar(11u, 8u, 9u, bar_fill(carb, d->carbs_goal, 9u));
+    ui_draw_bar(0u, 8u, 9u, ui_bar_fill(pro, d->protein_goal, 9u));
+    ui_draw_bar(11u, 8u, 9u, ui_bar_fill(carb, d->carbs_goal, 9u));
 
     /* Fat + Fiber */
     ui_print_at(0u, 9u, "FAT");
@@ -220,8 +195,8 @@ static void draw_nutrition(const NutritionState *state) {
     ui_print_at(0u, 10u, buf);
     sprintf(buf, "%u/%uG", (unsigned int)fib, (unsigned int)d->fiber_goal);
     ui_print_at(11u, 10u, buf);
-    draw_bar(0u, 11u, 9u, bar_fill(fat, d->fat_goal, 9u));
-    draw_bar(11u, 11u, 9u, bar_fill(fib, d->fiber_goal, 9u));
+    ui_draw_bar(0u, 11u, 9u, ui_bar_fill(fat, d->fat_goal, 9u));
+    ui_draw_bar(11u, 11u, 9u, ui_bar_fill(fib, d->fiber_goal, 9u));
 
     ui_print_at(0u, 12u, "--------------------");
 

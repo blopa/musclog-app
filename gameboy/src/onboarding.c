@@ -372,32 +372,32 @@ static void spinner_input(OnboardingState *state, const InputState *input) {
 }
 
 static void edit_goal_input(OnboardingState *state, const InputState *input) {
-    uint16_t *value = 0;
-    uint16_t min = 0u;
-    uint16_t max = MACRO_MAX;
-    uint16_t small = 1u;
-    uint16_t large = 10u;
+    uint16_t *value;
+    uint16_t  min;
+    uint16_t  max;
+    uint16_t  small;
+    uint16_t  large;
 
     switch (state->step) {
         case STEP_EDIT_CALORIES:
             value = &state->data->calorie_goal;
-            min = CAL_MIN;
-            max = CAL_MAX;
-            small = 10u;
-            large = 100u;
+            min = CAL_MIN; max = CAL_MAX; small = 10u; large = 100u;
             break;
         case STEP_EDIT_PROTEIN:
             value = &state->data->protein_goal;
+            min = 0u; max = MACRO_MAX; small = 1u; large = 10u;
             break;
         case STEP_EDIT_CARBS:
             value = &state->data->carbs_goal;
+            min = 0u; max = MACRO_MAX; small = 1u; large = 10u;
             break;
         case STEP_EDIT_FAT:
             value = &state->data->fat_goal;
+            min = 0u; max = MACRO_MAX; small = 1u; large = 10u;
             break;
         case STEP_EDIT_FIBER:
             value = &state->data->fiber_goal;
-            max = FIBER_MAX;
+            min = 0u; max = FIBER_MAX; small = 1u; large = 10u;
             break;
         default:
             return;
@@ -431,6 +431,7 @@ static void handle_accept(OnboardingState *state) {
             break;
         case STEP_REVIEW:
             if (state->selected == 0u) {
+                state->data->onboarding_complete = 1u;
                 db_save(state->data);
                 /* Ask for current date & time so the MBC3 RTC is calibrated
                  * before the user reaches the home screen.  The hardware day

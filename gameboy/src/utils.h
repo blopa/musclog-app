@@ -15,21 +15,25 @@ static uint16_t clamp_u16(uint16_t value, uint16_t min, uint16_t max) {
     return value;
 }
 
+/* Requires: amount <= max (unsigned subtraction max-amount must not wrap). */
 static uint16_t add_clamped_u16(uint16_t value, uint16_t amount, uint16_t max) {
     if (value > (uint16_t)(max - amount)) return max;
     return (uint16_t)(value + amount);
 }
 
+/* Requires: amount <= (max_uint16 - min) (min+amount must not wrap). */
 static uint16_t sub_clamped_u16(uint16_t value, uint16_t amount, uint16_t min) {
     if (value < (uint16_t)(min + amount)) return min;
     return (uint16_t)(value - amount);
 }
 
+/* Requires: amount <= max. */
 static uint8_t add_clamped_u8(uint8_t value, uint8_t amount, uint8_t max) {
     if (value > (uint8_t)(max - amount)) return max;
     return (uint8_t)(value + amount);
 }
 
+/* Requires: amount <= (255 - min). */
 static uint8_t sub_clamped_u8(uint8_t value, uint8_t amount, uint8_t min) {
     if (value < (uint8_t)(min + amount)) return min;
     return (uint8_t)(value - amount);
