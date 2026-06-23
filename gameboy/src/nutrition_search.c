@@ -119,7 +119,8 @@ static void draw_amount_values(const FoodCache *fc, uint16_t amount, uint8_t imp
     ui_fill_attr(0u, 8u, 20u, 1u, UI_PAL_SELECTED);
     if (imperial) sprintf(buf, "%u OZ", (unsigned int)amount);
     else          sprintf(buf, "%u G",  (unsigned int)amount);
-    ui_print_center_clear(8u, buf);
+    ui_clear_row(8u);
+    ui_print_center(8u, buf);
 
     sprintf(buf, "CAL  %u KCAL", (unsigned int)kcal);
     ui_clear_row(11u);
@@ -192,6 +193,7 @@ static uint8_t food_amount_screen(SaveData *data, const FoodCache *fc,
                 foodlog_add(cal_day_number(log_date), food_idx, grams);
                 ui_title(STR_TRACKED);
                 ui_print_center(8u, STR_FOOD_TRACKED);
+                ui_present();
                 for (i = 0u; i != 75u; ++i) wait_vbl_done();
                 return 1u;
             }

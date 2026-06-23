@@ -16,7 +16,7 @@ void ui_footer(const char *left, const char *right);
 void ui_print_at(uint8_t x, uint8_t y, const char *text);
 void ui_print_center(uint8_t y, const char *text);
 void ui_clear_row(uint8_t y);
-void ui_print_center_clear(uint8_t y, const char *text);
+void ui_present(void);
 void ui_draw_menu(const char *title, const char **options, uint8_t count, uint8_t selected);
 void ui_draw_value_screen(const char *title, const char *label, const char *value, const char *hint);
 

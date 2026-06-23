@@ -118,21 +118,23 @@ typedef enum NutritionAction {
     NUTRITION_ACTION_NONE = 0u,
     NUTRITION_ACTION_GO_TO_DATE = 1u,
     NUTRITION_ACTION_TRACK_FOOD = 2u,
+    NUTRITION_ACTION_HOME = 3u,
 } NutritionAction;
 
 static NutritionAction nutrition_action_menu(void) {
-    static const char *OPTIONS[2] = {
-        STR_GO_TO_DATE,
-        STR_TRACK_FOOD,
-    };
+    const char *options[3];
     uint8_t selected = 0u;
     uint8_t dirty = 1u;
     InputState input;
 
+    options[0] = STR_GO_TO_DATE;
+    options[1] = STR_TRACK_FOOD;
+    options[2] = STR_HOME;
+
     input_init(&input);
     while (1) {
         if (dirty) {
-            ui_draw_menu(STR_NUTRITION, OPTIONS, 2u, selected);
+            ui_draw_menu(STR_NUTRITION, options, 3u, selected);
             dirty = 0u;
         }
 
@@ -142,12 +144,18 @@ static NutritionAction nutrition_action_menu(void) {
         if (input_pressed(&input, J_B)) return NUTRITION_ACTION_NONE;
 
         if (input_pressed(&input, J_UP | J_DOWN)) {
-            selected = (selected == 0u) ? 1u : 0u;
+            if (input_pressed(&input, J_UP)) {
+                selected = selected == 0u ? 2u : (uint8_t)(selected - 1u);
+            } else {
+                selected = selected == 2u ? 0u : (uint8_t)(selected + 1u);
+            }
             dirty = 1u;
         }
 
         if (input_pressed(&input, J_A | J_START)) {
-            return selected == 0u ? NUTRITION_ACTION_GO_TO_DATE : NUTRITION_ACTION_TRACK_FOOD;
+            if (selected == 0u) return NUTRITION_ACTION_GO_TO_DATE;
+            if (selected == 1u) return NUTRITION_ACTION_TRACK_FOOD;
+            return NUTRITION_ACTION_HOME;
         }
     }
 }
@@ -173,7 +181,7 @@ static void clamp_food_cursor(NutritionState *state) {
     }
 }
 
-static void run_action(NutritionState *state) {
+static uint8_t run_action(NutritionState *state) {
     NutritionAction action = nutrition_action_menu();
 
     if (action == NUTRITION_ACTION_GO_TO_DATE) {
@@ -183,7 +191,11 @@ static void run_action(NutritionState *state) {
         state->focused = 0u;
     } else if (action == NUTRITION_ACTION_TRACK_FOOD) {
         nutrition_food_search_track(state->data, state->viewing_date);
+    } else if (action == NUTRITION_ACTION_HOME) {
+        return 1u;
     }
+
+    return 0u;
 }
 
 void nutrition_track(SaveData *data) BANKED {
@@ -212,7 +224,7 @@ void nutrition_track(SaveData *data) BANKED {
         if (input_pressed(&input, J_B)) return;
 
         if (input_pressed(&input, J_SELECT)) {
-            run_action(&state);
+            if (run_action(&state)) return;
             state.dirty = 1u;
             continue;
         }

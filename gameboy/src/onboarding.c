@@ -309,7 +309,8 @@ static void update_value_step(const OnboardingState *state) {
     char value[16];
 
     format_value_step(state, value);
-    ui_print_center_clear(8u, value);
+    ui_clear_row(8u);
+    ui_print_center(8u, value);
 }
 
 static void render_step(const OnboardingState *state) {

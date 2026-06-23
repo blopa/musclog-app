@@ -253,12 +253,12 @@ What's wired up so far:
   then age, height, weight, training experience, fitness focus, weight goal, generated goal review,
   and manual macro edits.
 - **`gameboy/src/nutrition.c`** — `BANKED` nutrition shell in ROM bank 4: daily macro totals for the viewed date, the list of foods logged that day,
-  and the nutrition `Select` action menu. Goal-facing carb totals use digestible carbs (`carbs - fiber`),
+  and the nutrition `Select` action menu for date changes, food tracking, and returning home. Goal-facing carb totals use digestible carbs (`carbs - fiber`),
   while food detail/amount screens continue to show total food carbs and fiber separately. The date picker,
   food detail, and food search/amount subflows live in `nutrition_date.c`, `nutrition_detail.c`, and
   `nutrition_search.c`, also in ROM bank 4.
 - **`gameboy/src/workouts.c`** — `BANKED` workouts shell in ROM bank 7: a visual-only mocked workout
-  history list with summary stats and scrolling. Its `Select` action menu opens the free-session
+  history list with summary stats and scrolling. Its `Select` action menu can return home or open the free-session
   start flow: exercise picker, muscle-group filter input changed with left/right, a planning screen where
   the user edits the suggested set count, weight, and reps, an active set screen, an edit/options menu,
   a 60-second rest timer between non-final sets, and a loop back to the exercise picker after an exercise

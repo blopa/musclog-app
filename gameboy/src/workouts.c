@@ -54,6 +54,7 @@ typedef struct WorkoutsState {
 typedef enum WorkoutAction {
     WORKOUT_ACTION_NONE = 0u,
     WORKOUT_ACTION_START = 1u,
+    WORKOUT_ACTION_HOME = 2u,
 } WorkoutAction;
 
 typedef enum WorkoutPlanResult {
@@ -303,16 +304,18 @@ static void draw_workouts(const WorkoutsState *state) {
 }
 
 static WorkoutAction workouts_action_menu(void) {
-    static const char *OPTIONS[1] = {
-        STR_START_WORKOUT,
-    };
+    const char *options[2];
     InputState input;
+    uint8_t selected = 0u;
     uint8_t dirty = 1u;
+
+    options[0] = STR_START_WORKOUT;
+    options[1] = STR_HOME;
 
     input_init(&input);
     while (1) {
         if (dirty) {
-            ui_draw_menu(STR_WORKOUTS, OPTIONS, 1u, 0u);
+            ui_draw_menu(STR_WORKOUTS, options, 2u, selected);
             dirty = 0u;
         }
 
@@ -320,7 +323,15 @@ static WorkoutAction workouts_action_menu(void) {
         input_update(&input);
 
         if (input_pressed(&input, J_B)) return WORKOUT_ACTION_NONE;
-        if (input_pressed(&input, J_A | J_START)) return WORKOUT_ACTION_START;
+
+        if (input_pressed(&input, J_UP | J_DOWN)) {
+            selected = selected == 0u ? 1u : 0u;
+            dirty = 1u;
+        }
+
+        if (input_pressed(&input, J_A | J_START)) {
+            return selected == 0u ? WORKOUT_ACTION_START : WORKOUT_ACTION_HOME;
+        }
     }
 }
 
@@ -689,7 +700,8 @@ static void update_rest_timer(uint8_t seconds) {
     uint8_t fill;
 
     sprintf(timer_buf, "%u SEC", (unsigned int)seconds);
-    ui_print_center_clear(9u, timer_buf);
+    ui_clear_row(9u);
+    ui_print_center(9u, timer_buf);
 
     fill = ui_bar_fill(seconds, WORKOUT_REST_SECONDS, 18u);
     ui_draw_bar(1u, 11u, 18u, fill);
@@ -895,6 +907,7 @@ static void workout_start_free_session(SaveData *data) {
 void workouts_show(SaveData *data) BANKED {
     WorkoutsState state;
     InputState input;
+    WorkoutAction action;
     uint8_t abs_idx;
 
     state.scroll = 0u;
@@ -914,7 +927,9 @@ void workouts_show(SaveData *data) BANKED {
         if (input_pressed(&input, J_B)) return;
 
         if (input_pressed(&input, J_SELECT)) {
-            if (workouts_action_menu() == WORKOUT_ACTION_START) {
+            action = workouts_action_menu();
+            if (action == WORKOUT_ACTION_HOME) return;
+            if (action == WORKOUT_ACTION_START) {
                 workout_start_free_session(data);
             }
             state.dirty = 1u;

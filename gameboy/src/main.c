@@ -134,24 +134,6 @@ static void draw_button(uint8_t y, const char *label, uint8_t focused) {
     ui_print_at(3u, y, label);
 }
 
-/* "Feature not yet available" screen; dismisses on B / A / Start. */
-static void show_coming_soon(const char *feature) {
-    InputState input;
-
-    ui_title(STR_COMING_SOON);
-    ui_print_center(6u, feature);
-    ui_print_center(9u, STR_COMING_IN_A);
-    ui_print_center(10u, STR_FUTURE_UPDATE);
-    ui_footer(STR_FOOTER_BACK, "");
-
-    input_init(&input);
-    while (1) {
-        wait_vbl_done();
-        input_update(&input);
-        if (input_pressed(&input, J_B | J_A | J_START)) return;
-    }
-}
-
 /*
  * Home screen layout (20x18 tiles):
  *

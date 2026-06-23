@@ -12,7 +12,15 @@
 
 #define SCREEN_COLS 20u
 #define SCREEN_ROWS 18u
+#define SCREEN_CELLS ((uint16_t)SCREEN_COLS * SCREEN_ROWS)
 #define BLANK_ROW "                    "
+#define CELL_UNKNOWN 0xFFu
+
+static uint8_t screen_chars[SCREEN_CELLS];
+static uint8_t screen_attrs[SCREEN_CELLS];
+static uint8_t target_chars[SCREEN_CELLS];
+static uint8_t target_attrs[SCREEN_CELLS];
+static uint8_t frame_open = 0u;
 
 static const palette_color_t ui_palettes[16] = {
     /* Normal: Musclog green surface with off-white text. */
@@ -37,6 +45,10 @@ static const palette_color_t ui_palettes[16] = {
     RGB8(0x09, 0x13, 0x10),
 };
 
+static uint16_t cell_index(uint8_t x, uint8_t y) {
+    return (uint16_t)((uint16_t)y * SCREEN_COLS + x);
+}
+
 static void set_attr_row(uint8_t x, uint8_t y, uint8_t w, uint8_t palette) {
     uint8_t attrs[SCREEN_COLS];
     uint8_t i;
@@ -49,6 +61,50 @@ static void set_attr_row(uint8_t x, uint8_t y, uint8_t w, uint8_t palette) {
     VBK_REG = 1u;
     set_bkg_tiles(x, y, w, 1u, attrs);
     VBK_REG = 0u;
+}
+
+static void reset_shadow(void) {
+    uint16_t i;
+
+    for (i = 0u; i != SCREEN_CELLS; ++i) {
+        screen_chars[i] = CELL_UNKNOWN;
+        screen_attrs[i] = CELL_UNKNOWN;
+        target_chars[i] = ' ';
+        target_attrs[i] = UI_PAL_NORMAL;
+    }
+}
+
+static void write_char_cell(uint8_t x, uint8_t y, uint8_t c) {
+    uint16_t idx = cell_index(x, y);
+
+    if (screen_chars[idx] == c) return;
+
+    gotoxy(x, y);
+    setchar((char)c);
+    screen_chars[idx] = c;
+}
+
+static void write_attr_cell(uint8_t x, uint8_t y, uint8_t attr) {
+    uint16_t idx = cell_index(x, y);
+
+    if (screen_attrs[idx] == attr) return;
+
+    set_attr_row(x, y, 1u, attr);
+    screen_attrs[idx] = attr;
+}
+
+static void set_target_char(uint8_t x, uint8_t y, uint8_t c) {
+    uint16_t idx = cell_index(x, y);
+
+    target_chars[idx] = c;
+    if (!frame_open) write_char_cell(x, y, c);
+}
+
+static void set_target_attr(uint8_t x, uint8_t y, uint8_t attr) {
+    uint16_t idx = cell_index(x, y);
+
+    target_attrs[idx] = attr;
+    if (!frame_open) write_attr_cell(x, y, attr);
 }
 
 void ui_init_text(void) {
@@ -73,21 +129,29 @@ void ui_init_text(void) {
     font_set(font);
     mode(get_mode() | M_NO_SCROLL);
     SHOW_BKG;
+    reset_shadow();
+    ui_clear();
+    ui_present();
     DISPLAY_ON;
-    cls();
-    ui_fill_attr(0u, 0u, SCREEN_COLS, SCREEN_ROWS, UI_PAL_NORMAL);
 }
 
 void ui_clear(void) {
-    cls();
-    ui_fill_attr(0u, 0u, SCREEN_COLS, SCREEN_ROWS, UI_PAL_NORMAL);
+    uint16_t i;
+
+    frame_open = 1u;
+    for (i = 0u; i != SCREEN_CELLS; ++i) {
+        target_chars[i] = ' ';
+        target_attrs[i] = UI_PAL_NORMAL;
+    }
 }
 
 void ui_fill_attr(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t palette) {
-    uint8_t row;
+    uint8_t row, col;
 
     for (row = 0u; row != h; ++row) {
-        set_attr_row(x, (uint8_t)(y + row), w, palette);
+        for (col = 0u; col != w && (uint8_t)(x + col) < SCREEN_COLS; ++col) {
+            set_target_attr((uint8_t)(x + col), (uint8_t)(y + row), palette);
+        }
     }
 }
 
@@ -95,8 +159,7 @@ void ui_print_at(uint8_t x, uint8_t y, const char *text) {
     uint8_t i = 0u;
 
     while (text[i] && (uint8_t)(x + i) < SCREEN_COLS) {
-        gotoxy((uint8_t)(x + i), y);
-        setchar(text[i]);
+        set_target_char((uint8_t)(x + i), y, (uint8_t)text[i]);
         ++i;
     }
 }
@@ -116,9 +179,29 @@ void ui_clear_row(uint8_t y) {
     ui_print_at(0u, y, BLANK_ROW);
 }
 
-void ui_print_center_clear(uint8_t y, const char *text) {
-    ui_clear_row(y);
-    ui_print_center(y, text);
+void ui_present(void) {
+    uint8_t x, y;
+    uint16_t idx;
+
+    for (y = 0u; y != SCREEN_ROWS; ++y) {
+        for (x = 0u; x != SCREEN_COLS; ++x) {
+            idx = cell_index(x, y);
+            if (screen_attrs[idx] != target_attrs[idx]) {
+                write_attr_cell(x, y, target_attrs[idx]);
+            }
+        }
+    }
+
+    for (y = 0u; y != SCREEN_ROWS; ++y) {
+        for (x = 0u; x != SCREEN_COLS; ++x) {
+            idx = cell_index(x, y);
+            if (screen_chars[idx] != target_chars[idx]) {
+                write_char_cell(x, y, target_chars[idx]);
+            }
+        }
+    }
+
+    frame_open = 0u;
 }
 
 void ui_title(const char *title) {
@@ -145,6 +228,8 @@ void ui_footer(const char *left, const char *right) {
         x = len < SCREEN_COLS ? (uint8_t)(SCREEN_COLS - len) : 0u;
         ui_print_at(x, 17u, right);
     }
+
+    ui_present();
 }
 
 void ui_draw_menu(const char *title, const char **options, uint8_t count, uint8_t selected) {
