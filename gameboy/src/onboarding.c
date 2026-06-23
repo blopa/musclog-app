@@ -1,5 +1,6 @@
 #include "onboarding.h"
 
+#include "copies.h"
 #include "database.h"
 #include "input.h"
 #include "nutrition_math.h"
@@ -82,10 +83,10 @@ typedef struct OnboardingState {
     uint8_t done;
 } OnboardingState;
 
-static const char *experience_options[] = { "BEGINNER", "INTERMEDIATE", "ADVANCED" };
-static const char *fitness_options[] = { "MUSCLE", "STRENGTH", "ENDURANCE", "GENERAL" };
-static const char *weight_goal_options[] = { "LOSE", "MAINTAIN", "GAIN" };
-static const char *review_options[] = { "SAVE PROFILE", "EDIT TARGETS" };
+static const char *experience_options[] = { STR_BEGINNER, STR_INTERMEDIATE, STR_ADVANCED };
+static const char *fitness_options[] = { STR_MUSCLE, STR_STRENGTH, STR_ENDURANCE, STR_GENERAL };
+static const char *weight_goal_options[] = { STR_LOSE, STR_MAINTAIN, STR_GAIN };
+static const char *review_options[] = { STR_SAVE_PROFILE, STR_EDIT_TARGETS };
 
 static uint8_t cm_to_inches(uint16_t cm) {
     uint16_t inches = (uint16_t)((((uint32_t)cm * 100u) + 127u) / 254u);
@@ -125,40 +126,40 @@ static void step_back(OnboardingState *state) {
 }
 
 static const char *gender_label(uint8_t gender) {
-    if (gender == GENDER_FEMALE) return "FEMALE";
-    if (gender == GENDER_OTHER) return "OTHER";
-    return "MALE";
+    if (gender == GENDER_FEMALE) return STR_FEMALE;
+    if (gender == GENDER_OTHER) return STR_OTHER;
+    return STR_MALE;
 }
 
 static const char *activity_label(uint8_t activity_level) {
     switch (activity_level) {
-        case 1u: return "LOW";
-        case 2u: return "LIGHT";
-        case 3u: return "MODERATE";
-        case 4u: return "ACTIVE";
-        case 5u: return "VERY ACTIVE";
-        default: return "LIGHT";
+        case 1u: return STR_ACTIVITY_LOW;
+        case 2u: return STR_ACTIVITY_LIGHT;
+        case 3u: return STR_ACTIVITY_MODERATE;
+        case 4u: return STR_ACTIVITY_ACTIVE;
+        case 5u: return STR_ACTIVITY_VERY_ACTIVE;
+        default: return STR_ACTIVITY_LIGHT;
     }
 }
 
 static void draw_box_row(uint8_t y, const char *value, uint8_t focused) {
-    ui_print_at(0u, (uint8_t)(y - 1u), "+------------------+");
+    ui_print_at(0u, (uint8_t)(y - 1u), STR_BOX_BORDER);
     ui_fill_attr(1u, y, 18u, 1u, focused ? UI_PAL_SELECTED : UI_PAL_PANEL);
-    ui_print_at(0u, y, "|                  |");
+    ui_print_at(0u, y, STR_BOX_EMPTY);
     ui_print_at(1u, y, focused ? ">" : " ");
     ui_print_at(3u, y, value);
-    ui_print_at(0u, (uint8_t)(y + 1u), "+------------------+");
+    ui_print_at(0u, (uint8_t)(y + 1u), STR_BOX_BORDER);
 }
 
 static void draw_unit_row(const OnboardingState *state) {
-    ui_print_at(0u, 3u, "+------------------+");
+    ui_print_at(0u, 3u, STR_BOX_BORDER);
     ui_fill_attr(1u, 4u, 8u, 1u, state->data->units == UNITS_METRIC ? UI_PAL_SELECTED : UI_PAL_PANEL);
     ui_fill_attr(10u, 4u, 9u, 1u, state->data->units == UNITS_IMPERIAL ? UI_PAL_SELECTED : UI_PAL_PANEL);
-    ui_print_at(0u, 4u, "|        |         |");
+    ui_print_at(0u, 4u, STR_BOX_SPLIT);
     ui_print_at(state->data->units == UNITS_METRIC ? 1u : 10u, 4u, ">");
-    ui_print_at(2u, 4u, "METRIC");
-    ui_print_at(11u, 4u, "IMP");
-    ui_print_at(0u, 5u, "+------------------+");
+    ui_print_at(2u, 4u, STR_METRIC);
+    ui_print_at(11u, 4u, STR_IMPERIAL);
+    ui_print_at(0u, 5u, STR_BOX_BORDER);
 }
 
 static void draw_welcome(const OnboardingState *state) {
@@ -166,19 +167,22 @@ static void draw_welcome(const OnboardingState *state) {
 
     ui_fill_attr(0u, 0u, 20u, 1u, UI_PAL_HEADER);
     ui_print_at(1u, 0u, "[#][][]");
-    ui_print_at(8u, 0u, "LET'S START");
+    ui_print_at(8u, 0u, STR_LETS_START);
 
-    ui_print_at(0u, 2u, state->selected == 0u ? ">UNIT SYSTEM" : " UNIT SYSTEM");
+    ui_print_at(0u, 2u, state->selected == 0u ? ">" : " ");
+    ui_print_at(1u, 2u, STR_UNIT_SYSTEM);
     draw_unit_row(state);
 
-    ui_print_at(0u, 7u, state->selected == 1u ? ">BIOLOGICAL SEX" : " BIOLOGICAL SEX");
+    ui_print_at(0u, 7u, state->selected == 1u ? ">" : " ");
+    ui_print_at(1u, 7u, STR_BIOLOGICAL_SEX);
     draw_box_row(9u, gender_label(state->data->gender), state->selected == 1u);
 
-    ui_print_at(0u, 11u, state->selected == 2u ? ">ACTIVITY LEVEL" : " ACTIVITY LEVEL");
+    ui_print_at(0u, 11u, state->selected == 2u ? ">" : " ");
+    ui_print_at(1u, 11u, STR_ACTIVITY_LEVEL);
     draw_box_row(13u, activity_label(state->data->activity_level), state->selected == 2u);
 
-    ui_print_center(15u, "UP/DN FIELD  L/R SET");
-    ui_footer("", "A/ST NEXT");
+    ui_print_center(15u, STR_HINT_FIELD_SET);
+    ui_footer("", STR_FOOTER_NEXT);
 }
 
 static void format_height(const OnboardingState *state, char *buffer) {
@@ -206,7 +210,7 @@ static void draw_review(const OnboardingState *state) {
     uint8_t i;
     char row[20];
 
-    ui_title("REVIEW");
+    ui_title(STR_REVIEW);
     sprintf(row, "CAL %u KCAL", state->data->calorie_goal);
     ui_print_at(1u, 5u, row);
     sprintf(row, "P%u C%u", state->data->protein_goal, state->data->carbs_goal);
@@ -219,7 +223,7 @@ static void draw_review(const OnboardingState *state) {
         ui_print_at(3u, (uint8_t)(11u + i), review_options[i]);
     }
 
-    ui_footer("B BACK", "A/ST OK");
+    ui_footer(STR_FOOTER_BACK, STR_FOOTER_OK);
 }
 
 static void draw_edit_screen(const OnboardingState *state) {
@@ -228,23 +232,23 @@ static void draw_edit_screen(const OnboardingState *state) {
     switch (state->step) {
         case STEP_EDIT_CALORIES:
             sprintf(value, "%u KCAL", state->data->calorie_goal);
-            ui_draw_value_screen("EDIT CAL", "CALORIES", value, "UP/DN 10");
+            ui_draw_value_screen(STR_EDIT_CAL, STR_CALORIES, value, STR_HINT_STEP_10);
             break;
         case STEP_EDIT_PROTEIN:
             sprintf(value, "%u G", state->data->protein_goal);
-            ui_draw_value_screen("EDIT PRO", "PROTEIN", value, "UP/DN 1");
+            ui_draw_value_screen(STR_EDIT_PRO, STR_PROTEIN, value, STR_HINT_STEP_1);
             break;
         case STEP_EDIT_CARBS:
             sprintf(value, "%u G", state->data->carbs_goal);
-            ui_draw_value_screen("EDIT CARB", "CARBS", value, "UP/DN 1");
+            ui_draw_value_screen(STR_EDIT_CARB, STR_CARBS, value, STR_HINT_STEP_1);
             break;
         case STEP_EDIT_FAT:
             sprintf(value, "%u G", state->data->fat_goal);
-            ui_draw_value_screen("EDIT FAT", "FAT", value, "UP/DN 1");
+            ui_draw_value_screen(STR_EDIT_FAT, STR_FAT, value, STR_HINT_STEP_1);
             break;
         case STEP_EDIT_FIBER:
             sprintf(value, "%u G", state->data->fiber_goal);
-            ui_draw_value_screen("EDIT FIBER", "FIBER", value, "UP/DN 1");
+            ui_draw_value_screen(STR_EDIT_FIBER, STR_FIBER, value, STR_HINT_STEP_1);
             break;
         default:
             break;
@@ -260,24 +264,24 @@ static void render_step(const OnboardingState *state) {
             break;
         case STEP_AGE:
             sprintf(value, "%u YEARS", state->data->age);
-            ui_draw_value_screen("AGE", "YOUR AGE", value, "UP/DOWN CHANGE");
+            ui_draw_value_screen(STR_AGE, STR_YOUR_AGE, value, STR_HINT_CHANGE);
             break;
         case STEP_HEIGHT:
             format_height(state, value);
-            ui_draw_value_screen("HEIGHT", "YOUR HEIGHT", value, "UP/DOWN CHANGE");
+            ui_draw_value_screen(STR_HEIGHT, STR_YOUR_HEIGHT, value, STR_HINT_CHANGE);
             break;
         case STEP_WEIGHT:
             format_weight(state, value);
-            ui_draw_value_screen("WEIGHT", "YOUR WEIGHT", value, "UP/DOWN CHANGE");
+            ui_draw_value_screen(STR_WEIGHT, STR_YOUR_WEIGHT, value, STR_HINT_CHANGE);
             break;
         case STEP_EXPERIENCE:
-            ui_draw_menu("EXPERIENCE", experience_options, 3u, state->selected);
+            ui_draw_menu(STR_EXPERIENCE, experience_options, 3u, state->selected);
             break;
         case STEP_FITNESS:
-            ui_draw_menu("FOCUS", fitness_options, 4u, state->selected);
+            ui_draw_menu(STR_FOCUS, fitness_options, 4u, state->selected);
             break;
         case STEP_WEIGHT_GOAL:
-            ui_draw_menu("GOAL", weight_goal_options, 3u, state->selected);
+            ui_draw_menu(STR_GOAL, weight_goal_options, 3u, state->selected);
             break;
         case STEP_REVIEW:
             draw_review(state);

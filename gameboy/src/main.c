@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "copies.h"
 #include "database.h"
 #include "foodlog.h"
 #include "input.h"
@@ -114,7 +115,7 @@ static void show_splash(void) {
     set_bkg_tiles(TEXT_COL_SPLASH, TEXT_ROW_SPLASH, 7u, 1u, text_attrs);
     VBK_REG = 0;
     gotoxy(TEXT_COL_SPLASH, TEXT_ROW_SPLASH);
-    puts("MUSCLOG");
+    puts(STR_APP_NAME);
 
     SHOW_BKG;
     DISPLAY_ON;
@@ -136,11 +137,11 @@ static void draw_button(uint8_t y, const char *label, uint8_t focused) {
 static void show_coming_soon(const char *feature) {
     InputState input;
 
-    ui_title("COMING SOON");
+    ui_title(STR_COMING_SOON);
     ui_print_center(6u, feature);
-    ui_print_center(9u, "COMING IN A");
-    ui_print_center(10u, "FUTURE UPDATE");
-    ui_footer("B BACK", "");
+    ui_print_center(9u, STR_COMING_IN_A);
+    ui_print_center(10u, STR_FUTURE_UPDATE);
+    ui_footer(STR_FOOTER_BACK, "");
 
     input_init(&input);
     while (1) {
@@ -189,22 +190,22 @@ static void draw_home(const HomeState *state) {
 
     /* ── Header ── */
     ui_fill_attr(0u, 0u, 20u, 1u, UI_PAL_HEADER);
-    ui_print_center(0u, "MUSCLOG GB");
+    ui_print_center(0u, STR_APP_TITLE);
 
-    ui_print_at(1u, 1u, "HOME");
+    ui_print_at(1u, 1u, STR_HOME);
     ui_print_at((uint8_t)(19u - (uint8_t)strlen(date_buf)), 1u, date_buf);
 
-    ui_print_at(0u, 2u, "--------------------");
+    ui_print_at(0u, 2u, STR_DIVIDER);
 
     /* ── Calories ── */
-    ui_print_at(1u, 3u, "CALORIES");
+    ui_print_at(1u, 3u, STR_CALORIES);
     sprintf(buf, "%u / %u KCAL", cal, d->calorie_goal);
     ui_print_at(1u, 4u, buf);
     ui_draw_bar(1u, 5u, 18u, ui_bar_fill(cal, d->calorie_goal, 18u));
 
     /* ── Protein + Carbs ── */
-    ui_print_at(0u, 6u, "PROTEIN");
-    ui_print_at(11u, 6u, "CARBS");
+    ui_print_at(0u, 6u, STR_PROTEIN);
+    ui_print_at(11u, 6u, STR_CARBS);
     sprintf(buf, "%u/%uG", pro, d->protein_goal);
     ui_print_at(0u, 7u, buf);
     sprintf(buf, "%u/%uG", carb, d->carbs_goal);
@@ -213,8 +214,8 @@ static void draw_home(const HomeState *state) {
     ui_draw_bar(11u, 8u, 9u, ui_bar_fill(carb, d->carbs_goal, 9u));
 
     /* ── Fat + Fiber ── */
-    ui_print_at(0u, 9u, "FAT");
-    ui_print_at(11u, 9u, "FIBER");
+    ui_print_at(0u, 9u, STR_FAT);
+    ui_print_at(11u, 9u, STR_FIBER);
     sprintf(buf, "%u/%uG", fat, d->fat_goal);
     ui_print_at(0u, 10u, buf);
     sprintf(buf, "%u/%uG", fib, d->fiber_goal);
@@ -222,13 +223,13 @@ static void draw_home(const HomeState *state) {
     ui_draw_bar(0u, 11u, 9u, ui_bar_fill(fat, d->fat_goal, 9u));
     ui_draw_bar(11u, 11u, 9u, ui_bar_fill(fib, d->fiber_goal, 9u));
 
-    ui_print_at(0u, 12u, "--------------------");
+    ui_print_at(0u, 12u, STR_DIVIDER);
 
     /* ── Action buttons ── */
-    draw_button(13u, "NUTRITION", state->selected == HOME_BTN_FOOD);
-    draw_button(15u, "START WORKOUT", state->selected == HOME_BTN_WORKOUT);
+    draw_button(13u, STR_NUTRITION, state->selected == HOME_BTN_FOOD);
+    draw_button(15u, STR_START_WORKOUT, state->selected == HOME_BTN_WORKOUT);
 
-    ui_footer("SEL+B RESET", "");
+    ui_footer(STR_FOOTER_RESET, "");
 }
 
 static void home_loop(SaveData *data) {
@@ -267,7 +268,7 @@ static void home_loop(SaveData *data) {
             if (state.selected == HOME_BTN_FOOD) {
                 nutrition_track(data);
             } else {
-                show_coming_soon("START WORKOUT");
+                show_coming_soon(STR_START_WORKOUT);
             }
             state.dirty = 1u;
         }

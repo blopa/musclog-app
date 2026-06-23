@@ -1,5 +1,6 @@
 #include "rtc.h"
 
+#include "copies.h"
 #include "input.h"
 #include "ui_text.h"
 
@@ -198,10 +199,10 @@ void rtc_setup_date(SaveData *data) {
     input_init(&input);
     while (1) {
         if (dirty) {
-            ui_draw_datetime_picker("SET DATE & TIME", field,
+            ui_draw_datetime_picker(STR_SET_DATE_TIME, field,
                                     pick.year, pick.month, pick.day,
                                     pick_hour, pick_minute);
-            ui_footer("B SKIP", "A/ST SAVE");
+            ui_footer(STR_FOOTER_SKIP, STR_FOOTER_SAVE);
             dirty = 0u;
         }
 

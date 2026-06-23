@@ -1,5 +1,6 @@
 #include "ui_text.h"
 
+#include "copies.h"
 #include <gb/gb.h>
 #include <gbdk/console.h>
 #include <gbdk/font.h>
@@ -113,16 +114,16 @@ void ui_print_center(uint8_t y, const char *text) {
 void ui_title(const char *title) {
     ui_clear();
     ui_fill_attr(0u, 0u, SCREEN_COLS, 1u, UI_PAL_HEADER);
-    ui_print_center(0u, "MUSCLOG GB");
+    ui_print_center(0u, STR_APP_TITLE);
     ui_print_center(2u, title);
-    ui_print_at(0u, 3u, "--------------------");
+    ui_print_at(0u, 3u, STR_DIVIDER);
 }
 
 void ui_footer(const char *left, const char *right) {
     uint8_t len;
     uint8_t x;
 
-    ui_print_at(0u, 16u, "--------------------");
+    ui_print_at(0u, 16u, STR_DIVIDER);
     ui_print_at(0u, 17u, "                    ");
 
     if (left && left[0]) {
@@ -144,7 +145,7 @@ void ui_draw_menu(const char *title, const char **options, uint8_t count, uint8_
         ui_print_at(1u, (uint8_t)(5u + i), i == selected ? ">" : " ");
         ui_print_at(3u, (uint8_t)(5u + i), options[i]);
     }
-    ui_footer("B BACK", "A/ST OK");
+    ui_footer(STR_FOOTER_BACK, STR_FOOTER_OK);
 }
 
 void ui_draw_value_screen(const char *title, const char *label, const char *value, const char *hint) {
@@ -152,8 +153,8 @@ void ui_draw_value_screen(const char *title, const char *label, const char *valu
     ui_print_center(6u, label);
     ui_print_center(8u, value);
     ui_print_center(11u, hint);
-    ui_print_center(13u, "LEFT/RIGHT FAST");
-    ui_footer("B BACK", "A/ST OK");
+    ui_print_center(13u, STR_HINT_LEFT_RIGHT_FAST);
+    ui_footer(STR_FOOTER_BACK, STR_FOOTER_OK);
 }
 
 uint8_t ui_confirm(const char *title, const char *message) {
@@ -161,7 +162,7 @@ uint8_t ui_confirm(const char *title, const char *message) {
 
     ui_title(title);
     ui_print_center(8u, message);
-    ui_footer("B CANCEL", "A/ST OK");
+    ui_footer(STR_FOOTER_CANCEL, STR_FOOTER_OK);
 
     input_init(&input);
     while (1) {
@@ -209,7 +210,7 @@ static void draw_picker_rows(const char *title, uint8_t n_fields, uint8_t active
     uint8_t pal;
 
     ui_title(title);
-    ui_print_center(5u, "UP/DN FIELD  L/R SET");
+    ui_print_center(5u, STR_HINT_FIELD_SET);
 
     for (i = 0u; i != n_fields; ++i) {
         row = (uint8_t)(7u + i);
@@ -245,9 +246,9 @@ void ui_draw_date_picker(const char *title, uint8_t field,
     fmt2(month_buf, month);
     fmt2(day_buf, day);
 
-    labels[0] = "YEAR";  values[0] = year_buf;  cols[0] = 16u;
-    labels[1] = "MONTH"; values[1] = month_buf; cols[1] = 18u;
-    labels[2] = "DAY";   values[2] = day_buf;   cols[2] = 18u;
+    labels[0] = STR_YEAR;  values[0] = year_buf;  cols[0] = 16u;
+    labels[1] = STR_MONTH; values[1] = month_buf; cols[1] = 18u;
+    labels[2] = STR_DAY;   values[2] = day_buf;   cols[2] = 18u;
 
     draw_picker_rows(title, 3u, field, labels, values, cols);
 }
@@ -274,11 +275,11 @@ void ui_draw_datetime_picker(const char *title, uint8_t field,
     fmt2(hour_buf, hour);
     fmt2(minute_buf, minute);
 
-    labels[0] = "YEAR";   values[0] = year_buf;   cols[0] = 16u;
-    labels[1] = "MONTH";  values[1] = month_buf;  cols[1] = 18u;
-    labels[2] = "DAY";    values[2] = day_buf;    cols[2] = 18u;
-    labels[3] = "HOUR";   values[3] = hour_buf;   cols[3] = 18u;
-    labels[4] = "MINUTE"; values[4] = minute_buf; cols[4] = 18u;
+    labels[0] = STR_YEAR;   values[0] = year_buf;   cols[0] = 16u;
+    labels[1] = STR_MONTH;  values[1] = month_buf;  cols[1] = 18u;
+    labels[2] = STR_DAY;    values[2] = day_buf;    cols[2] = 18u;
+    labels[3] = STR_HOUR;   values[3] = hour_buf;   cols[3] = 18u;
+    labels[4] = STR_MINUTE; values[4] = minute_buf; cols[4] = 18u;
 
     draw_picker_rows(title, 5u, field, labels, values, cols);
 }

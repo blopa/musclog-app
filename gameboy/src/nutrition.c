@@ -1,5 +1,6 @@
 #include "nutrition.h"
 
+#include "copies.h"
 #include <gb/gb.h>
 #include <gbdk/console.h>
 #include <stdio.h>
@@ -100,20 +101,20 @@ static void draw_nutrition(const NutritionState *state) {
 
     /* Header */
     ui_fill_attr(0u, 0u, 20u, 1u, UI_PAL_HEADER);
-    ui_print_center(0u, "MUSCLOG GB");
-    ui_print_at(0u, 1u, "TRACK FOOD");
+    ui_print_center(0u, STR_APP_TITLE);
+    ui_print_at(0u, 1u, STR_TRACK_FOOD);
     ui_print_at((uint8_t)(19u - (uint8_t)strlen(date_buf)), 1u, date_buf);
-    ui_print_at(0u, 2u, "--------------------");
+    ui_print_at(0u, 2u, STR_DIVIDER);
 
     /* Calories */
-    ui_print_at(1u, 3u, "CALORIES");
+    ui_print_at(1u, 3u, STR_CALORIES);
     sprintf(buf, "%u / %u KCAL", (unsigned int)cal, (unsigned int)d->calorie_goal);
     ui_print_at(1u, 4u, buf);
     ui_draw_bar(1u, 5u, 18u, ui_bar_fill(cal, d->calorie_goal, 18u));
 
     /* Protein + Carbs */
-    ui_print_at(0u, 6u, "PROTEIN");
-    ui_print_at(11u, 6u, "CARBS");
+    ui_print_at(0u, 6u, STR_PROTEIN);
+    ui_print_at(11u, 6u, STR_CARBS);
     sprintf(buf, "%u/%uG", (unsigned int)pro, (unsigned int)d->protein_goal);
     ui_print_at(0u, 7u, buf);
     sprintf(buf, "%u/%uG", (unsigned int)carb, (unsigned int)d->carbs_goal);
@@ -122,8 +123,8 @@ static void draw_nutrition(const NutritionState *state) {
     ui_draw_bar(11u, 8u, 9u, ui_bar_fill(carb, d->carbs_goal, 9u));
 
     /* Fat + Fiber */
-    ui_print_at(0u, 9u, "FAT");
-    ui_print_at(11u, 9u, "FIBER");
+    ui_print_at(0u, 9u, STR_FAT);
+    ui_print_at(11u, 9u, STR_FIBER);
     sprintf(buf, "%u/%uG", (unsigned int)fat, (unsigned int)d->fat_goal);
     ui_print_at(0u, 10u, buf);
     sprintf(buf, "%u/%uG", (unsigned int)fib, (unsigned int)d->fiber_goal);
@@ -131,7 +132,7 @@ static void draw_nutrition(const NutritionState *state) {
     ui_draw_bar(0u, 11u, 9u, ui_bar_fill(fat, d->fat_goal, 9u));
     ui_draw_bar(11u, 11u, 9u, ui_bar_fill(fib, d->fiber_goal, 9u));
 
-    ui_print_at(0u, 12u, "--------------------");
+    ui_print_at(0u, 12u, STR_DIVIDER);
 
     /* Food list (rows 13-15) */
     for (i = 0u; i != FOOD_VISIBLE; ++i) {
@@ -144,7 +145,7 @@ static void draw_nutrition(const NutritionState *state) {
         );
     }
 
-    ui_footer("B BACK", "SEL MENU");
+    ui_footer(STR_FOOTER_BACK, STR_FOOTER_SEL_MENU);
 }
 
 typedef enum NutritionAction {
@@ -155,8 +156,8 @@ typedef enum NutritionAction {
 
 static NutritionAction nutrition_action_menu(void) {
     static const char *OPTIONS[2] = {
-        "GO TO DATE",
-        "TRACK FOOD",
+        STR_GO_TO_DATE,
+        STR_TRACK_FOOD,
     };
     uint8_t selected;
     uint8_t dirty;
@@ -168,7 +169,7 @@ static NutritionAction nutrition_action_menu(void) {
     input_init(&input);
     while (1) {
         if (dirty) {
-            ui_draw_menu("NUTRITION", OPTIONS, 2u, selected);
+            ui_draw_menu(STR_NUTRITION, OPTIONS, 2u, selected);
             dirty = 0u;
         }
 
@@ -207,8 +208,8 @@ static void nutrition_date_picker(CalDate today, CalDate *viewing_date) {
     input_init(&input);
     while (1) {
         if (dirty) {
-            ui_draw_date_picker("SELECT DATE", field, pick.year, pick.month, pick.day);
-            ui_footer("B CANCEL", "A/ST OK");
+            ui_draw_date_picker(STR_SELECT_DATE, field, pick.year, pick.month, pick.day);
+            ui_footer(STR_FOOTER_CANCEL, STR_FOOTER_OK);
             dirty = 0u;
         }
 
@@ -309,36 +310,36 @@ static uint8_t show_food_detail(SaveData *data, uint16_t day_num, uint8_t nth) {
     input_init(&input);
     while (1) {
         if (dirty) {
-            ui_title("FOOD DETAIL");
+            ui_title(STR_FOOD_DETAIL);
 
             ui_fill_attr(0u, 5u, 20u, 1u, UI_PAL_PANEL);
             ui_print_center(5u, fc.name);
 
-            ui_print_at(0u, 7u, "SERVING");
+            ui_print_at(0u, 7u, STR_SERVING);
             if (imperial) sprintf(buf, "%u OZ", (unsigned int)grams_to_oz(grams));
             else          sprintf(buf, "%u G",  (unsigned int)grams);
             ui_print_at(10u, 7u, buf);
-            ui_print_at(0u, 8u, "--------------------");
+            ui_print_at(0u, 8u, STR_DIVIDER);
 
-            ui_print_at(0u, 9u, "CALORIES");
+            ui_print_at(0u, 9u, STR_CALORIES);
             sprintf(buf, "%u KCAL", (unsigned int)cal);
             ui_print_at(10u, 9u, buf);
 
-            ui_print_at(0u, 11u, "PROTEIN");
-            ui_print_at(11u, 11u, "CARBS");
+            ui_print_at(0u, 11u, STR_PROTEIN);
+            ui_print_at(11u, 11u, STR_CARBS);
             sprintf(buf, "%uG", (unsigned int)pro);
             ui_print_at(1u, 12u, buf);
             sprintf(buf, "%uG", (unsigned int)carb);
             ui_print_at(12u, 12u, buf);
 
-            ui_print_at(0u, 14u, "FAT");
-            ui_print_at(11u, 14u, "FIBER");
+            ui_print_at(0u, 14u, STR_FAT);
+            ui_print_at(11u, 14u, STR_FIBER);
             sprintf(buf, "%uG", (unsigned int)fat);
             ui_print_at(1u, 15u, buf);
             sprintf(buf, "%uG", (unsigned int)fib);
             ui_print_at(12u, 15u, buf);
 
-            ui_footer("B BACK", "SEL DEL");
+            ui_footer(STR_FOOTER_BACK, STR_FOOTER_SEL_DEL);
             dirty = 0u;
         }
 
@@ -347,7 +348,7 @@ static uint8_t show_food_detail(SaveData *data, uint16_t day_num, uint8_t nth) {
 
         if (input_pressed(&input, J_B | J_A | J_START)) return 0u;
         if (input_pressed(&input, J_SELECT)) {
-            if (ui_confirm("DELETE FOOD", "DELETE FOOD?")) {
+            if (ui_confirm(STR_DELETE_FOOD, STR_DELETE_FOOD_Q)) {
                 foodlog_delete_for_day(day_num, nth);
                 return 1u;
             }
@@ -427,11 +428,11 @@ static void draw_search(const SearchState *s) {
 
     ui_clear();
     ui_fill_attr(0u, 0u, 20u, 1u, UI_PAL_HEADER);
-    ui_print_center(0u, "MUSCLOG GB");
-    ui_print_at(0u, 1u, "TRACK FOOD");
-    ui_print_at(0u, 2u, "--------------------");
+    ui_print_center(0u, STR_APP_TITLE);
+    ui_print_at(0u, 1u, STR_TRACK_FOOD);
+    ui_print_at(0u, 2u, STR_DIVIDER);
 
-    ui_print_at(0u, 3u, "NAME:");
+    ui_print_at(0u, 3u, STR_NAME_LABEL);
     for (i = 0u; i != s->len; ++i) line[i] = s->query[i];
     line[s->len] = '\0';
     ui_fill_attr(0u, 4u, 20u, 1u, UI_PAL_PANEL);
@@ -442,15 +443,15 @@ static void draw_search(const SearchState *s) {
         slot[1] = '\0';
         ui_fill_attr(s->len, 4u, 1u, 1u, UI_PAL_SELECTED);
         ui_print_at(s->len, 4u, slot);
-        ui_print_center(5u, "UP/DN A=ADD ST=DONE");
+        ui_print_center(5u, STR_HINT_TYPING);
     } else {
-        ui_print_center(5u, "UP/DN PICK  B EDIT");
+        ui_print_center(5u, STR_HINT_PICK);
     }
 
-    ui_print_at(0u, 6u, "--------------------");
+    ui_print_at(0u, 6u, STR_DIVIDER);
 
     if (s->match_count == 0u) {
-        ui_print_center(10u, "NO MATCHES");
+        ui_print_center(10u, STR_NO_MATCHES);
     } else {
         for (i = 0u; i != MATCH_VISIBLE; ++i) {
             abs_idx = (uint8_t)(s->scroll + i);
@@ -462,9 +463,9 @@ static void draw_search(const SearchState *s) {
     }
 
     if (s->mode == SEARCH_MODE_TYPING) {
-        ui_footer("B DEL", "ST DONE");
+        ui_footer(STR_FOOTER_DEL, STR_FOOTER_DONE);
     } else {
-        ui_footer("B EDIT", "A/ST PICK");
+        ui_footer(STR_FOOTER_EDIT, STR_FOOTER_PICK);
     }
 }
 
@@ -500,17 +501,17 @@ static void draw_amount(const FoodCache *fc, uint16_t amount, uint8_t imperial) 
     grams = imperial ? oz_to_grams(amount) : amount;
     foodlog_scale(fc, grams, &kcal, &pro, &carb, &fat, &fib);
 
-    ui_title("TRACK FOOD");
+    ui_title(STR_TRACK_FOOD);
 
     ui_fill_attr(0u, 5u, 20u, 1u, UI_PAL_PANEL);
     ui_print_center(5u, fc->name);
 
-    ui_print_at(0u, 7u, "AMOUNT");
+    ui_print_at(0u, 7u, STR_AMOUNT);
     ui_fill_attr(0u, 8u, 20u, 1u, UI_PAL_SELECTED);
     if (imperial) sprintf(buf, "%u OZ", (unsigned int)amount);
     else          sprintf(buf, "%u G",  (unsigned int)amount);
     ui_print_center(8u, buf);
-    ui_print_center(9u, "UP/DN  L/R FAST");
+    ui_print_center(9u, STR_HINT_AMOUNT);
 
     sprintf(buf, "CAL  %u KCAL", (unsigned int)kcal);
     ui_print_at(0u, 11u, buf);
@@ -524,7 +525,7 @@ static void draw_amount(const FoodCache *fc, uint16_t amount, uint8_t imperial) 
     sprintf(buf, "FIB %uG", (unsigned int)fib);
     ui_print_at(10u, 14u, buf);
 
-    ui_footer("B BACK", "A/ST TRACK");
+    ui_footer(STR_FOOTER_BACK, STR_FOOTER_TRACK);
 }
 
 /* Returns 1 if the food was tracked (confirmed), 0 if the user backed out. */
@@ -559,11 +560,11 @@ static uint8_t food_amount_screen(SaveData *data, const FoodCache *fc,
         if (input_pressed(&input, J_UP | J_DOWN | J_LEFT | J_RIGHT)) dirty = 1u;
 
         if (input_pressed(&input, J_A | J_START)) {
-            if (ui_confirm("TRACK FOOD", "TRACK FOOD?")) {
+            if (ui_confirm(STR_TRACK_FOOD, STR_TRACK_FOOD_Q)) {
                 uint16_t grams = imperial ? oz_to_grams(amount) : amount;
                 foodlog_add(cal_day_number(log_date), food_idx, grams);
-                ui_title("TRACKED");
-                ui_print_center(8u, "FOOD TRACKED!");
+                ui_title(STR_TRACKED);
+                ui_print_center(8u, STR_FOOD_TRACKED);
                 for (i = 0u; i != 75u; ++i) wait_vbl_done();
                 return 1u;
             }
