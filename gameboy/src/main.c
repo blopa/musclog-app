@@ -169,7 +169,7 @@ static void show_coming_soon(const char *feature) {
  *  Row 12  --------------------
  *  Row 13  [> NUTRITION       ] ← button (PAL_SELECTED when focused, PAL_PANEL otherwise)
  *  Row 14  (spacer)
- *  Row 15  [> START WORKOUT   ] ← button
+ *  Row 15  [> WORKOUTS        ] ← button
  *  Row 16  --------------------  ← via ui_footer
  *  Row 17  SEL+B RESET           ← via ui_footer
  */

@@ -44,7 +44,7 @@
 /* ── Home screen ───────────────────────────────────────────────────────── */
 #define STR_HOME          "HOME"
 #define STR_NUTRITION     "NUTRITION"
-#define STR_START_WORKOUT "START WORKOUT"
+#define STR_START_WORKOUT "WORKOUTS"
 
 /* ── Coming soon ───────────────────────────────────────────────────────── */
 #define STR_COMING_SOON   "COMING SOON"

@@ -23,6 +23,9 @@
 - `npm run reset-project`: Reset project to initial state via script
 - `npm run build-android`: Production build for Android via EAS
 - `npm run playwright`: Run Playwright E2E tests (Web)
+- `npm run gb:build`: Build the Game Boy Color ROM
+- `npm run gb:gen-foods`: Regenerate Game Boy food C tables
+- `npm run gb:gen-exercises`: Regenerate Game Boy exercise C table
 
 ## Testing Commands
 

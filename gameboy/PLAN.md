@@ -168,6 +168,7 @@ gameboy/
 │   ├── food_db.c/.h      # NONBANKED banked-food readers (ff_load/ff_filter)
 │   ├── foundation_foods.c/.h # generated USDA food table (name+kcal+protein/fat/carbs/fiber per 100g), ROM bank 2
 │   ├── common_foods.c/.h # generated common-food table (same compact struct), ROM bank 3
+│   ├── exercises.c/.h    # generated exercise table (name+group+equipment+load multiplier), ROM bank 6
 │   ├── foodlog.c/.h      # persisted food log (6-byte records in SRAM bank 1) + macro scaling
 │   ├── metrics.c/.h      # body weight log
 │   └── database.c/.h     # SRAM bank-0 profile layout, named address constants, load/save, checksum
@@ -209,8 +210,8 @@ What's wired up so far:
 - **`scripts/build-gb-rom.mjs`** — orchestrator: ensures GBDK is present, runs `png2asset` on the logo,
   then compiles every `gameboy/src/*.c` file with `lcc`. The ROM is CGB-only (`-Wm-yC`), uses the
   MBC3+Timer+RAM+battery cart type (`-Wm-yt0x10`), declares 4 SRAM banks / 32 KB (`-Wm-ya4`), and
-  reserves 8 ROM banks / 128 KB (`-Wm-yo8`) so the bundled food tables and banked screen modules can live
-  in dedicated banks. The build emits `gameboy/build/musclog.map` and fails if the fixed bank crosses
+  reserves 8 ROM banks / 128 KB (`-Wm-yo8`) so the bundled food/exercise tables and banked screen modules can
+  live in dedicated banks. The build emits `gameboy/build/musclog.map` and fails if the fixed bank crosses
   `0x4000` or any banked `_CODE_N` area exceeds 16 KB; a ROM can otherwise link successfully and still
   crash as soon as code maps a switchable ROM bank.
 - **`gameboy/tools/gen-foundation-foods.mjs`** — ports `data/usda_foundation_foods.json` into
@@ -220,6 +221,12 @@ What's wired up so far:
   `#pragma bank 2`; the common-food table is placed in **ROM bank 3** via `#pragma bank 3`. Rows with missing,
   empty, or physically impossible per-100 g macro data are quarantined instead of emitted. Output is committed;
   re-run with `npm run gb:gen-foods` if either dataset changes.
+- **`gameboy/tools/gen-exercises.mjs`** — ports `data/exercisesData.json` into
+  `gameboy/src/exercises.{c,h}`: per exercise it keeps only name, primary muscle group, equipment type, and
+  load multiplier. Muscle groups and equipment types are compact enum values; load multipliers are stored as
+  centi-units in `uint16` (`1.45` → `145`) to preserve the source precision. The table is ordered by
+  `exerciseIndex`, so exercise ID is implicit as array index + 1, and it is placed in **ROM bank 6** via
+  `#pragma bank 6`. Output is committed; re-run with `npm run gb:gen-exercises` if the exercise dataset changes.
 - **`gameboy/src/food_db.c` / `.h`** — the only code that reads the banked food tables. `ff_load` copies a
   food into a RAM `FoodCache`; `ff_filter` does a case-insensitive **prefix** search over all foods. Both
   APIs use a single global index space: USDA foods keep indices `0..FOUNDATION_FOOD_COUNT-1`, and common

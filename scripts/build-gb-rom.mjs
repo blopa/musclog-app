@@ -105,8 +105,8 @@ run(png2asset, [
 //    -Wm-ya4 sets the RAM-size header to four 8 KB SRAM banks so emulators/flash carts
 //    actually persist the onboarding profile.
 //    -Wm-yo8 reserves eight 16 KB ROM banks (128 KB). The hardcoded food tables
-//    live in dedicated banks (USDA in bank 2, common foods in bank 3); SWITCH_ROM()
-//    is required to read them.
+//    live in dedicated banks (USDA in bank 2, common foods in bank 3), and the
+//    generated exercise table lives in bank 6; SWITCH_ROM() is required to read them.
 //    -Wl-m emits gameboy/build/musclog.map so the build can catch bank overflows.
 console.log('Compiling ROM ...');
 const cSources = readdirSync(srcDir)
