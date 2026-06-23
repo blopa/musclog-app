@@ -13,15 +13,15 @@ Musclog to the original Nintendo Game Boy (DMG) / Game Boy Color (CGB) as a home
 
 ## 1. Hardware reality check
 
-| Resource               | Original Game Boy (DMG)                       | Implication for Musclog GB                                             |
-| ---------------------- | --------------------------------------------- | ---------------------------------------------------------------------- |
-| CPU                    | Sharp LR35902 @ ~4.19 MHz (8-bit)             | Plenty for menus + integer math. No floating point.                    |
-| Work RAM               | 8 KB                                          | Hold the "current session" in RAM, page the rest.                      |
-| Video RAM              | 8 KB                                          | Tile-based text UI only. No bitmaps/photos.                            |
-| Save RAM (cart)        | 8–32 KB SRAM, battery-backed                  | This is our "database". Budget carefully (see §6).                     |
-| Display                | 160×144, 4 shades of gray                     | ~20×18 tiles ≈ 20 chars × 18 rows of text.                             |
-| Input                  | D-pad, A, B, Start, Select                    | All navigation is menu-driven.                                         |
-| Network / Camera / Mic | **None**                                      | No food search, scanning, AI, or sync.                                 |
+| Resource               | Original Game Boy (DMG)                          | Implication for Musclog GB                                                                                                                          |
+| ---------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CPU                    | Sharp LR35902 @ ~4.19 MHz (8-bit)                | Plenty for menus + integer math. No floating point.                                                                                                 |
+| Work RAM               | 8 KB                                             | Hold the "current session" in RAM, page the rest.                                                                                                   |
+| Video RAM              | 8 KB                                             | Tile-based text UI only. No bitmaps/photos.                                                                                                         |
+| Save RAM (cart)        | 8–32 KB SRAM, battery-backed                     | This is our "database". Budget carefully (see §6).                                                                                                  |
+| Display                | 160×144, 4 shades of gray                        | ~20×18 tiles ≈ 20 chars × 18 rows of text.                                                                                                          |
+| Input                  | D-pad, A, B, Start, Select                       | All navigation is menu-driven.                                                                                                                      |
+| Network / Camera / Mic | **None**                                         | No food search, scanning, AI, or sync.                                                                                                              |
 | Date/Time clock        | MBC3 RTC (5 registers: sec/min/hr/day-lo/day-hi) | Using MBC3+Timer+RAM+Battery (`0x10`). User sets today's date once; `cal_current_date()` computes current date from `rtc_base_date + elapsed_days`. |
 
 **Key takeaway:** everything is **integer math, tile-based text, and menu navigation**, persisted into a
