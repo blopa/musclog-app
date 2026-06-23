@@ -107,6 +107,18 @@ run(png2asset, [
 //    -Wm-yo8 reserves eight 16 KB ROM banks (128 KB). The hardcoded food tables
 //    live in dedicated banks (USDA in bank 2, common foods in bank 3), and the
 //    generated exercise table lives in bank 6; SWITCH_ROM() is required to read them.
+//
+//    Cartridge product code: CGB-MLOG-HOL (modelled on Nintendo's DMG-TR-USA scheme):
+//      - CGB     : Game Boy Color title, set by -Wm-yC.
+//      - MLOG    : 4-char manufacturer/game code, written into header 0x13F-0x142
+//                  ("MLOG" = 0x4D 0x4C 0x4F 0x47) via -Wm-yp patches. This field sits
+//                  just past the "MUSCLOG" title (0x134-0x13A) and is otherwise blank.
+//      - HOL     : Netherlands (non-Japanese) region. The header only carries a
+//                  Japanese / non-Japanese destination flag (0x14A); -Wm-yj sets it
+//                  to 0x01 (non-Japanese), the closest the hardware encodes for HOL.
+//    -Wm-yp0x14C=0 sets the mask-ROM version/revision byte (0x14C) to 0 — i.e. first
+//    revision, so the code reads CGB-MLOG-HOL with no trailing "-1". (makebin has no
+//    GameBoy version flag, so this is done with a header patch.)
 //    -Wl-m emits gameboy/build/musclog.map so the build can catch bank overflows.
 console.log('Compiling ROM ...');
 const cSources = readdirSync(srcDir)
@@ -120,6 +132,12 @@ run(lcc, [
     '-Wm-ya4',
     '-Wm-yo8',
     '-Wm-yn"MUSCLOG"',
+    '-Wm-yj',
+    '-Wm-yp0x13F=0x4D', // 'M'
+    '-Wm-yp0x140=0x4C', // 'L'
+    '-Wm-yp0x141=0x4F', // 'O'
+    '-Wm-yp0x142=0x47', // 'G'
+    '-Wm-yp0x14C=0x00', // revision 0 (no trailing "-1")
     '-Wl-m',
     '-o', romPath,
     ...cSources,
