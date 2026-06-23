@@ -163,7 +163,7 @@ gameboy/
 │   ├── main.c            # boot, top-level menu state machine
 │   ├── ui_text.c/.h      # tile font, menu/list rendering, number formatting
 │   ├── input.c/.h        # debounced D-pad/button handling
-│   ├── workouts.c/.h     # workout history shell + free-session planning flow
+│   ├── workouts.c/.h     # persisted workout history + free-session planning flow
 │   ├── nutrition.c/.h    # banked nutrition shell; subflows live in nutrition_date/detail/search
 │   ├── food_db.c/.h      # NONBANKED banked-food readers (ff_load/ff_filter)
 │   ├── foundation_foods.c/.h # generated USDA food table (name+kcal+protein/fat/carbs/fiber per 100g), ROM bank 2
@@ -171,6 +171,7 @@ gameboy/
 │   ├── exercises.c/.h    # generated exercise table (name+group+equipment+mechanic+load multiplier), ROM bank 6
 │   ├── exercise_db.c/.h  # NONBANKED banked-exercise readers (ex_load/ex_filter_by_muscle)
 │   ├── foodlog.c/.h      # persisted food log (6-byte records in SRAM bank 1) + macro scaling
+│   ├── workoutlog.c/.h   # persisted workout log (variable records in SRAM bank 2)
 │   ├── metrics.c/.h      # body weight log
 │   └── database.c/.h     # SRAM bank-0 profile layout, named address constants, load/save, checksum
 ├── data/
@@ -191,12 +192,12 @@ gameboy/
 
 ---
 
-## Build (current state — Milestone 1d: nutrition + free-session workout flow)
+## Build (current state — Milestone 1e: nutrition + saved workout history)
 
 The first interactive milestone is implemented: a **Game Boy Color** ROM that shows the Musclog logo,
 runs a first-time onboarding flow, generates calorie/macro goals, saves the profile to cartridge SRAM,
 skips onboarding on later boots when the save checksum is valid, and includes a free-session workout
-flow through exercise selection, active sets, and rest timers. Build it from the repo root with:
+flow through exercise selection, active sets, rest timers, and saved workout history. Build it from the repo root with:
 
 ```bash
 npm run gb:build        # produces gameboy/build/musclog.gbc
@@ -257,14 +258,16 @@ What's wired up so far:
   while food detail/amount screens continue to show total food carbs and fiber separately. The date picker,
   food detail, and food search/amount subflows live in `nutrition_date.c`, `nutrition_detail.c`, and
   `nutrition_search.c`, also in ROM bank 4.
-- **`gameboy/src/workouts.c`** — `BANKED` workouts shell in ROM bank 7: a visual-only mocked workout
-  history list with summary stats and scrolling. Its `Select` action menu can return home or open the free-session
+- **`gameboy/src/workouts.c`** — `BANKED` workouts shell in ROM bank 7: a saved workout
+  history list with weekly summary stats and scrolling. Its `Select` action menu can return home or open the free-session
   start flow: exercise picker, muscle-group filter input changed with left/right, a planning screen where
   the user edits the suggested set count, weight, and reps, an active set screen, an edit/options menu,
   a 60-second rest timer between non-final sets, and a loop back to the exercise picker after an exercise
-  is completed or skipped. Set logging is still in-memory only. The suggestion mirrors the Expo
-  fallback logic: `weight * loadMultiplier * experienceFactor * ageFactor`, bodyweight/load-zero exercises
-  start with no external load, and compound exercises suggest 10 reps while other mechanic types suggest 14.
+  is completed or skipped. Completed sets are accumulated for the active session, saved when the session
+  ends, and listed newest-first with generated titles like `CHEST 06-24-26` based on the dominant target
+  muscle. The suggestion mirrors the Expo fallback logic: `weight * loadMultiplier * experienceFactor *
+  ageFactor`, bodyweight/load-zero exercises start with no external load, and compound exercises suggest
+  10 reps while other mechanic types suggest 14.
 - **`gameboy/src/foodlog.c`** — the persisted food log. Each entry is a compact 6-byte record
   `{ day_num, food_idx, grams }` (day_num = `cal_day_number`, food_idx in the global bundled-food index,
   grams metric)
@@ -273,6 +276,11 @@ What's wired up so far:
   food and scaling per-100g values by grams (`foodlog_scale`). Validated/reset at boot (`foodlog_init`) and
   cleared on profile reset (`foodlog_erase`). It may call `ff_load`, which is `NONBANKED` and restores the
   caller's saved ROM bank on return.
+- **`gameboy/src/workoutlog.c` / `.h`** — persisted workout history in **SRAM bank 2** behind its own
+  magic/version/count/byte-count/checksum header. Each workout stores `{ day_num, dominant_muscle,
+  exercise_count, set_count, volume_kg }` plus compact 4-byte set rows `{ exercise_idx, reps,
+  weight_kg_tenths }`. Exercise names are never stored; the history UI reloads names/muscle metadata from
+  the ROM exercise table. The log drops the oldest workouts when the bank fills.
 - **`gameboy/src/database.c`** — SRAM bank 0 persistence with named byte-address constants, bit-packed profile flags, magic/version/checksum validation, and a compact 23-byte save block (down from 31 bytes; the extra byte vs the previous 22-byte layout holds the MBC3 RTC calibration date).
 - **`gameboy/src/rtc.c`** — MBC3 RTC hardware access (`rtc_latch`, `rtc_write_days`), calendar arithmetic (`cal_advance`, `cal_compare`, `cal_format`, `cal_day_number`), and the `rtc_setup_date` screen that lets the user pin today's date on first boot or after re-calibration.
 - **`gameboy/src/nutrition_math.c`** — `BANKED` ROM-bank-5 integer-only Mifflin-style BMR, activity multipliers,
@@ -327,7 +335,8 @@ battery.
 
 ### SRAM budget (the hard constraint)
 
-The ROM currently declares 32 KB SRAM. Bank 0 holds the tiny profile block and bank 1 holds the food log.
+The ROM currently declares 32 KB SRAM. Bank 0 holds the tiny profile block, bank 1 holds the food log,
+and bank 2 holds saved workout history.
 Rough plan for future data:
 
 - Keep food/exercise **names** as short fixed-width strings (e.g. 12 chars) or indices into a

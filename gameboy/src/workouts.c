@@ -6,17 +6,19 @@
 #include "exercise_db.h"
 #include "exercises.h"
 #include "input.h"
+#include "rtc.h"
 #include "ui_text.h"
 #include "utils.h"
+#include "workoutlog.h"
 
 #include <gb/gb.h>
 #include <stdio.h>
 #include <string.h>
 
 #define WORKOUT_VISIBLE          4u
-#define WORKOUT_COUNT            8u
 #define EXERCISE_VISIBLE         8u
 #define WORKOUT_NO_EXERCISE      0xFFu
+#define WORKOUT_SESSION_SET_CAP  64u
 #define WORKOUT_DEFAULT_SET_COUNT 3u
 #define WORKOUT_SET_COUNT_MIN    1u
 #define WORKOUT_SET_COUNT_MAX    20u
@@ -35,15 +37,6 @@
 #define SET_FIELD_COUNT          2u
 #define REPS_COMPOUND            10u
 #define REPS_DEFAULT             14u
-
-typedef struct MockWorkout {
-    const char *date;
-    const char *name;
-    uint8_t exercises;
-    uint8_t sets;
-    uint16_t volume_kg;
-    uint8_t minutes;
-} MockWorkout;
 
 typedef struct WorkoutsState {
     uint8_t scroll;
@@ -92,6 +85,7 @@ typedef struct WorkoutRecommendation {
 
 typedef struct WorkoutPlanState {
     ExerciseCache exercise;
+    uint8_t exercise_idx;
     uint8_t field;
     uint8_t set_count;
     uint16_t weight;
@@ -115,17 +109,10 @@ typedef struct WorkoutSetEditState {
 } WorkoutSetEditState;
 
 static uint8_t exercise_matches[EXERCISE_COUNT];
-
-static const MockWorkout MOCK_WORKOUTS[WORKOUT_COUNT] = {
-    { "06-21", "PUSH DAY",  6u, 24u, 12400u, 45u },
-    { "06-19", "LEGS",      5u, 22u, 18600u, 58u },
-    { "06-17", "PULL DAY",  6u, 26u, 15300u, 52u },
-    { "06-14", "FULL BODY", 7u, 30u, 20800u, 64u },
-    { "06-12", "UPPER",     5u, 21u, 11200u, 43u },
-    { "06-10", "CARDIO",    2u, 10u,     0u, 35u },
-    { "06-08", "LOWER",     6u, 27u, 19200u, 61u },
-    { "06-06", "ARMS",      5u, 20u,  8200u, 38u },
-};
+static WorkoutLogSet session_sets[WORKOUT_SESSION_SET_CAP];
+static uint8_t session_muscle_sets[EXERCISE_MUSCLE_GROUP_COUNT];
+static uint8_t session_set_count;
+static uint8_t session_exercise_count;
 
 static const char * const MUSCLE_FILTER_LABELS[EXERCISE_MUSCLE_GROUP_COUNT] = {
     "ABDOMEN",
@@ -233,41 +220,177 @@ static void format_plan_weight(
     }
 }
 
+static uint16_t display_weight_to_kg_tenths(const SaveData *data, uint16_t weight) {
+    if (data->units == UNITS_IMPERIAL) {
+        return (uint16_t)((((uint32_t)weight * 4536u) + 500u) / 1000u);
+    }
+
+    return (uint16_t)(weight * 10u);
+}
+
+static void session_reset(void) {
+    uint8_t i;
+
+    session_set_count = 0u;
+    session_exercise_count = 0u;
+    for (i = 0u; i != EXERCISE_MUSCLE_GROUP_COUNT; ++i) {
+        session_muscle_sets[i] = 0u;
+    }
+}
+
+static uint8_t session_has_exercise(uint8_t exercise_idx) {
+    uint8_t i;
+
+    for (i = 0u; i != session_set_count; ++i) {
+        if (session_sets[i].exercise_idx == exercise_idx) return 1u;
+    }
+
+    return 0u;
+}
+
+static void session_record_set(
+    const SaveData *data,
+    const WorkoutPlanState *plan,
+    const WorkoutSetState *set
+) {
+    WorkoutLogSet *saved;
+
+    if (session_set_count >= WORKOUT_SESSION_SET_CAP) return;
+
+    if (!session_has_exercise(plan->exercise_idx) && session_exercise_count != 255u) {
+        ++session_exercise_count;
+    }
+
+    saved = &session_sets[session_set_count];
+    saved->exercise_idx = plan->exercise_idx;
+    saved->reps = set->reps;
+    saved->weight_kg_tenths = display_weight_to_kg_tenths(data, set->weight);
+
+    if (plan->exercise.muscle_group < EXERCISE_MUSCLE_GROUP_COUNT) {
+        ++session_muscle_sets[plan->exercise.muscle_group];
+    }
+
+    ++session_set_count;
+}
+
+static uint8_t session_dominant_muscle(void) {
+    uint8_t i;
+    uint8_t best = 0u;
+    uint8_t best_sets = 0u;
+
+    for (i = 0u; i != EXERCISE_MUSCLE_GROUP_COUNT; ++i) {
+        if (session_muscle_sets[i] > best_sets) {
+            best_sets = session_muscle_sets[i];
+            best = i;
+        }
+    }
+
+    return best;
+}
+
+static uint8_t session_finish(SaveData *data) {
+    CalDate today;
+    uint8_t saved;
+
+    if (session_set_count == 0u) return 0u;
+
+    today = cal_current_date(data);
+    saved = workoutlog_add(
+        cal_day_number(today),
+        session_dominant_muscle(),
+        session_exercise_count,
+        session_set_count,
+        session_sets
+    );
+    session_reset();
+
+    return saved;
+}
+
+static void format_workout_title(const WorkoutLogSummary *summary, char *buf) {
+    CalDate base;
+    CalDate date;
+    char date_buf[9];
+    const char *muscle;
+
+    base.year = 2000u;
+    base.month = 1u;
+    base.day = 1u;
+    date = cal_advance(base, summary->day_num);
+    cal_format(&date, date_buf);
+
+    muscle = summary->dominant_muscle < EXERCISE_MUSCLE_GROUP_COUNT
+        ? MUSCLE_FILTER_LABELS[summary->dominant_muscle]
+        : "WORKOUT";
+    sprintf(buf, "%s %s", muscle, date_buf);
+}
+
 static void draw_workout_row(uint8_t y, uint8_t idx, uint8_t focused) {
-    const MockWorkout *workout;
-    char buf[12];
-    uint8_t len;
-    uint8_t x;
-
-    if (idx >= WORKOUT_COUNT) return;
-
-    workout = &MOCK_WORKOUTS[idx];
+    WorkoutLogSummary summary;
+    char title[20];
+    char buf[14];
 
     if (focused) {
         ui_fill_attr(0u, y, 20u, 1u, UI_PAL_SELECTED);
         ui_fill_attr(0u, (uint8_t)(y + 1u), 20u, 1u, UI_PAL_PANEL);
     }
 
-    ui_print_at(0u, y, focused ? ">" : " ");
-    ui_print_at(2u, y, workout->name);
+    if (!workoutlog_get_summary(idx, &summary)) return;
 
-    sprintf(buf, "%uM", (unsigned int)workout->minutes);
-    len = (uint8_t)strlen(buf);
-    x = len < 20u ? (uint8_t)(20u - len) : 17u;
-    ui_print_at(x, y, buf);
+    format_workout_title(&summary, title);
+
+    ui_print_at(0u, y, focused ? ">" : " ");
+    ui_print_at(2u, y, title);
 
     sprintf(buf, "%uEX %uS %uK",
-            (unsigned int)workout->exercises,
-            (unsigned int)workout->sets,
-            (unsigned int)(workout->volume_kg / 1000u));
-    ui_print_at(2u, (uint8_t)(y + 1u), workout->date);
-    ui_print_at(8u, (uint8_t)(y + 1u), buf);
+            (unsigned int)summary.exercise_count,
+            (unsigned int)summary.set_count,
+            (unsigned int)(summary.volume_kg / 1000u));
+    ui_print_at(2u, (uint8_t)(y + 1u), buf);
 }
 
-static void draw_workouts(const WorkoutsState *state) {
+static void workout_week_stats(const SaveData *data,
+                               uint8_t *week_count,
+                               uint16_t *week_sets,
+                               uint16_t *week_volume_kg) {
+    CalDate today;
+    WorkoutLogSummary summary;
+    uint16_t today_num;
+    uint16_t start_num;
+    uint8_t count;
+    uint8_t i;
+
+    *week_count = 0u;
+    *week_sets = 0u;
+    *week_volume_kg = 0u;
+
+    today = cal_current_date(data);
+    today_num = cal_day_number(today);
+    start_num = today_num > 6u ? (uint16_t)(today_num - 6u) : 0u;
+    count = workoutlog_count();
+
+    for (i = 0u; i != count; ++i) {
+        if (!workoutlog_get_summary(i, &summary)) continue;
+        if (summary.day_num < start_num || summary.day_num > today_num) continue;
+
+        if (*week_count != 255u) ++(*week_count);
+        *week_sets = add_clamped_u16(*week_sets, summary.set_count, 999u);
+        *week_volume_kg = add_clamped_u16(*week_volume_kg, summary.volume_kg, 65535u);
+    }
+}
+
+static void draw_workouts(const SaveData *data, const WorkoutsState *state) {
     uint8_t i;
     uint8_t abs_idx;
+    uint8_t count;
+    uint8_t end;
+    uint8_t week_count;
+    uint16_t week_sets;
+    uint16_t week_volume_kg;
     char buf[12];
+
+    count = workoutlog_count();
+    workout_week_stats(data, &week_count, &week_sets, &week_volume_kg);
 
     ui_clear();
 
@@ -275,30 +398,40 @@ static void draw_workouts(const WorkoutsState *state) {
     ui_print_center(0u, STR_APP_TITLE);
 
     ui_print_at(0u, 1u, STR_WORKOUTS);
-    sprintf(buf, "%u %s", (unsigned int)WORKOUT_COUNT, STR_DONE);
+    sprintf(buf, "%u %s", (unsigned int)count, STR_DONE);
     ui_print_at((uint8_t)(20u - (uint8_t)strlen(buf)), 1u, buf);
     ui_print_at(0u, 2u, STR_DIVIDER);
 
     ui_print_at(1u, 3u, STR_THIS_WEEK);
-    ui_print_at(15u, 3u, "3");
-    ui_print_at(1u, 4u, STR_AVG);
-    ui_print_at(5u, 4u, "49M");
+    sprintf(buf, "%u", (unsigned int)week_count);
+    ui_print_at(15u, 3u, buf);
+    ui_print_at(1u, 4u, STR_SETS);
+    sprintf(buf, "%u", (unsigned int)week_sets);
+    ui_print_at(6u, 4u, buf);
     ui_print_at(11u, 4u, STR_VOL);
-    ui_print_at(15u, 4u, "13K");
+    sprintf(buf, "%uK", (unsigned int)(week_volume_kg / 1000u));
+    ui_print_at(15u, 4u, buf);
     ui_print_at(0u, 5u, STR_DIVIDER);
 
-    for (i = 0u; i != WORKOUT_VISIBLE; ++i) {
-        abs_idx = (uint8_t)(state->scroll + i);
-        draw_workout_row((uint8_t)(6u + (i * 2u)),
-                         abs_idx,
-                         (uint8_t)(i == state->focused));
-    }
+    if (count == 0u) {
+        ui_print_center(9u, "NO WORKOUTS");
+    } else {
+        for (i = 0u; i != WORKOUT_VISIBLE; ++i) {
+            abs_idx = (uint8_t)(state->scroll + i);
+            if (abs_idx >= count) break;
+            draw_workout_row((uint8_t)(6u + (i * 2u)),
+                             abs_idx,
+                             (uint8_t)(i == state->focused));
+        }
 
-    sprintf(buf, "%u-%u OF %u",
-            (unsigned int)(state->scroll + 1u),
-            (unsigned int)(state->scroll + WORKOUT_VISIBLE),
-            (unsigned int)WORKOUT_COUNT);
-    ui_print_center(14u, buf);
+        end = (uint8_t)(state->scroll + WORKOUT_VISIBLE);
+        if (end > count) end = count;
+        sprintf(buf, "%u-%u OF %u",
+                (unsigned int)(state->scroll + 1u),
+                (unsigned int)end,
+                (unsigned int)count);
+        ui_print_center(14u, buf);
+    }
 
     ui_footer(STR_FOOTER_BACK, STR_FOOTER_SEL_MENU);
 }
@@ -527,6 +660,7 @@ static void init_workout_plan(
     ex_load(exercise_idx, &state->exercise);
     build_recommendation(data, &state->exercise, &recommendation);
 
+    state->exercise_idx = exercise_idx;
     state->field = PLAN_FIELD_SETS;
     state->set_count = WORKOUT_DEFAULT_SET_COUNT;
     state->weight = recommendation.display_weight;
@@ -765,12 +899,15 @@ static void workout_rest_timer(
 }
 
 static uint8_t workout_save_set_or_rest(
-    const ExerciseCache *exercise,
+    const SaveData *data,
+    const WorkoutPlanState *plan,
     WorkoutSetState *state
 ) {
+    session_record_set(data, plan, state);
+
     if (state->current_set >= state->total_sets) return 1u;
 
-    workout_rest_timer(exercise, (uint8_t)(state->current_set + 1u), state->total_sets);
+    workout_rest_timer(&plan->exercise, (uint8_t)(state->current_set + 1u), state->total_sets);
     ++state->current_set;
     state->dirty = 1u;
 
@@ -846,7 +983,7 @@ static uint8_t workout_set_flow(const SaveData *data, WorkoutPlanState *plan) {
         }
 
         if (input_pressed(&input, J_A | J_START)) {
-            if (workout_save_set_or_rest(&plan->exercise, &state)) {
+            if (workout_save_set_or_rest(data, plan, &state)) {
                 sync_plan_from_set(plan, &state);
                 return WORKOUT_SET_FLOW_NEXT_EXERCISE;
             }
@@ -863,7 +1000,7 @@ static uint8_t workout_set_flow(const SaveData *data, WorkoutPlanState *plan) {
                 workout_set_edit_screen(data, &plan->exercise, &state);
                 input_init(&input);
             } else if (action == SET_MENU_ACTION_SAVE) {
-                if (workout_save_set_or_rest(&plan->exercise, &state)) {
+                if (workout_save_set_or_rest(data, plan, &state)) {
                     sync_plan_from_set(plan, &state);
                     return WORKOUT_SET_FLOW_NEXT_EXERCISE;
                 }
@@ -887,9 +1024,14 @@ static void workout_start_free_session(SaveData *data) {
     uint8_t flow_result;
     WorkoutPlanState plan;
 
+    session_reset();
+
     while (1) {
         exercise_idx = workout_exercise_picker();
-        if (exercise_idx == WORKOUT_NO_EXERCISE) return;
+        if (exercise_idx == WORKOUT_NO_EXERCISE) {
+            session_finish(data);
+            return;
+        }
 
         init_workout_plan(data, exercise_idx, &plan);
 
@@ -898,7 +1040,10 @@ static void workout_start_free_session(SaveData *data) {
 
             flow_result = workout_set_flow(data, &plan);
             if (flow_result == WORKOUT_SET_FLOW_BACK_TO_PLAN) continue;
-            if (flow_result == WORKOUT_SET_FLOW_END_WORKOUT) return;
+            if (flow_result == WORKOUT_SET_FLOW_END_WORKOUT) {
+                session_finish(data);
+                return;
+            }
             break;
         }
     }
@@ -908,6 +1053,7 @@ void workouts_show(SaveData *data) BANKED {
     WorkoutsState state;
     InputState input;
     WorkoutAction action;
+    uint8_t count;
     uint8_t abs_idx;
 
     state.scroll = 0u;
@@ -917,7 +1063,7 @@ void workouts_show(SaveData *data) BANKED {
     input_init(&input);
     while (1) {
         if (state.dirty) {
-            draw_workouts(&state);
+            draw_workouts(data, &state);
             state.dirty = 0u;
         }
 
@@ -931,14 +1077,17 @@ void workouts_show(SaveData *data) BANKED {
             if (action == WORKOUT_ACTION_HOME) return;
             if (action == WORKOUT_ACTION_START) {
                 workout_start_free_session(data);
+                state.scroll = 0u;
+                state.focused = 0u;
             }
             state.dirty = 1u;
             continue;
         }
 
+        count = workoutlog_count();
         abs_idx = (uint8_t)(state.scroll + state.focused);
 
-        if (input_pressed(&input, J_DOWN) && (uint8_t)(abs_idx + 1u) < WORKOUT_COUNT) {
+        if (input_pressed(&input, J_DOWN) && count > 0u && (uint8_t)(abs_idx + 1u) < count) {
             if (state.focused < (uint8_t)(WORKOUT_VISIBLE - 1u)) {
                 ++state.focused;
             } else {

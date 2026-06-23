@@ -14,6 +14,7 @@
 #include "nutrition.h"
 #include "onboarding.h"
 #include "ui_text.h"
+#include "workoutlog.h"
 #include "workouts.h"
 
 /* The visible background is 20x18 tiles; center the 8x8-tile logo within it. */
@@ -238,6 +239,7 @@ static void home_loop(SaveData *data) {
         if ((input.current & J_SELECT) && input_pressed(&input, J_B)) {
             db_erase();
             foodlog_erase();
+            workoutlog_erase();
             onboarding_run(data);
             state.selected = HOME_BTN_FOOD;
             state.dirty = 1u;
@@ -271,6 +273,7 @@ void main(void) {
     }
 
     foodlog_init();
+    workoutlog_init();
 
     home_loop(&save);
 }
