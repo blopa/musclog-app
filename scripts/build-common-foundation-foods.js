@@ -5,7 +5,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 
 const ROOT_DIR = path.resolve(__dirname, '..');
-const INPUT_FILE = path.join(ROOT_DIR, 'data/common_foods_filled.json');
+const INPUT_FILE = path.join(ROOT_DIR, 'data/examples/OpenFoodFactsCommonFoods.json');
 const OUTPUT_FILE = path.join(ROOT_DIR, 'data/common_foundation_foods.json');
 
 const CALORIES_FOR_PROTEIN = 4;
@@ -44,7 +44,7 @@ function microValue(food, key) {
 }
 
 function totalCarbsFromOpenFoodFacts(carbs, fiber) {
-  // common_foods_filled.json does not retain label energy or carbohydrates-total,
+  // OpenFoodFactsCommonFoods.json does not retain label energy or carbohydrates-total,
   // so use the app's OFF fallback: treat ambiguous carbohydrates as EU-style net carbs.
   return carbs + fiber;
 }
