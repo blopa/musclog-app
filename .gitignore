@@ -95,3 +95,6 @@ devenv.local.yaml
 .pre-commit-config.yaml
 
 !.cursor/rules/global-context.mdc
+
+data/common_food_error.txt
+
