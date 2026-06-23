@@ -45,7 +45,7 @@ static const uint8_t blank_tile[16] = { 0 };
 
 /* Position of the "MUSCLOG" label on the splash screen (row below the logo). */
 #define TEXT_ROW_SPLASH 14u
-#define TEXT_COL_SPLASH  6u  /* (20 - 7) / 2 = 6 */
+#define TEXT_COL_SPLASH  7u  /* (20 - 7) / 2 + 1 = 7 */
 
 /* CGB palette 2 for splash text: dark-green bg (index 0) + off-white text (index 3).
  * font_color(3,0) maps foreground→index 3, background→index 0. */
