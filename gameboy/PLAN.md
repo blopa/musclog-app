@@ -165,6 +165,7 @@ gameboy/
 │   ├── input.c/.h        # debounced D-pad/button handling
 │   ├── workout.c/.h      # exercise library, session logging, PRs, volume
 │   ├── nutrition.c/.h    # food library, daily macro totals, goals
+│   ├── foundation_foods.c/.h # generated USDA food table (name+kcal+macros/100g), ROM bank 2
 │   ├── metrics.c/.h      # body weight log
 │   └── database.c/.h     # SRAM layout, named address constants, load/save, checksum
 ├── data/
@@ -204,7 +205,14 @@ What's wired up so far:
 
 - **`scripts/build-gb-rom.mjs`** — orchestrator: ensures GBDK is present, runs `png2asset` on the logo,
   then compiles every `gameboy/src/*.c` file with `lcc`. The ROM is CGB-only (`-Wm-yC`), uses the
-  MBC3+Timer+RAM+battery cart type (`-Wm-yt0x10`), and declares 4 SRAM banks / 32 KB (`-Wm-ya4`).
+  MBC3+Timer+RAM+battery cart type (`-Wm-yt0x10`), declares 4 SRAM banks / 32 KB (`-Wm-ya4`), and
+  reserves 8 ROM banks / 128 KB (`-Wm-yo8`) so the bundled USDA Foundation Foods table fits.
+- **`gameboy/tools/gen-foundation-foods.mjs`** — ports `data/examples/usda/FoundationFoods.json` into
+  `gameboy/src/foundation_foods.{c,h}`: per food it keeps only name + kcal + protein/fat/carbs per 100 g
+  (macros as decigrams in `uint16`, energy as whole kcal). The table is placed in **ROM bank 2** via
+  `#pragma bank 2` (it does not fit in the 32 KB default), so readers must `SWITCH_ROM(FOUNDATION_FOODS_BANK)`
+  before dereferencing `foundation_foods[]`. Output is committed; re-run with `npm run gb:gen-foods` if
+  the dataset changes. (Data is bundled now; tracking against it comes later.)
 - **`gameboy/tools/fetch-gbdk.mjs`** — downloads/extracts the GBDK-2020 release (platform-aware, pinned
   fallback version when offline). Also exposed as `npm run gb:setup`.
 - **`gameboy/tools/prepare-logo.mjs`** — converts `assets/icon-pixel.png` → `gameboy/assets/logo.png`

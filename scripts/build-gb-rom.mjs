@@ -50,6 +50,9 @@ run(png2asset, [
 //    MBC3 provides the real-time clock (RTC) registers used for calendar date tracking.
 //    -Wm-ya4 sets the RAM-size header to four 8 KB SRAM banks so emulators/flash carts
 //    actually persist the onboarding profile.
+//    -Wm-yo8 reserves eight 16 KB ROM banks (128 KB). The hardcoded USDA Foundation Foods
+//    table (foundation_foods.c, #pragma bank 2) does not fit in the 32 KB default, so it
+//    lives in its own bank; SWITCH_ROM(FOUNDATION_FOODS_BANK) is required to read it.
 console.log('Compiling ROM ...');
 const cSources = readdirSync(srcDir)
     .filter((name) => name.endsWith('.c'))
@@ -60,6 +63,7 @@ run(lcc, [
     '-Wm-yC',
     '-Wm-yt0x10',
     '-Wm-ya4',
+    '-Wm-yo8',
     '-Wm-yn"MUSCLOG"',
     '-o', romPath,
     ...cSources,
