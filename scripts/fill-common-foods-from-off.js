@@ -10,11 +10,7 @@ const OUTPUT_FILE = path.join(ROOT_DIR, 'data/common_foods_filled.json');
 const ERROR_FILE = path.join(ROOT_DIR, 'data/common_food_error.txt');
 
 const DEFAULT_DELAY_MS = 6500;
-const USER_AGENT =
-  process.env.OFF_USER_AGENT ||
-  'MusclogCommonFoodsFiller/1.0 (local script; set OFF_USER_AGENT with contact)';
-const RETRYABLE_STATUSES = new Set([408, 425, 429, 500, 502, 503, 504]);
-const SEARCH_FIELDS = [
+const PRODUCT_FIELDS = [
   'code',
   'product_name',
   'generic_name',
@@ -24,7 +20,8 @@ const SEARCH_FIELDS = [
   'nutriments',
   'nutrition_data',
   'nutrition_data_per',
-].join(',');
+];
+const SEARCH_FIELDS = PRODUCT_FIELDS.join(',');
 
 const MACRO_BASE_NAMES = new Set(['fat', 'fiber', 'carbohydrates', 'proteins']);
 const NON_MICRO_BASE_NAMES = new Set([
@@ -57,6 +54,19 @@ function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function sdkFetch(url, init) {
+  if (!process.env.OFF_USER_AGENT) {
+    return fetch(url, init);
+  }
+
+  const headers = new Headers(init?.headers);
+  headers.set('User-Agent', process.env.OFF_USER_AGENT);
+  return fetch(url, {
+    ...init,
+    headers,
+  });
+}
+
 function parseNumber(value) {
   if (typeof value === 'number') {
     return Number.isFinite(value) ? value : null;
@@ -68,60 +78,6 @@ function parseNumber(value) {
   }
 
   return null;
-}
-
-function searchUrl(foodName) {
-  const params = new URLSearchParams({
-    search_terms: foodName,
-    search_simple: '1',
-    action: 'process',
-    json: '1',
-    page: '1',
-    page_size: '1',
-    fields: SEARCH_FIELDS,
-  });
-
-  return `https://world.openfoodfacts.org/cgi/search.pl?${params.toString()}`;
-}
-
-async function fetchJson(url, attempt = 1) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 20000);
-
-  try {
-    const response = await fetch(url, {
-      headers: {
-        Accept: 'application/json',
-        'User-Agent': USER_AGENT,
-      },
-      signal: controller.signal,
-    });
-
-    const text = await response.text();
-    const body = text ? JSON.parse(text) : null;
-
-    if (!response.ok) {
-      const error = new Error(`HTTP ${response.status}`);
-      error.status = response.status;
-      throw error;
-    }
-
-    return body;
-  } catch (error) {
-    if (RETRYABLE_STATUSES.has(error.status) && attempt < 3) {
-      await delay(1000 * attempt);
-      return fetchJson(url, attempt + 1);
-    }
-
-    if (error.name === 'AbortError' && attempt < 3) {
-      await delay(1000 * attempt);
-      return fetchJson(url, attempt + 1);
-    }
-
-    throw error;
-  } finally {
-    clearTimeout(timeout);
-  }
 }
 
 function nutrientFrom(nutriments, baseName) {
@@ -173,6 +129,22 @@ function extractMicrosPer100g(nutriments) {
   return micros;
 }
 
+function productFromHit(hit) {
+  if (!hit || typeof hit !== 'object') {
+    return null;
+  }
+
+  if (hit.product && typeof hit.product === 'object') {
+    return hit.product;
+  }
+
+  if (hit._source && typeof hit._source === 'object') {
+    return hit._source;
+  }
+
+  return hit;
+}
+
 function buildFilledFood(food, product) {
   const nutriments = product.nutriments;
   if (!nutriments || typeof nutriments !== 'object') {
@@ -210,6 +182,46 @@ function buildFilledFood(food, product) {
   };
 }
 
+async function searchFirstProduct(searchClient, productClient, foodName) {
+  const { data, error, response } = await searchClient.searchGet({
+    q: foodName,
+    langs: 'en,es,it,pt,nl',
+    page: 1,
+    page_size: 1,
+    fields: SEARCH_FIELDS,
+  });
+
+  if (error) {
+    throw new Error(`Search API error: ${JSON.stringify(error)}`);
+  }
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  if (Array.isArray(data?.errors) && data.errors.length > 0) {
+    throw new Error(data.errors.map((item) => item.title || item.description).join('; '));
+  }
+
+  const hit = Array.isArray(data?.hits) ? data.hits[0] : null;
+  const hitProduct = productFromHit(hit);
+  const code = hitProduct?.code ? String(hitProduct.code) : '';
+
+  if (!code) {
+    return hitProduct;
+  }
+
+  try {
+    const detailResult = await productClient.getProductV3(code, {
+      fields: PRODUCT_FIELDS,
+    });
+    const detailProduct = detailResult.data?.product;
+    return detailProduct && typeof detailProduct === 'object' ? detailProduct : hitProduct;
+  } catch {
+    return hitProduct;
+  }
+}
+
 async function writeOutputs(filledFoods, errorNames) {
   await fs.writeFile(OUTPUT_FILE, `${JSON.stringify(filledFoods, null, 2)}\n`);
   await fs.writeFile(ERROR_FILE, errorNames.length ? `${errorNames.join('\n')}\n` : '');
@@ -228,9 +240,12 @@ async function main() {
   const foodsToProcess = foods.slice(0, limit);
   const filledFoods = [];
   const errorNames = [];
+  const { OpenFoodFacts, SearchApi } = await import('@openfoodfacts/openfoodfacts-nodejs');
+  const searchClient = new SearchApi(sdkFetch);
+  const productClient = new OpenFoodFacts(sdkFetch);
 
   if (!process.env.OFF_USER_AGENT) {
-    process.stdout.write('Tip: set OFF_USER_AGENT to identify yourself to Open Food Facts.\n');
+    process.stdout.write('Tip: set OFF_USER_AGENT if you want a custom contact User-Agent.\n');
   }
 
   process.stdout.write(
@@ -249,8 +264,7 @@ async function main() {
     process.stdout.write(`[${index + 1}/${foodsToProcess.length}] Searching ${foodName}...\n`);
 
     try {
-      const data = await fetchJson(searchUrl(foodName));
-      const product = Array.isArray(data?.products) ? data.products[0] : null;
+      const product = await searchFirstProduct(searchClient, productClient, foodName);
       const filledFood = product ? buildFilledFood(food, product) : null;
 
       if (filledFood) {
