@@ -6,87 +6,11 @@
 #include <string.h>
 
 #include "food_db.h"
+#include "foodlog.h"
 #include "input.h"
 #include "rtc.h"
 #include "ui_text.h"
 #include "utils.h"
-
-/* ── Mock food data (const = ROM) ── */
-typedef struct MockFood {
-    char name[13];   /* 12 visible chars + null terminator */
-    uint16_t kcal;
-    uint8_t protein;
-    uint8_t carbs;
-    uint8_t fat;
-    uint8_t fiber;
-} MockFood;
-
-static const MockFood MOCK_FOODS[6] = {
-    {"CHICKEN     ", 580u, 52u, 18u, 28u, 0u},
-    {"RICE BOWL   ", 200u,  4u, 44u,  1u, 1u},
-    {"PROT. SHAKE ", 150u, 25u,  8u,  3u, 0u},
-    {"EGGS X2     ", 140u, 12u,  1u, 10u, 0u},
-    {"GREEK YOGURT", 100u, 10u,  8u,  0u, 0u},
-    {"BANANA      ",  89u,  1u, 23u,  0u, 2u},
-};
-
-/* Day 0 → foods 0-3, Day 1 → foods 4-5, Day 2+ → empty */
-static uint8_t day_food_start(uint8_t day) {
-    if (day == 0u) return 0u;
-    if (day == 1u) return 4u;
-    return 6u;
-}
-
-static uint8_t day_food_end(uint8_t day) {
-    if (day == 0u) return 4u;
-    if (day == 1u) return 6u;
-    return 6u;
-}
-
-static uint8_t get_day_food_count(uint8_t day) {
-    return (uint8_t)(day_food_end(day) - day_food_start(day));
-}
-
-static const MockFood *get_day_food(uint8_t day, uint8_t idx) {
-    return &MOCK_FOODS[day_food_start(day) + idx];
-}
-
-static void sum_day_macros(uint8_t day,
-                            uint16_t *cal, uint16_t *pro,
-                            uint16_t *carb, uint16_t *fat, uint16_t *fib) {
-    uint8_t i;
-    uint8_t count = get_day_food_count(day);
-    const MockFood *f;
-
-    *cal = 0u; *pro = 0u; *carb = 0u; *fat = 0u; *fib = 0u;
-    for (i = 0u; i != count; ++i) {
-        f = get_day_food(day, i);
-        *cal  += f->kcal;
-        *pro  += (uint16_t)f->protein;
-        *carb += (uint16_t)f->carbs;
-        *fat  += (uint16_t)f->fat;
-        *fib  += (uint16_t)f->fiber;
-    }
-}
-
-/*
- * Map a CalDate to a mock day index (0=today, 1=yesterday, 2+=empty).
- * d must be <= today.
- */
-static uint8_t date_to_mock_idx(CalDate d, CalDate today) {
-    CalDate cursor;
-    uint8_t diff;
-
-    if (cal_compare(d, today) == 0) return 0u;
-
-    cursor = d;
-    diff   = 0u;
-    while (cal_compare(cursor, today) < 0 && diff < 3u) {
-        cursor = cal_advance(cursor, 1u);
-        diff++;
-    }
-    return (diff < 2u) ? diff : 2u;
-}
 
 /* ── Screen state ── */
 #define FOOD_VISIBLE 3u
@@ -95,6 +19,7 @@ typedef struct NutritionState {
     SaveData *data;
     CalDate  viewing_date; /* calendar date being viewed */
     CalDate  today;        /* current date (set once at entry) */
+    uint16_t day_num;      /* cal_day_number(viewing_date) — log key for the view */
     uint8_t  scroll;       /* absolute index of first visible food row */
     uint8_t  focused;      /* offset within visible window (0..FOOD_VISIBLE-1) */
     uint8_t  dirty;
@@ -102,28 +27,36 @@ typedef struct NutritionState {
 
 /*
  * Draw one food list row at tile row `screen_row`.
- * food_idx is the absolute index into the day's food list.
- * Empty rows (food_idx >= count) are left blank (ui_clear already blanked them).
+ * row_idx is the position (0-based) within the viewed day's logged foods.
+ * Empty rows (row_idx >= count) are left blank (ui_clear already blanked them).
+ * The kcal shown is scaled to the logged serving.
  */
-static void draw_food_row(uint8_t screen_row, uint8_t day,
-                          uint8_t food_idx, uint8_t count, uint8_t is_focused) {
-    const MockFood *f;
+static void draw_food_row(uint8_t screen_row, uint16_t day_num,
+                          uint8_t row_idx, uint8_t count, uint8_t is_focused) {
+    uint16_t food_idx, grams;
+    FoodCache fc;
+    uint16_t cal, pro, carb, fat, fib;
     char buf[8];
-    uint8_t klen, kx;
+    char nm[13];
+    uint8_t i, klen, kx;
 
-    if (food_idx >= count) return;
+    if (row_idx >= count) return;
+    if (!foodlog_get_for_day(day_num, row_idx, &food_idx, &grams)) return;
 
-    f = get_day_food(day, food_idx);
+    ff_load(food_idx, &fc);
+    foodlog_scale(&fc, grams, &cal, &pro, &carb, &fat, &fib);
 
     if (is_focused)
         ui_fill_attr(0u, screen_row, 20u, 1u, UI_PAL_PANEL);
 
     /* col 0: cursor */
     ui_print_at(0u, screen_row, is_focused ? ">" : " ");
-    /* cols 2-13: food name (12 chars, pre-padded in MOCK_FOODS) */
-    ui_print_at(2u, screen_row, f->name);
-    /* cols 15-19: kcal right-aligned ending at col 19 */
-    sprintf(buf, "%uK", (unsigned int)f->kcal);
+    /* cols 2-13: food name (truncated to 12) */
+    for (i = 0u; i != 12u && fc.name[i] != '\0'; ++i) nm[i] = fc.name[i];
+    nm[i] = '\0';
+    ui_print_at(2u, screen_row, nm);
+    /* cols 15-19: scaled kcal right-aligned ending at col 19 */
+    sprintf(buf, "%uK", (unsigned int)cal);
     klen = (uint8_t)strlen(buf);
     kx = (klen < 7u) ? (uint8_t)(20u - klen) : 14u;
     ui_print_at(kx, screen_row, buf);
@@ -153,17 +86,15 @@ static void draw_food_row(uint8_t screen_row, uint8_t day,
  */
 static void draw_nutrition(const NutritionState *state) {
     const SaveData *d = state->data;
-    uint8_t day;
     uint8_t count;
     uint8_t i;
     uint16_t cal, pro, carb, fat, fib;
     char buf[22];
     char date_buf[9];  /* "MM-DD-YY\0" */
 
-    day   = date_to_mock_idx(state->viewing_date, state->today);
-    count = get_day_food_count(day);
+    count = foodlog_count_for_day(state->day_num);
     cal_format(&state->viewing_date, date_buf);
-    sum_day_macros(day, &cal, &pro, &carb, &fat, &fib);
+    foodlog_sum_day(state->day_num, &cal, &pro, &carb, &fat, &fib);
 
     ui_clear();
 
@@ -206,7 +137,7 @@ static void draw_nutrition(const NutritionState *state) {
     for (i = 0u; i != FOOD_VISIBLE; ++i) {
         draw_food_row(
             (uint8_t)(13u + i),
-            day,
+            state->day_num,
             (uint8_t)(state->scroll + i),
             count,
             (uint8_t)(i == state->focused)
@@ -336,69 +267,92 @@ static void nutrition_date_picker(CalDate today, CalDate *viewing_date) {
     }
 }
 
+/* Whole ounces for `grams`, rounded — inverse of oz_to_grams (1 oz = 28.35 g). */
+static uint16_t grams_to_oz(uint16_t grams) {
+    return (uint16_t)(((uint32_t)grams * 100u + 1417u) / 2835u);
+}
+
 /*
- * Food detail screen layout (20×18):
+ * Detail screen for a logged food entry (the `nth` food on day `day_num`).
+ * Shows the serving and the macros scaled to it, including fiber, and lets the
+ * user delete the entry with SELECT. Returns 1 if the entry was deleted.
  *
  *  Row 0   MUSCLOG GB          ← header
  *  Row 2   FOOD DETAIL         ← title
  *  Row 3   --------------------
  *  Row 5   [   CHICKEN        ] ← name centered, PAL_PANEL
- *  Row 7   --------------------
- *  Row 8   CALORIES
- *  Row 9    580 KCAL
+ *  Row 7   SERVING   150 G
+ *  Row 8   --------------------
+ *  Row 9   CALORIES  XXX KCAL
  *  Row 11  PROTEIN      CARBS
- *  Row 12   52G          18G
+ *  Row 12   XXG          XXG
  *  Row 14  FAT          FIBER
- *  Row 15   28G           0G
+ *  Row 15   XXG          XXG
  *  Row 16  --------------------
- *  Row 17  B BACK
+ *  Row 17  B BACK      SEL DEL
  */
-static void show_food_detail(const MockFood *f) {
+static uint8_t show_food_detail(SaveData *data, uint16_t day_num, uint8_t nth) {
+    uint16_t food_idx, grams;
+    FoodCache fc;
+    uint16_t cal, pro, carb, fat, fib;
+    uint8_t  imperial;
+    uint8_t  dirty = 1u;
     char buf[22];
-    char name[13];
-    uint8_t i, trimlen;
     InputState input;
 
-    /* Trim trailing spaces from the padded name for centered display */
-    trimlen = 0u;
-    for (i = 0u; i != 12u && f->name[i] != '\0'; ++i) {
-        if (f->name[i] != ' ') trimlen = (uint8_t)(i + 1u);
-    }
-    for (i = 0u; i != trimlen; ++i) name[i] = f->name[i];
-    name[trimlen] = '\0';
+    if (!foodlog_get_for_day(day_num, nth, &food_idx, &grams)) return 0u;
 
-    ui_title("FOOD DETAIL");
-
-    ui_fill_attr(0u, 5u, 20u, 1u, UI_PAL_PANEL);
-    ui_print_center(5u, name);
-
-    ui_print_at(0u, 7u, "--------------------");
-
-    ui_print_at(0u, 8u, "CALORIES");
-    sprintf(buf, "%u KCAL", (unsigned int)f->kcal);
-    ui_print_at(1u, 9u, buf);
-
-    ui_print_at(0u, 11u, "PROTEIN");
-    ui_print_at(11u, 11u, "CARBS");
-    sprintf(buf, "%uG", (unsigned int)f->protein);
-    ui_print_at(1u, 12u, buf);
-    sprintf(buf, "%uG", (unsigned int)f->carbs);
-    ui_print_at(12u, 12u, buf);
-
-    ui_print_at(0u, 14u, "FAT");
-    ui_print_at(11u, 14u, "FIBER");
-    sprintf(buf, "%uG", (unsigned int)f->fat);
-    ui_print_at(1u, 15u, buf);
-    sprintf(buf, "%uG", (unsigned int)f->fiber);
-    ui_print_at(12u, 15u, buf);
-
-    ui_footer("B BACK", "");
+    ff_load(food_idx, &fc);
+    foodlog_scale(&fc, grams, &cal, &pro, &carb, &fat, &fib);
+    imperial = (uint8_t)(data->units == UNITS_IMPERIAL);
 
     input_init(&input);
     while (1) {
+        if (dirty) {
+            ui_title("FOOD DETAIL");
+
+            ui_fill_attr(0u, 5u, 20u, 1u, UI_PAL_PANEL);
+            ui_print_center(5u, fc.name);
+
+            ui_print_at(0u, 7u, "SERVING");
+            if (imperial) sprintf(buf, "%u OZ", (unsigned int)grams_to_oz(grams));
+            else          sprintf(buf, "%u G",  (unsigned int)grams);
+            ui_print_at(10u, 7u, buf);
+            ui_print_at(0u, 8u, "--------------------");
+
+            ui_print_at(0u, 9u, "CALORIES");
+            sprintf(buf, "%u KCAL", (unsigned int)cal);
+            ui_print_at(10u, 9u, buf);
+
+            ui_print_at(0u, 11u, "PROTEIN");
+            ui_print_at(11u, 11u, "CARBS");
+            sprintf(buf, "%uG", (unsigned int)pro);
+            ui_print_at(1u, 12u, buf);
+            sprintf(buf, "%uG", (unsigned int)carb);
+            ui_print_at(12u, 12u, buf);
+
+            ui_print_at(0u, 14u, "FAT");
+            ui_print_at(11u, 14u, "FIBER");
+            sprintf(buf, "%uG", (unsigned int)fat);
+            ui_print_at(1u, 15u, buf);
+            sprintf(buf, "%uG", (unsigned int)fib);
+            ui_print_at(12u, 15u, buf);
+
+            ui_footer("B BACK", "SEL DEL");
+            dirty = 0u;
+        }
+
         wait_vbl_done();
         input_update(&input);
-        if (input_pressed(&input, J_B | J_A | J_START)) return;
+
+        if (input_pressed(&input, J_B | J_A | J_START)) return 0u;
+        if (input_pressed(&input, J_SELECT)) {
+            if (ui_confirm("DELETE FOOD", "DELETE FOOD?")) {
+                foodlog_delete_for_day(day_num, nth);
+                return 1u;
+            }
+            dirty = 1u; /* cancelled → repaint the detail screen */
+        }
     }
 }
 
@@ -526,11 +480,6 @@ static uint16_t oz_to_grams(uint16_t oz) {
 #define AMOUNT_OZ_MIN       1u
 #define AMOUNT_OZ_MAX      70u
 
-/* Scale a per-100g decigram macro to whole grams for `grams` of food (rounded). */
-static uint16_t scale_macro_dg(uint16_t dg, uint16_t grams) {
-    return (uint16_t)(((uint32_t)dg * grams + 500u) / 1000u);
-}
-
 /*
  * Food detail + amount screen. `amount` is in display units (g metric / oz imperial);
  * calories and macros recompute live as it changes.
@@ -541,18 +490,15 @@ static uint16_t scale_macro_dg(uint16_t dg, uint16_t grams) {
  *  Row 9   UP/DN  L/R FAST
  *  Row 11  CAL  XXX KCAL
  *  Row 13  PRO XXXG   CARB XXXG
- *  Row 14  FAT XXXG
+ *  Row 14  FAT XXXG   FIB XXXG
  *  Row 17  B BACK / A/ST TRACK
  */
 static void draw_amount(const FoodCache *fc, uint16_t amount, uint8_t imperial) {
     char     buf[21];
-    uint16_t grams, kcal, pro, fat, carb;
+    uint16_t grams, kcal, pro, fat, carb, fib;
 
     grams = imperial ? oz_to_grams(amount) : amount;
-    kcal  = (uint16_t)(((uint32_t)fc->kcal * grams + 50u) / 100u);
-    pro   = scale_macro_dg(fc->protein_dg, grams);
-    fat   = scale_macro_dg(fc->fat_dg, grams);
-    carb  = scale_macro_dg(fc->carbs_dg, grams);
+    foodlog_scale(fc, grams, &kcal, &pro, &carb, &fat, &fib);
 
     ui_title("TRACK FOOD");
 
@@ -575,12 +521,15 @@ static void draw_amount(const FoodCache *fc, uint16_t amount, uint8_t imperial) 
     ui_print_at(10u, 13u, buf);
     sprintf(buf, "FAT %uG", (unsigned int)fat);
     ui_print_at(0u, 14u, buf);
+    sprintf(buf, "FIB %uG", (unsigned int)fib);
+    ui_print_at(10u, 14u, buf);
 
     ui_footer("B BACK", "A/ST TRACK");
 }
 
 /* Returns 1 if the food was tracked (confirmed), 0 if the user backed out. */
-static uint8_t food_amount_screen(SaveData *data, const FoodCache *fc) {
+static uint8_t food_amount_screen(SaveData *data, const FoodCache *fc,
+                                  uint16_t food_idx, CalDate log_date) {
     InputState input;
     uint8_t    imperial = (uint8_t)(data->units == UNITS_IMPERIAL);
     uint16_t   amount   = imperial ? AMOUNT_OZ_DEFAULT : AMOUNT_G_DEFAULT;
@@ -611,6 +560,8 @@ static uint8_t food_amount_screen(SaveData *data, const FoodCache *fc) {
 
         if (input_pressed(&input, J_A | J_START)) {
             if (ui_confirm("TRACK FOOD", "TRACK FOOD?")) {
+                uint16_t grams = imperial ? oz_to_grams(amount) : amount;
+                foodlog_add(cal_day_number(log_date), food_idx, grams);
                 ui_title("TRACKED");
                 ui_print_center(8u, "FOOD TRACKED!");
                 for (i = 0u; i != 75u; ++i) wait_vbl_done();
@@ -623,9 +574,10 @@ static uint8_t food_amount_screen(SaveData *data, const FoodCache *fc) {
 
 /*
  * Type-to-search foundation foods, pick one, choose an amount, and confirm.
+ * Tracked foods are logged to `log_date` (the date being viewed).
  * Returns when the user backs out (empty query + B) or tracks a food.
  */
-static void food_search_track(SaveData *data) {
+static void food_search_track(SaveData *data, CalDate log_date) {
     SearchState s;
     InputState  input;
     FoodCache   fc;
@@ -696,7 +648,8 @@ static void food_search_track(SaveData *data) {
 
         if (input_pressed(&input, J_A | J_START)) {
             ff_load(s.matches[abs_idx], &fc);
-            if (food_amount_screen(data, &fc)) return; /* tracked → exit flow */
+            if (food_amount_screen(data, &fc, s.matches[abs_idx], log_date))
+                return; /* tracked → exit flow */
             dirty = 1u;
             continue;
         }
@@ -716,11 +669,12 @@ static void food_search_track(SaveData *data) {
 void nutrition_track(SaveData *data) {
     NutritionState state;
     InputState input;
-    uint8_t count, abs_idx, mock_day;
+    uint8_t count, abs_idx;
 
     state.data         = data;
     state.today        = cal_current_date(data);
     state.viewing_date = state.today;
+    state.day_num      = cal_day_number(state.viewing_date);
     state.scroll       = 0u;
     state.focused      = 0u;
     state.dirty        = 1u;
@@ -743,22 +697,36 @@ void nutrition_track(SaveData *data) {
             NutritionAction action = nutrition_action_menu();
             if (action == NUTRITION_ACTION_GO_TO_DATE) {
                 nutrition_date_picker(state.today, &state.viewing_date);
+                state.day_num = cal_day_number(state.viewing_date);
                 state.scroll  = 0u;
                 state.focused = 0u;
             } else if (action == NUTRITION_ACTION_TRACK_FOOD) {
-                food_search_track(state.data);
+                food_search_track(state.data, state.viewing_date);
             }
             state.dirty = 1u;
             continue;
         }
 
-        mock_day = date_to_mock_idx(state.viewing_date, state.today);
-        count    = get_day_food_count(mock_day);
-        abs_idx  = (uint8_t)(state.scroll + state.focused);
+        count   = foodlog_count_for_day(state.day_num);
+        abs_idx = (uint8_t)(state.scroll + state.focused);
 
-        /* Start → food detail for the focused item */
+        /* Start → food detail for the focused item (with delete) */
         if (input_pressed(&input, J_START) && abs_idx < count) {
-            show_food_detail(get_day_food(mock_day, abs_idx));
+            show_food_detail(state.data, state.day_num, abs_idx);
+            /* An entry may have been deleted; clamp the cursor to the new count. */
+            count = foodlog_count_for_day(state.day_num);
+            if (count == 0u) {
+                state.scroll = 0u;
+                state.focused = 0u;
+            } else if ((uint8_t)(state.scroll + state.focused) >= count) {
+                uint8_t target = (uint8_t)(count - 1u); /* new last index */
+                if (target < state.scroll) {
+                    state.scroll = target;
+                    state.focused = 0u;
+                } else {
+                    state.focused = (uint8_t)(target - state.scroll);
+                }
+            }
             state.dirty = 1u;
             continue;
         }

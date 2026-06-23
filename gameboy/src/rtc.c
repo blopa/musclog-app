@@ -105,6 +105,21 @@ CalDate cal_advance(CalDate d, uint16_t n_days) {
     return d;
 }
 
+uint16_t cal_day_number(CalDate d) {
+    uint16_t n = 0u;
+    uint16_t y;
+    uint8_t  m;
+
+    for (y = 2000u; y != d.year; ++y) {
+        n = (uint16_t)(n + (cal_is_leap(y) ? 366u : 365u));
+    }
+    for (m = 1u; m != d.month; ++m) {
+        n = (uint16_t)(n + cal_days_in_month(m, d.year));
+    }
+    n = (uint16_t)(n + (d.day - 1u));
+    return n;
+}
+
 int8_t cal_compare(CalDate a, CalDate b) {
     if (a.year  != b.year)  return (a.year  < b.year)  ? (int8_t)(-1) : (int8_t)1;
     if (a.month != b.month) return (a.month < b.month) ? (int8_t)(-1) : (int8_t)1;

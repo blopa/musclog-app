@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "database.h"
+#include "foodlog.h"
 #include "input.h"
 #include "rtc.h"
 #include "logo.h"
@@ -176,11 +177,13 @@ static void draw_home(const HomeState *state) {
     char buf[22];
     char date_buf[9];  /* "MM-DD-YY\0" */
     CalDate today;
-    /* Tracked values are 0 until food/workout logging is implemented. */
-    uint16_t cal = 0u, pro = 0u, carb = 0u, fat = 0u, fib = 0u;
+    uint16_t cal, pro, carb, fat, fib;
 
     today = cal_current_date(d);
     cal_format(&today, date_buf);
+
+    /* Today's totals from the persisted food log. */
+    foodlog_sum_day(cal_day_number(today), &cal, &pro, &carb, &fat, &fib);
 
     ui_clear();
 
@@ -248,6 +251,7 @@ static void home_loop(SaveData *data) {
 
         if ((input.current & J_SELECT) && input_pressed(&input, J_B)) {
             db_erase();
+            foodlog_erase();
             onboarding_run(data);
             state.selected = HOME_BTN_FOOD;
             state.dirty = 1u;
@@ -279,6 +283,8 @@ void main(void) {
     if (!db_load(&save) || !save.onboarding_complete) {
         onboarding_run(&save);
     }
+
+    foodlog_init();
 
     home_loop(&save);
 }

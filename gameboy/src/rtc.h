@@ -41,6 +41,13 @@ uint8_t cal_days_in_month(uint8_t month, uint16_t year);
 CalDate cal_advance(CalDate base, uint16_t n_days);
 
 /*
+ * Map a CalDate to a compact day number: days elapsed since 2000-01-01
+ * (which is day 0). Used as a sortable/groupable key for stored food-log
+ * entries. Valid for years >= 2000.
+ */
+uint16_t cal_day_number(CalDate d);
+
+/*
  * Compare two CalDates.
  * Returns -1 if a < b, 0 if a == b, +1 if a > b.
  */

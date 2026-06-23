@@ -25,6 +25,7 @@ typedef struct FoodCache {
     uint16_t protein_dg;
     uint16_t fat_dg;
     uint16_t carbs_dg;
+    uint16_t fiber_dg;
 } FoodCache;
 
 /* Copy food `idx` out of ROM bank 2 into `out` (name truncated to FF_NAME_VISIBLE). */

@@ -27,6 +27,7 @@ void ff_load(uint16_t idx, FoodCache *out) {
     out->protein_dg = f->protein_dg;
     out->fat_dg     = f->fat_dg;
     out->carbs_dg   = f->carbs_dg;
+    out->fiber_dg   = f->fiber_dg;
     src = f->name;
     for (i = 0u; i != FF_NAME_VISIBLE && src[i] != '\0'; ++i) {
         out->name[i] = src[i];
