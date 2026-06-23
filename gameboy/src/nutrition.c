@@ -5,9 +5,11 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "food_db.h"
 #include "input.h"
 #include "rtc.h"
 #include "ui_text.h"
+#include "utils.h"
 
 /* ── Mock food data (const = ROM) ── */
 typedef struct MockFood {
@@ -400,6 +402,317 @@ static void show_food_detail(const MockFood *f) {
     }
 }
 
+/* ──────────────────────────────────────────────────────────────────────────
+ * Foundation-food search & track flow.
+ *
+ * The bundled USDA foods live in ROM bank 2; all reads go through food_db.c
+ * (ff_load / ff_filter), which owns the SWITCH_ROM dance. This file only ever
+ * touches the RAM FoodCache copies they hand back.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+#define MATCH_VISIBLE   6u             /* food rows shown at once (rows 8-13)     */
+#define QUERY_MAX       12u            /* max typed name length                  */
+
+/* Spinner alphabet: A-Z then a trailing space. */
+static const char ALPHABET[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
+#define ALPHABET_LEN 27u
+
+/* One filtered-food row: cursor + name (truncated to 12) + right-aligned kcal. */
+static void draw_match_row(uint8_t row, const FoodCache *fc, uint8_t focused) {
+    char buf[8];
+    char nm[13];
+    uint8_t i, klen, kx;
+
+    if (focused) ui_fill_attr(0u, row, 20u, 1u, UI_PAL_PANEL);
+    ui_print_at(0u, row, focused ? ">" : " ");
+
+    for (i = 0u; i != 12u && fc->name[i] != '\0'; ++i) nm[i] = fc->name[i];
+    nm[i] = '\0';
+    ui_print_at(2u, row, nm);
+
+    sprintf(buf, "%uK", (unsigned int)fc->kcal);
+    klen = (uint8_t)strlen(buf);
+    kx = (klen < 6u) ? (uint8_t)(20u - klen) : 14u;
+    ui_print_at(kx, row, buf);
+}
+
+#define SEARCH_MODE_TYPING 0u
+#define SEARCH_MODE_SELECT 1u
+
+typedef struct SearchState {
+    uint8_t  mode;
+    char     query[QUERY_MAX + 1u];
+    uint8_t  len;
+    uint8_t  spin;                     /* index into ALPHABET                    */
+    uint16_t matches[FF_MATCH_CAP];
+    uint8_t  match_count;
+    uint8_t  scroll;                   /* absolute index of first visible match  */
+    uint8_t  focused;                  /* offset within visible window           */
+} SearchState;
+
+/*
+ * Food search screen layout (20×18):
+ *
+ *  Row 0   MUSCLOG GB
+ *  Row 1   TRACK FOOD
+ *  Row 2   --------------------
+ *  Row 3   NAME:
+ *  Row 4   [CHICK_]              ← typed query; "_" = highlighted spin letter
+ *  Row 5   UP/DN A=ADD ST=DONE   ← hint (mode-dependent)
+ *  Row 6   --------------------
+ *  Row 8   > FOOD NAME    XXXXK  ← up to 6 filtered rows (8-13)
+ *  ...
+ *  Row 16  --------------------
+ *  Row 17  B DEL / ST DONE       ← footer (mode-dependent)
+ */
+static void draw_search(const SearchState *s) {
+    char     line[QUERY_MAX + 2u];
+    char     slot[2];
+    uint8_t  i, abs_idx;
+    FoodCache fc;
+
+    ui_clear();
+    ui_fill_attr(0u, 0u, 20u, 1u, UI_PAL_HEADER);
+    ui_print_center(0u, "MUSCLOG GB");
+    ui_print_at(0u, 1u, "TRACK FOOD");
+    ui_print_at(0u, 2u, "--------------------");
+
+    ui_print_at(0u, 3u, "NAME:");
+    for (i = 0u; i != s->len; ++i) line[i] = s->query[i];
+    line[s->len] = '\0';
+    ui_fill_attr(0u, 4u, 20u, 1u, UI_PAL_PANEL);
+    ui_print_at(0u, 4u, line);
+
+    if (s->mode == SEARCH_MODE_TYPING) {
+        slot[0] = ALPHABET[s->spin];
+        slot[1] = '\0';
+        ui_fill_attr(s->len, 4u, 1u, 1u, UI_PAL_SELECTED);
+        ui_print_at(s->len, 4u, slot);
+        ui_print_center(5u, "UP/DN A=ADD ST=DONE");
+    } else {
+        ui_print_center(5u, "UP/DN PICK  B EDIT");
+    }
+
+    ui_print_at(0u, 6u, "--------------------");
+
+    if (s->match_count == 0u) {
+        ui_print_center(10u, "NO MATCHES");
+    } else {
+        for (i = 0u; i != MATCH_VISIBLE; ++i) {
+            abs_idx = (uint8_t)(s->scroll + i);
+            if (abs_idx >= s->match_count) break;
+            ff_load(s->matches[abs_idx], &fc);
+            draw_match_row((uint8_t)(8u + i), &fc,
+                           (uint8_t)(s->mode == SEARCH_MODE_SELECT && i == s->focused));
+        }
+    }
+
+    if (s->mode == SEARCH_MODE_TYPING) {
+        ui_footer("B DEL", "ST DONE");
+    } else {
+        ui_footer("B EDIT", "A/ST PICK");
+    }
+}
+
+/* Imperial amount is entered in whole ounces; convert to grams for macro math. */
+static uint16_t oz_to_grams(uint16_t oz) {
+    return (uint16_t)(((uint32_t)oz * 2835u + 50u) / 100u);
+}
+
+#define AMOUNT_G_DEFAULT  100u
+#define AMOUNT_G_MIN        5u
+#define AMOUNT_G_MAX     2000u
+#define AMOUNT_OZ_DEFAULT   4u
+#define AMOUNT_OZ_MIN       1u
+#define AMOUNT_OZ_MAX      70u
+
+/* Scale a per-100g decigram macro to whole grams for `grams` of food (rounded). */
+static uint16_t scale_macro_dg(uint16_t dg, uint16_t grams) {
+    return (uint16_t)(((uint32_t)dg * grams + 500u) / 1000u);
+}
+
+/*
+ * Food detail + amount screen. `amount` is in display units (g metric / oz imperial);
+ * calories and macros recompute live as it changes.
+ *
+ *  Row 5   [   FOOD NAME      ]  ← name (PAL_PANEL)
+ *  Row 7   AMOUNT
+ *  Row 8   [     100 G        ]  ← spinner value (PAL_SELECTED)
+ *  Row 9   UP/DN  L/R FAST
+ *  Row 11  CAL  XXX KCAL
+ *  Row 13  PRO XXXG   CARB XXXG
+ *  Row 14  FAT XXXG
+ *  Row 17  B BACK / A/ST TRACK
+ */
+static void draw_amount(const FoodCache *fc, uint16_t amount, uint8_t imperial) {
+    char     buf[21];
+    uint16_t grams, kcal, pro, fat, carb;
+
+    grams = imperial ? oz_to_grams(amount) : amount;
+    kcal  = (uint16_t)(((uint32_t)fc->kcal * grams + 50u) / 100u);
+    pro   = scale_macro_dg(fc->protein_dg, grams);
+    fat   = scale_macro_dg(fc->fat_dg, grams);
+    carb  = scale_macro_dg(fc->carbs_dg, grams);
+
+    ui_title("TRACK FOOD");
+
+    ui_fill_attr(0u, 5u, 20u, 1u, UI_PAL_PANEL);
+    ui_print_center(5u, fc->name);
+
+    ui_print_at(0u, 7u, "AMOUNT");
+    ui_fill_attr(0u, 8u, 20u, 1u, UI_PAL_SELECTED);
+    if (imperial) sprintf(buf, "%u OZ", (unsigned int)amount);
+    else          sprintf(buf, "%u G",  (unsigned int)amount);
+    ui_print_center(8u, buf);
+    ui_print_center(9u, "UP/DN  L/R FAST");
+
+    sprintf(buf, "CAL  %u KCAL", (unsigned int)kcal);
+    ui_print_at(0u, 11u, buf);
+
+    sprintf(buf, "PRO %uG", (unsigned int)pro);
+    ui_print_at(0u, 13u, buf);
+    sprintf(buf, "CARB %uG", (unsigned int)carb);
+    ui_print_at(10u, 13u, buf);
+    sprintf(buf, "FAT %uG", (unsigned int)fat);
+    ui_print_at(0u, 14u, buf);
+
+    ui_footer("B BACK", "A/ST TRACK");
+}
+
+/* Returns 1 if the food was tracked (confirmed), 0 if the user backed out. */
+static uint8_t food_amount_screen(SaveData *data, const FoodCache *fc) {
+    InputState input;
+    uint8_t    imperial = (uint8_t)(data->units == UNITS_IMPERIAL);
+    uint16_t   amount   = imperial ? AMOUNT_OZ_DEFAULT : AMOUNT_G_DEFAULT;
+    uint16_t   small    = imperial ? 1u : 10u;
+    uint16_t   large    = imperial ? 5u : 50u;
+    uint16_t   mn       = imperial ? AMOUNT_OZ_MIN : AMOUNT_G_MIN;
+    uint16_t   mx       = imperial ? AMOUNT_OZ_MAX : AMOUNT_G_MAX;
+    uint8_t    dirty    = 1u;
+    uint8_t    i;
+
+    input_init(&input);
+    while (1) {
+        if (dirty) {
+            draw_amount(fc, amount, imperial);
+            dirty = 0u;
+        }
+
+        wait_vbl_done();
+        input_update(&input);
+
+        if (input_pressed(&input, J_B)) return 0u;
+
+        if (input_pressed(&input, J_UP))    amount = add_clamped_u16(amount, small, mx);
+        if (input_pressed(&input, J_DOWN))  amount = sub_clamped_u16(amount, small, mn);
+        if (input_pressed(&input, J_RIGHT)) amount = add_clamped_u16(amount, large, mx);
+        if (input_pressed(&input, J_LEFT))  amount = sub_clamped_u16(amount, large, mn);
+        if (input_pressed(&input, J_UP | J_DOWN | J_LEFT | J_RIGHT)) dirty = 1u;
+
+        if (input_pressed(&input, J_A | J_START)) {
+            if (ui_confirm("TRACK FOOD", "TRACK FOOD?")) {
+                ui_title("TRACKED");
+                ui_print_center(8u, "FOOD TRACKED!");
+                for (i = 0u; i != 75u; ++i) wait_vbl_done();
+                return 1u;
+            }
+            dirty = 1u; /* cancelled → redraw amount screen */
+        }
+    }
+}
+
+/*
+ * Type-to-search foundation foods, pick one, choose an amount, and confirm.
+ * Returns when the user backs out (empty query + B) or tracks a food.
+ */
+static void food_search_track(SaveData *data) {
+    SearchState s;
+    InputState  input;
+    FoodCache   fc;
+    uint8_t     dirty = 1u;
+    uint8_t     abs_idx;
+
+    s.mode = SEARCH_MODE_TYPING;
+    s.len = 0u;
+    s.query[0] = '\0';
+    s.spin = 0u;
+    s.scroll = 0u;
+    s.focused = 0u;
+    s.match_count = ff_filter(s.query, s.matches, FF_MATCH_CAP);
+
+    input_init(&input);
+    while (1) {
+        if (dirty) {
+            draw_search(&s);
+            dirty = 0u;
+        }
+
+        wait_vbl_done();
+        input_update(&input);
+
+        if (s.mode == SEARCH_MODE_TYPING) {
+            if (input_pressed(&input, J_UP)) {
+                s.spin = (s.spin == 0u) ? (uint8_t)(ALPHABET_LEN - 1u) : (uint8_t)(s.spin - 1u);
+                dirty = 1u;
+            }
+            if (input_pressed(&input, J_DOWN)) {
+                s.spin = (uint8_t)((s.spin + 1u) % ALPHABET_LEN);
+                dirty = 1u;
+            }
+            if (input_pressed(&input, J_A) && s.len < QUERY_MAX) {
+                s.query[s.len++] = ALPHABET[s.spin];
+                s.query[s.len] = '\0';
+                s.spin = 0u;
+                s.match_count = ff_filter(s.query, s.matches, FF_MATCH_CAP);
+                s.scroll = 0u;
+                s.focused = 0u;
+                dirty = 1u;
+            }
+            if (input_pressed(&input, J_B)) {
+                if (s.len == 0u) return; /* empty query → leave search */
+                s.query[--s.len] = '\0';
+                s.match_count = ff_filter(s.query, s.matches, FF_MATCH_CAP);
+                s.scroll = 0u;
+                s.focused = 0u;
+                dirty = 1u;
+            }
+            if (input_pressed(&input, J_START) && s.match_count > 0u) {
+                s.mode = SEARCH_MODE_SELECT;
+                s.scroll = 0u;
+                s.focused = 0u;
+                dirty = 1u;
+            }
+            continue;
+        }
+
+        /* SEARCH_MODE_SELECT */
+        if (input_pressed(&input, J_B)) {
+            s.mode = SEARCH_MODE_TYPING;
+            dirty = 1u;
+            continue;
+        }
+
+        abs_idx = (uint8_t)(s.scroll + s.focused);
+
+        if (input_pressed(&input, J_A | J_START)) {
+            ff_load(s.matches[abs_idx], &fc);
+            if (food_amount_screen(data, &fc)) return; /* tracked → exit flow */
+            dirty = 1u;
+            continue;
+        }
+
+        if (input_pressed(&input, J_DOWN) && (uint8_t)(abs_idx + 1u) < s.match_count) {
+            if (s.focused < (uint8_t)(MATCH_VISIBLE - 1u)) ++s.focused;
+            else ++s.scroll;
+            dirty = 1u;
+        }
+        if (input_pressed(&input, J_UP)) {
+            if (s.focused > 0u) { --s.focused; dirty = 1u; }
+            else if (s.scroll > 0u) { --s.scroll; dirty = 1u; }
+        }
+    }
+}
+
 void nutrition_track(SaveData *data) {
     NutritionState state;
     InputState input;
@@ -432,6 +745,8 @@ void nutrition_track(SaveData *data) {
                 nutrition_date_picker(state.today, &state.viewing_date);
                 state.scroll  = 0u;
                 state.focused = 0u;
+            } else if (action == NUTRITION_ACTION_TRACK_FOOD) {
+                food_search_track(state.data);
             }
             state.dirty = 1u;
             continue;

@@ -1,0 +1,1182 @@
+[
+  {
+    "name": "Pizza Margherita",
+    "description": "Italian pizza with tomato sauce, mozzarella, and basil"
+  },
+  {
+    "name": "Pizza Quattro Formaggi",
+    "description": "Italian four cheese pizza"
+  },
+  {
+    "name": "Pepperoni Pizza",
+    "description": "American pizza with tomato sauce, mozzarella, and pepperoni"
+  },
+  {
+    "name": "Hawaiian Pizza",
+    "description": "Pizza with ham, pineapple, tomato sauce, and cheese"
+  },
+  {
+    "name": "BBQ Chicken Pizza",
+    "description": "Pizza with barbecue sauce, chicken, onion, and cheese"
+  },
+  {
+    "name": "Vegetarian Pizza",
+    "description": "Pizza with mixed vegetables, tomato sauce, and cheese"
+  },
+  {
+    "name": "Mushroom Pizza",
+    "description": "Pizza with mushrooms, tomato sauce, and mozzarella"
+  },
+  {
+    "name": "Prosciutto Pizza",
+    "description": "Italian pizza with prosciutto, mozzarella, and tomato sauce"
+  },
+  {
+    "name": "Calzone",
+    "description": "Folded Italian pizza stuffed with cheese and fillings"
+  },
+  {
+    "name": "Garlic Bread",
+    "description": "Toasted bread with garlic butter"
+  },
+  {
+    "name": "Cheeseburger",
+    "description": "Beef burger with cheese, bun, and toppings"
+  },
+  {
+    "name": "Hamburger",
+    "description": "Beef patty in a bun with classic toppings"
+  },
+  {
+    "name": "Double Cheeseburger",
+    "description": "Burger with two beef patties and cheese"
+  },
+  {
+    "name": "Bacon Cheeseburger",
+    "description": "Beef burger with bacon, cheese, and toppings"
+  },
+  {
+    "name": "Chicken Burger",
+    "description": "Burger with chicken patty or grilled chicken"
+  },
+  {
+    "name": "Crispy Chicken Sandwich",
+    "description": "Fried chicken sandwich with bun and sauce"
+  },
+  {
+    "name": "Veggie Burger",
+    "description": "Plant-based burger with bun and toppings"
+  },
+  {
+    "name": "Fish Burger",
+    "description": "Burger with breaded fish fillet and sauce"
+  },
+  {
+    "name": "Hot Dog",
+    "description": "Sausage in a bun with condiments"
+  },
+  {
+    "name": "Corn Dog",
+    "description": "Battered sausage on a stick"
+  },
+  {
+    "name": "French Fries",
+    "description": "Deep fried potato sticks"
+  },
+  {
+    "name": "Sweet Potato Fries",
+    "description": "Fried sweet potato sticks"
+  },
+  {
+    "name": "Loaded Fries",
+    "description": "French fries topped with cheese, sauce, and meat"
+  },
+  {
+    "name": "Onion Rings",
+    "description": "Battered and fried onion rings"
+  },
+  {
+    "name": "Chicken Nuggets",
+    "description": "Breaded fried chicken pieces"
+  },
+  {
+    "name": "Chicken Wings",
+    "description": "Fried or baked chicken wings with sauce"
+  },
+  {
+    "name": "Buffalo Wings",
+    "description": "Chicken wings tossed in spicy buffalo sauce"
+  },
+  {
+    "name": "Mozzarella Sticks",
+    "description": "Breaded fried mozzarella cheese sticks"
+  },
+  {
+    "name": "Mac and Cheese",
+    "description": "Macaroni pasta with creamy cheese sauce"
+  },
+  {
+    "name": "Grilled Cheese Sandwich",
+    "description": "Toasted sandwich with melted cheese"
+  },
+  {
+    "name": "Club Sandwich",
+    "description": "Layered sandwich with turkey, bacon, lettuce, and tomato"
+  },
+  {
+    "name": "BLT Sandwich",
+    "description": "Sandwich with bacon, lettuce, and tomato"
+  },
+  {
+    "name": "Ham and Cheese Sandwich",
+    "description": "Sandwich with ham, cheese, and bread"
+  },
+  {
+    "name": "Turkey Sandwich",
+    "description": "Sandwich with sliced turkey and vegetables"
+  },
+  {
+    "name": "Tuna Salad Sandwich",
+    "description": "Sandwich with tuna salad filling"
+  },
+  {
+    "name": "Egg Salad Sandwich",
+    "description": "Sandwich with egg salad filling"
+  },
+  {
+    "name": "Chicken Salad Sandwich",
+    "description": "Sandwich with chicken salad filling"
+  },
+  {
+    "name": "Philly Cheesesteak",
+    "description": "Sandwich with sliced beef, cheese, and onions"
+  },
+  {
+    "name": "Meatball Sub",
+    "description": "Sub sandwich with meatballs, tomato sauce, and cheese"
+  },
+  {
+    "name": "Falafel Wrap",
+    "description": "Wrap with falafel, vegetables, and tahini sauce"
+  },
+  {
+    "name": "Chicken Caesar Wrap",
+    "description": "Wrap with chicken, romaine, parmesan, and Caesar dressing"
+  },
+  {
+    "name": "Shawarma Wrap",
+    "description": "Middle Eastern wrap with seasoned meat and garlic sauce"
+  },
+  {
+    "name": "Gyro",
+    "description": "Greek pita with sliced meat, vegetables, and tzatziki"
+  },
+  {
+    "name": "Doner Kebab",
+    "description": "Turkish-style flatbread or pita with shaved meat and salad"
+  },
+  {
+    "name": "Burrito",
+    "description": "Mexican tortilla filled with rice, beans, meat, and toppings"
+  },
+  {
+    "name": "Chicken Burrito",
+    "description": "Burrito with chicken, rice, beans, and salsa"
+  },
+  {
+    "name": "Beef Burrito",
+    "description": "Burrito with beef, rice, beans, and toppings"
+  },
+  {
+    "name": "Bean Burrito",
+    "description": "Burrito filled with beans, cheese, and salsa"
+  },
+  {
+    "name": "Burrito Bowl",
+    "description": "Rice bowl with beans, meat or vegetables, salsa, and toppings"
+  },
+  {
+    "name": "Taco",
+    "description": "Mexican tortilla with meat or vegetables and toppings"
+  },
+  {
+    "name": "Beef Taco",
+    "description": "Taco with seasoned beef, lettuce, cheese, and salsa"
+  },
+  {
+    "name": "Chicken Taco",
+    "description": "Taco with chicken, salsa, and vegetables"
+  },
+  {
+    "name": "Fish Taco",
+    "description": "Taco with fish, cabbage slaw, and sauce"
+  },
+  {
+    "name": "Carnitas Taco",
+    "description": "Taco with slow-cooked pork and toppings"
+  },
+  {
+    "name": "Quesadilla",
+    "description": "Grilled tortilla filled with melted cheese"
+  },
+  {
+    "name": "Chicken Quesadilla",
+    "description": "Grilled tortilla with chicken and melted cheese"
+  },
+  {
+    "name": "Nachos",
+    "description": "Tortilla chips topped with cheese, salsa, and toppings"
+  },
+  {
+    "name": "Loaded Nachos",
+    "description": "Nachos with meat, beans, cheese, salsa, and sour cream"
+  },
+  {
+    "name": "Enchiladas",
+    "description": "Rolled tortillas baked with sauce and cheese"
+  },
+  {
+    "name": "Chicken Enchiladas",
+    "description": "Enchiladas filled with chicken and topped with sauce"
+  },
+  {
+    "name": "Fajitas",
+    "description": "Sizzling meat or vegetables served with tortillas"
+  },
+  {
+    "name": "Chicken Fajitas",
+    "description": "Chicken with peppers and onions served with tortillas"
+  },
+  {
+    "name": "Chili con Carne",
+    "description": "Spiced beef and bean chili"
+  },
+  {
+    "name": "Guacamole",
+    "description": "Mashed avocado dip with lime and seasoning"
+  },
+  {
+    "name": "Salsa and Chips",
+    "description": "Tortilla chips served with tomato salsa"
+  },
+  {
+    "name": "Poke Bowl Chicken",
+    "description": "Hawaiian-style rice bowl with chicken, vegetables, and sauce"
+  },
+  {
+    "name": "Poke Bowl Salmon",
+    "description": "Hawaiian-style rice bowl with salmon, vegetables, and sauce"
+  },
+  {
+    "name": "Poke Bowl Tuna",
+    "description": "Hawaiian-style rice bowl with tuna, vegetables, and sauce"
+  },
+  {
+    "name": "Poke Bowl Tofu",
+    "description": "Hawaiian-style rice bowl with tofu, vegetables, and sauce"
+  },
+  {
+    "name": "Sushi Salmon Nigiri",
+    "description": "Japanese sushi rice topped with salmon"
+  },
+  {
+    "name": "Sushi Tuna Nigiri",
+    "description": "Japanese sushi rice topped with tuna"
+  },
+  {
+    "name": "Sushi Shrimp Nigiri",
+    "description": "Japanese sushi rice topped with shrimp"
+  },
+  {
+    "name": "California Roll",
+    "description": "Sushi roll with crab or surimi, avocado, and cucumber"
+  },
+  {
+    "name": "Spicy Tuna Roll",
+    "description": "Sushi roll with spicy tuna and rice"
+  },
+  {
+    "name": "Salmon Avocado Roll",
+    "description": "Sushi roll with salmon and avocado"
+  },
+  {
+    "name": "Dragon Roll",
+    "description": "Sushi roll with eel or shrimp, avocado, and sauce"
+  },
+  {
+    "name": "Vegetable Sushi Roll",
+    "description": "Sushi roll with cucumber, avocado, and vegetables"
+  },
+  {
+    "name": "Salmon Sashimi",
+    "description": "Japanese sliced raw salmon"
+  },
+  {
+    "name": "Tuna Sashimi",
+    "description": "Japanese sliced raw tuna"
+  },
+  {
+    "name": "Chicken Teriyaki",
+    "description": "Japanese chicken with sweet soy teriyaki sauce"
+  },
+  {
+    "name": "Beef Teriyaki",
+    "description": "Japanese beef with teriyaki sauce"
+  },
+  {
+    "name": "Teriyaki Salmon",
+    "description": "Salmon glazed with teriyaki sauce"
+  },
+  {
+    "name": "Chicken Katsu",
+    "description": "Japanese breaded fried chicken cutlet"
+  },
+  {
+    "name": "Pork Tonkatsu",
+    "description": "Japanese breaded fried pork cutlet"
+  },
+  {
+    "name": "Ramen",
+    "description": "Japanese noodle soup with broth and toppings"
+  },
+  {
+    "name": "Tonkotsu Ramen",
+    "description": "Japanese ramen with pork bone broth"
+  },
+  {
+    "name": "Miso Ramen",
+    "description": "Japanese ramen with miso broth"
+  },
+  {
+    "name": "Shoyu Ramen",
+    "description": "Japanese ramen with soy sauce broth"
+  },
+  {
+    "name": "Udon Noodle Soup",
+    "description": "Japanese thick wheat noodles in broth"
+  },
+  {
+    "name": "Yakisoba",
+    "description": "Japanese stir-fried noodles with vegetables and sauce"
+  },
+  {
+    "name": "Fried Rice",
+    "description": "Stir-fried rice with egg, vegetables, and seasoning"
+  },
+  {
+    "name": "Chicken Fried Rice",
+    "description": "Fried rice with chicken, egg, and vegetables"
+  },
+  {
+    "name": "Shrimp Fried Rice",
+    "description": "Fried rice with shrimp, egg, and vegetables"
+  },
+  {
+    "name": "Vegetable Fried Rice",
+    "description": "Fried rice with mixed vegetables and egg"
+  },
+  {
+    "name": "Chow Mein",
+    "description": "Chinese stir-fried noodles with vegetables"
+  },
+  {
+    "name": "Chicken Chow Mein",
+    "description": "Chinese stir-fried noodles with chicken and vegetables"
+  },
+  {
+    "name": "Lo Mein",
+    "description": "Chinese noodles tossed with sauce and vegetables"
+  },
+  {
+    "name": "Orange Chicken",
+    "description": "Chinese-American fried chicken in orange sauce"
+  },
+  {
+    "name": "General Tso Chicken",
+    "description": "Chinese-American fried chicken in sweet spicy sauce"
+  },
+  {
+    "name": "Sweet and Sour Chicken",
+    "description": "Chinese fried chicken with sweet and sour sauce"
+  },
+  {
+    "name": "Kung Pao Chicken",
+    "description": "Chinese chicken stir-fry with peanuts and chili"
+  },
+  {
+    "name": "Beef and Broccoli",
+    "description": "Chinese stir-fry with beef, broccoli, and sauce"
+  },
+  {
+    "name": "Mapo Tofu",
+    "description": "Sichuan tofu dish with spicy sauce"
+  },
+  {
+    "name": "Spring Rolls",
+    "description": "Fried or fresh rolls with vegetables and filling"
+  },
+  {
+    "name": "Egg Rolls",
+    "description": "Fried Chinese rolls with cabbage and filling"
+  },
+  {
+    "name": "Dumplings",
+    "description": "Filled dumplings, steamed or fried"
+  },
+  {
+    "name": "Pork Dumplings",
+    "description": "Dumplings filled with seasoned pork"
+  },
+  {
+    "name": "Chicken Dumplings",
+    "description": "Dumplings filled with seasoned chicken"
+  },
+  {
+    "name": "Pad Thai",
+    "description": "Thai stir-fried rice noodles with egg, peanuts, and sauce"
+  },
+  {
+    "name": "Chicken Pad Thai",
+    "description": "Thai stir-fried noodles with chicken and peanuts"
+  },
+  {
+    "name": "Pad See Ew",
+    "description": "Thai stir-fried wide noodles with soy sauce"
+  },
+  {
+    "name": "Thai Green Curry",
+    "description": "Thai coconut curry with green curry paste"
+  },
+  {
+    "name": "Thai Red Curry",
+    "description": "Thai coconut curry with red curry paste"
+  },
+  {
+    "name": "Massaman Curry",
+    "description": "Thai mild curry with coconut milk and potatoes"
+  },
+  {
+    "name": "Tom Yum Soup",
+    "description": "Thai hot and sour soup with herbs"
+  },
+  {
+    "name": "Tom Kha Gai",
+    "description": "Thai coconut chicken soup"
+  },
+  {
+    "name": "Green Papaya Salad",
+    "description": "Thai salad with shredded green papaya and lime dressing"
+  },
+  {
+    "name": "Chicken Satay",
+    "description": "Grilled chicken skewers with peanut sauce"
+  },
+  {
+    "name": "Pho Bo",
+    "description": "Vietnamese beef noodle soup"
+  },
+  {
+    "name": "Pho Ga",
+    "description": "Vietnamese chicken noodle soup"
+  },
+  {
+    "name": "Banh Mi",
+    "description": "Vietnamese baguette sandwich with meat and pickled vegetables"
+  },
+  {
+    "name": "Bun Cha",
+    "description": "Vietnamese grilled pork with noodles and herbs"
+  },
+  {
+    "name": "Vietnamese Spring Rolls",
+    "description": "Fresh rice paper rolls with herbs, noodles, and filling"
+  },
+  {
+    "name": "Bibimbap",
+    "description": "Korean rice bowl with vegetables, egg, and sauce"
+  },
+  {
+    "name": "Bulgogi",
+    "description": "Korean marinated grilled beef"
+  },
+  {
+    "name": "Korean Fried Chicken",
+    "description": "Crispy fried chicken with Korean sauce"
+  },
+  {
+    "name": "Kimchi Fried Rice",
+    "description": "Korean fried rice with kimchi and egg"
+  },
+  {
+    "name": "Tteokbokki",
+    "description": "Korean spicy rice cakes"
+  },
+  {
+    "name": "Kimbap",
+    "description": "Korean seaweed rice roll with fillings"
+  },
+  {
+    "name": "Butter Chicken",
+    "description": "Indian chicken curry in creamy tomato sauce"
+  },
+  {
+    "name": "Chicken Tikka Masala",
+    "description": "Indian-style chicken curry in spiced tomato cream sauce"
+  },
+  {
+    "name": "Chicken Curry",
+    "description": "Chicken cooked in spiced curry sauce"
+  },
+  {
+    "name": "Lamb Curry",
+    "description": "Lamb cooked in spiced curry sauce"
+  },
+  {
+    "name": "Beef Curry",
+    "description": "Beef cooked in spiced curry sauce"
+  },
+  {
+    "name": "Vegetable Curry",
+    "description": "Mixed vegetables cooked in curry sauce"
+  },
+  {
+    "name": "Chana Masala",
+    "description": "Indian chickpea curry"
+  },
+  {
+    "name": "Dal Tadka",
+    "description": "Indian lentil dish with spiced tempering"
+  },
+  {
+    "name": "Palak Paneer",
+    "description": "Indian spinach curry with paneer cheese"
+  },
+  {
+    "name": "Paneer Butter Masala",
+    "description": "Indian paneer curry in creamy tomato sauce"
+  },
+  {
+    "name": "Biryani",
+    "description": "Spiced rice dish with meat or vegetables"
+  },
+  {
+    "name": "Chicken Biryani",
+    "description": "Indian spiced rice with chicken"
+  },
+  {
+    "name": "Vegetable Biryani",
+    "description": "Indian spiced rice with mixed vegetables"
+  },
+  {
+    "name": "Naan",
+    "description": "Indian flatbread baked in a tandoor"
+  },
+  {
+    "name": "Garlic Naan",
+    "description": "Indian flatbread topped with garlic butter"
+  },
+  {
+    "name": "Samosa",
+    "description": "Fried pastry filled with spiced potatoes or meat"
+  },
+  {
+    "name": "Tandoori Chicken",
+    "description": "Indian spiced chicken roasted in a tandoor"
+  },
+  {
+    "name": "Spaghetti Bolognese",
+    "description": "Italian pasta with meat tomato sauce"
+  },
+  {
+    "name": "Spaghetti Carbonara",
+    "description": "Italian pasta with egg, cheese, pancetta, and pepper"
+  },
+  {
+    "name": "Pasta Alfredo",
+    "description": "Pasta with creamy parmesan sauce"
+  },
+  {
+    "name": "Penne Arrabbiata",
+    "description": "Italian pasta with spicy tomato sauce"
+  },
+  {
+    "name": "Pasta Pesto",
+    "description": "Pasta with basil pesto sauce"
+  },
+  {
+    "name": "Lasagna",
+    "description": "Layered pasta with meat sauce, cheese, and bechamel"
+  },
+  {
+    "name": "Vegetable Lasagna",
+    "description": "Layered pasta with vegetables, sauce, and cheese"
+  },
+  {
+    "name": "Ravioli",
+    "description": "Stuffed Italian pasta with sauce"
+  },
+  {
+    "name": "Gnocchi",
+    "description": "Italian potato dumplings with sauce"
+  },
+  {
+    "name": "Risotto",
+    "description": "Italian creamy rice dish"
+  },
+  {
+    "name": "Mushroom Risotto",
+    "description": "Italian creamy rice with mushrooms"
+  },
+  {
+    "name": "Chicken Parmesan",
+    "description": "Breaded chicken with tomato sauce and melted cheese"
+  },
+  {
+    "name": "Eggplant Parmesan",
+    "description": "Breaded eggplant with tomato sauce and cheese"
+  },
+  {
+    "name": "Caprese Salad",
+    "description": "Italian salad with tomato, mozzarella, and basil"
+  },
+  {
+    "name": "Caesar Salad",
+    "description": "Romaine salad with Caesar dressing, croutons, and parmesan"
+  },
+  {
+    "name": "Chicken Caesar Salad",
+    "description": "Caesar salad topped with chicken"
+  },
+  {
+    "name": "Greek Salad",
+    "description": "Salad with cucumber, tomato, olives, feta, and dressing"
+  },
+  {
+    "name": "Cobb Salad",
+    "description": "American salad with chicken, egg, bacon, avocado, and blue cheese"
+  },
+  {
+    "name": "Chef Salad",
+    "description": "Mixed salad with meat, cheese, egg, and vegetables"
+  },
+  {
+    "name": "Tuna Salad",
+    "description": "Salad with tuna, vegetables, and dressing"
+  },
+  {
+    "name": "Quinoa Salad",
+    "description": "Salad with quinoa, vegetables, and dressing"
+  },
+  {
+    "name": "Pasta Salad",
+    "description": "Cold pasta salad with vegetables and dressing"
+  },
+  {
+    "name": "Coleslaw",
+    "description": "Cabbage salad with creamy or vinegar dressing"
+  },
+  {
+    "name": "Potato Salad",
+    "description": "Cold potato salad with mayonnaise or vinaigrette"
+  },
+  {
+    "name": "Roast Chicken",
+    "description": "Oven-roasted whole or cut chicken"
+  },
+  {
+    "name": "Grilled Chicken Breast",
+    "description": "Grilled lean chicken breast"
+  },
+  {
+    "name": "Chicken Schnitzel",
+    "description": "Breaded fried chicken cutlet"
+  },
+  {
+    "name": "Pork Schnitzel",
+    "description": "Breaded fried pork cutlet"
+  },
+  {
+    "name": "Steak",
+    "description": "Grilled or pan-seared beef steak"
+  },
+  {
+    "name": "Ribeye Steak",
+    "description": "Grilled ribeye beef steak"
+  },
+  {
+    "name": "Sirloin Steak",
+    "description": "Grilled sirloin beef steak"
+  },
+  {
+    "name": "Meatloaf",
+    "description": "Baked ground meat loaf with seasoning"
+  },
+  {
+    "name": "Roast Beef",
+    "description": "Oven-roasted beef served sliced"
+  },
+  {
+    "name": "Pork Chop",
+    "description": "Grilled or pan-fried pork chop"
+  },
+  {
+    "name": "BBQ Ribs",
+    "description": "Pork or beef ribs with barbecue sauce"
+  },
+  {
+    "name": "Pulled Pork",
+    "description": "Slow-cooked shredded pork with sauce"
+  },
+  {
+    "name": "Grilled Salmon",
+    "description": "Salmon fillet grilled or pan-seared"
+  },
+  {
+    "name": "Baked Salmon",
+    "description": "Oven-baked salmon fillet"
+  },
+  {
+    "name": "Fish and Chips",
+    "description": "Battered fried fish served with fries"
+  },
+  {
+    "name": "Fish Sticks",
+    "description": "Breaded fried fish pieces"
+  },
+  {
+    "name": "Shrimp Scampi",
+    "description": "Shrimp cooked with garlic, butter, and lemon"
+  },
+  {
+    "name": "Grilled Shrimp",
+    "description": "Seasoned shrimp grilled on skewers or pan"
+  },
+  {
+    "name": "Paella",
+    "description": "Spanish rice dish with seafood, meat, or vegetables"
+  },
+  {
+    "name": "Seafood Paella",
+    "description": "Spanish rice dish with seafood and saffron"
+  },
+  {
+    "name": "Tortilla Espanola",
+    "description": "Spanish omelet with potatoes and onion"
+  },
+  {
+    "name": "Patatas Bravas",
+    "description": "Spanish fried potatoes with spicy sauce"
+  },
+  {
+    "name": "Empanadas",
+    "description": "Filled pastry with meat, cheese, or vegetables"
+  },
+  {
+    "name": "Arepa",
+    "description": "Cornmeal cake filled or topped with savory ingredients"
+  },
+  {
+    "name": "Ceviche",
+    "description": "Latin American citrus-marinated seafood"
+  },
+  {
+    "name": "Feijoada",
+    "description": "Brazilian black bean stew with pork or beef"
+  },
+  {
+    "name": "Moqueca",
+    "description": "Brazilian fish stew with coconut milk"
+  },
+  {
+    "name": "Picanha",
+    "description": "Brazilian grilled beef rump cap"
+  },
+  {
+    "name": "Coxinha",
+    "description": "Brazilian fried dough filled with shredded chicken"
+  },
+  {
+    "name": "Acai Bowl",
+    "description": "Frozen acai bowl with fruit and granola"
+  },
+  {
+    "name": "Hummus",
+    "description": "Middle Eastern chickpea and tahini dip"
+  },
+  {
+    "name": "Falafel Plate",
+    "description": "Falafel served with salad, pita, and sauces"
+  },
+  {
+    "name": "Tabbouleh",
+    "description": "Middle Eastern parsley and bulgur salad"
+  },
+  {
+    "name": "Baba Ganoush",
+    "description": "Middle Eastern roasted eggplant dip"
+  },
+  {
+    "name": "Shakshuka",
+    "description": "Eggs poached in spiced tomato sauce"
+  },
+  {
+    "name": "Kofta",
+    "description": "Seasoned ground meat kebabs or patties"
+  },
+  {
+    "name": "Lamb Kebab",
+    "description": "Grilled seasoned lamb on skewers"
+  },
+  {
+    "name": "Chicken Kebab",
+    "description": "Grilled seasoned chicken on skewers"
+  },
+  {
+    "name": "Couscous",
+    "description": "Steamed semolina grains with vegetables or meat"
+  },
+  {
+    "name": "Chicken Tagine",
+    "description": "Moroccan chicken stew with spices"
+  },
+  {
+    "name": "Moussaka",
+    "description": "Greek baked eggplant and meat casserole"
+  },
+  {
+    "name": "Spanakopita",
+    "description": "Greek spinach and feta pastry"
+  },
+  {
+    "name": "Souvlaki",
+    "description": "Greek grilled meat skewers with pita or salad"
+  },
+  {
+    "name": "Full English Breakfast",
+    "description": "Breakfast with eggs, sausage, bacon, beans, and toast"
+  },
+  {
+    "name": "Pancakes",
+    "description": "Griddled breakfast cakes served with syrup or toppings"
+  },
+  {
+    "name": "Waffles",
+    "description": "Grid-pattern breakfast cakes served with toppings"
+  },
+  {
+    "name": "French Toast",
+    "description": "Bread soaked in egg mixture and fried"
+  },
+  {
+    "name": "Omelette",
+    "description": "Beaten eggs cooked with fillings"
+  },
+  {
+    "name": "Cheese Omelette",
+    "description": "Omelette filled with cheese"
+  },
+  {
+    "name": "Vegetable Omelette",
+    "description": "Omelette with mixed vegetables"
+  },
+  {
+    "name": "Scrambled Eggs",
+    "description": "Beaten eggs cooked until soft or firm"
+  },
+  {
+    "name": "Fried Eggs",
+    "description": "Eggs cooked in a pan"
+  },
+  {
+    "name": "Boiled Eggs",
+    "description": "Eggs cooked in the shell in boiling water"
+  },
+  {
+    "name": "Eggs Benedict",
+    "description": "Poached eggs with ham, English muffin, and hollandaise"
+  },
+  {
+    "name": "Breakfast Burrito",
+    "description": "Tortilla filled with eggs, cheese, meat, and potatoes"
+  },
+  {
+    "name": "Avocado Toast",
+    "description": "Toast topped with mashed avocado"
+  },
+  {
+    "name": "Bagel with Cream Cheese",
+    "description": "Bagel spread with cream cheese"
+  },
+  {
+    "name": "Lox Bagel",
+    "description": "Bagel with smoked salmon, cream cheese, and toppings"
+  },
+  {
+    "name": "Oatmeal",
+    "description": "Cooked oats served as porridge"
+  },
+  {
+    "name": "Overnight Oats",
+    "description": "Oats soaked overnight with milk or yogurt"
+  },
+  {
+    "name": "Granola Bowl",
+    "description": "Granola served with yogurt or milk and fruit"
+  },
+  {
+    "name": "Greek Yogurt Bowl",
+    "description": "Greek yogurt with fruit, granola, or honey"
+  },
+  {
+    "name": "Smoothie Bowl",
+    "description": "Thick blended fruit bowl with toppings"
+  },
+  {
+    "name": "Protein Smoothie",
+    "description": "Blended drink with protein powder and fruit or milk"
+  },
+  {
+    "name": "Fruit Smoothie",
+    "description": "Blended fruit drink with juice, milk, or yogurt"
+  },
+  {
+    "name": "Green Smoothie",
+    "description": "Blended drink with leafy greens and fruit"
+  },
+  {
+    "name": "Chicken Rice Bowl",
+    "description": "Rice bowl with chicken, vegetables, and sauce"
+  },
+  {
+    "name": "Beef Rice Bowl",
+    "description": "Rice bowl with beef, vegetables, and sauce"
+  },
+  {
+    "name": "Salmon Rice Bowl",
+    "description": "Rice bowl with salmon, vegetables, and sauce"
+  },
+  {
+    "name": "Tofu Rice Bowl",
+    "description": "Rice bowl with tofu, vegetables, and sauce"
+  },
+  {
+    "name": "Chicken Grain Bowl",
+    "description": "Grain bowl with chicken, vegetables, and dressing"
+  },
+  {
+    "name": "Mediterranean Bowl",
+    "description": "Bowl with grains, vegetables, hummus, feta, and protein"
+  },
+  {
+    "name": "Buddha Bowl",
+    "description": "Plant-based bowl with grains, vegetables, and sauce"
+  },
+  {
+    "name": "Chicken Noodle Soup",
+    "description": "Soup with chicken, noodles, vegetables, and broth"
+  },
+  {
+    "name": "Tomato Soup",
+    "description": "Soup made from tomatoes and seasoning"
+  },
+  {
+    "name": "Minestrone Soup",
+    "description": "Italian vegetable soup with beans or pasta"
+  },
+  {
+    "name": "Lentil Soup",
+    "description": "Soup made with lentils and vegetables"
+  },
+  {
+    "name": "Split Pea Soup",
+    "description": "Thick soup made from split peas"
+  },
+  {
+    "name": "Clam Chowder",
+    "description": "Creamy soup with clams and potatoes"
+  },
+  {
+    "name": "French Onion Soup",
+    "description": "Onion soup topped with bread and melted cheese"
+  },
+  {
+    "name": "Beef Stew",
+    "description": "Slow-cooked beef with vegetables and gravy"
+  },
+  {
+    "name": "Chicken Pot Pie",
+    "description": "Savory pie with chicken, vegetables, and creamy sauce"
+  },
+  {
+    "name": "Shepherds Pie",
+    "description": "Meat and vegetable casserole topped with mashed potatoes"
+  },
+  {
+    "name": "Cottage Pie",
+    "description": "Ground beef casserole topped with mashed potatoes"
+  },
+  {
+    "name": "Baked Potato",
+    "description": "Whole baked potato with toppings"
+  },
+  {
+    "name": "Mashed Potatoes",
+    "description": "Boiled potatoes mashed with milk or butter"
+  },
+  {
+    "name": "Roasted Potatoes",
+    "description": "Potatoes roasted with oil and seasoning"
+  },
+  {
+    "name": "Hash Browns",
+    "description": "Fried shredded or diced potatoes"
+  },
+  {
+    "name": "Macaroni Salad",
+    "description": "Cold macaroni salad with creamy dressing"
+  },
+  {
+    "name": "Baked Beans",
+    "description": "Beans baked or simmered in sweet savory sauce"
+  },
+  {
+    "name": "Rice and Beans",
+    "description": "Simple dish of rice served with beans"
+  },
+  {
+    "name": "Jambalaya",
+    "description": "Cajun rice dish with meat, seafood, and vegetables"
+  },
+  {
+    "name": "Gumbo",
+    "description": "Louisiana stew with roux, vegetables, and meat or seafood"
+  },
+  {
+    "name": "Chicken and Waffles",
+    "description": "Fried chicken served with waffles"
+  },
+  {
+    "name": "Fried Chicken",
+    "description": "Chicken pieces coated and deep fried"
+  },
+  {
+    "name": "Chicken Tenders",
+    "description": "Breaded fried strips of chicken"
+  },
+  {
+    "name": "Cornbread",
+    "description": "Baked bread made with cornmeal"
+  },
+  {
+    "name": "Tuna Pasta Bake",
+    "description": "Baked pasta casserole with tuna and sauce"
+  },
+  {
+    "name": "Casserole",
+    "description": "Baked mixed dish with protein, starch, and sauce"
+  },
+  {
+    "name": "Quiche Lorraine",
+    "description": "Savory tart with eggs, cream, bacon, and cheese"
+  },
+  {
+    "name": "Vegetable Quiche",
+    "description": "Savory egg tart with vegetables and cheese"
+  },
+  {
+    "name": "Croissant",
+    "description": "Buttery French crescent pastry"
+  },
+  {
+    "name": "Pain au Chocolat",
+    "description": "French pastry with chocolate filling"
+  },
+  {
+    "name": "Muffin",
+    "description": "Small sweet baked quick bread"
+  },
+  {
+    "name": "Blueberry Muffin",
+    "description": "Muffin with blueberries"
+  },
+  {
+    "name": "Banana Bread",
+    "description": "Sweet loaf made with bananas"
+  },
+  {
+    "name": "Cinnamon Roll",
+    "description": "Sweet rolled pastry with cinnamon and icing"
+  },
+  {
+    "name": "Donut",
+    "description": "Fried sweet dough ring or filled pastry"
+  },
+  {
+    "name": "Chocolate Chip Cookie",
+    "description": "Cookie with chocolate chips"
+  },
+  {
+    "name": "Brownie",
+    "description": "Dense chocolate baked dessert"
+  },
+  {
+    "name": "Cheesecake",
+    "description": "Cream cheese dessert with crust"
+  },
+  {
+    "name": "Apple Pie",
+    "description": "Pie filled with apples and spices"
+  },
+  {
+    "name": "Pumpkin Pie",
+    "description": "Pie with spiced pumpkin custard filling"
+  },
+  {
+    "name": "Tiramisu",
+    "description": "Italian dessert with coffee-soaked ladyfingers and mascarpone"
+  },
+  {
+    "name": "Creme Brulee",
+    "description": "Custard dessert with caramelized sugar top"
+  },
+  {
+    "name": "Ice Cream",
+    "description": "Frozen dairy dessert"
+  },
+  {
+    "name": "Chocolate Ice Cream",
+    "description": "Frozen dairy dessert flavored with chocolate"
+  },
+  {
+    "name": "Vanilla Ice Cream",
+    "description": "Frozen dairy dessert flavored with vanilla"
+  },
+  {
+    "name": "Frozen Yogurt",
+    "description": "Frozen dessert made with yogurt"
+  },
+  {
+    "name": "Gelato",
+    "description": "Italian frozen dairy dessert"
+  },
+  {
+    "name": "Sorbet",
+    "description": "Frozen fruit dessert without dairy"
+  },
+  {
+    "name": "Milkshake",
+    "description": "Blended drink with ice cream and milk"
+  },
+  {
+    "name": "Bubble Tea",
+    "description": "Tea drink with milk or fruit flavor and tapioca pearls"
+  },
+  {
+    "name": "Iced Latte",
+    "description": "Espresso with cold milk and ice"
+  },
+  {
+    "name": "Cappuccino",
+    "description": "Espresso drink with steamed milk and foam"
+  }
+]

@@ -54,9 +54,14 @@ run(png2asset, [
 //    table (foundation_foods.c, #pragma bank 2) does not fit in the 32 KB default, so it
 //    lives in its own bank; SWITCH_ROM(FOUNDATION_FOODS_BANK) is required to read it.
 console.log('Compiling ROM ...');
+// food_db.c MUST link first: it holds the only code that calls SWITCH_ROM to map the
+// bank-2 USDA food table over the 0x4000 window, so it has to stay in the always-mapped
+// bank 0 (the bottom of _CODE). Linking it first guarantees that placement. See food_db.h.
+const BANK0_FIRST = 'food_db.c';
 const cSources = readdirSync(srcDir)
     .filter((name) => name.endsWith('.c'))
     .sort()
+    .sort((a, b) => (a === BANK0_FIRST ? -1 : b === BANK0_FIRST ? 1 : 0))
     .map((name) => join(srcDir, name));
 
 run(lcc, [

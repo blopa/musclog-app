@@ -18,6 +18,14 @@ void ui_print_center(uint8_t y, const char *text);
 void ui_draw_menu(const char *title, const char **options, uint8_t count, uint8_t selected);
 void ui_draw_value_screen(const char *title, const char *label, const char *value, const char *hint);
 
+/*
+ * Full-screen yes/no confirmation. Clears to its own screen with `title` in the
+ * header, `message` centered, and a "B CANCEL / A-ST OK" footer; runs its own
+ * input loop. Returns 1 if confirmed (A/Start), 0 if cancelled (B). The caller
+ * owns redrawing whatever screen it was showing afterwards.
+ */
+uint8_t ui_confirm(const char *title, const char *message);
+
 /* Progress bar primitives shared by all screens. */
 uint8_t ui_bar_fill(uint16_t tracked, uint16_t goal, uint8_t width);
 void    ui_draw_bar(uint8_t x, uint8_t y, uint8_t width, uint8_t fill);

@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "input.h"
+
 #define SCREEN_COLS 20u
 #define SCREEN_ROWS 18u
 
@@ -152,6 +154,22 @@ void ui_draw_value_screen(const char *title, const char *label, const char *valu
     ui_print_center(11u, hint);
     ui_print_center(13u, "LEFT/RIGHT FAST");
     ui_footer("B BACK", "A/ST OK");
+}
+
+uint8_t ui_confirm(const char *title, const char *message) {
+    InputState input;
+
+    ui_title(title);
+    ui_print_center(8u, message);
+    ui_footer("B CANCEL", "A/ST OK");
+
+    input_init(&input);
+    while (1) {
+        wait_vbl_done();
+        input_update(&input);
+        if (input_pressed(&input, J_A | J_START)) return 1u;
+        if (input_pressed(&input, J_B)) return 0u;
+    }
 }
 
 uint8_t ui_bar_fill(uint16_t tracked, uint16_t goal, uint8_t width) {

@@ -164,7 +164,8 @@ gameboy/
 │   ├── ui_text.c/.h      # tile font, menu/list rendering, number formatting
 │   ├── input.c/.h        # debounced D-pad/button handling
 │   ├── workout.c/.h      # exercise library, session logging, PRs, volume
-│   ├── nutrition.c/.h    # food library, daily macro totals, action menu
+│   ├── nutrition.c/.h    # daily macro totals, action menu, food search/track flow
+│   ├── food_db.c/.h      # bank-2 food readers (ff_load/ff_filter); links first → bank 0
 │   ├── foundation_foods.c/.h # generated USDA food table (name+kcal+macros/100g), ROM bank 2
 │   ├── metrics.c/.h      # body weight log
 │   └── database.c/.h     # SRAM layout, named address constants, load/save, checksum
@@ -206,13 +207,19 @@ What's wired up so far:
 - **`scripts/build-gb-rom.mjs`** — orchestrator: ensures GBDK is present, runs `png2asset` on the logo,
   then compiles every `gameboy/src/*.c` file with `lcc`. The ROM is CGB-only (`-Wm-yC`), uses the
   MBC3+Timer+RAM+battery cart type (`-Wm-yt0x10`), declares 4 SRAM banks / 32 KB (`-Wm-ya4`), and
-  reserves 8 ROM banks / 128 KB (`-Wm-yo8`) so the bundled USDA Foundation Foods table fits.
-- **`gameboy/tools/gen-foundation-foods.mjs`** — ports `data/examples/usda/FoundationFoods.json` into
+  reserves 8 ROM banks / 128 KB (`-Wm-yo8`) so the bundled USDA Foundation Foods table fits. It also
+  **forces `food_db.c` to link first** so the bank-2 readers stay in the always-mapped bank 0 (see below).
+- **`gameboy/tools/gen-foundation-foods.mjs`** — ports `data/usda_foundation_foods.json` into
   `gameboy/src/foundation_foods.{c,h}`: per food it keeps only name + kcal + protein/fat/carbs per 100 g
   (macros as decigrams in `uint16`, energy as whole kcal). The table is placed in **ROM bank 2** via
   `#pragma bank 2` (it does not fit in the 32 KB default), so readers must `SWITCH_ROM(FOUNDATION_FOODS_BANK)`
   before dereferencing `foundation_foods[]`. Output is committed; re-run with `npm run gb:gen-foods` if
-  the dataset changes. (Data is bundled now; tracking against it comes later.)
+  the dataset changes.
+- **`gameboy/src/food_db.c` / `.h`** — the only code that reads the bank-2 food table. `ff_load` copies a
+  food into a RAM `FoodCache`; `ff_filter` does a case-insensitive **prefix** search over all foods. Both
+  `SWITCH_ROM(FOUNDATION_FOODS_BANK)` to map bank 2 over the `0x4000` window, then restore `SWITCH_ROM(1)`
+  before returning. Because that switch displaces whatever resident code sits in the switchable window, this
+  file **must live in bank 0** — guaranteed by linking it first (the build does this; never reorder it).
 - **`gameboy/tools/fetch-gbdk.mjs`** — downloads/extracts the GBDK-2020 release (platform-aware, pinned
   fallback version when offline). Also exposed as `npm run gb:setup`.
 - **`gameboy/tools/prepare-logo.mjs`** — converts `assets/icon-pixel.png` → `gameboy/assets/logo.png`
@@ -225,7 +232,13 @@ What's wired up so far:
   then age, height, weight, training experience, fitness focus, weight goal, generated goal review,
   and manual macro edits.
 - **`gameboy/src/nutrition.c`** — daily macro totals, mock food rows/details, and the nutrition
-  `Select` action menu (`Go to Date` opens the date picker; `Track Food` is a placeholder).
+  `Select` action menu (`Go to Date` opens the date picker; `Track Food` opens the food search/track flow).
+  The flow (`food_search_track`) is a two-mode screen: **typing** builds a name with an Up/Down letter
+  spinner (A appends, B deletes, Start finishes) while the matching foods filter live; **select** picks one
+  from the list. Choosing a food opens an amount screen (grams metric / oz imperial) whose calories and
+  macros recompute live as the amount changes; Start there asks `ui_confirm("TRACK FOOD?")` and, on confirm,
+  shows "TRACKED!" and returns. This is UI-only for now — nothing is persisted yet (no nutrition-log schema),
+  so the daily totals are unchanged; fiber is not shown (it is not part of the bundled food fields).
 - **`gameboy/src/database.c`** — SRAM bank 0 persistence with named byte-address constants, bit-packed profile flags, magic/version/checksum validation, and a compact 23-byte save block (down from 31 bytes; the extra byte vs the previous 22-byte layout holds the MBC3 RTC calibration date).
 - **`gameboy/src/rtc.c`** — MBC3 RTC hardware access (`rtc_latch`, `rtc_write_days`), calendar arithmetic (`cal_advance`, `cal_compare`, `cal_format`), and the `rtc_setup_date` screen that lets the user pin today's date on first boot or after re-calibration.
 - **`gameboy/src/nutrition_math.c`** — integer-only Mifflin-style BMR, activity multipliers, calorie
