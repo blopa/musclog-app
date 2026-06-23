@@ -24,10 +24,15 @@
 #define WORKOUT_WEIGHT_MAX       999u
 #define WORKOUT_REPS_MIN         1u
 #define WORKOUT_REPS_MAX         99u
+#define WORKOUT_REST_SECONDS     60u
+#define WORKOUT_REST_FRAMES      60u
 #define PLAN_FIELD_SETS          0u
 #define PLAN_FIELD_WEIGHT        1u
 #define PLAN_FIELD_REPS          2u
 #define PLAN_FIELD_COUNT         3u
+#define SET_FIELD_WEIGHT         0u
+#define SET_FIELD_REPS           1u
+#define SET_FIELD_COUNT          2u
 #define REPS_COMPOUND            10u
 #define REPS_DEFAULT             14u
 
@@ -51,6 +56,26 @@ typedef enum WorkoutAction {
     WORKOUT_ACTION_START = 1u,
 } WorkoutAction;
 
+typedef enum WorkoutPlanResult {
+    WORKOUT_PLAN_CANCEL = 0u,
+    WORKOUT_PLAN_START = 1u,
+} WorkoutPlanResult;
+
+typedef enum WorkoutSetFlowResult {
+    WORKOUT_SET_FLOW_NEXT_EXERCISE = 0u,
+    WORKOUT_SET_FLOW_BACK_TO_PLAN = 1u,
+    WORKOUT_SET_FLOW_END_WORKOUT = 2u,
+} WorkoutSetFlowResult;
+
+typedef enum WorkoutSetMenuAction {
+    SET_MENU_ACTION_NONE = 0u,
+    SET_MENU_ACTION_EDIT = 1u,
+    SET_MENU_ACTION_SAVE = 2u,
+    SET_MENU_ACTION_OVERVIEW = 3u,
+    SET_MENU_ACTION_NEXT_EXERCISE = 4u,
+    SET_MENU_ACTION_END_WORKOUT = 5u,
+} WorkoutSetMenuAction;
+
 typedef struct ExercisePickerState {
     uint8_t filter;
     uint8_t scroll;
@@ -65,12 +90,28 @@ typedef struct WorkoutRecommendation {
 } WorkoutRecommendation;
 
 typedef struct WorkoutPlanState {
+    ExerciseCache exercise;
     uint8_t field;
     uint8_t set_count;
     uint16_t weight;
     uint8_t reps;
     uint8_t dirty;
 } WorkoutPlanState;
+
+typedef struct WorkoutSetState {
+    uint8_t current_set;
+    uint8_t total_sets;
+    uint16_t weight;
+    uint8_t reps;
+    uint8_t dirty;
+} WorkoutSetState;
+
+typedef struct WorkoutSetEditState {
+    uint8_t field;
+    uint16_t weight;
+    uint8_t reps;
+    uint8_t dirty;
+} WorkoutSetEditState;
 
 static uint8_t exercise_matches[EXERCISE_COUNT];
 
@@ -418,7 +459,6 @@ static void draw_plan_row(uint8_t y, const char *label, const char *value, uint8
 
 static void draw_workout_plan(
     const SaveData *data,
-    const ExerciseCache *exercise,
     const WorkoutPlanState *state
 ) {
     char sets_buf[4];
@@ -430,7 +470,7 @@ static void draw_workout_plan(
     sprintf(reps_buf, "%u", (unsigned int)state->reps);
 
     ui_title(STR_FREE_SESSION);
-    ui_print_center(4u, exercise->name);
+    ui_print_center(4u, state->exercise.name);
     ui_print_at(0u, 5u, STR_DIVIDER);
 
     draw_plan_row(7u, STR_SETS, sets_buf, state->field == PLAN_FIELD_SETS);
@@ -458,56 +498,362 @@ static void adjust_plan_field(WorkoutPlanState *state, uint8_t increase) {
     state->dirty = 1u;
 }
 
-static uint8_t workout_plan_screen(const SaveData *data, uint8_t exercise_idx) {
-    InputState input;
-    ExerciseCache exercise;
+static void init_workout_plan(
+    const SaveData *data,
+    uint8_t exercise_idx,
+    WorkoutPlanState *state
+) {
     WorkoutRecommendation recommendation;
-    WorkoutPlanState state;
 
-    ex_load(exercise_idx, &exercise);
-    build_recommendation(data, &exercise, &recommendation);
-    state.field = PLAN_FIELD_SETS;
-    state.set_count = WORKOUT_DEFAULT_SET_COUNT;
-    state.weight = recommendation.display_weight;
-    state.reps = recommendation.reps;
+    ex_load(exercise_idx, &state->exercise);
+    build_recommendation(data, &state->exercise, &recommendation);
+
+    state->field = PLAN_FIELD_SETS;
+    state->set_count = WORKOUT_DEFAULT_SET_COUNT;
+    state->weight = recommendation.display_weight;
+    state->reps = recommendation.reps;
+    state->dirty = 1u;
+}
+
+static uint8_t workout_plan_screen(const SaveData *data, WorkoutPlanState *state) {
+    InputState input;
+
+    state->dirty = 1u;
+    input_init(&input);
+    while (1) {
+        if (state->dirty) {
+            draw_workout_plan(data, state);
+            state->dirty = 0u;
+        }
+
+        wait_vbl_done();
+        input_update(&input);
+
+        if (input_pressed(&input, J_B)) return WORKOUT_PLAN_CANCEL;
+        if (input_pressed(&input, J_A | J_START)) return WORKOUT_PLAN_START;
+
+        if (input_pressed(&input, J_UP)) {
+            state->field = state->field == 0u
+                ? (uint8_t)(PLAN_FIELD_COUNT - 1u)
+                : (uint8_t)(state->field - 1u);
+            state->dirty = 1u;
+        } else if (input_pressed(&input, J_DOWN)) {
+            state->field = (uint8_t)((state->field + 1u) % PLAN_FIELD_COUNT);
+            state->dirty = 1u;
+        } else if (input_pressed(&input, J_RIGHT)) {
+            adjust_plan_field(state, 1u);
+        } else if (input_pressed(&input, J_LEFT)) {
+            adjust_plan_field(state, 0u);
+        }
+    }
+}
+
+static void draw_workout_set(
+    const SaveData *data,
+    const ExerciseCache *exercise,
+    const WorkoutSetState *state
+) {
+    char set_buf[10];
+    char weight_buf[14];
+    char reps_buf[8];
+
+    sprintf(set_buf, "SET %u/%u",
+            (unsigned int)state->current_set,
+            (unsigned int)state->total_sets);
+    format_plan_weight(data, state->weight, weight_buf);
+    sprintf(reps_buf, "%u", (unsigned int)state->reps);
+
+    ui_title(STR_FREE_SESSION);
+    ui_print_center(4u, exercise->name);
+    ui_print_at(0u, 5u, STR_DIVIDER);
+    ui_print_center(6u, set_buf);
+
+    draw_plan_row(8u, STR_REPS, reps_buf, 0u);
+    draw_plan_row(10u, STR_WEIGHT, weight_buf, 0u);
+
+    ui_print_center(13u, STR_HINT_SET_OPTIONS);
+    ui_print_center(14u, STR_HINT_SAVE_SET);
+    ui_footer(STR_FOOTER_BACK, STR_FOOTER_SEL_MENU);
+}
+
+static void draw_set_edit(
+    const SaveData *data,
+    const ExerciseCache *exercise,
+    const WorkoutSetEditState *state
+) {
+    char weight_buf[14];
+    char reps_buf[8];
+
+    format_plan_weight(data, state->weight, weight_buf);
+    sprintf(reps_buf, "%u", (unsigned int)state->reps);
+
+    ui_title(STR_EDIT_SET);
+    ui_print_center(4u, exercise->name);
+    ui_print_at(0u, 5u, STR_DIVIDER);
+
+    draw_plan_row(8u, STR_WEIGHT, weight_buf, state->field == SET_FIELD_WEIGHT);
+    draw_plan_row(10u, STR_REPS, reps_buf, state->field == SET_FIELD_REPS);
+
+    ui_print_center(14u, STR_HINT_EDIT_ROW);
+    ui_footer(STR_FOOTER_CANCEL, STR_FOOTER_OK);
+}
+
+static void adjust_set_edit_field(WorkoutSetEditState *state, uint8_t increase) {
+    if (state->field == SET_FIELD_WEIGHT) {
+        state->weight = increase
+            ? add_clamped_u16(state->weight, 1u, WORKOUT_WEIGHT_MAX)
+            : sub_clamped_u16(state->weight, 1u, WORKOUT_WEIGHT_MIN);
+    } else {
+        state->reps = increase
+            ? add_clamped_u8(state->reps, 1u, WORKOUT_REPS_MAX)
+            : sub_clamped_u8(state->reps, 1u, WORKOUT_REPS_MIN);
+    }
+    state->dirty = 1u;
+}
+
+static void workout_set_edit_screen(
+    const SaveData *data,
+    const ExerciseCache *exercise,
+    WorkoutSetState *set
+) {
+    InputState input;
+    WorkoutSetEditState state;
+
+    state.field = SET_FIELD_WEIGHT;
+    state.weight = set->weight;
+    state.reps = set->reps;
     state.dirty = 1u;
 
     input_init(&input);
     while (1) {
         if (state.dirty) {
-            draw_workout_plan(data, &exercise, &state);
+            draw_set_edit(data, exercise, &state);
             state.dirty = 0u;
         }
 
         wait_vbl_done();
         input_update(&input);
 
-        if (input_pressed(&input, J_B)) return 0u;
-        if (input_pressed(&input, J_A | J_START)) return 1u;
+        if (input_pressed(&input, J_B)) return;
+
+        if (input_pressed(&input, J_A | J_START)) {
+            set->weight = state.weight;
+            set->reps = state.reps;
+            set->dirty = 1u;
+            return;
+        }
 
         if (input_pressed(&input, J_UP)) {
             state.field = state.field == 0u
-                ? (uint8_t)(PLAN_FIELD_COUNT - 1u)
+                ? (uint8_t)(SET_FIELD_COUNT - 1u)
                 : (uint8_t)(state.field - 1u);
             state.dirty = 1u;
         } else if (input_pressed(&input, J_DOWN)) {
-            state.field = (uint8_t)((state.field + 1u) % PLAN_FIELD_COUNT);
+            state.field = (uint8_t)((state.field + 1u) % SET_FIELD_COUNT);
             state.dirty = 1u;
         } else if (input_pressed(&input, J_RIGHT)) {
-            adjust_plan_field(&state, 1u);
+            adjust_set_edit_field(&state, 1u);
         } else if (input_pressed(&input, J_LEFT)) {
-            adjust_plan_field(&state, 0u);
+            adjust_set_edit_field(&state, 0u);
+        }
+    }
+}
+
+static void draw_rest_timer(
+    const ExerciseCache *exercise,
+    uint8_t next_set,
+    uint8_t total_sets,
+    uint8_t seconds
+) {
+    char set_buf[16];
+    char timer_buf[8];
+    uint8_t fill;
+
+    sprintf(set_buf, "NEXT SET %u/%u",
+            (unsigned int)next_set,
+            (unsigned int)total_sets);
+    sprintf(timer_buf, "%u SEC", (unsigned int)seconds);
+
+    ui_title(STR_REST);
+    ui_print_center(5u, exercise->name);
+    ui_print_center(7u, set_buf);
+    ui_print_center(9u, timer_buf);
+
+    fill = ui_bar_fill(seconds, WORKOUT_REST_SECONDS, 18u);
+    ui_draw_bar(1u, 11u, 18u, fill);
+
+    ui_print_center(14u, STR_HINT_REST_SKIP);
+    ui_footer("", STR_FOOTER_SKIP_TIMER);
+}
+
+static void workout_rest_timer(
+    const ExerciseCache *exercise,
+    uint8_t next_set,
+    uint8_t total_sets
+) {
+    InputState input;
+    uint8_t seconds = WORKOUT_REST_SECONDS;
+    uint8_t frames = 0u;
+    uint8_t dirty = 1u;
+
+    input_init(&input);
+    while (seconds > 0u) {
+        if (dirty) {
+            draw_rest_timer(exercise, next_set, total_sets, seconds);
+            dirty = 0u;
+        }
+
+        wait_vbl_done();
+        input_update(&input);
+
+        if (input_pressed(&input, J_A | J_START)) return;
+
+        ++frames;
+        if (frames >= WORKOUT_REST_FRAMES) {
+            frames = 0u;
+            --seconds;
+            dirty = 1u;
+        }
+    }
+}
+
+static uint8_t workout_save_set_or_rest(
+    const ExerciseCache *exercise,
+    WorkoutSetState *state
+) {
+    if (state->current_set >= state->total_sets) return 1u;
+
+    workout_rest_timer(exercise, (uint8_t)(state->current_set + 1u), state->total_sets);
+    ++state->current_set;
+    state->dirty = 1u;
+
+    return 0u;
+}
+
+static uint8_t workout_set_action_menu(void) {
+    static const char *OPTIONS[5] = {
+        STR_EDIT_SET,
+        STR_SAVE_SET,
+        STR_EX_OVERVIEW,
+        STR_NEXT_EXERCISE,
+        STR_END_WORKOUT,
+    };
+    InputState input;
+    uint8_t selected = 0u;
+    uint8_t dirty = 1u;
+
+    input_init(&input);
+    while (1) {
+        if (dirty) {
+            ui_draw_menu(STR_SET_OPTIONS, OPTIONS, 5u, selected);
+            dirty = 0u;
+        }
+
+        wait_vbl_done();
+        input_update(&input);
+
+        if (input_pressed(&input, J_B)) return SET_MENU_ACTION_NONE;
+
+        if (input_pressed(&input, J_UP)) {
+            selected = selected == 0u ? 4u : (uint8_t)(selected - 1u);
+            dirty = 1u;
+        } else if (input_pressed(&input, J_DOWN)) {
+            selected = selected == 4u ? 0u : (uint8_t)(selected + 1u);
+            dirty = 1u;
+        } else if (input_pressed(&input, J_A | J_START)) {
+            return (uint8_t)(selected + 1u);
+        }
+    }
+}
+
+static void sync_plan_from_set(WorkoutPlanState *plan, const WorkoutSetState *set) {
+    plan->weight = set->weight;
+    plan->reps = set->reps;
+    plan->dirty = 1u;
+}
+
+static uint8_t workout_set_flow(const SaveData *data, WorkoutPlanState *plan) {
+    InputState input;
+    WorkoutSetState state;
+    uint8_t action;
+
+    state.current_set = 1u;
+    state.total_sets = plan->set_count;
+    state.weight = plan->weight;
+    state.reps = plan->reps;
+    state.dirty = 1u;
+
+    input_init(&input);
+    while (1) {
+        if (state.dirty) {
+            draw_workout_set(data, &plan->exercise, &state);
+            state.dirty = 0u;
+        }
+
+        wait_vbl_done();
+        input_update(&input);
+
+        if (input_pressed(&input, J_B)) {
+            sync_plan_from_set(plan, &state);
+            return WORKOUT_SET_FLOW_BACK_TO_PLAN;
+        }
+
+        if (input_pressed(&input, J_A | J_START)) {
+            if (workout_save_set_or_rest(&plan->exercise, &state)) {
+                sync_plan_from_set(plan, &state);
+                return WORKOUT_SET_FLOW_NEXT_EXERCISE;
+            }
+            continue;
+        }
+
+        if (input_pressed(&input, J_SELECT)) {
+            action = workout_set_action_menu();
+            input_init(&input);
+
+            if (action == SET_MENU_ACTION_NONE) {
+                state.dirty = 1u;
+            } else if (action == SET_MENU_ACTION_EDIT) {
+                workout_set_edit_screen(data, &plan->exercise, &state);
+                input_init(&input);
+            } else if (action == SET_MENU_ACTION_SAVE) {
+                if (workout_save_set_or_rest(&plan->exercise, &state)) {
+                    sync_plan_from_set(plan, &state);
+                    return WORKOUT_SET_FLOW_NEXT_EXERCISE;
+                }
+            } else if (action == SET_MENU_ACTION_OVERVIEW) {
+                sync_plan_from_set(plan, &state);
+                return WORKOUT_SET_FLOW_BACK_TO_PLAN;
+            } else if (action == SET_MENU_ACTION_NEXT_EXERCISE) {
+                sync_plan_from_set(plan, &state);
+                return WORKOUT_SET_FLOW_NEXT_EXERCISE;
+            } else if (action == SET_MENU_ACTION_END_WORKOUT) {
+                sync_plan_from_set(plan, &state);
+                return WORKOUT_SET_FLOW_END_WORKOUT;
+            }
+            state.dirty = 1u;
         }
     }
 }
 
 static void workout_start_free_session(SaveData *data) {
     uint8_t exercise_idx;
+    uint8_t flow_result;
+    WorkoutPlanState plan;
 
     while (1) {
         exercise_idx = workout_exercise_picker();
         if (exercise_idx == WORKOUT_NO_EXERCISE) return;
-        if (workout_plan_screen(data, exercise_idx)) return;
+
+        init_workout_plan(data, exercise_idx, &plan);
+
+        while (1) {
+            if (workout_plan_screen(data, &plan) == WORKOUT_PLAN_CANCEL) break;
+
+            flow_result = workout_set_flow(data, &plan);
+            if (flow_result == WORKOUT_SET_FLOW_BACK_TO_PLAN) continue;
+            if (flow_result == WORKOUT_SET_FLOW_END_WORKOUT) return;
+            break;
+        }
     }
 }
 

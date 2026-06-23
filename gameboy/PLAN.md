@@ -191,12 +191,12 @@ gameboy/
 
 ---
 
-## Build (current state — Milestone 1c: nutrition + free-session workout planning)
+## Build (current state — Milestone 1d: nutrition + free-session workout flow)
 
 The first interactive milestone is implemented: a **Game Boy Color** ROM that shows the Musclog logo,
 runs a first-time onboarding flow, generates calorie/macro goals, saves the profile to cartridge SRAM,
-skips onboarding on later boots when the save checksum is valid, and includes a first pass at the
-free-session workout start flow. Build it from the repo root with:
+skips onboarding on later boots when the save checksum is valid, and includes a free-session workout
+flow through exercise selection, active sets, and rest timers. Build it from the repo root with:
 
 ```bash
 npm run gb:build        # produces gameboy/build/musclog.gbc
@@ -258,9 +258,11 @@ What's wired up so far:
   food detail, and food search/amount subflows live in `nutrition_date.c`, `nutrition_detail.c`, and
   `nutrition_search.c`, also in ROM bank 4.
 - **`gameboy/src/workouts.c`** — `BANKED` workouts shell in ROM bank 7: a visual-only mocked workout
-  history list with summary stats and scrolling. Its `Select` action menu opens the first free-session
-  start flow: exercise picker, muscle-group filter input changed with left/right, and a planning screen where
-  the user edits the suggested set count, weight, and reps. The suggestion mirrors the Expo
+  history list with summary stats and scrolling. Its `Select` action menu opens the free-session
+  start flow: exercise picker, muscle-group filter input changed with left/right, a planning screen where
+  the user edits the suggested set count, weight, and reps, an active set screen, an edit/options menu,
+  a 60-second rest timer between non-final sets, and a loop back to the exercise picker after an exercise
+  is completed or skipped. Set logging is still in-memory only. The suggestion mirrors the Expo
   fallback logic: `weight * loadMultiplier * experienceFactor * ageFactor`, bodyweight/load-zero exercises
   start with no external load, and compound exercises suggest 10 reps while other mechanic types suggest 14.
 - **`gameboy/src/foodlog.c`** — the persisted food log. Each entry is a compact 6-byte record
