@@ -4,12 +4,16 @@
 #include <string.h>
 
 /*
- * Raw SRAM bank 0 — SRAM_SAVE_SIZE bytes at offset 0.
- * All data is encoded/decoded explicitly; no struct-layout assumptions.
+ * Profile data lives in cartridge SRAM bank 0, accessed through the hardware
+ * _SRAM pointer (0xA000) after ENABLE_RAM + SWITCH_RAM(0) — the same idiom the
+ * food log uses for bank 1 (see foodlog.c).
+ *
+ * A previous version stored this in a C array tagged `#pragma dataseg DATA_0`.
+ * That array was never battery-backed (it landed in volatile WRAM), so the
+ * profile silently vanished on every power cycle while the raw-_SRAM food log
+ * survived — the onboarding screen reappeared on each boot. Always go through
+ * _SRAM[] for persisted data; do not reintroduce a dataseg C array here.
  */
-#pragma dataseg DATA_0
-static uint8_t sram_bank[SRAM_SAVE_SIZE];
-#pragma dataseg DATA
 
 /* ── Checksum ─────────────────────────────────────────────────────────────── */
 
@@ -72,56 +76,56 @@ uint8_t db_load(SaveData *out) {
     ENABLE_RAM;
     SWITCH_RAM(0u);
 
-    magic = (uint16_t)((uint16_t)sram_bank[SRAM_MAGIC + 1u] << 8u)
-          | (uint16_t)sram_bank[SRAM_MAGIC];
+    magic = (uint16_t)((uint16_t)_SRAM[SRAM_MAGIC + 1u] << 8u)
+          | (uint16_t)_SRAM[SRAM_MAGIC];
 
-    if (magic != SAVE_MAGIC || sram_bank[SRAM_VERSION] != SAVE_VERSION) {
+    if (magic != SAVE_MAGIC || _SRAM[SRAM_VERSION] != SAVE_VERSION) {
         DISABLE_RAM;
         return 0u;
     }
 
     /* Decode SRAM_FLAGS1 */
-    flags1 = sram_bank[SRAM_FLAGS1];
+    flags1 = _SRAM[SRAM_FLAGS1];
     out->units              = (flags1 >> FLAGS1_UNITS_BIT) & 1u;
     out->gender             = (flags1 >> FLAGS1_GENDER_SHIFT) & 3u;
     out->activity_level     = (uint8_t)(((flags1 >> FLAGS1_ACTIVITY_SHIFT) & 7u) + 1u);
     out->lifting_experience = (flags1 >> FLAGS1_EXPERIENCE_SHIFT) & 3u;
 
     /* Decode SRAM_FLAGS2 */
-    flags2 = sram_bank[SRAM_FLAGS2];
+    flags2 = _SRAM[SRAM_FLAGS2];
     out->fitness_focus       = (flags2 >> FLAGS2_FITNESS_SHIFT) & 3u;
     out->weight_goal         = (flags2 >> FLAGS2_WEIGHT_GOAL_SHIFT) & 3u;
     out->onboarding_complete = (flags2 >> FLAGS2_ONBOARDING_BIT) & 1u;
     out->rtc_is_set          = (flags2 >> FLAGS2_RTC_IS_SET_BIT) & 1u;
 
     /* Decode scalar fields */
-    out->age       = sram_bank[SRAM_AGE];
-    out->height_cm = (uint16_t)(sram_bank[SRAM_HEIGHT] + DB_HEIGHT_CM_MIN);
+    out->age       = _SRAM[SRAM_AGE];
+    out->height_cm = (uint16_t)(_SRAM[SRAM_HEIGHT] + DB_HEIGHT_CM_MIN);
 
-    weight_off = (uint16_t)((uint16_t)sram_bank[SRAM_WEIGHT + 1u] << 8u)
-               | (uint16_t)sram_bank[SRAM_WEIGHT];
+    weight_off = (uint16_t)((uint16_t)_SRAM[SRAM_WEIGHT + 1u] << 8u)
+               | (uint16_t)_SRAM[SRAM_WEIGHT];
     out->weight_kg_tenths = (uint16_t)(weight_off + DB_WEIGHT_KG_TENTHS_MIN);
 
-    out->calorie_goal = (uint16_t)((uint16_t)sram_bank[SRAM_CAL_GOAL + 1u] << 8u)
-                      | (uint16_t)sram_bank[SRAM_CAL_GOAL];
-    out->protein_goal = (uint16_t)((uint16_t)sram_bank[SRAM_PROTEIN_GOAL + 1u] << 8u)
-                      | (uint16_t)sram_bank[SRAM_PROTEIN_GOAL];
-    out->carbs_goal   = (uint16_t)((uint16_t)sram_bank[SRAM_CARBS_GOAL + 1u] << 8u)
-                      | (uint16_t)sram_bank[SRAM_CARBS_GOAL];
-    out->fat_goal     = (uint16_t)((uint16_t)sram_bank[SRAM_FAT_GOAL + 1u] << 8u)
-                      | (uint16_t)sram_bank[SRAM_FAT_GOAL];
-    out->fiber_goal   = sram_bank[SRAM_FIBER_GOAL];
+    out->calorie_goal = (uint16_t)((uint16_t)_SRAM[SRAM_CAL_GOAL + 1u] << 8u)
+                      | (uint16_t)_SRAM[SRAM_CAL_GOAL];
+    out->protein_goal = (uint16_t)((uint16_t)_SRAM[SRAM_PROTEIN_GOAL + 1u] << 8u)
+                      | (uint16_t)_SRAM[SRAM_PROTEIN_GOAL];
+    out->carbs_goal   = (uint16_t)((uint16_t)_SRAM[SRAM_CARBS_GOAL + 1u] << 8u)
+                      | (uint16_t)_SRAM[SRAM_CARBS_GOAL];
+    out->fat_goal     = (uint16_t)((uint16_t)_SRAM[SRAM_FAT_GOAL + 1u] << 8u)
+                      | (uint16_t)_SRAM[SRAM_FAT_GOAL];
+    out->fiber_goal   = _SRAM[SRAM_FIBER_GOAL];
 
     /* Decode RTC calibration */
-    out->rtc_base_date.year  = (uint16_t)(2000u + sram_bank[SRAM_RTC_YEAR_OFS]);
-    out->rtc_base_date.month = sram_bank[SRAM_RTC_MONTH];
-    out->rtc_base_date.day   = sram_bank[SRAM_RTC_DAY];
+    out->rtc_base_date.year  = (uint16_t)(2000u + _SRAM[SRAM_RTC_YEAR_OFS]);
+    out->rtc_base_date.month = _SRAM[SRAM_RTC_MONTH];
+    out->rtc_base_date.day   = _SRAM[SRAM_RTC_DAY];
 
     /* Restore header fields used by db_is_valid */
     out->magic    = SAVE_MAGIC;
     out->version  = SAVE_VERSION;
-    out->checksum = (uint16_t)((uint16_t)sram_bank[SRAM_CHECKSUM + 1u] << 8u)
-                  | (uint16_t)sram_bank[SRAM_CHECKSUM];
+    out->checksum = (uint16_t)((uint16_t)_SRAM[SRAM_CHECKSUM + 1u] << 8u)
+                  | (uint16_t)_SRAM[SRAM_CHECKSUM];
 
     DISABLE_RAM;
 
@@ -170,29 +174,29 @@ void db_save(const SaveData *data) {
     ENABLE_RAM;
     SWITCH_RAM(0u);
 
-    sram_bank[SRAM_MAGIC]             = (uint8_t)(SAVE_MAGIC & 0xFFu);
-    sram_bank[SRAM_MAGIC + 1u]        = (uint8_t)(SAVE_MAGIC >> 8u);
-    sram_bank[SRAM_VERSION]           = SAVE_VERSION;
-    sram_bank[SRAM_CHECKSUM]          = (uint8_t)(checksum   & 0xFFu);
-    sram_bank[SRAM_CHECKSUM + 1u]     = (uint8_t)(checksum   >> 8u);
-    sram_bank[SRAM_FLAGS1]            = flags1;
-    sram_bank[SRAM_FLAGS2]            = flags2;
-    sram_bank[SRAM_AGE]               = data->age;
-    sram_bank[SRAM_HEIGHT]            = (uint8_t)(data->height_cm - DB_HEIGHT_CM_MIN);
-    sram_bank[SRAM_WEIGHT]            = (uint8_t)(weight_off  & 0xFFu);
-    sram_bank[SRAM_WEIGHT + 1u]       = (uint8_t)(weight_off  >> 8u);
-    sram_bank[SRAM_CAL_GOAL]          = (uint8_t)(data->calorie_goal  & 0xFFu);
-    sram_bank[SRAM_CAL_GOAL + 1u]     = (uint8_t)(data->calorie_goal  >> 8u);
-    sram_bank[SRAM_PROTEIN_GOAL]      = (uint8_t)(data->protein_goal  & 0xFFu);
-    sram_bank[SRAM_PROTEIN_GOAL + 1u] = (uint8_t)(data->protein_goal  >> 8u);
-    sram_bank[SRAM_CARBS_GOAL]        = (uint8_t)(data->carbs_goal    & 0xFFu);
-    sram_bank[SRAM_CARBS_GOAL + 1u]   = (uint8_t)(data->carbs_goal    >> 8u);
-    sram_bank[SRAM_FAT_GOAL]          = (uint8_t)(data->fat_goal      & 0xFFu);
-    sram_bank[SRAM_FAT_GOAL + 1u]     = (uint8_t)(data->fat_goal      >> 8u);
-    sram_bank[SRAM_FIBER_GOAL]        = (uint8_t)(data->fiber_goal    & 0xFFu);
-    sram_bank[SRAM_RTC_YEAR_OFS]      = year_ofs;
-    sram_bank[SRAM_RTC_MONTH]         = data->rtc_base_date.month;
-    sram_bank[SRAM_RTC_DAY]           = data->rtc_base_date.day;
+    _SRAM[SRAM_MAGIC]             = (uint8_t)(SAVE_MAGIC & 0xFFu);
+    _SRAM[SRAM_MAGIC + 1u]        = (uint8_t)(SAVE_MAGIC >> 8u);
+    _SRAM[SRAM_VERSION]           = SAVE_VERSION;
+    _SRAM[SRAM_CHECKSUM]          = (uint8_t)(checksum   & 0xFFu);
+    _SRAM[SRAM_CHECKSUM + 1u]     = (uint8_t)(checksum   >> 8u);
+    _SRAM[SRAM_FLAGS1]            = flags1;
+    _SRAM[SRAM_FLAGS2]            = flags2;
+    _SRAM[SRAM_AGE]               = data->age;
+    _SRAM[SRAM_HEIGHT]            = (uint8_t)(data->height_cm - DB_HEIGHT_CM_MIN);
+    _SRAM[SRAM_WEIGHT]            = (uint8_t)(weight_off  & 0xFFu);
+    _SRAM[SRAM_WEIGHT + 1u]       = (uint8_t)(weight_off  >> 8u);
+    _SRAM[SRAM_CAL_GOAL]          = (uint8_t)(data->calorie_goal  & 0xFFu);
+    _SRAM[SRAM_CAL_GOAL + 1u]     = (uint8_t)(data->calorie_goal  >> 8u);
+    _SRAM[SRAM_PROTEIN_GOAL]      = (uint8_t)(data->protein_goal  & 0xFFu);
+    _SRAM[SRAM_PROTEIN_GOAL + 1u] = (uint8_t)(data->protein_goal  >> 8u);
+    _SRAM[SRAM_CARBS_GOAL]        = (uint8_t)(data->carbs_goal    & 0xFFu);
+    _SRAM[SRAM_CARBS_GOAL + 1u]   = (uint8_t)(data->carbs_goal    >> 8u);
+    _SRAM[SRAM_FAT_GOAL]          = (uint8_t)(data->fat_goal      & 0xFFu);
+    _SRAM[SRAM_FAT_GOAL + 1u]     = (uint8_t)(data->fat_goal      >> 8u);
+    _SRAM[SRAM_FIBER_GOAL]        = (uint8_t)(data->fiber_goal    & 0xFFu);
+    _SRAM[SRAM_RTC_YEAR_OFS]      = year_ofs;
+    _SRAM[SRAM_RTC_MONTH]         = data->rtc_base_date.month;
+    _SRAM[SRAM_RTC_DAY]           = data->rtc_base_date.day;
 
     DISABLE_RAM;
 }
@@ -204,7 +208,7 @@ void db_erase(void) {
     ENABLE_RAM;
     SWITCH_RAM(0u);
     for (i = 0u; i != SRAM_SAVE_SIZE; ++i) {
-        sram_bank[i] = 0u;
+        _SRAM[i] = 0u;
     }
     DISABLE_RAM;
 }
