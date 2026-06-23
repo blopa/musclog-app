@@ -1,7 +1,7 @@
 #ifndef MUSCLOG_RTC_H
 #define MUSCLOG_RTC_H
 
-#include "database.h"  /* for CalDate, SaveData */
+#include "profile.h"  /* for CalDate, SaveData */
 
 /* MBC3 real-time clock register snapshot. */
 typedef struct RtcTime {

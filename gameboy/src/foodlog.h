@@ -9,7 +9,7 @@
  * Persistent food log.
  *
  * Each logged food is stored as a compact 6-byte record — { day_num, food_idx,
- * grams } — in SRAM bank 1 (the bank-0 profile written by database.c is left
+ * grams } — in SRAM bank 1 (the bank-0 profile written by profile.c is left
  * untouched). Macros are NOT stored: they are recomputed on demand by loading
  * the referenced food out of the banked ROM tables (ff_load) and scaling by grams, so a
  * day's worth of foods costs only 6 bytes each.

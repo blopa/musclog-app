@@ -3,12 +3,14 @@
 #include "onboarding.h"
 
 #include "copies.h"
-#include "database.h"
+#include "profile.h"
 #include "input.h"
+#include "metrics.h"
 #include "nutrition_math.h"
 #include "rtc.h"
 #include "ui_text.h"
 #include "utils.h"
+#include "weight_units.h"
 
 #include <gb/gb.h>
 #include <gbdk/console.h>
@@ -18,8 +20,6 @@
 #define AGE_MAX       99u
 #define HEIGHT_IN_MIN 47u
 #define HEIGHT_IN_MAX 91u
-#define WEIGHT_LB_MIN 66u
-#define WEIGHT_LB_MAX 551u
 #define CAL_MIN       800u
 #define CAL_MAX       6000u
 #define MACRO_MAX     999u
@@ -97,14 +97,6 @@ static uint8_t cm_to_inches(uint16_t cm) {
 
 static uint16_t inches_to_cm(uint8_t inches) {
     return (uint16_t)((((uint16_t)inches * 254u) + 50u) / 100u);
-}
-
-static uint16_t kg_tenths_to_lbs(uint16_t kg_tenths) {
-    return (uint16_t)((((uint32_t)kg_tenths * 1000u) + 2268u) / 4536u);
-}
-
-static uint16_t lbs_to_kg_tenths(uint16_t lbs) {
-    return (uint16_t)((((uint32_t)lbs * 4536u) + 500u) / 1000u);
 }
 
 static uint8_t menu_selected_for_step(const OnboardingState *state, OnboardingStep step) {
@@ -499,6 +491,10 @@ static void handle_accept(OnboardingState *state) {
                  * before the user reaches the home screen.  The hardware day
                  * counter then ticks on its own — no software update needed. */
                 rtc_setup_date(state->data);
+                /* Seed the body-weight log with the onboarding weight (now that
+                 * the RTC is calibrated) so the trend chart starts with a point. */
+                metrics_set_for_day(cal_day_number(cal_current_date(state->data)),
+                                    state->data->weight_kg_tenths);
                 state->done = 1u;
             } else {
                 enter_step(state, STEP_EDIT_CALORIES);

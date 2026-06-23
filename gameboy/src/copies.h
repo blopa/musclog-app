@@ -45,6 +45,16 @@
 #define STR_HOME          "HOME"
 #define STR_NUTRITION     "NUTRITION"
 #define STR_WORKOUTS      "WORKOUTS"
+#define STR_BODY_WEIGHT   "BODY WEIGHT"
+
+/* ── Body-weight tracking ──────────────────────────────────────────────── */
+#define STR_LOG_WEIGHT    "LOG WEIGHT"
+#define STR_CURRENT       "CURRENT"
+#define STR_MIN           "MIN"
+#define STR_MAX           "MAX"
+#define STR_TREND         "TREND"
+#define STR_NO_DATA       "NO DATA"
+#define STR_FOOTER_LOG    "A/ST LOG"
 
 /* ── Workout tracking ─────────────────────────────────────────────────── */
 #define STR_START_WORKOUT "START WORKOUT"

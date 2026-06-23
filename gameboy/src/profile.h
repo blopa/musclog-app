@@ -1,5 +1,5 @@
-#ifndef MUSCLOG_DATABASE_H
-#define MUSCLOG_DATABASE_H
+#ifndef MUSCLOG_PROFILE_H
+#define MUSCLOG_PROFILE_H
 
 #include <stdint.h>
 
@@ -145,4 +145,4 @@ uint8_t db_load(SaveData *out);
 void    db_save(const SaveData *data);
 void    db_erase(void);
 
-#endif /* MUSCLOG_DATABASE_H */
+#endif /* MUSCLOG_PROFILE_H */

@@ -3,7 +3,7 @@
 
 #include <gb/gb.h>
 
-#include "database.h"
+#include "profile.h"
 
 void workouts_show(SaveData *data) BANKED;
 

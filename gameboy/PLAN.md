@@ -52,10 +52,11 @@ between ROM, VRAM, work RAM, cartridge SRAM, and I/O — leaving room to "see" o
 ROM bank 0 can **never** be switched out: it holds the interrupt vectors, the cartridge header, and
 GBDK's `_HOME` segment — the bank-switching trampolines, interrupt handlers, and every **non-banked**
 function. Everything else depends on it always being mapped, so it must fit in 16 KB. It is currently
-**~16,377 / 16,384 bytes used** — effectively full. Any new *non-banked* function overflows it, and the
-build's bank-layout guard (see "Build" below) fails the build when `_HOME` crosses `0x4000`. The fix
-when that happens is to move code into a numbered bank (`#pragma bank N` + `BANKED`), not to grow
-`_HOME`.
+**~15,520 / 16,384 bytes used** — adding body-weight tracking pushed it briefly over `0x4000`, so the
+home-screen rendering (`home_screen.c`) was moved into a numbered bank to make room. Any new
+*non-banked* function still overflows it easily, and the build's bank-layout guard (see "Build" below)
+fails the build when `_HOME` crosses `0x4000`. The fix when that happens is to move code into a numbered
+bank (`#pragma bank N` + `BANKED`), not to grow `_HOME`.
 
 ### How many banks we get (set by the MBC)
 
@@ -74,19 +75,22 @@ the only way past 32 KB of save.
 
 ### What we reserve and use today
 
-- **ROM:** `-Wm-yo8` reserves **8 banks / 128 KB**. Assignments: bank 0 `_HOME` + core; bank 2 USDA
-  foundation foods; bank 3 common foods; bank 4 nutrition shell + subflows; bank 5 onboarding +
-  `nutrition_math`; bank 6 exercises; bank 7 workouts + workout log. Plenty of headroom toward 128.
+- **ROM:** `-Wm-yo8` reserves **8 banks / 128 KB**. Assignments: bank 0 `_HOME` + core; bank 1 metrics +
+  body-weight + home screens; bank 2 USDA foundation foods; bank 3 common foods; bank 4 nutrition shell +
+  subflows; bank 5 onboarding + `nutrition_math`; bank 6 exercises; bank 7 workouts + workout log. Plenty
+  of headroom toward 128.
 - **SRAM:** `-Wm-ya4` reserves **4 banks / 32 KB** — the MBC3 maximum. **Three are in use, one is free:**
 
-  | SRAM bank | Contents     | Owner          | Notes                                                              |
-  | --------- | ------------ | -------------- | ------------------------------------------------------------------ |
-  | 0         | Profile      | `database.c`   | 23-byte packed save block (units, body metrics, goals, RTC base).  |
-  | 1         | Food log     | `foodlog.c`    | 6-byte records `{ day_num, food_idx, grams }` + header.            |
-  | 2         | Workout log  | `workoutlog.c` | Variable records (workout header + 4-byte set rows) + header.      |
-  | 3         | **Free**     | —              | Unused; the only remaining save bank on MBC3.                      |
+  | SRAM bank | Contents             | Owner                    | Notes                                                                                   |
+  | --------- | -------------------- | ------------------------ | --------------------------------------------------------------------------------------- |
+  | 0         | Profile + metrics    | `profile.c` / `metrics.c`| Disjoint sub-regions: 23-byte profile at `0x00`; body-weight log at `0x40` (see §7).     |
+  | 1         | Food log             | `foodlog.c`              | 6-byte records `{ day_num, food_idx, grams }` + header.                                 |
+  | 2         | Workout log          | `workoutlog.c`           | Variable records (workout header + 4-byte set rows) + header.                           |
+  | 3         | **Free**             | —                        | Unused; the only remaining save bank on MBC3.                                           |
 
   So **persistent storage, not ROM, is the tighter constraint** — only one empty SRAM bank remains.
+  Body-weight metrics deliberately share bank 0 with the profile (the profile uses just 23 of 8192 bytes)
+  rather than spending the last free bank.
 
 ### Working with banks in GBDK
 
@@ -236,11 +240,13 @@ Open `musclog.gb` in the emulator. That's the entire inner loop: edit C → `lcc
 ```
 gameboy/
 ├── src/
-│   ├── main.c            # boot, top-level menu state machine
+│   ├── main.c            # boot, top-level menu state machine, home input loop
+│   ├── home_screen.c/.h  # BANKED home-screen rendering (macro summary + action buttons), ROM bank 1
 │   ├── ui_text.c/.h      # tile font, menu/list rendering, number formatting
 │   ├── input.c/.h        # debounced D-pad/button handling
 │   ├── workouts.c/.h     # persisted workout history + free-session planning flow
 │   ├── nutrition.c/.h    # banked nutrition shell; subflows live in nutrition_date/detail/search
+│   ├── body_weight.c/.h  # BANKED body-weight screen + log-entry spinner, ROM bank 1
 │   ├── food_db.c/.h      # NONBANKED banked-food readers (ff_load/ff_filter)
 │   ├── foundation_foods.c/.h # generated USDA food table (name+kcal+protein/fat/carbs/fiber per 100g), ROM bank 2
 │   ├── common_foods.c/.h # generated common-food table (same compact struct), ROM bank 3
@@ -248,8 +254,9 @@ gameboy/
 │   ├── exercise_db.c/.h  # NONBANKED banked-exercise readers (ex_load/ex_filter_by_muscle)
 │   ├── foodlog.c/.h      # persisted food log (6-byte records in SRAM bank 1) + macro scaling
 │   ├── workoutlog.c/.h   # persisted workout log (variable records in SRAM bank 2)
-│   ├── metrics.c/.h      # body weight log
-│   └── database.c/.h     # SRAM bank-0 profile layout, named address constants, load/save, checksum
+│   ├── metrics.c/.h      # BANKED body-weight log (4-byte records in the SRAM bank-0 metrics sub-region), ROM bank 1
+│   ├── weight_units.h    # shared kg-tenths <-> lb conversion (used by onboarding + body_weight)
+│   └── profile.c/.h      # SRAM bank-0 profile layout, named address constants, load/save, checksum
 ├── data/
 │   └── exercises.c       # bundled exercise names (const, lives in ROM)
 └── tools/                # build helpers (see "Build" below — Node scripts, not a Makefile)
@@ -268,12 +275,13 @@ gameboy/
 
 ---
 
-## Build (current state — Milestone 1e: nutrition + saved workout history)
+## Build (current state — Milestone 1f: nutrition + workout history + body weight)
 
 The first interactive milestone is implemented: a **Game Boy Color** ROM that shows the Musclog logo,
 runs a first-time onboarding flow, generates calorie/macro goals, saves the profile to cartridge SRAM,
-skips onboarding on later boots when the save checksum is valid, and includes a free-session workout
-flow through exercise selection, active sets, rest timers, and saved workout history. Build it from the repo root with:
+skips onboarding on later boots when the save checksum is valid, includes a free-session workout
+flow through exercise selection, active sets, rest timers, and saved workout history, and tracks
+per-day body weight with a min/max trend chart. Build it from the repo root with:
 
 ```bash
 npm run gb:build        # produces gameboy/build/musclog.gbc
@@ -324,8 +332,24 @@ What's wired up so far:
   (64×64, quantized to 4 colors = one CGB palette) using `sharp`. Output is committed, so the ROM build
   itself doesn't depend on `sharp`. Re-run with `npm run gb:prepare-logo` if the source icon changes.
 - **`gameboy/src/main.c`** — splash, text-mode init, save validation, onboarding/home routing, and the
-  macro-summary home screen that routes into nutrition and workouts. `Select+B` on home erases the save
-  and reruns onboarding.
+  home input loop that routes into nutrition, workouts, and body weight. `Select+B` on home erases the
+  save (profile + food log + workout log + body-weight metrics) and reruns onboarding. The home-screen
+  *rendering* lives in `home_screen.c` (banked) because `_HOME` is full.
+- **`gameboy/src/home_screen.c`** — `BANKED` ROM-bank-1 home-screen rendering: the daily macro summary
+  panel and the three action buttons (NUTRITION / WORKOUTS / BODY WEIGHT). Split out of `main.c` so its
+  ~0.9 KB of code lives in a switchable bank instead of the full `_HOME` bank.
+- **`gameboy/src/body_weight.c`** — `BANKED` ROM-bank-1 body-weight screen: shows the latest weight,
+  min/max, and a simple trend bar chart from the metrics log, plus a digit-spinner entry screen (metric
+  kg-tenths or imperial lb). Logging upserts today's record via `metrics_set_for_day`, updates the
+  profile's current weight, and re-saves the profile with `db_save`.
+- **`gameboy/src/metrics.c`** — `BANKED` ROM-bank-1 body-weight log. Lives in cartridge SRAM **bank 0**
+  (the same bank as the profile) in a fixed, disjoint sub-region at `0x40`, behind its own
+  magic/version/count/checksum header. Each record is 4 bytes `{ day_num, weight_kg_tenths }`; one record
+  per calendar day (upsert), oldest dropped when full. Shares the `0xA55Au` rolling-hash checksum shape
+  with `foodlog.c`. Validated/reset at boot (`metrics_init`) and cleared on profile reset
+  (`metrics_erase`) — note `db_erase` only zeroes the profile bytes, so the reset path must call both.
+- **`gameboy/src/weight_units.h`** — `static inline` kg-tenths ⇄ pound conversion and imperial entry
+  bounds, shared by `onboarding.c` and `body_weight.c` so the two never diverge.
 - **`gameboy/src/onboarding.c`** — `BANKED` first-run flow in ROM bank 5 with a combined unit/sex/activity setup screen,
   then age, height, weight, training experience, fitness focus, weight goal, generated goal review,
   and manual macro edits.
@@ -359,7 +383,7 @@ What's wired up so far:
   exercise_count, set_count, volume_kg }` plus compact 4-byte set rows `{ exercise_idx, reps,
   weight_kg_tenths }`. Exercise names are never stored; the history UI reloads names/muscle metadata from
   the ROM exercise table. The log drops the oldest workouts when the bank fills.
-- **`gameboy/src/database.c`** — SRAM bank 0 persistence with named byte-address constants, bit-packed profile flags, magic/version/checksum validation, and a compact 23-byte save block (down from 31 bytes; the extra byte vs the previous 22-byte layout holds the MBC3 RTC calibration date).
+- **`gameboy/src/profile.c`** — SRAM bank 0 profile persistence with named byte-address constants, bit-packed profile flags, magic/version/checksum validation, and a compact 23-byte save block (down from 31 bytes; the extra byte vs the previous 22-byte layout holds the MBC3 RTC calibration date). Occupies bytes `0x00–0x16`; the body-weight metrics log (`metrics.c`) owns `0x40+` in the same bank. (Renamed from `database.c` — bank 0 now holds profile *and* metrics.)
 - **`gameboy/src/rtc.c`** — MBC3 RTC hardware access (`rtc_latch`, `rtc_write_days`), calendar arithmetic (`cal_advance`, `cal_compare`, `cal_format`, `cal_day_number`), and the `rtc_setup_date` screen that lets the user pin today's date on first boot or after re-calibration.
 - **`gameboy/src/nutrition_math.c`** — `BANKED` ROM-bank-5 integer-only Mifflin-style BMR, activity multipliers,
   calorie adjustments, macro splits, and fiber target generation.
@@ -413,8 +437,17 @@ battery.
 
 ### SRAM budget (the hard constraint)
 
-The ROM currently declares 32 KB SRAM. Bank 0 holds the tiny profile block, bank 1 holds the food log,
-and bank 2 holds saved workout history.
+The ROM currently declares 32 KB SRAM. Bank 0 holds the tiny profile block **and** the body-weight
+metrics log, bank 1 holds the food log, and bank 2 holds saved workout history. Bank 0 is shared by two
+modules at disjoint, fixed offsets so each checksums only its own bytes:
+
+| Offset      | Bytes | Owner       | Content                                                                 |
+| ----------- | ----- | ----------- | ----------------------------------------------------------------------- |
+| `0x00–0x16` | 23    | `profile.c` | Packed profile (units, body metrics, goals, RTC calibration).           |
+| `0x17–0x3F` | —     | —           | Reserved profile growth headroom.                                       |
+| `0x40`      | 8     | `metrics.c` | Metrics header: magic `'BW'`, version, count, checksum.                 |
+| `0x48+`     | 4 ea. | `metrics.c` | Body-weight records `{ day_num, weight_kg_tenths }`, one per day.        |
+
 Rough plan for future data:
 
 - Keep food/exercise **names** as short fixed-width strings (e.g. 12 chars) or indices into a
@@ -437,7 +470,9 @@ Background on saving: [Larold's "How to Save Data in Game Boy Games"](https://la
 3. **Workout logging** — exercise picker, set/rep/weight digit spinners, session summary, save.
 4. **Workout history + PRs** — scrollable list, per-exercise PR detection, volume bar chart.
 5. **Macro logging** — implemented: bundled food search, daily totals vs. goal, digestible-carb math, progress bars.
-6. **Body weight + units** — weight log, metric/imperial display conversion, simple trend chart.
+6. **Body weight + units** — implemented: per-day body-weight log (`metrics.c`, SRAM bank-0 sub-region),
+   home-screen **WEIGHT** button → latest weight + min/max + trend bar chart, digit-spinner entry with
+   metric/imperial conversion, seeded from the onboarding weight.
 7. **Polish** — rest-timer beep, PR fanfare. Date tracking is already live via MBC3 RTC.
 8. **Stretch goals** — Link Cable data export to a second cart/PC; minimal cycle logging.
 

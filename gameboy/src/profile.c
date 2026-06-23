@@ -1,4 +1,4 @@
-#include "database.h"
+#include "profile.h"
 
 #include <gb/gb.h>
 #include <string.h>

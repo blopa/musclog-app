@@ -1,0 +1,163 @@
+#pragma bank 1
+
+#include "body_weight.h"
+
+#include "copies.h"
+#include "input.h"
+#include "metrics.h"
+#include "rtc.h"
+#include "ui_text.h"
+#include "utils.h"
+#include "weight_units.h"
+
+#include <gb/gb.h>
+#include <stdio.h>
+#include <string.h>
+
+#define TREND_VISIBLE 6u  /* trend bars shown (rows 10-15), newest at the bottom */
+
+/* Format a metric weight (kg tenths) into the user's unit system. */
+static void bw_format_weight(uint8_t units, uint16_t kg_tenths, char *buf) {
+    if (units == UNITS_IMPERIAL) {
+        sprintf(buf, "%u LB", (unsigned int)kg_tenths_to_lbs(kg_tenths));
+    } else {
+        sprintf(buf, "%u.%u KG", (unsigned int)(kg_tenths / 10u), (unsigned int)(kg_tenths % 10u));
+    }
+}
+
+static void bw_draw_trend(uint16_t count, uint16_t mn, uint16_t mx) {
+    uint16_t shown = count < TREND_VISIBLE ? count : TREND_VISIBLE;
+    uint16_t start = (uint16_t)(count - shown);  /* oldest record in the window */
+    uint16_t span  = (uint16_t)(mx - mn);
+    uint16_t i;
+    uint16_t day_num, w;
+    uint8_t  fill;
+
+    for (i = 0u; i != shown; ++i) {
+        if (!metrics_get((uint16_t)(start + i), &day_num, &w)) continue;
+        fill = (span == 0u) ? 18u : ui_bar_fill((uint16_t)(w - mn), span, 18u);
+        ui_draw_bar(1u, (uint8_t)(10u + i), 18u, fill);
+    }
+}
+
+static void bw_draw(const SaveData *data, const CalDate *today) {
+    uint16_t count = metrics_count();
+    uint16_t day_num, latest, mn, mx;
+    char buf[22];
+    char date_buf[9];
+
+    cal_format(today, date_buf);
+
+    ui_clear();
+    ui_fill_attr(0u, 0u, 20u, 1u, UI_PAL_HEADER);
+    ui_print_center(0u, STR_APP_TITLE);
+    ui_print_at(0u, 1u, STR_BODY_WEIGHT);
+    ui_print_at((uint8_t)(19u - (uint8_t)strlen(date_buf)), 1u, date_buf);
+    ui_print_at(0u, 2u, STR_DIVIDER);
+
+    if (count == 0u) {
+        ui_print_center(9u, STR_NO_DATA);
+        ui_footer(STR_FOOTER_BACK, STR_FOOTER_LOG);
+        return;
+    }
+
+    metrics_latest(&day_num, &latest);
+    metrics_min_max(&mn, &mx);
+
+    ui_print_at(1u, 3u, STR_CURRENT);
+    bw_format_weight(data->units, latest, buf);
+    ui_print_at(1u, 4u, buf);
+    ui_print_at(0u, 5u, STR_DIVIDER);
+
+    ui_print_at(1u, 6u, STR_MIN);
+    ui_print_at(11u, 6u, STR_MAX);
+    bw_format_weight(data->units, mn, buf);
+    ui_print_at(1u, 7u, buf);
+    bw_format_weight(data->units, mx, buf);
+    ui_print_at(11u, 7u, buf);
+    ui_print_at(0u, 8u, STR_DIVIDER);
+
+    ui_print_at(1u, 9u, STR_TREND);
+    bw_draw_trend(count, mn, mx);
+
+    ui_footer(STR_FOOTER_BACK, STR_FOOTER_LOG);
+}
+
+/* Digit-spinner entry for today's weight. Returns 1 if a value was saved. */
+static uint8_t bw_log_entry(SaveData *data, uint16_t day_num) {
+    InputState input;
+    uint16_t kg_tenths;
+    uint16_t lbs;
+    uint8_t  imperial = (uint8_t)(data->units == UNITS_IMPERIAL);
+    uint16_t prev_day;
+    char value[16];
+
+    /* Seed from the most recent weigh-in, falling back to the profile weight. */
+    if (metrics_latest(&prev_day, &kg_tenths) == 0u) {
+        kg_tenths = data->weight_kg_tenths;
+    }
+    lbs = kg_tenths_to_lbs(kg_tenths);
+
+    bw_format_weight(data->units, kg_tenths, value);
+    ui_draw_value_screen(STR_LOG_WEIGHT, STR_YOUR_WEIGHT, value, STR_HINT_CHANGE);
+
+    input_init(&input);
+    while (1) {
+        wait_vbl_done();
+        input_update(&input);
+
+        if (input_pressed(&input, J_B)) return 0u;
+
+        if (input_pressed(&input, J_A | J_START)) {
+            metrics_set_for_day(day_num, kg_tenths);
+            data->weight_kg_tenths = kg_tenths;
+            db_save(data);
+            return 1u;
+        }
+
+        if (input_pressed(&input, J_UP | J_DOWN | J_LEFT | J_RIGHT)) {
+            if (imperial) {
+                if (input_pressed(&input, J_UP))    lbs = add_clamped_u16(lbs, 1u, WEIGHT_LB_MAX);
+                if (input_pressed(&input, J_DOWN))  lbs = sub_clamped_u16(lbs, 1u, WEIGHT_LB_MIN);
+                if (input_pressed(&input, J_RIGHT)) lbs = add_clamped_u16(lbs, 10u, WEIGHT_LB_MAX);
+                if (input_pressed(&input, J_LEFT))  lbs = sub_clamped_u16(lbs, 10u, WEIGHT_LB_MIN);
+                kg_tenths = lbs_to_kg_tenths(lbs);
+            } else {
+                if (input_pressed(&input, J_UP))    kg_tenths = add_clamped_u16(kg_tenths, 5u, DB_WEIGHT_KG_TENTHS_MAX);
+                if (input_pressed(&input, J_DOWN))  kg_tenths = sub_clamped_u16(kg_tenths, 5u, DB_WEIGHT_KG_TENTHS_MIN);
+                if (input_pressed(&input, J_RIGHT)) kg_tenths = add_clamped_u16(kg_tenths, 50u, DB_WEIGHT_KG_TENTHS_MAX);
+                if (input_pressed(&input, J_LEFT))  kg_tenths = sub_clamped_u16(kg_tenths, 50u, DB_WEIGHT_KG_TENTHS_MIN);
+            }
+
+            bw_format_weight(data->units, kg_tenths, value);
+            ui_clear_row(8u);
+            ui_print_center(8u, value);
+            ui_present();
+        }
+    }
+}
+
+void body_weight_show(SaveData *data) BANKED {
+    InputState input;
+    CalDate today = cal_current_date(data);
+    uint16_t day_num = cal_day_number(today);
+    uint8_t  dirty = 1u;
+
+    input_init(&input);
+    while (1) {
+        if (dirty) {
+            bw_draw(data, &today);
+            dirty = 0u;
+        }
+
+        wait_vbl_done();
+        input_update(&input);
+
+        if (input_pressed(&input, J_B)) return;
+
+        if (input_pressed(&input, J_A | J_START)) {
+            bw_log_entry(data, day_num);
+            dirty = 1u;
+        }
+    }
+}

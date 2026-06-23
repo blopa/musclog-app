@@ -1,7 +1,7 @@
 #ifndef MUSCLOG_NUTRITION_DETAIL_H
 #define MUSCLOG_NUTRITION_DETAIL_H
 
-#include "database.h"
+#include "profile.h"
 #include <gb/gb.h>
 #include <stdint.h>
 
