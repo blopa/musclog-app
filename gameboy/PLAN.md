@@ -338,10 +338,12 @@ What's wired up so far:
   history list with weekly summary stats and scrolling. Its `Select` action menu can return home or open the free-session
   start flow: exercise picker, muscle-group filter input changed with left/right, a planning screen where
   the user edits the suggested set count, weight, and reps, an active set screen, an edit/options menu,
-  a 60-second rest timer between non-final sets, and a loop back to the exercise picker after an exercise
-  is completed or skipped. Completed sets are accumulated for the active session, saved when the session
-  ends, and listed newest-first with generated titles like `CHEST 06-24-26` based on the dominant target
-  muscle. The suggestion mirrors the Expo fallback logic: `weight * loadMultiplier * experienceFactor *
+  and a 60-second rest timer between non-final sets. After an exercise is completed (or skipped via the
+  options menu) an "exercise complete" screen congratulates the user, shows the running session totals
+  (exercises/sets/volume), and offers **ADD EXERCISE** (loop back to the picker) or **FINISH WORKOUT**
+  (save the session and exit). Completed sets are accumulated for the active session, saved when the
+  session is finished, and listed newest-first with generated titles like `CHEST 06-24-26` based on the
+  dominant target muscle. The suggestion mirrors the Expo fallback logic: `weight * loadMultiplier * experienceFactor *
   ageFactor`, bodyweight/load-zero exercises start with no external load, and compound exercises suggest
   10 reps while other mechanic types suggest 14.
 - **`gameboy/src/foodlog.c`** — the persisted food log. Each entry is a compact 6-byte record

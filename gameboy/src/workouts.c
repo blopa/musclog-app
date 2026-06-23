@@ -70,6 +70,11 @@ typedef enum WorkoutSetMenuAction {
     SET_MENU_ACTION_END_WORKOUT = 5u,
 } WorkoutSetMenuAction;
 
+typedef enum WorkoutDoneAction {
+    WORKOUT_DONE_ADD = 0u,
+    WORKOUT_DONE_FINISH = 1u,
+} WorkoutDoneAction;
+
 typedef struct ExercisePickerState {
     uint8_t filter;
     uint8_t scroll;
@@ -286,6 +291,18 @@ static uint8_t session_dominant_muscle(void) {
     }
 
     return best;
+}
+
+static uint16_t session_volume_kg(void) {
+    uint8_t i;
+    uint32_t volume = 0u;
+
+    for (i = 0u; i != session_set_count; ++i) {
+        volume += ((uint32_t)session_sets[i].weight_kg_tenths * session_sets[i].reps + 5u) / 10u;
+        if (volume > 65535u) return 65535u;
+    }
+
+    return (uint16_t)volume;
 }
 
 static uint8_t session_finish(SaveData *data) {
@@ -1046,6 +1063,61 @@ static uint8_t workout_set_flow(const SaveData *data, WorkoutPlanState *plan) {
     }
 }
 
+static void draw_exercise_complete(const char *exercise_name, uint8_t selected) {
+    char buf[20];
+
+    ui_title(STR_WELL_DONE);
+    ui_print_center(5u, exercise_name);
+
+    sprintf(buf, "%uEX %uS %uK",
+            (unsigned int)session_exercise_count,
+            (unsigned int)session_set_count,
+            (unsigned int)(session_volume_kg() / 1000u));
+    ui_print_center(7u, buf);
+
+    ui_fill_attr(0u, 10u, 20u, 1u, selected == WORKOUT_DONE_ADD ? UI_PAL_SELECTED : UI_PAL_PANEL);
+    ui_print_at(1u, 10u, selected == WORKOUT_DONE_ADD ? ">" : " ");
+    ui_print_at(3u, 10u, STR_ADD_EXERCISE);
+
+    ui_fill_attr(0u, 12u, 20u, 1u, selected == WORKOUT_DONE_FINISH ? UI_PAL_SELECTED : UI_PAL_PANEL);
+    ui_print_at(1u, 12u, selected == WORKOUT_DONE_FINISH ? ">" : " ");
+    ui_print_at(3u, 12u, STR_FINISH_WORKOUT);
+
+    ui_footer(STR_FOOTER_BACK, STR_FOOTER_OK);
+}
+
+/*
+ * Shown after an exercise is completed: a short congrats with the running
+ * session totals and a choice to add another exercise or finish the workout.
+ * Returns WORKOUT_DONE_ADD or WORKOUT_DONE_FINISH (B defaults to ADD so the
+ * session is never finished by accident).
+ */
+static uint8_t workout_exercise_complete_menu(const char *exercise_name) {
+    InputState input;
+    uint8_t selected = WORKOUT_DONE_ADD;
+    uint8_t dirty = 1u;
+
+    input_init(&input);
+    while (1) {
+        if (dirty) {
+            draw_exercise_complete(exercise_name, selected);
+            dirty = 0u;
+        }
+
+        wait_vbl_done();
+        input_update(&input);
+
+        if (input_pressed(&input, J_UP | J_DOWN)) {
+            selected = selected == WORKOUT_DONE_ADD ? WORKOUT_DONE_FINISH : WORKOUT_DONE_ADD;
+            dirty = 1u;
+        }
+
+        if (input_pressed(&input, J_B)) return WORKOUT_DONE_ADD;
+
+        if (input_pressed(&input, J_A | J_START)) return selected;
+    }
+}
+
 static void workout_start_free_session(SaveData *data) {
     uint8_t exercise_idx;
     uint8_t flow_result;
@@ -1068,6 +1140,13 @@ static void workout_start_free_session(SaveData *data) {
             flow_result = workout_set_flow(data, &plan);
             if (flow_result == WORKOUT_SET_FLOW_BACK_TO_PLAN) continue;
             if (flow_result == WORKOUT_SET_FLOW_END_WORKOUT) {
+                session_finish(data);
+                return;
+            }
+
+            /* Exercise completed: congratulate and let the user add another
+             * exercise or finish (and save) the whole workout. */
+            if (workout_exercise_complete_menu(plan.exercise.name) == WORKOUT_DONE_FINISH) {
                 session_finish(data);
                 return;
             }
