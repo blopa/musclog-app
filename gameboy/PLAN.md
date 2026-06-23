@@ -239,9 +239,9 @@ What's wired up so far:
 - **`gameboy/tools/prepare-logo.mjs`** — converts `assets/icon-pixel.png` → `gameboy/assets/logo.png`
   (64×64, quantized to 4 colors = one CGB palette) using `sharp`. Output is committed, so the ROM build
   itself doesn't depend on `sharp`. Re-run with `npm run gb:prepare-logo` if the source icon changes.
-- **`gameboy/src/main.c`** — splash, text-mode init, save validation, onboarding/home routing, and a
-  simple saved-profile home placeholder. `Select+B` on the home placeholder erases the save and reruns
-  onboarding.
+- **`gameboy/src/main.c`** — splash, text-mode init, save validation, onboarding/home routing, and the
+  macro-summary home screen that routes into nutrition and workouts. `Select+B` on home erases the save
+  and reruns onboarding.
 - **`gameboy/src/onboarding.c`** — `BANKED` first-run flow in ROM bank 5 with a combined unit/sex/activity setup screen,
   then age, height, weight, training experience, fitness focus, weight goal, generated goal review,
   and manual macro edits.
@@ -250,6 +250,9 @@ What's wired up so far:
   while food detail/amount screens continue to show total food carbs and fiber separately. The date picker,
   food detail, and food search/amount subflows live in `nutrition_date.c`, `nutrition_detail.c`, and
   `nutrition_search.c`, also in ROM bank 4.
+- **`gameboy/src/workouts.c`** — `BANKED` workouts shell in ROM bank 5: a visual-only mocked workout
+  history list with summary stats, scrolling, and a `Select` action menu exposing the future `START WORKOUT`
+  entry point.
 - **`gameboy/src/foodlog.c`** — the persisted food log. Each entry is a compact 6-byte record
   `{ day_num, food_idx, grams }` (day_num = `cal_day_number`, food_idx in the global bundled-food index,
   grams metric)

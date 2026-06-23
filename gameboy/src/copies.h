@@ -44,7 +44,14 @@
 /* ── Home screen ───────────────────────────────────────────────────────── */
 #define STR_HOME          "HOME"
 #define STR_NUTRITION     "NUTRITION"
-#define STR_START_WORKOUT "WORKOUTS"
+#define STR_WORKOUTS      "WORKOUTS"
+
+/* ── Workout tracking ─────────────────────────────────────────────────── */
+#define STR_START_WORKOUT "START WORKOUT"
+#define STR_THIS_WEEK     "THIS WEEK"
+#define STR_AVG           "AVG"
+#define STR_VOL           "VOL"
+#define STR_DONE          "DONE"
 
 /* ── Coming soon ───────────────────────────────────────────────────────── */
 #define STR_COMING_SOON   "COMING SOON"

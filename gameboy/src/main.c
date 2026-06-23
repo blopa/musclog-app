@@ -14,6 +14,7 @@
 #include "nutrition.h"
 #include "onboarding.h"
 #include "ui_text.h"
+#include "workouts.h"
 
 /* The visible background is 20x18 tiles; center the 8x8-tile logo within it. */
 #define SCREEN_TILE_W 20
@@ -229,7 +230,7 @@ static void draw_home(const HomeState *state) {
 
     /* ── Action buttons ── */
     draw_button(13u, STR_NUTRITION, state->selected == HOME_BTN_FOOD);
-    draw_button(15u, STR_START_WORKOUT, state->selected == HOME_BTN_WORKOUT);
+    draw_button(15u, STR_WORKOUTS, state->selected == HOME_BTN_WORKOUT);
 
     ui_footer(STR_FOOTER_RESET, "");
 }
@@ -270,7 +271,7 @@ static void home_loop(SaveData *data) {
             if (state.selected == HOME_BTN_FOOD) {
                 nutrition_track(data);
             } else {
-                show_coming_soon(STR_START_WORKOUT);
+                workouts_show();
             }
             state.dirty = 1u;
         }
