@@ -271,7 +271,7 @@ static void home_loop(SaveData *data) {
             if (state.selected == HOME_BTN_FOOD) {
                 nutrition_track(data);
             } else {
-                workouts_show();
+                workouts_show(data);
             }
             state.dirty = 1u;
         }

@@ -35,6 +35,15 @@ typedef enum {
 
 #define EXERCISE_EQUIPMENT_TYPE_COUNT 11u
 
+typedef enum {
+    EX_MECHANIC_CARDIO = 0,
+    EX_MECHANIC_COMPOUND = 1,
+    EX_MECHANIC_ISOLATION = 2,
+    EX_MECHANIC_PLYOMETRIC = 3,
+} exercise_mechanic_type_t;
+
+#define EXERCISE_MECHANIC_TYPE_COUNT 4u
+
 /* One bundled exercise. The table order follows exerciseIndex, so the stable
  * exercise id is the zero-based array index + 1.
  * load_multiplier_centi stores loadMultiplier * 100 (1.45 -> 145). */
@@ -42,6 +51,7 @@ typedef struct {
     const char *name;
     uint8_t muscle_group;            /* exercise_muscle_group_t */
     uint8_t equipment_type;          /* exercise_equipment_type_t */
+    uint8_t mechanic_type;           /* exercise_mechanic_type_t */
     uint16_t load_multiplier_centi;
 } exercise_t;
 
@@ -54,6 +64,7 @@ typedef struct {
 
 extern const char * const exercise_muscle_group_names[EXERCISE_MUSCLE_GROUP_COUNT];
 extern const char * const exercise_equipment_type_names[EXERCISE_EQUIPMENT_TYPE_COUNT];
+extern const char * const exercise_mechanic_type_names[EXERCISE_MECHANIC_TYPE_COUNT];
 extern const exercise_t exercises[EXERCISE_COUNT];
 
 #endif /* MUSCLOG_EXERCISES_H */

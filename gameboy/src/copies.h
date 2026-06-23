@@ -48,6 +48,16 @@
 
 /* ── Workout tracking ─────────────────────────────────────────────────── */
 #define STR_START_WORKOUT "START WORKOUT"
+#define STR_FREE_SESSION  "FREE SESSION"
+#define STR_SELECT_EXERCISE "SELECT EXERCISE"
+#define STR_FILTER        "FILTER"
+#define STR_ALL           "ALL"
+#define STR_SETS          "SETS"
+#define STR_REPS          "REPS"
+#define STR_BODYWEIGHT    "BODYWEIGHT"
+#define STR_NO_EXERCISES  "NO EXERCISES"
+#define STR_HINT_FILTER   "SEL/LR FILTER"
+#define STR_HINT_SETS     "UP/DN SETS L/R FAST"
 #define STR_THIS_WEEK     "THIS WEEK"
 #define STR_AVG           "AVG"
 #define STR_VOL           "VOL"
