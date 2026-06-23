@@ -4,7 +4,7 @@
 //   2. Convert gameboy/assets/logo.png -> gameboy/src/logo.c via png2asset.
 //   3. Compile + link src/*.c into gameboy/build/musclog.gbc via lcc.
 //
-// Usage: `npm run build-gb`
+// Usage: `npm run gb:build`
 
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';

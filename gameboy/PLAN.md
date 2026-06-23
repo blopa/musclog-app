@@ -164,7 +164,7 @@ gameboy/
 │   ├── ui_text.c/.h      # tile font, menu/list rendering, number formatting
 │   ├── input.c/.h        # debounced D-pad/button handling
 │   ├── workout.c/.h      # exercise library, session logging, PRs, volume
-│   ├── nutrition.c/.h    # food library, daily macro totals, goals
+│   ├── nutrition.c/.h    # food library, daily macro totals, action menu
 │   ├── foundation_foods.c/.h # generated USDA food table (name+kcal+macros/100g), ROM bank 2
 │   ├── metrics.c/.h      # body weight log
 │   └── database.c/.h     # SRAM layout, named address constants, load/save, checksum
@@ -193,7 +193,7 @@ runs a first-time onboarding flow, generates calorie/macro goals, saves the prof
 and skips onboarding on later boots when the save checksum is valid. Build it from the repo root with:
 
 ```bash
-npm run build-gb        # produces gameboy/build/musclog.gbc
+npm run gb:build        # produces gameboy/build/musclog.gbc
 ```
 
 On the **first** run this auto-downloads the GBDK-2020 toolchain into `gameboy/.gbdk/` (gitignored) —
@@ -224,6 +224,8 @@ What's wired up so far:
 - **`gameboy/src/onboarding.c`** — first-run flow with a combined unit/sex/activity setup screen,
   then age, height, weight, training experience, fitness focus, weight goal, generated goal review,
   and manual macro edits.
+- **`gameboy/src/nutrition.c`** — daily macro totals, mock food rows/details, and the nutrition
+  `Select` action menu (`Go to Date` opens the date picker; `Track Food` is a placeholder).
 - **`gameboy/src/database.c`** — SRAM bank 0 persistence with named byte-address constants, bit-packed profile flags, magic/version/checksum validation, and a compact 23-byte save block (down from 31 bytes; the extra byte vs the previous 22-byte layout holds the MBC3 RTC calibration date).
 - **`gameboy/src/rtc.c`** — MBC3 RTC hardware access (`rtc_latch`, `rtc_write_days`), calendar arithmetic (`cal_advance`, `cal_compare`, `cal_format`), and the `rtc_setup_date` screen that lets the user pin today's date on first boot or after re-calibration.
 - **`gameboy/src/nutrition_math.c`** — integer-only Mifflin-style BMR, activity multipliers, calorie

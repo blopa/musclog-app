@@ -147,7 +147,7 @@ static void draw_food_row(uint8_t screen_row, uint8_t day,
  *  Row 14    FOOD NAME     XXXXK
  *  Row 15    FOOD NAME     XXXXK
  *  Row 16  --------------------
- *  Row 17  B BACK          SEL DAY
+ *  Row 17  B BACK         SEL MENU
  */
 static void draw_nutrition(const NutritionState *state) {
     const SaveData *d = state->data;
@@ -211,7 +211,48 @@ static void draw_nutrition(const NutritionState *state) {
         );
     }
 
-    ui_footer("B BACK", "SEL DATE");
+    ui_footer("B BACK", "SEL MENU");
+}
+
+typedef enum NutritionAction {
+    NUTRITION_ACTION_NONE = 0u,
+    NUTRITION_ACTION_GO_TO_DATE = 1u,
+    NUTRITION_ACTION_TRACK_FOOD = 2u,
+} NutritionAction;
+
+static NutritionAction nutrition_action_menu(void) {
+    static const char *OPTIONS[2] = {
+        "GO TO DATE",
+        "TRACK FOOD",
+    };
+    uint8_t selected;
+    uint8_t dirty;
+    InputState input;
+
+    selected = 0u;
+    dirty = 1u;
+
+    input_init(&input);
+    while (1) {
+        if (dirty) {
+            ui_draw_menu("NUTRITION", OPTIONS, 2u, selected);
+            dirty = 0u;
+        }
+
+        wait_vbl_done();
+        input_update(&input);
+
+        if (input_pressed(&input, J_B)) return NUTRITION_ACTION_NONE;
+
+        if (input_pressed(&input, J_UP | J_DOWN)) {
+            selected = (selected == 0u) ? 1u : 0u;
+            dirty = 1u;
+        }
+
+        if (input_pressed(&input, J_A | J_START)) {
+            return selected == 0u ? NUTRITION_ACTION_GO_TO_DATE : NUTRITION_ACTION_TRACK_FOOD;
+        }
+    }
 }
 
 /*
@@ -384,12 +425,15 @@ void nutrition_track(SaveData *data) {
         /* B → return to home */
         if (input_pressed(&input, J_B)) return;
 
-        /* Select → date picker */
+        /* Select → action menu */
         if (input_pressed(&input, J_SELECT)) {
-            nutrition_date_picker(state.today, &state.viewing_date);
-            state.scroll  = 0u;
-            state.focused = 0u;
-            state.dirty   = 1u;
+            NutritionAction action = nutrition_action_menu();
+            if (action == NUTRITION_ACTION_GO_TO_DATE) {
+                nutrition_date_picker(state.today, &state.viewing_date);
+                state.scroll  = 0u;
+                state.focused = 0u;
+            }
+            state.dirty = 1u;
             continue;
         }
 

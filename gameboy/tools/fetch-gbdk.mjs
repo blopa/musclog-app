@@ -1,7 +1,7 @@
 // Downloads the GBDK-2020 toolchain into gameboy/.gbdk/ (gitignored).
 // Idempotent: if a usable `lcc` is already present, it does nothing.
 //
-// Run directly (`npm run gb:setup`) or let `npm run build-gb` invoke it on first build.
+// Run directly (`npm run gb:setup`) or let `npm run gb:build` invoke it on first build.
 
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, rmSync } from 'node:fs';
