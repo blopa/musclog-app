@@ -260,6 +260,38 @@
     "description": "Tortilla chips served with tomato salsa"
   },
   {
+    "name": "Tacos al Pastor",
+    "description": "Mexican tacos with marinated pork, pineapple, onion, and cilantro"
+  },
+  {
+    "name": "Carne Asada Tacos",
+    "description": "Mexican tacos with grilled steak, onion, cilantro, and salsa"
+  },
+  {
+    "name": "Chiles Rellenos",
+    "description": "Mexican stuffed peppers with cheese or meat and sauce"
+  },
+  {
+    "name": "Pozole",
+    "description": "Mexican hominy soup with pork or chicken and toppings"
+  },
+  {
+    "name": "Tamales",
+    "description": "Mexican steamed corn masa filled with meat, cheese, or vegetables"
+  },
+  {
+    "name": "Sopes",
+    "description": "Thick Mexican corn cakes topped with beans, meat, salsa, and cheese"
+  },
+  {
+    "name": "Tostadas",
+    "description": "Crisp tortillas topped with beans, meat, vegetables, and salsa"
+  },
+  {
+    "name": "Mole Poblano",
+    "description": "Mexican chicken or turkey with rich chile and chocolate mole sauce"
+  },
+  {
     "name": "Poke Bowl Chicken",
     "description": "Hawaiian-style rice bowl with chicken, vegetables, and sauce"
   },
@@ -640,6 +672,38 @@
     "description": "Italian salad with tomato, mozzarella, and basil"
   },
   {
+    "name": "Focaccia",
+    "description": "Italian flatbread with olive oil, herbs, and salt"
+  },
+  {
+    "name": "Bruschetta",
+    "description": "Toasted Italian bread topped with tomato, basil, and olive oil"
+  },
+  {
+    "name": "Pasta Amatriciana",
+    "description": "Italian pasta with tomato sauce, cured pork, and pecorino"
+  },
+  {
+    "name": "Pasta Cacio e Pepe",
+    "description": "Italian pasta with pecorino cheese and black pepper"
+  },
+  {
+    "name": "Osso Buco",
+    "description": "Italian braised veal shank with vegetables and wine"
+  },
+  {
+    "name": "Saltimbocca",
+    "description": "Italian veal or chicken with prosciutto, sage, and wine sauce"
+  },
+  {
+    "name": "Arancini",
+    "description": "Italian fried rice balls filled with cheese, meat, or sauce"
+  },
+  {
+    "name": "Panna Cotta",
+    "description": "Italian chilled cream dessert often served with fruit sauce"
+  },
+  {
     "name": "Caesar Salad",
     "description": "Romaine salad with Caesar dressing, croutons, and parmesan"
   },
@@ -768,6 +832,38 @@
     "description": "Spanish fried potatoes with spicy sauce"
   },
   {
+    "name": "Gazpacho",
+    "description": "Spanish chilled tomato and vegetable soup"
+  },
+  {
+    "name": "Croquetas",
+    "description": "Spanish fried bechamel croquettes with ham, chicken, or fish"
+  },
+  {
+    "name": "Pan con Tomate",
+    "description": "Spanish toasted bread rubbed with tomato, olive oil, and salt"
+  },
+  {
+    "name": "Gambas al Ajillo",
+    "description": "Spanish shrimp cooked with garlic, olive oil, and chili"
+  },
+  {
+    "name": "Pulpo a la Gallega",
+    "description": "Spanish octopus with potatoes, olive oil, and paprika"
+  },
+  {
+    "name": "Fabada Asturiana",
+    "description": "Spanish white bean stew with pork, sausage, and paprika"
+  },
+  {
+    "name": "Pisto",
+    "description": "Spanish vegetable stew with tomato, peppers, zucchini, and egg"
+  },
+  {
+    "name": "Churros",
+    "description": "Spanish fried dough pastries often served with chocolate"
+  },
+  {
     "name": "Empanadas",
     "description": "Filled pastry with meat, cheese, or vegetables"
   },
@@ -798,6 +894,38 @@
   {
     "name": "Acai Bowl",
     "description": "Frozen acai bowl with fruit and granola"
+  },
+  {
+    "name": "Pao de Queijo",
+    "description": "Brazilian cheese bread made with tapioca flour"
+  },
+  {
+    "name": "Farofa",
+    "description": "Brazilian toasted cassava flour side dish"
+  },
+  {
+    "name": "Vatapa",
+    "description": "Brazilian creamy stew with bread, shrimp, coconut milk, and peanuts"
+  },
+  {
+    "name": "Baiao de Dois",
+    "description": "Brazilian rice and beans dish with cheese, herbs, and dried meat"
+  },
+  {
+    "name": "Brazilian Stroganoff",
+    "description": "Brazilian creamy beef or chicken stew served with rice and potato sticks"
+  },
+  {
+    "name": "Pastel",
+    "description": "Brazilian fried pastry filled with meat, cheese, or vegetables"
+  },
+  {
+    "name": "Brigadeiro",
+    "description": "Brazilian chocolate condensed milk truffle"
+  },
+  {
+    "name": "Romeu e Julieta",
+    "description": "Brazilian dessert pairing guava paste with cheese"
   },
   {
     "name": "Hummus",
@@ -854,6 +982,38 @@
   {
     "name": "Full English Breakfast",
     "description": "Breakfast with eggs, sausage, bacon, beans, and toast"
+  },
+  {
+    "name": "Stamppot",
+    "description": "Dutch mashed potatoes with vegetables and smoked sausage"
+  },
+  {
+    "name": "Hutspot",
+    "description": "Dutch mashed potatoes with carrots, onions, and meat"
+  },
+  {
+    "name": "Erwtensoep",
+    "description": "Dutch split pea soup with pork and smoked sausage"
+  },
+  {
+    "name": "Bitterballen",
+    "description": "Dutch fried beef ragout balls served with mustard"
+  },
+  {
+    "name": "Kroket",
+    "description": "Dutch fried croquette filled with meat ragout"
+  },
+  {
+    "name": "Kibbeling",
+    "description": "Dutch battered fried fish pieces served with sauce"
+  },
+  {
+    "name": "Poffertjes",
+    "description": "Small Dutch pancakes served with butter and powdered sugar"
+  },
+  {
+    "name": "Uitsmijter",
+    "description": "Dutch open-faced sandwich with fried eggs, ham, and cheese"
   },
   {
     "name": "Pancakes",
@@ -1066,6 +1226,38 @@
   {
     "name": "Cornbread",
     "description": "Baked bread made with cornmeal"
+  },
+  {
+    "name": "Sloppy Joe",
+    "description": "American sandwich with saucy ground beef on a bun"
+  },
+  {
+    "name": "Reuben Sandwich",
+    "description": "American sandwich with corned beef, sauerkraut, Swiss cheese, and dressing"
+  },
+  {
+    "name": "Lobster Roll",
+    "description": "New England sandwich with lobster meat in a split-top bun"
+  },
+  {
+    "name": "Biscuits and Gravy",
+    "description": "American biscuits topped with sausage gravy"
+  },
+  {
+    "name": "Chili Cheese Dog",
+    "description": "Hot dog topped with chili, cheese, and onions"
+  },
+  {
+    "name": "Chicken Fried Steak",
+    "description": "American breaded beef cutlet served with gravy"
+  },
+  {
+    "name": "Hush Puppies",
+    "description": "Southern fried cornmeal balls"
+  },
+  {
+    "name": "Peach Cobbler",
+    "description": "American baked peach dessert with biscuit or batter topping"
   },
   {
     "name": "Tuna Pasta Bake",
