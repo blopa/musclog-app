@@ -165,8 +165,9 @@ gameboy/
 │   ├── input.c/.h        # debounced D-pad/button handling
 │   ├── workout.c/.h      # exercise library, session logging, PRs, volume
 │   ├── nutrition.c/.h    # daily macro totals, action menu, food search/track flow
-│   ├── food_db.c/.h      # bank-2 food readers (ff_load/ff_filter); links first → bank 0
+│   ├── food_db.c/.h      # banked food readers (ff_load/ff_filter); links first → bank 0
 │   ├── foundation_foods.c/.h # generated USDA food table (name+kcal+protein/fat/carbs/fiber per 100g), ROM bank 2
+│   ├── common_foods.c/.h # generated common-food table (same compact struct), ROM bank 3
 │   ├── foodlog.c/.h      # persisted food log (6-byte records in SRAM bank 1) + macro scaling
 │   ├── metrics.c/.h      # body weight log
 │   └── database.c/.h     # SRAM bank-0 profile layout, named address constants, load/save, checksum
@@ -208,17 +209,19 @@ What's wired up so far:
 - **`scripts/build-gb-rom.mjs`** — orchestrator: ensures GBDK is present, runs `png2asset` on the logo,
   then compiles every `gameboy/src/*.c` file with `lcc`. The ROM is CGB-only (`-Wm-yC`), uses the
   MBC3+Timer+RAM+battery cart type (`-Wm-yt0x10`), declares 4 SRAM banks / 32 KB (`-Wm-ya4`), and
-  reserves 8 ROM banks / 128 KB (`-Wm-yo8`) so the bundled USDA Foundation Foods table fits. It also
-  **forces `food_db.c` to link first** so the bank-2 readers stay in the always-mapped bank 0 (see below).
+  reserves 8 ROM banks / 128 KB (`-Wm-yo8`) so the bundled food tables can live in dedicated banks. It also
+  **forces `food_db.c` to link first** so the banked readers stay in the always-mapped bank 0 (see below).
 - **`gameboy/tools/gen-foundation-foods.mjs`** — ports `data/usda_foundation_foods.json` into
-  `gameboy/src/foundation_foods.{c,h}`: per food it keeps only name + kcal + protein/fat/carbs/fiber per 100 g
-  (macros as decigrams in `uint16`, energy as whole kcal). The table is placed in **ROM bank 2** via
-  `#pragma bank 2` (it does not fit in the 32 KB default), so readers must `SWITCH_ROM(FOUNDATION_FOODS_BANK)`
-  before dereferencing `foundation_foods[]`. Output is committed; re-run with `npm run gb:gen-foods` if
-  the dataset changes.
-- **`gameboy/src/food_db.c` / `.h`** — the only code that reads the bank-2 food table. `ff_load` copies a
+  `gameboy/src/foundation_foods.{c,h}` and `data/common_foundation_foods.json` into
+  `gameboy/src/common_foods.{c,h}`: per food it keeps only name + kcal + protein/fat/carbs/fiber per 100 g
+  (macros as decigrams in `uint16`, energy as whole kcal). The USDA table is placed in **ROM bank 2** via
+  `#pragma bank 2`; the common-food table is placed in **ROM bank 3** via `#pragma bank 3`. Output is
+  committed; re-run with `npm run gb:gen-foods` if either dataset changes.
+- **`gameboy/src/food_db.c` / `.h`** — the only code that reads the banked food tables. `ff_load` copies a
   food into a RAM `FoodCache`; `ff_filter` does a case-insensitive **prefix** search over all foods. Both
-  `SWITCH_ROM(FOUNDATION_FOODS_BANK)` to map bank 2 over the `0x4000` window, then restore `SWITCH_ROM(1)`
+  APIs use a single global index space: USDA foods keep indices `0..FOUNDATION_FOOD_COUNT-1`, and common
+  foods are appended after that range so existing USDA food-log references remain stable. The readers
+  `SWITCH_ROM(...)` to map the relevant table over the `0x4000` window, then restore `SWITCH_ROM(1)`
   before returning. Because that switch displaces whatever resident code sits in the switchable window, this
   file **must live in bank 0** — guaranteed by linking it first (the build does this; never reorder it).
 - **`gameboy/tools/fetch-gbdk.mjs`** — downloads/extracts the GBDK-2020 release (platform-aware, pinned
@@ -242,7 +245,8 @@ What's wired up so far:
   date) and shows "TRACKED!". Pressing Start on a logged row opens its detail (serving + scaled macros incl.
   fiber); `Select` there deletes the entry after a confirm.
 - **`gameboy/src/foodlog.c`** — the persisted food log. Each entry is a compact 6-byte record
-  `{ day_num, food_idx, grams }` (day_num = `cal_day_number`, food_idx into `foundation_foods[]`, grams metric)
+  `{ day_num, food_idx, grams }` (day_num = `cal_day_number`, food_idx in the global bundled-food index,
+  grams metric)
   stored in **SRAM bank 1** behind its own magic/version/count/checksum header, leaving the bank-0 profile
   untouched. Macros are never stored — `foodlog_sum_day` / the UI recompute them on demand by `ff_load`-ing the
   food and scaling per-100g values by grams (`foodlog_scale`). Validated/reset at boot (`foodlog_init`) and

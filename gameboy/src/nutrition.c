@@ -360,7 +360,7 @@ static uint8_t show_food_detail(SaveData *data, uint16_t day_num, uint8_t nth) {
 /* ──────────────────────────────────────────────────────────────────────────
  * Foundation-food search & track flow.
  *
- * The bundled USDA foods live in ROM bank 2; all reads go through food_db.c
+ * The bundled food tables live in ROM banks; all reads go through food_db.c
  * (ff_load / ff_filter), which owns the SWITCH_ROM dance. This file only ever
  * touches the RAM FoodCache copies they hand back.
  * ────────────────────────────────────────────────────────────────────────── */

@@ -248,7 +248,7 @@ void foodlog_sum_day(uint16_t day_num,
             if (fl_rd16(off) != day_num) continue;
             food_idx = fl_rd16((uint16_t)(off + 2u));
             grams    = fl_rd16((uint16_t)(off + 4u));
-            /* ff_load switches ROM bank 2 (not the RAM bank), so reading the
+            /* ff_load switches ROM food banks (not the RAM bank), so reading the
              * food while bank-1 SRAM is mapped is safe. */
             ff_load(food_idx, &fc);
             foodlog_scale(&fc, grams, &c, &p, &cb, &f, &fb);

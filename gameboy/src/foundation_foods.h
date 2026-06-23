@@ -5,7 +5,7 @@
 
 #include <stdint.h>
 
-/* One USDA Foundation Food, all values per 100 g.
+/* One bundled food, all values per 100 g.
  * Macros are decigrams (0.1 g resolution); energy is whole kcal. */
 typedef struct {
     const char *name;
