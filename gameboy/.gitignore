@@ -1,4 +1,4 @@
-# Downloaded GBDK-2020 toolchain (re-fetched by `npm run build-gb`)
+# Downloaded GBDK-2020 toolchain (re-fetched by `npm run gb:build`)
 .gbdk/
 
 # Compiled ROM output and intermediate object files

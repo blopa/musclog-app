@@ -7,7 +7,7 @@
 
 #include "foundation_foods.h" /* for foundation_food_t */
 
-#define COMMON_FOOD_COUNT 304u
+#define COMMON_FOOD_COUNT 302u
 
 /* The table and its name strings live in this ROM bank. Callers must
  * SWITCH_ROM(COMMON_FOODS_BANK) before dereferencing the array. */

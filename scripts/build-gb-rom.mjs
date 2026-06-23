@@ -3,11 +3,13 @@
 //   1. Ensure the GBDK-2020 toolchain is present (auto-download on first run).
 //   2. Convert gameboy/assets/logo.png -> gameboy/src/logo.c via png2asset.
 //   3. Compile + link src/*.c into gameboy/build/musclog.gbc via lcc.
+//   4. Check the linker map; bank overflows produce ROMs that "build" but crash
+//      when switchable banks are mapped.
 //
 // Usage: `npm run gb:build`
 
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -27,6 +29,58 @@ function run(bin, args, cwd) {
 const gbdkDir = ensureGbdk();
 const png2asset = join(gbdkDir, 'bin', 'png2asset');
 const lcc = join(gbdkDir, 'bin', 'lcc');
+
+function parseMapAreas(mapPath) {
+    const areas = [];
+    const areaPattern = /^(_[A-Z][A-Z0-9_]*|\.\s+\.ABS\.)\s+([0-9A-F]{8})\s+([0-9A-F]{8})/;
+
+    for (const line of readFileSync(mapPath, 'utf8').split('\n')) {
+        const match = line.match(areaPattern);
+        if (!match) continue;
+
+        areas.push({
+            name: match[1].trim(),
+            addr: Number.parseInt(match[2], 16),
+            size: Number.parseInt(match[3], 16),
+        });
+    }
+
+    return areas;
+}
+
+function checkBankLayout(mapPath) {
+    const areas = parseMapAreas(mapPath);
+    const fixedAreaNames = new Set(['_CODE', '_HOME', '_INITIALIZER', '_GSINIT', '_GSFINAL']);
+    const fixedLimit = 0x4000;
+    const warnings = [];
+    let fixedEnd = 0;
+
+    for (const area of areas) {
+        const end = area.addr + area.size;
+
+        if (fixedAreaNames.has(area.name)) {
+            fixedEnd = Math.max(fixedEnd, end);
+            if (area.size !== 0 && end > fixedLimit) {
+                warnings.push(
+                    `${area.name} is outside bank 0: 0x${area.addr.toString(16)} -> 0x${(end - 1).toString(16)}`,
+                );
+            }
+        }
+
+        if (/^_CODE_\d+$/.test(area.name) && area.size > fixedLimit) {
+            warnings.push(`${area.name} exceeds 16 KB: ${area.size} bytes`);
+        }
+    }
+
+    console.log(`\nBank layout: ROM_0 uses ${fixedEnd} / ${fixedLimit} bytes`);
+    for (const area of areas.filter((candidate) => /^_CODE_\d+$/.test(candidate.name))) {
+        console.log(`Bank layout: ${area.name} uses ${area.size} / ${fixedLimit} bytes`);
+    }
+
+    if (warnings.length !== 0) {
+        throw new Error(`GB ROM bank layout is invalid:\n${warnings.join('\n')}`);
+    }
+}
 
 if (!existsSync(logoPng)) {
     throw new Error(`Missing ${logoPng}. Run "npm run gb:prepare-logo" first to generate it.`);
@@ -53,15 +107,11 @@ run(png2asset, [
 //    -Wm-yo8 reserves eight 16 KB ROM banks (128 KB). The hardcoded food tables
 //    live in dedicated banks (USDA in bank 2, common foods in bank 3); SWITCH_ROM()
 //    is required to read them.
+//    -Wl-m emits gameboy/build/musclog.map so the build can catch bank overflows.
 console.log('Compiling ROM ...');
-// food_db.c MUST link first: it holds the only code that calls SWITCH_ROM to map
-// food-data banks over the 0x4000 window, so it has to stay in the always-mapped
-// bank 0 (the bottom of _CODE). Linking it first guarantees that placement. See food_db.h.
-const BANK0_FIRST = 'food_db.c';
 const cSources = readdirSync(srcDir)
     .filter((name) => name.endsWith('.c'))
     .sort()
-    .sort((a, b) => (a === BANK0_FIRST ? -1 : b === BANK0_FIRST ? 1 : 0))
     .map((name) => join(srcDir, name));
 
 run(lcc, [
@@ -70,9 +120,13 @@ run(lcc, [
     '-Wm-ya4',
     '-Wm-yo8',
     '-Wm-yn"MUSCLOG"',
+    '-Wl-m',
     '-o', romPath,
     ...cSources,
 ], gameboyDir);
+
+const mapPath = join(buildDir, 'musclog.map');
+checkBankLayout(mapPath);
 
 const sizeKb = (statSync(romPath).size / 1024).toFixed(0);
 console.log(`\n✓ Built ${romPath} (${sizeKb} KB)`);

@@ -17,20 +17,63 @@
 
 /* ── Checksum ─────────────────────────────────────────────────────────────── */
 
-static uint16_t db_checksum(const SaveData *data) {
-    SaveData copy;
-    const uint8_t *bytes;
+static uint16_t raw_rd16(const uint8_t *raw, uint8_t off) {
+    return (uint16_t)((uint16_t)raw[off] | ((uint16_t)raw[off + 1u] << 8u));
+}
+
+static void raw_wr16(uint8_t *raw, uint8_t off, uint16_t v) {
+    raw[off]      = (uint8_t)(v & 0xFFu);
+    raw[off + 1u] = (uint8_t)(v >> 8u);
+}
+
+static void db_pack_without_checksum(const SaveData *data, uint8_t *raw) {
+    memset(raw, 0, SRAM_SAVE_SIZE);
+
+    raw_wr16(raw, SRAM_MAGIC, SAVE_MAGIC);
+    raw[SRAM_VERSION] = SAVE_VERSION;
+    raw[SRAM_FLAGS1] = (uint8_t)(
+        ((data->units              & 1u) << FLAGS1_UNITS_BIT)          |
+        ((data->gender             & 3u) << FLAGS1_GENDER_SHIFT)        |
+        (((data->activity_level - 1u) & 7u) << FLAGS1_ACTIVITY_SHIFT)  |
+        ((data->lifting_experience & 3u) << FLAGS1_EXPERIENCE_SHIFT)
+    );
+    raw[SRAM_FLAGS2] = (uint8_t)(
+        ((data->fitness_focus        & 3u) << FLAGS2_FITNESS_SHIFT)      |
+        ((data->weight_goal          & 3u) << FLAGS2_WEIGHT_GOAL_SHIFT)   |
+        ((data->onboarding_complete  & 1u) << FLAGS2_ONBOARDING_BIT)     |
+        ((data->rtc_is_set           & 1u) << FLAGS2_RTC_IS_SET_BIT)
+    );
+
+    raw[SRAM_AGE]          = data->age;
+    raw[SRAM_HEIGHT]       = (uint8_t)(data->height_cm - DB_HEIGHT_CM_MIN);
+    raw_wr16(raw, SRAM_WEIGHT, (uint16_t)(data->weight_kg_tenths - DB_WEIGHT_KG_TENTHS_MIN));
+    raw_wr16(raw, SRAM_CAL_GOAL, data->calorie_goal);
+    raw_wr16(raw, SRAM_PROTEIN_GOAL, data->protein_goal);
+    raw_wr16(raw, SRAM_CARBS_GOAL, data->carbs_goal);
+    raw_wr16(raw, SRAM_FAT_GOAL, data->fat_goal);
+    raw[SRAM_FIBER_GOAL]   = (uint8_t)(data->fiber_goal & 0xFFu);
+    raw[SRAM_RTC_YEAR_OFS] = (uint8_t)(data->rtc_base_date.year - 2000u);
+    raw[SRAM_RTC_MONTH]    = data->rtc_base_date.month;
+    raw[SRAM_RTC_DAY]      = data->rtc_base_date.day;
+}
+
+static uint16_t db_checksum_bytes(const uint8_t *raw) {
     uint16_t sum = 0xA55Au;
     uint8_t i;
+    uint8_t b;
 
-    copy = *data;
-    copy.checksum = 0u;
-    bytes = (const uint8_t *)&copy;
-
-    for (i = 0u; i != sizeof(SaveData); ++i) {
-        sum = (uint16_t)((sum << 5u) ^ (sum >> 1u) ^ bytes[i]);
+    for (i = 0u; i != SRAM_SAVE_SIZE; ++i) {
+        b = (i == SRAM_CHECKSUM || i == (uint8_t)(SRAM_CHECKSUM + 1u)) ? 0u : raw[i];
+        sum = (uint16_t)((sum << 5u) ^ (sum >> 1u) ^ b);
     }
     return sum;
+}
+
+static uint16_t db_checksum(const SaveData *data) {
+    uint8_t raw[SRAM_SAVE_SIZE];
+
+    db_pack_without_checksum(data, raw);
+    return db_checksum_bytes(raw);
 }
 
 /* ── Public API ───────────────────────────────────────────────────────────── */
@@ -68,68 +111,62 @@ uint8_t db_is_valid(const SaveData *data) {
  * Returns 1 if magic, version, and checksum are all valid; 0 otherwise.
  */
 uint8_t db_load(SaveData *out) {
-    uint16_t magic;
     uint8_t  flags1;
     uint8_t  flags2;
     uint16_t weight_off;
+    uint8_t  raw[SRAM_SAVE_SIZE];
+    uint8_t  i;
 
     ENABLE_RAM;
     SWITCH_RAM(0u);
 
-    magic = (uint16_t)((uint16_t)_SRAM[SRAM_MAGIC + 1u] << 8u)
-          | (uint16_t)_SRAM[SRAM_MAGIC];
-
-    if (magic != SAVE_MAGIC || _SRAM[SRAM_VERSION] != SAVE_VERSION) {
-        DISABLE_RAM;
-        return 0u;
+    for (i = 0u; i != SRAM_SAVE_SIZE; ++i) {
+        raw[i] = _SRAM[i];
     }
 
+    DISABLE_RAM;
+
+    if (raw_rd16(raw, SRAM_MAGIC) != SAVE_MAGIC || raw[SRAM_VERSION] != SAVE_VERSION) return 0u;
+    if (raw_rd16(raw, SRAM_CHECKSUM) != db_checksum_bytes(raw)) return 0u;
+
     /* Decode SRAM_FLAGS1 */
-    flags1 = _SRAM[SRAM_FLAGS1];
+    flags1 = raw[SRAM_FLAGS1];
     out->units              = (flags1 >> FLAGS1_UNITS_BIT) & 1u;
     out->gender             = (flags1 >> FLAGS1_GENDER_SHIFT) & 3u;
     out->activity_level     = (uint8_t)(((flags1 >> FLAGS1_ACTIVITY_SHIFT) & 7u) + 1u);
     out->lifting_experience = (flags1 >> FLAGS1_EXPERIENCE_SHIFT) & 3u;
 
     /* Decode SRAM_FLAGS2 */
-    flags2 = _SRAM[SRAM_FLAGS2];
+    flags2 = raw[SRAM_FLAGS2];
     out->fitness_focus       = (flags2 >> FLAGS2_FITNESS_SHIFT) & 3u;
     out->weight_goal         = (flags2 >> FLAGS2_WEIGHT_GOAL_SHIFT) & 3u;
     out->onboarding_complete = (flags2 >> FLAGS2_ONBOARDING_BIT) & 1u;
     out->rtc_is_set          = (flags2 >> FLAGS2_RTC_IS_SET_BIT) & 1u;
 
     /* Decode scalar fields */
-    out->age       = _SRAM[SRAM_AGE];
-    out->height_cm = (uint16_t)(_SRAM[SRAM_HEIGHT] + DB_HEIGHT_CM_MIN);
+    out->age       = raw[SRAM_AGE];
+    out->height_cm = (uint16_t)(raw[SRAM_HEIGHT] + DB_HEIGHT_CM_MIN);
 
-    weight_off = (uint16_t)((uint16_t)_SRAM[SRAM_WEIGHT + 1u] << 8u)
-               | (uint16_t)_SRAM[SRAM_WEIGHT];
+    weight_off = raw_rd16(raw, SRAM_WEIGHT);
     out->weight_kg_tenths = (uint16_t)(weight_off + DB_WEIGHT_KG_TENTHS_MIN);
 
-    out->calorie_goal = (uint16_t)((uint16_t)_SRAM[SRAM_CAL_GOAL + 1u] << 8u)
-                      | (uint16_t)_SRAM[SRAM_CAL_GOAL];
-    out->protein_goal = (uint16_t)((uint16_t)_SRAM[SRAM_PROTEIN_GOAL + 1u] << 8u)
-                      | (uint16_t)_SRAM[SRAM_PROTEIN_GOAL];
-    out->carbs_goal   = (uint16_t)((uint16_t)_SRAM[SRAM_CARBS_GOAL + 1u] << 8u)
-                      | (uint16_t)_SRAM[SRAM_CARBS_GOAL];
-    out->fat_goal     = (uint16_t)((uint16_t)_SRAM[SRAM_FAT_GOAL + 1u] << 8u)
-                      | (uint16_t)_SRAM[SRAM_FAT_GOAL];
-    out->fiber_goal   = _SRAM[SRAM_FIBER_GOAL];
+    out->calorie_goal = raw_rd16(raw, SRAM_CAL_GOAL);
+    out->protein_goal = raw_rd16(raw, SRAM_PROTEIN_GOAL);
+    out->carbs_goal   = raw_rd16(raw, SRAM_CARBS_GOAL);
+    out->fat_goal     = raw_rd16(raw, SRAM_FAT_GOAL);
+    out->fiber_goal   = raw[SRAM_FIBER_GOAL];
 
     /* Decode RTC calibration */
-    out->rtc_base_date.year  = (uint16_t)(2000u + _SRAM[SRAM_RTC_YEAR_OFS]);
-    out->rtc_base_date.month = _SRAM[SRAM_RTC_MONTH];
-    out->rtc_base_date.day   = _SRAM[SRAM_RTC_DAY];
+    out->rtc_base_date.year  = (uint16_t)(2000u + raw[SRAM_RTC_YEAR_OFS]);
+    out->rtc_base_date.month = raw[SRAM_RTC_MONTH];
+    out->rtc_base_date.day   = raw[SRAM_RTC_DAY];
 
     /* Restore header fields used by db_is_valid */
     out->magic    = SAVE_MAGIC;
     out->version  = SAVE_VERSION;
-    out->checksum = (uint16_t)((uint16_t)_SRAM[SRAM_CHECKSUM + 1u] << 8u)
-                  | (uint16_t)_SRAM[SRAM_CHECKSUM];
+    out->checksum = raw_rd16(raw, SRAM_CHECKSUM);
 
-    DISABLE_RAM;
-
-    return db_is_valid(out);
+    return 1u;
 }
 
 /*
@@ -139,65 +176,19 @@ uint8_t db_load(SaveData *out) {
  * onboarding_complete before calling. Recomputes the checksum.
  */
 void db_save(const SaveData *data) {
-    SaveData stamped;
-    uint8_t  flags1;
-    uint8_t  flags2;
-    uint16_t weight_off;
+    uint8_t  raw[SRAM_SAVE_SIZE];
+    uint8_t  i;
     uint16_t checksum;
-    uint8_t  year_ofs;
 
-    stamped = *data;
-    stamped.magic    = SAVE_MAGIC;
-    stamped.version  = SAVE_VERSION;
-    stamped.checksum = 0u;
-    checksum = db_checksum(&stamped);
-
-    /* Pack SRAM_FLAGS1: [7:6]=experience [5:3]=activity-1 [2:1]=gender [0]=units */
-    flags1 = (uint8_t)(
-        ((data->units              & 1u) << FLAGS1_UNITS_BIT)          |
-        ((data->gender             & 3u) << FLAGS1_GENDER_SHIFT)        |
-        (((data->activity_level - 1u) & 7u) << FLAGS1_ACTIVITY_SHIFT)  |
-        ((data->lifting_experience & 3u) << FLAGS1_EXPERIENCE_SHIFT)
-    );
-
-    /* Pack SRAM_FLAGS2: [5]=rtc_is_set [4]=onboarding [3:2]=weight_goal [1:0]=fitness */
-    flags2 = (uint8_t)(
-        ((data->fitness_focus        & 3u) << FLAGS2_FITNESS_SHIFT)      |
-        ((data->weight_goal          & 3u) << FLAGS2_WEIGHT_GOAL_SHIFT)   |
-        ((data->onboarding_complete  & 1u) << FLAGS2_ONBOARDING_BIT)     |
-        ((data->rtc_is_set           & 1u) << FLAGS2_RTC_IS_SET_BIT)
-    );
-
-    weight_off = (uint16_t)(data->weight_kg_tenths - DB_WEIGHT_KG_TENTHS_MIN);
-    year_ofs   = (uint8_t)(data->rtc_base_date.year - 2000u);
+    db_pack_without_checksum(data, raw);
+    checksum = db_checksum_bytes(raw);
+    raw_wr16(raw, SRAM_CHECKSUM, checksum);
 
     ENABLE_RAM;
     SWITCH_RAM(0u);
-
-    _SRAM[SRAM_MAGIC]             = (uint8_t)(SAVE_MAGIC & 0xFFu);
-    _SRAM[SRAM_MAGIC + 1u]        = (uint8_t)(SAVE_MAGIC >> 8u);
-    _SRAM[SRAM_VERSION]           = SAVE_VERSION;
-    _SRAM[SRAM_CHECKSUM]          = (uint8_t)(checksum   & 0xFFu);
-    _SRAM[SRAM_CHECKSUM + 1u]     = (uint8_t)(checksum   >> 8u);
-    _SRAM[SRAM_FLAGS1]            = flags1;
-    _SRAM[SRAM_FLAGS2]            = flags2;
-    _SRAM[SRAM_AGE]               = data->age;
-    _SRAM[SRAM_HEIGHT]            = (uint8_t)(data->height_cm - DB_HEIGHT_CM_MIN);
-    _SRAM[SRAM_WEIGHT]            = (uint8_t)(weight_off  & 0xFFu);
-    _SRAM[SRAM_WEIGHT + 1u]       = (uint8_t)(weight_off  >> 8u);
-    _SRAM[SRAM_CAL_GOAL]          = (uint8_t)(data->calorie_goal  & 0xFFu);
-    _SRAM[SRAM_CAL_GOAL + 1u]     = (uint8_t)(data->calorie_goal  >> 8u);
-    _SRAM[SRAM_PROTEIN_GOAL]      = (uint8_t)(data->protein_goal  & 0xFFu);
-    _SRAM[SRAM_PROTEIN_GOAL + 1u] = (uint8_t)(data->protein_goal  >> 8u);
-    _SRAM[SRAM_CARBS_GOAL]        = (uint8_t)(data->carbs_goal    & 0xFFu);
-    _SRAM[SRAM_CARBS_GOAL + 1u]   = (uint8_t)(data->carbs_goal    >> 8u);
-    _SRAM[SRAM_FAT_GOAL]          = (uint8_t)(data->fat_goal      & 0xFFu);
-    _SRAM[SRAM_FAT_GOAL + 1u]     = (uint8_t)(data->fat_goal      >> 8u);
-    _SRAM[SRAM_FIBER_GOAL]        = (uint8_t)(data->fiber_goal    & 0xFFu);
-    _SRAM[SRAM_RTC_YEAR_OFS]      = year_ofs;
-    _SRAM[SRAM_RTC_MONTH]         = data->rtc_base_date.month;
-    _SRAM[SRAM_RTC_DAY]           = data->rtc_base_date.day;
-
+    for (i = 0u; i != SRAM_SAVE_SIZE; ++i) {
+        _SRAM[i] = raw[i];
+    }
     DISABLE_RAM;
 }
 

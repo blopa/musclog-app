@@ -25,8 +25,8 @@
  *   0x05  2  checksum
  *   0x08+    entry_count × 6-byte records
  *
- * This module lives in the default (bank-0/1) ROM region — it has no #pragma
- * bank — so it may safely call ff_load, which restores SWITCH_ROM(1) on return.
+ * This module may safely call ff_load, whose public readers are NONBANKED and
+ * restore the caller's active ROM bank on return.
  */
 
 void    foodlog_init(void);   /* validate header on boot; reset region if corrupt */
@@ -48,10 +48,13 @@ uint8_t foodlog_get_for_day(uint16_t day_num, uint8_t nth,
 /* Remove the `nth` (0-based) entry logged on `day_num` and compact the store. */
 void    foodlog_delete_for_day(uint16_t day_num, uint8_t nth);
 
-/* Sum the macros of every entry logged on `day_num` (kcal + grams, incl. fiber). */
+/* Sum the macros of every entry logged on `day_num` (kcal + grams; carbs include fiber). */
 void    foodlog_sum_day(uint16_t day_num,
                         uint16_t *cal, uint16_t *pro, uint16_t *carb,
                         uint16_t *fat, uint16_t *fib);
+
+/* Food rows store total carbs including fiber; carb goals use digestible carbs. */
+uint16_t foodlog_digestible_carbs(uint16_t carbs, uint16_t fiber);
 
 /*
  * Scale a loaded food's per-100g values to `grams`: calories in kcal, macros in

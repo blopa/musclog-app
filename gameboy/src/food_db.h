@@ -1,18 +1,17 @@
 #ifndef MUSCLOG_FOOD_DB_H
 #define MUSCLOG_FOOD_DB_H
 
+#include <gb/gb.h>
 #include <stdint.h>
 
 /*
  * Read access to the bundled foods that live in ROM banks
  * (foundation_foods[] in bank 2, common_foods[] in bank 3).
  *
- * IMPORTANT — bank residency: these readers call SWITCH_ROM() to map food-data
- * banks into the 0x4000-0x7FFF window, which displaces whatever resident
- * code currently sits there. The functions that perform the switch must therefore
- * live in the always-mapped bank 0 (0x0000-0x3FFF). This is guaranteed by linking
- * food_db.c FIRST (see scripts/build-gb-rom.mjs) so its code lands at the bottom of
- * _CODE. Keep all food-table dereferencing confined to food_db.c for that reason.
+ * IMPORTANT: these readers call SWITCH_ROM() to map food-data banks into the
+ * 0x4000-0x7FFF window. Keep all food-table dereferencing confined here; the
+ * public readers and their switched-bank helpers are NONBANKED so the bank switch
+ * cannot page out the executing code.
  */
 
 #define FF_NAME_VISIBLE 16u   /* chars copied from a ROM food name (fits the UI width) */
@@ -29,13 +28,13 @@ typedef struct FoodCache {
 } FoodCache;
 
 /* Copy global food `idx` out of ROM into `out` (name truncated to FF_NAME_VISIBLE). */
-void ff_load(uint16_t idx, FoodCache *out);
+void ff_load(uint16_t idx, FoodCache *out) NONBANKED;
 
 /*
  * Case-insensitive PREFIX filter over all bundled foods. `query` is uppercase ASCII.
  * Stores up to `cap` matching indices in `matches`; returns the stored count.
  * An empty query matches everything.
  */
-uint8_t ff_filter(const char *query, uint16_t *matches, uint8_t cap);
+uint8_t ff_filter(const char *query, uint16_t *matches, uint8_t cap) NONBANKED;
 
 #endif /* MUSCLOG_FOOD_DB_H */

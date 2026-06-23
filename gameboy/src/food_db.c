@@ -6,20 +6,22 @@
 #include "foundation_foods.h"
 
 /*
- * Banked food readers. See food_db.h for the bank-residency contract: this file
- * MUST be linked first so these functions stay in bank 0 and survive the
- * SWITCH_ROM() calls that map food tables over the 0x4000 window. Every function
- * here restores SWITCH_ROM(1) before returning so callers in the (switchable)
- * bank-1 region resume correctly.
+ * Banked food readers. See food_db.h for the bank-residency contract. Public
+ * readers and any helper they call while a food-data bank is mapped are NONBANKED;
+ * otherwise a helper call would jump into the currently mapped table bytes.
  */
 
 #define TOTAL_FOOD_COUNT ((uint16_t)(FOUNDATION_FOOD_COUNT + COMMON_FOOD_COUNT))
 
-static char ascii_upper(char c) {
+static uint8_t caller_bank(void) NONBANKED {
+    return CURRENT_BANK == 0u ? 1u : CURRENT_BANK;
+}
+
+static char ascii_upper(char c) NONBANKED {
     return (c >= 'a' && c <= 'z') ? (char)(c - 32) : c;
 }
 
-static uint8_t food_name_matches(const char *name, const char *query) {
+static uint8_t food_name_matches(const char *name, const char *query) NONBANKED {
     uint8_t j;
 
     for (j = 0u; query[j] != '\0'; ++j) {
@@ -29,7 +31,7 @@ static uint8_t food_name_matches(const char *name, const char *query) {
     return 1u;
 }
 
-static void copy_food(const foundation_food_t *f, FoodCache *out) {
+static void copy_food(const foundation_food_t *f, FoodCache *out) NONBANKED {
     const char *src;
     uint8_t i;
 
@@ -45,7 +47,7 @@ static void copy_food(const foundation_food_t *f, FoodCache *out) {
     out->name[i] = '\0';
 }
 
-static void clear_food(FoodCache *out) {
+static void clear_food(FoodCache *out) NONBANKED {
     out->name[0]     = '\0';
     out->kcal        = 0u;
     out->protein_dg  = 0u;
@@ -54,7 +56,9 @@ static void clear_food(FoodCache *out) {
     out->fiber_dg    = 0u;
 }
 
-void ff_load(uint16_t idx, FoodCache *out) {
+void ff_load(uint16_t idx, FoodCache *out) NONBANKED {
+    uint8_t saved_bank = caller_bank();
+
     if (idx < FOUNDATION_FOOD_COUNT) {
         SWITCH_ROM(FOUNDATION_FOODS_BANK);
         copy_food(&foundation_foods[idx], out);
@@ -63,17 +67,18 @@ void ff_load(uint16_t idx, FoodCache *out) {
         copy_food(&common_foods[idx - FOUNDATION_FOOD_COUNT], out);
     } else {
         clear_food(out);
-        SWITCH_ROM(1);
+        SWITCH_ROM(saved_bank);
         return;
     }
 
-    SWITCH_ROM(1);
+    SWITCH_ROM(saved_bank);
 }
 
-uint8_t ff_filter(const char *query, uint16_t *matches, uint8_t cap) {
+uint8_t ff_filter(const char *query, uint16_t *matches, uint8_t cap) NONBANKED {
     uint16_t i;
     uint8_t  count = 0u;
     const char *name;
+    uint8_t saved_bank = caller_bank();
 
     SWITCH_ROM(FOUNDATION_FOODS_BANK);
     for (i = 0u; i != FOUNDATION_FOOD_COUNT && count != cap; ++i) {
@@ -90,6 +95,6 @@ uint8_t ff_filter(const char *query, uint16_t *matches, uint8_t cap) {
         }
     }
 
-    SWITCH_ROM(1);
+    SWITCH_ROM(saved_bank);
     return count;
 }

@@ -1,3 +1,5 @@
+#pragma bank 5
+
 #include "onboarding.h"
 
 #include "copies.h"
@@ -493,7 +495,7 @@ static void handle_input(OnboardingState *state, const InputState *input) {
     }
 }
 
-void onboarding_run(SaveData *data) {
+void onboarding_run(SaveData *data) BANKED {
     OnboardingState state;
     InputState input;
 

@@ -179,12 +179,14 @@ static void draw_home(const HomeState *state) {
     char date_buf[9];  /* "MM-DD-YY\0" */
     CalDate today;
     uint16_t cal, pro, carb, fat, fib;
+    uint16_t digestible_carb;
 
     today = cal_current_date(d);
     cal_format(&today, date_buf);
 
     /* Today's totals from the persisted food log. */
     foodlog_sum_day(cal_day_number(today), &cal, &pro, &carb, &fat, &fib);
+    digestible_carb = foodlog_digestible_carbs(carb, fib);
 
     ui_clear();
 
@@ -208,10 +210,10 @@ static void draw_home(const HomeState *state) {
     ui_print_at(11u, 6u, STR_CARBS);
     sprintf(buf, "%u/%uG", pro, d->protein_goal);
     ui_print_at(0u, 7u, buf);
-    sprintf(buf, "%u/%uG", carb, d->carbs_goal);
+    sprintf(buf, "%u/%uG", digestible_carb, d->carbs_goal);
     ui_print_at(11u, 7u, buf);
     ui_draw_bar(0u, 8u, 9u, ui_bar_fill(pro, d->protein_goal, 9u));
-    ui_draw_bar(11u, 8u, 9u, ui_bar_fill(carb, d->carbs_goal, 9u));
+    ui_draw_bar(11u, 8u, 9u, ui_bar_fill(digestible_carb, d->carbs_goal, 9u));
 
     /* ── Fat + Fiber ── */
     ui_print_at(0u, 9u, STR_FAT);

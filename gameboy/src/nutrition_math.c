@@ -1,3 +1,5 @@
+#pragma bank 5
+
 #include "nutrition_math.h"
 #include "utils.h"
 
@@ -105,7 +107,7 @@ static void macro_split(const SaveData *data, uint8_t *carbs, uint8_t *protein, 
     }
 }
 
-void nutrition_apply_generated_goals(SaveData *data) {
+void nutrition_apply_generated_goals(SaveData *data) BANKED {
     uint16_t bmr;
     uint16_t tdee;
     int16_t adjusted;

@@ -16,7 +16,7 @@ typedef struct {
     uint16_t fiber_dg;    /* dietary fiber, decigrams (0.1 g) */
 } foundation_food_t;
 
-#define FOUNDATION_FOOD_COUNT 225u
+#define FOUNDATION_FOOD_COUNT 215u
 
 /* The table and its name strings live in this ROM bank. Callers must
  * SWITCH_ROM(FOUNDATION_FOODS_BANK) before dereferencing the array. */

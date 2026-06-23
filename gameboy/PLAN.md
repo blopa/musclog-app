@@ -164,8 +164,8 @@ gameboy/
 │   ├── ui_text.c/.h      # tile font, menu/list rendering, number formatting
 │   ├── input.c/.h        # debounced D-pad/button handling
 │   ├── workout.c/.h      # exercise library, session logging, PRs, volume
-│   ├── nutrition.c/.h    # daily macro totals, action menu, food search/track flow
-│   ├── food_db.c/.h      # banked food readers (ff_load/ff_filter); links first → bank 0
+│   ├── nutrition.c/.h    # banked nutrition shell; subflows live in nutrition_date/detail/search
+│   ├── food_db.c/.h      # NONBANKED banked-food readers (ff_load/ff_filter)
 │   ├── foundation_foods.c/.h # generated USDA food table (name+kcal+protein/fat/carbs/fiber per 100g), ROM bank 2
 │   ├── common_foods.c/.h # generated common-food table (same compact struct), ROM bank 3
 │   ├── foodlog.c/.h      # persisted food log (6-byte records in SRAM bank 1) + macro scaling
@@ -209,21 +209,24 @@ What's wired up so far:
 - **`scripts/build-gb-rom.mjs`** — orchestrator: ensures GBDK is present, runs `png2asset` on the logo,
   then compiles every `gameboy/src/*.c` file with `lcc`. The ROM is CGB-only (`-Wm-yC`), uses the
   MBC3+Timer+RAM+battery cart type (`-Wm-yt0x10`), declares 4 SRAM banks / 32 KB (`-Wm-ya4`), and
-  reserves 8 ROM banks / 128 KB (`-Wm-yo8`) so the bundled food tables can live in dedicated banks. It also
-  **forces `food_db.c` to link first** so the banked readers stay in the always-mapped bank 0 (see below).
+  reserves 8 ROM banks / 128 KB (`-Wm-yo8`) so the bundled food tables and banked screen modules can live
+  in dedicated banks. The build emits `gameboy/build/musclog.map` and fails if the fixed bank crosses
+  `0x4000` or any banked `_CODE_N` area exceeds 16 KB; a ROM can otherwise link successfully and still
+  crash as soon as code maps a switchable ROM bank.
 - **`gameboy/tools/gen-foundation-foods.mjs`** — ports `data/usda_foundation_foods.json` into
   `gameboy/src/foundation_foods.{c,h}` and `data/common_foundation_foods.json` into
   `gameboy/src/common_foods.{c,h}`: per food it keeps only name + kcal + protein/fat/carbs/fiber per 100 g
   (macros as decigrams in `uint16`, energy as whole kcal). The USDA table is placed in **ROM bank 2** via
-  `#pragma bank 2`; the common-food table is placed in **ROM bank 3** via `#pragma bank 3`. Output is
-  committed; re-run with `npm run gb:gen-foods` if either dataset changes.
+  `#pragma bank 2`; the common-food table is placed in **ROM bank 3** via `#pragma bank 3`. Rows with missing,
+  empty, or physically impossible per-100 g macro data are quarantined instead of emitted. Output is committed;
+  re-run with `npm run gb:gen-foods` if either dataset changes.
 - **`gameboy/src/food_db.c` / `.h`** — the only code that reads the banked food tables. `ff_load` copies a
   food into a RAM `FoodCache`; `ff_filter` does a case-insensitive **prefix** search over all foods. Both
   APIs use a single global index space: USDA foods keep indices `0..FOUNDATION_FOOD_COUNT-1`, and common
   foods are appended after that range so existing USDA food-log references remain stable. The readers
-  `SWITCH_ROM(...)` to map the relevant table over the `0x4000` window, then restore `SWITCH_ROM(1)`
-  before returning. Because that switch displaces whatever resident code sits in the switchable window, this
-  file **must live in bank 0** — guaranteed by linking it first (the build does this; never reorder it).
+  and their switched-bank helpers are marked `NONBANKED`, `SWITCH_ROM(...)` to map the relevant table over
+  the `0x4000` window, then restore the caller's saved `CURRENT_BANK` before returning. These functions
+  must remain physically below `0x4000`; the build map guard exists to catch regressions.
 - **`gameboy/tools/fetch-gbdk.mjs`** — downloads/extracts the GBDK-2020 release (platform-aware, pinned
   fallback version when offline). Also exposed as `npm run gb:setup`.
 - **`gameboy/tools/prepare-logo.mjs`** — converts `assets/icon-pixel.png` → `gameboy/assets/logo.png`
@@ -232,30 +235,26 @@ What's wired up so far:
 - **`gameboy/src/main.c`** — splash, text-mode init, save validation, onboarding/home routing, and a
   simple saved-profile home placeholder. `Select+B` on the home placeholder erases the save and reruns
   onboarding.
-- **`gameboy/src/onboarding.c`** — first-run flow with a combined unit/sex/activity setup screen,
+- **`gameboy/src/onboarding.c`** — `BANKED` first-run flow in ROM bank 5 with a combined unit/sex/activity setup screen,
   then age, height, weight, training experience, fitness focus, weight goal, generated goal review,
   and manual macro edits.
-- **`gameboy/src/nutrition.c`** — daily macro totals (incl. fiber) for the viewed date, the list of foods
-  logged that day, and the nutrition `Select` action menu (`Go to Date` opens the date picker; `Track Food`
-  opens the food search/track flow). The flow (`food_search_track`) is a two-mode screen: **typing** builds a
-  name with an Up/Down letter spinner (A appends, B deletes, Start finishes) while the matching foods filter
-  live; **select** picks one from the list. Choosing a food opens an amount screen (grams metric / oz imperial)
-  whose calories and macros (incl. fiber) recompute live as the amount changes; Start there asks
-  `ui_confirm("TRACK FOOD?")` and, on confirm, **persists** the entry via `foodlog_add` (keyed to the viewed
-  date) and shows "TRACKED!". Pressing Start on a logged row opens its detail (serving + scaled macros incl.
-  fiber); `Select` there deletes the entry after a confirm.
+- **`gameboy/src/nutrition.c`** — `BANKED` nutrition shell in ROM bank 4: daily macro totals for the viewed date, the list of foods logged that day,
+  and the nutrition `Select` action menu. Goal-facing carb totals use digestible carbs (`carbs - fiber`),
+  while food detail/amount screens continue to show total food carbs and fiber separately. The date picker,
+  food detail, and food search/amount subflows live in `nutrition_date.c`, `nutrition_detail.c`, and
+  `nutrition_search.c`, also in ROM bank 4.
 - **`gameboy/src/foodlog.c`** — the persisted food log. Each entry is a compact 6-byte record
   `{ day_num, food_idx, grams }` (day_num = `cal_day_number`, food_idx in the global bundled-food index,
   grams metric)
   stored in **SRAM bank 1** behind its own magic/version/count/checksum header, leaving the bank-0 profile
   untouched. Macros are never stored — `foodlog_sum_day` / the UI recompute them on demand by `ff_load`-ing the
   food and scaling per-100g values by grams (`foodlog_scale`). Validated/reset at boot (`foodlog_init`) and
-  cleared on profile reset (`foodlog_erase`). Lives in the default bank-0/1 region (no `#pragma bank`) so it may
-  call `ff_load`, which restores `SWITCH_ROM(1)` on return.
+  cleared on profile reset (`foodlog_erase`). It may call `ff_load`, which is `NONBANKED` and restores the
+  caller's saved ROM bank on return.
 - **`gameboy/src/database.c`** — SRAM bank 0 persistence with named byte-address constants, bit-packed profile flags, magic/version/checksum validation, and a compact 23-byte save block (down from 31 bytes; the extra byte vs the previous 22-byte layout holds the MBC3 RTC calibration date).
 - **`gameboy/src/rtc.c`** — MBC3 RTC hardware access (`rtc_latch`, `rtc_write_days`), calendar arithmetic (`cal_advance`, `cal_compare`, `cal_format`, `cal_day_number`), and the `rtc_setup_date` screen that lets the user pin today's date on first boot or after re-calibration.
-- **`gameboy/src/nutrition_math.c`** — integer-only Mifflin-style BMR, activity multipliers, calorie
-  adjustments, macro splits, and fiber target generation.
+- **`gameboy/src/nutrition_math.c`** — `BANKED` ROM-bank-5 integer-only Mifflin-style BMR, activity multipliers,
+  calorie adjustments, macro splits, and fiber target generation.
 - **`gameboy/src/ui_text.c` / `input.c`** — tiny text UI helpers and debounced joypad input.
 
 The generated `gameboy/src/logo.c`/`.h` files are still produced by `png2asset` and gitignored.
@@ -277,24 +276,17 @@ Set the MBC type at link time with `-Wm-yt<hex>`. The project uses **`0x10` (MBC
 
 ### Declaring save variables
 
-GBDK keeps SRAM access **write-protected by default**. The implemented save lives in SRAM bank 0 via
-`#pragma dataseg DATA_0`, and every load/save brackets access with `ENABLE_RAM` / `DISABLE_RAM`:
+GBDK keeps SRAM access **write-protected by default**. The implemented save lives in SRAM bank 0 via the
+hardware `_SRAM` window, and every load/save brackets access with `ENABLE_RAM` / `DISABLE_RAM`:
 
 ```c
-// gameboy/src/database.c
-#include <gb/gb.h>
-
-// Raw 23-byte block in SRAM bank 0; fields accessed via named SRAM_* address constants.
-#pragma dataseg DATA_0
-static uint8_t sram_bank[SRAM_SAVE_SIZE];   /* 23 bytes */
-#pragma dataseg DATA
-
 void db_save(const SaveData *data) {
     // Pack 7 enum/flag fields into 2 bytes (SRAM_FLAGS1 + SRAM_FLAGS2).
     // Store height as 1 byte offset from DB_HEIGHT_CM_MIN (saves 1 byte).
     // Store fiber_goal as 1 byte (max 99 < 256, saves 1 byte).
     // Store RTC calibration base date as 3 bytes (year-2000, month, day).
-    // Total profile block: 23 bytes (was 31).
+    // Compute the checksum over the canonical packed 23-byte SRAM payload,
+    // not over the compiler's in-memory SaveData struct.
     ...
 }
 ```
@@ -313,8 +305,8 @@ battery.
 
 ### SRAM budget (the hard constraint)
 
-The ROM currently declares 32 KB SRAM, but v1 still treats bank 0 as the only database bank and keeps
-the profile block tiny. Rough plan for future data:
+The ROM currently declares 32 KB SRAM. Bank 0 holds the tiny profile block and bank 1 holds the food log.
+Rough plan for future data:
 
 - Keep food/exercise **names** as short fixed-width strings (e.g. 12 chars) or indices into a
   ROM-bundled table; don't store long names per log entry.
@@ -335,7 +327,7 @@ Background on saving: [Larold's "How to Save Data in Game Boy Games"](https://la
    bank 0 profile save, and erase-data option.
 3. **Workout logging** — exercise picker, set/rep/weight digit spinners, session summary, save.
 4. **Workout history + PRs** — scrollable list, per-exercise PR detection, volume bar chart.
-5. **Macro logging** — food library CRUD in SRAM, daily totals vs. goal, net-carb math, progress bars.
+5. **Macro logging** — implemented: bundled food search, daily totals vs. goal, digestible-carb math, progress bars.
 6. **Body weight + units** — weight log, metric/imperial display conversion, simple trend chart.
 7. **Polish** — rest-timer beep, PR fanfare. Date tracking is already live via MBC3 RTC.
 8. **Stretch goals** — Link Cable data export to a second cart/PC; minimal cycle logging.

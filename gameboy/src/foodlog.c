@@ -225,6 +225,10 @@ void foodlog_scale(const FoodCache *fc, uint16_t grams,
     *fib  = (uint16_t)(((uint32_t)fc->fiber_dg   * grams + 500u) / 1000u);
 }
 
+uint16_t foodlog_digestible_carbs(uint16_t carbs, uint16_t fiber) {
+    return carbs > fiber ? (uint16_t)(carbs - fiber) : 0u;
+}
+
 void foodlog_sum_day(uint16_t day_num,
                      uint16_t *cal, uint16_t *pro, uint16_t *carb,
                      uint16_t *fat, uint16_t *fib) {

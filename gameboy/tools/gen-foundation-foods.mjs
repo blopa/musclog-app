@@ -37,21 +37,88 @@ function cString(name) {
     return name.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 }
 
+const MAX_KCAL_PER_100G = 950;
+const MAX_GRAMS_PER_100G = 100;
+
 const numberFromField = (value) => {
     const n = Number(value);
-    return Number.isFinite(n) ? n : 0;
+    return Number.isFinite(n) ? n : undefined;
 };
 const decigrams = (g) => Math.max(0, Math.round((g ?? 0) * 10));
 
-function toRows(foods, nameField) {
-    return foods.map((food) => ({
-        name: cString(food[nameField]),
-        kcal: Math.max(0, Math.round(numberFromField(food.kcal))),
-        protein: decigrams(numberFromField(food.protein)),
-        fat: decigrams(numberFromField(food.fat)),
-        carbs: decigrams(numberFromField(food.carbs)),
-        fiber: decigrams(numberFromField(food.fiber)),
-    }));
+function validFoodRow(food, nameField) {
+    const name = food[nameField];
+    const kcal = numberFromField(food.kcal);
+    const protein = numberFromField(food.protein);
+    const fat = numberFromField(food.fat);
+    const carbs = numberFromField(food.carbs);
+    const fiber = numberFromField(food.fiber);
+    const reasons = [];
+
+    if (typeof name !== 'string' || name.trim().length === 0) reasons.push('missing name');
+    for (const [field, value] of [
+        ['kcal', kcal],
+        ['protein', protein],
+        ['fat', fat],
+        ['carbs', carbs],
+        ['fiber', fiber],
+    ]) {
+        if (value === undefined) reasons.push(`missing ${field}`);
+        else if (value < 0) reasons.push(`negative ${field}`);
+    }
+
+    if (reasons.length === 0) {
+        if (kcal > MAX_KCAL_PER_100G) reasons.push(`kcal > ${MAX_KCAL_PER_100G}`);
+        for (const [field, value] of [
+            ['protein', protein],
+            ['fat', fat],
+            ['carbs', carbs],
+            ['fiber', fiber],
+        ]) {
+            if (value > MAX_GRAMS_PER_100G) reasons.push(`${field} > ${MAX_GRAMS_PER_100G}g`);
+        }
+        if (fiber > carbs) reasons.push('fiber > carbs');
+        if (kcal === 0 && protein === 0 && fat === 0 && carbs === 0 && fiber === 0) {
+            reasons.push('empty macro row');
+        }
+    }
+
+    return {
+        ok: reasons.length === 0,
+        reasons,
+        row: {
+            name: cString(String(name ?? '')),
+            kcal: Math.round(kcal ?? 0),
+            protein: decigrams(protein),
+            fat: decigrams(fat),
+            carbs: decigrams(carbs),
+            fiber: decigrams(fiber),
+        },
+    };
+}
+
+function toRows(foods, nameField, srcName) {
+    const rows = [];
+    const skipped = [];
+
+    foods.forEach((food, index) => {
+        const result = validFoodRow(food, nameField);
+        if (result.ok) rows.push(result.row);
+        else skipped.push({
+            index,
+            name: food[nameField] || food.description || food.name || '<unnamed>',
+            reasons: result.reasons,
+        });
+    });
+
+    if (skipped.length > 0) {
+        console.warn(`Quarantined ${skipped.length} invalid rows from ${srcName}:`);
+        for (const item of skipped) {
+            console.warn(`  [${item.index}] ${item.name}: ${item.reasons.join(', ')}`);
+        }
+    }
+
+    return rows;
 }
 
 function rowLiterals(rows) {
@@ -73,7 +140,7 @@ function rowLiterals(rows) {
 function emitDataset({ srcName, nameField, array, countMacro, bankMacro, bank, guard, base, defineStruct }) {
     const srcJson = join(dataDir, srcName);
     console.log(`Reading ${srcJson} ...`);
-    const rows = toRows(JSON.parse(readFileSync(srcJson, 'utf8')), nameField);
+    const rows = toRows(JSON.parse(readFileSync(srcJson, 'utf8')), nameField, srcName);
     const count = rows.length;
 
     const structBlock = defineStruct
