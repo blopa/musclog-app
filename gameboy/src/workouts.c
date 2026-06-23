@@ -307,16 +307,43 @@ static uint8_t session_finish(SaveData *data) {
     return saved;
 }
 
+/*
+ * Inverse of cal_day_number (days since 2000-01-01) without the day-by-day cost
+ * of cal_advance(2000-01-01, n): walks whole years then months, so it stays
+ * cheap to call per list row even for day numbers years out. Kept local to this
+ * bank-7 module to avoid growing the nearly-full non-banked rtc.c (bank 0).
+ */
+static CalDate workout_date_from_day_number(uint16_t n) {
+    CalDate d;
+    uint16_t days_in_year;
+    uint8_t  dim;
+
+    d.year  = 2000u;
+    d.month = 1u;
+    d.day   = 1u;
+
+    while (1) {
+        days_in_year = cal_is_leap(d.year) ? 366u : 365u;
+        if (n < days_in_year) break;
+        n = (uint16_t)(n - days_in_year);
+        ++d.year;
+    }
+    while (1) {
+        dim = cal_days_in_month(d.month, d.year);
+        if (n < dim) break;
+        n = (uint16_t)(n - dim);
+        ++d.month;
+    }
+    d.day = (uint8_t)(1u + n);
+    return d;
+}
+
 static void format_workout_title(const WorkoutLogSummary *summary, char *buf) {
-    CalDate base;
     CalDate date;
     char date_buf[9];
     const char *muscle;
 
-    base.year = 2000u;
-    base.month = 1u;
-    base.day = 1u;
-    date = cal_advance(base, summary->day_num);
+    date = workout_date_from_day_number(summary->day_num);
     cal_format(&date, date_buf);
 
     muscle = summary->dominant_muscle < EXERCISE_MUSCLE_GROUP_COUNT

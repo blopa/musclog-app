@@ -18,7 +18,7 @@ Musclog to the original Nintendo Game Boy (DMG) / Game Boy Color (CGB) as a home
 | CPU                    | Sharp LR35902 @ ~4.19 MHz (8-bit)                | Plenty for menus + integer math. No floating point.                                                                                                 |
 | Work RAM               | 8 KB                                             | Hold the "current session" in RAM, page the rest.                                                                                                   |
 | Video RAM              | 8 KB                                             | Tile-based text UI only. No bitmaps/photos.                                                                                                         |
-| Save RAM (cart)        | 8–32 KB SRAM, battery-backed                     | This is our "database". Budget carefully (see §6).                                                                                                  |
+| Save RAM (cart)        | 8–32 KB SRAM, battery-backed                     | This is our "database". Budget carefully (see §7).                                                                                                  |
 | Display                | 160×144, 4 shades of gray                        | ~20×18 tiles ≈ 20 chars × 18 rows of text.                                                                                                          |
 | Input                  | D-pad, A, B, Start, Select                       | All navigation is menu-driven.                                                                                                                      |
 | Network / Camera / Mic | **None**                                         | No food search, scanning, AI, or sync.                                                                                                              |
@@ -29,7 +29,83 @@ small battery-backed SRAM. Treat it like an embedded device, not a phone.
 
 ---
 
-## 2. Features we CAN port (manual-only subset)
+## 2. Memory banking — the 16 KB window
+
+The CPU has a **16-bit address bus**, so it can only address **64 KB at once**. That space is shared
+between ROM, VRAM, work RAM, cartridge SRAM, and I/O — leaving room to "see" only **32 KB of ROM**
+(a fixed 16 KB + a 16 KB switchable window) and **8 KB of cartridge SRAM** at any instant. Our ROM is
+128 KB and our save is 32 KB, so the cartridge's **Memory Bank Controller (MBC)** chip swaps which
+16 KB ROM slice and which 8 KB RAM slice appear in those windows. Each slice is a **bank**.
+
+### The memory map
+
+| Address         | Region         | Banked?                            |
+| --------------- | -------------- | ---------------------------------- |
+| `0x0000–0x3FFF` | ROM bank 0     | **Fixed** — always present         |
+| `0x4000–0x7FFF` | ROM bank 1…N   | Switchable (`SWITCH_ROM` / `BANKED` call) |
+| `0x8000–0x9FFF` | VRAM           | (GBC: 2 internal banks)            |
+| `0xA000–0xBFFF` | Cartridge SRAM | Switchable (`SWITCH_RAM`)          |
+| `0xC000–0xDFFF` | Work RAM       | (GBC: 7 internal banks)            |
+
+### Bank 0 is special (and scarce)
+
+ROM bank 0 can **never** be switched out: it holds the interrupt vectors, the cartridge header, and
+GBDK's `_HOME` segment — the bank-switching trampolines, interrupt handlers, and every **non-banked**
+function. Everything else depends on it always being mapped, so it must fit in 16 KB. It is currently
+**~16,377 / 16,384 bytes used** — effectively full. Any new *non-banked* function overflows it, and the
+build's bank-layout guard (see "Build" below) fails the build when `_HOME` crosses `0x4000`. The fix
+when that happens is to move code into a numbered bank (`#pragma bank N` + `BANKED`), not to grow
+`_HOME`.
+
+### How many banks we get (set by the MBC)
+
+The MBC type caps both counts. We use **MBC3 (`-Wm-yt0x10`)**:
+
+| MBC             | Max ROM banks | Max ROM  | Max SRAM banks | Max SRAM  |
+| --------------- | ------------- | -------- | -------------- | --------- |
+| None            | 2             | 32 KB    | 0              | –         |
+| MBC1            | 128           | 2 MB     | 4              | 32 KB     |
+| MBC2            | 16            | 256 KB   | (built-in)     | 512×4 bit |
+| **MBC3 (ours)** | **128**       | **2 MB** | **4**          | **32 KB** |
+| MBC5            | 512           | 8 MB     | 16             | 128 KB    |
+
+So we can grow ROM a lot (128 banks available) but **SRAM is capped at 4 banks** — moving to MBC5 is
+the only way past 32 KB of save.
+
+### What we reserve and use today
+
+- **ROM:** `-Wm-yo8` reserves **8 banks / 128 KB**. Assignments: bank 0 `_HOME` + core; bank 2 USDA
+  foundation foods; bank 3 common foods; bank 4 nutrition shell + subflows; bank 5 onboarding +
+  `nutrition_math`; bank 6 exercises; bank 7 workouts + workout log. Plenty of headroom toward 128.
+- **SRAM:** `-Wm-ya4` reserves **4 banks / 32 KB** — the MBC3 maximum. **Three are in use, one is free:**
+
+  | SRAM bank | Contents     | Owner          | Notes                                                              |
+  | --------- | ------------ | -------------- | ------------------------------------------------------------------ |
+  | 0         | Profile      | `database.c`   | 23-byte packed save block (units, body metrics, goals, RTC base).  |
+  | 1         | Food log     | `foodlog.c`    | 6-byte records `{ day_num, food_idx, grams }` + header.            |
+  | 2         | Workout log  | `workoutlog.c` | Variable records (workout header + 4-byte set rows) + header.      |
+  | 3         | **Free**     | —              | Unused; the only remaining save bank on MBC3.                      |
+
+  So **persistent storage, not ROM, is the tighter constraint** — only one empty SRAM bank remains.
+
+### Working with banks in GBDK
+
+- `#pragma bank N` at the top of a `.c` file compiles its code into **ROM bank N**.
+- A function marked `BANKED` is reached through a trampoline that switches the bank automatically, so
+  cross-bank calls "just work" (slightly slower than a same-bank call).
+- A function with neither lands in `_HOME` (bank 0) — always available, but spends the scarce 16 KB.
+- For **data** in a ROM bank, call `SWITCH_ROM(n)` before reading and restore the caller's
+  `CURRENT_BANK` after (the `NONBANKED` food/exercise readers in `food_db.c` / `exercise_db.c` do
+  exactly this).
+- For **SRAM**, `ENABLE_RAM` + `SWITCH_RAM(n)` selects a save bank, then `SWITCH_RAM(0)` / `DISABLE_RAM`.
+
+> **Note:** the GBC also has *internal* banked memories — 7 switchable Work RAM banks and 2 VRAM banks —
+> but those belong to the console, not the cartridge, and are unrelated to `#pragma bank`. In day-to-day
+> GBDK work, "bank" means a **cartridge ROM bank**.
+
+---
+
+## 3. Features we CAN port (manual-only subset)
 
 These map cleanly onto an offline, manual logbook:
 
@@ -71,7 +147,7 @@ These map cleanly onto an offline, manual logbook:
 
 ---
 
-## 3. Features we CANNOT port (and why)
+## 4. Features we CANNOT port (and why)
 
 | App feature                                       | Why it can't come along                                                        |
 | ------------------------------------------------- | ------------------------------------------------------------------------------ |
@@ -88,7 +164,7 @@ These map cleanly onto an offline, manual logbook:
 
 ---
 
-## 4. Technical bootstrap — toolchain choice
+## 5. Technical bootstrap — toolchain choice
 
 There are three realistic paths. **Recommendation: GBDK-2020.**
 
@@ -124,7 +200,7 @@ Resource hubs: [gbdev.io tools guide](https://gbdev.io/guides/tools) ·
 
 ---
 
-## 5. Getting started with GBDK-2020
+## 6. Getting started with GBDK-2020
 
 ### Install
 
@@ -291,7 +367,7 @@ The generated `gameboy/src/logo.c`/`.h` files are still produced by `png2asset` 
 
 ---
 
-## 6. Persistence — the cartridge "database" (SRAM)
+## 7. Persistence — the cartridge "database" (SRAM)
 
 This is the most important architectural piece. The save lives in **battery-backed cartridge SRAM**,
 so we must (a) pick an MBC that has SRAM + battery, (b) declare our save layout, and (c) validate it.
@@ -350,7 +426,7 @@ Background on saving: [Larold's "How to Save Data in Game Boy Games"](https://la
 
 ---
 
-## 7. Suggested milestones
+## 8. Suggested milestones
 
 1. **Boot + onboarding skeleton** — implemented: splash, text UI, joypad input, first-run setup, and
    home placeholder.
@@ -365,7 +441,7 @@ Background on saving: [Larold's "How to Save Data in Game Boy Games"](https://la
 
 ---
 
-## 8. Reality of running it
+## 9. Reality of running it
 
 - **Emulator:** any `.gb` ROM runs in Emulicious / BGB / SameBoy / mGBA — zero hardware needed.
 - **Real hardware:** flash the ROM onto an **EverDrive** / EZ-Flash cart (SD-card based) and play on an
