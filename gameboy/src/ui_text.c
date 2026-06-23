@@ -12,6 +12,7 @@
 
 #define SCREEN_COLS 20u
 #define SCREEN_ROWS 18u
+#define BLANK_ROW "                    "
 
 static const palette_color_t ui_palettes[16] = {
     /* Normal: Musclog green surface with off-white text. */
@@ -111,6 +112,15 @@ void ui_print_center(uint8_t y, const char *text) {
     ui_print_at(x, y, text);
 }
 
+void ui_clear_row(uint8_t y) {
+    ui_print_at(0u, y, BLANK_ROW);
+}
+
+void ui_print_center_clear(uint8_t y, const char *text) {
+    ui_clear_row(y);
+    ui_print_center(y, text);
+}
+
 void ui_title(const char *title) {
     ui_clear();
     ui_fill_attr(0u, 0u, SCREEN_COLS, 1u, UI_PAL_HEADER);
@@ -124,7 +134,7 @@ void ui_footer(const char *left, const char *right) {
     uint8_t x;
 
     ui_print_at(0u, 16u, STR_DIVIDER);
-    ui_print_at(0u, 17u, "                    ");
+    ui_clear_row(17u);
 
     if (left && left[0]) {
         ui_print_at(0u, 17u, left);

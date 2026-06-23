@@ -109,36 +109,44 @@ static void draw_search(const SearchState *s) {
 #define AMOUNT_OZ_MIN       1u
 #define AMOUNT_OZ_MAX      70u
 
-static void draw_amount(const FoodCache *fc, uint16_t amount, uint8_t imperial) {
+static void draw_amount_values(const FoodCache *fc, uint16_t amount, uint8_t imperial) {
     char     buf[21];
     uint16_t grams, kcal, pro, fat, carb, fib;
 
     grams = imperial ? nutrition_oz_to_grams(amount) : amount;
     foodlog_scale(fc, grams, &kcal, &pro, &carb, &fat, &fib);
 
+    ui_fill_attr(0u, 8u, 20u, 1u, UI_PAL_SELECTED);
+    if (imperial) sprintf(buf, "%u OZ", (unsigned int)amount);
+    else          sprintf(buf, "%u G",  (unsigned int)amount);
+    ui_print_center_clear(8u, buf);
+
+    sprintf(buf, "CAL  %u KCAL", (unsigned int)kcal);
+    ui_clear_row(11u);
+    ui_print_at(0u, 11u, buf);
+
+    ui_clear_row(13u);
+    sprintf(buf, "PRO %uG", (unsigned int)pro);
+    ui_print_at(0u, 13u, buf);
+    sprintf(buf, "CARB %uG", (unsigned int)carb);
+    ui_print_at(10u, 13u, buf);
+
+    ui_clear_row(14u);
+    sprintf(buf, "FAT %uG", (unsigned int)fat);
+    ui_print_at(0u, 14u, buf);
+    sprintf(buf, "FIB %uG", (unsigned int)fib);
+    ui_print_at(10u, 14u, buf);
+}
+
+static void draw_amount(const FoodCache *fc, uint16_t amount, uint8_t imperial) {
     ui_title(STR_TRACK_FOOD);
 
     ui_fill_attr(0u, 5u, 20u, 1u, UI_PAL_PANEL);
     ui_print_center(5u, fc->name);
 
     ui_print_at(0u, 7u, STR_AMOUNT);
-    ui_fill_attr(0u, 8u, 20u, 1u, UI_PAL_SELECTED);
-    if (imperial) sprintf(buf, "%u OZ", (unsigned int)amount);
-    else          sprintf(buf, "%u G",  (unsigned int)amount);
-    ui_print_center(8u, buf);
     ui_print_center(9u, STR_HINT_AMOUNT);
-
-    sprintf(buf, "CAL  %u KCAL", (unsigned int)kcal);
-    ui_print_at(0u, 11u, buf);
-
-    sprintf(buf, "PRO %uG", (unsigned int)pro);
-    ui_print_at(0u, 13u, buf);
-    sprintf(buf, "CARB %uG", (unsigned int)carb);
-    ui_print_at(10u, 13u, buf);
-    sprintf(buf, "FAT %uG", (unsigned int)fat);
-    ui_print_at(0u, 14u, buf);
-    sprintf(buf, "FIB %uG", (unsigned int)fib);
-    ui_print_at(10u, 14u, buf);
+    draw_amount_values(fc, amount, imperial);
 
     ui_footer(STR_FOOTER_BACK, STR_FOOTER_TRACK);
 }
@@ -153,12 +161,17 @@ static uint8_t food_amount_screen(SaveData *data, const FoodCache *fc,
     uint16_t   mn       = imperial ? AMOUNT_OZ_MIN : AMOUNT_G_MIN;
     uint16_t   mx       = imperial ? AMOUNT_OZ_MAX : AMOUNT_G_MAX;
     uint8_t    dirty    = 1u;
+    uint8_t    frame_drawn = 0u;
     uint8_t    i;
 
     input_init(&input);
     while (1) {
         if (dirty) {
-            draw_amount(fc, amount, imperial);
+            if (frame_drawn) draw_amount_values(fc, amount, imperial);
+            else {
+                draw_amount(fc, amount, imperial);
+                frame_drawn = 1u;
+            }
             dirty = 0u;
         }
 

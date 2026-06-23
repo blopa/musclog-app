@@ -452,12 +452,13 @@ static uint8_t workout_exercise_picker(void) {
 
 static void draw_plan_row(uint8_t y, const char *label, const char *value, uint8_t focused) {
     ui_fill_attr(0u, y, 20u, 1u, focused ? UI_PAL_SELECTED : UI_PAL_PANEL);
+    ui_clear_row(y);
     ui_print_at(1u, y, focused ? ">" : " ");
     ui_print_at(3u, y, label);
     print_right(y, value);
 }
 
-static void draw_workout_plan(
+static void draw_workout_plan_rows(
     const SaveData *data,
     const WorkoutPlanState *state
 ) {
@@ -469,13 +470,20 @@ static void draw_workout_plan(
     format_plan_weight(data, state->weight, weight_buf);
     sprintf(reps_buf, "%u", (unsigned int)state->reps);
 
+    draw_plan_row(7u, STR_SETS, sets_buf, state->field == PLAN_FIELD_SETS);
+    draw_plan_row(9u, STR_WEIGHT, weight_buf, state->field == PLAN_FIELD_WEIGHT);
+    draw_plan_row(11u, STR_REPS, reps_buf, state->field == PLAN_FIELD_REPS);
+}
+
+static void draw_workout_plan(
+    const SaveData *data,
+    const WorkoutPlanState *state
+) {
     ui_title(STR_FREE_SESSION);
     ui_print_center(4u, state->exercise.name);
     ui_print_at(0u, 5u, STR_DIVIDER);
 
-    draw_plan_row(7u, STR_SETS, sets_buf, state->field == PLAN_FIELD_SETS);
-    draw_plan_row(9u, STR_WEIGHT, weight_buf, state->field == PLAN_FIELD_WEIGHT);
-    draw_plan_row(11u, STR_REPS, reps_buf, state->field == PLAN_FIELD_REPS);
+    draw_workout_plan_rows(data, state);
 
     ui_print_center(14u, STR_HINT_EDIT_ROW);
     ui_footer(STR_FOOTER_BACK, STR_FOOTER_OK);
@@ -517,12 +525,17 @@ static void init_workout_plan(
 
 static uint8_t workout_plan_screen(const SaveData *data, WorkoutPlanState *state) {
     InputState input;
+    uint8_t frame_drawn = 0u;
 
     state->dirty = 1u;
     input_init(&input);
     while (1) {
         if (state->dirty) {
-            draw_workout_plan(data, state);
+            if (frame_drawn) draw_workout_plan_rows(data, state);
+            else {
+                draw_workout_plan(data, state);
+                frame_drawn = 1u;
+            }
             state->dirty = 0u;
         }
 
@@ -576,9 +589,8 @@ static void draw_workout_set(
     ui_footer(STR_FOOTER_BACK, STR_FOOTER_SEL_MENU);
 }
 
-static void draw_set_edit(
+static void draw_set_edit_rows(
     const SaveData *data,
-    const ExerciseCache *exercise,
     const WorkoutSetEditState *state
 ) {
     char weight_buf[14];
@@ -587,12 +599,20 @@ static void draw_set_edit(
     format_plan_weight(data, state->weight, weight_buf);
     sprintf(reps_buf, "%u", (unsigned int)state->reps);
 
+    draw_plan_row(8u, STR_WEIGHT, weight_buf, state->field == SET_FIELD_WEIGHT);
+    draw_plan_row(10u, STR_REPS, reps_buf, state->field == SET_FIELD_REPS);
+}
+
+static void draw_set_edit(
+    const SaveData *data,
+    const ExerciseCache *exercise,
+    const WorkoutSetEditState *state
+) {
     ui_title(STR_EDIT_SET);
     ui_print_center(4u, exercise->name);
     ui_print_at(0u, 5u, STR_DIVIDER);
 
-    draw_plan_row(8u, STR_WEIGHT, weight_buf, state->field == SET_FIELD_WEIGHT);
-    draw_plan_row(10u, STR_REPS, reps_buf, state->field == SET_FIELD_REPS);
+    draw_set_edit_rows(data, state);
 
     ui_print_center(14u, STR_HINT_EDIT_ROW);
     ui_footer(STR_FOOTER_CANCEL, STR_FOOTER_OK);
@@ -618,6 +638,7 @@ static void workout_set_edit_screen(
 ) {
     InputState input;
     WorkoutSetEditState state;
+    uint8_t frame_drawn = 0u;
 
     state.field = SET_FIELD_WEIGHT;
     state.weight = set->weight;
@@ -627,7 +648,11 @@ static void workout_set_edit_screen(
     input_init(&input);
     while (1) {
         if (state.dirty) {
-            draw_set_edit(data, exercise, &state);
+            if (frame_drawn) draw_set_edit_rows(data, &state);
+            else {
+                draw_set_edit(data, exercise, &state);
+                frame_drawn = 1u;
+            }
             state.dirty = 0u;
         }
 
@@ -659,6 +684,17 @@ static void workout_set_edit_screen(
     }
 }
 
+static void update_rest_timer(uint8_t seconds) {
+    char timer_buf[8];
+    uint8_t fill;
+
+    sprintf(timer_buf, "%u SEC", (unsigned int)seconds);
+    ui_print_center_clear(9u, timer_buf);
+
+    fill = ui_bar_fill(seconds, WORKOUT_REST_SECONDS, 18u);
+    ui_draw_bar(1u, 11u, 18u, fill);
+}
+
 static void draw_rest_timer(
     const ExerciseCache *exercise,
     uint8_t next_set,
@@ -666,21 +702,15 @@ static void draw_rest_timer(
     uint8_t seconds
 ) {
     char set_buf[16];
-    char timer_buf[8];
-    uint8_t fill;
 
     sprintf(set_buf, "NEXT SET %u/%u",
             (unsigned int)next_set,
             (unsigned int)total_sets);
-    sprintf(timer_buf, "%u SEC", (unsigned int)seconds);
 
     ui_title(STR_REST);
     ui_print_center(5u, exercise->name);
     ui_print_center(7u, set_buf);
-    ui_print_center(9u, timer_buf);
-
-    fill = ui_bar_fill(seconds, WORKOUT_REST_SECONDS, 18u);
-    ui_draw_bar(1u, 11u, 18u, fill);
+    update_rest_timer(seconds);
 
     ui_print_center(14u, STR_HINT_REST_SKIP);
     ui_footer("", STR_FOOTER_SKIP_TIMER);
@@ -695,11 +725,16 @@ static void workout_rest_timer(
     uint8_t seconds = WORKOUT_REST_SECONDS;
     uint8_t frames = 0u;
     uint8_t dirty = 1u;
+    uint8_t frame_drawn = 0u;
 
     input_init(&input);
     while (seconds > 0u) {
         if (dirty) {
-            draw_rest_timer(exercise, next_set, total_sets, seconds);
+            if (frame_drawn) update_rest_timer(seconds);
+            else {
+                draw_rest_timer(exercise, next_set, total_sets, seconds);
+                frame_drawn = 1u;
+            }
             dirty = 0u;
         }
 

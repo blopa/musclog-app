@@ -257,6 +257,61 @@ static void draw_edit_screen(const OnboardingState *state) {
     }
 }
 
+static uint8_t is_value_step(OnboardingStep step) {
+    switch (step) {
+        case STEP_AGE:
+        case STEP_HEIGHT:
+        case STEP_WEIGHT:
+        case STEP_EDIT_CALORIES:
+        case STEP_EDIT_PROTEIN:
+        case STEP_EDIT_CARBS:
+        case STEP_EDIT_FAT:
+        case STEP_EDIT_FIBER:
+            return 1u;
+        default:
+            return 0u;
+    }
+}
+
+static void format_value_step(const OnboardingState *state, char *value) {
+    switch (state->step) {
+        case STEP_AGE:
+            sprintf(value, "%u YEARS", state->data->age);
+            break;
+        case STEP_HEIGHT:
+            format_height(state, value);
+            break;
+        case STEP_WEIGHT:
+            format_weight(state, value);
+            break;
+        case STEP_EDIT_CALORIES:
+            sprintf(value, "%u KCAL", state->data->calorie_goal);
+            break;
+        case STEP_EDIT_PROTEIN:
+            sprintf(value, "%u G", state->data->protein_goal);
+            break;
+        case STEP_EDIT_CARBS:
+            sprintf(value, "%u G", state->data->carbs_goal);
+            break;
+        case STEP_EDIT_FAT:
+            sprintf(value, "%u G", state->data->fat_goal);
+            break;
+        case STEP_EDIT_FIBER:
+            sprintf(value, "%u G", state->data->fiber_goal);
+            break;
+        default:
+            value[0] = '\0';
+            break;
+    }
+}
+
+static void update_value_step(const OnboardingState *state) {
+    char value[16];
+
+    format_value_step(state, value);
+    ui_print_center_clear(8u, value);
+}
+
 static void render_step(const OnboardingState *state) {
     char value[16];
 
@@ -265,15 +320,15 @@ static void render_step(const OnboardingState *state) {
             draw_welcome(state);
             break;
         case STEP_AGE:
-            sprintf(value, "%u YEARS", state->data->age);
+            format_value_step(state, value);
             ui_draw_value_screen(STR_AGE, STR_YOUR_AGE, value, STR_HINT_CHANGE);
             break;
         case STEP_HEIGHT:
-            format_height(state, value);
+            format_value_step(state, value);
             ui_draw_value_screen(STR_HEIGHT, STR_YOUR_HEIGHT, value, STR_HINT_CHANGE);
             break;
         case STEP_WEIGHT:
-            format_weight(state, value);
+            format_value_step(state, value);
             ui_draw_value_screen(STR_WEIGHT, STR_YOUR_WEIGHT, value, STR_HINT_CHANGE);
             break;
         case STEP_EXPERIENCE:
@@ -498,6 +553,7 @@ static void handle_input(OnboardingState *state, const InputState *input) {
 void onboarding_run(SaveData *data) BANKED {
     OnboardingState state;
     InputState input;
+    OnboardingStep rendered_step;
 
     db_init_defaults(data);
     nutrition_apply_generated_goals(data);
@@ -509,11 +565,17 @@ void onboarding_run(SaveData *data) BANKED {
     state.weight_lbs = kg_tenths_to_lbs(data->weight_kg_tenths);
     state.dirty = 1u;
     state.done = 0u;
+    rendered_step = (OnboardingStep)0xFFu;
 
     input_init(&input);
     while (!state.done) {
         if (state.dirty) {
-            render_step(&state);
+            if (state.step == rendered_step && is_value_step(state.step)) {
+                update_value_step(&state);
+            } else {
+                render_step(&state);
+                rendered_step = state.step;
+            }
             state.dirty = 0u;
         }
 
