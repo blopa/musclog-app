@@ -166,7 +166,7 @@ static void show_coming_soon(const char *feature) {
  *  Row 10  0/69G        0/35G
  *  Row 11  [#######]  [#######]
  *  Row 12  --------------------
- *  Row 13  [> TRACK FOOD      ] ← button (PAL_SELECTED when focused, PAL_PANEL otherwise)
+ *  Row 13  [> NUTRITION       ] ← button (PAL_SELECTED when focused, PAL_PANEL otherwise)
  *  Row 14  (spacer)
  *  Row 15  [> START WORKOUT   ] ← button
  *  Row 16  --------------------  ← via ui_footer
@@ -225,7 +225,7 @@ static void draw_home(const HomeState *state) {
     ui_print_at(0u, 12u, "--------------------");
 
     /* ── Action buttons ── */
-    draw_button(13u, "TRACK FOOD", state->selected == HOME_BTN_FOOD);
+    draw_button(13u, "NUTRITION", state->selected == HOME_BTN_FOOD);
     draw_button(15u, "START WORKOUT", state->selected == HOME_BTN_WORKOUT);
 
     ui_footer("SEL+B RESET", "");
