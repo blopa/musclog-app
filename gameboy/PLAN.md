@@ -259,10 +259,10 @@ What's wired up so far:
   `nutrition_search.c`, also in ROM bank 4.
 - **`gameboy/src/workouts.c`** — `BANKED` workouts shell in ROM bank 7: a visual-only mocked workout
   history list with summary stats and scrolling. Its `Select` action menu opens the first free-session
-  start flow: exercise picker, muscle-group filter (`Select` or left/right), and a planning screen where
-  the user adjusts set count and sees profile-based suggested weight/reps. The suggestion mirrors the Expo
+  start flow: exercise picker, muscle-group filter input changed with left/right, and a planning screen where
+  the user edits the suggested set count, weight, and reps. The suggestion mirrors the Expo
   fallback logic: `weight * loadMultiplier * experienceFactor * ageFactor`, bodyweight/load-zero exercises
-  show no external load, and compound exercises suggest 10 reps while other mechanic types suggest 14.
+  start with no external load, and compound exercises suggest 10 reps while other mechanic types suggest 14.
 - **`gameboy/src/foodlog.c`** — the persisted food log. Each entry is a compact 6-byte record
   `{ day_num, food_idx, grams }` (day_num = `cal_day_number`, food_idx in the global bundled-food index,
   grams metric)

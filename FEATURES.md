@@ -165,7 +165,7 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 - Game Boy Color ROM prototype with first-run onboarding for units, sex, activity, age, height, weight, training level, fitness focus, and weight goal
 - Compact battery-backed SRAM profile save with generated calorie and macro goals
 - Prototype ROM nutrition and mocked workout-history screens
-- Game Boy Start Workout prototype for free sessions: pick an exercise, filter by muscle group, choose set count, and view profile-based suggested weight/reps
+- Game Boy Start Workout prototype for free sessions: pick an exercise, filter by muscle group with left/right arrows, and edit suggested sets, weight, and reps
 
 ---
 

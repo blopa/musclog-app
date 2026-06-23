@@ -20,6 +20,14 @@
 #define WORKOUT_DEFAULT_SET_COUNT 3u
 #define WORKOUT_SET_COUNT_MIN    1u
 #define WORKOUT_SET_COUNT_MAX    20u
+#define WORKOUT_WEIGHT_MIN       0u
+#define WORKOUT_WEIGHT_MAX       999u
+#define WORKOUT_REPS_MIN         1u
+#define WORKOUT_REPS_MAX         99u
+#define PLAN_FIELD_SETS          0u
+#define PLAN_FIELD_WEIGHT        1u
+#define PLAN_FIELD_REPS          2u
+#define PLAN_FIELD_COUNT         3u
 #define REPS_COMPOUND            10u
 #define REPS_DEFAULT             14u
 
@@ -54,8 +62,15 @@ typedef struct ExercisePickerState {
 typedef struct WorkoutRecommendation {
     uint16_t display_weight;
     uint8_t reps;
-    uint8_t is_bodyweight;
 } WorkoutRecommendation;
+
+typedef struct WorkoutPlanState {
+    uint8_t field;
+    uint8_t set_count;
+    uint16_t weight;
+    uint8_t reps;
+    uint8_t dirty;
+} WorkoutPlanState;
 
 static uint8_t exercise_matches[EXERCISE_COUNT];
 
@@ -94,6 +109,10 @@ static const char *filter_label(uint8_t filter) {
 
 static uint8_t filter_to_muscle(uint8_t filter) {
     return filter == 0u ? EX_FILTER_ALL : (uint8_t)(filter - 1u);
+}
+
+static void format_filter_value(uint8_t filter, char *buf) {
+    sprintf(buf, "< %s >", filter_label(filter));
 }
 
 static void refresh_exercise_matches(ExercisePickerState *state) {
@@ -151,7 +170,6 @@ static void build_recommendation(
 ) {
     uint16_t kg_tenths = suggested_weight_kg_tenths(data, exercise);
 
-    out->is_bodyweight = (uint8_t)(exercise->equipment_type == EX_EQUIPMENT_BODYWEIGHT);
     out->reps = exercise->mechanic_type == EX_MECHANIC_COMPOUND ? REPS_COMPOUND : REPS_DEFAULT;
 
     if (data->units == UNITS_IMPERIAL) {
@@ -161,17 +179,15 @@ static void build_recommendation(
     }
 }
 
-static void format_recommended_weight(
+static void format_plan_weight(
     const SaveData *data,
-    const WorkoutRecommendation *rec,
+    uint16_t weight,
     char *buf
 ) {
-    if (rec->is_bodyweight) {
-        strcpy(buf, STR_BODYWEIGHT);
-    } else if (data->units == UNITS_IMPERIAL) {
-        sprintf(buf, "%u LB", (unsigned int)rec->display_weight);
+    if (data->units == UNITS_IMPERIAL) {
+        sprintf(buf, "%u LB", (unsigned int)weight);
     } else {
-        sprintf(buf, "%u KG", (unsigned int)rec->display_weight);
+        sprintf(buf, "%u KG", (unsigned int)weight);
     }
 }
 
@@ -282,6 +298,7 @@ static void draw_exercise_picker(const ExercisePickerState *state) {
     uint8_t match_idx;
     uint8_t end;
     char buf[14];
+    char filter_buf[14];
 
     ui_clear();
 
@@ -291,8 +308,9 @@ static void draw_exercise_picker(const ExercisePickerState *state) {
     ui_print_at(0u, 2u, STR_DIVIDER);
 
     ui_fill_attr(0u, 4u, 20u, 1u, UI_PAL_PANEL);
+    format_filter_value(state->filter, filter_buf);
     ui_print_at(1u, 4u, STR_FILTER);
-    ui_print_at(9u, 4u, filter_label(state->filter));
+    ui_print_at(7u, 4u, filter_buf);
     ui_print_at(0u, 5u, STR_DIVIDER);
 
     if (state->match_count == 0u) {
@@ -356,7 +374,7 @@ static uint8_t workout_exercise_picker(void) {
             continue;
         }
 
-        if (input_pressed(&input, J_SELECT | J_RIGHT)) {
+        if (input_pressed(&input, J_RIGHT)) {
             cycle_filter(&state, 0u);
             continue;
         }
@@ -400,45 +418,65 @@ static void draw_plan_row(uint8_t y, const char *label, const char *value, uint8
 
 static void draw_workout_plan(
     const SaveData *data,
-    uint8_t set_count,
     const ExerciseCache *exercise,
-    const WorkoutRecommendation *recommendation
+    const WorkoutPlanState *state
 ) {
     char sets_buf[4];
     char weight_buf[14];
     char reps_buf[4];
 
-    sprintf(sets_buf, "%u", (unsigned int)set_count);
-    format_recommended_weight(data, recommendation, weight_buf);
-    sprintf(reps_buf, "%u", (unsigned int)recommendation->reps);
+    sprintf(sets_buf, "%u", (unsigned int)state->set_count);
+    format_plan_weight(data, state->weight, weight_buf);
+    sprintf(reps_buf, "%u", (unsigned int)state->reps);
 
     ui_title(STR_FREE_SESSION);
     ui_print_center(4u, exercise->name);
     ui_print_at(0u, 5u, STR_DIVIDER);
 
-    draw_plan_row(7u, STR_SETS, sets_buf, 1u);
-    draw_plan_row(9u, STR_WEIGHT, weight_buf, 0u);
-    draw_plan_row(11u, STR_REPS, reps_buf, 0u);
+    draw_plan_row(7u, STR_SETS, sets_buf, state->field == PLAN_FIELD_SETS);
+    draw_plan_row(9u, STR_WEIGHT, weight_buf, state->field == PLAN_FIELD_WEIGHT);
+    draw_plan_row(11u, STR_REPS, reps_buf, state->field == PLAN_FIELD_REPS);
 
-    ui_print_center(14u, STR_HINT_SETS);
+    ui_print_center(14u, STR_HINT_EDIT_ROW);
     ui_footer(STR_FOOTER_BACK, STR_FOOTER_OK);
+}
+
+static void adjust_plan_field(WorkoutPlanState *state, uint8_t increase) {
+    if (state->field == PLAN_FIELD_SETS) {
+        state->set_count = increase
+            ? add_clamped_u8(state->set_count, 1u, WORKOUT_SET_COUNT_MAX)
+            : sub_clamped_u8(state->set_count, 1u, WORKOUT_SET_COUNT_MIN);
+    } else if (state->field == PLAN_FIELD_WEIGHT) {
+        state->weight = increase
+            ? add_clamped_u16(state->weight, 1u, WORKOUT_WEIGHT_MAX)
+            : sub_clamped_u16(state->weight, 1u, WORKOUT_WEIGHT_MIN);
+    } else {
+        state->reps = increase
+            ? add_clamped_u8(state->reps, 1u, WORKOUT_REPS_MAX)
+            : sub_clamped_u8(state->reps, 1u, WORKOUT_REPS_MIN);
+    }
+    state->dirty = 1u;
 }
 
 static uint8_t workout_plan_screen(const SaveData *data, uint8_t exercise_idx) {
     InputState input;
     ExerciseCache exercise;
     WorkoutRecommendation recommendation;
-    uint8_t set_count = WORKOUT_DEFAULT_SET_COUNT;
-    uint8_t dirty = 1u;
+    WorkoutPlanState state;
 
     ex_load(exercise_idx, &exercise);
     build_recommendation(data, &exercise, &recommendation);
+    state.field = PLAN_FIELD_SETS;
+    state.set_count = WORKOUT_DEFAULT_SET_COUNT;
+    state.weight = recommendation.display_weight;
+    state.reps = recommendation.reps;
+    state.dirty = 1u;
 
     input_init(&input);
     while (1) {
-        if (dirty) {
-            draw_workout_plan(data, set_count, &exercise, &recommendation);
-            dirty = 0u;
+        if (state.dirty) {
+            draw_workout_plan(data, &exercise, &state);
+            state.dirty = 0u;
         }
 
         wait_vbl_done();
@@ -448,20 +486,17 @@ static uint8_t workout_plan_screen(const SaveData *data, uint8_t exercise_idx) {
         if (input_pressed(&input, J_A | J_START)) return 1u;
 
         if (input_pressed(&input, J_UP)) {
-            set_count = add_clamped_u8(set_count, 1u, WORKOUT_SET_COUNT_MAX);
-            dirty = 1u;
-        }
-        if (input_pressed(&input, J_DOWN)) {
-            set_count = sub_clamped_u8(set_count, 1u, WORKOUT_SET_COUNT_MIN);
-            dirty = 1u;
-        }
-        if (input_pressed(&input, J_RIGHT)) {
-            set_count = add_clamped_u8(set_count, 5u, WORKOUT_SET_COUNT_MAX);
-            dirty = 1u;
-        }
-        if (input_pressed(&input, J_LEFT)) {
-            set_count = sub_clamped_u8(set_count, 5u, WORKOUT_SET_COUNT_MIN);
-            dirty = 1u;
+            state.field = state.field == 0u
+                ? (uint8_t)(PLAN_FIELD_COUNT - 1u)
+                : (uint8_t)(state.field - 1u);
+            state.dirty = 1u;
+        } else if (input_pressed(&input, J_DOWN)) {
+            state.field = (uint8_t)((state.field + 1u) % PLAN_FIELD_COUNT);
+            state.dirty = 1u;
+        } else if (input_pressed(&input, J_RIGHT)) {
+            adjust_plan_field(&state, 1u);
+        } else if (input_pressed(&input, J_LEFT)) {
+            adjust_plan_field(&state, 0u);
         }
     }
 }
