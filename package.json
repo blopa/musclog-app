@@ -32,6 +32,7 @@
     "gb:prepare-logo": "node gameboy/tools/prepare-logo.mjs",
     "gb:setup": "node gameboy/tools/fetch-gbdk.mjs",
     "gb:build": "node scripts/build-gb-rom.mjs",
+    "gb:copy-rom": "cp gameboy/build/musclog.gbc assets/musclog.gbc",
     "sync-ml-model": "cp training-data/output/model.js utils/repCountingModel.js",
     "update-reps-model": "cd training-data && .venv/bin/python train.py && cd .. && npm run sync-ml-model",
     "generate-training-html": "cd training-data && .venv/bin/python visualize_loocv.py",
@@ -202,6 +203,7 @@
     "tesseract.js": "^7.0.0",
     "victory": "37.3.6",
     "victory-native": "41.26.0",
+    "wasmboy": "^0.7.1",
     "xlsx": "0.18.5",
     "zod": "^4.4.3"
   },

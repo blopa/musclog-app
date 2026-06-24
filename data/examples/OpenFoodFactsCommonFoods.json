@@ -4432,9 +4432,7 @@
       "code": "0023012200138",
       "productName": "Vegetable sushi roll",
       "genericName": null,
-      "brands": [
-        "Sushi Izu"
-      ],
+      "brands": ["Sushi Izu"],
       "categories": null,
       "servingSize": null,
       "nutritionDataPer": null,
@@ -13596,9 +13594,7 @@
       "code": "6288390366065",
       "productName": "Homemade Crunchy Granola Bowls",
       "genericName": null,
-      "brands": [
-        "Ultimate High Protein Handbook"
-      ],
+      "brands": ["Ultimate High Protein Handbook"],
       "categories": null,
       "servingSize": null,
       "nutritionDataPer": null,
@@ -15110,9 +15106,7 @@
       "code": "4050032985000",
       "productName": "Smart Ones",
       "genericName": null,
-      "brands": [
-        "Santa Fe Rice and beans"
-      ],
+      "brands": ["Santa Fe Rice and beans"],
       "categories": null,
       "servingSize": null,
       "nutritionDataPer": null,

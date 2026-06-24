@@ -39,13 +39,13 @@ between ROM, VRAM, work RAM, cartridge SRAM, and I/O — leaving room to "see" o
 
 ### The memory map
 
-| Address         | Region         | Banked?                            |
-| --------------- | -------------- | ---------------------------------- |
-| `0x0000–0x3FFF` | ROM bank 0     | **Fixed** — always present         |
+| Address         | Region         | Banked?                                   |
+| --------------- | -------------- | ----------------------------------------- |
+| `0x0000–0x3FFF` | ROM bank 0     | **Fixed** — always present                |
 | `0x4000–0x7FFF` | ROM bank 1…N   | Switchable (`SWITCH_ROM` / `BANKED` call) |
-| `0x8000–0x9FFF` | VRAM           | (GBC: 2 internal banks)            |
-| `0xA000–0xBFFF` | Cartridge SRAM | Switchable (`SWITCH_RAM`)          |
-| `0xC000–0xDFFF` | Work RAM       | (GBC: 7 internal banks)            |
+| `0x8000–0x9FFF` | VRAM           | (GBC: 2 internal banks)                   |
+| `0xA000–0xBFFF` | Cartridge SRAM | Switchable (`SWITCH_RAM`)                 |
+| `0xC000–0xDFFF` | Work RAM       | (GBC: 7 internal banks)                   |
 
 ### Bank 0 is special (and scarce)
 
@@ -54,7 +54,7 @@ GBDK's `_HOME` segment — the bank-switching trampolines, interrupt handlers, a
 function. Everything else depends on it always being mapped, so it must fit in 16 KB. It is currently
 **~15,520 / 16,384 bytes used** — adding body-weight tracking pushed it briefly over `0x4000`, so the
 home-screen rendering (`home_screen.c`) was moved into a numbered bank to make room. Any new
-*non-banked* function still overflows it easily, and the build's bank-layout guard (see "Build" below)
+_non-banked_ function still overflows it easily, and the build's bank-layout guard (see "Build" below)
 fails the build when `_HOME` crosses `0x4000`. The fix when that happens is to move code into a numbered
 bank (`#pragma bank N` + `BANKED`), not to grow `_HOME`.
 
@@ -81,12 +81,12 @@ the only way past 32 KB of save.
   of headroom toward 128.
 - **SRAM:** `-Wm-ya4` reserves **4 banks / 32 KB** — the MBC3 maximum. **Three are in use, one is free:**
 
-  | SRAM bank | Contents             | Owner                    | Notes                                                                                   |
-  | --------- | -------------------- | ------------------------ | --------------------------------------------------------------------------------------- |
-  | 0         | Profile + metrics    | `profile.c` / `metrics.c`| Disjoint sub-regions: 23-byte profile at `0x00`; body-weight log at `0x40` (see §7).     |
-  | 1         | Food log             | `foodlog.c`              | 6-byte records `{ day_num, food_idx, grams }` + header.                                 |
-  | 2         | Workout log          | `workoutlog.c`           | Variable records (workout header + 4-byte set rows) + header.                           |
-  | 3         | **Free**             | —                        | Unused; the only remaining save bank on MBC3.                                           |
+  | SRAM bank | Contents          | Owner                     | Notes                                                                                |
+  | --------- | ----------------- | ------------------------- | ------------------------------------------------------------------------------------ |
+  | 0         | Profile + metrics | `profile.c` / `metrics.c` | Disjoint sub-regions: 23-byte profile at `0x00`; body-weight log at `0x40` (see §7). |
+  | 1         | Food log          | `foodlog.c`               | 6-byte records `{ day_num, food_idx, grams }` + header.                              |
+  | 2         | Workout log       | `workoutlog.c`            | Variable records (workout header + 4-byte set rows) + header.                        |
+  | 3         | **Free**          | —                         | Unused; the only remaining save bank on MBC3.                                        |
 
   So **persistent storage, not ROM, is the tighter constraint** — only one empty SRAM bank remains.
   Body-weight metrics deliberately share bank 0 with the profile (the profile uses just 23 of 8192 bytes)
@@ -103,7 +103,7 @@ the only way past 32 KB of save.
   exactly this).
 - For **SRAM**, `ENABLE_RAM` + `SWITCH_RAM(n)` selects a save bank, then `SWITCH_RAM(0)` / `DISABLE_RAM`.
 
-> **Note:** the GBC also has *internal* banked memories — 7 switchable Work RAM banks and 2 VRAM banks —
+> **Note:** the GBC also has _internal_ banked memories — 7 switchable Work RAM banks and 2 VRAM banks —
 > but those belong to the console, not the cartridge, and are unrelated to `#pragma bank`. In day-to-day
 > GBDK work, "bank" means a **cartridge ROM bank**.
 
@@ -342,7 +342,7 @@ What's wired up so far:
   home input loop that routes into nutrition, workouts, and body weight. `Select` on home opens the
   settings menu (`settings_menu`: Settings / About / Reset Data); the reset option erases the save
   (profile + food log + workout log + body-weight metrics) after a confirmation and reruns onboarding.
-  The home-screen *rendering* lives in `home_screen.c` (banked) because `_HOME` is full.
+  The home-screen _rendering_ lives in `home_screen.c` (banked) because `_HOME` is full.
 - **`gameboy/src/home_screen.c`** — `BANKED` ROM-bank-1 home-screen rendering: the daily macro summary
   panel and the three action buttons (NUTRITION / WORKOUTS / BODY WEIGHT). Split out of `main.c` so its
   ~0.9 KB of code lives in a switchable bank instead of the full `_HOME` bank.
@@ -389,7 +389,7 @@ What's wired up so far:
   dominant target muscle. Pressing **A/Start** on a history row opens a read-only **WORKOUT DETAIL** screen
   that lists every logged set grouped under its exercise name (reps × weight in the user's units), scrollable
   with Up/Down. The suggestion mirrors the Expo fallback logic: `weight * loadMultiplier * experienceFactor *
-  ageFactor`, bodyweight/load-zero exercises start with no external load, and compound exercises suggest
+ageFactor`, bodyweight/load-zero exercises start with no external load, and compound exercises suggest
   10 reps while other mechanic types suggest 14.
 - **`gameboy/src/foodlog.c`** — the persisted food log. Each entry is a compact 6-byte record
   `{ day_num, food_idx, grams }` (day_num = `cal_day_number`, food_idx in the global bundled-food index,
@@ -401,12 +401,12 @@ What's wired up so far:
   caller's saved ROM bank on return.
 - **`gameboy/src/workoutlog.c` / `.h`** — persisted workout history in **SRAM bank 2** behind its own
   magic/version/count/byte-count/checksum header. Each workout stores `{ day_num, dominant_muscle,
-  exercise_count, set_count, volume_kg }` plus compact 4-byte set rows `{ exercise_idx, reps,
-  weight_kg_tenths }`. Exercise names are never stored; the history UI reloads names/muscle metadata from
+exercise_count, set_count, volume_kg }` plus compact 4-byte set rows `{ exercise_idx, reps,
+weight_kg_tenths }`. Exercise names are never stored; the history UI reloads names/muscle metadata from
   the ROM exercise table. `workoutlog_get_summary` reads a record's header for the history list, while
   `workoutlog_get_sets` copies its set rows for the workout detail screen. The log drops the oldest
   workouts when the bank fills.
-- **`gameboy/src/profile.c`** — SRAM bank 0 profile persistence with named byte-address constants, bit-packed profile flags, magic/version/checksum validation, and a compact 23-byte save block (down from 31 bytes; the extra byte vs the previous 22-byte layout holds the MBC3 RTC calibration date). Occupies bytes `0x00–0x16`; the body-weight metrics log (`metrics.c`) owns `0x40+` in the same bank. (Renamed from `database.c` — bank 0 now holds profile *and* metrics.)
+- **`gameboy/src/profile.c`** — SRAM bank 0 profile persistence with named byte-address constants, bit-packed profile flags, magic/version/checksum validation, and a compact 23-byte save block (down from 31 bytes; the extra byte vs the previous 22-byte layout holds the MBC3 RTC calibration date). Occupies bytes `0x00–0x16`; the body-weight metrics log (`metrics.c`) owns `0x40+` in the same bank. (Renamed from `database.c` — bank 0 now holds profile _and_ metrics.)
 - **`gameboy/src/rtc.c`** — MBC3 RTC hardware access (`rtc_latch`, `rtc_write_days`), calendar arithmetic (`cal_advance`, `cal_compare`, `cal_format`, `cal_day_number`), and the `rtc_setup_date` screen that lets the user pin today's date on first boot or after re-calibration.
 - **`gameboy/src/nutrition_math.c`** — `BANKED` ROM-bank-5 integer-only Mifflin-style BMR, activity multipliers,
   calorie adjustments, macro splits, and fiber target generation.
@@ -464,12 +464,12 @@ The ROM currently declares 32 KB SRAM. Bank 0 holds the tiny profile block **and
 metrics log, bank 1 holds the food log, and bank 2 holds saved workout history. Bank 0 is shared by two
 modules at disjoint, fixed offsets so each checksums only its own bytes:
 
-| Offset      | Bytes | Owner       | Content                                                                 |
-| ----------- | ----- | ----------- | ----------------------------------------------------------------------- |
-| `0x00–0x16` | 23    | `profile.c` | Packed profile (units, body metrics, goals, RTC calibration).           |
-| `0x17–0x3F` | —     | —           | Reserved profile growth headroom.                                       |
-| `0x40`      | 8     | `metrics.c` | Metrics header: magic `'BW'`, version, count, checksum.                 |
-| `0x48+`     | 4 ea. | `metrics.c` | Body-weight records `{ day_num, weight_kg_tenths }`, one per day.        |
+| Offset      | Bytes | Owner       | Content                                                           |
+| ----------- | ----- | ----------- | ----------------------------------------------------------------- |
+| `0x00–0x16` | 23    | `profile.c` | Packed profile (units, body metrics, goals, RTC calibration).     |
+| `0x17–0x3F` | —     | —           | Reserved profile growth headroom.                                 |
+| `0x40`      | 8     | `metrics.c` | Metrics header: magic `'BW'`, version, count, checksum.           |
+| `0x48+`     | 4 ea. | `metrics.c` | Body-weight records `{ day_num, weight_kg_tenths }`, one per day. |
 
 Rough plan for future data:
 

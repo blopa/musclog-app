@@ -249,7 +249,26 @@
       "github": "GitHub",
       "download": "Nu Downloaden",
       "exercises": "Oefeningen",
+      "gameboy": "Game Boy",
       "language": "Taal"
+    },
+    "gameboy": {
+      "pageTitle": "Speel Musclog op Game Boy",
+      "eyebrow": "Gewoon voor de lol",
+      "title": "Musclog op een Game Boy",
+      "subtitle": "We hebben een kleine Game Boy Color-versie van Musclog gemaakt. Druk op spelen en probeer het hier in je browser.",
+      "playButton": "Spelen",
+      "loading": "Laden…",
+      "errorLoad": "Kon het spel niet laden. Probeer het opnieuw.",
+      "controlsHint": "Desktop: pijltjestoetsen of WASD om te bewegen, X = A, Z = B, Enter = Start, Shift = Select. Op aanraakschermen gebruik je de knoppen op het scherm.",
+      "up": "Omhoog",
+      "down": "Omlaag",
+      "left": "Links",
+      "right": "Rechts",
+      "aButton": "A-knop",
+      "bButton": "B-knop",
+      "start": "Start",
+      "select": "Select"
     },
     "progress": {
       "metaTitle": "Musclog voortgangsimport",
