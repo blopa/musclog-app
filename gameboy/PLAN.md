@@ -242,6 +242,7 @@ gameboy/
 ├── src/
 │   ├── main.c            # boot, top-level menu state machine, home input loop
 │   ├── home_screen.c/.h  # BANKED home-screen rendering (macro summary + action buttons), ROM bank 1
+│   ├── settings.c/.h     # BANKED scrollable settings screen + home SELECT menu (settings/reset), ROM bank 1
 │   ├── ui_text.c/.h      # tile font, menu/list rendering, number formatting
 │   ├── input.c/.h        # debounced D-pad/button handling
 │   ├── workouts.c/.h     # free-session/history screens + input (ROM bank 7); logic in workout_session
@@ -338,12 +339,21 @@ What's wired up so far:
   (64×64, quantized to 4 colors = one CGB palette) using `sharp`. Output is committed, so the ROM build
   itself doesn't depend on `sharp`. Re-run with `npm run gb:prepare-logo` if the source icon changes.
 - **`gameboy/src/main.c`** — splash, text-mode init, save validation, onboarding/home routing, and the
-  home input loop that routes into nutrition, workouts, and body weight. `Select+B` on home erases the
-  save (profile + food log + workout log + body-weight metrics) and reruns onboarding. The home-screen
-  *rendering* lives in `home_screen.c` (banked) because `_HOME` is full.
+  home input loop that routes into nutrition, workouts, and body weight. `Select` on home opens the
+  settings menu (`settings_menu`: Settings / About / Reset Data); the reset option erases the save
+  (profile + food log + workout log + body-weight metrics) after a confirmation and reruns onboarding.
+  The home-screen *rendering* lives in `home_screen.c` (banked) because `_HOME` is full.
 - **`gameboy/src/home_screen.c`** — `BANKED` ROM-bank-1 home-screen rendering: the daily macro summary
   panel and the three action buttons (NUTRITION / WORKOUTS / BODY WEIGHT). Split out of `main.c` so its
   ~0.9 KB of code lives in a switchable bank instead of the full `_HOME` bank.
+- **`gameboy/src/settings.c`** — `BANKED` ROM-bank-1 scrollable settings screen plus the home `Select`
+  menu. The settings list edits every onboarding profile field (units, sex, age, height, weight, activity,
+  experience, focus, weight goal) and every macro target (calories, protein, carbs, fat, fiber):
+  Up/Down scroll, Left/Right change a value in place (enumerated fields cycle, numeric fields step), and
+  A/Start opens a focused spinner for fine numeric entry. Every change is persisted immediately with
+  `db_save`, so B just returns home. `settings_menu()` is the home SELECT menu (open settings, show the
+  About screen, or confirm-and-reset); the About screen shows a short blurb and the link to the full app
+  at `https://musclog.app/`. Kept in this bank so the menu/about/reset code stays out of the full `_HOME` bank.
 - **`gameboy/src/body_weight.c`** — `BANKED` ROM-bank-1 body-weight screen: shows the latest weight,
   min/max, and a left-to-right vertical column trend chart from the metrics log (oldest weigh-in on the
   left, newest on the right; column height = min/max-normalised weight), plus a digit-spinner entry screen (metric
@@ -356,7 +366,7 @@ What's wired up so far:
   with `foodlog.c`. Validated/reset at boot (`metrics_init`) and cleared on profile reset
   (`metrics_erase`) — note `db_erase` only zeroes the profile bytes, so the reset path must call both.
 - **`gameboy/src/weight_units.h`** — `static inline` kg-tenths ⇄ pound conversion and imperial entry
-  bounds, shared by `onboarding.c` and `body_weight.c` so the two never diverge.
+  bounds, shared by `onboarding.c`, `body_weight.c`, and `settings.c` so they never diverge.
 - **`gameboy/src/onboarding.c`** — `BANKED` first-run flow in ROM bank 5 with a combined unit/sex/activity setup screen,
   then age, height, weight, training experience, fitness focus, weight goal, generated goal review,
   and manual macro edits.
@@ -486,8 +496,11 @@ Background on saving: [Larold's "How to Save Data in Game Boy Games"](https://la
 6. **Body weight + units** — implemented: per-day body-weight log (`metrics.c`, SRAM bank-0 sub-region),
    home-screen **WEIGHT** button → latest weight + min/max + trend bar chart, digit-spinner entry with
    metric/imperial conversion, seeded from the onboarding weight.
-7. **Polish** — rest-timer beep, PR fanfare. Date tracking is already live via MBC3 RTC.
-8. **Stretch goals** — Link Cable data export to a second cart/PC; minimal cycle logging.
+7. **Settings + reset** — implemented: home `Select` menu (`settings.c`) opening a scrollable settings
+   screen that re-edits every onboarding profile field and macro target, an About screen linking to the
+   full app, plus a confirm-gated full reset.
+8. **Polish** — rest-timer beep, PR fanfare. Date tracking is already live via MBC3 RTC.
+9. **Stretch goals** — Link Cable data export to a second cart/PC; minimal cycle logging.
 
 ---
 

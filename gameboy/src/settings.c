@@ -82,13 +82,14 @@ static const char *gender_label(uint8_t gender) {
     return STR_MALE;
 }
 
+/* Short activity label so the value fits beside the row label (V.ACTIVE vs VERY ACTIVE). */
 static const char *activity_label(uint8_t activity_level) {
     switch (activity_level) {
         case 1u: return STR_ACTIVITY_LOW;
         case 2u: return STR_ACTIVITY_LIGHT;
         case 3u: return STR_ACTIVITY_MODERATE;
         case 4u: return STR_ACTIVITY_ACTIVE;
-        case 5u: return STR_ACTIVITY_VERY_ACTIVE;
+        case 5u: return STR_ACT_VERY;
         default: return STR_ACTIVITY_LIGHT;
     }
 }
@@ -102,7 +103,7 @@ static const char *field_label(uint8_t field) {
         case SET_HEIGHT:     return STR_HEIGHT;
         case SET_WEIGHT:     return STR_WEIGHT;
         case SET_ACTIVITY:   return STR_ACTIVITY;
-        case SET_EXPERIENCE: return STR_EXPERIENCE;
+        case SET_EXPERIENCE: return STR_EXP;
         case SET_FOCUS:      return STR_FOCUS;
         case SET_GOAL:       return STR_GOAL;
         case SET_CALORIES:   return STR_CALORIES;
@@ -173,7 +174,9 @@ static void format_value(const SettingsState *s, char *buf) {
             strcpy(buf, weight_goal_options[d->weight_goal]);
             break;
         case SET_CALORIES:
-            sprintf(buf, "%u KCAL", (unsigned int)d->calorie_goal);
+            /* No "KCAL" suffix here: the row label already names the field and
+             * the long value would otherwise collide with it. */
+            sprintf(buf, "%u", (unsigned int)d->calorie_goal);
             break;
         case SET_PROTEIN:
             sprintf(buf, "%uG", (unsigned int)d->protein_goal);
@@ -422,18 +425,42 @@ void settings_show(SaveData *data) BANKED {
     }
 }
 
+/* Short "what is this" blurb + the link to the full app. Waits for B/A/Start. */
+static void about_show(void) {
+    InputState input;
+
+    ui_title(STR_ABOUT);
+    ui_print_center(5u, STR_ABOUT_L1);
+    ui_print_center(6u, STR_ABOUT_L2);
+    ui_print_center(7u, STR_ABOUT_L3);
+    ui_print_center(9u, STR_ABOUT_L4);
+    ui_print_center(10u, STR_ABOUT_L5);
+    ui_print_center(12u, STR_ABOUT_URL);
+    ui_footer(STR_FOOTER_BACK, "");
+
+    input_init(&input);
+    while (1) {
+        wait_vbl_done();
+        input_update(&input);
+        if (input_pressed(&input, J_B | J_A | J_START)) return;
+    }
+}
+
 uint8_t settings_menu(SaveData *data) BANKED {
-    const char *options[2];
+    const char *options[3];
     uint8_t choice;
 
     options[0] = STR_SETTINGS;
-    options[1] = STR_RESET_DATA;
+    options[1] = STR_ABOUT;
+    options[2] = STR_RESET_DATA;
 
-    choice = ui_menu_select(STR_MENU, options, 2u);
+    choice = ui_menu_select(STR_MENU, options, 3u);
 
     if (choice == 0u) {
         settings_show(data);
     } else if (choice == 1u) {
+        about_show();
+    } else if (choice == 2u) {
         if (ui_confirm(STR_RESET_DATA, STR_RESET_DATA_Q)) {
             db_erase();
             foodlog_erase();

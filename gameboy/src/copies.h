@@ -50,13 +50,24 @@
 /* ── Home SELECT menu ──────────────────────────────────────────────────── */
 #define STR_MENU          "MENU"
 #define STR_SETTINGS      "SETTINGS"
+#define STR_ABOUT         "ABOUT"
 #define STR_RESET_DATA    "RESET DATA"
 #define STR_RESET_DATA_Q  "ERASE ALL DATA?"
+
+/* ── About screen ──────────────────────────────────────────────────────── */
+#define STR_ABOUT_L1   "MUSCLOG GB IS A"
+#define STR_ABOUT_L2   "POCKET PORT OF THE"
+#define STR_ABOUT_L3   "MUSCLOG APP."
+#define STR_ABOUT_L4   "FOR THE FULL"
+#define STR_ABOUT_L5   "EXPERIENCE VISIT"
+#define STR_ABOUT_URL  "https://musclog.app/"
 
 /* ── Settings screen ───────────────────────────────────────────────────── */
 #define STR_UNITS         "UNITS"
 #define STR_SEX           "SEX"
 #define STR_ACTIVITY      "ACTIVITY"
+#define STR_EXP           "EXP"          /* short row label; full word is STR_EXPERIENCE */
+#define STR_ACT_VERY      "V.ACTIVE"     /* short row value; full is STR_ACTIVITY_VERY_ACTIVE */
 #define STR_HINT_LR_EDIT  "L/R CHANGE"
 
 /* ── Body-weight tracking ──────────────────────────────────────────────── */

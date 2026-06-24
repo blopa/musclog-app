@@ -166,6 +166,7 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 - Compact battery-backed SRAM profile save with generated calorie and macro goals
 - Prototype ROM nutrition and saved workout-history screens with Select-menu shortcuts back to Home
 - Game Boy Start Workout prototype for free sessions: pick an exercise, filter by muscle group with left/right arrows, edit suggested sets/weight/reps, run active set screens, adjust set targets, use a 60-second rest timer, save completed workouts to cartridge SRAM, and return to exercise selection for the next movement
+- Home Select menu with a scrollable Settings screen to re-edit every profile field (units, sex, age, height, weight, activity, experience, focus, weight goal) and all macro targets, an About screen linking to the full app at https://musclog.app/, and a confirmation-gated Reset Data option
 
 ---
 
