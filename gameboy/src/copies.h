@@ -55,6 +55,7 @@
 #define STR_TREND         "TREND"
 #define STR_NO_DATA       "NO DATA"
 #define STR_FOOTER_LOG    "A/ST LOG"
+#define STR_NEW_ENTRY     "NEW ENTRY"
 
 /* ── Workout tracking ─────────────────────────────────────────────────── */
 #define STR_START_WORKOUT "START WORKOUT"

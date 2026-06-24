@@ -5,6 +5,7 @@
 #include "copies.h"
 #include "input.h"
 #include "metrics.h"
+#include "nutrition_date.h"
 #include "rtc.h"
 #include "spinner.h"
 #include "ui_text.h"
@@ -58,7 +59,7 @@ static void bw_draw(const SaveData *data, const CalDate *today) {
 
     if (count == 0u) {
         ui_print_center(9u, STR_NO_DATA);
-        ui_footer(STR_FOOTER_BACK, STR_FOOTER_LOG);
+        ui_footer(STR_FOOTER_BACK, STR_FOOTER_SEL_MENU);
         return;
     }
 
@@ -81,11 +82,15 @@ static void bw_draw(const SaveData *data, const CalDate *today) {
     ui_print_at(1u, 9u, STR_TREND);
     bw_draw_trend(count, mn, mx);
 
-    ui_footer(STR_FOOTER_BACK, STR_FOOTER_LOG);
+    ui_footer(STR_FOOTER_BACK, STR_FOOTER_SEL_MENU);
 }
 
-/* Digit-spinner entry for today's weight. Returns 1 if a value was saved. */
-static uint8_t bw_log_entry(SaveData *data, uint16_t day_num) {
+/*
+ * Digit-spinner entry for a weight on `day_num`. Returns 1 if a value was saved.
+ * When `is_today` is set the saved value also becomes the profile's current
+ * weight; logging a past date never overwrites it.
+ */
+static uint8_t bw_log_entry(SaveData *data, uint16_t day_num, uint8_t is_today) {
     InputState input;
     uint16_t kg_tenths;
     uint16_t lbs;
@@ -111,8 +116,10 @@ static uint8_t bw_log_entry(SaveData *data, uint16_t day_num) {
 
         if (input_pressed(&input, J_A | J_START)) {
             metrics_set_for_day(day_num, kg_tenths);
-            data->weight_kg_tenths = kg_tenths;
-            db_save(data);
+            if (is_today) {
+                data->weight_kg_tenths = kg_tenths;
+                db_save(data);
+            }
             return 1u;
         }
 
@@ -133,6 +140,37 @@ static uint8_t bw_log_entry(SaveData *data, uint16_t day_num) {
     }
 }
 
+typedef enum {
+    BW_ACTION_NONE = 0u,
+    BW_ACTION_NEW_ENTRY = 1u,
+    BW_ACTION_HOME = 2u,
+} BodyWeightAction;
+
+/* SELECT menu: add an entry for any date, or go back to the home screen. */
+static BodyWeightAction bw_action_menu(void) {
+    const char *options[2];
+    uint8_t selected;
+
+    options[0] = STR_NEW_ENTRY;
+    options[1] = STR_HOME;
+
+    selected = ui_menu_select(STR_BODY_WEIGHT, options, 2u);
+    if (selected == UI_MENU_CANCEL) return BW_ACTION_NONE;
+    if (selected == 0u) return BW_ACTION_NEW_ENTRY;
+    return BW_ACTION_HOME;
+}
+
+/* Pick a date (defaulting to today, capped at today), then log a weight for it. */
+static void bw_new_entry(SaveData *data, CalDate today) {
+    CalDate  pick = today;
+    uint16_t today_day = cal_day_number(today);
+    uint16_t pick_day;
+
+    nutrition_date_picker(today, &pick);
+    pick_day = cal_day_number(pick);
+    bw_log_entry(data, pick_day, (uint8_t)(pick_day == today_day));
+}
+
 void body_weight_show(SaveData *data) BANKED {
     InputState input;
     CalDate today = cal_current_date(data);
@@ -151,8 +189,17 @@ void body_weight_show(SaveData *data) BANKED {
 
         if (input_pressed(&input, J_B)) return;
 
+        if (input_pressed(&input, J_SELECT)) {
+            BodyWeightAction action = bw_action_menu();
+            if (action == BW_ACTION_HOME) return;
+            if (action == BW_ACTION_NEW_ENTRY) bw_new_entry(data, today);
+            dirty = 1u;
+            continue;
+        }
+
+        /* A/Start stays a quick shortcut to log today's weight. */
         if (input_pressed(&input, J_A | J_START)) {
-            bw_log_entry(data, day_num);
+            bw_log_entry(data, day_num, 1u);
             dirty = 1u;
         }
     }
