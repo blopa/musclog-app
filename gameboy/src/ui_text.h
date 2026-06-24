@@ -18,6 +18,15 @@ void ui_print_center(uint8_t y, const char *text);
 void ui_clear_row(uint8_t y);
 void ui_present(void);
 void ui_draw_menu(const char *title, const char **options, uint8_t count, uint8_t selected);
+
+/*
+ * Run a full vertical-menu input loop: renders via ui_draw_menu, moves the
+ * selection with up/down (wrapping), confirms with A/Start, cancels with B.
+ * Returns the selected option index, or UI_MENU_CANCEL on cancel. This is the
+ * single home of the menu loop that screens used to copy by hand.
+ */
+#define UI_MENU_CANCEL 0xFFu
+uint8_t ui_menu_select(const char *title, const char **options, uint8_t count);
 void ui_draw_value_screen(const char *title, const char *label, const char *value, const char *hint);
 
 /*

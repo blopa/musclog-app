@@ -2,6 +2,8 @@
 
 #include "workoutlog.h"
 
+#include "sram.h"
+
 #define WL_MAGIC          0x574Cu  /* 'WL' */
 #define WL_VERSION        1u
 
@@ -16,15 +18,6 @@
 #define WL_SET_SIZE           4u
 #define WL_CAPACITY           ((uint16_t)(8192u - WL_RECORDS_OFFSET))
 
-static uint16_t wl_rd16(uint16_t off) {
-    return (uint16_t)((uint16_t)_SRAM[off] | ((uint16_t)_SRAM[off + 1u] << 8u));
-}
-
-static void wl_wr16(uint16_t off, uint16_t v) {
-    _SRAM[off]      = (uint8_t)(v & 0xFFu);
-    _SRAM[off + 1u] = (uint8_t)(v >> 8u);
-}
-
 static uint16_t wl_record_len_at(uint16_t off) {
     return (uint16_t)(WL_RECORD_HEADER_SIZE + (uint16_t)_SRAM[off + 4u] * WL_SET_SIZE);
 }
@@ -34,33 +27,24 @@ static uint16_t wl_record_len_for(uint8_t set_count) {
 }
 
 static uint16_t wl_checksum(uint8_t count, uint16_t bytes_used) {
-    uint16_t sum = 0xA55Au;
-    uint16_t end = (uint16_t)(WL_RECORDS_OFFSET + bytes_used);
-    uint16_t i;
-
-    sum = (uint16_t)((sum << 5u) ^ (sum >> 1u) ^ count);
-    sum = (uint16_t)((sum << 5u) ^ (sum >> 1u) ^ (uint8_t)(bytes_used & 0xFFu));
-    sum = (uint16_t)((sum << 5u) ^ (sum >> 1u) ^ (uint8_t)(bytes_used >> 8u));
-
-    for (i = WL_RECORDS_OFFSET; i != end; ++i) {
-        sum = (uint16_t)((sum << 5u) ^ (sum >> 1u) ^ _SRAM[i]);
-    }
-
-    return sum;
+    uint16_t sum = sram_hash_byte(0xA55Au, count);
+    sum = sram_hash_byte(sum, (uint8_t)(bytes_used & 0xFFu));
+    sum = sram_hash_byte(sum, (uint8_t)(bytes_used >> 8u));
+    return sram_hash(sum, _SRAM, WL_RECORDS_OFFSET, bytes_used);
 }
 
 static void wl_finalize(uint8_t count, uint16_t bytes_used) {
-    wl_wr16(WL_OFF_MAGIC, WL_MAGIC);
+    sram_wr16(_SRAM, WL_OFF_MAGIC, WL_MAGIC);
     _SRAM[WL_OFF_VERSION] = WL_VERSION;
     _SRAM[WL_OFF_COUNT] = count;
-    wl_wr16(WL_OFF_BYTES, bytes_used);
-    wl_wr16(WL_OFF_CHECKSUM, wl_checksum(count, bytes_used));
+    sram_wr16(_SRAM, WL_OFF_BYTES, bytes_used);
+    sram_wr16(_SRAM, WL_OFF_CHECKSUM, wl_checksum(count, bytes_used));
 }
 
 static uint8_t wl_header_ok(void) {
-    return (uint8_t)(wl_rd16(WL_OFF_MAGIC) == WL_MAGIC &&
+    return (uint8_t)(sram_rd16(_SRAM, WL_OFF_MAGIC) == WL_MAGIC &&
                      _SRAM[WL_OFF_VERSION] == WL_VERSION &&
-                     wl_rd16(WL_OFF_BYTES) <= WL_CAPACITY);
+                     sram_rd16(_SRAM, WL_OFF_BYTES) <= WL_CAPACITY);
 }
 
 static void wl_drop_oldest(uint8_t *count, uint16_t *bytes_used) {
@@ -109,8 +93,8 @@ void workoutlog_init(void) BANKED {
     valid = wl_header_ok();
     if (valid) {
         count = _SRAM[WL_OFF_COUNT];
-        bytes_used = wl_rd16(WL_OFF_BYTES);
-        valid = (uint8_t)(wl_rd16(WL_OFF_CHECKSUM) == wl_checksum(count, bytes_used));
+        bytes_used = sram_rd16(_SRAM, WL_OFF_BYTES);
+        valid = (uint8_t)(sram_rd16(_SRAM, WL_OFF_CHECKSUM) == wl_checksum(count, bytes_used));
     }
     if (!valid) {
         wl_finalize(0u, 0u);
@@ -161,11 +145,11 @@ uint8_t workoutlog_get_summary(uint8_t newest_idx, WorkoutLogSummary *out) BANKE
             for (i = 0u; i != count; ++i) {
                 len = wl_record_len_at(off);
                 if (i == target) {
-                    out->day_num = wl_rd16(off);
+                    out->day_num = sram_rd16(_SRAM, off);
                     out->dominant_muscle = _SRAM[off + 2u];
                     out->exercise_count = _SRAM[off + 3u];
                     out->set_count = _SRAM[off + 4u];
-                    out->volume_kg = wl_rd16((uint16_t)(off + 5u));
+                    out->volume_kg = sram_rd16(_SRAM, (uint16_t)(off + 5u));
                     found = 1u;
                     break;
                 }
@@ -207,7 +191,7 @@ uint8_t workoutlog_add(uint16_t day_num,
     }
 
     count = _SRAM[WL_OFF_COUNT];
-    bytes_used = wl_rd16(WL_OFF_BYTES);
+    bytes_used = sram_rd16(_SRAM, WL_OFF_BYTES);
 
     while ((count == 255u || (uint16_t)(bytes_used + record_len) > WL_CAPACITY) && count > 0u) {
         wl_drop_oldest(&count, &bytes_used);
@@ -220,17 +204,17 @@ uint8_t workoutlog_add(uint16_t day_num,
     }
 
     off = (uint16_t)(WL_RECORDS_OFFSET + bytes_used);
-    wl_wr16(off, day_num);
+    sram_wr16(_SRAM, off, day_num);
     _SRAM[off + 2u] = dominant_muscle;
     _SRAM[off + 3u] = exercise_count;
     _SRAM[off + 4u] = set_count;
-    wl_wr16((uint16_t)(off + 5u), volume_kg);
+    sram_wr16(_SRAM, (uint16_t)(off + 5u), volume_kg);
 
     set_off = (uint16_t)(off + WL_RECORD_HEADER_SIZE);
     for (i = 0u; i != set_count; ++i) {
         _SRAM[set_off] = sets[i].exercise_idx;
         _SRAM[set_off + 1u] = sets[i].reps;
-        wl_wr16((uint16_t)(set_off + 2u), sets[i].weight_kg_tenths);
+        sram_wr16(_SRAM, (uint16_t)(set_off + 2u), sets[i].weight_kg_tenths);
         set_off = (uint16_t)(set_off + WL_SET_SIZE);
     }
 

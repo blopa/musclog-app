@@ -6,6 +6,7 @@
 #include "food_db.h"
 #include "foodlog.h"
 #include "input.h"
+#include "list_cursor.h"
 #include "nutrition_date.h"
 #include "nutrition_detail.h"
 #include "nutrition_search.h"
@@ -23,8 +24,7 @@ typedef struct NutritionState {
     CalDate  viewing_date;
     CalDate  today;
     uint16_t day_num;
-    uint8_t  scroll;
-    uint8_t  focused;
+    ListCursor cursor;
     uint8_t  dirty;
 } NutritionState;
 
@@ -106,9 +106,9 @@ static void draw_nutrition(const NutritionState *state) {
     for (i = 0u; i != FOOD_VISIBLE; ++i) {
         draw_food_row((uint8_t)(13u + i),
                       state->day_num,
-                      (uint8_t)(state->scroll + i),
+                      (uint8_t)(state->cursor.scroll + i),
                       count,
-                      (uint8_t)(i == state->focused));
+                      (uint8_t)(i == state->cursor.focused));
     }
 
     ui_footer(STR_FOOTER_BACK, STR_FOOTER_SEL_MENU);
@@ -123,62 +123,17 @@ typedef enum NutritionAction {
 
 static NutritionAction nutrition_action_menu(void) {
     const char *options[3];
-    uint8_t selected = 0u;
-    uint8_t dirty = 1u;
-    InputState input;
+    uint8_t selected;
 
     options[0] = STR_GO_TO_DATE;
     options[1] = STR_TRACK_FOOD;
     options[2] = STR_HOME;
 
-    input_init(&input);
-    while (1) {
-        if (dirty) {
-            ui_draw_menu(STR_NUTRITION, options, 3u, selected);
-            dirty = 0u;
-        }
-
-        wait_vbl_done();
-        input_update(&input);
-
-        if (input_pressed(&input, J_B)) return NUTRITION_ACTION_NONE;
-
-        if (input_pressed(&input, J_UP | J_DOWN)) {
-            if (input_pressed(&input, J_UP)) {
-                selected = selected == 0u ? 2u : (uint8_t)(selected - 1u);
-            } else {
-                selected = selected == 2u ? 0u : (uint8_t)(selected + 1u);
-            }
-            dirty = 1u;
-        }
-
-        if (input_pressed(&input, J_A | J_START)) {
-            if (selected == 0u) return NUTRITION_ACTION_GO_TO_DATE;
-            if (selected == 1u) return NUTRITION_ACTION_TRACK_FOOD;
-            return NUTRITION_ACTION_HOME;
-        }
-    }
-}
-
-static void clamp_food_cursor(NutritionState *state) {
-    uint8_t count = foodlog_count_for_day(state->day_num);
-    uint8_t target;
-
-    if (count == 0u) {
-        state->scroll = 0u;
-        state->focused = 0u;
-        return;
-    }
-
-    if ((uint8_t)(state->scroll + state->focused) < count) return;
-
-    target = (uint8_t)(count - 1u);
-    if (target < state->scroll) {
-        state->scroll = target;
-        state->focused = 0u;
-    } else {
-        state->focused = (uint8_t)(target - state->scroll);
-    }
+    selected = ui_menu_select(STR_NUTRITION, options, 3u);
+    if (selected == UI_MENU_CANCEL) return NUTRITION_ACTION_NONE;
+    if (selected == 0u) return NUTRITION_ACTION_GO_TO_DATE;
+    if (selected == 1u) return NUTRITION_ACTION_TRACK_FOOD;
+    return NUTRITION_ACTION_HOME;
 }
 
 static uint8_t run_action(NutritionState *state) {
@@ -187,8 +142,7 @@ static uint8_t run_action(NutritionState *state) {
     if (action == NUTRITION_ACTION_GO_TO_DATE) {
         nutrition_date_picker(state->today, &state->viewing_date);
         state->day_num = cal_day_number(state->viewing_date);
-        state->scroll  = 0u;
-        state->focused = 0u;
+        list_cursor_reset(&state->cursor);
     } else if (action == NUTRITION_ACTION_TRACK_FOOD) {
         nutrition_food_search_track(state->data, state->viewing_date);
     } else if (action == NUTRITION_ACTION_HOME) {
@@ -207,8 +161,7 @@ void nutrition_track(SaveData *data) BANKED {
     state.today        = cal_current_date(data);
     state.viewing_date = state.today;
     state.day_num      = cal_day_number(state.viewing_date);
-    state.scroll       = 0u;
-    state.focused      = 0u;
+    list_cursor_reset(&state.cursor);
     state.dirty        = 1u;
 
     input_init(&input);
@@ -230,32 +183,21 @@ void nutrition_track(SaveData *data) BANKED {
         }
 
         count   = foodlog_count_for_day(state.day_num);
-        abs_idx = (uint8_t)(state.scroll + state.focused);
+        abs_idx = list_cursor_index(&state.cursor);
 
         if (input_pressed(&input, J_START) && abs_idx < count) {
             nutrition_show_food_detail(state.data, state.day_num, abs_idx);
-            clamp_food_cursor(&state);
+            list_cursor_clamp(&state.cursor, foodlog_count_for_day(state.day_num));
             state.dirty = 1u;
             continue;
         }
 
-        if (input_pressed(&input, J_DOWN) && (uint8_t)(abs_idx + 1u) < count) {
-            if (state.focused < (uint8_t)(FOOD_VISIBLE - 1u)) {
-                ++state.focused;
-            } else {
-                ++state.scroll;
-            }
+        if (input_pressed(&input, J_DOWN) && list_cursor_down(&state.cursor, count, FOOD_VISIBLE)) {
             state.dirty = 1u;
         }
 
-        if (input_pressed(&input, J_UP)) {
-            if (state.focused > 0u) {
-                --state.focused;
-                state.dirty = 1u;
-            } else if (state.scroll > 0u) {
-                --state.scroll;
-                state.dirty = 1u;
-            }
+        if (input_pressed(&input, J_UP) && list_cursor_up(&state.cursor)) {
+            state.dirty = 1u;
         }
     }
 }

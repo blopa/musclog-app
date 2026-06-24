@@ -244,7 +244,8 @@ gameboy/
 │   ├── home_screen.c/.h  # BANKED home-screen rendering (macro summary + action buttons), ROM bank 1
 │   ├── ui_text.c/.h      # tile font, menu/list rendering, number formatting
 │   ├── input.c/.h        # debounced D-pad/button handling
-│   ├── workouts.c/.h     # persisted workout history + free-session planning flow
+│   ├── workouts.c/.h     # free-session/history screens + input (ROM bank 7); logic in workout_session
+│   ├── workout_session.c/.h # in-RAM session accumulator + starting-weight recommendation, ROM bank 7
 │   ├── nutrition.c/.h    # banked nutrition shell; subflows live in nutrition_date/detail/search
 │   ├── body_weight.c/.h  # BANKED body-weight screen + log-entry spinner, ROM bank 1
 │   ├── food_db.c/.h      # NONBANKED banked-food readers (ff_load/ff_filter)
@@ -255,8 +256,13 @@ gameboy/
 │   ├── foodlog.c/.h      # persisted food log (6-byte records in SRAM bank 1) + macro scaling
 │   ├── workoutlog.c/.h   # persisted workout log (variable records in SRAM bank 2)
 │   ├── metrics.c/.h      # BANKED body-weight log (4-byte records in the SRAM bank-0 metrics sub-region), ROM bank 1
-│   ├── weight_units.h    # shared kg-tenths <-> lb conversion (used by onboarding + body_weight)
-│   └── profile.c/.h      # SRAM bank-0 profile layout, named address constants, load/save, checksum
+│   ├── profile.c/.h      # SRAM bank-0 profile layout, named address constants, load/save, checksum
+│   │                     # ── shared header-only helpers (static, one bank-local copy per TU): ──
+│   ├── sram.h            # little-endian SRAM rd16/wr16 + rolling checksum (profile/metrics/food/workout logs)
+│   ├── list_cursor.h     # scrolling-list cursor (scroll/focused window) for every row-picker screen
+│   ├── spinner.h         # 4-direction clamped value spinner for numeric-entry screens
+│   ├── utils.h           # clamp + clamped add/sub helpers
+│   └── weight_units.h    # kg-tenths <-> lb conversion (onboarding + body_weight + workout_session)
 ├── data/
 │   └── exercises.c       # bundled exercise names (const, lives in ROM)
 └── tools/                # build helpers (see "Build" below — Node scripts, not a Makefile)

@@ -243,6 +243,35 @@ void ui_draw_menu(const char *title, const char **options, uint8_t count, uint8_
     ui_footer(STR_FOOTER_BACK, STR_FOOTER_OK);
 }
 
+uint8_t ui_menu_select(const char *title, const char **options, uint8_t count) {
+    InputState input;
+    uint8_t selected = 0u;
+    uint8_t dirty = 1u;
+
+    input_init(&input);
+    while (1) {
+        if (dirty) {
+            ui_draw_menu(title, options, count, selected);
+            dirty = 0u;
+        }
+
+        wait_vbl_done();
+        input_update(&input);
+
+        if (input_pressed(&input, J_B)) return UI_MENU_CANCEL;
+
+        if (input_pressed(&input, J_UP)) {
+            selected = selected == 0u ? (uint8_t)(count - 1u) : (uint8_t)(selected - 1u);
+            dirty = 1u;
+        } else if (input_pressed(&input, J_DOWN)) {
+            selected = (uint8_t)((selected + 1u) % count);
+            dirty = 1u;
+        } else if (input_pressed(&input, J_A | J_START)) {
+            return selected;
+        }
+    }
+}
+
 void ui_draw_value_screen(const char *title, const char *label, const char *value, const char *hint) {
     ui_title(title);
     ui_print_center(6u, label);

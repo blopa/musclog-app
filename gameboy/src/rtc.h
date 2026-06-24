@@ -54,6 +54,17 @@ uint16_t cal_day_number(CalDate d);
 int8_t  cal_compare(CalDate a, CalDate b);
 
 /*
+ * Adjust one Y/M/D field of *pick by a single step (going_right = increment).
+ * Shared by the date / datetime picker screens. The year is bounded to
+ * [min_year, max_year]: wrap_year=1 wraps it around those bounds, wrap_year=0
+ * clamps it (sticks at the ends). Month and day always wrap, and the day is
+ * re-clamped to the resulting month's length. field: 0=year 1=month 2=day;
+ * other fields (hour/minute) are the caller's concern.
+ */
+void cal_adjust_ymd(CalDate *pick, uint8_t field, uint8_t going_right,
+                    uint16_t min_year, uint16_t max_year, uint8_t wrap_year);
+
+/*
  * Format d as "MM-DD-YY\0" (8 visible chars, 9 bytes including null).
  * buf must be at least 9 bytes.
  */

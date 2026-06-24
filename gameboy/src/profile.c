@@ -1,5 +1,7 @@
 #include "profile.h"
 
+#include "sram.h"
+
 #include <gb/gb.h>
 #include <string.h>
 
@@ -16,20 +18,13 @@
  */
 
 /* ── Checksum ─────────────────────────────────────────────────────────────── */
-
-static uint16_t raw_rd16(const uint8_t *raw, uint8_t off) {
-    return (uint16_t)((uint16_t)raw[off] | ((uint16_t)raw[off + 1u] << 8u));
-}
-
-static void raw_wr16(uint8_t *raw, uint8_t off, uint16_t v) {
-    raw[off]      = (uint8_t)(v & 0xFFu);
-    raw[off + 1u] = (uint8_t)(v >> 8u);
-}
+/* The profile stages into a RAM buffer then bulk-copies to SRAM, so the shared
+ * sram_* helpers operate on that buffer pointer rather than _SRAM directly. */
 
 static void db_pack_without_checksum(const SaveData *data, uint8_t *raw) {
     memset(raw, 0, SRAM_SAVE_SIZE);
 
-    raw_wr16(raw, SRAM_MAGIC, SAVE_MAGIC);
+    sram_wr16(raw, SRAM_MAGIC, SAVE_MAGIC);
     raw[SRAM_VERSION] = SAVE_VERSION;
     raw[SRAM_FLAGS1] = (uint8_t)(
         ((data->units              & 1u) << FLAGS1_UNITS_BIT)          |
@@ -46,11 +41,11 @@ static void db_pack_without_checksum(const SaveData *data, uint8_t *raw) {
 
     raw[SRAM_AGE]          = data->age;
     raw[SRAM_HEIGHT]       = (uint8_t)(data->height_cm - DB_HEIGHT_CM_MIN);
-    raw_wr16(raw, SRAM_WEIGHT, (uint16_t)(data->weight_kg_tenths - DB_WEIGHT_KG_TENTHS_MIN));
-    raw_wr16(raw, SRAM_CAL_GOAL, data->calorie_goal);
-    raw_wr16(raw, SRAM_PROTEIN_GOAL, data->protein_goal);
-    raw_wr16(raw, SRAM_CARBS_GOAL, data->carbs_goal);
-    raw_wr16(raw, SRAM_FAT_GOAL, data->fat_goal);
+    sram_wr16(raw, SRAM_WEIGHT, (uint16_t)(data->weight_kg_tenths - DB_WEIGHT_KG_TENTHS_MIN));
+    sram_wr16(raw, SRAM_CAL_GOAL, data->calorie_goal);
+    sram_wr16(raw, SRAM_PROTEIN_GOAL, data->protein_goal);
+    sram_wr16(raw, SRAM_CARBS_GOAL, data->carbs_goal);
+    sram_wr16(raw, SRAM_FAT_GOAL, data->fat_goal);
     raw[SRAM_FIBER_GOAL]   = (uint8_t)(data->fiber_goal & 0xFFu);
     raw[SRAM_RTC_YEAR_OFS] = (uint8_t)(data->rtc_base_date.year - 2000u);
     raw[SRAM_RTC_MONTH]    = data->rtc_base_date.month;
@@ -64,7 +59,7 @@ static uint16_t db_checksum_bytes(const uint8_t *raw) {
 
     for (i = 0u; i != SRAM_SAVE_SIZE; ++i) {
         b = (i == SRAM_CHECKSUM || i == (uint8_t)(SRAM_CHECKSUM + 1u)) ? 0u : raw[i];
-        sum = (uint16_t)((sum << 5u) ^ (sum >> 1u) ^ b);
+        sum = sram_hash_byte(sum, b);
     }
     return sum;
 }
@@ -126,8 +121,8 @@ uint8_t db_load(SaveData *out) {
 
     DISABLE_RAM;
 
-    if (raw_rd16(raw, SRAM_MAGIC) != SAVE_MAGIC || raw[SRAM_VERSION] != SAVE_VERSION) return 0u;
-    if (raw_rd16(raw, SRAM_CHECKSUM) != db_checksum_bytes(raw)) return 0u;
+    if (sram_rd16(raw, SRAM_MAGIC) != SAVE_MAGIC || raw[SRAM_VERSION] != SAVE_VERSION) return 0u;
+    if (sram_rd16(raw, SRAM_CHECKSUM) != db_checksum_bytes(raw)) return 0u;
 
     /* Decode SRAM_FLAGS1 */
     flags1 = raw[SRAM_FLAGS1];
@@ -147,13 +142,13 @@ uint8_t db_load(SaveData *out) {
     out->age       = raw[SRAM_AGE];
     out->height_cm = (uint16_t)(raw[SRAM_HEIGHT] + DB_HEIGHT_CM_MIN);
 
-    weight_off = raw_rd16(raw, SRAM_WEIGHT);
+    weight_off = sram_rd16(raw, SRAM_WEIGHT);
     out->weight_kg_tenths = (uint16_t)(weight_off + DB_WEIGHT_KG_TENTHS_MIN);
 
-    out->calorie_goal = raw_rd16(raw, SRAM_CAL_GOAL);
-    out->protein_goal = raw_rd16(raw, SRAM_PROTEIN_GOAL);
-    out->carbs_goal   = raw_rd16(raw, SRAM_CARBS_GOAL);
-    out->fat_goal     = raw_rd16(raw, SRAM_FAT_GOAL);
+    out->calorie_goal = sram_rd16(raw, SRAM_CAL_GOAL);
+    out->protein_goal = sram_rd16(raw, SRAM_PROTEIN_GOAL);
+    out->carbs_goal   = sram_rd16(raw, SRAM_CARBS_GOAL);
+    out->fat_goal     = sram_rd16(raw, SRAM_FAT_GOAL);
     out->fiber_goal   = raw[SRAM_FIBER_GOAL];
 
     /* Decode RTC calibration */
@@ -164,7 +159,7 @@ uint8_t db_load(SaveData *out) {
     /* Restore header fields used by db_is_valid */
     out->magic    = SAVE_MAGIC;
     out->version  = SAVE_VERSION;
-    out->checksum = raw_rd16(raw, SRAM_CHECKSUM);
+    out->checksum = sram_rd16(raw, SRAM_CHECKSUM);
 
     return 1u;
 }
@@ -182,7 +177,7 @@ void db_save(const SaveData *data) {
 
     db_pack_without_checksum(data, raw);
     checksum = db_checksum_bytes(raw);
-    raw_wr16(raw, SRAM_CHECKSUM, checksum);
+    sram_wr16(raw, SRAM_CHECKSUM, checksum);
 
     ENABLE_RAM;
     SWITCH_RAM(0u);

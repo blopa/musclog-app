@@ -128,6 +128,41 @@ int8_t cal_compare(CalDate a, CalDate b) {
     return 0;
 }
 
+void cal_adjust_ymd(CalDate *pick, uint8_t field, uint8_t going_right,
+                    uint16_t min_year, uint16_t max_year, uint8_t wrap_year) {
+    uint8_t dim;
+
+    if (field == 0u) {
+        if (going_right) {
+            pick->year = (pick->year >= max_year)
+                ? (wrap_year ? min_year : max_year)
+                : (uint16_t)(pick->year + 1u);
+        } else {
+            pick->year = (pick->year <= min_year)
+                ? (wrap_year ? max_year : min_year)
+                : (uint16_t)(pick->year - 1u);
+        }
+    } else if (field == 1u) {
+        if (going_right) {
+            pick->month = (pick->month >= 12u) ? 1u : (uint8_t)(pick->month + 1u);
+        } else {
+            pick->month = (pick->month <= 1u) ? 12u : (uint8_t)(pick->month - 1u);
+        }
+    } else {
+        dim = cal_days_in_month(pick->month, pick->year);
+        if (going_right) {
+            pick->day = (pick->day >= dim) ? 1u : (uint8_t)(pick->day + 1u);
+        } else {
+            pick->day = (pick->day <= 1u) ? dim : (uint8_t)(pick->day - 1u);
+        }
+        return;
+    }
+
+    /* Year/month change can shorten the month: pull the day back in range. */
+    dim = cal_days_in_month(pick->month, pick->year);
+    if (pick->day > dim) pick->day = dim;
+}
+
 void cal_format(const CalDate *d, char *buf) {
     /* "MM-DD-YY\0" — 8 visible chars, 9 bytes total */
     buf[0] = (char)('0' + d->month / 10u);
@@ -180,7 +215,6 @@ void rtc_setup_date(SaveData *data) {
     uint8_t    field;       /* 0=year 1=month 2=day 3=hour 4=minute */
     uint8_t    dirty;
     uint8_t    going_right;
-    uint8_t    dim;
     InputState input;
 
     /* Seed with existing calibration date if available; otherwise 2025-01-01 00:00. */
@@ -234,35 +268,9 @@ void rtc_setup_date(SaveData *data) {
         if (input_pressed(&input, J_LEFT | J_RIGHT)) {
             going_right = input_pressed(&input, J_RIGHT);
 
-            if (field == 0u) {
-                /* Year: 2000–2099, wrapping */
-                if (going_right) {
-                    pick.year = (pick.year >= 2099u) ? 2000u : (uint16_t)(pick.year + 1u);
-                } else {
-                    pick.year = (pick.year <= 2000u) ? 2099u : (uint16_t)(pick.year - 1u);
-                }
-                dim = cal_days_in_month(pick.month, pick.year);
-                if (pick.day > dim) pick.day = dim;
-
-            } else if (field == 1u) {
-                /* Month: 1–12, wrapping */
-                if (going_right) {
-                    pick.month = (pick.month >= 12u) ? 1u : (uint8_t)(pick.month + 1u);
-                } else {
-                    pick.month = (pick.month <= 1u) ? 12u : (uint8_t)(pick.month - 1u);
-                }
-                dim = cal_days_in_month(pick.month, pick.year);
-                if (pick.day > dim) pick.day = dim;
-
-            } else if (field == 2u) {
-                /* Day: 1–days_in_month, wrapping */
-                dim = cal_days_in_month(pick.month, pick.year);
-                if (going_right) {
-                    pick.day = (pick.day >= dim) ? 1u : (uint8_t)(pick.day + 1u);
-                } else {
-                    pick.day = (pick.day <= 1u) ? dim : (uint8_t)(pick.day - 1u);
-                }
-
+            if (field <= 2u) {
+                /* Year/month/day, year wrapping within 2000–2099. */
+                cal_adjust_ymd(&pick, field, going_right, 2000u, 2099u, 1u);
             } else if (field == 3u) {
                 /* Hour: 0–23, wrapping */
                 if (going_right) {
@@ -270,7 +278,6 @@ void rtc_setup_date(SaveData *data) {
                 } else {
                     pick_hour = (pick_hour == 0u) ? 23u : (uint8_t)(pick_hour - 1u);
                 }
-
             } else {
                 /* Minute: 0–59, wrapping */
                 if (going_right) {

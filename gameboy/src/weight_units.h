@@ -6,7 +6,8 @@
 /*
  * Body-weight unit conversion, shared by onboarding and the body-weight screen.
  * Storage is always metric (kg in tenths); imperial is a display/entry concern.
- * static inline (like nutrition_units.h) so each translation unit gets its own copy.
+ * Defined `static` in the header (like utils.h) so each translation unit gets its
+ * own bank-local copy — no cross-bank trampolines.
  */
 
 /* Imperial entry bounds for the weight spinner (whole pounds). */

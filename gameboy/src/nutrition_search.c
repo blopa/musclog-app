@@ -6,8 +6,10 @@
 #include "food_db.h"
 #include "foodlog.h"
 #include "input.h"
+#include "list_cursor.h"
 #include "nutrition_units.h"
 #include "rtc.h"
+#include "spinner.h"
 #include "ui_text.h"
 #include "utils.h"
 
@@ -31,8 +33,7 @@ typedef struct SearchState {
     uint8_t  spin;
     uint16_t matches[FF_MATCH_CAP];
     uint8_t  match_count;
-    uint8_t  scroll;
-    uint8_t  focused;
+    ListCursor cursor;
 } SearchState;
 
 static void draw_match_row(uint8_t row, const FoodCache *fc, uint8_t focused) {
@@ -87,11 +88,11 @@ static void draw_search(const SearchState *s) {
         ui_print_center(10u, STR_NO_MATCHES);
     } else {
         for (i = 0u; i != MATCH_VISIBLE; ++i) {
-            abs_idx = (uint8_t)(s->scroll + i);
+            abs_idx = (uint8_t)(s->cursor.scroll + i);
             if (abs_idx >= s->match_count) break;
             ff_load(s->matches[abs_idx], &fc);
             draw_match_row((uint8_t)(8u + i), &fc,
-                           (uint8_t)(s->mode == SEARCH_MODE_SELECT && i == s->focused));
+                           (uint8_t)(s->mode == SEARCH_MODE_SELECT && i == s->cursor.focused));
         }
     }
 
@@ -181,10 +182,7 @@ static uint8_t food_amount_screen(SaveData *data, const FoodCache *fc,
 
         if (input_pressed(&input, J_B)) return 0u;
 
-        if (input_pressed(&input, J_UP))    amount = add_clamped_u16(amount, small, mx);
-        if (input_pressed(&input, J_DOWN))  amount = sub_clamped_u16(amount, small, mn);
-        if (input_pressed(&input, J_RIGHT)) amount = add_clamped_u16(amount, large, mx);
-        if (input_pressed(&input, J_LEFT))  amount = sub_clamped_u16(amount, large, mn);
+        amount = spinner_u16(&input, amount, small, large, mn, mx);
         if (input_pressed(&input, J_UP | J_DOWN | J_LEFT | J_RIGHT)) dirty = 1u;
 
         if (input_pressed(&input, J_A | J_START)) {
@@ -213,8 +211,7 @@ void nutrition_food_search_track(SaveData *data, CalDate log_date) BANKED {
     s.len = 0u;
     s.query[0] = '\0';
     s.spin = 0u;
-    s.scroll = 0u;
-    s.focused = 0u;
+    list_cursor_reset(&s.cursor);
     s.match_count = ff_filter(s.query, s.matches, FF_MATCH_CAP);
 
     input_init(&input);
@@ -241,22 +238,19 @@ void nutrition_food_search_track(SaveData *data, CalDate log_date) BANKED {
                 s.query[s.len] = '\0';
                 s.spin = 0u;
                 s.match_count = ff_filter(s.query, s.matches, FF_MATCH_CAP);
-                s.scroll = 0u;
-                s.focused = 0u;
+                list_cursor_reset(&s.cursor);
                 dirty = 1u;
             }
             if (input_pressed(&input, J_B)) {
                 if (s.len == 0u) return;
                 s.query[--s.len] = '\0';
                 s.match_count = ff_filter(s.query, s.matches, FF_MATCH_CAP);
-                s.scroll = 0u;
-                s.focused = 0u;
+                list_cursor_reset(&s.cursor);
                 dirty = 1u;
             }
             if (input_pressed(&input, J_START) && s.match_count > 0u) {
                 s.mode = SEARCH_MODE_SELECT;
-                s.scroll = 0u;
-                s.focused = 0u;
+                list_cursor_reset(&s.cursor);
                 dirty = 1u;
             }
             continue;
@@ -268,7 +262,7 @@ void nutrition_food_search_track(SaveData *data, CalDate log_date) BANKED {
             continue;
         }
 
-        abs_idx = (uint8_t)(s.scroll + s.focused);
+        abs_idx = list_cursor_index(&s.cursor);
 
         if (input_pressed(&input, J_A | J_START)) {
             ff_load(s.matches[abs_idx], &fc);
@@ -278,14 +272,11 @@ void nutrition_food_search_track(SaveData *data, CalDate log_date) BANKED {
             continue;
         }
 
-        if (input_pressed(&input, J_DOWN) && (uint8_t)(abs_idx + 1u) < s.match_count) {
-            if (s.focused < (uint8_t)(MATCH_VISIBLE - 1u)) ++s.focused;
-            else ++s.scroll;
+        if (input_pressed(&input, J_DOWN) && list_cursor_down(&s.cursor, s.match_count, MATCH_VISIBLE)) {
             dirty = 1u;
         }
-        if (input_pressed(&input, J_UP)) {
-            if (s.focused > 0u) { --s.focused; dirty = 1u; }
-            else if (s.scroll > 0u) { --s.scroll; dirty = 1u; }
+        if (input_pressed(&input, J_UP) && list_cursor_up(&s.cursor)) {
+            dirty = 1u;
         }
     }
 }

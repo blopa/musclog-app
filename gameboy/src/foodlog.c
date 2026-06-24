@@ -3,6 +3,7 @@
 #include <gb/gb.h>
 
 #include "food_db.h"
+#include "sram.h"
 
 /* ── Bank-1 layout constants ──────────────────────────────────────────────── */
 #define FL_MAGIC          0x464Cu  /* 'FL' */
@@ -20,15 +21,6 @@
 
 /* ── Raw SRAM bank-1 access (caller must have ENABLE_RAM + SWITCH_RAM(1u)) ──── */
 
-static uint16_t fl_rd16(uint16_t off) {
-    return (uint16_t)((uint16_t)_SRAM[off] | ((uint16_t)_SRAM[off + 1u] << 8u));
-}
-
-static void fl_wr16(uint16_t off, uint16_t v) {
-    _SRAM[off]      = (uint8_t)(v & 0xFFu);
-    _SRAM[off + 1u] = (uint8_t)(v >> 8u);
-}
-
 static uint16_t fl_entry_off(uint16_t idx) {
     return (uint16_t)(FL_ENTRIES_OFFSET + idx * FL_ENTRY_SIZE);
 }
@@ -43,31 +35,23 @@ static void fl_copy_entry(uint16_t dst, uint16_t src) {
 
 /* Rolling hash over the count field + all entry bytes (mirrors db_checksum). */
 static uint16_t fl_checksum(uint16_t count) {
-    uint16_t sum = 0xA55Au;
-    uint16_t end = (uint16_t)(FL_ENTRIES_OFFSET + count * FL_ENTRY_SIZE);
-    uint16_t i;
-
-    sum = (uint16_t)((sum << 5u) ^ (sum >> 1u) ^ _SRAM[FL_OFF_COUNT]);
-    sum = (uint16_t)((sum << 5u) ^ (sum >> 1u) ^ _SRAM[FL_OFF_COUNT + 1u]);
-    for (i = FL_ENTRIES_OFFSET; i != end; ++i) {
-        sum = (uint16_t)((sum << 5u) ^ (sum >> 1u) ^ _SRAM[i]);
-    }
-    return sum;
+    uint16_t sum = sram_hash(0xA55Au, _SRAM, FL_OFF_COUNT, 2u);
+    return sram_hash(sum, _SRAM, FL_ENTRIES_OFFSET, (uint16_t)(count * FL_ENTRY_SIZE));
 }
 
 /* Stamp magic/version and recompute the stored checksum for `count` entries. */
 static void fl_finalize(uint16_t count) {
-    fl_wr16(FL_OFF_MAGIC, FL_MAGIC);
+    sram_wr16(_SRAM, FL_OFF_MAGIC, FL_MAGIC);
     _SRAM[FL_OFF_VERSION] = FL_VERSION;
-    fl_wr16(FL_OFF_COUNT, count);
-    fl_wr16(FL_OFF_CHECKSUM, fl_checksum(count));
+    sram_wr16(_SRAM, FL_OFF_COUNT, count);
+    sram_wr16(_SRAM, FL_OFF_CHECKSUM, fl_checksum(count));
 }
 
 /* Cheap header check used by runtime reads (full checksum is verified at boot). */
 static uint8_t fl_header_ok(void) {
-    return (uint8_t)(fl_rd16(FL_OFF_MAGIC) == FL_MAGIC &&
+    return (uint8_t)(sram_rd16(_SRAM, FL_OFF_MAGIC) == FL_MAGIC &&
                      _SRAM[FL_OFF_VERSION] == FL_VERSION &&
-                     fl_rd16(FL_OFF_COUNT) <= FL_CAPACITY);
+                     sram_rd16(_SRAM, FL_OFF_COUNT) <= FL_CAPACITY);
 }
 
 /* ── Public API ───────────────────────────────────────────────────────────── */
@@ -81,8 +65,8 @@ void foodlog_init(void) {
 
     valid = fl_header_ok();
     if (valid) {
-        count = fl_rd16(FL_OFF_COUNT);
-        valid = (uint8_t)(fl_rd16(FL_OFF_CHECKSUM) == fl_checksum(count));
+        count = sram_rd16(_SRAM, FL_OFF_COUNT);
+        valid = (uint8_t)(sram_rd16(_SRAM, FL_OFF_CHECKSUM) == fl_checksum(count));
     }
     if (!valid) {
         fl_finalize(0u);
@@ -108,7 +92,7 @@ uint8_t foodlog_add(uint16_t day_num, uint16_t food_idx, uint16_t grams) {
     ENABLE_RAM;
     SWITCH_RAM(1u);
 
-    count = fl_rd16(FL_OFF_COUNT);
+    count = sram_rd16(_SRAM, FL_OFF_COUNT);
 
     /* Full: drop the oldest entry by shifting the rest down one slot. */
     if (count >= FL_CAPACITY) {
@@ -119,9 +103,9 @@ uint8_t foodlog_add(uint16_t day_num, uint16_t food_idx, uint16_t grams) {
     }
 
     off = fl_entry_off(count);
-    fl_wr16(off, day_num);
-    fl_wr16((uint16_t)(off + 2u), food_idx);
-    fl_wr16((uint16_t)(off + 4u), grams);
+    sram_wr16(_SRAM, off, day_num);
+    sram_wr16(_SRAM, (uint16_t)(off + 2u), food_idx);
+    sram_wr16(_SRAM, (uint16_t)(off + 4u), grams);
 
     fl_finalize((uint16_t)(count + 1u));
 
@@ -139,9 +123,9 @@ uint8_t foodlog_count_for_day(uint16_t day_num) {
     SWITCH_RAM(1u);
 
     if (fl_header_ok()) {
-        count = fl_rd16(FL_OFF_COUNT);
+        count = sram_rd16(_SRAM, FL_OFF_COUNT);
         for (i = 0u; i != count; ++i) {
-            if (fl_rd16(fl_entry_off(i)) == day_num && n != 255u) ++n;
+            if (sram_rd16(_SRAM, fl_entry_off(i)) == day_num && n != 255u) ++n;
         }
     }
 
@@ -162,13 +146,13 @@ uint8_t foodlog_get_for_day(uint16_t day_num, uint8_t nth,
     SWITCH_RAM(1u);
 
     if (fl_header_ok()) {
-        count = fl_rd16(FL_OFF_COUNT);
+        count = sram_rd16(_SRAM, FL_OFF_COUNT);
         for (i = 0u; i != count; ++i) {
             off = fl_entry_off(i);
-            if (fl_rd16(off) != day_num) continue;
+            if (sram_rd16(_SRAM, off) != day_num) continue;
             if (seen == nth) {
-                *food_idx = fl_rd16((uint16_t)(off + 2u));
-                *grams    = fl_rd16((uint16_t)(off + 4u));
+                *food_idx = sram_rd16(_SRAM, (uint16_t)(off + 2u));
+                *grams    = sram_rd16(_SRAM, (uint16_t)(off + 4u));
                 found = 1u;
                 break;
             }
@@ -197,9 +181,9 @@ void foodlog_delete_for_day(uint16_t day_num, uint8_t nth) {
         return;
     }
 
-    count = fl_rd16(FL_OFF_COUNT);
+    count = sram_rd16(_SRAM, FL_OFF_COUNT);
     for (i = 0u; i != count; ++i) {
-        if (fl_rd16(fl_entry_off(i)) != day_num) continue;
+        if (sram_rd16(_SRAM, fl_entry_off(i)) != day_num) continue;
         if (seen == nth) { target = i; found = 1u; break; }
         ++seen;
     }
@@ -246,12 +230,12 @@ void foodlog_sum_day(uint16_t day_num,
     SWITCH_RAM(1u);
 
     if (fl_header_ok()) {
-        count = fl_rd16(FL_OFF_COUNT);
+        count = sram_rd16(_SRAM, FL_OFF_COUNT);
         for (i = 0u; i != count; ++i) {
             off = fl_entry_off(i);
-            if (fl_rd16(off) != day_num) continue;
-            food_idx = fl_rd16((uint16_t)(off + 2u));
-            grams    = fl_rd16((uint16_t)(off + 4u));
+            if (sram_rd16(_SRAM, off) != day_num) continue;
+            food_idx = sram_rd16(_SRAM, (uint16_t)(off + 2u));
+            grams    = sram_rd16(_SRAM, (uint16_t)(off + 4u));
             /* ff_load switches ROM food banks (not the RAM bank), so reading the
              * food while bank-1 SRAM is mapped is safe. */
             ff_load(food_idx, &fc);

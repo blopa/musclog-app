@@ -23,7 +23,7 @@ static void draw_button(uint8_t y, const char *label, uint8_t focused) {
  * Home screen layout (20x18 tiles):
  *
  *  Row 0   MUSCLOG GB           ← header bar (PAL_HEADER)
- *  Row 1   HOME         DAY 0   ← screen label + day counter
+ *  Row 1   HOME      MM-DD-YY   ← screen label + today's date
  *  Row 2   --------------------
  *  Row 3   CALORIES
  *  Row 4    0 / 2510 KCAL
@@ -69,16 +69,16 @@ void home_draw(const HomeState *state) BANKED {
 
     /* ── Calories ── */
     ui_print_at(1u, 3u, STR_CALORIES);
-    sprintf(buf, "%u / %u KCAL", cal, d->calorie_goal);
+    sprintf(buf, "%u / %u KCAL", (unsigned int)cal, (unsigned int)d->calorie_goal);
     ui_print_at(1u, 4u, buf);
     ui_draw_bar(1u, 5u, 18u, ui_bar_fill(cal, d->calorie_goal, 18u));
 
     /* ── Protein + Carbs ── */
     ui_print_at(0u, 6u, STR_PROTEIN);
     ui_print_at(11u, 6u, STR_CARBS);
-    sprintf(buf, "%u/%uG", pro, d->protein_goal);
+    sprintf(buf, "%u/%uG", (unsigned int)pro, (unsigned int)d->protein_goal);
     ui_print_at(0u, 7u, buf);
-    sprintf(buf, "%u/%uG", digestible_carb, d->carbs_goal);
+    sprintf(buf, "%u/%uG", (unsigned int)digestible_carb, (unsigned int)d->carbs_goal);
     ui_print_at(11u, 7u, buf);
     ui_draw_bar(0u, 8u, 9u, ui_bar_fill(pro, d->protein_goal, 9u));
     ui_draw_bar(11u, 8u, 9u, ui_bar_fill(digestible_carb, d->carbs_goal, 9u));
@@ -86,9 +86,9 @@ void home_draw(const HomeState *state) BANKED {
     /* ── Fat + Fiber ── */
     ui_print_at(0u, 9u, STR_FAT);
     ui_print_at(11u, 9u, STR_FIBER);
-    sprintf(buf, "%u/%uG", fat, d->fat_goal);
+    sprintf(buf, "%u/%uG", (unsigned int)fat, (unsigned int)d->fat_goal);
     ui_print_at(0u, 10u, buf);
-    sprintf(buf, "%u/%uG", fib, d->fiber_goal);
+    sprintf(buf, "%u/%uG", (unsigned int)fib, (unsigned int)d->fiber_goal);
     ui_print_at(11u, 10u, buf);
     ui_draw_bar(0u, 11u, 9u, ui_bar_fill(fat, d->fat_goal, 9u));
     ui_draw_bar(11u, 11u, 9u, ui_bar_fill(fib, d->fiber_goal, 9u));

@@ -6,6 +6,7 @@
 #include "input.h"
 #include "metrics.h"
 #include "rtc.h"
+#include "spinner.h"
 #include "ui_text.h"
 #include "utils.h"
 #include "weight_units.h"
@@ -117,16 +118,11 @@ static uint8_t bw_log_entry(SaveData *data, uint16_t day_num) {
 
         if (input_pressed(&input, J_UP | J_DOWN | J_LEFT | J_RIGHT)) {
             if (imperial) {
-                if (input_pressed(&input, J_UP))    lbs = add_clamped_u16(lbs, 1u, WEIGHT_LB_MAX);
-                if (input_pressed(&input, J_DOWN))  lbs = sub_clamped_u16(lbs, 1u, WEIGHT_LB_MIN);
-                if (input_pressed(&input, J_RIGHT)) lbs = add_clamped_u16(lbs, 10u, WEIGHT_LB_MAX);
-                if (input_pressed(&input, J_LEFT))  lbs = sub_clamped_u16(lbs, 10u, WEIGHT_LB_MIN);
+                lbs = spinner_u16(&input, lbs, 1u, 10u, WEIGHT_LB_MIN, WEIGHT_LB_MAX);
                 kg_tenths = lbs_to_kg_tenths(lbs);
             } else {
-                if (input_pressed(&input, J_UP))    kg_tenths = add_clamped_u16(kg_tenths, 5u, DB_WEIGHT_KG_TENTHS_MAX);
-                if (input_pressed(&input, J_DOWN))  kg_tenths = sub_clamped_u16(kg_tenths, 5u, DB_WEIGHT_KG_TENTHS_MIN);
-                if (input_pressed(&input, J_RIGHT)) kg_tenths = add_clamped_u16(kg_tenths, 50u, DB_WEIGHT_KG_TENTHS_MAX);
-                if (input_pressed(&input, J_LEFT))  kg_tenths = sub_clamped_u16(kg_tenths, 50u, DB_WEIGHT_KG_TENTHS_MIN);
+                kg_tenths = spinner_u16(&input, kg_tenths, 5u, 50u,
+                                        DB_WEIGHT_KG_TENTHS_MIN, DB_WEIGHT_KG_TENTHS_MAX);
             }
 
             bw_format_weight(data->units, kg_tenths, value);

@@ -8,6 +8,7 @@
 #include "metrics.h"
 #include "nutrition_math.h"
 #include "rtc.h"
+#include "spinner.h"
 #include "ui_text.h"
 #include "utils.h"
 #include "weight_units.h"
@@ -385,22 +386,6 @@ static void setup_input(OnboardingState *state, const InputState *input) {
     }
 }
 
-static uint8_t spinner_u8(const InputState *input, uint8_t v, uint8_t small_step, uint8_t large_step, uint8_t mn, uint8_t mx) {
-    if (input_pressed(input, J_UP))    v = add_clamped_u8(v, small_step, mx);
-    if (input_pressed(input, J_DOWN))  v = sub_clamped_u8(v, small_step, mn);
-    if (input_pressed(input, J_RIGHT)) v = add_clamped_u8(v, large_step, mx);
-    if (input_pressed(input, J_LEFT))  v = sub_clamped_u8(v, large_step, mn);
-    return v;
-}
-
-static uint16_t spinner_u16(const InputState *input, uint16_t v, uint16_t small_step, uint16_t large_step, uint16_t mn, uint16_t mx) {
-    if (input_pressed(input, J_UP))    v = add_clamped_u16(v, small_step, mx);
-    if (input_pressed(input, J_DOWN))  v = sub_clamped_u16(v, small_step, mn);
-    if (input_pressed(input, J_RIGHT)) v = add_clamped_u16(v, large_step, mx);
-    if (input_pressed(input, J_LEFT))  v = sub_clamped_u16(v, large_step, mn);
-    return v;
-}
-
 static void spinner_input(OnboardingState *state, const InputState *input) {
     if (state->step == STEP_AGE) {
         state->data->age = spinner_u8(input, state->data->age, 1u, 10u, AGE_MIN, AGE_MAX);
@@ -457,10 +442,7 @@ static void edit_goal_input(OnboardingState *state, const InputState *input) {
             return;
     }
 
-    if (input_pressed(input, J_UP))    *value = add_clamped_u16(*value, small, max);
-    if (input_pressed(input, J_DOWN))  *value = sub_clamped_u16(*value, small, min);
-    if (input_pressed(input, J_RIGHT)) *value = add_clamped_u16(*value, large, max);
-    if (input_pressed(input, J_LEFT))  *value = sub_clamped_u16(*value, large, min);
+    *value = spinner_u16(input, *value, small, large, min, max);
 
     if (input_pressed(input, J_UP | J_DOWN | J_LEFT | J_RIGHT)) {
         state->dirty = 1u;
