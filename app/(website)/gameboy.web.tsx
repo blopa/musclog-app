@@ -209,6 +209,14 @@ export default function GameBoy() {
           <TouchControls onPress={setButton} disabled={status !== 'playing'} t={t} />
 
           <p className="mt-8 max-w-md text-xs leading-5 text-gray-500">{t('controlsHint')}</p>
+
+          <a
+            href={ROM_URL}
+            download="musclog.gbc"
+            className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#00FFA3]/40 bg-[#00FFA3]/10 px-6 py-2 text-sm font-bold text-[#00FFA3] transition-transform hover:-translate-y-0.5"
+          >
+            {t('downloadRom')}
+          </a>
         </div>
       </main>
     </>

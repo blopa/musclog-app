@@ -268,7 +268,8 @@
       "aButton": "A-knop",
       "bButton": "B-knop",
       "start": "Start",
-      "select": "Select"
+      "select": "Select",
+      "downloadRom": "ROM downloaden"
     },
     "progress": {
       "metaTitle": "Musclog voortgangsimport",

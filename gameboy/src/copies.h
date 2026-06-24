@@ -200,6 +200,21 @@
 #define STR_TRACKED       "TRACKED"
 #define STR_FOOD_TRACKED  "FOOD TRACKED!"
 
+/* ── Custom foods ──────────────────────────────────────────────────────────── */
+#define STR_CUSTOM_FOODS  "CUSTOM FOODS"
+#define STR_NEW_FOOD      "NEW FOOD"
+#define STR_MY_FOODS      "MY FOODS"
+#define STR_NO_CUSTOM     "NO CUSTOM FOODS"
+#define STR_CAL_100       "CAL/100G"
+#define STR_CARB_100      "CARB/100G"
+#define STR_FIB_100       "FIBER/100G"
+#define STR_FAT_100       "FAT/100G"
+#define STR_PRO_100       "PROTEIN/100G"
+#define STR_HINT_MACRO    "UP/DN/LR  A NEXT"
+#define STR_FOOTER_SAVE_ST "ST SAVE"
+#define STR_FOOD_SAVED    "FOOD SAVED!"
+#define STR_FOODS_FULL    "STORAGE FULL"
+
 /* ── Date / time picker labels ─────────────────────────────────────────── */
 #define STR_YEAR   "YEAR"
 #define STR_MONTH  "MONTH"

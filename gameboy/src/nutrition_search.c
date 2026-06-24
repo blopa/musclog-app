@@ -3,6 +3,7 @@
 #include "nutrition_search.h"
 
 #include "copies.h"
+#include "custom_foods.h"
 #include "food_db.h"
 #include "foodlog.h"
 #include "input.h"
@@ -36,13 +37,14 @@ typedef struct SearchState {
     ListCursor cursor;
 } SearchState;
 
-static void draw_match_row(uint8_t row, const FoodCache *fc, uint8_t focused) {
+static void draw_match_row(uint8_t row, const FoodCache *fc, uint16_t food_idx, uint8_t focused) {
     char buf[8];
     char nm[13];
     uint8_t i, klen, kx;
 
     if (focused) ui_fill_attr(0u, row, 20u, 1u, UI_PAL_PANEL);
     ui_print_at(0u, row, focused ? ">" : " ");
+    ui_print_at(1u, row, food_idx >= CUSTOM_FOOD_BASE ? "*" : " ");
 
     for (i = 0u; i != 12u && fc->name[i] != '\0'; ++i) nm[i] = fc->name[i];
     nm[i] = '\0';
@@ -91,7 +93,7 @@ static void draw_search(const SearchState *s) {
             abs_idx = (uint8_t)(s->cursor.scroll + i);
             if (abs_idx >= s->match_count) break;
             ff_load(s->matches[abs_idx], &fc);
-            draw_match_row((uint8_t)(8u + i), &fc,
+            draw_match_row((uint8_t)(8u + i), &fc, s->matches[abs_idx],
                            (uint8_t)(s->mode == SEARCH_MODE_SELECT && i == s->cursor.focused));
         }
     }

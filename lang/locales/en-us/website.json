@@ -267,7 +267,8 @@
       "aButton": "A button",
       "bButton": "B button",
       "start": "Start",
-      "select": "Select"
+      "select": "Select",
+      "downloadRom": "Download ROM"
     },
     "progress": {
       "metaTitle": "Musclog Progress Import",

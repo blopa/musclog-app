@@ -301,7 +301,7 @@ Boy Color emulator (SameBoy / BGB / mGBA / Emulicious).
 
 What's wired up so far:
 
-- **`scripts/build-gb-rom.mjs`** — orchestrator: ensures GBDK is present, runs `png2asset` on the logo,
+- **`gameboy/tools/build-gb-rom.mjs`** — orchestrator: ensures GBDK is present, runs `png2asset` on the logo,
   then compiles every `gameboy/src/*.c` file with `lcc`. The ROM is CGB-only (`-Wm-yC`), uses the
   MBC3+Timer+RAM+battery cart type (`-Wm-yt0x10`), declares 4 SRAM banks / 32 KB (`-Wm-ya4`), and
   reserves 8 ROM banks / 128 KB (`-Wm-yo8`) so the bundled food/exercise tables and banked screen modules can

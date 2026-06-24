@@ -268,7 +268,8 @@
       "aButton": "Botão A",
       "bButton": "Botão B",
       "start": "Start",
-      "select": "Select"
+      "select": "Select",
+      "downloadRom": "Baixar ROM"
     },
     "progress": {
       "metaTitle": "Importação de progresso do Musclog",

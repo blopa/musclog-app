@@ -13,9 +13,9 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, statSync } from 'node
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { ensureGbdk } from '../gameboy/tools/fetch-gbdk.mjs';
+import { ensureGbdk } from './fetch-gbdk.mjs';
 
-const repoRoot = join(fileURLToPath(import.meta.url), '..', '..');
+const repoRoot = join(fileURLToPath(import.meta.url), '..', '..', '..');
 const gameboyDir = join(repoRoot, 'gameboy');
 const srcDir = join(gameboyDir, 'src');
 const buildDir = join(gameboyDir, 'build');

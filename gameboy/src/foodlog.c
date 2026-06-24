@@ -236,9 +236,13 @@ void foodlog_sum_day(uint16_t day_num,
             if (sram_rd16(_SRAM, off) != day_num) continue;
             food_idx = sram_rd16(_SRAM, (uint16_t)(off + 2u));
             grams    = sram_rd16(_SRAM, (uint16_t)(off + 4u));
-            /* ff_load switches ROM food banks (not the RAM bank), so reading the
-             * food while bank-1 SRAM is mapped is safe. */
+            /* For a bundled food ff_load only switches ROM banks, so reading it while
+             * bank-1 SRAM is mapped is safe. A custom food, though, sends ff_load into
+             * SRAM bank 3 (and it returns with RAM disabled on bank 0), so re-assert
+             * bank-1 SRAM afterwards before the loop reads the next entry. */
             ff_load(food_idx, &fc);
+            ENABLE_RAM;
+            SWITCH_RAM(1u);
             foodlog_scale(&fc, grams, &c, &p, &cb, &f, &fb);
             *cal  = (uint16_t)(*cal  + c);
             *pro  = (uint16_t)(*pro  + p);

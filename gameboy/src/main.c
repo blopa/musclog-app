@@ -7,6 +7,7 @@
 
 #include "body_weight.h"
 #include "copies.h"
+#include "custom_foods.h"
 #include "profile.h"
 #include "foodlog.h"
 #include "home_screen.h"
@@ -183,6 +184,7 @@ void main(void) {
     foodlog_init();
     workoutlog_init();
     metrics_init();
+    custom_foods_init();
 
     home_loop(&save);
 }

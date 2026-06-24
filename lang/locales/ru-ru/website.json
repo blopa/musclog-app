@@ -268,7 +268,8 @@
       "aButton": "Кнопка A",
       "bButton": "Кнопка B",
       "start": "Start",
-      "select": "Select"
+      "select": "Select",
+      "downloadRom": "Скачать ROM"
     },
     "progress": {
       "metaTitle": "Импорт прогресса Musclog",

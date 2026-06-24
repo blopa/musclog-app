@@ -3,6 +3,7 @@
 #include "nutrition.h"
 
 #include "copies.h"
+#include "custom_foods.h"
 #include "food_db.h"
 #include "foodlog.h"
 #include "input.h"
@@ -47,6 +48,7 @@ static void draw_food_row(uint8_t screen_row, uint16_t day_num,
         ui_fill_attr(0u, screen_row, 20u, 1u, UI_PAL_PANEL);
 
     ui_print_at(0u, screen_row, is_focused ? ">" : " ");
+    ui_print_at(1u, screen_row, food_idx >= CUSTOM_FOOD_BASE ? "*" : " ");
     for (i = 0u; i != 12u && fc.name[i] != '\0'; ++i) nm[i] = fc.name[i];
     nm[i] = '\0';
     ui_print_at(2u, screen_row, nm);
@@ -118,22 +120,37 @@ typedef enum NutritionAction {
     NUTRITION_ACTION_NONE = 0u,
     NUTRITION_ACTION_GO_TO_DATE = 1u,
     NUTRITION_ACTION_TRACK_FOOD = 2u,
-    NUTRITION_ACTION_HOME = 3u,
+    NUTRITION_ACTION_CUSTOM = 3u,
+    NUTRITION_ACTION_HOME = 4u,
 } NutritionAction;
 
 static NutritionAction nutrition_action_menu(void) {
-    const char *options[3];
+    const char *options[4];
     uint8_t selected;
 
     options[0] = STR_GO_TO_DATE;
     options[1] = STR_TRACK_FOOD;
-    options[2] = STR_HOME;
+    options[2] = STR_CUSTOM_FOODS;
+    options[3] = STR_HOME;
 
-    selected = ui_menu_select(STR_NUTRITION, options, 3u);
+    selected = ui_menu_select(STR_NUTRITION, options, 4u);
     if (selected == UI_MENU_CANCEL) return NUTRITION_ACTION_NONE;
     if (selected == 0u) return NUTRITION_ACTION_GO_TO_DATE;
     if (selected == 1u) return NUTRITION_ACTION_TRACK_FOOD;
+    if (selected == 2u) return NUTRITION_ACTION_CUSTOM;
     return NUTRITION_ACTION_HOME;
+}
+
+static void custom_foods_submenu(SaveData *data) {
+    const char *options[2];
+    uint8_t selected;
+
+    options[0] = STR_NEW_FOOD;
+    options[1] = STR_MY_FOODS;
+
+    selected = ui_menu_select(STR_CUSTOM_FOODS, options, 2u);
+    if (selected == 0u) custom_food_create(data);
+    else if (selected == 1u) custom_foods_manage(data);
 }
 
 static uint8_t run_action(NutritionState *state) {
@@ -145,6 +162,8 @@ static uint8_t run_action(NutritionState *state) {
         list_cursor_reset(&state->cursor);
     } else if (action == NUTRITION_ACTION_TRACK_FOOD) {
         nutrition_food_search_track(state->data, state->viewing_date);
+    } else if (action == NUTRITION_ACTION_CUSTOM) {
+        custom_foods_submenu(state->data);
     } else if (action == NUTRITION_ACTION_HOME) {
         return 1u;
     }

@@ -3,6 +3,7 @@
 #include <gb/gb.h>
 
 #include "common_foods.h"
+#include "custom_foods.h"
 #include "foundation_foods.h"
 
 /*
@@ -59,6 +60,14 @@ static void clear_food(FoodCache *out) NONBANKED {
 void ff_load(uint16_t idx, FoodCache *out) NONBANKED {
     uint8_t saved_bank = caller_bank();
 
+    /* Custom foods live in SRAM bank 3, not a ROM food bank. custom_foods_load is
+     * BANKED (bank 4); the GBDK trampoline handles its ROM bank, and the custom data
+     * is in SRAM, so no SWITCH_ROM is needed here. */
+    if (idx >= CUSTOM_FOOD_BASE) {
+        custom_foods_load((uint8_t)(idx - CUSTOM_FOOD_BASE), out);
+        return;
+    }
+
     if (idx < FOUNDATION_FOOD_COUNT) {
         SWITCH_ROM(FOUNDATION_FOODS_BANK);
         copy_food(&foundation_foods[idx], out);
@@ -79,6 +88,11 @@ uint8_t ff_filter(const char *query, uint16_t *matches, uint8_t cap) NONBANKED {
     uint8_t  count = 0u;
     const char *name;
     uint8_t saved_bank = caller_bank();
+
+    /* User's own foods first so they surface at the top of the results. This is a
+     * BANKED call into SRAM bank 3; it maps no ROM food bank, so do it before the
+     * SWITCH_ROM scans below. */
+    count = custom_foods_filter(query, matches, cap, count);
 
     SWITCH_ROM(FOUNDATION_FOODS_BANK);
     for (i = 0u; i != FOUNDATION_FOOD_COUNT && count != cap; ++i) {

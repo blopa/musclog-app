@@ -3,6 +3,7 @@
 #include "settings.h"
 
 #include "copies.h"
+#include "custom_foods.h"
 #include "foodlog.h"
 #include "input.h"
 #include "metrics.h"
@@ -466,6 +467,7 @@ uint8_t settings_menu(SaveData *data) BANKED {
             foodlog_erase();
             workoutlog_erase();
             metrics_erase();
+            custom_foods_erase();
             onboarding_run(data);
             return 1u;
         }
