@@ -163,6 +163,49 @@ uint8_t workoutlog_get_summary(uint8_t newest_idx, WorkoutLogSummary *out) BANKE
     return found;
 }
 
+uint8_t workoutlog_get_sets(uint8_t newest_idx, WorkoutLogSet *out, uint8_t max) BANKED {
+    uint8_t count;
+    uint8_t target;
+    uint8_t set_count;
+    uint8_t i;
+    uint8_t read = 0u;
+    uint16_t off;
+    uint16_t len;
+    uint16_t set_off;
+
+    ENABLE_RAM;
+    SWITCH_RAM(2u);
+
+    if (wl_header_ok()) {
+        count = _SRAM[WL_OFF_COUNT];
+        if (newest_idx < count) {
+            target = (uint8_t)(count - 1u - newest_idx);
+            off = WL_RECORDS_OFFSET;
+
+            for (i = 0u; i != count; ++i) {
+                len = wl_record_len_at(off);
+                if (i == target) {
+                    set_count = _SRAM[off + 4u];
+                    set_off = (uint16_t)(off + WL_RECORD_HEADER_SIZE);
+                    while (read != set_count && read != max) {
+                        out[read].exercise_idx = _SRAM[set_off];
+                        out[read].reps = _SRAM[set_off + 1u];
+                        out[read].weight_kg_tenths = sram_rd16(_SRAM, (uint16_t)(set_off + 2u));
+                        set_off = (uint16_t)(set_off + WL_SET_SIZE);
+                        ++read;
+                    }
+                    break;
+                }
+                off = (uint16_t)(off + len);
+            }
+        }
+    }
+
+    SWITCH_RAM(0u);
+    DISABLE_RAM;
+    return read;
+}
+
 uint8_t workoutlog_add(uint16_t day_num,
                        uint8_t dominant_muscle,
                        uint8_t exercise_count,

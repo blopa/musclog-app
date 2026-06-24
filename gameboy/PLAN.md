@@ -371,9 +371,13 @@ What's wired up so far:
   and a 60-second rest timer between non-final sets. After an exercise is completed (or skipped via the
   options menu) an "exercise complete" screen congratulates the user, shows the running session totals
   (exercises/sets/volume), and offers **ADD EXERCISE** (loop back to the picker) or **FINISH WORKOUT**
-  (save the session and exit). Completed sets are accumulated for the active session, saved when the
+  (save the session and exit). Once a session is saved, a **WORKOUT DONE** overview screen shows the final
+  exercises/sets/volume totals with a single **CONTINUE** button before returning to the history.
+  Completed sets are accumulated for the active session, saved when the
   session is finished, and listed newest-first with generated titles like `CHEST 06-24-26` based on the
-  dominant target muscle. The suggestion mirrors the Expo fallback logic: `weight * loadMultiplier * experienceFactor *
+  dominant target muscle. Pressing **A/Start** on a history row opens a read-only **WORKOUT DETAIL** screen
+  that lists every logged set grouped under its exercise name (reps × weight in the user's units), scrollable
+  with Up/Down. The suggestion mirrors the Expo fallback logic: `weight * loadMultiplier * experienceFactor *
   ageFactor`, bodyweight/load-zero exercises start with no external load, and compound exercises suggest
   10 reps while other mechanic types suggest 14.
 - **`gameboy/src/foodlog.c`** — the persisted food log. Each entry is a compact 6-byte record
@@ -388,7 +392,9 @@ What's wired up so far:
   magic/version/count/byte-count/checksum header. Each workout stores `{ day_num, dominant_muscle,
   exercise_count, set_count, volume_kg }` plus compact 4-byte set rows `{ exercise_idx, reps,
   weight_kg_tenths }`. Exercise names are never stored; the history UI reloads names/muscle metadata from
-  the ROM exercise table. The log drops the oldest workouts when the bank fills.
+  the ROM exercise table. `workoutlog_get_summary` reads a record's header for the history list, while
+  `workoutlog_get_sets` copies its set rows for the workout detail screen. The log drops the oldest
+  workouts when the bank fills.
 - **`gameboy/src/profile.c`** — SRAM bank 0 profile persistence with named byte-address constants, bit-packed profile flags, magic/version/checksum validation, and a compact 23-byte save block (down from 31 bytes; the extra byte vs the previous 22-byte layout holds the MBC3 RTC calibration date). Occupies bytes `0x00–0x16`; the body-weight metrics log (`metrics.c`) owns `0x40+` in the same bank. (Renamed from `database.c` — bank 0 now holds profile *and* metrics.)
 - **`gameboy/src/rtc.c`** — MBC3 RTC hardware access (`rtc_latch`, `rtc_write_days`), calendar arithmetic (`cal_advance`, `cal_compare`, `cal_format`, `cal_day_number`), and the `rtc_setup_date` screen that lets the user pin today's date on first boot or after re-calibration.
 - **`gameboy/src/nutrition_math.c`** — `BANKED` ROM-bank-5 integer-only Mifflin-style BMR, activity multipliers,

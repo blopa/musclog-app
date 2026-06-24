@@ -31,6 +31,13 @@ void    workoutlog_init(void) BANKED;
 void    workoutlog_erase(void) BANKED;
 uint8_t workoutlog_count(void) BANKED;
 uint8_t workoutlog_get_summary(uint8_t newest_idx, WorkoutLogSummary *out) BANKED;
+
+/*
+ * Copy the set rows of the `newest_idx`-th workout (0 = most recent) into `out`,
+ * up to `max` sets. Returns the number of sets copied (0 if the index is out of
+ * range). Used by the workout detail screen.
+ */
+uint8_t workoutlog_get_sets(uint8_t newest_idx, WorkoutLogSet *out, uint8_t max) BANKED;
 uint8_t workoutlog_add(uint16_t day_num,
                        uint8_t dominant_muscle,
                        uint8_t exercise_count,

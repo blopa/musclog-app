@@ -10,6 +10,7 @@
 #include "rtc.h"
 #include "ui_text.h"
 #include "utils.h"
+#include "weight_units.h"
 #include "workout_session.h"
 #include "workoutlog.h"
 
@@ -106,6 +107,23 @@ typedef struct WorkoutSetEditState {
 } WorkoutSetEditState;
 
 static uint8_t exercise_matches[EXERCISE_COUNT];
+
+/*
+ * Workout detail screen scratch: the selected workout's set rows plus a flat
+ * list of display rows (an exercise-name header followed by its set rows), so
+ * the read-only detail list can scroll a single uniform window. Worst case is
+ * one header per set, hence twice the set cap.
+ */
+#define WORKOUT_DETAIL_SET_CAP 64u
+#define WORKOUT_DETAIL_VISIBLE 9u
+
+typedef struct WorkoutDetailRow {
+    uint8_t is_header;  /* 1 = exercise-name header, 0 = set row */
+    uint8_t value;      /* header: exercise_idx; set: index into detail_sets */
+} WorkoutDetailRow;
+
+static WorkoutLogSet workout_detail_sets[WORKOUT_DETAIL_SET_CAP];
+static WorkoutDetailRow workout_detail_rows[WORKOUT_DETAIL_SET_CAP * 2u];
 
 static const char * const MUSCLE_FILTER_LABELS[EXERCISE_MUSCLE_GROUP_COUNT] = {
     "ABDOMEN",
@@ -899,6 +917,207 @@ static uint8_t workout_exercise_complete_menu(const char *exercise_name) {
     }
 }
 
+/* ── Post-workout overview ──────────────────────────────────────────────────── */
+
+static void draw_workout_overview(uint8_t exercises, uint8_t sets, uint16_t volume_kg) {
+    char buf[14];
+
+    ui_title(STR_WORKOUT_DONE);
+    ui_print_center(5u, STR_WELL_DONE);
+    ui_print_at(0u, 6u, STR_DIVIDER);
+
+    ui_print_at(1u, 8u, STR_EXERCISES);
+    sprintf(buf, "%u", (unsigned int)exercises);
+    print_right(8u, buf);
+
+    ui_print_at(1u, 10u, STR_SETS);
+    sprintf(buf, "%u", (unsigned int)sets);
+    print_right(10u, buf);
+
+    ui_print_at(1u, 12u, STR_VOLUME);
+    sprintf(buf, "%uK", (unsigned int)(volume_kg / 1000u));
+    print_right(12u, buf);
+
+    ui_footer("", STR_FOOTER_CONTINUE);
+}
+
+/*
+ * Shown once a workout has been saved: the final session totals plus a single
+ * CONTINUE button back to the workout history. Any button dismisses it.
+ */
+static void workout_show_overview(uint8_t exercises, uint8_t sets, uint16_t volume_kg) {
+    InputState input;
+    uint8_t dirty = 1u;
+
+    input_init(&input);
+    while (1) {
+        if (dirty) {
+            draw_workout_overview(exercises, sets, volume_kg);
+            dirty = 0u;
+        }
+
+        wait_vbl_done();
+        input_update(&input);
+
+        if (input_pressed(&input, J_A | J_START | J_B)) return;
+    }
+}
+
+static void workout_finish_with_overview(SaveData *data) {
+    uint8_t exercises = session_exercise_count();
+    uint8_t sets = session_set_count();
+    uint16_t volume_kg = session_volume_kg();
+
+    if (session_finish(data) && sets != 0u) {
+        workout_show_overview(exercises, sets, volume_kg);
+    }
+}
+
+/* ── Saved-workout detail ───────────────────────────────────────────────────── */
+
+static uint8_t build_detail_rows(uint8_t set_count) {
+    uint8_t i;
+    uint8_t row_count = 0u;
+    uint8_t prev_ex = WORKOUT_NO_EXERCISE;
+    uint8_t ex;
+
+    for (i = 0u; i != set_count; ++i) {
+        ex = workout_detail_sets[i].exercise_idx;
+        if (ex != prev_ex) {
+            workout_detail_rows[row_count].is_header = 1u;
+            workout_detail_rows[row_count].value = ex;
+            ++row_count;
+            prev_ex = ex;
+        }
+        workout_detail_rows[row_count].is_header = 0u;
+        workout_detail_rows[row_count].value = i;
+        ++row_count;
+    }
+
+    return row_count;
+}
+
+static void draw_detail_row(const SaveData *data, uint8_t y, uint8_t row_idx, uint8_t row_count) {
+    const WorkoutDetailRow *row;
+    const WorkoutLogSet *set;
+    ExerciseCache exercise;
+    uint16_t weight;
+    char buf[14];
+
+    if (row_idx >= row_count) return;
+
+    row = &workout_detail_rows[row_idx];
+    if (row->is_header) {
+        ex_load(row->value, &exercise);
+        ui_fill_attr(0u, y, 20u, 1u, UI_PAL_PANEL);
+        ui_print_at(0u, y, exercise.name);
+        return;
+    }
+
+    set = &workout_detail_sets[row->value];
+    if (data->units == UNITS_IMPERIAL) {
+        weight = kg_tenths_to_lbs(set->weight_kg_tenths);
+    } else {
+        weight = (uint16_t)((set->weight_kg_tenths + 5u) / 10u);
+    }
+
+    if (weight == 0u) {
+        sprintf(buf, "%u %s", (unsigned int)set->reps, STR_REPS_SHORT);
+    } else {
+        sprintf(buf, "%u X %u %s",
+                (unsigned int)set->reps,
+                (unsigned int)weight,
+                data->units == UNITS_IMPERIAL ? "LB" : "KG");
+    }
+    ui_print_at(2u, y, buf);
+}
+
+static void draw_workout_detail(const SaveData *data,
+                                const WorkoutLogSummary *summary,
+                                uint8_t row_count,
+                                uint8_t scroll) {
+    char title[20];
+    char buf[14];
+    uint8_t i;
+    uint8_t end;
+
+    ui_clear();
+
+    ui_fill_attr(0u, 0u, 20u, 1u, UI_PAL_HEADER);
+    ui_print_center(0u, STR_WORKOUT_DETAIL);
+
+    format_workout_title(summary, title);
+    ui_print_at(0u, 1u, title);
+    ui_print_at(0u, 2u, STR_DIVIDER);
+
+    sprintf(buf, "%uEX %uS %uK",
+            (unsigned int)summary->exercise_count,
+            (unsigned int)summary->set_count,
+            (unsigned int)(summary->volume_kg / 1000u));
+    ui_print_center(3u, buf);
+    ui_print_at(0u, 4u, STR_DIVIDER);
+
+    for (i = 0u; i != WORKOUT_DETAIL_VISIBLE; ++i) {
+        draw_detail_row(data, (uint8_t)(5u + i), (uint8_t)(scroll + i), row_count);
+    }
+
+    if (row_count > WORKOUT_DETAIL_VISIBLE) {
+        end = (uint8_t)(scroll + WORKOUT_DETAIL_VISIBLE);
+        if (end > row_count) end = row_count;
+        sprintf(buf, "%u-%u OF %u",
+                (unsigned int)(scroll + 1u),
+                (unsigned int)end,
+                (unsigned int)row_count);
+        ui_print_center(15u, buf);
+    }
+
+    ui_footer(STR_FOOTER_BACK, "");
+}
+
+/*
+ * Read-only screen for a saved workout (newest_idx, 0 = most recent): the
+ * generated title, the session totals, and every logged set grouped under its
+ * exercise name. Up/Down scrolls the set list; B returns to the history.
+ */
+static void workout_show_detail(const SaveData *data, uint8_t newest_idx) {
+    WorkoutLogSummary summary;
+    InputState input;
+    uint8_t set_count;
+    uint8_t row_count;
+    uint8_t scroll = 0u;
+    uint8_t dirty = 1u;
+
+    if (!workoutlog_get_summary(newest_idx, &summary)) return;
+
+    set_count = workoutlog_get_sets(newest_idx, workout_detail_sets, WORKOUT_DETAIL_SET_CAP);
+    row_count = build_detail_rows(set_count);
+
+    input_init(&input);
+    while (1) {
+        if (dirty) {
+            draw_workout_detail(data, &summary, row_count, scroll);
+            dirty = 0u;
+        }
+
+        wait_vbl_done();
+        input_update(&input);
+
+        if (input_pressed(&input, J_B)) return;
+
+        if (input_pressed(&input, J_DOWN) &&
+            row_count > WORKOUT_DETAIL_VISIBLE &&
+            (uint8_t)(scroll + WORKOUT_DETAIL_VISIBLE) < row_count) {
+            ++scroll;
+            dirty = 1u;
+        }
+
+        if (input_pressed(&input, J_UP) && scroll > 0u) {
+            --scroll;
+            dirty = 1u;
+        }
+    }
+}
+
 static void workout_start_free_session(SaveData *data) {
     uint8_t exercise_idx;
     uint8_t flow_result;
@@ -909,7 +1128,7 @@ static void workout_start_free_session(SaveData *data) {
     while (1) {
         exercise_idx = workout_exercise_picker();
         if (exercise_idx == WORKOUT_NO_EXERCISE) {
-            session_finish(data);
+            workout_finish_with_overview(data);
             return;
         }
 
@@ -921,14 +1140,14 @@ static void workout_start_free_session(SaveData *data) {
             flow_result = workout_set_flow(data, &plan);
             if (flow_result == WORKOUT_SET_FLOW_BACK_TO_PLAN) continue;
             if (flow_result == WORKOUT_SET_FLOW_END_WORKOUT) {
-                session_finish(data);
+                workout_finish_with_overview(data);
                 return;
             }
 
             /* Exercise completed: congratulate and let the user add another
              * exercise or finish (and save) the whole workout. */
             if (workout_exercise_complete_menu(plan.exercise.name) == WORKOUT_DONE_FINISH) {
-                session_finish(data);
+                workout_finish_with_overview(data);
                 return;
             }
             break;
@@ -969,6 +1188,13 @@ void workouts_show(SaveData *data) BANKED {
         }
 
         count = workoutlog_count();
+
+        if (input_pressed(&input, J_A | J_START) &&
+            list_cursor_index(&state.cursor) < count) {
+            workout_show_detail(data, list_cursor_index(&state.cursor));
+            state.dirty = 1u;
+            continue;
+        }
 
         if (input_pressed(&input, J_DOWN) &&
             list_cursor_down(&state.cursor, count, WORKOUT_VISIBLE)) {
