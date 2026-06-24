@@ -16,7 +16,25 @@
 #include <stdio.h>
 #include <string.h>
 
-#define TREND_VISIBLE 6u  /* trend bars shown (rows 10-15), newest at the bottom */
+/*
+ * Trend plot: a left-to-right vertical column chart filling rows 10-15.
+ * Time runs along the x-axis (oldest weigh-in on the left, newest on the
+ * right); each weigh-in is a column whose height encodes its weight, min/max
+ * normalised over the visible window. Drawn with whole-tile palette fills (the
+ * same mechanism as ui_draw_bar) so it stays inside the console shadow buffer.
+ *
+ *   plot area : columns 1..18 (TREND_PLOT_W wide), rows 10..15 (TREND_ROWS tall)
+ *   bars      : TREND_BARS columns of TREND_BAR_W tiles, separated by a 1-tile gap
+ *               ((TREND_BAR_W + TREND_BAR_GAP) * TREND_BARS == TREND_PLOT_W)
+ */
+#define TREND_TOP     10u
+#define TREND_ROWS     6u
+#define TREND_BASE    15u  /* bottom row of the plot */
+#define TREND_LEFT     1u
+#define TREND_PLOT_W  18u
+#define TREND_BAR_W    2u
+#define TREND_BAR_GAP  1u
+#define TREND_BARS     6u
 
 /* Format a metric weight (kg tenths) into the user's unit system. */
 static void bw_format_weight(uint8_t units, uint16_t kg_tenths, char *buf) {
@@ -27,18 +45,34 @@ static void bw_format_weight(uint8_t units, uint16_t kg_tenths, char *buf) {
     }
 }
 
+/*
+ * Column height in whole tiles (1..TREND_ROWS) for weight `w`. The bottom tile
+ * is reserved as a baseline so the lightest weigh-in stays visible; the rest of
+ * the range spreads the variation over the remaining rows. A flat window (all
+ * weigh-ins equal) renders at mid height.
+ */
+static uint8_t bw_bar_height(uint16_t w, uint16_t mn, uint16_t span) {
+    if (span == 0u) return (uint8_t)((TREND_ROWS + 1u) / 2u);
+    return (uint8_t)(1u + ((uint32_t)(w - mn) * (TREND_ROWS - 1u) + (span >> 1u)) / span);
+}
+
 static void bw_draw_trend(uint16_t count, uint16_t mn, uint16_t mx) {
-    uint16_t shown = count < TREND_VISIBLE ? count : TREND_VISIBLE;
+    uint16_t shown = count < TREND_BARS ? count : TREND_BARS;
     uint16_t start = (uint16_t)(count - shown);  /* oldest record in the window */
     uint16_t span  = (uint16_t)(mx - mn);
     uint16_t i;
     uint16_t day_num, w;
-    uint8_t  fill;
+    uint8_t  h, x, top;
+
+    /* Pale card backdrop behind the whole plot (also covers unused bar slots). */
+    ui_fill_attr(TREND_LEFT, TREND_TOP, TREND_PLOT_W, TREND_ROWS, UI_PAL_PANEL);
 
     for (i = 0u; i != shown; ++i) {
         if (!metrics_get((uint16_t)(start + i), &day_num, &w)) continue;
-        fill = (span == 0u) ? 18u : ui_bar_fill((uint16_t)(w - mn), span, 18u);
-        ui_draw_bar(1u, (uint8_t)(10u + i), 18u, fill);
+        h   = bw_bar_height(w, mn, span);
+        x   = (uint8_t)(TREND_LEFT + i * (TREND_BAR_W + TREND_BAR_GAP));
+        top = (uint8_t)(TREND_BASE + 1u - h);  /* topmost filled row of the column */
+        ui_fill_attr(x, top, TREND_BAR_W, h, UI_PAL_SELECTED);
     }
 }
 

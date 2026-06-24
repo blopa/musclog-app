@@ -345,7 +345,8 @@ What's wired up so far:
   panel and the three action buttons (NUTRITION / WORKOUTS / BODY WEIGHT). Split out of `main.c` so its
   ~0.9 KB of code lives in a switchable bank instead of the full `_HOME` bank.
 - **`gameboy/src/body_weight.c`** — `BANKED` ROM-bank-1 body-weight screen: shows the latest weight,
-  min/max, and a simple trend bar chart from the metrics log, plus a digit-spinner entry screen (metric
+  min/max, and a left-to-right vertical column trend chart from the metrics log (oldest weigh-in on the
+  left, newest on the right; column height = min/max-normalised weight), plus a digit-spinner entry screen (metric
   kg-tenths or imperial lb). Logging upserts today's record via `metrics_set_for_day`, updates the
   profile's current weight, and re-saves the profile with `db_save`.
 - **`gameboy/src/metrics.c`** — `BANKED` ROM-bank-1 body-weight log. Lives in cartridge SRAM **bank 0**
