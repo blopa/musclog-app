@@ -39,6 +39,11 @@ battery so dates and logs can survive emulator or flash-cart restarts.
   fiber, fat, and protein per 100 g. Custom foods appear first in search and are
   marked with `*`.
 - Body-weight tracking stores dated weigh-ins and renders a compact trend chart.
+- A Progress dashboard pages through charts over a rolling 7-day or 30-day window
+  (toggled with up/down): a summary (distinct muscle groups hit, workout count,
+  days logged, average daily calories/protein/carbs/fat) and per-day bar charts
+  for calories, protein, digestible carbs, fat, and the body-weight trend.
+  Left/right cycle pages.
 - Free workout sessions support muscle-group exercise filtering, suggested
   starting weights, editable sets/weight/reps, set editing, a 60-second rest
   timer, and saved workout history.
@@ -133,6 +138,8 @@ Important source modules:
 - `src/profile.c` stores the packed profile and macro targets in SRAM bank 0.
 - `src/rtc.c` reads and writes the MBC3 RTC and provides calendar helpers.
 - `src/home_screen.c` renders the macro dashboard and top-level navigation.
+- `src/progress.c` aggregates the food log, workout log, and weight metrics over
+  a rolling window and renders the paged progress charts.
 - `src/onboarding.c` collects profile details and macro-goal review/editing.
 - `src/nutrition.c`, `src/nutrition_search.c`, and `src/nutrition_detail.c`
   implement the food diary, search, serving picker, detail, and delete flows.

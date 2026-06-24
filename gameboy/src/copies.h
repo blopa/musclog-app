@@ -116,6 +116,22 @@
 #define STR_VOL           "VOL"
 #define STR_DONE          "DONE"
 
+/* ── Progress dashboard ────────────────────────────────────────────────── */
+#define STR_PROGRESS      "PROGRESS"
+#define STR_SUMMARY       "SUMMARY"
+#define STR_MUSCLES       "MUSCLES"
+#define STR_LOGGED        "LOGGED"
+#define STR_DAYS          "DAYS"
+#define STR_AVG_PER_DAY   "AVG / DAY"
+#define STR_RANGE_7       "7D"
+#define STR_RANGE_30      "30D"
+#define STR_LBL_CAL       "CAL"
+#define STR_LBL_PRO       "PRO"
+#define STR_LBL_CARB      "CARB"
+#define STR_LBL_FAT       "FAT"
+#define STR_PER_DAY       "/DAY"
+#define STR_FOOTER_PROG   "<>PAGE ^vRNG"
+
 /* ── Coming soon ───────────────────────────────────────────────────────── */
 #define STR_COMING_SOON   "COMING SOON"
 #define STR_COMING_IN_A   "COMING IN A"

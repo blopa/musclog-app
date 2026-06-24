@@ -34,10 +34,10 @@ static void draw_button(uint8_t y, const char *label, uint8_t focused) {
  *  Row 9   FAT          FIBER
  *  Row 10  0/69G        0/35G
  *  Row 11  [#######]  [#######]
- *  Row 12  --------------------
- *  Row 13  [> NUTRITION       ] ← button (PAL_SELECTED when focused, PAL_PANEL otherwise)
- *  Row 14  [> WORKOUTS        ] ← button
- *  Row 15  [> BODY WEIGHT     ] ← button
+ *  Row 12  [> NUTRITION       ] ← button (PAL_SELECTED when focused, PAL_PANEL otherwise)
+ *  Row 13  [> WORKOUTS        ] ← button
+ *  Row 14  [> BODY WEIGHT     ] ← button
+ *  Row 15  [> PROGRESS        ] ← button
  *  Row 16  --------------------  ← via ui_footer
  *  Row 17  SEL MENU              ← via ui_footer (opens settings / reset menu)
  */
@@ -93,12 +93,11 @@ void home_draw(const HomeState *state) BANKED {
     ui_draw_bar(0u, 11u, 9u, ui_bar_fill(fat, d->fat_goal, 9u));
     ui_draw_bar(11u, 11u, 9u, ui_bar_fill(fib, d->fiber_goal, 9u));
 
-    ui_print_at(0u, 12u, STR_DIVIDER);
-
     /* ── Action buttons ── */
-    draw_button(13u, STR_NUTRITION, state->selected == HOME_BTN_FOOD);
-    draw_button(14u, STR_WORKOUTS, state->selected == HOME_BTN_WORKOUT);
-    draw_button(15u, STR_BODY_WEIGHT, state->selected == HOME_BTN_WEIGHT);
+    draw_button(12u, STR_NUTRITION, state->selected == HOME_BTN_FOOD);
+    draw_button(13u, STR_WORKOUTS, state->selected == HOME_BTN_WORKOUT);
+    draw_button(14u, STR_BODY_WEIGHT, state->selected == HOME_BTN_WEIGHT);
+    draw_button(15u, STR_PROGRESS, state->selected == HOME_BTN_PROGRESS);
 
     ui_footer(STR_FOOTER_SEL_MENU, "");
 }

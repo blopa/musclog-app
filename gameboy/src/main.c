@@ -16,6 +16,7 @@
 #include "logo.h"
 #include "nutrition.h"
 #include "onboarding.h"
+#include "progress.h"
 #include "settings.h"
 #include "ui_text.h"
 #include "workoutlog.h"
@@ -163,8 +164,10 @@ static void home_loop(SaveData *data) {
                 nutrition_track(data);
             } else if (state.selected == HOME_BTN_WORKOUT) {
                 workouts_show(data);
-            } else {
+            } else if (state.selected == HOME_BTN_WEIGHT) {
                 body_weight_show(data);
+            } else {
+                progress_show(data);
             }
             state.dirty = 1u;
         }
