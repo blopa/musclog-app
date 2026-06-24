@@ -34,5 +34,9 @@ declare module 'wasmboy' {
     enableDefaultJoypad(): void;
     disableDefaultJoypad(): void;
     setJoypadState(state: WasmBoyJoypadState): void;
+    // Persists the loaded cartridge (including its battery-backed SRAM) to
+    // IndexedDB, keyed by the cartridge header. loadROM() restores the saved
+    // cartridge RAM automatically on the next load.
+    saveLoadedCartridge(saveStates?: unknown): Promise<unknown>;
   };
 }

@@ -111,6 +111,49 @@ export default function GameBoy() {
     }
   }, []);
 
+  // Flush the cartridge's battery-backed SRAM (all of the game's saves) to
+  // IndexedDB. WasmBoy keeps a fresh copy of cartridge RAM on the main thread
+  // (the core pushes it every frame) and restores it automatically inside
+  // loadROM() on the next page load, so persisting it is all that's needed.
+  const persistSave = useCallback(async () => {
+    try {
+      const { WasmBoy } = await import('wasmboy');
+      if (!WasmBoy.isReady()) {
+        return;
+      }
+
+      await WasmBoy.saveLoadedCartridge();
+    } catch (error) {
+      console.error('[gameboy] failed to persist save', error);
+    }
+  }, []);
+
+  // Persist saves while playing: on a periodic safety-net interval, on the
+  // events that fire when the user leaves (tab hidden/closed, full reload), and
+  // on unmount (e.g. client-side navigation away, which fires no unload event).
+  useEffect(() => {
+    if (status !== 'playing') {
+      return;
+    }
+
+    const interval = setInterval(() => void persistSave(), 10000);
+    const onPageHide = () => void persistSave();
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        void persistSave();
+      }
+    };
+
+    window.addEventListener('pagehide', onPageHide);
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('pagehide', onPageHide);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      void persistSave();
+    };
+  }, [status, persistSave]);
+
   // Keyboard input (desktop), only while playing.
   useEffect(() => {
     if (status !== 'playing') {
@@ -157,7 +200,7 @@ export default function GameBoy() {
         <DotPattern className="text-primary/30" />
         <div className="from-background/60 to-background/80 absolute inset-0 bg-gradient-to-b via-transparent" />
 
-        <div className="relative z-10 mx-auto flex w-full max-w-xl flex-col items-center text-center">
+        <div className="relative z-10 mx-auto flex w-full max-w-xl flex-col items-center text-center mt-4">
           <h1 className="max-w-lg text-balance text-4xl font-black leading-tight text-white sm:text-5xl">
             {t('title')}
           </h1>
