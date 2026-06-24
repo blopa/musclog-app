@@ -76,7 +76,7 @@ the only way past 32 KB of save.
 ### What we reserve and use today
 
 - **ROM:** `-Wm-yo8` reserves **8 banks / 128 KB**. Assignments: bank 0 `_HOME` + core; bank 1 metrics +
-  body-weight + home screens; bank 2 USDA foundation foods; bank 3 common foods; bank 4 nutrition shell +
+  body-weight + home + settings screens; bank 2 USDA foundation foods; bank 3 common foods; bank 4 nutrition shell +
   subflows; bank 5 onboarding + `nutrition_math`; bank 6 exercises; bank 7 workouts + workout log. Plenty
   of headroom toward 128.
 - **SRAM:** `-Wm-ya4` reserves **4 banks / 32 KB** — the MBC3 maximum. **Three are in use, one is free:**

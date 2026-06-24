@@ -47,6 +47,18 @@
 #define STR_WORKOUTS      "WORKOUTS"
 #define STR_BODY_WEIGHT   "BODY WEIGHT"
 
+/* ── Home SELECT menu ──────────────────────────────────────────────────── */
+#define STR_MENU          "MENU"
+#define STR_SETTINGS      "SETTINGS"
+#define STR_RESET_DATA    "RESET DATA"
+#define STR_RESET_DATA_Q  "ERASE ALL DATA?"
+
+/* ── Settings screen ───────────────────────────────────────────────────── */
+#define STR_UNITS         "UNITS"
+#define STR_SEX           "SEX"
+#define STR_ACTIVITY      "ACTIVITY"
+#define STR_HINT_LR_EDIT  "L/R CHANGE"
+
 /* ── Body-weight tracking ──────────────────────────────────────────────── */
 #define STR_LOG_WEIGHT    "LOG WEIGHT"
 #define STR_CURRENT       "CURRENT"

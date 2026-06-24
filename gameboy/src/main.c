@@ -15,6 +15,7 @@
 #include "logo.h"
 #include "nutrition.h"
 #include "onboarding.h"
+#include "settings.h"
 #include "ui_text.h"
 #include "workoutlog.h"
 #include "workouts.h"
@@ -137,13 +138,10 @@ static void home_loop(SaveData *data) {
         wait_vbl_done();
         input_update(&input);
 
-        if ((input.current & J_SELECT) && input_pressed(&input, J_B)) {
-            db_erase();
-            foodlog_erase();
-            workoutlog_erase();
-            metrics_erase();
-            onboarding_run(data);
-            state.selected = HOME_BTN_FOOD;
+        if (input_pressed(&input, J_SELECT)) {
+            if (settings_menu(data)) {
+                state.selected = HOME_BTN_FOOD;
+            }
             state.dirty = 1u;
             continue;
         }

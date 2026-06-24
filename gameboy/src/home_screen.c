@@ -39,7 +39,7 @@ static void draw_button(uint8_t y, const char *label, uint8_t focused) {
  *  Row 14  [> WORKOUTS        ] ← button
  *  Row 15  [> BODY WEIGHT     ] ← button
  *  Row 16  --------------------  ← via ui_footer
- *  Row 17  SEL+B RESET           ← via ui_footer
+ *  Row 17  SEL MENU              ← via ui_footer (opens settings / reset menu)
  */
 void home_draw(const HomeState *state) BANKED {
     const SaveData *d = state->data;
@@ -100,5 +100,5 @@ void home_draw(const HomeState *state) BANKED {
     draw_button(14u, STR_WORKOUTS, state->selected == HOME_BTN_WORKOUT);
     draw_button(15u, STR_BODY_WEIGHT, state->selected == HOME_BTN_WEIGHT);
 
-    ui_footer(STR_FOOTER_RESET, "");
+    ui_footer(STR_FOOTER_SEL_MENU, "");
 }
