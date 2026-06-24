@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import type { WasmBoyJoypadState } from 'wasmboy';
 
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
+import { isProduction } from '@/utils/app';
+import { readAndDecodeGameBoySaves } from '@/utils/decodeGameBoySave';
 
 const GB_SCREEN_WIDTH = 160;
 const GB_SCREEN_HEIGHT = 144;
@@ -109,6 +111,24 @@ export default function GameBoy() {
       console.error('[gameboy] failed to start emulator', error);
       setStatus('error');
     }
+  }, []);
+
+  // Dev-only: decode and log the persisted cartridge SRAM on load so the whole
+  // save (profile, weigh-ins, food log, workouts, custom foods) is inspectable.
+  useEffect(() => {
+    // TODO: eventually use this to read/write back to the Gameboy stated, based on what is saved into the
+    // indexedDb "musclog" database, used in the progress.web.tsx screen
+    if (isProduction()) {
+      return;
+    }
+
+    readAndDecodeGameBoySaves()
+      .then((saves) => {
+        console.log('[gameboy] decoded save(s):', saves);
+      })
+      .catch((error) => {
+        console.error('[gameboy] failed to decode save', error);
+      });
   }, []);
 
   // Flush the cartridge's battery-backed SRAM (all of the game's saves) to
