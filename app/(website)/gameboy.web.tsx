@@ -220,7 +220,7 @@ export default function GameBoy() {
         <DotPattern className="text-primary/30" />
         <div className="from-background/60 to-background/80 absolute inset-0 bg-gradient-to-b via-transparent" />
 
-        <div className="relative z-10 mx-auto flex w-full max-w-xl flex-col items-center text-center mt-4">
+        <div className="relative z-10 mx-auto mt-4 flex w-full max-w-xl flex-col items-center text-center">
           <h1 className="max-w-lg text-balance text-4xl font-black leading-tight text-white sm:text-5xl">
             {t('title')}
           </h1>

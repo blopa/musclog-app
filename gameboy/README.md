@@ -11,16 +11,16 @@ battery so dates and logs can survive emulator or flash-cart restarts.
 
 ## Screenshots
 
-| Home | Nutrition | Workout |
-| --- | --- | --- |
+| Home                                                   | Nutrition                                           | Workout                                      |
+| ------------------------------------------------------ | --------------------------------------------------- | -------------------------------------------- |
 | ![Musclog GB home screen](screenshots/home-screen.png) | ![Nutrition day summary](screenshots/nutrition.png) | ![Workout history](screenshots/workouts.png) |
 
-| Track food | Free session | Rest timer |
-| --- | --- | --- |
+| Track food                                        | Free session                                             | Rest timer                                        |
+| ------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------- |
 | ![Food amount screen](screenshots/track-food.png) | ![Workout session plan](screenshots/workout-session.png) | ![Workout rest timer](screenshots/rest-timer.png) |
 
-| Onboarding | Date setup | Settings |
-| --- | --- | --- |
+| Onboarding                                      | Date setup                                       | Settings                                   |
+| ----------------------------------------------- | ------------------------------------------------ | ------------------------------------------ |
 | ![Onboarding setup](screenshots/onboarding.png) | ![Date and time setup](screenshots/set-date.png) | ![Settings list](screenshots/settings.png) |
 
 ## Player Features
@@ -55,14 +55,14 @@ battery so dates and logs can survive emulator or flash-cart restarts.
 
 ## Controls
 
-| Button | Common behavior |
-| --- | --- |
-| D-pad | Move between rows, scroll lists, or change spinner values |
+| Button       | Common behavior                                                   |
+| ------------ | ----------------------------------------------------------------- |
+| D-pad        | Move between rows, scroll lists, or change spinner values         |
 | Left / Right | Change selected values quickly, cycle filters, or edit row values |
-| A | Confirm, add a typed character, save a set, or select an item |
-| Start | Alternate confirm; often shown as `ST` in footers |
-| B | Back, cancel, or delete one typed character |
-| Select | Open the current screen's menu |
+| A            | Confirm, add a typed character, save a set, or select an item     |
+| Start        | Alternate confirm; often shown as `ST` in footers                 |
+| B            | Back, cancel, or delete one typed character                       |
+| Select       | Open the current screen's menu                                    |
 
 The on-screen footers are the best guide for each screen. `A/ST` means either
 `A` or `Start`.
