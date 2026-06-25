@@ -249,7 +249,27 @@
       "github": "GitHub",
       "download": "Descargar Ahora",
       "exercises": "Ejercicios",
+      "gameboy": "Game Boy",
       "language": "Idioma"
+    },
+    "gameboy": {
+      "pageTitle": "Juega a Musclog en Game Boy",
+      "eyebrow": "Solo por diversión",
+      "title": "Musclog en una Game Boy",
+      "subtitle": "Creamos una pequeña versión de Musclog para Game Boy Color. Pulsa jugar y pruébala aquí mismo en tu navegador.",
+      "playButton": "Jugar",
+      "loading": "Cargando…",
+      "errorLoad": "No se pudo cargar el juego. Inténtalo de nuevo.",
+      "controlsHint": "Escritorio: flechas o WASD para moverte, X = A, Z = B, Enter = Start, Shift = Select. En pantallas táctiles, usa los botones en pantalla.",
+      "up": "Arriba",
+      "down": "Abajo",
+      "left": "Izquierda",
+      "right": "Derecha",
+      "aButton": "Botón A",
+      "bButton": "Botón B",
+      "start": "Start",
+      "select": "Select",
+      "downloadRom": "Descargar ROM"
     },
     "progress": {
       "metaTitle": "Importación de progreso de Musclog",

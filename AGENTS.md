@@ -23,6 +23,10 @@
 - `npm run reset-project`: Reset project to initial state via script
 - `npm run build-android`: Production build for Android via EAS
 - `npm run playwright`: Run Playwright E2E tests (Web)
+- `npm run gb:build`: Build the Game Boy Color ROM
+- `npm run gb:copy-rom`: Copy the built Game Boy Color ROM into assets
+- `npm run gb:gen-foods`: Regenerate Game Boy food C tables
+- `npm run gb:gen-exercises`: Regenerate Game Boy exercise C table
 
 ## Testing Commands
 
@@ -69,6 +73,7 @@ This repository serves two distinct purposes that share the same Expo Router pro
 ### Architecture
 
 - **Keep documentation in sync (required)**: When a change alters behavior, architecture, file layout, or any invariant, update the docs in the same change — this `AGENTS.md`, the relevant files under `docs/`, `README.md`, and any code comments that name files/functions you moved or renamed. Treat a doc that names a file, function, flag, or approach that no longer matches the code as a bug to fix, not to leave. If a `docs/` plan describes an approach that was superseded, rewrite it to reflect what was actually built (or mark it superseded) rather than leaving the stale plan. Do not add docs for trivial changes, but never let an existing doc drift out of date.
+- **Feature list sync (required)**: Whenever a new user-facing feature is added or an existing one is removed or significantly changed, update `FEATURES.md` to reflect it. If the change also affects the high-level summary in `README.md` (Key Features section), update that too. `FEATURES.md` is the source of truth for the complete feature list; `README.md` contains a curated subset — both must stay accurate.
 - **Layered Structure**: Schema (`database/schema.ts`) -> Models (`database/models/`) -> Repositories (`database/repositories/`) -> Services (`database/services/`).
 - **Repositories**: Complex queries live in `database/repositories/` (e.g., `WorkoutLogRepository`, `MenstrualCycleRepository`). Prefer repositories over direct model queries for non-trivial reads.
 - **App Services**: Non-database services (AI, notifications, Health Connect sync) live in top-level `services/`.

@@ -408,6 +408,7 @@ export function Footer() {
     { text: t('terms'), href: '/terms' },
     { text: t('contact'), href: '/contact' },
     { text: navT('exercises'), href: '/exercises' },
+    { text: navT('gameboy'), href: '/gameboy' },
     { text: 'FAQ', href: '/faq' },
     { text: t('license'), href: 'https://github.com/blopa/musclog-app/blob/main/LICENSE' },
     { text: t('github'), href: 'https://github.com/blopa/musclog-app' },

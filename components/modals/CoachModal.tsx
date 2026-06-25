@@ -210,7 +210,7 @@ type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 const renderCustomView = (
   props: BubbleProps<ExtendedIMessage>,
   onViewWorkoutDetails?: (workoutLogId: string) => void,
-  onViewMealDetails?: (meal: ExtendedIMessage['meal'], mealType: MealType) => void,
+  onViewMealDetails?: (meal: ExtendedIMessage['meal'], mealIndex: number) => void,
   onSeeAllMeals?: () => void,
   onViewMuscles?: (workoutLogId: string, workoutName: string) => void
 ) => {
@@ -263,7 +263,7 @@ const renderCustomView = (
       <View className="mt-2 w-full pr-4">
         <ChatMealCard
           meals={currentMessage.meal.meals}
-          onViewDetails={(mealType) => onViewMealDetails?.(currentMessage.meal!, mealType)}
+          onViewDetails={(mealIndex) => onViewMealDetails?.(currentMessage.meal!, mealIndex)}
         />
       </View>
     );
@@ -282,7 +282,7 @@ const renderBubble = (
   conversationContext: string,
   onViewWorkoutDetails?: (workoutLogId: string) => void,
   onLongPress?: (message: ExtendedIMessage) => void,
-  onViewMealDetails?: (meal: ExtendedIMessage['meal'], mealType: MealType) => void,
+  onViewMealDetails?: (meal: ExtendedIMessage['meal'], mealIndex: number) => void,
   onGoToSettings?: () => void,
   goToSettingsLabel?: string,
   onSeeAllMeals?: () => void,
@@ -680,6 +680,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
   const [musclesWorkoutName, setMusclesWorkoutName] = useState('');
   const [selectedMealForTracking, setSelectedMealForTracking] = useState<{
     messageId: string;
+    mealIndex: number;
     mealTypeIdentifier: MealType;
     mealName?: string;
     calories: number;
@@ -925,28 +926,28 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     }
   }, []);
 
-  const handleViewMealDetails = useCallback(
-    (meal: ExtendedIMessage['meal'], mealType: MealType) => {
-      if (!meal) {
-        return;
-      }
-      const entry = meal.meals.find((m) => m.mealType === mealType);
-      if (!entry) {
-        return;
-      }
-      setSelectedMealForTracking({
-        messageId: meal.messageId,
-        mealTypeIdentifier: mealType,
-        mealName: entry.mealName,
-        calories: entry.calories,
-        protein: entry.protein,
-        carbs: entry.carbs,
-        fats: entry.fats,
-        ingredients: entry.ingredients,
-      });
-    },
-    []
-  );
+  const handleViewMealDetails = useCallback((meal: ExtendedIMessage['meal'], mealIndex: number) => {
+    if (!meal) {
+      return;
+    }
+
+    const entry = meal.meals[mealIndex];
+    if (!entry) {
+      return;
+    }
+
+    setSelectedMealForTracking({
+      messageId: meal.messageId,
+      mealIndex,
+      mealTypeIdentifier: entry.mealType,
+      mealName: entry.mealName,
+      calories: entry.calories,
+      protein: entry.protein,
+      carbs: entry.carbs,
+      fats: entry.fats,
+      ingredients: entry.ingredients,
+    });
+  }, []);
 
   const handleGoToSettings = useCallback(() => {
     onClose();
@@ -1672,7 +1673,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
 
       {selectedMealForTracking && mealForLogMealModal ? (
         <LogMealModal
-          key={`log-meal-${selectedMealForTracking.messageId}-${selectedMealForTracking.mealTypeIdentifier}`}
+          key={`log-meal-${selectedMealForTracking.messageId}-${selectedMealForTracking.mealIndex}`}
           visible
           onClose={() => setSelectedMealForTracking(null)}
           meal={mealForLogMealModal}
@@ -1681,7 +1682,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
           onLogMeal={async (date, logMealType, portionGrams) => {
             await markMealAsTracked(
               selectedMealForTracking.messageId,
-              selectedMealForTracking.mealTypeIdentifier,
+              selectedMealForTracking.mealIndex,
               selectedMealForTracking.ingredients,
               date,
               logMealType,

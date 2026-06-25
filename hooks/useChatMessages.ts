@@ -221,7 +221,7 @@ export type UseChatMessagesResult = {
   deleteMessage: (messageId: string | number) => Promise<void>;
   markMealAsTracked: (
     messageId: string,
-    mealTypeIdentifier: 'breakfast' | 'lunch' | 'dinner' | 'snack',
+    mealIndex: number,
     ingredients: TrackMealIngredient[],
     date: Date,
     logMealType: MealType,
@@ -868,7 +868,7 @@ export function useChatMessages(
   const markMealAsTracked = useCallback(
     async (
       messageId: string,
-      mealTypeIdentifier: 'breakfast' | 'lunch' | 'dinner' | 'snack',
+      mealIndex: number,
       ingredients: TrackMealIngredient[],
       date: Date,
       logMealType: MealType,
@@ -937,9 +937,7 @@ export function useChatMessages(
         if (isTrackMealPayload(payload)) {
           const updated: TrackMealPayload = {
             ...payload,
-            meals: payload.meals.map((m) =>
-              m.mealType === mealTypeIdentifier ? { ...m, was_tracked: true } : m
-            ),
+            meals: payload.meals.map((m, i) => (i === mealIndex ? { ...m, was_tracked: true } : m)),
           };
           await ChatService.updateMessagePayload(messageId, JSON.stringify(updated));
         }
@@ -954,8 +952,8 @@ export function useChatMessages(
             ...msg,
             meal: {
               ...msg.meal,
-              meals: msg.meal.meals.map((m) =>
-                m.mealType === mealTypeIdentifier ? { ...m, wasTracked: true } : m
+              meals: msg.meal.meals.map((m, i) =>
+                i === mealIndex ? { ...m, wasTracked: true } : m
               ),
             },
           };

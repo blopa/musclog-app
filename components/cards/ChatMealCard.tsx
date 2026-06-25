@@ -22,7 +22,7 @@ type MealRow = {
 
 type ChatMealCardProps = {
   meals: MealRow[];
-  onViewDetails: (mealType: MealType) => void;
+  onViewDetails: (mealIndex: number) => void;
 };
 
 export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
@@ -85,7 +85,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
 
       {/* Per-meal rows */}
       {meals.map((meal, index) => (
-        <View key={meal.mealType}>
+        <View key={index}>
           {/* Divider */}
           <View
             style={{ height: theme.borderWidth.thin, backgroundColor: theme.colors.border.light }}
@@ -200,7 +200,7 @@ export function ChatMealCard({ meals, onViewDetails }: ChatMealCardProps) {
             ) : (
               <Button
                 label={getViewMealLabel(meal.mealType)}
-                onPress={() => onViewDetails(meal.mealType)}
+                onPress={() => onViewDetails(index)}
                 size="xs"
                 variant="secondary"
                 width="full"
