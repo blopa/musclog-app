@@ -34,7 +34,7 @@
 #define DB_WEIGHT_KG_TENTHS_MIN 300u   /* stored as: weight_kg_tenths - DB_WEIGHT_KG_TENTHS_MIN */
 #define DB_WEIGHT_KG_TENTHS_MAX 2500u
 
-/* ── Calendar date (year is full, e.g. 2025) ──────────────────────────────── */
+/* ── Calendar date (year is full, e.g. 2026) ──────────────────────────────── */
 typedef struct CalDate {
     uint16_t year;
     uint8_t  month;  /* 1-12 */
@@ -61,8 +61,11 @@ typedef struct CalDate {
  *  0x14  |   1   | SRAM_RTC_YEAR_OFS   | rtc_base_date.year - 2000 (0-99)
  *  0x15  |   1   | SRAM_RTC_MONTH      | rtc_base_date.month (1-12)
  *  0x16  |   1   | SRAM_RTC_DAY        | rtc_base_date.day (1-31)
+ *  ------|-------|---------------------|------------------------------------------- (checksummed: 23 bytes)
+ *  0x17  |   1   | SRAM_RTC_HOUR       | seed hint: hour   (0-23) — NOT checksummed
+ *  0x18  |   1   | SRAM_RTC_MINUTE     | seed hint: minute (0-59) — NOT checksummed
  *  ------|-------|---------------------|-------------------------------------------
- *  Total: 23 bytes
+ *  Total: 23 checksummed bytes + 2 seed-hint bytes
  */
 #define SRAM_MAGIC         0x00u
 #define SRAM_VERSION       0x02u
@@ -80,7 +83,16 @@ typedef struct CalDate {
 #define SRAM_RTC_YEAR_OFS  0x14u
 #define SRAM_RTC_MONTH     0x15u
 #define SRAM_RTC_DAY       0x16u
-#define SRAM_SAVE_SIZE     0x17u  /* 23 bytes total — next free address for future data */
+#define SRAM_SAVE_SIZE     0x17u  /* 23 bytes — size of the checksummed profile block */
+
+/* ── Onboarding seed hints (NOT part of the checksummed profile block) ──────── */
+/* Written by the website emulator before boot so the onboarding date/time picker
+ * can pre-fill the time of day (the date itself lives in the block above). They
+ * sit in the free gap before the metrics store (0x40), are excluded from
+ * SRAM_CHECKSUM, and are never read/written/erased by db_load/db_save/db_erase —
+ * so they do not affect save validity. Future profile growth must resume at 0x19. */
+#define SRAM_RTC_HOUR      0x17u  /* seed hint: hour   (0-23) */
+#define SRAM_RTC_MINUTE    0x18u  /* seed hint: minute (0-59) */
 
 /* ── SRAM_FLAGS1 bit layout ───────────────────────────────────────────────── */
 /* bit  0    : units             (UNITS_METRIC=0, UNITS_IMPERIAL=1)           */

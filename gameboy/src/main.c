@@ -180,8 +180,11 @@ void main(void) {
     show_splash();
     ui_init_text();
 
-    if (!db_load(&save) || !save.onboarding_complete) {
-        onboarding_run(&save);
+    {
+        uint8_t had_valid_save = db_load(&save);
+        if (!had_valid_save || !save.onboarding_complete) {
+            onboarding_run(&save, had_valid_save);
+        }
     }
 
     foodlog_init();
