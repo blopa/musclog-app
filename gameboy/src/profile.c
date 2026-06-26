@@ -88,7 +88,7 @@ void db_init_defaults(SaveData *data) {
     data->fitness_focus       = FITNESS_GENERAL;
     data->weight_goal         = WEIGHT_GOAL_MAINTAIN;
     data->rtc_is_set          = 0u;
-    data->rtc_base_date.year  = 2025u;
+    data->rtc_base_date.year  = 2026u;
     data->rtc_base_date.month = 1u;
     data->rtc_base_date.day   = 1u;
 }

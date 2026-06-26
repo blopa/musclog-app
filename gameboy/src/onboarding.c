@@ -529,13 +529,25 @@ static void handle_input(OnboardingState *state, const InputState *input) {
     }
 }
 
-void onboarding_run(SaveData *data) BANKED {
+void onboarding_run(SaveData *data, uint8_t had_valid_save) BANKED {
     OnboardingState state;
     InputState input;
     OnboardingStep rendered_step;
 
+    /* A valid save may carry an RTC base date pre-seeded into SRAM (e.g. by the
+     * web emulator handing us today's real date). Capture it before
+     * db_init_defaults() wipes it, then restore it so rtc_setup_date() pre-fills
+     * the picker with that date instead of the 2026-01-01 placeholder. */
+    uint8_t seed_rtc = (uint8_t)(had_valid_save && data->rtc_is_set);
+    CalDate seed_date = data->rtc_base_date;
+
     db_init_defaults(data);
     nutrition_apply_generated_goals(data);
+
+    if (seed_rtc) {
+        data->rtc_is_set    = 1u;
+        data->rtc_base_date = seed_date;
+    }
 
     state.data = data;
     state.step = STEP_WELCOME;

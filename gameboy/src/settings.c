@@ -468,7 +468,8 @@ uint8_t settings_menu(SaveData *data) BANKED {
             workoutlog_erase();
             metrics_erase();
             custom_foods_erase();
-            onboarding_run(data);
+            /* SRAM was just erased, so there is no pre-seeded RTC date to honor. */
+            onboarding_run(data, 0u);
             return 1u;
         }
     }

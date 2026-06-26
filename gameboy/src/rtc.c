@@ -183,7 +183,7 @@ CalDate cal_current_date(const SaveData *data) {
     CalDate  current;
 
     if (!data->rtc_is_set) {
-        fallback.year  = 2025u;
+        fallback.year  = 2026u;
         fallback.month = 1u;
         fallback.day   = 1u;
         return fallback;
@@ -217,16 +217,26 @@ void rtc_setup_date(SaveData *data) {
     uint8_t    going_right;
     InputState input;
 
-    /* Seed with existing calibration date if available; otherwise 2025-01-01 00:00. */
+    /* Seed with existing calibration date if available; otherwise 2026-01-01 00:00. */
     if (data->rtc_is_set) {
         pick = data->rtc_base_date;
+        /* Hour+minute are seeded alongside the date by the website emulator in
+         * the seed-hint bytes (profile.h SRAM_RTC_HOUR/MINUTE, outside the
+         * checksummed block). Read them directly and clamp defensively. */
+        ENABLE_RAM;
+        SWITCH_RAM(0u);
+        pick_hour   = _SRAM[SRAM_RTC_HOUR];
+        pick_minute = _SRAM[SRAM_RTC_MINUTE];
+        DISABLE_RAM;
+        if (pick_hour   > 23u) pick_hour   = 0u;
+        if (pick_minute > 59u) pick_minute = 0u;
     } else {
-        pick.year  = 2025u;
-        pick.month = 1u;
-        pick.day   = 1u;
+        pick.year   = 2026u;
+        pick.month  = 1u;
+        pick.day    = 1u;
+        pick_hour   = 0u;
+        pick_minute = 0u;
     }
-    pick_hour   = 0u;
-    pick_minute = 0u;
     field       = 0u;
     dirty       = 1u;
 

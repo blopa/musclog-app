@@ -51,7 +51,11 @@ battery so dates and logs can survive emulator or flash-cart restarts.
 - Settings let players update profile fields, macro goals, units, and reset all
   saved data.
 - MBC3 RTC calibration powers calendar dates. If no clock has been set, the ROM
-  falls back to `2025-01-01`.
+  falls back to `2026-01-01`. When a save already carries a calibrated RTC base
+  date as onboarding begins — e.g. one pre-seeded into SRAM by the website
+  emulator, which hands the ROM today's real date and time — onboarding
+  preserves it across its defaults reset and pre-fills the date/time picker with
+  it (the time of day rides along in two seed-hint bytes after the profile block).
 
 ## Controls
 
@@ -199,7 +203,14 @@ imperial units, display pounds are converted at the UI boundary.
 
 Calendar values are stored as day numbers from `2000-01-01`. The RTC setup
 screen stores a base date and resets the MBC3 day counter; current date is
-derived by advancing that base date by elapsed RTC days.
+derived by advancing that base date by elapsed RTC days. The RTC base date
+(`SRAM_RTC_*` in `src/profile.h`, bank 0) and its `rtc_is_set` flag can also be
+written from outside the ROM: `utils/decodeGameBoySave.ts` encodes a valid
+profile block (matching `db_checksum`) so the website can hand the ROM today's
+date before boot. Today's time of day rides along in two seed-hint bytes
+(`SRAM_RTC_HOUR`/`SRAM_RTC_MINUTE`, 0x17/0x18) that sit just after the profile
+block and are deliberately excluded from the checksum, so the picker can also
+pre-fill the hour and minute without touching the save format.
 
 ## Development Notes
 

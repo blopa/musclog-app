@@ -1,19 +1,20 @@
 import Head from 'expo-router/head';
+import type { MouseEvent, PointerEvent, ReactNode } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { WasmBoyJoypadState } from 'wasmboy';
 
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
 import { isProduction } from '@/utils/app';
-import { readAndDecodeGameBoySaves } from '@/utils/decodeGameBoySave';
+import { readAndDecodeGameBoySaves, seedGameBoyTodayDate } from '@/utils/decodeGameBoySave';
 
 const GB_SCREEN_WIDTH = 160;
 const GB_SCREEN_HEIGHT = 144;
 
-// Hold a tap for at least this long (~3 frames at 60fps) so the emulator's
+// Hold a tap for at least this long (~5 frames at 60fps) so the emulator's
 // per-frame joypad poll reliably samples it, even when the press and release
 // land within a single frame.
-const MIN_PRESS_MS = 50;
+const MIN_PRESS_MS = 90;
 
 function withExpoBaseUrl(path: string): string {
   if (/^https?:\/\//i.test(path)) {
@@ -37,6 +38,8 @@ function withExpoBaseUrl(path: string): string {
 const ROM_URL = withExpoBaseUrl('/images/musclog.gbc');
 
 type JoypadButton = keyof WasmBoyJoypadState;
+
+const JOYPAD_BUTTONS: JoypadButton[] = ['UP', 'RIGHT', 'DOWN', 'LEFT', 'A', 'B', 'SELECT', 'START'];
 
 // Keyboard mapping for desktop play (lower-cased key -> joypad button).
 const KEY_MAP: Record<string, JoypadButton> = {
@@ -89,13 +92,17 @@ export default function GameBoy() {
     [flushJoypad]
   );
 
+  const clearReleaseTimer = useCallback((button: JoypadButton) => {
+    const pendingRelease = releaseTimersRef.current[button];
+    if (pendingRelease != null) {
+      clearTimeout(pendingRelease);
+      delete releaseTimersRef.current[button];
+    }
+  }, []);
+
   const setButton = useCallback(
     (button: JoypadButton, pressed: boolean) => {
-      const pendingRelease = releaseTimersRef.current[button];
-      if (pendingRelease != null) {
-        clearTimeout(pendingRelease);
-        delete releaseTimersRef.current[button];
-      }
+      clearReleaseTimer(button);
 
       if (pressed) {
         pressedAtRef.current[button] = Date.now();
@@ -110,14 +117,25 @@ export default function GameBoy() {
       if (remainingMs > 0) {
         releaseTimersRef.current[button] = setTimeout(() => {
           delete releaseTimersRef.current[button];
+          delete pressedAtRef.current[button];
           applyButton(button, false);
         }, remainingMs);
       } else {
+        delete pressedAtRef.current[button];
         applyButton(button, false);
       }
     },
-    [applyButton]
+    [applyButton, clearReleaseTimer]
   );
+
+  const releaseAllButtons = useCallback(() => {
+    for (const button of JOYPAD_BUTTONS) {
+      clearReleaseTimer(button);
+      delete pressedAtRef.current[button];
+      joypadRef.current[button] = false;
+    }
+    flushJoypad();
+  }, [clearReleaseTimer, flushJoypad]);
 
   const start = useCallback(async () => {
     if (canvasRef.current == null) {
@@ -149,6 +167,20 @@ export default function GameBoy() {
         throw new Error(`Failed to fetch ROM: ${response.status}`);
       }
       const rom = new Uint8Array(await response.arrayBuffer());
+
+      // Hand the ROM today's real date before it boots: the Game Boy has no wall
+      // clock, so for a not-yet-onboarded save we seed today's date into the
+      // cartridge SRAM (creating the save if none exists). loadROM() then
+      // restores it and onboarding pre-fills its date picker. Best-effort: a
+      // failure here must never block play.
+      try {
+        const seedResult = await seedGameBoyTodayDate(rom);
+        if (!isProduction()) {
+          console.log('[gameboy] seed today date:', seedResult);
+        }
+      } catch (error) {
+        console.error('[gameboy] failed to seed today date', error);
+      }
 
       await WasmBoy.loadROM(rom);
       await WasmBoy.play();
@@ -194,9 +226,12 @@ export default function GameBoy() {
     }
   }, []);
 
-  // Persist saves while playing: on a periodic safety-net interval, on the
-  // events that fire when the user leaves (tab hidden/closed, full reload), and
-  // on unmount (e.g. client-side navigation away, which fires no unload event).
+  // While playing, react to the user leaving or backgrounding the page. Persist
+  // the save on a periodic safety-net interval, on pagehide, on
+  // visibilitychange→hidden, and on cleanup (covers client-side navigation away,
+  // which fires no unload event). Also release any held buttons on blur or when
+  // hidden, so a button can't stick down when focus is lost mid-press (no
+  // keyup/pointerup ever arrives).
   useEffect(() => {
     if (status !== 'playing') {
       return;
@@ -207,18 +242,22 @@ export default function GameBoy() {
     const onVisibilityChange = () => {
       if (document.visibilityState === 'hidden') {
         void persistSave();
+        releaseAllButtons();
       }
     };
 
     window.addEventListener('pagehide', onPageHide);
+    window.addEventListener('blur', releaseAllButtons);
     document.addEventListener('visibilitychange', onVisibilityChange);
     return () => {
       clearInterval(interval);
       window.removeEventListener('pagehide', onPageHide);
+      window.removeEventListener('blur', releaseAllButtons);
       document.removeEventListener('visibilitychange', onVisibilityChange);
       void persistSave();
+      releaseAllButtons();
     };
-  }, [status, persistSave]);
+  }, [status, persistSave, releaseAllButtons]);
 
   // Keyboard input (desktop), only while playing.
   useEffect(() => {
@@ -423,7 +462,7 @@ type ButtonProps = {
   onPress: (button: JoypadButton, pressed: boolean) => void;
   disabled: boolean;
   className?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 function useButtonHandlers(
@@ -431,27 +470,56 @@ function useButtonHandlers(
   disabled: boolean,
   onPress: (button: JoypadButton, pressed: boolean) => void
 ) {
-  const press = (event: React.PointerEvent) => {
+  const activePointerIdRef = useRef<number | null>(null);
+
+  const press = (event: PointerEvent<HTMLButtonElement>) => {
     if (disabled) {
       return;
     }
+    if (event.pointerType === 'mouse' && event.button !== 0) {
+      return;
+    }
+    if (activePointerIdRef.current != null) {
+      return;
+    }
+
     event.preventDefault();
     event.currentTarget.setPointerCapture?.(event.pointerId);
+    activePointerIdRef.current = event.pointerId;
     onPress(button, true);
   };
-  const release = (event: React.PointerEvent) => {
+
+  const release = (event: PointerEvent<HTMLButtonElement>) => {
     if (disabled) {
       return;
     }
+    if (activePointerIdRef.current == null || activePointerIdRef.current !== event.pointerId) {
+      return;
+    }
+
     event.preventDefault();
+    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      event.currentTarget.releasePointerCapture?.(event.pointerId);
+    }
+    activePointerIdRef.current = null;
     onPress(button, false);
   };
+
+  const releaseOnLeave = (event: PointerEvent<HTMLButtonElement>) => {
+    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      return;
+    }
+    release(event);
+  };
+
   return {
     onPointerDown: press,
     onPointerUp: release,
     onPointerCancel: release,
-    onPointerLeave: release,
-    onContextMenu: (event: React.MouseEvent) => event.preventDefault(),
+    onPointerLeave: releaseOnLeave,
+    onLostPointerCapture: release,
+    onClick: (event: MouseEvent<HTMLButtonElement>) => event.preventDefault(),
+    onContextMenu: (event: MouseEvent<HTMLButtonElement>) => event.preventDefault(),
   };
 }
 

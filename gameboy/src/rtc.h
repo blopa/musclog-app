@@ -73,7 +73,7 @@ void    cal_format(const CalDate *d, char *buf);
 /*
  * Compute today's CalDate from the RTC and the calibration stored in data.
  * Accurate for up to 1023 elapsed days (~2.8 years) without re-calibration.
- * Returns a 2025-01-01 placeholder when rtc_is_set is 0.
+ * Returns a 2026-01-01 placeholder when rtc_is_set is 0.
  */
 CalDate cal_current_date(const SaveData *data);
 
