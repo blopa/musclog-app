@@ -162,20 +162,29 @@ export type GameBoySave = {
   customFoods: { checksumValid: boolean; count: number; entries: GameBoyCustomFood[] };
 };
 
+// Rolling checksum over the 23-byte profile block with the 2 checksum bytes
+// (0x03, 0x04) zeroed — mirrors db_checksum_bytes. The single source of truth
+// for both validating (decodeProfile) and writing (writeProfileChecksum) it, so
+// the encoder can never drift from the decoder.
+function profileChecksum(ram: Ram): number {
+  let sum = HASH_SEED;
+  for (let i = 0; i < SRAM_SAVE_SIZE; i++) {
+    const b = i === SRAM_CHECKSUM || i === SRAM_CHECKSUM + 1 ? 0 : (ram[i] ?? 0);
+    sum = ((sum << 5) ^ (sum >> 1) ^ b) & 0xffff;
+  }
+
+  return sum;
+}
+
 // ── Profile + RTC base (bank 0, 0x00) — profile.c ──────────────────────────
 function decodeProfile(ram: Ram): GameBoyProfile {
   const r = new BankReader(ram, 0);
-  // Checksum hashes the 23-byte block with the 2 checksum bytes (0x03,0x04) zeroed.
-  let sum = HASH_SEED;
-  for (let i = 0; i < 0x17; i++) {
-    sum = r.hashByte(sum, i === 0x03 || i === 0x04 ? 0 : r.u8(i));
-  }
   const flags1 = r.u8(0x05);
   const flags2 = r.u8(0x06);
   return {
-    magicValid: r.u16(0x00) === 0x4d47,
+    magicValid: r.u16(0x00) === SAVE_MAGIC,
     version: r.u8(0x02),
-    checksumValid: r.u16(0x03) === sum,
+    checksumValid: r.u16(SRAM_CHECKSUM) === profileChecksum(ram),
     onboarded: ((flags2 >> 4) & 1) === 1,
     units: flags1 & 1 ? 'imperial' : 'metric',
     gender: indexName(GENDERS, (flags1 >> 1) & 3),
@@ -389,39 +398,29 @@ export type SeedGameBoyDateResult =
   | 'already-onboarded' // save exists and onboarding is done; left untouched
   | 'unavailable'; // IndexedDB not available (e.g. SSR)
 
-// Rolling checksum over the 23-byte profile block with the 2 checksum bytes
-// zeroed — the inverse of decodeProfile's check, mirroring db_checksum_bytes.
-function computeProfileChecksum(ram: Ram): number {
-  let sum = HASH_SEED;
-  for (let i = 0; i < SRAM_SAVE_SIZE; i++) {
-    const b = i === SRAM_CHECKSUM || i === SRAM_CHECKSUM + 1 ? 0 : (ram[i] ?? 0);
-    sum = ((sum << 5) ^ (sum >> 1) ^ b) & 0xffff;
-  }
-  return sum;
-}
-
 function writeProfileChecksum(ram: Uint8Array): void {
-  const sum = computeProfileChecksum(ram);
+  const sum = profileChecksum(ram);
   ram[SRAM_CHECKSUM] = sum & 0xff;
   ram[SRAM_CHECKSUM + 1] = (sum >> 8) & 0xff;
 }
 
+// Clamp to an integer in [min, max]; non-finite input falls back to min.
+const clampInt = (value: number, min: number, max: number): number =>
+  Math.min(max, Math.max(min, Math.trunc(Number.isFinite(value) ? value : min)));
+
 function writeRtcDate(ram: Uint8Array, date: GameBoyCalDate): void {
   ram[SRAM_FLAGS2] = (ram[SRAM_FLAGS2] ?? 0) | FLAGS2_RTC_IS_SET;
   ram[SRAM_RTC_YEAR_OFS] = (date.year - 2000) & 0xff;
-  ram[SRAM_RTC_MONTH] = date.month;
-  ram[SRAM_RTC_DAY] = date.day;
+  ram[SRAM_RTC_MONTH] = clampInt(date.month, 1, 12);
+  ram[SRAM_RTC_DAY] = clampInt(date.day, 1, 31);
 }
-
-const clampInt = (value: number, max: number): number =>
-  Math.min(max, Math.max(0, Math.trunc(Number.isFinite(value) ? value : 0)));
 
 // Write today's time-of-day into the seed-hint bytes (outside the checksummed
 // block, so this is independent of writeProfileChecksum). Clamped to valid RTC
 // ranges; defaults to 00:00 when no time is supplied.
 function writeSeedTime(ram: Uint8Array, instant: GameBoySeedInstant): void {
-  ram[SRAM_RTC_HOUR] = clampInt(instant.hour ?? 0, 23);
-  ram[SRAM_RTC_MINUTE] = clampInt(instant.minute ?? 0, 59);
+  ram[SRAM_RTC_HOUR] = clampInt(instant.hour ?? 0, 0, 23);
+  ram[SRAM_RTC_MINUTE] = clampInt(instant.minute ?? 0, 0, 59);
 }
 
 // Stamp today's date into the RTC base-date fields of an existing (valid v3,
@@ -460,11 +459,20 @@ export function buildFreshGameBoyCartridgeRam(
   return ram;
 }
 
+// Mirrors the firmware's db_load() acceptance test: a save is loadable only when
+// magic, version, and the profile checksum all validate. Anything else makes
+// db_load() reject the save and re-run onboarding, so the seeder must treat such
+// a profile as junk (mint fresh) rather than trusting its bytes.
+function isLoadableProfile(profile: GameBoyProfile): boolean {
+  return profile.magicValid && profile.version === SAVE_VERSION && profile.checksumValid;
+}
+
 /*
  * Return a 32 KB copy of `existing` (other banks — weigh-ins, food log, workouts,
  * custom foods — preserved) with `date` stamped into the profile's RTC base date.
- * A valid v3 profile is patched in place; anything else gets a fresh profile
- * block. Pure — exported for the seeder below and for tests.
+ * A loadable v3 profile (valid magic + version + checksum) is patched in place;
+ * anything else gets a fresh profile block. Pure — exported for the seeder below
+ * and for tests.
  */
 export function stampGameBoyTodayDate(
   existing: Ram,
@@ -474,8 +482,7 @@ export function stampGameBoyTodayDate(
   const src = toUint8Array(existing);
   ram.set(src.subarray(0, Math.min(src.length, ram.length)));
 
-  const profile = decodeProfile(ram);
-  if (profile.magicValid && profile.version === SAVE_VERSION) {
+  if (isLoadableProfile(decodeProfile(ram))) {
     seedExistingProfileDate(ram, today);
   } else {
     writeFreshProfileBlock(ram, today);
@@ -610,8 +617,14 @@ export async function seedGameBoyTodayDate(
     const record = (await keyvalGet<{ cartridgeRam?: Ram }>(db, key)) ?? {};
     const existing = record.cartridgeRam;
 
-    if (existing != null && decodeProfile(existing).onboarded) {
-      return 'already-onboarded';
+    // Only treat the save as onboarded when db_load() would actually accept it
+    // (valid magic + version + checksum). A profile whose checksum fails is
+    // rejected by the ROM and re-onboarded, so we must still seed it.
+    if (existing != null) {
+      const profile = decodeProfile(existing);
+      if (isLoadableProfile(profile) && profile.onboarded) {
+        return 'already-onboarded';
+      }
     }
 
     const ram =

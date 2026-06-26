@@ -89,15 +89,18 @@ describe('Game Boy save seeding (encode → decode round-trip)', () => {
       expect(profile.onboarded).toBe(false);
     });
 
-    it('does not flip the onboarding flag when stamping a completed save', () => {
-      // (The seeder itself skips onboarded saves; this guards the byte logic so a
-      // stamp never clears an existing onboarding_complete bit.)
-      const existing = buildFreshGameBoyCartridgeRam({ year: 2025, month: 1, day: 1 });
-      existing[0x06] |= 1 << 4; // set FLAGS2 onboarding bit
-      // re-checksum so it decodes as a valid, onboarded save
-      const reChecksummed = stampGameBoyTodayDate(existing, { year: 2025, month: 1, day: 1 });
-      // sanity: the helper preserved the onboarding bit we set
-      expect(decodeGameBoySave(reChecksummed).profile.onboarded).toBe(true);
+    it('resets a profile with a stale/corrupt checksum to a fresh not-onboarded save', () => {
+      // Mirror what the firmware's db_load() does: a save whose checksum no longer
+      // validates is junk, so a stamp must not trust its bytes (including a stray
+      // onboarding bit) — it mints a fresh, not-onboarded profile instead.
+      const corrupt = buildFreshGameBoyCartridgeRam({ year: 2025, month: 1, day: 1 });
+      corrupt[0x06] |= 1 << 4; // set FLAGS2 onboarding bit WITHOUT re-checksumming
+
+      const { profile } = decodeGameBoySave(stampGameBoyTodayDate(corrupt, today));
+
+      expect(profile.checksumValid).toBe(true);
+      expect(profile.onboarded).toBe(false); // corrupt onboarding bit was not trusted
+      expect(profile.rtcBaseDate).toBe('2026-06-26');
     });
   });
 });

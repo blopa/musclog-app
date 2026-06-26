@@ -57,20 +57,6 @@ const KEY_MAP: Record<string, JoypadButton> = {
   shift: 'SELECT',
 };
 
-// Touch controls dispatch these synthetic keyboard keys, then the normal
-// keyboard listener below drives WasmBoy. That keeps desktop and touch input on
-// one path.
-const BUTTON_KEY_MAP: Record<JoypadButton, string> = {
-  UP: 'ArrowUp',
-  DOWN: 'ArrowDown',
-  LEFT: 'ArrowLeft',
-  RIGHT: 'ArrowRight',
-  A: 'x',
-  B: 'z',
-  START: 'Enter',
-  SELECT: 'Shift',
-};
-
 type Status = 'idle' | 'loading' | 'playing' | 'error';
 
 export default function GameBoy() {
@@ -106,13 +92,17 @@ export default function GameBoy() {
     [flushJoypad]
   );
 
+  const clearReleaseTimer = useCallback((button: JoypadButton) => {
+    const pendingRelease = releaseTimersRef.current[button];
+    if (pendingRelease != null) {
+      clearTimeout(pendingRelease);
+      delete releaseTimersRef.current[button];
+    }
+  }, []);
+
   const setButton = useCallback(
     (button: JoypadButton, pressed: boolean) => {
-      const pendingRelease = releaseTimersRef.current[button];
-      if (pendingRelease != null) {
-        clearTimeout(pendingRelease);
-        delete releaseTimersRef.current[button];
-      }
+      clearReleaseTimer(button);
 
       if (pressed) {
         pressedAtRef.current[button] = Date.now();
@@ -135,21 +125,17 @@ export default function GameBoy() {
         applyButton(button, false);
       }
     },
-    [applyButton]
+    [applyButton, clearReleaseTimer]
   );
 
   const releaseAllButtons = useCallback(() => {
     for (const button of JOYPAD_BUTTONS) {
-      const pendingRelease = releaseTimersRef.current[button];
-      if (pendingRelease != null) {
-        clearTimeout(pendingRelease);
-        delete releaseTimersRef.current[button];
-      }
+      clearReleaseTimer(button);
       delete pressedAtRef.current[button];
       joypadRef.current[button] = false;
     }
     flushJoypad();
-  }, [flushJoypad]);
+  }, [clearReleaseTimer, flushJoypad]);
 
   const start = useCallback(async () => {
     if (canvasRef.current == null) {
@@ -240,9 +226,12 @@ export default function GameBoy() {
     }
   }, []);
 
-  // Persist saves while playing: on a periodic safety-net interval, on the
-  // events that fire when the user leaves (tab hidden/closed, full reload), and
-  // on unmount (e.g. client-side navigation away, which fires no unload event).
+  // While playing, react to the user leaving or backgrounding the page. Persist
+  // the save on a periodic safety-net interval, on pagehide, on
+  // visibilitychange→hidden, and on cleanup (covers client-side navigation away,
+  // which fires no unload event). Also release any held buttons on blur or when
+  // hidden, so a button can't stick down when focus is lost mid-press (no
+  // keyup/pointerup ever arrives).
   useEffect(() => {
     if (status !== 'playing') {
       return;
@@ -253,18 +242,22 @@ export default function GameBoy() {
     const onVisibilityChange = () => {
       if (document.visibilityState === 'hidden') {
         void persistSave();
+        releaseAllButtons();
       }
     };
 
     window.addEventListener('pagehide', onPageHide);
+    window.addEventListener('blur', releaseAllButtons);
     document.addEventListener('visibilitychange', onVisibilityChange);
     return () => {
       clearInterval(interval);
       window.removeEventListener('pagehide', onPageHide);
+      window.removeEventListener('blur', releaseAllButtons);
       document.removeEventListener('visibilitychange', onVisibilityChange);
       void persistSave();
+      releaseAllButtons();
     };
-  }, [status, persistSave]);
+  }, [status, persistSave, releaseAllButtons]);
 
   // Keyboard input (desktop), only while playing.
   useEffect(() => {
@@ -291,26 +284,6 @@ export default function GameBoy() {
       window.removeEventListener('keyup', onKeyUp);
     };
   }, [status, setButton]);
-
-  useEffect(() => {
-    if (status !== 'playing') {
-      return;
-    }
-
-    const onVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') {
-        releaseAllButtons();
-      }
-    };
-
-    window.addEventListener('blur', releaseAllButtons);
-    document.addEventListener('visibilitychange', onVisibilityChange);
-    return () => {
-      window.removeEventListener('blur', releaseAllButtons);
-      document.removeEventListener('visibilitychange', onVisibilityChange);
-      releaseAllButtons();
-    };
-  }, [status, releaseAllButtons]);
 
   // Stop the emulator worker/RAF loop when leaving the page.
   useEffect(() => {
@@ -391,7 +364,7 @@ export default function GameBoy() {
           </div>
 
           {/* Touch controls */}
-          <TouchControls disabled={status !== 'playing'} t={t} />
+          <TouchControls onPress={setButton} disabled={status !== 'playing'} t={t} />
 
           <p className="mt-8 max-w-md text-xs leading-5 text-gray-500">{t('controlsHint')}</p>
 
@@ -409,11 +382,12 @@ export default function GameBoy() {
 }
 
 type TouchControlsProps = {
+  onPress: (button: JoypadButton, pressed: boolean) => void;
   disabled: boolean;
   t: (key: string) => string;
 };
 
-function TouchControls({ disabled, t }: TouchControlsProps) {
+function TouchControls({ onPress, disabled, t }: TouchControlsProps) {
   return (
     <div
       className="mt-8 flex w-full max-w-sm select-none items-center justify-between gap-6"
@@ -424,6 +398,7 @@ function TouchControls({ disabled, t }: TouchControlsProps) {
         <PadButton
           button="UP"
           label={t('up')}
+          onPress={onPress}
           disabled={disabled}
           className="left-12 top-0 h-12 w-12 rounded-t-lg"
         >
@@ -432,6 +407,7 @@ function TouchControls({ disabled, t }: TouchControlsProps) {
         <PadButton
           button="LEFT"
           label={t('left')}
+          onPress={onPress}
           disabled={disabled}
           className="left-0 top-12 h-12 w-12 rounded-l-lg"
         >
@@ -440,6 +416,7 @@ function TouchControls({ disabled, t }: TouchControlsProps) {
         <PadButton
           button="RIGHT"
           label={t('right')}
+          onPress={onPress}
           disabled={disabled}
           className="left-24 top-12 h-12 w-12 rounded-r-lg"
         >
@@ -448,6 +425,7 @@ function TouchControls({ disabled, t }: TouchControlsProps) {
         <PadButton
           button="DOWN"
           label={t('down')}
+          onPress={onPress}
           disabled={disabled}
           className="left-12 top-24 h-12 w-12 rounded-b-lg"
         >
@@ -458,18 +436,18 @@ function TouchControls({ disabled, t }: TouchControlsProps) {
       {/* Action + system buttons */}
       <div className="flex flex-col items-center gap-4">
         <div className="flex items-center gap-4">
-          <RoundButton button="B" label={t('bButton')} disabled={disabled}>
+          <RoundButton button="B" label={t('bButton')} onPress={onPress} disabled={disabled}>
             B
           </RoundButton>
-          <RoundButton button="A" label={t('aButton')} disabled={disabled}>
+          <RoundButton button="A" label={t('aButton')} onPress={onPress} disabled={disabled}>
             A
           </RoundButton>
         </div>
         <div className="flex items-center gap-3">
-          <PillButton button="SELECT" label={t('select')} disabled={disabled}>
+          <PillButton button="SELECT" label={t('select')} onPress={onPress} disabled={disabled}>
             {t('select')}
           </PillButton>
-          <PillButton button="START" label={t('start')} disabled={disabled}>
+          <PillButton button="START" label={t('start')} onPress={onPress} disabled={disabled}>
             {t('start')}
           </PillButton>
         </div>
@@ -481,22 +459,17 @@ function TouchControls({ disabled, t }: TouchControlsProps) {
 type ButtonProps = {
   button: JoypadButton;
   label: string;
+  onPress: (button: JoypadButton, pressed: boolean) => void;
   disabled: boolean;
   className?: string;
   children: ReactNode;
 };
 
-function dispatchJoypadKeyboardEvent(button: JoypadButton, type: 'keydown' | 'keyup') {
-  window.dispatchEvent(
-    new KeyboardEvent(type, {
-      key: BUTTON_KEY_MAP[button],
-      bubbles: true,
-      cancelable: true,
-    })
-  );
-}
-
-function useButtonHandlers(button: JoypadButton, disabled: boolean) {
+function useButtonHandlers(
+  button: JoypadButton,
+  disabled: boolean,
+  onPress: (button: JoypadButton, pressed: boolean) => void
+) {
   const activePointerIdRef = useRef<number | null>(null);
 
   const press = (event: PointerEvent<HTMLButtonElement>) => {
@@ -513,7 +486,7 @@ function useButtonHandlers(button: JoypadButton, disabled: boolean) {
     event.preventDefault();
     event.currentTarget.setPointerCapture?.(event.pointerId);
     activePointerIdRef.current = event.pointerId;
-    dispatchJoypadKeyboardEvent(button, 'keydown');
+    onPress(button, true);
   };
 
   const release = (event: PointerEvent<HTMLButtonElement>) => {
@@ -529,7 +502,7 @@ function useButtonHandlers(button: JoypadButton, disabled: boolean) {
       event.currentTarget.releasePointerCapture?.(event.pointerId);
     }
     activePointerIdRef.current = null;
-    dispatchJoypadKeyboardEvent(button, 'keyup');
+    onPress(button, false);
   };
 
   const releaseOnLeave = (event: PointerEvent<HTMLButtonElement>) => {
@@ -550,8 +523,8 @@ function useButtonHandlers(button: JoypadButton, disabled: boolean) {
   };
 }
 
-function PadButton({ button, label, disabled, className, children }: ButtonProps) {
-  const handlers = useButtonHandlers(button, disabled);
+function PadButton({ button, label, onPress, disabled, className, children }: ButtonProps) {
+  const handlers = useButtonHandlers(button, disabled, onPress);
   return (
     <button
       type="button"
@@ -565,8 +538,8 @@ function PadButton({ button, label, disabled, className, children }: ButtonProps
   );
 }
 
-function RoundButton({ button, label, disabled, children }: ButtonProps) {
-  const handlers = useButtonHandlers(button, disabled);
+function RoundButton({ button, label, onPress, disabled, children }: ButtonProps) {
+  const handlers = useButtonHandlers(button, disabled, onPress);
   return (
     <button
       type="button"
@@ -580,8 +553,8 @@ function RoundButton({ button, label, disabled, children }: ButtonProps) {
   );
 }
 
-function PillButton({ button, label, disabled, children }: ButtonProps) {
-  const handlers = useButtonHandlers(button, disabled);
+function PillButton({ button, label, onPress, disabled, children }: ButtonProps) {
+  const handlers = useButtonHandlers(button, disabled, onPress);
   return (
     <button
       type="button"
