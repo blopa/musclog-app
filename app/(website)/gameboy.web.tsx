@@ -10,6 +10,11 @@ import { readAndDecodeGameBoySaves } from '@/utils/decodeGameBoySave';
 const GB_SCREEN_WIDTH = 160;
 const GB_SCREEN_HEIGHT = 144;
 
+// Hold a tap for at least this long (~3 frames at 60fps) so the emulator's
+// per-frame joypad poll reliably samples it, even when the press and release
+// land within a single frame.
+const MIN_PRESS_MS = 50;
+
 function withExpoBaseUrl(path: string): string {
   if (/^https?:\/\//i.test(path)) {
     return path;
@@ -55,23 +60,63 @@ export default function GameBoy() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.gameboy' });
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const joypadRef = useRef<WasmBoyJoypadState>({});
+  // The configured WasmBoy module, cached once the emulator starts so input can
+  // be flushed synchronously (see flushJoypad below).
+  const wasmBoyRef = useRef<{ setJoypadState: (state: WasmBoyJoypadState) => void } | null>(null);
+  // When each button was last pressed, plus any pending delayed-release timers,
+  // so a quick tap is held long enough for the emulator to sample it.
+  const pressedAtRef = useRef<Partial<Record<JoypadButton, number>>>({});
+  const releaseTimersRef = useRef<Partial<Record<JoypadButton, ReturnType<typeof setTimeout>>>>({});
   const [status, setStatus] = useState<Status>('idle');
 
-  // Push the current joypad ref into the running emulator.
-  const flushJoypad = useCallback(async () => {
-    const { WasmBoy } = await import('wasmboy');
-    WasmBoy.setJoypadState({ ...joypadRef.current });
+  // Push the current joypad ref into the running emulator. This MUST stay
+  // synchronous so it reads joypadRef at call time. An earlier version awaited a
+  // dynamic import() first, so by the time it read the ref a fast press+release
+  // had already flipped the button back to false — the press never reached the
+  // emulator and on-screen taps appeared to do nothing.
+  const flushJoypad = useCallback(() => {
+    wasmBoyRef.current?.setJoypadState({ ...joypadRef.current });
   }, []);
 
-  const setButton = useCallback(
+  const applyButton = useCallback(
     (button: JoypadButton, pressed: boolean) => {
       if (joypadRef.current[button] === pressed) {
         return;
       }
       joypadRef.current[button] = pressed;
-      void flushJoypad();
+      flushJoypad();
     },
     [flushJoypad]
+  );
+
+  const setButton = useCallback(
+    (button: JoypadButton, pressed: boolean) => {
+      const pendingRelease = releaseTimersRef.current[button];
+      if (pendingRelease != null) {
+        clearTimeout(pendingRelease);
+        delete releaseTimersRef.current[button];
+      }
+
+      if (pressed) {
+        pressedAtRef.current[button] = Date.now();
+        applyButton(button, true);
+        return;
+      }
+
+      // Defer the release until the press has been held for MIN_PRESS_MS so the
+      // emulator's per-frame joypad poll reliably sees a quick tap.
+      const heldForMs = Date.now() - (pressedAtRef.current[button] ?? 0);
+      const remainingMs = MIN_PRESS_MS - heldForMs;
+      if (remainingMs > 0) {
+        releaseTimersRef.current[button] = setTimeout(() => {
+          delete releaseTimersRef.current[button];
+          applyButton(button, false);
+        }, remainingMs);
+      } else {
+        applyButton(button, false);
+      }
+    },
+    [applyButton]
   );
 
   const start = useCallback(async () => {
@@ -97,6 +142,7 @@ export default function GameBoy() {
       // We drive input ourselves (keyboard + touch) so on-screen buttons
       // are not overwritten by the built-in per-frame joypad polling.
       WasmBoy.disableDefaultJoypad();
+      wasmBoyRef.current = WasmBoy;
 
       const response = await fetch(ROM_URL);
       if (!response.ok) {
@@ -211,6 +257,16 @@ export default function GameBoy() {
     };
   }, []);
 
+  // Clear any pending delayed button releases on unmount so no timer fires after
+  // the component is gone.
+  useEffect(() => {
+    const timers = releaseTimersRef.current;
+    return () => {
+      Object.values(timers).forEach((id) => clearTimeout(id));
+      releaseTimersRef.current = {};
+    };
+  }, []);
+
   return (
     <>
       <Head>
@@ -220,7 +276,7 @@ export default function GameBoy() {
         <DotPattern className="text-primary/30" />
         <div className="from-background/60 to-background/80 absolute inset-0 bg-gradient-to-b via-transparent" />
 
-        <div className="relative z-10 mx-auto flex w-full max-w-xl flex-col items-center text-center mt-4">
+        <div className="relative z-10 mx-auto mt-4 flex w-full max-w-xl flex-col items-center text-center">
           <h1 className="max-w-lg text-balance text-4xl font-black leading-tight text-white sm:text-5xl">
             {t('title')}
           </h1>
