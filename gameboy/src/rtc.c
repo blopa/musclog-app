@@ -190,9 +190,20 @@ CalDate cal_current_date(const SaveData *data) {
     }
 
     rtc_latch(&rtc);
+    /* WasmBoy's MBC3 RTC register select/latch is not implemented, so reading
+     * 0x08..0x0C can alias the first byte of each SRAM bank instead of real RTC
+     * registers. That produces impossible times like 71:76:76 and a bogus day
+     * count (often 326, derived from the save-store magics). When that happens,
+     * treat the RTC as unavailable and fall back to the seeded base date. */
+    if (rtc.seconds > 59u || rtc.minutes > 59u || rtc.hours > 23u) {
+        current = data->rtc_base_date;
+        return current;
+    }
+
     elapsed = rtc.days;
     if (rtc.carry) elapsed = (uint16_t)(elapsed + 512u);
     current = cal_advance(data->rtc_base_date, elapsed);
+
     return current;
 }
 

@@ -161,6 +161,80 @@ static uint16_t max_u16(const uint16_t *vals, uint8_t len) {
     return mx;
 }
 
+static uint16_t min_u16(const uint16_t *vals, uint8_t len) {
+    uint16_t mn = 0xFFFFu;
+    uint8_t i;
+
+    if (len == 0u) return 0u;
+    for (i = 0u; i != len; ++i) {
+        if (vals[i] < mn) mn = vals[i];
+    }
+    return mn;
+}
+
+/* Round a raw step to a compact 1/2/5 * 10^n interval. */
+static uint16_t nice_step_u16(uint16_t raw) {
+    uint16_t pow10 = 1u;
+    uint16_t scaled;
+
+    if (raw <= 1u) return 1u;
+
+    while (raw >= 10u) {
+        raw /= 10u;
+        if (pow10 <= (uint16_t)(65535u / 10u)) pow10 *= 10u;
+    }
+
+    scaled = raw * pow10;
+    if (scaled == 0u) scaled = pow10;
+
+    if (scaled <= pow10) return pow10;
+    if (scaled <= (uint16_t)(2u * pow10)) return (uint16_t)(2u * pow10);
+    if (scaled <= (uint16_t)(5u * pow10)) return (uint16_t)(5u * pow10);
+    if (pow10 > (uint16_t)(65535u / 10u)) return 65535u;
+    return (uint16_t)(10u * pow10);
+}
+
+static void chart_domain_for_values(const uint16_t *vals, uint8_t len,
+                                    uint16_t *out_min, uint16_t *out_max) {
+    uint16_t mn = min_u16(vals, len);
+    uint16_t mx = max_u16(vals, len);
+    uint16_t span, step, padded_max, floor_min, ceil_max;
+
+    if (len == 0u || mx == 0u) {
+        *out_min = 0u;
+        *out_max = 0u;
+        return;
+    }
+
+    if (mn == mx) {
+        step = nice_step_u16((uint16_t)(mx / 4u));
+        if (step == 0u) step = 1u;
+        *out_min = (mn > step) ? (uint16_t)(mn - step) : 0u;
+        *out_max = (mx > (uint16_t)(65535u - step)) ? 65535u : (uint16_t)(mx + step);
+        return;
+    }
+
+    span = (uint16_t)(mx - mn);
+    step = nice_step_u16((uint16_t)((span + 5u) / 6u));
+    padded_max = (mx > (uint16_t)(65535u - step)) ? 65535u : (uint16_t)(mx + step);
+
+    floor_min = (uint16_t)((mn / step) * step);
+    ceil_max = (uint16_t)((padded_max + step - 1u) / step);
+    if (ceil_max > (uint16_t)(65535u / step)) {
+        ceil_max = 65535u;
+    } else {
+        ceil_max = (uint16_t)(ceil_max * step);
+    }
+
+    if (floor_min == mn && floor_min >= step) floor_min = (uint16_t)(floor_min - step);
+    if (ceil_max <= mx) {
+        ceil_max = (mx > (uint16_t)(65535u - step)) ? 65535u : (uint16_t)(mx + step);
+    }
+
+    *out_min = floor_min;
+    *out_max = ceil_max;
+}
+
 /* Average value of bucket `b` of `n_bars` evenly splitting `vals[0..len)`. */
 static uint16_t bucket_avg(const uint16_t *vals, uint8_t len, uint8_t b, uint8_t n_bars) {
     uint16_t lo = (uint16_t)((uint16_t)b * len / n_bars);
@@ -175,16 +249,16 @@ static uint16_t bucket_avg(const uint16_t *vals, uint8_t len, uint8_t b, uint8_t
 /* ── Bar chart drawing ───────────────────────────────────────────────────── */
 
 /*
- * Render `vals[0..len)` as a baseline-0 column chart. Wide window data is
- * bucketed down to at most MAX_BARS columns (averaged); a short window draws
- * fatter bars. `max` is the value mapped to the full plot height (caller passes
- * the window max so the tallest day fills the plot).
+ * Render `vals[0..len)` as a column chart over the caller-provided domain.
+ * Wide window data is bucketed down to at most MAX_BARS columns; the active
+ * data range is padded so the chart doesn't hug the top or waste space below.
  */
-static void draw_bar_chart(const uint16_t *vals, uint8_t len, uint16_t max) {
+static void draw_bar_chart(const uint16_t *vals, uint8_t len, uint16_t chart_min,
+                           uint16_t chart_max) {
     uint8_t bar_w = (len <= 9u) ? 2u : 1u;
     uint8_t n_bars = len;
     uint8_t span_w, x0, b;
-    uint16_t v;
+    uint16_t v, span;
     uint8_t h, x, top;
 
     if (n_bars > (uint8_t)(PLOT_W / bar_w)) n_bars = (uint8_t)(PLOT_W / bar_w);
@@ -192,14 +266,16 @@ static void draw_bar_chart(const uint16_t *vals, uint8_t len, uint16_t max) {
     x0 = (uint8_t)(PLOT_LEFT + (PLOT_W - span_w) / 2u); /* centre the bars */
 
     ui_fill_attr(PLOT_LEFT, PLOT_TOP, PLOT_W, PLOT_ROWS, UI_PAL_PANEL);
-    if (max == 0u) return;
+    if (chart_max <= chart_min) return;
+
+    span = (uint16_t)(chart_max - chart_min);
 
     for (b = 0u; b != n_bars; ++b) {
         v = bucket_avg(vals, len, b, n_bars);
-        h = (uint8_t)(((uint32_t)v * PLOT_ROWS + (max >> 1u)) / max);
-        if (v != 0u && h == 0u) h = 1u;
+        if (v <= chart_min) continue;
+        h = (uint8_t)(((uint32_t)(v - chart_min) * PLOT_ROWS + (span >> 1u)) / span);
+        if (h == 0u) h = 1u;
         if (h > PLOT_ROWS) h = PLOT_ROWS;
-        if (h == 0u) continue;
         x = (uint8_t)(x0 + b * bar_w);
         top = (uint8_t)(PLOT_BASE + 1u - h);
         ui_fill_attr(x, top, bar_w, h, UI_PAL_SELECTED);
@@ -214,28 +290,24 @@ static void draw_weight_chart(void) {
     uint8_t bar_w = (weight_count <= 9u) ? 2u : 1u;
     uint8_t n_bars = weight_count;
     uint8_t span_w, x0, b;
-    uint16_t mn = 0xFFFFu, mx = 0u, span, v;
-    uint8_t i, h, x, top;
-
-    for (i = 0u; i != weight_count; ++i) {
-        if (weight_vals[i] < mn) mn = weight_vals[i];
-        if (weight_vals[i] > mx) mx = weight_vals[i];
-    }
-    span = (uint16_t)(mx - mn);
+    uint16_t chart_min, chart_max, span, v;
+    uint8_t h, x, top;
 
     if (n_bars > (uint8_t)(PLOT_W / bar_w)) n_bars = (uint8_t)(PLOT_W / bar_w);
     span_w = (uint8_t)(n_bars * bar_w);
     x0 = (uint8_t)(PLOT_LEFT + (PLOT_W - span_w) / 2u);
 
     ui_fill_attr(PLOT_LEFT, PLOT_TOP, PLOT_W, PLOT_ROWS, UI_PAL_PANEL);
+    chart_domain_for_values(weight_vals, weight_count, &chart_min, &chart_max);
+    if (chart_max <= chart_min) return;
+    span = (uint16_t)(chart_max - chart_min);
 
     for (b = 0u; b != n_bars; ++b) {
         v = bucket_avg(weight_vals, weight_count, b, n_bars);
-        if (span == 0u) {
-            h = (uint8_t)((PLOT_ROWS + 1u) / 2u);
-        } else {
-            h = (uint8_t)(1u + ((uint32_t)(v - mn) * (PLOT_ROWS - 1u) + (span >> 1u)) / span);
-        }
+        if (v <= chart_min) continue;
+        h = (uint8_t)(((uint32_t)(v - chart_min) * PLOT_ROWS + (span >> 1u)) / span);
+        if (h == 0u) h = 1u;
+        if (h > PLOT_ROWS) h = PLOT_ROWS;
         x = (uint8_t)(x0 + b * bar_w);
         top = (uint8_t)(PLOT_BASE + 1u - h);
         ui_fill_attr(x, top, bar_w, h, UI_PAL_SELECTED);
@@ -285,6 +357,7 @@ static void draw_macro_page(const char *title, const char *unit,
                             const uint16_t *vals) {
     char buf[22];
     uint16_t mx = max_u16(vals, agg_range);
+    uint16_t chart_min, chart_max;
 
     ui_print_at(1u, 3u, title);
     ui_print_at((uint8_t)(19u - (uint8_t)strlen(STR_PER_DAY)), 3u, STR_PER_DAY);
@@ -297,7 +370,8 @@ static void draw_macro_page(const char *title, const char *unit,
     ui_print_at(15u, 4u, buf);
 
     ui_print_at(0u, 6u, STR_DIVIDER);
-    draw_bar_chart(vals, agg_range, mx);
+    chart_domain_for_values(vals, agg_range, &chart_min, &chart_max);
+    draw_bar_chart(vals, agg_range, chart_min, chart_max);
 }
 
 static void bw_format(uint8_t units, uint16_t kg_tenths, char *buf) {

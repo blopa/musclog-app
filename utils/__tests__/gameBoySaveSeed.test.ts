@@ -1,4 +1,5 @@
 import {
+  buildGameBoyDemoCartridgeRam,
   buildFreshGameBoyCartridgeRam,
   decodeGameBoySave,
   stampGameBoyTodayDate,
@@ -101,6 +102,60 @@ describe('Game Boy save seeding (encode → decode round-trip)', () => {
       expect(profile.checksumValid).toBe(true);
       expect(profile.onboarded).toBe(false); // corrupt onboarding bit was not trusted
       expect(profile.rtcBaseDate).toBe('2026-06-26');
+    });
+  });
+
+  describe('buildGameBoyDemoCartridgeRam', () => {
+    it('produces an onboarded debug save with recent profile, nutrition, weight, and workout data', () => {
+      const save = decodeGameBoySave(buildGameBoyDemoCartridgeRam(today));
+
+      expect(save.profile.magicValid).toBe(true);
+      expect(save.profile.checksumValid).toBe(true);
+      expect(save.profile.onboarded).toBe(true);
+      expect(save.profile.weightKg).toBe(82.4);
+      expect(save.profile.calorieGoal).toBe(2860);
+      expect(save.profile.rtcBaseDate).toBe('2026-06-26');
+
+      expect(save.weighIns.checksumValid).toBe(true);
+      expect(save.weighIns.count).toBe(30);
+      expect(save.weighIns.entries[0]).toMatchObject({
+        date: '2026-05-28',
+        weightKg: 84.5,
+      });
+      expect(save.weighIns.entries.at(-1)?.weightKg).toBe(82.4);
+
+      expect(save.customFoods.checksumValid).toBe(true);
+      expect(save.customFoods.count).toBe(5);
+      expect(save.customFoods.entries.map((entry) => entry.name)).toEqual([
+        'OVERNIGHT OATS',
+        'CHICKEN RICE',
+        'PB SHAKE',
+        'BEEF PASTA',
+        'YOGURT BOWL',
+      ]);
+
+      expect(save.foodLog.checksumValid).toBe(true);
+      expect(save.foodLog.count).toBe(120);
+      expect(save.foodLog.entries[0]).toMatchObject({
+        date: '2026-05-28',
+        customFoodSlot: 0,
+        grams: 255,
+      });
+      expect(save.foodLog.entries.at(-1)).toMatchObject({
+        date: '2026-06-26',
+        customFoodSlot: 2,
+        grams: 321,
+      });
+
+      expect(save.workouts.checksumValid).toBe(true);
+      expect(save.workouts.count).toBe(30);
+      expect(save.workouts.entries[0]?.date).toBe('2026-05-28');
+      expect(save.workouts.entries.at(-1)).toMatchObject({
+        date: '2026-06-26',
+        dominantMuscleIdx: 2,
+        exerciseCount: 2,
+        setCount: 4,
+      });
     });
   });
 });

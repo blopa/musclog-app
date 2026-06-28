@@ -16,12 +16,13 @@
  * those are surfaced as raw indices. Custom food names live in SRAM and ARE
  * decoded. Multi-byte values are little-endian throughout.
  *
- * Besides decoding, this module can also *write* the profile block back: it can
- * seed today's date into the RTC-base-date fields of a not-yet-onboarded save
- * (plus today's time of day into two seed-hint bytes after the block), or mint a
- * fresh save image from scratch, and persist it into WasmBoy's IndexedDB store so
- * the emulator restores it on the next loadROM(). See seedGameBoyTodayDate() at
- * the bottom of the file.
+ * Besides decoding, this module can also *write* SRAM images back: it can seed
+ * today's date into the RTC-base-date fields of a not-yet-onboarded save (plus
+ * today's time of day into two seed-hint bytes after the block), mint a fresh
+ * save image from scratch, or build a deterministic demo save with recent
+ * bodyweight, nutrition, and workout history. Those images are persisted into
+ * WasmBoy's IndexedDB store so the emulator restores them on the next loadROM().
+ * See seedGameBoyTodayDate() / seedGameBoyDemoData() at the bottom of the file.
  */
 
 const BANK_SIZE = 0x2000; // 8 KB per SRAM bank
@@ -47,6 +48,44 @@ const FLAGS2_RTC_IS_SET = 1 << 5; // FLAGS2 bit 5 (FLAGS2_RTC_IS_SET_BIT)
 const SRAM_RTC_HOUR = 0x17; // seeded hour (0-23)
 const SRAM_RTC_MINUTE = 0x18; // seeded minute (0-59)
 
+const METRICS_MAGIC = 0x4257; // 'BW'
+const METRICS_VERSION = 1;
+const METRICS_BASE = 0x40;
+const METRICS_COUNT = METRICS_BASE + 0x03;
+const METRICS_CHECKSUM = METRICS_BASE + 0x05;
+const METRICS_ENTRIES_OFF = METRICS_BASE + 0x08;
+const METRICS_ENTRY_SIZE = 4;
+
+const FOODLOG_MAGIC = 0x464c; // 'FL'
+const FOODLOG_VERSION = 1;
+const FOODLOG_COUNT = 0x03;
+const FOODLOG_CHECKSUM = 0x05;
+const FOODLOG_ENTRIES_OFF = 0x08;
+const FOODLOG_ENTRY_SIZE = 6;
+
+const WORKOUT_MAGIC = 0x574c; // 'WL'
+const WORKOUT_VERSION = 1;
+const WORKOUT_COUNT = 0x03;
+const WORKOUT_BYTES = 0x04;
+const WORKOUT_CHECKSUM = 0x06;
+const WORKOUT_RECORDS_OFF = 0x08;
+const WORKOUT_RECORD_HEADER_SIZE = 7;
+const WORKOUT_SET_SIZE = 4;
+
+const CUSTOM_FOODS_MAGIC = 0x4346; // 'CF'
+const CUSTOM_FOODS_VERSION = 1;
+const CUSTOM_FOODS_CHECKSUM = 0x04;
+const CUSTOM_FOODS_ENTRIES_OFF = 0x08;
+const CUSTOM_FOOD_NAME_BYTES = 16;
+const CUSTOM_FOOD_ENTRY_SIZE = 26;
+const CUSTOM_FOOD_KCAL_OFF = 16;
+const CUSTOM_FOOD_PROTEIN_OFF = 18;
+const CUSTOM_FOOD_FAT_OFF = 20;
+const CUSTOM_FOOD_CARBS_OFF = 22;
+const CUSTOM_FOOD_FIBER_OFF = 24;
+
+const FLAGS2_ONBOARDING_COMPLETE = 1 << 4;
+
 const GENDERS = ['male', 'female', 'other'] as const;
 const EXPERIENCE = ['beginner', 'intermediate', 'advanced'] as const;
 const FITNESS = ['muscle', 'strength', 'endurance', 'general'] as const;
@@ -56,6 +95,26 @@ const CUSTOM_FOOD_BASE = 0x8000;
 const MAX_CUSTOM_FOODS = 100;
 
 type Ram = ArrayLike<number>;
+
+type DemoWeighInRecord = { dayNumber: number; weightKgTenths: number };
+type DemoFoodLogRecord = { dayNumber: number; foodIdx: number; grams: number };
+type DemoWorkoutSetRecord = { exerciseIdx: number; reps: number; weightKgTenths: number };
+type DemoWorkoutRecord = {
+  dayNumber: number;
+  dominantMuscleIdx: number;
+  exerciseCount: number;
+  sets: DemoWorkoutSetRecord[];
+};
+
+type DemoCustomFoodRecord = {
+  slot: number;
+  name: string;
+  kcal: number;
+  proteinG: number;
+  fatG: number;
+  carbsG: number;
+  fiberG: number;
+};
 
 // Reads bytes out of one SRAM bank, mirroring sram.h's helpers.
 class BankReader {
@@ -170,7 +229,20 @@ function profileChecksum(ram: Ram): number {
   let sum = HASH_SEED;
   for (let i = 0; i < SRAM_SAVE_SIZE; i++) {
     const b = i === SRAM_CHECKSUM || i === SRAM_CHECKSUM + 1 ? 0 : (ram[i] ?? 0);
-    sum = ((sum << 5) ^ (sum >> 1) ^ b) & 0xffff;
+    sum = hashByte(sum, b);
+  }
+
+  return sum;
+}
+
+function hashByte(sum: number, b: number): number {
+  return ((sum << 5) ^ (sum >> 1) ^ b) & 0xffff;
+}
+
+function hashBytes(ram: Ram, seed: number, off: number, len: number): number {
+  let sum = seed;
+  for (let i = 0; i < len; i++) {
+    sum = hashByte(sum, ram[off + i] ?? 0);
   }
 
   return sum;
@@ -361,7 +433,7 @@ export async function readAndDecodeGameBoySaves(): Promise<GameBoySave[]> {
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
- * Encoding / seeding — write today's date into the cartridge SRAM
+ * Encoding / seeding — write SRAM images into WasmBoy's cartridge store
  *
  * WasmBoy persists each game's battery-backed SRAM to the IndexedDB database
  * `wasmboy` (object store `keyval`, idb-keyval schema: DB version 1, out-of-line
@@ -370,11 +442,15 @@ export async function readAndDecodeGameBoySaves(): Promise<GameBoySave[]> {
  * `cartridgeRam` into the live cartridge inside loadROM(), so writing this record
  * *before* loadROM() lets us pre-seed save data the ROM then reads at boot.
  *
- * We use that to hand the ROM today's real calendar date (the Game Boy has no
- * wall clock): if the player has not finished onboarding yet, we stamp today's
- * date into the RTC base-date fields (profile.h SRAM_RTC_*). The ROM's
- * onboarding flow preserves that seed across its db_init_defaults() reset and
- * pre-fills the date/time picker with it (see gameboy/src/onboarding.c).
+ * In normal mode we use that to hand the ROM today's real calendar date (the
+ * Game Boy has no wall clock): if the player has not finished onboarding yet, we
+ * stamp today's date into the RTC base-date fields (profile.h SRAM_RTC_*). The
+ * ROM's onboarding flow preserves that seed across its db_init_defaults() reset
+ * and pre-fills the date/time picker with it (see gameboy/src/onboarding.c).
+ *
+ * In demo mode we write a complete, fully onboarded SRAM image with recent
+ * bodyweight, nutrition, custom-food, and workout history so the web route can
+ * boot straight into a rich debug state.
  * ────────────────────────────────────────────────────────────────────────── */
 
 const WASMBOY_DB_NAME = 'wasmboy';
@@ -398,10 +474,17 @@ export type SeedGameBoyDateResult =
   | 'already-onboarded' // save exists and onboarding is done; left untouched
   | 'unavailable'; // IndexedDB not available (e.g. SSR)
 
+export type SeedGameBoyDemoResult = 'demo-seeded' | 'unavailable';
+
 function writeProfileChecksum(ram: Uint8Array): void {
   const sum = profileChecksum(ram);
   ram[SRAM_CHECKSUM] = sum & 0xff;
   ram[SRAM_CHECKSUM + 1] = (sum >> 8) & 0xff;
+}
+
+function writeU16(ram: Uint8Array, off: number, value: number): void {
+  ram[off] = value & 0xff;
+  ram[off + 1] = (value >> 8) & 0xff;
 }
 
 // Clamp to an integer in [min, max]; non-finite input falls back to min.
@@ -427,6 +510,53 @@ function writeSeedTime(ram: Uint8Array, instant: GameBoySeedInstant): void {
 // not-onboarded) profile block, preserving every other byte, then re-checksum.
 function seedExistingProfileDate(ram: Uint8Array, date: GameBoyCalDate): void {
   writeRtcDate(ram, date);
+  writeProfileChecksum(ram);
+}
+
+type DemoProfileSeed = GameBoySeedInstant & {
+  units: 'metric' | 'imperial';
+  gender: 0 | 1 | 2;
+  activityLevel: number;
+  experience: 0 | 1 | 2;
+  fitnessFocus: 0 | 1 | 2 | 3;
+  weightGoal: 0 | 1 | 2;
+  age: number;
+  heightCm: number;
+  weightKgTenths: number;
+  calorieGoal: number;
+  proteinG: number;
+  carbsG: number;
+  fatG: number;
+  fiberG: number;
+  onboarded: boolean;
+};
+
+function writeProfileDataBlock(ram: Uint8Array, profile: DemoProfileSeed): void {
+  for (let i = 0; i < SRAM_SAVE_SIZE; i++) {
+    ram[i] = 0;
+  }
+
+  ram[0x00] = SAVE_MAGIC & 0xff;
+  ram[0x01] = (SAVE_MAGIC >> 8) & 0xff;
+  ram[SRAM_VERSION_OFF] = SAVE_VERSION;
+  ram[0x05] =
+    (profile.units === 'imperial' ? 1 : 0) |
+    ((profile.gender & 0x03) << 1) |
+    ((clampInt(profile.activityLevel, 1, 5) - 1) << 3) |
+    ((profile.experience & 0x03) << 6);
+  ram[SRAM_FLAGS2] =
+    (profile.fitnessFocus & 0x03) |
+    ((profile.weightGoal & 0x03) << 2) |
+    (profile.onboarded ? FLAGS2_ONBOARDING_COMPLETE : 0);
+  ram[0x07] = clampInt(profile.age, 13, 99);
+  ram[0x08] = clampInt(profile.heightCm, 120, 230) - 120;
+  writeU16(ram, 0x09, clampInt(profile.weightKgTenths, 300, 2500) - 300);
+  writeU16(ram, 0x0b, clampInt(profile.calorieGoal, 0, 65535));
+  writeU16(ram, 0x0d, clampInt(profile.proteinG, 0, 65535));
+  writeU16(ram, 0x0f, clampInt(profile.carbsG, 0, 65535));
+  writeU16(ram, 0x11, clampInt(profile.fatG, 0, 65535));
+  ram[0x13] = clampInt(profile.fiberG, 0, 255);
+  writeRtcDate(ram, profile);
   writeProfileChecksum(ram);
 }
 
@@ -488,6 +618,321 @@ export function stampGameBoyTodayDate(
     writeFreshProfileBlock(ram, today);
   }
   writeSeedTime(ram, today);
+  return ram;
+}
+
+function dayNumberFromDate(date: GameBoyCalDate): number {
+  const ms = Date.UTC(date.year, date.month - 1, date.day);
+  return Math.floor((ms - Date.UTC(2000, 0, 1)) / 86_400_000);
+}
+
+function calendarDaysFrom(date: GameBoyCalDate, deltaDays: number): GameBoyCalDate {
+  const next = new Date(date.year, date.month - 1, date.day);
+  next.setDate(next.getDate() + deltaDays);
+  return {
+    year: next.getFullYear(),
+    month: next.getMonth() + 1,
+    day: next.getDate(),
+  };
+}
+
+function recentDayNumber(today: GameBoyCalDate, daysAgo: number): number {
+  return dayNumberFromDate(calendarDaysFrom(today, -daysAgo));
+}
+
+function workoutVolumeKg(sets: DemoWorkoutSetRecord[]): number {
+  let volume = 0;
+  for (const set of sets) {
+    volume += Math.trunc((set.weightKgTenths * set.reps + 5) / 10);
+  }
+  return Math.min(volume, 65535);
+}
+
+function writeMetricsStore(ram: Uint8Array, entries: DemoWeighInRecord[]): void {
+  writeU16(ram, METRICS_BASE + 0x00, METRICS_MAGIC);
+  ram[METRICS_BASE + 0x02] = METRICS_VERSION;
+  writeU16(ram, METRICS_COUNT, entries.length);
+
+  for (let i = 0; i < entries.length; i++) {
+    const off = METRICS_ENTRIES_OFF + i * METRICS_ENTRY_SIZE;
+    writeU16(ram, off, entries[i].dayNumber);
+    writeU16(ram, off + 2, entries[i].weightKgTenths);
+  }
+
+  const checksum = hashBytes(
+    ram,
+    hashBytes(ram, HASH_SEED, METRICS_COUNT, 2),
+    METRICS_ENTRIES_OFF,
+    entries.length * METRICS_ENTRY_SIZE
+  );
+  writeU16(ram, METRICS_CHECKSUM, checksum);
+}
+
+function writeFoodLogStore(ram: Uint8Array, entries: DemoFoodLogRecord[]): void {
+  const base = BANK_SIZE;
+  writeU16(ram, base + 0x00, FOODLOG_MAGIC);
+  ram[base + 0x02] = FOODLOG_VERSION;
+  writeU16(ram, base + FOODLOG_COUNT, entries.length);
+
+  for (let i = 0; i < entries.length; i++) {
+    const off = base + FOODLOG_ENTRIES_OFF + i * FOODLOG_ENTRY_SIZE;
+    writeU16(ram, off, entries[i].dayNumber);
+    writeU16(ram, off + 2, entries[i].foodIdx);
+    writeU16(ram, off + 4, entries[i].grams);
+  }
+
+  const checksum = hashBytes(
+    ram,
+    hashBytes(ram, HASH_SEED, base + FOODLOG_COUNT, 2),
+    base + FOODLOG_ENTRIES_OFF,
+    entries.length * FOODLOG_ENTRY_SIZE
+  );
+  writeU16(ram, base + FOODLOG_CHECKSUM, checksum);
+}
+
+function writeWorkoutLogStore(ram: Uint8Array, workouts: DemoWorkoutRecord[]): void {
+  const base = BANK_SIZE * 2;
+  let bytesUsed = 0;
+
+  for (const workout of workouts) {
+    const recordOff = base + WORKOUT_RECORDS_OFF + bytesUsed;
+    writeU16(ram, recordOff, workout.dayNumber);
+    ram[recordOff + 2] = workout.dominantMuscleIdx & 0xff;
+    ram[recordOff + 3] = workout.exerciseCount & 0xff;
+    ram[recordOff + 4] = workout.sets.length & 0xff;
+    writeU16(ram, recordOff + 5, workoutVolumeKg(workout.sets));
+
+    let setOff = recordOff + WORKOUT_RECORD_HEADER_SIZE;
+    for (const set of workout.sets) {
+      ram[setOff] = set.exerciseIdx & 0xff;
+      ram[setOff + 1] = set.reps & 0xff;
+      writeU16(ram, setOff + 2, set.weightKgTenths);
+      setOff += WORKOUT_SET_SIZE;
+    }
+
+    bytesUsed += WORKOUT_RECORD_HEADER_SIZE + workout.sets.length * WORKOUT_SET_SIZE;
+  }
+
+  writeU16(ram, base + 0x00, WORKOUT_MAGIC);
+  ram[base + 0x02] = WORKOUT_VERSION;
+  ram[base + WORKOUT_COUNT] = workouts.length & 0xff;
+  writeU16(ram, base + WORKOUT_BYTES, bytesUsed);
+
+  let checksum = hashByte(HASH_SEED, workouts.length & 0xff);
+  checksum = hashByte(checksum, bytesUsed & 0xff);
+  checksum = hashByte(checksum, (bytesUsed >> 8) & 0xff);
+  checksum = hashBytes(ram, checksum, base + WORKOUT_RECORDS_OFF, bytesUsed);
+  writeU16(ram, base + WORKOUT_CHECKSUM, checksum);
+}
+
+function writeCustomFoodsStore(ram: Uint8Array, foods: DemoCustomFoodRecord[]): void {
+  const base = BANK_SIZE * 3;
+  writeU16(ram, base + 0x00, CUSTOM_FOODS_MAGIC);
+  ram[base + 0x02] = CUSTOM_FOODS_VERSION;
+
+  for (const food of foods) {
+    if (food.slot < 0 || food.slot >= MAX_CUSTOM_FOODS) {
+      continue;
+    }
+
+    const off = base + CUSTOM_FOODS_ENTRIES_OFF + food.slot * CUSTOM_FOOD_ENTRY_SIZE;
+    const upperName = food.name.toUpperCase().slice(0, CUSTOM_FOOD_NAME_BYTES - 1);
+    for (let i = 0; i < CUSTOM_FOOD_NAME_BYTES; i++) {
+      ram[off + i] = i < upperName.length ? upperName.charCodeAt(i) & 0x7f : 0;
+    }
+    writeU16(ram, off + CUSTOM_FOOD_KCAL_OFF, clampInt(food.kcal, 0, 65535));
+    writeU16(ram, off + CUSTOM_FOOD_PROTEIN_OFF, clampInt(Math.round(food.proteinG * 10), 0, 65535));
+    writeU16(ram, off + CUSTOM_FOOD_FAT_OFF, clampInt(Math.round(food.fatG * 10), 0, 65535));
+    writeU16(ram, off + CUSTOM_FOOD_CARBS_OFF, clampInt(Math.round(food.carbsG * 10), 0, 65535));
+    writeU16(ram, off + CUSTOM_FOOD_FIBER_OFF, clampInt(Math.round(food.fiberG * 10), 0, 65535));
+  }
+
+  const entriesBytes = MAX_CUSTOM_FOODS * CUSTOM_FOOD_ENTRY_SIZE;
+  const checksum = hashBytes(ram, HASH_SEED, base + CUSTOM_FOODS_ENTRIES_OFF, entriesBytes);
+  writeU16(ram, base + CUSTOM_FOODS_CHECKSUM, checksum);
+}
+
+const DEMO_CUSTOM_FOODS: DemoCustomFoodRecord[] = [
+  { slot: 0, name: 'OVERNIGHT OATS', kcal: 146, proteinG: 6.2, fatG: 4.1, carbsG: 21.5, fiberG: 4.0 },
+  { slot: 1, name: 'CHICKEN RICE', kcal: 168, proteinG: 13.2, fatG: 5.1, carbsG: 16.3, fiberG: 0.8 },
+  { slot: 2, name: 'PB SHAKE', kcal: 92, proteinG: 7.8, fatG: 4.2, carbsG: 7.6, fiberG: 1.3 },
+  { slot: 3, name: 'BEEF PASTA', kcal: 180, proteinG: 12.0, fatG: 6.0, carbsG: 19.0, fiberG: 1.2 },
+  { slot: 4, name: 'YOGURT BOWL', kcal: 110, proteinG: 9.0, fatG: 3.0, carbsG: 12.0, fiberG: 1.0 },
+];
+
+function buildDemoWeighIns(today: GameBoyCalDate): DemoWeighInRecord[] {
+  const records: DemoWeighInRecord[] = [];
+
+  for (let daysAgo = 29; daysAgo >= 0; daysAgo--) {
+    const dayIndex = 29 - daysAgo;
+    const weightKgTenths = 849 - dayIndex + ((dayIndex % 5) - 2) * 2;
+    records.push({
+      dayNumber: recentDayNumber(today, daysAgo),
+      weightKgTenths,
+    });
+  }
+
+  return records;
+}
+
+function buildDemoFoodLog(today: GameBoyCalDate): DemoFoodLogRecord[] {
+  const custom = (slot: number) => CUSTOM_FOOD_BASE + slot;
+  const entries: DemoFoodLogRecord[] = [];
+
+  for (let daysAgo = 29; daysAgo >= 0; daysAgo--) {
+    const dayIndex = 29 - daysAgo;
+    const dayNumber = recentDayNumber(today, daysAgo);
+    const dayFoods = [
+      { foodIdx: custom(dayIndex % 5), grams: 255 + ((dayIndex * 17) % 55) },
+      { foodIdx: custom((dayIndex + 1) % 5), grams: 360 + ((dayIndex * 23) % 120) },
+      { foodIdx: custom((dayIndex + 2) % 5), grams: 220 + ((dayIndex * 19) % 90) },
+      { foodIdx: custom((dayIndex + 3) % 5), grams: 280 + ((dayIndex * 29) % 80) },
+    ];
+
+    for (const entry of dayFoods) {
+      entries.push({
+        dayNumber,
+        foodIdx: entry.foodIdx,
+        grams: entry.grams,
+      });
+    }
+  }
+
+  return entries;
+}
+
+function buildDemoWorkouts(today: GameBoyCalDate): DemoWorkoutRecord[] {
+  const workoutTemplates = [
+    {
+      dominantMuscleIdx: 0,
+      sets: [
+        { exerciseIdx: 54, reps: 14, weightKgTenths: 0 },
+        { exerciseIdx: 54, reps: 12, weightKgTenths: 0 },
+        { exerciseIdx: 101, reps: 16, weightKgTenths: 0 },
+        { exerciseIdx: 101, reps: 14, weightKgTenths: 0 },
+      ],
+    },
+    {
+      dominantMuscleIdx: 1,
+      sets: [
+        { exerciseIdx: 13, reps: 12, weightKgTenths: 160 },
+        { exerciseIdx: 13, reps: 10, weightKgTenths: 180 },
+        { exerciseIdx: 21, reps: 12, weightKgTenths: 320 },
+        { exerciseIdx: 21, reps: 10, weightKgTenths: 340 },
+      ],
+    },
+    {
+      dominantMuscleIdx: 2,
+      sets: [
+        { exerciseIdx: 10, reps: 12, weightKgTenths: 700 },
+        { exerciseIdx: 10, reps: 10, weightKgTenths: 740 },
+        { exerciseIdx: 12, reps: 12, weightKgTenths: 620 },
+        { exerciseIdx: 12, reps: 10, weightKgTenths: 660 },
+      ],
+    },
+    {
+      dominantMuscleIdx: 3,
+      sets: [
+        { exerciseIdx: 0, reps: 8, weightKgTenths: 820 },
+        { exerciseIdx: 0, reps: 8, weightKgTenths: 840 },
+        { exerciseIdx: 117, reps: 10, weightKgTenths: 320 },
+        { exerciseIdx: 117, reps: 8, weightKgTenths: 340 },
+      ],
+    },
+    {
+      dominantMuscleIdx: 4,
+      sets: [
+        { exerciseIdx: 52, reps: 50, weightKgTenths: 0 },
+        { exerciseIdx: 52, reps: 45, weightKgTenths: 0 },
+        { exerciseIdx: 68, reps: 14, weightKgTenths: 240 },
+        { exerciseIdx: 68, reps: 12, weightKgTenths: 260 },
+      ],
+    },
+    {
+      dominantMuscleIdx: 5,
+      sets: [
+        { exerciseIdx: 4, reps: 5, weightKgTenths: 1420 },
+        { exerciseIdx: 4, reps: 5, weightKgTenths: 1480 },
+        { exerciseIdx: 43, reps: 18, weightKgTenths: 240 },
+        { exerciseIdx: 43, reps: 16, weightKgTenths: 260 },
+      ],
+    },
+    {
+      dominantMuscleIdx: 6,
+      sets: [
+        { exerciseIdx: 35, reps: 15, weightKgTenths: 0 },
+        { exerciseIdx: 36, reps: 10, weightKgTenths: 1000 },
+        { exerciseIdx: 111, reps: 14, weightKgTenths: 200 },
+        { exerciseIdx: 111, reps: 12, weightKgTenths: 220 },
+      ],
+    },
+    {
+      dominantMuscleIdx: 7,
+      sets: [
+        { exerciseIdx: 8, reps: 8, weightKgTenths: 1120 },
+        { exerciseIdx: 8, reps: 8, weightKgTenths: 1160 },
+        { exerciseIdx: 34, reps: 10, weightKgTenths: 900 },
+        { exerciseIdx: 34, reps: 10, weightKgTenths: 940 },
+      ],
+    },
+    {
+      dominantMuscleIdx: 8,
+      sets: [
+        { exerciseIdx: 3, reps: 8, weightKgTenths: 460 },
+        { exerciseIdx: 3, reps: 8, weightKgTenths: 480 },
+        { exerciseIdx: 16, reps: 14, weightKgTenths: 100 },
+        { exerciseIdx: 16, reps: 12, weightKgTenths: 120 },
+      ],
+    },
+  ] as const;
+
+  const workouts: DemoWorkoutRecord[] = [];
+
+  for (let daysAgo = 29; daysAgo >= 0; daysAgo--) {
+    const dayIndex = 29 - daysAgo;
+    const template = workoutTemplates[dayIndex % workoutTemplates.length];
+    const progression = dayIndex % 4;
+    workouts.push({
+      dayNumber: recentDayNumber(today, daysAgo),
+      dominantMuscleIdx: template.dominantMuscleIdx,
+      exerciseCount: 2,
+      sets: template.sets.map((set, setIndex) => ({
+        exerciseIdx: set.exerciseIdx,
+        reps: Math.max(1, set.reps + ((dayIndex + setIndex) % 3 === 0 ? 1 : 0)),
+        weightKgTenths:
+          set.weightKgTenths === 0 ? 0 : set.weightKgTenths + progression * (setIndex < 2 ? 20 : 10),
+      })),
+    });
+  }
+
+  return workouts;
+}
+
+export function buildGameBoyDemoCartridgeRam(today: GameBoySeedInstant = localToday()): Uint8Array {
+  const ram = new Uint8Array(SRAM_IMAGE_SIZE);
+  writeProfileDataBlock(ram, {
+    ...today,
+    units: 'metric',
+    gender: 1,
+    activityLevel: 4,
+    experience: 1,
+    fitnessFocus: 0,
+    weightGoal: 2,
+    age: 29,
+    heightCm: 178,
+    weightKgTenths: 824,
+    calorieGoal: 2860,
+    proteinG: 190,
+    carbsG: 320,
+    fatG: 78,
+    fiberG: 34,
+    onboarded: true,
+  });
+  writeSeedTime(ram, today);
+  writeMetricsStore(ram, buildDemoWeighIns(today));
+  writeCustomFoodsStore(ram, DEMO_CUSTOM_FOODS);
+  writeFoodLogStore(ram, buildDemoFoodLog(today));
+  writeWorkoutLogStore(ram, buildDemoWorkouts(today));
   return ram;
 }
 
@@ -633,6 +1078,29 @@ export async function seedGameBoyTodayDate(
         : buildFreshGameBoyCartridgeRam(today);
     await keyvalPut(db, key, { ...record, cartridgeRam: ram });
     return existing != null ? 'patched' : 'created';
+  } finally {
+    db.close();
+  }
+}
+
+export async function seedGameBoyDemoData(
+  rom: Ram,
+  today: GameBoySeedInstant = localToday()
+): Promise<SeedGameBoyDemoResult> {
+  if (typeof indexedDB === 'undefined') {
+    return 'unavailable';
+  }
+
+  const key = cartridgeHeaderKey(rom);
+  const db = await openWasmBoyKeyval();
+  try {
+    const record = (await keyvalGet<Record<string, unknown>>(db, key)) ?? {};
+    await keyvalPut(db, key, {
+      ...record,
+      cartridgeRam: buildGameBoyDemoCartridgeRam(today),
+    });
+
+    return 'demo-seeded';
   } finally {
     db.close();
   }

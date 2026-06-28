@@ -5,7 +5,12 @@ import type { WasmBoyJoypadState } from 'wasmboy';
 
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
 import { isProduction } from '@/utils/app';
-import { readAndDecodeGameBoySaves, seedGameBoyTodayDate } from '@/utils/decodeGameBoySave';
+import {
+  readAndDecodeGameBoySaves,
+  seedGameBoyDemoData,
+  seedGameBoyTodayDate,
+} from '@/utils/decodeGameBoySave';
+import { shouldSeedDevData } from '@/utils/file';
 
 const GB_SCREEN_WIDTH = 160;
 const GB_SCREEN_HEIGHT = 144;
@@ -167,18 +172,19 @@ export default function GameBoy() {
       }
       const rom = new Uint8Array(await response.arrayBuffer());
 
-      // Hand the ROM today's real date before it boots: the Game Boy has no wall
-      // clock, so for a not-yet-onboarded save we seed today's date into the
-      // cartridge SRAM (creating the save if none exists). loadROM() then
-      // restores it and onboarding pre-fills its date picker. Best-effort: a
-      // failure here must never block play.
+      // Hand the ROM save data before it boots. Normal mode only seeds today's
+      // date for not-yet-onboarded saves; demo mode force-writes a deterministic
+      // fully onboarded SRAM image with recent nutrition/bodyweight/workout data.
+      // Best-effort: a failure here must never block play.
       try {
-        const seedResult = await seedGameBoyTodayDate(rom);
+        const seedResult = shouldSeedDevData()
+          ? await seedGameBoyDemoData(rom)
+          : await seedGameBoyTodayDate(rom);
         if (!isProduction()) {
-          console.log('[gameboy] seed today date:', seedResult);
+          console.log('[gameboy] seeded save:', seedResult);
         }
       } catch (error) {
-        console.error('[gameboy] failed to seed today date', error);
+        console.error('[gameboy] failed to seed save', error);
       }
 
       await WasmBoy.loadROM(rom);
