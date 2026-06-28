@@ -5,7 +5,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FloatingShapes, GridPattern } from '@/components/website/WebsiteBackgrounds';
-import { WebsiteSeo } from '@/components/website/WebsiteSeo';
 import { CALORIES_FOR_CARBS, CALORIES_FOR_FAT, CALORIES_FOR_PROTEIN } from '@/constants/nutrition';
 import type { FitnessGoal, Gender, LiftingExperience, WeightGoal } from '@/database/models';
 import {
@@ -238,7 +237,6 @@ export default function Calculator() {
 
   return (
     <>
-      <WebsiteSeo routeKey="calculator" />
       <main className="relative overflow-hidden pb-20 pt-28">
         <GridPattern className="text-primary/50" />
         <FloatingShapes />

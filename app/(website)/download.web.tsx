@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next';
 
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
-import { WebsiteSeo } from '@/components/website/WebsiteSeo';
 import { trackStoreButtonClick } from '@/utils/websiteAnalytics';
 
 const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/details?id=com.werules.logger';
@@ -50,7 +49,6 @@ export default function Download() {
 
   return (
     <>
-      <WebsiteSeo routeKey="download" />
       <main className="relative flex min-h-[calc(100vh-8rem)] items-center justify-center overflow-hidden px-4 py-20">
         <DotPattern className="text-primary/30" />
         <div className="from-background/60 to-background/80 absolute inset-0 bg-gradient-to-b via-transparent" />

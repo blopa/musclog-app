@@ -9,11 +9,8 @@
 
 #include "audio.h"
 #include "copies.h"
-#include "game_data.h"
 #include "gb_background.h"
 #include "input.h"
-#include "onboarding.h"
-#include "profile.h"
 #include "ui_text.h"
 
 /* The title art and this code share ROM bank 8 (set above + via png2asset -b 8),
@@ -213,17 +210,17 @@ static void st_render(uint8_t state, uint8_t has_save, uint8_t selected, uint8_t
     }
 }
 
-void start_screen_run(SaveData *save, uint8_t had_valid_save) BANKED {
+StartScreenAction start_screen_run(SaveData *save, uint8_t had_valid_save) BANKED {
     /* A completed save is required before CONTINUE is offered. A valid-but-incomplete
      * save (e.g. a pre-seeded RTC from the web emulator) still counts as "no save"
-     * here — NEW GAME just runs onboarding, preserving the RTC. */
+     * here; NEW GAME returns a fresh-start action so main can preserve that RTC. */
     uint8_t has_save = (uint8_t)(had_valid_save && save->onboarding_complete);
     uint8_t menu_count = (uint8_t)(has_save ? 3u : 2u); /* CONTINUE?/NEW GAME/OPTIONS */
     uint8_t selected = 0u;
     uint8_t opt_sel = 0u;
     uint8_t state = ST_STATE_MENU;
     uint8_t dirty = 1u;
-    uint8_t go_onboard = 0u;
+    StartScreenAction action = START_SCREEN_CONTINUE;
     uint8_t done = 0u;
     InputState input;
 
@@ -254,15 +251,15 @@ void start_screen_run(SaveData *save, uint8_t had_valid_save) BANKED {
             }
             if (input_pressed(&input, J_A | J_START)) {
                 /* Without a save the menu omits CONTINUE, so shift the cursor up. */
-                uint8_t action = (uint8_t)(has_save ? selected : (selected + 1u));
-                if (action == ST_ACTION_CONTINUE) {
+                uint8_t menu_action = (uint8_t)(has_save ? selected : (selected + 1u));
+                if (menu_action == ST_ACTION_CONTINUE) {
                     done = 1u; /* CONTINUE — keep the loaded save, go home. */
-                } else if (action == ST_ACTION_NEW_GAME) {
+                } else if (menu_action == ST_ACTION_NEW_GAME) {
                     if (has_save) {
                         state = ST_STATE_CONFIRM; /* NEW GAME over an existing save. */
                         dirty = 1u;
                     } else {
-                        go_onboard = 1u; /* NEW GAME, fresh install. */
+                        action = START_SCREEN_NEW_GAME; /* Fresh start; caller runs onboarding. */
                         done = 1u;
                     }
                 } else {
@@ -290,8 +287,7 @@ void start_screen_run(SaveData *save, uint8_t had_valid_save) BANKED {
             }
         } else {
             if (input_pressed(&input, J_A | J_START)) {
-                game_data_erase_all();
-                go_onboard = 1u;
+                action = START_SCREEN_ERASE_AND_NEW_GAME;
                 done = 1u;
             } else if (input_pressed(&input, J_B)) {
                 state = ST_STATE_MENU; /* Cancelled — back to the menu. */
@@ -305,9 +301,5 @@ void start_screen_run(SaveData *save, uint8_t had_valid_save) BANKED {
     /* Hand the screen back to the text UI that onboarding and home expect. */
     ui_init_text();
 
-    if (go_onboard) {
-        /* The confirm path erased everything (nothing to preserve); the fresh path
-         * forwards had_valid_save so a pre-seeded RTC date survives. */
-        onboarding_run(save, (uint8_t)(has_save ? 0u : had_valid_save));
-    }
+    return action;
 }

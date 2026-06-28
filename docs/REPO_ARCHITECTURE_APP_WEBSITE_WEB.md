@@ -27,7 +27,7 @@ In practice:
 
 ### Root entry
 
-[`app/index.tsx`](/musclog/app/index.tsx) is the top-level traffic switch:
+[`app/index.tsx`](/app/index.tsx) is the top-level traffic switch:
 
 - `Platform.OS === 'web'` redirects to `/home`
 - Native redirects to `/app`
@@ -39,7 +39,7 @@ So the same repo has a different default experience by platform:
 
 ### Product app routes
 
-[`app/app/_layout.tsx`](/musclog/app/app/_layout.tsx) is the main app shell for the product itself. It loads:
+[`app/app/_layout.tsx`](/app/app/_layout.tsx) is the main app shell for the product itself. It loads:
 
 - database initialization
 - translations
@@ -59,7 +59,7 @@ This is the route tree that powers:
 
 ### Website routes
 
-The public site lives under the route group [`app/(website)/`](/musclog/app/%28website%29).
+The public site lives under the route group [`app/(website)/`](/app/%28website%29).
 
 Examples:
 
@@ -69,21 +69,22 @@ Examples:
 - `/contact`
 - `/calculator`
 
-The web layout is [`app/(website)/_layout.web.tsx`](/musclog/app/%28website%29/_layout.web.tsx), which wraps pages with:
+The web layout is [`app/(website)/_layout.web.tsx`](/app/%28website%29/_layout.web.tsx), which wraps pages with:
 
 - `WebsiteProviders`
+- `WebsiteSeoForCurrentRoute`
 - `WebsiteChrome`
 
-That gives the website its own header, footer, consent UI, and general web-only presentation.
+That gives the website its own header, footer, consent UI, SEO tags, and general web-only presentation.
 
-Each public website route should render [`WebsiteSeo`](/musclog/components/website/WebsiteSeo.tsx) with its route key. That component owns the route title, description, canonical URL, robots directive, Open Graph tags, Twitter card tags, and the shared preview image at `/images/seo-image.png` (sourced from [`assets/seo-image.png`](/musclog/assets/seo-image.png)).
+[`WebsiteSeoForCurrentRoute`](/musclog/components/website/WebsiteSeo.tsx) maps the current pathname to the route key and renders [`WebsiteSeo`](/musclog/components/website/WebsiteSeo.tsx). That component owns the route title, description, canonical URL, robots directive, Open Graph tags, Twitter card tags, and the shared preview image at `/images/seo-image.png` (sourced from [`assets/seo-image.png`](/musclog/assets/seo-image.png)). When adding a public website route, update the route map and translation metadata there rather than adding SEO tags inside the page component.
 
-The native fallback layout is [`app/(website)/_layout.tsx`](/musclog/app/%28website%29/_layout.tsx), which skips the website chrome. That keeps the route group valid across platforms without pretending the marketing site is a native app feature.
+The native fallback layout is [`app/(website)/_layout.tsx`](/app/%28website%29/_layout.tsx), which skips the website chrome. That keeps the route group valid across platforms without pretending the marketing site is a native app feature.
 
 Several website routes also have native stubs such as:
 
-- [`app/(website)/home.tsx`](/musclog/app/%28website%29/home.tsx)
-- [`app/(website)/calculator.tsx`](/musclog/app/%28website%29/calculator.tsx)
+- [`app/(website)/home.tsx`](/app/%28website%29/home.tsx)
+- [`app/(website)/calculator.tsx`](/app/%28website%29/calculator.tsx)
 
 These simply redirect to `/app` on native, which is a clean way to say: this content is part of the public website, not part of the mobile app UX.
 
@@ -118,7 +119,7 @@ It also avoids the common multi-repo pain of duplicating:
 
 ## The Special Role of `app/+html.tsx`
 
-[`app/+html.tsx`](/musclog/app/+html.tsx) is the most important file for understanding the web experience.
+[`app/+html.tsx`](/app/+html.tsx) is the most important file for understanding the web experience.
 
 It only runs for the web/static-rendered HTML shell, and it does three big things:
 
@@ -212,7 +213,7 @@ That matters because the following layers are shared:
 - business logic
 - much of the component library
 
-The app shell in [`app/app/_layout.tsx`](/musclog/app/app/_layout.tsx) is loaded for the product app on all platforms, including web.
+The app shell in [`app/app/_layout.tsx`](/app/app/_layout.tsx) is loaded for the product app on all platforms, including web.
 
 There are platform-specific adaptations where needed, but the product surface is still fundamentally one app.
 
@@ -222,7 +223,7 @@ The product app and the website do not use exactly the same wrapper stack.
 
 ### Product app providers
 
-[`app/app/_layout.tsx`](/musclog/app/app/_layout.tsx) includes a heavier runtime shell:
+[`app/app/_layout.tsx`](/app/app/_layout.tsx) includes a heavier runtime shell:
 
 - database setup
 - migrations
@@ -272,8 +273,8 @@ This repo is not “a website with an app inside it.” It is a real mobile app 
 
 Examples of clearly native-oriented behavior:
 
-- orientation locking in [`app/app/_layout.tsx`](/musclog/app/app/_layout.tsx)
-- native deep-link interception in [`app/+native-intent.tsx`](/musclog/app/+native-intent.tsx)
+- orientation locking in [`app/app/_layout.tsx`](/app/app/_layout.tsx)
+- native deep-link interception in [`app/+native-intent.tsx`](/app/+native-intent.tsx)
 - Android/iOS build scripts in [`package.json`](/musclog/package.json)
 - native-specific libraries for camera, health data, widgets, notifications, and platform integrations
 
@@ -367,13 +368,13 @@ This is why one repo is genuinely nicer here than two:
 
 ## Files Worth Knowing
 
-- [`app/index.tsx`](/musclog/app/index.tsx)
-- [`app/app/_layout.tsx`](/musclog/app/app/_layout.tsx)
-- [`app/(website)/_layout.web.tsx`](/musclog/app/%28website%29/_layout.web.tsx)
-- [`app/(website)/_layout.tsx`](/musclog/app/%28website%29/_layout.tsx)
-- [`app/(website)/home.web.tsx`](/musclog/app/%28website%29/home.web.tsx)
-- [`app/+html.tsx`](/musclog/app/+html.tsx)
-- [`app/+native-intent.tsx`](/musclog/app/+native-intent.tsx)
+- [`app/index.tsx`](/app/index.tsx)
+- [`app/app/_layout.tsx`](/app/app/_layout.tsx)
+- [`app/(website)/_layout.web.tsx`](/app/%28website%29/_layout.web.tsx)
+- [`app/(website)/_layout.tsx`](/app/%28website%29/_layout.tsx)
+- [`app/(website)/home.web.tsx`](/app/%28website%29/home.web.tsx)
+- [`app/+html.tsx`](/app/+html.tsx)
+- [`app/+native-intent.tsx`](/app/+native-intent.tsx)
 - [`global.css`](/musclog/global.css)
 - [`components/website/WebsiteChrome.web.tsx`](/musclog/components/website/WebsiteChrome.web.tsx)
 - [`components/website/WebsiteProviders.tsx`](/musclog/components/website/WebsiteProviders.tsx)

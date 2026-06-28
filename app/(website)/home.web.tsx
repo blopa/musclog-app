@@ -26,7 +26,6 @@ import {
   SectionBackground,
 } from '@/components/website/WebsiteBackgrounds';
 import { DownloadModal } from '@/components/website/WebsiteChrome';
-import { WebsiteSeo } from '@/components/website/WebsiteSeo';
 
 const BRAND_GREEN = '#22C55E';
 const BRAND_GREEN_BRIGHT = '#00FFA3';
@@ -1019,7 +1018,6 @@ export function Hero() {
 export default function Home() {
   return (
     <>
-      <WebsiteSeo routeKey="home" />
       <main>
         <Hero />
         <Features />

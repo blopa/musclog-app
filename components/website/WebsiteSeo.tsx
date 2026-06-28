@@ -1,3 +1,4 @@
+import { usePathname } from 'expo-router';
 import Head from 'expo-router/head';
 import { useTranslation } from 'react-i18next';
 
@@ -35,6 +36,22 @@ const OG_LOCALE_BY_LANGUAGE: Record<string, string> = {
 
 export type WebsiteSeoRouteKey = keyof typeof ROUTE_PATHS;
 
+const ROUTE_KEY_BY_PATH: Record<string, WebsiteSeoRouteKey> = {
+  '/': 'home',
+  '/calculator': 'calculator',
+  '/contact': 'contact',
+  '/download': 'download',
+  '/exercises': 'exercises',
+  '/faq': 'faq',
+  '/gameboy': 'gameboy',
+  '/home': 'home',
+  '/privacy': 'privacy',
+  '/progress': 'progress',
+  '/rep-marker': 'repMarker',
+  '/terms': 'terms',
+  '/test': 'test',
+};
+
 function absoluteUrl(path: string): string {
   if (/^https?:\/\//i.test(path)) {
     return path;
@@ -49,6 +66,30 @@ function ogLocaleForLanguage(language: string | undefined): string {
   }
 
   return OG_LOCALE_BY_LANGUAGE[language.toLowerCase()] ?? OG_LOCALE_BY_LANGUAGE['en-us'];
+}
+
+function normalizePathname(pathname: string | null | undefined): string {
+  if (!pathname) {
+    return '/';
+  }
+
+  const pathOnly = pathname.split(/[?#]/)[0] || '/';
+  return pathOnly.length > 1 ? pathOnly.replace(/\/+$/, '') : pathOnly;
+}
+
+function routeKeyForPathname(pathname: string | null | undefined): WebsiteSeoRouteKey | null {
+  return ROUTE_KEY_BY_PATH[normalizePathname(pathname)] ?? null;
+}
+
+export function WebsiteSeoForCurrentRoute({
+  fallbackRouteKey,
+}: {
+  fallbackRouteKey?: WebsiteSeoRouteKey;
+}) {
+  const pathname = usePathname();
+  const routeKey = routeKeyForPathname(pathname) ?? fallbackRouteKey;
+
+  return routeKey == null ? null : <WebsiteSeo routeKey={routeKey} />;
 }
 
 export function WebsiteSeo({

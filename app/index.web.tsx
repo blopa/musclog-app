@@ -4,7 +4,7 @@ import { Redirect, usePathname, useRootNavigationState, useRouter } from 'expo-r
 import { useEffect } from 'react';
 
 import { SplashLoading } from '@/components/SplashLoading';
-import { WebsiteSeo } from '@/components/website/WebsiteSeo';
+import { WebsiteSeoForCurrentRoute } from '@/components/website/WebsiteSeo';
 import { isProduction } from '@/utils/app';
 import { runEntryOnboardingRedirect } from '@/utils/entryOnboardingRedirect';
 
@@ -24,7 +24,7 @@ export default function Index() {
   if (isProduction()) {
     return (
       <>
-        <WebsiteSeo routeKey="home" />
+        <WebsiteSeoForCurrentRoute fallbackRouteKey="home" />
         <Redirect href="/home" />
       </>
     );

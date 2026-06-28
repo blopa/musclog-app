@@ -9,18 +9,23 @@
  * Title screen shown after the splash: a full-screen background image with the
  * Musclog logo and the menu options floating over the lower (dark) band.
  *
- *   - CONTINUE is offered only when a completed save exists; choosing it returns
- *     so the caller can show the home screen with the loaded save.
- *   - NEW GAME with no completed save runs onboarding directly.
- *   - NEW GAME with a completed save asks for confirmation, then erases all data
- *     and runs onboarding.
+ *   - CONTINUE is offered only when a completed save exists.
+ *   - NEW GAME with no completed save returns START_SCREEN_NEW_GAME.
+ *   - NEW GAME with a completed save asks for confirmation, then returns
+ *     START_SCREEN_ERASE_AND_NEW_GAME.
  *
  * On return the text UI (used by onboarding and the home screen) has been
  * re-initialised, so the caller can proceed straight to the home loop.
  *
- * `had_valid_save` is the result of `db_load()` and is forwarded to onboarding so
- * a pre-seeded RTC date survives a fresh start.
+ * The caller owns all data lifecycle work (erase/onboarding/home), keeping this
+ * module focused on title-screen rendering and input.
  */
-void start_screen_run(SaveData *save, uint8_t had_valid_save) BANKED;
+typedef uint8_t StartScreenAction;
+
+#define START_SCREEN_CONTINUE           0u
+#define START_SCREEN_NEW_GAME           1u
+#define START_SCREEN_ERASE_AND_NEW_GAME 2u
+
+StartScreenAction start_screen_run(SaveData *save, uint8_t had_valid_save) BANKED;
 
 #endif

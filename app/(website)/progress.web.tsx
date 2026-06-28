@@ -16,7 +16,6 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FloatingShapes, GridPattern } from '@/components/website/WebsiteBackgrounds';
-import { WebsiteSeo } from '@/components/website/WebsiteSeo';
 import {
   CALORIES_FOR_CARBS,
   CALORIES_FOR_FAT,
@@ -916,7 +915,6 @@ export default function ProgressWebsitePage() {
   if (hasImportedData === null) {
     return (
       <>
-        <WebsiteSeo routeKey="progress" />
         <main className="flex min-h-[70vh] items-center justify-center px-4 pt-24">
           <div
             className="inline-flex items-center gap-3 rounded-full border px-5 py-3 text-sm text-white"
@@ -933,7 +931,6 @@ export default function ProgressWebsitePage() {
   if (!hasImportedData) {
     return (
       <>
-        <WebsiteSeo routeKey="progress" />
         <input
           id={fileInputId}
           ref={fileInputRef}
@@ -958,8 +955,6 @@ export default function ProgressWebsitePage() {
 
   return (
     <>
-      <WebsiteSeo routeKey="progress" />
-
       <input
         id={fileInputId}
         ref={fileInputRef}

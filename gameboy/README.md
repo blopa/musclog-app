@@ -155,12 +155,13 @@ gameboy/
 Important source modules:
 
 - `src/main.c` boots the splash screen, loads save data, runs the start screen,
-  initializes stores, and runs the home loop.
+  owns the New Game / Continue lifecycle decisions (including data erase and
+  onboarding), initializes stores, and runs the home loop.
 - `src/start_screen.c` draws the title art (`gb_background`) with the New Game /
   Continue / Options menu, the erase confirmation, and the SFX/soundtrack Options
-  panel, then hands control to onboarding or the home loop. It starts and stops
-  the title-screen soundtrack and shares ROM bank 8 with its art so the data is
-  read directly.
+  panel, then returns the selected action to `main.c`. It starts and stops the
+  title-screen soundtrack and shares ROM bank 8 with its art so the data is read
+  directly.
 - `src/audio.c` is the APU driver (SFX blip, soundtrack sequencer, and the
   persisted enable flags); `src/music_data.c` is the generated APU data. Both live
   in ROM bank 9.

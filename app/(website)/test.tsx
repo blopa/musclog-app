@@ -4,7 +4,6 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { MultipleLinesChart } from '@/components/charts/MultipleLinesChart';
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
-import { WebsiteSeo } from '@/components/website/WebsiteSeo';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { isProduction } from '@/utils/app';
 import { analyzeRecordedReps } from '@/utils/repAnalysis';
@@ -331,7 +330,7 @@ export default function Test() {
   );
 
   if (isProduction()) {
-    return <WebsiteSeo routeKey="test" />;
+    return null;
   }
 
   const sampleCount = fileState?.samples.length ?? 0;
@@ -386,8 +385,6 @@ export default function Test() {
 
   return (
     <>
-      <WebsiteSeo routeKey="test" />
-
       <main className="relative min-h-screen overflow-hidden bg-[#06110b] px-4 py-8 text-white">
         <DotPattern className="text-emerald-400/10" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.22),transparent_42%),radial-gradient(circle_at_bottom_right,rgba(245,158,11,0.08),transparent_30%)]" />

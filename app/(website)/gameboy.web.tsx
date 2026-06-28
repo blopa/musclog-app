@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import type { WasmBoyJoypadState } from 'wasmboy';
 
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
-import { WebsiteSeo } from '@/components/website/WebsiteSeo';
 import { isProduction } from '@/utils/app';
 import { readAndDecodeGameBoySaves, seedGameBoyTodayDate } from '@/utils/decodeGameBoySave';
 
@@ -306,9 +305,35 @@ export default function GameBoy() {
     };
   }, []);
 
+  let screenOverlay: ReactNode = (
+    <button
+      type="button"
+      onClick={start}
+      className="rounded-full bg-[#00FFA3] px-8 py-3 text-base font-bold text-black shadow-lg transition-transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-[#00FFA3] focus:ring-offset-2 focus:ring-offset-black"
+    >
+      {t('playButton')}
+    </button>
+  );
+
+  if (status === 'loading') {
+    screenOverlay = <p className="text-sm font-medium text-gray-300">{t('loading')}</p>;
+  } else if (status === 'error') {
+    screenOverlay = (
+      <>
+        <p className="text-sm font-medium text-red-400">{t('errorLoad')}</p>
+        <button
+          type="button"
+          onClick={start}
+          className="rounded-full bg-[#00FFA3] px-6 py-2 text-sm font-bold text-black transition-transform hover:-translate-y-0.5"
+        >
+          {t('playButton')}
+        </button>
+      </>
+    );
+  }
+
   return (
     <>
-      <WebsiteSeo routeKey="gameboy" />
       <main className="relative flex min-h-[calc(100vh-8rem)] flex-col items-center overflow-hidden px-4 py-16">
         <DotPattern className="text-primary/30" />
         <div className="from-background/60 to-background/80 absolute inset-0 bg-gradient-to-b via-transparent" />
@@ -334,28 +359,7 @@ export default function GameBoy() {
 
               {status !== 'playing' ? (
                 <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-black/80 backdrop-blur-sm">
-                  {status === 'loading' ? (
-                    <p className="text-sm font-medium text-gray-300">{t('loading')}</p>
-                  ) : status === 'error' ? (
-                    <>
-                      <p className="text-sm font-medium text-red-400">{t('errorLoad')}</p>
-                      <button
-                        type="button"
-                        onClick={start}
-                        className="rounded-full bg-[#00FFA3] px-6 py-2 text-sm font-bold text-black transition-transform hover:-translate-y-0.5"
-                      >
-                        {t('playButton')}
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={start}
-                      className="rounded-full bg-[#00FFA3] px-8 py-3 text-base font-bold text-black shadow-lg transition-transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-[#00FFA3] focus:ring-offset-2 focus:ring-offset-black"
-                    >
-                      {t('playButton')}
-                    </button>
-                  )}
+                  {screenOverlay}
                 </div>
               ) : null}
             </div>

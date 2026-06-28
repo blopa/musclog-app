@@ -9,13 +9,15 @@
 #include "body_weight.h"
 #include "copies.h"
 #include "custom_foods.h"
-#include "profile.h"
 #include "foodlog.h"
+#include "game_data.h"
 #include "home_screen.h"
 #include "input.h"
 #include "metrics.h"
 #include "logo.h"
 #include "nutrition.h"
+#include "onboarding.h"
+#include "profile.h"
 #include "progress.h"
 #include "settings.h"
 #include "start_screen.h"
@@ -185,10 +187,16 @@ void main(void) {
     show_splash();
 
     {
-        /* The start screen shows the title art with New Game / Continue, handles the
-         * erase-confirm and onboarding, and leaves the text UI ready for the home loop. */
+        /* The title screen is only a chooser; main owns save lifecycle decisions. */
         uint8_t had_valid_save = db_load(&save);
-        start_screen_run(&save, had_valid_save);
+        StartScreenAction start_action = start_screen_run(&save, had_valid_save);
+
+        if (start_action == START_SCREEN_ERASE_AND_NEW_GAME) {
+            game_data_erase_all();
+            onboarding_run(&save, 0u);
+        } else if (start_action == START_SCREEN_NEW_GAME) {
+            onboarding_run(&save, had_valid_save);
+        }
     }
 
     foodlog_init();

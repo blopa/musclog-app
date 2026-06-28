@@ -14,7 +14,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GridPattern } from '@/components/website/WebsiteBackgrounds';
-import { WebsiteSeo } from '@/components/website/WebsiteSeo';
 import { computePosition, type DeadReckoningSample } from '@/utils/deadReckoning';
 
 // ── Color palette ──────────────────────────────────────────────────────────
@@ -739,7 +738,6 @@ export default function RepMarkerPage() {
 
   return (
     <>
-      <WebsiteSeo routeKey="repMarker" />
       <main className="relative min-h-screen overflow-hidden pb-20 pt-28">
         <GridPattern className="opacity-30" />
         <div

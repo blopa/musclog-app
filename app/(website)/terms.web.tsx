@@ -2,7 +2,6 @@ import { AlertTriangle, FileText, Mail, Scale } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
-import { WebsiteSeo } from '@/components/website/WebsiteSeo';
 
 const BRAND_GREEN_BRIGHT = '#00FFA3';
 const BODY_TEXT_SOFT = '#9CA3AF';
@@ -147,7 +146,6 @@ export default function Terms() {
 
   return (
     <>
-      <WebsiteSeo routeKey="terms" />
       <main className="relative overflow-hidden pb-20 pt-24">
         <DotPattern className="text-primary/30" />
         <div className="from-background/50 to-background/50 absolute inset-0 bg-gradient-to-b via-transparent" />

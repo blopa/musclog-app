@@ -5,7 +5,6 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { SectionBackground } from '@/components/website/WebsiteBackgrounds';
-import { WebsiteSeo } from '@/components/website/WebsiteSeo';
 import exercisesData from '@/data/exercisesData.json';
 import i18n, { EXERCISES_JSON } from '@/lang/lang';
 
@@ -328,7 +327,6 @@ export default function ExercisesPage() {
 
   return (
     <>
-      <WebsiteSeo routeKey="exercises" />
       <main>
         {/* Page header */}
         <section className="relative overflow-hidden pb-12 pt-24 md:pb-16 md:pt-32">
