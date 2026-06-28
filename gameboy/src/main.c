@@ -186,6 +186,10 @@ void main(void) {
 
     show_splash();
 
+    /* Keep the soundtrack off during the splash, then let it run for the rest
+     * of the game unless the player disables it in Options. */
+    audio_music_start();
+
     {
         /* The title screen is only a chooser; main owns save lifecycle decisions. */
         uint8_t had_valid_save = db_load(&save);

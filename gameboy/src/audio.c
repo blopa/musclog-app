@@ -34,7 +34,7 @@ static const uint8_t s_wave_triangle[16] = {
 
 static uint8_t s_sfx_enabled;
 static uint8_t s_music_enabled;
-static uint8_t s_on_title; /* 1 while the title screen wants the soundtrack playing */
+static uint8_t s_music_running; /* 1 while the current soundtrack loop should run */
 static uint16_t s_idx;     /* next soundtrack event to apply */
 static uint8_t s_wait;     /* video frames to wait before applying events[s_idx] */
 
@@ -126,7 +126,7 @@ void audio_init(void) BANKED {
         WAVE_RAM[i] = s_wave_triangle[i];
     }
 
-    s_on_title = 0u;
+    s_music_running = 0u;
     s_idx = 0u;
     s_wait = 0u;
 
@@ -145,7 +145,7 @@ void audio_play_sfx(void) BANKED {
 }
 
 void audio_music_start(void) BANKED {
-    s_on_title = 1u;
+    s_music_running = 1u;
     s_idx = 0u;
     s_wait = 0u;
     if (!s_music_enabled) {
@@ -154,14 +154,14 @@ void audio_music_start(void) BANKED {
 }
 
 void audio_music_stop(void) BANKED {
-    s_on_title = 0u;
+    s_music_running = 0u;
     audio_silence_music_channels();
 }
 
 void audio_music_update(void) BANKED {
     uint8_t guard;
 
-    if (!s_music_enabled || !s_on_title) return;
+    if (!s_music_enabled || !s_music_running) return;
 
     if (s_wait != 0u) {
         s_wait--;
@@ -205,8 +205,8 @@ void audio_set_music(uint8_t on) BANKED {
 
     if (!s_music_enabled) {
         audio_silence_music_channels();
-    } else if (s_on_title) {
-        s_idx = 0u; /* re-enabled on the title screen: restart from the top */
+    } else if (s_music_running) {
+        s_idx = 0u; /* re-enabled while the soundtrack loop is active: restart from the top */
         s_wait = 0u;
     }
 }

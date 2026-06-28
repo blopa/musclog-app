@@ -31,7 +31,8 @@ battery so dates and logs can survive emulator or flash-cart restarts.
   restarts onboarding. A third `OPTIONS` entry opens a panel (floating over the
   title art) to toggle sound effects and the soundtrack independently.
 - Sound: a short blip plays on every selection/confirm/back press across the whole
-  app, and a soundtrack plays only on the title screen. The Game Boy cannot play
+  app, and a soundtrack plays on every screen after the splash while it remains
+  enabled. The Game Boy cannot play
   MIDI, so both bundled `.mid` files are reduced at build time to the four hardware
   channels — SFX on pulse 1, and the soundtrack as pulse-lead + wave-bass + noise-
   drums. The SFX/soundtrack on/off choices persist in battery-backed SRAM.
@@ -170,15 +171,15 @@ Important source modules:
   onboarding), initializes stores, and runs the home loop.
 - `src/start_screen.c` draws the title art (`gb_background`) with the New Game /
   Continue / Options menu, the erase confirmation, and the SFX/soundtrack Options
-  panel, then returns the selected action to `main.c`. It starts and stops the
-  title-screen soundtrack and shares ROM bank 8 with its art so the data is read
-  directly.
-- `src/audio.c` is the APU driver (SFX blip, soundtrack sequencer, and the
+  panel, then returns the selected action to `main.c`. It shares ROM bank 8 with
+  its art so the data is read directly.
+- `src/audio.c` is the APU driver (SFX blip, global soundtrack sequencer, and the
   persisted enable flags); `src/music_data.c` is the generated APU data. Both live
   in ROM bank 9.
 - `src/ui_text.c` owns the 20x18 text UI renderer, palettes, menus, value
   screens, confirmations, bars, date/datetime pickers, and the explicit UI input
-  wrapper that plays the SFX blip after fresh button presses.
+  wrapper that advances the soundtrack and plays the SFX blip after fresh button
+  presses.
 - `src/profile.c` stores the packed profile and macro targets in SRAM bank 0;
   `src/sram_layout.h` names shared bank-0 subregions so profile, metrics, RTC seed
   hints, and audio settings cannot drift into each other.

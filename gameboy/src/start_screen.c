@@ -227,9 +227,6 @@ StartScreenAction start_screen_run(SaveData *save, uint8_t had_valid_save) BANKE
     st_setup_graphics();
     input_init(&input);
 
-    /* The soundtrack plays only on this title screen; stop it before leaving. */
-    audio_music_start();
-
     while (!done) {
         if (dirty) {
             st_render(state, has_save, selected, opt_sel);
@@ -238,8 +235,6 @@ StartScreenAction start_screen_run(SaveData *save, uint8_t had_valid_save) BANKE
 
         wait_vbl_done();
         ui_input_update(&input);
-        audio_music_update();
-
         if (state == ST_STATE_MENU) {
             if (input_pressed(&input, J_UP)) {
                 selected = (uint8_t)((selected == 0u) ? (menu_count - 1u) : (selected - 1u));
@@ -295,9 +290,6 @@ StartScreenAction start_screen_run(SaveData *save, uint8_t had_valid_save) BANKE
             }
         }
     }
-
-    audio_music_stop();
-
     /* Hand the screen back to the text UI that onboarding and home expect. */
     ui_init_text();
 

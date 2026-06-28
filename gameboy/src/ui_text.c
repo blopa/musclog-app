@@ -24,6 +24,9 @@ static uint8_t target_attrs[SCREEN_CELLS];
 static uint8_t frame_open = 0u;
 
 void ui_input_update(InputState *input) {
+    /* Most interactive screens call this once per frame after wait_vbl_done(),
+     * which keeps the soundtrack running everywhere outside the splash. */
+    audio_music_update();
     input_update(input);
     if (input->pressed != 0u) {
         audio_play_sfx();

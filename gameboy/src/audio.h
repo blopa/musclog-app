@@ -10,7 +10,7 @@
  * music_data.c) and played back here on the four hardware channels:
  *
  *   - SFX   : a UI confirm/select blip on pulse channel 1.
- *   - Music : the title-screen soundtrack — lead on pulse channel 2, bass on the
+ *   - Music : the in-game soundtrack — lead on pulse channel 2, bass on the
  *             wave channel 3, drums on the noise channel 4. SFX (channel 1) is
  *             kept separate so a blip never interrupts the soundtrack.
  *
@@ -27,9 +27,10 @@ void audio_init(void) BANKED;
  * channel's length counter silences it on its own, so this is fire-and-forget. */
 void audio_play_sfx(void) BANKED;
 
-/* Title-screen soundtrack control. start() rewinds and begins; update() advances
- * one step and must be called once per video frame; stop() silences the music
- * channels. start/update are no-ops while music is disabled. */
+/* Soundtrack control. start() rewinds and begins; update() advances one step and
+ * must be called once per video frame on every gameplay/menu screen where music
+ * should keep running; stop() silences the music channels. start/update are
+ * no-ops while music is disabled. */
 void audio_music_start(void) BANKED;
 void audio_music_update(void) BANKED;
 void audio_music_stop(void) BANKED;
