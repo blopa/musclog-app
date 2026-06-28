@@ -268,3 +268,7 @@ pre-fill the hour and minute without touching the save format.
 - Use raw `_SRAM[]` access only through the existing store modules and checksum
   helpers. Profile, food log, workout log, metrics, and custom foods each own
   their layout.
+
+## License
+
+This software is licensed under the MIT License.
