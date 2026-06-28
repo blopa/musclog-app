@@ -403,6 +403,29 @@ static void draw_weight_page(const SaveData *data) {
 
 /* ── Frame + loop ────────────────────────────────────────────────────────── */
 
+static void progress_draw_loading(uint8_t range) {
+    const char *range_label = (range == RANGE_SHORT) ? STR_RANGE_7 : STR_RANGE_30;
+
+    ui_clear();
+    ui_fill_attr(0u, 0u, 20u, 1u, UI_PAL_HEADER);
+    ui_print_center(0u, STR_APP_TITLE);
+
+    ui_print_at(1u, 1u, STR_PROGRESS);
+    ui_print_at((uint8_t)(19u - (uint8_t)strlen(range_label)), 1u, range_label);
+    ui_print_at(0u, 2u, STR_DIVIDER);
+
+    ui_print_center(7u, "LOADING DATA");
+    ui_print_center(9u, "[===     ]");
+    ui_print_center(11u, "PLEASE WAIT");
+    ui_footer("", "");
+}
+
+static void progress_compute_with_loading(const SaveData *data, uint8_t range) {
+    progress_draw_loading(range);
+    wait_vbl_done();
+    progress_compute(data, range);
+}
+
 static void progress_draw(const SaveData *data, uint8_t page) {
     const char *range_label = (agg_range == RANGE_SHORT) ? STR_RANGE_7 : STR_RANGE_30;
 
@@ -432,7 +455,7 @@ void progress_show(SaveData *data) BANKED {
     uint8_t range = RANGE_SHORT;
     uint8_t dirty = 1u;
 
-    progress_compute(data, range);
+    progress_compute_with_loading(data, range);
 
     input_init(&input);
     while (1) {
@@ -457,7 +480,7 @@ void progress_show(SaveData *data) BANKED {
 
         if (input_pressed(&input, J_UP | J_DOWN)) {
             range = (range == RANGE_SHORT) ? RANGE_LONG : RANGE_SHORT;
-            progress_compute(data, range);
+            progress_compute_with_loading(data, range);
             dirty = 1u;
         }
     }
