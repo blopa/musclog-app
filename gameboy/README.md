@@ -139,6 +139,17 @@ converter is split under `gameboy/tools/music/`; run
 `node --test gameboy/tools/music/*.test.mjs` after changing its parser or
 arrangement code.
 
+## Asset Credits
+
+- The title-screen soundtrack MIDI comes from the
+  [Ultimate MIDI Pack](https://opengameart.org/content/ultimate-midi-pack) on
+  OpenGameArt.
+- The title background art is based on
+  [Mountain at Dusk Background](https://opengameart.org/content/mountain-at-dusk-background)
+  on OpenGameArt.
+- The icons used on the Game Boy label were acquired from
+  [UXWing](https://uxwing.com/).
+
 ## Source Layout
 
 ```text
