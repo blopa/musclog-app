@@ -175,7 +175,10 @@ Important source modules:
   its art so the data is read directly.
 - `src/audio.c` is the APU driver (SFX blip, global soundtrack sequencer, and the
   persisted enable flags); `src/music_data.c` is the generated APU data. Both live
-  in ROM bank 9.
+  in ROM bank 9. `src/audio_vbl.c` (HOME bank) holds the VBL interrupt handler
+  that silences stalled music channels during screen transitions and heavy tile
+  loading — it watches a stall counter reset by `audio_music_update()` each frame,
+  and kills channels 2/3/4 after 2 frames without a sequencer tick.
 - `src/ui_text.c` owns the 20x18 text UI renderer, palettes, menus, value
   screens, confirmations, bars, date/datetime pickers, and the explicit UI input
   wrapper that advances the soundtrack and plays the SFX blip after fresh button

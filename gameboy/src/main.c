@@ -180,8 +180,10 @@ static void home_loop(SaveData *data) {
 void main(void) {
     SaveData save;
 
-    /* Power on the APU and load the persisted SFX/soundtrack toggles before any
-     * screen can request a blip or the title-screen soundtrack. */
+    /* Install the HOME-bank VBL ISR that silences stalled music channels during
+     * screen transitions/loading, then power on the APU. Order matters: the ISR
+     * must be registered before any audio function sets g_audio_vbl_active. */
+    audio_install_vbl();
     audio_init();
 
     show_splash();

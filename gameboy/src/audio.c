@@ -1,6 +1,7 @@
 #pragma bank 9
 
 #include "audio.h"
+#include "audio_vbl.h"
 
 #include <gb/gb.h>
 #include <gb/hardware.h>
@@ -148,6 +149,8 @@ void audio_music_start(void) BANKED {
     s_music_running = 1u;
     s_idx = 0u;
     s_wait = 0u;
+    g_audio_vbl_stall = 0u;
+    g_audio_vbl_active = s_music_enabled ? 1u : 0u;
     if (!s_music_enabled) {
         audio_silence_music_channels();
     }
@@ -155,12 +158,14 @@ void audio_music_start(void) BANKED {
 
 void audio_music_stop(void) BANKED {
     s_music_running = 0u;
+    g_audio_vbl_active = 0u;
     audio_silence_music_channels();
 }
 
 void audio_music_update(void) BANKED {
     uint8_t guard;
 
+    g_audio_vbl_stall = 0u; /* tell the VBL ISR the sequencer is alive */
     if (!s_music_enabled || !s_music_running) return;
 
     if (s_wait != 0u) {
@@ -204,9 +209,12 @@ void audio_set_music(uint8_t on) BANKED {
     audio_save_settings();
 
     if (!s_music_enabled) {
+        g_audio_vbl_active = 0u;
         audio_silence_music_channels();
     } else if (s_music_running) {
         s_idx = 0u; /* re-enabled while the soundtrack loop is active: restart from the top */
         s_wait = 0u;
+        g_audio_vbl_stall = 0u;
+        g_audio_vbl_active = 1u;
     }
 }

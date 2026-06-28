@@ -741,7 +741,11 @@ function writeCustomFoodsStore(ram: Uint8Array, foods: DemoCustomFoodRecord[]): 
       ram[off + i] = i < upperName.length ? upperName.charCodeAt(i) & 0x7f : 0;
     }
     writeU16(ram, off + CUSTOM_FOOD_KCAL_OFF, clampInt(food.kcal, 0, 65535));
-    writeU16(ram, off + CUSTOM_FOOD_PROTEIN_OFF, clampInt(Math.round(food.proteinG * 10), 0, 65535));
+    writeU16(
+      ram,
+      off + CUSTOM_FOOD_PROTEIN_OFF,
+      clampInt(Math.round(food.proteinG * 10), 0, 65535)
+    );
     writeU16(ram, off + CUSTOM_FOOD_FAT_OFF, clampInt(Math.round(food.fatG * 10), 0, 65535));
     writeU16(ram, off + CUSTOM_FOOD_CARBS_OFF, clampInt(Math.round(food.carbsG * 10), 0, 65535));
     writeU16(ram, off + CUSTOM_FOOD_FIBER_OFF, clampInt(Math.round(food.fiberG * 10), 0, 65535));
@@ -753,8 +757,24 @@ function writeCustomFoodsStore(ram: Uint8Array, foods: DemoCustomFoodRecord[]): 
 }
 
 const DEMO_CUSTOM_FOODS: DemoCustomFoodRecord[] = [
-  { slot: 0, name: 'OVERNIGHT OATS', kcal: 146, proteinG: 6.2, fatG: 4.1, carbsG: 21.5, fiberG: 4.0 },
-  { slot: 1, name: 'CHICKEN RICE', kcal: 168, proteinG: 13.2, fatG: 5.1, carbsG: 16.3, fiberG: 0.8 },
+  {
+    slot: 0,
+    name: 'OVERNIGHT OATS',
+    kcal: 146,
+    proteinG: 6.2,
+    fatG: 4.1,
+    carbsG: 21.5,
+    fiberG: 4.0,
+  },
+  {
+    slot: 1,
+    name: 'CHICKEN RICE',
+    kcal: 168,
+    proteinG: 13.2,
+    fatG: 5.1,
+    carbsG: 16.3,
+    fiberG: 0.8,
+  },
   { slot: 2, name: 'PB SHAKE', kcal: 92, proteinG: 7.8, fatG: 4.2, carbsG: 7.6, fiberG: 1.3 },
   { slot: 3, name: 'BEEF PASTA', kcal: 180, proteinG: 12.0, fatG: 6.0, carbsG: 19.0, fiberG: 1.2 },
   { slot: 4, name: 'YOGURT BOWL', kcal: 110, proteinG: 9.0, fatG: 3.0, carbsG: 12.0, fiberG: 1.0 },
@@ -900,7 +920,9 @@ function buildDemoWorkouts(today: GameBoyCalDate): DemoWorkoutRecord[] {
         exerciseIdx: set.exerciseIdx,
         reps: Math.max(1, set.reps + ((dayIndex + setIndex) % 3 === 0 ? 1 : 0)),
         weightKgTenths:
-          set.weightKgTenths === 0 ? 0 : set.weightKgTenths + progression * (setIndex < 2 ? 20 : 10),
+          set.weightKgTenths === 0
+            ? 0
+            : set.weightKgTenths + progression * (setIndex < 2 ? 20 : 10),
       })),
     });
   }

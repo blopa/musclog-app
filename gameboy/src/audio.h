@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <gbdk/platform.h>
 
+#include "audio_vbl.h"
+
 /*
  * Game Boy APU sound for Musclog GB. The Game Boy cannot play MIDI, so the two
  * bundled .mid files are reduced at build time (gameboy/tools/gen-music.mjs ->
