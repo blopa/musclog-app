@@ -1,6 +1,7 @@
 #ifndef MUSCLOG_UI_TEXT_H
 #define MUSCLOG_UI_TEXT_H
 
+#include <gb/gb.h>
 #include <stdint.h>
 
 #include "input.h"
@@ -39,6 +40,13 @@ void ui_draw_value_screen(const char *title, const char *label, const char *valu
  * owns redrawing whatever screen it was showing afterwards.
  */
 uint8_t ui_confirm(const char *title, const char *message);
+
+/*
+ * Blocking storage-full info screen. Shows `title` as the screen heading with
+ * `line1` and `line2` as body text, then waits for any button press to dismiss.
+ * Use when an add operation is blocked by a capacity limit.
+ */
+void ui_storage_full(const char *title, const char *line1, const char *line2) BANKED;
 
 /* Progress bar primitives shared by all screens. */
 uint8_t ui_bar_fill(uint16_t tracked, uint16_t goal, uint8_t width);

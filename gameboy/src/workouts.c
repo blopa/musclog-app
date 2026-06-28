@@ -968,6 +968,18 @@ static void workout_finish_with_overview(SaveData *data) {
     uint8_t sets = session_set_count();
     uint16_t volume_kg = session_volume_kg();
 
+    if (sets != 0u && workoutlog_is_full(sets)) {
+        if (ui_confirm(STR_WKT_LOG_FULL, STR_WKT_LOG_FULL_Q)) {
+            /* User chose to save; workoutlog_add will drop the oldest entry. */
+            if (session_finish(data)) {
+                workout_show_overview(exercises, sets, volume_kg);
+            }
+        } else {
+            session_reset();
+        }
+        return;
+    }
+
     if (session_finish(data) && sets != 0u) {
         workout_show_overview(exercises, sets, volume_kg);
     }

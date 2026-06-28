@@ -56,6 +56,17 @@ static uint8_t fl_header_ok(void) {
 
 /* ── Public API ───────────────────────────────────────────────────────────── */
 
+uint8_t foodlog_is_full(void) {
+    uint8_t full;
+
+    ENABLE_RAM;
+    SWITCH_RAM(1u);
+    full = (uint8_t)(!fl_header_ok() || sram_rd16(_SRAM, FL_OFF_COUNT) >= FL_CAPACITY);
+    SWITCH_RAM(0u);
+    DISABLE_RAM;
+    return full;
+}
+
 void foodlog_init(void) {
     uint8_t valid;
     uint16_t count;

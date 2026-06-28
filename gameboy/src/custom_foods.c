@@ -386,7 +386,6 @@ void custom_food_create(SaveData *data) BANKED {
     uint16_t   nv;
     uint8_t    field = 0u;
     uint8_t    dirty = 1u;
-    uint8_t    full;
     uint8_t    i;
 
     (void)data;  /* macros are per-100g grams/kcal — unit-system independent */
@@ -423,15 +422,18 @@ void custom_food_create(SaveData *data) BANKED {
     }
 
     /* The loop only falls through here on J_START (J_B returns early). */
-    full = (uint8_t)(custom_foods_add(name, vals[FIELD_KCAL],
-                                      (uint16_t)(vals[FIELD_PRO]  * 10u),
-                                      (uint16_t)(vals[FIELD_FAT]  * 10u),
-                                      (uint16_t)(vals[FIELD_CARB] * 10u),
-                                      (uint16_t)(vals[FIELD_FIB]  * 10u)) == 0u);
-    ui_title(STR_NEW_FOOD);
-    ui_print_center(8u, full ? STR_FOODS_FULL : STR_FOOD_SAVED);
-    ui_present();
-    for (i = 0u; i != 75u; ++i) wait_vbl_done();
+    if (custom_foods_add(name, vals[FIELD_KCAL],
+                         (uint16_t)(vals[FIELD_PRO]  * 10u),
+                         (uint16_t)(vals[FIELD_FAT]  * 10u),
+                         (uint16_t)(vals[FIELD_CARB] * 10u),
+                         (uint16_t)(vals[FIELD_FIB]  * 10u)) == 0u) {
+        ui_storage_full(STR_MY_FOODS, STR_CUSTOM_FULL_1, STR_CUSTOM_FULL_2);
+    } else {
+        ui_title(STR_NEW_FOOD);
+        ui_print_center(8u, STR_FOOD_SAVED);
+        ui_present();
+        for (i = 0u; i != 75u; ++i) wait_vbl_done();
+    }
 }
 
 /* ── Manage / delete screen ───────────────────────────────────────────────── */

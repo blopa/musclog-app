@@ -126,6 +126,30 @@ uint8_t workoutlog_count(void) BANKED {
     return count;
 }
 
+uint8_t workoutlog_is_full(uint8_t set_count) BANKED {
+    uint8_t count;
+    uint16_t bytes_used;
+    uint16_t record_len;
+    uint8_t full;
+
+    record_len = wl_record_len_for(set_count);
+
+    ENABLE_RAM;
+    SWITCH_RAM(2u);
+
+    if (!wl_header_ok()) {
+        full = 0u;
+    } else {
+        count = _SRAM[WL_OFF_COUNT];
+        bytes_used = sram_rd16(_SRAM, WL_OFF_BYTES);
+        full = (uint8_t)(count >= 255u || (uint16_t)(bytes_used + record_len) > WL_CAPACITY);
+    }
+
+    SWITCH_RAM(0u);
+    DISABLE_RAM;
+    return full;
+}
+
 uint8_t workoutlog_get_summary(uint8_t newest_idx, WorkoutLogSummary *out) BANKED {
     uint8_t count;
     uint8_t target;

@@ -245,7 +245,15 @@
 #define STR_HINT_MACRO    "UP/DN/LR  A NEXT"
 #define STR_FOOTER_SAVE_ST "ST SAVE"
 #define STR_FOOD_SAVED    "FOOD SAVED!"
-#define STR_FOODS_FULL    "STORAGE FULL"
+
+/* ── Storage-full warnings ─────────────────────────────────────────────── */
+#define STR_FOOD_LOG_FULL   "FOOD LOG FULL"
+#define STR_FOOD_LOG_FULL_1 "DELETE OLD ENTRIES"
+#define STR_FOOD_LOG_FULL_2 "TO ADD MORE FOOD."
+#define STR_WKT_LOG_FULL    "WORKOUT LOG FULL"
+#define STR_WKT_LOG_FULL_Q  "SAVE, DROP OLDEST?"
+#define STR_CUSTOM_FULL_1   "MAX 100 FOODS."
+#define STR_CUSTOM_FULL_2   "DELETE ONE TO ADD."
 
 /* ── Date / time picker labels ─────────────────────────────────────────── */
 #define STR_YEAR   "YEAR"

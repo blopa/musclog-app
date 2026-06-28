@@ -32,6 +32,9 @@
 void    foodlog_init(void);   /* validate header on boot; reset region if corrupt */
 void    foodlog_erase(void);  /* clear all entries (called from the reset path)    */
 
+/* Returns 1 if the log is at capacity (no room for another entry). */
+uint8_t foodlog_is_full(void);
+
 /* Append an entry. Returns 1 on success. When full, the oldest entry is dropped. */
 uint8_t foodlog_add(uint16_t day_num, uint16_t food_idx, uint16_t grams);
 

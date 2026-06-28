@@ -189,13 +189,18 @@ static uint8_t food_amount_screen(SaveData *data, const FoodCache *fc,
 
         if (input_pressed(&input, J_A | J_START)) {
             if (ui_confirm(STR_TRACK_FOOD, STR_TRACK_FOOD_Q)) {
-                uint16_t grams = imperial ? nutrition_oz_to_grams(amount) : amount;
-                foodlog_add(cal_day_number(log_date), food_idx, grams);
-                ui_title(STR_TRACKED);
-                ui_print_center(8u, STR_FOOD_TRACKED);
-                ui_present();
-                for (i = 0u; i != 75u; ++i) wait_vbl_done();
-                return 1u;
+                if (foodlog_is_full()) {
+                    ui_storage_full(STR_FOOD_LOG_FULL,
+                                    STR_FOOD_LOG_FULL_1, STR_FOOD_LOG_FULL_2);
+                } else {
+                    uint16_t grams = imperial ? nutrition_oz_to_grams(amount) : amount;
+                    foodlog_add(cal_day_number(log_date), food_idx, grams);
+                    ui_title(STR_TRACKED);
+                    ui_print_center(8u, STR_FOOD_TRACKED);
+                    ui_present();
+                    for (i = 0u; i != 75u; ++i) wait_vbl_done();
+                    return 1u;
+                }
             }
             dirty = 1u;
         }

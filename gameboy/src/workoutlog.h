@@ -30,6 +30,11 @@ typedef struct WorkoutLogSummary {
 void    workoutlog_init(void) BANKED;
 void    workoutlog_erase(void) BANKED;
 uint8_t workoutlog_count(void) BANKED;
+
+/* Returns 1 if adding a workout with `set_count` sets would require dropping the
+ * oldest entry (count at 255 or no byte space left). */
+uint8_t workoutlog_is_full(uint8_t set_count) BANKED;
+
 uint8_t workoutlog_get_summary(uint8_t newest_idx, WorkoutLogSummary *out) BANKED;
 
 /*
