@@ -45,6 +45,13 @@ type JoypadButton = keyof WasmBoyJoypadState;
 
 const JOYPAD_BUTTONS: JoypadButton[] = ['UP', 'RIGHT', 'DOWN', 'LEFT', 'A', 'B', 'SELECT', 'START'];
 
+const DPAD_GLYPHS: Record<'UP' | 'RIGHT' | 'DOWN' | 'LEFT', string> = {
+  UP: '^',
+  RIGHT: '>',
+  DOWN: 'v',
+  LEFT: '<',
+};
+
 // Keyboard mapping for desktop play (lower-cased key -> joypad button).
 const KEY_MAP: Record<string, JoypadButton> = {
   arrowup: 'UP',
@@ -410,7 +417,7 @@ function TouchControls({ onPress, disabled, t }: TouchControlsProps) {
           disabled={disabled}
           className="left-12 top-0 h-12 w-12 rounded-t-lg"
         >
-          ▲
+          {DPAD_GLYPHS.UP}
         </PadButton>
         <PadButton
           button="LEFT"
@@ -419,7 +426,7 @@ function TouchControls({ onPress, disabled, t }: TouchControlsProps) {
           disabled={disabled}
           className="left-0 top-12 h-12 w-12 rounded-l-lg"
         >
-          ◀
+          {DPAD_GLYPHS.LEFT}
         </PadButton>
         <PadButton
           button="RIGHT"
@@ -428,7 +435,7 @@ function TouchControls({ onPress, disabled, t }: TouchControlsProps) {
           disabled={disabled}
           className="left-24 top-12 h-12 w-12 rounded-r-lg"
         >
-          ▶
+          {DPAD_GLYPHS.RIGHT}
         </PadButton>
         <PadButton
           button="DOWN"
@@ -437,7 +444,7 @@ function TouchControls({ onPress, disabled, t }: TouchControlsProps) {
           disabled={disabled}
           className="left-12 top-24 h-12 w-12 rounded-b-lg"
         >
-          ▼
+          {DPAD_GLYPHS.DOWN}
         </PadButton>
       </div>
 
