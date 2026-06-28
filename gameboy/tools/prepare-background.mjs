@@ -1,7 +1,8 @@
 // Converts the full-screen title art (assets/gb_background.png, 160x144 truecolor)
 // into a Game Boy-ready background: 160x144 (= 20x18 tiles) quantized to 4 colors
 // (one CGB background palette), with no dithering so the tile count stays low
-// enough to fit a single VRAM bank alongside the menu font.
+// enough for png2asset to dedupe into the 256 tile indices addressable by the
+// start screen. The ROM build allows flipped-tile dedupe for this background.
 //
 // The output (gameboy/assets/gb_background.png) is committed so the ROM build
 // itself does not depend on `sharp`. Re-run with `npm run gb:prepare-bg` if the
@@ -24,7 +25,7 @@ await sharp(src)
     .resize(WIDTH, HEIGHT, { kernel: 'nearest', fit: 'cover', position: 'center' })
     .flatten({ background: { r: 0, g: 0, b: 0 } })
     // dither: 0 keeps flat color regions flat so png2asset dedupes tiles aggressively
-    // (a dithered image explodes the unique-tile count past one VRAM bank's 256 tiles).
+    // (a dithered image explodes the unique-tile count past the 256-tile limit).
     .png({ palette: true, colors: COLORS, dither: 0 })
     .toFile(out);
 

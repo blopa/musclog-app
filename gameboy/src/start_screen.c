@@ -46,6 +46,8 @@
 #define OPT_TEXT_X   7u
 #define OPT_VALUE_X  14u   /* ON/OFF column on the Options sub-screen */
 
+#define ROW_TAGLINE 7u
+
 /* Menu rows (CONTINUE / NEW GAME / OPTIONS — the first is shown only with a save). */
 #define ROW_OPT0    13u
 #define ROW_OPT1    14u
@@ -163,6 +165,7 @@ static void st_setup_graphics(void) {
     for (y = 0u; y != ST_ROWS; ++y) {
         st_paint_art_row(y);
     }
+    st_text(0u, ROW_TAGLINE, STR_APP_TAGLINE);
 
     SHOW_BKG;
     DISPLAY_ON;

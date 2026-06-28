@@ -1,7 +1,7 @@
 // Builds the Musclog Game Boy Color ROM from gameboy/.
 //
 //   1. Ensure the GBDK-2020 toolchain is present (auto-download on first run).
-//   2. Convert gameboy/assets/logo.png -> gameboy/src/logo.c via png2asset.
+//   2. Convert gameboy/assets/*.png -> gameboy/src/*.c via png2asset.
 //   3. Compile + link src/*.c into gameboy/build/musclog.gbc via lcc.
 //   4. Check the linker map; bank overflows produce ROMs that "build" but crash
 //      when switchable banks are mapped.
@@ -88,6 +88,22 @@ function checkBankLayout(mapPath) {
     }
 }
 
+function assertGeneratedBackgroundFits(tileHeaderPath) {
+    const header = readFileSync(tileHeaderPath, 'utf8');
+    const match = header.match(/^#define gb_background_TILE_COUNT\s+(\d+)$/m);
+    if (!match) {
+        throw new Error(`Could not read gb_background_TILE_COUNT from ${tileHeaderPath}`);
+    }
+
+    const tileCount = Number.parseInt(match[1], 10);
+    if (tileCount > 256) {
+        throw new Error(
+            `The title background generated ${tileCount} unique tiles, but the start screen can address only 256. ` +
+                'Simplify assets/gb_background.png slightly, then run "npm run gb:prepare-bg" and "npm run gb:build" again.',
+        );
+    }
+}
+
 if (!existsSync(logoPng)) {
     throw new Error(`Missing ${logoPng}. Run "npm run gb:prepare-logo" first to generate it.`);
 }
@@ -112,6 +128,8 @@ run(png2asset, [
 
 // 2b. Start-screen art -> C data, pinned to BACKGROUND_BANK so it co-locates with
 // start_screen.c (which uses the same "#pragma bank 8") and stays out of the full bank 0.
+// Let png2asset dedupe flipped tiles; the start screen writes map attributes, so
+// the flip flags survive alongside the CGB palette and VRAM-bank attributes.
 console.log('Converting gb_background.png -> src/gb_background.c ...');
 run(png2asset, [
     backgroundPng,
@@ -119,9 +137,9 @@ run(png2asset, [
     '-map',
     '-use_map_attributes',
     '-keep_palette_order',
-    '-noflip',
     '-b', String(BACKGROUND_BANK),
 ]);
+assertGeneratedBackgroundFits(join(srcDir, 'gb_background.h'));
 
 // 3. Compile + link. -Wm-yC = Game Boy Color only; -Wm-yt0x10 = MBC3 + Timer + RAM + battery.
 //    MBC3 provides the real-time clock (RTC) registers used for calendar date tracking.

@@ -4,6 +4,7 @@
 /* ── App identity ──────────────────────────────────────────────────────── */
 #define STR_APP_NAME   "MUSCLOG"
 #define STR_APP_TITLE  "MUSCLOG GB"
+#define STR_APP_TAGLINE "-LIFT, LOG, REPEAT-"
 
 /* ── Common UI divider ─────────────────────────────────────────────────── */
 #define STR_DIVIDER    "--------------------"

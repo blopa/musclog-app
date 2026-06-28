@@ -114,8 +114,9 @@ To publish a freshly built ROM into the web app's in-browser emulator asset:
 npm run gb:copy-rom
 ```
 
-That copies `gameboy/build/musclog.gbc` to `assets/musclog.gbc`, which is served
-by the website Game Boy page through WasmBoy.
+That copies `gameboy/build/musclog.gbc` to both `assets/musclog.gbc` and
+`public/images/musclog.gbc`. The website Game Boy page fetches the latter through
+WasmBoy.
 
 ## Tooling Commands
 
@@ -127,7 +128,7 @@ npm run gb:gen-foods     # Regenerate ROM food tables from data/*.json
 npm run gb:gen-exercises # Regenerate the ROM exercise table from data/exercisesData.json
 npm run gb:gen-music     # Reduce assets/*.mid to APU data (src/music_data.{c,h})
 npm run gb:build         # Build the .gbc ROM
-npm run gb:copy-rom      # Copy the ROM into assets/ for the website emulator
+npm run gb:copy-rom      # Copy the ROM into app + website emulator assets
 ```
 
 The generated food, exercise, and music C files are committed so normal ROM
@@ -248,6 +249,9 @@ pre-fill the hour and minute without touching the save format.
   `src/gb_background.c`/`src/gb_background.h`, which are gitignored. The title art
   is pinned to ROM bank 8 (`png2asset -b 8`), matching `start_screen.c`'s
   `#pragma bank 8` so the code reads the data co-located without `SWITCH_ROM()`.
+  The title art must fit within 256 addressable background tile indices after
+  png2asset dedupes duplicate and flipped tiles; `npm run gb:build` fails if a
+  new `gb_background.png` is too detailed.
 - After adding large tables or new screens, run `npm run gb:build` and inspect
   the bank layout output. The build fails if fixed or switchable banks overflow.
 - Prefer keeping ROM-bank-sensitive readers non-banked when they call

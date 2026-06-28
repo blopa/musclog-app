@@ -34,7 +34,7 @@
     "gb:prepare-bg": "node gameboy/tools/prepare-background.mjs",
     "gb:setup": "node gameboy/tools/fetch-gbdk.mjs",
     "gb:build": "node gameboy/tools/build-gb-rom.mjs",
-    "gb:copy-rom": "cp gameboy/build/musclog.gbc assets/musclog.gbc",
+    "gb:copy-rom": "cp gameboy/build/musclog.gbc assets/musclog.gbc && cp gameboy/build/musclog.gbc public/images/musclog.gbc",
     "sync-ml-model": "cp training-data/output/model.js utils/repCountingModel.js",
     "update-reps-model": "cd training-data && .venv/bin/python train.py && cd .. && npm run sync-ml-model",
     "generate-training-html": "cd training-data && .venv/bin/python visualize_loocv.py",
