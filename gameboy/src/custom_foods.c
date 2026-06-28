@@ -328,7 +328,7 @@ static uint8_t name_entry(char *out) {
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (input_pressed(&input, J_UP)) {
             spin = (spin == 0u) ? (uint8_t)(ALPHABET_LEN - 1u) : (uint8_t)(spin - 1u);
@@ -403,7 +403,7 @@ void custom_food_create(SaveData *data) BANKED {
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (input_pressed(&input, J_B)) return;
 
@@ -498,7 +498,7 @@ void custom_foods_manage(SaveData *data) BANKED {
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (input_pressed(&input, J_B)) return;
         if (count == 0u) continue;

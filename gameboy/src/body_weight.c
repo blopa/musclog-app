@@ -144,7 +144,7 @@ static uint8_t bw_log_entry(SaveData *data, uint16_t day_num, uint8_t is_today) 
     input_init(&input);
     while (1) {
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (input_pressed(&input, J_B)) return 0u;
 
@@ -219,7 +219,7 @@ void body_weight_show(SaveData *data) BANKED {
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (input_pressed(&input, J_B)) return;
 

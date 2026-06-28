@@ -9,15 +9,12 @@
 
 #include "audio.h"
 #include "copies.h"
-#include "custom_foods.h"
-#include "foodlog.h"
+#include "game_data.h"
 #include "gb_background.h"
 #include "input.h"
-#include "metrics.h"
 #include "onboarding.h"
 #include "profile.h"
 #include "ui_text.h"
-#include "workoutlog.h"
 
 /* The title art and this code share ROM bank 8 (set above + via png2asset -b 8),
  * so the art tables are read directly here without a SWITCH_ROM. */
@@ -243,7 +240,7 @@ void start_screen_run(SaveData *save, uint8_t had_valid_save) BANKED {
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
         audio_music_update();
 
         if (state == ST_STATE_MENU) {
@@ -293,11 +290,7 @@ void start_screen_run(SaveData *save, uint8_t had_valid_save) BANKED {
             }
         } else {
             if (input_pressed(&input, J_A | J_START)) {
-                db_erase();
-                foodlog_erase();
-                workoutlog_erase();
-                metrics_erase();
-                custom_foods_erase();
+                game_data_erase_all();
                 go_onboard = 1u;
                 done = 1u;
             } else if (input_pressed(&input, J_B)) {

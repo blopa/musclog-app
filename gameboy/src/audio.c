@@ -6,6 +6,7 @@
 #include <gb/hardware.h>
 
 #include "music_data.h"
+#include "sram_layout.h"
 
 /*
  * audio.c lives in AUDIO_BANK (9) together with music_data.c, so the sequencer
@@ -15,8 +16,8 @@
 /* ── Persisted settings (cartridge SRAM bank 0, inside the profile-reserved
  *    region; see profile.h's SRAM map). A magic byte distinguishes a written
  *    store from blank SRAM so first boot defaults both toggles on. ──────────── */
-#define AUDIO_SRAM_MAGIC_OFF 0x38u
-#define AUDIO_SRAM_FLAGS_OFF 0x39u
+#define AUDIO_SRAM_MAGIC_OFF SRAM_LAYOUT_AUDIO_MAGIC
+#define AUDIO_SRAM_FLAGS_OFF SRAM_LAYOUT_AUDIO_FLAGS
 #define AUDIO_SRAM_MAGIC     0xA7u
 #define AUDIO_FLAG_SFX       0x01u
 #define AUDIO_FLAG_MUSIC     0x02u
@@ -41,7 +42,7 @@ static void audio_save_settings(void) {
     uint8_t flags = (uint8_t)((s_sfx_enabled ? AUDIO_FLAG_SFX : 0u) |
                               (s_music_enabled ? AUDIO_FLAG_MUSIC : 0u));
     ENABLE_RAM;
-    SWITCH_RAM(0u);
+    SWITCH_RAM(SRAM_LAYOUT_BANK0);
     _SRAM[AUDIO_SRAM_MAGIC_OFF] = AUDIO_SRAM_MAGIC;
     _SRAM[AUDIO_SRAM_FLAGS_OFF] = flags;
     DISABLE_RAM;
@@ -52,7 +53,7 @@ static void audio_load_settings(void) {
     uint8_t flags;
 
     ENABLE_RAM;
-    SWITCH_RAM(0u);
+    SWITCH_RAM(SRAM_LAYOUT_BANK0);
     magic = _SRAM[AUDIO_SRAM_MAGIC_OFF];
     flags = _SRAM[AUDIO_SRAM_FLAGS_OFF];
     DISABLE_RAM;

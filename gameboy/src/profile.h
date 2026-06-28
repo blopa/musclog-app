@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include "sram_layout.h"
+
 /* ── Save-file header ─────────────────────────────────────────────────────── */
 #define SAVE_MAGIC   0x4D47u  /* 'MG' */
 #define SAVE_VERSION 3u       /* v3: packed layout + MBC3 RTC calendar fields */
@@ -65,16 +67,16 @@ typedef struct CalDate {
  *  0x17  |   1   | SRAM_RTC_HOUR       | seed hint: hour   (0-23) — NOT checksummed
  *  0x18  |   1   | SRAM_RTC_MINUTE     | seed hint: minute (0-59) — NOT checksummed
  *  ------|-------|---------------------|-------------------------------------------
- *  0x38  |   1   | (audio.c) magic     | 0xA7 marks a written audio-settings store
- *  0x39  |   1   | (audio.c) flags     | bit0 = SFX on, bit1 = soundtrack on
+ *  0x38  |   1   | SRAM_LAYOUT_AUDIO_MAGIC | 0xA7 marks a written audio-settings store
+ *  0x39  |   1   | SRAM_LAYOUT_AUDIO_FLAGS | bit0 = SFX on, bit1 = soundtrack on
  *  ------|-------|---------------------|-------------------------------------------
  *  Total: 23 checksummed bytes + 2 seed-hint bytes
  *
- *  The audio-settings micro-store (0x38-0x39) lives in the free part of the
- *  profile-reserved region (the metrics store starts at 0x40). db_load/db_save/
- *  db_erase only touch the 23-byte checksummed block, so the audio flags persist
- *  across a NEW GAME erase. It is owned entirely by audio.c (AUDIO_SRAM_*); future
- *  profile growth from 0x19 must stop before 0x38.
+ *  The audio-settings micro-store lives in the free part of the profile-reserved
+ *  region (the metrics store starts at SRAM_LAYOUT_METRICS_BASE). db_load/db_save/
+ *  db_erase only touch the checksummed block, so the audio flags persist across a
+ *  NEW GAME erase. Future profile growth from 0x19 must stop before
+ *  SRAM_LAYOUT_PROFILE_GROW_LIMIT.
  */
 #define SRAM_MAGIC         0x00u
 #define SRAM_VERSION       0x02u
@@ -92,7 +94,7 @@ typedef struct CalDate {
 #define SRAM_RTC_YEAR_OFS  0x14u
 #define SRAM_RTC_MONTH     0x15u
 #define SRAM_RTC_DAY       0x16u
-#define SRAM_SAVE_SIZE     0x17u  /* 23 bytes — size of the checksummed profile block */
+#define SRAM_SAVE_SIZE     SRAM_LAYOUT_PROFILE_SAVE_SIZE  /* 23 bytes — size of the checksummed profile block */
 
 /* ── Onboarding seed hints (NOT part of the checksummed profile block) ──────── */
 /* Written by the website emulator before boot so the onboarding date/time picker
@@ -100,8 +102,8 @@ typedef struct CalDate {
  * sit in the free gap before the metrics store (0x40), are excluded from
  * SRAM_CHECKSUM, and are never read/written/erased by db_load/db_save/db_erase —
  * so they do not affect save validity. Future profile growth must resume at 0x19. */
-#define SRAM_RTC_HOUR      0x17u  /* seed hint: hour   (0-23) */
-#define SRAM_RTC_MINUTE    0x18u  /* seed hint: minute (0-59) */
+#define SRAM_RTC_HOUR      SRAM_LAYOUT_RTC_HOUR    /* seed hint: hour   (0-23) */
+#define SRAM_RTC_MINUTE    SRAM_LAYOUT_RTC_MINUTE  /* seed hint: minute (0-59) */
 
 /* ── SRAM_FLAGS1 bit layout ───────────────────────────────────────────────── */
 /* bit  0    : units             (UNITS_METRIC=0, UNITS_IMPERIAL=1)           */

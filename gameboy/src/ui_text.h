@@ -3,12 +3,15 @@
 
 #include <stdint.h>
 
+#include "input.h"
+
 #define UI_PAL_NORMAL 0u
 #define UI_PAL_HEADER 1u
 #define UI_PAL_SELECTED 2u
 #define UI_PAL_PANEL 3u
 
 void ui_init_text(void);
+void ui_input_update(InputState *input);
 void ui_clear(void);
 void ui_fill_attr(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t palette);
 void ui_title(const char *title);

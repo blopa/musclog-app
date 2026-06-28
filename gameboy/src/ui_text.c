@@ -1,5 +1,6 @@
 #include "ui_text.h"
 
+#include "audio.h"
 #include "copies.h"
 #include <gb/gb.h>
 #include <gbdk/console.h>
@@ -21,6 +22,13 @@ static uint8_t screen_attrs[SCREEN_CELLS];
 static uint8_t target_chars[SCREEN_CELLS];
 static uint8_t target_attrs[SCREEN_CELLS];
 static uint8_t frame_open = 0u;
+
+void ui_input_update(InputState *input) {
+    input_update(input);
+    if (input->pressed != 0u) {
+        audio_play_sfx();
+    }
+}
 
 static const palette_color_t ui_palettes[16] = {
     /* Normal: Musclog green surface with off-white text. */
@@ -256,7 +264,7 @@ uint8_t ui_menu_select(const char *title, const char **options, uint8_t count) {
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (input_pressed(&input, J_B)) return UI_MENU_CANCEL;
 
@@ -291,7 +299,7 @@ uint8_t ui_confirm(const char *title, const char *message) {
     input_init(&input);
     while (1) {
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
         if (input_pressed(&input, J_A | J_START)) return 1u;
         if (input_pressed(&input, J_B)) return 0u;
     }

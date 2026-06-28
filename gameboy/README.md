@@ -134,7 +134,10 @@ npm run gb:copy-rom      # Copy the ROM into app + website emulator assets
 The generated food, exercise, and music C files are committed so normal ROM
 builds do not depend on the JSON seed data or the `.mid` assets. Regenerate them
 only when the source datasets or MIDI files change. `gb:gen-music` prints the
-loop it found (or reports that it fell back to looping the whole song).
+loop it found (or reports that it fell back to looping the whole song). The music
+converter is split under `gameboy/tools/music/`; run
+`node --test gameboy/tools/music/*.test.mjs` after changing its parser or
+arrangement code.
 
 ## Source Layout
 
@@ -144,6 +147,7 @@ gameboy/
   screenshots/  160x144 captures used in this README and website material
   src/          GBDK C source code
   tools/        Node scripts for toolchain setup, data generation, and builds
+  tools/music/  MIDI parser, arrangement reducer, C emitter, and node:test coverage
   build/        Generated ROM, map, and capture artifacts (gitignored)
   .gbdk/        Downloaded GBDK-2020 toolchain (gitignored)
 ```
@@ -159,11 +163,15 @@ Important source modules:
   read directly.
 - `src/audio.c` is the APU driver (SFX blip, soundtrack sequencer, and the
   persisted enable flags); `src/music_data.c` is the generated APU data. Both live
-  in ROM bank 9. `src/input.c` calls `audio_play_sfx()` so every fresh button
-  press across the app blips from one place.
+  in ROM bank 9.
 - `src/ui_text.c` owns the 20x18 text UI renderer, palettes, menus, value
-  screens, confirmations, bars, and date/datetime pickers.
-- `src/profile.c` stores the packed profile and macro targets in SRAM bank 0.
+  screens, confirmations, bars, date/datetime pickers, and the explicit UI input
+  wrapper that plays the SFX blip after fresh button presses.
+- `src/profile.c` stores the packed profile and macro targets in SRAM bank 0;
+  `src/sram_layout.h` names shared bank-0 subregions so profile, metrics, RTC seed
+  hints, and audio settings cannot drift into each other.
+- `src/game_data.c` owns the full gameplay-data erase sequence used by both Reset
+  Data and title-screen New Game. Audio settings intentionally survive that erase.
 - `src/rtc.c` reads and writes the MBC3 RTC and provides calendar helpers.
 - `src/home_screen.c` renders the macro dashboard and top-level navigation.
 - `src/progress.c` aggregates the food log, workout log, and weight metrics over
@@ -243,7 +251,7 @@ pre-fill the hour and minute without touching the save format.
 ## Development Notes
 
 - Keep generated tables in sync with their source data by using
-  `npm run gb:gen-foods` and `npm run gb:gen-exercises`.
+  `npm run gb:gen-foods`, `npm run gb:gen-exercises`, and `npm run gb:gen-music`.
 - Keep `gameboy/assets/logo.png` and `gameboy/assets/gb_background.png` committed.
   The build converts them into generated `src/logo.c`/`src/logo.h` and
   `src/gb_background.c`/`src/gb_background.h`, which are gitignored. The title art

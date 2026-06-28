@@ -69,7 +69,7 @@ uint8_t nutrition_show_food_detail(SaveData *data, uint16_t day_num, uint8_t nth
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (input_pressed(&input, J_B | J_A | J_START)) return 0u;
         if (input_pressed(&input, J_SELECT)) {

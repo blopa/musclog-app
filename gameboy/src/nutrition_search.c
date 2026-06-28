@@ -180,7 +180,7 @@ static uint8_t food_amount_screen(SaveData *data, const FoodCache *fc,
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (input_pressed(&input, J_B)) return 0u;
 
@@ -224,7 +224,7 @@ void nutrition_food_search_track(SaveData *data, CalDate log_date) BANKED {
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (s.mode == SEARCH_MODE_TYPING) {
             if (input_pressed(&input, J_UP)) {

@@ -3,17 +3,14 @@
 #include "settings.h"
 
 #include "copies.h"
-#include "custom_foods.h"
-#include "foodlog.h"
+#include "game_data.h"
 #include "input.h"
-#include "metrics.h"
 #include "onboarding.h"
 #include "profile.h"
 #include "spinner.h"
 #include "ui_text.h"
 #include "utils.h"
 #include "weight_units.h"
-#include "workoutlog.h"
 
 #include <gb/gb.h>
 #include <stdio.h>
@@ -349,7 +346,7 @@ static void settings_edit_numeric(SettingsState *s) {
     input_init(&input);
     while (1) {
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (input_pressed(&input, J_B | J_A | J_START)) {
             db_save(s->data);
@@ -386,7 +383,7 @@ void settings_show(SaveData *data) BANKED {
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (input_pressed(&input, J_B)) return;
 
@@ -442,7 +439,7 @@ static void about_show(void) {
     input_init(&input);
     while (1) {
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
         if (input_pressed(&input, J_B | J_A | J_START)) return;
     }
 }
@@ -463,11 +460,7 @@ uint8_t settings_menu(SaveData *data) BANKED {
         about_show();
     } else if (choice == 2u) {
         if (ui_confirm(STR_RESET_DATA, STR_RESET_DATA_Q)) {
-            db_erase();
-            foodlog_erase();
-            workoutlog_erase();
-            metrics_erase();
-            custom_foods_erase();
+            game_data_erase_all();
             /* SRAM was just erased, so there is no pre-seeded RTC date to honor. */
             onboarding_run(data, 0u);
             return 1u;

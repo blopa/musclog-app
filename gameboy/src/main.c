@@ -19,6 +19,7 @@
 #include "progress.h"
 #include "settings.h"
 #include "start_screen.h"
+#include "ui_text.h"
 #include "workoutlog.h"
 #include "workouts.h"
 
@@ -138,7 +139,7 @@ static void home_loop(SaveData *data) {
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (input_pressed(&input, J_SELECT)) {
             if (settings_menu(data)) {

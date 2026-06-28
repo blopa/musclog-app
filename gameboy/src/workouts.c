@@ -426,7 +426,7 @@ static uint8_t workout_exercise_picker(void) {
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (input_pressed(&input, J_B)) return WORKOUT_NO_EXERCISE;
 
@@ -548,7 +548,7 @@ static uint8_t workout_plan_screen(const SaveData *data, WorkoutPlanState *state
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (input_pressed(&input, J_B)) return WORKOUT_PLAN_CANCEL;
         if (input_pressed(&input, J_A | J_START)) return WORKOUT_PLAN_START;
@@ -665,7 +665,7 @@ static void workout_set_edit_screen(
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (input_pressed(&input, J_B)) return;
 
@@ -748,7 +748,7 @@ static void workout_rest_timer(
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (input_pressed(&input, J_A | J_START)) return;
 
@@ -818,7 +818,7 @@ static uint8_t workout_set_flow(const SaveData *data, WorkoutPlanState *plan) {
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (input_pressed(&input, J_B)) {
             sync_plan_from_set(plan, &state);
@@ -904,7 +904,7 @@ static uint8_t workout_exercise_complete_menu(const char *exercise_name) {
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (input_pressed(&input, J_UP | J_DOWN)) {
             selected = selected == WORKOUT_DONE_ADD ? WORKOUT_DONE_FINISH : WORKOUT_DONE_ADD;
@@ -957,7 +957,7 @@ static void workout_show_overview(uint8_t exercises, uint8_t sets, uint16_t volu
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (input_pressed(&input, J_A | J_START | J_B)) return;
     }
@@ -1100,7 +1100,7 @@ static void workout_show_detail(const SaveData *data, uint8_t newest_idx) {
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (input_pressed(&input, J_B)) return;
 
@@ -1172,7 +1172,7 @@ void workouts_show(SaveData *data) BANKED {
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (input_pressed(&input, J_B)) return;
 

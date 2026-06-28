@@ -251,7 +251,7 @@ void rtc_setup_date(SaveData *data) {
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (input_pressed(&input, J_B)) return;   /* skip — rtc_is_set unchanged */
 

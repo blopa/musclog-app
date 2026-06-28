@@ -2,6 +2,7 @@
 
 #include "metrics.h"
 
+#include "sram_layout.h"
 #include "sram.h"
 
 #include <gb/gb.h>
@@ -10,7 +11,7 @@
 #define MX_MAGIC          0x4257u  /* 'BW' */
 #define MX_VERSION        1u
 
-#define MX_BASE           0x40u    /* profile keeps 0x00..0x3F; metrics start here */
+#define MX_BASE           SRAM_LAYOUT_METRICS_BASE
 #define MX_OFF_MAGIC      (MX_BASE + 0x00u)
 #define MX_OFF_VERSION    (MX_BASE + 0x02u)
 #define MX_OFF_COUNT      (MX_BASE + 0x03u)

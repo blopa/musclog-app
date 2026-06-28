@@ -571,7 +571,7 @@ void onboarding_run(SaveData *data, uint8_t had_valid_save) BANKED {
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
         handle_input(&state, &input);
     }
 }

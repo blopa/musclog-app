@@ -33,7 +33,7 @@ void nutrition_date_picker(CalDate today, CalDate *viewing_date) BANKED {
         }
 
         wait_vbl_done();
-        input_update(&input);
+        ui_input_update(&input);
 
         if (input_pressed(&input, J_B)) return;
 
