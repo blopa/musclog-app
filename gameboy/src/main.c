@@ -174,6 +174,58 @@ static void home_loop(SaveData *data) {
     }
 }
 
+/* Title screen shown after the splash. Returns when the player should proceed
+ * to the home screen — either by choosing CONTINUE, or after onboarding (fresh
+ * start, or NEW GAME-with-erase on a returning save). */
+static void start_menu(SaveData *save, uint8_t had_valid_save) {
+    /* A completed save is required before CONTINUE is offered. A valid-but-
+     * incomplete save (e.g. pre-seeded RTC from the web emulator) still counts
+     * as "no save" here — NEW GAME just runs onboarding, preserving the RTC. */
+    uint8_t has_save = (uint8_t)(had_valid_save && save->onboarding_complete);
+    const char *options[2];
+    uint8_t count;
+    uint8_t new_game_index;
+    uint8_t choice;
+
+    while (1) {
+        if (has_save) {
+            options[0] = STR_CONTINUE;   /* first + default-selected */
+            options[1] = STR_NEW_GAME;
+            count = 2u;
+            new_game_index = 1u;
+        } else {
+            options[0] = STR_NEW_GAME;
+            count = 1u;
+            new_game_index = 0u;
+        }
+
+        choice = ui_menu_select(STR_START_TITLE, options, count);
+
+        if (has_save && choice == 0u) {
+            return; /* CONTINUE — keep the loaded save, go home. */
+        }
+
+        if (choice == new_game_index) {
+            if (!has_save) {
+                onboarding_run(save, had_valid_save); /* fresh start; keep any seeded RTC */
+                return;
+            }
+            if (ui_confirm(STR_NEW_GAME, STR_NEW_GAME_Q)) {
+                db_erase();
+                foodlog_erase();
+                workoutlog_erase();
+                metrics_erase();
+                custom_foods_erase();
+                onboarding_run(save, 0u);             /* nothing left to preserve */
+                return;
+            }
+            /* Cancelled the confirm -> fall through, redraw the menu. */
+        }
+        /* UI_MENU_CANCEL (B) or cancelled confirm -> loop; the start menu has
+         * no "back" destination. */
+    }
+}
+
 void main(void) {
     SaveData save;
 
@@ -182,9 +234,7 @@ void main(void) {
 
     {
         uint8_t had_valid_save = db_load(&save);
-        if (!had_valid_save || !save.onboarding_complete) {
-            onboarding_run(&save, had_valid_save);
-        }
+        start_menu(&save, had_valid_save);
     }
 
     foodlog_init();
