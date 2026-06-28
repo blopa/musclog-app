@@ -1,0 +1,32 @@
+---
+# clang-tidy config for the Game Boy C sources.
+#
+# Only enable checks that catch real bugs in embedded C99 code.
+# Skipped intentionally:
+#   - readability-isolate-declaration / misc-include-cleaner: style noise
+#   - readability-non-const-parameter: cascading header changes for little gain
+#   - cppcoreguidelines-*/modernize-*: C++ guidelines, not applicable here
+#   - clang-analyzer-security.insecureAPI.*: no OS, no user input paths
+Checks: >
+  -*,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  clang-analyzer-core.*,
+  clang-analyzer-deadcode.*,
+  misc-redundant-expression,
+  readability-misleading-indentation,
+  readability-misplaced-array-index
+
+WarningsAsErrors: >
+  bugprone-*,
+  clang-analyzer-core.*,
+  clang-analyzer-deadcode.*,
+  misc-redundant-expression,
+  readability-misleading-indentation,
+  readability-misplaced-array-index
+
+HeaderFilterRegex: ''
+
+CheckOptions:
+  - key: bugprone-suspicious-enum-usage.StrictMode
+    value: '0'

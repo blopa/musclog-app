@@ -24,6 +24,7 @@
 - `npm run build-android`: Production build for Android via EAS
 - `npm run playwright`: Run Playwright E2E tests (Web)
 - `npm run gb:build`: Build the Game Boy Color ROM
+- `npm run gb:lint`: Run `cppcheck` on the Game Boy C sources
 - `npm run gb:copy-rom`: Copy the built Game Boy Color ROM into assets
 - `npm run gb:gen-foods`: Regenerate Game Boy food C tables
 - `npm run gb:gen-exercises`: Regenerate Game Boy exercise C table

@@ -87,23 +87,24 @@ uint8_t cal_days_in_month(uint8_t month, uint16_t year) {
     return 31u;
 }
 
-CalDate cal_advance(CalDate d, uint16_t n_days) {
+CalDate cal_advance(CalDate base, uint16_t n_days) {
     uint16_t i;
     uint8_t  dim;
 
     for (i = 0u; i != n_days; ++i) {
-        dim = cal_days_in_month(d.month, d.year);
-        d.day++;
-        if (d.day > dim) {
-            d.day = 1u;
-            d.month++;
-            if (d.month > 12u) {
-                d.month = 1u;
-                d.year++;
+        dim = cal_days_in_month(base.month, base.year);
+        base.day++;
+        if (base.day > dim) {
+            base.day = 1u;
+            base.month++;
+            if (base.month > 12u) {
+                base.month = 1u;
+                base.year++;
             }
         }
     }
-    return d;
+
+    return base;
 }
 
 uint16_t cal_day_number(CalDate d) {

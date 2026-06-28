@@ -33,6 +33,8 @@
     "gb:prepare-logo": "node gameboy/tools/prepare-logo.mjs",
     "gb:prepare-bg": "node gameboy/tools/prepare-background.mjs",
     "gb:setup": "node gameboy/tools/fetch-gbdk.mjs",
+    "gb:lint": "node gameboy/tools/lint-c.mjs",
+    "gb:lint-fix": "node gameboy/tools/lint-c.mjs --fix",
     "gb:build": "node gameboy/tools/build-gb-rom.mjs",
     "gb:copy-rom": "cp gameboy/build/musclog.gbc assets/musclog.gbc && cp gameboy/build/musclog.gbc public/images/musclog.gbc",
     "sync-ml-model": "cp training-data/output/model.js utils/repCountingModel.js",

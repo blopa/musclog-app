@@ -123,6 +123,7 @@ WasmBoy.
 
 ```sh
 npm run gb:setup         # Fetch GBDK-2020 only
+npm run gb:lint          # Run cppcheck on gameboy/src
 npm run gb:prepare-logo  # Regenerate gameboy/assets/logo.png from the app icon
 npm run gb:prepare-bg    # Regenerate gameboy/assets/gb_background.png (4-color title art)
 npm run gb:gen-foods     # Regenerate ROM food tables from data/*.json
@@ -139,6 +140,10 @@ loop it found (or reports that it fell back to looping the whole song). The musi
 converter is split under `gameboy/tools/music/`; run
 `node --test gameboy/tools/music/*.test.mjs` after changing its parser or
 arrangement code.
+
+`npm run gb:lint` runs `cppcheck` over `gameboy/src` with a small suppression list
+for missing system headers from GBDK. Install `cppcheck` on your machine first;
+extra flags can be forwarded with `npm run gb:lint -- ...`.
 
 ## Asset Credits
 

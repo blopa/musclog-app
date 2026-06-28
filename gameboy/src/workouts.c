@@ -190,7 +190,6 @@ static CalDate workout_date_from_day_number(uint16_t n) {
 
     d.year  = 2000u;
     d.month = 1u;
-    d.day   = 1u;
 
     while (1) {
         days_in_year = cal_is_leap(d.year) ? 366u : 365u;
@@ -837,9 +836,7 @@ static uint8_t workout_set_flow(const SaveData *data, WorkoutPlanState *plan) {
             action = workout_set_action_menu();
             input_init(&input);
 
-            if (action == SET_MENU_ACTION_NONE) {
-                state.dirty = 1u;
-            } else if (action == SET_MENU_ACTION_EDIT) {
+            if (action == SET_MENU_ACTION_EDIT) {
                 workout_set_edit_screen(data, &plan->exercise, &state);
                 input_init(&input);
             } else if (action == SET_MENU_ACTION_SAVE) {
@@ -919,7 +916,7 @@ static uint8_t workout_exercise_complete_menu(const char *exercise_name) {
 
 /* ── Post-workout overview ──────────────────────────────────────────────────── */
 
-static void draw_workout_overview(uint8_t exercises, uint8_t sets, uint16_t volume_kg) {
+static void draw_workout_overview(uint8_t n_exercises, uint8_t sets, uint16_t volume_kg) {
     char buf[14];
 
     ui_title(STR_WORKOUT_DONE);
@@ -927,7 +924,7 @@ static void draw_workout_overview(uint8_t exercises, uint8_t sets, uint16_t volu
     ui_print_at(0u, 6u, STR_DIVIDER);
 
     ui_print_at(1u, 8u, STR_EXERCISES);
-    sprintf(buf, "%u", (unsigned int)exercises);
+    sprintf(buf, "%u", (unsigned int)n_exercises);
     print_right(8u, buf);
 
     ui_print_at(1u, 10u, STR_SETS);
@@ -945,14 +942,14 @@ static void draw_workout_overview(uint8_t exercises, uint8_t sets, uint16_t volu
  * Shown once a workout has been saved: the final session totals plus a single
  * CONTINUE button back to the workout history. Any button dismisses it.
  */
-static void workout_show_overview(uint8_t exercises, uint8_t sets, uint16_t volume_kg) {
+static void workout_show_overview(uint8_t n_exercises, uint8_t sets, uint16_t volume_kg) {
     InputState input;
     uint8_t dirty = 1u;
 
     input_init(&input);
     while (1) {
         if (dirty) {
-            draw_workout_overview(exercises, sets, volume_kg);
+            draw_workout_overview(n_exercises, sets, volume_kg);
             dirty = 0u;
         }
 
@@ -964,7 +961,7 @@ static void workout_show_overview(uint8_t exercises, uint8_t sets, uint16_t volu
 }
 
 static void workout_finish_with_overview(SaveData *data) {
-    uint8_t exercises = session_exercise_count();
+    uint8_t n_exercises = session_exercise_count();
     uint8_t sets = session_set_count();
     uint16_t volume_kg = session_volume_kg();
 
@@ -972,7 +969,7 @@ static void workout_finish_with_overview(SaveData *data) {
         if (ui_confirm(STR_WKT_LOG_FULL, STR_WKT_LOG_FULL_Q)) {
             /* User chose to save; workoutlog_add will drop the oldest entry. */
             if (session_finish(data)) {
-                workout_show_overview(exercises, sets, volume_kg);
+                workout_show_overview(n_exercises, sets, volume_kg);
             }
         } else {
             session_reset();
@@ -981,7 +978,7 @@ static void workout_finish_with_overview(SaveData *data) {
     }
 
     if (session_finish(data) && sets != 0u) {
-        workout_show_overview(exercises, sets, volume_kg);
+        workout_show_overview(n_exercises, sets, volume_kg);
     }
 }
 
