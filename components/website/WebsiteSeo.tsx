@@ -37,19 +37,13 @@ const OG_LOCALE_BY_LANGUAGE: Record<string, string> = {
 export type WebsiteSeoRouteKey = keyof typeof ROUTE_PATHS;
 
 const ROUTE_KEY_BY_PATH: Record<string, WebsiteSeoRouteKey> = {
-  '/': 'home',
-  '/calculator': 'calculator',
-  '/contact': 'contact',
-  '/download': 'download',
-  '/exercises': 'exercises',
-  '/faq': 'faq',
-  '/gameboy': 'gameboy',
+  // Inverse of ROUTE_PATHS, derived so a new route only needs one entry above.
+  ...(Object.fromEntries(Object.entries(ROUTE_PATHS).map(([k, v]) => [v, k])) as Record<
+    string,
+    WebsiteSeoRouteKey
+  >),
+  // Expo Router may expose the home screen under /home as well as /.
   '/home': 'home',
-  '/privacy': 'privacy',
-  '/progress': 'progress',
-  '/rep-marker': 'repMarker',
-  '/terms': 'terms',
-  '/test': 'test',
 };
 
 function absoluteUrl(path: string): string {
@@ -81,13 +75,9 @@ function routeKeyForPathname(pathname: string | null | undefined): WebsiteSeoRou
   return ROUTE_KEY_BY_PATH[normalizePathname(pathname)] ?? null;
 }
 
-export function WebsiteSeoForCurrentRoute({
-  fallbackRouteKey,
-}: {
-  fallbackRouteKey?: WebsiteSeoRouteKey;
-}) {
+export function WebsiteSeoForCurrentRoute() {
   const pathname = usePathname();
-  const routeKey = routeKeyForPathname(pathname) ?? fallbackRouteKey;
+  const routeKey = routeKeyForPathname(pathname);
 
   return routeKey == null ? null : <WebsiteSeo routeKey={routeKey} />;
 }
