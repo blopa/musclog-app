@@ -53,6 +53,15 @@
 #define STR_NEW_GAME_Q   "ERASE ALL DATA?"   /* confirm message; 15 chars, fits centered */
 #define STR_START_YESNO  "A=YES  B=NO"       /* confirm hint; 11 chars, fits centered */
 
+/* ── Start-screen Options sub-screen (SFX / soundtrack toggles) ─────────── */
+#define STR_OPTIONS       "OPTIONS"
+#define STR_OPTIONS_TITLE "- OPTIONS -"   /* centered title; 11 chars */
+#define STR_SFX           "SFX"
+#define STR_MUSIC         "MUSIC"
+#define STR_ON            "ON"
+#define STR_OFF           "OFF"
+#define STR_OPT_BACK_HINT "B=BACK"        /* hint; matches the A=YES B=NO style */
+
 /* ── Home SELECT menu ──────────────────────────────────────────────────── */
 #define STR_MENU          "MENU"
 #define STR_SETTINGS      "SETTINGS"

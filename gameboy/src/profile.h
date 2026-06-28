@@ -65,7 +65,16 @@ typedef struct CalDate {
  *  0x17  |   1   | SRAM_RTC_HOUR       | seed hint: hour   (0-23) — NOT checksummed
  *  0x18  |   1   | SRAM_RTC_MINUTE     | seed hint: minute (0-59) — NOT checksummed
  *  ------|-------|---------------------|-------------------------------------------
+ *  0x38  |   1   | (audio.c) magic     | 0xA7 marks a written audio-settings store
+ *  0x39  |   1   | (audio.c) flags     | bit0 = SFX on, bit1 = soundtrack on
+ *  ------|-------|---------------------|-------------------------------------------
  *  Total: 23 checksummed bytes + 2 seed-hint bytes
+ *
+ *  The audio-settings micro-store (0x38-0x39) lives in the free part of the
+ *  profile-reserved region (the metrics store starts at 0x40). db_load/db_save/
+ *  db_erase only touch the 23-byte checksummed block, so the audio flags persist
+ *  across a NEW GAME erase. It is owned entirely by audio.c (AUDIO_SRAM_*); future
+ *  profile growth from 0x19 must stop before 0x38.
  */
 #define SRAM_MAGIC         0x00u
 #define SRAM_VERSION       0x02u

@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "audio.h"
 #include "body_weight.h"
 #include "copies.h"
 #include "custom_foods.h"
@@ -175,6 +176,10 @@ static void home_loop(SaveData *data) {
 
 void main(void) {
     SaveData save;
+
+    /* Power on the APU and load the persisted SFX/soundtrack toggles before any
+     * screen can request a blip or the title-screen soundtrack. */
+    audio_init();
 
     show_splash();
 

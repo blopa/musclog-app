@@ -28,7 +28,13 @@ battery so dates and logs can survive emulator or flash-cart restarts.
 - A title screen (full-screen art) shown after the splash, with `NEW GAME` and —
   once a completed save exists — `CONTINUE`. `CONTINUE` resumes the saved profile;
   `NEW GAME` over an existing save asks for confirmation, then erases all data and
-  restarts onboarding.
+  restarts onboarding. A third `OPTIONS` entry opens a panel (floating over the
+  title art) to toggle sound effects and the soundtrack independently.
+- Sound: a short blip plays on every selection/confirm/back press across the whole
+  app, and a soundtrack plays only on the title screen. The Game Boy cannot play
+  MIDI, so both bundled `.mid` files are reduced at build time to the four hardware
+  channels — SFX on pulse 1, and the soundtrack as pulse-lead + wave-bass + noise-
+  drums. The SFX/soundtrack on/off choices persist in battery-backed SRAM.
 - First-run onboarding for unit system, biological sex, activity level, age,
   height, weight, lifting experience, fitness focus, and weight goal.
 - Macro goals are generated from the profile, then can be reviewed and edited
@@ -119,13 +125,15 @@ npm run gb:prepare-logo  # Regenerate gameboy/assets/logo.png from the app icon
 npm run gb:prepare-bg    # Regenerate gameboy/assets/gb_background.png (4-color title art)
 npm run gb:gen-foods     # Regenerate ROM food tables from data/*.json
 npm run gb:gen-exercises # Regenerate the ROM exercise table from data/exercisesData.json
+npm run gb:gen-music     # Reduce assets/*.mid to APU data (src/music_data.{c,h})
 npm run gb:build         # Build the .gbc ROM
 npm run gb:copy-rom      # Copy the ROM into assets/ for the website emulator
 ```
 
-The generated food and exercise C files are committed so normal ROM builds do
-not depend on the JSON seed data. Regenerate them only when the source datasets
-change.
+The generated food, exercise, and music C files are committed so normal ROM
+builds do not depend on the JSON seed data or the `.mid` assets. Regenerate them
+only when the source datasets or MIDI files change. `gb:gen-music` prints the
+loop it found (or reports that it fell back to looping the whole song).
 
 ## Source Layout
 
@@ -144,8 +152,14 @@ Important source modules:
 - `src/main.c` boots the splash screen, loads save data, runs the start screen,
   initializes stores, and runs the home loop.
 - `src/start_screen.c` draws the title art (`gb_background`) with the New Game /
-  Continue menu and the erase confirmation, then hands control to onboarding or
-  the home loop. It shares ROM bank 8 with its art so the data is read directly.
+  Continue / Options menu, the erase confirmation, and the SFX/soundtrack Options
+  panel, then hands control to onboarding or the home loop. It starts and stops
+  the title-screen soundtrack and shares ROM bank 8 with its art so the data is
+  read directly.
+- `src/audio.c` is the APU driver (SFX blip, soundtrack sequencer, and the
+  persisted enable flags); `src/music_data.c` is the generated APU data. Both live
+  in ROM bank 9. `src/input.c` calls `audio_play_sfx()` so every fresh button
+  press across the app blips from one place.
 - `src/ui_text.c` owns the 20x18 text UI renderer, palettes, menus, value
   screens, confirmations, bars, and date/datetime pickers.
 - `src/profile.c` stores the packed profile and macro targets in SRAM bank 0.
@@ -186,11 +200,14 @@ ROM banks are used deliberately:
 - Bank 6 contains the exercise table.
 - Bank 7 contains workout UI and session logic.
 - Bank 8 contains the start screen and its title art (`gb_background`).
+- Bank 9 contains the audio driver (`audio.c`) and the generated APU data
+  (`music_data.c`), co-located so the sequencer reads the tables directly.
 
 SRAM stores are separate and checksummed:
 
 - Bank 0 stores the profile at the start of SRAM and body-weight metrics from
-  offset `0x40`.
+  offset `0x40`. The audio SFX/soundtrack on-off flags sit at `0x38-0x39`, in the
+  free part of the profile-reserved region, and survive a NEW GAME erase.
 - Bank 1 stores food log records: day number, food index, and grams.
 - Bank 2 stores workout records with summary data plus every logged set.
 - Bank 3 stores custom foods in fixed tombstoned slots.

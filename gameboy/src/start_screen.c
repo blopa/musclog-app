@@ -7,6 +7,7 @@
 
 #include "start_screen.h"
 
+#include "audio.h"
 #include "copies.h"
 #include "custom_foods.h"
 #include "foodlog.h"
@@ -43,16 +44,29 @@
 
 #define OPT_CURSOR_X 5u
 #define OPT_TEXT_X   7u
+#define OPT_VALUE_X  14u   /* ON/OFF column on the Options sub-screen */
 
-/* Menu rows. */
+/* Menu rows (CONTINUE / NEW GAME / OPTIONS — the first is shown only with a save). */
 #define ROW_OPT0    13u
 #define ROW_OPT1    14u
+#define ROW_OPT2    15u
 /* Confirm rows. */
 #define ROW_CONFIRM_Q  13u
 #define ROW_CONFIRM_YN 15u
+/* Options sub-screen rows (within the lower text band). */
+#define ROW_OPTSCR_TITLE 12u
+#define ROW_OPTSCR_SFX   13u
+#define ROW_OPTSCR_MUSIC 14u
+#define ROW_OPTSCR_HINT  16u
 
 #define ST_STATE_MENU    0u
 #define ST_STATE_CONFIRM 1u
+#define ST_STATE_OPTIONS 2u
+
+/* Menu actions (decoded from the cursor + whether a save exists). */
+#define ST_ACTION_CONTINUE 0u
+#define ST_ACTION_NEW_GAME 1u
+#define ST_ACTION_OPTIONS  2u
 
 /* Write a 1-row run of CGB attribute bytes (palette + flags) at the given cell. */
 static void st_attr_row(uint8_t x, uint8_t y, uint8_t w, uint8_t value) {
@@ -166,17 +180,36 @@ static void st_center(uint8_t y, const char *s) {
     st_text(x, y, s);
 }
 
-static void st_render(uint8_t state, uint8_t has_save, uint8_t selected) {
+/* One Options row: cursor, label, and the ON/OFF value floating over the art. */
+static void st_opt_toggle(uint8_t y, const char *label, uint8_t on, uint8_t focused) {
+    st_text(OPT_CURSOR_X, y, focused ? ">" : " ");
+    st_text(OPT_TEXT_X, y, label);
+    st_text(OPT_VALUE_X, y, on ? STR_ON : STR_OFF);
+}
+
+/* The Options sub-screen: SFX and soundtrack toggles drawn over the title art. */
+static void st_render_options(uint8_t opt_sel) {
+    st_center(ROW_OPTSCR_TITLE, STR_OPTIONS_TITLE);
+    st_opt_toggle(ROW_OPTSCR_SFX, STR_SFX, audio_sfx_enabled(), (uint8_t)(opt_sel == 0u));
+    st_opt_toggle(ROW_OPTSCR_MUSIC, STR_MUSIC, audio_music_enabled(), (uint8_t)(opt_sel == 1u));
+    st_center(ROW_OPTSCR_HINT, STR_OPT_BACK_HINT);
+}
+
+static void st_render(uint8_t state, uint8_t has_save, uint8_t selected, uint8_t opt_sel) {
     st_restore_band();
 
     if (state == ST_STATE_CONFIRM) {
         st_center(ROW_CONFIRM_Q, STR_NEW_GAME_Q);
         st_center(ROW_CONFIRM_YN, STR_START_YESNO);
+    } else if (state == ST_STATE_OPTIONS) {
+        st_render_options(opt_sel);
     } else if (has_save) {
         st_draw_option(ROW_OPT0, STR_CONTINUE, (uint8_t)(selected == 0u));
         st_draw_option(ROW_OPT1, STR_NEW_GAME, (uint8_t)(selected == 1u));
+        st_draw_option(ROW_OPT2, STR_OPTIONS, (uint8_t)(selected == 2u));
     } else {
-        st_draw_option(ROW_OPT0, STR_NEW_GAME, 1u);
+        st_draw_option(ROW_OPT0, STR_NEW_GAME, (uint8_t)(selected == 0u));
+        st_draw_option(ROW_OPT1, STR_OPTIONS, (uint8_t)(selected == 1u));
     }
 }
 
@@ -185,7 +218,9 @@ void start_screen_run(SaveData *save, uint8_t had_valid_save) BANKED {
      * save (e.g. a pre-seeded RTC from the web emulator) still counts as "no save"
      * here — NEW GAME just runs onboarding, preserving the RTC. */
     uint8_t has_save = (uint8_t)(had_valid_save && save->onboarding_complete);
+    uint8_t menu_count = (uint8_t)(has_save ? 3u : 2u); /* CONTINUE?/NEW GAME/OPTIONS */
     uint8_t selected = 0u;
+    uint8_t opt_sel = 0u;
     uint8_t state = ST_STATE_MENU;
     uint8_t dirty = 1u;
     uint8_t go_onboard = 0u;
@@ -195,30 +230,63 @@ void start_screen_run(SaveData *save, uint8_t had_valid_save) BANKED {
     st_setup_graphics();
     input_init(&input);
 
+    /* The soundtrack plays only on this title screen; stop it before leaving. */
+    audio_music_start();
+
     while (!done) {
         if (dirty) {
-            st_render(state, has_save, selected);
+            st_render(state, has_save, selected, opt_sel);
             dirty = 0u;
         }
 
         wait_vbl_done();
         input_update(&input);
+        audio_music_update();
 
         if (state == ST_STATE_MENU) {
-            if (has_save && input_pressed(&input, J_UP | J_DOWN)) {
-                selected ^= 1u;
+            if (input_pressed(&input, J_UP)) {
+                selected = (uint8_t)((selected == 0u) ? (menu_count - 1u) : (selected - 1u));
+                dirty = 1u;
+            }
+            if (input_pressed(&input, J_DOWN)) {
+                selected = (uint8_t)((selected + 1u) % menu_count);
                 dirty = 1u;
             }
             if (input_pressed(&input, J_A | J_START)) {
-                if (has_save && selected == 0u) {
+                /* Without a save the menu omits CONTINUE, so shift the cursor up. */
+                uint8_t action = (uint8_t)(has_save ? selected : (selected + 1u));
+                if (action == ST_ACTION_CONTINUE) {
                     done = 1u; /* CONTINUE — keep the loaded save, go home. */
-                } else if (has_save) {
-                    state = ST_STATE_CONFIRM; /* NEW GAME over an existing save. */
-                    dirty = 1u;
+                } else if (action == ST_ACTION_NEW_GAME) {
+                    if (has_save) {
+                        state = ST_STATE_CONFIRM; /* NEW GAME over an existing save. */
+                        dirty = 1u;
+                    } else {
+                        go_onboard = 1u; /* NEW GAME, fresh install. */
+                        done = 1u;
+                    }
                 } else {
-                    go_onboard = 1u; /* NEW GAME, fresh install. */
-                    done = 1u;
+                    opt_sel = 0u;
+                    state = ST_STATE_OPTIONS;
+                    dirty = 1u;
                 }
+            }
+        } else if (state == ST_STATE_OPTIONS) {
+            if (input_pressed(&input, J_UP | J_DOWN)) {
+                opt_sel ^= 1u;
+                dirty = 1u;
+            }
+            if (input_pressed(&input, J_A | J_START | J_LEFT | J_RIGHT)) {
+                if (opt_sel == 0u) {
+                    audio_set_sfx((uint8_t)(!audio_sfx_enabled()));
+                } else {
+                    audio_set_music((uint8_t)(!audio_music_enabled()));
+                }
+                dirty = 1u;
+            }
+            if (input_pressed(&input, J_B)) {
+                state = ST_STATE_MENU; /* Back to the menu (OPTIONS stays focused). */
+                dirty = 1u;
             }
         } else {
             if (input_pressed(&input, J_A | J_START)) {
@@ -235,6 +303,8 @@ void start_screen_run(SaveData *save, uint8_t had_valid_save) BANKED {
             }
         }
     }
+
+    audio_music_stop();
 
     /* Hand the screen back to the text UI that onboarding and home expect. */
     ui_init_text();
