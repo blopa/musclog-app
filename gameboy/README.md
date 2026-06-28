@@ -25,6 +25,10 @@ battery so dates and logs can survive emulator or flash-cart restarts.
 
 ## Player Features
 
+- A title screen (full-screen art) shown after the splash, with `NEW GAME` and —
+  once a completed save exists — `CONTINUE`. `CONTINUE` resumes the saved profile;
+  `NEW GAME` over an existing save asks for confirmation, then erases all data and
+  restarts onboarding.
 - First-run onboarding for unit system, biological sex, activity level, age,
   height, weight, lifting experience, fitness focus, and weight goal.
 - Macro goals are generated from the profile, then can be reviewed and edited
@@ -82,7 +86,8 @@ npm run gb:build
 The build script:
 
 1. Downloads GBDK-2020 into `gameboy/.gbdk/` if `lcc` is missing.
-2. Converts `gameboy/assets/logo.png` into generated GBDK asset sources.
+2. Converts `gameboy/assets/logo.png` and `gameboy/assets/gb_background.png` into
+   generated GBDK asset sources.
 3. Compiles every `gameboy/src/*.c` file.
 4. Writes `gameboy/build/musclog.gbc`.
 5. Checks `gameboy/build/musclog.map` for ROM bank overflows.
@@ -111,6 +116,7 @@ by the website Game Boy page through WasmBoy.
 ```sh
 npm run gb:setup         # Fetch GBDK-2020 only
 npm run gb:prepare-logo  # Regenerate gameboy/assets/logo.png from the app icon
+npm run gb:prepare-bg    # Regenerate gameboy/assets/gb_background.png (4-color title art)
 npm run gb:gen-foods     # Regenerate ROM food tables from data/*.json
 npm run gb:gen-exercises # Regenerate the ROM exercise table from data/exercisesData.json
 npm run gb:build         # Build the .gbc ROM
@@ -135,8 +141,11 @@ gameboy/
 
 Important source modules:
 
-- `src/main.c` boots the splash screen, loads or creates save data, initializes
-  stores, and runs the home loop.
+- `src/main.c` boots the splash screen, loads save data, runs the start screen,
+  initializes stores, and runs the home loop.
+- `src/start_screen.c` draws the title art (`gb_background`) with the New Game /
+  Continue menu and the erase confirmation, then hands control to onboarding or
+  the home loop. It shares ROM bank 8 with its art so the data is read directly.
 - `src/ui_text.c` owns the 20x18 text UI renderer, palettes, menus, value
   screens, confirmations, bars, and date/datetime pickers.
 - `src/profile.c` stores the packed profile and macro targets in SRAM bank 0.
@@ -158,12 +167,12 @@ Important source modules:
 
 ## Cartridge Layout
 
-The ROM is linked as a 128 KB CGB-only MBC3 cartridge:
+The ROM is linked as a 256 KB CGB-only MBC3 cartridge:
 
 - `-Wm-yC`: Game Boy Color only
 - `-Wm-yt0x10`: MBC3 + timer + RAM + battery
 - `-Wm-ya4`: four 8 KB SRAM banks
-- `-Wm-yo8`: eight 16 KB ROM banks
+- `-Wm-yo16`: sixteen 16 KB ROM banks
 - Header title: `MUSCLOG`
 - Header product/manufacturer patch: `MLOG`
 
@@ -176,6 +185,7 @@ ROM banks are used deliberately:
 - Bank 5 contains onboarding.
 - Bank 6 contains the exercise table.
 - Bank 7 contains workout UI and session logic.
+- Bank 8 contains the start screen and its title art (`gb_background`).
 
 SRAM stores are separate and checksummed:
 
@@ -216,8 +226,11 @@ pre-fill the hour and minute without touching the save format.
 
 - Keep generated tables in sync with their source data by using
   `npm run gb:gen-foods` and `npm run gb:gen-exercises`.
-- Keep `gameboy/assets/logo.png` committed. The build converts it into generated
-  `src/logo.c` and `src/logo.h`, which are gitignored.
+- Keep `gameboy/assets/logo.png` and `gameboy/assets/gb_background.png` committed.
+  The build converts them into generated `src/logo.c`/`src/logo.h` and
+  `src/gb_background.c`/`src/gb_background.h`, which are gitignored. The title art
+  is pinned to ROM bank 8 (`png2asset -b 8`), matching `start_screen.c`'s
+  `#pragma bank 8` so the code reads the data co-located without `SWITCH_ROM()`.
 - After adding large tables or new screens, run `npm run gb:build` and inspect
   the bank layout output. The build fails if fixed or switchable banks overflow.
 - Prefer keeping ROM-bank-sensitive readers non-banked when they call

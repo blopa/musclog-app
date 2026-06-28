@@ -20,7 +20,13 @@ const gameboyDir = join(repoRoot, 'gameboy');
 const srcDir = join(gameboyDir, 'src');
 const buildDir = join(gameboyDir, 'build');
 const logoPng = join(gameboyDir, 'assets', 'logo.png');
+const backgroundPng = join(gameboyDir, 'assets', 'gb_background.png');
 const romPath = join(buildDir, 'musclog.gbc');
+
+// The start-screen art is the largest single asset; it lives in its own ROM bank
+// (8) together with the start-screen code so the code can read it directly without
+// SWITCH_ROM. Bank 0 is full, so this must NOT go to the default (fixed) bank.
+const BACKGROUND_BANK = 8;
 
 function run(bin, args, cwd) {
     execFileSync(bin, args, { cwd, stdio: 'inherit' });
@@ -86,6 +92,10 @@ if (!existsSync(logoPng)) {
     throw new Error(`Missing ${logoPng}. Run "npm run gb:prepare-logo" first to generate it.`);
 }
 
+if (!existsSync(backgroundPng)) {
+    throw new Error(`Missing ${backgroundPng}. Run "npm run gb:prepare-bg" first to generate it.`);
+}
+
 mkdirSync(srcDir, { recursive: true });
 mkdirSync(buildDir, { recursive: true });
 
@@ -100,13 +110,27 @@ run(png2asset, [
     '-noflip',
 ]);
 
+// 2b. Start-screen art -> C data, pinned to BACKGROUND_BANK so it co-locates with
+// start_screen.c (which uses the same "#pragma bank 8") and stays out of the full bank 0.
+console.log('Converting gb_background.png -> src/gb_background.c ...');
+run(png2asset, [
+    backgroundPng,
+    '-c', join(srcDir, 'gb_background.c'),
+    '-map',
+    '-use_map_attributes',
+    '-keep_palette_order',
+    '-noflip',
+    '-b', String(BACKGROUND_BANK),
+]);
+
 // 3. Compile + link. -Wm-yC = Game Boy Color only; -Wm-yt0x10 = MBC3 + Timer + RAM + battery.
 //    MBC3 provides the real-time clock (RTC) registers used for calendar date tracking.
 //    -Wm-ya4 sets the RAM-size header to four 8 KB SRAM banks so emulators/flash carts
 //    actually persist the onboarding profile.
-//    -Wm-yo8 reserves eight 16 KB ROM banks (128 KB). The hardcoded food tables
-//    live in dedicated banks (USDA in bank 2, common foods in bank 3), and the
-//    generated exercise table lives in bank 6; SWITCH_ROM() is required to read them.
+//    -Wm-yo16 reserves sixteen 16 KB ROM banks (256 KB). The hardcoded food tables
+//    live in dedicated banks (USDA in bank 2, common foods in bank 3), the generated
+//    exercise table lives in bank 6 (SWITCH_ROM() is required to read those), and the
+//    start-screen art + code live in bank 8 (read directly, co-located in that bank).
 //
 //    Cartridge product code: CGB-MLOG-HOL (modelled on Nintendo's DMG-TR-USA scheme):
 //      - CGB     : Game Boy Color title, set by -Wm-yC.
@@ -130,7 +154,7 @@ run(lcc, [
     '-Wm-yC',
     '-Wm-yt0x10',
     '-Wm-ya4',
-    '-Wm-yo8',
+    '-Wm-yo16',
     '-Wm-yn"MUSCLOG"',
     '-Wm-yj',
     '-Wm-yp0x13F=0x4D', // 'M'

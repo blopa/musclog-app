@@ -7,3 +7,5 @@ build/
 # Generated asset source (emitted by png2asset during the build)
 src/logo.c
 src/logo.h
+src/gb_background.c
+src/gb_background.h

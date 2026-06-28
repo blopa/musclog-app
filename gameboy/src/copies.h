@@ -47,11 +47,11 @@
 #define STR_WORKOUTS      "WORKOUTS"
 #define STR_BODY_WEIGHT   "BODY WEIGHT"
 
-/* ── Start menu ────────────────────────────────────────────────────────── */
-#define STR_START_TITLE  "START"
+/* ── Start screen ──────────────────────────────────────────────────────── */
 #define STR_CONTINUE     "CONTINUE"      /* menu label (distinct from STR_FOOTER_CONTINUE) */
 #define STR_NEW_GAME     "NEW GAME"
 #define STR_NEW_GAME_Q   "ERASE ALL DATA?"   /* confirm message; 15 chars, fits centered */
+#define STR_START_YESNO  "A=YES  B=NO"       /* confirm hint; 11 chars, fits centered */
 
 /* ── Home SELECT menu ──────────────────────────────────────────────────── */
 #define STR_MENU          "MENU"

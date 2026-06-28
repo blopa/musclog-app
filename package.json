@@ -30,6 +30,7 @@
     "gb:gen-foods": "node gameboy/tools/gen-foundation-foods.mjs",
     "gb:gen-exercises": "node gameboy/tools/gen-exercises.mjs",
     "gb:prepare-logo": "node gameboy/tools/prepare-logo.mjs",
+    "gb:prepare-bg": "node gameboy/tools/prepare-background.mjs",
     "gb:setup": "node gameboy/tools/fetch-gbdk.mjs",
     "gb:build": "node gameboy/tools/build-gb-rom.mjs",
     "gb:copy-rom": "cp gameboy/build/musclog.gbc assets/musclog.gbc",
