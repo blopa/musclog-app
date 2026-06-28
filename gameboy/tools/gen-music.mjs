@@ -7,7 +7,7 @@
 // The parser/reduction/emission pieces live under tools/music/ so this command
 // stays as orchestration: read assets, build the reduced streams, emit C, report.
 
-import { readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -16,7 +16,8 @@ import { musicBody, musicHeader } from './music/emit-c.mjs';
 
 const repoRoot = join(fileURLToPath(import.meta.url), '..', '..', '..');
 const assetsDir = join(repoRoot, 'gameboy', 'assets');
-const outDir = join(repoRoot, 'gameboy', 'src');
+const outDir = join(repoRoot, 'gameboy', 'src', 'generated');
+mkdirSync(outDir, { recursive: true });
 
 const SFX_FILE = 'beep_sfx.mid';
 const SONG_FILE = 'E2M9_Cammy_-_Cookie_Fangs.mid';

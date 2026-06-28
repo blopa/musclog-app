@@ -95,7 +95,7 @@ The build script:
 1. Downloads GBDK-2020 into `gameboy/.gbdk/` if `lcc` is missing.
 2. Converts `gameboy/assets/logo.png` and `gameboy/assets/gb_background.png` into
    generated GBDK asset sources.
-3. Compiles every `gameboy/src/*.c` file.
+3. Compiles every `gameboy/src/**/*.c` file.
 4. Writes `gameboy/build/musclog.gbc`.
 5. Checks `gameboy/build/musclog.map` for ROM bank overflows.
 
@@ -123,12 +123,12 @@ WasmBoy.
 
 ```sh
 npm run gb:setup         # Fetch GBDK-2020 only
-npm run gb:lint          # Run cppcheck on gameboy/src
+npm run gb:lint          # Run clang-tidy on gameboy/src recursively
 npm run gb:prepare-logo  # Regenerate gameboy/assets/logo.png from the app icon
 npm run gb:prepare-bg    # Regenerate gameboy/assets/gb_background.png (4-color title art)
 npm run gb:gen-foods     # Regenerate ROM food tables from data/*.json
 npm run gb:gen-exercises # Regenerate the ROM exercise table from data/exercisesData.json
-npm run gb:gen-music     # Reduce assets/*.mid to APU data (src/music_data.{c,h})
+npm run gb:gen-music     # Reduce assets/*.mid to APU data (src/generated/music_data.{c,h})
 npm run gb:build         # Build the .gbc ROM
 npm run gb:copy-rom      # Copy the ROM into app + website emulator assets
 ```
@@ -141,9 +141,9 @@ converter is split under `gameboy/tools/music/`; run
 `node --test gameboy/tools/music/*.test.mjs` after changing its parser or
 arrangement code.
 
-`npm run gb:lint` runs `cppcheck` over `gameboy/src` with a small suppression list
-for missing system headers from GBDK. Install `cppcheck` on your machine first;
-extra flags can be forwarded with `npm run gb:lint -- ...`.
+`npm run gb:lint` runs `clang-tidy` over `gameboy/src` recursively using the
+stub GBDK headers in `gameboy/tools/lint-stubs`. Install `clang-tidy` on your
+machine first; extra flags can be forwarded with `npm run gb:lint -- ...`.
 
 ## Asset Credits
 
@@ -162,7 +162,14 @@ extra flags can be forwarded with `npm run gb:lint -- ...`.
 gameboy/
   assets/       Source bitmap assets used by the ROM build
   screenshots/  160x144 captures used in this README and website material
-  src/          GBDK C source code
+  src/
+    app/        Boot flow and top-level screens
+    audio/      APU driver and interrupt glue
+    data/       SRAM/RTC/storage logic and shared data math
+    features/   Nutrition and workout feature flows
+    generated/  Build-generated assets and committed ROM tables
+    shared/     Cross-cutting utility headers
+    ui/         Text UI/input helpers and copy strings
   tools/        Node scripts for toolchain setup, data generation, and builds
   tools/music/  MIDI parser, arrangement reducer, C emitter, and node:test coverage
   build/        Generated ROM, map, and capture artifacts (gitignored)
@@ -171,42 +178,44 @@ gameboy/
 
 Important source modules:
 
-- `src/main.c` boots the splash screen, loads save data, runs the start screen,
+- `src/app/main.c` boots the splash screen, loads save data, runs the start screen,
   owns the New Game / Continue lifecycle decisions (including data erase and
   onboarding), initializes stores, and runs the home loop.
-- `src/start_screen.c` draws the title art (`gb_background`) with the New Game /
+- `src/app/start_screen.c` draws the title art (`gb_background`) with the New Game /
   Continue / Options menu, the erase confirmation, and the SFX/soundtrack Options
   panel, then returns the selected action to `main.c`. It shares ROM bank 8 with
   its art so the data is read directly.
-- `src/audio.c` is the APU driver (SFX blip, global soundtrack sequencer, and the
-  persisted enable flags); `src/music_data.c` is the generated APU data. Both live
-  in ROM bank 9. `src/audio_vbl.c` (HOME bank) holds the VBL interrupt handler
+- `src/audio/audio.c` is the APU driver (SFX blip, global soundtrack sequencer, and the
+  persisted enable flags); `src/generated/music_data.c` is the generated APU data.
+  Both live in ROM bank 9. `src/audio/audio_vbl.c` (HOME bank) holds the VBL interrupt handler
   that silences stalled music channels during screen transitions and heavy tile
   loading — it watches a stall counter reset by `audio_music_update()` each frame,
   and kills channels 2/3/4 after 2 frames without a sequencer tick.
-- `src/ui_text.c` owns the 20x18 text UI renderer, palettes, menus, value
+- `src/ui/ui_text.c` owns the 20x18 text UI renderer, palettes, menus, value
   screens, confirmations, bars, date/datetime pickers, and the explicit UI input
   wrapper that advances the soundtrack and plays the SFX blip after fresh button
   presses.
-- `src/profile.c` stores the packed profile and macro targets in SRAM bank 0;
-  `src/sram_layout.h` names shared bank-0 subregions so profile, metrics, RTC seed
+- `src/data/profile.c` stores the packed profile and macro targets in SRAM bank 0;
+  `src/data/sram_layout.h` names shared bank-0 subregions so profile, metrics, RTC seed
   hints, and audio settings cannot drift into each other.
-- `src/game_data.c` owns the full gameplay-data erase sequence used by both Reset
+- `src/app/game_data.c` owns the full gameplay-data erase sequence used by both Reset
   Data and title-screen New Game. Audio settings intentionally survive that erase.
-- `src/rtc.c` reads and writes the MBC3 RTC and provides calendar helpers.
-- `src/home_screen.c` renders the macro dashboard and top-level navigation.
-- `src/progress.c` aggregates the food log, workout log, and weight metrics over
+- `src/data/rtc.c` reads and writes the MBC3 RTC and provides calendar helpers.
+- `src/app/home_screen.c` renders the macro dashboard and top-level navigation.
+- `src/app/progress.c` aggregates the food log, workout log, and weight metrics over
   a rolling window and renders the paged progress charts.
-- `src/onboarding.c` collects profile details and macro-goal review/editing.
-- `src/nutrition.c`, `src/nutrition_search.c`, and `src/nutrition_detail.c`
+- `src/app/onboarding.c` collects profile details and macro-goal review/editing.
+- `src/features/nutrition/nutrition.c`, `src/features/nutrition/nutrition_search.c`, and
+  `src/features/nutrition/nutrition_detail.c`
   implement the food diary, search, serving picker, detail, and delete flows.
-- `src/food_db.c` reads bundled ROM food tables and custom foods behind one
+- `src/data/food_db.c` reads bundled ROM food tables and custom foods behind one
   global food index space.
-- `src/custom_foods.c` persists user-created foods in SRAM bank 3.
-- `src/body_weight.c` and `src/metrics.c` implement dated weigh-ins and the
+- `src/data/custom_foods.c` persists user-created foods in SRAM bank 3.
+- `src/data/body_weight.c` and `src/data/metrics.c` implement dated weigh-ins and the
   body-weight trend chart.
-- `src/workouts.c`, `src/workout_session.c`, `src/workoutlog.c`, and
-  `src/exercise_db.c` implement free sessions, exercise lookup, recommendations,
+- `src/features/workouts/workouts.c`, `src/features/workouts/workout_session.c`,
+  `src/features/workouts/workoutlog.c`, and `src/features/workouts/exercise_db.c`
+  implement free sessions, exercise lookup, recommendations,
   rest timers, saved workouts, and workout details.
 
 ## Cartridge Layout
@@ -261,7 +270,7 @@ imperial units, display pounds are converted at the UI boundary.
 Calendar values are stored as day numbers from `2000-01-01`. The RTC setup
 screen stores a base date and resets the MBC3 day counter; current date is
 derived by advancing that base date by elapsed RTC days. The RTC base date
-(`SRAM_RTC_*` in `src/profile.h`, bank 0) and its `rtc_is_set` flag can also be
+(`SRAM_RTC_*` in `src/data/profile.h`, bank 0) and its `rtc_is_set` flag can also be
 written from outside the ROM: `utils/decodeGameBoySave.ts` encodes a valid
 profile block (matching `db_checksum`) so the website can hand the ROM today's
 date before boot. Today's time of day rides along in two seed-hint bytes
@@ -274,9 +283,10 @@ pre-fill the hour and minute without touching the save format.
 - Keep generated tables in sync with their source data by using
   `npm run gb:gen-foods`, `npm run gb:gen-exercises`, and `npm run gb:gen-music`.
 - Keep `gameboy/assets/logo.png` and `gameboy/assets/gb_background.png` committed.
-  The build converts them into generated `src/logo.c`/`src/logo.h` and
-  `src/gb_background.c`/`src/gb_background.h`, which are gitignored. The title art
-  is pinned to ROM bank 8 (`png2asset -b 8`), matching `start_screen.c`'s
+  The build converts them into generated `src/generated/logo.c`/`src/generated/logo.h`
+  and `src/generated/gb_background.c`/`src/generated/gb_background.h`, which are
+  gitignored. The title art is pinned to ROM bank 8 (`png2asset -b 8`), matching
+  `start_screen.c`'s
   `#pragma bank 8` so the code reads the data co-located without `SWITCH_ROM()`.
   The title art must fit within 256 addressable background tile indices after
   png2asset dedupes duplicate and flipped tiles; `npm run gb:build` fails if a

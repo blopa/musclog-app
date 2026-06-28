@@ -82,15 +82,42 @@ function ensureClangTidyAvailable() {
 }
 
 function collectSourceFiles() {
-    return readdirSync(srcDir)
-        .filter((f) => f.endsWith('.c'))
-        .map((f) => join(srcDir, f));
+    return collectFilesRecursive(srcDir, '.c');
+}
+
+function collectFilesRecursive(rootDir, extension) {
+    const files = [];
+
+    for (const entry of readdirSync(rootDir, { withFileTypes: true })) {
+        const fullPath = join(rootDir, entry.name);
+        if (entry.isDirectory()) {
+            files.push(...collectFilesRecursive(fullPath, extension));
+            continue;
+        }
+        if (entry.isFile() && entry.name.endsWith(extension)) {
+            files.push(fullPath);
+        }
+    }
+
+    return files.sort();
+}
+
+function collectIncludeDirs(rootDir) {
+    const dirs = [rootDir];
+
+    for (const entry of readdirSync(rootDir, { withFileTypes: true })) {
+        if (!entry.isDirectory()) continue;
+        dirs.push(...collectIncludeDirs(join(rootDir, entry.name)));
+    }
+
+    return dirs.sort();
 }
 
 function generateCompileCommands(sourceFiles) {
     // clang-tidy needs a compile_commands.json to know which flags to use.
     // We generate a minimal one: -std=c99, stub include path first so our
-    // SDCC-free headers shadow the real GBDK ones, then the src dir.
+    // SDCC-free headers shadow the real GBDK ones, then every project include dir.
+    const includeDirs = collectIncludeDirs(srcDir);
     const entries = sourceFiles.map((file) => ({
         directory: srcDir,
         file,
@@ -100,7 +127,7 @@ function generateCompileCommands(sourceFiles) {
             // Stubs must come before any system path so clang picks our
             // SDCC-free <gb/gb.h> etc. instead of the real GBDK ones.
             `-I${stubsDir}`,
-            `-I${srcDir}`,
+            ...includeDirs.map((dir) => `-I${dir}`),
             // Silence warnings that are expected in GBC embedded code.
             '-Wno-unused-parameter',
             '-c',
@@ -125,7 +152,7 @@ function run() {
 
     const sourceFiles = collectSourceFiles();
     if (sourceFiles.length === 0) {
-        console.log('No .c files found in gameboy/src — nothing to lint.');
+        console.log('No .c files found under gameboy/src — nothing to lint.');
         return;
     }
 
@@ -140,7 +167,7 @@ function run() {
         ...sourceFiles,
     ];
 
-    console.log(`Running clang-tidy on gameboy/src (${sourceFiles.length} files)...`);
+    console.log(`Running clang-tidy on gameboy/src recursively (${sourceFiles.length} files)...`);
     execFileSync('clang-tidy', args, {
         cwd: repoRoot,
         stdio: 'inherit',
