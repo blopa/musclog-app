@@ -1,10 +1,10 @@
-import Head from 'expo-router/head';
 import savitzkyGolay from 'ml-savitzky-golay';
 import type { ChangeEvent, DragEvent } from 'react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { MultipleLinesChart } from '@/components/charts/MultipleLinesChart';
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
+import { WebsiteSeo } from '@/components/website/WebsiteSeo';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { isProduction } from '@/utils/app';
 import { analyzeRecordedReps } from '@/utils/repAnalysis';
@@ -331,7 +331,7 @@ export default function Test() {
   );
 
   if (isProduction()) {
-    return null;
+    return <WebsiteSeo routeKey="test" />;
   }
 
   const sampleCount = fileState?.samples.length ?? 0;
@@ -386,9 +386,7 @@ export default function Test() {
 
   return (
     <>
-      <Head>
-        <title>Debug chart uploader</title>
-      </Head>
+      <WebsiteSeo routeKey="test" />
 
       <main className="relative min-h-screen overflow-hidden bg-[#06110b] px-4 py-8 text-white">
         <DotPattern className="text-emerald-400/10" />

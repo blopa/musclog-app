@@ -1,11 +1,11 @@
 'use client';
 
-import Head from 'expo-router/head';
 import { ExternalLink, Mail, MessageSquare, Send, Shield } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FloatingShapes, GridPattern } from '@/components/website/WebsiteBackgrounds';
+import { WebsiteSeo } from '@/components/website/WebsiteSeo';
 
 const BRAND_GREEN_BRIGHT = '#00FFA3';
 const BODY_TEXT_SOFT = '#9CA3AF';
@@ -55,9 +55,7 @@ export default function Contact() {
 
   return (
     <>
-      <Head>
-        <title>{t('pageTitle')}</title>
-      </Head>
+      <WebsiteSeo routeKey="contact" />
       <main className="relative overflow-hidden pb-20 pt-28">
         <GridPattern className="text-primary/50" />
         <FloatingShapes />

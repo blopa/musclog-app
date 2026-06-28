@@ -1,10 +1,10 @@
-import Head from 'expo-router/head';
 import type { MouseEvent, PointerEvent, ReactNode } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { WasmBoyJoypadState } from 'wasmboy';
 
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
+import { WebsiteSeo } from '@/components/website/WebsiteSeo';
 import { isProduction } from '@/utils/app';
 import { readAndDecodeGameBoySaves, seedGameBoyTodayDate } from '@/utils/decodeGameBoySave';
 
@@ -308,9 +308,7 @@ export default function GameBoy() {
 
   return (
     <>
-      <Head>
-        <title>{t('pageTitle')}</title>
-      </Head>
+      <WebsiteSeo routeKey="gameboy" />
       <main className="relative flex min-h-[calc(100vh-8rem)] flex-col items-center overflow-hidden px-4 py-16">
         <DotPattern className="text-primary/30" />
         <div className="from-background/60 to-background/80 absolute inset-0 bg-gradient-to-b via-transparent" />

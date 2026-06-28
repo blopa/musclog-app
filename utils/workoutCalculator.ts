@@ -164,13 +164,7 @@ export function calculatePreviewVolumeFromTemplateSets(
  * Type representing the supported 1RM calculation formulas
  */
 export type FormulaType =
-  | 'Epley'
-  | 'Brzycki'
-  | 'Lander'
-  | 'Lombardi'
-  | 'Mayhew'
-  | 'OConner'
-  | 'Wathen';
+  'Epley' | 'Brzycki' | 'Lander' | 'Lombardi' | 'Mayhew' | 'OConner' | 'Wathen';
 
 /**
  * Calculates the average one-rep max (1RM) across multiple validated formulas.

@@ -329,14 +329,7 @@ export const MUSCLOG_GATEWAY_ANONYMOUS_ID_SETTING_TYPE = 'musclog_gateway_anonym
 export const DUMP_LLM_REQUESTS_SETTING_TYPE = 'dump_llm_requests';
 
 export type NavItemKey =
-  | 'workouts'
-  | 'food'
-  | 'profile'
-  | 'coach'
-  | 'cycle'
-  | 'settings'
-  | 'progress'
-  | 'checkin';
+  'workouts' | 'food' | 'profile' | 'coach' | 'cycle' | 'settings' | 'progress' | 'checkin';
 
 export type Units = 'metric' | 'imperial';
 export type ThemeOption = 'system' | 'light' | 'dark';

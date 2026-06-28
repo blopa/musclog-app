@@ -46,8 +46,7 @@ export type UseWorkoutTemplatesResultPaginated = {
 };
 
 export type UseWorkoutTemplatesResult =
-  | UseWorkoutTemplatesResultAll
-  | UseWorkoutTemplatesResultPaginated;
+  UseWorkoutTemplatesResultAll | UseWorkoutTemplatesResultPaginated;
 
 // Function overloads for proper type narrowing
 export function useWorkoutTemplates(

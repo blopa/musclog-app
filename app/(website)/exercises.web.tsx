@@ -1,11 +1,11 @@
 'use client';
 
-import Head from 'expo-router/head';
 import { Dumbbell, Info, Search, X } from 'lucide-react-native';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { SectionBackground } from '@/components/website/WebsiteBackgrounds';
+import { WebsiteSeo } from '@/components/website/WebsiteSeo';
 import exercisesData from '@/data/exercisesData.json';
 import i18n, { EXERCISES_JSON } from '@/lang/lang';
 
@@ -269,7 +269,6 @@ function ExerciseCard({
 
 export default function ExercisesPage() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.exercises' });
-  const { t: navT } = useTranslation(undefined, { keyPrefix: 'website.navigation' });
   const { t: tEx } = useTranslation();
 
   const locale = i18n.resolvedLanguage ?? i18n.language ?? 'en-us';
@@ -329,9 +328,7 @@ export default function ExercisesPage() {
 
   return (
     <>
-      <Head>
-        <title>{`${navT('exercises')} — Musclog`}</title>
-      </Head>
+      <WebsiteSeo routeKey="exercises" />
       <main>
         {/* Page header */}
         <section className="relative overflow-hidden pb-12 pt-24 md:pb-16 md:pt-32">

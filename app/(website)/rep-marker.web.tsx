@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'expo-router/head';
 import {
   Download,
   FileJson,
@@ -15,6 +14,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GridPattern } from '@/components/website/WebsiteBackgrounds';
+import { WebsiteSeo } from '@/components/website/WebsiteSeo';
 import { computePosition, type DeadReckoningSample } from '@/utils/deadReckoning';
 
 // ── Color palette ──────────────────────────────────────────────────────────
@@ -38,16 +38,7 @@ const ACCENT_RED = '#EF4444';
 //   • Acceleration — raw accel per axis + magnitude. Drift-free and works for
 //     any lift. Dead-reckoned position is kept here but hidden by default.
 type ChannelKey =
-  | 'angleX'
-  | 'angleY'
-  | 'angleZ'
-  | 'accelX'
-  | 'accelY'
-  | 'accelZ'
-  | 'accelMag'
-  | 'px'
-  | 'py'
-  | 'pz';
+  'angleX' | 'angleY' | 'angleZ' | 'accelX' | 'accelY' | 'accelZ' | 'accelMag' | 'px' | 'py' | 'pz';
 
 const CHART_COLORS: Record<ChannelKey, string> = {
   accelMag: '#FFFFFF',
@@ -748,9 +739,7 @@ export default function RepMarkerPage() {
 
   return (
     <>
-      <Head>
-        <title>{t('title')} | Musclog</title>
-      </Head>
+      <WebsiteSeo routeKey="repMarker" />
       <main className="relative min-h-screen overflow-hidden pb-20 pt-28">
         <GridPattern className="opacity-30" />
         <div

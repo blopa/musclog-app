@@ -631,8 +631,7 @@ export class WorkoutService {
   static buildEnrichedSetsFromRecords(
     logExercises: { id: string; exerciseId: string; groupId?: string; notes?: string }[],
     rawSets: (
-      | WorkoutLogSet
-      | { id: string; logExerciseId: string; _raw: Record<string, unknown> }
+      WorkoutLogSet | { id: string; logExerciseId: string; _raw: Record<string, unknown> }
     )[]
   ): EnrichedWorkoutLogSet[] {
     const logExerciseMap = new Map<

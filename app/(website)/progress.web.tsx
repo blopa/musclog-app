@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'expo-router/head';
 import {
   Activity,
   CalendarRange,
@@ -17,6 +16,7 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FloatingShapes, GridPattern } from '@/components/website/WebsiteBackgrounds';
+import { WebsiteSeo } from '@/components/website/WebsiteSeo';
 import {
   CALORIES_FOR_CARBS,
   CALORIES_FOR_FAT,
@@ -915,24 +915,25 @@ export default function ProgressWebsitePage() {
 
   if (hasImportedData === null) {
     return (
-      <main className="flex min-h-[70vh] items-center justify-center px-4 pt-24">
-        <div
-          className="inline-flex items-center gap-3 rounded-full border px-5 py-3 text-sm text-white"
-          style={{ borderColor: CARD_BORDER, backgroundColor: 'rgba(255,255,255,0.04)' }}
-        >
-          <LoaderCircle className="h-4 w-4 animate-spin text-[#00FFA3]" />
-          {t('website.progress.loading')}
-        </div>
-      </main>
+      <>
+        <WebsiteSeo routeKey="progress" />
+        <main className="flex min-h-[70vh] items-center justify-center px-4 pt-24">
+          <div
+            className="inline-flex items-center gap-3 rounded-full border px-5 py-3 text-sm text-white"
+            style={{ borderColor: CARD_BORDER, backgroundColor: 'rgba(255,255,255,0.04)' }}
+          >
+            <LoaderCircle className="h-4 w-4 animate-spin text-[#00FFA3]" />
+            {t('website.progress.loading')}
+          </div>
+        </main>
+      </>
     );
   }
 
   if (!hasImportedData) {
     return (
       <>
-        <Head>
-          <title>{t('website.progress.metaTitle')}</title>
-        </Head>
+        <WebsiteSeo routeKey="progress" />
         <input
           id={fileInputId}
           ref={fileInputRef}
@@ -957,9 +958,7 @@ export default function ProgressWebsitePage() {
 
   return (
     <>
-      <Head>
-        <title>{t('website.progress.metaTitle')}</title>
-      </Head>
+      <WebsiteSeo routeKey="progress" />
 
       <input
         id={fileInputId}

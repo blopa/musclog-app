@@ -6,13 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '@/components/theme/Button';
 
 type ButtonVariant =
-  | 'accent'
-  | 'discard'
-  | 'outline'
-  | 'secondary'
-  | 'secondaryGradient'
-  | 'dashed'
-  | 'gradientCta';
+  'accent' | 'discard' | 'outline' | 'secondary' | 'secondaryGradient' | 'dashed' | 'gradientCta';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 const VARIANTS: ButtonVariant[] = [

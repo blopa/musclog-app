@@ -7,13 +7,7 @@ import { Theme } from '@/theme';
 type ThemeButtonSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 type ThemeButtonWidth = 'full' | 'flex-1' | 'flex-2' | 'auto';
 type ThemeButtonVariant =
-  | 'accent'
-  | 'discard'
-  | 'outline'
-  | 'secondary'
-  | 'secondaryGradient'
-  | 'dashed'
-  | 'gradientCta';
+  'accent' | 'discard' | 'outline' | 'secondary' | 'secondaryGradient' | 'dashed' | 'gradientCta';
 
 type ThemeButtonProps = {
   label: string;

@@ -1,5 +1,60 @@
 {
   "website": {
+    "seo": {
+      "siteName": "Musclog",
+      "imageAlt": "Vista previa de Musclog con seguimiento privado de fitness, nutricion y progreso.",
+      "keywords": "Musclog, app de fitness, registro de entrenamientos, seguimiento nutricional, macros, fitness open source, app local-first",
+      "routes": {
+        "home": {
+          "title": "Musclog - Lift, Log, Repeat",
+          "description": "Un tracker de fitness y nutricion gratis, open source y local-first, con entrenamientos, comidas con IA, analiticas de progreso y datos privados en tu dispositivo."
+        },
+        "download": {
+          "title": "Descargar Musclog",
+          "description": "Descarga Musclog para Android o entra en TestFlight para iOS y empieza a registrar entrenamientos, nutricion y progreso con tus datos privados en tu dispositivo."
+        },
+        "exercises": {
+          "title": "Biblioteca de ejercicios de Musclog",
+          "description": "Explora la biblioteca de ejercicios de Musclog con grupos musculares, equipo, mecanica, instrucciones y visuales para crear mejores entrenamientos."
+        },
+        "gameboy": {
+          "title": "Juega Musclog en Game Boy",
+          "description": "Juega en tu navegador la version diminuta de Musclog para Game Boy Color y descarga la ROM para un guiño fitness de bolsillo."
+        },
+        "progress": {
+          "title": "Importar progreso de Musclog",
+          "description": "Importa localmente un export JSON de Musclog en tu navegador para explorar peso, nutricion, entrenamientos, estado de animo y medidas en escritorio."
+        },
+        "repMarker": {
+          "title": "Herramienta Rep Marker | Musclog",
+          "description": "Sube grabaciones de repeticiones, marca intervalos, previsualiza graficas de movimiento y exporta datos etiquetados para las herramientas de repeticiones de Musclog."
+        },
+        "calculator": {
+          "title": "Calculadora fitness y de macros | Musclog",
+          "description": "Estima calorias, macros, BMI, FFMI y objetivos con la calculadora fitness de Musclog, y despues usa el plan en la app."
+        },
+        "faq": {
+          "title": "Preguntas frecuentes de Musclog",
+          "description": "Encuentra respuestas sobre privacidad, calculos nutricionales, registro de entrenamientos, funciones de IA y metodologia fitness open source de Musclog."
+        },
+        "contact": {
+          "title": "Contactar con Musclog",
+          "description": "Contacta con Musclog para soporte, preguntas, informes de errores o colaboracion open source en fitness y nutricion privados."
+        },
+        "privacy": {
+          "title": "Politica de privacidad de Musclog",
+          "description": "Lee como Musclog gestiona datos de la app, analiticas del sitio, proveedores de IA opcionales, almacenamiento local-first, cifrado, permisos y opciones de privacidad."
+        },
+        "terms": {
+          "title": "Terminos y condiciones de Musclog",
+          "description": "Revisa los terminos y condiciones de uso de Musclog, incluyendo alcance del servicio, responsabilidad, garantias, ley aplicable y contacto."
+        },
+        "test": {
+          "title": "Subidor de graficas debug | Musclog",
+          "description": "Ruta de desarrollo noindex para subir y previsualizar datos de graficas de repeticiones mientras se crean herramientas de grabacion de Musclog."
+        }
+      }
+    },
     "landing": {
       "title": "Demo Web de Musclog",
       "cta": "Pruébalo ahora",

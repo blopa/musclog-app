@@ -144,9 +144,7 @@ export class SettingsService {
    */
   static async getThemePreference(): Promise<'system' | 'light' | 'dark'> {
     return (await SettingsService.getStringSetting(THEME_SETTING_TYPE, 'system')) as
-      | 'system'
-      | 'light'
-      | 'dark';
+      'system' | 'light' | 'dark';
   }
 
   /**
@@ -551,9 +549,7 @@ export class SettingsService {
 
   static async getCoachConversationContext(): Promise<'general' | 'exercise' | 'nutrition'> {
     return (await SettingsService.getStringSetting(CONVERSATION_CONTEXT, 'general')) as unknown as
-      | 'general'
-      | 'exercise'
-      | 'nutrition';
+      'general' | 'exercise' | 'nutrition';
   }
 
   static async getSendFoundationFoodsToLlm(): Promise<boolean> {

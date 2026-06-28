@@ -45,6 +45,7 @@ This repository serves two distinct purposes that share the same Expo Router pro
 
 - Files ending in `.web.tsx` inside `app/(website)/` are the web-specific implementations (e.g. `home.web.tsx`). Their non-web counterparts (e.g. `home.tsx`) exist as native stubs or redirects.
 - Website components live in `components/website/` (e.g. `StoreButtons`, `WebsiteBackgrounds`, `WebsiteChrome`).
+- Website pages must include `components/website/WebsiteSeo.tsx` with a route-specific key so social previews, search descriptions, canonical URLs, and `assets/seo-image.png` / `/images/seo-image.png` stay consistent across public routes.
 - The website uses standard HTML elements (`<div>`, `<section>`, `<a>`) and Tailwind/NativeWind utility classes — **not** React Native primitives.
 - When working on website files, treat them as a standard React web app, not a React Native app.
 - Website layout is in `app/(website)/_layout.web.tsx`; it wraps pages with the nav/footer chrome.

@@ -99,9 +99,7 @@ export type CreateFoodFromExternalProductInput = ExternalProductContext & {
 };
 
 export type FoodMealTrackingActionResult =
-  | { kind: 'foodLogged' }
-  | { kind: 'foodLogUpdated' }
-  | { kind: 'mealLogged' };
+  { kind: 'foodLogged' } | { kind: 'foodLogUpdated' } | { kind: 'mealLogged' };
 
 type FoodUpdatePatch = Partial<
   Pick<

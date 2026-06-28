@@ -1,5 +1,60 @@
 {
   "website": {
+    "seo": {
+      "siteName": "Musclog",
+      "imageAlt": "Musclog app preview showing private fitness, nutrition, and progress tracking.",
+      "keywords": "Musclog, fitness tracker, workout tracker, nutrition tracker, macro tracker, open source fitness app, local-first app",
+      "routes": {
+        "home": {
+          "title": "Musclog - Lift, Log, Repeat",
+          "description": "A free, open-source, local-first fitness and nutrition tracker with workout logging, AI meal tracking, progress analytics, and private on-device data."
+        },
+        "download": {
+          "title": "Download Musclog",
+          "description": "Download Musclog for Android or join the iOS TestFlight and start tracking workouts, nutrition, and progress with your data stored privately on your device."
+        },
+        "exercises": {
+          "title": "Musclog Exercise Library",
+          "description": "Browse Musclog's exercise library with muscle groups, equipment, mechanics, instructions, and GIF-style visuals for building better workouts."
+        },
+        "gameboy": {
+          "title": "Play Musclog on Game Boy",
+          "description": "Play the tiny Game Boy Color version of Musclog in your browser and download the ROM for a pocket-sized fitness tracking throwback."
+        },
+        "progress": {
+          "title": "Musclog Progress Import",
+          "description": "Import a Musclog JSON export locally in your browser to explore weight, nutrition, workout, mood, and measurement trends on a desktop dashboard."
+        },
+        "repMarker": {
+          "title": "Rep Marker Tool | Musclog",
+          "description": "Upload rep recordings, mark intervals, preview motion charts, and export labeled training data for Musclog's rep-counting tools."
+        },
+        "calculator": {
+          "title": "Fitness and Macro Calculator | Musclog",
+          "description": "Estimate calories, macros, BMI, FFMI, and goal targets with Musclog's fitness calculator, then use the plan in the app."
+        },
+        "faq": {
+          "title": "Musclog FAQ",
+          "description": "Find answers about Musclog's privacy model, nutrition math, workout tracking, AI features, and open-source fitness methodology."
+        },
+        "contact": {
+          "title": "Contact Musclog",
+          "description": "Contact Musclog for support, questions, bug reports, or open-source collaboration around private fitness and nutrition tracking."
+        },
+        "privacy": {
+          "title": "Musclog Privacy Policy",
+          "description": "Read how Musclog handles app data, website analytics, optional AI providers, local-first storage, encryption, permissions, and your privacy choices."
+        },
+        "terms": {
+          "title": "Musclog Terms and Conditions",
+          "description": "Review the terms and conditions for using Musclog, including service scope, liability, warranties, governing law, and contact details."
+        },
+        "test": {
+          "title": "Debug Chart Uploader | Musclog",
+          "description": "A noindex development route for uploading and previewing rep chart data while building Musclog's recording tools."
+        }
+      }
+    },
     "landing": {
       "title": "Musclog Web Demo",
       "cta": "Try it live",
@@ -254,6 +309,7 @@
     },
     "gameboy": {
       "pageTitle": "Play Musclog on Game Boy",
+      "eyebrow": "Just for fun",
       "title": "Musclog on a Game Boy",
       "subtitle": "We built a tiny Game Boy Color version of Musclog. Press play and try it right here in your browser.",
       "playButton": "Play",
