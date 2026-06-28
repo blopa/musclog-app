@@ -3,6 +3,7 @@
 #include "workoutlog.h"
 
 #include "sram.h"
+#include "volume_calc.h"
 
 #define WL_MAGIC          0x574Cu  /* 'WL' */
 #define WL_VERSION        1u
@@ -75,7 +76,7 @@ static uint16_t wl_sets_volume_kg(uint8_t set_count, const WorkoutLogSet *sets) 
     uint32_t volume = 0u;
 
     for (i = 0u; i != set_count; ++i) {
-        volume += ((uint32_t)sets[i].weight_kg_tenths * sets[i].reps + 5u) / 10u;
+        volume += set_volume_1rm_kg(sets[i].weight_kg_tenths, sets[i].reps);
         if (volume > 65535u) return 65535u;
     }
 

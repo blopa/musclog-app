@@ -31,6 +31,7 @@ import {
   buildDemoWorkouts,
   DEMO_CUSTOM_FOODS,
 } from './decodeGameBoySave.demo';
+import { calculateAverage1RM } from './workoutCalculator';
 
 const BANK_SIZE = 0x2000; // 8 KB per SRAM bank
 const HASH_SEED = 0xa55a;
@@ -618,14 +619,13 @@ export function stampGameBoyTodayDate(
   return ram;
 }
 
-// TODO: use real workout volume calculation, same as the mobile app - do it for the gameboy game too
 function workoutVolumeKg(sets: readonly { reps: number; weightKgTenths: number }[]): number {
   let volume = 0;
   for (const set of sets) {
-    volume += Math.trunc((set.weightKgTenths * set.reps + 5) / 10);
+    volume += calculateAverage1RM(set.weightKgTenths / 10, set.reps, 0);
   }
 
-  return Math.min(volume, 65535);
+  return Math.min(Math.round(volume), 65535);
 }
 
 function writeMetricsStore(

@@ -3,6 +3,7 @@
 #include "workout_session.h"
 
 #include "rtc.h"
+#include "volume_calc.h"
 #include "weight_units.h"
 #include "workoutlog.h"
 
@@ -143,7 +144,7 @@ uint16_t session_volume_kg(void) BANKED {
     uint32_t volume = 0u;
 
     for (i = 0u; i != session_set_total; ++i) {
-        volume += ((uint32_t)session_sets[i].weight_kg_tenths * session_sets[i].reps + 5u) / 10u;
+        volume += set_volume_1rm_kg(session_sets[i].weight_kg_tenths, session_sets[i].reps);
         if (volume > 65535u) return 65535u;
     }
 
