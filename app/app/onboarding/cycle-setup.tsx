@@ -1,24 +1,33 @@
+import { subWeeks } from 'date-fns';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Plus, Trash2 } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 import { BottomButtonWrapper } from '@/components/BottomButtonWrapper';
 import { type CycleSetupData, EditCycleSetupData } from '@/components/EditCycleSetupData';
 import { MasterLayout } from '@/components/MasterLayout';
+import { DatePickerModal } from '@/components/modals/DatePickerModal';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
 import { MenstrualCycleRepository } from '@/database/repositories/MenstrualCycleRepository';
+import { PeriodLogRepository } from '@/database/repositories/PeriodLogRepository';
 import { useTheme } from '@/hooks/useTheme';
-import { localDayStartMs } from '@/utils/calendarDate';
+import { getLocalCalendarYear, localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
 import { setOnboardingCompleted } from '@/utils/onboardingService';
+import { getCurrentTimezone } from '@/utils/timezone';
+
+type PastPeriod = {
+  startDate: Date;
+  endDate: Date | null;
+};
 
 const DEFAULT_CYCLE_DATA: CycleSetupData = {
-  lastPeriodStartDate: new Date(),
-  cycleLength: 28,
-  periodDuration: 5,
+  lastPeriodStartDate: null,
   birthControlType: 'none',
   syncGoal: 'performance',
+  lifeStage: 'regular',
 };
 
 export default function CycleSetup() {
@@ -37,20 +46,79 @@ export default function CycleSetup() {
   const quickTotal = params.quickTotal ? parseInt(params.quickTotal, 10) : undefined;
 
   const [currentFormData, setCurrentFormData] = useState<Partial<CycleSetupData>>({});
+  const [pastPeriods, setPastPeriods] = useState<PastPeriod[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [addingPastPeriodIndex, setAddingPastPeriodIndex] = useState<number | null>(null);
+  const [isPastPeriodPickerVisible, setIsPastPeriodPickerVisible] = useState(false);
+
+  const handleAddPastPeriod = () => {
+    const newIndex = pastPeriods.length;
+    setAddingPastPeriodIndex(newIndex);
+    setIsPastPeriodPickerVisible(true);
+  };
+
+  const handlePastPeriodDateSelect = (date: Date) => {
+    const localDate = localCalendarDayDate(date);
+    if (addingPastPeriodIndex === pastPeriods.length) {
+      setPastPeriods((prev) => [...prev, { startDate: localDate, endDate: null }]);
+    } else if (addingPastPeriodIndex != null) {
+      setPastPeriods((prev) =>
+        prev.map((p, i) => (i === addingPastPeriodIndex ? { ...p, startDate: localDate } : p))
+      );
+    }
+
+    setIsPastPeriodPickerVisible(false);
+    setAddingPastPeriodIndex(null);
+  };
+
+  const handleRemovePastPeriod = (index: number) => {
+    setPastPeriods((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const handleFinish = async () => {
     const data: CycleSetupData = { ...DEFAULT_CYCLE_DATA, ...currentFormData };
     setIsSaving(true);
+
     try {
-      await MenstrualCycleRepository.createNewCycle({
-        lastPeriodStartDate: localDayStartMs(data.lastPeriodStartDate),
+      const cycle = await MenstrualCycleRepository.createNewCycle({
+        lastPeriodStartDate: data.lastPeriodStartDate
+          ? localDayStartMs(data.lastPeriodStartDate)
+          : null,
         useHormonalBirthControl: data.birthControlType !== 'none',
         birthControlType: data.birthControlType !== 'none' ? data.birthControlType : undefined,
-        avgCycleLength: data.cycleLength,
-        avgPeriodDuration: data.periodDuration,
         syncGoal: data.syncGoal,
+        lifeStage: data.lifeStage !== 'regular' ? data.lifeStage : undefined,
       });
+
+      // Log the last period start as a period_log entry
+      const tz = getCurrentTimezone();
+      const logsToCreate = [];
+
+      if (data.lastPeriodStartDate) {
+        logsToCreate.push({
+          menstrualCycleId: cycle.id,
+          startDate: localDayStartMs(data.lastPeriodStartDate),
+          endDate: null,
+          timezone: tz,
+        });
+      }
+
+      // Log any past periods the user entered (sorted oldest first)
+      const sortedPast = [...pastPeriods].sort(
+        (a, b) => a.startDate.getTime() - b.startDate.getTime()
+      );
+      for (const past of sortedPast) {
+        logsToCreate.push({
+          menstrualCycleId: cycle.id,
+          startDate: localDayStartMs(past.startDate),
+          endDate: past.endDate ? localDayStartMs(past.endDate) : null,
+          timezone: tz,
+        });
+      }
+
+      if (logsToCreate.length > 0) {
+        await PeriodLogRepository.createMany(logsToCreate);
+      }
 
       if (nextRoute) {
         router.navigate(nextRoute as never);
@@ -70,17 +138,58 @@ export default function CycleSetup() {
       {quickStep !== undefined && quickTotal !== undefined ? (
         <QuickSetupProgressBar current={quickStep} total={quickTotal} />
       ) : null}
+
       <ScrollView className="flex-1 px-6 pt-8" showsVerticalScrollIndicator={false}>
         <Text
           className="mb-2 text-3xl font-bold tracking-tight"
           style={{ color: theme.colors.text.white }}
         >
-          {t('onboarding.cycleSetup.length.title')}
+          {t('onboarding.cycleSetup.title')}
         </Text>
         <Text className="mb-8 text-lg text-text-secondary">
-          {t('onboarding.cycleSetup.length.description')}
+          {t('onboarding.cycleSetup.description')}
         </Text>
+
         <EditCycleSetupData onFormChange={setCurrentFormData} />
+
+        {/* Past periods section */}
+        <View className="mt-8 gap-3">
+          <Text className="text-base font-semibold text-text-secondary">
+            {t('onboarding.cycleSetup.pastPeriods.title')}
+          </Text>
+          <Text className="text-sm text-text-secondary">
+            {t('onboarding.cycleSetup.pastPeriods.description')}
+          </Text>
+
+          {pastPeriods.map((period, index) => (
+            <View
+              key={index}
+              className="flex-row items-center justify-between rounded-xl px-4 py-3"
+              style={{ backgroundColor: theme.colors.background.card }}
+            >
+              <Text style={{ color: theme.colors.text.primary }}>
+                {period.startDate.toLocaleDateString()}
+              </Text>
+              <TouchableOpacity onPress={() => handleRemovePastPeriod(index)} className="p-1">
+                <Trash2 size={theme.iconSize.md} color={theme.colors.status.error} />
+              </TouchableOpacity>
+            </View>
+          ))}
+
+          {pastPeriods.length < 6 ? (
+            <TouchableOpacity
+              onPress={handleAddPastPeriod}
+              className="flex-row items-center gap-2 rounded-xl border px-4 py-3"
+              style={{ borderColor: theme.colors.border.default }}
+            >
+              <Plus size={theme.iconSize.md} color={theme.colors.accent.primary} />
+              <Text style={{ color: theme.colors.accent.primary }}>
+                {t('onboarding.cycleSetup.pastPeriods.addPastPeriod')}
+              </Text>
+            </TouchableOpacity>
+          ) : null}
+        </View>
+
         <View pointerEvents="none" style={{ height: theme.spacing.margin['6xl'] }} />
       </ScrollView>
 
@@ -96,6 +205,31 @@ export default function CycleSetup() {
           loading={isSaving}
         />
       </BottomButtonWrapper>
+
+      <DatePickerModal
+        visible={isPastPeriodPickerVisible}
+        onClose={() => {
+          setIsPastPeriodPickerVisible(false);
+          setAddingPastPeriodIndex(null);
+        }}
+        selectedDate={new Date()}
+        onDateSelect={handlePastPeriodDateSelect}
+        maxYear={getLocalCalendarYear(new Date())}
+        quickDates={[
+          {
+            label: t('common.weeksAgo', { count: 4 }),
+            date: localCalendarDayDate(subWeeks(new Date(), 4)),
+          },
+          {
+            label: t('common.weeksAgo', { count: 8 }),
+            date: localCalendarDayDate(subWeeks(new Date(), 8)),
+          },
+          {
+            label: t('common.weeksAgo', { count: 12 }),
+            date: localCalendarDayDate(subWeeks(new Date(), 12)),
+          },
+        ]}
+      />
     </MasterLayout>
   );
 }

@@ -966,7 +966,8 @@ export class ProgressService {
       const dayTs = this.getStartOfAggregation(d, aggregation);
 
       // Determine phase
-      const daysSinceStart = Math.floor((dayTs - c.lastPeriodStartDate) / MS_PER_SOLAR_DAY);
+      const anchorDate = c.lastPeriodStartDate ?? Date.now();
+      const daysSinceStart = Math.floor((dayTs - anchorDate) / MS_PER_SOLAR_DAY);
       const cycleDay = ((daysSinceStart % c.avgCycleLength) + c.avgCycleLength) % c.avgCycleLength;
 
       let phase: 'menstrual' | 'follicular' | 'ovulatory' | 'luteal';

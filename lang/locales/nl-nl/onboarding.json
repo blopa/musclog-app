@@ -39,9 +39,14 @@
       "trackCycleDescription": "Synchroniseer je prestaties en voeding met je hormonale fasen."
     },
     "cycleSetup": {
+      "title": "Cyclusregistratie instellen",
+      "description": "We leren je cyclus kennen naarmate je bijhoudt — je hoeft je gemiddelden niet van tevoren te weten.",
       "anchor": {
         "title": "Laatste menstruatie",
-        "description": "Wanneer begon je laatste menstruatie? Dit helpt ons je huidige fase te bepalen."
+        "description": "Wanneer begon je laatste menstruatie? Een ruwe schatting is prima — je kunt dit later bijwerken.",
+        "tapToSelect": "Tik om een datum te selecteren",
+        "iDontKnow": "Ik weet het niet / overslaan",
+        "skipInstead": "Datum wissen — ik weet het niet zeker"
       },
       "birthControl": {
         "title": "Hormonale anticonceptie",
@@ -57,13 +62,18 @@
         "other": "Anders",
         "otherDescription": "Een andere vorm van anticonceptie."
       },
-      "length": {
-        "title": "Cyclusduur",
-        "description": "Hoe lang is je typische cyclus en menstruatieduur?",
-        "cycleLength": "Gemiddelde cyclusduur",
-        "periodDuration": "Gemiddelde menstruatieduur",
-        "cycleLengthLabel": "Cyclusduur",
-        "periodDurationLabel": "Menstruatieduur"
+      "lifeStage": {
+        "title": "Cyclus context",
+        "regular": "Niets bijzonders",
+        "regularDescription": "Mijn cyclus is min of meer regelmatig.",
+        "pcos": "PCOS / Onregelmatige cycli",
+        "pcosDescription": "Mijn cycli zijn vaak onregelmatig of onvoorspelbaar.",
+        "perimenopause": "Perimenopauze",
+        "perimenopauseDescription": "Mijn cycli zijn de laatste tijd onregelmatiger geworden.",
+        "postpartum": "Na de bevalling",
+        "postpartumDescription": "Ik heb het afgelopen jaar bevallen.",
+        "postPill": "Recent gestopt met anticonceptie",
+        "postPillDescription": "Ik ben recent gestopt met hormonale anticonceptie en mijn cyclus kan nog aan het herstellen zijn."
       },
       "goal": {
         "title": "Sync-doel",
@@ -74,6 +84,11 @@
         "symptomsDescription": "Focus op comfort en herstel tijdens veranderingen.",
         "energy": "Energiedips voorspellen",
         "energyDescription": "Anticipeer op dips en pas de intensiteit aan."
+      },
+      "pastPeriods": {
+        "title": "Eerdere menstruaties (optioneel)",
+        "description": "Het toevoegen van datums van eerdere menstruaties helpt de app je cycluslengte te leren en direct betere voorspellingen te doen.",
+        "addPastPeriod": "Eerdere menstruatie toevoegen"
       }
     },
     "healthConnect": {

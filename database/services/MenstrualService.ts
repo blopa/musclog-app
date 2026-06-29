@@ -1,60 +1,220 @@
 import { differenceInCalendarDays } from 'date-fns';
 
-import MenstrualCycle, { SyncGoal } from '@/database/models/MenstrualCycle';
+import { SyncGoal } from '@/database/models/MenstrualCycle';
+import PeriodLog from '@/database/models/PeriodLog';
 import { dayStartInTimezone, localDayStartFromUtcMs } from '@/utils/calendarDate';
 
 export type MenstrualPhase = 'menstrual' | 'follicular' | 'ovulation' | 'luteal';
 export type EnergyLevel = 'peak' | 'high' | 'moderate' | 'low';
+export type PredictionConfidence = 'none' | 'low' | 'medium' | 'high';
+
+export interface CycleStats {
+  avgCycleLength: number;
+  avgPeriodDuration: number;
+  minCycleLength: number;
+  maxCycleLength: number;
+  isIrregular: boolean;
+  confidence: PredictionConfidence;
+  logCount: number;
+}
+
+const DEFAULT_CYCLE_LENGTH = 28;
+const DEFAULT_PERIOD_DURATION = 5;
+// The luteal phase (ovulation → next period) is stable at ~14 days across most cycles.
+// The follicular phase varies. We anchor predictions on this constant.
+const LUTEAL_PHASE_DAYS = 14;
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+function getPredictionConfidence(logCount: number): PredictionConfidence {
+  if (logCount === 1) return 'low';
+  if (logCount <= 3) return 'medium';
+  return 'high';
+}
 
 export class MenstrualService {
   /**
-   * Calculates the current cycle day (1-indexed)
+   * Calculates cycle stats from actual period log history.
+   * Cycle length = days between consecutive period start dates.
+   * Period duration = days from start to end (for logs that have ended).
    */
-  static getCycleDay(cycle: MenstrualCycle): number {
-    const anchorDay = dayStartInTimezone(cycle.lastPeriodStartDate, cycle.timezone);
-    const currentDay = localDayStartFromUtcMs(Date.now());
+  static calculateCycleStats(periodLogs: PeriodLog[]): CycleStats {
+    const sorted = [...periodLogs].sort((a, b) => a.startDate - b.startDate);
+    const logCount = sorted.length;
 
+    if (logCount === 0) {
+      return {
+        avgCycleLength: DEFAULT_CYCLE_LENGTH,
+        avgPeriodDuration: DEFAULT_PERIOD_DURATION,
+        minCycleLength: DEFAULT_CYCLE_LENGTH,
+        maxCycleLength: DEFAULT_CYCLE_LENGTH,
+        isIrregular: false,
+        confidence: 'none',
+        logCount: 0,
+      };
+    }
+
+    // Calculate cycle lengths from consecutive period start dates
+    const cycleLengths: number[] = [];
+    for (let i = 1; i < sorted.length; i++) {
+      const days = Math.round((sorted[i].startDate - sorted[i - 1].startDate) / MS_PER_DAY);
+      if (days >= 15 && days <= 60) {
+        // Sanity filter: ignore clearly wrong values
+        cycleLengths.push(days);
+      }
+    }
+
+    const avgCycleLength =
+      cycleLengths.length > 0
+        ? Math.round(cycleLengths.reduce((sum, l) => sum + l, 0) / cycleLengths.length)
+        : DEFAULT_CYCLE_LENGTH;
+
+    const minCycleLength = cycleLengths.length > 0 ? Math.min(...cycleLengths) : avgCycleLength;
+    const maxCycleLength = cycleLengths.length > 0 ? Math.max(...cycleLengths) : avgCycleLength;
+
+    // Cycle is considered irregular when spread > 9 days (per clinical standards)
+    const isIrregular = maxCycleLength - minCycleLength > 9;
+
+    // Period duration: average of logs with known end dates
+    const knownDurations = sorted
+      .filter((log) => log.endDate != null)
+      .map((log) => log.getDurationDays())
+      .filter((d): d is number => d != null && d >= 1 && d <= 14);
+
+    const avgPeriodDuration =
+      knownDurations.length > 0
+        ? Math.round(knownDurations.reduce((sum, d) => sum + d, 0) / knownDurations.length)
+        : DEFAULT_PERIOD_DURATION;
+
+    const confidence: PredictionConfidence = getPredictionConfidence(logCount);
+
+    return {
+      avgCycleLength,
+      avgPeriodDuration,
+      minCycleLength,
+      maxCycleLength,
+      isIrregular,
+      confidence,
+      logCount,
+    };
+  }
+
+  /**
+   * Returns the latest period log (most recent start date), or null if none.
+   */
+  static getLatestPeriodLog(periodLogs: PeriodLog[]): PeriodLog | null {
+    if (periodLogs.length === 0) {
+      return null;
+    }
+
+    return periodLogs.reduce((latest, log) => (log.startDate > latest.startDate ? log : latest));
+  }
+
+  /**
+   * Returns the active period log (has a start but no end), or null.
+   */
+  static getActivePeriodLog(periodLogs: PeriodLog[]): PeriodLog | null {
+    return periodLogs.find((log) => log.isActive) ?? null;
+  }
+
+  /**
+   * Predicts the next period start date.
+   * Uses luteal-phase anchoring: ovulation ≈ next period − 14 days.
+   * Returns a range [earliest, latest] for irregular cycles.
+   */
+  static predictNextPeriod(
+    periodLogs: PeriodLog[],
+    stats: CycleStats
+  ): { date: Date; earliest: Date; latest: Date } | null {
+    const latest = this.getLatestPeriodLog(periodLogs);
+    if (latest == null) {
+      return null;
+    }
+
+    const predictedMs = latest.startDate + stats.avgCycleLength * MS_PER_DAY;
+    const spreadMs = ((stats.maxCycleLength - stats.minCycleLength) / 2) * MS_PER_DAY;
+
+    return {
+      date: new Date(predictedMs),
+      earliest: new Date(predictedMs - spreadMs),
+      latest: new Date(predictedMs + spreadMs),
+    };
+  }
+
+  /**
+   * Calculates the current cycle day (1-indexed) from the latest period log.
+   * Returns null if no period has been logged.
+   */
+  static getCycleDay(
+    periodLogs: PeriodLog[],
+    stats: CycleStats,
+    timezone?: string | null
+  ): number | null {
+    const latest = this.getLatestPeriodLog(periodLogs);
+    if (latest == null) {
+      return null;
+    }
+
+    const anchorDay = dayStartInTimezone(latest.startDate, timezone ?? undefined);
+    const currentDay = localDayStartFromUtcMs(Date.now());
     const diffDays = Math.max(
       0,
       differenceInCalendarDays(new Date(currentDay), new Date(anchorDay))
     );
 
-    // Normalize to cycle length
-    return (diffDays % cycle.avgCycleLength) + 1;
+    // Normalize to cycle length so it wraps if the app hasn't been updated
+    return (diffDays % stats.avgCycleLength) + 1;
   }
 
   /**
-   * Determines the current phase based on cycle day
+   * Determines the current menstrual phase from period logs.
+   * Uses luteal-phase anchoring: predicted ovulation = next period start − 14 days.
+   * Returns null when there is no logged data at all.
    */
-  static calculateCurrentPhase(cycle: MenstrualCycle): MenstrualPhase {
-    const day = this.getCycleDay(cycle);
-    const length = cycle.avgCycleLength;
-    const duration = cycle.avgPeriodDuration;
+  static calculateCurrentPhase(
+    periodLogs: PeriodLog[],
+    stats: CycleStats,
+    timezone?: string | null
+  ): MenstrualPhase | null {
+    const latest = this.getLatestPeriodLog(periodLogs);
+    if (latest == null) {
+      return null;
+    }
 
-    // Menstrual Phase (Day 1 to duration)
-    if (day <= duration) {
+    const now = Date.now();
+    const cycleDay = this.getCycleDay(periodLogs, stats, timezone);
+    if (cycleDay == null) {
+      return null;
+    }
+
+    // Menstrual: from period start until the period ends (or avg duration if end unknown)
+    const periodEndDate =
+      latest.endDate != null
+        ? latest.endDate
+        : latest.startDate + stats.avgPeriodDuration * MS_PER_DAY;
+    if (now <= periodEndDate) {
       return 'menstrual';
     }
 
-    // Ovulation typically occurs 14 days before the next period
-    const ovulationDay = length - 14;
+    // Predicted next period using luteal anchoring
+    const predictedNextPeriodMs = latest.startDate + stats.avgCycleLength * MS_PER_DAY;
+    // Ovulation ≈ predicted next period − 14 days
+    const ovulationMs = predictedNextPeriodMs - LUTEAL_PHASE_DAYS * MS_PER_DAY;
+    const ovulationWindowStartMs = ovulationMs - 2 * MS_PER_DAY;
+    const ovulationWindowEndMs = ovulationMs + 2 * MS_PER_DAY;
 
-    // Follicular Phase (After period, before ovulation)
-    if (day < ovulationDay) {
-      return 'follicular';
-    }
-
-    // Ovulation Window (approx 3 days)
-    if (day >= ovulationDay && day <= ovulationDay + 2) {
+    if (now >= ovulationWindowStartMs && now <= ovulationWindowEndMs) {
       return 'ovulation';
     }
 
-    // Luteal Phase (After ovulation, before next period)
+    if (now < ovulationWindowStartMs) {
+      return 'follicular';
+    }
+
     return 'luteal';
   }
 
   /**
-   * Returns the predicted energy level for a given phase
+   * Returns the predicted energy level for a given phase.
    */
   static getEnergyLevel(phase: MenstrualPhase): EnergyLevel {
     switch (phase) {
@@ -72,7 +232,7 @@ export class MenstrualService {
   }
 
   /**
-   * Returns an intensity multiplier for workouts based on phase and user goals
+   * Returns an intensity multiplier for workouts based on phase and user goals.
    */
   static getIntensityMultiplier(phase: MenstrualPhase, goal?: SyncGoal): number {
     const multipliers: Record<MenstrualPhase, number> = {
@@ -84,11 +244,11 @@ export class MenstrualService {
 
     let multiplier = multipliers[phase];
 
-    // Adjust based on goal
     if (goal === 'performance') {
       if (phase === 'ovulation') {
         multiplier = 1.15;
       }
+
       if (phase === 'follicular') {
         multiplier = 1.05;
       }
@@ -96,6 +256,7 @@ export class MenstrualService {
       if (phase === 'menstrual') {
         multiplier = 0.75;
       }
+
       if (phase === 'luteal') {
         multiplier = 0.9;
       }
@@ -105,7 +266,7 @@ export class MenstrualService {
   }
 
   /**
-   * Gets physiological insights for the current phase
+   * Gets physiological insights for the current phase.
    */
   static getInsights(phase: MenstrualPhase) {
     switch (phase) {
@@ -138,5 +299,26 @@ export class MenstrualService {
           focus: 'endurance',
         };
     }
+  }
+
+  /**
+   * Returns the predicted fertile window: 5 days before ovulation to 1 day after.
+   */
+  static getFertileWindow(
+    periodLogs: PeriodLog[],
+    stats: CycleStats
+  ): { start: Date; end: Date } | null {
+    const latest = this.getLatestPeriodLog(periodLogs);
+    if (latest == null) {
+      return null;
+    }
+
+    const predictedNextPeriodMs = latest.startDate + stats.avgCycleLength * MS_PER_DAY;
+    const ovulationMs = predictedNextPeriodMs - LUTEAL_PHASE_DAYS * MS_PER_DAY;
+
+    return {
+      start: new Date(ovulationMs - 5 * MS_PER_DAY),
+      end: new Date(ovulationMs + MS_PER_DAY),
+    };
   }
 }

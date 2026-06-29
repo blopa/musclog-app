@@ -3,15 +3,11 @@ import { Q, Query } from '@nozbe/watermelondb';
 import { database } from '@/database/database-instance';
 import MenstrualCycle, {
   type BirthControlType,
+  type LifeStage,
   type SyncGoal,
 } from '@/database/models/MenstrualCycle';
 import { getCurrentTimezone } from '@/utils/timezone';
 
-/**
- * Repository for MenstrualCycle queries
- * This file contains static query methods that require the database instance.
- * This pattern avoids circular dependencies between models and the database instance.
- */
 export class MenstrualCycleRepository {
   static getActive(): Query<MenstrualCycle> {
     return database
@@ -30,8 +26,9 @@ export class MenstrualCycleRepository {
     avgPeriodDuration?: number;
     useHormonalBirthControl?: boolean;
     birthControlType?: string;
-    lastPeriodStartDate?: number;
+    lastPeriodStartDate?: number | null;
     syncGoal?: SyncGoal;
+    lifeStage?: LifeStage;
   }): Promise<MenstrualCycle> {
     const now = Date.now();
 
@@ -40,13 +37,15 @@ export class MenstrualCycleRepository {
         cycle.avgCycleLength = data.avgCycleLength ?? 28;
         cycle.avgPeriodDuration = data.avgPeriodDuration ?? 5;
         cycle.useHormonalBirthControl = data.useHormonalBirthControl ?? false;
-        cycle.birthControlType = data.birthControlType as BirthControlType | undefined;
-        cycle.lastPeriodStartDate = data.lastPeriodStartDate ?? now;
+        cycle.birthControlType = (data.birthControlType as BirthControlType) ?? null;
+        cycle.lastPeriodStartDate = data.lastPeriodStartDate ?? null;
         cycle.timezone = getCurrentTimezone();
-        cycle.syncGoal = data.syncGoal;
+        cycle.syncGoal = data.syncGoal ?? null;
+        cycle.lifeStage = data.lifeStage ?? null;
         cycle.isActive = true;
         cycle.createdAt = now;
         cycle.updatedAt = now;
+        cycle.deletedAt = null;
       });
     });
   }
@@ -56,8 +55,6 @@ export class MenstrualCycleRepository {
 
     await database.write(async (writer) => {
       for (const cycle of activeCycles) {
-        // `MenstrualCycle.updateCycle` is a @writer; call it via callWriter so it
-        // joins this transaction instead of nesting a new one (which would stall).
         await writer.callWriter(() => cycle.updateCycle({ isActive: false }));
       }
     });

@@ -9,22 +9,83 @@
     "noLogsToday": "No symptoms logged for today.",
     "logSymptoms": "Log Symptoms",
     "logDaily": "Daily Cycle Log",
+    "predictionDisclaimer": "Cycle predictions are estimates and not a contraceptive method.",
+    "periodActive": "Period active — Day {{day}}",
+    "periodActiveGeneric": "Period active",
     "settings": {
       "title": "Cycle Settings",
       "subtitle": "Edit your cycle configuration",
       "save": "Save Changes"
     },
+    "noData": {
+      "title": "Start tracking your cycle",
+      "description": "Tap the button below to log your first period and unlock personalized phase predictions."
+    },
+    "actions": {
+      "periodStarted": "My period started today",
+      "periodEnded": "My period ended today",
+      "logPastPeriod": "Log a past period"
+    },
+    "periodLog": {
+      "startTitle": "Log Period Start",
+      "endTitle": "Log Period End",
+      "pastTitle": "Add Past Period",
+      "startDescription": "Mark when your period began. You can log for today or a past date.",
+      "endDescription": "Mark when your period ended.",
+      "pastDescription": "Adding past period dates helps the app learn your cycle and make better predictions.",
+      "startDateLabel": "Period started on",
+      "endDateLabel": "Period ended on",
+      "startedOn": "Period started on",
+      "useToday": "Use today"
+    },
+    "confidence": {
+      "low": "Estimate — based on {{count}} cycle",
+      "low_plural": "Estimate — based on {{count}} cycles",
+      "medium": "Based on {{count}} cycles",
+      "high": "Based on {{count}} cycles — good accuracy",
+      "irregular": "Cycles vary — showing date range"
+    },
+    "lifeStage": {
+      "pcos": "With PCOS, cycles can be highly irregular. Predictions are rough estimates.",
+      "postPill": "Coming off birth control: cycles may be irregular for 1–3 months.",
+      "postpartum": "Postpartum cycles often return unpredictably, especially while breastfeeding.",
+      "perimenopause": "Perimenopause can cause significant cycle irregularity. Showing an estimated range."
+    },
+    "flow": {
+      "spotting": "Spotting",
+      "light": "Light",
+      "medium": "Medium",
+      "heavy": "Heavy",
+      "veryHeavy": "Very Heavy"
+    },
     "symptoms": {
+      "physicalTitle": "Physical",
+      "emotionalTitle": "Emotional & Mental",
       "cramps": "Cramps",
       "headache": "Headache",
+      "migraine": "Migraine",
       "bloating": "Bloating",
+      "breastTenderness": "Breast Tenderness",
+      "nausea": "Nausea",
+      "backPain": "Back Pain",
+      "fatigue": "Fatigue",
+      "acne": "Acne",
+      "foodCravings": "Food Cravings",
+      "digestiveIssues": "Digestive Issues",
+      "hotFlashes": "Hot Flashes",
+      "insomnia": "Insomnia",
       "moodSwings": "Mood Swings",
-      "fatigue": "Fatigue"
+      "anxiety": "Anxiety",
+      "irritability": "Irritability",
+      "lowMood": "Low Mood",
+      "brainFog": "Brain Fog",
+      "lowLibido": "Low Libido"
     },
     "phase": {
       "menstrual": "Menstrual",
       "follicular": "Follicular",
       "ovulatory": "Ovulatory",
+      "ovulation": "Ovulation",
       "luteal": "Luteal"
     }
   }

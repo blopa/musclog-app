@@ -5,7 +5,10 @@ import { Platform } from 'react-native';
 import { database } from '@/database';
 import MenstrualCycle from '@/database/models/MenstrualCycle';
 import NutritionCheckin from '@/database/models/NutritionCheckin';
+import PeriodLog from '@/database/models/PeriodLog';
 import Schedule from '@/database/models/Schedule';
+import { PeriodLogRepository } from '@/database/repositories/PeriodLogRepository';
+import { MenstrualService } from '@/database/services/MenstrualService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n from '@/lang/lang';
 import { darkTheme } from '@/theme'; // TODO: figure out how to get the current theme instead
@@ -453,9 +456,18 @@ export class NotificationService {
       return;
     }
 
+    // Fetch period logs for this cycle
+    const periodLogs = await PeriodLogRepository.fetchForCycle(cycle.id);
+    const stats = MenstrualService.calculateCycleStats(periodLogs);
+    const nextPeriodPrediction = MenstrualService.predictNextPeriod(periodLogs, stats);
+    if (!nextPeriodPrediction) {
+      return;
+    }
+
     // Schedule next period prediction (2 days before)
-    const nextPeriodDate = cycle.getNextPeriodDate();
-    const notificationDate = new Date(nextPeriodDate.getTime() - 2 * 24 * 60 * 60 * 1000);
+    const notificationDate = new Date(
+      nextPeriodPrediction.date.getTime() - 2 * 24 * 60 * 60 * 1000
+    );
     notificationDate.setHours(9, 0, 0, 0);
 
     if (notificationDate.getTime() > Date.now()) {
@@ -473,22 +485,24 @@ export class NotificationService {
     }
 
     // Schedule fertile window start
-    const fertileWindow = cycle.getFertileWindow();
-    const fertileStartNotification = new Date(fertileWindow.start.getTime());
-    fertileStartNotification.setHours(9, 0, 0, 0);
+    const fertileWindow = MenstrualService.getFertileWindow(periodLogs, stats);
+    if (fertileWindow) {
+      const fertileStartNotification = new Date(fertileWindow.start);
+      fertileStartNotification.setHours(9, 0, 0, 0);
 
-    if (fertileStartNotification.getTime() > Date.now()) {
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: i18n.t('notifications.types.fertileWindow.title'),
-          body: i18n.t('notifications.types.fertileWindow.body'),
-          data: { type: 'menstrual-cycle', subtype: 'fertile-window' },
-        },
-        trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.DATE,
-          date: fertileStartNotification,
-        },
-      });
+      if (fertileStartNotification.getTime() > Date.now()) {
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: i18n.t('notifications.types.fertileWindow.title'),
+            body: i18n.t('notifications.types.fertileWindow.body'),
+            data: { type: 'menstrual-cycle', subtype: 'fertile-window' },
+          },
+          trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.DATE,
+            date: fertileStartNotification,
+          },
+        });
+      }
     }
   }
 

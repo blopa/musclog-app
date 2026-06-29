@@ -1,50 +1,74 @@
-import MenstrualCycle from '@/database/models/MenstrualCycle';
+import PeriodLog from '@/database/models/PeriodLog';
 import { MenstrualService } from '@/database/services/MenstrualService';
 
+const makePeriodLog = (startDate: number, endDate: number | null = null): PeriodLog => {
+  const log = {
+    startDate,
+    endDate,
+    deletedAt: null,
+    get isActive() {
+      return this.endDate == null && this.deletedAt == null;
+    },
+    getDurationDays() {
+      if (this.endDate == null) return null;
+      const MS_PER_DAY = 24 * 60 * 60 * 1000;
+      return Math.max(1, Math.round((this.endDate - this.startDate) / MS_PER_DAY) + 1);
+    },
+  } as unknown as PeriodLog;
+  return log;
+};
+
 describe('MenstrualService', () => {
-  const mockCycle = {
-    lastPeriodStartDate: new Date('2024-01-01').getTime(),
-    avgCycleLength: 28,
-    avgPeriodDuration: 5,
-    syncGoal: 'performance',
-  } as unknown as MenstrualCycle;
+  const periodStart = new Date('2024-01-01').getTime();
+  const periodEnd = new Date('2024-01-05').getTime();
+  const mockLogs = [makePeriodLog(periodStart, periodEnd)];
+  const mockStats = MenstrualService.calculateCycleStats(mockLogs);
 
   describe('getCycleDay', () => {
     it('should return 1 on the start date', () => {
       jest.useFakeTimers().setSystemTime(new Date('2024-01-01'));
-      expect(MenstrualService.getCycleDay(mockCycle)).toBe(1);
+      expect(MenstrualService.getCycleDay(mockLogs, mockStats)).toBe(1);
     });
 
     it('should return 15 for mid-cycle', () => {
       jest.useFakeTimers().setSystemTime(new Date('2024-01-15'));
-      expect(MenstrualService.getCycleDay(mockCycle)).toBe(15);
+      expect(MenstrualService.getCycleDay(mockLogs, mockStats)).toBe(15);
     });
 
     it('should wrap around the cycle length', () => {
       jest.useFakeTimers().setSystemTime(new Date('2024-01-29'));
-      expect(MenstrualService.getCycleDay(mockCycle)).toBe(1);
+      expect(MenstrualService.getCycleDay(mockLogs, mockStats)).toBe(1);
+    });
+
+    it('should return null when no logs exist', () => {
+      expect(MenstrualService.getCycleDay([], MenstrualService.calculateCycleStats([]))).toBeNull();
     });
   });
 
   describe('calculateCurrentPhase', () => {
-    it('should return menstrual for day 1-5', () => {
+    it('should return menstrual while period is active', () => {
       jest.useFakeTimers().setSystemTime(new Date('2024-01-03'));
-      expect(MenstrualService.calculateCurrentPhase(mockCycle)).toBe('menstrual');
+      expect(MenstrualService.calculateCurrentPhase(mockLogs, mockStats)).toBe('menstrual');
     });
 
-    it('should return follicular for day 6-13', () => {
+    it('should return follicular after period ends, before ovulation', () => {
       jest.useFakeTimers().setSystemTime(new Date('2024-01-10'));
-      expect(MenstrualService.calculateCurrentPhase(mockCycle)).toBe('follicular');
+      expect(MenstrualService.calculateCurrentPhase(mockLogs, mockStats)).toBe('follicular');
     });
 
-    it('should return ovulation for day 14-16', () => {
-      jest.useFakeTimers().setSystemTime(new Date('2024-01-14'));
-      expect(MenstrualService.calculateCurrentPhase(mockCycle)).toBe('ovulation');
+    it('should return ovulation around the ovulation window', () => {
+      // Ovulation ≈ next period (Jan 29) − 14 days = Jan 15
+      jest.useFakeTimers().setSystemTime(new Date('2024-01-15'));
+      expect(MenstrualService.calculateCurrentPhase(mockLogs, mockStats)).toBe('ovulation');
     });
 
-    it('should return luteal for day 17-28', () => {
+    it('should return luteal after ovulation window', () => {
       jest.useFakeTimers().setSystemTime(new Date('2024-01-20'));
-      expect(MenstrualService.calculateCurrentPhase(mockCycle)).toBe('luteal');
+      expect(MenstrualService.calculateCurrentPhase(mockLogs, mockStats)).toBe('luteal');
+    });
+
+    it('should return null when no logs exist', () => {
+      expect(MenstrualService.calculateCurrentPhase([], MenstrualService.calculateCycleStats([]))).toBeNull();
     });
   });
 
@@ -65,6 +89,16 @@ describe('MenstrualService', () => {
 
     it('should return lower multiplier for menstrual with symptoms goal', () => {
       expect(MenstrualService.getIntensityMultiplier('menstrual', 'symptoms')).toBe(0.75);
+    });
+  });
+
+  describe('calculateCycleStats', () => {
+    it('should return confidence none for empty logs', () => {
+      expect(MenstrualService.calculateCycleStats([]).confidence).toBe('none');
+    });
+
+    it('should return confidence low for a single log', () => {
+      expect(MenstrualService.calculateCycleStats([makePeriodLog(periodStart)]).confidence).toBe('low');
     });
   });
 });

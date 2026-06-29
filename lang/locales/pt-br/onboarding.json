@@ -39,9 +39,14 @@
       "trackCycleDescription": "Sincronize seu desempenho e nutrição com suas fases hormonais."
     },
     "cycleSetup": {
+      "title": "Configuração do Rastreamento do Ciclo",
+      "description": "Aprenderemos seu ciclo à medida que você registrar — não precisa saber suas médias de antemão.",
       "anchor": {
         "title": "Última Menstruação",
-        "description": "Quando sua última menstruação começou? Isso nos ajuda a calibrar sua fase atual."
+        "description": "Quando sua última menstruação começou? Uma estimativa aproximada está ótima — você pode atualizar depois.",
+        "tapToSelect": "Toque para selecionar uma data",
+        "iDontKnow": "Não sei / pular",
+        "skipInstead": "Limpar data — não tenho certeza"
       },
       "birthControl": {
         "title": "Anticoncepcional Hormonal",
@@ -57,13 +62,18 @@
         "other": "Outro",
         "otherDescription": "Outra forma de contracepção."
       },
-      "length": {
-        "title": "Duração do Ciclo",
-        "description": "Qual é a duração típica do seu ciclo e período?",
-        "cycleLength": "Duração Média do Ciclo",
-        "periodDuration": "Duração Média do Período",
-        "cycleLengthLabel": "Duração do Ciclo",
-        "periodDurationLabel": "Duração do Período"
+      "lifeStage": {
+        "title": "Contexto do Ciclo",
+        "regular": "Nada incomum",
+        "regularDescription": "Meu ciclo é razoavelmente regular.",
+        "pcos": "SOP / Ciclos irregulares",
+        "pcosDescription": "Meus ciclos costumam ser irregulares ou imprevisíveis.",
+        "perimenopause": "Perimenopausa",
+        "perimenopauseDescription": "Meus ciclos ficaram mais irregulares recentemente.",
+        "postpartum": "Pós-parto",
+        "postpartumDescription": "Tive um bebê no último ano.",
+        "postPill": "Parei o anticoncepcional recentemente",
+        "postPillDescription": "Parei o anticoncepcional hormonal recentemente e meu ciclo ainda pode estar se ajustando."
       },
       "goal": {
         "title": "Meta de Sincronização",
@@ -74,6 +84,11 @@
         "symptomsDescription": "Foco em conforto e recuperação durante mudanças.",
         "energy": "Prever Quedas de Energia",
         "energyDescription": "Antecipar quedas e ajustar intensidade conforme necessário."
+      },
+      "pastPeriods": {
+        "title": "Períodos Passados (Opcional)",
+        "description": "Adicionar datas de períodos passados ajuda o app a aprender a duração do seu ciclo e fazer melhores previsões de imediato.",
+        "addPastPeriod": "Adicionar um período passado"
       }
     },
     "healthConnect": {

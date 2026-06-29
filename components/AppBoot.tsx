@@ -1,3 +1,4 @@
+import { Q } from '@nozbe/watermelondb';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { focusManager } from '@tanstack/react-query';
 import { useSegments } from 'expo-router';
@@ -11,8 +12,11 @@ import {
   CONFETTI_INTERACTIONS_KEY,
   ConfettiActivity,
 } from '@/context/ConfettiInteractionsContext';
+import { database } from '@/database';
 import { runDatabaseBootSequence, stopDatabaseBootProgress } from '@/database/dbBootCoordinator';
 import { waitForDbReady } from '@/database/dbReady';
+import MenstrualCycle from '@/database/models/MenstrualCycle';
+import { PeriodLogRepository } from '@/database/repositories/PeriodLogRepository';
 import {
   ExerciseGoalService,
   FoodPortionService,
@@ -34,6 +38,8 @@ import {
   handleNotificationResponse,
 } from '@/utils/notifications';
 import { isOnboardingCompleted } from '@/utils/onboardingService';
+
+const PERIOD_LOGS_BACKFILL_V22_KEY = 'PERIOD_LOGS_BACKFILL_V22_DONE';
 
 export function AppBoot() {
   const segments = useSegments();
@@ -230,6 +236,61 @@ export function AppBoot() {
     const subscription = AppState.addEventListener('change', onAppStateChange);
 
     return () => subscription.remove();
+  }, []);
+
+  // One-time backfill: users who upgraded from v21 have last_period_start_date on
+  // their menstrual_cycles row but no corresponding period_log entries. Seed one
+  // period_log from that anchor so the new luteal-anchored prediction code has data.
+  useEffect(() => {
+    if (isStaticExport) {
+      return;
+    }
+
+    const backfillPeriodLogs = async () => {
+      try {
+        const alreadyDone = await AsyncStorage.getItem(PERIOD_LOGS_BACKFILL_V22_KEY);
+        if (alreadyDone) {
+          return;
+        }
+
+        await waitForDbReady();
+
+        const cycles = await database
+          .get<MenstrualCycle>('menstrual_cycles')
+          .query(Q.where('deleted_at', Q.eq(null)))
+          .fetch();
+
+        const logsToCreate = (
+          await Promise.all(
+            cycles
+              .filter((cycle) => !!cycle.lastPeriodStartDate)
+              .map(async (cycle) => {
+                const existing = await PeriodLogRepository.fetchForCycle(cycle.id);
+                if (existing.length > 0) {
+                  return null;
+                }
+
+                return {
+                  menstrualCycleId: cycle.id,
+                  startDate: cycle.lastPeriodStartDate as number,
+                  endDate: null,
+                  timezone: cycle.timezone ?? undefined,
+                };
+              })
+          )
+        ).filter((l): l is NonNullable<typeof l> => l !== null);
+
+        if (logsToCreate.length > 0) {
+          await PeriodLogRepository.createMany(logsToCreate);
+        }
+
+        await AsyncStorage.setItem(PERIOD_LOGS_BACKFILL_V22_KEY, '1');
+      } catch (err) {
+        captureBootException(err, 'AppBoot.backfillPeriodLogs');
+      }
+    };
+
+    void backfillPeriodLogs();
   }, []);
 
   return null;

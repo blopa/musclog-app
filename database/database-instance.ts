@@ -27,6 +27,7 @@ import Muscle from './models/Muscle';
 import NutritionCheckin from './models/NutritionCheckin';
 import NutritionGoal from './models/NutritionGoal';
 import NutritionLog from './models/NutritionLog';
+import PeriodLog from './models/PeriodLog';
 import SavedForLaterGroup from './models/SavedForLaterGroup';
 import SavedForLaterItem from './models/SavedForLaterItem';
 import Schedule from './models/Schedule';
@@ -57,6 +58,7 @@ export const database = new Database({
     UserMetricsNote,
     User,
     MenstrualCycle,
+    PeriodLog,
     Setting,
     WorkoutTemplate,
     WorkoutTemplateExercise,
