@@ -9,10 +9,7 @@
  */
 
 import type { GameBoyCalDate } from './decodeGameBoySave';
-
-// Mirrors the CUSTOM_FOOD_BASE constant in decodeGameBoySave.ts.
-// Stable hardware-layout constant; duplicated here to break the import cycle.
-const CUSTOM_FOOD_BASE = 0x8000;
+import { CUSTOM_FOOD_BASE } from './decodeGameBoySave.layout';
 
 type DemoWeighInRecord = { dayNumber: number; weightKgTenths: number };
 type DemoFoodLogRecord = { dayNumber: number; foodIdx: number; grams: number };

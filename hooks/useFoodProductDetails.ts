@@ -58,7 +58,8 @@ const PRODUCT_V3_PATH = '/api/v3/product';
 const REQUEST_TIMEOUT_MS = 20_000;
 
 type ProductV3Result =
-  { data: ProductState; error?: undefined } | { data?: undefined; error: { message: string } };
+  | { data: ProductState; error?: undefined }
+  | { data?: undefined; error: { message: string } };
 
 export async function fetchOFFProductByBarcode(
   barcode: string,

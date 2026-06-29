@@ -2,7 +2,12 @@ import { Model } from '@nozbe/watermelondb';
 import { field } from '@nozbe/watermelondb/decorators';
 
 export type ExerciseGoalType =
-  '1rm' | 'consistency' | 'steps_per_day' | 'distance_per_session' | 'pace' | 'duration';
+  | '1rm'
+  | 'consistency'
+  | 'steps_per_day'
+  | 'distance_per_session'
+  | 'pace'
+  | 'duration';
 
 export default class ExerciseGoal extends Model {
   static table = 'exercise_goals';

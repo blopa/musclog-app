@@ -4,7 +4,13 @@ import { field, relation } from '@nozbe/watermelondb/decorators';
 import WorkoutTemplate from './WorkoutTemplate';
 
 export type DayOfWeek =
-  'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
+  | 'Monday'
+  | 'Tuesday'
+  | 'Wednesday'
+  | 'Thursday'
+  | 'Friday'
+  | 'Saturday'
+  | 'Sunday';
 
 export default class Schedule extends Model {
   static table = 'schedules';

@@ -42,7 +42,13 @@ export type LineChartProps = {
   yDomain?: [number, number];
   /** Interpolation method for the line (default: "monotoneX") */
   interpolation?:
-    'linear' | 'monotoneX' | 'monotoneY' | 'natural' | 'step' | 'stepBefore' | 'stepAfter';
+    | 'linear'
+    | 'monotoneX'
+    | 'monotoneY'
+    | 'natural'
+    | 'step'
+    | 'stepBefore'
+    | 'stepAfter';
   /** Whether to show grid lines (default: true) */
   showGridLines?: boolean;
   /** Color of grid lines (default: theme border light) */

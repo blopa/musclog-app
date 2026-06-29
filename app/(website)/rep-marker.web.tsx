@@ -37,7 +37,16 @@ const ACCENT_RED = '#EF4444';
 //   • Acceleration — raw accel per axis + magnitude. Drift-free and works for
 //     any lift. Dead-reckoned position is kept here but hidden by default.
 type ChannelKey =
-  'angleX' | 'angleY' | 'angleZ' | 'accelX' | 'accelY' | 'accelZ' | 'accelMag' | 'px' | 'py' | 'pz';
+  | 'angleX'
+  | 'angleY'
+  | 'angleZ'
+  | 'accelX'
+  | 'accelY'
+  | 'accelZ'
+  | 'accelMag'
+  | 'px'
+  | 'py'
+  | 'pz';
 
 const CHART_COLORS: Record<ChannelKey, string> = {
   accelMag: '#FFFFFF',

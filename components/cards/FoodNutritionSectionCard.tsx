@@ -45,7 +45,11 @@ type NutritionalData = {
 
 /** How food details were opened: saved food, log, meal, or external catalog (barcode scan / search preload). */
 export type FoodDetailsNutritionSectionMode =
-  'meal' | 'foodLog' | 'food' | 'externalProduct' | null;
+  | 'meal'
+  | 'foodLog'
+  | 'food'
+  | 'externalProduct'
+  | null;
 
 type FoodNutritionSectionProps = {
   food: FoodData;

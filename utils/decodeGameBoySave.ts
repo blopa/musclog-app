@@ -31,6 +31,7 @@ import {
   buildDemoWorkouts,
   DEMO_CUSTOM_FOODS,
 } from './decodeGameBoySave.demo';
+import { CUSTOM_FOOD_BASE, MAX_CUSTOM_FOODS } from './decodeGameBoySave.layout';
 import { calculateAverage1RM } from './workoutCalculator';
 
 const BANK_SIZE = 0x2000; // 8 KB per SRAM bank
@@ -98,9 +99,6 @@ const GENDERS = ['male', 'female', 'other'] as const;
 const EXPERIENCE = ['beginner', 'intermediate', 'advanced'] as const;
 const FITNESS = ['muscle', 'strength', 'endurance', 'general'] as const;
 const WEIGHT_GOALS = ['lose', 'maintain', 'gain'] as const;
-
-const CUSTOM_FOOD_BASE = 0x8000;
-const MAX_CUSTOM_FOODS = 100;
 
 type Ram = ArrayLike<number>;
 

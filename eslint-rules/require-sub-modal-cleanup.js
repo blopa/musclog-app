@@ -71,12 +71,14 @@ function isCleanupEffect(node) {
   }
 
   const callee = node.callee;
-  if (!(
-    (callee.type === 'Identifier' && callee.name === 'useEffect') ||
-    (callee.type === 'MemberExpression' &&
-      callee.property.type === 'Identifier' &&
-      callee.property.name === 'useEffect')
-  )) {
+  if (
+    !(
+      (callee.type === 'Identifier' && callee.name === 'useEffect') ||
+      (callee.type === 'MemberExpression' &&
+        callee.property.type === 'Identifier' &&
+        callee.property.name === 'useEffect')
+    )
+  ) {
     return false;
   }
 

@@ -47,7 +47,8 @@ export type UseCurrentNutritionGoalResultHistory = {
 };
 
 export type UseCurrentNutritionGoalResult =
-  UseCurrentNutritionGoalResultCurrent | UseCurrentNutritionGoalResultHistory;
+  | UseCurrentNutritionGoalResultCurrent
+  | UseCurrentNutritionGoalResultHistory;
 
 // Function overloads for proper type narrowing
 export function useCurrentNutritionGoal(
