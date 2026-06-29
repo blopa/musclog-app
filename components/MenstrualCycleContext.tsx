@@ -148,6 +148,15 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
       lifeStage?: LifeStage;
     }): Promise<void> => {
       await MenstrualCycleRepository.deactivateAll();
+
+      if (data.lastPeriodStartDate != null) {
+        const { lastPeriodStartDate, ...cycleData } = data;
+        await MenstrualCycleRepository.createNewCycleWithLogs(cycleData, [
+          { startDate: lastPeriodStartDate },
+        ]);
+        return;
+      }
+
       await MenstrualCycleRepository.createNewCycle(data);
     },
     []
@@ -183,6 +192,10 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
         return;
       }
 
+      if (endDate < active.startDate) {
+        throw new Error('period_end_before_start');
+      }
+
       await active.endPeriod(endDate);
     },
     [periodLogs]
@@ -190,7 +203,8 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
 
   const addPastPeriod = useCallback(
     (data: Omit<PeriodLogCreate, 'menstrualCycleId'>) => {
-      const updateAnchor = !cycle?.lastPeriodStartDate || data.startDate > cycle.lastPeriodStartDate;
+      const updateAnchor =
+        !cycle?.lastPeriodStartDate || data.startDate > cycle.lastPeriodStartDate;
       return createPeriodLog(data, updateAnchor);
     },
     [createPeriodLog, cycle]

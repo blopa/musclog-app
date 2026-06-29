@@ -6,6 +6,7 @@ import MenstrualCycle, {
   type LifeStage,
   type SyncGoal,
 } from '@/database/models/MenstrualCycle';
+import PeriodLog, { type PeriodLogCreate } from '@/database/models/PeriodLog';
 import { getCurrentTimezone } from '@/utils/timezone';
 
 export class MenstrualCycleRepository {
@@ -25,7 +26,7 @@ export class MenstrualCycleRepository {
     avgCycleLength?: number;
     avgPeriodDuration?: number;
     useHormonalBirthControl?: boolean;
-    birthControlType?: string;
+    birthControlType?: BirthControlType;
     lastPeriodStartDate?: number | null;
     syncGoal?: SyncGoal;
     lifeStage?: LifeStage;
@@ -37,7 +38,7 @@ export class MenstrualCycleRepository {
         cycle.avgCycleLength = data.avgCycleLength ?? 28;
         cycle.avgPeriodDuration = data.avgPeriodDuration ?? 5;
         cycle.useHormonalBirthControl = data.useHormonalBirthControl ?? false;
-        cycle.birthControlType = (data.birthControlType as BirthControlType) ?? null;
+        cycle.birthControlType = data.birthControlType ?? null;
         cycle.lastPeriodStartDate = data.lastPeriodStartDate ?? null;
         cycle.timezone = getCurrentTimezone();
         cycle.syncGoal = data.syncGoal ?? null;
@@ -47,6 +48,62 @@ export class MenstrualCycleRepository {
         cycle.updatedAt = now;
         cycle.deletedAt = null;
       });
+    });
+  }
+
+  /**
+   * Atomically creates a new cycle and its initial period logs in one write transaction.
+   * The cycle's lastPeriodStartDate is derived from the logs (max startDate), not passed separately.
+   * Use this for initial setup flows where the cycle and its first logs must either both exist or neither exist.
+   */
+  static async createNewCycleWithLogs(
+    data: {
+      avgCycleLength?: number;
+      avgPeriodDuration?: number;
+      useHormonalBirthControl?: boolean;
+      birthControlType?: BirthControlType;
+      syncGoal?: SyncGoal;
+      lifeStage?: LifeStage;
+    },
+    logs: Omit<PeriodLogCreate, 'menstrualCycleId'>[]
+  ): Promise<MenstrualCycle> {
+    const now = Date.now();
+    const tz = getCurrentTimezone();
+    const lastPeriodStartDate = logs.length > 0 ? Math.max(...logs.map((l) => l.startDate)) : null;
+
+    return await database.write(async () => {
+      const preparedCycle = database
+        .get<MenstrualCycle>('menstrual_cycles')
+        .prepareCreate((cycle) => {
+          cycle.avgCycleLength = data.avgCycleLength ?? 28;
+          cycle.avgPeriodDuration = data.avgPeriodDuration ?? 5;
+          cycle.useHormonalBirthControl = data.useHormonalBirthControl ?? false;
+          cycle.birthControlType = data.birthControlType ?? null;
+          cycle.lastPeriodStartDate = lastPeriodStartDate;
+          cycle.timezone = tz;
+          cycle.syncGoal = data.syncGoal ?? null;
+          cycle.lifeStage = data.lifeStage ?? null;
+          cycle.isActive = true;
+          cycle.createdAt = now;
+          cycle.updatedAt = now;
+          cycle.deletedAt = null;
+        });
+
+      const preparedLogs = logs.map((logData) =>
+        database.get<PeriodLog>('period_logs').prepareCreate((log) => {
+          log.menstrualCycleId = preparedCycle.id;
+          log.startDate = logData.startDate;
+          log.endDate = logData.endDate ?? null;
+          log.notes = logData.notes ?? null;
+          log.timezone = logData.timezone ?? tz;
+          log.createdAt = now;
+          log.updatedAt = now;
+          log.deletedAt = null;
+        })
+      );
+
+      await database.batch(preparedCycle, ...preparedLogs);
+      return preparedCycle;
     });
   }
 

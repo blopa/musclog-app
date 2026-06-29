@@ -20,7 +20,12 @@ import { CycleSettingsModal } from '@/components/modals/CycleSettingsModal';
 import { PeriodLogModal } from '@/components/modals/PeriodLogModal';
 import { PhaseWheel } from '@/components/PhaseWheel';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
-import { CONFIDENCE_LABEL_KEYS, FLOW_LEVEL_KEYS, LIFE_STAGE_WARNING_KEYS } from '@/constants/cycle';
+import {
+  CONFIDENCE_LABEL_KEYS,
+  FLOW_LEVEL_KEYS,
+  LIFE_STAGE_WARNING_KEYS,
+  type PeriodLogMode,
+} from '@/constants/cycle';
 import { UserMetricService } from '@/database/services';
 import { MenstrualService } from '@/database/services/MenstrualService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -38,8 +43,6 @@ type DailyMetric = {
   value: number;
   note: string | undefined;
 };
-
-type PeriodLogMode = 'start' | 'end' | 'past';
 
 const getHormoneTrend = (trend?: string) => {
   if (trend === 'rising') {
@@ -93,8 +96,8 @@ export default function CycleScreen() {
   const [isPeriodLogModalVisible, setIsPeriodLogModalVisible] = useState(false);
   const [dailyMetrics, setDailyMetrics] = useState<DailyMetric[]>([]);
   const [selectedDate, setSelectedDate] = useState(() => localCalendarDayDate(new Date()));
+  const [currentTimestamp, setCurrentTimestamp] = useState(Date.now);
 
-  const [now] = useState(() => Date.now());
   const insights = currentPhase ? MenstrualService.getInsights(currentPhase) : null;
 
   const avgCycleLength = cycleStats?.avgCycleLength ?? cycle?.avgCycleLength ?? 28;
@@ -139,6 +142,14 @@ export default function CycleScreen() {
 
     fetchDailyMetrics();
   }, [isLogModalVisible, isPeriodLogModalVisible, selectedDate]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentTimestamp(Date.now());
+    }, 60_000);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   const lifeStage = cycle?.lifeStage;
   const lifeStageWarningKey = lifeStage ? LIFE_STAGE_WARNING_KEYS[lifeStage] : undefined;
@@ -257,7 +268,8 @@ export default function CycleScreen() {
                             ? t('cycle.periodActive', {
                                 day:
                                   Math.round(
-                                    (now - activePeriodLog.startDate) / (24 * 60 * 60 * 1000)
+                                    (currentTimestamp - activePeriodLog.startDate) /
+                                      (24 * 60 * 60 * 1000)
                                   ) + 1,
                               })
                             : t('cycle.periodActiveGeneric')}
@@ -414,12 +426,14 @@ export default function CycleScreen() {
       </ScrollView>
 
       <CycleLogModal
+        key={`${isLogModalVisible ? 'open' : 'closed'}-${selectedDate.getTime()}`}
         visible={isLogModalVisible}
         onClose={() => setIsLogModalVisible(false)}
         initialDate={selectedDate}
       />
 
       <PeriodLogModal
+        key={`${isPeriodLogModalVisible ? 'open' : 'closed'}-${periodLogMode}`}
         visible={isPeriodLogModalVisible}
         onClose={() => setIsPeriodLogModalVisible(false)}
         mode={periodLogMode}

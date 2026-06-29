@@ -72,17 +72,6 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
     if (!visible) {
       return;
     }
-    const init = async () => {
-      setSelectedDate(localCalendarDayDate(initialDate || new Date()));
-      resetForm();
-    };
-    void init();
-  }, [visible, initialDate]);
-
-  useEffect(() => {
-    if (!visible) {
-      return;
-    }
 
     const loadExistingMetrics = async () => {
       const startMs = localDayStartMs(selectedDate);

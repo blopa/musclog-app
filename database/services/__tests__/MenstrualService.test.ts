@@ -51,6 +51,11 @@ describe('MenstrualService', () => {
       expect(MenstrualService.calculateCurrentPhase(mockLogs, mockStats)).toBe('menstrual');
     });
 
+    it('should keep the period active through the full logged end day', () => {
+      jest.useFakeTimers().setSystemTime(new Date('2024-01-05T23:59:00'));
+      expect(MenstrualService.calculateCurrentPhase(mockLogs, mockStats)).toBe('menstrual');
+    });
+
     it('should return follicular after period ends, before ovulation', () => {
       jest.useFakeTimers().setSystemTime(new Date('2024-01-10'));
       expect(MenstrualService.calculateCurrentPhase(mockLogs, mockStats)).toBe('follicular');

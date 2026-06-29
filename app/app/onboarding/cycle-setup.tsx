@@ -1,4 +1,3 @@
-import { subWeeks } from 'date-fns';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Plus, Trash2 } from 'lucide-react-native';
 import { useState } from 'react';
@@ -11,8 +10,8 @@ import { MasterLayout } from '@/components/MasterLayout';
 import { DatePickerModal } from '@/components/modals/DatePickerModal';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
+import { getPastPeriodQuickDates } from '@/constants/cycle';
 import { MenstrualCycleRepository } from '@/database/repositories/MenstrualCycleRepository';
-import { PeriodLogRepository } from '@/database/repositories/PeriodLogRepository';
 import { useTheme } from '@/hooks/useTheme';
 import { getLocalCalendarYear, localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
 import { setOnboardingCompleted } from '@/utils/onboardingService';
@@ -69,36 +68,23 @@ export default function CycleSetup() {
     setIsSaving(true);
 
     try {
-      const cycle = await MenstrualCycleRepository.createNewCycle({
-        lastPeriodStartDate: data.lastPeriodStartDate
-          ? localDayStartMs(data.lastPeriodStartDate)
-          : null,
-        useHormonalBirthControl: data.birthControlType !== 'none',
-        birthControlType: data.birthControlType !== 'none' ? data.birthControlType : undefined,
-        syncGoal: data.syncGoal,
-        lifeStage: data.lifeStage !== 'regular' ? data.lifeStage : undefined,
-      });
-
-      // Log the last period start as a period_log entry
       const tz = getCurrentTimezone();
       const allCandidates = [];
 
       if (data.lastPeriodStartDate) {
         allCandidates.push({
-          menstrualCycleId: cycle.id,
           startDate: localDayStartMs(data.lastPeriodStartDate),
-          endDate: null,
+          endDate: null as null,
           timezone: tz,
         });
       }
 
-      // Log any past periods the user entered (sorted oldest first)
+      // Past periods sorted oldest first; lastPeriodStartDate is computed inside createNewCycleWithLogs
       const sortedPast = [...pastPeriods].sort(
         (a, b) => a.startDate.getTime() - b.startDate.getTime()
       );
       for (const past of sortedPast) {
         allCandidates.push({
-          menstrualCycleId: cycle.id,
           startDate: localDayStartMs(past.startDate),
           endDate: past.endDate ? localDayStartMs(past.endDate) : null,
           timezone: tz,
@@ -111,14 +97,19 @@ export default function CycleSetup() {
         if (seenStartDates.has(log.startDate)) {
           return false;
         }
-
         seenStartDates.add(log.startDate);
         return true;
       });
 
-      if (logsToCreate.length > 0) {
-        await PeriodLogRepository.createMany(logsToCreate);
-      }
+      await MenstrualCycleRepository.createNewCycleWithLogs(
+        {
+          useHormonalBirthControl: data.birthControlType !== 'none',
+          birthControlType: data.birthControlType !== 'none' ? data.birthControlType : undefined,
+          syncGoal: data.syncGoal,
+          lifeStage: data.lifeStage !== 'regular' ? data.lifeStage : undefined,
+        },
+        logsToCreate
+      );
 
       if (nextRoute) {
         router.navigate(nextRoute as never);
@@ -212,20 +203,7 @@ export default function CycleSetup() {
         selectedDate={new Date()}
         onDateSelect={handlePastPeriodDateSelect}
         maxYear={getLocalCalendarYear(new Date())}
-        quickDates={[
-          {
-            label: t('common.weeksAgo', { count: 4 }),
-            date: localCalendarDayDate(subWeeks(new Date(), 4)),
-          },
-          {
-            label: t('common.weeksAgo', { count: 8 }),
-            date: localCalendarDayDate(subWeeks(new Date(), 8)),
-          },
-          {
-            label: t('common.weeksAgo', { count: 12 }),
-            date: localCalendarDayDate(subWeeks(new Date(), 12)),
-          },
-        ]}
+        quickDates={getPastPeriodQuickDates(t)}
       />
     </MasterLayout>
   );

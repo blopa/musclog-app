@@ -187,12 +187,13 @@ export class MenstrualService {
 
     const now = Date.now();
 
-    // Menstrual: from period start until the period ends (or avg duration if end unknown)
-    const periodEndDate =
+    // Menstrual: covers the full end day. endDate is stored as local day start (midnight),
+    // so use endDate + MS_PER_DAY as the exclusive upper bound so the entire logged day counts.
+    const periodEndExclusive =
       latest.endDate != null
-        ? latest.endDate
+        ? latest.endDate + MS_PER_DAY
         : latest.startDate + stats.avgPeriodDuration * MS_PER_DAY;
-    if (now <= periodEndDate) {
+    if (now < periodEndExclusive) {
       return 'menstrual';
     }
 

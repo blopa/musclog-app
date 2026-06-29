@@ -1,9 +1,10 @@
 import { subDays, subWeeks } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
+import { getPastPeriodQuickDates, type PeriodLogMode } from '@/constants/cycle';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useTheme } from '@/hooks/useTheme';
 import { getLocalCalendarYear, localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
@@ -12,8 +13,6 @@ import { handleError } from '@/utils/handleError';
 import { CenteredModal } from './CenteredModal';
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
-
-type PeriodLogMode = 'start' | 'end' | 'past';
 
 const TITLE_KEYS: Record<PeriodLogMode, string> = {
   end: 'cycle.periodLog.endTitle',
@@ -51,17 +50,6 @@ export function PeriodLogModal({
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    if (!visible) {
-      return;
-    }
-    const reset = async () => {
-      setSelectedDate(localCalendarDayDate(initialDate ?? new Date()));
-      setIsDatePickerVisible(false);
-    };
-    void reset();
-  }, [visible, initialDate]);
-
   const titleKey = TITLE_KEYS[mode];
   const descriptionKey = DESCRIPTION_KEYS[mode];
 
@@ -88,34 +76,16 @@ export function PeriodLogModal({
     }
   };
 
+  const now = new Date();
   const quickDates =
     mode === 'past'
-      ? [
-          {
-            label: t('common.weeksAgo', { count: 4 }),
-            date: localCalendarDayDate(subWeeks(new Date(), 4)),
-          },
-          {
-            label: t('common.weeksAgo', { count: 8 }),
-            date: localCalendarDayDate(subWeeks(new Date(), 8)),
-          },
-          {
-            label: t('common.weeksAgo', { count: 12 }),
-            date: localCalendarDayDate(subWeeks(new Date(), 12)),
-          },
-        ]
+      ? getPastPeriodQuickDates(t)
       : [
-          {
-            label: t('common.yesterday'),
-            date: localCalendarDayDate(subDays(new Date(), 1)),
-          },
-          {
-            label: t('common.oneWeekAgo'),
-            date: localCalendarDayDate(subWeeks(new Date(), 1)),
-          },
+          { label: t('common.yesterday'), date: localCalendarDayDate(subDays(now, 1)) },
+          { label: t('common.oneWeekAgo'), date: localCalendarDayDate(subWeeks(now, 1)) },
           {
             label: t('common.weeksAgo', { count: 2 }),
-            date: localCalendarDayDate(subWeeks(new Date(), 2)),
+            date: localCalendarDayDate(subWeeks(now, 2)),
           },
         ];
 

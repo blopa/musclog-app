@@ -39,19 +39,6 @@ export type MealGroup = {
 const EMPTY_MACROS: MacroTotals = { calories: 0, protein: 0, carbs: 0, fat: 0 };
 const EMPTY_NUTRIENTS: NutrientTotals = { ...EMPTY_MACROS, fiber: 0, alcohol: 0 };
 
-/** Sum macro values across resolved log entries. */
-export function sumMacros(entries: ResolvedLogEntry[]): MacroTotals {
-  return entries.reduce(
-    (acc, e) => ({
-      calories: acc.calories + e.nutrients.calories,
-      protein: acc.protein + e.nutrients.protein,
-      carbs: acc.carbs + e.nutrients.carbs,
-      fat: acc.fat + e.nutrients.fat,
-    }),
-    { ...EMPTY_MACROS }
-  );
-}
-
 /** Sum the full nutrient breakdown (incl. fiber/alcohol) across resolved log entries. */
 export function sumNutrients(entries: ResolvedLogEntry[]): NutrientTotals {
   return entries.reduce(
@@ -65,4 +52,10 @@ export function sumNutrients(entries: ResolvedLogEntry[]): NutrientTotals {
     }),
     { ...EMPTY_NUTRIENTS }
   );
+}
+
+/** Sum macro values across resolved log entries. */
+export function sumMacros(entries: ResolvedLogEntry[]): MacroTotals {
+  const { calories, protein, carbs, fat } = sumNutrients(entries);
+  return { calories, protein, carbs, fat };
 }
