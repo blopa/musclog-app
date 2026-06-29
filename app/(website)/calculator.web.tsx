@@ -331,6 +331,9 @@ export default function Calculator() {
                       </button>
                     ))}
                   </div>
+                  <p className="mt-1.5 text-[11px] leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
+                    {t('form.genderNote')}
+                  </p>
                 </div>
               </div>
 

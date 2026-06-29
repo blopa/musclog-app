@@ -80,7 +80,6 @@
 
 /* ── Settings screen ───────────────────────────────────────────────────── */
 #define STR_UNITS "UNITS"
-#define STR_SEX "SEX"
 #define STR_ACTIVITY "ACTIVITY"
 #define STR_EXP "EXP"           /* short row label; full word is STR_EXPERIENCE */
 #define STR_ACT_VERY "V.ACTIVE" /* short row value; full is STR_ACTIVITY_VERY_ACTIVE */
@@ -156,7 +155,7 @@
 /* ── Onboarding: welcome / setup ───────────────────────────────────────── */
 #define STR_LETS_START "LET'S START"
 #define STR_UNIT_SYSTEM "UNIT SYSTEM"
-#define STR_BIOLOGICAL_SEX "BIOLOGICAL SEX"
+#define STR_GENDER "GENDER"
 #define STR_ACTIVITY_LEVEL "ACTIVITY LEVEL"
 #define STR_METRIC "METRIC"
 #define STR_IMPERIAL "IMP"

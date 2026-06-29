@@ -6,7 +6,7 @@
 
 /*
  * Scrollable settings screen: lets the user change every onboarding profile
- * field (units, biological sex, age, height, weight, activity level, lifting
+ * field (units, gender, age, height, weight, activity level, lifting
  * experience, fitness focus, weight goal) and every macro target (calories,
  * protein, carbs, fat, fiber) from a single list.
  *

@@ -838,6 +838,7 @@
         "male": "Male",
         "female": "Female",
         "other": "Other",
+        "genderNote": "These formulas come from older research that only studied two groups. Pick whichever best reflects your current hormones and body, or choose \"Other\" for averaged values.",
         "weight": "WEIGHT (KG)",
         "height": "HEIGHT (CM)",
         "bodyFat": "BODY FAT %",
