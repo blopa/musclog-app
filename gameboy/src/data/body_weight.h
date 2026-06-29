@@ -1,7 +1,7 @@
 #ifndef MUSCLOG_BODY_WEIGHT_H
 #define MUSCLOG_BODY_WEIGHT_H
 
-#include "profile.h"  /* SaveData */
+#include "profile.h" /* SaveData */
 #include <gb/gb.h>
 
 /*

@@ -21,8 +21,8 @@ uint8_t nutrition_show_food_detail(SaveData *data, uint16_t day_num, uint8_t nth
     uint16_t food_idx, grams;
     FoodCache fc;
     uint16_t cal, pro, carb, fat, fib;
-    uint8_t  imperial;
-    uint8_t  dirty = 1u;
+    uint8_t imperial;
+    uint8_t dirty = 1u;
     char buf[22];
     InputState input;
 
@@ -41,8 +41,10 @@ uint8_t nutrition_show_food_detail(SaveData *data, uint16_t day_num, uint8_t nth
             ui_print_center(5u, fc.name);
 
             ui_print_at(0u, 7u, STR_SERVING);
-            if (imperial) sprintf(buf, "%u OZ", (unsigned int)nutrition_grams_to_oz(grams));
-            else          sprintf(buf, "%u G",  (unsigned int)grams);
+            if (imperial)
+                sprintf(buf, "%u OZ", (unsigned int)nutrition_grams_to_oz(grams));
+            else
+                sprintf(buf, "%u G", (unsigned int)grams);
             ui_print_at(10u, 7u, buf);
             ui_print_at(0u, 8u, STR_DIVIDER);
 

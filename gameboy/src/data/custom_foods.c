@@ -14,25 +14,25 @@
 #include "ui_text.h"
 
 /* ── Bank-3 layout constants ──────────────────────────────────────────────── */
-#define CF_BANK            3u
-#define CF_MAGIC           0x4346u  /* 'CF' */
-#define CF_VERSION         1u
+#define CF_BANK 3u
+#define CF_MAGIC 0x4346u /* 'CF' */
+#define CF_VERSION 1u
 
-#define CF_OFF_MAGIC       0x00u
-#define CF_OFF_VERSION     0x02u
-#define CF_OFF_CHECKSUM    0x04u
-#define CF_ENTRIES_OFFSET  0x08u
+#define CF_OFF_MAGIC 0x00u
+#define CF_OFF_VERSION 0x02u
+#define CF_OFF_CHECKSUM 0x04u
+#define CF_ENTRIES_OFFSET 0x08u
 
-#define CF_NAME_BYTES      16u
-#define CF_ENTRY_SIZE      26u   /* name[16] + 5 x uint16 */
-#define CF_ENTRIES_BYTES   ((uint16_t)(MAX_CUSTOM_FOODS * CF_ENTRY_SIZE))
+#define CF_NAME_BYTES 16u
+#define CF_ENTRY_SIZE 26u /* name[16] + 5 x uint16 */
+#define CF_ENTRIES_BYTES ((uint16_t)(MAX_CUSTOM_FOODS * CF_ENTRY_SIZE))
 
 /* Macro offsets within a slot. */
-#define CF_OFF_KCAL        16u
-#define CF_OFF_PROTEIN     18u
-#define CF_OFF_FAT         20u
-#define CF_OFF_CARBS       22u
-#define CF_OFF_FIBER       24u
+#define CF_OFF_KCAL 16u
+#define CF_OFF_PROTEIN 18u
+#define CF_OFF_FAT 20u
+#define CF_OFF_CARBS 22u
+#define CF_OFF_FIBER 24u
 
 /* ── Raw SRAM bank-3 access (caller must have ENABLE_RAM + SWITCH_RAM(CF_BANK)) ─ */
 
@@ -71,26 +71,26 @@ static void cf_reset(void) {
 
 static void cf_read_entry(uint8_t slot, FoodCache *out) {
     uint16_t off = cf_entry_off(slot);
-    uint8_t  i;
+    uint8_t i;
 
     for (i = 0u; i != CF_NAME_BYTES && _SRAM[off + i] != 0u; ++i) {
         out->name[i] = (char)_SRAM[off + i];
     }
-    out->name[i]    = '\0';
-    out->kcal       = sram_rd16(_SRAM, (uint16_t)(off + CF_OFF_KCAL));
+    out->name[i] = '\0';
+    out->kcal = sram_rd16(_SRAM, (uint16_t)(off + CF_OFF_KCAL));
     out->protein_dg = sram_rd16(_SRAM, (uint16_t)(off + CF_OFF_PROTEIN));
-    out->fat_dg     = sram_rd16(_SRAM, (uint16_t)(off + CF_OFF_FAT));
-    out->carbs_dg   = sram_rd16(_SRAM, (uint16_t)(off + CF_OFF_CARBS));
-    out->fiber_dg   = sram_rd16(_SRAM, (uint16_t)(off + CF_OFF_FIBER));
+    out->fat_dg = sram_rd16(_SRAM, (uint16_t)(off + CF_OFF_FAT));
+    out->carbs_dg = sram_rd16(_SRAM, (uint16_t)(off + CF_OFF_CARBS));
+    out->fiber_dg = sram_rd16(_SRAM, (uint16_t)(off + CF_OFF_FIBER));
 }
 
 static void cf_clear_cache(FoodCache *out) {
-    out->name[0]    = '\0';
-    out->kcal       = 0u;
+    out->name[0] = '\0';
+    out->kcal = 0u;
     out->protein_dg = 0u;
-    out->fat_dg     = 0u;
-    out->carbs_dg   = 0u;
-    out->fiber_dg   = 0u;
+    out->fat_dg = 0u;
+    out->carbs_dg = 0u;
+    out->fiber_dg = 0u;
 }
 
 static char cf_upper(char c) {
@@ -99,13 +99,13 @@ static char cf_upper(char c) {
 
 static uint8_t cf_name_matches(uint8_t slot, const char *query) {
     uint16_t off = cf_entry_off(slot);
-    uint8_t  j;
-    char     nc;
+    uint8_t j;
+    char nc;
 
     for (j = 0u; query[j] != '\0'; ++j) {
         if (j >= CF_NAME_BYTES) return 0u;
         nc = (char)_SRAM[off + j];
-        if (nc == '\0') return 0u;            /* name shorter than query */
+        if (nc == '\0') return 0u; /* name shorter than query */
         if (cf_upper(nc) != query[j]) return 0u;
     }
     return 1u;
@@ -139,13 +139,13 @@ void custom_foods_erase(void) BANKED {
     DISABLE_RAM;
 }
 
-uint8_t custom_foods_add(const char *name, uint16_t kcal, uint16_t protein_dg,
-                         uint16_t fat_dg, uint16_t carbs_dg, uint16_t fiber_dg) BANKED {
-    uint8_t  slot  = 0u;
-    uint8_t  found = 0u;
-    uint8_t  done  = 0u;
-    uint8_t  i;
-    char     c;
+uint8_t custom_foods_add(const char *name, uint16_t kcal, uint16_t protein_dg, uint16_t fat_dg,
+                         uint16_t carbs_dg, uint16_t fiber_dg) BANKED {
+    uint8_t slot = 0u;
+    uint8_t found = 0u;
+    uint8_t done = 0u;
+    uint8_t i;
+    char c;
     uint16_t off;
 
     ENABLE_RAM;
@@ -153,7 +153,10 @@ uint8_t custom_foods_add(const char *name, uint16_t kcal, uint16_t protein_dg,
 
     if (cf_header_ok()) {
         for (slot = 0u; slot != MAX_CUSTOM_FOODS; ++slot) {
-            if (cf_slot_empty(slot)) { found = 1u; break; }
+            if (cf_slot_empty(slot)) {
+                found = 1u;
+                break;
+            }
         }
     }
 
@@ -164,11 +167,11 @@ uint8_t custom_foods_add(const char *name, uint16_t kcal, uint16_t protein_dg,
             if (c == '\0') done = 1u;
             _SRAM[off + i] = (uint8_t)c;
         }
-        sram_wr16(_SRAM, (uint16_t)(off + CF_OFF_KCAL),    kcal);
+        sram_wr16(_SRAM, (uint16_t)(off + CF_OFF_KCAL), kcal);
         sram_wr16(_SRAM, (uint16_t)(off + CF_OFF_PROTEIN), protein_dg);
-        sram_wr16(_SRAM, (uint16_t)(off + CF_OFF_FAT),     fat_dg);
-        sram_wr16(_SRAM, (uint16_t)(off + CF_OFF_CARBS),   carbs_dg);
-        sram_wr16(_SRAM, (uint16_t)(off + CF_OFF_FIBER),   fiber_dg);
+        sram_wr16(_SRAM, (uint16_t)(off + CF_OFF_FAT), fat_dg);
+        sram_wr16(_SRAM, (uint16_t)(off + CF_OFF_CARBS), carbs_dg);
+        sram_wr16(_SRAM, (uint16_t)(off + CF_OFF_FIBER), fiber_dg);
         cf_finalize();
     }
 
@@ -211,7 +214,7 @@ uint8_t custom_foods_count(void) BANKED {
 
 uint8_t custom_foods_get(uint8_t nth, uint8_t *slot, FoodCache *out) BANKED {
     uint8_t s;
-    uint8_t seen  = 0u;
+    uint8_t seen = 0u;
     uint8_t found = 0u;
 
     ENABLE_RAM;
@@ -240,7 +243,7 @@ void custom_foods_delete(uint8_t slot) BANKED {
     SWITCH_RAM(CF_BANK);
 
     if (cf_header_ok() && slot < MAX_CUSTOM_FOODS) {
-        _SRAM[cf_entry_off(slot)] = 0u;  /* tombstone: name[0] = '\0' */
+        _SRAM[cf_entry_off(slot)] = 0u; /* tombstone: name[0] = '\0' */
         cf_finalize();
     }
 
@@ -248,8 +251,8 @@ void custom_foods_delete(uint8_t slot) BANKED {
     DISABLE_RAM;
 }
 
-uint8_t custom_foods_filter(const char *query, uint16_t *matches,
-                            uint8_t cap, uint8_t count) BANKED {
+uint8_t custom_foods_filter(const char *query, uint16_t *matches, uint8_t cap,
+                            uint8_t count) BANKED {
     uint8_t slot;
 
     ENABLE_RAM;
@@ -276,31 +279,31 @@ static const char ALPHABET[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
 
 /* Per-100g macro fields, in `vals[]` order. kcal is whole; the rest are whole grams. */
 #define FIELD_COUNT 5u
-#define FIELD_KCAL  0u
-#define FIELD_CARB  1u
-#define FIELD_FIB   2u
-#define FIELD_FAT   3u
-#define FIELD_PRO   4u
+#define FIELD_KCAL 0u
+#define FIELD_CARB 1u
+#define FIELD_FIB 2u
+#define FIELD_FAT 3u
+#define FIELD_PRO 4u
 
 static const char *const FIELD_LABEL[FIELD_COUNT] = {
     STR_CAL_100, STR_CARB_100, STR_FIB_100, STR_FAT_100, STR_PRO_100,
 };
-static const uint16_t FIELD_SMALL[FIELD_COUNT] = { 10u, 1u, 1u, 1u, 1u };
-static const uint16_t FIELD_LARGE[FIELD_COUNT] = { 50u, 10u, 10u, 10u, 10u };
-static const uint16_t FIELD_MAX[FIELD_COUNT]   = { 950u, 100u, 100u, 100u, 100u };
-static const uint8_t  FIELD_ROW[FIELD_COUNT]   = { 4u, 6u, 8u, 10u, 12u };
+static const uint16_t FIELD_SMALL[FIELD_COUNT] = {10u, 1u, 1u, 1u, 1u};
+static const uint16_t FIELD_LARGE[FIELD_COUNT] = {50u, 10u, 10u, 10u, 10u};
+static const uint16_t FIELD_MAX[FIELD_COUNT] = {950u, 100u, 100u, 100u, 100u};
+static const uint8_t FIELD_ROW[FIELD_COUNT] = {4u, 6u, 8u, 10u, 12u};
 
 /* On-screen A-Z + space name picker. Returns 1 and fills `out` if confirmed
  * (>= 1 char), 0 if the user cancelled (B with an empty name). */
 static uint8_t name_entry(char *out) {
     InputState input;
-    char       name[CUSTOM_NAME_MAX + 1u];
-    char       line[CUSTOM_NAME_MAX + 1u];
-    char       slot[2];
-    uint8_t    len   = 0u;
-    uint8_t    spin  = 0u;
-    uint8_t    dirty = 1u;
-    uint8_t    i;
+    char name[CUSTOM_NAME_MAX + 1u];
+    char line[CUSTOM_NAME_MAX + 1u];
+    char slot[2];
+    uint8_t len = 0u;
+    uint8_t spin = 0u;
+    uint8_t dirty = 1u;
+    uint8_t i;
 
     name[0] = '\0';
     input_init(&input);
@@ -312,7 +315,8 @@ static uint8_t name_entry(char *out) {
             ui_print_center(0u, STR_NEW_FOOD);
             ui_print_at(0u, 2u, STR_NAME_LABEL);
 
-            for (i = 0u; i != len; ++i) line[i] = name[i];
+            for (i = 0u; i != len; ++i)
+                line[i] = name[i];
             line[len] = '\0';
             ui_fill_attr(0u, 3u, 20u, 1u, UI_PAL_PANEL);
             ui_print_at(0u, 3u, line);
@@ -349,14 +353,15 @@ static uint8_t name_entry(char *out) {
             dirty = 1u;
         }
         if (input_pressed(&input, J_START) && len > 0u) {
-            for (i = 0u; i != (uint8_t)(len + 1u); ++i) out[i] = name[i];
+            for (i = 0u; i != (uint8_t)(len + 1u); ++i)
+                out[i] = name[i];
             return 1u;
         }
     }
 }
 
 static void draw_macro_fields(const char *name, const uint16_t *vals, uint8_t field) {
-    char    buf[22];
+    char buf[22];
     uint8_t i, row;
 
     ui_clear();
@@ -370,8 +375,10 @@ static void draw_macro_fields(const char *name, const uint16_t *vals, uint8_t fi
         row = FIELD_ROW[i];
         if (i == field) ui_fill_attr(0u, row, 20u, 1u, UI_PAL_SELECTED);
         ui_print_at(0u, row, FIELD_LABEL[i]);
-        if (i == FIELD_KCAL) sprintf(buf, "%u KCAL", (unsigned int)vals[i]);
-        else                 sprintf(buf, "%u G",    (unsigned int)vals[i]);
+        if (i == FIELD_KCAL)
+            sprintf(buf, "%u KCAL", (unsigned int)vals[i]);
+        else
+            sprintf(buf, "%u G", (unsigned int)vals[i]);
         ui_print_at((uint8_t)(19u - (uint8_t)strlen(buf)), row, buf);
     }
 
@@ -381,18 +388,19 @@ static void draw_macro_fields(const char *name, const uint16_t *vals, uint8_t fi
 
 void custom_food_create(SaveData *data) BANKED {
     InputState input;
-    char       name[CUSTOM_NAME_MAX + 1u];
-    uint16_t   vals[FIELD_COUNT];
-    uint16_t   nv;
-    uint8_t    field = 0u;
-    uint8_t    dirty = 1u;
-    uint8_t    i;
+    char name[CUSTOM_NAME_MAX + 1u];
+    uint16_t vals[FIELD_COUNT];
+    uint16_t nv;
+    uint8_t field = 0u;
+    uint8_t dirty = 1u;
+    uint8_t i;
 
-    (void)data;  /* macros are per-100g grams/kcal — unit-system independent */
+    (void)data; /* macros are per-100g grams/kcal — unit-system independent */
 
     if (!name_entry(name)) return;
 
-    for (i = 0u; i != FIELD_COUNT; ++i) vals[i] = 0u;
+    for (i = 0u; i != FIELD_COUNT; ++i)
+        vals[i] = 0u;
 
     input_init(&input);
     while (1) {
@@ -411,8 +419,8 @@ void custom_food_create(SaveData *data) BANKED {
             dirty = 1u;
         }
 
-        nv = spinner_u16(&input, vals[field], FIELD_SMALL[field], FIELD_LARGE[field],
-                         0u, FIELD_MAX[field]);
+        nv = spinner_u16(&input, vals[field], FIELD_SMALL[field], FIELD_LARGE[field], 0u,
+                         FIELD_MAX[field]);
         if (nv != vals[field]) {
             vals[field] = nv;
             dirty = 1u;
@@ -422,17 +430,16 @@ void custom_food_create(SaveData *data) BANKED {
     }
 
     /* The loop only falls through here on J_START (J_B returns early). */
-    if (custom_foods_add(name, vals[FIELD_KCAL],
-                         (uint16_t)(vals[FIELD_PRO]  * 10u),
-                         (uint16_t)(vals[FIELD_FAT]  * 10u),
-                         (uint16_t)(vals[FIELD_CARB] * 10u),
-                         (uint16_t)(vals[FIELD_FIB]  * 10u)) == 0u) {
+    if (custom_foods_add(name, vals[FIELD_KCAL], (uint16_t)(vals[FIELD_PRO] * 10u),
+                         (uint16_t)(vals[FIELD_FAT] * 10u), (uint16_t)(vals[FIELD_CARB] * 10u),
+                         (uint16_t)(vals[FIELD_FIB] * 10u)) == 0u) {
         ui_storage_full(STR_MY_FOODS, STR_CUSTOM_FULL_1, STR_CUSTOM_FULL_2);
     } else {
         ui_title(STR_NEW_FOOD);
         ui_print_center(8u, STR_FOOD_SAVED);
         ui_present();
-        for (i = 0u; i != 75u; ++i) wait_vbl_done();
+        for (i = 0u; i != 75u; ++i)
+            wait_vbl_done();
     }
 }
 
@@ -442,9 +449,9 @@ void custom_food_create(SaveData *data) BANKED {
 
 static void draw_manage(const ListCursor *cursor, uint8_t count) {
     FoodCache fc;
-    char      buf[8];
-    char      nm[13];
-    uint8_t   i, nth, slot, row, focused, klen, kx, k;
+    char buf[8];
+    char nm[13];
+    uint8_t i, nth, slot, row, focused, klen, kx, k;
 
     ui_clear();
     ui_fill_attr(0u, 0u, 20u, 1u, UI_PAL_HEADER);
@@ -462,18 +469,19 @@ static void draw_manage(const ListCursor *cursor, uint8_t count) {
         if (nth >= count) break;
         if (!custom_foods_get(nth, &slot, &fc)) break;
 
-        row     = (uint8_t)(4u + i);
+        row = (uint8_t)(4u + i);
         focused = (uint8_t)(i == cursor->focused);
         if (focused) ui_fill_attr(0u, row, 20u, 1u, UI_PAL_PANEL);
         ui_print_at(0u, row, focused ? ">" : " ");
 
-        for (k = 0u; k != 12u && fc.name[k] != '\0'; ++k) nm[k] = fc.name[k];
+        for (k = 0u; k != 12u && fc.name[k] != '\0'; ++k)
+            nm[k] = fc.name[k];
         nm[k] = '\0';
         ui_print_at(2u, row, nm);
 
         sprintf(buf, "%uK", (unsigned int)fc.kcal);
         klen = (uint8_t)strlen(buf);
-        kx   = (klen < 6u) ? (uint8_t)(20u - klen) : 14u;
+        kx = (klen < 6u) ? (uint8_t)(20u - klen) : 14u;
         ui_print_at(kx, row, buf);
     }
 
@@ -483,10 +491,10 @@ static void draw_manage(const ListCursor *cursor, uint8_t count) {
 void custom_foods_manage(SaveData *data) BANKED {
     InputState input;
     ListCursor cursor;
-    FoodCache  fc;
-    uint8_t    count;
-    uint8_t    nth, slot;
-    uint8_t    dirty = 1u;
+    FoodCache fc;
+    uint8_t count;
+    uint8_t nth, slot;
+    uint8_t dirty = 1u;
 
     (void)data;
     list_cursor_reset(&cursor);

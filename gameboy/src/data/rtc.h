@@ -1,16 +1,16 @@
 #ifndef MUSCLOG_RTC_H
 #define MUSCLOG_RTC_H
 
-#include "profile.h"  /* for CalDate, SaveData */
+#include "profile.h" /* for CalDate, SaveData */
 
 /* MBC3 real-time clock register snapshot. */
 typedef struct RtcTime {
-    uint8_t  seconds;
-    uint8_t  minutes;
-    uint8_t  hours;
-    uint16_t days;    /* 9-bit day counter (0–511) */
-    uint8_t  halt;    /* 1 = timer is halted */
-    uint8_t  carry;   /* 1 = day counter overflowed 511, stays set until cleared */
+    uint8_t seconds;
+    uint8_t minutes;
+    uint8_t hours;
+    uint16_t days; /* 9-bit day counter (0–511) */
+    uint8_t halt;  /* 1 = timer is halted */
+    uint8_t carry; /* 1 = day counter overflowed 511, stays set until cleared */
 } RtcTime;
 
 /* ── Hardware access ──────────────────────────────────────────────────────── */
@@ -51,7 +51,7 @@ uint16_t cal_day_number(CalDate d);
  * Compare two CalDates.
  * Returns -1 if a < b, 0 if a == b, +1 if a > b.
  */
-int8_t  cal_compare(CalDate a, CalDate b);
+int8_t cal_compare(CalDate a, CalDate b);
 
 /*
  * Adjust one Y/M/D field of *pick by a single step (going_right = increment).
@@ -61,14 +61,14 @@ int8_t  cal_compare(CalDate a, CalDate b);
  * re-clamped to the resulting month's length. field: 0=year 1=month 2=day;
  * other fields (hour/minute) are the caller's concern.
  */
-void cal_adjust_ymd(CalDate *pick, uint8_t field, uint8_t going_right,
-                    uint16_t min_year, uint16_t max_year, uint8_t wrap_year);
+void cal_adjust_ymd(CalDate *pick, uint8_t field, uint8_t going_right, uint16_t min_year,
+                    uint16_t max_year, uint8_t wrap_year);
 
 /*
  * Format d as "MM-DD-YY\0" (8 visible chars, 9 bytes including null).
  * buf must be at least 9 bytes.
  */
-void    cal_format(const CalDate *d, char *buf);
+void cal_format(const CalDate *d, char *buf);
 
 /*
  * Compute today's CalDate from the RTC and the calibration stored in data.

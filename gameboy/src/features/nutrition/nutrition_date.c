@@ -14,13 +14,13 @@
  * Updates *viewing_date only on A/Start confirm; B cancels.
  */
 void nutrition_date_picker(CalDate today, CalDate *viewing_date) BANKED {
-    CalDate    pick;
-    uint8_t    field;
-    uint8_t    dirty;
-    uint8_t    going_right;
+    CalDate pick;
+    uint8_t field;
+    uint8_t dirty;
+    uint8_t going_right;
     InputState input;
 
-    pick  = *viewing_date;
+    pick = *viewing_date;
     field = 0u;
     dirty = 1u;
 

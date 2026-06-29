@@ -81,6 +81,42 @@ function ensureClangTidyAvailable() {
     );
 }
 
+/** Finds the clang compiler binary and its builtin include directory.
+ *  Returns { bin, incDir } where bin is the compiler to use in compile_commands.json
+ *  and incDir is the builtin include path for stdint.h / stddef.h / stdbool.h.
+ *  Needed on systems where glibc-devel is not installed (e.g. Fedora Kinoite). */
+function findClang() {
+    // Prefer versioned binaries (clang-22, clang-20…) then bare clang.
+    const candidates = [];
+    const binDir = '/usr/bin';
+    if (existsSync(binDir)) {
+        for (const f of readdirSync(binDir).sort().reverse()) {
+            if (/^clang-\d+$/.test(f)) candidates.push(join(binDir, f));
+        }
+    }
+    candidates.push('clang'); // also try PATH
+
+    for (const bin of candidates) {
+        const r = spawnSync(bin, ['--print-resource-dir'], { encoding: 'utf8' });
+        if (r.status === 0 && r.stdout) {
+            const resourceDir = r.stdout.trim();
+            const incDir = join(resourceDir, 'include');
+            if (existsSync(incDir)) return { bin, incDir };
+        }
+    }
+
+    // Fallback: probe /usr/lib/clang/*/include without a known binary
+    const clangLib = '/usr/lib/clang';
+    if (existsSync(clangLib)) {
+        for (const v of readdirSync(clangLib).sort().reverse()) {
+            const incDir = join(clangLib, v, 'include');
+            if (existsSync(incDir)) return { bin: 'clang', incDir };
+        }
+    }
+
+    return { bin: 'clang', incDir: null };
+}
+
 function collectSourceFiles() {
     return collectFilesRecursive(srcDir, '.c');
 }
@@ -118,18 +154,26 @@ function generateCompileCommands(sourceFiles) {
     // We generate a minimal one: -std=c99, stub include path first so our
     // SDCC-free headers shadow the real GBDK ones, then every project include dir.
     const includeDirs = collectIncludeDirs(srcDir);
+    const { bin: clangBin, incDir: clangBuiltinInc } = findClang();
+
     const entries = sourceFiles.map((file) => ({
         directory: srcDir,
         file,
         command: [
-            'clang',
-            '-std=c99',
+            clangBin,
+            // Use gnu99 instead of c99: SDCC allows void main(); strict C99 does not.
+            '-std=gnu99',
             // Stubs must come before any system path so clang picks our
             // SDCC-free <gb/gb.h> etc. instead of the real GBDK ones.
             `-I${stubsDir}`,
             ...includeDirs.map((dir) => `-I${dir}`),
+            // Clang's own builtin headers (stdint.h, stddef.h, stdbool.h).
+            // Required on systems where glibc-devel is not installed (e.g. Fedora Kinoite).
+            ...(clangBuiltinInc ? [`-isystem${clangBuiltinInc}`] : []),
             // Silence warnings that are expected in GBC embedded code.
             '-Wno-unused-parameter',
+            // GBC's main() is void-returning (SDCC convention); clang requires int.
+            '-Wno-main',
             '-c',
             file,
         ].join(' '),
@@ -164,6 +208,9 @@ function run() {
         `-p=${buildDir}`,
         ...(fix ? ['--fix', '--fix-errors'] : []),
         '--warnings-as-errors=*',
+        // GBC uses void main() (SDCC convention). Pass -Wno-main directly so
+        // clang-tidy's driver honours it regardless of compile_commands.json parsing.
+        '--extra-arg=-Wno-main',
         ...sourceFiles,
     ];
 

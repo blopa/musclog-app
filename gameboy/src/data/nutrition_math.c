@@ -35,12 +35,18 @@ static uint16_t calculate_bmr(const SaveData *data) {
 
 static uint16_t activity_multiplier(uint8_t activity_level) {
     switch (activity_level) {
-        case 1u: return 1200u;
-        case 2u: return 1375u;
-        case 3u: return 1550u;
-        case 4u: return 1725u;
-        case 5u: return 1900u;
-        default: return 1375u;
+    case 1u:
+        return 1200u;
+    case 2u:
+        return 1375u;
+    case 3u:
+        return 1550u;
+    case 4u:
+        return 1725u;
+    case 5u:
+        return 1900u;
+    default:
+        return 1375u;
     }
 }
 
@@ -83,27 +89,27 @@ static void macro_split(const SaveData *data, uint8_t *carbs, uint8_t *protein, 
     }
 
     switch (data->fitness_focus) {
-        case FITNESS_MUSCLE:
-            *carbs = 45u;
-            *protein = 30u;
-            *fat = 25u;
-            break;
-        case FITNESS_STRENGTH:
-            *carbs = 50u;
-            *protein = 30u;
-            *fat = 20u;
-            break;
-        case FITNESS_ENDURANCE:
-            *carbs = 55u;
-            *protein = 20u;
-            *fat = 25u;
-            break;
-        case FITNESS_GENERAL:
-        default:
-            *carbs = 45u;
-            *protein = 25u;
-            *fat = 30u;
-            break;
+    case FITNESS_MUSCLE:
+        *carbs = 45u;
+        *protein = 30u;
+        *fat = 25u;
+        break;
+    case FITNESS_STRENGTH:
+        *carbs = 50u;
+        *protein = 30u;
+        *fat = 20u;
+        break;
+    case FITNESS_ENDURANCE:
+        *carbs = 55u;
+        *protein = 20u;
+        *fat = 25u;
+        break;
+    case FITNESS_GENERAL:
+    default:
+        *carbs = 45u;
+        *protein = 25u;
+        *fat = 30u;
+        break;
     }
 }
 
@@ -130,7 +136,8 @@ void nutrition_apply_generated_goals(SaveData *data) BANKED {
     macro_split(data, &carbs_pct, &protein_pct, &fat_pct);
 
     data->calorie_goal = target;
-    data->protein_goal = (uint16_t)((((uint32_t)target * protein_pct) + 200u) / (100u * KCAL_PROTEIN));
+    data->protein_goal =
+        (uint16_t)((((uint32_t)target * protein_pct) + 200u) / (100u * KCAL_PROTEIN));
     data->carbs_goal = (uint16_t)((((uint32_t)target * carbs_pct) + 200u) / (100u * KCAL_CARBS));
     data->fat_goal = (uint16_t)((((uint32_t)target * fat_pct) + 450u) / (100u * KCAL_FAT));
 

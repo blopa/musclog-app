@@ -9,11 +9,11 @@
  * Macros are decigrams (0.1 g resolution); energy is whole kcal. */
 typedef struct {
     const char *name;
-    uint16_t kcal;        /* energy, kcal */
-    uint16_t protein_dg;  /* protein, decigrams (0.1 g) */
-    uint16_t fat_dg;      /* total fat, decigrams (0.1 g) */
-    uint16_t carbs_dg;    /* carbohydrate by difference, decigrams (0.1 g) */
-    uint16_t fiber_dg;    /* dietary fiber, decigrams (0.1 g) */
+    uint16_t kcal;       /* energy, kcal */
+    uint16_t protein_dg; /* protein, decigrams (0.1 g) */
+    uint16_t fat_dg;     /* total fat, decigrams (0.1 g) */
+    uint16_t carbs_dg;   /* carbohydrate by difference, decigrams (0.1 g) */
+    uint16_t fiber_dg;   /* dietary fiber, decigrams (0.1 g) */
 } foundation_food_t;
 
 #define FOUNDATION_FOOD_COUNT 215u

@@ -44,7 +44,7 @@ static void draw_button(uint8_t y, const char *label, uint8_t focused) {
 void home_draw(const HomeState *state) BANKED {
     const SaveData *d = state->data;
     char buf[22];
-    char date_buf[9];  /* "MM-DD-YY\0" */
+    char date_buf[9]; /* "MM-DD-YY\0" */
     CalDate today;
     uint16_t cal, pro, carb, fat, fib;
     uint16_t digestible_carb;

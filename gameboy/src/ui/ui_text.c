@@ -283,7 +283,8 @@ uint8_t ui_menu_select(const char *title, const char **options, uint8_t count) {
     }
 }
 
-void ui_draw_value_screen(const char *title, const char *label, const char *value, const char *hint) {
+void ui_draw_value_screen(const char *title, const char *label, const char *value,
+                          const char *hint) {
     ui_title(title);
     ui_print_center(6u, label);
     ui_print_center(8u, value);
@@ -316,8 +317,7 @@ uint8_t ui_bar_fill(uint16_t tracked, uint16_t goal, uint8_t width) {
 
 void ui_draw_bar(uint8_t x, uint8_t y, uint8_t width, uint8_t fill) {
     if (fill > width) fill = width;
-    if (fill > 0u)
-        ui_fill_attr(x, y, fill, 1u, UI_PAL_SELECTED);
+    if (fill > 0u) ui_fill_attr(x, y, fill, 1u, UI_PAL_SELECTED);
     if (fill < width)
         ui_fill_attr((uint8_t)(x + fill), y, (uint8_t)(width - fill), 1u, UI_PAL_PANEL);
 }
@@ -337,8 +337,7 @@ void ui_draw_bar(uint8_t x, uint8_t y, uint8_t width, uint8_t fill) {
  *   7+ one row per field
  */
 static void draw_picker_rows(const char *title, uint8_t n_fields, uint8_t active,
-                             const char * const *labels,
-                             const char * const *values,
+                             const char *const *labels, const char *const *values,
                              const uint8_t *cols) {
     uint8_t i;
     uint8_t row;
@@ -364,33 +363,38 @@ static void fmt2(char *buf, uint8_t v) {
     buf[2] = '\0';
 }
 
-void ui_draw_date_picker(const char *title, uint8_t field,
-                         uint16_t year, uint8_t month, uint8_t day) {
+void ui_draw_date_picker(const char *title, uint8_t field, uint16_t year, uint8_t month,
+                         uint8_t day) {
     char year_buf[5];
     char month_buf[3];
     char day_buf[3];
     const char *labels[3];
     const char *values[3];
-    uint8_t     cols[3];
+    uint8_t cols[3];
 
     year_buf[0] = (char)('0' + (year / 1000u) % 10u);
-    year_buf[1] = (char)('0' + (year / 100u)  % 10u);
-    year_buf[2] = (char)('0' + (year / 10u)   % 10u);
-    year_buf[3] = (char)('0' +  year           % 10u);
+    year_buf[1] = (char)('0' + (year / 100u) % 10u);
+    year_buf[2] = (char)('0' + (year / 10u) % 10u);
+    year_buf[3] = (char)('0' + year % 10u);
     year_buf[4] = '\0';
     fmt2(month_buf, month);
     fmt2(day_buf, day);
 
-    labels[0] = STR_YEAR;  values[0] = year_buf;  cols[0] = 16u;
-    labels[1] = STR_MONTH; values[1] = month_buf; cols[1] = 18u;
-    labels[2] = STR_DAY;   values[2] = day_buf;   cols[2] = 18u;
+    labels[0] = STR_YEAR;
+    values[0] = year_buf;
+    cols[0] = 16u;
+    labels[1] = STR_MONTH;
+    values[1] = month_buf;
+    cols[1] = 18u;
+    labels[2] = STR_DAY;
+    values[2] = day_buf;
+    cols[2] = 18u;
 
     draw_picker_rows(title, 3u, field, labels, values, cols);
 }
 
-void ui_draw_datetime_picker(const char *title, uint8_t field,
-                             uint16_t year, uint8_t month, uint8_t day,
-                             uint8_t hour, uint8_t minute) {
+void ui_draw_datetime_picker(const char *title, uint8_t field, uint16_t year, uint8_t month,
+                             uint8_t day, uint8_t hour, uint8_t minute) {
     char year_buf[5];
     char month_buf[3];
     char day_buf[3];
@@ -398,23 +402,33 @@ void ui_draw_datetime_picker(const char *title, uint8_t field,
     char minute_buf[3];
     const char *labels[5];
     const char *values[5];
-    uint8_t     cols[5];
+    uint8_t cols[5];
 
     year_buf[0] = (char)('0' + (year / 1000u) % 10u);
-    year_buf[1] = (char)('0' + (year / 100u)  % 10u);
-    year_buf[2] = (char)('0' + (year / 10u)   % 10u);
-    year_buf[3] = (char)('0' +  year           % 10u);
+    year_buf[1] = (char)('0' + (year / 100u) % 10u);
+    year_buf[2] = (char)('0' + (year / 10u) % 10u);
+    year_buf[3] = (char)('0' + year % 10u);
     year_buf[4] = '\0';
     fmt2(month_buf, month);
     fmt2(day_buf, day);
     fmt2(hour_buf, hour);
     fmt2(minute_buf, minute);
 
-    labels[0] = STR_YEAR;   values[0] = year_buf;   cols[0] = 16u;
-    labels[1] = STR_MONTH;  values[1] = month_buf;  cols[1] = 18u;
-    labels[2] = STR_DAY;    values[2] = day_buf;    cols[2] = 18u;
-    labels[3] = STR_HOUR;   values[3] = hour_buf;   cols[3] = 18u;
-    labels[4] = STR_MINUTE; values[4] = minute_buf; cols[4] = 18u;
+    labels[0] = STR_YEAR;
+    values[0] = year_buf;
+    cols[0] = 16u;
+    labels[1] = STR_MONTH;
+    values[1] = month_buf;
+    cols[1] = 18u;
+    labels[2] = STR_DAY;
+    values[2] = day_buf;
+    cols[2] = 18u;
+    labels[3] = STR_HOUR;
+    values[3] = hour_buf;
+    cols[3] = 18u;
+    labels[4] = STR_MINUTE;
+    values[4] = minute_buf;
+    cols[4] = 18u;
 
     draw_picker_rows(title, 5u, field, labels, values, cols);
 }

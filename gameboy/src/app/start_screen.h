@@ -22,8 +22,8 @@
  */
 typedef uint8_t StartScreenAction;
 
-#define START_SCREEN_CONTINUE           0u
-#define START_SCREEN_NEW_GAME           1u
+#define START_SCREEN_CONTINUE 0u
+#define START_SCREEN_NEW_GAME 1u
 #define START_SCREEN_ERASE_AND_NEW_GAME 2u
 
 StartScreenAction start_screen_run(SaveData *save, uint8_t had_valid_save) BANKED;

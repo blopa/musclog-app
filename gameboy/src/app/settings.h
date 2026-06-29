@@ -1,7 +1,7 @@
 #ifndef MUSCLOG_SETTINGS_H
 #define MUSCLOG_SETTINGS_H
 
-#include "profile.h"  /* SaveData */
+#include "profile.h" /* SaveData */
 #include <gb/gb.h>
 
 /*

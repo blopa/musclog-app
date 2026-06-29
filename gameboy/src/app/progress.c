@@ -30,42 +30,42 @@
  *  Row 16  --------------------       footer divider
  *  Row 17  B BACK     <>PAGE ^vRNG    footer
  */
-#define PLOT_LEFT  1u
-#define PLOT_W    18u
-#define PLOT_TOP   7u
-#define PLOT_BASE 15u  /* bottom row of the plot */
-#define PLOT_ROWS  9u  /* rows 7..15 */
-#define MAX_BARS  18u
+#define PLOT_LEFT 1u
+#define PLOT_W 18u
+#define PLOT_TOP 7u
+#define PLOT_BASE 15u /* bottom row of the plot */
+#define PLOT_ROWS 9u  /* rows 7..15 */
+#define MAX_BARS 18u
 
 /* Rolling windows offered by Up/Down. */
-#define RANGE_SHORT  7u
-#define RANGE_LONG  30u
-#define MAX_DAYS    30u
+#define RANGE_SHORT 7u
+#define RANGE_LONG 30u
+#define MAX_DAYS 30u
 
 /* Pages cycled with Left/Right. */
 #define PAGE_SUMMARY 0u
-#define PAGE_CAL     1u
-#define PAGE_PRO     2u
-#define PAGE_CARB    3u
-#define PAGE_FAT     4u
-#define PAGE_WEIGHT  5u
-#define PAGE_COUNT   6u
+#define PAGE_CAL 1u
+#define PAGE_PRO 2u
+#define PAGE_CARB 3u
+#define PAGE_FAT 4u
+#define PAGE_WEIGHT 5u
+#define PAGE_COUNT 6u
 
 /* Up to this many sets per workout are scanned for distinct muscle groups. */
 #define SET_SCAN_CAP 32u
 
 /* ── Aggregates, recomputed when entering the screen or changing the range ── */
-static uint16_t day_cal[MAX_DAYS];   /* per-day kcal, index 0 = oldest day      */
-static uint16_t day_pro[MAX_DAYS];   /* per-day protein g                       */
-static uint16_t day_carb[MAX_DAYS];  /* per-day digestible carbs g              */
-static uint16_t day_fat[MAX_DAYS];   /* per-day fat g                           */
-static uint8_t  agg_range;           /* RANGE_SHORT or RANGE_LONG               */
-static uint8_t  logged_days;         /* days in window with any food logged     */
-static uint8_t  muscles_hit;         /* distinct muscle groups hit (0..9)       */
-static uint8_t  workout_total;       /* workouts in the window                  */
+static uint16_t day_cal[MAX_DAYS];  /* per-day kcal, index 0 = oldest day      */
+static uint16_t day_pro[MAX_DAYS];  /* per-day protein g                       */
+static uint16_t day_carb[MAX_DAYS]; /* per-day digestible carbs g              */
+static uint16_t day_fat[MAX_DAYS];  /* per-day fat g                           */
+static uint8_t agg_range;           /* RANGE_SHORT or RANGE_LONG               */
+static uint8_t logged_days;         /* days in window with any food logged     */
+static uint8_t muscles_hit;         /* distinct muscle groups hit (0..9)       */
+static uint8_t workout_total;       /* workouts in the window                  */
 
 static uint16_t weight_vals[MAX_DAYS]; /* weigh-ins (kg tenths) inside the window */
-static uint8_t  weight_count;          /* number collected                       */
+static uint8_t weight_count;           /* number collected                       */
 
 static WorkoutLogSet set_buf[SET_SCAN_CAP];
 
@@ -83,8 +83,8 @@ static uint8_t popcount9(uint16_t mask) {
 /* Sum the macros of every workout-set's muscle group across the window. */
 static void progress_scan_workouts(uint16_t start_day, uint16_t end_day) {
     uint16_t mask = 0u;
-    uint8_t  count = workoutlog_count();
-    uint8_t  w, s, got;
+    uint8_t count = workoutlog_count();
+    uint8_t w, s, got;
     WorkoutLogSummary summary;
     ExerciseCache exercise;
 
@@ -118,22 +118,22 @@ static void progress_collect_weight(uint16_t start_day, uint16_t end_day) {
 }
 
 static void progress_compute(const SaveData *data, uint8_t range) {
-    CalDate  today = cal_current_date(data);
+    CalDate today = cal_current_date(data);
     uint16_t end_day = cal_day_number(today);
-    uint16_t start_day = (end_day >= (uint16_t)(range - 1u))
-        ? (uint16_t)(end_day - (range - 1u)) : 0u;
+    uint16_t start_day =
+        (end_day >= (uint16_t)(range - 1u)) ? (uint16_t)(end_day - (range - 1u)) : 0u;
     uint16_t cal, pro, carb, fat, fib;
-    uint8_t  i;
+    uint8_t i;
 
     agg_range = range;
     logged_days = 0u;
 
     for (i = 0u; i != range; ++i) {
         foodlog_sum_day((uint16_t)(start_day + i), &cal, &pro, &carb, &fat, &fib);
-        day_cal[i]  = cal;
-        day_pro[i]  = pro;
+        day_cal[i] = cal;
+        day_pro[i] = pro;
         day_carb[i] = foodlog_digestible_carbs(carb, fib);
-        day_fat[i]  = fat;
+        day_fat[i] = fat;
         if (cal != 0u || pro != 0u || carb != 0u || fat != 0u) ++logged_days;
     }
 
@@ -148,7 +148,8 @@ static uint16_t avg_u16(const uint16_t *vals, uint8_t len) {
     uint32_t sum = 0u;
     uint8_t i;
     if (len == 0u) return 0u;
-    for (i = 0u; i != len; ++i) sum += vals[i];
+    for (i = 0u; i != len; ++i)
+        sum += vals[i];
     return (uint16_t)((sum + (len >> 1u)) / len);
 }
 
@@ -194,8 +195,8 @@ static uint16_t nice_step_u16(uint16_t raw) {
     return (uint16_t)(10u * pow10);
 }
 
-static void chart_domain_for_values(const uint16_t *vals, uint8_t len,
-                                    uint16_t *out_min, uint16_t *out_max) {
+static void chart_domain_for_values(const uint16_t *vals, uint8_t len, uint16_t *out_min,
+                                    uint16_t *out_max) {
     uint16_t mn = min_u16(vals, len);
     uint16_t mx = max_u16(vals, len);
     uint16_t span, step, padded_max, floor_min, ceil_max;
@@ -242,7 +243,8 @@ static uint16_t bucket_avg(const uint16_t *vals, uint8_t len, uint8_t b, uint8_t
     uint32_t sum = 0u;
     uint16_t i;
     if (hi <= lo) hi = (uint16_t)(lo + 1u);
-    for (i = lo; i != hi && i < len; ++i) sum += vals[i];
+    for (i = lo; i != hi && i < len; ++i)
+        sum += vals[i];
     return (uint16_t)(sum / (hi - lo));
 }
 
@@ -322,8 +324,7 @@ static void draw_summary(void) {
     ui_print_at(1u, 3u, STR_SUMMARY);
 
     ui_print_at(1u, 5u, STR_MUSCLES);
-    sprintf(buf, "%u/%u", (unsigned int)muscles_hit,
-            (unsigned int)EXERCISE_MUSCLE_GROUP_COUNT);
+    sprintf(buf, "%u/%u", (unsigned int)muscles_hit, (unsigned int)EXERCISE_MUSCLE_GROUP_COUNT);
     ui_print_at(13u, 5u, buf);
 
     ui_print_at(1u, 6u, STR_WORKOUTS);
@@ -353,8 +354,7 @@ static void draw_summary(void) {
 }
 
 /* Shared layout for the four macro charts. */
-static void draw_macro_page(const char *title, const char *unit,
-                            const uint16_t *vals) {
+static void draw_macro_page(const char *title, const char *unit, const uint16_t *vals) {
     char buf[22];
     uint16_t mx = max_u16(vals, agg_range);
     uint16_t chart_min, chart_max;
@@ -378,8 +378,7 @@ static void bw_format(uint8_t units, uint16_t kg_tenths, char *buf) {
     if (units == UNITS_IMPERIAL) {
         sprintf(buf, "%u LB", (unsigned int)kg_tenths_to_lbs(kg_tenths));
     } else {
-        sprintf(buf, "%u.%u KG", (unsigned int)(kg_tenths / 10u),
-                (unsigned int)(kg_tenths % 10u));
+        sprintf(buf, "%u.%u KG", (unsigned int)(kg_tenths / 10u), (unsigned int)(kg_tenths % 10u));
     }
 }
 
@@ -438,12 +437,24 @@ static void progress_draw(const SaveData *data, uint8_t page) {
     ui_print_at(0u, 2u, STR_DIVIDER);
 
     switch (page) {
-        case PAGE_SUMMARY: draw_summary(); break;
-        case PAGE_CAL:  draw_macro_page(STR_CALORIES, "", day_cal); break;
-        case PAGE_PRO:  draw_macro_page(STR_PROTEIN, "G", day_pro); break;
-        case PAGE_CARB: draw_macro_page(STR_CARBS, "G", day_carb); break;
-        case PAGE_FAT:  draw_macro_page(STR_FAT, "G", day_fat); break;
-        default:        draw_weight_page(data); break;
+    case PAGE_SUMMARY:
+        draw_summary();
+        break;
+    case PAGE_CAL:
+        draw_macro_page(STR_CALORIES, "", day_cal);
+        break;
+    case PAGE_PRO:
+        draw_macro_page(STR_PROTEIN, "G", day_pro);
+        break;
+    case PAGE_CARB:
+        draw_macro_page(STR_CARBS, "G", day_carb);
+        break;
+    case PAGE_FAT:
+        draw_macro_page(STR_FAT, "G", day_fat);
+        break;
+    default:
+        draw_weight_page(data);
+        break;
     }
 
     ui_footer(STR_FOOTER_BACK, STR_FOOTER_PROG);

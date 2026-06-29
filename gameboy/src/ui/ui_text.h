@@ -31,7 +31,8 @@ void ui_draw_menu(const char *title, const char **options, uint8_t count, uint8_
  */
 #define UI_MENU_CANCEL 0xFFu
 uint8_t ui_menu_select(const char *title, const char **options, uint8_t count);
-void ui_draw_value_screen(const char *title, const char *label, const char *value, const char *hint);
+void ui_draw_value_screen(const char *title, const char *label, const char *value,
+                          const char *hint);
 
 /*
  * Full-screen yes/no confirmation. Clears to its own screen with `title` in the
@@ -50,23 +51,22 @@ void ui_storage_full(const char *title, const char *line1, const char *line2) BA
 
 /* Progress bar primitives shared by all screens. */
 uint8_t ui_bar_fill(uint16_t tracked, uint16_t goal, uint8_t width);
-void    ui_draw_bar(uint8_t x, uint8_t y, uint8_t width, uint8_t fill);
+void ui_draw_bar(uint8_t x, uint8_t y, uint8_t width, uint8_t fill);
 
 /*
  * Draw a 3-field year/month/day date picker.
  * field: 0=YEAR, 1=MONTH, 2=DAY (currently selected, shown with PAL_SELECTED).
  * Does NOT draw the footer — call ui_footer() after.
  */
-void ui_draw_date_picker(const char *title, uint8_t field,
-                         uint16_t year, uint8_t month, uint8_t day);
+void ui_draw_date_picker(const char *title, uint8_t field, uint16_t year, uint8_t month,
+                         uint8_t day);
 
 /*
  * Draw a 5-field year/month/day/hour/minute datetime picker.
  * field: 0=YEAR 1=MONTH 2=DAY 3=HOUR 4=MINUTE (selected = PAL_SELECTED).
  * Does NOT draw the footer — call ui_footer() after.
  */
-void ui_draw_datetime_picker(const char *title, uint8_t field,
-                             uint16_t year, uint8_t month, uint8_t day,
-                             uint8_t hour, uint8_t minute);
+void ui_draw_datetime_picker(const char *title, uint8_t field, uint16_t year, uint8_t month,
+                             uint8_t day, uint8_t hour, uint8_t minute);
 
 #endif

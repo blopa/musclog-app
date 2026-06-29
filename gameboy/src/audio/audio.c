@@ -19,9 +19,9 @@
  *    store from blank SRAM so first boot defaults both toggles on. ──────────── */
 #define AUDIO_SRAM_MAGIC_OFF SRAM_LAYOUT_AUDIO_MAGIC
 #define AUDIO_SRAM_FLAGS_OFF SRAM_LAYOUT_AUDIO_FLAGS
-#define AUDIO_SRAM_MAGIC     0xA7u
-#define AUDIO_FLAG_SFX       0x01u
-#define AUDIO_FLAG_MUSIC     0x02u
+#define AUDIO_SRAM_MAGIC 0xA7u
+#define AUDIO_FLAG_SFX 0x01u
+#define AUDIO_FLAG_MUSIC 0x02u
 
 /* Game Boy wave-pattern RAM (32 4-bit samples packed into 16 bytes at 0xFF30). */
 #define WAVE_RAM ((volatile uint8_t *)0xFF30u)
@@ -36,8 +36,8 @@ static const uint8_t s_wave_triangle[16] = {
 static uint8_t s_sfx_enabled;
 static uint8_t s_music_enabled;
 static uint8_t s_music_running; /* 1 while the current soundtrack loop should run */
-static uint16_t s_idx;     /* next soundtrack event to apply */
-static uint8_t s_wait;     /* video frames to wait before applying events[s_idx] */
+static uint16_t s_idx;          /* next soundtrack event to apply */
+static uint8_t s_wait;          /* video frames to wait before applying events[s_idx] */
 
 static void audio_save_settings(void) {
     uint8_t flags = (uint8_t)((s_sfx_enabled ? AUDIO_FLAG_SFX : 0u) |
@@ -84,8 +84,8 @@ static void apply_event(uint8_t target, uint8_t value) {
             NR22_REG = 0x00u; /* note off: silence channel 2 */
         } else {
             period = music_pulse_periods[value - 1u];
-            NR21_REG = 0x80u;                              /* 50% duty */
-            NR22_REG = 0xA0u;                              /* volume 10, sustained */
+            NR21_REG = 0x80u; /* 50% duty */
+            NR22_REG = 0xA0u; /* volume 10, sustained */
             NR23_REG = (uint8_t)(period & 0xFFu);
             NR24_REG = (uint8_t)(0x80u | ((period >> 8) & 0x07u)); /* trigger */
         }
@@ -94,8 +94,8 @@ static void apply_event(uint8_t target, uint8_t value) {
             NR30_REG = 0x00u; /* note off: DAC off on the wave channel */
         } else {
             period = music_wave_periods[value - 1u];
-            NR30_REG = 0x80u;                              /* DAC on */
-            NR32_REG = 0x20u;                              /* output level 100% */
+            NR30_REG = 0x80u; /* DAC on */
+            NR32_REG = 0x20u; /* output level 100% */
             NR33_REG = (uint8_t)(period & 0xFFu);
             NR34_REG = (uint8_t)(0x80u | ((period >> 8) & 0x07u)); /* trigger */
         }

@@ -9,7 +9,7 @@
 #define AUDIO_BANK 9
 
 /* UI confirm/select blip: a single pulse note (from beep_sfx.mid). */
-#define MUSIC_SFX_PERIOD 1899u   /* 11-bit pulse period (MIDI note 81) */
+#define MUSIC_SFX_PERIOD 1899u /* 11-bit pulse period (MIDI note 81) */
 #define MUSIC_SFX_FRAMES 6u
 
 /* One step of the soundtrack event stream. The player applies the event, then
@@ -26,9 +26,9 @@ typedef struct {
 #define MUSIC_TARGET_LEAD 0u
 #define MUSIC_TARGET_BASS 1u
 #define MUSIC_TARGET_DRUM 2u
-#define MUSIC_TARGET_NOP  255u
+#define MUSIC_TARGET_NOP 255u
 
-#define MUSIC_DRUM_KICK  1u
+#define MUSIC_DRUM_KICK 1u
 #define MUSIC_DRUM_SNARE 2u
 
 #define MUSIC_NOTE_COUNT 43u

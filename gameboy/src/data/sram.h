@@ -24,7 +24,7 @@ static uint16_t sram_rd16(const uint8_t *p, uint16_t off) {
 
 /* Little-endian 16-bit write at byte offset `off`. */
 static void sram_wr16(uint8_t *p, uint16_t off, uint16_t v) {
-    p[off]      = (uint8_t)(v & 0xFFu);
+    p[off] = (uint8_t)(v & 0xFFu);
     p[off + 1u] = (uint8_t)(v >> 8u);
 }
 

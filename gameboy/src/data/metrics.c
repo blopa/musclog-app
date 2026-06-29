@@ -8,19 +8,19 @@
 #include <gb/gb.h>
 
 /* ── Bank-0 metrics sub-region layout (disjoint from the profile at 0x00..0x16) ── */
-#define MX_MAGIC          0x4257u  /* 'BW' */
-#define MX_VERSION        1u
+#define MX_MAGIC 0x4257u /* 'BW' */
+#define MX_VERSION 1u
 
-#define MX_BASE           SRAM_LAYOUT_METRICS_BASE
-#define MX_OFF_MAGIC      (MX_BASE + 0x00u)
-#define MX_OFF_VERSION    (MX_BASE + 0x02u)
-#define MX_OFF_COUNT      (MX_BASE + 0x03u)
-#define MX_OFF_CHECKSUM   (MX_BASE + 0x05u)
+#define MX_BASE SRAM_LAYOUT_METRICS_BASE
+#define MX_OFF_MAGIC (MX_BASE + 0x00u)
+#define MX_OFF_VERSION (MX_BASE + 0x02u)
+#define MX_OFF_COUNT (MX_BASE + 0x03u)
+#define MX_OFF_CHECKSUM (MX_BASE + 0x05u)
 #define MX_ENTRIES_OFFSET (MX_BASE + 0x08u)
 
-#define MX_ENTRY_SIZE     4u
+#define MX_ENTRY_SIZE 4u
 /* 8 KB bank minus the metrics base+header, in whole 4-byte records. */
-#define MX_CAPACITY       ((uint16_t)((8192u - MX_ENTRIES_OFFSET) / MX_ENTRY_SIZE))
+#define MX_CAPACITY ((uint16_t)((8192u - MX_ENTRIES_OFFSET) / MX_ENTRY_SIZE))
 
 /* ── Raw SRAM bank-0 access (caller must have ENABLE_RAM + SWITCH_RAM(0u)) ──── */
 
@@ -138,7 +138,7 @@ uint16_t metrics_count(void) BANKED {
 
 uint8_t metrics_get(uint16_t idx, uint16_t *day_num, uint16_t *weight_kg_tenths) BANKED {
     uint16_t count;
-    uint8_t  found = 0u;
+    uint8_t found = 0u;
     uint16_t off;
 
     ENABLE_RAM;
@@ -148,7 +148,7 @@ uint8_t metrics_get(uint16_t idx, uint16_t *day_num, uint16_t *weight_kg_tenths)
         count = sram_rd16(_SRAM, MX_OFF_COUNT);
         if (idx < count) {
             off = mx_entry_off(idx);
-            *day_num          = sram_rd16(_SRAM, off);
+            *day_num = sram_rd16(_SRAM, off);
             *weight_kg_tenths = sram_rd16(_SRAM, (uint16_t)(off + 2u));
             found = 1u;
         }
@@ -160,7 +160,7 @@ uint8_t metrics_get(uint16_t idx, uint16_t *day_num, uint16_t *weight_kg_tenths)
 
 uint8_t metrics_latest(uint16_t *day_num, uint16_t *weight_kg_tenths) BANKED {
     uint16_t count;
-    uint8_t  found = 0u;
+    uint8_t found = 0u;
     uint16_t off;
 
     ENABLE_RAM;
@@ -170,7 +170,7 @@ uint8_t metrics_latest(uint16_t *day_num, uint16_t *weight_kg_tenths) BANKED {
         count = sram_rd16(_SRAM, MX_OFF_COUNT);
         if (count != 0u) {
             off = mx_entry_off((uint16_t)(count - 1u));
-            *day_num          = sram_rd16(_SRAM, off);
+            *day_num = sram_rd16(_SRAM, off);
             *weight_kg_tenths = sram_rd16(_SRAM, (uint16_t)(off + 2u));
             found = 1u;
         }

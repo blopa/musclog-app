@@ -33,7 +33,6 @@ typedef INT32    LWORD;
 typedef UINT32   ULWORD;
 typedef INT32    DWORD;
 typedef UINT32   UDWORD;
-typedef UINT16   size_t;
 typedef UINT16   palette_color_t;
 
 /* SDCC banked-call helpers — no-ops for static analysis */

@@ -35,17 +35,21 @@ void rtc_latch(RtcTime *out) {
     RTC_LATCH = 0x00u;
     RTC_LATCH = 0x01u;
 
-    SWITCH_RAM(0x08u); out->seconds = _SRAM[0];
-    SWITCH_RAM(0x09u); out->minutes = _SRAM[0];
-    SWITCH_RAM(0x0Au); out->hours   = _SRAM[0];
-    SWITCH_RAM(0x0Bu); out->days    = _SRAM[0];
+    SWITCH_RAM(0x08u);
+    out->seconds = _SRAM[0];
+    SWITCH_RAM(0x09u);
+    out->minutes = _SRAM[0];
+    SWITCH_RAM(0x0Au);
+    out->hours = _SRAM[0];
+    SWITCH_RAM(0x0Bu);
+    out->days = _SRAM[0];
     SWITCH_RAM(0x0Cu);
-    dhi         = _SRAM[0];
-    out->days  |= (uint16_t)((uint16_t)(dhi & 0x01u) << 8u);
-    out->halt   = (dhi >> 6u) & 0x01u;
-    out->carry  = (dhi >> 7u) & 0x01u;
+    dhi = _SRAM[0];
+    out->days |= (uint16_t)((uint16_t)(dhi & 0x01u) << 8u);
+    out->halt = (dhi >> 6u) & 0x01u;
+    out->carry = (dhi >> 7u) & 0x01u;
 
-    SWITCH_RAM(0u);  /* restore SRAM bank 0 */
+    SWITCH_RAM(0u); /* restore SRAM bank 0 */
     DISABLE_RAM;
 }
 
@@ -58,15 +62,20 @@ void rtc_write_datetime(uint16_t days, uint8_t hours, uint8_t minutes) {
 
     /* Halt the timer before writing to prevent corrupt mid-tick reads. */
     SWITCH_RAM(0x0Cu);
-    _SRAM[0] = 0x40u;  /* halt=1, carry=0, day_bit8=0 */
+    _SRAM[0] = 0x40u; /* halt=1, carry=0, day_bit8=0 */
 
-    SWITCH_RAM(0x08u); _SRAM[0] = 0x00u;    /* seconds = 0 */
-    SWITCH_RAM(0x09u); _SRAM[0] = minutes;
-    SWITCH_RAM(0x0Au); _SRAM[0] = hours;
+    SWITCH_RAM(0x08u);
+    _SRAM[0] = 0x00u; /* seconds = 0 */
+    SWITCH_RAM(0x09u);
+    _SRAM[0] = minutes;
+    SWITCH_RAM(0x0Au);
+    _SRAM[0] = hours;
 
-    SWITCH_RAM(0x0Bu); _SRAM[0] = (uint8_t)(days & 0xFFu);
+    SWITCH_RAM(0x0Bu);
+    _SRAM[0] = (uint8_t)(days & 0xFFu);
     /* Writing day_hi with halt=0 restarts the timer; carry and halt are cleared. */
-    SWITCH_RAM(0x0Cu); _SRAM[0] = (uint8_t)((days >> 8u) & 0x01u);
+    SWITCH_RAM(0x0Cu);
+    _SRAM[0] = (uint8_t)((days >> 8u) & 0x01u);
 
     SWITCH_RAM(0u);
     DISABLE_RAM;
@@ -77,7 +86,7 @@ void rtc_write_datetime(uint16_t days, uint8_t hours, uint8_t minutes) {
 uint8_t cal_is_leap(uint16_t year) {
     if ((year % 400u) == 0u) return 1u;
     if ((year % 100u) == 0u) return 0u;
-    if ((year %   4u) == 0u) return 1u;
+    if ((year % 4u) == 0u) return 1u;
     return 0u;
 }
 
@@ -89,7 +98,7 @@ uint8_t cal_days_in_month(uint8_t month, uint16_t year) {
 
 CalDate cal_advance(CalDate base, uint16_t n_days) {
     uint16_t i;
-    uint8_t  dim;
+    uint8_t dim;
 
     for (i = 0u; i != n_days; ++i) {
         dim = cal_days_in_month(base.month, base.year);
@@ -110,7 +119,7 @@ CalDate cal_advance(CalDate base, uint16_t n_days) {
 uint16_t cal_day_number(CalDate d) {
     uint16_t n = 0u;
     uint16_t y;
-    uint8_t  m;
+    uint8_t m;
 
     for (y = 2000u; y != d.year; ++y) {
         n = (uint16_t)(n + (cal_is_leap(y) ? 366u : 365u));
@@ -123,25 +132,23 @@ uint16_t cal_day_number(CalDate d) {
 }
 
 int8_t cal_compare(CalDate a, CalDate b) {
-    if (a.year  != b.year)  return (a.year  < b.year)  ? (int8_t)(-1) : (int8_t)1;
+    if (a.year != b.year) return (a.year < b.year) ? (int8_t)(-1) : (int8_t)1;
     if (a.month != b.month) return (a.month < b.month) ? (int8_t)(-1) : (int8_t)1;
-    if (a.day   != b.day)   return (a.day   < b.day)   ? (int8_t)(-1) : (int8_t)1;
+    if (a.day != b.day) return (a.day < b.day) ? (int8_t)(-1) : (int8_t)1;
     return 0;
 }
 
-void cal_adjust_ymd(CalDate *pick, uint8_t field, uint8_t going_right,
-                    uint16_t min_year, uint16_t max_year, uint8_t wrap_year) {
+void cal_adjust_ymd(CalDate *pick, uint8_t field, uint8_t going_right, uint16_t min_year,
+                    uint16_t max_year, uint8_t wrap_year) {
     uint8_t dim;
 
     if (field == 0u) {
         if (going_right) {
-            pick->year = (pick->year >= max_year)
-                ? (wrap_year ? min_year : max_year)
-                : (uint16_t)(pick->year + 1u);
+            pick->year = (pick->year >= max_year) ? (wrap_year ? min_year : max_year)
+                                                  : (uint16_t)(pick->year + 1u);
         } else {
-            pick->year = (pick->year <= min_year)
-                ? (wrap_year ? max_year : min_year)
-                : (uint16_t)(pick->year - 1u);
+            pick->year = (pick->year <= min_year) ? (wrap_year ? max_year : min_year)
+                                                  : (uint16_t)(pick->year - 1u);
         }
     } else if (field == 1u) {
         if (going_right) {
@@ -178,15 +185,15 @@ void cal_format(const CalDate *d, char *buf) {
 }
 
 CalDate cal_current_date(const SaveData *data) {
-    RtcTime  rtc;
+    RtcTime rtc;
     uint16_t elapsed;
-    CalDate  fallback;
-    CalDate  current;
+    CalDate fallback;
+    CalDate current;
 
     if (!data->rtc_is_set) {
-        fallback.year  = 2026u;
+        fallback.year = 2026u;
         fallback.month = 1u;
-        fallback.day   = 1u;
+        fallback.day = 1u;
         return fallback;
     }
 
@@ -221,12 +228,12 @@ CalDate cal_current_date(const SaveData *data) {
  * intervention needed.
  */
 void rtc_setup_date(SaveData *data) {
-    CalDate    pick;
-    uint8_t    pick_hour;
-    uint8_t    pick_minute;
-    uint8_t    field;       /* 0=year 1=month 2=day 3=hour 4=minute */
-    uint8_t    dirty;
-    uint8_t    going_right;
+    CalDate pick;
+    uint8_t pick_hour;
+    uint8_t pick_minute;
+    uint8_t field; /* 0=year 1=month 2=day 3=hour 4=minute */
+    uint8_t dirty;
+    uint8_t going_right;
     InputState input;
 
     /* Seed with existing calibration date if available; otherwise 2026-01-01 00:00. */
@@ -237,26 +244,25 @@ void rtc_setup_date(SaveData *data) {
          * checksummed block). Read them directly and clamp defensively. */
         ENABLE_RAM;
         SWITCH_RAM(0u);
-        pick_hour   = _SRAM[SRAM_RTC_HOUR];
+        pick_hour = _SRAM[SRAM_RTC_HOUR];
         pick_minute = _SRAM[SRAM_RTC_MINUTE];
         DISABLE_RAM;
-        if (pick_hour   > 23u) pick_hour   = 0u;
+        if (pick_hour > 23u) pick_hour = 0u;
         if (pick_minute > 59u) pick_minute = 0u;
     } else {
-        pick.year   = 2026u;
-        pick.month  = 1u;
-        pick.day    = 1u;
-        pick_hour   = 0u;
+        pick.year = 2026u;
+        pick.month = 1u;
+        pick.day = 1u;
+        pick_hour = 0u;
         pick_minute = 0u;
     }
-    field       = 0u;
-    dirty       = 1u;
+    field = 0u;
+    dirty = 1u;
 
     input_init(&input);
     while (1) {
         if (dirty) {
-            ui_draw_datetime_picker(STR_SET_DATE_TIME, field,
-                                    pick.year, pick.month, pick.day,
+            ui_draw_datetime_picker(STR_SET_DATE_TIME, field, pick.year, pick.month, pick.day,
                                     pick_hour, pick_minute);
             ui_footer(STR_FOOTER_SKIP, STR_FOOTER_SAVE);
             dirty = 0u;
@@ -265,11 +271,11 @@ void rtc_setup_date(SaveData *data) {
         wait_vbl_done();
         ui_input_update(&input);
 
-        if (input_pressed(&input, J_B)) return;   /* skip — rtc_is_set unchanged */
+        if (input_pressed(&input, J_B)) return; /* skip — rtc_is_set unchanged */
 
         if (input_pressed(&input, J_A | J_START)) {
             data->rtc_base_date = pick;
-            data->rtc_is_set    = 1u;
+            data->rtc_is_set = 1u;
             /* Reset day counter to 0 at the chosen time.  The counter ticks every
              * 86400 s, so setting hours+minutes makes the day boundary fall at
              * midnight rather than at the time of calibration. */

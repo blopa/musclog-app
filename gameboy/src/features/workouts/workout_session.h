@@ -18,15 +18,14 @@
  */
 
 typedef struct WorkoutRecommendation {
-    uint16_t display_weight;  /* in the user's unit system (kg or lb) */
-    uint8_t  reps;
+    uint16_t display_weight; /* in the user's unit system (kg or lb) */
+    uint8_t reps;
 } WorkoutRecommendation;
 
 /* ── Recommendation ─────────────────────────────────────────────────────────── */
 
 /* Suggested starting weight + rep target for `exercise`, in display units. */
-void session_build_recommendation(const SaveData *data,
-                                  const ExerciseCache *exercise,
+void session_build_recommendation(const SaveData *data, const ExerciseCache *exercise,
                                   WorkoutRecommendation *out) BANKED;
 
 /* ── Session accumulator ────────────────────────────────────────────────────── */
@@ -36,12 +35,12 @@ void session_reset(void) BANKED;
 
 /* Record one completed set. `display_weight` is in the user's unit system and is
  * converted to stored metric internally. */
-void session_record_set(const SaveData *data, uint8_t exercise_idx,
-                        uint8_t muscle_group, uint16_t display_weight, uint8_t reps) BANKED;
+void session_record_set(const SaveData *data, uint8_t exercise_idx, uint8_t muscle_group,
+                        uint16_t display_weight, uint8_t reps) BANKED;
 
 /* Running totals for the "exercise complete" summary. */
-uint8_t  session_set_count(void) BANKED;
-uint8_t  session_exercise_count(void) BANKED;
+uint8_t session_set_count(void) BANKED;
+uint8_t session_exercise_count(void) BANKED;
 uint16_t session_volume_kg(void) BANKED;
 
 /* Persist the session to the workout log (no-op if empty). Returns 1 if saved.

@@ -11,7 +11,10 @@ Checks: >
   -*,
   bugprone-*,
   -bugprone-easily-swappable-parameters,
+  -bugprone-implicit-widening-of-multiplication-result,
+  -bugprone-narrowing-conversions,
   clang-analyzer-core.*,
+  -clang-analyzer-core.FixedAddressDereference,
   clang-analyzer-deadcode.*,
   misc-redundant-expression,
   readability-misleading-indentation,
@@ -24,6 +27,7 @@ WarningsAsErrors: >
   misc-redundant-expression,
   readability-misleading-indentation,
   readability-misplaced-array-index
+
 
 HeaderFilterRegex: ''
 

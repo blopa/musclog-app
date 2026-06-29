@@ -1,15 +1,15 @@
 #ifndef MUSCLOG_HOME_SCREEN_H
 #define MUSCLOG_HOME_SCREEN_H
 
-#include "profile.h"  /* SaveData */
+#include "profile.h" /* SaveData */
 #include <gb/gb.h>
 
 /* Home-screen action buttons. */
-#define HOME_BTN_FOOD     0u
-#define HOME_BTN_WORKOUT  1u
-#define HOME_BTN_WEIGHT   2u
+#define HOME_BTN_FOOD 0u
+#define HOME_BTN_WORKOUT 1u
+#define HOME_BTN_WEIGHT 2u
 #define HOME_BTN_PROGRESS 3u
-#define HOME_BTN_COUNT    4u
+#define HOME_BTN_COUNT 4u
 
 typedef struct HomeState {
     SaveData *data;

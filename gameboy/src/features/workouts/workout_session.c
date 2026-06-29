@@ -7,9 +7,9 @@
 #include "weight_units.h"
 #include "workoutlog.h"
 
-#define WORKOUT_SESSION_SET_CAP  64u
-#define REPS_COMPOUND            10u
-#define REPS_DEFAULT             14u
+#define WORKOUT_SESSION_SET_CAP 64u
+#define REPS_COMPOUND 10u
+#define REPS_DEFAULT 14u
 
 static WorkoutLogSet session_sets[WORKOUT_SESSION_SET_CAP];
 static uint8_t session_muscle_sets[EXERCISE_MUSCLE_GROUP_COUNT];
@@ -20,11 +20,13 @@ static uint8_t session_exercise_total;
 
 static uint8_t experience_factor_centi(uint8_t experience) {
     switch (experience) {
-        case EXPERIENCE_BEGINNER: return 40u;
-        case EXPERIENCE_ADVANCED: return 140u;
-        case EXPERIENCE_INTERMEDIATE:
-        default:
-            return 100u;
+    case EXPERIENCE_BEGINNER:
+        return 40u;
+    case EXPERIENCE_ADVANCED:
+        return 140u;
+    case EXPERIENCE_INTERMEDIATE:
+    default:
+        return 100u;
     }
 }
 
@@ -51,8 +53,7 @@ static uint16_t suggested_weight_kg_tenths(const SaveData *data, const ExerciseC
     return (uint16_t)kg_tenths;
 }
 
-void session_build_recommendation(const SaveData *data,
-                                  const ExerciseCache *exercise,
+void session_build_recommendation(const SaveData *data, const ExerciseCache *exercise,
                                   WorkoutRecommendation *out) BANKED {
     uint16_t kg_tenths = suggested_weight_kg_tenths(data, exercise);
 
@@ -94,8 +95,8 @@ static uint8_t session_has_exercise(uint8_t exercise_idx) {
     return 0u;
 }
 
-void session_record_set(const SaveData *data, uint8_t exercise_idx,
-                        uint8_t muscle_group, uint16_t display_weight, uint8_t reps) BANKED {
+void session_record_set(const SaveData *data, uint8_t exercise_idx, uint8_t muscle_group,
+                        uint16_t display_weight, uint8_t reps) BANKED {
     WorkoutLogSet *saved;
 
     if (session_set_total >= WORKOUT_SESSION_SET_CAP) return;
@@ -158,13 +159,8 @@ uint8_t session_finish(SaveData *data) BANKED {
     if (session_set_total == 0u) return 0u;
 
     today = cal_current_date(data);
-    saved = workoutlog_add(
-        cal_day_number(today),
-        session_dominant_muscle(),
-        session_exercise_total,
-        session_set_total,
-        session_sets
-    );
+    saved = workoutlog_add(cal_day_number(today), session_dominant_muscle(), session_exercise_total,
+                           session_set_total, session_sets);
     session_reset();
 
     return saved;

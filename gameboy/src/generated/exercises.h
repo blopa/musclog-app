@@ -49,9 +49,9 @@ typedef enum {
  * load_multiplier_centi stores loadMultiplier * 100 (1.45 -> 145). */
 typedef struct {
     const char *name;
-    uint8_t muscle_group;            /* exercise_muscle_group_t */
-    uint8_t equipment_type;          /* exercise_equipment_type_t */
-    uint8_t mechanic_type;           /* exercise_mechanic_type_t */
+    uint8_t muscle_group;   /* exercise_muscle_group_t */
+    uint8_t equipment_type; /* exercise_equipment_type_t */
+    uint8_t mechanic_type;  /* exercise_mechanic_type_t */
     uint16_t load_multiplier_centi;
 } exercise_t;
 
@@ -62,9 +62,9 @@ typedef struct {
  * SWITCH_ROM(EXERCISES_BANK) before dereferencing the arrays. */
 #define EXERCISES_BANK 6
 
-extern const char * const exercise_muscle_group_names[EXERCISE_MUSCLE_GROUP_COUNT];
-extern const char * const exercise_equipment_type_names[EXERCISE_EQUIPMENT_TYPE_COUNT];
-extern const char * const exercise_mechanic_type_names[EXERCISE_MECHANIC_TYPE_COUNT];
+extern const char *const exercise_muscle_group_names[EXERCISE_MUSCLE_GROUP_COUNT];
+extern const char *const exercise_equipment_type_names[EXERCISE_EQUIPMENT_TYPE_COUNT];
+extern const char *const exercise_mechanic_type_names[EXERCISE_MECHANIC_TYPE_COUNT];
 extern const exercise_t exercises[EXERCISE_COUNT];
 
 #endif /* MUSCLOG_EXERCISES_H */

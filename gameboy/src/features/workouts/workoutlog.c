@@ -5,19 +5,19 @@
 #include "sram.h"
 #include "volume_calc.h"
 
-#define WL_MAGIC          0x574Cu  /* 'WL' */
-#define WL_VERSION        1u
+#define WL_MAGIC 0x574Cu /* 'WL' */
+#define WL_VERSION 1u
 
-#define WL_OFF_MAGIC      0x00u
-#define WL_OFF_VERSION    0x02u
-#define WL_OFF_COUNT      0x03u
-#define WL_OFF_BYTES      0x04u
-#define WL_OFF_CHECKSUM   0x06u
+#define WL_OFF_MAGIC 0x00u
+#define WL_OFF_VERSION 0x02u
+#define WL_OFF_COUNT 0x03u
+#define WL_OFF_BYTES 0x04u
+#define WL_OFF_CHECKSUM 0x06u
 #define WL_RECORDS_OFFSET 0x08u
 
 #define WL_RECORD_HEADER_SIZE 7u
-#define WL_SET_SIZE           4u
-#define WL_CAPACITY           ((uint16_t)(8192u - WL_RECORDS_OFFSET))
+#define WL_SET_SIZE 4u
+#define WL_CAPACITY ((uint16_t)(8192u - WL_RECORDS_OFFSET))
 
 static uint16_t wl_record_len_at(uint16_t off) {
     return (uint16_t)(WL_RECORD_HEADER_SIZE + (uint16_t)_SRAM[off + 4u] * WL_SET_SIZE);
@@ -231,11 +231,8 @@ uint8_t workoutlog_get_sets(uint8_t newest_idx, WorkoutLogSet *out, uint8_t max)
     return read;
 }
 
-uint8_t workoutlog_add(uint16_t day_num,
-                       uint8_t dominant_muscle,
-                       uint8_t exercise_count,
-                       uint8_t set_count,
-                       const WorkoutLogSet *sets) BANKED {
+uint8_t workoutlog_add(uint16_t day_num, uint8_t dominant_muscle, uint8_t exercise_count,
+                       uint8_t set_count, const WorkoutLogSet *sets) BANKED {
     uint8_t count;
     uint8_t i;
     uint16_t bytes_used;

@@ -22,23 +22,21 @@
  * its own bank-local copy — no cross-bank trampolines.
  */
 
-static uint8_t spinner_u8(const InputState *in, uint8_t v,
-                          uint8_t small_step, uint8_t large_step,
+static uint8_t spinner_u8(const InputState *in, uint8_t v, uint8_t small_step, uint8_t large_step,
                           uint8_t mn, uint8_t mx) {
-    if (input_pressed(in, J_UP))    v = add_clamped_u8(v, small_step, mx);
-    if (input_pressed(in, J_DOWN))  v = sub_clamped_u8(v, small_step, mn);
+    if (input_pressed(in, J_UP)) v = add_clamped_u8(v, small_step, mx);
+    if (input_pressed(in, J_DOWN)) v = sub_clamped_u8(v, small_step, mn);
     if (input_pressed(in, J_RIGHT)) v = add_clamped_u8(v, large_step, mx);
-    if (input_pressed(in, J_LEFT))  v = sub_clamped_u8(v, large_step, mn);
+    if (input_pressed(in, J_LEFT)) v = sub_clamped_u8(v, large_step, mn);
     return v;
 }
 
-static uint16_t spinner_u16(const InputState *in, uint16_t v,
-                            uint16_t small_step, uint16_t large_step,
-                            uint16_t mn, uint16_t mx) {
-    if (input_pressed(in, J_UP))    v = add_clamped_u16(v, small_step, mx);
-    if (input_pressed(in, J_DOWN))  v = sub_clamped_u16(v, small_step, mn);
+static uint16_t spinner_u16(const InputState *in, uint16_t v, uint16_t small_step,
+                            uint16_t large_step, uint16_t mn, uint16_t mx) {
+    if (input_pressed(in, J_UP)) v = add_clamped_u16(v, small_step, mx);
+    if (input_pressed(in, J_DOWN)) v = sub_clamped_u16(v, small_step, mn);
     if (input_pressed(in, J_RIGHT)) v = add_clamped_u16(v, large_step, mx);
-    if (input_pressed(in, J_LEFT))  v = sub_clamped_u16(v, large_step, mn);
+    if (input_pressed(in, J_LEFT)) v = sub_clamped_u16(v, large_step, mn);
     return v;
 }
 

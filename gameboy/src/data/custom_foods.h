@@ -5,8 +5,8 @@
 
 #include <gb/gb.h>
 
-#include "food_db.h"  /* FoodCache */
-#include "profile.h"  /* SaveData  */
+#include "food_db.h" /* FoodCache */
+#include "profile.h" /* SaveData  */
 
 /*
  * User-created custom foods, persisted in SRAM bank 3 (the only free SRAM bank —
@@ -36,26 +36,26 @@
  * out-of-range ff_load).
  */
 
-#define CUSTOM_FOOD_BASE  0x8000u
-#define MAX_CUSTOM_FOODS  100u
-#define CUSTOM_NAME_MAX   15u  /* visible chars the user may type (fits FoodCache.name[16]) */
+#define CUSTOM_FOOD_BASE 0x8000u
+#define MAX_CUSTOM_FOODS 100u
+#define CUSTOM_NAME_MAX 15u /* visible chars the user may type (fits FoodCache.name[16]) */
 
 /* Validate the bank-3 header on boot; reset the region if it is missing/corrupt. */
-void    custom_foods_init(void) BANKED;
+void custom_foods_init(void) BANKED;
 
 /* Clear every custom food (called from the Reset Data path). */
-void    custom_foods_erase(void) BANKED;
+void custom_foods_erase(void) BANKED;
 
 /*
  * Append a custom food. name is uppercase ASCII (<= CUSTOM_NAME_MAX chars); macros
  * are per-100g, kcal whole and protein/fat/carbs/fiber in decigrams. Returns 1 on
  * success, 0 if the store is full.
  */
-uint8_t custom_foods_add(const char *name, uint16_t kcal, uint16_t protein_dg,
-                         uint16_t fat_dg, uint16_t carbs_dg, uint16_t fiber_dg) BANKED;
+uint8_t custom_foods_add(const char *name, uint16_t kcal, uint16_t protein_dg, uint16_t fat_dg,
+                         uint16_t carbs_dg, uint16_t fiber_dg) BANKED;
 
 /* Copy the custom food in `slot` into *out (cleared if the slot is empty/invalid). */
-void    custom_foods_load(uint8_t slot, FoodCache *out) BANKED;
+void custom_foods_load(uint8_t slot, FoodCache *out) BANKED;
 
 /* Number of live (non-tombstoned) custom foods. */
 uint8_t custom_foods_count(void) BANKED;
@@ -64,7 +64,7 @@ uint8_t custom_foods_count(void) BANKED;
 uint8_t custom_foods_get(uint8_t nth, uint8_t *slot, FoodCache *out) BANKED;
 
 /* Tombstone the custom food in `slot` (slot indices stay stable). */
-void    custom_foods_delete(uint8_t slot) BANKED;
+void custom_foods_delete(uint8_t slot) BANKED;
 
 /*
  * Append every custom food whose name prefix-matches `query` (uppercase ASCII) to
@@ -72,11 +72,11 @@ void    custom_foods_delete(uint8_t slot) BANKED;
  * `cap`. Returns the new total match count. Lets ff_filter surface custom foods
  * inline with the bundled results.
  */
-uint8_t custom_foods_filter(const char *query, uint16_t *matches,
-                            uint8_t cap, uint8_t count) BANKED;
+uint8_t custom_foods_filter(const char *query, uint16_t *matches, uint8_t cap,
+                            uint8_t count) BANKED;
 
 /* Screens reached from the nutrition SELECT menu (Custom Foods submenu). */
-void    custom_food_create(SaveData *data) BANKED;
-void    custom_foods_manage(SaveData *data) BANKED;
+void custom_food_create(SaveData *data) BANKED;
+void custom_foods_manage(SaveData *data) BANKED;
 
 #endif /* MUSCLOG_CUSTOM_FOODS_H */

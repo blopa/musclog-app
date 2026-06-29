@@ -28,8 +28,8 @@
  * _HOME is full) and brackets its SRAM access with ENABLE_RAM/SWITCH_RAM(0).
  */
 
-void metrics_init(void) BANKED;    /* validate header on boot; reset region if corrupt */
-void metrics_erase(void) BANKED;   /* clear all entries (called from the profile-reset path) */
+void metrics_init(void) BANKED;  /* validate header on boot; reset region if corrupt */
+void metrics_erase(void) BANKED; /* clear all entries (called from the profile-reset path) */
 
 /*
  * Record today's weight: replace the existing record for `day_num` if present,

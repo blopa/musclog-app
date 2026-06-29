@@ -46,16 +46,16 @@ static const palette_color_t bg_palette[4] = {
 /* A solid tile of color index 0, filled around the logo. In the 2bpp tile format
  * index 0 = both bitplanes clear, so every byte is 0x00. Loaded past the logo tiles;
  * paired with BG_PALETTE so it shows the app background color. */
-static const uint8_t blank_tile[16] = { 0 };
+static const uint8_t blank_tile[16] = {0};
 
 /* font_ibm loads 96 tiles (chars 0x20–0x7F). Logo tiles follow immediately after.
  * BLANK_TILE_SPLASH is the single solid-fill tile loaded after the logo tiles. */
-#define LOGO_TILE_ORIGIN  96u
+#define LOGO_TILE_ORIGIN 96u
 #define BLANK_TILE_SPLASH (LOGO_TILE_ORIGIN + logo_TILE_COUNT)
 
 /* Position of the "MUSCLOG" label on the splash screen (row below the logo). */
 #define TEXT_ROW_SPLASH 14u
-#define TEXT_COL_SPLASH  7u  /* (20 - 7) / 2 + 1 = 7 */
+#define TEXT_COL_SPLASH 7u /* (20 - 7) / 2 + 1 = 7 */
 
 /* CGB palette 2 for splash text: dark-green bg (index 0) + off-white text (index 3).
  * font_color(3,0) maps foreground→index 3, background→index 0. */
@@ -152,8 +152,8 @@ static void home_loop(SaveData *data) {
         }
 
         if (input_pressed(&input, J_UP)) {
-            state.selected = (state.selected == HOME_BTN_FOOD)
-                ? (uint8_t)(HOME_BTN_COUNT - 1u) : (uint8_t)(state.selected - 1u);
+            state.selected = (state.selected == HOME_BTN_FOOD) ? (uint8_t)(HOME_BTN_COUNT - 1u)
+                                                               : (uint8_t)(state.selected - 1u);
             state.dirty = 1u;
         }
 

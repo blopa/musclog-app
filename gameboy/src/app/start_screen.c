@@ -23,7 +23,7 @@
  *   0 = the title-art palette (emitted by png2asset).
  *   1 = floating menu text — background is the art's darkest color (index 0) so the
  *       text blends into the dark lower band, foreground is the art's white (index 2). */
-#define PAL_ART  0u
+#define PAL_ART 0u
 #define PAL_TEXT 1u
 
 /* The image tiles are uploaded to VRAM bank 1 (the font occupies bank 0), so every
@@ -37,32 +37,32 @@
 #define BAND_H 5u
 
 #define OPT_CURSOR_X 5u
-#define OPT_TEXT_X   7u
-#define OPT_VALUE_X  14u   /* ON/OFF column on the Options sub-screen */
+#define OPT_TEXT_X 7u
+#define OPT_VALUE_X 14u /* ON/OFF column on the Options sub-screen */
 
 #define ROW_TAGLINE 7u
 
 /* Menu rows (CONTINUE / NEW GAME / OPTIONS — the first is shown only with a save). */
-#define ROW_OPT0    13u
-#define ROW_OPT1    14u
-#define ROW_OPT2    15u
+#define ROW_OPT0 13u
+#define ROW_OPT1 14u
+#define ROW_OPT2 15u
 /* Confirm rows. */
-#define ROW_CONFIRM_Q  13u
+#define ROW_CONFIRM_Q 13u
 #define ROW_CONFIRM_YN 15u
 /* Options sub-screen rows (within the lower text band). */
 #define ROW_OPTSCR_TITLE 12u
-#define ROW_OPTSCR_SFX   13u
+#define ROW_OPTSCR_SFX 13u
 #define ROW_OPTSCR_MUSIC 14u
-#define ROW_OPTSCR_HINT  16u
+#define ROW_OPTSCR_HINT 16u
 
-#define ST_STATE_MENU    0u
+#define ST_STATE_MENU 0u
 #define ST_STATE_CONFIRM 1u
 #define ST_STATE_OPTIONS 2u
 
 /* Menu actions (decoded from the cursor + whether a save exists). */
 #define ST_ACTION_CONTINUE 0u
 #define ST_ACTION_NEW_GAME 1u
-#define ST_ACTION_OPTIONS  2u
+#define ST_ACTION_OPTIONS 2u
 
 /* Write a 1-row run of CGB attribute bytes (palette + flags) at the given cell. */
 static void st_attr_row(uint8_t x, uint8_t y, uint8_t w, uint8_t value) {

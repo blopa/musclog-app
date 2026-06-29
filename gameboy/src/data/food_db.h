@@ -14,12 +14,12 @@
  * cannot page out the executing code.
  */
 
-#define FF_NAME_VISIBLE 16u   /* chars copied from a ROM food name (fits the UI width) */
-#define FF_MATCH_CAP    24u   /* max filtered matches kept in RAM                       */
+#define FF_NAME_VISIBLE 16u /* chars copied from a ROM food name (fits the UI width) */
+#define FF_MATCH_CAP 24u    /* max filtered matches kept in RAM                       */
 
 /* A food copied out of ROM into RAM (all values per 100 g). */
 typedef struct FoodCache {
-    char     name[FF_NAME_VISIBLE + 1u];
+    char name[FF_NAME_VISIBLE + 1u];
     uint16_t kcal;
     uint16_t protein_dg;
     uint16_t fat_dg;

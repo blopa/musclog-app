@@ -17,14 +17,14 @@
 #include <string.h>
 
 /* Spinner/validation bounds (mirrors the onboarding constants). */
-#define AGE_MIN       13u
-#define AGE_MAX       99u
+#define AGE_MIN 13u
+#define AGE_MAX 99u
 #define HEIGHT_IN_MIN 47u
 #define HEIGHT_IN_MAX 91u
-#define CAL_MIN       800u
-#define CAL_MAX       6000u
-#define MACRO_MAX     999u
-#define FIBER_MAX     99u
+#define CAL_MIN 800u
+#define CAL_MAX 6000u
+#define MACRO_MAX 999u
+#define FIBER_MAX 99u
 
 /*
  * Field order in the scrollable list. Profile fields first, macro targets last,
@@ -50,20 +50,20 @@ typedef enum SettingsField {
 
 /* Visible field rows (4..15); the list scrolls when SET_FIELD_COUNT exceeds this. */
 #define FIRST_ROW 4u
-#define VIS_ROWS  12u
+#define VIS_ROWS 12u
 
 typedef struct SettingsState {
     SaveData *data;
-    uint8_t   field;        /* currently focused SettingsField */
-    uint8_t   top;          /* first visible field (scroll offset) */
-    uint8_t   height_inches;/* imperial working value for SET_HEIGHT */
-    uint16_t  weight_lbs;   /* imperial working value for SET_WEIGHT */
-    uint8_t   dirty;
+    uint8_t field;         /* currently focused SettingsField */
+    uint8_t top;           /* first visible field (scroll offset) */
+    uint8_t height_inches; /* imperial working value for SET_HEIGHT */
+    uint16_t weight_lbs;   /* imperial working value for SET_WEIGHT */
+    uint8_t dirty;
 } SettingsState;
 
-static const char *experience_options[] = { STR_BEGINNER, STR_INTERMEDIATE, STR_ADVANCED };
-static const char *fitness_options[]    = { STR_MUSCLE, STR_STRENGTH, STR_ENDURANCE, STR_GENERAL };
-static const char *weight_goal_options[] = { STR_LOSE, STR_MAINTAIN, STR_GAIN };
+static const char *experience_options[] = {STR_BEGINNER, STR_INTERMEDIATE, STR_ADVANCED};
+static const char *fitness_options[] = {STR_MUSCLE, STR_STRENGTH, STR_ENDURANCE, STR_GENERAL};
+static const char *weight_goal_options[] = {STR_LOSE, STR_MAINTAIN, STR_GAIN};
 
 static uint8_t cm_to_inches(uint16_t cm) {
     uint16_t inches = (uint16_t)((((uint32_t)cm * 100u) + 127u) / 254u);
@@ -83,50 +83,71 @@ static const char *gender_label(uint8_t gender) {
 /* Short activity label so the value fits beside the row label (V.ACTIVE vs VERY ACTIVE). */
 static const char *activity_label(uint8_t activity_level) {
     switch (activity_level) {
-        case 1u: return STR_ACTIVITY_LOW;
-        case 2u: return STR_ACTIVITY_LIGHT;
-        case 3u: return STR_ACTIVITY_MODERATE;
-        case 4u: return STR_ACTIVITY_ACTIVE;
-        case 5u: return STR_ACT_VERY;
-        default: return STR_ACTIVITY_LIGHT;
+    case 1u:
+        return STR_ACTIVITY_LOW;
+    case 2u:
+        return STR_ACTIVITY_LIGHT;
+    case 3u:
+        return STR_ACTIVITY_MODERATE;
+    case 4u:
+        return STR_ACTIVITY_ACTIVE;
+    case 5u:
+        return STR_ACT_VERY;
+    default:
+        return STR_ACTIVITY_LIGHT;
     }
 }
 
 /* Short row label shown on the left of each field. */
 static const char *field_label(uint8_t field) {
     switch (field) {
-        case SET_UNITS:      return STR_UNITS;
-        case SET_SEX:        return STR_SEX;
-        case SET_AGE:        return STR_AGE;
-        case SET_HEIGHT:     return STR_HEIGHT;
-        case SET_WEIGHT:     return STR_WEIGHT;
-        case SET_ACTIVITY:   return STR_ACTIVITY;
-        case SET_EXPERIENCE: return STR_EXP;
-        case SET_FOCUS:      return STR_FOCUS;
-        case SET_GOAL:       return STR_GOAL;
-        case SET_CALORIES:   return STR_CALORIES;
-        case SET_PROTEIN:    return STR_PROTEIN;
-        case SET_CARBS:      return STR_CARBS;
-        case SET_FAT:        return STR_FAT;
-        case SET_FIBER:      return STR_FIBER;
-        default:             return "";
+    case SET_UNITS:
+        return STR_UNITS;
+    case SET_SEX:
+        return STR_SEX;
+    case SET_AGE:
+        return STR_AGE;
+    case SET_HEIGHT:
+        return STR_HEIGHT;
+    case SET_WEIGHT:
+        return STR_WEIGHT;
+    case SET_ACTIVITY:
+        return STR_ACTIVITY;
+    case SET_EXPERIENCE:
+        return STR_EXP;
+    case SET_FOCUS:
+        return STR_FOCUS;
+    case SET_GOAL:
+        return STR_GOAL;
+    case SET_CALORIES:
+        return STR_CALORIES;
+    case SET_PROTEIN:
+        return STR_PROTEIN;
+    case SET_CARBS:
+        return STR_CARBS;
+    case SET_FAT:
+        return STR_FAT;
+    case SET_FIBER:
+        return STR_FIBER;
+    default:
+        return "";
     }
 }
 
 /* 1 for fields edited with the spinner; 0 for fields that cycle through options. */
 static uint8_t is_numeric(uint8_t field) {
     switch (field) {
-        case SET_AGE:
-        case SET_HEIGHT:
-        case SET_WEIGHT:
-        case SET_CALORIES:
-        case SET_PROTEIN:
-        case SET_CARBS:
-        case SET_FAT:
-        case SET_FIBER:
-            return 1u;
-        default:
-            return 0u;
+    case SET_AGE:
+    case SET_HEIGHT:
+    case SET_WEIGHT:
+    case SET_CALORIES:
+    case SET_PROTEIN:
+    case SET_CARBS:
+    case SET_FAT:
+    case SET_FIBER:
+        return 1u;
+    default:
+        return 0u;
     }
 }
 
@@ -134,63 +155,63 @@ static void format_value(const SettingsState *s, char *buf) {
     const SaveData *d = s->data;
 
     switch (s->field) {
-        case SET_UNITS:
-            strcpy(buf, d->units == UNITS_IMPERIAL ? STR_IMPERIAL : STR_METRIC);
-            break;
-        case SET_SEX:
-            strcpy(buf, gender_label(d->gender));
-            break;
-        case SET_AGE:
-            sprintf(buf, "%u", (unsigned int)d->age);
-            break;
-        case SET_HEIGHT:
-            if (d->units == UNITS_IMPERIAL) {
-                sprintf(buf, "%u'%u\"", (unsigned int)(s->height_inches / 12u),
-                        (unsigned int)(s->height_inches % 12u));
-            } else {
-                sprintf(buf, "%u CM", (unsigned int)d->height_cm);
-            }
-            break;
-        case SET_WEIGHT:
-            if (d->units == UNITS_IMPERIAL) {
-                sprintf(buf, "%u LB", (unsigned int)s->weight_lbs);
-            } else {
-                sprintf(buf, "%u.%u KG", (unsigned int)(d->weight_kg_tenths / 10u),
-                        (unsigned int)(d->weight_kg_tenths % 10u));
-            }
-            break;
-        case SET_ACTIVITY:
-            strcpy(buf, activity_label(d->activity_level));
-            break;
-        case SET_EXPERIENCE:
-            strcpy(buf, experience_options[d->lifting_experience]);
-            break;
-        case SET_FOCUS:
-            strcpy(buf, fitness_options[d->fitness_focus]);
-            break;
-        case SET_GOAL:
-            strcpy(buf, weight_goal_options[d->weight_goal]);
-            break;
-        case SET_CALORIES:
-            /* No "KCAL" suffix here: the row label already names the field and
-             * the long value would otherwise collide with it. */
-            sprintf(buf, "%u", (unsigned int)d->calorie_goal);
-            break;
-        case SET_PROTEIN:
-            sprintf(buf, "%uG", (unsigned int)d->protein_goal);
-            break;
-        case SET_CARBS:
-            sprintf(buf, "%uG", (unsigned int)d->carbs_goal);
-            break;
-        case SET_FAT:
-            sprintf(buf, "%uG", (unsigned int)d->fat_goal);
-            break;
-        case SET_FIBER:
-            sprintf(buf, "%uG", (unsigned int)d->fiber_goal);
-            break;
-        default:
-            buf[0] = '\0';
-            break;
+    case SET_UNITS:
+        strcpy(buf, d->units == UNITS_IMPERIAL ? STR_IMPERIAL : STR_METRIC);
+        break;
+    case SET_SEX:
+        strcpy(buf, gender_label(d->gender));
+        break;
+    case SET_AGE:
+        sprintf(buf, "%u", (unsigned int)d->age);
+        break;
+    case SET_HEIGHT:
+        if (d->units == UNITS_IMPERIAL) {
+            sprintf(buf, "%u'%u\"", (unsigned int)(s->height_inches / 12u),
+                    (unsigned int)(s->height_inches % 12u));
+        } else {
+            sprintf(buf, "%u CM", (unsigned int)d->height_cm);
+        }
+        break;
+    case SET_WEIGHT:
+        if (d->units == UNITS_IMPERIAL) {
+            sprintf(buf, "%u LB", (unsigned int)s->weight_lbs);
+        } else {
+            sprintf(buf, "%u.%u KG", (unsigned int)(d->weight_kg_tenths / 10u),
+                    (unsigned int)(d->weight_kg_tenths % 10u));
+        }
+        break;
+    case SET_ACTIVITY:
+        strcpy(buf, activity_label(d->activity_level));
+        break;
+    case SET_EXPERIENCE:
+        strcpy(buf, experience_options[d->lifting_experience]);
+        break;
+    case SET_FOCUS:
+        strcpy(buf, fitness_options[d->fitness_focus]);
+        break;
+    case SET_GOAL:
+        strcpy(buf, weight_goal_options[d->weight_goal]);
+        break;
+    case SET_CALORIES:
+        /* No "KCAL" suffix here: the row label already names the field and
+         * the long value would otherwise collide with it. */
+        sprintf(buf, "%u", (unsigned int)d->calorie_goal);
+        break;
+    case SET_PROTEIN:
+        sprintf(buf, "%uG", (unsigned int)d->protein_goal);
+        break;
+    case SET_CARBS:
+        sprintf(buf, "%uG", (unsigned int)d->carbs_goal);
+        break;
+    case SET_FAT:
+        sprintf(buf, "%uG", (unsigned int)d->fat_goal);
+        break;
+    case SET_FIBER:
+        sprintf(buf, "%uG", (unsigned int)d->fiber_goal);
+        break;
+    default:
+        buf[0] = '\0';
+        break;
     }
 }
 
@@ -199,48 +220,49 @@ static void cycle_field(SettingsState *s, uint8_t going_right) {
     SaveData *d = s->data;
 
     switch (s->field) {
-        case SET_UNITS:
-            d->units = d->units == UNITS_METRIC ? UNITS_IMPERIAL : UNITS_METRIC;
-            s->height_inches = cm_to_inches(d->height_cm);
-            s->weight_lbs = kg_tenths_to_lbs(d->weight_kg_tenths);
-            break;
-        case SET_SEX:
-            if (going_right) {
-                d->gender = (uint8_t)((d->gender + 1u) % 3u);
-            } else {
-                d->gender = d->gender == GENDER_MALE ? GENDER_OTHER : (uint8_t)(d->gender - 1u);
-            }
-            break;
-        case SET_ACTIVITY:
-            if (going_right) {
-                d->activity_level = d->activity_level >= 5u ? 1u : (uint8_t)(d->activity_level + 1u);
-            } else {
-                d->activity_level = d->activity_level <= 1u ? 5u : (uint8_t)(d->activity_level - 1u);
-            }
-            break;
-        case SET_EXPERIENCE:
-            if (going_right) {
-                d->lifting_experience = (uint8_t)((d->lifting_experience + 1u) % 3u);
-            } else {
-                d->lifting_experience = d->lifting_experience == 0u ? 2u : (uint8_t)(d->lifting_experience - 1u);
-            }
-            break;
-        case SET_FOCUS:
-            if (going_right) {
-                d->fitness_focus = (uint8_t)((d->fitness_focus + 1u) % 4u);
-            } else {
-                d->fitness_focus = d->fitness_focus == 0u ? 3u : (uint8_t)(d->fitness_focus - 1u);
-            }
-            break;
-        case SET_GOAL:
-            if (going_right) {
-                d->weight_goal = (uint8_t)((d->weight_goal + 1u) % 3u);
-            } else {
-                d->weight_goal = d->weight_goal == 0u ? 2u : (uint8_t)(d->weight_goal - 1u);
-            }
-            break;
-        default:
-            break;
+    case SET_UNITS:
+        d->units = d->units == UNITS_METRIC ? UNITS_IMPERIAL : UNITS_METRIC;
+        s->height_inches = cm_to_inches(d->height_cm);
+        s->weight_lbs = kg_tenths_to_lbs(d->weight_kg_tenths);
+        break;
+    case SET_SEX:
+        if (going_right) {
+            d->gender = (uint8_t)((d->gender + 1u) % 3u);
+        } else {
+            d->gender = d->gender == GENDER_MALE ? GENDER_OTHER : (uint8_t)(d->gender - 1u);
+        }
+        break;
+    case SET_ACTIVITY:
+        if (going_right) {
+            d->activity_level = d->activity_level >= 5u ? 1u : (uint8_t)(d->activity_level + 1u);
+        } else {
+            d->activity_level = d->activity_level <= 1u ? 5u : (uint8_t)(d->activity_level - 1u);
+        }
+        break;
+    case SET_EXPERIENCE:
+        if (going_right) {
+            d->lifting_experience = (uint8_t)((d->lifting_experience + 1u) % 3u);
+        } else {
+            d->lifting_experience =
+                d->lifting_experience == 0u ? 2u : (uint8_t)(d->lifting_experience - 1u);
+        }
+        break;
+    case SET_FOCUS:
+        if (going_right) {
+            d->fitness_focus = (uint8_t)((d->fitness_focus + 1u) % 4u);
+        } else {
+            d->fitness_focus = d->fitness_focus == 0u ? 3u : (uint8_t)(d->fitness_focus - 1u);
+        }
+        break;
+    case SET_GOAL:
+        if (going_right) {
+            d->weight_goal = (uint8_t)((d->weight_goal + 1u) % 3u);
+        } else {
+            d->weight_goal = d->weight_goal == 0u ? 2u : (uint8_t)(d->weight_goal - 1u);
+        }
+        break;
+    default:
+        break;
     }
 }
 
@@ -253,43 +275,45 @@ static void spin_field(SettingsState *s, const InputState *in) {
     SaveData *d = s->data;
 
     switch (s->field) {
-        case SET_AGE:
-            d->age = spinner_u8(in, d->age, 1u, 5u, AGE_MIN, AGE_MAX);
-            break;
-        case SET_HEIGHT:
-            if (d->units == UNITS_IMPERIAL) {
-                s->height_inches = spinner_u8(in, s->height_inches, 1u, 12u, HEIGHT_IN_MIN, HEIGHT_IN_MAX);
-                d->height_cm = inches_to_cm(s->height_inches);
-            } else {
-                d->height_cm = spinner_u16(in, d->height_cm, 1u, 10u, DB_HEIGHT_CM_MIN, DB_HEIGHT_CM_MAX);
-            }
-            break;
-        case SET_WEIGHT:
-            if (d->units == UNITS_IMPERIAL) {
-                s->weight_lbs = spinner_u16(in, s->weight_lbs, 1u, 10u, WEIGHT_LB_MIN, WEIGHT_LB_MAX);
-                d->weight_kg_tenths = lbs_to_kg_tenths(s->weight_lbs);
-            } else {
-                d->weight_kg_tenths = spinner_u16(in, d->weight_kg_tenths, 5u, 50u,
-                                                  DB_WEIGHT_KG_TENTHS_MIN, DB_WEIGHT_KG_TENTHS_MAX);
-            }
-            break;
-        case SET_CALORIES:
-            d->calorie_goal = spinner_u16(in, d->calorie_goal, 10u, 100u, CAL_MIN, CAL_MAX);
-            break;
-        case SET_PROTEIN:
-            d->protein_goal = spinner_u16(in, d->protein_goal, 1u, 10u, 0u, MACRO_MAX);
-            break;
-        case SET_CARBS:
-            d->carbs_goal = spinner_u16(in, d->carbs_goal, 1u, 10u, 0u, MACRO_MAX);
-            break;
-        case SET_FAT:
-            d->fat_goal = spinner_u16(in, d->fat_goal, 1u, 10u, 0u, MACRO_MAX);
-            break;
-        case SET_FIBER:
-            d->fiber_goal = spinner_u16(in, d->fiber_goal, 1u, 10u, 0u, FIBER_MAX);
-            break;
-        default:
-            break;
+    case SET_AGE:
+        d->age = spinner_u8(in, d->age, 1u, 5u, AGE_MIN, AGE_MAX);
+        break;
+    case SET_HEIGHT:
+        if (d->units == UNITS_IMPERIAL) {
+            s->height_inches =
+                spinner_u8(in, s->height_inches, 1u, 12u, HEIGHT_IN_MIN, HEIGHT_IN_MAX);
+            d->height_cm = inches_to_cm(s->height_inches);
+        } else {
+            d->height_cm =
+                spinner_u16(in, d->height_cm, 1u, 10u, DB_HEIGHT_CM_MIN, DB_HEIGHT_CM_MAX);
+        }
+        break;
+    case SET_WEIGHT:
+        if (d->units == UNITS_IMPERIAL) {
+            s->weight_lbs = spinner_u16(in, s->weight_lbs, 1u, 10u, WEIGHT_LB_MIN, WEIGHT_LB_MAX);
+            d->weight_kg_tenths = lbs_to_kg_tenths(s->weight_lbs);
+        } else {
+            d->weight_kg_tenths = spinner_u16(in, d->weight_kg_tenths, 5u, 50u,
+                                              DB_WEIGHT_KG_TENTHS_MIN, DB_WEIGHT_KG_TENTHS_MAX);
+        }
+        break;
+    case SET_CALORIES:
+        d->calorie_goal = spinner_u16(in, d->calorie_goal, 10u, 100u, CAL_MIN, CAL_MAX);
+        break;
+    case SET_PROTEIN:
+        d->protein_goal = spinner_u16(in, d->protein_goal, 1u, 10u, 0u, MACRO_MAX);
+        break;
+    case SET_CARBS:
+        d->carbs_goal = spinner_u16(in, d->carbs_goal, 1u, 10u, 0u, MACRO_MAX);
+        break;
+    case SET_FAT:
+        d->fat_goal = spinner_u16(in, d->fat_goal, 1u, 10u, 0u, MACRO_MAX);
+        break;
+    case SET_FIBER:
+        d->fiber_goal = spinner_u16(in, d->fiber_goal, 1u, 10u, 0u, FIBER_MAX);
+        break;
+    default:
+        break;
     }
 }
 
@@ -388,8 +412,8 @@ void settings_show(SaveData *data) BANKED {
         if (input_pressed(&input, J_B)) return;
 
         if (input_pressed(&input, J_UP)) {
-            state.field = state.field == 0u
-                ? (uint8_t)(SET_FIELD_COUNT - 1u) : (uint8_t)(state.field - 1u);
+            state.field =
+                state.field == 0u ? (uint8_t)(SET_FIELD_COUNT - 1u) : (uint8_t)(state.field - 1u);
             state.dirty = 1u;
             continue;
         }

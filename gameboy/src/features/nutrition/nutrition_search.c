@@ -18,8 +18,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#define MATCH_VISIBLE   6u
-#define QUERY_MAX       12u
+#define MATCH_VISIBLE 6u
+#define QUERY_MAX 12u
 
 static const char ALPHABET[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
 #define ALPHABET_LEN 27u
@@ -28,12 +28,12 @@ static const char ALPHABET[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
 #define SEARCH_MODE_SELECT 1u
 
 typedef struct SearchState {
-    uint8_t  mode;
-    char     query[QUERY_MAX + 1u];
-    uint8_t  len;
-    uint8_t  spin;
+    uint8_t mode;
+    char query[QUERY_MAX + 1u];
+    uint8_t len;
+    uint8_t spin;
     uint16_t matches[FF_MATCH_CAP];
-    uint8_t  match_count;
+    uint8_t match_count;
     ListCursor cursor;
 } SearchState;
 
@@ -46,7 +46,8 @@ static void draw_match_row(uint8_t row, const FoodCache *fc, uint16_t food_idx, 
     ui_print_at(0u, row, focused ? ">" : " ");
     ui_print_at(1u, row, food_idx >= CUSTOM_FOOD_BASE ? "*" : " ");
 
-    for (i = 0u; i != 12u && fc->name[i] != '\0'; ++i) nm[i] = fc->name[i];
+    for (i = 0u; i != 12u && fc->name[i] != '\0'; ++i)
+        nm[i] = fc->name[i];
     nm[i] = '\0';
     ui_print_at(2u, row, nm);
 
@@ -57,11 +58,12 @@ static void draw_match_row(uint8_t row, const FoodCache *fc, uint16_t food_idx, 
 }
 
 static void draw_search(const SearchState *s) {
-    char     line[QUERY_MAX + 2u];
-    char     slot[2];
-    uint8_t  i, abs_idx;
+    char line[QUERY_MAX + 2u];
+    char slot[2];
+    uint8_t i, abs_idx;
     FoodCache fc;
 
+    memset(&fc, 0, sizeof(fc));
     ui_clear();
     ui_fill_attr(0u, 0u, 20u, 1u, UI_PAL_HEADER);
     ui_print_center(0u, STR_APP_TITLE);
@@ -69,7 +71,8 @@ static void draw_search(const SearchState *s) {
     ui_print_at(0u, 2u, STR_DIVIDER);
 
     ui_print_at(0u, 3u, STR_NAME_LABEL);
-    for (i = 0u; i != s->len; ++i) line[i] = s->query[i];
+    for (i = 0u; i != s->len; ++i)
+        line[i] = s->query[i];
     line[s->len] = '\0';
     ui_fill_attr(0u, 4u, 20u, 1u, UI_PAL_PANEL);
     ui_print_at(0u, 4u, line);
@@ -105,23 +108,25 @@ static void draw_search(const SearchState *s) {
     }
 }
 
-#define AMOUNT_G_DEFAULT  100u
-#define AMOUNT_G_MIN        5u
-#define AMOUNT_G_MAX     2000u
-#define AMOUNT_OZ_DEFAULT   4u
-#define AMOUNT_OZ_MIN       1u
-#define AMOUNT_OZ_MAX      70u
+#define AMOUNT_G_DEFAULT 100u
+#define AMOUNT_G_MIN 5u
+#define AMOUNT_G_MAX 2000u
+#define AMOUNT_OZ_DEFAULT 4u
+#define AMOUNT_OZ_MIN 1u
+#define AMOUNT_OZ_MAX 70u
 
 static void draw_amount_values(const FoodCache *fc, uint16_t amount, uint8_t imperial) {
-    char     buf[21];
+    char buf[21];
     uint16_t grams, kcal, pro, fat, carb, fib;
 
     grams = imperial ? nutrition_oz_to_grams(amount) : amount;
     foodlog_scale(fc, grams, &kcal, &pro, &carb, &fat, &fib);
 
     ui_fill_attr(0u, 8u, 20u, 1u, UI_PAL_SELECTED);
-    if (imperial) sprintf(buf, "%u OZ", (unsigned int)amount);
-    else          sprintf(buf, "%u G",  (unsigned int)amount);
+    if (imperial)
+        sprintf(buf, "%u OZ", (unsigned int)amount);
+    else
+        sprintf(buf, "%u G", (unsigned int)amount);
     ui_clear_row(8u);
     ui_print_center(8u, buf);
 
@@ -155,23 +160,24 @@ static void draw_amount(const FoodCache *fc, uint16_t amount, uint8_t imperial) 
     ui_footer(STR_FOOTER_BACK, STR_FOOTER_TRACK);
 }
 
-static uint8_t food_amount_screen(SaveData *data, const FoodCache *fc,
-                                  uint16_t food_idx, CalDate log_date) {
+static uint8_t food_amount_screen(SaveData *data, const FoodCache *fc, uint16_t food_idx,
+                                  CalDate log_date) {
     InputState input;
-    uint8_t    imperial = (uint8_t)(data->units == UNITS_IMPERIAL);
-    uint16_t   amount   = imperial ? AMOUNT_OZ_DEFAULT : AMOUNT_G_DEFAULT;
-    uint16_t   small    = imperial ? 1u : 10u;
-    uint16_t   large    = imperial ? 5u : 50u;
-    uint16_t   mn       = imperial ? AMOUNT_OZ_MIN : AMOUNT_G_MIN;
-    uint16_t   mx       = imperial ? AMOUNT_OZ_MAX : AMOUNT_G_MAX;
-    uint8_t    dirty    = 1u;
-    uint8_t    frame_drawn = 0u;
-    uint8_t    i;
+    uint8_t imperial = (uint8_t)(data->units == UNITS_IMPERIAL);
+    uint16_t amount = imperial ? AMOUNT_OZ_DEFAULT : AMOUNT_G_DEFAULT;
+    uint16_t small = imperial ? 1u : 10u;
+    uint16_t large = imperial ? 5u : 50u;
+    uint16_t mn = imperial ? AMOUNT_OZ_MIN : AMOUNT_G_MIN;
+    uint16_t mx = imperial ? AMOUNT_OZ_MAX : AMOUNT_G_MAX;
+    uint8_t dirty = 1u;
+    uint8_t frame_drawn = 0u;
+    uint8_t i;
 
     input_init(&input);
     while (1) {
         if (dirty) {
-            if (frame_drawn) draw_amount_values(fc, amount, imperial);
+            if (frame_drawn)
+                draw_amount_values(fc, amount, imperial);
             else {
                 draw_amount(fc, amount, imperial);
                 frame_drawn = 1u;
@@ -190,15 +196,15 @@ static uint8_t food_amount_screen(SaveData *data, const FoodCache *fc,
         if (input_pressed(&input, J_A | J_START)) {
             if (ui_confirm(STR_TRACK_FOOD, STR_TRACK_FOOD_Q)) {
                 if (foodlog_is_full()) {
-                    ui_storage_full(STR_FOOD_LOG_FULL,
-                                    STR_FOOD_LOG_FULL_1, STR_FOOD_LOG_FULL_2);
+                    ui_storage_full(STR_FOOD_LOG_FULL, STR_FOOD_LOG_FULL_1, STR_FOOD_LOG_FULL_2);
                 } else {
                     uint16_t grams = imperial ? nutrition_oz_to_grams(amount) : amount;
                     foodlog_add(cal_day_number(log_date), food_idx, grams);
                     ui_title(STR_TRACKED);
                     ui_print_center(8u, STR_FOOD_TRACKED);
                     ui_present();
-                    for (i = 0u; i != 75u; ++i) wait_vbl_done();
+                    for (i = 0u; i != 75u; ++i)
+                        wait_vbl_done();
                     return 1u;
                 }
             }
@@ -209,11 +215,13 @@ static uint8_t food_amount_screen(SaveData *data, const FoodCache *fc,
 
 void nutrition_food_search_track(SaveData *data, CalDate log_date) BANKED {
     SearchState s;
-    InputState  input;
-    FoodCache   fc;
-    uint8_t     dirty = 1u;
-    uint8_t     abs_idx;
+    InputState input;
+    FoodCache fc;
+    uint8_t dirty = 1u;
+    uint8_t abs_idx;
 
+    memset(&s, 0, sizeof(s));
+    memset(&fc, 0, sizeof(fc));
     s.mode = SEARCH_MODE_TYPING;
     s.len = 0u;
     s.query[0] = '\0';
@@ -273,13 +281,13 @@ void nutrition_food_search_track(SaveData *data, CalDate log_date) BANKED {
 
         if (input_pressed(&input, J_A | J_START)) {
             ff_load(s.matches[abs_idx], &fc);
-            if (food_amount_screen(data, &fc, s.matches[abs_idx], log_date))
-                return;
+            if (food_amount_screen(data, &fc, s.matches[abs_idx], log_date)) return;
             dirty = 1u;
             continue;
         }
 
-        if (input_pressed(&input, J_DOWN) && list_cursor_down(&s.cursor, s.match_count, MATCH_VISIBLE)) {
+        if (input_pressed(&input, J_DOWN) &&
+            list_cursor_down(&s.cursor, s.match_count, MATCH_VISIBLE)) {
             dirty = 1u;
         }
         if (input_pressed(&input, J_UP) && list_cursor_up(&s.cursor)) {

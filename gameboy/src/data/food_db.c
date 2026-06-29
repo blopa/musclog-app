@@ -36,11 +36,11 @@ static void copy_food(const foundation_food_t *f, FoodCache *out) NONBANKED {
     const char *src;
     uint8_t i;
 
-    out->kcal       = f->kcal;
+    out->kcal = f->kcal;
     out->protein_dg = f->protein_dg;
-    out->fat_dg     = f->fat_dg;
-    out->carbs_dg   = f->carbs_dg;
-    out->fiber_dg   = f->fiber_dg;
+    out->fat_dg = f->fat_dg;
+    out->carbs_dg = f->carbs_dg;
+    out->fiber_dg = f->fiber_dg;
     src = f->name;
     for (i = 0u; i != FF_NAME_VISIBLE && src[i] != '\0'; ++i) {
         out->name[i] = src[i];
@@ -49,12 +49,12 @@ static void copy_food(const foundation_food_t *f, FoodCache *out) NONBANKED {
 }
 
 static void clear_food(FoodCache *out) NONBANKED {
-    out->name[0]     = '\0';
-    out->kcal        = 0u;
-    out->protein_dg  = 0u;
-    out->fat_dg      = 0u;
-    out->carbs_dg    = 0u;
-    out->fiber_dg    = 0u;
+    out->name[0] = '\0';
+    out->kcal = 0u;
+    out->protein_dg = 0u;
+    out->fat_dg = 0u;
+    out->carbs_dg = 0u;
+    out->fiber_dg = 0u;
 }
 
 void ff_load(uint16_t idx, FoodCache *out) NONBANKED {
@@ -85,7 +85,7 @@ void ff_load(uint16_t idx, FoodCache *out) NONBANKED {
 
 uint8_t ff_filter(const char *query, uint16_t *matches, uint8_t cap) NONBANKED {
     uint16_t i;
-    uint8_t  count = 0u;
+    uint8_t count = 0u;
     const char *name;
     uint8_t saved_bank = caller_bank();
 

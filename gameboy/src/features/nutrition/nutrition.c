@@ -22,15 +22,15 @@
 
 typedef struct NutritionState {
     SaveData *data;
-    CalDate  viewing_date;
-    CalDate  today;
+    CalDate viewing_date;
+    CalDate today;
     uint16_t day_num;
     ListCursor cursor;
-    uint8_t  dirty;
+    uint8_t dirty;
 } NutritionState;
 
-static void draw_food_row(uint8_t screen_row, uint16_t day_num,
-                          uint8_t row_idx, uint8_t count, uint8_t is_focused) {
+static void draw_food_row(uint8_t screen_row, uint16_t day_num, uint8_t row_idx, uint8_t count,
+                          uint8_t is_focused) {
     uint16_t food_idx, grams;
     FoodCache fc;
     uint16_t cal, pro, carb, fat, fib;
@@ -44,12 +44,12 @@ static void draw_food_row(uint8_t screen_row, uint16_t day_num,
     ff_load(food_idx, &fc);
     foodlog_scale(&fc, grams, &cal, &pro, &carb, &fat, &fib);
 
-    if (is_focused)
-        ui_fill_attr(0u, screen_row, 20u, 1u, UI_PAL_PANEL);
+    if (is_focused) ui_fill_attr(0u, screen_row, 20u, 1u, UI_PAL_PANEL);
 
     ui_print_at(0u, screen_row, is_focused ? ">" : " ");
     ui_print_at(1u, screen_row, food_idx >= CUSTOM_FOOD_BASE ? "*" : " ");
-    for (i = 0u; i != 12u && fc.name[i] != '\0'; ++i) nm[i] = fc.name[i];
+    for (i = 0u; i != 12u && fc.name[i] != '\0'; ++i)
+        nm[i] = fc.name[i];
     nm[i] = '\0';
     ui_print_at(2u, screen_row, nm);
 
@@ -106,11 +106,8 @@ static void draw_nutrition(const NutritionState *state) {
 
     ui_print_at(0u, 12u, STR_DIVIDER);
     for (i = 0u; i != FOOD_VISIBLE; ++i) {
-        draw_food_row((uint8_t)(13u + i),
-                      state->day_num,
-                      (uint8_t)(state->cursor.scroll + i),
-                      count,
-                      (uint8_t)(i == state->cursor.focused));
+        draw_food_row((uint8_t)(13u + i), state->day_num, (uint8_t)(state->cursor.scroll + i),
+                      count, (uint8_t)(i == state->cursor.focused));
     }
 
     ui_footer(STR_FOOTER_BACK, STR_FOOTER_SEL_MENU);
@@ -149,8 +146,10 @@ static void custom_foods_submenu(SaveData *data) {
     options[1] = STR_MY_FOODS;
 
     selected = ui_menu_select(STR_CUSTOM_FOODS, options, 2u);
-    if (selected == 0u) custom_food_create(data);
-    else if (selected == 1u) custom_foods_manage(data);
+    if (selected == 0u)
+        custom_food_create(data);
+    else if (selected == 1u)
+        custom_foods_manage(data);
 }
 
 static uint8_t run_action(NutritionState *state) {
@@ -176,12 +175,12 @@ void nutrition_track(SaveData *data) BANKED {
     InputState input;
     uint8_t count, abs_idx;
 
-    state.data         = data;
-    state.today        = cal_current_date(data);
+    state.data = data;
+    state.today = cal_current_date(data);
     state.viewing_date = state.today;
-    state.day_num      = cal_day_number(state.viewing_date);
+    state.day_num = cal_day_number(state.viewing_date);
     list_cursor_reset(&state.cursor);
-    state.dirty        = 1u;
+    state.dirty = 1u;
 
     input_init(&input);
     while (1) {
@@ -201,7 +200,7 @@ void nutrition_track(SaveData *data) BANKED {
             continue;
         }
 
-        count   = foodlog_count_for_day(state.day_num);
+        count = foodlog_count_for_day(state.day_num);
         abs_idx = list_cursor_index(&state.cursor);
 
         if (input_pressed(&input, J_START) && abs_idx < count) {

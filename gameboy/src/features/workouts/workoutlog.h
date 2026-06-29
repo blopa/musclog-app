@@ -14,21 +14,21 @@
  */
 
 typedef struct WorkoutLogSet {
-    uint8_t  exercise_idx;
-    uint8_t  reps;
+    uint8_t exercise_idx;
+    uint8_t reps;
     uint16_t weight_kg_tenths;
 } WorkoutLogSet;
 
 typedef struct WorkoutLogSummary {
     uint16_t day_num;
-    uint8_t  dominant_muscle;
-    uint8_t  exercise_count;
-    uint8_t  set_count;
+    uint8_t dominant_muscle;
+    uint8_t exercise_count;
+    uint8_t set_count;
     uint16_t volume_kg;
 } WorkoutLogSummary;
 
-void    workoutlog_init(void) BANKED;
-void    workoutlog_erase(void) BANKED;
+void workoutlog_init(void) BANKED;
+void workoutlog_erase(void) BANKED;
 uint8_t workoutlog_count(void) BANKED;
 
 /* Returns 1 if adding a workout with `set_count` sets would require dropping the
@@ -43,10 +43,7 @@ uint8_t workoutlog_get_summary(uint8_t newest_idx, WorkoutLogSummary *out) BANKE
  * range). Used by the workout detail screen.
  */
 uint8_t workoutlog_get_sets(uint8_t newest_idx, WorkoutLogSet *out, uint8_t max) BANKED;
-uint8_t workoutlog_add(uint16_t day_num,
-                       uint8_t dominant_muscle,
-                       uint8_t exercise_count,
-                       uint8_t set_count,
-                       const WorkoutLogSet *sets) BANKED;
+uint8_t workoutlog_add(uint16_t day_num, uint8_t dominant_muscle, uint8_t exercise_count,
+                       uint8_t set_count, const WorkoutLogSet *sets) BANKED;
 
 #endif /* MUSCLOG_WORKOUTLOG_H */
