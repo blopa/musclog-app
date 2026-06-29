@@ -156,7 +156,7 @@
       "metric": "Metric",
       "imperial": "Imperial",
       "gender": "Gender",
-      "genderNote": "Our calorie and macro formulas come from older research that only studied two groups. Pick whichever best reflects your current hormones and body — or choose \"Other\" for averaged values.",
+      "genderNote": "Our calorie and macro formulas come from older research that only recognized two groups, so they can't reflect everyone. Pick whichever best matches your current body and hormones (for example, if you're on hormone therapy) — or choose \"Other\" for averaged values.",
       "male": "Male",
       "female": "Female",
       "other": "Other / Prefer not to say",

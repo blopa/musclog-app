@@ -838,7 +838,7 @@
         "male": "Hombre",
         "female": "Mujer",
         "other": "Otro",
-        "genderNote": "Estas fórmulas provienen de estudios antiguos que solo analizaban dos grupos. Elige la opción que mejor refleje tus hormonas y tu cuerpo actuales, o selecciona «Otro» para usar valores promedio.",
+        "genderNote": "Estas fórmulas provienen de estudios antiguos que solo reconocían dos grupos, por lo que no reflejan a todo el mundo. Elige la opción que mejor se ajuste a tu cuerpo y tus hormonas actuales (por ejemplo, si sigues una terapia hormonal), o selecciona «Otro» para usar valores promedio.",
         "weight": "PESO (KG)",
         "height": "ALTURA (CM)",
         "bodyFat": "GRASA CORPORAL %",
