@@ -1,6 +1,6 @@
 {
   "name": "musclog",
-  "version": "2.9.8",
+  "version": "2.9.9",
   "engines": {
     "node": "26.x"
   },
@@ -102,7 +102,7 @@
     "@mjcdev/react-body-highlighter": "^0.0.4",
     "@musclog/witmotion-ble": "file:modules/witmotion-ble",
     "@nozbe/watermelondb": "0.28.0",
-    "@openfoodfacts/openfoodfacts-nodejs": "2.0.0-alpha.32",
+    "@openfoodfacts/openfoodfacts-nodejs": "2.0.0-alpha.30",
     "@react-native-ai/apple": "^0.12.0",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/netinfo": "12.0.1",

@@ -1430,8 +1430,7 @@ export const getExtractMacrosFromLabelTextPrompt = (): string => {
  * Function schema for chat message response (Gemini + OpenAI compatible)
  */
 export const getSendChatMessageFunctions = ():
-  | FunctionDeclaration[]
-  | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
+  FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
   const BE_CONCISE_PROMPT_LOCAL = `Be concise and limit your message to ${WORDS_SOFT_LIMIT} words.`;
   return [
     {
@@ -1469,8 +1468,7 @@ export const getSendChatMessageFunctions = ():
  * Function schema for workout plan generation
  */
 export const getGenerateWorkoutPlanFunctions = ():
-  | FunctionDeclaration[]
-  | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
+  FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
   return [
     {
       name: 'generateWorkoutPlan',
@@ -1546,8 +1544,7 @@ export const getGenerateWorkoutPlanFunctions = ():
  * Function schema for next workout volume calculation
  */
 export const getCalculateNextWorkoutVolumeFunctions = ():
-  | FunctionDeclaration[]
-  | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
+  FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
   return [
     {
       name: 'calculateNextWorkoutVolume',
@@ -1609,8 +1606,7 @@ export const getCalculateNextWorkoutVolumeFunctions = ():
  * Function schema for parsing past workouts
  */
 export const getParsePastWorkoutsFunctions = ():
-  | FunctionDeclaration[]
-  | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
+  FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
   return [
     {
       name: 'parsePastWorkouts',
@@ -1686,8 +1682,7 @@ export const getParsePastWorkoutsFunctions = ():
  * Function schema for parsing past nutrition
  */
 export const getParsePastNutritionFunctions = ():
-  | FunctionDeclaration[]
-  | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
+  FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
   return [
     {
       name: 'parsePastNutrition',
@@ -1754,8 +1749,7 @@ export const getParsePastNutritionFunctions = ():
  * Function schema for retrospective nutrition parsing
  */
 export const getParseRetrospectiveNutritionFunctions = ():
-  | FunctionDeclaration[]
-  | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
+  FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => {
   return [
     {
       name: 'parseRetrospectiveNutrition',
@@ -2022,8 +2016,7 @@ export const getRecipeExtractionFunctions = (
 };
 
 export const getEstimateMissingIngredientsFunctions = ():
-  | FunctionDeclaration[]
-  | OpenAI.Chat.ChatCompletionCreateParams.Function[] => [
+  FunctionDeclaration[] | OpenAI.Chat.ChatCompletionCreateParams.Function[] => [
   {
     name: 'estimateMissingIngredients',
     description: 'Estimate macronutrients for a list of ingredients that have known gram weights.',
