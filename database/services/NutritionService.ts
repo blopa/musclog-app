@@ -51,10 +51,10 @@ async function retryOnResetError<T>(
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       return await queryFn();
-    } catch (error: any) {
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '';
       const isResetError =
-        error?.message?.includes('database is being reset') ||
-        error?.message?.includes('underlyingAdapter');
+        message.includes('database is being reset') || message.includes('underlyingAdapter');
 
       if (isResetError && attempt < maxRetries - 1) {
         // Exponential backoff: 100ms, 200ms, 400ms
@@ -62,9 +62,11 @@ async function retryOnResetError<T>(
         await new Promise((resolve) => setTimeout(resolve, delay));
         continue;
       }
+
       throw error;
     }
   }
+
   throw new Error('Max retries exceeded');
 }
 

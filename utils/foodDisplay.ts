@@ -20,7 +20,7 @@ export async function getFoodServingDisplay(
     const defaultPortion = await food.getDefaultPortionAsync();
     if (defaultPortion) {
       const unit = getMassUnitLabel(units);
-      const amount = formatDisplayGrams(locale, units, defaultPortion.gramWeight);
+      const amount = formatDisplayGrams(locale, units, defaultPortion.gramWeight ?? 100);
       return `${amount} ${unit} ${defaultPortion.name}`;
     }
   } catch (error) {

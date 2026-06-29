@@ -540,7 +540,7 @@ export class MigrationService {
     for (const oldFood of oldFoods) {
       try {
         // Build micros JSON object from old micro fields
-        const micros: Record<string, any> = {};
+        const micros: Record<string, number> = {};
 
         // Add micro nutrients if they exist and are not null
         const microFields = [
@@ -729,7 +729,7 @@ export class MigrationService {
         const mealType = await decryptDatabaseValue(oldLog.mealType);
 
         // Build micros JSON object from old micro fields
-        const micros: Record<string, any> = {};
+        const micros: Record<string, number> = {};
 
         // Add micro nutrients if they exist and are not null after decryption
         const microFields = [

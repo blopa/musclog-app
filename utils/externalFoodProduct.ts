@@ -33,6 +33,7 @@ export type ProductDetailsQueryData =
   | ProductState
   | { status: 'success'; source: 'usda'; product: USDAFood }
   | { status: 'success'; source: 'musclog'; product: MusclogProduct }
+  | { status: 'failure'; code?: string }
   | { status: 'error'; error: { message: string } }
   | null;
 

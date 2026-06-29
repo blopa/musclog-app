@@ -331,10 +331,10 @@ export function useNutritionLogs({
             .get<NutritionLog>('nutrition_logs')
             .query(Q.where('deleted_at', Q.eq(null)))
             .fetchCount();
-        } catch (error: any) {
+        } catch (error) {
+          const message = error instanceof Error ? error.message : '';
           const isResetError =
-            error?.message?.includes('database is being reset') ||
-            error?.message?.includes('underlyingAdapter');
+            message.includes('database is being reset') || message.includes('underlyingAdapter');
           if (isResetError) {
             // Retry after a short delay
             await new Promise((resolve) => setTimeout(resolve, 200));
