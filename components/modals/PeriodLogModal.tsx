@@ -13,11 +13,25 @@ import { CenteredModal } from './CenteredModal';
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 
+type PeriodLogMode = 'start' | 'end' | 'past';
+
+const TITLE_KEYS: Record<PeriodLogMode, string> = {
+  end: 'cycle.periodLog.endTitle',
+  past: 'cycle.periodLog.pastTitle',
+  start: 'cycle.periodLog.startTitle',
+};
+
+const DESCRIPTION_KEYS: Record<PeriodLogMode, string> = {
+  end: 'cycle.periodLog.endDescription',
+  past: 'cycle.periodLog.pastDescription',
+  start: 'cycle.periodLog.startDescription',
+};
+
 type PeriodLogModalProps = {
   visible: boolean;
   onClose: () => void;
   /** When true, the modal logs period end instead of period start */
-  mode?: 'start' | 'end' | 'past';
+  mode?: PeriodLogMode;
   initialDate?: Date;
 };
 
@@ -48,21 +62,8 @@ export function PeriodLogModal({
     void reset();
   }, [visible, initialDate]);
 
-  // TODO: no nested ternaries
-  const titleKey =
-    mode === 'end'
-      ? 'cycle.periodLog.endTitle'
-      : mode === 'past'
-        ? 'cycle.periodLog.pastTitle'
-        : 'cycle.periodLog.startTitle';
-
-  // TODO: no nested ternaries
-  const descriptionKey =
-    mode === 'end'
-      ? 'cycle.periodLog.endDescription'
-      : mode === 'past'
-        ? 'cycle.periodLog.pastDescription'
-        : 'cycle.periodLog.startDescription';
+  const titleKey = TITLE_KEYS[mode];
+  const descriptionKey = DESCRIPTION_KEYS[mode];
 
   const handleSave = async () => {
     setIsSaving(true);

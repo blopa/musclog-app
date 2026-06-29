@@ -196,10 +196,7 @@ export class MenstrualService {
       return 'menstrual';
     }
 
-    // Predicted next period using luteal anchoring
-    const predictedNextPeriodMs = latest.startDate + stats.avgCycleLength * MS_PER_DAY;
-    // Ovulation ≈ predicted next period − 14 days
-    const ovulationMs = predictedNextPeriodMs - LUTEAL_PHASE_DAYS * MS_PER_DAY;
+    const ovulationMs = this.predictedOvulationMs(latest, stats);
     const ovulationWindowStartMs = ovulationMs - 2 * MS_PER_DAY;
     const ovulationWindowEndMs = ovulationMs + 2 * MS_PER_DAY;
 
@@ -212,6 +209,13 @@ export class MenstrualService {
     }
 
     return 'luteal';
+  }
+
+  /**
+   * Predicted ovulation timestamp: next period start minus the stable luteal phase.
+   */
+  private static predictedOvulationMs(latest: PeriodLog, stats: CycleStats): number {
+    return latest.startDate + (stats.avgCycleLength - LUTEAL_PHASE_DAYS) * MS_PER_DAY;
   }
 
   /**
@@ -314,8 +318,7 @@ export class MenstrualService {
       return null;
     }
 
-    const predictedNextPeriodMs = latest.startDate + stats.avgCycleLength * MS_PER_DAY;
-    const ovulationMs = predictedNextPeriodMs - LUTEAL_PHASE_DAYS * MS_PER_DAY;
+    const ovulationMs = this.predictedOvulationMs(latest, stats);
 
     return {
       start: new Date(ovulationMs - 5 * MS_PER_DAY),

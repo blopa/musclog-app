@@ -1,6 +1,8 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, writer } from '@nozbe/watermelondb/decorators';
 
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
 export interface PeriodLogCreate {
   menstrualCycleId: string;
   startDate: number;
@@ -35,7 +37,6 @@ export default class PeriodLog extends Model {
       return null;
     }
 
-    const MS_PER_DAY = 24 * 60 * 60 * 1000;
     return Math.max(1, Math.round((this.endDate - this.startDate) / MS_PER_DAY) + 1);
   }
 

@@ -153,8 +153,11 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  const logPeriodStart = useCallback(
-    async (data: Omit<PeriodLogCreate, 'menstrualCycleId'>): Promise<PeriodLog | null> => {
+  const createPeriodLog = useCallback(
+    async (
+      data: Omit<PeriodLogCreate, 'menstrualCycleId'>,
+      updateAnchor: boolean
+    ): Promise<PeriodLog | null> => {
       if (!cycle) {
         return null;
       }
@@ -162,10 +165,15 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
       return await PeriodLogRepository.createWithCycleAnchor(
         { ...data, menstrualCycleId: cycle.id },
         cycle,
-        true
+        updateAnchor
       );
     },
     [cycle]
+  );
+
+  const logPeriodStart = useCallback(
+    (data: Omit<PeriodLogCreate, 'menstrualCycleId'>) => createPeriodLog(data, true),
+    [createPeriodLog]
   );
 
   const logPeriodEnd = useCallback(
@@ -181,20 +189,11 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
   );
 
   const addPastPeriod = useCallback(
-    async (data: Omit<PeriodLogCreate, 'menstrualCycleId'>): Promise<PeriodLog | null> => {
-      if (!cycle) {
-        return null;
-      }
-
-      const updateAnchor = !cycle.lastPeriodStartDate || data.startDate > cycle.lastPeriodStartDate;
-
-      return await PeriodLogRepository.createWithCycleAnchor(
-        { ...data, menstrualCycleId: cycle.id },
-        cycle,
-        updateAnchor
-      );
+    (data: Omit<PeriodLogCreate, 'menstrualCycleId'>) => {
+      const updateAnchor = !cycle?.lastPeriodStartDate || data.startDate > cycle.lastPeriodStartDate;
+      return createPeriodLog(data, updateAnchor);
     },
-    [cycle]
+    [createPeriodLog, cycle]
   );
 
   const deactivateTracking = useCallback(async (): Promise<void> => {

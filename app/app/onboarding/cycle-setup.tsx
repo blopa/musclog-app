@@ -81,10 +81,10 @@ export default function CycleSetup() {
 
       // Log the last period start as a period_log entry
       const tz = getCurrentTimezone();
-      const logsToCreate = [];
+      const allCandidates = [];
 
       if (data.lastPeriodStartDate) {
-        logsToCreate.push({
+        allCandidates.push({
           menstrualCycleId: cycle.id,
           startDate: localDayStartMs(data.lastPeriodStartDate),
           endDate: null,
@@ -97,13 +97,24 @@ export default function CycleSetup() {
         (a, b) => a.startDate.getTime() - b.startDate.getTime()
       );
       for (const past of sortedPast) {
-        logsToCreate.push({
+        allCandidates.push({
           menstrualCycleId: cycle.id,
           startDate: localDayStartMs(past.startDate),
           endDate: past.endDate ? localDayStartMs(past.endDate) : null,
           timezone: tz,
         });
       }
+
+      // Deduplicate by startDate so both pickers selecting the same day don't create two logs
+      const seenStartDates = new Set<number>();
+      const logsToCreate = allCandidates.filter((log) => {
+        if (seenStartDates.has(log.startDate)) {
+          return false;
+        }
+
+        seenStartDates.add(log.startDate);
+        return true;
+      });
 
       if (logsToCreate.length > 0) {
         await PeriodLogRepository.createMany(logsToCreate);
