@@ -268,6 +268,8 @@ export default function FoodScreen() {
   // Show skeleton until data is loaded
   const isScreenLoading = isLoading || isResolvingRelations;
 
+  // TODO: there's too much code in the body of this component
+  // move most of it to hooks
   const handleSaveCurrentNutritionGoal = useCallback(
     async (goals: NutritionGoals) => {
       if (!currentNutritionGoal) {
