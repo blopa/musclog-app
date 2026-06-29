@@ -57,7 +57,7 @@ export default class UserMetric extends Model {
   @field('deleted_at') deletedAt?: number;
 
   // Relation to notes
-  @children('user_metrics_notes') declare notes: any[];
+  @children('user_metrics_notes') declare notes: UserMetricsNote[];
 
   @writer
   async markAsDeleted(): Promise<void> {

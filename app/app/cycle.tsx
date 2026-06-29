@@ -21,6 +21,13 @@ import {
   localDayStartMs,
 } from '@/utils/calendarDate';
 
+type DailyMetric = {
+  id: string;
+  type: string;
+  value: number;
+  note: string | undefined;
+};
+
 const getHormoneTrend = (trend?: string) => {
   if (trend === 'rising') {
     return 'up';
@@ -40,7 +47,7 @@ export default function CycleScreen() {
   const { currentPhase, energyLevel, cycleDay, cycle, nextPeriodDate } = useMenstrualCycle();
   const [isLogModalVisible, setIsLogModalVisible] = useState(false);
   const [isSettingsModalVisible, setIsSettingsModalVisible] = useState(false);
-  const [dailyMetrics, setDailyMetrics] = useState<any[]>([]);
+  const [dailyMetrics, setDailyMetrics] = useState<DailyMetric[]>([]);
   const [selectedDate, setSelectedDate] = useState(() => localCalendarDayDate(new Date()));
 
   const insights = currentPhase ? MenstrualService.getInsights(currentPhase) : null;
