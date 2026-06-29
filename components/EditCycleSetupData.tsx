@@ -231,13 +231,13 @@ export function EditCycleSetupData({
                 </TouchableOpacity>
               </View>
             )}
-            <TouchableOpacity onPress={() => setSelectedDate(null)} className="mt-2 self-start">
-              <Text style={{ color: theme.colors.accent.primary }} className="text-sm">
-                {selectedDate != null
-                  ? t('onboarding.cycleSetup.anchor.skipInstead')
-                  : t('onboarding.cycleSetup.anchor.iDontKnow')}
-              </Text>
-            </TouchableOpacity>
+            {selectedDate != null ? (
+              <TouchableOpacity onPress={() => setSelectedDate(null)} className="mt-2 self-start">
+                <Text style={{ color: theme.colors.accent.primary }} className="text-sm">
+                  {t('onboarding.cycleSetup.anchor.skipInstead')}
+                </Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
         ) : null}
 

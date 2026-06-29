@@ -24,10 +24,20 @@ const DEFAULT_PERIOD_DURATION = 5;
 // The follicular phase varies. We anchor predictions on this constant.
 const LUTEAL_PHASE_DAYS = 14;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
+// Cycle is considered irregular when the spread between shortest and longest observed
+// cycle exceeds this threshold (per clinical standards — ACOG definition of irregular cycles).
+const IRREGULAR_SPREAD_THRESHOLD_DAYS = 9;
+// Log count thresholds for prediction confidence levels.
+const MIN_LOGS_MEDIUM_CONFIDENCE = 2;
+const MIN_LOGS_HIGH_CONFIDENCE = 4;
 
 function getPredictionConfidence(logCount: number): PredictionConfidence {
-  if (logCount === 1) return 'low';
-  if (logCount <= 3) return 'medium';
+  if (logCount < MIN_LOGS_MEDIUM_CONFIDENCE) {
+    return 'low';
+  }
+  if (logCount < MIN_LOGS_HIGH_CONFIDENCE) {
+    return 'medium';
+  }
   return 'high';
 }
 
@@ -71,8 +81,7 @@ export class MenstrualService {
     const minCycleLength = cycleLengths.length > 0 ? Math.min(...cycleLengths) : avgCycleLength;
     const maxCycleLength = cycleLengths.length > 0 ? Math.max(...cycleLengths) : avgCycleLength;
 
-    // Cycle is considered irregular when spread > 9 days (per clinical standards)
-    const isIrregular = maxCycleLength - minCycleLength > 9;
+    const isIrregular = maxCycleLength - minCycleLength > IRREGULAR_SPREAD_THRESHOLD_DAYS;
 
     // Period duration: average of logs with known end dates
     const knownDurations = sorted
@@ -170,21 +179,13 @@ export class MenstrualService {
    * Uses luteal-phase anchoring: predicted ovulation = next period start − 14 days.
    * Returns null when there is no logged data at all.
    */
-  static calculateCurrentPhase(
-    periodLogs: PeriodLog[],
-    stats: CycleStats,
-    timezone?: string | null
-  ): MenstrualPhase | null {
+  static calculateCurrentPhase(periodLogs: PeriodLog[], stats: CycleStats): MenstrualPhase | null {
     const latest = this.getLatestPeriodLog(periodLogs);
     if (latest == null) {
       return null;
     }
 
     const now = Date.now();
-    const cycleDay = this.getCycleDay(periodLogs, stats, timezone);
-    if (cycleDay == null) {
-      return null;
-    }
 
     // Menstrual: from period start until the period ends (or avg duration if end unknown)
     const periodEndDate =

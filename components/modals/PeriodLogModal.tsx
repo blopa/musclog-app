@@ -1,5 +1,5 @@
 import { subDays, subWeeks } from 'date-fns';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
@@ -37,6 +37,18 @@ export function PeriodLogModal({
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
+  useEffect(() => {
+    if (!visible) {
+      return;
+    }
+    const reset = async () => {
+      setSelectedDate(localCalendarDayDate(initialDate ?? new Date()));
+      setIsDatePickerVisible(false);
+    };
+    void reset();
+  }, [visible, initialDate]);
+
+  // TODO: no nested ternaries
   const titleKey =
     mode === 'end'
       ? 'cycle.periodLog.endTitle'
@@ -44,6 +56,7 @@ export function PeriodLogModal({
         ? 'cycle.periodLog.pastTitle'
         : 'cycle.periodLog.startTitle';
 
+  // TODO: no nested ternaries
   const descriptionKey =
     mode === 'end'
       ? 'cycle.periodLog.endDescription'

@@ -18,7 +18,6 @@ import { CenteredModal } from './CenteredModal';
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 
-
 type CycleLogModalProps = {
   visible: boolean;
   onClose: () => void;

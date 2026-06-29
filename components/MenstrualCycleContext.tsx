@@ -69,10 +69,12 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
   const [periodLogs, setPeriodLogs] = useState<PeriodLog[]>([]);
   // isStaticExport is a build-time constant — no async loading on static export
   const [isLoading, setIsLoading] = useState(!isStaticExport);
-  const [now, setNow] = useState(Date.now);
+  // Refreshed every minute to trigger re-derivation of time-sensitive values
+  // (isCurrentlyInFertileWindow, currentPhase) without a WatermelonDB subscription event.
+  const [nowMs, setNowMs] = useState(Date.now);
 
   useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 60_000);
+    const id = setInterval(() => setNowMs(Date.now()), 60_000);
     return () => clearInterval(id);
   }, []);
 
@@ -184,8 +186,7 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
         return null;
       }
 
-      const updateAnchor =
-        !cycle.lastPeriodStartDate || data.startDate > cycle.lastPeriodStartDate;
+      const updateAnchor = !cycle.lastPeriodStartDate || data.startDate > cycle.lastPeriodStartDate;
 
       return await PeriodLogRepository.createWithCycleAnchor(
         { ...data, menstrualCycleId: cycle.id },
@@ -204,11 +205,9 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(() => {
     const stats = cycle ? MenstrualService.calculateCycleStats(periodLogs) : null;
-    const activePeriodLog = stats ? MenstrualService.getActivePeriodLog(periodLogs) : null;
+    const activePeriodLog = MenstrualService.getActivePeriodLog(periodLogs);
     const currentPhase =
-      cycle && stats
-        ? MenstrualService.calculateCurrentPhase(periodLogs, stats, cycle.timezone)
-        : null;
+      cycle && stats ? MenstrualService.calculateCurrentPhase(periodLogs, stats) : null;
     const nextPeriodPrediction =
       cycle && stats ? MenstrualService.predictNextPeriod(periodLogs, stats) : null;
     const fertileWindow =
@@ -236,8 +235,8 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
       isCurrentlyInPeriod: activePeriodLog != null,
       isCurrentlyInFertileWindow:
         fertileWindow != null &&
-        now >= fertileWindow.start.getTime() &&
-        now <= fertileWindow.end.getTime(),
+        nowMs >= fertileWindow.start.getTime() &&
+        nowMs <= fertileWindow.end.getTime(),
       isIrregular: stats?.isIrregular ?? false,
       predictionConfidence: stats?.confidence ?? ('none' as const),
       updateCycle,
@@ -249,7 +248,7 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
     };
   }, [
     cycle,
-    now,
+    nowMs,
     periodLogs,
     isLoading,
     updateCycle,

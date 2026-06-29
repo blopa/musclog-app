@@ -48,27 +48,16 @@ export default function CycleSetup() {
   const [currentFormData, setCurrentFormData] = useState<Partial<CycleSetupData>>({});
   const [pastPeriods, setPastPeriods] = useState<PastPeriod[]>([]);
   const [isSaving, setIsSaving] = useState(false);
-  const [addingPastPeriodIndex, setAddingPastPeriodIndex] = useState<number | null>(null);
   const [isPastPeriodPickerVisible, setIsPastPeriodPickerVisible] = useState(false);
 
   const handleAddPastPeriod = () => {
-    const newIndex = pastPeriods.length;
-    setAddingPastPeriodIndex(newIndex);
     setIsPastPeriodPickerVisible(true);
   };
 
   const handlePastPeriodDateSelect = (date: Date) => {
     const localDate = localCalendarDayDate(date);
-    if (addingPastPeriodIndex === pastPeriods.length) {
-      setPastPeriods((prev) => [...prev, { startDate: localDate, endDate: null }]);
-    } else if (addingPastPeriodIndex != null) {
-      setPastPeriods((prev) =>
-        prev.map((p, i) => (i === addingPastPeriodIndex ? { ...p, startDate: localDate } : p))
-      );
-    }
-
+    setPastPeriods((prev) => [...prev, { startDate: localDate, endDate: null }]);
     setIsPastPeriodPickerVisible(false);
-    setAddingPastPeriodIndex(null);
   };
 
   const handleRemovePastPeriod = (index: number) => {
@@ -208,10 +197,7 @@ export default function CycleSetup() {
 
       <DatePickerModal
         visible={isPastPeriodPickerVisible}
-        onClose={() => {
-          setIsPastPeriodPickerVisible(false);
-          setAddingPastPeriodIndex(null);
-        }}
+        onClose={() => setIsPastPeriodPickerVisible(false)}
         selectedDate={new Date()}
         onDateSelect={handlePastPeriodDateSelect}
         maxYear={getLocalCalendarYear(new Date())}

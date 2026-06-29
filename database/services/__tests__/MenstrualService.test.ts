@@ -68,7 +68,9 @@ describe('MenstrualService', () => {
     });
 
     it('should return null when no logs exist', () => {
-      expect(MenstrualService.calculateCurrentPhase([], MenstrualService.calculateCycleStats([]))).toBeNull();
+      expect(
+        MenstrualService.calculateCurrentPhase([], MenstrualService.calculateCycleStats([]))
+      ).toBeNull();
     });
   });
 
@@ -98,7 +100,9 @@ describe('MenstrualService', () => {
     });
 
     it('should return confidence low for a single log', () => {
-      expect(MenstrualService.calculateCycleStats([makePeriodLog(periodStart)]).confidence).toBe('low');
+      expect(MenstrualService.calculateCycleStats([makePeriodLog(periodStart)]).confidence).toBe(
+        'low'
+      );
     });
   });
 });

@@ -1,4 +1,3 @@
-import { Q } from '@nozbe/watermelondb';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { focusManager } from '@tanstack/react-query';
 import { useSegments } from 'expo-router';
@@ -12,10 +11,9 @@ import {
   CONFETTI_INTERACTIONS_KEY,
   ConfettiActivity,
 } from '@/context/ConfettiInteractionsContext';
-import { database } from '@/database';
 import { runDatabaseBootSequence, stopDatabaseBootProgress } from '@/database/dbBootCoordinator';
 import { waitForDbReady } from '@/database/dbReady';
-import MenstrualCycle from '@/database/models/MenstrualCycle';
+import { MenstrualCycleRepository } from '@/database/repositories/MenstrualCycleRepository';
 import { PeriodLogRepository } from '@/database/repositories/PeriodLogRepository';
 import {
   ExerciseGoalService,
@@ -255,10 +253,7 @@ export function AppBoot() {
 
         await waitForDbReady();
 
-        const cycles = await database
-          .get<MenstrualCycle>('menstrual_cycles')
-          .query(Q.where('deleted_at', Q.eq(null)))
-          .fetch();
+        const cycles = await MenstrualCycleRepository.getAll().fetch();
 
         const logsToCreate = (
           await Promise.all(

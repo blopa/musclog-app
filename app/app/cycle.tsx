@@ -20,11 +20,7 @@ import { CycleSettingsModal } from '@/components/modals/CycleSettingsModal';
 import { PeriodLogModal } from '@/components/modals/PeriodLogModal';
 import { PhaseWheel } from '@/components/PhaseWheel';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
-import {
-  CONFIDENCE_LABEL_KEYS,
-  FLOW_LEVEL_KEYS,
-  LIFE_STAGE_WARNING_KEYS,
-} from '@/constants/cycle';
+import { CONFIDENCE_LABEL_KEYS, FLOW_LEVEL_KEYS, LIFE_STAGE_WARNING_KEYS } from '@/constants/cycle';
 import { UserMetricService } from '@/database/services';
 import { MenstrualService } from '@/database/services/MenstrualService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -165,7 +161,6 @@ export default function CycleScreen() {
     isIrregular && nextPeriodEarliest && nextPeriodLatest
       ? `${formatDate(nextPeriodEarliest)} – ${formatDate(nextPeriodLatest)}`
       : formatDate(nextPeriodDate);
-
 
   return (
     <MasterLayout>
