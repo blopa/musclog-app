@@ -1,6 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import convert from 'convert';
-import { Dumbbell, User } from 'lucide-react-native';
+import { Dumbbell, type LucideIcon, User } from 'lucide-react-native';
+import type { ComponentType } from 'react';
 
 import type { RawWorkoutTemplate } from '@/components/modals/BrowseTemplatesModal';
 import { DEFAULT_WORKOUT_TYPE } from '@/constants/workoutTypes';
@@ -37,7 +38,7 @@ import { UserService } from './UserService';
 export type ExerciseInWorkout = Pick<Exercise, 'id'> & {
   label: string;
   description: string;
-  icon: any;
+  icon: LucideIcon | ComponentType<{ size: number; color: string }>;
   iconBgColor: string;
   iconColor: string;
   groupId?: string;

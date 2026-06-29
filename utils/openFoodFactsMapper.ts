@@ -251,8 +251,12 @@ function v3NutrientValue(n: unknown): number {
 }
 
 /** Get flat nutriments from OFF v3 product.nutrition (aggregated_set or first input_set). */
-export function getNutrimentsFromV3Nutrition(product: any): Record<string, number> | null {
-  const set = product?.nutrition?.aggregated_set ?? product?.nutrition?.input_sets?.[0];
+export function getNutrimentsFromV3Nutrition(
+  product: OpenFoodFactsNutritionProduct
+): Record<string, number> | null {
+  const nutrition =
+    product?.nutrition && typeof product.nutrition === 'object' ? product.nutrition : undefined;
+  const set = nutrition?.aggregated_set ?? nutrition?.input_sets?.[0];
   if (!set) {
     return null;
   }
@@ -293,7 +297,10 @@ export function getNutrimentsFromV3Nutrition(product: any): Record<string, numbe
 }
 
 // Helper function to extract nutriment value with fallback hierarchy (exported for use in modals)
-export function getNutrimentValue(nutriments: any, baseName: string): number | undefined {
+export function getNutrimentValue(
+  nutriments: Record<string, unknown>,
+  baseName: string
+): number | undefined {
   // Priority order: _100g > _serving > base name > _value
   const value100g = nutriments[`${baseName}_100g`];
   const valueServing = nutriments[`${baseName}_serving`];
@@ -318,7 +325,7 @@ export function getNutrimentValue(nutriments: any, baseName: string): number | u
  * `carbohydrates-total − carbohydrates` (OFF's `carbohydrates` is the net value when a separate
  * total is present). Always non-negative; falls back to 0 when neither path is available.
  */
-export function resolveOpenFoodFactsFiberPer100g(nutriments: any): number {
+export function resolveOpenFoodFactsFiberPer100g(nutriments: Record<string, unknown>): number {
   const directFiber = getNutrimentValue(nutriments, 'fiber');
   if (directFiber !== undefined) {
     return Math.max(0, directFiber);

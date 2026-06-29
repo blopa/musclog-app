@@ -45,7 +45,7 @@ export class NotificationService {
       await Notifications.setNotificationChannelAsync('workout-active', {
         name: i18n.t('notifications.channels.activeWorkout'),
         importance: Notifications.AndroidImportance.LOW, // Low importance for persistent notification to avoid annoying sound/popup on every update
-        lockscreenVisibility: (Notifications as any).AndroidVisibility?.PUBLIC,
+        lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
       });
     }
 
@@ -75,7 +75,7 @@ export class NotificationService {
     title: string,
     body: string,
     trigger: Notifications.NotificationTriggerInput,
-    data: Record<string, any> = {},
+    data: Record<string, unknown> = {},
     channelId: string = 'default'
   ) {
     if (Platform.OS === 'web') {
@@ -176,7 +176,7 @@ export class NotificationService {
   static async testNotification(
     title: string,
     body: string,
-    data: Record<string, any> = {},
+    data: Record<string, unknown> = {},
     channelId: string = 'default'
   ) {
     if (Platform.OS === 'web') {

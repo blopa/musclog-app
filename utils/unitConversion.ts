@@ -218,24 +218,25 @@ export function storedHeightToCm(value: number, storedUnit?: string | null): num
  * // Result: { targetWeight: 81.6, height: 182.88 }
  * ```
  */
-export function prepareMetricDataToSave<T extends Record<string, any>>(
+export function prepareMetricDataToSave<T extends Record<string, unknown>>(
   data: T,
   fields: { key: keyof T; type: 'weight' | 'length' | 'mass' }[],
   units: Units
 ): T {
   const result = { ...data };
+  const mutableResult = result as Record<keyof T, unknown>;
   for (const { key, type } of fields) {
     const value = result[key];
     if (typeof value === 'number') {
       switch (type) {
         case 'weight':
-          (result as any)[key] = displayToKg(value, units);
+          mutableResult[key] = displayToKg(value, units);
           break;
         case 'length':
-          (result as any)[key] = displayToCm(value, units);
+          mutableResult[key] = displayToCm(value, units);
           break;
         case 'mass':
-          (result as any)[key] = displayToGrams(value, units);
+          mutableResult[key] = displayToGrams(value, units);
           break;
       }
     }
@@ -262,24 +263,25 @@ export function prepareMetricDataToSave<T extends Record<string, any>>(
  * // Result: { weight: 165.3 }
  * ```
  */
-export function prepareMetricDataToDisplay<T extends Record<string, any>>(
+export function prepareMetricDataToDisplay<T extends Record<string, unknown>>(
   data: T,
   fields: { key: keyof T; type: 'weight' | 'length' | 'mass' }[],
   units: Units
 ): T {
   const result = { ...data };
+  const mutableResult = result as Record<keyof T, unknown>;
   for (const { key, type } of fields) {
     const value = result[key];
     if (typeof value === 'number') {
       switch (type) {
         case 'weight':
-          (result as any)[key] = kgToDisplay(value, units);
+          mutableResult[key] = kgToDisplay(value, units);
           break;
         case 'length':
-          (result as any)[key] = cmToDisplay(value, units);
+          mutableResult[key] = cmToDisplay(value, units);
           break;
         case 'mass':
-          (result as any)[key] = gramsToDisplay(value, units);
+          mutableResult[key] = gramsToDisplay(value, units);
           break;
       }
     }

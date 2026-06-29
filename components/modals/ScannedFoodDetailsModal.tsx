@@ -264,7 +264,7 @@ export function ScannedFoodDetailsModal({
     const product = effectiveProductDetails.product;
     return (
       product.no_nutrition_data === 'on' ||
-      product.no_nutrition_data === 1 ||
+      product.no_nutrition_data === '1' ||
       !product.nutriments ||
       Object.keys(product.nutriments).length === 0
     );

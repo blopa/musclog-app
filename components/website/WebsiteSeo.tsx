@@ -75,9 +75,13 @@ function routeKeyForPathname(pathname: string | null | undefined): WebsiteSeoRou
   return ROUTE_KEY_BY_PATH[normalizePathname(pathname)] ?? null;
 }
 
-export function WebsiteSeoForCurrentRoute() {
+export function WebsiteSeoForCurrentRoute({
+  fallbackRouteKey,
+}: {
+  fallbackRouteKey?: WebsiteSeoRouteKey;
+}) {
   const pathname = usePathname();
-  const routeKey = routeKeyForPathname(pathname);
+  const routeKey = routeKeyForPathname(pathname) ?? fallbackRouteKey ?? null;
 
   return routeKey == null ? null : <WebsiteSeo routeKey={routeKey} />;
 }

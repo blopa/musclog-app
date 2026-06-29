@@ -57,7 +57,8 @@ export async function sendOnDeviceStructured<T>(
     model: apple(),
     system: systemPrompt,
     messages: messages.map((m) => ({ role: m.role, content: m.content })),
-    experimental_output: Output.object({ schema: jsonSchema(schema) }),
+    output: Output.object({ schema: jsonSchema(schema) }),
   });
-  return (result.experimental_output as T) ?? null;
+
+  return (result.output as T) ?? null;
 }
