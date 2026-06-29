@@ -1,4 +1,3 @@
-import Head from 'expo-router/head';
 import type { MouseEvent, PointerEvent, ReactNode } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +5,12 @@ import type { WasmBoyJoypadState } from 'wasmboy';
 
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
 import { isProduction } from '@/utils/app';
-import { readAndDecodeGameBoySaves, seedGameBoyTodayDate } from '@/utils/decodeGameBoySave';
+import {
+  readAndDecodeGameBoySaves,
+  seedGameBoyDemoData,
+  seedGameBoyTodayDate,
+} from '@/utils/decodeGameBoySave';
+import { shouldSeedDevData } from '@/utils/file';
 
 const GB_SCREEN_WIDTH = 160;
 const GB_SCREEN_HEIGHT = 144;
@@ -40,6 +44,13 @@ const ROM_URL = withExpoBaseUrl('/images/musclog.gbc');
 type JoypadButton = keyof WasmBoyJoypadState;
 
 const JOYPAD_BUTTONS: JoypadButton[] = ['UP', 'RIGHT', 'DOWN', 'LEFT', 'A', 'B', 'SELECT', 'START'];
+
+const DPAD_GLYPHS: Record<'UP' | 'RIGHT' | 'DOWN' | 'LEFT', string> = {
+  UP: '^',
+  RIGHT: '>',
+  DOWN: 'v',
+  LEFT: '<',
+};
 
 // Keyboard mapping for desktop play (lower-cased key -> joypad button).
 const KEY_MAP: Record<string, JoypadButton> = {
@@ -168,18 +179,19 @@ export default function GameBoy() {
       }
       const rom = new Uint8Array(await response.arrayBuffer());
 
-      // Hand the ROM today's real date before it boots: the Game Boy has no wall
-      // clock, so for a not-yet-onboarded save we seed today's date into the
-      // cartridge SRAM (creating the save if none exists). loadROM() then
-      // restores it and onboarding pre-fills its date picker. Best-effort: a
-      // failure here must never block play.
+      // Hand the ROM save data before it boots. Normal mode only seeds today's
+      // date for not-yet-onboarded saves; demo mode force-writes a deterministic
+      // fully onboarded SRAM image with recent nutrition/bodyweight/workout data.
+      // Best-effort: a failure here must never block play.
       try {
-        const seedResult = await seedGameBoyTodayDate(rom);
+        const seedResult = shouldSeedDevData()
+          ? await seedGameBoyDemoData(rom)
+          : await seedGameBoyTodayDate(rom);
         if (!isProduction()) {
-          console.log('[gameboy] seed today date:', seedResult);
+          console.log('[gameboy] seeded save:', seedResult);
         }
       } catch (error) {
-        console.error('[gameboy] failed to seed today date', error);
+        console.error('[gameboy] failed to seed save', error);
       }
 
       await WasmBoy.loadROM(rom);
@@ -306,11 +318,35 @@ export default function GameBoy() {
     };
   }, []);
 
+  let screenOverlay: ReactNode = (
+    <button
+      type="button"
+      onClick={start}
+      className="rounded-full bg-[#00FFA3] px-8 py-3 text-base font-bold text-black shadow-lg transition-transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-[#00FFA3] focus:ring-offset-2 focus:ring-offset-black"
+    >
+      {t('playButton')}
+    </button>
+  );
+
+  if (status === 'loading') {
+    screenOverlay = <p className="text-sm font-medium text-gray-300">{t('loading')}</p>;
+  } else if (status === 'error') {
+    screenOverlay = (
+      <>
+        <p className="text-sm font-medium text-red-400">{t('errorLoad')}</p>
+        <button
+          type="button"
+          onClick={start}
+          className="rounded-full bg-[#00FFA3] px-6 py-2 text-sm font-bold text-black transition-transform hover:-translate-y-0.5"
+        >
+          {t('playButton')}
+        </button>
+      </>
+    );
+  }
+
   return (
     <>
-      <Head>
-        <title>{t('pageTitle')}</title>
-      </Head>
       <main className="relative flex min-h-[calc(100vh-8rem)] flex-col items-center overflow-hidden px-4 py-16">
         <DotPattern className="text-primary/30" />
         <div className="from-background/60 to-background/80 absolute inset-0 bg-gradient-to-b via-transparent" />
@@ -336,28 +372,7 @@ export default function GameBoy() {
 
               {status !== 'playing' ? (
                 <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-black/80 backdrop-blur-sm">
-                  {status === 'loading' ? (
-                    <p className="text-sm font-medium text-gray-300">{t('loading')}</p>
-                  ) : status === 'error' ? (
-                    <>
-                      <p className="text-sm font-medium text-red-400">{t('errorLoad')}</p>
-                      <button
-                        type="button"
-                        onClick={start}
-                        className="rounded-full bg-[#00FFA3] px-6 py-2 text-sm font-bold text-black transition-transform hover:-translate-y-0.5"
-                      >
-                        {t('playButton')}
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={start}
-                      className="rounded-full bg-[#00FFA3] px-8 py-3 text-base font-bold text-black shadow-lg transition-transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-[#00FFA3] focus:ring-offset-2 focus:ring-offset-black"
-                    >
-                      {t('playButton')}
-                    </button>
-                  )}
+                  {screenOverlay}
                 </div>
               ) : null}
             </div>
@@ -402,7 +417,7 @@ function TouchControls({ onPress, disabled, t }: TouchControlsProps) {
           disabled={disabled}
           className="left-12 top-0 h-12 w-12 rounded-t-lg"
         >
-          ▲
+          {DPAD_GLYPHS.UP}
         </PadButton>
         <PadButton
           button="LEFT"
@@ -411,7 +426,7 @@ function TouchControls({ onPress, disabled, t }: TouchControlsProps) {
           disabled={disabled}
           className="left-0 top-12 h-12 w-12 rounded-l-lg"
         >
-          ◀
+          {DPAD_GLYPHS.LEFT}
         </PadButton>
         <PadButton
           button="RIGHT"
@@ -420,7 +435,7 @@ function TouchControls({ onPress, disabled, t }: TouchControlsProps) {
           disabled={disabled}
           className="left-24 top-12 h-12 w-12 rounded-r-lg"
         >
-          ▶
+          {DPAD_GLYPHS.RIGHT}
         </PadButton>
         <PadButton
           button="DOWN"
@@ -429,7 +444,7 @@ function TouchControls({ onPress, disabled, t }: TouchControlsProps) {
           disabled={disabled}
           className="left-12 top-24 h-12 w-12 rounded-b-lg"
         >
-          ▼
+          {DPAD_GLYPHS.DOWN}
         </PadButton>
       </div>
 

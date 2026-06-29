@@ -19,13 +19,14 @@
 // The generated files are committed so the ROM build does not depend on the app
 // seed JSON. Re-run with `npm run gb:gen-exercises` if the dataset changes.
 
-import { readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const repoRoot = join(fileURLToPath(import.meta.url), '..', '..', '..');
 const dataDir = join(repoRoot, 'data');
-const outDir = join(repoRoot, 'gameboy', 'src');
+const outDir = join(repoRoot, 'gameboy', 'src', 'generated');
+mkdirSync(outDir, { recursive: true });
 
 const SOURCE_FILE = 'exercisesData.json';
 const EXERCISES_BANK = 6;

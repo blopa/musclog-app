@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'expo-router/head';
 import { BarChart3, ChevronDown, Zap } from 'lucide-react-native';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -238,9 +237,6 @@ export default function Calculator() {
 
   return (
     <>
-      <Head>
-        <title>{t('pageTitle')}</title>
-      </Head>
       <main className="relative overflow-hidden pb-20 pt-28">
         <GridPattern className="text-primary/50" />
         <FloatingShapes />

@@ -1,4 +1,3 @@
-import Head from 'expo-router/head';
 import savitzkyGolay from 'ml-savitzky-golay';
 import type { ChangeEvent, DragEvent } from 'react';
 import { useCallback, useMemo, useRef, useState } from 'react';
@@ -386,10 +385,6 @@ export default function Test() {
 
   return (
     <>
-      <Head>
-        <title>Debug chart uploader</title>
-      </Head>
-
       <main className="relative min-h-screen overflow-hidden bg-[#06110b] px-4 py-8 text-white">
         <DotPattern className="text-emerald-400/10" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.22),transparent_42%),radial-gradient(circle_at_bottom_right,rgba(245,158,11,0.08),transparent_30%)]" />

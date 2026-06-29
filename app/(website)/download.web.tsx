@@ -1,4 +1,3 @@
-import Head from 'expo-router/head';
 import { useTranslation } from 'react-i18next';
 
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
@@ -50,9 +49,6 @@ export default function Download() {
 
   return (
     <>
-      <Head>
-        <title>{t('pageTitle')}</title>
-      </Head>
       <main className="relative flex min-h-[calc(100vh-8rem)] items-center justify-center overflow-hidden px-4 py-20">
         <DotPattern className="text-primary/30" />
         <div className="from-background/60 to-background/80 absolute inset-0 bg-gradient-to-b via-transparent" />

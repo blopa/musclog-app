@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'expo-router/head';
 import {
   Download,
   FileJson,
@@ -748,9 +747,6 @@ export default function RepMarkerPage() {
 
   return (
     <>
-      <Head>
-        <title>{t('title')} | Musclog</title>
-      </Head>
       <main className="relative min-h-screen overflow-hidden pb-20 pt-28">
         <GridPattern className="opacity-30" />
         <div

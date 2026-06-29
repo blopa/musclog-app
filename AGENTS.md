@@ -24,6 +24,10 @@
 - `npm run build-android`: Production build for Android via EAS
 - `npm run playwright`: Run Playwright E2E tests (Web)
 - `npm run gb:build`: Build the Game Boy Color ROM
+- `npm run gb:lint`: Run `clang-tidy` on the Game Boy C sources
+- `npm run gb:lint-fix`: Run `clang-tidy --fix` to auto-fix findings in the Game Boy C sources
+- `npm run gb:format`: Format the Game Boy C sources with `clang-format`
+- `npm run gb:format-check`: Check formatting without modifying files (exits 1 on violations)
 - `npm run gb:copy-rom`: Copy the built Game Boy Color ROM into assets
 - `npm run gb:gen-foods`: Regenerate Game Boy food C tables
 - `npm run gb:gen-exercises`: Regenerate Game Boy exercise C table
@@ -45,6 +49,7 @@ This repository serves two distinct purposes that share the same Expo Router pro
 
 - Files ending in `.web.tsx` inside `app/(website)/` are the web-specific implementations (e.g. `home.web.tsx`). Their non-web counterparts (e.g. `home.tsx`) exist as native stubs or redirects.
 - Website components live in `components/website/` (e.g. `StoreButtons`, `WebsiteBackgrounds`, `WebsiteChrome`).
+- Website SEO is mounted once by `app/(website)/_layout.web.tsx` via `components/website/WebsiteSeo.tsx`. When adding a public website route, add its path/key/metadata there so social previews, search descriptions, canonical URLs, and `assets/seo-image.png` / `/images/seo-image.png` stay consistent across public routes.
 - The website uses standard HTML elements (`<div>`, `<section>`, `<a>`) and Tailwind/NativeWind utility classes — **not** React Native primitives.
 - When working on website files, treat them as a standard React web app, not a React Native app.
 - Website layout is in `app/(website)/_layout.web.tsx`; it wraps pages with the nav/footer chrome.

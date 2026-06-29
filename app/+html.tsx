@@ -143,9 +143,11 @@ export default function Root({ children }: PropsWithChildren) {
   return (
     <html lang="en">
       <head>
-        <title data-landing-i18n="title">Musclog Web Demo</title>
+        <title data-landing-i18n="title">Musclog - Lift, Log, Repeat</title>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="application-name" content="Musclog" />
+        <meta name="theme-color" content="#0c1a13" />
         {/*
             viewport-fit=cover is required so the browser exposes
             env(safe-area-inset-*) CSS variables. Without it, the

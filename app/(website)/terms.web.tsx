@@ -1,4 +1,3 @@
-import Head from 'expo-router/head';
 import { AlertTriangle, FileText, Mail, Scale } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
@@ -147,9 +146,6 @@ export default function Terms() {
 
   return (
     <>
-      <Head>
-        <title>{t('pageTitle')}</title>
-      </Head>
       <main className="relative overflow-hidden pb-20 pt-24">
         <DotPattern className="text-primary/30" />
         <div className="from-background/50 to-background/50 absolute inset-0 bg-gradient-to-b via-transparent" />

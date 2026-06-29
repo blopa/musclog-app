@@ -1,5 +1,60 @@
 {
   "website": {
+    "seo": {
+      "siteName": "Musclog",
+      "imageAlt": "Voorvertoning van Musclog met private fitness-, voedings- en voortgangstracking.",
+      "keywords": "Musclog, fitness tracker, workout tracker, voeding tracker, macro tracker, open source fitness app, local-first app",
+      "routes": {
+        "home": {
+          "title": "Musclog - Lift, Log, Repeat",
+          "description": "Een gratis, open-source en local-first fitness- en voedingstracker met workouts, AI-maaltijden, voortgangsanalyses en private data op je apparaat."
+        },
+        "download": {
+          "title": "Musclog downloaden",
+          "description": "Download Musclog voor Android of doe mee met de iOS TestFlight en track workouts, voeding en voortgang met je data prive op je apparaat."
+        },
+        "exercises": {
+          "title": "Musclog oefenbibliotheek",
+          "description": "Blader door de oefenbibliotheek van Musclog met spiergroepen, materiaal, bewegingstype, instructies en visuals om betere workouts te bouwen."
+        },
+        "gameboy": {
+          "title": "Speel Musclog op Game Boy",
+          "description": "Speel de kleine Game Boy Color-versie van Musclog in je browser en download de ROM voor een fitnessknipoog op zakformaat."
+        },
+        "progress": {
+          "title": "Musclog voortgang importeren",
+          "description": "Importeer lokaal een Musclog JSON-export in je browser en bekijk gewicht, voeding, workouts, stemming en metingen op een desktopdashboard."
+        },
+        "repMarker": {
+          "title": "Rep Marker-tool | Musclog",
+          "description": "Upload rep-opnames, markeer intervallen, bekijk bewegingsgrafieken en exporteer gelabelde trainingsdata voor de rep-counting tools van Musclog."
+        },
+        "calculator": {
+          "title": "Fitness- en macrocalculator | Musclog",
+          "description": "Schat calorieen, macro's, BMI, FFMI en doelen met de fitnesscalculator van Musclog en gebruik het plan daarna in de app."
+        },
+        "faq": {
+          "title": "Musclog FAQ",
+          "description": "Vind antwoorden over Musclogs privacymodel, voedingsberekeningen, workouttracking, AI-functies en open-source fitnessmethodologie."
+        },
+        "contact": {
+          "title": "Contact met Musclog",
+          "description": "Neem contact op met Musclog voor support, vragen, bugreports of open-source samenwerking rond private fitness- en voedingstracking."
+        },
+        "privacy": {
+          "title": "Privacybeleid van Musclog",
+          "description": "Lees hoe Musclog appdata, website-analytics, optionele AI-providers, local-first opslag, encryptie, permissies en privacykeuzes behandelt."
+        },
+        "terms": {
+          "title": "Algemene voorwaarden van Musclog",
+          "description": "Bekijk de voorwaarden voor het gebruik van Musclog, inclusief servicebereik, aansprakelijkheid, garanties, toepasselijk recht en contactgegevens."
+        },
+        "test": {
+          "title": "Debug grafiekuploader | Musclog",
+          "description": "Een noindex ontwikkelroute om repgrafiekdata te uploaden en bekijken tijdens het bouwen van Musclogs opnamehulpmiddelen."
+        }
+      }
+    },
     "landing": {
       "title": "Musclog Web Demo",
       "cta": "Probeer het nu",

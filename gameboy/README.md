@@ -25,6 +25,17 @@ battery so dates and logs can survive emulator or flash-cart restarts.
 
 ## Player Features
 
+- A title screen (full-screen art) shown after the splash, with `NEW GAME` and —
+  once a completed save exists — `CONTINUE`. `CONTINUE` resumes the saved profile;
+  `NEW GAME` over an existing save asks for confirmation, then erases all data and
+  restarts onboarding. A third `OPTIONS` entry opens a panel (floating over the
+  title art) to toggle sound effects and the soundtrack independently.
+- Sound: a short blip plays on every selection/confirm/back press across the whole
+  app, and a soundtrack plays on every screen after the splash while it remains
+  enabled. The Game Boy cannot play
+  MIDI, so both bundled `.mid` files are reduced at build time to the four hardware
+  channels — SFX on pulse 1, and the soundtrack as pulse-lead + wave-bass + noise-
+  drums. The SFX/soundtrack on/off choices persist in battery-backed SRAM.
 - First-run onboarding for unit system, biological sex, activity level, age,
   height, weight, lifting experience, fitness focus, and weight goal.
 - Macro goals are generated from the profile, then can be reviewed and edited
@@ -82,8 +93,9 @@ npm run gb:build
 The build script:
 
 1. Downloads GBDK-2020 into `gameboy/.gbdk/` if `lcc` is missing.
-2. Converts `gameboy/assets/logo.png` into generated GBDK asset sources.
-3. Compiles every `gameboy/src/*.c` file.
+2. Converts `gameboy/assets/logo.png` and `gameboy/assets/gb_background.png` into
+   generated GBDK asset sources.
+3. Compiles every `gameboy/src/**/*.c` file.
 4. Writes `gameboy/build/musclog.gbc`.
 5. Checks `gameboy/build/musclog.map` for ROM bank overflows.
 
@@ -103,23 +115,46 @@ To publish a freshly built ROM into the web app's in-browser emulator asset:
 npm run gb:copy-rom
 ```
 
-That copies `gameboy/build/musclog.gbc` to `assets/musclog.gbc`, which is served
-by the website Game Boy page through WasmBoy.
+That copies `gameboy/build/musclog.gbc` to both `assets/musclog.gbc` and
+`public/images/musclog.gbc`. The website Game Boy page fetches the latter through
+WasmBoy.
 
 ## Tooling Commands
 
 ```sh
 npm run gb:setup         # Fetch GBDK-2020 only
+npm run gb:lint          # Run clang-tidy on gameboy/src recursively
 npm run gb:prepare-logo  # Regenerate gameboy/assets/logo.png from the app icon
+npm run gb:prepare-bg    # Regenerate gameboy/assets/gb_background.png (4-color title art)
 npm run gb:gen-foods     # Regenerate ROM food tables from data/*.json
 npm run gb:gen-exercises # Regenerate the ROM exercise table from data/exercisesData.json
+npm run gb:gen-music     # Reduce assets/*.mid to APU data (src/generated/music_data.{c,h})
 npm run gb:build         # Build the .gbc ROM
-npm run gb:copy-rom      # Copy the ROM into assets/ for the website emulator
+npm run gb:copy-rom      # Copy the ROM into app + website emulator assets
 ```
 
-The generated food and exercise C files are committed so normal ROM builds do
-not depend on the JSON seed data. Regenerate them only when the source datasets
-change.
+The generated food, exercise, and music C files are committed so normal ROM
+builds do not depend on the JSON seed data or the `.mid` assets. Regenerate them
+only when the source datasets or MIDI files change. `gb:gen-music` prints the
+loop it found (or reports that it fell back to looping the whole song). The music
+converter is split under `gameboy/tools/music/`; run
+`node --test gameboy/tools/music/*.test.mjs` after changing its parser or
+arrangement code.
+
+`npm run gb:lint` runs `clang-tidy` over `gameboy/src` recursively using the
+stub GBDK headers in `gameboy/tools/lint-stubs`. Install `clang-tidy` on your
+machine first; extra flags can be forwarded with `npm run gb:lint -- ...`.
+
+## Asset Credits
+
+- The title-screen soundtrack MIDI comes from the
+  [Ultimate MIDI Pack](https://opengameart.org/content/ultimate-midi-pack) on
+  OpenGameArt.
+- The title background art is based on
+  [Mountain at Dusk Background](https://opengameart.org/content/mountain-at-dusk-background)
+  on OpenGameArt.
+- The icons used on the Game Boy label were acquired from
+  [UXWing](https://uxwing.com/).
 
 ## Source Layout
 
@@ -127,43 +162,70 @@ change.
 gameboy/
   assets/       Source bitmap assets used by the ROM build
   screenshots/  160x144 captures used in this README and website material
-  src/          GBDK C source code
+  src/
+    app/        Boot flow and top-level screens
+    audio/      APU driver and interrupt glue
+    data/       SRAM/RTC/storage logic and shared data math
+    features/   Nutrition and workout feature flows
+    generated/  Build-generated assets and committed ROM tables
+    shared/     Cross-cutting utility headers
+    ui/         Text UI/input helpers and copy strings
   tools/        Node scripts for toolchain setup, data generation, and builds
+  tools/music/  MIDI parser, arrangement reducer, C emitter, and node:test coverage
   build/        Generated ROM, map, and capture artifacts (gitignored)
   .gbdk/        Downloaded GBDK-2020 toolchain (gitignored)
 ```
 
 Important source modules:
 
-- `src/main.c` boots the splash screen, loads or creates save data, initializes
-  stores, and runs the home loop.
-- `src/ui_text.c` owns the 20x18 text UI renderer, palettes, menus, value
-  screens, confirmations, bars, and date/datetime pickers.
-- `src/profile.c` stores the packed profile and macro targets in SRAM bank 0.
-- `src/rtc.c` reads and writes the MBC3 RTC and provides calendar helpers.
-- `src/home_screen.c` renders the macro dashboard and top-level navigation.
-- `src/progress.c` aggregates the food log, workout log, and weight metrics over
+- `src/app/main.c` boots the splash screen, loads save data, runs the start screen,
+  owns the New Game / Continue lifecycle decisions (including data erase and
+  onboarding), initializes stores, and runs the home loop.
+- `src/app/start_screen.c` draws the title art (`gb_background`) with the New Game /
+  Continue / Options menu, the erase confirmation, and the SFX/soundtrack Options
+  panel, then returns the selected action to `main.c`. It shares ROM bank 8 with
+  its art so the data is read directly.
+- `src/audio/audio.c` is the APU driver (SFX blip, global soundtrack sequencer, and the
+  persisted enable flags); `src/generated/music_data.c` is the generated APU data.
+  Both live in ROM bank 9. `src/audio/audio_vbl.c` (HOME bank) holds the VBL interrupt handler
+  that silences stalled music channels during screen transitions and heavy tile
+  loading — it watches a stall counter reset by `audio_music_update()` each frame,
+  and kills channels 2/3/4 after 2 frames without a sequencer tick.
+- `src/ui/ui_text.c` owns the 20x18 text UI renderer, palettes, menus, value
+  screens, confirmations, bars, date/datetime pickers, and the explicit UI input
+  wrapper that advances the soundtrack and plays the SFX blip after fresh button
+  presses.
+- `src/data/profile.c` stores the packed profile and macro targets in SRAM bank 0;
+  `src/data/sram_layout.h` names shared bank-0 subregions so profile, metrics, RTC seed
+  hints, and audio settings cannot drift into each other.
+- `src/app/game_data.c` owns the full gameplay-data erase sequence used by both Reset
+  Data and title-screen New Game. Audio settings intentionally survive that erase.
+- `src/data/rtc.c` reads and writes the MBC3 RTC and provides calendar helpers.
+- `src/app/home_screen.c` renders the macro dashboard and top-level navigation.
+- `src/app/progress.c` aggregates the food log, workout log, and weight metrics over
   a rolling window and renders the paged progress charts.
-- `src/onboarding.c` collects profile details and macro-goal review/editing.
-- `src/nutrition.c`, `src/nutrition_search.c`, and `src/nutrition_detail.c`
+- `src/app/onboarding.c` collects profile details and macro-goal review/editing.
+- `src/features/nutrition/nutrition.c`, `src/features/nutrition/nutrition_search.c`, and
+  `src/features/nutrition/nutrition_detail.c`
   implement the food diary, search, serving picker, detail, and delete flows.
-- `src/food_db.c` reads bundled ROM food tables and custom foods behind one
+- `src/data/food_db.c` reads bundled ROM food tables and custom foods behind one
   global food index space.
-- `src/custom_foods.c` persists user-created foods in SRAM bank 3.
-- `src/body_weight.c` and `src/metrics.c` implement dated weigh-ins and the
+- `src/data/custom_foods.c` persists user-created foods in SRAM bank 3.
+- `src/data/body_weight.c` and `src/data/metrics.c` implement dated weigh-ins and the
   body-weight trend chart.
-- `src/workouts.c`, `src/workout_session.c`, `src/workoutlog.c`, and
-  `src/exercise_db.c` implement free sessions, exercise lookup, recommendations,
+- `src/features/workouts/workouts.c`, `src/features/workouts/workout_session.c`,
+  `src/features/workouts/workoutlog.c`, and `src/features/workouts/exercise_db.c`
+  implement free sessions, exercise lookup, recommendations,
   rest timers, saved workouts, and workout details.
 
 ## Cartridge Layout
 
-The ROM is linked as a 128 KB CGB-only MBC3 cartridge:
+The ROM is linked as a 256 KB CGB-only MBC3 cartridge:
 
 - `-Wm-yC`: Game Boy Color only
 - `-Wm-yt0x10`: MBC3 + timer + RAM + battery
 - `-Wm-ya4`: four 8 KB SRAM banks
-- `-Wm-yo8`: eight 16 KB ROM banks
+- `-Wm-yo16`: sixteen 16 KB ROM banks
 - Header title: `MUSCLOG`
 - Header product/manufacturer patch: `MLOG`
 
@@ -176,11 +238,15 @@ ROM banks are used deliberately:
 - Bank 5 contains onboarding.
 - Bank 6 contains the exercise table.
 - Bank 7 contains workout UI and session logic.
+- Bank 8 contains the start screen and its title art (`gb_background`).
+- Bank 9 contains the audio driver (`audio.c`) and the generated APU data
+  (`music_data.c`), co-located so the sequencer reads the tables directly.
 
 SRAM stores are separate and checksummed:
 
 - Bank 0 stores the profile at the start of SRAM and body-weight metrics from
-  offset `0x40`.
+  offset `0x40`. The audio SFX/soundtrack on-off flags sit at `0x38-0x39`, in the
+  free part of the profile-reserved region, and survive a NEW GAME erase.
 - Bank 1 stores food log records: day number, food index, and grams.
 - Bank 2 stores workout records with summary data plus every logged set.
 - Bank 3 stores custom foods in fixed tombstoned slots.
@@ -204,7 +270,7 @@ imperial units, display pounds are converted at the UI boundary.
 Calendar values are stored as day numbers from `2000-01-01`. The RTC setup
 screen stores a base date and resets the MBC3 day counter; current date is
 derived by advancing that base date by elapsed RTC days. The RTC base date
-(`SRAM_RTC_*` in `src/profile.h`, bank 0) and its `rtc_is_set` flag can also be
+(`SRAM_RTC_*` in `src/data/profile.h`, bank 0) and its `rtc_is_set` flag can also be
 written from outside the ROM: `utils/decodeGameBoySave.ts` encodes a valid
 profile block (matching `db_checksum`) so the website can hand the ROM today's
 date before boot. Today's time of day rides along in two seed-hint bytes
@@ -215,9 +281,16 @@ pre-fill the hour and minute without touching the save format.
 ## Development Notes
 
 - Keep generated tables in sync with their source data by using
-  `npm run gb:gen-foods` and `npm run gb:gen-exercises`.
-- Keep `gameboy/assets/logo.png` committed. The build converts it into generated
-  `src/logo.c` and `src/logo.h`, which are gitignored.
+  `npm run gb:gen-foods`, `npm run gb:gen-exercises`, and `npm run gb:gen-music`.
+- Keep `gameboy/assets/logo.png` and `gameboy/assets/gb_background.png` committed.
+  The build converts them into generated `src/generated/logo.c`/`src/generated/logo.h`
+  and `src/generated/gb_background.c`/`src/generated/gb_background.h`, which are
+  gitignored. The title art is pinned to ROM bank 8 (`png2asset -b 8`), matching
+  `start_screen.c`'s
+  `#pragma bank 8` so the code reads the data co-located without `SWITCH_ROM()`.
+  The title art must fit within 256 addressable background tile indices after
+  png2asset dedupes duplicate and flipped tiles; `npm run gb:build` fails if a
+  new `gb_background.png` is too detailed.
 - After adding large tables or new screens, run `npm run gb:build` and inspect
   the bank layout output. The build fails if fixed or switchable banks overflow.
 - Prefer keeping ROM-bank-sensitive readers non-banked when they call
@@ -225,3 +298,7 @@ pre-fill the hour and minute without touching the save format.
 - Use raw `_SRAM[]` access only through the existing store modules and checksum
   helpers. Profile, food log, workout log, metrics, and custom foods each own
   their layout.
+
+## License
+
+This software is licensed under the MIT License.

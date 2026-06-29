@@ -1,5 +1,4 @@
 import { Link } from 'expo-router';
-import Head from 'expo-router/head';
 import {
   ArrowRight,
   Calendar,
@@ -1019,9 +1018,6 @@ export function Hero() {
 export default function Home() {
   return (
     <>
-      <Head>
-        <title>Musclog - Lift, Log, Repeat</title>
-      </Head>
       <main>
         <Hero />
         <Features />

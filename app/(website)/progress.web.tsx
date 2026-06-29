@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'expo-router/head';
 import {
   Activity,
   CalendarRange,
@@ -930,9 +929,6 @@ export default function ProgressWebsitePage() {
   if (!hasImportedData) {
     return (
       <>
-        <Head>
-          <title>{t('website.progress.metaTitle')}</title>
-        </Head>
         <input
           id={fileInputId}
           ref={fileInputRef}
@@ -957,10 +953,6 @@ export default function ProgressWebsitePage() {
 
   return (
     <>
-      <Head>
-        <title>{t('website.progress.metaTitle')}</title>
-      </Head>
-
       <input
         id={fileInputId}
         ref={fileInputRef}

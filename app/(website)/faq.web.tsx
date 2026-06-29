@@ -1,6 +1,5 @@
 'use client';
 
-import Head from 'expo-router/head';
 import {
   BookOpen,
   ChevronDown,
@@ -286,9 +285,6 @@ export default function Faq() {
 
   return (
     <>
-      <Head>
-        <title>{t('pageTitle')}</title>
-      </Head>
       <main className="relative overflow-hidden pb-24 pt-24">
         <DotPattern className="text-primary/20" />
         <div className="from-background/60 to-background/60 absolute inset-0 bg-gradient-to-b via-transparent" />
