@@ -18,6 +18,31 @@ import { CenteredModal } from './CenteredModal';
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 
+const PHYSICAL_SYMPTOM_KEYS: { key: string; value: string }[] = [
+  { key: 'cycle.symptoms.cramps', value: 'cramps' },
+  { key: 'cycle.symptoms.bloating', value: 'bloating' },
+  { key: 'cycle.symptoms.breastTenderness', value: 'breast_tenderness' },
+  { key: 'cycle.symptoms.headache', value: 'headache' },
+  { key: 'cycle.symptoms.migraine', value: 'migraine' },
+  { key: 'cycle.symptoms.nausea', value: 'nausea' },
+  { key: 'cycle.symptoms.backPain', value: 'back_pain' },
+  { key: 'cycle.symptoms.fatigue', value: 'fatigue' },
+  { key: 'cycle.symptoms.acne', value: 'acne' },
+  { key: 'cycle.symptoms.foodCravings', value: 'food_cravings' },
+  { key: 'cycle.symptoms.digestiveIssues', value: 'digestive_issues' },
+  { key: 'cycle.symptoms.hotFlashes', value: 'hot_flashes' },
+  { key: 'cycle.symptoms.insomnia', value: 'insomnia' },
+];
+
+const EMOTIONAL_SYMPTOM_KEYS: { key: string; value: string }[] = [
+  { key: 'cycle.symptoms.moodSwings', value: 'mood_swings' },
+  { key: 'cycle.symptoms.anxiety', value: 'anxiety' },
+  { key: 'cycle.symptoms.irritability', value: 'irritability' },
+  { key: 'cycle.symptoms.lowMood', value: 'low_mood' },
+  { key: 'cycle.symptoms.brainFog', value: 'brain_fog' },
+  { key: 'cycle.symptoms.lowLibido', value: 'low_libido' },
+];
+
 type CycleLogModalProps = {
   visible: boolean;
   onClose: () => void;
@@ -35,31 +60,6 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [existingFlowId, setExistingFlowId] = useState<string | null>(null);
   const [existingSymptomId, setExistingSymptomId] = useState<string | null>(null);
-
-  const physicalSymptoms = [
-    { label: t('cycle.symptoms.cramps'), value: 'cramps' },
-    { label: t('cycle.symptoms.bloating'), value: 'bloating' },
-    { label: t('cycle.symptoms.breastTenderness'), value: 'breast_tenderness' },
-    { label: t('cycle.symptoms.headache'), value: 'headache' },
-    { label: t('cycle.symptoms.migraine'), value: 'migraine' },
-    { label: t('cycle.symptoms.nausea'), value: 'nausea' },
-    { label: t('cycle.symptoms.backPain'), value: 'back_pain' },
-    { label: t('cycle.symptoms.fatigue'), value: 'fatigue' },
-    { label: t('cycle.symptoms.acne'), value: 'acne' },
-    { label: t('cycle.symptoms.foodCravings'), value: 'food_cravings' },
-    { label: t('cycle.symptoms.digestiveIssues'), value: 'digestive_issues' },
-    { label: t('cycle.symptoms.hotFlashes'), value: 'hot_flashes' },
-    { label: t('cycle.symptoms.insomnia'), value: 'insomnia' },
-  ];
-
-  const emotionalSymptoms = [
-    { label: t('cycle.symptoms.moodSwings'), value: 'mood_swings' },
-    { label: t('cycle.symptoms.anxiety'), value: 'anxiety' },
-    { label: t('cycle.symptoms.irritability'), value: 'irritability' },
-    { label: t('cycle.symptoms.lowMood'), value: 'low_mood' },
-    { label: t('cycle.symptoms.brainFog'), value: 'brain_fog' },
-    { label: t('cycle.symptoms.lowLibido'), value: 'low_libido' },
-  ];
 
   const resetForm = () => {
     setFlow(null);
@@ -237,7 +237,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
             {t('cycle.symptoms.physicalTitle')}
           </Text>
           <View className="flex-row flex-wrap gap-2">
-            {physicalSymptoms.map((option) => (
+            {PHYSICAL_SYMPTOM_KEYS.map((option) => (
               <Pressable
                 key={option.value}
                 onPress={() => toggleSymptom(option.value)}
@@ -254,7 +254,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
                       : 'text-text-primary'
                   }`}
                 >
-                  {option.label}
+                  {t(option.key)}
                 </Text>
               </Pressable>
             ))}
@@ -267,7 +267,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
             {t('cycle.symptoms.emotionalTitle')}
           </Text>
           <View className="flex-row flex-wrap gap-2">
-            {emotionalSymptoms.map((option) => (
+            {EMOTIONAL_SYMPTOM_KEYS.map((option) => (
               <Pressable
                 key={option.value}
                 onPress={() => toggleSymptom(option.value)}
@@ -284,7 +284,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
                       : 'text-text-primary'
                   }`}
                 >
-                  {option.label}
+                  {t(option.key)}
                 </Text>
               </Pressable>
             ))}

@@ -1,4 +1,5 @@
 import type { ProgressiveOverloadDataPoint } from '@/database/services/WorkoutAnalytics';
+import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 
 export interface ProjectionInputs {
   dataPoints: ProgressiveOverloadDataPoint[]; // Sorted by date ascending
@@ -76,7 +77,7 @@ export function weightedLinearRegressionSlope(
  * Calculate weeks between two timestamps
  */
 function weeksBetween(startMs: number, endMs: number): number {
-  const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+  const msPerWeek = 7 * MS_PER_SOLAR_DAY;
   return (endMs - startMs) / msPerWeek;
 }
 
@@ -271,7 +272,7 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
   }
 
   const projectedWeeks = simWeeks;
-  const projectedDate = new Date(Date.now() + projectedWeeks * 7 * 24 * 60 * 60 * 1000);
+  const projectedDate = new Date(Date.now() + projectedWeeks * 7 * MS_PER_SOLAR_DAY);
 
   return {
     currentEstimated1RM,
@@ -329,7 +330,7 @@ export function estimateConservativeTargetDate(
   const weeks = weeklyGainKg > 0.001 ? Math.ceil(gap / weeklyGainKg) : 104;
   const cappedWeeks = Math.min(Math.max(weeks, 1), 104);
 
-  return new Date(Date.now() + cappedWeeks * 7 * 24 * 60 * 60 * 1000);
+  return new Date(Date.now() + cappedWeeks * 7 * MS_PER_SOLAR_DAY);
 }
 
 /**

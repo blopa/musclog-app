@@ -24,6 +24,7 @@ import {
   NutritionService,
   WorkoutService,
 } from '@/database/services';
+import { MenstrualService } from '@/database/services/MenstrualService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n from '@/lang/lang';
 import { healthDataSyncService } from '@/services/healthDataSync';
@@ -269,10 +270,10 @@ export function AppBoot() {
 
                 const startDate = cycle.lastPeriodStartDate as number;
                 const avgDuration = cycle.avgPeriodDuration || DEFAULT_PERIOD_DURATION;
-                const estimatedEnd = startDate + avgDuration * MS_PER_SOLAR_DAY;
+                const inferredEnd = MenstrualService.inferPeriodEndDate(startDate, avgDuration);
                 // Only close the log if the estimated end is in the past.
                 // If it falls in the future the period may still be ongoing.
-                const endDate = estimatedEnd < Date.now() ? estimatedEnd : null;
+                const endDate = inferredEnd < Date.now() ? inferredEnd : null;
 
                 return {
                   menstrualCycleId: cycle.id,

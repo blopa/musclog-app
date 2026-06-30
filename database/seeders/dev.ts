@@ -35,7 +35,7 @@ import {
   SettingsService,
   UserService,
 } from '@/database/services';
-import { consumedDateTimeOnDay, localDayStartMs } from '@/utils/calendarDate';
+import { consumedDateTimeOnDay, localDayStartMs, MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { calculateWorkoutVolume } from '@/utils/workoutCalculator';
 
@@ -1390,7 +1390,7 @@ async function seedUserMetrics(): Promise<{ created: number }> {
         created++;
 
         // Add energy levels (mood)
-        const energyValue = 5 + Math.sin(data.date / (5 * 24 * 60 * 60 * 1000)) * 4;
+        const energyValue = 5 + Math.sin(data.date / (5 * MS_PER_SOLAR_DAY)) * 4;
         const encryptedEnergy = await encryptUserMetricFields({
           value: energyValue,
           unit: '',
@@ -1430,7 +1430,7 @@ async function seedMenstrualCycle(): Promise<void> {
         c.avgCycleLength = 28;
         c.avgPeriodDuration = 5;
         c.useHormonalBirthControl = false;
-        c.lastPeriodStartDate = Date.now() - 14 * 24 * 60 * 60 * 1000;
+        c.lastPeriodStartDate = Date.now() - 14 * MS_PER_SOLAR_DAY;
         c.isActive = true;
         c.createdAt = now;
         c.updatedAt = now;
@@ -2285,8 +2285,7 @@ export async function seedDevData(clear: boolean = true): Promise<boolean> {
     }
 
     const now = Date.now();
-    const day = 24 * 60 * 60 * 1000;
-    const week = 7 * day;
+    const week = 7 * MS_PER_SOLAR_DAY;
 
     // Helper: date offset from today in ms
     const weeksAgo = (n: number) => now - n * week;

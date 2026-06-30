@@ -10,8 +10,9 @@ import { MasterLayout } from '@/components/MasterLayout';
 import { DatePickerModal } from '@/components/modals/DatePickerModal';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
-import { getPastPeriodQuickDates } from '@/constants/cycle';
+import { DEFAULT_PERIOD_DURATION, getPastPeriodQuickDates } from '@/constants/cycle';
 import { MenstrualCycleRepository } from '@/database/repositories/MenstrualCycleRepository';
+import { MenstrualService } from '@/database/services/MenstrualService';
 import { useTheme } from '@/hooks/useTheme';
 import { getLocalCalendarYear, localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
 import { setOnboardingCompleted } from '@/utils/onboardingService';
@@ -72,9 +73,13 @@ export default function CycleSetup() {
       const allCandidates = [];
 
       if (data.lastPeriodStartDate) {
+        const startMs = localDayStartMs(data.lastPeriodStartDate);
+        const avgDuration = currentFormData.avgPeriodDuration ?? DEFAULT_PERIOD_DURATION;
+        const inferredEnd = MenstrualService.inferPeriodEndDate(startMs, avgDuration);
+        // Close the log if it's definitively in the past; leave open only if it may still be ongoing.
         allCandidates.push({
-          startDate: localDayStartMs(data.lastPeriodStartDate),
-          endDate: null as null,
+          startDate: startMs,
+          endDate: inferredEnd < Date.now() ? inferredEnd : null,
           timezone: tz,
         });
       }

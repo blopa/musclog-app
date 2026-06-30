@@ -1,3 +1,5 @@
+import { MS_PER_SOLAR_DAY } from '../../../utils/calendarDate';
+
 export function createMockDatabase() {
   const mockQuery = {
     fetch: jest.fn().mockResolvedValue([]),
@@ -51,7 +53,7 @@ export function createMockUser(overrides: Partial<any> = {}) {
     id: 'user-1',
     fullName: 'Test User',
     email: 'test@example.com',
-    dateOfBirth: Date.now() - 30 * 365 * 24 * 60 * 60 * 1000, // 30 years ago
+    dateOfBirth: Date.now() - 30 * 365 * MS_PER_SOLAR_DAY, // 30 years ago
     gender: 'male' as const,
     fitnessGoal: 'hypertrophy',
     weightGoal: 'maintain',

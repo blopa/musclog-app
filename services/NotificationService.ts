@@ -5,14 +5,17 @@ import { Platform } from 'react-native';
 import { database } from '@/database';
 import MenstrualCycle from '@/database/models/MenstrualCycle';
 import NutritionCheckin from '@/database/models/NutritionCheckin';
-import PeriodLog from '@/database/models/PeriodLog';
 import Schedule from '@/database/models/Schedule';
 import { PeriodLogRepository } from '@/database/repositories/PeriodLogRepository';
 import { MenstrualService } from '@/database/services/MenstrualService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n from '@/lang/lang';
 import { darkTheme } from '@/theme'; // TODO: figure out how to get the current theme instead
-import { localDayKeyPlusCalendarDaysFromNow, localDayStartMs } from '@/utils/calendarDate';
+import {
+  localDayKeyPlusCalendarDaysFromNow,
+  localDayStartMs,
+  MS_PER_SOLAR_DAY,
+} from '@/utils/calendarDate';
 
 export class NotificationService {
   private static isConfigured = false;
@@ -465,9 +468,7 @@ export class NotificationService {
     }
 
     // Schedule next period prediction (2 days before)
-    const notificationDate = new Date(
-      nextPeriodPrediction.date.getTime() - 2 * 24 * 60 * 60 * 1000
-    );
+    const notificationDate = new Date(nextPeriodPrediction.date.getTime() - 2 * MS_PER_SOLAR_DAY);
     notificationDate.setHours(9, 0, 0, 0);
 
     if (notificationDate.getTime() > Date.now()) {

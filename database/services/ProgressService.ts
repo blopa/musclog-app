@@ -5,11 +5,13 @@ import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import MenstrualCycle from '@/database/models/MenstrualCycle';
 import NutritionLog from '@/database/models/NutritionLog';
+import PeriodLog from '@/database/models/PeriodLog';
 import Supplement from '@/database/models/Supplement';
 import UserMetric, { UserMetricType } from '@/database/models/UserMetric';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import { PeriodLogRepository } from '@/database/repositories/PeriodLogRepository';
 import { localDayStartMs, MS_PER_SOLAR_DAY, utcNormalizedDayKey } from '@/utils/calendarDate';
 import {
   calculateBMR,
@@ -22,6 +24,7 @@ import { calculateEmpiricalTDEEWindow } from '@/utils/progress';
 import { cmToDisplay, kgToDisplay } from '@/utils/unitConversion';
 import { calculateExerciseVolume } from '@/utils/workoutCalculator';
 
+import { MenstrualService } from './MenstrualService';
 import { NutritionGoalService } from './NutritionGoalService';
 import { NutritionService } from './NutritionService';
 import { SettingsService } from './SettingsService';
@@ -707,7 +710,7 @@ export class ProgressService {
         : initialWeight || 70) ||
       70;
     const dob = user?.dateOfBirth || localDayStartMs(new Date(1990, 0, 1));
-    const age = Math.floor((new Date().getTime() - dob) / (365.25 * 24 * 60 * 60 * 1000));
+    const age = Math.floor((new Date().getTime() - dob) / (365.25 * MS_PER_SOLAR_DAY));
 
     const bmr = isValidBodyFat(finalFat)
       ? calculateBMRKatchMcArdle(weightKg, finalFat)
@@ -939,16 +942,23 @@ export class ProgressService {
     endDate: number,
     aggregation: TimeAggregation
   ): Promise<MenstrualPhasePoint[]> {
-    const cycle = await database
+    const cycles = await database
       .get<MenstrualCycle>('menstrual_cycles')
       .query(Q.where('is_active', Q.eq(true)), Q.where('deleted_at', Q.eq(null)))
       .fetch();
 
-    if (cycle.length === 0) {
+    if (cycles.length === 0) {
       return [];
     }
 
-    const c = cycle[0];
+    const c = cycles[0];
+    const periodLogs: PeriodLog[] = await PeriodLogRepository.fetchForCycle(c.id);
+    const stats = MenstrualService.calculateCycleStats(periodLogs);
+
+    if (stats.logCount === 0) {
+      return [];
+    }
+
     const history: MenstrualPhasePoint[] = [];
 
     // Get energy levels from user metrics
@@ -965,21 +975,18 @@ export class ProgressService {
     for (let d = startDate; d <= endDate; d += step) {
       const dayTs = this.getStartOfAggregation(d, aggregation);
 
-      // Determine phase
-      const anchorDate = c.lastPeriodStartDate ?? Date.now();
-      const daysSinceStart = Math.floor((dayTs - anchorDate) / MS_PER_SOLAR_DAY);
-      const cycleDay = ((daysSinceStart % c.avgCycleLength) + c.avgCycleLength) % c.avgCycleLength;
-
-      let phase: 'menstrual' | 'follicular' | 'ovulatory' | 'luteal';
-      if (cycleDay < c.avgPeriodDuration) {
-        phase = 'menstrual';
-      } else if (cycleDay < c.avgCycleLength / 2 - 2) {
-        phase = 'follicular';
-      } else if (cycleDay < c.avgCycleLength / 2 + 2) {
-        phase = 'ovulatory';
-      } else {
-        phase = 'luteal';
+      // Use MenstrualService with the actual log history so phase is derived from
+      // period_logs (the canonical source) rather than the stale lastPeriodStartDate field.
+      const menstrualPhase = MenstrualService.getPhaseAtTimestamp(periodLogs, stats, dayTs);
+      if (menstrualPhase == null) {
+        continue;
       }
+
+      // ProgressService uses 'ovulatory' while MenstrualService uses 'ovulation'.
+      const phase =
+        menstrualPhase === 'ovulation'
+          ? ('ovulatory' as const)
+          : (menstrualPhase as 'menstrual' | 'follicular' | 'luteal');
 
       const workoutsInPeriod = workoutLogs.filter((wl) => {
         const start = this.getStartOfAggregation(this.getWorkoutLogDayKey(wl), aggregation);

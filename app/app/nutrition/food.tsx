@@ -69,13 +69,11 @@ import {
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
-import { useDailySummaryUi } from '@/hooks/useDailySummaryUi';
 import { useFoodItemUi } from '@/hooks/useFoodItemUi';
-import { useFoodSearchUi } from '@/hooks/useFoodSearchUi';
+import { useFoodScreenModals } from '@/hooks/useFoodScreenModals';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useMealGroupUi } from '@/hooks/useMealGroupUi';
 import { useMealUi } from '@/hooks/useMealUi';
-import { useSaveForLaterUi } from '@/hooks/useSaveForLaterUi';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import AiService from '@/services/AiService';
@@ -136,7 +134,7 @@ const applyMealAction = async (
   targetDate: Date,
   targetMealType: MealType,
   splitPercentage?: number
-): Promise<string | null> => {
+): Promise<string> => {
   if (mode === 'move') {
     await NutritionService.moveNutritionLogsToDate(logs, targetDate, targetMealType);
     return 'food.actions.moveSuccess';
@@ -147,7 +145,11 @@ const applyMealAction = async (
     return 'food.actions.copySuccess';
   }
 
-  if (mode === 'split' && splitPercentage) {
+  if (mode === 'split') {
+    if (!splitPercentage) {
+      throw new Error('applyMealAction: split mode requires a splitPercentage');
+    }
+
     await NutritionService.splitNutritionLogsToDate(
       logs,
       targetDate,
@@ -158,7 +160,8 @@ const applyMealAction = async (
     return 'food.actions.splitSuccess';
   }
 
-  return null;
+  // TypeScript exhaustiveness — unreachable at runtime
+  throw new Error(`applyMealAction: unknown mode "${mode}"`);
 };
 
 export default function FoodScreen() {
@@ -272,41 +275,35 @@ export default function FoodScreen() {
 
   const {
     foodSearchInitialTab,
+    hasSavedForLaterItems,
     isCreateCustomFoodVisible,
+    isDailySummaryMenuVisible,
+    isEditCurrentGoalVisible,
     isFoodSearchModalVisible,
+    isGoalsManagementModalVisible,
     isMyMealsModalVisible,
     isQuickTrackMealModalVisible,
-    setFoodSearchInitialTab,
-    setIsCreateCustomFoodVisible,
-    setIsFoodSearchModalVisible,
-    setIsMyMealsModalVisible,
-    setIsQuickTrackMealModalVisible,
-  } = useFoodSearchUi();
-
-  const {
-    hasSavedForLaterItems,
     isSaveForLaterLoading,
     isSaveForLaterPortionVisible,
     isSavedForLaterModalVisible,
     requestSaveForLater,
     saveForLaterPendingLogs,
     saveForLaterPendingMealType,
+    setFoodSearchInitialTab,
     setHasSavedForLaterItems,
+    setIsCreateCustomFoodVisible,
+    setIsDailySummaryMenuVisible,
+    setIsEditCurrentGoalVisible,
+    setIsFoodSearchModalVisible,
+    setIsGoalsManagementModalVisible,
+    setIsMyMealsModalVisible,
+    setIsQuickTrackMealModalVisible,
     setIsSaveForLaterLoading,
     setIsSaveForLaterPortionVisible,
     setIsSavedForLaterModalVisible,
     setSaveForLaterPendingLogs,
     setSaveForLaterPendingMealType,
-  } = useSaveForLaterUi();
-
-  const {
-    isDailySummaryMenuVisible,
-    isEditCurrentGoalVisible,
-    isGoalsManagementModalVisible,
-    setIsDailySummaryMenuVisible,
-    setIsEditCurrentGoalVisible,
-    setIsGoalsManagementModalVisible,
-  } = useDailySummaryUi();
+  } = useFoodScreenModals();
   const [selectedDate, setSelectedDate] = useState(() => localCalendarDayDate(new Date()));
 
   // Keep camera context aware of the current date so the nav-bar camera button
@@ -651,9 +648,7 @@ export default function FoodScreen() {
         targetMealType,
         splitPercentage
       );
-      if (successKey) {
-        showSnackbar('success', t(successKey));
-      }
+      showSnackbar('success', t(successKey));
       await refresh();
     } catch (error) {
       handleError(error, 'food.performMealGroupAction', {
@@ -1181,9 +1176,7 @@ export default function FoodScreen() {
         targetMealType,
         splitPercentage
       );
-      if (successKey) {
-        showSnackbar('success', t(successKey));
-      }
+      showSnackbar('success', t(successKey));
       await refresh();
     } catch (error) {
       const errorKey = getMealActionErrorKey(mealActionMode);

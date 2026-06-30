@@ -25,6 +25,7 @@ import {
   localDayClosedRangeMaxMs,
   localDayStartFromUtcMs,
   localDayStartMs,
+  MS_PER_SOLAR_DAY,
   parseLocalCalendarDate,
 } from './calendarDate';
 import { getNutritionLogHistoryPrompt, getWorkoutLogHistoryPrompt } from './coachPromptHistory';
@@ -274,7 +275,7 @@ export const getUserDetailsPrompt = async (
 
   if (user.dateOfBirth) {
     const birthDate = new Date(user.dateOfBirth);
-    const age = Math.floor((Date.now() - birthDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+    const age = Math.floor((Date.now() - birthDate.getTime()) / (365.25 * MS_PER_SOLAR_DAY));
     if (age > 0) {
       parts.push(`${age} years old`);
     }

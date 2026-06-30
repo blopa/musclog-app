@@ -10,7 +10,8 @@ export interface MenstrualCycleUpdate {
   avgPeriodDuration?: number;
   useHormonalBirthControl?: boolean;
   birthControlType?: BirthControlType | null;
-  lastPeriodStartDate?: number | null;
+  // lastPeriodStartDate is maintained exclusively by PeriodLogRepository as a
+  // denormalized cache. Never set it directly through updateCycle().
   syncGoal?: SyncGoal | null;
   lifeStage?: LifeStage | null;
   isActive?: boolean;
@@ -57,10 +58,6 @@ export default class MenstrualCycle extends Model {
 
       if (data.birthControlType !== undefined) {
         cycle.birthControlType = data.birthControlType ?? null;
-      }
-
-      if (data.lastPeriodStartDate !== undefined) {
-        cycle.lastPeriodStartDate = data.lastPeriodStartDate ?? null;
       }
 
       if (data.syncGoal !== undefined) {

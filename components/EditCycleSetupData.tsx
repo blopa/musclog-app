@@ -29,6 +29,7 @@ export type CycleSetupData = {
   birthControlType: BirthControlType | 'none';
   syncGoal: SyncGoal;
   lifeStage: LifeStage;
+  avgPeriodDuration?: number;
 };
 
 type EditCycleSetupDataProps = {

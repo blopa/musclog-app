@@ -176,25 +176,41 @@ export class MenstrualService {
   }
 
   /**
-   * Determines the current menstrual phase from period logs.
-   * Uses luteal-phase anchoring: predicted ovulation = next period start − 14 days.
-   * Returns null when there is no logged data at all.
+   * Returns the inclusive endDate for a period given its start and average duration.
+   * endDate is stored as the last calendar day of the period (inclusive), so
+   * a 5-day period starting June 1 ends June 5 = start + (duration − 1) days.
+   * All code that infers an endDate from an average must go through this helper.
    */
-  static calculateCurrentPhase(periodLogs: PeriodLog[], stats: CycleStats): MenstrualPhase | null {
-    const latest = this.getLatestPeriodLog(periodLogs);
-    if (latest == null) {
+  static inferPeriodEndDate(startDate: number, durationDays: number): number {
+    return startDate + (durationDays - 1) * MS_PER_SOLAR_DAY;
+  }
+
+  /**
+   * Determines the menstrual phase at an explicit timestamp.
+   * Uses luteal-phase anchoring: predicted ovulation = next period start − 14 days.
+   * Returns null when there is no period log with a startDate ≤ timestampMs.
+   */
+  static getPhaseAtTimestamp(
+    periodLogs: PeriodLog[],
+    stats: CycleStats,
+    timestampMs: number
+  ): MenstrualPhase | null {
+    // Find the most recent log whose period started on or before the queried timestamp
+    const logsBeforeTime = periodLogs.filter((l) => l.startDate <= timestampMs);
+    if (logsBeforeTime.length === 0) {
       return null;
     }
 
-    const now = Date.now();
+    const latest = logsBeforeTime.reduce((a, b) => (a.startDate > b.startDate ? a : b));
 
-    // Menstrual: covers the full end day. endDate is stored as local day start (midnight),
+    // Menstrual: covers the full end day. endDate is stored as an inclusive local-day boundary,
     // so use endDate + MS_PER_SOLAR_DAY as the exclusive upper bound so the entire logged day counts.
+    // For open-ended (active) logs, infer the end from average duration as an exclusive bound directly.
     const periodEndExclusive =
       latest.endDate != null
         ? latest.endDate + MS_PER_SOLAR_DAY
         : latest.startDate + stats.avgPeriodDuration * MS_PER_SOLAR_DAY;
-    if (now < periodEndExclusive) {
+    if (timestampMs < periodEndExclusive) {
       return 'menstrual';
     }
 
@@ -202,15 +218,24 @@ export class MenstrualService {
     const ovulationWindowStartMs = ovulationMs - 2 * MS_PER_SOLAR_DAY;
     const ovulationWindowEndMs = ovulationMs + 2 * MS_PER_SOLAR_DAY;
 
-    if (now >= ovulationWindowStartMs && now <= ovulationWindowEndMs) {
+    if (timestampMs >= ovulationWindowStartMs && timestampMs <= ovulationWindowEndMs) {
       return 'ovulation';
     }
 
-    if (now < ovulationWindowStartMs) {
+    if (timestampMs < ovulationWindowStartMs) {
       return 'follicular';
     }
 
     return 'luteal';
+  }
+
+  /**
+   * Determines the current menstrual phase from period logs.
+   * Uses luteal-phase anchoring: predicted ovulation = next period start − 14 days.
+   * Returns null when there is no logged data at all.
+   */
+  static calculateCurrentPhase(periodLogs: PeriodLog[], stats: CycleStats): MenstrualPhase | null {
+    return this.getPhaseAtTimestamp(periodLogs, stats, Date.now());
   }
 
   /**

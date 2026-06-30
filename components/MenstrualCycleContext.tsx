@@ -51,6 +51,8 @@ export interface MenstrualCycleContextType {
   energyLevel: EnergyLevel | null;
   intensityMultiplier: number;
   cycleDay: number | null;
+  /** Current timestamp refreshed every minute; use for time-sensitive display values. */
+  nowMs: number;
   updateCycle: (data: MenstrualCycleUpdate) => Promise<void>;
   createNewCycle: (data: {
     avgCycleLength?: number;
@@ -157,9 +159,9 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
       if (data.lastPeriodStartDate != null) {
         const { lastPeriodStartDate, ...cycleData } = data;
         const avgDuration = cycleData.avgPeriodDuration ?? DEFAULT_PERIOD_DURATION;
-        const estimatedEnd = lastPeriodStartDate + avgDuration * MS_PER_SOLAR_DAY;
-        // Leave open if the period might still be ongoing; close it if it's definitely past.
-        const endDate = estimatedEnd < Date.now() ? estimatedEnd : null;
+        const inferredEnd = MenstrualService.inferPeriodEndDate(lastPeriodStartDate, avgDuration);
+        // Close the log if it's definitively past; leave open if it may still be ongoing.
+        const endDate = inferredEnd < Date.now() ? inferredEnd : null;
         await MenstrualCycleRepository.createNewCycleWithLogs(cycleData, [
           { startDate: lastPeriodStartDate, endDate },
         ]);
@@ -169,24 +171,6 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
       await MenstrualCycleRepository.createNewCycle(data);
     },
     []
-  );
-
-  const createPeriodLog = useCallback(
-    async (
-      data: Omit<PeriodLogCreate, 'menstrualCycleId'>,
-      updateAnchor: boolean
-    ): Promise<PeriodLog | null> => {
-      if (!cycle) {
-        return null;
-      }
-
-      return await PeriodLogRepository.createWithCycleAnchor(
-        { ...data, menstrualCycleId: cycle.id },
-        cycle,
-        updateAnchor
-      );
-    },
-    [cycle]
   );
 
   const logPeriodStart = useCallback(
@@ -225,17 +209,25 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
 
   const addPastPeriod = useCallback(
     async (data: Omit<PeriodLogCreate, 'menstrualCycleId'>): Promise<PeriodLog | null> => {
+      if (!cycle) {
+        return null;
+      }
+
       // Past periods have definitionally ended — always set a concrete endDate so they
       // don't appear as "currently in period" via the isActive (endDate == null) check.
-      const avgDuration = cycle?.avgPeriodDuration ?? DEFAULT_PERIOD_DURATION;
-      const endDate = data.endDate ?? data.startDate + avgDuration * MS_PER_SOLAR_DAY;
-      const updateAnchor =
-        !cycle?.lastPeriodStartDate || data.startDate > cycle.lastPeriodStartDate;
-      const result = await createPeriodLog({ ...data, endDate }, updateAnchor);
+      const avgDuration = cycle.avgPeriodDuration ?? DEFAULT_PERIOD_DURATION;
+      const endDate =
+        data.endDate ?? MenstrualService.inferPeriodEndDate(data.startDate, avgDuration);
+      const updateAnchor = !cycle.lastPeriodStartDate || data.startDate > cycle.lastPeriodStartDate;
+      const result = await PeriodLogRepository.createWithCycleAnchor(
+        { ...data, endDate, menstrualCycleId: cycle.id },
+        cycle,
+        updateAnchor
+      );
       void NotificationService.scheduleMenstrualCycleNotifications();
       return result;
     },
-    [createPeriodLog, cycle]
+    [cycle]
   );
 
   const deactivateTracking = useCallback(async (): Promise<void> => {
@@ -289,6 +281,7 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
       nextPeriodEarliest: nextPeriodPrediction?.earliest ?? null,
       nextPeriodLatest: nextPeriodPrediction?.latest ?? null,
       fertileWindow,
+      nowMs,
       isCurrentlyInPeriod: activePeriodLog != null,
       isCurrentlyInFertileWindow:
         fertileWindow != null &&

@@ -35,6 +35,7 @@ import {
   localCalendarDayDate,
   localDayClosedRangeMaxMs,
   localDayStartMs,
+  MS_PER_SOLAR_DAY,
 } from '@/utils/calendarDate';
 
 type DailyMetric = {
@@ -88,6 +89,7 @@ export default function CycleScreen() {
     isIrregular,
     predictionConfidence,
     activePeriodLog,
+    nowMs,
   } = useMenstrualCycle();
 
   const [isLogModalVisible, setIsLogModalVisible] = useState(false);
@@ -96,7 +98,6 @@ export default function CycleScreen() {
   const [isPeriodLogModalVisible, setIsPeriodLogModalVisible] = useState(false);
   const [dailyMetrics, setDailyMetrics] = useState<DailyMetric[]>([]);
   const [selectedDate, setSelectedDate] = useState(() => localCalendarDayDate(new Date()));
-  const [currentTimestamp, setCurrentTimestamp] = useState(Date.now);
 
   const insights = currentPhase ? MenstrualService.getInsights(currentPhase) : null;
 
@@ -142,14 +143,6 @@ export default function CycleScreen() {
 
     fetchDailyMetrics();
   }, [isLogModalVisible, isPeriodLogModalVisible, selectedDate]);
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCurrentTimestamp(Date.now());
-    }, 60_000);
-
-    return () => clearInterval(intervalId);
-  }, []);
 
   const lifeStage = cycle?.lifeStage;
   const lifeStageWarningKey = lifeStage ? LIFE_STAGE_WARNING_KEYS[lifeStage] : undefined;
@@ -268,8 +261,7 @@ export default function CycleScreen() {
                             ? t('cycle.periodActive', {
                                 day:
                                   Math.round(
-                                    (currentTimestamp - activePeriodLog.startDate) /
-                                      (24 * 60 * 60 * 1000)
+                                    (nowMs - activePeriodLog.startDate) / MS_PER_SOLAR_DAY
                                   ) + 1,
                               })
                             : t('cycle.periodActiveGeneric')}
