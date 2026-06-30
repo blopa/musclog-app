@@ -3,6 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
+import {
+  EMOTIONAL_SYMPTOM_KEYS,
+  FLOW_LEVEL_KEYS,
+  FLOW_LEVELS,
+  PHYSICAL_SYMPTOM_KEYS,
+} from '@/constants/cycle';
 import { UserMetricService } from '@/database/services';
 import {
   getLocalCalendarYear,
@@ -11,7 +17,6 @@ import {
   localDayStartMs,
 } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
-import { showSnackbar } from '@/utils/snackbarService';
 import { getCurrentTimezone } from '@/utils/timezone';
 
 import { CenteredModal } from './CenteredModal';
@@ -36,14 +41,6 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
   const [existingFlowId, setExistingFlowId] = useState<string | null>(null);
   const [existingSymptomId, setExistingSymptomId] = useState<string | null>(null);
 
-  const symptomOptions = [
-    { label: t('cycle.symptoms.cramps'), value: 'cramps' },
-    { label: t('cycle.symptoms.headache'), value: 'headache' },
-    { label: t('cycle.symptoms.bloating'), value: 'bloating' },
-    { label: t('cycle.symptoms.moodSwings'), value: 'mood_swings' },
-    { label: t('cycle.symptoms.fatigue'), value: 'fatigue' },
-  ];
-
   const resetForm = () => {
     setFlow(null);
     setSymptoms([]);
@@ -51,18 +48,19 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
     setExistingSymptomId(null);
   };
 
-  // Reset to initial date or today whenever the modal opens
   useEffect(() => {
-    if (visible) {
-      const syncState = () => {
-        setSelectedDate(localCalendarDayDate(initialDate || new Date()));
-        resetForm();
-      };
-      syncState();
+    if (!visible) {
+      return;
     }
+
+    const frame = requestAnimationFrame(() => {
+      setSelectedDate(localCalendarDayDate(initialDate || new Date()));
+      setIsDatePickerVisible(false);
+    });
+
+    return () => cancelAnimationFrame(frame);
   }, [visible, initialDate]);
 
-  // Load existing metrics for the selected date
   useEffect(() => {
     if (!visible) {
       return;
@@ -72,7 +70,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
       const startMs = localDayStartMs(selectedDate);
       const endMs = localDayClosedRangeMaxMs(selectedDate);
 
-      resetForm(); // Reset form fields before loading new data
+      resetForm();
 
       const [flowMetrics, symptomMetrics] = await Promise.all([
         UserMetricService.getMetricsHistory('period_flow', {
@@ -89,18 +87,12 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
         const decrypted = await flowMetrics[0].getDecrypted();
         setFlow(decrypted.value);
         setExistingFlowId(flowMetrics[0].id);
-      } else {
-        setFlow(null);
-        setExistingFlowId(null);
       }
 
       if (symptomMetrics.length > 0) {
         const note = await symptomMetrics[0].getNote();
         setSymptoms(note ? note.split(', ') : []);
         setExistingSymptomId(symptomMetrics[0].id);
-      } else {
-        setSymptoms([]);
-        setExistingSymptomId(null);
       }
     };
 
@@ -200,60 +192,107 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
           <Text className="mb-4 text-lg font-bold text-text-primary">
             {t('cycle.flowIntensity')}
           </Text>
-          <View className="flex-row justify-between">
-            {[1, 2, 3, 4, 5].map((level) => (
+          <View className="gap-2">
+            {FLOW_LEVELS.map((level) => (
               <Pressable
                 key={level}
                 onPress={() => setFlow(level)}
-                className={`h-12 w-12 items-center justify-center rounded-full border-2 ${
+                className={`flex-row items-center rounded-xl border-2 px-4 py-3 ${
                   flow === level ? 'bg-accent-primary10 border-accent-primary' : 'border-white/10'
                 }`}
               >
-                <Text
-                  className={flow === level ? 'font-bold text-accent-primary' : 'text-text-primary'}
+                <View
+                  className={`mr-3 h-6 w-6 items-center justify-center rounded-full border-2 ${
+                    flow === level ? 'border-accent-primary' : 'border-white/20'
+                  }`}
                 >
-                  {level}
-                </Text>
+                  {flow === level ? (
+                    <View className="h-3 w-3 rounded-full bg-accent-primary" />
+                  ) : null}
+                </View>
+                <View>
+                  <Text
+                    className={`font-semibold ${
+                      flow === level ? 'text-accent-primary' : 'text-text-primary'
+                    }`}
+                  >
+                    {t(FLOW_LEVEL_KEYS[level])}
+                  </Text>
+                </View>
               </Pressable>
             ))}
           </View>
         </View>
 
-        {/* Symptoms */}
-        <View className="mb-2">
-          <Text className="mb-4 text-lg font-bold text-text-primary">
-            {t('cycle.symptomsTitle')}
+        {/* Physical Symptoms */}
+        <View className="mb-4">
+          <Text className="mb-3 text-base font-bold text-text-primary">
+            {t('cycle.symptoms.physicalTitle')}
           </Text>
-          <View className="flex-row flex-wrap gap-3">
-            {symptomOptions.map((option) => (
+          <View className="flex-row flex-wrap gap-2">
+            {PHYSICAL_SYMPTOM_KEYS.map((option) => (
               <Pressable
                 key={option.value}
                 onPress={() => toggleSymptom(option.value)}
-                className={`rounded-full border-2 px-4 py-2 ${
+                className={`rounded-full border-2 px-3 py-2 ${
                   symptoms.includes(option.value)
                     ? 'bg-accent-primary10 border-accent-primary'
                     : 'border-white/10'
                 }`}
               >
                 <Text
-                  className={
+                  className={`text-sm ${
                     symptoms.includes(option.value)
                       ? 'font-bold text-accent-primary'
                       : 'text-text-primary'
-                  }
+                  }`}
                 >
-                  {option.label}
+                  {t(option.key)}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+
+        {/* Emotional Symptoms */}
+        <View className="mb-2">
+          <Text className="mb-3 text-base font-bold text-text-primary">
+            {t('cycle.symptoms.emotionalTitle')}
+          </Text>
+          <View className="flex-row flex-wrap gap-2">
+            {EMOTIONAL_SYMPTOM_KEYS.map((option) => (
+              <Pressable
+                key={option.value}
+                onPress={() => toggleSymptom(option.value)}
+                className={`rounded-full border-2 px-3 py-2 ${
+                  symptoms.includes(option.value)
+                    ? 'bg-accent-primary10 border-accent-primary'
+                    : 'border-white/10'
+                }`}
+              >
+                <Text
+                  className={`text-sm ${
+                    symptoms.includes(option.value)
+                      ? 'font-bold text-accent-primary'
+                      : 'text-text-primary'
+                  }`}
+                >
+                  {t(option.key)}
                 </Text>
               </Pressable>
             ))}
           </View>
         </View>
       </ScrollView>
+
       <DatePickerModal
         visible={isDatePickerVisible}
         onClose={() => setIsDatePickerVisible(false)}
         selectedDate={selectedDate}
-        onDateSelect={(date) => setSelectedDate(localCalendarDayDate(date))}
+        onDateSelect={(date) => {
+          setSelectedDate(localCalendarDayDate(date));
+          setIsDatePickerVisible(false);
+        }}
         maxYear={getLocalCalendarYear(new Date())}
       />
     </CenteredModal>

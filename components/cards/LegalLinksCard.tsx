@@ -2,7 +2,15 @@ import Constants from 'expo-constants';
 import { ExternalLink } from 'lucide-react-native';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Linking, Platform, Pressable, Text, View } from 'react-native';
+import {
+  Linking,
+  Platform,
+  Pressable,
+  type StyleProp,
+  Text,
+  View,
+  type ViewStyle,
+} from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 
 import { SUPPORT_PROJECT_DONATION_URL } from '@/constants/misc';
@@ -16,7 +24,7 @@ const buildNumber =
   Constants.expoConfig?.ios?.buildNumber ?? Constants.expoConfig?.android?.versionCode ?? null;
 
 interface LegalLinksCardProps {
-  containerStyle?: any;
+  containerStyle?: StyleProp<ViewStyle>;
 }
 
 export function LegalLinksCard({ containerStyle }: LegalLinksCardProps) {

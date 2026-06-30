@@ -3,7 +3,7 @@ import { isSuccessFoodDetailProductState } from '@/types/guards/openFoodFacts';
 import type { ProductState } from '@/types/openFoodFacts';
 import { totalCarbsForFoodSource } from '@/utils/carbsConvention';
 import { toFiniteMacro } from '@/utils/inferCaloriesFromMacros';
-import { getMusclogNutritionPer100g } from '@/utils/musclogProduct';
+import { getMusclogNutritionPer100g, type MusclogProduct } from '@/utils/musclogProduct';
 import {
   getNutrimentsWithFallback,
   getNutrimentValue,
@@ -11,22 +11,41 @@ import {
   parseOpenFoodFactsNutritionPer100g,
   resolveOpenFoodFactsFiberPer100g,
 } from '@/utils/openFoodFactsMapper';
-import { mapUSDANutritient } from '@/utils/usdaMapper';
+import {
+  mapUSDANutritient,
+  type USDAFood,
+  type USDAFoodWithServingFields,
+} from '@/utils/usdaMapper';
 
 export type ExternalFoodProductSource = 'openfood' | 'usda' | 'musclog';
 export type BarcodeNutritionSource = ExternalFoodProductSource | null;
+export type BarcodeSearchProduct = {
+  source?: ExternalFoodProductSource | string;
+  code?: string;
+  gtinUpc?: string;
+  fdcId?: string | number;
+  servingSize?: number;
+  servingSizeUnit?: string;
+  serving_size?: string;
+};
 
 export type ProductDetailsQueryData =
   | ProductState
-  | { status: 'success'; source: 'usda' | 'musclog'; product: any }
+  | { status: 'success'; source: 'usda'; product: USDAFood }
+  | { status: 'success'; source: 'musclog'; product: MusclogProduct }
+  | { status: 'failure'; code?: string }
   | { status: 'error'; error: { message: string } }
   | null;
 
 export function inferBarcodeNutritionSource(
   details: ProductDetailsQueryData | null | undefined,
-  productFromSearch: any
+  productFromSearch: BarcodeSearchProduct | null | undefined
 ): BarcodeNutritionSource {
-  const explicit = (details as any)?.source ?? productFromSearch?.source;
+  const explicit =
+    details && 'source' in details && typeof details.source === 'string'
+      ? details.source
+      : productFromSearch?.source;
+
   if (explicit === 'usda') {
     return 'usda';
   }
@@ -59,19 +78,20 @@ export function inferBarcodeNutritionSource(
  */
 export function resolveExternalFoodSource(
   details: ProductDetailsQueryData | null | undefined,
-  productFromSearch: any
+  productFromSearch: BarcodeSearchProduct | null | undefined
 ): ExternalFoodProductSource {
   const inferred = inferBarcodeNutritionSource(details, productFromSearch);
   if (inferred) {
     return inferred;
   }
 
-  const product = (details as any)?.product ?? productFromSearch;
-  if (product?.source === 'usda' || product?.fdcId) {
+  const product = details && 'product' in details ? details.product : productFromSearch;
+  const productHints = product as BarcodeSearchProduct | null | undefined;
+  if (productHints?.source === 'usda' || productHints?.fdcId) {
     return 'usda';
   }
 
-  if (product?.source === 'musclog') {
+  if (productHints?.source === 'musclog') {
     return 'musclog';
   }
 
@@ -87,7 +107,9 @@ export function getProductBarcodeFromSearchProduct(productFromSearch: unknown): 
   return product.code ?? product.gtinUpc ?? '';
 }
 
-export function parseServingSizeFromProduct(product: any): number | undefined {
+export function parseServingSizeFromProduct(
+  product: BarcodeSearchProduct | null | undefined
+): number | undefined {
   if (!product) {
     return undefined;
   }
@@ -153,7 +175,7 @@ export const EMPTY_PRODUCT_NUTRITION: ProductNutritionPer100g = {
   zinc: 0,
 };
 
-function parseMusclogNutritionPer100g(product: any): ProductNutritionPer100g {
+function parseMusclogNutritionPer100g(product: MusclogProduct): ProductNutritionPer100g {
   const n = getMusclogNutritionPer100g(product);
   return {
     ...EMPTY_PRODUCT_NUTRITION,
@@ -168,11 +190,11 @@ function parseMusclogNutritionPer100g(product: any): ProductNutritionPer100g {
   };
 }
 
-function parseUSDANutritionPer100g(product: any): ProductNutritionPer100g {
-  const nutrients = (product?.foodNutrients as any[]) ?? undefined;
+function parseUSDANutritionPer100g(product: USDAFood): ProductNutritionPer100g {
+  const nutrients = product.foodNutrients;
   // USDA Branded foods report nutrients per serving, not per 100g. Normalize to per-100g so the
   // caller's scaleFactor (servingSize / 100) produces correct values.
-  const rawServingSize = product?.servingSize;
+  const rawServingSize = (product as USDAFoodWithServingFields).servingSize;
   const isBranded = product?.dataType === 'Branded';
   const normFactor = isBranded && rawServingSize && rawServingSize > 0 ? 100 / rawServingSize : 1;
 
@@ -259,17 +281,17 @@ export function parsePlainNutrimentsNutritionPer100g(
  */
 export function parseProductNutritionPer100g(
   source: ExternalFoodProductSource,
-  product: any
+  product: OpenFoodFactsNutritionProduct | USDAFood | MusclogProduct
 ): ProductNutritionPer100g {
   if (source === 'musclog') {
-    return parseMusclogNutritionPer100g(product);
+    return parseMusclogNutritionPer100g(product as MusclogProduct);
   }
 
   if (source === 'usda') {
-    return parseUSDANutritionPer100g(product);
+    return parseUSDANutritionPer100g(product as USDAFood);
   }
 
-  return parseOFFNutritionPer100g(product);
+  return parseOFFNutritionPer100g(product as OpenFoodFactsNutritionProduct);
 }
 
 /** Picks the tracked micros out of a parsed nutrition object, skipping non-finite / zero trace values. */

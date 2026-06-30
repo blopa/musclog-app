@@ -445,7 +445,7 @@ export function FoodMealTrackingDetailsModal({
 
     return (
       product.no_nutrition_data === 'on' ||
-      product.no_nutrition_data === 1 ||
+      product.no_nutrition_data === '1' ||
       !product.nutriments ||
       Object.keys(product.nutriments).length === 0
     );

@@ -36,9 +36,7 @@ export type RawWorkoutTemplate = {
   difficulty?: string;
   duration?: number | string;
   exercises?:
-    | { exerciseId?: number; day?: number; sets?: number; reps?: number }[]
-    | number
-    | string;
+    { exerciseId?: number; day?: number; sets?: number; reps?: number }[] | number | string;
   sets?: number;
   icon?: string;
 };

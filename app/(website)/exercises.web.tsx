@@ -5,13 +5,14 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { SectionBackground } from '@/components/website/WebsiteBackgrounds';
+import {
+  BODY_TEXT,
+  BODY_TEXT_SOFT,
+  BRAND_GREEN,
+  BRAND_GREEN_BRIGHT,
+} from '@/components/website/websiteColors';
 import exercisesData from '@/data/exercisesData.json';
 import i18n, { EXERCISES_JSON } from '@/lang/lang';
-
-const BRAND_GREEN = '#22C55E';
-const BRAND_GREEN_BRIGHT = '#00FFA3';
-const BODY_TEXT = '#D1D5DB';
-const BODY_TEXT_SOFT = '#9CA3AF';
 
 function withExpoBaseUrl(path: string): string {
   if (/^https?:\/\//i.test(path)) {

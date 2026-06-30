@@ -1,5 +1,7 @@
 import { queryQuantitySamples } from '@kingstinct/react-native-healthkit';
 
+import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
+
 import { HeightConverter } from './healthDataTransform';
 
 export interface HealthBodyMetrics {
@@ -11,7 +13,7 @@ export interface HealthBodyMetrics {
 export async function fetchHealthBodyMetrics(): Promise<HealthBodyMetrics> {
   try {
     const now = new Date();
-    const past = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+    const past = new Date(now.getTime() - 90 * MS_PER_SOLAR_DAY);
 
     const queryOpts = {
       limit: 1,

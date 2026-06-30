@@ -36,7 +36,7 @@ battery so dates and logs can survive emulator or flash-cart restarts.
   MIDI, so both bundled `.mid` files are reduced at build time to the four hardware
   channels — SFX on pulse 1, and the soundtrack as pulse-lead + wave-bass + noise-
   drums. The SFX/soundtrack on/off choices persist in battery-backed SRAM.
-- First-run onboarding for unit system, biological sex, activity level, age,
+- First-run onboarding for unit system, gender, activity level, age,
   height, weight, lifting experience, fitness focus, and weight goal.
 - Macro goals are generated from the profile, then can be reviewed and edited
   before saving.

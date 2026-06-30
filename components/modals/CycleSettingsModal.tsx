@@ -5,7 +5,6 @@ import { View } from 'react-native';
 import { type CycleSetupData, EditCycleSetupData } from '@/components/EditCycleSetupData';
 import { Button } from '@/components/theme/Button';
 import type MenstrualCycle from '@/database/models/MenstrualCycle';
-import { localDayStartMs } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -22,11 +21,12 @@ export function CycleSettingsModal({ visible, onClose, cycle }: CycleSettingsMod
   const [isSaving, setIsSaving] = useState(false);
 
   const initialData: CycleSetupData = {
-    lastPeriodStartDate: new Date(cycle.lastPeriodStartDate),
+    lastPeriodStartDate: cycle.lastPeriodStartDate ? new Date(cycle.lastPeriodStartDate) : null,
     cycleLength: cycle.avgCycleLength,
     periodDuration: cycle.avgPeriodDuration,
     birthControlType: cycle.birthControlType ?? 'none',
     syncGoal: cycle.syncGoal ?? 'performance',
+    lifeStage: cycle.lifeStage ?? 'regular',
   };
 
   const handleClose = () => {
@@ -39,15 +39,13 @@ export function CycleSettingsModal({ visible, onClose, cycle }: CycleSettingsMod
     setIsSaving(true);
     try {
       await cycle.updateCycle({
-        lastPeriodStartDate: localDayStartMs(data.lastPeriodStartDate),
-        useHormonalBirthControl: data.birthControlType !== 'none',
-        birthControlType: data.birthControlType !== 'none' ? data.birthControlType : null,
         avgCycleLength: data.cycleLength,
         avgPeriodDuration: data.periodDuration,
+        useHormonalBirthControl: data.birthControlType !== 'none',
+        birthControlType: data.birthControlType !== 'none' ? data.birthControlType : null,
         syncGoal: data.syncGoal,
+        lifeStage: data.lifeStage ?? null,
       });
-      // useMenstrualCycle subscribes via WatermelonDB .observe(), so cycle.tsx
-      // re-renders automatically with fresh data after this write.
       handleClose();
     } catch (error) {
       handleError(error, 'CycleSettingsModal.handleSave', {
@@ -81,6 +79,7 @@ export function CycleSettingsModal({ visible, onClose, cycle }: CycleSettingsMod
           key={visible ? cycle.updatedAt : 'closed'}
           initialData={initialData}
           onFormChange={setCurrentFormData}
+          showDatePicker={false}
         />
       </View>
     </FullScreenModal>

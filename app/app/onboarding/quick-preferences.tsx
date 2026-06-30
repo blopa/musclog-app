@@ -99,13 +99,13 @@ export default function QuickPreferencesScreen() {
               />
             </View>
 
-            {/* Biological Sex */}
+            {/* Gender */}
             <View className="gap-3">
               <Text
                 className="text-xs font-semibold tracking-widest"
                 style={{ color: theme.colors.text.tertiary }}
               >
-                {t('onboarding.quickPreferences.biologicalSex').toUpperCase()}
+                {t('onboarding.quickPreferences.gender').toUpperCase()}
               </Text>
 
               {/* Info note */}
@@ -120,7 +120,7 @@ export default function QuickPreferencesScreen() {
                     lineHeight: theme.typography.fontSize.xs * 1.6,
                   }}
                 >
-                  {t('onboarding.quickPreferences.sexNote')}
+                  {t('onboarding.quickPreferences.genderNote')}
                 </Text>
               </View>
 

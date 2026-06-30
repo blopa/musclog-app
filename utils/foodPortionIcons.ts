@@ -1,3 +1,4 @@
+import type { LucideIcon } from 'lucide-react-native';
 import {
   Apple,
   Coffee,
@@ -12,10 +13,9 @@ import {
   UtensilsCrossed,
   Wind,
 } from 'lucide-react-native';
-import type { ComponentType } from 'react';
 
 /** Lucide components for `FoodPortion.icon` string ids (seed + user portions). */
-const FOOD_PORTION_ICON_MAP: Record<string, ComponentType<any>> = {
+const FOOD_PORTION_ICON_MAP: Record<string, LucideIcon> = {
   droplet: Droplet,
   scale: Scale,
   egg: Egg,
@@ -31,7 +31,7 @@ const FOOD_PORTION_ICON_MAP: Record<string, ComponentType<any>> = {
   nutrition: Apple,
 };
 
-export function getFoodPortionIconComponent(iconName?: string | null): ComponentType<any> | null {
+export function getFoodPortionIconComponent(iconName?: string | null): LucideIcon | null {
   if (!iconName) {
     return null;
   }

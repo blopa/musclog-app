@@ -1,3 +1,4 @@
+import type { LucideIcon } from 'lucide-react-native';
 import {
   Apple,
   Coffee,
@@ -48,7 +49,7 @@ const MacroItem = ({
   valueMode = 'decimal1',
   intuitiveMode = false,
 }: {
-  icon: any;
+  icon: LucideIcon;
   value: number;
   label?: string;
   unit?: string;

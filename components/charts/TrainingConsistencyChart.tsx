@@ -4,6 +4,11 @@ import { Pressable, Text, View } from 'react-native';
 import { useChartTooltip } from '@/context/ChartTooltipContext';
 import { useTheme } from '@/hooks/useTheme';
 
+import {
+  TRAINING_CONSISTENCY_TOOLTIP_HEIGHT as TOOLTIP_HEIGHT,
+  TRAINING_CONSISTENCY_TOOLTIP_WIDTH as TOOLTIP_WIDTH,
+} from './chartConstants';
+
 /**
  * Cell intensity: 0 = empty (border color), 1–5 = neon at 20%, 40%, 60%, 80%, 100%.
  * Value 5 can optionally show a glow (high PR).
@@ -49,9 +54,6 @@ const OPACITIES: Record<number, number> = {
   4: 0.8,
   5: 1,
 };
-
-const TOOLTIP_WIDTH = 100;
-const TOOLTIP_HEIGHT = 40;
 
 export function TrainingConsistencyChart({
   title,

@@ -30,6 +30,7 @@ import { FoodPortionService } from '@/database/services';
 import { handleError } from '@/utils/handleError';
 import { getTimezoneAt, ianaZoneToTimezoneAt } from '@/utils/timezone';
 
+import { HC_SENTINEL_FOOD_NAME, HC_SENTINEL_FOOD_SOURCE } from './healthConnectConstants';
 import { RETRY_CONFIG } from './healthConnectErrors';
 
 async function isSettingEnabled(type: string): Promise<boolean> {
@@ -186,9 +187,6 @@ export interface NutritionSyncCounts {
   deleted: number;
   skipped: number;
 }
-
-const HC_SENTINEL_FOOD_SOURCE = 'health_connect';
-const HC_SENTINEL_FOOD_NAME = 'Health Connect Import';
 
 function mapMealType(hcMealType: number | undefined): MealType {
   switch (hcMealType) {

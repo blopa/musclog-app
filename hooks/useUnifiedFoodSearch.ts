@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import type Food from '@/database/models/Food';
 import { type FoodLabels } from '@/database/models/Food';
 import {
   MappedNutriments,
@@ -13,7 +14,7 @@ import { getNutrimentsWithFallback, mapOpenFoodFactsProduct } from '@/utils/open
 import { getProductName } from '@/utils/productName';
 import { gramsToDisplay } from '@/utils/unitConversion';
 import { getMassUnit, getMassUnitI18nKey } from '@/utils/units';
-import { mapUSDAFoodToUnified } from '@/utils/usdaMapper';
+import { mapUSDAFoodToUnified, type USDAFood } from '@/utils/usdaMapper';
 
 import { useFoods } from './useFoods';
 import { useSettings } from './useSettings';
@@ -38,7 +39,7 @@ export type UnifiedFoodResult = {
   ecoscore?: string;
   novaGroup?: number;
   labels?: FoodLabels;
-  _raw?: any; // Original data from API or database
+  _raw?: Food | Record<string, unknown> | SearchResultProduct | USDAFood; // Original data from API or database
 };
 
 // Hook parameters
@@ -80,7 +81,7 @@ export function useUnifiedFoodSearch({
   // USDA API states
   const [usdaOffset, setUsdaOffset] = useState(0);
   const [isLoadingMoreUSDA, setIsLoadingMoreUSDA] = useState(false);
-  const [accumulatedUsdaResults, setAccumulatedUsdaResults] = useState<any[]>([]);
+  const [accumulatedUsdaResults, setAccumulatedUsdaResults] = useState<USDAFood[]>([]);
   const [usdaCompleted, setUsdaCompleted] = useState(false);
 
   const includeOpenFood =

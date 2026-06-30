@@ -18,6 +18,7 @@
  */
 
 import { Q } from '@nozbe/watermelondb';
+import type { RecordResult } from 'react-native-health-connect';
 import { RecordingMethod } from 'react-native-health-connect';
 
 import {
@@ -36,6 +37,7 @@ import { handleError } from '@/utils/handleError';
 import { getTimezoneAt, offsetMinutesToTimezone } from '@/utils/timezone';
 
 import { healthConnectService } from './healthConnect';
+import { HC_SENTINEL_FOOD_NAME, HC_SENTINEL_FOOD_SOURCE } from './healthConnectConstants';
 import { RETRY_CONFIG } from './healthConnectErrors';
 import { TimestampConverter } from './healthDataTransform';
 
@@ -158,9 +160,6 @@ export interface NutritionSyncCounts {
   skipped: number;
 }
 
-const HC_SENTINEL_FOOD_SOURCE = 'health_connect';
-const HC_SENTINEL_FOOD_NAME = 'Health Connect Import';
-
 /** Maps Health Connect mealType integer to app MealType string. */
 function mapMealType(hcMealType: number | undefined): MealType {
   switch (hcMealType) {
@@ -185,12 +184,19 @@ function mapMealType(hcMealType: number | undefined): MealType {
  * keeps its original offset after import. Returns undefined when the record carries no
  * offset (caller falls back to the device offset at the sample instant).
  */
-function extractHcRecordTimezone(rec: any): string | undefined {
+function extractHcRecordTimezone(
+  rec: RecordResult<'Nutrition'> & {
+    startZoneOffset?: { totalSeconds?: number };
+    endZoneOffset?: { totalSeconds?: number };
+  }
+): string | undefined {
   const totalSeconds: unknown =
     rec?.startZoneOffset?.totalSeconds ?? rec?.endZoneOffset?.totalSeconds;
+
   if (typeof totalSeconds === 'number' && Number.isFinite(totalSeconds)) {
     return offsetMinutesToTimezone(Math.round(totalSeconds / 60));
   }
+
   return undefined;
 }
 
@@ -300,7 +306,7 @@ async function syncNutritionOnce(timeRange: {
     endTime: TimestampConverter.unixToIso(timeRange.endTime),
   };
   const MAX_PAGES = 100;
-  const allHcRecords: any[] = [];
+  const allHcRecords: RecordResult<'Nutrition'>[] = [];
   let pageToken: string | undefined;
   let pageCount = 0;
   let hcResult = await healthConnectService.readRecords('Nutrition', timeRangeFilter);

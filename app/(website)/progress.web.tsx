@@ -16,6 +16,7 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FloatingShapes, GridPattern } from '@/components/website/WebsiteBackgrounds';
+import { BODY_TEXT, BRAND_GREEN, BRAND_GREEN_BRIGHT } from '@/components/website/websiteColors';
 import {
   CALORIES_FOR_CARBS,
   CALORIES_FOR_FAT,
@@ -38,8 +39,6 @@ import { formatUtcNormalizedDayIntl } from '@/utils/calendarDate';
 import { digestibleCarbs } from '@/utils/carbsConvention';
 import { handleError } from '@/utils/handleError';
 
-const BRAND_GREEN = '#22C55E';
-const BRAND_GREEN_BRIGHT = '#00FFA3';
 const CYAN = '#22D3EE';
 const INDIGO = '#818CF8';
 const ROSE = '#FB7185';
@@ -47,7 +46,6 @@ const AMBER = '#F59E0B';
 const CARD_BG = 'rgba(255,255,255,0.04)';
 const CARD_BORDER = 'rgba(255,255,255,0.10)';
 const SOFT_TEXT = '#9CA3AF';
-const BODY_TEXT = '#D1D5DB';
 
 type XYPoint = { x: number; y: number };
 

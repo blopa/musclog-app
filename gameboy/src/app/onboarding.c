@@ -182,7 +182,7 @@ static void draw_welcome(const OnboardingState *state) {
     draw_unit_row(state);
 
     ui_print_at(0u, 7u, state->selected == 1u ? ">" : " ");
-    ui_print_at(1u, 7u, STR_BIOLOGICAL_SEX);
+    ui_print_at(1u, 7u, STR_GENDER);
     draw_box_row(9u, gender_label(state->data->gender), state->selected == 1u);
 
     ui_print_at(0u, 11u, state->selected == 2u ? ">" : " ");

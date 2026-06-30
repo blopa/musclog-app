@@ -104,7 +104,7 @@ static const char *field_label(uint8_t field) {
     case SET_UNITS:
         return STR_UNITS;
     case SET_SEX:
-        return STR_SEX;
+        return STR_GENDER;
     case SET_AGE:
         return STR_AGE;
     case SET_HEIGHT:

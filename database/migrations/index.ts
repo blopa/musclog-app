@@ -20,6 +20,7 @@ import migrationV18 from '@/database/migrations/2026/05/migration-v18';
 import migrationV19 from '@/database/migrations/2026/05/migration-v19';
 import migrationV20 from '@/database/migrations/2026/06/migration-v20';
 import migrationV21 from '@/database/migrations/2026/06/migration-v21';
+import migrationV22 from '@/database/migrations/2026/06/migration-v22';
 
 export const migrations = schemaMigrations({
   migrations: [
@@ -99,5 +100,11 @@ export const migrations = schemaMigrations({
     // saved_for_later_groups, nutrition_goals, and exercise_goals.
     // Null rows are filled by the boot-time backfill TimezoneMigrationService.backfillMissingTimezones().
     migrationV21,
+    // Version 22: Add period_logs table and life_stage column to menstrual_cycles.
+    // period_logs stores actual period start/end events so cycle length is calculated
+    // from real history rather than a user-entered average. last_period_start_date on
+    // menstrual_cycles stays required as a cached denormalization, using 0 as the
+    // "no anchor yet" sentinel to keep upgrades simple.
+    migrationV22,
   ],
 });

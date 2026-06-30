@@ -2,10 +2,7 @@ import { AlertTriangle, FileText, Mail, Scale } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
-
-const BRAND_GREEN_BRIGHT = '#00FFA3';
-const BODY_TEXT_SOFT = '#9CA3AF';
-const MUTED = '#6B7280';
+import { BODY_TEXT_SOFT, BRAND_GREEN_BRIGHT, MUTED } from '@/components/website/websiteColors';
 
 export default function Terms() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.terms' });

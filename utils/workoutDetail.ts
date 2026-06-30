@@ -1,6 +1,8 @@
 import type { Locale } from 'date-fns';
 import { format } from 'date-fns';
 import type { TFunction } from 'i18next';
+import type { LucideIcon } from 'lucide-react-native';
+import type { ComponentType } from 'react';
 
 import type { LineChartDataPoint } from '@/components/charts/LineChart';
 import type { Units } from '@/constants/settings';
@@ -38,7 +40,7 @@ export type WorkoutExercise = Pick<Exercise, 'id' | 'name'> & {
   timeSpent: number;
   iconColor: string;
   iconBgColor: string;
-  icon: any;
+  icon: LucideIcon | ComponentType<{ size: number; color: string }>;
   sets: WorkoutSet[];
 };
 

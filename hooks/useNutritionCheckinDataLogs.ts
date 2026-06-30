@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import type NutritionCheckin from '@/database/models/NutritionCheckin';
 import { NutritionCheckinService } from '@/database/services';
 
+import { BATCH_SIZE } from './paginationConstants';
 import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
 
@@ -27,8 +28,6 @@ export type NutritionCheckinDayGroup = {
   items: NutritionCheckinDisplayItem[];
 };
 
-const BATCH_SIZE = 20;
-
 const ICON = 'event-note';
 
 function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): string {
@@ -36,12 +35,15 @@ function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): st
   if (isToday(date)) {
     return t('common.today');
   }
+
   if (isYesterday(date)) {
     return t('common.yesterday');
   }
+
   if (isThisWeek(date)) {
     return format(date, 'EEEE', { locale });
   }
+
   return format(date, 'MMM d, yyyy', { locale });
 }
 
@@ -51,6 +53,7 @@ function checkinToDisplayItem(
   locale: Locale
 ): NutritionCheckinDisplayItem {
   const dateLabel = format(new Date(checkin.checkinDate), 'MMM d, yyyy', { locale });
+
   return {
     id: checkin.id,
     name: `Check-in • ${dateLabel}`,

@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import FoodPortion from '@/database/models/FoodPortion';
 import { FoodPortionService } from '@/database/services';
 
+import { BATCH_SIZE } from './paginationConstants';
 import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
 
@@ -25,19 +26,20 @@ export type FoodPortionDayGroup = {
   items: FoodPortionDisplayItem[];
 };
 
-const BATCH_SIZE = 20;
-
 function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): string {
   const date = new Date(timestamp);
   if (isToday(date)) {
     return t('common.today');
   }
+
   if (isYesterday(date)) {
     return t('common.yesterday');
   }
+
   if (isThisWeek(date)) {
     return format(date, 'EEEE', { locale });
   }
+
   return format(date, 'MMM d', { locale });
 }
 
@@ -45,12 +47,14 @@ function mapPortionIconToMaterial(icon?: string): string {
   if (!icon) {
     return 'scale';
   }
+
   const m: Record<string, string> = {
     scale: 'scale',
     egg: 'egg',
     cup: 'local-cafe',
     droplet: 'water-drop',
   };
+
   return m[icon] ?? 'scale';
 }
 

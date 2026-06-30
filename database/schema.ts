@@ -402,10 +402,25 @@ export const schema = appSchema({
         { name: 'avg_period_duration', type: 'number' }, // Default 5
         { name: 'use_hormonal_birth_control', type: 'boolean' },
         { name: 'birth_control_type', type: 'string', isOptional: true }, // 'pill', 'iud', etc.
-        { name: 'last_period_start_date', type: 'number' }, // The "Anchor Date"
+        { name: 'last_period_start_date', type: 'number' }, // Cached from period_logs; 0 = no period logged yet
         { name: 'timezone', type: 'string', isOptional: true },
         { name: 'sync_goal', type: 'string', isOptional: true }, // 'performance', 'symptoms', 'energy'
+        { name: 'life_stage', type: 'string', isOptional: true }, // 'regular', 'pcos', 'perimenopause', 'postpartum', 'post_pill'
         { name: 'is_active', type: 'boolean' }, // Allow users to turn tracking off
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    tableSchema({
+      name: 'period_logs',
+      columns: [
+        { name: 'menstrual_cycle_id', type: 'string', isIndexed: true },
+        { name: 'start_date', type: 'number' }, // Local day start ms (localDayStartMs)
+        { name: 'end_date', type: 'number', isOptional: true }, // null = period still active or end unknown
+        { name: 'notes', type: 'string', isOptional: true },
+        { name: 'timezone', type: 'string', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

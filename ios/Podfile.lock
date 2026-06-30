@@ -296,7 +296,7 @@ PODS:
     - nanopb/encode (= 3.30910.0)
   - nanopb/decode (3.30910.0)
   - nanopb/encode (3.30910.0)
-  - NitroModules (0.35.9):
+  - NitroModules (0.35.10):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3302,7 +3302,7 @@ SPEC CHECKSUMS:
   MLKitVision: fa8dea9012ac59497c79ddbe9ebf32051047ac4c
   MultiplatformBleAdapter: b1fddd0d499b96b607e00f0faa8e60648343dc1d
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
-  NitroModules: 8308314b644c15567ffad50bb10667e8c1d82666
+  NitroModules: 65b53212caf01270656501155b718dfd2e0db185
   onnxruntime-c: e6e9272f5996fed3ea3ca3c9bc843478b2ecbc73
   OpenCV: 681e0451c1e54c5930a8922277f817ed5d5ab459
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47

@@ -7,6 +7,11 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { getXAxisLabelEdgeMargin, XAxisLabel } from '@/utils/chartUtils';
 
+import {
+  STACKED_BAR_TOOLTIP_HEIGHT as TOOLTIP_HEIGHT,
+  STACKED_BAR_TOOLTIP_WIDTH as TOOLTIP_WIDTH,
+} from './chartConstants';
+
 /** One bar: x plus up to 4 segment values (e.g. [coffee, chocolate, soda, iceCream]) */
 export type StackedBarChartDatum = {
   x: number;
@@ -51,9 +56,6 @@ export type StackedBarChartProps = {
   /** Format the tooltip label for a given data point (default: shows rounded total) */
   tooltipFormatter?: (point: StackedBarChartDatum) => string;
 };
-
-const TOOLTIP_WIDTH = 90;
-const TOOLTIP_HEIGHT = 36;
 
 export function StackedBarChart({
   data,

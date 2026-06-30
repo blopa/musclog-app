@@ -1,7 +1,7 @@
 import { Model, Query } from '@nozbe/watermelondb';
 import { children, field, json, writer } from '@nozbe/watermelondb/decorators';
 
-import { MealFood, NutritionLog } from './index';
+import { FoodFoodPortion, MealFood, NutritionLog } from './index';
 
 // TODO: import data from https://www.eurofir.org/food-information/food-composition-databases/
 export interface MicrosData {
@@ -172,7 +172,7 @@ export default class Food extends Model {
   @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;
 
-  @children('food_food_portions') declare foodPortions: Query<any>; // FoodFoodPortion
+  @children('food_food_portions') declare foodPortions: Query<FoodFoodPortion>;
   @children('nutrition_logs') declare nutritionLogs: Query<NutritionLog>;
   @children('meal_foods') declare mealFoods: Query<MealFood>;
 
@@ -207,7 +207,7 @@ export default class Food extends Model {
   async getDefaultPortionAsync() {
     try {
       const ffp = await this.foodPortions.fetch();
-      const defaultEntry = ffp.find((entry: any) => entry.isDefault && !entry.deletedAt);
+      const defaultEntry = ffp.find((entry) => entry.isDefault && !entry.deletedAt);
       if (defaultEntry) {
         return defaultEntry.foodPortion;
       }
@@ -223,10 +223,10 @@ export default class Food extends Model {
   async getPortionsAsync() {
     try {
       const ffp = await this.foodPortions.fetch();
-      const activeLinks = ffp.filter((fp: any) => !fp.deletedAt);
-      const portions = await Promise.all(activeLinks.map((fp: any) => fp.foodPortion));
+      const activeLinks = ffp.filter((fp) => !fp.deletedAt);
+      const portions = await Promise.all(activeLinks.map((fp) => fp.foodPortion));
 
-      return portions.filter((portion: any) => !portion?.deletedAt);
+      return portions.filter((portion) => !portion?.deletedAt);
     } catch (error) {
       console.warn('Error getting portions:', error);
       return [];

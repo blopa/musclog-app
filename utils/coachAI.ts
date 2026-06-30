@@ -699,7 +699,7 @@ async function sendViaOpenAI(
 
     const raw = completion.choices[0]?.message?.content ?? '{}';
     return parseCoachResponse(raw);
-  } catch (error: any) {
+  } catch (error) {
     await logLlmDebugEvent({
       provider: config.provider,
       direction: 'response',

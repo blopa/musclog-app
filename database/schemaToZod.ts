@@ -3,6 +3,7 @@
  * This ensures validation schemas stay in sync with the database schema.
  */
 
+import { type ColumnSchema, type TableSchema } from '@nozbe/watermelondb/Schema';
 import { z } from 'zod';
 
 import { EXPORT_PLATFORMS } from '@/constants/platform';
@@ -126,14 +127,16 @@ function generateTableSchema(
  * WatermelonDB stores columns as both a map (columns) and array (columnArray).
  * We use columnArray since it's easier to work with.
  */
-function getColumnsFromTable(table: any): { name: string; type: string; isOptional?: boolean }[] {
+function getColumnsFromTable(
+  table: TableSchema
+): { name: string; type: string; isOptional?: boolean }[] {
   if (!table) {
     return [];
   }
 
   // WatermelonDB provides columnArray as the array version of columns
   if (Array.isArray(table.columnArray)) {
-    return table.columnArray.map((col: any) => ({
+    return table.columnArray.map((col: ColumnSchema) => ({
       name: col.name,
       type: col.type,
       isOptional: col.isOptional,
@@ -142,7 +145,7 @@ function getColumnsFromTable(table: any): { name: string; type: string; isOption
 
   // Fallback: try columns directly (might be an object map)
   if (table.columns && typeof table.columns === 'object') {
-    return Object.values(table.columns).map((col: any) => ({
+    return Object.values(table.columns).map((col: ColumnSchema) => ({
       name: col.name,
       type: col.type,
       isOptional: col.isOptional,
@@ -161,9 +164,9 @@ function getTablesFromSchema(): {
   columns: { name: string; type: string; isOptional?: boolean }[];
 }[] {
   // Access the tables map from the schema
-  const tablesMap = (watermelonSchema as any).tables || {};
+  const tablesMap = watermelonSchema.tables;
 
-  return Object.entries(tablesMap).map(([name, table]: [string, any]) => ({
+  return Object.entries(tablesMap).map(([name, table]) => ({
     name,
     columns: getColumnsFromTable(table),
   }));
@@ -212,9 +215,9 @@ export function validateExportDump(data: unknown): ValidationResult {
   const result = ExportDumpSchema.safeParse(data);
 
   if (!result.success) {
-    const issues = (result.error as any).issues || (result.error as any).errors || [];
-    const errors = issues.map((err: { path: (string | number)[]; message: string }) => {
-      const path = err.path.join('.');
+    const issues = result.error.issues;
+    const errors = issues.map((err) => {
+      const path = err.path.map(String).join('.');
       return `${path}: ${err.message}`;
     });
 

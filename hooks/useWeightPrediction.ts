@@ -2,7 +2,11 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { WorkoutLogRepository } from '@/database/repositories/WorkoutLogRepository';
 import { NutritionService, UserMetricService } from '@/database/services';
-import { localDayKeyPlusCalendarDays, localDayStartMs } from '@/utils/calendarDate';
+import {
+  localDayKeyPlusCalendarDays,
+  localDayStartMs,
+  MS_PER_SOLAR_DAY,
+} from '@/utils/calendarDate';
 import { computeWeightChangeFromCalorieDelta } from '@/utils/nutritionCalculator';
 import { storedHeightToCm, storedWeightToKg } from '@/utils/unitConversion';
 import { calculateCaloriesBurnedBySteps } from '@/utils/workoutCalculator';
@@ -92,9 +96,7 @@ export function useWeightPrediction(): UseWeightPredictionResult {
         }
 
         // Condition 2: collect calorie data for every day since the last weigh-in
-        const daysSinceLastWeight = Math.round(
-          (todayStart - latestWeight.date) / (24 * 60 * 60 * 1000)
-        );
+        const daysSinceLastWeight = Math.round((todayStart - latestWeight.date) / MS_PER_SOLAR_DAY);
         const currentPeriodEnd = localDayKeyPlusCalendarDays(todayStart, -1);
 
         const caloriesPerDay: number[] = [];

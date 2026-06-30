@@ -1,4 +1,5 @@
-import { ComponentType, createElement } from 'react';
+import type { LucideIcon } from 'lucide-react-native';
+import { createElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -13,7 +14,7 @@ interface AvatarSelectorProps {
   selectedColor: AvatarColor;
   onAvatarSelect: (avatar: AvatarIcon) => void;
   onColorSelect?: (color: AvatarColor) => void;
-  avatarOptions: { icon: AvatarIcon; component: ComponentType<any> }[];
+  avatarOptions: { icon: AvatarIcon; component: LucideIcon }[];
   showColorPicker?: boolean;
   label: string;
 }

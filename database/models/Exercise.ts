@@ -36,13 +36,7 @@ export type EquipmentType =
   | 'other';
 
 export type MechanicType =
-  | 'compound'
-  | 'isolation'
-  | 'cardio'
-  | 'mobility'
-  | 'stretching'
-  | 'plyometric'
-  | 'other';
+  'compound' | 'isolation' | 'cardio' | 'mobility' | 'stretching' | 'plyometric' | 'other';
 
 export type ExerciseSource = 'app' | 'user';
 

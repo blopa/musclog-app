@@ -21,6 +21,7 @@ import {
   NutritionService,
   WorkoutService,
 } from '@/database/services';
+import { MenstrualBackfillService } from '@/database/services/MenstrualBackfillService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n from '@/lang/lang';
 import { healthDataSyncService } from '@/services/healthDataSync';
@@ -230,6 +231,14 @@ export function AppBoot() {
     const subscription = AppState.addEventListener('change', onAppStateChange);
 
     return () => subscription.remove();
+  }, []);
+
+  useEffect(() => {
+    if (isStaticExport) {
+      return;
+    }
+
+    void MenstrualBackfillService.runV22Backfill();
   }, []);
 
   return null;

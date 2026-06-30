@@ -3,28 +3,12 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, ScrollView, Text, View } from 'react-native';
 
+import { BLOCK_DURATION, BLOCK_FRACTIONS, type BlockKey } from '@/constants/circadian';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { localDayStartMs } from '@/utils/calendarDate';
 
 import { FullScreenModal } from './FullScreenModal';
-
-// ---------------------------------------------------------------------------
-// Shared constants (mirrors CaloriesBurnedCard — kept in sync manually)
-// ---------------------------------------------------------------------------
-
-const BLOCK_FRACTIONS = {
-  earlySlеep: 0.095,
-  nadir: 0.085,
-  morning: 0.195,
-  midday: 0.225,
-  peak: 0.25,
-  evening: 0.15,
-} as const;
-
-type BlockKey = keyof typeof BLOCK_FRACTIONS;
-
-const BLOCK_DURATION = 240; // minutes
 
 const CIRCADIAN_SEGMENTS = [
   { start: 0, end: 180, blockKey: 'earlySlеep' as BlockKey },
@@ -45,10 +29,12 @@ function getCircadianCaloriesBurned(tdee: number, minutesSinceMidnight: number):
     if (minutesSinceMidnight <= seg.start) {
       break;
     }
+
     const rate = BLOCK_FRACTIONS[seg.blockKey] / BLOCK_DURATION;
     const elapsed = Math.min(minutesSinceMidnight, seg.end) - seg.start;
     burned += elapsed * rate * tdee;
   }
+
   return burned; // keep fractional for live display
 }
 
@@ -58,11 +44,13 @@ function getCurrentBlockKey(minutesSinceMidnight: number): BlockKey {
       return seg.blockKey;
     }
   }
+
   return CIRCADIAN_SEGMENTS[CIRCADIAN_SEGMENTS.length - 1].blockKey;
 }
 
 function getInstantRate(tdee: number, blockKey: BlockKey) {
   const ratePerMin = (BLOCK_FRACTIONS[blockKey] / BLOCK_DURATION) * tdee;
+
   return {
     perHour: ratePerMin * 60,
     perMinute: ratePerMin,
@@ -88,7 +76,9 @@ function LiveDot() {
         Animated.timing(opacity, { toValue: 1, duration: 700, useNativeDriver: true }),
       ])
     );
+
     anim.start();
+
     return () => anim.stop();
   }, [opacity]);
 

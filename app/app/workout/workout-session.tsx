@@ -84,7 +84,7 @@ import {
   createBleWorkoutTrackingTempFile,
   saveBleWorkoutFile,
 } from '@/utils/bleWorkoutDataStorage';
-import { localDayHalfOpenRange } from '@/utils/calendarDate';
+import { localDayHalfOpenRange, MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
@@ -105,7 +105,7 @@ const getHormonalInsightText = (
   t: TFunction
 ) => {
   switch (currentPhase) {
-    case 'ovulation':
+    case 'ovulatory':
       return t('workoutSession.ovulationInsight');
     case 'menstrual':
       return t('workoutSession.menstrualInsight');
@@ -563,7 +563,7 @@ export default function WorkoutSessionScreen() {
 
         if (user?.dateOfBirth) {
           const ageMsAtStop = stoppedAt.getTime() - user.dateOfBirth;
-          userAgeYears = Math.floor(ageMsAtStop / (365.25 * 24 * 60 * 60 * 1000));
+          userAgeYears = Math.floor(ageMsAtStop / (365.25 * MS_PER_SOLAR_DAY));
         }
 
         if (user?.gender) {

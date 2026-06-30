@@ -8,6 +8,7 @@ import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import {
   localCalendarWeekIndexSince,
   localDayKeyPlusCalendarDaysFromNow,
+  MS_PER_SOLAR_DAY,
 } from '@/utils/calendarDate';
 import { calculateEstimated1RMForSet, calculateSetVolume } from '@/utils/workoutCalculator';
 
@@ -520,7 +521,7 @@ export class WorkoutAnalytics {
     exerciseId: string,
     weeks: number = 2
   ): Promise<{ average1RM: number; setCount: number } | null> {
-    const cutoffMs = Date.now() - weeks * 7 * 24 * 60 * 60 * 1000;
+    const cutoffMs = Date.now() - weeks * 7 * MS_PER_SOLAR_DAY;
 
     const logExercises = await database
       .get<WorkoutLogExercise>('workout_log_exercises')

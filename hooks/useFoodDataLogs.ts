@@ -8,6 +8,7 @@ import NutritionLog from '@/database/models/NutritionLog';
 import { NutritionService } from '@/database/services';
 import { localDayStartFromUtcMs } from '@/utils/calendarDate';
 
+import { BATCH_SIZE } from './paginationConstants';
 import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
 
@@ -30,16 +31,6 @@ export type FoodDataDayGroup = {
   items: FoodDataDisplayItem[];
 };
 
-const BATCH_SIZE = 20;
-
-const ICON_OPTIONS: FoodDataDisplayItem['icon'][] = [
-  'restaurant',
-  'egg',
-  'local-pizza',
-  'fitness-center',
-  'restaurant-menu',
-];
-
 function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): string {
   const date = new Date(timestamp);
   if (isToday(date)) {
@@ -59,15 +50,19 @@ function pickIconForFood(name: string): FoodDataDisplayItem['icon'] {
   if (lower.includes('egg')) {
     return 'egg';
   }
+
   if (lower.includes('pizza')) {
     return 'local-pizza';
   }
+
   if (lower.includes('protein') || lower.includes('shake') || lower.includes('whey')) {
     return 'fitness-center';
   }
+
   if (lower.includes('yogurt') || lower.includes('berry')) {
     return 'restaurant-menu';
   }
+
   return 'restaurant';
 }
 

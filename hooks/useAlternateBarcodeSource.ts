@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 
 import { findAlternateBarcodeSource } from '@/hooks/useFoodProductDetails';
 import {
+  type BarcodeSearchProduct,
   inferBarcodeNutritionSource,
   type ProductDetailsQueryData,
 } from '@/utils/externalFoodProduct';
@@ -12,7 +13,7 @@ type UseAlternateBarcodeSourceParams = {
   /** The primary product-details query result (used to infer the source already in use). */
   productDetails: ProductDetailsQueryData | null | undefined;
   /** Preloaded search product, when the modal was opened from search instead of a barcode lookup. */
-  productFromSearch?: any;
+  productFromSearch?: BarcodeSearchProduct | null;
   /** Context label passed to {@link handleError} on a failed cross-source fetch. */
   errorContext: string;
   /** Invoked when no other provider yields usable nutrition (e.g. to enable manual editing). */

@@ -9,7 +9,7 @@
  */
 
 import { Q } from '@nozbe/watermelondb';
-import type { RecordType } from 'react-native-health-connect';
+import type { RecordResult, RecordType } from 'react-native-health-connect';
 import { RecordingMethod } from 'react-native-health-connect';
 
 import {
@@ -278,7 +278,7 @@ async function syncDailySteps(timeRange: {
     endTime: TimestampConverter.unixToIso(timeRange.endTime),
   };
   const STEPS_MAX_PAGES = 100;
-  const allHcRecords: any[] = [];
+  const allHcRecords: RecordResult<'Steps'>[] = [];
   let stepsPageToken: string | undefined;
   let stepsPageCount = 0;
   let stepsResult = await healthConnectService.readRecords('Steps', stepsTimeRangeFilter);
@@ -421,7 +421,7 @@ async function syncOneMetricType(
     endTime: TimestampConverter.unixToIso(timeRange.endTime),
   };
   const MAX_PAGES = 100;
-  const allHcRecords: any[] = [];
+  const allHcRecords: RecordResult<RecordType>[] = [];
   let pageToken: string | undefined;
   let pageCount = 0;
   let hcResult = await healthConnectService.readRecords(hcType, timeRangeFilter);

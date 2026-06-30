@@ -11,6 +11,7 @@ import Exercise, {
 } from '@/database/models/Exercise';
 import { ExerciseService } from '@/database/services';
 
+import { BATCH_SIZE } from './paginationConstants';
 import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
 
@@ -31,19 +32,20 @@ export type ExerciseDataDayGroup = {
   items: ExerciseDataDisplayItem[];
 };
 
-const BATCH_SIZE = 20;
-
 function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): string {
   const date = new Date(timestamp);
   if (isToday(date)) {
     return t('common.today');
   }
+
   if (isYesterday(date)) {
     return t('common.yesterday');
   }
+
   if (isThisWeek(date)) {
     return format(date, 'EEEE', { locale });
   }
+
   return format(date, 'MMM d', { locale });
 }
 

@@ -9,22 +9,83 @@
     "noLogsToday": "Geen symptomen gelogd voor vandaag.",
     "logSymptoms": "Symptomen loggen",
     "logDaily": "Dagelijks cyclus-logboek",
+    "predictionDisclaimer": "Cyclusvoorspellingen zijn schattingen en geen anticonceptiemethode.",
+    "periodActive": "Menstruatie actief — Dag {{day}}",
+    "periodActiveGeneric": "Menstruatie actief",
     "settings": {
       "title": "Cyclus-instellingen",
       "subtitle": "Bewerk je cyclusconfiguratie",
       "save": "Wijzigingen opslaan"
     },
+    "noData": {
+      "title": "Begin je cyclus bij te houden",
+      "description": "Tik op de knop om je eerste menstruatie te registreren en gepersonaliseerde fasevoorspellingen te ontvangen."
+    },
+    "actions": {
+      "periodStarted": "Mijn menstruatie is vandaag begonnen",
+      "periodEnded": "Mijn menstruatie is vandaag gestopt",
+      "logPastPeriod": "Verleden menstruatie registreren"
+    },
+    "periodLog": {
+      "startTitle": "Menstruatie starten",
+      "endTitle": "Menstruatie beëindigen",
+      "pastTitle": "Verleden menstruatie toevoegen",
+      "startDescription": "Markeer wanneer je menstruatie begon. Je kunt voor vandaag of een datum in het verleden registreren.",
+      "endDescription": "Markeer wanneer je menstruatie eindigde.",
+      "pastDescription": "Het toevoegen van verleden datums helpt de app je cyclus te leren en betere voorspellingen te doen.",
+      "startDateLabel": "Menstruatie begon op",
+      "endDateLabel": "Menstruatie eindigde op",
+      "startedOn": "Menstruatie begon op",
+      "useToday": "Gebruik vandaag"
+    },
+    "confidence": {
+      "low": "Schatting — gebaseerd op {{count}} cyclus",
+      "low_plural": "Schatting — gebaseerd op {{count}} cycli",
+      "medium": "Gebaseerd op {{count}} cycli",
+      "high": "Gebaseerd op {{count}} cycli — goede nauwkeurigheid",
+      "irregular": "Cycli variëren — datumbereik weergegeven"
+    },
+    "lifeStage": {
+      "pcos": "Met PCOS kunnen cycli zeer onregelmatig zijn. Voorspellingen zijn ruwe schattingen.",
+      "postPill": "Na het stoppen met anticonceptie: cycli kunnen 1–3 maanden onregelmatig zijn.",
+      "postpartum": "Cycli na de bevalling zijn vaak onvoorspelbaar, zeker tijdens het geven van borstvoeding.",
+      "perimenopause": "Perimenopauze kan grote onregelmatigheid veroorzaken. Er wordt een geschat bereik weergegeven."
+    },
+    "flow": {
+      "spotting": "Spotting",
+      "light": "Licht",
+      "medium": "Matig",
+      "heavy": "Hevig",
+      "veryHeavy": "Zeer hevig"
+    },
     "symptoms": {
+      "physicalTitle": "Lichamelijk",
+      "emotionalTitle": "Emotioneel & Mentaal",
       "cramps": "Krampen",
       "headache": "Hoofdpijn",
+      "migraine": "Migraine",
       "bloating": "Opgeblazen gevoel",
+      "breastTenderness": "Gevoelige borsten",
+      "nausea": "Misselijkheid",
+      "backPain": "Rugpijn",
+      "fatigue": "Vermoeidheid",
+      "acne": "Acne",
+      "foodCravings": "Eetbuien",
+      "digestiveIssues": "Spijsverteringsproblemen",
+      "hotFlashes": "Opvliegers",
+      "insomnia": "Slapeloosheid",
       "moodSwings": "Stemmingswisselingen",
-      "fatigue": "Vermoeidheid"
+      "anxiety": "Angst",
+      "irritability": "Prikkelbaarheid",
+      "lowMood": "Neerslachtigheid",
+      "brainFog": "Hersenmist",
+      "lowLibido": "Laag libido"
     },
     "phase": {
       "menstrual": "Menstruatie",
       "follicular": "Folliculaire fase",
       "ovulatory": "Ovulatie",
+      "ovulation": "Ovulatie",
       "luteal": "Luteale fase"
     }
   }

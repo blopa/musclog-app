@@ -8,46 +8,81 @@ import {
   useState,
 } from 'react';
 
+import { DEFAULT_PERIOD_DURATION } from '@/constants/cycle';
 import { isStaticExport } from '@/constants/platform';
-import type { BirthControlType, MenstrualCycleUpdate } from '@/database/models';
+import type {
+  BirthControlType,
+  LifeStage,
+  MenstrualCycleUpdate,
+  SyncGoal,
+} from '@/database/models';
+import MenstrualCycle from '@/database/models/MenstrualCycle';
+import PeriodLog, { type PeriodLogCreate } from '@/database/models/PeriodLog';
 import { MenstrualCycleRepository } from '@/database/repositories/MenstrualCycleRepository';
+import { PeriodLogRepository } from '@/database/repositories/PeriodLogRepository';
 import {
+  CycleStats,
   EnergyLevel,
   MenstrualPhase,
   MenstrualService,
+  PredictionConfidence,
 } from '@/database/services/MenstrualService';
+import { NotificationService } from '@/services/NotificationService';
 
 export interface MenstrualCycleContextType {
-  cycle: any | null;
+  cycle: MenstrualCycle | null;
+  periodLogs: PeriodLog[];
+  activePeriodLog: PeriodLog | null;
+  cycleStats: CycleStats | null;
   isLoading: boolean;
   isActive: boolean;
   isCurrentlyInPeriod: boolean;
   isCurrentlyInFertileWindow: boolean;
+  isIrregular: boolean;
+  predictionConfidence: PredictionConfidence;
   nextPeriodDate: Date | null;
+  nextPeriodEarliest: Date | null;
+  nextPeriodLatest: Date | null;
   fertileWindow: { start: Date; end: Date } | null;
   currentPhase: MenstrualPhase | null;
   energyLevel: EnergyLevel | null;
   intensityMultiplier: number;
-  cycleDay: number;
+  cycleDay: number | null;
+  /** Current timestamp refreshed every minute; use for time-sensitive display values. */
+  nowMs: number;
   updateCycle: (data: MenstrualCycleUpdate) => Promise<void>;
   createNewCycle: (data: {
     avgCycleLength?: number;
     avgPeriodDuration?: number;
     useHormonalBirthControl?: boolean;
     birthControlType?: BirthControlType;
-    lastPeriodStartDate?: number;
+    lastPeriodStartDate?: number | null;
+    syncGoal?: SyncGoal;
+    lifeStage?: LifeStage;
   }) => Promise<void>;
+  logPeriodStart: (data: Omit<PeriodLogCreate, 'menstrualCycleId'>) => Promise<PeriodLog | null>;
+  logPeriodEnd: (endDate: number) => Promise<void>;
+  addPastPeriod: (data: Omit<PeriodLogCreate, 'menstrualCycleId'>) => Promise<PeriodLog | null>;
   deactivateTracking: () => Promise<void>;
 }
 
 const MenstrualCycleContext = createContext<MenstrualCycleContextType | undefined>(undefined);
 
 export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
-  const [cycle, setCycle] = useState<any | null>(null);
+  const [cycle, setCycle] = useState<MenstrualCycle | null>(null);
+  const [periodLogs, setPeriodLogs] = useState<PeriodLog[]>([]);
   // isStaticExport is a build-time constant — no async loading on static export
   const [isLoading, setIsLoading] = useState(!isStaticExport);
-  const [updateTick, setUpdateTick] = useState(0);
+  // Refreshed every minute to trigger re-derivation of time-sensitive values
+  // (isCurrentlyInFertileWindow, currentPhase) without a WatermelonDB subscription event.
+  const [nowMs, setNowMs] = useState(Date.now);
 
+  useEffect(() => {
+    const id = setInterval(() => setNowMs(Date.now()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
+  // Subscribe to the active menstrual cycle
   useEffect(() => {
     if (isStaticExport) {
       return;
@@ -61,13 +96,13 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
         'birth_control_type',
         'last_period_start_date',
         'sync_goal',
+        'life_stage',
         'is_active',
         'updated_at',
       ])
       .subscribe({
         next: (cycles) => {
           setCycle(cycles[0] || null);
-          setUpdateTick((t) => t + 1);
           setIsLoading(false);
         },
         error: () => {
@@ -79,11 +114,32 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
+  // Subscribe to period_logs for the active cycle
+  useEffect(() => {
+    if (isStaticExport) {
+      return;
+    }
+
+    if (!cycle) {
+      return;
+    }
+
+    const subscription = PeriodLogRepository.getForCycle(cycle.id)
+      .observeWithColumns(['start_date', 'end_date', 'notes', 'deleted_at', 'updated_at'])
+      .subscribe({
+        next: (logs) => setPeriodLogs(logs),
+        error: () => setPeriodLogs([]),
+      });
+
+    return () => subscription.unsubscribe();
+  }, [cycle]);
+
   const updateCycle = useCallback(
     async (data: MenstrualCycleUpdate): Promise<void> => {
       if (!cycle) {
         return;
       }
+
       await cycle.updateCycle(data);
     },
     [cycle]
@@ -95,12 +151,74 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
       avgPeriodDuration?: number;
       useHormonalBirthControl?: boolean;
       birthControlType?: BirthControlType;
-      lastPeriodStartDate?: number;
+      lastPeriodStartDate?: number | null;
+      syncGoal?: SyncGoal;
+      lifeStage?: LifeStage;
     }): Promise<void> => {
-      await MenstrualCycleRepository.deactivateAll();
-      await MenstrualCycleRepository.createNewCycle(data);
+      const { lastPeriodStartDate, ...cycleData } = data;
+      await MenstrualCycleRepository.replaceActiveCycle(
+        cycleData,
+        lastPeriodStartDate != null ? [{ startDate: lastPeriodStartDate }] : []
+      );
     },
     []
+  );
+
+  const logPeriodStart = useCallback(
+    async (data: Omit<PeriodLogCreate, 'menstrualCycleId'>): Promise<PeriodLog | null> => {
+      if (!cycle) {
+        return null;
+      }
+
+      const result = await PeriodLogRepository.startPeriodAtomically(
+        { ...data, menstrualCycleId: cycle.id },
+        cycle
+      );
+      void NotificationService.scheduleMenstrualCycleNotifications();
+
+      return result;
+    },
+    [cycle]
+  );
+
+  const logPeriodEnd = useCallback(
+    async (endDate: number): Promise<void> => {
+      const active = MenstrualService.getActivePeriodLog(periodLogs);
+      if (!active) {
+        return;
+      }
+
+      if (endDate < active.startDate) {
+        throw new Error('period_end_before_start');
+      }
+
+      await active.endPeriod(endDate);
+      void NotificationService.scheduleMenstrualCycleNotifications();
+    },
+    [periodLogs]
+  );
+
+  const addPastPeriod = useCallback(
+    async (data: Omit<PeriodLogCreate, 'menstrualCycleId'>): Promise<PeriodLog | null> => {
+      if (!cycle) {
+        return null;
+      }
+
+      // Past periods have definitionally ended — always set a concrete endDate so they
+      // don't appear as "currently in period" via the isActive (endDate == null) check.
+      const avgDuration = cycle.avgPeriodDuration ?? DEFAULT_PERIOD_DURATION;
+      const endDate =
+        data.endDate ?? MenstrualService.inferPeriodEndDate(data.startDate, avgDuration);
+      const updateAnchor = !cycle.lastPeriodStartDate || data.startDate > cycle.lastPeriodStartDate;
+      const result = await PeriodLogRepository.createWithCycleAnchor(
+        { ...data, endDate, menstrualCycleId: cycle.id },
+        cycle,
+        updateAnchor
+      );
+      void NotificationService.scheduleMenstrualCycleNotifications();
+      return result;
+    },
+    [cycle]
   );
 
   const deactivateTracking = useCallback(async (): Promise<void> => {
@@ -109,46 +227,70 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
     }
   }, [cycle]);
 
-  const derivedValues = useMemo(() => {
-    const isActive = cycle?.isActive ?? false;
-    const isCurrentlyInPeriod = cycle?.isCurrentlyInPeriod() ?? false;
-    const isCurrentlyInFertileWindow = cycle?.isCurrentlyInFertileWindow() ?? false;
-    const nextPeriodDate = cycle?.getNextPeriodDate() ?? null;
-    const fertileWindow = cycle?.getFertileWindow() ?? null;
-
-    const currentPhase = cycle ? MenstrualService.calculateCurrentPhase(cycle) : null;
-    const energyLevel = currentPhase ? MenstrualService.getEnergyLevel(currentPhase) : null;
-    const intensityMultiplier =
-      cycle && currentPhase
-        ? MenstrualService.getIntensityMultiplier(currentPhase, cycle.syncGoal)
-        : 1.0;
-    const cycleDay = cycle ? MenstrualService.getCycleDay(cycle) : 0;
+  const value = useMemo(() => {
+    const effectivePeriodLogs = cycle ? periodLogs : [];
+    const stats = cycle
+      ? MenstrualService.calculateCycleStats(effectivePeriodLogs, {
+          avgCycleLength: cycle.avgCycleLength,
+          avgPeriodDuration: cycle.avgPeriodDuration,
+        })
+      : null;
+    const activePeriodLog = MenstrualService.getActivePeriodLog(effectivePeriodLogs, nowMs);
+    const currentPhase =
+      cycle && stats ? MenstrualService.calculateCurrentPhase(effectivePeriodLogs, stats) : null;
+    const nextPeriodPrediction =
+      cycle && stats ? MenstrualService.predictNextPeriod(effectivePeriodLogs, stats) : null;
+    const fertileWindow =
+      cycle && stats ? MenstrualService.getFertileWindow(effectivePeriodLogs, stats) : null;
 
     return {
-      isActive,
-      isCurrentlyInPeriod,
-      isCurrentlyInFertileWindow,
-      nextPeriodDate,
-      fertileWindow,
-      currentPhase,
-      energyLevel,
-      intensityMultiplier,
-      cycleDay,
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cycle, updateTick]);
-
-  const value = useMemo(
-    () => ({
       cycle,
+      periodLogs: isStaticExport ? [] : effectivePeriodLogs,
       isLoading,
-      ...derivedValues,
+      isActive: cycle?.isActive ?? false,
+      activePeriodLog,
+      cycleStats: stats,
+      currentPhase,
+      energyLevel: currentPhase ? MenstrualService.getEnergyLevel(currentPhase) : null,
+      intensityMultiplier:
+        cycle && currentPhase
+          ? MenstrualService.getIntensityMultiplier(currentPhase, cycle.syncGoal ?? undefined)
+          : 1.0,
+      cycleDay:
+        cycle && stats
+          ? MenstrualService.getCycleDay(effectivePeriodLogs, stats, cycle.timezone)
+          : null,
+      nextPeriodDate: nextPeriodPrediction?.date ?? null,
+      nextPeriodEarliest: nextPeriodPrediction?.earliest ?? null,
+      nextPeriodLatest: nextPeriodPrediction?.latest ?? null,
+      fertileWindow,
+      nowMs,
+      isCurrentlyInPeriod: activePeriodLog != null,
+      isCurrentlyInFertileWindow:
+        fertileWindow != null &&
+        nowMs >= fertileWindow.start.getTime() &&
+        nowMs <= fertileWindow.end.getTime(),
+      isIrregular: stats?.isIrregular ?? false,
+      predictionConfidence: stats?.confidence ?? ('none' as const),
       updateCycle,
       createNewCycle,
+      logPeriodStart,
+      logPeriodEnd,
+      addPastPeriod,
       deactivateTracking,
-    }),
-    [cycle, isLoading, derivedValues, updateCycle, createNewCycle, deactivateTracking]
-  );
+    };
+  }, [
+    cycle,
+    nowMs,
+    periodLogs,
+    isLoading,
+    updateCycle,
+    createNewCycle,
+    logPeriodStart,
+    logPeriodEnd,
+    addPastPeriod,
+    deactivateTracking,
+  ]);
 
   return <MenstrualCycleContext.Provider value={value}>{children}</MenstrualCycleContext.Provider>;
 }
@@ -158,5 +300,6 @@ export function useMenstrualCycleContext(): MenstrualCycleContextType {
   if (context === undefined) {
     throw new Error('useMenstrualCycleContext must be used within a MenstrualCycleProvider');
   }
+
   return context;
 }

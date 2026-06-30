@@ -1,3 +1,5 @@
+import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
+
 import { healthConnectService } from './healthConnect';
 import { HealthDataTransformer, TimestampConverter } from './healthDataTransform';
 
@@ -10,7 +12,7 @@ export interface HealthBodyMetrics {
 export async function fetchHealthBodyMetrics(): Promise<HealthBodyMetrics> {
   try {
     const now = new Date();
-    const past = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+    const past = new Date(now.getTime() - 90 * MS_PER_SOLAR_DAY);
     const timeRange = {
       operator: 'between' as const,
       startTime: TimestampConverter.unixToIso(past.getTime()),

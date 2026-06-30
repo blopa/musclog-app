@@ -9,22 +9,83 @@
     "noLogsToday": "Nenhum sintoma registrado para hoje.",
     "logSymptoms": "Registrar Sintomas",
     "logDaily": "Registro Diário do Ciclo",
+    "predictionDisclaimer": "As previsões do ciclo são estimativas e não são um método contraceptivo.",
+    "periodActive": "Período ativo — Dia {{day}}",
+    "periodActiveGeneric": "Período ativo",
     "settings": {
       "title": "Configurações do Ciclo",
       "subtitle": "Edite sua configuração de ciclo",
       "save": "Salvar Alterações"
     },
+    "noData": {
+      "title": "Comece a registrar seu ciclo",
+      "description": "Toque no botão para registrar seu primeiro período e obter previsões personalizadas."
+    },
+    "actions": {
+      "periodStarted": "Meu período começou hoje",
+      "periodEnded": "Meu período terminou hoje",
+      "logPastPeriod": "Registrar um período passado"
+    },
+    "periodLog": {
+      "startTitle": "Registrar Início do Período",
+      "endTitle": "Registrar Fim do Período",
+      "pastTitle": "Adicionar Período Passado",
+      "startDescription": "Marque quando seu período começou. Você pode registrar para hoje ou uma data passada.",
+      "endDescription": "Marque quando seu período terminou.",
+      "pastDescription": "Adicionar datas de períodos passados ajuda o app a aprender seu ciclo e fazer melhores previsões.",
+      "startDateLabel": "Período começou em",
+      "endDateLabel": "Período terminou em",
+      "startedOn": "Período começou em",
+      "useToday": "Usar hoje"
+    },
+    "confidence": {
+      "low": "Estimativa — baseada em {{count}} ciclo",
+      "low_plural": "Estimativa — baseada em {{count}} ciclos",
+      "medium": "Baseada em {{count}} ciclos",
+      "high": "Baseada em {{count}} ciclos — boa precisão",
+      "irregular": "Ciclos variam — mostrando intervalo de datas"
+    },
+    "lifeStage": {
+      "pcos": "Com SOP, os ciclos podem ser muito irregulares. As previsões são aproximadas.",
+      "postPill": "Ao parar o anticoncepcional: os ciclos podem ser irregulares por 1–3 meses.",
+      "postpartum": "Os ciclos pós-parto costumam voltar de forma imprevisível, especialmente durante a amamentação.",
+      "perimenopause": "A perimenopausa pode causar grande irregularidade. Mostrando um intervalo estimado."
+    },
+    "flow": {
+      "spotting": "Manchas",
+      "light": "Leve",
+      "medium": "Moderado",
+      "heavy": "Intenso",
+      "veryHeavy": "Muito Intenso"
+    },
     "symptoms": {
+      "physicalTitle": "Físicos",
+      "emotionalTitle": "Emocionais e Mentais",
       "cramps": "Cólicas",
       "headache": "Dor de Cabeça",
+      "migraine": "Enxaqueca",
       "bloating": "Inchaço",
+      "breastTenderness": "Sensibilidade nos seios",
+      "nausea": "Náusea",
+      "backPain": "Dor nas costas",
+      "fatigue": "Fadiga",
+      "acne": "Acne",
+      "foodCravings": "Desejos alimentares",
+      "digestiveIssues": "Problemas digestivos",
+      "hotFlashes": "Ondas de calor",
+      "insomnia": "Insônia",
       "moodSwings": "Mudanças de Humor",
-      "fatigue": "Fadiga"
+      "anxiety": "Ansiedade",
+      "irritability": "Irritabilidade",
+      "lowMood": "Humor baixo",
+      "brainFog": "Névoa mental",
+      "lowLibido": "Baixa libido"
     },
     "phase": {
       "menstrual": "Menstrual",
       "follicular": "Folicular",
       "ovulatory": "Ovulatório",
+      "ovulation": "Ovulação",
       "luteal": "Lútea"
     }
   }

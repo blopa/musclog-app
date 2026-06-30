@@ -6,10 +6,16 @@ import { database } from '@/database';
 import MenstrualCycle from '@/database/models/MenstrualCycle';
 import NutritionCheckin from '@/database/models/NutritionCheckin';
 import Schedule from '@/database/models/Schedule';
+import { PeriodLogRepository } from '@/database/repositories/PeriodLogRepository';
+import { MenstrualService } from '@/database/services/MenstrualService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n from '@/lang/lang';
 import { darkTheme } from '@/theme'; // TODO: figure out how to get the current theme instead
-import { localDayKeyPlusCalendarDaysFromNow, localDayStartMs } from '@/utils/calendarDate';
+import {
+  localDayKeyPlusCalendarDaysFromNow,
+  localDayStartMs,
+  MS_PER_SOLAR_DAY,
+} from '@/utils/calendarDate';
 
 export class NotificationService {
   private static isConfigured = false;
@@ -45,7 +51,7 @@ export class NotificationService {
       await Notifications.setNotificationChannelAsync('workout-active', {
         name: i18n.t('notifications.channels.activeWorkout'),
         importance: Notifications.AndroidImportance.LOW, // Low importance for persistent notification to avoid annoying sound/popup on every update
-        lockscreenVisibility: (Notifications as any).AndroidVisibility?.PUBLIC,
+        lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
       });
     }
 
@@ -75,7 +81,7 @@ export class NotificationService {
     title: string,
     body: string,
     trigger: Notifications.NotificationTriggerInput,
-    data: Record<string, any> = {},
+    data: Record<string, unknown> = {},
     channelId: string = 'default'
   ) {
     if (Platform.OS === 'web') {
@@ -176,7 +182,7 @@ export class NotificationService {
   static async testNotification(
     title: string,
     body: string,
-    data: Record<string, any> = {},
+    data: Record<string, unknown> = {},
     channelId: string = 'default'
   ) {
     if (Platform.OS === 'web') {
@@ -453,9 +459,20 @@ export class NotificationService {
       return;
     }
 
+    // Fetch period logs for this cycle
+    const periodLogs = await PeriodLogRepository.fetchForCycle(cycle.id);
+    const stats = MenstrualService.calculateCycleStats(periodLogs, {
+      avgCycleLength: cycle.avgCycleLength,
+      avgPeriodDuration: cycle.avgPeriodDuration,
+    });
+
+    const nextPeriodPrediction = MenstrualService.predictNextPeriod(periodLogs, stats);
+    if (!nextPeriodPrediction) {
+      return;
+    }
+
     // Schedule next period prediction (2 days before)
-    const nextPeriodDate = cycle.getNextPeriodDate();
-    const notificationDate = new Date(nextPeriodDate.getTime() - 2 * 24 * 60 * 60 * 1000);
+    const notificationDate = new Date(nextPeriodPrediction.date.getTime() - 2 * MS_PER_SOLAR_DAY);
     notificationDate.setHours(9, 0, 0, 0);
 
     if (notificationDate.getTime() > Date.now()) {
@@ -473,22 +490,24 @@ export class NotificationService {
     }
 
     // Schedule fertile window start
-    const fertileWindow = cycle.getFertileWindow();
-    const fertileStartNotification = new Date(fertileWindow.start.getTime());
-    fertileStartNotification.setHours(9, 0, 0, 0);
+    const fertileWindow = MenstrualService.getFertileWindow(periodLogs, stats);
+    if (fertileWindow) {
+      const fertileStartNotification = new Date(fertileWindow.start);
+      fertileStartNotification.setHours(9, 0, 0, 0);
 
-    if (fertileStartNotification.getTime() > Date.now()) {
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: i18n.t('notifications.types.fertileWindow.title'),
-          body: i18n.t('notifications.types.fertileWindow.body'),
-          data: { type: 'menstrual-cycle', subtype: 'fertile-window' },
-        },
-        trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.DATE,
-          date: fertileStartNotification,
-        },
-      });
+      if (fertileStartNotification.getTime() > Date.now()) {
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: i18n.t('notifications.types.fertileWindow.title'),
+            body: i18n.t('notifications.types.fertileWindow.body'),
+            data: { type: 'menstrual-cycle', subtype: 'fertile-window' },
+          },
+          trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.DATE,
+            date: fertileStartNotification,
+          },
+        });
+      }
     }
   }
 

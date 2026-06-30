@@ -8,17 +8,29 @@ import { resolveRoundedPer100gCaloriesForDisplay } from './inferCaloriesFromMacr
 import { gramsToDisplay } from './unitConversion';
 import { getMassUnitI18nKey } from './units';
 
-type USDAFood = components['schemas']['SearchResultFood'];
+export type USDAFood = components['schemas']['SearchResultFood'];
+export type USDANutrient = {
+  nutrientNumber?: string | number;
+  number?: string | number;
+  nutrient?: { number?: string | number };
+  value?: number;
+  amount?: number;
+};
+export type USDAFoodWithServingFields = USDAFood & {
+  brandName?: string;
+  servingSize?: number;
+  servingSizeUnit?: string;
+};
 
 export function mapUSDANutritient(
-  nutrients: any[] | undefined,
+  nutrients: USDANutrient[] | undefined,
   nutrientNumber: string
 ): number | undefined {
   if (!nutrients || !Array.isArray(nutrients)) {
     return undefined;
   }
 
-  const nutrient = nutrients.find((n: any) => {
+  const nutrient = nutrients.find((n) => {
     const num = n.nutrientNumber || n.number || n.nutrient?.number;
     return String(num) === nutrientNumber;
   });
@@ -27,7 +39,8 @@ export function mapUSDANutritient(
 }
 
 export function mapUSDAFoodToUnified(food: USDAFood, units: Units = 'metric'): UnifiedFoodResult {
-  const nutrients = food.foodNutrients;
+  const brandedFood = food as USDAFoodWithServingFields;
+  const nutrients = food.foodNutrients as USDANutrient[] | undefined;
 
   const rawCalories = mapUSDANutritient(nutrients, '1008') ?? mapUSDANutritient(nutrients, '208');
   const protein = mapUSDANutritient(nutrients, '1003') ?? mapUSDANutritient(nutrients, '203');
@@ -46,10 +59,10 @@ export function mapUSDAFoodToUnified(food: USDAFood, units: Units = 'metric'): U
   const calories = roundedCalories > 0 ? roundedCalories : undefined;
 
   // Brand can be brandOwner or brandName
-  const brand = food.brandOwner || (food as any).brandName;
+  const brand = food.brandOwner || brandedFood.brandName;
 
-  const servingSizeValue = (food as any).servingSize;
-  const servingSizeUnit = (food as any).servingSizeUnit || 'g';
+  const servingSizeValue = brandedFood.servingSize;
+  const servingSizeUnit = brandedFood.servingSizeUnit || 'g';
   const servingSize = servingSizeValue ? `${servingSizeValue}${servingSizeUnit}` : '100g';
 
   // When the USDA serving is in grams, convert to oz for imperial users

@@ -1,4 +1,4 @@
-import { Droplet, EggFried, Flame, Wheat, Zap } from 'lucide-react-native';
+import { Droplet, EggFried, Flame, type LucideIcon, Wheat, Zap } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
@@ -43,7 +43,7 @@ function MacroRow({
   value,
   unit,
 }: {
-  icon: any;
+  icon: LucideIcon;
   label: string;
   value: number;
   unit: string;

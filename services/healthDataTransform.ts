@@ -1,4 +1,5 @@
 import convert from 'convert';
+import type { RecordResult } from 'react-native-health-connect';
 
 import type { Units } from '@/constants/settings';
 import i18n from '@/lang/lang';
@@ -329,7 +330,7 @@ export class HealthDataTransformer {
   /**
    * Transform Health Connect Height record to app format
    */
-  static transformHeight(hcRecord: any): {
+  static transformHeight(hcRecord: RecordResult<'Height'>): {
     type: MetricType;
     value: number;
     unit: string;
@@ -355,7 +356,7 @@ export class HealthDataTransformer {
   /**
    * Transform Health Connect Weight record to app format
    */
-  static transformWeight(hcRecord: any): {
+  static transformWeight(hcRecord: RecordResult<'Weight'>): {
     type: MetricType;
     value: number;
     unit: string;
@@ -381,7 +382,7 @@ export class HealthDataTransformer {
   /**
    * Transform Health Connect BodyFat record to app format
    */
-  static transformBodyFat(hcRecord: any): {
+  static transformBodyFat(hcRecord: RecordResult<'BodyFat'>): {
     type: MetricType;
     value: number;
     unit: string;
@@ -407,7 +408,7 @@ export class HealthDataTransformer {
   /**
    * Transform Health Connect LeanBodyMass record to app format
    */
-  static transformLeanBodyMass(hcRecord: any): {
+  static transformLeanBodyMass(hcRecord: RecordResult<'LeanBodyMass'>): {
     type: MetricType;
     value: number;
     unit: string;
@@ -433,7 +434,7 @@ export class HealthDataTransformer {
   /**
    * Transform Health Connect TotalCaloriesBurned record to app format
    */
-  static transformTotalCalories(hcRecord: any): {
+  static transformTotalCalories(hcRecord: RecordResult<'TotalCaloriesBurned'>): {
     type: MetricType;
     value: number;
     unit: string;
@@ -459,7 +460,7 @@ export class HealthDataTransformer {
   /**
    * Transform Health Connect ActiveCaloriesBurned record to app format
    */
-  static transformActiveCalories(hcRecord: any): {
+  static transformActiveCalories(hcRecord: RecordResult<'ActiveCaloriesBurned'>): {
     type: MetricType;
     value: number;
     unit: string;
@@ -485,7 +486,7 @@ export class HealthDataTransformer {
   /**
    * Transform Health Connect BasalMetabolicRate record to app format
    */
-  static transformBMR(hcRecord: any): {
+  static transformBMR(hcRecord: RecordResult<'BasalMetabolicRate'>): {
     type: MetricType;
     value: number;
     unit: string;

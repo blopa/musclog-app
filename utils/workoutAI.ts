@@ -1,3 +1,5 @@
+import { Dumbbell } from 'lucide-react-native';
+
 import {
   ChatService,
   ExerciseService,
@@ -116,7 +118,7 @@ export async function processWorkoutPlanResponse(
           id: matchedExercise.id,
           label: matchedExercise.name ?? '',
           description: `${aiExercise.sets}x${aiExercise.reps}`,
-          icon: undefined,
+          icon: Dumbbell,
           iconBgColor: '',
           iconColor: '',
           sets: aiExercise.sets,

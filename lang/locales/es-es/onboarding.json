@@ -39,9 +39,14 @@
       "trackCycleDescription": "Sincroniza tu rendimiento y nutrición con tus fases hormonales."
     },
     "cycleSetup": {
+      "title": "Configuración del Seguimiento del Ciclo",
+      "description": "Aprenderemos tu ciclo a medida que lo registres — no necesitas saber tus promedios de antemano.",
       "anchor": {
         "title": "Último Periodo",
-        "description": "¿Cuándo comenzó tu último periodo? Esto nos ayuda a calibrar tu fase actual."
+        "description": "¿Cuándo comenzó tu último periodo? Una estimación aproximada está bien — puedes actualizarlo después.",
+        "tapToSelect": "Toca para seleccionar una fecha",
+        "iDontKnow": "No lo sé / omitir",
+        "skipInstead": "Borrar fecha — no estoy segura"
       },
       "birthControl": {
         "title": "Control de Natalidad Hormonal",
@@ -57,13 +62,18 @@
         "other": "Otro",
         "otherDescription": "Otra forma de anticoncepción."
       },
-      "length": {
-        "title": "Duración del Ciclo",
-        "description": "¿Cuánto dura tu ciclo típico y la duración de tu periodo?",
-        "cycleLength": "Duración Promedio del Ciclo",
-        "periodDuration": "Duración Promedio del Periodo",
-        "cycleLengthLabel": "Duración del Ciclo",
-        "periodDurationLabel": "Duración del Periodo"
+      "lifeStage": {
+        "title": "Contexto del Ciclo",
+        "regular": "Nada inusual",
+        "regularDescription": "Mi ciclo es bastante regular.",
+        "pcos": "SOP / Ciclos irregulares",
+        "pcosDescription": "Mis ciclos suelen ser irregulares o impredecibles.",
+        "perimenopause": "Perimenopausia",
+        "perimenopauseDescription": "Mis ciclos se han vuelto más irregulares recientemente.",
+        "postpartum": "Posparto",
+        "postpartumDescription": "Tuve un bebé en el último año.",
+        "postPill": "Dejé el anticonceptivo recientemente",
+        "postPillDescription": "Dejé el anticonceptivo hormonal recientemente y mi ciclo todavía puede estar ajustándose."
       },
       "goal": {
         "title": "Objetivo de Sincronización",
@@ -74,6 +84,11 @@
         "symptomsDescription": "Enfoque en la comodidad y recuperación durante los cambios.",
         "energy": "Predecir Bajones de Energía",
         "energyDescription": "Anticipar bajones y ajustar la intensidad en consecuencia."
+      },
+      "pastPeriods": {
+        "title": "Periodos Pasados (Opcional)",
+        "description": "Agregar fechas de periodos pasados ayuda a la app a aprender la duración de tu ciclo y hacer mejores predicciones de inmediato.",
+        "addPastPeriod": "Agregar un periodo pasado"
       }
     },
     "healthConnect": {
@@ -155,8 +170,8 @@
       "unitSystem": "Sistema de Unidades",
       "metric": "Métrico",
       "imperial": "Imperial",
-      "biologicalSex": "Sexo Biológico",
-      "sexNote": "Selecciona tu sexo asignado al nacer para cálculos precisos.",
+      "gender": "Género",
+      "genderNote": "Nuestras fórmulas de calorías y macros provienen de estudios antiguos que solo reconocían dos grupos, por lo que no reflejan a todo el mundo. Elige la opción que mejor se ajuste a tu cuerpo y tus hormonas actuales (por ejemplo, si sigues una terapia hormonal), o selecciona «Otro» para usar valores promedio.",
       "male": "Masculino",
       "female": "Femenino",
       "other": "Otro / Prefiero no decir",

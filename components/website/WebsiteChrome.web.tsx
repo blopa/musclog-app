@@ -6,12 +6,10 @@ import { useTranslation } from 'react-i18next';
 
 import { StoreButtons } from '@/components/website/StoreButtons';
 import { SectionBackground } from '@/components/website/WebsiteBackgrounds';
+import { BODY_TEXT, BODY_TEXT_SOFT, BRAND_GREEN } from '@/components/website/websiteColors';
 import i18n from '@/lang/lang';
 import { resetAnalyticsConsent } from '@/utils/websiteAnalytics';
 
-const BRAND_GREEN = '#22C55E';
-const BODY_TEXT = '#D1D5DB';
-const BODY_TEXT_SOFT = '#9CA3AF';
 const CARD_BORDER = 'rgba(255, 255, 255, 0.12)';
 
 const languages = [

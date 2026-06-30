@@ -8,6 +8,7 @@ import NutritionGoal, { type EatingPhase } from '@/database/models/NutritionGoal
 import { NutritionGoalService } from '@/database/services';
 import { normalizeNutritionGoalTargetWeight } from '@/utils/nutritionGoalHelpers';
 
+import { BATCH_SIZE } from './paginationConstants';
 import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
 
@@ -29,8 +30,6 @@ export type NutritionGoalDayGroup = {
   items: NutritionGoalDisplayItem[];
 };
 
-const BATCH_SIZE = 20;
-
 const ICON = 'flag';
 
 function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): string {
@@ -38,12 +37,15 @@ function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): st
   if (isToday(date)) {
     return t('common.today');
   }
+
   if (isYesterday(date)) {
     return t('common.yesterday');
   }
+
   if (isThisWeek(date)) {
     return format(date, 'EEEE', { locale });
   }
+
   return format(date, 'MMM d, yyyy', { locale });
 }
 
@@ -53,6 +55,7 @@ function getPhaseLabel(phase: EatingPhase, t: TFunction): string {
   if (translated === key) {
     return phase;
   }
+
   return translated;
 }
 

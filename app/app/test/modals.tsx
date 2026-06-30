@@ -2301,6 +2301,7 @@ export default function ModalsTestScreen() {
       />
 
       <CycleLogModal
+        key={isCycleLogVisible ? 'cycle-log-open' : 'cycle-log-closed'}
         visible={isCycleLogVisible}
         onClose={() => setIsCycleLogVisible(false)}
         initialDate={new Date()}

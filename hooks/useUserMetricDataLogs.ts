@@ -9,6 +9,7 @@ import UserMetric, { type UserMetricType } from '@/database/models/UserMetric';
 import { UserMetricService } from '@/database/services';
 import { metricDisplayUnit, metricValueToDisplay, storedWeightToKg } from '@/utils/unitConversion';
 
+import { BATCH_SIZE } from './paginationConstants';
 import { useDateFnsLocale } from './useDateFnsLocale';
 import { useSettings } from './useSettings';
 import { useTheme } from './useTheme';
@@ -28,8 +29,6 @@ export type UserMetricDataDayGroup = {
   dateTimestamp: number;
   items: UserMetricDataDisplayItem[];
 };
-
-const BATCH_SIZE = 20;
 
 const ICON_BY_TYPE: Partial<Record<UserMetricType, string>> = {
   weight: 'monitor-weight',
@@ -60,12 +59,15 @@ function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): st
   if (isToday(date)) {
     return t('common.today');
   }
+
   if (isYesterday(date)) {
     return t('common.yesterday');
   }
+
   if (isThisWeek(date)) {
     return format(date, 'EEEE', { locale });
   }
+
   return format(date, 'MMM d', { locale });
 }
 
@@ -75,6 +77,7 @@ function getMetricTypeLabel(type: string, t: TFunction): string {
   if (translated === key) {
     return type.replace(/_/g, ' ');
   }
+
   return translated;
 }
 

@@ -5,10 +5,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FloatingShapes, GridPattern } from '@/components/website/WebsiteBackgrounds';
-
-const BRAND_GREEN_BRIGHT = '#00FFA3';
-const BODY_TEXT_SOFT = '#9CA3AF';
-const MUTED = '#6B7280';
+import { BODY_TEXT_SOFT, BRAND_GREEN_BRIGHT, MUTED } from '@/components/website/websiteColors';
 
 interface FormState {
   email: string;

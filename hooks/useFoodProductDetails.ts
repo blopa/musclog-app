@@ -8,6 +8,8 @@ import {
   parseCoreMacrosFromAlternateSource,
   type ProductDetailsQueryData,
 } from '@/utils/externalFoodProduct';
+import type { MusclogProduct } from '@/utils/musclogProduct';
+import type { USDAFood } from '@/utils/usdaMapper';
 
 import { useSettings } from './useSettings';
 
@@ -58,8 +60,7 @@ const PRODUCT_V3_PATH = '/api/v3/product';
 const REQUEST_TIMEOUT_MS = 20_000;
 
 type ProductV3Result =
-  | { data: ProductState; error?: undefined }
-  | { data?: undefined; error: { message: string } };
+  { data: ProductState; error?: undefined } | { data?: undefined; error: { message: string } };
 
 export async function fetchOFFProductByBarcode(
   barcode: string,
@@ -99,7 +100,7 @@ export async function fetchOFFProductByBarcode(
 export async function fetchUSDAProductByBarcode(
   barcode: string,
   signal?: AbortSignal
-): Promise<any> {
+): Promise<USDAFood | null> {
   const apiKey = process.env.EXPO_PUBLIC_USDA_API_KEY || '';
   const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(barcode)}&pageSize=1&api_key=${apiKey}`;
 
@@ -109,7 +110,7 @@ export async function fetchUSDAProductByBarcode(
       return null;
     }
 
-    const data = await res.json();
+    const data = (await res.json()) as { foods?: USDAFood[] };
     if (data.foods && data.foods.length > 0) {
       return data.foods[0];
     }
@@ -128,7 +129,7 @@ export async function fetchUSDAProductByBarcode(
 export async function fetchMusclogProductByBarcode(
   barcode: string,
   signal?: AbortSignal
-): Promise<any> {
+): Promise<MusclogProduct | null> {
   const url = `https://api.musclog.app/barcodes/${encodeURIComponent(barcode)}.json`;
   try {
     const res = await fetch(url, { signal, headers: { Accept: 'application/json' } });
@@ -136,7 +137,7 @@ export async function fetchMusclogProductByBarcode(
       return null;
     }
 
-    return await res.json();
+    return (await res.json()) as MusclogProduct;
   } catch {
     return null;
   }
@@ -145,7 +146,7 @@ export async function fetchMusclogProductByBarcode(
 export async function fetchUSDAProductById(
   fdcId: string | number,
   signal?: AbortSignal
-): Promise<any> {
+): Promise<USDAFood | null> {
   const apiKey = process.env.EXPO_PUBLIC_USDA_API_KEY || '';
   const url = `https://api.nal.usda.gov/fdc/v1/food/${fdcId}?api_key=${apiKey}`;
 
@@ -155,7 +156,7 @@ export async function fetchUSDAProductById(
       return null;
     }
 
-    return await res.json();
+    return (await res.json()) as USDAFood;
   } catch (e) {
     console.error('Error fetching USDA product by ID:', e);
     return null;
@@ -242,9 +243,10 @@ export function useFoodProductDetails(
             status: 'success',
             product: usdaData,
             source: 'usda',
-          } as any;
+          };
         }
-        return { status: 'failure' } as any;
+
+        return { status: 'failure' };
       }
 
       if (!barcode) {
@@ -271,7 +273,7 @@ export function useFoodProductDetails(
             async (signal) => {
               const usdaData = await fetchUSDAProductByBarcode(barcode, signal);
               return usdaData
-                ? ({ status: 'success', product: usdaData, source: 'usda' } as any)
+                ? ({ status: 'success', product: usdaData, source: 'usda' } as const)
                 : null;
             }
           );
@@ -286,11 +288,11 @@ export function useFoodProductDetails(
         if (includeMusclog) {
           const musclogData = await fetchMusclogProductByBarcode(barcode);
           if (musclogData) {
-            return { status: 'success', product: musclogData, source: 'musclog' } as any;
+            return { status: 'success', product: musclogData, source: 'musclog' };
           }
         }
 
-        return { status: 'failure', code: barcode } as any;
+        return { status: 'failure', code: barcode };
       }
 
       if (includeOpenFood) {
@@ -312,18 +314,18 @@ export function useFoodProductDetails(
             status: 'success',
             product: usdaData,
             source: 'usda',
-          } as any;
+          };
         }
       }
 
       if (includeMusclog && foodSearchSource === 'musclog') {
         const musclogData = await fetchMusclogProductByBarcode(barcode);
         if (musclogData) {
-          return { status: 'success', product: musclogData, source: 'musclog' } as any;
+          return { status: 'success', product: musclogData, source: 'musclog' };
         }
       }
 
-      return { status: 'failure', code: barcode } as any;
+      return { status: 'failure', code: barcode };
     },
     enabled: Boolean(barcode || usdaId),
     staleTime: 1000 * 60 * 10,
