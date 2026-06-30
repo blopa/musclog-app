@@ -70,6 +70,8 @@
     "build-android-nowait": "eas build -p android --profile production --clear-cache --no-wait",
     "build-android-local": "eas build -p android --profile production --local --clear-cache",
     "build-android-local-cache": "EAS_LOCAL_BUILD_WORKINGDIR=~/eas-local-builds eas build -p android --profile production --local --clear-cache",
+    "build-android-apk": "eas build -p android --profile production-apk --clear-cache",
+    "build-android-apk-local": "eas build -p android --profile production-apk --local --clear-cache",
     "build-android-web": "node scripts/sync-web-images.js && node scripts/export-web-wrapper.js",
     "submit-android": "eas submit --platform android",
     "build-android-preview": "eas build -p android --profile preview",

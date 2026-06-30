@@ -43,6 +43,13 @@
       "env": {
         "EAS_BUILD_PLATFORM": "device"
       }
+    },
+    "production-apk": {
+      "extends": "production",
+      "android": {
+        "buildType": "apk",
+        "applicationArchivePath": "android/app/build/outputs/apk/release/app-release.apk"
+      }
     }
   },
   "submit": {

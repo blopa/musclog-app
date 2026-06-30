@@ -21,7 +21,8 @@
 - `npm run typecheck`: Run TypeScript type checking
 - `npm run check-translations`: Validate i18n keys and locale consistency
 - `npm run reset-project`: Reset project to initial state via script
-- `npm run build-android`: Production build for Android via EAS
+- `npm run build-android`: Production build for Android via EAS (AAB for Google Play)
+- `npm run build-android-apk`: Production build as an installable, release-signed APK (for direct download / GitHub release attachment); `build-android-apk-local` builds it locally
 - `npm run playwright`: Run Playwright E2E tests (Web)
 - `npm run gb:build`: Build the Game Boy Color ROM
 - `npm run gb:lint`: Run `clang-tidy` on the Game Boy C sources

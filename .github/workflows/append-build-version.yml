@@ -1,0 +1,56 @@
+name: Append build version to release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  append-build-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository at release tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Read version info from app.json
+        id: appinfo
+        run: |
+          VERSION=$(jq -r '.expo.version' app.json)
+          VERSION_CODE=$(jq -r '.expo.android.versionCode' app.json)
+          BUILD_NUMBER=$(jq -r '.expo.ios.buildNumber' app.json)
+          {
+            echo "version=$VERSION"
+            echo "version_code=$VERSION_CODE"
+            echo "build_number=$BUILD_NUMBER"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Append build version to release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+          VERSION: ${{ steps.appinfo.outputs.version }}
+          VERSION_CODE: ${{ steps.appinfo.outputs.version_code }}
+          BUILD_NUMBER: ${{ steps.appinfo.outputs.build_number }}
+        run: |
+          MARKER="<!-- musclog-build-version -->"
+          CURRENT=$(gh release view "$TAG" --json body -q .body)
+
+          if printf '%s' "$CURRENT" | grep -qF "$MARKER"; then
+            echo "Build version footer already present; nothing to do."
+            exit 0
+          fi
+
+          {
+            printf '%s\n' "$CURRENT"
+            printf '\n%s\n' "$MARKER"
+            printf '%s\n' "---"
+            printf '📦 **App version \`%s\` (build %s)**\n\n' "$VERSION" "$VERSION_CODE"
+            printf -- '- Android `versionCode`: %s\n' "$VERSION_CODE"
+            printf -- '- iOS `buildNumber`: %s\n' "$BUILD_NUMBER"
+          } > release-notes.md
+
+          gh release edit "$TAG" --notes-file release-notes.md
+          echo "Appended build version footer to release $TAG."
