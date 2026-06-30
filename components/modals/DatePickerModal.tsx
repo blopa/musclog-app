@@ -40,6 +40,8 @@ type DatePickerModalProps = {
   onClose: () => void;
   selectedDate: Date;
   onDateSelect: (date: Date) => void | Promise<void>;
+  minDate?: Date;
+  maxDate?: Date;
   minYear?: number;
   maxYear?: number;
   quickDates?: QuickDateOption[];
@@ -50,6 +52,8 @@ export function DatePickerModal({
   onClose,
   selectedDate,
   onDateSelect,
+  minDate,
+  maxDate,
   minYear,
   maxYear,
   quickDates,
@@ -63,6 +67,13 @@ export function DatePickerModal({
   const [isConfirmLoading, setIsConfirmLoading] = useState(false);
   const [selectedYear, setSelectedYear] = useState(getYear(currentMonth));
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(getMonth(currentMonth));
+
+  const syncPickerState = () => {
+    setCurrentMonth(selectedDate);
+    setTempSelectedDate(selectedDate);
+    setSelectedYear(getYear(selectedDate));
+    setSelectedMonthIndex(getMonth(selectedDate));
+  };
 
   const today = new Date();
   const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
@@ -93,6 +104,10 @@ export function DatePickerModal({
   };
 
   const handleDateSelect = (date: Date) => {
+    if (!isDateSelectable(date)) {
+      return;
+    }
+
     setTempSelectedDate(date);
   };
 
@@ -112,6 +127,18 @@ export function DatePickerModal({
     const dayName = format(date, 'EEEE', { locale });
     const monthDay = format(date, 'MMM d', { locale });
     return `${dayName},\n${monthDay}`;
+  };
+
+  const isDateSelectable = (date: Date) => {
+    if (minDate && date < localCalendarDayDate(minDate)) {
+      return false;
+    }
+
+    if (maxDate && date > localCalendarDayDate(maxDate)) {
+      return false;
+    }
+
+    return true;
   };
 
   const handleMonthYearSelect = () => {
@@ -135,7 +162,13 @@ export function DatePickerModal({
   const years = Array.from({ length: maxYearToUse - minYearToUse + 1 }, (_, i) => maxYearToUse - i);
 
   return (
-    <FullScreenModal visible={visible} onClose={onClose} title="" scrollable={false}>
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      onShow={syncPickerState}
+      title=""
+      scrollable={false}
+    >
       <View className="flex-1">
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -199,12 +232,14 @@ export function DatePickerModal({
                   const isToday = isSameDay(day, today);
                   const isSelected = isSameDay(day, tempSelectedDate);
                   const isOtherMonth = !isCurrentMonth;
+                  const isDisabled = !isDateSelectable(day);
 
                   return (
                     <Pressable
                       key={index}
                       className="h-10 items-center justify-center"
                       style={{ width: '14.28%' }}
+                      disabled={isDisabled}
                       onPress={() => handleDateSelect(day)}
                     >
                       {isSelected ? (
@@ -222,7 +257,11 @@ export function DatePickerModal({
                           />
                           <Text
                             className="relative z-10 text-sm font-bold"
-                            style={{ color: theme.colors.text.black }}
+                            style={{
+                              color: isDisabled
+                                ? theme.colors.text.secondary
+                                : theme.colors.text.black,
+                            }}
                           >
                             {format(day, 'd')}
                           </Text>
@@ -235,7 +274,9 @@ export function DatePickerModal({
                         >
                           <Text
                             className={`text-sm font-medium ${
-                              isOtherMonth ? 'text-text-secondary' : 'text-text-primary'
+                              isOtherMonth || isDisabled
+                                ? 'text-text-secondary'
+                                : 'text-text-primary'
                             }`}
                           >
                             {format(day, 'd')}
@@ -269,6 +310,7 @@ export function DatePickerModal({
                 ]
               ).map((option, index) => {
                 const isQuickPickActive = isSameDay(tempSelectedDate, option.date);
+                const isDisabled = !isDateSelectable(option.date);
                 return (
                   <Button
                     key={index}
@@ -276,7 +318,12 @@ export function DatePickerModal({
                     variant={isQuickPickActive ? 'accent' : 'secondary'}
                     size="sm"
                     width="auto"
+                    disabled={isDisabled}
                     onPress={() => {
+                      if (isDisabled) {
+                        return;
+                      }
+
                       setTempSelectedDate(option.date);
                       setCurrentMonth(startOfMonth(option.date));
                     }}
@@ -309,7 +356,7 @@ export function DatePickerModal({
               size="sm"
               width="flex-1"
               loading={isConfirmLoading}
-              disabled={isConfirmLoading}
+              disabled={isConfirmLoading || !isDateSelectable(tempSelectedDate)}
               onPress={handleConfirm}
             />
           </View>

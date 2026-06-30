@@ -234,8 +234,13 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
   }, [cycle]);
 
   const value = useMemo(() => {
-    const stats = cycle ? MenstrualService.calculateCycleStats(periodLogs) : null;
-    const activePeriodLog = MenstrualService.getActivePeriodLog(periodLogs);
+    const stats = cycle
+      ? MenstrualService.calculateCycleStats(periodLogs, {
+          avgCycleLength: cycle.avgCycleLength,
+          avgPeriodDuration: cycle.avgPeriodDuration,
+        })
+      : null;
+    const activePeriodLog = MenstrualService.getActivePeriodLog(periodLogs, nowMs);
     const currentPhase =
       cycle && stats ? MenstrualService.calculateCurrentPhase(periodLogs, stats) : null;
     const nextPeriodPrediction =

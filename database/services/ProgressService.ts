@@ -953,7 +953,10 @@ export class ProgressService {
 
     const c = cycles[0];
     const periodLogs: PeriodLog[] = await PeriodLogRepository.fetchForCycle(c.id);
-    const stats = MenstrualService.calculateCycleStats(periodLogs);
+    const stats = MenstrualService.calculateCycleStats(periodLogs, {
+      avgCycleLength: c.avgCycleLength,
+      avgPeriodDuration: c.avgPeriodDuration,
+    });
 
     if (stats.logCount === 0) {
       return [];

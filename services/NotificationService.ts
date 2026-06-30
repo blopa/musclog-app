@@ -461,7 +461,11 @@ export class NotificationService {
 
     // Fetch period logs for this cycle
     const periodLogs = await PeriodLogRepository.fetchForCycle(cycle.id);
-    const stats = MenstrualService.calculateCycleStats(periodLogs);
+    const stats = MenstrualService.calculateCycleStats(periodLogs, {
+      avgCycleLength: cycle.avgCycleLength,
+      avgPeriodDuration: cycle.avgPeriodDuration,
+    });
+
     const nextPeriodPrediction = MenstrualService.predictNextPeriod(periodLogs, stats);
     if (!nextPeriodPrediction) {
       return;

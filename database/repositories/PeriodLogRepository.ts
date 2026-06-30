@@ -3,6 +3,10 @@ import { Q, Query } from '@nozbe/watermelondb';
 import { database } from '@/database/database-instance';
 import MenstrualCycle from '@/database/models/MenstrualCycle';
 import PeriodLog, { type PeriodLogCreate } from '@/database/models/PeriodLog';
+import {
+  findSameStartPeriodLog,
+  hasOverlappingPeriodLog,
+} from '@/database/repositories/periodLogOverlap';
 import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 import { getCurrentTimezone } from '@/utils/timezone';
 
@@ -120,6 +124,23 @@ export class PeriodLogRepository {
   ): Promise<PeriodLog> {
     const now = Date.now();
     return await database.write(async () => {
+      const existingLogs = await database
+        .get<PeriodLog>('period_logs')
+        .query(
+          Q.where('menstrual_cycle_id', cycle.id),
+          Q.where('deleted_at', Q.eq(null))
+        )
+        .fetch();
+
+      const sameStartLog = findSameStartPeriodLog(existingLogs, data.startDate);
+      if (sameStartLog) {
+        return sameStartLog;
+      }
+
+      if (hasOverlappingPeriodLog(existingLogs, data)) {
+        throw new Error('period_log_overlaps_existing');
+      }
+
       const preparedLog = database.get<PeriodLog>('period_logs').prepareCreate((log) => {
         fillPeriodLog(log, data, data.menstrualCycleId, now);
       });
@@ -159,6 +180,29 @@ export class PeriodLogRepository {
           Q.where('end_date', Q.eq(null))
         )
         .fetch();
+
+      const existingLogs = await database
+        .get<PeriodLog>('period_logs')
+        .query(
+          Q.where('menstrual_cycle_id', cycle.id),
+          Q.where('deleted_at', Q.eq(null))
+        )
+        .fetch();
+
+      const sameStartLog = findSameStartPeriodLog(existingLogs, data.startDate);
+      if (sameStartLog) {
+        return sameStartLog;
+      }
+
+      if (
+        hasOverlappingPeriodLog(
+          existingLogs,
+          data,
+          activeLogs.map((log) => log.id)
+        )
+      ) {
+        throw new Error('period_log_overlaps_existing');
+      }
 
       const preparedCloses = activeLogs.map((log) =>
         log.prepareUpdate((l) => {

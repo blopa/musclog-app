@@ -109,5 +109,25 @@ describe('MenstrualService', () => {
         'low'
       );
     });
+
+    it('should preserve stored cycle averages when history is sparse', () => {
+      const stats = MenstrualService.calculateCycleStats([makePeriodLog(periodStart)], {
+        avgCycleLength: 32,
+        avgPeriodDuration: 6,
+      });
+
+      expect(stats.avgCycleLength).toBe(32);
+      expect(stats.avgPeriodDuration).toBe(6);
+    });
+  });
+
+  describe('getActivePeriodLog', () => {
+    it('should ignore future open-ended logs', () => {
+      const futureLog = makePeriodLog(new Date('2024-01-10').getTime());
+
+      expect(
+        MenstrualService.getActivePeriodLog([futureLog], new Date('2024-01-05').getTime())
+      ).toBeNull();
+    });
   });
 });

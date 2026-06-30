@@ -66,11 +66,19 @@ export function PeriodLogModal({
 
   const titleKey = TITLE_KEYS[mode];
   const descriptionKey = DESCRIPTION_KEYS[mode];
+  const today = localCalendarDayDate(new Date());
+  const minDate =
+    mode === 'end' && activePeriodLog ? localCalendarDayDate(new Date(activePeriodLog.startDate)) : undefined;
 
   const handleSave = async () => {
     setIsSaving(true);
     try {
       const dateMs = localDayStartMs(selectedDate);
+      const todayMs = localDayStartMs(today);
+
+      if (dateMs > todayMs) {
+        throw new Error('period_date_in_future');
+      }
 
       if (mode === 'end') {
         await logPeriodEnd(dateMs);
@@ -90,16 +98,15 @@ export function PeriodLogModal({
     }
   };
 
-  const now = new Date();
   const quickDates =
     mode === 'past'
       ? getPastPeriodQuickDates(t)
       : [
-          { label: t('common.yesterday'), date: localCalendarDayDate(subDays(now, 1)) },
-          { label: t('common.oneWeekAgo'), date: localCalendarDayDate(subWeeks(now, 1)) },
+          { label: t('common.yesterday'), date: localCalendarDayDate(subDays(today, 1)) },
+          { label: t('common.oneWeekAgo'), date: localCalendarDayDate(subWeeks(today, 1)) },
           {
             label: t('common.weeksAgo', { count: 2 }),
-            date: localCalendarDayDate(subWeeks(now, 2)),
+            date: localCalendarDayDate(subWeeks(today, 2)),
           },
         ];
 
@@ -152,7 +159,7 @@ export function PeriodLogModal({
         {mode !== 'end' ? (
           <TouchableOpacity
             onPress={() => {
-              setSelectedDate(localCalendarDayDate(new Date()));
+              setSelectedDate(today);
             }}
             className="self-start"
           >
@@ -171,6 +178,8 @@ export function PeriodLogModal({
           setSelectedDate(localCalendarDayDate(date));
           setIsDatePickerVisible(false);
         }}
+        minDate={minDate}
+        maxDate={today}
         maxYear={getLocalCalendarYear(new Date())}
         quickDates={quickDates}
       />

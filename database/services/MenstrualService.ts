@@ -19,6 +19,11 @@ export interface CycleStats {
   logCount: number;
 }
 
+type CycleStatsFallback = {
+  avgCycleLength?: number | null;
+  avgPeriodDuration?: number | null;
+};
+
 const DEFAULT_CYCLE_LENGTH = 28;
 // The luteal phase (ovulation → next period) is stable at ~14 days across most cycles.
 // The follicular phase varies. We anchor predictions on this constant.
@@ -48,16 +53,21 @@ export class MenstrualService {
    * Cycle length = days between consecutive period start dates.
    * Period duration = days from start to end (for logs that have ended).
    */
-  static calculateCycleStats(periodLogs: PeriodLog[]): CycleStats {
+  static calculateCycleStats(
+    periodLogs: PeriodLog[],
+    fallback: CycleStatsFallback = {}
+  ): CycleStats {
     const sorted = [...periodLogs].sort((a, b) => a.startDate - b.startDate);
     const logCount = sorted.length;
+    const fallbackCycleLength = fallback.avgCycleLength ?? DEFAULT_CYCLE_LENGTH;
+    const fallbackPeriodDuration = fallback.avgPeriodDuration ?? DEFAULT_PERIOD_DURATION;
 
     if (logCount === 0) {
       return {
-        avgCycleLength: DEFAULT_CYCLE_LENGTH,
-        avgPeriodDuration: DEFAULT_PERIOD_DURATION,
-        minCycleLength: DEFAULT_CYCLE_LENGTH,
-        maxCycleLength: DEFAULT_CYCLE_LENGTH,
+        avgCycleLength: fallbackCycleLength,
+        avgPeriodDuration: fallbackPeriodDuration,
+        minCycleLength: fallbackCycleLength,
+        maxCycleLength: fallbackCycleLength,
         isIrregular: false,
         confidence: 'none',
         logCount: 0,
@@ -77,7 +87,7 @@ export class MenstrualService {
     const avgCycleLength =
       cycleLengths.length > 0
         ? Math.round(cycleLengths.reduce((sum, l) => sum + l, 0) / cycleLengths.length)
-        : DEFAULT_CYCLE_LENGTH;
+        : fallbackCycleLength;
 
     const minCycleLength = cycleLengths.length > 0 ? Math.min(...cycleLengths) : avgCycleLength;
     const maxCycleLength = cycleLengths.length > 0 ? Math.max(...cycleLengths) : avgCycleLength;
@@ -93,7 +103,7 @@ export class MenstrualService {
     const avgPeriodDuration =
       knownDurations.length > 0
         ? Math.round(knownDurations.reduce((sum, d) => sum + d, 0) / knownDurations.length)
-        : DEFAULT_PERIOD_DURATION;
+        : fallbackPeriodDuration;
 
     const confidence: PredictionConfidence = getPredictionConfidence(logCount);
 
@@ -122,8 +132,8 @@ export class MenstrualService {
   /**
    * Returns the active period log (has a start but no end), or null.
    */
-  static getActivePeriodLog(periodLogs: PeriodLog[]): PeriodLog | null {
-    return periodLogs.find((log) => log.isActive) ?? null;
+  static getActivePeriodLog(periodLogs: PeriodLog[], nowMs = Date.now()): PeriodLog | null {
+    return periodLogs.find((log) => log.isActive && log.startDate <= nowMs) ?? null;
   }
 
   /**
