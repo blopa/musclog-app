@@ -18,12 +18,7 @@ const MEAL_TYPES: { type: MealType; titleKey: string }[] = [
   { type: 'other', titleKey: 'food.meals.other' },
 ];
 
-type MealSectionsListProps = {
-  byMealType?: Partial<Record<MealType, Partial<MacroTotals>>>;
-  ungroupedByType: Record<MealType, ResolvedLogEntry[]>;
-  mealGroupsByType: Record<MealType, MealGroup[]>;
-  mealGroupImageUrls: Record<string, string>;
-  intuitiveMode?: boolean;
+type MealSectionsCallbacks = {
   onAddFood: (mealType: MealType) => void;
   onMealMenuPress: (mealType: MealType) => void;
   onFoodCardPress: (entry: ResolvedLogEntry) => void;
@@ -32,19 +27,31 @@ type MealSectionsListProps = {
   onMealGroupMenuPress: (group: MealGroup) => void;
 };
 
+type MealSectionsListProps = {
+  byMealType?: Partial<Record<MealType, Partial<MacroTotals>>>;
+  ungroupedByType: Record<MealType, ResolvedLogEntry[]>;
+  mealGroupsByType: Record<MealType, MealGroup[]>;
+  mealGroupImageUrls: Record<string, string>;
+  intuitiveMode?: boolean;
+  callbacks: MealSectionsCallbacks;
+};
+
 export function MealSectionsList({
   byMealType,
   ungroupedByType,
   mealGroupsByType,
   mealGroupImageUrls,
   intuitiveMode,
-  onAddFood,
-  onMealMenuPress,
-  onFoodCardPress,
-  onFoodMenuPress,
-  onMealGroupCardPress,
-  onMealGroupMenuPress,
+  callbacks,
 }: MealSectionsListProps) {
+  const {
+    onAddFood,
+    onMealMenuPress,
+    onFoodCardPress,
+    onFoodMenuPress,
+    onMealGroupCardPress,
+    onMealGroupMenuPress,
+  } = callbacks;
   const theme = useTheme();
   const { t } = useTranslation();
 

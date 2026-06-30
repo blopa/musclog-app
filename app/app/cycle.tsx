@@ -421,17 +421,16 @@ export default function CycleScreen() {
       </ScrollView>
 
       <CycleLogModal
-        key={`${isLogModalVisible ? 'open' : 'closed'}-${selectedDate.getTime()}`}
         visible={isLogModalVisible}
         onClose={() => setIsLogModalVisible(false)}
         initialDate={selectedDate}
       />
 
       <PeriodLogModal
-        key={`${isPeriodLogModalVisible ? 'open' : 'closed'}-${periodLogMode}`}
         visible={isPeriodLogModalVisible}
         onClose={() => setIsPeriodLogModalVisible(false)}
         mode={periodLogMode}
+        initialDate={selectedDate}
       />
 
       {cycle ? (

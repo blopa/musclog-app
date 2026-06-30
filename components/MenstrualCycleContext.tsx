@@ -5,10 +5,8 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
-import { Platform } from 'react-native';
 
 import { DEFAULT_PERIOD_DURATION } from '@/constants/cycle';
 import { isStaticExport } from '@/constants/platform';
@@ -30,7 +28,6 @@ import {
   PredictionConfidence,
 } from '@/database/services/MenstrualService';
 import { NotificationService } from '@/services/NotificationService';
-import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 
 export interface MenstrualCycleContextType {
   cycle: MenstrualCycle | null;
@@ -131,7 +128,7 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
       });
 
     return () => subscription.unsubscribe();
-  }, [cycle?.id]);
+  }, [cycle]);
 
   const updateCycle = useCallback(
     async (data: MenstrualCycleUpdate): Promise<void> => {
@@ -235,22 +232,6 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
       await cycle.updateCycle({ isActive: false });
     }
   }, [cycle]);
-
-  // Keep menstrual notifications in sync whenever period logs change.
-  // Skip the initial empty-array render (before the WatermelonDB subscription delivers data).
-  const isFirstPeriodLogsRef = useRef(true);
-  useEffect(() => {
-    if (Platform.OS === 'web' || isStaticExport || !cycle) {
-      return;
-    }
-
-    if (isFirstPeriodLogsRef.current) {
-      isFirstPeriodLogsRef.current = false;
-      return;
-    }
-
-    void NotificationService.scheduleMenstrualCycleNotifications();
-  }, [cycle, periodLogs]);
 
   const value = useMemo(() => {
     const stats = cycle ? MenstrualService.calculateCycleStats(periodLogs) : null;

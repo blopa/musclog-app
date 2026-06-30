@@ -1,13 +1,14 @@
 import { subDays, subWeeks } from 'date-fns';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
-import { getPastPeriodQuickDates, type PeriodLogMode } from '@/constants/cycle';
+import { type PeriodLogMode } from '@/constants/cycle';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useTheme } from '@/hooks/useTheme';
 import { getLocalCalendarYear, localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
+import { getPastPeriodQuickDates } from '@/utils/cycleUtils';
 import { handleError } from '@/utils/handleError';
 
 import { CenteredModal } from './CenteredModal';
@@ -49,6 +50,19 @@ export function PeriodLogModal({
   );
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (!visible) {
+      return;
+    }
+
+    const frame = requestAnimationFrame(() => {
+      setSelectedDate(localCalendarDayDate(initialDate ?? new Date()));
+      setIsDatePickerVisible(false);
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [visible, initialDate]);
 
   const titleKey = TITLE_KEYS[mode];
   const descriptionKey = DESCRIPTION_KEYS[mode];

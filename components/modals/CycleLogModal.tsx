@@ -3,7 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
-import { FLOW_LEVEL_KEYS, FLOW_LEVELS } from '@/constants/cycle';
+import {
+  EMOTIONAL_SYMPTOM_KEYS,
+  FLOW_LEVEL_KEYS,
+  FLOW_LEVELS,
+  PHYSICAL_SYMPTOM_KEYS,
+} from '@/constants/cycle';
 import { UserMetricService } from '@/database/services';
 import {
   getLocalCalendarYear,
@@ -17,31 +22,6 @@ import { getCurrentTimezone } from '@/utils/timezone';
 import { CenteredModal } from './CenteredModal';
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
-
-const PHYSICAL_SYMPTOM_KEYS: { key: string; value: string }[] = [
-  { key: 'cycle.symptoms.cramps', value: 'cramps' },
-  { key: 'cycle.symptoms.bloating', value: 'bloating' },
-  { key: 'cycle.symptoms.breastTenderness', value: 'breast_tenderness' },
-  { key: 'cycle.symptoms.headache', value: 'headache' },
-  { key: 'cycle.symptoms.migraine', value: 'migraine' },
-  { key: 'cycle.symptoms.nausea', value: 'nausea' },
-  { key: 'cycle.symptoms.backPain', value: 'back_pain' },
-  { key: 'cycle.symptoms.fatigue', value: 'fatigue' },
-  { key: 'cycle.symptoms.acne', value: 'acne' },
-  { key: 'cycle.symptoms.foodCravings', value: 'food_cravings' },
-  { key: 'cycle.symptoms.digestiveIssues', value: 'digestive_issues' },
-  { key: 'cycle.symptoms.hotFlashes', value: 'hot_flashes' },
-  { key: 'cycle.symptoms.insomnia', value: 'insomnia' },
-];
-
-const EMOTIONAL_SYMPTOM_KEYS: { key: string; value: string }[] = [
-  { key: 'cycle.symptoms.moodSwings', value: 'mood_swings' },
-  { key: 'cycle.symptoms.anxiety', value: 'anxiety' },
-  { key: 'cycle.symptoms.irritability', value: 'irritability' },
-  { key: 'cycle.symptoms.lowMood', value: 'low_mood' },
-  { key: 'cycle.symptoms.brainFog', value: 'brain_fog' },
-  { key: 'cycle.symptoms.lowLibido', value: 'low_libido' },
-];
 
 type CycleLogModalProps = {
   visible: boolean;
@@ -67,6 +47,19 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
     setExistingFlowId(null);
     setExistingSymptomId(null);
   };
+
+  useEffect(() => {
+    if (!visible) {
+      return;
+    }
+
+    const frame = requestAnimationFrame(() => {
+      setSelectedDate(localCalendarDayDate(initialDate || new Date()));
+      setIsDatePickerVisible(false);
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [visible, initialDate]);
 
   useEffect(() => {
     if (!visible) {

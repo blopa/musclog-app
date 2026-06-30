@@ -10,11 +10,12 @@ import { MasterLayout } from '@/components/MasterLayout';
 import { DatePickerModal } from '@/components/modals/DatePickerModal';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
-import { DEFAULT_PERIOD_DURATION, getPastPeriodQuickDates } from '@/constants/cycle';
+import { DEFAULT_PERIOD_DURATION } from '@/constants/cycle';
 import { MenstrualCycleRepository } from '@/database/repositories/MenstrualCycleRepository';
 import { MenstrualService } from '@/database/services/MenstrualService';
 import { useTheme } from '@/hooks/useTheme';
 import { getLocalCalendarYear, localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
+import { getPastPeriodQuickDates } from '@/utils/cycleUtils';
 import { setOnboardingCompleted } from '@/utils/onboardingService';
 import { getCurrentTimezone } from '@/utils/timezone';
 

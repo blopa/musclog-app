@@ -1,8 +1,5 @@
-import { subWeeks } from 'date-fns';
-
 import type { LifeStage } from '@/database/models/MenstrualCycle';
 import type { PredictionConfidence } from '@/database/services/MenstrualService';
-import { localCalendarDayDate } from '@/utils/calendarDate';
 
 export type PeriodLogMode = 'start' | 'end' | 'past';
 
@@ -31,14 +28,27 @@ export const CONFIDENCE_LABEL_KEYS: Partial<Record<PredictionConfidence, string>
   high: 'cycle.confidence.high',
 };
 
-/** Quick-date shortcuts shown in the date picker when logging a past period. */
-export function getPastPeriodQuickDates(
-  t: (key: string, opts?: Record<string, unknown>) => string
-): { label: string; date: Date }[] {
-  const now = new Date();
-  return [
-    { label: t('common.weeksAgo', { count: 4 }), date: localCalendarDayDate(subWeeks(now, 4)) },
-    { label: t('common.weeksAgo', { count: 8 }), date: localCalendarDayDate(subWeeks(now, 8)) },
-    { label: t('common.weeksAgo', { count: 12 }), date: localCalendarDayDate(subWeeks(now, 12)) },
-  ];
-}
+export const PHYSICAL_SYMPTOM_KEYS: { key: string; value: string }[] = [
+  { key: 'cycle.symptoms.cramps', value: 'cramps' },
+  { key: 'cycle.symptoms.bloating', value: 'bloating' },
+  { key: 'cycle.symptoms.breastTenderness', value: 'breast_tenderness' },
+  { key: 'cycle.symptoms.headache', value: 'headache' },
+  { key: 'cycle.symptoms.migraine', value: 'migraine' },
+  { key: 'cycle.symptoms.nausea', value: 'nausea' },
+  { key: 'cycle.symptoms.backPain', value: 'back_pain' },
+  { key: 'cycle.symptoms.fatigue', value: 'fatigue' },
+  { key: 'cycle.symptoms.acne', value: 'acne' },
+  { key: 'cycle.symptoms.foodCravings', value: 'food_cravings' },
+  { key: 'cycle.symptoms.digestiveIssues', value: 'digestive_issues' },
+  { key: 'cycle.symptoms.hotFlashes', value: 'hot_flashes' },
+  { key: 'cycle.symptoms.insomnia', value: 'insomnia' },
+];
+
+export const EMOTIONAL_SYMPTOM_KEYS: { key: string; value: string }[] = [
+  { key: 'cycle.symptoms.moodSwings', value: 'mood_swings' },
+  { key: 'cycle.symptoms.anxiety', value: 'anxiety' },
+  { key: 'cycle.symptoms.irritability', value: 'irritability' },
+  { key: 'cycle.symptoms.lowMood', value: 'low_mood' },
+  { key: 'cycle.symptoms.brainFog', value: 'brain_fog' },
+  { key: 'cycle.symptoms.lowLibido', value: 'low_libido' },
+];

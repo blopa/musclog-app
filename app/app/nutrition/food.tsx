@@ -177,6 +177,12 @@ export default function FoodScreen() {
   const {
     handleFoodCardPress,
     handleFoodMenuPress,
+    closeDeleteConfirm,
+    closeFoodDetails,
+    closeFoodLogDetails,
+    closeFoodMenu,
+    closeFoodMove,
+    closeFoodSplit,
     isDeleteConfirmationVisible,
     isDeleteFoodLoading,
     isDuplicateMode,
@@ -186,23 +192,29 @@ export default function FoodScreen() {
     isFoodMoveModalVisible,
     isFoodSplitLoading,
     isFoodSplitModalVisible,
+    openDeleteConfirm,
+    openDuplicate,
+    openEdit,
+    openMove,
+    openSplit,
     selectedFoodItem,
     selectedFoodLogDetails,
-    setIsDeleteConfirmationVisible,
-    setIsDeleteFoodLoading,
-    setIsDuplicateMode,
-    setIsFoodDetailsModalVisible,
-    setIsFoodMenuVisible,
-    setIsFoodMoveLoading,
-    setIsFoodMoveModalVisible,
-    setIsFoodSplitLoading,
-    setIsFoodSplitModalVisible,
-    setSelectedFoodItem,
-    setSelectedFoodLogDetails,
+    setDeleteFoodLoading,
+    setMoveFoodLoading,
+    setSplitFoodLoading,
   } = useFoodItemUi();
 
   const {
     addFoodModalPreselectedMealType,
+    clearMealSelection,
+    closeAddFoodModal,
+    closeCreateMeal,
+    closeDeleteAll,
+    closeMealAction,
+    closeMealInsights,
+    closeMealMenu,
+    closeMergeDuplicates,
+    closeScalePortion,
     createMealInitialFoods,
     handleAddFoodToMeal,
     handleMealMenuPress,
@@ -220,31 +232,33 @@ export default function FoodScreen() {
     isScaleMealPortionLoading,
     isScaleMealPortionModalVisible,
     mealActionMode,
+    openAddFoodModal,
+    openCreateMeal,
+    openDeleteAll,
+    openMealAction,
+    openMealInsights,
+    openMergeDuplicates,
+    openScalePortion,
     selectedMealForMenu,
     selectedMealType,
-    setAddFoodModalPreselectedMealType,
-    setCreateMealInitialFoods,
-    setIsAddFoodModalVisible,
-    setIsCreateMealModalVisible,
-    setIsDeleteAllMealLoading,
-    setIsDeleteAllMealVisible,
-    setIsMealActionLoading,
-    setIsMealActionModalVisible,
-    setIsMealInsightsLoading,
-    setIsMealInsightsVisible,
-    setIsMealMenuVisible,
-    setIsMergeDuplicatesLoading,
-    setIsMergeDuplicatesVisible,
-    setIsScaleMealPortionLoading,
-    setIsScaleMealPortionModalVisible,
-    setMealActionMode,
-    setSelectedMealForMenu,
-    setSelectedMealType,
+    selectMealType,
+    setDeleteAllMealLoading,
+    setMealActionLoading,
+    setMealInsightsLoading,
+    setMergeDuplicatesLoading,
+    setScaleMealPortionLoading,
   } = useMealUi();
 
   const {
     handleMealGroupCardPress,
     handleMealGroupMenuPress,
+    clearSelectedMealGroup,
+    closeDeleteMealGroup,
+    closeGroupAction,
+    closeGroupInsights,
+    closeGroupScale,
+    closeMealGroupDetails,
+    closeMealGroupMenu,
     isDeleteMealGroupLoading,
     isDeleteMealGroupVisible,
     isMealGroupActionLoading,
@@ -256,21 +270,16 @@ export default function FoodScreen() {
     isMealGroupScaleLoading,
     isMealGroupScaleModalVisible,
     mealGroupActionMode,
+    openGroupAction,
+    openGroupDeleteConfirm,
+    openGroupInsights,
+    openGroupScale,
     selectedMealGroup,
     selectedMealGroupForDetails,
-    setIsDeleteMealGroupLoading,
-    setIsDeleteMealGroupVisible,
-    setIsMealGroupActionLoading,
-    setIsMealGroupActionModalVisible,
-    setIsMealGroupDetailsVisible,
-    setIsMealGroupInsightsLoading,
-    setIsMealGroupInsightsVisible,
-    setIsMealGroupMenuVisible,
-    setIsMealGroupScaleLoading,
-    setIsMealGroupScaleModalVisible,
-    setMealGroupActionMode,
-    setSelectedMealGroup,
-    setSelectedMealGroupForDetails,
+    setDeleteMealGroupLoading,
+    setGroupActionLoading,
+    setGroupInsightsLoading,
+    setGroupScaleLoading,
   } = useMealGroupUi();
 
   const {
@@ -570,8 +579,7 @@ export default function FoodScreen() {
 
   // Meal Group menu action handlers
   const handleMealGroupScalePortion = () => {
-    setIsMealGroupMenuVisible(false);
-    setIsMealGroupScaleModalVisible(true);
+    openGroupScale();
   };
 
   const handleConfirmMealGroupScalePortion = async (newTotalGrams: number) => {
@@ -586,12 +594,11 @@ export default function FoodScreen() {
     const currentTotal = selectedMealGroup.entries.reduce((sum, e) => sum + e.gramWeight, 0);
     if (currentTotal <= 0) {
       showSnackbar('error', t('food.actions.scaleMealPortionError'));
-      setIsMealGroupScaleModalVisible(false);
-      setSelectedMealGroup(null);
+      closeGroupScale();
       return;
     }
 
-    setIsMealGroupScaleLoading(true);
+    setGroupScaleLoading(true);
     await flushLoadingPaint();
     try {
       await scaleMealNutritionLogsToTotalGrams(
@@ -600,33 +607,26 @@ export default function FoodScreen() {
       );
       showSnackbar('success', t('food.actions.scaleMealPortionSuccess'));
       await refresh();
-      setIsMealGroupScaleModalVisible(false);
-      setSelectedMealGroup(null);
+      closeGroupScale();
     } catch (error) {
       handleError(error, 'food.scaleMealGroupPortions', {
         snackbarMessage: t('food.actions.scaleMealPortionError'),
       });
     } finally {
-      setIsMealGroupScaleLoading(false);
+      setGroupScaleLoading(false);
     }
   };
 
   const handleMealGroupMove = () => {
-    setIsMealGroupMenuVisible(false);
-    setMealGroupActionMode('move');
-    setIsMealGroupActionModalVisible(true);
+    openGroupAction('move');
   };
 
   const handleMealGroupCopy = () => {
-    setIsMealGroupMenuVisible(false);
-    setMealGroupActionMode('copy');
-    setIsMealGroupActionModalVisible(true);
+    openGroupAction('copy');
   };
 
   const handleMealGroupSplit = () => {
-    setIsMealGroupMenuVisible(false);
-    setMealGroupActionMode('split');
-    setIsMealGroupActionModalVisible(true);
+    openGroupAction('split');
   };
 
   const handleConfirmMealGroupAction = async (
@@ -637,7 +637,7 @@ export default function FoodScreen() {
     if (!selectedMealGroup) {
       return;
     }
-    setIsMealGroupActionLoading(true);
+    setGroupActionLoading(true);
     await flushLoadingPaint();
     try {
       const logs = selectedMealGroup.entries.map((e) => e.log);
@@ -655,15 +655,12 @@ export default function FoodScreen() {
         snackbarMessage: t(getMealActionErrorKey(mealGroupActionMode)),
       });
     } finally {
-      setIsMealGroupActionLoading(false);
-      setIsMealGroupActionModalVisible(false);
-      setSelectedMealGroup(null);
+      closeGroupAction();
     }
   };
 
   const handleMealGroupGetInsights = () => {
-    setIsMealGroupMenuVisible(false);
-    setIsMealGroupInsightsVisible(true);
+    openGroupInsights();
   };
 
   const handleSaveMealForLater = async (
@@ -706,7 +703,7 @@ export default function FoodScreen() {
       return;
     }
 
-    setIsMealGroupInsightsLoading(true);
+    setGroupInsightsLoading(true);
     await flushLoadingPaint();
     try {
       const aiConfig = await AiService.getAiConfig();
@@ -733,15 +730,14 @@ export default function FoodScreen() {
 
       await ChatService.saveMessage({ sender: 'coach', message: response, context: 'nutrition' });
       await SettingsService.setCoachConversationContext('nutrition');
-      setIsMealGroupInsightsVisible(false);
-      setSelectedMealGroup(null);
+      closeGroupInsights();
       openCoach();
     } catch (error) {
       handleError(error, 'food.getMealGroupInsights', {
         snackbarMessage: t('food.actions.getMealInsightsError'),
       });
     } finally {
-      setIsMealGroupInsightsLoading(false);
+      setGroupInsightsLoading(false);
     }
   };
 
@@ -749,48 +745,20 @@ export default function FoodScreen() {
     if (!selectedMealGroup) {
       return;
     }
-    setIsDeleteMealGroupLoading(true);
+
+    setDeleteMealGroupLoading(true);
     try {
       await NutritionService.deleteNutritionLogsBatch(selectedMealGroup.entries.map((e) => e.log));
       await refresh();
     } catch {
       showSnackbar('error', t('errors.somethingWentWrong'));
     } finally {
-      setIsDeleteMealGroupLoading(false);
-      setIsDeleteMealGroupVisible(false);
-      setSelectedMealGroup(null);
+      closeDeleteMealGroup();
     }
   };
 
-  const handleEditFood = () => {
-    setIsFoodMenuVisible(false);
-    setIsDuplicateMode(false);
-    setIsFoodDetailsModalVisible(true);
-  };
-
-  const handleDuplicateFood = () => {
-    setIsFoodMenuVisible(false);
-    setIsDuplicateMode(true);
-    setIsFoodDetailsModalVisible(true);
-  };
-
-  const handleDeleteFood = () => {
-    setIsFoodMenuVisible(false);
-    setIsDeleteConfirmationVisible(true);
-  };
-
-  const handleMoveFood = () => {
-    setIsFoodMenuVisible(false);
-    setIsFoodMoveModalVisible(true);
-  };
-
-  const handleSplitFood = () => {
-    setIsFoodMenuVisible(false);
-    setIsFoodSplitModalVisible(true);
-  };
-
   const handleFoodCreateMeal = () => {
-    setIsFoodMenuVisible(false);
+    closeFoodMenu();
     if (!selectedFoodItem || !selectedFoodItem.food) {
       return;
     }
@@ -805,15 +773,15 @@ export default function FoodScreen() {
       },
     ];
 
-    setCreateMealInitialFoods(items);
-    setIsCreateMealModalVisible(true);
+    openCreateMeal(items);
   };
 
   const handleConfirmFoodMove = async (targetDate: Date, targetMealType: MealType) => {
     if (!selectedFoodItem) {
       return;
     }
-    setIsFoodMoveLoading(true);
+
+    setMoveFoodLoading(true);
     await flushLoadingPaint();
     try {
       await NutritionService.moveNutritionLogsToDate(
@@ -821,6 +789,7 @@ export default function FoodScreen() {
         targetDate,
         targetMealType
       );
+
       showSnackbar('success', t('food.actions.moveSuccess'));
       await refresh();
     } catch (error) {
@@ -828,9 +797,7 @@ export default function FoodScreen() {
       console.error('Error moving food:', error);
       showSnackbar('error', t('food.actions.moveError'));
     } finally {
-      setIsFoodMoveLoading(false);
-      setIsFoodMoveModalVisible(false);
-      setSelectedFoodItem(null);
+      closeFoodMove();
     }
   };
 
@@ -842,7 +809,8 @@ export default function FoodScreen() {
     if (!selectedFoodItem || !splitPercentage) {
       return;
     }
-    setIsFoodSplitLoading(true);
+
+    setSplitFoodLoading(true);
     await flushLoadingPaint();
     try {
       await NutritionService.splitNutritionLogsToDate(
@@ -858,9 +826,7 @@ export default function FoodScreen() {
       console.error('Error splitting food:', error);
       showSnackbar('error', t('food.actions.splitError'));
     } finally {
-      setIsFoodSplitLoading(false);
-      setIsFoodSplitModalVisible(false);
-      setSelectedFoodItem(null);
+      closeFoodSplit();
     }
   };
 
@@ -869,7 +835,7 @@ export default function FoodScreen() {
       return;
     }
 
-    setIsDeleteFoodLoading(true);
+    setDeleteFoodLoading(true);
     await flushLoadingPaint();
     try {
       // The @writer method returns a promise that resolves when the operation completes
@@ -880,17 +846,11 @@ export default function FoodScreen() {
       console.error('Error deleting food:', error);
       showSnackbar('error', t('food.actions.deleteError'));
     } finally {
-      setIsDeleteFoodLoading(false);
-      // Always close the modal and clear selection, regardless of success or error
-      setIsDeleteConfirmationVisible(false);
-      setSelectedFoodItem(null);
+      closeDeleteConfirm();
     }
   };
 
-  const handleCancelDelete = () => {
-    setIsDeleteConfirmationVisible(false);
-    setSelectedFoodItem(null);
-  };
+  const handleCancelDelete = () => closeDeleteConfirm();
 
   const foodMenuItems = [
     {
@@ -899,7 +859,7 @@ export default function FoodScreen() {
       iconBgColor: theme.colors.accent.primary10,
       title: t('food.actions.edit'),
       description: t('food.actions.editDesc'),
-      onPress: handleEditFood,
+      onPress: openEdit,
     },
     {
       icon: Copy,
@@ -907,7 +867,7 @@ export default function FoodScreen() {
       iconBgColor: theme.colors.status.purple10,
       title: t('food.actions.duplicate'),
       description: t('food.actions.duplicateDesc'),
-      onPress: handleDuplicateFood,
+      onPress: openDuplicate,
     },
     {
       icon: ArrowRight,
@@ -915,7 +875,7 @@ export default function FoodScreen() {
       iconBgColor: theme.colors.status.purple10,
       title: t('food.actions.move'),
       description: t('food.actions.moveDesc'),
-      onPress: handleMoveFood,
+      onPress: openMove,
     },
     {
       icon: Scissors,
@@ -923,7 +883,7 @@ export default function FoodScreen() {
       iconBgColor: theme.colors.status.warning10,
       title: t('food.actions.split'),
       description: t('food.actions.splitDesc'),
-      onPress: handleSplitFood,
+      onPress: openSplit,
     },
     {
       icon: UtensilsCrossed,
@@ -940,10 +900,10 @@ export default function FoodScreen() {
       title: t('food.mealGroup.saveForLater'),
       description: t('food.mealGroup.saveForLaterDesc'),
       onPress: () => {
-        setIsFoodMenuVisible(false);
+        closeFoodMenu();
         if (selectedFoodItem) {
           requestSaveForLater([selectedFoodItem.log], selectedFoodItem.log.type);
-          setSelectedFoodItem(null);
+          closeFoodMenu(true);
         }
       },
     },
@@ -954,20 +914,19 @@ export default function FoodScreen() {
       iconBgColor: theme.colors.status.error20,
       title: t('food.actions.delete'),
       description: t('food.actions.deleteDesc'),
-      onPress: handleDeleteFood,
+      onPress: openDeleteConfirm,
     },
   ];
 
   const handleDeleteAllMeal = () => {
-    setIsMealMenuVisible(false);
-    setIsDeleteAllMealVisible(true);
+    openDeleteAll();
   };
 
   const handleConfirmDeleteAllMeal = async () => {
     if (!selectedMealForMenu) {
       return;
     }
-    setIsDeleteAllMealLoading(true);
+    setDeleteAllMealLoading(true);
     await flushLoadingPaint();
     try {
       const mealFoods = mealsByType[selectedMealForMenu];
@@ -979,26 +938,20 @@ export default function FoodScreen() {
       console.error('Error deleting all meal items:', error);
       showSnackbar('error', t('food.actions.deleteAllError'));
     } finally {
-      setIsDeleteAllMealLoading(false);
-      setIsDeleteAllMealVisible(false);
-      setSelectedMealForMenu(null);
+      closeDeleteAll();
     }
   };
 
   const handleMoveMealToAnotherDay = () => {
-    setIsMealMenuVisible(false);
-    setMealActionMode('move');
-    setIsMealActionModalVisible(true);
+    openMealAction('move');
   };
 
   const handleCopyMealToAnotherDay = () => {
-    setIsMealMenuVisible(false);
-    setMealActionMode('copy');
-    setIsMealActionModalVisible(true);
+    openMealAction('copy');
   };
 
   const handleCreateMealFromFood = () => {
-    setIsMealMenuVisible(false);
+    closeMealMenu();
     if (!selectedMealForMenu) {
       return;
     }
@@ -1022,29 +975,26 @@ export default function FoodScreen() {
 
     if (items.length === 0) {
       showSnackbar('error', t('food.createMeal.noFoods') ?? t('common.error'));
-      setSelectedMealForMenu(null);
+      clearMealSelection();
       return;
     }
 
-    setCreateMealInitialFoods(items);
-    setIsCreateMealModalVisible(true);
+    openCreateMeal(items);
   };
 
   const handleSplitMeal = () => {
-    setIsMealMenuVisible(false);
-    setMealActionMode('split');
-    setIsMealActionModalVisible(true);
+    openMealAction('split');
   };
 
   const handleScaleMealPortion = () => {
-    setIsMealMenuVisible(false);
-    setIsScaleMealPortionModalVisible(true);
+    openScalePortion();
   };
 
   const handleConfirmScaleMealPortion = async (newTotalGrams: number) => {
     if (!selectedMealForMenu) {
       return;
     }
+
     if (newTotalGrams < 1) {
       showSnackbar('error', t('food.actions.scaleMealPortionInvalid'));
       return;
@@ -1054,12 +1004,11 @@ export default function FoodScreen() {
     const currentTotal = mealFoods.reduce((sum, e) => sum + e.gramWeight, 0);
     if (currentTotal <= 0) {
       showSnackbar('error', t('food.actions.scaleMealPortionError'));
-      setIsScaleMealPortionModalVisible(false);
-      setSelectedMealForMenu(null);
+      closeScalePortion();
       return;
     }
 
-    setIsScaleMealPortionLoading(true);
+    setScaleMealPortionLoading(true);
     await flushLoadingPaint();
     try {
       await scaleMealNutritionLogsToTotalGrams(
@@ -1068,20 +1017,19 @@ export default function FoodScreen() {
       );
       showSnackbar('success', t('food.actions.scaleMealPortionSuccess'));
       await refresh();
-      setIsScaleMealPortionModalVisible(false);
-      setSelectedMealForMenu(null);
+      closeScalePortion();
     } catch (error) {
       await handleError(error, 'food.scaleMealPortions', {
         snackbarMessage: t('food.actions.scaleMealPortionError'),
         consoleMessage: 'Error scaling meal portions:',
       });
     } finally {
-      setIsScaleMealPortionLoading(false);
+      setScaleMealPortionLoading(false);
     }
   };
 
   const handleMergeDuplicates = () => {
-    setIsMealMenuVisible(false);
+    closeMealMenu();
     if (!selectedMealForMenu) {
       return;
     }
@@ -1089,11 +1037,11 @@ export default function FoodScreen() {
     const mealFoods = mealsByType[selectedMealForMenu] || [];
     if (!mealHasUngroupedDuplicateFoods(mealFoods)) {
       showSnackbar('success', t('food.actions.mergeDuplicatesNone'));
-      setSelectedMealForMenu(null);
+      clearMealSelection();
       return;
     }
 
-    setIsMergeDuplicatesVisible(true);
+    openMergeDuplicates();
   };
 
   const handleConfirmMergeDuplicates = async () => {
@@ -1106,7 +1054,7 @@ export default function FoodScreen() {
       return;
     }
 
-    setIsMergeDuplicatesLoading(true);
+    setMergeDuplicatesLoading(true);
     await flushLoadingPaint();
     try {
       const grouped = new Map<string, typeof entries>();
@@ -1144,14 +1092,13 @@ export default function FoodScreen() {
         consoleMessage: 'Error merging duplicate foods:',
       });
     } finally {
-      setIsMergeDuplicatesLoading(false);
-      setIsMergeDuplicatesVisible(false);
+      closeMergeDuplicates();
       if (selectedMealForMenu) {
-        setSelectedMealForMenu(null);
+        clearMealSelection();
       }
 
       if (selectedMealGroup) {
-        setSelectedMealGroup(null);
+        clearSelectedMealGroup();
       }
     }
   };
@@ -1164,7 +1111,8 @@ export default function FoodScreen() {
     if (!selectedMealForMenu) {
       return;
     }
-    setIsMealActionLoading(true);
+
+    setMealActionLoading(true);
     await flushLoadingPaint();
     try {
       const mealFoods = mealsByType[selectedMealForMenu];
@@ -1185,15 +1133,12 @@ export default function FoodScreen() {
         consoleMessage: 'Error performing meal action:',
       });
     } finally {
-      setIsMealActionLoading(false);
-      setIsMealActionModalVisible(false);
-      setSelectedMealForMenu(null);
+      closeMealAction();
     }
   };
 
   const handleGetMealInsights = () => {
-    setIsMealMenuVisible(false);
-    setIsMealInsightsVisible(true);
+    openMealInsights();
   };
 
   const handleSubmitMealInsights = async (userRemarks: string) => {
@@ -1201,7 +1146,7 @@ export default function FoodScreen() {
       return;
     }
 
-    setIsMealInsightsLoading(true);
+    setMealInsightsLoading(true);
     await flushLoadingPaint();
     try {
       const aiConfig = await AiService.getAiConfig();
@@ -1229,8 +1174,7 @@ export default function FoodScreen() {
 
       await ChatService.saveMessage({ sender: 'coach', message: response, context: 'nutrition' });
       await SettingsService.setCoachConversationContext('nutrition');
-      setIsMealInsightsVisible(false);
-      setSelectedMealForMenu(null);
+      closeMealInsights();
       openCoach();
     } catch (error) {
       await handleError(error, 'food.getMealInsights', {
@@ -1238,7 +1182,7 @@ export default function FoodScreen() {
         consoleMessage: 'Error getting meal insights:',
       });
     } finally {
-      setIsMealInsightsLoading(false);
+      setMealInsightsLoading(false);
     }
   };
 
@@ -1251,6 +1195,7 @@ export default function FoodScreen() {
     if (!selectedMealGroup) {
       return 0;
     }
+
     return selectedMealGroup.entries.reduce((sum, e) => sum + e.gramWeight, 0);
   }, [selectedMealGroup]);
 
@@ -1263,6 +1208,7 @@ export default function FoodScreen() {
     if (!selectedMealForMenu) {
       return 0;
     }
+
     return (mealsByType[selectedMealForMenu] || []).reduce((sum, e) => sum + e.gramWeight, 0);
   }, [selectedMealForMenu, mealsByType]);
 
@@ -1343,14 +1289,14 @@ export default function FoodScreen() {
       title: t('food.mealGroup.saveForLater'),
       description: t('food.mealGroup.saveForLaterDesc'),
       onPress: () => {
-        setIsMealMenuVisible(false);
+        closeMealMenu();
         if (selectedMealForMenu) {
           const mealFoods = mealsByType[selectedMealForMenu] || [];
           requestSaveForLater(
             mealFoods.map((e) => e.log),
             selectedMealForMenu
           );
-          setSelectedMealForMenu(null);
+          clearMealSelection();
         }
       },
     },
@@ -1417,13 +1363,13 @@ export default function FoodScreen() {
       title: t('food.mealGroup.saveForLater'),
       description: t('food.mealGroup.saveForLaterDesc'),
       onPress: () => {
-        setIsMealGroupMenuVisible(false);
+        closeMealGroupMenu();
         if (selectedMealGroup) {
           requestSaveForLater(
             selectedMealGroup.entries.map((e) => e.log),
             selectedMealGroup.entries[0]?.log.type || 'other'
           );
-          setSelectedMealGroup(null);
+          clearSelectedMealGroup();
         }
       },
     },
@@ -1435,10 +1381,7 @@ export default function FoodScreen() {
       title: t('food.actions.deleteAll'),
       description: t('food.actions.deleteAllDesc'),
       titleColor: theme.colors.status.error,
-      onPress: () => {
-        setIsMealGroupMenuVisible(false);
-        setIsDeleteMealGroupVisible(true);
-      },
+      onPress: openGroupDeleteConfirm,
     },
   ];
 
@@ -1523,7 +1466,7 @@ export default function FoodScreen() {
                 description={t('emptyStates.foods.description')}
                 buttonLabel={t('emptyStates.foods.buttonLabel')}
                 buttonVariant="secondary"
-                onButtonPress={() => setIsAddFoodModalVisible(true)}
+                onButtonPress={() => openAddFoodModal()}
               />
             ) : null}
 
@@ -1638,8 +1581,7 @@ export default function FoodScreen() {
                         size="sm"
                         width="flex-1"
                         onPress={() => {
-                          setAddFoodModalPreselectedMealType(null);
-                          setIsAddFoodModalVisible(true);
+                          openAddFoodModal();
                         }}
                       />
                     </View>
@@ -1651,12 +1593,14 @@ export default function FoodScreen() {
                     mealGroupsByType={mealGroupsByType}
                     mealGroupImageUrls={mealGroupImageUrls}
                     intuitiveMode={intuitiveEatingMode}
-                    onAddFood={handleAddFoodToMeal}
-                    onMealMenuPress={handleMealMenuPress}
-                    onFoodCardPress={handleFoodCardPress}
-                    onFoodMenuPress={handleFoodMenuPress}
-                    onMealGroupCardPress={handleMealGroupCardPress}
-                    onMealGroupMenuPress={handleMealGroupMenuPress}
+                    callbacks={{
+                      onAddFood: handleAddFoodToMeal,
+                      onMealMenuPress: handleMealMenuPress,
+                      onFoodCardPress: handleFoodCardPress,
+                      onFoodMenuPress: handleFoodMenuPress,
+                      onMealGroupCardPress: handleMealGroupCardPress,
+                      onMealGroupMenuPress: handleMealGroupMenuPress,
+                    }}
                   />
                 </>
               </AnimatedContent>
@@ -1677,15 +1621,15 @@ export default function FoodScreen() {
         onTrackFromSavedPress={() => {
           setIsSavedForLaterModalVisible(true);
         }}
-        onClose={() => setIsAddFoodModalVisible(false)}
+        onClose={closeAddFoodModal}
         onMealTypeSelect={(mealType) => {
-          setSelectedMealType(mealType);
-          setIsAddFoodModalVisible(false);
+          selectMealType(mealType);
+          closeAddFoodModal();
           setFoodSearchInitialTab('all');
           setIsFoodSearchModalVisible(true);
         }}
         onAiCameraPress={() => {
-          setIsAddFoodModalVisible(false);
+          closeAddFoodModal();
           openCamera({
             mode: 'ai-meal-photo',
             hideCameraModePicker: false,
@@ -1694,7 +1638,7 @@ export default function FoodScreen() {
           });
         }}
         onScanBarcodePress={() => {
-          setIsAddFoodModalVisible(false);
+          closeAddFoodModal();
           openCamera({
             mode: 'barcode-scan',
             hideCameraModePicker: false,
@@ -1704,23 +1648,22 @@ export default function FoodScreen() {
           });
         }}
         onSearchFoodPress={() => {
-          setIsAddFoodModalVisible(false);
+          closeAddFoodModal();
           setFoodSearchInitialTab('all');
           setIsFoodSearchModalVisible(true);
         }}
         onCreateCustomFoodPress={() => {
-          // Open CreateCustomFoodModal
-          setIsAddFoodModalVisible(false);
+          closeAddFoodModal();
           setIsCreateCustomFoodVisible(true);
         }}
         onTrackCustomMealPress={() => {
-          setIsAddFoodModalVisible(false);
+          closeAddFoodModal();
           setFoodSearchInitialTab('meals');
           setIsFoodSearchModalVisible(true);
         }}
         onQuickTrackMealPress={() => {
           setIsQuickTrackMealModalVisible(true);
-          setIsAddFoodModalVisible(false);
+          closeAddFoodModal();
         }}
       />
 
@@ -1742,17 +1685,15 @@ export default function FoodScreen() {
       <CreateMealModal
         visible={isCreateMealModalVisible}
         onClose={() => {
-          setIsCreateMealModalVisible(false);
-          setCreateMealInitialFoods([]);
-          setSelectedMealForMenu(null);
-          setSelectedFoodItem(null);
+          closeCreateMeal();
+          clearMealSelection();
+          closeFoodMenu(true);
         }}
         onSave={() => {
           refresh();
-          setIsCreateMealModalVisible(false);
-          setCreateMealInitialFoods([]);
-          setSelectedMealForMenu(null);
-          setSelectedFoodItem(null);
+          closeCreateMeal();
+          clearMealSelection();
+          closeFoodMenu(true);
         }}
         initialFoods={createMealInitialFoods}
         onFirstMealCreated={() => triggerConfetti(ConfettiActivity.FIRST_MEAL_CREATED)}
@@ -1844,7 +1785,7 @@ export default function FoodScreen() {
       {/* Food Menu Modal */}
       <BottomPopUpMenu
         visible={isFoodMenuVisible}
-        onClose={() => setIsFoodMenuVisible(false)}
+        onClose={closeFoodMenu}
         title={selectedFoodItem?.displayName ?? t('food.generic')}
         subtitle={`${getSimpleServingDisplay(selectedFoodItem?.gramWeight || 0, units, appLocale)} • ${t('common.amount_kcal', { amount: formatInteger(Math.round(selectedFoodItem?.nutrients?.calories || 0), { useGrouping: false }) })}`}
         items={foodMenuItems}
@@ -1853,7 +1794,7 @@ export default function FoodScreen() {
       {/* Meal Menu Modal */}
       <BottomPopUpMenu
         visible={isMealMenuVisible}
-        onClose={() => setIsMealMenuVisible(false)}
+        onClose={closeMealMenu}
         title={selectedMealForMenu ? t(`food.meals.${selectedMealForMenu}`) : ''}
         subtitle={t('food.actions.mealMenuSubtitle')}
         items={mealMenuItems}
@@ -1862,10 +1803,7 @@ export default function FoodScreen() {
       {/* Delete All Meal Confirmation Modal */}
       <ConfirmationModal
         visible={isDeleteAllMealVisible ? !!selectedMealForMenu : false}
-        onClose={() => {
-          setIsDeleteAllMealVisible(false);
-          setSelectedMealForMenu(null);
-        }}
+        onClose={closeDeleteAll}
         onConfirm={handleConfirmDeleteAllMeal}
         title={t('food.actions.deleteAllConfirmTitle')}
         message={t('food.actions.deleteAllConfirmMessage', {
@@ -1887,13 +1825,13 @@ export default function FoodScreen() {
             : false
         }
         onClose={() => {
-          setIsMergeDuplicatesVisible(false);
+          closeMergeDuplicates();
           if (selectedMealForMenu !== null) {
-            setSelectedMealForMenu(null);
+            clearMealSelection();
           }
 
           if (selectedMealGroup !== null) {
-            setSelectedMealGroup(null);
+            clearSelectedMealGroup();
           }
         }}
         onConfirm={handleConfirmMergeDuplicates}
@@ -1913,10 +1851,7 @@ export default function FoodScreen() {
       {/* Meal Insights Modal */}
       <MealInsightsModal
         visible={isMealInsightsVisible}
-        onClose={() => {
-          setIsMealInsightsVisible(false);
-          setSelectedMealForMenu(null);
-        }}
+        onClose={closeMealInsights}
         mealType={selectedMealForMenu || 'breakfast'}
         isLoading={isMealInsightsLoading}
         onSubmit={handleSubmitMealInsights}
@@ -1925,10 +1860,7 @@ export default function FoodScreen() {
       {/* Move / Copy Meal Modal */}
       <MoveCopyMealModal
         visible={isMealActionModalVisible ? !!selectedMealForMenu : false}
-        onClose={() => {
-          setIsMealActionModalVisible(false);
-          setSelectedMealForMenu(null);
-        }}
+        onClose={closeMealAction}
         onConfirm={handleConfirmMealAction}
         mode={mealActionMode}
         sourceMealType={selectedMealForMenu || 'breakfast'}
@@ -1939,10 +1871,7 @@ export default function FoodScreen() {
       {/* Scale meal total portion (grams) */}
       <ScaleMealPortionModal
         visible={isScaleMealPortionModalVisible ? !!selectedMealForMenu : false}
-        onClose={() => {
-          setIsScaleMealPortionModalVisible(false);
-          setSelectedMealForMenu(null);
-        }}
+        onClose={closeScalePortion}
         onConfirm={handleConfirmScaleMealPortion}
         initialTotalGrams={selectedMealTotalGrams}
         mealNutrients={selectedMealNutrients}
@@ -1952,10 +1881,7 @@ export default function FoodScreen() {
       {/* Move Food Modal */}
       <MoveCopyMealModal
         visible={isFoodMoveModalVisible ? !!selectedFoodItem : false}
-        onClose={() => {
-          setIsFoodMoveModalVisible(false);
-          setSelectedFoodItem(null);
-        }}
+        onClose={closeFoodMove}
         onConfirm={handleConfirmFoodMove}
         mode="move"
         sourceMealType={selectedFoodItem?.log.type || 'breakfast'}
@@ -1970,10 +1896,7 @@ export default function FoodScreen() {
       {/* Split Food Modal */}
       <MoveCopyMealModal
         visible={isFoodSplitModalVisible ? !!selectedFoodItem : false}
-        onClose={() => {
-          setIsFoodSplitModalVisible(false);
-          setSelectedFoodItem(null);
-        }}
+        onClose={closeFoodSplit}
         onConfirm={handleConfirmFoodSplit}
         mode="split"
         title={t('food.actions.splitFoodModalTitle')}
@@ -2024,11 +1947,7 @@ export default function FoodScreen() {
 
       <FoodMealTrackingDetailsModal
         visible={isFoodDetailsModalVisible ? !!selectedFoodItem : false}
-        onClose={() => {
-          setIsFoodDetailsModalVisible(false);
-          setIsDuplicateMode(false);
-          setSelectedFoodItem(null);
-        }}
+        onClose={closeFoodDetails}
         food={selectedFoodItem?.food || null}
         foodLog={selectedFoodItem && !isDuplicateMode ? selectedFoodItem.log : undefined}
         initialMealType={
@@ -2060,18 +1979,14 @@ export default function FoodScreen() {
 
       <FoodMealDetailsModal
         visible={selectedFoodLogDetails !== null}
-        onClose={() => setSelectedFoodLogDetails(null)}
+        onClose={closeFoodLogDetails}
         entry={selectedFoodLogDetails}
       />
 
       {/* Meal Group Options Menu */}
       <BottomPopUpMenu
         visible={isMealGroupMenuVisible}
-        onClose={() => {
-          setIsMealGroupMenuVisible(false);
-          // Note: We don't clear selectedMealGroup here because the action handlers
-          // need it to open their respective modals. It's cleared in the modals' onClose/onConfirm.
-        }}
+        onClose={closeMealGroupMenu}
         title={selectedMealGroup?.mealName || t('food.mealGroup.mealOptions')}
         subtitle={t('food.actions.mealMenuSubtitle')}
         items={mealGroupMenuItems}
@@ -2080,10 +1995,7 @@ export default function FoodScreen() {
       {/* Meal Group Scale Portion Modal */}
       <ScaleMealPortionModal
         visible={isMealGroupScaleModalVisible ? selectedMealGroup !== null : false}
-        onClose={() => {
-          setIsMealGroupScaleModalVisible(false);
-          setSelectedMealGroup(null);
-        }}
+        onClose={closeGroupScale}
         onConfirm={handleConfirmMealGroupScalePortion}
         initialTotalGrams={selectedMealGroupTotalGrams}
         mealNutrients={selectedMealGroupNutrients}
@@ -2093,10 +2005,7 @@ export default function FoodScreen() {
       {/* Meal Group Move/Copy/Split Modal */}
       <MoveCopyMealModal
         visible={isMealGroupActionModalVisible ? selectedMealGroup !== null : false}
-        onClose={() => {
-          setIsMealGroupActionModalVisible(false);
-          setSelectedMealGroup(null);
-        }}
+        onClose={closeGroupAction}
         onConfirm={handleConfirmMealGroupAction}
         mode={mealGroupActionMode}
         sourceMealType={selectedMealGroup?.entries[0]?.log.type || 'breakfast'}
@@ -2107,10 +2016,7 @@ export default function FoodScreen() {
       {/* Meal Group Insights Modal */}
       <MealInsightsModal
         visible={isMealGroupInsightsVisible ? selectedMealGroup !== null : false}
-        onClose={() => {
-          setIsMealGroupInsightsVisible(false);
-          setSelectedMealGroup(null);
-        }}
+        onClose={closeGroupInsights}
         mealType={selectedMealGroup?.entries[0]?.log.type || 'breakfast'}
         isLoading={isMealGroupInsightsLoading}
         onSubmit={handleSubmitMealGroupInsights}
@@ -2119,10 +2025,7 @@ export default function FoodScreen() {
       {/* Meal Group Details Modal */}
       <MealGroupDetailsModal
         visible={isMealGroupDetailsVisible}
-        onClose={() => {
-          setIsMealGroupDetailsVisible(false);
-          setSelectedMealGroupForDetails(null);
-        }}
+        onClose={closeMealGroupDetails}
         mealName={selectedMealGroupForDetails?.mealName ?? ''}
         entries={selectedMealGroupForDetails?.entries ?? []}
         totalNutrients={
@@ -2138,10 +2041,7 @@ export default function FoodScreen() {
       {/* Delete Meal Group Confirmation */}
       <ConfirmationModal
         visible={isDeleteMealGroupVisible}
-        onClose={() => {
-          setIsDeleteMealGroupVisible(false);
-          setSelectedMealGroup(null);
-        }}
+        onClose={closeDeleteMealGroup}
         onConfirm={handleConfirmDeleteMealGroup}
         title={t('food.mealGroup.deleteGroup')}
         message={t('food.mealGroup.deleteGroupWarning')}
