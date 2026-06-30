@@ -31,14 +31,14 @@ export class MenstrualBackfillService {
       const logsToCreate = (
         await Promise.all(
           cycles
-            .filter((cycle) => !!cycle.lastPeriodStartDate)
+            .filter((cycle) => cycle.lastPeriodStartDate > 0)
             .map(async (cycle) => {
               const existing = await PeriodLogRepository.fetchForCycle(cycle.id);
               if (existing.length > 0) {
                 return null;
               }
 
-              const startDate = cycle.lastPeriodStartDate as number;
+              const startDate = cycle.lastPeriodStartDate;
               const avgDuration = cycle.avgPeriodDuration || DEFAULT_PERIOD_DURATION;
               const inferredEnd = MenstrualService.inferPeriodEndDate(startDate, avgDuration);
               const endDate = inferredEnd < Date.now() ? inferredEnd : null;

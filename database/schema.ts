@@ -402,7 +402,7 @@ export const schema = appSchema({
         { name: 'avg_period_duration', type: 'number' }, // Default 5
         { name: 'use_hormonal_birth_control', type: 'boolean' },
         { name: 'birth_control_type', type: 'string', isOptional: true }, // 'pill', 'iud', etc.
-        { name: 'last_period_start_date', type: 'number', isOptional: true }, // Cached from period_logs; null = no period logged yet
+        { name: 'last_period_start_date', type: 'number' }, // Cached from period_logs; 0 = no period logged yet
         { name: 'timezone', type: 'string', isOptional: true },
         { name: 'sync_goal', type: 'string', isOptional: true }, // 'performance', 'symptoms', 'energy'
         { name: 'life_stage', type: 'string', isOptional: true }, // 'regular', 'pcos', 'perimenopause', 'postpartum', 'post_pill'

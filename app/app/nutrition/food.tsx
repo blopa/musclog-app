@@ -282,37 +282,7 @@ export default function FoodScreen() {
     setGroupScaleLoading,
   } = useMealGroupUi();
 
-  const {
-    foodSearchInitialTab,
-    hasSavedForLaterItems,
-    isCreateCustomFoodVisible,
-    isDailySummaryMenuVisible,
-    isEditCurrentGoalVisible,
-    isFoodSearchModalVisible,
-    isGoalsManagementModalVisible,
-    isMyMealsModalVisible,
-    isQuickTrackMealModalVisible,
-    isSaveForLaterLoading,
-    isSaveForLaterPortionVisible,
-    isSavedForLaterModalVisible,
-    requestSaveForLater,
-    saveForLaterPendingLogs,
-    saveForLaterPendingMealType,
-    setFoodSearchInitialTab,
-    setHasSavedForLaterItems,
-    setIsCreateCustomFoodVisible,
-    setIsDailySummaryMenuVisible,
-    setIsEditCurrentGoalVisible,
-    setIsFoodSearchModalVisible,
-    setIsGoalsManagementModalVisible,
-    setIsMyMealsModalVisible,
-    setIsQuickTrackMealModalVisible,
-    setIsSaveForLaterLoading,
-    setIsSaveForLaterPortionVisible,
-    setIsSavedForLaterModalVisible,
-    setSaveForLaterPendingLogs,
-    setSaveForLaterPendingMealType,
-  } = useFoodScreenModals();
+  const screenModals = useFoodScreenModals();
   const [selectedDate, setSelectedDate] = useState(() => localCalendarDayDate(new Date()));
 
   // Keep camera context aware of the current date so the nav-bar camera button
@@ -355,7 +325,7 @@ export default function FoodScreen() {
           nutritionGoalsToInput(goals),
           true
         );
-        setIsEditCurrentGoalVisible(false);
+        screenModals.editCurrentGoal.close();
       } catch (error) {
         await handleError(error, 'food.saveCurrentNutritionGoal', {
           snackbarMessage: t('errors.somethingWentWrong'),
@@ -369,7 +339,7 @@ export default function FoodScreen() {
   const checkSavedMeals = useCallback(async () => {
     try {
       const hasGroups = await SavedForLaterService.hasAnyGroups();
-      setHasSavedForLaterItems(hasGroups);
+      screenModals.savedForLater.setHasItems(hasGroups);
     } catch (error) {
       console.error('Error checking saved meals:', error);
     }
@@ -377,7 +347,7 @@ export default function FoodScreen() {
 
   useEffect(() => {
     SavedForLaterService.hasAnyGroups()
-      .then((hasGroups) => setHasSavedForLaterItems(hasGroups))
+      .then((hasGroups) => screenModals.savedForLater.setHasItems(hasGroups))
       .catch((error) => console.error('Error checking saved meals:', error));
   }, []);
 
@@ -669,7 +639,7 @@ export default function FoodScreen() {
     percentage: number = 100,
     note?: string
   ) => {
-    setIsSaveForLaterLoading(true);
+    screenModals.savedForLater.setLoading(true);
     try {
       const dateStr = formatLocalCalendarDayIso(new Date(selectedDate));
       const defaultName = t('food.mealGroup.savedMealDefaultName', {
@@ -694,7 +664,7 @@ export default function FoodScreen() {
         snackbarMessage: t('food.mealGroup.saveForLaterError'),
       });
     } finally {
-      setIsSaveForLaterLoading(false);
+      screenModals.savedForLater.setLoading(false);
     }
   };
 
@@ -902,7 +872,7 @@ export default function FoodScreen() {
       onPress: () => {
         closeFoodMenu();
         if (selectedFoodItem) {
-          requestSaveForLater([selectedFoodItem.log], selectedFoodItem.log.type);
+          screenModals.savedForLater.request([selectedFoodItem.log], selectedFoodItem.log.type);
           closeFoodMenu(true);
         }
       },
@@ -1292,7 +1262,7 @@ export default function FoodScreen() {
         closeMealMenu();
         if (selectedMealForMenu) {
           const mealFoods = mealsByType[selectedMealForMenu] || [];
-          requestSaveForLater(
+          screenModals.savedForLater.request(
             mealFoods.map((e) => e.log),
             selectedMealForMenu
           );
@@ -1365,7 +1335,7 @@ export default function FoodScreen() {
       onPress: () => {
         closeMealGroupMenu();
         if (selectedMealGroup) {
-          requestSaveForLater(
+          screenModals.savedForLater.request(
             selectedMealGroup.entries.map((e) => e.log),
             selectedMealGroup.entries[0]?.log.type || 'other'
           );
@@ -1520,7 +1490,7 @@ export default function FoodScreen() {
                     nutritionDisplay={nutritionDisplay}
                     menuButton={
                       <MenuButton
-                        onPress={() => setIsDailySummaryMenuVisible(true)}
+                        onPress={screenModals.dailySummaryMenu.open}
                         size="sm"
                         color={theme.colors.text.primary}
                       />
@@ -1572,7 +1542,7 @@ export default function FoodScreen() {
                         size="sm"
                         width="flex-1"
                         // onPress={goToToday}
-                        onPress={() => setIsMyMealsModalVisible(true)}
+                        onPress={screenModals.myMeals.open}
                       />
                       <Button
                         label={t('food.actions.moreFoodOptions')}
@@ -1617,16 +1587,13 @@ export default function FoodScreen() {
         isAiEnabled={isAiConfigured}
         visible={isAddFoodModalVisible}
         showTrackByMealType={!addFoodModalPreselectedMealType}
-        hasSavedMeals={hasSavedForLaterItems}
-        onTrackFromSavedPress={() => {
-          setIsSavedForLaterModalVisible(true);
-        }}
+        hasSavedMeals={screenModals.savedForLater.hasItems}
+        onTrackFromSavedPress={screenModals.savedForLater.open}
         onClose={closeAddFoodModal}
         onMealTypeSelect={(mealType) => {
           selectMealType(mealType);
           closeAddFoodModal();
-          setFoodSearchInitialTab('all');
-          setIsFoodSearchModalVisible(true);
+          screenModals.foodSearch.open('all');
         }}
         onAiCameraPress={() => {
           closeAddFoodModal();
@@ -1649,34 +1616,32 @@ export default function FoodScreen() {
         }}
         onSearchFoodPress={() => {
           closeAddFoodModal();
-          setFoodSearchInitialTab('all');
-          setIsFoodSearchModalVisible(true);
+          screenModals.foodSearch.open('all');
         }}
         onCreateCustomFoodPress={() => {
           closeAddFoodModal();
-          setIsCreateCustomFoodVisible(true);
+          screenModals.createCustomFood.open();
         }}
         onTrackCustomMealPress={() => {
           closeAddFoodModal();
-          setFoodSearchInitialTab('meals');
-          setIsFoodSearchModalVisible(true);
+          screenModals.foodSearch.open('meals');
         }}
         onQuickTrackMealPress={() => {
-          setIsQuickTrackMealModalVisible(true);
+          screenModals.quickTrackMeal.open();
           closeAddFoodModal();
         }}
       />
 
       {/* Quick Track Meal (CreateMealModal in quickTrack mode) */}
       <CreateMealModal
-        visible={isQuickTrackMealModalVisible}
-        onClose={() => setIsQuickTrackMealModalVisible(false)}
+        visible={screenModals.quickTrackMeal.visible}
+        onClose={screenModals.quickTrackMeal.close}
         mode="quickTrack"
         logDate={selectedDate}
         initialMealType={selectedMealType}
         onTracked={() => {
           refresh();
-          setIsQuickTrackMealModalVisible(false);
+          screenModals.quickTrackMeal.close();
         }}
         onFirstNutritionLog={() => triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG)}
         onFirstMealCreated={() => triggerConfetti(ConfettiActivity.FIRST_MEAL_CREATED)}
@@ -1701,36 +1666,35 @@ export default function FoodScreen() {
 
       {/* My Meals Modal */}
       <MyMealsModal
-        visible={isMyMealsModalVisible}
-        onClose={() => setIsMyMealsModalVisible(false)}
+        visible={screenModals.myMeals.visible}
+        onClose={screenModals.myMeals.close}
         initialMealType={selectedMealType}
       />
 
       {/* Create Custom Food Modal */}
       <CreateCustomFoodModal
-        visible={isCreateCustomFoodVisible}
+        visible={screenModals.createCustomFood.visible}
         trackFoodAfterSave={true}
-        onClose={() => setIsCreateCustomFoodVisible(false)}
+        onClose={screenModals.createCustomFood.close}
         isAiEnabled={isAiConfigured}
         initialMealType={selectedMealType}
       />
 
       {/* Food Search Modal */}
       <FoodSearchModal
-        visible={isFoodSearchModalVisible}
-        onClose={() => setIsFoodSearchModalVisible(false)}
+        visible={screenModals.foodSearch.visible}
+        onClose={screenModals.foodSearch.close}
         mealType={selectedMealType}
         logDate={selectedDate}
-        initialTab={foodSearchInitialTab}
+        initialTab={screenModals.foodSearch.initialTab}
         onFoodTracked={refresh}
         onFirstNutritionLog={() => triggerConfetti(ConfettiActivity.FIRST_NUTRITION_LOG)}
         onCreatePress={() => {
-          // Open CreateCustomFoodModal
-          setIsFoodSearchModalVisible(false);
-          setIsCreateCustomFoodVisible(true);
+          screenModals.foodSearch.close();
+          screenModals.createCustomFood.open();
         }}
         onBarcodeScanPress={() => {
-          setIsFoodSearchModalVisible(false);
+          screenModals.foodSearch.close();
           openCamera({
             mode: 'barcode-scan',
             hideCameraModePicker: true,
@@ -1759,15 +1723,15 @@ export default function FoodScreen() {
 
       {/* Goals Management Modal */}
       <GoalsManagementModal
-        visible={isGoalsManagementModalVisible}
-        onClose={() => setIsGoalsManagementModalVisible(false)}
+        visible={screenModals.goalsManagement.visible}
+        onClose={screenModals.goalsManagement.close}
         tab="nutrition"
       />
 
       {currentNutritionGoal ? (
         <NutritionGoalsModal
-          visible={isEditCurrentGoalVisible}
-          onClose={() => setIsEditCurrentGoalVisible(false)}
+          visible={screenModals.editCurrentGoal.visible}
+          onClose={screenModals.editCurrentGoal.close}
           onSave={handleSaveCurrentNutritionGoal}
           initialGoals={nutritionGoalToInitialValues(currentNutritionGoal)}
           isEditing={true}
@@ -1775,10 +1739,10 @@ export default function FoodScreen() {
       ) : null}
 
       <DailySummaryBottomMenu
-        visible={isDailySummaryMenuVisible}
-        onClose={() => setIsDailySummaryMenuVisible(false)}
-        onEditCurrentGoalPress={() => setIsEditCurrentGoalVisible(true)}
-        onGoalsManagementPress={() => setIsGoalsManagementModalVisible(true)}
+        visible={screenModals.dailySummaryMenu.visible}
+        onClose={screenModals.dailySummaryMenu.close}
+        onEditCurrentGoalPress={screenModals.editCurrentGoal.open}
+        onGoalsManagementPress={screenModals.goalsManagement.open}
         showEditCurrentGoal={currentNutritionGoal != null}
       />
 
@@ -1911,32 +1875,34 @@ export default function FoodScreen() {
 
       {/* Save for Later Portion Modal */}
       <SaveForLaterPortionModal
-        visible={isSaveForLaterPortionVisible}
+        visible={screenModals.savedForLater.portionSelectorVisible}
         onClose={() => {
-          setIsSaveForLaterPortionVisible(false);
-          setSaveForLaterPendingLogs(null);
-          setSaveForLaterPendingMealType(null);
+          screenModals.savedForLater.closePortionSelector();
+          screenModals.savedForLater.clearPending();
         }}
         onConfirm={async (percentage, note) => {
-          if (saveForLaterPendingLogs && saveForLaterPendingMealType) {
+          if (
+            screenModals.savedForLater.pendingLogs &&
+            screenModals.savedForLater.pendingMealType
+          ) {
             await handleSaveMealForLater(
-              saveForLaterPendingLogs,
-              saveForLaterPendingMealType,
+              screenModals.savedForLater.pendingLogs,
+              screenModals.savedForLater.pendingMealType,
               percentage,
               note
             );
           }
-          setSaveForLaterPendingLogs(null);
-          setSaveForLaterPendingMealType(null);
+          screenModals.savedForLater.closePortionSelector();
+          screenModals.savedForLater.clearPending();
         }}
-        isLoading={isSaveForLaterLoading}
-        mealType={saveForLaterPendingMealType || undefined}
+        isLoading={screenModals.savedForLater.isLoading}
+        mealType={screenModals.savedForLater.pendingMealType || undefined}
       />
 
       {/* Food Details Modal (edit/duplicate mode) */}
       <SavedForLaterModal
-        visible={isSavedForLaterModalVisible}
-        onClose={() => setIsSavedForLaterModalVisible(false)}
+        visible={screenModals.savedForLater.visible}
+        onClose={screenModals.savedForLater.close}
         onTracked={async () => {
           await refresh();
           await checkSavedMeals();

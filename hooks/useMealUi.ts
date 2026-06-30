@@ -5,7 +5,16 @@ import { type MealType } from '@/database/models/NutritionLog';
 
 type MealActionMode = 'move' | 'copy' | 'split';
 type CreateMealItem = { food: Food; amount: number };
-type MealDialog = null | 'addFood' | 'menu' | 'createMeal' | 'deleteAll' | 'action' | 'insights' | 'scale' | 'mergeDuplicates';
+type MealDialog =
+  | null
+  | 'addFood'
+  | 'menu'
+  | 'createMeal'
+  | 'deleteAll'
+  | 'action'
+  | 'insights'
+  | 'scale'
+  | 'mergeDuplicates';
 
 type MealLoadingState = {
   deleteAll: boolean;

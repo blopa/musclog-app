@@ -68,7 +68,9 @@ export function PeriodLogModal({
   const descriptionKey = DESCRIPTION_KEYS[mode];
   const today = localCalendarDayDate(new Date());
   const minDate =
-    mode === 'end' && activePeriodLog ? localCalendarDayDate(new Date(activePeriodLog.startDate)) : undefined;
+    mode === 'end' && activePeriodLog
+      ? localCalendarDayDate(new Date(activePeriodLog.startDate))
+      : undefined;
 
   const handleSave = async () => {
     setIsSaving(true);

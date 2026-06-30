@@ -22,6 +22,8 @@ export function CycleSettingsModal({ visible, onClose, cycle }: CycleSettingsMod
 
   const initialData: CycleSetupData = {
     lastPeriodStartDate: cycle.lastPeriodStartDate ? new Date(cycle.lastPeriodStartDate) : null,
+    cycleLength: cycle.avgCycleLength,
+    periodDuration: cycle.avgPeriodDuration,
     birthControlType: cycle.birthControlType ?? 'none',
     syncGoal: cycle.syncGoal ?? 'performance',
     lifeStage: cycle.lifeStage ?? 'regular',
@@ -37,6 +39,8 @@ export function CycleSettingsModal({ visible, onClose, cycle }: CycleSettingsMod
     setIsSaving(true);
     try {
       await cycle.updateCycle({
+        avgCycleLength: data.cycleLength,
+        avgPeriodDuration: data.periodDuration,
         useHormonalBirthControl: data.birthControlType !== 'none',
         birthControlType: data.birthControlType !== 'none' ? data.birthControlType : null,
         syncGoal: data.syncGoal,

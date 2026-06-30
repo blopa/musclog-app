@@ -22,14 +22,16 @@ import { getLocalCalendarYear, localCalendarDayDate } from '@/utils/calendarDate
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from './BottomPopUpMenu';
 import { DatePickerInput } from './modals/DatePickerInput';
 import { DatePickerModal } from './modals/DatePickerModal';
+import { NumericInput } from './theme/NumericInput';
 import { PickerButton } from './theme/PickerButton';
 
 export type CycleSetupData = {
   lastPeriodStartDate: Date | null;
+  cycleLength: number;
+  periodDuration: number;
   birthControlType: BirthControlType | 'none';
   syncGoal: SyncGoal;
   lifeStage: LifeStage;
-  avgPeriodDuration?: number;
 };
 
 type EditCycleSetupDataProps = {
@@ -50,6 +52,8 @@ export function EditCycleSetupData({
     initialData?.lastPeriodStartDate ? localCalendarDayDate(initialData.lastPeriodStartDate) : null
   );
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [cycleLength, setCycleLength] = useState(initialData?.cycleLength ?? 28);
+  const [periodDuration, setPeriodDuration] = useState(initialData?.periodDuration ?? 5);
   const [selectedBirthControl, setSelectedBirthControl] = useState<BirthControlType | 'none'>(
     initialData?.birthControlType ?? 'none'
   );
@@ -66,11 +70,21 @@ export function EditCycleSetupData({
   useEffect(() => {
     onFormChange?.({
       lastPeriodStartDate: selectedDate,
+      cycleLength,
+      periodDuration,
       birthControlType: selectedBirthControl,
       syncGoal: selectedGoal,
       lifeStage: selectedLifeStage,
     });
-  }, [selectedDate, selectedBirthControl, selectedGoal, selectedLifeStage, onFormChange]);
+  }, [
+    selectedDate,
+    cycleLength,
+    periodDuration,
+    selectedBirthControl,
+    selectedGoal,
+    selectedLifeStage,
+    onFormChange,
+  ]);
 
   const birthControlOptions: (BottomPopUpMenuItem & { value: BirthControlType | 'none' })[] = [
     {
@@ -241,6 +255,31 @@ export function EditCycleSetupData({
             ) : null}
           </View>
         ) : null}
+
+        {/* Cycle lengths */}
+        <View>
+          <Text className="mb-3 text-base font-semibold text-text-secondary">
+            {t('onboarding.cycleSetup.length.cycleLength')}
+          </Text>
+          <View className="flex-row gap-4">
+            <NumericInput
+              label={t('onboarding.cycleSetup.length.cycleLengthLabel')}
+              value={cycleLength.toString()}
+              onChangeText={(value) => setCycleLength(parseInt(value, 10) || 0)}
+              onIncrement={() => setCycleLength((value) => Math.min(45, value + 1))}
+              onDecrement={() => setCycleLength((value) => Math.max(15, value - 1))}
+              unit={t('common.days.label')}
+            />
+            <NumericInput
+              label={t('onboarding.cycleSetup.length.periodDurationLabel')}
+              value={periodDuration.toString()}
+              onChangeText={(value) => setPeriodDuration(parseInt(value, 10) || 0)}
+              onIncrement={() => setPeriodDuration((value) => Math.min(10, value + 1))}
+              onDecrement={() => setPeriodDuration((value) => Math.max(1, value - 1))}
+              unit={t('common.days.label')}
+            />
+          </View>
+        </View>
 
         {/* Life stage */}
         <View>

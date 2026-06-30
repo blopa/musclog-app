@@ -6,12 +6,7 @@ function periodIntervalEnd(log: Pick<PeriodLog, 'endDate'>): number {
   return log.endDate ?? OPEN_ENDED_PERIOD_END;
 }
 
-function intervalsOverlap(
-  startA: number,
-  endA: number,
-  startB: number,
-  endB: number
-): boolean {
+function intervalsOverlap(startA: number, endA: number, startB: number, endB: number): boolean {
   return startA <= endB && startB <= endA;
 }
 
@@ -23,7 +18,7 @@ export function findSameStartPeriodLog(
 }
 
 export function hasOverlappingPeriodLog(
-  existingLogs: PeriodLog[],
+  existingLogs: Pick<PeriodLog, 'id' | 'startDate' | 'endDate'>[],
   candidate: Pick<PeriodLogCreate, 'startDate' | 'endDate'>,
   ignoreLogIds: string[] = []
 ): boolean {

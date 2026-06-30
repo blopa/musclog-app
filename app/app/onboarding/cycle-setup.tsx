@@ -10,22 +10,20 @@ import { MasterLayout } from '@/components/MasterLayout';
 import { DatePickerModal } from '@/components/modals/DatePickerModal';
 import { QuickSetupProgressBar } from '@/components/QuickSetupProgressBar';
 import { Button } from '@/components/theme/Button';
-import { DEFAULT_PERIOD_DURATION } from '@/constants/cycle';
 import { MenstrualCycleRepository } from '@/database/repositories/MenstrualCycleRepository';
-import { MenstrualService } from '@/database/services/MenstrualService';
 import { useTheme } from '@/hooks/useTheme';
 import { getLocalCalendarYear, localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
 import { getPastPeriodQuickDates } from '@/utils/cycleUtils';
 import { setOnboardingCompleted } from '@/utils/onboardingService';
-import { getCurrentTimezone } from '@/utils/timezone';
 
 type PastPeriod = {
   startDate: Date;
-  endDate: Date | null;
 };
 
 const DEFAULT_CYCLE_DATA: CycleSetupData = {
   lastPeriodStartDate: null,
+  cycleLength: 28,
+  periodDuration: 5,
   birthControlType: 'none',
   syncGoal: 'performance',
   lifeStage: 'regular',
@@ -57,7 +55,7 @@ export default function CycleSetup() {
 
   const handlePastPeriodDateSelect = (date: Date) => {
     const localDate = localCalendarDayDate(date);
-    setPastPeriods((prev) => [...prev, { startDate: localDate, endDate: null }]);
+    setPastPeriods((prev) => [...prev, { startDate: localDate }]);
     setIsPastPeriodPickerVisible(false);
   };
 
@@ -70,51 +68,21 @@ export default function CycleSetup() {
     setIsSaving(true);
 
     try {
-      const tz = getCurrentTimezone();
-      const allCandidates = [];
-
-      if (data.lastPeriodStartDate) {
-        const startMs = localDayStartMs(data.lastPeriodStartDate);
-        const avgDuration = currentFormData.avgPeriodDuration ?? DEFAULT_PERIOD_DURATION;
-        const inferredEnd = MenstrualService.inferPeriodEndDate(startMs, avgDuration);
-        // Close the log if it's definitively in the past; leave open only if it may still be ongoing.
-        allCandidates.push({
-          startDate: startMs,
-          endDate: inferredEnd < Date.now() ? inferredEnd : null,
-          timezone: tz,
-        });
-      }
-
-      // Past periods sorted oldest first; lastPeriodStartDate is computed inside createNewCycleWithLogs
-      const sortedPast = [...pastPeriods].sort(
-        (a, b) => a.startDate.getTime() - b.startDate.getTime()
-      );
-      for (const past of sortedPast) {
-        allCandidates.push({
-          startDate: localDayStartMs(past.startDate),
-          endDate: past.endDate ? localDayStartMs(past.endDate) : null,
-          timezone: tz,
-        });
-      }
-
-      // Deduplicate by startDate so both pickers selecting the same day don't create two logs
-      const seenStartDates = new Set<number>();
-      const logsToCreate = allCandidates.filter((log) => {
-        if (seenStartDates.has(log.startDate)) {
-          return false;
-        }
-        seenStartDates.add(log.startDate);
-        return true;
-      });
-
-      await MenstrualCycleRepository.createNewCycleWithLogs(
+      await MenstrualCycleRepository.replaceActiveCycle(
         {
+          avgCycleLength: data.cycleLength,
+          avgPeriodDuration: data.periodDuration,
           useHormonalBirthControl: data.birthControlType !== 'none',
           birthControlType: data.birthControlType !== 'none' ? data.birthControlType : undefined,
           syncGoal: data.syncGoal,
           lifeStage: data.lifeStage !== 'regular' ? data.lifeStage : undefined,
         },
-        logsToCreate
+        [
+          ...(data.lastPeriodStartDate
+            ? [{ startDate: localDayStartMs(data.lastPeriodStartDate) }]
+            : []),
+          ...pastPeriods.map((past) => ({ startDate: localDayStartMs(past.startDate) })),
+        ]
       );
 
       if (nextRoute) {
@@ -160,7 +128,7 @@ export default function CycleSetup() {
 
           {pastPeriods.map((period, index) => (
             <View
-              key={index}
+              key={period.startDate.getTime()}
               className="flex-row items-center justify-between rounded-xl px-4 py-3"
               style={{ backgroundColor: theme.colors.background.card }}
             >

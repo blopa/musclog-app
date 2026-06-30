@@ -1,6 +1,4 @@
-import PeriodLog, {
-  type PeriodLogCreate,
-} from '@/database/models/PeriodLog';
+import PeriodLog, { type PeriodLogCreate } from '@/database/models/PeriodLog';
 import {
   findSameStartPeriodLog,
   hasOverlappingPeriodLog,

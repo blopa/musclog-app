@@ -151,21 +151,11 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
       syncGoal?: SyncGoal;
       lifeStage?: LifeStage;
     }): Promise<void> => {
-      await MenstrualCycleRepository.deactivateAll();
-
       const { lastPeriodStartDate, ...cycleData } = data;
-
-      if (lastPeriodStartDate != null) {
-        const avgDuration = cycleData.avgPeriodDuration ?? DEFAULT_PERIOD_DURATION;
-        const inferredEnd = MenstrualService.inferPeriodEndDate(lastPeriodStartDate, avgDuration);
-        const endDate = inferredEnd < Date.now() ? inferredEnd : null;
-        await MenstrualCycleRepository.createNewCycleWithLogs(cycleData, [
-          { startDate: lastPeriodStartDate, endDate },
-        ]);
-        return;
-      }
-
-      await MenstrualCycleRepository.createNewCycle(cycleData);
+      await MenstrualCycleRepository.replaceActiveCycle(
+        cycleData,
+        lastPeriodStartDate != null ? [{ startDate: lastPeriodStartDate }] : []
+      );
     },
     []
   );

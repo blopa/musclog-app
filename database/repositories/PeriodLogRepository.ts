@@ -96,8 +96,7 @@ export class PeriodLogRepository {
         )
         .fetch();
 
-      const newAnchor =
-        remaining.length > 0 ? Math.max(...remaining.map((l) => l.startDate)) : null;
+      const newAnchor = remaining.length > 0 ? Math.max(...remaining.map((l) => l.startDate)) : 0;
 
       const preparedLog = log.prepareUpdate((l) => {
         l.deletedAt = now;
@@ -126,10 +125,7 @@ export class PeriodLogRepository {
     return await database.write(async () => {
       const existingLogs = await database
         .get<PeriodLog>('period_logs')
-        .query(
-          Q.where('menstrual_cycle_id', cycle.id),
-          Q.where('deleted_at', Q.eq(null))
-        )
+        .query(Q.where('menstrual_cycle_id', cycle.id), Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
       const sameStartLog = findSameStartPeriodLog(existingLogs, data.startDate);
@@ -183,10 +179,7 @@ export class PeriodLogRepository {
 
       const existingLogs = await database
         .get<PeriodLog>('period_logs')
-        .query(
-          Q.where('menstrual_cycle_id', cycle.id),
-          Q.where('deleted_at', Q.eq(null))
-        )
+        .query(Q.where('menstrual_cycle_id', cycle.id), Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
       const sameStartLog = findSameStartPeriodLog(existingLogs, data.startDate);
