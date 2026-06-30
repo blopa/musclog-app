@@ -116,7 +116,11 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
 
   // Subscribe to period_logs for the active cycle
   useEffect(() => {
-    if (isStaticExport || !cycle) {
+    if (isStaticExport) {
+      return;
+    }
+
+    if (!cycle) {
       return;
     }
 
@@ -224,23 +228,24 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
   }, [cycle]);
 
   const value = useMemo(() => {
+    const effectivePeriodLogs = cycle ? periodLogs : [];
     const stats = cycle
-      ? MenstrualService.calculateCycleStats(periodLogs, {
+      ? MenstrualService.calculateCycleStats(effectivePeriodLogs, {
           avgCycleLength: cycle.avgCycleLength,
           avgPeriodDuration: cycle.avgPeriodDuration,
         })
       : null;
-    const activePeriodLog = MenstrualService.getActivePeriodLog(periodLogs, nowMs);
+    const activePeriodLog = MenstrualService.getActivePeriodLog(effectivePeriodLogs, nowMs);
     const currentPhase =
-      cycle && stats ? MenstrualService.calculateCurrentPhase(periodLogs, stats) : null;
+      cycle && stats ? MenstrualService.calculateCurrentPhase(effectivePeriodLogs, stats) : null;
     const nextPeriodPrediction =
-      cycle && stats ? MenstrualService.predictNextPeriod(periodLogs, stats) : null;
+      cycle && stats ? MenstrualService.predictNextPeriod(effectivePeriodLogs, stats) : null;
     const fertileWindow =
-      cycle && stats ? MenstrualService.getFertileWindow(periodLogs, stats) : null;
+      cycle && stats ? MenstrualService.getFertileWindow(effectivePeriodLogs, stats) : null;
 
     return {
       cycle,
-      periodLogs: isStaticExport || !cycle ? [] : periodLogs,
+      periodLogs: isStaticExport ? [] : effectivePeriodLogs,
       isLoading,
       isActive: cycle?.isActive ?? false,
       activePeriodLog,
@@ -252,7 +257,9 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
           ? MenstrualService.getIntensityMultiplier(currentPhase, cycle.syncGoal ?? undefined)
           : 1.0,
       cycleDay:
-        cycle && stats ? MenstrualService.getCycleDay(periodLogs, stats, cycle.timezone) : null,
+        cycle && stats
+          ? MenstrualService.getCycleDay(effectivePeriodLogs, stats, cycle.timezone)
+          : null,
       nextPeriodDate: nextPeriodPrediction?.date ?? null,
       nextPeriodEarliest: nextPeriodPrediction?.earliest ?? null,
       nextPeriodLatest: nextPeriodPrediction?.latest ?? null,

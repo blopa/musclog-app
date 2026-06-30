@@ -6,6 +6,7 @@ import { MenstrualCycleRepository } from '@/database/repositories/MenstrualCycle
 import { PeriodLogRepository } from '@/database/repositories/PeriodLogRepository';
 import { NotificationService } from '@/services/NotificationService';
 import { captureBootException } from '@/utils/bootErrorReporting';
+import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 
 import { MenstrualService } from './MenstrualService';
 
@@ -41,7 +42,8 @@ export class MenstrualBackfillService {
               const startDate = cycle.lastPeriodStartDate;
               const avgDuration = cycle.avgPeriodDuration || DEFAULT_PERIOD_DURATION;
               const inferredEnd = MenstrualService.inferPeriodEndDate(startDate, avgDuration);
-              const endDate = inferredEnd < Date.now() ? inferredEnd : null;
+              const periodEndExclusive = inferredEnd + MS_PER_SOLAR_DAY;
+              const endDate = periodEndExclusive <= Date.now() ? inferredEnd : null;
 
               return {
                 menstrualCycleId: cycle.id,

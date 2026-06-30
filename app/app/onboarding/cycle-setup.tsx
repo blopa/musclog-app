@@ -55,6 +55,13 @@ export default function CycleSetup() {
 
   const handlePastPeriodDateSelect = (date: Date) => {
     const localDate = localCalendarDayDate(date);
+    const today = localCalendarDayDate(new Date());
+
+    if (localDate.getTime() > today.getTime()) {
+      setIsPastPeriodPickerVisible(false);
+      return;
+    }
+
     setPastPeriods((prev) => [...prev, { startDate: localDate }]);
     setIsPastPeriodPickerVisible(false);
   };
@@ -176,6 +183,7 @@ export default function CycleSetup() {
         onClose={() => setIsPastPeriodPickerVisible(false)}
         selectedDate={new Date()}
         onDateSelect={handlePastPeriodDateSelect}
+        maxDate={localCalendarDayDate(new Date())}
         maxYear={getLocalCalendarYear(new Date())}
         quickDates={getPastPeriodQuickDates(t)}
       />
