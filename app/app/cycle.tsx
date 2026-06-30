@@ -59,7 +59,7 @@ const getHormoneTrend = (trend?: string) => {
 
 export default function CycleScreen() {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
 
   const formatFlowMetric = (value: number) => {
@@ -158,7 +158,10 @@ export default function CycleScreen() {
       return '--';
     }
 
-    return date.toLocaleDateString(undefined, { month: 'long', day: 'numeric' });
+    return date.toLocaleDateString(i18n.resolvedLanguage ?? i18n.language, {
+      month: 'long',
+      day: 'numeric',
+    });
   };
 
   const nextPeriodDisplay =

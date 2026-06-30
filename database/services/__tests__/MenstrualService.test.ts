@@ -61,10 +61,10 @@ describe('MenstrualService', () => {
       expect(MenstrualService.calculateCurrentPhase(mockLogs, mockStats)).toBe('follicular');
     });
 
-    it('should return ovulation around the ovulation window', () => {
+    it('should return ovulatory around the ovulation window', () => {
       // Ovulation ≈ next period (Jan 29) − 14 days = Jan 15
       jest.useFakeTimers().setSystemTime(new Date('2024-01-15'));
-      expect(MenstrualService.calculateCurrentPhase(mockLogs, mockStats)).toBe('ovulation');
+      expect(MenstrualService.calculateCurrentPhase(mockLogs, mockStats)).toBe('ovulatory');
     });
 
     it('should return luteal after ovulation window', () => {
@@ -84,14 +84,14 @@ describe('MenstrualService', () => {
       expect(MenstrualService.getEnergyLevel('menstrual')).toBe('low');
     });
 
-    it('should return peak for ovulation', () => {
-      expect(MenstrualService.getEnergyLevel('ovulation')).toBe('peak');
+    it('should return peak for ovulatory', () => {
+      expect(MenstrualService.getEnergyLevel('ovulatory')).toBe('peak');
     });
   });
 
   describe('getIntensityMultiplier', () => {
-    it('should return higher multiplier for ovulation with performance goal', () => {
-      expect(MenstrualService.getIntensityMultiplier('ovulation', 'performance')).toBe(1.15);
+    it('should return higher multiplier for ovulatory with performance goal', () => {
+      expect(MenstrualService.getIntensityMultiplier('ovulatory', 'performance')).toBe(1.15);
     });
 
     it('should return lower multiplier for menstrual with symptoms goal', () => {

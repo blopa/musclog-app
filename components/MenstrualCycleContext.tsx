@@ -156,11 +156,11 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
     }): Promise<void> => {
       await MenstrualCycleRepository.deactivateAll();
 
-      if (data.lastPeriodStartDate != null) {
-        const { lastPeriodStartDate, ...cycleData } = data;
+      const { lastPeriodStartDate, ...cycleData } = data;
+
+      if (lastPeriodStartDate != null) {
         const avgDuration = cycleData.avgPeriodDuration ?? DEFAULT_PERIOD_DURATION;
         const inferredEnd = MenstrualService.inferPeriodEndDate(lastPeriodStartDate, avgDuration);
-        // Close the log if it's definitively past; leave open if it may still be ongoing.
         const endDate = inferredEnd < Date.now() ? inferredEnd : null;
         await MenstrualCycleRepository.createNewCycleWithLogs(cycleData, [
           { startDate: lastPeriodStartDate, endDate },
@@ -168,7 +168,7 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      await MenstrualCycleRepository.createNewCycle(data);
+      await MenstrualCycleRepository.createNewCycle(cycleData);
     },
     []
   );

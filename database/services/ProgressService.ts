@@ -24,7 +24,7 @@ import { calculateEmpiricalTDEEWindow } from '@/utils/progress';
 import { cmToDisplay, kgToDisplay } from '@/utils/unitConversion';
 import { calculateExerciseVolume } from '@/utils/workoutCalculator';
 
-import { MenstrualService } from './MenstrualService';
+import { type MenstrualPhase, MenstrualService } from './MenstrualService';
 import { NutritionGoalService } from './NutritionGoalService';
 import { NutritionService } from './NutritionService';
 import { SettingsService } from './SettingsService';
@@ -102,7 +102,7 @@ export interface BodyCompProteinPoint {
 
 export interface MenstrualPhasePoint {
   date: number;
-  phase: 'menstrual' | 'follicular' | 'ovulatory' | 'luteal';
+  phase: MenstrualPhase;
   workoutScore: number;
   energyLevel: number;
   weight: number;
@@ -982,11 +982,7 @@ export class ProgressService {
         continue;
       }
 
-      // ProgressService uses 'ovulatory' while MenstrualService uses 'ovulation'.
-      const phase =
-        menstrualPhase === 'ovulation'
-          ? ('ovulatory' as const)
-          : (menstrualPhase as 'menstrual' | 'follicular' | 'luteal');
+      const phase = menstrualPhase;
 
       const workoutsInPeriod = workoutLogs.filter((wl) => {
         const start = this.getStartOfAggregation(this.getWorkoutLogDayKey(wl), aggregation);

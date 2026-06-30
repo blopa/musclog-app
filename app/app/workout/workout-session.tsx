@@ -105,7 +105,7 @@ const getHormonalInsightText = (
   t: TFunction
 ) => {
   switch (currentPhase) {
-    case 'ovulation':
+    case 'ovulatory':
       return t('workoutSession.ovulationInsight');
     case 'menstrual':
       return t('workoutSession.menstrualInsight');

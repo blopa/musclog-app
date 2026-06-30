@@ -7,6 +7,7 @@ import MenstrualCycle, {
   type SyncGoal,
 } from '@/database/models/MenstrualCycle';
 import PeriodLog, { type PeriodLogCreate } from '@/database/models/PeriodLog';
+import { fillPeriodLog } from '@/database/repositories/PeriodLogRepository';
 import { getCurrentTimezone } from '@/utils/timezone';
 
 export class MenstrualCycleRepository {
@@ -27,7 +28,6 @@ export class MenstrualCycleRepository {
     avgPeriodDuration?: number;
     useHormonalBirthControl?: boolean;
     birthControlType?: BirthControlType;
-    lastPeriodStartDate?: number | null;
     syncGoal?: SyncGoal;
     lifeStage?: LifeStage;
   }): Promise<MenstrualCycle> {
@@ -39,7 +39,7 @@ export class MenstrualCycleRepository {
         cycle.avgPeriodDuration = data.avgPeriodDuration ?? 5;
         cycle.useHormonalBirthControl = data.useHormonalBirthControl ?? false;
         cycle.birthControlType = data.birthControlType ?? null;
-        cycle.lastPeriodStartDate = data.lastPeriodStartDate ?? null;
+        cycle.lastPeriodStartDate = null;
         cycle.timezone = getCurrentTimezone();
         cycle.syncGoal = data.syncGoal ?? null;
         cycle.lifeStage = data.lifeStage ?? null;
@@ -91,14 +91,7 @@ export class MenstrualCycleRepository {
 
       const preparedLogs = logs.map((logData) =>
         database.get<PeriodLog>('period_logs').prepareCreate((log) => {
-          log.menstrualCycleId = preparedCycle.id;
-          log.startDate = logData.startDate;
-          log.endDate = logData.endDate ?? null;
-          log.notes = logData.notes ?? null;
-          log.timezone = logData.timezone ?? tz;
-          log.createdAt = now;
-          log.updatedAt = now;
-          log.deletedAt = null;
+          fillPeriodLog(log, logData, preparedCycle.id, now);
         })
       );
 

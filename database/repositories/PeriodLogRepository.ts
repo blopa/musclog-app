@@ -6,6 +6,22 @@ import PeriodLog, { type PeriodLogCreate } from '@/database/models/PeriodLog';
 import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 import { getCurrentTimezone } from '@/utils/timezone';
 
+export function fillPeriodLog(
+  log: PeriodLog,
+  data: Omit<PeriodLogCreate, 'menstrualCycleId'>,
+  menstrualCycleId: string,
+  now: number
+): void {
+  log.menstrualCycleId = menstrualCycleId;
+  log.startDate = data.startDate;
+  log.endDate = data.endDate ?? null;
+  log.notes = data.notes ?? null;
+  log.timezone = data.timezone ?? getCurrentTimezone();
+  log.createdAt = now;
+  log.updatedAt = now;
+  log.deletedAt = null;
+}
+
 export class PeriodLogRepository {
   static getForCycle(menstrualCycleId: string): Query<PeriodLog> {
     return database
@@ -32,14 +48,7 @@ export class PeriodLogRepository {
 
     return await database.write(async () => {
       return await database.get<PeriodLog>('period_logs').create((log) => {
-        log.menstrualCycleId = data.menstrualCycleId;
-        log.startDate = data.startDate;
-        log.endDate = data.endDate ?? null;
-        log.notes = data.notes ?? null;
-        log.timezone = data.timezone ?? getCurrentTimezone();
-        log.createdAt = now;
-        log.updatedAt = now;
-        log.deletedAt = null;
+        fillPeriodLog(log, data, data.menstrualCycleId, now);
       });
     });
   }
@@ -52,14 +61,7 @@ export class PeriodLogRepository {
 
       const preparedLogs = logs.map((data) =>
         collection.prepareCreate((log) => {
-          log.menstrualCycleId = data.menstrualCycleId;
-          log.startDate = data.startDate;
-          log.endDate = data.endDate ?? null;
-          log.notes = data.notes ?? null;
-          log.timezone = data.timezone ?? getCurrentTimezone();
-          log.createdAt = now;
-          log.updatedAt = now;
-          log.deletedAt = null;
+          fillPeriodLog(log, data, data.menstrualCycleId, now);
         })
       );
 
@@ -119,14 +121,7 @@ export class PeriodLogRepository {
     const now = Date.now();
     return await database.write(async () => {
       const preparedLog = database.get<PeriodLog>('period_logs').prepareCreate((log) => {
-        log.menstrualCycleId = data.menstrualCycleId;
-        log.startDate = data.startDate;
-        log.endDate = data.endDate ?? null;
-        log.notes = data.notes ?? null;
-        log.timezone = data.timezone ?? getCurrentTimezone();
-        log.createdAt = now;
-        log.updatedAt = now;
-        log.deletedAt = null;
+        fillPeriodLog(log, data, data.menstrualCycleId, now);
       });
 
       if (updateAnchor) {
@@ -173,14 +168,7 @@ export class PeriodLogRepository {
       );
 
       const preparedLog = database.get<PeriodLog>('period_logs').prepareCreate((log) => {
-        log.menstrualCycleId = data.menstrualCycleId;
-        log.startDate = data.startDate;
-        log.endDate = data.endDate ?? null;
-        log.notes = data.notes ?? null;
-        log.timezone = data.timezone ?? getCurrentTimezone();
-        log.createdAt = now;
-        log.updatedAt = now;
-        log.deletedAt = null;
+        fillPeriodLog(log, data, data.menstrualCycleId, now);
       });
 
       const preparedCycle = cycle.prepareUpdate((c) => {

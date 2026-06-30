@@ -40,7 +40,7 @@ function calculatePhaseProportions(
       color: theme.colors.status.emeraldLight,
       length: follicularLength,
     },
-    { key: 'ovulation' as const, color: theme.colors.status.amber, length: ovulationLength },
+    { key: 'ovulatory' as const, color: theme.colors.status.amber, length: ovulationLength },
     { key: 'luteal' as const, color: theme.colors.status.purple, length: lutealLength },
   ];
 }

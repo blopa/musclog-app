@@ -5,7 +5,7 @@ import { SyncGoal } from '@/database/models/MenstrualCycle';
 import PeriodLog from '@/database/models/PeriodLog';
 import { dayStartInTimezone, localDayStartFromUtcMs, MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 
-export type MenstrualPhase = 'menstrual' | 'follicular' | 'ovulation' | 'luteal';
+export type MenstrualPhase = 'menstrual' | 'follicular' | 'ovulatory' | 'luteal';
 export type EnergyLevel = 'peak' | 'high' | 'moderate' | 'low';
 export type PredictionConfidence = 'none' | 'low' | 'medium' | 'high';
 
@@ -219,7 +219,7 @@ export class MenstrualService {
     const ovulationWindowEndMs = ovulationMs + 2 * MS_PER_SOLAR_DAY;
 
     if (timestampMs >= ovulationWindowStartMs && timestampMs <= ovulationWindowEndMs) {
-      return 'ovulation';
+      return 'ovulatory';
     }
 
     if (timestampMs < ovulationWindowStartMs) {
@@ -254,7 +254,7 @@ export class MenstrualService {
         return 'low';
       case 'follicular':
         return 'high';
-      case 'ovulation':
+      case 'ovulatory':
         return 'peak';
       case 'luteal':
         return 'moderate';
@@ -270,14 +270,14 @@ export class MenstrualService {
     const multipliers: Record<MenstrualPhase, number> = {
       menstrual: 0.85,
       follicular: 1.0,
-      ovulation: 1.1,
+      ovulatory: 1.1,
       luteal: 0.95,
     };
 
     let multiplier = multipliers[phase];
 
     if (goal === 'performance') {
-      if (phase === 'ovulation') {
+      if (phase === 'ovulatory') {
         multiplier = 1.15;
       }
 
@@ -316,7 +316,7 @@ export class MenstrualService {
           metabolism: 'stable',
           focus: 'strength',
         };
-      case 'ovulation':
+      case 'ovulatory':
         return {
           estrogen: 'peak',
           progesterone: 'rising',

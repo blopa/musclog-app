@@ -40,7 +40,7 @@ export function PeriodLogModal({
   mode = 'start',
   initialDate,
 }: PeriodLogModalProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const { logPeriodStart, logPeriodEnd, addPastPeriod, activePeriodLog } = useMenstrualCycle();
 
@@ -119,11 +119,10 @@ export function PeriodLogModal({
               {t('cycle.periodLog.startedOn')}
             </Text>
             <Text className="mt-1 text-base font-bold text-text-primary">
-              {new Date(activePeriodLog.startDate).toLocaleDateString(undefined, {
-                weekday: 'long',
-                month: 'long',
-                day: 'numeric',
-              })}
+              {new Date(activePeriodLog.startDate).toLocaleDateString(
+                i18n.resolvedLanguage ?? i18n.language,
+                { weekday: 'long', month: 'long', day: 'numeric' }
+              )}
             </Text>
           </View>
         ) : null}
