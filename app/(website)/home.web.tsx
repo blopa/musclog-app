@@ -26,11 +26,12 @@ import {
   SectionBackground,
 } from '@/components/website/WebsiteBackgrounds';
 import { DownloadModal } from '@/components/website/WebsiteChrome';
-
-const BRAND_GREEN = '#22C55E';
-const BRAND_GREEN_BRIGHT = '#00FFA3';
-const BODY_TEXT = '#D1D5DB';
-const BODY_TEXT_SOFT = '#9CA3AF';
+import {
+  BODY_TEXT,
+  BODY_TEXT_SOFT,
+  BRAND_GREEN,
+  BRAND_GREEN_BRIGHT,
+} from '@/components/website/websiteColors';
 
 function withExpoBaseUrl(path: string): string {
   if (/^https?:\/\//i.test(path)) {

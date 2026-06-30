@@ -1,5 +1,6 @@
 import PeriodLog from '@/database/models/PeriodLog';
 import { MenstrualService } from '@/database/services/MenstrualService';
+import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 
 const makePeriodLog = (startDate: number, endDate: number | null = null): PeriodLog => {
   const log = {
@@ -11,8 +12,7 @@ const makePeriodLog = (startDate: number, endDate: number | null = null): Period
     },
     getDurationDays() {
       if (this.endDate == null) return null;
-      const MS_PER_DAY = 24 * 60 * 60 * 1000;
-      return Math.max(1, Math.round((this.endDate - this.startDate) / MS_PER_DAY) + 1);
+      return Math.max(1, Math.round((this.endDate - this.startDate) / MS_PER_SOLAR_DAY) + 1);
     },
   } as unknown as PeriodLog;
   return log;

@@ -5,41 +5,13 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { CircadianScienceModal } from '@/components/modals/CircadianScienceModal';
+import { BLOCK_DURATION, BLOCK_FRACTIONS } from '@/constants/circadian';
 import { useEmpiricalTDEE } from '@/hooks/useEmpiricalTDEE';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { localDayStartMs } from '@/utils/calendarDate';
 
 import { GenericCard } from './GenericCard';
-
-/**
- * Circadian caloric distribution across 6 four-hour blocks.
- * Percentages are midpoints of the scientifically-derived ranges from
- * metabolic chamber and circadian studies. Each block spans 240 minutes.
- *
- * Blocks are defined in wall-clock time, so block 1 (23:00–03:00) wraps
- * midnight and is split into two contiguous segments for midnight-anchored math.
- *
- * Segments are in minutes-since-midnight order (0–1440):
- *   00:00–03:00  →  3/4 of block 1  (early sleep, post-midnight)
- *   03:00–07:00  →  block 2 (biological nadir)
- *   07:00–11:00  →  block 3 (waking / breakfast)
- *   11:00–15:00  →  block 4 (midday / lunch)
- *   15:00–19:00  →  block 5 (circadian peak)
- *   19:00–23:00  →  block 6 (evening wind-down)
- *   23:00–24:00  →  1/4 of block 1  (early sleep, pre-midnight)
- */
-const BLOCK_FRACTIONS = {
-  earlySlеep: 0.095, // 11 PM – 3 AM  (9–10 %, midpoint 9.5 %)
-  nadir: 0.085, // 3 AM – 7 AM   (8–9 %, midpoint 8.5 %)
-  morning: 0.195, // 7 AM – 11 AM  (19–20 %, midpoint 19.5 %)
-  midday: 0.225, // 11 AM – 3 PM  (22–23 %, midpoint 22.5 %)
-  peak: 0.25, // 3 PM – 7 PM   (24–26 %, midpoint 25 %)
-  evening: 0.15, // 7 PM – 11 PM  (14–16 %, midpoint 15 %)
-} as const;
-
-// Each block is exactly 240 minutes.
-const BLOCK_DURATION = 240;
 
 // Segments in minutes-since-midnight order.
 // `rate` = fraction of TDEE burned per minute within this segment.

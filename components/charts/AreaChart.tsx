@@ -8,6 +8,11 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { getXAxisLabelEdgeMargin, XAxisLabel } from '@/utils/chartUtils';
 
+import {
+  AREA_TOOLTIP_HEIGHT as TOOLTIP_HEIGHT,
+  AREA_TOOLTIP_WIDTH as TOOLTIP_WIDTH,
+} from './chartConstants';
+
 /** Map chart points to victory-native PointsArray (includes xValue, yValue) */
 function toPointsArray(
   pts: { x: number; y: number }[]
@@ -69,9 +74,6 @@ export type AreaChartProps = {
 const PEAK_MARKER_R = 4;
 const PEAK_LABEL_WIDTH = 40;
 const PEAK_LABEL_HEIGHT = 24;
-
-const TOOLTIP_WIDTH = 120;
-const TOOLTIP_HEIGHT = 56;
 
 export function AreaChart({
   title,

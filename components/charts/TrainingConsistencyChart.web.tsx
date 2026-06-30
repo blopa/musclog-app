@@ -6,6 +6,11 @@ import { Text, View } from 'react-native';
 import { useChartTooltip } from '@/context/ChartTooltipContext';
 import { useTheme } from '@/hooks/useTheme';
 
+import {
+  TRAINING_CONSISTENCY_TOOLTIP_HEIGHT as TOOLTIP_HEIGHT,
+  TRAINING_CONSISTENCY_TOOLTIP_WIDTH as TOOLTIP_WIDTH,
+} from './chartConstants';
+
 type ViewWithMouseProps = ViewProps & {
   onClick?: (e: MouseEvent<HTMLElement>) => void;
   style?: ViewProps['style'] & { cursor?: string; boxShadow?: string };
@@ -21,9 +26,6 @@ const OPACITIES: Record<number, number> = {
 };
 
 export type { TrainingConsistencyChartProps } from './TrainingConsistencyChart';
-
-const TOOLTIP_WIDTH = 100;
-const TOOLTIP_HEIGHT = 40;
 
 export function TrainingConsistencyChart({
   title,

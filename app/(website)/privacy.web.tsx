@@ -2,10 +2,7 @@ import { Database, Globe, Lock, Mail, Shield, Smartphone } from 'lucide-react-na
 import { useTranslation } from 'react-i18next';
 
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
-
-const BRAND_GREEN_BRIGHT = '#00FFA3';
-const BODY_TEXT_SOFT = '#9CA3AF';
-const MUTED = '#6B7280';
+import { BODY_TEXT_SOFT, BRAND_GREEN_BRIGHT, MUTED } from '@/components/website/websiteColors';
 
 const DEFINITION_KEYS = [
   'account',

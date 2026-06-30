@@ -14,19 +14,19 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GridPattern } from '@/components/website/WebsiteBackgrounds';
+import {
+  BODY_TEXT,
+  BODY_TEXT_SOFT,
+  BRAND_GREEN,
+  BRAND_GREEN_BRIGHT,
+  INPUT_BG,
+  INPUT_BORDER,
+  MUTED,
+} from '@/components/website/websiteColors';
 import { computePosition, type DeadReckoningSample } from '@/utils/deadReckoning';
 
-// ── Color palette ──────────────────────────────────────────────────────────
-
-const BRAND_GREEN = '#22C55E';
-const BRAND_GREEN_BRIGHT = '#00FFA3';
-const BODY_TEXT = '#D1D5DB';
-const BODY_TEXT_SOFT = '#9CA3AF';
-const MUTED = '#6B7280';
 const CARD_BG = 'rgba(255,255,255,0.03)';
 const CARD_BORDER = 'rgba(255,255,255,0.10)';
-const INPUT_BG = 'rgba(255,255,255,0.06)';
-const INPUT_BORDER = 'rgba(255,255,255,0.12)';
 const ACCENT_YELLOW = '#F59E0B';
 const ACCENT_RED = '#EF4444';
 

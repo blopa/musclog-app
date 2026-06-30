@@ -1,7 +1,7 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, writer } from '@nozbe/watermelondb/decorators';
 
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
+import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 
 export interface PeriodLogCreate {
   menstrualCycleId: string;
@@ -37,7 +37,7 @@ export default class PeriodLog extends Model {
       return null;
     }
 
-    return Math.max(1, Math.round((this.endDate - this.startDate) / MS_PER_DAY) + 1);
+    return Math.max(1, Math.round((this.endDate - this.startDate) / MS_PER_SOLAR_DAY) + 1);
   }
 
   @writer

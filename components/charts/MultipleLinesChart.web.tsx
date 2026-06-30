@@ -15,6 +15,13 @@ import {
   XAxisLabel,
 } from '@/utils/chartUtils';
 
+import {
+  MULTIPLE_LINES_CALLOUT_HEIGHT as CALLOUT_HEIGHT,
+  MULTIPLE_LINES_CALLOUT_WIDTH as CALLOUT_WIDTH,
+  MULTIPLE_LINES_TOOLTIP_HEIGHT as TOOLTIP_HEIGHT,
+  MULTIPLE_LINES_TOOLTIP_WIDTH as TOOLTIP_WIDTH,
+} from './chartConstants';
+
 /** View props plus web mouse events (RN Web renders View as div and supports these) */
 type ViewWithMouseProps = ViewProps & {
   onClick?: (e: MouseEvent<HTMLElement>) => void;
@@ -58,12 +65,6 @@ export type MultipleLinesChartProps = {
   /** Format the tooltip label for a given data point (default: shows rounded y values) */
   tooltipFormatter?: (point: MultipleLinesChartDatum) => string;
 };
-
-const CALLOUT_WIDTH = 44;
-const CALLOUT_HEIGHT = 28;
-
-const TOOLTIP_WIDTH = 120;
-const TOOLTIP_HEIGHT = 56;
 
 export function MultipleLinesChart({
   title,

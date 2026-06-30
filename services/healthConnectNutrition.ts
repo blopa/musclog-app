@@ -37,6 +37,7 @@ import { handleError } from '@/utils/handleError';
 import { getTimezoneAt, offsetMinutesToTimezone } from '@/utils/timezone';
 
 import { healthConnectService } from './healthConnect';
+import { HC_SENTINEL_FOOD_NAME, HC_SENTINEL_FOOD_SOURCE } from './healthConnectConstants';
 import { RETRY_CONFIG } from './healthConnectErrors';
 import { TimestampConverter } from './healthDataTransform';
 
@@ -158,9 +159,6 @@ export interface NutritionSyncCounts {
   deleted: number;
   skipped: number;
 }
-
-const HC_SENTINEL_FOOD_SOURCE = 'health_connect';
-const HC_SENTINEL_FOOD_NAME = 'Health Connect Import';
 
 /** Maps Health Connect mealType integer to app MealType string. */
 function mapMealType(hcMealType: number | undefined): MealType {

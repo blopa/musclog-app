@@ -3,10 +3,8 @@ import { ReactNode, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
+import { GOOGLE_PLAY_URL, TESTFLIGHT_URL } from '@/components/website/storeLinks';
 import { trackStoreButtonClick } from '@/utils/websiteAnalytics';
-
-const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/details?id=com.werules.logger';
-const TESTFLIGHT_URL = 'https://testflight.apple.com/join/mq3QMSHU';
 
 function AppleLogo() {
   return (

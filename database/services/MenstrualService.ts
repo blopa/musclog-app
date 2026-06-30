@@ -1,8 +1,9 @@
 import { differenceInCalendarDays } from 'date-fns';
 
+import { DEFAULT_PERIOD_DURATION } from '@/constants/cycle';
 import { SyncGoal } from '@/database/models/MenstrualCycle';
 import PeriodLog from '@/database/models/PeriodLog';
-import { dayStartInTimezone, localDayStartFromUtcMs } from '@/utils/calendarDate';
+import { dayStartInTimezone, localDayStartFromUtcMs, MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 
 export type MenstrualPhase = 'menstrual' | 'follicular' | 'ovulation' | 'luteal';
 export type EnergyLevel = 'peak' | 'high' | 'moderate' | 'low';
@@ -19,11 +20,9 @@ export interface CycleStats {
 }
 
 const DEFAULT_CYCLE_LENGTH = 28;
-const DEFAULT_PERIOD_DURATION = 5;
 // The luteal phase (ovulation → next period) is stable at ~14 days across most cycles.
 // The follicular phase varies. We anchor predictions on this constant.
 const LUTEAL_PHASE_DAYS = 14;
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
 // Cycle is considered irregular when the spread between shortest and longest observed
 // cycle exceeds this threshold (per clinical standards — ACOG definition of irregular cycles).
 const IRREGULAR_SPREAD_THRESHOLD_DAYS = 9;
@@ -35,9 +34,11 @@ function getPredictionConfidence(logCount: number): PredictionConfidence {
   if (logCount < MIN_LOGS_MEDIUM_CONFIDENCE) {
     return 'low';
   }
+
   if (logCount < MIN_LOGS_HIGH_CONFIDENCE) {
     return 'medium';
   }
+
   return 'high';
 }
 
@@ -66,7 +67,7 @@ export class MenstrualService {
     // Calculate cycle lengths from consecutive period start dates
     const cycleLengths: number[] = [];
     for (let i = 1; i < sorted.length; i++) {
-      const days = Math.round((sorted[i].startDate - sorted[i - 1].startDate) / MS_PER_DAY);
+      const days = Math.round((sorted[i].startDate - sorted[i - 1].startDate) / MS_PER_SOLAR_DAY);
       if (days >= 15 && days <= 60) {
         // Sanity filter: ignore clearly wrong values
         cycleLengths.push(days);
@@ -139,8 +140,8 @@ export class MenstrualService {
       return null;
     }
 
-    const predictedMs = latest.startDate + stats.avgCycleLength * MS_PER_DAY;
-    const spreadMs = ((stats.maxCycleLength - stats.minCycleLength) / 2) * MS_PER_DAY;
+    const predictedMs = latest.startDate + stats.avgCycleLength * MS_PER_SOLAR_DAY;
+    const spreadMs = ((stats.maxCycleLength - stats.minCycleLength) / 2) * MS_PER_SOLAR_DAY;
 
     return {
       date: new Date(predictedMs),
@@ -188,18 +189,18 @@ export class MenstrualService {
     const now = Date.now();
 
     // Menstrual: covers the full end day. endDate is stored as local day start (midnight),
-    // so use endDate + MS_PER_DAY as the exclusive upper bound so the entire logged day counts.
+    // so use endDate + MS_PER_SOLAR_DAY as the exclusive upper bound so the entire logged day counts.
     const periodEndExclusive =
       latest.endDate != null
-        ? latest.endDate + MS_PER_DAY
-        : latest.startDate + stats.avgPeriodDuration * MS_PER_DAY;
+        ? latest.endDate + MS_PER_SOLAR_DAY
+        : latest.startDate + stats.avgPeriodDuration * MS_PER_SOLAR_DAY;
     if (now < periodEndExclusive) {
       return 'menstrual';
     }
 
     const ovulationMs = this.predictedOvulationMs(latest, stats);
-    const ovulationWindowStartMs = ovulationMs - 2 * MS_PER_DAY;
-    const ovulationWindowEndMs = ovulationMs + 2 * MS_PER_DAY;
+    const ovulationWindowStartMs = ovulationMs - 2 * MS_PER_SOLAR_DAY;
+    const ovulationWindowEndMs = ovulationMs + 2 * MS_PER_SOLAR_DAY;
 
     if (now >= ovulationWindowStartMs && now <= ovulationWindowEndMs) {
       return 'ovulation';
@@ -216,7 +217,7 @@ export class MenstrualService {
    * Predicted ovulation timestamp: next period start minus the stable luteal phase.
    */
   private static predictedOvulationMs(latest: PeriodLog, stats: CycleStats): number {
-    return latest.startDate + (stats.avgCycleLength - LUTEAL_PHASE_DAYS) * MS_PER_DAY;
+    return latest.startDate + (stats.avgCycleLength - LUTEAL_PHASE_DAYS) * MS_PER_SOLAR_DAY;
   }
 
   /**
@@ -322,8 +323,8 @@ export class MenstrualService {
     const ovulationMs = this.predictedOvulationMs(latest, stats);
 
     return {
-      start: new Date(ovulationMs - 5 * MS_PER_DAY),
-      end: new Date(ovulationMs + MS_PER_DAY),
+      start: new Date(ovulationMs - 5 * MS_PER_SOLAR_DAY),
+      end: new Date(ovulationMs + MS_PER_SOLAR_DAY),
     };
   }
 }

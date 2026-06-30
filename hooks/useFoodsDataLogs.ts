@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import Food from '@/database/models/Food';
 import { FoodService } from '@/database/services';
 
+import { BATCH_SIZE } from './paginationConstants';
 import { useDateFnsLocale } from './useDateFnsLocale';
 import { useTheme } from './useTheme';
 
@@ -29,19 +30,20 @@ export type FoodLibraryDayGroup = {
   items: FoodLibraryDisplayItem[];
 };
 
-const BATCH_SIZE = 20;
-
 function formatRelativeDate(timestamp: number, t: TFunction, locale: Locale): string {
   const date = new Date(timestamp);
   if (isToday(date)) {
     return t('common.today');
   }
+
   if (isYesterday(date)) {
     return t('common.yesterday');
   }
+
   if (isThisWeek(date)) {
     return format(date, 'EEEE', { locale });
   }
+
   return format(date, 'MMM d', { locale });
 }
 
@@ -50,15 +52,19 @@ function pickIconForFoodName(name: string): string {
   if (lower.includes('egg')) {
     return 'egg';
   }
+
   if (lower.includes('pizza')) {
     return 'local-pizza';
   }
+
   if (lower.includes('protein') || lower.includes('shake') || lower.includes('whey')) {
     return 'fitness-center';
   }
+
   if (lower.includes('yogurt') || lower.includes('berry')) {
     return 'restaurant-menu';
   }
+
   return 'restaurant';
 }
 

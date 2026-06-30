@@ -6,6 +6,8 @@ import { localCalendarDayDate } from '@/utils/calendarDate';
 
 export type PeriodLogMode = 'start' | 'end' | 'past';
 
+export const DEFAULT_PERIOD_DURATION = 5;
+
 export const FLOW_LEVELS = [1, 2, 3, 4, 5] as const;
 
 export const FLOW_LEVEL_KEYS: Record<number, string> = {

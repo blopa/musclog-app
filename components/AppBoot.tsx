@@ -4,6 +4,7 @@ import { useSegments } from 'expo-router';
 import { useEffect } from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 
+import { DEFAULT_PERIOD_DURATION } from '@/constants/cycle';
 import { isStaticExport } from '@/constants/platform';
 import {
   ALL_CONFETTI_ACTIVITIES,
@@ -29,6 +30,7 @@ import { healthDataSyncService } from '@/services/healthDataSync';
 import { NotificationService } from '@/services/NotificationService';
 import { getActiveWorkoutLogId, pruneWorkoutInsights } from '@/utils/activeWorkoutStorage';
 import { captureBootException } from '@/utils/bootErrorReporting';
+import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 import { configureDailyTasks } from '@/utils/configureDailyTasks';
 import {
   addNotificationResponseReceivedListener,
@@ -265,10 +267,17 @@ export function AppBoot() {
                   return null;
                 }
 
+                const startDate = cycle.lastPeriodStartDate as number;
+                const avgDuration = cycle.avgPeriodDuration || DEFAULT_PERIOD_DURATION;
+                const estimatedEnd = startDate + avgDuration * MS_PER_SOLAR_DAY;
+                // Only close the log if the estimated end is in the past.
+                // If it falls in the future the period may still be ongoing.
+                const endDate = estimatedEnd < Date.now() ? estimatedEnd : null;
+
                 return {
                   menstrualCycleId: cycle.id,
-                  startDate: cycle.lastPeriodStartDate as number,
-                  endDate: null,
+                  startDate,
+                  endDate,
                   timezone: cycle.timezone ?? undefined,
                 };
               })
@@ -277,6 +286,7 @@ export function AppBoot() {
 
         if (logsToCreate.length > 0) {
           await PeriodLogRepository.createMany(logsToCreate);
+          void NotificationService.scheduleMenstrualCycleNotifications();
         }
 
         await AsyncStorage.setItem(PERIOD_LOGS_BACKFILL_V22_KEY, '1');

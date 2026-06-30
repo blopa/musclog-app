@@ -5,9 +5,12 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
+import { Platform } from 'react-native';
 
+import { DEFAULT_PERIOD_DURATION } from '@/constants/cycle';
 import { isStaticExport } from '@/constants/platform';
 import type {
   BirthControlType,
@@ -26,6 +29,8 @@ import {
   MenstrualService,
   PredictionConfidence,
 } from '@/database/services/MenstrualService';
+import { NotificationService } from '@/services/NotificationService';
+import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 
 export interface MenstrualCycleContextType {
   cycle: MenstrualCycle | null;
@@ -151,8 +156,12 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
 
       if (data.lastPeriodStartDate != null) {
         const { lastPeriodStartDate, ...cycleData } = data;
+        const avgDuration = cycleData.avgPeriodDuration ?? DEFAULT_PERIOD_DURATION;
+        const estimatedEnd = lastPeriodStartDate + avgDuration * MS_PER_SOLAR_DAY;
+        // Leave open if the period might still be ongoing; close it if it's definitely past.
+        const endDate = estimatedEnd < Date.now() ? estimatedEnd : null;
         await MenstrualCycleRepository.createNewCycleWithLogs(cycleData, [
-          { startDate: lastPeriodStartDate },
+          { startDate: lastPeriodStartDate, endDate },
         ]);
         return;
       }
@@ -181,8 +190,20 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
   );
 
   const logPeriodStart = useCallback(
-    (data: Omit<PeriodLogCreate, 'menstrualCycleId'>) => createPeriodLog(data, true),
-    [createPeriodLog]
+    async (data: Omit<PeriodLogCreate, 'menstrualCycleId'>): Promise<PeriodLog | null> => {
+      if (!cycle) {
+        return null;
+      }
+
+      const result = await PeriodLogRepository.startPeriodAtomically(
+        { ...data, menstrualCycleId: cycle.id },
+        cycle
+      );
+      void NotificationService.scheduleMenstrualCycleNotifications();
+
+      return result;
+    },
+    [cycle]
   );
 
   const logPeriodEnd = useCallback(
@@ -197,15 +218,22 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
       }
 
       await active.endPeriod(endDate);
+      void NotificationService.scheduleMenstrualCycleNotifications();
     },
     [periodLogs]
   );
 
   const addPastPeriod = useCallback(
-    (data: Omit<PeriodLogCreate, 'menstrualCycleId'>) => {
+    async (data: Omit<PeriodLogCreate, 'menstrualCycleId'>): Promise<PeriodLog | null> => {
+      // Past periods have definitionally ended — always set a concrete endDate so they
+      // don't appear as "currently in period" via the isActive (endDate == null) check.
+      const avgDuration = cycle?.avgPeriodDuration ?? DEFAULT_PERIOD_DURATION;
+      const endDate = data.endDate ?? data.startDate + avgDuration * MS_PER_SOLAR_DAY;
       const updateAnchor =
         !cycle?.lastPeriodStartDate || data.startDate > cycle.lastPeriodStartDate;
-      return createPeriodLog(data, updateAnchor);
+      const result = await createPeriodLog({ ...data, endDate }, updateAnchor);
+      void NotificationService.scheduleMenstrualCycleNotifications();
+      return result;
     },
     [createPeriodLog, cycle]
   );
@@ -215,6 +243,22 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
       await cycle.updateCycle({ isActive: false });
     }
   }, [cycle]);
+
+  // Keep menstrual notifications in sync whenever period logs change.
+  // Skip the initial empty-array render (before the WatermelonDB subscription delivers data).
+  const isFirstPeriodLogsRef = useRef(true);
+  useEffect(() => {
+    if (Platform.OS === 'web' || isStaticExport || !cycle) {
+      return;
+    }
+
+    if (isFirstPeriodLogsRef.current) {
+      isFirstPeriodLogsRef.current = false;
+      return;
+    }
+
+    void NotificationService.scheduleMenstrualCycleNotifications();
+  }, [cycle, periodLogs]);
 
   const value = useMemo(() => {
     const stats = cycle ? MenstrualService.calculateCycleStats(periodLogs) : null;

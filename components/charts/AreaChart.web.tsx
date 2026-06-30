@@ -23,6 +23,11 @@ import {
   XAxisLabel,
 } from '@/utils/chartUtils';
 
+import {
+  AREA_TOOLTIP_HEIGHT as TOOLTIP_HEIGHT,
+  AREA_TOOLTIP_WIDTH as TOOLTIP_WIDTH,
+} from './chartConstants';
+
 /** View props plus web mouse events (RN Web renders View as div and supports these) */
 type ViewWithMouseProps = ViewProps & {
   onClick?: (e: MouseEvent<HTMLElement>) => void;
@@ -59,9 +64,6 @@ export type AreaChartProps = {
   /** Format the tooltip label for a given data point (default: shows rounded y values) */
   tooltipFormatter?: (point: AreaChartDatum) => string;
 };
-
-const TOOLTIP_WIDTH = 120;
-const TOOLTIP_HEIGHT = 56;
 
 function hexToRgba(hex: string, alpha: number): string {
   const r = parseInt(hex.slice(1, 3), 16);

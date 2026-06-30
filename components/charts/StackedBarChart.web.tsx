@@ -13,6 +13,11 @@ import {
   XAxisLabel,
 } from '@/utils/chartUtils';
 
+import {
+  STACKED_BAR_TOOLTIP_HEIGHT as TOOLTIP_HEIGHT,
+  STACKED_BAR_TOOLTIP_WIDTH as TOOLTIP_WIDTH,
+} from './chartConstants';
+
 /** View props plus web mouse events (RN Web renders View as div and supports these) */
 type ViewWithMouseProps = ViewProps & {
   onClick?: (e: MouseEvent<HTMLElement>) => void;
@@ -45,9 +50,6 @@ export type StackedBarChartProps = {
   /** Format the tooltip label for a given data point (default: shows rounded total) */
   tooltipFormatter?: (point: StackedBarChartDatum) => string;
 };
-
-const TOOLTIP_WIDTH = 90;
-const TOOLTIP_HEIGHT = 36;
 
 export function StackedBarChart({
   data,

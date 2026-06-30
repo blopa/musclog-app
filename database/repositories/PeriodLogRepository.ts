@@ -3,6 +3,7 @@ import { Q, Query } from '@nozbe/watermelondb';
 import { database } from '@/database/database-instance';
 import MenstrualCycle from '@/database/models/MenstrualCycle';
 import PeriodLog, { type PeriodLogCreate } from '@/database/models/PeriodLog';
+import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 import { getCurrentTimezone } from '@/utils/timezone';
 
 export class PeriodLogRepository {
@@ -138,6 +139,56 @@ export class PeriodLogRepository {
         await database.batch(preparedLog);
       }
 
+      return preparedLog as unknown as PeriodLog;
+    });
+  }
+
+  /**
+   * Enforces the single-active-period invariant: closes any open-ended logs for the cycle,
+   * then creates the new period log and updates the cycle anchor — all in one write.
+   * Existing open logs are closed with their endDate set to the day before the new period starts
+   * (floored at the log's own startDate so duration is never negative).
+   */
+  static async startPeriodAtomically(
+    data: PeriodLogCreate,
+    cycle: MenstrualCycle
+  ): Promise<PeriodLog> {
+    const now = Date.now();
+
+    return await database.write(async () => {
+      const activeLogs = await database
+        .get<PeriodLog>('period_logs')
+        .query(
+          Q.where('menstrual_cycle_id', cycle.id),
+          Q.where('deleted_at', Q.eq(null)),
+          Q.where('end_date', Q.eq(null))
+        )
+        .fetch();
+
+      const preparedCloses = activeLogs.map((log) =>
+        log.prepareUpdate((l) => {
+          l.endDate = Math.max(log.startDate, data.startDate - MS_PER_SOLAR_DAY);
+          l.updatedAt = now;
+        })
+      );
+
+      const preparedLog = database.get<PeriodLog>('period_logs').prepareCreate((log) => {
+        log.menstrualCycleId = data.menstrualCycleId;
+        log.startDate = data.startDate;
+        log.endDate = data.endDate ?? null;
+        log.notes = data.notes ?? null;
+        log.timezone = data.timezone ?? getCurrentTimezone();
+        log.createdAt = now;
+        log.updatedAt = now;
+        log.deletedAt = null;
+      });
+
+      const preparedCycle = cycle.prepareUpdate((c) => {
+        c.lastPeriodStartDate = data.startDate;
+        c.updatedAt = now;
+      });
+
+      await database.batch(...preparedCloses, preparedLog, preparedCycle);
       return preparedLog as unknown as PeriodLog;
     });
   }
