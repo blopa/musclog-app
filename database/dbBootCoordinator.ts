@@ -2,11 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
 import { isStaticExport } from '@/constants/platform';
-import {
-  beginBootProgress,
-  completeBootProgressStep,
-  finishBootProgress,
-} from '@/database/dbBootProgressController';
 import { startDbDurabilityMonitoring } from '@/database/dbDurability';
 import { isDbReady, markDbReady, markDbReadyFailed, waitForDbReady } from '@/database/dbReady';
 import { waitForPreMigrationBackup } from '@/database/preMigrationBackup';
@@ -23,6 +18,11 @@ import {
   WorkoutService,
 } from '@/database/services';
 import { captureBootException } from '@/utils/bootErrorReporting';
+import {
+  advanceBootProgressStep,
+  finishBootProgress,
+  startBootProgress,
+} from '@/utils/bootProgress';
 import { isOnboardingCompleted } from '@/utils/onboardingService';
 
 const DB_RESET_RACE_ERRORS = [
@@ -270,7 +270,7 @@ async function runBootMigration(m: BootMigration): Promise<void> {
     });
   } finally {
     clearTimeout(slowTimer);
-    completeBootProgressStep();
+    advanceBootProgressStep();
   }
 }
 
@@ -293,13 +293,13 @@ export async function runDatabaseBootSequence(cancelled: Cancelled): Promise<voi
       // trickle has room to move while it runs, instead of the bar snapping from
       // 0% straight to one step's worth once it finally lands.
       const dbReadyStepWeight = Math.max(1, migrations.length);
-      beginBootProgress([dbReadyStepWeight, ...migrations.map(() => 1)]);
+      startBootProgress([dbReadyStepWeight, ...migrations.map(() => 1)]);
       await waitForExistingDbReady(cancelled);
       if (cancelled()) {
         return;
       }
 
-      completeBootProgressStep();
+      advanceBootProgressStep();
       markDbReady();
     } else {
       await waitForDbReady();
@@ -307,7 +307,7 @@ export async function runDatabaseBootSequence(cancelled: Cancelled): Promise<voi
         return;
       }
 
-      beginBootProgress(migrations.map(() => 1));
+      startBootProgress(migrations.map(() => 1));
     }
 
     // Run boot migrations sequentially in declared order. Several repairs touch

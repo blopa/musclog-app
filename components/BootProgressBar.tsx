@@ -1,7 +1,7 @@
 import { Text, View } from 'react-native';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
 
-import { useBootProgressDisplay } from '@/database/dbBootProgressController';
+import { useBootProgressDisplay } from '@/hooks/useBootProgressDisplay';
 import i18n from '@/lang/lang';
 import { colors } from '@/theme.tokens';
 
