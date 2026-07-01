@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import type NutritionLog from '@/database/models/NutritionLog';
 import { type MealType } from '@/database/models/NutritionLog';
@@ -25,70 +25,129 @@ export function useFoodScreenModals() {
   const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
   const [isEditCurrentGoalVisible, setIsEditCurrentGoalVisible] = useState(false);
 
-  const clearSaveForLaterPending = () => {
+  const openFoodSearch = useCallback((tab: FoodSearchTab = 'all') => {
+    setFoodSearchInitialTab(tab);
+    setIsFoodSearchModalVisible(true);
+  }, []);
+
+  const closeFoodSearch = useCallback(() => setIsFoodSearchModalVisible(false), []);
+  const openCreateCustomFood = useCallback(() => setIsCreateCustomFoodVisible(true), []);
+  const closeCreateCustomFood = useCallback(() => setIsCreateCustomFoodVisible(false), []);
+  const openMyMeals = useCallback(() => setIsMyMealsModalVisible(true), []);
+  const closeMyMeals = useCallback(() => setIsMyMealsModalVisible(false), []);
+  const openQuickTrackMeal = useCallback(() => setIsQuickTrackMealModalVisible(true), []);
+  const closeQuickTrackMeal = useCallback(() => setIsQuickTrackMealModalVisible(false), []);
+  const openDailySummaryMenu = useCallback(() => setIsDailySummaryMenuVisible(true), []);
+  const closeDailySummaryMenu = useCallback(() => setIsDailySummaryMenuVisible(false), []);
+  const openGoalsManagement = useCallback(() => setIsGoalsManagementModalVisible(true), []);
+  const closeGoalsManagement = useCallback(() => setIsGoalsManagementModalVisible(false), []);
+  const openEditCurrentGoal = useCallback(() => setIsEditCurrentGoalVisible(true), []);
+  const closeEditCurrentGoal = useCallback(() => setIsEditCurrentGoalVisible(false), []);
+  const openSavedForLater = useCallback(() => setIsSavedForLaterModalVisible(true), []);
+  const closeSavedForLater = useCallback(() => setIsSavedForLaterModalVisible(false), []);
+  const requestSaveForLater = useCallback((logs: NutritionLog[], mealType: MealType) => {
+    setSaveForLaterPendingLogs(logs);
+    setSaveForLaterPendingMealType(mealType);
+    setIsSaveForLaterPortionVisible(true);
+  }, []);
+  const closeSaveForLaterPortionSelector = useCallback(
+    () => setIsSaveForLaterPortionVisible(false),
+    []
+  );
+  const clearSaveForLaterPending = useCallback(() => {
     setSaveForLaterPendingLogs(null);
     setSaveForLaterPendingMealType(null);
-  };
+  }, []);
 
-  return {
-    foodSearch: {
-      initialTab: foodSearchInitialTab,
-      visible: isFoodSearchModalVisible,
-      open: (tab: FoodSearchTab = 'all') => {
-        setFoodSearchInitialTab(tab);
-        setIsFoodSearchModalVisible(true);
+  return useMemo(
+    () => ({
+      foodSearch: {
+        initialTab: foodSearchInitialTab,
+        visible: isFoodSearchModalVisible,
+        open: openFoodSearch,
+        close: closeFoodSearch,
+        setInitialTab: setFoodSearchInitialTab,
       },
-      close: () => setIsFoodSearchModalVisible(false),
-      setInitialTab: setFoodSearchInitialTab,
-    },
-    createCustomFood: {
-      visible: isCreateCustomFoodVisible,
-      open: () => setIsCreateCustomFoodVisible(true),
-      close: () => setIsCreateCustomFoodVisible(false),
-    },
-    myMeals: {
-      visible: isMyMealsModalVisible,
-      open: () => setIsMyMealsModalVisible(true),
-      close: () => setIsMyMealsModalVisible(false),
-    },
-    quickTrackMeal: {
-      visible: isQuickTrackMealModalVisible,
-      open: () => setIsQuickTrackMealModalVisible(true),
-      close: () => setIsQuickTrackMealModalVisible(false),
-    },
-    dailySummaryMenu: {
-      visible: isDailySummaryMenuVisible,
-      open: () => setIsDailySummaryMenuVisible(true),
-      close: () => setIsDailySummaryMenuVisible(false),
-    },
-    goalsManagement: {
-      visible: isGoalsManagementModalVisible,
-      open: () => setIsGoalsManagementModalVisible(true),
-      close: () => setIsGoalsManagementModalVisible(false),
-    },
-    editCurrentGoal: {
-      visible: isEditCurrentGoalVisible,
-      open: () => setIsEditCurrentGoalVisible(true),
-      close: () => setIsEditCurrentGoalVisible(false),
-    },
-    savedForLater: {
-      hasItems: hasSavedForLaterItems,
-      setHasItems: setHasSavedForLaterItems,
-      visible: isSavedForLaterModalVisible,
-      open: () => setIsSavedForLaterModalVisible(true),
-      close: () => setIsSavedForLaterModalVisible(false),
-      isLoading: isSaveForLaterLoading,
-      setLoading: setIsSaveForLaterLoading,
-      portionSelectorVisible: isSaveForLaterPortionVisible,
-      pendingLogs: saveForLaterPendingLogs,
-      pendingMealType: saveForLaterPendingMealType,
-      request: (logs: NutritionLog[], mealType: MealType) => {
-        setSaveForLaterPendingLogs(logs);
-        setSaveForLaterPendingMealType(mealType);
-        setIsSaveForLaterPortionVisible(true);
+      createCustomFood: {
+        visible: isCreateCustomFoodVisible,
+        open: openCreateCustomFood,
+        close: closeCreateCustomFood,
       },
-      closePortionSelector: () => setIsSaveForLaterPortionVisible(false),
-      clearPending: clearSaveForLaterPending,
-    },
-  };
+      myMeals: {
+        visible: isMyMealsModalVisible,
+        open: openMyMeals,
+        close: closeMyMeals,
+      },
+      quickTrackMeal: {
+        visible: isQuickTrackMealModalVisible,
+        open: openQuickTrackMeal,
+        close: closeQuickTrackMeal,
+      },
+      dailySummaryMenu: {
+        visible: isDailySummaryMenuVisible,
+        open: openDailySummaryMenu,
+        close: closeDailySummaryMenu,
+      },
+      goalsManagement: {
+        visible: isGoalsManagementModalVisible,
+        open: openGoalsManagement,
+        close: closeGoalsManagement,
+      },
+      editCurrentGoal: {
+        visible: isEditCurrentGoalVisible,
+        open: openEditCurrentGoal,
+        close: closeEditCurrentGoal,
+      },
+      savedForLater: {
+        hasItems: hasSavedForLaterItems,
+        setHasItems: setHasSavedForLaterItems,
+        visible: isSavedForLaterModalVisible,
+        open: openSavedForLater,
+        close: closeSavedForLater,
+        isLoading: isSaveForLaterLoading,
+        setLoading: setIsSaveForLaterLoading,
+        portionSelectorVisible: isSaveForLaterPortionVisible,
+        pendingLogs: saveForLaterPendingLogs,
+        pendingMealType: saveForLaterPendingMealType,
+        request: requestSaveForLater,
+        closePortionSelector: closeSaveForLaterPortionSelector,
+        clearPending: clearSaveForLaterPending,
+      },
+    }),
+    [
+      clearSaveForLaterPending,
+      closeCreateCustomFood,
+      closeDailySummaryMenu,
+      closeEditCurrentGoal,
+      closeFoodSearch,
+      closeGoalsManagement,
+      closeMyMeals,
+      closeQuickTrackMeal,
+      closeSavedForLater,
+      closeSaveForLaterPortionSelector,
+      foodSearchInitialTab,
+      hasSavedForLaterItems,
+      isCreateCustomFoodVisible,
+      isDailySummaryMenuVisible,
+      isEditCurrentGoalVisible,
+      isFoodSearchModalVisible,
+      isGoalsManagementModalVisible,
+      isMyMealsModalVisible,
+      isQuickTrackMealModalVisible,
+      isSavedForLaterModalVisible,
+      isSaveForLaterLoading,
+      isSaveForLaterPortionVisible,
+      openCreateCustomFood,
+      openDailySummaryMenu,
+      openEditCurrentGoal,
+      openFoodSearch,
+      openGoalsManagement,
+      openMyMeals,
+      openQuickTrackMeal,
+      openSavedForLater,
+      requestSaveForLater,
+      saveForLaterPendingLogs,
+      saveForLaterPendingMealType,
+    ]
+  );
 }
