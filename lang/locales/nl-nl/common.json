@@ -6,6 +6,7 @@
     "next": "Volgende",
     "context": "Context",
     "processing": "verwerken...",
+    "bootMayTakeMinutes": "Dit kan een paar minuten duren",
     "success": "Succes",
     "saveError": "Wijzigingen opslaan mislukt",
     "saveErrorSubtitle": "Probeer het opnieuw",

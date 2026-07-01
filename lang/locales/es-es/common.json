@@ -6,6 +6,7 @@
     "next": "Siguiente",
     "context": "Contexto",
     "processing": "procesando...",
+    "bootMayTakeMinutes": "Esto puede tardar unos minutos",
     "success": "Éxito",
     "saveError": "Error al guardar los cambios",
     "saveErrorSubtitle": "Por favor, inténtalo de nuevo",
