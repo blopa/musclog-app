@@ -36,7 +36,7 @@ jobs:
           BUILD_NUMBER: ${{ steps.appinfo.outputs.build_number }}
         run: |
           MARKER="<!-- musclog-build-version -->"
-          CURRENT=$(gh release view "$TAG" --json body -q .body)
+          CURRENT=$(gh release view "$TAG" --json body -q '.body // ""')
 
           if printf '%s' "$CURRENT" | grep -qF "$MARKER"; then
             echo "Build version footer already present; nothing to do."

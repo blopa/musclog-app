@@ -1,4 +1,6 @@
 import { apple } from '@react-native-ai/apple';
+// Keep the AI SDK on v6: this provider still depends on the v3 provider stack,
+// and letting `ai` float to v7 breaks the iOS build.
 import { generateText, jsonSchema, Output } from 'ai';
 import { Platform } from 'react-native';
 

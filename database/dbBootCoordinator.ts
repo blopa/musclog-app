@@ -2,6 +2,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
 import { isStaticExport } from '@/constants/platform';
+import {
+  beginBootProgress,
+  completeBootProgressStep,
+  finishBootProgress,
+} from '@/database/dbBootProgressController';
 import { startDbDurabilityMonitoring } from '@/database/dbDurability';
 import { isDbReady, markDbReady, markDbReadyFailed, waitForDbReady } from '@/database/dbReady';
 import { waitForPreMigrationBackup } from '@/database/preMigrationBackup';
@@ -18,11 +23,6 @@ import {
   WorkoutService,
 } from '@/database/services';
 import { captureBootException } from '@/utils/bootErrorReporting';
-import {
-  beginBootProgress,
-  completeBootProgressStep,
-  finishBootProgress,
-} from '@/utils/bootProgress';
 import { isOnboardingCompleted } from '@/utils/onboardingService';
 
 const DB_RESET_RACE_ERRORS = [
