@@ -14,8 +14,8 @@ import { InfoCard } from './InfoCard';
 import { IngredientListModal, MealIngredient } from './IngredientListModal';
 import {
   hasNutritionQualityData,
-  resolveNutritionLabels,
   type NutritionQualityInput,
+  resolveNutritionLabels,
 } from './nutritionQuality';
 import { NutritionQualityData } from './NutritionQualityData';
 

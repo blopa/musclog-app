@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import type { MealGroup } from '@/components/nutrition/foodTypes';
+import { closeMenuDialog } from '@/hooks/closeMenuDialog';
 
 type MealGroupActionMode = 'move' | 'copy' | 'split';
 type MealGroupDialog = null | 'menu' | 'details' | 'delete' | 'scale' | 'action' | 'insights';
@@ -77,10 +78,7 @@ export function useMealGroupUi() {
       clearGroup();
     },
     closeMealGroupMenu: (clearSelection = false) => {
-      // BottomPopUpMenu always calls onClose right after an item's own onPress, even when
-      // that onPress already moved `dialog` to a different value (e.g. 'scale' via openGroupScale).
-      // Only clear the dialog if it's still showing the menu, so we don't clobber that transition.
-      setDialog((current) => (current === 'menu' ? null : current));
+      closeMenuDialog(setDialog);
       if (clearSelection) {
         clearGroup();
       }

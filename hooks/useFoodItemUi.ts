@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import type { ResolvedLogEntry } from '@/components/nutrition/foodTypes';
 import { type MealType } from '@/database/models/NutritionLog';
+import { closeMenuDialog } from '@/hooks/closeMenuDialog';
 
 type FoodLogDetails = ResolvedLogEntry & { mealType: MealType };
 type FoodDialog = null | 'menu' | 'details' | 'delete' | 'move' | 'split';
@@ -79,10 +80,7 @@ export function useFoodItemUi() {
       resetSelection();
     },
     closeFoodMenu: (clearSelection = false) => {
-      // BottomPopUpMenu always calls onClose right after an item's own onPress, even when
-      // that onPress already moved `dialog` to a different value (e.g. 'details' via openEdit).
-      // Only clear the dialog if it's still showing the menu, so we don't clobber that transition.
-      setDialog((current) => (current === 'menu' ? null : current));
+      closeMenuDialog(setDialog);
       if (clearSelection) {
         resetSelection();
       }
