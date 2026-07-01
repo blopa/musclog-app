@@ -343,13 +343,11 @@ export default function FoodScreen() {
     } catch (error) {
       console.error('Error checking saved meals:', error);
     }
-  }, []);
+  }, [screenModals.savedForLater]);
 
   useEffect(() => {
-    SavedForLaterService.hasAnyGroups()
-      .then((hasGroups) => screenModals.savedForLater.setHasItems(hasGroups))
-      .catch((error) => console.error('Error checking saved meals:', error));
-  }, []);
+    void checkSavedMeals();
+  }, [checkSavedMeals]);
 
   useEffect(() => {
     let cancelled = false;

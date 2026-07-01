@@ -120,7 +120,10 @@ export function useMealUi() {
       setCreateMealInitialFoods([]);
     },
     closeMealMenu: (clearSelection = false) => {
-      setDialog(null);
+      // BottomPopUpMenu always calls onClose right after an item's own onPress, even when
+      // that onPress already moved `dialog` to a different value (e.g. 'action' via openMealAction).
+      // Only clear the dialog if it's still showing the menu, so we don't clobber that transition.
+      setDialog((current) => (current === 'menu' ? null : current));
       if (clearSelection) {
         setSelectedMealForMenu(null);
       }
