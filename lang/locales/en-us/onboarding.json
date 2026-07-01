@@ -89,6 +89,10 @@
         "title": "Past Periods (Optional)",
         "description": "Adding past period start dates helps the app learn your cycle length and make better predictions right away.",
         "addPastPeriod": "Add a past period"
+      },
+      "errors": {
+        "futureDate": "Period dates can't be in the future.",
+        "overlappingPeriods": "Those period dates overlap once duration is applied. Remove one or space them farther apart."
       }
     },
     "healthConnect": {

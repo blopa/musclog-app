@@ -8,8 +8,6 @@ import { useTheme } from '@/hooks/useTheme';
 
 import {
   hasNutritionQualityData,
-  isHighFiberFood,
-  isHighProteinFood,
   normalizeNutritionQualityScore,
   type NutritionQualityInput,
   type NutritionQualityScore,
@@ -20,10 +18,6 @@ type NutritionQualityDataProps = {
   ecoScore?: NutritionQualityInput['ecoScore'];
   novaGroup?: number;
   labels?: NutritionQualityInput['labels'];
-  protein?: number;
-  carbs?: number;
-  fiber?: number;
-  calories?: number;
 };
 
 // iOS: RNGH ScrollView fights SwipeToReturnWrapper's pan gesture; RN's native UIScrollView wins correctly.
@@ -202,31 +196,18 @@ export function NutritionQualityData({
   ecoScore,
   novaGroup,
   labels,
-  protein,
-  carbs,
-  fiber,
-  calories,
 }: NutritionQualityDataProps) {
   const { t } = useTranslation();
 
   const normalizedNutriScore = normalizeNutritionQualityScore(nutriScore);
   const normalizedEcoScore = normalizeNutritionQualityScore(ecoScore);
-  const computedHighProtein =
-    protein != null && calories != null && isHighProteinFood(protein, calories);
-  const computedHighFiber =
-    carbs != null && fiber != null && calories != null && isHighFiberFood(carbs, fiber, calories);
-  const resolvedLabels = {
-    ...labels,
-    highProtein: labels?.highProtein === true || computedHighProtein,
-    highFiber: labels?.highFiber === true || computedHighFiber,
-  };
-  const activeLabels = LABEL_KEYS.filter(({ key }) => resolvedLabels?.[key] === true);
+  const activeLabels = LABEL_KEYS.filter(({ key }) => labels?.[key] === true);
   const hasScores = normalizedNutriScore != null || normalizedEcoScore != null;
   const hasData = hasNutritionQualityData({
     nutriScore,
     ecoScore,
     novaGroup,
-    labels: resolvedLabels,
+    labels,
   });
 
   if (!hasData) {

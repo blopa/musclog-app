@@ -14,6 +14,7 @@ import { MenstrualCycleRepository } from '@/database/repositories/MenstrualCycle
 import { useTheme } from '@/hooks/useTheme';
 import { getLocalCalendarYear, localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
 import { getPastPeriodQuickDates } from '@/utils/cycleUtils';
+import { handleError } from '@/utils/handleError';
 import { setOnboardingCompleted } from '@/utils/onboardingService';
 
 type PastPeriod = {
@@ -28,6 +29,23 @@ const DEFAULT_CYCLE_DATA: CycleSetupData = {
   syncGoal: 'performance',
   lifeStage: 'regular',
 };
+
+function getCycleSetupErrorMessage(
+  error: unknown,
+  t: ReturnType<typeof useTranslation>['t']
+): string {
+  if (error instanceof Error) {
+    if (error.message === 'period_log_overlaps_existing') {
+      return t('onboarding.cycleSetup.errors.overlappingPeriods');
+    }
+
+    if (error.message === 'period_date_in_future') {
+      return t('onboarding.cycleSetup.errors.futureDate');
+    }
+  }
+
+  return t('errors.somethingWentWrong');
+}
 
 export default function CycleSetup() {
   const theme = useTheme();
@@ -99,7 +117,12 @@ export default function CycleSetup() {
         router.navigate('/app');
       }
     } catch (error) {
-      console.error('Error saving cycle setup:', error);
+      const snackbarMessage = getCycleSetupErrorMessage(error, t);
+
+      await handleError(error, 'CycleSetup.handleFinish', {
+        snackbarMessage,
+        consoleMessage: 'Error saving cycle setup:',
+      });
     } finally {
       setIsSaving(false);
     }

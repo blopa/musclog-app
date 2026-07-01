@@ -3,6 +3,7 @@ import {
   isHighFiberFood,
   isHighProteinFood,
   normalizeNutritionQualityScore,
+  resolveNutritionLabels,
 } from '@/components/cards/nutritionQuality';
 
 describe('nutritionQuality helpers', () => {
@@ -41,5 +42,28 @@ describe('nutritionQuality helpers', () => {
     expect(isHighFiberFood(20, 10, 100)).toBe(true);
     expect(isHighFiberFood(20, 10, 400)).toBe(false);
     expect(isHighFiberFood(20, 0, 100)).toBe(false);
+  });
+
+  it('resolves computed labels using one consistent nutrition basis', () => {
+    expect(
+      resolveNutritionLabels({
+        protein: 0.018,
+        carbs: 0.228,
+        fiber: 0.012,
+        calories: 0.9,
+      })
+    ).toBeUndefined();
+
+    expect(
+      resolveNutritionLabels({
+        protein: 25,
+        carbs: 10,
+        fiber: 6,
+        calories: 200,
+      })
+    ).toEqual({
+      highProtein: true,
+      highFiber: true,
+    });
   });
 });

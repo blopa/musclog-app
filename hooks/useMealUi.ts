@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import type Food from '@/database/models/Food';
 import { type MealType } from '@/database/models/NutritionLog';
+import { closeMenuDialog } from '@/hooks/closeMenuDialog';
 
 type MealActionMode = 'move' | 'copy' | 'split';
 type CreateMealItem = { food: Food; amount: number };
@@ -120,7 +121,7 @@ export function useMealUi() {
       setCreateMealInitialFoods([]);
     },
     closeMealMenu: (clearSelection = false) => {
-      setDialog(null);
+      closeMenuDialog(setDialog);
       if (clearSelection) {
         setSelectedMealForMenu(null);
       }

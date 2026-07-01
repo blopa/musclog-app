@@ -153,6 +153,7 @@ function formatElapsed(ms: number): string {
 export default function RepsRecordingScreen() {
   const theme = useTheme();
   const wit = useWitMotion();
+  const requestWitPermissions = wit.requestPermissions;
 
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const [micPermission, requestMicPermission] = useMicrophonePermissions();
@@ -188,8 +189,8 @@ export default function RepsRecordingScreen() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    void wit.requestPermissions();
-  }, [wit.requestPermissions]);
+    void requestWitPermissions();
+  }, [requestWitPermissions]);
 
   // Elapsed timer — independent 1s interval, no BLE involvement
   useEffect(() => {
@@ -410,7 +411,7 @@ export default function RepsRecordingScreen() {
       setIsRecording(false);
       clearCapturedRecordingRefs(true);
     }
-  }, [selectedExercise, wit.connectedDevice, wit.isConnected]);
+  }, [clearCapturedRecordingRefs, selectedExercise, wit.connectedDevice, wit.isConnected]);
 
   const handleStop = useCallback(async () => {
     if (!recordingRef.current) {

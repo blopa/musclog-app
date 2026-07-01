@@ -262,7 +262,7 @@ export default function WorkoutsScreen() {
         });
       }
     },
-    [t]
+    [t, triggerConfetti]
   );
 
   // Helper function to open preview modal (now synchronous!)

@@ -139,10 +139,11 @@ export function BottomPopUpMenu({
                   titleColor={item.titleColor}
                   descriptionColor={item.descriptionColor}
                   onPress={() => {
-                    item.onPress();
                     if (!item.keepOpenOnPress) {
                       onClose?.();
                     }
+
+                    item.onPress();
                   }}
                 />
               </View>

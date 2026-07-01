@@ -141,6 +141,7 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
       }
 
       await cycle.updateCycle(data);
+      void NotificationService.scheduleMenstrualCycleNotifications();
     },
     [cycle]
   );
@@ -224,6 +225,7 @@ export function MenstrualCycleProvider({ children }: { children: ReactNode }) {
   const deactivateTracking = useCallback(async (): Promise<void> => {
     if (cycle) {
       await cycle.updateCycle({ isActive: false });
+      void NotificationService.scheduleMenstrualCycleNotifications();
     }
   }, [cycle]);
 

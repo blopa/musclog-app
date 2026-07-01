@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import type { ResolvedLogEntry } from '@/components/nutrition/foodTypes';
 import { type MealType } from '@/database/models/NutritionLog';
+import { closeMenuDialog } from '@/hooks/closeMenuDialog';
 
 type FoodLogDetails = ResolvedLogEntry & { mealType: MealType };
 type FoodDialog = null | 'menu' | 'details' | 'delete' | 'move' | 'split';
@@ -79,7 +80,7 @@ export function useFoodItemUi() {
       resetSelection();
     },
     closeFoodMenu: (clearSelection = false) => {
-      setDialog(null);
+      closeMenuDialog(setDialog);
       if (clearSelection) {
         resetSelection();
       }

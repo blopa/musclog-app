@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import type { MealGroup } from '@/components/nutrition/foodTypes';
+import { closeMenuDialog } from '@/hooks/closeMenuDialog';
 
 type MealGroupActionMode = 'move' | 'copy' | 'split';
 type MealGroupDialog = null | 'menu' | 'details' | 'delete' | 'scale' | 'action' | 'insights';
@@ -77,7 +78,7 @@ export function useMealGroupUi() {
       clearGroup();
     },
     closeMealGroupMenu: (clearSelection = false) => {
-      setDialog(null);
+      closeMenuDialog(setDialog);
       if (clearSelection) {
         clearGroup();
       }

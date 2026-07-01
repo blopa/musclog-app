@@ -313,6 +313,9 @@ export default function FoodScreen() {
   // Show skeleton until data is loaded
   const isScreenLoading = isLoading || isResolvingRelations;
 
+  const closeEditCurrentGoal = screenModals.editCurrentGoal.close;
+  const setSavedForLaterHasItems = screenModals.savedForLater.setHasItems;
+
   const handleSaveCurrentNutritionGoal = useCallback(
     async (goals: NutritionGoals) => {
       if (!currentNutritionGoal) {
@@ -325,7 +328,7 @@ export default function FoodScreen() {
           nutritionGoalsToInput(goals),
           true
         );
-        screenModals.editCurrentGoal.close();
+        closeEditCurrentGoal();
       } catch (error) {
         await handleError(error, 'food.saveCurrentNutritionGoal', {
           snackbarMessage: t('errors.somethingWentWrong'),
@@ -333,23 +336,21 @@ export default function FoodScreen() {
         });
       }
     },
-    [currentNutritionGoal, t]
+    [currentNutritionGoal, closeEditCurrentGoal, t]
   );
 
   const checkSavedMeals = useCallback(async () => {
     try {
       const hasGroups = await SavedForLaterService.hasAnyGroups();
-      screenModals.savedForLater.setHasItems(hasGroups);
+      setSavedForLaterHasItems(hasGroups);
     } catch (error) {
       console.error('Error checking saved meals:', error);
     }
-  }, []);
+  }, [setSavedForLaterHasItems]);
 
   useEffect(() => {
-    SavedForLaterService.hasAnyGroups()
-      .then((hasGroups) => screenModals.savedForLater.setHasItems(hasGroups))
-      .catch((error) => console.error('Error checking saved meals:', error));
-  }, []);
+    void checkSavedMeals();
+  }, [checkSavedMeals]);
 
   useEffect(() => {
     let cancelled = false;

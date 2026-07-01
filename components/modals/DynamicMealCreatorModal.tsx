@@ -268,17 +268,18 @@ export default function DynamicMealCreatorModal({
     }
   }, [
     mealName,
+    ingredients,
     mealDescription,
     preparedWeightGrams,
     nutritionBasis,
     recipeServingsCount,
     defaultPortionName,
     servingGrams,
-    ingredients,
-    onSaved,
-    showSnackbar,
     syncMealPortion,
+    showSnackbar,
     t,
+    onFirstMealCreated,
+    onSaved,
   ]);
 
   const handleClose = useCallback(() => {

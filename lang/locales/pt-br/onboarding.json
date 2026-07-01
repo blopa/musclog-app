@@ -89,6 +89,10 @@
         "title": "Períodos Passados (Opcional)",
         "description": "Adicionar datas de períodos passados ajuda o app a aprender a duração do seu ciclo e fazer melhores previsões de imediato.",
         "addPastPeriod": "Adicionar um período passado"
+      },
+      "errors": {
+        "futureDate": "As datas da menstruação não podem estar no futuro.",
+        "overlappingPeriods": "Essas datas de menstruação se sobrepõem quando a duração é aplicada. Remova uma delas ou deixe mais espaço entre elas."
       }
     },
     "healthConnect": {

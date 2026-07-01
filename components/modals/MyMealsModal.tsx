@@ -346,7 +346,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
         setIsGeneratingMealAI(false);
       }
     },
-    [refresh, showSnackbar, t]
+    [refresh, showSnackbar, t, triggerConfetti]
   );
 
   const handleSearchChange = (query: string) => {

@@ -960,7 +960,7 @@ export function useChatMessages(
         })
       );
     },
-    []
+    [triggerConfetti]
   );
 
   const ephemeralErrorAsMessage = useMemo((): ExtendedIMessage | null => {

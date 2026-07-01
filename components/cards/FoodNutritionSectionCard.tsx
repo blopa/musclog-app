@@ -14,9 +14,8 @@ import { InfoCard } from './InfoCard';
 import { IngredientListModal, MealIngredient } from './IngredientListModal';
 import {
   hasNutritionQualityData,
-  isHighFiberFood,
-  isHighProteinFood,
   type NutritionQualityInput,
+  resolveNutritionLabels,
 } from './nutritionQuality';
 import { NutritionQualityData } from './NutritionQualityData';
 
@@ -101,18 +100,16 @@ export function FoodNutritionSectionCard({
   const [nutritionExpanded, setNutritionExpanded] = useState(false);
 
   const scaleFactor = servingBasis === 'per_serving' ? servingSize : servingSize / 100;
-  const highProtein = isHighProteinFood(protein ?? food.protein, food.calories);
-  const highFiber = isHighFiberFood(
-    food.carbs,
-    (nutritionalData.fiber ?? 0) * scaleFactor,
-    food.calories
-  );
+  const resolvedLabels = resolveNutritionLabels({
+    labels: nutritionQuality?.labels,
+    protein: protein ?? food.protein,
+    carbs: food.carbs,
+    fiber: (nutritionalData.fiber ?? 0) * scaleFactor,
+    calories: food.calories,
+  });
 
-  const resolvedLabels = {
-    ...nutritionQuality?.labels,
-    highProtein: nutritionQuality?.labels?.highProtein === true || highProtein,
-    highFiber: nutritionQuality?.labels?.highFiber === true || highFiber,
-  };
+  const highProtein = resolvedLabels?.highProtein === true;
+  const highFiber = resolvedLabels?.highFiber === true;
 
   const showAdditionalNutrition =
     mode !== 'meal' &&
@@ -279,10 +276,6 @@ export function FoodNutritionSectionCard({
               ecoScore={nutritionQuality?.ecoScore}
               novaGroup={nutritionQuality?.novaGroup}
               labels={resolvedLabels}
-              protein={protein ?? food.protein}
-              carbs={food.carbs}
-              fiber={nutritionalData.fiber}
-              calories={food.calories}
             />
           ) : null}
 

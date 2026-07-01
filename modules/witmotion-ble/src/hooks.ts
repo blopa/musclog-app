@@ -1,4 +1,4 @@
-import { useEffect, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useSyncExternalStore } from 'react';
 
 import { witMotionClient } from './client';
 import type { WitMotionHookResult } from './types';
@@ -10,23 +10,26 @@ function useWitMotionState(): WitMotionHookResult {
     witMotionClient.getSnapshot
   );
 
-  return {
-    ...state,
-    requestPermissions: witMotionClient.requestPermissions,
-    startScan: witMotionClient.startScan,
-    stopScan: witMotionClient.stopScan,
-    connect: witMotionClient.connect,
-    disconnect: witMotionClient.disconnect,
-    reset: witMotionClient.reset,
-    setOutputRate: witMotionClient.setOutputRate,
-    setBandwidth: witMotionClient.setBandwidth,
-    setAngleZero: witMotionClient.setAngleZero,
-    startMagCalibration: witMotionClient.startMagCalibration,
-    stopMagCalibration: witMotionClient.stopMagCalibration,
-    requestMagneticField: witMotionClient.requestMagneticField,
-    requestBattery: witMotionClient.requestBattery,
-    sendRawCommand: witMotionClient.sendRawCommand,
-  };
+  return useMemo(
+    () => ({
+      ...state,
+      requestPermissions: witMotionClient.requestPermissions,
+      startScan: witMotionClient.startScan,
+      stopScan: witMotionClient.stopScan,
+      connect: witMotionClient.connect,
+      disconnect: witMotionClient.disconnect,
+      reset: witMotionClient.reset,
+      setOutputRate: witMotionClient.setOutputRate,
+      setBandwidth: witMotionClient.setBandwidth,
+      setAngleZero: witMotionClient.setAngleZero,
+      startMagCalibration: witMotionClient.startMagCalibration,
+      stopMagCalibration: witMotionClient.stopMagCalibration,
+      requestMagneticField: witMotionClient.requestMagneticField,
+      requestBattery: witMotionClient.requestBattery,
+      sendRawCommand: witMotionClient.sendRawCommand,
+    }),
+    [state]
+  );
 }
 
 export function useWitMotion(): WitMotionHookResult {

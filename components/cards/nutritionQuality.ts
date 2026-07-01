@@ -56,6 +56,40 @@ export function isHighFiberFood(totalCarbs: number, dietaryFiber: number, calori
   return true;
 }
 
+type ResolveNutritionLabelsInput = {
+  labels?: FoodLabels;
+  protein?: number;
+  carbs?: number;
+  fiber?: number;
+  calories?: number;
+};
+
+export function resolveNutritionLabels({
+  labels,
+  protein,
+  carbs,
+  fiber,
+  calories,
+}: ResolveNutritionLabelsInput): FoodLabels | undefined {
+  const computedHighProtein =
+    protein != null && calories != null && isHighProteinFood(protein, calories);
+  const computedHighFiber =
+    carbs != null &&
+    fiber != null &&
+    calories != null &&
+    isHighFiberFood(carbs, fiber, calories);
+
+  if (!labels && !computedHighProtein && !computedHighFiber) {
+    return undefined;
+  }
+
+  return {
+    ...labels,
+    highProtein: labels?.highProtein === true || computedHighProtein,
+    highFiber: labels?.highFiber === true || computedHighFiber,
+  };
+}
+
 export function hasNutritionQualityData({
   nutriScore,
   ecoScore,
