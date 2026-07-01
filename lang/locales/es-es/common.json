@@ -6,7 +6,7 @@
     "next": "Siguiente",
     "context": "Contexto",
     "processing": "procesando...",
-    "bootMayTakeMinutes": "Esto puede tardar unos minutos",
+    "bootMayTakeMinutes": "Espera y mantén la app abierta. Esto puede tardar varios minutos: la barra de progreso puede parecer detenida, pero seguimos trabajando.",
     "success": "Éxito",
     "saveError": "Error al guardar los cambios",
     "saveErrorSubtitle": "Por favor, inténtalo de nuevo",
