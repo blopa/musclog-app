@@ -14,6 +14,7 @@ import { MenstrualCycleRepository } from '@/database/repositories/MenstrualCycle
 import { useTheme } from '@/hooks/useTheme';
 import { getLocalCalendarYear, localCalendarDayDate, localDayStartMs } from '@/utils/calendarDate';
 import { getPastPeriodQuickDates } from '@/utils/cycleUtils';
+import { handleError } from '@/utils/handleError';
 import { setOnboardingCompleted } from '@/utils/onboardingService';
 
 type PastPeriod = {
@@ -99,7 +100,17 @@ export default function CycleSetup() {
         router.navigate('/app');
       }
     } catch (error) {
-      console.error('Error saving cycle setup:', error);
+      const snackbarMessage =
+        error instanceof Error && error.message === 'period_log_overlaps_existing'
+          ? t('onboarding.cycleSetup.errors.overlappingPeriods')
+          : error instanceof Error && error.message === 'period_date_in_future'
+            ? t('onboarding.cycleSetup.errors.futureDate')
+            : t('errors.somethingWentWrong');
+
+      await handleError(error, 'CycleSetup.handleFinish', {
+        snackbarMessage,
+        consoleMessage: 'Error saving cycle setup:',
+      });
     } finally {
       setIsSaving(false);
     }

@@ -5,6 +5,7 @@ import { View } from 'react-native';
 import { type CycleSetupData, EditCycleSetupData } from '@/components/EditCycleSetupData';
 import { Button } from '@/components/theme/Button';
 import type MenstrualCycle from '@/database/models/MenstrualCycle';
+import { NotificationService } from '@/services/NotificationService';
 import { handleError } from '@/utils/handleError';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -46,6 +47,7 @@ export function CycleSettingsModal({ visible, onClose, cycle }: CycleSettingsMod
         syncGoal: data.syncGoal,
         lifeStage: data.lifeStage ?? null,
       });
+      void NotificationService.scheduleMenstrualCycleNotifications();
       handleClose();
     } catch (error) {
       handleError(error, 'CycleSettingsModal.handleSave', {

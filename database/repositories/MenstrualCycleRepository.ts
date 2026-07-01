@@ -21,6 +21,16 @@ type NewCycleInput = {
   lifeStage?: LifeStage;
 };
 
+function assertNoFutureInitialLogs(logs: Omit<PeriodLogCreate, 'menstrualCycleId'>[]): void {
+  const now = Date.now();
+
+  for (const log of logs) {
+    if (log.startDate > now) {
+      throw new Error('period_date_in_future');
+    }
+  }
+}
+
 function assertNoOverlappingInitialLogs(logs: Omit<PeriodLogCreate, 'menstrualCycleId'>[]): void {
   for (let index = 0; index < logs.length; index++) {
     const log = logs[index];
@@ -82,6 +92,7 @@ export class MenstrualCycleRepository {
     const now = Date.now();
     const tz = getCurrentTimezone();
     const normalizedLogs = normalizeInitialPeriodLogs(logs, data.avgPeriodDuration ?? 5, now);
+    assertNoFutureInitialLogs(normalizedLogs);
     assertNoOverlappingInitialLogs(normalizedLogs);
 
     const lastPeriodStartDate =
@@ -128,6 +139,7 @@ export class MenstrualCycleRepository {
     const now = Date.now();
     const tz = getCurrentTimezone();
     const normalizedLogs = normalizeInitialPeriodLogs(logs, data.avgPeriodDuration ?? 5, now);
+    assertNoFutureInitialLogs(normalizedLogs);
     assertNoOverlappingInitialLogs(normalizedLogs);
 
     const lastPeriodStartDate =

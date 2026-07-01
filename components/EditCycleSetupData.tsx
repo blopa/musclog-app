@@ -333,6 +333,7 @@ export function EditCycleSetupData({
           setSelectedDate(localCalendarDayDate(date));
           setIsDatePickerVisible(false);
         }}
+        maxDate={localCalendarDayDate(new Date())}
         maxYear={getLocalCalendarYear(new Date())}
         quickDates={[
           {
