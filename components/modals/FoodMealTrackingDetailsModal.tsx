@@ -1135,7 +1135,7 @@ export function FoodMealTrackingDetailsModal({
   ]);
 
   // Get product name from meal, barcode lookup, search result, local food, or log snapshot
-  const getFoodMealName = useCallback(() => {
+  const foodMealName = useMemo(() => {
     if (editedOverrides?.name != null && editedOverrides.name.trim() !== '') {
       return editedOverrides.name.trim();
     }
@@ -1166,7 +1166,17 @@ export function FoodMealTrackingDetailsModal({
     }
 
     return t('food.unknownFood');
-  }, [editedOverrides?.name, food, foodLogDecrypted?.loggedFoodName, localFood?.name, meal, productDetails, productFromSearch, refetchedProductDetails, t]);
+  }, [
+    editedOverrides,
+    food,
+    foodLogDecrypted,
+    localFood,
+    meal,
+    productDetails,
+    productFromSearch,
+    refetchedProductDetails,
+    t,
+  ]);
 
   // Get product category/brand from meal, barcode lookup, search result, or local food
   const getProductCategory = useCallback(() => {
@@ -1452,7 +1462,7 @@ export function FoodMealTrackingDetailsModal({
     // For meals, scale nutrients by amount in grams (mealScaleFactor)
     if (meal && mealNutrients) {
       return {
-        name: getFoodMealName(),
+        name: foodMealName,
         category: getProductCategory(),
         calories: roundToDecimalPlaces(mealNutrients.calories * mealScaleFactor),
         protein: roundToDecimalPlaces(mealNutrients.protein * mealScaleFactor),
@@ -1487,7 +1497,7 @@ export function FoodMealTrackingDetailsModal({
     }
 
     return {
-      name: getFoodMealName(),
+      name: foodMealName,
       category: getProductCategory(),
       calories: roundToDecimalPlaces(nutritionalData.calories * scaleFactor),
       protein: roundToDecimalPlaces(nutritionalData.protein * scaleFactor),
@@ -1505,7 +1515,7 @@ export function FoodMealTrackingDetailsModal({
     productDetails,
     refetchedProductDetails,
     productFromSearch?.source,
-    getFoodMealName,
+    foodMealName,
     getProductCategory,
     nutritionalData.calories,
     nutritionalData.protein,
@@ -1545,7 +1555,7 @@ export function FoodMealTrackingDetailsModal({
       '';
 
     openEditPopUp({
-      name: getFoodMealName(),
+      name: foodMealName,
       barcode: currentBarcode,
       description: currentDescription,
       calories: formatAppRoundedDecimal(locale, nutritionalData.calories, 2),
@@ -1563,7 +1573,7 @@ export function FoodMealTrackingDetailsModal({
     food?.description,
     localFood?.barcode,
     barcode,
-    getFoodMealName,
+    foodMealName,
     locale,
     nutritionalData.calories,
     nutritionalData.protein,

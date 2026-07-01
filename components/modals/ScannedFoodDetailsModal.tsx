@@ -270,7 +270,7 @@ export function ScannedFoodDetailsModal({
     );
   }, [currentSource, effectiveProductDetails]);
 
-  const getCurrentName = useCallback(() => {
+  const currentName = useMemo(() => {
     if (editedOverrides?.name?.trim()) {
       return editedOverrides.name.trim();
     }
@@ -288,7 +288,7 @@ export function ScannedFoodDetailsModal({
     }
 
     return t('food.unknownFood');
-  }, [editedOverrides?.name, effectiveProductDetails, t]);
+  }, [editedOverrides, effectiveProductDetails, t]);
 
   const getCurrentBrand = useCallback(() => {
     if ((effectiveProductDetails as any)?.source === 'musclog') {
@@ -337,7 +337,7 @@ export function ScannedFoodDetailsModal({
     return t('food.generic');
   }, [effectiveProductDetails, t]);
 
-  const getCurrentDescription = useCallback(() => {
+  const currentDescription = useMemo(() => {
     if (editedOverrides?.description != null) {
       return editedOverrides.description.trim();
     }
@@ -355,7 +355,7 @@ export function ScannedFoodDetailsModal({
     }
 
     return '';
-  }, [editedOverrides?.description, effectiveProductDetails]);
+  }, [editedOverrides, effectiveProductDetails]);
 
   const parsedProductServingSize = useMemo(() => {
     if (!isScannedProductSuccess) {
@@ -403,7 +403,7 @@ export function ScannedFoodDetailsModal({
 
   const scaledFood = useMemo(
     () => ({
-      name: getCurrentName(),
+      name: currentName,
       category: getCurrentCategory(),
       calories: roundToDecimalPlaces(nutritionalData.calories * scaleFactor),
       protein: roundToDecimalPlaces(nutritionalData.protein * scaleFactor),
@@ -412,7 +412,7 @@ export function ScannedFoodDetailsModal({
       source: currentSource ?? undefined,
     }),
     [
-      getCurrentName,
+      currentName,
       getCurrentCategory,
       nutritionalData.calories,
       nutritionalData.protein,
@@ -431,9 +431,9 @@ export function ScannedFoodDetailsModal({
     const currentBarcode = editedOverrides?.barcode ?? barcode ?? productCode ?? '';
 
     openEditPopUp({
-      name: getCurrentName(),
+      name: currentName,
       barcode: currentBarcode,
-      description: getCurrentDescription(),
+      description: currentDescription,
       calories: formatAppRoundedDecimal(locale, nutritionalData.calories, 2),
       protein: formatAppRoundedDecimal(locale, nutritionalData.protein, 2),
       carbs: formatAppRoundedDecimal(locale, nutritionalData.carbs, 2),
@@ -445,8 +445,8 @@ export function ScannedFoodDetailsModal({
     effectiveProductDetails,
     editedOverrides?.barcode,
     barcode,
-    getCurrentName,
-    getCurrentDescription,
+    currentName,
+    currentDescription,
     locale,
     nutritionalData.calories,
     nutritionalData.protein,
@@ -469,9 +469,9 @@ export function ScannedFoodDetailsModal({
       if (existingFood) {
         if (editedOverrides || refetchedProductDetails) {
           await existingFood.update((record: any) => {
-            record.name = getCurrentName();
+            record.name = currentName;
             record.barcode = saveBarcode;
-            record.description = getCurrentDescription();
+            record.description = currentDescription;
             record.brand = getCurrentBrand();
             record.calories = nutritionalData.calories;
             record.protein = nutritionalData.protein;
@@ -542,8 +542,8 @@ export function ScannedFoodDetailsModal({
     barcode,
     productData,
     refetchedProductDetails,
-    getCurrentName,
-    getCurrentDescription,
+    currentName,
+    currentDescription,
     getCurrentBrand,
     nutritionalData,
     effectiveMicrosPer100g,
