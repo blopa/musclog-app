@@ -100,12 +100,20 @@ examples/
 data/examples/
 data/dev/
 data/usda/
-assets/exercises
-assets/workouts
 .git/
 .git/**
 
-# Exercise images are fetched from GitHub raw content (see utils/exerciseImage.ts)
-# except for the fallback image which is required by the app.
-assets/exercises/*
-!assets/exercises/fallback.png
+# ML training pipeline (~1.5 GB): Python scripts, raw recordings, intermediate
+# data, and the venv. The trained model is vendored at utils/repCountingModel.js
+# (npm run sync-ml-model), so the app build needs none of this.
+training-data/
+
+# Game Boy ROM C sources, build artifacts, and tooling (~23 MB). The ROM the app
+# ships is assets/musclog.gbc (and public/images/musclog.gbc for the web emulator).
+gameboy/
+
+# Exercise images (~64 MB) are fetched from GitHub raw content at runtime
+# (see utils/exerciseImage.ts). The fallback image lives at
+# assets/exercise-fallback.png (outside this dir), so it still ships.
+assets/exercises/
+assets/workouts/

@@ -1,8 +1,13 @@
 import { Text, View } from 'react-native';
+import { initialWindowMetrics } from 'react-native-safe-area-context';
 
+import { useBootProgressDisplay } from '@/hooks/useBootProgressDisplay';
 import i18n from '@/lang/lang';
 import { colors } from '@/theme.tokens';
-import { useBootProgress } from '@/utils/bootProgress';
+
+// Static launch-time inset (no SafeAreaProvider wraps the splash), used to lift
+// the bar clear of the Android navigation bar / iOS home indicator.
+const BOTTOM_INSET = initialWindowMetrics?.insets.bottom ?? 0;
 
 /**
  * Absolute-positioned progress bar anchored near the bottom of the splash
@@ -13,13 +18,13 @@ import { useBootProgress } from '@/utils/bootProgress';
  * before the database layer loads.
  */
 export function BootProgressBar() {
-  const progress = useBootProgress();
+  const { active, ratio: rawRatio } = useBootProgressDisplay();
 
-  if (!progress.active || progress.total <= 0) {
+  if (!active) {
     return null;
   }
 
-  const ratio = Math.min(1, Math.max(0, progress.completed / progress.total));
+  const ratio = Math.min(1, Math.max(0, rawRatio));
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const percent = new Intl.NumberFormat(locale, {
     style: 'percent',
@@ -33,11 +38,21 @@ export function BootProgressBar() {
         position: 'absolute',
         left: 0,
         right: 0,
-        bottom: 36,
+        bottom: BOTTOM_INSET + 72,
         alignItems: 'center',
       }}
     >
       <View style={{ width: '70%', maxWidth: 280, alignItems: 'center' }}>
+        <Text
+          style={{
+            marginBottom: 12,
+            color: colors.gray500,
+            fontSize: 13,
+            textAlign: 'center',
+          }}
+        >
+          {i18n.t('common.bootMayTakeMinutes')}
+        </Text>
         <View
           style={{
             width: '100%',

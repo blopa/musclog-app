@@ -695,15 +695,28 @@ export class ExerciseService {
    * Returns the number of exercises created (0 on a no-op boot).
    */
   static async syncAppExercises(): Promise<number> {
-    // Collect names of non-deleted app exercises already in the DB
-    const existing = await database
-      .get<Exercise>('exercises')
-      .query(Q.where('source', 'app'), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-    const existingNames = new Set(existing.map((ex) => (ex.name ?? '').toLowerCase()));
+    const existingExercises = await database.get<Exercise>('exercises').query().fetch();
+    const existingNames = new Set(
+      existingExercises
+        .filter((exercise) => exercise.source === 'app' && exercise.deletedAt == null)
+        .map((exercise) => (exercise.name ?? '').toLowerCase())
+    );
 
-    // Determine which JSON entries are missing from the DB
-    const missing = exercisesJson.filter((data) => !existingNames.has(data.name.toLowerCase()));
+    // New entries are inserted with a fixed id of `String(exerciseIndex)`, so we
+    // must never re-create an id that already exists or the batch throws
+    // `UNIQUE constraint failed: exercises.id` (sqlite error 1555). This matters
+    // because the name-based dedup above is locale-dependent — exercise names
+    // are translated per language, so after a language switch (or a JSON name
+    // refinement between versions) an already-present exercise looks "missing"
+    // by name while its id is unchanged. Skipping by id keeps the sync
+    // idempotent regardless of locale.
+    const existingIds = new Set(existingExercises.map((exercise) => exercise.id));
+
+    // Determine which JSON entries are missing from the DB (by name and by id)
+    const missing = exercisesJson.filter(
+      (data) =>
+        !existingNames.has(data.name.toLowerCase()) && !existingIds.has(String(data.exerciseIndex))
+    );
 
     if (missing.length === 0) {
       return 0;

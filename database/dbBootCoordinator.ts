@@ -19,9 +19,9 @@ import {
 } from '@/database/services';
 import { captureBootException } from '@/utils/bootErrorReporting';
 import {
-  beginBootProgress,
-  completeBootProgressStep,
+  advanceBootProgressStep,
   finishBootProgress,
+  startBootProgress,
 } from '@/utils/bootProgress';
 import { isOnboardingCompleted } from '@/utils/onboardingService';
 
@@ -270,7 +270,7 @@ async function runBootMigration(m: BootMigration): Promise<void> {
     });
   } finally {
     clearTimeout(slowTimer);
-    completeBootProgressStep();
+    advanceBootProgressStep();
   }
 }
 
@@ -287,13 +287,19 @@ export async function runDatabaseBootSequence(cancelled: Cancelled): Promise<voi
     const onboardingDone = await isOnboardingCompleted();
 
     if (onboardingDone) {
-      beginBootProgress(1 + migrations.length);
+      // The DB-ready step hides the pre-migration backup and the WatermelonDB
+      // schema migration, which on an upgrade can take far longer than every
+      // quick data-repair migration combined. Weight it to ~half the bar so the
+      // trickle has room to move while it runs, instead of the bar snapping from
+      // 0% straight to one step's worth once it finally lands.
+      const dbReadyStepWeight = Math.max(1, migrations.length);
+      startBootProgress([dbReadyStepWeight, ...migrations.map(() => 1)]);
       await waitForExistingDbReady(cancelled);
       if (cancelled()) {
         return;
       }
 
-      completeBootProgressStep();
+      advanceBootProgressStep();
       markDbReady();
     } else {
       await waitForDbReady();
@@ -301,7 +307,7 @@ export async function runDatabaseBootSequence(cancelled: Cancelled): Promise<voi
         return;
       }
 
-      beginBootProgress(migrations.length);
+      startBootProgress(migrations.map(() => 1));
     }
 
     // Run boot migrations sequentially in declared order. Several repairs touch

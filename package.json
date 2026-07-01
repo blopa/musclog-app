@@ -1,6 +1,6 @@
 {
   "name": "musclog",
-  "version": "2.9.9",
+  "version": "2.9.10",
   "engines": {
     "node": "26.x"
   },
@@ -70,6 +70,8 @@
     "build-android-nowait": "eas build -p android --profile production --clear-cache --no-wait",
     "build-android-local": "eas build -p android --profile production --local --clear-cache",
     "build-android-local-cache": "EAS_LOCAL_BUILD_WORKINGDIR=~/eas-local-builds eas build -p android --profile production --local --clear-cache",
+    "build-android-apk": "eas build -p android --profile production-apk --clear-cache",
+    "build-android-apk-local": "eas build -p android --profile production-apk --local --clear-cache",
     "build-android-web": "node scripts/sync-web-images.js && node scripts/export-web-wrapper.js",
     "submit-android": "eas submit --platform android",
     "build-android-preview": "eas build -p android --profile preview",
@@ -116,7 +118,7 @@
     "@tanstack/react-query": "^5.101.2",
     "@zxing/library": "0.23.0",
     "ahrs": "^1.3.3",
-    "ai": "^7.0.4",
+    "ai": "^6.0.216",
     "babel-preset-expo": "~56.0.15",
     "buffer": "6.0.3",
     "canvas-confetti": "^1.9.4",

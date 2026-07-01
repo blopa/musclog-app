@@ -6,6 +6,7 @@
     "next": "Next",
     "context": "Context",
     "processing": "processing...",
+    "bootMayTakeMinutes": "Please wait and keep the app open. This can take several minutes — the progress bar may look stuck, but we're still working.",
     "success": "Success",
     "saveError": "Failed to save changes",
     "saveErrorSubtitle": "Please try again",

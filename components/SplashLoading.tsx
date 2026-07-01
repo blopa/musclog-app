@@ -1,10 +1,15 @@
 import { ActivityIndicator, Image, Text, View } from 'react-native';
 
 import { BootProgressBar } from '@/components/BootProgressBar';
+import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 // theme.tokens (not theme.ts) so this stays importable before the database layer loads.
 import { colors } from '@/theme.tokens';
 
 export function SplashLoading() {
+  // Boot migrations/seeding can run for minutes on first launch; keep the
+  // screen on so the device doesn't sleep and interrupt the work.
+  useKeepScreenAwake('splash-loading');
+
   return (
     <View className="h-screen w-full items-center justify-center bg-bg-primary">
       <Image source={require('@/assets/logo.png')} className="h-24 w-24" resizeMode="contain" />
