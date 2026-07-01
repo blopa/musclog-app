@@ -23,7 +23,12 @@ const EMPTY_WEIGHTED_PROGRESS: WeightedBootProgressState = {
 
 let weightedState = EMPTY_WEIGHTED_PROGRESS;
 
-function ceilingFor(completed: number, index: number, total: number, stepWeights: number[]): number {
+function ceilingFor(
+  completed: number,
+  index: number,
+  total: number,
+  stepWeights: number[]
+): number {
   const inFlightWeight = stepWeights[index] ?? 0;
   return Math.min(total, completed + inFlightWeight);
 }
