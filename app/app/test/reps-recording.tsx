@@ -189,7 +189,7 @@ export default function RepsRecordingScreen() {
 
   useEffect(() => {
     void wit.requestPermissions();
-  }, [wit.requestPermissions]);
+  }, [wit, wit.requestPermissions]);
 
   // Elapsed timer — independent 1s interval, no BLE involvement
   useEffect(() => {
@@ -410,7 +410,7 @@ export default function RepsRecordingScreen() {
       setIsRecording(false);
       clearCapturedRecordingRefs(true);
     }
-  }, [selectedExercise, wit.connectedDevice, wit.isConnected]);
+  }, [clearCapturedRecordingRefs, selectedExercise, wit.connectedDevice, wit.isConnected]);
 
   const handleStop = useCallback(async () => {
     if (!recordingRef.current) {

@@ -568,7 +568,7 @@ export default function SmartCameraModal({
         showSnackbar('error', t('food.aiCamera.mealLoggingFailed'));
       }
     },
-    [selectedMealForLogging, aiIngredients, aiPhotoUri, t, onClose]
+    [selectedMealForLogging, aiIngredients, aiPhotoUri, t, triggerConfetti, onClose]
   );
 
   const handleScanBarcodePress = useCallback(() => {

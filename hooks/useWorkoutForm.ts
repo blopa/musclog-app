@@ -214,18 +214,19 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
     }
   }, [
     workoutTitle,
+    showSnackbar,
+    t,
+    exercises,
+    exerciseMetadata,
+    isEditMode,
+    templateId,
     description,
     workoutInsights,
     workoutType,
     icon,
-    exercises,
-    exerciseMetadata,
     selectedDays,
-    isEditMode,
-    templateId,
     onSaveSuccess,
-    t,
-    showSnackbar,
+    triggerConfetti,
   ]);
 
   const handleExerciseOrderChange = useCallback((reorderedExercises: SelectorOption<string>[]) => {

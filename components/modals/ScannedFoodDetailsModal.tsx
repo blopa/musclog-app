@@ -270,7 +270,7 @@ export function ScannedFoodDetailsModal({
     );
   }, [currentSource, effectiveProductDetails]);
 
-  const getCurrentName = () => {
+  const getCurrentName = useCallback(() => {
     if (editedOverrides?.name?.trim()) {
       return editedOverrides.name.trim();
     }
@@ -288,7 +288,7 @@ export function ScannedFoodDetailsModal({
     }
 
     return t('food.unknownFood');
-  };
+  }, [editedOverrides?.name, effectiveProductDetails, t]);
 
   const getCurrentBrand = useCallback(() => {
     if ((effectiveProductDetails as any)?.source === 'musclog') {
@@ -337,7 +337,7 @@ export function ScannedFoodDetailsModal({
     return t('food.generic');
   }, [effectiveProductDetails, t]);
 
-  const getCurrentDescription = () => {
+  const getCurrentDescription = useCallback(() => {
     if (editedOverrides?.description != null) {
       return editedOverrides.description.trim();
     }
@@ -355,7 +355,7 @@ export function ScannedFoodDetailsModal({
     }
 
     return '';
-  };
+  }, [editedOverrides?.description, effectiveProductDetails]);
 
   const parsedProductServingSize = useMemo(() => {
     if (!isScannedProductSuccess) {

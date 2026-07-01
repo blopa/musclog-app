@@ -946,7 +946,17 @@ export function FoodSearchModal({
     } finally {
       setIsAddingSameAsYesterday(false);
     }
-  }, [yesterdayMealData, mealType, logDate, onFoodSelect, onFoodTracked, onClose, showSnackbar, t]);
+  }, [
+    yesterdayMealData,
+    mealType,
+    logDate,
+    onFoodSelect,
+    onFirstNutritionLog,
+    onFoodTracked,
+    onClose,
+    showSnackbar,
+    t,
+  ]);
 
   const headerRight = (
     <Pressable onPress={onCreatePress}>

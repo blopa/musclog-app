@@ -265,7 +265,7 @@ export default function HomeScreen() {
         });
       }
     },
-    [t]
+    [t, triggerConfetti]
   );
 
   const handleSaveCurrentNutritionGoal = useCallback(

@@ -333,7 +333,7 @@ export default function FoodScreen() {
         });
       }
     },
-    [currentNutritionGoal, t]
+    [currentNutritionGoal, screenModals.editCurrentGoal, t]
   );
 
   const checkSavedMeals = useCallback(async () => {
