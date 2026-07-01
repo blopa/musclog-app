@@ -702,8 +702,22 @@ export class ExerciseService {
       .fetch();
     const existingNames = new Set(existing.map((ex) => (ex.name ?? '').toLowerCase()));
 
-    // Determine which JSON entries are missing from the DB
-    const missing = exercisesJson.filter((data) => !existingNames.has(data.name.toLowerCase()));
+    // Collect the ids of *every* exercise row already present (any source, incl.
+    // soft-deleted). New entries are inserted with a fixed id of
+    // `String(exerciseIndex)`, so we must never re-create an id that already
+    // exists or the batch throws `UNIQUE constraint failed: exercises.id`
+    // (sqlite error 1555). This matters because the name-based dedup above is
+    // locale-dependent — exercise names are translated per language, so after a
+    // language switch (or a JSON name refinement between versions) an
+    // already-present exercise looks "missing" by name while its id is
+    // unchanged. Skipping by id keeps the sync idempotent regardless of locale.
+    const existingIds = new Set(await database.get<Exercise>('exercises').query().fetchIds());
+
+    // Determine which JSON entries are missing from the DB (by name and by id)
+    const missing = exercisesJson.filter(
+      (data) =>
+        !existingNames.has(data.name.toLowerCase()) && !existingIds.has(String(data.exerciseIndex))
+    );
 
     if (missing.length === 0) {
       return 0;
