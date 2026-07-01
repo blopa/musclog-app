@@ -30,6 +30,23 @@ const DEFAULT_CYCLE_DATA: CycleSetupData = {
   lifeStage: 'regular',
 };
 
+function getCycleSetupErrorMessage(
+  error: unknown,
+  t: ReturnType<typeof useTranslation>['t']
+): string {
+  if (error instanceof Error) {
+    if (error.message === 'period_log_overlaps_existing') {
+      return t('onboarding.cycleSetup.errors.overlappingPeriods');
+    }
+
+    if (error.message === 'period_date_in_future') {
+      return t('onboarding.cycleSetup.errors.futureDate');
+    }
+  }
+
+  return t('errors.somethingWentWrong');
+}
+
 export default function CycleSetup() {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -100,12 +117,7 @@ export default function CycleSetup() {
         router.navigate('/app');
       }
     } catch (error) {
-      const snackbarMessage =
-        error instanceof Error && error.message === 'period_log_overlaps_existing'
-          ? t('onboarding.cycleSetup.errors.overlappingPeriods')
-          : error instanceof Error && error.message === 'period_date_in_future'
-            ? t('onboarding.cycleSetup.errors.futureDate')
-            : t('errors.somethingWentWrong');
+      const snackbarMessage = getCycleSetupErrorMessage(error, t);
 
       await handleError(error, 'CycleSetup.handleFinish', {
         snackbarMessage,
