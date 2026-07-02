@@ -74,10 +74,7 @@ export function resolveNutritionLabels({
   const computedHighProtein =
     protein != null && calories != null && isHighProteinFood(protein, calories);
   const computedHighFiber =
-    carbs != null &&
-    fiber != null &&
-    calories != null &&
-    isHighFiberFood(carbs, fiber, calories);
+    carbs != null && fiber != null && calories != null && isHighFiberFood(carbs, fiber, calories);
 
   if (!labels && !computedHighProtein && !computedHighFiber) {
     return undefined;

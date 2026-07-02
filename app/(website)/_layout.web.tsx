@@ -4,17 +4,17 @@ import '@/lang/lang';
 
 import { Slot } from 'expo-router';
 
-import { WebsiteChrome } from '@/components/website/WebsiteChrome';
 import { WebsiteProviders } from '@/components/website/WebsiteProviders';
 import { WebsiteSeoForCurrentRoute } from '@/components/website/WebsiteSeo';
+import { WebsiteWrapper } from '@/components/website/WebsiteWrapper';
 
 export default function WebsiteLayout() {
   return (
     <WebsiteProviders>
       <WebsiteSeoForCurrentRoute />
-      <WebsiteChrome>
+      <WebsiteWrapper>
         <Slot />
-      </WebsiteChrome>
+      </WebsiteWrapper>
     </WebsiteProviders>
   );
 }

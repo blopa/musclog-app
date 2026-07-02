@@ -441,7 +441,8 @@
       "github": "GitHub",
       "contact": "Контакт",
       "license": "Лицензия",
-      "copyright": "Бесплатное и Open Source ПО. Создано для вашей конфиденциальности."
+      "copyright": "Бесплатное и Open Source ПО. Создано для вашей конфиденциальности.",
+      "latestBuild": "Последняя сборка: {{version}}"
     },
     "cookieConsent": {
       "ariaLabel": "Согласие на cookies",

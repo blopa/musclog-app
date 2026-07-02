@@ -73,7 +73,7 @@ The web layout is [`app/(website)/_layout.web.tsx`](/app/%28website%29/_layout.w
 
 - `WebsiteProviders`
 - `WebsiteSeoForCurrentRoute`
-- `WebsiteChrome`
+- `WebsiteWrapper`
 
 That gives the website its own header, footer, consent UI, SEO tags, and general web-only presentation.
 
@@ -376,7 +376,7 @@ This is why one repo is genuinely nicer here than two:
 - [`app/+html.tsx`](/app/+html.tsx)
 - [`app/+native-intent.tsx`](/app/+native-intent.tsx)
 - [`global.css`](/musclog/global.css)
-- [`components/website/WebsiteChrome.web.tsx`](/musclog/components/website/WebsiteChrome.web.tsx)
+- [`components/website/WebsiteWrapper.web.tsx`](/musclog/components/website/WebsiteWrapper.web.tsx)
 - [`components/website/WebsiteProviders.tsx`](/musclog/components/website/WebsiteProviders.tsx)
 - [`context/WebModalShellContext.web.tsx`](/musclog/context/WebModalShellContext.web.tsx)
 - [`utils/webPhoneFrame.ts`](/musclog/utils/webPhoneFrame.ts)

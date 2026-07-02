@@ -25,13 +25,13 @@ import {
   HeroBackground,
   SectionBackground,
 } from '@/components/website/WebsiteBackgrounds';
-import { DownloadModal } from '@/components/website/WebsiteChrome';
 import {
   BODY_TEXT,
   BODY_TEXT_SOFT,
   BRAND_GREEN,
   BRAND_GREEN_BRIGHT,
 } from '@/components/website/websiteColors';
+import { DownloadModal } from '@/components/website/WebsiteWrapper';
 
 function withExpoBaseUrl(path: string): string {
   if (/^https?:\/\//i.test(path)) {

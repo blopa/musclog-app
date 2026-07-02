@@ -441,7 +441,8 @@
       "github": "GitHub",
       "contact": "Contact",
       "license": "Licentie",
-      "copyright": "Gratis & Open Source Software. Gebouwd voor uw privacy."
+      "copyright": "Gratis & Open Source Software. Gebouwd voor uw privacy.",
+      "latestBuild": "Nieuwste build: {{version}}"
     },
     "cookieConsent": {
       "ariaLabel": "Cookietoestemming",

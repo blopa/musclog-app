@@ -441,7 +441,8 @@
       "github": "Github",
       "contact": "Contact",
       "license": "License",
-      "copyright": "Free & Open Source Software. Built for your privacy."
+      "copyright": "Free & Open Source Software. Built for your privacy.",
+      "latestBuild": "Latest build: {{version}}"
     },
     "cookieConsent": {
       "ariaLabel": "Cookie consent",

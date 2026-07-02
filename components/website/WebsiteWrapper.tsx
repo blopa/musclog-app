@@ -23,6 +23,6 @@ export function Footer() {
   return null;
 }
 
-export function WebsiteChrome(_props: { children: ReactNode }) {
+export function WebsiteWrapper(_props: { children: ReactNode }) {
   return null;
 }

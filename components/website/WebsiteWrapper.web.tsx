@@ -8,6 +8,7 @@ import { StoreButtons } from '@/components/website/StoreButtons';
 import { SectionBackground } from '@/components/website/WebsiteBackgrounds';
 import { BODY_TEXT, BODY_TEXT_SOFT, BRAND_GREEN } from '@/components/website/websiteColors';
 import i18n from '@/lang/lang';
+import packageJson from '@/package.json';
 import { resetAnalyticsConsent } from '@/utils/websiteAnalytics';
 
 const CARD_BORDER = 'rgba(255, 255, 255, 0.12)';
@@ -555,7 +556,7 @@ export function Footer() {
 
         <div className="border-border mt-8 border-t pt-6 text-center">
           <p className="text-sm" style={{ color: 'rgba(209, 213, 219, 0.62)' }}>
-            {`© ${new Date().getFullYear()} Musclog. ${t('copyright')}`}
+            {`© ${new Date().getFullYear()} Musclog. ${t('copyright')} ${t('latestBuild', { version: packageJson.version })}`}
           </p>
         </div>
       </div>
@@ -563,7 +564,7 @@ export function Footer() {
   );
 }
 
-export function WebsiteChrome({ children }: { children: ReactNode }) {
+export function WebsiteWrapper({ children }: { children: ReactNode }) {
   return (
     <div className="bg-background text-foreground min-h-screen">
       <Header />
