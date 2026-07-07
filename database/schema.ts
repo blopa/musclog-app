@@ -427,6 +427,20 @@ export const schema = appSchema({
       ],
     }),
 
+    // Days the user explicitly fasted (ate nothing). Keyed to the same day-key space as
+    // nutrition_logs (date + timezone → utcNormalizedDayKey) so calc sites bucket them
+    // identically. Only consulted when the ENABLE_FASTED_DAY setting is on.
+    tableSchema({
+      name: 'fasted_days',
+      columns: [
+        { name: 'date', type: 'number' }, // consumed-datetime style instant on the fasted day
+        { name: 'timezone', type: 'string', isOptional: true },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
     // Settings
     tableSchema({
       name: 'settings',

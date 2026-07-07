@@ -11,6 +11,7 @@ import UserMetric, { UserMetricType } from '@/database/models/UserMetric';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import { FastedDayRepository } from '@/database/repositories/FastedDayRepository';
 import { PeriodLogRepository } from '@/database/repositories/PeriodLogRepository';
 import { localDayStartMs, MS_PER_SOLAR_DAY, utcNormalizedDayKey } from '@/utils/calendarDate';
 import {
@@ -221,7 +222,35 @@ export class ProgressService {
       new Date(startDate),
       new Date(endDate)
     );
-    const nutritionDaily = await this.aggregateNutritionDaily(nutritionLogs);
+    let nutritionDaily = await this.aggregateNutritionDaily(nutritionLogs);
+
+    // Fasting-day feature: inject flagged fasted days as explicit 0-kcal days so every
+    // per-day consumer below (averages, weekly buckets, correlations, mood) counts them as a
+    // real zero day, while unflagged empty days stay absent (skipped). Days that already had
+    // food are left untouched.
+    if (await SettingsService.getEnableFastedDay()) {
+      const fastedDayKeys = await FastedDayRepository.getFastedDayKeys(
+        new Date(startDate),
+        new Date(endDate)
+      );
+      const existingDays = new Set(nutritionDaily.map((n) => n.date));
+      const fastedZeroDays: DailyNutrition[] = [];
+      for (const dayKey of fastedDayKeys) {
+        if (!existingDays.has(dayKey)) {
+          fastedZeroDays.push({
+            date: dayKey,
+            calories: 0,
+            protein: 0,
+            carbs: 0,
+            fat: 0,
+            fiber: 0,
+          });
+        }
+      }
+      if (fastedZeroDays.length > 0) {
+        nutritionDaily = [...nutritionDaily, ...fastedZeroDays].sort((a, b) => a.date - b.date);
+      }
+    }
 
     // 3. Fetch Workouts
     const workoutLogs = await database
@@ -665,10 +694,11 @@ export class ProgressService {
     endDate: number,
     isImperial: boolean
   ): Promise<ProgressInsights> {
-    const [user, currentGoal, useBfForCalculations] = await Promise.all([
+    const [user, currentGoal, useBfForCalculations, enableFastedDay] = await Promise.all([
       UserService.getCurrentUser(),
       NutritionGoalService.getCurrent(),
       SettingsService.getUseBfForCalculations(),
+      SettingsService.getEnableFastedDay(),
     ]);
     const eatingPhase = currentGoal?.eatingPhase || 'maintain';
 
@@ -693,9 +723,18 @@ export class ProgressService {
     // We use [start, end) interval for calories because the final weight measurement
     // is typically taken at the start of the final day.
     // empiricalStart/End are already UTC-normalized day keys (from decryptMetricPoints).
-    const empiricalCalories = nutritionDaily
-      .filter((n) => n.date >= empiricalStart && n.date < empiricalEnd)
-      .reduce((acc, curr) => acc + curr.calories, 0);
+    const empiricalDayEntries = nutritionDaily.filter(
+      (n) => n.date >= empiricalStart && n.date < empiricalEnd
+    );
+    const empiricalCalories = empiricalDayEntries.reduce((acc, curr) => acc + curr.calories, 0);
+    // Divisor for empirical TDEE: the weight-measurement span by default. With the fasting-day
+    // feature on, divide instead by the days that actually had food plus the flagged fasted
+    // days in the window (empiricalDayEntries already includes injected fasted 0-kcal days),
+    // so forgotten-log days don't understate intake while real fasts still count.
+    const empiricalTdeeDays =
+      enableFastedDay && empiricalDayEntries.length > 0
+        ? empiricalDayEntries.length
+        : empiricalDays;
 
     if (isImperial) {
       initialWeight = convert(initialWeight, 'lb').to('kg') as number;
@@ -718,7 +757,7 @@ export class ProgressService {
 
     const empiricalTdee = calculateTDEE({
       totalCalories: empiricalCalories,
-      totalDays: empiricalDays,
+      totalDays: empiricalTdeeDays,
       initialWeight,
       finalWeight,
       initialFatPercentage: initialFat,
@@ -731,7 +770,8 @@ export class ProgressService {
       activityLevel: user?.activityLevel || 2,
     });
 
-    const usedEmpirical = empiricalCalories > 0 && empiricalDays > 0 && weightPoints.length >= 2;
+    const usedEmpirical =
+      empiricalCalories > 0 && empiricalTdeeDays > 0 && weightPoints.length >= 2;
     const tdee = usedEmpirical ? empiricalTdee : statisticalTdee;
 
     const weeklyAverages = this.aggregateMetricWeekly(weightPoints);

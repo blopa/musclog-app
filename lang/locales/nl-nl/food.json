@@ -8,6 +8,17 @@
     "unitGrams": "g",
     "unitOz": "oz",
     "macroValueFormat": "{{value}}{{unit}} {{label}}",
+    "fastingDay": {
+      "markTitle": "Geen voeding geregistreerd",
+      "markDescription": "Was dit een vastendag? Als je dit markeert, telt deze dag als een echte dag van 0 calorieën in je gemiddelden, TDEE en reeksen.",
+      "markButton": "Markeren als vastendag",
+      "fastedTitle": "Vastendag",
+      "fastedDescription": "Deze dag telt als 0 calorieën in je statistieken en houdt je reeks in stand.",
+      "unmarkButton": "Vastendag verwijderen",
+      "confirmTitle": "Markeren als vastendag?",
+      "confirmMessage": "Hiermee markeer je de dag als een dag waarop je hebt gevast, zodat deze telt als een echte dag van 0 calorieën in je gemiddelden, TDEE en reeksen.",
+      "confirmButton": "Markeren als vastendag"
+    },
     "logDetails": {
       "title": "Voedsellogboek Details",
       "trackedAmount": "{{amount}} {{unit}} bijgehouden",

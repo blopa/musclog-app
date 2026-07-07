@@ -1,4 +1,5 @@
-import { NutritionService, UserMetricService } from '@/database/services';
+import { FastedDayRepository } from '@/database/repositories/FastedDayRepository';
+import { NutritionService, SettingsService, UserMetricService } from '@/database/services';
 
 import {
   bucketPointsByUtcWeek,
@@ -8,6 +9,7 @@ import {
   utcDayKeyFromLocalDate,
   utcNormalizedDayKey,
 } from './calendarDate';
+import { effectiveNutritionDayCount } from './effectiveNutritionDays';
 import { storedWeightToKg } from './unitConversion';
 
 export const HISTORICAL_NUTRITION_LOOKBACK_DAYS = 30;
@@ -73,11 +75,27 @@ export async function getHistoricalNutritionParams(options: {
     NutritionService.getNutritionLogsForDateRange(startOfRange, inclusiveRangeEndDate),
   ]);
 
-  const distinctDaysWithNutrition = new Set(
+  const loggedDayKeys = new Set(
     nutritionLogs.map((log) => utcNormalizedDayKey(log.date, log.timezone))
-  ).size;
+  );
+  const distinctDaysWithNutrition = loggedDayKeys.size;
+  // Gate on days with *actual* intake (fasted days excluded) so empirical TDEE is only
+  // estimated once there's enough real logging to trust the calorie total.
   if (distinctDaysWithNutrition < minNutritionDays || rangeNutrients.calories <= 0) {
     return null;
+  }
+
+  // Empirical TDEE denominator. By default this is the full lookback window (every unlogged
+  // day treated as 0 kcal). With the fasting-day feature on, divide instead by the days that
+  // had food plus the days flagged as fasted, so a forgotten log no longer deflates TDEE while
+  // an intentional fast still lowers it as a real 0-kcal day.
+  let historicalTotalDays = lookbackDays;
+  if (await SettingsService.getEnableFastedDay()) {
+    const fastedDayKeys = await FastedDayRepository.getFastedDayKeys(
+      startOfRange,
+      inclusiveRangeEndDate
+    );
+    historicalTotalDays = effectiveNutritionDayCount(loggedDayKeys, fastedDayKeys);
   }
 
   const weightWithDecrypted = await Promise.all(
@@ -150,7 +168,7 @@ export async function getHistoricalNutritionParams(options: {
 
   return {
     historicalTotalCalories: Math.round(rangeNutrients.calories),
-    historicalTotalDays: lookbackDays,
+    historicalTotalDays,
     historicalInitialWeightKg: initialWeight,
     historicalFinalWeightKg: finalWeight,
     ...(initialFatPercent !== undefined && { historicalInitialFatPercent: initialFatPercent }),

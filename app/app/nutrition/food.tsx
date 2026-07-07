@@ -46,6 +46,7 @@ import {
   sumMacros,
   sumNutrients,
 } from '@/components/nutrition/foodTypes';
+import { FastingDayCard } from '@/components/nutrition/FastingDayCard';
 import { MealSectionsList } from '@/components/nutrition/MealSectionsList';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { Button } from '@/components/theme/Button';
@@ -57,6 +58,7 @@ import { useSmartCamera } from '@/context/SmartCameraContext';
 import { useSnackbar } from '@/context/SnackbarContext';
 import Food from '@/database/models/Food';
 import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
+import { FastedDayRepository } from '@/database/repositories/FastedDayRepository';
 import {
   ChatService,
   MealService,
@@ -81,6 +83,7 @@ import {
   calendarDateFromRecordDay,
   formatLocalCalendarDayIso,
   localCalendarDayDate,
+  utcDayKeyFromLocalDate,
 } from '@/utils/calendarDate';
 import { digestibleCarbs } from '@/utils/carbsConvention';
 import { getMealCritique } from '@/utils/coachAI';
@@ -168,7 +171,8 @@ export default function FoodScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger, locale: appLocale } = useFormatAppNumber();
-  const { units, isAiConfigured, intuitiveEatingMode, nutritionDisplay } = useSettings();
+  const { units, isAiConfigured, intuitiveEatingMode, nutritionDisplay, enableFastedDay } =
+    useSettings();
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const { openCoach } = useCoach();
   const { showSnackbar } = useSnackbar();
@@ -312,6 +316,59 @@ export default function FoodScreen() {
 
   // Show skeleton until data is loaded
   const isScreenLoading = isLoading || isResolvingRelations;
+
+  // Fasting-day feature: whether the selected day is currently flagged as fasted.
+  const [isSelectedDayFasted, setIsSelectedDayFasted] = useState(false);
+  const [fastingConfirmVisible, setFastingConfirmVisible] = useState(false);
+  const [fastingLoading, setFastingLoading] = useState(false);
+
+  useEffect(() => {
+    // When the feature is off the flag is never read (rendering is gated on enableFastedDay),
+    // so we simply skip the lookup rather than resetting state synchronously.
+    if (!enableFastedDay) {
+      return;
+    }
+    let cancelled = false;
+    FastedDayRepository.isFasted(selectedDate).then((fasted) => {
+      if (!cancelled) {
+        setIsSelectedDayFasted(fasted);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+    // Re-check when the day changes or its logs change (e.g. food added/removed).
+  }, [enableFastedDay, selectedDate, logs.length]);
+
+  const handleMarkFastedDay = useCallback(async () => {
+    setFastingLoading(true);
+    try {
+      await FastedDayRepository.markFasted(selectedDate);
+      setIsSelectedDayFasted(true);
+    } catch (error) {
+      handleError(error, 'food.markFastedDay');
+    } finally {
+      setFastingLoading(false);
+      setFastingConfirmVisible(false);
+    }
+  }, [selectedDate]);
+
+  const handleUnmarkFastedDay = useCallback(async () => {
+    setFastingLoading(true);
+    try {
+      await FastedDayRepository.unmarkFasted(selectedDate);
+      setIsSelectedDayFasted(false);
+    } catch (error) {
+      handleError(error, 'food.unmarkFastedDay');
+    } finally {
+      setFastingLoading(false);
+    }
+  }, [selectedDate]);
+
+  // Only offer the fasting affordance on empty, non-future days when the feature is on.
+  const isFutureDay = utcDayKeyFromLocalDate(selectedDate) > utcDayKeyFromLocalDate(new Date());
+  const showFastingDayCard =
+    enableFastedDay && !isScreenLoading && logs.length === 0 && !isFutureDay;
 
   const closeEditCurrentGoal = screenModals.editCurrentGoal.close;
   const setSavedForLaterHasItems = screenModals.savedForLater.setHasItems;
@@ -1498,6 +1555,16 @@ export default function FoodScreen() {
                     }
                   />
 
+                  {/* Fasting-day prompt (empty, non-future day, feature enabled) */}
+                  {showFastingDayCard ? (
+                    <FastingDayCard
+                      isFasted={isSelectedDayFasted}
+                      onMark={() => setFastingConfirmVisible(true)}
+                      onUnmark={handleUnmarkFastedDay}
+                      loading={fastingLoading}
+                    />
+                  ) : null}
+
                   {/* Scan Buttons */}
                   <View className="gap-4">
                     <View className="flex-row gap-4">
@@ -1720,6 +1787,19 @@ export default function FoodScreen() {
         cancelLabel={t('common.cancel')}
         variant="destructive"
         isLoading={isDeleteFoodLoading}
+      />
+
+      {/* Fasting Day Confirmation Modal */}
+      <ConfirmationModal
+        visible={fastingConfirmVisible}
+        onClose={() => setFastingConfirmVisible(false)}
+        onConfirm={handleMarkFastedDay}
+        title={t('food.fastingDay.confirmTitle')}
+        message={t('food.fastingDay.confirmMessage')}
+        confirmLabel={t('food.fastingDay.confirmButton')}
+        cancelLabel={t('common.cancel')}
+        variant="primary"
+        isLoading={fastingLoading}
       />
 
       {/* Goals Management Modal */}

@@ -8,6 +8,17 @@
     "unitGrams": "g",
     "unitOz": "oz",
     "macroValueFormat": "{{value}}{{unit}} {{label}}",
+    "fastingDay": {
+      "markTitle": "Sin comida registrada",
+      "markDescription": "¿Fue este un día de ayuno? Marcarlo cuenta este día como un día real de 0 calorías en tus promedios, TDEE y rachas.",
+      "markButton": "Marcar como día de ayuno",
+      "fastedTitle": "Día de ayuno",
+      "fastedDescription": "Este día cuenta como 0 calorías en tus estadísticas y mantiene tu racha.",
+      "unmarkButton": "Desmarcar día de ayuno",
+      "confirmTitle": "¿Marcar como día de ayuno?",
+      "confirmMessage": "Esto marca el día como uno en que ayunaste, por lo que cuenta como un día real de 0 calorías en tus promedios, TDEE y rachas.",
+      "confirmButton": "Marcar como día de ayuno"
+    },
     "logDetails": {
       "title": "Detalles del Registro",
       "trackedAmount": "{{amount}} {{unit}} registrado",

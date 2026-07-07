@@ -53,6 +53,7 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 - Move, copy, combine, or group meal entries
 - Configurable carb convention (total carbs vs. net carbs, based on region/label type)
 - Intuitive eating mode (hides calorie and macro numbers)
+- Fasting days (opt-in): mark an empty day as an intentional fast so it counts as a real 0-calorie day in TDEE, averages, check-ins, and streaks — while unflagged empty days (forgotten logs) are skipped
 - View full micronutrient breakdown, ingredient list, and allergen info per food
 
 ---

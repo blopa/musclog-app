@@ -11,7 +11,9 @@ import {
 } from '@/database/encryptionHelpers';
 import Food from '@/database/models/Food';
 import NutritionLog, { MealType } from '@/database/models/NutritionLog';
+import { FastedDayRepository } from '@/database/repositories/FastedDayRepository';
 import { MealService } from '@/database/services/MealService';
+import { SettingsService } from '@/database/services/SettingsService';
 import i18n from '@/lang/lang';
 import { writeNutritionLogToHealthConnect } from '@/services/healthConnectNutrition';
 import {
@@ -24,6 +26,7 @@ import {
   utcNormalizedDayKey,
 } from '@/utils/calendarDate';
 import { aiIngredientMacrosPer100g, totalCarbsForFoodSource } from '@/utils/carbsConvention';
+import { effectiveNutritionDayCount } from '@/utils/effectiveNutritionDays';
 import { handleError } from '@/utils/handleError';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { widgetEvents } from '@/utils/widgetEvents';
@@ -501,7 +504,18 @@ export class NutritionService {
       totalFiber += nutrients.fiber;
     }
 
-    const days = differenceInCalendarDays(endDate, startDate) + 1;
+    // Divisor: by default every calendar day in the range (empty days count as 0 kcal).
+    // With the fasting-day feature on, divide instead by the days that actually had food
+    // plus the days the user flagged as fasted, so forgotten-log days don't drag the
+    // average down while intentional fasts still count as a real 0-kcal day.
+    let days = differenceInCalendarDays(endDate, startDate) + 1;
+    if (await SettingsService.getEnableFastedDay()) {
+      const loggedDayKeys = new Set(
+        logs.map((log) => utcNormalizedDayKey(log.date, log.timezone))
+      );
+      const fastedDayKeys = await FastedDayRepository.getFastedDayKeys(startDate, endDate);
+      days = Math.max(1, effectiveNutritionDayCount(loggedDayKeys, fastedDayKeys));
+    }
 
     return {
       calories: totalCalories,
@@ -1033,13 +1047,21 @@ export class NutritionService {
       .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('date', Q.desc))
       .fetch();
 
-    if (logs.length === 0) {
+    const dayKeys = new Set(logs.map((log) => utcNormalizedDayKey(log.date ?? 0, log.timezone)));
+
+    // Flagged fasting days count as logged days so an intentional fast preserves the streak.
+    if (await SettingsService.getEnableFastedDay()) {
+      const fastedDayKeys = await FastedDayRepository.getAllFastedDayKeys();
+      for (const key of fastedDayKeys) {
+        dayKeys.add(key);
+      }
+    }
+
+    if (dayKeys.size === 0) {
       return 0;
     }
 
-    const uniqueDayStarts = [
-      ...new Set(logs.map((log) => utcNormalizedDayKey(log.date ?? 0, log.timezone))),
-    ].sort((a, b) => b - a);
+    const uniqueDayStarts = [...dayKeys].sort((a, b) => b - a);
 
     let streak = 0;
     const todayKey = utcDayKeyFromLocalDate(new Date());
@@ -1077,13 +1099,23 @@ export class NutritionService {
       .query(Q.where('deleted_at', Q.eq(null)))
       .fetch();
 
-    if (logs.length === 0) {
-      return 0;
-    }
-
     const loggedDayKeys = new Set(
       logs.map((log) => utcNormalizedDayKey(log.date ?? 0, log.timezone))
     );
+
+    // A flagged fasting day is an intentional 0-kcal day, so it counts as a logged day and
+    // keeps the streak alive. Back-dated flags can extend a streak arbitrarily, so the scan
+    // is unbounded (same as logs) and relies on the once-per-day cache in utils/macroStreak.ts.
+    if (await SettingsService.getEnableFastedDay()) {
+      const fastedDayKeys = await FastedDayRepository.getAllFastedDayKeys();
+      for (const key of fastedDayKeys) {
+        loggedDayKeys.add(key);
+      }
+    }
+
+    if (loggedDayKeys.size === 0) {
+      return 0;
+    }
 
     const todayKey = utcDayKeyFromLocalDate(date);
     let streak = 0;

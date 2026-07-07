@@ -2,11 +2,13 @@ import { Q } from '@nozbe/watermelondb';
 
 import { database } from '@/database/database-instance';
 import { dayRangeClauses } from '@/database/dayKeyQuery';
+import type FastedDay from '@/database/models/FastedDay';
 import type NutritionCheckin from '@/database/models/NutritionCheckin';
 import type { CheckinStatus } from '@/database/models/NutritionCheckin';
 import type NutritionLog from '@/database/models/NutritionLog';
 import type UserMetric from '@/database/models/UserMetric';
 import type WorkoutLog from '@/database/models/WorkoutLog';
+import { SettingsService } from '@/database/services/SettingsService';
 import {
   dayKeyRange,
   dayStartInTimezone,
@@ -181,6 +183,22 @@ export class NutritionCheckinService {
       const snapshot = await log.getDecryptedSnapshot();
       const dayKey = utcNormalizedDayKey(log.date, log.timezone);
       caloriesByDay.set(dayKey, (caloriesByDay.get(dayKey) ?? 0) + (snapshot.loggedCalories ?? 0));
+    }
+
+    // Fasting-day feature: count days the user flagged as fasted as real 0-kcal days, so an
+    // intentional fast lowers the average and counts toward consistency instead of being an
+    // ignored gap. Uses the same check-in window `range` as the nutrition logs above.
+    if (await SettingsService.getEnableFastedDay()) {
+      const fastedRaw = await database
+        .get<FastedDay>('fasted_days')
+        .query(...dayRangeClauses(range), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+      for (const row of range.filterRecords(fastedRaw)) {
+        const dayKey = utcNormalizedDayKey(row.date, row.timezone);
+        if (!caloriesByDay.has(dayKey)) {
+          caloriesByDay.set(dayKey, 0);
+        }
+      }
     }
 
     const daysWithLogs = caloriesByDay.size;

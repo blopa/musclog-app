@@ -146,6 +146,8 @@
       "useBfForCalculationsSubtitle": "Usar percentual de gordura corporal para cálculos de calorias e macros",
       "includeFiberInCarbs": "Carboidratos incluem fibra",
       "includeFiberInCarbsSubtitle": "Ao inserir alimentos manualmente, trate o campo de carboidratos como carboidratos totais (com fibra, rótulos dos EUA). Desative se seus rótulos mostram carboidratos líquidos (sem fibra, rótulos da UE).",
+      "enableFastedDay": "Dias de Jejum",
+      "enableFastedDaySubtitle": "Permite marcar dias em que você não comeu nada como dias de jejum. Um dia de jejum conta como um dia real de 0 calorias no seu TDEE, médias e sequências, enquanto dias vazios que você não marcou são ignorados para que um registro esquecido não reduza suas estatísticas.",
       "disableMinimumCaloriesConfirmTitle": "Desativar o mínimo de calorias?",
       "disableMinimumCaloriesConfirmMessage": "Isso remove as proteções mínimas de calorias padrão do Musclog e permite metas tão baixas quanto 0 kcal.",
       "disableMinimumCaloriesWarning": "Não é recomendado ficar abaixo das necessidades mínimas de calorias e isso pode não ser seguro. Ao ativar isso, você confirma que está agindo por sua própria responsabilidade, que o Musclog não recomenda ficar abaixo desses mínimos e que entende os riscos antes de prosseguir.",

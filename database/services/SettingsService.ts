@@ -11,6 +11,7 @@ import {
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
   DISABLE_MINIMUM_CALORIES_SETTING_TYPE,
   DUMP_LLM_REQUESTS_SETTING_TYPE,
+  ENABLE_FASTED_DAY_SETTING_TYPE,
   ENABLE_GOOGLE_GEMINI_SETTING_TYPE,
   ENABLE_LOCAL_LLM_SETTING_TYPE,
   ENABLE_OPENAI_SETTING_TYPE,
@@ -763,6 +764,20 @@ export class SettingsService {
    */
   static async getIntuitiveEatingMode(): Promise<boolean> {
     return SettingsService.getBooleanSetting(INTUITIVE_EATING_MODE_SETTING_TYPE, false);
+  }
+
+  /**
+   * Upsert the fasting-day feature setting
+   */
+  static async setEnableFastedDay(value: boolean) {
+    await SettingsService.setBooleanSetting(ENABLE_FASTED_DAY_SETTING_TYPE, value);
+  }
+
+  /**
+   * Get the fasting-day feature setting. Defaults to false (opt-in).
+   */
+  static async getEnableFastedDay(): Promise<boolean> {
+    return SettingsService.getBooleanSetting(ENABLE_FASTED_DAY_SETTING_TYPE, false);
   }
 
   /**

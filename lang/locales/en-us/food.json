@@ -8,6 +8,17 @@
     "unitGrams": "g",
     "unitOz": "oz",
     "macroValueFormat": "{{value}}{{unit}} {{label}}",
+    "fastingDay": {
+      "markTitle": "No food logged",
+      "markDescription": "Was this a fasting day? Marking it counts this day as a real 0-calorie day in your averages, TDEE and streaks.",
+      "markButton": "Mark as fasting day",
+      "fastedTitle": "Fasting day",
+      "fastedDescription": "This day counts as 0 calories in your stats and keeps your streak going.",
+      "unmarkButton": "Unmark fasting day",
+      "confirmTitle": "Mark as fasting day?",
+      "confirmMessage": "This marks the day as one you fasted, so it counts as a real 0-calorie day in your averages, TDEE and streaks.",
+      "confirmButton": "Mark as fasting day"
+    },
     "logDetails": {
       "title": "Food Log Details",
       "trackedAmount": "{{amount}} {{unit}} tracked",

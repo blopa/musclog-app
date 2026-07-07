@@ -21,6 +21,7 @@ import migrationV19 from '@/database/migrations/2026/05/migration-v19';
 import migrationV20 from '@/database/migrations/2026/06/migration-v20';
 import migrationV21 from '@/database/migrations/2026/06/migration-v21';
 import migrationV22 from '@/database/migrations/2026/06/migration-v22';
+import migrationV23 from '@/database/migrations/2026/07/migration-v23';
 
 export const migrations = schemaMigrations({
   migrations: [
@@ -106,5 +107,9 @@ export const migrations = schemaMigrations({
     // menstrual_cycles stays required as a cached denormalization, using 0 as the
     // "no anchor yet" sentinel to keep upgrades simple.
     migrationV22,
+    // Version 23: Add fasted_days table. Stores days the user explicitly fasted so
+    // historical macro/calorie averages count them as a real 0-kcal day, while unflagged
+    // empty days (forgotten logs) are skipped. Gated by the ENABLE_FASTED_DAY setting.
+    migrationV23,
   ],
 });

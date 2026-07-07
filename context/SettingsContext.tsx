@@ -14,6 +14,7 @@ import {
   CONVERSATION_CONTEXT,
   DAILY_NUTRITION_INSIGHTS_SETTING_TYPE,
   DISABLE_MINIMUM_CALORIES_SETTING_TYPE,
+  ENABLE_FASTED_DAY_SETTING_TYPE,
   ENABLE_GOOGLE_GEMINI_SETTING_TYPE,
   ENABLE_LOCAL_LLM_SETTING_TYPE,
   ENABLE_OPENAI_SETTING_TYPE,
@@ -125,6 +126,7 @@ type SettingsState = {
   disableMinimumCalories: boolean;
   useBfForCalculations: boolean;
   intuitiveEatingMode: boolean;
+  enableFastedDay: boolean;
   includeFiberInCarbs: boolean;
   progressionMode: ProgressionMode;
   nutritionDisplay: string;
@@ -184,6 +186,7 @@ const DEFAULT_STATE: SettingsState = {
   disableMinimumCalories: false,
   useBfForCalculations: false,
   intuitiveEatingMode: false,
+  enableFastedDay: false,
   includeFiberInCarbs: true,
   progressionMode: 'reps_first',
   nutritionDisplay: '11111',
@@ -315,6 +318,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     disableMinimumCalories: getBoolean(map, DISABLE_MINIMUM_CALORIES_SETTING_TYPE, false),
     useBfForCalculations: getBoolean(map, USE_BF_FOR_CALCULATIONS_SETTING_TYPE, false),
     intuitiveEatingMode: getBoolean(map, INTUITIVE_EATING_MODE_SETTING_TYPE, false),
+    enableFastedDay: getBoolean(map, ENABLE_FASTED_DAY_SETTING_TYPE, false),
     includeFiberInCarbs: getBoolean(map, INCLUDE_FIBER_IN_CARBS_SETTING_TYPE, true),
     progressionMode,
     nutritionDisplay: getString(map, NUTRITION_DISPLAY_SETTING_TYPE, '11111'),
@@ -375,6 +379,7 @@ export type SettingsContextType = UseSettingsResult & {
   disableMinimumCalories: boolean;
   useBfForCalculations: boolean;
   intuitiveEatingMode: boolean;
+  enableFastedDay: boolean;
   includeFiberInCarbs: boolean;
   progressionMode: ProgressionMode;
   nutritionDisplay: string;

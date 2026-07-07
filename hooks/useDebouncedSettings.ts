@@ -89,6 +89,7 @@ export function useDebouncedSettings(debounceMs = 200) {
         'disableMinimumCalories',
         'useBfForCalculations',
         'intuitiveEatingMode',
+        'enableFastedDay',
         'includeFiberInCarbs',
         'progressionMode',
         'advancedDataManagement',
@@ -350,6 +351,10 @@ export function useDebouncedSettings(debounceMs = 200) {
     'intuitiveEatingMode',
     SettingsService.setIntuitiveEatingMode
   );
+  const handleEnableFastedDayChange = createSettingHandler<boolean>(
+    'enableFastedDay',
+    SettingsService.setEnableFastedDay
+  );
   const handleIncludeFiberInCarbsChange = createSettingHandler<boolean>(
     'includeFiberInCarbs',
     SettingsService.setIncludeFiberInCarbs
@@ -500,6 +505,9 @@ export function useDebouncedSettings(debounceMs = 200) {
           case 'intuitiveEatingMode':
             await SettingsService.setIntuitiveEatingMode(value as boolean);
             break;
+          case 'enableFastedDay':
+            await SettingsService.setEnableFastedDay(value as boolean);
+            break;
           case 'includeFiberInCarbs':
             await SettingsService.setIncludeFiberInCarbs(value as boolean);
             break;
@@ -606,6 +614,8 @@ export function useDebouncedSettings(debounceMs = 200) {
       (localSettings.useBfForCalculations as boolean) ?? actualSettings.useBfForCalculations,
     intuitiveEatingMode:
       (localSettings.intuitiveEatingMode as boolean) ?? actualSettings.intuitiveEatingMode,
+    enableFastedDay:
+      (localSettings.enableFastedDay as boolean) ?? actualSettings.enableFastedDay,
     includeFiberInCarbs:
       (localSettings.includeFiberInCarbs as boolean) ?? actualSettings.includeFiberInCarbs,
     progressionMode:
@@ -664,6 +674,7 @@ export function useDebouncedSettings(debounceMs = 200) {
     handleDisableMinimumCaloriesChange,
     handleUseBfForCalculationsChange,
     handleIntuitiveEatingModeChange,
+    handleEnableFastedDayChange,
     handleIncludeFiberInCarbsChange,
     handleProgressionModeChange,
     handleAdvancedDataManagementChange,
