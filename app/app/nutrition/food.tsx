@@ -167,6 +167,9 @@ const applyMealAction = async (
   throw new Error(`applyMealAction: unknown mode "${mode}"`);
 };
 
+/** Local hour (24h) after which the current day may be offered as a fasting day. */
+const FASTING_DAY_TODAY_MIN_HOUR = 20;
+
 export default function FoodScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -365,10 +368,23 @@ export default function FoodScreen() {
     }
   }, [selectedDate]);
 
-  // Only offer the fasting affordance on empty, non-future days when the feature is on.
-  const isFutureDay = utcDayKeyFromLocalDate(selectedDate) > utcDayKeyFromLocalDate(new Date());
-  const showFastingDayCard =
-    enableFastedDay && !isScreenLoading && logs.length === 0 && !isFutureDay;
+  // Only offer the fasting affordance on empty days when the feature is on. The mark prompt
+  // ("Was this a fasting day?") only makes sense once a day is over or nearly over, so on the
+  // current day we wait until the evening (>= 8pm local) and never show it for future days.
+  const now = new Date();
+  const todayKey = utcDayKeyFromLocalDate(now);
+  const selectedDayKey = utcDayKeyFromLocalDate(selectedDate);
+  const isPastDay = selectedDayKey < todayKey;
+  const isToday = selectedDayKey === todayKey;
+  const isTodayEvening = isToday && now.getHours() >= FASTING_DAY_TODAY_MIN_HOUR;
+  const canOfferFastingMark = isPastDay || isTodayEvening;
+  // A flagged, empty day takes over the whole screen: no summary, meal sections, or tracking
+  // buttons — just the fasting card with an unmark action. Everything animates back in on unmark.
+  const isFastedDayView = enableFastedDay && isSelectedDayFasted && logs.length === 0;
+  // Otherwise, on an empty day that can be offered as a fast, show the mark prompt above the
+  // normal tracking UI.
+  const showFastingMarkPrompt =
+    enableFastedDay && !isSelectedDayFasted && logs.length === 0 && canOfferFastingMark;
 
   const closeEditCurrentGoal = screenModals.editCurrentGoal.close;
   const setSavedForLaterHasItems = screenModals.savedForLater.setHasItems;
@@ -1498,9 +1514,21 @@ export default function FoodScreen() {
               />
             ) : null}
 
+            {/* Fasted-day State: a flagged empty day shows only the fasting card */}
+            {!isScreenLoading && !hasNoFood && isFastedDayView ? (
+              <AnimatedContent key="fasted-day" style={{ gap: theme.spacing.gap['xl'] }}>
+                <FastingDayCard
+                  isFasted
+                  onMark={() => setFastingConfirmVisible(true)}
+                  onUnmark={handleUnmarkFastedDay}
+                  loading={fastingLoading}
+                />
+              </AnimatedContent>
+            ) : null}
+
             {/* Normal State */}
-            {!isScreenLoading && !hasNoFood ? (
-              <AnimatedContent style={{ gap: theme.spacing.gap['xl'] }}>
+            {!isScreenLoading && !hasNoFood && !isFastedDayView ? (
+              <AnimatedContent key="tracking" style={{ gap: theme.spacing.gap['xl'] }}>
                 <>
                   {/* Daily Summary Card */}
                   {nutritionGoal?.isDynamic ? (
@@ -1555,10 +1583,10 @@ export default function FoodScreen() {
                     }
                   />
 
-                  {/* Fasting-day prompt (empty, non-future day, feature enabled) */}
-                  {showFastingDayCard ? (
+                  {/* Fasting-day prompt: offer to mark an empty day as a fast */}
+                  {showFastingMarkPrompt ? (
                     <FastingDayCard
-                      isFasted={isSelectedDayFasted}
+                      isFasted={false}
                       onMark={() => setFastingConfirmVisible(true)}
                       onUnmark={handleUnmarkFastedDay}
                       loading={fastingLoading}
