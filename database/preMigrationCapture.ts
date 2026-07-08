@@ -1,13 +1,12 @@
 import type { SchemaMigrations } from '@nozbe/watermelondb/Schema/migrations';
+import { cacheDirectory } from 'expo-file-system/legacy';
 import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 
 import { DATABASE_NAME } from '@/constants/database';
-import { RESTORE_ORDER } from '@/constants/exportImport';
 
 import { wdbDir } from './dbPath';
-import { type CapturedTableRows, LIST_USER_TABLES_SQL, selectAllRowsSql } from './exportDbCore';
 import { pendingMigrationsCanTouchExistingData } from './migrationSafety';
-import { persistCapturedPreMigrationBackup } from './preMigrationBackup';
+import { registerPreMigrationDbBackup } from './preMigrationBackup';
 
 /**
  * Pre-adapter pre-migration capture (native only).
@@ -20,34 +19,61 @@ import { persistCapturedPreMigrationBackup } from './preMigrationBackup';
  * wmdbRaw.ts). Keeping this open/read/close out of preMigrationBackup.ts (which
  * holds runtime paths) makes that invariant structural — the runtime backup
  * module imports no expo-sqlite at all.
+ *
+ * The snapshot itself is a raw `VACUUM INTO` copy of musclog.db — one consistent
+ * standalone file (the WAL is folded in, so a session that was killed with
+ * uncheckpointed commits is still captured correctly) written synchronously
+ * through this same connection before the adapter opens. That is near-instant
+ * versus reading every row and serialising it to JSON, which is why upgrade boots
+ * used to stall for minutes. The JSON conversion is deferred to restore time.
  */
 
-function readCapturedRowsSync(db: SQLiteDatabase): CapturedTableRows {
-  const tableRows = db.getAllSync<{ name: string }>(LIST_USER_TABLES_SQL);
-  const existingTables = new Set(tableRows.map((row) => row.name));
-  const capturedRows: CapturedTableRows = {};
+// Escape a filesystem path for embedding as a single-quoted SQL string literal.
+const sqlQuote = (value: string): string => `'${value.replace(/'/g, "''")}'`;
 
-  for (const tableName of RESTORE_ORDER) {
-    if (!existingTables.has(tableName)) {
-      continue;
-    }
-
-    capturedRows[tableName] = db.getAllSync<Record<string, unknown>>(selectAllRowsSql(tableName));
+/**
+ * Builds the `file://` URI for a pre-migration snapshot in the cache directory,
+ * or null if the cache directory is unavailable.
+ */
+function buildPreMigrationBackupUri(fromVersion: number, toVersion: number): string | null {
+  if (!cacheDirectory) {
+    return null;
   }
 
-  return capturedRows;
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  return `${cacheDirectory}${timestamp}-pre-migration-v${fromVersion}-to-v${toVersion}.db`;
+}
+
+/**
+ * Writes a consistent `.db` snapshot of the open database to `backupUri` via
+ * `VACUUM INTO`, then registers it in the backup index. Synchronous copy so it
+ * finishes before the adapter opens; returns whether a snapshot was written.
+ */
+function captureDbSnapshotSync(
+  db: SQLiteDatabase,
+  fromVersion: number,
+  toVersion: number
+): boolean {
+  const backupUri = buildPreMigrationBackupUri(fromVersion, toVersion);
+  if (!backupUri) {
+    return false;
+  }
+
+  const backupPath = backupUri.replace(/^file:\/\//, '');
+  db.execSync(`VACUUM INTO ${sqlQuote(backupPath)}`);
+  registerPreMigrationDbBackup(backupUri, fromVersion, toVersion);
+  return true;
 }
 
 /**
  * Reads PRAGMA user_version and, when a schema migration that can touch existing
- * rows is pending, captures a full snapshot of the existing rows synchronously
- * (it must finish before the adapter opens the file and the migration starts
- * mutating it) and hands them to the async persist machinery in
- * preMigrationBackup.ts. Purely-additive migrations (createTable / addColumns)
- * skip the snapshot — see pendingMigrationsCanTouchExistingData — because they
- * cannot lose data and a full-DB capture there just makes upgrade boots crawl.
- * Returns the current on-disk version for migration diagnostics, or null if it
- * can't be read.
+ * rows is pending, writes a consistent `.db` snapshot synchronously via
+ * `VACUUM INTO` (it must finish before the adapter opens the file and the
+ * migration starts mutating it) and registers it via preMigrationBackup.ts.
+ * Purely-additive migrations (createTable / addColumns) skip the snapshot — see
+ * pendingMigrationsCanTouchExistingData — because they cannot lose data and a
+ * snapshot there just slows the boot. Returns the current on-disk version for
+ * migration diagnostics, or null if it can't be read.
  */
 export function preparePreMigrationBackupBeforeAdapter(
   toVersion: number,
@@ -65,8 +91,7 @@ export function preparePreMigrationBackupBeforeAdapter(
       fromVersion < toVersion &&
       pendingMigrationsCanTouchExistingData(migrations, fromVersion, toVersion)
     ) {
-      const capturedRows = readCapturedRowsSync(db);
-      persistCapturedPreMigrationBackup(capturedRows, fromVersion, toVersion);
+      captureDbSnapshotSync(db, fromVersion, toVersion);
     }
 
     return fromVersion;

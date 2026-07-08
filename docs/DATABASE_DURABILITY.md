@@ -75,10 +75,15 @@ single user action.
    `preparePreMigrationBackupBeforeAdapter()` in `database/preMigrationCapture.ts`,
    imported solely by `database/adapter.ts` **before `new SQLiteAdapter`**. It is
    safe only because WatermelonDB has not opened the file yet. It opens, reads
-   `user_version`, captures rows synchronously **only when a data-touching
-   migration is pending** (purely-additive migrations — `createTable` /
-   `addColumns` — skip the snapshot; see `database/migrationSafety.ts`), and
-   closes — all before the adapter exists. Keep this isolated:
+   `user_version`, and — **only when a data-touching migration is pending**
+   (purely-additive migrations — `createTable` / `addColumns` — skip it; see
+   `database/migrationSafety.ts`) — writes a consistent `.db` snapshot with
+   **`VACUUM INTO`** (one standalone file, WAL folded in, so a session killed with
+   uncheckpointed commits is captured correctly), then closes — all before the
+   adapter exists. `VACUUM INTO` is near-instant vs. reading every row into JSON,
+   which stalled upgrade boots for minutes. The `.db` → JSON conversion is deferred
+   to restore/download time (`database/sqliteBackupConvert.ts`, which opens the
+   _copy_ — a different file, rule #4 — never the live DB). Keep this isolated:
    `database/preMigrationBackup.ts` (runtime backup paths) imports **no**
    `expo-sqlite`, so the invariant is structural, not advisory.
 

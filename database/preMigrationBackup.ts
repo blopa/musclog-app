@@ -1,8 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { cacheDirectory, deleteAsync, writeAsStringAsync } from 'expo-file-system/legacy';
 
-import { type CapturedTableRows, dumpRowsToJson } from './exportDbCore';
-
 const PRE_MIGRATION_BACKUPS_KEY = 'pre_migration_backups_v1';
 const PRE_MIGRATION_BACKUPS_MAX_FILES = 3;
 
@@ -11,6 +9,11 @@ export type BackupFileMeta = {
   createdAt: string;
   fromVersion: number | null;
   toVersion: number | null;
+  // Storage format of the backup file. 'sqlite' is a raw `VACUUM INTO` copy of
+  // musclog.db (native pre-migration snapshots — fast to create, converted to
+  // JSON lazily at restore/download time). 'json' (or absent, for older entries
+  // and all web backups) is the portable export dump restoreDatabase() reads.
+  format?: 'json' | 'sqlite';
 };
 
 const formatVersion = (value: number | null): string => (value == null ? 'unknown' : String(value));
@@ -97,7 +100,10 @@ async function executeBackup(
   await writeAsStringAsync(uri, backupJson);
 
   const existing = await getStoredBackups();
-  const next = await pruneOldBackups([{ uri, createdAt, fromVersion, toVersion }, ...existing]);
+  const next = await pruneOldBackups([
+    { uri, createdAt, fromVersion, toVersion, format: 'json' },
+    ...existing,
+  ]);
   await writeStoredBackups(next);
 
   return uri;
@@ -132,12 +138,16 @@ export async function createPreRestoreBackup(): Promise<void> {
 let inFlightBackup: Promise<void> | null = null;
 let completedBackupSignature: string | null = null;
 
-// Called from preMigrationCapture.ts (the pre-adapter path) with the rows it
-// captured synchronously; persists them asynchronously. Fire-and-forget at
-// module-eval time, so the in-flight promise is tracked here and awaited via
-// waitForPreMigrationBackup() before boot proceeds.
-export function persistCapturedPreMigrationBackup(
-  capturedRows: CapturedTableRows,
+// Called from preMigrationCapture.ts (the pre-adapter path) after it has already
+// written a raw `.db` snapshot with `VACUUM INTO` (synchronous, so it completes
+// before WatermelonDB opens and the migration mutates the file). The file itself
+// is done; this only records it in the backup index (fast, async). Fire-and-forget
+// at module-eval time — the in-flight promise is tracked here and awaited via
+// waitForPreMigrationBackup() before boot proceeds. The expensive JSON conversion
+// is deferred to restore/download time (see convertSqliteBackupToJson), so upgrade
+// boots don't pay it.
+export function registerPreMigrationDbBackup(
+  uri: string,
   fromVersion: number,
   toVersion: number
 ): Promise<void> {
@@ -151,20 +161,21 @@ export function persistCapturedPreMigrationBackup(
     return inFlightBackup;
   }
 
-  async function performBackup() {
-    const infix = `pre-migration-v${formatVersion(fromVersion)}-to-v${formatVersion(toVersion)}`;
-    const jsonString = await dumpRowsToJson(capturedRows, undefined, {
-      exportVersion: fromVersion,
-    });
+  async function performRegister() {
+    const createdAt = new Date().toISOString();
+    const meta: BackupFileMeta = { uri, createdAt, fromVersion, toVersion, format: 'sqlite' };
 
-    const uri = await executeBackup(infix, fromVersion, toVersion, jsonString);
+    const existing = await getStoredBackups();
+    const next = await pruneOldBackups([meta, ...existing]);
+    await writeStoredBackups(next);
+
     completedBackupSignature = signature;
-    console.log(`[PreMigrationBackup] Created: ${uri}`);
+    console.log(`[PreMigrationBackup] Created (sqlite snapshot): ${uri}`);
   }
 
-  inFlightBackup = performBackup()
+  inFlightBackup = performRegister()
     .catch((error) => {
-      console.error('[PreMigrationBackup] Failed to create backup:', error);
+      console.error('[PreMigrationBackup] Failed to register backup:', error);
       void reportBackupError(error, 'database.preMigrationBackup');
     })
     .finally(() => {
