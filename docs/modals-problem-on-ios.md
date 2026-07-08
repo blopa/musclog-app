@@ -98,11 +98,15 @@ render barcode text search, food-not-found, food details, AI context, create/sea
 follow-ups under the active camera modal instead of as siblings.
 
 Barcode scanners launched from food creation/details edit flows are also rendered under the modal
-or bottom sheet that opened them. This keeps the presenter chain intact for iOS:
+or bottom sheet that opened them, via the shared `useBarcodeCameraModal` hook
+(`components/modals/useBarcodeCameraModal.tsx`), which owns the scanner's visibility state
+(auto-reset through `useSubModalVisibility` when the host closes), its camera permission, and the
+`BarcodeCameraModal` element. This keeps the presenter chain intact for iOS:
 
-- Full-screen form scan controls render `BarcodeCameraModal` inside the form's `FullScreenModal`.
-- Edit-sheet scan controls render `BarcodeCameraModal` inside that edit `BottomPopUp`.
-- `AddFoodItemToMealModal` uses a local `BarcodeCameraModal` child instead of opening the global
+- Hosts render the hook's `scanner` element inside their own `FullScreenModal` (full-screen forms)
+  or edit `BottomPopUp` (edit sheets) — never as a sibling. No host-side scanner cleanup is
+  needed; the hook resets itself when `hostVisible` goes false.
+- `AddFoodItemToMealModal` uses the same hook-owned local scanner instead of opening the global
   camera provider while the add-food modal remains active.
 
 ## Confirmed Remaining Cases

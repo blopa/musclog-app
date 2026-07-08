@@ -18,7 +18,6 @@ import { KeyboardAwareScrollViewRef } from 'react-native-keyboard-controller';
 
 import { BarcodeInput } from '@/components/BarcodeInput';
 import { BottomPopUp } from '@/components/BottomPopUp';
-import { useCameraPermissions } from '@/components/CameraView';
 import {
   type FoodDetailsNutritionSectionMode,
   FoodNutritionSectionCard,
@@ -88,13 +87,13 @@ import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { getMassUnitLabel } from '@/utils/unitConversion';
 import { mapUSDAFoodToUnified, mapUSDANutritient } from '@/utils/usdaMapper';
 
-import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 import { FoodNotFoundModal } from './FoodNotFoundModal';
 import { FullScreenModal } from './FullScreenModal';
 import { TimePickerInput } from './TimePickerInput';
 import { TimePickerModal } from './TimePickerModal';
+import { useBarcodeCameraModal } from './useBarcodeCameraModal';
 
 function computeMealScaleFactor(
   meal:
@@ -190,8 +189,6 @@ export function FoodMealTrackingDetailsModal({
   const decimalSeparator = useMemo(() => getDecimalSeparator(locale), [locale]);
   const { showSnackbar } = useSnackbar();
   const { units, alwaysAllowFoodEditing, intuitiveEatingMode } = useSettings();
-  const [permission, requestPermission] = useCameraPermissions();
-  const [isBarcodeScannerVisible, setIsBarcodeScannerVisible] = useState(false);
   const scrollViewRef = useRef<KeyboardAwareScrollViewRef>(null);
 
   // Infer meal type from current time of day when no initialMealType is passed
@@ -952,6 +949,10 @@ export function FoodMealTrackingDetailsModal({
     reset: resetEditForm,
   } = useFoodEditForm({ decimalSeparator, inferredCaloriesPer100g });
 
+  const { openScanner, scanner } = useBarcodeCameraModal(visible, (data) =>
+    setEditForm((prev) => (prev ? { ...prev, barcode: data } : null))
+  );
+
   const effectiveMicrosPer100g = useMemo(
     () => ({
       ...baseMicrosPer100g,
@@ -1668,7 +1669,6 @@ export function FoodMealTrackingDetailsModal({
         setMatchedPortion(null);
         resetEditForm();
         resetAlternateSource();
-        setIsBarcodeScannerVisible(false);
         setLocalCanEdit(canEdit);
         hasInitializedServingSizeRef.current = false;
         setSelectedTime(new Date());
@@ -1953,7 +1953,7 @@ export function FoodMealTrackingDetailsModal({
                   setEditForm((prev) => (prev ? { ...prev, barcode: text } : null))
                 }
                 placeholder={t('food.foodDetails.barcodePlaceholder')}
-                onScanPress={() => setIsBarcodeScannerVisible(true)}
+                onScanPress={openScanner}
               />
 
               {/* Description */}
@@ -2066,18 +2066,7 @@ export function FoodMealTrackingDetailsModal({
               />
             </View>
           ) : null}
-          {isBarcodeScannerVisible ? (
-            <BarcodeCameraModal
-              visible={isBarcodeScannerVisible}
-              onClose={() => setIsBarcodeScannerVisible(false)}
-              onBarcodeScanned={(data) =>
-                setEditForm((prev) => (prev ? { ...prev, barcode: data } : null))
-              }
-              showBarcodeTextSearch={true}
-              permissionGranted={permission?.granted ?? null}
-              onRequestPermission={requestPermission}
-            />
-          ) : null}
+          {scanner}
         </BottomPopUp>
       </FullScreenModal>
     </>

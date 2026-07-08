@@ -1,7 +1,19 @@
 import { FastedDayRepository } from '@/database/repositories/FastedDayRepository';
 import { SettingsService } from '@/database/services/SettingsService';
 import { type DayKeyRange, utcNormalizedDayKey } from '@/utils/calendarDate';
-import { effectiveNutritionDayCount } from '@/utils/effectiveNutritionDays';
+
+/**
+ * Shared denominator logic for the fasting-day feature.
+ *
+ * Every historical macro/calorie average divides a period total by a day count. Under the
+ * fasting-day feature that count (`effectiveDayCount`) is the union of:
+ *   - distinct days that had logged food, and
+ *   - distinct days the user explicitly flagged as fasted (a real 0-kcal day).
+ * Unflagged empty days (a forgotten log) are excluded so they don't drag averages toward 0.
+ *
+ * Both inputs are UTC-normalized day keys (see `utcNormalizedDayKey`), so a fasted day and a
+ * logged day on the same calendar day collapse to a single day.
+ */
 
 type NutritionDayRecord = {
   date: number;
@@ -9,45 +21,45 @@ type NutritionDayRecord = {
 };
 
 export type NutritionDayCoverage = {
-  loggedDayKeys: Set<number>;
-  fastedDayKeys: Set<number>;
+  /** Distinct logged-food days ∪ distinct flagged fasted days, as UTC-normalized day keys. */
   effectiveDayKeys: Set<number>;
   fastedDaysEnabled: boolean;
+  /** `effectiveDayKeys.size` — the averaging divisor under the fasting-day feature. */
   effectiveDayCount: number;
 };
 
-export function loggedNutritionDayKeys(records: Iterable<NutritionDayRecord>): Set<number> {
+function loggedNutritionDayKeys(records: Iterable<NutritionDayRecord>): Set<number> {
   return new Set([...records].map((record) => utcNormalizedDayKey(record.date, record.timezone)));
 }
 
-function unionDayKeys(loggedDayKeys: Set<number>, fastedDayKeys: Set<number>): Set<number> {
-  const effectiveDayKeys = new Set(loggedDayKeys);
-  for (const key of fastedDayKeys) {
-    effectiveDayKeys.add(key);
+function fastedDayKeysFor(options: {
+  range?: DayKeyRange;
+  includeAllFastedDays?: boolean;
+}): Promise<Set<number>> {
+  if (options.includeAllFastedDays) {
+    return FastedDayRepository.getAllFastedDayKeys();
   }
-  return effectiveDayKeys;
+  if (options.range) {
+    return FastedDayRepository.getFastedDayKeysForRange(options.range);
+  }
+  return Promise.resolve(new Set());
 }
 
 export async function getNutritionDayCoverage(
   records: Iterable<NutritionDayRecord>,
   options: { range?: DayKeyRange; includeAllFastedDays?: boolean } = {}
 ): Promise<NutritionDayCoverage> {
-  const loggedDayKeys = loggedNutritionDayKeys(records);
+  const effectiveDayKeys = loggedNutritionDayKeys(records);
   const fastedDaysEnabled = await SettingsService.getEnableFastedDay();
-  const fastedDayKeys =
-    fastedDaysEnabled && options.includeAllFastedDays
-      ? await FastedDayRepository.getAllFastedDayKeys()
-      : fastedDaysEnabled && options.range
-        ? await FastedDayRepository.getFastedDayKeysForRange(options.range)
-        : new Set<number>();
-  const effectiveDayKeys = unionDayKeys(loggedDayKeys, fastedDayKeys);
+  const fastedDayKeys = fastedDaysEnabled ? await fastedDayKeysFor(options) : new Set<number>();
+  for (const key of fastedDayKeys) {
+    effectiveDayKeys.add(key);
+  }
 
   return {
-    loggedDayKeys,
-    fastedDayKeys,
     effectiveDayKeys,
     fastedDaysEnabled,
-    effectiveDayCount: effectiveNutritionDayCount(loggedDayKeys, fastedDayKeys),
+    effectiveDayCount: effectiveDayKeys.size,
   };
 }
 

@@ -1,4 +1,4 @@
-import { NutritionService, SettingsService, UserMetricService } from '@/database/services';
+import { NutritionService, UserMetricService } from '@/database/services';
 
 import {
   bucketPointsByUtcWeek,
@@ -84,13 +84,11 @@ export async function getHistoricalNutritionParams(options: {
   }
 
   // Empirical TDEE denominator. By default this is the full lookback window (every unlogged
-  // day treated as 0 kcal). With the fasting-day feature on, divide instead by the days that
-  // had food plus the days flagged as fasted, so a forgotten log no longer deflates TDEE while
-  // an intentional fast still lowers it as a real 0-kcal day.
-  let historicalTotalDays = lookbackDays;
-  if (await SettingsService.getEnableFastedDay()) {
-    historicalTotalDays = rangeNutrients.effectiveDayCount ?? lookbackDays;
-  }
+  // day treated as 0 kcal). With the fasting-day feature on, getRangeNutrients sets
+  // effectiveDayCount (days that had food plus flagged fasted days), so a forgotten log no
+  // longer deflates TDEE while an intentional fast still lowers it as a real 0-kcal day;
+  // with the feature off it is undefined and the legacy window applies.
+  const historicalTotalDays = rangeNutrients.effectiveDayCount ?? lookbackDays;
 
   const weightWithDecrypted = await Promise.all(
     weightMetrics.map(async (m) => {

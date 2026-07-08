@@ -179,20 +179,22 @@ export default function SmartCameraModal({
 
   const isFoodDetailsModalVisible = barcode.detectedBarcode !== null || productFromAiLabel !== null;
 
-  // When any overlay modal is open or we're processing AI/OCR,
-  // the camera must be inactive so the feed is not live behind the modal.
+  // Every conditionally-rendered child modal in the JSX below MUST have its visibility
+  // flag listed here — the camera is active only while none of them covers it. A flag
+  // missing from this list leaves the camera feed live behind that modal.
+  const isAnyChildModalVisible = [
+    isContextModalVisible,
+    isBarcodeTextSearchModalVisible,
+    barcode.isFoodNotFoundModalVisible,
+    isFoodDetailsModalVisible,
+    isAddFoodModalVisible,
+    isNewCustomFoodModalVisible,
+    isFoodSearchModalVisible,
+    isLogMealModalVisible,
+  ].some(Boolean);
+
   const isCameraActive =
-    visible &&
-    !barcode.isSearchingBarcode &&
-    !isProcessingAi &&
-    !isContextModalVisible &&
-    !isBarcodeTextSearchModalVisible &&
-    !barcode.isFoodNotFoundModalVisible &&
-    !isFoodDetailsModalVisible &&
-    !isAddFoodModalVisible &&
-    !isNewCustomFoodModalVisible &&
-    !isFoodSearchModalVisible &&
-    !isLogMealModalVisible;
+    visible && !barcode.isSearchingBarcode && !isProcessingAi && !isAnyChildModalVisible;
 
   /** Map AI TrackMealResponse to the shape LogMealModal expects (calories from kcal). */
   const mapTrackMealResponseToMeal = useCallback(

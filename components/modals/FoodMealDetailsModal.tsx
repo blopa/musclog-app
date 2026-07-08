@@ -1,12 +1,13 @@
 import { TFunction } from 'i18next';
 import { Clock, LucideScale, Utensils } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
 import { FoodNutritionSectionCard } from '@/components/cards/FoodNutritionSectionCard';
 import { GenericCard } from '@/components/cards/GenericCard';
 import type { MealType } from '@/database/models';
-import Food from '@/database/models/Food';
+import Food, { type MicrosData } from '@/database/models/Food';
 import NutritionLog from '@/database/models/NutritionLog';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -19,6 +20,7 @@ import {
   utcNormalizedDayKey,
 } from '@/utils/calendarDate';
 import { formatDisplayGrams } from '@/utils/formatDisplayWeight';
+import { handleError } from '@/utils/handleError';
 import { getMassUnitLabel } from '@/utils/unitConversion';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -89,21 +91,40 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
   const theme = useTheme();
   const { t } = useTranslation();
   const { units, intuitiveEatingMode } = useSettings();
+  // Consumed micros, tagged with the log they belong to so switching entries never
+  // briefly shows the previous entry's values while the new lookup resolves.
+  const [resolvedMicros, setResolvedMicros] = useState<{
+    logId: string;
+    micros: MicrosData;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!entry) {
+      return;
+    }
+
+    let cancelled = false;
+    const { log } = entry;
+    log
+      .getConsumedMicros()
+      .then((micros) => {
+        if (!cancelled) {
+          setResolvedMicros({ logId: log.id, micros });
+        }
+      })
+      .catch((error) => handleError(error, 'FoodMealDetailsModal.getConsumedMicros'));
+
+    return () => {
+      cancelled = true;
+    };
+  }, [entry]);
 
   if (!entry) {
     return null;
   }
 
   const { log, food, nutrients, gramWeight, displayName, mealType } = entry;
-
-  // TODO: use a helper function to avoid using nested ternaries
-  const nutrientScale =
-    log.snapshotBasis === 'per_serving'
-      ? log.amount
-      : gramWeight > 0
-        ? gramWeight / 100
-        : 1;
-  const micros = food?.micros ?? {};
+  const micros = resolvedMicros?.logId === log.id ? resolvedMicros.micros : {};
 
   const foodData = {
     name: displayName,
@@ -117,13 +138,13 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
 
   const nutritionalData = {
     fiber: nutrients.fiber,
-    sugar: (micros.sugar ?? 0) * nutrientScale,
-    saturatedFat: (micros.saturatedFat ?? 0) * nutrientScale,
-    sodium: (micros.sodium ?? 0) * nutrientScale,
+    sugar: micros.sugar ?? 0,
+    saturatedFat: micros.saturatedFat ?? 0,
+    sodium: micros.sodium ?? 0,
     alcohol: nutrients.alcohol,
-    potassium: (micros.potassium ?? 0) * nutrientScale,
-    magnesium: (micros.magnesium ?? 0) * nutrientScale,
-    zinc: (micros.zinc ?? 0) * nutrientScale,
+    potassium: micros.potassium ?? 0,
+    magnesium: micros.magnesium ?? 0,
+    zinc: micros.zinc ?? 0,
   };
 
   const massUnit = getMassUnitLabel(units);

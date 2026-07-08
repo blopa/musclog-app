@@ -15,7 +15,6 @@ import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import { BarcodeInput } from '@/components/BarcodeInput';
 import { BottomPopUp } from '@/components/BottomPopUp';
-import { useCameraPermissions } from '@/components/CameraView';
 import {
   type FoodDetailsNutritionSectionMode,
   FoodNutritionSectionCard,
@@ -57,7 +56,7 @@ import { applyMusclogQualityToFoodRecord } from '@/utils/musclogProduct';
 import { extractLabelsFromOFFProduct, getProductName } from '@/utils/openFoodFactsMapper';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 
-import { BarcodeCameraModal } from './BarcodeCameraModal';
+import { useBarcodeCameraModal } from './useBarcodeCameraModal';
 
 type ScannedFoodDetailsModalProps = {
   visible: boolean;
@@ -80,8 +79,6 @@ export function ScannedFoodDetailsModal({
   );
   const decimalSeparator = useMemo(() => getDecimalSeparator(locale), [locale]);
   const { intuitiveEatingMode, alwaysAllowFoodEditing } = useSettings();
-  const [permission, requestPermission] = useCameraPermissions();
-  const [isBarcodeScannerVisible, setIsBarcodeScannerVisible] = useState(false);
   const [amount, setAmount] = useState(100);
   const [localCanEdit, setLocalCanEdit] = useState(alwaysAllowFoodEditing);
 
@@ -178,11 +175,14 @@ export function ScannedFoodDetailsModal({
     reset: resetEditForm,
   } = useFoodEditForm({ decimalSeparator, inferredCaloriesPer100g });
 
+  const { openScanner, scanner } = useBarcodeCameraModal(visible, (data) =>
+    setEditForm((prev) => (prev ? { ...prev, barcode: data } : null))
+  );
+
   useEffect(() => {
     if (!visible) {
       const reset = () => {
         setAmount(100);
-        setIsBarcodeScannerVisible(false);
         resetEditForm();
         resetAlternateSource();
         setLocalCanEdit(alwaysAllowFoodEditing);
@@ -701,7 +701,7 @@ export function ScannedFoodDetailsModal({
                   setEditForm((prev) => (prev ? { ...prev, barcode: text } : null))
                 }
                 placeholder={t('food.foodDetails.barcodePlaceholder')}
-                onScanPress={() => setIsBarcodeScannerVisible(true)}
+                onScanPress={openScanner}
               />
 
               <TextInput
@@ -813,18 +813,7 @@ export function ScannedFoodDetailsModal({
               />
             </View>
           ) : null}
-          {isBarcodeScannerVisible ? (
-            <BarcodeCameraModal
-              visible={isBarcodeScannerVisible}
-              onClose={() => setIsBarcodeScannerVisible(false)}
-              onBarcodeScanned={(data) =>
-                setEditForm((prev) => (prev ? { ...prev, barcode: data } : null))
-              }
-              showBarcodeTextSearch={true}
-              permissionGranted={permission?.granted ?? null}
-              onRequestPermission={requestPermission}
-            />
-          ) : null}
+          {scanner}
         </BottomPopUp>
       </BottomPopUp>
     </>

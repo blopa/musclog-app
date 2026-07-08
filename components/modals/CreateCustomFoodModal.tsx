@@ -38,7 +38,6 @@ import { Image, Pressable, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BarcodeInput } from '@/components/BarcodeInput';
-import { useCameraPermissions } from '@/components/CameraView';
 import { FilterTabs } from '@/components/FilterTabs';
 import { MacroInput } from '@/components/MacroInput';
 import { Button } from '@/components/theme/Button';
@@ -65,10 +64,10 @@ import {
 import { showSnackbar } from '@/utils/snackbarService';
 import { getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
 
-import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { FoodMealTrackingDetailsModal } from './FoodMealTrackingDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
 import { PortionSizesPickerModal } from './PortionSizesPickerModal';
+import { useBarcodeCameraModal } from './useBarcodeCameraModal';
 
 type NewCustomFoodModalProps = {
   visible: boolean;
@@ -91,8 +90,6 @@ export default function CreateCustomFoodModal({
 }: NewCustomFoodModalProps) {
   const theme = useTheme();
   const { units, includeFiberInCarbs } = useSettings();
-  const [permission, requestPermission] = useCameraPermissions();
-  const [isBarcodeScannerVisible, setIsBarcodeScannerVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [createdFood, setCreatedFood] = useState<Food | null>(null);
   const [isFoodDetailsVisible, setIsFoodDetailsVisible] = useState(false);
@@ -153,11 +150,12 @@ export default function CreateCustomFoodModal({
   const [nutritionBasis, setNutritionBasis] = useState<'per_100g' | 'per_serving'>('per_100g');
   const [servingName, setServingName] = useState('');
 
+  const { openScanner, scanner } = useBarcodeCameraModal(visible, setBarcode);
+
   useEffect(() => {
     if (!visible) {
       const reset = () => {
         setIsFoodDetailsVisible(false);
-        setIsBarcodeScannerVisible(false);
         setShowPortionPicker(false);
       };
       reset();
@@ -294,10 +292,6 @@ export default function CreateCustomFoodModal({
       ...prev,
       [key]: sanitizeLocalizedDecimalInput(value, decimalSeparator, 2),
     }));
-  };
-
-  const openBarcodeScanner = () => {
-    setIsBarcodeScannerVisible(true);
   };
 
   const handlePickImage = async () => {
@@ -680,7 +674,7 @@ export default function CreateCustomFoodModal({
               value={barcode}
               onChangeText={setBarcode}
               placeholder={t('food.newCustomFood.barcodePlaceholder')}
-              onScanPress={openBarcodeScanner}
+              onScanPress={openScanner}
             />
 
             {/* Brand */}
@@ -1076,16 +1070,7 @@ export default function CreateCustomFoodModal({
           }}
           selectedIds={selectedPortionIds}
         />
-        {isBarcodeScannerVisible ? (
-          <BarcodeCameraModal
-            visible={isBarcodeScannerVisible}
-            onClose={() => setIsBarcodeScannerVisible(false)}
-            onBarcodeScanned={(data) => setBarcode(data)}
-            showBarcodeTextSearch={true}
-            permissionGranted={permission?.granted ?? null}
-            onRequestPermission={requestPermission}
-          />
-        ) : null}
+        {scanner}
       </FullScreenModal>
     </>
   );

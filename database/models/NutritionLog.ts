@@ -13,6 +13,17 @@ import FoodPortion from './FoodPortion';
 
 export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other';
 
+/** Scale every micro value by `scale`, clamping negatives like getNutrients() does. */
+function scaleMicros(micros: MicrosData, scale: number): MicrosData {
+  const scaled: MicrosData = {};
+  for (const [key, value] of Object.entries(micros)) {
+    if (typeof value === 'number') {
+      scaled[key] = Math.max(0, value) * scale;
+    }
+  }
+  return scaled;
+}
+
 export interface DecryptedNutritionLogSnapshot {
   loggedFoodName?: string;
   loggedCalories: number;
@@ -300,6 +311,50 @@ export default class NutritionLog extends Model {
         fiber: 0,
         alcohol: 0,
       };
+    }
+  }
+
+  /** The food's current micros, or {} when the food is missing or deleted. */
+  private async currentFoodMicros(): Promise<MicrosData> {
+    try {
+      const food = await this.food;
+      return food?.micros ?? {};
+    } catch {
+      return {};
+    }
+  }
+
+  /**
+   * Micros actually consumed for this entry, scaled with the same rule as getNutrients()
+   * (per_serving → × amount, otherwise × gram weight / 100). Prefers the snapshot micros
+   * captured at log time — so the breakdown matches the snapshot macros even after the
+   * food record is edited — and falls back to the food's current micros for rows whose
+   * snapshot carried none (and for legacy rows without a snapshot).
+   */
+  async getConsumedMicros(): Promise<MicrosData> {
+    try {
+      const hasSnap = await this.hasSnapshot();
+      if (hasSnap) {
+        const s = await this.getDecryptedSnapshot();
+        const micros = s.loggedMicros ?? (await this.currentFoodMicros());
+        const scale =
+          s.snapshotBasis === 'per_serving' ? this.amount : (await this.getGramWeight()) / 100;
+        return scaleMicros(micros, scale);
+      }
+
+      // Fallback for legacy rows without snapshot
+      const food = await this.food;
+      if (!food) {
+        return {};
+      }
+      const scale =
+        food.resolvedNutritionBasis === 'per_serving'
+          ? this.amount
+          : (await this.getGramWeight()) / 100;
+      return scaleMicros(food.micros ?? {}, scale);
+    } catch (error) {
+      handleError(error, 'NutritionLog.getConsumedMicros');
+      return {};
     }
   }
 

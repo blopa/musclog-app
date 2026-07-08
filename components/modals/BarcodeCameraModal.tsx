@@ -65,12 +65,15 @@ export function BarcodeCameraModal({
 
   const isFoodDetailsModalVisible = barcode.detectedBarcode !== null;
 
-  const isCameraActive =
-    visible &&
-    !barcode.isSearchingBarcode &&
-    !isBarcodeTextSearchModalVisible &&
-    !barcode.isFoodNotFoundModalVisible &&
-    !isFoodDetailsModalVisible;
+  // Every conditionally-rendered child modal in the JSX below MUST have its visibility
+  // flag listed here — the camera is active only while none of them covers it.
+  const isAnyChildModalVisible = [
+    isBarcodeTextSearchModalVisible,
+    barcode.isFoodNotFoundModalVisible,
+    isFoodDetailsModalVisible,
+  ].some(Boolean);
+
+  const isCameraActive = visible && !barcode.isSearchingBarcode && !isAnyChildModalVisible;
 
   useKeepScreenAwake('barcode-camera-processing', visible && barcode.isSearchingBarcode);
 

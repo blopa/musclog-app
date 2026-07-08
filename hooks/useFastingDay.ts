@@ -93,6 +93,9 @@ export function useFastingDay({
   const isSelectedDayFasted =
     enabled && resolved?.dayKey === selectedDayKey ? resolved.fasted : null;
 
+  // Evaluated per render (no timer): crossing 20:00 surfaces the prompt on the next
+  // re-render, which the diary screen produces often enough — a deliberate tradeoff
+  // to avoid clock-tick machinery for a soft affordance.
   const now = new Date();
   const todayKey = utcDayKeyFromLocalDate(now);
   const isPastDay = selectedDayKey < todayKey;
