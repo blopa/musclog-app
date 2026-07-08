@@ -96,34 +96,34 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
 
   const { log, food, nutrients, gramWeight, displayName, mealType } = entry;
 
-  const scale = gramWeight > 0 ? 100 / gramWeight : 1;
-  const per100gCalories = food ? food.calories : nutrients.calories * scale;
-  const per100gProtein = food ? food.protein : nutrients.protein * scale;
-  const per100gCarbs = food ? food.carbs : nutrients.carbs * scale;
-  const per100gFat = food ? food.fat : nutrients.fat * scale;
-  const per100gFiber = food ? food.fiber : nutrients.fiber * scale;
-
+  // TODO: use a helper function to avoid using nested ternaries
+  const nutrientScale =
+    log.snapshotBasis === 'per_serving'
+      ? log.amount
+      : gramWeight > 0
+        ? gramWeight / 100
+        : 1;
   const micros = food?.micros ?? {};
 
   const foodData = {
     name: displayName,
     category: food?.brand ?? getMealTypeLabel(mealType, t),
-    calories: per100gCalories,
-    protein: per100gProtein,
-    carbs: per100gCarbs,
-    fat: per100gFat,
+    calories: nutrients.calories,
+    protein: nutrients.protein,
+    carbs: nutrients.carbs,
+    fat: nutrients.fat,
     source: food?.source as 'openfood' | 'usda' | 'local' | 'ai' | 'musclog' | undefined,
   };
 
   const nutritionalData = {
-    fiber: per100gFiber,
-    sugar: micros.sugar,
-    saturatedFat: micros.saturatedFat ?? 0,
-    sodium: micros.sodium ?? 0,
-    alcohol: micros.alcohol,
-    potassium: micros.potassium,
-    magnesium: micros.magnesium,
-    zinc: micros.zinc,
+    fiber: nutrients.fiber,
+    sugar: (micros.sugar ?? 0) * nutrientScale,
+    saturatedFat: (micros.saturatedFat ?? 0) * nutrientScale,
+    sodium: (micros.sodium ?? 0) * nutrientScale,
+    alcohol: nutrients.alcohol,
+    potassium: (micros.potassium ?? 0) * nutrientScale,
+    magnesium: (micros.magnesium ?? 0) * nutrientScale,
+    zinc: (micros.zinc ?? 0) * nutrientScale,
   };
 
   const massUnit = getMassUnitLabel(units);
@@ -198,8 +198,8 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
           canEdit={false}
           mode="foodLog"
           nutritionalData={nutritionalData}
-          servingSize={gramWeight}
-          servingBasis="per_100g"
+          servingSize={1}
+          servingBasis="per_serving"
           isLoadingDetails={false}
           intuitiveMode={intuitiveEatingMode}
           showName={false}
@@ -209,7 +209,7 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
             novaGroup,
             labels: food?.labels,
           }}
-          protein={per100gProtein}
+          protein={nutrients.protein}
         />
       </ScrollView>
     </FullScreenModal>
