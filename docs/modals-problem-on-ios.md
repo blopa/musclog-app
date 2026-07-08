@@ -79,6 +79,32 @@ Fixed in:
 `BrowseTemplatesModal` now owns the "create from template" confirmation modal, instead of leaving
 that confirmation as a sibling on the screen.
 
+### Smart camera and barcode scanner flow
+
+Fixed in:
+
+- `components/modals/SmartCameraShell.tsx`
+- `components/modals/SmartCameraModal.tsx`
+- `components/modals/BarcodeCameraModal.tsx`
+- `components/modals/CreateCustomFoodModal.tsx`
+- `components/modals/FoodMealTrackingDetailsModal.tsx`
+- `components/modals/ScannedFoodDetailsModal.tsx`
+- `components/modals/AddFoodItemToMealModal.tsx`
+- `eslint-rules/no-sibling-modals.js`
+
+`SmartCameraShell` is now the modal host for camera follow-up modals: it accepts children and
+renders them inside its `FullScreenModal`. `SmartCameraModal` and `BarcodeCameraModal` therefore
+render barcode text search, food-not-found, food details, AI context, create/search, and meal-log
+follow-ups under the active camera modal instead of as siblings.
+
+Barcode scanners launched from food creation/details edit flows are also rendered under the modal
+or bottom sheet that opened them. This keeps the presenter chain intact for iOS:
+
+- Full-screen form scan controls render `BarcodeCameraModal` inside the form's `FullScreenModal`.
+- Edit-sheet scan controls render `BarcodeCameraModal` inside that edit `BottomPopUp`.
+- `AddFoodItemToMealModal` uses a local `BarcodeCameraModal` child instead of opening the global
+  camera provider while the add-food modal remains active.
+
 ## Confirmed Remaining Cases
 
 These were manually checked during a repo-wide scan. They are the places that still match the same
@@ -268,28 +294,7 @@ Fix:
 
 - Render the `BottomPopUpMenu` inside the `FullScreenModal`.
 
-### 10. `FoodMealTrackingDetailsModal` mixes a safe child modal and an unsafe sibling popup
-
-File:
-
-- `components/modals/FoodMealTrackingDetailsModal.tsx:2172-2323`
-
-Problem:
-
-- Outer `FullScreenModal` at `:2172`
-- Child `DatePickerModal` at `:2310`, which is already correct
-- Sibling `BottomPopUp` at `:2323`
-
-Why it is risky:
-
-- The edit sheet is opened from inside the food details modal, but it is rendered outside the
-  active modal tree.
-
-Fix:
-
-- Move the `BottomPopUp` inside the `FullScreenModal`.
-
-### 11. `DataLogModal` is another modal hub with many sibling follow-up modals
+### 10. `DataLogModal` is another modal hub with many sibling follow-up modals
 
 File:
 
@@ -346,8 +351,8 @@ return (
 );
 ```
 
-The same rule applies to `CenteredModal`, `BottomPopUp`, `BottomPopUpMenu`, and any wrapper that
-ultimately uses React Native's `Modal`.
+The same rule applies to `CenteredModal`, `BottomPopUp`, `BottomPopUpMenu`, `SmartCameraShell`,
+and any wrapper that ultimately uses React Native's `Modal`.
 
 ## Practical Notes
 

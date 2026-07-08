@@ -5,9 +5,9 @@ import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { Button } from '@/components/theme/Button';
+import { useCameraPermissions } from '@/components/CameraView';
 import { StepperInput } from '@/components/theme/StepperInput';
 import { TextInput } from '@/components/theme/TextInput';
-import { useSmartCamera } from '@/context/SmartCameraContext';
 import Food from '@/database/models/Food';
 import { useFoods } from '@/hooks/useFoods';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -15,6 +15,7 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
 
+import { BarcodeCameraModal } from './BarcodeCameraModal';
 import { FullScreenModal } from './FullScreenModal';
 import { ScannedFoodDetailsModal } from './ScannedFoodDetailsModal';
 
@@ -256,18 +257,20 @@ export function AddFoodItemToMealModal({
 }: AddFoodItemToMealModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { openCamera } = useSmartCamera();
+  const [permission, requestPermission] = useCameraPermissions();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItems, setSelectedItems] = useState<
     Record<string, { selected: boolean; amount: number }>
   >({});
 
+  const [isBarcodeScannerVisible, setIsBarcodeScannerVisible] = useState(false);
   const [showScannedFoodDetails, setShowScannedFoodDetails] = useState(false);
   const [scannedBarcode, setScannedBarcode] = useState<string | null>(null);
 
   useEffect(() => {
     if (!visible) {
       const reset = () => {
+        setIsBarcodeScannerVisible(false);
         setShowScannedFoodDetails(false);
         setScannedBarcode(null);
       };
@@ -321,15 +324,7 @@ export function AddFoodItemToMealModal({
   };
 
   const openBarcodeScanner = () => {
-    openCamera({
-      mode: 'barcode-scan',
-      hideCameraModePicker: true,
-      showBarcodeTextSearch: true,
-      onBarcodeScanned: (data) => {
-        setScannedBarcode(data);
-        setShowScannedFoodDetails(true);
-      },
-    });
+    setIsBarcodeScannerVisible(true);
   };
 
   let resultsContent;
@@ -488,6 +483,20 @@ export function AddFoodItemToMealModal({
         {/* Results List */}
         {resultsContent}
       </View>
+      {isBarcodeScannerVisible ? (
+        <BarcodeCameraModal
+          visible={isBarcodeScannerVisible}
+          onClose={() => setIsBarcodeScannerVisible(false)}
+          onBarcodeScanned={(data) => {
+            setScannedBarcode(data);
+            setIsBarcodeScannerVisible(false);
+            setShowScannedFoodDetails(true);
+          }}
+          showBarcodeTextSearch={true}
+          permissionGranted={permission?.granted ?? null}
+          onRequestPermission={requestPermission}
+        />
+      ) : null}
       <ScannedFoodDetailsModal
         visible={showScannedFoodDetails}
         onClose={() => setShowScannedFoodDetails(false)}

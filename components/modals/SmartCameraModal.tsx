@@ -185,9 +185,14 @@ export default function SmartCameraModal({
     visible &&
     !barcode.isSearchingBarcode &&
     !isProcessingAi &&
+    !isContextModalVisible &&
     !isBarcodeTextSearchModalVisible &&
     !barcode.isFoodNotFoundModalVisible &&
-    !isFoodDetailsModalVisible;
+    !isFoodDetailsModalVisible &&
+    !isAddFoodModalVisible &&
+    !isNewCustomFoodModalVisible &&
+    !isFoodSearchModalVisible &&
+    !isLogMealModalVisible;
 
   /** Map AI TrackMealResponse to the shape LogMealModal expects (calories from kcal). */
   const mapTrackMealResponseToMeal = useCallback(
@@ -738,112 +743,112 @@ export default function SmartCameraModal({
         isAiEnabled={isAiEnabled}
         isAIVisionEnabled={isAIVisionEnabled}
         onModeChange={handleModeChange}
-      />
+      >
+        {/* Context Modal */}
+        {isContextModalVisible ? (
+          <AINutritionTrackingContextModal
+            visible={isContextModalVisible}
+            onClose={() => setIsContextModalVisible(false)}
+            onApply={handleApplyContext}
+            initialDescription={draftContext.description}
+            initialTags={draftContext.tags}
+            onDraftChange={setDraftContext}
+          />
+        ) : null}
 
-      {/* Context Modal */}
-      {isContextModalVisible ? (
-        <AINutritionTrackingContextModal
-          visible={isContextModalVisible}
-          onClose={() => setIsContextModalVisible(false)}
-          onApply={handleApplyContext}
-          initialDescription={draftContext.description}
-          initialTags={draftContext.tags}
-          onDraftChange={setDraftContext}
-        />
-      ) : null}
+        {/* Barcode Text Search Sheet */}
+        {isBarcodeTextSearchModalVisible ? (
+          <BarcodeTextSearchSheet
+            visible={isBarcodeTextSearchModalVisible}
+            value={barcodeTextSearchValue}
+            onChangeText={setBarcodeTextSearchValue}
+            onClose={() => setIsBarcodeTextSearchModalVisible(false)}
+            onSubmit={handleBarcodeTextSearchSubmit}
+          />
+        ) : null}
 
-      {/* Barcode Text Search Sheet */}
-      {isBarcodeTextSearchModalVisible ? (
-        <BarcodeTextSearchSheet
-          visible={isBarcodeTextSearchModalVisible}
-          value={barcodeTextSearchValue}
-          onChangeText={setBarcodeTextSearchValue}
-          onClose={() => setIsBarcodeTextSearchModalVisible(false)}
-          onSubmit={handleBarcodeTextSearchSubmit}
-        />
-      ) : null}
+        {/* Food Details Modal */}
+        {isFoodDetailsModalVisible ? (
+          <FoodMealTrackingDetailsModal
+            visible={isFoodDetailsModalVisible}
+            onClose={handleFoodDetailsClose}
+            barcode={productFromAiLabel ? null : barcode.detectedBarcode}
+            productFromSearch={productFromAiLabel ?? undefined}
+            onBarcodeLookupComplete={barcode.handleBarcodeLookupComplete}
+            onFoodTracked={handleClose}
+            isAiEnabled={isAiEnabled}
+            canEdit={!!productFromAiLabel}
+            initialDate={logDate}
+            initialMealType={mealTypeForLog}
+          />
+        ) : null}
 
-      {/* Food Details Modal */}
-      {isFoodDetailsModalVisible ? (
-        <FoodMealTrackingDetailsModal
-          visible={isFoodDetailsModalVisible}
-          onClose={handleFoodDetailsClose}
-          barcode={productFromAiLabel ? null : barcode.detectedBarcode}
-          productFromSearch={productFromAiLabel ?? undefined}
-          onBarcodeLookupComplete={barcode.handleBarcodeLookupComplete}
-          onFoodTracked={handleClose}
-          isAiEnabled={isAiEnabled}
-          canEdit={!!productFromAiLabel}
-          initialDate={logDate}
-          initialMealType={mealTypeForLog}
-        />
-      ) : null}
+        {/* Food Not Found Modal */}
+        {barcode.isFoodNotFoundModalVisible ? (
+          <FoodNotFoundModal
+            visible={barcode.isFoodNotFoundModalVisible}
+            onClose={barcode.handleFoodNotFoundClose}
+            onTryAiScan={handleAiCameraPress}
+            onSearchAgain={handleScanBarcodePress}
+            onCreateCustom={handleCreateCustomFood}
+            isAiEnabled={isAiEnabled}
+          />
+        ) : null}
 
-      {/* Food Not Found Modal */}
-      {barcode.isFoodNotFoundModalVisible ? (
-        <FoodNotFoundModal
-          visible={barcode.isFoodNotFoundModalVisible}
-          onClose={barcode.handleFoodNotFoundClose}
-          onTryAiScan={handleAiCameraPress}
-          onSearchAgain={handleScanBarcodePress}
-          onCreateCustom={handleCreateCustomFood}
-          isAiEnabled={isAiEnabled}
-        />
-      ) : null}
+        {/* Add Food Modal */}
+        {isAddFoodModalVisible ? (
+          <AddFoodModal
+            visible={isAddFoodModalVisible}
+            onClose={handleAddFoodClose}
+            onMealTypeSelect={handleMealTypeSelect}
+            onAiCameraPress={handleAiCameraPress}
+            onScanBarcodePress={handleScanBarcodePress}
+            onSearchFoodPress={handleSearchFoodPress}
+            onCreateCustomFoodPress={handleCreateCustomFood}
+            onTrackCustomMealPress={handleTrackCustomMeal}
+          />
+        ) : null}
 
-      {/* Add Food Modal */}
-      {isAddFoodModalVisible ? (
-        <AddFoodModal
-          visible={isAddFoodModalVisible}
-          onClose={handleAddFoodClose}
-          onMealTypeSelect={handleMealTypeSelect}
-          onAiCameraPress={handleAiCameraPress}
-          onScanBarcodePress={handleScanBarcodePress}
-          onSearchFoodPress={handleSearchFoodPress}
-          onCreateCustomFoodPress={handleCreateCustomFood}
-          onTrackCustomMealPress={handleTrackCustomMeal}
-        />
-      ) : null}
+        {/* New Custom Food Modal */}
+        {isNewCustomFoodModalVisible ? (
+          <CreateCustomFoodModal
+            visible={isNewCustomFoodModalVisible}
+            trackFoodAfterSave={true}
+            onClose={handleNewCustomFoodClose}
+            isAiEnabled={isAiEnabled}
+          />
+        ) : null}
 
-      {/* New Custom Food Modal */}
-      {isNewCustomFoodModalVisible ? (
-        <CreateCustomFoodModal
-          visible={isNewCustomFoodModalVisible}
-          trackFoodAfterSave={true}
-          onClose={handleNewCustomFoodClose}
-          isAiEnabled={isAiEnabled}
-        />
-      ) : null}
+        {/* Food Search Modal */}
+        {isFoodSearchModalVisible ? (
+          <FoodSearchModal
+            visible={isFoodSearchModalVisible}
+            onClose={() => setIsFoodSearchModalVisible(false)}
+            mealType={selectedMealType}
+            initialTab={foodSearchInitialTab}
+            onBarcodeScanPress={handleScanBarcodePress}
+            onCreatePress={handleCreateCustomFood}
+            isAiEnabled={isAiEnabled}
+          />
+        ) : null}
 
-      {/* Food Search Modal */}
-      {isFoodSearchModalVisible ? (
-        <FoodSearchModal
-          visible={isFoodSearchModalVisible}
-          onClose={() => setIsFoodSearchModalVisible(false)}
-          mealType={selectedMealType}
-          initialTab={foodSearchInitialTab}
-          onBarcodeScanPress={handleScanBarcodePress}
-          onCreatePress={handleCreateCustomFood}
-          isAiEnabled={isAiEnabled}
-        />
-      ) : null}
-
-      {/* Log Meal Modal */}
-      {isLogMealModalVisible && selectedMealForLogging ? (
-        <LogMealModal
-          visible={isLogMealModalVisible}
-          onClose={() => {
-            setIsLogMealModalVisible(false);
-            setSelectedMealForLogging(null);
-            setAiIngredients(undefined);
-            setAiPhotoUri(undefined);
-          }}
-          meal={selectedMealForLogging}
-          ingredients={aiIngredients}
-          onLogMeal={handleLogMeal}
-          initialDate={logDate}
-        />
-      ) : null}
+        {/* Log Meal Modal */}
+        {isLogMealModalVisible && selectedMealForLogging ? (
+          <LogMealModal
+            visible={isLogMealModalVisible}
+            onClose={() => {
+              setIsLogMealModalVisible(false);
+              setSelectedMealForLogging(null);
+              setAiIngredients(undefined);
+              setAiPhotoUri(undefined);
+            }}
+            meal={selectedMealForLogging}
+            ingredients={aiIngredients}
+            onLogMeal={handleLogMeal}
+            initialDate={logDate}
+          />
+        ) : null}
+      </SmartCameraShell>
       {showConfetti ? <ConfettiOverlay /> : null}
     </>
   );

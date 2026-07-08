@@ -1668,6 +1668,7 @@ export function FoodMealTrackingDetailsModal({
         setMatchedPortion(null);
         resetEditForm();
         resetAlternateSource();
+        setIsBarcodeScannerVisible(false);
         setLocalCanEdit(canEdit);
         hasInitializedServingSizeRef.current = false;
         setSelectedTime(new Date());
@@ -2065,20 +2066,20 @@ export function FoodMealTrackingDetailsModal({
               />
             </View>
           ) : null}
+          {isBarcodeScannerVisible ? (
+            <BarcodeCameraModal
+              visible={isBarcodeScannerVisible}
+              onClose={() => setIsBarcodeScannerVisible(false)}
+              onBarcodeScanned={(data) =>
+                setEditForm((prev) => (prev ? { ...prev, barcode: data } : null))
+              }
+              showBarcodeTextSearch={true}
+              permissionGranted={permission?.granted ?? null}
+              onRequestPermission={requestPermission}
+            />
+          ) : null}
         </BottomPopUp>
       </FullScreenModal>
-      {isBarcodeScannerVisible ? (
-        <BarcodeCameraModal
-          visible={isBarcodeScannerVisible}
-          onClose={() => setIsBarcodeScannerVisible(false)}
-          onBarcodeScanned={(data) =>
-            setEditForm((prev) => (prev ? { ...prev, barcode: data } : null))
-          }
-          showBarcodeTextSearch={true}
-          permissionGranted={permission?.granted ?? null}
-          onRequestPermission={requestPermission}
-        />
-      ) : null}
     </>
   );
 }

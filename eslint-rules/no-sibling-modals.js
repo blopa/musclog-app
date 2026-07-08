@@ -40,7 +40,12 @@
  */
 
 /** Extra non-Modal-suffixed components that use React Native's Modal internally. */
-const EXTRA_MODAL_LIKE = new Set(['BottomPopUp', 'BottomPopUpMenu']);
+const EXTRA_MODAL_LIKE = new Set([
+  'BarcodeTextSearchSheet',
+  'BottomPopUp',
+  'BottomPopUpMenu',
+  'SmartCameraShell',
+]);
 
 /** Returns the component name string from a JSX name node, or null. */
 function getJSXName(nameNode) {

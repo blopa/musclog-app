@@ -157,6 +157,8 @@ export default function CreateCustomFoodModal({
     if (!visible) {
       const reset = () => {
         setIsFoodDetailsVisible(false);
+        setIsBarcodeScannerVisible(false);
+        setShowPortionPicker(false);
       };
       reset();
     }
@@ -1074,17 +1076,17 @@ export default function CreateCustomFoodModal({
           }}
           selectedIds={selectedPortionIds}
         />
+        {isBarcodeScannerVisible ? (
+          <BarcodeCameraModal
+            visible={isBarcodeScannerVisible}
+            onClose={() => setIsBarcodeScannerVisible(false)}
+            onBarcodeScanned={(data) => setBarcode(data)}
+            showBarcodeTextSearch={true}
+            permissionGranted={permission?.granted ?? null}
+            onRequestPermission={requestPermission}
+          />
+        ) : null}
       </FullScreenModal>
-      {isBarcodeScannerVisible ? (
-        <BarcodeCameraModal
-          visible={isBarcodeScannerVisible}
-          onClose={() => setIsBarcodeScannerVisible(false)}
-          onBarcodeScanned={(data) => setBarcode(data)}
-          showBarcodeTextSearch={true}
-          permissionGranted={permission?.granted ?? null}
-          onRequestPermission={requestPermission}
-        />
-      ) : null}
     </>
   );
 }

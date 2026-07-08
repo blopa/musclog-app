@@ -208,43 +208,43 @@ export function BarcodeCameraModal({
         onShutterPress={handleTakePicture}
         bottomRightControl={bottomRightControl}
         showModePicker={false}
-      />
+      >
+        {/* Barcode Text Search Sheet */}
+        {isBarcodeTextSearchModalVisible ? (
+          <BarcodeTextSearchSheet
+            visible={isBarcodeTextSearchModalVisible}
+            value={barcodeTextSearchValue}
+            onChangeText={setBarcodeTextSearchValue}
+            onClose={() => setIsBarcodeTextSearchModalVisible(false)}
+            onSubmit={handleBarcodeTextSearchSubmit}
+          />
+        ) : null}
 
-      {/* Barcode Text Search Sheet */}
-      {isBarcodeTextSearchModalVisible ? (
-        <BarcodeTextSearchSheet
-          visible={isBarcodeTextSearchModalVisible}
-          value={barcodeTextSearchValue}
-          onChangeText={setBarcodeTextSearchValue}
-          onClose={() => setIsBarcodeTextSearchModalVisible(false)}
-          onSubmit={handleBarcodeTextSearchSubmit}
-        />
-      ) : null}
+        {/* Food Details Modal */}
+        {isFoodDetailsModalVisible ? (
+          <FoodMealTrackingDetailsModal
+            visible={isFoodDetailsModalVisible}
+            onClose={barcode.handleFoodDetailsClose}
+            barcode={barcode.detectedBarcode}
+            onBarcodeLookupComplete={barcode.handleBarcodeLookupComplete}
+            onFoodTracked={handleClose}
+            isAiEnabled={false}
+            canEdit={false}
+            initialDate={logDate}
+            initialMealType={mealTypeForLog}
+          />
+        ) : null}
 
-      {/* Food Details Modal */}
-      {isFoodDetailsModalVisible ? (
-        <FoodMealTrackingDetailsModal
-          visible={isFoodDetailsModalVisible}
-          onClose={barcode.handleFoodDetailsClose}
-          barcode={barcode.detectedBarcode}
-          onBarcodeLookupComplete={barcode.handleBarcodeLookupComplete}
-          onFoodTracked={handleClose}
-          isAiEnabled={false}
-          canEdit={false}
-          initialDate={logDate}
-          initialMealType={mealTypeForLog}
-        />
-      ) : null}
-
-      {/* Food Not Found Modal */}
-      {barcode.isFoodNotFoundModalVisible ? (
-        <FoodNotFoundModal
-          visible={barcode.isFoodNotFoundModalVisible}
-          onClose={barcode.handleFoodNotFoundClose}
-          onSearchAgain={barcode.handleFoodNotFoundClose}
-          isAiEnabled={false}
-        />
-      ) : null}
+        {/* Food Not Found Modal */}
+        {barcode.isFoodNotFoundModalVisible ? (
+          <FoodNotFoundModal
+            visible={barcode.isFoodNotFoundModalVisible}
+            onClose={barcode.handleFoodNotFoundClose}
+            onSearchAgain={barcode.handleFoodNotFoundClose}
+            isAiEnabled={false}
+          />
+        ) : null}
+      </SmartCameraShell>
     </>
   );
 }
