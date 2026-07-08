@@ -1,4 +1,4 @@
-import { convertSqliteBackupToJson } from '../sqliteBackupConvert';
+import { convertSqliteBackupToJson, type SqliteBackupRef } from '../sqliteBackupConvert';
 
 jest.mock('@/constants/database', () => ({ DATABASE_NAME: 'musclog' }));
 
@@ -36,6 +36,13 @@ const { dumpDatabaseWithQueryRunner } = jest.requireMock('../exportDbCore') as {
   dumpDatabaseWithQueryRunner: jest.Mock;
 };
 
+const snapshotRef = (overrides: Partial<SqliteBackupRef> = {}): SqliteBackupRef => ({
+  uri: 'file:///cache/snap.db',
+  fromVersion: 22,
+  asyncStorageUri: undefined,
+  ...overrides,
+});
+
 describe('convertSqliteBackupToJson', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -45,44 +52,49 @@ describe('convertSqliteBackupToJson', () => {
     dumpDatabaseWithQueryRunner.mockResolvedValue('{"_exportVersion":22}');
   });
 
-  it('refuses to open the live database file (never treat musclog.db as a snapshot)', async () => {
-    await expect(convertSqliteBackupToJson('file:///data/musclog.db')).rejects.toThrow(
-      /live database/i
+  it('refuses a snapshot without a schema version (would mislabel old data as current)', async () => {
+    await expect(convertSqliteBackupToJson(snapshotRef({ fromVersion: null }))).rejects.toThrow(
+      /schema version/i
     );
+    expect(openDatabaseSync).not.toHaveBeenCalled();
+  });
+
+  it('refuses to open the live database file (never treat musclog.db as a snapshot)', async () => {
+    await expect(
+      convertSqliteBackupToJson(snapshotRef({ uri: 'file:///data/musclog.db' }))
+    ).rejects.toThrow(/live database/i);
     expect(openDatabaseSync).not.toHaveBeenCalled();
   });
 
   it('throws when the snapshot file does not exist (no silent empty restore)', async () => {
     getInfoAsync.mockResolvedValue({ exists: false });
-    await expect(convertSqliteBackupToJson('file:///cache/snap.db')).rejects.toThrow(/not found/i);
+    await expect(convertSqliteBackupToJson(snapshotRef())).rejects.toThrow(/not found/i);
     expect(openDatabaseSync).not.toHaveBeenCalled();
   });
 
   it('throws when the snapshot has no user tables, so a restore cannot wipe the DB', async () => {
     getAllSync.mockReturnValue([]);
-    await expect(convertSqliteBackupToJson('file:///cache/snap.db')).rejects.toThrow(/no tables/i);
+    await expect(convertSqliteBackupToJson(snapshotRef())).rejects.toThrow(/no tables/i);
     expect(dumpDatabaseWithQueryRunner).not.toHaveBeenCalled();
     expect(closeSync).toHaveBeenCalledTimes(1); // opened, so it must be closed
   });
 
-  it('converts a valid snapshot, passing the schema version through, and closes the db', async () => {
-    const json = await convertSqliteBackupToJson('file:///cache/snap.db', 22);
+  it('converts a valid snapshot, stamping its own schema version, and closes the db', async () => {
+    const json = await convertSqliteBackupToJson(snapshotRef());
 
     expect(json).toBe('{"_exportVersion":22}');
     expect(openDatabaseSync).toHaveBeenCalledWith('snap.db', undefined, '/cache');
     expect(dumpDatabaseWithQueryRunner).toHaveBeenCalledWith(expect.any(Function), undefined, {
       includeDeletedRecords: true,
       exportVersion: 22,
-      asyncStorageData: null,
+      asyncStorageData: undefined,
     });
     expect(closeSync).toHaveBeenCalledTimes(1);
   });
 
   it('uses the captured AsyncStorage sidecar instead of live AsyncStorage during conversion', async () => {
     const json = await convertSqliteBackupToJson(
-      'file:///cache/snap.db',
-      22,
-      'file:///cache/snap.async-storage.json'
+      snapshotRef({ asyncStorageUri: 'file:///cache/snap.async-storage.json' })
     );
 
     expect(json).toBe('{"_exportVersion":22}');
@@ -97,7 +109,7 @@ describe('convertSqliteBackupToJson', () => {
 
   it('still closes the db if the dump throws', async () => {
     dumpDatabaseWithQueryRunner.mockRejectedValueOnce(new Error('boom'));
-    await expect(convertSqliteBackupToJson('file:///cache/snap.db')).rejects.toThrow('boom');
+    await expect(convertSqliteBackupToJson(snapshotRef())).rejects.toThrow('boom');
     expect(closeSync).toHaveBeenCalledTimes(1);
   });
 });

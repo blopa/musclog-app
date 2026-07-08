@@ -10,6 +10,13 @@ import { DATABASE_NAME } from '@/constants/database';
 
 import { type AsyncStorageDump } from './asyncStorageBackup';
 import { dumpDatabaseWithQueryRunner, LIST_USER_TABLES_SQL } from './exportDbCore';
+import type { BackupFileMeta } from './preMigrationBackup';
+
+// The slice of a backup-index entry a conversion needs. Passing the meta (rather
+// than shredding it into positional args) keeps call sites trivial and lets the
+// conversion enforce its own invariants (a sqlite snapshot must know its schema
+// version — see below).
+export type SqliteBackupRef = Pick<BackupFileMeta, 'uri' | 'fromVersion' | 'asyncStorageUri'>;
 
 /**
  * Lazy conversion of a raw `.db` pre-migration snapshot (see preMigrationCapture.ts)
@@ -30,9 +37,9 @@ function splitFsPath(uri: string): { dir: string; name: string } {
   return { dir: fsPath.slice(0, lastSlash), name: fsPath.slice(lastSlash + 1) };
 }
 
-async function readAsyncStorageSnapshot(uri?: string): Promise<AsyncStorageDump | null> {
+async function readAsyncStorageSnapshot(uri?: string): Promise<AsyncStorageDump | undefined> {
   if (!uri) {
-    return null;
+    return undefined;
   }
 
   const info = await getInfoAsync(uri);
@@ -49,18 +56,21 @@ async function readAsyncStorageSnapshot(uri?: string): Promise<AsyncStorageDump 
 }
 
 /**
- * Reads a `.db` snapshot and returns the equivalent JSON export string.
- * `exportVersion` should be the snapshot's schema version (its `fromVersion`) so
- * restoreDatabase() applies the right cross-version normalisation.
+ * Reads a `.db` snapshot and returns the equivalent JSON export string, stamped
+ * with the snapshot's own schema version (`fromVersion`) so restoreDatabase()
+ * applies the right cross-version normalisation. A missing version is an error —
+ * defaulting to the current version would mislabel old-schema data as current.
  *
  * Guards against a missing or empty file so a deleted/corrupt snapshot can never
  * turn a restore into a data-wipe (an empty dump would reset the DB to nothing).
  */
-export async function convertSqliteBackupToJson(
-  uri: string,
-  exportVersion?: number,
-  asyncStorageUri?: string
-): Promise<string> {
+export async function convertSqliteBackupToJson(backup: SqliteBackupRef): Promise<string> {
+  const { uri, fromVersion, asyncStorageUri } = backup;
+
+  if (fromVersion == null) {
+    throw new Error('SQLite backup snapshot is missing its schema version (fromVersion)');
+  }
+
   const { dir, name } = splitFsPath(uri);
 
   if (name === `${DATABASE_NAME}.db`) {
@@ -83,7 +93,7 @@ export async function convertSqliteBackupToJson(
     return await dumpDatabaseWithQueryRunner(
       async (sql) => db.getAllSync(sql) as Record<string, unknown>[],
       undefined,
-      { includeDeletedRecords: true, exportVersion, asyncStorageData }
+      { includeDeletedRecords: true, exportVersion: fromVersion, asyncStorageData }
     );
   } finally {
     try {
@@ -100,17 +110,13 @@ export async function convertSqliteBackupToJson(
  * pre-migration backup gets the portable JSON (re-importable on any device / on
  * web), not the internal SQLite file.
  */
-export async function exportSqliteBackupAsJsonFile(
-  uri: string,
-  exportVersion?: number,
-  asyncStorageUri?: string
-): Promise<string> {
+export async function exportSqliteBackupAsJsonFile(backup: SqliteBackupRef): Promise<string> {
   if (!cacheDirectory) {
     throw new Error('Cache directory is not available');
   }
 
-  const json = await convertSqliteBackupToJson(uri, exportVersion, asyncStorageUri);
-  const baseName = (uri.split('/').pop() ?? 'backup').replace(/\.db$/, '');
+  const json = await convertSqliteBackupToJson(backup);
+  const baseName = (backup.uri.split('/').pop() ?? 'backup').replace(/\.db$/, '');
   const jsonUri = `${cacheDirectory}${baseName}.json`;
   await writeAsStringAsync(jsonUri, json);
   return jsonUri;

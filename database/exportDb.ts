@@ -1,5 +1,6 @@
 import { handleError } from '@/utils/handleError';
 
+import { captureAsyncStorageDump } from './asyncStorageBackup';
 import {
   type DumpDatabaseOptions,
   dumpDatabaseWithQueryRunner,
@@ -25,10 +26,15 @@ export type { ExportDump };
  */
 export async function dumpDatabase(
   encryptionPhrase?: string,
-  options: DumpDatabaseOptions = {}
+  options: Omit<DumpDatabaseOptions, 'asyncStorageData'> = {}
 ): Promise<string> {
   try {
-    return await dumpDatabaseWithQueryRunner(rawQueryViaWatermelon, encryptionPhrase, options);
+    // Live exports always embed the current AsyncStorage state. Snapshot
+    // conversions pass their captured sidecar instead (sqliteBackupConvert.ts).
+    return await dumpDatabaseWithQueryRunner(rawQueryViaWatermelon, encryptionPhrase, {
+      ...options,
+      asyncStorageData: await captureAsyncStorageDump(),
+    });
   } catch (err) {
     await handleError(err, 'dumpDatabase');
     throw err;

@@ -3,6 +3,7 @@ import { cacheDirectory } from 'expo-file-system/legacy';
 import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 
 import { DATABASE_NAME } from '@/constants/database';
+import { timestampSlug } from '@/utils/timestampSlug';
 
 import { wdbDir } from './dbPath';
 import { pendingMigrationsCanTouchExistingData } from './migrationSafety';
@@ -32,37 +33,22 @@ import { registerPreMigrationDbBackup } from './preMigrationBackup';
 const sqlQuote = (value: string): string => `'${value.replace(/'/g, "''")}'`;
 
 /**
- * Builds the `file://` URI for a pre-migration snapshot in the cache directory,
- * or null if the cache directory is unavailable.
+ * Writes a consistent `.db` snapshot of the open database into the cache
+ * directory via `VACUUM INTO`, then registers it in the backup index.
+ * Synchronous copy so it finishes before the adapter opens.
  */
-function buildPreMigrationBackupUri(fromVersion: number, toVersion: number): string | null {
+function captureDbSnapshotSync(db: SQLiteDatabase, fromVersion: number, toVersion: number): void {
   if (!cacheDirectory) {
-    return null;
+    console.warn(
+      '[PreMigrationBackup] Cache directory unavailable — skipping pre-migration snapshot'
+    );
+    return;
   }
 
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-  return `${cacheDirectory}${timestamp}-pre-migration-v${fromVersion}-to-v${toVersion}.db`;
-}
-
-/**
- * Writes a consistent `.db` snapshot of the open database to `backupUri` via
- * `VACUUM INTO`, then registers it in the backup index. Synchronous copy so it
- * finishes before the adapter opens; returns whether a snapshot was written.
- */
-function captureDbSnapshotSync(
-  db: SQLiteDatabase,
-  fromVersion: number,
-  toVersion: number
-): boolean {
-  const backupUri = buildPreMigrationBackupUri(fromVersion, toVersion);
-  if (!backupUri) {
-    return false;
-  }
-
+  const backupUri = `${cacheDirectory}${timestampSlug()}-pre-migration-v${fromVersion}-to-v${toVersion}.db`;
   const backupPath = backupUri.replace(/^file:\/\//, '');
   db.execSync(`VACUUM INTO ${sqlQuote(backupPath)}`);
   registerPreMigrationDbBackup(backupUri, fromVersion, toVersion);
-  return true;
 }
 
 /**

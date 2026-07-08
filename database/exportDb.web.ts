@@ -1,5 +1,6 @@
 import { RESTORE_ORDER } from '@/constants/exportImport';
 
+import { captureAsyncStorageDump } from './asyncStorageBackup';
 import { database } from './database-instance';
 import {
   type CapturedTableRows,
@@ -46,7 +47,7 @@ function getRawRowsFromLoki(tableName: string): Record<string, unknown>[] | null
  */
 export async function dumpDatabase(
   encryptionPhrase?: string,
-  options: DumpDatabaseOptions = {}
+  options: Omit<DumpDatabaseOptions, 'asyncStorageData'> = {}
 ): Promise<string> {
   const includeDeletedRecords = options.includeDeletedRecords ?? true;
   const capturedRows: CapturedTableRows = {};
@@ -63,5 +64,9 @@ export async function dumpDatabase(
     capturedRows[tableName] = rows;
   }
 
-  return dumpRowsToJson(capturedRows, encryptionPhrase, options);
+  // Live exports always embed the current AsyncStorage state (see exportDb.ts).
+  return dumpRowsToJson(capturedRows, encryptionPhrase, {
+    ...options,
+    asyncStorageData: await captureAsyncStorageDump(),
+  });
 }

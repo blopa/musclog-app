@@ -96,12 +96,7 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
       // exported file is re-importable on any device (and on web); the internal
       // SQLite file itself never leaves the app.
       if (selectedBackup.format === 'sqlite') {
-        const jsonUri = await exportSqliteBackupAsJsonFile(
-          selectedBackup.uri,
-          selectedBackup.fromVersion ?? undefined,
-          selectedBackup.asyncStorageUri
-        );
-
+        const jsonUri = await exportSqliteBackupAsJsonFile(selectedBackup);
         await downloadFile(jsonUri, jsonUri.split('/').pop());
       } else {
         const fileName = selectedBackup.uri.split('/').pop();
@@ -130,11 +125,7 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
       // half of the fast-capture design.
       const content =
         selectedBackup.format === 'sqlite'
-          ? await convertSqliteBackupToJson(
-              selectedBackup.uri,
-              selectedBackup.fromVersion ?? undefined,
-              selectedBackup.asyncStorageUri
-            )
+          ? await convertSqliteBackupToJson(selectedBackup)
           : await readFileAsStringAsync(selectedBackup.uri);
       await restoreDatabase(content);
       showSnackbar('success', t('settings.advancedSettings.localBackups.restoreSuccess'));

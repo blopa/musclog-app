@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
-import { Button } from '@/components/theme/Button';
 import { useCameraPermissions } from '@/components/CameraView';
+import { Button } from '@/components/theme/Button';
 import { StepperInput } from '@/components/theme/StepperInput';
 import { TextInput } from '@/components/theme/TextInput';
 import Food from '@/database/models/Food';

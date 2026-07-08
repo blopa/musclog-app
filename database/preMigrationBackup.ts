@@ -1,6 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { cacheDirectory, deleteAsync, writeAsStringAsync } from 'expo-file-system/legacy';
 
+import { timestampSlug } from '@/utils/timestampSlug';
+
 const PRE_MIGRATION_BACKUPS_KEY = 'pre_migration_backups_v1';
 const PRE_MIGRATION_BACKUPS_MAX_FILES = 3;
 
@@ -70,21 +72,19 @@ const safeDelete = async (uri: string) => {
   }
 };
 
-export async function deleteBackup(uri: string): Promise<void> {
-  const backups = await getStoredBackups();
-  const backup = backups.find((b) => b.uri === uri);
-  await safeDelete(uri);
-  if (backup?.asyncStorageUri) {
-    await safeDelete(backup.asyncStorageUri);
-  }
-  await writeStoredBackups(backups.filter((b) => b.uri !== uri));
-}
-
 async function deleteBackupFiles(file: BackupFileMeta): Promise<void> {
   await safeDelete(file.uri);
   if (file.asyncStorageUri) {
     await safeDelete(file.asyncStorageUri);
   }
+}
+
+export async function deleteBackup(uri: string): Promise<void> {
+  const backups = await getStoredBackups();
+  const backup = backups.find((b) => b.uri === uri);
+  // Fall back to a bare file delete when the index has no entry for this URI.
+  await (backup ? deleteBackupFiles(backup) : safeDelete(uri));
+  await writeStoredBackups(backups.filter((b) => b.uri !== uri));
 }
 
 async function pruneOldBackups(backups: BackupFileMeta[]): Promise<BackupFileMeta[]> {
@@ -110,9 +110,9 @@ async function executeBackup(
   }
 
   const backupJson = jsonString ?? (await createLiveBackupJson());
-  const createdAt = new Date().toISOString();
-  const timestamp = createdAt.replace(/[:.]/g, '-').slice(0, 19);
-  const uri = `${cacheDirectory}${timestamp}-${nameInfix}.json`;
+  const createdAtDate = new Date();
+  const createdAt = createdAtDate.toISOString();
+  const uri = `${cacheDirectory}${timestampSlug(createdAtDate)}-${nameInfix}.json`;
 
   await writeAsStringAsync(uri, backupJson);
 
@@ -152,6 +152,12 @@ export async function createPreRestoreBackup(): Promise<void> {
   }
 }
 
+// Dedup state for registerPreMigrationDbBackup. Single-call-per-boot by
+// construction: the only caller is the pre-adapter capture in
+// preMigrationCapture.ts, which runs once at module-eval time. Do NOT reuse
+// this dedup from other paths — `inFlightBackup` is signature-agnostic, so a
+// second concurrent call with a different version range would be handed the
+// first call's promise.
 let inFlightBackup: Promise<void> | null = null;
 let completedBackupSignature: string | null = null;
 
