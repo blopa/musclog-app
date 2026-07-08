@@ -1,3 +1,4 @@
+import type { SchemaMigrations } from '@nozbe/watermelondb/Schema/migrations';
 import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 
 import { DATABASE_NAME } from '@/constants/database';
@@ -5,6 +6,7 @@ import { RESTORE_ORDER } from '@/constants/exportImport';
 
 import { wdbDir } from './dbPath';
 import { type CapturedTableRows, LIST_USER_TABLES_SQL, selectAllRowsSql } from './exportDbCore';
+import { pendingMigrationsCanTouchExistingData } from './migrationSafety';
 import { persistCapturedPreMigrationBackup } from './preMigrationBackup';
 
 /**
@@ -37,20 +39,32 @@ function readCapturedRowsSync(db: SQLiteDatabase): CapturedTableRows {
 }
 
 /**
- * Reads PRAGMA user_version and, when a schema migration is pending, captures a
- * full snapshot of the existing rows synchronously (it must finish before the
- * adapter opens the file and the migration starts mutating it) and hands them
- * to the async persist machinery in preMigrationBackup.ts. Returns the current
- * on-disk version for migration diagnostics, or null if it can't be read.
+ * Reads PRAGMA user_version and, when a schema migration that can touch existing
+ * rows is pending, captures a full snapshot of the existing rows synchronously
+ * (it must finish before the adapter opens the file and the migration starts
+ * mutating it) and hands them to the async persist machinery in
+ * preMigrationBackup.ts. Purely-additive migrations (createTable / addColumns)
+ * skip the snapshot — see pendingMigrationsCanTouchExistingData — because they
+ * cannot lose data and a full-DB capture there just makes upgrade boots crawl.
+ * Returns the current on-disk version for migration diagnostics, or null if it
+ * can't be read.
  */
-export function preparePreMigrationBackupBeforeAdapter(toVersion: number): number | null {
+export function preparePreMigrationBackupBeforeAdapter(
+  toVersion: number,
+  migrations: SchemaMigrations
+): number | null {
   let db: SQLiteDatabase | null = null;
   try {
     db = openDatabaseSync(`${DATABASE_NAME}.db`, undefined, wdbDir());
     const result = db.getFirstSync<{ user_version: number }>('PRAGMA user_version');
     const fromVersion = result?.user_version ?? null;
 
-    if (fromVersion != null && fromVersion > 0 && fromVersion < toVersion) {
+    if (
+      fromVersion != null &&
+      fromVersion > 0 &&
+      fromVersion < toVersion &&
+      pendingMigrationsCanTouchExistingData(migrations, fromVersion, toVersion)
+    ) {
       const capturedRows = readCapturedRowsSync(db);
       persistCapturedPreMigrationBackup(capturedRows, fromVersion, toVersion);
     }

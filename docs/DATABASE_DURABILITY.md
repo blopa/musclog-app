@@ -74,10 +74,13 @@ single user action.
 3. **The one sanctioned `expo-sqlite` open on `musclog.db`** is
    `preparePreMigrationBackupBeforeAdapter()` in `database/preMigrationCapture.ts`,
    imported solely by `database/adapter.ts` **before `new SQLiteAdapter`**. It is
-   safe only because WatermelonDB has not opened the file yet. It opens, reads,
-   captures rows synchronously, and closes — all before the adapter exists. Keep
-   this isolated: `database/preMigrationBackup.ts` (runtime backup paths) imports
-   **no** `expo-sqlite`, so the invariant is structural, not advisory.
+   safe only because WatermelonDB has not opened the file yet. It opens, reads
+   `user_version`, captures rows synchronously **only when a data-touching
+   migration is pending** (purely-additive migrations — `createTable` /
+   `addColumns` — skip the snapshot; see `database/migrationSafety.ts`), and
+   closes — all before the adapter exists. Keep this isolated:
+   `database/preMigrationBackup.ts` (runtime backup paths) imports **no**
+   `expo-sqlite`, so the invariant is structural, not advisory.
 
 4. **A different database file is fine.** `database/services/MigrationService.ts`
    opens the _legacy_ `workoutLoggerDatabase.db` with `expo-sqlite`. That's a
