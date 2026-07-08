@@ -3,10 +3,18 @@
 // stubs exist only so the shared LocalBackupsModal import resolves on web; they are
 // never reached because no web backup carries `format: 'sqlite'`.
 
-export async function convertSqliteBackupToJson(): Promise<string> {
+export async function convertSqliteBackupToJson(
+  _uri?: string,
+  _exportVersion?: number,
+  _asyncStorageUri?: string
+): Promise<string> {
   throw new Error('SQLite backup snapshots are not supported on web');
 }
 
-export async function exportSqliteBackupAsJsonFile(): Promise<string> {
+export async function exportSqliteBackupAsJsonFile(
+  _uri?: string,
+  _exportVersion?: number,
+  _asyncStorageUri?: string
+): Promise<string> {
   throw new Error('SQLite backup snapshots are not supported on web');
 }

@@ -1,15 +1,9 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import { CURRENT_DATABASE_VERSION } from '@/constants/database';
-import {
-  ASYNC_STORAGE_EXCLUDED_KEYS,
-  ASYNC_STORAGE_EXCLUDED_PREFIXES,
-  RESTORE_ORDER,
-  SETTINGS_EXCLUDED_TYPES,
-} from '@/constants/exportImport';
+import { RESTORE_ORDER, SETTINGS_EXCLUDED_TYPES } from '@/constants/exportImport';
 import { getExportPlatform } from '@/constants/platform';
 import { encrypt } from '@/utils/encryption';
 
+import { type AsyncStorageDump, captureAsyncStorageDump } from './asyncStorageBackup';
 import {
   decryptNumber,
   decryptNutritionLogSnapshotRow,
@@ -36,10 +30,12 @@ export type CapturedTableRows = Record<string, Record<string, unknown>[]>;
 export type DumpDatabaseOptions = {
   includeDeletedRecords?: boolean;
   exportVersion?: number;
+  asyncStorageData?: AsyncStorageDump | null;
 };
 
 type DumpRowsOptions = {
   exportVersion?: number;
+  asyncStorageData?: AsyncStorageDump | null;
 };
 
 /** SQL to list user tables (excludes SQLite-internal tables). */
@@ -59,22 +55,17 @@ export function selectAllRowsSql(tableName: string, includeDeletedRecords = true
   return `SELECT * FROM ${quoteIdentifier(tableName)}${deletedRecordsClause};`;
 }
 
-async function addAsyncStorageDump(dbData: ExportDump): Promise<void> {
-  const allKeys = await AsyncStorage.getAllKeys();
-  const keysToBackup = allKeys.filter(
-    (key) =>
-      !ASYNC_STORAGE_EXCLUDED_KEYS.has(key) &&
-      !ASYNC_STORAGE_EXCLUDED_PREFIXES.some((prefix) => key.startsWith(prefix))
-  );
-
-  if (keysToBackup.length === 0) {
+async function addAsyncStorageDump(
+  dbData: ExportDump,
+  snapshot?: AsyncStorageDump | null
+): Promise<void> {
+  if (snapshot === null) {
     return;
   }
 
-  const pairs = await AsyncStorage.multiGet(keysToBackup);
-  const asyncStorageData: Record<string, string | null> = {};
-  for (const [key, value] of pairs) {
-    asyncStorageData[key] = value;
+  const asyncStorageData = snapshot ?? (await captureAsyncStorageDump());
+  if (Object.keys(asyncStorageData).length === 0) {
+    return;
   }
 
   dbData._async_storage_ = asyncStorageData;
@@ -143,7 +134,7 @@ export async function dumpRowsToJson(
     dbData[tableName] = rows;
   }
 
-  await addAsyncStorageDump(dbData);
+  await addAsyncStorageDump(dbData, options.asyncStorageData);
 
   let jsonString = JSON.stringify(dbData, null, 2);
   if (encryptionPhrase && encryptionPhrase.trim()) {
@@ -173,5 +164,6 @@ export async function dumpDatabaseWithQueryRunner(
 
   return dumpRowsToJson(capturedRows, encryptionPhrase, {
     exportVersion: options.exportVersion,
+    asyncStorageData: options.asyncStorageData,
   });
 }

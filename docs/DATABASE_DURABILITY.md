@@ -81,9 +81,13 @@ single user action.
    **`VACUUM INTO`** (one standalone file, WAL folded in, so a session killed with
    uncheckpointed commits is captured correctly), then closes — all before the
    adapter exists. `VACUUM INTO` is near-instant vs. reading every row into JSON,
-   which stalled upgrade boots for minutes. The `.db` → JSON conversion is deferred
-   to restore/download time (`database/sqliteBackupConvert.ts`, which opens the
-   _copy_ — a different file, rule #4 — never the live DB). Keep this isolated:
+   which stalled upgrade boots for minutes. `database/preMigrationBackup.ts`
+   registers that `.db` snapshot and, when captured successfully, an
+   AsyncStorage sidecar from the same boot moment; the `.db` → JSON conversion
+   is deferred to restore/download time (`database/sqliteBackupConvert.ts`,
+   which opens the _copy_ — a different file, rule #4 — never the live DB — and
+   injects the captured sidecar instead of reading live AsyncStorage, or omits
+   AsyncStorage if no sidecar exists). Keep this isolated:
    `database/preMigrationBackup.ts` (runtime backup paths) imports **no**
    `expo-sqlite`, so the invariant is structural, not advisory.
 

@@ -1,8 +1,14 @@
-import { cacheDirectory, getInfoAsync, writeAsStringAsync } from 'expo-file-system/legacy';
+import {
+  cacheDirectory,
+  getInfoAsync,
+  readAsStringAsync,
+  writeAsStringAsync,
+} from 'expo-file-system/legacy';
 import { openDatabaseSync } from 'expo-sqlite';
 
 import { DATABASE_NAME } from '@/constants/database';
 
+import { type AsyncStorageDump } from './asyncStorageBackup';
 import { dumpDatabaseWithQueryRunner, LIST_USER_TABLES_SQL } from './exportDbCore';
 
 /**
@@ -24,6 +30,24 @@ function splitFsPath(uri: string): { dir: string; name: string } {
   return { dir: fsPath.slice(0, lastSlash), name: fsPath.slice(lastSlash + 1) };
 }
 
+async function readAsyncStorageSnapshot(uri?: string): Promise<AsyncStorageDump | null> {
+  if (!uri) {
+    return null;
+  }
+
+  const info = await getInfoAsync(uri);
+  if (!info.exists) {
+    throw new Error(`Backup AsyncStorage snapshot not found: ${uri}`);
+  }
+
+  const parsed = JSON.parse(await readAsStringAsync(uri));
+  if (parsed == null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error('Backup AsyncStorage snapshot is invalid');
+  }
+
+  return parsed as AsyncStorageDump;
+}
+
 /**
  * Reads a `.db` snapshot and returns the equivalent JSON export string.
  * `exportVersion` should be the snapshot's schema version (its `fromVersion`) so
@@ -34,7 +58,8 @@ function splitFsPath(uri: string): { dir: string; name: string } {
  */
 export async function convertSqliteBackupToJson(
   uri: string,
-  exportVersion?: number
+  exportVersion?: number,
+  asyncStorageUri?: string
 ): Promise<string> {
   const { dir, name } = splitFsPath(uri);
 
@@ -47,6 +72,7 @@ export async function convertSqliteBackupToJson(
     throw new Error(`Backup snapshot not found: ${uri}`);
   }
 
+  const asyncStorageData = await readAsyncStorageSnapshot(asyncStorageUri);
   const db = openDatabaseSync(name, undefined, dir);
   try {
     const tables = db.getAllSync<{ name: string }>(LIST_USER_TABLES_SQL);
@@ -57,7 +83,7 @@ export async function convertSqliteBackupToJson(
     return await dumpDatabaseWithQueryRunner(
       async (sql) => db.getAllSync(sql) as Record<string, unknown>[],
       undefined,
-      { includeDeletedRecords: true, exportVersion }
+      { includeDeletedRecords: true, exportVersion, asyncStorageData }
     );
   } finally {
     try {
@@ -76,13 +102,14 @@ export async function convertSqliteBackupToJson(
  */
 export async function exportSqliteBackupAsJsonFile(
   uri: string,
-  exportVersion?: number
+  exportVersion?: number,
+  asyncStorageUri?: string
 ): Promise<string> {
   if (!cacheDirectory) {
     throw new Error('Cache directory is not available');
   }
 
-  const json = await convertSqliteBackupToJson(uri, exportVersion);
+  const json = await convertSqliteBackupToJson(uri, exportVersion, asyncStorageUri);
   const baseName = (uri.split('/').pop() ?? 'backup').replace(/\.db$/, '');
   const jsonUri = `${cacheDirectory}${baseName}.json`;
   await writeAsStringAsync(jsonUri, json);

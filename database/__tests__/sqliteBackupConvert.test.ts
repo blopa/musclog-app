@@ -10,6 +10,7 @@ jest.mock('../exportDbCore', () => ({
 jest.mock('expo-file-system/legacy', () => ({
   cacheDirectory: 'file:///cache/',
   getInfoAsync: jest.fn(),
+  readAsStringAsync: jest.fn(),
   writeAsStringAsync: jest.fn(),
 }));
 
@@ -20,8 +21,9 @@ jest.mock('expo-sqlite', () => {
   return { openDatabaseSync, __mock: { closeSync, getAllSync, openDatabaseSync } };
 });
 
-const { getInfoAsync } = jest.requireMock('expo-file-system/legacy') as {
+const { getInfoAsync, readAsStringAsync } = jest.requireMock('expo-file-system/legacy') as {
   getInfoAsync: jest.Mock;
+  readAsStringAsync: jest.Mock;
 };
 const {
   openDatabaseSync,
@@ -38,6 +40,7 @@ describe('convertSqliteBackupToJson', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     getInfoAsync.mockResolvedValue({ exists: true });
+    readAsStringAsync.mockResolvedValue('{"ONBOARDING_COMPLETED":"true"}');
     getAllSync.mockReturnValue([{ name: 'settings' }]);
     dumpDatabaseWithQueryRunner.mockResolvedValue('{"_exportVersion":22}');
   });
@@ -70,6 +73,24 @@ describe('convertSqliteBackupToJson', () => {
     expect(dumpDatabaseWithQueryRunner).toHaveBeenCalledWith(expect.any(Function), undefined, {
       includeDeletedRecords: true,
       exportVersion: 22,
+      asyncStorageData: null,
+    });
+    expect(closeSync).toHaveBeenCalledTimes(1);
+  });
+
+  it('uses the captured AsyncStorage sidecar instead of live AsyncStorage during conversion', async () => {
+    const json = await convertSqliteBackupToJson(
+      'file:///cache/snap.db',
+      22,
+      'file:///cache/snap.async-storage.json'
+    );
+
+    expect(json).toBe('{"_exportVersion":22}');
+    expect(readAsStringAsync).toHaveBeenCalledWith('file:///cache/snap.async-storage.json');
+    expect(dumpDatabaseWithQueryRunner).toHaveBeenCalledWith(expect.any(Function), undefined, {
+      includeDeletedRecords: true,
+      exportVersion: 22,
+      asyncStorageData: { ONBOARDING_COMPLETED: 'true' },
     });
     expect(closeSync).toHaveBeenCalledTimes(1);
   });

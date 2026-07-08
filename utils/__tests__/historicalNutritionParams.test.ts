@@ -3,7 +3,6 @@ import { getHistoricalNutritionParams } from '@/utils/historicalNutritionParams'
 const mockGetMetricsHistory = jest.fn();
 const mockGetRangeNutrients = jest.fn();
 const mockGetNutritionLogsForDateRange = jest.fn();
-const mockGetEnableFastedDay = jest.fn();
 
 // Mock the whole services barrel: this both supplies the services under test and prevents the
 // barrel's other members (DatabaseRepairService → adapter → @sentry/react-native) from loading.
@@ -14,9 +13,6 @@ jest.mock('../../database/services', () => ({
   NutritionService: {
     getRangeNutrients: (...args: unknown[]) => mockGetRangeNutrients(...args),
     getNutritionLogsForDateRange: (...args: unknown[]) => mockGetNutritionLogsForDateRange(...args),
-  },
-  SettingsService: {
-    getEnableFastedDay: (...args: unknown[]) => mockGetEnableFastedDay(...args),
   },
 }));
 
@@ -44,8 +40,6 @@ const startTs = fixedEndDate.getTime() - 30 * 24 * 60 * 60 * 1000;
 describe('getHistoricalNutritionParams', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    // Default: fasting-day feature off (legacy behavior).
-    mockGetEnableFastedDay.mockResolvedValue(false);
   });
 
   it('returns null when there are fewer than 2 weight entries', async () => {
@@ -290,7 +284,6 @@ describe('getHistoricalNutritionParams', () => {
 
     it('keeps the full lookback window as the divisor when the feature is off', async () => {
       setupTenLoggedDays();
-      mockGetEnableFastedDay.mockResolvedValue(false);
 
       const result = await getHistoricalNutritionParams({ asOfDate: fixedEndDate });
       expect(result!.historicalTotalDays).toBe(30);
@@ -298,7 +291,6 @@ describe('getHistoricalNutritionParams', () => {
 
     it('divides by logged days ∪ fasted days when the feature is on', async () => {
       setupTenLoggedDays();
-      mockGetEnableFastedDay.mockResolvedValue(true);
       // 3 fasted days, none overlapping the 10 logged days → 13 effective days.
       mockGetRangeNutrients.mockResolvedValue({
         calories: 20000,
@@ -316,7 +308,6 @@ describe('getHistoricalNutritionParams', () => {
 
     it('excludes unflagged empty days from the divisor (feature on, no fasted days)', async () => {
       setupTenLoggedDays();
-      mockGetEnableFastedDay.mockResolvedValue(true);
       mockGetRangeNutrients.mockResolvedValue({
         calories: 20000,
         protein: 0,

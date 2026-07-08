@@ -11,9 +11,8 @@ import {
 } from '@/database/encryptionHelpers';
 import Food from '@/database/models/Food';
 import NutritionLog, { MealType } from '@/database/models/NutritionLog';
-import { FastedDayRepository } from '@/database/repositories/FastedDayRepository';
+import { getNutritionDayCoverage, loggedOrFastedDayKeys } from '@/database/nutritionDayCoverage';
 import { MealService } from '@/database/services/MealService';
-import { SettingsService } from '@/database/services/SettingsService';
 import i18n from '@/lang/lang';
 import { writeNutritionLogToHealthConnect } from '@/services/healthConnectNutrition';
 import {
@@ -23,10 +22,8 @@ import {
   dayKeyRangeForLocalDate,
   MS_PER_SOLAR_DAY,
   utcDayKeyFromLocalDate,
-  utcNormalizedDayKey,
 } from '@/utils/calendarDate';
 import { aiIngredientMacrosPer100g, totalCarbsForFoodSource } from '@/utils/carbsConvention';
-import { effectiveNutritionDayCount } from '@/utils/effectiveNutritionDays';
 import { handleError } from '@/utils/handleError';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { widgetEvents } from '@/utils/widgetEvents';
@@ -132,20 +129,6 @@ export async function scaleMealNutritionLogsToTotalGrams(
   });
 
   triggerWidgetUpdate();
-}
-
-async function loggedDayKeysWithFasted(logs: NutritionLog[]): Promise<Set<number>> {
-  const dayKeys = new Set(logs.map((log) => utcNormalizedDayKey(log.date ?? 0, log.timezone)));
-  if (!(await SettingsService.getEnableFastedDay())) {
-    return dayKeys;
-  }
-
-  const fastedDayKeys = await FastedDayRepository.getAllFastedDayKeys();
-  for (const key of fastedDayKeys) {
-    dayKeys.add(key);
-  }
-
-  return dayKeys;
 }
 
 export class NutritionService {
@@ -530,10 +513,10 @@ export class NutritionService {
     // average down while intentional fasts still count as a real 0-kcal day.
     let days = differenceInCalendarDays(endDate, startDate) + 1;
     let effectiveDayCount: number | undefined;
-    if (await SettingsService.getEnableFastedDay()) {
-      const loggedDayKeys = new Set(logs.map((log) => utcNormalizedDayKey(log.date, log.timezone)));
-      const fastedDayKeys = await FastedDayRepository.getFastedDayKeys(startDate, endDate);
-      effectiveDayCount = effectiveNutritionDayCount(loggedDayKeys, fastedDayKeys);
+    const range = dayKeyRange(utcDayKeyFromLocalDate(startDate), utcDayKeyFromLocalDate(endDate));
+    const coverage = await getNutritionDayCoverage(logs, { range });
+    if (coverage.fastedDaysEnabled) {
+      effectiveDayCount = coverage.effectiveDayCount;
       days = Math.max(1, effectiveDayCount);
     }
 
@@ -1068,7 +1051,7 @@ export class NutritionService {
       .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('date', Q.desc))
       .fetch();
 
-    const dayKeys = await loggedDayKeysWithFasted(logs);
+    const dayKeys = await loggedOrFastedDayKeys(logs);
 
     if (dayKeys.size === 0) {
       return 0;
@@ -1112,7 +1095,7 @@ export class NutritionService {
       .query(Q.where('deleted_at', Q.eq(null)))
       .fetch();
 
-    const loggedDayKeys = await loggedDayKeysWithFasted(logs);
+    const loggedDayKeys = await loggedOrFastedDayKeys(logs);
 
     if (loggedDayKeys.size === 0) {
       return 0;

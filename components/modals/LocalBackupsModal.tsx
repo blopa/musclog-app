@@ -98,7 +98,8 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
       if (selectedBackup.format === 'sqlite') {
         const jsonUri = await exportSqliteBackupAsJsonFile(
           selectedBackup.uri,
-          selectedBackup.fromVersion ?? undefined
+          selectedBackup.fromVersion ?? undefined,
+          selectedBackup.asyncStorageUri
         );
 
         await downloadFile(jsonUri, jsonUri.split('/').pop());
@@ -131,7 +132,8 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
         selectedBackup.format === 'sqlite'
           ? await convertSqliteBackupToJson(
               selectedBackup.uri,
-              selectedBackup.fromVersion ?? undefined
+              selectedBackup.fromVersion ?? undefined,
+              selectedBackup.asyncStorageUri
             )
           : await readFileAsStringAsync(selectedBackup.uri);
       await restoreDatabase(content);

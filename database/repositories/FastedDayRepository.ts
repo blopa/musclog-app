@@ -49,44 +49,72 @@ export class FastedDayRepository {
   /** Mark the calendar day of `date` as fasted (idempotent; un-deletes a prior flag if present). */
   static async markFasted(date: Date): Promise<void> {
     const { timestamp, timezone } = consumedDateTimeOnDay(date);
-    const rows = await this.fetchRowsForDay(date);
+    let shouldBustCache = false;
 
-    const active = rows.find((row) => row.deletedAt == null);
-    if (active) {
-      await this.bustStreakCache();
-      return;
-    }
-
-    const deleted = rows.find((row) => row.deletedAt != null);
-    if (deleted) {
-      await deleted.restore(timestamp, timezone);
-      await this.bustStreakCache();
-      return;
-    }
-
-    const now = Date.now();
     await database.write(async () => {
-      await database.get<FastedDay>('fasted_days').create((row) => {
-        row.date = timestamp;
-        row.timezone = timezone;
-        row.createdAt = now;
-        row.updatedAt = now;
-        row.deletedAt = null;
-      });
+      const rows = await this.fetchRowsForDay(date);
+      const active = rows.filter((row) => row.deletedAt == null);
+      const now = Date.now();
+
+      if (active.length > 0) {
+        const [, ...duplicates] = active;
+        if (duplicates.length > 0) {
+          await database.batch(
+            ...duplicates.map((row) =>
+              row.prepareUpdate((record) => {
+                record.deletedAt = now;
+                record.updatedAt = now;
+              })
+            )
+          );
+        }
+        shouldBustCache = true;
+        return;
+      }
+
+      const deleted = rows.find((row) => row.deletedAt != null);
+      if (deleted) {
+        await database.batch(
+          deleted.prepareUpdate((row) => {
+            row.date = timestamp;
+            row.timezone = timezone;
+            row.deletedAt = null;
+            row.updatedAt = now;
+          })
+        );
+        shouldBustCache = true;
+        return;
+      }
+
+      await database.batch(
+        database.get<FastedDay>('fasted_days').prepareCreate((row) => {
+          row.date = timestamp;
+          row.timezone = timezone;
+          row.createdAt = now;
+          row.updatedAt = now;
+          row.deletedAt = null;
+        })
+      );
+      shouldBustCache = true;
     });
-    await this.bustStreakCache();
+
+    if (shouldBustCache) {
+      await this.bustStreakCache();
+    }
   }
 
   /** Remove the fasted flag from the calendar day of `date`. */
   static async unmarkFasted(date: Date): Promise<void> {
-    const rows = await this.fetchRowsForDay(date);
-    const active = rows.filter((row) => row.deletedAt == null);
-    if (active.length === 0) {
-      return;
-    }
+    let shouldBustCache = false;
 
-    const now = Date.now();
     await database.write(async () => {
+      const rows = await this.fetchRowsForDay(date);
+      const active = rows.filter((row) => row.deletedAt == null);
+      if (active.length === 0) {
+        return;
+      }
+
+      const now = Date.now();
       await database.batch(
         ...active.map((row) =>
           row.prepareUpdate((r) => {
@@ -95,8 +123,12 @@ export class FastedDayRepository {
           })
         )
       );
+      shouldBustCache = true;
     });
-    await this.bustStreakCache();
+
+    if (shouldBustCache) {
+      await this.bustStreakCache();
+    }
   }
 
   /**

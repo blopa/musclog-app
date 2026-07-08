@@ -11,9 +11,15 @@ import UserMetric, { UserMetricType } from '@/database/models/UserMetric';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
-import { FastedDayRepository } from '@/database/repositories/FastedDayRepository';
+import { withFastedZeroDays } from '@/database/nutritionDayCoverage';
 import { PeriodLogRepository } from '@/database/repositories/PeriodLogRepository';
-import { localDayStartMs, MS_PER_SOLAR_DAY, utcNormalizedDayKey } from '@/utils/calendarDate';
+import {
+  dayKeyRange,
+  localDayStartMs,
+  MS_PER_SOLAR_DAY,
+  utcDayKeyFromLocalDate,
+  utcNormalizedDayKey,
+} from '@/utils/calendarDate';
 import {
   calculateBMR,
   calculateBMRKatchMcArdle,
@@ -223,34 +229,23 @@ export class ProgressService {
       new Date(endDate)
     );
     let nutritionDaily = await this.aggregateNutritionDaily(nutritionLogs);
-
-    // Fasting-day feature: inject flagged fasted days as explicit 0-kcal days so every
-    // per-day consumer below (averages, weekly buckets, correlations, mood) counts them as a
-    // real zero day, while unflagged empty days stay absent (skipped). Days that already had
-    // food are left untouched.
-    if (await SettingsService.getEnableFastedDay()) {
-      const fastedDayKeys = await FastedDayRepository.getFastedDayKeys(
-        new Date(startDate),
-        new Date(endDate)
-      );
-      const existingDays = new Set(nutritionDaily.map((n) => n.date));
-      const fastedZeroDays: DailyNutrition[] = [];
-      for (const dayKey of fastedDayKeys) {
-        if (!existingDays.has(dayKey)) {
-          fastedZeroDays.push({
-            date: dayKey,
-            calories: 0,
-            protein: 0,
-            carbs: 0,
-            fat: 0,
-            fiber: 0,
-          });
-        }
-      }
-      if (fastedZeroDays.length > 0) {
-        nutritionDaily = [...nutritionDaily, ...fastedZeroDays].sort((a, b) => a.date - b.date);
-      }
-    }
+    const nutritionDayRange = dayKeyRange(
+      utcDayKeyFromLocalDate(new Date(startDate)),
+      utcDayKeyFromLocalDate(new Date(endDate))
+    );
+    const nutritionDayResult = await withFastedZeroDays(
+      nutritionDaily,
+      nutritionDayRange,
+      (date) => ({
+        date,
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        fiber: 0,
+      })
+    );
+    nutritionDaily = nutritionDayResult.days;
 
     // 3. Fetch Workouts
     const workoutLogs = await database
@@ -337,7 +332,8 @@ export class ProgressService {
       heightCm,
       startDate,
       endDate,
-      isImperial
+      isImperial,
+      nutritionDayResult.fastedDaysEnabled
     );
 
     // 8. Calculate New Correlation Data
@@ -692,13 +688,13 @@ export class ProgressService {
     heightCm: number,
     startDate: number,
     endDate: number,
-    isImperial: boolean
+    isImperial: boolean,
+    useEffectiveNutritionDays: boolean
   ): Promise<ProgressInsights> {
-    const [user, currentGoal, useBfForCalculations, enableFastedDay] = await Promise.all([
+    const [user, currentGoal, useBfForCalculations] = await Promise.all([
       UserService.getCurrentUser(),
       NutritionGoalService.getCurrent(),
       SettingsService.getUseBfForCalculations(),
-      SettingsService.getEnableFastedDay(),
     ]);
     const eatingPhase = currentGoal?.eatingPhase || 'maintain';
 
@@ -732,7 +728,7 @@ export class ProgressService {
     // days in the window (empiricalDayEntries already includes injected fasted 0-kcal days),
     // so forgotten-log days don't understate intake while real fasts still count.
     const empiricalTdeeDays =
-      enableFastedDay && empiricalDayEntries.length > 0
+      useEffectiveNutritionDays && empiricalDayEntries.length > 0
         ? empiricalDayEntries.length
         : empiricalDays;
 
