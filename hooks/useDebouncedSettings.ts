@@ -614,8 +614,7 @@ export function useDebouncedSettings(debounceMs = 200) {
       (localSettings.useBfForCalculations as boolean) ?? actualSettings.useBfForCalculations,
     intuitiveEatingMode:
       (localSettings.intuitiveEatingMode as boolean) ?? actualSettings.intuitiveEatingMode,
-    enableFastedDay:
-      (localSettings.enableFastedDay as boolean) ?? actualSettings.enableFastedDay,
+    enableFastedDay: (localSettings.enableFastedDay as boolean) ?? actualSettings.enableFastedDay,
     includeFiberInCarbs:
       (localSettings.includeFiberInCarbs as boolean) ?? actualSettings.includeFiberInCarbs,
     progressionMode:

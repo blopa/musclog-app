@@ -1,12 +1,6 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, writer } from '@nozbe/watermelondb/decorators';
 
-export interface FastedDayCreate {
-  /** Consumed-datetime style instant on the fasted day (see consumedDateTimeOnDay). */
-  date: number;
-  timezone?: string;
-}
-
 export default class FastedDay extends Model {
   static table = 'fasted_days';
 

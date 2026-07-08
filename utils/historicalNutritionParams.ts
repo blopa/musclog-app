@@ -1,4 +1,3 @@
-import { FastedDayRepository } from '@/database/repositories/FastedDayRepository';
 import { NutritionService, SettingsService, UserMetricService } from '@/database/services';
 
 import {
@@ -9,7 +8,6 @@ import {
   utcDayKeyFromLocalDate,
   utcNormalizedDayKey,
 } from './calendarDate';
-import { effectiveNutritionDayCount } from './effectiveNutritionDays';
 import { storedWeightToKg } from './unitConversion';
 
 export const HISTORICAL_NUTRITION_LOOKBACK_DAYS = 30;
@@ -91,11 +89,7 @@ export async function getHistoricalNutritionParams(options: {
   // an intentional fast still lowers it as a real 0-kcal day.
   let historicalTotalDays = lookbackDays;
   if (await SettingsService.getEnableFastedDay()) {
-    const fastedDayKeys = await FastedDayRepository.getFastedDayKeys(
-      startOfRange,
-      inclusiveRangeEndDate
-    );
-    historicalTotalDays = effectiveNutritionDayCount(loggedDayKeys, fastedDayKeys);
+    historicalTotalDays = rangeNutrients.effectiveDayCount ?? lookbackDays;
   }
 
   const weightWithDecrypted = await Promise.all(

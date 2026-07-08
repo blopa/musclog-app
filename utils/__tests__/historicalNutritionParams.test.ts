@@ -4,7 +4,6 @@ const mockGetMetricsHistory = jest.fn();
 const mockGetRangeNutrients = jest.fn();
 const mockGetNutritionLogsForDateRange = jest.fn();
 const mockGetEnableFastedDay = jest.fn();
-const mockGetFastedDayKeys = jest.fn();
 
 // Mock the whole services barrel: this both supplies the services under test and prevents the
 // barrel's other members (DatabaseRepairService → adapter → @sentry/react-native) from loading.
@@ -18,12 +17,6 @@ jest.mock('../../database/services', () => ({
   },
   SettingsService: {
     getEnableFastedDay: (...args: unknown[]) => mockGetEnableFastedDay(...args),
-  },
-}));
-
-jest.mock('../../database/repositories/FastedDayRepository', () => ({
-  FastedDayRepository: {
-    getFastedDayKeys: (...args: unknown[]) => mockGetFastedDayKeys(...args),
   },
 }));
 
@@ -53,7 +46,6 @@ describe('getHistoricalNutritionParams', () => {
     jest.clearAllMocks();
     // Default: fasting-day feature off (legacy behavior).
     mockGetEnableFastedDay.mockResolvedValue(false);
-    mockGetFastedDayKeys.mockResolvedValue(new Set<number>());
   });
 
   it('returns null when there are fewer than 2 weight entries', async () => {
@@ -69,6 +61,7 @@ describe('getHistoricalNutritionParams', () => {
       carbs: 0,
       fat: 0,
       fiber: 0,
+      effectiveDayCount: undefined,
       dailyAverages: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
     });
     mockGetNutritionLogsForDateRange.mockResolvedValue(
@@ -94,6 +87,7 @@ describe('getHistoricalNutritionParams', () => {
       carbs: 0,
       fat: 0,
       fiber: 0,
+      effectiveDayCount: undefined,
       dailyAverages: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
     });
     mockGetNutritionLogsForDateRange.mockResolvedValue(
@@ -119,6 +113,7 @@ describe('getHistoricalNutritionParams', () => {
       carbs: 0,
       fat: 0,
       fiber: 0,
+      effectiveDayCount: undefined,
       dailyAverages: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
     });
     mockGetNutritionLogsForDateRange.mockResolvedValue(
@@ -144,6 +139,7 @@ describe('getHistoricalNutritionParams', () => {
       carbs: 0,
       fat: 0,
       fiber: 0,
+      effectiveDayCount: undefined,
       dailyAverages: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
     });
     mockGetNutritionLogsForDateRange.mockResolvedValue(
@@ -182,6 +178,7 @@ describe('getHistoricalNutritionParams', () => {
       carbs: 0,
       fat: 0,
       fiber: 0,
+      effectiveDayCount: undefined,
       dailyAverages: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
     });
     mockGetNutritionLogsForDateRange.mockResolvedValue(
@@ -215,6 +212,7 @@ describe('getHistoricalNutritionParams', () => {
       carbs: 0,
       fat: 0,
       fiber: 0,
+      effectiveDayCount: undefined,
       dailyAverages: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
     });
     mockGetNutritionLogsForDateRange.mockResolvedValue(
@@ -248,6 +246,7 @@ describe('getHistoricalNutritionParams', () => {
       carbs: 0,
       fat: 0,
       fiber: 0,
+      effectiveDayCount: undefined,
       dailyAverages: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
     });
     mockGetNutritionLogsForDateRange.mockResolvedValue(
@@ -280,6 +279,7 @@ describe('getHistoricalNutritionParams', () => {
         carbs: 0,
         fat: 0,
         fiber: 0,
+        effectiveDayCount: undefined,
         dailyAverages: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
       });
       // 10 distinct logged days (enough to pass the ≥7 gate).
@@ -294,14 +294,21 @@ describe('getHistoricalNutritionParams', () => {
 
       const result = await getHistoricalNutritionParams({ asOfDate: fixedEndDate });
       expect(result!.historicalTotalDays).toBe(30);
-      expect(mockGetFastedDayKeys).not.toHaveBeenCalled();
     });
 
     it('divides by logged days ∪ fasted days when the feature is on', async () => {
       setupTenLoggedDays();
       mockGetEnableFastedDay.mockResolvedValue(true);
       // 3 fasted days, none overlapping the 10 logged days → 13 effective days.
-      mockGetFastedDayKeys.mockResolvedValue(new Set<number>([-1, -2, -3]));
+      mockGetRangeNutrients.mockResolvedValue({
+        calories: 20000,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        fiber: 0,
+        effectiveDayCount: 13,
+        dailyAverages: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+      });
 
       const result = await getHistoricalNutritionParams({ asOfDate: fixedEndDate });
       expect(result!.historicalTotalDays).toBe(13);
@@ -310,7 +317,15 @@ describe('getHistoricalNutritionParams', () => {
     it('excludes unflagged empty days from the divisor (feature on, no fasted days)', async () => {
       setupTenLoggedDays();
       mockGetEnableFastedDay.mockResolvedValue(true);
-      mockGetFastedDayKeys.mockResolvedValue(new Set<number>());
+      mockGetRangeNutrients.mockResolvedValue({
+        calories: 20000,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        fiber: 0,
+        effectiveDayCount: 10,
+        dailyAverages: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+      });
 
       // 10 logged days, 0 fasted → divide by 10 (the other 20 empty days are skipped).
       const result = await getHistoricalNutritionParams({ asOfDate: fixedEndDate });

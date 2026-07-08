@@ -134,6 +134,20 @@ export async function scaleMealNutritionLogsToTotalGrams(
   triggerWidgetUpdate();
 }
 
+async function loggedDayKeysWithFasted(logs: NutritionLog[]): Promise<Set<number>> {
+  const dayKeys = new Set(logs.map((log) => utcNormalizedDayKey(log.date ?? 0, log.timezone)));
+  if (!(await SettingsService.getEnableFastedDay())) {
+    return dayKeys;
+  }
+
+  const fastedDayKeys = await FastedDayRepository.getAllFastedDayKeys();
+  for (const key of fastedDayKeys) {
+    dayKeys.add(key);
+  }
+
+  return dayKeys;
+}
+
 export class NutritionService {
   /**
    * Log food consumption. Stores a snapshot of the food's macros/micros per 100g at log time.
@@ -485,6 +499,12 @@ export class NutritionService {
     carbs: number;
     fat: number;
     fiber: number;
+    /**
+     * Distinct logged-or-fasted days in the range (the averaging divisor). Only set when the
+     * fasting-day feature is on; `undefined` otherwise, so callers fall back to their own
+     * default day count (calendar span / lookback window).
+     */
+    effectiveDayCount?: number;
     dailyAverages: { calories: number; protein: number; carbs: number; fat: number; fiber: number };
   }> {
     const logs = await this.getNutritionLogsForDateRange(startDate, endDate);
@@ -509,12 +529,12 @@ export class NutritionService {
     // plus the days the user flagged as fasted, so forgotten-log days don't drag the
     // average down while intentional fasts still count as a real 0-kcal day.
     let days = differenceInCalendarDays(endDate, startDate) + 1;
+    let effectiveDayCount: number | undefined;
     if (await SettingsService.getEnableFastedDay()) {
-      const loggedDayKeys = new Set(
-        logs.map((log) => utcNormalizedDayKey(log.date, log.timezone))
-      );
+      const loggedDayKeys = new Set(logs.map((log) => utcNormalizedDayKey(log.date, log.timezone)));
       const fastedDayKeys = await FastedDayRepository.getFastedDayKeys(startDate, endDate);
-      days = Math.max(1, effectiveNutritionDayCount(loggedDayKeys, fastedDayKeys));
+      effectiveDayCount = effectiveNutritionDayCount(loggedDayKeys, fastedDayKeys);
+      days = Math.max(1, effectiveDayCount);
     }
 
     return {
@@ -523,6 +543,7 @@ export class NutritionService {
       carbs: totalCarbs,
       fat: totalFat,
       fiber: totalFiber,
+      effectiveDayCount,
       dailyAverages: {
         calories: totalCalories / days,
         protein: totalProtein / days,
@@ -1047,15 +1068,7 @@ export class NutritionService {
       .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('date', Q.desc))
       .fetch();
 
-    const dayKeys = new Set(logs.map((log) => utcNormalizedDayKey(log.date ?? 0, log.timezone)));
-
-    // Flagged fasting days count as logged days so an intentional fast preserves the streak.
-    if (await SettingsService.getEnableFastedDay()) {
-      const fastedDayKeys = await FastedDayRepository.getAllFastedDayKeys();
-      for (const key of fastedDayKeys) {
-        dayKeys.add(key);
-      }
-    }
+    const dayKeys = await loggedDayKeysWithFasted(logs);
 
     if (dayKeys.size === 0) {
       return 0;
@@ -1099,19 +1112,7 @@ export class NutritionService {
       .query(Q.where('deleted_at', Q.eq(null)))
       .fetch();
 
-    const loggedDayKeys = new Set(
-      logs.map((log) => utcNormalizedDayKey(log.date ?? 0, log.timezone))
-    );
-
-    // A flagged fasting day is an intentional 0-kcal day, so it counts as a logged day and
-    // keeps the streak alive. Back-dated flags can extend a streak arbitrarily, so the scan
-    // is unbounded (same as logs) and relies on the once-per-day cache in utils/macroStreak.ts.
-    if (await SettingsService.getEnableFastedDay()) {
-      const fastedDayKeys = await FastedDayRepository.getAllFastedDayKeys();
-      for (const key of fastedDayKeys) {
-        loggedDayKeys.add(key);
-      }
-    }
+    const loggedDayKeys = await loggedDayKeysWithFasted(logs);
 
     if (loggedDayKeys.size === 0) {
       return 0;

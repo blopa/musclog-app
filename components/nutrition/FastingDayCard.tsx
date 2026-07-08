@@ -18,7 +18,12 @@ type FastingDayCardProps = {
  * is enabled. Lets the user flag the day as an intentional fast (a real 0-kcal day) or clear the
  * flag. Marking is confirmed by the caller via a ConfirmationModal.
  */
-export function FastingDayCard({ isFasted, onMark, onUnmark, loading = false }: FastingDayCardProps) {
+export function FastingDayCard({
+  isFasted,
+  onMark,
+  onUnmark,
+  loading = false,
+}: FastingDayCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -44,9 +49,7 @@ export function FastingDayCard({ isFasted, onMark, onUnmark, loading = false }: 
         </View>
 
         <Button
-          label={
-            isFasted ? t('food.fastingDay.unmarkButton') : t('food.fastingDay.markButton')
-          }
+          label={isFasted ? t('food.fastingDay.unmarkButton') : t('food.fastingDay.markButton')}
           icon={Coffee}
           variant={isFasted ? 'secondary' : 'secondaryGradient'}
           width="full"

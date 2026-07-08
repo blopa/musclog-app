@@ -38,7 +38,6 @@ export type { ChatMessageType, ChatSender } from './ChatMessage';
 export type { DebugDumpDirection } from './DebugDump';
 export type { EquipmentType, ExerciseSource, MechanicType, MuscleGroup } from './Exercise';
 export type { ExerciseGoalType } from './ExerciseGoal';
-export type { FastedDayCreate } from './FastedDay';
 export type { FoodNutritionBasis, MicrosData } from './Food';
 export type { BirthControlType, LifeStage, MenstrualCycleUpdate, SyncGoal } from './MenstrualCycle';
 export type { EatingPhase } from './NutritionGoal';

@@ -7,6 +7,7 @@ import { dayRangeClauses } from '@/database/dayKeyQuery';
 import FastedDay from '@/database/models/FastedDay';
 import {
   consumedDateTimeOnDay,
+  type DayKeyRange,
   dayKeyRange,
   dayKeyRangeForLocalDate,
   utcDayKeyFromLocalDate,
@@ -99,15 +100,11 @@ export class FastedDayRepository {
   }
 
   /**
-   * UTC-normalized day keys of every flagged fasted day whose calendar day falls within
-   * `[startDate, endDate]` (inclusive). Same key space as `utcNormalizedDayKey(log.date,
-   * log.timezone)`, so callers can union these directly with logged-day keys.
+   * UTC-normalized day keys of every flagged fasted day whose calendar day falls within `range`.
+   * Same key space as `utcNormalizedDayKey(log.date, log.timezone)`, so callers can union these
+   * directly with logged-day keys.
    */
-  static async getFastedDayKeys(startDate: Date, endDate: Date): Promise<Set<number>> {
-    const range = dayKeyRange(
-      utcDayKeyFromLocalDate(startDate),
-      utcDayKeyFromLocalDate(endDate)
-    );
+  static async getFastedDayKeysForRange(range: DayKeyRange): Promise<Set<number>> {
     const raw = await database
       .get<FastedDay>('fasted_days')
       .query(Q.where('deleted_at', Q.eq(null)), ...dayRangeClauses(range))
@@ -115,6 +112,17 @@ export class FastedDayRepository {
 
     return new Set(
       range.filterRecords(raw).map((row) => utcNormalizedDayKey(row.date, row.timezone))
+    );
+  }
+
+  /**
+   * UTC-normalized day keys of every flagged fasted day whose calendar day falls within
+   * `[startDate, endDate]` (inclusive). Same key space as `utcNormalizedDayKey(log.date,
+   * log.timezone)`, so callers can union these directly with logged-day keys.
+   */
+  static async getFastedDayKeys(startDate: Date, endDate: Date): Promise<Set<number>> {
+    return this.getFastedDayKeysForRange(
+      dayKeyRange(utcDayKeyFromLocalDate(startDate), utcDayKeyFromLocalDate(endDate))
     );
   }
 
