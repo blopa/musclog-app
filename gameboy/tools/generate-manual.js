@@ -102,7 +102,10 @@ doc.rect(bannerX, bannerY, bannerW, bannerH).fill('#000000');
 
 // Small pixel accents flanking the title (retro touch)
 const pixMid = bannerY + bannerH / 2 - 3;
-doc.fillColor('#FFFFFF').rect(bannerX + 12, pixMid, 6, 6).fill('#FFFFFF');
+doc
+  .fillColor('#FFFFFF')
+  .rect(bannerX + 12, pixMid, 6, 6)
+  .fill('#FFFFFF');
 doc.rect(bannerX + bannerW - 18, pixMid, 6, 6).fill('#FFFFFF');
 
 doc
@@ -134,7 +137,10 @@ function drawFallbackCoverBox() {
 }
 
 // Drop shadow behind the art (offset down-right)
-doc.fillColor('#000000').rect(artX + 4, artY + 4, artW, artH).fill('#000000');
+doc
+  .fillColor('#000000')
+  .rect(artX + 4, artY + 4, artW, artH)
+  .fill('#000000');
 // White mask so any residual gap reads as clean white, never the shadow
 doc.fillColor('#FFFFFF').rect(artX, artY, artW, artH).fill('#FFFFFF');
 
@@ -183,126 +189,291 @@ doc
   .text('BLOPA', colX, MARGIN + 134, { width: colW, characterSpacing: 3 });
 
 // ==========================================
-// PAGE 2: TABLE OF CONTENTS & WARNING
-// Two columns: warning box (left) + TOC (right)
+// FEATURE CHAPTERS
+// One manual page per feature. Defined here so the Table of Contents and the
+// feature pages are generated from the same source and never drift apart.
+// ==========================================
+const featureChapters = [
+  {
+    tocName: 'GETTING STARTED',
+    title: 'GETTING STARTED',
+    screenshot: 'onboarding.png',
+    fallback: 'ONBOARDING',
+    heading: 'CREATE YOUR LIFTER',
+    body:
+      'On first boot the cartridge guides you through setup: unit system, gender, ' +
+      'activity level, age, height, weight, lifting experience, fitness focus, and ' +
+      'weight goal. Your answers forge a training profile that powers every screen.',
+  },
+  {
+    tocName: 'MACRO GOALS',
+    title: 'MACRO GOALS',
+    screenshot: 'macro-goals-overview.png',
+    fallback: 'MACRO GOALS',
+    heading: 'YOUR DAILY GOALS',
+    body:
+      'From your profile the game calculates daily targets for calories, protein, ' +
+      'carbs, fat, and fiber. Review them on the overview screen and fine-tune any ' +
+      'value before saving. Change your mind later? Edit them from Settings.',
+  },
+  {
+    tocName: 'SET THE CLOCK',
+    title: 'SET THE CLOCK',
+    screenshot: 'set-date.png',
+    fallback: 'DATE SETUP',
+    heading: 'SET THE CLOCK',
+    body:
+      'Musclog GB keeps a real-time clock so every log carries a true calendar date. ' +
+      'Set the date and time once; the battery-backed cartridge remembers it through ' +
+      'power-offs. With no clock set, your journey begins on 2026-01-01.',
+  },
+  {
+    tocName: 'HOME DASHBOARD',
+    title: 'HOME DASHBOARD',
+    screenshot: 'home-screen.png',
+    fallback: 'HOME',
+    heading: 'THE DASHBOARD',
+    body:
+      "Your base camp. Today's calories, protein, digestible carbs, fat, and fiber are " +
+      'shown against your goals at a glance. Press SELECT to open the menu and travel to ' +
+      'nutrition, workouts, body weight, progress, or settings.',
+  },
+  {
+    tocName: 'LOGGING FOOD',
+    title: 'LOGGING FOOD',
+    screenshot: 'track-food.png',
+    fallback: 'TRACK FOOD',
+    heading: 'LOG YOUR FOOD',
+    body:
+      'Choose a date, search by name, and log a serving in grams or ounces. 517 foods ' +
+      'are built into the ROM: 215 USDA foundation foods and 302 everyday staples. Open ' +
+      'a food to inspect its macros, or delete an entry logged by mistake.',
+  },
+  {
+    tocName: 'CUSTOM FOODS',
+    title: 'CUSTOM FOODS',
+    screenshot: 'food-filter.png',
+    fallback: 'FOOD SEARCH',
+    heading: 'SEARCH & CREATE',
+    body:
+      "Prefix search finds foods fast. Can't find yours? Create up to 100 custom foods " +
+      'on-cart with calories, carbs, fiber, fat, and protein per 100 g. Custom foods ' +
+      'appear first in results and are marked with a star (*).',
+  },
+  {
+    tocName: 'NUTRITION DIARY',
+    title: 'NUTRITION DIARY',
+    screenshot: 'nutrition.png',
+    fallback: 'DIARY',
+    heading: 'THE DIARY',
+    body:
+      'Every meal logged for the day, totaled and measured against your goals. The carbs ' +
+      'bar shows digestible carbs (carbs minus fiber) while fiber earns its own bar, so ' +
+      'nothing is double-counted. Review, inspect, or remove entries.',
+  },
+  {
+    tocName: 'PROGRESS',
+    title: 'PROGRESS & CHARTS',
+    screenshot: 'progress.png',
+    fallback: 'PROGRESS',
+    heading: 'TRACK YOUR GAINS',
+    body:
+      'The progress dashboard pages through charts over a rolling 7- or 30-day window ' +
+      '(toggle with Up/Down): muscle groups hit, workout counts, days logged, average ' +
+      'macros, per-day bar charts, and your body-weight trend. Left/Right cycle pages.',
+  },
+  {
+    tocName: 'FREE WORKOUTS',
+    title: 'FREE WORKOUTS',
+    screenshot: 'workout-session.png',
+    fallback: 'WORKOUT',
+    heading: 'FREE WORKOUTS',
+    body:
+      'Start a free session, filter exercises by muscle group, and lift. The game ' +
+      'suggests starting weights; you edit sets, weights, and reps as you go. 198 ' +
+      'exercises across 9 muscle groups are built in. Finished sessions are saved.',
+  },
+  {
+    tocName: 'REST TIMER',
+    title: 'REST TIMER',
+    screenshot: 'rest-timer.png',
+    fallback: 'REST TIMER',
+    heading: 'CATCH YOUR BREATH',
+    body:
+      'Between sets a 60-second rest timer keeps you honest and focused. Recover, then ' +
+      'jump back in for the next set without losing your place in the session.',
+  },
+  {
+    tocName: 'WORKOUT HISTORY',
+    title: 'WORKOUT HISTORY',
+    screenshot: 'workouts.png',
+    fallback: 'HISTORY',
+    heading: 'HALL OF IRON',
+    body:
+      'Every completed session is battery-saved with its full set data. Revisit past ' +
+      'workouts to see what you lifted, track your consistency, and prove your progress ' +
+      'over time.',
+  },
+  {
+    tocName: 'SETTINGS',
+    title: 'SETTINGS',
+    screenshot: 'settings.png',
+    fallback: 'SETTINGS',
+    heading: 'SETTINGS',
+    body:
+      'Update your profile, macro goals, and unit system whenever your journey changes. ' +
+      'Toggle sound effects and the soundtrack, or reset all saved data to begin a new ' +
+      'legend from scratch.',
+  },
+];
+
+const FEATURES_START = 5; // page number of the first feature page
+const memoPage = FEATURES_START + featureChapters.length;
+
+// ==========================================
+// PAGE 2: TABLE OF CONTENTS (full page, two columns)
 // ==========================================
 setupPage(2, true, true);
 
 doc
   .font('Courier-Bold')
-  .fontSize(12)
-  .text('PRECAUTIONS & TOC', MARGIN + 15, MARGIN + 26, {
+  .fontSize(13)
+  .fillColor('#000000')
+  .text('TABLE OF CONTENTS', MARGIN + 15, MARGIN + 24, {
     width: PRINTABLE_WIDTH - 30,
     align: 'center',
   });
 
-// WARNINGS / PRECAUTIONS (left column)
-const warnX = INNER_LEFT;
-const warnY = MARGIN + 46;
-const warnW = 122;
-const warnH = 124;
-doc.lineWidth(1).strokeColor('#000000').rect(warnX, warnY, warnW, warnH).stroke();
-
 doc
-  .font('Courier-Bold')
-  .fontSize(7)
-  .text('** WARNING **', warnX + 6, warnY + 8, { width: warnW - 12, align: 'center' })
-  .font('Courier-Bold')
-  .fontSize(6)
-  .text('READ BEFORE PLAYING', warnX + 6, warnY + 20, { width: warnW - 12, align: 'center' })
-  .font('Courier')
-  .fontSize(6)
-  .text(
-    'Take a 10 to 15 minute break every hour, even if you do not think you need it. Avoid playing if you are tired. If your hands, wrists, or arms become sore, stop and rest.',
-    warnX + 8,
-    warnY + 36,
-    {
-      width: warnW - 16,
-      align: 'justify',
-      lineGap: 1.5,
-    }
-  );
+  .lineWidth(1)
+  .strokeColor('#000000')
+  .moveTo(MARGIN + 60, MARGIN + 40)
+  .lineTo(RIGHT - 60, MARGIN + 40)
+  .stroke();
 
-// TABLE OF CONTENTS (right column, with dot-leaders)
-const tocX = warnX + warnW + 14; // ~171
-const tocRight = INNER_RIGHT;
-const tocW = tocRight - tocX;
-
-doc.font('Courier-Bold').fontSize(9).text('TABLE OF CONTENTS', tocX, MARGIN + 46, { width: tocW });
-
-const tocItems = [
-  { name: 'THE LEGEND', page: '3' },
-  { name: 'CONTROLS', page: '4' },
-  { name: 'HOW TO PLAY', page: '5' },
-  { name: 'WORKOUTS', page: '6' },
-  { name: 'MEMO / NOTES', page: '7' },
+const tocEntries = [
+  { name: 'THE LEGEND', page: 3 },
+  { name: 'CONTROLS', page: 4 },
+  ...featureChapters.map((chapter, i) => ({ name: chapter.tocName, page: FEATURES_START + i })),
+  { name: 'MEMO / NOTES', page: memoPage },
 ];
 
-let itemY = MARGIN + 66;
-doc.font('Courier').fontSize(7.5);
-const dotWidth = doc.widthOfString('.');
+const tocTop = MARGIN + 50; // 70
+const tocRowH = 15;
+const tocPerCol = Math.ceil(tocEntries.length / 2);
+const tocColLeftX = INNER_LEFT; // 35
+const tocColLeftRight = 153;
+const tocColRightX = 171;
+const tocColRightRight = INNER_RIGHT; // 289
 
-tocItems.forEach((item) => {
+doc.font('Courier').fontSize(8).fillColor('#000000');
+const tocDotWidth = doc.widthOfString('.');
+
+tocEntries.forEach((item, i) => {
+  const col = Math.floor(i / tocPerCol);
+  const row = i % tocPerCol;
+  const colX = col === 0 ? tocColLeftX : tocColRightX;
+  const colRight = col === 0 ? tocColLeftRight : tocColRightRight;
+  const y = tocTop + row * tocRowH;
+
+  const pageStr = String(item.page);
   const nameWidth = doc.widthOfString(item.name);
-  const pageWidth = doc.widthOfString(item.page);
+  const pageWidth = doc.widthOfString(pageStr);
 
-  // Name on the left, page number pinned to the right edge
-  doc.text(item.name, tocX, itemY, { lineBreak: false });
-  doc.text(item.page, tocRight - pageWidth, itemY, { lineBreak: false });
+  // Name on the left, page number pinned to the right edge, dots between
+  doc.text(item.name, colX, y, { lineBreak: false });
+  doc.text(pageStr, colRight - pageWidth, y, { lineBreak: false });
 
-  // Dot leaders filling the gap between them
-  const dotsStart = tocX + nameWidth + 3;
-  const dotsEnd = tocRight - pageWidth - 3;
-  const dotsCount = Math.max(0, Math.floor((dotsEnd - dotsStart) / dotWidth));
+  const dotsStart = colX + nameWidth + 3;
+  const dotsEnd = colRight - pageWidth - 3;
+  const dotsCount = Math.max(0, Math.floor((dotsEnd - dotsStart) / tocDotWidth));
   if (dotsCount > 0) {
-    doc.text('.'.repeat(dotsCount), dotsStart, itemY, { lineBreak: false });
+    doc.text('.'.repeat(dotsCount), dotsStart, y, { lineBreak: false });
   }
-
-  itemY += 18;
 });
 
 // ==========================================
-// PAGE 3: THE LEGEND (LORE)
+// PAGE 3: THE LEGEND + PRECAUTIONS
+// Lore (left column) + warning box (right column)
 // ==========================================
 setupPage(3, true, true);
 
 doc
   .font('Courier-Bold')
   .fontSize(12)
+  .fillColor('#000000')
   .text('THE LEGEND', MARGIN + 15, MARGIN + 26, { width: PRINTABLE_WIDTH - 30, align: 'center' });
+
+// --- Lore (left column) ---
+const loreX = INNER_LEFT;
+const loreW = 150;
 
 doc
   .font('Courier-Bold')
-  .fontSize(9)
-  .text('A Muscle Journey Begins...', INNER_LEFT, MARGIN + 42);
+  .fontSize(8)
+  .text('A Muscle Journey Begins...', loreX, MARGIN + 42, { width: loreW });
 
 doc
   .font('Courier')
-  .fontSize(7)
+  .fontSize(6.5)
   .text(
-    'In a world where physical gains and nutrient balances have been forgotten, a lone lifter stands strong against the decay of stamina and iron.\n\n' +
-      'Equipped with the legendary "Musclog" cartridge, your mission is to log daily foods, calculate calories, track body-weight trends, and complete intense free workouts.\n\n' +
-      'The path to ultimate fitness is fraught with heavy sets and calorie math. Lift carefully, watch your macros, and write your name in the Hall of Iron!',
-    INNER_LEFT,
-    MARGIN + 56,
+    'The world has forgotten the balance of iron and nutrients. One lone lifter still stands against the decay of strength.\n\n' +
+      'Armed with the legendary Musclog cartridge, your quest: log foods, master your macros, track your weight, and conquer free workouts.\n\n' +
+      'Lift with care, mind your macros, and carve your name into the Hall of Iron!',
+    loreX,
+    MARGIN + 54,
     {
-      width: PRINTABLE_WIDTH - 30,
+      width: loreW,
       align: 'justify',
-      lineGap: 2,
+      lineGap: 1.5,
     }
   );
 
-// Graphic element at the bottom (retro barbell)
-const barbellY = BOTTOM - 24;
-const barLeft = MARGIN + 90;
-const barRight = RIGHT - 90;
-doc.lineWidth(2).strokeColor('#000000').moveTo(barLeft, barbellY).lineTo(barRight, barbellY).stroke();
-// Plates left
-doc.rect(barLeft - 10, barbellY - 6, 10, 12).fill('#000000');
-doc.rect(barLeft - 16, barbellY - 10, 6, 20).fill('#000000');
-// Plates right
-doc.rect(barRight, barbellY - 6, 10, 12).fill('#000000');
-doc.rect(barRight + 10, barbellY - 10, 6, 20).fill('#000000');
+// Small barbell flourish under the lore
+const barbellY = BOTTOM - 28;
+const barLeft = loreX + 42;
+const barRight = loreX + loreW - 42;
+doc
+  .lineWidth(2)
+  .strokeColor('#000000')
+  .moveTo(barLeft, barbellY)
+  .lineTo(barRight, barbellY)
+  .stroke();
+doc
+  .fillColor('#000000')
+  .rect(barLeft - 8, barbellY - 5, 8, 10)
+  .fill('#000000');
+doc.rect(barLeft - 13, barbellY - 8, 5, 16).fill('#000000');
+doc.rect(barRight, barbellY - 5, 8, 10).fill('#000000');
+doc.rect(barRight + 8, barbellY - 8, 5, 16).fill('#000000');
+
+// --- Precautions (right column) ---
+const warnX = loreX + loreW + 16; // 201
+const warnW = INNER_RIGHT - warnX; // ~88
+const warnY = MARGIN + 44;
+const warnH = 122;
+doc.lineWidth(1).strokeColor('#000000').rect(warnX, warnY, warnW, warnH).stroke();
+
+doc
+  .font('Courier-Bold')
+  .fontSize(7)
+  .fillColor('#000000')
+  .text('** WARNING **', warnX + 5, warnY + 8, { width: warnW - 10, align: 'center' })
+  .font('Courier-Bold')
+  .fontSize(5.5)
+  .text('READ BEFORE PLAYING', warnX + 5, warnY + 19, { width: warnW - 10, align: 'center' })
+  .font('Courier')
+  .fontSize(6)
+  .text(
+    'Take a 10 to 15 minute break every hour, even if you do not think you need it. Avoid playing if you are tired. If your hands, wrists, or arms become sore, stop and rest.',
+    warnX + 7,
+    warnY + 34,
+    {
+      width: warnW - 14,
+      align: 'justify',
+      lineGap: 1.5,
+    }
+  );
 
 // ==========================================
 // PAGE 4: CONTROLS
@@ -369,7 +540,11 @@ const controlsList = [
 ];
 
 controlsList.forEach((item) => {
-  doc.font('Courier-Bold').fontSize(7).fillColor('#000000').text(item.btn, ctrlX, controlY, { width: ctrlW });
+  doc
+    .font('Courier-Bold')
+    .fontSize(7)
+    .fillColor('#000000')
+    .text(item.btn, ctrlX, controlY, { width: ctrlW });
   doc
     .font('Courier')
     .fontSize(6.5)
@@ -378,111 +553,105 @@ controlsList.forEach((item) => {
 });
 
 // ==========================================
-// HELPER FOR HOW TO PLAY PAGES (DYNAMIC IMAGES)
+// FEATURE PAGES (one framed screenshot + description each)
 // ==========================================
 function getScreenshotPath(filename) {
   const fullPath = path.join(SCREENSHOT_DIR, filename);
   return fs.existsSync(fullPath) ? fullPath : null;
 }
 
-// Shared screenshot layout (two side-by-side screens)
-const imgWidth = 108;
-const imgHeight = 84;
-const col1X = INNER_LEFT; // 35
-const col2X = INNER_RIGHT - imgWidth; // 181
-const screensY = MARGIN + 38; // 58
+// Screenshot box preserves the 160x144 Game Boy screen ratio (~1.111)
+const FEAT_SHOT_W = 120;
+const FEAT_SHOT_H = 108;
+const FEAT_SHOT_Y = MARGIN + 42; // 62
 
-function drawScreen(imagePath, x, fallbackLabel) {
-  if (imagePath) {
-    doc.image(imagePath, x, screensY, { width: imgWidth, height: imgHeight });
-    doc.lineWidth(1).strokeColor('#000000').rect(x, screensY, imgWidth, imgHeight).stroke();
+function featurePage(pageNo, chapter, index) {
+  setupPage(pageNo, true, true);
+
+  // Page title
+  doc
+    .font('Courier-Bold')
+    .fontSize(12)
+    .fillColor('#000000')
+    .text(chapter.title, MARGIN + 15, MARGIN + 26, {
+      width: PRINTABLE_WIDTH - 30,
+      align: 'center',
+    });
+
+  // Alternate the screenshot side page to page for visual variety
+  const imageLeft = index % 2 === 0;
+  const shotX = imageLeft ? INNER_LEFT : INNER_RIGHT - FEAT_SHOT_W;
+
+  // Drop shadow + white mask so the framed screenshot reads cleanly
+  doc
+    .fillColor('#000000')
+    .rect(shotX + 3, FEAT_SHOT_Y + 3, FEAT_SHOT_W, FEAT_SHOT_H)
+    .fill('#000000');
+  doc.fillColor('#FFFFFF').rect(shotX, FEAT_SHOT_Y, FEAT_SHOT_W, FEAT_SHOT_H).fill('#FFFFFF');
+
+  const shot = getScreenshotPath(chapter.screenshot);
+  if (shot) {
+    doc.image(shot, shotX, FEAT_SHOT_Y, {
+      fit: [FEAT_SHOT_W, FEAT_SHOT_H],
+      align: 'center',
+      valign: 'center',
+    });
   } else {
-    doc.lineWidth(1).strokeColor('#000000').rect(x, screensY, imgWidth, imgHeight).stroke();
     doc
       .font('Courier-Bold')
-      .fontSize(8)
+      .fontSize(9)
       .fillColor('#000000')
-      .text(fallbackLabel, x + 8, screensY + imgHeight / 2 - 4, {
-        width: imgWidth - 16,
+      .text(chapter.fallback || 'SCREEN', shotX + 8, FEAT_SHOT_Y + FEAT_SHOT_H / 2 - 5, {
+        width: FEAT_SHOT_W - 16,
         align: 'center',
       });
   }
-}
+  doc
+    .lineWidth(1.5)
+    .strokeColor('#000000')
+    .rect(shotX, FEAT_SHOT_Y, FEAT_SHOT_W, FEAT_SHOT_H)
+    .stroke();
 
-function drawCaption(x, title, body) {
-  doc.font('Courier-Bold').fontSize(8).fillColor('#000000').text(title, x, screensY + imgHeight + 6);
+  // Description column on the opposite side
+  const textX = imageLeft ? shotX + FEAT_SHOT_W + 16 : INNER_LEFT;
+  const textRight = imageLeft ? INNER_RIGHT : shotX - 16;
+  const textW = textRight - textX;
+  const headingY = FEAT_SHOT_Y;
+
+  doc
+    .font('Courier-Bold')
+    .fontSize(10)
+    .fillColor('#000000')
+    .text(chapter.heading, textX, headingY, { width: textW });
+
+  doc
+    .lineWidth(1)
+    .strokeColor('#000000')
+    .moveTo(textX, headingY + 16)
+    .lineTo(textX + Math.min(textW, 96), headingY + 16)
+    .stroke();
+
   doc
     .font('Courier')
-    .fontSize(6.5)
-    .text(body, x, screensY + imgHeight + 17, { width: imgWidth, align: 'justify' });
+    .fontSize(7.5)
+    .fillColor('#000000')
+    .text(chapter.body, textX, headingY + 24, { width: textW, align: 'justify', lineGap: 1.5 });
 }
 
+featureChapters.forEach((chapter, i) => {
+  featurePage(FEATURES_START + i, chapter, i);
+});
+
 // ==========================================
-// PAGE 5: HOW TO PLAY - BASICS
+// MEMO PAGE (writing lines)
 // ==========================================
-setupPage(5, true, true);
+setupPage(memoPage, true, true);
 
 doc
   .font('Courier-Bold')
   .fontSize(12)
-  .text('HOW TO PLAY', MARGIN + 15, MARGIN + 26, { width: PRINTABLE_WIDTH - 30, align: 'center' });
-
-const screen1 = getScreenshotPath('home-screen.png');
-const screen2 = getScreenshotPath('track-food.png') || getScreenshotPath('nutrition.png');
-
-drawScreen(screen1, col1X, 'HOME SCREEN');
-drawScreen(screen2, col2X, 'TRACK DIARY');
-
-drawCaption(
-  col1X,
-  '1. Home Dashboard',
-  'Monitor your daily calorie and macronutrient budgets on the home interface.'
-);
-drawCaption(
-  col2X,
-  '2. Macro Logging',
-  'Log pre-bundled foods or create custom entries. Keep your progress steady!'
-);
-
-// ==========================================
-// PAGE 6: HOW TO PLAY - WORKOUTS
-// ==========================================
-setupPage(6, true, true);
-
-doc
-  .font('Courier-Bold')
-  .fontSize(12)
-  .text('WORKOUTS & PROGRESS', MARGIN + 15, MARGIN + 26, {
-    width: PRINTABLE_WIDTH - 30,
-    align: 'center',
-  });
-
-const screen3 = getScreenshotPath('workout-session.png') || getScreenshotPath('workouts.png');
-const screen4 = getScreenshotPath('progress.png');
-
-drawScreen(screen3, col1X, 'WORKOUT');
-drawScreen(screen4, col2X, 'PROGRESS');
-
-drawCaption(
-  col1X,
-  '3. Workout Logging',
-  'Log sets, reps, and load. A 60-second rest timer keeps you focused.'
-);
-drawCaption(
-  col2X,
-  '4. Progress Graphs',
-  'Track body weight and calories on charts. Press Up/Down to toggle views.'
-);
-
-// ==========================================
-// PAGE 7: MEMO
-// ==========================================
-setupPage(7, true, true);
-
-doc
-  .font('Courier-Bold')
-  .fontSize(12)
-  .text('MEMO / PASSWORDS', MARGIN + 15, MARGIN + 26, {
+  .fillColor('#000000')
+  .text('MEMO / NOTES', MARGIN + 15, MARGIN + 26, {
     width: PRINTABLE_WIDTH - 30,
     align: 'center',
   });
@@ -490,7 +659,7 @@ doc
 doc
   .font('Courier')
   .fontSize(7.5)
-  .text('Record high scores, custom food IDs, or passwords.', MARGIN + 15, MARGIN + 44, {
+  .text('Record custom food IDs, personal bests, or reminders.', MARGIN + 15, MARGIN + 44, {
     width: PRINTABLE_WIDTH - 30,
     align: 'center',
   });
