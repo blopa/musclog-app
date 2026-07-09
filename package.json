@@ -95,6 +95,7 @@
   },
   "optionalDependencies": {
     "@babel/plugin-transform-react-jsx": "7.29.7",
+    "pdfkit": "^0.19.1",
     "sharp": "^0.35.3"
   },
   "dependencies": {
