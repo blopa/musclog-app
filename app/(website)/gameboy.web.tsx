@@ -40,6 +40,7 @@ function withExpoBaseUrl(path: string): string {
 }
 
 const ROM_URL = withExpoBaseUrl('/images/musclog.gbc');
+const MANUAL_URL = withExpoBaseUrl('/images/musclog-manual.pdf');
 
 type JoypadButton = keyof WasmBoyJoypadState;
 
@@ -383,13 +384,22 @@ export default function GameBoy() {
 
           <p className="mt-8 max-w-md text-xs leading-5 text-gray-500">{t('controlsHint')}</p>
 
-          <a
-            href={ROM_URL}
-            download="musclog.gbc"
-            className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#00FFA3]/40 bg-[#00FFA3]/10 px-6 py-2 text-sm font-bold text-[#00FFA3] transition-transform hover:-translate-y-0.5"
-          >
-            {t('downloadRom')}
-          </a>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <a
+              href={ROM_URL}
+              download="musclog.gbc"
+              className="inline-flex items-center gap-2 rounded-full border border-[#00FFA3]/40 bg-[#00FFA3]/10 px-6 py-2 text-sm font-bold text-[#00FFA3] transition-transform hover:-translate-y-0.5"
+            >
+              {t('downloadRom')}
+            </a>
+            <a
+              href={MANUAL_URL}
+              download="musclog-manual.pdf"
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-2 text-sm font-bold text-white transition-transform hover:-translate-y-0.5"
+            >
+              {t('downloadManual')}
+            </a>
+          </div>
         </div>
       </main>
     </>

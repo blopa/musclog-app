@@ -39,6 +39,7 @@
     "gb:format-check": "node gameboy/tools/format-c.mjs --check",
     "gb:build": "node gameboy/tools/build-gb-rom.mjs",
     "gb:copy-rom": "cp gameboy/build/musclog.gbc assets/musclog.gbc && cp gameboy/build/musclog.gbc public/images/musclog.gbc",
+    "gb:manual": "node gameboy/tools/generate-manual.js",
     "sync-ml-model": "cp training-data/output/model.js utils/repCountingModel.js",
     "update-reps-model": "cd training-data && .venv/bin/python train.py && cd .. && npm run sync-ml-model",
     "generate-training-html": "cd training-data && .venv/bin/python visualize_loocv.py",
