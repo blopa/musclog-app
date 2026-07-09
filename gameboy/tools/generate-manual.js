@@ -1,10 +1,11 @@
 /**
  * generate-manual.js
- * Generates a retro-style, square Game Boy GBC instruction booklet PDF for "Musclog GB".
+ * Generates a retro-style Game Boy GBC instruction booklet PDF for "Musclog GB".
  *
- * Dimensions: 4.75 x 4.75 inches (342 x 342 points)
+ * Dimensions: 4.5 x 3.25 inches landscape (324 x 234 points) — matches real
+ *   GBC/GBA instruction booklets (4 1/2" long by 3 1/4" tall).
  * Margins: 20 points uniform
- * Printable area: x: 20 to 322, y: 20 to 322 (width: 302, height: 302)
+ * Printable area: x: 20 to 304, y: 20 to 214 (width: 284, height: 194)
  */
 
 const fs = require('fs');
@@ -14,24 +15,29 @@ const PDFDocument = require('pdfkit');
 // Paths
 const OUTPUT_FILE = path.join(__dirname, '../../musclog-manual.pdf');
 const SCREENSHOT_DIR = path.join(__dirname, '../screenshots');
-const CARTRIDGE_LABEL_IMAGE = path.join(__dirname, '../assets/musclog-gbc-label.png');
+const CARTRIDGE_LABEL_IMAGE = path.join(__dirname, '../assets/gameboy-cover.png');
+
+// Page geometry (landscape: wider than tall)
+const PAGE_WIDTH = 324; // 4.5"
+const PAGE_HEIGHT = 234; // 3.25"
+const MARGIN = 20;
+const PRINTABLE_WIDTH = PAGE_WIDTH - MARGIN * 2; // 284
+const PRINTABLE_HEIGHT = PAGE_HEIGHT - MARGIN * 2; // 194
+const RIGHT = MARGIN + PRINTABLE_WIDTH; // 304
+const BOTTOM = MARGIN + PRINTABLE_HEIGHT; // 214
+const INNER_LEFT = MARGIN + 15; // 35
+const INNER_RIGHT = RIGHT - 15; // 289
 
 // Initialize PDF Document
 const doc = new PDFDocument({
-  size: [342, 342],
-  margins: { top: 20, bottom: 20, left: 20, right: 20 },
+  size: [PAGE_WIDTH, PAGE_HEIGHT],
+  margins: { top: MARGIN, bottom: MARGIN, left: MARGIN, right: MARGIN },
   autoFirstPage: false, // Handle page creation manually to control layout/borders
 });
 
 // Pipe PDF document to file
 const writeStream = fs.createWriteStream(OUTPUT_FILE);
 doc.pipe(writeStream);
-
-// Helper constants for positions
-const PAGE_SIZE = 342;
-const MARGIN = 20;
-const PRINTABLE_WIDTH = PAGE_SIZE - MARGIN * 2; // 302
-const PRINTABLE_HEIGHT = PAGE_SIZE - MARGIN * 2; // 302
 
 // Common styles & drawings
 function setupPage(pageIndex, hasHeader = true, hasFooter = true) {
@@ -50,14 +56,14 @@ function setupPage(pageIndex, hasHeader = true, hasFooter = true) {
       .font('Courier-Bold')
       .fontSize(8)
       .fillColor('#000000')
-      .text('MUSCLOG GB', MARGIN + 10, MARGIN + 10, { width: PRINTABLE_WIDTH - 20, align: 'left' });
+      .text('MUSCLOG GB', MARGIN + 10, MARGIN + 8, { width: PRINTABLE_WIDTH - 20, align: 'left' });
 
     // Thin horizontal divider below header
     doc
       .lineWidth(0.5)
       .strokeColor('#000000')
-      .moveTo(MARGIN + 10, MARGIN + 22)
-      .lineTo(MARGIN + PRINTABLE_WIDTH - 10, MARGIN + 22)
+      .moveTo(MARGIN + 10, MARGIN + 20)
+      .lineTo(RIGHT - 10, MARGIN + 20)
       .stroke();
   }
 
@@ -67,7 +73,7 @@ function setupPage(pageIndex, hasHeader = true, hasFooter = true) {
       .font('Courier')
       .fontSize(8)
       .fillColor('#000000')
-      .text(String(pageIndex), MARGIN + 10, MARGIN + PRINTABLE_HEIGHT - 18, {
+      .text(String(pageIndex), MARGIN + 10, BOTTOM - 16, {
         width: PRINTABLE_WIDTH - 20,
         align: 'center',
       });
@@ -76,46 +82,85 @@ function setupPage(pageIndex, hasHeader = true, hasFooter = true) {
 
 // ==========================================
 // PAGE 1: COVER PAGE (No headers/footers)
+// Two columns: title block (left) + cartridge art (right)
 // ==========================================
 setupPage(1, false, false);
 
-// Decorative double lines at top
+const coverColW = 135;
+const coverColX = MARGIN + 10; // 30
+
+// Decorative double lines above the title
 doc
   .lineWidth(2)
   .strokeColor('#000000')
-  .moveTo(MARGIN + 15, MARGIN + 25)
-  .lineTo(MARGIN + PRINTABLE_WIDTH - 15, MARGIN + 25)
+  .moveTo(coverColX, MARGIN + 28)
+  .lineTo(coverColX + coverColW, MARGIN + 28)
   .stroke();
-
 doc
   .lineWidth(0.5)
   .strokeColor('#000000')
-  .moveTo(MARGIN + 15, MARGIN + 30)
-  .lineTo(MARGIN + PRINTABLE_WIDTH - 15, MARGIN + 30)
+  .moveTo(coverColX, MARGIN + 33)
+  .lineTo(coverColX + coverColW, MARGIN + 33)
   .stroke();
 
 // Title
 doc
   .font('Courier-Bold')
-  .fontSize(24)
+  .fontSize(20)
   .fillColor('#000000')
-  .text('MUSCLOG GB', MARGIN + 15, MARGIN + 42, { width: PRINTABLE_WIDTH - 30, align: 'center' });
+  .text('MUSCLOG GB', coverColX, MARGIN + 44, { width: coverColW, align: 'center' });
 
 // Subtitle
 doc
   .font('Courier')
-  .fontSize(10)
-  .text('INSTRUCTION BOOKLET', MARGIN + 15, MARGIN + 70, {
-    width: PRINTABLE_WIDTH - 30,
+  .fontSize(8)
+  .text('INSTRUCTION BOOKLET', coverColX, MARGIN + 72, {
+    width: coverColW,
     align: 'center',
     characterSpacing: 1,
   });
 
-// Cartridge label or default placeholder box
-const artBoxX = MARGIN + 51; // Centered (302 - 200) / 2 = 51
-const artBoxY = MARGIN + 95;
-const artBoxW = 200;
-const artBoxH = 150;
+// Decorative double lines below the subtitle
+doc
+  .lineWidth(0.5)
+  .strokeColor('#000000')
+  .moveTo(coverColX, MARGIN + 88)
+  .lineTo(coverColX + coverColW, MARGIN + 88)
+  .stroke();
+doc
+  .lineWidth(2)
+  .strokeColor('#000000')
+  .moveTo(coverColX, MARGIN + 92)
+  .lineTo(coverColX + coverColW, MARGIN + 92)
+  .stroke();
+
+// Bottom text: Retro publisher feel
+doc
+  .font('Courier-Bold')
+  .fontSize(8)
+  .fillColor('#000000')
+  .text('DEVELOPED BY', coverColX, BOTTOM - 40, { width: coverColW, align: 'center' })
+  .font('Courier')
+  .text('BLOPA', coverColX, BOTTOM - 28, {
+    width: coverColW,
+    align: 'center',
+    characterSpacing: 2,
+  });
+
+// Cartridge label or default placeholder box (right column)
+const artBoxW = 118;
+const artBoxH = 100;
+const artBoxX = INNER_RIGHT - artBoxW; // right-aligned to inner edge
+const artBoxY = MARGIN + (PRINTABLE_HEIGHT - artBoxH) / 2; // vertically centered
+
+function drawFallbackCoverBox() {
+  doc.lineWidth(1).strokeColor('#000000').rect(artBoxX, artBoxY, artBoxW, artBoxH).stroke();
+
+  doc
+    .font('Courier-Bold')
+    .fontSize(11)
+    .text('MUSCLOG GB ART', artBoxX + 8, artBoxY + 44, { width: artBoxW - 16, align: 'center' });
+}
 
 if (fs.existsSync(CARTRIDGE_LABEL_IMAGE)) {
   try {
@@ -134,100 +179,83 @@ if (fs.existsSync(CARTRIDGE_LABEL_IMAGE)) {
   drawFallbackCoverBox();
 }
 
-function drawFallbackCoverBox() {
-  doc.lineWidth(1).strokeColor('#000000').rect(artBoxX, artBoxY, artBoxW, artBoxH).stroke();
-
-  doc
-    .font('Courier-Bold')
-    .fontSize(12)
-    .text('MUSCLOG GB ART', artBoxX + 10, artBoxY + 65, { width: artBoxW - 20, align: 'center' });
-}
-
-// Bottom text: Retro publisher feel
-doc
-  .font('Courier-Bold')
-  .fontSize(8)
-  .fillColor('#000000')
-  .text('LICENSED BY', MARGIN + 15, MARGIN + PRINTABLE_HEIGHT - 36, {
-    width: PRINTABLE_WIDTH - 30,
-    align: 'center',
-  })
-  .font('Courier')
-  .text('NINTENDO', MARGIN + 15, MARGIN + PRINTABLE_HEIGHT - 26, {
-    width: PRINTABLE_WIDTH - 30,
-    align: 'center',
-    characterSpacing: 2,
-  });
-
 // ==========================================
 // PAGE 2: TABLE OF CONTENTS & WARNING
+// Two columns: warning box (left) + TOC (right)
 // ==========================================
 setupPage(2, true, true);
 
-// Header / Title
 doc
   .font('Courier-Bold')
-  .fontSize(14)
-  .text('PRECAUTIONS & TOC', MARGIN + 15, MARGIN + 32, { align: 'center' });
-
-// WARNINGS / PRECAUTIONS
-const warningBoxY = MARGIN + 55;
-doc
-  .lineWidth(1)
-  .strokeColor('#000000')
-  .rect(MARGIN + 15, warningBoxY, PRINTABLE_WIDTH - 30, 75)
-  .stroke();
-
-doc
-  .font('Courier-Bold')
-  .fontSize(8)
-  .text('★ WARNING: READ BEFORE PLAYING ★', MARGIN + 20, warningBoxY + 8, {
-    width: PRINTABLE_WIDTH - 40,
+  .fontSize(12)
+  .text('PRECAUTIONS & TOC', MARGIN + 15, MARGIN + 26, {
+    width: PRINTABLE_WIDTH - 30,
     align: 'center',
-  })
-  .font('Courier')
+  });
+
+// WARNINGS / PRECAUTIONS (left column)
+const warnX = INNER_LEFT;
+const warnY = MARGIN + 46;
+const warnW = 122;
+const warnH = 124;
+doc.lineWidth(1).strokeColor('#000000').rect(warnX, warnY, warnW, warnH).stroke();
+
+doc
+  .font('Courier-Bold')
   .fontSize(7)
+  .text('** WARNING **', warnX + 6, warnY + 8, { width: warnW - 12, align: 'center' })
+  .font('Courier-Bold')
+  .fontSize(6)
+  .text('READ BEFORE PLAYING', warnX + 6, warnY + 20, { width: warnW - 12, align: 'center' })
+  .font('Courier')
+  .fontSize(6)
   .text(
-    'Take a 10 to 15 minute break every hour, even if you do not think you need it. Avoid playing if you are tired. If your hands, wrists, or arms become tired or sore, stop playing immediately and rest.',
-    MARGIN + 25,
-    warningBoxY + 22,
+    'Take a 10 to 15 minute break every hour, even if you do not think you need it. Avoid playing if you are tired. If your hands, wrists, or arms become sore, stop and rest.',
+    warnX + 8,
+    warnY + 36,
     {
-      width: PRINTABLE_WIDTH - 50,
+      width: warnW - 16,
       align: 'justify',
       lineGap: 1.5,
     }
   );
 
-// TABLE OF CONTENTS (Using Dot-leaders)
-const tocY = MARGIN + 145;
-doc
-  .font('Courier-Bold')
-  .fontSize(10)
-  .text('TABLE OF CONTENTS', MARGIN + 15, tocY);
+// TABLE OF CONTENTS (right column, with dot-leaders)
+const tocX = warnX + warnW + 14; // ~171
+const tocRight = INNER_RIGHT;
+const tocW = tocRight - tocX;
+
+doc.font('Courier-Bold').fontSize(9).text('TABLE OF CONTENTS', tocX, MARGIN + 46, { width: tocW });
 
 const tocItems = [
-  { name: 'THE LEGEND OF MUSCLOG', page: '3' },
+  { name: 'THE LEGEND', page: '3' },
   { name: 'CONTROLS', page: '4' },
-  { name: 'HOW TO PLAY - BASICS', page: '5' },
-  { name: 'HOW TO PLAY - WORKOUTS', page: '6' },
-  { name: 'MEMO / PASSWORD NOTES', page: '7' },
+  { name: 'HOW TO PLAY', page: '5' },
+  { name: 'WORKOUTS', page: '6' },
+  { name: 'MEMO / NOTES', page: '7' },
 ];
 
-let itemY = tocY + 18;
-doc.font('Courier').fontSize(8);
+let itemY = MARGIN + 66;
+doc.font('Courier').fontSize(7.5);
+const dotWidth = doc.widthOfString('.');
 
 tocItems.forEach((item) => {
-  const dotsCount = 42 - item.name.length;
-  const dots = '.'.repeat(Math.max(3, dotsCount));
+  const nameWidth = doc.widthOfString(item.name);
+  const pageWidth = doc.widthOfString(item.page);
 
-  doc.text(item.name, MARGIN + 15, itemY);
-  // Align page number on the right
-  doc.text(item.page, MARGIN + PRINTABLE_WIDTH - 25, itemY, { width: 15, align: 'right' });
-  // Add leaders
-  const textWidth = doc.widthOfString(item.name);
-  doc.text(dots, MARGIN + 15 + textWidth + 3, itemY);
+  // Name on the left, page number pinned to the right edge
+  doc.text(item.name, tocX, itemY, { lineBreak: false });
+  doc.text(item.page, tocRight - pageWidth, itemY, { lineBreak: false });
 
-  itemY += 16;
+  // Dot leaders filling the gap between them
+  const dotsStart = tocX + nameWidth + 3;
+  const dotsEnd = tocRight - pageWidth - 3;
+  const dotsCount = Math.max(0, Math.floor((dotsEnd - dotsStart) / dotWidth));
+  if (dotsCount > 0) {
+    doc.text('.'.repeat(dotsCount), dotsStart, itemY, { lineBreak: false });
+  }
+
+  itemY += 18;
 });
 
 // ==========================================
@@ -237,60 +265,58 @@ setupPage(3, true, true);
 
 doc
   .font('Courier-Bold')
-  .fontSize(14)
-  .text('THE LEGEND', MARGIN + 15, MARGIN + 32, { align: 'center' });
+  .fontSize(12)
+  .text('THE LEGEND', MARGIN + 15, MARGIN + 26, { width: PRINTABLE_WIDTH - 30, align: 'center' });
 
 doc
   .font('Courier-Bold')
-  .fontSize(10)
-  .text('A Muscle Journey Begins...', MARGIN + 15, MARGIN + 52);
+  .fontSize(9)
+  .text('A Muscle Journey Begins...', INNER_LEFT, MARGIN + 42);
 
 doc
   .font('Courier')
-  .fontSize(8.5)
+  .fontSize(7)
   .text(
     'In a world where physical gains and nutrient balances have been forgotten, a lone lifter stands strong against the decay of stamina and iron.\n\n' +
       'Equipped with the legendary "Musclog" cartridge, your mission is to log daily foods, calculate calories, track body-weight trends, and complete intense free workouts.\n\n' +
       'The path to ultimate fitness is fraught with heavy sets and calorie math. Lift carefully, watch your macros, and write your name in the Hall of Iron!',
-    MARGIN + 15,
-    MARGIN + 72,
+    INNER_LEFT,
+    MARGIN + 56,
     {
       width: PRINTABLE_WIDTH - 30,
       align: 'justify',
-      lineGap: 3,
+      lineGap: 2,
     }
   );
 
 // Graphic element at the bottom (retro barbell)
-const barbellY = MARGIN + PRINTABLE_HEIGHT - 45;
-doc
-  .lineWidth(2)
-  .strokeColor('#000000')
-  .moveTo(MARGIN + 60, barbellY)
-  .lineTo(MARGIN + PRINTABLE_WIDTH - 60, barbellY)
-  .stroke();
+const barbellY = BOTTOM - 24;
+const barLeft = MARGIN + 90;
+const barRight = RIGHT - 90;
+doc.lineWidth(2).strokeColor('#000000').moveTo(barLeft, barbellY).lineTo(barRight, barbellY).stroke();
 // Plates left
-doc.rect(MARGIN + 50, barbellY - 6, 10, 12).fill('#000000');
-doc.rect(MARGIN + 44, barbellY - 10, 6, 20).fill('#000000');
+doc.rect(barLeft - 10, barbellY - 6, 10, 12).fill('#000000');
+doc.rect(barLeft - 16, barbellY - 10, 6, 20).fill('#000000');
 // Plates right
-doc.rect(MARGIN + PRINTABLE_WIDTH - 60, barbellY - 6, 10, 12).fill('#000000');
-doc.rect(MARGIN + PRINTABLE_WIDTH - 50, barbellY - 10, 6, 20).fill('#000000');
+doc.rect(barRight, barbellY - 6, 10, 12).fill('#000000');
+doc.rect(barRight + 10, barbellY - 10, 6, 20).fill('#000000');
 
 // ==========================================
 // PAGE 4: CONTROLS
+// Two columns: controller diagram (left) + descriptions (right)
 // ==========================================
 setupPage(4, true, true);
 
 doc
   .font('Courier-Bold')
-  .fontSize(14)
-  .text('CONTROLS', MARGIN + 15, MARGIN + 32, { align: 'center' });
+  .fontSize(12)
+  .fillColor('#000000')
+  .text('CONTROLS', MARGIN + 15, MARGIN + 26, { width: PRINTABLE_WIDTH - 30, align: 'center' });
 
-// Draw simple retro Game Boy controller overlay outline
-const dpadX = MARGIN + 25;
-const dpadY = MARGIN + 58;
+// --- Controller diagram (left column) ---
+const dpadX = MARGIN + 22;
+const dpadY = MARGIN + 52;
 
-// D-PAD drawing
 doc.lineWidth(1.5).strokeColor('#000000');
 // Vertical bar
 doc.rect(dpadX + 8, dpadY, 8, 24).stroke();
@@ -300,10 +326,10 @@ doc.rect(dpadX, dpadY + 8, 24, 8).stroke();
 doc.rect(dpadX + 8, dpadY + 8, 8, 8).fill('#000000');
 
 // Buttons A and B
-const btnX = MARGIN + PRINTABLE_WIDTH - 70;
-const btnY = MARGIN + 64;
+const btnX = MARGIN + 90;
+const btnY = MARGIN + 60;
 // B Button
-doc.circle(btnX, btnY, 6).stroke();
+doc.lineWidth(1.5).strokeColor('#000000').circle(btnX, btnY, 6).stroke();
 doc
   .font('Courier-Bold')
   .fontSize(7)
@@ -316,31 +342,36 @@ doc
   .text('A', btnX + 16, btnY - 7);
 
 // SELECT / START
-const selStartX = MARGIN + 90;
-const selStartY = MARGIN + 80;
-// Select
+const selStartX = MARGIN + 34;
+const selStartY = MARGIN + 92;
 doc.lineWidth(1).rect(selStartX, selStartY, 14, 4).stroke();
-// Start
 doc.rect(selStartX + 22, selStartY, 14, 4).stroke();
+doc
+  .font('Courier')
+  .fontSize(5.5)
+  .text('SEL', selStartX, selStartY + 6, { width: 14, align: 'center' })
+  .text('ST', selStartX + 22, selStartY + 6, { width: 14, align: 'center' });
 
-// Descriptions
-doc.font('Courier-Bold').fontSize(8).fillColor('#000000');
-let controlY = MARGIN + 105;
+// --- Descriptions (right column) ---
+const ctrlX = MARGIN + 118; // ~138
+const ctrlW = INNER_RIGHT - ctrlX;
+let controlY = MARGIN + 44;
 
 const controlsList = [
-  { btn: 'D-PAD', desc: 'Move cursor, scroll lists, and adjust spinners.' },
-  { btn: 'A BUTTON', desc: 'Confirm selections, save set, or add a character.' },
-  { btn: 'B BUTTON', desc: 'Go back, cancel actions, or delete characters.' },
-  { btn: 'START', desc: 'Alternate confirm button (represented as "ST").' },
-  { btn: 'SELECT', desc: 'Open menu for current active screen.' },
+  { btn: 'D-PAD', desc: 'Move cursor, scroll lists, adjust spinners.' },
+  { btn: 'A BUTTON', desc: 'Confirm, save set, or add a character.' },
+  { btn: 'B BUTTON', desc: 'Back, cancel, or delete characters.' },
+  { btn: 'START', desc: 'Alternate confirm ("ST").' },
+  { btn: 'SELECT', desc: 'Open menu for the active screen.' },
 ];
 
 controlsList.forEach((item) => {
-  doc.font('Courier-Bold').text(item.btn, MARGIN + 15, controlY, { width: 65 });
+  doc.font('Courier-Bold').fontSize(7).fillColor('#000000').text(item.btn, ctrlX, controlY, { width: ctrlW });
   doc
     .font('Courier')
-    .text(item.desc, MARGIN + 85, controlY, { width: PRINTABLE_WIDTH - 100, align: 'left' });
-  controlY += 34;
+    .fontSize(6.5)
+    .text(item.desc, ctrlX, controlY + 9, { width: ctrlW, align: 'left' });
+  controlY += 26;
 });
 
 // ==========================================
@@ -351,6 +382,38 @@ function getScreenshotPath(filename) {
   return fs.existsSync(fullPath) ? fullPath : null;
 }
 
+// Shared screenshot layout (two side-by-side screens)
+const imgWidth = 108;
+const imgHeight = 84;
+const col1X = INNER_LEFT; // 35
+const col2X = INNER_RIGHT - imgWidth; // 181
+const screensY = MARGIN + 38; // 58
+
+function drawScreen(imagePath, x, fallbackLabel) {
+  if (imagePath) {
+    doc.image(imagePath, x, screensY, { width: imgWidth, height: imgHeight });
+    doc.lineWidth(1).strokeColor('#000000').rect(x, screensY, imgWidth, imgHeight).stroke();
+  } else {
+    doc.lineWidth(1).strokeColor('#000000').rect(x, screensY, imgWidth, imgHeight).stroke();
+    doc
+      .font('Courier-Bold')
+      .fontSize(8)
+      .fillColor('#000000')
+      .text(fallbackLabel, x + 8, screensY + imgHeight / 2 - 4, {
+        width: imgWidth - 16,
+        align: 'center',
+      });
+  }
+}
+
+function drawCaption(x, title, body) {
+  doc.font('Courier-Bold').fontSize(8).fillColor('#000000').text(title, x, screensY + imgHeight + 6);
+  doc
+    .font('Courier')
+    .fontSize(6.5)
+    .text(body, x, screensY + imgHeight + 17, { width: imgWidth, align: 'justify' });
+}
+
 // ==========================================
 // PAGE 5: HOW TO PLAY - BASICS
 // ==========================================
@@ -358,73 +421,25 @@ setupPage(5, true, true);
 
 doc
   .font('Courier-Bold')
-  .fontSize(14)
-  .text('HOW TO PLAY', MARGIN + 15, MARGIN + 32, { align: 'center' });
+  .fontSize(12)
+  .text('HOW TO PLAY', MARGIN + 15, MARGIN + 26, { width: PRINTABLE_WIDTH - 30, align: 'center' });
 
-// First screen: Home Dashboard
 const screen1 = getScreenshotPath('home-screen.png');
 const screen2 = getScreenshotPath('track-food.png') || getScreenshotPath('nutrition.png');
 
-const imgWidth = 100;
-const imgHeight = 90; // Approx Game Boy resolution ratio
+drawScreen(screen1, col1X, 'HOME SCREEN');
+drawScreen(screen2, col2X, 'TRACK DIARY');
 
-// Left section (Screen 1)
-const col1X = MARGIN + 15;
-const col2X = MARGIN + PRINTABLE_WIDTH - 15 - imgWidth;
-const screensY = MARGIN + 55;
-
-if (screen1) {
-  doc.image(screen1, col1X, screensY, { width: imgWidth, height: imgHeight });
-  doc.lineWidth(1).strokeColor('#000000').rect(col1X, screensY, imgWidth, imgHeight).stroke();
-} else {
-  // Fallback box
-  doc.lineWidth(1).strokeColor('#000000').rect(col1X, screensY, imgWidth, imgHeight).stroke();
-  doc
-    .font('Courier-Bold')
-    .fontSize(8)
-    .text('HOME SCREEN', col1X + 10, screensY + 40, { width: imgWidth - 20, align: 'center' });
-}
-
-// Right section (Screen 2)
-if (screen2) {
-  doc.image(screen2, col2X, screensY, { width: imgWidth, height: imgHeight });
-  doc.lineWidth(1).strokeColor('#000000').rect(col2X, screensY, imgWidth, imgHeight).stroke();
-} else {
-  doc.lineWidth(1).strokeColor('#000000').rect(col2X, screensY, imgWidth, imgHeight).stroke();
-  doc
-    .font('Courier-Bold')
-    .fontSize(8)
-    .text('TRACK DIARY', col2X + 10, screensY + 40, { width: imgWidth - 20, align: 'center' });
-}
-
-// Captions
-doc
-  .font('Courier-Bold')
-  .fontSize(9)
-  .text('1. Home Dashboard', col1X, screensY + imgHeight + 8);
-doc
-  .font('Courier')
-  .fontSize(7.5)
-  .text(
-    'Monitor your daily calorie and macronutrient budgets directly on the home interface.',
-    col1X,
-    screensY + imgHeight + 20,
-    { width: 125, align: 'justify' }
-  );
-
-doc
-  .font('Courier-Bold')
-  .fontSize(9)
-  .text('2. Macro Logging', col2X, screensY + imgHeight + 8);
-doc
-  .font('Courier')
-  .fontSize(7.5)
-  .text(
-    'Log pre-bundled foods or create custom entries easily. Keep your progress steady!',
-    col2X,
-    screensY + imgHeight + 20,
-    { width: 125, align: 'justify' }
-  );
+drawCaption(
+  col1X,
+  '1. Home Dashboard',
+  'Monitor your daily calorie and macronutrient budgets on the home interface.'
+);
+drawCaption(
+  col2X,
+  '2. Macro Logging',
+  'Log pre-bundled foods or create custom entries. Keep your progress steady!'
+);
 
 // ==========================================
 // PAGE 6: HOW TO PLAY - WORKOUTS
@@ -433,62 +448,28 @@ setupPage(6, true, true);
 
 doc
   .font('Courier-Bold')
-  .fontSize(14)
-  .text('WORKOUTS & PROGRESS', MARGIN + 15, MARGIN + 32, { align: 'center' });
+  .fontSize(12)
+  .text('WORKOUTS & PROGRESS', MARGIN + 15, MARGIN + 26, {
+    width: PRINTABLE_WIDTH - 30,
+    align: 'center',
+  });
 
 const screen3 = getScreenshotPath('workout-session.png') || getScreenshotPath('workouts.png');
 const screen4 = getScreenshotPath('progress.png');
 
-if (screen3) {
-  doc.image(screen3, col1X, screensY, { width: imgWidth, height: imgHeight });
-  doc.lineWidth(1).strokeColor('#000000').rect(col1X, screensY, imgWidth, imgHeight).stroke();
-} else {
-  doc.lineWidth(1).strokeColor('#000000').rect(col1X, screensY, imgWidth, imgHeight).stroke();
-  doc
-    .font('Courier-Bold')
-    .fontSize(8)
-    .text('WORKOUT', col1X + 10, screensY + 40, { width: imgWidth - 20, align: 'center' });
-}
+drawScreen(screen3, col1X, 'WORKOUT');
+drawScreen(screen4, col2X, 'PROGRESS');
 
-if (screen4) {
-  doc.image(screen4, col2X, screensY, { width: imgWidth, height: imgHeight });
-  doc.lineWidth(1).strokeColor('#000000').rect(col2X, screensY, imgWidth, imgHeight).stroke();
-} else {
-  doc.lineWidth(1).strokeColor('#000000').rect(col2X, screensY, imgWidth, imgHeight).stroke();
-  doc
-    .font('Courier-Bold')
-    .fontSize(8)
-    .text('PROGRESS', col2X + 10, screensY + 40, { width: imgWidth - 20, align: 'center' });
-}
-
-// Captions
-doc
-  .font('Courier-Bold')
-  .fontSize(9)
-  .text('3. Workout Logging', col1X, screensY + imgHeight + 8);
-doc
-  .font('Courier')
-  .fontSize(7.5)
-  .text(
-    'Log sets, reps, and load metrically. A 60-second rest timer keeps you focused.',
-    col1X,
-    screensY + imgHeight + 20,
-    { width: 125, align: 'justify' }
-  );
-
-doc
-  .font('Courier-Bold')
-  .fontSize(9)
-  .text('4. Progress Graphs', col2X, screensY + imgHeight + 8);
-doc
-  .font('Courier')
-  .fontSize(7.5)
-  .text(
-    'Track body weight and calories on built-in charts. Press Up/Down to toggle views.',
-    col2X,
-    screensY + imgHeight + 20,
-    { width: 125, align: 'justify' }
-  );
+drawCaption(
+  col1X,
+  '3. Workout Logging',
+  'Log sets, reps, and load. A 60-second rest timer keeps you focused.'
+);
+drawCaption(
+  col2X,
+  '4. Progress Graphs',
+  'Track body weight and calories on charts. Press Up/Down to toggle views.'
+);
 
 // ==========================================
 // PAGE 7: MEMO
@@ -497,29 +478,27 @@ setupPage(7, true, true);
 
 doc
   .font('Courier-Bold')
-  .fontSize(14)
-  .text('MEMO / PASSWORDS', MARGIN + 15, MARGIN + 32, { align: 'center' });
+  .fontSize(12)
+  .text('MEMO / PASSWORDS', MARGIN + 15, MARGIN + 26, {
+    width: PRINTABLE_WIDTH - 30,
+    align: 'center',
+  });
 
 doc
   .font('Courier')
-  .fontSize(8)
-  .text(
-    'Use this section to record high scores, custom food IDs, or passwords.',
-    MARGIN + 15,
-    MARGIN + 52,
-    { width: PRINTABLE_WIDTH - 30, align: 'center' }
-  );
+  .fontSize(7.5)
+  .text('Record high scores, custom food IDs, or passwords.', MARGIN + 15, MARGIN + 44, {
+    width: PRINTABLE_WIDTH - 30,
+    align: 'center',
+  });
 
-// Draw writing lines (dotted/solid lines)
-let lineY = MARGIN + 74;
+// Draw writing lines
+let lineY = MARGIN + 62;
 doc.lineWidth(0.5).strokeColor('#555555');
 
-for (let i = 0; i < 11; i++) {
-  doc
-    .moveTo(MARGIN + 15, lineY)
-    .lineTo(MARGIN + PRINTABLE_WIDTH - 15, lineY)
-    .stroke();
-  lineY += 19;
+while (lineY <= BOTTOM - 24) {
+  doc.moveTo(INNER_LEFT, lineY).lineTo(INNER_RIGHT, lineY).stroke();
+  lineY += 17;
 }
 
 // End & Save Document
