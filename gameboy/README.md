@@ -131,7 +131,13 @@ npm run gb:gen-exercises # Regenerate the ROM exercise table from data/exercises
 npm run gb:gen-music     # Reduce assets/*.mid to APU data (src/generated/music_data.{c,h})
 npm run gb:build         # Build the .gbc ROM
 npm run gb:copy-rom      # Copy the ROM into app + website emulator assets
+npm run gb:manual        # Generate the PDF instruction manual (musclog-manual.pdf)
 ```
+
+`gb:manual` renders `gameboy/tools/generate-manual.js` into `musclog-manual.pdf` at
+the repo root and mirrors a copy into `public/images/musclog-manual.pdf`, which the
+website's Game Boy page (`/gameboy`) links for download. Rerun it whenever the manual
+copy or the `gameboy/screenshots/` captures it embeds change.
 
 The generated food, exercise, and music C files are committed so normal ROM
 builds do not depend on the JSON seed data or the `.mid` assets. Regenerate them

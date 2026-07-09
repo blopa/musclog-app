@@ -14,6 +14,8 @@ const PDFDocument = require('pdfkit');
 
 // Paths
 const OUTPUT_FILE = path.join(__dirname, '../../musclog-manual.pdf');
+// Public copy served by the website's Game Boy page for download.
+const PUBLIC_OUTPUT_FILE = path.join(__dirname, '../../public/images/musclog-manual.pdf');
 const SCREENSHOT_DIR = path.join(__dirname, '../screenshots');
 const CARTRIDGE_LABEL_IMAGE = path.join(__dirname, '../assets/gameboy-cover.png');
 
@@ -678,4 +680,14 @@ doc.end();
 
 writeStream.on('finish', () => {
   console.log(`PDF successfully generated at: ${OUTPUT_FILE}`);
+
+  // Mirror the PDF into the website's public assets so the Game Boy page can
+  // serve it for download (same pattern as gb:copy-rom for the ROM).
+  try {
+    fs.mkdirSync(path.dirname(PUBLIC_OUTPUT_FILE), { recursive: true });
+    fs.copyFileSync(OUTPUT_FILE, PUBLIC_OUTPUT_FILE);
+    console.log(`PDF copied to public assets: ${PUBLIC_OUTPUT_FILE}`);
+  } catch (err) {
+    console.error('Failed to copy PDF into public assets:', err);
+  }
 });
