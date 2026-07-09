@@ -82,95 +82,69 @@ function setupPage(pageIndex, hasHeader = true, hasFooter = true) {
 
 // ==========================================
 // PAGE 1: COVER PAGE (No headers/footers)
-// Two columns: title block (left) + cartridge art (right)
+// Knockout title banner (top) + framed hero art (left) + type block (right)
 // ==========================================
 setupPage(1, false, false);
 
-const coverColW = 135;
-const coverColX = MARGIN + 10; // 30
-
-// Decorative double lines above the title
+// Inner decorative frame for a double-border "boxed manual" look
 doc
-  .lineWidth(2)
+  .lineWidth(0.75)
   .strokeColor('#000000')
-  .moveTo(coverColX, MARGIN + 28)
-  .lineTo(coverColX + coverColW, MARGIN + 28)
-  .stroke();
-doc
-  .lineWidth(0.5)
-  .strokeColor('#000000')
-  .moveTo(coverColX, MARGIN + 33)
-  .lineTo(coverColX + coverColW, MARGIN + 33)
+  .rect(MARGIN + 6, MARGIN + 6, PRINTABLE_WIDTH - 12, PRINTABLE_HEIGHT - 12)
   .stroke();
 
-// Title
+// --- Title banner: white knockout text on a solid black bar ---
+const bannerX = MARGIN + 14; // 34
+const bannerY = MARGIN + 14; // 34
+const bannerW = PRINTABLE_WIDTH - 28; // 256
+const bannerH = 30;
+doc.rect(bannerX, bannerY, bannerW, bannerH).fill('#000000');
+
+// Small pixel accents flanking the title (retro touch)
+const pixMid = bannerY + bannerH / 2 - 3;
+doc.fillColor('#FFFFFF').rect(bannerX + 12, pixMid, 6, 6).fill('#FFFFFF');
+doc.rect(bannerX + bannerW - 18, pixMid, 6, 6).fill('#FFFFFF');
+
 doc
   .font('Courier-Bold')
   .fontSize(20)
-  .fillColor('#000000')
-  .text('MUSCLOG GB', coverColX, MARGIN + 44, { width: coverColW, align: 'center' });
-
-// Subtitle
-doc
-  .font('Courier')
-  .fontSize(8)
-  .text('INSTRUCTION BOOKLET', coverColX, MARGIN + 72, {
-    width: coverColW,
-    align: 'center',
-    characterSpacing: 1,
-  });
-
-// Decorative double lines below the subtitle
-doc
-  .lineWidth(0.5)
-  .strokeColor('#000000')
-  .moveTo(coverColX, MARGIN + 88)
-  .lineTo(coverColX + coverColW, MARGIN + 88)
-  .stroke();
-doc
-  .lineWidth(2)
-  .strokeColor('#000000')
-  .moveTo(coverColX, MARGIN + 92)
-  .lineTo(coverColX + coverColW, MARGIN + 92)
-  .stroke();
-
-// Bottom text: Retro publisher feel
-doc
-  .font('Courier-Bold')
-  .fontSize(8)
-  .fillColor('#000000')
-  .text('DEVELOPED BY', coverColX, BOTTOM - 40, { width: coverColW, align: 'center' })
-  .font('Courier')
-  .text('BLOPA', coverColX, BOTTOM - 28, {
-    width: coverColW,
+  .fillColor('#FFFFFF')
+  .text('MUSCLOG GB', bannerX, bannerY + 8, {
+    width: bannerW,
     align: 'center',
     characterSpacing: 2,
   });
 
-// Cartridge label or default placeholder box (right column)
-const artBoxW = 118;
-const artBoxH = 100;
-const artBoxX = INNER_RIGHT - artBoxW; // right-aligned to inner edge
-const artBoxY = MARGIN + (PRINTABLE_HEIGHT - artBoxH) / 2; // vertically centered
+// --- Hero art (left), framed with a drop shadow for depth ---
+// Box matches the source image aspect ratio (2100x1850 ~= 1.135) so it fills
+// the frame exactly with no letterboxing.
+const artW = 114;
+const artH = 100;
+const artX = MARGIN + 18; // 38
+const artY = MARGIN + 64; // 84
 
 function drawFallbackCoverBox() {
-  doc.lineWidth(1).strokeColor('#000000').rect(artBoxX, artBoxY, artBoxW, artBoxH).stroke();
-
   doc
     .font('Courier-Bold')
-    .fontSize(11)
-    .text('MUSCLOG GB ART', artBoxX + 8, artBoxY + 44, { width: artBoxW - 16, align: 'center' });
+    .fontSize(12)
+    .fillColor('#000000')
+    .text('MUSCLOG GB', artX + 8, artY + artH / 2 - 11, { width: artW - 16, align: 'center' })
+    .fontSize(8)
+    .text('ART', artX + 8, artY + artH / 2 + 4, { width: artW - 16, align: 'center' });
 }
+
+// Drop shadow behind the art (offset down-right)
+doc.fillColor('#000000').rect(artX + 4, artY + 4, artW, artH).fill('#000000');
+// White mask so any residual gap reads as clean white, never the shadow
+doc.fillColor('#FFFFFF').rect(artX, artY, artW, artH).fill('#FFFFFF');
 
 if (fs.existsSync(CARTRIDGE_LABEL_IMAGE)) {
   try {
-    doc.image(CARTRIDGE_LABEL_IMAGE, artBoxX, artBoxY, {
-      fit: [artBoxW, artBoxH],
+    doc.image(CARTRIDGE_LABEL_IMAGE, artX, artY, {
+      fit: [artW, artH],
       align: 'center',
       valign: 'center',
     });
-    // Draw fine border around cover art
-    doc.lineWidth(1).strokeColor('#000000').rect(artBoxX, artBoxY, artBoxW, artBoxH).stroke();
   } catch (err) {
     console.error('Error drawing cartridge label image:', err);
     drawFallbackCoverBox();
@@ -178,6 +152,35 @@ if (fs.existsSync(CARTRIDGE_LABEL_IMAGE)) {
 } else {
   drawFallbackCoverBox();
 }
+// Clean frame around the art
+doc.lineWidth(1.5).strokeColor('#000000').rect(artX, artY, artW, artH).stroke();
+
+// --- Type block (right column), vertically balanced against the art ---
+const colX = artX + artW + 18; // 170
+const colW = INNER_RIGHT - colX; // ~119
+
+doc
+  .font('Courier-Bold')
+  .fontSize(15)
+  .fillColor('#000000')
+  .text('INSTRUCTION', colX, MARGIN + 70, { width: colW })
+  .text('BOOKLET', colX, MARGIN + 88, { width: colW });
+
+// Divider rule
+doc
+  .lineWidth(1)
+  .strokeColor('#000000')
+  .moveTo(colX, MARGIN + 114)
+  .lineTo(colX + 104, MARGIN + 114)
+  .stroke();
+
+doc
+  .font('Courier-Bold')
+  .fontSize(7)
+  .text('DEVELOPED BY', colX, MARGIN + 124, { width: colW, characterSpacing: 1 })
+  .font('Courier-Bold')
+  .fontSize(13)
+  .text('BLOPA', colX, MARGIN + 134, { width: colW, characterSpacing: 3 });
 
 // ==========================================
 // PAGE 2: TABLE OF CONTENTS & WARNING
@@ -326,7 +329,7 @@ doc.rect(dpadX, dpadY + 8, 24, 8).stroke();
 doc.rect(dpadX + 8, dpadY + 8, 8, 8).fill('#000000');
 
 // Buttons A and B
-const btnX = MARGIN + 90;
+const btnX = MARGIN + 66;
 const btnY = MARGIN + 60;
 // B Button
 doc.lineWidth(1.5).strokeColor('#000000').circle(btnX, btnY, 6).stroke();
