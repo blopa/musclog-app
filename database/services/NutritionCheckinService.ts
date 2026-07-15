@@ -7,6 +7,7 @@ import type { CheckinStatus } from '@/database/models/NutritionCheckin';
 import type NutritionLog from '@/database/models/NutritionLog';
 import type UserMetric from '@/database/models/UserMetric';
 import type WorkoutLog from '@/database/models/WorkoutLog';
+import { addFastedZeroDaysToMap } from '@/database/nutritionDayCoverage';
 import {
   dayKeyRange,
   dayStartInTimezone,
@@ -182,6 +183,8 @@ export class NutritionCheckinService {
       const dayKey = utcNormalizedDayKey(log.date, log.timezone);
       caloriesByDay.set(dayKey, (caloriesByDay.get(dayKey) ?? 0) + (snapshot.loggedCalories ?? 0));
     }
+
+    await addFastedZeroDaysToMap(caloriesByDay, range, 0);
 
     const daysWithLogs = caloriesByDay.size;
     const totalCalories = Array.from(caloriesByDay.values()).reduce((a, b) => a + b, 0);

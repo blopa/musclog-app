@@ -686,6 +686,33 @@ export class ExerciseService {
   }
 
   /**
+   * Returns the bundled JSON exercises that are missing from `existingExercises`,
+   * deduped by BOTH translated name and fixed id (`String(exerciseIndex)`).
+   *
+   * The id check is what keeps the sync idempotent. Entries are inserted with a
+   * fixed id, and the name check alone is locale-dependent — exercise names are
+   * translated per language, so after a language switch (or a JSON name refinement
+   * between versions) an already-present exercise looks "missing" by its new name
+   * while its id is unchanged. Skipping by id prevents re-inserting an existing
+   * primary key, which throws `UNIQUE constraint failed: exercises.id` (sqlite
+   * error 1555). `existingIds` intentionally includes rows of every source and
+   * soft-deleted rows, because those still occupy their id in SQLite.
+   */
+  private static computeMissingAppExercises(existingExercises: Exercise[]): ExerciseJsonData[] {
+    const existingNames = new Set(
+      existingExercises
+        .filter((exercise) => exercise.source === 'app' && exercise.deletedAt == null)
+        .map((exercise) => (exercise.name ?? '').toLowerCase())
+    );
+    const existingIds = new Set(existingExercises.map((exercise) => exercise.id));
+
+    return exercisesJson.filter(
+      (data) =>
+        !existingNames.has(data.name.toLowerCase()) && !existingIds.has(String(data.exerciseIndex))
+    );
+  }
+
+  /**
    * Compares the bundled exercisesEnUS.json against the exercises in the DB that
    * have source='app', and creates any entries that are missing. Intended to run
    * on every app boot so that new exercises added to the JSON in a future update
@@ -695,86 +722,89 @@ export class ExerciseService {
    * Returns the number of exercises created (0 on a no-op boot).
    */
   static async syncAppExercises(): Promise<number> {
-    const existingExercises = await database.get<Exercise>('exercises').query().fetch();
-    const existingNames = new Set(
-      existingExercises
-        .filter((exercise) => exercise.source === 'app' && exercise.deletedAt == null)
-        .map((exercise) => (exercise.name ?? '').toLowerCase())
-    );
-
-    // New entries are inserted with a fixed id of `String(exerciseIndex)`, so we
-    // must never re-create an id that already exists or the batch throws
-    // `UNIQUE constraint failed: exercises.id` (sqlite error 1555). This matters
-    // because the name-based dedup above is locale-dependent — exercise names
-    // are translated per language, so after a language switch (or a JSON name
-    // refinement between versions) an already-present exercise looks "missing"
-    // by name while its id is unchanged. Skipping by id keeps the sync
-    // idempotent regardless of locale.
-    const existingIds = new Set(existingExercises.map((exercise) => exercise.id));
-
-    // Determine which JSON entries are missing from the DB (by name and by id)
-    const missing = exercisesJson.filter(
-      (data) =>
-        !existingNames.has(data.name.toLowerCase()) && !existingIds.has(String(data.exerciseIndex))
-    );
-
-    if (missing.length === 0) {
+    // Fast path: skip all work — and avoid opening a writer — when nothing is
+    // missing. This read is only an optimization; the authoritative check runs
+    // inside the writer below, so a stale result here can never cause a bad write.
+    const preCheck = await database.get<Exercise>('exercises').query().fetch();
+    if (this.computeMissingAppExercises(preCheck).length === 0) {
       return 0;
     }
 
     const now = Date.now();
 
-    // Ensure muscles are seeded and get the name→id map for junction records
+    // Ensure muscles are seeded and get the name→id map for junction records.
+    // Done before the write block below because seedMuscles() opens its own
+    // writer, and nesting database.write() calls deadlocks (see AGENTS.md).
     const muscleNameToId = await MuscleService.seedMuscles();
 
-    // prepareCreate assigns IDs synchronously
-    const prepared = missing.map((data) => {
-      const jsonIndex = exercisesJson.indexOf(data);
-      const mechanicType = data.mechanicType;
-      const equipmentType = this.inferEquipmentFromName(data.name, data.equipmentType);
+    let createdCount = 0;
 
-      return database.get<Exercise>('exercises').prepareCreate((exercise) => {
-        exercise._raw.id = String(data.exerciseIndex);
-        exercise.name = data.name;
-        exercise.description = data.description;
-        exercise.muscleGroup = data.muscleGroup as MuscleGroup;
-        exercise.equipmentType = equipmentType as EquipmentType;
-        exercise.mechanicType = mechanicType as MechanicType;
-        exercise.source = 'app';
-        exercise.loadMultiplier = data.loadMultiplier ?? 1.0;
-        exercise.orderIndex = jsonIndex;
-        exercise.imageUrl = buildExerciseCloudUrl(jsonIndex + 1);
-        exercise.createdAt = now;
-        exercise.updatedAt = now;
-        exercise.deletedAt = undefined;
-      });
-    });
-
-    const junctionRecords = missing.flatMap((data, i) =>
-      (data.targetMuscles ?? []).flatMap((muscleName) => {
-        const muscleId = muscleNameToId.get(muscleName);
-        if (!muscleId) {
-          return [];
-        }
-        return [
-          database.get<ExerciseMuscle>('exercise_muscles').prepareCreate((link) => {
-            link.exerciseId = prepared[i].id;
-            link.muscleId = muscleId;
-            link.role = 'primary';
-            link.createdAt = now;
-            link.updatedAt = now;
-            link.deletedAt = undefined;
-          }),
-        ];
-      })
-    );
-
+    // The existence check and the insert MUST happen inside a single writer.
+    // WatermelonDB serialises write blocks, so re-reading the existing rows here
+    // (instead of reusing the pre-check above) closes the TOCTOU window: a second
+    // concurrent syncAppExercises() run cannot read a stale "missing" set — before
+    // this run's rows are committed — and then re-insert a fixed id we already
+    // wrote, which would throw `sqlite error 1555 (UNIQUE constraint failed:
+    // exercises.id)`. Never read-then-write across a writer boundary here.
     await database.write(async () => {
+      const existingExercises = await database.get<Exercise>('exercises').query().fetch();
+      const missing = this.computeMissingAppExercises(existingExercises);
+
+      if (missing.length === 0) {
+        return;
+      }
+
+      // prepareCreate assigns IDs synchronously
+      const prepared = missing.map((data) => {
+        const jsonIndex = exercisesJson.indexOf(data);
+        const mechanicType = data.mechanicType;
+        const equipmentType = this.inferEquipmentFromName(data.name, data.equipmentType);
+
+        return database.get<Exercise>('exercises').prepareCreate((exercise) => {
+          exercise._raw.id = String(data.exerciseIndex);
+          exercise.name = data.name;
+          exercise.description = data.description;
+          exercise.muscleGroup = data.muscleGroup as MuscleGroup;
+          exercise.equipmentType = equipmentType as EquipmentType;
+          exercise.mechanicType = mechanicType as MechanicType;
+          exercise.source = 'app';
+          exercise.loadMultiplier = data.loadMultiplier ?? 1.0;
+          exercise.orderIndex = jsonIndex;
+          exercise.imageUrl = buildExerciseCloudUrl(jsonIndex + 1);
+          exercise.createdAt = now;
+          exercise.updatedAt = now;
+          exercise.deletedAt = undefined;
+        });
+      });
+
+      const junctionRecords = missing.flatMap((data, i) =>
+        (data.targetMuscles ?? []).flatMap((muscleName) => {
+          const muscleId = muscleNameToId.get(muscleName);
+          if (!muscleId) {
+            return [];
+          }
+          return [
+            database.get<ExerciseMuscle>('exercise_muscles').prepareCreate((link) => {
+              link.exerciseId = prepared[i].id;
+              link.muscleId = muscleId;
+              link.role = 'primary';
+              link.createdAt = now;
+              link.updatedAt = now;
+              link.deletedAt = undefined;
+            }),
+          ];
+        })
+      );
+
       await database.batch(...prepared, ...junctionRecords);
+      createdCount = prepared.length;
     });
 
-    console.log(`[syncAppExercises] Created ${prepared.length} new app exercise(s)`);
-    return prepared.length;
+    if (createdCount > 0) {
+      console.log(`[syncAppExercises] Created ${createdCount} new app exercise(s)`);
+    }
+
+    return createdCount;
   }
 
   /**

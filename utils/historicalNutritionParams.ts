@@ -73,12 +73,22 @@ export async function getHistoricalNutritionParams(options: {
     NutritionService.getNutritionLogsForDateRange(startOfRange, inclusiveRangeEndDate),
   ]);
 
-  const distinctDaysWithNutrition = new Set(
+  const loggedDayKeys = new Set(
     nutritionLogs.map((log) => utcNormalizedDayKey(log.date, log.timezone))
-  ).size;
+  );
+  const distinctDaysWithNutrition = loggedDayKeys.size;
+  // Gate on days with *actual* intake (fasted days excluded) so empirical TDEE is only
+  // estimated once there's enough real logging to trust the calorie total.
   if (distinctDaysWithNutrition < minNutritionDays || rangeNutrients.calories <= 0) {
     return null;
   }
+
+  // Empirical TDEE denominator. By default this is the full lookback window (every unlogged
+  // day treated as 0 kcal). With the fasting-day feature on, getRangeNutrients sets
+  // effectiveDayCount (days that had food plus flagged fasted days), so a forgotten log no
+  // longer deflates TDEE while an intentional fast still lowers it as a real 0-kcal day;
+  // with the feature off it is undefined and the legacy window applies.
+  const historicalTotalDays = rangeNutrients.effectiveDayCount ?? lookbackDays;
 
   const weightWithDecrypted = await Promise.all(
     weightMetrics.map(async (m) => {
@@ -150,7 +160,7 @@ export async function getHistoricalNutritionParams(options: {
 
   return {
     historicalTotalCalories: Math.round(rangeNutrients.calories),
-    historicalTotalDays: lookbackDays,
+    historicalTotalDays,
     historicalInitialWeightKg: initialWeight,
     historicalFinalWeightKg: finalWeight,
     ...(initialFatPercent !== undefined && { historicalInitialFatPercent: initialFatPercent }),

@@ -11,6 +11,7 @@ import {
 } from '@/database/encryptionHelpers';
 import Food from '@/database/models/Food';
 import NutritionLog, { MealType } from '@/database/models/NutritionLog';
+import { getNutritionDayCoverage, loggedOrFastedDayKeys } from '@/database/nutritionDayCoverage';
 import { MealService } from '@/database/services/MealService';
 import i18n from '@/lang/lang';
 import { writeNutritionLogToHealthConnect } from '@/services/healthConnectNutrition';
@@ -21,7 +22,6 @@ import {
   dayKeyRangeForLocalDate,
   MS_PER_SOLAR_DAY,
   utcDayKeyFromLocalDate,
-  utcNormalizedDayKey,
 } from '@/utils/calendarDate';
 import { aiIngredientMacrosPer100g, totalCarbsForFoodSource } from '@/utils/carbsConvention';
 import { handleError } from '@/utils/handleError';
@@ -482,6 +482,12 @@ export class NutritionService {
     carbs: number;
     fat: number;
     fiber: number;
+    /**
+     * Distinct logged-or-fasted days in the range (the averaging divisor). Only set when the
+     * fasting-day feature is on; `undefined` otherwise, so callers fall back to their own
+     * default day count (calendar span / lookback window).
+     */
+    effectiveDayCount?: number;
     dailyAverages: { calories: number; protein: number; carbs: number; fat: number; fiber: number };
   }> {
     const logs = await this.getNutritionLogsForDateRange(startDate, endDate);
@@ -501,7 +507,18 @@ export class NutritionService {
       totalFiber += nutrients.fiber;
     }
 
-    const days = differenceInCalendarDays(endDate, startDate) + 1;
+    // Divisor: by default every calendar day in the range (empty days count as 0 kcal).
+    // With the fasting-day feature on, divide instead by the days that actually had food
+    // plus the days the user flagged as fasted, so forgotten-log days don't drag the
+    // average down while intentional fasts still count as a real 0-kcal day.
+    let days = differenceInCalendarDays(endDate, startDate) + 1;
+    let effectiveDayCount: number | undefined;
+    const range = dayKeyRange(utcDayKeyFromLocalDate(startDate), utcDayKeyFromLocalDate(endDate));
+    const coverage = await getNutritionDayCoverage(logs, { range });
+    if (coverage.fastedDaysEnabled) {
+      effectiveDayCount = coverage.effectiveDayCount;
+      days = Math.max(1, effectiveDayCount);
+    }
 
     return {
       calories: totalCalories,
@@ -509,6 +526,7 @@ export class NutritionService {
       carbs: totalCarbs,
       fat: totalFat,
       fiber: totalFiber,
+      effectiveDayCount,
       dailyAverages: {
         calories: totalCalories / days,
         protein: totalProtein / days,
@@ -1033,13 +1051,13 @@ export class NutritionService {
       .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('date', Q.desc))
       .fetch();
 
-    if (logs.length === 0) {
+    const dayKeys = await loggedOrFastedDayKeys(logs);
+
+    if (dayKeys.size === 0) {
       return 0;
     }
 
-    const uniqueDayStarts = [
-      ...new Set(logs.map((log) => utcNormalizedDayKey(log.date ?? 0, log.timezone))),
-    ].sort((a, b) => b - a);
+    const uniqueDayStarts = [...dayKeys].sort((a, b) => b - a);
 
     let streak = 0;
     const todayKey = utcDayKeyFromLocalDate(new Date());
@@ -1077,13 +1095,11 @@ export class NutritionService {
       .query(Q.where('deleted_at', Q.eq(null)))
       .fetch();
 
-    if (logs.length === 0) {
+    const loggedDayKeys = await loggedOrFastedDayKeys(logs);
+
+    if (loggedDayKeys.size === 0) {
       return 0;
     }
-
-    const loggedDayKeys = new Set(
-      logs.map((log) => utcNormalizedDayKey(log.date ?? 0, log.timezone))
-    );
 
     const todayKey = utcDayKeyFromLocalDate(date);
     let streak = 0;

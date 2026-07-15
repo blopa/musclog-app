@@ -18,6 +18,7 @@ import { dumpDatabase } from '@/database/exportDb';
 import { restoreDatabase } from '@/database/importDb';
 
 import { detectBarcodes } from './barcodeScanner';
+import { timestampSlug } from './timestampSlug';
 type ReadingOptions = NonNullable<Parameters<typeof readAsStringAsync>[1]>;
 
 export { detectBarcodes };
@@ -27,8 +28,7 @@ type ExportDatabaseOptions = {
 };
 
 function getExportFileName(): string {
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-  return `${timestamp}-musclog-export.json`;
+  return `${timestampSlug()}-musclog-export.json`;
 }
 
 export async function downloadFile(uri: string, fileName?: string): Promise<void> {

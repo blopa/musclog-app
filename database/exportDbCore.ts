@@ -1,15 +1,9 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import { CURRENT_DATABASE_VERSION } from '@/constants/database';
-import {
-  ASYNC_STORAGE_EXCLUDED_KEYS,
-  ASYNC_STORAGE_EXCLUDED_PREFIXES,
-  RESTORE_ORDER,
-  SETTINGS_EXCLUDED_TYPES,
-} from '@/constants/exportImport';
+import { RESTORE_ORDER, SETTINGS_EXCLUDED_TYPES } from '@/constants/exportImport';
 import { getExportPlatform } from '@/constants/platform';
 import { encrypt } from '@/utils/encryption';
 
+import type { AsyncStorageDump } from './asyncStorageBackup';
 import {
   decryptNumber,
   decryptNutritionLogSnapshotRow,
@@ -36,10 +30,17 @@ export type CapturedTableRows = Record<string, Record<string, unknown>[]>;
 export type DumpDatabaseOptions = {
   includeDeletedRecords?: boolean;
   exportVersion?: number;
+  // AsyncStorage snapshot to embed as `_async_storage_` in the dump. Absent (or
+  // empty) means the dump carries no AsyncStorage section. This module never
+  // captures live AsyncStorage itself — callers that want the live state pass
+  // `await captureAsyncStorageDump()` explicitly (see exportDb.ts), and snapshot
+  // conversions pass their captured sidecar (see sqliteBackupConvert.ts).
+  asyncStorageData?: AsyncStorageDump;
 };
 
 type DumpRowsOptions = {
   exportVersion?: number;
+  asyncStorageData?: AsyncStorageDump;
 };
 
 /** SQL to list user tables (excludes SQLite-internal tables). */
@@ -59,25 +60,12 @@ export function selectAllRowsSql(tableName: string, includeDeletedRecords = true
   return `SELECT * FROM ${quoteIdentifier(tableName)}${deletedRecordsClause};`;
 }
 
-async function addAsyncStorageDump(dbData: ExportDump): Promise<void> {
-  const allKeys = await AsyncStorage.getAllKeys();
-  const keysToBackup = allKeys.filter(
-    (key) =>
-      !ASYNC_STORAGE_EXCLUDED_KEYS.has(key) &&
-      !ASYNC_STORAGE_EXCLUDED_PREFIXES.some((prefix) => key.startsWith(prefix))
-  );
-
-  if (keysToBackup.length === 0) {
+function addAsyncStorageDump(dbData: ExportDump, snapshot?: AsyncStorageDump): void {
+  if (!snapshot || Object.keys(snapshot).length === 0) {
     return;
   }
 
-  const pairs = await AsyncStorage.multiGet(keysToBackup);
-  const asyncStorageData: Record<string, string | null> = {};
-  for (const [key, value] of pairs) {
-    asyncStorageData[key] = value;
-  }
-
-  dbData._async_storage_ = asyncStorageData;
+  dbData._async_storage_ = snapshot;
 }
 
 export async function dumpRowsToJson(
@@ -143,7 +131,7 @@ export async function dumpRowsToJson(
     dbData[tableName] = rows;
   }
 
-  await addAsyncStorageDump(dbData);
+  addAsyncStorageDump(dbData, options.asyncStorageData);
 
   let jsonString = JSON.stringify(dbData, null, 2);
   if (encryptionPhrase && encryptionPhrase.trim()) {
@@ -173,5 +161,6 @@ export async function dumpDatabaseWithQueryRunner(
 
   return dumpRowsToJson(capturedRows, encryptionPhrase, {
     exportVersion: options.exportVersion,
+    asyncStorageData: options.asyncStorageData,
   });
 }

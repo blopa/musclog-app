@@ -1,12 +1,13 @@
 import { TFunction } from 'i18next';
 import { Clock, LucideScale, Utensils } from 'lucide-react-native';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, View } from 'react-native';
 
 import { FoodNutritionSectionCard } from '@/components/cards/FoodNutritionSectionCard';
 import { GenericCard } from '@/components/cards/GenericCard';
 import type { MealType } from '@/database/models';
-import Food from '@/database/models/Food';
+import Food, { type MicrosData } from '@/database/models/Food';
 import NutritionLog from '@/database/models/NutritionLog';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -19,6 +20,7 @@ import {
   utcNormalizedDayKey,
 } from '@/utils/calendarDate';
 import { formatDisplayGrams } from '@/utils/formatDisplayWeight';
+import { handleError } from '@/utils/handleError';
 import { getMassUnitLabel } from '@/utils/unitConversion';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -89,41 +91,60 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
   const theme = useTheme();
   const { t } = useTranslation();
   const { units, intuitiveEatingMode } = useSettings();
+  // Consumed micros, tagged with the log they belong to so switching entries never
+  // briefly shows the previous entry's values while the new lookup resolves.
+  const [resolvedMicros, setResolvedMicros] = useState<{
+    logId: string;
+    micros: MicrosData;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!entry) {
+      return;
+    }
+
+    let cancelled = false;
+    const { log } = entry;
+    log
+      .getConsumedMicros()
+      .then((micros) => {
+        if (!cancelled) {
+          setResolvedMicros({ logId: log.id, micros });
+        }
+      })
+      .catch((error) => handleError(error, 'FoodMealDetailsModal.getConsumedMicros'));
+
+    return () => {
+      cancelled = true;
+    };
+  }, [entry]);
 
   if (!entry) {
     return null;
   }
 
   const { log, food, nutrients, gramWeight, displayName, mealType } = entry;
-
-  const scale = gramWeight > 0 ? 100 / gramWeight : 1;
-  const per100gCalories = food ? food.calories : nutrients.calories * scale;
-  const per100gProtein = food ? food.protein : nutrients.protein * scale;
-  const per100gCarbs = food ? food.carbs : nutrients.carbs * scale;
-  const per100gFat = food ? food.fat : nutrients.fat * scale;
-  const per100gFiber = food ? food.fiber : nutrients.fiber * scale;
-
-  const micros = food?.micros ?? {};
+  const micros = resolvedMicros?.logId === log.id ? resolvedMicros.micros : {};
 
   const foodData = {
     name: displayName,
     category: food?.brand ?? getMealTypeLabel(mealType, t),
-    calories: per100gCalories,
-    protein: per100gProtein,
-    carbs: per100gCarbs,
-    fat: per100gFat,
+    calories: nutrients.calories,
+    protein: nutrients.protein,
+    carbs: nutrients.carbs,
+    fat: nutrients.fat,
     source: food?.source as 'openfood' | 'usda' | 'local' | 'ai' | 'musclog' | undefined,
   };
 
   const nutritionalData = {
-    fiber: per100gFiber,
-    sugar: micros.sugar,
+    fiber: nutrients.fiber,
+    sugar: micros.sugar ?? 0,
     saturatedFat: micros.saturatedFat ?? 0,
     sodium: micros.sodium ?? 0,
-    alcohol: micros.alcohol,
-    potassium: micros.potassium,
-    magnesium: micros.magnesium,
-    zinc: micros.zinc,
+    alcohol: nutrients.alcohol,
+    potassium: micros.potassium ?? 0,
+    magnesium: micros.magnesium ?? 0,
+    zinc: micros.zinc ?? 0,
   };
 
   const massUnit = getMassUnitLabel(units);
@@ -198,8 +219,8 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
           canEdit={false}
           mode="foodLog"
           nutritionalData={nutritionalData}
-          servingSize={gramWeight}
-          servingBasis="per_100g"
+          servingSize={1}
+          servingBasis="per_serving"
           isLoadingDetails={false}
           intuitiveMode={intuitiveEatingMode}
           showName={false}
@@ -209,7 +230,7 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
             novaGroup,
             labels: food?.labels,
           }}
-          protein={per100gProtein}
+          protein={nutrients.protein}
         />
       </ScrollView>
     </FullScreenModal>

@@ -1,6 +1,6 @@
 export const DEFAULT_BATCH_SIZE = 5;
 
-export const CURRENT_DATABASE_VERSION = 22;
+export const CURRENT_DATABASE_VERSION = 23;
 
 // Build-time toggle for the nutrition-log loss detection/telemetry in dbDurability.ts.
 // Flip per build to enable/disable the baseline writes and Sentry loss reports.

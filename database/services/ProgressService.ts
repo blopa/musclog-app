@@ -11,8 +11,15 @@ import UserMetric, { UserMetricType } from '@/database/models/UserMetric';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import { withFastedZeroDays } from '@/database/nutritionDayCoverage';
 import { PeriodLogRepository } from '@/database/repositories/PeriodLogRepository';
-import { localDayStartMs, MS_PER_SOLAR_DAY, utcNormalizedDayKey } from '@/utils/calendarDate';
+import {
+  dayKeyRange,
+  localDayStartMs,
+  MS_PER_SOLAR_DAY,
+  utcDayKeyFromLocalDate,
+  utcNormalizedDayKey,
+} from '@/utils/calendarDate';
 import {
   calculateBMR,
   calculateBMRKatchMcArdle,
@@ -221,7 +228,24 @@ export class ProgressService {
       new Date(startDate),
       new Date(endDate)
     );
-    const nutritionDaily = await this.aggregateNutritionDaily(nutritionLogs);
+    let nutritionDaily = await this.aggregateNutritionDaily(nutritionLogs);
+    const nutritionDayRange = dayKeyRange(
+      utcDayKeyFromLocalDate(new Date(startDate)),
+      utcDayKeyFromLocalDate(new Date(endDate))
+    );
+    const nutritionDayResult = await withFastedZeroDays(
+      nutritionDaily,
+      nutritionDayRange,
+      (date) => ({
+        date,
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        fiber: 0,
+      })
+    );
+    nutritionDaily = nutritionDayResult.days;
 
     // 3. Fetch Workouts
     const workoutLogs = await database
@@ -308,7 +332,8 @@ export class ProgressService {
       heightCm,
       startDate,
       endDate,
-      isImperial
+      isImperial,
+      nutritionDayResult.fastedDaysEnabled
     );
 
     // 8. Calculate New Correlation Data
@@ -663,7 +688,8 @@ export class ProgressService {
     heightCm: number,
     startDate: number,
     endDate: number,
-    isImperial: boolean
+    isImperial: boolean,
+    useEffectiveNutritionDays: boolean
   ): Promise<ProgressInsights> {
     const [user, currentGoal, useBfForCalculations] = await Promise.all([
       UserService.getCurrentUser(),
@@ -693,9 +719,18 @@ export class ProgressService {
     // We use [start, end) interval for calories because the final weight measurement
     // is typically taken at the start of the final day.
     // empiricalStart/End are already UTC-normalized day keys (from decryptMetricPoints).
-    const empiricalCalories = nutritionDaily
-      .filter((n) => n.date >= empiricalStart && n.date < empiricalEnd)
-      .reduce((acc, curr) => acc + curr.calories, 0);
+    const empiricalDayEntries = nutritionDaily.filter(
+      (n) => n.date >= empiricalStart && n.date < empiricalEnd
+    );
+    const empiricalCalories = empiricalDayEntries.reduce((acc, curr) => acc + curr.calories, 0);
+    // Divisor for empirical TDEE: the weight-measurement span by default. With the fasting-day
+    // feature on, divide instead by the days that actually had food plus the flagged fasted
+    // days in the window (empiricalDayEntries already includes injected fasted 0-kcal days),
+    // so forgotten-log days don't understate intake while real fasts still count.
+    const empiricalTdeeDays =
+      useEffectiveNutritionDays && empiricalDayEntries.length > 0
+        ? empiricalDayEntries.length
+        : empiricalDays;
 
     if (isImperial) {
       initialWeight = convert(initialWeight, 'lb').to('kg') as number;
@@ -718,7 +753,7 @@ export class ProgressService {
 
     const empiricalTdee = calculateTDEE({
       totalCalories: empiricalCalories,
-      totalDays: empiricalDays,
+      totalDays: empiricalTdeeDays,
       initialWeight,
       finalWeight,
       initialFatPercentage: initialFat,
@@ -731,7 +766,8 @@ export class ProgressService {
       activityLevel: user?.activityLevel || 2,
     });
 
-    const usedEmpirical = empiricalCalories > 0 && empiricalDays > 0 && weightPoints.length >= 2;
+    const usedEmpirical =
+      empiricalCalories > 0 && empiricalTdeeDays > 0 && weightPoints.length >= 2;
     const tdee = usedEmpirical ? empiricalTdee : statisticalTdee;
 
     const weeklyAverages = this.aggregateMetricWeekly(weightPoints);

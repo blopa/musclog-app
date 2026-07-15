@@ -6,6 +6,7 @@ export { default as DebugDump } from './DebugDump';
 export { default as Exercise } from './Exercise';
 export { default as ExerciseGoal } from './ExerciseGoal';
 export { default as ExerciseMuscle } from './ExerciseMuscle';
+export { default as FastedDay } from './FastedDay';
 export { default as Food } from './Food';
 export { default as FoodFoodPortion } from './FoodFoodPortion';
 export { default as FoodPortion } from './FoodPortion';

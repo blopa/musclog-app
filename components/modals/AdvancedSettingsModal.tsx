@@ -57,6 +57,8 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
     handleIncludeFiberInCarbsChange,
     intuitiveEatingMode: debouncedIntuitiveEatingMode,
     handleIntuitiveEatingModeChange,
+    enableFastedDay: debouncedEnableFastedDay,
+    handleEnableFastedDayChange,
     progressionMode: debouncedProgressionMode,
     handleProgressionModeChange,
     flushAllPendingChanges,
@@ -327,6 +329,27 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
       ),
       value: debouncedIncludeFiberInCarbs,
       onValueChange: handleIncludeFiberInCarbsChange,
+    },
+    {
+      key: 'enable-fasted-day',
+      label: t('settings.advancedSettings.enableFastedDay'),
+      subtitle: t('settings.advancedSettings.enableFastedDaySubtitle'),
+      icon: (
+        <View
+          style={{
+            width: theme.size['10'],
+            height: theme.size['10'],
+            borderRadius: theme.borderRadius.sm,
+            backgroundColor: theme.colors.status.emerald20,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Coffee size={theme.iconSize.xl} color={theme.colors.status.emerald} />
+        </View>
+      ),
+      value: debouncedEnableFastedDay,
+      onValueChange: handleEnableFastedDayChange,
     },
   ];
 

@@ -4,13 +4,14 @@ import { dumpDatabase } from '@/database/exportDb';
 import { restoreDatabase } from '@/database/importDb';
 import { getWebBackupContent } from '@/database/preMigrationBackup';
 
+import { timestampSlug } from './timestampSlug';
+
 type ExportDatabaseOptions = {
   includeDeletedRecords?: boolean;
 };
 
 function getExportFileName(): string {
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-  return `${timestamp}-musclog-export.json`;
+  return `${timestampSlug()}-musclog-export.json`;
 }
 
 export async function downloadFile(uri: string, fileName?: string): Promise<void> {
@@ -25,9 +26,7 @@ export async function downloadFile(uri: string, fileName?: string): Promise<void
     // Build a descriptive filename from the metadata index.
     const backups = await getStoredBackups();
     const meta = backups.find((b) => b.uri === uri);
-    const ts = meta
-      ? new Date(meta.createdAt).toISOString().replace(/[:.]/g, '-').slice(0, 19)
-      : hash;
+    const ts = meta ? timestampSlug(new Date(meta.createdAt)) : hash;
     const versionStr =
       meta?.fromVersion != null && meta?.toVersion != null
         ? `-v${meta.fromVersion}-to-v${meta.toVersion}`

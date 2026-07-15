@@ -16,6 +16,7 @@ import DebugDump from './models/DebugDump';
 import Exercise from './models/Exercise';
 import ExerciseGoal from './models/ExerciseGoal';
 import ExerciseMuscle from './models/ExerciseMuscle';
+import FastedDay from './models/FastedDay';
 import Food from './models/Food';
 import FoodFoodPortion from './models/FoodFoodPortion';
 import FoodPortion from './models/FoodPortion';
@@ -54,6 +55,7 @@ export const database = new Database({
     Exercise,
     ExerciseGoal,
     ExerciseMuscle,
+    FastedDay,
     UserMetric,
     UserMetricsNote,
     User,

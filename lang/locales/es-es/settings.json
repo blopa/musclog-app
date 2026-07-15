@@ -146,6 +146,8 @@
       "useBfForCalculationsSubtitle": "Usar el porcentaje de grasa corporal para los cálculos de calorías y macros",
       "includeFiberInCarbs": "Los carbohidratos incluyen fibra",
       "includeFiberInCarbsSubtitle": "Al añadir alimentos manualmente, trata el campo de carbohidratos como carbohidratos totales (con fibra, etiquetas de EE. UU.). Desactívalo si tus etiquetas muestran carbohidratos netos (sin fibra, etiquetas de la UE).",
+      "enableFastedDay": "Días de Ayuno",
+      "enableFastedDaySubtitle": "Te permite marcar los días que no comiste nada como días de ayuno. Un día de ayuno cuenta como un día real de 0 calorías en tu TDEE, promedios y rachas, mientras que los días vacíos que no marcaste se omiten para que un registro olvidado no reduzca tus estadísticas.",
       "disableMinimumCaloriesConfirmTitle": "¿Desactivar el mínimo de calorías?",
       "disableMinimumCaloriesConfirmMessage": "Esto elimina las protecciones mínimas de calorías predeterminadas de Musclog y permite objetivos tan bajos como 0 kcal.",
       "disableMinimumCaloriesWarning": "No se recomienda bajar de los requerimientos mínimos de calorías y puede no ser seguro. Al activar esto, confirmas que actúas bajo tu propia responsabilidad, que Musclog no recomienda bajar de esos mínimos y que entiendes los riesgos antes de continuar.",

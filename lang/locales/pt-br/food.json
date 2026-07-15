@@ -8,6 +8,17 @@
     "unitGrams": "g",
     "unitOz": "oz",
     "macroValueFormat": "{{value}}{{unit}} {{label}}",
+    "fastingDay": {
+      "markTitle": "Nenhum alimento registrado",
+      "markDescription": "Este foi um dia de jejum? Marcá-lo conta este dia como um dia real de 0 calorias nas suas médias, TDEE e sequências.",
+      "markButton": "Marcar como dia de jejum",
+      "fastedTitle": "Dia de jejum",
+      "fastedDescription": "Este dia conta como 0 calorias nas suas estatísticas e mantém a sua sequência.",
+      "unmarkButton": "Desmarcar dia de jejum",
+      "confirmTitle": "Marcar como dia de jejum?",
+      "confirmMessage": "Isso marca o dia como um em que você jejuou, então conta como um dia real de 0 calorias nas suas médias, TDEE e sequências.",
+      "confirmButton": "Marcar como dia de jejum"
+    },
     "logDetails": {
       "title": "Detalhes do Registro",
       "trackedAmount": "{{amount}} {{unit}} registrado",

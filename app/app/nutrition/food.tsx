@@ -40,6 +40,7 @@ import { type NutritionGoals, NutritionGoalsModal } from '@/components/modals/Nu
 import { SavedForLaterModal } from '@/components/modals/SavedForLaterModal';
 import { SaveForLaterPortionModal } from '@/components/modals/SaveForLaterPortionModal';
 import { ScaleMealPortionModal } from '@/components/modals/ScaleMealPortionModal';
+import { FastingDayCard } from '@/components/nutrition/FastingDayCard';
 import {
   type MealGroup,
   type ResolvedLogEntry,
@@ -69,6 +70,7 @@ import {
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
+import { useFastingDay } from '@/hooks/useFastingDay';
 import { useFoodItemUi } from '@/hooks/useFoodItemUi';
 import { useFoodScreenModals } from '@/hooks/useFoodScreenModals';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -168,7 +170,8 @@ export default function FoodScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger, locale: appLocale } = useFormatAppNumber();
-  const { units, isAiConfigured, intuitiveEatingMode, nutritionDisplay } = useSettings();
+  const { units, isAiConfigured, intuitiveEatingMode, nutritionDisplay, enableFastedDay } =
+    useSettings();
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const { openCoach } = useCoach();
   const { showSnackbar } = useSnackbar();
@@ -547,6 +550,23 @@ export default function FoodScreen() {
 
   // Check if all meals are empty AND no food has ever been tracked
   const hasNoFood = !isScreenLoading && totalCount === 0;
+  const {
+    confirmVisible: fastingConfirmVisible,
+    fastingLoading,
+    isFastedDayView,
+    showFastingMarkPrompt,
+    openConfirm: openFastingConfirm,
+    closeConfirm: closeFastingConfirm,
+    markFastedDay: handleMarkFastedDay,
+    unmarkFastedDay: handleUnmarkFastedDay,
+  } = useFastingDay({
+    enabled: enableFastedDay,
+    selectedDate,
+    hasLoggedFoodOnSelectedDay: logs.length > 0,
+  });
+  // Brand-new users stay on the global empty-diary onboarding card instead of the fasting-day
+  // affordance; once there's any food history, empty selected days can offer fasting actions.
+  const showTrackedDayContent = !hasNoFood;
 
   // Meal Group menu action handlers
   const handleMealGroupScalePortion = () => {
@@ -1441,9 +1461,21 @@ export default function FoodScreen() {
               />
             ) : null}
 
+            {/* Fasted-day State: a flagged empty day shows only the fasting card */}
+            {!isScreenLoading && showTrackedDayContent && isFastedDayView ? (
+              <AnimatedContent key="fasted-day" style={{ gap: theme.spacing.gap['xl'] }}>
+                <FastingDayCard
+                  isFasted
+                  onMark={openFastingConfirm}
+                  onUnmark={handleUnmarkFastedDay}
+                  loading={fastingLoading}
+                />
+              </AnimatedContent>
+            ) : null}
+
             {/* Normal State */}
-            {!isScreenLoading && !hasNoFood ? (
-              <AnimatedContent style={{ gap: theme.spacing.gap['xl'] }}>
+            {!isScreenLoading && showTrackedDayContent && !isFastedDayView ? (
+              <AnimatedContent key="tracking" style={{ gap: theme.spacing.gap['xl'] }}>
                 <>
                   {/* Daily Summary Card */}
                   {nutritionGoal?.isDynamic ? (
@@ -1497,6 +1529,16 @@ export default function FoodScreen() {
                       />
                     }
                   />
+
+                  {/* Fasting-day prompt: offer to mark an empty day as a fast */}
+                  {showFastingMarkPrompt ? (
+                    <FastingDayCard
+                      isFasted={false}
+                      onMark={openFastingConfirm}
+                      onUnmark={handleUnmarkFastedDay}
+                      loading={fastingLoading}
+                    />
+                  ) : null}
 
                   {/* Scan Buttons */}
                   <View className="gap-4">
@@ -1720,6 +1762,19 @@ export default function FoodScreen() {
         cancelLabel={t('common.cancel')}
         variant="destructive"
         isLoading={isDeleteFoodLoading}
+      />
+
+      {/* Fasting Day Confirmation Modal */}
+      <ConfirmationModal
+        visible={fastingConfirmVisible}
+        onClose={closeFastingConfirm}
+        onConfirm={handleMarkFastedDay}
+        title={t('food.fastingDay.confirmTitle')}
+        message={t('food.fastingDay.confirmMessage')}
+        confirmLabel={t('food.fastingDay.confirmButton')}
+        cancelLabel={t('common.cancel')}
+        variant="primary"
+        isLoading={fastingLoading}
       />
 
       {/* Goals Management Modal */}

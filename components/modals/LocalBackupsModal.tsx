@@ -12,6 +12,10 @@ import { useSnackbar } from '@/context/SnackbarContext';
 import { restoreDatabase } from '@/database/importDb';
 import { type BackupFileMeta, deleteBackup, getStoredBackups } from '@/database/preMigrationBackup';
 import { SettingsService } from '@/database/services/SettingsService';
+import {
+  convertSqliteBackupToJson,
+  exportSqliteBackupAsJsonFile,
+} from '@/database/sqliteBackupConvert';
 import { useTheme } from '@/hooks/useTheme';
 import { reloadApp } from '@/utils/app';
 import { downloadFile, readFileAsStringAsync } from '@/utils/file';
@@ -88,8 +92,16 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
     }
     setShowMenu(false);
     try {
-      const fileName = selectedBackup.uri.split('/').pop();
-      await downloadFile(selectedBackup.uri, fileName);
+      // Raw `.db` snapshots are converted to portable JSON on download so the
+      // exported file is re-importable on any device (and on web); the internal
+      // SQLite file itself never leaves the app.
+      if (selectedBackup.format === 'sqlite') {
+        const jsonUri = await exportSqliteBackupAsJsonFile(selectedBackup);
+        await downloadFile(jsonUri, jsonUri.split('/').pop());
+      } else {
+        const fileName = selectedBackup.uri.split('/').pop();
+        await downloadFile(selectedBackup.uri, fileName);
+      }
     } catch (error) {
       console.error('Export failed:', error);
       showSnackbar('error', t('settings.advancedSettings.exportFailedMessage'));
@@ -107,7 +119,14 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
     }
     setIsProcessing(true);
     try {
-      const content = await readFileAsStringAsync(selectedBackup.uri);
+      // A `.db` snapshot is converted to the JSON export format on the fly, then
+      // restored through the same path as every other backup (Zod validation,
+      // re-encryption, cross-version normalisation). This is the rare, deferred
+      // half of the fast-capture design.
+      const content =
+        selectedBackup.format === 'sqlite'
+          ? await convertSqliteBackupToJson(selectedBackup)
+          : await readFileAsStringAsync(selectedBackup.uri);
       await restoreDatabase(content);
       showSnackbar('success', t('settings.advancedSettings.localBackups.restoreSuccess'));
       setRestoreModalVisible(false);

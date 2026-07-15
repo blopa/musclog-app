@@ -146,6 +146,8 @@
       "useBfForCalculationsSubtitle": "Lichaamsvetpercentage gebruiken voor calorie- en macroberekeningen",
       "includeFiberInCarbs": "Koolhydraten bevatten vezels",
       "includeFiberInCarbsSubtitle": "Bij het handmatig invoeren van voeding wordt het koolhydratenveld als totale koolhydraten behandeld (inclusief vezels, Amerikaanse etiketten). Schakel dit uit als je etiketten netto koolhydraten tonen (exclusief vezels, EU-etiketten).",
+      "enableFastedDay": "Vastendagen",
+      "enableFastedDaySubtitle": "Hiermee kun je dagen waarop je niets at markeren als vastendagen. Een vastendag telt als een echte dag van 0 calorieën in je TDEE, gemiddelden en reeksen, terwijl lege dagen die je niet markeerde worden overgeslagen zodat een vergeten registratie je statistieken niet verlaagt.",
       "disableMinimumCaloriesConfirmTitle": "Minimale caloriegrens uitschakelen?",
       "disableMinimumCaloriesConfirmMessage": "Hiermee verwijder je de standaard minimale caloriebeveiliging van Musclog en kunnen doelen zo laag als 0 kcal worden ingesteld.",
       "disableMinimumCaloriesWarning": "Onder de minimale caloriebehoefte gaan wordt niet aanbevolen en kan onveilig zijn. Door dit in te schakelen bevestig je dat je op eigen verantwoordelijkheid handelt, dat Musclog niet aanbeveelt om onder die minimums te gaan, en dat je de risico's begrijpt voordat je doorgaat.",

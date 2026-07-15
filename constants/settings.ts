@@ -280,6 +280,15 @@ export const USE_BF_FOR_CALCULATIONS_SETTING_TYPE = 'use_bf_for_calculations';
 export const INTUITIVE_EATING_MODE_SETTING_TYPE = 'intuitive_eating_mode';
 
 /**
+ * Setting type for the fasting-day feature.
+ * When enabled, the user can mark days they ate nothing as fasting days. Flagged days count
+ * as a real 0-calorie day in historical averages (TDEE, weekly summaries, check-ins, streaks),
+ * while unflagged empty days are skipped so a forgotten log doesn't lower the user's stats.
+ * value: 'true' | 'false'. Default: 'false'.
+ */
+export const ENABLE_FASTED_DAY_SETTING_TYPE = 'enable_fasted_day';
+
+/**
  * Setting type for smart double progression preference.
  * value: 'reps_first' | 'weight_first'.
  */
@@ -361,6 +370,7 @@ export type UseSettingsResult = {
   disableMinimumCalories: boolean;
   useBfForCalculations: boolean;
   intuitiveEatingMode: boolean;
+  enableFastedDay: boolean;
   progressionMode: ProgressionMode;
   /** 5-char binary string: positions 0-4 = carbs, protein, fats, fiber, alcohol. '1'=visible. */
   nutritionDisplay: string;

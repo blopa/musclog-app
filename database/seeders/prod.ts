@@ -453,6 +453,9 @@ async function runSeedProductionData(options?: SeedProductionDataOptions): Promi
     await SettingsService.setBleGenerateChartPayload(false);
     console.log(`Set default WitMotion chart payload generation to 'false'}`);
 
+    await SettingsService.setEnableFastedDay(false);
+    console.log("Set default fasting-day feature to 'false'");
+
     await SettingsService.setNutritionLogHistoryDays('none');
     console.log('Set default nutrition log history days sent to LLM to none');
 

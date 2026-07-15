@@ -41,6 +41,7 @@ type SmartCameraShellProps = {
   onClose: () => void;
   permissionGranted: boolean | null;
   onRequestPermission: () => void;
+  children?: ReactNode;
   /** The live camera view (or dark placeholder) rendered in the background. */
   cameraSlot: ReactNode;
   /** Shows the processing overlay when true. */
@@ -64,6 +65,7 @@ export function SmartCameraShell({
   onClose,
   permissionGranted,
   onRequestPermission,
+  children,
   cameraSlot,
   isLoading,
   cameraMode,
@@ -466,6 +468,7 @@ export function SmartCameraShell({
           </View>
         </SafeAreaView>
       </View>
+      {children}
     </FullScreenModal>
   );
 }

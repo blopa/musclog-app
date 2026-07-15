@@ -52,6 +52,7 @@ export const RESTORE_ORDER: string[] = [
   'workout_log_exercises',
   'workout_log_sets',
   'nutrition_logs',
+  'fasted_days',
   'user_metrics',
   'user_metrics_notes',
 

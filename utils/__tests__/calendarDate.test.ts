@@ -2,6 +2,7 @@ import { addDays } from 'date-fns';
 import { enUS } from 'date-fns/locale';
 
 import {
+  consumedDateTimeOnDay,
   formatLocalCalendarDayDdMm,
   formatLocalCalendarDayIso,
   formatLocalCalendarDayMmDdYyyy,
@@ -24,6 +25,8 @@ import {
   localNextDayStartMsFromDate,
   MS_PER_SOLAR_DAY,
   parseLocalCalendarDate,
+  utcDayKeyFromLocalDate,
+  utcNormalizedDayKey,
 } from '@/utils/calendarDate';
 
 describe('calendarDate', () => {
@@ -166,5 +169,36 @@ describe('calendarDate', () => {
     expect(localCalendarDayPlusDays(d, 1).getTime()).toBe(
       localDayStartMs(new Date(2026, 0, 16, 12, 0, 0))
     );
+  });
+});
+
+describe('fasting-day timezone round-trip', () => {
+  // A fasting day is stored with a consumed-datetime style (date, timezone) pair, exactly like a
+  // nutrition log. This locks the invariant that reading it back with the STORED timezone
+  // (utcNormalizedDayKey) resolves to the same calendar-day key a picked local Date maps to
+  // (utcDayKeyFromLocalDate) — so fasted days and food logs on the same day share a bucket
+  // regardless of where the row is later read.
+  const days = [
+    new Date(2026, 0, 15), // winter
+    new Date(2026, 6, 8), // summer (different DST offset in many zones)
+    new Date(2026, 2, 29), // near a common DST transition
+    new Date(2026, 9, 25), // near another common DST transition
+  ];
+
+  it.each(days)('stored (date, timezone) resolves to the picked calendar day (%s)', (day) => {
+    const selected = localCalendarDayDate(day);
+    const stamp = consumedDateTimeOnDay(selected);
+    expect(utcNormalizedDayKey(stamp.timestamp, stamp.timezone)).toBe(
+      utcDayKeyFromLocalDate(selected)
+    );
+  });
+
+  it('is independent of the time-of-day captured when marking', () => {
+    const selected = localCalendarDayDate(new Date(2026, 6, 8));
+    const expected = utcDayKeyFromLocalDate(selected);
+    for (const hour of [0, 6, 12, 20, 23]) {
+      const stamp = consumedDateTimeOnDay(selected, new Date(2026, 6, 8, hour, 30, 0));
+      expect(utcNormalizedDayKey(stamp.timestamp, stamp.timezone)).toBe(expected);
+    }
   });
 });

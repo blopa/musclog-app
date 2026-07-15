@@ -65,12 +65,15 @@ export function BarcodeCameraModal({
 
   const isFoodDetailsModalVisible = barcode.detectedBarcode !== null;
 
-  const isCameraActive =
-    visible &&
-    !barcode.isSearchingBarcode &&
-    !isBarcodeTextSearchModalVisible &&
-    !barcode.isFoodNotFoundModalVisible &&
-    !isFoodDetailsModalVisible;
+  // Every conditionally-rendered child modal in the JSX below MUST have its visibility
+  // flag listed here — the camera is active only while none of them covers it.
+  const isAnyChildModalVisible = [
+    isBarcodeTextSearchModalVisible,
+    barcode.isFoodNotFoundModalVisible,
+    isFoodDetailsModalVisible,
+  ].some(Boolean);
+
+  const isCameraActive = visible && !barcode.isSearchingBarcode && !isAnyChildModalVisible;
 
   useKeepScreenAwake('barcode-camera-processing', visible && barcode.isSearchingBarcode);
 
@@ -208,43 +211,43 @@ export function BarcodeCameraModal({
         onShutterPress={handleTakePicture}
         bottomRightControl={bottomRightControl}
         showModePicker={false}
-      />
+      >
+        {/* Barcode Text Search Sheet */}
+        {isBarcodeTextSearchModalVisible ? (
+          <BarcodeTextSearchSheet
+            visible={isBarcodeTextSearchModalVisible}
+            value={barcodeTextSearchValue}
+            onChangeText={setBarcodeTextSearchValue}
+            onClose={() => setIsBarcodeTextSearchModalVisible(false)}
+            onSubmit={handleBarcodeTextSearchSubmit}
+          />
+        ) : null}
 
-      {/* Barcode Text Search Sheet */}
-      {isBarcodeTextSearchModalVisible ? (
-        <BarcodeTextSearchSheet
-          visible={isBarcodeTextSearchModalVisible}
-          value={barcodeTextSearchValue}
-          onChangeText={setBarcodeTextSearchValue}
-          onClose={() => setIsBarcodeTextSearchModalVisible(false)}
-          onSubmit={handleBarcodeTextSearchSubmit}
-        />
-      ) : null}
+        {/* Food Details Modal */}
+        {isFoodDetailsModalVisible ? (
+          <FoodMealTrackingDetailsModal
+            visible={isFoodDetailsModalVisible}
+            onClose={barcode.handleFoodDetailsClose}
+            barcode={barcode.detectedBarcode}
+            onBarcodeLookupComplete={barcode.handleBarcodeLookupComplete}
+            onFoodTracked={handleClose}
+            isAiEnabled={false}
+            canEdit={false}
+            initialDate={logDate}
+            initialMealType={mealTypeForLog}
+          />
+        ) : null}
 
-      {/* Food Details Modal */}
-      {isFoodDetailsModalVisible ? (
-        <FoodMealTrackingDetailsModal
-          visible={isFoodDetailsModalVisible}
-          onClose={barcode.handleFoodDetailsClose}
-          barcode={barcode.detectedBarcode}
-          onBarcodeLookupComplete={barcode.handleBarcodeLookupComplete}
-          onFoodTracked={handleClose}
-          isAiEnabled={false}
-          canEdit={false}
-          initialDate={logDate}
-          initialMealType={mealTypeForLog}
-        />
-      ) : null}
-
-      {/* Food Not Found Modal */}
-      {barcode.isFoodNotFoundModalVisible ? (
-        <FoodNotFoundModal
-          visible={barcode.isFoodNotFoundModalVisible}
-          onClose={barcode.handleFoodNotFoundClose}
-          onSearchAgain={barcode.handleFoodNotFoundClose}
-          isAiEnabled={false}
-        />
-      ) : null}
+        {/* Food Not Found Modal */}
+        {barcode.isFoodNotFoundModalVisible ? (
+          <FoodNotFoundModal
+            visible={barcode.isFoodNotFoundModalVisible}
+            onClose={barcode.handleFoodNotFoundClose}
+            onSearchAgain={barcode.handleFoodNotFoundClose}
+            isAiEnabled={false}
+          />
+        ) : null}
+      </SmartCameraShell>
     </>
   );
 }

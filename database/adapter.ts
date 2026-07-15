@@ -19,7 +19,7 @@ import { schema } from './schema';
 // the WAL, and we need the pre-checkpoint WAL size for loss diagnostics.
 captureBootDbFileStats();
 
-const currentDbVersion = preparePreMigrationBackupBeforeAdapter(schema.version);
+const currentDbVersion = preparePreMigrationBackupBeforeAdapter(schema.version, migrations);
 
 // Note: The JSI SQLiteAdapter warning ("JSI SQLiteAdapter not available... falling back to asynchronous operation")
 // is expected and harmless in the following scenarios:

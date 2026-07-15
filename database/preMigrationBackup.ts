@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { cacheDirectory, deleteAsync, writeAsStringAsync } from 'expo-file-system/legacy';
 
-import { type CapturedTableRows, dumpRowsToJson } from './exportDbCore';
+import { timestampSlug } from '@/utils/timestampSlug';
 
 const PRE_MIGRATION_BACKUPS_KEY = 'pre_migration_backups_v1';
 const PRE_MIGRATION_BACKUPS_MAX_FILES = 3;
@@ -11,6 +11,15 @@ export type BackupFileMeta = {
   createdAt: string;
   fromVersion: number | null;
   toVersion: number | null;
+  // Storage format of the backup file. 'sqlite' is a raw `VACUUM INTO` copy of
+  // musclog.db (native pre-migration snapshots — fast to create, converted to
+  // JSON lazily at restore/download time). 'json' (or absent, for older entries
+  // and all web backups) is the portable export dump restoreDatabase() reads.
+  format?: 'json' | 'sqlite';
+  // Sidecar JSON file containing the AsyncStorage snapshot captured at the same
+  // time as a native sqlite snapshot. Keeps restored backups coherent without
+  // embedding the sidecar payload in the AsyncStorage backup index itself.
+  asyncStorageUri?: string;
 };
 
 const formatVersion = (value: number | null): string => (value == null ? 'unknown' : String(value));
@@ -43,7 +52,9 @@ export async function getStoredBackups(): Promise<BackupFileMeta[]> {
         item !== null &&
         typeof item === 'object' &&
         typeof (item as Record<string, unknown>).uri === 'string' &&
-        typeof (item as Record<string, unknown>).createdAt === 'string'
+        typeof (item as Record<string, unknown>).createdAt === 'string' &&
+        ((item as Record<string, unknown>).asyncStorageUri === undefined ||
+          typeof (item as Record<string, unknown>).asyncStorageUri === 'string')
     );
   } catch {
     return [];
@@ -61,9 +72,18 @@ const safeDelete = async (uri: string) => {
   }
 };
 
+async function deleteBackupFiles(file: BackupFileMeta): Promise<void> {
+  await safeDelete(file.uri);
+  if (file.asyncStorageUri) {
+    await safeDelete(file.asyncStorageUri);
+  }
+}
+
 export async function deleteBackup(uri: string): Promise<void> {
   const backups = await getStoredBackups();
-  await safeDelete(uri);
+  const backup = backups.find((b) => b.uri === uri);
+  // Fall back to a bare file delete when the index has no entry for this URI.
+  await (backup ? deleteBackupFiles(backup) : safeDelete(uri));
   await writeStoredBackups(backups.filter((b) => b.uri !== uri));
 }
 
@@ -75,7 +95,7 @@ async function pruneOldBackups(backups: BackupFileMeta[]): Promise<BackupFileMet
   const keep = backups.slice(0, PRE_MIGRATION_BACKUPS_MAX_FILES);
   const remove = backups.slice(PRE_MIGRATION_BACKUPS_MAX_FILES);
 
-  await Promise.all(remove.map((file) => safeDelete(file.uri)));
+  await Promise.all(remove.map(deleteBackupFiles));
   return keep;
 }
 
@@ -90,14 +110,17 @@ async function executeBackup(
   }
 
   const backupJson = jsonString ?? (await createLiveBackupJson());
-  const createdAt = new Date().toISOString();
-  const timestamp = createdAt.replace(/[:.]/g, '-').slice(0, 19);
-  const uri = `${cacheDirectory}${timestamp}-${nameInfix}.json`;
+  const createdAtDate = new Date();
+  const createdAt = createdAtDate.toISOString();
+  const uri = `${cacheDirectory}${timestampSlug(createdAtDate)}-${nameInfix}.json`;
 
   await writeAsStringAsync(uri, backupJson);
 
   const existing = await getStoredBackups();
-  const next = await pruneOldBackups([{ uri, createdAt, fromVersion, toVersion }, ...existing]);
+  const next = await pruneOldBackups([
+    { uri, createdAt, fromVersion, toVersion, format: 'json' },
+    ...existing,
+  ]);
   await writeStoredBackups(next);
 
   return uri;
@@ -129,15 +152,40 @@ export async function createPreRestoreBackup(): Promise<void> {
   }
 }
 
+// Dedup state for registerPreMigrationDbBackup. Single-call-per-boot by
+// construction: the only caller is the pre-adapter capture in
+// preMigrationCapture.ts, which runs once at module-eval time. Do NOT reuse
+// this dedup from other paths — `inFlightBackup` is signature-agnostic, so a
+// second concurrent call with a different version range would be handed the
+// first call's promise.
 let inFlightBackup: Promise<void> | null = null;
 let completedBackupSignature: string | null = null;
 
-// Called from preMigrationCapture.ts (the pre-adapter path) with the rows it
-// captured synchronously; persists them asynchronously. Fire-and-forget at
-// module-eval time, so the in-flight promise is tracked here and awaited via
-// waitForPreMigrationBackup() before boot proceeds.
-export function persistCapturedPreMigrationBackup(
-  capturedRows: CapturedTableRows,
+function asyncStorageSidecarUriFor(dbSnapshotUri: string): string {
+  return dbSnapshotUri.endsWith('.db')
+    ? dbSnapshotUri.slice(0, -'.db'.length) + '.async-storage.json'
+    : `${dbSnapshotUri}.async-storage.json`;
+}
+
+async function writeAsyncStorageSnapshotSidecar(dbSnapshotUri: string): Promise<string> {
+  const { captureAsyncStorageDump } = await import('./asyncStorageBackup');
+  const snapshot = await captureAsyncStorageDump();
+  const uri = asyncStorageSidecarUriFor(dbSnapshotUri);
+  await writeAsStringAsync(uri, JSON.stringify(snapshot));
+  return uri;
+}
+
+// Called from preMigrationCapture.ts (the pre-adapter path) after it has already
+// written a raw `.db` snapshot with `VACUUM INTO` (synchronous, so it completes
+// before WatermelonDB opens and the migration mutates the file). The file itself
+// is done; this attempts to capture an AsyncStorage sidecar from the same boot
+// moment and records the available files in the backup index. Fire-and-forget at
+// module-eval time — the in-flight promise is tracked here and awaited via
+// waitForPreMigrationBackup() before boot proceeds. The expensive DB JSON
+// conversion is deferred to restore / download time (see convertSqliteBackupToJson),
+// so upgrade boots don't pay it.
+export function registerPreMigrationDbBackup(
+  uri: string,
   fromVersion: number,
   toVersion: number
 ): Promise<void> {
@@ -151,20 +199,36 @@ export function persistCapturedPreMigrationBackup(
     return inFlightBackup;
   }
 
-  async function performBackup() {
-    const infix = `pre-migration-v${formatVersion(fromVersion)}-to-v${formatVersion(toVersion)}`;
-    const jsonString = await dumpRowsToJson(capturedRows, undefined, {
-      exportVersion: fromVersion,
-    });
+  async function performRegister() {
+    const createdAt = new Date().toISOString();
+    let asyncStorageUri: string | undefined;
+    try {
+      asyncStorageUri = await writeAsyncStorageSnapshotSidecar(uri);
+    } catch (error) {
+      console.error('[PreMigrationBackup] Failed to write AsyncStorage sidecar:', error);
+      await reportBackupError(error, 'database.preMigrationBackup.asyncStorageSidecar');
+    }
 
-    const uri = await executeBackup(infix, fromVersion, toVersion, jsonString);
+    const meta: BackupFileMeta = {
+      uri,
+      createdAt,
+      fromVersion,
+      toVersion,
+      format: 'sqlite',
+      asyncStorageUri,
+    };
+
+    const existing = await getStoredBackups();
+    const next = await pruneOldBackups([meta, ...existing]);
+    await writeStoredBackups(next);
+
     completedBackupSignature = signature;
-    console.log(`[PreMigrationBackup] Created: ${uri}`);
+    console.log(`[PreMigrationBackup] Created (sqlite snapshot): ${uri}`);
   }
 
-  inFlightBackup = performBackup()
+  inFlightBackup = performRegister()
     .catch((error) => {
-      console.error('[PreMigrationBackup] Failed to create backup:', error);
+      console.error('[PreMigrationBackup] Failed to register backup:', error);
       void reportBackupError(error, 'database.preMigrationBackup');
     })
     .finally(() => {
