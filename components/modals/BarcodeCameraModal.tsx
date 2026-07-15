@@ -46,6 +46,8 @@ export function BarcodeCameraModal({
   const { t } = useTranslation();
   const cameraRef = useRef<CameraViewType>(null);
   const [flashEnabled, setFlashEnabled] = useState(false);
+  const [isCapturing, setIsCapturing] = useState(false);
+  const isCapturingRef = useRef(false);
   const [isBarcodeTextSearchModalVisible, setIsBarcodeTextSearchModalVisible] = useState(false);
   const [barcodeTextSearchValue, setBarcodeTextSearchValue] = useState('');
 
@@ -57,6 +59,8 @@ export function BarcodeCameraModal({
       const reset = () => {
         setIsBarcodeTextSearchModalVisible(false);
         setBarcodeTextSearchValue('');
+        setIsCapturing(false);
+        isCapturingRef.current = false;
       };
       reset();
       isSearchingBarcodeRef.current = false;
@@ -87,9 +91,12 @@ export function BarcodeCameraModal({
   }, []);
 
   const handleTakePicture = useCallback(async () => {
-    if (!cameraRef.current) {
+    if (!cameraRef.current || isCapturingRef.current) {
       return;
     }
+
+    isCapturingRef.current = true;
+    setIsCapturing(true);
 
     try {
       const photo = await cameraRef.current.takePictureAsync({ quality: 0.8, base64: false });
@@ -105,10 +112,17 @@ export function BarcodeCameraModal({
         console.error('Error taking picture:', error);
         showSnackbar('error', t('food.aiCamera.cameraError'));
       }
+    } finally {
+      isCapturingRef.current = false;
+      setIsCapturing(false);
     }
   }, [barcode, t]);
 
   const handleGalleryPress = useCallback(async () => {
+    if (isCapturingRef.current) {
+      return;
+    }
+
     try {
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!permissionResult.granted) {
@@ -123,6 +137,8 @@ export function BarcodeCameraModal({
       });
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
+        isCapturingRef.current = true;
+        setIsCapturing(true);
         try {
           const cropped = await openCropperAsync({
             imageUri: result.assets[0].uri,
@@ -135,6 +151,9 @@ export function BarcodeCameraModal({
           if (!message.includes('cancel') && !message.includes('Cancel')) {
             showSnackbar('error', t('food.aiCamera.cameraError'));
           }
+        } finally {
+          isCapturingRef.current = false;
+          setIsCapturing(false);
         }
       }
     } catch {
@@ -204,6 +223,7 @@ export function BarcodeCameraModal({
           )
         }
         isLoading={barcode.isSearchingBarcode}
+        isCapturing={isCapturing}
         cameraMode={CAMERA_MODE}
         flashEnabled={flashEnabled}
         onFlashToggle={handleFlashToggle}

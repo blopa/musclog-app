@@ -143,6 +143,8 @@ export default function SmartCameraModal({
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const { formatRoundedDecimal } = useFormatAppNumber();
   const [flashEnabled, setFlashEnabled] = useState(false);
+  const [isCapturing, setIsCapturing] = useState(false);
+  const isCapturingRef = useRef(false);
   const [cameraMode, setCameraMode] = useState<CameraMode>(
     getSafeCameraMode(mode, isAiEnabled, isAIVisionEnabled)
   );
@@ -267,6 +269,8 @@ export default function SmartCameraModal({
         setIsLogMealModalVisible(false);
         setProductFromAiLabel(null);
         isSearchingBarcodeRef.current = false;
+        setIsCapturing(false);
+        isCapturingRef.current = false;
       };
       reset();
     }
@@ -424,9 +428,12 @@ export default function SmartCameraModal({
   );
 
   const handleTakePicture = useCallback(async () => {
-    if (!cameraRef.current) {
+    if (!cameraRef.current || isCapturingRef.current) {
       return;
     }
+
+    isCapturingRef.current = true;
+    setIsCapturing(true);
 
     if (cameraMode === 'ai-label-scan' || cameraMode === 'ai-meal-photo') {
       try {
@@ -447,6 +454,9 @@ export default function SmartCameraModal({
           console.error('Error taking picture:', error);
           showSnackbar('error', t('food.aiCamera.cameraError'));
         }
+      } finally {
+        isCapturingRef.current = false;
+        setIsCapturing(false);
       }
       return;
     }
@@ -468,6 +478,9 @@ export default function SmartCameraModal({
         console.error('Error taking picture:', error);
         showSnackbar('error', t('food.aiCamera.cameraError'));
       }
+    } finally {
+      isCapturingRef.current = false;
+      setIsCapturing(false);
     }
   }, [cameraMode, t, processAiPhoto, barcode]);
 
@@ -592,6 +605,10 @@ export default function SmartCameraModal({
   }, [onOpenFoodSearch, selectedMealType]);
 
   const handleGalleryPress = useCallback(async () => {
+    if (isCapturingRef.current) {
+      return;
+    }
+
     try {
       const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!permissionResult.granted) {
@@ -607,6 +624,8 @@ export default function SmartCameraModal({
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const selectedAsset = result.assets[0];
+        isCapturingRef.current = true;
+        setIsCapturing(true);
         if (cameraMode === 'barcode-scan') {
           try {
             const cropped = await openCropperAsync({
@@ -621,6 +640,9 @@ export default function SmartCameraModal({
               console.error('Error cropping gallery image for barcode scan:', error);
               showSnackbar('error', t('food.aiCamera.cameraError'));
             }
+          } finally {
+            isCapturingRef.current = false;
+            setIsCapturing(false);
           }
         } else if (cameraMode === 'ai-label-scan' || cameraMode === 'ai-meal-photo') {
           try {
@@ -636,6 +658,9 @@ export default function SmartCameraModal({
               console.error('Error cropping gallery image:', error);
               showSnackbar('error', t('food.aiCamera.cameraError'));
             }
+          } finally {
+            isCapturingRef.current = false;
+            setIsCapturing(false);
           }
         }
       }
@@ -735,6 +760,7 @@ export default function SmartCameraModal({
           )
         }
         isLoading={barcode.isSearchingBarcode || isProcessingAi}
+        isCapturing={isCapturing}
         cameraMode={cameraMode}
         flashEnabled={flashEnabled}
         onFlashToggle={handleFlashToggle}

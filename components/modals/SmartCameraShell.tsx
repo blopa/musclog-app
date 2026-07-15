@@ -36,6 +36,8 @@ const getCameraInstructionText = (cameraMode: CameraMode, t: TFunction): string 
   }
 };
 
+import { ActivityIndicator } from 'react-native';
+
 type SmartCameraShellProps = {
   visible: boolean;
   onClose: () => void;
@@ -46,6 +48,8 @@ type SmartCameraShellProps = {
   cameraSlot: ReactNode;
   /** Shows the processing overlay when true. */
   isLoading: boolean;
+  /** Is currently capturing/cropping. */
+  isCapturing?: boolean;
   cameraMode: CameraMode;
   flashEnabled: boolean;
   onFlashToggle: () => void;
@@ -68,6 +72,7 @@ export function SmartCameraShell({
   children,
   cameraSlot,
   isLoading,
+  isCapturing = false,
   cameraMode,
   flashEnabled,
   onFlashToggle,
@@ -160,24 +165,28 @@ export function SmartCameraShell({
           {/* Header */}
           <View className="relative z-20 flex-row items-center justify-between px-4 pb-2 pt-4">
             <Pressable
-              onPress={onClose}
+              onPress={isLoading || isCapturing ? undefined : onClose}
+              disabled={isLoading || isCapturing}
               className="h-10 w-10 items-center justify-center rounded-full"
               style={{
                 backgroundColor: theme.colors.background.darkGray,
                 borderWidth: theme.borderWidth.thin,
                 borderColor: theme.colors.background.white10,
+                opacity: isLoading || isCapturing ? theme.colors.opacity.medium : 1,
               }}
             >
               <X size={theme.iconSize.lg} color={theme.colors.text.primary} />
             </Pressable>
 
             <Pressable
-              onPress={onFlashToggle}
+              onPress={isLoading || isCapturing ? undefined : onFlashToggle}
+              disabled={isLoading || isCapturing}
               className="h-10 w-10 items-center justify-center rounded-full"
               style={{
                 backgroundColor: theme.colors.background.darkGray,
                 borderWidth: theme.borderWidth.thin,
                 borderColor: theme.colors.background.white10,
+                opacity: isLoading || isCapturing ? theme.colors.opacity.medium : 1,
               }}
             >
               {flashEnabled ? (
@@ -257,6 +266,8 @@ export function SmartCameraShell({
             {showModePicker && isAiEnabled ? (
               <View
                 className={isSmallScreen ? 'mb-3 w-full items-center' : 'mb-6 w-full items-center'}
+                style={{ opacity: isLoading || isCapturing ? theme.colors.opacity.medium : 1 }}
+                pointerEvents={isLoading || isCapturing ? 'none' : 'auto'}
               >
                 <View
                   className="w-full max-w-sm flex-row items-stretch justify-between rounded-2xl p-1.5"
@@ -269,6 +280,7 @@ export function SmartCameraShell({
                   {/* Barcode Scan */}
                   <Pressable
                     onPress={() => onModeChange?.('barcode-scan')}
+                    disabled={isLoading || isCapturing}
                     className="flex-1 rounded-xl px-2"
                     style={[
                       { overflow: 'hidden', paddingVertical: isSmallScreen ? 8 : 10 },
@@ -321,6 +333,7 @@ export function SmartCameraShell({
                   {isAiEnabled ? (
                     <Pressable
                       onPress={() => onModeChange?.('ai-label-scan')}
+                      disabled={isLoading || isCapturing}
                       className="flex-1 rounded-xl px-2"
                       style={[
                         { overflow: 'hidden', paddingVertical: isSmallScreen ? 8 : 10 },
@@ -374,6 +387,7 @@ export function SmartCameraShell({
                   {isAiEnabled && isAIVisionEnabled ? (
                     <Pressable
                       onPress={() => onModeChange?.('ai-meal-photo')}
+                      disabled={isLoading || isCapturing}
                       className="flex-1 rounded-xl px-2"
                       style={[
                         { overflow: 'hidden', paddingVertical: isSmallScreen ? 8 : 10 },
@@ -434,7 +448,9 @@ export function SmartCameraShell({
                   backgroundColor: theme.colors.background.darkGray50,
                   borderWidth: theme.borderWidth.thin,
                   borderColor: theme.colors.background.white20,
+                  opacity: isLoading || isCapturing ? theme.colors.opacity.medium : 1,
                 }}
+                disabled={isLoading || isCapturing}
                 onPress={onGalleryPress}
               >
                 <Images size={theme.iconSize.lg} color={theme.colors.text.primary} />
@@ -442,11 +458,13 @@ export function SmartCameraShell({
 
               {/* Shutter Button */}
               <Pressable
-                onPress={onShutterPress}
+                onPress={isLoading || isCapturing ? undefined : onShutterPress}
+                disabled={isLoading || isCapturing}
                 className="h-20 w-20 items-center justify-center rounded-full active:scale-95"
                 style={{
                   borderWidth: theme.borderWidth.thick,
                   borderColor: theme.colors.text.white,
+                  opacity: isLoading || isCapturing ? theme.colors.opacity.medium : 1,
                 }}
               >
                 <View
@@ -456,14 +474,23 @@ export function SmartCameraShell({
                     borderColor: theme.colors.background.black20,
                   }}
                 />
-                <View
-                  className="h-16 w-16 rounded-full bg-white"
-                  style={{ backgroundColor: theme.colors.text.white }}
-                />
+                {isCapturing ? (
+                  <ActivityIndicator size="small" color={theme.colors.text.white} />
+                ) : (
+                  <View
+                    className="h-16 w-16 rounded-full bg-white"
+                    style={{ backgroundColor: theme.colors.text.white }}
+                  />
+                )}
               </Pressable>
 
               {/* Bottom-right control slot */}
-              {bottomRightControl ?? <View className="h-12 w-12" />}
+              <View
+                style={{ opacity: isLoading || isCapturing ? theme.colors.opacity.medium : 1 }}
+                pointerEvents={isLoading || isCapturing ? 'none' : 'auto'}
+              >
+                {bottomRightControl ?? <View className="h-12 w-12" />}
+              </View>
             </View>
           </View>
         </SafeAreaView>
