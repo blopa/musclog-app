@@ -172,6 +172,8 @@ export default function SmartCameraModal({
 
   const isBarcodeScanning = cameraMode === 'barcode-scan';
   const cameraRef = useRef<CameraViewType>(null);
+  const isCapturingRef = useRef(false);
+  const [isCapturing, setIsCapturing] = useState(false);
   const shouldShowBarcodeTextSearch = showBarcodeTextSearch && cameraMode === 'barcode-scan';
 
   const barcode = useBarcodeScanner({ visible, onBarcodeScanned, onClose });
@@ -267,6 +269,8 @@ export default function SmartCameraModal({
         setIsLogMealModalVisible(false);
         setProductFromAiLabel(null);
         isSearchingBarcodeRef.current = false;
+        isCapturingRef.current = false;
+        setIsCapturing(false);
       };
       reset();
     }
@@ -424,23 +428,52 @@ export default function SmartCameraModal({
   );
 
   const handleTakePicture = useCallback(async () => {
-    if (!cameraRef.current) {
+    // Guard against re-entrant taps: without this, tapping the shutter multiple times while
+    // the (slow) native takePictureAsync call is still in flight fires one full
+    // capture+crop flow per tap, so the crop tool ends up presented N times in a row.
+    if (!cameraRef.current || isCapturingRef.current) {
       return;
     }
 
-    if (cameraMode === 'ai-label-scan' || cameraMode === 'ai-meal-photo') {
+    isCapturingRef.current = true;
+    setIsCapturing(true);
+    try {
+      if (cameraMode === 'ai-label-scan' || cameraMode === 'ai-meal-photo') {
+        try {
+          const photo = await cameraRef.current.takePictureAsync({
+            quality: 0.85,
+            base64: false,
+            skipProcessing: true,
+          });
+
+          const cropped = await openCropperAsync({
+            imageUri: photo.uri,
+            format: 'jpeg',
+            compressImageQuality: 0.85,
+          });
+          await processAiPhoto(cropped.path);
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          if (!message.includes('cancel') && !message.includes('Cancel')) {
+            console.error('Error taking picture:', error);
+            showSnackbar('error', t('food.aiCamera.cameraError'));
+          }
+        }
+        return;
+      }
       try {
         const photo = await cameraRef.current.takePictureAsync({
-          quality: 0.85,
+          quality: 0.8,
           base64: false,
+          skipProcessing: true,
         });
 
         const cropped = await openCropperAsync({
           imageUri: photo.uri,
           format: 'jpeg',
-          compressImageQuality: 0.85,
+          compressImageQuality: 0.8,
         });
-        await processAiPhoto(cropped.path);
+        await barcode.processBarcodeImage(cropped.path);
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         if (!message.includes('cancel') && !message.includes('Cancel')) {
@@ -448,26 +481,9 @@ export default function SmartCameraModal({
           showSnackbar('error', t('food.aiCamera.cameraError'));
         }
       }
-      return;
-    }
-    try {
-      const photo = await cameraRef.current.takePictureAsync({
-        quality: 0.8,
-        base64: false,
-      });
-
-      const cropped = await openCropperAsync({
-        imageUri: photo.uri,
-        format: 'jpeg',
-        compressImageQuality: 0.8,
-      });
-      await barcode.processBarcodeImage(cropped.path);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      if (!message.includes('cancel') && !message.includes('Cancel')) {
-        console.error('Error taking picture:', error);
-        showSnackbar('error', t('food.aiCamera.cameraError'));
-      }
+    } finally {
+      isCapturingRef.current = false;
+      setIsCapturing(false);
     }
   }, [cameraMode, t, processAiPhoto, barcode]);
 
@@ -740,6 +756,7 @@ export default function SmartCameraModal({
         onFlashToggle={handleFlashToggle}
         onGalleryPress={handleGalleryPress}
         onShutterPress={handleTakePicture}
+        isCapturing={isCapturing}
         bottomRightControl={bottomRightControl}
         showModePicker={!hideCameraModePicker}
         isAiEnabled={isAiEnabled}

@@ -51,6 +51,8 @@ type SmartCameraShellProps = {
   onFlashToggle: () => void;
   onGalleryPress: () => void;
   onShutterPress: () => void;
+  /** When true, a capture is already in flight — shutter is disabled and dimmed to prevent duplicate taps. */
+  isCapturing?: boolean;
   /** Slot for the bottom-right control button (text search, AI context, or empty). */
   bottomRightControl?: ReactNode;
   /** When true, renders the three-tab mode picker. */
@@ -73,6 +75,7 @@ export function SmartCameraShell({
   onFlashToggle,
   onGalleryPress,
   onShutterPress,
+  isCapturing = false,
   bottomRightControl,
   showModePicker = false,
   isAiEnabled = false,
@@ -443,10 +446,12 @@ export function SmartCameraShell({
               {/* Shutter Button */}
               <Pressable
                 onPress={onShutterPress}
+                disabled={isCapturing}
                 className="h-20 w-20 items-center justify-center rounded-full active:scale-95"
                 style={{
                   borderWidth: theme.borderWidth.thick,
                   borderColor: theme.colors.text.white,
+                  opacity: isCapturing ? theme.colors.opacity.strong : 1,
                 }}
               >
                 <View

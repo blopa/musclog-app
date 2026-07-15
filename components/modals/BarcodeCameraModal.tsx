@@ -45,6 +45,8 @@ export function BarcodeCameraModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const cameraRef = useRef<CameraViewType>(null);
+  const isCapturingRef = useRef(false);
+  const [isCapturing, setIsCapturing] = useState(false);
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [isBarcodeTextSearchModalVisible, setIsBarcodeTextSearchModalVisible] = useState(false);
   const [barcodeTextSearchValue, setBarcodeTextSearchValue] = useState('');
@@ -60,6 +62,8 @@ export function BarcodeCameraModal({
       };
       reset();
       isSearchingBarcodeRef.current = false;
+      isCapturingRef.current = false;
+      setIsCapturing(false);
     }
   }, [visible, isSearchingBarcodeRef]);
 
@@ -87,12 +91,21 @@ export function BarcodeCameraModal({
   }, []);
 
   const handleTakePicture = useCallback(async () => {
-    if (!cameraRef.current) {
+    // Guard against re-entrant taps: without this, tapping the shutter multiple times while
+    // the (slow) native takePictureAsync call is still in flight fires one full
+    // capture+crop flow per tap, so the crop tool ends up presented N times in a row.
+    if (!cameraRef.current || isCapturingRef.current) {
       return;
     }
 
+    isCapturingRef.current = true;
+    setIsCapturing(true);
     try {
-      const photo = await cameraRef.current.takePictureAsync({ quality: 0.8, base64: false });
+      const photo = await cameraRef.current.takePictureAsync({
+        quality: 0.8,
+        base64: false,
+        skipProcessing: true,
+      });
       const cropped = await openCropperAsync({
         imageUri: photo.uri,
         format: 'jpeg',
@@ -105,6 +118,9 @@ export function BarcodeCameraModal({
         console.error('Error taking picture:', error);
         showSnackbar('error', t('food.aiCamera.cameraError'));
       }
+    } finally {
+      isCapturingRef.current = false;
+      setIsCapturing(false);
     }
   }, [barcode, t]);
 
@@ -209,6 +225,7 @@ export function BarcodeCameraModal({
         onFlashToggle={handleFlashToggle}
         onGalleryPress={handleGalleryPress}
         onShutterPress={handleTakePicture}
+        isCapturing={isCapturing}
         bottomRightControl={bottomRightControl}
         showModePicker={false}
       >
