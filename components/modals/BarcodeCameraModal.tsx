@@ -59,11 +59,11 @@ export function BarcodeCameraModal({
       const reset = () => {
         setIsBarcodeTextSearchModalVisible(false);
         setBarcodeTextSearchValue('');
+        setIsCapturing(false);
       };
       reset();
       isSearchingBarcodeRef.current = false;
       isCapturingRef.current = false;
-      setIsCapturing(false);
     }
   }, [visible, isSearchingBarcodeRef]);
 
