@@ -163,24 +163,28 @@ export function SmartCameraShell({
           {/* Header */}
           <View className="relative z-20 flex-row items-center justify-between px-4 pb-2 pt-4">
             <Pressable
-              onPress={onClose}
+              onPress={isLoading || isCapturing ? undefined : onClose}
+              disabled={isLoading || isCapturing}
               className="h-10 w-10 items-center justify-center rounded-full"
               style={{
                 backgroundColor: theme.colors.background.darkGray,
                 borderWidth: theme.borderWidth.thin,
                 borderColor: theme.colors.background.white10,
+                opacity: isLoading || isCapturing ? theme.colors.opacity.medium : 1,
               }}
             >
               <X size={theme.iconSize.lg} color={theme.colors.text.primary} />
             </Pressable>
 
             <Pressable
-              onPress={onFlashToggle}
+              onPress={isLoading || isCapturing ? undefined : onFlashToggle}
+              disabled={isLoading || isCapturing}
               className="h-10 w-10 items-center justify-center rounded-full"
               style={{
                 backgroundColor: theme.colors.background.darkGray,
                 borderWidth: theme.borderWidth.thin,
                 borderColor: theme.colors.background.white10,
+                opacity: isLoading || isCapturing ? theme.colors.opacity.medium : 1,
               }}
             >
               {flashEnabled ? (
@@ -272,6 +276,7 @@ export function SmartCameraShell({
                   {/* Barcode Scan */}
                   <Pressable
                     onPress={() => onModeChange?.('barcode-scan')}
+                    disabled={isLoading || isCapturing}
                     className="flex-1 rounded-xl px-2"
                     style={[
                       { overflow: 'hidden', paddingVertical: isSmallScreen ? 8 : 10 },
@@ -324,6 +329,7 @@ export function SmartCameraShell({
                   {isAiEnabled ? (
                     <Pressable
                       onPress={() => onModeChange?.('ai-label-scan')}
+                      disabled={isLoading || isCapturing}
                       className="flex-1 rounded-xl px-2"
                       style={[
                         { overflow: 'hidden', paddingVertical: isSmallScreen ? 8 : 10 },
@@ -377,6 +383,7 @@ export function SmartCameraShell({
                   {isAiEnabled && isAIVisionEnabled ? (
                     <Pressable
                       onPress={() => onModeChange?.('ai-meal-photo')}
+                      disabled={isLoading || isCapturing}
                       className="flex-1 rounded-xl px-2"
                       style={[
                         { overflow: 'hidden', paddingVertical: isSmallScreen ? 8 : 10 },
@@ -437,7 +444,9 @@ export function SmartCameraShell({
                   backgroundColor: theme.colors.background.darkGray50,
                   borderWidth: theme.borderWidth.thin,
                   borderColor: theme.colors.background.white20,
+                  opacity: isLoading || isCapturing ? theme.colors.opacity.medium : 1,
                 }}
+                disabled={isLoading || isCapturing}
                 onPress={onGalleryPress}
               >
                 <Images size={theme.iconSize.lg} color={theme.colors.text.primary} />
@@ -445,13 +454,13 @@ export function SmartCameraShell({
 
               {/* Shutter Button */}
               <Pressable
-                onPress={onShutterPress}
-                disabled={isCapturing}
+                onPress={isLoading || isCapturing ? undefined : onShutterPress}
+                disabled={isLoading || isCapturing}
                 className="h-20 w-20 items-center justify-center rounded-full active:scale-95"
                 style={{
                   borderWidth: theme.borderWidth.thick,
                   borderColor: theme.colors.text.white,
-                  opacity: isCapturing ? theme.colors.opacity.strong : 1,
+                  opacity: isLoading || isCapturing ? theme.colors.opacity.strong : 1,
                 }}
               >
                 <View
