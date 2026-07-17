@@ -9,7 +9,7 @@ import {
   Sparkles,
   X,
 } from 'lucide-react-native';
-import type { ReactNode } from 'react';
+import { type ReactNode, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
@@ -50,9 +50,8 @@ type SmartCameraShellProps = {
   flashEnabled: boolean;
   onFlashToggle: () => void;
   onGalleryPress: () => void;
-  onShutterPress: () => void;
-  /** When true, a capture is already in flight — shutter is disabled and dimmed to prevent duplicate taps. */
-  isCapturing?: boolean;
+  /** Awaited by the shell, which locks all controls while it runs so double-taps can't fire twice. */
+  onShutterPress: () => void | Promise<void>;
   /** Slot for the bottom-right control button (text search, AI context, or empty). */
   bottomRightControl?: ReactNode;
   /** When true, renders the three-tab mode picker. */
@@ -75,7 +74,6 @@ export function SmartCameraShell({
   onFlashToggle,
   onGalleryPress,
   onShutterPress,
-  isCapturing = false,
   bottomRightControl,
   showModePicker = false,
   isAiEnabled = false,
@@ -87,6 +85,30 @@ export function SmartCameraShell({
   const { height: screenHeight } = useWindowDimensions();
   const isSmallScreen = screenHeight < SMALL_SCREEN_HEIGHT;
   const cameraMaxHeight = screenHeight * (isSmallScreen ? 0.48 : 0.6);
+
+  // Guard against re-entrant shutter taps: without this, tapping the shutter multiple times
+  // while the (slow) native capture is still in flight fires one full capture+crop flow per
+  // tap, so the crop tool ends up presented N times in a row. The ref catches taps that land
+  // before the disabling re-render commits.
+  const [isCapturing, setIsCapturing] = useState(false);
+  const isCapturingRef = useRef(false);
+
+  const handleShutterPress = async () => {
+    if (isCapturingRef.current) {
+      return;
+    }
+
+    isCapturingRef.current = true;
+    setIsCapturing(true);
+    try {
+      await onShutterPress();
+    } finally {
+      isCapturingRef.current = false;
+      setIsCapturing(false);
+    }
+  };
+
+  const controlsLocked = isLoading || isCapturing;
 
   if (permissionGranted === null) {
     return (
@@ -163,28 +185,28 @@ export function SmartCameraShell({
           {/* Header */}
           <View className="relative z-20 flex-row items-center justify-between px-4 pb-2 pt-4">
             <Pressable
-              onPress={isLoading || isCapturing ? undefined : onClose}
-              disabled={isLoading || isCapturing}
+              onPress={onClose}
+              disabled={controlsLocked}
               className="h-10 w-10 items-center justify-center rounded-full"
               style={{
                 backgroundColor: theme.colors.background.darkGray,
                 borderWidth: theme.borderWidth.thin,
                 borderColor: theme.colors.background.white10,
-                opacity: isLoading || isCapturing ? theme.colors.opacity.medium : 1,
+                opacity: controlsLocked ? theme.colors.opacity.medium : 1,
               }}
             >
               <X size={theme.iconSize.lg} color={theme.colors.text.primary} />
             </Pressable>
 
             <Pressable
-              onPress={isLoading || isCapturing ? undefined : onFlashToggle}
-              disabled={isLoading || isCapturing}
+              onPress={onFlashToggle}
+              disabled={controlsLocked}
               className="h-10 w-10 items-center justify-center rounded-full"
               style={{
                 backgroundColor: theme.colors.background.darkGray,
                 borderWidth: theme.borderWidth.thin,
                 borderColor: theme.colors.background.white10,
-                opacity: isLoading || isCapturing ? theme.colors.opacity.medium : 1,
+                opacity: controlsLocked ? theme.colors.opacity.medium : 1,
               }}
             >
               {flashEnabled ? (
@@ -276,10 +298,14 @@ export function SmartCameraShell({
                   {/* Barcode Scan */}
                   <Pressable
                     onPress={() => onModeChange?.('barcode-scan')}
-                    disabled={isLoading || isCapturing}
+                    disabled={controlsLocked}
                     className="flex-1 rounded-xl px-2"
                     style={[
-                      { overflow: 'hidden', paddingVertical: isSmallScreen ? 8 : 10 },
+                      {
+                        overflow: 'hidden',
+                        paddingVertical: isSmallScreen ? 8 : 10,
+                        opacity: controlsLocked ? theme.colors.opacity.medium : 1,
+                      },
                       cameraMode === 'barcode-scan' ? { backgroundColor: 'transparent' } : {},
                     ]}
                   >
@@ -329,10 +355,14 @@ export function SmartCameraShell({
                   {isAiEnabled ? (
                     <Pressable
                       onPress={() => onModeChange?.('ai-label-scan')}
-                      disabled={isLoading || isCapturing}
+                      disabled={controlsLocked}
                       className="flex-1 rounded-xl px-2"
                       style={[
-                        { overflow: 'hidden', paddingVertical: isSmallScreen ? 8 : 10 },
+                        {
+                          overflow: 'hidden',
+                          paddingVertical: isSmallScreen ? 8 : 10,
+                          opacity: controlsLocked ? theme.colors.opacity.medium : 1,
+                        },
                         cameraMode === 'ai-label-scan' ? { backgroundColor: 'transparent' } : {},
                       ]}
                     >
@@ -383,10 +413,14 @@ export function SmartCameraShell({
                   {isAiEnabled && isAIVisionEnabled ? (
                     <Pressable
                       onPress={() => onModeChange?.('ai-meal-photo')}
-                      disabled={isLoading || isCapturing}
+                      disabled={controlsLocked}
                       className="flex-1 rounded-xl px-2"
                       style={[
-                        { overflow: 'hidden', paddingVertical: isSmallScreen ? 8 : 10 },
+                        {
+                          overflow: 'hidden',
+                          paddingVertical: isSmallScreen ? 8 : 10,
+                          opacity: controlsLocked ? theme.colors.opacity.medium : 1,
+                        },
                         cameraMode === 'ai-meal-photo' ? { backgroundColor: 'transparent' } : {},
                       ]}
                     >
@@ -444,9 +478,9 @@ export function SmartCameraShell({
                   backgroundColor: theme.colors.background.darkGray50,
                   borderWidth: theme.borderWidth.thin,
                   borderColor: theme.colors.background.white20,
-                  opacity: isLoading || isCapturing ? theme.colors.opacity.medium : 1,
+                  opacity: controlsLocked ? theme.colors.opacity.medium : 1,
                 }}
-                disabled={isLoading || isCapturing}
+                disabled={controlsLocked}
                 onPress={onGalleryPress}
               >
                 <Images size={theme.iconSize.lg} color={theme.colors.text.primary} />
@@ -454,13 +488,13 @@ export function SmartCameraShell({
 
               {/* Shutter Button */}
               <Pressable
-                onPress={isLoading || isCapturing ? undefined : onShutterPress}
-                disabled={isLoading || isCapturing}
+                onPress={handleShutterPress}
+                disabled={controlsLocked}
                 className="h-20 w-20 items-center justify-center rounded-full active:scale-95"
                 style={{
                   borderWidth: theme.borderWidth.thick,
                   borderColor: theme.colors.text.white,
-                  opacity: isLoading || isCapturing ? theme.colors.opacity.strong : 1,
+                  opacity: controlsLocked ? theme.colors.opacity.strong : 1,
                 }}
               >
                 <View

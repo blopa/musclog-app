@@ -10,7 +10,7 @@ import type { MealType } from '@/database/models';
 import { useBarcodeScanner } from '@/hooks/useBarcodeScanner';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useTheme } from '@/hooks/useTheme';
-import { openCropperAsync } from '@/utils/file';
+import { isCropCancelledError, openCropperAsync } from '@/utils/file';
 import { showSnackbar } from '@/utils/snackbarService';
 
 import { BarcodeTextSearchSheet } from './BarcodeTextSearchSheet';
@@ -45,8 +45,6 @@ export function BarcodeCameraModal({
   const theme = useTheme();
   const { t } = useTranslation();
   const cameraRef = useRef<CameraViewType>(null);
-  const isCapturingRef = useRef(false);
-  const [isCapturing, setIsCapturing] = useState(false);
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [isBarcodeTextSearchModalVisible, setIsBarcodeTextSearchModalVisible] = useState(false);
   const [barcodeTextSearchValue, setBarcodeTextSearchValue] = useState('');
@@ -59,11 +57,9 @@ export function BarcodeCameraModal({
       const reset = () => {
         setIsBarcodeTextSearchModalVisible(false);
         setBarcodeTextSearchValue('');
-        setIsCapturing(false);
       };
       reset();
       isSearchingBarcodeRef.current = false;
-      isCapturingRef.current = false;
     }
   }, [visible, isSearchingBarcodeRef]);
 
@@ -91,15 +87,10 @@ export function BarcodeCameraModal({
   }, []);
 
   const handleTakePicture = useCallback(async () => {
-    // Guard against re-entrant taps: without this, tapping the shutter multiple times while
-    // the (slow) native takePictureAsync call is still in flight fires one full
-    // capture+crop flow per tap, so the crop tool ends up presented N times in a row.
-    if (!cameraRef.current || isCapturingRef.current) {
+    if (!cameraRef.current) {
       return;
     }
 
-    isCapturingRef.current = true;
-    setIsCapturing(true);
     try {
       const photo = await cameraRef.current.takePictureAsync({
         quality: 0.8,
@@ -113,14 +104,10 @@ export function BarcodeCameraModal({
       });
       await barcode.processBarcodeImage(cropped.path);
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      if (!message.includes('cancel') && !message.includes('Cancel')) {
+      if (!isCropCancelledError(error)) {
         console.error('Error taking picture:', error);
         showSnackbar('error', t('food.aiCamera.cameraError'));
       }
-    } finally {
-      isCapturingRef.current = false;
-      setIsCapturing(false);
     }
   }, [barcode, t]);
 
@@ -147,8 +134,7 @@ export function BarcodeCameraModal({
           });
           await barcode.processBarcodeImage(cropped.path);
         } catch (error) {
-          const message = error instanceof Error ? error.message : String(error);
-          if (!message.includes('cancel') && !message.includes('Cancel')) {
+          if (!isCropCancelledError(error)) {
             showSnackbar('error', t('food.aiCamera.cameraError'));
           }
         }
@@ -225,7 +211,6 @@ export function BarcodeCameraModal({
         onFlashToggle={handleFlashToggle}
         onGalleryPress={handleGalleryPress}
         onShutterPress={handleTakePicture}
-        isCapturing={isCapturing}
         bottomRightControl={bottomRightControl}
         showModePicker={false}
       >

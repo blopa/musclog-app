@@ -257,6 +257,15 @@ export async function openCropperAsync(options: any): Promise<{ path: string }> 
   return { path: options.imageUri };
 }
 
+/**
+ * `openCropperAsync` rejects with a "cancel" message when the user dismisses the crop UI —
+ * a normal outcome, not an error. Callers use this to decide whether to surface a failure.
+ */
+export function isCropCancelledError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return message.toLowerCase().includes('cancel');
+}
+
 export async function readFileAsStringAsync(fileUri: string, options: { encoding?: string } = {}) {
   if (fileUri.startsWith('web-backup://')) {
     const hash = fileUri.replace('web-backup://', '');

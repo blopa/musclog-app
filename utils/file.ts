@@ -292,6 +292,15 @@ export async function openCropperAsync(options: OpenCropperOptions) {
   return ExpoImageCropTool.openCropperAsync(options);
 }
 
+/**
+ * `openCropperAsync` rejects with a "cancel" message when the user dismisses the crop UI —
+ * a normal outcome, not an error. Callers use this to decide whether to surface a failure.
+ */
+export function isCropCancelledError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return message.toLowerCase().includes('cancel');
+}
+
 export async function readFileAsStringAsync(fileUri: string, options: ReadingOptions = {}) {
   return readAsStringAsync(fileUri, options);
 }

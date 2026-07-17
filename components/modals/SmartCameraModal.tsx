@@ -28,6 +28,7 @@ import {
 } from '@/utils/coachAI';
 import {
   copyImageToDocumentDirectory,
+  isCropCancelledError,
   openCropperAsync,
   readFileAsStringAsync,
 } from '@/utils/file';
@@ -172,8 +173,6 @@ export default function SmartCameraModal({
 
   const isBarcodeScanning = cameraMode === 'barcode-scan';
   const cameraRef = useRef<CameraViewType>(null);
-  const isCapturingRef = useRef(false);
-  const [isCapturing, setIsCapturing] = useState(false);
   const shouldShowBarcodeTextSearch = showBarcodeTextSearch && cameraMode === 'barcode-scan';
 
   const barcode = useBarcodeScanner({ visible, onBarcodeScanned, onClose });
@@ -269,8 +268,6 @@ export default function SmartCameraModal({
         setIsLogMealModalVisible(false);
         setProductFromAiLabel(null);
         isSearchingBarcodeRef.current = false;
-        isCapturingRef.current = false;
-        setIsCapturing(false);
       };
       reset();
     }
@@ -428,64 +425,32 @@ export default function SmartCameraModal({
   );
 
   const handleTakePicture = useCallback(async () => {
-    // Guard against re-entrant taps: without this, tapping the shutter multiple times while
-    // the (slow) native takePictureAsync call is still in flight fires one full
-    // capture+crop flow per tap, so the crop tool ends up presented N times in a row.
-    if (!cameraRef.current || isCapturingRef.current) {
+    if (!cameraRef.current) {
       return;
     }
 
-    isCapturingRef.current = true;
-    setIsCapturing(true);
+    const quality = isBarcodeScanning ? 0.8 : 0.85;
+    const processPhoto = isBarcodeScanning ? barcode.processBarcodeImage : processAiPhoto;
     try {
-      if (cameraMode === 'ai-label-scan' || cameraMode === 'ai-meal-photo') {
-        try {
-          const photo = await cameraRef.current.takePictureAsync({
-            quality: 0.85,
-            base64: false,
-            skipProcessing: true,
-          });
+      const photo = await cameraRef.current.takePictureAsync({
+        quality,
+        base64: false,
+        skipProcessing: true,
+      });
 
-          const cropped = await openCropperAsync({
-            imageUri: photo.uri,
-            format: 'jpeg',
-            compressImageQuality: 0.85,
-          });
-          await processAiPhoto(cropped.path);
-        } catch (error) {
-          const message = error instanceof Error ? error.message : String(error);
-          if (!message.includes('cancel') && !message.includes('Cancel')) {
-            console.error('Error taking picture:', error);
-            showSnackbar('error', t('food.aiCamera.cameraError'));
-          }
-        }
-        return;
+      const cropped = await openCropperAsync({
+        imageUri: photo.uri,
+        format: 'jpeg',
+        compressImageQuality: quality,
+      });
+      await processPhoto(cropped.path);
+    } catch (error) {
+      if (!isCropCancelledError(error)) {
+        console.error('Error taking picture:', error);
+        showSnackbar('error', t('food.aiCamera.cameraError'));
       }
-      try {
-        const photo = await cameraRef.current.takePictureAsync({
-          quality: 0.8,
-          base64: false,
-          skipProcessing: true,
-        });
-
-        const cropped = await openCropperAsync({
-          imageUri: photo.uri,
-          format: 'jpeg',
-          compressImageQuality: 0.8,
-        });
-        await barcode.processBarcodeImage(cropped.path);
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        if (!message.includes('cancel') && !message.includes('Cancel')) {
-          console.error('Error taking picture:', error);
-          showSnackbar('error', t('food.aiCamera.cameraError'));
-        }
-      }
-    } finally {
-      isCapturingRef.current = false;
-      setIsCapturing(false);
     }
-  }, [cameraMode, t, processAiPhoto, barcode]);
+  }, [isBarcodeScanning, t, processAiPhoto, barcode]);
 
   const handleClose = useCallback(() => {
     isSearchingBarcodeRef.current = false;
@@ -622,36 +587,18 @@ export default function SmartCameraModal({
       });
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
-        const selectedAsset = result.assets[0];
-        if (cameraMode === 'barcode-scan') {
-          try {
-            const cropped = await openCropperAsync({
-              imageUri: selectedAsset.uri,
-              format: 'jpeg',
-              compressImageQuality: 0.85,
-            });
-            await barcode.processBarcodeImage(cropped.path);
-          } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            if (!message.includes('cancel') && !message.includes('Cancel')) {
-              console.error('Error cropping gallery image for barcode scan:', error);
-              showSnackbar('error', t('food.aiCamera.cameraError'));
-            }
-          }
-        } else if (cameraMode === 'ai-label-scan' || cameraMode === 'ai-meal-photo') {
-          try {
-            const cropped = await openCropperAsync({
-              imageUri: selectedAsset.uri,
-              format: 'jpeg',
-              compressImageQuality: 0.85,
-            });
-            await processAiPhoto(cropped.path);
-          } catch (error) {
-            const message = error instanceof Error ? error.message : String(error);
-            if (!message.includes('cancel') && !message.includes('Cancel')) {
-              console.error('Error cropping gallery image:', error);
-              showSnackbar('error', t('food.aiCamera.cameraError'));
-            }
+        const processPhoto = isBarcodeScanning ? barcode.processBarcodeImage : processAiPhoto;
+        try {
+          const cropped = await openCropperAsync({
+            imageUri: result.assets[0].uri,
+            format: 'jpeg',
+            compressImageQuality: 0.85,
+          });
+          await processPhoto(cropped.path);
+        } catch (error) {
+          if (!isCropCancelledError(error)) {
+            console.error('Error cropping gallery image:', error);
+            showSnackbar('error', t('food.aiCamera.cameraError'));
           }
         }
       }
@@ -659,7 +606,7 @@ export default function SmartCameraModal({
       console.error('Error picking image from gallery:', error);
       showSnackbar('error', t('food.aiCamera.galleryError'));
     }
-  }, [cameraMode, processAiPhoto, barcode, t]);
+  }, [isBarcodeScanning, processAiPhoto, barcode, t]);
 
   const handleBarcodeTextSearchSubmit = useCallback(() => {
     const value = barcodeTextSearchValue.trim();
@@ -756,7 +703,6 @@ export default function SmartCameraModal({
         onFlashToggle={handleFlashToggle}
         onGalleryPress={handleGalleryPress}
         onShutterPress={handleTakePicture}
-        isCapturing={isCapturing}
         bottomRightControl={bottomRightControl}
         showModePicker={!hideCameraModePicker}
         isAiEnabled={isAiEnabled}
