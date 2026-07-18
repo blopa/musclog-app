@@ -44,7 +44,7 @@ type ModePickerTabProps = {
   label: string;
   disabled: boolean;
   isSmallScreen: boolean;
-  onPress: () => void;
+  onSelect: (mode: CameraMode) => void;
 };
 
 function ModePickerTab({
@@ -54,7 +54,7 @@ function ModePickerTab({
   label,
   disabled,
   isSmallScreen,
-  onPress,
+  onSelect,
 }: ModePickerTabProps) {
   const theme = useTheme();
   const isActive = mode === activeMode;
@@ -62,7 +62,7 @@ function ModePickerTab({
 
   return (
     <Pressable
-      onPress={onPress}
+      onPress={() => onSelect(mode)}
       disabled={disabled}
       className="flex-1 rounded-xl px-2"
       style={[
@@ -180,6 +180,8 @@ export function SmartCameraShell({
 
   const controlsLocked = isLoading || isActionRunning;
   const lockedControlStyle = { opacity: controlsLocked ? theme.colors.opacity.medium : 1 };
+
+  const handleModeSelect = (mode: CameraMode) => onModeChange?.(mode);
 
   if (permissionGranted === null) {
     return (
@@ -375,7 +377,7 @@ export function SmartCameraShell({
                     label={t('food.aiCamera.modes.barcodeScan')}
                     disabled={controlsLocked}
                     isSmallScreen={isSmallScreen}
-                    onPress={() => onModeChange?.('barcode-scan')}
+                    onSelect={handleModeSelect}
                   />
 
                   <ModePickerTab
@@ -385,7 +387,7 @@ export function SmartCameraShell({
                     label={t('food.aiCamera.modes.labelScan')}
                     disabled={controlsLocked}
                     isSmallScreen={isSmallScreen}
-                    onPress={() => onModeChange?.('ai-label-scan')}
+                    onSelect={handleModeSelect}
                   />
 
                   {isAIVisionEnabled ? (
@@ -396,7 +398,7 @@ export function SmartCameraShell({
                       label={t('food.aiCamera.modes.mealPhoto')}
                       disabled={controlsLocked}
                       isSmallScreen={isSmallScreen}
-                      onPress={() => onModeChange?.('ai-meal-photo')}
+                      onSelect={handleModeSelect}
                     />
                   ) : null}
                 </View>

@@ -1,4 +1,5 @@
 import Quagga, { QuaggaJSCodeReader } from '@ericblade/quagga2';
+import type { OpenCropperOptions } from 'expo-image-crop-tool/src/ExpoImageCropTool.types';
 
 import { dumpDatabase } from '@/database/exportDb';
 import { restoreDatabase } from '@/database/importDb';
@@ -257,7 +258,7 @@ export async function deleteFoodImage(imageUri: string): Promise<void> {
  * Web has no crop UI: returns the image unchanged. Matches the native contract, where
  * `null` means the user cancelled the crop.
  */
-export async function openCropperAsync(options: { imageUri: string }): Promise<{
+export async function openCropperAsync(options: OpenCropperOptions): Promise<{
   path: string;
 } | null> {
   return { path: options.imageUri };

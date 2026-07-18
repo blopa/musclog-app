@@ -11,11 +11,12 @@ import { showSnackbar } from '@/utils/snackbarService';
 export const BARCODE_PHOTO_QUALITY = 0.8;
 export const AI_PHOTO_QUALITY = 0.85;
 
-const GALLERY_IMAGE_QUALITY = 0.85;
-
 type UseCameraCaptureFlowOptions = {
   cameraRef: RefObject<CameraView | null>;
-  /** JPEG quality for the capture (iOS only — see `skipProcessing` below) and the crop re-encode. */
+  /**
+   * JPEG quality for the whole pipeline: the shutter capture (iOS only — see `skipProcessing`
+   * below), the gallery pick, and the crop re-encode.
+   */
   quality: number;
   /** Receives the cropped image path (shutter and gallery alike). */
   process: (fileUri: string) => Promise<void>;
@@ -28,6 +29,23 @@ type UseCameraCaptureFlowOptions = {
  */
 export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraCaptureFlowOptions) {
   const { t } = useTranslation();
+
+  const cropAndProcess = useCallback(
+    async (imageUri: string) => {
+      const cropped = await openCropperAsync({
+        imageUri,
+        format: 'jpeg',
+        compressImageQuality: quality,
+      });
+
+      if (!cropped) {
+        return;
+      }
+
+      await process(cropped.path);
+    },
+    [quality, process]
+  );
 
   const takePicture = useCallback(async () => {
     if (!cameraRef.current) {
@@ -44,21 +62,12 @@ export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraC
         base64: false,
         skipProcessing: true,
       });
-
-      const cropped = await openCropperAsync({
-        imageUri: photo.uri,
-        format: 'jpeg',
-        compressImageQuality: quality,
-      });
-      if (!cropped) {
-        return;
-      }
-      await process(cropped.path);
+      await cropAndProcess(photo.uri);
     } catch (error) {
       console.error('Error taking picture:', error);
       showSnackbar('error', t('food.aiCamera.cameraError'));
     }
-  }, [cameraRef, quality, process, t]);
+  }, [cameraRef, quality, cropAndProcess, t]);
 
   const pickFromGallery = useCallback(async () => {
     try {
@@ -70,7 +79,7 @@ export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraC
 
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
-        quality: GALLERY_IMAGE_QUALITY,
+        quality,
         base64: false,
       });
       if (result.canceled || !result.assets?.length) {
@@ -78,15 +87,7 @@ export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraC
       }
 
       try {
-        const cropped = await openCropperAsync({
-          imageUri: result.assets[0].uri,
-          format: 'jpeg',
-          compressImageQuality: GALLERY_IMAGE_QUALITY,
-        });
-        if (!cropped) {
-          return;
-        }
-        await process(cropped.path);
+        await cropAndProcess(result.assets[0].uri);
       } catch (error) {
         console.error('Error cropping gallery image:', error);
         showSnackbar('error', t('food.aiCamera.cameraError'));
@@ -95,7 +96,7 @@ export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraC
       console.error('Error picking image from gallery:', error);
       showSnackbar('error', t('food.aiCamera.galleryError'));
     }
-  }, [process, t]);
+  }, [quality, cropAndProcess, t]);
 
   return { takePicture, pickFromGallery };
 }
