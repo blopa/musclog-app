@@ -1,0 +1,24 @@
+diff --git a/node_modules/expo-camera/android/src/main/java/expo/modules/camera/ExpoCameraView.kt b/node_modules/expo-camera/android/src/main/java/expo/modules/camera/ExpoCameraView.kt
+index 999a22c..93bdaa0 100644
+--- a/node_modules/expo-camera/android/src/main/java/expo/modules/camera/ExpoCameraView.kt
++++ b/node_modules/expo-camera/android/src/main/java/expo/modules/camera/ExpoCameraView.kt
+@@ -534,6 +534,19 @@ class ExpoCameraView(
+     camera = cameraProvider.bindToLifecycle(currentActivity, cameraSelector, useCases)
+     camera?.let {
+       observeCameraState(it.cameraInfo)
++      // Zero-Shutter Lag: pulls the frame closest to the button press from a ring buffer
++      // CameraX keeps continuously topped up, instead of running a fresh capture (which pays
++      // an AF/AE convergence cost the first time a session takes a still picture). Requires
++      // PRIVATE reprocessing support and is incompatible with ON/AUTO flash, so we check both;
++      // setCaptureMode() itself also falls back to CAPTURE_MODE_MINIMIZE_LATENCY on failure.
++      if (
++        cameraMode == CameraMode.PICTURE &&
++        currentFlashMode != FlashMode.ON &&
++        currentFlashMode != FlashMode.AUTO &&
++        it.cameraInfo.isZslSupported()
++      ) {
++        imageCaptureUseCase?.setCaptureMode(ImageCapture.CAPTURE_MODE_ZERO_SHUTTER_LAG)
++      }
+     }
+     // Set the previous zoom level after recreating the camera
+     setCameraZoom(zoom)
