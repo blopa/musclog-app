@@ -169,6 +169,8 @@ export default function SmartCameraModal({
   const [isProcessingAi, setIsProcessingAi] = useState(false);
   /** Synthetic product from AI label (OCR or vision) for FoodMealTrackingDetailsModal */
   const [productFromAiLabel, setProductFromAiLabel] = useState<SearchResultProduct | null>(null);
+  /** Set by the camera's onCameraReady; drives the capture-flow warm-up (see useCameraCaptureFlow). */
+  const [isCameraReady, setIsCameraReady] = useState(false);
 
   const isBarcodeScanning = cameraMode === 'barcode-scan';
   const cameraRef = useRef<CameraViewType>(null);
@@ -195,6 +197,16 @@ export default function SmartCameraModal({
 
   const isCameraActive =
     visible && !barcode.isSearchingBarcode && !isProcessingAi && !isAnyChildModalVisible;
+
+  // The <CameraView> unmounts whenever isCameraActive goes false and gets a fresh native
+  // session when it remounts — so isCameraReady must reset in step so the capture-flow
+  // warm-up re-arms for that new session.
+  useEffect(() => {
+    if (!isCameraActive) {
+      const reset = () => setIsCameraReady(false);
+      reset();
+    }
+  }, [isCameraActive]);
 
   /** Map AI TrackMealResponse to the shape LogMealModal expects (calories from kcal). */
   const mapTrackMealResponseToMeal = useCallback(
@@ -427,6 +439,7 @@ export default function SmartCameraModal({
     cameraRef,
     quality: isBarcodeScanning ? BARCODE_PHOTO_QUALITY : AI_PHOTO_QUALITY,
     process: isBarcodeScanning ? barcode.processBarcodeImage : processAiPhoto,
+    cameraReady: isCameraReady,
   });
 
   const handleClose = useCallback(() => {
@@ -620,6 +633,8 @@ export default function SmartCameraModal({
               facing="back"
               enableTorch={flashEnabled}
               active={true}
+              onCameraReady={() => setIsCameraReady(true)}
+              animateShutter={false}
               onBarcodeScanned={isBarcodeScanning ? barcode.handleLiveBarcodeScanned : undefined}
               barcodeScannerSettings={{
                 barcodeTypes: [
