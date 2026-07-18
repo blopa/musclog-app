@@ -422,7 +422,7 @@ export default function SmartCameraModal({
     ]
   );
 
-  const { takePicture, pickFromGallery, capturedPhotoUri } = useCameraCaptureFlow({
+  const { takePicture, pickFromGallery } = useCameraCaptureFlow({
     cameraRef,
     quality: isBarcodeScanning ? BARCODE_PHOTO_QUALITY : AI_PHOTO_QUALITY,
     process: isBarcodeScanning ? barcode.processBarcodeImage : processAiPhoto,
@@ -643,7 +643,6 @@ export default function SmartCameraModal({
         onFlashToggle={handleFlashToggle}
         onGalleryPress={pickFromGallery}
         onShutterPress={takePicture}
-        frozenFrameUri={capturedPhotoUri}
         bottomRightControl={bottomRightControl}
         showModePicker={!hideCameraModePicker}
         isAiEnabled={isAiEnabled}
