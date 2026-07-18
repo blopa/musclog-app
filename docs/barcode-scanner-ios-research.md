@@ -2,6 +2,11 @@
 
 Date: 2026-04-25
 
+> **Status note (2026-07-19):** the `expo-camera` details below are historical — the app has
+> since migrated all camera capture (live scanning, photo, and video) to
+> `react-native-vision-camera`, and `expo-camera` was removed from the project. The
+> image-file-based `detectBarcodes` implementation this document describes is still current.
+
 ## Goal
 
 Implement the iOS TODO in `utils/barcodeScanner.ios.ts` for scanning barcodes from an image file, because the existing package setup used for web and Android was not working as the iOS solution.

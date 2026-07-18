@@ -22,7 +22,6 @@
         }
       ],
       "./plugins/withGradleJvmArgs",
-      "./plugins/withCameraXVersionPin",
       "./plugins/withIosSimulatorBuildFix",
       "expo-system-ui",
       "react-native-edge-to-edge",
@@ -47,18 +46,11 @@
         }
       ],
       [
-        "expo-camera",
-        {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
-          "recordAudioAndroid": true
-        }
-      ],
-      [
         "react-native-vision-camera",
         {
           "cameraPermissionText": "Allow $(PRODUCT_NAME) to access your camera",
-          "enableMicrophonePermission": false,
+          "enableMicrophonePermission": true,
+          "microphonePermissionText": "Allow $(PRODUCT_NAME) to access your microphone",
           "enableCodeScanner": true,
           "enableFrameProcessors": false
         }

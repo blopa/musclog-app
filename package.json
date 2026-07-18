@@ -138,7 +138,6 @@
     "expo-blur": "~57.0.2",
     "expo-build-properties": "~57.0.6",
     "expo-calendar": "~57.0.1",
-    "expo-camera": "~57.0.3",
     "expo-clipboard": "~57.0.1",
     "expo-constants": "~57.0.6",
     "expo-device": "~57.0.1",

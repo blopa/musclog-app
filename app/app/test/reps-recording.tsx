@@ -1,5 +1,3 @@
-import type { CameraView as CameraViewType } from 'expo-camera';
-import { CameraView, useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
 import { File } from 'expo-file-system';
 import { copyAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
@@ -14,6 +12,13 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import {
+  Camera as VisionCamera,
+  useCameraDevice,
+  useCameraFormat,
+  useCameraPermission,
+  useMicrophonePermission,
+} from 'react-native-vision-camera';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { MasterLayout } from '@/components/MasterLayout';
@@ -155,11 +160,22 @@ export default function RepsRecordingScreen() {
   const wit = useWitMotion();
   const requestWitPermissions = wit.requestPermissions;
 
-  const [cameraPermission, requestCameraPermission] = useCameraPermissions();
-  const [micPermission, requestMicPermission] = useMicrophonePermissions();
+  const { hasPermission: hasCameraPermission, requestPermission: requestCameraPermission } =
+    useCameraPermission();
+  const { hasPermission: hasMicPermission, requestPermission: requestMicPermission } =
+    useMicrophonePermission();
   const [isCameraEnabled, setIsCameraEnabled] = useState(false);
+  // startRecording before the native session is initialized fails; gate START on this.
+  const [isCameraInitialized, setIsCameraInitialized] = useState(false);
 
-  const cameraRef = useRef<CameraViewType>(null);
+  const cameraDevice = useCameraDevice('back');
+  // Mirrors the previous expo-camera videoQuality="720p" — keeps training clips small and
+  // consistent across recording sessions.
+  const cameraFormat = useCameraFormat(cameraDevice, [
+    { videoResolution: { width: 1280, height: 720 } },
+  ]);
+
+  const cameraRef = useRef<VisionCamera>(null);
   const recordingRef = useRef(false);
   const tempFileRef = useRef<ReturnType<typeof createBleWorkoutTrackingTempFile> | null>(null);
   const startedAtRef = useRef<number | null>(null);
@@ -211,26 +227,15 @@ export default function RepsRecordingScreen() {
   }, []);
 
   const handleEnableCamera = useCallback(async () => {
-    if (!cameraPermission?.granted) {
-      const result = await requestCameraPermission();
-      if (!result.granted) {
-        return;
-      }
+    if (!hasCameraPermission && !(await requestCameraPermission())) {
+      return;
     }
 
-    if (!micPermission?.granted) {
-      const result = await requestMicPermission();
-      if (!result.granted) {
-        return;
-      }
+    if (!hasMicPermission && !(await requestMicPermission())) {
+      return;
     }
     setIsCameraEnabled(true);
-  }, [
-    cameraPermission?.granted,
-    micPermission?.granted,
-    requestCameraPermission,
-    requestMicPermission,
-  ]);
+  }, [hasCameraPermission, hasMicPermission, requestCameraPermission, requestMicPermission]);
 
   const clearCapturedRecordingRefs = useCallback((deleteTempFile: boolean) => {
     const tempFile = tempFileRef.current;
@@ -314,7 +319,8 @@ export default function RepsRecordingScreen() {
   }, [recordingPendingDelete]);
 
   const handleStart = useCallback(async () => {
-    if (!wit.isConnected || !selectedExercise || !cameraRef.current) {
+    const camera = cameraRef.current;
+    if (!wit.isConnected || !selectedExercise || !camera) {
       return;
     }
     if (recordingRef.current) {
@@ -372,9 +378,21 @@ export default function RepsRecordingScreen() {
         }
       });
 
-      // Do NOT await here. Expo resolves this promise when stopRecording() is called,
-      // but also when the native camera source/preview stops or a native limit is hit.
-      const recordingPromise = cameraRef.current.recordAsync();
+      // Wrap vision-camera's callback-based startRecording in the promise shape the rest of
+      // this flow is built around. It settles when stopRecording() is called, but also when
+      // the native session stops on its own (interruption, error, storage limit) — the
+      // .then/.catch below detect that early-stop case while recordingRef is still true.
+      const recordingPromise = new Promise<{ uri: string }>((resolve, reject) => {
+        camera.startRecording({
+          fileType: 'mp4',
+          onRecordingFinished: (video) => {
+            resolve({
+              uri: video.path.startsWith('file://') ? video.path : `file://${video.path}`,
+            });
+          },
+          onRecordingError: reject,
+        });
+      });
       recordingPromiseRef.current = recordingPromise
         .then((result: CameraRecordingResult) => {
           const resolvedAt = Date.now();
@@ -432,12 +450,16 @@ export default function RepsRecordingScreen() {
       recordingPromiseRef.current = null;
 
       if (cameraRef.current && !cameraStoppedBeforeUser) {
-        cameraRef.current.stopRecording();
+        // Fire-and-forget: the recordingPromise settles via onRecordingFinished once the
+        // file is finalized; stopRecording rejecting (e.g. recording already ended) is
+        // covered by the early-stop handling above.
+        cameraRef.current.stopRecording().catch((err: unknown) => {
+          console.warn('[reps-recording] stopRecording failed:', err);
+        });
       }
 
-      // recordAsync() can reject (device-specific camera errors) or hang without
-      // resolving (known expo-camera iOS issue, and Android backgrounding bugs).
-      // Race against a generous timeout so the UI never gets stuck.
+      // The recording can error natively (device-specific camera issues) or, in edge
+      // cases, never finalize. Race against a generous timeout so the UI never gets stuck.
       const result = await Promise.race([
         recordingPromise ?? Promise.resolve(undefined),
         new Promise<{ uri: string } | undefined>((resolve) =>
@@ -536,7 +558,12 @@ export default function RepsRecordingScreen() {
   }, [clearCapturedRecordingRefs]);
 
   const canStart =
-    wit.isConnected && selectedExercise !== null && !isSaving && isCameraEnabled && !isRecording;
+    wit.isConnected &&
+    selectedExercise !== null &&
+    !isSaving &&
+    isCameraEnabled &&
+    isCameraInitialized &&
+    !isRecording;
 
   const statusColor = useMemo(() => {
     if (wit.status === 'connected') {
@@ -739,7 +766,12 @@ export default function RepsRecordingScreen() {
             <View className="flex-row items-center justify-between">
               <Text className="font-semibold text-text-primary">Camera</Text>
               {isCameraEnabled && !isRecording ? (
-                <Pressable onPress={() => setIsCameraEnabled(false)}>
+                <Pressable
+                  onPress={() => {
+                    setIsCameraEnabled(false);
+                    setIsCameraInitialized(false);
+                  }}
+                >
                   <Text className="text-xs text-text-tertiary">Disable</Text>
                 </Pressable>
               ) : null}
@@ -754,20 +786,26 @@ export default function RepsRecordingScreen() {
                   backgroundColor: '#000',
                 }}
               >
-                {cameraPermission?.granted ? (
-                  <CameraView
+                {hasCameraPermission && hasMicPermission && cameraDevice ? (
+                  <VisionCamera
                     ref={cameraRef}
                     style={{ flex: 1 }}
-                    mode="video"
-                    facing="back"
-                    videoQuality="720p"
+                    device={cameraDevice}
+                    format={cameraFormat}
+                    fps={30}
+                    isActive={true}
+                    video={true}
+                    audio={true}
+                    onInitialized={() => setIsCameraInitialized(true)}
                   />
                 ) : (
                   <Pressable
-                    onPress={() => void requestCameraPermission()}
+                    onPress={() => void handleEnableCamera()}
                     className="flex-1 items-center justify-center"
                   >
-                    <Text className="text-text-tertiary">Tap to grant camera permission</Text>
+                    <Text className="text-text-tertiary">
+                      Tap to grant camera and microphone permissions
+                    </Text>
                   </Pressable>
                 )}
               </View>

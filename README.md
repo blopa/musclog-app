@@ -134,27 +134,27 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 
 ## Tech Stack
 
-| Layer          | Technology                                                  |
-| -------------- | ----------------------------------------------------------- |
-| Framework      | React Native 0.81 + Expo Router 6                           |
-| Language       | TypeScript 5.9                                              |
-| Database       | WatermelonDB 0.28 (SQLite-backed, reactive)                 |
-| Styling        | NativeWind 4.2 (Tailwind CSS for React Native)              |
-| Icons          | Lucide React Native                                         |
-| Charts         | Victory Native (Skia)                                       |
-| Graphics       | @shopify/react-native-skia                                  |
-| AI             | Google Generative AI + OpenAI SDK                           |
-| Camera / OCR   | expo-camera, Quagga2, ZXing, ML Kit OCR, Tesseract.js       |
-| Health         | expo-health-connect / react-native-health-connect (Android) |
-|                | @kingstinct/react-native-healthkit (iOS)                    |
-| Localization   | i18next + react-i18next                                     |
-| Animations     | React Native Reanimated 4                                   |
-| Widgets        | react-native-android-widget                                 |
-| Chat UI        | react-native-gifted-chat                                    |
-| Validation     | Zod                                                         |
-| Error Tracking | Sentry                                                      |
-| Testing        | Jest + React Testing Library + Playwright (web E2E)         |
-| Build          | EAS (Expo Application Services)                             |
+| Layer          | Technology                                                           |
+| -------------- | -------------------------------------------------------------------- |
+| Framework      | React Native 0.81 + Expo Router 6                                    |
+| Language       | TypeScript 5.9                                                       |
+| Database       | WatermelonDB 0.28 (SQLite-backed, reactive)                          |
+| Styling        | NativeWind 4.2 (Tailwind CSS for React Native)                       |
+| Icons          | Lucide React Native                                                  |
+| Charts         | Victory Native (Skia)                                                |
+| Graphics       | @shopify/react-native-skia                                           |
+| AI             | Google Generative AI + OpenAI SDK                                    |
+| Camera / OCR   | react-native-vision-camera, Quagga2, ZXing, ML Kit OCR, Tesseract.js |
+| Health         | expo-health-connect / react-native-health-connect (Android)          |
+|                | @kingstinct/react-native-healthkit (iOS)                             |
+| Localization   | i18next + react-i18next                                              |
+| Animations     | React Native Reanimated 4                                            |
+| Widgets        | react-native-android-widget                                          |
+| Chat UI        | react-native-gifted-chat                                             |
+| Validation     | Zod                                                                  |
+| Error Tracking | Sentry                                                               |
+| Testing        | Jest + React Testing Library + Playwright (web E2E)                  |
+| Build          | EAS (Expo Application Services)                                      |
 
 ---
 

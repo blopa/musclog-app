@@ -22,22 +22,3 @@ allprojects {
 
 apply plugin: "expo-root-project"
 apply plugin: "com.facebook.react.rootproject"
-
-// [withCameraXVersionPin] Managed by plugins/withCameraXVersionPin.js — see that file for the full rationale.
-// [withCameraXVersionPin] Pins CameraX so react-native-vision-camera (compiled against 1.5.0-alpha03) does not
-// [withCameraXVersionPin] get expo-camera's CameraX 1.6.0 at runtime (NoClassDefFoundError: Camera2CameraInfoImpl).
-allprojects {
-  configurations.configureEach {
-    resolutionStrategy {
-      force(
-        'androidx.camera:camera-core:1.5.0-alpha03',
-        'androidx.camera:camera-camera2:1.5.0-alpha03',
-        'androidx.camera:camera-lifecycle:1.5.0-alpha03',
-        'androidx.camera:camera-video:1.5.0-alpha03',
-        'androidx.camera:camera-view:1.5.0-alpha03',
-        'androidx.camera:camera-extensions:1.5.0-alpha03',
-        'androidx.camera:camera-mlkit-vision:1.5.0-alpha03'
-      )
-    }
-  }
-}
