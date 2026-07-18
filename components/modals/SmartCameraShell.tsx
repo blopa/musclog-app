@@ -260,22 +260,13 @@ export function SmartCameraShell({
               locations={[0, 0.5, 1]}
               style={StyleSheet.absoluteFill}
             />
-            {/* Opaque capture state. pointerEvents="none" so the close button
-                (kept enabled while an action runs) stays tappable. */}
+            {/* Opaque capture state. The spinner is rendered in the camera frame below so it
+                stays centered in the capture area on every screen size. */}
             {isActionRunning ? (
               <View
                 pointerEvents="none"
-                style={[
-                  StyleSheet.absoluteFill,
-                  {
-                    backgroundColor: theme.colors.text.black,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  },
-                ]}
-              >
-                <ActivityIndicator size="large" color={theme.colors.text.white} />
-              </View>
+                style={[StyleSheet.absoluteFill, { backgroundColor: theme.colors.text.black }]}
+              />
             ) : null}
           </View>
 
@@ -365,6 +356,16 @@ export function SmartCameraShell({
                   backgroundColor: theme.colors.accent.primary40,
                 }}
               />
+
+              {isActionRunning ? (
+                <View pointerEvents="none" className="absolute inset-0 items-center justify-center">
+                  <ActivityIndicator
+                    size="large"
+                    color={theme.colors.text.white}
+                    style={{ transform: [{ scale: 1.6 }] }}
+                  />
+                </View>
+              ) : null}
             </View>
 
             {/* Instruction Text */}
