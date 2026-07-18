@@ -1,9 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// expo-camera's useCameraPermissions hook calls Camera.getCameraPermissionsAsync()
-// on mount, which can take ~10s on the first call in production builds (TurboModule
-// lazy init on Android). SmartCameraContext keeps useCameraPermissions alive for the
-// lifetime of the app so the warm-up cost is paid at boot, not when the camera opens.
+// Originally written around expo-camera's useCameraPermissions hook, whose
+// Camera.getCameraPermissionsAsync() could take ~10s on the first call in production
+// builds (TurboModule lazy init on Android). react-native-vision-camera's equivalent
+// (Camera.getCameraPermissionStatus()) is synchronous, so that specific cold-start cost
+// no longer applies — but this cache is left in place as a harmless optimistic-UI layer
+// (avoids a one-frame flash of the "grant permission" screen before the first
+// permission check settles) and to keep the pattern available if a native permission
+// check ever gets slow again. SmartCameraContext keeps useCameraPermissions mounted for
+// the lifetime of the app regardless.
 //
 // This module handles Layer 1: persist the granted flag to AsyncStorage so that
 // getCachedCameraPermissionGranted() is readable synchronously at the time the

@@ -1,10 +1,9 @@
-import type { CameraView as CameraViewType } from 'expo-camera';
 import { MessageSquareText, Search } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
-import { CameraView } from '@/components/CameraView';
+import { CameraView, type CameraViewRef } from '@/components/CameraView';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { type MealType } from '@/database/models';
@@ -173,7 +172,7 @@ export default function SmartCameraModal({
   const [isCameraReady, setIsCameraReady] = useState(false);
 
   const isBarcodeScanning = cameraMode === 'barcode-scan';
-  const cameraRef = useRef<CameraViewType>(null);
+  const cameraRef = useRef<CameraViewRef>(null);
   const shouldShowBarcodeTextSearch = showBarcodeTextSearch && cameraMode === 'barcode-scan';
 
   const barcode = useBarcodeScanner({ visible, onBarcodeScanned, onClose });
@@ -634,7 +633,6 @@ export default function SmartCameraModal({
               enableTorch={flashEnabled}
               active={true}
               onCameraReady={() => setIsCameraReady(true)}
-              animateShutter={false}
               onBarcodeScanned={isBarcodeScanning ? barcode.handleLiveBarcodeScanned : undefined}
               barcodeScannerSettings={{
                 barcodeTypes: [

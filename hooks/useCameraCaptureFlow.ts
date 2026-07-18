@@ -1,10 +1,10 @@
-import type { CameraView } from 'expo-camera';
 import { File } from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import type { RefObject } from 'react';
 import { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import type { CameraViewRef } from '@/components/CameraView';
 import { openCropperAsync } from '@/utils/file';
 import { showSnackbar } from '@/utils/snackbarService';
 
@@ -19,24 +19,23 @@ const logPhase = (label: string, startedAt: number) => {
 };
 
 type UseCameraCaptureFlowOptions = {
-  cameraRef: RefObject<CameraView | null>;
-  /**
-   * JPEG quality for the whole pipeline: the shutter capture (iOS only — see `skipProcessing`
-   * below), the gallery pick, and the crop re-encode.
-   */
+  cameraRef: RefObject<CameraViewRef | null>;
+  /** JPEG quality for the crop re-encode step (shutter capture and gallery pick alike). */
   quality: number;
   /** Receives the cropped image path (shutter and gallery alike). */
   process: (fileUri: string) => Promise<void>;
   /**
-   * True once expo-camera's `onCameraReady` has fired for the currently mounted camera view.
-   * The first `takePictureAsync` call against a freshly bound camera session pays a one-off,
-   * multi-second focus/exposure convergence cost on Android (CameraX only fully converges 3A —
+   * True once the camera's `onCameraReady` has fired for the currently mounted camera view.
+   * The first `takePhoto` call against a freshly bound camera session can pay a one-off
+   * focus/exposure convergence cost on Android (CameraX only fully converges 3A —
    * autofocus/auto-exposure — on the first still-capture request of a session); every capture
-   * after that in the same session is near-instant. That is the delay users saw *even after*
-   * `skipProcessing` was added: skipProcessing only speeds up post-capture processing, not the
-   * native capture itself. We pay the convergence cost once, silently, as soon as the camera
-   * reports ready — before the user has framed their shot and reached for the shutter — instead
-   * of making their first real tap absorb it.
+   * after that in the same session is near-instant. `photoQualityBalance="balanced"` (set in
+   * @/components/CameraView, mapping to CameraX's Zero-Shutter-Lag mode on Android) already
+   * absorbs most of this, but we still pay any residual convergence cost once, silently, as soon
+   * as the camera reports ready — before the user has framed their shot and reached for the
+   * shutter — instead of making their first real tap absorb it. The warm-up capture is silent on
+   * both platforms via `shutterSound: false` (vision-camera supports suppressing the native
+   * shutter sound on iOS too, unlike the expo-camera implementation this replaced).
    */
   cameraReady: boolean;
 };
@@ -72,9 +71,6 @@ export function useCameraCaptureFlow({
     const startedAt = Date.now();
     warmUpPromiseRef.current = camera
       .takePictureAsync({
-        quality,
-        base64: false,
-        skipProcessing: true,
         shutterSound: false,
       })
       .then((photo) => {
@@ -99,7 +95,7 @@ export function useCameraCaptureFlow({
       .finally(() => {
         warmUpPromiseRef.current = null;
       });
-  }, [cameraReady, cameraRef, quality]);
+  }, [cameraReady, cameraRef]);
 
   const cropAndProcess = useCallback(
     async (imageUri: string) => {
@@ -134,23 +130,15 @@ export function useCameraCaptureFlow({
         await warmUpPromiseRef.current;
       }
 
-      // skipProcessing skips Android's post-capture pipeline (re-encode + orientation bake),
-      // which is what made the shutter feel seconds-slow. Per expo-camera docs Android then
-      // discards `quality` (iOS still honors it) and may deliver the image with its rotation
-      // only in EXIF — the CanHub crop view reads EXIF, so the crop step re-bakes it upright.
       const startedAt = Date.now();
-      const photo = await cameraRef.current.takePictureAsync({
-        quality,
-        base64: false,
-        skipProcessing: true,
-      });
+      const photo = await cameraRef.current.takePictureAsync();
       logPhase('shutter capture', startedAt);
       await cropAndProcess(photo.uri);
     } catch (error) {
       console.error('Error taking picture:', error);
       showSnackbar('error', t('food.aiCamera.cameraError'));
     }
-  }, [cameraRef, quality, cropAndProcess, t]);
+  }, [cameraRef, cropAndProcess, t]);
 
   const pickFromGallery = useCallback(async () => {
     try {

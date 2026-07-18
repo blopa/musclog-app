@@ -70,9 +70,7 @@ describe('useCameraCaptureFlow warm-up', () => {
     await waitFor(() => {
       expect(takePictureAsync).toHaveBeenCalledTimes(1);
     });
-    expect(takePictureAsync).toHaveBeenCalledWith(
-      expect.objectContaining({ skipProcessing: true, shutterSound: false })
-    );
+    expect(takePictureAsync).toHaveBeenCalledWith(expect.objectContaining({ shutterSound: false }));
 
     await waitFor(() => {
       expect(mockFileDelete).toHaveBeenCalledTimes(1);

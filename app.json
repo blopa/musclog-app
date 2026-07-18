@@ -54,6 +54,15 @@
         }
       ],
       [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "Allow $(PRODUCT_NAME) to access your camera",
+          "enableMicrophonePermission": false,
+          "enableCodeScanner": true,
+          "enableFrameProcessors": false
+        }
+      ],
+      [
         "@sentry/react-native/expo",
         {
           "organization": "werules",

@@ -49,15 +49,16 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
   const onBarcodeScannedRef = useRef<((data: string) => void) | undefined>(undefined);
   const [hasBarcodeCallback, setHasBarcodeCallback] = useState(false);
 
-  // Permission lives here so useCameraPermissions() runs at app boot (context always
-  // mounts) rather than when the user first opens the camera. This pays the ~10s
-  // TurboModule cold-start cost during splash/navigation, not mid-session.
-  // Note: app/index.tsx also calls useCameraPermissions() even earlier (during splash)
-  // to give the TurboModule maximum warm-up time before the user reaches the camera.
+  // Permission lives here so useCameraPermissions() is mounted for the app's lifetime
+  // rather than only while the camera is open. react-native-vision-camera's permission
+  // check (Camera.getCameraPermissionStatus()) is synchronous, so `permission` is never
+  // actually null in practice — the null branches below are kept as a defensive fallback
+  // (and to preserve the optimistic-cache layer in utils/cameraPermissionCache.ts) rather
+  // than because a native cold-start delay is expected here today.
   const [permission, requestPermission] = useCameraPermissions();
 
-  // Cached permission for optimistic rendering while the TurboModule is initializing
-  // (permission === null). Once permission resolves, the live value always wins.
+  // Cached permission for optimistic rendering on the rare chance `permission` is still
+  // null on first read. Once permission resolves, the live value always wins.
   const [cachedPermissionGranted, setCachedPermissionGrantedState] = useState<boolean | null>(() =>
     getCachedCameraPermissionGranted()
   );
@@ -105,9 +106,9 @@ export function SmartCameraProvider({ children }: { children: ReactNode }) {
     }
   }, [isVisible, permission, requestPermission]);
 
-  // Live native value wins over the cache. Fall back to cache only while the
-  // TurboModule is still initializing (permission === null) so we can show an
-  // optimistic UI instead of always blocking on the cold-start delay.
+  // Live native value wins over the cache. Fall back to cache only on the rare chance
+  // `permission` is still null (see comment above) so we never show a placeholder UI
+  // when we already know the answer from a previous session.
   const effectivePermissionGranted =
     permission !== null ? permission.granted : cachedPermissionGranted;
 

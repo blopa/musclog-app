@@ -1,9 +1,8 @@
-import type { CameraView as CameraViewType } from 'expo-camera';
 import { Search } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, View } from 'react-native';
 
-import { CameraView } from '@/components/CameraView';
+import { CameraView, type CameraViewRef } from '@/components/CameraView';
 import type { MealType } from '@/database/models';
 import { useBarcodeScanner } from '@/hooks/useBarcodeScanner';
 import { BARCODE_PHOTO_QUALITY, useCameraCaptureFlow } from '@/hooks/useCameraCaptureFlow';
@@ -40,7 +39,7 @@ export function BarcodeCameraModal({
   onRequestPermission,
 }: BarcodeCameraModalProps) {
   const theme = useTheme();
-  const cameraRef = useRef<CameraViewType>(null);
+  const cameraRef = useRef<CameraViewRef>(null);
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [isBarcodeTextSearchModalVisible, setIsBarcodeTextSearchModalVisible] = useState(false);
   const [barcodeTextSearchValue, setBarcodeTextSearchValue] = useState('');
@@ -145,7 +144,6 @@ export function BarcodeCameraModal({
               enableTorch={flashEnabled}
               active={true}
               onCameraReady={() => setIsCameraReady(true)}
-              animateShutter={false}
               onBarcodeScanned={barcode.handleLiveBarcodeScanned}
               barcodeScannerSettings={{
                 barcodeTypes: [
