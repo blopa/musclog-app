@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import * as ImagePicker from 'expo-image-picker';
 
 import { useCameraCaptureFlow } from '@/hooks/useCameraCaptureFlow';
@@ -66,6 +66,31 @@ describe('useCameraCaptureFlow', () => {
   });
 
   describe('takePicture', () => {
+    it('exposes the captured photo as a freeze-frame until cropping and processing finish', async () => {
+      let finishCrop: ((value: { path: string }) => void) | undefined;
+      mockOpenCropperAsync.mockReturnValue(
+        new Promise((resolve) => {
+          finishCrop = resolve;
+        })
+      );
+      const { result } = renderFlow();
+
+      let capturePromise: Promise<void>;
+      await act(async () => {
+        capturePromise = result.current.takePicture();
+        await Promise.resolve();
+      });
+
+      expect(result.current.capturedPhotoUri).toBe('file:///shot.jpg');
+
+      await act(async () => {
+        finishCrop?.({ path: 'file:///cropped.jpg' });
+        await capturePromise;
+      });
+
+      expect(result.current.capturedPhotoUri).toBeNull();
+    });
+
     it('captures, crops at the configured quality, and processes the cropped path', async () => {
       const { result, takePictureAsync, process } = renderFlow({ quality: 0.85 });
 

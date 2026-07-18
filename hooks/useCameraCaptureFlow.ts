@@ -1,6 +1,6 @@
 import * as ImagePicker from 'expo-image-picker';
 import type { RefObject } from 'react';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { CameraViewRef } from '@/components/CameraView';
@@ -33,6 +33,12 @@ type UseCameraCaptureFlowOptions = {
  */
 export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraCaptureFlowOptions) {
   const { t } = useTranslation();
+  /**
+   * The shutter photo's uri for the duration of its crop/process flow. The shell renders it
+   * as a freeze-frame over the live preview, so the tap feels instant while the crop UI
+   * (a native Activity that must decode the photo first) is still opening.
+   */
+  const [capturedPhotoUri, setCapturedPhotoUri] = useState<null | string>(null);
 
   const cropAndProcess = useCallback(
     async (imageUri: string) => {
@@ -62,10 +68,13 @@ export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraC
       const startedAt = Date.now();
       const photo = await cameraRef.current.takePictureAsync();
       logPhase('shutter capture', startedAt);
+      setCapturedPhotoUri(photo.uri);
       await cropAndProcess(photo.uri);
     } catch (error) {
       console.error('Error taking picture:', error);
       showSnackbar('error', t('food.aiCamera.cameraError'));
+    } finally {
+      setCapturedPhotoUri(null);
     }
   }, [cameraRef, cropAndProcess, t]);
 
@@ -98,5 +107,5 @@ export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraC
     }
   }, [quality, cropAndProcess, t]);
 
-  return { takePicture, pickFromGallery };
+  return { takePicture, pickFromGallery, capturedPhotoUri };
 }

@@ -12,7 +12,15 @@ import {
 } from 'lucide-react-native';
 import { type ReactNode, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -122,6 +130,11 @@ type SmartCameraShellProps = {
   onGalleryPress: () => void | Promise<void>;
   /** Awaited by the shell, which locks every control except close while either runs. */
   onShutterPress: () => void | Promise<void>;
+  /**
+   * Still image shown over the live feed while a capture is being cropped/processed — the
+   * freeze-frame between the shutter tap and the crop UI opening (see useCameraCaptureFlow).
+   */
+  frozenFrameUri?: null | string;
   /** Slot for the bottom-right control button (text search, AI context, or empty). */
   bottomRightControl?: ReactNode;
   /** When true, renders the three-tab mode picker. */
@@ -144,6 +157,7 @@ export function SmartCameraShell({
   onFlashToggle,
   onGalleryPress,
   onShutterPress,
+  frozenFrameUri,
   bottomRightControl,
   showModePicker = false,
   isAiEnabled = false,
@@ -247,12 +261,37 @@ export function SmartCameraShell({
           {/* Camera Background */}
           <View className="absolute inset-0">
             {cameraSlot}
+            {/* Freeze-frame: the just-captured still, shown while the crop UI opens */}
+            {frozenFrameUri ? (
+              <Image
+                source={{ uri: frozenFrameUri }}
+                style={StyleSheet.absoluteFill}
+                resizeMode="cover"
+              />
+            ) : null}
             {/* Gradient Overlay */}
             <LinearGradient
               colors={theme.colors.gradients.cameraOverlay}
               locations={[0, 0.5, 1]}
               style={StyleSheet.absoluteFill}
             />
+            {/* Capture-in-progress dim + spinner. pointerEvents="none" so the close button
+                (kept enabled while an action runs) stays tappable. */}
+            {isActionRunning ? (
+              <View
+                pointerEvents="none"
+                style={[
+                  StyleSheet.absoluteFill,
+                  {
+                    backgroundColor: theme.colors.overlay.black60,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  },
+                ]}
+              >
+                <ActivityIndicator size="large" color={theme.colors.text.white} />
+              </View>
+            ) : null}
           </View>
 
           {/* Header */}

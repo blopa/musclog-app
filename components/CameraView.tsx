@@ -5,6 +5,7 @@ import {
   type CameraPermissionStatus,
   type CodeType,
   useCameraDevice,
+  useCameraFormat,
   useCameraPermission,
   useCodeScanner,
 } from 'react-native-vision-camera';
@@ -38,6 +39,16 @@ const CODE_TYPE_MAP = {
 } as const satisfies Record<string, CodeType>;
 
 export type BarcodeType = keyof typeof CODE_TYPE_MAP;
+
+/**
+ * Target still-photo size (~3MP, 4:3). Without a format vision-camera captures at the full
+ * sensor resolution (12–108MP on modern phones), and that megapixel count — not shutter lag —
+ * dominates the tap-to-crop-UI latency: the JPEG encode + file write inflate `takePhoto`, and
+ * the crop Activity then pays a proportional bitmap decode before it can even render. Every
+ * downstream consumer works on ≤3MP images anyway: barcode detection, label OCR, and AI vision
+ * (which resizes inputs to ≤~2k px before inference).
+ */
+const PHOTO_RESOLUTION_TARGET = { width: 2048, height: 1536 };
 
 type CameraViewProps = {
   children?: ReactNode;
@@ -73,6 +84,7 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
     ref
   ) => {
     const device = useCameraDevice(facing);
+    const format = useCameraFormat(device, [{ photoResolution: PHOTO_RESOLUTION_TARGET }]);
     const cameraRef = useRef<Camera>(null);
     const warmUpPromiseRef = useRef<Promise<void> | null>(null);
 
@@ -134,6 +146,7 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
           ref={cameraRef}
           style={StyleSheet.absoluteFill}
           device={device}
+          format={format}
           isActive={active}
           photo={true}
           torch={enableTorch ? 'on' : 'off'}

@@ -81,7 +81,7 @@ export function BarcodeCameraModal({
     setFlashEnabled((prev) => !prev);
   }, []);
 
-  const { takePicture, pickFromGallery } = useCameraCaptureFlow({
+  const { takePicture, pickFromGallery, capturedPhotoUri } = useCameraCaptureFlow({
     cameraRef,
     quality: BARCODE_PHOTO_QUALITY,
     process: barcode.processBarcodeImage,
@@ -154,6 +154,7 @@ export function BarcodeCameraModal({
         onFlashToggle={handleFlashToggle}
         onGalleryPress={pickFromGallery}
         onShutterPress={takePicture}
+        frozenFrameUri={capturedPhotoUri}
         bottomRightControl={bottomRightControl}
         showModePicker={false}
       >
