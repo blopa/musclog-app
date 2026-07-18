@@ -22,6 +22,7 @@
         }
       ],
       "./plugins/withGradleJvmArgs",
+      "./plugins/withCameraXVersionPin",
       "./plugins/withIosSimulatorBuildFix",
       "expo-system-ui",
       "react-native-edge-to-edge",
