@@ -2,13 +2,14 @@
  * @jest-environment jsdom
  */
 
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
+import * as ImagePicker from 'expo-image-picker';
 
 import { useCameraCaptureFlow } from '@/hooks/useCameraCaptureFlow';
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string, defaultValue?: string) => defaultValue || key,
+    t: (key: string) => key,
   }),
 }));
 
@@ -27,150 +28,147 @@ jest.mock('expo-image-picker', () => ({
   launchImageLibraryAsync: jest.fn(),
 }));
 
-const mockFileDelete = jest.fn();
-const fileInstances: Array<{ uri: string; exists: boolean; delete: jest.Mock }> = [];
-jest.mock('expo-file-system', () => ({
-  File: jest.fn().mockImplementation((uri: string) => {
-    const instance = { uri, exists: true, delete: mockFileDelete };
-    fileInstances.push(instance);
-    return instance;
-  }),
-}));
+const mockRequestMediaLibraryPermissions =
+  ImagePicker.requestMediaLibraryPermissionsAsync as jest.Mock;
+const mockLaunchImageLibrary = ImagePicker.launchImageLibraryAsync as jest.Mock;
 
-describe('useCameraCaptureFlow warm-up', () => {
+describe('useCameraCaptureFlow', () => {
+  const renderFlow = ({
+    takePictureAsync = jest.fn().mockResolvedValue({ uri: 'file:///shot.jpg' }),
+    process = jest.fn().mockResolvedValue(undefined),
+    quality = 0.8,
+    cameraRef = { current: { takePictureAsync } },
+  }: {
+    takePictureAsync?: jest.Mock;
+    process?: jest.Mock;
+    quality?: number;
+    cameraRef?: { current: { takePictureAsync: jest.Mock } | null };
+  } = {}) => {
+    const { result } = renderHook(() =>
+      useCameraCaptureFlow({ cameraRef: cameraRef as never, quality, process })
+    );
+    return { result, takePictureAsync, process };
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
-    fileInstances.length = 0;
-    mockOpenCropperAsync.mockReset();
-  });
-
-  const makeCameraRef = (takePictureAsync: jest.Mock) => ({
-    current: { takePictureAsync },
-  });
-
-  it('fires a silent warm-up capture once the camera reports ready, then deletes the file', async () => {
-    const takePictureAsync = jest.fn().mockResolvedValue({ uri: 'file:///warmup.jpg' });
-    const cameraRef = makeCameraRef(takePictureAsync);
-
-    const { rerender } = renderHook(
-      ({ cameraReady }) =>
-        useCameraCaptureFlow({
-          cameraRef: cameraRef as never,
-          quality: 0.85,
-          process: jest.fn(),
-          cameraReady,
-        }),
-      { initialProps: { cameraReady: false } }
-    );
-
-    expect(takePictureAsync).not.toHaveBeenCalled();
-
-    rerender({ cameraReady: true });
-
-    await waitFor(() => {
-      expect(takePictureAsync).toHaveBeenCalledTimes(1);
-    });
-    expect(takePictureAsync).toHaveBeenCalledWith(expect.objectContaining({ shutterSound: false }));
-
-    await waitFor(() => {
-      expect(mockFileDelete).toHaveBeenCalledTimes(1);
-    });
-
-    // Re-rendering with cameraReady still true must not fire a second warm-up.
-    rerender({ cameraReady: true });
-    expect(takePictureAsync).toHaveBeenCalledTimes(1);
-  });
-
-  it('re-arms the warm-up when the camera session resets (ready -> not ready -> ready)', async () => {
-    const takePictureAsync = jest.fn().mockResolvedValue({ uri: 'file:///warmup.jpg' });
-    const cameraRef = makeCameraRef(takePictureAsync);
-
-    const { rerender } = renderHook(
-      ({ cameraReady }) =>
-        useCameraCaptureFlow({
-          cameraRef: cameraRef as never,
-          quality: 0.85,
-          process: jest.fn(),
-          cameraReady,
-        }),
-      { initialProps: { cameraReady: true } }
-    );
-
-    await waitFor(() => expect(takePictureAsync).toHaveBeenCalledTimes(1));
-
-    rerender({ cameraReady: false });
-    rerender({ cameraReady: true });
-
-    await waitFor(() => expect(takePictureAsync).toHaveBeenCalledTimes(2));
-  });
-
-  it('does not throw or show a snackbar when the warm-up capture itself fails', async () => {
-    const takePictureAsync = jest.fn().mockRejectedValue(new Error('camera not ready'));
-    const cameraRef = makeCameraRef(takePictureAsync);
-
-    renderHook(() =>
-      useCameraCaptureFlow({
-        cameraRef: cameraRef as never,
-        quality: 0.85,
-        process: jest.fn(),
-        cameraReady: true,
-      })
-    );
-
-    await waitFor(() => expect(takePictureAsync).toHaveBeenCalledTimes(1));
-    // Give the rejected warm-up promise's .catch() a tick to run.
-    await act(async () => {
-      await Promise.resolve();
-    });
-
-    expect(mockShowSnackbar).not.toHaveBeenCalled();
-  });
-
-  it('takePicture waits for an in-flight warm-up instead of firing a concurrent capture', async () => {
-    let resolveWarmUp!: (value: { uri: string }) => void;
-    const warmUpPromise = new Promise<{ uri: string }>((resolve) => {
-      resolveWarmUp = resolve;
-    });
-
-    const takePictureAsync = jest
-      .fn()
-      .mockImplementationOnce(() => warmUpPromise) // the warm-up call
-      .mockResolvedValueOnce({ uri: 'file:///real-shot.jpg' }); // the real shutter call
-
-    const cameraRef = makeCameraRef(takePictureAsync);
-    const process = jest.fn().mockResolvedValue(undefined);
+    jest.spyOn(console, 'error').mockImplementation(() => {});
     mockOpenCropperAsync.mockResolvedValue({ path: 'file:///cropped.jpg' });
+    mockRequestMediaLibraryPermissions.mockResolvedValue({ granted: true });
+    mockLaunchImageLibrary.mockResolvedValue({
+      canceled: false,
+      assets: [{ uri: 'file:///picked.jpg' }],
+    });
+  });
 
-    const { result } = renderHook(() =>
-      useCameraCaptureFlow({
-        cameraRef: cameraRef as never,
-        quality: 0.85,
-        process,
-        cameraReady: true,
-      })
-    );
+  afterEach(() => {
+    (console.error as jest.Mock).mockRestore();
+  });
 
-    await waitFor(() => expect(takePictureAsync).toHaveBeenCalledTimes(1));
+  describe('takePicture', () => {
+    it('captures, crops at the configured quality, and processes the cropped path', async () => {
+      const { result, takePictureAsync, process } = renderFlow({ quality: 0.85 });
 
-    // User taps the shutter while the warm-up capture is still in flight.
-    let takePictureResolved = false;
-    const takePicturePromise = result.current.takePicture().then(() => {
-      takePictureResolved = true;
+      await result.current.takePicture();
+
+      expect(takePictureAsync).toHaveBeenCalledTimes(1);
+      expect(mockOpenCropperAsync).toHaveBeenCalledWith({
+        imageUri: 'file:///shot.jpg',
+        format: 'jpeg',
+        compressImageQuality: 0.85,
+      });
+      expect(process).toHaveBeenCalledWith('file:///cropped.jpg');
+      expect(mockShowSnackbar).not.toHaveBeenCalled();
     });
 
-    // The real capture must not fire a second concurrent takePictureAsync call yet.
-    await act(async () => {
-      await new Promise((r) => setTimeout(r, 0));
-    });
-    expect(takePictureAsync).toHaveBeenCalledTimes(1);
-    expect(takePictureResolved).toBe(false);
+    it('ends silently when the user cancels the crop UI', async () => {
+      mockOpenCropperAsync.mockResolvedValue(null);
+      const { result, process } = renderFlow();
 
-    await act(async () => {
-      resolveWarmUp({ uri: 'file:///warmup.jpg' });
-      await takePicturePromise;
+      await result.current.takePicture();
+
+      expect(process).not.toHaveBeenCalled();
+      expect(mockShowSnackbar).not.toHaveBeenCalled();
     });
 
-    expect(takePictureAsync).toHaveBeenCalledTimes(2);
-    expect(process).toHaveBeenCalledWith('file:///cropped.jpg');
+    it('shows the camera-error snackbar when the capture fails', async () => {
+      const takePictureAsync = jest.fn().mockRejectedValue(new Error('capture failed'));
+      const { result, process } = renderFlow({ takePictureAsync });
+
+      await result.current.takePicture();
+
+      expect(process).not.toHaveBeenCalled();
+      expect(mockShowSnackbar).toHaveBeenCalledWith('error', 'food.aiCamera.cameraError');
+    });
+
+    it('is a no-op while the camera ref is unset', async () => {
+      const { result } = renderFlow({ cameraRef: { current: null } });
+
+      await result.current.takePicture();
+
+      expect(mockOpenCropperAsync).not.toHaveBeenCalled();
+      expect(mockShowSnackbar).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('pickFromGallery', () => {
+    it('crops the picked image at the configured quality and processes it', async () => {
+      const { result, process } = renderFlow({ quality: 0.85 });
+
+      await result.current.pickFromGallery();
+
+      expect(mockLaunchImageLibrary).toHaveBeenCalledWith(
+        expect.objectContaining({ quality: 0.85 })
+      );
+      expect(mockOpenCropperAsync).toHaveBeenCalledWith({
+        imageUri: 'file:///picked.jpg',
+        format: 'jpeg',
+        compressImageQuality: 0.85,
+      });
+      expect(process).toHaveBeenCalledWith('file:///cropped.jpg');
+    });
+
+    it('shows the gallery-permission snackbar when media library access is denied', async () => {
+      mockRequestMediaLibraryPermissions.mockResolvedValue({ granted: false });
+      const { result, process } = renderFlow();
+
+      await result.current.pickFromGallery();
+
+      expect(mockLaunchImageLibrary).not.toHaveBeenCalled();
+      expect(process).not.toHaveBeenCalled();
+      expect(mockShowSnackbar).toHaveBeenCalledWith(
+        'error',
+        'food.aiCamera.galleryPermissionRequired'
+      );
+    });
+
+    it('ends silently when the picker is cancelled', async () => {
+      mockLaunchImageLibrary.mockResolvedValue({ canceled: true, assets: [] });
+      const { result, process } = renderFlow();
+
+      await result.current.pickFromGallery();
+
+      expect(process).not.toHaveBeenCalled();
+      expect(mockShowSnackbar).not.toHaveBeenCalled();
+    });
+
+    it('shows the camera-error snackbar when processing the picked image fails', async () => {
+      const process = jest.fn().mockRejectedValue(new Error('processing failed'));
+      const { result } = renderFlow({ process });
+
+      await result.current.pickFromGallery();
+
+      expect(mockShowSnackbar).toHaveBeenCalledWith('error', 'food.aiCamera.cameraError');
+    });
+
+    it('shows the gallery-error snackbar when the picker itself fails', async () => {
+      mockLaunchImageLibrary.mockRejectedValue(new Error('picker crashed'));
+      const { result, process } = renderFlow();
+
+      await result.current.pickFromGallery();
+
+      expect(process).not.toHaveBeenCalled();
+      expect(mockShowSnackbar).toHaveBeenCalledWith('error', 'food.aiCamera.galleryError');
+    });
   });
 });

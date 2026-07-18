@@ -1,7 +1,6 @@
-import { File } from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import type { RefObject } from 'react';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { CameraViewRef } from '@/components/CameraView';
@@ -24,78 +23,16 @@ type UseCameraCaptureFlowOptions = {
   quality: number;
   /** Receives the cropped image path (shutter and gallery alike). */
   process: (fileUri: string) => Promise<void>;
-  /**
-   * True once the camera's `onCameraReady` has fired for the currently mounted camera view.
-   * The first `takePhoto` call against a freshly bound camera session can pay a one-off
-   * focus/exposure convergence cost on Android (CameraX only fully converges 3A —
-   * autofocus/auto-exposure — on the first still-capture request of a session); every capture
-   * after that in the same session is near-instant. `photoQualityBalance="balanced"` (set in
-   * @/components/CameraView, mapping to CameraX's Zero-Shutter-Lag mode on Android) already
-   * absorbs most of this, but we still pay any residual convergence cost once, silently, as soon
-   * as the camera reports ready — before the user has framed their shot and reached for the
-   * shutter — instead of making their first real tap absorb it. The warm-up capture is silent on
-   * both platforms via `shutterSound: false` (vision-camera supports suppressing the native
-   * shutter sound on iOS too, unlike the expo-camera implementation this replaced).
-   */
-  cameraReady: boolean;
 };
 
 /**
  * The shared capture pipeline behind the smart-camera modals: photo (shutter or gallery pick)
  * → crop UI → `process`. A cancelled crop ends the flow silently; real failures log and show
- * the camera-error snackbar.
+ * the camera-error snackbar. Camera-session concerns (the silent warm-up capture, one capture
+ * in flight at a time) are owned by the CameraView wrapper itself.
  */
-export function useCameraCaptureFlow({
-  cameraRef,
-  quality,
-  process,
-  cameraReady,
-}: UseCameraCaptureFlowOptions) {
+export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraCaptureFlowOptions) {
   const { t } = useTranslation();
-  const warmedUpRef = useRef(false);
-  const warmUpPromiseRef = useRef<Promise<void> | null>(null);
-
-  useEffect(() => {
-    if (!cameraReady) {
-      // Reset so the next fresh camera session (new mount / remount) warms up again.
-      warmedUpRef.current = false;
-      return;
-    }
-
-    if (warmedUpRef.current || !cameraRef.current) {
-      return;
-    }
-    warmedUpRef.current = true;
-
-    const camera = cameraRef.current;
-    const startedAt = Date.now();
-    warmUpPromiseRef.current = camera
-      .takePictureAsync({
-        shutterSound: false,
-      })
-      .then((photo) => {
-        logPhase('warm-up capture', startedAt);
-        if (!photo?.uri) {
-          return;
-        }
-        try {
-          const file = new File(photo.uri);
-          if (file.exists) {
-            file.delete();
-          }
-        } catch {
-          // Best-effort cleanup of the throwaway warm-up photo.
-        }
-      })
-      .catch((error) => {
-        if (__DEV__) {
-          console.debug('[CameraCaptureFlow] warm-up capture failed (non-fatal):', error);
-        }
-      })
-      .finally(() => {
-        warmUpPromiseRef.current = null;
-      });
-  }, [cameraReady, cameraRef]);
 
   const cropAndProcess = useCallback(
     async (imageUri: string) => {
@@ -122,14 +59,6 @@ export function useCameraCaptureFlow({
     }
 
     try {
-      // A silent warm-up capture (see the `cameraReady` effect above) may still be resolving
-      // if the user taps the shutter within a moment of the camera mounting. Wait for it
-      // instead of firing a second, concurrent `takePictureAsync` — CameraX only supports one
-      // capture in flight at a time.
-      if (warmUpPromiseRef.current) {
-        await warmUpPromiseRef.current;
-      }
-
       const startedAt = Date.now();
       const photo = await cameraRef.current.takePictureAsync();
       logPhase('shutter capture', startedAt);

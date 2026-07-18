@@ -43,8 +43,6 @@ export function BarcodeCameraModal({
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [isBarcodeTextSearchModalVisible, setIsBarcodeTextSearchModalVisible] = useState(false);
   const [barcodeTextSearchValue, setBarcodeTextSearchValue] = useState('');
-  /** Set by the camera's onCameraReady; drives the capture-flow warm-up (see useCameraCaptureFlow). */
-  const [isCameraReady, setIsCameraReady] = useState(false);
 
   const barcode = useBarcodeScanner({ visible, onBarcodeScanned, onClose });
   const { isSearchingBarcodeRef } = barcode;
@@ -72,16 +70,6 @@ export function BarcodeCameraModal({
 
   const isCameraActive = visible && !barcode.isSearchingBarcode && !isAnyChildModalVisible;
 
-  // The <CameraView> unmounts whenever isCameraActive goes false and gets a fresh native
-  // session when it remounts — so isCameraReady must reset in step so the capture-flow
-  // warm-up re-arms for that new session.
-  useEffect(() => {
-    if (!isCameraActive) {
-      const reset = () => setIsCameraReady(false);
-      reset();
-    }
-  }, [isCameraActive]);
-
   useKeepScreenAwake('barcode-camera-processing', visible && barcode.isSearchingBarcode);
 
   const handleClose = useCallback(() => {
@@ -97,7 +85,6 @@ export function BarcodeCameraModal({
     cameraRef,
     quality: BARCODE_PHOTO_QUALITY,
     process: barcode.processBarcodeImage,
-    cameraReady: isCameraReady,
   });
 
   const handleBarcodeTextSearchSubmit = useCallback(() => {
@@ -143,7 +130,6 @@ export function BarcodeCameraModal({
               facing="back"
               enableTorch={flashEnabled}
               active={true}
-              onCameraReady={() => setIsCameraReady(true)}
               onBarcodeScanned={barcode.handleLiveBarcodeScanned}
               barcodeScannerSettings={{
                 barcodeTypes: [

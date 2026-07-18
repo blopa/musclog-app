@@ -1,25 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+
+import type { PermissionResponse } from '@/components/CameraView';
 
 /**
  * Web-only camera permission check, replacing expo-camera's `useCameraPermissions` hook (which
  * CameraView.web.tsx used to source purely for its permission API, even though the actual video
- * feed is react-zxing/getUserMedia-based). Matches the same `[PermissionResponse | null, request]`
- * shape the native CameraView's wrapper (@/components/CameraView) uses, so call sites
- * (SmartCameraContext, useBarcodeCameraModal) need no changes. Kept as a standalone type here
- * (rather than importing it from the native CameraView) since that file re-exports this hook on
- * web, and a cross-import back into it would be circular.
+ * feed is react-zxing/getUserMedia-based). Matches the `[PermissionResponse | null, request]`
+ * shape of the native wrapper (@/components/CameraView) — the type import is type-only, so the
+ * platform-resolution cycle with CameraView.web.tsx (which re-exports this hook) is erased at
+ * runtime.
  *
- * Safari has no Permissions API for 'camera', so `permission` stays `null` (unknown/still-checking,
- * the same semantics the native hook uses while its TurboModule check is in flight) there until
- * `requestPermission()` is called.
+ * Browsers where the Permissions API can't answer for 'camera' (e.g. Safari) report
+ * 'not-determined' instead of staying null, so the camera UI shows its grant button and
+ * `requestPermission()`'s getUserMedia call is what actually prompts. `permission` is null only
+ * while a supported browser's Permissions API query is still resolving.
  */
-type PermissionResponse = {
-  granted: boolean;
-  status: 'granted' | 'denied';
-  canAskAgain: boolean;
-  expires: 'never';
-};
-
 const toPermissionResponse = (granted: boolean): PermissionResponse => ({
   granted,
   status: granted ? 'granted' : 'denied',
@@ -27,14 +22,26 @@ const toPermissionResponse = (granted: boolean): PermissionResponse => ({
   expires: 'never',
 });
 
+const NOT_DETERMINED: PermissionResponse = {
+  granted: false,
+  status: 'not-determined',
+  canAskAgain: true,
+  expires: 'never',
+};
+
+const supportsCameraPermissionQuery = () =>
+  typeof navigator !== 'undefined' && !!navigator.permissions?.query;
+
 export const useCameraPermissions = (): [
   null | PermissionResponse,
   () => Promise<PermissionResponse>,
 ] => {
-  const [permission, setPermission] = useState<PermissionResponse | null>(null);
+  const [permission, setPermission] = useState<PermissionResponse | null>(() =>
+    supportsCameraPermissionQuery() ? null : NOT_DETERMINED
+  );
 
   useEffect(() => {
-    if (typeof navigator === 'undefined' || !navigator.permissions?.query) {
+    if (!supportsCameraPermissionQuery()) {
       return;
     }
 
@@ -54,8 +61,11 @@ export const useCameraPermissions = (): [
         };
       })
       .catch(() => {
-        // Permissions API doesn't support querying 'camera' in this browser (e.g. Safari);
-        // leave `permission` as null until requestPermission() is called explicitly.
+        // The Permissions API exists but can't query 'camera' in this browser — same
+        // treatment as no API at all: not determined until requestPermission() prompts.
+        if (!cancelled) {
+          setPermission(NOT_DETERMINED);
+        }
       });
 
     return () => {
@@ -66,7 +76,7 @@ export const useCameraPermissions = (): [
     };
   }, []);
 
-  const requestPermission = async (): Promise<PermissionResponse> => {
+  const requestPermission = useCallback(async (): Promise<PermissionResponse> => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       stream.getTracks().forEach((track) => track.stop());
@@ -78,7 +88,7 @@ export const useCameraPermissions = (): [
       setPermission(response);
       return response;
     }
-  };
+  }, []);
 
   return [permission, requestPermission];
 };
