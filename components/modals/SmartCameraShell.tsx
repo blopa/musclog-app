@@ -5,6 +5,7 @@ import {
   Images,
   Lightbulb,
   LightbulbOff,
+  type LucideIcon,
   ScanBarcode,
   Sparkles,
   X,
@@ -36,6 +37,74 @@ const getCameraInstructionText = (cameraMode: CameraMode, t: TFunction): string 
   }
 };
 
+type ModePickerTabProps = {
+  mode: CameraMode;
+  activeMode: CameraMode;
+  icon: LucideIcon;
+  label: string;
+  disabled: boolean;
+  isSmallScreen: boolean;
+  onPress: () => void;
+};
+
+function ModePickerTab({
+  mode,
+  activeMode,
+  icon: Icon,
+  label,
+  disabled,
+  isSmallScreen,
+  onPress,
+}: ModePickerTabProps) {
+  const theme = useTheme();
+  const isActive = mode === activeMode;
+  const color = isActive ? theme.colors.text.white : theme.colors.text.secondary;
+
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      className="flex-1 rounded-xl px-2"
+      style={[
+        {
+          overflow: 'hidden',
+          paddingVertical: isSmallScreen ? 8 : 10,
+          opacity: disabled ? theme.colors.opacity.medium : 1,
+        },
+        isActive ? { backgroundColor: 'transparent' } : {},
+      ]}
+    >
+      {isActive ? (
+        <LinearGradient
+          colors={theme.colors.gradients.cta}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            borderRadius: theme.borderRadius.md,
+            overflow: 'hidden',
+          }}
+        />
+      ) : null}
+      <View className="flex-row items-center justify-center gap-1.5">
+        <Icon size={theme.iconSize.md} color={color} />
+        {!isSmallScreen ? (
+          <Text
+            className="font-bold uppercase tracking-wide"
+            style={{ fontSize: theme.typography.fontSize.xs, color }}
+          >
+            {label}
+          </Text>
+        ) : null}
+      </View>
+    </Pressable>
+  );
+}
+
 type SmartCameraShellProps = {
   visible: boolean;
   onClose: () => void;
@@ -49,8 +118,9 @@ type SmartCameraShellProps = {
   cameraMode: CameraMode;
   flashEnabled: boolean;
   onFlashToggle: () => void;
-  onGalleryPress: () => void;
-  /** Awaited by the shell, which locks all controls while it runs so double-taps can't fire twice. */
+  /** Awaited by the shell, which locks every control except close while either runs. */
+  onGalleryPress: () => void | Promise<void>;
+  /** Awaited by the shell, which locks every control except close while either runs. */
   onShutterPress: () => void | Promise<void>;
   /** Slot for the bottom-right control button (text search, AI context, or empty). */
   bottomRightControl?: ReactNode;
@@ -86,29 +156,30 @@ export function SmartCameraShell({
   const isSmallScreen = screenHeight < SMALL_SCREEN_HEIGHT;
   const cameraMaxHeight = screenHeight * (isSmallScreen ? 0.48 : 0.6);
 
-  // Guard against re-entrant shutter taps: without this, tapping the shutter multiple times
-  // while the (slow) native capture is still in flight fires one full capture+crop flow per
-  // tap, so the crop tool ends up presented N times in a row. The ref catches taps that land
-  // before the disabling re-render commits.
-  const [isCapturing, setIsCapturing] = useState(false);
-  const isCapturingRef = useRef(false);
+  // One owner-provided async action (shutter capture or gallery pick) runs at a time: without
+  // this latch, taps landing while the (slow) native capture is still in flight each fire a
+  // full capture+crop flow, so the crop tool ends up presented N times in a row. The ref
+  // catches taps that land before the disabling re-render commits.
+  const [isActionRunning, setIsActionRunning] = useState(false);
+  const actionRunningRef = useRef(false);
 
-  const handleShutterPress = async () => {
-    if (isCapturingRef.current) {
+  const runExclusive = async (action: () => void | Promise<void>) => {
+    if (actionRunningRef.current) {
       return;
     }
 
-    isCapturingRef.current = true;
-    setIsCapturing(true);
+    actionRunningRef.current = true;
+    setIsActionRunning(true);
     try {
-      await onShutterPress();
+      await action();
     } finally {
-      isCapturingRef.current = false;
-      setIsCapturing(false);
+      actionRunningRef.current = false;
+      setIsActionRunning(false);
     }
   };
 
-  const controlsLocked = isLoading || isCapturing;
+  const controlsLocked = isLoading || isActionRunning;
+  const lockedControlStyle = { opacity: controlsLocked ? theme.colors.opacity.medium : 1 };
 
   if (permissionGranted === null) {
     return (
@@ -184,15 +255,15 @@ export function SmartCameraShell({
 
           {/* Header */}
           <View className="relative z-20 flex-row items-center justify-between px-4 pb-2 pt-4">
+            {/* Close stays enabled while an action runs — if a native capture hangs, the
+                user must still be able to leave the modal. */}
             <Pressable
               onPress={onClose}
-              disabled={controlsLocked}
               className="h-10 w-10 items-center justify-center rounded-full"
               style={{
                 backgroundColor: theme.colors.background.darkGray,
                 borderWidth: theme.borderWidth.thin,
                 borderColor: theme.colors.background.white10,
-                opacity: controlsLocked ? theme.colors.opacity.medium : 1,
               }}
             >
               <X size={theme.iconSize.lg} color={theme.colors.text.primary} />
@@ -202,12 +273,14 @@ export function SmartCameraShell({
               onPress={onFlashToggle}
               disabled={controlsLocked}
               className="h-10 w-10 items-center justify-center rounded-full"
-              style={{
-                backgroundColor: theme.colors.background.darkGray,
-                borderWidth: theme.borderWidth.thin,
-                borderColor: theme.colors.background.white10,
-                opacity: controlsLocked ? theme.colors.opacity.medium : 1,
-              }}
+              style={[
+                {
+                  backgroundColor: theme.colors.background.darkGray,
+                  borderWidth: theme.borderWidth.thin,
+                  borderColor: theme.colors.background.white10,
+                },
+                lockedControlStyle,
+              ]}
             >
               {flashEnabled ? (
                 <Lightbulb size={theme.iconSize.lg} color={theme.colors.text.primary} />
@@ -295,176 +368,36 @@ export function SmartCameraShell({
                     borderColor: theme.colors.background.white10,
                   }}
                 >
-                  {/* Barcode Scan */}
-                  <Pressable
-                    onPress={() => onModeChange?.('barcode-scan')}
+                  <ModePickerTab
+                    mode="barcode-scan"
+                    activeMode={cameraMode}
+                    icon={ScanBarcode}
+                    label={t('food.aiCamera.modes.barcodeScan')}
                     disabled={controlsLocked}
-                    className="flex-1 rounded-xl px-2"
-                    style={[
-                      {
-                        overflow: 'hidden',
-                        paddingVertical: isSmallScreen ? 8 : 10,
-                        opacity: controlsLocked ? theme.colors.opacity.medium : 1,
-                      },
-                      cameraMode === 'barcode-scan' ? { backgroundColor: 'transparent' } : {},
-                    ]}
-                  >
-                    {cameraMode === 'barcode-scan' ? (
-                      <LinearGradient
-                        colors={theme.colors.gradients.cta}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        style={{
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          borderRadius: theme.borderRadius.md,
-                          overflow: 'hidden',
-                        }}
-                      />
-                    ) : null}
-                    <View className="flex-row items-center justify-center gap-1.5">
-                      <ScanBarcode
-                        size={theme.iconSize.md}
-                        color={
-                          cameraMode === 'barcode-scan'
-                            ? theme.colors.text.white
-                            : theme.colors.text.secondary
-                        }
-                      />
-                      {!isSmallScreen ? (
-                        <Text
-                          className="font-bold uppercase tracking-wide"
-                          style={{
-                            fontSize: theme.typography.fontSize.xs,
-                            color:
-                              cameraMode === 'barcode-scan'
-                                ? theme.colors.text.white
-                                : theme.colors.text.secondary,
-                          }}
-                        >
-                          {t('food.aiCamera.modes.barcodeScan')}
-                        </Text>
-                      ) : null}
-                    </View>
-                  </Pressable>
+                    isSmallScreen={isSmallScreen}
+                    onPress={() => onModeChange?.('barcode-scan')}
+                  />
 
-                  {/* AI Label Scan */}
-                  {isAiEnabled ? (
-                    <Pressable
-                      onPress={() => onModeChange?.('ai-label-scan')}
+                  <ModePickerTab
+                    mode="ai-label-scan"
+                    activeMode={cameraMode}
+                    icon={FileText}
+                    label={t('food.aiCamera.modes.labelScan')}
+                    disabled={controlsLocked}
+                    isSmallScreen={isSmallScreen}
+                    onPress={() => onModeChange?.('ai-label-scan')}
+                  />
+
+                  {isAIVisionEnabled ? (
+                    <ModePickerTab
+                      mode="ai-meal-photo"
+                      activeMode={cameraMode}
+                      icon={Sparkles}
+                      label={t('food.aiCamera.modes.mealPhoto')}
                       disabled={controlsLocked}
-                      className="flex-1 rounded-xl px-2"
-                      style={[
-                        {
-                          overflow: 'hidden',
-                          paddingVertical: isSmallScreen ? 8 : 10,
-                          opacity: controlsLocked ? theme.colors.opacity.medium : 1,
-                        },
-                        cameraMode === 'ai-label-scan' ? { backgroundColor: 'transparent' } : {},
-                      ]}
-                    >
-                      {cameraMode === 'ai-label-scan' ? (
-                        <LinearGradient
-                          colors={theme.colors.gradients.cta}
-                          start={{ x: 0, y: 0 }}
-                          end={{ x: 1, y: 1 }}
-                          style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            borderRadius: theme.borderRadius.md,
-                            overflow: 'hidden',
-                          }}
-                        />
-                      ) : null}
-                      <View className="flex-row items-center justify-center gap-1.5">
-                        <FileText
-                          size={theme.iconSize.md}
-                          color={
-                            cameraMode === 'ai-label-scan'
-                              ? theme.colors.text.white
-                              : theme.colors.text.secondary
-                          }
-                        />
-                        {!isSmallScreen ? (
-                          <Text
-                            className="font-bold uppercase tracking-wide"
-                            style={{
-                              fontSize: theme.typography.fontSize.xs,
-                              color:
-                                cameraMode === 'ai-label-scan'
-                                  ? theme.colors.text.white
-                                  : theme.colors.text.secondary,
-                            }}
-                          >
-                            {t('food.aiCamera.modes.labelScan')}
-                          </Text>
-                        ) : null}
-                      </View>
-                    </Pressable>
-                  ) : null}
-
-                  {/* AI Meal Photo */}
-                  {isAiEnabled && isAIVisionEnabled ? (
-                    <Pressable
+                      isSmallScreen={isSmallScreen}
                       onPress={() => onModeChange?.('ai-meal-photo')}
-                      disabled={controlsLocked}
-                      className="flex-1 rounded-xl px-2"
-                      style={[
-                        {
-                          overflow: 'hidden',
-                          paddingVertical: isSmallScreen ? 8 : 10,
-                          opacity: controlsLocked ? theme.colors.opacity.medium : 1,
-                        },
-                        cameraMode === 'ai-meal-photo' ? { backgroundColor: 'transparent' } : {},
-                      ]}
-                    >
-                      {cameraMode === 'ai-meal-photo' ? (
-                        <LinearGradient
-                          colors={theme.colors.gradients.cta}
-                          start={{ x: 0, y: 0 }}
-                          end={{ x: 1, y: 1 }}
-                          style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            borderRadius: theme.borderRadius.md,
-                            overflow: 'hidden',
-                          }}
-                        />
-                      ) : null}
-                      <View className="flex-row items-center justify-center gap-1.5">
-                        <Sparkles
-                          size={theme.iconSize.md}
-                          color={
-                            cameraMode === 'ai-meal-photo'
-                              ? theme.colors.text.white
-                              : theme.colors.text.secondary
-                          }
-                        />
-                        {!isSmallScreen ? (
-                          <Text
-                            className="font-bold uppercase tracking-wide"
-                            style={{
-                              fontSize: theme.typography.fontSize.xs,
-                              color:
-                                cameraMode === 'ai-meal-photo'
-                                  ? theme.colors.text.white
-                                  : theme.colors.text.secondary,
-                            }}
-                          >
-                            {t('food.aiCamera.modes.mealPhoto')}
-                          </Text>
-                        ) : null}
-                      </View>
-                    </Pressable>
+                    />
                   ) : null}
                 </View>
               </View>
@@ -474,21 +407,23 @@ export function SmartCameraShell({
             <View className="flex-row items-center justify-between px-2">
               <Pressable
                 className="h-12 w-12 items-center justify-center rounded-lg active:scale-95"
-                style={{
-                  backgroundColor: theme.colors.background.darkGray50,
-                  borderWidth: theme.borderWidth.thin,
-                  borderColor: theme.colors.background.white20,
-                  opacity: controlsLocked ? theme.colors.opacity.medium : 1,
-                }}
+                style={[
+                  {
+                    backgroundColor: theme.colors.background.darkGray50,
+                    borderWidth: theme.borderWidth.thin,
+                    borderColor: theme.colors.background.white20,
+                  },
+                  lockedControlStyle,
+                ]}
                 disabled={controlsLocked}
-                onPress={onGalleryPress}
+                onPress={() => runExclusive(onGalleryPress)}
               >
                 <Images size={theme.iconSize.lg} color={theme.colors.text.primary} />
               </Pressable>
 
               {/* Shutter Button */}
               <Pressable
-                onPress={handleShutterPress}
+                onPress={() => runExclusive(onShutterPress)}
                 disabled={controlsLocked}
                 className="h-20 w-20 items-center justify-center rounded-full active:scale-95"
                 style={{

@@ -288,17 +288,23 @@ export async function deleteFoodImage(imageUri: string): Promise<void> {
   }
 }
 
-export async function openCropperAsync(options: OpenCropperOptions) {
-  return ExpoImageCropTool.openCropperAsync(options);
-}
-
 /**
- * `openCropperAsync` rejects with a "cancel" message when the user dismisses the crop UI —
- * a normal outcome, not an error. Callers use this to decide whether to surface a failure.
+ * Opens the native crop UI. Resolves `null` when the user dismisses it — a normal outcome,
+ * not an error — so callers never have to distinguish cancellation from real failures.
  */
-export function isCropCancelledError(error: unknown): boolean {
-  const message = error instanceof Error ? error.message : String(error);
-  return message.toLowerCase().includes('cancel');
+export async function openCropperAsync(options: OpenCropperOptions) {
+  try {
+    return await ExpoImageCropTool.openCropperAsync(options);
+  } catch (error) {
+    // The module rejects with "Crop cancelled" on both platforms; match loosely in case the
+    // bridge decorates the message.
+    const message = error instanceof Error ? error.message : String(error);
+    if (message.toLowerCase().includes('cancel')) {
+      return null;
+    }
+
+    throw error;
+  }
 }
 
 export async function readFileAsStringAsync(fileUri: string, options: ReadingOptions = {}) {

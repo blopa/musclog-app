@@ -61,11 +61,11 @@ Effort: **S** = small (≈0.5–1 day), **M** = medium (≈1–3 days), **L** = 
 
 ## 6. Web platform (file utilities)
 
-| TODO                                          | Location            | Plan                                                                                                                                                                                     | Effort |
-| --------------------------------------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| Implement actual image saving logic for web   | `utils/file.web.ts` | Save to your backend or blob storage: upload `tempUri` (blob/file), get back persistent URL; return that URL. If web is read-only for now, keep returning `tempUri` and document.        | M      |
-| Implement actual image deletion logic for web | `utils/file.web.ts` | If images are stored on your server, call delete API with `imageUri` (or id). No-op if web doesn’t persist images yet.                                                                   | S      |
-| Implement actual image cropping logic for web | `utils/file.web.ts` | Use a web crop library (e.g. react-image-crop) or Canvas to crop; return blob/data URL or re-upload and return new URL. Match `openCropperAsync` contract (e.g. `{ path: croppedUrl }`). | M      |
+| TODO                                          | Location            | Plan                                                                                                                                                                                                                           | Effort |
+| --------------------------------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
+| Implement actual image saving logic for web   | `utils/file.web.ts` | Save to your backend or blob storage: upload `tempUri` (blob/file), get back persistent URL; return that URL. If web is read-only for now, keep returning `tempUri` and document.                                              | M      |
+| Implement actual image deletion logic for web | `utils/file.web.ts` | If images are stored on your server, call delete API with `imageUri` (or id). No-op if web doesn’t persist images yet.                                                                                                         | S      |
+| Implement actual image cropping logic for web | `utils/file.web.ts` | Use a web crop library (e.g. react-image-crop) or Canvas to crop; return blob/data URL or re-upload and return new URL. Match `openCropperAsync` contract (`{ path: croppedUrl }`, or `null` if the user cancels the crop UI). | M      |
 
 ---
 

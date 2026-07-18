@@ -1,5 +1,4 @@
 import type { CameraView as CameraViewType } from 'expo-camera';
-import * as ImagePicker from 'expo-image-picker';
 import { MessageSquareText, Search } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +10,11 @@ import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { type MealType } from '@/database/models';
 import { NutritionService } from '@/database/services';
 import { useBarcodeScanner } from '@/hooks/useBarcodeScanner';
+import {
+  AI_PHOTO_QUALITY,
+  BARCODE_PHOTO_QUALITY,
+  useCameraCaptureFlow,
+} from '@/hooks/useCameraCaptureFlow';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
@@ -26,12 +30,7 @@ import {
   type TrackMealIngredient,
   type TrackMealResponse,
 } from '@/utils/coachAI';
-import {
-  copyImageToDocumentDirectory,
-  isCropCancelledError,
-  openCropperAsync,
-  readFileAsStringAsync,
-} from '@/utils/file';
+import { copyImageToDocumentDirectory, readFileAsStringAsync } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 import { showSnackbar } from '@/utils/snackbarService';
 import { generateUUID } from '@/utils/uuid';
@@ -424,33 +423,11 @@ export default function SmartCameraModal({
     ]
   );
 
-  const handleTakePicture = useCallback(async () => {
-    if (!cameraRef.current) {
-      return;
-    }
-
-    const quality = isBarcodeScanning ? 0.8 : 0.85;
-    const processPhoto = isBarcodeScanning ? barcode.processBarcodeImage : processAiPhoto;
-    try {
-      const photo = await cameraRef.current.takePictureAsync({
-        quality,
-        base64: false,
-        skipProcessing: true,
-      });
-
-      const cropped = await openCropperAsync({
-        imageUri: photo.uri,
-        format: 'jpeg',
-        compressImageQuality: quality,
-      });
-      await processPhoto(cropped.path);
-    } catch (error) {
-      if (!isCropCancelledError(error)) {
-        console.error('Error taking picture:', error);
-        showSnackbar('error', t('food.aiCamera.cameraError'));
-      }
-    }
-  }, [isBarcodeScanning, t, processAiPhoto, barcode]);
+  const { takePicture, pickFromGallery } = useCameraCaptureFlow({
+    cameraRef,
+    quality: isBarcodeScanning ? BARCODE_PHOTO_QUALITY : AI_PHOTO_QUALITY,
+    process: isBarcodeScanning ? barcode.processBarcodeImage : processAiPhoto,
+  });
 
   const handleClose = useCallback(() => {
     isSearchingBarcodeRef.current = false;
@@ -572,42 +549,6 @@ export default function SmartCameraModal({
     }
   }, [onOpenFoodSearch, selectedMealType]);
 
-  const handleGalleryPress = useCallback(async () => {
-    try {
-      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permissionResult.granted) {
-        showSnackbar('error', t('food.aiCamera.galleryPermissionRequired'));
-        return;
-      }
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        quality: 0.85,
-        base64: false,
-      });
-
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        const processPhoto = isBarcodeScanning ? barcode.processBarcodeImage : processAiPhoto;
-        try {
-          const cropped = await openCropperAsync({
-            imageUri: result.assets[0].uri,
-            format: 'jpeg',
-            compressImageQuality: 0.85,
-          });
-          await processPhoto(cropped.path);
-        } catch (error) {
-          if (!isCropCancelledError(error)) {
-            console.error('Error cropping gallery image:', error);
-            showSnackbar('error', t('food.aiCamera.cameraError'));
-          }
-        }
-      }
-    } catch (error) {
-      console.error('Error picking image from gallery:', error);
-      showSnackbar('error', t('food.aiCamera.galleryError'));
-    }
-  }, [isBarcodeScanning, processAiPhoto, barcode, t]);
-
   const handleBarcodeTextSearchSubmit = useCallback(() => {
     const value = barcodeTextSearchValue.trim();
     setIsBarcodeTextSearchModalVisible(false);
@@ -701,8 +642,8 @@ export default function SmartCameraModal({
         cameraMode={cameraMode}
         flashEnabled={flashEnabled}
         onFlashToggle={handleFlashToggle}
-        onGalleryPress={handleGalleryPress}
-        onShutterPress={handleTakePicture}
+        onGalleryPress={pickFromGallery}
+        onShutterPress={takePicture}
         bottomRightControl={bottomRightControl}
         showModePicker={!hideCameraModePicker}
         isAiEnabled={isAiEnabled}

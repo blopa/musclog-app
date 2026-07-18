@@ -253,17 +253,14 @@ export async function deleteFoodImage(imageUri: string): Promise<void> {
   // Not really necessary to be implemented for web
 }
 
-export async function openCropperAsync(options: any): Promise<{ path: string }> {
-  return { path: options.imageUri };
-}
-
 /**
- * `openCropperAsync` rejects with a "cancel" message when the user dismisses the crop UI —
- * a normal outcome, not an error. Callers use this to decide whether to surface a failure.
+ * Web has no crop UI: returns the image unchanged. Matches the native contract, where
+ * `null` means the user cancelled the crop.
  */
-export function isCropCancelledError(error: unknown): boolean {
-  const message = error instanceof Error ? error.message : String(error);
-  return message.toLowerCase().includes('cancel');
+export async function openCropperAsync(options: { imageUri: string }): Promise<{
+  path: string;
+} | null> {
+  return { path: options.imageUri };
 }
 
 export async function readFileAsStringAsync(fileUri: string, options: { encoding?: string } = {}) {
