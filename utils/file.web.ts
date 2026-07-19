@@ -1,5 +1,5 @@
+import type { OpenCropperOptions } from '@bsky.app/expo-image-crop-tool';
 import Quagga, { QuaggaJSCodeReader } from '@ericblade/quagga2';
-import type { OpenCropperOptions } from 'expo-image-crop-tool/src/ExpoImageCropTool.types';
 
 import { dumpDatabase } from '@/database/exportDb';
 import { restoreDatabase } from '@/database/importDb';

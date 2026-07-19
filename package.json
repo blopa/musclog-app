@@ -100,6 +100,7 @@
     "sharp": "^0.35.3"
   },
   "dependencies": {
+    "@bsky.app/expo-image-crop-tool": "^0.5.1",
     "@ericblade/quagga2": "^1.12.1",
     "@google/genai": "2.12.0",
     "@gutenye/ocr-react-native": "^1.4.8",
@@ -146,7 +147,6 @@
     "expo-font": "~57.0.1",
     "expo-haptics": "~57.0.1",
     "expo-health-connect": "0.1.1",
-    "expo-image-crop-tool": "^0.4.0",
     "expo-image-manipulator": "~57.0.5",
     "expo-image-picker": "~57.0.5",
     "expo-intent-launcher": "~57.0.1",
@@ -263,7 +263,7 @@
           "@react-native-ml-kit/barcode-scanning",
           "rn-mlkit-ocr",
           "@musclog/witmotion-ble",
-          "expo-image-crop-tool",
+          "@bsky.app/expo-image-crop-tool",
           "react-native-barcodes-detector",
           "@gutenye/ocr-react-native"
         ],

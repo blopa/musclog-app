@@ -1,7 +1,7 @@
-diff --git a/node_modules/expo-image-crop-tool/android/src/main/java/xyz/blueskyweb/expoimagecroptool/ExpoImageCropToolModule.kt b/node_modules/expo-image-crop-tool/android/src/main/java/xyz/blueskyweb/expoimagecroptool/ExpoImageCropToolModule.kt
+diff --git a/node_modules/@bsky.app/expo-image-crop-tool/android/src/main/java/xyz/blueskyweb/expoimagecroptool/ExpoImageCropToolModule.kt b/node_modules/@bsky.app/expo-image-crop-tool/android/src/main/java/xyz/blueskyweb/expoimagecroptool/ExpoImageCropToolModule.kt
 index ba2184d..05951a8 100644
---- a/node_modules/expo-image-crop-tool/android/src/main/java/xyz/blueskyweb/expoimagecroptool/ExpoImageCropToolModule.kt
-+++ b/node_modules/expo-image-crop-tool/android/src/main/java/xyz/blueskyweb/expoimagecroptool/ExpoImageCropToolModule.kt
+--- a/node_modules/@bsky.app/expo-image-crop-tool/android/src/main/java/xyz/blueskyweb/expoimagecroptool/ExpoImageCropToolModule.kt
++++ b/node_modules/@bsky.app/expo-image-crop-tool/android/src/main/java/xyz/blueskyweb/expoimagecroptool/ExpoImageCropToolModule.kt
 @@ -2,6 +2,7 @@ package xyz.blueskyweb.expoimagecroptool
  
  import android.app.Activity.RESULT_OK

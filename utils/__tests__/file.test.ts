@@ -1,4 +1,4 @@
-import ExpoImageCropTool from 'expo-image-crop-tool';
+import ExpoImageCropTool from '@bsky.app/expo-image-crop-tool';
 
 import { openCropperAsync } from '@/utils/file';
 
@@ -17,7 +17,7 @@ jest.mock('expo-file-system/legacy', () => ({
   readAsStringAsync: jest.fn(),
   writeAsStringAsync: jest.fn(),
 }));
-jest.mock('expo-image-crop-tool', () => ({
+jest.mock('@bsky.app/expo-image-crop-tool', () => ({
   __esModule: true,
   default: { openCropperAsync: jest.fn() },
 }));
