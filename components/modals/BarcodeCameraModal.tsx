@@ -45,7 +45,7 @@ export function BarcodeCameraModal({
   const [barcodeTextSearchValue, setBarcodeTextSearchValue] = useState('');
 
   const barcode = useBarcodeScanner({ visible, onBarcodeScanned, onClose });
-  const { isSearchingBarcodeRef } = barcode;
+  const { isSearchingBarcodeRef, captureWithLiveScanSuppressed } = barcode;
 
   useEffect(() => {
     if (!visible) {
@@ -87,21 +87,10 @@ export function BarcodeCameraModal({
     process: barcode.processBarcodeImage,
   });
 
-  // Stop the live barcode scanner the instant the shutter is pressed: `takePicture` sends the
-  // photo straight into `processBarcodeImage` (the shutter path has no crop tool), and the camera
-  // preview keeps feeding frames the whole time it runs. Without this guard, a barcode detected
-  // during that window races the shutter's own `processBarcodeImage` call and pops a second
-  // "Analyzing barcode..." overlay. Only release the guard if nothing ended up processing (a
-  // camera error) — otherwise `processBarcodeImage`'s own success/error/not-found paths own it.
-  const handleShutterPress = useCallback(async () => {
-    isSearchingBarcodeRef.current = true;
-
-    const processed = await takePicture();
-
-    if (!processed) {
-      isSearchingBarcodeRef.current = false;
-    }
-  }, [isSearchingBarcodeRef, takePicture]);
+  const handleShutterPress = useCallback(
+    () => captureWithLiveScanSuppressed(takePicture),
+    [captureWithLiveScanSuppressed, takePicture]
+  );
 
   const handleBarcodeTextSearchSubmit = useCallback(() => {
     const value = barcodeTextSearchValue.trim();

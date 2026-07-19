@@ -174,7 +174,7 @@ export default function SmartCameraModal({
   const shouldShowBarcodeTextSearch = showBarcodeTextSearch && cameraMode === 'barcode-scan';
 
   const barcode = useBarcodeScanner({ visible, onBarcodeScanned, onClose });
-  const { isSearchingBarcodeRef } = barcode;
+  const { isSearchingBarcodeRef, captureWithLiveScanSuppressed } = barcode;
 
   const isFoodDetailsModalVisible = barcode.detectedBarcode !== null || productFromAiLabel !== null;
 
@@ -539,23 +539,15 @@ export default function SmartCameraModal({
     setCameraMode('barcode-scan');
   }, []);
 
-  // Stop the live barcode scanner the instant the shutter is pressed: `takePicture` sends the
-  // photo straight into `processBarcodeImage` (the shutter path has no crop tool), and the camera
-  // preview keeps feeding frames the whole time it runs. Without this guard, a barcode detected
-  // during that window races the shutter's own `processBarcodeImage` call and pops a second
-  // "Analyzing barcode..." overlay. Only release the guard if nothing ended up processing (a
-  // camera error) — otherwise `processBarcodeImage`'s own success/error/not-found paths own it.
+  // Barcode mode needs the live scanner suppressed for the capture's duration (see
+  // captureWithLiveScanSuppressed); the AI modes have no live scanner, so they capture directly.
   const handleShutterPress = useCallback(async () => {
     if (isBarcodeScanning) {
-      isSearchingBarcodeRef.current = true;
+      await captureWithLiveScanSuppressed(takePicture);
+    } else {
+      await takePicture();
     }
-
-    const processed = await takePicture();
-
-    if (isBarcodeScanning && !processed) {
-      isSearchingBarcodeRef.current = false;
-    }
-  }, [isBarcodeScanning, isSearchingBarcodeRef, takePicture]);
+  }, [isBarcodeScanning, captureWithLiveScanSuppressed, takePicture]);
 
   const handleSearchFoodPress = useCallback(() => {
     if (onOpenFoodSearch) {

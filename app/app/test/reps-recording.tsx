@@ -39,6 +39,7 @@ import {
   deleteBleWorkoutArchiveFile,
   saveBleWorkoutFile,
 } from '@/utils/bleWorkoutDataStorage';
+import { toFileUri } from '@/utils/file';
 import { showSnackbar } from '@/utils/snackbarService';
 import { generateUUID } from '@/utils/uuid';
 
@@ -386,9 +387,7 @@ export default function RepsRecordingScreen() {
         camera.startRecording({
           fileType: 'mp4',
           onRecordingFinished: (video) => {
-            resolve({
-              uri: video.path.startsWith('file://') ? video.path : `file://${video.path}`,
-            });
+            resolve({ uri: toFileUri(video.path) });
           },
           onRecordingError: reject,
         });

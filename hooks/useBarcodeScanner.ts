@@ -103,6 +103,20 @@ export function useBarcodeScanner({ visible, onBarcodeScanned, onClose }: UseBar
     [t, onBarcodeScanned, onClose]
   );
 
+  // Runs a shutter capture with the live scanner suppressed for its whole duration. The shutter
+  // path sends the photo straight into `processBarcodeImage` (no crop tool), and the preview
+  // keeps feeding frames the whole time it runs — without this guard, a barcode detected in that
+  // window races the shutter's own `processBarcodeImage` and pops a second "Analyzing barcode..."
+  // overlay. `capture` reports whether it actually processed anything; release the guard only
+  // when it didn't (a camera error) — otherwise `processBarcodeImage`'s own
+  // success/error/not-found paths own the ref.
+  const captureWithLiveScanSuppressed = useCallback(async (capture: () => Promise<boolean>) => {
+    isSearchingBarcodeRef.current = true;
+    if (!(await capture())) {
+      isSearchingBarcodeRef.current = false;
+    }
+  }, []);
+
   const handleBarcodeLookupComplete = useCallback(() => {
     setIsSearchingBarcode(false);
   }, []);
@@ -131,6 +145,7 @@ export function useBarcodeScanner({ visible, onBarcodeScanned, onClose }: UseBar
     handleLiveBarcodeScanned,
     handleBarcodeTextSearchSubmit,
     processBarcodeImage,
+    captureWithLiveScanSuppressed,
     handleBarcodeLookupComplete,
     handleFoodDetailsClose,
     handleFoodNotFoundClose,

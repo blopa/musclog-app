@@ -287,6 +287,9 @@ export async function deleteFoodImage(imageUri: string): Promise<void> {
   }
 }
 
+/** Normalizes a native file path (with or without the `file://` scheme) to a URI. */
+export const toFileUri = (path: string) => (path.startsWith('file://') ? path : `file://${path}`);
+
 /**
  * Opens the native crop UI. Resolves `null` when the user dismisses it — a normal outcome,
  * not an error — so callers never have to distinguish cancellation from real failures.

@@ -74,9 +74,10 @@ export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraC
     }
 
     try {
-      const startedAt = Date.now();
+      // No phase log here: CameraView's own reportShutterOutcome already times the shutter and
+      // reports the path + fallback breakdown (to logcat and Sentry), so a second timer here
+      // would just duplicate the weaker half of that signal.
       const photo = await cameraRef.current.takePictureAsync();
-      logPhase('shutter capture', startedAt);
       await process(photo.uri);
       return true;
     } catch (error) {

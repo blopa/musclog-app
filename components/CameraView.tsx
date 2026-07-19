@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/react-native';
 import {
   forwardRef,
   ReactNode,
@@ -19,91 +18,9 @@ import {
   useCodeScanner,
 } from 'react-native-vision-camera';
 
+import { captureWithSnapshotLadder } from '@/components/cameraShutter';
 import { runCameraWarmUp } from '@/components/cameraWarmUp';
-
-/**
- * Upper bound on how long `takePictureAsync` will wait for the preview to report its first
- * rendered frame (see `previewReady` below) before giving up and attempting the snapshot
- * anyway. Comfortably above the ~hundreds-of-ms this normally takes, while still far cheaper
- * than falling through to a full `takePhoto()` capture.
- */
-const PREVIEW_READY_TIMEOUT_MS = 2000;
-
-/**
- * Upper bound on the `takePhoto()` fallback. The underlying CameraX capture request cannot be
- * cancelled, but on devices where the still-capture pipeline stalls (a documented,
- * device-specific CameraX failure mode — captures that take tens of seconds or never invoke
- * their callback at all) this converts a silent multi-tens-of-seconds hang into a fast,
- * visible camera error the user can simply retry.
- */
-const FALLBACK_PHOTO_TIMEOUT_MS = 10000;
-
-/**
- * A shutter slower than this is a regression worth a Sentry event: the snapshot path is
- * normally near-instant, so anything above this means the preview wait or a fallback ate the
- * budget.
- */
-const SLOW_SHUTTER_THRESHOLD_MS = 3000;
-
-type ShutterOutcome = {
-  /** Which capture path actually produced (or failed to produce) the photo. */
-  path: 'snapshot' | 'takePhoto-fallback' | 'fallback-failed';
-  /** How long the shutter waited for the preview's first-frame signal (or its timeout). */
-  previewWaitMs: number;
-  totalMs: number;
-  snapshotError?: string;
-  fallbackError?: string;
-};
-
-/**
- * Production-visible shutter telemetry. The console.log line shows up in `adb logcat`
- * (ReactNativeJS) on release builds — essential because the historical shutter slowness only
- * reproduces in release builds. The Sentry call is a real event, not a breadcrumb: this app's
- * Sentry config drops all breadcrumbs (`maxBreadcrumbs: 0` in sentry-init.ts), so a breadcrumb
- * here would never be seen.
- */
-const reportShutterOutcome = (outcome: ShutterOutcome) => {
-  console.log(`[CameraView] shutter outcome: ${JSON.stringify(outcome)}`);
-  if (outcome.path !== 'snapshot' || outcome.totalMs >= SLOW_SHUTTER_THRESHOLD_MS) {
-    Sentry.captureMessage('camera-shutter-slow-or-fallback', {
-      level: 'warning',
-      extra: { ...outcome },
-    });
-  }
-};
-
-/**
- * Bounds a native camera call that cannot be cancelled. If the timeout wins, the losing
- * promise is kept observed (no unhandled rejection) and its eventual settlement is logged —
- * on a stalled capture pipeline that late settlement time is exactly the diagnostic we need
- * from the field.
- */
-const withTimeout = <T,>(promise: Promise<T>, ms: number, label: string): Promise<T> =>
-  new Promise<T>((resolve, reject) => {
-    const timer = setTimeout(() => {
-      reject(new Error(`${label} timed out after ${ms}ms`));
-      const timedOutAt = Date.now();
-      promise.then(
-        () =>
-          console.log(
-            `[CameraView] ${label} settled ${Date.now() - timedOutAt}ms after timing out`
-          ),
-        () =>
-          console.log(`[CameraView] ${label} failed ${Date.now() - timedOutAt}ms after timing out`)
-      );
-    }, ms);
-
-    promise.then(
-      (value) => {
-        clearTimeout(timer);
-        resolve(value);
-      },
-      (error) => {
-        clearTimeout(timer);
-        reject(error);
-      }
-    );
-  });
+import { toFileUri } from '@/utils/file';
 
 export type CameraViewRef = {
   takePictureAsync: () => Promise<{ uri: string }>;
@@ -142,9 +59,6 @@ export type BarcodeType = keyof typeof CODE_TYPE_MAP;
  * vision) as everything else.
  */
 const PHOTO_RESOLUTION_TARGET = { width: 2048, height: 1536 };
-
-/** Normalizes a native file path (with or without the `file://` scheme) to a URI. */
-const toFileUri = (path: string) => (path.startsWith('file://') ? path : `file://${path}`);
 
 type CameraViewProps = {
   children?: ReactNode;
@@ -257,67 +171,21 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
           if (!cameraRef.current) {
             throw new Error('Camera is not ready');
           }
-          const startedAt = Date.now();
-          // Snapshot reads whatever the preview has already rendered (Android:
-          // `PreviewView.getBitmap()`, which is null until the first frame is painted); tapping
-          // the shutter within the first moment or two of opening the camera can race that. Wait
-          // for the real readiness signal (bounded, so a stalled preview can't hang the shutter
-          // forever) rather than letting the snapshot fail and silently paying for a full
-          // takePhoto() fallback on effectively every "first shot".
-          await Promise.race([
-            previewReady.promise,
-            new Promise((resolve) => setTimeout(resolve, PREVIEW_READY_TIMEOUT_MS)),
-          ]);
-          const previewWaitMs = Date.now() - startedAt;
-
-          if (!cameraRef.current) {
-            throw new Error('Camera is not ready');
-          }
-
-          let snapshotError: string | undefined;
-          try {
-            const snapshot = await cameraRef.current.takeSnapshot({ quality: 90 });
-            reportShutterOutcome({
-              path: 'snapshot',
-              previewWaitMs,
-              totalMs: Date.now() - startedAt,
-            });
-            return { uri: toFileUri(snapshot.path) };
-          } catch (error) {
-            snapshotError = error instanceof Error ? error.message : String(error);
-          }
-
-          // Snapshot needs a live, rendered preview surface; on the rare chance that isn't
-          // available even after waiting for it, fall back to a real (slower) capture instead
-          // of failing the shot — but bounded: an uncancellable capture stalling for tens of
-          // seconds is worse than a fast, retryable error.
-          try {
-            const photo = await withTimeout(
-              takePhoto(),
-              FALLBACK_PHOTO_TIMEOUT_MS,
-              'fallback takePhoto'
-            );
-
-            reportShutterOutcome({
-              path: 'takePhoto-fallback',
-              previewWaitMs,
-              totalMs: Date.now() - startedAt,
-              snapshotError,
-            });
-
-            return photo;
-          } catch (fallbackError) {
-            reportShutterOutcome({
-              path: 'fallback-failed',
-              previewWaitMs,
-              totalMs: Date.now() - startedAt,
-              snapshotError,
-              fallbackError:
-                fallbackError instanceof Error ? fallbackError.message : String(fallbackError),
-            });
-
-            throw fallbackError;
-          }
+          // The snapshot ladder (preview wait → snapshot → bounded takePhoto fallback) and its
+          // telemetry live in cameraShutter.ts; here we just wire in the session-bound
+          // primitives. The snapshot primitive re-checks the ref because the camera can unmount
+          // during the bounded preview wait.
+          return captureWithSnapshotLadder({
+            previewReady: previewReady.promise,
+            takeSnapshot: async () => {
+              if (!cameraRef.current) {
+                throw new Error('Camera is not ready');
+              }
+              const snapshot = await cameraRef.current.takeSnapshot({ quality: 90 });
+              return { uri: toFileUri(snapshot.path) };
+            },
+            takePhotoFallback: takePhoto,
+          });
         },
       }),
       [takePhoto, previewReady]
