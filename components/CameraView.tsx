@@ -122,7 +122,7 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
     const device = useCameraDevice(facing);
     const format = useCameraFormat(device, [{ photoResolution: PHOTO_RESOLUTION_TARGET }]);
     const cameraRef = useRef<Camera>(null);
-    const warmUpPromiseRef = useRef<Promise<void> | null>(null);
+    const hasWarmedUpRef = useRef(false);
 
     // Resolves once the preview View has painted its first frame (Android: `onPreviewStarted`,
     // tied to CameraX's `PreviewView.StreamState.STREAMING`; iOS's video pipeline fills up on a
@@ -164,10 +164,12 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
     // and writing the ref) and React invokes `onInitialized` on the JS thread, so two calls can
     // never interleave.
     const handleInitialized = useCallback(() => {
-      if (warmUpPromiseRef.current) {
+      if (hasWarmedUpRef.current) {
         return;
       }
-      warmUpPromiseRef.current = runCameraWarmUp(takePhoto);
+
+      hasWarmedUpRef.current = true;
+      runCameraWarmUp(takePhoto);
     }, [takePhoto]);
 
     useImperativeHandle(
