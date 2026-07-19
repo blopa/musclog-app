@@ -45,8 +45,8 @@ describe('runCameraWarmUp', () => {
     expect(mockFileDelete).not.toHaveBeenCalled();
   });
 
-  // Callers (CameraView's takePictureAsync) queue behind this promise; a rejection would
-  // surface as a bogus capture error on the user's first real shutter tap.
+  // The shutter path (takeSnapshot) never awaits this promise; a rejection here would only
+  // produce a pointless unhandled-rejection warning.
   it('resolves instead of rejecting when the capture fails', async () => {
     const takePhoto = jest.fn().mockRejectedValue(new Error('camera not ready'));
 

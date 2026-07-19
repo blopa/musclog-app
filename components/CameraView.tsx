@@ -1,5 +1,5 @@
 import { forwardRef, ReactNode, useCallback, useImperativeHandle, useMemo, useRef } from 'react';
-import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { Platform, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import {
   Camera,
   type CameraPermissionStatus,
@@ -13,7 +13,7 @@ import {
 import { runCameraWarmUp } from '@/components/cameraWarmUp';
 
 export type CameraViewRef = {
-  takePictureAsync: (options?: { shutterSound?: boolean }) => Promise<{ uri: string }>;
+  takePictureAsync: () => Promise<{ uri: string }>;
 };
 
 export type PermissionResponse = {
@@ -41,14 +41,17 @@ const CODE_TYPE_MAP = {
 export type BarcodeType = keyof typeof CODE_TYPE_MAP;
 
 /**
- * Target still-photo size (~3MP, 4:3). Without a format vision-camera captures at the full
- * sensor resolution (12–108MP on modern phones), and that megapixel count — not shutter lag —
- * dominates the tap-to-crop-UI latency: the JPEG encode + file write inflate `takePhoto`, and
- * the crop Activity then pays a proportional bitmap decode before it can even render. Every
- * downstream consumer works on ≤3MP images anyway: barcode detection, label OCR, and AI vision
- * (which resizes inputs to ≤~2k px before inference).
+ * Target still-photo size (~3MP, 4:3) for the `takePhoto` fallback/warm-up path (see below —
+ * the shutter itself no longer uses `takePhoto`). Without a format vision-camera captures at
+ * the full sensor resolution (12–108MP on modern phones), and that megapixel count inflates the
+ * JPEG encode + file write for no benefit here: the warm-up photo is discarded, and the
+ * takePhoto fallback feeds the same ≤3MP-hungry consumers (barcode detection, label OCR, AI
+ * vision) as everything else.
  */
 const PHOTO_RESOLUTION_TARGET = { width: 2048, height: 1536 };
+
+/** Normalizes a native file path (with or without the `file://` scheme) to a URI. */
+const toFileUri = (path: string) => (path.startsWith('file://') ? path : `file://${path}`);
 
 type CameraViewProps = {
   children?: ReactNode;
@@ -63,12 +66,22 @@ type CameraViewProps = {
 /**
  * Wraps react-native-vision-camera's Camera behind the prop/ref shape the app previously used
  * for expo-camera, so SmartCameraModal/BarcodeCameraModal and useCameraCaptureFlow need minimal
- * changes. `photoQualityBalance="balanced"` maps to CameraX's Zero-Shutter-Lag capture mode on
- * Android out of the box — the native fast-capture path a prior version of this codebase had to
- * patch expo-camera's source to get (see git history: patches/expo-camera+57.0.3.patch).
+ * changes.
+ *
+ * The shutter path is `takeSnapshot()`, not `takePhoto()`: on Android this reads the already-
+ * composited preview `View`'s bitmap directly (no capture request, no HAL round-trip); on iOS
+ * it reads the latest buffered video frame (`video={true}` below exists solely to keep that
+ * buffer populated — we never call `startRecording`). Both are near-instant regardless of
+ * camera-session "warmth", unlike `takePhoto()`, whose still-capture pipeline — even with
+ * `photoQualityBalance="balanced"` (CameraX's Zero-Shutter-Lag capture mode, the native
+ * fast-capture path a prior version of this codebase had to patch expo-camera's source to get,
+ * see git history: patches/expo-camera+57.0.3.patch) — can take anywhere from a fraction of a
+ * second to tens of seconds on a freshly bound session. `takePhoto` is kept only as (a) the
+ * fallback if a snapshot ever fails and (b) the vehicle for the background focus/exposure
+ * warm-up below.
  *
  * Session-lifecycle concerns live here, next to the session they belong to: the silent warm-up
- * capture (see runCameraWarmUp) and the one-capture-in-flight ordering it requires.
+ * capture (see runCameraWarmUp) and the one-warm-up-per-session guard it needs.
  */
 export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
   (
@@ -95,28 +108,45 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
       const photo = await cameraRef.current.takePhoto({
         enableShutterSound: options?.shutterSound ?? true,
       });
-      const uri = photo.path.startsWith('file://') ? photo.path : `file://${photo.path}`;
-      return { uri };
+      return { uri: toFileUri(photo.path) };
     }, []);
 
     // Warm the session up once per mount, as soon as it reports ready. Callers deactivate the
     // camera by unmounting this component, so a remount — a new native session — re-arms the
-    // warm-up naturally. onInitialized can re-fire when the session is reconfigured in place
-    // (e.g. the code scanner toggling); ??= keeps that a no-op.
+    // warm-up naturally.
+    //
+    // Guard against a second, overlapping warm-up: `onInitialized` can re-fire when the session
+    // is reconfigured in place (e.g. the code scanner toggling), and CameraX only supports one
+    // in-flight photo-capture request at a time — firing a second warm-up while the first is
+    // still resolving would contend with it natively. The check-then-assign below is safe
+    // without a separate lock because it's synchronous end-to-end (no `await` between reading
+    // and writing the ref) and React invokes `onInitialized` on the JS thread, so two calls can
+    // never interleave.
     const handleInitialized = useCallback(() => {
-      warmUpPromiseRef.current ??= runCameraWarmUp(takePhoto);
+      if (warmUpPromiseRef.current) {
+        return;
+      }
+      warmUpPromiseRef.current = runCameraWarmUp(takePhoto);
     }, [takePhoto]);
 
     useImperativeHandle(
       ref,
       () => ({
-        takePictureAsync: async (options) => {
-          // The native session supports one capture in flight at a time; if the silent warm-up
-          // is still resolving (a tap moments after mount), queue behind it.
-          if (warmUpPromiseRef.current) {
-            await warmUpPromiseRef.current;
+        takePictureAsync: async () => {
+          if (!cameraRef.current) {
+            throw new Error('Camera is not ready');
           }
-          return takePhoto(options);
+          try {
+            const snapshot = await cameraRef.current.takeSnapshot({ quality: 90 });
+            return { uri: toFileUri(snapshot.path) };
+          } catch (error) {
+            // Snapshot needs a live, rendered preview surface; on the rare chance that isn't
+            // available, fall back to a real (slower) capture instead of failing the shot.
+            if (__DEV__) {
+              console.debug('[CameraView] takeSnapshot failed, falling back to takePhoto:', error);
+            }
+            return takePhoto();
+          }
         },
       }),
       [takePhoto]
@@ -149,6 +179,9 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
           format={format}
           isActive={active}
           photo={true}
+          // Only iOS's takeSnapshot() needs the video pipeline (it reads the latest buffered
+          // video frame); Android's reads the preview View's bitmap directly and doesn't.
+          video={Platform.OS === 'ios'}
           torch={enableTorch ? 'on' : 'off'}
           photoQualityBalance="balanced"
           onInitialized={handleInitialized}
