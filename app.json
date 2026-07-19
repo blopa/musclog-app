@@ -152,6 +152,7 @@
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Allow Musclog to access your photos to select food images and exercise demonstrations.",
         "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use Face ID.",
+        "NSLocationWhenInUseUsageDescription": "Musclog does not use your location. This permission string is required because a bundled SDK references location APIs.",
         "UIBackgroundModes": ["fetch", "remote-notification"]
       }
     },

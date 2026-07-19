@@ -63,6 +63,8 @@
 	<string>Musclog reads your health data to sync workouts, nutrition, weight, and body measurements for comprehensive fitness tracking.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Musclog writes your workout sessions, nutrition logs, and body metrics to Apple Health to keep all your health data in sync.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Musclog does not use your location. This permission string is required because a bundled SDK references location APIs.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow $(PRODUCT_NAME) to access your microphone</string>
 	<key>NSPhotoLibraryUsageDescription</key>
