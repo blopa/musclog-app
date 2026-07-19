@@ -1,4 +1,13 @@
-import { forwardRef, ReactNode, useCallback, useImperativeHandle, useMemo, useRef } from 'react';
+import * as Sentry from '@sentry/react-native';
+import {
+  forwardRef,
+  ReactNode,
+  useCallback,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Platform, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import {
   Camera,
@@ -11,6 +20,14 @@ import {
 } from 'react-native-vision-camera';
 
 import { runCameraWarmUp } from '@/components/cameraWarmUp';
+
+/**
+ * Upper bound on how long `takePictureAsync` will wait for the preview to report its first
+ * rendered frame (see `previewReady` below) before giving up and attempting the snapshot
+ * anyway. Comfortably above the ~hundreds-of-ms this normally takes, while still far cheaper
+ * than falling through to a full `takePhoto()` capture.
+ */
+const PREVIEW_READY_TIMEOUT_MS = 3000;
 
 export type CameraViewRef = {
   takePictureAsync: () => Promise<{ uri: string }>;
@@ -80,6 +97,12 @@ type CameraViewProps = {
  * fallback if a snapshot ever fails and (b) the vehicle for the background focus/exposure
  * warm-up below.
  *
+ * A snapshot is only as good as what the preview has already rendered — on Android,
+ * `PreviewView.getBitmap()` returns null until the first frame is painted — so tapping the
+ * shutter within the first moment of opening the camera can race that and throw. `takePictureAsync`
+ * waits (bounded) for the `onPreviewStarted` signal before attempting the snapshot, specifically
+ * so that race doesn't silently fall through to the slow `takePhoto()` path on every "first shot".
+ *
  * Session-lifecycle concerns live here, next to the session they belong to: the silent warm-up
  * capture (see runCameraWarmUp) and the one-warm-up-per-session guard it needs.
  */
@@ -100,6 +123,22 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
     const format = useCameraFormat(device, [{ photoResolution: PHOTO_RESOLUTION_TARGET }]);
     const cameraRef = useRef<Camera>(null);
     const warmUpPromiseRef = useRef<Promise<void> | null>(null);
+
+    // Resolves once the preview View has painted its first frame (Android: `onPreviewStarted`,
+    // tied to CameraX's `PreviewView.StreamState.STREAMING`; iOS's video pipeline fills up on a
+    // comparable timescale). Built once per mounted session via useState's lazy initializer —
+    // the object itself is never replaced, only its `resolve` is invoked, so this never triggers
+    // a re-render.
+    const [previewReady] = useState(() => {
+      let resolve = () => {};
+      const promise = new Promise<void>((res) => {
+        resolve = res;
+      });
+      return { promise, resolve };
+    });
+    const handlePreviewStarted = useCallback(() => {
+      previewReady.resolve();
+    }, [previewReady]);
 
     const takePhoto = useCallback(async (options?: { shutterSound?: boolean }) => {
       if (!cameraRef.current) {
@@ -136,20 +175,38 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
           if (!cameraRef.current) {
             throw new Error('Camera is not ready');
           }
+          // Snapshot reads whatever the preview has already rendered (Android:
+          // `PreviewView.getBitmap()`, which is null until the first frame is painted); tapping
+          // the shutter within the first moment or two of opening the camera can race that. Wait
+          // for the real readiness signal (bounded, so a stalled preview can't hang the shutter
+          // forever) rather than letting the snapshot fail and silently paying for a full
+          // takePhoto() fallback on effectively every "first shot".
+          await Promise.race([
+            previewReady.promise,
+            new Promise((resolve) => setTimeout(resolve, PREVIEW_READY_TIMEOUT_MS)),
+          ]);
+          if (!cameraRef.current) {
+            throw new Error('Camera is not ready');
+          }
           try {
             const snapshot = await cameraRef.current.takeSnapshot({ quality: 90 });
             return { uri: toFileUri(snapshot.path) };
           } catch (error) {
             // Snapshot needs a live, rendered preview surface; on the rare chance that isn't
-            // available, fall back to a real (slower) capture instead of failing the shot.
-            if (__DEV__) {
-              console.debug('[CameraView] takeSnapshot failed, falling back to takePhoto:', error);
-            }
+            // available even after waiting for it, fall back to a real (slower) capture instead
+            // of failing the shot. Logged to Sentry (not just __DEV__) since this path being hit
+            // in production is itself the signal that the wait above isn't enough.
+            Sentry.addBreadcrumb({
+              category: 'camera.snapshot',
+              message: 'takeSnapshot failed, falling back to takePhoto',
+              level: 'warning',
+              data: { error: error instanceof Error ? error.message : String(error) },
+            });
             return takePhoto();
           }
         },
       }),
-      [takePhoto]
+      [takePhoto, previewReady]
     );
 
     const codeTypes = (barcodeScannerSettings?.barcodeTypes ?? []).map(
@@ -185,6 +242,7 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
           torch={enableTorch ? 'on' : 'off'}
           photoQualityBalance="balanced"
           onInitialized={handleInitialized}
+          onPreviewStarted={handlePreviewStarted}
           codeScanner={onBarcodeScanned && codeTypes.length > 0 ? codeScanner : undefined}
         />
         {children}
