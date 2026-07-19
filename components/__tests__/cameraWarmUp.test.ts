@@ -4,6 +4,10 @@ const mockFileDelete = jest.fn();
 let mockFileExists = true;
 let mockFileConstructorError: Error | null = null;
 
+jest.mock('@sentry/react-native', () => ({
+  captureMessage: jest.fn(),
+}));
+
 jest.mock('expo-file-system', () => ({
   File: jest.fn().mockImplementation((uri: string) => {
     if (mockFileConstructorError) {

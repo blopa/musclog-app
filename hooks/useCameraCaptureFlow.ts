@@ -11,10 +11,11 @@ import { showSnackbar } from '@/utils/snackbarService';
 export const BARCODE_PHOTO_QUALITY = 0.8;
 export const AI_PHOTO_QUALITY = 0.85;
 
+// Deliberately not __DEV__-gated: the shutter-latency regression this instruments only ever
+// reproduced in release builds, where these lines are readable via `adb logcat` (ReactNativeJS)
+// on a locally installed release APK (`npm run build-android-apk-local`).
 const logPhase = (label: string, startedAt: number) => {
-  if (__DEV__) {
-    console.debug(`[CameraCaptureFlow] ${label}: ${Date.now() - startedAt}ms`);
-  }
+  console.log(`[CameraCaptureFlow] ${label}: ${Date.now() - startedAt}ms`);
 };
 
 type UseCameraCaptureFlowOptions = {
