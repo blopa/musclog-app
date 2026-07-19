@@ -87,6 +87,23 @@ export function BarcodeCameraModal({
     process: barcode.processBarcodeImage,
   });
 
+  // Stop the live barcode scanner the instant the shutter is pressed: `takePicture` stays in
+  // flight through the crop tool (which has its own loading step before it even opens), and the
+  // camera preview keeps feeding frames the whole time. Without this guard, a barcode detected
+  // during that window races the shutter's own `processBarcodeImage` call and pops a second
+  // "Analyzing barcode..." overlay on top of the crop flow. Only release the guard if nothing
+  // ended up processing (e.g. the user cancelled the crop) — otherwise `processBarcodeImage`'s
+  // own success/error/not-found paths own resetting it.
+  const handleShutterPress = useCallback(async () => {
+    isSearchingBarcodeRef.current = true;
+
+    const processed = await takePicture();
+
+    if (!processed) {
+      isSearchingBarcodeRef.current = false;
+    }
+  }, [isSearchingBarcodeRef, takePicture]);
+
   const handleBarcodeTextSearchSubmit = useCallback(() => {
     const value = barcodeTextSearchValue.trim();
     setIsBarcodeTextSearchModalVisible(false);
@@ -153,7 +170,7 @@ export function BarcodeCameraModal({
         flashEnabled={flashEnabled}
         onFlashToggle={handleFlashToggle}
         onGalleryPress={pickFromGallery}
-        onShutterPress={takePicture}
+        onShutterPress={handleShutterPress}
         bottomRightControl={bottomRightControl}
         showModePicker={false}
       >

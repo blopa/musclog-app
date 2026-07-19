@@ -34,8 +34,9 @@ type UseCameraCaptureFlowOptions = {
 export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraCaptureFlowOptions) {
   const { t } = useTranslation();
 
+  /** Returns whether `process` was actually invoked (false if the crop was cancelled). */
   const cropAndProcess = useCallback(
-    async (imageUri: string) => {
+    async (imageUri: string): Promise<boolean> => {
       const startedAt = Date.now();
       const cropped = await openCropperAsync({
         imageUri,
@@ -45,27 +46,30 @@ export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraC
       logPhase('crop step', startedAt);
 
       if (!cropped) {
-        return;
+        return false;
       }
 
       await process(cropped.path);
+      return true;
     },
     [quality, process]
   );
 
-  const takePicture = useCallback(async () => {
+  /** Returns whether `process` was actually invoked (false on camera error or cancelled crop). */
+  const takePicture = useCallback(async (): Promise<boolean> => {
     if (!cameraRef.current) {
-      return;
+      return false;
     }
 
     try {
       const startedAt = Date.now();
       const photo = await cameraRef.current.takePictureAsync();
       logPhase('shutter capture', startedAt);
-      await cropAndProcess(photo.uri);
+      return await cropAndProcess(photo.uri);
     } catch (error) {
       console.error('Error taking picture:', error);
       showSnackbar('error', t('food.aiCamera.cameraError'));
+      return false;
     }
   }, [cameraRef, cropAndProcess, t]);
 
@@ -82,6 +86,7 @@ export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraC
         quality,
         base64: false,
       });
+
       if (result.canceled || !result.assets?.length) {
         return;
       }
