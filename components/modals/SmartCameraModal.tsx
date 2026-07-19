@@ -539,13 +539,12 @@ export default function SmartCameraModal({
     setCameraMode('barcode-scan');
   }, []);
 
-  // Stop the live barcode scanner the instant the shutter is pressed: `takePicture` stays in
-  // flight through the crop tool (which has its own loading step before it even opens), and the
-  // camera preview keeps feeding frames the whole time. Without this guard, a barcode detected
+  // Stop the live barcode scanner the instant the shutter is pressed: `takePicture` sends the
+  // photo straight into `processBarcodeImage` (the shutter path has no crop tool), and the camera
+  // preview keeps feeding frames the whole time it runs. Without this guard, a barcode detected
   // during that window races the shutter's own `processBarcodeImage` call and pops a second
-  // "Analyzing barcode..." overlay on top of the crop flow. Only release the guard if nothing
-  // ended up processing (e.g. the user cancelled the crop) — otherwise `processBarcodeImage`'s
-  // own success/error/not-found paths own resetting it.
+  // "Analyzing barcode..." overlay. Only release the guard if nothing ended up processing (a
+  // camera error) — otherwise `processBarcodeImage`'s own success/error/not-found paths own it.
   const handleShutterPress = useCallback(async () => {
     if (isBarcodeScanning) {
       isSearchingBarcodeRef.current = true;

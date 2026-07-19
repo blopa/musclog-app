@@ -66,28 +66,14 @@ describe('useCameraCaptureFlow', () => {
   });
 
   describe('takePicture', () => {
-    it('captures, crops at the configured quality, and processes the cropped path', async () => {
+    it('captures and processes the raw photo without opening the crop tool', async () => {
       const { result, takePictureAsync, process } = renderFlow({ quality: 0.85 });
 
       await result.current.takePicture();
 
       expect(takePictureAsync).toHaveBeenCalledTimes(1);
-      expect(mockOpenCropperAsync).toHaveBeenCalledWith({
-        imageUri: 'file:///shot.jpg',
-        format: 'jpeg',
-        compressImageQuality: 0.85,
-      });
-      expect(process).toHaveBeenCalledWith('file:///cropped.jpg');
-      expect(mockShowSnackbar).not.toHaveBeenCalled();
-    });
-
-    it('ends silently when the user cancels the crop UI', async () => {
-      mockOpenCropperAsync.mockResolvedValue(null);
-      const { result, process } = renderFlow();
-
-      await result.current.takePicture();
-
-      expect(process).not.toHaveBeenCalled();
+      expect(mockOpenCropperAsync).not.toHaveBeenCalled();
+      expect(process).toHaveBeenCalledWith('file:///shot.jpg');
       expect(mockShowSnackbar).not.toHaveBeenCalled();
     });
 
@@ -102,11 +88,12 @@ describe('useCameraCaptureFlow', () => {
     });
 
     it('is a no-op while the camera ref is unset', async () => {
-      const { result } = renderFlow({ cameraRef: { current: null } });
+      const { result, process } = renderFlow({ cameraRef: { current: null } });
 
       await result.current.takePicture();
 
       expect(mockOpenCropperAsync).not.toHaveBeenCalled();
+      expect(process).not.toHaveBeenCalled();
       expect(mockShowSnackbar).not.toHaveBeenCalled();
     });
   });

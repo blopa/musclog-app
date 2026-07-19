@@ -1,6 +1,6 @@
 {
   "name": "musclog",
-  "version": "2.9.20",
+  "version": "2.9.21",
   "engines": {
     "node": "26.x"
   },
@@ -76,6 +76,7 @@
     "build-android-web": "node scripts/sync-web-images.js && node scripts/export-web-wrapper.js",
     "submit-android": "eas submit --platform android",
     "build-android-preview": "eas build -p android --profile preview",
+    "prebuild:android": "expo prebuild -p android --clean",
     "build-android-preview-local": "bash -c 'set -a; source .env; set +a; eas build -p android --profile preview --local",
     "build-android-preview-local-cache": "bash -c 'set -a; source .env; set +a; EAS_LOCAL_BUILD_WORKINGDIR=~/eas-local-builds eas build -p android --profile preview --local'",
     "build-ios": "node scripts/prepare-for-eas.js && eas build -p ios --profile production --clear-cache",

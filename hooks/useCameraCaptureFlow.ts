@@ -20,17 +20,24 @@ const logPhase = (label: string, startedAt: number) => {
 
 type UseCameraCaptureFlowOptions = {
   cameraRef: RefObject<CameraViewRef | null>;
-  /** JPEG quality for the crop re-encode step (shutter capture and gallery pick alike). */
+  /** JPEG quality for the gallery crop re-encode step and the gallery picker. */
   quality: number;
-  /** Receives the cropped image path (shutter and gallery alike). */
+  /** Receives the raw photo path on shutter capture, or the cropped path on gallery pick. */
   process: (fileUri: string) => Promise<void>;
 };
 
 /**
- * The shared capture pipeline behind the smart-camera modals: photo (shutter or gallery pick)
- * → crop UI → `process`. A cancelled crop ends the flow silently; real failures log and show
- * the camera-error snackbar. Camera-session concerns (the silent warm-up capture, one capture
- * in flight at a time) are owned by the CameraView wrapper itself.
+ * The shared capture pipeline behind the smart-camera modals.
+ *
+ * A shutter capture goes straight to `process` with NO crop step. Opening the native crop tool
+ * has a ~20s+ one-time-per-process stall on some devices (fresh Pixel 10 / Android 17 — see the
+ * Camera notes in AGENTS.md), and a photo the user just framed live through the camera rarely
+ * needs re-cropping anyway. A gallery pick still goes through the crop UI (`cropAndProcess`),
+ * since an existing photo usually does need framing and the user chose that path deliberately.
+ *
+ * A cancelled crop (gallery only) ends the flow silently; real failures log and show the
+ * camera-error snackbar. Camera-session concerns (the silent warm-up capture, one capture in
+ * flight at a time) are owned by the CameraView wrapper itself.
  */
 export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraCaptureFlowOptions) {
   const { t } = useTranslation();
@@ -56,7 +63,11 @@ export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraC
     [quality, process]
   );
 
-  /** Returns whether `process` was actually invoked (false on camera error or cancelled crop). */
+  /**
+   * Captures a photo and sends it straight to `process` — no crop tool on the camera path (see
+   * the hook docstring for why). Returns whether `process` was invoked; false only on a camera
+   * error. There is no crop to cancel here, so a successful capture always processes.
+   */
   const takePicture = useCallback(async (): Promise<boolean> => {
     if (!cameraRef.current) {
       return false;
@@ -66,13 +77,14 @@ export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraC
       const startedAt = Date.now();
       const photo = await cameraRef.current.takePictureAsync();
       logPhase('shutter capture', startedAt);
-      return await cropAndProcess(photo.uri);
+      await process(photo.uri);
+      return true;
     } catch (error) {
       console.error('Error taking picture:', error);
       showSnackbar('error', t('food.aiCamera.cameraError'));
       return false;
     }
-  }, [cameraRef, cropAndProcess, t]);
+  }, [cameraRef, process, t]);
 
   const pickFromGallery = useCallback(async () => {
     try {
