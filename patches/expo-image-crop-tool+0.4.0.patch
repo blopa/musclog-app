@@ -1,0 +1,71 @@
+diff --git a/node_modules/expo-image-crop-tool/android/src/main/java/xyz/blueskyweb/expoimagecroptool/ExpoImageCropToolModule.kt b/node_modules/expo-image-crop-tool/android/src/main/java/xyz/blueskyweb/expoimagecroptool/ExpoImageCropToolModule.kt
+index ba2184d..05951a8 100644
+--- a/node_modules/expo-image-crop-tool/android/src/main/java/xyz/blueskyweb/expoimagecroptool/ExpoImageCropToolModule.kt
++++ b/node_modules/expo-image-crop-tool/android/src/main/java/xyz/blueskyweb/expoimagecroptool/ExpoImageCropToolModule.kt
+@@ -2,6 +2,7 @@ package xyz.blueskyweb.expoimagecroptool
+ 
+ import android.app.Activity.RESULT_OK
+ import android.content.Intent
++import android.os.Bundle
+ import android.util.Log
+ import expo.modules.kotlin.Promise
+ import expo.modules.kotlin.exception.toCodedException
+@@ -19,11 +20,15 @@ class ExpoImageCropToolModule : Module() {
+     ModuleDefinition {
+       Name("ExpoImageCropTool")
+ 
+-      AsyncFunction("openCropperAsync") { options: OpenCropperOptions, promise: Promise ->
++      // Expo falls back to kotlin-reflect when converting a JS object to a Record if
++      // generated introspection data is unavailable. On some fresh Android installs,
++      // that cold path can take tens of seconds. A plain map uses Expo's built-in
++      // dynamic converter and keeps the public JS API unchanged.
++      AsyncFunction("openCropperAsync") { options: Map<String, Any?>, promise: Promise ->
+         val context = appContext.reactContext
+ 
+         val intent = Intent(context, CropperActivity::class.java)
+-        val bundle = options.toBundle()
++        val bundle = options.toCropperBundle()
+         intent.putExtras(bundle)
+ 
+         pendingPromise = promise
+@@ -42,8 +47,9 @@ class ExpoImageCropToolModule : Module() {
+           RESULT_OK -> {
+             // Only for successful results, we need extras
+             event.data?.extras?.let { extras ->
+-              val result = OpenCropperResult.fromBundle(extras)
+-              promise.resolve(result)
++              // Returning a map also avoids the same reflection fallback when the
++              // cropped result crosses back over the Expo module bridge.
++              promise.resolve(extras.toCropperResult())
+             }
+               ?: run {
+                 Log.e("ExpoImageCropTool", "RESULT_OK with null extras")
+@@ -56,4 +62,28 @@ class ExpoImageCropToolModule : Module() {
+         }
+       }
+     }
++
++  private fun Map<String, Any?>.toCropperBundle(): Bundle =
++    Bundle().apply {
++      putString("imageUri", this@toCropperBundle["imageUri"] as? String)
++      putString("shape", this@toCropperBundle["shape"] as? String)
++      putDouble("aspectRatio", (this@toCropperBundle["aspectRatio"] as? Number)?.toDouble() ?: 0.0)
++      putString("format", this@toCropperBundle["format"] as? String)
++      putDouble(
++        "compressImageQuality",
++        (this@toCropperBundle["compressImageQuality"] as? Number)?.toDouble() ?: 1.0,
++      )
++      putBoolean("rotationEnabled", this@toCropperBundle["rotationEnabled"] as? Boolean ?: true)
++      putString("cancelButtonText", this@toCropperBundle["cancelButtonText"] as? String)
++      putString("doneButtonText", this@toCropperBundle["doneButtonText"] as? String)
++    }
++
++  private fun Bundle.toCropperResult(): Map<String, Any?> =
++    mapOf(
++      "path" to getString("path"),
++      "mimeType" to getString("mimeType"),
++      "size" to getInt("size"),
++      "width" to getInt("width"),
++      "height" to getInt("height"),
++    )
+ }
