@@ -1,7 +1,8 @@
-import { PermissionResponse, useCameraPermissions as useExpoCameraPermissions } from 'expo-camera';
 import { ReactNode, RefObject } from 'react';
 import { StyleProp, View, ViewStyle } from 'react-native';
 import { useZxing } from 'react-zxing';
+
+export { useCameraPermissions } from '@/utils/webCameraPermissions';
 
 type CameraViewProps = {
   [key: string]: any;
@@ -102,12 +103,4 @@ export const CameraView = ({
       {children}
     </WebCameraView>
   );
-};
-
-export const useCameraPermissions = (): [
-  null | PermissionResponse,
-  () => Promise<PermissionResponse>,
-] => {
-  const [permission, requestPermission] = useExpoCameraPermissions();
-  return [permission, requestPermission];
 };

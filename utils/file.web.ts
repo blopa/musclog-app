@@ -1,3 +1,4 @@
+import type { OpenCropperOptions } from '@bsky.app/expo-image-crop-tool';
 import Quagga, { QuaggaJSCodeReader } from '@ericblade/quagga2';
 
 import { dumpDatabase } from '@/database/exportDb';
@@ -253,7 +254,16 @@ export async function deleteFoodImage(imageUri: string): Promise<void> {
   // Not really necessary to be implemented for web
 }
 
-export async function openCropperAsync(options: any): Promise<{ path: string }> {
+/** Normalizes a native file path (with or without the `file://` scheme) to a URI. */
+export const toFileUri = (path: string) => (path.startsWith('file://') ? path : `file://${path}`);
+
+/**
+ * Web has no crop UI: returns the image unchanged. Matches the native contract, where
+ * `null` means the user cancelled the crop.
+ */
+export async function openCropperAsync(options: OpenCropperOptions): Promise<{
+  path: string;
+} | null> {
   return { path: options.imageUri };
 }
 

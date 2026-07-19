@@ -1,3 +1,4 @@
+import ExpoImageCropTool, { OpenCropperOptions } from '@bsky.app/expo-image-crop-tool';
 import * as DocumentPicker from 'expo-document-picker';
 import { Directory, File, Paths } from 'expo-file-system';
 import {
@@ -9,8 +10,6 @@ import {
   readAsStringAsync,
   writeAsStringAsync,
 } from 'expo-file-system/legacy';
-import ExpoImageCropTool from 'expo-image-crop-tool';
-import { OpenCropperOptions } from 'expo-image-crop-tool/src/ExpoImageCropTool.types';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as Sharing from 'expo-sharing';
 
@@ -288,8 +287,26 @@ export async function deleteFoodImage(imageUri: string): Promise<void> {
   }
 }
 
+/** Normalizes a native file path (with or without the `file://` scheme) to a URI. */
+export const toFileUri = (path: string) => (path.startsWith('file://') ? path : `file://${path}`);
+
+/**
+ * Opens the native crop UI. Resolves `null` when the user dismisses it — a normal outcome,
+ * not an error — so callers never have to distinguish cancellation from real failures.
+ */
 export async function openCropperAsync(options: OpenCropperOptions) {
-  return ExpoImageCropTool.openCropperAsync(options);
+  try {
+    return await ExpoImageCropTool.openCropperAsync(options);
+  } catch (error) {
+    // The module rejects with "Crop cancelled" on both platforms; match loosely in case the
+    // bridge decorates the message.
+    const message = error instanceof Error ? error.message : String(error);
+    if (message.toLowerCase().includes('cancel')) {
+      return null;
+    }
+
+    throw error;
+  }
 }
 
 export async function readFileAsStringAsync(fileUri: string, options: ReadingOptions = {}) {

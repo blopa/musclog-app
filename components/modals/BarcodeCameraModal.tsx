@@ -1,17 +1,13 @@
-import type { CameraView as CameraViewType } from 'expo-camera';
-import * as ImagePicker from 'expo-image-picker';
 import { Search } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Pressable, View } from 'react-native';
 
-import { CameraView } from '@/components/CameraView';
+import { CameraView, type CameraViewRef } from '@/components/CameraView';
 import type { MealType } from '@/database/models';
 import { useBarcodeScanner } from '@/hooks/useBarcodeScanner';
+import { BARCODE_PHOTO_QUALITY, useCameraCaptureFlow } from '@/hooks/useCameraCaptureFlow';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useTheme } from '@/hooks/useTheme';
-import { openCropperAsync } from '@/utils/file';
-import { showSnackbar } from '@/utils/snackbarService';
 
 import { BarcodeTextSearchSheet } from './BarcodeTextSearchSheet';
 import { FoodMealTrackingDetailsModal } from './FoodMealTrackingDetailsModal';
@@ -43,14 +39,13 @@ export function BarcodeCameraModal({
   onRequestPermission,
 }: BarcodeCameraModalProps) {
   const theme = useTheme();
-  const { t } = useTranslation();
-  const cameraRef = useRef<CameraViewType>(null);
+  const cameraRef = useRef<CameraViewRef>(null);
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [isBarcodeTextSearchModalVisible, setIsBarcodeTextSearchModalVisible] = useState(false);
   const [barcodeTextSearchValue, setBarcodeTextSearchValue] = useState('');
 
   const barcode = useBarcodeScanner({ visible, onBarcodeScanned, onClose });
-  const { isSearchingBarcodeRef } = barcode;
+  const { isSearchingBarcodeRef, captureWithLiveScanSuppressed } = barcode;
 
   useEffect(() => {
     if (!visible) {
@@ -86,61 +81,16 @@ export function BarcodeCameraModal({
     setFlashEnabled((prev) => !prev);
   }, []);
 
-  const handleTakePicture = useCallback(async () => {
-    if (!cameraRef.current) {
-      return;
-    }
+  const { takePicture, pickFromGallery } = useCameraCaptureFlow({
+    cameraRef,
+    quality: BARCODE_PHOTO_QUALITY,
+    process: barcode.processBarcodeImage,
+  });
 
-    try {
-      const photo = await cameraRef.current.takePictureAsync({ quality: 0.8, base64: false });
-      const cropped = await openCropperAsync({
-        imageUri: photo.uri,
-        format: 'jpeg',
-        compressImageQuality: 0.8,
-      });
-      await barcode.processBarcodeImage(cropped.path);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      if (!message.includes('cancel') && !message.includes('Cancel')) {
-        console.error('Error taking picture:', error);
-        showSnackbar('error', t('food.aiCamera.cameraError'));
-      }
-    }
-  }, [barcode, t]);
-
-  const handleGalleryPress = useCallback(async () => {
-    try {
-      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permissionResult.granted) {
-        showSnackbar('error', t('food.aiCamera.galleryPermissionRequired'));
-        return;
-      }
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        quality: 0.85,
-        base64: false,
-      });
-
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        try {
-          const cropped = await openCropperAsync({
-            imageUri: result.assets[0].uri,
-            format: 'jpeg',
-            compressImageQuality: 0.85,
-          });
-          await barcode.processBarcodeImage(cropped.path);
-        } catch (error) {
-          const message = error instanceof Error ? error.message : String(error);
-          if (!message.includes('cancel') && !message.includes('Cancel')) {
-            showSnackbar('error', t('food.aiCamera.cameraError'));
-          }
-        }
-      }
-    } catch {
-      showSnackbar('error', t('food.aiCamera.galleryError'));
-    }
-  }, [barcode, t]);
+  const handleShutterPress = useCallback(
+    () => captureWithLiveScanSuppressed(takePicture),
+    [captureWithLiveScanSuppressed, takePicture]
+  );
 
   const handleBarcodeTextSearchSubmit = useCallback(() => {
     const value = barcodeTextSearchValue.trim();
@@ -207,8 +157,8 @@ export function BarcodeCameraModal({
         cameraMode={CAMERA_MODE}
         flashEnabled={flashEnabled}
         onFlashToggle={handleFlashToggle}
-        onGalleryPress={handleGalleryPress}
-        onShutterPress={handleTakePicture}
+        onGalleryPress={pickFromGallery}
+        onShutterPress={handleShutterPress}
         bottomRightControl={bottomRightControl}
         showModePicker={false}
       >

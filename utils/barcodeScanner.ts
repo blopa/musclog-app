@@ -6,8 +6,9 @@
  * (see barcodeScanner.ios.ts)
  * On Web: Uses @ericblade/quagga2 (see file.web.ts)
  *
- * For real-time barcode scanning across platforms, use the CameraView component
- * with barcodeScannerSettings which uses expo-camera's built-in barcode detection.
+ * For real-time barcode scanning across platforms, use the CameraView component with
+ * barcodeScannerSettings, which uses react-native-vision-camera's code scanner on native
+ * and react-zxing on web.
  */
 
 /**
