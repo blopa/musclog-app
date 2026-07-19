@@ -174,12 +174,12 @@ function BulkTrackFoodModal({ visible, food, onClose, onTracked }: BulkTrackModa
             variant="default"
           />
           {dayCount > 366 ? (
-            <Text className="text-xs font-medium text-status-error">
+            <Text className="text-status-error text-xs font-medium">
               Range too large ({dayCount} days). Max 366.
             </Text>
           ) : null}
           {dayCount === 0 ? (
-            <Text className="text-xs font-medium text-status-error">
+            <Text className="text-status-error text-xs font-medium">
               End date must be on or after the start date.
             </Text>
           ) : null}
@@ -306,11 +306,7 @@ export default function NutritionDebugScreen() {
         </GenericCard>
       </ScrollView>
 
-      <FoodSearchModal
-        visible={isSearchVisible}
-        onClose={closeAll}
-        onFoodPicked={handleFoodPicked}
-      >
+      <FoodSearchModal visible={isSearchVisible} onClose={closeAll} onFoodPicked={handleFoodPicked}>
         <BulkTrackFoodModal
           visible={isBulkTrackVisible}
           food={pickedFood}

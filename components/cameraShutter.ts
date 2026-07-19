@@ -57,7 +57,7 @@ const reportShutterOutcome = (outcome: ShutterOutcome) => {
  * on a stalled capture pipeline that late settlement time is exactly the diagnostic we need
  * from the field.
  */
-const withTimeout = <T,>(promise: Promise<T>, ms: number, label: string): Promise<T> =>
+const withTimeout = <T>(promise: Promise<T>, ms: number, label: string): Promise<T> =>
   new Promise<T>((resolve, reject) => {
     const timer = setTimeout(() => {
       reject(new Error(`${label} timed out after ${ms}ms`));
@@ -158,8 +158,7 @@ export async function captureWithSnapshotLadder({
       previewWaitMs,
       totalMs: Date.now() - startedAt,
       snapshotError,
-      fallbackError:
-        fallbackError instanceof Error ? fallbackError.message : String(fallbackError),
+      fallbackError: fallbackError instanceof Error ? fallbackError.message : String(fallbackError),
     });
     throw fallbackError;
   }
