@@ -27,7 +27,7 @@ import { runCameraWarmUp } from '@/components/cameraWarmUp';
  * anyway. Comfortably above the ~hundreds-of-ms this normally takes, while still far cheaper
  * than falling through to a full `takePhoto()` capture.
  */
-const PREVIEW_READY_TIMEOUT_MS = 3000;
+const PREVIEW_READY_TIMEOUT_MS = 2000;
 
 export type CameraViewRef = {
   takePictureAsync: () => Promise<{ uri: string }>;
@@ -134,8 +134,10 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
       const promise = new Promise<void>((res) => {
         resolve = res;
       });
+
       return { promise, resolve };
     });
+
     const handlePreviewStarted = useCallback(() => {
       previewReady.resolve();
     }, [previewReady]);
@@ -185,9 +187,11 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
             previewReady.promise,
             new Promise((resolve) => setTimeout(resolve, PREVIEW_READY_TIMEOUT_MS)),
           ]);
+
           if (!cameraRef.current) {
             throw new Error('Camera is not ready');
           }
+
           try {
             const snapshot = await cameraRef.current.takeSnapshot({ quality: 90 });
             return { uri: toFileUri(snapshot.path) };
