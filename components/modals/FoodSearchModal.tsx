@@ -24,7 +24,7 @@ import {
   UtensilsCrossed,
   Wheat,
 } from 'lucide-react-native';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
@@ -110,6 +110,18 @@ type FoodSearchModalProps = {
   onCreatePress?: () => void;
   onBarcodeScanPress?: () => void;
   onFoodSelect?: (food: FoodItem) => void;
+  /**
+   * When provided, picking a food short-circuits the built-in tracking-details flow and hands
+   * the raw {@link FoodItem} to the caller instead (e.g. a debug/bulk-tracking screen that wants
+   * to drive its own logging). The caller is responsible for closing the modal.
+   */
+  onFoodPicked?: (food: FoodItem) => void;
+  /**
+   * Follow-up modals opened from this modal (e.g. after {@link onFoodPicked}). Rendered inside the
+   * outer `FullScreenModal` so iOS presents them from the active controller — see
+   * `docs/modals-problem-on-ios.md`. Not for visible content; use only to host child modals.
+   */
+  children?: ReactNode;
   /** Called when food(s) have been tracked so the parent can refresh logs (e.g. daily nutrition list). */
   onFoodTracked?: () => void;
   /** Called before closing when a nutrition log is tracked for the first time, so the parent can trigger confetti. */
@@ -338,6 +350,8 @@ export function FoodSearchModal({
   onCreatePress,
   onBarcodeScanPress,
   onFoodSelect,
+  onFoodPicked,
+  children,
   onFoodTracked,
   onFirstNutritionLog,
   isAiEnabled = true,
@@ -906,6 +920,14 @@ export function FoodSearchModal({
     // Always close the history modal before opening food details — if it was open,
     // leaving it visible would stack two native modal windows and block touches.
     setIsRecentNutritionHistoryModalVisible(false);
+
+    // Opt-in pick mode: hand the raw food to the caller instead of opening the built-in
+    // tracking-details modal (the caller owns closing + logging).
+    if (onFoodPicked) {
+      onFoodPicked(foodItem);
+      return;
+    }
+
     setSelectedFood(foodItem);
     setIsFoodDetailsVisible(true);
   };
@@ -1566,10 +1588,7 @@ export function FoodSearchModal({
                         <FoodSearchItemCard
                           key={food.id}
                           food={food}
-                          onAddPress={() => {
-                            setSelectedFood(food);
-                            setIsFoodDetailsVisible(true);
-                          }}
+                          onAddPress={() => handleFoodClick(food)}
                           intuitiveMode={intuitiveEatingMode}
                         />
                       ))
@@ -1679,6 +1698,9 @@ export function FoodSearchModal({
           variant="primary"
           isLoading={isAddingSameAsYesterday}
         />
+
+        {/* Follow-up modals hosted under the active modal (iOS presenter safety). */}
+        {children}
       </FullScreenModal>
     </>
   );
