@@ -988,5 +988,250 @@
     "name": "Bosu Ball Squat",
     "description": "A squat performed on an unstable bosu ball surface to challenge balance and control.",
     "exerciseIndex": 198
+  },
+  {
+    "name": "Cable Concentration Curl",
+    "description": "A seated one-arm cable curl with the elbow braced against the inner thigh for peak biceps contraction.",
+    "exerciseIndex": 199
+  },
+  {
+    "name": "Cable One Arm Curl-Supinating",
+    "description": "A one-arm cable curl where the wrist rotates from an overhand to an underhand grip through the motion for full biceps engagement.",
+    "exerciseIndex": 200
+  },
+  {
+    "name": "Cable One Arm Overhead Triceps Extension",
+    "description": "A one-arm cable triceps extension performed overhead with the elbow locked in place to isolate the triceps.",
+    "exerciseIndex": 201
+  },
+  {
+    "name": "Cable One Arm Underhand Push Down",
+    "description": "A one-arm cable push down performed with an underhand grip, extending the elbow while keeping it pinned to your side.",
+    "exerciseIndex": 202
+  },
+  {
+    "name": "Cable One Arm Push Down",
+    "description": "A one-arm cable push down performed with an overhand grip, extending the elbow while keeping it pinned to your side.",
+    "exerciseIndex": 203
+  },
+  {
+    "name": "Cable Standing Arm Curl",
+    "description": "A standing cable curl performed with both arms simultaneously through a full range of motion.",
+    "exerciseIndex": 204
+  },
+  {
+    "name": "Cable Standing Hammer Curl",
+    "description": "A standing cable curl performed with a neutral, hammer grip using both arms simultaneously.",
+    "exerciseIndex": 205
+  },
+  {
+    "name": "Cable Underhand Push Down",
+    "description": "A two-handed cable push down performed with an underhand grip, converging at the top and pulling out to your sides at the bottom.",
+    "exerciseIndex": 206
+  },
+  {
+    "name": "Cable Hanging Knee Raise",
+    "description": "A hanging knee raise performed from a pull-up bar, focusing on contracting the abs to lift the knees.",
+    "exerciseIndex": 207
+  },
+  {
+    "name": "Cable Reverse Ab Crunch",
+    "description": "A reverse crunch performed lying on a bench with ankle-strap cables, pulling the knees toward the head to lift the hips.",
+    "exerciseIndex": 208
+  },
+  {
+    "name": "Cable Bench One Arm Row",
+    "description": "A one-arm cable row performed with support from an incline bench, pulling the handle toward your midsection.",
+    "exerciseIndex": 209
+  },
+  {
+    "name": "Cable Kneeling High Row",
+    "description": "A kneeling cable row pulling both handles to the chest while pinching the shoulder blades together.",
+    "exerciseIndex": 210
+  },
+  {
+    "name": "Cable Kneeling Lat Pull Down",
+    "description": "A kneeling cable lat pulldown pulling both handles down to shoulder level while pinching the shoulder blades together.",
+    "exerciseIndex": 211
+  },
+  {
+    "name": "Cable Mid Diverging Row",
+    "description": "A standing cable row pulling both handles across the body and back with bent elbows, pinching the shoulder blades together.",
+    "exerciseIndex": 212
+  },
+  {
+    "name": "Cable Pull Up",
+    "description": "A pull-up performed on the cable machine's pull-up bar, using an underhand or wide overhand grip.",
+    "exerciseIndex": 213
+  },
+  {
+    "name": "Cable Assisted Pull Up",
+    "description": "A pull-up performed while standing on the machine's rear frame to assist the movement with your legs.",
+    "exerciseIndex": 214
+  },
+  {
+    "name": "Cable Reverse Fly",
+    "description": "A standing cable reverse fly, pulling both handles across the front of the body and back with straight arms to target the rear delts.",
+    "exerciseIndex": 215
+  },
+  {
+    "name": "Cable Seated Lat Pull Down",
+    "description": "A seated cable lat pulldown pulling both handles down to shoulder level while pinching the shoulder blades together.",
+    "exerciseIndex": 216
+  },
+  {
+    "name": "Cable Seated Rear Delt Row",
+    "description": "A seated cable row with the handles at head height, pulling back with high elbows to target the rear delts.",
+    "exerciseIndex": 217
+  },
+  {
+    "name": "Cable Standing One Arm Row",
+    "description": "A standing one-arm cable row, pulling the handle toward your midsection while bracing your body.",
+    "exerciseIndex": 218
+  },
+  {
+    "name": "Cable Bench Press",
+    "description": "A cable bench press performed lying on a bench, pressing both handles upward from chest level.",
+    "exerciseIndex": 219
+  },
+  {
+    "name": "Cable Bench Press-Converging",
+    "description": "A cable bench press performed lying on a bench, pressing both handles upward and together at the top.",
+    "exerciseIndex": 220
+  },
+  {
+    "name": "Cable Low Pec Fly",
+    "description": "A standing cable fly with the handles set low, raising them to chest height while converging in front of the body.",
+    "exerciseIndex": 221
+  },
+  {
+    "name": "Cable Pec Fly",
+    "description": "A cable fly performed lying on a bench, bringing the handles together above the chest in a circular motion.",
+    "exerciseIndex": 222
+  },
+  {
+    "name": "Cable Pec Fly-Standing",
+    "description": "A standing cable fly with the handles at chest height, bringing the arms together in a circular motion.",
+    "exerciseIndex": 223
+  },
+  {
+    "name": "Cable Seated Incline Press",
+    "description": "A cable chest press performed seated on an incline bench, pressing both handles upward.",
+    "exerciseIndex": 224
+  },
+  {
+    "name": "Cable Seated Incline Press-Converging",
+    "description": "A cable chest press performed seated on an incline bench, pressing both handles upward and together at the top.",
+    "exerciseIndex": 225
+  },
+  {
+    "name": "Cable Standing Chest Press",
+    "description": "A standing cable chest press, pressing both handles forward from chest height.",
+    "exerciseIndex": 226
+  },
+  {
+    "name": "Cable Standing Chest Press-Converging",
+    "description": "A standing cable chest press, pressing both handles forward and together at the top.",
+    "exerciseIndex": 227
+  },
+  {
+    "name": "Cable Standing Incline Press",
+    "description": "A standing cable press pressing both handles forward and upward at an incline angle.",
+    "exerciseIndex": 228
+  },
+  {
+    "name": "Cable Standing Incline Press-Converging",
+    "description": "A standing cable press pressing both handles forward, upward, and together at an incline angle.",
+    "exerciseIndex": 229
+  },
+  {
+    "name": "Cable External Rotator",
+    "description": "A cable shoulder external rotation exercise with the elbow braced against your side to isolate the rotator cuff.",
+    "exerciseIndex": 230
+  },
+  {
+    "name": "Cable Internal Rotator",
+    "description": "A cable shoulder internal rotation exercise with the elbow braced against your side to isolate the rotator cuff.",
+    "exerciseIndex": 231
+  },
+  {
+    "name": "Cable One Arm Rear Delt",
+    "description": "A standing one-arm cable exercise pulling the handle across the body and toward the rear to target the rear delts.",
+    "exerciseIndex": 232
+  },
+  {
+    "name": "Cable One Arm Lateral Raise",
+    "description": "A one-arm cable lateral raise, raising the arm to the side up to shoulder height.",
+    "exerciseIndex": 233
+  },
+  {
+    "name": "Cable One Arm Shoulder Press",
+    "description": "A standing one-arm cable shoulder press, pressing the handle straight overhead.",
+    "exerciseIndex": 234
+  },
+  {
+    "name": "Cable Seated Shoulder Press",
+    "description": "A seated cable shoulder press, pressing both handles straight overhead.",
+    "exerciseIndex": 235
+  },
+  {
+    "name": "Cable Seated Shoulder Press-Converging",
+    "description": "A seated cable shoulder press, pressing both handles overhead and together at the top.",
+    "exerciseIndex": 236
+  },
+  {
+    "name": "Cable Shrugs",
+    "description": "A standing cable shrug, raising the shoulders straight up while holding the handles at arm's length.",
+    "exerciseIndex": 237
+  },
+  {
+    "name": "Cable Standing Shoulder Press",
+    "description": "A standing cable shoulder press, pressing both handles straight overhead.",
+    "exerciseIndex": 238
+  },
+  {
+    "name": "Cable Upright Row",
+    "description": "A cable upright row, pulling the handle up toward shoulder level with both hands.",
+    "exerciseIndex": 239
+  },
+  {
+    "name": "Cable Front Squat",
+    "description": "A cable-loaded front squat, holding the handles at chest height while squatting to parallel.",
+    "exerciseIndex": 240
+  },
+  {
+    "name": "Cable Hip Abduction",
+    "description": "A cable hip abduction using an ankle strap, extending the leg outward at the hip.",
+    "exerciseIndex": 241
+  },
+  {
+    "name": "Cable Hip Adduction",
+    "description": "A cable hip adduction using an ankle strap, pulling the leg inward across the body.",
+    "exerciseIndex": 242
+  },
+  {
+    "name": "Cable Lunge",
+    "description": "A cable-loaded lunge, holding both handles at waist level while stepping forward and squatting down.",
+    "exerciseIndex": 243
+  },
+  {
+    "name": "Cable Reverse Lunge",
+    "description": "A cable-loaded reverse lunge, holding both handles at arm's length while stepping backward into the lunge.",
+    "exerciseIndex": 244
+  },
+  {
+    "name": "Cable Squat",
+    "description": "A cable-loaded squat, holding both handles at shoulder height while squatting to parallel.",
+    "exerciseIndex": 245
+  },
+  {
+    "name": "Cable Standing Leg Curl",
+    "description": "A cable leg curl using an ankle strap, curling the lower leg backward while standing.",
+    "exerciseIndex": 246
+  },
+  {
+    "name": "Cable Standing Leg Extension",
+    "description": "A cable leg extension using an ankle strap, extending the lower leg while standing.",
+    "exerciseIndex": 247
   }
 ]

@@ -988,5 +988,250 @@
     "name": "Sentadilla en bosu",
     "description": "Una sentadilla realizada sobre la superficie inestable de un bosu para desafiar el equilibrio y el control.",
     "exerciseIndex": 198
+  },
+  {
+    "name": "Concentración de Bíceps en Polea",
+    "description": "Un curl de bíceps en polea realizado sentado, un brazo a la vez, con el codo apoyado en el muslo interno para una contracción máxima del bíceps.",
+    "exerciseIndex": 199
+  },
+  {
+    "name": "Curl Supinado a Una Mano en Polea",
+    "description": "Un curl de bíceps a una mano en polea donde la muñeca rota de un agarre prono a uno supino durante el movimiento para un trabajo completo del bíceps.",
+    "exerciseIndex": 200
+  },
+  {
+    "name": "Extensión de Tríceps sobre la Cabeza a Una Mano en Polea",
+    "description": "Una extensión de tríceps a una mano en polea realizada sobre la cabeza, manteniendo el codo fijo para aislar el tríceps.",
+    "exerciseIndex": 201
+  },
+  {
+    "name": "Jalón a Una Mano Agarre Supino en Polea",
+    "description": "Un jalón a una mano en polea con agarre supino, extendiendo el codo mientras se mantiene pegado al costado.",
+    "exerciseIndex": 202
+  },
+  {
+    "name": "Jalón a Una Mano en Polea",
+    "description": "Un jalón a una mano en polea con agarre prono, extendiendo el codo mientras se mantiene pegado al costado.",
+    "exerciseIndex": 203
+  },
+  {
+    "name": "Curl de Brazos de Pie en Polea",
+    "description": "Un curl de bíceps de pie en polea realizado con ambos brazos simultáneamente en todo el rango de movimiento.",
+    "exerciseIndex": 204
+  },
+  {
+    "name": "Curl Martillo de Pie en Polea",
+    "description": "Un curl de bíceps de pie en polea con agarre neutro tipo martillo realizado con ambos brazos simultáneamente.",
+    "exerciseIndex": 205
+  },
+  {
+    "name": "Jalón Agarre Supino en Polea",
+    "description": "Un jalón a dos manos en polea con agarre supino, convergiendo arriba y separando los codos a los costados abajo.",
+    "exerciseIndex": 206
+  },
+  {
+    "name": "Elevación de Rodillas Colgado en Polea",
+    "description": "Una elevación de rodillas colgado de la barra, concentrándose en contraer el abdomen para levantar las rodillas.",
+    "exerciseIndex": 207
+  },
+  {
+    "name": "Crunch Abdominal Inverso en Polea",
+    "description": "Un crunch abdominal inverso realizado acostado en un banco con correas de tobillo en polea, llevando las rodillas hacia la cabeza para levantar la cadera.",
+    "exerciseIndex": 208
+  },
+  {
+    "name": "Remo a Una Mano en Banco con Polea",
+    "description": "Un remo a una mano en polea con apoyo de un banco inclinado, llevando la manija hacia la zona media del cuerpo.",
+    "exerciseIndex": 209
+  },
+  {
+    "name": "Remo Alto de Rodillas en Polea",
+    "description": "Un remo de rodillas en polea llevando ambas manijas hacia el pecho, juntando los omóplatos.",
+    "exerciseIndex": 210
+  },
+  {
+    "name": "Jalón al Pecho de Rodillas en Polea",
+    "description": "Un jalón de rodillas en polea llevando ambas manijas hasta la altura de los hombros mientras se juntan los omóplatos.",
+    "exerciseIndex": 211
+  },
+  {
+    "name": "Remo Medio Convergente en Polea",
+    "description": "Un remo de pie en polea llevando ambas manijas por delante del cuerpo y hacia atrás con los codos flexionados, juntando los omóplatos.",
+    "exerciseIndex": 212
+  },
+  {
+    "name": "Dominada en Polea",
+    "description": "Una dominada realizada en la barra de dominadas de la máquina de poleas, con agarre supino o prono amplio.",
+    "exerciseIndex": 213
+  },
+  {
+    "name": "Dominada Asistida en Polea",
+    "description": "Una dominada realizada apoyando los pies en el marco trasero de la máquina para asistir el movimiento con las piernas.",
+    "exerciseIndex": 214
+  },
+  {
+    "name": "Apertura Posterior en Polea",
+    "description": "Una apertura posterior de pie en polea, llevando ambas manijas por delante del cuerpo y hacia atrás con los brazos rectos para trabajar el deltoides posterior.",
+    "exerciseIndex": 215
+  },
+  {
+    "name": "Jalón al Pecho Sentado en Polea",
+    "description": "Un jalón sentado en polea llevando ambas manijas hasta la altura de los hombros mientras se juntan los omóplatos.",
+    "exerciseIndex": 216
+  },
+  {
+    "name": "Remo Posterior Sentado en Polea",
+    "description": "Un remo sentado en polea con las manijas a la altura de la cabeza, tirando hacia atrás con los codos altos para trabajar el deltoides posterior.",
+    "exerciseIndex": 217
+  },
+  {
+    "name": "Remo a Una Mano de Pie en Polea",
+    "description": "Un remo a una mano de pie en polea, llevando la manija hacia la zona media del cuerpo mientras se estabiliza el torso.",
+    "exerciseIndex": 218
+  },
+  {
+    "name": "Press de Banca en Polea",
+    "description": "Un press de banca en polea realizado acostado, presionando ambas manijas hacia arriba desde la altura del pecho.",
+    "exerciseIndex": 219
+  },
+  {
+    "name": "Press de Banca Convergente en Polea",
+    "description": "Un press de banca en polea realizado acostado, presionando ambas manijas hacia arriba y juntándolas en la parte superior.",
+    "exerciseIndex": 220
+  },
+  {
+    "name": "Apertura Baja en Polea",
+    "description": "Una apertura de pie en polea con las manijas bajas, elevándolas hasta la altura del pecho mientras convergen frente al cuerpo.",
+    "exerciseIndex": 221
+  },
+  {
+    "name": "Apertura de Pecho en Polea",
+    "description": "Una apertura de pecho realizada acostado, juntando las manijas por encima del pecho en un movimiento circular.",
+    "exerciseIndex": 222
+  },
+  {
+    "name": "Apertura de Pecho de Pie en Polea",
+    "description": "Una apertura de pecho de pie con las manijas a la altura del pecho, juntando los brazos en un movimiento circular.",
+    "exerciseIndex": 223
+  },
+  {
+    "name": "Press Inclinado Sentado en Polea",
+    "description": "Un press de pecho en polea realizado sentado en un banco inclinado, presionando ambas manijas hacia arriba.",
+    "exerciseIndex": 224
+  },
+  {
+    "name": "Press Inclinado Sentado Convergente en Polea",
+    "description": "Un press de pecho en polea sentado en un banco inclinado, presionando ambas manijas hacia arriba y juntándolas al final.",
+    "exerciseIndex": 225
+  },
+  {
+    "name": "Press de Pecho de Pie en Polea",
+    "description": "Un press de pecho de pie en polea, presionando ambas manijas hacia adelante desde la altura del pecho.",
+    "exerciseIndex": 226
+  },
+  {
+    "name": "Press de Pecho de Pie Convergente en Polea",
+    "description": "Un press de pecho de pie en polea, presionando ambas manijas hacia adelante y juntándolas al final.",
+    "exerciseIndex": 227
+  },
+  {
+    "name": "Press Inclinado de Pie en Polea",
+    "description": "Un press de pie en polea presionando ambas manijas hacia adelante y arriba en ángulo inclinado.",
+    "exerciseIndex": 228
+  },
+  {
+    "name": "Press Inclinado de Pie Convergente en Polea",
+    "description": "Un press de pie en polea presionando ambas manijas hacia adelante, arriba y juntándolas en ángulo inclinado.",
+    "exerciseIndex": 229
+  },
+  {
+    "name": "Rotador Externo en Polea",
+    "description": "Un ejercicio de rotación externa de hombro en polea con el codo apoyado en el costado para aislar el manguito rotador.",
+    "exerciseIndex": 230
+  },
+  {
+    "name": "Rotador Interno en Polea",
+    "description": "Un ejercicio de rotación interna de hombro en polea con el codo apoyado en el costado para aislar el manguito rotador.",
+    "exerciseIndex": 231
+  },
+  {
+    "name": "Deltoides Posterior a Una Mano en Polea",
+    "description": "Un ejercicio de pie a una mano en polea, llevando la manija por delante del cuerpo y hacia atrás para trabajar el deltoides posterior.",
+    "exerciseIndex": 232
+  },
+  {
+    "name": "Elevación Lateral a Una Mano en Polea",
+    "description": "Una elevación lateral a una mano en polea, elevando el brazo hacia el costado hasta la altura del hombro.",
+    "exerciseIndex": 233
+  },
+  {
+    "name": "Press de Hombro a Una Mano en Polea",
+    "description": "Un press de hombro de pie a una mano en polea, presionando la manija directamente sobre la cabeza.",
+    "exerciseIndex": 234
+  },
+  {
+    "name": "Press de Hombro Sentado en Polea",
+    "description": "Un press de hombro sentado en polea, presionando ambas manijas directamente sobre la cabeza.",
+    "exerciseIndex": 235
+  },
+  {
+    "name": "Press de Hombro Sentado Convergente en Polea",
+    "description": "Un press de hombro sentado en polea, presionando ambas manijas sobre la cabeza y juntándolas arriba.",
+    "exerciseIndex": 236
+  },
+  {
+    "name": "Encogimientos en Polea",
+    "description": "Un encogimiento de hombros de pie en polea, elevando los hombros mientras se sostienen las manijas con los brazos extendidos.",
+    "exerciseIndex": 237
+  },
+  {
+    "name": "Press de Hombro de Pie en Polea",
+    "description": "Un press de hombro de pie en polea, presionando ambas manijas directamente sobre la cabeza.",
+    "exerciseIndex": 238
+  },
+  {
+    "name": "Remo al Mentón en Polea",
+    "description": "Un remo al mentón en polea, tirando de la manija hacia la altura de los hombros con ambas manos.",
+    "exerciseIndex": 239
+  },
+  {
+    "name": "Sentadilla Frontal en Polea",
+    "description": "Una sentadilla frontal con carga de polea, sosteniendo las manijas a la altura del pecho mientras se realiza la sentadilla hasta paralelo.",
+    "exerciseIndex": 240
+  },
+  {
+    "name": "Abducción de Cadera en Polea",
+    "description": "Una abducción de cadera en polea con correa de tobillo, extendiendo la pierna hacia afuera desde la cadera.",
+    "exerciseIndex": 241
+  },
+  {
+    "name": "Aducción de Cadera en Polea",
+    "description": "Una aducción de cadera en polea con correa de tobillo, llevando la pierna hacia adentro cruzando el cuerpo.",
+    "exerciseIndex": 242
+  },
+  {
+    "name": "Zancada en Polea",
+    "description": "Una zancada con carga de polea, sosteniendo ambas manijas a la altura de la cintura mientras se avanza y desciende.",
+    "exerciseIndex": 243
+  },
+  {
+    "name": "Zancada Inversa en Polea",
+    "description": "Una zancada inversa con carga de polea, sosteniendo ambas manijas con los brazos extendidos mientras se retrocede en la zancada.",
+    "exerciseIndex": 244
+  },
+  {
+    "name": "Sentadilla en Polea",
+    "description": "Una sentadilla con carga de polea, sosteniendo ambas manijas a la altura de los hombros mientras se desciende hasta paralelo.",
+    "exerciseIndex": 245
+  },
+  {
+    "name": "Curl Femoral de Pie en Polea",
+    "description": "Un curl femoral en polea con correa de tobillo, flexionando la pierna hacia atrás mientras se está de pie.",
+    "exerciseIndex": 246
+  },
+  {
+    "name": "Extensión de Pierna de Pie en Polea",
+    "description": "Una extensión de pierna en polea con correa de tobillo, extendiendo la pierna mientras se está de pie.",
+    "exerciseIndex": 247
   }
 ]
