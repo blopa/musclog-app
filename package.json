@@ -26,6 +26,7 @@
     "check-locale-consistency": "node scripts/check-locale-consistency.js",
     "generate-lang": "node scripts/generateLangFile.js",
     "convert-exercise-images": "node scripts/convert-exercise-images-to-png.js",
+    "compress-exercise-images": "node scripts/compress-exercises.mjs",
     "gb": "flatpak run io.mgba.mGBA gameboy/build/musclog.gbc",
     "gb:gen-foods": "node gameboy/tools/gen-foundation-foods.mjs",
     "gb:gen-exercises": "node gameboy/tools/gen-exercises.mjs",
