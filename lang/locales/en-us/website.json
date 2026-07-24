@@ -533,10 +533,7 @@
           "typesCollected": {
             "title": "Types of Data Collected",
             "content": "While using Our Service, We may ask You to provide Us with certain personally identifiable information that can be used to contact or identify You. Personally identifiable information may include, but is not limited to:",
-            "items": [
-              "First name and last name",
-              "Usage Data"
-            ]
+            "items": ["First name and last name", "Usage Data"]
           },
           "googleOAuth": {
             "title": "Google OAuth Data",
@@ -1079,13 +1076,7 @@
               "question": "How are my daily macros calculated?",
               "answer": "Macro splits are based on fitness goal, using IOM AMDR ranges as the framework and ISSN/ACSM sport-specific research for refinement.",
               "table": {
-                "head": [
-                  "Goal",
-                  "Carbs",
-                  "Protein",
-                  "Fat",
-                  "Rationale"
-                ],
+                "head": ["Goal", "Carbs", "Protein", "Fat", "Rationale"],
                 "rows": [
                   [
                     "Weight Loss",
@@ -1196,47 +1187,19 @@
               "question": "How are one-rep max (1RM) estimates calculated?",
               "answer": "Musclog calculates 1RM using an ensemble of seven published formulas and averages their outputs. Averaging reduces the systematic error of any single formula, which each have different accuracy profiles across rep ranges.",
               "table": {
-                "head": [
-                  "Formula",
-                  "Equation",
-                  "Best For"
-                ],
+                "head": ["Formula", "Equation", "Best For"],
                 "rows": [
-                  [
-                    "Brzycki (1993)",
-                    "w / (1.0278 − 0.0278 × r)",
-                    "2–10 reps; most widely used"
-                  ],
-                  [
-                    "Epley (1985)",
-                    "w × (1 + r / 30)",
-                    "General use; slightly conservative"
-                  ],
-                  [
-                    "Lander (1985)",
-                    "w / (1.013 − 0.0267 × r)",
-                    "Moderate rep ranges"
-                  ],
-                  [
-                    "Lombardi (1989)",
-                    "w × r^0.1",
-                    "Low rep ranges"
-                  ],
+                  ["Brzycki (1993)", "w / (1.0278 − 0.0278 × r)", "2–10 reps; most widely used"],
+                  ["Epley (1985)", "w × (1 + r / 30)", "General use; slightly conservative"],
+                  ["Lander (1985)", "w / (1.013 − 0.0267 × r)", "Moderate rep ranges"],
+                  ["Lombardi (1989)", "w × r^0.1", "Low rep ranges"],
                   [
                     "Mayhew et al. (1992)",
                     "w / (0.522 + 0.419 × e^{−0.055r})",
                     "Wide rep range; exponential model"
                   ],
-                  [
-                    "O'Connor et al. (1989)",
-                    "w × (1 + 0.025 × r)",
-                    "Linear; conservative"
-                  ],
-                  [
-                    "Wathen (1994)",
-                    "w / (0.488 + 0.539 × e^{−0.035r})",
-                    "Higher rep ranges"
-                  ]
+                  ["O'Connor et al. (1989)", "w × (1 + 0.025 × r)", "Linear; conservative"],
+                  ["Wathen (1994)", "w / (0.488 + 0.539 × e^{−0.035r})", "Higher rep ranges"]
                 ]
               },
               "answer2": "Reps in Reserve (RIR) is added to actual reps before applying any formula (adjusted_reps = reps + RIR). This maps submaximal effort to a full-effort equivalent, so a set of 8 reps with 2 RIR is treated as 10 reps at failure for 1RM estimation purposes.",
@@ -1378,11 +1341,7 @@
               "question": "How is the \"Calories Burned Today\" estimate calculated?",
               "answer": "The real-time calorie burn estimate uses a circadian-weighted model rather than a simple linear division of your TDEE across 24 hours. Metabolic chamber and circadian biology research shows that energy expenditure is not uniform throughout the day — it follows a pronounced 24-hour rhythm driven by your internal biological clock, posture, meal timing (thermic effect of food, TEF), and spontaneous physical activity (NEAT).",
               "table": {
-                "head": [
-                  "Time Block",
-                  "% of TDEE",
-                  "Primary Driver"
-                ],
+                "head": ["Time Block", "% of TDEE", "Primary Driver"],
                 "rows": [
                   [
                     "11 PM – 3 AM",
@@ -1394,21 +1353,9 @@
                     "~8.5 %",
                     "Circadian nadir (~5 AM), lowest core temperature and REE"
                   ],
-                  [
-                    "7 AM – 11 AM",
-                    "~19.5 %",
-                    "Waking posture rise (+10 %), peak morning TEF"
-                  ],
-                  [
-                    "11 AM – 3 PM",
-                    "~22.5 %",
-                    "Lunch TEF, daytime NEAT and occupational movement"
-                  ],
-                  [
-                    "3 PM – 7 PM",
-                    "~25 %",
-                    "Circadian REE peak (~5 PM), core temperature peak"
-                  ],
+                  ["7 AM – 11 AM", "~19.5 %", "Waking posture rise (+10 %), peak morning TEF"],
+                  ["11 AM – 3 PM", "~22.5 %", "Lunch TEF, daytime NEAT and occupational movement"],
+                  ["3 PM – 7 PM", "~25 %", "Circadian REE peak (~5 PM), core temperature peak"],
                   [
                     "7 PM – 11 PM",
                     "~15 %",

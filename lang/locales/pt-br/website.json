@@ -533,10 +533,7 @@
           "typesCollected": {
             "title": "Tipos de dados coletados",
             "content": "Ao usar nosso Serviço, podemos pedir que você nos forneça certas informações pessoalmente identificáveis. As informações pessoalmente identificáveis podem incluir, mas não se limitam a:",
-            "items": [
-              "Nome e sobrenome",
-              "Dados de uso"
-            ]
+            "items": ["Nome e sobrenome", "Dados de uso"]
           },
           "googleOAuth": {
             "title": "Dados do Google OAuth",
@@ -1079,13 +1076,7 @@
               "question": "Como meus macros diários são calculados?",
               "answer": "As divisões de macros são baseadas no objetivo de fitness, usando as faixas AMDR do IOM como estrutura e pesquisas específicas de esportes do ISSN/ACSM para refinamento.",
               "table": {
-                "head": [
-                  "Objetivo",
-                  "Carboidratos",
-                  "Proteína",
-                  "Gordura",
-                  "Justificativa"
-                ],
+                "head": ["Objetivo", "Carboidratos", "Proteína", "Gordura", "Justificativa"],
                 "rows": [
                   [
                     "Perda de Peso",
@@ -1196,42 +1187,22 @@
               "question": "Como as estimativas de uma repetição máxima (1RM) são calculadas?",
               "answer": "O Musclog calcula o 1RM usando um conjunto de sete fórmulas publicadas e faz a média dos resultados. A média reduz o erro sistemático de qualquer fórmula individual, que têm perfis de precisão diferentes em diferentes faixas de repetições.",
               "table": {
-                "head": [
-                  "Fórmula",
-                  "Equação",
-                  "Melhor Para"
-                ],
+                "head": ["Fórmula", "Equação", "Melhor Para"],
                 "rows": [
                   [
                     "Brzycki (1993)",
                     "w / (1,0278 − 0,0278 × r)",
                     "2–10 reps; a mais amplamente usada"
                   ],
-                  [
-                    "Epley (1985)",
-                    "w × (1 + r / 30)",
-                    "Uso geral; ligeiramente conservadora"
-                  ],
-                  [
-                    "Lander (1985)",
-                    "w / (1,013 − 0,0267 × r)",
-                    "Faixas de repetições moderadas"
-                  ],
-                  [
-                    "Lombardi (1989)",
-                    "w × r^0,1",
-                    "Faixas de poucas repetições"
-                  ],
+                  ["Epley (1985)", "w × (1 + r / 30)", "Uso geral; ligeiramente conservadora"],
+                  ["Lander (1985)", "w / (1,013 − 0,0267 × r)", "Faixas de repetições moderadas"],
+                  ["Lombardi (1989)", "w × r^0,1", "Faixas de poucas repetições"],
                   [
                     "Mayhew et al. (1992)",
                     "w / (0,522 + 0,419 × e^{−0,055r})",
                     "Ampla faixa de reps; modelo exponencial"
                   ],
-                  [
-                    "O'Connor et al. (1989)",
-                    "w × (1 + 0,025 × r)",
-                    "Linear; conservadora"
-                  ],
+                  ["O'Connor et al. (1989)", "w × (1 + 0,025 × r)", "Linear; conservadora"],
                   [
                     "Wathen (1994)",
                     "w / (0,488 + 0,539 × e^{−0,035r})",
@@ -1378,11 +1349,7 @@
               "question": "Como a estimativa de «Calorias queimadas hoje» é calculada?",
               "answer": "A estimativa em tempo real de calorias queimadas usa um modelo ponderado pelo ritmo circadiano, em vez de uma simples divisão linear do seu TDEE ao longo de 24 horas. Pesquisas em câmaras metabólicas e biologia circadiana mostram que o gasto energético não é uniforme ao longo do dia — ele segue um pronunciado ritmo de 24 horas impulsionado pelo relógio biológico interno, postura, horário das refeições (efeito térmico dos alimentos, TEF) e atividade física espontânea (NEAT).",
               "table": {
-                "head": [
-                  "Bloco de tempo",
-                  "% do TDEE",
-                  "Fator principal"
-                ],
+                "head": ["Bloco de tempo", "% do TDEE", "Fator principal"],
                 "rows": [
                   [
                     "23:00 – 03:00",
