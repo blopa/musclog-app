@@ -90,11 +90,12 @@ export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraC
 
   const pickFromGallery = useCallback(async () => {
     try {
-      // Android's `ACTION_GET_CONTENT` picker (forced via `legacy` below) grants access to the
-      // chosen file through a temporary content-URI grant, so it needs no media-library
-      // permission — and requesting one is an extra Expo async call on the single shared
-      // `modulesQueue` thread (see the shutter/gallery latency notes in AGENTS.md), the exact
-      // thread whose boot-time saturation stalls this flow. Skip it on Android; keep it on iOS.
+      // Android's system Photo Picker (the default here — see the removed `legacy: true` in the
+      // git history) grants access to the chosen file through a temporary, per-item content-URI
+      // grant, so it needs no media-library permission — and requesting one is an extra Expo
+      // async call on the single shared `modulesQueue` thread (see the shutter/gallery latency
+      // notes in AGENTS.md), the exact thread whose boot-time saturation stalls this flow. Skip
+      // it on Android; keep it on iOS.
       if (Platform.OS !== 'android') {
         const permissionStartedAt = Date.now();
         const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -113,8 +114,6 @@ export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraC
         mediaTypes: ['images'],
         quality,
         base64: false,
-        // Force the legacy Android picker (`ACTION_GET_CONTENT`) instead of the modern system
-        legacy: true,
       });
       logPhase('gallery picker', pickerStartedAt);
 

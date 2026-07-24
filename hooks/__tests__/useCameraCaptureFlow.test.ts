@@ -148,7 +148,7 @@ describe('useCameraCaptureFlow', () => {
 
       expect(mockRequestMediaLibraryPermissions).not.toHaveBeenCalled();
       expect(mockLaunchImageLibrary).toHaveBeenCalledWith(
-        expect.objectContaining({ legacy: true })
+        expect.not.objectContaining({ legacy: expect.anything() })
       );
       expect(process).toHaveBeenCalledWith('file:///cropped.jpg');
     });
