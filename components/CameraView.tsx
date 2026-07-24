@@ -19,8 +19,6 @@ import {
   useCodeScanner,
 } from 'react-native-vision-camera';
 
-import { runCameraWarmUp } from '@/components/cameraWarmUp';
-
 /**
  * Upper bound on how long `takePictureAsync` will wait for the preview to report its first
  * rendered frame (see `previewReady` below) before giving up and attempting the snapshot
@@ -122,7 +120,6 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
     const device = useCameraDevice(facing);
     const format = useCameraFormat(device, [{ photoResolution: PHOTO_RESOLUTION_TARGET }]);
     const cameraRef = useRef<Camera>(null);
-    const hasWarmedUpRef = useRef(false);
 
     // Resolves once the preview View has painted its first frame (Android: `onPreviewStarted`,
     // tied to CameraX's `PreviewView.StreamState.STREAMING`; iOS's video pipeline fills up on a
@@ -152,25 +149,10 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
       return { uri: toFileUri(photo.path) };
     }, []);
 
-    // Warm the session up once per mount, as soon as it reports ready. Callers deactivate the
-    // camera by unmounting this component, so a remount — a new native session — re-arms the
-    // warm-up naturally.
-    //
-    // Guard against a second, overlapping warm-up: `onInitialized` can re-fire when the session
-    // is reconfigured in place (e.g. the code scanner toggling), and CameraX only supports one
-    // in-flight photo-capture request at a time — firing a second warm-up while the first is
-    // still resolving would contend with it natively. The check-then-assign below is safe
-    // without a separate lock because it's synchronous end-to-end (no `await` between reading
-    // and writing the ref) and React invokes `onInitialized` on the JS thread, so two calls can
-    // never interleave.
     const handleInitialized = useCallback(() => {
-      if (hasWarmedUpRef.current) {
-        return;
-      }
-
-      hasWarmedUpRef.current = true;
-      runCameraWarmUp(takePhoto);
-    }, [takePhoto]);
+      // Warm-up is disabled because takeSnapshot is used as the primary instant capture path.
+      // Triggering takePhoto in the background causes severe contention/deadlocks on some Android drivers.
+    }, []);
 
     useImperativeHandle(
       ref,
@@ -250,6 +232,7 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
           onInitialized={handleInitialized}
           onPreviewStarted={handlePreviewStarted}
           codeScanner={onBarcodeScanned && codeTypes.length > 0 ? codeScanner : undefined}
+          androidPreviewViewType="texture-view"
         />
         {children}
       </View>
