@@ -363,6 +363,13 @@ export function Header() {
           >
             FAQ
           </Link>
+          <Link
+            href="/alternatives"
+            className="text-sm transition-colors hover:text-[#22C55E]"
+            style={{ color: '#F3F4F6' }}
+          >
+            {t('alternatives')}
+          </Link>
           <a
             href="https://github.com/blopa/musclog-app"
             target="_blank"
@@ -409,6 +416,7 @@ export function Footer() {
     { text: navT('exercises'), href: '/exercises' },
     { text: navT('gameboy'), href: '/gameboy' },
     { text: 'FAQ', href: '/faq' },
+    { text: navT('alternatives'), href: '/alternatives' },
     { text: t('license'), href: 'https://github.com/blopa/musclog-app/blob/main/LICENSE' },
     { text: t('github'), href: 'https://github.com/blopa/musclog-app' },
   ];
@@ -493,7 +501,7 @@ export function Footer() {
             </div>
           </Link>
 
-          <nav className="flex flex-wrap justify-center gap-6">
+          <nav className="grid grid-cols-2 gap-x-8 gap-y-3 text-center sm:grid-cols-3 md:text-left">
             {footerLinks.map((link) =>
               link.href.startsWith('http') ? (
                 <a

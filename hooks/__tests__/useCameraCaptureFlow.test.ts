@@ -24,12 +24,9 @@ jest.mock('@/utils/file', () => ({
 }));
 
 jest.mock('expo-image-picker', () => ({
-  requestMediaLibraryPermissionsAsync: jest.fn(),
   launchImageLibraryAsync: jest.fn(),
 }));
 
-const mockRequestMediaLibraryPermissions =
-  ImagePicker.requestMediaLibraryPermissionsAsync as jest.Mock;
 const mockLaunchImageLibrary = ImagePicker.launchImageLibraryAsync as jest.Mock;
 
 describe('useCameraCaptureFlow', () => {
@@ -54,7 +51,6 @@ describe('useCameraCaptureFlow', () => {
     jest.clearAllMocks();
     jest.spyOn(console, 'error').mockImplementation(() => {});
     mockOpenCropperAsync.mockResolvedValue({ path: 'file:///cropped.jpg' });
-    mockRequestMediaLibraryPermissions.mockResolvedValue({ granted: true });
     mockLaunchImageLibrary.mockResolvedValue({
       canceled: false,
       assets: [{ uri: 'file:///picked.jpg' }],
@@ -115,18 +111,15 @@ describe('useCameraCaptureFlow', () => {
       expect(process).toHaveBeenCalledWith('file:///cropped.jpg');
     });
 
-    it('shows the gallery-permission snackbar when media library access is denied', async () => {
-      mockRequestMediaLibraryPermissions.mockResolvedValue({ granted: false });
+    it('launches the system photo picker with no permission request and no legacy override', async () => {
       const { result, process } = renderFlow();
 
       await result.current.pickFromGallery();
 
-      expect(mockLaunchImageLibrary).not.toHaveBeenCalled();
-      expect(process).not.toHaveBeenCalled();
-      expect(mockShowSnackbar).toHaveBeenCalledWith(
-        'error',
-        'food.aiCamera.galleryPermissionRequired'
+      expect(mockLaunchImageLibrary).toHaveBeenCalledWith(
+        expect.not.objectContaining({ legacy: expect.anything() })
       );
+      expect(process).toHaveBeenCalledWith('file:///cropped.jpg');
     });
 
     it('ends silently when the picker is cancelled', async () => {

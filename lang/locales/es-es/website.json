@@ -52,6 +52,10 @@
         "test": {
           "title": "Subidor de graficas debug | Musclog",
           "description": "Ruta de desarrollo noindex para subir y previsualizar datos de graficas de repeticiones mientras se crean herramientas de grabacion de Musclog."
+        },
+        "alternatives": {
+          "title": "Musclog frente a alternativas — Comparación honesta de apps",
+          "description": "Descubre cómo se compara Musclog con MyFitnessPal, MacroFactor, Cronometer, Bevel, Lifesum, Hevy y más en privacidad, nutrición, entrenamientos y seguimiento integral de la salud."
         }
       }
     },
@@ -305,7 +309,8 @@
       "download": "Descargar Ahora",
       "exercises": "Ejercicios",
       "gameboy": "Game Boy",
-      "language": "Idioma"
+      "language": "Idioma",
+      "alternatives": "Alternativas"
     },
     "gameboy": {
       "pageTitle": "Juega a Musclog en Game Boy",
@@ -1458,6 +1463,206 @@
       "chartOrientationSubtitle": "ángulo del dispositivo · más claro para ejercicios rotacionales",
       "chartAccelerationTitle": "Aceleración",
       "chartAccelerationSubtitle": "aceleración bruta · sirve para cualquier ejercicio"
+    },
+    "alternatives": {
+      "badge": "Comparación honesta",
+      "titlePrefix": "Musclog vs.",
+      "titleHighlight": "las alternativas",
+      "description": "Cómo se compara Musclog con apps populares de nutrición y fitness en privacidad, nutrición, entrenamientos y seguimiento integral de la salud. Los criterios priorizan amplitud, privacidad, propiedad, uso sin conexión e integración.",
+      "featureColumn": "Función",
+      "asOf": "Esta comparación refleja la documentación oficial de los productos disponible el 24 de julio de 2026. La información de Musclog proviene de su sitio web y repositorio; la de los competidores, de sus sitios oficiales y centros de ayuda.",
+      "disclaimer": "Los nombres de producto y marcas pertenecen a sus respectivos propietarios. Los detalles cambian con frecuencia; consulta siempre el sitio oficial de cada proveedor para lo más reciente.",
+      "legend": {
+        "title": "Leyenda",
+        "full": "Soporte sólido e integrado",
+        "partial": "Parcial, básico, dependiente de integración o de pago",
+        "none": "No es una función principal documentada"
+      },
+      "notes": {
+        "fullApp": "App completa",
+        "basic": "Básico",
+        "trialOnly": "Solo prueba",
+        "trackingFree": "Seguimiento gratis",
+        "strongBasic": "Básico sólido",
+        "limited": "Limitado",
+        "strongCore": "Núcleo sólido",
+        "appleEcosystem": "Ecosistema Apple",
+        "appleHealthCentric": "Centrado en Apple Health",
+        "offlineDiarySync": "Sinc. de diario sin conexión",
+        "notLocalFirst": "No local-first",
+        "trackingDependent": "Depende del seguimiento",
+        "cloudAccount": "Cuenta en la nube",
+        "internetRequired": "Requiere internet",
+        "workoutCaching": "Caché de entrenos",
+        "applePlatform": "Plataforma Apple",
+        "serverEncryption": "Cifrado en servidor",
+        "premiumExport": "Exportación premium",
+        "exportGeneric": "Exportación",
+        "healthExport": "Exportación de salud",
+        "exportReports": "Exportación/informes",
+        "fullExportViaSupport": "Exportación completa vía soporte",
+        "workoutsMeasurements": "Entrenos/medidas",
+        "mobile": "Móvil",
+        "appleOnly": "Solo Apple",
+        "fullAppMobileOnly": "App completa solo en móvil",
+        "upTo84": "Hasta 84",
+        "paid": "De pago",
+        "paidVoice": "Voz de pago",
+        "gold": "Gold",
+        "goldVoice": "Gold/voz",
+        "premium": "Premium",
+        "curatedSources": "Fuentes curadas",
+        "verifiedDatabases": "Bases verificadas",
+        "aiGuidance": "Guía con IA",
+        "ai": "IA",
+        "nutritionAdvice": "Consejos de nutrición",
+        "fastingFeature": "Función de ayuno",
+        "timer": "Temporizador",
+        "plansTimer": "Planes/temporizador",
+        "logging": "Registro",
+        "journal": "Diario",
+        "basicExercise": "Ejercicio básico",
+        "exerciseEntries": "Registros de ejercicio",
+        "exerciseHabits": "Hábitos de ejercicio",
+        "aiCoach": "Coach con IA",
+        "separateApp": "App aparte",
+        "periodLogging": "Registro del periodo",
+        "bestHere": "El mejor aquí",
+        "biometrics": "Biometría",
+        "wearables": "Wearables",
+        "integrations": "Integraciones",
+        "watches": "Relojes",
+        "algorithmic": "Algorítmico",
+        "workoutCoach": "Coach de entreno",
+        "pro": "Pro",
+        "nutrition": "Nutrición",
+        "personalitiesFiles": "Personalidades/archivos",
+        "gpl3": "GPL-3.0",
+        "jsonDbExcel": "JSON, DB, Excel",
+        "micros40": "40+",
+        "yes": "Sí",
+        "no": "No",
+        "some": "Algunos"
+      },
+      "sections": {
+        "privacy": {
+          "title": "Privacidad, propiedad y precio",
+          "footnote": "Lifesum indica que no puede guardar cambios sin conexión a internet y almacena los datos en servidores de la empresa. MyFitnessPal permite algunos cambios en el diario sin conexión, pero luego los sincroniza con su sistema de cuentas. Musclog usa una base de datos local WatermelonDB como capa de almacenamiento central.",
+          "rows": {
+            "freeVersion": "Versión gratuita útil",
+            "openSource": "Código abierto",
+            "noProprietaryAccount": "Sin cuenta propietaria obligatoria",
+            "localFirst": "Modelo de datos local-first",
+            "fullyOffline": "Funciones básicas totalmente sin conexión",
+            "localEncryption": "Campos sensibles cifrados localmente",
+            "rawDbAccess": "Acceso directo a la base de datos",
+            "migrationBackups": "Copias de migración y reparación de BD",
+            "completeBackup": "Copia completa autoservicio",
+            "platforms": "Android, iOS y web",
+            "adsInFree": "Anuncios en la versión gratuita"
+          }
+        },
+        "nutrition": {
+          "title": "Nutrición y coaching energético",
+          "footnote": "MacroFactor y Musclog son los dos más fuertes aquí en estimación empírica del gasto energético. Cronometer sigue siendo especialmente fuerte en profundidad de micronutrientes, mientras que MyFitnessPal, Lifesum, Bevel, MacroFactor y Cronometer ya ofrecen alguna forma de registro de comidas asistido por IA.",
+          "rows": {
+            "caloriesMacros": "Calorías y macros",
+            "micronutrients": "Micronutrientes detallados",
+            "barcode": "Escaneo de códigos de barras",
+            "customFoods": "Alimentos y porciones personalizados",
+            "savedMeals": "Comidas y recetas guardadas",
+            "aiPhoto": "Registro de comidas por foto con IA",
+            "naturalLanguage": "Registro de comida en lenguaje natural",
+            "labelOcr": "OCR de etiquetas nutricionales",
+            "foodDbSelection": "Selección de Open Food Facts y USDA",
+            "netCarbs": "Modo carbohidratos totales vs netos",
+            "empiricalTdee": "TDEE empírico a partir de ingesta y peso",
+            "autoTarget": "Ajuste automático del objetivo calórico",
+            "weeklyCheckins": "Revisiones semanales de objetivos",
+            "intuitiveEating": "Modo alimentación intuitiva que oculta números",
+            "fastedDays": "Registro de días de ayuno intencional",
+            "supplements": "Suplementos y recordatorios",
+            "qualityInsights": "Análisis de calidad nutricional"
+          }
+        },
+        "workouts": {
+          "title": "Entrenamientos y progreso",
+          "footnote": "MacroFactor Workouts y Hevy son los competidores más cercanos para el registro serio de fuerza. Hevy documenta series, pesos, superseries, RPE, temporizadores, récords personales, rutinas y estadísticas detalladas de progreso; MacroFactor Workouts se centra más en la programación dinámica. La diferencia clave es que MacroFactor separa nutrición y entrenamiento en productos distintos, mientras que Musclog los combina en un único conjunto de datos local.",
+          "rows": {
+            "strengthLogging": "Registro detallado de entrenos de fuerza",
+            "setsRepsWeights": "Series, repeticiones y pesos",
+            "rpeRir": "Soporte RPE/RIR",
+            "supersets": "Superseries",
+            "prDetection": "Detección de récords personales",
+            "restTimers": "Temporizadores de descanso",
+            "customExercises": "Ejercicios personalizados",
+            "templates": "Plantillas y rutinas de entreno",
+            "aiPlans": "Planes de entreno generados por IA",
+            "pasteParse": "Pega un entreno y analízalo con IA",
+            "editHistorical": "Editar entrenos pasados",
+            "exerciseGoals": "Objetivos por ejercicio",
+            "sharing": "Compartir entrenos/enlaces directos",
+            "nutritionAndLifting": "Nutrición y levantamiento serio juntos",
+            "offlineRecovery": "Recuperación de entrenos sin conexión"
+          }
+        },
+        "wholeHealth": {
+          "title": "Salud integral, IA e integraciones",
+          "footnote": "Bevel es el competidor más fuerte en recuperación, sueño, estrés y preparación derivados de wearables. Musclog sigue siendo más fuerte en propiedad local de los datos, soporte para Android, controles nutricionales detallados, TDEE empírico, IA autoalojada, flujos BLE directos y herramientas de base de datos.",
+          "rows": {
+            "bodyMeasurements": "Peso y medidas corporales",
+            "bodyFatBmiFfmi": "Grasa corporal, IMC y FFMI",
+            "correlationCharts": "Gráficos de correlación entre dominios",
+            "menstrualCycle": "Seguimiento del ciclo menstrual",
+            "phaseAware": "Análisis de entreno/nutrición según la fase",
+            "moodRecovery": "Seguimiento de ánimo y recuperación",
+            "sleepReadiness": "Puntuación dedicada de sueño/preparación",
+            "healthConnect": "Integración con Health Connect",
+            "healthKit": "Integración con HealthKit",
+            "historicalImport": "Importación de datos de salud históricos",
+            "bleManagement": "Gestión directa de dispositivos BLE",
+            "imuRepCounting": "Conteo de repeticiones por IMU local",
+            "aiCoachConfig": "Coach conversacional de IA configurable",
+            "aiContext": "La IA ve el contexto de nutrición y entreno",
+            "customPrompts": "Prompts de sistema de IA personalizados",
+            "byoApiKey": "Usa tu propia clave de API",
+            "localModels": "Modelos de IA locales/autoalojados",
+            "gameboy": "Edición Game Boy Color"
+          }
+        }
+      },
+      "winners": {
+        "title": "¿Quién gana en cada categoría específica?",
+        "categoryHeader": "Categoría",
+        "winnerHeader": "Mejor opción",
+        "rows": {
+          "overallCoverage": "Mejor cobertura general de funciones",
+          "privacyOwnership": "Mejor privacidad y propiedad del usuario",
+          "freeOpenSource": "Mejor propuesta gratuita/de código abierto",
+          "nutritionLifting": "Mejor app única para nutrición + levantamiento serio",
+          "configurableAi": "Mejor IA configurable/local",
+          "foodEcosystem": "Mayor ecosistema comercial de alimentos",
+          "dietCoaching": "Coaching de dieta adaptativa más especializado",
+          "micronutrient": "Seguimiento de micronutrientes más especializado",
+          "wearableRecovery": "Mejor experiencia de recuperación/preparación con wearables",
+          "socialLifting": "Experiencia social de levantamiento más consolidada",
+          "mealPlan": "Experiencia de plan de comidas de estilo de vida más pulida",
+          "liftingProgramme": "Programa de levantamiento automatizado más especializado",
+          "gameboy": "Mejor soporte para Game Boy Color"
+        }
+      },
+      "conclusion": {
+        "title": "La conclusión honesta",
+        "quote": "Musclog es la única app de esta comparación que combina registro serio de entrenamientos, seguimiento nutricional completo, coaching energético empírico, análisis corporal y del ciclo, coaching con IA, integraciones de salud y soporte para dispositivos conectados, mientras sigue siendo gratuita, de código abierto, local-first y utilizable sin una cuenta propietaria.",
+        "body": "Eso no significa que Musclog ya sea el mejor en cada función aislada. MyFitnessPal tiene un ecosistema comercial de alimentos más grande, Cronometer tiene datos de nutrientes más profundos, Bevel tiene un mejor análisis de sueño y preparación, y Hevy tiene una red social de levantamiento madura. Pero quien quiera la combinación completa necesitaría, de lo contrario, algo como:",
+        "stack": "MacroFactor + MacroFactor Workouts o Hevy + Bevel + herramientas adicionales de privacidad/exportación",
+        "bodyAfter": "Musclog busca ofrecer todo el conjunto en una sola app."
+      },
+      "cta": {
+        "title": "Consigue todo el conjunto en una sola app",
+        "description": "Gratis, de código abierto y local-first. Sin cuenta obligatoria.",
+        "button": "Descargar Musclog"
+      }
     }
   }
 }

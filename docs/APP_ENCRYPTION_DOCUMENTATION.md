@@ -53,6 +53,7 @@ Relevant behaviors:
 
 - imports `crypto-js`
 - generates random key material
+- coalesces concurrent reads of the same storage key
 - encrypts values with `CryptoJS.AES.encrypt(...)`
 - decrypts values with `CryptoJS.AES.decrypt(...)`
 
@@ -67,6 +68,15 @@ Relevant behaviors:
 - reads keys from `expo-secure-store`
 - writes keys with `SecureStore.setItemAsync(...)`
 - migrates legacy values from AsyncStorage to SecureStore
+
+On Android, `patches/expo-secure-store+57.0.1.patch` runs SecureStore's asynchronous
+SharedPreferences/Android Keystore operations on a dedicated serial I/O queue. Expo Modules Core
+otherwise puts these operations on its single default async-function queue, where a cold Keystore
+read can delay unrelated native modules such as the system image picker. Because Expo SDK 57 ships
+SecureStore as a prebuilt AAR, `package.json` opts only `expo-secure-store` into Android source
+building (`expo.autolinking.android.buildFromSource`) so the patch is included. The patch changes
+scheduling only; it does not change the stored format, algorithm, key alias, or security
+properties.
 
 ### Database field encryption helpers
 
