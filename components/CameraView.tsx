@@ -161,7 +161,10 @@ export const CameraView = forwardRef<CameraViewRef, CameraViewProps>(
       }
 
       hasWarmedUpRef.current = true;
-      runCameraWarmUp(takePhoto);
+      // The warm-up capture can't be cancelled; if the user dismisses the camera before it
+      // resolves, `cameraRef.current` goes null and the failure is expected teardown, not a
+      // stall worth a Sentry event — let runCameraWarmUp distinguish the two.
+      runCameraWarmUp(takePhoto, () => cameraRef.current !== null);
     }, [takePhoto]);
 
     useImperativeHandle(
