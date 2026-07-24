@@ -1,0 +1,34 @@
+diff --git a/node_modules/@bsky.app/expo-image-crop-tool/android/src/main/java/xyz/blueskyweb/expoimagecroptool/ExpoImageCropToolModule.kt b/node_modules/@bsky.app/expo-image-crop-tool/android/src/main/java/xyz/blueskyweb/expoimagecroptool/ExpoImageCropToolModule.kt
+index ba2184d..2199cd4 100644
+--- a/node_modules/@bsky.app/expo-image-crop-tool/android/src/main/java/xyz/blueskyweb/expoimagecroptool/ExpoImageCropToolModule.kt
++++ b/node_modules/@bsky.app/expo-image-crop-tool/android/src/main/java/xyz/blueskyweb/expoimagecroptool/ExpoImageCropToolModule.kt
+@@ -5,6 +5,7 @@ import android.content.Intent
+ import android.util.Log
+ import expo.modules.kotlin.Promise
+ import expo.modules.kotlin.exception.toCodedException
++import expo.modules.kotlin.functions.Queues
+ import expo.modules.kotlin.modules.Module
+ import expo.modules.kotlin.modules.ModuleDefinition
+ 
+@@ -19,6 +20,12 @@ class ExpoImageCropToolModule : Module() {
+     ModuleDefinition {
+       Name("ExpoImageCropTool")
+ 
++      // Run on the MAIN queue, not Expo's default single-threaded `modulesQueue`
++      // (`expo.modules.AsyncFunctionQueue`, one HandlerThread shared by every Expo AsyncFunction
++      // in the app). During app boot that shared thread is saturated by other modules' async
++      // work, and this launch — which is only a `startActivityForResult` (a Main-thread op
++      // anyway) — would otherwise queue behind it for tens of seconds on the first crop of a
++      // session. Main is not similarly saturated, so the crop UI opens promptly.
+       AsyncFunction("openCropperAsync") { options: OpenCropperOptions, promise: Promise ->
+         val context = appContext.reactContext
+ 
+@@ -28,7 +35,7 @@ class ExpoImageCropToolModule : Module() {
+ 
+         pendingPromise = promise
+         appContext.throwingActivity.startActivityForResult(intent, CROP_REQUEST_CODE)
+-      }
++      }.runOnQueue(Queues.MAIN)
+ 
+       OnActivityResult { _, event ->
+         if (event.requestCode != CROP_REQUEST_CODE) {

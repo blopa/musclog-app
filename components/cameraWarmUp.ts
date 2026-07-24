@@ -30,9 +30,16 @@ const WARM_UP_SLOW_THRESHOLD_MS = 5000;
  * Duration is always logged (visible in `adb logcat` on release builds), and a slow or failed
  * warm-up is reported as a Sentry event — not a breadcrumb, which this app's Sentry config
  * drops — because a stalled warm-up capture blocks any takePhoto fallback queued behind it.
+ *
+ * `isSessionAlive` (optional) lets the caller distinguish a genuine capture failure from expected
+ * teardown: if the user opens then immediately dismisses the camera, the in-flight capture rejects
+ * simply because the session was torn down. When that predicate reports the session is already
+ * gone at failure time, the failure is logged but NOT sent to Sentry — otherwise that benign,
+ * user-driven churn would be indistinguishable from a real warm-up stall.
  */
 export async function runCameraWarmUp(
-  takePhoto: (options: { shutterSound: boolean }) => Promise<{ uri: string }>
+  takePhoto: (options: { shutterSound: boolean }) => Promise<{ uri: string }>,
+  isSessionAlive: () => boolean = () => true
 ): Promise<void> {
   const startedAt = Date.now();
   try {
@@ -56,6 +63,15 @@ export async function runCameraWarmUp(
     }
   } catch (error) {
     const durationMs = Date.now() - startedAt;
+
+    // The session was torn down while this capture was in flight (camera opened then quickly
+    // dismissed) — expected teardown, not a stall. Log it, but don't emit a Sentry event that
+    // would masquerade as a real warm-up failure.
+    if (!isSessionAlive()) {
+      console.log(`[CameraView] warm-up capture aborted (camera closed) after ${durationMs}ms`);
+      return;
+    }
+
     console.log(`[CameraView] warm-up capture failed after ${durationMs}ms`);
     Sentry.captureMessage('camera-warm-up-failed', {
       level: 'warning',

@@ -21,6 +21,7 @@ import { timestampSlug } from './timestampSlug';
 type ReadingOptions = NonNullable<Parameters<typeof readAsStringAsync>[1]>;
 
 export { detectBarcodes };
+export { toFileUri } from './fileUri';
 
 type ExportDatabaseOptions = {
   includeDeletedRecords?: boolean;
@@ -286,9 +287,6 @@ export async function deleteFoodImage(imageUri: string): Promise<void> {
     // Non-fatal
   }
 }
-
-/** Normalizes a native file path (with or without the `file://` scheme) to a URI. */
-export const toFileUri = (path: string) => (path.startsWith('file://') ? path : `file://${path}`);
 
 /**
  * Opens the native crop UI. Resolves `null` when the user dismisses it — a normal outcome,

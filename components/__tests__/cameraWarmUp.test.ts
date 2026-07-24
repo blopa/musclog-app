@@ -1,5 +1,8 @@
+import * as Sentry from '@sentry/react-native';
+
 import { runCameraWarmUp } from '@/components/cameraWarmUp';
 
+const mockCaptureMessage = Sentry.captureMessage as jest.Mock;
 const mockFileDelete = jest.fn();
 let mockFileExists = true;
 let mockFileConstructorError: Error | null = null;
@@ -62,5 +65,24 @@ describe('runCameraWarmUp', () => {
     const takePhoto = jest.fn().mockResolvedValue({ uri: 'file:///warmup.jpg' });
 
     await expect(runCameraWarmUp(takePhoto)).resolves.toBeUndefined();
+  });
+
+  it('reports a real capture failure to Sentry when the session is still alive', async () => {
+    const takePhoto = jest.fn().mockRejectedValue(new Error('camera stalled'));
+
+    await runCameraWarmUp(takePhoto, () => true);
+
+    expect(mockCaptureMessage).toHaveBeenCalledWith(
+      'camera-warm-up-failed',
+      expect.objectContaining({ level: 'warning' })
+    );
+  });
+
+  it('does not report to Sentry when the session was torn down mid-capture', async () => {
+    const takePhoto = jest.fn().mockRejectedValue(new Error('session closed'));
+
+    await runCameraWarmUp(takePhoto, () => false);
+
+    expect(mockCaptureMessage).not.toHaveBeenCalled();
   });
 });
