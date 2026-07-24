@@ -2,7 +2,6 @@ import * as ImagePicker from 'expo-image-picker';
 import type { RefObject } from 'react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform } from 'react-native';
 
 import type { CameraViewRef } from '@/components/CameraView';
 import { openCropperAsync } from '@/utils/file';
@@ -30,11 +29,9 @@ type UseCameraCaptureFlowOptions = {
 /**
  * The shared capture pipeline behind the smart-camera modals.
  *
- * A shutter capture goes straight to `process` with NO crop step. Opening the native crop tool
- * has a ~20s+ one-time-per-process stall on some devices (fresh Pixel 10 / Android 17 — see the
- * Camera notes in AGENTS.md), and a photo the user just framed live through the camera rarely
- * needs re-cropping anyway. A gallery pick still goes through the crop UI (`cropAndProcess`),
- * since an existing photo usually does need framing and the user chose that path deliberately.
+ * A shutter capture goes straight to `process` with NO crop step because the user already framed
+ * it in the live preview. A gallery pick goes through the crop UI (`cropAndProcess`), since an
+ * existing photo usually does need framing and the user chose that path deliberately.
  *
  * A cancelled crop (gallery only) ends the flow silently; real failures log and show the
  * camera-error snackbar. Camera-session concerns (the silent warm-up capture, one capture in
@@ -90,22 +87,13 @@ export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraC
 
   const pickFromGallery = useCallback(async () => {
     try {
-      // Android's system Photo Picker (the default here — see the removed `legacy: true` in the
-      // git history) grants access to the chosen file through a temporary, per-item content-URI
-      // grant, so it needs no media-library permission — and requesting one is an extra Expo
-      // async call on the single shared `modulesQueue` thread (see the shutter/gallery latency
-      // notes in AGENTS.md), the exact thread whose boot-time saturation stalls this flow. Skip
-      // it on Android; keep it on iOS.
-      if (Platform.OS !== 'android') {
-        const permissionStartedAt = Date.now();
-        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        logPhase('gallery permission', permissionStartedAt);
-        if (!permissionResult.granted) {
-          showSnackbar('error', t('food.aiCamera.galleryPermissionRequired'));
-          return;
-        }
-      }
-
+      // No media-library permission request here: the modern system photo picker (Android
+      // ACTION_PICK_IMAGES / iOS PHPicker — expo-image-picker's default without `legacy`) returns
+      // only the user-picked item through a temporary content grant, so it needs no permission.
+      // Dropping the request also removes an Expo async call from the single shared `modulesQueue`
+      // thread whose boot-time saturation is the real stall (see the SecureStore/queue notes in
+      // AGENTS.md).
+      //
       // Time the picker call itself. This span includes the user browsing/selecting, so a large
       // value is only a red flag when the picker was slow to *appear* (the reported symptom:
       // the picker UI not showing for ~25s on the first pick after a cold boot).

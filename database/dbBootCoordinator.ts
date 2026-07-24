@@ -144,6 +144,10 @@ const BOOT_MIGRATIONS: BootMigration[] = [
   },
   {
     tag: 'SettingsService.migrateApiKeysToEncrypted',
+    // Plaintext API keys only ever exist pre-encryption; new keys are always written encrypted,
+    // so there is nothing to re-migrate after the first successful run. Gating it avoids a
+    // redundant SecureStore decrypt on every boot (see the SecureStore queue note in AGENTS.md).
+    runOnce: true,
     run: () => SettingsService.migrateApiKeysToEncrypted(),
   },
   {

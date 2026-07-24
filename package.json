@@ -257,6 +257,13 @@
   "private": false,
   "license": "GPL-3.0-or-later",
   "expo": {
+    "autolinking": {
+      "android": {
+        "buildFromSource": [
+          "expo-secure-store"
+        ]
+      }
+    },
     "doctor": {
       "reactNativeDirectoryCheck": {
         "exclude": [
