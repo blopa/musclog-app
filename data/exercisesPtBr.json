@@ -988,5 +988,250 @@
     "name": "Agachamento na bosu",
     "description": "Um agachamento sobre a superfície instável de uma bosu para desafiar equilíbrio e controle.",
     "exerciseIndex": 198
+  },
+  {
+    "name": "Rosca Concentrada no Cabo",
+    "description": "Uma rosca de bíceps no cabo feita sentado, um braço de cada vez, com o cotovelo apoiado na parte interna da coxa para uma contração máxima do bíceps.",
+    "exerciseIndex": 199
+  },
+  {
+    "name": "Rosca Supinada Unilateral no Cabo",
+    "description": "Uma rosca de bíceps unilateral no cabo em que o pulso gira de uma pegada pronada para supinada durante o movimento, para trabalho completo do bíceps.",
+    "exerciseIndex": 200
+  },
+  {
+    "name": "Extensão de Tríceps Unilateral Acima da Cabeça no Cabo",
+    "description": "Uma extensão de tríceps unilateral no cabo feita acima da cabeça, mantendo o cotovelo fixo para isolar o tríceps.",
+    "exerciseIndex": 201
+  },
+  {
+    "name": "Puxada Unilateral Pegada Supinada no Cabo",
+    "description": "Uma puxada unilateral no cabo com pegada supinada, estendendo o cotovelo enquanto o mantém junto ao corpo.",
+    "exerciseIndex": 202
+  },
+  {
+    "name": "Puxada Unilateral no Cabo",
+    "description": "Uma puxada unilateral no cabo com pegada pronada, estendendo o cotovelo enquanto o mantém junto ao corpo.",
+    "exerciseIndex": 203
+  },
+  {
+    "name": "Rosca de Pé no Cabo",
+    "description": "Uma rosca de bíceps em pé no cabo feita com os dois braços simultaneamente em toda a amplitude de movimento.",
+    "exerciseIndex": 204
+  },
+  {
+    "name": "Rosca Martelo de Pé no Cabo",
+    "description": "Uma rosca de bíceps em pé no cabo com pegada neutra, tipo martelo, feita com os dois braços simultaneamente.",
+    "exerciseIndex": 205
+  },
+  {
+    "name": "Puxada Pegada Supinada no Cabo",
+    "description": "Uma puxada com as duas mãos no cabo com pegada supinada, convergindo na parte superior e afastando na parte inferior.",
+    "exerciseIndex": 206
+  },
+  {
+    "name": "Elevação de Joelhos Suspenso no Cabo",
+    "description": "Uma elevação de joelhos suspenso na barra, concentrando-se em contrair o abdômen para levantar os joelhos.",
+    "exerciseIndex": 207
+  },
+  {
+    "name": "Abdominal Reverso no Cabo",
+    "description": "Um abdominal reverso feito deitado em um banco com tornozeleiras presas ao cabo, puxando os joelhos em direção à cabeça para levantar o quadril.",
+    "exerciseIndex": 208
+  },
+  {
+    "name": "Remada Unilateral no Banco com Cabo",
+    "description": "Uma remada unilateral no cabo com apoio de um banco inclinado, puxando o cabo em direção à parte central do corpo.",
+    "exerciseIndex": 209
+  },
+  {
+    "name": "Remada Alta Ajoelhado no Cabo",
+    "description": "Uma remada ajoelhado no cabo puxando as duas alças em direção ao peito, unindo as escápulas.",
+    "exerciseIndex": 210
+  },
+  {
+    "name": "Puxada Alta Ajoelhado no Cabo",
+    "description": "Uma puxada ajoelhado no cabo, puxando as duas alças até a altura dos ombros enquanto une as escápulas.",
+    "exerciseIndex": 211
+  },
+  {
+    "name": "Remada Média Convergente no Cabo",
+    "description": "Uma remada em pé no cabo, puxando as duas alças à frente do corpo e de volta com os cotovelos flexionados, unindo as escápulas.",
+    "exerciseIndex": 212
+  },
+  {
+    "name": "Barra Fixa no Cabo",
+    "description": "Uma barra fixa feita na barra da máquina de cabo, usando pegada supinada ou pronada aberta.",
+    "exerciseIndex": 213
+  },
+  {
+    "name": "Barra Fixa Assistida no Cabo",
+    "description": "Uma barra fixa em que você se apoia na estrutura traseira da máquina para assistir o movimento com as pernas.",
+    "exerciseIndex": 214
+  },
+  {
+    "name": "Crucifixo Invertido no Cabo",
+    "description": "Um crucifixo invertido em pé no cabo, puxando as duas alças à frente do corpo e de volta com os braços estendidos para trabalhar o deltoide posterior.",
+    "exerciseIndex": 215
+  },
+  {
+    "name": "Puxada Sentado no Cabo",
+    "description": "Uma puxada sentado no cabo, puxando as duas alças até a altura dos ombros enquanto une as escápulas.",
+    "exerciseIndex": 216
+  },
+  {
+    "name": "Remada Deltoide Posterior Sentado no Cabo",
+    "description": "Uma remada sentado no cabo com as alças na altura da cabeça, puxando para trás com os cotovelos altos para trabalhar o deltoide posterior.",
+    "exerciseIndex": 217
+  },
+  {
+    "name": "Remada Unilateral de Pé no Cabo",
+    "description": "Uma remada unilateral em pé no cabo, puxando a alça em direção à parte central do corpo enquanto estabiliza o corpo.",
+    "exerciseIndex": 218
+  },
+  {
+    "name": "Supino no Cabo",
+    "description": "Um supino no cabo feito deitado em um banco, empurrando as duas alças para cima a partir da altura do peito.",
+    "exerciseIndex": 219
+  },
+  {
+    "name": "Supino Convergente no Cabo",
+    "description": "Um supino no cabo feito deitado em um banco, empurrando as duas alças para cima e juntas na parte superior.",
+    "exerciseIndex": 220
+  },
+  {
+    "name": "Voador Baixo no Cabo",
+    "description": "Um voador em pé no cabo com as alças posicionadas baixo, elevando-as até a altura do peito enquanto convergem à frente do corpo.",
+    "exerciseIndex": 221
+  },
+  {
+    "name": "Voador no Cabo",
+    "description": "Um voador feito deitado em um banco, unindo as alças acima do peito em um movimento circular.",
+    "exerciseIndex": 222
+  },
+  {
+    "name": "Voador de Pé no Cabo",
+    "description": "Um voador em pé com as alças na altura do peito, unindo os braços em um movimento circular.",
+    "exerciseIndex": 223
+  },
+  {
+    "name": "Supino Inclinado Sentado no Cabo",
+    "description": "Um supino no cabo feito sentado em um banco inclinado, empurrando as duas alças para cima.",
+    "exerciseIndex": 224
+  },
+  {
+    "name": "Supino Inclinado Sentado Convergente no Cabo",
+    "description": "Um supino no cabo sentado em um banco inclinado, empurrando as duas alças para cima e juntas no topo.",
+    "exerciseIndex": 225
+  },
+  {
+    "name": "Supino de Pé no Cabo",
+    "description": "Um supino em pé no cabo, empurrando as duas alças para frente a partir da altura do peito.",
+    "exerciseIndex": 226
+  },
+  {
+    "name": "Supino de Pé Convergente no Cabo",
+    "description": "Um supino em pé no cabo, empurrando as duas alças para frente e juntas no topo.",
+    "exerciseIndex": 227
+  },
+  {
+    "name": "Supino Inclinado de Pé no Cabo",
+    "description": "Um supino em pé no cabo, empurrando as duas alças para frente e para cima em um ângulo inclinado.",
+    "exerciseIndex": 228
+  },
+  {
+    "name": "Supino Inclinado de Pé Convergente no Cabo",
+    "description": "Um supino em pé no cabo, empurrando as duas alças para frente, para cima e juntas em um ângulo inclinado.",
+    "exerciseIndex": 229
+  },
+  {
+    "name": "Rotação Externa no Cabo",
+    "description": "Um exercício de rotação externa de ombro no cabo com o cotovelo apoiado ao lado do corpo para isolar o manguito rotador.",
+    "exerciseIndex": 230
+  },
+  {
+    "name": "Rotação Interna no Cabo",
+    "description": "Um exercício de rotação interna de ombro no cabo com o cotovelo apoiado ao lado do corpo para isolar o manguito rotador.",
+    "exerciseIndex": 231
+  },
+  {
+    "name": "Deltoide Posterior Unilateral no Cabo",
+    "description": "Um exercício em pé unilateral no cabo, puxando a alça à frente do corpo e para trás para trabalhar o deltoide posterior.",
+    "exerciseIndex": 232
+  },
+  {
+    "name": "Elevação Lateral Unilateral no Cabo",
+    "description": "Uma elevação lateral unilateral no cabo, elevando o braço para o lado até a altura do ombro.",
+    "exerciseIndex": 233
+  },
+  {
+    "name": "Desenvolvimento Unilateral no Cabo",
+    "description": "Um desenvolvimento de ombro unilateral em pé no cabo, empurrando a alça diretamente acima da cabeça.",
+    "exerciseIndex": 234
+  },
+  {
+    "name": "Desenvolvimento Sentado no Cabo",
+    "description": "Um desenvolvimento de ombro sentado no cabo, empurrando as duas alças diretamente acima da cabeça.",
+    "exerciseIndex": 235
+  },
+  {
+    "name": "Desenvolvimento Sentado Convergente no Cabo",
+    "description": "Um desenvolvimento de ombro sentado no cabo, empurrando as duas alças acima da cabeça e juntas no topo.",
+    "exerciseIndex": 236
+  },
+  {
+    "name": "Encolhimento no Cabo",
+    "description": "Um encolhimento de ombros em pé no cabo, elevando os ombros enquanto segura as alças com os braços estendidos.",
+    "exerciseIndex": 237
+  },
+  {
+    "name": "Desenvolvimento de Pé no Cabo",
+    "description": "Um desenvolvimento de ombro em pé no cabo, empurrando as duas alças diretamente acima da cabeça.",
+    "exerciseIndex": 238
+  },
+  {
+    "name": "Remada Alta no Cabo",
+    "description": "Uma remada alta no cabo, puxando a alça até a altura dos ombros com as duas mãos.",
+    "exerciseIndex": 239
+  },
+  {
+    "name": "Agachamento Frontal no Cabo",
+    "description": "Um agachamento frontal com carga no cabo, segurando as alças na altura do peito enquanto agacha até a paralela.",
+    "exerciseIndex": 240
+  },
+  {
+    "name": "Abdução de Quadril no Cabo",
+    "description": "Uma abdução de quadril no cabo com tornozeleira, estendendo a perna para fora a partir do quadril.",
+    "exerciseIndex": 241
+  },
+  {
+    "name": "Adução de Quadril no Cabo",
+    "description": "Uma adução de quadril no cabo com tornozeleira, puxando a perna para dentro cruzando o corpo.",
+    "exerciseIndex": 242
+  },
+  {
+    "name": "Avanço no Cabo",
+    "description": "Um avanço com carga no cabo, segurando as duas alças na altura da cintura enquanto avança e agacha.",
+    "exerciseIndex": 243
+  },
+  {
+    "name": "Avanço Reverso no Cabo",
+    "description": "Um avanço reverso com carga no cabo, segurando as duas alças com os braços estendidos enquanto dá um passo para trás no avanço.",
+    "exerciseIndex": 244
+  },
+  {
+    "name": "Agachamento no Cabo",
+    "description": "Um agachamento com carga no cabo, segurando as duas alças na altura dos ombros enquanto agacha até a paralela.",
+    "exerciseIndex": 245
+  },
+  {
+    "name": "Flexão de Perna de Pé no Cabo",
+    "description": "Uma flexão de perna no cabo com tornozeleira, flexionando a perna inferior para trás enquanto fica em pé.",
+    "exerciseIndex": 246
+  },
+  {
+    "name": "Extensão de Perna de Pé no Cabo",
+    "description": "Uma extensão de perna no cabo com tornozeleira, estendendo a perna inferior enquanto fica em pé.",
+    "exerciseIndex": 247
   }
 ]

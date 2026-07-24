@@ -988,5 +988,250 @@
     "name": "Bosu Ball Squat",
     "description": "Een squat op het instabiele oppervlak van een bosu ball om balans en controle te trainen.",
     "exerciseIndex": 198
+  },
+  {
+    "name": "Kabel Concentratiecurl",
+    "description": "Een zittende kabelcurl met één arm, waarbij de elleboog tegen de binnenkant van de dij rust voor een maximale bicepscontractie.",
+    "exerciseIndex": 199
+  },
+  {
+    "name": "Kabel Eenarmige Supinerende Curl",
+    "description": "Een eenarmige kabelcurl waarbij de pols tijdens de beweging draait van een boven- naar een ondergreep, voor volledige bicepsbetrokkenheid.",
+    "exerciseIndex": 200
+  },
+  {
+    "name": "Kabel Eenarmige Triceps Overhead Extensie",
+    "description": "Een eenarmige triceps-extensie boven het hoofd met de kabel, waarbij de elleboog stilgehouden wordt om de triceps te isoleren.",
+    "exerciseIndex": 201
+  },
+  {
+    "name": "Kabel Eenarmige Onderhandse Pushdown",
+    "description": "Een eenarmige kabel-pushdown met een ondergreep, waarbij de elleboog wordt gestrekt terwijl deze tegen de zij blijft.",
+    "exerciseIndex": 202
+  },
+  {
+    "name": "Kabel Eenarmige Pushdown",
+    "description": "Een eenarmige kabel-pushdown met een bovengreep, waarbij de elleboog wordt gestrekt terwijl deze tegen de zij blijft.",
+    "exerciseIndex": 203
+  },
+  {
+    "name": "Kabel Staande Armcurl",
+    "description": "Een staande kabelcurl met beide armen tegelijk, over het volledige bewegingsbereik.",
+    "exerciseIndex": 204
+  },
+  {
+    "name": "Kabel Staande Hamercurl",
+    "description": "Een staande kabelcurl met een neutrale, hamergreep, uitgevoerd met beide armen tegelijk.",
+    "exerciseIndex": 205
+  },
+  {
+    "name": "Kabel Onderhandse Pushdown",
+    "description": "Een tweehandige kabel-pushdown met een ondergreep, waarbij de handvatten boven samenkomen en onderaan uit elkaar naar de zijkanten gaan.",
+    "exerciseIndex": 206
+  },
+  {
+    "name": "Kabel Hangende Knieheffing",
+    "description": "Een hangende knieheffing aan de trekbeugel, met de focus op het aanspannen van de buikspieren om de knieën op te trekken.",
+    "exerciseIndex": 207
+  },
+  {
+    "name": "Kabel Omgekeerde Buikcrunch",
+    "description": "Een omgekeerde buikcrunch, liggend op een bank met enkelbanden aan de kabel, waarbij de knieën naar het hoofd worden getrokken om de heupen op te tillen.",
+    "exerciseIndex": 208
+  },
+  {
+    "name": "Kabel Eenarmige Roeioefening op Bank",
+    "description": "Een eenarmige kabelroeioefening met ondersteuning van een schuine bank, waarbij het handvat naar het middenlichaam wordt getrokken.",
+    "exerciseIndex": 209
+  },
+  {
+    "name": "Kabel Knielende Hoge Roeioefening",
+    "description": "Een knielende kabelroeioefening waarbij beide handvatten naar de borst worden getrokken terwijl de schouderbladen samengeknepen worden.",
+    "exerciseIndex": 210
+  },
+  {
+    "name": "Kabel Knielende Lat Pulldown",
+    "description": "Een knielende lat pulldown met de kabel, waarbij beide handvatten tot schouderhoogte worden getrokken terwijl de schouderbladen samengeknepen worden.",
+    "exerciseIndex": 211
+  },
+  {
+    "name": "Kabel Middelste Divergerende Roeioefening",
+    "description": "Een staande kabelroeioefening waarbij beide handvatten voor het lichaam langs en weer terug worden getrokken met gebogen ellebogen, terwijl de schouderbladen samengeknepen worden.",
+    "exerciseIndex": 212
+  },
+  {
+    "name": "Kabel Pull Up",
+    "description": "Een pull-up uitgevoerd aan de trekbeugel van de kabelmachine, met een onder- of brede bovengreep.",
+    "exerciseIndex": 213
+  },
+  {
+    "name": "Kabel Geassisteerde Pull Up",
+    "description": "Een pull-up waarbij je op het achterframe van de machine staat om de beweging met je benen te ondersteunen.",
+    "exerciseIndex": 214
+  },
+  {
+    "name": "Kabel Reverse Fly",
+    "description": "Een staande reverse fly met de kabel, waarbij beide handvatten voor het lichaam langs en weer terug worden getrokken met gestrekte armen om de achterste deltaspier te trainen.",
+    "exerciseIndex": 215
+  },
+  {
+    "name": "Kabel Zittende Lat Pulldown",
+    "description": "Een zittende lat pulldown met de kabel, waarbij beide handvatten tot schouderhoogte worden getrokken terwijl de schouderbladen samengeknepen worden.",
+    "exerciseIndex": 216
+  },
+  {
+    "name": "Kabel Zittende Achterste Deltroeioefening",
+    "description": "Een zittende kabelroeioefening met de handvatten op hoofdhoogte, waarbij met hoge ellebogen naar achteren wordt getrokken om de achterste deltaspier te trainen.",
+    "exerciseIndex": 217
+  },
+  {
+    "name": "Kabel Staande Eenarmige Roeioefening",
+    "description": "Een staande eenarmige kabelroeioefening, waarbij het handvat naar het middenlichaam wordt getrokken terwijl het lichaam stabiel wordt gehouden.",
+    "exerciseIndex": 218
+  },
+  {
+    "name": "Kabel Bankdrukken",
+    "description": "Een bankdrukoefening met de kabel, liggend op een bank, waarbij beide handvatten vanaf borsthoogte omhoog worden gedrukt.",
+    "exerciseIndex": 219
+  },
+  {
+    "name": "Kabel Bankdrukken-Convergerend",
+    "description": "Een bankdrukoefening met de kabel, liggend op een bank, waarbij beide handvatten omhoog en aan de top samen worden gedrukt.",
+    "exerciseIndex": 220
+  },
+  {
+    "name": "Kabel Lage Pec Fly",
+    "description": "Een staande pec fly met de handvatten laag ingesteld, waarbij ze tot borsthoogte worden geheven terwijl ze voor het lichaam samenkomen.",
+    "exerciseIndex": 221
+  },
+  {
+    "name": "Kabel Pec Fly",
+    "description": "Een pec fly met de kabel, liggend op een bank, waarbij de handvatten in een cirkelbeweging boven de borst samenkomen.",
+    "exerciseIndex": 222
+  },
+  {
+    "name": "Kabel Pec Fly-Staand",
+    "description": "Een staande pec fly met de handvatten op borsthoogte, waarbij de armen in een cirkelbeweging samenkomen.",
+    "exerciseIndex": 223
+  },
+  {
+    "name": "Kabel Zittende Schuine Druk",
+    "description": "Een borstdrukoefening met de kabel, zittend op een schuine bank, waarbij beide handvatten omhoog worden gedrukt.",
+    "exerciseIndex": 224
+  },
+  {
+    "name": "Kabel Zittende Schuine Druk-Convergerend",
+    "description": "Een borstdrukoefening met de kabel, zittend op een schuine bank, waarbij beide handvatten omhoog en aan de top samen worden gedrukt.",
+    "exerciseIndex": 225
+  },
+  {
+    "name": "Kabel Staande Borstdruk",
+    "description": "Een staande borstdrukoefening met de kabel, waarbij beide handvatten vanaf borsthoogte naar voren worden gedrukt.",
+    "exerciseIndex": 226
+  },
+  {
+    "name": "Kabel Staande Borstdruk-Convergerend",
+    "description": "Een staande borstdrukoefening met de kabel, waarbij beide handvatten naar voren en aan het einde samen worden gedrukt.",
+    "exerciseIndex": 227
+  },
+  {
+    "name": "Kabel Staande Schuine Druk",
+    "description": "Een staande drukoefening met de kabel, waarbij beide handvatten naar voren en omhoog in een schuine hoek worden gedrukt.",
+    "exerciseIndex": 228
+  },
+  {
+    "name": "Kabel Staande Schuine Druk-Convergerend",
+    "description": "Een staande drukoefening met de kabel, waarbij beide handvatten naar voren, omhoog en samen in een schuine hoek worden gedrukt.",
+    "exerciseIndex": 229
+  },
+  {
+    "name": "Kabel Externe Rotator",
+    "description": "Een externe schouderrotatie-oefening met de kabel, waarbij de elleboog tegen de zij rust om de rotator cuff te isoleren.",
+    "exerciseIndex": 230
+  },
+  {
+    "name": "Kabel Interne Rotator",
+    "description": "Een interne schouderrotatie-oefening met de kabel, waarbij de elleboog tegen de zij rust om de rotator cuff te isoleren.",
+    "exerciseIndex": 231
+  },
+  {
+    "name": "Kabel Eenarmige Achterste Delt",
+    "description": "Een staande eenarmige kabeloefening waarbij het handvat voor het lichaam langs en naar achteren wordt getrokken om de achterste deltaspier te trainen.",
+    "exerciseIndex": 232
+  },
+  {
+    "name": "Kabel Eenarmige Zijwaartse Heffing",
+    "description": "Een eenarmige zijwaartse heffing met de kabel, waarbij de arm zijwaarts tot schouderhoogte wordt geheven.",
+    "exerciseIndex": 233
+  },
+  {
+    "name": "Kabel Eenarmige Schouderdruk",
+    "description": "Een staande eenarmige schouderdrukoefening met de kabel, waarbij het handvat recht boven het hoofd wordt gedrukt.",
+    "exerciseIndex": 234
+  },
+  {
+    "name": "Kabel Zittende Schouderdruk",
+    "description": "Een zittende schouderdrukoefening met de kabel, waarbij beide handvatten recht boven het hoofd worden gedrukt.",
+    "exerciseIndex": 235
+  },
+  {
+    "name": "Kabel Zittende Schouderdruk-Convergerend",
+    "description": "Een zittende schouderdrukoefening met de kabel, waarbij beide handvatten boven het hoofd en aan de top samen worden gedrukt.",
+    "exerciseIndex": 236
+  },
+  {
+    "name": "Kabel Shrugs",
+    "description": "Een staande schouderophaaloefening met de kabel, waarbij de schouders recht omhoog worden gehaald terwijl de handvatten op armlengte worden vastgehouden.",
+    "exerciseIndex": 237
+  },
+  {
+    "name": "Kabel Staande Schouderdruk",
+    "description": "Een staande schouderdrukoefening met de kabel, waarbij beide handvatten recht boven het hoofd worden gedrukt.",
+    "exerciseIndex": 238
+  },
+  {
+    "name": "Kabel Upright Row",
+    "description": "Een upright row met de kabel, waarbij het handvat met beide handen tot schouderhoogte wordt opgetrokken.",
+    "exerciseIndex": 239
+  },
+  {
+    "name": "Kabel Frontsquat",
+    "description": "Een frontsquat met kabelbelasting, waarbij de handvatten op borsthoogte worden vastgehouden tijdens het zakken naar evenwijdig.",
+    "exerciseIndex": 240
+  },
+  {
+    "name": "Kabel Heupabductie",
+    "description": "Een heupabductie met de kabel en een enkelband, waarbij het been zijwaarts vanuit de heup wordt gestrekt.",
+    "exerciseIndex": 241
+  },
+  {
+    "name": "Kabel Heupadductie",
+    "description": "Een heupadductie met de kabel en een enkelband, waarbij het been naar binnen over het lichaam wordt getrokken.",
+    "exerciseIndex": 242
+  },
+  {
+    "name": "Kabel Lunge",
+    "description": "Een lunge met kabelbelasting, waarbij beide handvatten op heuphoogte worden vastgehouden tijdens het naar voren stappen en zakken.",
+    "exerciseIndex": 243
+  },
+  {
+    "name": "Kabel Reverse Lunge",
+    "description": "Een omgekeerde lunge met kabelbelasting, waarbij beide handvatten op armlengte worden vastgehouden tijdens het naar achteren stappen in de lunge.",
+    "exerciseIndex": 244
+  },
+  {
+    "name": "Kabel Squat",
+    "description": "Een squat met kabelbelasting, waarbij beide handvatten op schouderhoogte worden vastgehouden tijdens het zakken naar evenwijdig.",
+    "exerciseIndex": 245
+  },
+  {
+    "name": "Kabel Staande Leg Curl",
+    "description": "Een leg curl met de kabel en een enkelband, waarbij het onderbeen naar achteren wordt gebogen terwijl je staat.",
+    "exerciseIndex": 246
+  },
+  {
+    "name": "Kabel Staande Leg Extensie",
+    "description": "Een leg extensie met de kabel en een enkelband, waarbij het onderbeen wordt gestrekt terwijl je staat.",
+    "exerciseIndex": 247
   }
 ]

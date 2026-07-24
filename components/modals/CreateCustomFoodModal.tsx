@@ -306,6 +306,8 @@ export default function CreateCustomFoodModal({
         mediaTypes: ['images'],
         allowsEditing: true,
         quality: 0.8,
+        // Force the legacy Android picker (`ACTION_GET_CONTENT`) instead of the modern system
+        legacy: true,
       });
 
       if (!result.canceled && result.assets?.[0]) {
