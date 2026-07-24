@@ -52,6 +52,10 @@
         "test": {
           "title": "Debug Chart Uploader | Musclog",
           "description": "A noindex development route for uploading and previewing rep chart data while building Musclog's recording tools."
+        },
+        "alternatives": {
+          "title": "Musclog vs. Alternatives — Honest App Comparison",
+          "description": "See how Musclog compares to MyFitnessPal, MacroFactor, Cronometer, Bevel, Lifesum, Hevy and more across privacy, nutrition, workouts, and whole-health tracking."
         }
       }
     },
@@ -305,7 +309,8 @@
       "download": "Download Now",
       "exercises": "Exercises",
       "gameboy": "Game Boy",
-      "language": "Language"
+      "language": "Language",
+      "alternatives": "Compare"
     },
     "gameboy": {
       "pageTitle": "Play Musclog on Game Boy",
@@ -528,7 +533,10 @@
           "typesCollected": {
             "title": "Types of Data Collected",
             "content": "While using Our Service, We may ask You to provide Us with certain personally identifiable information that can be used to contact or identify You. Personally identifiable information may include, but is not limited to:",
-            "items": ["First name and last name", "Usage Data"]
+            "items": [
+              "First name and last name",
+              "Usage Data"
+            ]
           },
           "googleOAuth": {
             "title": "Google OAuth Data",
@@ -1071,7 +1079,13 @@
               "question": "How are my daily macros calculated?",
               "answer": "Macro splits are based on fitness goal, using IOM AMDR ranges as the framework and ISSN/ACSM sport-specific research for refinement.",
               "table": {
-                "head": ["Goal", "Carbs", "Protein", "Fat", "Rationale"],
+                "head": [
+                  "Goal",
+                  "Carbs",
+                  "Protein",
+                  "Fat",
+                  "Rationale"
+                ],
                 "rows": [
                   [
                     "Weight Loss",
@@ -1182,19 +1196,47 @@
               "question": "How are one-rep max (1RM) estimates calculated?",
               "answer": "Musclog calculates 1RM using an ensemble of seven published formulas and averages their outputs. Averaging reduces the systematic error of any single formula, which each have different accuracy profiles across rep ranges.",
               "table": {
-                "head": ["Formula", "Equation", "Best For"],
+                "head": [
+                  "Formula",
+                  "Equation",
+                  "Best For"
+                ],
                 "rows": [
-                  ["Brzycki (1993)", "w / (1.0278 − 0.0278 × r)", "2–10 reps; most widely used"],
-                  ["Epley (1985)", "w × (1 + r / 30)", "General use; slightly conservative"],
-                  ["Lander (1985)", "w / (1.013 − 0.0267 × r)", "Moderate rep ranges"],
-                  ["Lombardi (1989)", "w × r^0.1", "Low rep ranges"],
+                  [
+                    "Brzycki (1993)",
+                    "w / (1.0278 − 0.0278 × r)",
+                    "2–10 reps; most widely used"
+                  ],
+                  [
+                    "Epley (1985)",
+                    "w × (1 + r / 30)",
+                    "General use; slightly conservative"
+                  ],
+                  [
+                    "Lander (1985)",
+                    "w / (1.013 − 0.0267 × r)",
+                    "Moderate rep ranges"
+                  ],
+                  [
+                    "Lombardi (1989)",
+                    "w × r^0.1",
+                    "Low rep ranges"
+                  ],
                   [
                     "Mayhew et al. (1992)",
                     "w / (0.522 + 0.419 × e^{−0.055r})",
                     "Wide rep range; exponential model"
                   ],
-                  ["O'Connor et al. (1989)", "w × (1 + 0.025 × r)", "Linear; conservative"],
-                  ["Wathen (1994)", "w / (0.488 + 0.539 × e^{−0.035r})", "Higher rep ranges"]
+                  [
+                    "O'Connor et al. (1989)",
+                    "w × (1 + 0.025 × r)",
+                    "Linear; conservative"
+                  ],
+                  [
+                    "Wathen (1994)",
+                    "w / (0.488 + 0.539 × e^{−0.035r})",
+                    "Higher rep ranges"
+                  ]
                 ]
               },
               "answer2": "Reps in Reserve (RIR) is added to actual reps before applying any formula (adjusted_reps = reps + RIR). This maps submaximal effort to a full-effort equivalent, so a set of 8 reps with 2 RIR is treated as 10 reps at failure for 1RM estimation purposes.",
@@ -1336,7 +1378,11 @@
               "question": "How is the \"Calories Burned Today\" estimate calculated?",
               "answer": "The real-time calorie burn estimate uses a circadian-weighted model rather than a simple linear division of your TDEE across 24 hours. Metabolic chamber and circadian biology research shows that energy expenditure is not uniform throughout the day — it follows a pronounced 24-hour rhythm driven by your internal biological clock, posture, meal timing (thermic effect of food, TEF), and spontaneous physical activity (NEAT).",
               "table": {
-                "head": ["Time Block", "% of TDEE", "Primary Driver"],
+                "head": [
+                  "Time Block",
+                  "% of TDEE",
+                  "Primary Driver"
+                ],
                 "rows": [
                   [
                     "11 PM – 3 AM",
@@ -1348,9 +1394,21 @@
                     "~8.5 %",
                     "Circadian nadir (~5 AM), lowest core temperature and REE"
                   ],
-                  ["7 AM – 11 AM", "~19.5 %", "Waking posture rise (+10 %), peak morning TEF"],
-                  ["11 AM – 3 PM", "~22.5 %", "Lunch TEF, daytime NEAT and occupational movement"],
-                  ["3 PM – 7 PM", "~25 %", "Circadian REE peak (~5 PM), core temperature peak"],
+                  [
+                    "7 AM – 11 AM",
+                    "~19.5 %",
+                    "Waking posture rise (+10 %), peak morning TEF"
+                  ],
+                  [
+                    "11 AM – 3 PM",
+                    "~22.5 %",
+                    "Lunch TEF, daytime NEAT and occupational movement"
+                  ],
+                  [
+                    "3 PM – 7 PM",
+                    "~25 %",
+                    "Circadian REE peak (~5 PM), core temperature peak"
+                  ],
                   [
                     "7 PM – 11 PM",
                     "~15 %",
@@ -1438,6 +1496,206 @@
       "chartOrientationSubtitle": "device angle · clearest for rotational lifts",
       "chartAccelerationTitle": "Acceleration",
       "chartAccelerationSubtitle": "raw accel · works for any lift"
+    },
+    "alternatives": {
+      "badge": "Honest Comparison",
+      "titlePrefix": "Musclog vs.",
+      "titleHighlight": "the alternatives",
+      "description": "How Musclog compares to popular nutrition and fitness apps across privacy, nutrition, workouts, and whole-health tracking. The criteria emphasise breadth, privacy, ownership, offline use, and integration.",
+      "featureColumn": "Feature",
+      "asOf": "This comparison reflects official product documentation available on 24 July 2026. Musclog information comes from its live website and repository; competitor information comes from their official sites and help centres.",
+      "disclaimer": "Product names and trademarks belong to their respective owners. Details change frequently — always check each provider's official site for the latest.",
+      "legend": {
+        "title": "Legend",
+        "full": "Strong, built-in support",
+        "partial": "Partial, basic, integration-dependent, or paywalled",
+        "none": "Not a documented core feature"
+      },
+      "notes": {
+        "fullApp": "Full app",
+        "basic": "Basic",
+        "trialOnly": "Trial only",
+        "trackingFree": "Tracking free",
+        "strongBasic": "Strong basic",
+        "limited": "Limited",
+        "strongCore": "Strong core",
+        "appleEcosystem": "Apple ecosystem",
+        "appleHealthCentric": "Apple Health-centric",
+        "offlineDiarySync": "Offline diary sync",
+        "notLocalFirst": "Not local-first",
+        "trackingDependent": "Tracking-dependent",
+        "cloudAccount": "Cloud account",
+        "internetRequired": "Internet required",
+        "workoutCaching": "Workout caching",
+        "applePlatform": "Apple platform",
+        "serverEncryption": "Server encryption",
+        "premiumExport": "Premium export",
+        "exportGeneric": "Export",
+        "healthExport": "Health export",
+        "exportReports": "Export/reports",
+        "fullExportViaSupport": "Full export via support",
+        "workoutsMeasurements": "Workouts/measurements",
+        "mobile": "Mobile",
+        "appleOnly": "Apple only",
+        "fullAppMobileOnly": "Full app mobile only",
+        "upTo84": "Up to 84",
+        "paid": "Paid",
+        "paidVoice": "Paid voice",
+        "gold": "Gold",
+        "goldVoice": "Gold/voice",
+        "premium": "Premium",
+        "curatedSources": "Curated sources",
+        "verifiedDatabases": "Verified databases",
+        "aiGuidance": "AI guidance",
+        "ai": "AI",
+        "nutritionAdvice": "Nutrition advice",
+        "fastingFeature": "Fasting feature",
+        "timer": "Timer",
+        "plansTimer": "Plans/timer",
+        "logging": "Logging",
+        "journal": "Journal",
+        "basicExercise": "Basic exercise",
+        "exerciseEntries": "Exercise entries",
+        "exerciseHabits": "Exercise habits",
+        "aiCoach": "AI coach",
+        "separateApp": "Separate app",
+        "periodLogging": "Period logging",
+        "bestHere": "Best here",
+        "biometrics": "Biometrics",
+        "wearables": "Wearables",
+        "integrations": "Integrations",
+        "watches": "Watches",
+        "algorithmic": "Algorithmic",
+        "workoutCoach": "Workout coach",
+        "pro": "Pro",
+        "nutrition": "Nutrition",
+        "personalitiesFiles": "Personalities/files",
+        "gpl3": "GPL-3.0",
+        "jsonDbExcel": "JSON, DB, Excel",
+        "micros40": "40+",
+        "yes": "Yes",
+        "no": "No",
+        "some": "Some"
+      },
+      "sections": {
+        "privacy": {
+          "title": "Privacy, ownership and pricing",
+          "footnote": "Lifesum states it cannot save changes without an internet connection and stores data on company servers. MyFitnessPal allows some offline diary changes but later syncs them with its account system. Musclog uses a local WatermelonDB database as its central storage layer.",
+          "rows": {
+            "freeVersion": "Useful free version",
+            "openSource": "Open source",
+            "noProprietaryAccount": "No proprietary account required",
+            "localFirst": "Local-first data model",
+            "fullyOffline": "Core functionality fully offline",
+            "localEncryption": "Sensitive fields encrypted locally",
+            "rawDbAccess": "Raw database access",
+            "migrationBackups": "Migration backups and DB repair",
+            "completeBackup": "Self-service complete backup",
+            "platforms": "Android, iOS and web",
+            "adsInFree": "Ads in free version"
+          }
+        },
+        "nutrition": {
+          "title": "Nutrition and energy coaching",
+          "footnote": "MacroFactor and Musclog are the two strongest here for empirical expenditure estimation. Cronometer remains particularly strong in micronutrient depth, while MyFitnessPal, Lifesum, Bevel, MacroFactor and Cronometer now all offer some form of AI-assisted food logging.",
+          "rows": {
+            "caloriesMacros": "Calories and macros",
+            "micronutrients": "Detailed micronutrients",
+            "barcode": "Barcode scanning",
+            "customFoods": "Custom foods and portions",
+            "savedMeals": "Saved meals and recipes",
+            "aiPhoto": "AI photo meal logging",
+            "naturalLanguage": "Natural-language food logging",
+            "labelOcr": "Nutrition-label OCR",
+            "foodDbSelection": "Open Food Facts and USDA selection",
+            "netCarbs": "Total versus net-carb mode",
+            "empiricalTdee": "Empirical TDEE from intake and weight",
+            "autoTarget": "Automatic calorie-target adjustment",
+            "weeklyCheckins": "Weekly goal check-ins",
+            "intuitiveEating": "Intuitive Eating Mode hiding numbers",
+            "fastedDays": "Intentional fasted-day records",
+            "supplements": "Supplements and reminders",
+            "qualityInsights": "Nutrition-quality insights"
+          }
+        },
+        "workouts": {
+          "title": "Workouts and progress",
+          "footnote": "MacroFactor Workouts and Hevy are the closest competitors for serious strength logging. Hevy documents sets, weights, supersets, RPE, timers, personal records, routines and detailed progress stats; MacroFactor Workouts focuses more on dynamic programming. The key distinction is that MacroFactor splits nutrition and training into separate products, while Musclog combines them in one local dataset.",
+          "rows": {
+            "strengthLogging": "Detailed strength-workout logging",
+            "setsRepsWeights": "Sets, repetitions and weights",
+            "rpeRir": "RPE/RIR support",
+            "supersets": "Supersets",
+            "prDetection": "Personal-record detection",
+            "restTimers": "Rest timers",
+            "customExercises": "Custom exercises",
+            "templates": "Workout templates and routines",
+            "aiPlans": "AI-generated workout plans",
+            "pasteParse": "Paste a workout and parse it with AI",
+            "editHistorical": "Edit historical workouts",
+            "exerciseGoals": "Exercise-specific goals",
+            "sharing": "Workout sharing/deep links",
+            "nutritionAndLifting": "Nutrition and serious lifting together",
+            "offlineRecovery": "Offline workout recovery"
+          }
+        },
+        "wholeHealth": {
+          "title": "Whole-health, AI and integrations",
+          "footnote": "Bevel is the strongest competitor for wearable-derived recovery, sleep, stress and readiness. Musclog remains stronger on local data ownership, Android support, detailed nutrition controls, empirical TDEE, self-hosted AI, direct BLE workflows and database tooling.",
+          "rows": {
+            "bodyMeasurements": "Weight and body measurements",
+            "bodyFatBmiFfmi": "Body-fat, BMI and FFMI",
+            "correlationCharts": "Cross-domain correlation charts",
+            "menstrualCycle": "Menstrual-cycle tracking",
+            "phaseAware": "Phase-aware training/nutrition insights",
+            "moodRecovery": "Mood and recovery tracking",
+            "sleepReadiness": "Dedicated sleep/readiness score",
+            "healthConnect": "Health Connect integration",
+            "healthKit": "HealthKit integration",
+            "historicalImport": "Historical health-data import",
+            "bleManagement": "Direct BLE-device management",
+            "imuRepCounting": "Local IMU repetition counting",
+            "aiCoachConfig": "Configurable conversational AI coach",
+            "aiContext": "AI sees nutrition and workout context",
+            "customPrompts": "Custom AI system prompts",
+            "byoApiKey": "Bring your own API key",
+            "localModels": "Local/self-hosted AI models",
+            "gameboy": "Game Boy Color edition"
+          }
+        }
+      },
+      "winners": {
+        "title": "Who wins each narrow category?",
+        "categoryHeader": "Category",
+        "winnerHeader": "Strongest option",
+        "rows": {
+          "overallCoverage": "Best overall feature coverage",
+          "privacyOwnership": "Best privacy and user ownership",
+          "freeOpenSource": "Best free/open-source proposition",
+          "nutritionLifting": "Best single app for nutrition + serious lifting",
+          "configurableAi": "Best configurable/local AI",
+          "foodEcosystem": "Largest commercial food ecosystem",
+          "dietCoaching": "Most specialised adaptive diet coaching",
+          "micronutrient": "Most specialised micronutrient tracking",
+          "wearableRecovery": "Best wearable recovery/readiness experience",
+          "socialLifting": "Most established social lifting experience",
+          "mealPlan": "Most polished lifestyle meal-plan experience",
+          "liftingProgramme": "Most specialised automated lifting programme",
+          "gameboy": "Best Game Boy Color support"
+        }
+      },
+      "conclusion": {
+        "title": "The honest conclusion",
+        "quote": "Musclog is the only app in this comparison that combines serious workout logging, comprehensive nutrition tracking, empirical energy coaching, body and cycle analytics, AI coaching, health integrations and connected-device support while remaining free, open-source, local-first and usable without a proprietary account.",
+        "body": "That doesn't mean Musclog is already the best at every isolated feature. MyFitnessPal has a larger commercial food ecosystem, Cronometer has deeper nutrient data, Bevel has stronger sleep and readiness analysis, and Hevy has a mature social lifting network. But anyone wanting the complete combination would otherwise need something like:",
+        "stack": "MacroFactor + MacroFactor Workouts or Hevy + Bevel + extra privacy/export tooling",
+        "bodyAfter": "Musclog aims to provide the whole stack in one app."
+      },
+      "cta": {
+        "title": "Get the whole stack in one app",
+        "description": "Free, open-source, and local-first. No account required.",
+        "button": "Download Musclog"
+      }
     }
   }
 }

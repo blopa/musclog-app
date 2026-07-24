@@ -8,6 +8,7 @@ const SEO_IMAGE_WIDTH = '1224';
 const SEO_IMAGE_HEIGHT = '741';
 
 const ROUTE_PATHS = {
+  alternatives: '/alternatives',
   calculator: '/calculator',
   contact: '/contact',
   download: '/download',

@@ -52,6 +52,10 @@
         "test": {
           "title": "Debug grafiekuploader | Musclog",
           "description": "Een noindex ontwikkelroute om repgrafiekdata te uploaden en bekijken tijdens het bouwen van Musclogs opnamehulpmiddelen."
+        },
+        "alternatives": {
+          "title": "Musclog vs. alternatieven — Eerlijke app-vergelijking",
+          "description": "Ontdek hoe Musclog zich verhoudt tot MyFitnessPal, MacroFactor, Cronometer, Bevel, Lifesum, Hevy en meer op het gebied van privacy, voeding, workouts en volledige gezondheidstracking."
         }
       }
     },
@@ -305,7 +309,8 @@
       "download": "Nu Downloaden",
       "exercises": "Oefeningen",
       "gameboy": "Game Boy",
-      "language": "Taal"
+      "language": "Taal",
+      "alternatives": "Vergelijk"
     },
     "gameboy": {
       "pageTitle": "Speel Musclog op Game Boy",
@@ -528,7 +533,10 @@
           "typesCollected": {
             "title": "Soorten verzamelde gegevens",
             "content": "Bij gebruik van onze Service kunnen wij u vragen bepaalde persoonlijk identificeerbare informatie te verstrekken. Persoonlijk identificeerbare informatie kan onder meer omvatten:",
-            "items": ["Voor- en achternaam", "Gebruiksgegevens"]
+            "items": [
+              "Voor- en achternaam",
+              "Gebruiksgegevens"
+            ]
           },
           "googleOAuth": {
             "title": "Google OAuth-gegevens",
@@ -1071,7 +1079,13 @@
               "question": "Hoe worden mijn dagelijkse macro's berekend?",
               "answer": "Macro-verdelingen zijn gebaseerd op fitnessdoel, met behulp van IOM AMDR-bereiken als kader en ISSN/ACSM sportspecifiek onderzoek voor verfijning.",
               "table": {
-                "head": ["Doel", "Koolhydraten", "Eiwit", "Vet", "Redenering"],
+                "head": [
+                  "Doel",
+                  "Koolhydraten",
+                  "Eiwit",
+                  "Vet",
+                  "Redenering"
+                ],
                 "rows": [
                   [
                     "Gewichtsverlies",
@@ -1182,18 +1196,42 @@
               "question": "Hoe worden eenherhalingsmaximum (1RM) schattingen berekend?",
               "answer": "Musclog berekent 1RM met een ensemble van zeven gepubliceerde formules en middelt hun uitkomsten. Middelen vermindert de systematische fout van elke afzonderlijke formule, die elk verschillende nauwkeurigheidsprofielen hebben over herhalingsbereiken.",
               "table": {
-                "head": ["Formule", "Vergelijking", "Beste Voor"],
+                "head": [
+                  "Formule",
+                  "Vergelijking",
+                  "Beste Voor"
+                ],
                 "rows": [
-                  ["Brzycki (1993)", "w / (1,0278 − 0,0278 × r)", "2–10 reps; meest gebruikt"],
-                  ["Epley (1985)", "w × (1 + r / 30)", "Algemeen gebruik; licht conservatief"],
-                  ["Lander (1985)", "w / (1,013 − 0,0267 × r)", "Matige herhalingsbereiken"],
-                  ["Lombardi (1989)", "w × r^0,1", "Lage herhalingsbereiken"],
+                  [
+                    "Brzycki (1993)",
+                    "w / (1,0278 − 0,0278 × r)",
+                    "2–10 reps; meest gebruikt"
+                  ],
+                  [
+                    "Epley (1985)",
+                    "w × (1 + r / 30)",
+                    "Algemeen gebruik; licht conservatief"
+                  ],
+                  [
+                    "Lander (1985)",
+                    "w / (1,013 − 0,0267 × r)",
+                    "Matige herhalingsbereiken"
+                  ],
+                  [
+                    "Lombardi (1989)",
+                    "w × r^0,1",
+                    "Lage herhalingsbereiken"
+                  ],
                   [
                     "Mayhew et al. (1992)",
                     "w / (0,522 + 0,419 × e^{−0,055r})",
                     "Breed herhalingsbereik; exponentieel model"
                   ],
-                  ["O'Connor et al. (1989)", "w × (1 + 0,025 × r)", "Lineair; conservatief"],
+                  [
+                    "O'Connor et al. (1989)",
+                    "w × (1 + 0,025 × r)",
+                    "Lineair; conservatief"
+                  ],
                   [
                     "Wathen (1994)",
                     "w / (0,488 + 0,539 × e^{−0,035r})",
@@ -1340,7 +1378,11 @@
               "question": "Hoe wordt de schatting van «Vandaag verbrand» berekend?",
               "answer": "De realtime schatting van calorieverbranding gebruikt een circadiaans gewogen model, in plaats van een eenvoudige lineaire verdeling van je TDEE over 24 uur. Metabole kameraonderzoek en circadiaanse biologie tonen aan dat het energieverbruik niet uniform is gedurende de dag — het volgt een uitgesproken 24-uursritme dat wordt aangedreven door je interne biologische klok, houding, maaltijdtiming (thermisch effect van voedsel, TEF) en spontane fysieke activiteit (NEAT).",
               "table": {
-                "head": ["Tijdblok", "% van TDEE", "Primaire factor"],
+                "head": [
+                  "Tijdblok",
+                  "% van TDEE",
+                  "Primaire factor"
+                ],
                 "rows": [
                   [
                     "23:00 – 03:00",
@@ -1362,7 +1404,11 @@
                     "~22,5 %",
                     "Lunch-TEF, overdag NEAT en werkgerelateerde beweging"
                   ],
-                  ["15:00 – 19:00", "~25 %", "Circadiaanse REE-piek (~17:00), kerntemperatuurpiek"],
+                  [
+                    "15:00 – 19:00",
+                    "~25 %",
+                    "Circadiaanse REE-piek (~17:00), kerntemperatuurpiek"
+                  ],
                   [
                     "19:00 – 23:00",
                     "~15 %",
@@ -1450,6 +1496,206 @@
       "chartOrientationSubtitle": "apparaathoek · duidelijkst voor roterende oefeningen",
       "chartAccelerationTitle": "Versnelling",
       "chartAccelerationSubtitle": "ruwe versnelling · werkt voor elke oefening"
+    },
+    "alternatives": {
+      "badge": "Eerlijke vergelijking",
+      "titlePrefix": "Musclog vs.",
+      "titleHighlight": "de alternatieven",
+      "description": "Hoe Musclog zich verhoudt tot populaire voedings- en fitnessapps op het gebied van privacy, voeding, workouts en volledige gezondheidstracking. De criteria benadrukken breedte, privacy, eigenaarschap, offline gebruik en integratie.",
+      "featureColumn": "Functie",
+      "asOf": "Deze vergelijking weerspiegelt de officiële productdocumentatie die beschikbaar was op 24 juli 2026. Musclog-informatie komt van de live website en repository; concurrentinformatie van hun officiële sites en helpcentra.",
+      "disclaimer": "Productnamen en handelsmerken behoren toe aan hun respectieve eigenaren. Details veranderen vaak — controleer altijd de officiële site van elke aanbieder voor de laatste stand.",
+      "legend": {
+        "title": "Legenda",
+        "full": "Sterke, ingebouwde ondersteuning",
+        "partial": "Gedeeltelijk, basis, integratie-afhankelijk of achter betaalmuur",
+        "none": "Geen gedocumenteerde kernfunctie"
+      },
+      "notes": {
+        "fullApp": "Volledige app",
+        "basic": "Basis",
+        "trialOnly": "Alleen proefversie",
+        "trackingFree": "Tracking gratis",
+        "strongBasic": "Sterk basis",
+        "limited": "Beperkt",
+        "strongCore": "Sterke kern",
+        "appleEcosystem": "Apple-ecosysteem",
+        "appleHealthCentric": "Apple Health-gericht",
+        "offlineDiarySync": "Offline dagboeksync",
+        "notLocalFirst": "Niet local-first",
+        "trackingDependent": "Tracking-afhankelijk",
+        "cloudAccount": "Cloud-account",
+        "internetRequired": "Internet vereist",
+        "workoutCaching": "Workout-caching",
+        "applePlatform": "Apple-platform",
+        "serverEncryption": "Serverencryptie",
+        "premiumExport": "Premium-export",
+        "exportGeneric": "Export",
+        "healthExport": "Health-export",
+        "exportReports": "Export/rapporten",
+        "fullExportViaSupport": "Volledige export via support",
+        "workoutsMeasurements": "Workouts/metingen",
+        "mobile": "Mobiel",
+        "appleOnly": "Alleen Apple",
+        "fullAppMobileOnly": "Volledige app alleen mobiel",
+        "upTo84": "Tot 84",
+        "paid": "Betaald",
+        "paidVoice": "Betaalde spraak",
+        "gold": "Gold",
+        "goldVoice": "Gold/spraak",
+        "premium": "Premium",
+        "curatedSources": "Samengestelde bronnen",
+        "verifiedDatabases": "Geverifieerde databases",
+        "aiGuidance": "AI-begeleiding",
+        "ai": "AI",
+        "nutritionAdvice": "Voedingsadvies",
+        "fastingFeature": "Vastenfunctie",
+        "timer": "Timer",
+        "plansTimer": "Plannen/timer",
+        "logging": "Loggen",
+        "journal": "Dagboek",
+        "basicExercise": "Basisoefening",
+        "exerciseEntries": "Oefeninvoer",
+        "exerciseHabits": "Bewegingsgewoonten",
+        "aiCoach": "AI-coach",
+        "separateApp": "Aparte app",
+        "periodLogging": "Menstruatie loggen",
+        "bestHere": "Beste hier",
+        "biometrics": "Biometrie",
+        "wearables": "Wearables",
+        "integrations": "Integraties",
+        "watches": "Smartwatches",
+        "algorithmic": "Algoritmisch",
+        "workoutCoach": "Workout-coach",
+        "pro": "Pro",
+        "nutrition": "Voeding",
+        "personalitiesFiles": "Persoonlijkheden/bestanden",
+        "gpl3": "GPL-3.0",
+        "jsonDbExcel": "JSON, DB, Excel",
+        "micros40": "40+",
+        "yes": "Ja",
+        "no": "Nee",
+        "some": "Enkele"
+      },
+      "sections": {
+        "privacy": {
+          "title": "Privacy, eigenaarschap en prijs",
+          "footnote": "Lifesum stelt dat het geen wijzigingen kan opslaan zonder internetverbinding en gegevens op bedrijfsservers bewaart. MyFitnessPal staat sommige offline dagboekwijzigingen toe maar synchroniseert die later met zijn accountsysteem. Musclog gebruikt een lokale WatermelonDB-database als centrale opslaglaag.",
+          "rows": {
+            "freeVersion": "Bruikbare gratis versie",
+            "openSource": "Open source",
+            "noProprietaryAccount": "Geen eigen account vereist",
+            "localFirst": "Local-first datamodel",
+            "fullyOffline": "Kernfunctionaliteit volledig offline",
+            "localEncryption": "Gevoelige velden lokaal versleuteld",
+            "rawDbAccess": "Directe databasetoegang",
+            "migrationBackups": "Migratieback-ups en DB-reparatie",
+            "completeBackup": "Volledige back-up in zelfbediening",
+            "platforms": "Android, iOS en web",
+            "adsInFree": "Advertenties in gratis versie"
+          }
+        },
+        "nutrition": {
+          "title": "Voeding en energiecoaching",
+          "footnote": "MacroFactor en Musclog zijn hier het sterkst in empirische schatting van het energieverbruik. Cronometer blijft bijzonder sterk in de diepgang van micronutriënten, terwijl MyFitnessPal, Lifesum, Bevel, MacroFactor en Cronometer nu allemaal een vorm van AI-ondersteund voedsel loggen bieden.",
+          "rows": {
+            "caloriesMacros": "Calorieën en macro's",
+            "micronutrients": "Gedetailleerde micronutriënten",
+            "barcode": "Barcodescannen",
+            "customFoods": "Eigen voedingsmiddelen en porties",
+            "savedMeals": "Opgeslagen maaltijden en recepten",
+            "aiPhoto": "Maaltijd loggen via AI-foto",
+            "naturalLanguage": "Voedsel loggen in natuurlijke taal",
+            "labelOcr": "OCR van voedingslabels",
+            "foodDbSelection": "Keuze uit Open Food Facts en USDA",
+            "netCarbs": "Totale versus netto koolhydraten",
+            "empiricalTdee": "Empirisch TDEE uit inname en gewicht",
+            "autoTarget": "Automatische aanpassing caloriedoel",
+            "weeklyCheckins": "Wekelijkse doelchecks",
+            "intuitiveEating": "Intuïtief-etenmodus verbergt cijfers",
+            "fastedDays": "Registratie van bewuste vastendagen",
+            "supplements": "Supplementen en herinneringen",
+            "qualityInsights": "Inzichten in voedingskwaliteit"
+          }
+        },
+        "workouts": {
+          "title": "Workouts en voortgang",
+          "footnote": "MacroFactor Workouts en Hevy zijn de dichtstbijzijnde concurrenten voor serieus krachtloggen. Hevy legt sets, gewichten, supersets, RPE, timers, persoonlijke records, routines en gedetailleerde voortgangsstatistieken vast; MacroFactor Workouts richt zich meer op dynamische programmering. Het belangrijkste verschil is dat MacroFactor voeding en training in aparte producten splitst, terwijl Musclog ze combineert in één lokale dataset.",
+          "rows": {
+            "strengthLogging": "Gedetailleerd krachttraining loggen",
+            "setsRepsWeights": "Sets, herhalingen en gewichten",
+            "rpeRir": "RPE/RIR-ondersteuning",
+            "supersets": "Supersets",
+            "prDetection": "Detectie van persoonlijke records",
+            "restTimers": "Rusttimers",
+            "customExercises": "Eigen oefeningen",
+            "templates": "Workout-sjablonen en routines",
+            "aiPlans": "AI-gegenereerde trainingsschema's",
+            "pasteParse": "Plak een workout en verwerk met AI",
+            "editHistorical": "Historische workouts bewerken",
+            "exerciseGoals": "Doelen per oefening",
+            "sharing": "Workouts delen/deeplinks",
+            "nutritionAndLifting": "Voeding en serieus krachttraining samen",
+            "offlineRecovery": "Offline workout-herstel"
+          }
+        },
+        "wholeHealth": {
+          "title": "Volledige gezondheid, AI en integraties",
+          "footnote": "Bevel is de sterkste concurrent voor herstel, slaap, stress en readiness op basis van wearables. Musclog blijft sterker op het gebied van lokaal data-eigenaarschap, Android-ondersteuning, gedetailleerde voedingsinstellingen, empirisch TDEE, zelf-gehoste AI, directe BLE-workflows en databasetooling.",
+          "rows": {
+            "bodyMeasurements": "Gewicht en lichaamsmaten",
+            "bodyFatBmiFfmi": "Vetpercentage, BMI en FFMI",
+            "correlationCharts": "Cross-domein correlatiegrafieken",
+            "menstrualCycle": "Menstruatiecyclus bijhouden",
+            "phaseAware": "Fasegerichte training/voeding-inzichten",
+            "moodRecovery": "Stemming en herstel bijhouden",
+            "sleepReadiness": "Speciale slaap-/readiness-score",
+            "healthConnect": "Health Connect-integratie",
+            "healthKit": "HealthKit-integratie",
+            "historicalImport": "Import van historische gezondheidsdata",
+            "bleManagement": "Direct beheer van BLE-apparaten",
+            "imuRepCounting": "Lokaal IMU-herhalingen tellen",
+            "aiCoachConfig": "Configureerbare conversationele AI-coach",
+            "aiContext": "AI ziet voedings- en workoutcontext",
+            "customPrompts": "Aangepaste AI-systeemprompts",
+            "byoApiKey": "Eigen API-sleutel gebruiken",
+            "localModels": "Lokale/zelf-gehoste AI-modellen",
+            "gameboy": "Game Boy Color-editie"
+          }
+        }
+      },
+      "winners": {
+        "title": "Wie wint elke specifieke categorie?",
+        "categoryHeader": "Categorie",
+        "winnerHeader": "Sterkste optie",
+        "rows": {
+          "overallCoverage": "Beste algehele functiedekking",
+          "privacyOwnership": "Beste privacy en gebruikerseigenaarschap",
+          "freeOpenSource": "Beste gratis/open-source-propositie",
+          "nutritionLifting": "Beste enkele app voor voeding + serieus krachttraining",
+          "configurableAi": "Beste configureerbare/lokale AI",
+          "foodEcosystem": "Grootste commerciële voedselecosysteem",
+          "dietCoaching": "Meest gespecialiseerde adaptieve dieetcoaching",
+          "micronutrient": "Meest gespecialiseerde micronutriënten-tracking",
+          "wearableRecovery": "Beste wearable herstel-/readiness-ervaring",
+          "socialLifting": "Meest gevestigde sociale krachttraining-ervaring",
+          "mealPlan": "Meest verfijnde lifestyle-maaltijdplanervaring",
+          "liftingProgramme": "Meest gespecialiseerde geautomatiseerde krachtprogramma",
+          "gameboy": "Beste Game Boy Color-ondersteuning"
+        }
+      },
+      "conclusion": {
+        "title": "De eerlijke conclusie",
+        "quote": "Musclog is de enige app in deze vergelijking die serieus workout loggen, uitgebreide voedingsregistratie, empirische energiecoaching, lichaams- en cyclusanalyse, AI-coaching, gezondheidsintegraties en ondersteuning voor gekoppelde apparaten combineert, terwijl het gratis, open source, local-first en bruikbaar zonder eigen account blijft.",
+        "body": "Dat betekent niet dat Musclog al de beste is in elke afzonderlijke functie. MyFitnessPal heeft een groter commercieel voedselecosysteem, Cronometer heeft diepere nutriëntendata, Bevel heeft een sterkere slaap- en readiness-analyse, en Hevy heeft een volwassen sociaal krachttraining-netwerk. Maar wie de volledige combinatie wil, zou anders iets nodig hebben als:",
+        "stack": "MacroFactor + MacroFactor Workouts of Hevy + Bevel + extra privacy-/exporttools",
+        "bodyAfter": "Musclog wil de hele stack in één app bieden."
+      },
+      "cta": {
+        "title": "Krijg de hele stack in één app",
+        "description": "Gratis, open source en local-first. Geen account nodig.",
+        "button": "Musclog downloaden"
+      }
     }
   }
 }
