@@ -2,6 +2,7 @@ import * as ImagePicker from 'expo-image-picker';
 import type { RefObject } from 'react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Platform } from 'react-native';
 
 import type { CameraViewRef } from '@/components/CameraView';
 import { openCropperAsync } from '@/utils/file';
@@ -89,12 +90,25 @@ export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraC
 
   const pickFromGallery = useCallback(async () => {
     try {
-      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (!permissionResult.granted) {
-        showSnackbar('error', t('food.aiCamera.galleryPermissionRequired'));
-        return;
+      // Android's `ACTION_GET_CONTENT` picker (forced via `legacy` below) grants access to the
+      // chosen file through a temporary content-URI grant, so it needs no media-library
+      // permission — and requesting one is an extra Expo async call on the single shared
+      // `modulesQueue` thread (see the shutter/gallery latency notes in AGENTS.md), the exact
+      // thread whose boot-time saturation stalls this flow. Skip it on Android; keep it on iOS.
+      if (Platform.OS !== 'android') {
+        const permissionStartedAt = Date.now();
+        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        logPhase('gallery permission', permissionStartedAt);
+        if (!permissionResult.granted) {
+          showSnackbar('error', t('food.aiCamera.galleryPermissionRequired'));
+          return;
+        }
       }
 
+      // Time the picker call itself. This span includes the user browsing/selecting, so a large
+      // value is only a red flag when the picker was slow to *appear* (the reported symptom:
+      // the picker UI not showing for ~25s on the first pick after a cold boot).
+      const pickerStartedAt = Date.now();
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         quality,
@@ -102,6 +116,7 @@ export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraC
         // Force the legacy Android picker (`ACTION_GET_CONTENT`) instead of the modern system
         legacy: true,
       });
+      logPhase('gallery picker', pickerStartedAt);
 
       if (result.canceled || !result.assets?.length) {
         return;

@@ -13,6 +13,16 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
+// The jsdom project doesn't load the RN preset, so stub the only RN surface the hook uses.
+// Default to a non-Android platform so the media-library permission request still runs for the
+// existing permission-path tests; individual tests override `mockPlatformOS` for Android.
+let mockPlatformOS = 'ios';
+jest.mock('react-native', () => ({
+  get Platform() {
+    return { OS: mockPlatformOS };
+  },
+}));
+
 const mockShowSnackbar = jest.fn();
 jest.mock('@/utils/snackbarService', () => ({
   showSnackbar: (...args: unknown[]) => mockShowSnackbar(...args),
@@ -52,6 +62,7 @@ describe('useCameraCaptureFlow', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockPlatformOS = 'ios';
     jest.spyOn(console, 'error').mockImplementation(() => {});
     mockOpenCropperAsync.mockResolvedValue({ path: 'file:///cropped.jpg' });
     mockRequestMediaLibraryPermissions.mockResolvedValue({ granted: true });
@@ -127,6 +138,19 @@ describe('useCameraCaptureFlow', () => {
         'error',
         'food.aiCamera.galleryPermissionRequired'
       );
+    });
+
+    it('skips the media-library permission request on Android and still launches the picker', async () => {
+      mockPlatformOS = 'android';
+      const { result, process } = renderFlow();
+
+      await result.current.pickFromGallery();
+
+      expect(mockRequestMediaLibraryPermissions).not.toHaveBeenCalled();
+      expect(mockLaunchImageLibrary).toHaveBeenCalledWith(
+        expect.objectContaining({ legacy: true })
+      );
+      expect(process).toHaveBeenCalledWith('file:///cropped.jpg');
     });
 
     it('ends silently when the picker is cancelled', async () => {
