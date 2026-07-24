@@ -501,7 +501,7 @@ export function Footer() {
             </div>
           </Link>
 
-          <nav className="flex flex-wrap justify-center gap-6">
+          <nav className="grid grid-cols-2 gap-x-8 gap-y-3 text-center sm:grid-cols-3 md:text-left">
             {footerLinks.map((link) =>
               link.href.startsWith('http') ? (
                 <a
