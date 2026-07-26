@@ -60,6 +60,7 @@ import {
 import {
   areCoreMacrosEffectivelyZero,
   EMPTY_PRODUCT_NUTRITION,
+  getExternalProductDisplayQuality,
   getProductBarcodeFromSearchProduct,
   inferBarcodeNutritionSource,
   microsFromNutrition,
@@ -68,6 +69,7 @@ import {
   parseServingSizeFromProduct,
   type ProductNutritionPer100g,
 } from '@/utils/externalFoodProduct';
+import { foodRecordDisplayQuality } from '@/utils/foodDisplayQuality';
 import { formatAppRoundedDecimal } from '@/utils/formatAppNumber';
 import { formatDisplayGrams } from '@/utils/formatDisplayWeight';
 import {
@@ -76,12 +78,7 @@ import {
   toFiniteMacro,
 } from '@/utils/inferCaloriesFromMacros';
 import { getDecimalSeparator } from '@/utils/localizedDecimalInput';
-import { getMusclogDisplayQuality } from '@/utils/musclogProduct';
-import {
-  extractLabelsFromOFFProduct,
-  getNutrimentsWithFallback,
-  mapOpenFoodFactsProduct,
-} from '@/utils/openFoodFactsMapper';
+import { getNutrimentsWithFallback, mapOpenFoodFactsProduct } from '@/utils/openFoodFactsMapper';
 import { getProductName } from '@/utils/productName';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { getMassUnitLabel } from '@/utils/unitConversion';
@@ -973,80 +970,20 @@ export function FoodMealTrackingDetailsModal({
   }, [rawNutritionalData.calories, inferredCaloriesPer100g, mode, editedOverrides]);
 
   const nutritionQuality = useMemo(() => {
+    // A stored food (or a mapped search result) already carries the quality columns directly.
     if (food || localFood) {
-      const foodData = food || localFood;
-      const hasQuality =
-        foodData!.nutriscore ||
-        foodData!.ecoscore ||
-        foodData!.novaGroup != null ||
-        foodData!.labels;
-
-      if (!hasQuality) {
-        return undefined;
-      }
-
-      return {
-        nutriScore: foodData!.nutriscore,
-        ecoScore: foodData!.ecoscore,
-        novaGroup: foodData!.novaGroup,
-        labels: foodData!.labels,
-      };
+      return foodRecordDisplayQuality(food ?? localFood);
     }
 
     if (productFromSearch?.source === 'openfood') {
-      const mapped = mapOpenFoodFactsProduct(productFromSearch);
-      const hasQuality =
-        mapped.nutriscore || mapped.ecoscore || mapped.novaGroup != null || mapped.labels;
-
-      if (!hasQuality) {
-        return undefined;
-      }
-
-      return {
-        nutriScore: mapped.nutriscore,
-        ecoScore: mapped.ecoscore,
-        novaGroup: mapped.novaGroup,
-        labels: mapped.labels,
-      };
+      return foodRecordDisplayQuality(mapOpenFoodFactsProduct(productFromSearch));
     }
 
     const effectiveDetails = refetchedProductDetails ?? productDetails;
-
-    if (
-      isSuccessFoodDetailProductState(effectiveDetails) &&
-      (effectiveDetails as any).source === 'musclog'
-    ) {
-      return getMusclogDisplayQuality((effectiveDetails as any).product);
-    }
-
-    if (
-      isSuccessFoodDetailProductState(effectiveDetails) &&
-      (effectiveDetails as any).source !== 'usda'
-    ) {
-      const product = effectiveDetails.product;
-      const nutriScore =
-        typeof (product as any).nutriscore_grade === 'string' && (product as any).nutriscore_grade
-          ? (product as any).nutriscore_grade.toLowerCase()
-          : undefined;
-
-      const ecoScore =
-        typeof (product as any).ecoscore_grade === 'string' && (product as any).ecoscore_grade
-          ? (product as any).ecoscore_grade.toLowerCase()
-          : undefined;
-
-      const novaGroup =
-        typeof (product as any).nova_group === 'number' ? (product as any).nova_group : undefined;
-
-      const labels = extractLabelsFromOFFProduct(product as any);
-      const hasQuality = nutriScore || ecoScore || novaGroup != null || labels;
-      if (!hasQuality) {
-        return undefined;
-      }
-
-      return { nutriScore, ecoScore, novaGroup, labels };
-    }
-
-    return undefined;
+    return getExternalProductDisplayQuality(
+      inferBarcodeNutritionSource(effectiveDetails, null),
+      effectiveDetails
+    );
   }, [food, localFood, productFromSearch, productDetails, refetchedProductDetails]);
 
   const nutritionalData = useMemo(() => {

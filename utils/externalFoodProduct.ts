@@ -2,11 +2,17 @@ import type { MicrosData } from '@/database/models';
 import { isSuccessFoodDetailProductState } from '@/types/guards/openFoodFacts';
 import type { ProductState } from '@/types/openFoodFacts';
 import { totalCarbsForFoodSource } from '@/utils/carbsConvention';
+import type { FoodDisplayQuality } from '@/utils/foodDisplayQuality';
 import { toFiniteMacro } from '@/utils/inferCaloriesFromMacros';
-import { getMusclogNutritionPer100g, type MusclogProduct } from '@/utils/musclogProduct';
+import {
+  getMusclogDisplayQuality,
+  getMusclogNutritionPer100g,
+  type MusclogProduct,
+} from '@/utils/musclogProduct';
 import {
   getNutrimentsWithFallback,
   getNutrimentValue,
+  getOffDisplayQuality,
   type OpenFoodFactsNutritionProduct,
   parseOpenFoodFactsNutritionPer100g,
   resolveOpenFoodFactsFiberPer100g,
@@ -96,6 +102,33 @@ export function resolveExternalFoodSource(
   }
 
   return 'openfood';
+}
+
+/**
+ * Quality badges for a product-details state, dispatched on its already-resolved source rather
+ * than re-sniffing field shapes. USDA carries no quality data, so it resolves to undefined
+ * instead of being read with another provider's field names.
+ *
+ * Pass the source from {@link inferBarcodeNutritionSource} (or {@link resolveExternalFoodSource})
+ * — do not re-derive it at the call site.
+ */
+export function getExternalProductDisplayQuality(
+  source: BarcodeNutritionSource,
+  details: ProductDetailsQueryData | null | undefined
+): FoodDisplayQuality | undefined {
+  if (!details || !('product' in details) || !details.product) {
+    return undefined;
+  }
+
+  if (source === 'musclog') {
+    return getMusclogDisplayQuality(details.product as MusclogProduct);
+  }
+
+  if (source === 'openfood' && isSuccessFoodDetailProductState(details)) {
+    return getOffDisplayQuality(details.product);
+  }
+
+  return undefined;
 }
 
 export function getProductBarcodeFromSearchProduct(productFromSearch: unknown): string {

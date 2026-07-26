@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
+import { useSurfaceColor } from '@/context/SurfaceColorContext';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { addOpacityToHex } from '@/theme';
@@ -20,6 +21,18 @@ import {
 import { NutritionQualityData } from './NutritionQualityData';
 
 export type { MealIngredient };
+
+/** Collapsed-accordion preview height; the fade gradient below spans exactly this band. */
+const ACCORDION_COLLAPSED_HEIGHT = 110;
+
+/**
+ * Where the fade reaches each opacity, in dp from the top of the collapsed preview: a few
+ * legible dp, then a quick ramp to opaque. Divided by the band height at the use site so the
+ * ramp keeps its tuned dp geometry if ACCORDION_COLLAPSED_HEIGHT ever changes, rather than
+ * stretching with it.
+ */
+const FADE_STOP_DP = { clear: 0, half: 10, most: 30, nearly: 52, opaque: 72 } as const;
+const fadeLocation = (dp: number) => dp / ACCORDION_COLLAPSED_HEIGHT;
 
 type FoodData = {
   name: string;
@@ -94,6 +107,8 @@ export function FoodNutritionSectionCard({
   useQualityAccordion = true,
 }: FoodNutritionSectionProps) {
   const theme = useTheme();
+  /** Whatever surface this card sits on — the fade below has to blend into it, not the screen. */
+  const surfaceColor = useSurfaceColor();
   const { t } = useTranslation();
   const { formatRoundedDecimal } = useFormatAppNumber();
   const [ingredientsModalVisible, setIngredientsModalVisible] = useState(false);
@@ -266,7 +281,7 @@ export function FoodNutritionSectionCard({
         <View
           style={
             effectivelyUseAccordion && !nutritionExpanded
-              ? { maxHeight: 110, overflow: 'hidden' }
+              ? { maxHeight: ACCORDION_COLLAPSED_HEIGHT, overflow: 'hidden' }
               : undefined
           }
         >
@@ -439,22 +454,43 @@ export function FoodNutritionSectionCard({
 
         {effectivelyUseAccordion && !nutritionExpanded && hasExpandableNutritionContent ? (
           <>
+            {/*
+              This overlay hides clipped content by painting over it, which only works while the
+              content below composites in normal 2D draw order. Android renders an `elevation`
+              view in a separate Z pass that can paint above a later, non-elevated sibling — so
+              nothing inside the collapsed preview may use `elevation` (see NutritionQualityData,
+              whose score badges deliberately use iOS shadow props without it).
+            */}
             <LinearGradient
               colors={[
-                addOpacityToHex(theme.colors.background.primary, 0.5),
-                addOpacityToHex(theme.colors.background.primary, 0.78),
-                addOpacityToHex(theme.colors.background.primary, 0.94),
-                theme.colors.background.primary,
+                addOpacityToHex(surfaceColor, 0),
+                addOpacityToHex(surfaceColor, 0.5),
+                addOpacityToHex(surfaceColor, 0.78),
+                addOpacityToHex(surfaceColor, 0.94),
+                surfaceColor,
               ]}
-              locations={[0, 0.2, 0.42, 0.62]}
-              style={{ bottom: 0, height: 100, left: 0, position: 'absolute', right: 0 }}
+              locations={[
+                fadeLocation(FADE_STOP_DP.clear),
+                fadeLocation(FADE_STOP_DP.half),
+                fadeLocation(FADE_STOP_DP.most),
+                fadeLocation(FADE_STOP_DP.nearly),
+                fadeLocation(FADE_STOP_DP.opaque),
+              ]}
+              style={{
+                bottom: 0,
+                height: ACCORDION_COLLAPSED_HEIGHT,
+                left: 0,
+                position: 'absolute',
+                right: 0,
+                zIndex: 10,
+              }}
               pointerEvents="none"
             />
             <Pressable
               onPress={() => setNutritionExpanded(true)}
               hitSlop={12}
               className="items-center py-1"
-              style={{ bottom: 0, left: 0, position: 'absolute', right: 0 }}
+              style={{ bottom: 0, left: 0, position: 'absolute', right: 0, zIndex: 10 }}
             >
               <Text
                 className="text-xs font-semibold"

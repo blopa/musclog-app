@@ -1,13 +1,9 @@
 import type { FoodLabels } from '@/database/models/Food';
+import type { FoodDisplayQuality } from '@/utils/foodDisplayQuality';
 
 export type NutritionQualityScore = 'a' | 'b' | 'c' | 'd' | 'e';
 
-export type NutritionQualityInput = {
-  nutriScore?: string;
-  ecoScore?: string;
-  novaGroup?: number;
-  labels?: FoodLabels;
-};
+export type NutritionQualityInput = FoodDisplayQuality;
 
 const LABEL_KEYS: { key: keyof FoodLabels }[] = [
   { key: 'organic' },
