@@ -612,6 +612,7 @@ export function ScannedFoodDetailsModal({
           }
           isRefetchingSource={isRefetchingSource}
           alternateSourceNotFound={alternateSourceLookupFailed ? hasAllZeroMacros : false}
+          fadeBackgroundColor={theme.colors.background.cardElevated}
           caloriesTooLowWarning={
             showCaloriesTooLowWarning
               ? {

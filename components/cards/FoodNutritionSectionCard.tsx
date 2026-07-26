@@ -70,6 +70,8 @@ type FoodNutritionSectionProps = {
   useQualityAccordion?: boolean;
   ingredients?: MealIngredient[];
   nutritionQuality?: NutritionQualityInput;
+  /** Color the "show more" fade blends into — must match the actual surface behind this card (defaults to the screen background; pass the sheet's background when rendered inside a BottomPopUp). */
+  fadeBackgroundColor?: string;
 };
 
 export function FoodNutritionSectionCard({
@@ -92,6 +94,7 @@ export function FoodNutritionSectionCard({
   ingredients,
   nutritionQuality,
   useQualityAccordion = true,
+  fadeBackgroundColor,
 }: FoodNutritionSectionProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -441,10 +444,10 @@ export function FoodNutritionSectionCard({
           <>
             <LinearGradient
               colors={[
-                addOpacityToHex(theme.colors.background.primary, 0.5),
-                addOpacityToHex(theme.colors.background.primary, 0.78),
-                addOpacityToHex(theme.colors.background.primary, 0.94),
-                theme.colors.background.primary,
+                addOpacityToHex(fadeBackgroundColor ?? theme.colors.background.primary, 0.5),
+                addOpacityToHex(fadeBackgroundColor ?? theme.colors.background.primary, 0.78),
+                addOpacityToHex(fadeBackgroundColor ?? theme.colors.background.primary, 0.94),
+                fadeBackgroundColor ?? theme.colors.background.primary,
               ]}
               locations={[0, 0.2, 0.42, 0.62]}
               style={{ bottom: 0, height: 100, left: 0, position: 'absolute', right: 0 }}
