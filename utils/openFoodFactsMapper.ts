@@ -5,6 +5,7 @@ import i18n from '@/lang/lang';
 import { ProductV3, SearchResultProduct, SuccessFoodProductState } from '@/types/openFoodFacts';
 
 import { totalCarbsForFoodSource } from './carbsConvention';
+import type { FoodDisplayQuality } from './foodDisplayQuality';
 import { resolveRoundedPer100gCaloriesForDisplay, toFiniteMacro } from './inferCaloriesFromMacros';
 import { getProductName as _getProductName } from './productName';
 import { gramsToDisplay } from './unitConversion';
@@ -567,6 +568,47 @@ export function extractLabelsFromOFFProduct(product: {
   return Object.keys(result).length > 0 ? result : undefined;
 }
 
+/** The subset of an OFF product (V2 search item or V3 product) carrying quality badges. */
+export type OpenFoodFactsQualityProduct = {
+  nutriscore_grade?: unknown;
+  ecoscore_grade?: unknown;
+  nova_group?: unknown;
+  labels_tags?: string[];
+  ingredients_analysis_tags?: string[];
+};
+
+/**
+ * Normalizes an Open Food Facts product's quality badges into {@link FoodDisplayQuality},
+ * lowercasing the letter grades OFF returns in mixed case. Returns undefined when the product
+ * carries no quality data at all, so callers can skip rendering the section entirely.
+ *
+ * Single source of truth for reading these OFF fields — do not re-inline the field names.
+ */
+export function getOffDisplayQuality(
+  product: OpenFoodFactsQualityProduct | null | undefined
+): FoodDisplayQuality | undefined {
+  if (!product) {
+    return undefined;
+  }
+
+  const nutriScore =
+    typeof product.nutriscore_grade === 'string' && product.nutriscore_grade
+      ? product.nutriscore_grade.toLowerCase()
+      : undefined;
+  const ecoScore =
+    typeof product.ecoscore_grade === 'string' && product.ecoscore_grade
+      ? product.ecoscore_grade.toLowerCase()
+      : undefined;
+  const novaGroup = typeof product.nova_group === 'number' ? product.nova_group : undefined;
+  const labels = extractLabelsFromOFFProduct(product);
+
+  if (nutriScore == null && ecoScore == null && novaGroup == null && labels == null) {
+    return undefined;
+  }
+
+  return { nutriScore, ecoScore, novaGroup, labels };
+}
+
 export function mapOpenFoodFactsProduct(
   product: SearchResultProduct,
   units: Units = 'metric'
@@ -628,16 +670,12 @@ export function mapOpenFoodFactsProduct(
   const carbonFootprint = nutrimentValue('carbon-footprint-from-known-ingredients');
 
   // Extract product scores
-  const nutriscoreGrade =
-    typeof product.nutriscore_grade === 'string' && product.nutriscore_grade
-      ? product.nutriscore_grade.toLowerCase()
-      : undefined;
-  const ecoscoreGrade =
-    typeof product.ecoscore_grade === 'string' && product.ecoscore_grade
-      ? product.ecoscore_grade.toLowerCase()
-      : undefined;
-  const novaGroup = typeof product.nova_group === 'number' ? product.nova_group : undefined;
-  const labels = extractLabelsFromOFFProduct(product);
+  const {
+    nutriScore: nutriscoreGrade,
+    ecoScore: ecoscoreGrade,
+    novaGroup,
+    labels,
+  } = getOffDisplayQuality(product) ?? {};
 
   return {
     id: product.code || String(Math.random()),

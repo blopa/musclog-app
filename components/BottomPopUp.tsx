@@ -15,6 +15,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { computeKeyboardSheetLift } from '@/components/keyboardSheetLift';
+import { SurfaceColorProvider } from '@/context/SurfaceColorContext';
 import { useTheme } from '@/hooks/useTheme';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
 
@@ -53,6 +54,8 @@ export function BottomPopUp({
 
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  /** Published to descendants so content can fade out to the real surface behind it. */
+  const sheetSurfaceColor = theme.colors.background.cardElevated;
   /**
    * Android: `Modal` + edge-to-edge often reports `insets.bottom === 0` while the sheet is still laid out
    * to the physical screen bottom behind the system nav bar. Padding inside ScrollView does not move the
@@ -78,8 +81,12 @@ export function BottomPopUp({
       return (
         <ScrollView
           className="p-6"
-          style={!footer ? { paddingBottom: contentBottomPadding } : undefined}
-          contentContainerStyle={footer ? { paddingBottom: theme.spacing.padding.lg } : undefined}
+          // Bottom padding belongs on the content container, not the frame: on the frame it
+          // shrinks the scrollable viewport instead of scrolling with the content. A footer
+          // renders its own inset clearance below, so the content only needs breathing room.
+          contentContainerStyle={{
+            paddingBottom: footer ? theme.spacing.padding.lg : contentBottomPadding,
+          }}
           scrollEnabled={true}
           nestedScrollEnabled={true}
           keyboardShouldPersistTaps="handled"
@@ -108,12 +115,11 @@ export function BottomPopUp({
   const [rawKeyboardBottomLift, setKeyboardBottomLift] = useState(0);
   // Derive: when the sheet is not visible the lift is always 0
   const keyboardBottomLift = visible ? rawKeyboardBottomLift : 0;
-  /** The lift currently laid out, so measurements can be read back in resting coordinates. */
-  const appliedLiftRef = useRef(0);
 
-  useEffect(() => {
-    appliedLiftRef.current = keyboardBottomLift;
-  }, [keyboardBottomLift]);
+  /** Highest the sheet's top may go — above this its header would leave the screen. */
+  const minSheetTop = Math.max(insets.top, theme.spacing.padding.md);
+  /** Breathing room kept between the focused input and the keyboard. */
+  const inputGap = theme.spacing.padding.base;
 
   useEffect(() => {
     if (Platform.OS === 'web' || !visible) {
@@ -127,41 +133,55 @@ export function BottomPopUp({
       // screenY is the keyboard's top edge in absolute screen coordinates — same space
       // as measureInWindow, so no window-vs-screen height mismatch on Android.
       const keyboardTop = e.endCoordinates.screenY;
+      // The sheet is bottom-anchored, so its resting bottom edge is a known constant:
+      // `androidSheetBottomMargin` above the screen bottom. Deriving it that way instead of
+      // measuring keeps every input to computeKeyboardSheetLift in resting coordinates —
+      // the sheet's *measured* position already includes whatever lift is currently applied
+      // (and, mid slide-in, the animated translateY), which would otherwise have to be
+      // corrected for against layout that updates a frame behind this callback.
+      const sheetBottom = keyboardTop + e.endCoordinates.height - androidSheetBottomMargin;
       const sheet = sheetRef.current;
 
       if (!sheet) {
-        setKeyboardBottomLift(e.endCoordinates.height);
+        // Nothing to measure: fall back to the lift a full-height sheet would need, which is
+        // exactly the identity above with the header cap and focused input left out.
+        setKeyboardBottomLift(Math.max(0, sheetBottom - keyboardTop));
         return;
       }
 
+      /**
+       * @param sheetHeight
+       * @param inputBottomInSheet Bottom edge of the focused input as an offset from the sheet's
+       * top edge, or null when nothing is focused.
+       */
+      const applyLift = (sheetHeight: number, inputBottomInSheet: null | number) => {
+        const sheetTop = sheetBottom - sheetHeight;
+        setKeyboardBottomLift(
+          computeKeyboardSheetLift({
+            focusedInputBottom: inputBottomInSheet === null ? null : sheetTop + inputBottomInSheet,
+            inputGap,
+            keyboardTop,
+            minSheetTop,
+            sheetHeight,
+            sheetTop,
+          })
+        );
+      };
+
       const focusedInput = RNTextInput.State.currentlyFocusedInput();
-      // Measurements already include the lift in effect, so subtract it and reason about the
-      // sheet at rest — repeated events (keyboard resize, emoji panel) then settle on the same
-      // lift instead of stacking on top of each other.
-      const appliedLift = appliedLiftRef.current;
 
       sheet.measureInWindow((_x, sheetY, _w, sheetHeight) => {
-        const applyLift = (focusedInputBottom: null | number) =>
-          setKeyboardBottomLift(
-            computeKeyboardSheetLift({
-              focusedInputBottom,
-              inputGap: theme.spacing.padding.base,
-              keyboardTop,
-              minSheetTop: Math.max(insets.top, theme.spacing.padding.md),
-              sheetHeight,
-              sheetTop: sheetY + appliedLift,
-            })
-          );
-
         if (!focusedInput) {
-          applyLift(null);
+          applyLift(sheetHeight, null);
           return;
         }
 
         // measureInWindow is available on the native host ref at runtime;
         // RN's declared instance type doesn't expose it directly.
         (focusedInput as any).measureInWindow((_ix: number, y: number, _iw: number, h: number) => {
-          applyLift(y + appliedLift + h);
+          // Both measurements come from the same pass, so whatever lift is currently applied
+          // cancels in the difference and the offset is already a resting-coordinate value.
+          applyLift(sheetHeight, y - sheetY + h);
         });
       });
     };
@@ -174,7 +194,7 @@ export function BottomPopUp({
       showSub.remove();
       hideSub.remove();
     };
-  }, [visible, insets.top, theme.spacing.padding.md, theme.spacing.padding.base]);
+  }, [visible, androidSheetBottomMargin, minSheetTop, inputGap]);
 
   useEffect(() => {
     if (visible) {
@@ -198,104 +218,106 @@ export function BottomPopUp({
   const webBackdropStyle = useWebModalLayerStyle({ variant: 'fullscreen' });
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={() => onClose?.()}
-      statusBarTranslucent={Platform.OS !== 'web'}
-    >
-      <View
-        className="flex-1"
-        style={[{ backgroundColor: 'transparent' }, webBackdropStyle]}
-        pointerEvents="box-none"
+    <SurfaceColorProvider color={sheetSurfaceColor}>
+      <Modal
+        visible={visible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => onClose?.()}
+        statusBarTranslucent={Platform.OS !== 'web'}
       >
-        {/* Backdrop: sibling behind content so taps on content hit content first (fixes Android menu taps) */}
-        <TouchableWithoutFeedback onPress={() => onClose?.()}>
-          <View
-            style={[
-              { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
-              { backgroundColor: theme.colors.overlay.black60 },
-            ]}
-          />
-        </TouchableWithoutFeedback>
-        {/* Content: sibling on top so hit-testing delivers touches to Pressables inside */}
         <View
-          className="flex-1 justify-end"
-          style={
-            Platform.OS === 'web'
-              ? { display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }
-              : undefined
-          }
+          className="flex-1"
+          style={[{ backgroundColor: 'transparent' }, webBackdropStyle]}
           pointerEvents="box-none"
         >
-          <Animated.View
-            ref={sheetRef}
-            className="border-t border-border-dark"
-            style={[
-              {
-                transform: [{ translateY: slideAnim }],
-                backgroundColor: theme.colors.background.cardElevated,
-                overflow: 'hidden',
-                borderTopLeftRadius: theme.borderRadius['3xl'],
-                borderTopRightRadius: theme.borderRadius['3xl'],
-                maxHeight: effectiveMaxHeight,
-                width: '100%',
-                marginBottom: androidSheetBottomMargin + keyboardBottomLift,
-              },
-              sheetHeightStyle,
-            ]}
-          >
-            {/* Header */}
-            <LinearGradient
-              colors={[
-                theme.colors.status.purple40,
-                theme.colors.accent.secondary10,
-                'transparent',
+          {/* Backdrop: sibling behind content so taps on content hit content first (fixes Android menu taps) */}
+          <TouchableWithoutFeedback onPress={() => onClose?.()}>
+            <View
+              style={[
+                { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
+                { backgroundColor: theme.colors.overlay.black60 },
               ]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              className="border-b border-border-dark"
+            />
+          </TouchableWithoutFeedback>
+          {/* Content: sibling on top so hit-testing delivers touches to Pressables inside */}
+          <View
+            className="flex-1 justify-end"
+            style={
+              Platform.OS === 'web'
+                ? { display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }
+                : undefined
+            }
+            pointerEvents="box-none"
+          >
+            <Animated.View
+              ref={sheetRef}
+              className="border-t border-border-dark"
+              style={[
+                {
+                  transform: [{ translateY: slideAnim }],
+                  backgroundColor: sheetSurfaceColor,
+                  overflow: 'hidden',
+                  borderTopLeftRadius: theme.borderRadius['3xl'],
+                  borderTopRightRadius: theme.borderRadius['3xl'],
+                  maxHeight: effectiveMaxHeight,
+                  width: '100%',
+                  marginBottom: androidSheetBottomMargin + keyboardBottomLift,
+                },
+                sheetHeightStyle,
+              ]}
             >
-              <View className="flex-row items-center justify-between p-6">
-                <View className="flex-1 flex-row items-center gap-3">
-                  {headerIcon ? <View>{headerIcon}</View> : null}
-                  <View className="flex-1">
-                    <Text className="text-2xl font-bold text-text-primary">{title}</Text>
-                    {subtitle ? (
-                      <Text className="mt-1 text-sm text-text-secondary">{subtitle}</Text>
-                    ) : null}
-                  </View>
-                </View>
-                {onClose ? (
-                  <Pressable
-                    className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
-                    onPress={() => onClose?.()}
-                    {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
-                  >
-                    <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
-                  </Pressable>
-                ) : null}
-              </View>
-            </LinearGradient>
-
-            {/* Content */}
-            {renderContent()}
-
-            {/* Footer */}
-            {footer ? (
-              <View
-                className="border-t border-border-dark px-6 pt-2"
-                style={{
-                  paddingBottom: contentBottomPadding,
-                }}
+              {/* Header */}
+              <LinearGradient
+                colors={[
+                  theme.colors.status.purple40,
+                  theme.colors.accent.secondary10,
+                  'transparent',
+                ]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                className="border-b border-border-dark"
               >
-                {footer}
-              </View>
-            ) : null}
-          </Animated.View>
+                <View className="flex-row items-center justify-between p-6">
+                  <View className="flex-1 flex-row items-center gap-3">
+                    {headerIcon ? <View>{headerIcon}</View> : null}
+                    <View className="flex-1">
+                      <Text className="text-2xl font-bold text-text-primary">{title}</Text>
+                      {subtitle ? (
+                        <Text className="mt-1 text-sm text-text-secondary">{subtitle}</Text>
+                      ) : null}
+                    </View>
+                  </View>
+                  {onClose ? (
+                    <Pressable
+                      className="active:bg-bg-card-elevated h-10 w-10 items-center justify-center rounded-full bg-bg-overlay"
+                      onPress={() => onClose?.()}
+                      {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
+                    >
+                      <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
+                    </Pressable>
+                  ) : null}
+                </View>
+              </LinearGradient>
+
+              {/* Content */}
+              {renderContent()}
+
+              {/* Footer */}
+              {footer ? (
+                <View
+                  className="border-t border-border-dark px-6 pt-2"
+                  style={{
+                    paddingBottom: contentBottomPadding,
+                  }}
+                >
+                  {footer}
+                </View>
+              ) : null}
+            </Animated.View>
+          </View>
         </View>
-      </View>
-    </Modal>
+      </Modal>
+    </SurfaceColorProvider>
   );
 }

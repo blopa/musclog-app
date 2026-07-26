@@ -38,12 +38,14 @@ import { isSuccessFoodDetailProductState } from '@/types/guards/openFoodFacts';
 import {
   areCoreMacrosEffectivelyZero,
   EMPTY_PRODUCT_NUTRITION,
+  getExternalProductDisplayQuality,
   getProductBarcodeFromSearchProduct,
   inferBarcodeNutritionSource,
   microsFromNutrition,
   parseProductNutritionPer100g,
   parseServingSizeFromProduct,
 } from '@/utils/externalFoodProduct';
+import { applyDisplayQualityToFoodRecord } from '@/utils/foodDisplayQuality';
 import { formatAppRoundedDecimal } from '@/utils/formatAppNumber';
 import { handleError } from '@/utils/handleError';
 import {
@@ -52,8 +54,7 @@ import {
   toFiniteMacro,
 } from '@/utils/inferCaloriesFromMacros';
 import { getDecimalSeparator } from '@/utils/localizedDecimalInput';
-import { applyMusclogQualityToFoodRecord, getMusclogDisplayQuality } from '@/utils/musclogProduct';
-import { extractLabelsFromOFFProduct, getProductName } from '@/utils/openFoodFactsMapper';
+import { getProductName } from '@/utils/openFoodFactsMapper';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 
 import { useBarcodeCameraModal } from './useBarcodeCameraModal';
@@ -402,40 +403,13 @@ export function ScannedFoodDetailsModal({
     return result.length > 0 ? result : undefined;
   }, [effectiveProductDetails]);
 
-  const nutritionQuality = useMemo(() => {
-    if (!isScannedProductSuccess) {
-      return undefined;
-    }
-
-    if ((effectiveProductDetails as any)?.source === 'musclog') {
-      const product = (effectiveProductDetails as any).product;
-      return product ? getMusclogDisplayQuality(product) : undefined;
-    }
-
-    if (isSuccessFoodDetailProductState(effectiveProductDetails)) {
-      const product = effectiveProductDetails.product as any;
-      const nutriScore =
-        typeof product?.nutriscore_grade === 'string' && product.nutriscore_grade
-          ? product.nutriscore_grade.toLowerCase()
-          : undefined;
-
-      const ecoScore =
-        typeof product?.ecoscore_grade === 'string' && product.ecoscore_grade
-          ? product.ecoscore_grade.toLowerCase()
-          : undefined;
-
-      const novaGroup = typeof product?.nova_group === 'number' ? product.nova_group : undefined;
-      const labels = extractLabelsFromOFFProduct(product);
-
-      if (nutriScore == null && ecoScore == null && novaGroup == null && labels == null) {
-        return undefined;
-      }
-
-      return { nutriScore, ecoScore, novaGroup, labels };
-    }
-
-    return undefined;
-  }, [effectiveProductDetails, isScannedProductSuccess]);
+  const nutritionQuality = useMemo(
+    () =>
+      isScannedProductSuccess
+        ? getExternalProductDisplayQuality(currentSource, effectiveProductDetails)
+        : undefined,
+    [currentSource, effectiveProductDetails, isScannedProductSuccess]
+  );
 
   const scaledFood = useMemo(
     () => ({
@@ -519,29 +493,7 @@ export function ScannedFoodDetailsModal({
               record.source = currentSource;
             }
 
-            const bp = (effectiveProductDetails as any)?.product;
-            if (bp) {
-              if ((effectiveProductDetails as any).source === 'musclog') {
-                applyMusclogQualityToFoodRecord(record, bp);
-              } else {
-                if (typeof bp.nutriscore_grade === 'string' && bp.nutriscore_grade) {
-                  record.nutriscore = bp.nutriscore_grade.toLowerCase();
-                }
-
-                if (typeof bp.ecoscore_grade === 'string' && bp.ecoscore_grade) {
-                  record.ecoscore = bp.ecoscore_grade.toLowerCase();
-                }
-
-                if (typeof bp.nova_group === 'number') {
-                  record.novaGroup = bp.nova_group;
-                }
-
-                const extractedLabels = extractLabelsFromOFFProduct(bp);
-                if (extractedLabels != null) {
-                  record.labels = extractedLabels;
-                }
-              }
-            }
+            applyDisplayQualityToFoodRecord(record, nutritionQuality);
           });
         }
 
@@ -587,7 +539,7 @@ export function ScannedFoodDetailsModal({
     onAddFood,
     amount,
     onClose,
-    effectiveProductDetails,
+    nutritionQuality,
   ]);
 
   if (!visible) {
@@ -647,7 +599,6 @@ export function ScannedFoodDetailsModal({
           }
           isRefetchingSource={isRefetchingSource}
           alternateSourceNotFound={alternateSourceLookupFailed ? hasAllZeroMacros : false}
-          fadeBackgroundColor={theme.colors.background.cardElevated}
           nutritionQuality={nutritionQuality}
           caloriesTooLowWarning={
             showCaloriesTooLowWarning

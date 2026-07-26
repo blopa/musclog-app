@@ -56,6 +56,14 @@ describe('computeKeyboardSheetLift', () => {
     expect(lift).toBe(180);
   });
 
+  it('never lifts further than clearing the whole sheet, even for a bogus input measurement', () => {
+    // The focused input is inside the sheet, so clearing the sheet always clears the input.
+    // A measurement claiming otherwise must not push the sheet off the top of the screen.
+    const lift = computeKeyboardSheetLift({ ...baseInput, focusedInputBottom: 5000 });
+
+    expect(lift).toBe(212);
+  });
+
   it('returns a smaller lift when the keyboard shrinks', () => {
     // The lift is absolute, not a delta, so a second keyboard event with a shorter keyboard
     // lets the sheet back down instead of pushing it further up.

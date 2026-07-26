@@ -35,8 +35,13 @@ export function computeKeyboardSheetLift({
 }: KeyboardSheetLiftInput): number {
   const liftToClearSheet = sheetTop + sheetHeight - keyboardTop;
   const maxLift = Math.max(0, sheetTop - minSheetTop);
+  // The focused input lives inside the sheet, so clearing the whole sheet always clears it too.
+  // Capping here keeps a bogus input measurement from pushing the sheet off the top of the
+  // screen, without weakening the "showing the focused input wins over the header" rule.
   const liftToClearInput =
-    focusedInputBottom === null ? 0 : focusedInputBottom + inputGap - keyboardTop;
+    focusedInputBottom === null
+      ? 0
+      : Math.min(focusedInputBottom + inputGap - keyboardTop, liftToClearSheet);
 
   return Math.max(0, liftToClearInput, Math.min(liftToClearSheet, maxLift));
 }

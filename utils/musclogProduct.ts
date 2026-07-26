@@ -1,5 +1,6 @@
 import { type FoodLabels } from '@/database/models/Food';
 import { totalCarbsForFoodSource } from '@/utils/carbsConvention';
+import type { FoodDisplayQuality } from '@/utils/foodDisplayQuality';
 
 type NumericLike = number | string | null | undefined;
 
@@ -48,18 +49,7 @@ export type MusclogFoodQuality = {
   labels: FoodLabels | undefined;
 };
 
-export type MusclogDisplayQuality = {
-  nutriScore?: string;
-  ecoScore?: string;
-  novaGroup?: number;
-  labels?: FoodLabels;
-};
-
-type FoodQualityRecord = {
-  nutriscore?: string;
-  novaGroup?: number;
-  labels?: FoodLabels;
-};
+export type MusclogDisplayQuality = FoodDisplayQuality;
 
 function parseMusclogNumber(value: NumericLike): number {
   const parsed = typeof value === 'number' ? value : parseFloat(String(value ?? '0'));
@@ -128,24 +118,6 @@ export function getMusclogDisplayQuality(
   }
 
   return quality;
-}
-
-export function applyMusclogQualityToFoodRecord(
-  record: FoodQualityRecord,
-  product: MusclogProduct
-): void {
-  const { nutriscore, novaGroup, labels } = getMusclogQualityScores(product);
-  if (nutriscore != null) {
-    record.nutriscore = nutriscore;
-  }
-
-  if (novaGroup != null) {
-    record.novaGroup = novaGroup;
-  }
-
-  if (labels != null) {
-    record.labels = labels;
-  }
 }
 
 export function getMusclogNutritionPer100g(product: MusclogProduct): MusclogNutritionPer100g {
