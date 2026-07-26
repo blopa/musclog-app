@@ -79,6 +79,7 @@ export function BottomPopUp({
         <ScrollView
           className="p-6"
           style={!footer ? { paddingBottom: contentBottomPadding } : undefined}
+          contentContainerStyle={footer ? { paddingBottom: theme.spacing.padding.lg } : undefined}
           scrollEnabled={true}
           nestedScrollEnabled={true}
           keyboardShouldPersistTaps="handled"
