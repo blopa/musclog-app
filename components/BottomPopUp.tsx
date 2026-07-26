@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { X } from 'lucide-react-native';
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Keyboard,
@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { computeKeyboardSheetLift } from '@/components/keyboardSheetLift';
 import { useTheme } from '@/hooks/useTheme';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
 
@@ -102,9 +103,16 @@ export function BottomPopUp({
   };
 
   const [slideAnim] = useState(() => new Animated.Value(theme.size['300']));
+  const sheetRef = useRef<View>(null);
   const [rawKeyboardBottomLift, setKeyboardBottomLift] = useState(0);
   // Derive: when the sheet is not visible the lift is always 0
   const keyboardBottomLift = visible ? rawKeyboardBottomLift : 0;
+  /** The lift currently laid out, so measurements can be read back in resting coordinates. */
+  const appliedLiftRef = useRef(0);
+
+  useEffect(() => {
+    appliedLiftRef.current = keyboardBottomLift;
+  }, [keyboardBottomLift]);
 
   useEffect(() => {
     if (Platform.OS === 'web' || !visible) {
@@ -118,19 +126,42 @@ export function BottomPopUp({
       // screenY is the keyboard's top edge in absolute screen coordinates — same space
       // as measureInWindow, so no window-vs-screen height mismatch on Android.
       const keyboardTop = e.endCoordinates.screenY;
-      const focusedInput = RNTextInput.State.currentlyFocusedInput();
+      const sheet = sheetRef.current;
 
-      if (!focusedInput) {
+      if (!sheet) {
         setKeyboardBottomLift(e.endCoordinates.height);
         return;
       }
 
-      // measureInWindow is available on the native host ref at runtime;
-      // RN's declared instance type doesn't expose it directly.
-      (focusedInput as any).measureInWindow((_x: number, y: number, _w: number, h: number) => {
-        const inputBottom = y + h;
-        // Only lift as much as needed to clear the keyboard, plus 16px breathing room.
-        setKeyboardBottomLift(Math.max(0, inputBottom - keyboardTop + 16));
+      const focusedInput = RNTextInput.State.currentlyFocusedInput();
+      // Measurements already include the lift in effect, so subtract it and reason about the
+      // sheet at rest — repeated events (keyboard resize, emoji panel) then settle on the same
+      // lift instead of stacking on top of each other.
+      const appliedLift = appliedLiftRef.current;
+
+      sheet.measureInWindow((_x, sheetY, _w, sheetHeight) => {
+        const applyLift = (focusedInputBottom: null | number) =>
+          setKeyboardBottomLift(
+            computeKeyboardSheetLift({
+              focusedInputBottom,
+              inputGap: theme.spacing.padding.base,
+              keyboardTop,
+              minSheetTop: Math.max(insets.top, theme.spacing.padding.md),
+              sheetHeight,
+              sheetTop: sheetY + appliedLift,
+            })
+          );
+
+        if (!focusedInput) {
+          applyLift(null);
+          return;
+        }
+
+        // measureInWindow is available on the native host ref at runtime;
+        // RN's declared instance type doesn't expose it directly.
+        (focusedInput as any).measureInWindow((_ix: number, y: number, _iw: number, h: number) => {
+          applyLift(y + appliedLift + h);
+        });
       });
     };
 
@@ -142,7 +173,7 @@ export function BottomPopUp({
       showSub.remove();
       hideSub.remove();
     };
-  }, [visible]);
+  }, [visible, insets.top, theme.spacing.padding.md, theme.spacing.padding.base]);
 
   useEffect(() => {
     if (visible) {
@@ -198,6 +229,7 @@ export function BottomPopUp({
           pointerEvents="box-none"
         >
           <Animated.View
+            ref={sheetRef}
             className="border-t border-border-dark"
             style={[
               {
