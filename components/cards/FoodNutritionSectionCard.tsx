@@ -21,6 +21,15 @@ import { NutritionQualityData } from './NutritionQualityData';
 
 export type { MealIngredient };
 
+/**
+ * Collapsed-accordion preview height. The fade gradient below must span this exact same
+ * height (not an approximation) — a mismatch leaves a band of clipped content the gradient
+ * never covers, letting colored elements (e.g. the Nutri-Score/Eco-Score badge shadows,
+ * which on Android can render via a Z-elevation pass instead of normal 2D compositing) show
+ * through uncovered on some devices.
+ */
+const ACCORDION_COLLAPSED_HEIGHT = 110;
+
 type FoodData = {
   name: string;
   category: string;
@@ -269,7 +278,7 @@ export function FoodNutritionSectionCard({
         <View
           style={
             effectivelyUseAccordion && !nutritionExpanded
-              ? { maxHeight: 110, overflow: 'hidden' }
+              ? { maxHeight: ACCORDION_COLLAPSED_HEIGHT, overflow: 'hidden' }
               : undefined
           }
         >
@@ -442,22 +451,38 @@ export function FoodNutritionSectionCard({
 
         {effectivelyUseAccordion && !nutritionExpanded && hasExpandableNutritionContent ? (
           <>
+            {/*
+              elevation/zIndex here must exceed the highest elevation used by content this
+              overlay needs to hide (NutritionQualityData's score badges use up to elevation 6) —
+              on Android, a shadow's Z-compositing pass can otherwise paint above a later,
+              non-elevated sibling regardless of draw order, leaking a sliver of the badge's
+              colored shadow past this "fade to background" cover on some devices.
+            */}
             <LinearGradient
               colors={[
+                addOpacityToHex(fadeBackgroundColor ?? theme.colors.background.primary, 0),
                 addOpacityToHex(fadeBackgroundColor ?? theme.colors.background.primary, 0.5),
                 addOpacityToHex(fadeBackgroundColor ?? theme.colors.background.primary, 0.78),
                 addOpacityToHex(fadeBackgroundColor ?? theme.colors.background.primary, 0.94),
                 fadeBackgroundColor ?? theme.colors.background.primary,
               ]}
-              locations={[0, 0.2, 0.42, 0.62]}
-              style={{ bottom: 0, height: 100, left: 0, position: 'absolute', right: 0 }}
+              locations={[0, 0.09, 0.27, 0.47, 0.65]}
+              style={{
+                bottom: 0,
+                elevation: 10,
+                height: ACCORDION_COLLAPSED_HEIGHT,
+                left: 0,
+                position: 'absolute',
+                right: 0,
+                zIndex: 10,
+              }}
               pointerEvents="none"
             />
             <Pressable
               onPress={() => setNutritionExpanded(true)}
               hitSlop={12}
               className="items-center py-1"
-              style={{ bottom: 0, left: 0, position: 'absolute', right: 0 }}
+              style={{ bottom: 0, elevation: 10, left: 0, position: 'absolute', right: 0, zIndex: 10 }}
             >
               <Text
                 className="text-xs font-semibold"
