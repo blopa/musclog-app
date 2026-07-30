@@ -7,7 +7,7 @@ env/
 
 # Generated output — re-created by train.py
 output/features.csv
-output/model.pkl
+output/models/*.pkl
 recordings/*
 raw-data/*
 !raw-data/PRIVACY.md

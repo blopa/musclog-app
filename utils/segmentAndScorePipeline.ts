@@ -6,7 +6,8 @@
  *                          select the most periodic axis via spectral concentration score.
  *   2. overSegment       — valley-to-valley / peak-to-peak candidate full-rep segments.
  *   3. extractFeatures   — 41-feature vector per segment (must exactly match Python training).
- *   4. classifySegment   — RandomForestClassifier exported from train.py via m2cgen.
+ *   4. classifySegment   — dispatches to the RandomForestClassifier for metadata.mechanicType
+ *                          (falling back to the general model), see ./repCountingModel/index.ts.
  *   5. detectPhases      — analytical split at the turning point → Phase A / Phase B timing + speed.
  */
 
@@ -739,7 +740,7 @@ export function segmentAndScore(
 
   for (let i = 0; i < allSegs.length; i++) {
     const features = extractFeatures(i, allSegs[i], signal1d, timestamps, allSegs, metadata);
-    const probs = classifySegment(features);
+    const probs = classifySegment(features, metadata.mechanicType);
     if (probs[1] > 0.5) {
       repPairs.push({ seg: allSegs[i], conf: probs[1] });
     }
