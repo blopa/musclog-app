@@ -110,9 +110,9 @@ Every recording is a JSON file with the following top-level fields:
 
 | Field           | Type                | Description                                                                                                                                                              |
 | --------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `repMarkers`    | `array`             | **Required for training.** Per-rep start/end boundary annotations. The total rep count is derived from `len(repMarkers)`. See [Labeling Workflow](#7-labeling-workflow). |
+| `repMarkers`    | `array`             | **Mandatory.** Per-rep start/end boundary annotations. The total rep count is *always* derived from `len(repMarkers)` — there is no separate stored rep count anywhere in the pipeline. Recordings without `repMarkers` are skipped entirely by `train.py`/`visualize_loocv.py`, and `predict.py` shows no `ground_truth_reps` for them. See [Labeling Workflow](#7-labeling-workflow). |
 | `samples`       | `array`             | Time-series sensor samples (see below).                                                                                                                                  |
-| `reps`          | `int` (optional)    | Legacy total rep count. Not used during training. `predict.py` uses it as a fallback ground-truth display value when `repMarkers` is absent.                             |
+| `reps`          | `int` (optional)    | Total rep count recorded by the app at collection time. Purely an annotator UX hint (shown as "N reps expected" while placing markers in `generate-markers-html.py` / the video marker tools) — never read by `train.py`, `predict.py`, or `visualize_loocv.py`. |
 | `muscleGroup`   | `string`            | Primary muscle group (e.g. `"chest"`, `"legs"`).                                                                                                                         |
 | `equipmentType` | `string`            | Equipment used (e.g. `"barbell"`, `"dumbbell"`).                                                                                                                         |
 | `mechanicType`  | `string`            | Movement pattern (e.g. `"compound"`, `"isolation"`).                                                                                                                     |
@@ -269,7 +269,7 @@ Per-rep breakdown:
 | `candidate_segments` | Total segments found by over-segmentation                             |
 | `classified_as_rep`  | Same as `predicted_reps`                                              |
 | `reps`               | Array of per-rep dicts (see below)                                    |
-| `ground_truth_reps`  | Only present if `reps` field exists in the file                       |
+| `ground_truth_reps`  | Only present if `repMarkers` exists in the file (`len(repMarkers)`)   |
 | `count_error`        | `predicted_reps - ground_truth_reps` (only if ground truth available) |
 | `error`              | Human-readable error string (only if something went wrong)            |
 

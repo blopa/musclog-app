@@ -21,7 +21,9 @@ Usage:
     python train.py
 
 Input:
-    raw-data/*.json  — motion recordings with a 'reps' field
+    raw-data/*.json  — motion recordings with a 'repMarkers' field (mandatory: the
+                       total rep count is derived from len(repMarkers), never stored
+                       separately)
 
 One classifier is trained per exercise mechanic type (compound, isolation,
 cardio, ...) plus a "general" classifier pooled across all recordings. A
