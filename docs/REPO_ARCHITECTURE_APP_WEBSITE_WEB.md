@@ -73,11 +73,18 @@ The web layout is [`app/(website)/_layout.web.tsx`](/app/%28website%29/_layout.w
 
 - `WebsiteProviders`
 - `WebsiteSeoForCurrentRoute`
+- `WebsiteOrganizationJsonLd`
 - `WebsiteWrapper`
 
-That gives the website its own header, footer, consent UI, SEO tags, and general web-only presentation.
+That gives the website its own header, footer, consent UI, SEO tags, structured data, and general web-only presentation.
 
-[`WebsiteSeoForCurrentRoute`](/musclog/components/website/WebsiteSeo.tsx) maps the current pathname to the route key and renders [`WebsiteSeo`](/musclog/components/website/WebsiteSeo.tsx). That component owns the route title, description, canonical URL, robots directive, Open Graph tags, Twitter card tags, and the shared preview image at `/images/seo-image.png` (sourced from [`assets/seo-image.png`](/musclog/assets/seo-image.png)). When adding a public website route, update the route map and translation metadata there rather than adding SEO tags inside the page component.
+[`WebsiteSeoForCurrentRoute`](/musclog/components/website/WebsiteSeo.tsx) maps the current pathname to the route key and renders [`WebsiteSeo`](/musclog/components/website/WebsiteSeo.tsx). That component owns the route title, description, canonical URL, robots directive, Open Graph tags (including `og:locale:alternate` for the other supported languages), Twitter card tags, and the shared preview image at `/images/seo-image.png` (sourced from [`assets/seo-image.png`](/musclog/assets/seo-image.png)). When adding a public website route, update the route map and translation metadata there rather than adding SEO tags inside the page component.
+
+### SEO / agentic discoverability
+
+- `WebsiteOrganizationJsonLd` (in [`components/website/WebsiteStructuredData.tsx`](/musclog/components/website/WebsiteStructuredData.tsx)) mounts sitewide `Organization` + `WebSite` JSON-LD once, in `_layout.web.tsx`. Route-specific schema — `SoftwareApplicationJsonLd` on `/home`, `FaqPageJsonLd` on `/faq` (built from the same i18n content the page renders, not a separate copy) — is mounted from within the page component itself. Don't add fields that aren't backed by real data (e.g. `aggregateRating`).
+- `public/robots.txt` and `public/sitemap.xml` are **generated**, not hand-edited: [`scripts/generate-web-seo-files.js`](/musclog/scripts/generate-web-seo-files.js) runs before every `npm run web` / `npm run build-android-web` (mirroring `sync-web-images.js`) and rewrites both from its `INDEXABLE_ROUTES` list, which mirrors `ROUTE_PATHS`/`ROUTE_ROBOTS` in `WebsiteSeo.tsx`. `robots.txt` explicitly allows the major AI answer/citation crawlers (GPTBot, ClaudeBot, PerplexityBot, Google-Extended, ...) in addition to the default `Allow: /`, since the marketing site has nothing that needs hiding from AI assistants.
+- `public/llms.txt` is a hand-maintained, agent-readable summary of the site (per the community [llms.txt](https://llmstxt.org/) convention) — update it when routes are added/removed/renamed, same as the other SEO surfaces above.
 
 The native fallback layout is [`app/(website)/_layout.tsx`](/app/%28website%29/_layout.tsx), which skips the website chrome. That keeps the route group valid across platforms without pretending the marketing site is a native app feature.
 

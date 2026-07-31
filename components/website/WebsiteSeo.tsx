@@ -104,6 +104,7 @@ export function WebsiteSeo({
   const imageUrl = absoluteUrl(SEO_IMAGE_PATH);
   const robots = ROUTE_ROBOTS[routeKey] ?? 'index, follow';
   const locale = ogLocaleForLanguage(i18n.resolvedLanguage ?? i18n.language);
+  const alternateLocales = Object.values(OG_LOCALE_BY_LANGUAGE).filter((l) => l !== locale);
 
   return (
     <Head>
@@ -116,6 +117,9 @@ export function WebsiteSeo({
       <meta property="og:type" content="website" />
       <meta property="og:site_name" content={siteName} />
       <meta property="og:locale" content={locale} />
+      {alternateLocales.map((alt) => (
+        <meta key={alt} property="og:locale:alternate" content={alt} />
+      ))}
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={pageUrl} />
