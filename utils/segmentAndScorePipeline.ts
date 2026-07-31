@@ -14,6 +14,7 @@
 import mlMax from 'ml-array-max';
 import mlMin from 'ml-array-min';
 
+import { MECHANIC_TYPES, normalizeMechanicType } from './mechanicType';
 import { classifySegment } from './repCountingModel';
 
 // ─── Band-pass bounds (see train.py for rationale) ───────────────────────────
@@ -52,17 +53,6 @@ const EQUIPMENT_TYPES = [
   'pneumatic_machine',
   'resistance_band',
   'smith_machine',
-  'unknown',
-];
-
-const MECHANIC_TYPES = [
-  'cardio',
-  'compound',
-  'isolation',
-  'mobility',
-  'other',
-  'plyometric',
-  'stretching',
   'unknown',
 ];
 
@@ -590,7 +580,9 @@ function extractFeatures(
   // One-hot categorical (fallback to 'unknown' for unrecognised values)
   const mg = (metadata.muscleGroup ?? 'unknown').toLowerCase();
   const eq = (metadata.equipmentType ?? 'unknown').toLowerCase();
-  const mt = (metadata.mechanicType ?? 'unknown').toLowerCase();
+  // Same normalization the model dispatcher uses, so the mechanic_* one-hot
+  // and the chosen model always agree on the bucket. See utils/mechanicType.ts.
+  const mt = normalizeMechanicType(metadata.mechanicType);
 
   const muscleVec = MUSCLE_GROUPS.map((g) =>
     MUSCLE_GROUPS.includes(mg) ? (g === mg ? 1 : 0) : g === 'unknown' ? 1 : 0
@@ -598,9 +590,7 @@ function extractFeatures(
   const equipVec = EQUIPMENT_TYPES.map((e) =>
     EQUIPMENT_TYPES.includes(eq) ? (e === eq ? 1 : 0) : e === 'unknown' ? 1 : 0
   );
-  const mechanicVec = MECHANIC_TYPES.map((m) =>
-    MECHANIC_TYPES.includes(mt) ? (m === mt ? 1 : 0) : m === 'unknown' ? 1 : 0
-  );
+  const mechanicVec = MECHANIC_TYPES.map((m) => (m === mt ? 1 : 0));
 
   return [
     amplitude,

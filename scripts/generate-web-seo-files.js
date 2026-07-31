@@ -2,40 +2,43 @@
 /* eslint-disable no-undef */
 
 /**
- * Generates public/robots.txt and public/sitemap.xml before each web export,
- * so both are always in sync with what actually gets shipped. Runs alongside
- * sync-web-images.js in the build-android-web pipeline (see package.json).
+ * Generates public/robots.txt, public/sitemap.xml and public/llms.txt before
+ * each web export, so all three stay in sync with what actually ships. Runs
+ * alongside sync-web-images.js in the web pipelines (see package.json).
  *
- * ROUTE_PATHS below must be kept in sync with ROUTE_PATHS / ROUTE_ROBOTS in
- * components/website/WebsiteSeo.tsx (the canonical per-route SEO registry) —
- * add a new indexable route to both places. This script stays plain
- * CommonJS (no ts-node/tsx in this repo) so it can't import that .tsx file
- * directly.
+ * All three are derived from components/website/websiteRoutes.json — the same
+ * registry components/website/WebsiteSeo.tsx reads for titles, canonical URLs
+ * and robots directives. Adding a public route is one edit there (plus its
+ * `website.seo.routes.<key>` strings in each lang/locales website.json);
+ * nothing in this script needs touching.
  */
 const fs = require('fs');
 const path = require('path');
 
+const websiteRoutes = require('../components/website/websiteRoutes.json');
+
 const SITE_ORIGIN = 'https://musclog.app';
 
-// Indexable routes, mirrors ROUTE_PATHS in components/website/WebsiteSeo.tsx
-// minus the noindex `test` debug route.
-const INDEXABLE_ROUTES = [
-  '/',
-  '/download',
-  '/exercises',
-  '/faq',
-  '/contact',
-  '/privacy',
-  '/terms',
-  '/calculator',
-  '/alternatives',
-  '/progress',
-  '/rep-marker',
-  '/gameboy',
-];
+// Order the llms.txt sections appear in. A route naming a section outside this
+// list is a typo, and fails the build rather than vanishing from the output.
+const LLMS_SECTIONS = ['Product', 'Support & Policies', 'Source & Extras'];
 
-// robots.txt disallow rules, mirrors ROUTE_ROBOTS in WebsiteSeo.tsx.
-const NOINDEX_ROUTES = ['/test'];
+// Non-route entries for llms.txt, keyed by the section they belong to.
+const LLMS_EXTERNAL_LINKS = {
+  'Source & Extras': [
+    {
+      title: 'GitHub Repository',
+      summary: 'Full source code, issues, and license (open-source).',
+      url: 'https://github.com/blopa/musclog-app',
+    },
+  ],
+};
+
+const LLMS_INTRO = [
+  '> Musclog is a free, open-source, local-first fitness and nutrition tracker for Android, iOS, and web. It logs workouts, tracks macros with AI photo/barcode meal recognition, and charts progress — all with data stored privately on-device rather than in the cloud.',
+  '',
+  'Musclog is built and maintained in the open; the full source is on GitHub. This file summarizes the public marketing site at https://musclog.app for AI assistants and agents — for the product itself, see the Download and FAQ pages below.',
+].join('\n');
 
 // AI answer/citation crawlers explicitly allowed so Musclog can be discovered
 // and cited by AI assistants and AI-powered search (agentic SEO). All are
@@ -57,11 +60,29 @@ const AI_CRAWLER_USER_AGENTS = [
   'CCBot',
 ];
 
+/** A route is indexable unless it carries a `robots` directive saying otherwise. */
+function isIndexable(route) {
+  return !route.robots || !route.robots.includes('noindex');
+}
+
+const routes = Object.values(websiteRoutes);
+const indexableRoutes = routes.filter(isIndexable);
+const noindexRoutes = routes.filter((route) => !isIndexable(route));
+
+/**
+ * Matches `absoluteUrl` in WebsiteSeo.tsx, so a page's sitemap <loc> is
+ * byte-identical to the canonical URL it advertises — including the trailing
+ * slash on home, which the previous sitemap dropped.
+ */
+function absoluteUrl(routePath) {
+  return `${SITE_ORIGIN}${routePath}`;
+}
+
 function generateRobotsTxt() {
-  const disallowLines = NOINDEX_ROUTES.map((route) => `Disallow: ${route}`).join('\n');
-  const aiBlocks = AI_CRAWLER_USER_AGENTS.map(
-    (agent) => `User-agent: ${agent}\nAllow: /\n`
-  ).join('\n');
+  const disallowLines = noindexRoutes.map((route) => `Disallow: ${route.path}`).join('\n');
+  const aiBlocks = AI_CRAWLER_USER_AGENTS.map((agent) => `User-agent: ${agent}\nAllow: /\n`).join(
+    '\n'
+  );
 
   return (
     `# Musclog — ${SITE_ORIGIN}\n` +
@@ -77,12 +98,15 @@ function generateRobotsTxt() {
   );
 }
 
+/**
+ * No <lastmod>: it is optional, search engines largely discount self-reported
+ * values, and stamping today's date into a tracked file made every `npm run
+ * web` dirty the working tree with a meaningless diff.
+ */
 function generateSitemapXml() {
-  const today = new Date().toISOString().slice(0, 10);
-  const urls = INDEXABLE_ROUTES.map((route) => {
-    const loc = route === '/' ? SITE_ORIGIN : `${SITE_ORIGIN}${route}`;
-    return `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${today}</lastmod>\n  </url>`;
-  }).join('\n');
+  const urls = indexableRoutes
+    .map((route) => `  <url>\n    <loc>${absoluteUrl(route.path)}</loc>\n  </url>`)
+    .join('\n');
 
   return (
     '<?xml version="1.0" encoding="UTF-8"?>\n' +
@@ -93,16 +117,44 @@ function generateSitemapXml() {
   );
 }
 
+function generateLlmsTxt() {
+  const unknownSections = routes
+    .filter((route) => route.llms && !LLMS_SECTIONS.includes(route.llms.section))
+    .map((route) => route.llms.section);
+
+  if (unknownSections.length > 0) {
+    throw new Error(
+      `websiteRoutes.json references unknown llms.txt section(s): ${unknownSections.join(', ')}. ` +
+        `Known sections: ${LLMS_SECTIONS.join(', ')}.`
+    );
+  }
+
+  const sections = LLMS_SECTIONS.map((section) => {
+    const links = [
+      ...(LLMS_EXTERNAL_LINKS[section] ?? []),
+      ...routes
+        .filter((route) => route.llms?.section === section)
+        .map((route) => ({ ...route.llms, url: absoluteUrl(route.path) })),
+    ];
+
+    return `## ${section}\n\n${links
+      .map((link) => `- [${link.title}](${link.url}): ${link.summary}`)
+      .join('\n')}`;
+  });
+
+  return `# Musclog\n\n${LLMS_INTRO}\n\n${sections.join('\n\n')}\n`;
+}
+
 function main() {
-  const root = path.resolve(__dirname, '..');
-  const publicDir = path.join(root, 'public');
+  const publicDir = path.join(path.resolve(__dirname, '..'), 'public');
 
   fs.writeFileSync(path.join(publicDir, 'robots.txt'), generateRobotsTxt());
   fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), generateSitemapXml());
+  fs.writeFileSync(path.join(publicDir, 'llms.txt'), generateLlmsTxt());
 
   console.log(
-    '[generate-web-seo-files] wrote public/robots.txt and public/sitemap.xml',
-    `(${INDEXABLE_ROUTES.length} routes)`
+    '[generate-web-seo-files] wrote public/robots.txt, public/sitemap.xml and public/llms.txt',
+    `(${indexableRoutes.length} indexable routes)`
   );
 }
 

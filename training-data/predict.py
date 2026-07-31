@@ -85,9 +85,16 @@ def detect_phases(seg: dict, signal_1d: np.ndarray, timestamps: np.ndarray) -> d
 def _load_model_bundle(mechanic_type) -> tuple:
     """
     Returns (bundle, model_name). Loads output/models/model_<mechanicType>.pkl
-    when train.py trained a dedicated model for it (per manifest.json),
+    when train.py adopted a dedicated model for it (per manifest.json),
     otherwise falls back to output/models/model_general.pkl.
+
+    Mirrors the app-side dispatcher in utils/repCountingModel/index.ts, down to
+    using train.py's `normalize_mechanic_type` so both sides bucket a raw
+    `mechanicType` identically.
     """
+    sys.path.insert(0, str(ROOT))
+    from train import normalize_mechanic_type
+
     models_dir = ROOT / "output" / "models"
     manifest_path = models_dir / "manifest.json"
 
@@ -96,7 +103,7 @@ def _load_model_bundle(mechanic_type) -> tuple:
         with open(manifest_path) as f:
             trained_types = set(json.load(f).get("trainedMechanicTypes", []))
 
-    mt = str(mechanic_type or "unknown").strip().lower()
+    mt = normalize_mechanic_type(mechanic_type)
     model_name = mt if mt in trained_types else "general"
 
     pkl_path = models_dir / f"model_{model_name}.pkl"

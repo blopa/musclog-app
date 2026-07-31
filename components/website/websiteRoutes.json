@@ -1,0 +1,102 @@
+{
+  "home": {
+    "path": "/",
+    "llms": {
+      "section": "Product",
+      "title": "Home",
+      "summary": "Overview of Musclog — workout logging, AI meal tracking, progress analytics, and on-device privacy."
+    }
+  },
+  "download": {
+    "path": "/download",
+    "llms": {
+      "section": "Product",
+      "title": "Download",
+      "summary": "Get Musclog for Android (Play Store) or join the iOS TestFlight."
+    }
+  },
+  "exercises": {
+    "path": "/exercises",
+    "llms": {
+      "section": "Product",
+      "title": "Exercise Library",
+      "summary": "Browse exercises by muscle group, equipment, and mechanic type, with instructions and visuals."
+    }
+  },
+  "calculator": {
+    "path": "/calculator",
+    "llms": {
+      "section": "Product",
+      "title": "Fitness & Macro Calculator",
+      "summary": "Estimate calories, macros, BMI, and FFMI, usable standalone or as a starting plan in the app."
+    }
+  },
+  "progress": {
+    "path": "/progress",
+    "llms": {
+      "section": "Product",
+      "title": "Progress Import",
+      "summary": "Import a Musclog JSON export in-browser to explore weight, nutrition, workout, mood, and measurement trends."
+    }
+  },
+  "alternatives": {
+    "path": "/alternatives",
+    "llms": {
+      "section": "Product",
+      "title": "Musclog vs. Alternatives",
+      "summary": "Honest comparison of Musclog against MyFitnessPal, MacroFactor, Cronometer, Bevel, Lifesum, Hevy, and other fitness/nutrition apps."
+    }
+  },
+  "faq": {
+    "path": "/faq",
+    "llms": {
+      "section": "Support & Policies",
+      "title": "FAQ",
+      "summary": "Answers about privacy, nutrition math, workout tracking, AI features, and the app's open-source methodology."
+    }
+  },
+  "contact": {
+    "path": "/contact",
+    "llms": {
+      "section": "Support & Policies",
+      "title": "Contact",
+      "summary": "How to reach Musclog for support, bug reports, or open-source collaboration."
+    }
+  },
+  "privacy": {
+    "path": "/privacy",
+    "llms": {
+      "section": "Support & Policies",
+      "title": "Privacy Policy",
+      "summary": "How Musclog handles app data, website analytics, optional AI providers, local-first storage, and encryption."
+    }
+  },
+  "terms": {
+    "path": "/terms",
+    "llms": {
+      "section": "Support & Policies",
+      "title": "Terms and Conditions",
+      "summary": "Terms of use, service scope, liability, and governing law."
+    }
+  },
+  "repMarker": {
+    "path": "/rep-marker",
+    "llms": {
+      "section": "Source & Extras",
+      "title": "Rep Marker Tool",
+      "summary": "Browser tool for uploading and labeling rep-counting training data."
+    }
+  },
+  "gameboy": {
+    "path": "/gameboy",
+    "llms": {
+      "section": "Source & Extras",
+      "title": "Game Boy Edition",
+      "summary": "A Game Boy Color version of Musclog, playable in-browser."
+    }
+  },
+  "test": {
+    "path": "/test",
+    "robots": "noindex, nofollow, noarchive"
+  }
+}

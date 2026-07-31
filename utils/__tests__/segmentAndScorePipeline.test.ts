@@ -4,10 +4,17 @@ jest.mock('../repCountingModel', () => ({
 
 import { segmentAndScore } from '../segmentAndScorePipeline';
 
+// 100 Hz sampling, one rep every 60 samples = 600 ms/rep (1.67 Hz). The period
+// has to clear MIN_SEG_DURATION_MS (300 ms) and sit inside the pipeline's
+// 0.1–3.0 Hz band-pass, or over-segmentation discards every candidate and
+// segmentAndScore returns "No segments found".
+const SAMPLE_INTERVAL_MS = 10;
+const SAMPLES_PER_REP = 60;
+
 function buildSamples() {
   return Array.from({ length: 300 }, (_, i) => {
-    const timestamp = i * 10;
-    const phase = (i / 25) * Math.PI * 2;
+    const timestamp = i * SAMPLE_INTERVAL_MS;
+    const phase = (i / SAMPLES_PER_REP) * Math.PI * 2;
     const signal = Math.sin(phase);
 
     return {

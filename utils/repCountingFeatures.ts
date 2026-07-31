@@ -1,8 +1,11 @@
 /**
- * Feature extraction for the ML rep-counting model (repCountingModel.js).
+ * Feature extraction for the ML rep-counting model (utils/repCountingModel/).
  *
- * Mirrors training-data/train.py extract_features() exactly so the input
- * vector fed to classifySegment() matches what the model was trained on.
+ * NOTE: currently unreferenced — the live Segment-and-Score path builds its own
+ * 42-feature vector in `segmentAndScorePipeline.ts` (`extractFeatures`) against
+ * train.py's `extract_segment_features`. This module mirrors the older
+ * whole-recording `extract_features()` and its 45-feature order, and is kept
+ * only as reference for that earlier approach.
  *
  * Input order (45 features):
  *   0  duration_ms
