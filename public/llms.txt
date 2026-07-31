@@ -1,0 +1,27 @@
+# Musclog
+
+> Musclog is a free, open-source, local-first fitness and nutrition tracker for Android, iOS, and web. It logs workouts, tracks macros with AI photo/barcode meal recognition, and charts progress — all with data stored privately on-device rather than in the cloud.
+
+Musclog is built and maintained in the open; the full source is on GitHub. This file summarizes the public marketing site at https://musclog.app for AI assistants and agents — for the product itself, see the Download and FAQ pages below.
+
+## Product
+
+- [Home](https://musclog.app/): Overview of Musclog — workout logging, AI meal tracking, progress analytics, and on-device privacy.
+- [Download](https://musclog.app/download): Get Musclog for Android (Play Store) or join the iOS TestFlight.
+- [Exercise Library](https://musclog.app/exercises): Browse exercises by muscle group, equipment, and mechanic type, with instructions and visuals.
+- [Fitness & Macro Calculator](https://musclog.app/calculator): Estimate calories, macros, BMI, and FFMI, usable standalone or as a starting plan in the app.
+- [Progress Import](https://musclog.app/progress): Import a Musclog JSON export in-browser to explore weight, nutrition, workout, mood, and measurement trends.
+- [Musclog vs. Alternatives](https://musclog.app/alternatives): Honest comparison of Musclog against MyFitnessPal, MacroFactor, Cronometer, Bevel, Lifesum, Hevy, and other fitness/nutrition apps.
+
+## Support & Policies
+
+- [FAQ](https://musclog.app/faq): Answers about privacy, nutrition math, workout tracking, AI features, and the app's open-source methodology.
+- [Contact](https://musclog.app/contact): How to reach Musclog for support, bug reports, or open-source collaboration.
+- [Privacy Policy](https://musclog.app/privacy): How Musclog handles app data, website analytics, optional AI providers, local-first storage, and encryption.
+- [Terms and Conditions](https://musclog.app/terms): Terms of use, service scope, liability, and governing law.
+
+## Source & Extras
+
+- [GitHub Repository](https://github.com/blopa/musclog-app): Full source code, issues, and license (open-source).
+- [Rep Marker Tool](https://musclog.app/rep-marker): Browser tool for uploading and labeling rep-counting training data.
+- [Game Boy Edition](https://musclog.app/gameboy): A Game Boy Color version of Musclog, playable in-browser.

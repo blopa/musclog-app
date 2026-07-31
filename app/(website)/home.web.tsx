@@ -31,6 +31,7 @@ import {
   BRAND_GREEN,
   BRAND_GREEN_BRIGHT,
 } from '@/components/website/websiteColors';
+import { SoftwareApplicationJsonLd } from '@/components/website/WebsiteStructuredData';
 import { DownloadModal } from '@/components/website/WebsiteWrapper';
 
 function withExpoBaseUrl(path: string): string {
@@ -1017,8 +1018,11 @@ export function Hero() {
 }
 
 export default function Home() {
+  const { t } = useTranslation();
+
   return (
     <>
+      <SoftwareApplicationJsonLd description={t('website.seo.routes.home.description')} />
       <main>
         <Hero />
         <Features />

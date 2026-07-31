@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
 import { BODY_TEXT_SOFT, BRAND_GREEN_BRIGHT, MUTED } from '@/components/website/websiteColors';
+import { FaqPageJsonLd, type FaqPageJsonLdItem } from '@/components/website/WebsiteStructuredData';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -280,8 +281,16 @@ export default function Faq() {
     setOpenQuestion(null);
   };
 
+  const jsonLdItems: FaqPageJsonLdItem[] = faqCategories.flatMap((category) =>
+    category.items.map((item) => ({
+      question: item.question,
+      answer: [item.answer, item.answer2, ...(item.bullets ?? [])].filter(Boolean).join(' '),
+    }))
+  );
+
   return (
     <>
+      <FaqPageJsonLd items={jsonLdItems} />
       <main className="relative overflow-hidden pb-24 pt-24">
         <DotPattern className="text-primary/20" />
         <div className="from-background/60 to-background/60 absolute inset-0 bg-gradient-to-b via-transparent" />

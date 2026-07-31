@@ -6,13 +6,15 @@
  *                          select the most periodic axis via spectral concentration score.
  *   2. overSegment       — valley-to-valley / peak-to-peak candidate full-rep segments.
  *   3. extractFeatures   — 41-feature vector per segment (must exactly match Python training).
- *   4. classifySegment   — RandomForestClassifier exported from train.py via m2cgen.
+ *   4. classifySegment   — dispatches to the RandomForestClassifier for metadata.mechanicType
+ *                          (falling back to the general model), see ./repCountingModel/index.ts.
  *   5. detectPhases      — analytical split at the turning point → Phase A / Phase B timing + speed.
  */
 
 import mlMax from 'ml-array-max';
 import mlMin from 'ml-array-min';
 
+import { MECHANIC_TYPES, normalizeMechanicType } from './mechanicType';
 import { classifySegment } from './repCountingModel';
 
 // ─── Band-pass bounds (see train.py for rationale) ───────────────────────────
@@ -51,17 +53,6 @@ const EQUIPMENT_TYPES = [
   'pneumatic_machine',
   'resistance_band',
   'smith_machine',
-  'unknown',
-];
-
-const MECHANIC_TYPES = [
-  'cardio',
-  'compound',
-  'isolation',
-  'mobility',
-  'other',
-  'plyometric',
-  'stretching',
   'unknown',
 ];
 
@@ -589,7 +580,9 @@ function extractFeatures(
   // One-hot categorical (fallback to 'unknown' for unrecognised values)
   const mg = (metadata.muscleGroup ?? 'unknown').toLowerCase();
   const eq = (metadata.equipmentType ?? 'unknown').toLowerCase();
-  const mt = (metadata.mechanicType ?? 'unknown').toLowerCase();
+  // Same normalization the model dispatcher uses, so the mechanic_* one-hot
+  // and the chosen model always agree on the bucket. See utils/mechanicType.ts.
+  const mt = normalizeMechanicType(metadata.mechanicType);
 
   const muscleVec = MUSCLE_GROUPS.map((g) =>
     MUSCLE_GROUPS.includes(mg) ? (g === mg ? 1 : 0) : g === 'unknown' ? 1 : 0
@@ -597,9 +590,7 @@ function extractFeatures(
   const equipVec = EQUIPMENT_TYPES.map((e) =>
     EQUIPMENT_TYPES.includes(eq) ? (e === eq ? 1 : 0) : e === 'unknown' ? 1 : 0
   );
-  const mechanicVec = MECHANIC_TYPES.map((m) =>
-    MECHANIC_TYPES.includes(mt) ? (m === mt ? 1 : 0) : m === 'unknown' ? 1 : 0
-  );
+  const mechanicVec = MECHANIC_TYPES.map((m) => (m === mt ? 1 : 0));
 
   return [
     amplitude,
@@ -739,7 +730,7 @@ export function segmentAndScore(
 
   for (let i = 0; i < allSegs.length; i++) {
     const features = extractFeatures(i, allSegs[i], signal1d, timestamps, allSegs, metadata);
-    const probs = classifySegment(features);
+    const probs = classifySegment(features, metadata.mechanicType);
     if (probs[1] > 0.5) {
       repPairs.push({ seg: allSegs[i], conf: probs[1] });
     }

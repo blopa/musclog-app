@@ -21,18 +21,32 @@ Usage:
     python train.py
 
 Input:
-    raw-data/*.json  — motion recordings with a 'reps' field
+    raw-data/*.json  — motion recordings with a 'repMarkers' field (mandatory: the
+                       total rep count is derived from len(repMarkers), never stored
+                       separately)
+
+A "general" classifier is always trained, pooled across every recording. A
+mechanic type (compound, isolation, cardio, ...) additionally gets its own
+dedicated classifier only when it has enough labeled recordings to evaluate
+(MIN_RECORDINGS_PER_MECHANIC / MIN_SEGMENTS_PER_CLASS_MECHANIC below) *and*
+that dedicated model beats the general one on the same held-out recordings.
+Everything else falls back to general, in predict.py and in the app alike.
 
 Output:
-    output/features.csv  — per-segment feature matrix (for inspection)
-    output/model.pkl     — trained classifier  (used by predict.py)
-    output/model.js      — same classifier as a JS function  (for app)
-    output/summary.txt   — evaluation report
+    output/features.csv        — per-segment feature matrix (for inspection)
+    output/models/models.js    — mechanic type -> classifier map (for the app)
+    output/models/manifest.json — which mechanic types got a dedicated model,
+                                   with the MAE comparison behind each decision
+    output/models/model_<name>.pkl — trained classifier (used by predict.py)
+                                      <name> is "general" or a mechanic type
+    output/models/model_<name>.js  — same classifier as a JS function (for app)
+    output/summary.txt         — evaluation report
 """
 
 import json
 import pickle
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
@@ -57,6 +71,8 @@ ROOT           = Path(__file__).parent
 RECORDINGS_DIR = ROOT / "raw-data"
 OUTPUT_DIR     = ROOT / "output"
 OUTPUT_DIR.mkdir(exist_ok=True)
+MODELS_DIR     = OUTPUT_DIR / "models"
+MODELS_DIR.mkdir(exist_ok=True)
 
 # ---------------------------------------------------------------------------
 # Over-segmentation constants
@@ -64,6 +80,18 @@ OUTPUT_DIR.mkdir(exist_ok=True)
 OVER_SEG_PROMINENCE_FRAC = 0.03  # 3 % of signal range — deliberately sensitive
 MIN_SEG_DURATION_MS      = 300   # discard sub-300 ms micro-movements
 MIN_HALF_REP_MS          = 150   # minimum half-rep (sets peak/valley min_distance)
+
+# ---------------------------------------------------------------------------
+# Per-mechanic-type model thresholds
+# ---------------------------------------------------------------------------
+# A mechanic type is only *considered* for its own classifier once it clears
+# both bars below — they gate whether a meaningful comparison against the
+# general model can be run at all, not whether the split is a good idea (that
+# is decided by the MAE comparison in _train_and_export_by_mechanic).
+# Requiring >=3 recordings also guarantees LeaveOneGroupOut has >=3 groups,
+# so a within-group LOOCV report is always possible for a candidate model.
+MIN_RECORDINGS_PER_MECHANIC     = 3
+MIN_SEGMENTS_PER_CLASS_MECHANIC = 15
 
 # ---------------------------------------------------------------------------
 # Categorical metadata — fixed lists so the feature vector size never changes
@@ -81,6 +109,19 @@ MECHANIC_TYPES = sorted([
     "cardio", "compound", "isolation", "mobility", "other",
     "plyometric", "stretching", "unknown",
 ])
+
+
+def normalize_mechanic_type(value) -> str:
+    """
+    Map any raw `mechanicType` onto MECHANIC_TYPES. Missing, blank,
+    differently-cased and unrecognised values all collapse to "unknown".
+
+    Mirrored by `normalizeMechanicType` in utils/mechanicType.ts, and used by
+    predict.py too — the same rule has to decide which `mechanic_*` one-hot is
+    set and which model scores the segment, at training and at inference time.
+    """
+    key = str(value or "").strip().lower()
+    return key if key in MECHANIC_TYPES else "unknown"
 
 # ---------------------------------------------------------------------------
 # Feature names — defines the segment-level input vector (order matters)
@@ -388,10 +429,9 @@ def extract_segment_features(
     # One-hot categorical features
     mg = str(metadata.get("muscleGroup")   or "unknown").strip().lower()
     eq = str(metadata.get("equipmentType") or "unknown").strip().lower()
-    mt = str(metadata.get("mechanicType")  or "unknown").strip().lower()
+    mt = normalize_mechanic_type(metadata.get("mechanicType"))
     if mg not in MUSCLE_GROUPS:   mg = "unknown"
     if eq not in EQUIPMENT_TYPES: eq = "unknown"
-    if mt not in MECHANIC_TYPES:  mt = "unknown"
 
     for g in MUSCLE_GROUPS:
         feats[f"muscle_{g}"] = 1.0 if mg == g else 0.0
@@ -399,6 +439,13 @@ def extract_segment_features(
         feats[f"equip_{t_}"] = 1.0 if eq == t_ else 0.0
     for t_ in MECHANIC_TYPES:
         feats[f"mechanic_{t_}"] = 1.0 if mt == t_ else 0.0
+
+    # Plain (non-one-hot) mechanic type, used to group segments by mechanic
+    # type when training per-mechanic-type models. Not part of
+    # SEGMENT_FEATURE_COLS — every model (general or per-mechanic) is still
+    # trained on the full one-hot feature vector, so a dedicated per-type
+    # model's mechanic_* columns are simply constant within that subset.
+    feats["mechanic_type"] = mt
 
     return feats
 
@@ -574,6 +621,212 @@ def loocv_by_recording(df: pd.DataFrame) -> tuple:
 
 
 # ---------------------------------------------------------------------------
+# Per-model training / export helpers
+# ---------------------------------------------------------------------------
+
+def _fit_classifier(df: pd.DataFrame) -> RandomForestClassifier:
+    clf = RandomForestClassifier(
+        n_estimators=200, max_depth=6,
+        class_weight="balanced", random_state=42,
+    )
+    clf.fit(df[SEGMENT_FEATURE_COLS].values, df["is_rep"].values)
+    return clf
+
+
+def _export_classifier(clf: RandomForestClassifier, name: str) -> None:
+    """Save `clf` as output/models/model_<name>.pkl and .js (via m2cgen)."""
+    pkl_path = MODELS_DIR / f"model_{name}.pkl"
+    with open(pkl_path, "wb") as f:
+        pickle.dump({"model": clf, "feature_cols": SEGMENT_FEATURE_COLS}, f)
+
+    raw_js    = m2c.export_to_javascript(clf, function_name="classifySegment")
+    minified  = " ".join(line.strip() for line in raw_js.splitlines() if line.strip())
+    feat_list = ", ".join(SEGMENT_FEATURE_COLS)
+
+    js_path = MODELS_DIR / f"model_{name}.js"
+    js_path.write_text(
+        "// @ts-nocheck\n"
+        "/* eslint-disable */\n"
+        "/*\n"
+        " * auto-generated by train.py — do not edit.\n"
+        f" * Mechanic type: {name}\n"
+        " * classifySegment(input) returns [prob_noise, prob_rep].\n"
+        " * Usage: classifySegment(features)[1] > 0.5  →  is a real rep.\n"
+        f" * Input order ({len(SEGMENT_FEATURE_COLS)} features): {feat_list}\n"
+        " */\n"
+        + minified
+        + "\nexport{classifySegment};\n"
+    )
+    print(f"  {name:<12} → output/models/model_{name}.pkl, model_{name}.js")
+
+
+def _write_models_index_js(trained_types: list) -> None:
+    """
+    Write output/models/models.js — the dispatch map the app imports.
+
+    Only `general` plus the mechanic types that earned a dedicated model appear
+    here; anything absent is routed to `general` by the app-side dispatcher
+    (utils/repCountingModel/index.ts). That keeps the "which types have their
+    own model" decision entirely in this file: no per-type stub modules, no
+    per-type declaration files, and no code change in the app when a type
+    gains or loses a dedicated model.
+
+    Entries are thunks so each ~500 KB m2cgen forest is parsed on first use
+    rather than at bundle-eval time — a session only classifies one or two
+    mechanic types.
+    """
+    names = ["general"] + trained_types
+    loaders = "\n".join(
+        f"  {name}: () => require('./model_{name}.js').classifySegment," for name in names
+    )
+    dedicated = ", ".join(trained_types) or "(none — every mechanic type uses general)"
+
+    (MODELS_DIR / "models.js").write_text(
+        "// @ts-nocheck\n"
+        "/* eslint-disable */\n"
+        "/*\n"
+        " * auto-generated by train.py — do not edit.\n"
+        " *\n"
+        " * Maps a canonical mechanic type to a loader for its dedicated classifier.\n"
+        " * Only mechanic types that earned a dedicated model appear here; every other\n"
+        " * type is routed to `general` by the dispatcher in ./index.ts.\n"
+        " *\n"
+        " * Loaders are thunks rather than imports on purpose: each m2cgen forest is\n"
+        " * ~500 KB of JavaScript and a session only ever classifies one or two mechanic\n"
+        " * types, so a forest is parsed on first use instead of at bundle-eval time.\n"
+        " *\n"
+        f" * Dedicated models in this build: {dedicated}\n"
+        " */\n"
+        "const MODEL_LOADERS = {\n"
+        f"{loaders}\n"
+        "};\n"
+        "\n"
+        "export { MODEL_LOADERS };\n"
+    )
+    print(f"\n  → output/models/models.js  (dedicated: {dedicated})")
+
+
+def _train_and_export_by_mechanic(df: pd.DataFrame, pooled_by_recording: dict) -> list:
+    """
+    Train the general (pooled) classifier, then try a dedicated classifier for
+    each mechanic type with enough labeled data.
+
+    A dedicated model is only *adopted* when it actually beats the pooled model
+    on the same held-out recordings — the data thresholds
+    (MIN_RECORDINGS_PER_MECHANIC / MIN_SEGMENTS_PER_CLASS_MECHANIC) only decide
+    whether the comparison is worth running at all, they are not a proxy for
+    "a split helps here". Splitting trades training data for specificity, and
+    on a small corpus that trade is frequently a loss; adopting unconditionally
+    would silently replace a model trained on every recording with one trained
+    on three.
+
+    `pooled_by_recording` maps recording_id -> (predicted_reps, actual_reps)
+    from the pooled leave-one-recording-out run in main(), which is what makes
+    the two MAEs directly comparable: same recordings, same held-out protocol.
+
+    Returns a list of per-mechanic-type report rows for the summary/manifest.
+    """
+    # ── General (pooled) model — always trained, always the fallback ───────
+    clf_general = _fit_classifier(df)
+    _export_classifier(clf_general, "general")
+
+    print("\n  Feature importances (general model, top 15):")
+    ranked = sorted(
+        zip(SEGMENT_FEATURE_COLS, clf_general.feature_importances_), key=lambda x: -x[1]
+    )
+    for feat, imp in ranked[:15]:
+        bar = "█" * int(imp * 60)
+        print(f"    {feat:<32} {imp:.3f}  {bar}")
+
+    # ── Per-mechanic-type models ────────────────────────────────────────────
+    report: list = []
+    trained_types: list = []
+
+    for mt in MECHANIC_TYPES:
+        subset = df[df["mechanic_type"] == mt]
+        n_recs   = subset["recording_id"].nunique()
+        n_rep    = int((subset["is_rep"] == 1).sum())
+        n_noise  = int((subset["is_rep"] == 0).sum())
+
+        row = {
+            "mechanicType": mt,
+            "recordings":   int(n_recs),
+            "repSegments":  n_rep,
+            "noiseSegments": n_noise,
+        }
+
+        if not (
+            n_recs >= MIN_RECORDINGS_PER_MECHANIC
+            and n_rep >= MIN_SEGMENTS_PER_CLASS_MECHANIC
+            and n_noise >= MIN_SEGMENTS_PER_CLASS_MECHANIC
+        ):
+            reason = (
+                f"only {n_recs} recording(s), {n_rep} rep / {n_noise} noise segments — "
+                f"needs >={MIN_RECORDINGS_PER_MECHANIC} recordings and "
+                f">={MIN_SEGMENTS_PER_CLASS_MECHANIC} segments per class"
+            )
+            row["status"] = "skipped"
+            row["reason"] = reason
+            report.append(row)
+            print(f"  {mt:<12} general  ({reason})")
+            continue
+
+        # Within-type LOOCV for the candidate dedicated model...
+        seg_preds, seg_true, rec_preds, rec_actual, _ = loocv_by_recording(subset)
+        mt_prec = precision_score(seg_true, seg_preds, zero_division=0)
+        mt_rec  = recall_score(seg_true, seg_preds, zero_division=0)
+        mt_f1   = f1_score(seg_true, seg_preds, zero_division=0)
+        mt_mae  = mean_absolute_error(rec_actual, rec_preds)
+
+        # ...against the pooled model's LOOCV on those same recordings.
+        pooled = [pooled_by_recording[r] for r in subset["recording_id"].unique()]
+        general_mae = mean_absolute_error([a for _, a in pooled], [p for p, _ in pooled])
+
+        row.update({
+            "precision": mt_prec,
+            "recall": mt_rec,
+            "f1": mt_f1,
+            "mae": mt_mae,
+            "generalMae": general_mae,
+        })
+
+        if mt_mae >= general_mae:
+            reason = (
+                f"dedicated MAE {mt_mae:.2f} does not beat general {general_mae:.2f} "
+                f"on the same {n_recs} recordings"
+            )
+            row["status"] = "rejected"
+            row["reason"] = reason
+            report.append(row)
+            print(f"  {mt:<12} general  ({reason})")
+            continue
+
+        _export_classifier(_fit_classifier(subset), mt)
+        trained_types.append(mt)
+        row["status"] = "adopted"
+        report.append(row)
+        print(
+            f"  {mt:<12} adopted  MAE {mt_mae:.2f} < general {general_mae:.2f}  "
+            f"(precision={mt_prec:.2f} recall={mt_rec:.2f} f1={mt_f1:.2f}, "
+            f"{n_recs} recordings)"
+        )
+
+    _write_models_index_js(trained_types)
+
+    manifest = {
+        "generatedAt": datetime.now(timezone.utc).isoformat(),
+        "featureCols": SEGMENT_FEATURE_COLS,
+        "mechanicTypes": MECHANIC_TYPES,
+        "trainedMechanicTypes": trained_types,
+        "perMechanicType": report,
+    }
+    (MODELS_DIR / "manifest.json").write_text(json.dumps(manifest, indent=2))
+    print(f"  → output/models/manifest.json")
+
+    return report
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -672,51 +925,15 @@ def main() -> None:
         sus_path.write_text("No suspicious recordings detected.\n")
         print("\n── No suspicious recordings detected.")
 
-    # ── Train final classifier on ALL data ──────────────────────────────
-    print("\n── Training final classifier on all data ───────────────────────")
-    X_all = df[SEGMENT_FEATURE_COLS].values
-    y_all = df["is_rep"].values
-
-    clf = RandomForestClassifier(
-        n_estimators=200, max_depth=6,
-        class_weight="balanced", random_state=42,
-    )
-    clf.fit(X_all, y_all)
-
-    # ── Feature importances ─────────────────────────────────────────────
-    print("\n── Feature importances (top 15) ────────────────────────────────")
-    ranked = sorted(
-        zip(SEGMENT_FEATURE_COLS, clf.feature_importances_), key=lambda x: -x[1]
-    )
-    for feat, imp in ranked[:15]:
-        bar = "█" * int(imp * 60)
-        print(f"  {feat:<32} {imp:.3f}  {bar}")
-
-    # ── Save model.pkl ──────────────────────────────────────────────────
-    pkl_path = OUTPUT_DIR / "model.pkl"
-    with open(pkl_path, "wb") as f:
-        pickle.dump({"model": clf, "feature_cols": SEGMENT_FEATURE_COLS}, f)
-    print(f"\n── Saved → output/model.pkl")
-
-    # ── Export to JavaScript ────────────────────────────────────────────
-    raw_js   = m2c.export_to_javascript(clf, function_name="classifySegment")
-    minified = " ".join(line.strip() for line in raw_js.splitlines() if line.strip())
-    feat_list = ", ".join(SEGMENT_FEATURE_COLS)
-
-    js_path = OUTPUT_DIR / "model.js"
-    js_path.write_text(
-        "// @ts-nocheck\n"
-        "/* eslint-disable */\n"
-        "/*\n"
-        " * auto-generated by train.py — do not edit.\n"
-        " * classifySegment(input) returns [prob_noise, prob_rep].\n"
-        " * Usage: classifySegment(features)[1] > 0.5  →  is a real rep.\n"
-        f" * Input order ({len(SEGMENT_FEATURE_COLS)} features): {feat_list}\n"
-        " */\n"
-        + minified
-        + "\nexport{classifySegment};\n"
-    )
-    print(f"── Saved → output/model.js")
+    # ── Train + export one classifier per mechanic type, plus general ──────
+    print("\n── Training per-mechanic-type classifiers ──────────────────────")
+    # Pooled LOOCV result per recording, so each mechanic type's candidate model
+    # can be compared against the general model on the very same held-out data.
+    pooled_by_recording = {
+        name: (pred, actual)
+        for name, pred, actual in zip(rec_names, rec_preds, rec_actual)
+    }
+    mechanic_report = _train_and_export_by_mechanic(df, pooled_by_recording)
 
     # ── Summary report ──────────────────────────────────────────────────
     summary_lines = [
@@ -727,17 +944,32 @@ def main() -> None:
         f"Rep segments   : {n_rep}",
         f"Noise segments : {n_noise}",
         "",
-        "LOOCV — Segment-level:",
+        "LOOCV (pooled) — Segment-level:",
         f"  Precision : {prec:.2f}",
         f"  Recall    : {rec:.2f}",
         f"  F1        : {f1:.2f}",
         "",
-        "LOOCV — Recording-level:",
+        "LOOCV (pooled) — Recording-level:",
         f"  MAE         : {mae:.2f}",
         f"  Exact match : {exact}/{len(rec_actual)} ({100*exact/len(rec_actual):.0f}%)",
         "",
         f"Feature order ({len(SEGMENT_FEATURE_COLS)} features):",
         *[f"  {i:>2}: {name}" for i, name in enumerate(SEGMENT_FEATURE_COLS)],
+        "",
+        "Per-mechanic-type models:",
+        "  (a dedicated model is adopted only when its within-type LOOCV MAE",
+        "   beats the pooled model's MAE on the same held-out recordings)",
+        *[
+            f"  {row['mechanicType']:<12} {row['status']:<8} "
+            f"recordings={row['recordings']:>3} rep_segs={row['repSegments']:>4} "
+            f"noise_segs={row['noiseSegments']:>4}"
+            + (
+                f"  MAE={row['mae']:.2f} vs general={row['generalMae']:.2f}"
+                if row.get("mae") is not None
+                else ""
+            )
+            for row in mechanic_report
+        ],
     ]
     (OUTPUT_DIR / "summary.txt").write_text("\n".join(summary_lines))
     print(f"── Saved → output/summary.txt\n")

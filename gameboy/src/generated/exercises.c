@@ -325,4 +325,95 @@ const exercise_t exercises[EXERCISE_COUNT] = {
      0u},                                                                                 /* 196 */
     {"Swiss Ball Crunch", EX_MUSCLE_CORE, EX_EQUIPMENT_OTHER, EX_MECHANIC_ISOLATION, 0u}, /* 197 */
     {"Bosu Ball Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_OTHER, EX_MECHANIC_COMPOUND, 0u},    /* 198 */
+    {"Cable Concentration Curl", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
+     20u}, /* 199 */
+    {"Cable One Arm Curl-Supinating", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
+     15u}, /* 200 */
+    {"Cable One Arm Overhead Triceps Extension", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE,
+     EX_MECHANIC_ISOLATION, 15u}, /* 201 */
+    {"Cable One Arm Underhand Push Down", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
+     15u}, /* 202 */
+    {"Cable One Arm Push Down", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
+     15u}, /* 203 */
+    {"Cable Standing Arm Curl", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
+     25u}, /* 204 */
+    {"Cable Standing Hammer Curl", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
+     25u}, /* 205 */
+    {"Cable Underhand Push Down", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
+     28u}, /* 206 */
+    {"Cable Hanging Knee Raise", EX_MUSCLE_ABDOMEN, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
+     40u}, /* 207 */
+    {"Cable Reverse Ab Crunch", EX_MUSCLE_ABDOMEN, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
+     35u}, /* 208 */
+    {"Cable Bench One Arm Row", EX_MUSCLE_BACK, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
+     30u}, /* 209 */
+    {"Cable Kneeling High Row", EX_MUSCLE_BACK, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
+     30u}, /* 210 */
+    {"Cable Kneeling Lat Pull Down", EX_MUSCLE_BACK, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
+     30u}, /* 211 */
+    {"Cable Mid Diverging Row", EX_MUSCLE_BACK, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
+     30u},                                                                            /* 212 */
+    {"Cable Pull Up", EX_MUSCLE_BACK, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND, 50u}, /* 213 */
+    {"Cable Assisted Pull Up", EX_MUSCLE_BACK, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
+     40u}, /* 214 */
+    {"Cable Reverse Fly", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
+     25u}, /* 215 */
+    {"Cable Seated Lat Pull Down", EX_MUSCLE_BACK, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
+     35u}, /* 216 */
+    {"Cable Seated Rear Delt Row", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
+     25u}, /* 217 */
+    {"Cable Standing One Arm Row", EX_MUSCLE_BACK, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
+     25u},                                                                                 /* 218 */
+    {"Cable Bench Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND, 30u}, /* 219 */
+    {"Cable Bench Press-Converging", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
+     30u}, /* 220 */
+    {"Cable Low Pec Fly", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
+     28u},                                                                              /* 221 */
+    {"Cable Pec Fly", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION, 30u}, /* 222 */
+    {"Cable Pec Fly-Standing", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
+     28u}, /* 223 */
+    {"Cable Seated Incline Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
+     30u}, /* 224 */
+    {"Cable Seated Incline Press-Converging", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE,
+     EX_MECHANIC_COMPOUND, 30u}, /* 225 */
+    {"Cable Standing Chest Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
+     30u}, /* 226 */
+    {"Cable Standing Chest Press-Converging", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE,
+     EX_MECHANIC_COMPOUND, 30u}, /* 227 */
+    {"Cable Standing Incline Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
+     30u}, /* 228 */
+    {"Cable Standing Incline Press-Converging", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE,
+     EX_MECHANIC_COMPOUND, 30u}, /* 229 */
+    {"Cable External Rotator", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
+     8u}, /* 230 */
+    {"Cable Internal Rotator", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
+     8u}, /* 231 */
+    {"Cable One Arm Rear Delt", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
+     15u}, /* 232 */
+    {"Cable One Arm Lateral Raise", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
+     6u}, /* 233 */
+    {"Cable One Arm Shoulder Press", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
+     15u}, /* 234 */
+    {"Cable Seated Shoulder Press", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
+     30u}, /* 235 */
+    {"Cable Seated Shoulder Press-Converging", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE,
+     EX_MECHANIC_COMPOUND, 30u},                                                           /* 236 */
+    {"Cable Shrugs", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION, 30u}, /* 237 */
+    {"Cable Standing Shoulder Press", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
+     30u}, /* 238 */
+    {"Cable Upright Row", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
+     30u},                                                                                /* 239 */
+    {"Cable Front Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND, 50u}, /* 240 */
+    {"Cable Hip Abduction", EX_MUSCLE_GLUTES, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
+     15u}, /* 241 */
+    {"Cable Hip Adduction", EX_MUSCLE_GLUTES, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
+     15u},                                                                          /* 242 */
+    {"Cable Lunge", EX_MUSCLE_LEGS, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND, 40u}, /* 243 */
+    {"Cable Reverse Lunge", EX_MUSCLE_LEGS, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
+     40u},                                                                          /* 244 */
+    {"Cable Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND, 50u}, /* 245 */
+    {"Cable Standing Leg Curl", EX_MUSCLE_LEGS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
+     15u}, /* 246 */
+    {"Cable Standing Leg Extension", EX_MUSCLE_LEGS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
+     20u}, /* 247 */
 };

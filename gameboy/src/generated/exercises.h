@@ -55,7 +55,7 @@ typedef struct {
     uint16_t load_multiplier_centi;
 } exercise_t;
 
-#define EXERCISE_COUNT 198u
+#define EXERCISE_COUNT 247u
 #define EXERCISE_LOAD_MULTIPLIER_SCALE 100u
 
 /* The table and its name strings live in this ROM bank. Callers must

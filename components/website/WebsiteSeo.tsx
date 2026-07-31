@@ -2,30 +2,30 @@ import { usePathname } from 'expo-router';
 import Head from 'expo-router/head';
 import { useTranslation } from 'react-i18next';
 
+import websiteRoutes from './websiteRoutes.json';
+
 const SITE_ORIGIN = 'https://musclog.app';
 const SEO_IMAGE_PATH = '/images/seo-image.png';
 const SEO_IMAGE_WIDTH = '1224';
 const SEO_IMAGE_HEIGHT = '741';
 
-const ROUTE_PATHS = {
-  alternatives: '/alternatives',
-  calculator: '/calculator',
-  contact: '/contact',
-  download: '/download',
-  exercises: '/exercises',
-  faq: '/faq',
-  gameboy: '/gameboy',
-  home: '/',
-  privacy: '/privacy',
-  progress: '/progress',
-  repMarker: '/rep-marker',
-  terms: '/terms',
-  test: '/test',
-} as const;
+export type WebsiteSeoRouteKey = keyof typeof websiteRoutes;
 
-const ROUTE_ROBOTS: Partial<Record<WebsiteSeoRouteKey, string>> = {
-  test: 'noindex, nofollow, noarchive',
-};
+interface WebsiteRoute {
+  /** Canonical path, e.g. `/faq`. */
+  path: string;
+  /** `robots` directive; indexable routes omit it and get `index, follow`. */
+  robots?: string;
+}
+
+/**
+ * The website's route registry, widened to its contract once here so nothing
+ * downstream deals with the raw JSON shape. `websiteRoutes.json` is also read
+ * by `scripts/generate-web-seo-files.js` (robots.txt / sitemap.xml / llms.txt),
+ * which is the point: adding a public route is a single edit there, not the
+ * same list maintained in four places.
+ */
+const WEBSITE_ROUTES: Record<WebsiteSeoRouteKey, WebsiteRoute> = websiteRoutes;
 
 const OG_LOCALE_BY_LANGUAGE: Record<string, string> = {
   'en-us': 'en_US',
@@ -35,14 +35,11 @@ const OG_LOCALE_BY_LANGUAGE: Record<string, string> = {
   'ru-ru': 'ru_RU',
 };
 
-export type WebsiteSeoRouteKey = keyof typeof ROUTE_PATHS;
-
 const ROUTE_KEY_BY_PATH: Record<string, WebsiteSeoRouteKey> = {
-  // Inverse of ROUTE_PATHS, derived so a new route only needs one entry above.
-  ...(Object.fromEntries(Object.entries(ROUTE_PATHS).map(([k, v]) => [v, k])) as Record<
-    string,
-    WebsiteSeoRouteKey
-  >),
+  // Inverse of the registry, derived so a new route only needs its JSON entry.
+  ...(Object.fromEntries(
+    Object.entries(WEBSITE_ROUTES).map(([key, route]) => [route.path, key])
+  ) as Record<string, WebsiteSeoRouteKey>),
   // Expo Router may expose the home screen under /home as well as /.
   '/home': 'home',
 };
@@ -100,10 +97,11 @@ export function WebsiteSeo({
   const siteName = t('website.seo.siteName');
   const imageAlt = t('website.seo.imageAlt');
   const keywords = t('website.seo.keywords');
-  const pageUrl = absoluteUrl(canonicalPath ?? ROUTE_PATHS[routeKey]);
+  const pageUrl = absoluteUrl(canonicalPath ?? WEBSITE_ROUTES[routeKey].path);
   const imageUrl = absoluteUrl(SEO_IMAGE_PATH);
-  const robots = ROUTE_ROBOTS[routeKey] ?? 'index, follow';
+  const robots = WEBSITE_ROUTES[routeKey].robots ?? 'index, follow';
   const locale = ogLocaleForLanguage(i18n.resolvedLanguage ?? i18n.language);
+  const alternateLocales = Object.values(OG_LOCALE_BY_LANGUAGE).filter((l) => l !== locale);
 
   return (
     <Head>
@@ -116,6 +114,9 @@ export function WebsiteSeo({
       <meta property="og:type" content="website" />
       <meta property="og:site_name" content={siteName} />
       <meta property="og:locale" content={locale} />
+      {alternateLocales.map((alt) => (
+        <meta key={alt} property="og:locale:alternate" content={alt} />
+      ))}
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={pageUrl} />

@@ -20,8 +20,8 @@ module.exports = defineConfig([
       '**/*.spec.tsx',
       'gameboy/**',
       'training-data/.venv/**',
-      'training-data/output/model.js',
-      'utils/repCountingModel.js',
+      'training-data/output/**',
+      'utils/repCountingModel/*.js',
     ],
   },
   {

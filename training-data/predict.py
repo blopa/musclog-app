@@ -20,7 +20,10 @@ Usage:
 
 Add --json to print the full result as JSON.
 
-Requires output/model.pkl — run train.py first.
+Picks the recording's mechanicType model (output/models/model_<type>.pkl)
+when train.py trained a dedicated one, falling back to
+output/models/model_general.pkl otherwise. Requires output/models/ —
+run train.py first.
 """
 
 import json
@@ -76,6 +79,42 @@ def detect_phases(seg: dict, signal_1d: np.ndarray, timestamps: np.ndarray) -> d
 
 
 # ---------------------------------------------------------------------------
+# Model selection — dedicated per-mechanic-type model, else general fallback
+# ---------------------------------------------------------------------------
+
+def _load_model_bundle(mechanic_type) -> tuple:
+    """
+    Returns (bundle, model_name). Loads output/models/model_<mechanicType>.pkl
+    when train.py adopted a dedicated model for it (per manifest.json),
+    otherwise falls back to output/models/model_general.pkl.
+
+    Mirrors the app-side dispatcher in utils/repCountingModel/index.ts, down to
+    using train.py's `normalize_mechanic_type` so both sides bucket a raw
+    `mechanicType` identically.
+    """
+    sys.path.insert(0, str(ROOT))
+    from train import normalize_mechanic_type
+
+    models_dir = ROOT / "output" / "models"
+    manifest_path = models_dir / "manifest.json"
+
+    trained_types = set()
+    if manifest_path.exists():
+        with open(manifest_path) as f:
+            trained_types = set(json.load(f).get("trainedMechanicTypes", []))
+
+    mt = normalize_mechanic_type(mechanic_type)
+    model_name = mt if mt in trained_types else "general"
+
+    pkl_path = models_dir / f"model_{model_name}.pkl"
+    if not pkl_path.exists():
+        sys.exit(f"{pkl_path} not found — run train.py first.")
+
+    with open(pkl_path, "rb") as f:
+        return pickle.load(f), model_name
+
+
+# ---------------------------------------------------------------------------
 # Full prediction pipeline
 # ---------------------------------------------------------------------------
 
@@ -86,20 +125,10 @@ def predict_recording(recording_path: Path) -> dict:
     """
     sys.path.insert(0, str(ROOT))
     from train import (
-        SEGMENT_FEATURE_COLS,
         extract_segment_features,
         over_segment,
         preprocess_to_1d,
     )
-
-    pkl_path = ROOT / "output" / "model.pkl"
-    if not pkl_path.exists():
-        sys.exit("output/model.pkl not found — run train.py first.")
-
-    with open(pkl_path, "rb") as f:
-        bundle = pickle.load(f)
-    model        = bundle["model"]
-    feature_cols = bundle["feature_cols"]
 
     with open(recording_path) as f:
         data = json.load(f)
@@ -112,9 +141,14 @@ def predict_recording(recording_path: Path) -> dict:
         "setNumber":     data.get("setNumber"),
     }
 
+    bundle, model_name = _load_model_bundle(metadata.get("mechanicType"))
+    model        = bundle["model"]
+    feature_cols = bundle["feature_cols"]
+
     if len(samples) < 20:
         return {
             "recording":          recording_path.name,
+            "model_used":         model_name,
             "predicted_reps":     0,
             "candidate_segments": 0,
             "classified_as_rep":  0,
@@ -128,6 +162,7 @@ def predict_recording(recording_path: Path) -> dict:
     if not all_segs:
         return {
             "recording":          recording_path.name,
+            "model_used":         model_name,
             "predicted_reps":     0,
             "candidate_segments": 0,
             "classified_as_rep":  0,
@@ -171,6 +206,7 @@ def predict_recording(recording_path: Path) -> dict:
 
     result: dict = {
         "recording":          recording_path.name,
+        "model_used":         model_name,
         "predicted_reps":     len(reps_detail),
         "candidate_segments": len(all_segs),
         "classified_as_rep":  len(reps_detail),
@@ -180,10 +216,6 @@ def predict_recording(recording_path: Path) -> dict:
     rep_markers = data.get("repMarkers")
     if rep_markers:
         true_count = len(rep_markers)
-        result["ground_truth_reps"] = true_count
-        result["count_error"]       = len(reps_detail) - true_count
-    elif "reps" in data:
-        true_count = int(data["reps"])
         result["ground_truth_reps"] = true_count
         result["count_error"]       = len(reps_detail) - true_count
 
@@ -196,6 +228,7 @@ def predict_recording(recording_path: Path) -> dict:
 
 def _print_result(result: dict, n_samples: int) -> None:
     print(f"\nRecording         : {result['recording']}")
+    print(f"Model used        : {result.get('model_used', 'general')}")
     print(f"Samples           : {n_samples}")
     print(f"Candidate segments: {result['candidate_segments']}")
     print(f"Classified as rep : {result['classified_as_rep']}")

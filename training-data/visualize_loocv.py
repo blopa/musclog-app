@@ -2,7 +2,7 @@
 """
 LOOCV HTML Visualizer for the Segment-and-Score rep-counting pipeline.
 
-For each training recording that has a 'reps' label:
+For each training recording that has manually annotated `repMarkers`:
   1. Train a RandomForestClassifier on ALL OTHER recordings (leave-one-out)
   2. Run the full prediction pipeline on the held-out recording
   3. Emit a standalone HTML report showing:
@@ -275,7 +275,7 @@ def generate_html(
     predicted_pairs: list,    # [(seg, confidence), …] — only predicted reps
     orig_file_kb: float = 0.0,
 ) -> str:
-    gt = len(data.get("repMarkers") or []) or int(data.get("reps", 0))
+    gt = len(data.get("repMarkers") or [])
     pred = len(predicted_pairs)
     err  = pred - gt
 
