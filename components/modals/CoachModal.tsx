@@ -71,8 +71,9 @@ import { useTheme } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
 import { type TrackMealIngredient } from '@/utils/coachAI';
 import { FALLBACK_EXERCISE_IMAGE } from '@/utils/exerciseImage';
-import { createThumbnail, openCropperAsync, pickImageFromGallery } from '@/utils/file';
+import { createThumbnail } from '@/utils/file';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
+import { pickAndCropImageFromGallery } from '@/utils/galleryImagePicker';
 import { handleError } from '@/utils/handleError';
 
 import { CoachQuickSettingsModal } from './CoachQuickSettingsModal';
@@ -875,22 +876,13 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
 
   const handleAttachFile = useCallback(async () => {
     try {
-      const pickedUri = await pickImageFromGallery();
-      if (!pickedUri) {
-        return;
-      }
-
-      const cropped = await openCropperAsync({
-        imageUri: pickedUri,
-        format: 'jpeg',
-        compressImageQuality: 0.8,
-      });
-      if (!cropped) {
+      const croppedPath = await pickAndCropImageFromGallery();
+      if (!croppedPath) {
         return;
       }
 
       // Create a thumbnail for efficient chat preview (max 300px)
-      const { uri, base64 } = await createThumbnail(cropped.path, 300);
+      const { uri, base64 } = await createThumbnail(croppedPath, 300);
 
       setAttachedImage({
         uri,

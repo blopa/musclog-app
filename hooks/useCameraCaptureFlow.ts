@@ -3,7 +3,8 @@ import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { CameraViewRef } from '@/components/CameraView';
-import { openCropperAsync, pickImageFromGallery } from '@/utils/file';
+import { openCropperAsync } from '@/utils/file';
+import { pickImageFromGallery } from '@/utils/galleryImagePicker';
 import { showSnackbar } from '@/utils/snackbarService';
 
 /** Barcode photos tolerate more compression than AI photos, which need legible label text. */

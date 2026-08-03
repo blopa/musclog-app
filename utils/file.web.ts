@@ -1,6 +1,5 @@
 import type { OpenCropperOptions } from '@bsky.app/expo-image-crop-tool';
 import Quagga, { QuaggaJSCodeReader } from '@ericblade/quagga2';
-import * as ImagePicker from 'expo-image-picker';
 
 import { dumpDatabase } from '@/database/exportDb';
 import { restoreDatabase } from '@/database/importDb';
@@ -208,25 +207,6 @@ export async function saveFoodImage(tempUri: string, existingUri?: string): Prom
 
 export async function deleteFoodImage(imageUri: string): Promise<void> {
   // Not really necessary to be implemented for web
-}
-
-/**
- * Web counterpart of the native picker in file.ts — expo-image-picker also works on web (it
- * opens a hidden `<input type=file accept=image/*>` under the hood), so the call shape and
- * "single gallery-pick entry point" contract match exactly.
- */
-export async function pickImageFromGallery(quality: number = 0.8): Promise<string | null> {
-  const result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ['images'],
-    quality,
-    base64: false,
-  });
-
-  if (result.canceled || !result.assets?.length) {
-    return null;
-  }
-
-  return result.assets[0].uri;
 }
 
 /**

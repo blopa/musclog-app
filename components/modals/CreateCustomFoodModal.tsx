@@ -52,8 +52,9 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { manualEntryCarbsConvention, totalCarbsFromSource } from '@/utils/carbsConvention';
-import { deleteFoodImage, openCropperAsync, pickImageFromGallery, saveFoodImage } from '@/utils/file';
+import { deleteFoodImage, saveFoodImage } from '@/utils/file';
 import { getFoodPortionIconComponent } from '@/utils/foodPortionIcons';
+import { pickAndCropImageFromGallery } from '@/utils/galleryImagePicker';
 import { handleError } from '@/utils/handleError';
 import {
   getDecimalSeparator,
@@ -294,21 +295,12 @@ export default function CreateCustomFoodModal({
 
   const handlePickImage = async () => {
     try {
-      const pickedUri = await pickImageFromGallery();
-      if (!pickedUri) {
+      const croppedPath = await pickAndCropImageFromGallery();
+      if (!croppedPath) {
         return;
       }
 
-      const cropped = await openCropperAsync({
-        imageUri: pickedUri,
-        format: 'jpeg',
-        compressImageQuality: 0.8,
-      });
-      if (!cropped) {
-        return;
-      }
-
-      const permanentUri = await saveFoodImage(cropped.path, imageUrl || undefined);
+      const permanentUri = await saveFoodImage(croppedPath, imageUrl || undefined);
       setImageUrl(permanentUri);
     } catch (error) {
       handleError(error, 'CreateCustomFoodModal.handlePickImage', {

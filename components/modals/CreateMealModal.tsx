@@ -40,7 +40,8 @@ import { useTheme } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
 import { blurFilter } from '@/utils/blurFilter';
 import { localCalendarDayDate, withCurrentTimeOnDay } from '@/utils/calendarDate';
-import { deleteMealImage, openCropperAsync, pickImageFromGallery, saveMealImage } from '@/utils/file';
+import { deleteMealImage, saveMealImage } from '@/utils/file';
+import { pickAndCropImageFromGallery } from '@/utils/galleryImagePicker';
 import { handleError } from '@/utils/handleError';
 import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
 
@@ -575,22 +576,13 @@ export function CreateMealModal({
 
   const handlePickImage = async () => {
     try {
-      const pickedUri = await pickImageFromGallery();
-      if (!pickedUri) {
-        return;
-      }
-
-      const cropped = await openCropperAsync({
-        imageUri: pickedUri,
-        format: 'jpeg',
-        compressImageQuality: 0.8,
-      });
-      if (!cropped) {
+      const croppedPath = await pickAndCropImageFromGallery();
+      if (!croppedPath) {
         return;
       }
 
       // Save to permanent storage immediately
-      const permanentUri = await saveMealImage(cropped.path, imageUrl);
+      const permanentUri = await saveMealImage(croppedPath, imageUrl);
       setImageUrl(permanentUri);
     } catch (error) {
       handleError(error, 'CreateMealModal.handlePickImage', {

@@ -12,7 +12,8 @@ import { useSnackbar } from '@/context/SnackbarContext';
 import { type MuscleGroup } from '@/database/models';
 import { ExerciseService } from '@/database/services';
 import { useTheme } from '@/hooks/useTheme';
-import { openCropperAsync, pickImageFromGallery, saveExerciseImage } from '@/utils/file';
+import { saveExerciseImage } from '@/utils/file';
+import { pickAndCropImageFromGallery } from '@/utils/galleryImagePicker';
 import { handleError } from '@/utils/handleError';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -116,23 +117,14 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
   };
 
   const handleUploadImage = async () => {
-    const pickedUri = await pickImageFromGallery();
-    if (!pickedUri) {
-      return;
-    }
-
-    const cropped = await openCropperAsync({
-      imageUri: pickedUri,
-      format: 'jpeg',
-      compressImageQuality: 0.8,
-    });
-    if (!cropped) {
-      return;
-    }
-
     try {
+      const croppedPath = await pickAndCropImageFromGallery();
+      if (!croppedPath) {
+        return;
+      }
+
       // Copy the image from the crop tool's temporary cache to permanent storage
-      const permanentUri = await saveExerciseImage(cropped.path, imageUri);
+      const permanentUri = await saveExerciseImage(croppedPath, imageUri);
       setImageUri(permanentUri);
     } catch (err) {
       handleError(err, 'CreateExerciseModal.handleUploadImage', {

@@ -18,9 +18,12 @@ jest.mock('@/utils/snackbarService', () => ({
 }));
 
 const mockOpenCropperAsync = jest.fn();
-const mockPickImageFromGallery = jest.fn();
 jest.mock('@/utils/file', () => ({
   openCropperAsync: (...args: unknown[]) => mockOpenCropperAsync(...args),
+}));
+
+const mockPickImageFromGallery = jest.fn();
+jest.mock('@/utils/galleryImagePicker', () => ({
   pickImageFromGallery: (...args: unknown[]) => mockPickImageFromGallery(...args),
 }));
 
