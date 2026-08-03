@@ -1,10 +1,9 @@
-import * as ImagePicker from 'expo-image-picker';
 import type { RefObject } from 'react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { CameraViewRef } from '@/components/CameraView';
-import { openCropperAsync } from '@/utils/file';
+import { openCropperAsync, pickImageFromGallery } from '@/utils/file';
 import { showSnackbar } from '@/utils/snackbarService';
 
 /** Barcode photos tolerate more compression than AI photos, which need legible label text. */
@@ -87,30 +86,25 @@ export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraC
 
   const pickFromGallery = useCallback(async () => {
     try {
-      // No media-library permission request here: the modern system photo picker (Android
-      // ACTION_PICK_IMAGES / iOS PHPicker — expo-image-picker's default without `legacy`) returns
-      // only the user-picked item through a temporary content grant, so it needs no permission.
-      // Dropping the request also removes an Expo async call from the single shared `modulesQueue`
-      // thread whose boot-time saturation is the real stall (see the SecureStore/queue notes in
-      // AGENTS.md).
+      // No media-library permission request: pickImageFromGallery uses the modern system photo
+      // picker (Android ACTION_PICK_IMAGES / iOS PHPicker), which returns only the user-picked
+      // item through a temporary content grant. Skipping the request also removes an Expo async
+      // call from the single shared `modulesQueue` thread whose boot-time saturation is the real
+      // stall (see the SecureStore/queue notes in AGENTS.md).
       //
       // Time the picker call itself. This span includes the user browsing/selecting, so a large
       // value is only a red flag when the picker was slow to *appear* (the reported symptom:
       // the picker UI not showing for ~25s on the first pick after a cold boot).
       const pickerStartedAt = Date.now();
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        quality,
-        base64: false,
-      });
+      const uri = await pickImageFromGallery(quality);
       logPhase('gallery picker', pickerStartedAt);
 
-      if (result.canceled || !result.assets?.length) {
+      if (!uri) {
         return;
       }
 
       try {
-        await cropAndProcess(result.assets[0].uri);
+        await cropAndProcess(uri);
       } catch (error) {
         console.error('Error cropping gallery image:', error);
         showSnackbar('error', t('food.aiCamera.cameraError'));

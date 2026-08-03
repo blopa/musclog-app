@@ -1,8 +1,10 @@
 import ExpoImageCropTool from '@bsky.app/expo-image-crop-tool';
+import * as ImagePicker from 'expo-image-picker';
 
-import { openCropperAsync } from '@/utils/file';
+import { openCropperAsync, pickImageFromGallery } from '@/utils/file';
 
 jest.mock('expo-document-picker', () => ({}));
+jest.mock('expo-image-picker', () => ({ launchImageLibraryAsync: jest.fn() }));
 jest.mock('expo-file-system', () => ({
   Directory: jest.fn(),
   File: jest.fn(),
@@ -79,5 +81,62 @@ describe('openCropperAsync', () => {
     mockOpenCropper.mockRejectedValue(failure);
 
     await expect(openCropperAsync(CROP_OPTIONS)).rejects.toBe(failure);
+  });
+});
+
+describe('pickImageFromGallery', () => {
+  const mockLaunchImageLibrary = ImagePicker.launchImageLibraryAsync as jest.Mock;
+
+  beforeEach(() => {
+    mockLaunchImageLibrary.mockReset();
+  });
+
+  it('launches the system photo picker with no permission flag and no legacy override', async () => {
+    mockLaunchImageLibrary.mockResolvedValue({
+      canceled: false,
+      assets: [{ uri: 'file:///picked.jpg' }],
+    });
+
+    await pickImageFromGallery(0.85);
+
+    expect(mockLaunchImageLibrary).toHaveBeenCalledWith({
+      mediaTypes: ['images'],
+      quality: 0.85,
+      base64: false,
+    });
+  });
+
+  it('returns the picked asset uri', async () => {
+    mockLaunchImageLibrary.mockResolvedValue({
+      canceled: false,
+      assets: [{ uri: 'file:///picked.jpg' }],
+    });
+
+    await expect(pickImageFromGallery()).resolves.toBe('file:///picked.jpg');
+  });
+
+  it('returns null when the picker is cancelled', async () => {
+    mockLaunchImageLibrary.mockResolvedValue({ canceled: true, assets: [] });
+
+    await expect(pickImageFromGallery()).resolves.toBeNull();
+  });
+
+  it('returns null when no asset is returned', async () => {
+    mockLaunchImageLibrary.mockResolvedValue({ canceled: false, assets: [] });
+
+    await expect(pickImageFromGallery()).resolves.toBeNull();
+  });
+
+  it('defaults quality to 0.8', async () => {
+    mockLaunchImageLibrary.mockResolvedValue({
+      canceled: false,
+      assets: [{ uri: 'file:///picked.jpg' }],
+    });
+
+    await pickImageFromGallery();
+
+    expect(mockLaunchImageLibrary).toHaveBeenCalledWith(
+      expect.objectContaining({ quality: 0.8 })
+    );
   });
 });

@@ -426,7 +426,6 @@
       },
       "closeScanner": "Scanner sluiten",
       "galleryError": "Kon afbeelding niet laden uit galerij",
-      "galleryPermissionRequired": "Toegang tot galerij vereist om foto's te uploaden",
       "noBarcodeDetected": "Geen barcode gedetecteerd",
       "noBarcodeFound": "Geen barcode gevonden",
       "photoCaptured": "Foto succesvol gemaakt",

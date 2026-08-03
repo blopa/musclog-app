@@ -11,6 +11,7 @@ import {
   writeAsStringAsync,
 } from 'expo-file-system/legacy';
 import * as ImageManipulator from 'expo-image-manipulator';
+import * as ImagePicker from 'expo-image-picker';
 import * as Sharing from 'expo-sharing';
 
 import { dumpDatabase } from '@/database/exportDb';
@@ -71,18 +72,6 @@ export async function importDatabase(decryptionPhrase?: string): Promise<void> {
     await restoreDatabase(dbDump, decryptionPhrase);
   } catch (error) {
     console.error('Error importing database:', error);
-    throw error;
-  }
-}
-
-export async function pickDocument(types?: string[]): Promise<DocumentPicker.DocumentPickerResult> {
-  try {
-    return await DocumentPicker.getDocumentAsync({
-      type: types || ['image/*', 'application/pdf', 'text/plain'],
-      copyToCacheDirectory: true,
-    });
-  } catch (error) {
-    console.error('Error picking document:', error);
     throw error;
   }
 }
@@ -286,6 +275,28 @@ export async function deleteFoodImage(imageUri: string): Promise<void> {
   } catch {
     // Non-fatal
   }
+}
+
+/**
+ * Opens the modern system photo picker (Android Photo Picker / iOS PHPicker — expo-image-picker's
+ * default when no `legacy` flag is passed) and returns the picked image's URI, or `null` if the
+ * user cancels. This picker hands back only the user-selected item through a temporary content
+ * grant, so it needs no media-library permission request. This is the single "pick from gallery"
+ * entry point every image-attach flow in the app should share, so gallery picking feels identical
+ * everywhere (smart camera, chat attachments, meal/food/exercise photo uploads).
+ */
+export async function pickImageFromGallery(quality: number = 0.8): Promise<string | null> {
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ['images'],
+    quality,
+    base64: false,
+  });
+
+  if (result.canceled || !result.assets?.length) {
+    return null;
+  }
+
+  return result.assets[0].uri;
 }
 
 /**

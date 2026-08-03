@@ -1,4 +1,3 @@
-import * as ImagePicker from 'expo-image-picker';
 import { Camera, Check, ChevronDown, Dumbbell, Link } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +12,7 @@ import { useSnackbar } from '@/context/SnackbarContext';
 import { type MuscleGroup } from '@/database/models';
 import { ExerciseService } from '@/database/services';
 import { useTheme } from '@/hooks/useTheme';
-import { saveExerciseImage } from '@/utils/file';
+import { openCropperAsync, pickImageFromGallery, saveExerciseImage } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -117,29 +116,28 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
   };
 
   const handleUploadImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      showSnackbar('error', t('exercises.createExercise.imagePermissionDenied'));
-
+    const pickedUri = await pickImageFromGallery();
+    if (!pickedUri) {
       return;
     }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: 'images',
-      allowsEditing: true,
-      quality: 0.8,
+    const cropped = await openCropperAsync({
+      imageUri: pickedUri,
+      format: 'jpeg',
+      compressImageQuality: 0.8,
     });
+    if (!cropped) {
+      return;
+    }
 
-    if (!result.canceled && result.assets[0]) {
-      try {
-        // Copy the image from the picker's temporary cache to permanent storage
-        const permanentUri = await saveExerciseImage(result.assets[0].uri, imageUri);
-        setImageUri(permanentUri);
-      } catch (err) {
-        handleError(err, 'CreateExerciseModal.handleUploadImage', {
-          snackbarMessage: t('exercises.createExercise.createError'),
-        });
-      }
+    try {
+      // Copy the image from the crop tool's temporary cache to permanent storage
+      const permanentUri = await saveExerciseImage(cropped.path, imageUri);
+      setImageUri(permanentUri);
+    } catch (err) {
+      handleError(err, 'CreateExerciseModal.handleUploadImage', {
+        snackbarMessage: t('exercises.createExercise.createError'),
+      });
     }
   };
 

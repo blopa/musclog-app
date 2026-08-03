@@ -426,7 +426,6 @@
       },
       "closeScanner": "Закрыть сканер",
       "galleryError": "Не удалось загрузить изображение из галереи",
-      "galleryPermissionRequired": "Для загрузки фото требуется доступ к галерее",
       "noBarcodeDetected": "Штрих-код не обнаружен",
       "noBarcodeFound": "Штрих-код не найден",
       "photoCaptured": "Фото успешно сделано",

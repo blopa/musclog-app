@@ -1,4 +1,3 @@
-import * as ImagePicker from 'expo-image-picker';
 import type { TFunction } from 'i18next';
 import {
   Apple,
@@ -41,7 +40,7 @@ import { useTheme } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
 import { blurFilter } from '@/utils/blurFilter';
 import { localCalendarDayDate, withCurrentTimeOnDay } from '@/utils/calendarDate';
-import { deleteMealImage, saveMealImage } from '@/utils/file';
+import { deleteMealImage, openCropperAsync, pickImageFromGallery, saveMealImage } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 import { displayToGrams, getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
 
@@ -576,17 +575,23 @@ export function CreateMealModal({
 
   const handlePickImage = async () => {
     try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        allowsEditing: true,
-        quality: 0.8,
-      });
-
-      if (!result.canceled && result.assets?.[0]) {
-        // Save to permanent storage immediately
-        const permanentUri = await saveMealImage(result.assets[0].uri, imageUrl);
-        setImageUrl(permanentUri);
+      const pickedUri = await pickImageFromGallery();
+      if (!pickedUri) {
+        return;
       }
+
+      const cropped = await openCropperAsync({
+        imageUri: pickedUri,
+        format: 'jpeg',
+        compressImageQuality: 0.8,
+      });
+      if (!cropped) {
+        return;
+      }
+
+      // Save to permanent storage immediately
+      const permanentUri = await saveMealImage(cropped.path, imageUrl);
+      setImageUrl(permanentUri);
     } catch (error) {
       handleError(error, 'CreateMealModal.handlePickImage', {
         snackbarMessage: t('errors.somethingWentWrong'),

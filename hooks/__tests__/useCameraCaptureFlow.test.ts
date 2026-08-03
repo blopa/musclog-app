@@ -3,7 +3,6 @@
  */
 
 import { renderHook } from '@testing-library/react';
-import * as ImagePicker from 'expo-image-picker';
 
 import { useCameraCaptureFlow } from '@/hooks/useCameraCaptureFlow';
 
@@ -19,15 +18,11 @@ jest.mock('@/utils/snackbarService', () => ({
 }));
 
 const mockOpenCropperAsync = jest.fn();
+const mockPickImageFromGallery = jest.fn();
 jest.mock('@/utils/file', () => ({
   openCropperAsync: (...args: unknown[]) => mockOpenCropperAsync(...args),
+  pickImageFromGallery: (...args: unknown[]) => mockPickImageFromGallery(...args),
 }));
-
-jest.mock('expo-image-picker', () => ({
-  launchImageLibraryAsync: jest.fn(),
-}));
-
-const mockLaunchImageLibrary = ImagePicker.launchImageLibraryAsync as jest.Mock;
 
 describe('useCameraCaptureFlow', () => {
   const renderFlow = ({
@@ -51,10 +46,7 @@ describe('useCameraCaptureFlow', () => {
     jest.clearAllMocks();
     jest.spyOn(console, 'error').mockImplementation(() => {});
     mockOpenCropperAsync.mockResolvedValue({ path: 'file:///cropped.jpg' });
-    mockLaunchImageLibrary.mockResolvedValue({
-      canceled: false,
-      assets: [{ uri: 'file:///picked.jpg' }],
-    });
+    mockPickImageFromGallery.mockResolvedValue('file:///picked.jpg');
   });
 
   afterEach(() => {
@@ -100,9 +92,7 @@ describe('useCameraCaptureFlow', () => {
 
       await result.current.pickFromGallery();
 
-      expect(mockLaunchImageLibrary).toHaveBeenCalledWith(
-        expect.objectContaining({ quality: 0.85 })
-      );
+      expect(mockPickImageFromGallery).toHaveBeenCalledWith(0.85);
       expect(mockOpenCropperAsync).toHaveBeenCalledWith({
         imageUri: 'file:///picked.jpg',
         format: 'jpeg',
@@ -111,23 +101,13 @@ describe('useCameraCaptureFlow', () => {
       expect(process).toHaveBeenCalledWith('file:///cropped.jpg');
     });
 
-    it('launches the system photo picker with no permission request and no legacy override', async () => {
-      const { result, process } = renderFlow();
-
-      await result.current.pickFromGallery();
-
-      expect(mockLaunchImageLibrary).toHaveBeenCalledWith(
-        expect.not.objectContaining({ legacy: expect.anything() })
-      );
-      expect(process).toHaveBeenCalledWith('file:///cropped.jpg');
-    });
-
     it('ends silently when the picker is cancelled', async () => {
-      mockLaunchImageLibrary.mockResolvedValue({ canceled: true, assets: [] });
+      mockPickImageFromGallery.mockResolvedValue(null);
       const { result, process } = renderFlow();
 
       await result.current.pickFromGallery();
 
+      expect(mockOpenCropperAsync).not.toHaveBeenCalled();
       expect(process).not.toHaveBeenCalled();
       expect(mockShowSnackbar).not.toHaveBeenCalled();
     });
@@ -142,7 +122,7 @@ describe('useCameraCaptureFlow', () => {
     });
 
     it('shows the gallery-error snackbar when the picker itself fails', async () => {
-      mockLaunchImageLibrary.mockRejectedValue(new Error('picker crashed'));
+      mockPickImageFromGallery.mockRejectedValue(new Error('picker crashed'));
       const { result, process } = renderFlow();
 
       await result.current.pickFromGallery();

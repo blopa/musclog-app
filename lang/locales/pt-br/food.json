@@ -426,7 +426,6 @@
       },
       "closeScanner": "Fechar Scanner",
       "galleryError": "Não foi possível carregar imagem da galeria",
-      "galleryPermissionRequired": "Acesso à galeria necessário para enviar fotos",
       "noBarcodeDetected": "Nenhum código de barras detectado",
       "noBarcodeFound": "Nenhum código de barras encontrado",
       "photoCaptured": "Foto capturada com sucesso",

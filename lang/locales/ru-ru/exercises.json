@@ -71,7 +71,6 @@
     "emptyGroupMessage": "Нажмите для просмотра упражнений на {{muscleGroup}}.",
     "createExercise": {
       "title": "Создать упражнение",
-      "imagePermissionDenied": "Требуется доступ к фотобиблиотеке",
       "imageSelected": "Изображение выбрано",
       "videoURLSet": "URL установлен",
       "description": "Добавить новое упражнение в вашу библиотеку",

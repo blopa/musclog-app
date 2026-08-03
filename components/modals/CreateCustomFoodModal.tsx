@@ -1,4 +1,3 @@
-import * as ImagePicker from 'expo-image-picker';
 import {
   AlignLeft,
   Apple,
@@ -53,7 +52,7 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { manualEntryCarbsConvention, totalCarbsFromSource } from '@/utils/carbsConvention';
-import { deleteFoodImage, saveFoodImage } from '@/utils/file';
+import { deleteFoodImage, openCropperAsync, pickImageFromGallery, saveFoodImage } from '@/utils/file';
 import { getFoodPortionIconComponent } from '@/utils/foodPortionIcons';
 import { handleError } from '@/utils/handleError';
 import {
@@ -61,7 +60,6 @@ import {
   parseLocalizedDecimalString,
   sanitizeLocalizedDecimalInput,
 } from '@/utils/localizedDecimalInput';
-import { showSnackbar } from '@/utils/snackbarService';
 import { getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
 
 import { FoodMealTrackingDetailsModal } from './FoodMealTrackingDetailsModal';
@@ -296,22 +294,22 @@ export default function CreateCustomFoodModal({
 
   const handlePickImage = async () => {
     try {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
-        showSnackbar('error', t('food.smartCamera.galleryPermissionRequired'));
+      const pickedUri = await pickImageFromGallery();
+      if (!pickedUri) {
         return;
       }
 
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        allowsEditing: true,
-        quality: 0.8,
+      const cropped = await openCropperAsync({
+        imageUri: pickedUri,
+        format: 'jpeg',
+        compressImageQuality: 0.8,
       });
-
-      if (!result.canceled && result.assets?.[0]) {
-        const permanentUri = await saveFoodImage(result.assets[0].uri, imageUrl || undefined);
-        setImageUrl(permanentUri);
+      if (!cropped) {
+        return;
       }
+
+      const permanentUri = await saveFoodImage(cropped.path, imageUrl || undefined);
+      setImageUrl(permanentUri);
     } catch (error) {
       handleError(error, 'CreateCustomFoodModal.handlePickImage', {
         snackbarMessage: t('food.newCustomFood.errorSaving'),

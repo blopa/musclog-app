@@ -426,7 +426,6 @@
       },
       "closeScanner": "Close Scanner",
       "galleryError": "Could not load image from gallery",
-      "galleryPermissionRequired": "Gallery access required to upload photos",
       "noBarcodeDetected": "No barcode detected",
       "noBarcodeFound": "No barcode found",
       "photoCaptured": "Photo captured successfully",

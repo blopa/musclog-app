@@ -71,7 +71,7 @@ import { useTheme } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
 import { type TrackMealIngredient } from '@/utils/coachAI';
 import { FALLBACK_EXERCISE_IMAGE } from '@/utils/exerciseImage';
-import { createThumbnail, pickDocument } from '@/utils/file';
+import { createThumbnail, openCropperAsync, pickImageFromGallery } from '@/utils/file';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { handleError } from '@/utils/handleError';
 
@@ -875,21 +875,29 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
 
   const handleAttachFile = useCallback(async () => {
     try {
-      const result = await pickDocument(['image/*']);
-
-      if (!result.canceled && result.assets?.[0]) {
-        const file = result.assets[0];
-
-        // Create a thumbnail for efficient chat preview (max 300px)
-        const { uri, base64 } = await createThumbnail(file.uri, 300);
-
-        setAttachedImage({
-          uri,
-          base64: base64 || '',
-        });
+      const pickedUri = await pickImageFromGallery();
+      if (!pickedUri) {
+        return;
       }
+
+      const cropped = await openCropperAsync({
+        imageUri: pickedUri,
+        format: 'jpeg',
+        compressImageQuality: 0.8,
+      });
+      if (!cropped) {
+        return;
+      }
+
+      // Create a thumbnail for efficient chat preview (max 300px)
+      const { uri, base64 } = await createThumbnail(cropped.path, 300);
+
+      setAttachedImage({
+        uri,
+        base64: base64 || '',
+      });
     } catch (error) {
-      console.error('Error picking document:', error);
+      console.error('Error picking image:', error);
       showSnackbar('error', t('coach.errors.filePickFailed'));
     }
   }, [showSnackbar, t]);
