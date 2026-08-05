@@ -104,12 +104,12 @@ replacing files with the same name while leaving local-only files untouched.
 
 ## Outputs
 
-| File                                              | Description                                                                                                                      |
-| -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `output/features.csv`                              | Generated segment feature matrix                                                                                                  |
-| `output/models/model_general.pkl` / `.js`          | Pooled classifier, used as the fallback for any mechanic type                                                                     |
-| `output/models/model_<mechanicType>.pkl` / `.js`   | Dedicated per-mechanic-type classifier, or a fallback re-export of `model_general.js` if that type doesn't have enough data yet   |
-| `output/models/manifest.json`                      | Which mechanic types got a dedicated model                                                                                        |
-| `output/summary.txt`                               | Evaluation report from the last training run (pooled + per-mechanic-type)                                                         |
-| `output/sus_data.txt`                               | Suspicious/noisy recording report                                                                                                 |
-| `recordings/<uuid>/combined.mp4`                    | Optional video plus IMU chart overlay                                                                                             |
+| File                                             | Description                                                                                                                     |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| `output/features.csv`                            | Generated segment feature matrix                                                                                                |
+| `output/models/model_general.pkl` / `.js`        | Pooled classifier, used as the fallback for any mechanic type                                                                   |
+| `output/models/model_<mechanicType>.pkl` / `.js` | Dedicated per-mechanic-type classifier, or a fallback re-export of `model_general.js` if that type doesn't have enough data yet |
+| `output/models/manifest.json`                    | Which mechanic types got a dedicated model                                                                                      |
+| `output/summary.txt`                             | Evaluation report from the last training run (pooled + per-mechanic-type)                                                       |
+| `output/sus_data.txt`                            | Suspicious/noisy recording report                                                                                               |
+| `recordings/<uuid>/combined.mp4`                 | Optional video plus IMU chart overlay                                                                                           |

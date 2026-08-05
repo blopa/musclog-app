@@ -108,17 +108,17 @@ training-data/
 
 Every recording is a JSON file with the following top-level fields:
 
-| Field           | Type                | Description                                                                                                                                                              |
-| --------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `repMarkers`    | `array`             | **Mandatory.** Per-rep start/end boundary annotations. The total rep count is *always* derived from `len(repMarkers)` — there is no separate stored rep count anywhere in the pipeline. Recordings without `repMarkers` are skipped entirely by `train.py`/`visualize_loocv.py`, and `predict.py` shows no `ground_truth_reps` for them. See [Labeling Workflow](#7-labeling-workflow). |
-| `samples`       | `array`             | Time-series sensor samples (see below).                                                                                                                                  |
-| `reps`          | `int` (optional)    | Total rep count recorded by the app at collection time. Purely an annotator UX hint (shown as "N reps expected" while placing markers in `generate-markers-html.py` / the video marker tools) — never read by `train.py`, `predict.py`, or `visualize_loocv.py`. |
-| `muscleGroup`   | `string`            | Primary muscle group (e.g. `"chest"`, `"legs"`).                                                                                                                         |
-| `equipmentType` | `string`            | Equipment used (e.g. `"barbell"`, `"dumbbell"`).                                                                                                                         |
-| `mechanicType`  | `string`            | Movement pattern (e.g. `"compound"`, `"isolation"`).                                                                                                                     |
-| `setNumber`     | `int`               | Which set this is within the workout session.                                                                                                                            |
-| `exerciseName`  | `string` (optional) | Human-readable exercise name.                                                                                                                                            |
-| `startedAt`     | `string` (optional) | ISO 8601 wall-clock timestamp when recording began on device. Used to align chart with video.                                                                            |
+| Field           | Type                | Description                                                                                                                                                                                                                                                                                                                                                                             |
+| --------------- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `repMarkers`    | `array`             | **Mandatory.** Per-rep start/end boundary annotations. The total rep count is _always_ derived from `len(repMarkers)` — there is no separate stored rep count anywhere in the pipeline. Recordings without `repMarkers` are skipped entirely by `train.py`/`visualize_loocv.py`, and `predict.py` shows no `ground_truth_reps` for them. See [Labeling Workflow](#7-labeling-workflow). |
+| `samples`       | `array`             | Time-series sensor samples (see below).                                                                                                                                                                                                                                                                                                                                                 |
+| `reps`          | `int` (optional)    | Total rep count recorded by the app at collection time. Purely an annotator UX hint (shown as "N reps expected" while placing markers in `generate-markers-html.py` / the video marker tools) — never read by `train.py`, `predict.py`, or `visualize_loocv.py`.                                                                                                                        |
+| `muscleGroup`   | `string`            | Primary muscle group (e.g. `"chest"`, `"legs"`).                                                                                                                                                                                                                                                                                                                                        |
+| `equipmentType` | `string`            | Equipment used (e.g. `"barbell"`, `"dumbbell"`).                                                                                                                                                                                                                                                                                                                                        |
+| `mechanicType`  | `string`            | Movement pattern (e.g. `"compound"`, `"isolation"`).                                                                                                                                                                                                                                                                                                                                    |
+| `setNumber`     | `int`               | Which set this is within the workout session.                                                                                                                                                                                                                                                                                                                                           |
+| `exerciseName`  | `string` (optional) | Human-readable exercise name.                                                                                                                                                                                                                                                                                                                                                           |
+| `startedAt`     | `string` (optional) | ISO 8601 wall-clock timestamp when recording began on device. Used to align chart with video.                                                                                                                                                                                                                                                                                           |
 
 Each element of `samples` has this structure:
 
@@ -173,15 +173,15 @@ python train.py
 
 **Key constants:**
 
-| Constant                   | Default | Meaning                                                                                       |
-| -------------------------- | ------- | --------------------------------------------------------------------------------------------- |
-| `OVER_SEG_PROMINENCE_FRAC` | `0.03`  | Minimum peak/valley prominence as a fraction of signal range. Lower = more segments detected. |
-| `MIN_SEG_DURATION_MS`      | `300`   | Discard segments shorter than 300 ms (sub-rep micro-movements).                               |
-| `MIN_HALF_REP_MS`          | `150`   | Minimum time between adjacent peaks/valleys, used to set `min_distance` in `find_peaks`.      |
-| `_BP_LO_HZ`                | `0.10`  | Bandpass lower bound (corresponds to 10 s/rep — slowest possible controlled movement).        |
-| `_BP_HI_HZ`                | `3.00`  | Bandpass upper bound (corresponds to 333 ms/rep — fastest loaded movement).                   |
-| `MIN_RECORDINGS_PER_MECHANIC`     | `3`  | A mechanic type needs at least this many distinct recordings to get a dedicated model.        |
-| `MIN_SEGMENTS_PER_CLASS_MECHANIC` | `15` | ...and at least this many rep segments *and* this many noise segments.                        |
+| Constant                          | Default | Meaning                                                                                       |
+| --------------------------------- | ------- | --------------------------------------------------------------------------------------------- |
+| `OVER_SEG_PROMINENCE_FRAC`        | `0.03`  | Minimum peak/valley prominence as a fraction of signal range. Lower = more segments detected. |
+| `MIN_SEG_DURATION_MS`             | `300`   | Discard segments shorter than 300 ms (sub-rep micro-movements).                               |
+| `MIN_HALF_REP_MS`                 | `150`   | Minimum time between adjacent peaks/valleys, used to set `min_distance` in `find_peaks`.      |
+| `_BP_LO_HZ`                       | `0.10`  | Bandpass lower bound (corresponds to 10 s/rep — slowest possible controlled movement).        |
+| `_BP_HI_HZ`                       | `3.00`  | Bandpass upper bound (corresponds to 333 ms/rep — fastest loaded movement).                   |
+| `MIN_RECORDINGS_PER_MECHANIC`     | `3`     | A mechanic type needs at least this many distinct recordings to get a dedicated model.        |
+| `MIN_SEGMENTS_PER_CLASS_MECHANIC` | `15`    | ...and at least this many rep segments _and_ this many noise segments.                        |
 
 **Categorical feature lists (`MUSCLE_GROUPS`, `EQUIPMENT_TYPES`, `MECHANIC_TYPES`):**
 
@@ -198,7 +198,7 @@ for every model instead of needing per-model feature layouts.
 
 `train.py` always trains the pooled `general` classifier described above. On top of
 that, each `mechanicType` (`cardio`, `compound`, `isolation`, `mobility`, `other`,
-`plyometric`, `stretching`, `unknown`) *may* get its own classifier — but only if that
+`plyometric`, `stretching`, `unknown`) _may_ get its own classifier — but only if that
 classifier is measurably better.
 
 For each mechanic type:
@@ -784,7 +784,7 @@ const MODEL_LOADERS = {
 ```
 
 The loaders are thunks rather than imports because each m2cgen forest is ~500 KB of
-JavaScript. A static import of every model would put all of them in the app bundle *and*
+JavaScript. A static import of every model would put all of them in the app bundle _and_
 evaluate all of them at startup; with thunks (memoized in `index.ts`) a session only
 parses the one or two mechanic types it actually classifies.
 
@@ -1060,7 +1060,7 @@ After annotation, copy the downloaded updated JSON back to `raw-data/` and rerun
 `output/models/*.js` (the forests plus `models.js`). Clearing first matters: a type that
 loses its dedicated model on a retrain must not leave a stale forest behind. The app's
 dispatcher (`utils/repCountingModel/index.ts`) and the `models.d.ts` declaration are
-hand-written and are *not* touched by the sync:
+hand-written and are _not_ touched by the sync:
 
 ```js
 // returns [prob_noise, prob_rep]

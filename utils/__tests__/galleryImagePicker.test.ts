@@ -60,9 +60,7 @@ describe('pickImageFromGallery', () => {
 
     await pickImageFromGallery();
 
-    expect(mockLaunchImageLibrary).toHaveBeenCalledWith(
-      expect.objectContaining({ quality: 0.8 })
-    );
+    expect(mockLaunchImageLibrary).toHaveBeenCalledWith(expect.objectContaining({ quality: 0.8 }));
   });
 });
 
