@@ -30,6 +30,7 @@ import type Note from '@/database/models/Note';
 import { NoteService } from '@/database/services/NoteService';
 import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
 import { useNotes } from '@/hooks/useNotes';
+import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { formatRelativeTime } from '@/utils/formatRelativeTime';
 import { handleError } from '@/utils/handleError';
@@ -58,6 +59,7 @@ export default function NotesScreen() {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const { openCoach } = useCoach();
+  const { isAiConfigured } = useSettings();
   const dateFnsLocale = useDateFnsLocale();
   const { notes, isLoading, hasMore, loadMore } = useNotes();
 
@@ -179,14 +181,21 @@ export default function NotesScreen() {
         description: t('notes.noteMenu.duplicateDescription'),
         onPress: () => void handleDuplicateNote(note),
       },
-      {
-        icon: UtensilsCrossed,
-        iconColor: theme.colors.accent.primary,
-        iconBgColor: theme.colors.accent.primary10,
-        title: t('notes.noteMenu.track'),
-        description: t('notes.noteMenu.trackDescription'),
-        onPress: () => handleTrackNote(note),
-      },
+      // Hidden entirely when no AI provider is set up — "Track this" only leads to the coach's
+      // meal-tracking flow, so offering it would dead-end. Same gating as the AI meal actions in
+      // app/app/nutrition/food.tsx.
+      ...(isAiConfigured
+        ? [
+            {
+              icon: UtensilsCrossed,
+              iconColor: theme.colors.accent.primary,
+              iconBgColor: theme.colors.accent.primary10,
+              title: t('notes.noteMenu.track'),
+              description: t('notes.noteMenu.trackDescription'),
+              onPress: () => handleTrackNote(note),
+            },
+          ]
+        : []),
       {
         icon: Trash2,
         iconColor: theme.colors.status.error,
@@ -197,7 +206,7 @@ export default function NotesScreen() {
         onPress: () => setNoteToDelete(note),
       },
     ];
-  }, [activeMenuNote, handleDuplicateNote, handleTrackNote, t, theme]);
+  }, [activeMenuNote, handleDuplicateNote, handleTrackNote, isAiConfigured, t, theme]);
 
   return (
     <MasterLayout>
