@@ -10,6 +10,7 @@ import {
   Leaf,
   MessageSquare,
   Settings,
+  StickyNote,
   User,
   UtensilsCrossed,
   Wheat,
@@ -46,6 +47,7 @@ const NAV_ITEM_ICON: Record<NavItemKey, typeof Dumbbell> = {
   settings: Settings,
   progress: BarChart3,
   checkin: ClipboardCheck,
+  notes: StickyNote,
 };
 
 /** Ordered macro keys — index maps to the binary string position. */
@@ -136,6 +138,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     'settings',
     'progress',
     'checkin',
+    'notes',
   ];
 
   const isItemAvailable = (item: NavItemKey): boolean => {

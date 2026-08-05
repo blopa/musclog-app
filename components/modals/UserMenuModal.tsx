@@ -6,6 +6,7 @@ import {
   ClipboardCheck,
   Dumbbell,
   Settings,
+  StickyNote,
   User,
   UtensilsCrossed,
   X,
@@ -279,6 +280,19 @@ export function UserMenuModal({
                     navigateAndClose('checkin', () =>
                       router.navigate('/app/nutrition/checkin-list')
                     );
+                  }}
+                />
+              ) : null}
+
+              {!isInNav('notes') ? (
+                <MenuItem
+                  icon={
+                    <StickyNote size={theme.iconSize.md} color={theme.colors.accent.secondary} />
+                  }
+                  label={t('userMenu.notes')}
+                  isLoading={loadingItem === 'notes'}
+                  onPress={() => {
+                    navigateAndClose('notes', () => router.navigate('/app/notes'));
                   }}
                 />
               ) : null}

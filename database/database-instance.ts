@@ -25,6 +25,7 @@ import MealFood from './models/MealFood';
 import MealFoodPortion from './models/MealFoodPortion';
 import MenstrualCycle from './models/MenstrualCycle';
 import Muscle from './models/Muscle';
+import Note from './models/Note';
 import NutritionCheckin from './models/NutritionCheckin';
 import NutritionGoal from './models/NutritionGoal';
 import NutritionLog from './models/NutritionLog';
@@ -56,6 +57,7 @@ export const database = new Database({
     ExerciseGoal,
     ExerciseMuscle,
     FastedDay,
+    Note,
     UserMetric,
     UserMetricsNote,
     User,

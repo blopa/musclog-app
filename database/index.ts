@@ -7,6 +7,7 @@ export { database } from './database-instance';
 export { default as ChatMessage } from './models/ChatMessage';
 export { default as DebugDump } from './models/DebugDump';
 export { default as Exercise } from './models/Exercise';
+export { default as Note } from './models/Note';
 export { default as NutritionGoal } from './models/NutritionGoal';
 export { default as Schedule } from './models/Schedule';
 export { default as Setting } from './models/Setting';

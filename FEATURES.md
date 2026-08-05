@@ -137,6 +137,19 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 
 ---
 
+## Notes
+
+- Free-form scratchpad for jotting things down ("70g of broccoli") without committing to a nutrition log
+- Optional title plus a required note body
+- The two newest notes are highlighted as cards at the top; older notes appear beneath in a paged "Earlier" list with a "Load more" button
+- Per-note menu: edit, duplicate, **Track this**, and delete (with a confirmation prompt)
+- **Track this** hands the note's text to the AI Coach with meal tracking pre-armed — the user reviews the text, sends it, then confirms the parsed meal before anything is logged
+- Notes never affect macros, goals, streaks, or any aggregate on their own
+- Reachable from the account menu, and assignable to a bottom navigation slot in Visual settings
+- Included in backup and restore
+
+---
+
 ## Profile & Settings
 
 - Set name, email, gender, date of birth, and avatar

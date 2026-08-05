@@ -19,6 +19,11 @@
       "title": "Nada registrado hoy",
       "description": "¡Alimenta tu cuerpo!",
       "button": "Registrar"
+    },
+    "notes": {
+      "title": "Aún no hay notas",
+      "description": "Apunta lo que estás preparando — 70 g de brócoli, una idea de receta — y regístralo cuando quieras.",
+      "buttonLabel": "Escribe tu primera nota"
     }
   }
 }

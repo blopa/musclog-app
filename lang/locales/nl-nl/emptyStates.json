@@ -19,6 +19,11 @@
       "title": "Niets gelogd vandaag",
       "description": "Voed je lichaam!",
       "button": "Log"
+    },
+    "notes": {
+      "title": "Nog geen notities",
+      "description": "Schrijf op wat je maakt — 70 g broccoli, een recept-idee — en log het wanneer je er klaar voor bent.",
+      "buttonLabel": "Schrijf je eerste notitie"
     }
   }
 }

@@ -346,6 +346,30 @@ setUnits(parseUnitsFromSettings(settings)); // This is correct
 units = parseUnitsFromSettings(settings);
 ```
 
+### Issue 1b: Edits Don't Re-render on a Sorted / Paged Query (`observe` vs `observeWithColumns`)
+
+**Symptoms:** A list backed by a query that uses `Q.sortBy`, `Q.take`, or `Q.skip` updates fine when rows are **added or removed**, but editing a row's fields leaves the UI showing stale text.
+
+**Cause:** WatermelonDB picks its observer strategy from the query description. `encodeMatcher/canEncode.js` refuses to encode a matcher for queries containing `sortBy`/`take`/`skip`, so those queries route to `subscribeToQueryReloading`, which only emits when `identicalArrays(records, previousRecords)` is false. WatermelonDB reuses the **same `Model` instance** after an in-place `.update()`, so an edit leaves the array identical — no emit, no re-render.
+
+**Solution:** subscribe with `observeWithColumns`, listing every column the UI reads that can change. It wraps the reloading observer with a per-record column watcher and emits `records.slice(0)` — a fresh array identity, which is what React needs.
+
+```typescript
+// ❌ Wrong: sortBy/take route to the reloading observer; in-place edits never emit
+const query = database
+  .get<Note>('notes')
+  .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.desc), Q.take(limit));
+
+query.observe().subscribe({ next: setNotes });
+
+// ✅ Correct: name the mutable columns
+query.observeWithColumns(['title', 'body', 'updated_at']).subscribe({ next: setNotes });
+```
+
+Examples in the codebase: `hooks/useNotes.ts`, `components/MenstrualCycleContext.tsx`, `hooks/useWorkoutSessionState.ts`.
+
+**Related pagination trap:** don't drive "Load more" by observing a sentinel query and refetching through a `loadInitial()` that resets `offset`/`limit` — any edit then silently collapses the user's paging progress back to page 1 (`hooks/useExerciseGoals.ts` has this bug today). Instead observe a single query whose `Q.take(limit + 1)` window grows; the `+1` row doubles as the `hasMore` probe, so no separate count query is needed. See `hooks/useNotes.ts`.
+
 ### Issue 2: Multiple Re-renders
 
 **Symptoms:** Component re-renders too often

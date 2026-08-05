@@ -145,6 +145,12 @@
     },
     "cycle": {
       "title": "Musclog - Cycle"
+    },
+    "relativeTime": {
+      "now": "just now",
+      "minutes": "{{value}}m ago",
+      "hours": "{{value}}h ago",
+      "days": "{{value}}d ago"
     }
   }
 }

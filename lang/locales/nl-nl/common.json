@@ -145,6 +145,12 @@
     },
     "cycle": {
       "title": "Musclog - Cyclus"
+    },
+    "relativeTime": {
+      "now": "zojuist",
+      "minutes": "{{value}} min geleden",
+      "hours": "{{value}} u geleden",
+      "days": "{{value}} d geleden"
     }
   }
 }

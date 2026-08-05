@@ -15,6 +15,7 @@ export { default as MealFood } from './MealFood';
 export { default as MealFoodPortion } from './MealFoodPortion';
 export { default as MenstrualCycle } from './MenstrualCycle';
 export { default as Muscle } from './Muscle';
+export { default as Note } from './Note';
 export { default as NutritionCheckin } from './NutritionCheckin';
 export { default as NutritionGoal } from './NutritionGoal';
 export { default as NutritionLog } from './NutritionLog';

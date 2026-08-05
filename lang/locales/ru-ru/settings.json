@@ -310,7 +310,8 @@
         "cycle": "Цикл",
         "settings": "Настройки",
         "progress": "Прогресс",
-        "checkin": "Отметка"
+        "checkin": "Отметка",
+        "notes": "Заметки"
       }
     },
     "nutritionDisplay": {

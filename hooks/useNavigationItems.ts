@@ -25,6 +25,7 @@ const ALWAYS_AVAILABLE_ITEMS: NavItemKey[] = [
   'progress',
   'checkin',
   'coach',
+  'notes',
 ];
 
 /**

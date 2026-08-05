@@ -145,6 +145,12 @@
     },
     "cycle": {
       "title": "Musclog - Цикл"
+    },
+    "relativeTime": {
+      "now": "только что",
+      "minutes": "{{value}} мин назад",
+      "hours": "{{value}} ч назад",
+      "days": "{{value}} д назад"
     }
   }
 }

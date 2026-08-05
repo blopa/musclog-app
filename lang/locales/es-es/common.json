@@ -145,6 +145,12 @@
     },
     "cycle": {
       "title": "Musclog - Ciclo"
+    },
+    "relativeTime": {
+      "now": "ahora mismo",
+      "minutes": "hace {{value}} min",
+      "hours": "hace {{value}} h",
+      "days": "hace {{value}} d"
     }
   }
 }

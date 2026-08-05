@@ -53,6 +53,7 @@ export const RESTORE_ORDER: string[] = [
   'workout_log_sets',
   'nutrition_logs',
   'fasted_days',
+  'period_logs',
   'user_metrics',
   'user_metrics_notes',
 
@@ -65,6 +66,9 @@ export const RESTORE_ORDER: string[] = [
   // Saved for later (independent)
   'saved_for_later_groups',
   'saved_for_later_items',
+
+  // Scratchpad notes (independent)
+  'notes',
 ];
 
 export const SETTINGS_EXCLUDED_TYPES = [

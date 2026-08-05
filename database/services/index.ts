@@ -37,6 +37,7 @@ export {
   MigrationService,
   type MigrationStepKey,
 } from './MigrationService';
+export { NoteService } from './NoteService';
 export { NutritionCheckinService } from './NutritionCheckinService';
 export { NutritionGoalService } from './NutritionGoalService';
 export { ProgressService } from './ProgressService';

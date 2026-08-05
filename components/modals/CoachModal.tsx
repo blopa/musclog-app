@@ -637,9 +637,19 @@ type CoachModalProps = {
   onClose: () => void;
   /** Invoked after the coach closes when the user opens “My meals” from a meal plan (e.g. carousel). */
   onOpenMyMeals: () => void;
+  /** Seeds the composer without sending (e.g. “Track this” from a note). */
+  initialComposerText?: string;
+  /** CHAT_INTENTION constant to arm when the coach opens. */
+  initialIntention?: string;
 };
 
-export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps) {
+export function CoachModal({
+  visible,
+  onClose,
+  onOpenMyMeals,
+  initialComposerText,
+  initialIntention,
+}: CoachModalProps) {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -675,6 +685,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
   const [isOnline, setIsOnline] = useState(false);
   const pendingIntention = hookPendingIntention;
   const setPendingIntention = setHookPendingIntention;
+  const [prefillText, setPrefillText] = useState<null | string>(initialComposerText ?? null);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
   const [isMusclesModalVisible, setIsMusclesModalVisible] = useState(false);
   const [musclesModalGroups, setMusclesModalGroups] = useState<string[]>([]);
@@ -775,6 +786,9 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       const text = newMessages[0]?.text;
       const image = attachedImage?.base64;
       if (text || image) {
+        // sendMessage clears the hook's failedMessageText but not our local seed, so the
+        // composer would repopulate with the prefill right after sending.
+        setPrefillText(null);
         sendMessage(text ?? '', image);
         setAttachedImage(null);
         setComposerResetKey((k) => k + 1);
@@ -782,6 +796,37 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     },
     [sendMessage, attachedImage]
   );
+
+  // Arm the requested intention once, on mount. CoachContext only renders CoachModal while the
+  // coach is open, so mount === open and no visible-transition tracking is needed. Deliberately
+  // not routed through handleTrackMeal: that handler toggles, so it would clear the intention.
+  useEffect(() => {
+    if (initialIntention !== TRACK_MEAL) {
+      return;
+    }
+
+    const armTrackMeal = async () => {
+      await AsyncStorage.setItem(CHAT_INTENTION_KEY, TRACK_MEAL);
+      setPendingIntention(TRACK_MEAL);
+      addPendingCoachMessage({
+        _id: `pending-track-meal-${Date.now()}`,
+        text: t('coach.trackMealPrompt'),
+        createdAt: new Date(),
+        user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
+      });
+    };
+
+    void armTrackMeal();
+    // Mount-only: re-running would re-arm an intention the user may have just cleared.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // The composer seed and the hook's failed-send restore share one render path.
+  const composerSeedText = failedMessageText ?? prefillText;
+  const clearComposerSeed = useCallback(() => {
+    clearFailedMessageText();
+    setPrefillText(null);
+  }, [clearFailedMessageText]);
 
   const handleGenerateMealPlan = useCallback(async () => {
     if (pendingIntention === GENERATE_MEAL_PLAN) {
@@ -1383,8 +1428,8 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
         props,
         t,
         theme,
-        failedMessageText,
-        clearFailedMessageText,
+        composerSeedText,
+        clearComposerSeed,
         handleAttachFile,
         pendingIntention === TRACK_MEAL,
         composerResetKey
@@ -1392,24 +1437,26 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     [
       t,
       theme,
-      failedMessageText,
-      clearFailedMessageText,
+      composerSeedText,
+      clearComposerSeed,
       handleAttachFile,
       pendingIntention,
       composerResetKey,
     ]
   );
 
+  // composerSeedText must reach renderSend too: it computes the enabled state from that value,
+  // so seeding only the composer would leave Send disabled until the user typed a character.
   const gcRenderSend = useCallback(
     (props: Parameters<typeof renderSend>[0]) =>
       renderSend(
         props,
         theme,
-        failedMessageText,
+        composerSeedText,
         !!attachedImage && pendingIntention === TRACK_MEAL,
         isSending
       ),
-    [theme, failedMessageText, attachedImage, pendingIntention, isSending]
+    [theme, composerSeedText, attachedImage, pendingIntention, isSending]
   );
 
   const gcRenderDay = useCallback(
