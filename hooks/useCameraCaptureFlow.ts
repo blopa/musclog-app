@@ -20,7 +20,11 @@ const logPhase = (label: string, startedAt: number) => {
 
 type UseCameraCaptureFlowOptions = {
   cameraRef: RefObject<CameraViewRef | null>;
-  /** JPEG quality for the gallery crop re-encode step and the gallery picker. */
+  /**
+   * JPEG quality for the gallery crop re-encode — the only lossy step on the gallery path
+   * (`pickImageFromGallery` deliberately picks uncompressed). Unused on the shutter path, which
+   * never crops.
+   */
   quality: number;
   /** Receives the raw photo path on shutter capture, or the cropped path on gallery pick. */
   process: (fileUri: string) => Promise<void>;
@@ -97,7 +101,7 @@ export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraC
       // value is only a red flag when the picker was slow to *appear* (the reported symptom:
       // the picker UI not showing for ~25s on the first pick after a cold boot).
       const pickerStartedAt = Date.now();
-      const uri = await pickImageFromGallery(quality);
+      const uri = await pickImageFromGallery();
       logPhase('gallery picker', pickerStartedAt);
 
       if (!uri) {
@@ -114,7 +118,7 @@ export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraC
       console.error('Error picking image from gallery:', error);
       showSnackbar('error', t('food.aiCamera.galleryError'));
     }
-  }, [quality, cropAndProcess, t]);
+  }, [cropAndProcess, t]);
 
   return { takePicture, pickFromGallery };
 }

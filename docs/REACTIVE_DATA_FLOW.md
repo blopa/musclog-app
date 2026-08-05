@@ -355,11 +355,11 @@ units = parseUnitsFromSettings(settings);
 **Solution:** subscribe with `observeWithColumns`, listing every column the UI reads that can change. It wraps the reloading observer with a per-record column watcher and emits `records.slice(0)` — a fresh array identity, which is what React needs.
 
 ```typescript
-// ❌ Wrong: sortBy/take route to the reloading observer; in-place edits never emit
-const query = database
-  .get<Note>('notes')
-  .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.desc), Q.take(limit));
+// The query shape belongs to the service; the hook only decides how to subscribe to it.
+// NoteService.notesQuery(limit) returns the Query itself, not fetched rows, exactly so this works.
+const query = NoteService.notesQuery(limit + 1);
 
+// ❌ Wrong: sortBy/take route to the reloading observer; in-place edits never emit
 query.observe().subscribe({ next: setNotes });
 
 // ✅ Correct: name the mutable columns
@@ -367,6 +367,8 @@ query.observeWithColumns(['title', 'body', 'updated_at']).subscribe({ next: setN
 ```
 
 Examples in the codebase: `hooks/useNotes.ts`, `components/MenstrualCycleContext.tsx`, `hooks/useWorkoutSessionState.ts`.
+
+**Keep the query in one place.** A hook that re-inlines the clauses its service already defines gives you two definitions of the same list, free to drift — the notes list briefly had a `Q.skip`-based service copy alongside the hook's growing-window copy. Have the service expose the `Query` and let the hook observe it.
 
 **Related pagination trap:** don't drive "Load more" by observing a sentinel query and refetching through a `loadInitial()` that resets `offset`/`limit` — any edit then silently collapses the user's paging progress back to page 1 (`hooks/useExerciseGoals.ts` has this bug today). Instead observe a single query whose `Q.take(limit + 1)` window grows; the `+1` row doubles as the `hasMore` probe, so no separate count query is needed. See `hooks/useNotes.ts`.
 

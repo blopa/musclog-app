@@ -11,11 +11,17 @@ import { openCropperAsync } from '@/utils/file';
  * `openCropperAsync` this has no platform-specific behavior and does not need a `.web.ts`
  * counterpart. This is the single "pick from gallery" entry point every image-attach flow in the
  * app should share, so gallery picking feels identical everywhere.
+ *
+ * Deliberately picks at `quality: 1` and takes no quality argument: every caller re-encodes the
+ * result through `openCropperAsync`, so compressing here would stack a second lossy pass on top
+ * (a requested 0.8 actually landing at ~0.64) for no benefit. The crop step is the single place
+ * output quality is chosen. This matters most on the smart-camera path, where the photo has to
+ * stay legible enough for OCR and barcode decoding.
  */
-export async function pickImageFromGallery(quality: number = 0.8): Promise<string | null> {
+export async function pickImageFromGallery(): Promise<string | null> {
   const result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ['images'],
-    quality,
+    quality: 1,
     base64: false,
   });
 
@@ -33,8 +39,11 @@ export async function pickImageFromGallery(quality: number = 0.8): Promise<strin
  * photo uploads); the smart camera modals use `pickImageFromGallery` and `openCropperAsync`
  * directly instead, since they need separate timing/error handling for each step.
  */
-export async function pickAndCropImageFromGallery(quality: number = 0.8): Promise<string | null> {
-  const pickedUri = await pickImageFromGallery(quality);
+export async function pickAndCropImageFromGallery(
+  /** JPEG quality of the crop re-encode — the only lossy step in this flow. */
+  compressImageQuality: number = 0.8
+): Promise<string | null> {
+  const pickedUri = await pickImageFromGallery();
   if (!pickedUri) {
     return null;
   }
@@ -42,7 +51,7 @@ export async function pickAndCropImageFromGallery(quality: number = 0.8): Promis
   const cropped = await openCropperAsync({
     imageUri: pickedUri,
     format: 'jpeg',
-    compressImageQuality: quality,
+    compressImageQuality,
   });
 
   return cropped?.path ?? null;

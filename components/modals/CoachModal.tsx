@@ -6,17 +6,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import type { TFunction } from 'i18next';
 import {
-  ClipboardList,
   Copy,
   Dumbbell,
   Images,
   Paperclip,
-  PlusCircle,
   Send as SendIcon,
   Share2,
   SlidersHorizontal,
   Trash2,
-  TrendingUp,
   UtensilsCrossed,
   X,
   Zap,
@@ -50,11 +47,13 @@ import { ChatMealCard } from '@/components/cards/ChatMealCard';
 import { ChatWorkoutCard } from '@/components/cards/ChatWorkoutCard';
 import { ChatWorkoutCompletedCard } from '@/components/cards/ChatWorkoutCompletedCard';
 import { ChatMealPlanCarousel } from '@/components/chat/ChatMealPlanCarousel';
+import { COACH_INTENTION_CHIP_ORDER, COACH_INTENTIONS } from '@/components/coach/coachIntentions';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import {
   ANALYZE_PROGRESS,
   CHAT_INTENTION_KEY,
+  type ChatIntention,
   GENERATE_MEAL_PLAN,
   GENERATE_MY_WORKOUTS,
   NUTRITION_CHECK,
@@ -639,8 +638,8 @@ type CoachModalProps = {
   onOpenMyMeals: () => void;
   /** Seeds the composer without sending (e.g. “Track this” from a note). */
   initialComposerText?: string;
-  /** CHAT_INTENTION constant to arm when the coach opens. */
-  initialIntention?: string;
+  /** Intention to arm when the coach opens. Any member of the union works. */
+  initialIntention?: ChatIntention;
 };
 
 export function CoachModal({
@@ -797,26 +796,42 @@ export function CoachModal({
     [sendMessage, attachedImage]
   );
 
-  // Arm the requested intention once, on mount. CoachContext only renders CoachModal while the
-  // coach is open, so mount === open and no visible-transition tracking is needed. Deliberately
-  // not routed through handleTrackMeal: that handler toggles, so it would clear the intention.
-  useEffect(() => {
-    if (initialIntention !== TRACK_MEAL) {
-      return;
-    }
+  // Arm and disarm are separate primitives on purpose: the chips want the toggle, while an
+  // externally requested intention (a note's "Track this") wants a plain arm — folding the two
+  // into one toggling handler is what previously forced callers to copy the arming block.
+  const armIntention = useCallback(
+    async (intention: ChatIntention) => {
+      const { idPrefix, promptKey } = COACH_INTENTIONS[intention];
 
-    const armTrackMeal = async () => {
-      await AsyncStorage.setItem(CHAT_INTENTION_KEY, TRACK_MEAL);
-      setPendingIntention(TRACK_MEAL);
+      await AsyncStorage.setItem(CHAT_INTENTION_KEY, intention);
+      setPendingIntention(intention);
       addPendingCoachMessage({
-        _id: `pending-track-meal-${Date.now()}`,
-        text: t('coach.trackMealPrompt'),
+        _id: `${idPrefix}-${Date.now()}`,
+        text: t(promptKey),
         createdAt: new Date(),
         user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
       });
-    };
+    },
+    [addPendingCoachMessage, setPendingIntention, t]
+  );
 
-    void armTrackMeal();
+  const disarmIntention = useCallback(async () => {
+    await clearIntention();
+    clearPendingCoachMessage();
+  }, [clearIntention, clearPendingCoachMessage]);
+
+  const toggleIntention = useCallback(
+    (intention: ChatIntention) =>
+      pendingIntention === intention ? disarmIntention() : armIntention(intention),
+    [armIntention, disarmIntention, pendingIntention]
+  );
+
+  // Arm the requested intention once, on mount. CoachContext only renders CoachModal while the
+  // coach is open, so mount === open and no visible-transition tracking is needed.
+  useEffect(() => {
+    if (initialIntention) {
+      void armIntention(initialIntention);
+    }
     // Mount-only: re-running would re-arm an intention the user may have just cleared.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -828,96 +843,10 @@ export function CoachModal({
     setPrefillText(null);
   }, [clearFailedMessageText]);
 
-  const handleGenerateMealPlan = useCallback(async () => {
-    if (pendingIntention === GENERATE_MEAL_PLAN) {
-      await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
-      setPendingIntention(null);
-      clearPendingCoachMessage();
-    } else {
-      await AsyncStorage.setItem(CHAT_INTENTION_KEY, GENERATE_MEAL_PLAN);
-      setPendingIntention(GENERATE_MEAL_PLAN);
-      addPendingCoachMessage({
-        _id: `pending-meal-plan-gen-${Date.now()}`,
-        text: t('coach.mealPlanPrompt'),
-        createdAt: new Date(),
-        user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
-      });
-    }
-  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, setPendingIntention, t]);
-
-  const handleGenerateWorkouts = useCallback(async () => {
-    if (pendingIntention === GENERATE_MY_WORKOUTS) {
-      await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
-      setPendingIntention(null);
-      clearPendingCoachMessage();
-    } else {
-      await AsyncStorage.setItem(CHAT_INTENTION_KEY, GENERATE_MY_WORKOUTS);
-      setPendingIntention(GENERATE_MY_WORKOUTS);
-      addPendingCoachMessage({
-        _id: `pending-workout-gen-${Date.now()}`,
-        text: t('coach.workoutGenerationPrompt'),
-        createdAt: new Date(),
-        user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
-      });
-    }
-  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, setPendingIntention, t]);
-
-  const handleTrackMeal = useCallback(async () => {
-    if (pendingIntention === TRACK_MEAL) {
-      await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
-      setPendingIntention(null);
-      clearPendingCoachMessage();
-    } else {
-      await AsyncStorage.setItem(CHAT_INTENTION_KEY, TRACK_MEAL);
-      setPendingIntention(TRACK_MEAL);
-      addPendingCoachMessage({
-        _id: `pending-track-meal-${Date.now()}`,
-        text: t('coach.trackMealPrompt'),
-        createdAt: new Date(),
-        user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
-      });
-    }
-  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, setPendingIntention, t]);
-
-  const handleAnalyzeProgress = useCallback(async () => {
-    if (pendingIntention === ANALYZE_PROGRESS) {
-      await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
-      setPendingIntention(null);
-      clearPendingCoachMessage();
-    } else {
-      await AsyncStorage.setItem(CHAT_INTENTION_KEY, ANALYZE_PROGRESS);
-      setPendingIntention(ANALYZE_PROGRESS);
-      addPendingCoachMessage({
-        _id: `pending-analyze-progress-${Date.now()}`,
-        text: t('coach.analyzeProgressPrompt'),
-        createdAt: new Date(),
-        user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
-      });
-    }
-  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, setPendingIntention, t]);
-
-  const handleNutritionCheck = useCallback(async () => {
-    if (pendingIntention === NUTRITION_CHECK) {
-      await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
-      setPendingIntention(null);
-      clearPendingCoachMessage();
-    } else {
-      await AsyncStorage.setItem(CHAT_INTENTION_KEY, NUTRITION_CHECK);
-      setPendingIntention(NUTRITION_CHECK);
-      addPendingCoachMessage({
-        _id: `pending-nutrition-check-${Date.now()}`,
-        text: t('coach.nutritionCheckPrompt'),
-        createdAt: new Date(),
-        user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
-      });
-    }
-  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, setPendingIntention, t]);
-
   const handleClearIntention = useCallback(async () => {
-    await clearIntention();
+    await disarmIntention();
     setAttachedImage(null);
-    clearPendingCoachMessage();
-  }, [clearIntention, clearPendingCoachMessage]);
+  }, [disarmIntention]);
 
   const handleAttachFile = useCallback(async () => {
     try {
@@ -1227,126 +1156,31 @@ export function CoachModal({
         className="px-4 py-3"
         contentContainerStyle={{ gap: theme.spacing.gap.sm }}
       >
-        <Pressable
-          onPress={handleGenerateWorkouts}
-          className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
-          style={{
-            borderColor:
-              pendingIntention === GENERATE_MY_WORKOUTS
-                ? theme.colors.accent.primary
-                : theme.colors.border.light,
-            borderWidth: pendingIntention === GENERATE_MY_WORKOUTS ? 2 : 1,
-            backgroundColor:
-              pendingIntention === GENERATE_MY_WORKOUTS
-                ? theme.colors.accent.primary10
-                : theme.colors.background.card,
-          }}
-        >
-          <PlusCircle size={theme.iconSize.md} color={theme.colors.accent.primary} />
-          <Text className="text-sm font-medium text-text-primary">
-            {t('coach.actions.createWorkout')}
-          </Text>
-        </Pressable>
-        <Pressable
-          onPress={handleGenerateMealPlan}
-          className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
-          style={{
-            borderColor:
-              pendingIntention === GENERATE_MEAL_PLAN
-                ? theme.colors.accent.primary
-                : theme.colors.border.light,
-            borderWidth: pendingIntention === GENERATE_MEAL_PLAN ? 2 : 1,
-            backgroundColor:
-              pendingIntention === GENERATE_MEAL_PLAN
-                ? theme.colors.accent.primary10
-                : theme.colors.background.card,
-          }}
-        >
-          <ClipboardList size={theme.iconSize.md} color={theme.colors.status.success} />
-          <Text className="text-sm font-medium text-text-primary">
-            {t('coach.actions.mealPlan')}
-          </Text>
-        </Pressable>
-        <Pressable
-          onPress={handleAnalyzeProgress}
-          className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
-          style={{
-            borderColor:
-              pendingIntention === ANALYZE_PROGRESS
-                ? theme.colors.accent.primary
-                : theme.colors.border.light,
-            borderWidth: pendingIntention === ANALYZE_PROGRESS ? 2 : 1,
-            backgroundColor:
-              pendingIntention === ANALYZE_PROGRESS
-                ? theme.colors.accent.primary10
-                : theme.colors.background.card,
-          }}
-        >
-          <TrendingUp size={theme.iconSize.md} color={theme.colors.status.info} />
-          <Text className="text-sm font-medium text-text-primary">
-            {t('coach.actions.analyzeProgress')}
-          </Text>
-        </Pressable>
-        <Pressable
-          onPress={handleTrackMeal}
-          className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
-          style={{
-            borderColor:
-              pendingIntention === TRACK_MEAL
-                ? theme.colors.accent.primary
-                : theme.colors.border.light,
-            borderWidth: pendingIntention === TRACK_MEAL ? 2 : 1,
-            backgroundColor:
-              pendingIntention === TRACK_MEAL
-                ? theme.colors.accent.primary10
-                : theme.colors.background.card,
-          }}
-        >
-          <UtensilsCrossed size={theme.iconSize.md} color={theme.colors.accent.primary} />
-          <Text className="text-sm font-medium text-text-primary">
-            {t('coach.actions.trackMeal')}
-          </Text>
-        </Pressable>
-        <Pressable
-          onPress={handleNutritionCheck}
-          className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
-          style={{
-            borderColor:
-              pendingIntention === NUTRITION_CHECK
-                ? theme.colors.accent.primary
-                : theme.colors.border.light,
-            borderWidth: pendingIntention === NUTRITION_CHECK ? 2 : 1,
-            backgroundColor:
-              pendingIntention === NUTRITION_CHECK
-                ? theme.colors.accent.primary10
-                : theme.colors.background.card,
-          }}
-        >
-          <UtensilsCrossed size={theme.iconSize.md} color={theme.colors.status.warning} />
-          <Text className="text-sm font-medium text-text-primary">
-            {t('coach.actions.nutritionCheck')}
-          </Text>
-        </Pressable>
+        {COACH_INTENTION_CHIP_ORDER.map((intention) => {
+          const { icon: Icon, iconColor, labelKey } = COACH_INTENTIONS[intention];
+          const isArmed = pendingIntention === intention;
+
+          return (
+            <Pressable
+              key={intention}
+              onPress={() => void toggleIntention(intention)}
+              className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
+              style={{
+                borderColor: isArmed ? theme.colors.accent.primary : theme.colors.border.light,
+                borderWidth: isArmed ? 2 : 1,
+                backgroundColor: isArmed
+                  ? theme.colors.accent.primary10
+                  : theme.colors.background.card,
+              }}
+            >
+              <Icon size={theme.iconSize.md} color={iconColor(theme)} />
+              <Text className="text-sm font-medium text-text-primary">{t(labelKey)}</Text>
+            </Pressable>
+          );
+        })}
       </ScrollView>
     );
-  }, [
-    handleAnalyzeProgress,
-    handleGenerateMealPlan,
-    handleGenerateWorkouts,
-    handleNutritionCheck,
-    handleTrackMeal,
-    pendingIntention,
-    t,
-    theme.colors.accent.primary,
-    theme.colors.accent.primary10,
-    theme.colors.background.card,
-    theme.colors.border.light,
-    theme.colors.status.info,
-    theme.colors.status.success,
-    theme.colors.status.warning,
-    theme.iconSize.md,
-    theme.spacing.gap.sm,
-  ]);
+  }, [pendingIntention, t, theme, toggleIntention]);
 
   const headerRight = useMemo(
     () => (

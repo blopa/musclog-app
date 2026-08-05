@@ -1,23 +1,13 @@
 import * as Haptics from 'expo-haptics';
 import { usePathname, useRouter } from 'expo-router';
-import {
-  BarChart3,
-  Calendar,
-  Camera,
-  ClipboardCheck,
-  Dumbbell,
-  Home,
-  Settings,
-  StickyNote,
-  User,
-  UtensilsCrossed,
-} from 'lucide-react-native';
-import { memo, useCallback } from 'react';
+import { Camera, Home } from 'lucide-react-native';
+import { memo, type ReactNode, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CoachUnreadBadgeIcon } from '@/components/CoachUnreadBadgeIcon';
+import { NAV_ITEM_ICON } from '@/components/navigation/navItemIcons';
 import type { NavItemKey } from '@/constants/settings';
 import { useNavigationItems } from '@/hooks/useNavigationItems';
 import { useTheme } from '@/hooks/useTheme';
@@ -26,6 +16,93 @@ import { addOpacityToHex } from '@/theme';
 type NavigationMenuProps = {
   onCoachPress: () => void;
   onCameraPress: () => void;
+};
+
+type NavSlotButtonProps = {
+  icon: ReactNode;
+  label: string;
+  active: boolean;
+  onPress: () => void;
+  onPressIn?: () => void;
+};
+
+/**
+ * One tab in the bottom bar. Every destination — the fixed Home tab, each customisable slot —
+ * renders through this, so active colouring and stroke weights are defined once.
+ */
+function NavSlotButton({ icon, label, active, onPress, onPressIn }: NavSlotButtonProps) {
+  return (
+    <Pressable
+      className="flex-1 items-center justify-center gap-1"
+      onPress={onPress}
+      onPressIn={onPressIn}
+    >
+      <View
+        className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
+      >
+        {icon}
+      </View>
+      <Text className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
+type NavSlotConfig = {
+  labelKey: string;
+  /** Route prefix that marks this slot active. Also the navigation target unless `target` is set. */
+  activePath: string;
+  /** Second prefix that also counts as active — profile owns the progress screen. */
+  alsoActiveFor?: string;
+  /** Navigation target when it differs from `activePath` (workouts lands on a sub-route). */
+  target?: string;
+  /** `replace` instead of `navigate` — the food diary swaps itself rather than stacking. */
+  replace?: boolean;
+  /** Haptic + route prefetch on press-in. Worth it only for the heaviest screen. */
+  prefetch?: boolean;
+  /**
+   * Press navigates even while active. Required wherever `alsoActiveFor` is set, since "active"
+   * there does not imply "already on the target" — no-oping would strand the user.
+   */
+  navigateWhenActive?: boolean;
+};
+
+/**
+ * Routing and labelling for each nav slot; icons come from the shared `NAV_ITEM_ICON` map so a
+ * destination picks its icon once for both the bar and the slot picker.
+ *
+ * `coach` is deliberately absent: it has no route, never shows an active state, and renders an
+ * unread badge, so it stays an explicit branch in `renderNavSlot` rather than growing this table
+ * three fields it alone would use.
+ */
+const NAV_SLOTS: Record<Exclude<NavItemKey, 'coach'>, NavSlotConfig> = {
+  workouts: {
+    labelKey: 'home.navigation.workouts',
+    activePath: '/app/workout',
+    target: '/app/workout/workouts',
+  },
+  food: {
+    labelKey: 'home.navigation.food',
+    activePath: '/app/nutrition/',
+    target: '/app/nutrition/food',
+    replace: true,
+  },
+  profile: {
+    labelKey: 'home.navigation.profile',
+    activePath: '/app/profile',
+    alsoActiveFor: '/app/progress',
+    prefetch: true,
+    navigateWhenActive: true,
+  },
+  cycle: { labelKey: 'userMenu.cycle', activePath: '/app/cycle' },
+  settings: { labelKey: 'userMenu.settings', activePath: '/app/settings' },
+  progress: { labelKey: 'userMenu.progress', activePath: '/app/progress' },
+  notes: { labelKey: 'userMenu.notes', activePath: '/app/notes' },
+  checkin: {
+    labelKey: 'home.navigation.checkin',
+    activePath: '/app/nutrition/checkin-list',
+  },
 };
 
 export const NavigationMenu = memo(function NavigationMenu({
@@ -52,284 +129,78 @@ export const NavigationMenu = memo(function NavigationMenu({
     [pathname]
   );
 
-  const isFoodActive = useCallback(() => {
-    return pathname.startsWith('/app/nutrition/');
-  }, [pathname]);
-
   const renderNavSlot = useCallback(
     (slotKey: NavItemKey) => {
-      switch (slotKey) {
-        case 'workouts': {
-          const active = isPathActive('/app/workout');
-          return (
-            <Pressable
-              key="workouts"
-              className="flex-1 items-center justify-center gap-1"
-              onPress={() => {
-                if (!active) {
-                  router.navigate('/app/workout/workouts');
-                }
-              }}
-            >
-              <View
-                className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
-              >
-                <Dumbbell
-                  size={theme.iconSize.md}
-                  color={active ? theme.colors.accent.primary : theme.colors.text.tertiary}
-                  strokeWidth={active ? theme.strokeWidth.medium : theme.borderWidth.medium}
-                />
-              </View>
-              <Text
-                className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}
-              >
-                {t('home.navigation.workouts')}
-              </Text>
-            </Pressable>
-          );
-        }
-
-        case 'food': {
-          const active = isFoodActive();
-          return (
-            <Pressable
-              key="food"
-              className="flex-1 items-center justify-center gap-1"
-              onPress={() => {
-                if (!active) {
-                  router.replace('/app/nutrition/food');
-                }
-              }}
-            >
-              <View
-                className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
-              >
-                <UtensilsCrossed
-                  size={theme.iconSize.md}
-                  color={active ? theme.colors.accent.primary : theme.colors.text.tertiary}
-                  strokeWidth={active ? theme.strokeWidth.medium : theme.borderWidth.medium}
-                />
-              </View>
-              <Text
-                className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}
-              >
-                {t('home.navigation.food')}
-              </Text>
-            </Pressable>
-          );
-        }
-
-        case 'profile': {
-          const active = isPathActive('/app/profile') || isPathActive('/app/progress');
-          return (
-            <Pressable
-              key="profile"
-              className="flex-1 items-center justify-center gap-1"
-              onPressIn={() => {
-                if (!active) {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
-                  router.prefetch('/app/profile');
-                }
-              }}
-              onPress={() => router.navigate('/app/profile')}
-            >
-              <View
-                className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
-              >
-                <User
-                  size={theme.iconSize.md}
-                  color={active ? theme.colors.accent.primary : theme.colors.text.tertiary}
-                  strokeWidth={active ? theme.strokeWidth.medium : theme.borderWidth.medium}
-                />
-              </View>
-              <Text
-                className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}
-              >
-                {t('home.navigation.profile')}
-              </Text>
-            </Pressable>
-          );
-        }
-
-        case 'coach': {
-          return (
-            <Pressable
-              key="coach"
-              className="flex-1 items-center justify-center gap-1"
-              onPress={onCoachPress}
-            >
-              <View className="h-10 w-16 items-center justify-center rounded-lg">
-                <CoachUnreadBadgeIcon
-                  color={theme.colors.text.tertiary}
-                  size={theme.iconSize.md}
-                  strokeWidth={theme.borderWidth.medium}
-                />
-              </View>
-              <Text className="text-xs font-medium text-text-tertiary">
-                {t('home.navigation.coach')}
-              </Text>
-            </Pressable>
-          );
-        }
-
-        case 'cycle': {
-          if (!isCycleActive) {
-            return null;
-          }
-          const active = isPathActive('/app/cycle');
-          return (
-            <Pressable
-              key="cycle"
-              className="flex-1 items-center justify-center gap-1"
-              onPress={() => {
-                if (!active) {
-                  router.navigate('/app/cycle');
-                }
-              }}
-            >
-              <View
-                className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
-              >
-                <Calendar
-                  size={theme.iconSize.md}
-                  color={active ? theme.colors.accent.primary : theme.colors.text.tertiary}
-                  strokeWidth={active ? theme.strokeWidth.medium : theme.borderWidth.medium}
-                />
-              </View>
-              <Text
-                className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}
-              >
-                {t('userMenu.cycle')}
-              </Text>
-            </Pressable>
-          );
-        }
-
-        case 'settings': {
-          const active = isPathActive('/app/settings');
-          return (
-            <Pressable
-              key="settings"
-              className="flex-1 items-center justify-center gap-1"
-              onPress={() => {
-                if (!active) {
-                  router.navigate('/app/settings');
-                }
-              }}
-            >
-              <View
-                className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
-              >
-                <Settings
-                  size={theme.iconSize.md}
-                  color={active ? theme.colors.accent.primary : theme.colors.text.tertiary}
-                  strokeWidth={active ? theme.strokeWidth.medium : theme.borderWidth.medium}
-                />
-              </View>
-              <Text
-                className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}
-              >
-                {t('userMenu.settings')}
-              </Text>
-            </Pressable>
-          );
-        }
-
-        case 'progress': {
-          const active = isPathActive('/app/progress');
-          return (
-            <Pressable
-              key="progress"
-              className="flex-1 items-center justify-center gap-1"
-              onPress={() => {
-                if (!active) {
-                  router.navigate('/app/progress');
-                }
-              }}
-            >
-              <View
-                className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
-              >
-                <BarChart3
-                  size={theme.iconSize.md}
-                  color={active ? theme.colors.accent.primary : theme.colors.text.tertiary}
-                  strokeWidth={active ? theme.strokeWidth.medium : theme.borderWidth.medium}
-                />
-              </View>
-              <Text
-                className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}
-              >
-                {t('userMenu.progress')}
-              </Text>
-            </Pressable>
-          );
-        }
-
-        case 'notes': {
-          const active = isPathActive('/app/notes');
-          return (
-            <Pressable
-              key="notes"
-              className="flex-1 items-center justify-center gap-1"
-              onPress={() => {
-                if (!active) {
-                  router.navigate('/app/notes');
-                }
-              }}
-            >
-              <View
-                className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
-              >
-                <StickyNote
-                  size={theme.iconSize.md}
-                  color={active ? theme.colors.accent.primary : theme.colors.text.tertiary}
-                  strokeWidth={active ? theme.strokeWidth.medium : theme.borderWidth.medium}
-                />
-              </View>
-              <Text
-                className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}
-              >
-                {t('userMenu.notes')}
-              </Text>
-            </Pressable>
-          );
-        }
-
-        case 'checkin': {
-          const active = isPathActive('/app/nutrition/checkin-list');
-          return (
-            <Pressable
-              key="checkin"
-              className="flex-1 items-center justify-center gap-1"
-              onPress={() => {
-                if (!active) {
-                  router.navigate('/app/nutrition/checkin-list');
-                }
-              }}
-            >
-              <View
-                className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
-              >
-                <ClipboardCheck
-                  size={theme.iconSize.md}
-                  color={active ? theme.colors.accent.primary : theme.colors.text.tertiary}
-                  strokeWidth={active ? theme.strokeWidth.medium : theme.borderWidth.medium}
-                />
-              </View>
-              <Text
-                className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}
-              >
-                {t('home.navigation.checkin')}
-              </Text>
-            </Pressable>
-          );
-        }
-
-        default:
-          return null;
+      // The coach has no route: it never reads active and carries its own unread badge.
+      if (slotKey === 'coach') {
+        return (
+          <NavSlotButton
+            key="coach"
+            active={false}
+            label={t('home.navigation.coach')}
+            onPress={onCoachPress}
+            icon={
+              <CoachUnreadBadgeIcon
+                color={theme.colors.text.tertiary}
+                size={theme.iconSize.md}
+                strokeWidth={theme.borderWidth.medium}
+              />
+            }
+          />
+        );
       }
+
+      if (slotKey === 'cycle' && !isCycleActive) {
+        return null;
+      }
+
+      const slot = NAV_SLOTS[slotKey];
+      if (!slot) {
+        return null;
+      }
+
+      const { activePath, alsoActiveFor, target, replace, prefetch } = slot;
+      const Icon = NAV_ITEM_ICON[slotKey];
+      const active = isPathActive(activePath) || (!!alsoActiveFor && isPathActive(alsoActiveFor));
+      const destination = target ?? activePath;
+
+      const go = () => {
+        if (replace) {
+          router.replace(destination);
+        } else {
+          router.navigate(destination);
+        }
+      };
+
+      return (
+        <NavSlotButton
+          key={slotKey}
+          active={active}
+          label={t(slot.labelKey)}
+          onPress={() => {
+            if (!active || slot.navigateWhenActive) {
+              go();
+            }
+          }}
+          onPressIn={
+            prefetch && !active
+              ? () => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+                  router.prefetch(destination);
+                }
+              : undefined
+          }
+          icon={
+            <Icon
+              size={theme.iconSize.md}
+              color={active ? theme.colors.accent.primary : theme.colors.text.tertiary}
+              strokeWidth={active ? theme.strokeWidth.medium : theme.borderWidth.medium}
+            />
+          }
+        />
+      );
     },
-    [isPathActive, isFoodActive, isCycleActive, onCoachPress, router, t, theme]
+    [isPathActive, isCycleActive, onCoachPress, router, t, theme]
   );
 
   const homeActive = isPathActive('/');
@@ -345,29 +216,22 @@ export const NavigationMenu = memo(function NavigationMenu({
     >
       <View className="relative flex-row items-stretch px-6 py-4">
         {/* Home - always fixed */}
-        <Pressable
-          className="flex-1 items-center justify-center gap-1"
+        <NavSlotButton
+          active={homeActive}
+          label={t('home.navigation.home')}
           onPress={() => {
             if (!homeActive) {
               router.navigate('/app');
             }
           }}
-        >
-          <View
-            className={`h-10 w-16 items-center justify-center rounded-lg ${homeActive ? 'bg-bg-navActive' : ''}`}
-          >
+          icon={
             <Home
               size={theme.iconSize.md}
               color={homeActive ? theme.colors.accent.primary : theme.colors.text.tertiary}
               strokeWidth={homeActive ? theme.strokeWidth.medium : theme.borderWidth.medium}
             />
-          </View>
-          <Text
-            className={`text-xs font-medium ${homeActive ? 'text-text-accent' : 'text-text-tertiary'}`}
-          >
-            {t('home.navigation.home')}
-          </Text>
-        </Pressable>
+          }
+        />
 
         {/* Slot 1 - customizable */}
         {renderNavSlot(navSlot1)}

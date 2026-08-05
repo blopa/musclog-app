@@ -39,3 +39,15 @@ export const TRACK_MEAL = 'TRACK_MEAL';
  * User wants to generate a custom meal plan
  */
 export const GENERATE_MEAL_PLAN = 'GENERATE_MEAL_PLAN';
+
+/**
+ * The intentions the coach can *arm* — each one parks a pending prompt in the chat and runs its
+ * action on the next send. Narrower than the raw constants above (`CANCEL_GENERATE_MY_WORKOUTS`
+ * and `GET_WORKOUT_FEEDBACK` are one-shot signals, never armed state).
+ */
+export type ChatIntention =
+  | typeof ANALYZE_PROGRESS
+  | typeof GENERATE_MEAL_PLAN
+  | typeof GENERATE_MY_WORKOUTS
+  | typeof NUTRITION_CHECK
+  | typeof TRACK_MEAL;

@@ -1,12 +1,20 @@
-import { Q } from '@nozbe/watermelondb';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { database } from '@/database/database-instance';
 import type Note from '@/database/models/Note';
+import { NoteService } from '@/database/services/NoteService';
 
-/** 2 highlighted "Latest" tiles + 10 "Earlier" rows on first paint. */
-export const NOTES_INITIAL_LIMIT = 12;
+/**
+ * How many of the newest notes render as highlighted "Latest" tiles; the rest fall through to the
+ * flat "Earlier" rows. The notes screen slices on this, so it lives here next to the page size it
+ * feeds rather than as a bare `2` at the call site.
+ */
+export const LATEST_NOTE_COUNT = 2;
+
+/** How many further "Earlier" rows each "Load more" press appends. */
 const NOTES_BATCH_SIZE = 10;
+
+/** One screenful: the "Latest" tiles plus a batch of "Earlier" rows. */
+export const NOTES_INITIAL_LIMIT = LATEST_NOTE_COUNT + NOTES_BATCH_SIZE;
 
 export interface UseNotesResult {
   notes: Note[];
@@ -22,11 +30,9 @@ export function useNotes(): UseNotesResult {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // take(limit + 1): the extra row is the "is there another page?" probe. One query, so no
-    // count/list race and no second subscription.
-    const query = database
-      .get<Note>('notes')
-      .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.desc), Q.take(limit + 1));
+    // limit + 1: the extra row is the "is there another page?" probe. One query, so no count/list
+    // race and no second subscription. The query shape itself is NoteService's to define.
+    const query = NoteService.notesQuery(limit + 1);
 
     // observeWithColumns, NOT observe: sortBy/take force WatermelonDB's "reloading" observer,
     // which dedupes emissions by record identity. Editing a note mutates the cached Model in

@@ -16,17 +16,20 @@ describe('pickImageFromGallery', () => {
     mockLaunchImageLibrary.mockReset();
   });
 
-  it('launches the system photo picker with no permission flag and no legacy override', async () => {
+  // Regression guard: every caller re-encodes the result through openCropperAsync, so compressing
+  // here too would stack a second lossy pass (a requested 0.8 landing at ~0.64) and cost the
+  // smart-camera path the label legibility OCR/barcode decoding depends on.
+  it('picks uncompressed, leaving the crop step as the only lossy pass', async () => {
     mockLaunchImageLibrary.mockResolvedValue({
       canceled: false,
       assets: [{ uri: 'file:///picked.jpg' }],
     });
 
-    await pickImageFromGallery(0.85);
+    await pickImageFromGallery();
 
     expect(mockLaunchImageLibrary).toHaveBeenCalledWith({
       mediaTypes: ['images'],
-      quality: 0.85,
+      quality: 1,
       base64: false,
     });
   });
@@ -51,17 +54,6 @@ describe('pickImageFromGallery', () => {
 
     await expect(pickImageFromGallery()).resolves.toBeNull();
   });
-
-  it('defaults quality to 0.8', async () => {
-    mockLaunchImageLibrary.mockResolvedValue({
-      canceled: false,
-      assets: [{ uri: 'file:///picked.jpg' }],
-    });
-
-    await pickImageFromGallery();
-
-    expect(mockLaunchImageLibrary).toHaveBeenCalledWith(expect.objectContaining({ quality: 0.8 }));
-  });
 });
 
 describe('pickAndCropImageFromGallery', () => {
@@ -70,7 +62,7 @@ describe('pickAndCropImageFromGallery', () => {
     mockOpenCropperAsync.mockReset();
   });
 
-  it('crops the picked image at the configured quality and returns the cropped path', async () => {
+  it('applies the requested quality at the crop step only, and returns the cropped path', async () => {
     mockLaunchImageLibrary.mockResolvedValue({
       canceled: false,
       assets: [{ uri: 'file:///picked.jpg' }],
@@ -79,6 +71,7 @@ describe('pickAndCropImageFromGallery', () => {
 
     await expect(pickAndCropImageFromGallery(0.85)).resolves.toBe('file:///cropped.jpg');
 
+    expect(mockLaunchImageLibrary).toHaveBeenCalledWith(expect.objectContaining({ quality: 1 }));
     expect(mockOpenCropperAsync).toHaveBeenCalledWith({
       imageUri: 'file:///picked.jpg',
       format: 'jpeg',

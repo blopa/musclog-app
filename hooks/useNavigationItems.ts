@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 
-import type { NavItemKey } from '@/constants/settings';
+import { NAV_ITEM_KEYS, type NavItemKey } from '@/constants/settings';
 import { SettingsService } from '@/database/services/SettingsService';
 
 import { useMenstrualCycle } from './useMenstrualCycle';
@@ -16,17 +16,11 @@ export type UseNavigationItemsResult = {
   setNavSlot: (slot: SlotNumber, item: NavItemKey) => Promise<void>;
 };
 
-// Fallback items that are always available (never conditionally hidden)
-const ALWAYS_AVAILABLE_ITEMS: NavItemKey[] = [
-  'workouts',
-  'food',
-  'profile',
-  'settings',
-  'progress',
-  'checkin',
-  'coach',
-  'notes',
-];
+// Fallback items that are always available (never conditionally hidden). Derived from the
+// canonical list so a new destination becomes eligible automatically; `cycle` is the only item
+// `isItemAvailable` can reject. Order is not load-bearing — the fallback search takes the first
+// *unused* entry, and with 3 slots one of the leading entries is always free.
+const ALWAYS_AVAILABLE_ITEMS: NavItemKey[] = NAV_ITEM_KEYS.filter((item) => item !== 'cycle');
 
 /**
  * Checks if a navigation item is currently available/visible.

@@ -2,22 +2,15 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { MenuButton } from '@/components/theme/MenuButton';
-import type Note from '@/database/models/Note';
 import { useTheme } from '@/hooks/useTheme';
 
-export type NoteCardProps = {
-  note: Note;
-  /** Pre-formatted by the screen so locale/`t` resolve in one place. */
-  relativeTime: string;
-  onPress: () => void;
-  onMenuPress: () => void;
-};
+import type { NoteListItemProps } from './noteListItem';
 
 /**
  * The highlighted "Latest" tile. Sits in a 2-column grid; elevation + a faint accent rim carry
  * the hierarchy against the flat `NoteRow`s below.
  */
-export function NoteCard({ note, relativeTime, onPress, onMenuPress }: NoteCardProps) {
+export function NoteCard({ note, relativeTime, onPress, onMenuPress }: NoteListItemProps) {
   const theme = useTheme();
   const { t } = useTranslation();
 

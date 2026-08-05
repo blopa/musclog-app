@@ -3,13 +3,13 @@ import { Pressable, Text, View } from 'react-native';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { useTheme } from '@/hooks/useTheme';
 
-import type { NoteCardProps } from './NoteCard';
+import type { NoteListItemProps } from './noteListItem';
 
 /**
  * The flat "Earlier" row. Deliberately recedes against the elevated `NoteCard` tiles: no border,
  * no shadow, a step-down radius, timestamp above the text, and a tighter clamp.
  */
-export function NoteRow({ note, relativeTime, onPress, onMenuPress }: NoteCardProps) {
+export function NoteRow({ note, relativeTime, onPress, onMenuPress }: NoteListItemProps) {
   const theme = useTheme();
 
   return (

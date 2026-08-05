@@ -90,12 +90,15 @@ describe('useCameraCaptureFlow', () => {
   });
 
   describe('pickFromGallery', () => {
-    it('crops the picked image at the configured quality and processes it', async () => {
+    // The crop is the only lossy step: the picker is asked for the image uncompressed, so the
+    // requested quality is applied once rather than compounding into ~0.72 and costing the AI /
+    // barcode paths the label legibility they depend on.
+    it('applies the configured quality at the crop step only, then processes it', async () => {
       const { result, process } = renderFlow({ quality: 0.85 });
 
       await result.current.pickFromGallery();
 
-      expect(mockPickImageFromGallery).toHaveBeenCalledWith(0.85);
+      expect(mockPickImageFromGallery).toHaveBeenCalledWith();
       expect(mockOpenCropperAsync).toHaveBeenCalledWith({
         imageUri: 'file:///picked.jpg',
         format: 'jpeg',

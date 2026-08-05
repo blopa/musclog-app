@@ -29,7 +29,7 @@ import { TRACK_MEAL } from '@/constants/chat';
 import type Note from '@/database/models/Note';
 import { NoteService } from '@/database/services/NoteService';
 import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
-import { useNotes } from '@/hooks/useNotes';
+import { LATEST_NOTE_COUNT, useNotes } from '@/hooks/useNotes';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { formatRelativeTime } from '@/utils/formatRelativeTime';
@@ -69,8 +69,8 @@ export default function NotesScreen() {
   const [isCreateVisible, setIsCreateVisible] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
 
-  const latest = notes.slice(0, 2);
-  const earlier = notes.slice(2);
+  const latest = notes.slice(0, LATEST_NOTE_COUNT);
+  const earlier = notes.slice(LATEST_NOTE_COUNT);
 
   const relativeTimeFor = useCallback(
     (timestamp: number) =>

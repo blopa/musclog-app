@@ -1,18 +1,10 @@
 import {
   BarChart3,
   Beef,
-  Calendar,
-  ClipboardCheck,
   Droplets,
-  Dumbbell,
   Flame,
   LayoutGrid,
   Leaf,
-  MessageSquare,
-  Settings,
-  StickyNote,
-  User,
-  UtensilsCrossed,
   Wheat,
   Wine,
 } from 'lucide-react-native';
@@ -22,9 +14,10 @@ import { Text, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { NAV_ITEM_ICON } from '@/components/navigation/navItemIcons';
 import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/OptionsMultiSelector';
 import { PickerButton } from '@/components/theme/PickerButton';
-import type { HomeSummaryCard, NavItemKey } from '@/constants/settings';
+import { type HomeSummaryCard, NAV_ITEM_KEYS, type NavItemKey } from '@/constants/settings';
 import SettingsService from '@/database/services/SettingsService';
 import { useNavigationItems } from '@/hooks/useNavigationItems';
 import { useTheme } from '@/hooks/useTheme';
@@ -37,18 +30,6 @@ type VisualSettingsModalProps = {
 };
 
 type SlotNumber = 1 | 2 | 3;
-
-const NAV_ITEM_ICON: Record<NavItemKey, typeof Dumbbell> = {
-  workouts: Dumbbell,
-  food: UtensilsCrossed,
-  profile: User,
-  coach: MessageSquare,
-  cycle: Calendar,
-  settings: Settings,
-  progress: BarChart3,
-  checkin: ClipboardCheck,
-  notes: StickyNote,
-};
 
 /** Ordered macro keys — index maps to the binary string position. */
 const MACRO_KEYS = ['carbs', 'protein', 'fats', 'fiber', 'alcohol'] as const;
@@ -129,18 +110,6 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     3: t('settings.visualSettings.slot3Label'),
   };
 
-  const allNavItems: NavItemKey[] = [
-    'workouts',
-    'food',
-    'profile',
-    'coach',
-    'cycle',
-    'settings',
-    'progress',
-    'checkin',
-    'notes',
-  ];
-
   const isItemAvailable = (item: NavItemKey): boolean => {
     if (item === 'cycle' && !isCycleActive) {
       return false;
@@ -163,7 +132,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
 
   const menuItems =
     activeSlot !== null
-      ? allNavItems.filter(isItemAvailable).map((item) => ({
+      ? NAV_ITEM_KEYS.filter(isItemAvailable).map((item) => ({
           icon: NAV_ITEM_ICON[item],
           iconColor: theme.colors.accent.primary,
           iconBgColor: theme.colors.background.iconDark,

@@ -1,31 +1,20 @@
-import { Q } from '@nozbe/watermelondb';
+import { Q, type Query } from '@nozbe/watermelondb';
 
 import { database } from '@/database/database-instance';
 import Note from '@/database/models/Note';
 
 export class NoteService {
-  /** Newest first. `limit`/`offset` back the "Load more" pager on the notes screen. */
-  static async getNotes(limit: number, offset = 0): Promise<Note[]> {
-    const clauses = [
-      Q.where('deleted_at', Q.eq(null)),
-      Q.sortBy('created_at', Q.desc),
-      ...(offset > 0 ? [Q.skip(offset)] : []),
-      Q.take(limit),
-    ];
-
+  /**
+   * The canonical notes list query — soft-deleted rows excluded, newest first, windowed to
+   * `limit`. Returns the `Query` rather than fetched rows so `useNotes` can observe it (see
+   * `hooks/useNotes.ts`, which passes `limit + 1` as its `hasMore` probe): one definition of what
+   * "the notes list" means, rather than a service copy and a screen copy free to drift into
+   * different orderings or pagination models.
+   */
+  static notesQuery(limit: number): Query<Note> {
     return database
       .get<Note>('notes')
-      .query(...clauses)
-      .fetch();
-  }
-
-  static async getNoteById(id: string): Promise<Note | null> {
-    try {
-      const note = await database.get<Note>('notes').find(id);
-      return note.deletedAt != null ? null : note;
-    } catch {
-      return null;
-    }
+      .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.desc), Q.take(limit));
   }
 
   static async createNote(data: { title?: string; body: string }): Promise<Note> {

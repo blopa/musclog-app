@@ -29,39 +29,31 @@ describe('NoteService', () => {
     jest.clearAllMocks();
   });
 
-  describe('getNotes', () => {
-    it('filters soft-deleted rows, sorts newest first, and windows to the limit', async () => {
-      const rows = [{ id: 'note-1' }];
-      const query = jest.fn().mockReturnValue({ fetch: jest.fn().mockResolvedValue(rows) });
+  describe('notesQuery', () => {
+    it('filters soft-deleted rows, sorts newest first, and windows to the limit', () => {
+      const built = { observeWithColumns: jest.fn() };
+      const query = jest.fn().mockReturnValue(built);
       mockDatabase.get.mockReturnValue({ query } as any);
 
-      const result = await NoteService.getNotes(12);
+      const result = NoteService.notesQuery(13);
 
-      expect(result).toBe(rows);
+      expect(result).toBe(built);
       expect(mockDatabase.get).toHaveBeenCalledWith('notes');
       expect(Q.where).toHaveBeenCalledWith('deleted_at', null);
       expect(Q.sortBy).toHaveBeenCalledWith('created_at', 'desc');
-      expect(Q.take).toHaveBeenCalledWith(12);
-    });
-
-    it('omits Q.skip on the first page so the query stays minimal', async () => {
-      const query = jest.fn().mockReturnValue({ fetch: jest.fn().mockResolvedValue([]) });
-      mockDatabase.get.mockReturnValue({ query } as any);
-
-      await NoteService.getNotes(12);
-
-      expect(Q.skip).not.toHaveBeenCalled();
+      expect(Q.take).toHaveBeenCalledWith(13);
       expect(query.mock.calls[0]).toHaveLength(3);
     });
 
-    it('applies Q.skip for later pages', async () => {
-      const query = jest.fn().mockReturnValue({ fetch: jest.fn().mockResolvedValue([]) });
-      mockDatabase.get.mockReturnValue({ query } as any);
+    // Returning the Query (not fetched rows) is what lets useNotes observe the same definition
+    // instead of re-inlining the clauses — keep it lazy.
+    it('does not fetch: the caller decides between observing and fetching', () => {
+      const fetch = jest.fn();
+      mockDatabase.get.mockReturnValue({ query: jest.fn().mockReturnValue({ fetch }) } as any);
 
-      await NoteService.getNotes(10, 12);
+      NoteService.notesQuery(13);
 
-      expect(Q.skip).toHaveBeenCalledWith(12);
-      expect(query.mock.calls[0]).toHaveLength(4);
+      expect(fetch).not.toHaveBeenCalled();
     });
   });
 
@@ -193,24 +185,6 @@ describe('NoteService', () => {
       expect(updateNote).toHaveBeenCalledWith({ body: 'Updated' });
       expect(mockDatabase.write).not.toHaveBeenCalled();
       expect(result).toBe(note);
-    });
-  });
-
-  describe('getNoteById', () => {
-    it('returns null for a soft-deleted note', async () => {
-      mockDatabase.get.mockReturnValue({
-        find: jest.fn().mockResolvedValue({ id: 'note-1', deletedAt: 123 }),
-      } as any);
-
-      await expect(NoteService.getNoteById('note-1')).resolves.toBeNull();
-    });
-
-    it('returns null when the row is missing', async () => {
-      mockDatabase.get.mockReturnValue({
-        find: jest.fn().mockRejectedValue(new Error('not found')),
-      } as any);
-
-      await expect(NoteService.getNoteById('missing')).resolves.toBeNull();
     });
   });
 });

@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react';
 
+import type { ChatIntention } from '@/constants/chat';
 import { useSettings } from '@/hooks/useSettings';
 
 import { AINotConfiguredModal } from './modals/AINotConfiguredModal';
@@ -10,8 +11,8 @@ import MyMealsModal from './modals/MyMealsModal';
 export type OpenCoachOptions = {
   /** Seeds the chat composer without sending (e.g. "Track this" from a note). */
   composerText?: string;
-  /** One of the CHAT_INTENTION constants; armed when the coach opens. */
-  intention?: string;
+  /** Armed when the coach opens, exactly as if the user had tapped that quick-action chip. */
+  intention?: ChatIntention;
 };
 
 type CoachContextType = {
@@ -35,13 +36,15 @@ export function CoachProvider({ children }: { children: ReactNode }) {
 
   const openCoach = useCallback(
     (options?: OpenCoachOptions) => {
-      setOpenOptions(options ?? null);
-      if (isAiConfigured) {
-        setIsVisible(true);
-      } else {
-        // CoachModal never mounts here, so no intention is armed for an unconfigured user.
+      if (!isAiConfigured) {
+        // CoachModal never mounts here, so the options would have nothing to apply to — don't
+        // stash them, or they'd outlive the request that carried them.
         setIsNotConfiguredVisible(true);
+        return;
       }
+
+      setOpenOptions(options ?? null);
+      setIsVisible(true);
     },
     [isAiConfigured]
   );

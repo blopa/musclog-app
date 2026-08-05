@@ -337,16 +337,27 @@ export const USE_MUSCLOG_FREE_TIER_SETTING_TYPE = 'use_musclog_free_tier';
 export const MUSCLOG_GATEWAY_ANONYMOUS_ID_SETTING_TYPE = 'musclog_gateway_anonymous_id';
 export const DUMP_LLM_REQUESTS_SETTING_TYPE = 'dump_llm_requests';
 
-export type NavItemKey =
-  | 'workouts'
-  | 'food'
-  | 'profile'
-  | 'coach'
-  | 'cycle'
-  | 'settings'
-  | 'progress'
-  | 'checkin'
-  | 'notes';
+/**
+ * Every navigation-slot destination, in the order the visual-settings picker lists them.
+ *
+ * `NavItemKey` is derived from this array rather than declared next to it so that adding a
+ * destination updates the type *and* every list that enumerates destinations. A separate
+ * `NavItemKey[]` literal is not checked against the union and silently goes stale — which is
+ * exactly what a `Record<NavItemKey, …>` map (compiler-enforced) does not do.
+ */
+export const NAV_ITEM_KEYS = [
+  'workouts',
+  'food',
+  'profile',
+  'coach',
+  'cycle',
+  'settings',
+  'progress',
+  'checkin',
+  'notes',
+] as const;
+
+export type NavItemKey = (typeof NAV_ITEM_KEYS)[number];
 
 export type Units = 'metric' | 'imperial';
 export type ThemeOption = 'system' | 'light' | 'dark';
