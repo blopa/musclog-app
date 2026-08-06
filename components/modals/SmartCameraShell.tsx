@@ -307,8 +307,12 @@ type SmartCameraShellProps = {
   onFlashToggle: () => void;
   /** Awaited by the shell, which locks every control except close while either runs. */
   onGalleryPress: () => void | Promise<void>;
-  /** Awaited by the shell, which locks every control except close while either runs. */
-  onShutterPress: () => void | Promise<void>;
+  /**
+   * Awaited by the shell, which locks every control except close while either runs. Omit to hide
+   * the shutter button entirely — barcode scanning reads the live preview, so it has nothing to
+   * capture manually and leaves the slot empty.
+   */
+  onShutterPress?: () => void | Promise<void>;
   /** Slot for the bottom-right control button (text search, AI context, or empty). */
   bottomRightControl?: ReactNode;
   /** When true, renders the three-tab mode picker. */
@@ -661,10 +665,9 @@ export function SmartCameraShell({
                 <Images size={theme.iconSize.lg} color={theme.colors.text.primary} />
               </Pressable>
 
-              {/* Shutter Button — hidden in barcode mode, which scans live with no manual capture */}
-              {isBarcodeScan ? (
-                <View className="h-20 w-20" />
-              ) : (
+              {/* Shutter Button. The owner decides whether there is one: barcode scanning reads
+                  the live preview and passes no handler, leaving the slot empty. */}
+              {onShutterPress ? (
                 <Pressable
                   onPress={() => runExclusive(onShutterPress)}
                   disabled={controlsLocked}
@@ -687,6 +690,8 @@ export function SmartCameraShell({
                     style={{ backgroundColor: theme.colors.text.white }}
                   />
                 </Pressable>
+              ) : (
+                <View className="h-20 w-20" />
               )}
 
               {/* Bottom-right control slot */}

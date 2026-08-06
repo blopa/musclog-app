@@ -21,45 +21,29 @@ const logPhase = (label: string, startedAt: number) => {
 type UseCameraCaptureFlowOptions = {
   cameraRef: RefObject<CameraViewRef | null>;
   /**
-   * JPEG quality for the crop re-encode — the only lossy step on either path (`pickImageFromGallery`
-   * deliberately picks uncompressed, and the shutter photo itself isn't recompressed). Unused on
-   * the shutter path when `cropOnShutter` is false.
+   * JPEG quality for the crop re-encode — the only lossy step on either path
+   * (`pickImageFromGallery` deliberately picks uncompressed, and the shutter photo itself isn't
+   * recompressed before the crop).
    */
   quality: number;
-  /** Receives the raw photo path on shutter capture (unless cropped), or the cropped path otherwise. */
+  /** Receives the cropped image path. */
   process: (fileUri: string) => Promise<void>;
-  /**
-   * Run the crop tool on shutter captures too, same as gallery picks. Defaults to false: a barcode
-   * shutter capture should stay uncropped since the barcode just needs to be in frame, not
-   * reframed. AI modes (meal photo, label scan) opt in so the user can trim the shutter photo
-   * before it's sent for analysis.
-   */
-  cropOnShutter?: boolean;
 };
 
 /**
- * The shared capture pipeline behind the smart-camera modals.
- *
- * A gallery pick always goes through the crop UI (`cropAndProcess`), since an existing photo
- * usually does need framing and the user chose that path deliberately. A shutter capture goes
- * straight to `process` UNLESS `cropOnShutter` is set, in which case it goes through the same
- * crop UI as the gallery path.
+ * The shared capture pipeline behind the smart-camera modals. Both entry points — a shutter
+ * capture and a gallery pick — end in the same crop UI, so the user can trim the shot before it
+ * is analysed and `process` only ever sees a cropped image.
  *
  * A cancelled crop ends the flow silently; real failures log and show the camera-error snackbar.
  * Camera-session concerns (the silent warm-up capture, one capture in flight at a time) are owned
  * by the CameraView wrapper itself.
  */
-export function useCameraCaptureFlow({
-  cameraRef,
-  quality,
-  process,
-  cropOnShutter = false,
-}: UseCameraCaptureFlowOptions) {
+export function useCameraCaptureFlow({ cameraRef, quality, process }: UseCameraCaptureFlowOptions) {
   const { t } = useTranslation();
 
-  /** Returns whether `process` was actually invoked (false if the crop was cancelled). */
   const cropAndProcess = useCallback(
-    async (imageUri: string): Promise<boolean> => {
+    async (imageUri: string): Promise<void> => {
       const startedAt = Date.now();
       const cropped = await openCropperAsync({
         imageUri,
@@ -69,23 +53,18 @@ export function useCameraCaptureFlow({
       logPhase('crop step', startedAt);
 
       if (!cropped) {
-        return false;
+        return;
       }
 
       await process(cropped.path);
-      return true;
     },
     [quality, process]
   );
 
-  /**
-   * Captures a photo and either sends it straight to `process`, or (when `cropOnShutter` is set)
-   * routes it through the same crop UI as a gallery pick. Returns whether `process` was invoked:
-   * false on a camera error, or when `cropOnShutter` is set and the user cancels the crop.
-   */
-  const takePicture = useCallback(async (): Promise<boolean> => {
+  /** Captures a photo and routes it through the same crop UI as a gallery pick. */
+  const takePicture = useCallback(async (): Promise<void> => {
     if (!cameraRef.current) {
-      return false;
+      return;
     }
 
     try {
@@ -93,19 +72,12 @@ export function useCameraCaptureFlow({
       // reports the path + fallback breakdown (to logcat and Sentry), so a second timer here
       // would just duplicate the weaker half of that signal.
       const photo = await cameraRef.current.takePictureAsync();
-
-      if (cropOnShutter) {
-        return await cropAndProcess(photo.uri);
-      }
-
-      await process(photo.uri);
-      return true;
+      await cropAndProcess(photo.uri);
     } catch (error) {
       console.error('Error taking picture:', error);
       showSnackbar('error', t('food.aiCamera.cameraError'));
-      return false;
     }
-  }, [cameraRef, cropOnShutter, cropAndProcess, process, t]);
+  }, [cameraRef, cropAndProcess, t]);
 
   const pickFromGallery = useCallback(async () => {
     try {

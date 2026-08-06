@@ -7,9 +7,9 @@ import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CoachUnreadBadgeIcon } from '@/components/CoachUnreadBadgeIcon';
-import { NAV_ITEM_ICON } from '@/components/navigation/navItemIcons';
+import { NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
 import type { NavItemKey } from '@/constants/settings';
-import { useNavigationItems } from '@/hooks/useNavigationItems';
+import { isNavItemAvailable, useNavigationItems } from '@/hooks/useNavigationItems';
 import { useTheme } from '@/hooks/useTheme';
 import { addOpacityToHex } from '@/theme';
 
@@ -50,13 +50,14 @@ function NavSlotButton({ icon, label, active, onPress, onPressIn }: NavSlotButto
 }
 
 type NavSlotConfig = {
-  labelKey: string;
-  /** Route prefix that marks this slot active. Also the navigation target unless `target` is set. */
-  activePath: string;
+  /**
+   * Route prefix that marks this slot active, when it is broader than the destination's own
+   * route (workouts lands on a sub-route; the food diary highlights for the whole section).
+   * Defaults to `NAV_DESTINATIONS[key].route`.
+   */
+  activePath?: string;
   /** Second prefix that also counts as active — profile owns the progress screen. */
   alsoActiveFor?: string;
-  /** Navigation target when it differs from `activePath` (workouts lands on a sub-route). */
-  target?: string;
   /** `replace` instead of `navigate` — the food diary swaps itself rather than stacking. */
   replace?: boolean;
   /** Haptic + route prefetch on press-in. Worth it only for the heaviest screen. */
@@ -69,40 +70,23 @@ type NavSlotConfig = {
 };
 
 /**
- * Routing and labelling for each nav slot; icons come from the shared `NAV_ITEM_ICON` map so a
- * destination picks its icon once for both the bar and the slot picker.
+ * Bottom-bar-only routing modifiers. Icon, label and destination route come from the shared
+ * `NAV_DESTINATIONS` map, so this table holds nothing the account menu or slot picker would also
+ * need — only how the *bar* treats a slot.
  *
  * `coach` is deliberately absent: it has no route, never shows an active state, and renders an
  * unread badge, so it stays an explicit branch in `renderNavSlot` rather than growing this table
- * three fields it alone would use.
+ * fields it alone would use.
  */
 const NAV_SLOTS: Record<Exclude<NavItemKey, 'coach'>, NavSlotConfig> = {
-  workouts: {
-    labelKey: 'home.navigation.workouts',
-    activePath: '/app/workout',
-    target: '/app/workout/workouts',
-  },
-  food: {
-    labelKey: 'home.navigation.food',
-    activePath: '/app/nutrition/',
-    target: '/app/nutrition/food',
-    replace: true,
-  },
-  profile: {
-    labelKey: 'home.navigation.profile',
-    activePath: '/app/profile',
-    alsoActiveFor: '/app/progress',
-    prefetch: true,
-    navigateWhenActive: true,
-  },
-  cycle: { labelKey: 'userMenu.cycle', activePath: '/app/cycle' },
-  settings: { labelKey: 'userMenu.settings', activePath: '/app/settings' },
-  progress: { labelKey: 'userMenu.progress', activePath: '/app/progress' },
-  notes: { labelKey: 'userMenu.notes', activePath: '/app/notes' },
-  checkin: {
-    labelKey: 'home.navigation.checkin',
-    activePath: '/app/nutrition/checkin-list',
-  },
+  workouts: { activePath: '/app/workout' },
+  food: { activePath: '/app/nutrition/', replace: true },
+  profile: { alsoActiveFor: '/app/progress', prefetch: true, navigateWhenActive: true },
+  cycle: {},
+  settings: {},
+  progress: {},
+  notes: {},
+  checkin: {},
 };
 
 export const NavigationMenu = memo(function NavigationMenu({
@@ -137,7 +121,7 @@ export const NavigationMenu = memo(function NavigationMenu({
           <NavSlotButton
             key="coach"
             active={false}
-            label={t('home.navigation.coach')}
+            label={t(NAV_DESTINATIONS.coach.labelKey)}
             onPress={onCoachPress}
             icon={
               <CoachUnreadBadgeIcon
@@ -150,19 +134,18 @@ export const NavigationMenu = memo(function NavigationMenu({
         );
       }
 
-      if (slotKey === 'cycle' && !isCycleActive) {
+      if (!isNavItemAvailable(slotKey, isCycleActive)) {
         return null;
       }
 
       const slot = NAV_SLOTS[slotKey];
-      if (!slot) {
-        return null;
-      }
-
-      const { activePath, alsoActiveFor, target, replace, prefetch } = slot;
-      const Icon = NAV_ITEM_ICON[slotKey];
-      const active = isPathActive(activePath) || (!!alsoActiveFor && isPathActive(alsoActiveFor));
-      const destination = target ?? activePath;
+      const { alsoActiveFor, replace, prefetch } = slot;
+      // Typed `string`, not `string | null`: `coach` is the only routeless destination and it
+      // returned above, so the narrowed key can only index entries with a real route.
+      const { icon: Icon, route: destination } = NAV_DESTINATIONS[slotKey];
+      const active =
+        isPathActive(slot.activePath ?? destination) ||
+        (!!alsoActiveFor && isPathActive(alsoActiveFor));
 
       const go = () => {
         if (replace) {
@@ -176,7 +159,7 @@ export const NavigationMenu = memo(function NavigationMenu({
         <NavSlotButton
           key={slotKey}
           active={active}
-          label={t(slot.labelKey)}
+          label={t(NAV_DESTINATIONS[slotKey].labelKey)}
           onPress={() => {
             if (!active || slot.navigateWhenActive) {
               go();

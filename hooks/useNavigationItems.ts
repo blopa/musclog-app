@@ -18,27 +18,21 @@ export type UseNavigationItemsResult = {
 
 // Fallback items that are always available (never conditionally hidden). Derived from the
 // canonical list so a new destination becomes eligible automatically; `cycle` is the only item
-// `isItemAvailable` can reject. Order is not load-bearing — the fallback search takes the first
-// *unused* entry, and with 3 slots one of the leading entries is always free.
+// `isNavItemAvailable` can reject. Order is not load-bearing — the fallback search takes the
+// first *unused* entry, and with 3 slots one of the leading entries is always free.
 const ALWAYS_AVAILABLE_ITEMS: NavItemKey[] = NAV_ITEM_KEYS.filter((item) => item !== 'cycle');
 
 /**
- * Checks if a navigation item is currently available/visible.
+ * Whether a navigation destination can currently be shown. `cycle` is the only one that is ever
+ * hidden; `coach` deliberately stays available with no AI provider configured, because tapping it
+ * opens `AINotConfiguredModal` with an "Open AI settings" CTA (see the AI-gating rule in
+ * AGENTS.md — nav destinations may advertise AI, actions inside menus may not).
+ *
+ * Exported so the bottom bar, the account menu and the slot picker all ask the same question;
+ * three copies of this predicate previously answered it in three slightly different ways.
  */
-function isItemAvailable(
-  item: NavItemKey,
-  isAiConfigured: boolean,
-  isCycleActive: boolean
-): boolean {
-  if (item === 'coach') {
-    return true;
-  }
-
-  if (item === 'cycle' && !isCycleActive) {
-    return false;
-  }
-
-  return true;
+export function isNavItemAvailable(item: NavItemKey, isCycleActive: boolean): boolean {
+  return item !== 'cycle' || isCycleActive;
 }
 
 /**
@@ -48,7 +42,6 @@ function isItemAvailable(
  */
 function ensureValidSlots(
   slots: Record<SlotNumber, NavItemKey>,
-  isAiConfigured: boolean,
   isCycleActive: boolean
 ): Record<SlotNumber, NavItemKey> {
   const result: Record<SlotNumber, NavItemKey> = { ...slots };
@@ -57,7 +50,7 @@ function ensureValidSlots(
   // First pass: mark all valid items as used
   ([1, 2, 3] as SlotNumber[]).forEach((slot) => {
     const item = slots[slot];
-    if (isItemAvailable(item, isAiConfigured, isCycleActive)) {
+    if (isNavItemAvailable(item, isCycleActive)) {
       usedItems.add(item);
     }
   });
@@ -65,7 +58,7 @@ function ensureValidSlots(
   // Second pass: replace unavailable items with fallback items
   ([1, 2, 3] as SlotNumber[]).forEach((slot) => {
     const item = slots[slot];
-    if (!isItemAvailable(item, isAiConfigured, isCycleActive)) {
+    if (!isNavItemAvailable(item, isCycleActive)) {
       // Find the first available fallback item that's not already used
       const fallback = ALWAYS_AVAILABLE_ITEMS.find((fallbackItem) => !usedItems.has(fallbackItem));
       if (fallback) {
@@ -92,8 +85,8 @@ export function useNavigationItems(): UseNavigationItemsResult {
 
   // Ensure all slots have valid, renderable items
   const validSlots = useMemo(
-    () => ensureValidSlots(rawSlots, isAiConfigured, isCycleActive),
-    [rawSlots, isAiConfigured, isCycleActive]
+    () => ensureValidSlots(rawSlots, isCycleActive),
+    [rawSlots, isCycleActive]
   );
 
   // Keep a ref synced to the latest slot values so that async swap operations

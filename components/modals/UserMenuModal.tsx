@@ -1,16 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import {
-  BarChart3,
-  Calendar,
-  ClipboardCheck,
-  Dumbbell,
-  Settings,
-  StickyNote,
-  User,
-  UtensilsCrossed,
-  X,
-} from 'lucide-react-native';
+import { X } from 'lucide-react-native';
 import { createElement, ReactNode, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -25,9 +15,12 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CoachUnreadBadgeIcon } from '@/components/CoachUnreadBadgeIcon';
+import { NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
 import { Modal } from '@/components/theme/Modal';
-import { useNavigationItems } from '@/hooks/useNavigationItems';
+import { type NavItemKey, type NavItemKeyList } from '@/constants/settings';
+import { isNavItemAvailable, useNavigationItems } from '@/hooks/useNavigationItems';
 import { useTheme } from '@/hooks/useTheme';
+import type { Theme } from '@/theme';
 import { AvatarColor } from '@/types/AvatarColor';
 import { AvatarIcon } from '@/types/AvatarIcon';
 import { getAvatarDisplayProps } from '@/utils/avatarUtils';
@@ -48,6 +41,36 @@ type UserMenuModalProps = {
   onProgressPress?: () => void;
   onCyclePress?: () => void;
   onDebugMenuPress?: () => void;
+};
+
+/**
+ * Account-menu order. Deliberately not `NAV_ITEM_KEYS` order — an account menu leads with the
+ * account — so it is spelled out, but `NavItemKeyList` makes the compiler reject a list that
+ * misses a destination, which a bare `NavItemKey[]` would happily accept.
+ */
+const USER_MENU_ORDER = [
+  'profile',
+  'progress',
+  'cycle',
+  'workouts',
+  'food',
+  'checkin',
+  'notes',
+  'coach',
+  'settings',
+] as const satisfies NavItemKeyList;
+
+/** Icon tint per destination — this menu's own styling, unlike the icon itself. */
+const MENU_ICON_COLOR: Record<NavItemKey, (theme: Theme) => string> = {
+  profile: (theme) => theme.colors.accent.primary,
+  progress: (theme) => theme.colors.accent.secondary,
+  cycle: (theme) => theme.colors.status.purple40,
+  workouts: (theme) => theme.colors.accent.primary,
+  food: (theme) => theme.colors.accent.secondary,
+  checkin: (theme) => theme.colors.accent.secondary,
+  notes: (theme) => theme.colors.accent.secondary,
+  coach: (theme) => theme.colors.text.secondary,
+  settings: (theme) => theme.colors.text.secondary,
 };
 
 type MenuItemProps = {
@@ -109,6 +132,50 @@ export function UserMenuModal({
     },
     [onClose]
   );
+
+  // A few destinations let the host screen intercept the press instead of routing; the rest just
+  // navigate to the destination's own route. `coach` has no route at all, so it is *only* ever
+  // reachable through its handler and disappears from the menu when none is supplied.
+  const pressHandlerOverrides: Partial<Record<NavItemKey, (() => void) | undefined>> = {
+    profile: onProfilePress,
+    progress: onProgressPress,
+    cycle: onCyclePress,
+    settings: onSettingsPress,
+    coach: onCoachPress,
+  };
+
+  // Nine entries rendered inside a modal — cheap enough to build on every render, which keeps the
+  // list free of a memo whose dependency list would have to restate every override prop.
+  const menuItems = USER_MENU_ORDER.filter(
+    (item) => !isInNav(item) && isNavItemAvailable(item, isCycleActive)
+  )
+    .map((item) => {
+      const { icon: Icon, menuLabelKey, route } = NAV_DESTINATIONS[item];
+      const navigate = pressHandlerOverrides[item] ?? (route ? () => router.navigate(route) : null);
+
+      if (!navigate) {
+        return null;
+      }
+
+      return {
+        item,
+        label: t(menuLabelKey),
+        // The coach carries an unread badge, so it draws its own icon rather than the plain
+        // lucide glyph every other destination uses.
+        icon:
+          item === 'coach' ? (
+            <CoachUnreadBadgeIcon
+              color={theme.colors.text.secondary}
+              size={theme.iconSize.md}
+              strokeWidth={theme.borderWidth.medium}
+            />
+          ) : (
+            <Icon size={theme.iconSize.md} color={MENU_ICON_COLOR[item](theme)} />
+          ),
+        onPress: () => navigateAndClose(item, navigate),
+      };
+    })
+    .filter((entry) => entry !== null);
 
   return (
     <Modal
@@ -198,134 +265,15 @@ export function UserMenuModal({
 
             {/* Menu Items */}
             <View className="gap-3 p-6">
-              {!isInNav('profile') ? (
+              {menuItems.map(({ item, label, icon, onPress }) => (
                 <MenuItem
-                  icon={<User size={theme.iconSize.md} color={theme.colors.accent.primary} />}
-                  label={t('userMenu.profile')}
-                  isLoading={loadingItem === 'profile'}
-                  onPress={() => {
-                    navigateAndClose('profile', () => {
-                      onProfilePress ? onProfilePress() : router.navigate('/app/profile');
-                    });
-                  }}
+                  key={item}
+                  icon={icon}
+                  label={label}
+                  isLoading={loadingItem === item}
+                  onPress={onPress}
                 />
-              ) : null}
-
-              {!isInNav('progress') ? (
-                <MenuItem
-                  icon={
-                    <BarChart3 size={theme.iconSize.md} color={theme.colors.accent.secondary} />
-                  }
-                  label={t('userMenu.progress')}
-                  isLoading={loadingItem === 'progress'}
-                  onPress={() => {
-                    navigateAndClose('progress', () => {
-                      onProgressPress ? onProgressPress() : router.navigate('/app/progress');
-                    });
-                  }}
-                />
-              ) : null}
-
-              {!isInNav('cycle') && isCycleActive ? (
-                <MenuItem
-                  icon={<Calendar size={theme.iconSize.md} color={theme.colors.status.purple40} />}
-                  label={t('userMenu.cycle')}
-                  isLoading={loadingItem === 'cycle'}
-                  onPress={() => {
-                    navigateAndClose('cycle', () => {
-                      onCyclePress ? onCyclePress() : router.navigate('/app/cycle');
-                    });
-                  }}
-                />
-              ) : null}
-
-              {!isInNav('workouts') ? (
-                <MenuItem
-                  icon={<Dumbbell size={theme.iconSize.md} color={theme.colors.accent.primary} />}
-                  label={t('userMenu.workouts')}
-                  isLoading={loadingItem === 'workouts'}
-                  onPress={() => {
-                    navigateAndClose('workouts', () => router.navigate('/app/workout/workouts'));
-                  }}
-                />
-              ) : null}
-
-              {!isInNav('food') ? (
-                <MenuItem
-                  icon={
-                    <UtensilsCrossed
-                      size={theme.iconSize.md}
-                      color={theme.colors.accent.secondary}
-                    />
-                  }
-                  label={t('userMenu.food')}
-                  isLoading={loadingItem === 'food'}
-                  onPress={() => {
-                    navigateAndClose('food', () => router.navigate('/app/nutrition/food'));
-                  }}
-                />
-              ) : null}
-
-              {!isInNav('checkin') ? (
-                <MenuItem
-                  icon={
-                    <ClipboardCheck
-                      size={theme.iconSize.md}
-                      color={theme.colors.accent.secondary}
-                    />
-                  }
-                  label={t('userMenu.checkin')}
-                  isLoading={loadingItem === 'checkin'}
-                  onPress={() => {
-                    navigateAndClose('checkin', () =>
-                      router.navigate('/app/nutrition/checkin-list')
-                    );
-                  }}
-                />
-              ) : null}
-
-              {!isInNav('notes') ? (
-                <MenuItem
-                  icon={
-                    <StickyNote size={theme.iconSize.md} color={theme.colors.accent.secondary} />
-                  }
-                  label={t('userMenu.notes')}
-                  isLoading={loadingItem === 'notes'}
-                  onPress={() => {
-                    navigateAndClose('notes', () => router.navigate('/app/notes'));
-                  }}
-                />
-              ) : null}
-
-              {!isInNav('coach') && onCoachPress ? (
-                <MenuItem
-                  icon={
-                    <CoachUnreadBadgeIcon
-                      color={theme.colors.text.secondary}
-                      size={theme.iconSize.md}
-                      strokeWidth={theme.borderWidth.medium}
-                    />
-                  }
-                  label={t('userMenu.coach')}
-                  isLoading={loadingItem === 'coach'}
-                  onPress={() => {
-                    navigateAndClose('coach', onCoachPress);
-                  }}
-                />
-              ) : null}
-
-              {!isInNav('settings') ? (
-                <MenuItem
-                  icon={<Settings size={theme.iconSize.md} color={theme.colors.text.secondary} />}
-                  label={t('userMenu.settings')}
-                  isLoading={loadingItem === 'settings'}
-                  onPress={() => {
-                    navigateAndClose('settings', () => {
-                      onSettingsPress ? onSettingsPress() : router.navigate('/app/settings');
-                    });
-                  }}
-                />
-              ) : null}
+              ))}
 
               {onDebugMenuPress ? (
                 <Pressable

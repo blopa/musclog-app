@@ -33,16 +33,14 @@ describe('useCameraCaptureFlow', () => {
     process = jest.fn().mockResolvedValue(undefined),
     quality = 0.8,
     cameraRef = { current: { takePictureAsync } },
-    cropOnShutter = false,
   }: {
     takePictureAsync?: jest.Mock;
     process?: jest.Mock;
     quality?: number;
     cameraRef?: { current: { takePictureAsync: jest.Mock } | null };
-    cropOnShutter?: boolean;
   } = {}) => {
     const { result } = renderHook(() =>
-      useCameraCaptureFlow({ cameraRef: cameraRef as never, quality, process, cropOnShutter })
+      useCameraCaptureFlow({ cameraRef: cameraRef as never, quality, process })
     );
     return { result, takePictureAsync, process };
   };
@@ -59,14 +57,30 @@ describe('useCameraCaptureFlow', () => {
   });
 
   describe('takePicture', () => {
-    it('captures and processes the raw photo without opening the crop tool', async () => {
+    // Same crop step as a gallery pick: the user gets to trim the shot before it is analysed,
+    // and `process` only ever sees a cropped image.
+    it('routes the shutter photo through the crop tool at the configured quality', async () => {
       const { result, takePictureAsync, process } = renderFlow({ quality: 0.85 });
 
       await result.current.takePicture();
 
       expect(takePictureAsync).toHaveBeenCalledTimes(1);
-      expect(mockOpenCropperAsync).not.toHaveBeenCalled();
-      expect(process).toHaveBeenCalledWith('file:///shot.jpg');
+      expect(mockOpenCropperAsync).toHaveBeenCalledWith({
+        imageUri: 'file:///shot.jpg',
+        format: 'jpeg',
+        compressImageQuality: 0.85,
+      });
+      expect(process).toHaveBeenCalledWith('file:///cropped.jpg');
+      expect(mockShowSnackbar).not.toHaveBeenCalled();
+    });
+
+    it('ends silently without processing when the crop is cancelled', async () => {
+      mockOpenCropperAsync.mockResolvedValue(null);
+      const { result, process } = renderFlow();
+
+      await result.current.takePicture();
+
+      expect(process).not.toHaveBeenCalled();
       expect(mockShowSnackbar).not.toHaveBeenCalled();
     });
 
@@ -88,32 +102,6 @@ describe('useCameraCaptureFlow', () => {
       expect(mockOpenCropperAsync).not.toHaveBeenCalled();
       expect(process).not.toHaveBeenCalled();
       expect(mockShowSnackbar).not.toHaveBeenCalled();
-    });
-
-    describe('with cropOnShutter enabled', () => {
-      it('routes the shutter photo through the crop tool before processing', async () => {
-        const { result, process } = renderFlow({ quality: 0.85, cropOnShutter: true });
-
-        await result.current.takePicture();
-
-        expect(mockOpenCropperAsync).toHaveBeenCalledWith({
-          imageUri: 'file:///shot.jpg',
-          format: 'jpeg',
-          compressImageQuality: 0.85,
-        });
-        expect(process).toHaveBeenCalledWith('file:///cropped.jpg');
-      });
-
-      it('ends silently without processing when the crop is cancelled', async () => {
-        mockOpenCropperAsync.mockResolvedValue(null);
-        const { result, process } = renderFlow({ cropOnShutter: true });
-
-        const processed = await result.current.takePicture();
-
-        expect(processed).toBe(false);
-        expect(process).not.toHaveBeenCalled();
-        expect(mockShowSnackbar).not.toHaveBeenCalled();
-      });
     });
   });
 

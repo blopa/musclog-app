@@ -14,12 +14,12 @@ import { Text, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
-import { NAV_ITEM_ICON } from '@/components/navigation/navItemIcons';
+import { NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
 import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/OptionsMultiSelector';
 import { PickerButton } from '@/components/theme/PickerButton';
 import { type HomeSummaryCard, NAV_ITEM_KEYS, type NavItemKey } from '@/constants/settings';
 import SettingsService from '@/database/services/SettingsService';
-import { useNavigationItems } from '@/hooks/useNavigationItems';
+import { isNavItemAvailable, useNavigationItems } from '@/hooks/useNavigationItems';
 import { useTheme } from '@/hooks/useTheme';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -64,7 +64,7 @@ function selectedToBinary(selected: MacroKey[]): string {
 export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { rawSlots, isAiConfigured, isCycleActive, setNavSlot } = useNavigationItems();
+  const { rawSlots, isCycleActive, setNavSlot } = useNavigationItems();
 
   const [activeSlot, setActiveSlot] = useState<SlotNumber | null>(null);
   const [macrosPopupVisible, setMacrosPopupVisible] = useState(false);
@@ -110,14 +110,6 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     3: t('settings.visualSettings.slot3Label'),
   };
 
-  const isItemAvailable = (item: NavItemKey): boolean => {
-    if (item === 'cycle' && !isCycleActive) {
-      return false;
-    }
-
-    return true;
-  };
-
   const getItemLabel = (item: NavItemKey): string => t(`settings.visualSettings.navItems.${item}`);
 
   const getItemDescription = (item: NavItemKey): string => {
@@ -132,8 +124,8 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
 
   const menuItems =
     activeSlot !== null
-      ? NAV_ITEM_KEYS.filter(isItemAvailable).map((item) => ({
-          icon: NAV_ITEM_ICON[item],
+      ? NAV_ITEM_KEYS.filter((item) => isNavItemAvailable(item, isCycleActive)).map((item) => ({
+          icon: NAV_DESTINATIONS[item].icon,
           iconColor: theme.colors.accent.primary,
           iconBgColor: theme.colors.background.iconDark,
           title: getItemLabel(item),
@@ -146,7 +138,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
 
   const renderPickerButton = (slot: SlotNumber) => {
     const currentItem = currentSlots[slot];
-    const Icon = NAV_ITEM_ICON[currentItem];
+    const Icon = NAV_DESTINATIONS[currentItem].icon;
 
     return (
       <View key={slot} className="mb-4">

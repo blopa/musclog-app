@@ -359,6 +359,15 @@ export const NAV_ITEM_KEYS = [
 
 export type NavItemKey = (typeof NAV_ITEM_KEYS)[number];
 
+/**
+ * A list that must mention every navigation destination — for the surfaces that show all of them
+ * in an order of their own (the account menu leads with the account, not with `workouts`). The
+ * length constraint is what a bare `NavItemKey[]` lacks: adding a key to `NAV_ITEM_KEYS` without
+ * placing it in such a list becomes a build error instead of a destination that quietly vanishes
+ * from that surface. Use it with `satisfies`, so the literal keeps its narrow tuple type.
+ */
+export type NavItemKeyList = readonly NavItemKey[] & { length: (typeof NAV_ITEM_KEYS)['length'] };
+
 export type Units = 'metric' | 'imperial';
 export type ThemeOption = 'system' | 'light' | 'dark';
 export type ProgressionMode = 'reps_first' | 'weight_first';

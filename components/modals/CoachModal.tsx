@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
@@ -47,18 +46,10 @@ import { ChatMealCard } from '@/components/cards/ChatMealCard';
 import { ChatWorkoutCard } from '@/components/cards/ChatWorkoutCard';
 import { ChatWorkoutCompletedCard } from '@/components/cards/ChatWorkoutCompletedCard';
 import { ChatMealPlanCarousel } from '@/components/chat/ChatMealPlanCarousel';
-import { COACH_INTENTION_CHIP_ORDER, COACH_INTENTIONS } from '@/components/coach/coachIntentions';
+import { COACH_INTENTIONS } from '@/components/coach/coachIntentions';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
-import {
-  ANALYZE_PROGRESS,
-  CHAT_INTENTION_KEY,
-  type ChatIntention,
-  GENERATE_MEAL_PLAN,
-  GENERATE_MY_WORKOUTS,
-  NUTRITION_CHECK,
-  TRACK_MEAL,
-} from '@/constants/chat';
+import { CHAT_INTENTIONS, type ChatIntention, TRACK_MEAL } from '@/constants/chat';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { useUnreadChat } from '@/context/UnreadChatContext';
 import { ChatService, MuscleService, WorkoutService } from '@/database/services';
@@ -82,22 +73,8 @@ import { LogMealModal } from './LogMealModal';
 import PastWorkoutDetailModal from './PastWorkoutDetailModal';
 import { WorkoutMusclesModal } from './WorkoutMusclesModal';
 
-const getPendingIntentionDisplayText = (pendingIntention: string, t: TFunction): string => {
-  switch (pendingIntention) {
-    case GENERATE_MY_WORKOUTS:
-      return t('coach.actions.workoutGen');
-    case GENERATE_MEAL_PLAN:
-      return t('coach.actions.mealPlan');
-    case ANALYZE_PROGRESS:
-      return t('coach.actions.analyzeProgress');
-    case NUTRITION_CHECK:
-      return t('coach.actions.nutritionCheck');
-    case TRACK_MEAL:
-      return t('coach.actions.trackMeal');
-    default:
-      return pendingIntention;
-  }
-};
+const getPendingIntentionDisplayText = (pendingIntention: ChatIntention, t: TFunction): string =>
+  t(COACH_INTENTIONS[pendingIntention].bannerLabelKey);
 
 const getConversationContextBackgroundColor = (
   conversationContext: string,
@@ -429,13 +406,14 @@ const renderDay = (props: any, t: TFunction, theme: Theme) => {
 const renderSend = (
   props: SendProps<ExtendedIMessage>,
   theme: Theme,
-  failedMessageText: string | null,
+  composerSeedText: string | null,
   hasAttachedImage: boolean,
   isSending: boolean
 ) => {
   const styles = getStyles(theme);
-  // When we restored failed text, GiftedChat's state may not have it yet; pass it so Send button is visible
-  const effectiveText = (failedMessageText ?? props.text ?? '').trim();
+  // The seed (restored failed text, or a caller's prefill) may not be in GiftedChat's state yet;
+  // pass it so the Send button is enabled without the user typing a character first.
+  const effectiveText = (composerSeedText ?? props.text ?? '').trim();
   // Disable send button when: no text/image OR currently sending
   const isDisabled = (!effectiveText && !hasAttachedImage) || isSending;
 
@@ -474,13 +452,18 @@ type ComposerPropsWithText = ComposerProps & {
   onTextChanged?: (text: string) => void;
 };
 
-/** Wrapper so we can run an effect to sync restored (failed) message text into GiftedChat's state when user taps Send without typing. */
-function ComposerWithRestoredText({
+/**
+ * Wrapper that seeds GiftedChat's composer with text the user did not type. Two sources share this
+ * path: the restored text of a send that failed, and a prefill from whoever opened the coach
+ * (a note's "Track this"). Either way the seed is synced into GiftedChat's internal state so Send
+ * works without a keystroke, and it is cleared the moment the user edits.
+ */
+function SeededComposer({
   props,
   t,
   theme,
-  failedMessageText,
-  clearFailedMessageText,
+  seedText,
+  clearSeedText,
   onAttachFile,
   isImageAttachmentEnabled,
   resetKey,
@@ -488,8 +471,8 @@ function ComposerWithRestoredText({
   props: ComposerProps;
   t: TFunction;
   theme: Theme;
-  failedMessageText: string | null;
-  clearFailedMessageText: () => void;
+  seedText: string | null;
+  clearSeedText: () => void;
   onAttachFile: () => void;
   isImageAttachmentEnabled: boolean;
   resetKey: number;
@@ -497,19 +480,19 @@ function ComposerWithRestoredText({
   const styles = getStyles(theme);
   const propsWithText = props as ComposerPropsWithText;
 
-  // When we have restored text, sync it into GiftedChat's internal state so Send uses it
+  // Sync the seed into GiftedChat's internal state so Send uses it
   useEffect(() => {
-    if (failedMessageText != null && propsWithText.onTextChanged) {
-      propsWithText.onTextChanged(failedMessageText);
+    if (seedText != null && propsWithText.onTextChanged) {
+      propsWithText.onTextChanged(seedText);
     }
-    // Intentionally not including props to run only when failedMessageText is set
+    // Intentionally not including props to run only when seedText is set
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [failedMessageText]);
+  }, [seedText]);
 
-  const text = failedMessageText !== null ? failedMessageText : propsWithText.text;
+  const text = seedText !== null ? seedText : propsWithText.text;
   const onTextChanged = (newText: string) => {
-    if (failedMessageText !== null) {
-      clearFailedMessageText();
+    if (seedText !== null) {
+      clearSeedText();
     }
     propsWithText.onTextChanged?.(newText);
   };
@@ -546,18 +529,18 @@ const renderComposer = (
   props: ComposerProps,
   t: TFunction,
   theme: Theme,
-  failedMessageText: string | null,
-  clearFailedMessageText: () => void,
+  seedText: string | null,
+  clearSeedText: () => void,
   onAttachFile: () => void,
   isImageAttachmentEnabled: boolean,
   resetKey: number
 ) => (
-  <ComposerWithRestoredText
+  <SeededComposer
     props={props}
     t={t}
     theme={theme}
-    failedMessageText={failedMessageText}
-    clearFailedMessageText={clearFailedMessageText}
+    seedText={seedText}
+    clearSeedText={clearSeedText}
     onAttachFile={onAttachFile}
     isImageAttachmentEnabled={isImageAttachmentEnabled}
     resetKey={resetKey}
@@ -567,7 +550,7 @@ const renderComposer = (
 const renderInputToolbar = (
   props: InputToolbarProps<ExtendedIMessage>,
   theme: Theme,
-  pendingIntention: string | null,
+  pendingIntention: ChatIntention | null,
   onClearIntention: () => void,
   attachedImage: { uri: string } | null,
   onRemoveImage: () => void,
@@ -658,7 +641,7 @@ export function CoachModal({
   const {
     messages,
     pendingCoachMessage,
-    pendingIntention: hookPendingIntention,
+    pendingIntention,
     isSending,
     isLoadingMore,
     hasMore,
@@ -673,17 +656,15 @@ export function CoachModal({
     ephemeralErrorAsMessage,
     isCreditsError,
     markMealAsTracked,
+    setIntention,
     clearIntention,
-    setPendingIntention: setHookPendingIntention,
     showConfetti,
-  } = useChatMessages(conversationContext);
+  } = useChatMessages(conversationContext, initialIntention);
 
   const { clearUnreadCount } = useUnreadChat();
   const { showSnackbar } = useSnackbar();
   const { shareText } = useNativeShareText();
   const [isOnline, setIsOnline] = useState(false);
-  const pendingIntention = hookPendingIntention;
-  const setPendingIntention = setHookPendingIntention;
   const [prefillText, setPrefillText] = useState<null | string>(initialComposerText ?? null);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
   const [isMusclesModalVisible, setIsMusclesModalVisible] = useState(false);
@@ -796,15 +777,11 @@ export function CoachModal({
     [sendMessage, attachedImage]
   );
 
-  // Arm and disarm are separate primitives on purpose: the chips want the toggle, while an
-  // externally requested intention (a note's "Track this") wants a plain arm — folding the two
-  // into one toggling handler is what previously forced callers to copy the arming block.
-  const armIntention = useCallback(
-    async (intention: ChatIntention) => {
+  /** Shows the intention's prompt as a parked coach message above the composer. */
+  const parkIntentionPrompt = useCallback(
+    (intention: ChatIntention) => {
       const { idPrefix, promptKey } = COACH_INTENTIONS[intention];
 
-      await AsyncStorage.setItem(CHAT_INTENTION_KEY, intention);
-      setPendingIntention(intention);
       addPendingCoachMessage({
         _id: `${idPrefix}-${Date.now()}`,
         text: t(promptKey),
@@ -812,7 +789,20 @@ export function CoachModal({
         user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
       });
     },
-    [addPendingCoachMessage, setPendingIntention, t]
+    [addPendingCoachMessage, t]
+  );
+
+  // Arm and disarm are separate primitives on purpose: the chips want the toggle, while an
+  // externally requested intention (a note's "Track this") wants a plain arm — folding the two
+  // into one toggling handler is what previously forced callers to copy the arming block.
+  // Persistence is `useChatMessages`' job (`setIntention`/`clearIntention`); this only adds the
+  // chat-visible half.
+  const armIntention = useCallback(
+    async (intention: ChatIntention) => {
+      await setIntention(intention);
+      parkIntentionPrompt(intention);
+    },
+    [setIntention, parkIntentionPrompt]
   );
 
   const disarmIntention = useCallback(async () => {
@@ -826,15 +816,16 @@ export function CoachModal({
     [armIntention, disarmIntention, pendingIntention]
   );
 
-  // Arm the requested intention once, on mount. CoachContext only renders CoachModal while the
-  // coach is open, so mount === open and no visible-transition tracking is needed.
+  // `useChatMessages` arms `initialIntention` itself as it loads (it owns CHAT_INTENTION_KEY, and
+  // a second writer here would race its read), so a caller-requested intention arrives as state
+  // rather than through `armIntention`. Only its prompt is left to park — pure UI, no storage, so
+  // there is no ordering to get wrong. `initialIntention` is a fixed prop and `parkIntentionPrompt`
+  // is stable, so this runs exactly once per open.
   useEffect(() => {
     if (initialIntention) {
-      void armIntention(initialIntention);
+      parkIntentionPrompt(initialIntention);
     }
-    // Mount-only: re-running would re-arm an intention the user may have just cleared.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [initialIntention, parkIntentionPrompt]);
 
   // The composer seed and the hook's failed-send restore share one render path.
   const composerSeedText = failedMessageText ?? prefillText;
@@ -1156,7 +1147,7 @@ export function CoachModal({
         className="px-4 py-3"
         contentContainerStyle={{ gap: theme.spacing.gap.sm }}
       >
-        {COACH_INTENTION_CHIP_ORDER.map((intention) => {
+        {CHAT_INTENTIONS.map((intention) => {
           const { icon: Icon, iconColor, labelKey } = COACH_INTENTIONS[intention];
           const isArmed = pendingIntention === intention;
 

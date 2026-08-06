@@ -45,7 +45,7 @@ export function BarcodeCameraModal({
   const [barcodeTextSearchValue, setBarcodeTextSearchValue] = useState('');
 
   const barcode = useBarcodeScanner({ visible, onBarcodeScanned, onClose });
-  const { isSearchingBarcodeRef, captureWithLiveScanSuppressed } = barcode;
+  const { isSearchingBarcodeRef } = barcode;
 
   useEffect(() => {
     if (!visible) {
@@ -81,16 +81,13 @@ export function BarcodeCameraModal({
     setFlashEnabled((prev) => !prev);
   }, []);
 
-  const { takePicture, pickFromGallery } = useCameraCaptureFlow({
+  // Gallery picks only: this modal scans the live preview, so the shell renders no shutter (it
+  // gets no `onShutterPress`) and `takePicture` would have nothing to fire it.
+  const { pickFromGallery } = useCameraCaptureFlow({
     cameraRef,
     quality: BARCODE_PHOTO_QUALITY,
     process: barcode.processBarcodeImage,
   });
-
-  const handleShutterPress = useCallback(
-    () => captureWithLiveScanSuppressed(takePicture),
-    [captureWithLiveScanSuppressed, takePicture]
-  );
 
   const handleBarcodeTextSearchSubmit = useCallback(() => {
     const value = barcodeTextSearchValue.trim();
@@ -158,7 +155,6 @@ export function BarcodeCameraModal({
         flashEnabled={flashEnabled}
         onFlashToggle={handleFlashToggle}
         onGalleryPress={pickFromGallery}
-        onShutterPress={handleShutterPress}
         bottomRightControl={bottomRightControl}
         showModePicker={false}
       >

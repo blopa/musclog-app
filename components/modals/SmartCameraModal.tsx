@@ -174,7 +174,7 @@ export default function SmartCameraModal({
   const shouldShowBarcodeTextSearch = showBarcodeTextSearch && cameraMode === 'barcode-scan';
 
   const barcode = useBarcodeScanner({ visible, onBarcodeScanned, onClose });
-  const { isSearchingBarcodeRef, captureWithLiveScanSuppressed } = barcode;
+  const { isSearchingBarcodeRef } = barcode;
 
   const isFoodDetailsModalVisible = barcode.detectedBarcode !== null || productFromAiLabel !== null;
 
@@ -426,10 +426,11 @@ export default function SmartCameraModal({
     cameraRef,
     quality: isBarcodeScanning ? BARCODE_PHOTO_QUALITY : AI_PHOTO_QUALITY,
     process: isBarcodeScanning ? barcode.processBarcodeImage : processAiPhoto,
-    // AI modes (meal photo, label scan) let the user trim the shutter photo before it's analyzed;
-    // barcode shutter captures stay uncropped since the barcode just needs to be in frame.
-    cropOnShutter: !isBarcodeScanning,
   });
+
+  // Barcode mode reads the live preview, so it offers no shutter at all; omitting the handler is
+  // what hides the button (see SmartCameraShell's `onShutterPress`).
+  const shutterPress = isBarcodeScanning ? undefined : takePicture;
 
   const handleClose = useCallback(() => {
     isSearchingBarcodeRef.current = false;
@@ -542,16 +543,6 @@ export default function SmartCameraModal({
     setCameraMode('barcode-scan');
   }, []);
 
-  // Barcode mode needs the live scanner suppressed for the capture's duration (see
-  // captureWithLiveScanSuppressed); the AI modes have no live scanner, so they capture directly.
-  const handleShutterPress = useCallback(async () => {
-    if (isBarcodeScanning) {
-      await captureWithLiveScanSuppressed(takePicture);
-    } else {
-      await takePicture();
-    }
-  }, [isBarcodeScanning, captureWithLiveScanSuppressed, takePicture]);
-
   const handleSearchFoodPress = useCallback(() => {
     if (onOpenFoodSearch) {
       onOpenFoodSearch(selectedMealType);
@@ -655,7 +646,7 @@ export default function SmartCameraModal({
         flashEnabled={flashEnabled}
         onFlashToggle={handleFlashToggle}
         onGalleryPress={pickFromGallery}
-        onShutterPress={handleShutterPress}
+        onShutterPress={shutterPress}
         bottomRightControl={bottomRightControl}
         showModePicker={!hideCameraModePicker}
         isAiEnabled={isAiEnabled}
