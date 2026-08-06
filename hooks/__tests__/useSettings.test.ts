@@ -2,25 +2,34 @@
  * @jest-environment jsdom
  */
 
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor } from '@testing-library/react';
+import { createElement, type ReactNode } from 'react';
 
+import { UNITS_SETTING_TYPE } from '@/constants/settings';
+import { SettingsProvider } from '@/context/SettingsContext';
 import { useSettings } from '@/hooks/useSettings';
 
-type FakeSetting = { id: string; value: string };
-let subscribeNext: (val: FakeSetting[]) => void;
+type FakeSetting = { id: string; type: string; updatedAt: number; value: string };
+
 let unsubscribeFn: jest.Mock;
 
 const createMockObservable = (initialEmit: FakeSetting[]) => ({
-  subscribe: (handlers: { next: (v: FakeSetting[]) => void; error?: (e: unknown) => void }) => {
-    subscribeNext = handlers.next;
+  subscribe: (handlers: { error?: (e: unknown) => void; next: (v: FakeSetting[]) => void }) => {
     handlers.next(initialEmit);
     unsubscribeFn = jest.fn();
     return { unsubscribe: unsubscribeFn };
   },
 });
 
+const unitsSetting = (value: string): FakeSetting => ({
+  id: '1',
+  type: UNITS_SETTING_TYPE,
+  updatedAt: 1,
+  value,
+});
+
 const mockQuery = {
-  observe: jest.fn(),
+  observeWithColumns: jest.fn(),
 };
 
 const mockCollection = {
@@ -33,14 +42,36 @@ jest.mock('../../database/database-instance', () => ({
   },
 }));
 
+jest.mock('../../database/dbReady', () => ({
+  waitForDbReady: jest.fn(() => Promise.resolve()),
+}));
+
+// jsdom trips the static-export guard (`Platform.OS === 'web'` + a jsdom user agent),
+// which would make the provider skip the subscription entirely.
+jest.mock('../../constants/platform', () => ({
+  isStaticExport: false,
+}));
+
+// The provider decrypts the AI keys once settings load; not what these tests are about.
+jest.mock('../../database/services/SettingsService', () => ({
+  SettingsService: {
+    getGoogleGeminiApiKey: jest.fn().mockResolvedValue(''),
+    getLocalLlmApiKey: jest.fn().mockResolvedValue(''),
+    getOpenAiApiKey: jest.fn().mockResolvedValue(''),
+  },
+}));
+
+const wrapper = ({ children }: { children: ReactNode }) =>
+  createElement(SettingsProvider, null, children);
+
 describe('useSettings', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockQuery.observe.mockReturnValue(createMockObservable([]));
+    mockQuery.observeWithColumns.mockReturnValue(createMockObservable([]));
   });
 
   it('returns metric and isLoading false after first emit when no settings', async () => {
-    const { result } = renderHook(() => useSettings());
+    const { result } = renderHook(() => useSettings(), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -51,26 +82,22 @@ describe('useSettings', () => {
   });
 
   it('returns imperial when settings emit value 1', async () => {
-    mockQuery.observe.mockReturnValue(
-      createMockObservable([{ id: '1', value: '1' } as FakeSetting])
-    );
+    mockQuery.observeWithColumns.mockReturnValue(createMockObservable([unitsSetting('1')]));
 
-    const { result } = renderHook(() => useSettings());
+    const { result } = renderHook(() => useSettings(), { wrapper });
 
     await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
+      expect(result.current.units).toBe('imperial');
     });
-    expect(result.current.units).toBe('imperial');
+    expect(result.current.isLoading).toBe(false);
     expect(result.current.weightUnit).toBe('lbs');
     expect(result.current.heightUnit).toBe('in');
   });
 
   it('returns metric when settings emit value 0', async () => {
-    mockQuery.observe.mockReturnValue(
-      createMockObservable([{ id: '1', value: '0' } as FakeSetting])
-    );
+    mockQuery.observeWithColumns.mockReturnValue(createMockObservable([unitsSetting('0')]));
 
-    const { result } = renderHook(() => useSettings());
+    const { result } = renderHook(() => useSettings(), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -79,7 +106,7 @@ describe('useSettings', () => {
   });
 
   it('unsubscribes on unmount', async () => {
-    const { unmount } = renderHook(() => useSettings());
+    const { unmount } = renderHook(() => useSettings(), { wrapper });
 
     await waitFor(() => {
       expect(unsubscribeFn).toBeDefined();
@@ -90,28 +117,19 @@ describe('useSettings', () => {
   });
 
   it('handles error by defaulting to metric and isLoading false', async () => {
-    let errorHandler: (e: unknown) => void;
-    const mockObs = {
-      subscribe: (handlers: { next: (v: FakeSetting[]) => void; error?: (e: unknown) => void }) => {
-        subscribeNext = handlers.next;
-        errorHandler = handlers.error!;
-        // Emit error synchronously
-        setTimeout(() => errorHandler(new Error('db error')), 0);
+    mockQuery.observeWithColumns.mockReturnValue({
+      subscribe: (handlers: { error?: (e: unknown) => void; next: (v: FakeSetting[]) => void }) => {
+        setTimeout(() => handlers.error!(new Error('db error')), 0);
         unsubscribeFn = jest.fn();
         return { unsubscribe: unsubscribeFn };
       },
-    };
-    mockQuery.observe.mockReturnValue(mockObs);
-
-    const { result } = renderHook(() => useSettings());
-
-    await act(async () => {
-      await new Promise((r) => setTimeout(r, 10));
     });
+
+    const { result } = renderHook(() => useSettings(), { wrapper });
 
     await waitFor(() => {
-      expect(result.current.units).toBe('metric');
       expect(result.current.isLoading).toBe(false);
     });
+    expect(result.current.units).toBe('metric');
   });
 });

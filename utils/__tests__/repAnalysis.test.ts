@@ -1,16 +1,40 @@
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 
 import type { MotionSample } from '@/utils/repAnalysis';
 import { analyzeRecordedReps, reconcileRepCounts } from '@/utils/repAnalysis';
 
+const RAW_DATA_DIR = join(__dirname, '../../training-data/raw-data');
+
+// The recordings are gitignored (`training-data/.gitignore`: `raw-data/*`), so they only
+// exist on a machine that has downloaded them. They also live in dated subdirectories
+// rather than flat in `raw-data/`, so resolve a name across the known locations.
+const RAW_DATA_SUBDIRS = ['', 'old_new', 'old'];
+
+function resolveRepsJson(fileName: string): null | string {
+  for (const subdir of RAW_DATA_SUBDIRS) {
+    const candidate = join(RAW_DATA_DIR, subdir, fileName);
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+  }
+  return null;
+}
+
 function loadRepsJson(fileName: string = 'slow_reps.json'): MotionSample[] {
-  const filePath = join(__dirname, `../../training-data/raw-data/${fileName}`);
+  const filePath = resolveRepsJson(fileName);
+  if (!filePath) {
+    throw new Error(`Missing rep recording ${fileName} under ${RAW_DATA_DIR}`);
+  }
   const raw = JSON.parse(readFileSync(filePath, 'utf-8')) as { samples: MotionSample[] };
   return raw.samples;
 }
 
-describe('analyzeRecordedReps', () => {
+// Without the recordings this suite has nothing to assert against, so skip rather than
+// fail on a fresh checkout. Run `npm run download-training-data` to fetch them.
+const describeWithRecordings = resolveRepsJson('slow_reps.json') ? describe : describe.skip;
+
+describeWithRecordings('analyzeRecordedReps', () => {
   it('counts 3 reps in slow_reps.json', () => {
     const samples = loadRepsJson();
     const result = analyzeRecordedReps(samples);

@@ -15,14 +15,20 @@ jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock')
 );
 
-jest.mock('expo-localization', () => ({
-  getLocales: () => [{ languageTag: 'en-US', languageCode: 'en', regionCode: 'US' }],
-  getCalendars: () => [
-    {
-      calendar: 'gregorian',
-      timeZone: 'America/New_York',
-      uses24HourClock: false,
-      firstDayOfWeek: 1,
-    },
-  ],
+// `database/adapter.ts` constructs a real native SQLiteAdapter at module scope, which
+// needs JSI and cannot exist under Jest. Because `database/database-instance.ts` imports
+// it, that would take down every suite whose module graph reaches the database — even
+// suites that mock the database itself. `new Database()` only requires a truthy adapter,
+// so a stub is enough. Suites that exercise the adapter mock it themselves.
+// It keeps the real schema/migrations because WatermelonDB's `Database` constructor
+// validates every model class against the adapter's schema.
+jest.mock('@/database/adapter', () => ({
+  __esModule: true,
+  default: {
+    migrations: jest.requireActual('@/database/migrations').migrations,
+    schema: jest.requireActual('@/database/schema').schema,
+  },
 }));
+
+// `expo-localization` is stubbed by the manual mock in `__mocks__/`, which Jest applies
+// automatically to both the node and jsdom projects.

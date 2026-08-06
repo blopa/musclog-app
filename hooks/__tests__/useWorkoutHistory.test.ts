@@ -156,7 +156,12 @@ jest.mock('../../utils/workoutHistory', () => ({
 }));
 
 jest.mock('react-i18next', () => ({
+  // `lang/lang.ts` loads for real further down the graph and calls
+  // `i18n.use(initReactI18next)`, which throws on an undefined module.
+  initReactI18next: jest.requireActual('react-i18next').initReactI18next,
   useTranslation: () => ({
+    // `useDateFnsLocale` reads `i18n.language` off the same hook result.
+    i18n: { language: 'en-US' },
     t: (key: string) => {
       const translations: Record<string, string> = {
         'common.today': 'Today',

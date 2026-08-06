@@ -12,6 +12,8 @@ import {
 jest.mock('@/database/services', () => ({
   SettingsService: {
     getDisableMinimumCalories: jest.fn(() => Promise.resolve(false)),
+    // Defaults to false, matching SettingsService's own default.
+    getUseBfForCalculations: jest.fn(() => Promise.resolve(false)),
   },
   UserService: {
     getCurrentUser: jest.fn(),

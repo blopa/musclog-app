@@ -1,11 +1,13 @@
 import { database } from '@/database/database-instance';
 import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
 import { WorkoutService } from '@/database/services/WorkoutService';
+import { getActiveWorkoutLogId } from '@/utils/activeWorkoutStorage';
 
 import {
   createMockExercise,
   createMockSchedule,
   createMockWorkoutLog,
+  createMockWorkoutLogExercise,
   createMockWorkoutLogSet,
   createMockWorkoutTemplate,
 } from './helpers';
@@ -26,7 +28,13 @@ jest.mock('@nozbe/watermelondb', () => ({
   },
 }));
 
-jest.mock('../../index', () => {
+// Modules further down the graph still reach the database through the `database/index`
+// barrel; loading it for real would evaluate every WatermelonDB model against the `Q`-only
+// mock above (`class X extends Model` with `Model` undefined), so point it at the same
+// mocked instance.
+jest.mock('../../index', () => require('../../database-instance'));
+
+jest.mock('../../database-instance', () => {
   const mockQuery = {
     fetch: jest.fn().mockResolvedValue([]),
     extend: jest.fn().mockReturnThis(),
@@ -61,12 +69,78 @@ jest.mock('../WorkoutAnalytics', () => ({
   },
 }));
 
+// The active workout is tracked by id in AsyncStorage, not by querying for an
+// uncompleted `workout_logs` row.
+jest.mock('@/utils/activeWorkoutStorage', () => ({
+  clearActiveWorkoutLogId: jest.fn().mockResolvedValue(undefined),
+  getActiveWorkoutLogId: jest.fn().mockResolvedValue(null),
+  setActiveWorkoutLogId: jest.fn().mockResolvedValue(undefined),
+}));
+
+// `completeWorkout` does a best-effort calorie estimate and Health Connect sync after the
+// workout is closed. Neither is under test here, so stub the collaborators they reach for.
+jest.mock('../UserMetricService', () => ({
+  UserMetricService: {
+    getLatest: jest.fn().mockResolvedValue(null),
+    getUserBodyWeightKgForVolume: jest.fn().mockResolvedValue(0),
+  },
+}));
+
+jest.mock('../UserService', () => ({
+  UserService: {
+    getCurrentUser: jest.fn().mockResolvedValue(null),
+  },
+}));
+
 const mockDatabase = database as jest.Mocked<typeof database>;
 const mockWorkoutAnalytics = WorkoutAnalytics as jest.Mocked<typeof WorkoutAnalytics>;
+const mockGetActiveWorkoutLogId = getActiveWorkoutLogId as jest.MockedFunction<
+  typeof getActiveWorkoutLogId
+>;
+
+/**
+ * A collection stub that always answers both `find` and `query`. The service makes
+ * incidental lookups around the call under test (calorie estimate, health sync); those
+ * are caught and ignored by the service, but only if the collection responds at all.
+ */
+const collection = (overrides: { fetch?: jest.Mock; find?: jest.Mock } = {}) => ({
+  create: jest.fn().mockResolvedValue({}),
+  find: overrides.find ?? jest.fn().mockResolvedValue(null),
+  prepareCreate: jest.fn().mockReturnValue({}),
+  query: jest.fn().mockReturnValue({
+    extend: jest.fn().mockReturnThis(),
+    fetch: overrides.fetch ?? jest.fn().mockResolvedValue([]),
+  }),
+});
+
+/**
+ * Points `database.get(table)` at per-table rows. Reads that walk several tables in a
+ * fixed order (`getWorkoutWithDetails`: log -> log exercises -> sets -> exercises) are
+ * far easier to follow this way than as a chain of `mockReturnValueOnce`s. A table may
+ * also be given an explicit collection override instead of a row list.
+ */
+function installTables(tables: Record<string, any[] | { find?: jest.Mock }>) {
+  mockDatabase.get.mockImplementation((table: string) => {
+    const entry = tables[table];
+    if (!entry) {
+      return collection() as any;
+    }
+    if (Array.isArray(entry)) {
+      return collection({ fetch: jest.fn().mockResolvedValue(entry) }) as any;
+    }
+    return collection(entry) as any;
+  });
+}
 
 describe('WorkoutService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // `clearAllMocks` does not drain a `mockReturnValueOnce` queue, so a test that queues
+    // more collections than the service consumes would leak into the next one.
+    mockDatabase.get.mockReset();
+    mockGetActiveWorkoutLogId.mockReset();
+    mockGetActiveWorkoutLogId.mockResolvedValue(null);
+    mockDatabase.get.mockReturnValue(collection() as any);
   });
 
   describe('startWorkoutFromTemplate', () => {
@@ -77,18 +151,9 @@ describe('WorkoutService', () => {
         startWorkout: jest.fn().mockResolvedValue(createMockWorkoutLog()),
       });
 
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get
-        .mockReturnValueOnce({
-          find: jest.fn().mockResolvedValue(mockTemplate),
-        } as any)
-        .mockReturnValueOnce({
-          query: jest.fn().mockReturnValue(mockQuery),
-        } as any);
+      mockDatabase.get.mockReturnValue(
+        collection({ find: jest.fn().mockResolvedValue(mockTemplate) }) as any
+      );
 
       const result = await WorkoutService.startWorkoutFromTemplate('template-1');
 
@@ -103,9 +168,9 @@ describe('WorkoutService', () => {
         deletedAt: Date.now(),
       });
 
-      mockDatabase.get.mockReturnValue({
-        find: jest.fn().mockResolvedValue(mockTemplate),
-      } as any);
+      mockDatabase.get.mockReturnValue(
+        collection({ find: jest.fn().mockResolvedValue(mockTemplate) }) as any
+      );
 
       await expect(WorkoutService.startWorkoutFromTemplate('template-1')).rejects.toThrow(
         'Cannot start workout from a deleted template'
@@ -119,21 +184,22 @@ describe('WorkoutService', () => {
       });
 
       const activeWorkout = createMockWorkoutLog({
+        id: 'workout-active',
         completedAt: null,
+        deletedAt: null,
       });
 
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([activeWorkout]),
-        extend: jest.fn().mockReturnThis(),
-      };
+      // A stored id whose workout is still open is what blocks a new workout.
+      mockGetActiveWorkoutLogId.mockResolvedValue('workout-active');
 
-      mockDatabase.get
-        .mockReturnValueOnce({
-          find: jest.fn().mockResolvedValue(mockTemplate),
-        } as any)
-        .mockReturnValueOnce({
-          query: jest.fn().mockReturnValue(mockQuery),
-        } as any);
+      mockDatabase.get.mockImplementation(
+        (table: string) =>
+          collection({
+            find: jest
+              .fn()
+              .mockResolvedValue(table === 'workout_templates' ? mockTemplate : activeWorkout),
+          }) as any
+      );
 
       await expect(WorkoutService.startWorkoutFromTemplate('template-1')).rejects.toThrow(
         'There is already an active workout. Please complete it first.'
@@ -157,18 +223,9 @@ describe('WorkoutService', () => {
         startWorkout: jest.fn().mockRejectedValue(new Error('Database error')),
       });
 
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get
-        .mockReturnValueOnce({
-          find: jest.fn().mockResolvedValue(mockTemplate),
-        } as any)
-        .mockReturnValueOnce({
-          query: jest.fn().mockReturnValue(mockQuery),
-        } as any);
+      mockDatabase.get.mockReturnValue(
+        collection({ find: jest.fn().mockResolvedValue(mockTemplate) }) as any
+      );
 
       await expect(WorkoutService.startWorkoutFromTemplate('template-1')).rejects.toThrow(
         'Failed to start workout: Database error'
@@ -182,18 +239,9 @@ describe('WorkoutService', () => {
         startWorkout: jest.fn().mockRejectedValue('String error'),
       });
 
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get
-        .mockReturnValueOnce({
-          find: jest.fn().mockResolvedValue(mockTemplate),
-        } as any)
-        .mockReturnValueOnce({
-          query: jest.fn().mockReturnValue(mockQuery),
-        } as any);
+      mockDatabase.get.mockReturnValue(
+        collection({ find: jest.fn().mockResolvedValue(mockTemplate) }) as any
+      );
 
       await expect(WorkoutService.startWorkoutFromTemplate('template-1')).rejects.toThrow(
         'Failed to start workout: Unknown error'
@@ -201,33 +249,27 @@ describe('WorkoutService', () => {
     });
 
     it('should handle non-Error type exceptions from find', async () => {
-      mockDatabase.get.mockReturnValue({
-        find: jest.fn().mockRejectedValue('String error from find'),
-      } as any);
+      mockDatabase.get.mockReturnValue(
+        collection({ find: jest.fn().mockRejectedValue('String error from find') }) as any
+      );
 
       await expect(WorkoutService.startWorkoutFromTemplate('template-1')).rejects.toThrow(
         'Failed to start workout: Unknown error'
       );
     });
 
-    it('should handle non-Error type exceptions from getActiveWorkout', async () => {
+    it('should handle non-Error type exceptions from the active-workout lookup', async () => {
       const mockTemplate = createMockWorkoutTemplate({
         id: 'template-1',
         deletedAt: null,
+        startWorkout: jest.fn().mockResolvedValue(createMockWorkoutLog()),
       });
 
-      const mockQuery = {
-        fetch: jest.fn().mockRejectedValue('String error from getActiveWorkout'),
-        extend: jest.fn().mockReturnThis(),
-      };
+      mockGetActiveWorkoutLogId.mockRejectedValue('String error from getActiveWorkoutLogId');
 
-      mockDatabase.get
-        .mockReturnValueOnce({
-          find: jest.fn().mockResolvedValue(mockTemplate),
-        } as any)
-        .mockReturnValueOnce({
-          query: jest.fn().mockReturnValue(mockQuery),
-        } as any);
+      mockDatabase.get.mockReturnValue(
+        collection({ find: jest.fn().mockResolvedValue(mockTemplate) }) as any
+      );
 
       await expect(WorkoutService.startWorkoutFromTemplate('template-1')).rejects.toThrow(
         'Failed to start workout: Unknown error'
@@ -238,18 +280,15 @@ describe('WorkoutService', () => {
   describe('getActiveWorkout', () => {
     it('should return active workout when exists', async () => {
       const activeWorkout = createMockWorkoutLog({
+        id: 'workout-1',
         completedAt: null,
         deletedAt: null,
       });
 
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([activeWorkout]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
+      mockGetActiveWorkoutLogId.mockResolvedValue('workout-1');
+      mockDatabase.get.mockReturnValue(
+        collection({ find: jest.fn().mockResolvedValue(activeWorkout) }) as any
+      );
 
       const result = await WorkoutService.getActiveWorkout();
 
@@ -258,56 +297,49 @@ describe('WorkoutService', () => {
     });
 
     it('should return null when no active workout', async () => {
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
+      mockGetActiveWorkoutLogId.mockResolvedValue(null);
 
       const result = await WorkoutService.getActiveWorkout();
 
       expect(result).toBeNull();
     });
 
-    it('should return most recent if multiple active', async () => {
-      const olderWorkout = createMockWorkoutLog({
-        id: 'workout-1',
-        completedAt: null,
-        startedAt: Date.now() - 1000,
-      });
-
-      const newerWorkout = createMockWorkoutLog({
+    it('should return the stored workout even when other workouts are still open', async () => {
+      // The active workout is identified by the id in storage, so an unrelated
+      // uncompleted log must not be picked up.
+      const storedWorkout = createMockWorkoutLog({
         id: 'workout-2',
         completedAt: null,
         startedAt: Date.now(),
       });
 
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([newerWorkout, olderWorkout]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
+      mockGetActiveWorkoutLogId.mockResolvedValue('workout-2');
+      mockDatabase.get.mockReturnValue(
+        collection({
+          find: jest.fn(async (id: string) => {
+            if (id !== 'workout-2') {
+              throw new Error(`Unexpected lookup for ${id}`);
+            }
+            return storedWorkout;
+          }),
+        }) as any
+      );
 
       const result = await WorkoutService.getActiveWorkout();
 
-      expect(result).toBe(newerWorkout);
+      expect(result).toBe(storedWorkout);
     });
 
     it('should filter out completed and deleted workouts', async () => {
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
+      const completedWorkout = createMockWorkoutLog({
+        id: 'workout-1',
+        completedAt: Date.now(),
+      });
 
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
+      mockGetActiveWorkoutLogId.mockResolvedValue('workout-1');
+      mockDatabase.get.mockReturnValue(
+        collection({ find: jest.fn().mockResolvedValue(completedWorkout) }) as any
+      );
 
       const result = await WorkoutService.getActiveWorkout();
 
@@ -529,9 +561,11 @@ describe('WorkoutService', () => {
         },
       ];
 
-      mockDatabase.get.mockReturnValue({
-        find: jest.fn().mockResolvedValueOnce(workoutLog).mockResolvedValueOnce(completedWorkout),
-      } as any);
+      mockDatabase.get.mockReturnValue(
+        collection({
+          find: jest.fn().mockResolvedValueOnce(workoutLog).mockResolvedValueOnce(completedWorkout),
+        }) as any
+      );
 
       mockWorkoutAnalytics.detectPersonalRecords.mockResolvedValue(personalRecords as any);
 
@@ -549,9 +583,9 @@ describe('WorkoutService', () => {
         completedAt: Date.now(),
       });
 
-      mockDatabase.get.mockReturnValue({
-        find: jest.fn().mockResolvedValue(workoutLog),
-      } as any);
+      mockDatabase.get.mockReturnValue(
+        collection({ find: jest.fn().mockResolvedValue(workoutLog) }) as any
+      );
 
       await expect(WorkoutService.completeWorkout('workout-1')).rejects.toThrow(
         'Workout is already completed'
@@ -559,9 +593,9 @@ describe('WorkoutService', () => {
     });
 
     it('should handle workout not found error', async () => {
-      mockDatabase.get.mockReturnValue({
-        find: jest.fn().mockRejectedValue(new Error('Workout not found')),
-      } as any);
+      mockDatabase.get.mockReturnValue(
+        collection({ find: jest.fn().mockRejectedValue(new Error('Workout not found')) }) as any
+      );
 
       await expect(WorkoutService.completeWorkout('workout-1')).rejects.toThrow(
         'Failed to complete workout'
@@ -569,9 +603,9 @@ describe('WorkoutService', () => {
     });
 
     it('should handle non-Error type exceptions', async () => {
-      mockDatabase.get.mockReturnValue({
-        find: jest.fn().mockRejectedValue('String error'),
-      } as any);
+      mockDatabase.get.mockReturnValue(
+        collection({ find: jest.fn().mockRejectedValue('String error') }) as any
+      );
 
       await expect(WorkoutService.completeWorkout('workout-1')).rejects.toThrow(
         'Failed to complete workout: Unknown error'
@@ -585,9 +619,9 @@ describe('WorkoutService', () => {
         completeWorkout: jest.fn().mockRejectedValue('String error from completeWorkout'),
       });
 
-      mockDatabase.get.mockReturnValue({
-        find: jest.fn().mockResolvedValue(workoutLog),
-      } as any);
+      mockDatabase.get.mockReturnValue(
+        collection({ find: jest.fn().mockResolvedValue(workoutLog) }) as any
+      );
 
       await expect(WorkoutService.completeWorkout('workout-1')).rejects.toThrow(
         'Failed to complete workout: Unknown error'
@@ -606,9 +640,11 @@ describe('WorkoutService', () => {
         completedAt: Date.now(),
       });
 
-      mockDatabase.get.mockReturnValue({
-        find: jest.fn().mockResolvedValueOnce(workoutLog).mockResolvedValueOnce(completedWorkout),
-      } as any);
+      mockDatabase.get.mockReturnValue(
+        collection({
+          find: jest.fn().mockResolvedValueOnce(workoutLog).mockResolvedValueOnce(completedWorkout),
+        }) as any
+      );
 
       mockWorkoutAnalytics.detectPersonalRecords.mockRejectedValue(
         'String error from detectPersonalRecords'
@@ -812,42 +848,39 @@ describe('WorkoutService', () => {
         deletedAt: null,
       });
 
+      const logExercise1 = createMockWorkoutLogExercise({ id: 'le-1', exerciseId: 'ex-1' });
+      const logExercise2 = createMockWorkoutLogExercise({ id: 'le-2', exerciseId: 'ex-2' });
+
       const set1 = createMockWorkoutLogSet({
-        exerciseId: 'ex-1',
+        id: 'set-1',
+        logExerciseId: 'le-1',
         setOrder: 1,
       });
 
       const set2 = createMockWorkoutLogSet({
-        exerciseId: 'ex-2',
+        id: 'set-2',
+        logExerciseId: 'le-2',
         setOrder: 2,
       });
 
       const exercise1 = createMockExercise({ id: 'ex-1' });
       const exercise2 = createMockExercise({ id: 'ex-2' });
 
-      const mockQuery = {
-        fetch: jest
-          .fn()
-          .mockResolvedValueOnce([set1, set2])
-          .mockResolvedValueOnce([exercise1, exercise2]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get
-        .mockReturnValueOnce({
-          find: jest.fn().mockResolvedValue(workoutLog),
-        } as any)
-        .mockReturnValueOnce({
-          query: jest.fn().mockReturnValue(mockQuery),
-        } as any)
-        .mockReturnValueOnce({
-          query: jest.fn().mockReturnValue(mockQuery),
-        } as any);
+      installTables({
+        exercises: [exercise1, exercise2],
+        workout_log_exercises: [logExercise1, logExercise2],
+        workout_log_sets: [set1, set2],
+        workout_logs: { find: jest.fn().mockResolvedValue(workoutLog) },
+      });
 
       const result = await WorkoutService.getWorkoutWithDetails('workout-1');
 
       expect(result.workoutLog).toBe(workoutLog);
-      expect(result.sets).toEqual([set1, set2]);
+      // Sets come back enriched with the exercise their log-exercise points at.
+      expect(result.sets.map((s) => [s.id, s.exerciseId])).toEqual([
+        ['set-1', 'ex-1'],
+        ['set-2', 'ex-2'],
+      ]);
       expect(result.exercises).toEqual([exercise1, exercise2]);
     });
 
@@ -857,28 +890,19 @@ describe('WorkoutService', () => {
         deletedAt: null,
       });
 
-      const set1 = createMockWorkoutLogSet({ setOrder: 1 });
-      const set2 = createMockWorkoutLogSet({ setOrder: 2 });
+      const logExercise = createMockWorkoutLogExercise({ id: 'le-1', exerciseId: 'ex-1' });
+      const set1 = createMockWorkoutLogSet({ id: 'set-1', logExerciseId: 'le-1', setOrder: 1 });
+      const set2 = createMockWorkoutLogSet({ id: 'set-2', logExerciseId: 'le-1', setOrder: 2 });
 
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([set1, set2]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get
-        .mockReturnValueOnce({
-          find: jest.fn().mockResolvedValue(workoutLog),
-        } as any)
-        .mockReturnValueOnce({
-          query: jest.fn().mockReturnValue(mockQuery),
-        } as any)
-        .mockReturnValueOnce({
-          query: jest.fn().mockReturnValue({ fetch: jest.fn().mockResolvedValue([]) }),
-        } as any);
+      installTables({
+        workout_log_exercises: [logExercise],
+        workout_log_sets: [set1, set2],
+        workout_logs: { find: jest.fn().mockResolvedValue(workoutLog) },
+      });
 
       const result = await WorkoutService.getWorkoutWithDetails('workout-1');
 
-      expect(result.sets).toEqual([set1, set2]);
+      expect(result.sets.map((s) => s.setOrder)).toEqual([1, 2]);
     });
 
     it('should get unique exercises for sets', async () => {
@@ -887,31 +911,24 @@ describe('WorkoutService', () => {
         deletedAt: null,
       });
 
-      const set1 = createMockWorkoutLogSet({ exerciseId: 'ex-1' });
-      const set2 = createMockWorkoutLogSet({ exerciseId: 'ex-1' });
-      const set3 = createMockWorkoutLogSet({ exerciseId: 'ex-2' });
+      // Two log exercises point at ex-1 and one at ex-2, so the exercise lookup must dedupe.
+      const logExercise1 = createMockWorkoutLogExercise({ id: 'le-1', exerciseId: 'ex-1' });
+      const logExercise2 = createMockWorkoutLogExercise({ id: 'le-2', exerciseId: 'ex-1' });
+      const logExercise3 = createMockWorkoutLogExercise({ id: 'le-3', exerciseId: 'ex-2' });
+
+      const set1 = createMockWorkoutLogSet({ id: 'set-1', logExerciseId: 'le-1' });
+      const set2 = createMockWorkoutLogSet({ id: 'set-2', logExerciseId: 'le-2' });
+      const set3 = createMockWorkoutLogSet({ id: 'set-3', logExerciseId: 'le-3' });
 
       const exercise1 = createMockExercise({ id: 'ex-1' });
       const exercise2 = createMockExercise({ id: 'ex-2' });
 
-      const mockQuery = {
-        fetch: jest
-          .fn()
-          .mockResolvedValueOnce([set1, set2, set3])
-          .mockResolvedValueOnce([exercise1, exercise2]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get
-        .mockReturnValueOnce({
-          find: jest.fn().mockResolvedValue(workoutLog),
-        } as any)
-        .mockReturnValueOnce({
-          query: jest.fn().mockReturnValue(mockQuery),
-        } as any)
-        .mockReturnValueOnce({
-          query: jest.fn().mockReturnValue(mockQuery),
-        } as any);
+      installTables({
+        exercises: [exercise1, exercise2],
+        workout_log_exercises: [logExercise1, logExercise2, logExercise3],
+        workout_log_sets: [set1, set2, set3],
+        workout_logs: { find: jest.fn().mockResolvedValue(workoutLog) },
+      });
 
       const result = await WorkoutService.getWorkoutWithDetails('workout-1');
 

@@ -13,7 +13,10 @@ import * as workoutUtils from '@/utils/workout';
 import { ExerciseMetadata } from '@/utils/workout';
 
 // Mock dependencies
+// Only `Alert` is stubbed: the rest of the module has to stay real because NativeWind's
+// JSX runtime (pulled in through ConfettiInteractionsContext) reads `Appearance` at import.
 jest.mock('react-native', () => ({
+  ...jest.requireActual('react-native'),
   Alert: {
     alert: jest.fn(),
   },

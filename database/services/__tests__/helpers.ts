@@ -96,6 +96,8 @@ export function createMockNutritionGoal(overrides: Partial<any> = {}) {
     createdAt: Date.now(),
     updatedAt: Date.now(),
     deletedAt: null,
+    // `saveGoals` regenerates periodic check-ins, which soft-deletes the stale ones.
+    markAsDeleted: jest.fn().mockResolvedValue(undefined),
     update: jest.fn((callback) => {
       callback({ updatedAt: Date.now() });
       return Promise.resolve();
@@ -126,10 +128,6 @@ export function createMockExercise(overrides: Partial<any> = {}) {
  * Creates a mock WorkoutLog model
  */
 export function createMockWorkoutLog(overrides: Partial<any> = {}) {
-  const mockLogSetsQuery = {
-    fetch: jest.fn().mockResolvedValue([]),
-  };
-
   return {
     id: 'workout-1',
     templateId: 'template-1',
@@ -143,7 +141,8 @@ export function createMockWorkoutLog(overrides: Partial<any> = {}) {
     createdAt: Date.now(),
     updatedAt: Date.now(),
     deletedAt: null,
-    logSets: mockLogSetsQuery,
+    // Sets hang off `workout_log_exercises`, not off the log directly.
+    logExercises: { fetch: jest.fn().mockResolvedValue([]) },
     completeWorkout: jest.fn().mockResolvedValue(undefined),
     update: jest.fn((callback) => {
       callback({ updatedAt: Date.now() });
@@ -154,17 +153,58 @@ export function createMockWorkoutLog(overrides: Partial<any> = {}) {
 }
 
 /**
+ * Creates a mock WorkoutLogExercise model — the join between a workout log and an
+ * exercise that every set now belongs to.
+ */
+export function createMockWorkoutLogExercise(overrides: Partial<any> = {}) {
+  const fields = {
+    id: 'log-exercise-1',
+    workoutLogId: 'workout-1',
+    exerciseId: 'exercise-1',
+    exerciseOrder: 1,
+    groupId: undefined,
+    notes: undefined,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    deletedAt: null,
+    ...overrides,
+  };
+
+  return {
+    ...fields,
+    _raw: {
+      id: fields.id,
+      workout_log_id: fields.workoutLogId,
+      exercise_id: fields.exerciseId,
+      exercise_order: fields.exerciseOrder,
+      group_id: fields.groupId,
+      notes: fields.notes,
+      created_at: fields.createdAt,
+      updated_at: fields.updatedAt,
+      deleted_at: fields.deletedAt,
+    },
+    update: jest.fn((callback) => {
+      callback({ updatedAt: Date.now() });
+      return Promise.resolve();
+    }),
+  };
+}
+
+/**
  * Creates a mock WorkoutLogSet model
  */
 export function createMockWorkoutLogSet(overrides: Partial<any> = {}) {
-  return {
+  const fields = {
     id: 'set-1',
+    logExerciseId: 'log-exercise-1',
     workoutLogId: 'workout-1',
     exerciseId: 'exercise-1',
     reps: 10,
     weight: 100,
     partials: 0,
     restTimeAfter: 60,
+    repsInReserve: 0,
+    isSkipped: false,
     difficultyLevel: 5,
     setType: 'normal',
     groupId: undefined,
@@ -172,11 +212,33 @@ export function createMockWorkoutLogSet(overrides: Partial<any> = {}) {
     createdAt: Date.now(),
     updatedAt: Date.now(),
     deletedAt: null,
+    ...overrides,
+  };
+
+  return {
+    ...fields,
+    // Services read set values straight out of `_raw` (WatermelonDB's underlying row)
+    // rather than through the model getters, so the mock has to carry the columns too.
+    _raw: {
+      id: fields.id,
+      log_exercise_id: fields.logExerciseId,
+      reps: fields.reps,
+      weight: fields.weight,
+      partials: fields.partials,
+      rest_time_after: fields.restTimeAfter,
+      reps_in_reserve: fields.repsInReserve,
+      is_skipped: fields.isSkipped,
+      difficulty_level: fields.difficultyLevel,
+      set_type: fields.setType,
+      set_order: fields.setOrder,
+      created_at: fields.createdAt,
+      updated_at: fields.updatedAt,
+      deleted_at: fields.deletedAt,
+    },
     update: jest.fn((callback) => {
       callback({ updatedAt: Date.now() });
       return Promise.resolve();
     }),
-    ...overrides,
   };
 }
 
@@ -184,10 +246,6 @@ export function createMockWorkoutLogSet(overrides: Partial<any> = {}) {
  * Creates a mock WorkoutTemplate model
  */
 export function createMockWorkoutTemplate(overrides: Partial<any> = {}) {
-  const mockTemplateSetsQuery = {
-    fetch: jest.fn().mockResolvedValue([]),
-  };
-
   return {
     id: 'template-1',
     name: 'Test Template',
@@ -195,7 +253,9 @@ export function createMockWorkoutTemplate(overrides: Partial<any> = {}) {
     createdAt: Date.now(),
     updatedAt: Date.now(),
     deletedAt: null,
-    templateSets: mockTemplateSetsQuery,
+    // Template sets hang off `workout_template_exercises`, not off the template directly.
+    templateExercises: { fetch: jest.fn().mockResolvedValue([]) },
+    schedules: { fetch: jest.fn().mockResolvedValue([]) },
     startWorkout: jest.fn().mockResolvedValue(createMockWorkoutLog()),
     update: jest.fn((callback) => {
       callback({ updatedAt: Date.now() });
