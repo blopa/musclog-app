@@ -177,15 +177,19 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
-jest.mock('../../theme', () => ({
-  theme: {
+// `useTheme()` picks between `darkTheme` and `lightTheme`, so both have to exist —
+// otherwise it returns undefined and every workout fails to process.
+jest.mock('../../theme', () => {
+  const mockTheme = {
     colors: {
       background: {
         imageLight: '#d4b5a0',
       },
     },
-  },
-}));
+  };
+
+  return { darkTheme: mockTheme, lightTheme: mockTheme, theme: mockTheme };
+});
 
 jest.mock('../useSettings', () => ({
   useSettings: () => ({

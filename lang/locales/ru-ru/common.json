@@ -22,6 +22,8 @@
     "oneWeekAgo": "1 неделю назад",
     "weeksAgo": "{{count}} недель назад",
     "monthsAgo": "{{count}} месяцев назад",
+    "monthsAgo_one": "{{count}} месяц назад",
+    "monthsAgo_other": "{{count}} месяцев назад",
     "oneMonthFromNow": "Через 1 месяц",
     "monthsFromNow": "Через {{count}} месяцев",
     "seeAll": "Смотреть все",

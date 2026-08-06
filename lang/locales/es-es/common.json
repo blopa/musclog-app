@@ -22,6 +22,8 @@
     "oneWeekAgo": "Hace 1 semana",
     "weeksAgo": "Hace {{count}} semanas",
     "monthsAgo": "Hace {{count}} meses",
+    "monthsAgo_one": "Hace {{count}} mes",
+    "monthsAgo_other": "Hace {{count}} meses",
     "oneMonthFromNow": "En 1 mes",
     "monthsFromNow": "En {{count}} meses",
     "seeAll": "Ver todo",

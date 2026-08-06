@@ -87,19 +87,23 @@ export class WorkoutService {
       // Check if there's already an active workout in AsyncStorage
       const activeWorkoutLogId = await getActiveWorkoutLogId();
       if (activeWorkoutLogId) {
-        // Verify the workout still exists and is not completed
+        // Verify the workout still exists. Only the lookup is guarded: the
+        // "already active" check below must stay outside the try, or its own catch
+        // swallows the guard and silently starts a second workout.
+        let activeWorkout: null | WorkoutLog = null;
         try {
-          const activeWorkout = await database
-            .get<WorkoutLog>('workout_logs')
-            .find(activeWorkoutLogId);
+          activeWorkout = await database.get<WorkoutLog>('workout_logs').find(activeWorkoutLogId);
+        } catch {
+          // Workout doesn't exist, clear it from storage
+          await clearActiveWorkoutLogId();
+        }
+
+        if (activeWorkout) {
           if (!activeWorkout.deletedAt && !activeWorkout.completedAt) {
             throw new Error('There is already an active workout. Please complete it first.');
-          } else {
-            // Workout was completed or deleted, clear it from storage
-            await clearActiveWorkoutLogId();
           }
-        } catch (error) {
-          // Workout doesn't exist, clear it from storage
+
+          // Workout was completed or deleted, clear it from storage
           await clearActiveWorkoutLogId();
         }
       }
