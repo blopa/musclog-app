@@ -33,7 +33,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CameraProcessingIndicator } from '@/components/CameraProcessingIndicator';
 import { useTheme } from '@/hooks/useTheme';
-import { addOpacityToHex } from '@/theme';
+import { addOpacityToHex, type Theme } from '@/theme';
 
 import { FullScreenModal } from './FullScreenModal';
 import type { CameraMode } from './SmartCameraModal';
@@ -46,17 +46,31 @@ const SCAN_LINE_GLOW_FRAME_SHARE = 0.4;
 const SCAN_LINE_SWEEP_MS = 1800;
 
 /**
- * Fraction of the screen height the capture frame may occupy. Barcode scanning uses a short,
- * barcode-shaped frame; the AI modes keep a taller one that fits a plate or a nutrition label.
- * The AI caps leave room for the heading and hint — the frame does not shrink (RN defaults
- * `flexShrink` to 0), so a cap that is too generous pushes them off screen instead of squeezing.
+ * Size of the capture frame, which always spans the full content width — only the height differs
+ * per mode. Barcode scanning gets a short, wide band; the AI modes keep a taller portrait one that
+ * fits a plate or a nutrition label.
+ *
+ * The barcode height is set directly instead of through an `aspectRatio` + `maxHeight` pair,
+ * because clamping an aspect-ratio'd box makes Yoga re-derive a *narrower* width to preserve the
+ * ratio — that is what used to leave the barcode frame far narrower than the AI modes'. The AI cap
+ * never binds at portrait 4:5, and it leaves room for the heading and hint: the frame does not
+ * shrink (RN defaults `flexShrink` to 0), so a cap that is too generous pushes them off screen
+ * instead of squeezing.
  */
-const getFrameMaxHeightRatio = (cameraMode: CameraMode, isSmallScreen: boolean): number => {
+const getFrameSizeStyle = (
+  cameraMode: CameraMode,
+  isSmallScreen: boolean,
+  screenHeight: number,
+  theme: Theme
+): ViewStyle => {
   if (cameraMode === 'barcode-scan') {
-    return isSmallScreen ? 0.15 : 0.2;
+    return { height: screenHeight * (isSmallScreen ? 0.15 : 0.2) };
   }
 
-  return isSmallScreen ? 0.5 : 0.55;
+  return {
+    aspectRatio: theme.aspectRatio.portrait,
+    maxHeight: screenHeight * (isSmallScreen ? 0.5 : 0.55),
+  };
 };
 
 /** Heading above the frame plus the hint below it, one entry per capture mode. */
@@ -349,7 +363,7 @@ export function SmartCameraShell({
   const scrimOverscan = Math.max(screenHeight, screenWidth);
   const isBarcodeScan = cameraMode === 'barcode-scan';
   const modeCopy = CAMERA_MODE_COPY[cameraMode];
-  const cameraMaxHeight = screenHeight * getFrameMaxHeightRatio(cameraMode, isSmallScreen);
+  const frameSizeStyle = getFrameSizeStyle(cameraMode, isSmallScreen, screenHeight, theme);
   const [frameHeight, setFrameHeight] = useState(0);
 
   // One owner-provided async action (shutter capture or gallery pick) runs at a time: without
@@ -531,10 +545,7 @@ export function SmartCameraShell({
               className="relative w-full rounded-2xl"
               onLayout={(event) => setFrameHeight(event.nativeEvent.layout.height)}
               style={{
-                aspectRatio: isBarcodeScan
-                  ? theme.aspectRatio.landscape
-                  : theme.aspectRatio.portrait,
-                maxHeight: cameraMaxHeight,
+                ...frameSizeStyle,
                 borderWidth: theme.borderWidth.thin,
                 borderColor: theme.colors.background.white20,
                 overflow: 'visible',

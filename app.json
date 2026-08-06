@@ -2,7 +2,7 @@
   "expo": {
     "name": "Musclog - Lift, Log, Repeat",
     "slug": "logger",
-    "version": "2.10.4",
+    "version": "2.10.5",
     "scheme": "com.werules.logger",
     "userInterfaceStyle": "automatic",
     "platforms": ["ios", "android", "web"],
@@ -147,7 +147,7 @@
       "backgroundColor": "#091310",
       "supportsTablet": true,
       "bundleIdentifier": "com.werules.logger",
-      "buildNumber": "289",
+      "buildNumber": "290",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSPhotoLibraryUsageDescription": "Allow Musclog to access your photos to select food images and exercise demonstrations.",
@@ -159,7 +159,7 @@
     "android": {
       "softwareKeyboardLayoutMode": "resize",
       "package": "com.werules.logger",
-      "versionCode": 289,
+      "versionCode": 290,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0c1a13"
