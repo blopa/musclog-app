@@ -9,6 +9,7 @@ import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 import { type AddExerciseData, useWorkoutForm } from '@/hooks/useWorkoutForm';
+import { handleError } from '@/utils/handleError';
 import * as workoutUtils from '@/utils/workout';
 import { ExerciseMetadata } from '@/utils/workout';
 
@@ -30,6 +31,9 @@ jest.mock('expo-router', () => ({
 }));
 
 jest.mock('react-i18next', () => ({
+  // `lang/lang.ts` loads for real further down the graph and calls
+  // `i18n.use(initReactI18next)`, which throws on an undefined module.
+  initReactI18next: jest.requireActual('react-i18next').initReactI18next,
   useTranslation: () => ({
     t: (key: string, defaultValue?: string) => defaultValue || key,
   }),
@@ -58,9 +62,28 @@ jest.mock('../../database', () => ({
 jest.mock('../../database/services/WorkoutTemplateService', () => ({
   WorkoutTemplateService: {
     getTemplateWithDetails: jest.fn(),
-    convertSetsToExercises: jest.fn(),
+    convertTemplateExercisesToUI: jest.fn(),
     saveTemplate: jest.fn(),
   },
+}));
+
+// The hook reads three contexts. Stub them so it can be rendered without a provider tree.
+const mockShowSnackbar = jest.fn();
+jest.mock('../../context/SnackbarContext', () => ({
+  useSnackbar: () => ({ showSnackbar: mockShowSnackbar }),
+}));
+
+// Errors are reported through `handleError` (Sentry + snackbar) rather than `Alert.alert`.
+jest.mock('../../utils/handleError', () => ({
+  handleError: jest.fn().mockResolvedValue(undefined),
+}));
+
+jest.mock('../useConfettiTrigger', () => ({
+  useConfettiTrigger: () => ({ showConfetti: jest.fn(), triggerConfetti: jest.fn() }),
+}));
+
+jest.mock('../useSettings', () => ({
+  useSettings: () => ({ heightUnit: 'cm', isLoading: false, units: 'metric', weightUnit: 'kg' }),
 }));
 
 jest.mock('../../utils/workout', () => ({
@@ -79,6 +102,10 @@ const mockWorkoutTemplateService = WorkoutTemplateService as jest.Mocked<
 const mockDatabase = database as jest.Mocked<typeof database>;
 const mockWorkoutUtils = workoutUtils as jest.Mocked<typeof workoutUtils>;
 const mockAlert = Alert as jest.Mocked<typeof Alert>;
+const mockHandleError = handleError as jest.MockedFunction<typeof handleError>;
+
+/** The hook reports a successful save through this callback, not through the router. */
+const mockOnSaveSuccess = jest.fn();
 
 describe('hooks/useWorkoutForm', () => {
   const mockExercise: Partial<Exercise> = {
@@ -217,7 +244,11 @@ describe('hooks/useWorkoutForm', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(mockAlert.alert).toHaveBeenCalledWith('Error', 'Failed to load workout template');
+      expect(mockHandleError).toHaveBeenCalledWith(
+        error,
+        'useWorkoutForm.loadTemplate',
+        expect.objectContaining({ snackbarMessage: 'createWorkout.loadError' })
+      );
     });
 
     it('should not load template in create mode', () => {
@@ -354,13 +385,16 @@ describe('hooks/useWorkoutForm', () => {
 
       expect(mockDatabase.get).toHaveBeenCalledWith('exercises');
       expect(mockFind).toHaveBeenCalledWith('ex-1');
-      expect(mockWorkoutUtils.createExerciseOption).toHaveBeenCalledWith({
+      // `createExerciseOption(theme, params)` — the palette is passed separately, and the
+      // params now carry the unit system so the option's description can be localised.
+      expect(mockWorkoutUtils.createExerciseOption).toHaveBeenCalledWith(expect.any(Object), {
         exercise: mockExercise,
         sets: 3,
         reps: 10,
         weight: 60,
         isBodyweight: false,
         groupId: undefined,
+        units: 'metric',
       });
       expect(result.current.exercises).toHaveLength(1);
       expect(result.current.exerciseMetadata.has('ex-1')).toBe(true);
@@ -371,6 +405,10 @@ describe('hooks/useWorkoutForm', () => {
         weight: 60,
         isBodyweight: false,
         groupId: undefined,
+        // Defaulted when the caller does not supply them.
+        restTimeAfter: 60,
+        setType: 'normal',
+        notes: undefined,
       });
     });
 
@@ -394,7 +432,11 @@ describe('hooks/useWorkoutForm', () => {
         await result.current.handleAddExerciseWithMetadata(exerciseData);
       });
 
-      expect(mockAlert.alert).toHaveBeenCalledWith('Error', 'Failed to add exercise');
+      expect(mockHandleError).toHaveBeenCalledWith(
+        error,
+        'useWorkoutForm.addExercise',
+        expect.objectContaining({ snackbarMessage: 'createWorkout.addExerciseError' })
+      );
     });
   });
 
@@ -402,7 +444,7 @@ describe('hooks/useWorkoutForm', () => {
     it('should save workout template in create mode', async () => {
       mockWorkoutTemplateService.saveTemplate.mockResolvedValue(mockTemplate);
 
-      const { result } = renderHook(() => useWorkoutForm());
+      const { result } = renderHook(() => useWorkoutForm({ onSaveSuccess: mockOnSaveSuccess }));
 
       act(() => {
         result.current.setWorkoutTitle('New Workout');
@@ -425,7 +467,7 @@ describe('hooks/useWorkoutForm', () => {
         exercises: [],
         selectedDays: [],
       });
-      expect(mockRouterBack).toHaveBeenCalled();
+      expect(mockOnSaveSuccess).toHaveBeenCalled();
       expect(result.current.isSaving).toBe(false);
     });
 
@@ -445,9 +487,9 @@ describe('hooks/useWorkoutForm', () => {
         await result.current.handleSave();
       });
 
-      expect(mockAlert.alert).toHaveBeenCalledWith(
-        'Title Required',
-        'Please enter a workout title'
+      expect(mockShowSnackbar).toHaveBeenCalledWith(
+        'error',
+        'createWorkout.validation.titleRequiredMessage'
       );
       expect(mockWorkoutTemplateService.saveTemplate).not.toHaveBeenCalled();
     });
@@ -459,7 +501,7 @@ describe('hooks/useWorkoutForm', () => {
     it('should trim title and description', async () => {
       mockWorkoutTemplateService.saveTemplate.mockResolvedValue(mockTemplate);
 
-      const { result } = renderHook(() => useWorkoutForm());
+      const { result } = renderHook(() => useWorkoutForm({ onSaveSuccess: mockOnSaveSuccess }));
 
       act(() => {
         result.current.setWorkoutTitle('  Trimmed Title  ');
@@ -478,7 +520,7 @@ describe('hooks/useWorkoutForm', () => {
           weekDaysJson: undefined,
         })
       );
-      expect(mockRouterBack).toHaveBeenCalled();
+      expect(mockOnSaveSuccess).toHaveBeenCalled();
     });
 
     it('should convert empty trimmed description to undefined', async () => {
@@ -522,7 +564,11 @@ describe('hooks/useWorkoutForm', () => {
         await result.current.handleSave();
       });
 
-      expect(mockAlert.alert).toHaveBeenCalledWith('Error', 'Failed to save workout template');
+      expect(mockHandleError).toHaveBeenCalledWith(
+        error,
+        'useWorkoutForm.saveTemplate',
+        expect.objectContaining({ snackbarMessage: 'createWorkout.saveError' })
+      );
       expect(result.current.isSaving).toBe(false);
     });
 

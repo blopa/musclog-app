@@ -70,15 +70,17 @@ describe('useSettings', () => {
     mockQuery.observeWithColumns.mockReturnValue(createMockObservable([]));
   });
 
-  it('returns metric and isLoading false after first emit when no settings', async () => {
+  // With no stored units setting the provider falls back to `getDefaultUnits()`, which is
+  // locale-derived — and the shared `expo-localization` mock reports a US locale.
+  it('falls back to the locale default and isLoading false after first emit when no settings', async () => {
     const { result } = renderHook(() => useSettings(), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
-    expect(result.current.units).toBe('metric');
-    expect(result.current.weightUnit).toBe('kg');
-    expect(result.current.heightUnit).toBe('cm');
+    expect(result.current.units).toBe('imperial');
+    expect(result.current.weightUnit).toBe('lbs');
+    expect(result.current.heightUnit).toBe('in');
   });
 
   it('returns imperial when settings emit value 1', async () => {
@@ -86,10 +88,12 @@ describe('useSettings', () => {
 
     const { result } = renderHook(() => useSettings(), { wrapper });
 
+    // Gate on `isLoading` rather than on `units`: the pre-emit default is imperial too,
+    // so waiting on `units` alone would pass before the setting had been read at all.
     await waitFor(() => {
-      expect(result.current.units).toBe('imperial');
+      expect(result.current.isLoading).toBe(false);
     });
-    expect(result.current.isLoading).toBe(false);
+    expect(result.current.units).toBe('imperial');
     expect(result.current.weightUnit).toBe('lbs');
     expect(result.current.heightUnit).toBe('in');
   });
@@ -116,7 +120,7 @@ describe('useSettings', () => {
     expect(unsubscribeFn).toHaveBeenCalled();
   });
 
-  it('handles error by defaulting to metric and isLoading false', async () => {
+  it('handles error by falling back to the locale default and isLoading false', async () => {
     mockQuery.observeWithColumns.mockReturnValue({
       subscribe: (handlers: { error?: (e: unknown) => void; next: (v: FakeSetting[]) => void }) => {
         setTimeout(() => handlers.error!(new Error('db error')), 0);
@@ -130,6 +134,6 @@ describe('useSettings', () => {
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
-    expect(result.current.units).toBe('metric');
+    expect(result.current.units).toBe('imperial');
   });
 });

@@ -21,6 +21,9 @@ const createMockObservable = (initialEmit: FakeTemplate[]) => ({
 });
 
 const mockQuery = {
+  // Paginated mode narrows the change-watching query with `.extend(Q.take(1))` before
+  // observing it; a real WatermelonDB Query returns another Query from `extend`.
+  extend: jest.fn(() => mockQuery),
   observe: jest.fn(),
 };
 
@@ -230,10 +233,16 @@ describe('useWorkoutTemplates', () => {
         },
       ];
 
-      (WorkoutTemplateService.getTemplatesWithMetadataPaginated as jest.Mock)
-        .mockResolvedValueOnce(initialTemplates)
-        .mockResolvedValueOnce(moreTemplates) // Check for hasMore
-        .mockResolvedValueOnce(moreTemplates); // loadMore call
+      // Serve the paginated query from a fixed dataset rather than a fixed call order:
+      // the hook loads the initial batch both from `runInit` and from the observable's
+      // first emit, and each load also issues a "is there more?" probe.
+      const allTemplates = [...initialTemplates, ...moreTemplates];
+      (WorkoutTemplateService.getTemplatesWithMetadataPaginated as jest.Mock).mockImplementation(
+        async (limit?: number, offset?: number) => {
+          const from = offset ?? 0;
+          return limit === undefined ? allTemplates.slice(from) : allTemplates.slice(from, from + limit);
+        }
+      );
 
       mockQuery.observe.mockReturnValue(createMockObservable([{ id: '1', name: 'Push Day' }]));
 
@@ -296,7 +305,12 @@ describe('useWorkoutTemplates', () => {
 
       expect(result.current.templates).toEqual(allTemplates);
       expect(result.current.hasMore).toBe(false);
-      expect(WorkoutTemplateService.getTemplatesWithMetadataPaginated).toHaveBeenCalledWith();
+      // `getAll` means "no limit, no offset" — the scope is still passed through.
+      expect(WorkoutTemplateService.getTemplatesWithMetadataPaginated).toHaveBeenCalledWith(
+        undefined,
+        undefined,
+        'active'
+      );
     });
 
     it('handles error in paginated mode', async () => {
