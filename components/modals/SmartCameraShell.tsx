@@ -559,19 +559,10 @@ export function SmartCameraShell({
                 style={{ borderColor: theme.colors.accent.primary }}
               />
 
-              {/* Sweeping scan line while scanning a barcode, static center line otherwise */}
+              {/* Sweeping scan line, barcode mode only — the AI modes have no center line */}
               {isBarcodeScan ? (
                 <ScanLine active={!isActionRunning} frameHeight={frameHeight} />
-              ) : (
-                <View
-                  className="absolute left-0 right-0"
-                  style={{
-                    top: '50%',
-                    height: theme.borderWidth.thin,
-                    backgroundColor: theme.colors.accent.primary40,
-                  }}
-                />
-              )}
+              ) : null}
 
               {isActionRunning ? (
                 <View pointerEvents="none" className="absolute inset-0 items-center justify-center">
@@ -670,29 +661,33 @@ export function SmartCameraShell({
                 <Images size={theme.iconSize.lg} color={theme.colors.text.primary} />
               </Pressable>
 
-              {/* Shutter Button */}
-              <Pressable
-                onPress={() => runExclusive(onShutterPress)}
-                disabled={controlsLocked}
-                className="h-20 w-20 items-center justify-center rounded-full active:scale-95"
-                style={{
-                  borderWidth: theme.borderWidth.thick,
-                  borderColor: theme.colors.text.white,
-                  opacity: controlsLocked ? theme.colors.opacity.strong : 1,
-                }}
-              >
-                <View
-                  className="absolute inset-0 rounded-full"
+              {/* Shutter Button — hidden in barcode mode, which scans live with no manual capture */}
+              {isBarcodeScan ? (
+                <View className="h-20 w-20" />
+              ) : (
+                <Pressable
+                  onPress={() => runExclusive(onShutterPress)}
+                  disabled={controlsLocked}
+                  className="h-20 w-20 items-center justify-center rounded-full active:scale-95"
                   style={{
-                    borderWidth: theme.borderWidth.thin,
-                    borderColor: theme.colors.background.black20,
+                    borderWidth: theme.borderWidth.thick,
+                    borderColor: theme.colors.text.white,
+                    opacity: controlsLocked ? theme.colors.opacity.strong : 1,
                   }}
-                />
-                <View
-                  className="h-16 w-16 rounded-full bg-white"
-                  style={{ backgroundColor: theme.colors.text.white }}
-                />
-              </Pressable>
+                >
+                  <View
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                      borderWidth: theme.borderWidth.thin,
+                      borderColor: theme.colors.background.black20,
+                    }}
+                  />
+                  <View
+                    className="h-16 w-16 rounded-full bg-white"
+                    style={{ backgroundColor: theme.colors.text.white }}
+                  />
+                </Pressable>
+              )}
 
               {/* Bottom-right control slot */}
               {bottomRightControl ?? <View className="h-12 w-12" />}
