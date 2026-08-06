@@ -1,5 +1,4 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import type { TFunction } from 'i18next';
 import {
   FileText,
   Images,
@@ -48,28 +47,69 @@ const SCAN_LINE_SWEEP_MS = 1800;
 
 /**
  * Fraction of the screen height the capture frame may occupy. Barcode scanning uses a short,
- * barcode-shaped frame; the AI modes keep the taller frame that fits a plate or a nutrition label.
+ * barcode-shaped frame; the AI modes keep a taller one that fits a plate or a nutrition label.
+ * The AI caps leave room for the heading and hint — the frame does not shrink (RN defaults
+ * `flexShrink` to 0), so a cap that is too generous pushes them off screen instead of squeezing.
  */
 const getFrameMaxHeightRatio = (cameraMode: CameraMode, isSmallScreen: boolean): number => {
   if (cameraMode === 'barcode-scan') {
     return isSmallScreen ? 0.15 : 0.2;
   }
 
-  return isSmallScreen ? 0.48 : 0.6;
+  return isSmallScreen ? 0.4 : 0.46;
 };
 
-const getCameraInstructionText = (cameraMode: CameraMode, t: TFunction): string => {
-  switch (cameraMode) {
-    case 'ai-meal-photo':
-      return t('food.aiCamera.mealInstruction');
-    case 'ai-label-scan':
-      return t('food.aiCamera.labelInstruction');
-    case 'barcode-scan':
-      return t('food.aiCamera.barcodeAutoInstruction');
-    default:
-      return '';
-  }
+/** Heading above the frame plus the hint below it, one entry per capture mode. */
+const CAMERA_MODE_COPY: Record<
+  CameraMode,
+  { titleKey: string; subtitleKey: string; hintKey: string }
+> = {
+  'ai-label-scan': {
+    titleKey: 'food.aiCamera.labelTitle',
+    subtitleKey: 'food.aiCamera.labelInstruction',
+    hintKey: 'food.aiCamera.labelHint',
+  },
+  'ai-meal-photo': {
+    titleKey: 'food.aiCamera.mealTitle',
+    subtitleKey: 'food.aiCamera.mealInstruction',
+    hintKey: 'food.aiCamera.mealHint',
+  },
+  'barcode-scan': {
+    titleKey: 'food.aiCamera.barcodeTitle',
+    subtitleKey: 'food.aiCamera.barcodeAutoInstruction',
+    hintKey: 'food.aiCamera.barcodeHint',
+  },
 };
+
+/**
+ * Relative widths of the decorative barcode's bars. Fixed rather than random so the glyph is
+ * stable across renders; each bar flexes, so the pattern scales with the frame.
+ */
+const BARCODE_GLYPH_BARS = [
+  3, 1, 2, 1, 1, 4, 1, 2, 3, 1, 1, 2, 4, 1, 2, 1, 3, 1, 1, 2, 1, 4, 2, 1, 3, 1, 2, 2, 1, 1, 3, 1, 2,
+  4, 1, 1, 2, 3, 1, 2,
+];
+
+/** Faded barcode drawn inside the frame, showing the user what to line up. Purely decorative. */
+function BarcodeGlyph() {
+  const theme = useTheme();
+
+  return (
+    <View
+      pointerEvents="none"
+      className="absolute inset-0 flex-row items-stretch justify-center gap-[2px] px-4 py-10"
+      style={{ opacity: theme.colors.opacity.subtle }}
+    >
+      {BARCODE_GLYPH_BARS.map((barWidth, index) => (
+        <View
+          // Fixed decorative pattern — bars have no identity beyond their position.
+          key={index}
+          style={{ backgroundColor: theme.colors.text.white, flexGrow: barWidth, flexShrink: 1 }}
+        />
+      ))}
+    </View>
+  );
+}
 
 type FrameScrimProps = {
   /** How far past each frame edge the scrim reaches; must exceed the frame-to-screen-edge gap. */
@@ -304,6 +344,7 @@ export function SmartCameraShell({
   // The frame is roughly centered, so one screen's worth in every direction always reaches the edge.
   const scrimOverscan = Math.max(screenHeight, screenWidth);
   const isBarcodeScan = cameraMode === 'barcode-scan';
+  const modeCopy = CAMERA_MODE_COPY[cameraMode];
   const cameraMaxHeight = screenHeight * getFrameMaxHeightRatio(cameraMode, isSmallScreen);
   const [frameHeight, setFrameHeight] = useState(0);
 
@@ -463,6 +504,25 @@ export function SmartCameraShell({
 
           {/* Main Content - Camera Frame */}
           <View className="relative z-10 flex-1 items-center justify-center px-6">
+            {/* Heading. zIndex lifts it over the frame's scrim, which spills across the screen. */}
+            <View
+              className="items-center"
+              style={{ marginBottom: isSmallScreen ? 16 : 24, zIndex: 1 }}
+            >
+              <Text
+                className="text-center text-2xl font-bold drop-shadow-md"
+                style={{ color: theme.colors.text.white }}
+              >
+                {t(modeCopy.titleKey)}
+              </Text>
+              <Text
+                className="mt-2 text-center text-sm font-medium drop-shadow-md"
+                style={{ color: theme.colors.overlay.white70 }}
+              >
+                {t(modeCopy.subtitleKey)}
+              </Text>
+            </View>
+
             <View
               className="relative w-full rounded-2xl"
               onLayout={(event) => setFrameHeight(event.nativeEvent.layout.height)}
@@ -478,6 +538,8 @@ export function SmartCameraShell({
             >
               {/* Dims the feed outside the frame. First child so everything below paints over it. */}
               <FrameScrim overscan={scrimOverscan} />
+
+              {isBarcodeScan ? <BarcodeGlyph /> : null}
 
               {/* Corner Markers */}
               <View
@@ -522,13 +584,19 @@ export function SmartCameraShell({
               ) : null}
             </View>
 
-            {/* Instruction Text */}
-            <Text
-              className="text-center text-sm font-medium drop-shadow-md"
-              style={{ color: theme.colors.overlay.white90, marginTop: isSmallScreen ? 8 : 24 }}
+            {/* Hint. Same zIndex reason as the heading above. */}
+            <View
+              className="flex-row items-center justify-center gap-2"
+              style={{ marginTop: isSmallScreen ? 12 : 20, zIndex: 1 }}
             >
-              {getCameraInstructionText(cameraMode, t)}
-            </Text>
+              <Sparkles size={theme.iconSize.md} color={theme.colors.overlay.white70} />
+              <Text
+                className="text-center text-sm font-medium drop-shadow-md"
+                style={{ color: theme.colors.overlay.white70 }}
+              >
+                {t(modeCopy.hintKey)}
+              </Text>
+            </View>
           </View>
 
           {/* Bottom Controls */}

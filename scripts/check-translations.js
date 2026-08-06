@@ -25,7 +25,7 @@ const CONFIG = {
     /t\(['"`]([^'"`]+)['"`]\s*,/g, // t('key', options)
     /t\(`([^`]+)`\s*,/g, // t(`key`, options)
     // Keys passed via variables: titleKey: 'profile.stats.weight', descriptionKey: '...', etc.
-    /(?:titleKey|descriptionKey|labelKey|messageKey|promptKey)\s*:\s*['"]([^'"]+)['"]/g,
+    /(?:titleKey|subtitleKey|descriptionKey|labelKey|messageKey|promptKey|hintKey)\s*:\s*['"]([^'"]+)['"]/g,
     // Keys in ternary branches: condition ? 'profile.gender.male' : 'profile.gender.female'
     /\?\s*['"]([^'"]+\.[^'"]+)['"]\s*:/g,
     /:\s*['"]([^'"]+\.[^'"]+)['"]\s*[;),]/g,
