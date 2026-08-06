@@ -36,7 +36,7 @@ This document is a **technical runbook** for shipping the Musclog app on iOS. It
 | EAS                          | ✅ Ready      | `eas.json` exists with `development` / `preview` / `production` profiles                              |
 | Sentry                       | ✅ Ready      | `@sentry/react-native` + `metro.config.js` uses `getSentryExpoConfig`                                 |
 | Native modules with iOS code | ✅ Ready      | `rn-mlkit-ocr` ships an `ios/` tree with Expo config plugin                                           |
-| Android-only config plugins  | ⚠️ Verified   | `expo-health-connect` and `react-native-android-widget` are Android-scoped and won't block iOS builds |
+| Android-only config plugins  | ⚠️ Verified   | `react-native-health-connect` and `react-native-android-widget` are Android-scoped and won't block iOS builds |
 
 ### 1.2 Gaps to Address for iOS Release
 
@@ -241,7 +241,6 @@ npx expo install react-native-nitro-modules
       "./plugins/withAndroidBarcodeScannerFix",
       "expo-localization",
       "expo-router",
-      "expo-health-connect",
       [
         "expo-notifications",
         {

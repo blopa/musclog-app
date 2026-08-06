@@ -27,7 +27,6 @@
       "react-native-edge-to-edge",
       "expo-localization",
       "expo-router",
-      "expo-health-connect",
       [
         "expo-splash-screen",
         {

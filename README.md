@@ -151,7 +151,7 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 | Graphics       | @shopify/react-native-skia                                           |
 | AI             | Google Generative AI + OpenAI SDK                                    |
 | Camera / OCR   | react-native-vision-camera, Quagga2, ZXing, ML Kit OCR, Tesseract.js |
-| Health         | expo-health-connect / react-native-health-connect (Android)          |
+| Health         | react-native-health-connect (Android)                                |
 |                | @kingstinct/react-native-healthkit (iOS)                             |
 | Localization   | i18next + react-i18next                                              |
 | Animations     | React Native Reanimated 4                                            |
