@@ -426,6 +426,9 @@ export default function SmartCameraModal({
     cameraRef,
     quality: isBarcodeScanning ? BARCODE_PHOTO_QUALITY : AI_PHOTO_QUALITY,
     process: isBarcodeScanning ? barcode.processBarcodeImage : processAiPhoto,
+    // AI modes (meal photo, label scan) let the user trim the shutter photo before it's analyzed;
+    // barcode shutter captures stay uncropped since the barcode just needs to be in frame.
+    cropOnShutter: !isBarcodeScanning,
   });
 
   const handleClose = useCallback(() => {

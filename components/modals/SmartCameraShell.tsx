@@ -56,7 +56,7 @@ const getFrameMaxHeightRatio = (cameraMode: CameraMode, isSmallScreen: boolean):
     return isSmallScreen ? 0.15 : 0.2;
   }
 
-  return isSmallScreen ? 0.4 : 0.46;
+  return isSmallScreen ? 0.5 : 0.55;
 };
 
 /** Heading above the frame plus the hint below it, one entry per capture mode. */
