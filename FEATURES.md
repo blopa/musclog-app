@@ -51,6 +51,7 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 - Scale meal portions up or down while maintaining macro ratios
 - Log meals retroactively for past dates
 - Move, copy, combine, or group meal entries
+- Copy a whole previous day into the current one — pick a recent logged day, review its meals, untick anything you didn't repeat, and confirm (meal types, meal groups, and times of day are preserved)
 - Configurable carb convention (total carbs vs. net carbs, based on region/label type)
 - Intuitive eating mode (hides calorie and macro numbers)
 - Fasting days (opt-in): mark an empty day as an intentional fast so it counts as a real 0-calorie day in TDEE, averages, check-ins, and streaks — while unflagged empty days (forgotten logs) are skipped

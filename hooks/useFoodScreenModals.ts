@@ -24,6 +24,8 @@ export function useFoodScreenModals() {
   const [isDailySummaryMenuVisible, setIsDailySummaryMenuVisible] = useState(false);
   const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
   const [isEditCurrentGoalVisible, setIsEditCurrentGoalVisible] = useState(false);
+  const [isCopyDayModalVisible, setIsCopyDayModalVisible] = useState(false);
+  const [isCopyDayLoading, setIsCopyDayLoading] = useState(false);
 
   const openFoodSearch = useCallback((tab: FoodSearchTab = 'all') => {
     setFoodSearchInitialTab(tab);
@@ -43,6 +45,8 @@ export function useFoodScreenModals() {
   const closeGoalsManagement = useCallback(() => setIsGoalsManagementModalVisible(false), []);
   const openEditCurrentGoal = useCallback(() => setIsEditCurrentGoalVisible(true), []);
   const closeEditCurrentGoal = useCallback(() => setIsEditCurrentGoalVisible(false), []);
+  const openCopyDay = useCallback(() => setIsCopyDayModalVisible(true), []);
+  const closeCopyDay = useCallback(() => setIsCopyDayModalVisible(false), []);
   const openSavedForLater = useCallback(() => setIsSavedForLaterModalVisible(true), []);
   const closeSavedForLater = useCallback(() => setIsSavedForLaterModalVisible(false), []);
   const requestSaveForLater = useCallback((logs: NutritionLog[], mealType: MealType) => {
@@ -101,6 +105,13 @@ export function useFoodScreenModals() {
       visible: isEditCurrentGoalVisible,
       open: openEditCurrentGoal,
       close: closeEditCurrentGoal,
+    },
+    copyDay: {
+      visible: isCopyDayModalVisible,
+      open: openCopyDay,
+      close: closeCopyDay,
+      isLoading: isCopyDayLoading,
+      setLoading: setIsCopyDayLoading,
     },
     savedForLater: {
       hasItems: hasSavedForLaterItems,

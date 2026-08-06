@@ -11,7 +11,7 @@ rather than silently omitted.
 
 **Related docs — read these first, they are not repeated here:**
 
-- [docs/workout-feature-gap.md](docs/workout-feature-gap.md) — the workout *mechanics* backlog
+- [docs/workout-feature-gap.md](docs/workout-feature-gap.md) — the workout _mechanics_ backlog
   (plate calculator, warm-ups, myoreps, periodization, body map, readiness score, gym profiles…).
   Still accurate; this document adds the framing and presentation layer on top of it, and does not
   restate its items.
@@ -34,7 +34,7 @@ normalization, empirical TDEE with Forbes-curve body-composition partitioning, s
 So the opportunity is **not** to port their feature lists. It is to close two specific gaps:
 
 1. **Credibility of the energy-balance math** — not the model itself (ours is more sophisticated),
-   but its inputs, its stability, and whether the user can *see* it working.
+   but its inputs, its stability, and whether the user can _see_ it working.
 2. **Presentation** — most of what users praise in those apps is one glanceable, explained,
    non-punitive surface built on data we already compute and currently bury.
 
@@ -114,27 +114,43 @@ log.
 
 ---
 
-### 5. Copy day / repeat meal from history
+### 5. Copy day / repeat meal from history — ✅ shipped
 
-**Gap:** entries can be moved, copied, combined and grouped, but there is no day-level copy from a
-past date.
+**Gap (resolved):** entries could be moved, copied, combined and grouped, but every one of those
+actions _pushed_ a meal forward from the viewed day. There was no way to _pull_ a past day in.
 
-**What good looks like:** "I ate the same thing as Tuesday" is the highest-frequency intent in any
-food tracker. Three taps, done.
+**What shipped:** a source-day picker listing recent days that have logs (with kcal and item count),
+a preview of that day's meals grouped by meal type with per-item checkboxes, and an additive copy.
+Reachable from an inline prompt on any empty day and from the daily-summary menu.
+
+**Where it lives:** `NutritionService.copyNutritionLogsPreservingMealType` and
+`getRecentLoggedDays`; selection logic in [utils/copyDaySelection.ts](utils/copyDaySelection.ts);
+`components/modals/CopyDayFromHistoryModal.tsx` and `components/nutrition/CopyDayPromptCard.tsx`.
+
+Two invariants that are load-bearing and easy to break:
+
+- **`groupId` is preserved verbatim.** Nothing queries `nutrition_logs` by `group_id` globally and
+  nothing assumes per-day uniqueness — logging the same saved meal on two days already produces the
+  same id on both. Because `groupId` is sometimes a `meals.id`, minting fresh ids would break
+  `MealService.getMealImageUrl` and the meal name on the copied day.
+- **Each log keeps its own time-of-day.** `nutrition_logs.date` is a consumed datetime, so the copy
+  re-anchors through `wallClockDateInTimezone` per log rather than calling `consumedDateTimeOnDay`
+  once — otherwise a whole day collapses onto a single instant. `copyNutritionLogsToDate` (the
+  single-meal path) still stamps "now" and that is correct for its use.
 
 ---
 
 ## Nutrition — energy balance and goals
 
 - **Coaching modes: Coached / Collaborative / Manual.** The strongest UX idea in the
-  adaptive-nutrition app, and nearly free for us. *Coached* = the algorithm sets targets weekly and
-  the user just logs. *Collaborative* = the user picks a rate of change and the app computes macros.
-  *Manual* = the user types numbers. We already support multiple goals with switching; reframing
+  adaptive-nutrition app, and nearly free for us. _Coached_ = the algorithm sets targets weekly and
+  the user just logs. _Collaborative_ = the user picks a rate of change and the app computes macros.
+  _Manual_ = the user types numbers. We already support multiple goals with switching; reframing
   that as an explicit **mode** removes the "is this thing overriding me?" anxiety that kills trust
   in adaptive apps.
 - **Weekly automatic target updates with a narrated "here's why."** We already have check-ins and
   [utils/dynamicNutritionTarget.ts](utils/dynamicNutritionTarget.ts). The port is making the update
-  *scheduled and explained* — "expenditure rose ~90 kcal, so your target moved" — rather than
+  _scheduled and explained_ — "expenditure rose ~90 kcal, so your target moved" — rather than
   something the user must go looking for.
 - **Adherence-neutral framing, stated out loud.** Because expenditure is inferred from weight change
   against logged intake, under-logging degrades the estimate gracefully rather than breaking it.
@@ -161,8 +177,8 @@ The quietly decisive half. None of this is glamorous; all of it is felt daily.
 - **Multi-select from search** — tick four foods, add all at once, instead of four round trips.
 - **Serving editor with fraction shortcuts** (½, 1, 1½, 2) and visible gram-equivalence per unit.
 - **Let users correct bad database entries.** The adaptive-nutrition app built an entire curated
-  database because public food data is frequently wrong. We can't fund that — but we *own a barcode
-  database*. Letting a user fix an entry, having the correction stick locally, and optionally
+  database because public food data is frequently wrong. We can't fund that — but we _own a barcode
+  database_. Letting a user fix an entry, having the correction stick locally, and optionally
   feeding it upstream is a differentiator a closed database cannot match.
 
 ---
@@ -173,12 +189,12 @@ The quietly decisive half. None of this is glamorous; all of it is felt daily.
   `getExternalProductDisplayQuality` already normalizes Nutri-Score / Eco-Score / NOVA into
   `FoodDisplayQuality` ([utils/foodDisplayQuality.ts](utils/foodDisplayQuality.ts)), and
   `NutritionQualityData` renders it per food. Nothing rolls it up to a **day-level** figure weighted
-  by gram or kcal contribution. Doing so lets the diary answer *"did I eat well?"* and not only
-  *"did I hit my numbers?"* — which was the headline feature of the researched app's latest
+  by gram or kcal contribution. Doing so lets the diary answer _"did I eat well?"_ and not only
+  _"did I hit my numbers?"_ — which was the headline feature of the researched app's latest
   nutrition release.
 - **Weekly micronutrient coverage, not per-food.** `MicronutrientsExpandableSection` shows micros on
-  an individual food or meal. The valuable framing is the rollup: *"potassium under target 5 of the
-  last 7 days"* — and, critically, *"here are foods you already log that fix it."* The `micros_json`
+  an individual food or meal. The valuable framing is the rollup: _"potassium under target 5 of the
+  last 7 days"_ — and, critically, _"here are foods you already log that fix it."_ The `micros_json`
   data is already sitting there.
 - **Micronutrient targets, not just tracking.** We track 40+ micros with nothing to compare against.
   A static RDA table by age/sex turns a data dump into a percentage.
@@ -193,14 +209,14 @@ The mechanics backlog lives in [docs/workout-feature-gap.md](docs/workout-featur
 repeated. What this research adds is framing:
 
 - **Readiness should output a verdict, not a score.** The readiness item is already specced as a
-  0–100 composite. The most-cited complaint across every health app in this space is *opaque
-  scores*. Ship the **verdict** — "push hard / normal / back off" — with the two or three reasons
+  0–100 composite. The most-cited complaint across every health app in this space is _opaque
+  scores_. Ship the **verdict** — "push hard / normal / back off" — with the two or three reasons
   listed beneath it, and let the number be secondary or hidden. We have no readiness code yet, so
   this is a chance to get it right the first time rather than retrofit an explanation onto a number.
 - **Progressive-overload nudges at the point of entry.** We already have smart double progression,
   `getProgressiveOverloadData`, `getRecentFirstSetAverage1RM`, and previous-set display in
   [app/app/workout/workout-session.tsx:1315](app/app/workout/workout-session.tsx#L1315). What's
-  missing is the *nudge*: "you hit the top of the rep range twice — try +2.5 kg." The computation
+  missing is the _nudge_: "you hit the top of the rep range twice — try +2.5 kg." The computation
   exists; it just isn't in front of the user at the moment of decision.
 - **e1RM trend per exercise as a headline strength metric.** Calculated in
   [utils/workoutCalculator.ts](utils/workoutCalculator.ts) and used inside exercise goals, but never
@@ -219,14 +235,14 @@ This section matters more than any individual feature above.
   `HOME_SUMMARY_CARD_SETTING_TYPE` picks between daily-summary and weekly-streak. A third option
   combining fueling + training load fits the existing seam exactly.
 - **Explanations attached to metrics, not hidden in a chat.** We have
-  `ProgressService.calculateInsights` and an AI coach. Put the one-line insight *on the card*, with
+  `ProgressService.calculateInsights` and an AI coach. Put the one-line insight _on the card_, with
   "ask the coach" as the follow-up rather than the entry point. A chat you must open is a chat most
   users won't.
 - **One card anatomy everywhere:** chart → stat row → plain-language why → history. The "clean,
   intuitive, well-organized" praise these apps receive is mostly this consistency, not any
   individual screen.
 - **Explain every computed number.** The adaptive-nutrition app puts an ⓘ on everything, with a real
-  explanation behind it. We compute *more* sophisticated numbers than it does. Explaining them is
+  explanation behind it. We compute _more_ sophisticated numbers than it does. Explaining them is
   how that sophistication converts into trust instead of suspicion.
 - **Non-punitive framing throughout.** Reviewers specifically praise food logging that "skips the
   guilt-trip framing." Concretely: no red over-budget bars, neutral surplus/deficit wording, no
@@ -245,7 +261,7 @@ This section matters more than any individual feature above.
 Listed so the decision is explicit and doesn't get relitigated:
 
 - Biological age, health records, glucose, screen time, and general all-in-one health sprawl. That
-  breadth is *precisely why* reviewers call the researched apps' training and nutrition modules
+  breadth is _precisely why_ reviewers call the researched apps' training and nutrition modules
   thin. Workouts + nutrition + sleep-as-an-input is the stronger position.
 - A hard paywall on AI features. One researched app gates its intelligence layer behind a premium
   subscription and is criticized for it in nearly every review.
@@ -262,7 +278,7 @@ Ordered by value-per-effort, with dependencies respected.
 2. **Whole-series regression for empirical TDEE** — correctness improvement, not just a feature.
 3. **Expenditure hero screen** — turns our best hidden asset into the reason people stay.
 4. **Muscle-group body map** — data layer already exists; pure presentation work.
-5. **Copy day / repeat meal** — highest-frequency user intent still unserved.
+5. ~~**Copy day / repeat meal**~~ — ✅ shipped.
 6. **Quick add + last-used serving + personal search ranking** — the logging-speed cluster; ship together.
 7. **Daily nutrition quality score** — ~80% of the pipeline already exists.
 8. **Non-punitive copy pass** — cheap, cross-cutting, no schema changes.

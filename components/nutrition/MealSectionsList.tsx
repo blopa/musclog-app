@@ -7,16 +7,7 @@ import { MenuButton } from '@/components/theme/MenuButton';
 import type { MealType } from '@/database/models/NutritionLog';
 import { useTheme } from '@/hooks/useTheme';
 
-import type { MacroTotals, MealGroup, ResolvedLogEntry } from './foodTypes';
-
-/** Meal types in display order. `snack` uses the plural `snacks` translation key. */
-const MEAL_TYPES: { type: MealType; titleKey: string }[] = [
-  { type: 'breakfast', titleKey: 'food.meals.breakfast' },
-  { type: 'lunch', titleKey: 'food.meals.lunch' },
-  { type: 'dinner', titleKey: 'food.meals.dinner' },
-  { type: 'snack', titleKey: 'food.meals.snacks' },
-  { type: 'other', titleKey: 'food.meals.other' },
-];
+import { type MacroTotals, MEAL_TYPES, type MealGroup, type ResolvedLogEntry } from './foodTypes';
 
 type MealSectionsCallbacks = {
   onAddFood: (mealType: MealType) => void;

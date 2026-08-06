@@ -1,4 +1,4 @@
-import { Pencil, Scale } from 'lucide-react-native';
+import { CalendarPlus, Pencil, Scale } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
@@ -10,6 +10,7 @@ type DailySummaryBottomMenuProps = {
   onGoalsManagementPress: () => void;
   onEditCurrentGoalPress?: () => void;
   showEditCurrentGoal?: boolean;
+  onCopyDayFromHistoryPress?: () => void;
 };
 
 export function DailySummaryBottomMenu({
@@ -18,6 +19,7 @@ export function DailySummaryBottomMenu({
   onGoalsManagementPress,
   onEditCurrentGoalPress,
   showEditCurrentGoal = false,
+  onCopyDayFromHistoryPress,
 }: DailySummaryBottomMenuProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -32,6 +34,18 @@ export function DailySummaryBottomMenu({
             title: t('goalsManagement.manageGoalData.editGoal'),
             description: t('goalsManagement.manageGoalData.editGoalDesc'),
             onPress: onEditCurrentGoalPress,
+          },
+        ]
+      : []),
+    ...(onCopyDayFromHistoryPress
+      ? [
+          {
+            icon: CalendarPlus,
+            iconColor: theme.colors.status.purple,
+            iconBgColor: theme.colors.background.iconDarker,
+            title: t('food.actions.copyDayFromHistory'),
+            description: t('food.actions.copyDayFromHistoryDesc'),
+            onPress: onCopyDayFromHistoryPress,
           },
         ]
       : []),

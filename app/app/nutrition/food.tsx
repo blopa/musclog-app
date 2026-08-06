@@ -26,6 +26,7 @@ import { DateNavigator } from '@/components/DateNavigator';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AddFoodModal } from '@/components/modals/AddFoodModal';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
+import { CopyDayFromHistoryModal } from '@/components/modals/CopyDayFromHistoryModal';
 import CreateCustomFoodModal from '@/components/modals/CreateCustomFoodModal';
 import { CreateMealModal } from '@/components/modals/CreateMealModal';
 import { FoodMealDetailsModal } from '@/components/modals/FoodMealDetailsModal';
@@ -40,6 +41,7 @@ import { type NutritionGoals, NutritionGoalsModal } from '@/components/modals/Nu
 import { SavedForLaterModal } from '@/components/modals/SavedForLaterModal';
 import { SaveForLaterPortionModal } from '@/components/modals/SaveForLaterPortionModal';
 import { ScaleMealPortionModal } from '@/components/modals/ScaleMealPortionModal';
+import { CopyDayPromptCard } from '@/components/nutrition/CopyDayPromptCard';
 import { FastingDayCard } from '@/components/nutrition/FastingDayCard';
 import {
   type MealGroup,
@@ -567,6 +569,9 @@ export default function FoodScreen() {
   // Brand-new users stay on the global empty-diary onboarding card instead of the fasting-day
   // affordance; once there's any food history, empty selected days can offer fasting actions.
   const showTrackedDayContent = !hasNoFood;
+  // Same emptiness signal the fasting prompt uses (this day, not the whole diary). A day
+  // already flagged as a fast renders only FastingDayCard, so this never competes with it.
+  const showCopyDayPrompt = !isScreenLoading && showTrackedDayContent && logs.length === 0;
 
   // Meal Group menu action handlers
   const handleMealGroupScalePortion = () => {
@@ -1094,6 +1099,31 @@ export default function FoodScreen() {
     }
   };
 
+  const handleConfirmCopyDay = async (logIds: string[], sourceDate: Date) => {
+    screenModals.copyDay.setLoading(true);
+    await flushLoadingPaint();
+    try {
+      // Re-read the source day at confirm time so the write works off fresh records
+      // rather than the model instances the preview captured.
+      const sourceLogs = await NutritionService.getNutritionLogsForDate(sourceDate);
+      const selectedIds = new Set(logIds);
+      const logsToCopy = sourceLogs.filter((log) => selectedIds.has(log.id));
+      const count = await NutritionService.copyNutritionLogsPreservingMealType(
+        logsToCopy,
+        selectedDate
+      );
+      showSnackbar('success', t('food.actions.copyDaySuccess', { count }));
+      await refresh();
+    } catch (error) {
+      await handleError(error, 'food.copyDayFromHistory', {
+        snackbarMessage: t('food.actions.copyDayError'),
+        consoleMessage: 'Error copying day from history:',
+      });
+    } finally {
+      screenModals.copyDay.setLoading(false);
+    }
+  };
+
   const handleConfirmMealAction = async (
     targetDate: Date,
     targetMealType: MealType,
@@ -1530,6 +1560,11 @@ export default function FoodScreen() {
                     }
                   />
 
+                  {/* Copy-day prompt: an empty day is usually a repeat of a previous one */}
+                  {showCopyDayPrompt ? (
+                    <CopyDayPromptCard onPress={screenModals.copyDay.open} />
+                  ) : null}
+
                   {/* Fasting-day prompt: offer to mark an empty day as a fast */}
                   {showFastingMarkPrompt ? (
                     <FastingDayCard
@@ -1800,6 +1835,16 @@ export default function FoodScreen() {
         onEditCurrentGoalPress={screenModals.editCurrentGoal.open}
         onGoalsManagementPress={screenModals.goalsManagement.open}
         showEditCurrentGoal={currentNutritionGoal != null}
+        onCopyDayFromHistoryPress={screenModals.copyDay.open}
+      />
+
+      <CopyDayFromHistoryModal
+        visible={screenModals.copyDay.visible}
+        onClose={screenModals.copyDay.close}
+        targetDate={selectedDate}
+        targetDayItemCount={logs.length}
+        onConfirm={handleConfirmCopyDay}
+        isLoading={screenModals.copyDay.isLoading}
       />
 
       {/* Food Menu Modal */}

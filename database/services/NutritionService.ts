@@ -16,12 +16,15 @@ import { MealService } from '@/database/services/MealService';
 import i18n from '@/lang/lang';
 import { writeNutritionLogToHealthConnect } from '@/services/healthConnectNutrition';
 import {
+  combineLocalDateAndTime,
   consumedDateTimeFromDate,
   consumedDateTimeOnDay,
   dayKeyRange,
   dayKeyRangeForLocalDate,
   MS_PER_SOLAR_DAY,
   utcDayKeyFromLocalDate,
+  utcNormalizedDayKey,
+  wallClockDateInTimezone,
 } from '@/utils/calendarDate';
 import { aiIngredientMacrosPer100g, totalCarbsForFoodSource } from '@/utils/carbsConvention';
 import { handleError } from '@/utils/handleError';
@@ -718,6 +721,126 @@ export class NutritionService {
     });
 
     triggerWidgetUpdate();
+  }
+
+  /**
+   * Copy logs onto a target day while preserving each log's own meal type and
+   * time-of-day — the "repeat this whole day" case.
+   *
+   * Differs from {@link copyNutritionLogsToDate} in two ways, both because a whole
+   * day is being reproduced rather than one meal relocated:
+   * - `type` is taken per log instead of a single `targetMealType`, so breakfast
+   *   stays breakfast.
+   * - each copy is re-anchored to the wall-clock time its source was consumed at
+   *   (`nutrition_logs.date` is a consumed datetime, not a day key), instead of
+   *   collapsing the whole day onto a single "now" instant.
+   *
+   * Encrypted snapshot fields are copied as-is so nothing is re-encrypted, and
+   * `groupId` is preserved so grouped meals keep their name and image on the
+   * destination day. `externalId` is deliberately not copied — the copy is a new
+   * entry, not the same external record.
+   *
+   * Returns the number of logs created.
+   */
+  static async copyNutritionLogsPreservingMealType(
+    logs: NutritionLog[],
+    targetDate: Date
+  ): Promise<number> {
+    if (logs.length === 0) {
+      return 0;
+    }
+
+    await database.write(async () => {
+      const now = Date.now();
+      await database.batch(
+        ...logs.map((log) => {
+          // Re-anchor onto the target day at the time-of-day the source was consumed,
+          // reading it back through the source's own offset so a DST change or a trip
+          // between the two days can't shift the copy into a different hour.
+          const consumed = consumedDateTimeFromDate(
+            combineLocalDateAndTime(targetDate, wallClockDateInTimezone(log.date, log.timezone))
+          );
+
+          return database.get<NutritionLog>('nutrition_logs').prepareCreate((record) => {
+            record.foodId = log.foodId;
+            record.date = consumed.timestamp;
+            record.timezone = consumed.timezone;
+            record.type = log.type;
+            record.amount = log.amount;
+            record.portionId = log.portionId;
+            record.loggedFoodNameRaw = log.loggedFoodNameRaw;
+            record.loggedCaloriesRaw = log.loggedCaloriesRaw;
+            record.loggedProteinRaw = log.loggedProteinRaw;
+            record.loggedCarbsRaw = log.loggedCarbsRaw;
+            record.loggedFatRaw = log.loggedFatRaw;
+            record.loggedFiberRaw = log.loggedFiberRaw;
+            record.loggedMicrosRaw = log.loggedMicrosRaw;
+            record.loggedNutriscore = log.loggedNutriscore;
+            record.loggedEcoscore = log.loggedEcoscore;
+            record.loggedNovaGroup = log.loggedNovaGroup;
+            record.snapshotBasis = log.snapshotBasis;
+            record.groupId = log.groupId;
+            record.loggedMealName = log.loggedMealName;
+            record.createdAt = now;
+            record.updatedAt = now;
+          });
+        })
+      );
+    });
+
+    triggerWidgetUpdate();
+
+    return logs.length;
+  }
+
+  /**
+   * Recent calendar days that have at least one logged food, newest first — the
+   * candidate list for "copy a past day into this one".
+   *
+   * Deliberately bounded by `lookbackDays` rather than scanning the whole table the
+   * way the streak calculations do: a picker only ever shows a handful of days, and
+   * the full scan is expensive enough that `utils/macroStreak.ts` has to cache it.
+   */
+  static async getRecentLoggedDays(
+    limit: number = 14,
+    lookbackDays: number = 60,
+    options?: { excludeDayKey?: number }
+  ): Promise<{ dayKey: number; itemCount: number; calories: number }[]> {
+    const endDate = new Date();
+    const startDate = new Date(endDate.getTime() - lookbackDays * MS_PER_SOLAR_DAY);
+    const logs = await this.getNutritionLogsForDateRange(startDate, endDate);
+
+    const byDayKey = new Map<number, NutritionLog[]>();
+    for (const log of logs) {
+      const dayKey = utcNormalizedDayKey(log.date, log.timezone);
+      if (options?.excludeDayKey !== undefined && dayKey === options.excludeDayKey) {
+        continue;
+      }
+
+      const existing = byDayKey.get(dayKey);
+      if (existing) {
+        existing.push(log);
+      } else {
+        byDayKey.set(dayKey, [log]);
+      }
+    }
+
+    // Slice before decrypting: calories need getNutrients() per log, and only the
+    // days that actually get rendered are worth paying that for.
+    const recentDayKeys = [...byDayKey.keys()].sort((a, b) => b - a).slice(0, limit);
+
+    return await Promise.all(
+      recentDayKeys.map(async (dayKey) => {
+        const dayLogs = byDayKey.get(dayKey) ?? [];
+        const nutrients = await Promise.all(dayLogs.map((log) => log.getNutrients()));
+
+        return {
+          dayKey,
+          itemCount: dayLogs.length,
+          calories: nutrients.reduce((sum, n) => sum + n.calories, 0),
+        };
+      })
+    );
   }
 
   /**
