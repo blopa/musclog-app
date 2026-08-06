@@ -19,6 +19,7 @@ import {
   Text,
   useWindowDimensions,
   View,
+  type ViewStyle,
 } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
 import Animated, {
@@ -39,8 +40,9 @@ import { FullScreenModal } from './FullScreenModal';
 import type { CameraMode } from './SmartCameraModal';
 
 const SMALL_SCREEN_HEIGHT = 700;
-/** Height of the glow band that travels with the barcode scan line. */
+/** Height of the glow band that travels with the barcode scan line, capped to a share of the frame. */
 const SCAN_LINE_GLOW_HEIGHT = 56;
+const SCAN_LINE_GLOW_FRAME_SHARE = 0.4;
 /** Duration of a single top-to-bottom sweep; the animation reverses to sweep back up. */
 const SCAN_LINE_SWEEP_MS = 1800;
 
@@ -69,6 +71,45 @@ const getCameraInstructionText = (cameraMode: CameraMode, t: TFunction): string 
   }
 };
 
+type FrameScrimProps = {
+  /** How far past each frame edge the scrim reaches; must exceed the frame-to-screen-edge gap. */
+  overscan: number;
+};
+
+/**
+ * Dims the camera feed everywhere except inside the capture frame. Four rects anchored to the
+ * frame's own edges with percentage offsets — no measurement, and no mask compositing — that spill
+ * out to the screen edges through the frame's `overflow: visible`. They render inside the z-10
+ * content layer, so the header and bottom controls (z-20) still paint above them undimmed.
+ */
+function FrameScrim({ overscan }: FrameScrimProps) {
+  const theme = useTheme();
+  const scrimStyle: ViewStyle = {
+    backgroundColor: theme.colors.background.black40,
+    position: 'absolute',
+  };
+
+  return (
+    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+      {/* Above */}
+      <View
+        style={[
+          scrimStyle,
+          { bottom: '100%', height: overscan, left: -overscan, right: -overscan },
+        ]}
+      />
+      {/* Below */}
+      <View
+        style={[scrimStyle, { height: overscan, left: -overscan, right: -overscan, top: '100%' }]}
+      />
+      {/* Left */}
+      <View style={[scrimStyle, { bottom: 0, right: '100%', top: 0, width: overscan }]} />
+      {/* Right */}
+      <View style={[scrimStyle, { bottom: 0, left: '100%', top: 0, width: overscan }]} />
+    </View>
+  );
+}
+
 type ScanLineProps = {
   /** Frame height in px, measured via onLayout — the sweep distance. 0 until the first layout. */
   frameHeight: number;
@@ -85,6 +126,7 @@ function ScanLine({ active, frameHeight }: ScanLineProps) {
   const theme = useTheme();
   const progress = useSharedValue(0);
   const isRunning = active && frameHeight > 0;
+  const glowHeight = Math.min(SCAN_LINE_GLOW_HEIGHT, frameHeight * SCAN_LINE_GLOW_FRAME_SHARE);
 
   useEffect(() => {
     if (!isRunning) {
@@ -102,7 +144,7 @@ function ScanLine({ active, frameHeight }: ScanLineProps) {
   }, [isRunning, progress]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: progress.value * frameHeight - SCAN_LINE_GLOW_HEIGHT / 2 }],
+    transform: [{ translateY: progress.value * frameHeight - glowHeight / 2 }],
   }));
 
   if (!isRunning) {
@@ -120,7 +162,7 @@ function ScanLine({ active, frameHeight }: ScanLineProps) {
             top: 0,
             left: 0,
             right: 0,
-            height: SCAN_LINE_GLOW_HEIGHT,
+            height: glowHeight,
           },
           animatedStyle,
         ]}
@@ -132,7 +174,7 @@ function ScanLine({ active, frameHeight }: ScanLineProps) {
         <View
           className="absolute left-0 right-0"
           style={{
-            top: SCAN_LINE_GLOW_HEIGHT / 2,
+            top: glowHeight / 2,
             height: theme.borderWidth.thin,
             backgroundColor: theme.colors.accent.primary,
           }}
@@ -257,8 +299,10 @@ export function SmartCameraShell({
 }: SmartCameraShellProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { height: screenHeight } = useWindowDimensions();
+  const { height: screenHeight, width: screenWidth } = useWindowDimensions();
   const isSmallScreen = screenHeight < SMALL_SCREEN_HEIGHT;
+  // The frame is roughly centered, so one screen's worth in every direction always reaches the edge.
+  const scrimOverscan = Math.max(screenHeight, screenWidth);
   const isBarcodeScan = cameraMode === 'barcode-scan';
   const cameraMaxHeight = screenHeight * getFrameMaxHeightRatio(cameraMode, isSmallScreen);
   const [frameHeight, setFrameHeight] = useState(0);
@@ -432,6 +476,9 @@ export function SmartCameraShell({
                 overflow: 'visible',
               }}
             >
+              {/* Dims the feed outside the frame. First child so everything below paints over it. */}
+              <FrameScrim overscan={scrimOverscan} />
+
               {/* Corner Markers */}
               <View
                 className="absolute -left-1 -top-1 h-8 w-8 rounded-tl-lg border-l-2 border-t-2"
