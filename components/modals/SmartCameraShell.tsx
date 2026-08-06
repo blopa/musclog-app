@@ -10,7 +10,7 @@ import {
   Sparkles,
   X,
 } from 'lucide-react-native';
-import { type ReactNode, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   ActivityIndicator,
@@ -21,15 +21,40 @@ import {
   View,
 } from 'react-native';
 import { SystemBars } from 'react-native-edge-to-edge';
+import Animated, {
+  cancelAnimation,
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CameraProcessingIndicator } from '@/components/CameraProcessingIndicator';
 import { useTheme } from '@/hooks/useTheme';
+import { addOpacityToHex } from '@/theme';
 
 import { FullScreenModal } from './FullScreenModal';
 import type { CameraMode } from './SmartCameraModal';
 
 const SMALL_SCREEN_HEIGHT = 700;
+/** Height of the glow band that travels with the barcode scan line. */
+const SCAN_LINE_GLOW_HEIGHT = 56;
+/** Duration of a single top-to-bottom sweep; the animation reverses to sweep back up. */
+const SCAN_LINE_SWEEP_MS = 1800;
+
+/**
+ * Fraction of the screen height the capture frame may occupy. Barcode scanning uses a short,
+ * barcode-shaped frame; the AI modes keep the taller frame that fits a plate or a nutrition label.
+ */
+const getFrameMaxHeightRatio = (cameraMode: CameraMode, isSmallScreen: boolean): number => {
+  if (cameraMode === 'barcode-scan') {
+    return isSmallScreen ? 0.15 : 0.2;
+  }
+
+  return isSmallScreen ? 0.48 : 0.6;
+};
 
 const getCameraInstructionText = (cameraMode: CameraMode, t: TFunction): string => {
   switch (cameraMode) {
@@ -43,6 +68,79 @@ const getCameraInstructionText = (cameraMode: CameraMode, t: TFunction): string 
       return '';
   }
 };
+
+type ScanLineProps = {
+  /** Frame height in px, measured via onLayout — the sweep distance. 0 until the first layout. */
+  frameHeight: number;
+  /** Paused (and unmounted) while a capture runs, so it never competes with the spinner. */
+  active: boolean;
+};
+
+/**
+ * Barcode sweep: a glowing line travelling the frame top -> bottom -> top. It lives in its own
+ * clipping container because the frame itself keeps `overflow: visible` for the corner markers,
+ * which would otherwise let the glow band spill past the frame edges.
+ */
+function ScanLine({ active, frameHeight }: ScanLineProps) {
+  const theme = useTheme();
+  const progress = useSharedValue(0);
+  const isRunning = active && frameHeight > 0;
+
+  useEffect(() => {
+    if (!isRunning) {
+      return;
+    }
+
+    progress.value = 0;
+    progress.value = withRepeat(
+      withTiming(1, { duration: SCAN_LINE_SWEEP_MS, easing: Easing.inOut(Easing.quad) }),
+      -1,
+      true
+    );
+
+    return () => cancelAnimation(progress);
+  }, [isRunning, progress]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: progress.value * frameHeight - SCAN_LINE_GLOW_HEIGHT / 2 }],
+  }));
+
+  if (!isRunning) {
+    return null;
+  }
+
+  const transparentAccent = addOpacityToHex(theme.colors.accent.primary, theme.colors.opacity.zero);
+
+  return (
+    <View pointerEvents="none" className="absolute inset-0 overflow-hidden rounded-2xl">
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: SCAN_LINE_GLOW_HEIGHT,
+          },
+          animatedStyle,
+        ]}
+      >
+        <LinearGradient
+          colors={[transparentAccent, theme.colors.accent.primary40, transparentAccent]}
+          style={StyleSheet.absoluteFill}
+        />
+        <View
+          className="absolute left-0 right-0"
+          style={{
+            top: SCAN_LINE_GLOW_HEIGHT / 2,
+            height: theme.borderWidth.thin,
+            backgroundColor: theme.colors.accent.primary,
+          }}
+        />
+      </Animated.View>
+    </View>
+  );
+}
 
 type ModePickerTabProps = {
   mode: CameraMode;
@@ -161,7 +259,9 @@ export function SmartCameraShell({
   const { t } = useTranslation();
   const { height: screenHeight } = useWindowDimensions();
   const isSmallScreen = screenHeight < SMALL_SCREEN_HEIGHT;
-  const cameraMaxHeight = screenHeight * (isSmallScreen ? 0.48 : 0.6);
+  const isBarcodeScan = cameraMode === 'barcode-scan';
+  const cameraMaxHeight = screenHeight * getFrameMaxHeightRatio(cameraMode, isSmallScreen);
+  const [frameHeight, setFrameHeight] = useState(0);
 
   // One owner-provided async action (shutter capture or gallery pick) runs at a time: without
   // this latch, taps landing while the (slow) native capture is still in flight each fire a
@@ -321,8 +421,11 @@ export function SmartCameraShell({
           <View className="relative z-10 flex-1 items-center justify-center px-6">
             <View
               className="relative w-full rounded-2xl"
+              onLayout={(event) => setFrameHeight(event.nativeEvent.layout.height)}
               style={{
-                aspectRatio: theme.aspectRatio.portrait,
+                aspectRatio: isBarcodeScan
+                  ? theme.aspectRatio.landscape
+                  : theme.aspectRatio.portrait,
                 maxHeight: cameraMaxHeight,
                 borderWidth: theme.borderWidth.thin,
                 borderColor: theme.colors.background.white20,
@@ -347,15 +450,19 @@ export function SmartCameraShell({
                 style={{ borderColor: theme.colors.accent.primary }}
               />
 
-              {/* Center Line */}
-              <View
-                className="absolute left-0 right-0"
-                style={{
-                  top: '50%',
-                  height: theme.borderWidth.thin,
-                  backgroundColor: theme.colors.accent.primary40,
-                }}
-              />
+              {/* Sweeping scan line while scanning a barcode, static center line otherwise */}
+              {isBarcodeScan ? (
+                <ScanLine active={!isActionRunning} frameHeight={frameHeight} />
+              ) : (
+                <View
+                  className="absolute left-0 right-0"
+                  style={{
+                    top: '50%',
+                    height: theme.borderWidth.thin,
+                    backgroundColor: theme.colors.accent.primary40,
+                  }}
+                />
+              )}
 
               {isActionRunning ? (
                 <View pointerEvents="none" className="absolute inset-0 items-center justify-center">
