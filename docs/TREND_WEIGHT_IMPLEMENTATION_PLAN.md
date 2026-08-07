@@ -230,10 +230,8 @@ hook/service boundary using the raw record ids and `updated_at` values, not pers
 
 ## Chart implementation
 
-Add platform counterparts:
-
-- `components/progress/WeightTrendChart.tsx`
-- `components/progress/WeightTrendChart.web.tsx`
+Add `components/progress/WeightTrendChart.tsx`. It uses the existing platform-resolved `LineChart`
+implementations, so a re-export-only `.web.tsx` wrapper is unnecessary.
 
 Use `victory-native` on native and `victory` on web, matching the repository's chart convention.
 Build a dedicated component instead of adding weight-specific secondary-series behavior to the
@@ -373,7 +371,6 @@ New files:
 - `utils/trendWeight.ts`
 - `utils/__tests__/trendWeight.test.ts`
 - `components/progress/WeightTrendChart.tsx`
-- `components/progress/WeightTrendChart.web.tsx`
 - a pure chart view-model helper/test if tooltip logic warrants it
 
 Primary modifications:
