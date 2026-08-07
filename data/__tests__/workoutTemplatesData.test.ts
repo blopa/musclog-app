@@ -1,5 +1,33 @@
 import exercisesData from '@/data/exercisesData.json';
-import workoutTemplates from '@/data/workoutTemplatesEnUS.json';
+import { applyWorkoutTemplateCopies, workoutTemplates } from '@/data/workoutTemplates';
+
+describe('workout template copies', () => {
+  it('overlays localized copy without losing the workout definition', () => {
+    const [template] = applyWorkoutTemplateCopies(
+      [
+        {
+          title: 'Fallback title',
+          duration: 45,
+          exercises: [{ exerciseId: 1, day: 1, sets: 3, reps: 8 }],
+        },
+      ],
+      [{ title: 'Localized title', description: 'Localized description' }]
+    );
+
+    expect(template).toEqual({
+      title: 'Localized title',
+      description: 'Localized description',
+      duration: 45,
+      exercises: [{ exerciseId: 1, day: 1, sets: 3, reps: 8 }],
+    });
+  });
+
+  it('keeps the base template when no localized copy exists at its index', () => {
+    expect(applyWorkoutTemplateCopies([{ title: 'Fallback title', duration: 30 }], [])).toEqual([
+      { title: 'Fallback title', duration: 30 },
+    ]);
+  });
+});
 
 describe('Cable Superset Workout', () => {
   const program = workoutTemplates.find(({ title }) => title === 'Cable Superset Workout');

@@ -3,11 +3,8 @@ import convert from 'convert';
 import { Dumbbell, type LucideIcon, User } from 'lucide-react-native';
 import type { ComponentType } from 'react';
 
-import type {
-  RawWorkoutTemplate,
-  RawWorkoutTemplateExercise,
-} from '@/components/modals/BrowseTemplatesModal';
 import { DEFAULT_WORKOUT_TYPE } from '@/constants/workoutTypes';
+import type { RawWorkoutTemplate, RawWorkoutTemplateExercise } from '@/data/workoutTemplates';
 import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import Schedule from '@/database/models/Schedule';
