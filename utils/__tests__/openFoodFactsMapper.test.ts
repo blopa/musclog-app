@@ -219,9 +219,9 @@ describe('openFoodFactsMapper', () => {
     });
 
     it('treats organic / fair-trade as true-or-absent, accepting both tag spellings', () => {
-      expect(extractLabelsFromOFFProduct({ labels_tags: ['en:eu-organic', 'en:fairtrade'] })).toEqual(
-        { organic: true, fairTrade: true }
-      );
+      expect(
+        extractLabelsFromOFFProduct({ labels_tags: ['en:eu-organic', 'en:fairtrade'] })
+      ).toEqual({ organic: true, fairTrade: true });
     });
 
     it('returns undefined when the product carries no tags, or only irrelevant ones', () => {

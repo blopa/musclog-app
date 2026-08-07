@@ -22,8 +22,7 @@ const makeRow = (tableName: string, overrides: Record<string, unknown> = {}) => 
       continue;
     }
 
-    row[column.name] =
-      column.type === 'number' ? 0 : column.type === 'boolean' ? false : 'value';
+    row[column.name] = column.type === 'number' ? 0 : column.type === 'boolean' ? false : 'value';
   }
 
   return { ...row, ...overrides };
@@ -76,10 +75,14 @@ describe('validateExportDump — metadata', () => {
 
   it('accepts each known export platform and rejects an unknown one', () => {
     for (const platform of ['android', 'ios', 'web']) {
-      expect(validateExportDump({ ...minimalDump(), _exportPlatform: platform }).success).toBe(true);
+      expect(validateExportDump({ ...minimalDump(), _exportPlatform: platform }).success).toBe(
+        true
+      );
     }
 
-    expect(validateExportDump({ ...minimalDump(), _exportPlatform: 'symbian' }).success).toBe(false);
+    expect(validateExportDump({ ...minimalDump(), _exportPlatform: 'symbian' }).success).toBe(
+      false
+    );
   });
 
   it('treats the platform as optional — older dumps predate the field', () => {
@@ -96,9 +99,9 @@ describe('validateExportDump — metadata', () => {
   });
 
   it('rejects a non-string AsyncStorage value', () => {
-    expect(
-      validateExportDump({ ...minimalDump(), _async_storage_: { someKey: 42 } }).success
-    ).toBe(false);
+    expect(validateExportDump({ ...minimalDump(), _async_storage_: { someKey: 42 } }).success).toBe(
+      false
+    );
   });
 });
 

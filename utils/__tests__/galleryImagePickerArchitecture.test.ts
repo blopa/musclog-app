@@ -66,7 +66,7 @@ describe('gallery picker architecture', () => {
     const componentSource = source(path);
 
     expect(componentSource).toContain(
-      "import { pickAndCropImageFromGallery } from '@/utils/galleryImagePicker';",
+      "import { pickAndCropImageFromGallery } from '@/utils/galleryImagePicker';"
     );
     expect(componentSource).toMatch(/await pickAndCropImageFromGallery\(\)/);
   });
@@ -75,7 +75,7 @@ describe('gallery picker architecture', () => {
     const hookSource = source('hooks/useCameraCaptureFlow.ts');
 
     expect(hookSource).toContain(
-      "import { pickImageFromGallery } from '@/utils/galleryImagePicker';",
+      "import { pickImageFromGallery } from '@/utils/galleryImagePicker';"
     );
     expect(hookSource).toMatch(/await pickImageFromGallery\(\)/);
     expect(hookSource).toMatch(/await openCropperAsync\(/);

@@ -96,7 +96,9 @@ describe('EnergyConverter', () => {
   });
 
   it('keeps decimals when asked', () => {
-    expect(EnergyConverter.formatCalories(1234.56, 1)).toBe('common.amount_kcal|{"amount":"1234.6"}');
+    expect(EnergyConverter.formatCalories(1234.56, 1)).toBe(
+      'common.amount_kcal|{"amount":"1234.6"}'
+    );
   });
 });
 
@@ -212,7 +214,10 @@ describe('HealthDataTransformer record transforms', () => {
   const time = new Date(Date.now() - 60_000).toISOString();
 
   it('converts Health Connect metres to the centimetres the DB stores', () => {
-    const result = HealthDataTransformer.transformHeight({ height: { inMeters: 1.8 }, time } as any);
+    const result = HealthDataTransformer.transformHeight({
+      height: { inMeters: 1.8 },
+      time,
+    } as any);
 
     expect(result.type).toBe(MetricType.HEIGHT);
     expect(result.value).toBeCloseTo(180, 6);
@@ -330,9 +335,9 @@ describe('HealthDataTransformer collection helpers', () => {
   });
 
   it('sorts newest first by default and oldest first when asked', () => {
-    expect(HealthDataTransformer.sortRecordsByDate([{ date: 1 }, { date: 3 }, { date: 2 }])).toEqual(
-      [{ date: 3 }, { date: 2 }, { date: 1 }]
-    );
+    expect(
+      HealthDataTransformer.sortRecordsByDate([{ date: 1 }, { date: 3 }, { date: 2 }])
+    ).toEqual([{ date: 3 }, { date: 2 }, { date: 1 }]);
 
     expect(
       HealthDataTransformer.sortRecordsByDate([{ date: 1 }, { date: 3 }, { date: 2 }], false)

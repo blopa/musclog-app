@@ -94,7 +94,9 @@ describe('useExerciseGoals', () => {
   // The "is there another page?" answer comes from a 1-row probe query rather than a count.
   it('probes for a further page when the first history page comes back full', async () => {
     mockGoalsTable();
-    mockGetGoalHistory.mockResolvedValueOnce(goals(['h1', 'h2'])).mockResolvedValueOnce(goals(['h3']));
+    mockGetGoalHistory
+      .mockResolvedValueOnce(goals(['h1', 'h2']))
+      .mockResolvedValueOnce(goals(['h3']));
 
     const { result } = renderHook(() => useExerciseGoals({ initialLimit: 2, mode: 'history' }));
 
@@ -175,7 +177,10 @@ describe('useExerciseGoals', () => {
     expect(database.get).toHaveBeenCalledWith('exercise_goals');
     expect(Q.take).toHaveBeenCalledWith(1);
     expect(Q.sortBy).toHaveBeenCalledWith('created_at', 'desc');
-    expect(queryArgs[0]).toContainEqual({ condition: { op: 'eq', value: null }, field: 'deleted_at' });
+    expect(queryArgs[0]).toContainEqual({
+      condition: { op: 'eq', value: null },
+      field: 'deleted_at',
+    });
   });
 
   it('neither queries nor subscribes while hidden, and clears the loading flag', async () => {

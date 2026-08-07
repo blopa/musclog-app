@@ -11,10 +11,7 @@ describe('dayRangeClauses', () => {
     const clauses = dayRangeClauses(range);
 
     expect(clauses).toHaveLength(2);
-    expect(clauses).toEqual([
-      Q.where('date', Q.gte(1000)),
-      Q.where('date', Q.lt(5000)),
-    ]);
+    expect(clauses).toEqual([Q.where('date', Q.gte(1000)), Q.where('date', Q.lt(5000))]);
   });
 
   it('defaults to the `date` column', () => {

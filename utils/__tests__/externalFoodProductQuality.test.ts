@@ -44,9 +44,9 @@ describe('externalFoodProduct — source resolution and quality dispatch', () =>
     it('falls back to the search product source when the details state carries none', () => {
       expect(inferBarcodeNutritionSource(null, { source: 'usda' })).toBe('usda');
       expect(inferBarcodeNutritionSource(null, { source: 'musclog' })).toBe('musclog');
-      expect(inferBarcodeNutritionSource({ status: 'failure' } as any, { source: 'openfood' })).toBe(
-        'openfood'
-      );
+      expect(
+        inferBarcodeNutritionSource({ status: 'failure' } as any, { source: 'openfood' })
+      ).toBe('openfood');
     });
 
     it('recognises an OFF detail state by its product shape when nothing is tagged', () => {

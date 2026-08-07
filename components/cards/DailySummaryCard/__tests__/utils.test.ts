@@ -152,12 +152,7 @@ describe('isNarrowLayout', () => {
 
   it('short-labels every column when all four macros are shown', () => {
     // With 4 columns of ~80px, fats/fiber must not keep the roomier long labels.
-    expect(isNarrowLayout('en-US', 380, undefined, undefined, 4)).toEqual([
-      true,
-      true,
-      true,
-      true,
-    ]);
+    expect(isNarrowLayout('en-US', 380, undefined, undefined, 4)).toEqual([true, true, true, true]);
   });
 
   it('tightens the threshold once a value reaches four digits', () => {

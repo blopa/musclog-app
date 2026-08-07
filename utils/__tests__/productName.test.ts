@@ -9,15 +9,15 @@ const expectUnknown = (input: unknown) =>
 describe('getProductName', () => {
   describe('Open Food Facts products', () => {
     it('prefers product_name', () => {
-      expect(getProductName({ code: '1', product_name: 'Granola', generic_name: 'Cereal' })).toEqual(
-        { name: 'Granola', found: true }
-      );
+      expect(
+        getProductName({ code: '1', product_name: 'Granola', generic_name: 'Cereal' })
+      ).toEqual({ name: 'Granola', found: true });
     });
 
     it('uses the product_name_<lang> field named by the product lang', () => {
-      expect(
-        getProductName({ code: '1', lang: 'nl', product_name_nl: 'Volkorenbrood' }).name
-      ).toBe('Volkorenbrood');
+      expect(getProductName({ code: '1', lang: 'nl', product_name_nl: 'Volkorenbrood' }).name).toBe(
+        'Volkorenbrood'
+      );
     });
 
     it('scans any product_name_<lang> key, since the V3 API sometimes omits the bare one', () => {

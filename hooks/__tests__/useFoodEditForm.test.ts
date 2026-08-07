@@ -28,10 +28,7 @@ const makeForm = (overrides: Partial<EditFormState> = {}): EditFormState =>
     ...overrides,
   }) as EditFormState;
 
-const render = ({
-  decimalSeparator = ',' as ',' | '.',
-  inferredCaloriesPer100g = 0,
-} = {}) =>
+const render = ({ decimalSeparator = ',' as ',' | '.', inferredCaloriesPer100g = 0 } = {}) =>
   renderHook(() => useFoodEditForm({ decimalSeparator, inferredCaloriesPer100g }));
 
 describe('useFoodEditForm', () => {

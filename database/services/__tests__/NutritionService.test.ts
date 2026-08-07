@@ -236,10 +236,7 @@ describe('NutritionService.copyNutritionLogsPreservingMealType', () => {
       timezone: '+05:30',
     });
 
-    await NutritionService.copyNutritionLogsPreservingMealType(
-      [source],
-      new Date(2026, 7, 1)
-    );
+    await NutritionService.copyNutritionLogsPreservingMealType([source], new Date(2026, 7, 1));
 
     const copiedWallClock = wallClockDateInTimezone(
       created[0].date as number,

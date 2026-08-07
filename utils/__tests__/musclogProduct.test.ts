@@ -110,9 +110,11 @@ describe('musclogProduct', () => {
     });
 
     it('falls back to the flat micro fields when other_nutrients is absent', () => {
-      expect(
-        getMusclogNutritionPer100g({ sugar: 5, saturatedFat: 1, sodium: 0.2 })
-      ).toMatchObject({ sugar: 5, saturatedFat: 1, sodium: 0.2 });
+      expect(getMusclogNutritionPer100g({ sugar: 5, saturatedFat: 1, sodium: 0.2 })).toMatchObject({
+        sugar: 5,
+        saturatedFat: 1,
+        sodium: 0.2,
+      });
     });
 
     it('coerces every missing field to 0 rather than NaN', () => {

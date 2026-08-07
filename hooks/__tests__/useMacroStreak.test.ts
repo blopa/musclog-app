@@ -47,9 +47,12 @@ describe('useMacroStreak', () => {
   // The effect keys off the timestamp, not the Date identity, so the diary re-rendering with a
   // fresh `new Date(sameDay)` must not fire another read.
   it('does not re-read when re-rendered with an equal but distinct Date', async () => {
-    const { rerender, result } = renderHook(({ date }: { date: Date }) => useMacroStreak({ date }), {
-      initialProps: { date: DAY_1 },
-    });
+    const { rerender, result } = renderHook(
+      ({ date }: { date: Date }) => useMacroStreak({ date }),
+      {
+        initialProps: { date: DAY_1 },
+      }
+    );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -61,9 +64,12 @@ describe('useMacroStreak', () => {
   });
 
   it('re-reads and returns to loading when the day changes', async () => {
-    const { rerender, result } = renderHook(({ date }: { date: Date }) => useMacroStreak({ date }), {
-      initialProps: { date: DAY_1 },
-    });
+    const { rerender, result } = renderHook(
+      ({ date }: { date: Date }) => useMacroStreak({ date }),
+      {
+        initialProps: { date: DAY_1 },
+      }
+    );
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -106,9 +112,12 @@ describe('useMacroStreak', () => {
 
   it('keeps the last known streak and stops loading when the read fails', async () => {
     const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
-    const { rerender, result } = renderHook(({ date }: { date: Date }) => useMacroStreak({ date }), {
-      initialProps: { date: DAY_1 },
-    });
+    const { rerender, result } = renderHook(
+      ({ date }: { date: Date }) => useMacroStreak({ date }),
+      {
+        initialProps: { date: DAY_1 },
+      }
+    );
 
     await waitFor(() => expect(result.current.currentStreak).toBe(4));
 

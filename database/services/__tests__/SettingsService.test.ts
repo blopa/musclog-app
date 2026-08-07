@@ -112,8 +112,8 @@ const valuesFor = (rows: SettingRow[], type: string) =>
 describe('SettingsService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (mockDatabase.write as jest.Mock).mockImplementation(
-      async (callback: () => Promise<void>) => callback()
+    (mockDatabase.write as jest.Mock).mockImplementation(async (callback: () => Promise<void>) =>
+      callback()
     );
   });
 
@@ -390,9 +390,9 @@ describe('SettingsService', () => {
       });
 
       expect(valuesFor(rows, SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE)).toEqual(['true']);
-      expect(rows.filter((row) => row.type === SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE)).toHaveLength(
-        1
-      );
+      expect(
+        rows.filter((row) => row.type === SEND_FOUNDATION_FOODS_TO_LLM_SETTING_TYPE)
+      ).toHaveLength(1);
     });
   });
 });

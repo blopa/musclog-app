@@ -589,7 +589,9 @@ describe('WorkoutAnalytics', () => {
           { exerciseId: 'ex-1', workoutLogId: 'workout-1', weight: 100, reps: 8 },
           { exerciseId: 'ex-1', workoutLogId: 'workout-1', weight: 100, reps: 10 },
         ],
-        workouts: [{ id: 'workout-1', startedAt: Date.now() - 1000, completedAt: Date.now() - 500 }],
+        workouts: [
+          { id: 'workout-1', startedAt: Date.now() - 1000, completedAt: Date.now() - 500 },
+        ],
       });
       installFixture(fixture);
 
@@ -603,7 +605,9 @@ describe('WorkoutAnalytics', () => {
       const fixture = buildFixture({
         exercises: [benchPress],
         sets: [{ exerciseId: 'ex-1', workoutLogId: 'workout-1', weight: 100, reps: 10 }],
-        workouts: [{ id: 'workout-1', startedAt: Date.now() - 1000, completedAt: Date.now() - 500 }],
+        workouts: [
+          { id: 'workout-1', startedAt: Date.now() - 1000, completedAt: Date.now() - 500 },
+        ],
       });
       installFixture(fixture);
 
@@ -640,7 +644,9 @@ describe('WorkoutAnalytics', () => {
       const fixture = buildFixture({
         exercises: [benchPress],
         sets: [{ exerciseId: 'ex-1', workoutLogId: 'workout-1', weight: 100, reps: 10 }],
-        workouts: [{ id: 'workout-1', startedAt: Date.now() - 1000, completedAt: Date.now() - 500 }],
+        workouts: [
+          { id: 'workout-1', startedAt: Date.now() - 1000, completedAt: Date.now() - 500 },
+        ],
       });
       // Drop the workout row after the completed-workout filter has been satisfied by
       // making `find` reject for it.
@@ -716,7 +722,9 @@ describe('WorkoutAnalytics', () => {
           // Equal volume to the first set — must not replace it.
           { exerciseId: 'ex-1', workoutLogId: 'workout-1', weight: 100, reps: 10 },
         ],
-        workouts: [{ id: 'workout-1', startedAt: Date.now() - 1000, completedAt: Date.now() - 500 }],
+        workouts: [
+          { id: 'workout-1', startedAt: Date.now() - 1000, completedAt: Date.now() - 500 },
+        ],
       });
       installFixture(fixture);
 

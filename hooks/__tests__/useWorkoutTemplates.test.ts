@@ -240,7 +240,9 @@ describe('useWorkoutTemplates', () => {
       (WorkoutTemplateService.getTemplatesWithMetadataPaginated as jest.Mock).mockImplementation(
         async (limit?: number, offset?: number) => {
           const from = offset ?? 0;
-          return limit === undefined ? allTemplates.slice(from) : allTemplates.slice(from, from + limit);
+          return limit === undefined
+            ? allTemplates.slice(from)
+            : allTemplates.slice(from, from + limit);
         }
       );
 
