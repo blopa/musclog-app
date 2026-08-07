@@ -61,6 +61,7 @@
     "android-device": "expo run:android --no-build-cache --device",
     "web": "node scripts/sync-web-images.js && node scripts/generate-web-seo-files.js && expo start --web",
     "test": "jest --watchAll",
+    "test:ci": "jest --ci --runInBand --silent",
     "lint": "expo lint",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\"",

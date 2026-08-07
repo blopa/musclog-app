@@ -7,11 +7,11 @@ import { act } from 'react';
 
 import { useSessionTotalTime } from '@/hooks/useSessionTotalTime';
 
-let staticExport = false;
+let mockStaticExport = false;
 
 jest.mock('@/constants/platform', () => ({
   get isStaticExport() {
-    return staticExport;
+    return mockStaticExport;
   },
 }));
 
@@ -34,7 +34,7 @@ const tick = (count = 1) => {
 
 describe('useSessionTotalTime', () => {
   beforeEach(() => {
-    staticExport = false;
+    mockStaticExport = false;
     now = START;
     // `Date` stays real so the tests, not the timer queue, decide what time it is.
     jest.useFakeTimers({ doNotFake: ['Date'] });
@@ -190,7 +190,7 @@ describe('useSessionTotalTime', () => {
 
   describe('during static web export', () => {
     it('never starts a timer, so the export build cannot hang on a pending interval', () => {
-      staticExport = true;
+      mockStaticExport = true;
 
       const { result } = renderHook(() => useSessionTotalTime({ startTime: START }));
 
