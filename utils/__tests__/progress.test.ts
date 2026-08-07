@@ -1,9 +1,14 @@
-import { localDayStartFromUtcMs, MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
+import { MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 import { calculateEmpiricalTDEEWindow, MetricPoint } from '@/utils/progress';
 const START_DATE = new Date('2026-01-01').getTime();
 
-/** Local calendar day key for synthetic "day i" timestamps (matches calculateEmpiricalTDEEWindow bucketing). */
-const dayKey = (i: number) => localDayStartFromUtcMs(START_DATE + i * MS_PER_SOLAR_DAY);
+/**
+ * Day key for the synthetic "day i" timestamps. `calculateEmpiricalTDEEWindow` takes
+ * `MetricPoint.date` values that are *already* UTC-normalized day keys and uses them
+ * verbatim — it does no bucketing of its own — so the key is just the input timestamp.
+ * (Re-normalizing here would also make the expectations depend on the machine timezone.)
+ */
+const dayKey = (i: number) => START_DATE + i * MS_PER_SOLAR_DAY;
 
 const avgDayKeys = (indices: number[]) =>
   indices.reduce((sum, i) => sum + dayKey(i), 0) / indices.length;

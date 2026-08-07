@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
@@ -6,17 +5,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import type { TFunction } from 'i18next';
 import {
-  ClipboardList,
   Copy,
   Dumbbell,
   Images,
   Paperclip,
-  PlusCircle,
   Send as SendIcon,
   Share2,
   SlidersHorizontal,
   Trash2,
-  TrendingUp,
   UtensilsCrossed,
   X,
   Zap,
@@ -50,16 +46,10 @@ import { ChatMealCard } from '@/components/cards/ChatMealCard';
 import { ChatWorkoutCard } from '@/components/cards/ChatWorkoutCard';
 import { ChatWorkoutCompletedCard } from '@/components/cards/ChatWorkoutCompletedCard';
 import { ChatMealPlanCarousel } from '@/components/chat/ChatMealPlanCarousel';
+import { COACH_INTENTIONS } from '@/components/coach/coachIntentions';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
-import {
-  ANALYZE_PROGRESS,
-  CHAT_INTENTION_KEY,
-  GENERATE_MEAL_PLAN,
-  GENERATE_MY_WORKOUTS,
-  NUTRITION_CHECK,
-  TRACK_MEAL,
-} from '@/constants/chat';
+import { CHAT_INTENTIONS, type ChatIntention, TRACK_MEAL } from '@/constants/chat';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { useUnreadChat } from '@/context/UnreadChatContext';
 import { ChatService, MuscleService, WorkoutService } from '@/database/services';
@@ -71,8 +61,9 @@ import { useTheme } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
 import { type TrackMealIngredient } from '@/utils/coachAI';
 import { FALLBACK_EXERCISE_IMAGE } from '@/utils/exerciseImage';
-import { createThumbnail, pickDocument } from '@/utils/file';
+import { createThumbnail } from '@/utils/file';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
+import { pickAndCropImageFromGallery } from '@/utils/galleryImagePicker';
 import { handleError } from '@/utils/handleError';
 
 import { CoachQuickSettingsModal } from './CoachQuickSettingsModal';
@@ -82,22 +73,8 @@ import { LogMealModal } from './LogMealModal';
 import PastWorkoutDetailModal from './PastWorkoutDetailModal';
 import { WorkoutMusclesModal } from './WorkoutMusclesModal';
 
-const getPendingIntentionDisplayText = (pendingIntention: string, t: TFunction): string => {
-  switch (pendingIntention) {
-    case GENERATE_MY_WORKOUTS:
-      return t('coach.actions.workoutGen');
-    case GENERATE_MEAL_PLAN:
-      return t('coach.actions.mealPlan');
-    case ANALYZE_PROGRESS:
-      return t('coach.actions.analyzeProgress');
-    case NUTRITION_CHECK:
-      return t('coach.actions.nutritionCheck');
-    case TRACK_MEAL:
-      return t('coach.actions.trackMeal');
-    default:
-      return pendingIntention;
-  }
-};
+const getPendingIntentionDisplayText = (pendingIntention: ChatIntention, t: TFunction): string =>
+  t(COACH_INTENTIONS[pendingIntention].bannerLabelKey);
 
 const getConversationContextBackgroundColor = (
   conversationContext: string,
@@ -429,13 +406,14 @@ const renderDay = (props: any, t: TFunction, theme: Theme) => {
 const renderSend = (
   props: SendProps<ExtendedIMessage>,
   theme: Theme,
-  failedMessageText: string | null,
+  composerSeedText: string | null,
   hasAttachedImage: boolean,
   isSending: boolean
 ) => {
   const styles = getStyles(theme);
-  // When we restored failed text, GiftedChat's state may not have it yet; pass it so Send button is visible
-  const effectiveText = (failedMessageText ?? props.text ?? '').trim();
+  // The seed (restored failed text, or a caller's prefill) may not be in GiftedChat's state yet;
+  // pass it so the Send button is enabled without the user typing a character first.
+  const effectiveText = (composerSeedText ?? props.text ?? '').trim();
   // Disable send button when: no text/image OR currently sending
   const isDisabled = (!effectiveText && !hasAttachedImage) || isSending;
 
@@ -474,13 +452,18 @@ type ComposerPropsWithText = ComposerProps & {
   onTextChanged?: (text: string) => void;
 };
 
-/** Wrapper so we can run an effect to sync restored (failed) message text into GiftedChat's state when user taps Send without typing. */
-function ComposerWithRestoredText({
+/**
+ * Wrapper that seeds GiftedChat's composer with text the user did not type. Two sources share this
+ * path: the restored text of a send that failed, and a prefill from whoever opened the coach
+ * (a note's "Track this"). Either way the seed is synced into GiftedChat's internal state so Send
+ * works without a keystroke, and it is cleared the moment the user edits.
+ */
+function SeededComposer({
   props,
   t,
   theme,
-  failedMessageText,
-  clearFailedMessageText,
+  seedText,
+  clearSeedText,
   onAttachFile,
   isImageAttachmentEnabled,
   resetKey,
@@ -488,8 +471,8 @@ function ComposerWithRestoredText({
   props: ComposerProps;
   t: TFunction;
   theme: Theme;
-  failedMessageText: string | null;
-  clearFailedMessageText: () => void;
+  seedText: string | null;
+  clearSeedText: () => void;
   onAttachFile: () => void;
   isImageAttachmentEnabled: boolean;
   resetKey: number;
@@ -497,19 +480,19 @@ function ComposerWithRestoredText({
   const styles = getStyles(theme);
   const propsWithText = props as ComposerPropsWithText;
 
-  // When we have restored text, sync it into GiftedChat's internal state so Send uses it
+  // Sync the seed into GiftedChat's internal state so Send uses it
   useEffect(() => {
-    if (failedMessageText != null && propsWithText.onTextChanged) {
-      propsWithText.onTextChanged(failedMessageText);
+    if (seedText != null && propsWithText.onTextChanged) {
+      propsWithText.onTextChanged(seedText);
     }
-    // Intentionally not including props to run only when failedMessageText is set
+    // Intentionally not including props to run only when seedText is set
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [failedMessageText]);
+  }, [seedText]);
 
-  const text = failedMessageText !== null ? failedMessageText : propsWithText.text;
+  const text = seedText !== null ? seedText : propsWithText.text;
   const onTextChanged = (newText: string) => {
-    if (failedMessageText !== null) {
-      clearFailedMessageText();
+    if (seedText !== null) {
+      clearSeedText();
     }
     propsWithText.onTextChanged?.(newText);
   };
@@ -546,18 +529,18 @@ const renderComposer = (
   props: ComposerProps,
   t: TFunction,
   theme: Theme,
-  failedMessageText: string | null,
-  clearFailedMessageText: () => void,
+  seedText: string | null,
+  clearSeedText: () => void,
   onAttachFile: () => void,
   isImageAttachmentEnabled: boolean,
   resetKey: number
 ) => (
-  <ComposerWithRestoredText
+  <SeededComposer
     props={props}
     t={t}
     theme={theme}
-    failedMessageText={failedMessageText}
-    clearFailedMessageText={clearFailedMessageText}
+    seedText={seedText}
+    clearSeedText={clearSeedText}
     onAttachFile={onAttachFile}
     isImageAttachmentEnabled={isImageAttachmentEnabled}
     resetKey={resetKey}
@@ -567,7 +550,7 @@ const renderComposer = (
 const renderInputToolbar = (
   props: InputToolbarProps<ExtendedIMessage>,
   theme: Theme,
-  pendingIntention: string | null,
+  pendingIntention: ChatIntention | null,
   onClearIntention: () => void,
   attachedImage: { uri: string } | null,
   onRemoveImage: () => void,
@@ -636,9 +619,19 @@ type CoachModalProps = {
   onClose: () => void;
   /** Invoked after the coach closes when the user opens “My meals” from a meal plan (e.g. carousel). */
   onOpenMyMeals: () => void;
+  /** Seeds the composer without sending (e.g. “Track this” from a note). */
+  initialComposerText?: string;
+  /** Intention to arm when the coach opens. Any member of the union works. */
+  initialIntention?: ChatIntention;
 };
 
-export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps) {
+export function CoachModal({
+  visible,
+  onClose,
+  onOpenMyMeals,
+  initialComposerText,
+  initialIntention,
+}: CoachModalProps) {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const insets = useSafeAreaInsets();
@@ -648,7 +641,7 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
   const {
     messages,
     pendingCoachMessage,
-    pendingIntention: hookPendingIntention,
+    pendingIntention,
     isSending,
     isLoadingMore,
     hasMore,
@@ -663,17 +656,16 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     ephemeralErrorAsMessage,
     isCreditsError,
     markMealAsTracked,
+    setIntention,
     clearIntention,
-    setPendingIntention: setHookPendingIntention,
     showConfetti,
-  } = useChatMessages(conversationContext);
+  } = useChatMessages(conversationContext, initialIntention);
 
   const { clearUnreadCount } = useUnreadChat();
   const { showSnackbar } = useSnackbar();
   const { shareText } = useNativeShareText();
   const [isOnline, setIsOnline] = useState(false);
-  const pendingIntention = hookPendingIntention;
-  const setPendingIntention = setHookPendingIntention;
+  const [prefillText, setPrefillText] = useState<null | string>(initialComposerText ?? null);
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string | null>(null);
   const [isMusclesModalVisible, setIsMusclesModalVisible] = useState(false);
   const [musclesModalGroups, setMusclesModalGroups] = useState<string[]>([]);
@@ -774,6 +766,9 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
       const text = newMessages[0]?.text;
       const image = attachedImage?.base64;
       if (text || image) {
+        // sendMessage clears the hook's failedMessageText but not our local seed, so the
+        // composer would repopulate with the prefill right after sending.
+        setPrefillText(null);
         sendMessage(text ?? '', image);
         setAttachedImage(null);
         setComposerResetKey((k) => k + 1);
@@ -782,114 +777,84 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     [sendMessage, attachedImage]
   );
 
-  const handleGenerateMealPlan = useCallback(async () => {
-    if (pendingIntention === GENERATE_MEAL_PLAN) {
-      await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
-      setPendingIntention(null);
-      clearPendingCoachMessage();
-    } else {
-      await AsyncStorage.setItem(CHAT_INTENTION_KEY, GENERATE_MEAL_PLAN);
-      setPendingIntention(GENERATE_MEAL_PLAN);
+  /** Shows the intention's prompt as a parked coach message above the composer. */
+  const parkIntentionPrompt = useCallback(
+    (intention: ChatIntention) => {
+      const { idPrefix, promptKey } = COACH_INTENTIONS[intention];
+
       addPendingCoachMessage({
-        _id: `pending-meal-plan-gen-${Date.now()}`,
-        text: t('coach.mealPlanPrompt'),
+        _id: `${idPrefix}-${Date.now()}`,
+        text: t(promptKey),
         createdAt: new Date(),
         user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
       });
-    }
-  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, setPendingIntention, t]);
+    },
+    [addPendingCoachMessage, t]
+  );
 
-  const handleGenerateWorkouts = useCallback(async () => {
-    if (pendingIntention === GENERATE_MY_WORKOUTS) {
-      await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
-      setPendingIntention(null);
-      clearPendingCoachMessage();
-    } else {
-      await AsyncStorage.setItem(CHAT_INTENTION_KEY, GENERATE_MY_WORKOUTS);
-      setPendingIntention(GENERATE_MY_WORKOUTS);
-      addPendingCoachMessage({
-        _id: `pending-workout-gen-${Date.now()}`,
-        text: t('coach.workoutGenerationPrompt'),
-        createdAt: new Date(),
-        user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
-      });
-    }
-  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, setPendingIntention, t]);
+  // Arm and disarm are separate primitives on purpose: the chips want the toggle, while an
+  // externally requested intention (a note's "Track this") wants a plain arm — folding the two
+  // into one toggling handler is what previously forced callers to copy the arming block.
+  // Persistence is `useChatMessages`' job (`setIntention`/`clearIntention`); this only adds the
+  // chat-visible half.
+  const armIntention = useCallback(
+    async (intention: ChatIntention) => {
+      await setIntention(intention);
+      parkIntentionPrompt(intention);
+    },
+    [setIntention, parkIntentionPrompt]
+  );
 
-  const handleTrackMeal = useCallback(async () => {
-    if (pendingIntention === TRACK_MEAL) {
-      await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
-      setPendingIntention(null);
-      clearPendingCoachMessage();
-    } else {
-      await AsyncStorage.setItem(CHAT_INTENTION_KEY, TRACK_MEAL);
-      setPendingIntention(TRACK_MEAL);
-      addPendingCoachMessage({
-        _id: `pending-track-meal-${Date.now()}`,
-        text: t('coach.trackMealPrompt'),
-        createdAt: new Date(),
-        user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
-      });
-    }
-  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, setPendingIntention, t]);
-
-  const handleAnalyzeProgress = useCallback(async () => {
-    if (pendingIntention === ANALYZE_PROGRESS) {
-      await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
-      setPendingIntention(null);
-      clearPendingCoachMessage();
-    } else {
-      await AsyncStorage.setItem(CHAT_INTENTION_KEY, ANALYZE_PROGRESS);
-      setPendingIntention(ANALYZE_PROGRESS);
-      addPendingCoachMessage({
-        _id: `pending-analyze-progress-${Date.now()}`,
-        text: t('coach.analyzeProgressPrompt'),
-        createdAt: new Date(),
-        user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
-      });
-    }
-  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, setPendingIntention, t]);
-
-  const handleNutritionCheck = useCallback(async () => {
-    if (pendingIntention === NUTRITION_CHECK) {
-      await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
-      setPendingIntention(null);
-      clearPendingCoachMessage();
-    } else {
-      await AsyncStorage.setItem(CHAT_INTENTION_KEY, NUTRITION_CHECK);
-      setPendingIntention(NUTRITION_CHECK);
-      addPendingCoachMessage({
-        _id: `pending-nutrition-check-${Date.now()}`,
-        text: t('coach.nutritionCheckPrompt'),
-        createdAt: new Date(),
-        user: { _id: 2, name: 'Loggy', avatar: AI_COACH_AVATAR },
-      });
-    }
-  }, [addPendingCoachMessage, clearPendingCoachMessage, pendingIntention, setPendingIntention, t]);
-
-  const handleClearIntention = useCallback(async () => {
+  const disarmIntention = useCallback(async () => {
     await clearIntention();
-    setAttachedImage(null);
     clearPendingCoachMessage();
   }, [clearIntention, clearPendingCoachMessage]);
 
+  const toggleIntention = useCallback(
+    (intention: ChatIntention) =>
+      pendingIntention === intention ? disarmIntention() : armIntention(intention),
+    [armIntention, disarmIntention, pendingIntention]
+  );
+
+  // `useChatMessages` arms `initialIntention` itself as it loads (it owns CHAT_INTENTION_KEY, and
+  // a second writer here would race its read), so a caller-requested intention arrives as state
+  // rather than through `armIntention`. Only its prompt is left to park — pure UI, no storage, so
+  // there is no ordering to get wrong. `initialIntention` is a fixed prop and `parkIntentionPrompt`
+  // is stable, so this runs exactly once per open.
+  useEffect(() => {
+    if (initialIntention) {
+      parkIntentionPrompt(initialIntention);
+    }
+  }, [initialIntention, parkIntentionPrompt]);
+
+  // The composer seed and the hook's failed-send restore share one render path.
+  const composerSeedText = failedMessageText ?? prefillText;
+  const clearComposerSeed = useCallback(() => {
+    clearFailedMessageText();
+    setPrefillText(null);
+  }, [clearFailedMessageText]);
+
+  const handleClearIntention = useCallback(async () => {
+    await disarmIntention();
+    setAttachedImage(null);
+  }, [disarmIntention]);
+
   const handleAttachFile = useCallback(async () => {
     try {
-      const result = await pickDocument(['image/*']);
-
-      if (!result.canceled && result.assets?.[0]) {
-        const file = result.assets[0];
-
-        // Create a thumbnail for efficient chat preview (max 300px)
-        const { uri, base64 } = await createThumbnail(file.uri, 300);
-
-        setAttachedImage({
-          uri,
-          base64: base64 || '',
-        });
+      const croppedPath = await pickAndCropImageFromGallery();
+      if (!croppedPath) {
+        return;
       }
+
+      // Create a thumbnail for efficient chat preview (max 300px)
+      const { uri, base64 } = await createThumbnail(croppedPath, 300);
+
+      setAttachedImage({
+        uri,
+        base64: base64 || '',
+      });
     } catch (error) {
-      console.error('Error picking document:', error);
+      console.error('Error picking image:', error);
       showSnackbar('error', t('coach.errors.filePickFailed'));
     }
   }, [showSnackbar, t]);
@@ -1182,126 +1147,31 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
         className="px-4 py-3"
         contentContainerStyle={{ gap: theme.spacing.gap.sm }}
       >
-        <Pressable
-          onPress={handleGenerateWorkouts}
-          className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
-          style={{
-            borderColor:
-              pendingIntention === GENERATE_MY_WORKOUTS
-                ? theme.colors.accent.primary
-                : theme.colors.border.light,
-            borderWidth: pendingIntention === GENERATE_MY_WORKOUTS ? 2 : 1,
-            backgroundColor:
-              pendingIntention === GENERATE_MY_WORKOUTS
-                ? theme.colors.accent.primary10
-                : theme.colors.background.card,
-          }}
-        >
-          <PlusCircle size={theme.iconSize.md} color={theme.colors.accent.primary} />
-          <Text className="text-sm font-medium text-text-primary">
-            {t('coach.actions.createWorkout')}
-          </Text>
-        </Pressable>
-        <Pressable
-          onPress={handleGenerateMealPlan}
-          className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
-          style={{
-            borderColor:
-              pendingIntention === GENERATE_MEAL_PLAN
-                ? theme.colors.accent.primary
-                : theme.colors.border.light,
-            borderWidth: pendingIntention === GENERATE_MEAL_PLAN ? 2 : 1,
-            backgroundColor:
-              pendingIntention === GENERATE_MEAL_PLAN
-                ? theme.colors.accent.primary10
-                : theme.colors.background.card,
-          }}
-        >
-          <ClipboardList size={theme.iconSize.md} color={theme.colors.status.success} />
-          <Text className="text-sm font-medium text-text-primary">
-            {t('coach.actions.mealPlan')}
-          </Text>
-        </Pressable>
-        <Pressable
-          onPress={handleAnalyzeProgress}
-          className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
-          style={{
-            borderColor:
-              pendingIntention === ANALYZE_PROGRESS
-                ? theme.colors.accent.primary
-                : theme.colors.border.light,
-            borderWidth: pendingIntention === ANALYZE_PROGRESS ? 2 : 1,
-            backgroundColor:
-              pendingIntention === ANALYZE_PROGRESS
-                ? theme.colors.accent.primary10
-                : theme.colors.background.card,
-          }}
-        >
-          <TrendingUp size={theme.iconSize.md} color={theme.colors.status.info} />
-          <Text className="text-sm font-medium text-text-primary">
-            {t('coach.actions.analyzeProgress')}
-          </Text>
-        </Pressable>
-        <Pressable
-          onPress={handleTrackMeal}
-          className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
-          style={{
-            borderColor:
-              pendingIntention === TRACK_MEAL
-                ? theme.colors.accent.primary
-                : theme.colors.border.light,
-            borderWidth: pendingIntention === TRACK_MEAL ? 2 : 1,
-            backgroundColor:
-              pendingIntention === TRACK_MEAL
-                ? theme.colors.accent.primary10
-                : theme.colors.background.card,
-          }}
-        >
-          <UtensilsCrossed size={theme.iconSize.md} color={theme.colors.accent.primary} />
-          <Text className="text-sm font-medium text-text-primary">
-            {t('coach.actions.trackMeal')}
-          </Text>
-        </Pressable>
-        <Pressable
-          onPress={handleNutritionCheck}
-          className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
-          style={{
-            borderColor:
-              pendingIntention === NUTRITION_CHECK
-                ? theme.colors.accent.primary
-                : theme.colors.border.light,
-            borderWidth: pendingIntention === NUTRITION_CHECK ? 2 : 1,
-            backgroundColor:
-              pendingIntention === NUTRITION_CHECK
-                ? theme.colors.accent.primary10
-                : theme.colors.background.card,
-          }}
-        >
-          <UtensilsCrossed size={theme.iconSize.md} color={theme.colors.status.warning} />
-          <Text className="text-sm font-medium text-text-primary">
-            {t('coach.actions.nutritionCheck')}
-          </Text>
-        </Pressable>
+        {CHAT_INTENTIONS.map((intention) => {
+          const { icon: Icon, iconColor, labelKey } = COACH_INTENTIONS[intention];
+          const isArmed = pendingIntention === intention;
+
+          return (
+            <Pressable
+              key={intention}
+              onPress={() => void toggleIntention(intention)}
+              className="flex-row items-center gap-2 whitespace-nowrap rounded-full border bg-bg-card px-4 py-2 active:scale-95"
+              style={{
+                borderColor: isArmed ? theme.colors.accent.primary : theme.colors.border.light,
+                borderWidth: isArmed ? 2 : 1,
+                backgroundColor: isArmed
+                  ? theme.colors.accent.primary10
+                  : theme.colors.background.card,
+              }}
+            >
+              <Icon size={theme.iconSize.md} color={iconColor(theme)} />
+              <Text className="text-sm font-medium text-text-primary">{t(labelKey)}</Text>
+            </Pressable>
+          );
+        })}
       </ScrollView>
     );
-  }, [
-    handleAnalyzeProgress,
-    handleGenerateMealPlan,
-    handleGenerateWorkouts,
-    handleNutritionCheck,
-    handleTrackMeal,
-    pendingIntention,
-    t,
-    theme.colors.accent.primary,
-    theme.colors.accent.primary10,
-    theme.colors.background.card,
-    theme.colors.border.light,
-    theme.colors.status.info,
-    theme.colors.status.success,
-    theme.colors.status.warning,
-    theme.iconSize.md,
-    theme.spacing.gap.sm,
-  ]);
+  }, [pendingIntention, t, theme, toggleIntention]);
 
   const headerRight = useMemo(
     () => (
@@ -1383,8 +1253,8 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
         props,
         t,
         theme,
-        failedMessageText,
-        clearFailedMessageText,
+        composerSeedText,
+        clearComposerSeed,
         handleAttachFile,
         pendingIntention === TRACK_MEAL,
         composerResetKey
@@ -1392,24 +1262,26 @@ export function CoachModal({ visible, onClose, onOpenMyMeals }: CoachModalProps)
     [
       t,
       theme,
-      failedMessageText,
-      clearFailedMessageText,
+      composerSeedText,
+      clearComposerSeed,
       handleAttachFile,
       pendingIntention,
       composerResetKey,
     ]
   );
 
+  // composerSeedText must reach renderSend too: it computes the enabled state from that value,
+  // so seeding only the composer would leave Send disabled until the user typed a character.
   const gcRenderSend = useCallback(
     (props: Parameters<typeof renderSend>[0]) =>
       renderSend(
         props,
         theme,
-        failedMessageText,
+        composerSeedText,
         !!attachedImage && pendingIntention === TRACK_MEAL,
         isSending
       ),
-    [theme, failedMessageText, attachedImage, pendingIntention, isSending]
+    [theme, composerSeedText, attachedImage, pendingIntention, isSending]
   );
 
   const gcRenderDay = useCallback(

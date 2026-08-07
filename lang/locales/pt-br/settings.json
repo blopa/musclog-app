@@ -310,7 +310,8 @@
         "cycle": "Ciclo",
         "settings": "Configurações",
         "progress": "Progresso",
-        "checkin": "Verificação"
+        "checkin": "Verificação",
+        "notes": "Notas"
       }
     },
     "nutritionDisplay": {

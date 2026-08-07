@@ -441,6 +441,21 @@ export const schema = appSchema({
       ],
     }),
 
+    // Free-form scratchpad notes ("70g of broccoli") the user jots down without committing to
+    // a nutrition log. Plaintext on purpose so the paged list query stays SQL-side; created_at
+    // is indexed because the only read path is
+    // `WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT n`.
+    tableSchema({
+      name: 'notes',
+      columns: [
+        { name: 'title', type: 'string', isOptional: true },
+        { name: 'body', type: 'string' },
+        { name: 'created_at', type: 'number', isIndexed: true },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
     // Settings
     tableSchema({
       name: 'settings',

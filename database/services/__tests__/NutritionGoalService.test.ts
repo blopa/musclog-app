@@ -13,7 +13,13 @@ jest.mock('@nozbe/watermelondb', () => ({
   },
 }));
 
-jest.mock('../../index', () => {
+// `NutritionGoalService` reaches the database through the `database/index` barrel;
+// loading it for real would evaluate every WatermelonDB model against the `Q`-only mock
+// above (`class X extends Model` with `Model` undefined), so point it at the same mocked
+// instance.
+jest.mock('../../index', () => require('../../database-instance'));
+
+jest.mock('../../database-instance', () => {
   const mockQuery = {
     fetch: jest.fn().mockResolvedValue([]),
     extend: jest.fn().mockReturnThis(),
@@ -318,6 +324,9 @@ describe('NutritionGoalService', () => {
           fiber: 30,
           eatingPhase: 'cut',
           isDynamic: true,
+          // A dynamic goal is only valid with both a target weight and a target date.
+          targetWeight: 75,
+          targetDate: startDate + 60 * 24 * 60 * 60 * 1000,
         },
         startDate
       );

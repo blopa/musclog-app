@@ -19,6 +19,11 @@
       "title": "Nothing logged today",
       "description": "Fuel your body!",
       "button": "Log"
+    },
+    "notes": {
+      "title": "No notes yet",
+      "description": "Jot down what you're making — 70g of broccoli, a recipe idea — and track it whenever you're ready.",
+      "buttonLabel": "Write your first note"
     }
   }
 }

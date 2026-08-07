@@ -1,0 +1,50 @@
+{
+  "notes": {
+    "title": "Notas",
+    "latestBadge": "Recente",
+    "sections": {
+      "latest": "Recentes",
+      "earlier": "Anteriores"
+    },
+    "screenMenu": {
+      "title": "Notas",
+      "subtitle": "Anote agora, registre depois",
+      "create": "Criar nova nota",
+      "createDescription": "Anote o que você fez ou comeu"
+    },
+    "noteMenu": {
+      "title": "Opções da nota",
+      "edit": "Editar",
+      "editDescription": "Altere o título ou o texto",
+      "duplicate": "Duplicar",
+      "duplicateDescription": "Copie para o topo da lista",
+      "track": "Registrar isto",
+      "trackDescription": "Envie ao treinador para registrar a comida",
+      "delete": "Excluir",
+      "deleteDescription": "Remova esta nota permanentemente"
+    },
+    "form": {
+      "createTitle": "Nova nota",
+      "editTitle": "Editar nota",
+      "titleLabel": "Título (opcional)",
+      "titlePlaceholder": "ex. Preparo do almoço",
+      "bodyLabel": "Nota",
+      "bodyPlaceholder": "ex. 70 g de brócolis, 120 g de peito de frango",
+      "bodyRequired": "Escreva algo antes de salvar",
+      "submit": "Salvar nota"
+    },
+    "deleteConfirm": {
+      "title": "Excluir nota?",
+      "message": "Esta nota será removida permanentemente. Não é possível desfazer.",
+      "confirm": "Excluir"
+    },
+    "createSuccess": "Nota salva",
+    "createError": "Não foi possível salvar a nota",
+    "updateSuccess": "Nota atualizada",
+    "updateError": "Não foi possível atualizar a nota",
+    "duplicateSuccess": "Nota duplicada",
+    "duplicateError": "Não foi possível duplicar a nota",
+    "deleteSuccess": "Nota excluída",
+    "deleteError": "Não foi possível excluir a nota"
+  }
+}

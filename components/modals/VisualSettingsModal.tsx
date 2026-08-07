@@ -1,17 +1,10 @@
 import {
   BarChart3,
   Beef,
-  Calendar,
-  ClipboardCheck,
   Droplets,
-  Dumbbell,
   Flame,
   LayoutGrid,
   Leaf,
-  MessageSquare,
-  Settings,
-  User,
-  UtensilsCrossed,
   Wheat,
   Wine,
 } from 'lucide-react-native';
@@ -21,11 +14,12 @@ import { Text, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
 import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/OptionsMultiSelector';
 import { PickerButton } from '@/components/theme/PickerButton';
-import type { HomeSummaryCard, NavItemKey } from '@/constants/settings';
+import { type HomeSummaryCard, NAV_ITEM_KEYS, type NavItemKey } from '@/constants/settings';
 import SettingsService from '@/database/services/SettingsService';
-import { useNavigationItems } from '@/hooks/useNavigationItems';
+import { isNavItemAvailable, useNavigationItems } from '@/hooks/useNavigationItems';
 import { useTheme } from '@/hooks/useTheme';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -36,17 +30,6 @@ type VisualSettingsModalProps = {
 };
 
 type SlotNumber = 1 | 2 | 3;
-
-const NAV_ITEM_ICON: Record<NavItemKey, typeof Dumbbell> = {
-  workouts: Dumbbell,
-  food: UtensilsCrossed,
-  profile: User,
-  coach: MessageSquare,
-  cycle: Calendar,
-  settings: Settings,
-  progress: BarChart3,
-  checkin: ClipboardCheck,
-};
 
 /** Ordered macro keys — index maps to the binary string position. */
 const MACRO_KEYS = ['carbs', 'protein', 'fats', 'fiber', 'alcohol'] as const;
@@ -81,7 +64,7 @@ function selectedToBinary(selected: MacroKey[]): string {
 export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
-  const { rawSlots, isAiConfigured, isCycleActive, setNavSlot } = useNavigationItems();
+  const { rawSlots, isCycleActive, setNavSlot } = useNavigationItems();
 
   const [activeSlot, setActiveSlot] = useState<SlotNumber | null>(null);
   const [macrosPopupVisible, setMacrosPopupVisible] = useState(false);
@@ -127,25 +110,6 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     3: t('settings.visualSettings.slot3Label'),
   };
 
-  const allNavItems: NavItemKey[] = [
-    'workouts',
-    'food',
-    'profile',
-    'coach',
-    'cycle',
-    'settings',
-    'progress',
-    'checkin',
-  ];
-
-  const isItemAvailable = (item: NavItemKey): boolean => {
-    if (item === 'cycle' && !isCycleActive) {
-      return false;
-    }
-
-    return true;
-  };
-
   const getItemLabel = (item: NavItemKey): string => t(`settings.visualSettings.navItems.${item}`);
 
   const getItemDescription = (item: NavItemKey): string => {
@@ -160,8 +124,8 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
 
   const menuItems =
     activeSlot !== null
-      ? allNavItems.filter(isItemAvailable).map((item) => ({
-          icon: NAV_ITEM_ICON[item],
+      ? NAV_ITEM_KEYS.filter((item) => isNavItemAvailable(item, isCycleActive)).map((item) => ({
+          icon: NAV_DESTINATIONS[item].icon,
           iconColor: theme.colors.accent.primary,
           iconBgColor: theme.colors.background.iconDark,
           title: getItemLabel(item),
@@ -174,7 +138,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
 
   const renderPickerButton = (slot: SlotNumber) => {
     const currentItem = currentSlots[slot];
-    const Icon = NAV_ITEM_ICON[currentItem];
+    const Icon = NAV_DESTINATIONS[currentItem].icon;
 
     return (
       <View key={slot} className="mb-4">

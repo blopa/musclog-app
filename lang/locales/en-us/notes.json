@@ -1,0 +1,50 @@
+{
+  "notes": {
+    "title": "Notes",
+    "latestBadge": "Latest",
+    "sections": {
+      "latest": "Latest",
+      "earlier": "Earlier"
+    },
+    "screenMenu": {
+      "title": "Notes",
+      "subtitle": "Jot it down now, track it later",
+      "create": "Create new note",
+      "createDescription": "Write down what you made or ate"
+    },
+    "noteMenu": {
+      "title": "Note options",
+      "edit": "Edit",
+      "editDescription": "Change the title or the text",
+      "duplicate": "Duplicate",
+      "duplicateDescription": "Copy it to the top of the list",
+      "track": "Track this",
+      "trackDescription": "Send it to the coach to log the food",
+      "delete": "Delete",
+      "deleteDescription": "Remove this note permanently"
+    },
+    "form": {
+      "createTitle": "New note",
+      "editTitle": "Edit note",
+      "titleLabel": "Title (optional)",
+      "titlePlaceholder": "e.g. Lunch prep",
+      "bodyLabel": "Note",
+      "bodyPlaceholder": "e.g. 70g of broccoli, 120g chicken breast",
+      "bodyRequired": "Write something before saving",
+      "submit": "Save note"
+    },
+    "deleteConfirm": {
+      "title": "Delete note?",
+      "message": "This note will be removed permanently. This can't be undone.",
+      "confirm": "Delete"
+    },
+    "createSuccess": "Note saved",
+    "createError": "Couldn't save the note",
+    "updateSuccess": "Note updated",
+    "updateError": "Couldn't update the note",
+    "duplicateSuccess": "Note duplicated",
+    "duplicateError": "Couldn't duplicate the note",
+    "deleteSuccess": "Note deleted",
+    "deleteError": "Couldn't delete the note"
+  }
+}

@@ -112,6 +112,12 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 - **Custom System Prompts**: Create and toggle multiple context-specific prompts (general, nutrition, exercise)
 - **Flexible Config**: Choose model, configure API keys, set insight frequency, control conversation history length
 
+### 📝 Notes
+
+- Jot down what you're making ("70g of broccoli", a recipe idea) without committing to a nutrition log
+- Latest two notes are highlighted; older ones load in pages, each with edit / duplicate / delete
+- **Track this**: hand a note to the AI Coach to turn it into a logged meal when you're ready
+
 ### 🔗 Health Integration
 
 - Sync with Google Health Connect (Android) for weight, nutrition, and exercise data
@@ -145,7 +151,7 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 | Graphics       | @shopify/react-native-skia                                           |
 | AI             | Google Generative AI + OpenAI SDK                                    |
 | Camera / OCR   | react-native-vision-camera, Quagga2, ZXing, ML Kit OCR, Tesseract.js |
-| Health         | expo-health-connect / react-native-health-connect (Android)          |
+| Health         | react-native-health-connect (Android)                                |
 |                | @kingstinct/react-native-healthkit (iOS)                             |
 | Localization   | i18next + react-i18next                                              |
 | Animations     | React Native Reanimated 4                                            |

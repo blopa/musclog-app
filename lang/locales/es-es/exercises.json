@@ -71,7 +71,6 @@
     "emptyGroupMessage": "Toca para ver los ejercicios de {{muscleGroup}}.",
     "createExercise": {
       "title": "Crear ejercicio",
-      "imagePermissionDenied": "Se requiere acceso a la biblioteca de fotos",
       "imageSelected": "Imagen seleccionada",
       "videoURLSet": "URL establecida",
       "description": "Añade un nuevo ejercicio a tu biblioteca",

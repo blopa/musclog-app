@@ -51,6 +51,7 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 - Scale meal portions up or down while maintaining macro ratios
 - Log meals retroactively for past dates
 - Move, copy, combine, or group meal entries
+- Copy a whole previous day into the current one — pick a recent logged day, review its meals, untick anything you didn't repeat, and confirm (meal types, meal groups, and times of day are preserved)
 - Configurable carb convention (total carbs vs. net carbs, based on region/label type)
 - Intuitive eating mode (hides calorie and macro numbers)
 - Fasting days (opt-in): mark an empty day as an intentional fast so it counts as a real 0-calorie day in TDEE, averages, check-ins, and streaks — while unflagged empty days (forgotten logs) are skipped
@@ -134,6 +135,19 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 - Daily water intake prompt based on TDEE estimate
 - Daily supplement reminder for pending doses
 - All prompts are individually dismissible
+
+---
+
+## Notes
+
+- Free-form scratchpad for jotting things down ("70g of broccoli") without committing to a nutrition log
+- Optional title plus a required note body
+- The two newest notes are highlighted as cards at the top; older notes appear beneath in a paged "Earlier" list with a "Load more" button
+- Per-note menu: edit, duplicate, delete (with a confirmation prompt), and — when an AI provider is configured — **Track this**
+- **Track this** hands the note's text to the AI Coach with meal tracking pre-armed — the user reviews the text, sends it, then confirms the parsed meal before anything is logged. The option is hidden entirely when no AI provider is set up, since it would otherwise dead-end
+- Notes never affect macros, goals, streaks, or any aggregate on their own
+- Reachable from the account menu, and assignable to a bottom navigation slot in Visual settings
+- Included in backup and restore
 
 ---
 

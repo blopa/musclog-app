@@ -156,7 +156,12 @@ jest.mock('../../utils/workoutHistory', () => ({
 }));
 
 jest.mock('react-i18next', () => ({
+  // `lang/lang.ts` loads for real further down the graph and calls
+  // `i18n.use(initReactI18next)`, which throws on an undefined module.
+  initReactI18next: jest.requireActual('react-i18next').initReactI18next,
   useTranslation: () => ({
+    // `useDateFnsLocale` reads `i18n.language` off the same hook result.
+    i18n: { language: 'en-US' },
     t: (key: string) => {
       const translations: Record<string, string> = {
         'common.today': 'Today',
@@ -172,15 +177,19 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
-jest.mock('../../theme', () => ({
-  theme: {
+// `useTheme()` picks between `darkTheme` and `lightTheme`, so both have to exist —
+// otherwise it returns undefined and every workout fails to process.
+jest.mock('../../theme', () => {
+  const mockTheme = {
     colors: {
       background: {
         imageLight: '#d4b5a0',
       },
     },
-  },
-}));
+  };
+
+  return { darkTheme: mockTheme, lightTheme: mockTheme, theme: mockTheme };
+});
 
 jest.mock('../useSettings', () => ({
   useSettings: () => ({

@@ -22,6 +22,8 @@
     "oneWeekAgo": "1 week geleden",
     "weeksAgo": "{{count}} weken geleden",
     "monthsAgo": "{{count}} maanden geleden",
+    "monthsAgo_one": "{{count}} maand geleden",
+    "monthsAgo_other": "{{count}} maanden geleden",
     "oneMonthFromNow": "over 1 maand",
     "monthsFromNow": "over {{count}} maanden",
     "seeAll": "Alles bekijken",
@@ -145,6 +147,12 @@
     },
     "cycle": {
       "title": "Musclog - Cyclus"
+    },
+    "relativeTime": {
+      "now": "zojuist",
+      "minutes": "{{value}} min geleden",
+      "hours": "{{value}} u geleden",
+      "days": "{{value}} d geleden"
     }
   }
 }

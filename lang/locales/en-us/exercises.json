@@ -71,7 +71,6 @@
     "emptyGroupMessage": "Tap to view {{muscleGroup}} exercises.",
     "createExercise": {
       "title": "Create exercise",
-      "imagePermissionDenied": "Photo library access is required",
       "imageSelected": "Image selected",
       "videoURLSet": "URL set",
       "description": "Add a new exercise to your library",

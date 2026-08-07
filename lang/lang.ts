@@ -61,6 +61,7 @@ import enUsHome from './locales/en-us/home.json';
 import enUsLogSetPerformance from './locales/en-us/logSetPerformance.json';
 import enUsMealFoods from './locales/en-us/meal_foods.json';
 import enUsMeals from './locales/en-us/meals.json';
+import enUsNotes from './locales/en-us/notes.json';
 import enUsNotifications from './locales/en-us/notifications.json';
 import enUsNutrition from './locales/en-us/nutrition.json';
 import enUsNutritionLogs from './locales/en-us/nutrition_logs.json';
@@ -136,6 +137,7 @@ import esEsHome from './locales/es-es/home.json';
 import esEsLogSetPerformance from './locales/es-es/logSetPerformance.json';
 import esEsMealFoods from './locales/es-es/meal_foods.json';
 import esEsMeals from './locales/es-es/meals.json';
+import esEsNotes from './locales/es-es/notes.json';
 import esEsNotifications from './locales/es-es/notifications.json';
 import esEsNutrition from './locales/es-es/nutrition.json';
 import esEsNutritionLogs from './locales/es-es/nutrition_logs.json';
@@ -211,6 +213,7 @@ import nlNlHome from './locales/nl-nl/home.json';
 import nlNlLogSetPerformance from './locales/nl-nl/logSetPerformance.json';
 import nlNlMealFoods from './locales/nl-nl/meal_foods.json';
 import nlNlMeals from './locales/nl-nl/meals.json';
+import nlNlNotes from './locales/nl-nl/notes.json';
 import nlNlNotifications from './locales/nl-nl/notifications.json';
 import nlNlNutrition from './locales/nl-nl/nutrition.json';
 import nlNlNutritionLogs from './locales/nl-nl/nutrition_logs.json';
@@ -286,6 +289,7 @@ import ptBrHome from './locales/pt-br/home.json';
 import ptBrLogSetPerformance from './locales/pt-br/logSetPerformance.json';
 import ptBrMealFoods from './locales/pt-br/meal_foods.json';
 import ptBrMeals from './locales/pt-br/meals.json';
+import ptBrNotes from './locales/pt-br/notes.json';
 import ptBrNotifications from './locales/pt-br/notifications.json';
 import ptBrNutrition from './locales/pt-br/nutrition.json';
 import ptBrNutritionLogs from './locales/pt-br/nutrition_logs.json';
@@ -361,6 +365,7 @@ import ruRuHome from './locales/ru-ru/home.json';
 import ruRuLogSetPerformance from './locales/ru-ru/logSetPerformance.json';
 import ruRuMealFoods from './locales/ru-ru/meal_foods.json';
 import ruRuMeals from './locales/ru-ru/meals.json';
+import ruRuNotes from './locales/ru-ru/notes.json';
 import ruRuNotifications from './locales/ru-ru/notifications.json';
 import ruRuNutrition from './locales/ru-ru/nutrition.json';
 import ruRuNutritionLogs from './locales/ru-ru/nutrition_logs.json';
@@ -457,6 +462,7 @@ const resources = {
       ...enUsLogSetPerformance,
       ...enUsMealFoods,
       ...enUsMeals,
+      ...enUsNotes,
       ...enUsNotifications,
       ...enUsNutrition,
       ...enUsNutritionGoals,
@@ -536,6 +542,7 @@ const resources = {
       ...esEsLogSetPerformance,
       ...esEsMealFoods,
       ...esEsMeals,
+      ...esEsNotes,
       ...esEsNotifications,
       ...esEsNutrition,
       ...esEsNutritionGoals,
@@ -615,6 +622,7 @@ const resources = {
       ...nlNlLogSetPerformance,
       ...nlNlMealFoods,
       ...nlNlMeals,
+      ...nlNlNotes,
       ...nlNlNotifications,
       ...nlNlNutrition,
       ...nlNlNutritionGoals,
@@ -694,6 +702,7 @@ const resources = {
       ...ptBrLogSetPerformance,
       ...ptBrMealFoods,
       ...ptBrMeals,
+      ...ptBrNotes,
       ...ptBrNotifications,
       ...ptBrNutrition,
       ...ptBrNutritionGoals,
@@ -773,6 +782,7 @@ const resources = {
       ...ruRuLogSetPerformance,
       ...ruRuMealFoods,
       ...ruRuMeals,
+      ...ruRuNotes,
       ...ruRuNotifications,
       ...ruRuNutrition,
       ...ruRuNutritionGoals,

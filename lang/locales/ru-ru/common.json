@@ -22,6 +22,8 @@
     "oneWeekAgo": "1 неделю назад",
     "weeksAgo": "{{count}} недель назад",
     "monthsAgo": "{{count}} месяцев назад",
+    "monthsAgo_one": "{{count}} месяц назад",
+    "monthsAgo_other": "{{count}} месяцев назад",
     "oneMonthFromNow": "Через 1 месяц",
     "monthsFromNow": "Через {{count}} месяцев",
     "seeAll": "Смотреть все",
@@ -145,6 +147,12 @@
     },
     "cycle": {
       "title": "Musclog - Цикл"
+    },
+    "relativeTime": {
+      "now": "только что",
+      "minutes": "{{value}} мин назад",
+      "hours": "{{value}} ч назад",
+      "days": "{{value}} д назад"
     }
   }
 }

@@ -13,6 +13,9 @@ const CONFIG = {
     '../components/**/*.tsx',
     '../utils/**/*.ts',
     '../hooks/**/*.ts',
+    // Non-JSX component modules (registry tables, helpers) were previously invisible to this
+    // scan, so translation keys held in them read as unused.
+    '../components/**/*.ts',
     '../types/**/*.ts',
     '../services/**/*.ts',
   ],
@@ -22,7 +25,7 @@ const CONFIG = {
     /t\(['"`]([^'"`]+)['"`]\s*,/g, // t('key', options)
     /t\(`([^`]+)`\s*,/g, // t(`key`, options)
     // Keys passed via variables: titleKey: 'profile.stats.weight', descriptionKey: '...', etc.
-    /(?:titleKey|descriptionKey|labelKey|messageKey)\s*:\s*['"]([^'"]+)['"]/g,
+    /(?:titleKey|subtitleKey|descriptionKey|labelKey|messageKey|promptKey|hintKey)\s*:\s*['"]([^'"]+)['"]/g,
     // Keys in ternary branches: condition ? 'profile.gender.male' : 'profile.gender.female'
     /\?\s*['"]([^'"]+\.[^'"]+)['"]\s*:/g,
     /:\s*['"]([^'"]+\.[^'"]+)['"]\s*[;),]/g,
@@ -117,7 +120,13 @@ class TranslationScanner {
       }
     }
 
-    return [...new Set(files)]; // Remove duplicates
+    // glob's `ignore` is matched against the `../`-relative match paths, so the `**/__tests__/**`
+    // style entries in CONFIG.ignorePatterns never fire and test files were being scanned. Their
+    // `it('...')` descriptions then parse as translation keys via the loose ternary patterns and
+    // flood the missing-key report. Re-apply the exclusion on the resolved absolute path.
+    const isTestFile = (filePath) => /(^|[\\/])__tests__[\\/]|\.(test|spec)\.tsx?$/.test(filePath);
+
+    return [...new Set(files)].filter((filePath) => !isTestFile(filePath));
   }
 
   // Extract translation keys from a single file

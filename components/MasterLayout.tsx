@@ -26,6 +26,10 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
     [openCamera]
   );
 
+  // NavigationMenu wires this straight into `onPress`, so React Native would hand openCoach a
+  // GestureResponderEvent as its options argument. Swallow it.
+  const handleCoachPress = useCallback(() => openCoach(), [openCoach]);
+
   return (
     <View
       className="flex-1 bg-bg-primary"
@@ -38,7 +42,7 @@ export function MasterLayout({ children, showNavigationMenu = true }: MasterLayo
       <View className="relative flex-1 overflow-hidden">{children}</View>
       {showNavigationMenu ? (
         <>
-          <NavigationMenu onCoachPress={openCoach} onCameraPress={handleCameraPress} />
+          <NavigationMenu onCoachPress={handleCoachPress} onCameraPress={handleCameraPress} />
           <View pointerEvents="none" style={{ height: theme.spacing.padding['4xl'] }} />
         </>
       ) : null}

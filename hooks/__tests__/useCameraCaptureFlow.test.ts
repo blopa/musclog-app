@@ -3,7 +3,6 @@
  */
 
 import { renderHook } from '@testing-library/react';
-import * as ImagePicker from 'expo-image-picker';
 
 import { useCameraCaptureFlow } from '@/hooks/useCameraCaptureFlow';
 
@@ -23,11 +22,10 @@ jest.mock('@/utils/file', () => ({
   openCropperAsync: (...args: unknown[]) => mockOpenCropperAsync(...args),
 }));
 
-jest.mock('expo-image-picker', () => ({
-  launchImageLibraryAsync: jest.fn(),
+const mockPickImageFromGallery = jest.fn();
+jest.mock('@/utils/galleryImagePicker', () => ({
+  pickImageFromGallery: (...args: unknown[]) => mockPickImageFromGallery(...args),
 }));
-
-const mockLaunchImageLibrary = ImagePicker.launchImageLibraryAsync as jest.Mock;
 
 describe('useCameraCaptureFlow', () => {
   const renderFlow = ({
@@ -51,10 +49,7 @@ describe('useCameraCaptureFlow', () => {
     jest.clearAllMocks();
     jest.spyOn(console, 'error').mockImplementation(() => {});
     mockOpenCropperAsync.mockResolvedValue({ path: 'file:///cropped.jpg' });
-    mockLaunchImageLibrary.mockResolvedValue({
-      canceled: false,
-      assets: [{ uri: 'file:///picked.jpg' }],
-    });
+    mockPickImageFromGallery.mockResolvedValue('file:///picked.jpg');
   });
 
   afterEach(() => {
@@ -62,20 +57,46 @@ describe('useCameraCaptureFlow', () => {
   });
 
   describe('takePicture', () => {
-    it('captures and processes the raw photo without opening the crop tool', async () => {
+    // Same crop step as a gallery pick: the user gets to trim the shot before it is analysed,
+    // and `process` only ever sees a cropped image.
+    it('routes the shutter photo through the crop tool at the configured quality', async () => {
       const { result, takePictureAsync, process } = renderFlow({ quality: 0.85 });
 
       await result.current.takePicture();
 
       expect(takePictureAsync).toHaveBeenCalledTimes(1);
-      expect(mockOpenCropperAsync).not.toHaveBeenCalled();
-      expect(process).toHaveBeenCalledWith('file:///shot.jpg');
+      expect(mockOpenCropperAsync).toHaveBeenCalledWith({
+        imageUri: 'file:///shot.jpg',
+        format: 'jpeg',
+        compressImageQuality: 0.85,
+      });
+      expect(process).toHaveBeenCalledWith('file:///cropped.jpg');
+      expect(mockShowSnackbar).not.toHaveBeenCalled();
+    });
+
+    it('ends silently without processing when the crop is cancelled', async () => {
+      mockOpenCropperAsync.mockResolvedValue(null);
+      const { result, process } = renderFlow();
+
+      await result.current.takePicture();
+
+      expect(process).not.toHaveBeenCalled();
       expect(mockShowSnackbar).not.toHaveBeenCalled();
     });
 
     it('shows the camera-error snackbar when the capture fails', async () => {
       const takePictureAsync = jest.fn().mockRejectedValue(new Error('capture failed'));
       const { result, process } = renderFlow({ takePictureAsync });
+
+      await result.current.takePicture();
+
+      expect(process).not.toHaveBeenCalled();
+      expect(mockShowSnackbar).toHaveBeenCalledWith('error', 'food.aiCamera.cameraError');
+    });
+
+    it('shows the camera-error snackbar when cropping a captured image fails', async () => {
+      mockOpenCropperAsync.mockRejectedValue(new Error('crop failed'));
+      const { result, process } = renderFlow();
 
       await result.current.takePicture();
 
@@ -95,14 +116,15 @@ describe('useCameraCaptureFlow', () => {
   });
 
   describe('pickFromGallery', () => {
-    it('crops the picked image at the configured quality and processes it', async () => {
+    // The crop is the only lossy step: the picker is asked for the image uncompressed, so the
+    // requested quality is applied once rather than compounding into ~0.72 and costing the AI /
+    // barcode paths the label legibility they depend on.
+    it('applies the configured quality at the crop step only, then processes it', async () => {
       const { result, process } = renderFlow({ quality: 0.85 });
 
       await result.current.pickFromGallery();
 
-      expect(mockLaunchImageLibrary).toHaveBeenCalledWith(
-        expect.objectContaining({ quality: 0.85 })
-      );
+      expect(mockPickImageFromGallery).toHaveBeenCalledWith();
       expect(mockOpenCropperAsync).toHaveBeenCalledWith({
         imageUri: 'file:///picked.jpg',
         format: 'jpeg',
@@ -111,23 +133,13 @@ describe('useCameraCaptureFlow', () => {
       expect(process).toHaveBeenCalledWith('file:///cropped.jpg');
     });
 
-    it('launches the system photo picker with no permission request and no legacy override', async () => {
-      const { result, process } = renderFlow();
-
-      await result.current.pickFromGallery();
-
-      expect(mockLaunchImageLibrary).toHaveBeenCalledWith(
-        expect.not.objectContaining({ legacy: expect.anything() })
-      );
-      expect(process).toHaveBeenCalledWith('file:///cropped.jpg');
-    });
-
     it('ends silently when the picker is cancelled', async () => {
-      mockLaunchImageLibrary.mockResolvedValue({ canceled: true, assets: [] });
+      mockPickImageFromGallery.mockResolvedValue(null);
       const { result, process } = renderFlow();
 
       await result.current.pickFromGallery();
 
+      expect(mockOpenCropperAsync).not.toHaveBeenCalled();
       expect(process).not.toHaveBeenCalled();
       expect(mockShowSnackbar).not.toHaveBeenCalled();
     });
@@ -141,8 +153,18 @@ describe('useCameraCaptureFlow', () => {
       expect(mockShowSnackbar).toHaveBeenCalledWith('error', 'food.aiCamera.cameraError');
     });
 
+    it('shows the camera-error snackbar when cropping the picked image fails', async () => {
+      mockOpenCropperAsync.mockRejectedValue(new Error('crop failed'));
+      const { result, process } = renderFlow();
+
+      await result.current.pickFromGallery();
+
+      expect(process).not.toHaveBeenCalled();
+      expect(mockShowSnackbar).toHaveBeenCalledWith('error', 'food.aiCamera.cameraError');
+    });
+
     it('shows the gallery-error snackbar when the picker itself fails', async () => {
-      mockLaunchImageLibrary.mockRejectedValue(new Error('picker crashed'));
+      mockPickImageFromGallery.mockRejectedValue(new Error('picker crashed'));
       const { result, process } = renderFlow();
 
       await result.current.pickFromGallery();

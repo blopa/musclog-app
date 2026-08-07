@@ -310,7 +310,8 @@
         "cycle": "Cycle",
         "settings": "Settings",
         "progress": "Progress",
-        "checkin": "Check-in"
+        "checkin": "Check-in",
+        "notes": "Notes"
       }
     },
     "nutritionDisplay": {

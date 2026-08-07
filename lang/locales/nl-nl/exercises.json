@@ -71,7 +71,6 @@
     "emptyGroupMessage": "Tik om {{muscleGroup}} oefeningen te bekijken.",
     "createExercise": {
       "title": "Oefening maken",
-      "imagePermissionDenied": "Toegang tot fotobibliotheek is vereist",
       "imageSelected": "Afbeelding geselecteerd",
       "videoURLSet": "URL ingesteld",
       "description": "Voeg een nieuwe oefening toe aan je bibliotheek",

@@ -562,3 +562,17 @@ export function formatUtcNormalizedDayIntl(dayKeyMs: number, localeTag: string):
     timeZone: 'UTC',
   }).format(dayKeyMs);
 }
+
+/**
+ * Longer sibling of {@link formatUtcNormalizedDayIntl} that leads with the weekday
+ * ("Tue, 4 Aug"). Used where a day is being *recognised* rather than just labelled —
+ * picking a past day to copy is far easier by weekday than by date.
+ */
+export function formatUtcNormalizedDayWithWeekdayIntl(dayKeyMs: number, localeTag: string): string {
+  return new Intl.DateTimeFormat(localeTag, {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    timeZone: 'UTC',
+  }).format(dayKeyMs);
+}

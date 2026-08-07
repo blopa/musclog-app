@@ -1,7 +1,7 @@
 import type { LucideIcon } from 'lucide-react-native';
 import { Activity, Dumbbell, Flame, Heart, Target, Trophy, Zap } from 'lucide-react-native';
 
-export const WORKOUT_ICON_MAP: Record<string, LucideIcon> = {
+export const WORKOUT_ICON_MAP = {
   dumbbell: Dumbbell,
   target: Target,
   zap: Zap,
@@ -9,7 +9,7 @@ export const WORKOUT_ICON_MAP: Record<string, LucideIcon> = {
   activity: Activity,
   heart: Heart,
   flame: Flame,
-};
+} satisfies Record<string, LucideIcon>;
 
 export type WorkoutIconName = keyof typeof WORKOUT_ICON_MAP;
 
@@ -18,7 +18,9 @@ export function getWorkoutIcon(icon?: string | null): LucideIcon {
     return Dumbbell;
   }
 
-  return WORKOUT_ICON_MAP[icon] ?? Dumbbell;
+  return Object.hasOwn(WORKOUT_ICON_MAP, icon)
+    ? WORKOUT_ICON_MAP[icon as WorkoutIconName]
+    : Dumbbell;
 }
 
 export const WORKOUT_ICON_OPTIONS: { value: WorkoutIconName; label: string }[] = [

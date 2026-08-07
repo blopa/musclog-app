@@ -6,9 +6,11 @@ import { IMessage } from 'react-native-gifted-chat';
 import {
   ANALYZE_PROGRESS,
   CHAT_INTENTION_KEY,
+  type ChatIntention,
   GENERATE_MEAL_PLAN,
   GENERATE_MY_WORKOUTS,
   NUTRITION_CHECK,
+  parseChatIntention,
   TRACK_MEAL,
 } from '@/constants/chat';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
@@ -201,7 +203,7 @@ function toGiftedMessage(record: ChatMessage): ExtendedIMessage {
 export type UseChatMessagesResult = {
   messages: ExtendedIMessage[];
   pendingCoachMessage: ExtendedIMessage | null;
-  pendingIntention: string | null;
+  pendingIntention: ChatIntention | null;
   isLoading: boolean;
   isLoadingMore: boolean;
   isSending: boolean;
@@ -228,13 +230,24 @@ export type UseChatMessagesResult = {
     portionGrams: number,
     mealName?: string
   ) => Promise<void>;
+  /**
+   * Arms an intention: persists it under `CHAT_INTENTION_KEY` and mirrors it into state. Paired
+   * with `clearIntention` so this hook stays the *only* writer of that key — a second writer
+   * elsewhere would race this hook's own load, which reads the key on mount.
+   */
+  setIntention: (intention: ChatIntention) => Promise<void>;
   clearIntention: () => Promise<void>;
-  setPendingIntention: (intention: string | null) => void;
   showConfetti: boolean;
 };
 
 export function useChatMessages(
-  conversationContext: 'general' | 'exercise' | 'nutrition' = 'general'
+  conversationContext: 'general' | 'exercise' | 'nutrition' = 'general',
+  /**
+   * Arms this intention as the chat loads, for callers that open the coach with one already
+   * chosen (a note's "Track this"). Seeded inside the load effect rather than by a separate
+   * effect in the modal, so there is exactly one writer of `CHAT_INTENTION_KEY` per mount.
+   */
+  initialIntention?: ChatIntention
 ): UseChatMessagesResult {
   const { t } = useTranslation();
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
@@ -248,8 +261,12 @@ export function useChatMessages(
   const [failedMessageText, setFailedMessageText] = useState<string | null>(null);
   const [ephemeralErrorMessage, setEphemeralErrorMessage] = useState<string | null>(null);
   const [ephemeralCreditsError, setEphemeralCreditsError] = useState(false);
-  const [pendingIntention, setPendingIntention] = useState<string | null>(null);
+  const [pendingIntention, setPendingIntention] = useState<ChatIntention | null>(null);
 
+  // Consumed exactly once, by the first run of the load effect below. Switching conversation
+  // context re-runs that effect, and re-arming an intention the user has since cleared would be
+  // wrong — so the caller's request is taken, not re-read.
+  const requestedIntentionRef = useRef<ChatIntention | null>(initialIntention ?? null);
   // ASC-ordered cache of all loaded records for building AI history
   const rawMessagesRef = useRef<ChatMessage[]>([]);
   // Ref mirror for pendingCoachMessage to avoid stale closure in sendMessage
@@ -268,7 +285,18 @@ export function useChatMessages(
       setHasMore(false);
       rawMessagesRef.current = [];
 
-      const intention = await AsyncStorage.getItem(CHAT_INTENTION_KEY);
+      // Seed the armed intention. A caller-supplied one wins and is persisted right here, so this
+      // effect stays the single writer of CHAT_INTENTION_KEY on mount — a second writer (an effect
+      // in CoachModal, say) would race this read and could silently lose the arm.
+      const requestedIntention = requestedIntentionRef.current;
+      requestedIntentionRef.current = null;
+
+      if (requestedIntention) {
+        await AsyncStorage.setItem(CHAT_INTENTION_KEY, requestedIntention);
+      }
+
+      const intention =
+        requestedIntention ?? parseChatIntention(await AsyncStorage.getItem(CHAT_INTENTION_KEY));
       if (!cancelled) {
         setPendingIntention(intention);
       }
@@ -996,12 +1024,13 @@ export function useChatMessages(
     deleteMessage,
     markMealAsTracked,
     pendingIntention,
+    setIntention: async (intention: ChatIntention) => {
+      await AsyncStorage.setItem(CHAT_INTENTION_KEY, intention);
+      setPendingIntention(intention);
+    },
     clearIntention: async () => {
       await AsyncStorage.removeItem(CHAT_INTENTION_KEY);
       setPendingIntention(null);
-    },
-    setPendingIntention: (intention: string | null) => {
-      setPendingIntention(intention);
     },
     showConfetti,
   };

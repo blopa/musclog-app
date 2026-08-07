@@ -1,0 +1,50 @@
+{
+  "notes": {
+    "title": "Notities",
+    "latestBadge": "Nieuwste",
+    "sections": {
+      "latest": "Nieuwste",
+      "earlier": "Eerder"
+    },
+    "screenMenu": {
+      "title": "Notities",
+      "subtitle": "Schrijf het nu op, log het later",
+      "create": "Nieuwe notitie",
+      "createDescription": "Noteer wat je hebt gemaakt of gegeten"
+    },
+    "noteMenu": {
+      "title": "Notitieopties",
+      "edit": "Bewerken",
+      "editDescription": "Wijzig de titel of de tekst",
+      "duplicate": "Dupliceren",
+      "duplicateDescription": "Kopieer naar boven aan de lijst",
+      "track": "Dit loggen",
+      "trackDescription": "Stuur naar de coach om het eten te loggen",
+      "delete": "Verwijderen",
+      "deleteDescription": "Verwijder deze notitie definitief"
+    },
+    "form": {
+      "createTitle": "Nieuwe notitie",
+      "editTitle": "Notitie bewerken",
+      "titleLabel": "Titel (optioneel)",
+      "titlePlaceholder": "bijv. Lunch voorbereiden",
+      "bodyLabel": "Notitie",
+      "bodyPlaceholder": "bijv. 70 g broccoli, 120 g kipfilet",
+      "bodyRequired": "Schrijf iets voordat je opslaat",
+      "submit": "Notitie opslaan"
+    },
+    "deleteConfirm": {
+      "title": "Notitie verwijderen?",
+      "message": "Deze notitie wordt definitief verwijderd. Dit kan niet ongedaan worden gemaakt.",
+      "confirm": "Verwijderen"
+    },
+    "createSuccess": "Notitie opgeslagen",
+    "createError": "Kon de notitie niet opslaan",
+    "updateSuccess": "Notitie bijgewerkt",
+    "updateError": "Kon de notitie niet bijwerken",
+    "duplicateSuccess": "Notitie gedupliceerd",
+    "duplicateError": "Kon de notitie niet dupliceren",
+    "deleteSuccess": "Notitie verwijderd",
+    "deleteError": "Kon de notitie niet verwijderen"
+  }
+}

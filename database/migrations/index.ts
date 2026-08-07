@@ -22,6 +22,7 @@ import migrationV20 from '@/database/migrations/2026/06/migration-v20';
 import migrationV21 from '@/database/migrations/2026/06/migration-v21';
 import migrationV22 from '@/database/migrations/2026/06/migration-v22';
 import migrationV23 from '@/database/migrations/2026/07/migration-v23';
+import migrationV24 from '@/database/migrations/2026/08/migration-v24';
 
 export const migrations = schemaMigrations({
   migrations: [
@@ -111,5 +112,9 @@ export const migrations = schemaMigrations({
     // historical macro/calorie averages count them as a real 0-kcal day, while unflagged
     // empty days (forgotten logs) are skipped. Gated by the ENABLE_FASTED_DAY setting.
     migrationV23,
+    // Version 24: Add notes table. Free-form scratchpad entries ("70g of broccoli") the user
+    // jots down without committing to a nutrition log; a note can later be handed to the
+    // coach's TRACK_MEAL flow. Stored in plaintext so the paged list query stays SQL-side.
+    migrationV24,
   ],
 });

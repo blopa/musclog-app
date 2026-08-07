@@ -22,6 +22,8 @@
     "oneWeekAgo": "1 week ago",
     "weeksAgo": "{{count}} weeks ago",
     "monthsAgo": "{{count}} months ago",
+    "monthsAgo_one": "{{count}} month ago",
+    "monthsAgo_other": "{{count}} months ago",
     "oneMonthFromNow": "1 month from now",
     "monthsFromNow": "{{count}} months from now",
     "seeAll": "See all",
@@ -145,6 +147,12 @@
     },
     "cycle": {
       "title": "Musclog - Cycle"
+    },
+    "relativeTime": {
+      "now": "just now",
+      "minutes": "{{value}}m ago",
+      "hours": "{{value}}h ago",
+      "days": "{{value}}d ago"
     }
   }
 }

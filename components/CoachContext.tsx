@@ -1,14 +1,27 @@
 import { useRouter } from 'expo-router';
 import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react';
 
+import type { ChatIntention } from '@/constants/chat';
 import { useSettings } from '@/hooks/useSettings';
 
 import { AINotConfiguredModal } from './modals/AINotConfiguredModal';
 import { CoachModal } from './modals/CoachModal';
 import MyMealsModal from './modals/MyMealsModal';
 
+export type OpenCoachOptions = {
+  /** Seeds the chat composer without sending (e.g. "Track this" from a note). */
+  composerText?: string;
+  /** Armed when the coach opens, exactly as if the user had tapped that quick-action chip. */
+  intention?: ChatIntention;
+};
+
 type CoachContextType = {
-  openCoach: () => void;
+  /**
+   * Never pass this straight to an `onPress` handler — React Native supplies a
+   * `GestureResponderEvent` as the first argument, which would be read as `options`.
+   * Wrap it: `() => openCoach()`.
+   */
+  openCoach: (options?: OpenCoachOptions) => void;
 };
 
 const CoachContext = createContext<CoachContextType | undefined>(undefined);
@@ -19,14 +32,27 @@ export function CoachProvider({ children }: { children: ReactNode }) {
   const [isVisible, setIsVisible] = useState(false);
   const [isNotConfiguredVisible, setIsNotConfiguredVisible] = useState(false);
   const [isMyMealsVisible, setIsMyMealsVisible] = useState(false);
+  const [openOptions, setOpenOptions] = useState<OpenCoachOptions | null>(null);
 
-  const openCoach = useCallback(() => {
-    if (isAiConfigured) {
+  const openCoach = useCallback(
+    (options?: OpenCoachOptions) => {
+      if (!isAiConfigured) {
+        // CoachModal never mounts here, so the options would have nothing to apply to — don't
+        // stash them, or they'd outlive the request that carried them.
+        setIsNotConfiguredVisible(true);
+        return;
+      }
+
+      setOpenOptions(options ?? null);
       setIsVisible(true);
-    } else {
-      setIsNotConfiguredVisible(true);
-    }
-  }, [isAiConfigured]);
+    },
+    [isAiConfigured]
+  );
+
+  const closeCoach = useCallback(() => {
+    setIsVisible(false);
+    setOpenOptions(null);
+  }, []);
 
   const openMyMealsFromCoach = useCallback(() => {
     setIsMyMealsVisible(true);
@@ -42,8 +68,10 @@ export function CoachProvider({ children }: { children: ReactNode }) {
       {isVisible ? (
         <CoachModal
           visible={isVisible}
-          onClose={() => setIsVisible(false)}
+          onClose={closeCoach}
           onOpenMyMeals={openMyMealsFromCoach}
+          initialComposerText={openOptions?.composerText}
+          initialIntention={openOptions?.intention}
         />
       ) : null}
       <AINotConfiguredModal

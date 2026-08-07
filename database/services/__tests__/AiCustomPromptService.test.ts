@@ -10,7 +10,7 @@ jest.mock('@nozbe/watermelondb', () => ({
   },
 }));
 
-jest.mock('../../index', () => {
+jest.mock('../../database-instance', () => {
   const mockQuery = {
     fetch: jest.fn().mockResolvedValue([]),
     extend: jest.fn(function () {

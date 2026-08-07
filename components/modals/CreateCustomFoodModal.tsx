@@ -1,4 +1,3 @@
-import * as ImagePicker from 'expo-image-picker';
 import {
   AlignLeft,
   Apple,
@@ -55,13 +54,13 @@ import { useTheme } from '@/hooks/useTheme';
 import { manualEntryCarbsConvention, totalCarbsFromSource } from '@/utils/carbsConvention';
 import { deleteFoodImage, saveFoodImage } from '@/utils/file';
 import { getFoodPortionIconComponent } from '@/utils/foodPortionIcons';
+import { pickAndCropImageFromGallery } from '@/utils/galleryImagePicker';
 import { handleError } from '@/utils/handleError';
 import {
   getDecimalSeparator,
   parseLocalizedDecimalString,
   sanitizeLocalizedDecimalInput,
 } from '@/utils/localizedDecimalInput';
-import { showSnackbar } from '@/utils/snackbarService';
 import { getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
 
 import { FoodMealTrackingDetailsModal } from './FoodMealTrackingDetailsModal';
@@ -296,22 +295,13 @@ export default function CreateCustomFoodModal({
 
   const handlePickImage = async () => {
     try {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
-        showSnackbar('error', t('food.smartCamera.galleryPermissionRequired'));
+      const croppedPath = await pickAndCropImageFromGallery();
+      if (!croppedPath) {
         return;
       }
 
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        allowsEditing: true,
-        quality: 0.8,
-      });
-
-      if (!result.canceled && result.assets?.[0]) {
-        const permanentUri = await saveFoodImage(result.assets[0].uri, imageUrl || undefined);
-        setImageUrl(permanentUri);
-      }
+      const permanentUri = await saveFoodImage(croppedPath, imageUrl || undefined);
+      setImageUrl(permanentUri);
     } catch (error) {
       handleError(error, 'CreateCustomFoodModal.handlePickImage', {
         snackbarMessage: t('food.newCustomFood.errorSaving'),

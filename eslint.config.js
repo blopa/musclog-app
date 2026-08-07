@@ -25,7 +25,7 @@ module.exports = defineConfig([
     ],
   },
   {
-    files: ['jest.setup.js'],
+    files: ['jest.setup.js', 'jest.setup.jsdom.js', '__mocks__/**'],
     languageOptions: {
       globals: {
         jest: 'readonly',
@@ -82,7 +82,14 @@ module.exports = defineConfig([
     },
   },
   {
-    files: ['**/*.test.ts', '**/*.test.tsx', '**/__tests__/**', 'jest.setup.js'],
+    files: [
+      '**/*.test.ts',
+      '**/*.test.tsx',
+      '**/__tests__/**',
+      '__mocks__/**',
+      'jest.setup.js',
+      'jest.setup.jsdom.js',
+    ],
     languageOptions: {
       globals: {
         jest: 'readonly',

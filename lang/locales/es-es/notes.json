@@ -1,0 +1,50 @@
+{
+  "notes": {
+    "title": "Notas",
+    "latestBadge": "Reciente",
+    "sections": {
+      "latest": "Recientes",
+      "earlier": "Anteriores"
+    },
+    "screenMenu": {
+      "title": "Notas",
+      "subtitle": "Apúntalo ahora, regístralo después",
+      "create": "Crear nueva nota",
+      "createDescription": "Anota lo que preparaste o comiste"
+    },
+    "noteMenu": {
+      "title": "Opciones de la nota",
+      "edit": "Editar",
+      "editDescription": "Cambia el título o el texto",
+      "duplicate": "Duplicar",
+      "duplicateDescription": "Cópiala al principio de la lista",
+      "track": "Registrar esto",
+      "trackDescription": "Envíala al entrenador para registrar la comida",
+      "delete": "Eliminar",
+      "deleteDescription": "Elimina esta nota permanentemente"
+    },
+    "form": {
+      "createTitle": "Nueva nota",
+      "editTitle": "Editar nota",
+      "titleLabel": "Título (opcional)",
+      "titlePlaceholder": "ej. Preparación del almuerzo",
+      "bodyLabel": "Nota",
+      "bodyPlaceholder": "ej. 70 g de brócoli, 120 g de pechuga de pollo",
+      "bodyRequired": "Escribe algo antes de guardar",
+      "submit": "Guardar nota"
+    },
+    "deleteConfirm": {
+      "title": "¿Eliminar nota?",
+      "message": "Esta nota se eliminará permanentemente. No se puede deshacer.",
+      "confirm": "Eliminar"
+    },
+    "createSuccess": "Nota guardada",
+    "createError": "No se pudo guardar la nota",
+    "updateSuccess": "Nota actualizada",
+    "updateError": "No se pudo actualizar la nota",
+    "duplicateSuccess": "Nota duplicada",
+    "duplicateError": "No se pudo duplicar la nota",
+    "deleteSuccess": "Nota eliminada",
+    "deleteError": "No se pudo eliminar la nota"
+  }
+}

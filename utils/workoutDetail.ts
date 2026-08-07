@@ -134,8 +134,7 @@ async function calculateVolumeTrend(
 
   const currentVolume = currentWorkoutLog.totalVolume || 0;
   const currentIndex = sortedLogs.findIndex((log) => log.id === currentWorkoutLog.id);
-  const previousIndex = currentIndex > 0 ? currentIndex - 1 : currentIndex;
-  const previousVolume = sortedLogs[previousIndex].totalVolume || 0;
+  const previousVolume = currentIndex > 0 ? sortedLogs[currentIndex - 1].totalVolume || 0 : 0;
   const percentageChange =
     previousVolume > 0 && currentIndex > 0
       ? Math.round(((currentVolume - previousVolume) / previousVolume) * 100)
@@ -145,7 +144,6 @@ async function calculateVolumeTrend(
   const minVolume = Math.min(...sortedLogs.map((log) => log.totalVolume || 0));
   const volumeRange = maxVolume - minVolume || 1;
 
-  const chartWidth = 400;
   const chartHeight = 100;
 
   const data: LineChartDataPoint[] = sortedLogs.map((log, index) => {
@@ -168,8 +166,7 @@ async function calculateVolumeTrend(
     locale
   );
 
-  // Map data x back to chartWidth scale if needed, but LineChart can handle domain [0, n-1]
-  // We'll just update the data x to match the indices used for labels
+  // LineChart can use the point indices directly for its x domain and labels.
   const chartData: LineChartDataPoint[] = data.map((d, i) => ({
     x: i,
     y: d.y,
@@ -236,11 +233,17 @@ export async function transformWorkoutToDetailData(
     });
   });
 
+  const exerciseOrder = new Map<string, number>();
+  orderedExerciseIds?.forEach((id, index) => {
+    if (!exerciseOrder.has(id)) {
+      exerciseOrder.set(id, index);
+    }
+  });
+  const unlistedOrder = orderedExerciseIds?.length ?? 0;
   const exerciseEntries = orderedExerciseIds
     ? [...setsByExercise.entries()].sort(
         (a, b) =>
-          (orderedExerciseIds.indexOf(a[0]) + 1 || Infinity) -
-          (orderedExerciseIds.indexOf(b[0]) + 1 || Infinity)
+          (exerciseOrder.get(a[0]) ?? unlistedOrder) - (exerciseOrder.get(b[0]) ?? unlistedOrder)
       )
     : [...setsByExercise.entries()];
 
