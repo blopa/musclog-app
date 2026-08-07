@@ -94,6 +94,16 @@ describe('useCameraCaptureFlow', () => {
       expect(mockShowSnackbar).toHaveBeenCalledWith('error', 'food.aiCamera.cameraError');
     });
 
+    it('shows the camera-error snackbar when cropping a captured image fails', async () => {
+      mockOpenCropperAsync.mockRejectedValue(new Error('crop failed'));
+      const { result, process } = renderFlow();
+
+      await result.current.takePicture();
+
+      expect(process).not.toHaveBeenCalled();
+      expect(mockShowSnackbar).toHaveBeenCalledWith('error', 'food.aiCamera.cameraError');
+    });
+
     it('is a no-op while the camera ref is unset', async () => {
       const { result, process } = renderFlow({ cameraRef: { current: null } });
 
@@ -140,6 +150,16 @@ describe('useCameraCaptureFlow', () => {
 
       await result.current.pickFromGallery();
 
+      expect(mockShowSnackbar).toHaveBeenCalledWith('error', 'food.aiCamera.cameraError');
+    });
+
+    it('shows the camera-error snackbar when cropping the picked image fails', async () => {
+      mockOpenCropperAsync.mockRejectedValue(new Error('crop failed'));
+      const { result, process } = renderFlow();
+
+      await result.current.pickFromGallery();
+
+      expect(process).not.toHaveBeenCalled();
       expect(mockShowSnackbar).toHaveBeenCalledWith('error', 'food.aiCamera.cameraError');
     });
 

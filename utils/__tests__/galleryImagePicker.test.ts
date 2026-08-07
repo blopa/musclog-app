@@ -54,6 +54,21 @@ describe('pickImageFromGallery', () => {
 
     await expect(pickImageFromGallery()).resolves.toBeNull();
   });
+
+  it('returns null when the picker omits its assets collection', async () => {
+    mockLaunchImageLibrary.mockResolvedValue({ canceled: false });
+
+    await expect(pickImageFromGallery()).resolves.toBeNull();
+  });
+
+  it('returns the first asset when the picker supplies multiple images', async () => {
+    mockLaunchImageLibrary.mockResolvedValue({
+      canceled: false,
+      assets: [{ uri: 'file:///first.jpg' }, { uri: 'file:///second.jpg' }],
+    });
+
+    await expect(pickImageFromGallery()).resolves.toBe('file:///first.jpg');
+  });
 });
 
 describe('pickAndCropImageFromGallery', () => {
@@ -95,5 +110,40 @@ describe('pickAndCropImageFromGallery', () => {
     mockOpenCropperAsync.mockResolvedValue(null);
 
     await expect(pickAndCropImageFromGallery()).resolves.toBeNull();
+  });
+
+  it('uses the documented default crop quality', async () => {
+    mockLaunchImageLibrary.mockResolvedValue({
+      canceled: false,
+      assets: [{ uri: 'file:///picked.jpg' }],
+    });
+    mockOpenCropperAsync.mockResolvedValue({ path: 'file:///cropped.jpg' });
+
+    await pickAndCropImageFromGallery();
+
+    expect(mockOpenCropperAsync).toHaveBeenCalledWith({
+      imageUri: 'file:///picked.jpg',
+      format: 'jpeg',
+      compressImageQuality: 0.8,
+    });
+  });
+
+  it('propagates picker failures to the caller', async () => {
+    const error = new Error('picker failed');
+    mockLaunchImageLibrary.mockRejectedValue(error);
+
+    await expect(pickAndCropImageFromGallery()).rejects.toBe(error);
+    expect(mockOpenCropperAsync).not.toHaveBeenCalled();
+  });
+
+  it('propagates crop failures to the caller', async () => {
+    const error = new Error('crop failed');
+    mockLaunchImageLibrary.mockResolvedValue({
+      canceled: false,
+      assets: [{ uri: 'file:///picked.jpg' }],
+    });
+    mockOpenCropperAsync.mockRejectedValue(error);
+
+    await expect(pickAndCropImageFromGallery()).rejects.toBe(error);
   });
 });
