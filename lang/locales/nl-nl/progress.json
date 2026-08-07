@@ -57,6 +57,16 @@
     "weeklyAverages": "Wekelijkse gemiddelden",
     "weight": "Gewicht",
     "weightTrendSubtitle": "Lichaamsgewicht over de tijd",
+    "weightTrend": {
+      "title": "Gewichtstrend",
+      "trend": "Trend",
+      "scaleWeight": "Weegschaalgewicht",
+      "sevenDayChange": "Verandering in 7 dagen",
+      "explanation": "Filtert normale veranderingen door vocht, voeding en hydratatie.",
+      "addAnother": "Voeg nog een weging toe om je trend te starten",
+      "changeUnavailable": "nog niet beschikbaar",
+      "accessibilitySummary": "Huidige gewichtstrend {{current}} {{unit}}. Verandering in zeven dagen: {{change}}."
+    },
     "bodyFat": "Vetpercentage",
     "bodyFatSubtitle": "Vetpercentage over de tijd",
     "ffmi": "FFMI",

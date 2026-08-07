@@ -74,6 +74,11 @@ export type LineChartProps = {
   interactive?: boolean;
   /** Format the tooltip label for a given data point (default: shows rounded y value) */
   tooltipFormatter?: (point: LineChartDataPoint) => string;
+  /** Optional independent observations rendered as dots without a connecting line. */
+  scatterData?: LineChartDataPoint[];
+  scatterColor?: string;
+  scatterRadius?: number;
+  accessibilityLabel?: string;
   /** No-op on web — only used by native to lock parent ScrollView */
   onInteractionStart?: () => void;
   /** No-op on web — only used by native to lock parent ScrollView */
@@ -122,6 +127,10 @@ export function LineChart({
   className,
   interactive = true,
   tooltipFormatter,
+  scatterData = [],
+  scatterColor,
+  scatterRadius = 3,
+  accessibilityLabel,
 }: LineChartProps) {
   const theme = useTheme();
   const chartId = useId();
@@ -154,7 +163,13 @@ export function LineChart({
   const lastPoint = data[data.length - 1];
 
   return (
-    <View className={className || `relative w-full`} style={{ marginTop }}>
+    <View
+      className={className || `relative w-full`}
+      style={{ marginTop }}
+      accessible={Boolean(accessibilityLabel)}
+      accessibilityRole="image"
+      accessibilityLabel={accessibilityLabel}
+    >
       {/* Y-axis labels overlaid on the chart */}
       {yAxisLabels?.map(({ label, yDomainValue }, i) => {
         const yRange = yDomainFinal[1] - yDomainFinal[0];
@@ -265,6 +280,13 @@ export function LineChart({
               },
             }}
           />
+          {scatterData.length > 0 ? (
+            <VictoryScatter
+              data={scatterData}
+              size={scatterRadius}
+              style={{ data: { fill: scatterColor || theme.colors.text.tertiary } }}
+            />
+          ) : null}
           {/* Data point circle at the end */}
           {showLastPoint ? (
             <VictoryScatter

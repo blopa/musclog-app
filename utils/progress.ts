@@ -27,8 +27,10 @@ export function calculateEmpiricalTDEEWindow(
   weightPoints: MetricPoint[],
   fatPoints: MetricPoint[],
   startDate: number,
-  endDate: number
+  endDate: number,
+  options: { useEndpointAverages?: boolean } = {}
 ): EmpiricalTDEEWindow {
+  const useEndpointAverages = options.useEndpointAverages ?? true;
   // p.date is already a UTC-midnight key — use it directly as the day key.
   const weightByDay = new Map<number, number>();
   for (const p of weightPoints) {
@@ -51,7 +53,7 @@ export function calculateEmpiricalTDEEWindow(
   let initialFat: number | undefined;
   let finalFat: number | undefined;
 
-  if (commonDays.length > 14) {
+  if (commonDays.length > 14 && useEndpointAverages) {
     // Use weekly averages for start and end to smooth fluctuations
     const startPoints = commonDays.slice(0, 7);
     const endPoints = commonDays.slice(-7);

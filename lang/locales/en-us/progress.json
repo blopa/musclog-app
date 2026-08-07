@@ -57,6 +57,16 @@
     "weeklyAverages": "Weekly Averages",
     "weight": "Weight",
     "weightTrendSubtitle": "Body weight over time",
+    "weightTrend": {
+      "title": "Weight trend",
+      "trend": "Trend",
+      "scaleWeight": "Scale weight",
+      "sevenDayChange": "7-day change",
+      "explanation": "Filters normal changes in water, food, and hydration.",
+      "addAnother": "Add another weigh-in to start your trend",
+      "changeUnavailable": "not available yet",
+      "accessibilitySummary": "Current weight trend {{current}} {{unit}}. Seven-day change: {{change}}."
+    },
     "bodyFat": "Body Fat",
     "bodyFatSubtitle": "Fat percentage over time",
     "ffmi": "FFMI",

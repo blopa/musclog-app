@@ -282,6 +282,7 @@ function ProgressScreenContent({
                   </View>
                   <BodyMetricsCharts
                     weightHistory={data?.weightHistory || []}
+                    weightTrendHistory={data?.weightTrendHistory || []}
                     fatHistory={data?.fatHistory || []}
                     ffmiHistory={data?.ffmiHistory || []}
                     units={units}
@@ -294,7 +295,7 @@ function ProgressScreenContent({
                 <>
                   <NutritionCharts
                     nutritionHistory={data?.nutritionHistory || []}
-                    weightHistory={data?.weightHistory || []}
+                    weightHistory={data?.weightTrendHistory || []}
                     units={units}
                   />
 

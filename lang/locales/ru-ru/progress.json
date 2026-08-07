@@ -57,6 +57,16 @@
     "weeklyAverages": "Еженедельные средние",
     "weight": "Вес",
     "weightTrendSubtitle": "Вес тела со временем",
+    "weightTrend": {
+      "title": "Тренд веса",
+      "trend": "Тренд",
+      "scaleWeight": "Вес на весах",
+      "sevenDayChange": "Изменение за 7 дней",
+      "explanation": "Сглаживает обычные изменения из-за воды, еды и гидратации.",
+      "addAnother": "Добавьте ещё одно взвешивание, чтобы увидеть тренд",
+      "changeUnavailable": "пока недоступно",
+      "accessibilitySummary": "Текущий тренд веса: {{current}} {{unit}}. Изменение за семь дней: {{change}}."
+    },
     "bodyFat": "Жировая масса",
     "bodyFatSubtitle": "Процент жира со временем",
     "ffmi": "FFMI",

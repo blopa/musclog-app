@@ -89,6 +89,7 @@
       "noHistory": "Nenhuma verificação concluída ainda.",
       "selectYear": "Filtrar por Ano",
       "notEnoughDataWarning": "Poucos dados registrados esta semana. Os resultados podem ser imprecisos.",
+      "sparseTrendWarning": "Sua tendência está disponível, mas faltam pesagens ou registros de nutrição para um check-in semanal confiável.",
       "status": {
         "pending": "Pendente",
         "ahead": "Acima",

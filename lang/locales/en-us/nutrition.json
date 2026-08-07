@@ -89,6 +89,7 @@
       "noHistory": "No completed check-ins yet.",
       "selectYear": "Filter by Year",
       "notEnoughDataWarning": "Not enough data logged this week. Results may be inaccurate.",
+      "sparseTrendWarning": "Your trend is available, but there are not enough weigh-ins or nutrition logs for a confident weekly check-in.",
       "status": {
         "pending": "Pending",
         "ahead": "Ahead",

@@ -63,6 +63,11 @@ export type LineChartProps = {
   interactive?: boolean;
   /** Format the tooltip label for a given data point (default: shows rounded y value) */
   tooltipFormatter?: (point: LineChartDataPoint) => string;
+  /** Optional independent observations rendered as dots without a connecting line. */
+  scatterData?: LineChartDataPoint[];
+  scatterColor?: string;
+  scatterRadius?: number;
+  accessibilityLabel?: string;
   /** Called when the user starts touching the chart — use to disable parent ScrollView */
   onInteractionStart?: () => void;
   /** Called when the user stops touching the chart — use to re-enable parent ScrollView */
@@ -109,6 +114,10 @@ export function LineChart({
   className,
   interactive = true,
   tooltipFormatter,
+  scatterData = [],
+  scatterColor,
+  scatterRadius = 3,
+  accessibilityLabel,
   onInteractionStart,
   onInteractionEnd,
 }: LineChartProps) {
@@ -177,10 +186,20 @@ export function LineChart({
 
   // CartesianChart (victory-native) uses standard math coordinates: y=0 at bottom, y increases upward.
   // Callers provide values where high metric = high y = near top of chart.
-  const chartData = data as { x: number; y: number }[];
+  const scatterByX = new Map(scatterData.map((point) => [point.x, point.y]));
+  const chartData = data.map((point) => ({
+    ...point,
+    scatterY: scatterByX.get(point.x) ?? Number.NaN,
+  }));
 
   return (
-    <View className={className || 'relative w-full'} style={{ marginTop }}>
+    <View
+      className={className || 'relative w-full'}
+      style={{ marginTop }}
+      accessible={Boolean(accessibilityLabel)}
+      accessibilityRole="image"
+      accessibilityLabel={accessibilityLabel}
+    >
       <View
         style={{ height, position: 'relative' }}
         onLayout={(e) => {
@@ -190,7 +209,7 @@ export function LineChart({
         <CartesianChart
           data={chartData}
           xKey="x"
-          yKeys={['y']}
+          yKeys={['y', 'scatterY']}
           domain={{ x: xDomainFinal, y: yDomainFinal }}
           padding={0}
           axisOptions={{
@@ -219,6 +238,14 @@ export function LineChart({
                   strokeWidth={lineWidth}
                   strokeCap="round"
                 />
+                {scatterData.length > 0 ? (
+                  <Scatter
+                    points={points.scatterY.filter((point) => point.y !== null)}
+                    radius={scatterRadius}
+                    color={scatterColor ?? theme.colors.text.tertiary}
+                    style="fill"
+                  />
+                ) : null}
                 {showLastPoint && points.y.length > 0 ? (
                   <>
                     <Scatter
@@ -284,8 +311,8 @@ export function LineChart({
                 position: 'absolute',
                 top: 6,
                 ...(tooltipPosition === 'left' ? { left: 6 } : { right: 6 }),
-                minWidth: TOOLTIP_WIDTH,
-                height: TOOLTIP_HEIGHT,
+                minWidth: Math.max(TOOLTIP_WIDTH, 140),
+                minHeight: TOOLTIP_HEIGHT,
                 backgroundColor: theme.colors.background.card,
                 borderRadius: theme.borderRadius.xs,
                 paddingHorizontal: theme.spacing.padding.sm,
@@ -307,6 +334,7 @@ export function LineChart({
                   fontWeight: '600',
                   textAlign: 'center',
                 }}
+                numberOfLines={3}
               >
                 {activeLabel}
               </Text>

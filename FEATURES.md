@@ -63,9 +63,9 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 
 - Set personalized calorie and macro targets
 - Support for multiple goals with easy switching
-- Empirical TDEE calculation derived from actual logged activity and weight changes
+- Empirical TDEE calculation derived from actual logged intake and smoothed trend-weight endpoints
 - Auto-calculated goal templates based on activity level, weight goal, and experience
-- Weekly nutrition check-ins: "On Track / Ahead / Behind" status with 7-day trend analysis
+- Weekly nutrition check-ins: "On Track / Ahead / Behind" status based on trend weight, with raw seven-day weigh-in bars
 - Dynamic goal recalculation based on real-world progress trends
 
 ---
@@ -87,7 +87,7 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 
 ## Progress & Analytics
 
-- Interactive charts: weight, body fat %, FFMI, lifting volume, calorie/macro trends, mood
+- Interactive charts: smoothed weight trend with raw scale points, body fat %, FFMI, lifting volume, calorie/macro trends, mood
 - Time range filters: 7-day, 30-day, 90-day, or custom
 - Weekly rolling averages toggle
 - Correlation charts: volume vs. calories, body composition vs. protein, mood vs. macros/volume, etc.

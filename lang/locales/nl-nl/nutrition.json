@@ -89,6 +89,7 @@
       "noHistory": "Nog geen voltooide controles.",
       "selectYear": "Filteren op jaar",
       "notEnoughDataWarning": "Niet genoeg gegevens gelogd deze week. Resultaten kunnen onnauwkeurig zijn.",
+      "sparseTrendWarning": "Je trend is beschikbaar, maar er zijn niet genoeg wegingen of voedingslogs voor een betrouwbare weekcheck-in.",
       "status": {
         "pending": "In afwachting",
         "ahead": "Vooruit",
