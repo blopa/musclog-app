@@ -227,6 +227,28 @@ describe('NutritionService.copyNutritionLogsPreservingMealType', () => {
     expect(copiedBreakfast).not.toBe(copiedDinner);
   });
 
+  it('preserves the source wall-clock time when its stored timezone differs from the target', async () => {
+    const { created } = captureCreatedRecords();
+    // 18:45 in India is 13:15 UTC. Reading the instant directly would therefore
+    // copy the wrong time-of-day onto the target date.
+    const source = mockLog({
+      date: Date.UTC(2026, 6, 14, 13, 15),
+      timezone: '+05:30',
+    });
+
+    await NutritionService.copyNutritionLogsPreservingMealType(
+      [source],
+      new Date(2026, 7, 1)
+    );
+
+    const copiedWallClock = wallClockDateInTimezone(
+      created[0].date as number,
+      created[0].timezone as string
+    );
+    expect(copiedWallClock.getHours()).toBe(18);
+    expect(copiedWallClock.getMinutes()).toBe(45);
+  });
+
   it('returns the number of logs created and refreshes the widget', async () => {
     captureCreatedRecords();
 
@@ -294,12 +316,35 @@ describe('NutritionService.getRecentLoggedDays', () => {
     expect(days[1].dayKey).toBeGreaterThan(days[2].dayKey);
   });
 
+  it('buckets an instant by each log stored timezone rather than the device timezone', async () => {
+    const instant = Date.UTC(2026, 7, 2, 0, 30);
+    withLogs([
+      mockLog({ id: 'east', date: instant, timezone: '+02:00', calories: 100 }),
+      mockLog({ id: 'west', date: instant, timezone: '-02:00', calories: 200 }),
+    ]);
+
+    const days = await NutritionService.getRecentLoggedDays();
+
+    expect(days).toEqual([
+      { dayKey: Date.UTC(2026, 7, 2), itemCount: 1, calories: 100 },
+      { dayKey: Date.UTC(2026, 7, 1), itemCount: 1, calories: 200 },
+    ]);
+  });
+
   it('respects the limit', async () => {
-    withLogs([logDaysAgo(1, 'a'), logDaysAgo(2, 'b'), logDaysAgo(3, 'c'), logDaysAgo(4, 'd')]);
+    const included = [logDaysAgo(1, 'a'), logDaysAgo(2, 'b')];
+    const omitted = [logDaysAgo(3, 'c'), logDaysAgo(4, 'd')];
+    withLogs([...included, ...omitted]);
 
     const days = await NutritionService.getRecentLoggedDays(2);
 
     expect(days).toHaveLength(2);
+    for (const log of included) {
+      expect(log.getNutrients).toHaveBeenCalledTimes(1);
+    }
+    for (const log of omitted) {
+      expect(log.getNutrients).not.toHaveBeenCalled();
+    }
   });
 
   it('omits the excluded day so the target day never offers to copy itself', async () => {
@@ -312,6 +357,7 @@ describe('NutritionService.getRecentLoggedDays', () => {
 
     expect(days).toHaveLength(1);
     expect(days[0].dayKey).not.toBe(utcNormalizedDayKey(excluded.date, excluded.timezone));
+    expect(excluded.getNutrients).not.toHaveBeenCalled();
   });
 
   it('returns nothing when no days have logs', async () => {
