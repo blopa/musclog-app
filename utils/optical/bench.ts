@@ -12,6 +12,7 @@
 import { BASE44_ALPHABET } from './base44';
 import { dlog } from './fountain';
 import { fnv1a } from './frameProtocol';
+import { base44CharsForBytes, OPTICAL_PRESETS, type OpticalPresetId } from './presets';
 import { encodeQrAlphanumericFixed } from './qrEncode';
 import { rasterizeQr } from './qrRaster';
 
@@ -183,13 +184,170 @@ export async function benchQrEncode(
 }
 
 /**
- * Cap the display rate so frame generation uses at most half the JS thread, and never exceed 24 —
- * a frame must be held for at least two display refreshes or the receiver's capture straddles a
- * transition and reads a torn code.
+ * Above this there is nothing to gain: the receiving camera decodes on the order of 10 codes a
+ * second, and a sender running far ahead of it just shows frames nobody reads. Decimen's rule of
+ * thumb is ~1.5–2× the receiver's rate, which lands here. (A frame must also be held for at
+ * least two display refreshes, so 30 is a hard ceiling on a 60 Hz panel regardless.)
+ */
+export const OPTICAL_MAX_DISPLAY_FPS = 15;
+
+/**
+ * Display rate this device can actually sustain while generating frames live, with ~15% headroom.
+ *
+ * The floor is 1, not 4. An earlier floor of 4 was actively harmful: on a 2018 phone a `max`
+ * frame costs ~320 ms, so "4 fps" asked for a 250 ms period against 320 ms of work. With a
+ * `setInterval` that silently piles callbacks up until the thread never catches up — the observed
+ * "fps drops off a cliff after a few seconds". The sender now self-schedules (each tick is queued
+ * only once the previous one finishes) so an over-optimistic target degrades gracefully instead,
+ * but reporting an unreachable number was still a lie.
  */
 export function suggestedFpsForFrameCost(frameMs: number): number {
   if (frameMs <= 0) {
-    return 24;
+    return OPTICAL_MAX_DISPLAY_FPS;
   }
-  return Math.max(4, Math.min(24, Math.floor(1000 / (frameMs * 2))));
+  return Math.max(1, Math.min(OPTICAL_MAX_DISPLAY_FPS, Math.floor(1000 / (frameMs * 1.15))));
+}
+
+export interface PresetCalibration {
+  presetId: OpticalPresetId;
+  qrVersion: number;
+  encodeP90: number;
+  /** Frames per second this device can generate at this density. */
+  buildFps: number;
+  /** blockLen × the rate we could actually run at — the number that decides the winner. */
+  throughputBytesPerSec: number;
+}
+
+export interface DeviceCalibration {
+  presets: PresetCalibration[];
+  recommendedPresetId: OpticalPresetId;
+  recommendedFps: number;
+  notes: string[];
+}
+
+/**
+ * Measure this device and pick settings for it.
+ *
+ * THE FINDING THIS ENCODES: when the sender is encode-bound, goodput is very nearly independent
+ * of density, because a QR symbol's data capacity and its encoding cost both scale with the
+ * module count squared. Measured on a Moto Z3 Play (2018, Snapdragon 636, Hermes):
+ *
+ *     preset    ver  encode p90   bytes/frame   bytes/sec
+ *     tiny       16      81 ms         568        7 003
+ *     compact    20     123 ms         832        6 759
+ *     standard   24     175 ms        1136        6 503
+ *     dense      27     228 ms        1420        6 231
+ *     max        33     321 ms        2006        6 251
+ *
+ * Density buys nothing — it is very slightly *worse* — while costing a lot of decode margin (at
+ * Android's locked ~640×480 analysis resolution, v16 gets 4.85 px/module and v33 only 2.75). So
+ * on a slow device the lowest density is strictly better on both axes.
+ *
+ * On a fast device the picture inverts: once generation outruns the camera, the display rate is
+ * capped by decoding and the only way to move more bytes is denser frames. This function handles
+ * both by ranking on `blockLen × min(buildFps, cap)` and breaking ties toward lower density.
+ */
+export async function calibrateDevice(iterations = 8): Promise<DeviceCalibration> {
+  const presets: PresetCalibration[] = [];
+
+  for (const preset of OPTICAL_PRESETS) {
+    const row = await benchQrEncode(
+      preset.id,
+      preset.qrVersion,
+      base44CharsForBytes(preset.frameBytes),
+      iterations
+    );
+    const buildFps = 1000 / Math.max(1, row.frameP90);
+    presets.push({
+      presetId: preset.id,
+      qrVersion: preset.qrVersion,
+      encodeP90: row.encodeP90,
+      buildFps,
+      throughputBytesPerSec: preset.blockLen * Math.min(buildFps, OPTICAL_MAX_DISPLAY_FPS),
+    });
+  }
+
+  // Rank on throughput, then prefer the lower density: on Android the receiver's analysis
+  // resolution is fixed at CameraX's default, so every module we can give back is decode margin
+  // we get for free.
+  const best = [...presets].sort(
+    (a, b) => b.throughputBytesPerSec - a.throughputBytesPerSec || a.qrVersion - b.qrVersion
+  )[0];
+
+  // Anything within 10% of the best is a wash; take the least dense of those.
+  const contenders = presets.filter(
+    (candidate) => candidate.throughputBytesPerSec >= best.throughputBytesPerSec * 0.9
+  );
+  const chosen = contenders.sort((a, b) => a.qrVersion - b.qrVersion)[0];
+  const recommendedFps = suggestedFpsForFrameCost(1000 / chosen.buildFps);
+
+  const notes = [
+    `Measured ${presets.length} densities on this device.`,
+    `Goodput is ${Math.round(Math.min(...presets.map((p) => p.throughputBytesPerSec)))}–` +
+      `${Math.round(Math.max(...presets.map((p) => p.throughputBytesPerSec)))} B/s across all of ` +
+      `them — density barely moves it, because QR capacity and QR encode cost both scale with ` +
+      `modules².`,
+    `So the lowest density within 10% of the best wins: it decodes far more reliably for the ` +
+      `same speed.`,
+    `Chose "${chosen.presetId}" (QR v${chosen.qrVersion}) at ${recommendedFps} fps.`,
+  ];
+
+  if (chosen.buildFps < 3) {
+    notes.push(
+      `NOTE: this device generates under 3 frames/s even at the lowest density. The first pass ` +
+        `will be slow; the frame cache makes any later pass fast.`
+    );
+  }
+
+  return {
+    presets,
+    recommendedPresetId: chosen.presetId,
+    recommendedFps,
+    notes,
+  };
+}
+
+/**
+ * How many distinct frames to keep so the stream can loop without re-encoding.
+ *
+ * WHY CACHE AT ALL: encoding is the sender's whole cost, and a frame's contents depend only on
+ * its seq — so a frame generated once can be shown again for free. The first pass runs at
+ * whatever the device can generate; every pass after that runs at the display rate.
+ *
+ * WHY 2.5× k: a receiver that has seen every frame the cache holds and still cannot peel is
+ * deadlocked, so the cache must comfortably exceed the worst-case frame count. Decimen's measured
+ * p90 overhead reaches 1.9–2.2 at small k, so 1.6 (the ETA model's clamp) would not be safe here
+ * and 2.5 is.
+ *
+ * The byte cap keeps a huge payload from exhausting memory on a low-end device; past it the
+ * sender must keep generating rather than looping (see the caller).
+ */
+export const OPTICAL_FRAME_CACHE_MULTIPLIER = 2.5;
+export const OPTICAL_FRAME_CACHE_MAX_BYTES = 8 * 1024 * 1024;
+
+export interface FrameCachePlan {
+  /** Frames to cache. **0 means do not cache** — generate every frame live, forever. */
+  frames: number;
+  /** True when the cache is big enough that looping it is safe. */
+  loopSafe: boolean;
+}
+
+/**
+ * A HALF-SIZED CACHE IS WORSE THAN NO CACHE, which is why this returns a plan rather than a
+ * number. Looping N distinct frames when the receiver needs more than N is a hard deadlock: it
+ * has seen everything the sender will ever show and still cannot peel, so the transfer sits at
+ * ~98% forever. That failure is silent and unrecoverable without restarting the sender.
+ *
+ * So the cache is all-or-nothing: either it holds a safely loopable set, or we do not cache at
+ * all and pay the encode cost on every frame (slower, but always correct — the fountain never
+ * runs out of new frames). A big payload on a low-end phone takes the second path.
+ */
+export function planFrameCache(k: number, moduleCount: number): FrameCachePlan {
+  const safeFrames = Math.ceil(k * OPTICAL_FRAME_CACHE_MULTIPLIER);
+  const perFrameBytes = Math.max(1, moduleCount * moduleCount);
+  const affordable = Math.floor(OPTICAL_FRAME_CACHE_MAX_BYTES / perFrameBytes);
+
+  return safeFrames <= affordable
+    ? { frames: safeFrames, loopSafe: true }
+    : { frames: 0, loopSafe: false };
 }

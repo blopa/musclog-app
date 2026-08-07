@@ -25,7 +25,7 @@ import {
   MipmapMode,
   Skia,
 } from '@shopify/react-native-skia';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { PixelRatio, View } from 'react-native';
 
 import { type QrRaster } from '@/utils/optical/qrRaster';
@@ -52,6 +52,18 @@ export function OpticalQrCanvas({ raster, budgetDp }: OpticalQrCanvasProps) {
       raster.size * 4
     );
   }, [raster]);
+
+  // An SkImage owns native memory that JS garbage collection does not account for, so at a dozen
+  // frames a second the collector sees a trickle of small JS objects while native memory climbs
+  // by ~65 KB a frame. On a low-end device that shows up as a stream that starts fine and grinds
+  // to a halt after a few seconds. React runs this cleanup for the previous image only after the
+  // new one has been committed and drawn, so the image being released is never the one on screen.
+  useEffect(
+    () => () => {
+      image?.dispose();
+    },
+    [image]
+  );
 
   const density = PixelRatio.get();
   const sizeDp = useMemo(() => {
