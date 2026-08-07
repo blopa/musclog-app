@@ -3,7 +3,10 @@ import convert from 'convert';
 import { Dumbbell, type LucideIcon, User } from 'lucide-react-native';
 import type { ComponentType } from 'react';
 
-import type { RawWorkoutTemplate } from '@/components/modals/BrowseTemplatesModal';
+import type {
+  RawWorkoutTemplate,
+  RawWorkoutTemplateExercise,
+} from '@/components/modals/BrowseTemplatesModal';
 import { DEFAULT_WORKOUT_TYPE } from '@/constants/workoutTypes';
 import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
@@ -827,7 +830,14 @@ export class WorkoutTemplateService {
     }
 
     const exercises = rawTemplate.exercises.filter(
-      (e): e is { exerciseId: number; day: number; sets: number; reps: number } =>
+      (
+        e
+      ): e is RawWorkoutTemplateExercise & {
+        exerciseId: number;
+        day: number;
+        sets: number;
+        reps: number;
+      } =>
         typeof e === 'object' &&
         e !== null &&
         typeof e.exerciseId === 'number' &&
@@ -860,8 +870,8 @@ export class WorkoutTemplateService {
     // Get user age (default to 30 if not available, which gives ageFactor 1.0)
     const age = user ? user.getAge() : 30;
 
-    // Get all exercises from database ordered by creation time
-    // This assumes exercises are seeded in the same order as the JSON exerciseId indices
+    // App exercise order_index is the stable, zero-based counterpart of exerciseId in the JSON.
+    // Fall back to creation order only for legacy databases that have not completed the backfill.
     const allExercises = await database
       .get<Exercise>('exercises')
       .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.asc))
@@ -869,10 +879,19 @@ export class WorkoutTemplateService {
 
     // Create mapping: exerciseId (1-based) -> database exercise ID
     const exerciseIdMap = new Map<number, string>();
-    allExercises.forEach((exercise, index) => {
-      // exerciseId in JSON is 1-based, array index is 0-based
-      exerciseIdMap.set(index + 1, exercise.id);
-    });
+    const indexedExercises = allExercises.filter(
+      (exercise) => exercise.orderIndex !== null && exercise.orderIndex !== undefined
+    );
+
+    if (indexedExercises.length > 0) {
+      indexedExercises.forEach((exercise) => {
+        exerciseIdMap.set((exercise.orderIndex ?? 0) + 1, exercise.id);
+      });
+    } else {
+      allExercises.forEach((exercise, index) => {
+        exerciseIdMap.set(index + 1, exercise.id);
+      });
+    }
 
     // Group exercises by day
     const exercisesByDay = new Map<number, typeof exercises>();
@@ -945,10 +964,23 @@ export class WorkoutTemplateService {
           icon: Icon,
           iconBgColor,
           iconColor,
+          groupId: exerciseData.supersetGroup
+            ? `${rawTemplate.title}-day-${day}-${exerciseData.supersetGroup}`
+            : undefined,
+          notes:
+            [
+              typeof exerciseData.minReps === 'number' && exerciseData.minReps !== exerciseData.reps
+                ? `Target ${exerciseData.minReps}–${exerciseData.reps} reps`
+                : undefined,
+              exerciseData.notes,
+            ]
+              .filter((note): note is string => !!note)
+              .join(' • ') || undefined,
           sets: exerciseData.sets,
           reps: exerciseData.reps,
           weight: suggestedWeight,
           isBodyweight,
+          restTimeAfter: exerciseData.restTimeAfter,
         });
       }
 
@@ -958,7 +990,8 @@ export class WorkoutTemplateService {
       }
 
       // Create workout template name
-      const templateName = `${rawTemplate.title} - Day ${day}`;
+      const dayName = rawTemplate.dayNames?.[String(day)];
+      const templateName = `${rawTemplate.title} - ${dayName ?? `Day ${day}`}`;
 
       // Create the template using saveTemplate
       const template = await this.saveTemplate({

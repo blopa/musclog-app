@@ -35,10 +35,21 @@ export type RawWorkoutTemplate = {
   description?: string;
   difficulty?: string;
   duration?: number | string;
-  exercises?:
-    { exerciseId?: number; day?: number; sets?: number; reps?: number }[] | number | string;
+  dayNames?: Record<string, string>;
+  exercises?: RawWorkoutTemplateExercise[] | number | string;
   sets?: number;
   icon?: string;
+};
+
+export type RawWorkoutTemplateExercise = {
+  exerciseId?: number;
+  day?: number;
+  sets?: number;
+  reps?: number;
+  minReps?: number;
+  notes?: string;
+  restTimeAfter?: number;
+  supersetGroup?: string;
 };
 
 /**

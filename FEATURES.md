@@ -20,7 +20,7 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 - Log sets, reps, weight, rest times, and RPE for any exercise
 - Workout types: Strength, Cardio, Flexibility, Calisthenics
 - Create and save custom workout templates (e.g., PPL, Upper/Lower splits)
-- Browse a built-in template library
+- Browse a built-in template library, including a five-session cable superset program
 - AI-generated workout plans based on your equipment and goals
 - Drag-and-drop exercise reordering during or after a session
 - Superset / exercise grouping via shared group ID

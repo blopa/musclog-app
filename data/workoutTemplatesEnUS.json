@@ -305,5 +305,346 @@
       { "exerciseId": 49, "day": 2, "sets": 3, "reps": 15 }
     ],
     "icon": "fitness-center"
+  },
+  {
+    "title": "Cable Superset Workout",
+    "description": "A five-session BodyCraft HFT cable program built around upper, lower, and antagonist supersets. Keep compounds and isolation work at 1–2 RIR; the final isolation set may reach 0–1 RIR. Progress each exercise independently with double progression.",
+    "difficulty": "Advanced",
+    "duration": 70,
+    "dayNames": {
+      "1": "Upper A",
+      "2": "Lower A",
+      "3": "Arms",
+      "5": "Upper B",
+      "6": "Lower B"
+    },
+    "exercises": [
+      {
+        "exerciseId": 220,
+        "day": 1,
+        "sets": 4,
+        "minReps": 4,
+        "reps": 6,
+        "restTimeAfter": 45,
+        "supersetGroup": "A",
+        "notes": "1–2 RIR"
+      },
+      {
+        "exerciseId": 213,
+        "day": 1,
+        "sets": 4,
+        "minReps": 3,
+        "reps": 6,
+        "restTimeAfter": 210,
+        "supersetGroup": "A",
+        "notes": "Use added weight when appropriate; 1–2 RIR"
+      },
+      {
+        "exerciseId": 209,
+        "day": 1,
+        "sets": 3,
+        "minReps": 5,
+        "reps": 8,
+        "restTimeAfter": 45,
+        "supersetGroup": "B",
+        "notes": "Chest supported; complete both arms; 1–2 RIR"
+      },
+      {
+        "exerciseId": 238,
+        "day": 1,
+        "sets": 3,
+        "minReps": 5,
+        "reps": 8,
+        "restTimeAfter": 180,
+        "supersetGroup": "B",
+        "notes": "Use both cables; 1–2 RIR"
+      },
+      {
+        "exerciseId": 256,
+        "day": 1,
+        "sets": 2,
+        "minReps": 8,
+        "reps": 12,
+        "restTimeAfter": 30,
+        "supersetGroup": "C",
+        "notes": "Do not reach failure before the lateral raise; 1–2 RIR"
+      },
+      {
+        "exerciseId": 91,
+        "day": 1,
+        "sets": 2,
+        "minReps": 12,
+        "reps": 20,
+        "restTimeAfter": 90,
+        "supersetGroup": "C",
+        "notes": "Final set may reach 0–1 RIR"
+      },
+      {
+        "exerciseId": 245,
+        "day": 2,
+        "sets": 4,
+        "minReps": 4,
+        "reps": 6,
+        "restTimeAfter": 300,
+        "notes": "Straight sets; use both cables; 1–2 RIR"
+      },
+      {
+        "exerciseId": 249,
+        "day": 2,
+        "sets": 3,
+        "minReps": 6,
+        "reps": 10,
+        "restTimeAfter": 180,
+        "notes": "Straight sets; 1–2 RIR"
+      },
+      {
+        "exerciseId": 244,
+        "day": 2,
+        "sets": 3,
+        "minReps": 6,
+        "reps": 10,
+        "restTimeAfter": 180,
+        "notes": "Per leg; straight sets; 1–2 RIR"
+      },
+      {
+        "exerciseId": 246,
+        "day": 2,
+        "sets": 3,
+        "minReps": 8,
+        "reps": 12,
+        "restTimeAfter": 30,
+        "supersetGroup": "D",
+        "notes": "Use one low pulley; 1–2 RIR"
+      },
+      {
+        "exerciseId": 105,
+        "day": 2,
+        "sets": 3,
+        "minReps": 8,
+        "reps": 15,
+        "restTimeAfter": 120,
+        "supersetGroup": "D",
+        "notes": "Use the other high pulley; final set may reach 0–1 RIR"
+      },
+      {
+        "exerciseId": 250,
+        "day": 2,
+        "sets": 4,
+        "minReps": 8,
+        "reps": 15,
+        "restTimeAfter": 90,
+        "notes": "Straight sets; final set may reach 0–1 RIR"
+      },
+      {
+        "exerciseId": 204,
+        "day": 3,
+        "sets": 3,
+        "minReps": 6,
+        "reps": 10,
+        "restTimeAfter": 30,
+        "supersetGroup": "A",
+        "notes": "Keep one pulley low; 1–2 RIR"
+      },
+      {
+        "exerciseId": 22,
+        "day": 3,
+        "sets": 3,
+        "minReps": 6,
+        "reps": 10,
+        "restTimeAfter": 120,
+        "supersetGroup": "A",
+        "notes": "Keep one pulley high; 1–2 RIR"
+      },
+      {
+        "exerciseId": 251,
+        "day": 3,
+        "sets": 3,
+        "minReps": 8,
+        "reps": 15,
+        "restTimeAfter": 30,
+        "supersetGroup": "B",
+        "notes": "1–2 RIR"
+      },
+      {
+        "exerciseId": 141,
+        "day": 3,
+        "sets": 3,
+        "minReps": 8,
+        "reps": 15,
+        "restTimeAfter": 120,
+        "supersetGroup": "B",
+        "notes": "Final set may reach 0–1 RIR"
+      },
+      {
+        "exerciseId": 205,
+        "day": 3,
+        "sets": 2,
+        "minReps": 8,
+        "reps": 15,
+        "restTimeAfter": 30,
+        "supersetGroup": "C",
+        "notes": "1–2 RIR"
+      },
+      {
+        "exerciseId": 252,
+        "day": 3,
+        "sets": 2,
+        "minReps": 10,
+        "reps": 15,
+        "restTimeAfter": 90,
+        "supersetGroup": "C",
+        "notes": "Final set may reach 0–1 RIR"
+      },
+      {
+        "exerciseId": 253,
+        "day": 3,
+        "sets": 2,
+        "minReps": 10,
+        "reps": 20,
+        "restTimeAfter": 20,
+        "supersetGroup": "D",
+        "notes": "1–2 RIR"
+      },
+      {
+        "exerciseId": 254,
+        "day": 3,
+        "sets": 2,
+        "minReps": 10,
+        "reps": 20,
+        "restTimeAfter": 90,
+        "supersetGroup": "D",
+        "notes": "Final set may reach 0–1 RIR"
+      },
+      {
+        "exerciseId": 216,
+        "day": 5,
+        "sets": 4,
+        "minReps": 6,
+        "reps": 10,
+        "restTimeAfter": 45,
+        "supersetGroup": "A",
+        "notes": "Use both cables; 1–2 RIR"
+      },
+      {
+        "exerciseId": 225,
+        "day": 5,
+        "sets": 4,
+        "minReps": 6,
+        "reps": 10,
+        "restTimeAfter": 210,
+        "supersetGroup": "A",
+        "notes": "Reposition the pulleys without rushing; 1–2 RIR"
+      },
+      {
+        "exerciseId": 218,
+        "day": 5,
+        "sets": 3,
+        "minReps": 8,
+        "reps": 12,
+        "restTimeAfter": 45,
+        "supersetGroup": "B",
+        "notes": "Per arm; complete both arms before the press; 1–2 RIR"
+      },
+      {
+        "exerciseId": 235,
+        "day": 5,
+        "sets": 3,
+        "minReps": 6,
+        "reps": 10,
+        "restTimeAfter": 180,
+        "supersetGroup": "B",
+        "notes": "1–2 RIR"
+      },
+      {
+        "exerciseId": 223,
+        "day": 5,
+        "sets": 2,
+        "minReps": 10,
+        "reps": 15,
+        "restTimeAfter": 30,
+        "supersetGroup": "C",
+        "notes": "Use a high-to-low cable path; 1–2 RIR"
+      },
+      {
+        "exerciseId": 49,
+        "day": 5,
+        "sets": 3,
+        "minReps": 12,
+        "reps": 20,
+        "restTimeAfter": 90,
+        "supersetGroup": "C",
+        "notes": "The third set is standalone; final set may reach 0–1 RIR"
+      },
+      {
+        "exerciseId": 255,
+        "day": 6,
+        "sets": 4,
+        "minReps": 6,
+        "reps": 10,
+        "restTimeAfter": 240,
+        "notes": "Straight sets; avoid low-rep grinding; 1–2 RIR"
+      },
+      {
+        "exerciseId": 249,
+        "day": 6,
+        "sets": 3,
+        "minReps": 8,
+        "reps": 15,
+        "restTimeAfter": 30,
+        "supersetGroup": "B",
+        "notes": "Perform with a cable pull-through setup; 1–2 RIR"
+      },
+      {
+        "exerciseId": 250,
+        "day": 6,
+        "sets": 4,
+        "minReps": 10,
+        "reps": 15,
+        "restTimeAfter": 120,
+        "supersetGroup": "B",
+        "notes": "The fourth set is standalone; final set may reach 0–1 RIR"
+      },
+      {
+        "exerciseId": 247,
+        "day": 6,
+        "sets": 3,
+        "minReps": 10,
+        "reps": 15,
+        "restTimeAfter": 30,
+        "supersetGroup": "C",
+        "notes": "Per leg; 1–2 RIR"
+      },
+      {
+        "exerciseId": 246,
+        "day": 6,
+        "sets": 3,
+        "minReps": 10,
+        "reps": 15,
+        "restTimeAfter": 120,
+        "supersetGroup": "C",
+        "notes": "Final set may reach 0–1 RIR"
+      },
+      {
+        "exerciseId": 241,
+        "day": 6,
+        "sets": 2,
+        "minReps": 12,
+        "reps": 20,
+        "restTimeAfter": 30,
+        "supersetGroup": "D",
+        "notes": "Per leg; use one low pulley; 1–2 RIR"
+      },
+      {
+        "exerciseId": 69,
+        "day": 6,
+        "sets": 2,
+        "minReps": 10,
+        "reps": 15,
+        "restTimeAfter": 90,
+        "supersetGroup": "D",
+        "notes": "Per side; hold the extended position for 1–2 seconds"
+      }
+    ],
+    "icon": "fitness-center"
   }
 ]

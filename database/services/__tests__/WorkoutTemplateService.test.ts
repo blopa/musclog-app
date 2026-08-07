@@ -1,5 +1,7 @@
 import { database } from '@/database/database-instance';
 import { WorkoutTemplateRepository } from '@/database/repositories/WorkoutTemplateRepository';
+import { UserMetricService } from '@/database/services/UserMetricService';
+import { UserService } from '@/database/services/UserService';
 import {
   ExerciseInWorkout,
   SaveTemplateData,
@@ -1440,6 +1442,94 @@ describe('WorkoutTemplateService', () => {
       expect(mockSetsPrepareCreate).toHaveBeenCalledTimes(5);
       // Should have 1 valid schedule (index 0) - invalid indices -1, 7, 10 should be skipped
       expect(mockSchedulesPrepareCreate).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('createWorkoutsFromJsonTemplate', () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('imports rep ranges, rest timers, day names, and superset groups', async () => {
+      const bench = createMockExercise({
+        id: 'bench-id',
+        name: 'Cable Bench Press',
+        equipmentType: 'cable',
+        loadMultiplier: 1,
+        orderIndex: 0,
+      });
+      const pullUp = createMockExercise({
+        id: 'pull-up-id',
+        name: 'Cable Pull Up',
+        equipmentType: 'bodyweight',
+        loadMultiplier: 0,
+        orderIndex: 1,
+      });
+
+      mockDatabase.get.mockImplementation((table: string) => {
+        if (table === 'exercises') {
+          return collection({ fetch: jest.fn().mockResolvedValue([pullUp, bench]) }) as any;
+        }
+        return collection() as any;
+      });
+
+      jest.spyOn(UserService, 'getCurrentUser').mockResolvedValue(null);
+      jest.spyOn(UserMetricService, 'getLatest').mockResolvedValue(null);
+      jest.spyOn(WorkoutTemplateService as any, 'calculateSuggestedWeight').mockResolvedValue(40);
+
+      const createdTemplate = createMockWorkoutTemplate({ id: 'created-template' });
+      const saveTemplate = jest
+        .spyOn(WorkoutTemplateService, 'saveTemplate')
+        .mockResolvedValue(createdTemplate);
+
+      await WorkoutTemplateService.createWorkoutsFromJsonTemplate({
+        title: 'Test Cable Program',
+        dayNames: { '1': 'Upper A' },
+        exercises: [
+          {
+            exerciseId: 1,
+            day: 1,
+            sets: 4,
+            minReps: 4,
+            reps: 6,
+            restTimeAfter: 45,
+            supersetGroup: 'A',
+            notes: '1–2 RIR',
+          },
+          {
+            exerciseId: 2,
+            day: 1,
+            sets: 4,
+            minReps: 3,
+            reps: 6,
+            restTimeAfter: 210,
+            supersetGroup: 'A',
+          },
+        ],
+      });
+
+      expect(saveTemplate).toHaveBeenCalledTimes(1);
+      expect(saveTemplate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'Test Cable Program - Upper A',
+          exercises: [
+            expect.objectContaining({
+              id: 'bench-id',
+              groupId: 'Test Cable Program-day-1-A',
+              notes: 'Target 4–6 reps • 1–2 RIR',
+              reps: 6,
+              restTimeAfter: 45,
+            }),
+            expect.objectContaining({
+              id: 'pull-up-id',
+              groupId: 'Test Cable Program-day-1-A',
+              notes: 'Target 3–6 reps',
+              reps: 6,
+              restTimeAfter: 210,
+            }),
+          ],
+        })
+      );
     });
   });
 
