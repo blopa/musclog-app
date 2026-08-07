@@ -11,7 +11,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { GenericCard } from '@/components/cards/GenericCard';
 import { FilterTabs } from '@/components/FilterTabs';
 import { TextInput } from '@/components/theme/TextInput';
-import { type RawWorkoutTemplate, workoutTemplates } from '@/data/workoutTemplates';
+import { getWorkoutTemplates, type RawWorkoutTemplate } from '@/data/workoutTemplates';
 import { useTheme } from '@/hooks/useTheme';
 import { addOpacityToHex } from '@/theme';
 
@@ -33,7 +33,7 @@ type MaterialIconName = ComponentProps<typeof MaterialIcons>['name'];
  * Extracts the template index from a normalized template ID
  * ID format: template-${idx}-${title}
  */
-export function getRawTemplateById(templateId: string): RawWorkoutTemplate | null {
+export function getRawTemplateById(templateId: string, locale?: string): RawWorkoutTemplate | null {
   // Extract index from ID format: template-${idx}-${title}
   const match = templateId.match(/^template-(\d+)-/);
   if (!match) {
@@ -41,6 +41,7 @@ export function getRawTemplateById(templateId: string): RawWorkoutTemplate | nul
   }
 
   const index = parseInt(match[1], 10);
+  const workoutTemplates = getWorkoutTemplates(locale);
   if (index < 0 || index >= workoutTemplates.length) {
     return null;
   }
@@ -48,7 +49,8 @@ export function getRawTemplateById(templateId: string): RawWorkoutTemplate | nul
   return workoutTemplates[index];
 }
 
-const getNormalizedTemplates = (t: TFunction) => {
+const getNormalizedTemplates = (t: TFunction, locale: string) => {
+  const workoutTemplates = getWorkoutTemplates(locale);
   // Normalize imported JSON format to the UI-friendly WorkoutTemplate shape
   const normalizedTemplates: WorkoutTemplate[] = workoutTemplates.map((item, idx) => {
     const title =
@@ -122,7 +124,7 @@ export function BrowseTemplatesModal({
   onTemplateSelect,
   children,
 }: BrowseTemplatesModalProps) {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const theme = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -156,7 +158,7 @@ export function BrowseTemplatesModal({
     }
   };
 
-  const normalizedTemplates = getNormalizedTemplates(t);
+  const normalizedTemplates = getNormalizedTemplates(t, i18n.resolvedLanguage ?? i18n.language);
 
   const filteredTemplates = normalizedTemplates.filter((template) => {
     const matchesSearch = template.title.toLowerCase().includes(searchQuery.toLowerCase());

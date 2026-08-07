@@ -1,0 +1,58 @@
+[
+  {
+    "title": "5-daagse hypertrofiesplit",
+    "difficulty": "Advanced"
+  },
+  {
+    "title": "Push-pull-legs (PPL)",
+    "difficulty": "Intermediate"
+  },
+  {
+    "title": "4-daagse boven-/onderlichaamsplit",
+    "difficulty": "Intermediate"
+  },
+  {
+    "title": "Full-body (3 dagen)",
+    "difficulty": "Beginner"
+  },
+  {
+    "title": "Arnold-split (6 dagen)",
+    "difficulty": "Advanced"
+  },
+  {
+    "title": "Bro-split (5 dagen)",
+    "difficulty": "Intermediate"
+  },
+  {
+    "title": "PHUL (kracht en hypertrofie boven-/onderlichaam)",
+    "difficulty": "Intermediate"
+  },
+  {
+    "title": "2-daagse full-body (A/B)",
+    "difficulty": "Beginner"
+  },
+  {
+    "title": "3-daagse krachtopbouw",
+    "difficulty": "Beginner"
+  },
+  {
+    "title": "Klassieke 3-daagse (borst/triceps, rug/biceps, benen/schouders)",
+    "difficulty": "Intermediate"
+  },
+  {
+    "title": "Brolic-workout",
+    "difficulty": "Intermediate"
+  },
+  {
+    "title": "Kabelsuperset-workout",
+    "description": "Een BodyCraft HFT-kabelprogramma van vijf sessies, opgebouwd rond supersets voor het bovenlichaam, onderlichaam en antagonistische spiergroepen. Houd compounds en isolatieoefeningen op 1–2 RIR; de laatste isolatieset mag tot 0–1 RIR gaan. Bouw elke oefening afzonderlijk op met dubbele progressie.",
+    "dayNames": {
+      "1": "Bovenlichaam A",
+      "2": "Onderlichaam A",
+      "3": "Armen",
+      "5": "Bovenlichaam B",
+      "6": "Onderlichaam B"
+    },
+    "difficulty": "Advanced"
+  }
+]

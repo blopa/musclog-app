@@ -1,5 +1,14 @@
 import exercisesData from '@/data/exercisesData.json';
-import { applyWorkoutTemplateCopies, workoutTemplates } from '@/data/workoutTemplates';
+import {
+  applyWorkoutTemplateCopies,
+  getWorkoutTemplates,
+  workoutTemplates,
+} from '@/data/workoutTemplates';
+import workoutTemplatesEnUs from '@/data/workoutTemplatesEnUS.json';
+import workoutTemplatesEsEs from '@/data/workoutTemplatesEsEs.json';
+import workoutTemplatesNlNl from '@/data/workoutTemplatesNlNl.json';
+import workoutTemplatesPtBr from '@/data/workoutTemplatesPtBr.json';
+import workoutTemplatesRuRu from '@/data/workoutTemplatesRuRu.json';
 
 describe('workout template copies', () => {
   it('overlays localized copy without losing the workout definition', () => {
@@ -26,6 +35,41 @@ describe('workout template copies', () => {
     expect(applyWorkoutTemplateCopies([{ title: 'Fallback title', duration: 30 }], [])).toEqual([
       { title: 'Fallback title', duration: 30 },
     ]);
+  });
+
+  it.each([
+    ['en-US', workoutTemplatesEnUs],
+    ['es-ES', workoutTemplatesEsEs],
+    ['nl-NL', workoutTemplatesNlNl],
+    ['pt-BR', workoutTemplatesPtBr],
+    ['ru-RU', workoutTemplatesRuRu],
+  ])('keeps the %s catalog aligned with the workout definitions', (_locale, copies) => {
+    expect(copies).toHaveLength(workoutTemplates.length);
+    expect(copies.every(({ title }) => title.trim().length > 0)).toBe(true);
+  });
+
+  it.each([
+    ['es-ES', 'Rutina dividida de hipertrofia de 5 días', 'Torso A'],
+    ['nl-NL', '5-daagse hypertrofiesplit', 'Bovenlichaam A'],
+    ['pt-BR', 'Divisão de hipertrofia de 5 dias', 'Superior A'],
+    ['ru-RU', '5-дневный сплит на гипертрофию', 'Верх A'],
+  ])('selects localized copies for %s', (locale, expectedTitle, expectedFirstDay) => {
+    const templates = getWorkoutTemplates(locale);
+
+    expect(templates[0].title).toBe(expectedTitle);
+    expect(templates[0].exercises).toEqual(workoutTemplates[0].exercises);
+    expect(templates[11].description).toBeTruthy();
+    expect(templates[11].dayNames?.['1']).toBe(expectedFirstDay);
+  });
+
+  it('supports base language and underscore locale variants', () => {
+    expect(getWorkoutTemplates('es')[0].title).toBe(workoutTemplatesEsEs[0].title);
+    expect(getWorkoutTemplates('es-MX')[0].title).toBe(workoutTemplatesEsEs[0].title);
+    expect(getWorkoutTemplates('pt_BR')[0].title).toBe(workoutTemplatesPtBr[0].title);
+  });
+
+  it('falls back to English copies for unsupported locales', () => {
+    expect(getWorkoutTemplates('fr-FR')[0].title).toBe(workoutTemplatesEnUs[0].title);
   });
 });
 

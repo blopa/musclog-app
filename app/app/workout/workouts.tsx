@@ -45,7 +45,7 @@ import { handleError } from '@/utils/handleError';
 
 export default function WorkoutsScreen() {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const router = useRouter();
   const params = useLocalSearchParams<{ previewTemplateId?: string }>();
@@ -679,7 +679,10 @@ export default function WorkoutsScreen() {
         visible={isBrowseTemplatesVisible}
         onClose={() => setIsBrowseTemplatesVisible(false)}
         onTemplateSelect={(template) => {
-          const rawTemplate = getRawTemplateById(template.id);
+          const rawTemplate = getRawTemplateById(
+            template.id,
+            i18n.resolvedLanguage ?? i18n.language
+          );
           if (rawTemplate) {
             setSelectedRawTemplate({ templateId: template.id, title: template.title });
             setIsCreateFromTemplateConfirmationVisible(true);
@@ -704,7 +707,10 @@ export default function WorkoutsScreen() {
             await flushLoadingPaint();
 
             try {
-              const rawTemplate = getRawTemplateById(selectedRawTemplate.templateId);
+              const rawTemplate = getRawTemplateById(
+                selectedRawTemplate.templateId,
+                i18n.resolvedLanguage ?? i18n.language
+              );
               if (!rawTemplate) {
                 console.error('Could not find raw template data');
                 setIsCreatingWorkoutsFromTemplate(false);

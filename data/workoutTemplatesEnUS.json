@@ -46,6 +46,13 @@
   {
     "title": "Cable Superset Workout",
     "description": "A five-session BodyCraft HFT cable program built around upper, lower, and antagonist supersets. Keep compounds and isolation work at 1–2 RIR; the final isolation set may reach 0–1 RIR. Progress each exercise independently with double progression.",
+    "dayNames": {
+      "1": "Upper A",
+      "2": "Lower A",
+      "3": "Arms",
+      "5": "Upper B",
+      "6": "Lower B"
+    },
     "difficulty": "Advanced"
   }
 ]
