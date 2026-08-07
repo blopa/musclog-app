@@ -192,7 +192,9 @@
       "clearAppDataAuthPrompt": "Authenticeer om alle app-gegevens te verwijderen",
       "clearAppDataFailedMessage": "Er is een fout opgetreden bij het wissen van app-gegevens. Probeer het opnieuw.",
       "openSettingsFailedMessage": "Kan app-instellingen niet openen. Open ze handmatig.",
-      "dangerZone": "GEVARENZONE"
+      "dangerZone": "GEVARENZONE",
+      "opticalTransfer": "Optische overdracht",
+      "opticalTransferSubtitle": "Verplaats je gegevens met licht naar een andere telefoon"
     },
     "chatMessages": {
       "title": "Chatberichten",

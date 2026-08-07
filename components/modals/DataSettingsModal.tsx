@@ -13,6 +13,7 @@ import {
   Flag,
   Lock,
   MessageSquare,
+  ScanLine,
   Target,
   TrendingUp,
   Upload,
@@ -20,7 +21,7 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { Platform, Text, View } from 'react-native';
 
 import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
 import { SettingsCard } from '@/components/cards/SettingsCard';
@@ -30,8 +31,10 @@ import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
+import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
 import { clearAllAppData } from '@/utils/clearAppData';
+import { authenticateForDangerousAction } from '@/utils/dangerousActionAuth';
 import { exportDatabase, importDatabase } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 
@@ -53,6 +56,7 @@ import {
 } from './DataLogModal';
 import { FullScreenModal } from './FullScreenModal';
 import { LocalBackupsModal } from './LocalBackupsModal';
+import { OpticalTransferModal } from './OpticalTransferModal';
 
 type AdvancedDataModalProps = {
   visible: boolean;
@@ -88,6 +92,7 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
   const [includeDeletedRecords, setIncludeDeletedRecords] = useState(true);
   const [loading, setLoading] = useState(false);
   const [localBackupsModalVisible, setLocalBackupsModalVisible] = useState(false);
+  const [opticalTransferVisible, setOpticalTransferVisible] = useSubModalVisibility(visible);
 
   // Disable encryption confirmation modal state
   const [disableEncryptionModalVisible, setDisableEncryptionModalVisible] = useState(false);
@@ -132,32 +137,10 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
     }
   }, [decryptionPhrase, t]);
 
-  const authenticateForDangerousAction = useCallback(
-    async (promptMessage: string): Promise<boolean> => {
-      try {
-        const hasHardware = await LocalAuthentication.hasHardwareAsync();
-        const isEnrolled = await LocalAuthentication.isEnrolledAsync();
-
-        if (!hasHardware || !isEnrolled) {
-          return true;
-        }
-
-        const result = await LocalAuthentication.authenticateAsync({
-          promptMessage,
-        });
-
-        return result.success;
-      } catch (error) {
-        handleError(error, 'DataSettingsModal.authenticateForDangerousAction');
-        return false;
-      }
-    },
-    []
-  );
-
   const handleClearAppDataConfirm = useCallback(async () => {
     const authenticated = await authenticateForDangerousAction(
-      t('settings.advancedSettings.clearAppDataAuthPrompt')
+      t('settings.advancedSettings.clearAppDataAuthPrompt'),
+      'DataSettingsModal.handleClearAppDataConfirm'
     );
 
     if (!authenticated) {
@@ -174,7 +157,7 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
     } finally {
       setLoading(false);
     }
-  }, [authenticateForDangerousAction, t]);
+  }, [t]);
 
   const onRequireExportEncryptionToggle = useCallback(
     async (value: boolean) => {
@@ -324,6 +307,24 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
             onPress={() => setImportModalVisible(true)}
             rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
           />
+          {/* Phone-to-phone only: it needs a camera on one device and a screen on the other. */}
+          {Platform.OS === 'web' ? null : (
+            <SettingsCard
+              icon={<ScanLine size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+              iconContainerStyle={{
+                width: theme.size['16'],
+                height: theme.size['16'],
+                borderRadius: theme.borderRadius.sm,
+                backgroundColor: theme.colors.accent.primary20,
+              }}
+              title={t('settings.advancedSettings.opticalTransfer')}
+              subtitle={t('settings.advancedSettings.opticalTransferSubtitle')}
+              onPress={() => setOpticalTransferVisible(true)}
+              rightIcon={
+                <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
+              }
+            />
+          )}
           <View className="mt-4" />
           <ToggleInput
             items={[
@@ -834,6 +835,10 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
       <LocalBackupsModal
         visible={localBackupsModalVisible}
         onClose={() => setLocalBackupsModalVisible(false)}
+      />
+      <OpticalTransferModal
+        visible={opticalTransferVisible}
+        onClose={() => setOpticalTransferVisible(false)}
       />
       <BleWorkoutDataModal
         visible={showBleWorkoutDataModal}

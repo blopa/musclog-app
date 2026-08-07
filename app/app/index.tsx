@@ -347,19 +347,6 @@ export default function HomeScreen() {
     <MasterLayout>
       {showConfetti ? <ConfettiOverlay /> : null}
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* TEMPORARY — Optical Transfer Phase 0 bench. Deliberately not gated on isProduction():
-            the timings are only meaningful on a release build. Remove this block, the route
-            app/app/optical-bench.tsx, and components/optical/* once the go/no-go is recorded. */}
-        <Pressable
-          className="mx-4 mt-4 items-center rounded-lg py-3"
-          onPress={() => router.navigate('/app/optical-bench')}
-          style={{ backgroundColor: theme.colors.accent.primary }}
-        >
-          <Text className="font-bold" style={{ color: theme.colors.background.primary }}>
-            Optical Transfer bench (temporary)
-          </Text>
-        </Pressable>
-
         {/* Header */}
         <View className="flex-row items-center justify-between px-4 py-6">
           <Pressable

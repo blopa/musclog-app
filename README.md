@@ -136,6 +136,9 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 - All data stored locally on-device via WatermelonDB
 - Sensitive fields (nutrition logs, user metrics) encrypted at rest with AES
 - AI features are fully optional — app works offline without them
+- **Optical Transfer**: move your whole profile to a new phone using only the two screens — one
+  shows a stream of QR codes, the other reads them with its camera. No internet, no cable, no
+  account, and nothing ever touches a third party
 
 ---
 

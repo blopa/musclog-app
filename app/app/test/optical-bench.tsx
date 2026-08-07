@@ -1,17 +1,18 @@
 /**
- * TEMPORARY — Optical Transfer Phase 0 bench.
+ * Optical Transfer bench — device measurement and a bare sender/receiver harness.
  *
- * Deliberately NOT under `app/app/test/`: that route group's layout redirects to /app whenever
- * `isProduction()`, and the measurements here are only meaningful on a release build (dev-mode
- * Hermes and the unminified bundle distort every timing). Delete this file, its route, and the
- * temporary Home entry point once the go/no-go decision is recorded.
+ * Reached from Debug → "Test: Optical Transfer". This is the instrument, not the feature: it
+ * talks to `utils/optical/*` directly with no container, compression, encryption or restore, so
+ * a bad number here points at the channel rather than at the pipeline around it.
  *
- * What it answers:
- *   A4  Does Hermes reproduce the fountain's dlog digest? If not, two phones desync silently.
- *   A1  What does one QR frame cost to generate? Decides live generation vs. another strategy.
- *   A3  How big is a real database dump, and how well does it gzip? Decides transfer time.
- *   A2  What does the receiving camera actually see and decode? The decisive one — especially
- *       the analysis resolution, which on Android we do not get to choose.
+ * It answered the feasibility questions in `docs/OPTICAL_TRANSFER.md`; keep it for re-measuring
+ * on new hardware, for bisecting a "won't scan" report, and for re-running the determinism sweep
+ * after any Hermes or Expo upgrade.
+ *
+ * NOTE ON MEASURING: this route group's layout redirects to /app when `isProduction()`, so a dev
+ * build is the only way in — but dev-mode Hermes and the unminified bundle distort every timing
+ * badly. The recorded numbers come from a release build with that redirect temporarily removed.
+ * Do that again rather than trusting a dev-build reading.
  */
 
 import { useRouter } from 'expo-router';
