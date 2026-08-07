@@ -3,6 +3,7 @@ import {
   getNutritionLogHistoryPrompt,
   getWorkoutLogHistoryPrompt,
 } from '@/utils/coachPromptHistory';
+import { differenceInCalendarDays, startOfDay } from 'date-fns';
 
 jest.mock('@/database/services', () => ({
   NutritionService: { getNutritionLogsForDateRange: jest.fn() },
@@ -106,9 +107,9 @@ describe('coachPromptHistory', () => {
       await getNutritionLogHistoryPrompt();
 
       const [startDate, endDate] = mockGetNutritionLogs.mock.calls[0];
-      const dayMs = 24 * 60 * 60 * 1000;
       // 7 days inclusive => start is 6 calendar days back.
-      expect(Math.round((endDate.getTime() - startDate.getTime()) / dayMs)).toBe(6);
+      expect(differenceInCalendarDays(endDate, startDate)).toBe(6);
+      expect(startDate.getTime()).toBe(startOfDay(startDate).getTime());
     });
 
     it('groups entries by day (oldest day first) and orders each day oldest-first', async () => {

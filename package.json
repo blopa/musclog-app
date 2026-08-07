@@ -167,6 +167,7 @@
     "expo-system-ui": "~57.0.2",
     "expo-updates": "~57.0.12",
     "expo-web-browser": "~57.0.2",
+    "fflate": "^0.8.3",
     "glob": "13.0.6",
     "html-to-image": "^1.11.13",
     "i18next": "26.3.6",
