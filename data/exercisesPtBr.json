@@ -1233,5 +1233,50 @@
     "name": "Extensão de Perna de Pé no Cabo",
     "description": "Uma extensão de perna no cabo com tornozeleira, estendendo a perna inferior enquanto fica em pé.",
     "exerciseIndex": 247
+  },
+  {
+    "name": "Agachamento Búlgaro no Cabo",
+    "description": "Um agachamento unilateral com o pé traseiro elevado, realizado contra a resistência do cabo.",
+    "exerciseIndex": 248
+  },
+  {
+    "name": "Levantamento Terra Romeno no Cabo",
+    "description": "Um movimento de dobradiça do quadril realizado com resistência do cabo e as pernas levemente flexionadas.",
+    "exerciseIndex": 249
+  },
+  {
+    "name": "Elevação de Panturrilha de Pé no Cabo",
+    "description": "Uma elevação de panturrilha em pé realizada segurando a resistência do cabo.",
+    "exerciseIndex": 250
+  },
+  {
+    "name": "Rosca Bayesiana no Cabo",
+    "description": "Uma rosca unilateral no cabo realizada de costas para uma polia baixa, com o braço de trabalho atrás do tronco.",
+    "exerciseIndex": 251
+  },
+  {
+    "name": "Extensão de Tríceps Cruzada no Cabo",
+    "description": "Uma extensão unilateral de tríceps no cabo realizada diagonalmente através do corpo.",
+    "exerciseIndex": 252
+  },
+  {
+    "name": "Flexão de Punho no Cabo",
+    "description": "Uma flexão de punho no cabo realizada flexionando os punhos e mantendo os antebraços imóveis.",
+    "exerciseIndex": 253
+  },
+  {
+    "name": "Flexão Inversa de Punho no Cabo",
+    "description": "Uma flexão de punho pronada no cabo realizada estendendo os punhos e mantendo os antebraços imóveis.",
+    "exerciseIndex": 254
+  },
+  {
+    "name": "Agachamento com Cinto no Cabo",
+    "description": "Um agachamento com o cabo preso a um cinto de quadril, carregando as pernas sem sobrecarregar a coluna.",
+    "exerciseIndex": 255
+  },
+  {
+    "name": "Crucifixo de Baixo para Cima no Cabo",
+    "description": "Um crucifixo no cabo que leva as alças para cima e para dentro a partir de uma posição baixa.",
+    "exerciseIndex": 256
   }
 ]

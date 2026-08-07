@@ -1233,5 +1233,50 @@
     "name": "Cable Standing Leg Extension",
     "description": "A cable leg extension using an ankle strap, extending the lower leg while standing.",
     "exerciseIndex": 247
+  },
+  {
+    "name": "Cable Bulgarian Split Squat",
+    "description": "A rear-foot-elevated split squat performed against cable resistance.",
+    "exerciseIndex": 248
+  },
+  {
+    "name": "Cable Romanian Deadlift",
+    "description": "A hip hinge performed with cable resistance while keeping the legs slightly bent.",
+    "exerciseIndex": 249
+  },
+  {
+    "name": "Cable Standing Calf Raise",
+    "description": "A standing calf raise performed while holding cable resistance.",
+    "exerciseIndex": 250
+  },
+  {
+    "name": "Cable Bayesian Curl",
+    "description": "A single-arm cable curl performed facing away from a low pulley with the working arm behind the torso.",
+    "exerciseIndex": 251
+  },
+  {
+    "name": "Cable Cross-Body Triceps Extension",
+    "description": "A single-arm cable triceps extension performed diagonally across the body.",
+    "exerciseIndex": 252
+  },
+  {
+    "name": "Cable Wrist Curl",
+    "description": "A cable wrist curl performed by flexing the wrists while keeping the forearms still.",
+    "exerciseIndex": 253
+  },
+  {
+    "name": "Cable Reverse Wrist Curl",
+    "description": "A pronated cable wrist curl performed by extending the wrists while keeping the forearms still.",
+    "exerciseIndex": 254
+  },
+  {
+    "name": "Cable Belt Squat",
+    "description": "A squat performed with a cable attached to a hip belt, loading the legs without loading the spine.",
+    "exerciseIndex": 255
+  },
+  {
+    "name": "Cable Low-to-High Fly",
+    "description": "A cable fly that brings the handles upward and inward from a low pulley position.",
+    "exerciseIndex": 256
   }
 ]

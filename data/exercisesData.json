@@ -2329,5 +2329,86 @@
     "targetMuscles": ["quadriceps"],
     "loadMultiplier": 0.2,
     "__exerciseName": "Cable Standing Leg Extension"
+  },
+  {
+    "exerciseIndex": 248,
+    "muscleGroup": "legs",
+    "equipmentType": "cable",
+    "mechanicType": "compound",
+    "targetMuscles": ["glutes", "quadriceps", "hamstrings"],
+    "loadMultiplier": 0.4,
+    "__exerciseName": "Cable Bulgarian Split Squat"
+  },
+  {
+    "exerciseIndex": 249,
+    "muscleGroup": "legs",
+    "equipmentType": "cable",
+    "mechanicType": "compound",
+    "targetMuscles": ["hamstrings", "glutes", "erector_spinae"],
+    "loadMultiplier": 0.5,
+    "__exerciseName": "Cable Romanian Deadlift"
+  },
+  {
+    "exerciseIndex": 250,
+    "muscleGroup": "legs",
+    "equipmentType": "cable",
+    "mechanicType": "isolation",
+    "targetMuscles": ["calves"],
+    "loadMultiplier": 0.5,
+    "__exerciseName": "Cable Standing Calf Raise"
+  },
+  {
+    "exerciseIndex": 251,
+    "muscleGroup": "arms",
+    "equipmentType": "cable",
+    "mechanicType": "isolation",
+    "targetMuscles": ["biceps", "forearms"],
+    "loadMultiplier": 0.15,
+    "__exerciseName": "Cable Bayesian Curl"
+  },
+  {
+    "exerciseIndex": 252,
+    "muscleGroup": "arms",
+    "equipmentType": "cable",
+    "mechanicType": "isolation",
+    "targetMuscles": ["triceps"],
+    "loadMultiplier": 0.15,
+    "__exerciseName": "Cable Cross-Body Triceps Extension"
+  },
+  {
+    "exerciseIndex": 253,
+    "muscleGroup": "arms",
+    "equipmentType": "cable",
+    "mechanicType": "isolation",
+    "targetMuscles": ["forearms"],
+    "loadMultiplier": 0.1,
+    "__exerciseName": "Cable Wrist Curl"
+  },
+  {
+    "exerciseIndex": 254,
+    "muscleGroup": "arms",
+    "equipmentType": "cable",
+    "mechanicType": "isolation",
+    "targetMuscles": ["forearms"],
+    "loadMultiplier": 0.1,
+    "__exerciseName": "Cable Reverse Wrist Curl"
+  },
+  {
+    "exerciseIndex": 255,
+    "muscleGroup": "legs",
+    "equipmentType": "cable",
+    "mechanicType": "compound",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "loadMultiplier": 0.5,
+    "__exerciseName": "Cable Belt Squat"
+  },
+  {
+    "exerciseIndex": 256,
+    "muscleGroup": "chest",
+    "equipmentType": "cable",
+    "mechanicType": "isolation",
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
+    "loadMultiplier": 0.28,
+    "__exerciseName": "Cable Low-to-High Fly"
   }
 ]
