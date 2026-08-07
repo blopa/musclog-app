@@ -40,18 +40,20 @@ Almost every item below is a presentation or input-quality change, not a new dat
 
 ## Tier 1 — the five highest-value items
 
-### 1. Trend weight, everywhere
+### 1. Trend weight, everywhere — shipped
 
-**Gap:** there is no weight smoothing anywhere in the codebase — no EMA, no filter, no Kalman.
-Raw scale weight is what the user sees and what feeds every downstream calculation.
+**Implementation record:** see [TREND_WEIGHT_IMPLEMENTATION_PLAN.md](TREND_WEIGHT_IMPLEMENTATION_PLAN.md).
+
+**Status:** shipped. `utils/trendWeight.ts` provides the canonical alpha-0.10 EWMA with same-day
+averaging, interpolation between observations, and a 28-day warm-up for bounded reads. Progress,
+nutrition charts, check-ins, and empirical-TDEE endpoints use it; raw readings remain visible.
 
 **What good looks like:** the primary weight number the user sees is an exponentially-smoothed
 trend, with raw weigh-ins as faint dots behind it. Daily fluctuation from water, sodium and gut
 content stops reading as failure.
 
-**Build:** a `utils/trendWeight.ts` (Hacker's-Diet style EMA, α ≈ 0.25/day, or a small Kalman
-filter). Feed it into the home card, [app/app/progress.tsx](../app/app/progress.tsx), the check-in, and
-the TDEE input path.
+**Follow-up:** calibrate alpha against production outcomes if needed. A home card remains a separate
+dashboard-information-architecture decision, and there is no user-facing smoothing control.
 
 **Why it's first:** cheapest change with the largest perceived-quality jump, and it is a
 prerequisite for items 2 and 3.
@@ -60,10 +62,9 @@ prerequisite for items 2 and 3.
 
 ### 2. Fit the whole weight series, not two endpoints
 
-**Gap:** [utils/historicalNutritionParams.ts:113](../utils/historicalNutritionParams.ts#L113) derives
-empirical TDEE by comparing the **first week's average** to the **last week's average**, discarding
-every week in between. It is better than raw endpoints, but a user who weighed in once during week 1
-has their entire expenditure estimate anchored to a single reading.
+**Gap:** [utils/historicalNutritionParams.ts](../utils/historicalNutritionParams.ts) derives
+empirical TDEE from the **initial and final trend-weight endpoints**, discarding every point in
+between. This is calmer than raw or weekly-average endpoints but still leaves information unused.
 
 **What good looks like:** a weighted regression over trend weight across the full window. More
 robust, and it yields the confidence interval that makes item 3 credible.
@@ -352,8 +353,8 @@ Listed so the decision is explicit and doesn't get relitigated:
 
 Ordered by value-per-effort, with dependencies respected.
 
-1. **Trend weight** — unblocks 2 and 3; smallest diff on this list.
-2. **Whole-series regression for empirical TDEE** — correctness improvement, not just a feature.
+1. ~~**Trend weight**~~ — ✅ shipped; it unblocks 2 and 3.
+2. **Whole-series regression for empirical TDEE** — the next correctness improvement.
 3. **Expenditure hero screen** — turns our best hidden asset into the reason people stay.
 4. **Muscle-group body map** — data layer already exists; pure presentation work.
 5. ~~**Copy day / repeat meal**~~ — ✅ shipped.
