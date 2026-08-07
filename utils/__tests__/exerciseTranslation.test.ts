@@ -37,10 +37,8 @@ describe('getMuscleGroupTranslationKey', () => {
     expect(getMuscleGroupTranslationKey('Legs')).toBe('workout.muscleGroups.legs');
   });
 
-  it('checks back before arms, so any group containing "lat" wins the back bucket', () => {
-    // Documents the branch ordering: `lateral_deltoid` is a shoulder muscle but contains
-    // "lat", and the back branch runs first. Reordering the branches would change this.
-    expect(getMuscleGroupTranslationKey('lateral_deltoid')).toBe('workout.muscleGroups.back');
+  it('recognizes deltoids before matching the shorter "lat" back keyword', () => {
+    expect(getMuscleGroupTranslationKey('lateral_deltoid')).toBe('workout.muscleGroups.arms');
   });
 
   it('falls back to the other bucket for unknown or empty values instead of throwing', () => {
@@ -48,18 +46,12 @@ describe('getMuscleGroupTranslationKey', () => {
     expect(getMuscleGroupTranslationKey('neck')).toBe('workout.muscleGroups.other');
     expect(getMuscleGroupTranslationKey('full_body')).toBe('workout.muscleGroups.other');
     // The optional-chained `muscleGroup?.toLowerCase()` is the only nullish guard in the file.
-    expect(getMuscleGroupTranslationKey(undefined as unknown as string)).toBe(
-      'workout.muscleGroups.other'
-    );
-    expect(getMuscleGroupTranslationKey(null as unknown as string)).toBe(
-      'workout.muscleGroups.other'
-    );
+    expect(getMuscleGroupTranslationKey(undefined)).toBe('workout.muscleGroups.other');
+    expect(getMuscleGroupTranslationKey(null)).toBe('workout.muscleGroups.other');
   });
 
-  it('does not match "calves" against the "calf" leg keyword', () => {
-    // Regression marker: the legs branch tests for "calf", which the plural spelling stored
-    // in the exercise tables does not contain, so it lands in `other`.
-    expect(getMuscleGroupTranslationKey('calves')).toBe('workout.muscleGroups.other');
+  it('recognizes both singular and plural calf spellings as legs', () => {
+    expect(getMuscleGroupTranslationKey('calves')).toBe('workout.muscleGroups.legs');
     expect(getMuscleGroupTranslationKey('calf')).toBe('workout.muscleGroups.legs');
   });
 });
@@ -82,6 +74,13 @@ describe('getExerciseTypeTranslationKey / getMechanicTypeTranslationKey', () => 
     expect(getExerciseTypeTranslationKey('Smith Machine')).toBe(
       'workout.exerciseTypes.smith machine'
     );
-    expect(getExerciseTypeTranslationKey('')).toBe('workout.exerciseTypes.');
+    expect(getExerciseTypeTranslationKey('')).toBe('workout.exerciseTypes.other');
+  });
+
+  it('falls back to other for missing equipment and mechanic values', () => {
+    expect(getExerciseTypeTranslationKey(undefined)).toBe('workout.exerciseTypes.other');
+    expect(getExerciseTypeTranslationKey(null)).toBe('workout.exerciseTypes.other');
+    expect(getMechanicTypeTranslationKey(undefined)).toBe('workout.exerciseTypes.other');
+    expect(getMechanicTypeTranslationKey(null)).toBe('workout.exerciseTypes.other');
   });
 });

@@ -87,53 +87,6 @@ export const MUSCLE_TO_SLUGS: Record<string, MuscleSlug[]> = {
   other: [],
 };
 
-export const SLUG_TO_LABEL: Record<MuscleSlug, string> = {
-  abs: 'Abs',
-  adductors: 'Adductors',
-  ankles: 'Ankles',
-  biceps: 'Biceps',
-  calves: 'Calves',
-  chest: 'Chest',
-  deltoids: 'Deltoids',
-  feet: 'Feet',
-  forearm: 'Forearms',
-  gluteal: 'Glutes',
-  hamstring: 'Hamstrings',
-  hands: 'Hands',
-  hair: 'Hair',
-  head: 'Head',
-  knees: 'Knees',
-  'lower-back': 'Lower Back',
-  neck: 'Neck',
-  obliques: 'Obliques',
-  quadriceps: 'Quads',
-  tibialis: 'Tibialis',
-  trapezius: 'Trapezius',
-  triceps: 'Triceps',
-  'upper-back': 'Upper Back',
-};
-
-export const FRONT_SLUGS = new Set<MuscleSlug>([
-  'abs',
-  'biceps',
-  'chest',
-  'deltoids',
-  'forearm',
-  'quadriceps',
-  'obliques',
-]);
-
-export const BACK_SLUGS = new Set<MuscleSlug>([
-  'calves',
-  'forearm',
-  'gluteal',
-  'hamstring',
-  'lower-back',
-  'trapezius',
-  'triceps',
-  'upper-back',
-]);
-
 export function buildSlugIntensityMap(
   muscleGroups: (string | null | undefined)[]
 ): Map<MuscleSlug, number> {

@@ -8,21 +8,19 @@
  * @param muscleGroup - Raw muscle group value from database
  * @returns Translation key for the muscle group
  */
-export function getMuscleGroupTranslationKey(muscleGroup: string): string {
+export function getMuscleGroupTranslationKey(muscleGroup?: string | null): string {
   const normalized = muscleGroup?.toLowerCase() || '';
 
   // Map normalized values to translation keys
   if (normalized.includes('chest')) {
     return 'workout.muscleGroups.chest';
   }
-  if (normalized.includes('back') || normalized.includes('lat')) {
-    return 'workout.muscleGroups.back';
-  }
   if (
     normalized.includes('leg') ||
     normalized.includes('quad') ||
     normalized.includes('hamstring') ||
     normalized.includes('calf') ||
+    normalized.includes('calves') ||
     normalized.includes('glute')
   ) {
     return 'workout.muscleGroups.legs';
@@ -36,6 +34,9 @@ export function getMuscleGroupTranslationKey(muscleGroup: string): string {
   ) {
     return 'workout.muscleGroups.arms';
   }
+  if (normalized.includes('back') || normalized.includes('lat')) {
+    return 'workout.muscleGroups.back';
+  }
 
   return 'workout.muscleGroups.other';
 }
@@ -45,8 +46,8 @@ export function getMuscleGroupTranslationKey(muscleGroup: string): string {
  * @param exerciseType - Raw exercise type or equipment value from database
  * @returns Translation key for the exercise type
  */
-export function getExerciseTypeTranslationKey(exerciseType: string): string {
-  return `workout.exerciseTypes.${exerciseType.toLowerCase()}`;
+export function getExerciseTypeTranslationKey(exerciseType?: string | null): string {
+  return `workout.exerciseTypes.${exerciseType?.toLowerCase() || 'other'}`;
 }
 
 /**
@@ -54,6 +55,6 @@ export function getExerciseTypeTranslationKey(exerciseType: string): string {
  * @param mechanicType - Raw mechanic type value from database
  * @returns Translation key for the mechanic type
  */
-export function getMechanicTypeTranslationKey(mechanicType: string): string {
-  return `workout.exerciseTypes.${mechanicType.toLowerCase()}`;
+export function getMechanicTypeTranslationKey(mechanicType?: string | null): string {
+  return `workout.exerciseTypes.${mechanicType?.toLowerCase() || 'other'}`;
 }

@@ -197,7 +197,6 @@ describe('transformWorkoutToDetailData — exercise grouping', () => {
   });
 
   it('pushes an exercise missing from the ordered list to the end', async () => {
-    // `indexOf(...) + 1 || Infinity` turns "not found" (-1 → 0 → falsy) into last place.
     const result = await transform(
       workoutLog(),
       [logSet({ id: 's1', exerciseId: 'ex-untracked' }), logSet({ id: 's2', exerciseId: 'ex-1' })],
@@ -207,6 +206,26 @@ describe('transformWorkoutToDetailData — exercise grouping', () => {
     );
 
     expect(result.exercises.map((e) => e.id)).toEqual(['ex-1', 'ex-untracked']);
+  });
+
+  it('keeps first-appearance order among multiple exercises missing from the ordered list', async () => {
+    const result = await transform(
+      workoutLog(),
+      [
+        logSet({ id: 's1', exerciseId: 'ex-extra-2' }),
+        logSet({ id: 's2', exerciseId: 'ex-1' }),
+        logSet({ id: 's3', exerciseId: 'ex-extra-1' }),
+      ],
+      [
+        exercise(),
+        exercise({ id: 'ex-extra-1', name: 'Extra One' }),
+        exercise({ id: 'ex-extra-2', name: 'Extra Two' }),
+      ],
+      'metric',
+      ['ex-1']
+    );
+
+    expect(result.exercises.map((e) => e.id)).toEqual(['ex-1', 'ex-extra-2', 'ex-extra-1']);
   });
 
   it('carries the exercise metadata and derives timeSpent from the set count', async () => {
@@ -579,5 +598,26 @@ describe('transformWorkoutToDetailData — volume trend', () => {
 
     expect(result.volumeTrend.data).toHaveLength(3);
     expect(result.volumeTrend.percentage).toBe(25);
+  });
+
+  it('keeps a neutral percentage when an incomplete current workout is absent from history', async () => {
+    getWorkoutLogsByTemplate.mockResolvedValue([
+      historicalLog('wl-latest', 1000, 7),
+      historicalLog('wl-old', 800, 0),
+    ]);
+
+    const result = await transform(
+      workoutLog({
+        id: 'wl-current',
+        templateId: 'tpl-1',
+        totalVolume: 900,
+        completedAt: null,
+      }),
+      [logSet()],
+      [exercise()]
+    );
+
+    expect(result.volumeTrend.percentage).toBe(0);
+    expect(result.volumeTrend.data).toHaveLength(2);
   });
 });

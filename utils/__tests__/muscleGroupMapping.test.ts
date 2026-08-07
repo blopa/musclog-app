@@ -1,11 +1,5 @@
 import type { MuscleSlug } from '@/utils/muscleGroupMapping';
-import {
-  BACK_SLUGS,
-  buildSlugIntensityMap,
-  FRONT_SLUGS,
-  MUSCLE_TO_SLUGS,
-  SLUG_TO_LABEL,
-} from '@/utils/muscleGroupMapping';
+import { buildSlugIntensityMap, MUSCLE_TO_SLUGS } from '@/utils/muscleGroupMapping';
 
 /** Sorted entries, so assertions don't depend on Map insertion order. */
 function entries(map: Map<MuscleSlug, number>): [MuscleSlug, number][] {
@@ -77,41 +71,10 @@ describe('buildSlugIntensityMap', () => {
   });
 });
 
-describe('muscle group registries', () => {
+describe('MUSCLE_TO_SLUGS', () => {
   it('keys MUSCLE_TO_SLUGS in lowercase, since lookups are always lowercased', () => {
     // An upper-case key would be permanently unreachable through buildSlugIntensityMap.
     const nonLowercase = Object.keys(MUSCLE_TO_SLUGS).filter((key) => key !== key.toLowerCase());
     expect(nonLowercase).toEqual([]);
-  });
-
-  it('labels every slug any muscle group can produce', () => {
-    const produced = new Set(Object.values(MUSCLE_TO_SLUGS).flat());
-    const unlabelled = [...produced].filter((slug) => !(slug in SLUG_TO_LABEL));
-    expect(unlabelled).toEqual([]);
-  });
-
-  it('only lists labelled slugs on the front and back body silhouettes', () => {
-    const sided = [...FRONT_SLUGS, ...BACK_SLUGS];
-    expect(sided.filter((slug) => !(slug in SLUG_TO_LABEL))).toEqual([]);
-  });
-
-  it('places every slug reachable from a primary muscle group on at least one silhouette', () => {
-    // Primary groups are what the workout UI actually passes in; a slug reachable from one
-    // of them but missing from both silhouettes would be counted yet never drawn.
-    const primaryGroups = [
-      'abdomen',
-      'arms',
-      'back',
-      'chest',
-      'core',
-      'glutes',
-      'legs',
-      'shoulders',
-    ];
-    const reachable = new Set(primaryGroups.flatMap((group) => MUSCLE_TO_SLUGS[group]));
-    const undrawable = [...reachable].filter(
-      (slug) => !FRONT_SLUGS.has(slug) && !BACK_SLUGS.has(slug)
-    );
-    expect(undrawable).toEqual([]);
   });
 });

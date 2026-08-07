@@ -18,8 +18,13 @@ describe('getWorkoutIcon', () => {
   });
 
   it('falls back to Dumbbell for an unrecognised icon name', () => {
-    // The value can come straight from an LLM, so an invented name must not crash the card.
     expect(getWorkoutIcon('rocket')).toBe(Dumbbell);
+  });
+
+  it('does not resolve inherited object properties as icons', () => {
+    expect(getWorkoutIcon('constructor')).toBe(Dumbbell);
+    expect(getWorkoutIcon('toString')).toBe(Dumbbell);
+    expect(getWorkoutIcon('__proto__')).toBe(Dumbbell);
   });
 
   it('looks up case-sensitively, so a capitalised name falls back', () => {
