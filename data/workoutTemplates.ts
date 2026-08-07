@@ -5,10 +5,14 @@ import workoutTemplatesNlNl from '@/data/workoutTemplatesNlNl.json';
 import workoutTemplatesPtBr from '@/data/workoutTemplatesPtBr.json';
 import workoutTemplatesRuRu from '@/data/workoutTemplatesRuRu.json';
 
+export const WORKOUT_TEMPLATE_DIFFICULTIES = ['beginner', 'intermediate', 'advanced'] as const;
+
+export type WorkoutTemplateDifficulty = (typeof WORKOUT_TEMPLATE_DIFFICULTIES)[number];
+
 export type RawWorkoutTemplate = {
   title: string;
   description?: string;
-  difficulty?: string;
+  difficulty?: WorkoutTemplateDifficulty;
   duration?: number | string;
   dayNames?: Record<string, string>;
   exercises?: RawWorkoutTemplateExercise[] | number | string;
@@ -27,14 +31,16 @@ export type RawWorkoutTemplateExercise = {
   supersetGroup?: string;
 };
 
+export type WorkoutTemplateCopy = Pick<RawWorkoutTemplate, 'title' | 'description' | 'dayNames'>;
+
 export function applyWorkoutTemplateCopies(
   templates: RawWorkoutTemplate[],
-  copies: Partial<RawWorkoutTemplate>[]
+  copies: WorkoutTemplateCopy[]
 ): RawWorkoutTemplate[] {
   return templates.map((template, index) => ({ ...template, ...copies[index] }));
 }
 
-const workoutTemplateCopiesByLocale: Record<string, Partial<RawWorkoutTemplate>[]> = {
+const workoutTemplateCopiesByLocale: Record<string, WorkoutTemplateCopy[]> = {
   'en-US': workoutTemplatesEnUs,
   'es-ES': workoutTemplatesEsEs,
   'nl-NL': workoutTemplatesNlNl,

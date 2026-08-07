@@ -1,47 +1,36 @@
 [
   {
-    "title": "Divisão de hipertrofia de 5 dias",
-    "difficulty": "Advanced"
+    "title": "Divisão de hipertrofia de 5 dias"
   },
   {
-    "title": "Empurrar, puxar e pernas (PPL)",
-    "difficulty": "Intermediate"
+    "title": "Empurrar, puxar e pernas (PPL)"
   },
   {
-    "title": "Divisão superior/inferior de 4 dias",
-    "difficulty": "Intermediate"
+    "title": "Divisão superior/inferior de 4 dias"
   },
   {
-    "title": "Corpo inteiro (3 dias)",
-    "difficulty": "Beginner"
+    "title": "Corpo inteiro (3 dias)"
   },
   {
-    "title": "Divisão Arnold (6 dias)",
-    "difficulty": "Advanced"
+    "title": "Divisão Arnold (6 dias)"
   },
   {
-    "title": "Divisão por grupo muscular (5 dias)",
-    "difficulty": "Intermediate"
+    "title": "Divisão por grupo muscular (5 dias)"
   },
   {
-    "title": "PHUL (força e hipertrofia superior/inferior)",
-    "difficulty": "Intermediate"
+    "title": "PHUL (força e hipertrofia superior/inferior)"
   },
   {
-    "title": "Corpo inteiro em 2 dias (A/B)",
-    "difficulty": "Beginner"
+    "title": "Corpo inteiro em 2 dias (A/B)"
   },
   {
-    "title": "Desenvolvimento de força em 3 dias",
-    "difficulty": "Beginner"
+    "title": "Desenvolvimento de força em 3 dias"
   },
   {
-    "title": "Clássico de 3 dias (peito/tríceps, costas/bíceps, pernas/ombros)",
-    "difficulty": "Intermediate"
+    "title": "Clássico de 3 dias (peito/tríceps, costas/bíceps, pernas/ombros)"
   },
   {
-    "title": "Treino Brolic",
-    "difficulty": "Intermediate"
+    "title": "Treino Brolic"
   },
   {
     "title": "Treino de superséries no cabo",
@@ -52,7 +41,6 @@
       "3": "Braços",
       "5": "Superior B",
       "6": "Inferior B"
-    },
-    "difficulty": "Advanced"
+    }
   }
 ]

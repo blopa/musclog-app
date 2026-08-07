@@ -1,47 +1,36 @@
 [
   {
-    "title": "5-Day Hypertrophy Split",
-    "difficulty": "Advanced"
+    "title": "5-Day Hypertrophy Split"
   },
   {
-    "title": "Push Pull Legs (PPL)",
-    "difficulty": "Intermediate"
+    "title": "Push Pull Legs (PPL)"
   },
   {
-    "title": "Upper/Lower 4-Day Split",
-    "difficulty": "Intermediate"
+    "title": "Upper/Lower 4-Day Split"
   },
   {
-    "title": "Full Body (3-Day)",
-    "difficulty": "Beginner"
+    "title": "Full Body (3-Day)"
   },
   {
-    "title": "Arnold Split (6-Day)",
-    "difficulty": "Advanced"
+    "title": "Arnold Split (6-Day)"
   },
   {
-    "title": "Bro Split (5-Day)",
-    "difficulty": "Intermediate"
+    "title": "Bro Split (5-Day)"
   },
   {
-    "title": "PHUL (Power Hypertrophy Upper Lower)",
-    "difficulty": "Intermediate"
+    "title": "PHUL (Power Hypertrophy Upper Lower)"
   },
   {
-    "title": "2-Day Full Body (A/B)",
-    "difficulty": "Beginner"
+    "title": "2-Day Full Body (A/B)"
   },
   {
-    "title": "3-Day Strength Builder",
-    "difficulty": "Beginner"
+    "title": "3-Day Strength Builder"
   },
   {
-    "title": "Classic 3-Day (Chest/Tri, Back/Bi, Legs/Shoulders)",
-    "difficulty": "Intermediate"
+    "title": "Classic 3-Day (Chest/Tri, Back/Bi, Legs/Shoulders)"
   },
   {
-    "title": "Brolic Workout",
-    "difficulty": "Intermediate"
+    "title": "Brolic Workout"
   },
   {
     "title": "Cable Superset Workout",
@@ -52,7 +41,6 @@
       "3": "Arms",
       "5": "Upper B",
       "6": "Lower B"
-    },
-    "difficulty": "Advanced"
+    }
   }
 ]

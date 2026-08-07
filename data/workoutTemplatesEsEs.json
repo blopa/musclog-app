@@ -1,47 +1,36 @@
 [
   {
-    "title": "Rutina dividida de hipertrofia de 5 días",
-    "difficulty": "Advanced"
+    "title": "Rutina dividida de hipertrofia de 5 días"
   },
   {
-    "title": "Empuje, tirón y piernas (PPL)",
-    "difficulty": "Intermediate"
+    "title": "Empuje, tirón y piernas (PPL)"
   },
   {
-    "title": "Rutina torso-pierna de 4 días",
-    "difficulty": "Intermediate"
+    "title": "Rutina torso-pierna de 4 días"
   },
   {
-    "title": "Rutina de cuerpo completo (3 días)",
-    "difficulty": "Beginner"
+    "title": "Rutina de cuerpo completo (3 días)"
   },
   {
-    "title": "Rutina Arnold (6 días)",
-    "difficulty": "Advanced"
+    "title": "Rutina Arnold (6 días)"
   },
   {
-    "title": "Rutina por grupos musculares (5 días)",
-    "difficulty": "Intermediate"
+    "title": "Rutina por grupos musculares (5 días)"
   },
   {
-    "title": "PHUL (fuerza e hipertrofia de torso y pierna)",
-    "difficulty": "Intermediate"
+    "title": "PHUL (fuerza e hipertrofia de torso y pierna)"
   },
   {
-    "title": "Rutina de cuerpo completo de 2 días (A/B)",
-    "difficulty": "Beginner"
+    "title": "Rutina de cuerpo completo de 2 días (A/B)"
   },
   {
-    "title": "Programa de fuerza de 3 días",
-    "difficulty": "Beginner"
+    "title": "Programa de fuerza de 3 días"
   },
   {
-    "title": "Rutina clásica de 3 días (pecho/tríceps, espalda/bíceps, piernas/hombros)",
-    "difficulty": "Intermediate"
+    "title": "Rutina clásica de 3 días (pecho/tríceps, espalda/bíceps, piernas/hombros)"
   },
   {
-    "title": "Entrenamiento Brolic",
-    "difficulty": "Intermediate"
+    "title": "Entrenamiento Brolic"
   },
   {
     "title": "Entrenamiento de superseries con poleas",
@@ -52,7 +41,6 @@
       "3": "Brazos",
       "5": "Torso B",
       "6": "Tren inferior B"
-    },
-    "difficulty": "Advanced"
+    }
   }
 ]

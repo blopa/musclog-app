@@ -1,4 +1,5 @@
 import exercisesData from '@/data/exercisesData.json';
+import workoutTemplatesData from '@/data/workoutTemplatesData.json';
 import {
   applyWorkoutTemplateCopies,
   getWorkoutTemplates,
@@ -46,6 +47,14 @@ describe('workout template copies', () => {
   ])('keeps the %s catalog aligned with the workout definitions', (_locale, copies) => {
     expect(copies).toHaveLength(workoutTemplates.length);
     expect(copies.every(({ title }) => title.trim().length > 0)).toBe(true);
+    expect(copies.every((copy) => !('difficulty' in copy))).toBe(true);
+  });
+
+  it('keeps canonical difficulty identifiers in structural data only', () => {
+    expect(new Set(workoutTemplatesData.map(({ difficulty }) => difficulty))).toEqual(
+      new Set(['beginner', 'intermediate', 'advanced'])
+    );
+    expect(workoutTemplates.every(({ difficulty }) => difficulty !== undefined)).toBe(true);
   });
 
   it.each([

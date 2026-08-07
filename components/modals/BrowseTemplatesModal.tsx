@@ -11,7 +11,11 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { GenericCard } from '@/components/cards/GenericCard';
 import { FilterTabs } from '@/components/FilterTabs';
 import { TextInput } from '@/components/theme/TextInput';
-import { getWorkoutTemplates, type RawWorkoutTemplate } from '@/data/workoutTemplates';
+import {
+  getWorkoutTemplates,
+  type RawWorkoutTemplate,
+  type WorkoutTemplateDifficulty,
+} from '@/data/workoutTemplates';
 import { useTheme } from '@/hooks/useTheme';
 import { addOpacityToHex } from '@/theme';
 
@@ -20,7 +24,7 @@ import { FullScreenModal } from './FullScreenModal';
 type WorkoutTemplate = {
   id: string;
   title: string;
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  difficulty: WorkoutTemplateDifficulty;
   duration: string;
   exercises: string;
   sets: string;
@@ -55,7 +59,7 @@ const getNormalizedTemplates = (t: TFunction, locale: string) => {
   const normalizedTemplates: WorkoutTemplate[] = workoutTemplates.map((item, idx) => {
     const title =
       item.title || t('workouts.browseTemplatesModal.templateName', { number: idx + 1 });
-    const difficulty = (item.difficulty as any) || 'Beginner';
+    const difficulty = item.difficulty ?? 'beginner';
 
     // Duration: number (minutes) -> "NN min", otherwise keep string
     let duration = '';
@@ -98,9 +102,7 @@ const getNormalizedTemplates = (t: TFunction, locale: string) => {
     return {
       id,
       title,
-      difficulty: ['Beginner', 'Intermediate', 'Advanced'].includes(difficulty)
-        ? (difficulty as any)
-        : 'Beginner',
+      difficulty,
       duration,
       exercises: exercisesText,
       sets: setsText,
@@ -127,23 +129,23 @@ export function BrowseTemplatesModal({
   const { i18n, t } = useTranslation();
   const theme = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
-  const getDifficultyColor = (difficulty: string) => {
+  const getDifficultyColor = (difficulty: WorkoutTemplateDifficulty) => {
     switch (difficulty) {
-      case 'Beginner':
+      case 'beginner':
         return {
           bg: theme.colors.status.emerald10,
           text: theme.colors.status.emerald,
           border: theme.colors.status.emerald20,
         };
-      case 'Intermediate':
+      case 'intermediate':
         return {
           bg: theme.colors.status.amber10,
           text: theme.colors.status.amber,
           border: addOpacityToHex(theme.colors.status.amber, 0.2),
         };
-      case 'Advanced':
+      case 'advanced':
         return {
           bg: theme.colors.status.error10,
           text: theme.colors.status.error,
@@ -163,7 +165,7 @@ export function BrowseTemplatesModal({
   const filteredTemplates = normalizedTemplates.filter((template) => {
     const matchesSearch = template.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory =
-      selectedCategory === 'All' ||
+      selectedCategory === 'all' ||
       template.difficulty === selectedCategory ||
       template.title.toLowerCase().includes(selectedCategory.toLowerCase());
     return matchesSearch && matchesCategory;
@@ -210,7 +212,7 @@ export function BrowseTemplatesModal({
                 className="text-[10px] font-bold uppercase tracking-wider"
                 style={{ color: difficultyColors.text }}
               >
-                {t(`workouts.browseTemplatesModal.tabs.${template.difficulty.toLowerCase()}`)}
+                {t(`workouts.browseTemplatesModal.tabs.${template.difficulty}`)}
               </Text>
             </View>
           </View>
@@ -290,13 +292,13 @@ export function BrowseTemplatesModal({
           {/* Category Filter Tabs */}
           <FilterTabs
             tabs={[
-              { id: 'All', label: t('workouts.browseTemplatesModal.tabs.all') },
-              { id: 'Beginner', label: t('workouts.browseTemplatesModal.tabs.beginner') },
-              { id: 'Intermediate', label: t('workouts.browseTemplatesModal.tabs.intermediate') },
-              { id: 'Advanced', label: t('workouts.browseTemplatesModal.tabs.advanced') },
-              { id: 'Strength', label: t('workouts.browseTemplatesModal.tabs.strength') },
-              { id: 'Hypertrophy', label: t('workouts.browseTemplatesModal.tabs.hypertrophy') },
-              { id: 'Cardio', label: t('workouts.browseTemplatesModal.tabs.cardio') },
+              { id: 'all', label: t('workouts.browseTemplatesModal.tabs.all') },
+              { id: 'beginner', label: t('workouts.browseTemplatesModal.tabs.beginner') },
+              { id: 'intermediate', label: t('workouts.browseTemplatesModal.tabs.intermediate') },
+              { id: 'advanced', label: t('workouts.browseTemplatesModal.tabs.advanced') },
+              { id: 'strength', label: t('workouts.browseTemplatesModal.tabs.strength') },
+              { id: 'hypertrophy', label: t('workouts.browseTemplatesModal.tabs.hypertrophy') },
+              { id: 'cardio', label: t('workouts.browseTemplatesModal.tabs.cardio') },
             ]}
             activeTab={selectedCategory}
             onTabChange={setSelectedCategory}

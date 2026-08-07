@@ -1,47 +1,36 @@
 [
   {
-    "title": "5-дневный сплит на гипертрофию",
-    "difficulty": "Advanced"
+    "title": "5-дневный сплит на гипертрофию"
   },
   {
-    "title": "Толкай-тяни-ноги (PPL)",
-    "difficulty": "Intermediate"
+    "title": "Толкай-тяни-ноги (PPL)"
   },
   {
-    "title": "4-дневный сплит верх/низ",
-    "difficulty": "Intermediate"
+    "title": "4-дневный сплит верх/низ"
   },
   {
-    "title": "На всё тело (3 дня)",
-    "difficulty": "Beginner"
+    "title": "На всё тело (3 дня)"
   },
   {
-    "title": "Сплит Арнольда (6 дней)",
-    "difficulty": "Advanced"
+    "title": "Сплит Арнольда (6 дней)"
   },
   {
-    "title": "Бро-сплит (5 дней)",
-    "difficulty": "Intermediate"
+    "title": "Бро-сплит (5 дней)"
   },
   {
-    "title": "PHUL (сила и гипертрофия верха/низа)",
-    "difficulty": "Intermediate"
+    "title": "PHUL (сила и гипертрофия верха/низа)"
   },
   {
-    "title": "На всё тело: 2 дня (A/B)",
-    "difficulty": "Beginner"
+    "title": "На всё тело: 2 дня (A/B)"
   },
   {
-    "title": "3-дневная программа развития силы",
-    "difficulty": "Beginner"
+    "title": "3-дневная программа развития силы"
   },
   {
-    "title": "Классический 3-дневный сплит (грудь/трицепс, спина/бицепс, ноги/плечи)",
-    "difficulty": "Intermediate"
+    "title": "Классический 3-дневный сплит (грудь/трицепс, спина/бицепс, ноги/плечи)"
   },
   {
-    "title": "Тренировка Brolic",
-    "difficulty": "Intermediate"
+    "title": "Тренировка Brolic"
   },
   {
     "title": "Тренировка с суперсетами на блоках",
@@ -52,7 +41,6 @@
       "3": "Руки",
       "5": "Верх B",
       "6": "Низ B"
-    },
-    "difficulty": "Advanced"
+    }
   }
 ]
