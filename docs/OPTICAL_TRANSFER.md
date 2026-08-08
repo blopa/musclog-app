@@ -273,3 +273,18 @@ back-loads: blocks-solved sits near zero and then hockey-sticks, while frame arr
 bar driven by solved blocks looks stalled for most of the transfer and then teleports. Blocks
 belong on a secondary line. The sender shows no progress bar at all and says so — a user staring
 at an endless fountain expecting one is the likeliest support question.
+
+**`estimateTransferProgress` never returns 1, and the hook must override it on completion.**
+Mid-flight the curve cannot know how many more frames a particular stream will need, so it
+asymptotes to 99% rather than promising a finish it might not keep. But that produced a visible
+bug: the peeling cascade solves every remaining block in a single step, so the blocks-based term
+never got a tick of its own, and the transfer jumped from wherever the frame curve happened to be
+— reproducibly **95%** — straight to the verified screen. 100% was never displayed. `useOpticalReceiver`
+therefore publishes `fraction: 1` (and clears the ETA) once the payload is out, because completion
+is a fact rather than an estimate. Pinned by `hooks/__tests__/useOpticalReceiver.test.ts`.
+
+The percentage is shown to **two decimals** alongside a KB pair — `8.23% (12.3 KB / 130.4 KB)`.
+Two decimals because a slow transfer moves less than a whole percent per second and a frozen
+number reads as a stall. The KB figures are derived from the same fraction, not from solved
+blocks, for the back-loading reason above: a literal "bytes reconstructed" counter would sit at
+0 KB for almost the whole transfer and then jump to the total.

@@ -77,7 +77,8 @@
       "cameraPermissionSettings": "Cameratoegang is geweigerd. Schakel dit in voor Musclog in de systeeminstellingen en kom terug.",
       "allowCamera": "Camera toestaan",
       "openSettings": "Instellingen openen",
-      "noCamera": "Geen camera aan de achterkant beschikbaar op dit apparaat."
+      "noCamera": "Geen camera aan de achterkant beschikbaar op dit apparaat.",
+      "percentWithSize": "{{percent}}% ({{received}} / {{total}})"
     },
     "quality": {
       "trigger": "Wordt niet gescand? Aanpassen",

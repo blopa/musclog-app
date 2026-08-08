@@ -77,7 +77,8 @@
       "cameraPermissionSettings": "Доступ к камере запрещён. Включите его для Musclog в настройках системы и вернитесь сюда.",
       "allowCamera": "Разрешить камеру",
       "openSettings": "Открыть настройки",
-      "noCamera": "На этом устройстве нет задней камеры."
+      "noCamera": "На этом устройстве нет задней камеры.",
+      "percentWithSize": "{{percent}}% ({{received}} / {{total}})"
     },
     "quality": {
       "trigger": "Не считывается? Настроить",

@@ -77,7 +77,8 @@
       "cameraPermissionSettings": "Se denegó el acceso a la cámara. Actívalo para Musclog en los ajustes del sistema y vuelve.",
       "allowCamera": "Permitir cámara",
       "openSettings": "Abrir ajustes",
-      "noCamera": "No hay cámara trasera disponible en este dispositivo."
+      "noCamera": "No hay cámara trasera disponible en este dispositivo.",
+      "percentWithSize": "{{percent}}% ({{received}} / {{total}})"
     },
     "quality": {
       "trigger": "¿No lo lee? Ajustar",

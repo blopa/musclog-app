@@ -77,7 +77,8 @@
       "cameraPermissionSettings": "Camera access was denied. Enable it for Musclog in system settings, then come back.",
       "allowCamera": "Allow camera",
       "openSettings": "Open settings",
-      "noCamera": "No back camera is available on this device."
+      "noCamera": "No back camera is available on this device.",
+      "percentWithSize": "{{percent}}% ({{received}} / {{total}})"
     },
     "quality": {
       "trigger": "Not scanning? Adjust",

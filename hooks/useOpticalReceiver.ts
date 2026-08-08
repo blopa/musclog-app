@@ -192,10 +192,20 @@ export function useOpticalReceiver(options: { active: boolean }) {
 
       noSignalRef.current.tick(now);
 
+      // `estimateTransferProgress` deliberately asymptotes to 99% and never reaches 1: mid-flight
+      // it cannot know how many more frames this particular stream will need, and a bar that sits
+      // at 100% while frames keep arriving is worse than one that never quite gets there.
+      //
+      // But completion is a fact, not an estimate. Without this the bar jumped from wherever the
+      // frame curve happened to be — around 95%, because the peeling cascade solves every
+      // remaining block in a single step, so the blocks-based term never gets a tick of its own —
+      // straight to the verified screen, and 100% was never displayed.
+      const isComplete = outcomeRef.current === 'complete';
+
       setState((previous) => {
         // The completion transition is taken here rather than in the scanner callback, so the
         // camera is never torn down from inside a native callback.
-        if (outcomeRef.current === 'complete' && previous.phase === 'collecting') {
+        if (isComplete && previous.phase === 'collecting') {
           void unpack();
         }
 
@@ -204,8 +214,8 @@ export function useOpticalReceiver(options: { active: boolean }) {
           ...previous,
           analysisFrame: analysisRef.current,
           elapsedSeconds: elapsed,
-          etaSeconds: progress.etaSeconds,
-          fraction: progress.fraction,
+          etaSeconds: isComplete ? undefined : progress.etaSeconds,
+          fraction: isComplete ? 1 : progress.fraction,
           framesDup: stats.framesDup,
           framesNew: stats.framesNew,
           payloadBytes: stats.totalLen,

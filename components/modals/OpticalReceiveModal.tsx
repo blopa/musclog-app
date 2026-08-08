@@ -41,7 +41,14 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
   const theme = useTheme();
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
-  const { formatInteger } = useFormatAppNumber();
+  const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
+
+  // KB throughout: a transfer this size never reaches MB, and switching units partway through
+  // would make the two halves of "12.3 KB / 130.4 KB" incomparable at a glance.
+  const formatKb = useCallback(
+    (bytes: number) => `${formatRoundedDecimal(bytes / 1024, 1)} KB`,
+    [formatRoundedDecimal]
+  );
 
   const receiver = useOpticalReceiver({ active: visible });
   const [confirmVisible, setConfirmVisible] = useSubModalVisibility(visible);
@@ -145,9 +152,22 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
 
             <View className="gap-2 p-4" style={{ backgroundColor: theme.colors.background.card }}>
               <Text className="text-2xl font-bold text-text-primary">
-                {t('opticalTransfer.receive.percent', {
-                  percent: formatInteger(Math.round(fraction * 100)),
-                })}
+                {/*
+                  Two decimals because a slow transfer moves less than a whole percent a second,
+                  and a number that sits still reads as a stall. The KB pair is derived from the
+                  same fraction rather than from solved blocks: peeling back-loads, so a literal
+                  "bytes reconstructed" counter would read 0 KB for most of the transfer and then
+                  jump to the total.
+                */}
+                {receiver.payloadBytes > 0
+                  ? t('opticalTransfer.receive.percentWithSize', {
+                      percent: formatRoundedDecimal(fraction * 100, 2),
+                      received: formatKb(fraction * receiver.payloadBytes),
+                      total: formatKb(receiver.payloadBytes),
+                    })
+                  : t('opticalTransfer.receive.percent', {
+                      percent: formatRoundedDecimal(fraction * 100, 2),
+                    })}
               </Text>
               <View
                 className="h-2 overflow-hidden rounded-full"
@@ -157,7 +177,9 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
                   style={{
                     backgroundColor: theme.colors.accent.primary,
                     height: '100%',
-                    width: `${Math.round(fraction * 100)}%`,
+                    // Unrounded, so the bar creeps visibly on a slow transfer instead of sitting
+                    // still for several seconds and then stepping a whole percent.
+                    width: `${Math.min(100, fraction * 100)}%`,
                   }}
                 />
               </View>
