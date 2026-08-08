@@ -10,8 +10,19 @@ import workoutTemplatesEsEs from '@/data/workoutTemplatesEsEs.json';
 import workoutTemplatesNlNl from '@/data/workoutTemplatesNlNl.json';
 import workoutTemplatesPtBr from '@/data/workoutTemplatesPtBr.json';
 import workoutTemplatesRuRu from '@/data/workoutTemplatesRuRu.json';
+import { WORKOUT_TEMPLATE_COPIES_BY_LOCALE } from '@/lang/lang';
 
 describe('workout template copies', () => {
+  it('generates the locale catalog from the localized workout template files', () => {
+    expect(WORKOUT_TEMPLATE_COPIES_BY_LOCALE).toEqual({
+      'en-US': workoutTemplatesEnUs,
+      'es-ES': workoutTemplatesEsEs,
+      'nl-NL': workoutTemplatesNlNl,
+      'pt-BR': workoutTemplatesPtBr,
+      'ru-RU': workoutTemplatesRuRu,
+    });
+  });
+
   it('overlays localized copy without losing the workout definition', () => {
     const [template] = applyWorkoutTemplateCopies(
       [

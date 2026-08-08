@@ -1,9 +1,5 @@
 import workoutTemplatesData from '@/data/workoutTemplatesData.json';
-import workoutTemplatesEnUs from '@/data/workoutTemplatesEnUS.json';
-import workoutTemplatesEsEs from '@/data/workoutTemplatesEsEs.json';
-import workoutTemplatesNlNl from '@/data/workoutTemplatesNlNl.json';
-import workoutTemplatesPtBr from '@/data/workoutTemplatesPtBr.json';
-import workoutTemplatesRuRu from '@/data/workoutTemplatesRuRu.json';
+import { DEFAULT_LANG, WORKOUT_TEMPLATE_COPIES_BY_LOCALE } from '@/lang/lang';
 
 export const WORKOUT_TEMPLATE_DIFFICULTIES = ['beginner', 'intermediate', 'advanced'] as const;
 
@@ -42,6 +38,8 @@ export type RawWorkoutTemplateDefinition = Omit<RawWorkoutTemplate, 'description
 
 export type WorkoutTemplateCopy = Pick<RawWorkoutTemplate, 'title' | 'description' | 'dayNames'>;
 
+type WorkoutTemplateLocale = keyof typeof WORKOUT_TEMPLATE_COPIES_BY_LOCALE;
+
 export function applyWorkoutTemplateCopies(
   templates: RawWorkoutTemplateDefinition[],
   copies: WorkoutTemplateCopy[]
@@ -52,24 +50,15 @@ export function applyWorkoutTemplateCopies(
   });
 }
 
-// TODO: move this to lang.ts (which is auto-generated) - so update the auto generator to generate this
-const workoutTemplateCopiesByLocale: Record<string, WorkoutTemplateCopy[]> = {
-  'en-US': workoutTemplatesEnUs,
-  'es-ES': workoutTemplatesEsEs,
-  'nl-NL': workoutTemplatesNlNl,
-  'pt-BR': workoutTemplatesPtBr,
-  'ru-RU': workoutTemplatesRuRu,
-};
-
-export function getWorkoutTemplates(locale = 'en-US'): RawWorkoutTemplate[] {
+export function getWorkoutTemplates(locale = DEFAULT_LANG): RawWorkoutTemplate[] {
   const normalizedLocale = locale.replace('_', '-');
-  const localeKeys = Object.keys(workoutTemplateCopiesByLocale);
+  const localeKeys = Object.keys(WORKOUT_TEMPLATE_COPIES_BY_LOCALE) as WorkoutTemplateLocale[];
   const matchingLocale =
     localeKeys.find((key) => key.toLowerCase() === normalizedLocale.toLowerCase()) ??
     localeKeys.find(
       (key) => key.split('-')[0].toLowerCase() === normalizedLocale.split('-')[0].toLowerCase()
     );
-  const copies = workoutTemplateCopiesByLocale[matchingLocale ?? 'en-US'];
+  const copies = WORKOUT_TEMPLATE_COPIES_BY_LOCALE[matchingLocale ?? DEFAULT_LANG];
 
   return applyWorkoutTemplateCopies(workoutTemplatesData as RawWorkoutTemplateDefinition[], copies);
 }

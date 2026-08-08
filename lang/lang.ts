@@ -20,6 +20,12 @@ import exercisesEsEs from '@/data/exercisesEsEs.json';
 import exercisesNlNl from '@/data/exercisesNlNl.json';
 import exercisesPtBr from '@/data/exercisesPtBr.json';
 import exercisesRuRu from '@/data/exercisesRuRu.json';
+// Workout template copies
+import workoutTemplatesEnUs from '@/data/workoutTemplatesEnUS.json';
+import workoutTemplatesEsEs from '@/data/workoutTemplatesEsEs.json';
+import workoutTemplatesNlNl from '@/data/workoutTemplatesNlNl.json';
+import workoutTemplatesPtBr from '@/data/workoutTemplatesPtBr.json';
+import workoutTemplatesRuRu from '@/data/workoutTemplatesRuRu.json';
 
 // en-us
 import enUsAccessToken from './locales/en-us/access_token.json';
@@ -423,6 +429,15 @@ export const EXERCISES_JSON = {
   [NL_NL]: exercisesNlNl,
   [PT_BR]: exercisesPtBr,
   [RU_RU]: exercisesRuRu,
+};
+
+// Workout template copy exports
+export const WORKOUT_TEMPLATE_COPIES_BY_LOCALE = {
+  [EN_US]: workoutTemplatesEnUs,
+  [ES_ES]: workoutTemplatesEsEs,
+  [NL_NL]: workoutTemplatesNlNl,
+  [PT_BR]: workoutTemplatesPtBr,
+  [RU_RU]: workoutTemplatesRuRu,
 };
 
 const resources = {
