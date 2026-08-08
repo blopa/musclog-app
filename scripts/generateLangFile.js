@@ -322,6 +322,7 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
       ...exerciseImports,
       '',
       constantLines.join('\n'),
+      'export const DEFAULT_LANG = EN_US;',
       '',
       '// Exercise exports',
       ...exerciseExports,

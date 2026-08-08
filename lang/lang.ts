@@ -414,6 +414,7 @@ export const ES_ES = 'es-ES';
 export const NL_NL = 'nl-NL';
 export const PT_BR = 'pt-BR';
 export const RU_RU = 'ru-RU';
+export const DEFAULT_LANG = EN_US;
 
 // Exercise exports
 export const EXERCISES_JSON = {
