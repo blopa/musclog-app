@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, useWindowDimensions, View } from 'react-native';
 
 import { OpticalQrCanvas } from '@/components/optical/OpticalQrCanvas';
+import { OpticalQualityControls } from '@/components/optical/OpticalQualityControls';
 import { Button } from '@/components/theme/Button';
 import { ProgressIndicator } from '@/components/theme/ProgressIndicator';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -78,6 +79,16 @@ export function OpticalSendModal({ visible, onClose, passphrase }: OpticalSendMo
               : t('opticalTransfer.send.framesShown', { frames: formatInteger(framesShown) })}
           </Text>
 
+          {/* Reachable here on purpose: a stuck transfer is discovered while it is running, and
+              sending the user back to a setup screen to fix it is where they give up. */}
+          <OpticalQualityControls
+            estimatedSeconds={summary?.estimatedSeconds}
+            fps={sender.fps}
+            onFpsChange={sender.setFps}
+            onPresetChange={sender.setPreset}
+            presetId={sender.presetId}
+          />
+
           <Button
             label={t('opticalTransfer.send.stop')}
             onPress={sender.stop}
@@ -136,6 +147,14 @@ export function OpticalSendModal({ visible, onClose, passphrase }: OpticalSendMo
             size="lg"
             variant="accent"
             width="full"
+          />
+
+          <OpticalQualityControls
+            estimatedSeconds={summary.estimatedSeconds}
+            fps={sender.fps}
+            onFpsChange={sender.setFps}
+            onPresetChange={sender.setPreset}
+            presetId={sender.presetId}
           />
         </View>
       ) : null}

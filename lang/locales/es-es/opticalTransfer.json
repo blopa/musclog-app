@@ -68,7 +68,28 @@
       "checksumFailed": "Los datos no sobrevivieron a la transferencia.",
       "failed": "Algo salió mal al leer la transferencia.",
       "nothingChanged": "No se cambió nada en este móvil.",
-      "scanAgain": "Escanear de nuevo"
+      "scanAgain": "Escanear de nuevo",
+      "replacing": "Reemplazando…",
+      "restoring": "Reemplazando tus datos…",
+      "restoringHint": "Esto puede tardar un minuto con una base de datos grande. Mantén Musclog abierto."
+    },
+    "quality": {
+      "trigger": "¿No lo lee? Ajustar",
+      "speed": "Velocidad",
+      "speedValue": "{{fps}}/s",
+      "speedHint": "Más lento da a la otra cámara más tiempo para captar cada código.",
+      "size": "Tamaño del código",
+      "sizeHint": "Los códigos más simples se leen mucho más fácilmente.",
+      "sizeHintWithTime": "Los códigos más simples se leen mucho más fácilmente. Unos {{seconds}}s con este ajuste.",
+      "sizeRestartsNote": "Cambiar el tamaño reinicia la transferencia, así que prueba primero la velocidad.",
+      "density": {
+        "micro": "Lo más simple",
+        "tiny": "Simple",
+        "compact": "Equilibrado",
+        "standard": "Detallado",
+        "dense": "Denso",
+        "max": "Lo más denso"
+      }
     }
   }
 }

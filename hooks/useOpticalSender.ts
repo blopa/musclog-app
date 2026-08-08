@@ -6,8 +6,13 @@
  * hook itself stays free of Skia (and so it needs no `.web.ts` stub); turning that into pixels is
  * `components/optical/OpticalQrCanvas.tsx`'s job.
  *
- * Three things here were learned the hard way on a 2018 phone and must not be undone — see
- * `docs/OPTICAL_TRANSFER.md`:
+ * WHY THE PACKED CONTAINER IS RETAINED for the whole session: calibration measures *this* phone,
+ * but whether a code is readable depends on the *other* phone's camera, which nothing here can
+ * observe. So the user has to be able to change density mid-stream, and re-deriving the payload
+ * would mean another dump + gzip + hash — seconds of dead time every adjustment. Keeping the
+ * container costs one extra copy of a few hundred KB and makes `setPreset` instant.
+ *
+ * Three things here were learned the hard way on real hardware — see `docs/OPTICAL_TRANSFER.md`:
  *
  *  1. The display loop SELF-SCHEDULES. `setInterval` at a period shorter than a frame's encode
  *     cost queues callbacks faster than they drain, and the frame rate collapses progressively
@@ -24,13 +29,14 @@ import { AppState } from 'react-native';
 
 import { dumpDatabase } from '@/database/exportDb';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
-import { calibrateDevice, planFrameCache, suggestedFpsForFrameCost } from '@/utils/optical/bench';
+import { calibrateDevice, planFrameCache } from '@/utils/optical/bench';
 import {
   type OpticalContainerMeta,
   type OpticalPackStep,
   packOpticalContainer,
 } from '@/utils/optical/container';
 import {
+  DEFAULT_OPTICAL_PRESET_ID,
   getOpticalPreset,
   type OpticalPreset,
   type OpticalPresetId,
@@ -46,11 +52,9 @@ export type OpticalSenderPhase =
 export interface OpticalSenderSummary {
   plainBytes: number;
   containerBytes: number;
-  compressionRatio: number;
   encrypted: boolean;
   sourceBlocks: number;
   preset: OpticalPreset;
-  fps: number;
   /** Whether the cache can cover a safely loopable set; false means we encode forever. */
   loopSafe: boolean;
   estimatedSeconds: number;
@@ -67,32 +71,41 @@ export interface OpticalSenderState {
   framesShown: number;
   cachedFrames: number;
   cacheTarget: number;
+  presetId: OpticalPresetId;
+  fps: number;
 }
 
-/** Frames of headroom before the first display, so the stream does not stutter on frame one. */
+const DEFAULT_FPS = 8;
+
 const nowMs = (): number =>
   typeof performance !== 'undefined' && typeof performance.now === 'function'
     ? performance.now()
     : Date.now();
 
-export function useOpticalSender(options: { passphrase?: string; presetId?: OpticalPresetId }) {
-  const { passphrase, presetId } = options;
+const idleState = (): OpticalSenderState => ({
+  cacheTarget: 0,
+  cachedFrames: 0,
+  fps: DEFAULT_FPS,
+  framesShown: 0,
+  phase: 'idle',
+  prepareFraction: 0,
+  presetId: DEFAULT_OPTICAL_PRESET_ID,
+  raster: null,
+});
 
-  const [state, setState] = useState<OpticalSenderState>({
-    cacheTarget: 0,
-    cachedFrames: 0,
-    framesShown: 0,
-    phase: 'idle',
-    prepareFraction: 0,
-    raster: null,
-  });
+export function useOpticalSender(options: { passphrase?: string }) {
+  const { passphrase } = options;
 
+  const [state, setState] = useState<OpticalSenderState>(idleState);
+
+  const containerRef = useRef<null | Uint8Array>(null);
+  const metaRef = useRef<null | OpticalContainerMeta>(null);
   const streamRef = useRef<null | OpticalStream>(null);
   const cacheRef = useRef<QrMatrix[]>([]);
   const cacheTargetRef = useRef(0);
   const cursorRef = useRef(0);
   const framesShownRef = useRef(0);
-  const fpsRef = useRef(8);
+  const fpsRef = useRef(DEFAULT_FPS);
   const runningRef = useRef(false);
   const timerRef = useRef<null | ReturnType<typeof setTimeout>>(null);
   /**
@@ -104,6 +117,48 @@ export function useOpticalSender(options: { passphrase?: string; presetId?: Opti
 
   const isStreaming = state.phase === 'streaming';
   useKeepScreenAwake('optical-send', isStreaming);
+
+  /** Build (or rebuild) the stream and frame cache for a density, from the retained container. */
+  const installStream = useCallback((presetId: OpticalPresetId, fps: number) => {
+    const container = containerRef.current;
+    const meta = metaRef.current;
+    if (!container || !meta) {
+      return;
+    }
+
+    const preset = getOpticalPreset(presetId);
+    const stream = new OpticalStream(container, preset, newOpticalSessionId());
+    const plan = planFrameCache(stream.k, preset.moduleCount);
+
+    streamRef.current = stream;
+    // A new density invalidates every cached frame: they are a different QR version, and a
+    // receiver that saw one mid-stream would stop decoding.
+    cacheRef.current = [];
+    cacheTargetRef.current = plan.frames;
+    cursorRef.current = 0;
+    framesShownRef.current = 0;
+    fpsRef.current = fps;
+
+    setState((previous) => ({
+      ...previous,
+      cachedFrames: 0,
+      cacheTarget: plan.frames,
+      fps,
+      framesShown: 0,
+      presetId,
+      raster: null,
+      summary: {
+        containerBytes: container.length,
+        encrypted: meta.encrypted,
+        estimatedSeconds: Math.ceil((stream.k * 1.25) / Math.max(1, fps)),
+        loopSafe: plan.loopSafe,
+        meta,
+        plainBytes: meta.plainLen,
+        preset,
+        sourceBlocks: stream.k,
+      },
+    }));
+  }, []);
 
   const stop = useCallback(() => {
     generationRef.current++;
@@ -124,19 +179,15 @@ export function useOpticalSender(options: { passphrase?: string; presetId?: Opti
       clearTimeout(timerRef.current);
       timerRef.current = null;
     }
+    containerRef.current = null;
+    metaRef.current = null;
     streamRef.current = null;
     cacheRef.current = [];
     cacheTargetRef.current = 0;
     cursorRef.current = 0;
     framesShownRef.current = 0;
-    setState({
-      cacheTarget: 0,
-      cachedFrames: 0,
-      framesShown: 0,
-      phase: 'idle',
-      prepareFraction: 0,
-      raster: null,
-    });
+    fpsRef.current = DEFAULT_FPS;
+    setState(idleState());
   }, []);
 
   const prepare = useCallback(async () => {
@@ -144,8 +195,8 @@ export function useOpticalSender(options: { passphrase?: string; presetId?: Opti
     const alive = () => generationRef.current === generation;
 
     try {
-      // Calibrate first: it decides the density, and the density decides how the container is
-      // sliced into frames.
+      // Calibrate first: it decides the starting density, and the density decides how the
+      // container is sliced into frames.
       setState((previous) => ({
         ...previous,
         phase: 'calibrating',
@@ -156,13 +207,6 @@ export function useOpticalSender(options: { passphrase?: string; presetId?: Opti
       if (!alive()) {
         return;
       }
-
-      const preset = getOpticalPreset(presetId ?? calibration.recommendedPresetId);
-      const chosen = calibration.presets.find((row) => row.presetId === preset.id);
-      const fps = chosen
-        ? suggestedFpsForFrameCost(1000 / chosen.buildFps)
-        : calibration.recommendedFps;
-      fpsRef.current = fps;
 
       setState((previous) => ({ ...previous, phase: 'dumping', prepareStep: 'dumping' }));
       const json = await dumpDatabase();
@@ -181,35 +225,10 @@ export function useOpticalSender(options: { passphrase?: string; presetId?: Opti
         return;
       }
 
-      const stream = new OpticalStream(container, preset, newOpticalSessionId());
-      const plan = planFrameCache(stream.k, preset.moduleCount);
-
-      streamRef.current = stream;
-      cacheRef.current = [];
-      cacheTargetRef.current = plan.frames;
-      cursorRef.current = 0;
-      framesShownRef.current = 0;
-
-      setState({
-        cacheTarget: plan.frames,
-        cachedFrames: 0,
-        framesShown: 0,
-        phase: 'ready',
-        prepareFraction: 1,
-        raster: null,
-        summary: {
-          compressionRatio: meta.plainLen / Math.max(1, meta.bodyLen),
-          containerBytes: container.length,
-          encrypted: meta.encrypted,
-          estimatedSeconds: Math.ceil((stream.k * 1.25) / Math.max(1, fps)),
-          fps,
-          loopSafe: plan.loopSafe,
-          meta,
-          plainBytes: meta.plainLen,
-          preset,
-          sourceBlocks: stream.k,
-        },
-      });
+      containerRef.current = container;
+      metaRef.current = meta;
+      installStream(calibration.recommendedPresetId, calibration.recommendedFps);
+      setState((previous) => ({ ...previous, phase: 'ready', prepareFraction: 1 }));
     } catch (error) {
       if (!alive()) {
         return;
@@ -220,7 +239,7 @@ export function useOpticalSender(options: { passphrase?: string; presetId?: Opti
         phase: 'error',
       }));
     }
-  }, [passphrase, presetId]);
+  }, [installStream, passphrase]);
 
   const start = useCallback(() => {
     if (!streamRef.current) {
@@ -228,6 +247,35 @@ export function useOpticalSender(options: { passphrase?: string; presetId?: Opti
     }
     runningRef.current = true;
     setState((previous) => ({ ...previous, phase: 'streaming' }));
+  }, []);
+
+  /**
+   * Change density.
+   *
+   * This restarts the stream: every frame becomes a different QR version, so the receiver sees a
+   * new `streamIdentity`, rebuilds its decoder, and loses whatever it had collected. That is why
+   * the UI says so, and why fps — which costs nothing — is the knob to try first.
+   */
+  const setPreset = useCallback(
+    (presetId: OpticalPresetId) => {
+      installStream(presetId, fpsRef.current);
+    },
+    [installStream]
+  );
+
+  /** Change the display rate. Free: the loop reads this from a ref on its next tick. */
+  const setFps = useCallback((fps: number) => {
+    fpsRef.current = fps;
+    setState((previous) => ({
+      ...previous,
+      fps,
+      summary: previous.summary
+        ? {
+            ...previous.summary,
+            estimatedSeconds: Math.ceil((previous.summary.sourceBlocks * 1.25) / Math.max(1, fps)),
+          }
+        : undefined,
+    }));
   }, []);
 
   const nextFrame = useCallback((): null | QrRaster => {
@@ -274,7 +322,7 @@ export function useOpticalSender(options: { passphrase?: string; presetId?: Opti
           raster,
         }));
       }
-      // The 16 ms floor guarantees the thread yields between frames, so the Stop control stays
+      // The 16 ms floor guarantees the thread yields between frames, so the controls stay
       // responsive even while every frame costs an encode.
       const period = 1000 / Math.max(1, fpsRef.current);
       timerRef.current = setTimeout(tick, Math.max(16, period - (nowMs() - started)));
@@ -303,5 +351,5 @@ export function useOpticalSender(options: { passphrase?: string; presetId?: Opti
     return () => subscription.remove();
   }, [isStreaming, stop]);
 
-  return { ...state, prepare, reset, start, stop };
+  return { ...state, prepare, reset, setFps, setPreset, start, stop };
 }

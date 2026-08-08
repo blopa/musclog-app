@@ -68,7 +68,28 @@
       "checksumFailed": "De gegevens hebben de overdracht niet overleefd.",
       "failed": "Er ging iets mis bij het lezen van de overdracht.",
       "nothingChanged": "Er is niets op deze telefoon gewijzigd.",
-      "scanAgain": "Opnieuw scannen"
+      "scanAgain": "Opnieuw scannen",
+      "replacing": "Bezig met vervangen…",
+      "restoring": "Je gegevens worden vervangen…",
+      "restoringHint": "Bij een grote database kan dit een minuut duren. Houd Musclog open."
+    },
+    "quality": {
+      "trigger": "Wordt niet gescand? Aanpassen",
+      "speed": "Snelheid",
+      "speedValue": "{{fps}}/sec",
+      "speedHint": "Langzamer geeft de andere camera meer tijd per code.",
+      "size": "Codegrootte",
+      "sizeHint": "Eenvoudiger codes worden veel makkelijker gelezen.",
+      "sizeHintWithTime": "Eenvoudiger codes worden veel makkelijker gelezen. Ongeveer {{seconds}}s met deze instelling.",
+      "sizeRestartsNote": "De codegrootte wijzigen start de overdracht opnieuw; probeer eerst de snelheid.",
+      "density": {
+        "micro": "Eenvoudigst",
+        "tiny": "Eenvoudig",
+        "compact": "Gebalanceerd",
+        "standard": "Gedetailleerd",
+        "dense": "Dicht",
+        "max": "Dichtst"
+      }
     }
   }
 }

@@ -12,7 +12,12 @@
 import { BASE44_ALPHABET } from './base44';
 import { dlog } from './fountain';
 import { fnv1a } from './frameProtocol';
-import { base44CharsForBytes, OPTICAL_PRESETS, type OpticalPresetId } from './presets';
+import {
+  base44CharsForBytes,
+  MAX_RECOMMENDED_OPTICAL_PRESET_ID,
+  OPTICAL_PRESETS,
+  type OpticalPresetId,
+} from './presets';
 import { encodeQrAlphanumericFixed } from './qrEncode';
 import { rasterizeQr } from './qrRaster';
 
@@ -243,12 +248,18 @@ export interface DeviceCalibration {
  * Android's locked ~640×480 analysis resolution, v16 gets 4.85 px/module and v33 only 2.75). So
  * on a slow device the lowest density is strictly better on both axes.
  *
- * On a fast device the picture inverts: once generation outruns the camera, the display rate is
- * capped by decoding and the only way to move more bytes is denser frames. This function handles
- * both by ranking on `blockLen × min(buildFps, cap)` and breaking ties toward lower density.
+ * ON A FAST DEVICE THE THROUGHPUT RANKING BECOMES ACTIVELY WRONG, which cost a real transfer an
+ * hour before this cap existed. Once generation outruns the camera, every preset hits the display
+ * cap, so `blockLen × fps` simply picks the densest one — and density is what the receiving camera
+ * cannot hold focus on. A frame that fails to decode has zero throughput, and no sender-side
+ * measurement can see that. So the search is restricted to presets no denser than
+ * `MAX_RECOMMENDED_OPTICAL_PRESET_ID`; the rest of the ladder stays available for manual override.
  */
 export async function calibrateDevice(iterations = 8): Promise<DeviceCalibration> {
   const presets: PresetCalibration[] = [];
+  const ceilingVersion =
+    OPTICAL_PRESETS.find((preset) => preset.id === MAX_RECOMMENDED_OPTICAL_PRESET_ID)?.qrVersion ??
+    Infinity;
 
   for (const preset of OPTICAL_PRESETS) {
     const row = await benchQrEncode(
@@ -267,18 +278,16 @@ export async function calibrateDevice(iterations = 8): Promise<DeviceCalibration
     });
   }
 
-  // Rank on throughput, then prefer the lower density: on Android the receiver's analysis
-  // resolution is fixed at CameraX's default, so every module we can give back is decode margin
-  // we get for free.
-  const best = [...presets].sort(
+  // Only densities the receiving camera can be expected to hold focus on are eligible.
+  const eligible = presets.filter((candidate) => candidate.qrVersion <= ceilingVersion);
+  const best = [...eligible].sort(
     (a, b) => b.throughputBytesPerSec - a.throughputBytesPerSec || a.qrVersion - b.qrVersion
   )[0];
 
   // Anything within 10% of the best is a wash; take the least dense of those.
-  const contenders = presets.filter(
-    (candidate) => candidate.throughputBytesPerSec >= best.throughputBytesPerSec * 0.9
-  );
-  const chosen = contenders.sort((a, b) => a.qrVersion - b.qrVersion)[0];
+  const chosen = eligible
+    .filter((candidate) => candidate.throughputBytesPerSec >= best.throughputBytesPerSec * 0.9)
+    .sort((a, b) => a.qrVersion - b.qrVersion)[0];
   const recommendedFps = suggestedFpsForFrameCost(1000 / chosen.buildFps);
 
   const notes = [
@@ -287,8 +296,8 @@ export async function calibrateDevice(iterations = 8): Promise<DeviceCalibration
       `${Math.round(Math.max(...presets.map((p) => p.throughputBytesPerSec)))} B/s across all of ` +
       `them — density barely moves it, because QR capacity and QR encode cost both scale with ` +
       `modules².`,
-    `So the lowest density within 10% of the best wins: it decodes far more reliably for the ` +
-      `same speed.`,
+    `Selection is capped at "${MAX_RECOMMENDED_OPTICAL_PRESET_ID}": denser codes do not transfer ` +
+      `faster in practice, they just stop decoding once the receiving camera loses focus.`,
     `Chose "${chosen.presetId}" (QR v${chosen.qrVersion}) at ${recommendedFps} fps.`,
   ];
 

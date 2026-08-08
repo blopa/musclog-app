@@ -68,7 +68,28 @@
       "checksumFailed": "The data did not survive the transfer.",
       "failed": "Something went wrong reading the transfer.",
       "nothingChanged": "Nothing on this phone was changed.",
-      "scanAgain": "Scan again"
+      "scanAgain": "Scan again",
+      "replacing": "Replacing…",
+      "restoring": "Replacing your data…",
+      "restoringHint": "This can take a minute on a large database. Keep Musclog open."
+    },
+    "quality": {
+      "trigger": "Not scanning? Adjust",
+      "speed": "Speed",
+      "speedValue": "{{fps}}/sec",
+      "speedHint": "Slower gives the other camera longer to catch each code.",
+      "size": "Code size",
+      "sizeHint": "Simpler codes scan far more easily.",
+      "sizeHintWithTime": "Simpler codes scan far more easily. About {{seconds}}s at this setting.",
+      "sizeRestartsNote": "Changing code size restarts the transfer, so try speed first.",
+      "density": {
+        "micro": "Simplest",
+        "tiny": "Simple",
+        "compact": "Balanced",
+        "standard": "Detailed",
+        "dense": "Dense",
+        "max": "Densest"
+      }
     }
   }
 }

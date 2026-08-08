@@ -11,10 +11,11 @@
  * ours to choose. `react-native-vision-camera` builds it as a bare `ImageAnalysis.Builder().build()`
  * (`CameraSession+Configuration.kt`, "5. Code Scanner") with no ResolutionSelector — unlike its
  * frame-processor branch, which sets one — so CameraX's ~640×480 default applies and the `format`
- * prop cannot raise it. At a 480 px short edge a code filling ~90% of the frame gets ~432 px, so
- * px-per-module is:
+ * prop cannot raise it (confirmed on device: 640×480). At a 480 px short edge a code filling ~90%
+ * of the frame gets ~432 px, so px-per-module is:
  *
  *     preset     ver  modules+quiet  px/module
+ *     micro       13       77           5.61
  *     tiny        16       89           4.85
  *     compact     20      105           4.11
  *     standard    24      121           3.57
@@ -28,8 +29,8 @@
  * samples `device.activeFormat`, which `format` does set), but a preset that only works on one
  * platform is a support burden, so the ladder is shared.
  *
- * `tiny` exists as the documented contingency if field testing shows even `compact` is
- * unreliable on low-end Android.
+ * The upper half of this ladder is for manual override and measurement only — automatic
+ * selection is capped at `MAX_RECOMMENDED_OPTICAL_PRESET_ID`, for the reason recorded there.
  *
  * DEFAULT FPS IS PROVISIONAL. The sender derives its real rate from an on-device warm-up
  * measurement (encode cost varies hugely across devices); these are only the fallback used
@@ -38,7 +39,7 @@
 
 import { HEADER_LEN } from './frameProtocol';
 
-export type OpticalPresetId = 'tiny' | 'compact' | 'standard' | 'dense' | 'max';
+export type OpticalPresetId = 'micro' | 'tiny' | 'compact' | 'standard' | 'dense' | 'max';
 
 export interface OpticalPreset {
   readonly id: OpticalPresetId;
@@ -66,6 +67,7 @@ const preset = (
 });
 
 export const OPTICAL_PRESETS: readonly OpticalPreset[] = [
+  preset('micro', 13, 412, 15),
   preset('tiny', 16, 568, 15),
   preset('compact', 20, 832, 14),
   preset('standard', 24, 1136, 12),
@@ -73,7 +75,22 @@ export const OPTICAL_PRESETS: readonly OpticalPreset[] = [
   preset('max', 33, 2006, 8),
 ];
 
-export const DEFAULT_OPTICAL_PRESET_ID: OpticalPresetId = 'standard';
+export const DEFAULT_OPTICAL_PRESET_ID: OpticalPresetId = 'tiny';
+
+/**
+ * Calibration will not recommend anything denser than this, whatever the throughput numbers say.
+ *
+ * FIELD EVIDENCE, and the reason this ceiling exists: a fast sender makes every preset hit the
+ * display-rate cap, so ranking purely on bytes/second picks the DENSEST one — and that is exactly
+ * backwards. A 3.6 MB transfer at `dense` took an hour on real phones because the receiving camera
+ * could not hold focus on the code; frames that do not decode have zero throughput, which a
+ * sender-side measurement cannot see.
+ *
+ * Autofocus tolerance falls off far faster than px/module suggests: a sparse code stays readable
+ * while slightly blurred, a dense one does not. So the ladder above exists for manual override and
+ * for measurement, but automatic selection stays in the comfortable half of it.
+ */
+export const MAX_RECOMMENDED_OPTICAL_PRESET_ID: OpticalPresetId = 'tiny';
 
 /**
  * The quiet zone the spec requires around a symbol. Rendered as part of the raster rather than

@@ -25,7 +25,9 @@ import {
   base44CharsForBytes,
   DEFAULT_OPTICAL_PRESET_ID,
   getOpticalPreset,
+  MAX_RECOMMENDED_OPTICAL_PRESET_ID,
   OPTICAL_PRESETS,
+  type OpticalPreset,
   QR_QUIET_ZONE_MODULES,
 } from '@/utils/optical/presets';
 import {
@@ -89,6 +91,33 @@ describe('preset table', () => {
     // V40 at Android's ~640x480 locked analysis resolution is ~2.3 px/module — below what MLKit
     // reliably reads with any motion. See the header comment in presets.ts.
     expect(versions).not.toContain(40);
+  });
+
+  it('keeps automatic selection in the sparse half of the ladder', () => {
+    // Field evidence: a transfer at `dense` took an hour because the receiving camera could not
+    // hold focus. Density is not a speed/reliability trade-off here — undecoded frames carry
+    // nothing — so anything denser than the ceiling is manual-override only.
+    const ceiling = OPTICAL_PRESETS.find((p) => p.id === MAX_RECOMMENDED_OPTICAL_PRESET_ID);
+    expect(ceiling).toBeDefined();
+
+    const denser = OPTICAL_PRESETS.filter(
+      (p) => p.qrVersion > (ceiling as OpticalPreset).qrVersion
+    );
+    expect(denser.length).toBeGreaterThan(0);
+    // The default the app ships with must itself be within the cap.
+    const shipped = OPTICAL_PRESETS.find((p) => p.id === DEFAULT_OPTICAL_PRESET_ID);
+    expect((shipped as OpticalPreset).qrVersion).toBeLessThanOrEqual(
+      (ceiling as OpticalPreset).qrVersion
+    );
+  });
+
+  it('offers a preset sparse enough for a struggling camera', () => {
+    // ~5.6 px/module at a 480 px short edge — the fallback when even `tiny` will not hold.
+    const sparsest = OPTICAL_PRESETS[0];
+    expect(sparsest.qrVersion).toBeLessThanOrEqual(13);
+    // Roughly half the payload of the old `standard` default, which is what the density
+    // complaint asked for.
+    expect(sparsest.blockLen).toBeLessThan(1116 / 2);
   });
 
   it('resolves ids, falling back to the default for anything unknown', () => {

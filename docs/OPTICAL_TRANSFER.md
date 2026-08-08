@@ -31,7 +31,7 @@ dumpDatabase()  →  JSON string
       ↓  container: magic + lengths + hash
       ↓  LT fountain  →  frame (20-byte header + block)
       ↓  base44        →  QR alphanumeric text
-      ↓  QR v16–v33, ECC L, mask 4
+      ↓  QR v13–v33, ECC L, mask 4
       ↓  Skia canvas   ~~ light ~~   camera
       ↓  useCodeScanner → string
       ↓  base44Decode → parseFrame → LTDecoder → FNV check
@@ -68,17 +68,64 @@ the scanner stack can silently eat a frame's head or tail.
 
 At a 480 px short edge a code filling ~90% of the frame gets ~432 px:
 
-| preset     | QR ver | modules+quiet | px/module |
-| ---------- | ------ | ------------- | --------- |
-| `tiny`     | 16     | 89            | 4.85      |
-| `compact`  | 20     | 105           | 4.11      |
-| `standard` | 24     | 121           | 3.57      |
-| `dense`    | 27     | 133           | 3.25      |
-| `max`      | 33     | 157           | 2.75      |
-| (rejected) | 40     | 185           | 2.34      |
+| preset     | QR ver | modules+quiet | px/module | bytes/frame |
+| ---------- | ------ | ------------- | --------- | ----------- |
+| `micro`    | 13     | 77            | 5.61      | 412         |
+| `tiny`     | 16     | 89            | 4.85      | 568         |
+| `compact`  | 20     | 105           | 4.11      | 832         |
+| `standard` | 24     | 121           | 3.57      | 1136        |
+| `dense`    | 27     | 133           | 3.25      | 1420        |
+| `max`      | 33     | 157           | 2.75      | 2006        |
+| (rejected) | 40     | 185           | 2.34      | —           |
 
 V40 — decimen's own default, fine browser-to-browser where the receiver controls its capture
 resolution — is not viable here.
+
+### Density: the sender cannot measure the thing that matters
+
+**Automatic selection is capped at `tiny`** (`MAX_RECOMMENDED_OPTICAL_PRESET_ID`), _and_ the user
+can override both density and frame rate from the send screen. Both halves are necessary, and the
+reason is structural rather than a fixable modelling error.
+
+`calibrateDevice()` runs on the **sending** phone. The binding constraint lives on the **receiving**
+phone's camera — its sensor, its autofocus, the light in the room, how steady the hands are — none
+of which the sender can observe. A frame that fails to decode still counts as sent, so no
+sender-side measurement can even detect the failure, let alone optimise against it.
+
+That blindness produced a concrete failure. Ranking presets on `bytes/frame × min(buildFps, cap)`
+is right on a slow phone, where it lands somewhere sparse. But on a **fast** phone every preset
+saturates the display-rate cap, so the ranking degenerates to "most bytes per frame" and picks the
+densest option available. A 3.6 MB export sent at `dense` then took roughly **an hour**, with the
+receiving camera hunting for focus and decoding almost nothing.
+
+Two things make density much worse than px/module suggests:
+
+- autofocus tolerance collapses faster than resolution does — a sparse code stays readable while
+  slightly blurred, a dense one does not; and
+- goodput is nearly density-invariant anyway (see the encode table below), so the denser frame was
+  never buying much to begin with.
+
+Hence the two-part answer: a conservative automatic ceiling, because a sender-side ranking that
+lands on the densest option is wrong regardless; and a manual override, because the only party who
+can actually see whether the codes are being read is the person holding both phones.
+
+### The escape hatch (`components/optical/OpticalQualityControls.tsx`)
+
+Collapsed by default behind "Not scanning? Adjust", and **reachable while streaming** — a stuck
+transfer is discovered by watching the other phone sit at 0%, and making the user stop, back out
+and start over is the moment they give up.
+
+Two steppers, in a deliberate order:
+
+1. **Speed** (fps) comes first because it is free: the display loop reads it from a ref, so nothing
+   restarts. Slowing down gives a struggling camera longer to catch each code, which is often
+   enough on its own.
+2. **Code size** (density) comes second and says that it restarts the transfer. It genuinely does:
+   every frame becomes a different QR version, so the receiver sees a new `streamIdentity`,
+   rebuilds its decoder and loses whatever it had collected.
+
+Changing density is instant despite that, because `useOpticalSender` retains the packed container
+for the whole session and re-slices it. Re-deriving it would mean another dump + gzip + hash.
 
 ## Measured results
 
@@ -102,10 +149,10 @@ the bench after any Hermes or Expo upgrade.
 
 **Density buys nothing when the sender is encode-bound** — it is marginally _worse_. A QR symbol's
 data capacity and its encoding cost both scale with the module count squared, so they cancel. Since
-lower density also buys decode margin, on a slow device the least dense preset is strictly better
-on both axes. `calibrateDevice()` encodes this: it ranks on `blockLen × min(buildFps, cap)` and
-breaks ties toward lower density, which naturally inverts on a fast phone where the display rate is
-capped by decoding rather than encoding.
+lower density also buys decode margin, the least dense preset is strictly better on both axes.
+`calibrateDevice()` ranks on `blockLen × min(buildFps, cap)` and breaks ties toward lower density,
+within the density ceiling described above — the ceiling exists precisely because that ranking
+stops being meaningful once the sender outruns the camera.
 
 Rasterizing is negligible; this is ~99% QR encode. Hermes runs it ~35–40× slower than desktop V8
 (`standard`: 175 ms vs 4.4 ms) — no optimising JIT, and Reed–Solomon is a tight numeric loop.
@@ -167,6 +214,14 @@ Two bugs found on real hardware, both worth not reintroducing:
 - **Dispose `SkImage`s.** Each frame allocates ~65 KB of _native_ memory that JS garbage collection
   does not account for; the collector sees only a small wrapper while native memory climbs. On a
   low-end device the stream starts fine and grinds to a halt.
+
+**`reloadApp()` was silently a no-op in release.** `utils/app.ts` had its branch inverted against
+its own comment — `if (isProduction()) DevSettings.reload()` — so release builds took the dev path,
+which does nothing there. Every restore in the app (file import, Local Backups, optical transfer)
+finished without reloading, leaving stale data on screen until the user killed the app by hand.
+Fixed, but the receive screen still ships an explicit "Restart now" button rather than assuming a
+reload works: nothing should leave the user with no way forward right after their database was
+replaced.
 
 **Frame cache.** A frame's contents depend only on its seq, so a frame generated once can be
 replayed for free. The sender caches module matrices (1 byte per module, ~14 KB at v24 — not the

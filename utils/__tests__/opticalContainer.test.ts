@@ -196,7 +196,9 @@ describe('container rejection', () => {
 
     expect(() => parseOpticalContainerHeader(wrongMagic)).toThrow(OpticalContainerError);
     expect(() => parseOpticalContainerHeader(wrongMagic)).toThrow(/Musclog optical container/);
-    expect(() => parseOpticalContainerHeader(new Uint8Array(10))).toThrow(/shorter than its header/);
+    expect(() => parseOpticalContainerHeader(new Uint8Array(10))).toThrow(
+      /shorter than its header/
+    );
   });
 
   it('rejects a container from a newer app rather than guessing', async () => {
@@ -243,9 +245,9 @@ describe('container rejection', () => {
     await expect(unpackOpticalContainer(container)).rejects.toMatchObject({
       code: 'needs-passphrase',
     });
-    await expect(
-      unpackOpticalContainer(container, { passphrase: 'wrong' })
-    ).rejects.toMatchObject({ code: 'bad-passphrase' });
+    await expect(unpackOpticalContainer(container, { passphrase: 'wrong' })).rejects.toMatchObject({
+      code: 'bad-passphrase',
+    });
   });
 
   it('reports a passphrase on an unencrypted container rather than ignoring it', async () => {

@@ -68,15 +68,21 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
       return;
     }
 
+    // Set before the biometric prompt, not after: the confirmation modal is still on screen while
+    // the system sheet is up and again while the write runs, and on a large database that write
+    // can take a minute. Without this the user comes back from the fingerprint to a dialog that
+    // looks identical to the one they just tapped, with no indication anything is happening.
+    setRestoring(true);
+
     const authenticated = await authenticateForDangerousAction(
       t('opticalTransfer.receive.authPrompt'),
       'OpticalReceiveModal.handleRestore'
     );
     if (!authenticated) {
+      setRestoring(false);
       return;
     }
 
-    setRestoring(true);
     try {
       // One argument: our passphrase lives at the container layer and has already been removed.
       // Passing it here would make restoreDatabase try to AES-decrypt already-plain JSON.
@@ -227,7 +233,19 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
                   width="full"
                 />
               </>
-            ) : (
+            ) : null}
+
+            {!restored && restoring ? (
+              // A large database takes tens of seconds to write. Say so, and say not to leave.
+              <View className="gap-2 py-4">
+                <ProgressIndicator message={t('opticalTransfer.receive.restoring')} />
+                <Text className="text-center text-xs text-text-tertiary">
+                  {t('opticalTransfer.receive.restoringHint')}
+                </Text>
+              </View>
+            ) : null}
+
+            {!restored && !restoring ? (
               <>
                 {tooNew ? (
                   <Text style={{ color: theme.colors.status.error }}>
@@ -239,16 +257,15 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
                   </Text>
                 )}
                 <Button
-                  disabled={tooNew || restoring}
+                  disabled={tooNew}
                   label={t('opticalTransfer.receive.replace')}
-                  loading={restoring}
                   onPress={() => setConfirmVisible(true)}
                   size="lg"
                   variant="discard"
                   width="full"
                 />
               </>
-            )}
+            ) : null}
           </View>
         ) : null}
 
@@ -276,7 +293,14 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
         ) : null}
 
         <ConfirmationModal
-          confirmLabel={t('opticalTransfer.receive.replace')}
+          confirmLabel={
+            restoring
+              ? t('opticalTransfer.receive.replacing')
+              : t('opticalTransfer.receive.replace')
+          }
+          // Disables both buttons, spins the confirm button, and blocks backdrop/back dismissal
+          // for the whole biometric-plus-write sequence.
+          isLoading={restoring}
           message={t('opticalTransfer.receive.confirmMessage')}
           onClose={() => setConfirmVisible(false)}
           onConfirm={handleRestore}
