@@ -5,21 +5,33 @@ import WorkoutLog from './WorkoutLog';
 import WorkoutLogExercise from './WorkoutLogExercise';
 import WorkoutTemplateExercise from './WorkoutTemplateExercise';
 
+// Two vocabularies coexist in `muscle_group` and both must stay in this union.
+// The bundled catalogue and `CreateExerciseModal` write the coarse names
+// (`EXERCISE_JSON_MUSCLE_GROUPS` in `database/services/ExerciseService.ts`);
+// exercises migrated from the legacy database carry the fine-grained ones.
+// Anything reading `muscleGroup` has to handle both — see the group sets in
+// `utils/workoutEnergyCalculator.ts`.
 export type MuscleGroup =
-  | 'chest'
+  // coarse — bundled catalogue and user-created exercises
+  | 'abdomen'
+  | 'arms'
   | 'back'
-  | 'shoulders'
-  | 'biceps'
-  | 'triceps'
-  | 'forearms'
-  | 'abs'
-  | 'quads'
-  | 'hamstrings'
-  | 'glutes'
-  | 'calves'
+  | 'chest'
+  | 'core'
   | 'full_body'
+  | 'glutes'
+  | 'legs'
+  | 'shoulders'
+  // fine-grained — legacy migrated exercises
+  | 'abs'
+  | 'biceps'
+  | 'calves'
   | 'cardio'
-  | 'other';
+  | 'forearms'
+  | 'hamstrings'
+  | 'other'
+  | 'quads'
+  | 'triceps';
 
 export type EquipmentType =
   | 'dumbbell'

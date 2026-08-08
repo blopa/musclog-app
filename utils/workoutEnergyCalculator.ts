@@ -49,8 +49,13 @@ export interface MWEMInput {
 // Helpers
 // ---------------------------------------------------------------------------
 
-const LEG_GROUPS = new Set<MuscleGroup>(['quads', 'hamstrings', 'glutes', 'calves']);
-const SMALL_ISOLATION_GROUPS = new Set<MuscleGroup>(['biceps', 'triceps', 'forearms']);
+// `muscle_group` holds either vocabulary (see the `MuscleGroup` union), so both
+// spellings of a group belong in these sets. Listing only the fine-grained names
+// silently routed every bundled leg exercise — all 60 of them are stored as
+// `legs`, none as `quads` — down the generic branch, costing them both the longer
+// leg displacement and the 0.88x bodyweight contribution below.
+const LEG_GROUPS = new Set<MuscleGroup>(['legs', 'quads', 'hamstrings', 'glutes', 'calves']);
+const SMALL_ISOLATION_GROUPS = new Set<MuscleGroup>(['arms', 'biceps', 'triceps', 'forearms']);
 
 function resolveDisplacementFactor(muscleGroup: MuscleGroup, mechanicType: MechanicType): number {
   if (LEG_GROUPS.has(muscleGroup)) {
@@ -117,6 +122,13 @@ export function calculateExerciseKcal(input: MWEMInput): number {
   const anaerobicFactor = resolveAnaerobicMultiplier(mechanicType, equipmentType);
   const genderFactor = gender === 'female' ? 0.9 : 1.0;
 
+  // `loadMultiplier` is a bodyweight-relative *load* benchmark, so bodyweight and
+  // cardio entries carry 0 — they have no external load to benchmark against. That
+  // is not a claim that they cost no energy, and multiplying by it zeroed every
+  // pull-up, dip and push-up. The work term already accounts for the body mass being
+  // moved, so treat 0 as "no correction" rather than "no calories".
+  const loadFactor = loadMultiplier > 0 ? loadMultiplier : 1;
+
   let totalKcal = 0;
 
   for (const set of sets) {
@@ -131,7 +143,7 @@ export function calculateExerciseKcal(input: MWEMInput): number {
     const totalMass = set.weight + bodyMass;
     const workJoules = totalMass * G * distance * set.reps;
     const kcal = workJoules / (J_TO_KCAL * EFFICIENCY);
-    totalKcal += kcal * anaerobicFactor * loadMultiplier * genderFactor;
+    totalKcal += kcal * anaerobicFactor * loadFactor * genderFactor;
   }
 
   return totalKcal;

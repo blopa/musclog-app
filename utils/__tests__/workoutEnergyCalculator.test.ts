@@ -135,6 +135,85 @@ describe('calculateExerciseKcal', () => {
     expect(calculateExerciseKcal(input)).toBe(0);
   });
 
+  // `muscle_group` holds either the coarse vocabulary the bundled catalogue writes
+  // (`legs`, `arms`) or the fine-grained one legacy migrated exercises carry
+  // (`quads`, `biceps`). The group sets used to list only the fine-grained names, so
+  // all 60 bundled leg exercises — every one stored as `legs` — fell through to the
+  // generic branch and scored roughly half what the model intends.
+  it.each([
+    ['legs', 'quads'],
+    ['arms', 'biceps'],
+  ])('treats the coarse group %s the same as the fine-grained %s', (coarse, fine) => {
+    const exercise = {
+      mechanicType: 'compound' as const,
+      equipmentType: 'barbell' as const,
+      loadMultiplier: 1,
+    };
+    const sets = [{ weight: 100, reps: 5 }];
+
+    expect(
+      calculateExerciseKcal({
+        user: BASE_USER,
+        exercise: { ...exercise, muscleGroup: coarse },
+        sets,
+      })
+    ).toBeCloseTo(
+      calculateExerciseKcal({
+        user: BASE_USER,
+        exercise: { ...exercise, muscleGroup: fine },
+        sets,
+      }),
+      5
+    );
+  });
+
+  it('gives a coarse-group leg compound the full bodyweight contribution', () => {
+    const legs = calculateExerciseKcal({
+      user: BASE_USER,
+      exercise: {
+        mechanicType: 'compound',
+        muscleGroup: 'legs',
+        equipmentType: 'barbell',
+        loadMultiplier: 1,
+      },
+      sets: [{ weight: 100, reps: 5 }],
+    });
+    const upperBody = calculateExerciseKcal({
+      user: BASE_USER,
+      exercise: {
+        mechanicType: 'compound',
+        muscleGroup: 'back',
+        equipmentType: 'barbell',
+        loadMultiplier: 1,
+      },
+      sets: [{ weight: 100, reps: 5 }],
+    });
+
+    expect(legs).toBeGreaterThan(upperBody);
+  });
+
+  // Bodyweight and cardio exercises store a loadMultiplier of 0 — no external load to
+  // benchmark. Multiplying by it zeroed the calorie total for every pull-up, dip and
+  // push-up, even though the body mass being moved is already in the work term.
+  it('does not zero a bodyweight exercise whose loadMultiplier is 0', () => {
+    const input: MWEMInput = {
+      user: BASE_USER,
+      exercise: {
+        mechanicType: 'compound',
+        muscleGroup: 'back',
+        equipmentType: 'bodyweight',
+        loadMultiplier: 0,
+      },
+      sets: [{ weight: 0, reps: 8 }],
+    };
+
+    expect(calculateExerciseKcal(input)).toBeGreaterThan(0);
+    expect(calculateExerciseKcal(input)).toBeCloseTo(
+      calculateExerciseKcal({ ...input, exercise: { ...input.exercise, loadMultiplier: 1 } }),
+      5
+    );
+  });
+
   it('loadMultiplier scales the result proportionally', () => {
     const base: MWEMInput = {
       user: BASE_USER,

@@ -197,7 +197,12 @@ export function projectGoal(inputs: ProjectionInputs): ProjectionResult {
   // Sex-Aware Normalization: Women typically have absolute strength caps $\sim 60-70\%$ of men.
   // We adjust the relative strength benchmark to ensure training tiers are accurate for both sexes.
   const genderFactor = userGender === 'female' ? 0.7 : 1.0;
-  const normalizedRelativeStrength = currentEstimated1RM / (bw * loadMultiplier * genderFactor);
+  // Bodyweight and cardio exercises store a loadMultiplier of 0 — they have no
+  // external load to benchmark against. The `?? 1.0` default above only catches
+  // null/undefined, so a stored 0 reached this divisor and made the ratio Infinity,
+  // tiering every bodyweight goal as advanced.
+  const loadBenchmark = loadMultiplier > 0 ? loadMultiplier : 1.0;
+  const normalizedRelativeStrength = currentEstimated1RM / (bw * loadBenchmark * genderFactor);
 
   // Stalling threshold: 0.1 kg/week for novices, 0.05 kg/week for advanced.
   // Capped at 0.05kg to ensure we don't flag progress smaller than what can be physically loaded (microplates).
