@@ -31,15 +31,28 @@ export type RawWorkoutTemplateExercise = {
   supersetGroup?: string;
 };
 
+/**
+ * Shape of `workoutTemplatesData.json`: structural data only. Its `__title` is a reading aid for
+ * maintainers, never a source of user-facing copy — titles and descriptions come from the locale
+ * files (`workoutTemplatesEnUS.json` and friends), so `applyWorkoutTemplateCopies` drops it.
+ */
+export type RawWorkoutTemplateDefinition = Omit<RawWorkoutTemplate, 'description' | 'title'> & {
+  __title?: string;
+};
+
 export type WorkoutTemplateCopy = Pick<RawWorkoutTemplate, 'title' | 'description' | 'dayNames'>;
 
 export function applyWorkoutTemplateCopies(
-  templates: RawWorkoutTemplate[],
+  templates: RawWorkoutTemplateDefinition[],
   copies: WorkoutTemplateCopy[]
 ): RawWorkoutTemplate[] {
-  return templates.map((template, index) => ({ ...template, ...copies[index] }));
+  return templates.map(({ __title, ...template }, index) => {
+    const copy: undefined | WorkoutTemplateCopy = copies[index];
+    return { ...template, ...copy, title: copy?.title ?? '' };
+  });
 }
 
+// TODO: move this to lang.ts (which is auto-generated)
 const workoutTemplateCopiesByLocale: Record<string, WorkoutTemplateCopy[]> = {
   'en-US': workoutTemplatesEnUs,
   'es-ES': workoutTemplatesEsEs,
@@ -58,7 +71,7 @@ export function getWorkoutTemplates(locale = 'en-US'): RawWorkoutTemplate[] {
     );
   const copies = workoutTemplateCopiesByLocale[matchingLocale ?? 'en-US'];
 
-  return applyWorkoutTemplateCopies(workoutTemplatesData as RawWorkoutTemplate[], copies);
+  return applyWorkoutTemplateCopies(workoutTemplatesData as RawWorkoutTemplateDefinition[], copies);
 }
 
 export const workoutTemplates = getWorkoutTemplates();

@@ -16,7 +16,7 @@ describe('workout template copies', () => {
     const [template] = applyWorkoutTemplateCopies(
       [
         {
-          title: 'Fallback title',
+          __title: 'Reference title',
           duration: 45,
           exercises: [{ exerciseId: 1, day: 1, sets: 3, reps: 8 }],
         },
@@ -32,10 +32,11 @@ describe('workout template copies', () => {
     });
   });
 
-  it('keeps the base template when no localized copy exists at its index', () => {
-    expect(applyWorkoutTemplateCopies([{ title: 'Fallback title', duration: 30 }], [])).toEqual([
-      { title: 'Fallback title', duration: 30 },
+  it('never surfaces the reference title from the definition file', () => {
+    expect(applyWorkoutTemplateCopies([{ __title: 'Reference title', duration: 30 }], [])).toEqual([
+      { title: '', duration: 30 },
     ]);
+    expect(workoutTemplates.every((template) => !('__title' in template))).toBe(true);
   });
 
   it.each([
