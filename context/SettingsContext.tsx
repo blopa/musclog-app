@@ -75,9 +75,9 @@ import { database } from '@/database';
 import { waitForDbReady } from '@/database/dbReady';
 import Setting from '@/database/models/Setting';
 import { SettingsService } from '@/database/services/SettingsService';
+import { DEFAULT_LANG } from '@/lang/lang';
 import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
 import { getDefaultUnits, getHeightUnit, getWeightUnit } from '@/utils/units';
-import { DEFAULT_LANG } from '@/lang/lang';
 
 type SettingsState = {
   units: Units;

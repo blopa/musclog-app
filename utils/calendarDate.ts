@@ -30,8 +30,8 @@
 import type { Locale } from 'date-fns';
 import { addDays, differenceInCalendarDays, format, getYear, parseISO, startOfDay } from 'date-fns';
 
-import { getTimezoneAt, parseTimezoneOffsetMinutes } from '@/utils/timezone';
 import { DEFAULT_LANG } from '@/lang/lang';
+import { getTimezoneAt, parseTimezoneOffsetMinutes } from '@/utils/timezone';
 
 /**
  * Mean solar day length in milliseconds (24h). Use for **approximate** durations between

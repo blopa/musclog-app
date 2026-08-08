@@ -1,6 +1,7 @@
 import { subYears } from 'date-fns';
 
 import { SettingsService, UserMetricService, UserService } from '@/database/services';
+import { DEFAULT_LANG } from '@/lang/lang';
 import type { FitnessDetails } from '@/types/fitnessDetails';
 
 import {
@@ -21,7 +22,6 @@ import {
   storedWeightToKg,
 } from './unitConversion';
 import { getDefaultUsernameForGender } from './usernameUtils';
-import { DEFAULT_LANG } from '@/lang/lang';
 
 /**
  * Display DOB using the user's locale (numeric day/month/year).

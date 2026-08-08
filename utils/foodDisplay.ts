@@ -1,9 +1,9 @@
 import type { Units } from '@/constants/settings';
 import Food from '@/database/models/Food';
+import { DEFAULT_LANG } from '@/lang/lang';
 
 import { formatDisplayGrams } from './formatDisplayWeight';
 import { getMassUnitLabel } from './unitConversion';
-import { DEFAULT_LANG } from '@/lang/lang';
 
 /**
  * Get a display string for the serving size of a food

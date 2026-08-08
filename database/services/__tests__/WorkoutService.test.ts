@@ -1,3 +1,5 @@
+import { Q } from '@nozbe/watermelondb';
+
 import { database } from '@/database/database-instance';
 import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
 import { WorkoutService } from '@/database/services/WorkoutService';
@@ -479,6 +481,7 @@ describe('WorkoutService', () => {
   describe('getUpcomingScheduledWorkouts', () => {
     it('should return templates for correct day of week', async () => {
       const date = new Date('2024-01-15'); // Monday
+      const localizedDateSpy = jest.spyOn(date, 'toLocaleDateString').mockReturnValue('maandag');
       const schedule = createMockSchedule({
         templateId: 'template-1',
         dayOfWeek: 'Monday',
@@ -501,6 +504,8 @@ describe('WorkoutService', () => {
       const result = await WorkoutService.getUpcomingScheduledWorkouts(date);
 
       expect(result).toEqual([template]);
+      expect(Q.where).toHaveBeenCalledWith('day_of_week', 'Monday');
+      expect(localizedDateSpy).not.toHaveBeenCalled();
     });
 
     it('should return empty array when no schedules for day', async () => {

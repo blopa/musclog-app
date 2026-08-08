@@ -3,7 +3,7 @@ import convert, { type Unit } from 'convert';
 
 import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
-import Schedule from '@/database/models/Schedule';
+import Schedule, { type DayOfWeek } from '@/database/models/Schedule';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
@@ -36,6 +36,16 @@ export type EnrichedWorkoutLogSet = WorkoutLogSet & {
   notes?: string;
   isAutoAdjusted?: boolean;
 };
+
+const DATABASE_DAY_NAMES_BY_JS_DAY: readonly DayOfWeek[] = [
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
+];
 
 export class WorkoutService {
   private static async retryAfterWorkoutRepair<T>(
@@ -365,6 +375,7 @@ export class WorkoutService {
         const repaired = await this.retryAfterWorkoutRepair(error, () =>
           this.getWorkoutLogsByWorkoutNameInternal(workoutName, limit, true)
         );
+
         if (repaired) {
           return repaired;
         }
@@ -378,8 +389,7 @@ export class WorkoutService {
    * Get upcoming scheduled workouts for a specific date
    */
   static async getUpcomingScheduledWorkouts(date: Date): Promise<WorkoutTemplate[]> {
-    // TODO: use current locale instead
-    const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
+    const dayOfWeek = DATABASE_DAY_NAMES_BY_JS_DAY[date.getDay()];
 
     const schedules = await database
       .get<Schedule>('schedules')
@@ -468,10 +478,12 @@ export class WorkoutService {
               if ((set.difficultyLevel ?? 0) === 0 || set.isSkipped) {
                 continue;
               }
+
               const eid = set.exerciseId ?? '';
               if (!setsByExercise.has(eid)) {
                 setsByExercise.set(eid, []);
               }
+
               setsByExercise.get(eid)!.push(set);
             }
 
@@ -526,6 +538,7 @@ export class WorkoutService {
           if (!byExercise.has(eid)) {
             byExercise.set(eid, []);
           }
+
           byExercise.get(eid)!.push(set);
         }
         const segmentItems = Array.from(byExercise.entries()).map(([exerciseId, exerciseSets]) => {
@@ -643,6 +656,7 @@ export class WorkoutService {
       string,
       { exerciseId: string; groupId?: string; notes?: string }
     >();
+
     logExercises.forEach((le) => {
       logExerciseMap.set(le.id, {
         exerciseId: le.exerciseId,
@@ -650,9 +664,11 @@ export class WorkoutService {
         notes: le.notes,
       });
     });
+
     return rawSets.map((set) => {
       const logExercise = logExerciseMap.get(set.logExerciseId);
       const r = (set as unknown as { _raw: Record<string, unknown> })._raw;
+
       return {
         id: set.id,
         logExerciseId: (r.log_exercise_id as string) ?? set.logExerciseId,
@@ -987,6 +1003,7 @@ export class WorkoutService {
       if (error instanceof Error) {
         throw new Error(`Failed to update workout metadata: ${error.message}`);
       }
+
       throw new Error('Failed to update workout metadata: Unknown error');
     }
   }
@@ -1056,6 +1073,7 @@ export class WorkoutService {
       if (error instanceof Error) {
         throw new Error(`Failed to reorder workout log exercises: ${error.message}`);
       }
+
       throw new Error('Failed to reorder workout log exercises: Unknown error');
     }
   }
