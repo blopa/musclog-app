@@ -92,7 +92,7 @@ export function OpticalSendModal({ visible, onClose, passphrase }: OpticalSendMo
           <Button
             label={t('opticalTransfer.send.stop')}
             onPress={sender.stop}
-            size="md"
+            size="sm"
             variant="discard"
             width="full"
           />
@@ -144,7 +144,7 @@ export function OpticalSendModal({ visible, onClose, passphrase }: OpticalSendMo
           <Button
             label={t('opticalTransfer.send.start')}
             onPress={sender.start}
-            size="lg"
+            size="sm"
             variant="accent"
             width="full"
           />
@@ -168,7 +168,7 @@ export function OpticalSendModal({ visible, onClose, passphrase }: OpticalSendMo
           <Button
             label={t('opticalTransfer.retry')}
             onPress={() => void sender.prepare()}
-            size="md"
+            size="sm"
             variant="outline"
             width="full"
           />

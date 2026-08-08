@@ -123,7 +123,9 @@ export function OpticalScannerCamera({
           onPress={() =>
             permanentlyDenied ? void Linking.openSettings() : void handleAllowPress()
           }
-          size="md"
+          size="sm"
+          // Button defaults to alignSelf: 'flex-start', which beats the parent's items-center.
+          style={{ alignSelf: 'center' }}
           variant="accent"
         />
       </View>

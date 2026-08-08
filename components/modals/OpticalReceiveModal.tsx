@@ -219,7 +219,7 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
               disabled={!passphrase}
               label={t('opticalTransfer.receive.passphraseSubmit')}
               onPress={() => receiver.submitPassphrase(passphrase)}
-              size="md"
+              size="sm"
               variant="accent"
               width="full"
             />
@@ -254,7 +254,7 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
                 <Button
                   label={t('opticalTransfer.receive.restartNow')}
                   onPress={() => void reloadApp()}
-                  size="lg"
+                  size="sm"
                   variant="accent"
                   width="full"
                 />
@@ -286,7 +286,7 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
                   disabled={tooNew}
                   label={t('opticalTransfer.receive.replace')}
                   onPress={() => setConfirmVisible(true)}
-                  size="lg"
+                  size="sm"
                   variant="discard"
                   width="full"
                 />
@@ -311,7 +311,7 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
             <Button
               label={t('opticalTransfer.receive.scanAgain')}
               onPress={receiver.reset}
-              size="md"
+              size="sm"
               variant="outline"
               width="full"
             />
