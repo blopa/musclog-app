@@ -71,7 +71,13 @@
       "scanAgain": "Escanear de novo",
       "replacing": "Substituindo…",
       "restoring": "Substituindo seus dados…",
-      "restoringHint": "Isso pode levar um minuto em um banco de dados grande. Mantenha o Musclog aberto."
+      "restoringHint": "Isso pode levar um minuto em um banco de dados grande. Mantenha o Musclog aberto.",
+      "cameraPermissionTitle": "Acesso à câmera necessário",
+      "cameraPermissionMessage": "O Musclog precisa da câmera para ler os códigos do outro telefone. Nada é gravado nem enviado.",
+      "cameraPermissionSettings": "O acesso à câmera foi negado. Ative-o para o Musclog nas configurações do sistema e volte aqui.",
+      "allowCamera": "Permitir câmera",
+      "openSettings": "Abrir configurações",
+      "noCamera": "Nenhuma câmera traseira disponível neste dispositivo."
     },
     "quality": {
       "trigger": "Não está lendo? Ajustar",

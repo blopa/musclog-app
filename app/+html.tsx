@@ -31,6 +31,7 @@ type LandingCopy = {
   tagline: string;
 };
 
+// this is fine to stay here because it's for the website wrapper
 const LANDING_TRANSLATIONS: Record<string, LandingCopy> = {
   'en-US': enUsWebsite.website.landing,
   'es-ES': esEsWebsite.website.landing,

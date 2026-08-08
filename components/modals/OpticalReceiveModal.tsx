@@ -110,7 +110,11 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
         {phase === 'collecting' ? (
           <View className="flex-1">
             <View className="flex-1 overflow-hidden">
-              <OpticalScannerCamera active={visible} onCodeScanned={receiver.onCodeScanned} />
+              <OpticalScannerCamera
+                active={visible}
+                onCodeScanned={receiver.onCodeScanned}
+                onStarted={receiver.cameraStarted}
+              />
               {showNoSignalHint ? (
                 <View
                   className="absolute inset-x-4 bottom-4 gap-2 rounded-xl p-4"

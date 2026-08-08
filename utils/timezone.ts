@@ -47,6 +47,7 @@ export function ianaZoneToTimezoneAt(ianaZone: string, date: Date): string | und
     // Render the instant as wall-clock time in the target zone, reinterpret those fields as
     // UTC, and diff against the real instant to recover the offset. Works on any Intl that
     // supports timeZone formatting (already a baseline requirement of the app).
+    // TODO: Use current locale instead
     const parts = new Intl.DateTimeFormat('en-US', {
       timeZone: ianaZone,
       hourCycle: 'h23',

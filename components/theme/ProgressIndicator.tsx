@@ -33,44 +33,25 @@ export function ProgressIndicator({ message, size = 'large' }: ProgressIndicator
         }}
       >
         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+          {/*
+            One spinner, nothing behind it. This used to stack three circular elements: a static
+            grey ring, a second "progress arc" ring inset on top/left only — so it sat visibly
+            off-centre inside the first — and the animated indicator scaled up on top of both. The
+            arc never animated and never tracked any progress, so the whole effect read as a
+            broken double spinner rather than as decoration.
+          */}
           <View
             style={{
-              width: theme.size['18'],
-              height: theme.size['18'],
               alignItems: 'center',
+              height: theme.size['18'],
               justifyContent: 'center',
+              width: theme.size['18'],
             }}
           >
-            {/* Outer ring */}
-            <View
-              style={{
-                position: 'absolute',
-                width: theme.size['18'],
-                height: theme.size['18'],
-                borderRadius: theme.size['18'] / 2,
-                borderWidth: theme.borderWidth.thick6,
-                borderColor: theme.colors.background.black15,
-              }}
-            />
-            {/* Progress arc using smaller view with accent color on top */}
-            <View
-              style={{
-                position: 'absolute',
-                top: theme.borderWidth.thick6,
-                left: theme.borderWidth.thick6,
-                width: theme.size['14'],
-                height: theme.size['14'],
-                borderRadius: theme.size['14'] / 2,
-                borderWidth: theme.borderWidth.thick6,
-                borderColor: theme.colors.accent.primary,
-                transform: [{ rotate: '45deg' }],
-                overflow: 'hidden',
-              }}
-            />
             <ActivityIndicator
               // ActivityIndicator accepts 'small' | 'large' | number
-              size={size === 'large' ? 'large' : 'small'}
               color={theme.colors.accent.primary}
+              size={size === 'large' ? 'large' : 'small'}
               style={{ transform: [{ scale: size === 'large' ? 1.4 : 1 }] }}
             />
           </View>

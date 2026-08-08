@@ -163,11 +163,16 @@ export function useOpticalReceiver(options: { active: boolean }) {
   /** The verified dump, ready for `restoreDatabase`. Non-null only in the `verified` phase. */
   const takeJson = useCallback(() => jsonRef.current, []);
 
-  useEffect(() => {
-    if (active) {
-      noSignalRef.current.cameraStarted(Date.now());
-    }
-  }, [active]);
+  /**
+   * The camera session is genuinely streaming — wired to vision-camera's `onStarted`, not to the
+   * screen becoming visible. The distinction matters: while the OS permission prompt is up, or
+   * while the session is still binding, no frames can arrive, and arming the countdown then would
+   * pop "nothing is coming through — move the phones closer" over a dialog asking for camera
+   * access.
+   */
+  const cameraStarted = useCallback(() => {
+    noSignalRef.current.cameraStarted(Date.now());
+  }, []);
 
   useEffect(() => {
     if (!active) {
@@ -231,5 +236,13 @@ export function useOpticalReceiver(options: { active: boolean }) {
     return () => subscription.remove();
   }, [active]);
 
-  return { ...state, dismissNoSignalHint, onCodeScanned, reset, submitPassphrase, takeJson };
+  return {
+    ...state,
+    cameraStarted,
+    dismissNoSignalHint,
+    onCodeScanned,
+    reset,
+    submitPassphrase,
+    takeJson,
+  };
 }

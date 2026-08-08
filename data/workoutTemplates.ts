@@ -52,7 +52,7 @@ export function applyWorkoutTemplateCopies(
   });
 }
 
-// TODO: move this to lang.ts (which is auto-generated)
+// TODO: move this to lang.ts (which is auto-generated) - so update the auto generator to generate this
 const workoutTemplateCopiesByLocale: Record<string, WorkoutTemplateCopy[]> = {
   'en-US': workoutTemplatesEnUs,
   'es-ES': workoutTemplatesEsEs,

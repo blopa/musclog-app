@@ -71,7 +71,13 @@
       "scanAgain": "Opnieuw scannen",
       "replacing": "Bezig met vervangen…",
       "restoring": "Je gegevens worden vervangen…",
-      "restoringHint": "Bij een grote database kan dit een minuut duren. Houd Musclog open."
+      "restoringHint": "Bij een grote database kan dit een minuut duren. Houd Musclog open.",
+      "cameraPermissionTitle": "Cameratoegang nodig",
+      "cameraPermissionMessage": "Musclog heeft de camera nodig om de codes op de andere telefoon te lezen. Er wordt niets opgenomen of verstuurd.",
+      "cameraPermissionSettings": "Cameratoegang is geweigerd. Schakel dit in voor Musclog in de systeeminstellingen en kom terug.",
+      "allowCamera": "Camera toestaan",
+      "openSettings": "Instellingen openen",
+      "noCamera": "Geen camera aan de achterkant beschikbaar op dit apparaat."
     },
     "quality": {
       "trigger": "Wordt niet gescand? Aanpassen",

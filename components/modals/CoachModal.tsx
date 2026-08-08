@@ -294,6 +294,7 @@ const renderBubble = (
             className="mr-1 mt-1 text-right text-xs"
             style={{ color: theme.colors.text.tertiary }}
           >
+            {/* TODO: Use current locale instead */}
             {new Date(currentMessage.createdAt).toLocaleTimeString('en-US', {
               hour: 'numeric',
               minute: '2-digit',
@@ -393,6 +394,7 @@ const renderDay = (props: any, t: TFunction, theme: Theme) => {
         <View className="rounded-full bg-bg-card px-3 py-1">
           <Text className="text-xs font-medium" style={{ color: theme.colors.text.tertiary }}>
             {t('coach.todayAt', {
+              // TODO: Use current locale instead
               time: date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
             })}
           </Text>

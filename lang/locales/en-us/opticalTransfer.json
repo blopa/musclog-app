@@ -71,7 +71,13 @@
       "scanAgain": "Scan again",
       "replacing": "Replacing…",
       "restoring": "Replacing your data…",
-      "restoringHint": "This can take a minute on a large database. Keep Musclog open."
+      "restoringHint": "This can take a minute on a large database. Keep Musclog open.",
+      "cameraPermissionTitle": "Camera access needed",
+      "cameraPermissionMessage": "Musclog needs the camera to read the codes on the other phone. Nothing is recorded or sent anywhere.",
+      "cameraPermissionSettings": "Camera access was denied. Enable it for Musclog in system settings, then come back.",
+      "allowCamera": "Allow camera",
+      "openSettings": "Open settings",
+      "noCamera": "No back camera is available on this device."
     },
     "quality": {
       "trigger": "Not scanning? Adjust",
