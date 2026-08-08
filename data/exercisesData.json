@@ -104,7 +104,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["lats", "biceps", "rhomboids", "traps"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.99,
     "__exerciseName": "Pull-Up"
   },
   {
@@ -320,7 +320,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.4,
     "__exerciseName": "Glute Bridge"
   },
   {
@@ -455,7 +455,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.99,
     "__exerciseName": "Dips"
   },
   {
@@ -464,7 +464,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid", "serratus_anterior"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.7,
     "__exerciseName": "Push-Up"
   },
   {
@@ -496,7 +496,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.41,
     "__exerciseName": "Hanging Leg Raise"
   },
   {
@@ -505,7 +505,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "hip_flexors", "shoulders", "quadriceps"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.35,
     "__exerciseName": "Mountain Climbers"
   },
   {
@@ -521,7 +521,7 @@
       "triceps",
       "shoulders"
     ],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.9,
     "__exerciseName": "Burpees"
   },
   {
@@ -530,7 +530,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "plyometric",
     "targetMuscles": ["quadriceps", "glutes", "calves"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.97,
     "__exerciseName": "Box Jump"
   },
   {
@@ -643,7 +643,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.3,
     "__exerciseName": "Hanging Knee Raise"
   },
   {
@@ -914,7 +914,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "isolation",
     "targetMuscles": ["quadriceps", "rectus_abdominis", "hip_flexors"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.89,
     "__exerciseName": "Sissy Squat"
   },
   {
@@ -941,7 +941,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.7,
     "__exerciseName": "Dragon Flag"
   },
   {
@@ -959,7 +959,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.35,
     "__exerciseName": "Reverse Crunch"
   },
   {
@@ -977,7 +977,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.78,
     "__exerciseName": "Pike Push-Up"
   },
   {
@@ -1076,7 +1076,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "isolation",
     "targetMuscles": ["glutes", "hamstrings"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.2,
     "__exerciseName": "Bodyweight Quadruped Glute Kickback"
   },
   {
@@ -1085,7 +1085,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "isolation",
     "targetMuscles": ["glutes", "hamstrings"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.2,
     "__exerciseName": "Standing Bodyweight Glute Kickback"
   },
   {
@@ -1154,7 +1154,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["lats", "biceps", "brachialis", "rhomboids", "traps"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.99,
     "__exerciseName": "Chin-Up"
   },
   {
@@ -1243,7 +1243,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "calves"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.97,
     "__exerciseName": "Pistol Squat"
   },
   {
@@ -1252,7 +1252,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "isolation",
     "targetMuscles": ["hamstrings", "glutes"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.85,
     "__exerciseName": "Nordic Hamstring Curl"
   },
   {
@@ -1261,7 +1261,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["hamstrings", "glutes", "erector_spinae"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.85,
     "__exerciseName": "Glute-Ham Raise"
   },
   {
@@ -1279,7 +1279,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["rhomboids", "lats", "traps", "biceps", "posterior_deltoid"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.6,
     "__exerciseName": "Inverted Row"
   },
   {
@@ -1333,7 +1333,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["triceps", "pectoralis_major", "anterior_deltoid", "serratus_anterior"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.7,
     "__exerciseName": "Diamond Push-Up"
   },
   {
@@ -1342,7 +1342,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["triceps", "anterior_deltoid", "pectoralis_major"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.55,
     "__exerciseName": "Bench Dip"
   },
   {
@@ -1351,7 +1351,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.41,
     "__exerciseName": "Lying Leg Raise"
   },
   {
@@ -1360,7 +1360,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.15,
     "__exerciseName": "Dead Bug"
   },
   {

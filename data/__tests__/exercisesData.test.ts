@@ -148,3 +148,58 @@ describe('exercise loadMultiplier', () => {
     expect(zeroed.map(({ __exerciseName }) => __exerciseName)).toEqual([]);
   });
 });
+
+// For a bodyweight exercise the multiplier is not a benchmark at all — it is the
+// fraction of body mass the movement actually shifts, derived from de Leva (1996)
+// segment masses or, for the push-up family, measured on force plates by Suprak
+// (2011). Body mass and height cancel out of that derivation: the fractions are
+// fractions *of* body mass and `workoutEnergyCalculator` already multiplies by the
+// user's weight and height. Sex shifts them 0.1-6% — below the model's own noise —
+// so the stored values are sex-neutral and `genderFactor` carries the adjustment.
+describe('bodyweight loadMultiplier', () => {
+  const bodyweight = exercisesData.filter(({ equipmentType }) => equipmentType === 'bodyweight');
+
+  // Every dynamic bodyweight exercise scored exactly 0 kcal before this was derived.
+  it('leaves no dynamic bodyweight exercise at zero', () => {
+    const isometricHolds = ['Plank', 'Side Plank', 'Wall Sit', 'Hollow Body Hold'];
+    const zeroed = bodyweight
+      .filter(({ loadMultiplier }) => loadMultiplier === 0)
+      .map(({ __exerciseName }) => __exerciseName);
+
+    expect(zeroed.sort()).toEqual([...isometricHolds].sort());
+  });
+
+  // 0 means "no displacement to credit", which is the honest answer for a hold: the
+  // model is mass x distance x reps and a plank has no distance.
+  it.each(['Plank', 'Side Plank', 'Wall Sit', 'Hollow Body Hold'])(
+    'keeps the isometric hold %s at 0',
+    (name) => {
+      expect(multiplierByName.get(name)).toBe(0);
+    }
+  );
+
+  it('never exceeds the whole body', () => {
+    const overloaded = bodyweight
+      .filter(({ loadMultiplier }) => loadMultiplier > 1)
+      .map(({ __exerciseName }) => __exerciseName);
+
+    expect(overloaded).toEqual([]);
+  });
+
+  // Ordering follows the segment mass that each movement actually lifts.
+  it.each([
+    // hands anchored (1 - 2*hand) beats feet anchored (1 - 2*foot)
+    ['Pull-Up', 'Pistol Squat'],
+    // whole body beats the push-up lever, which beats a legs-only raise
+    ['Pistol Squat', 'Push-Up'],
+    ['Push-Up', 'Hanging Leg Raise'],
+    // both legs beat one leg
+    ['Hanging Leg Raise', 'Standing Bodyweight Glute Kickback'],
+    // straight legs beat bent knees
+    ['Hanging Leg Raise', 'Hanging Knee Raise'],
+    // mass shifted over the shoulders beats the flat push-up
+    ['Pike Push-Up', 'Push-Up'],
+  ])('ranks %s above %s', (heavier, lighter) => {
+    expect(multiplierByName.get(heavier)!).toBeGreaterThan(multiplierByName.get(lighter)!);
+  });
+});

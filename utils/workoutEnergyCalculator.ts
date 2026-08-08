@@ -105,6 +105,12 @@ function resolveAnaerobicMultiplier(
  * Calculate total kilocalories burned for a single exercise across all sets.
  *
  * Sets with zero weight on non-bodyweight exercises are skipped (unlogged sets).
+ *
+ * A `loadMultiplier` of 0 zeroes the exercise, and that is deliberate — it is
+ * reserved for movements with no displacement to credit (isometric holds like the
+ * plank and wall sit, and cardio). Bodyweight exercises are not in that category:
+ * each carries the fraction of body mass its movement actually shifts, so a
+ * pull-up is 0.99 and a push-up 0.70. See the `loadMultiplier` entry in AGENTS.md.
  */
 export function calculateExerciseKcal(input: MWEMInput): number {
   const { user, exercise, sets } = input;
@@ -122,13 +128,6 @@ export function calculateExerciseKcal(input: MWEMInput): number {
   const anaerobicFactor = resolveAnaerobicMultiplier(mechanicType, equipmentType);
   const genderFactor = gender === 'female' ? 0.9 : 1.0;
 
-  // `loadMultiplier` is a bodyweight-relative *load* benchmark, so bodyweight and
-  // cardio entries carry 0 — they have no external load to benchmark against. That
-  // is not a claim that they cost no energy, and multiplying by it zeroed every
-  // pull-up, dip and push-up. The work term already accounts for the body mass being
-  // moved, so treat 0 as "no correction" rather than "no calories".
-  const loadFactor = loadMultiplier > 0 ? loadMultiplier : 1;
-
   let totalKcal = 0;
 
   for (const set of sets) {
@@ -143,7 +142,7 @@ export function calculateExerciseKcal(input: MWEMInput): number {
     const totalMass = set.weight + bodyMass;
     const workJoules = totalMass * G * distance * set.reps;
     const kcal = workJoules / (J_TO_KCAL * EFFICIENCY);
-    totalKcal += kcal * anaerobicFactor * loadFactor * genderFactor;
+    totalKcal += kcal * anaerobicFactor * loadMultiplier * genderFactor;
   }
 
   return totalKcal;

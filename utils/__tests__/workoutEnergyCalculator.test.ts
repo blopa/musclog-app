@@ -192,26 +192,50 @@ describe('calculateExerciseKcal', () => {
     expect(legs).toBeGreaterThan(upperBody);
   });
 
-  // Bodyweight and cardio exercises store a loadMultiplier of 0 — no external load to
-  // benchmark. Multiplying by it zeroed the calorie total for every pull-up, dip and
-  // push-up, even though the body mass being moved is already in the work term.
-  it('does not zero a bodyweight exercise whose loadMultiplier is 0', () => {
-    const input: MWEMInput = {
+  // A bodyweight exercise carries the fraction of body mass its movement shifts, so
+  // it scores real calories — this used to be 0 for every pull-up, dip and push-up.
+  it('scores a bodyweight exercise from the fraction of body mass it moves', () => {
+    const pullUp = calculateExerciseKcal({
       user: BASE_USER,
       exercise: {
         mechanicType: 'compound',
         muscleGroup: 'back',
         equipmentType: 'bodyweight',
-        loadMultiplier: 0,
+        loadMultiplier: 0.99, // whole body less the hands
       },
       sets: [{ weight: 0, reps: 8 }],
-    };
+    });
+    const pushUp = calculateExerciseKcal({
+      user: BASE_USER,
+      exercise: {
+        mechanicType: 'compound',
+        muscleGroup: 'chest',
+        equipmentType: 'bodyweight',
+        loadMultiplier: 0.7, // Suprak 2011, measured at the hands
+      },
+      sets: [{ weight: 0, reps: 8 }],
+    });
 
-    expect(calculateExerciseKcal(input)).toBeGreaterThan(0);
-    expect(calculateExerciseKcal(input)).toBeCloseTo(
-      calculateExerciseKcal({ ...input, exercise: { ...input.exercise, loadMultiplier: 1 } }),
-      5
-    );
+    expect(pushUp).toBeGreaterThan(0);
+    expect(pullUp).toBeGreaterThan(pushUp);
+  });
+
+  // 0 is reserved for movements with no displacement to credit. Coercing it to a
+  // neutral 1 — the first attempt at the bodyweight fix — would have scored a plank
+  // like a full-bodyweight rep.
+  it('scores an isometric hold at 0 rather than treating it as unloaded bodyweight', () => {
+    expect(
+      calculateExerciseKcal({
+        user: BASE_USER,
+        exercise: {
+          mechanicType: 'compound',
+          muscleGroup: 'core',
+          equipmentType: 'bodyweight',
+          loadMultiplier: 0, // plank, side plank, wall sit, hollow body hold
+        },
+        sets: [{ weight: 0, reps: 3 }],
+      })
+    ).toBe(0);
   });
 
   it('loadMultiplier scales the result proportionally', () => {
