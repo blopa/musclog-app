@@ -31,6 +31,7 @@ import type { Locale } from 'date-fns';
 import { addDays, differenceInCalendarDays, format, getYear, parseISO, startOfDay } from 'date-fns';
 
 import { getTimezoneAt, parseTimezoneOffsetMinutes } from '@/utils/timezone';
+import { DEFAULT_LANG } from '@/lang/lang';
 
 /**
  * Mean solar day length in milliseconds (24h). Use for **approximate** durations between
@@ -148,8 +149,8 @@ export function formatLocalCalendarDayNumericIntl(date: Date | number, localeTag
  * @deprecated Prefer {@link formatLocalCalendarMonthDayNumericIntl} with `i18n.language`.
  * Kept as `en-US`-style numeric labels for tests and legacy call sites.
  */
-export function formatLocalCalendarDayDdMm(date: Date | number): string {
-  return formatLocalCalendarMonthDayNumericIntl(date, 'en-US');
+export function formatLocalCalendarDayDdMm(date: Date | number, locale = DEFAULT_LANG): string {
+  return formatLocalCalendarMonthDayNumericIntl(date, locale);
 }
 
 /**

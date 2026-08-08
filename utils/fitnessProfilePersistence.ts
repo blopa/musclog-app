@@ -21,6 +21,7 @@ import {
   storedWeightToKg,
 } from './unitConversion';
 import { getDefaultUsernameForGender } from './usernameUtils';
+import { DEFAULT_LANG } from '@/lang/lang';
 
 /**
  * Display DOB using the user's locale (numeric day/month/year).
@@ -28,7 +29,7 @@ import { getDefaultUsernameForGender } from './usernameUtils';
  */
 export function formatDateOfBirthFromTimestamp(
   timestamp: number,
-  localeTag: string = 'en-US'
+  localeTag: string = DEFAULT_LANG
 ): string {
   return formatLocalCalendarDayNumericIntl(timestamp, localeTag);
 }
@@ -39,7 +40,7 @@ export function defaultAdultDobLocalDayStartMs(ageYears = 25): number {
 }
 
 /** Same as {@link defaultAdultDobLocalDayStartMs} but formatted for display fields. */
-export function defaultAdultDobDisplayString(ageYears = 25, localeTag = 'en-US'): string {
+export function defaultAdultDobDisplayString(ageYears = 25, localeTag = DEFAULT_LANG): string {
   return formatDateOfBirthFromTimestamp(defaultAdultDobLocalDayStartMs(ageYears), localeTag);
 }
 
@@ -92,7 +93,7 @@ export function parseDobDisplayStringToPickerDate(dobString: string): Date {
  */
 export async function loadFitnessDetailsInitialData(
   units: 'imperial' | 'metric',
-  localeTag: string = 'en-US'
+  localeTag: string = DEFAULT_LANG
 ): Promise<Partial<FitnessDetails>> {
   const user = await UserService.getCurrentUser();
   const latestWeight = await UserMetricService.getLatest('weight');

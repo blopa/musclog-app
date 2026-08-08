@@ -378,6 +378,7 @@ export class WorkoutService {
    * Get upcoming scheduled workouts for a specific date
    */
   static async getUpcomingScheduledWorkouts(date: Date): Promise<WorkoutTemplate[]> {
+    // TODO: use current locale instead
     const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'long' });
 
     const schedules = await database

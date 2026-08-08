@@ -2,7 +2,7 @@ import { Content, Part } from '@google/genai';
 import OpenAI from 'openai';
 
 import { DebugDumpService, NutritionService, SettingsService } from '@/database/services';
-import i18n from '@/lang/lang';
+import i18n, { DEFAULT_LANG } from '@/lang/lang';
 import { isProduction } from '@/utils/app';
 
 import { configureBasicGenAI } from './gemini';
@@ -797,7 +797,7 @@ async function generateText(
 ): Promise<string> {
   // Wrap user message with delimiters to prevent prompt injection
   const sanitizedUserMessage = wrapUserContent(userMessage);
-  const lang = config.language ?? 'en-US';
+  const lang = config.language ?? DEFAULT_LANG;
   const promptWithLang = `${systemPrompt}\n\nRespond in the following language/locale: ${lang}.`;
   if (config.provider === 'gemini') {
     const requestPayload = {
@@ -995,7 +995,7 @@ async function generateStructured<T>(
   // Wrap user message with delimiters to prevent prompt injection
   const sanitizedUserMessage = wrapUserContent(userMessage);
 
-  const lang = config.language ?? 'en-US';
+  const lang = config.language ?? DEFAULT_LANG;
   const promptWithLang = `${systemPrompt}\n\nRespond in the following language/locale: ${lang}. All user-facing content in the structured output (e.g. titles, descriptions) must be in this language.`;
 
   if (config.provider === 'on-device') {
@@ -1310,7 +1310,7 @@ async function extractRecipe(
   userMessage: string,
   base64Image?: string
 ): Promise<RecipeExtractionResponse | null> {
-  const lang = config.language ?? 'en-US';
+  const lang = config.language ?? DEFAULT_LANG;
   const providerConfig = PROVIDER_CONFIGS[config.provider] ?? PROVIDER_CONFIGS.openai;
   const includeFoundationFoods = providerConfig.enableFoundationFoods
     ? await SettingsService.getSendFoundationFoodsToLlm()
@@ -1451,7 +1451,7 @@ export async function trackMeal(
       return await trackMealWithThinking(config, userMessage, base64Image);
     }
 
-    const lang = config.language ?? 'en-US';
+    const lang = config.language ?? DEFAULT_LANG;
     const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
     const includeFoundationFoods = providerConfig.enableFoundationFoods
       ? await SettingsService.getSendFoundationFoodsToLlm()
@@ -1541,7 +1541,7 @@ export async function getNutritionInsights(
   context: 'nutrition' | 'exercise' | 'general' = 'nutrition'
 ): Promise<string | null> {
   try {
-    const lang = config.language ?? 'en-US';
+    const lang = config.language ?? DEFAULT_LANG;
     const systemPrompt = await getNutritionInsightsPrompt(
       startDate,
       endDate,
@@ -1582,7 +1582,7 @@ export async function generateMealPlan(
   context: 'nutrition' | 'exercise' | 'general' = 'nutrition'
 ): Promise<GenerateMealPlanResponse | null> {
   try {
-    const lang = config.language ?? 'en-US';
+    const lang = config.language ?? DEFAULT_LANG;
     const providerConfig = PROVIDER_CONFIGS[config.provider] || PROVIDER_CONFIGS.openai;
     const includeFoundationFoods = providerConfig.enableFoundationFoods
       ? await SettingsService.getSendFoundationFoodsToLlm()
@@ -1624,7 +1624,7 @@ export async function generateWorkoutPlan(
   context: 'nutrition' | 'exercise' | 'general' = 'exercise'
 ): Promise<GenerateWorkoutPlanResponse | null> {
   try {
-    const lang = config.language ?? 'en-US';
+    const lang = config.language ?? DEFAULT_LANG;
     const systemPrompt = await createWorkoutPlanPrompt(lang, undefined, context);
     const instruction =
       history.length > 0
@@ -1663,7 +1663,7 @@ export async function calculateNextWorkoutVolume(
   completedWorkoutData: any
 ): Promise<CalculateVolumeResponse | null> {
   try {
-    const lang = config.language ?? 'en-US';
+    const lang = config.language ?? DEFAULT_LANG;
     const systemPrompt = await getCalculateNextWorkoutVolumePrompt(workoutTitle, lang);
     const userMessage =
       typeof completedWorkoutData === 'string'
@@ -1693,7 +1693,7 @@ export async function getWorkoutInsights(
   workoutTitle: string
 ): Promise<string | null> {
   try {
-    const lang = config.language ?? 'en-US';
+    const lang = config.language ?? DEFAULT_LANG;
     const systemPrompt = await getWorkoutInsightsPrompt(workoutTitle, lang);
     const text = await generateText(config, systemPrompt);
     return text || null;
@@ -1711,7 +1711,7 @@ export async function getRecentWorkoutInsights(
   workoutLogId: string
 ): Promise<string | null> {
   try {
-    const lang = config.language ?? 'en-US';
+    const lang = config.language ?? DEFAULT_LANG;
     const systemPrompt = await getRecentWorkoutInsightsPromptByLogId(workoutLogId, lang);
     const text = await generateText(config, systemPrompt);
     return text || null;
@@ -1735,7 +1735,7 @@ export async function getRecentWorkoutsInsights(
   context: 'nutrition' | 'exercise' | 'general' = 'exercise'
 ): Promise<string | null> {
   try {
-    const lang = config.language ?? 'en-US';
+    const lang = config.language ?? DEFAULT_LANG;
     const systemPrompt = await getRecentWorkoutsInsightsPrompt(
       startDate,
       endDate,
@@ -1774,7 +1774,7 @@ export async function getWorkoutVolumeInsights(
   workoutTitle: string
 ): Promise<string | null> {
   try {
-    const lang = config.language ?? 'en-US';
+    const lang = config.language ?? DEFAULT_LANG;
     const systemPrompt = await getWorkoutVolumeInsightsPrompt(workoutTitle, lang);
     const text = await generateText(config, systemPrompt);
     return text || null;
@@ -1988,7 +1988,7 @@ export async function parsePastWorkouts(
   exerciseNames: string[]
 ): Promise<ParsedWorkout[] | null> {
   try {
-    const lang = config.language ?? 'en-US';
+    const lang = config.language ?? DEFAULT_LANG;
     const systemPrompt = await getParsePastWorkoutsPrompt(userMessage, exerciseNames, lang);
     const fns = getParsePastWorkoutsFunctions();
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
@@ -2014,7 +2014,7 @@ export async function parsePastNutrition(
   userMessage: string
 ): Promise<ParsedNutrition[] | null> {
   try {
-    const lang = config.language ?? 'en-US';
+    const lang = config.language ?? DEFAULT_LANG;
     const systemPrompt = await getParsePastNutritionPrompt(userMessage, lang);
     const fns = getParsePastNutritionFunctions();
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
@@ -2041,7 +2041,7 @@ export async function parseRetrospectiveNutrition(
   targetDate: string
 ): Promise<NutritionEntry[] | null> {
   try {
-    const lang = config.language ?? 'en-US';
+    const lang = config.language ?? DEFAULT_LANG;
     const systemPrompt = await getRetrospectiveNutritionPrompt(targetDate, userMessage, lang);
     const fns = getParseRetrospectiveNutritionFunctions();
     const schema = getSchemaFromFunctionDeclaration((fns as any)[0]);
@@ -2071,7 +2071,7 @@ export async function getMealCritique(
   userRemarks?: string
 ): Promise<string | null> {
   try {
-    const lang = config.language ?? 'en-US';
+    const lang = config.language ?? DEFAULT_LANG;
     const systemPrompt = await getMealCritiquePrompt(mealType, foods, totals, lang, 'nutrition');
     const finalUserMessage = userRemarks?.trim()
       ? userRemarks.trim()
