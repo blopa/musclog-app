@@ -1,6 +1,6 @@
 [
   {
-    "title": "5-Day Hypertrophy Split",
+    "__title": "5-Day Hypertrophy Split",
     "difficulty": "advanced",
     "duration": 75,
     "exercises": [
@@ -29,7 +29,7 @@
     "icon": "fitness-center"
   },
   {
-    "title": "Push Pull Legs (PPL)",
+    "__title": "Push Pull Legs (PPL)",
     "difficulty": "intermediate",
     "duration": 60,
     "exercises": [
@@ -57,7 +57,7 @@
     "icon": "fitness-center"
   },
   {
-    "title": "Upper/Lower 4-Day Split",
+    "__title": "Upper/Lower 4-Day Split",
     "difficulty": "intermediate",
     "duration": 65,
     "exercises": [
@@ -90,7 +90,7 @@
     "icon": "fitness-center"
   },
   {
-    "title": "Full Body (3-Day)",
+    "__title": "Full Body (3-Day)",
     "difficulty": "beginner",
     "duration": 55,
     "exercises": [
@@ -121,7 +121,7 @@
     "icon": "fitness-center"
   },
   {
-    "title": "Arnold Split (6-Day)",
+    "__title": "Arnold Split (6-Day)",
     "difficulty": "advanced",
     "duration": 70,
     "exercises": [
@@ -149,7 +149,7 @@
     "icon": "fitness-center"
   },
   {
-    "title": "Bro Split (5-Day)",
+    "__title": "Bro Split (5-Day)",
     "difficulty": "intermediate",
     "duration": 55,
     "exercises": [
@@ -183,7 +183,7 @@
     "icon": "fitness-center"
   },
   {
-    "title": "PHUL (Power Hypertrophy Upper Lower)",
+    "__title": "PHUL (Power Hypertrophy Upper Lower)",
     "difficulty": "intermediate",
     "duration": 60,
     "exercises": [
@@ -216,7 +216,7 @@
     "icon": "fitness-center"
   },
   {
-    "title": "2-Day Full Body (A/B)",
+    "__title": "2-Day Full Body (A/B)",
     "difficulty": "beginner",
     "duration": 50,
     "exercises": [
@@ -234,7 +234,7 @@
     "icon": "fitness-center"
   },
   {
-    "title": "3-Day Strength Builder",
+    "__title": "3-Day Strength Builder",
     "difficulty": "beginner",
     "duration": 50,
     "exercises": [
@@ -259,7 +259,7 @@
     "icon": "fitness-center"
   },
   {
-    "title": "Classic 3-Day (Chest/Tri, Back/Bi, Legs/Shoulders)",
+    "__title": "Classic 3-Day (Chest/Tri, Back/Bi, Legs/Shoulders)",
     "difficulty": "intermediate",
     "duration": 55,
     "exercises": [
@@ -287,7 +287,7 @@
     "icon": "fitness-center"
   },
   {
-    "title": "Brolic Workout",
+    "__title": "Brolic Workout",
     "difficulty": "intermediate",
     "duration": 50,
     "exercises": [
@@ -307,7 +307,7 @@
     "icon": "fitness-center"
   },
   {
-    "title": "Cable Superset Workout",
+    "__title": "Cable Superset Workout",
     "difficulty": "advanced",
     "duration": 70,
     "dayNames": {
