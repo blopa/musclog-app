@@ -59,6 +59,7 @@ import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useTheme } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
+import { formatTimeInTimezone } from '@/utils/calendarDate';
 import { type TrackMealIngredient } from '@/utils/coachAI';
 import { FALLBACK_EXERCISE_IMAGE } from '@/utils/exerciseImage';
 import { createThumbnail } from '@/utils/file';
@@ -257,6 +258,7 @@ const renderBubble = (
   props: BubbleProps<ExtendedIMessage>,
   theme: Theme,
   conversationContext: string,
+  locale: string,
   onViewWorkoutDetails?: (workoutLogId: string) => void,
   onLongPress?: (message: ExtendedIMessage) => void,
   onViewMealDetails?: (meal: ExtendedIMessage['meal'], mealIndex: number) => void,
@@ -294,11 +296,7 @@ const renderBubble = (
             className="mr-1 mt-1 text-right text-xs"
             style={{ color: theme.colors.text.tertiary }}
           >
-            {/* TODO: Use current locale instead */}
-            {new Date(currentMessage.createdAt).toLocaleTimeString('en-US', {
-              hour: 'numeric',
-              minute: '2-digit',
-            })}
+            {formatTimeInTimezone(new Date(currentMessage.createdAt).getTime(), undefined, locale)}
           </Text>
         ) : null}
       </Pressable>
@@ -380,7 +378,7 @@ const renderAvatar = (props: any, theme: Theme) => {
   );
 };
 
-const renderDay = (props: any, t: TFunction, theme: Theme) => {
+const renderDay = (props: any, t: TFunction, theme: Theme, locale: string) => {
   if (!props.currentMessage?.createdAt) {
     return null;
   }
@@ -394,8 +392,7 @@ const renderDay = (props: any, t: TFunction, theme: Theme) => {
         <View className="rounded-full bg-bg-card px-3 py-1">
           <Text className="text-xs font-medium" style={{ color: theme.colors.text.tertiary }}>
             {t('coach.todayAt', {
-              // TODO: Use current locale instead
-              time: date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+              time: formatTimeInTimezone(date.getTime(), undefined, locale),
             })}
           </Text>
         </View>
@@ -636,6 +633,7 @@ export function CoachModal({
 }: CoachModalProps) {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
+  const locale = i18n.resolvedLanguage ?? i18n.language;
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
@@ -1197,6 +1195,7 @@ export function CoachModal({
         props,
         theme,
         conversationContext,
+        locale,
         handleViewWorkoutDetails,
         handleMessageLongPress,
         handleViewMealDetails,
@@ -1215,6 +1214,7 @@ export function CoachModal({
       handleGoToSettings,
       handleSeeAllMeals,
       handleViewMuscles,
+      locale,
       t,
     ]
   );
@@ -1287,8 +1287,8 @@ export function CoachModal({
   );
 
   const gcRenderDay = useCallback(
-    (props: Parameters<typeof renderDay>[0]) => renderDay(props, t, theme),
-    [t, theme]
+    (props: Parameters<typeof renderDay>[0]) => renderDay(props, t, theme, locale),
+    [t, theme, locale]
   );
 
   const gcRenderMessageImage = useCallback(

@@ -6,6 +6,7 @@ import {
   consumedDateTimeOnDay,
   dayKeyForCalendarDateInTimezone,
   dayKeyRange,
+  formatTimeInTimezone,
   instantForDateTimeInTimezone,
   MS_PER_SOLAR_DAY,
   timeOfDayMsInTimezone,
@@ -95,6 +96,15 @@ describe('ianaZoneToTimezoneAt', () => {
 
   it('returns undefined for an unresolvable zone', () => {
     expect(ianaZoneToTimezoneAt('Not/ARealZone', new Date('2023-01-15T12:00:00Z'))).toBeUndefined();
+  });
+});
+
+describe('formatTimeInTimezone', () => {
+  it('uses the requested locale for local time-of-day formatting', () => {
+    const date = new Date(2025, 0, 15, 13, 5);
+
+    expect(formatTimeInTimezone(date.getTime(), undefined, 'en-US')).toMatch(/1:05\s?PM/i);
+    expect(formatTimeInTimezone(date.getTime(), undefined, 'nl-NL')).toBe('13:05');
   });
 });
 
