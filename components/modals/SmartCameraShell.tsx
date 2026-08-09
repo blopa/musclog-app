@@ -1,14 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import {
-  FileText,
-  Images,
-  Lightbulb,
-  LightbulbOff,
-  type LucideIcon,
-  ScanBarcode,
-  Sparkles,
-  X,
-} from 'lucide-react-native';
+import { FileText, type LucideIcon, ScanBarcode, Sparkles } from 'lucide-react-native';
 import { type ReactNode, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
@@ -16,6 +7,7 @@ import { SystemBars } from 'react-native-edge-to-edge';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CameraProcessingIndicator } from '@/components/CameraProcessingIndicator';
+import { SmartCameraBottomActions, SmartCameraTopActions } from '@/components/SmartCameraActions';
 import { SmartCameraFrame } from '@/components/SmartCameraFrame';
 import { useTheme } from '@/hooks/useTheme';
 
@@ -192,7 +184,6 @@ export function SmartCameraShell({
   };
 
   const controlsLocked = isLoading || isActionRunning;
-  const lockedControlStyle = { opacity: controlsLocked ? theme.colors.opacity.medium : 1 };
 
   const handleModeSelect = (mode: CameraMode) => onModeChange?.(mode);
 
@@ -276,42 +267,12 @@ export function SmartCameraShell({
             ) : null}
           </View>
 
-          {/* Header */}
-          <View className="relative z-20 flex-row items-center justify-between px-4 pb-2 pt-4">
-            {/* Close stays enabled while an action runs — if a native capture hangs, the
-                user must still be able to leave the modal. */}
-            <Pressable
-              onPress={onClose}
-              className="h-10 w-10 items-center justify-center rounded-full"
-              style={{
-                backgroundColor: theme.colors.background.darkGray,
-                borderWidth: theme.borderWidth.thin,
-                borderColor: theme.colors.background.white10,
-              }}
-            >
-              <X size={theme.iconSize.lg} color={theme.colors.text.primary} />
-            </Pressable>
-
-            <Pressable
-              onPress={onFlashToggle}
-              disabled={controlsLocked}
-              className="h-10 w-10 items-center justify-center rounded-full"
-              style={[
-                {
-                  backgroundColor: theme.colors.background.darkGray,
-                  borderWidth: theme.borderWidth.thin,
-                  borderColor: theme.colors.background.white10,
-                },
-                lockedControlStyle,
-              ]}
-            >
-              {flashEnabled ? (
-                <Lightbulb size={theme.iconSize.lg} color={theme.colors.text.primary} />
-              ) : (
-                <LightbulbOff size={theme.iconSize.lg} color={theme.colors.text.primary} />
-              )}
-            </Pressable>
-          </View>
+          <SmartCameraTopActions
+            onClose={onClose}
+            flashEnabled={flashEnabled}
+            onFlashToggle={onFlashToggle}
+            controlsLocked={controlsLocked}
+          />
 
           {/* Loading Overlay */}
           {isLoading ? (
@@ -418,56 +379,12 @@ export function SmartCameraShell({
               </View>
             ) : null}
 
-            {/* Camera Controls */}
-            <View className="flex-row items-center justify-between px-2">
-              <Pressable
-                className="h-12 w-12 items-center justify-center rounded-lg active:scale-95"
-                style={[
-                  {
-                    backgroundColor: theme.colors.background.darkGray50,
-                    borderWidth: theme.borderWidth.thin,
-                    borderColor: theme.colors.background.white20,
-                  },
-                  lockedControlStyle,
-                ]}
-                disabled={controlsLocked}
-                onPress={() => runExclusive(onGalleryPress)}
-              >
-                <Images size={theme.iconSize.lg} color={theme.colors.text.primary} />
-              </Pressable>
-
-              {/* Shutter Button. The owner decides whether there is one: barcode scanning reads
-                  the live preview and passes no handler, leaving the slot empty. */}
-              {onShutterPress ? (
-                <Pressable
-                  onPress={() => runExclusive(onShutterPress)}
-                  disabled={controlsLocked}
-                  className="h-20 w-20 items-center justify-center rounded-full active:scale-95"
-                  style={{
-                    borderWidth: theme.borderWidth.thick,
-                    borderColor: theme.colors.text.white,
-                    opacity: controlsLocked ? theme.colors.opacity.strong : 1,
-                  }}
-                >
-                  <View
-                    className="absolute inset-0 rounded-full"
-                    style={{
-                      borderWidth: theme.borderWidth.thin,
-                      borderColor: theme.colors.background.black20,
-                    }}
-                  />
-                  <View
-                    className="h-16 w-16 rounded-full bg-white"
-                    style={{ backgroundColor: theme.colors.text.white }}
-                  />
-                </Pressable>
-              ) : (
-                <View className="h-20 w-20" />
-              )}
-
-              {/* Bottom-right control slot */}
-              {bottomRightControl ?? <View className="h-12 w-12" />}
-            </View>
+            <SmartCameraBottomActions
+              onGalleryPress={() => runExclusive(onGalleryPress)}
+              onShutterPress={onShutterPress ? () => runExclusive(onShutterPress) : undefined}
+              bottomRightControl={bottomRightControl}
+              controlsLocked={controlsLocked}
+            />
           </View>
         </SafeAreaView>
       </View>
