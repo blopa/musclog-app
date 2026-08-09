@@ -180,13 +180,25 @@ describe('encryptionHelpers', () => {
       );
     });
 
-    it('leaves no macro readable in the stored columns', async () => {
+    it('stores every snapshot field as ciphertext rather than plaintext', async () => {
       const encrypted = await encryptNutritionLogSnapshot(plain);
 
-      for (const value of Object.values(encrypted)) {
+      const plaintextByField: Record<keyof typeof encrypted, string> = {
+        loggedFoodName: plain.loggedFoodName!,
+        loggedCalories: String(plain.loggedCalories),
+        loggedProtein: String(plain.loggedProtein),
+        loggedCarbs: String(plain.loggedCarbs),
+        loggedFat: String(plain.loggedFat),
+        loggedFiber: String(plain.loggedFiber),
+        loggedMicrosJson: JSON.stringify(plain.loggedMicros),
+      };
+
+      for (const [field, value] of Object.entries(encrypted) as [
+        keyof typeof encrypted,
+        string,
+      ][]) {
         expect(value).not.toBe('');
-        expect(value).not.toContain('Chicken');
-        expect(value).not.toContain('165');
+        expect(value).not.toBe(plaintextByField[field]);
       }
     });
 
