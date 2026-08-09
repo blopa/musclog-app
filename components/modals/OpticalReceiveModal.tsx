@@ -98,11 +98,15 @@ export function OpticalReceiveModal({
   const tooNew = Boolean(isDatabase && meta.exportVersion > CURRENT_DATABASE_VERSION);
   const databaseRefused = Boolean(meta && accept === 'share' && isDatabase);
   const unknownPayload = Boolean(meta && !isDatabase && !isShare);
+  // Depends on `takeJson` (a stable `useCallback(…, [])`) rather than on `receiver`, which
+  // `useOpticalReceiver` rebuilds as a fresh object on every render — that would re-run a full
+  // JSON.parse plus envelope validation on each of them.
+  const { takeJson } = receiver;
   const shareEnvelope = useMemo(() => {
     if (phase !== 'verified' || !isShare) {
       return undefined;
     }
-    const json = receiver.takeJson();
+    const json = takeJson();
     if (!json) {
       return undefined;
     }
@@ -111,7 +115,7 @@ export function OpticalReceiveModal({
     } catch {
       return undefined;
     }
-  }, [isShare, phase, receiver]);
+  }, [isShare, phase, takeJson]);
   const invalidShare = phase === 'verified' && isShare && !shareEnvelope;
 
   const handleClose = useCallback(() => {

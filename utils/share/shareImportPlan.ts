@@ -65,10 +65,6 @@ function sanitizeRow(row: ShareRow): ShareRow | undefined {
   );
 }
 
-function parentForeignKey(spec: ShareKindSpec, table: string): string | undefined {
-  return Object.keys(spec.foreignKeys[table] ?? {})[0];
-}
-
 function isReferenced(
   spec: ShareKindSpec,
   rows: WorkingRow[],
@@ -131,16 +127,13 @@ export function planShareImport(
     }
   }
 
-  for (const table of spec.dropWhenParentReused) {
-    const parentColumn = parentForeignKey(spec, table);
-    if (!parentColumn) {
-      continue;
-    }
+  for (const [table, parentColumn] of Object.entries(spec.dropWhenParentReused)) {
     const target = spec.foreignKeys[table]?.[parentColumn];
     rows = rows.filter((row) => {
       if (row.table !== table || !target || !isPresentForeignKey(row.row[parentColumn])) {
         return true;
       }
+
       const targetTable = resolveTargetTable(target, row.row);
       const targetSourceId = String(row.row[parentColumn]);
       return !rows.some(

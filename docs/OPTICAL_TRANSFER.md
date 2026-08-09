@@ -251,12 +251,25 @@ about 17 seconds at 8 fps. `useOpticalSender` computes the displayed estimate fr
 packed container. Repacking after a toggle reuses the device calibration; changing density still
 re-slices the retained container without rebuilding the meal.
 
+**Calibration seeds only the first stream.** The quality controls and the photo toggle sit on the
+same screen, so a re-pack reinstalls the stream at the density and speed already showing
+(`presetIdRef` in `useOpticalSender`) rather than at the calibrated recommendation — otherwise
+"set compact, then include the photo" would silently undo the density the user just chose. Only
+`reset()` returns to the calibrated default.
+
 Import planning is pure (`utils/share/shareImportPlan.ts`): it drops tombstones, assigns local IDs,
 prunes unused portions, rewrites every ordinary and polymorphic foreign key, and fails if any sender
 ID would leak through. File writes happen before the one WatermelonDB writer and are cleaned up if
 the batch fails. Dedupe reads happen inside that writer to avoid TOCTOU races. The importer does
 not call the form-oriented `syncMealPortionFromForm`: that helper clears and re-derives portions from UI
 state, while a share already carries authoritative portion rows.
+
+Two registry fields are load-bearing and easy to get wrong. `dedupe` is **read**, not decorative:
+`buildResolutions` walks `spec.tables` and dispatches through `DEDUPE_RESOLVERS`, so a table left at
+the default `'create'` is never even queried — that is what makes an imported meal always a new
+meal. And `dropWhenParentReused` maps each table to the **named** foreign key of its parent; it was
+once inferred from the first key of `foreignKeys[table]`, which meant reordering two properties
+silently changed which parent was consulted.
 
 ## Sender pacing
 

@@ -96,4 +96,37 @@ describe('useOpticalSender payload building', () => {
     await act(async () => result.current.prepare());
     expect(mockCalibrateDevice).toHaveBeenCalledTimes(2);
   });
+
+  it('keeps a manually chosen density and speed across a re-pack', async () => {
+    // The quality controls sit on the same screen as the photo toggle, so re-packing must not
+    // snap the density back to whatever calibration recommended.
+    const buildPayload = jest.fn(async () => ({
+      exportVersion: OPTICAL_EXPORT_VERSION_SHARE,
+      json: '{"small":true}',
+      payloadKind: OPTICAL_PAYLOAD_KIND_SHARE,
+    }));
+    const { result } = renderHook(() => useOpticalSender({ buildPayload }));
+
+    await act(async () => result.current.prepare());
+    expect(result.current.presetId).toBe('tiny');
+
+    act(() => result.current.setPreset('compact'));
+    act(() => result.current.setFps(3));
+    await act(async () => result.current.prepare());
+
+    expect(result.current.presetId).toBe('compact');
+    expect(result.current.fps).toBe(3);
+  });
+
+  it('returns to the calibrated density after a reset', async () => {
+    const { result } = renderHook(() => useOpticalSender({}));
+
+    await act(async () => result.current.prepare());
+    act(() => result.current.setPreset('compact'));
+    act(() => result.current.reset());
+    await act(async () => result.current.prepare());
+
+    expect(result.current.presetId).toBe('tiny');
+    expect(result.current.fps).toBe(8);
+  });
 });

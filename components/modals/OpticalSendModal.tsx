@@ -86,7 +86,9 @@ export function OpticalSendModal({
   const preparing = phase === 'calibrating' || phase === 'dumping' || phase === 'packing';
   const firstPrepare = preparing && !summary;
   const repacking = preparing && Boolean(summary);
-  const showReadyCard = Boolean(summary) && (phase === 'ready' || phase === 'error' || repacking);
+  // Deliberately excludes `error`: the error branch below renders its own message and retry, and
+  // showing both left a stale summary card sitting above a failure notice after a failed re-pack.
+  const showReadyCard = Boolean(summary) && (phase === 'ready' || repacking);
 
   const handlePhotoChange = useCallback(
     (value: boolean) => {
@@ -206,7 +208,7 @@ export function OpticalSendModal({
           </Text>
 
           <Button
-            disabled={repacking || phase === 'error'}
+            disabled={repacking}
             label={t('opticalTransfer.send.start')}
             onPress={sender.start}
             size="sm"

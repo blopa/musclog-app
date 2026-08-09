@@ -133,6 +133,14 @@ export function useOpticalSender(options: {
   const generationRef = useRef(0);
   const buildPayloadRef = useRef<OpticalPayloadBuilder>(buildPayload ?? buildDatabasePayload);
   const calibrationRef = useRef<null | Awaited<ReturnType<typeof calibrateDevice>>>(null);
+  /**
+   * The density currently installed, or null before the first `installStream`.
+   *
+   * A re-pack (the photo toggle) must NOT snap back to the calibrated default: the quality controls
+   * sit on the same screen as the toggle, so "set compact, then include the photo" would silently
+   * undo the density the user just chose. Calibration seeds the first stream only.
+   */
+  const presetIdRef = useRef<null | OpticalPresetId>(null);
 
   useEffect(() => {
     buildPayloadRef.current = buildPayload ?? buildDatabasePayload;
@@ -161,6 +169,7 @@ export function useOpticalSender(options: {
     cursorRef.current = 0;
     framesShownRef.current = 0;
     fpsRef.current = fps;
+    presetIdRef.current = presetId;
 
     setState((previous) => ({
       ...previous,
@@ -211,6 +220,7 @@ export function useOpticalSender(options: {
     framesShownRef.current = 0;
     fpsRef.current = DEFAULT_FPS;
     calibrationRef.current = null;
+    presetIdRef.current = null;
     setState(idleState());
   }, []);
 
@@ -258,12 +268,18 @@ export function useOpticalSender(options: {
 
         containerRef.current = container;
         metaRef.current = meta;
-        installStream(calibration.recommendedPresetId, calibration.recommendedFps);
+        // Calibration seeds the FIRST stream only. Once a stream exists the user may have adjusted
+        // density or speed, and a re-pack (the photo toggle) must preserve that rather than reset it.
+        installStream(
+          presetIdRef.current ?? calibration.recommendedPresetId,
+          presetIdRef.current ? fpsRef.current : calibration.recommendedFps
+        );
         setState((previous) => ({ ...previous, phase: 'ready', prepareFraction: 1 }));
       } catch (error) {
         if (!alive()) {
           return;
         }
+
         setState((previous) => ({
           ...previous,
           errorMessage: error instanceof Error ? error.message : String(error),
@@ -278,6 +294,7 @@ export function useOpticalSender(options: {
     if (!streamRef.current) {
       return;
     }
+
     runningRef.current = true;
     setState((previous) => ({ ...previous, phase: 'streaming' }));
   }, []);
@@ -376,11 +393,13 @@ export function useOpticalSender(options: {
     if (!isStreaming) {
       return;
     }
+
     const subscription = AppState.addEventListener('change', (next) => {
       if (next !== 'active') {
         stop();
       }
     });
+
     return () => subscription.remove();
   }, [isStreaming, stop]);
 

@@ -105,6 +105,7 @@ function storedFood(nutritionBasis: 'per_100g' | 'per_serving') {
 
 function wire(foodCandidates: unknown[]) {
   const created: Record<string, any[]> = {};
+  const queriedTables: string[] = [];
   mockDatabase.get.mockImplementation(((table: string) => ({
     prepareCreate: (callback: (record: any) => void) => {
       const record = { _raw: {}, table };
@@ -112,9 +113,12 @@ function wire(foodCandidates: unknown[]) {
       (created[table] ??= []).push(record);
       return record;
     },
-    query: () => ({ fetch: jest.fn().mockResolvedValue(table === 'foods' ? foodCandidates : []) }),
+    query: () => {
+      queriedTables.push(table);
+      return { fetch: jest.fn().mockResolvedValue(table === 'foods' ? foodCandidates : []) };
+    },
   })) as any);
-  return created;
+  return { created, queriedTables };
 }
 
 describe('importShareEnvelope', () => {
@@ -126,7 +130,7 @@ describe('importShareEnvelope', () => {
   });
 
   it('dedupes an external-id match and performs one non-destructive write', async () => {
-    const created = wire([storedFood('per_100g')]);
+    const { created } = wire([storedFood('per_100g')]);
     const result = await importShareEnvelope(envelope());
 
     expect(mockDatabase.write).toHaveBeenCalledTimes(1);
@@ -141,15 +145,29 @@ describe('importShareEnvelope', () => {
   });
 
   it('never reuses a food across a nutrition-basis mismatch', async () => {
-    const created = wire([storedFood('per_serving')]);
+    const { created } = wire([storedFood('per_serving')]);
     const result = await importShareEnvelope(envelope());
 
     expect(created.foods).toHaveLength(1);
     expect(result.reused.filter((item) => item.table === 'foods')).toHaveLength(0);
   });
 
+  it('only looks for matches in the tables the kind spec marks for dedupe', async () => {
+    // The strategy per table lives in MEAL_SHARE_SPEC.dedupe, not in this module. Tables left at
+    // the default 'create' must never be queried, so an imported meal is always a new meal.
+    const { created, queriedTables } = wire([storedFood('per_100g')]);
+    const result = await importShareEnvelope(envelope());
+
+    expect(queriedTables).toContain('foods');
+    expect(queriedTables).not.toContain('meals');
+    expect(queriedTables).not.toContain('meal_foods');
+    expect(created.meals).toHaveLength(1);
+    expect(result.reused.filter((item) => item.table === 'meals')).toHaveLength(0);
+  });
+
   it('removes a written asset when the batch fails', async () => {
     wire([]);
+
     (mockDatabase.batch as jest.Mock).mockRejectedValueOnce(new Error('batch failed'));
 
     await expect(importShareEnvelope(envelope({ image: true }))).rejects.toThrow('batch failed');

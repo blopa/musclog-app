@@ -133,10 +133,15 @@ describe('share registry', () => {
       expect(spec.tables.includes(spec.rootTable)).toBe(true);
       for (const table of [
         ...Object.keys(spec.dedupe),
-        ...spec.dropWhenParentReused,
+        ...Object.keys(spec.dropWhenParentReused),
         ...spec.pruneUnreferenced,
       ]) {
         expect(spec.tables.includes(table)).toBe(true);
+      }
+      // The drop parent must name a real foreign key of its own table — it used to be inferred
+      // from property order, so a reordered spec silently changed which parent was consulted.
+      for (const [table, parentColumn] of Object.entries(spec.dropWhenParentReused)) {
+        expect(Object.keys(spec.foreignKeys[table] ?? {})).toContain(parentColumn);
       }
       for (const tableForeignKeys of Object.values(spec.foreignKeys)) {
         for (const target of Object.values(tableForeignKeys)) {

@@ -5,11 +5,7 @@
     "version": "2.11.0",
     "scheme": "com.werules.logger",
     "userInterfaceStyle": "automatic",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
+    "platforms": ["ios", "android", "web"],
     "web": {
       "output": "static",
       "favicon": "./assets/favicon.png"
@@ -78,12 +74,7 @@
         {
           "android": {
             "minSdkVersion": 26,
-            "buildArchs": [
-              "armeabi-v7a",
-              "arm64-v8a",
-              "x86",
-              "x86_64"
-            ]
+            "buildArchs": ["armeabi-v7a", "arm64-v8a", "x86", "x86_64"]
           },
           "ios": {
             "deploymentTarget": "17.0",
@@ -111,9 +102,7 @@
       [
         "react-native-android-widget",
         {
-          "fonts": [
-            "./assets/fonts/material.ttf"
-          ],
+          "fonts": ["./assets/fonts/material.ttf"],
           "widgets": [
             {
               "name": "SmartCamera",
@@ -149,9 +138,7 @@
         "react-native-ble-plx",
         {
           "isBackgroundEnabled": false,
-          "modes": [
-            "central"
-          ],
+          "modes": ["central"],
           "neverForLocation": true,
           "bluetoothAlwaysPermission": "Allow $(BUNDLE_ID) to use Bluetooth to connect to fitness sensors"
         }
@@ -160,9 +147,7 @@
     ],
     "orientation": "default",
     "icon": "./assets/icon.png",
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "backgroundColor": "#091310",
       "supportsTablet": true,
@@ -173,10 +158,7 @@
         "NSPhotoLibraryUsageDescription": "Allow Musclog to access your photos to select food images and exercise demonstrations.",
         "NSFaceIDUsageDescription": "Allow $(PRODUCT_NAME) to use Face ID.",
         "NSLocationWhenInUseUsageDescription": "Musclog does not use your location. This permission string is required because a bundled SDK references location APIs.",
-        "UIBackgroundModes": [
-          "fetch",
-          "remote-notification"
-        ]
+        "UIBackgroundModes": ["fetch", "remote-notification"]
       }
     },
     "android": {

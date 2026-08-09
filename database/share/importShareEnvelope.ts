@@ -11,7 +11,11 @@ import {
   type ReusedShareRow,
   type ShareImportResolutions,
 } from '@/utils/share/shareImportPlan';
-import { getShareKindSpec } from '@/utils/share/shareKinds';
+import {
+  getShareKindSpec,
+  type ShareDedupeStrategy,
+  type ShareKindSpec,
+} from '@/utils/share/shareKinds';
 
 const MACRO_COLUMNS = ['calories', 'protein', 'carbs', 'fat', 'fiber'] as const;
 const IDENTITY_EPSILON = 1e-6;
@@ -109,28 +113,40 @@ async function resolvePortion(row: ShareRow): Promise<FoodPortion | undefined> {
   );
 }
 
+/**
+ * The query behind each `ShareKindSpec.dedupe` strategy. Adding a strategy means adding an entry
+ * here and naming it in a kind's spec — the loop below never learns a table name.
+ */
+const DEDUPE_RESOLVERS: Record<
+  Exclude<ShareDedupeStrategy, 'create'>,
+  (row: ShareRow) => Promise<{ id: string } | undefined>
+> = {
+  'food-identity': resolveFood,
+  'portion-identity': resolvePortion,
+};
+
 async function buildResolutions(
+  spec: ShareKindSpec,
   records: Record<string, ShareRow[]>
 ): Promise<ShareImportResolutions> {
-  const resolutions: ShareImportResolutions = { food_portions: {}, foods: {} };
+  const resolutions: ShareImportResolutions = {};
 
-  for (const row of records.foods ?? []) {
-    if (row.deleted_at != null || row._status === 'deleted' || typeof row.id !== 'string') {
+  for (const table of spec.tables) {
+    const strategy = spec.dedupe[table] ?? 'create';
+    if (strategy === 'create') {
       continue;
     }
-    const match = await resolveFood(row);
-    if (match) {
-      resolutions.foods[row.id] = match.id;
-    }
-  }
+    const resolve = DEDUPE_RESOLVERS[strategy];
+    resolutions[table] = {};
 
-  for (const row of records.food_portions ?? []) {
-    if (row.deleted_at != null || row._status === 'deleted' || typeof row.id !== 'string') {
-      continue;
-    }
-    const match = await resolvePortion(row);
-    if (match) {
-      resolutions.food_portions[row.id] = match.id;
+    for (const row of records[table] ?? []) {
+      if (row.deleted_at != null || row._status === 'deleted' || typeof row.id !== 'string') {
+        continue;
+      }
+      const match = await resolve(row);
+      if (match) {
+        resolutions[table][row.id] = match.id;
+      }
     }
   }
 
@@ -159,7 +175,7 @@ export async function importShareEnvelope(
 
   try {
     return await database.write(async () => {
-      const resolutions = await buildResolutions(envelope.records);
+      const resolutions = await buildResolutions(spec, envelope.records);
       const plan = planShareImport(spec, envelope.records, {
         assets: resolvedAssets,
         nowMs: Date.now(),
