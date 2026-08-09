@@ -323,7 +323,9 @@
       "description": "Notities over het bouwen van een private, open-source fitnessapp — van productkeuzes tot de technologie erachter.",
       "empty": "Er zijn nog geen artikelen gepubliceerd.",
       "listLabel": "Blogartikelen",
-      "tagsLabel": "Artikeltags"
+      "tagsLabel": "Artikeltags",
+      "readArticle": "Artikel lezen",
+      "backToBlog": "Terug naar alle artikelen"
     },
     "gameboy": {
       "pageTitle": "Speel Musclog op Game Boy",

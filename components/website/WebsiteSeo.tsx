@@ -135,3 +135,69 @@ export function WebsiteSeo({
     </Head>
   );
 }
+
+export interface BlogPostSeoProps {
+  canonicalPath: string;
+  category: string;
+  date: string;
+  description: string;
+  tags: string[];
+  title: string;
+}
+
+export function BlogPostSeo({
+  canonicalPath,
+  category,
+  date,
+  description,
+  tags,
+  title,
+}: BlogPostSeoProps) {
+  const { i18n, t } = useTranslation();
+  const siteName = t('website.seo.siteName');
+  const imageAlt = t('website.seo.imageAlt');
+  const pageTitle = `${title} | ${siteName}`;
+  const pageDescription = description || title;
+  const pageUrl = absoluteUrl(canonicalPath);
+  const imageUrl = absoluteUrl(SEO_IMAGE_PATH);
+  const locale = ogLocaleForLanguage(i18n.resolvedLanguage ?? i18n.language);
+  const alternateLocales = Object.values(OG_LOCALE_BY_LANGUAGE).filter((l) => l !== locale);
+  const keywords = [t('website.seo.keywords'), ...tags].join(', ');
+
+  return (
+    <Head>
+      <title>{pageTitle}</title>
+      <meta name="description" content={pageDescription} />
+      <meta name="keywords" content={keywords} />
+      <meta name="robots" content="index, follow" />
+      <link rel="canonical" href={pageUrl} />
+
+      <meta property="og:type" content="article" />
+      <meta property="og:site_name" content={siteName} />
+      <meta property="og:locale" content={locale} />
+      {alternateLocales.map((alt) => (
+        <meta key={alt} property="og:locale:alternate" content={alt} />
+      ))}
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={pageDescription} />
+      <meta property="og:url" content={pageUrl} />
+      <meta property="og:image" content={imageUrl} />
+      <meta property="og:image:secure_url" content={imageUrl} />
+      <meta property="og:image:type" content="image/png" />
+      <meta property="og:image:width" content={SEO_IMAGE_WIDTH} />
+      <meta property="og:image:height" content={SEO_IMAGE_HEIGHT} />
+      <meta property="og:image:alt" content={imageAlt} />
+      <meta property="article:published_time" content={`${date}T00:00:00.000Z`} />
+      <meta property="article:section" content={category} />
+      {tags.map((tag) => (
+        <meta key={tag} property="article:tag" content={tag} />
+      ))}
+
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={pageDescription} />
+      <meta name="twitter:image" content={imageUrl} />
+      <meta name="twitter:image:alt" content={imageAlt} />
+    </Head>
+  );
+}

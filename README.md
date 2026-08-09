@@ -313,7 +313,7 @@ This project is open source. See the [LICENSE](LICENSE) file for details.
 
 ## Resources
 
-- [Musclog Blog](https://musclog.app/blog)
+- [Musclog Blog](https://musclog.app/blog) — statically generated from Markdown with rich prose and syntax-highlighted code
 - [Blog post: How Musclog came to be](https://pablo.gg/en/blog/coding/musclog-leveraging-my-reactjs-experience-to-build-a-react-native-app/)
 - [Expo Documentation](https://docs.expo.dev/)
 - [WatermelonDB Documentation](https://watermelondb.dev/)

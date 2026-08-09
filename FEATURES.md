@@ -189,7 +189,7 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 
 ## Public Website
 
-- Static blog index at `/blog`, generated from Markdown files under `app/(website)/posts`; YAML frontmatter supplies each post's title, publication date, category, tags, and optional description (otherwise an excerpt is derived from the body)
+- Markdown-powered blog at `/blog`: the index and individual post URLs are statically generated from files under `app/(website)/posts`; YAML frontmatter supplies metadata, while post bodies support headings, links, lists, tables, blockquotes, images, inline code, and syntax-highlighted fenced code blocks
 
 ---
 

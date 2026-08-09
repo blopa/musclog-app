@@ -101,27 +101,42 @@ These simply redirect to `/app` on native, which is a clean way to say: this con
 
 ### Blog content
 
-The static `/blog` index discovers Markdown files recursively under
+The static `/blog` index and its individual `/blog/<year>/<month>/<slug>` pages discover Markdown
+files recursively under
 [`app/(website)/posts`](/app/%28website%29/posts). Each post must provide YAML frontmatter with a
 `title`, `date` (`YYYY-MM-DD`), `category`, and `tags` array; `description` is optional and otherwise
-comes from the first prose in the Markdown body. The route's Expo static loader runs only at build
-time, reads the files through [`utils/blogPosts.server.ts`](/utils/blogPosts.server.ts), and embeds the
-sorted summaries in the exported page. `unstable_useServerDataLoaders` must remain enabled on the
-`expo-router` plugin in `app.json` for this build-time content step.
+comes from the first prose in the Markdown body. File and directory names become URL segments and
+therefore accept only letters, numbers, hyphens, and underscores. The routes' Expo static loaders
+read and validate the files through [`utils/blogPosts.server.ts`](/utils/blogPosts.server.ts).
+
+The catch-all [`blog/[...slug].tsx`](/app/%28website%29/blog/%5B...slug%5D.tsx) route exports
+`generateStaticParams` from those discovered slugs, so Expo emits one HTML page per post. Its
+`[...slug].native.tsx` sibling redirects native users to `/app`; using an unsuffixed `.tsx` for the web
+implementation is deliberate because Expo Router 57.0.11 cannot interpolate a catch-all parameter
+from a platform-suffixed `[...slug].web.tsx` loader context.
+
+Post bodies are converted to HTML inside the server loader with `markdown-it` and `highlight.js`.
+That supports standard rich Markdown (headings, emphasis, links, lists, tables, blockquotes, images,
+inline code, and fenced code blocks) while keeping the parser and highlighter out of the client
+bundle. Source HTML is disabled, unsafe link protocols are rejected by `markdown-it`, and code
+fences are escaped before highlighting. The page scopes all prose and highlight styles under
+`.blog-prose` in `global.css`.
+
+Each post renders frontmatter-derived article metadata and `BlogPosting` JSON-LD. The SEO generator
+also discovers Markdown paths for `public/sitemap.xml`; the fixed-route registry remains the source
+for robots rules and `llms.txt`. `unstable_useServerDataLoaders` must remain enabled on the
+`expo-router` plugin in `app.json` for these build-time content steps.
 
 Expo Router 57.0.11 still labels data loaders as alpha. Its client-side loader path builder receives
-the filesystem context key for this platform-specific grouped route (`/(website)/blog.web`) during
-development, while the dev-server manifest correctly exposes the loader at `/blog`.
+filesystem context keys such as `/(website)/blog.web` and
+`/(website)/blog/2026/08/example` during development, while the dev-server manifest exposes their
+public loader paths.
 [`patches/expo-router+57.0.11.patch`](/patches/expo-router+57.0.11.patch) normalizes that context key
-only in development and when it has a `.web` suffix, removing route-group segments and the suffix
-before requesting the loader. Production deliberately keeps the context key because static export
-writes `_expo/loaders/(website)/blog.web`. Remove the patch once Expo Router includes an equivalent
-upstream fix, and recheck both `npm run web` navigation and static export when upgrading it.
-
-`generateStaticParams` is intentionally not exported by the index because `/blog` has no dynamic
-segment. When individual post pages are added, their dynamic route (for example,
-`blog/[...slug].web.tsx`) should export `generateStaticParams` from the same discovered post slugs so
-Expo emits one static HTML file per Markdown post.
+only in development, removing route-group segments and a possible `.web` suffix before requesting
+the loader. Production deliberately keeps context keys because static export writes loader assets
+under those paths. Remove the patch once Expo Router includes an equivalent upstream fix, and
+recheck index-to-post navigation under both `npm run web` and a locally served static export when
+upgrading it.
 
 ## Why `musclog.app/app` Exists
 

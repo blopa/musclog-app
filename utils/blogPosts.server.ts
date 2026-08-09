@@ -2,6 +2,8 @@ import { readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 
 import matter from 'gray-matter';
+import hljs from 'highlight.js/lib/common';
+import MarkdownIt from 'markdown-it';
 
 export interface BlogPostSummary {
   category: string;
@@ -10,6 +12,10 @@ export interface BlogPostSummary {
   slug: string;
   tags: string[];
   title: string;
+}
+
+export interface BlogPost extends BlogPostSummary {
+  html: string;
 }
 
 interface BlogPostFrontmatter {
@@ -22,6 +28,37 @@ interface BlogPostFrontmatter {
 
 const MARKDOWN_EXTENSION = /\.md$/i;
 const ISO_CALENDAR_DATE = /^\d{4}-\d{2}-\d{2}$/;
+const SAFE_SLUG_SEGMENT = /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/i;
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;');
+}
+
+const markdownRenderer = new MarkdownIt({
+  breaks: false,
+  html: false,
+  linkify: true,
+  typographer: true,
+  highlight(code, language) {
+    const normalizedLanguage = language.trim().toLowerCase();
+    let highlighted = escapeHtml(code);
+    if (normalizedLanguage && hljs.getLanguage(normalizedLanguage)) {
+      highlighted = hljs.highlight(code, {
+        ignoreIllegals: true,
+        language: normalizedLanguage,
+      }).value;
+    }
+    const languageClass = normalizedLanguage
+      ? ` class="language-${escapeHtml(normalizedLanguage)}"`
+      : '';
+
+    return `<pre class="hljs"><code${languageClass}>${highlighted}</code></pre>`;
+  },
+});
 
 function frontmatterError(relativePath: string, message: string): Error {
   return new Error(`Invalid blog frontmatter in ${relativePath}: ${message}`);
@@ -77,6 +114,30 @@ function excerptFromContent(content: string): string {
   return `${shortened.slice(0, lastSpace > 120 ? lastSpace : 180).trimEnd()}…`;
 }
 
+function slugFromRelativePath(relativePath: string): string {
+  const normalizedPath = relativePath.replaceAll('\\', '/');
+  const slug = normalizedPath.replace(MARKDOWN_EXTENSION, '');
+  const segments = slug.split('/');
+
+  if (segments.some((segment) => !SAFE_SLUG_SEGMENT.test(segment))) {
+    throw frontmatterError(
+      normalizedPath,
+      'file and directory names must contain only letters, numbers, hyphens, or underscores'
+    );
+  }
+
+  return slug;
+}
+
+function normalizedSlug(slug: string | string[]): string {
+  const segments = Array.isArray(slug) ? slug : slug.split('/');
+  if (segments.length === 0 || segments.some((segment) => !SAFE_SLUG_SEGMENT.test(segment))) {
+    throw new Error('Invalid blog post slug');
+  }
+
+  return segments.join('/');
+}
+
 export function parseBlogPostSummary(markdown: string, relativePath: string): BlogPostSummary {
   const { content, data } = matter(markdown);
   const frontmatter = data as BlogPostFrontmatter;
@@ -90,10 +151,14 @@ export function parseBlogPostSummary(markdown: string, relativePath: string): Bl
     category: requiredString(frontmatter.category, 'category', normalizedPath),
     date: normalizeDate(frontmatter.date, normalizedPath),
     excerpt: description,
-    slug: normalizedPath.replace(MARKDOWN_EXTENSION, ''),
+    slug: slugFromRelativePath(normalizedPath),
     tags: normalizeTags(frontmatter.tags, normalizedPath),
     title: requiredString(frontmatter.title, 'title', normalizedPath),
   };
+}
+
+export function renderBlogPostMarkdown(markdown: string): string {
+  return markdownRenderer.render(markdown);
 }
 
 async function markdownFiles(directory: string): Promise<string[]> {
@@ -127,4 +192,22 @@ export async function loadBlogPostSummaries(
     const dateOrder = right.date.localeCompare(left.date);
     return dateOrder !== 0 ? dateOrder : left.title.localeCompare(right.title);
   });
+}
+
+export async function loadBlogPost(
+  slug: string | string[],
+  postsDirectory = path.join(process.cwd(), 'app', '(website)', 'posts')
+): Promise<BlogPost> {
+  const postSlug = normalizedSlug(slug);
+  const relativePath = `${postSlug}.md`;
+  const markdown = await readFile(
+    path.join(postsDirectory, ...postSlug.split('/')) + '.md',
+    'utf8'
+  );
+  const { content } = matter(markdown);
+
+  return {
+    ...parseBlogPostSummary(markdown, relativePath),
+    html: renderBlogPostMarkdown(content),
+  };
 }

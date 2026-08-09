@@ -323,7 +323,9 @@
       "description": "Notas sobre a criação de um app de fitness privado e open source — das decisões de produto à tecnologia por trás dele.",
       "empty": "Ainda não há artigos publicados.",
       "listLabel": "Artigos do blog",
-      "tagsLabel": "Tags do artigo"
+      "tagsLabel": "Tags do artigo",
+      "readArticle": "Ler artigo",
+      "backToBlog": "Voltar para todos os artigos"
     },
     "gameboy": {
       "pageTitle": "Jogue Musclog no Game Boy",

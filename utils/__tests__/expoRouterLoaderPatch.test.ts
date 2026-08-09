@@ -23,11 +23,16 @@ describe('Expo Router loader path patch', () => {
     );
   });
 
+  it('maps a grouped dynamic fallback route to its public loader path', () => {
+    process.env.NODE_ENV = 'development';
+    expect(getLoaderModulePath('/(website)/blog/2026/08/example')).toBe(
+      '/_expo/loaders/blog/2026/08/example'
+    );
+  });
+
   it('preserves the exported static loader path in production', () => {
     process.env.NODE_ENV = 'production';
-    expect(getLoaderModulePath('/(website)/blog.web')).toBe(
-      '/_expo/loaders/(website)/blog.web'
-    );
+    expect(getLoaderModulePath('/(website)/blog.web')).toBe('/_expo/loaders/(website)/blog.web');
   });
 
   it('leaves ordinary public loader paths unchanged', () => {

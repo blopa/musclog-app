@@ -6,11 +6,10 @@
  * each web export, so all three stay in sync with what actually ships. Runs
  * alongside sync-web-images.js in the web pipelines (see package.json).
  *
- * All three are derived from components/website/websiteRoutes.json — the same
- * registry components/website/WebsiteSeo.tsx reads for titles, canonical URLs
- * and robots directives. Adding a public route is one edit there (plus its
- * `website.seo.routes.<key>` strings in each lang/locales website.json);
- * nothing in this script needs touching.
+ * Fixed routes are derived from components/website/websiteRoutes.json — the
+ * same registry components/website/WebsiteSeo.tsx reads for titles, canonical
+ * URLs and robots directives. Blog post sitemap paths are derived from the
+ * Markdown files that generate those dynamic routes.
  */
 const fs = require('fs');
 const path = require('path');
@@ -18,6 +17,9 @@ const path = require('path');
 const websiteRoutes = require('../components/website/websiteRoutes.json');
 
 const SITE_ORIGIN = 'https://musclog.app';
+const BLOG_POSTS_DIRECTORY = path.join(path.resolve(__dirname, '..'), 'app', '(website)', 'posts');
+const MARKDOWN_EXTENSION = /\.md$/i;
+const SAFE_SLUG_SEGMENT = /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/i;
 
 // Order the llms.txt sections appear in. A route naming a section outside this
 // list is a typo, and fails the build rather than vanishing from the output.
@@ -69,6 +71,31 @@ const routes = Object.values(websiteRoutes);
 const indexableRoutes = routes.filter(isIndexable);
 const noindexRoutes = routes.filter((route) => !isIndexable(route));
 
+function discoverBlogPostPaths(postsDirectory = BLOG_POSTS_DIRECTORY) {
+  const paths = [];
+
+  function visit(directory) {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      const entryPath = path.join(directory, entry.name);
+      if (entry.isDirectory()) {
+        visit(entryPath);
+      } else if (entry.isFile() && MARKDOWN_EXTENSION.test(entry.name)) {
+        const relativePath = path.relative(postsDirectory, entryPath).replaceAll('\\', '/');
+        const slug = relativePath.replace(MARKDOWN_EXTENSION, '');
+        if (slug.split('/').some((segment) => !SAFE_SLUG_SEGMENT.test(segment))) {
+          throw new Error(`Invalid blog post path for a public URL: ${relativePath}`);
+        }
+        paths.push(`/blog/${slug}`);
+      }
+    }
+  }
+
+  visit(postsDirectory);
+  return paths.sort();
+}
+
+const blogPostPaths = discoverBlogPostPaths();
+
 /**
  * Matches `absoluteUrl` in WebsiteSeo.tsx, so a page's sitemap <loc> is
  * byte-identical to the canonical URL it advertises — including the trailing
@@ -104,8 +131,8 @@ function generateRobotsTxt() {
  * web` dirty the working tree with a meaningless diff.
  */
 function generateSitemapXml() {
-  const urls = indexableRoutes
-    .map((route) => `  <url>\n    <loc>${absoluteUrl(route.path)}</loc>\n  </url>`)
+  const urls = [...indexableRoutes.map((route) => route.path), ...blogPostPaths]
+    .map((routePath) => `  <url>\n    <loc>${absoluteUrl(routePath)}</loc>\n  </url>`)
     .join('\n');
 
   return (
@@ -154,8 +181,12 @@ function main() {
 
   console.log(
     '[generate-web-seo-files] wrote public/robots.txt, public/sitemap.xml and public/llms.txt',
-    `(${indexableRoutes.length} indexable routes)`
+    `(${indexableRoutes.length + blogPostPaths.length} indexable routes)`
   );
 }
 
-main();
+if (require.main === module) {
+  main();
+}
+
+module.exports = { discoverBlogPostPaths, generateSitemapXml };

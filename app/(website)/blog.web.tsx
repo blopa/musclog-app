@@ -1,6 +1,6 @@
-import { useLoaderData } from 'expo-router';
+import { type Href, Link, useLoaderData } from 'expo-router';
 import { createStaticLoader } from 'expo-router/server';
-import { CalendarDays, Folder, Tags } from 'lucide-react-native';
+import { ArrowRight, CalendarDays, Folder, Tags } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { GridPattern } from '@/components/website/WebsiteBackgrounds';
@@ -62,7 +62,7 @@ export default function Blog() {
             {posts.map((post) => (
               <article
                 key={post.slug}
-                className="rounded-3xl border p-6 shadow-2xl backdrop-blur-sm md:p-8"
+                className="group rounded-3xl border p-6 shadow-2xl backdrop-blur-sm transition-colors hover:border-emerald-400/30 md:p-8"
                 style={{
                   background:
                     'linear-gradient(145deg, rgba(255,255,255,0.055) 0%, rgba(255,255,255,0.025) 100%)',
@@ -89,7 +89,12 @@ export default function Blog() {
                 </div>
 
                 <h2 className="text-balance text-2xl font-bold leading-tight text-white md:text-3xl">
-                  {post.title}
+                  <Link
+                    href={`/blog/${post.slug}` as Href}
+                    className="transition-colors group-hover:text-emerald-300"
+                  >
+                    {post.title}
+                  </Link>
                 </h2>
                 {post.excerpt ? (
                   <p className="mt-4 leading-relaxed" style={{ color: BODY_TEXT }}>
@@ -118,6 +123,16 @@ export default function Blog() {
                     ))}
                   </div>
                 ) : null}
+
+                <Link
+                  href={`/blog/${post.slug}` as Href}
+                  aria-label={`${t('readArticle')}: ${post.title}`}
+                  className="mt-7 inline-flex items-center gap-2 text-sm font-bold transition-colors hover:text-emerald-200"
+                  style={{ color: BRAND_GREEN_BRIGHT }}
+                >
+                  {t('readArticle')}
+                  <ArrowRight className="h-4 w-4" color="currentColor" />
+                </Link>
               </article>
             ))}
           </section>
