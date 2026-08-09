@@ -17,8 +17,6 @@ import { ExerciseService } from '@/database/services/ExerciseService';
  * id-based dedup (`existingIds`) that makes the sync locale-independent.
  */
 
-const EN_US = 'en-US';
-
 // Deterministic, self-contained catalogue: three app exercises, indices 1..3.
 jest.mock('@/lang/lang', () => ({
   __esModule: true,

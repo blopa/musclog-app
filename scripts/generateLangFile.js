@@ -86,6 +86,32 @@ function getExerciseFiles() {
   }
 }
 
+function getWorkoutTemplateFiles() {
+  try {
+    return fs
+      .readdirSync(dataDir)
+      .filter((f) => /^workoutTemplates[A-Z][a-z]+[A-Z][A-Za-z]*\.json$/.test(f))
+      .sort();
+  } catch {
+    return [];
+  }
+}
+
+function localizedDataFileNames(file, prefix) {
+  const localeSuffix = path.basename(file, '.json').slice(prefix.length);
+  const match = localeSuffix.match(/^([A-Z][a-z]+)([A-Z][A-Za-z]*)$/);
+
+  if (!match) {
+    throw new Error(`Invalid localized data filename: ${file}`);
+  }
+
+  const [, language, region] = match;
+  return {
+    constantName: `${language.toUpperCase()}_${region.toUpperCase()}`,
+    variableName: `${prefix}${language}${region.charAt(0).toUpperCase()}${region.slice(1).toLowerCase()}`,
+  };
+}
+
 function writeUntranslatedJson(langDirs) {
   let existing = {};
   try {
@@ -180,6 +206,7 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
 
     // Get exercise files
     const exerciseFiles = getExerciseFiles();
+    const workoutTemplateFiles = getWorkoutTemplateFiles();
 
     // For each language, collect its JSON files
     const languages = langDirs.map((dir) => {
@@ -274,6 +301,21 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
 
     exerciseExports.push('};');
 
+    const workoutTemplateImports = workoutTemplateFiles.map((file) => {
+      const { variableName } = localizedDataFileNames(file, 'workoutTemplates');
+      return `import ${variableName} from '../data/${file}';`;
+    });
+
+    const workoutTemplateExports = ['export const WORKOUT_TEMPLATE_COPIES_BY_LOCALE = {'];
+    workoutTemplateFiles.forEach((file) => {
+      const { constantName: languageConstant, variableName } = localizedDataFileNames(
+        file,
+        'workoutTemplates'
+      );
+      workoutTemplateExports.push(`  [${languageConstant}]: ${variableName},`);
+    });
+    workoutTemplateExports.push('};');
+
     // Language constants
     const constantLines = languages.map(
       (lang) => `export const ${constantName(lang)} = '${dirToLanguageTag(lang.dir)}';`
@@ -321,10 +363,17 @@ fs.readdir(localesDir, { withFileTypes: true }, (err, entries) => {
       '// Exercise data',
       ...exerciseImports,
       '',
+      '// Workout template copies',
+      ...workoutTemplateImports,
+      '',
       constantLines.join('\n'),
+      'export const DEFAULT_LANG = EN_US;',
       '',
       '// Exercise exports',
       ...exerciseExports,
+      '',
+      '// Workout template copy exports',
+      ...workoutTemplateExports,
       '',
       'const resources = {',
       resourceEntries.join('\n'),

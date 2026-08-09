@@ -104,7 +104,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["lats", "biceps", "rhomboids", "traps"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.99,
     "__exerciseName": "Pull-Up"
   },
   {
@@ -194,7 +194,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.35,
+    "loadMultiplier": 0.5,
     "__exerciseName": "Cable Tricep Pushdown"
   },
   {
@@ -284,7 +284,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.45,
     "__exerciseName": "Cable Crossover"
   },
   {
@@ -320,7 +320,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["glutes", "hamstrings"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.4,
     "__exerciseName": "Glute Bridge"
   },
   {
@@ -338,7 +338,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["biceps", "brachialis"],
-    "loadMultiplier": 0.25,
+    "loadMultiplier": 0.42,
     "__exerciseName": "Cable Bicep Curl"
   },
   {
@@ -437,7 +437,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.35,
     "__exerciseName": "Cable Face Pull"
   },
   {
@@ -455,7 +455,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.99,
     "__exerciseName": "Dips"
   },
   {
@@ -464,7 +464,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid", "serratus_anterior"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.7,
     "__exerciseName": "Push-Up"
   },
   {
@@ -496,7 +496,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.41,
     "__exerciseName": "Hanging Leg Raise"
   },
   {
@@ -505,7 +505,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "hip_flexors", "shoulders", "quadriceps"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.35,
     "__exerciseName": "Mountain Climbers"
   },
   {
@@ -521,7 +521,7 @@
       "triceps",
       "shoulders"
     ],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.9,
     "__exerciseName": "Burpees"
   },
   {
@@ -530,7 +530,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "plyometric",
     "targetMuscles": ["quadriceps", "glutes", "calves"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.97,
     "__exerciseName": "Box Jump"
   },
   {
@@ -634,7 +634,7 @@
       "external_obliques",
       "transverse_abdominis"
     ],
-    "loadMultiplier": 0.2,
+    "loadMultiplier": 0.25,
     "__exerciseName": "Pallof Press"
   },
   {
@@ -643,7 +643,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.3,
     "__exerciseName": "Hanging Knee Raise"
   },
   {
@@ -815,7 +815,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["lats", "teres_major", "pectoralis_major"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.45,
     "__exerciseName": "Cable Pullover"
   },
   {
@@ -842,7 +842,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "triceps", "anterior_deltoid"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.85,
     "__exerciseName": "Cable Chest Press"
   },
   {
@@ -851,7 +851,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["anterior_deltoid", "pectoralis_major"],
-    "loadMultiplier": 0.08,
+    "loadMultiplier": 0.12,
     "__exerciseName": "Cable Front Raise"
   },
   {
@@ -860,7 +860,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["lateral_deltoid", "traps"],
-    "loadMultiplier": 0.1,
+    "loadMultiplier": 0.12,
     "__exerciseName": "Cable Lateral Raise"
   },
   {
@@ -914,7 +914,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "isolation",
     "targetMuscles": ["quadriceps", "rectus_abdominis", "hip_flexors"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.89,
     "__exerciseName": "Sissy Squat"
   },
   {
@@ -941,7 +941,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.7,
     "__exerciseName": "Dragon Flag"
   },
   {
@@ -959,7 +959,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.35,
     "__exerciseName": "Reverse Crunch"
   },
   {
@@ -977,7 +977,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["anterior_deltoid", "triceps", "upper_traps"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.78,
     "__exerciseName": "Pike Push-Up"
   },
   {
@@ -986,7 +986,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis"],
-    "loadMultiplier": 0.4,
+    "loadMultiplier": 0.6,
     "__exerciseName": "Cable Crunch"
   },
   {
@@ -1031,7 +1031,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.28,
+    "loadMultiplier": 0.2,
     "__exerciseName": "Cable Triceps Kickback"
   },
   {
@@ -1040,7 +1040,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.26,
+    "loadMultiplier": 0.18,
     "__exerciseName": "Cable Triceps Kickback from High Pulley"
   },
   {
@@ -1049,7 +1049,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["glutes", "hamstrings"],
-    "loadMultiplier": 0.2,
+    "loadMultiplier": 0.3,
     "__exerciseName": "Cable Glute Kickback"
   },
   {
@@ -1076,7 +1076,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "isolation",
     "targetMuscles": ["glutes", "hamstrings"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.2,
     "__exerciseName": "Bodyweight Quadruped Glute Kickback"
   },
   {
@@ -1085,7 +1085,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "isolation",
     "targetMuscles": ["glutes", "hamstrings"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.2,
     "__exerciseName": "Standing Bodyweight Glute Kickback"
   },
   {
@@ -1154,7 +1154,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["lats", "biceps", "brachialis", "rhomboids", "traps"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.99,
     "__exerciseName": "Chin-Up"
   },
   {
@@ -1163,7 +1163,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["lats", "teres_major", "triceps"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.4,
     "__exerciseName": "Straight-Arm Pulldown"
   },
   {
@@ -1243,7 +1243,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings", "calves"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.97,
     "__exerciseName": "Pistol Squat"
   },
   {
@@ -1252,7 +1252,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "isolation",
     "targetMuscles": ["hamstrings", "glutes"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.85,
     "__exerciseName": "Nordic Hamstring Curl"
   },
   {
@@ -1261,7 +1261,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["hamstrings", "glutes", "erector_spinae"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.85,
     "__exerciseName": "Glute-Ham Raise"
   },
   {
@@ -1279,7 +1279,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["rhomboids", "lats", "traps", "biceps", "posterior_deltoid"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.6,
     "__exerciseName": "Inverted Row"
   },
   {
@@ -1324,7 +1324,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["triceps"],
-    "loadMultiplier": 0.28,
+    "loadMultiplier": 0.35,
     "__exerciseName": "Cable Overhead Tricep Extension"
   },
   {
@@ -1333,7 +1333,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["triceps", "pectoralis_major", "anterior_deltoid", "serratus_anterior"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.7,
     "__exerciseName": "Diamond Push-Up"
   },
   {
@@ -1342,7 +1342,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["triceps", "anterior_deltoid", "pectoralis_major"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.55,
     "__exerciseName": "Bench Dip"
   },
   {
@@ -1351,7 +1351,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.41,
     "__exerciseName": "Lying Leg Raise"
   },
   {
@@ -1360,7 +1360,7 @@
     "equipmentType": "bodyweight",
     "mechanicType": "compound",
     "targetMuscles": ["rectus_abdominis", "transverse_abdominis", "hip_flexors"],
-    "loadMultiplier": 0,
+    "loadMultiplier": 0.15,
     "__exerciseName": "Dead Bug"
   },
   {
@@ -1389,7 +1389,7 @@
       "transverse_abdominis",
       "shoulders"
     ],
-    "loadMultiplier": 0.35,
+    "loadMultiplier": 0.4,
     "__exerciseName": "Cable Woodchopper"
   },
   {
@@ -1850,7 +1850,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["hamstrings", "quadriceps"],
-    "loadMultiplier": 0.5,
+    "loadMultiplier": 0.4,
     "__exerciseName": "Hamstring Curl Machine"
   },
   {
@@ -1895,7 +1895,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["biceps", "forearms"],
-    "loadMultiplier": 0.2,
+    "loadMultiplier": 0.22,
     "__exerciseName": "Cable Concentration Curl"
   },
   {
@@ -1904,7 +1904,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["biceps", "forearms"],
-    "loadMultiplier": 0.15,
+    "loadMultiplier": 0.22,
     "__exerciseName": "Cable One Arm Curl-Supinating"
   },
   {
@@ -1913,7 +1913,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["triceps", "forearms"],
-    "loadMultiplier": 0.15,
+    "loadMultiplier": 0.2,
     "__exerciseName": "Cable One Arm Overhead Triceps Extension"
   },
   {
@@ -1922,7 +1922,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["triceps", "forearms"],
-    "loadMultiplier": 0.15,
+    "loadMultiplier": 0.25,
     "__exerciseName": "Cable One Arm Underhand Push Down"
   },
   {
@@ -1931,7 +1931,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["triceps", "forearms"],
-    "loadMultiplier": 0.15,
+    "loadMultiplier": 0.28,
     "__exerciseName": "Cable One Arm Push Down"
   },
   {
@@ -1940,7 +1940,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["biceps", "forearms"],
-    "loadMultiplier": 0.25,
+    "loadMultiplier": 0.42,
     "__exerciseName": "Cable Standing Arm Curl"
   },
   {
@@ -1949,7 +1949,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["biceps", "forearms"],
-    "loadMultiplier": 0.25,
+    "loadMultiplier": 0.4,
     "__exerciseName": "Cable Standing Hammer Curl"
   },
   {
@@ -1958,7 +1958,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["triceps", "forearms"],
-    "loadMultiplier": 0.28,
+    "loadMultiplier": 0.45,
     "__exerciseName": "Cable Underhand Push Down"
   },
   {
@@ -1967,7 +1967,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["rectus_abdominis"],
-    "loadMultiplier": 0.4,
+    "loadMultiplier": 0.2,
     "__exerciseName": "Cable Hanging Knee Raise"
   },
   {
@@ -1976,7 +1976,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["rectus_abdominis"],
-    "loadMultiplier": 0.35,
+    "loadMultiplier": 0.3,
     "__exerciseName": "Cable Reverse Ab Crunch"
   },
   {
@@ -1985,7 +1985,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["lats", "rhomboids", "traps", "biceps"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.4,
     "__exerciseName": "Cable Bench One Arm Row"
   },
   {
@@ -1994,7 +1994,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["lats", "rhomboids", "traps", "biceps"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.55,
     "__exerciseName": "Cable Kneeling High Row"
   },
   {
@@ -2003,7 +2003,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["lats", "rhomboids", "traps", "biceps"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.6,
     "__exerciseName": "Cable Kneeling Lat Pull Down"
   },
   {
@@ -2012,7 +2012,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["lats", "rhomboids", "traps", "posterior_deltoid", "biceps"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.7,
     "__exerciseName": "Cable Mid Diverging Row"
   },
   {
@@ -2021,7 +2021,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["lats", "rhomboids", "traps", "biceps"],
-    "loadMultiplier": 0.5,
+    "loadMultiplier": 0.7,
     "__exerciseName": "Cable Pull Up"
   },
   {
@@ -2039,7 +2039,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["posterior_deltoid", "rhomboids", "traps"],
-    "loadMultiplier": 0.25,
+    "loadMultiplier": 0.4,
     "__exerciseName": "Cable Reverse Fly"
   },
   {
@@ -2048,7 +2048,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["lats", "rhomboids", "traps", "biceps"],
-    "loadMultiplier": 0.35,
+    "loadMultiplier": 0.7,
     "__exerciseName": "Cable Seated Lat Pull Down"
   },
   {
@@ -2057,7 +2057,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["posterior_deltoid", "traps"],
-    "loadMultiplier": 0.25,
+    "loadMultiplier": 0.45,
     "__exerciseName": "Cable Seated Rear Delt Row"
   },
   {
@@ -2066,7 +2066,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["lats", "rhomboids", "traps", "biceps"],
-    "loadMultiplier": 0.25,
+    "loadMultiplier": 0.35,
     "__exerciseName": "Cable Standing One Arm Row"
   },
   {
@@ -2075,7 +2075,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.9,
     "__exerciseName": "Cable Bench Press"
   },
   {
@@ -2084,7 +2084,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.9,
     "__exerciseName": "Cable Bench Press-Converging"
   },
   {
@@ -2093,7 +2093,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
-    "loadMultiplier": 0.28,
+    "loadMultiplier": 0.4,
     "__exerciseName": "Cable Low Pec Fly"
   },
   {
@@ -2102,7 +2102,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.45,
     "__exerciseName": "Cable Pec Fly"
   },
   {
@@ -2111,7 +2111,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
-    "loadMultiplier": 0.28,
+    "loadMultiplier": 0.35,
     "__exerciseName": "Cable Pec Fly-Standing"
   },
   {
@@ -2120,7 +2120,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.8,
     "__exerciseName": "Cable Seated Incline Press"
   },
   {
@@ -2129,7 +2129,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.8,
     "__exerciseName": "Cable Seated Incline Press-Converging"
   },
   {
@@ -2138,7 +2138,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.65,
     "__exerciseName": "Cable Standing Chest Press"
   },
   {
@@ -2147,7 +2147,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.65,
     "__exerciseName": "Cable Standing Chest Press-Converging"
   },
   {
@@ -2156,7 +2156,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.6,
     "__exerciseName": "Cable Standing Incline Press"
   },
   {
@@ -2165,7 +2165,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.6,
     "__exerciseName": "Cable Standing Incline Press-Converging"
   },
   {
@@ -2183,7 +2183,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["shoulders"],
-    "loadMultiplier": 0.08,
+    "loadMultiplier": 0.1,
     "__exerciseName": "Cable Internal Rotator"
   },
   {
@@ -2192,7 +2192,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["posterior_deltoid", "traps"],
-    "loadMultiplier": 0.15,
+    "loadMultiplier": 0.12,
     "__exerciseName": "Cable One Arm Rear Delt"
   },
   {
@@ -2201,7 +2201,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["lateral_deltoid"],
-    "loadMultiplier": 0.06,
+    "loadMultiplier": 0.1,
     "__exerciseName": "Cable One Arm Lateral Raise"
   },
   {
@@ -2210,7 +2210,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["shoulders", "triceps"],
-    "loadMultiplier": 0.15,
+    "loadMultiplier": 0.25,
     "__exerciseName": "Cable One Arm Shoulder Press"
   },
   {
@@ -2219,7 +2219,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["shoulders", "triceps"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.6,
     "__exerciseName": "Cable Seated Shoulder Press"
   },
   {
@@ -2228,7 +2228,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["shoulders", "triceps"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.6,
     "__exerciseName": "Cable Seated Shoulder Press-Converging"
   },
   {
@@ -2237,7 +2237,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["upper_traps", "traps"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.8,
     "__exerciseName": "Cable Shrugs"
   },
   {
@@ -2246,7 +2246,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["shoulders", "triceps"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.45,
     "__exerciseName": "Cable Standing Shoulder Press"
   },
   {
@@ -2255,7 +2255,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["shoulders", "traps"],
-    "loadMultiplier": 0.3,
+    "loadMultiplier": 0.4,
     "__exerciseName": "Cable Upright Row"
   },
   {
@@ -2264,7 +2264,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves"],
-    "loadMultiplier": 0.5,
+    "loadMultiplier": 0.85,
     "__exerciseName": "Cable Front Squat"
   },
   {
@@ -2273,7 +2273,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["abductors", "gluteus_medius"],
-    "loadMultiplier": 0.15,
+    "loadMultiplier": 0.35,
     "__exerciseName": "Cable Hip Abduction"
   },
   {
@@ -2282,7 +2282,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["adductors"],
-    "loadMultiplier": 0.15,
+    "loadMultiplier": 0.35,
     "__exerciseName": "Cable Hip Adduction"
   },
   {
@@ -2291,7 +2291,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves"],
-    "loadMultiplier": 0.4,
+    "loadMultiplier": 0.6,
     "__exerciseName": "Cable Lunge"
   },
   {
@@ -2300,7 +2300,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves"],
-    "loadMultiplier": 0.4,
+    "loadMultiplier": 0.6,
     "__exerciseName": "Cable Reverse Lunge"
   },
   {
@@ -2309,7 +2309,7 @@
     "equipmentType": "cable",
     "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "hamstrings", "glutes", "calves"],
-    "loadMultiplier": 0.5,
+    "loadMultiplier": 1.1,
     "__exerciseName": "Cable Squat"
   },
   {
@@ -2318,7 +2318,7 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["hamstrings", "calves"],
-    "loadMultiplier": 0.15,
+    "loadMultiplier": 0.35,
     "__exerciseName": "Cable Standing Leg Curl"
   },
   {
@@ -2327,7 +2327,88 @@
     "equipmentType": "cable",
     "mechanicType": "isolation",
     "targetMuscles": ["quadriceps"],
-    "loadMultiplier": 0.2,
+    "loadMultiplier": 0.4,
     "__exerciseName": "Cable Standing Leg Extension"
+  },
+  {
+    "exerciseIndex": 248,
+    "muscleGroup": "legs",
+    "equipmentType": "cable",
+    "mechanicType": "compound",
+    "targetMuscles": ["glutes", "quadriceps", "hamstrings"],
+    "loadMultiplier": 0.6,
+    "__exerciseName": "Cable Bulgarian Split Squat"
+  },
+  {
+    "exerciseIndex": 249,
+    "muscleGroup": "legs",
+    "equipmentType": "cable",
+    "mechanicType": "compound",
+    "targetMuscles": ["hamstrings", "glutes", "erector_spinae"],
+    "loadMultiplier": 1.0,
+    "__exerciseName": "Cable Romanian Deadlift"
+  },
+  {
+    "exerciseIndex": 250,
+    "muscleGroup": "legs",
+    "equipmentType": "cable",
+    "mechanicType": "isolation",
+    "targetMuscles": ["calves"],
+    "loadMultiplier": 1.0,
+    "__exerciseName": "Cable Standing Calf Raise"
+  },
+  {
+    "exerciseIndex": 251,
+    "muscleGroup": "arms",
+    "equipmentType": "cable",
+    "mechanicType": "isolation",
+    "targetMuscles": ["biceps", "forearms"],
+    "loadMultiplier": 0.25,
+    "__exerciseName": "Cable Bayesian Curl"
+  },
+  {
+    "exerciseIndex": 252,
+    "muscleGroup": "arms",
+    "equipmentType": "cable",
+    "mechanicType": "isolation",
+    "targetMuscles": ["triceps"],
+    "loadMultiplier": 0.2,
+    "__exerciseName": "Cable Cross-Body Triceps Extension"
+  },
+  {
+    "exerciseIndex": 253,
+    "muscleGroup": "arms",
+    "equipmentType": "cable",
+    "mechanicType": "isolation",
+    "targetMuscles": ["forearms"],
+    "loadMultiplier": 0.2,
+    "__exerciseName": "Cable Wrist Curl"
+  },
+  {
+    "exerciseIndex": 254,
+    "muscleGroup": "arms",
+    "equipmentType": "cable",
+    "mechanicType": "isolation",
+    "targetMuscles": ["forearms"],
+    "loadMultiplier": 0.1,
+    "__exerciseName": "Cable Reverse Wrist Curl"
+  },
+  {
+    "exerciseIndex": 255,
+    "muscleGroup": "legs",
+    "equipmentType": "cable",
+    "mechanicType": "compound",
+    "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
+    "loadMultiplier": 1.4,
+    "__exerciseName": "Cable Belt Squat"
+  },
+  {
+    "exerciseIndex": 256,
+    "muscleGroup": "chest",
+    "equipmentType": "cable",
+    "mechanicType": "isolation",
+    "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
+    "loadMultiplier": 0.35,
+    "__exerciseName": "Cable Low-to-High Fly"
   }
 ]

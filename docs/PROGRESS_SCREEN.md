@@ -13,12 +13,14 @@ Dashboard for tracking fitness metrics, nutrition, workouts, and body measuremen
 - X-axis: dates; Y-axis: fat percentage (%)
 - Adjusts scale to fit data range
 
-### 2. Weight line chart
+### 2. Weight trend chart
 
-- Shows body weight over time
-- Includes summary insights (see Calculations)
-- Requires at least 2 data points
-- Supports metric (kg) and imperial (lbs)
+- Shows a daily EWMA trend (alpha 0.10) as the primary line and raw scale readings as subdued dots
+- Interpolates only between observed days; it never extrapolates beyond the first or last weigh-in
+- Shows the latest trend, trailing seven-calendar-day change, legend, and shared trend/scale tooltip
+- Uses a 28-day pre-range warm-up so overlapping chart ranges produce stable values
+- With one weigh-in, shows the reading and prompts for another instead of presenting a trend
+- Supports metric (kg) and imperial (lbs); smoothing is always calculated in kilograms
 
 ### 3. FFMI (Fat-Free Mass Index) line chart
 
@@ -28,7 +30,7 @@ Dashboard for tracking fitness metrics, nutrition, workouts, and body measuremen
 
 ### 4. Nutrition detailed chart (multiple views)
 
-- Combined view: Weight and calories on one chart (bars for calories, line for weight)
+- Combined view: Calories and trend weight on one chart (bars for calories, line for trend weight)
 - Stacked bars: Daily calories by macros (carbs, fats, proteins, fibers)
 - Calories only: Total daily calories as bars
 - Macro-specific views: Individual macros vs total calories (carbs, proteins, fats, or fibers)
@@ -85,7 +87,7 @@ Dashboard for tracking fitness metrics, nutrition, workouts, and body measuremen
 
 ### 1. Weekly averages
 
-#### For body metrics (weight, fat percentage, FFMI)
+#### For body metrics (raw weight, fat percentage, FFMI)
 
 - Groups data into 7-day windows
 - Averages valid data points per week
@@ -135,11 +137,11 @@ Dashboard for tracking fitness metrics, nutrition, workouts, and body measuremen
 
 ### 5. Metrics averages and trends
 
-- Only calculated if there are more than 7 data points
+- Weight insights use the canonical daily trend endpoints; body-fat insights retain weekly aggregation
 - Method:
-  - Groups metrics by week
-  - Computes weekly averages for weight and fat percentage
-  - Calculates week-over-week changes
+  - Computes trend weight from raw observations with interpolation and EWMA smoothing
+  - Computes the trend's weekly rate from its first and last visible values
+  - Computes weekly averages for fat percentage
   - Computes overall averages:
     - Average weight across all weeks
     - Average weekly weight change
@@ -160,7 +162,7 @@ Dashboard for tracking fitness metrics, nutrition, workouts, and body measuremen
 
 ### 8. Nutrition and weight aggregation
 
-- Matches nutrition and weight data by date
+- Matches nutrition and daily trend-weight data by date
 - In weekly view, further aggregates into weekly chunks
 - Used for combined weight + calories chart
 
@@ -237,7 +239,7 @@ Dashboard for tracking fitness metrics, nutrition, workouts, and body measuremen
 
 ### 8. Weight trend analysis
 
-- Determines if weight is trending up or down
+- Determines if weight is trending up or down from the canonical smoothed series
 - Shows "Your weight is trending upwards/downwards"
 - Provides eating phase-specific recommendations
 

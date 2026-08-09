@@ -227,6 +227,8 @@
         "editMealDesc": "Maaltijdnaam en ingrediënten wijzigen",
         "shareMealAsRecipe": "Maaltijd delen als recept",
         "shareMealAsRecipeDesc": "Deel ingrediënten en instructies als tekst",
+        "sendToPhone": "Naar een andere telefoon sturen",
+        "sendToPhoneDesc": "Zet deze maaltijd over met bewegende QR-codes",
         "shareRecipeIngredientLine": "{{grams}}g {{name}}",
         "shareRecipeNoIngredients": "Deze maaltijd heeft geen ingrediënten om te delen",
         "duplicateMeal": "Maaltijd dupliceren",

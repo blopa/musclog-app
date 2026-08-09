@@ -8,6 +8,11 @@ import {
   utcDayKeyFromLocalDate,
   utcNormalizedDayKey,
 } from './calendarDate';
+import {
+  calculateTrendWeightSeries,
+  TREND_WEIGHT_WARMUP_DAYS,
+  trendWeightAtOrBefore,
+} from './trendWeight';
 import { storedWeightToKg } from './unitConversion';
 
 export const HISTORICAL_NUTRITION_LOOKBACK_DAYS = 30;
@@ -24,7 +29,9 @@ function average(values: number[]): number {
 export interface HistoricalNutritionParams {
   historicalTotalCalories: number;
   historicalTotalDays: number;
+  /** Trend weight at the beginning of the empirical window. */
   historicalInitialWeightKg: number;
+  /** Trend weight at the end of the empirical window. */
   historicalFinalWeightKg: number;
   historicalInitialFatPercent?: number;
   historicalFinalFatPercent?: number;
@@ -41,6 +48,7 @@ export interface HistoricalNutritionParams {
  */
 export async function getHistoricalNutritionParams(options: {
   asOfDate?: Date;
+  /** Retained for compatibility; affects body-fat anchors only. Weight always uses trend endpoints. */
   useWeeklyAverages?: boolean;
   /** Days to look back. Defaults to {@link HISTORICAL_NUTRITION_LOOKBACK_DAYS}. */
   lookbackDays?: number;
@@ -65,9 +73,13 @@ export async function getHistoricalNutritionParams(options: {
   const utcStartKey = utcDayKeyFromLocalDate(new Date(startTs));
 
   const dateRange = { startDate: startTs, endDate: endMetricTs };
+  const weightDateRange = {
+    startDate: localDayKeyPlusCalendarDays(startTs, -TREND_WEIGHT_WARMUP_DAYS),
+    endDate: endMetricTs,
+  };
 
   const [weightMetrics, bodyFatMetrics, rangeNutrients, nutritionLogs] = await Promise.all([
-    UserMetricService.getMetricsHistory('weight', dateRange),
+    UserMetricService.getMetricsHistory('weight', weightDateRange),
     UserMetricService.getMetricsHistory('body_fat', dateRange),
     NutritionService.getRangeNutrients(startOfRange, inclusiveRangeEndDate),
     NutritionService.getNutritionLogsForDateRange(startOfRange, inclusiveRangeEndDate),
@@ -94,37 +106,27 @@ export async function getHistoricalNutritionParams(options: {
     weightMetrics.map(async (m) => {
       const d = await m.getDecrypted();
       const valueKg = storedWeightToKg(d.value, d.unit);
-      return { date: m.date, timezone: m.timezone, valueKg };
+      return {
+        date: utcNormalizedDayKey(m.date, m.timezone),
+        value: valueKg,
+      };
     })
   );
 
-  // Order by the calendar day each record was experienced in (its own timezone), not by raw
-  // stored instant — across mixed timezones a smaller instant can belong to a later day.
-  weightWithDecrypted.sort(
-    (a, b) => utcNormalizedDayKey(a.date, a.timezone) - utcNormalizedDayKey(b.date, b.timezone)
-  );
+  // Normalize by the calendar day each record was experienced in (its own timezone), not by raw
+  // stored instant. The trend utility handles sorting and same-day averaging.
   if (weightWithDecrypted.length < 2) {
     return null;
   }
 
-  let initialWeight: number;
-  let finalWeight: number;
-
-  if (useWeeklyAverages) {
-    const weightByWeek = bucketPointsByUtcWeek(weightWithDecrypted, utcStartKey);
-    const weekIndices = Array.from(weightByWeek.keys()).sort((a, b) => a - b);
-    if (weekIndices.length < 2) {
-      return null;
-    }
-
-    initialWeight = average(weightByWeek.get(weekIndices[0])!.map((x) => x.valueKg));
-    finalWeight = average(
-      weightByWeek.get(weekIndices[weekIndices.length - 1])!.map((x) => x.valueKg)
-    );
-  } else {
-    initialWeight = weightWithDecrypted[0].valueKg;
-    finalWeight = weightWithDecrypted[weightWithDecrypted.length - 1].valueKg;
+  const trend = calculateTrendWeightSeries(weightWithDecrypted);
+  const firstTrendInWindow = trend.find((point) => point.date >= utcStartKey);
+  const finalTrend = trendWeightAtOrBefore(trend, utcDayKeyFromLocalDate(asOfDate));
+  if (!firstTrendInWindow || !finalTrend || firstTrendInWindow.date >= finalTrend.date) {
+    return null;
   }
+  const initialWeight = firstTrendInWindow.value;
+  const finalWeight = finalTrend.value;
 
   let initialFatPercent: number | undefined;
   let finalFatPercent: number | undefined;

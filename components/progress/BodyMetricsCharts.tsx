@@ -11,9 +11,11 @@ import { formatUtcNormalizedDayIntl } from '@/utils/calendarDate';
 import { getXAxisLabels, getYAxisLabels } from '@/utils/chartUtils';
 
 import { ProgressChartSection } from './ProgressChartSection';
+import { WeightTrendChart } from './WeightTrendChart';
 
 interface BodyMetricsChartsProps {
   weightHistory: MetricPoint[];
+  weightTrendHistory: MetricPoint[];
   fatHistory: MetricPoint[];
   ffmiHistory: MetricPoint[];
   units: string;
@@ -21,6 +23,7 @@ interface BodyMetricsChartsProps {
 
 export function BodyMetricsCharts({
   weightHistory,
+  weightTrendHistory,
   fatHistory,
   ffmiHistory,
   units,
@@ -31,40 +34,13 @@ export function BodyMetricsCharts({
   const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
   const formatDay = (x: number) => formatUtcNormalizedDayIntl(x, i18n.language);
 
-  const weightLabel = units === 'imperial' ? 'lbs' : 'kg';
-
   return (
     <View>
-      {weightHistory.length >= 2 ? (
-        <ProgressChartSection
-          title={t('progress.weight')}
-          subtitle={t('progress.weightTrendSubtitle')}
-        >
-          <LineChart
-            data={weightHistory.map((p) => ({ x: p.date, y: p.value }))}
-            height={200}
-            lineColor={theme.colors.status.info}
-            areaColor={theme.colors.status.info10}
-            xDomain={[weightHistory[0].date, weightHistory[weightHistory.length - 1].date]}
-            yDomain={[
-              Math.min(...weightHistory.map((p) => p.value)) * 0.95,
-              Math.max(...weightHistory.map((p) => p.value)) * 1.05,
-            ]}
-            yAxisLabels={getYAxisLabels(
-              Math.min(...weightHistory.map((p) => p.value)) * 0.95,
-              Math.max(...weightHistory.map((p) => p.value)) * 1.05,
-              3,
-              (v) => `${formatInteger(Math.round(v))} ${weightLabel}`
-            )}
-            tooltipFormatter={(p) => `${formatRoundedDecimal(p.y, 1)} ${weightLabel}`}
-            xAxisLabels={getXAxisLabels(
-              weightHistory.map((p) => ({ x: p.date })),
-              formatDay,
-              dateFnsLocale
-            )}
-          />
-        </ProgressChartSection>
-      ) : null}
+      <WeightTrendChart
+        weightHistory={weightHistory}
+        weightTrendHistory={weightTrendHistory}
+        units={units}
+      />
 
       {fatHistory.length >= 2 ? (
         <ProgressChartSection

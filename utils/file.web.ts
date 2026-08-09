@@ -138,10 +138,16 @@ export async function resizeImage(photoUri: string, width: number = 256): Promis
 export async function createThumbnail(
   uri: string,
   width: number = 300
-): Promise<{ uri: string; base64?: string }> {
+): Promise<{ uri: string; base64?: string; width: number; height: number }> {
   const dataUrl = await resizeImage(uri, width);
   const base64 = dataUrl.split(',')[1];
-  return { uri, base64 };
+  const image = new Image();
+  image.src = dataUrl;
+  await new Promise<void>((resolve, reject) => {
+    image.onload = () => resolve();
+    image.onerror = (error) => reject(error);
+  });
+  return { uri, base64, width: image.width, height: image.height };
 }
 
 export async function detectBarcodes(imageUri: string) {
@@ -279,6 +285,10 @@ async function ensureFoodImagesDir(): Promise<void> {
 export async function saveBase64ImageToFile(base64: string): Promise<string> {
   // TODO
   return Promise.resolve('');
+}
+
+export async function saveBase64MealImage(_base64: string): Promise<string> {
+  throw new Error('Saving shared meal photos is not available on web');
 }
 
 export async function copyImageToDocumentDirectory(sourceUri: string): Promise<string> {

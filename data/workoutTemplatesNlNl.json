@@ -1,0 +1,46 @@
+[
+  {
+    "title": "5-daagse hypertrofiesplit"
+  },
+  {
+    "title": "Push-pull-legs (PPL)"
+  },
+  {
+    "title": "4-daagse boven-/onderlichaamsplit"
+  },
+  {
+    "title": "Full-body (3 dagen)"
+  },
+  {
+    "title": "Arnold-split (6 dagen)"
+  },
+  {
+    "title": "Bro-split (5 dagen)"
+  },
+  {
+    "title": "PHUL (kracht en hypertrofie boven-/onderlichaam)"
+  },
+  {
+    "title": "2-daagse full-body (A/B)"
+  },
+  {
+    "title": "3-daagse krachtopbouw"
+  },
+  {
+    "title": "Klassieke 3-daagse (borst/triceps, rug/biceps, benen/schouders)"
+  },
+  {
+    "title": "Brolic-workout"
+  },
+  {
+    "title": "Kabelsuperset-workout",
+    "description": "Een kabelprogramma van vijf sessies, opgebouwd rond supersets voor het bovenlichaam, onderlichaam en antagonistische spiergroepen. Houd compounds en isolatieoefeningen op 1–2 RIR; de laatste isolatieset mag tot 0–1 RIR gaan. Bouw elke oefening afzonderlijk op met dubbele progressie.",
+    "dayNames": {
+      "1": "Bovenlichaam A",
+      "2": "Onderlichaam A",
+      "3": "Armen",
+      "5": "Bovenlichaam B",
+      "6": "Onderlichaam B"
+    }
+  }
+]

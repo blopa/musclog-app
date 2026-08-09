@@ -1233,5 +1233,50 @@
     "name": "Kabel Staande Leg Extensie",
     "description": "Een leg extensie met de kabel en een enkelband, waarbij het onderbeen wordt gestrekt terwijl je staat.",
     "exerciseIndex": 247
+  },
+  {
+    "name": "Kabel Bulgaarse Split Squat",
+    "description": "Een split squat met de achterste voet verhoogd, uitgevoerd met kabelweerstand.",
+    "exerciseIndex": 248
+  },
+  {
+    "name": "Kabel Romanian Deadlift",
+    "description": "Een heupscharnier met kabelweerstand, uitgevoerd met licht gebogen benen.",
+    "exerciseIndex": 249
+  },
+  {
+    "name": "Kabel Staande Kuitheffing",
+    "description": "Een staande kuitheffing uitgevoerd terwijl je kabelweerstand vasthoudt.",
+    "exerciseIndex": 250
+  },
+  {
+    "name": "Kabel Bayesian Curl",
+    "description": "Een eenarmige kabelcurl met de rug naar een lage katrol en de werkende arm achter de romp.",
+    "exerciseIndex": 251
+  },
+  {
+    "name": "Kabel Cross-Body Triceps Extensie",
+    "description": "Een eenarmige triceps extensie met de kabel, diagonaal over het lichaam uitgevoerd.",
+    "exerciseIndex": 252
+  },
+  {
+    "name": "Kabel Polscurl",
+    "description": "Een polscurl met de kabel waarbij de polsen buigen en de onderarmen stil blijven.",
+    "exerciseIndex": 253
+  },
+  {
+    "name": "Kabel Omgekeerde Polscurl",
+    "description": "Een bovenhandse polscurl met de kabel waarbij de polsen strekken en de onderarmen stil blijven.",
+    "exerciseIndex": 254
+  },
+  {
+    "name": "Kabel Belt Squat",
+    "description": "Een squat met een kabel aan een heupgordel, waardoor de benen worden belast zonder de wervelkolom te belasten.",
+    "exerciseIndex": 255
+  },
+  {
+    "name": "Kabel Low-to-High Fly",
+    "description": "Een cable fly waarbij de handvatten vanuit een lage katrolpositie omhoog en naar binnen worden gebracht.",
+    "exerciseIndex": 256
   }
 ]

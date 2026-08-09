@@ -20,6 +20,12 @@ import exercisesEsEs from '@/data/exercisesEsEs.json';
 import exercisesNlNl from '@/data/exercisesNlNl.json';
 import exercisesPtBr from '@/data/exercisesPtBr.json';
 import exercisesRuRu from '@/data/exercisesRuRu.json';
+// Workout template copies
+import workoutTemplatesEnUs from '@/data/workoutTemplatesEnUS.json';
+import workoutTemplatesEsEs from '@/data/workoutTemplatesEsEs.json';
+import workoutTemplatesNlNl from '@/data/workoutTemplatesNlNl.json';
+import workoutTemplatesPtBr from '@/data/workoutTemplatesPtBr.json';
+import workoutTemplatesRuRu from '@/data/workoutTemplatesRuRu.json';
 
 // en-us
 import enUsAccessToken from './locales/en-us/access_token.json';
@@ -67,6 +73,7 @@ import enUsNutrition from './locales/en-us/nutrition.json';
 import enUsNutritionLogs from './locales/en-us/nutrition_logs.json';
 import enUsNutritionGoals from './locales/en-us/nutritionGoals.json';
 import enUsOnboarding from './locales/en-us/onboarding.json';
+import enUsOpticalTransfer from './locales/en-us/opticalTransfer.json';
 import enUsOptionsSelector from './locales/en-us/optionsSelector.json';
 import enUsPastWorkoutHistory from './locales/en-us/pastWorkoutHistory.json';
 import enUsPortionSizes from './locales/en-us/portionSizes.json';
@@ -143,6 +150,7 @@ import esEsNutrition from './locales/es-es/nutrition.json';
 import esEsNutritionLogs from './locales/es-es/nutrition_logs.json';
 import esEsNutritionGoals from './locales/es-es/nutritionGoals.json';
 import esEsOnboarding from './locales/es-es/onboarding.json';
+import esEsOpticalTransfer from './locales/es-es/opticalTransfer.json';
 import esEsOptionsSelector from './locales/es-es/optionsSelector.json';
 import esEsPastWorkoutHistory from './locales/es-es/pastWorkoutHistory.json';
 import esEsPortionSizes from './locales/es-es/portionSizes.json';
@@ -219,6 +227,7 @@ import nlNlNutrition from './locales/nl-nl/nutrition.json';
 import nlNlNutritionLogs from './locales/nl-nl/nutrition_logs.json';
 import nlNlNutritionGoals from './locales/nl-nl/nutritionGoals.json';
 import nlNlOnboarding from './locales/nl-nl/onboarding.json';
+import nlNlOpticalTransfer from './locales/nl-nl/opticalTransfer.json';
 import nlNlOptionsSelector from './locales/nl-nl/optionsSelector.json';
 import nlNlPastWorkoutHistory from './locales/nl-nl/pastWorkoutHistory.json';
 import nlNlPortionSizes from './locales/nl-nl/portionSizes.json';
@@ -295,6 +304,7 @@ import ptBrNutrition from './locales/pt-br/nutrition.json';
 import ptBrNutritionLogs from './locales/pt-br/nutrition_logs.json';
 import ptBrNutritionGoals from './locales/pt-br/nutritionGoals.json';
 import ptBrOnboarding from './locales/pt-br/onboarding.json';
+import ptBrOpticalTransfer from './locales/pt-br/opticalTransfer.json';
 import ptBrOptionsSelector from './locales/pt-br/optionsSelector.json';
 import ptBrPastWorkoutHistory from './locales/pt-br/pastWorkoutHistory.json';
 import ptBrPortionSizes from './locales/pt-br/portionSizes.json';
@@ -371,6 +381,7 @@ import ruRuNutrition from './locales/ru-ru/nutrition.json';
 import ruRuNutritionLogs from './locales/ru-ru/nutrition_logs.json';
 import ruRuNutritionGoals from './locales/ru-ru/nutritionGoals.json';
 import ruRuOnboarding from './locales/ru-ru/onboarding.json';
+import ruRuOpticalTransfer from './locales/ru-ru/opticalTransfer.json';
 import ruRuOptionsSelector from './locales/ru-ru/optionsSelector.json';
 import ruRuPastWorkoutHistory from './locales/ru-ru/pastWorkoutHistory.json';
 import ruRuPortionSizes from './locales/ru-ru/portionSizes.json';
@@ -409,6 +420,7 @@ export const ES_ES = 'es-ES';
 export const NL_NL = 'nl-NL';
 export const PT_BR = 'pt-BR';
 export const RU_RU = 'ru-RU';
+export const DEFAULT_LANG = EN_US;
 
 // Exercise exports
 export const EXERCISES_JSON = {
@@ -417,6 +429,15 @@ export const EXERCISES_JSON = {
   [NL_NL]: exercisesNlNl,
   [PT_BR]: exercisesPtBr,
   [RU_RU]: exercisesRuRu,
+};
+
+// Workout template copy exports
+export const WORKOUT_TEMPLATE_COPIES_BY_LOCALE = {
+  [EN_US]: workoutTemplatesEnUs,
+  [ES_ES]: workoutTemplatesEsEs,
+  [NL_NL]: workoutTemplatesNlNl,
+  [PT_BR]: workoutTemplatesPtBr,
+  [RU_RU]: workoutTemplatesRuRu,
 };
 
 const resources = {
@@ -468,6 +489,7 @@ const resources = {
       ...enUsNutritionGoals,
       ...enUsNutritionLogs,
       ...enUsOnboarding,
+      ...enUsOpticalTransfer,
       ...enUsOptionsSelector,
       ...enUsPastWorkoutHistory,
       ...enUsPortionSizes,
@@ -548,6 +570,7 @@ const resources = {
       ...esEsNutritionGoals,
       ...esEsNutritionLogs,
       ...esEsOnboarding,
+      ...esEsOpticalTransfer,
       ...esEsOptionsSelector,
       ...esEsPastWorkoutHistory,
       ...esEsPortionSizes,
@@ -628,6 +651,7 @@ const resources = {
       ...nlNlNutritionGoals,
       ...nlNlNutritionLogs,
       ...nlNlOnboarding,
+      ...nlNlOpticalTransfer,
       ...nlNlOptionsSelector,
       ...nlNlPastWorkoutHistory,
       ...nlNlPortionSizes,
@@ -708,6 +732,7 @@ const resources = {
       ...ptBrNutritionGoals,
       ...ptBrNutritionLogs,
       ...ptBrOnboarding,
+      ...ptBrOpticalTransfer,
       ...ptBrOptionsSelector,
       ...ptBrPastWorkoutHistory,
       ...ptBrPortionSizes,
@@ -788,6 +813,7 @@ const resources = {
       ...ruRuNutritionGoals,
       ...ruRuNutritionLogs,
       ...ruRuOnboarding,
+      ...ruRuOpticalTransfer,
       ...ruRuOptionsSelector,
       ...ruRuPastWorkoutHistory,
       ...ruRuPortionSizes,

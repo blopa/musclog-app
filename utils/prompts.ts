@@ -18,7 +18,7 @@ import {
   WorkoutService,
   WorkoutTemplateService,
 } from '@/database/services';
-import i18n from '@/lang/lang';
+import i18n, { DEFAULT_LANG } from '@/lang/lang';
 
 import {
   formatLocalCalendarDayIso,
@@ -111,7 +111,7 @@ export const getActiveMemories = async (
  * Base system prompt for Loggy persona
  */
 export const getBaseSystemPrompt = async (
-  language: string = 'en-US',
+  language: string = DEFAULT_LANG,
   context?: 'nutrition' | 'exercise' | 'general',
   provider?: string
 ): Promise<string> => {
@@ -221,7 +221,7 @@ export const convertWorkoutToMarkdownKV = (workoutData: any): string => {
 export const getAppleIntelligenceContext = async (
   workoutHistory: WorkoutLog[],
   nutritionHistory: NutritionHistoryEntry[],
-  locale: string = 'en-US'
+  locale: string = DEFAULT_LANG
 ): Promise<string> => {
   let context = '## ANALYZE: Recent Workout History\n\n';
 
@@ -403,7 +403,7 @@ export const getMinimalUserStats = async (user: User | null): Promise<string> =>
 export const getMinimalWorkoutSummary = async (
   workoutLogId: string,
   units?: Units,
-  locale: string = 'en-US'
+  locale: string = DEFAULT_LANG
 ): Promise<string> => {
   try {
     const details = await WorkoutService.getWorkoutWithDetails(workoutLogId);
@@ -426,7 +426,7 @@ export const getMinimalWorkoutSummary = async (
  */
 export const getMinimalSystemPrompt = async (
   user: User | null,
-  language: string = 'en-US',
+  language: string = DEFAULT_LANG,
   context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<string> => {
   const userStats = await getMinimalUserStats(user);
@@ -486,7 +486,7 @@ function buildWorkoutSummaryFromDetails(
     exercises: { id: string; name?: string; muscleGroup?: string }[];
   },
   units?: Units,
-  locale: string = 'en-US'
+  locale: string = DEFAULT_LANG
 ): string {
   const { workoutLog, sets, exercises } = details;
   const exerciseMap = new Map(exercises.map((ex) => [ex.id, ex]));
@@ -542,7 +542,7 @@ function buildWorkoutSummaryFromDetails(
 async function buildWorkoutSummaryJson(
   workoutLogId: string,
   units?: Units,
-  locale: string = 'en-US'
+  locale: string = DEFAULT_LANG
 ): Promise<string> {
   try {
     const resolvedUnits = units ?? (await SettingsService.getUnits());
@@ -560,7 +560,7 @@ async function buildWorkoutSummaryJson(
  * Note: eatingPhase needs to be fetched from NutritionGoal separately
  */
 export const getChatMessagePromptContent = async (
-  language: string = 'en-US',
+  language: string = DEFAULT_LANG,
   eatingPhase?: string,
   context: 'nutrition' | 'exercise' | 'general' = 'general',
   provider?: string
@@ -682,7 +682,7 @@ export const getChatMessagePromptContent = async (
  * System prompt for workout plan generation
  */
 export const createWorkoutPlanPrompt = async (
-  language: string = 'en-US',
+  language: string = DEFAULT_LANG,
   eatingPhase?: string,
   context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<string> => {
@@ -719,7 +719,7 @@ export const createWorkoutPlanPrompt = async (
 export const getNutritionInsightsPrompt = async (
   startDate: string,
   endDate: string,
-  language: string = 'en-US',
+  language: string = DEFAULT_LANG,
   eatingPhase?: string,
   context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<string> => {
@@ -839,7 +839,7 @@ export const getMealCritiquePrompt = async (
   mealType: string,
   foods: { name: string; gramWeight: number }[],
   totals: { calories: number; protein: number; carbs: number; fat: number },
-  language: string = 'en-US',
+  language: string = DEFAULT_LANG,
   context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
@@ -903,7 +903,7 @@ export const getMealCritiquePrompt = async (
 export const getRecentWorkoutsInsightsPrompt = async (
   startDate: string,
   endDate: string,
-  language: string = 'en-US',
+  language: string = DEFAULT_LANG,
   eatingPhase?: string,
   context?: 'nutrition' | 'exercise' | 'general'
 ): Promise<string> => {
@@ -954,7 +954,7 @@ export const getRecentWorkoutsInsightsPrompt = async (
  */
 export const getCalculateNextWorkoutVolumePrompt = async (
   workoutTitle: string,
-  language: string = 'en-US',
+  language: string = DEFAULT_LANG,
   eatingPhase?: string
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
@@ -997,7 +997,7 @@ export const getCalculateNextWorkoutVolumePrompt = async (
  */
 export const getWorkoutInsightsPrompt = async (
   workoutTitle: string,
-  language: string = 'en-US',
+  language: string = DEFAULT_LANG,
   eatingPhase?: string
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
@@ -1071,7 +1071,7 @@ export const getWorkoutInsightsPrompt = async (
  */
 export const getRecentWorkoutInsightsPrompt = async (
   workoutTitle: string,
-  language: string = 'en-US',
+  language: string = DEFAULT_LANG,
   eatingPhase?: string,
   workoutJson?: string
 ): Promise<string> => {
@@ -1098,7 +1098,7 @@ export const getRecentWorkoutInsightsPrompt = async (
  */
 export const getRecentWorkoutInsightsPromptByLogId = async (
   workoutLogId: string,
-  language: string = 'en-US',
+  language: string = DEFAULT_LANG,
   eatingPhase?: string
 ): Promise<string> => {
   const details = await WorkoutService.getWorkoutWithDetails(workoutLogId);
@@ -1117,7 +1117,7 @@ export const getRecentWorkoutInsightsPromptByLogId = async (
  */
 export const getWorkoutVolumeInsightsPrompt = async (
   workoutTitle: string,
-  language: string = 'en-US',
+  language: string = DEFAULT_LANG,
   eatingPhase?: string
 ): Promise<string> => {
   const user = await UserService.getCurrentUser();
@@ -1158,7 +1158,7 @@ export const getWorkoutVolumeInsightsPrompt = async (
 export const getParsePastWorkoutsPrompt = async (
   userMessage: string,
   exerciseNames: string[],
-  language: string = 'en-US'
+  language: string = DEFAULT_LANG
 ): Promise<string> => {
   // Sanitize user input to prevent prompt injection
   const sanitizedUserMessage = wrapUserContent(userMessage);
@@ -1176,7 +1176,7 @@ export const getParsePastWorkoutsPrompt = async (
  */
 export const getParsePastNutritionPrompt = async (
   userMessage: string,
-  language: string = 'en-US'
+  language: string = DEFAULT_LANG
 ): Promise<string> => {
   // Sanitize user input to prevent prompt injection
   const sanitizedUserMessage = wrapUserContent(userMessage);
@@ -1195,7 +1195,7 @@ export const getParsePastNutritionPrompt = async (
 export const getRetrospectiveNutritionPrompt = async (
   targetDate: string,
   userMessage: string,
-  language: string = 'en-US'
+  language: string = DEFAULT_LANG
 ): Promise<string> => {
   // Sanitize user input to prevent prompt injection
   const sanitizedUserMessage = wrapUserContent(userMessage);
@@ -1333,7 +1333,7 @@ export const getMissingIngredientsMacrosPrompt = (
  * System prompt for meal plan generation
  */
 export const getGenerateMealPlanPrompt = async (
-  language: string = 'en-US',
+  language: string = DEFAULT_LANG,
   macroTargets?: { calories: number; protein: number; carbs: number; fat: number; fiber: number },
   eatingPhase?: string,
   context?: 'nutrition' | 'exercise' | 'general',

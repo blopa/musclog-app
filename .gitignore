@@ -11,6 +11,9 @@ web-build/
 # Generated web mirror of experiments.baseUrl (see scripts/sync-web-images.js)
 public/musclog-app/
 
+# Copied from node_modules on postinstall (see scripts/sync-web-wasm.js)
+public/zxing_reader.wasm
+
 # Native
 *.orig.*
 *.jks

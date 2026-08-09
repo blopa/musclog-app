@@ -1,0 +1,46 @@
+[
+  {
+    "title": "Divisão de hipertrofia de 5 dias"
+  },
+  {
+    "title": "Empurrar, puxar e pernas (PPL)"
+  },
+  {
+    "title": "Divisão superior/inferior de 4 dias"
+  },
+  {
+    "title": "Corpo inteiro (3 dias)"
+  },
+  {
+    "title": "Divisão Arnold (6 dias)"
+  },
+  {
+    "title": "Divisão por grupo muscular (5 dias)"
+  },
+  {
+    "title": "PHUL (força e hipertrofia superior/inferior)"
+  },
+  {
+    "title": "Corpo inteiro em 2 dias (A/B)"
+  },
+  {
+    "title": "Desenvolvimento de força em 3 dias"
+  },
+  {
+    "title": "Clássico de 3 dias (peito/tríceps, costas/bíceps, pernas/ombros)"
+  },
+  {
+    "title": "Treino Brolic"
+  },
+  {
+    "title": "Treino de superséries no cabo",
+    "description": "Um programa de cinco sessões com cabos, estruturado em superséries para membros superiores, inferiores e músculos antagonistas. Mantenha os exercícios compostos e isolados em 1–2 RIR; a última série de isolamento pode chegar a 0–1 RIR. Progrida em cada exercício de forma independente usando progressão dupla.",
+    "dayNames": {
+      "1": "Superior A",
+      "2": "Inferior A",
+      "3": "Braços",
+      "5": "Superior B",
+      "6": "Inferior B"
+    }
+  }
+]

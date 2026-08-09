@@ -61,6 +61,7 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 
 - Log workouts with sets, reps, and weights
 - Create and manage custom workout templates and exercises
+- Browse built-in workout programs, including a five-session cable superset split
 - Schedule workouts on a weekly basis with reminders
 - View lifting volume stats and progression over time
 - Comprehensive exercise library with muscle group categorization
@@ -85,8 +86,8 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 - **AI Macro Estimation**: Use AI vision to estimate nutrition from food photos or nutrition label images; optionally run local OCR before sending to AI
 - **Retrospective Logging**: Log meals for past dates
 - **Fasting Days**: Optionally mark a no-food day as an intentional fast so it counts as a real 0-calorie day in your TDEE, averages, and streaks — while forgotten (unflagged) empty days are skipped
-- **Empirical TDEE**: Calorie needs estimated from actual activity logs
-- **Weekly Progress Check-ins**: Automated weekly check-ins that analyze weight trends, caloric adherence, and activity levels. Get status updates (On Track, Ahead, Behind) and readjust goals based on real-world progress.
+- **Empirical TDEE**: Calorie needs estimated from logged intake and smoothed trend-weight changes
+- **Weekly Progress Check-ins**: Automated weekly check-ins that use trend weight alongside caloric adherence and activity levels. Get status updates (On Track, Ahead, Behind) and readjust goals based on real-world progress.
 
 ### 🌙 Menstrual Cycle Tracking
 
@@ -99,7 +100,7 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 ### 📈 Progress & Insights
 
 - Visualize fitness progress with charts and graphs
-- Track body metrics: weight, body fat %, and custom measurements
+- Track body metrics with a smoothed weight trend, editable scale readings, body fat %, and custom measurements
 - Daily and weekly AI-generated insights on workouts and nutrition
 - **Mood tracking**: Log daily mood and correlate it with calories, workout volume, and cycle phase over time
 
@@ -135,6 +136,10 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 - All data stored locally on-device via WatermelonDB
 - Sensitive fields (nutrition logs, user metrics) encrypted at rest with AES
 - AI features are fully optional — app works offline without them
+- **Optical Transfer**: move your whole profile, or just one meal, using only the two screens — one
+  shows a stream of QR codes, the other reads them with its camera. Meal shares preview and save
+  without replacing existing data. Works phone-to-phone and in the browser, in any combination. No
+  internet, cable, account, or third party
 
 ---
 
@@ -308,6 +313,7 @@ This project is open source. See the [LICENSE](LICENSE) file for details.
 
 ## Resources
 
+- [Musclog Blog](https://musclog.app/blog) — statically generated from Markdown with rich prose and syntax-highlighted code
 - [Blog post: How Musclog came to be](https://pablo.gg/en/blog/coding/musclog-leveraging-my-reactjs-experience-to-build-a-react-native-app/)
 - [Expo Documentation](https://docs.expo.dev/)
 - [WatermelonDB Documentation](https://watermelondb.dev/)

@@ -8,8 +8,12 @@ export function isProduction() {
 }
 
 export async function reloadApp() {
-  if (isProduction()) {
-    // In development mode, use DevSettings.reload() to reload the app (does not work in prod)
+  // This branch used to be inverted — it read `if (isProduction())` while its own comment said
+  // "in development mode", so release builds took the DevSettings path, which is a no-op there.
+  // The symptom was silent: every restore (file import, Local Backups, optical transfer) finished
+  // without reloading, leaving the app showing pre-restore data until the user killed it by hand.
+  if (!isProduction()) {
+    // Under Metro this is the only thing that reliably reloads.
     DevSettings.reload();
     return;
   }
@@ -24,7 +28,7 @@ export async function reloadApp() {
     }
 
     router.replace('/app');
-  } catch (error) {
+  } catch {
     router.replace('/app');
   }
 }

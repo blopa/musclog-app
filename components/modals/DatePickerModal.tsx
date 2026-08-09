@@ -24,7 +24,7 @@ import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { Button } from '@/components/theme/Button';
 import { Modal } from '@/components/theme/Modal';
 import { useTheme } from '@/hooks/useTheme';
-import i18n, { LanguageKeys, LOCALE_MAP } from '@/lang/lang';
+import i18n, { DEFAULT_LANG, LanguageKeys, LOCALE_MAP } from '@/lang/lang';
 import { localCalendarDayDate } from '@/utils/calendarDate';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
 
@@ -76,8 +76,8 @@ export function DatePickerModal({
   };
 
   const today = new Date();
-  const currentLanguage = (i18n.language || 'en-US') as LanguageKeys;
-  const locale = LOCALE_MAP[currentLanguage] || LOCALE_MAP['en-US'];
+  const currentLanguage = (i18n.language || DEFAULT_LANG) as LanguageKeys;
+  const locale = LOCALE_MAP[currentLanguage] || LOCALE_MAP[DEFAULT_LANG];
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);

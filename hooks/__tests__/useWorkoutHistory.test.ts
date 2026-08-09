@@ -591,6 +591,39 @@ describe('useWorkoutHistory', () => {
   });
 
   describe('Date formatting', () => {
+    // The clock is pinned because the hook's `isThisWeek` uses date-fns' default
+    // Sunday-start week: run on a Sunday, Monday or Tuesday there is no "earlier this
+    // week" day that isn't also today or yesterday, so a relative "N days ago" fixture
+    // formats as "Aug 3" / "Yesterday" instead of a weekday name. Thursday has one.
+    // Only `Date` is faked — the timers stay real so `waitFor` behaves normally.
+    const FIXED_NOW = new Date(2026, 7, 6, 12, 0, 0, 0); // Thursday, 6 August 2026, local noon
+
+    beforeAll(() => {
+      jest.useFakeTimers({
+        doNotFake: [
+          'cancelAnimationFrame',
+          'cancelIdleCallback',
+          'clearImmediate',
+          'clearInterval',
+          'clearTimeout',
+          'hrtime',
+          'nextTick',
+          'performance',
+          'queueMicrotask',
+          'requestAnimationFrame',
+          'requestIdleCallback',
+          'setImmediate',
+          'setInterval',
+          'setTimeout',
+        ],
+        now: FIXED_NOW,
+      });
+    });
+
+    afterAll(() => {
+      jest.useRealTimers();
+    });
+
     it('formats today date correctly', async () => {
       // Create a date for today at noon to avoid edge cases at midnight
       const today = new Date();
@@ -628,11 +661,8 @@ describe('useWorkoutHistory', () => {
     });
 
     it('formats this week date correctly', async () => {
-      // Get a date from earlier this week (not today, not yesterday)
-      const today = new Date();
-      const daysFromMonday = today.getDay() === 0 ? 6 : today.getDay() - 1; // Convert Sunday=0 to 6
-      const thisWeekDate = new Date(today);
-      thisWeekDate.setDate(today.getDate() - (daysFromMonday > 0 ? daysFromMonday : 1));
+      // Monday of the pinned week — earlier this week, but neither today nor yesterday
+      const thisWeekDate = new Date(2026, 7, 3, 12, 0, 0, 0);
       const thisWeekTimestamp = thisWeekDate.getTime();
 
       const mockWorkoutLogs = [

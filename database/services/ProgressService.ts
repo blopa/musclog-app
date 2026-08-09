@@ -15,6 +15,7 @@ import { withFastedZeroDays } from '@/database/nutritionDayCoverage';
 import { PeriodLogRepository } from '@/database/repositories/PeriodLogRepository';
 import {
   dayKeyRange,
+  localDayKeyPlusCalendarDays,
   localDayStartMs,
   MS_PER_SOLAR_DAY,
   utcDayKeyFromLocalDate,
@@ -28,7 +29,9 @@ import {
   isValidBodyFat,
 } from '@/utils/nutritionCalculator';
 import { calculateEmpiricalTDEEWindow } from '@/utils/progress';
-import { cmToDisplay, kgToDisplay } from '@/utils/unitConversion';
+import { prepareProgressWeightHistory } from '@/utils/progressWeightHistory';
+import { TREND_WEIGHT_WARMUP_DAYS } from '@/utils/trendWeight';
+import { cmToDisplay, kgToDisplay, storedWeightToKg } from '@/utils/unitConversion';
 import { calculateExerciseVolume } from '@/utils/workoutCalculator';
 
 import { type MenstrualPhase, MenstrualService } from './MenstrualService';
@@ -172,6 +175,7 @@ export type TimeAggregation = 'daily' | 'weekly' | 'monthly';
 
 export interface ProgressData {
   weightHistory: MetricPoint[];
+  weightTrendHistory: MetricPoint[];
   fatHistory: MetricPoint[];
   ffmiHistory: MetricPoint[];
   nutritionHistory: DailyNutrition[];
@@ -207,7 +211,10 @@ export class ProgressService {
     const dateRange = { startDate, endDate };
 
     // 1. Fetch Body Metrics
-    const weightMetrics = await UserMetricService.getMetricsHistory('weight', dateRange);
+    const weightMetrics = await UserMetricService.getMetricsHistory('weight', {
+      startDate: localDayKeyPlusCalendarDays(startDate, -TREND_WEIGHT_WARMUP_DAYS),
+      endDate,
+    });
     const fatMetrics = await UserMetricService.getMetricsHistory('body_fat', dateRange);
     const heightMetric = await UserMetricService.getLatest('height');
 
@@ -220,7 +227,20 @@ export class ProgressService {
           : decHeight.value;
     }
 
-    const weightPoints = await this.decryptMetricPoints(weightMetrics, isImperial, true);
+    const expandedWeightPointsKg = await this.decryptWeightMetricPointsKg(weightMetrics);
+    const visibleStartKey = utcNormalizedDayKey(startDate, null);
+    const visibleEndKey = utcNormalizedDayKey(endDate, null);
+    const preparedWeight = prepareProgressWeightHistory(
+      expandedWeightPointsKg,
+      visibleStartKey,
+      visibleEndKey,
+      units
+    );
+    const visibleWeightPointsKg = expandedWeightPointsKg.filter(
+      (point) => point.date >= visibleStartKey && point.date <= visibleEndKey
+    );
+    const weightPoints = preparedWeight.raw;
+    const weightTrendPoints = preparedWeight.trend;
     const fatPoints = await this.decryptMetricPoints(fatMetrics, false, true); // Body fat % - no unit conversion needed
 
     // 2. Fetch Nutrition
@@ -307,7 +327,12 @@ export class ProgressService {
     );
 
     // 5b. Calculate FFMI
-    const ffmiHistory = this.calculateFFMIHistory(weightPoints, fatPoints, heightCm, isImperial);
+    const ffmiHistory = this.calculateFFMIHistory(
+      visibleWeightPointsKg,
+      fatPoints,
+      heightCm,
+      false
+    );
 
     // 6. Handle Weekly Averages if requested
     let finalWeightPoints = weightPoints;
@@ -327,6 +352,7 @@ export class ProgressService {
     // 7. Calculate Insights
     const insights = await this.calculateInsights(
       weightPoints,
+      weightTrendPoints,
       fatPoints,
       nutritionDaily,
       heightCm,
@@ -391,6 +417,7 @@ export class ProgressService {
 
     return {
       weightHistory: finalWeightPoints,
+      weightTrendHistory: weightTrendPoints,
       fatHistory: finalFatPoints,
       ffmiHistory: finalFfmiPoints,
       nutritionHistory: finalNutritionPoints,
@@ -434,6 +461,19 @@ export class ProgressService {
         }
 
         return { date: utcNormalizedDayKey(m.date, m.timezone), value };
+      })
+    );
+    return points.sort((a, b) => a.date - b.date);
+  }
+
+  private static async decryptWeightMetricPointsKg(metrics: UserMetric[]): Promise<MetricPoint[]> {
+    const points = await Promise.all(
+      metrics.map(async (metric) => {
+        const decrypted = await metric.getDecrypted();
+        return {
+          date: utcNormalizedDayKey(metric.date, metric.timezone),
+          value: storedWeightToKg(decrypted.value, decrypted.unit),
+        };
       })
     );
     return points.sort((a, b) => a.date - b.date);
@@ -682,7 +722,8 @@ export class ProgressService {
   }
 
   private static async calculateInsights(
-    weightPoints: MetricPoint[],
+    rawWeightPoints: MetricPoint[],
+    trendWeightPoints: MetricPoint[],
     fatPoints: MetricPoint[],
     nutritionDaily: DailyNutrition[],
     heightCm: number,
@@ -707,10 +748,25 @@ export class ProgressService {
       initialFat: rawInitialFat,
       finalFat: rawFinalFat,
       empiricalDays,
-    } = calculateEmpiricalTDEEWindow(weightPoints, fatPoints, startDate, endDate);
+    } = calculateEmpiricalTDEEWindow(trendWeightPoints, fatPoints, startDate, endDate, {
+      // Weight points are already the canonical smoothed trend; averaging them again would
+      // introduce extra lag and make these anchors differ from the other trend consumers.
+      useEndpointAverages: false,
+    });
 
     const initialFat = useBfForCalculations ? rawInitialFat : undefined;
     const finalFat = useBfForCalculations ? rawFinalFat : undefined;
+
+    const compositionWindow = calculateEmpiricalTDEEWindow(
+      rawWeightPoints,
+      fatPoints,
+      startDate,
+      endDate
+    );
+    let compositionInitialWeight = compositionWindow.initialWeight;
+    let compositionFinalWeight = compositionWindow.finalWeight;
+    const compositionInitialFat = useBfForCalculations ? compositionWindow.initialFat : undefined;
+    const compositionFinalFat = useBfForCalculations ? compositionWindow.finalFat : undefined;
 
     let initialWeight = initW;
     let finalWeight = finW;
@@ -735,6 +791,8 @@ export class ProgressService {
     if (isImperial) {
       initialWeight = convert(initialWeight, 'lb').to('kg') as number;
       finalWeight = convert(finalWeight, 'lb').to('kg') as number;
+      compositionInitialWeight = convert(compositionInitialWeight, 'lb').to('kg') as number;
+      compositionFinalWeight = convert(compositionFinalWeight, 'lb').to('kg') as number;
     }
 
     const gender = user?.gender || 'other';
@@ -767,15 +825,15 @@ export class ProgressService {
     });
 
     const usedEmpirical =
-      empiricalCalories > 0 && empiricalTdeeDays > 0 && weightPoints.length >= 2;
+      empiricalCalories > 0 && empiricalTdeeDays > 0 && trendWeightPoints.length >= 2;
     const tdee = usedEmpirical ? empiricalTdee : statisticalTdee;
 
-    const weeklyAverages = this.aggregateMetricWeekly(weightPoints);
     let weightChangeWeekly = 0;
-    if (weeklyAverages.length >= 2) {
-      const first = weeklyAverages[0].value;
-      const last = weeklyAverages[weeklyAverages.length - 1].value;
-      weightChangeWeekly = (last - first) / Math.max(1, weeklyAverages.length - 1);
+    if (trendWeightPoints.length >= 2) {
+      const first = trendWeightPoints[0];
+      const last = trendWeightPoints[trendWeightPoints.length - 1];
+      const elapsedDays = Math.max(1, (last.date - first.date) / MS_PER_SOLAR_DAY);
+      weightChangeWeekly = ((last.value - first.value) / elapsedDays) * 7;
     }
 
     const fatWeeklyAverages = this.aggregateMetricWeekly(fatPoints);
@@ -789,15 +847,15 @@ export class ProgressService {
     let leanBodyMassChange = 0;
     let fatMassChange = 0;
     if (
-      initialWeight > 0 &&
-      finalWeight > 0 &&
-      initialFat !== undefined &&
-      finalFat !== undefined
+      compositionInitialWeight > 0 &&
+      compositionFinalWeight > 0 &&
+      compositionInitialFat !== undefined &&
+      compositionFinalFat !== undefined
     ) {
-      const initialLBM = initialWeight * (1 - initialFat / 100);
-      const finalLBM = finalWeight * (1 - finalFat / 100);
-      const initialFatMass = initialWeight * (initialFat / 100);
-      const finalFatMass = finalWeight * (finalFat / 100);
+      const initialLBM = compositionInitialWeight * (1 - compositionInitialFat / 100);
+      const finalLBM = compositionFinalWeight * (1 - compositionFinalFat / 100);
+      const initialFatMass = compositionInitialWeight * (compositionInitialFat / 100);
+      const finalFatMass = compositionFinalWeight * (compositionFinalFat / 100);
 
       leanBodyMassChange = finalLBM - initialLBM;
       fatMassChange = finalFatMass - initialFatMass;
@@ -809,8 +867,8 @@ export class ProgressService {
     }
 
     let targetWeights = { bf5: 0, bf10: 0, bf15: 0, bf20: 0 };
-    if (finalWeight > 0 && finalFat !== undefined) {
-      const currentLBM = finalWeight * (1 - finalFat / 100);
+    if (compositionFinalWeight > 0 && compositionFinalFat !== undefined) {
+      const currentLBM = compositionFinalWeight * (1 - compositionFinalFat / 100);
       targetWeights = {
         bf5: currentLBM / (1 - 0.05),
         bf10: currentLBM / (1 - 0.1),

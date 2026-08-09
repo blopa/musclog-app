@@ -12,7 +12,7 @@ import {
   BRAND_GREEN_BRIGHT,
 } from '@/components/website/websiteColors';
 import exercisesData from '@/data/exercisesData.json';
-import i18n, { EXERCISES_JSON } from '@/lang/lang';
+import i18n, { DEFAULT_LANG, EXERCISES_JSON } from '@/lang/lang';
 
 function withExpoBaseUrl(path: string): string {
   if (/^https?:\/\//i.test(path)) {
@@ -44,7 +44,7 @@ const LOCALE_NAMES: Record<string, Record<number, LocaleExerciseEntry>> = Object
   ])
 );
 
-const EN_US_NAMES = LOCALE_NAMES['en-US'] ?? {};
+const EN_US_NAMES = LOCALE_NAMES[DEFAULT_LANG] ?? {};
 
 function getLocalizedName(exerciseIndex: number, locale: string, fallback: string): string {
   const map = LOCALE_NAMES[locale] ?? EN_US_NAMES;

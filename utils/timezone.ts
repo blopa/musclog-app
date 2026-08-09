@@ -1,3 +1,5 @@
+import i18n from '@/lang/lang';
+
 /**
  * UTC offset as a fixed "±HH:MM" string (e.g. "-05:00", "+05:30", "+00:00"), captured at
  * the moment a record is written. Stored alongside log timestamps (nutrition_logs.timezone,
@@ -47,9 +49,12 @@ export function ianaZoneToTimezoneAt(ianaZone: string, date: Date): string | und
     // Render the instant as wall-clock time in the target zone, reinterpret those fields as
     // UTC, and diff against the real instant to recover the offset. Works on any Intl that
     // supports timeZone formatting (already a baseline requirement of the app).
-    const parts = new Intl.DateTimeFormat('en-US', {
+    const locale = i18n.resolvedLanguage ?? i18n.language;
+    const parts = new Intl.DateTimeFormat(locale, {
       timeZone: ianaZone,
       hourCycle: 'h23',
+      // These parts are parsed below, so keep their digits machine-readable in every locale.
+      numberingSystem: 'latn',
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',

@@ -86,6 +86,27 @@ describe('exerciseGoalProjection', () => {
       expect(result.isRealistic).toBe(false);
     });
 
+    // Bodyweight and cardio exercises store a loadMultiplier of 0 (no external load to
+    // benchmark). `?? 1.0` only defaults null/undefined, so a stored 0 divided through
+    // to Infinity and tiered every bodyweight goal as advanced, silently applying the
+    // lower stalling threshold.
+    it('treats a loadMultiplier of 0 as unbenchmarked rather than dividing by zero', () => {
+      const dayMs = 24 * 60 * 60 * 1000;
+      const dataPoints: ProgressiveOverloadDataPoint[] = [
+        { date: 0, weight: 70, reps: 5, volume: 350, estimated1RM: 80 },
+        { date: 7 * dayMs, weight: 71, reps: 5, volume: 355, estimated1RM: 81 },
+        { date: 14 * dayMs, weight: 72, reps: 5, volume: 360, estimated1RM: 82 },
+      ];
+      const inputs = { dataPoints, baseline1rm: 80, targetWeight: 100, bodyWeight };
+
+      const zeroed = projectGoal({ ...inputs, loadMultiplier: 0 });
+      const neutral = projectGoal({ ...inputs, loadMultiplier: 1.0 });
+
+      expect(zeroed.status).toBe(neutral.status);
+      expect(zeroed.isRealistic).toBe(neutral.isRealistic);
+      expect(zeroed.projectedWeeks).toBe(neutral.projectedWeeks);
+    });
+
     it('projects longer timelines for tier transitions', () => {
       const dayMs = 24 * 60 * 60 * 1000;
       // 80kg lifter at 75kg 1RM is Novice (RS 0.93)

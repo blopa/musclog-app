@@ -47,6 +47,14 @@
       "summary": "Honest comparison of Musclog against MyFitnessPal, MacroFactor, Cronometer, Bevel, Lifesum, Hevy, and other fitness/nutrition apps."
     }
   },
+  "blog": {
+    "path": "/blog",
+    "llms": {
+      "section": "Source & Extras",
+      "title": "Blog",
+      "summary": "Articles about Musclog, open-source development, privacy, fitness technology, and the ideas behind the app."
+    }
+  },
   "faq": {
     "path": "/faq",
     "llms": {

@@ -1,4 +1,4 @@
-import { Folder, Layers, Plus, Sparkles } from 'lucide-react-native';
+import { Folder, Layers, Plus, ScanLine, Sparkles } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
@@ -11,6 +11,7 @@ export type AddMealModalProps = {
   onDynamicMealCreator?: () => void;
   onGenerateMealAI?: () => void;
   onManageCategories?: () => void;
+  onImportFromPhone?: () => void;
   isAiEnabled?: boolean;
 };
 
@@ -21,6 +22,7 @@ export function AddMealModal({
   onDynamicMealCreator,
   onGenerateMealAI,
   onManageCategories,
+  onImportFromPhone,
   isAiEnabled = true,
 }: AddMealModalProps) {
   const theme = useTheme();
@@ -44,6 +46,18 @@ export function AddMealModal({
             title: t('addMeal.dynamicCreator'),
             description: t('addMeal.dynamicCreatorDesc'),
             onPress: onDynamicMealCreator,
+          },
+        ]
+      : []),
+    ...(onImportFromPhone
+      ? [
+          {
+            icon: ScanLine,
+            iconColor: theme.colors.accent.primary,
+            iconBgColor: theme.colors.accent.primary10,
+            title: t('addMeal.importFromPhone'),
+            description: t('addMeal.importFromPhoneDesc'),
+            onPress: onImportFromPhone,
           },
         ]
       : []),

@@ -9,7 +9,7 @@ import { Button } from '@/components/theme/Button';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { EatingPhase } from '@/database/models';
 import type NutritionCheckin from '@/database/models/NutritionCheckin';
-import { NutritionGoalService, UserMetricService } from '@/database/services';
+import { NutritionGoalService } from '@/database/services';
 import {
   CheckinMetrics,
   NutritionCheckinService,
@@ -187,8 +187,8 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
   }
 
   const {
-    avgWeight,
-    trend,
+    trendWeight,
+    targetWeightDelta,
     avgCalories,
     consistency,
     avgBodyFat,
@@ -199,12 +199,14 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
     weekInfo,
     status,
     hasEnoughData,
+    hasTrendData,
   } = metrics;
 
-  const displayActualWeight = kgToDisplay(avgWeight, units);
+  const displayActualWeight = kgToDisplay(trendWeight, units);
   const displayTargetWeight = kgToDisplay(checkin.targetWeight, units);
-  const displayTrend = kgToDisplay(Math.abs(trend), units);
-  const trendColor = trend <= 0 ? theme.colors.status.emerald : theme.colors.status.warning;
+  const displayTrend = kgToDisplay(Math.abs(targetWeightDelta), units);
+  const trendColor =
+    targetWeightDelta <= 0 ? theme.colors.status.emerald : theme.colors.status.warning;
   const weightUnitKey = getWeightUnitI18nKey(units);
   let statusColor = theme.colors.status.warning;
   if (status === 'onTrack') {
@@ -286,7 +288,11 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
               className="flex-1 text-sm font-medium"
               style={{ color: theme.colors.status.amber }}
             >
-              {t('nutrition.checkin.notEnoughDataWarning')}
+              {t(
+                hasTrendData
+                  ? 'nutrition.checkin.sparseTrendWarning'
+                  : 'nutrition.checkin.notEnoughDataWarning'
+              )}
             </Text>
           </View>
         ) : null}
@@ -318,7 +324,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                   style={{ backgroundColor: trendColor + '22' }}
                 >
                   <Text className="text-xs font-bold" style={{ color: trendColor }}>
-                    {trend > 0 ? '+' : '-'}
+                    {targetWeightDelta > 0 ? '+' : '-'}
                     {formatDecimal(displayTrend, 1)}
                     {t(weightUnitKey, { value: '' })}
                   </Text>

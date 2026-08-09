@@ -75,6 +75,7 @@ import { database } from '@/database';
 import { waitForDbReady } from '@/database/dbReady';
 import Setting from '@/database/models/Setting';
 import { SettingsService } from '@/database/services/SettingsService';
+import { DEFAULT_LANG } from '@/lang/lang';
 import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
 import { getDefaultUnits, getHeightUnit, getWeightUnit } from '@/utils/units';
 
@@ -139,7 +140,7 @@ type SettingsState = {
 };
 
 const DEFAULT_STATE: SettingsState = {
-  language: 'en-US',
+  language: DEFAULT_LANG,
   units: getDefaultUnits(),
   theme: 'system',
   connectHealthData: false,
@@ -256,7 +257,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
   const rawWorkoutHistoryDays = getString(map, WORKOUT_HISTORY_DAYS_SETTING_TYPE);
   const rawConversationContext = getString(map, CONVERSATION_CONTEXT);
   const rawChartTooltipPosition = getString(map, CHART_TOOLTIP_POSITION_SETTING_TYPE);
-  const language = getString(map, LANGUAGE_SETTING_TYPE, 'en-US');
+  const language = getString(map, LANGUAGE_SETTING_TYPE, DEFAULT_LANG);
   const maxAiMemories = getNumber(map, MAX_AI_MEMORIES_SETTING_TYPE, 50);
   const rawProgressionMode = getString(map, PROGRESSION_MODE_SETTING_TYPE);
   const progressionMode: ProgressionMode =

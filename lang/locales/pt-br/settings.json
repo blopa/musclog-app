@@ -192,7 +192,9 @@
       "clearAppDataAuthPrompt": "Autentique-se para excluir todos os dados do app",
       "clearAppDataFailedMessage": "Ocorreu um erro ao limpar os dados do app. Tente novamente.",
       "openSettingsFailedMessage": "Não foi possível abrir as configurações do app. Por favor, abra-as manualmente.",
-      "dangerZone": "ZONA DE PERIGO"
+      "dangerZone": "ZONA DE PERIGO",
+      "opticalTransfer": "Transferência óptica",
+      "opticalTransferSubtitle": "Leve seus dados para outro celular com luz"
     },
     "chatMessages": {
       "title": "Mensagens do Chat",

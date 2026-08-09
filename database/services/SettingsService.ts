@@ -70,6 +70,7 @@ import {
 import { database } from '@/database/database-instance';
 import { encryptOptionalString } from '@/database/encryptionHelpers';
 import Setting, { type SettingType } from '@/database/models/Setting';
+import { DEFAULT_LANG } from '@/lang/lang';
 import { decryptDatabaseValue } from '@/utils/encryption';
 import { getDefaultUnits } from '@/utils/units';
 
@@ -472,7 +473,7 @@ export class SettingsService {
       .fetch();
 
     if (settings.length === 0) {
-      return 'en-US';
+      return DEFAULT_LANG;
     }
 
     return settings[0].value;

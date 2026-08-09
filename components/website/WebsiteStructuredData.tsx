@@ -6,14 +6,13 @@ const LOGO_URL = `${SITE_ORIGIN}/images/seo-image.png`;
 const SAME_AS = ['https://github.com/blopa/musclog-app', 'https://instagram.com/musclog.app'];
 
 /**
- * JSON-LD must be embedded via dangerouslySetInnerHTML, not JSX children —
- * React HTML-escapes text children (e.g. `"` -> `&quot;`), but browsers
- * never decode HTML entities inside <script> content, which would corrupt
- * the JSON. `<` is additionally escaped so a value containing "</script>"
- * can't prematurely close the tag.
+ * Expo Router's Head uses react-helmet-async, which requires script content as
+ * a string child and converts it to innerHTML itself. Passing
+ * dangerouslySetInnerHTML directly is ignored by Helmet. `<` is escaped so a
+ * value containing "</script>" cannot prematurely close the tag.
  */
-function jsonLdHtml(data: unknown): { __html: string } {
-  return { __html: JSON.stringify(data).replace(/</g, '\\u003c') };
+function jsonLdText(data: unknown): string {
+  return JSON.stringify(data).replace(/</g, '\\u003c');
 }
 
 /**
@@ -43,7 +42,7 @@ export function WebsiteOrganizationJsonLd() {
 
   return (
     <Head>
-      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdHtml(graph)} />
+      <script type="application/ld+json">{jsonLdText(graph)}</script>
     </Head>
   );
 }
@@ -71,7 +70,7 @@ export function SoftwareApplicationJsonLd({ description }: { description: string
 
   return (
     <Head>
-      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdHtml(schema)} />
+      <script type="application/ld+json">{jsonLdText(schema)}</script>
     </Head>
   );
 }
@@ -102,7 +101,60 @@ export function FaqPageJsonLd({ items }: { items: FaqPageJsonLdItem[] }) {
 
   return (
     <Head>
-      <script type="application/ld+json" dangerouslySetInnerHTML={jsonLdHtml(schema)} />
+      <script type="application/ld+json">{jsonLdText(schema)}</script>
+    </Head>
+  );
+}
+
+interface BlogPostingJsonLdProps {
+  canonicalPath: string;
+  category: string;
+  date: string;
+  description: string;
+  tags: string[];
+  title: string;
+}
+
+/** BlogPosting JSON-LD built from the same frontmatter rendered by the post page. */
+export function BlogPostingJsonLd({
+  canonicalPath,
+  category,
+  date,
+  description,
+  tags,
+  title,
+}: BlogPostingJsonLdProps) {
+  const url = `${SITE_ORIGIN}${canonicalPath}`;
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: title,
+    description: description || title,
+    datePublished: date,
+    articleSection: category,
+    keywords: tags,
+    image: LOGO_URL,
+    mainEntityOfPage: url,
+    url,
+    author: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      url: SITE_ORIGIN,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: SITE_NAME,
+      url: SITE_ORIGIN,
+      logo: {
+        '@type': 'ImageObject',
+        url: LOGO_URL,
+      },
+    },
+  };
+
+  return (
+    <Head>
+      <script type="application/ld+json">{jsonLdText(schema)}</script>
     </Head>
   );
 }

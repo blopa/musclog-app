@@ -11,8 +11,8 @@ import { StepperInput } from '@/components/theme/StepperInput';
 import { TextInput } from '@/components/theme/TextInput';
 import { useSnackbar } from '@/context/SnackbarContext';
 import Food from '@/database/models/Food';
-import Meal from '@/database/models/Meal';
-import { FoodPortionService, MealService } from '@/database/services';
+import { MealService } from '@/database/services';
+import { syncMealPortionFromForm } from '@/database/services/syncMealPortionFromForm';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -191,43 +191,14 @@ export default function DynamicMealCreatorModal({
   }, [preparedWeightGrams, totalRawWeightGrams]);
 
   const syncMealPortion = useCallback(
-    async (targetMeal: Meal) => {
-      await FoodPortionService.clearMealPortions(targetMeal.id);
-
-      if (nutritionBasis === 'per_recipe') {
-        return;
-      }
-
-      const trimmedPortionName =
-        defaultPortionName.trim() || mealName.trim() || t('food.foodDetails.serving');
-
-      if (nutritionBasis === 'per_serving') {
-        const portion = await FoodPortionService.createPrivateNamedPortion(
-          trimmedPortionName,
-          'meal',
-          targetMeal.id
-        );
-        await FoodPortionService.addPortionToMeal(targetMeal.id, portion.id, true);
-        return;
-      }
-
-      if (nutritionBasis === 'per_gram') {
-        const portion = await FoodPortionService.createFoodPortion(
-          trimmedPortionName,
-          Math.max(1, servingGrams),
-          undefined,
-          'custom',
-          {
-            kind: 'mass',
-            scope: 'private',
-            ownerType: 'meal',
-            ownerId: targetMeal.id,
-            dedupe: false,
-          }
-        );
-
-        await FoodPortionService.addPortionToMeal(targetMeal.id, portion.id, true);
-      }
+    async (targetMeal: { id: string }) => {
+      await syncMealPortionFromForm(targetMeal.id, {
+        defaultPortionName,
+        fallbackPortionName: t('food.foodDetails.serving'),
+        mealName,
+        nutritionBasis,
+        servingGrams,
+      });
     },
     [nutritionBasis, defaultPortionName, mealName, servingGrams, t]
   );

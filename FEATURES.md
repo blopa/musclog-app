@@ -20,7 +20,7 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 - Log sets, reps, weight, rest times, and RPE for any exercise
 - Workout types: Strength, Cardio, Flexibility, Calisthenics
 - Create and save custom workout templates (e.g., PPL, Upper/Lower splits)
-- Browse a built-in template library
+- Browse a built-in template library, including a five-session cable superset program
 - AI-generated workout plans based on your equipment and goals
 - Drag-and-drop exercise reordering during or after a session
 - Superset / exercise grouping via shared group ID
@@ -63,9 +63,9 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 
 - Set personalized calorie and macro targets
 - Support for multiple goals with easy switching
-- Empirical TDEE calculation derived from actual logged activity and weight changes
+- Empirical TDEE calculation derived from actual logged intake and smoothed trend-weight endpoints
 - Auto-calculated goal templates based on activity level, weight goal, and experience
-- Weekly nutrition check-ins: "On Track / Ahead / Behind" status with 7-day trend analysis
+- Weekly nutrition check-ins: "On Track / Ahead / Behind" status based on trend weight, with raw seven-day weigh-in bars
 - Dynamic goal recalculation based on real-world progress trends
 
 ---
@@ -87,7 +87,7 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 
 ## Progress & Analytics
 
-- Interactive charts: weight, body fat %, FFMI, lifting volume, calorie/macro trends, mood
+- Interactive charts: smoothed weight trend with raw scale points, body fat %, FFMI, lifting volume, calorie/macro trends, mood
 - Time range filters: 7-day, 30-day, 90-day, or custom
 - Weekly rolling averages toggle
 - Correlation charts: volume vs. calories, body composition vs. protein, mood vs. macros/volume, etc.
@@ -187,6 +187,10 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 - Game Boy sound: a UI blip on every selection/confirm/back press across the app, plus a soundtrack that plays on every Game Boy screen after the splash while enabled, mixed live from the four APU channels (pulse lead, wave bass, noise drums). Both .mid assets are reduced to Game Boy sound data at build time (`npm run gb:gen-music`); the soundtrack converter auto-detects a repeating section to loop. A title-screen Options menu toggles SFX and the soundtrack independently, persisted to battery-backed SRAM so the choice survives resets
 - Playable in-browser Game Boy Color emulator on the website (`/gameboy`) that auto-loads the ROM, with keyboard controls on desktop and on-screen touch controls on mobile, and persists the cartridge's battery-backed SRAM to IndexedDB (autosaved periodically and when leaving the page) so in-game saves survive reloads; before boot it also seeds today's real date and time into the cartridge SRAM (creating the save if none exists yet) for any not-yet-onboarded player, so first-run onboarding pre-fills the correct date and time. The page also offers direct downloads of the Game Boy ROM (`.gbc`) and a retro-styled PDF instruction manual
 
+## Public Website
+
+- Markdown-powered blog at `/blog`: the index and individual post URLs are statically generated from files under `app/(website)/posts`; YAML frontmatter supplies metadata, while post bodies support headings, links, lists, tables, blockquotes, images, inline code, and syntax-highlighted fenced code blocks
+
 ---
 
 ## Privacy & Data
@@ -195,6 +199,14 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 - Sensitive metrics (weight, body fat) and nutrition logs encrypted at rest with AES
 - Fully offline — core features work without internet
 - Full data export (encrypted JSON or Excel) and import for portability
+- **Optical Transfer** — move everything, or just one saved meal, to another device with nothing
+  but the two screens: one displays an animated stream of QR codes, the other reads them with its
+  camera. Whole-profile transfers remain optionally passphrase-protected and replace only after
+  verification; meal shares preview ingredients/macros and save non-destructively into the existing
+  database. Send from a meal's ⋮ menu and receive from My Meals → +, or receive either payload from
+  Settings. Available on Android, iOS and web in any combination, with no internet, cable, or account
+  (see [docs/OPTICAL_TRANSFER.md](docs/OPTICAL_TRANSFER.md))
+- Automatic local backups before any restore, browsable and restorable from settings
 - Complete database reset option
 
 ---

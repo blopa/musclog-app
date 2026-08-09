@@ -1,0 +1,63 @@
+diff --git a/node_modules/expo-router/build/getRoutesCore.js b/node_modules/expo-router/build/getRoutesCore.js
+index bff90e4..9878806 100644
+--- a/node_modules/expo-router/build/getRoutesCore.js
++++ b/node_modules/expo-router/build/getRoutesCore.js
+@@ -522,9 +522,17 @@ function getFileMeta(originalKey, options, redirects, rewrites) {
+     let route = key;
+     const parts = (0, matchers_1.removeFileSystemDots)(originalKey).split('/');
+     const filename = parts[parts.length - 1];
+-    const filenameParts = (0, matchers_1.removeSupportedExtensions)(filename).split('.');
+-    const filenameWithoutExtensions = filenameParts[0];
+-    const platformExtension = filenameParts[1];
++    // Read the platform extension off the END of the filename. Splitting on `.` and taking
++    // index 1 misparses deep dynamic segments, whose `[...]` contains dots:
++    // `[...slug].web.tsx` -> ['[', '', '', 'slug]', 'web'], so the platform extension was read
++    // as '' and the file was registered as a literal route named `[...slug].web` on every
++    // platform instead of as the web variant of `[...slug]`.
++    const filenameWithoutFileExtension = (0, matchers_1.removeSupportedExtensions)(filename);
++    const platformExtensionMatch = filenameWithoutFileExtension.match(/\.(android|ios|native|web)$/);
++    const filenameWithoutExtensions = platformExtensionMatch
++        ? filenameWithoutFileExtension.slice(0, -platformExtensionMatch[0].length)
++        : filenameWithoutFileExtension;
++    const platformExtension = platformExtensionMatch?.[1];
+     const isLayout = filenameWithoutExtensions === '_layout';
+     const isApi = originalKey.match(/\+api\.(\w+\.)?[jt]sx?$/);
+     if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
+diff --git a/node_modules/expo-router/build/loaders/utils.js b/node_modules/expo-router/build/loaders/utils.js
+index a117f27..c63707f 100644
+--- a/node_modules/expo-router/build/loaders/utils.js
++++ b/node_modules/expo-router/build/loaders/utils.js
+@@ -13,7 +13,15 @@ const url_1 = require("../utils/url");
+  */
+ function getLoaderModulePath(routePath) {
+     const { pathname, search } = (0, url_1.parseUrlUsingCustomBase)(routePath);
+-    const normalizedPath = pathname === '/' ? '/' : pathname.replace(/\/$/, '');
++    // `useLoaderData` currently passes the filesystem context key for grouped website routes.
++    // Strip development-only route syntax so the request matches the public loader manifest path.
++    const publicPath = process.env.NODE_ENV !== 'production'
++        ? pathname
++            .split('/')
++            .filter((segment) => !/^\(.+\)$/.test(segment))
++            .join('/')
++        : pathname;
++    const normalizedPath = publicPath === '/' ? '/' : publicPath.replace(/\/$/, '');
+     const pathSegment = normalizedPath === '/' ? '/index' : normalizedPath;
+     return `/_expo/loaders${pathSegment}${search}`;
+ }
+diff --git a/node_modules/expo-router/build/matchers.js b/node_modules/expo-router/build/matchers.js
+index 50fc082..fa88fc3 100644
+--- a/node_modules/expo-router/build/matchers.js
++++ b/node_modules/expo-router/build/matchers.js
+@@ -50,7 +50,11 @@ function getNameFromFilePath(name) {
+ function getContextKey(name) {
+     // The root path is `` (empty string) so always prepend `/` to ensure
+     // there is some value.
+-    const normal = '/' + getNameFromFilePath(name);
++    // A platform extension (`route.web.tsx`) is a build-time file selector, not part of the
++    // route identity. Leaving it in breaks `[...slug].web` param interpolation in
++    // `useLoaderData`, desyncs the exported loader path, and stops `_layout.web` from being
++    // recognised as a layout below.
++    const normal = ('/' + getNameFromFilePath(name)).replace(/\.(android|ios|native|web)$/, '');
+     if (!normal.endsWith('_layout')) {
+         return normal;
+     }

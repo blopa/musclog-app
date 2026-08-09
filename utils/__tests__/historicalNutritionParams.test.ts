@@ -1,4 +1,5 @@
 import { getHistoricalNutritionParams } from '@/utils/historicalNutritionParams';
+import { localDayKeyPlusCalendarDays } from '@/utils/calendarDate';
 
 const mockGetMetricsHistory = jest.fn();
 const mockGetRangeNutrients = jest.fn();
@@ -146,7 +147,7 @@ describe('getHistoricalNutritionParams', () => {
       historicalTotalCalories: 52500,
       historicalTotalDays: 30,
       historicalInitialWeightKg: 72,
-      historicalFinalWeightKg: 70,
+      historicalFinalWeightKg: expect.closeTo(70.574565, 5),
     });
     expect(result).not.toHaveProperty('historicalInitialFatPercent');
     expect(result).not.toHaveProperty('historicalFinalFatPercent');
@@ -185,7 +186,7 @@ describe('getHistoricalNutritionParams', () => {
       historicalTotalCalories: 52500,
       historicalTotalDays: 30,
       historicalInitialWeightKg: 72,
-      historicalFinalWeightKg: 70,
+      historicalFinalWeightKg: expect.closeTo(70.574565, 5),
       historicalInitialFatPercent: 22,
       historicalFinalFatPercent: 20,
     });
@@ -216,10 +217,10 @@ describe('getHistoricalNutritionParams', () => {
     const result = await getHistoricalNutritionParams({ asOfDate: fixedEndDate });
     expect(result).not.toBeNull();
     expect(result!.historicalInitialWeightKg).toBeCloseTo(72, 1);
-    expect(result!.historicalFinalWeightKg).toBeCloseTo(70, 1);
+    expect(result!.historicalFinalWeightKg).toBeCloseTo(70.57, 1);
   });
 
-  it('when useWeeklyAverages is true, uses average of first week for initial and last week for final', async () => {
+  it('uses canonical trend endpoints regardless of the legacy weekly-averages option', async () => {
     const msPerDay = 24 * 60 * 60 * 1000;
     const msPerWeek = 7 * msPerDay;
     // Week 0 (days 0-6): weights 72, 73 → avg 72.5
@@ -252,10 +253,37 @@ describe('getHistoricalNutritionParams', () => {
       useWeeklyAverages: true,
     });
     expect(result).not.toBeNull();
-    expect(result!.historicalInitialWeightKg).toBe(72.5);
-    expect(result!.historicalFinalWeightKg).toBe(69.5);
+    expect(result!.historicalInitialWeightKg).toBe(72);
+    expect(result!.historicalFinalWeightKg).toBeCloseTo(70.297477, 5);
     expect(result!.historicalTotalCalories).toBe(52500);
     expect(result!.historicalTotalDays).toBe(30);
+  });
+
+  it('fetches a 28-day weight warm-up before the empirical window', async () => {
+    const weight1 = makeWeightMetric(startTs, 72);
+    const weight2 = makeWeightMetric(fixedEndDate.getTime(), 70);
+    mockGetMetricsHistory.mockImplementation(async (type: string) =>
+      type === 'weight' ? [weight2, weight1] : []
+    );
+    mockGetRangeNutrients.mockResolvedValue({
+      calories: 52500,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      fiber: 0,
+      effectiveDayCount: undefined,
+      dailyAverages: { calories: 0, protein: 0, carbs: 0, fat: 0, fiber: 0 },
+    });
+    mockGetNutritionLogsForDateRange.mockResolvedValue(
+      Array.from({ length: 10 }, (_, index) =>
+        makeNutritionLog(startTs + index * 24 * 60 * 60 * 1000)
+      )
+    );
+
+    await getHistoricalNutritionParams({ asOfDate: fixedEndDate });
+
+    const weightCall = mockGetMetricsHistory.mock.calls.find(([type]) => type === 'weight');
+    expect(weightCall[1].startDate).toBe(localDayKeyPlusCalendarDays(startTs, -28));
   });
 
   describe('fasting-day feature', () => {

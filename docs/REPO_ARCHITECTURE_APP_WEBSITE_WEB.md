@@ -64,6 +64,7 @@ The public site lives under the route group [`app/(website)/`](/app/%28website%2
 Examples:
 
 - `/home`
+- `/blog`
 - `/privacy`
 - `/terms`
 - `/contact`
@@ -97,6 +98,72 @@ Several website routes also have native stubs such as:
 - [`app/(website)/calculator.tsx`](/app/%28website%29/calculator.tsx)
 
 These simply redirect to `/app` on native, which is a clean way to say: this content is part of the public website, not part of the mobile app UX.
+
+### Blog content
+
+The static `/blog` index and its individual `/blog/<year>/<month>/<slug>` pages discover Markdown
+files recursively under
+[`app/(website)/posts`](/app/%28website%29/posts). Each post must provide YAML frontmatter with a
+`title`, `date` (`YYYY-MM-DD`), `category`, and `tags` array; `description` is optional and otherwise
+comes from the first prose in the Markdown body. File and directory names become URL segments and
+therefore accept only letters, numbers, hyphens, and underscores. The routes' Expo static loaders
+read and validate the files through [`utils/blogPosts.server.ts`](/utils/blogPosts.server.ts).
+
+The catch-all [`blog/[...slug].web.tsx`](/app/%28website%29/blog/%5B...slug%5D.web.tsx) route exports
+`generateStaticParams` from those discovered slugs, so Expo emits one HTML page per post. It follows
+the same convention as every other website route: the `.web.tsx` file is the implementation and the
+unsuffixed [`blog/[...slug].tsx`](/app/%28website%29/blog/%5B...slug%5D.tsx) sibling redirects native
+users to `/app`. That convention only works because of
+[`patches/expo-router+57.0.11.patch`](/patches/expo-router+57.0.11.patch) — see below. Expo Router 57
+also retains the unresolved catch-all template in its static manifest, so `loadBlogPostForRoute`
+handles the literal `[...slug]` loader call that occurs during export in addition to the generated
+post paths.
+
+The blog index lives at [`blog/index.web.tsx`](/app/%28website%29/blog/index.web.tsx) rather than
+`blog.web.tsx` so that its exported loader (`dist/_expo/loaders/(website)/blog/index`) does not
+collide with the directory (`dist/_expo/loaders/(website)/blog/`) holding the per-post loaders. Expo
+writes loader payloads as extensionless files named after the route's context key, so a
+`foo.tsx` + `foo/[x].tsx` pair that both export loaders fails the export with
+`EISDIR: illegal operation on a directory`. Keep the index inside the directory.
+
+Post bodies are converted to HTML inside the server loader with `markdown-it` and `highlight.js`.
+That supports standard rich Markdown (headings, emphasis, links, lists, tables, blockquotes, images,
+inline code, and fenced code blocks) while keeping the parser and highlighter out of the client
+bundle. Source HTML is disabled, unsafe link protocols are rejected by `markdown-it`, and code
+fences are escaped before highlighting. The page scopes all prose and highlight styles under
+`.blog-prose` in `global.css`.
+
+Each post renders frontmatter-derived article metadata and `BlogPosting` JSON-LD. The SEO generator
+also discovers Markdown paths for `public/sitemap.xml`; the fixed-route registry remains the source
+for robots rules and `llms.txt`. `unstable_useServerDataLoaders` must remain enabled on the
+`expo-router` plugin in `app.json` for these build-time content steps.
+
+Expo Router 57.0.11 still labels data loaders as alpha.
+[`patches/expo-router+57.0.11.patch`](/patches/expo-router+57.0.11.patch) carries three fixes, all
+pinned by [`utils/__tests__/expoRouterLoaderPatch.test.ts`](/utils/__tests__/expoRouterLoaderPatch.test.ts):
+
+1. **`getRoutesCore.js` — platform extensions on catch-all routes.** `getFileMeta` read the platform
+   extension as `removeSupportedExtensions(filename).split('.')[1]`, which misparses any deep dynamic
+   segment because `[...]` contains dots: `[...slug].web.tsx` splits to
+   `['[', '', '', 'slug]', 'web']`, so the extension was read as `''` and the file was published as a
+   literal route named `blog/[...slug].web` on **every** platform instead of as the web variant of
+   `blog/[...slug]`. The same misparse silently disabled `[...slug].native.tsx`, so before this fix
+   native rendered the web page. The patch matches the extension at the end of the filename instead.
+   Single dynamic segments (`[id].web.tsx`) were never affected.
+2. **`matchers.js` — platform extensions in the loader context key.** `getContextKey` kept the
+   `.web` suffix, so `useLoaderData` interpolated `[...slug].web` (whose `slice(4, -1)` yields
+   `slug].we`, never a real param) and the exported loader path disagreed with the one the client
+   requested. It also stopped `_layout.web` from being recognised as a layout. The patch strips a
+   trailing platform extension. Both the runtime hook and `@expo/cli`'s static export call this same
+   function, so the two sides stay in sync.
+3. **`loaders/utils.js` — route groups in development.** The client-side loader path builder receives
+   filesystem context keys such as `/(website)/blog/index` and `/(website)/blog/2026/08/example`,
+   while the dev-server manifest exposes their public loader paths. The patch removes route-group
+   segments **in development only**; production deliberately keeps them because static export writes
+   loader assets under those paths.
+
+Remove each once Expo Router ships an equivalent upstream fix, and recheck index-to-post navigation
+under both `npm run web` and a locally served static export when upgrading it.
 
 ## Why `musclog.app/app` Exists
 

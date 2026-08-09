@@ -15,6 +15,12 @@ import {
   utcNormalizedDayKey,
 } from '@/utils/calendarDate';
 import { getTimezoneAt } from '@/utils/timezone';
+import {
+  calculateTrendWeightSeries,
+  TREND_WEIGHT_WARMUP_DAYS,
+  trendWeightAtOrBefore,
+} from '@/utils/trendWeight';
+import { storedWeightToKg } from '@/utils/unitConversion';
 
 export interface NutritionCheckinInput {
   checkinDate: number;
@@ -27,8 +33,9 @@ export interface NutritionCheckinInput {
 }
 
 export interface CheckinMetrics {
-  avgWeight: number;
-  trend: number;
+  scaleWeightAverage: number;
+  trendWeight: number;
+  targetWeightDelta: number;
   avgCalories: number;
   consistency: number;
   avgBodyFat: number | null;
@@ -39,6 +46,7 @@ export interface CheckinMetrics {
   weekInfo: { current: number; total: number };
   status: 'ahead' | 'onTrack' | 'behind';
   hasEnoughData: boolean;
+  hasTrendData: boolean;
 }
 
 export class NutritionCheckinService {
@@ -118,37 +126,54 @@ export class NutritionCheckinService {
     // DB bounds for the [periodStartKey, periodEndKey) window, widened ±14 h to capture records
     // stored in any timezone; `range.matches` trims the overscan back to the exact day window.
     const range = dayKeyRange(periodStartKey, periodEndKey, { inclusiveEnd: false });
+    const weightRange = dayKeyRange(
+      periodStartKey - TREND_WEIGHT_WARMUP_DAYS * MS_PER_SOLAR_DAY,
+      periodEndKey,
+      { inclusiveEnd: false }
+    );
 
     const weightMetricsRaw = await database
       .get<UserMetric>('user_metrics')
       .query(
         Q.where('type', 'weight'),
-        ...dayRangeClauses(range),
+        ...dayRangeClauses(weightRange),
         Q.where('deleted_at', Q.eq(null)),
         Q.sortBy('date', Q.asc)
       )
       .fetch();
 
-    const weightMetrics = range.filterRecords(weightMetricsRaw);
+    const weightMetrics = weightRange.filterRecords(weightMetricsRaw);
 
     // Build daily weights array (7 slots, one per day)
     const dailyWeights: number[] = Array(7).fill(0);
-    const decryptedWeights: number[] = [];
+    const observedWeights: { date: number; value: number }[] = [];
+    const currentWeightsByDay = new Map<number, number[]>();
     for (const metric of weightMetrics) {
-      const { value } = await metric.getDecrypted();
-      decryptedWeights.push(value);
+      const { value, unit } = await metric.getDecrypted();
+      const valueKg = storedWeightToKg(value, unit);
+      const date = utcNormalizedDayKey(metric.date, metric.timezone);
+      observedWeights.push({ date, value: valueKg });
       const dayIndex = dayIndexInPeriod(metric.date, metric.timezone);
       if (dayIndex >= 0 && dayIndex < 7) {
-        dailyWeights[dayIndex] = value;
+        const values = currentWeightsByDay.get(dayIndex) ?? [];
+        values.push(valueKg);
+        currentWeightsByDay.set(dayIndex, values);
       }
     }
+    for (const [dayIndex, values] of currentWeightsByDay) {
+      dailyWeights[dayIndex] = values.reduce((sum, value) => sum + value, 0) / values.length;
+    }
 
-    const avgWeight =
-      decryptedWeights.length > 0
-        ? decryptedWeights.reduce((a, b) => a + b, 0) / decryptedWeights.length
+    const currentWeights = Array.from(currentWeightsByDay.values()).flat();
+    const scaleWeightAverage =
+      currentWeights.length > 0
+        ? currentWeights.reduce((a, b) => a + b, 0) / currentWeights.length
         : checkin.targetWeight;
-
-    const trend = avgWeight - checkin.targetWeight;
+    const trendSeries = calculateTrendWeightSeries(observedWeights);
+    const hasTrendData = new Set(observedWeights.map((point) => point.date)).size >= 2;
+    const trendPoint = trendWeightAtOrBefore(trendSeries, periodEndKey);
+    const trendWeight = trendPoint?.value ?? scaleWeightAverage;
+    const targetWeightDelta = trendWeight - checkin.targetWeight;
 
     const bodyFatMetricsRaw = await database
       .get<UserMetric>('user_metrics')
@@ -230,19 +255,20 @@ export class NutritionCheckinService {
     // Determine status using 0.5% weight deviation threshold
     const threshold = checkin.targetWeight * 0.005;
     let status: 'ahead' | 'onTrack' | 'behind';
-    if (Math.abs(trend) <= threshold) {
+    if (Math.abs(targetWeightDelta) <= threshold) {
       status = 'onTrack';
-    } else if (trend < 0) {
+    } else if (targetWeightDelta < 0) {
       status = 'ahead';
     } else {
       status = 'behind';
     }
 
-    const hasEnoughData = decryptedWeights.length >= 3 && daysWithLogs >= 3;
+    const hasEnoughData = currentWeights.length >= 3 && daysWithLogs >= 3;
 
     return {
-      avgWeight,
-      trend,
+      scaleWeightAverage,
+      trendWeight,
+      targetWeightDelta,
       avgCalories,
       consistency,
       avgBodyFat,
@@ -253,6 +279,7 @@ export class NutritionCheckinService {
       weekInfo,
       status,
       hasEnoughData,
+      hasTrendData,
     };
   }
 

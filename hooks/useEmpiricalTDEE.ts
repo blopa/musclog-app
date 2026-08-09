@@ -15,7 +15,7 @@ export interface UseEmpiricalTDEEConfig {
   lookbackDays?: number;
   /** Minimum days with nutrition data required (default: 7) */
   minNutritionDays?: number;
-  /** Use weekly averages for weight/body fat (default: true) */
+  /** Use weekly averages for body fat (default: true); weight always uses trend endpoints. */
   useWeeklyAverages?: boolean;
   /** Fallback TDEE value when calculation fails (default: 2850) */
   fallbackValue?: number;

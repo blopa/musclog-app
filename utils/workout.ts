@@ -6,7 +6,7 @@ import type { Units } from '@/constants/settings';
 import Exercise, { type EquipmentType } from '@/database/models/Exercise';
 import Schedule, { type DayOfWeek } from '@/database/models/Schedule';
 import type { ExerciseInWorkout } from '@/database/services/WorkoutTemplateService';
-import i18n from '@/lang/lang';
+import i18n, { DEFAULT_LANG } from '@/lang/lang';
 import { Theme } from '@/theme';
 
 import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
@@ -119,7 +119,7 @@ export function formatExerciseDescription(
   weight?: number,
   isBodyweight?: boolean,
   units?: Units,
-  appNumberLocale: string = i18n.resolvedLanguage ?? i18n.language ?? 'en-US'
+  appNumberLocale: string = i18n.resolvedLanguage ?? i18n.language ?? DEFAULT_LANG
 ): string {
   if (weight !== undefined && weight > 0 && !isBodyweight && units) {
     const displayWeight = kgToDisplay(weight, units);
@@ -150,7 +150,7 @@ export function formatExerciseListRowMeta(
   weight?: number,
   isBodyweight?: boolean,
   units?: Units,
-  appNumberLocale: string = i18n.resolvedLanguage ?? i18n.language ?? 'en-US'
+  appNumberLocale: string = i18n.resolvedLanguage ?? i18n.language ?? DEFAULT_LANG
 ): { description: string; trailingHighlight?: string } {
   if (weight !== undefined && weight > 0 && !isBodyweight && units) {
     const displayWeight = kgToDisplay(weight, units);

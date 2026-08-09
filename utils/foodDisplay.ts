@@ -1,5 +1,6 @@
 import type { Units } from '@/constants/settings';
 import Food from '@/database/models/Food';
+import { DEFAULT_LANG } from '@/lang/lang';
 
 import { formatDisplayGrams } from './formatDisplayWeight';
 import { getMassUnitLabel } from './unitConversion';
@@ -14,7 +15,7 @@ import { getMassUnitLabel } from './unitConversion';
 export async function getFoodServingDisplay(
   food: Food,
   units: Units = 'metric',
-  locale: string = 'en-US'
+  locale: string = DEFAULT_LANG
 ): Promise<string> {
   try {
     const defaultPortion = await food.getDefaultPortionAsync();
@@ -36,7 +37,7 @@ export async function getFoodServingDisplay(
 export function getSimpleServingDisplay(
   gramWeight: number = 100,
   units: Units = 'metric',
-  locale: string = 'en-US'
+  locale: string = DEFAULT_LANG
 ): string {
   const unit = getMassUnitLabel(units);
   return `${formatDisplayGrams(locale, units, gramWeight)} ${unit}`;

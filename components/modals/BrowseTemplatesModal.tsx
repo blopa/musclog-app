@@ -11,7 +11,11 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { GenericCard } from '@/components/cards/GenericCard';
 import { FilterTabs } from '@/components/FilterTabs';
 import { TextInput } from '@/components/theme/TextInput';
-import workoutTemplatesEnUS from '@/data/workoutTemplatesEnUS.json';
+import {
+  getWorkoutTemplates,
+  type RawWorkoutTemplate,
+  type WorkoutTemplateDifficulty,
+} from '@/data/workoutTemplates';
 import { useTheme } from '@/hooks/useTheme';
 import { addOpacityToHex } from '@/theme';
 
@@ -20,7 +24,7 @@ import { FullScreenModal } from './FullScreenModal';
 type WorkoutTemplate = {
   id: string;
   title: string;
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  difficulty: WorkoutTemplateDifficulty;
   duration: string;
   exercises: string;
   sets: string;
@@ -29,23 +33,11 @@ type WorkoutTemplate = {
 
 type MaterialIconName = ComponentProps<typeof MaterialIcons>['name'];
 
-// Raw template type as found in workoutTemplatesEnUS.json
-export type RawWorkoutTemplate = {
-  title: string;
-  description?: string;
-  difficulty?: string;
-  duration?: number | string;
-  exercises?:
-    { exerciseId?: number; day?: number; sets?: number; reps?: number }[] | number | string;
-  sets?: number;
-  icon?: string;
-};
-
 /**
  * Extracts the template index from a normalized template ID
  * ID format: template-${idx}-${title}
  */
-export function getRawTemplateById(templateId: string): RawWorkoutTemplate | null {
+export function getRawTemplateById(templateId: string, locale?: string): RawWorkoutTemplate | null {
   // Extract index from ID format: template-${idx}-${title}
   const match = templateId.match(/^template-(\d+)-/);
   if (!match) {
@@ -53,74 +45,70 @@ export function getRawTemplateById(templateId: string): RawWorkoutTemplate | nul
   }
 
   const index = parseInt(match[1], 10);
-  const templates = workoutTemplatesEnUS as RawWorkoutTemplate[];
-
-  if (index < 0 || index >= templates.length) {
+  const workoutTemplates = getWorkoutTemplates(locale);
+  if (index < 0 || index >= workoutTemplates.length) {
     return null;
   }
 
-  return templates[index];
+  return workoutTemplates[index];
 }
 
-const getNormalizedTemplates = (t: TFunction) => {
+const getNormalizedTemplates = (t: TFunction, locale: string) => {
+  const workoutTemplates = getWorkoutTemplates(locale);
   // Normalize imported JSON format to the UI-friendly WorkoutTemplate shape
-  const normalizedTemplates: WorkoutTemplate[] = (workoutTemplatesEnUS as RawWorkoutTemplate[]).map(
-    (item, idx) => {
-      const title =
-        item.title || t('workouts.browseTemplatesModal.templateName', { number: idx + 1 });
-      const difficulty = (item.difficulty as any) || 'Beginner';
+  const normalizedTemplates: WorkoutTemplate[] = workoutTemplates.map((item, idx) => {
+    const title =
+      item.title || t('workouts.browseTemplatesModal.templateName', { number: idx + 1 });
+    const difficulty = item.difficulty ?? 'beginner';
 
-      // Duration: number (minutes) -> "NN min", otherwise keep string
-      let duration = '';
-      if (typeof item.duration === 'number') {
-        duration = `${item.duration} ${t('common.min')}`;
-      } else if (typeof item.duration === 'string') {
-        duration = item.duration;
-      }
-
-      // Exercises: if array -> use translation with count, if number -> use translation with count, otherwise string
-      let exercisesText = '';
-      let totalSets = 0;
-      if (Array.isArray(item.exercises)) {
-        // Use i18next pluralization by passing `count` so translations can handle singular/plural forms.
-        const count = item.exercises.length;
-        exercisesText = t('workouts.browseTemplatesModal.stats.exercisesQty', { count });
-        totalSets = item.exercises.reduce((sum, e) => sum + (e.sets || 0), 0);
-      } else if (typeof item.exercises === 'number') {
-        // Use i18next pluralization for numbers too
-        exercisesText = t('workouts.browseTemplatesModal.stats.exercisesQty', {
-          count: item.exercises,
-        });
-      } else if (typeof item.exercises === 'string') {
-        exercisesText = item.exercises;
-      }
-
-      // If JSON provides top-level sets, or we computed totalSets from exercises array, use that
-      if (!totalSets && typeof item.sets === 'number') {
-        totalSets = item.sets;
-      }
-
-      const setsText = totalSets
-        ? t('workouts.browseTemplatesModal.stats.setsQty', { count: totalSets })
-        : '';
-
-      const iconKey = (item.icon || 'fitness-center') as MaterialIconName;
-
-      const id = `template-${idx}-${title.replace(/\s+/g, '-').toLowerCase()}`;
-
-      return {
-        id,
-        title,
-        difficulty: ['Beginner', 'Intermediate', 'Advanced'].includes(difficulty)
-          ? (difficulty as any)
-          : 'Beginner',
-        duration,
-        exercises: exercisesText,
-        sets: setsText,
-        icon: iconKey,
-      } as WorkoutTemplate;
+    // Duration: number (minutes) -> "NN min", otherwise keep string
+    let duration = '';
+    if (typeof item.duration === 'number') {
+      duration = `${item.duration} ${t('common.min')}`;
+    } else if (typeof item.duration === 'string') {
+      duration = item.duration;
     }
-  );
+
+    // Exercises: if array -> use translation with count, if number -> use translation with count, otherwise string
+    let exercisesText = '';
+    let totalSets = 0;
+    if (Array.isArray(item.exercises)) {
+      // Use i18next pluralization by passing `count` so translations can handle singular/plural forms.
+      const count = item.exercises.length;
+      exercisesText = t('workouts.browseTemplatesModal.stats.exercisesQty', { count });
+      totalSets = item.exercises.reduce((sum, e) => sum + (e.sets || 0), 0);
+    } else if (typeof item.exercises === 'number') {
+      // Use i18next pluralization for numbers too
+      exercisesText = t('workouts.browseTemplatesModal.stats.exercisesQty', {
+        count: item.exercises,
+      });
+    } else if (typeof item.exercises === 'string') {
+      exercisesText = item.exercises;
+    }
+
+    // If JSON provides top-level sets, or we computed totalSets from exercises array, use that
+    if (!totalSets && typeof item.sets === 'number') {
+      totalSets = item.sets;
+    }
+
+    const setsText = totalSets
+      ? t('workouts.browseTemplatesModal.stats.setsQty', { count: totalSets })
+      : '';
+
+    const iconKey = (item.icon || 'fitness-center') as MaterialIconName;
+
+    const id = `template-${idx}-${title.replace(/\s+/g, '-').toLowerCase()}`;
+
+    return {
+      id,
+      title,
+      difficulty,
+      duration,
+      exercises: exercisesText,
+      sets: setsText,
+      icon: iconKey,
+    } as WorkoutTemplate;
+  });
 
   return normalizedTemplates;
 };
@@ -138,26 +126,26 @@ export function BrowseTemplatesModal({
   onTemplateSelect,
   children,
 }: BrowseTemplatesModalProps) {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const theme = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
-  const getDifficultyColor = (difficulty: string) => {
+  const getDifficultyColor = (difficulty: WorkoutTemplateDifficulty) => {
     switch (difficulty) {
-      case 'Beginner':
+      case 'beginner':
         return {
           bg: theme.colors.status.emerald10,
           text: theme.colors.status.emerald,
           border: theme.colors.status.emerald20,
         };
-      case 'Intermediate':
+      case 'intermediate':
         return {
           bg: theme.colors.status.amber10,
           text: theme.colors.status.amber,
           border: addOpacityToHex(theme.colors.status.amber, 0.2),
         };
-      case 'Advanced':
+      case 'advanced':
         return {
           bg: theme.colors.status.error10,
           text: theme.colors.status.error,
@@ -172,12 +160,12 @@ export function BrowseTemplatesModal({
     }
   };
 
-  const normalizedTemplates = getNormalizedTemplates(t);
+  const normalizedTemplates = getNormalizedTemplates(t, i18n.resolvedLanguage ?? i18n.language);
 
   const filteredTemplates = normalizedTemplates.filter((template) => {
     const matchesSearch = template.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory =
-      selectedCategory === 'All' ||
+      selectedCategory === 'all' ||
       template.difficulty === selectedCategory ||
       template.title.toLowerCase().includes(selectedCategory.toLowerCase());
     return matchesSearch && matchesCategory;
@@ -224,7 +212,7 @@ export function BrowseTemplatesModal({
                 className="text-[10px] font-bold uppercase tracking-wider"
                 style={{ color: difficultyColors.text }}
               >
-                {t(`workouts.browseTemplatesModal.tabs.${template.difficulty.toLowerCase()}`)}
+                {t(`workouts.browseTemplatesModal.tabs.${template.difficulty}`)}
               </Text>
             </View>
           </View>
@@ -304,13 +292,13 @@ export function BrowseTemplatesModal({
           {/* Category Filter Tabs */}
           <FilterTabs
             tabs={[
-              { id: 'All', label: t('workouts.browseTemplatesModal.tabs.all') },
-              { id: 'Beginner', label: t('workouts.browseTemplatesModal.tabs.beginner') },
-              { id: 'Intermediate', label: t('workouts.browseTemplatesModal.tabs.intermediate') },
-              { id: 'Advanced', label: t('workouts.browseTemplatesModal.tabs.advanced') },
-              { id: 'Strength', label: t('workouts.browseTemplatesModal.tabs.strength') },
-              { id: 'Hypertrophy', label: t('workouts.browseTemplatesModal.tabs.hypertrophy') },
-              { id: 'Cardio', label: t('workouts.browseTemplatesModal.tabs.cardio') },
+              { id: 'all', label: t('workouts.browseTemplatesModal.tabs.all') },
+              { id: 'beginner', label: t('workouts.browseTemplatesModal.tabs.beginner') },
+              { id: 'intermediate', label: t('workouts.browseTemplatesModal.tabs.intermediate') },
+              { id: 'advanced', label: t('workouts.browseTemplatesModal.tabs.advanced') },
+              { id: 'strength', label: t('workouts.browseTemplatesModal.tabs.strength') },
+              { id: 'hypertrophy', label: t('workouts.browseTemplatesModal.tabs.hypertrophy') },
+              { id: 'cardio', label: t('workouts.browseTemplatesModal.tabs.cardio') },
             ]}
             activeTab={selectedCategory}
             onTabChange={setSelectedCategory}

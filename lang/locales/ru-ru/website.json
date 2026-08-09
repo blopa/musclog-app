@@ -56,6 +56,10 @@
         "alternatives": {
           "title": "Musclog против альтернатив — честное сравнение приложений",
           "description": "Узнайте, как Musclog сравнивается с MyFitnessPal, MacroFactor, Cronometer, Bevel, Lifesum, Hevy и другими по приватности, питанию, тренировкам и целостному отслеживанию здоровья."
+        },
+        "blog": {
+          "title": "Блог Musclog — Open-source фитнес и технологии",
+          "description": "Читайте статьи о Musclog, open-source разработке, приватности, фитнес-технологиях и идеях, лежащих в основе приложения."
         }
       }
     },
@@ -310,7 +314,18 @@
       "exercises": "Упражнения",
       "gameboy": "Game Boy",
       "language": "Язык",
-      "alternatives": "Альтернативы"
+      "alternatives": "Альтернативы",
+      "blog": "Блог"
+    },
+    "blog": {
+      "eyebrow": "Из мастерской",
+      "title": "Блог Musclog",
+      "description": "Заметки о создании приватного open-source фитнес-приложения — от продуктовых решений до технологий в его основе.",
+      "empty": "Публикаций пока нет.",
+      "listLabel": "Статьи блога",
+      "tagsLabel": "Теги статьи",
+      "readArticle": "Читать статью",
+      "backToBlog": "Назад ко всем статьям"
     },
     "gameboy": {
       "pageTitle": "Играть в Musclog на Game Boy",

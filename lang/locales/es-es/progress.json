@@ -57,6 +57,16 @@
     "weeklyAverages": "Promedios Semanales",
     "weight": "Peso",
     "weightTrendSubtitle": "Peso corporal a lo largo del tiempo",
+    "weightTrend": {
+      "title": "Tendencia de peso",
+      "trend": "Tendencia",
+      "scaleWeight": "Peso de báscula",
+      "sevenDayChange": "Cambio en 7 días",
+      "explanation": "Filtra los cambios normales de agua, comida e hidratación.",
+      "addAnother": "Añade otro pesaje para iniciar tu tendencia",
+      "changeUnavailable": "aún no disponible",
+      "accessibilitySummary": "Tendencia de peso actual: {{current}} {{unit}}. Cambio en siete días: {{change}}."
+    },
     "bodyFat": "Grasa Corporal",
     "bodyFatSubtitle": "Porcentaje de grasa a lo largo del tiempo",
     "ffmi": "FFMI",

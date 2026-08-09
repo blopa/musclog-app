@@ -1233,5 +1233,50 @@
     "name": "Extensión de Pierna de Pie en Polea",
     "description": "Una extensión de pierna en polea con correa de tobillo, extendiendo la pierna mientras se está de pie.",
     "exerciseIndex": 247
+  },
+  {
+    "name": "Sentadilla Búlgara en Polea",
+    "description": "Una sentadilla dividida con el pie trasero elevado, realizada contra la resistencia de una polea.",
+    "exerciseIndex": 248
+  },
+  {
+    "name": "Peso Muerto Rumano en Polea",
+    "description": "Una bisagra de cadera realizada con resistencia de polea y las piernas ligeramente flexionadas.",
+    "exerciseIndex": 249
+  },
+  {
+    "name": "Elevación de Talones de Pie en Polea",
+    "description": "Una elevación de talones de pie realizada sujetando la resistencia de una polea.",
+    "exerciseIndex": 250
+  },
+  {
+    "name": "Curl Bayesiano en Polea",
+    "description": "Un curl unilateral en polea realizado de espaldas a una polea baja, con el brazo de trabajo detrás del torso.",
+    "exerciseIndex": 251
+  },
+  {
+    "name": "Extensión de Tríceps Cruzada en Polea",
+    "description": "Una extensión unilateral de tríceps en polea realizada en diagonal a través del cuerpo.",
+    "exerciseIndex": 252
+  },
+  {
+    "name": "Curl de Muñeca en Polea",
+    "description": "Un curl de muñeca en polea realizado flexionando las muñecas y manteniendo los antebrazos inmóviles.",
+    "exerciseIndex": 253
+  },
+  {
+    "name": "Curl Inverso de Muñeca en Polea",
+    "description": "Un curl de muñeca en pronación realizado extendiendo las muñecas y manteniendo los antebrazos inmóviles.",
+    "exerciseIndex": 254
+  },
+  {
+    "name": "Sentadilla con Cinturón en Polea",
+    "description": "Una sentadilla con una polea unida a un cinturón de cadera, que carga las piernas sin cargar la columna.",
+    "exerciseIndex": 255
+  },
+  {
+    "name": "Apertura de Abajo Hacia Arriba en Polea",
+    "description": "Una apertura en polea que lleva las manijas hacia arriba y hacia dentro desde una posición baja.",
+    "exerciseIndex": 256
   }
 ]

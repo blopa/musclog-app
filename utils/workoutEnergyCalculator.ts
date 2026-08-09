@@ -49,8 +49,13 @@ export interface MWEMInput {
 // Helpers
 // ---------------------------------------------------------------------------
 
-const LEG_GROUPS = new Set<MuscleGroup>(['quads', 'hamstrings', 'glutes', 'calves']);
-const SMALL_ISOLATION_GROUPS = new Set<MuscleGroup>(['biceps', 'triceps', 'forearms']);
+// `muscle_group` holds either vocabulary (see the `MuscleGroup` union), so both
+// spellings of a group belong in these sets. Listing only the fine-grained names
+// silently routed every bundled leg exercise — all 60 of them are stored as
+// `legs`, none as `quads` — down the generic branch, costing them both the longer
+// leg displacement and the 0.88x bodyweight contribution below.
+const LEG_GROUPS = new Set<MuscleGroup>(['legs', 'quads', 'hamstrings', 'glutes', 'calves']);
+const SMALL_ISOLATION_GROUPS = new Set<MuscleGroup>(['arms', 'biceps', 'triceps', 'forearms']);
 
 function resolveDisplacementFactor(muscleGroup: MuscleGroup, mechanicType: MechanicType): number {
   if (LEG_GROUPS.has(muscleGroup)) {
@@ -100,6 +105,12 @@ function resolveAnaerobicMultiplier(
  * Calculate total kilocalories burned for a single exercise across all sets.
  *
  * Sets with zero weight on non-bodyweight exercises are skipped (unlogged sets).
+ *
+ * A `loadMultiplier` of 0 zeroes the exercise, and that is deliberate — it is
+ * reserved for movements with no displacement to credit (isometric holds like the
+ * plank and wall sit, and cardio). Bodyweight exercises are not in that category:
+ * each carries the fraction of body mass its movement actually shifts, so a
+ * pull-up is 0.99 and a push-up 0.70. See the `loadMultiplier` entry in AGENTS.md.
  */
 export function calculateExerciseKcal(input: MWEMInput): number {
   const { user, exercise, sets } = input;

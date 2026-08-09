@@ -192,7 +192,9 @@
       "clearAppDataAuthPrompt": "Authenticate to delete all app data",
       "clearAppDataFailedMessage": "An error occurred while clearing app data. Please try again.",
       "openSettingsFailedMessage": "Unable to open app settings. Please open them manually.",
-      "dangerZone": "DANGER ZONE"
+      "dangerZone": "DANGER ZONE",
+      "opticalTransfer": "Optical Transfer",
+      "opticalTransferSubtitle": "Move your data to another phone with light"
     },
     "chatMessages": {
       "title": "Chat Messages",

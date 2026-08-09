@@ -9,15 +9,11 @@ user whether to push hard today. Everything below respects that. Features that w
 toward all-in-one health sprawl are listed in [Deliberately out of scope](#deliberately-out-of-scope)
 rather than silently omitted.
 
-**Related docs — read these first, they are not repeated here:**
+**Related docs:**
 
-- [docs/workout-feature-gap.md](docs/workout-feature-gap.md) — the workout _mechanics_ backlog
-  (plate calculator, warm-ups, myoreps, periodization, body map, readiness score, gym profiles…).
-  Still accurate; this document adds the framing and presentation layer on top of it, and does not
-  restate its items.
-- [docs/NUTRITION_APP_COMPARISON_AND_IMPROVEMENTS.md](docs/NUTRITION_APP_COMPARISON_AND_IMPROVEMENTS.md)
+- [NUTRITION_APP_COMPARISON_AND_IMPROVEMENTS.md](NUTRITION_APP_COMPARISON_AND_IMPROVEMENTS.md)
   — earlier competitor pass; its "weight smoothing" observation is picked up and expanded below.
-- [FEATURES.md](FEATURES.md) — what actually ships today.
+- [../FEATURES.md](../FEATURES.md) — what actually ships today.
 
 ---
 
@@ -44,18 +40,20 @@ Almost every item below is a presentation or input-quality change, not a new dat
 
 ## Tier 1 — the five highest-value items
 
-### 1. Trend weight, everywhere
+### 1. Trend weight, everywhere — shipped
 
-**Gap:** there is no weight smoothing anywhere in the codebase — no EMA, no filter, no Kalman.
-Raw scale weight is what the user sees and what feeds every downstream calculation.
+**Implementation record:** see [TREND_WEIGHT_IMPLEMENTATION_PLAN.md](TREND_WEIGHT_IMPLEMENTATION_PLAN.md).
+
+**Status:** shipped. `utils/trendWeight.ts` provides the canonical alpha-0.10 EWMA with same-day
+averaging, interpolation between observations, and a 28-day warm-up for bounded reads. Progress,
+nutrition charts, check-ins, and empirical-TDEE endpoints use it; raw readings remain visible.
 
 **What good looks like:** the primary weight number the user sees is an exponentially-smoothed
 trend, with raw weigh-ins as faint dots behind it. Daily fluctuation from water, sodium and gut
 content stops reading as failure.
 
-**Build:** a `utils/trendWeight.ts` (Hacker's-Diet style EMA, α ≈ 0.25/day, or a small Kalman
-filter). Feed it into the home card, [app/app/progress.tsx](app/app/progress.tsx), the check-in, and
-the TDEE input path.
+**Follow-up:** calibrate alpha against production outcomes if needed. A home card remains a separate
+dashboard-information-architecture decision, and there is no user-facing smoothing control.
 
 **Why it's first:** cheapest change with the largest perceived-quality jump, and it is a
 prerequisite for items 2 and 3.
@@ -64,17 +62,16 @@ prerequisite for items 2 and 3.
 
 ### 2. Fit the whole weight series, not two endpoints
 
-**Gap:** [utils/historicalNutritionParams.ts:113](utils/historicalNutritionParams.ts#L113) derives
-empirical TDEE by comparing the **first week's average** to the **last week's average**, discarding
-every week in between. It is better than raw endpoints, but a user who weighed in once during week 1
-has their entire expenditure estimate anchored to a single reading.
+**Gap:** [utils/historicalNutritionParams.ts](../utils/historicalNutritionParams.ts) derives
+empirical TDEE from the **initial and final trend-weight endpoints**, discarding every point in
+between. This is calmer than raw or weekly-average endpoints but still leaves information unused.
 
 **What good looks like:** a weighted regression over trend weight across the full window. More
 robust, and it yields the confidence interval that makes item 3 credible.
 
 **Build:** extend `getHistoricalNutritionParams` to return a fitted rate-of-change plus a confidence
 band instead of two scalar endpoints; `calculateTDEE` in
-[utils/nutritionCalculator.ts:809](utils/nutritionCalculator.ts#L809) consumes the fitted delta. The
+[utils/nutritionCalculator.ts:809](../utils/nutritionCalculator.ts#L809) consumes the fitted delta. The
 thermodynamic model underneath — tissue coefficients, adaptive thermogenesis, drift correction — is
 already strong and does not change.
 
@@ -104,11 +101,11 @@ strength-specific strain as more useful than the cardio-biased strain scores in 
 — and we already have the data layer that makes it accurate.
 
 **Build:** `calculateMuscleGroupVolume` in
-[database/services/WorkoutAnalytics.ts](database/services/WorkoutAnalytics.ts) already produces the
+[database/services/WorkoutAnalytics.ts](../database/services/WorkoutAnalytics.ts) already produces the
 numbers; `MuscleService` has the seed data. The work is purely an SVG component (native + web).
 
-**Note:** also listed as item 9 in [docs/workout-feature-gap.md](docs/workout-feature-gap.md), where
-it sits last in the build order. This research argues for promoting it — it is the highest
+**Priority:** earlier workout-gap research placed this behind new logging mechanics. The broader
+product research argues for promoting it: the data layer already exists, making this the highest
 value-per-effort item in the workout tab and the one that makes it feel like a product rather than a
 log.
 
@@ -124,7 +121,7 @@ a preview of that day's meals grouped by meal type with per-item checkboxes, and
 Reachable from an inline prompt on any empty day and from the daily-summary menu.
 
 **Where it lives:** `NutritionService.copyNutritionLogsPreservingMealType` and
-`getRecentLoggedDays`; selection logic in [utils/copyDaySelection.ts](utils/copyDaySelection.ts);
+`getRecentLoggedDays`; selection logic in [utils/copyDaySelection.ts](../utils/copyDaySelection.ts);
 `components/modals/CopyDayFromHistoryModal.tsx` and `components/nutrition/CopyDayPromptCard.tsx`.
 
 Two invariants that are load-bearing and easy to break:
@@ -149,7 +146,7 @@ Two invariants that are load-bearing and easy to break:
   that as an explicit **mode** removes the "is this thing overriding me?" anxiety that kills trust
   in adaptive apps.
 - **Weekly automatic target updates with a narrated "here's why."** We already have check-ins and
-  [utils/dynamicNutritionTarget.ts](utils/dynamicNutritionTarget.ts). The port is making the update
+  [utils/dynamicNutritionTarget.ts](../utils/dynamicNutritionTarget.ts). The port is making the update
   _scheduled and explained_ — "expenditure rose ~90 kcal, so your target moved" — rather than
   something the user must go looking for.
 - **Adherence-neutral framing, stated out loud.** Because expenditure is inferred from weight change
@@ -187,7 +184,7 @@ The quietly decisive half. None of this is glamorous; all of it is felt daily.
 
 - **Daily nutrition quality score.** We are ~80% there:
   `getExternalProductDisplayQuality` already normalizes Nutri-Score / Eco-Score / NOVA into
-  `FoodDisplayQuality` ([utils/foodDisplayQuality.ts](utils/foodDisplayQuality.ts)), and
+  `FoodDisplayQuality` ([utils/foodDisplayQuality.ts](../utils/foodDisplayQuality.ts)), and
   `NutritionQualityData` renders it per food. Nothing rolls it up to a **day-level** figure weighted
   by gram or kcal contribution. Doing so lets the diary answer _"did I eat well?"_ and not only
   _"did I hit my numbers?"_ — which was the headline feature of the researched app's latest
@@ -205,24 +202,106 @@ The quietly decisive half. None of this is glamorous; all of it is felt daily.
 
 ## Workouts
 
-The mechanics backlog lives in [docs/workout-feature-gap.md](docs/workout-feature-gap.md) and is not
-repeated. What this research adds is framing:
+Musclog already has the foundation this backlog should build on: RIR-aware logging and 1RM
+calculations, drop sets, supersets, partial reps, templates and programs, free sessions, exercise
+reordering, history and charts, custom exercises, smart double progression, intra-session RIR
+adjustment, goal projection, suggested starting weights, body metrics and mood tracking, AI
+coaching, and Health Connect/HealthKit sync. The gaps below add mechanics or surface more value from
+that existing data.
 
-- **Readiness should output a verdict, not a score.** The readiness item is already specced as a
-  0–100 composite. The most-cited complaint across every health app in this space is _opaque
-  scores_. Ship the **verdict** — "push hard / normal / back off" — with the two or three reasons
-  listed beneath it, and let the number be secondary or hidden. We have no readiness code yet, so
-  this is a chance to get it right the first time rather than retrofit an explanation onto a number.
+### High-value presentation and session improvements
+
 - **Progressive-overload nudges at the point of entry.** We already have smart double progression,
   `getProgressiveOverloadData`, `getRecentFirstSetAverage1RM`, and previous-set display in
-  [app/app/workout/workout-session.tsx:1315](app/app/workout/workout-session.tsx#L1315). What's
-  missing is the _nudge_: "you hit the top of the rep range twice — try +2.5 kg." The computation
-  exists; it just isn't in front of the user at the moment of decision.
-- **e1RM trend per exercise as a headline strength metric.** Calculated in
-  [utils/workoutCalculator.ts](utils/workoutCalculator.ts) and used inside exercise goals, but never
-  charted per lift. "Your bench e1RM is up 6 kg in 8 weeks" is the number lifters actually want.
-- **Auto-start the rest timer on set completion.** There is no `autoStart` anywhere in the codebase
-  — the user currently taps twice for something that should be automatic.
+  `app/app/workout/workout-session.tsx`. Add the missing nudge at the moment of decision: "you hit
+  the top of the rep range twice — try +2.5 kg."
+- **e1RM trend per exercise as a headline strength metric.** It is calculated in
+  `utils/workoutCalculator.ts` and used inside exercise goals, but never charted per lift. "Your
+  bench e1RM is up 6 kg in 8 weeks" is the number lifters actually want.
+- **Auto-start the rest timer on set completion.** There is no `autoStart` path today; the user taps
+  twice for something that should be automatic.
+- **Explicit PR highlights.** Volume and history exist, but post-workout summaries should call out
+  new rep, weight, volume, and estimated-1RM records.
+- **Smart in-session exercise swaps.** Exercise selection exists; use equipment, muscle group,
+  session context, and history to suggest equivalent substitutions.
+
+### Workout mechanics backlog
+
+#### Plate calculator and gym profiles
+
+A plate calculator should take the target total, subtract the bar, and show the plates needed per
+side. It must respect the available denominations, flag weights that cannot be built exactly rather
+than silently round, and allow non-standard bar weights per exercise. Put it in a modal or bottom
+sheet reachable from set logging.
+
+Named gym profiles (home, commercial, travel) should define bars, plate denominations, machines,
+and achievable increments. A session chooses a profile; both the plate calculator and progression
+algorithm consume it. This likely requires a `GymProfile` model, settings editor, and session-start
+selector. The calculator can ship first with settings-level defaults, then adopt profiles.
+
+#### Smart warm-up suggestions
+
+Generate three or four removable warm-up sets from the working target (for example, 40%, 55%, 70%,
+and 85% with decreasing reps). Mark warm-ups separately and exclude them from working-set and volume
+analytics. Support a global toggle plus a per-session override; integrate generation into the
+session start flow or `useWorkoutSessionState`.
+
+#### Readiness and volume autoregulation
+
+Combine sleep duration/quality from Health Connect or HealthKit, recent training load from
+`WorkoutAnalytics`, and the existing daily mood input. Store the result as a daily metric, but make
+the primary output an explained verdict — **push hard / normal / back off** — rather than an opaque
+0–100 score. Show the two or three contributing reasons and keep the numeric score secondary.
+
+Before a session, a low-readiness verdict can suggest trimming set count (for example, four sets to
+three). The user must be able to accept, dismiss, or restore the sets in one tap. Store that choice
+to support later calibration. The volume adjustment depends on the readiness model and should not
+ship independently.
+
+#### Left/right asymmetrical logging
+
+For exercises marked unilateral, allow separate weight and reps for each side in the same set.
+Add optional left/right fields to `WorkoutLogSet` while keeping current fields for backward
+compatibility, expose the inputs in set details, and define volume aggregation explicitly. This
+removes the current workaround of creating two exercises and makes imbalances visible.
+
+#### Advanced set types
+
+- **Myoreps / rest-pause clusters:** group one near-failure activation set and its short-rest
+  mini-sets as a single visual unit with individual rep counts. Treat it distinctly in set-count and
+  volume analytics instead of inflating normal-set totals.
+- **Failure sets:** add an explicit failure designation rather than treating it as RIR 0. Intentional
+  failure is analytically different from a hard-but-not-maximal set and should be programmable.
+
+Model these as deliberate set-type semantics rather than accumulating unrelated booleans if the
+schema can support a clean migration from the existing `is_drop_set` field.
+
+#### Per-cycle program periodization
+
+Allow each program week or cycle to vary sets, rep ranges, and RIR targets. This supports linear
+periodization, rep ladders, intensity blocks, and deloads without duplicating templates. A
+`cycle_config`-style structure on the template is one option, but normalize it if the editor and
+query needs outgrow JSON. The session-start flow applies the active cycle.
+
+#### Workout sections
+
+Let users group exercises under named headings such as Main Work, Accessories, and Core. Add section
+identity and ordering to template and log exercises, render headers in session/history, and expose
+section assignment in the program editor. Avoid using only a free-text field if stable reordering or
+renaming requires a first-class section record.
+
+### Lower-priority workout backlog
+
+| Feature                      | Current gap / direction                                                                            |
+| ---------------------------- | -------------------------------------------------------------------------------------------------- |
+| Session pause/resume         | Persist an in-progress session as a recoverable draft across app restarts.                         |
+| Progress photos              | Verify the current body-metrics flow, then add a dedicated comparison experience if absent.        |
+| Exercise technique videos    | `ViewExerciseModal` is a natural surface, but content hosting and licensing need a strategy first. |
+| Spreadsheet program import   | Target a specific, validated format before building a generic importer.                            |
+| Dashboard section reordering | Add only after the core dashboard/card structure stabilizes.                                       |
+
+The muscle-group body map is specified in Tier 1 above. Wearable recovery input is part of the
+readiness proposal rather than a separate feature.
 
 ---
 
@@ -274,8 +353,8 @@ Listed so the decision is explicit and doesn't get relitigated:
 
 Ordered by value-per-effort, with dependencies respected.
 
-1. **Trend weight** — unblocks 2 and 3; smallest diff on this list.
-2. **Whole-series regression for empirical TDEE** — correctness improvement, not just a feature.
+1. ~~**Trend weight**~~ — ✅ shipped; it unblocks 2 and 3.
+2. **Whole-series regression for empirical TDEE** — the next correctness improvement.
 3. **Expenditure hero screen** — turns our best hidden asset into the reason people stay.
 4. **Muscle-group body map** — data layer already exists; pure presentation work.
 5. ~~**Copy day / repeat meal**~~ — ✅ shipped.
@@ -284,7 +363,13 @@ Ordered by value-per-effort, with dependencies respected.
 8. **Non-punitive copy pass** — cheap, cross-cutting, no schema changes.
 9. **Coaching modes (Coached / Collaborative / Manual)** — reframes existing multi-goal support.
 10. **Overload nudges at point of entry + rest-timer auto-start** — small, high-frequency wins.
-11. **Readiness as a verdict** — coordinate with items 4/5 in
-    [docs/workout-feature-gap.md](docs/workout-feature-gap.md).
+11. **Readiness verdict, then volume auto-adjustment** — combine existing mood, sleep, and training
+    load; make the output actionable and explained.
 12. **Weekly micro coverage, micro targets, weekly report** — the analytics digest cluster.
 13. **Diet breaks, calorie cycling, rate-of-change goals** — the advanced-goal cluster.
+14. **Plate calculator, then gym profiles** — ship the immediate set-logging utility before the
+    larger multi-location equipment model.
+15. **Smart warm-ups and explicit advanced set types** — add volume-exclusion semantics alongside
+    the new logging mechanics.
+16. **Asymmetrical logging, workout sections, and periodization** — valuable structural changes
+    that each require coordinated schema, editor, session, history, and analytics work.

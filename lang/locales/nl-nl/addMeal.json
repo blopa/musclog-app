@@ -8,6 +8,8 @@
     "generateMealAIDesc": "Laat AI een maaltijd voorstellen op basis van je voorkeuren",
     "manageCategories": "Categorieën beheren",
     "manageCategoriesDesc": "Organiseer je maaltijdcategorieën (ontbijt, lunch, enz.)",
+    "importFromPhone": "Importeren vanaf een andere telefoon",
+    "importFromPhoneDesc": "Scan een maaltijd die vanaf een andere telefoon wordt verstuurd",
     "title": "Maaltijd toevoegen"
   }
 }
