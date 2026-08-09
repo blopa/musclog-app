@@ -15,6 +15,16 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     };
   }
 
+  // The blog loaders are web-only (they read Markdown with `node:fs/promises`), but they still
+  // reach the native graph: expo-router's native require.context matches the `blog/*.web.tsx`
+  // route files, and Metro resolves their `await import()` statically. See blog-posts-server-stub.js.
+  if (platform !== 'web' && /(^|\/)blogPosts\.server$/.test(moduleName)) {
+    return {
+      filePath: path.resolve(__dirname, 'blog-posts-server-stub.js'),
+      type: 'sourceFile',
+    };
+  }
+
   return context.resolveRequest(context, moduleName, platform);
 };
 
