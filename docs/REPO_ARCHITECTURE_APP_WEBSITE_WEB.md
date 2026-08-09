@@ -64,6 +64,7 @@ The public site lives under the route group [`app/(website)/`](/app/%28website%2
 Examples:
 
 - `/home`
+- `/blog`
 - `/privacy`
 - `/terms`
 - `/contact`
@@ -97,6 +98,29 @@ Several website routes also have native stubs such as:
 - [`app/(website)/calculator.tsx`](/app/%28website%29/calculator.tsx)
 
 These simply redirect to `/app` on native, which is a clean way to say: this content is part of the public website, not part of the mobile app UX.
+
+### Blog content
+
+The static `/blog` index discovers Markdown files recursively under
+[`app/(website)/posts`](/app/%28website%29/posts). Each post must provide YAML frontmatter with a
+`title`, `date` (`YYYY-MM-DD`), `category`, and `tags` array; `description` is optional and otherwise
+comes from the first prose in the Markdown body. The route's Expo static loader runs only at build
+time, reads the files through [`utils/blogPosts.server.ts`](/utils/blogPosts.server.ts), and embeds the
+sorted summaries in the exported page. `unstable_useServerDataLoaders` must remain enabled on the
+`expo-router` plugin in `app.json` for this build-time content step.
+
+Expo Router 57.0.11 still labels data loaders as alpha. Its client-side loader path builder receives
+the filesystem context key for this platform-specific grouped route (`/(website)/blog.web`) during
+development, while the dev-server manifest correctly exposes the loader at `/blog`.
+[`patches/expo-router+57.0.11.patch`](/patches/expo-router+57.0.11.patch) normalizes that context key
+only when it has a `.web` suffix, removing route-group segments and the suffix before requesting the
+loader. Remove the patch once Expo Router includes an equivalent upstream fix, and recheck both
+`npm run web` navigation and static export when upgrading it.
+
+`generateStaticParams` is intentionally not exported by the index because `/blog` has no dynamic
+segment. When individual post pages are added, their dynamic route (for example,
+`blog/[...slug].web.tsx`) should export `generateStaticParams` from the same discovered post slugs so
+Expo emits one static HTML file per Markdown post.
 
 ## Why `musclog.app/app` Exists
 

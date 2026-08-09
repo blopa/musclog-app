@@ -370,6 +370,13 @@ export function Header() {
           >
             {t('alternatives')}
           </Link>
+          <Link
+            href="/blog"
+            className="text-sm transition-colors hover:text-[#22C55E]"
+            style={{ color: '#F3F4F6' }}
+          >
+            {t('blog')}
+          </Link>
           <a
             href="https://github.com/blopa/musclog-app"
             target="_blank"
@@ -417,6 +424,7 @@ export function Footer() {
     { text: navT('gameboy'), href: '/gameboy' },
     { text: 'FAQ', href: '/faq' },
     { text: navT('alternatives'), href: '/alternatives' },
+    { text: navT('blog'), href: '/blog' },
     { text: t('license'), href: 'https://github.com/blopa/musclog-app/blob/main/LICENSE' },
     { text: t('github'), href: 'https://github.com/blopa/musclog-app' },
   ];

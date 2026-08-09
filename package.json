@@ -169,6 +169,7 @@
     "expo-web-browser": "~57.0.2",
     "fflate": "^0.8.3",
     "glob": "13.0.6",
+    "gray-matter": "^4.0.3",
     "html-to-image": "^1.11.13",
     "i18next": "26.3.6",
     "ics": "3.12.0",

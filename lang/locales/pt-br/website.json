@@ -56,6 +56,10 @@
         "alternatives": {
           "title": "Musclog vs. alternativas — Comparação honesta de apps",
           "description": "Veja como o Musclog se compara a MyFitnessPal, MacroFactor, Cronometer, Bevel, Lifesum, Hevy e mais em privacidade, nutrição, treinos e acompanhamento completo da saúde."
+        },
+        "blog": {
+          "title": "Blog do Musclog — Fitness open source e tecnologia",
+          "description": "Leia artigos sobre o Musclog, desenvolvimento open source, privacidade, tecnologia fitness e as ideias por trás do app."
         }
       }
     },
@@ -310,7 +314,16 @@
       "exercises": "Exercícios",
       "gameboy": "Game Boy",
       "language": "Idioma",
-      "alternatives": "Alternativas"
+      "alternatives": "Alternativas",
+      "blog": "Blog"
+    },
+    "blog": {
+      "eyebrow": "Direto da oficina",
+      "title": "Blog do Musclog",
+      "description": "Notas sobre a criação de um app de fitness privado e open source — das decisões de produto à tecnologia por trás dele.",
+      "empty": "Ainda não há artigos publicados.",
+      "listLabel": "Artigos do blog",
+      "tagsLabel": "Tags do artigo"
     },
     "gameboy": {
       "pageTitle": "Jogue Musclog no Game Boy",

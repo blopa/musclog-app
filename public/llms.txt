@@ -23,5 +23,6 @@ Musclog is built and maintained in the open; the full source is on GitHub. This 
 ## Source & Extras
 
 - [GitHub Repository](https://github.com/blopa/musclog-app): Full source code, issues, and license (open-source).
+- [Blog](https://musclog.app/blog): Articles about Musclog, open-source development, privacy, fitness technology, and the ideas behind the app.
 - [Rep Marker Tool](https://musclog.app/rep-marker): Browser tool for uploading and labeling rep-counting training data.
 - [Game Boy Edition](https://musclog.app/gameboy): A Game Boy Color version of Musclog, playable in-browser.

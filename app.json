@@ -26,7 +26,12 @@
       "expo-system-ui",
       "react-native-edge-to-edge",
       "expo-localization",
-      "expo-router",
+      [
+        "expo-router",
+        {
+          "unstable_useServerDataLoaders": true
+        }
+      ],
       [
         "expo-splash-screen",
         {
