@@ -14,9 +14,14 @@ import { act, renderHook } from '@testing-library/react';
 import { TextEncoder as NodeTextEncoder } from 'node:util';
 
 import { useOpticalReceiver } from '@/hooks/useOpticalReceiver';
-import { packOpticalContainer } from '@/utils/optical/container';
+import {
+  OPTICAL_EXPORT_VERSION_SHARE,
+  OPTICAL_PAYLOAD_KIND_SHARE,
+  packOpticalContainer,
+} from '@/utils/optical/container';
 import { getOpticalPreset } from '@/utils/optical/presets';
 import { OpticalStream } from '@/utils/optical/senderSession';
+import { parseShareEnvelope, type MealShareEnvelope } from '@/utils/share/shareEnvelope';
 
 // jsdom ships no TextEncoder. Hermes has it natively and the Jest `node` project inherits Node's,
 // so this gap is specific to this test environment and not something the app ever hits.
@@ -41,6 +46,7 @@ const preset = getOpticalPreset('tiny');
 const FRAME = { height: 480, width: 640 };
 
 let container: Uint8Array;
+let shareContainer: Uint8Array;
 
 beforeAll(async () => {
   // Deliberately high-entropy: a repetitive dump gzips down to a single source block, and a
@@ -63,14 +69,43 @@ beforeAll(async () => {
   // Built with real timers — packing yields through setTimeout to keep the UI alive, which fake
   // timers would stall.
   ({ container } = await packOpticalContainer(dump));
+
+  const share: MealShareEnvelope = {
+    _musclogShare: 1,
+    createdAtMs: 1,
+    kind: 'meal',
+    kindVersion: 1,
+    records: {
+      foods: [{ id: 'food-1', name: 'Rice' }],
+      meal_foods: [{ amount: 100, food_id: 'food-1', id: 'mf-1', meal_id: 'meal-1' }],
+      meals: [{ id: 'meal-1', name: 'Rice bowl' }],
+    },
+    rootId: 'meal-1',
+    rootTable: 'meals',
+    summary: {
+      hasImage: false,
+      ingredients: [{ amount: 100, calories: 130, name: 'Rice', unit: 'g' }],
+      name: 'Rice bowl',
+      nutritionBasis: 'per_recipe',
+      totals: { calories: 130, carbs: 28, fat: 0.3, fiber: 0.4, protein: 2.7 },
+    },
+  };
+  ({ container: shareContainer } = await packOpticalContainer(JSON.stringify(share), {
+    exportVersion: OPTICAL_EXPORT_VERSION_SHARE,
+    payloadKind: OPTICAL_PAYLOAD_KIND_SHARE,
+  }));
 });
 
 /**
  * Feed frames one act() at a time so React commits between iterations — reading `result.current`
  * from inside a single long act() would only ever see the pre-flush value.
  */
-function runTransfer(result: { current: ReturnType<typeof useOpticalReceiver> }, maxFrames = 500) {
-  const stream = new OpticalStream(container, preset, 4242);
+function runTransfer(
+  result: { current: ReturnType<typeof useOpticalReceiver> },
+  maxFrames = 500,
+  transferContainer = container
+) {
+  const stream = new OpticalStream(transferContainer, preset, 4242);
   const seen: number[] = [];
 
   for (let seq = 0; seq < maxFrames; seq++) {
@@ -157,5 +192,26 @@ describe('useOpticalReceiver progress', () => {
     expect(result.current.fraction).toBe(0);
     expect(result.current.payloadBytes).toBe(0);
     expect(result.current.phase).toBe('collecting');
+  });
+
+  it('publishes and parses a tiny share payload through the real stream', async () => {
+    const stream = new OpticalStream(shareContainer, preset, 4242);
+    expect(stream.k).toBeLessThanOrEqual(2);
+
+    const { result } = renderHook(() => useOpticalReceiver({ active: true }));
+    runTransfer(result, 50, shareContainer);
+    await act(async () => {
+      for (let i = 0; i < 100 && result.current.phase !== 'verified'; i++) {
+        jest.advanceTimersByTime(50);
+        await Promise.resolve();
+      }
+    });
+
+    expect(result.current.phase).toBe('verified');
+    expect(result.current.meta).toMatchObject({
+      exportVersion: OPTICAL_EXPORT_VERSION_SHARE,
+      payloadKind: OPTICAL_PAYLOAD_KIND_SHARE,
+    });
+    expect(parseShareEnvelope(result.current.takeJson() as string).summary.name).toBe('Rice bowl');
   });
 });

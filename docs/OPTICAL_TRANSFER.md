@@ -202,6 +202,55 @@ vectors. If one fails you have not broken a test, you have broken compatibility;
 header version bump, not a re-recorded constant. Jest runs on V8, so the on-device sweep in the
 bench is the other half of that guarantee.
 
+## Carrying something smaller than a database
+
+The optical pipeline also carries a single meal and the food/portion rows it depends on. The wire
+below the container is unchanged: byte 54 of the v1 container header, formerly the low byte of a
+zeroed reserved `u16`, is now `payloadKind` (`0` database, `1` share envelope). Byte 55 remains
+reserved. A database container still writes zero at both positions and is therefore byte-identical
+to one produced before shares existed.
+
+Share JSON is wrapped as `{ _musclogShare, kind, kindVersion, records, rootTable, rootId, ... }`.
+`utils/share/shareKinds.ts` is the registry of allowed tables, foreign keys, dedupe rules, forced
+columns, and asset columns. Meals are the first kind. Their preview summary is display-only; the
+importer always writes the carried rows and never derives authoritative data from summary totals.
+Adding a future kind means adding a registry entry, builder, preview branch, and translations — not
+changing fountain frames.
+
+### Why shares cannot look like export dumps
+
+`restoreDatabase(json)` wipes the receiver, while its table keys are deliberately permissive for
+older exports. Two independent guards protect an old build that knows nothing about shares:
+
+| guard                                                                 | what it prevents          | old-build behaviour                                                                                                        |
+| --------------------------------------------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| Rows live under `records`; there is **no top-level `_exportVersion`** | data loss                 | `validateExportDump` rejects the JSON before `createPreRestoreBackup` and `unsafeResetDatabase`                            |
+| Share containers declare `exportVersion = 0xFFFF`                     | a misleading restore flow | the old receive screen sees a version newer than its database schema and disables Replace with its existing update message |
+
+The first guard is the catastrophe prevention; the sentinel is the better experience. Both are
+compatibility contracts. A new receiver additionally requires `payloadKind === 0` before it renders
+the destructive restore path. Never express that check as “not a share”: an unknown future kind
+must be refused, not treated as a database.
+
+Meal sending has no passphrase path. It is an explicit nearby-device share of one recipe rather
+than an archive of the user's whole profile, so the UI avoids suggesting it inherits the export
+encryption setting. The tradeoff is straightforward: while the codes are visible, another camera
+could read the recipe.
+
+The photo toggle defaults off because the image dominates transfer time. A five-ingredient meal is
+about 2.5 KB of JSON, roughly 1 KB after gzip (`k ≈ 2` at `tiny`), so it completes in under a second.
+A 60 KB JPEG becomes about 80 KB of base64 and still compresses to roughly 62 KB (`k ≈ 110`), or
+about 17 seconds at 8 fps. `useOpticalSender` computes the displayed estimate from the actual
+packed container. Repacking after a toggle reuses the device calibration; changing density still
+re-slices the retained container without rebuilding the meal.
+
+Import planning is pure (`utils/share/shareImportPlan.ts`): it drops tombstones, assigns local IDs,
+prunes unused portions, rewrites every ordinary and polymorphic foreign key, and fails if any sender
+ID would leak through. File writes happen before the one WatermelonDB writer and are cleaned up if
+the batch fails. Dedupe reads happen inside that writer to avoid TOCTOU races. The importer does
+not call the form-oriented `syncMealPortionFromForm`: that helper clears and re-derives portions from UI
+state, while a share already carries authoritative portion rows.
+
 ## Sender pacing
 
 Two bugs found on real hardware, both worth not reintroducing:
@@ -249,7 +298,13 @@ clamp does not — or the sender generates live forever, which is slower but alw
 | `utils/optical/progress.ts`                       | overhead model, progress and ETA                        |
 | `utils/optical/noSignal.ts`                       | when to show the "nothing is decoding" hint             |
 | `utils/optical/bench.ts`                          | device calibration and the Phase 0 measurements         |
+| `utils/share/shareEnvelope.ts`                    | bounded, versioned share envelope parser                |
+| `utils/share/shareKinds.ts`                       | share-kind table/FK/dedupe registry                     |
+| `utils/share/shareImportPlan.ts`                  | pure ID/FK rewrite and prune planner                    |
+| `database/share/buildMealShare.ts`                | builds one meal and its dependency graph                |
+| `database/share/importShareEnvelope.ts`           | atomic, non-destructive share importer                  |
 | `components/optical/OpticalQrCanvas.tsx`          | Skia draw, integer module scaling                       |
+| `components/optical/OpticalMealSharePreview.tsx`  | verified meal preview before saving                     |
 | `components/optical/OpticalScannerCamera.tsx`     | receiving camera (vision-camera)                        |
 | `components/SmartCameraFrame.tsx`                 | shared aiming frame + scrim, `portrait` variant here    |
 | `components/optical/OpticalQrCanvas.web.tsx`      | Skia-free DOM canvas, same integer scaling              |

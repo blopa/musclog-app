@@ -8,6 +8,8 @@
     "generateMealAIDesc": "Deja que la IA sugiera una comida basada en tus preferencias",
     "manageCategories": "Gestionar Categorías",
     "manageCategoriesDesc": "Organiza tus categorías de comidas (desayuno, almuerzo, etc.)",
+    "importFromPhone": "Importar desde otro teléfono",
+    "importFromPhoneDesc": "Escanea una comida enviada desde otro teléfono",
     "title": "Añadir Comida"
   }
 }

@@ -10,10 +10,11 @@
  * Progress is FRAMES COLLECTED, not blocks solved — see `docs/OPTICAL_TRANSFER.md`.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { OpticalMealSharePreview } from '@/components/optical/OpticalMealSharePreview';
 import { OpticalScannerCamera } from '@/components/optical/OpticalScannerCamera';
 import { SmartCameraTopActions } from '@/components/SmartCameraActions';
 import { Button } from '@/components/theme/Button';
@@ -22,6 +23,7 @@ import { SecretInput } from '@/components/theme/SecretInput';
 import { CURRENT_DATABASE_VERSION } from '@/constants/database';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { restoreDatabase } from '@/database/importDb';
+import { importShareEnvelope, type ShareImportResult } from '@/database/share/importShareEnvelope';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useOpticalReceiver } from '@/hooks/useOpticalReceiver';
 import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
@@ -29,6 +31,11 @@ import { useTheme } from '@/hooks/useTheme';
 import { reloadApp } from '@/utils/app';
 import { authenticateForDangerousAction } from '@/utils/dangerousActionAuth';
 import { handleError } from '@/utils/handleError';
+import {
+  OPTICAL_PAYLOAD_KIND_DATABASE,
+  OPTICAL_PAYLOAD_KIND_SHARE,
+} from '@/utils/optical/container';
+import { parseShareEnvelope } from '@/utils/share/shareEnvelope';
 
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -36,9 +43,16 @@ import { FullScreenModal } from './FullScreenModal';
 interface OpticalReceiveModalProps {
   visible: boolean;
   onClose: () => void;
+  accept?: 'any' | 'share';
+  onShareImported?: () => void;
 }
 
-export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalProps) {
+export function OpticalReceiveModal({
+  visible,
+  onClose,
+  accept = 'any',
+  onShareImported,
+}: OpticalReceiveModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { showSnackbar } = useSnackbar();
@@ -56,6 +70,8 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
   const [passphrase, setPassphrase] = useState('');
   const [restoring, setRestoring] = useState(false);
   const [restored, setRestored] = useState(false);
+  const [savingShare, setSavingShare] = useState(false);
+  const [shareResult, setShareResult] = useState<ShareImportResult>();
   const [torchEnabled, setTorchEnabled] = useState(false);
   const [torchAvailable, setTorchAvailable] = useState(false);
 
@@ -77,18 +93,42 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
 
   // A backup written by a newer app cannot be understood by this one. Zod would eventually reject
   // it, but only after the wipe and a wall of validation errors — so refuse up front.
-  const tooNew = Boolean(meta && meta.exportVersion > CURRENT_DATABASE_VERSION);
+  const isDatabase = meta?.payloadKind === OPTICAL_PAYLOAD_KIND_DATABASE;
+  const isShare = meta?.payloadKind === OPTICAL_PAYLOAD_KIND_SHARE;
+  const tooNew = Boolean(isDatabase && meta.exportVersion > CURRENT_DATABASE_VERSION);
+  const databaseRefused = Boolean(meta && accept === 'share' && isDatabase);
+  const unknownPayload = Boolean(meta && !isDatabase && !isShare);
+  const shareEnvelope = useMemo(() => {
+    if (phase !== 'verified' || !isShare) {
+      return undefined;
+    }
+    const json = receiver.takeJson();
+    if (!json) {
+      return undefined;
+    }
+    try {
+      return parseShareEnvelope(json);
+    } catch {
+      return undefined;
+    }
+  }, [isShare, phase, receiver]);
+  const invalidShare = phase === 'verified' && isShare && !shareEnvelope;
 
   const handleClose = useCallback(() => {
     receiver.reset();
     setPassphrase('');
     setRestored(false);
+    setSavingShare(false);
+    setShareResult(undefined);
     // Never leave the torch burning behind a closed modal.
     setTorchEnabled(false);
     onClose();
   }, [onClose, receiver]);
 
   const handleRestore = useCallback(async () => {
+    if (meta?.payloadKind !== OPTICAL_PAYLOAD_KIND_DATABASE) {
+      return;
+    }
     const json = receiver.takeJson();
     if (!json) {
       return;
@@ -122,7 +162,33 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
     } finally {
       setRestoring(false);
     }
-  }, [receiver, showSnackbar, t]);
+  }, [meta?.payloadKind, receiver, showSnackbar, t]);
+
+  const handleScanAgain = useCallback(() => {
+    setPassphrase('');
+    setSavingShare(false);
+    setShareResult(undefined);
+    receiver.reset();
+  }, [receiver]);
+
+  const handleSaveShare = useCallback(async () => {
+    if (!shareEnvelope) {
+      return;
+    }
+    setSavingShare(true);
+    try {
+      const result = await importShareEnvelope(shareEnvelope);
+      setShareResult(result);
+      showSnackbar('success', t('opticalTransfer.share.savedTitle'));
+      onShareImported?.();
+    } catch (error) {
+      handleError(error, 'OpticalReceiveModal.handleSaveShare', {
+        snackbarMessage: t('opticalTransfer.share.saveFailed'),
+      });
+    } finally {
+      setSavingShare(false);
+    }
+  }, [onShareImported, shareEnvelope, showSnackbar, t]);
 
   return (
     <FullScreenModal
@@ -130,7 +196,11 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
       scrollable={false}
       showHeader={!isScanning}
       subtitle={t('opticalTransfer.receive.subtitle')}
-      title={t('opticalTransfer.receive.title')}
+      title={
+        accept === 'share'
+          ? t('opticalTransfer.share.receiveMealTitle')
+          : t('opticalTransfer.receive.title')
+      }
       visible={visible}
     >
       <View className="flex-1">
@@ -231,13 +301,30 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
           </View>
         ) : null}
 
-        {phase === 'unpacking' ? (
+        {databaseRefused || unknownPayload ? (
+          <View className="gap-4 px-4 py-10">
+            <Text className="text-center" style={{ color: theme.colors.status.error }}>
+              {databaseRefused
+                ? t('opticalTransfer.share.notAMeal')
+                : t('opticalTransfer.receive.tooNew')}
+            </Text>
+            <Button
+              label={t('opticalTransfer.receive.scanAgain')}
+              onPress={handleScanAgain}
+              size="sm"
+              variant="outline"
+              width="full"
+            />
+          </View>
+        ) : null}
+
+        {phase === 'unpacking' && !databaseRefused && !unknownPayload ? (
           <View className="flex-1 justify-center px-4">
             <ProgressIndicator message={t('opticalTransfer.receive.verifying')} />
           </View>
         ) : null}
 
-        {phase === 'passphrase' ? (
+        {phase === 'passphrase' && !databaseRefused && !unknownPayload ? (
           <View className="gap-4 px-4 py-8">
             <Text className="text-text-secondary">
               {t('opticalTransfer.receive.passphrasePrompt')}
@@ -263,7 +350,7 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
           </View>
         ) : null}
 
-        {phase === 'verified' && meta ? (
+        {phase === 'verified' && meta && isDatabase && accept === 'any' ? (
           <View className="gap-4 px-4 py-6">
             <View
               className="gap-2 rounded-xl p-4"
@@ -332,6 +419,65 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
           </View>
         ) : null}
 
+        {phase === 'verified' && isShare && shareEnvelope ? (
+          <View className="gap-4 px-4 py-6">
+            {shareResult ? (
+              <View className="gap-4">
+                <Text
+                  className="text-center text-lg font-bold"
+                  style={{ color: theme.colors.status.success }}
+                >
+                  {t('opticalTransfer.share.savedTitle')}
+                </Text>
+                {shareResult.reused.filter((item) => item.table === 'foods').length > 0 ? (
+                  <Text className="text-center text-sm text-text-secondary">
+                    {t('opticalTransfer.share.savedReusedFoods', {
+                      count: shareResult.reused.filter((item) => item.table === 'foods').length,
+                    })}
+                  </Text>
+                ) : null}
+                <Button
+                  label={t('common.close')}
+                  onPress={handleClose}
+                  size="sm"
+                  variant="accent"
+                  width="full"
+                />
+              </View>
+            ) : (
+              <>
+                <OpticalMealSharePreview summary={shareEnvelope.summary} />
+                {savingShare ? (
+                  <ProgressIndicator message={t('opticalTransfer.share.saving')} />
+                ) : (
+                  <Button
+                    label={t('opticalTransfer.share.saveToMyMeals')}
+                    onPress={() => void handleSaveShare()}
+                    size="sm"
+                    variant="accent"
+                    width="full"
+                  />
+                )}
+              </>
+            )}
+          </View>
+        ) : null}
+
+        {invalidShare ? (
+          <View className="gap-4 px-4 py-10">
+            <Text className="text-center" style={{ color: theme.colors.status.error }}>
+              {t('opticalTransfer.receive.tooNew')}
+            </Text>
+            <Button
+              label={t('opticalTransfer.receive.scanAgain')}
+              onPress={handleScanAgain}
+              size="sm"
+              variant="outline"
+              width="full"
+            />
+          </View>
+        ) : null}
+
         {phase === 'error' ? (
           <View className="gap-4 px-4 py-10">
             <Text className="text-center" style={{ color: theme.colors.status.error }}>
@@ -347,7 +493,7 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
             </Text>
             <Button
               label={t('opticalTransfer.receive.scanAgain')}
-              onPress={receiver.reset}
+              onPress={handleScanAgain}
               size="sm"
               variant="outline"
               width="full"
@@ -369,7 +515,7 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
           onConfirm={handleRestore}
           title={t('opticalTransfer.receive.confirmTitle')}
           variant="destructive"
-          visible={confirmVisible}
+          visible={Boolean(isDatabase && confirmVisible)}
           warning={t('opticalTransfer.receive.confirmWarning')}
         />
       </View>

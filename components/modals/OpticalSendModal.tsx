@@ -7,7 +7,7 @@
  * support question.
  */
 
-import { useCallback } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, useWindowDimensions, View } from 'react-native';
 
@@ -15,8 +15,9 @@ import { OpticalQrCanvas } from '@/components/optical/OpticalQrCanvas';
 import { OpticalQualityControls } from '@/components/optical/OpticalQualityControls';
 import { Button } from '@/components/theme/Button';
 import { ProgressIndicator } from '@/components/theme/ProgressIndicator';
+import { ToggleInput } from '@/components/theme/ToggleInput';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
-import { useOpticalSender } from '@/hooks/useOpticalSender';
+import { type OpticalSenderPayload, useOpticalSender } from '@/hooks/useOpticalSender';
 import { useTheme } from '@/hooks/useTheme';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -25,15 +26,41 @@ interface OpticalSendModalProps {
   visible: boolean;
   onClose: () => void;
   passphrase?: string;
+  buildPayload?: (options: { includeImage: boolean }) => Promise<OpticalSenderPayload>;
+  photoToggle?: { available: boolean };
+  copy?: {
+    title: string;
+    readyTitle: string;
+    instructions: string;
+    buildingStep: string;
+  };
 }
 
-export function OpticalSendModal({ visible, onClose, passphrase }: OpticalSendModalProps) {
+export function OpticalSendModal({
+  visible,
+  onClose,
+  passphrase,
+  buildPayload,
+  photoToggle,
+  copy,
+}: OpticalSendModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { width } = useWindowDimensions();
   const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
 
-  const sender = useOpticalSender({ passphrase });
+  const [includeImage, setIncludeImage] = useState(false);
+  const boundBuildPayload = useCallback(
+    () =>
+      buildPayload
+        ? buildPayload({ includeImage })
+        : Promise.reject(new Error('No optical payload builder was provided')),
+    [buildPayload, includeImage]
+  );
+  const sender = useOpticalSender({
+    buildPayload: buildPayload ? boundBuildPayload : undefined,
+    passphrase,
+  });
   const { cachedFrames, cacheTarget, framesShown, phase, prepareStep, raster, summary } = sender;
 
   const formatBytes = useCallback(
@@ -52,10 +79,37 @@ export function OpticalSendModal({ visible, onClose, passphrase }: OpticalSendMo
 
   const handleClose = useCallback(() => {
     sender.reset();
+    setIncludeImage(false);
     onClose();
   }, [onClose, sender]);
 
   const preparing = phase === 'calibrating' || phase === 'dumping' || phase === 'packing';
+  const firstPrepare = preparing && !summary;
+  const repacking = preparing && Boolean(summary);
+  const showReadyCard = Boolean(summary) && (phase === 'ready' || phase === 'error' || repacking);
+
+  const handlePhotoChange = useCallback(
+    (value: boolean) => {
+      setIncludeImage(value);
+      if (buildPayload) {
+        void sender.prepare(() => buildPayload({ includeImage: value }));
+      }
+    },
+    [buildPayload, sender]
+  );
+
+  const photoItems = useMemo(
+    () => [
+      {
+        key: 'include-photo',
+        label: t('opticalTransfer.share.includePhoto'),
+        onValueChange: handlePhotoChange,
+        subtitle: t('opticalTransfer.share.includePhotoHint'),
+        value: includeImage,
+      },
+    ],
+    [handlePhotoChange, includeImage, t]
+  );
 
   return (
     <FullScreenModal
@@ -63,7 +117,7 @@ export function OpticalSendModal({ visible, onClose, passphrase }: OpticalSendMo
       onShow={handleShow}
       scrollable={phase !== 'streaming'}
       subtitle={phase === 'streaming' ? t('opticalTransfer.send.streamingSubtitle') : undefined}
-      title={t('opticalTransfer.send.title')}
+      title={copy?.title ?? t('opticalTransfer.send.title')}
       visible={visible}
     >
       {phase === 'streaming' ? (
@@ -99,10 +153,14 @@ export function OpticalSendModal({ visible, onClose, passphrase }: OpticalSendMo
         </View>
       ) : null}
 
-      {preparing ? (
+      {firstPrepare ? (
         <View className="gap-2 px-4 py-10">
           <ProgressIndicator
-            message={t(`opticalTransfer.send.step.${prepareStep ?? 'calibrating'}`)}
+            message={
+              prepareStep === 'dumping' && copy?.buildingStep
+                ? copy.buildingStep
+                : t(`opticalTransfer.send.step.${prepareStep ?? 'calibrating'}`)
+            }
           />
           <Text className="text-center text-xs text-text-tertiary">
             {t('opticalTransfer.send.preparingHint')}
@@ -110,14 +168,14 @@ export function OpticalSendModal({ visible, onClose, passphrase }: OpticalSendMo
         </View>
       ) : null}
 
-      {phase === 'ready' && summary ? (
+      {showReadyCard && summary ? (
         <View className="gap-4 px-4 py-6">
           <View
             className="gap-2 rounded-xl p-4"
             style={{ backgroundColor: theme.colors.background.card }}
           >
             <Text className="font-bold text-text-primary">
-              {t('opticalTransfer.send.readyTitle')}
+              {copy?.readyTitle ?? t('opticalTransfer.send.readyTitle')}
             </Text>
             <Text className="text-sm text-text-secondary">
               {t('opticalTransfer.send.readySize', {
@@ -137,11 +195,18 @@ export function OpticalSendModal({ visible, onClose, passphrase }: OpticalSendMo
             ) : null}
           </View>
 
+          {photoToggle?.available ? <ToggleInput items={photoItems} /> : null}
+
+          {repacking ? (
+            <ProgressIndicator message={t('opticalTransfer.share.recalculating')} />
+          ) : null}
+
           <Text className="text-sm text-text-secondary">
-            {t('opticalTransfer.send.readyInstructions')}
+            {copy?.instructions ?? t('opticalTransfer.send.readyInstructions')}
           </Text>
 
           <Button
+            disabled={repacking || phase === 'error'}
             label={t('opticalTransfer.send.start')}
             onPress={sender.start}
             size="sm"

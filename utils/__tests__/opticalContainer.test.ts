@@ -10,12 +10,16 @@ import {
   MAX_OPTICAL_PLAIN_BYTES,
   OPTICAL_CONTAINER_HEADER_LEN,
   OPTICAL_CONTAINER_VERSION,
+  OPTICAL_EXPORT_VERSION_SHARE,
+  OPTICAL_PAYLOAD_KIND_DATABASE,
+  OPTICAL_PAYLOAD_KIND_SHARE,
   OpticalContainerError,
   packOpticalContainer,
   parseOpticalContainerHeader,
   readExportVersion,
   unpackOpticalContainer,
 } from '@/utils/optical/container';
+import { CURRENT_DATABASE_VERSION } from '@/constants/database';
 import { gunzipChunked, gzipChunked, OpticalInflateTooLargeError } from '@/utils/optical/gzip';
 import { sha256 } from '@/utils/optical/passphrase';
 import { utf8Decode, utf8Encode } from '@/utils/optical/utf8';
@@ -182,7 +186,35 @@ describe('container round trip', () => {
     expect(meta.containerVersion).toBe(OPTICAL_CONTAINER_VERSION);
     expect(meta.createdAtSec).toBe(1_754_000_000);
     expect(meta.exportVersion).toBe(24);
+    expect(meta.payloadKind).toBe(OPTICAL_PAYLOAD_KIND_DATABASE);
     expect(meta.sha256).toEqual(sha256(utf8Encode(sampleDump())));
+  });
+
+  it('round-trips the payload kind in the reserved header byte', async () => {
+    const { container, meta } = await packOpticalContainer(sampleDump(), {
+      payloadKind: OPTICAL_PAYLOAD_KIND_SHARE,
+    });
+
+    expect(container[54]).toBe(OPTICAL_PAYLOAD_KIND_SHARE);
+    expect(meta.payloadKind).toBe(OPTICAL_PAYLOAD_KIND_SHARE);
+    expect(parseOpticalContainerHeader(container).payloadKind).toBe(OPTICAL_PAYLOAD_KIND_SHARE);
+  });
+
+  it('keeps database containers byte-identical when the payload kind is omitted', async () => {
+    const nowMs = 1_754_000_000_000;
+    const implicit = await packOpticalContainer(sampleDump(), { nowMs });
+    const explicit = await packOpticalContainer(sampleDump(), {
+      nowMs,
+      payloadKind: OPTICAL_PAYLOAD_KIND_DATABASE,
+    });
+
+    expect(implicit.container).toEqual(explicit.container);
+    expect(implicit.container[54]).toBe(0);
+  });
+
+  it('keeps the share export sentinel above every supported database version', () => {
+    // Compatibility contract: old receivers use this comparison to disable destructive restore.
+    expect(OPTICAL_EXPORT_VERSION_SHARE).toBeGreaterThan(CURRENT_DATABASE_VERSION);
   });
 });
 

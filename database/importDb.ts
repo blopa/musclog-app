@@ -17,6 +17,7 @@ import { isMusclogGatewayAvailable } from '@/utils/musclogGatewayAvailability';
 import { normalizeTimezoneToOffset } from '@/utils/timezone';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
+import { assignRawColumns } from './assignRawColumns';
 import { database } from './database-instance';
 import { updateNutritionLogCountBaseline } from './dbDurability';
 import {
@@ -353,42 +354,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
             rec.completed = false;
           }
 
-          for (const key of Object.keys(raw)) {
-            if (key === 'id' || key === '_decrypted') {
-              continue;
-            }
-
-            const value = raw[key];
-            if (value === undefined) {
-              continue;
-            }
-
-            let assignValue = value;
-            if (key.endsWith('_json')) {
-              // @json properties may be named without the "_json" suffix (e.g. micros_json → micros),
-              // so the camelCase setter path silently misses. Write _raw directly instead.
-              // _raw must hold a JSON *string* (WatermelonDB stringifies before _setRaw),
-              // so stringify objects coming from web exports that already hold parsed values.
-              if (typeof value === 'string' && value) {
-                try {
-                  JSON.parse(value); // validate — keep as string
-                  assignValue = value;
-                } catch {
-                  assignValue = null;
-                }
-              } else if (value !== null && value !== undefined && typeof value === 'object') {
-                assignValue = JSON.stringify(value);
-              } else {
-                assignValue = null;
-              }
-
-              rec._raw[key] = assignValue;
-              continue;
-            }
-
-            const camel = key.replace(/_([a-z0-9])/g, (_, c) => c.toUpperCase());
-            (rec as any)[camel] = assignValue;
-          }
+          assignRawColumns(rec, raw);
         })
       );
     }

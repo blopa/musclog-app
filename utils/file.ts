@@ -95,13 +95,13 @@ export async function resizeImage(photoUri: string, width: number = 512): Promis
 export async function createThumbnail(
   uri: string,
   width: number = 300
-): Promise<{ uri: string; base64?: string }> {
+): Promise<{ uri: string; base64?: string; width: number; height: number }> {
   const result = await ImageManipulator.manipulateAsync(uri, [{ resize: { width } }], {
     compress: 0.7,
     format: ImageManipulator.SaveFormat.JPEG,
     base64: true,
   });
-  return { uri: result.uri, base64: result.base64 };
+  return { uri: result.uri, base64: result.base64, width: result.width, height: result.height };
 }
 
 // detectBarcodes is now imported from platform-specific implementation
@@ -305,6 +305,7 @@ export function shouldSeedDevData() {
 }
 
 const FOOD_IMAGES_DIR = `${documentDirectory}food_images/`;
+const MEAL_IMAGES_DIR = `${documentDirectory}meals/`;
 
 async function ensureFoodImagesDir(): Promise<void> {
   await makeDirectoryAsync(FOOD_IMAGES_DIR, { intermediates: true });
@@ -315,6 +316,15 @@ export async function saveBase64ImageToFile(base64: string): Promise<string> {
   await ensureFoodImagesDir();
   const filename = `food_${Date.now()}_${Math.random().toString(36).slice(2)}.jpg`;
   const destUri = `${FOOD_IMAGES_DIR}${filename}`;
+  await writeAsStringAsync(destUri, base64, { encoding: EncodingType.Base64 });
+  return destUri;
+}
+
+/** Saves a shared meal photo beside photos created by `saveMealImage`. */
+export async function saveBase64MealImage(base64: string): Promise<string> {
+  await makeDirectoryAsync(MEAL_IMAGES_DIR, { intermediates: true });
+  const filename = `meal-${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
+  const destUri = `${MEAL_IMAGES_DIR}${filename}`;
   await writeAsStringAsync(destUri, base64, { encoding: EncodingType.Base64 });
   return destUri;
 }

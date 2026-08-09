@@ -38,6 +38,28 @@
         "encrypting": "Шифрование…"
       }
     },
+    "share": {
+      "sendMealTitle": "Отправить блюдо",
+      "sendMealReadyTitle": "Блюдо готово к отправке",
+      "sendMealInstructions": "На другом телефоне откройте «Мои блюда», нажмите +, выберите импорт с другого телефона и наведите камеру на этот экран.",
+      "buildingStep": "Подготовка блюда…",
+      "recalculating": "Пересчёт…",
+      "noIngredients": "В этом блюде нет ингредиентов для отправки.",
+      "includePhoto": "Добавить фото",
+      "includePhotoHint": "Фото передаются намного дольше. Оставьте выключенным для быстрой отправки.",
+      "receiveMealTitle": "Получить блюдо",
+      "ingredientGrams": "{{amount}} г — {{name}}",
+      "ingredientServings": "{{amount}} порц. — {{name}}",
+      "ingredientPortions": "{{amount}} × {{portion}} — {{name}}",
+      "hasPhoto": "Содержит фото",
+      "saveToMyMeals": "Сохранить в «Мои блюда»",
+      "saving": "Сохранение блюда…",
+      "savedTitle": "Блюдо сохранено",
+      "savedReusedFoods_one": "{{count}} ингредиент совпал с продуктом на этом телефоне.",
+      "savedReusedFoods_other": "{{count}} ингредиента совпали с продуктами на этом телефоне.",
+      "saveFailed": "Не удалось сохранить блюдо.",
+      "notAMeal": "Это полная резервная копия, а не блюдо. Получите её через Настройки → Оптическая передача."
+    },
     "receive": {
       "title": "Приём",
       "subtitle": "Наведите на экран другого телефона",

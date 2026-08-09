@@ -227,6 +227,8 @@
         "editMealDesc": "Изменить название и ингредиенты приёма пищи",
         "shareMealAsRecipe": "Поделиться рецептом",
         "shareMealAsRecipeDesc": "Поделиться ингредиентами и инструкциями текстом",
+        "sendToPhone": "Отправить на другой телефон",
+        "sendToPhoneDesc": "Передать это блюдо с помощью анимированных QR-кодов",
         "shareRecipeIngredientLine": "{{grams}} г {{name}}",
         "shareRecipeNoIngredients": "В этом приёме пищи нет ингредиентов для отправки",
         "duplicateMeal": "Дублировать приём пищи",

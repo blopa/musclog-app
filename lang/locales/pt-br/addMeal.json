@@ -8,6 +8,8 @@
     "generateMealAIDesc": "Deixe a IA sugerir uma refeição baseada nas suas preferências",
     "manageCategories": "Gerenciar Categorias",
     "manageCategoriesDesc": "Organize suas categorias de refeição (café da manhã, almoço, etc.)",
+    "importFromPhone": "Importar de outro celular",
+    "importFromPhoneDesc": "Escaneie uma refeição enviada de outro celular",
     "title": "Adicionar Refeição"
   }
 }

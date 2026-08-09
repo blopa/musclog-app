@@ -24,6 +24,7 @@ import {
   OpticalContainerError,
   type OpticalContainerErrorCode,
   type OpticalContainerMeta,
+  parseOpticalContainerHeader,
   unpackOpticalContainer,
 } from '@/utils/optical/container';
 import { NoSignalHintTimer } from '@/utils/optical/noSignal';
@@ -115,8 +116,9 @@ export function useOpticalReceiver(options: { active: boolean }) {
     }
 
     unpackingRef.current = true;
-    setState((previous) => ({ ...previous, phase: 'unpacking' }));
     try {
+      const headerMeta = parseOpticalContainerHeader(container);
+      setState((previous) => ({ ...previous, meta: headerMeta, phase: 'unpacking' }));
       const { json, meta } = await unpackOpticalContainer(container, { passphrase });
       jsonRef.current = json;
       setState((previous) => ({ ...previous, meta, phase: 'verified' }));

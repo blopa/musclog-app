@@ -31,6 +31,7 @@ import { dumpDatabase } from '@/database/exportDb';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { calibrateDevice, planFrameCache } from '@/utils/optical/bench';
 import {
+  OPTICAL_PAYLOAD_KIND_DATABASE,
   type OpticalContainerMeta,
   type OpticalPackStep,
   packOpticalContainer,
@@ -75,7 +76,20 @@ export interface OpticalSenderState {
   fps: number;
 }
 
+export interface OpticalSenderPayload {
+  json: string;
+  payloadKind: number;
+  exportVersion?: number;
+}
+
+export type OpticalPayloadBuilder = () => Promise<OpticalSenderPayload>;
+
 const DEFAULT_FPS = 8;
+
+const buildDatabasePayload: OpticalPayloadBuilder = async () => ({
+  json: await dumpDatabase(),
+  payloadKind: OPTICAL_PAYLOAD_KIND_DATABASE,
+});
 
 const nowMs = (): number =>
   typeof performance !== 'undefined' && typeof performance.now === 'function'
@@ -93,8 +107,11 @@ const idleState = (): OpticalSenderState => ({
   raster: null,
 });
 
-export function useOpticalSender(options: { passphrase?: string }) {
-  const { passphrase } = options;
+export function useOpticalSender(options: {
+  passphrase?: string;
+  buildPayload?: OpticalPayloadBuilder;
+}) {
+  const { buildPayload, passphrase } = options;
 
   const [state, setState] = useState<OpticalSenderState>(idleState);
 
@@ -114,6 +131,12 @@ export function useOpticalSender(options: { passphrase?: string }) {
    * over a newer one.
    */
   const generationRef = useRef(0);
+  const buildPayloadRef = useRef<OpticalPayloadBuilder>(buildPayload ?? buildDatabasePayload);
+  const calibrationRef = useRef<null | Awaited<ReturnType<typeof calibrateDevice>>>(null);
+
+  useEffect(() => {
+    buildPayloadRef.current = buildPayload ?? buildDatabasePayload;
+  }, [buildPayload]);
 
   const isStreaming = state.phase === 'streaming';
   useKeepScreenAwake('optical-send', isStreaming);
@@ -187,59 +210,69 @@ export function useOpticalSender(options: { passphrase?: string }) {
     cursorRef.current = 0;
     framesShownRef.current = 0;
     fpsRef.current = DEFAULT_FPS;
+    calibrationRef.current = null;
     setState(idleState());
   }, []);
 
-  const prepare = useCallback(async () => {
-    const generation = ++generationRef.current;
-    const alive = () => generationRef.current === generation;
+  const prepare = useCallback(
+    async (override?: OpticalPayloadBuilder) => {
+      const generation = ++generationRef.current;
+      const alive = () => generationRef.current === generation;
 
-    try {
-      // Calibrate first: it decides the starting density, and the density decides how the
-      // container is sliced into frames.
-      setState((previous) => ({
-        ...previous,
-        phase: 'calibrating',
-        prepareFraction: 0,
-        prepareStep: 'calibrating',
-      }));
-      const calibration = await calibrateDevice();
-      if (!alive()) {
-        return;
-      }
+      try {
+        // Calibrate first: it decides the starting density, and the density decides how the
+        // container is sliced into frames.
+        let calibration = calibrationRef.current;
+        if (!calibration) {
+          setState((previous) => ({
+            ...previous,
+            phase: 'calibrating',
+            prepareFraction: 0,
+            prepareStep: 'calibrating',
+          }));
+          calibration = await calibrateDevice();
+          if (!alive()) {
+            return;
+          }
+          calibrationRef.current = calibration;
+        }
 
-      setState((previous) => ({ ...previous, phase: 'dumping', prepareStep: 'dumping' }));
-      const json = await dumpDatabase();
-      if (!alive()) {
-        return;
-      }
+        setState((previous) => ({ ...previous, phase: 'dumping', prepareStep: 'dumping' }));
+        const payload = await (override ?? buildPayloadRef.current)();
+        if (!alive()) {
+          return;
+        }
 
-      setState((previous) => ({ ...previous, phase: 'packing', prepareStep: 'encoding' }));
-      const { container, meta } = await packOpticalContainer(json, {
-        onProgress: (step, fraction) =>
-          alive() &&
-          setState((previous) => ({ ...previous, prepareFraction: fraction, prepareStep: step })),
-        passphrase,
-      });
-      if (!alive()) {
-        return;
-      }
+        setState((previous) => ({ ...previous, phase: 'packing', prepareStep: 'encoding' }));
+        const { container, meta } = await packOpticalContainer(payload.json, {
+          exportVersion: payload.exportVersion,
+          onProgress: (step, fraction) =>
+            alive() &&
+            setState((previous) => ({ ...previous, prepareFraction: fraction, prepareStep: step })),
+          passphrase,
+          payloadKind: payload.payloadKind,
+        });
+        if (!alive()) {
+          return;
+        }
 
-      containerRef.current = container;
-      metaRef.current = meta;
-      installStream(calibration.recommendedPresetId, calibration.recommendedFps);
-      setState((previous) => ({ ...previous, phase: 'ready', prepareFraction: 1 }));
-    } catch (error) {
-      if (!alive()) {
-        return;
+        containerRef.current = container;
+        metaRef.current = meta;
+        installStream(calibration.recommendedPresetId, calibration.recommendedFps);
+        setState((previous) => ({ ...previous, phase: 'ready', prepareFraction: 1 }));
+      } catch (error) {
+        if (!alive()) {
+          return;
+        }
+        setState((previous) => ({
+          ...previous,
+          errorMessage: error instanceof Error ? error.message : String(error),
+          phase: 'error',
+        }));
       }
-      setState((previous) => ({
-        ...previous,
-        errorMessage: error instanceof Error ? error.message : String(error),
-        phase: 'error',
-      }));
-    }
-  }, [installStream, passphrase]);
+    },
+    [installStream, passphrase]
+  );
 
   const start = useCallback(() => {
     if (!streamRef.current) {

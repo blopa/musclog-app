@@ -28,7 +28,8 @@ import { useSnackbar } from '@/context/SnackbarContext';
 import type { MealType } from '@/database/models';
 import Food from '@/database/models/Food';
 import Meal from '@/database/models/Meal';
-import { FoodPortionService, MealService, NutritionService } from '@/database/services';
+import { MealService, NutritionService } from '@/database/services';
+import { syncMealPortionFromForm } from '@/database/services/syncMealPortionFromForm';
 import {
   createIngredientLocalId,
   type Ingredient,
@@ -479,41 +480,13 @@ export function CreateMealModal({
   };
 
   const syncMealPortion = async (targetMeal: Meal) => {
-    await FoodPortionService.clearMealPortions(targetMeal.id);
-
-    if (nutritionBasis === 'per_recipe') {
-      return;
-    }
-
-    const trimmedPortionName =
-      defaultPortionName.trim() || mealName.trim() || t('food.foodDetails.serving');
-
-    if (nutritionBasis === 'per_serving') {
-      const portion = await FoodPortionService.createPrivateNamedPortion(
-        trimmedPortionName,
-        'meal',
-        targetMeal.id
-      );
-      await FoodPortionService.addPortionToMeal(targetMeal.id, portion.id, true);
-      return;
-    }
-
-    if (nutritionBasis === 'per_gram') {
-      const portion = await FoodPortionService.createFoodPortion(
-        trimmedPortionName,
-        Math.max(1, servingGrams),
-        undefined,
-        'custom',
-        {
-          kind: 'mass',
-          scope: 'private',
-          ownerType: 'meal',
-          ownerId: targetMeal.id,
-          dedupe: false,
-        }
-      );
-      await FoodPortionService.addPortionToMeal(targetMeal.id, portion.id, true);
-    }
+    await syncMealPortionFromForm(targetMeal.id, {
+      defaultPortionName,
+      fallbackPortionName: t('food.foodDetails.serving'),
+      mealName,
+      nutritionBasis,
+      servingGrams,
+    });
   };
 
   const handleTrack = async () => {

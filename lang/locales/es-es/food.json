@@ -227,6 +227,8 @@
         "editMealDesc": "Modificar el nombre y los ingredientes de la comida",
         "shareMealAsRecipe": "Compartir comida como receta",
         "shareMealAsRecipeDesc": "Compartir ingredientes e instrucciones como texto",
+        "sendToPhone": "Enviar a otro teléfono",
+        "sendToPhoneDesc": "Transfiere esta comida con códigos QR animados",
         "shareRecipeIngredientLine": "{{grams}}g de {{name}}",
         "shareRecipeNoIngredients": "Esta comida no tiene ingredientes para compartir",
         "duplicateMeal": "Duplicar Comida",

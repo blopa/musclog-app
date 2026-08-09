@@ -38,6 +38,28 @@
         "encrypting": "Criptografando…"
       }
     },
+    "share": {
+      "sendMealTitle": "Enviar refeição",
+      "sendMealReadyTitle": "Refeição pronta para enviar",
+      "sendMealInstructions": "No outro celular, abra Minhas refeições, toque em +, escolha Importar de outro celular e aponte a câmera para esta tela.",
+      "buildingStep": "Preparando a refeição…",
+      "recalculating": "Recalculando…",
+      "noIngredients": "Esta refeição não tem ingredientes para enviar.",
+      "includePhoto": "Incluir foto",
+      "includePhotoHint": "Fotos demoram muito mais para transferir. Deixe desativado para enviar mais rápido.",
+      "receiveMealTitle": "Receber refeição",
+      "ingredientGrams": "{{amount}} g de {{name}}",
+      "ingredientServings": "{{amount}} porções de {{name}}",
+      "ingredientPortions": "{{amount}} × {{portion}} de {{name}}",
+      "hasPhoto": "Inclui uma foto",
+      "saveToMyMeals": "Salvar em Minhas refeições",
+      "saving": "Salvando refeição…",
+      "savedTitle": "Refeição salva",
+      "savedReusedFoods_one": "{{count}} ingrediente correspondeu a um alimento que já estava neste celular.",
+      "savedReusedFoods_other": "{{count}} ingredientes corresponderam a alimentos que já estavam neste celular.",
+      "saveFailed": "Não foi possível salvar a refeição.",
+      "notAMeal": "Este é um backup completo, não uma refeição. Receba-o em Configurações → Transferência óptica."
+    },
     "receive": {
       "title": "Receber",
       "subtitle": "Aponte para a tela do outro celular",

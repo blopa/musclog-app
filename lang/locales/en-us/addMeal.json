@@ -8,6 +8,8 @@
     "generateMealAIDesc": "Let AI suggest a meal based on your preferences",
     "manageCategories": "Manage Categories",
     "manageCategoriesDesc": "Organize your meal categories (breakfast, lunch, etc.)",
+    "importFromPhone": "Import from another phone",
+    "importFromPhoneDesc": "Scan a meal being sent from another phone",
     "title": "Add Meal"
   }
 }

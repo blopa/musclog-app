@@ -38,6 +38,28 @@
         "encrypting": "Encrypting…"
       }
     },
+    "share": {
+      "sendMealTitle": "Send meal",
+      "sendMealReadyTitle": "Meal ready to send",
+      "sendMealInstructions": "On the other phone, open My Meals, tap +, choose Import from another phone, then point its camera at this screen.",
+      "buildingStep": "Building the meal…",
+      "recalculating": "Recalculating…",
+      "noIngredients": "This meal has no ingredients to send.",
+      "includePhoto": "Include photo",
+      "includePhotoHint": "Photos take much longer to transfer. Leave this off for the fastest send.",
+      "receiveMealTitle": "Receive meal",
+      "ingredientGrams": "{{amount}} g of {{name}}",
+      "ingredientServings": "{{amount}} servings of {{name}}",
+      "ingredientPortions": "{{amount}} × {{portion}} of {{name}}",
+      "hasPhoto": "Includes a photo",
+      "saveToMyMeals": "Save to My Meals",
+      "saving": "Saving meal…",
+      "savedTitle": "Meal saved",
+      "savedReusedFoods_one": "{{count}} ingredient matched a food already on this phone.",
+      "savedReusedFoods_other": "{{count}} ingredients matched foods already on this phone.",
+      "saveFailed": "Could not save the meal.",
+      "notAMeal": "This is a full backup, not a meal. Receive it from Settings → Optical Transfer instead."
+    },
     "receive": {
       "title": "Receive",
       "subtitle": "Point at the other phone's screen",

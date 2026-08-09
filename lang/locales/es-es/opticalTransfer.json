@@ -38,6 +38,28 @@
         "encrypting": "Cifrando…"
       }
     },
+    "share": {
+      "sendMealTitle": "Enviar comida",
+      "sendMealReadyTitle": "Comida lista para enviar",
+      "sendMealInstructions": "En el otro teléfono, abre Mis comidas, toca +, elige Importar desde otro teléfono y apunta la cámara a esta pantalla.",
+      "buildingStep": "Preparando la comida…",
+      "recalculating": "Recalculando…",
+      "noIngredients": "Esta comida no tiene ingredientes para enviar.",
+      "includePhoto": "Incluir foto",
+      "includePhotoHint": "Las fotos tardan mucho más en transferirse. Déjalo desactivado para enviar más rápido.",
+      "receiveMealTitle": "Recibir comida",
+      "ingredientGrams": "{{amount}} g de {{name}}",
+      "ingredientServings": "{{amount}} porciones de {{name}}",
+      "ingredientPortions": "{{amount}} × {{portion}} de {{name}}",
+      "hasPhoto": "Incluye una foto",
+      "saveToMyMeals": "Guardar en Mis comidas",
+      "saving": "Guardando comida…",
+      "savedTitle": "Comida guardada",
+      "savedReusedFoods_one": "{{count}} ingrediente coincidió con un alimento que ya estaba en este teléfono.",
+      "savedReusedFoods_other": "{{count}} ingredientes coincidieron con alimentos que ya estaban en este teléfono.",
+      "saveFailed": "No se pudo guardar la comida.",
+      "notAMeal": "Esto es una copia de seguridad completa, no una comida. Recíbela desde Ajustes → Transferencia óptica."
+    },
     "receive": {
       "title": "Recibir",
       "subtitle": "Apunta a la pantalla del otro móvil",

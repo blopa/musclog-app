@@ -1,4 +1,4 @@
-import { Pencil, Search, Share2, Trash2, Utensils } from 'lucide-react-native';
+import { Pencil, QrCode, Search, Share2, Trash2, Utensils } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
@@ -37,6 +37,8 @@ import { CreateMealModal } from './CreateMealModal';
 import DynamicMealCreatorModal from './DynamicMealCreatorModal';
 import { FoodMealTrackingDetailsModal } from './FoodMealTrackingDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
+import { MealOpticalSendModal } from './MealOpticalSendModal';
+import { OpticalReceiveModal } from './OpticalReceiveModal';
 
 // Type for transformed meal data that matches MealItemCard props
 type MealCardData = {
@@ -130,6 +132,8 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
   const [isDeleting, setIsDeleting] = useState(false);
   const [isGeneratingMealAI, setIsGeneratingMealAI] = useState(false);
   const [generateMealContextVisible, setGenerateMealContextVisible] = useState(false);
+  const [sendMealId, setSendMealId] = useState<string | null>(null);
+  const [importVisible, setImportVisible] = useState(false);
 
   useEffect(() => {
     if (!visible) {
@@ -143,6 +147,8 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
         setEditMealId(null);
         setDeleteMealId(null);
         setGenerateMealContextVisible(false);
+        setSendMealId(null);
+        setImportVisible(false);
       };
       reset();
     }
@@ -263,6 +269,11 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
     setTimeout(() => setDynamicMealCreatorVisible(true), 300);
   };
 
+  const handleImportFromPhone = () => {
+    setAddMealModalVisible(false);
+    setTimeout(() => setImportVisible(true), 300);
+  };
+
   const handleGenerateMealAI = useCallback(() => {
     if (isGeneratingMealAI) {
       return;
@@ -380,6 +391,11 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
   const handleDeleteMeal = (mealId: string) => {
     setMenuMealId(null);
     setDeleteMealId(mealId);
+  };
+
+  const handleSendMealToPhone = (mealId: string) => {
+    setMenuMealId(null);
+    setSendMealId(mealId);
   };
 
   const handleShareMealAsRecipe = useCallback(
@@ -600,6 +616,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
             onCreateMeal={handleCreateMeal}
             onDynamicMealCreator={handleDynamicMealCreator}
             onGenerateMealAI={handleGenerateMealAI}
+            onImportFromPhone={handleImportFromPhone}
             isAiEnabled={isAiConfigured}
           />
         ) : null}
@@ -675,6 +692,14 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
                 },
               },
               {
+                icon: QrCode,
+                iconColor: theme.colors.accent.primary,
+                iconBgColor: theme.colors.accent.primary10,
+                title: t('food.meals.manageMealData.sendToPhone'),
+                description: t('food.meals.manageMealData.sendToPhoneDesc'),
+                onPress: () => handleSendMealToPhone(menuMealId),
+              },
+              {
                 icon: Trash2,
                 iconColor: theme.colors.status.error,
                 iconBgColor: theme.colors.status.error20,
@@ -684,6 +709,22 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
                 onPress: () => handleDeleteMeal(menuMealId),
               },
             ]}
+          />
+        ) : null}
+        {sendMealId ? (
+          <MealOpticalSendModal
+            hasImage={Boolean(mealsMap.get(sendMealId)?.imageUrl)}
+            mealId={sendMealId}
+            onClose={() => setSendMealId(null)}
+            visible={Boolean(sendMealId)}
+          />
+        ) : null}
+        {importVisible ? (
+          <OpticalReceiveModal
+            accept="share"
+            onClose={() => setImportVisible(false)}
+            onShareImported={() => void refresh()}
+            visible={importVisible}
           />
         ) : null}
         {/* FoodDetailsModal for Meal */}

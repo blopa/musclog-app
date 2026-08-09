@@ -20,7 +20,8 @@
  *    20    32  sha256              over the plain UTF-8 JSON bytes
  *    52     1  kdfId               0 none, 1 PBKDF2-HMAC-SHA256
  *    53     1  cipherId            0 none, 1 AES-256-CBC/PKCS#7
- *    54     2  reserved
+ *    54     1  payloadKind         0 database dump, 1 share envelope
+ *    55     1  reserved
  *    56     4  kdfIterations
  *    60    16  kdfSalt
  *    76    16  cipherIv
@@ -28,6 +29,12 @@
  *
  * The crypto fields are always present, zeroed when unencrypted. Forty wasted bytes on a ≥70 KB
  * payload is under 0.06%, and one fixed-size parse is worth more than two layouts.
+ *
+ * `payloadKind` claims the low byte of what used to be a zeroed `reserved` u16, so a container
+ * carrying a database dump is byte-identical to one written before the field existed — which is
+ * what lets an already-shipped receiver keep reading our dumps unchanged. See
+ * `docs/OPTICAL_TRANSFER.md` for what an OLD build does when it receives a share payload, and for
+ * why `containerVersion` was deliberately NOT bumped for this.
  *
  * BODY ORDER IS FIXED: utf8 → sha256 → gzip → aes. **gzip strictly before aes** — ciphertext is
  * incompressible, so encrypting first would cost roughly 9× the transfer time. That ordering is
@@ -53,6 +60,28 @@ import { utf8Decode, utf8Encode } from './utf8';
 
 export const OPTICAL_CONTAINER_HEADER_LEN = 92;
 export const OPTICAL_CONTAINER_VERSION = 1;
+
+/** A whole-database dump, restored by `restoreDatabase`. The default, and what byte 54 read as
+ *  before the field existed. */
+export const OPTICAL_PAYLOAD_KIND_DATABASE = 0;
+/** A `_musclogShare` envelope carrying a subset of records — see `utils/share/shareEnvelope.ts`. */
+export const OPTICAL_PAYLOAD_KIND_SHARE = 1;
+
+/**
+ * The `exportVersion` every share container declares.
+ *
+ * This is a COMPATIBILITY CONTRACT, not a version number. A build shipped before share payloads
+ * existed ignores `payloadKind` entirely and would otherwise offer its destructive "Replace my
+ * data" restore for a meal. Its `tooNew` gate compares this field against `CURRENT_DATABASE_VERSION`,
+ * so a deliberately impossible value makes that build disable the button and say "sent by a newer
+ * version of Musclog" — the right sentence, for free, with no change to already-shipped code.
+ *
+ * It is the second of two independent defences. The first is that a share envelope carries no
+ * top-level `_exportVersion`, so `restoreDatabase`'s Zod pass rejects it before the wipe. This one
+ * turns a confusing wall of validation errors into a clear message; that one prevents data loss.
+ * `utils/__tests__/opticalContainer.test.ts` pins it above `CURRENT_DATABASE_VERSION`.
+ */
+export const OPTICAL_EXPORT_VERSION_SHARE = 0xffff;
 
 /** Ceiling on the inflated JSON. Bounds `gunzipChunked` against a hostile declared length. */
 export const MAX_OPTICAL_PLAIN_BYTES = 64 * 1024 * 1024;
@@ -99,6 +128,8 @@ export interface OpticalContainerMeta {
   sha256: Uint8Array;
   kdfId: number;
   cipherId: number;
+  /** OPTICAL_PAYLOAD_KIND_*. Readers must treat an unrecognised value as "not for me". */
+  payloadKind: number;
   kdfIterations: number;
   kdfSalt: Uint8Array;
   cipherIv: Uint8Array;
@@ -113,6 +144,8 @@ export interface PackOpticalOptions {
   nowMs?: number;
   kdfIterations?: number;
   onProgress?: OpticalPackProgress;
+  /** OPTICAL_PAYLOAD_KIND_*. Defaults to a database dump, which is what byte 54 meant before. */
+  payloadKind?: number;
 }
 
 export interface UnpackOpticalOptions {
@@ -142,6 +175,7 @@ export async function packOpticalContainer(
     nowMs = Date.now(),
     kdfIterations = DEFAULT_OPTICAL_KDF_ITERATIONS,
     onProgress,
+    payloadKind = OPTICAL_PAYLOAD_KIND_DATABASE,
   } = options;
 
   onProgress?.('encoding', 0);
@@ -192,6 +226,7 @@ export async function packOpticalContainer(
     sha256: digest,
     kdfId: encrypted ? OPTICAL_KDF_PBKDF2_SHA256 : OPTICAL_KDF_NONE,
     cipherId: encrypted ? OPTICAL_CIPHER_AES256_CBC : OPTICAL_CIPHER_NONE,
+    payloadKind,
     kdfIterations: encrypted ? kdfIterations : 0,
     kdfSalt: salt,
     cipherIv: iv,
@@ -209,7 +244,8 @@ export async function packOpticalContainer(
   container.set(digest, 20);
   view.setUint8(52, meta.kdfId);
   view.setUint8(53, meta.cipherId);
-  view.setUint16(54, 0, true);
+  view.setUint8(54, meta.payloadKind);
+  view.setUint8(55, 0);
   view.setUint32(56, meta.kdfIterations, true);
   container.set(salt, 60);
   container.set(iv, 76);
@@ -247,6 +283,7 @@ export function parseOpticalContainerHeader(bytes: Uint8Array): OpticalContainer
     sha256: bytes.slice(20, 52),
     kdfId: view.getUint8(52),
     cipherId: view.getUint8(53),
+    payloadKind: view.getUint8(54),
     kdfIterations: view.getUint32(56, true),
     kdfSalt: bytes.slice(60, 76),
     cipherIv: bytes.slice(76, 92),
