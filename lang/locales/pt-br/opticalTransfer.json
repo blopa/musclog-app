@@ -12,7 +12,7 @@
     "passphraseRequired": "Senha (obrigatória)",
     "passphraseHint": "Qualquer pessoa que apontar uma câmera para a tela que está enviando consegue ler a transferência. Uma senha torna isso inútil — digite a mesma nos dois celulares.",
     "passphraseRequiredHint": "Suas configurações exigem uma senha para exportações.",
-    "nativeOnly": "A transferência óptica só funciona em celular ou tablet.",
+    "webNote": "Isso também funciona no navegador: ao enviar, os códigos aparecem nesta tela; ao receber, usa a câmera deste dispositivo.",
     "retry": "Tentar de novo",
     "send": {
       "title": "Enviar",
@@ -75,6 +75,7 @@
       "cameraPermissionTitle": "Acesso à câmera necessário",
       "cameraPermissionMessage": "O Musclog precisa da câmera para ler os códigos do outro telefone. Nada é gravado nem enviado.",
       "cameraPermissionSettings": "O acesso à câmera foi negado. Ative-o para o Musclog nas configurações do sistema e volte aqui.",
+      "cameraPermissionBrowser": "Seu navegador bloqueou o acesso à câmera. Permita para este site na barra de endereços e tente de novo.",
       "allowCamera": "Permitir câmera",
       "openSettings": "Abrir configurações",
       "noCamera": "Nenhuma câmera traseira disponível neste dispositivo.",

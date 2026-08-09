@@ -49,7 +49,7 @@
     "generate-video-markers": "cd training-data && .venv/bin/python generate-video-markers.py",
     "generate-video-combined": "cd training-data && .venv/bin/python generate-video-combined.py",
     "pip-install": "cd training-data && .venv/bin/pip install -r requirements.txt",
-    "postinstall": "patch-package",
+    "postinstall": "patch-package && node scripts/sync-web-wasm.js",
     "prestart": "node scripts/sync-web-images.js",
     "start": "expo start",
     "eas-login": "eas login --browser",
@@ -59,7 +59,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "android-device": "expo run:android --no-build-cache --device",
-    "web": "node scripts/sync-web-images.js && node scripts/generate-web-seo-files.js && expo start --web",
+    "web": "node scripts/sync-web-images.js && node scripts/sync-web-wasm.js && node scripts/generate-web-seo-files.js && expo start --web",
     "test": "jest --watchAll",
     "test:ci": "jest --ci --runInBand --silent",
     "lint": "expo lint",
@@ -75,7 +75,7 @@
     "build-android-local-cache": "bash scripts/run-eas-local-android-build.sh production",
     "build-android-apk": "eas build -p android --profile production-apk --clear-cache",
     "build-android-apk-local": "bash scripts/run-eas-local-android-build.sh production-apk --clear-cache",
-    "build-android-web": "node scripts/sync-web-images.js && node scripts/generate-web-seo-files.js && node scripts/export-web-wrapper.js",
+    "build-android-web": "node scripts/sync-web-images.js && node scripts/sync-web-wasm.js && node scripts/generate-web-seo-files.js && node scripts/export-web-wrapper.js",
     "submit-android": "eas submit --platform android",
     "build-android-preview": "eas build -p android --profile preview",
     "prebuild:android": "expo prebuild -p android --clean",
@@ -219,7 +219,8 @@
     "victory-native": "41.26.0",
     "wasmboy": "^0.7.1",
     "xlsx": "0.18.5",
-    "zod": "^4.4.3"
+    "zod": "^4.4.3",
+    "zxing-wasm": "3.1.0"
   },
   "devDependencies": {
     "@babel/core": "7.29.7",

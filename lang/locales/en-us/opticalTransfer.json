@@ -12,7 +12,7 @@
     "passphraseRequired": "Passphrase (required)",
     "passphraseHint": "Anyone pointing a camera at the sending screen can read the transfer. A passphrase makes that useless — type the same one on both phones.",
     "passphraseRequiredHint": "Your settings require a passphrase for exports.",
-    "nativeOnly": "Optical Transfer only works on a phone or tablet.",
+    "webNote": "This works in your browser too: sending shows the codes on this screen, receiving uses this device’s camera.",
     "retry": "Try again",
     "send": {
       "title": "Send",
@@ -75,6 +75,7 @@
       "cameraPermissionTitle": "Camera access needed",
       "cameraPermissionMessage": "Musclog needs the camera to read the codes on the other phone. Nothing is recorded or sent anywhere.",
       "cameraPermissionSettings": "Camera access was denied. Enable it for Musclog in system settings, then come back.",
+      "cameraPermissionBrowser": "Your browser blocked camera access. Allow it for this site from the address bar, then try again.",
       "allowCamera": "Allow camera",
       "openSettings": "Open settings",
       "noCamera": "No back camera is available on this device.",

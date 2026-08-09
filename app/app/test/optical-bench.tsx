@@ -28,7 +28,6 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import { useCameraPermission } from 'react-native-vision-camera';
 
 import { OpticalQrCanvas } from '@/components/optical/OpticalQrCanvas';
 import { OpticalScannerCamera } from '@/components/optical/OpticalScannerCamera';
@@ -745,7 +744,6 @@ const emptySnapshot: ReceiveSnapshot = {
 
 function ReceivePanel() {
   const theme = useTheme();
-  const { hasPermission, requestPermission } = useCameraPermission();
   const [snapshot, setSnapshot] = useState<ReceiveSnapshot>(emptySnapshot);
   const [running, setRunning] = useState(true);
 
@@ -853,20 +851,6 @@ function ReceivePanel() {
     setSnapshot(emptySnapshot);
     setRunning(true);
   }, []);
-
-  if (!hasPermission) {
-    return (
-      <View style={{ gap: 12, padding: 16 }}>
-        <Mono>Camera permission is required to receive.</Mono>
-        <Button
-          label="Grant camera access"
-          onPress={requestPermission}
-          size="sm"
-          variant="accent"
-        />
-      </View>
-    );
-  }
 
   const complete = snapshot.outcome === 'complete';
   const failed = snapshot.outcome === 'checksum-failed';

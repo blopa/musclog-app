@@ -12,7 +12,7 @@
     "passphraseRequired": "Wachtwoord (verplicht)",
     "passphraseHint": "Iedereen die een camera op het verzendende scherm richt kan de overdracht lezen. Een wachtwoord maakt dat nutteloos — typ hetzelfde op beide telefoons.",
     "passphraseRequiredHint": "Je instellingen vereisen een wachtwoord voor exports.",
-    "nativeOnly": "Optische overdracht werkt alleen op een telefoon of tablet.",
+    "webNote": "Dit werkt ook in je browser: bij verzenden verschijnen de codes op dit scherm, bij ontvangen wordt de camera van dit apparaat gebruikt.",
     "retry": "Opnieuw proberen",
     "send": {
       "title": "Versturen",
@@ -75,6 +75,7 @@
       "cameraPermissionTitle": "Cameratoegang nodig",
       "cameraPermissionMessage": "Musclog heeft de camera nodig om de codes op de andere telefoon te lezen. Er wordt niets opgenomen of verstuurd.",
       "cameraPermissionSettings": "Cameratoegang is geweigerd. Schakel dit in voor Musclog in de systeeminstellingen en kom terug.",
+      "cameraPermissionBrowser": "Je browser heeft cameratoegang geblokkeerd. Sta het toe voor deze site via de adresbalk en probeer het opnieuw.",
       "allowCamera": "Camera toestaan",
       "openSettings": "Instellingen openen",
       "noCamera": "Geen camera aan de achterkant beschikbaar op dit apparaat.",

@@ -5,12 +5,8 @@
  * already an RGBA_8888 surface — so this is `Skia.Data.fromBytes` + `Skia.Image.MakeImage` with
  * no conversion pass, then a GPU upscale.
  *
- * INTEGER SCALING IS MANDATORY. The image is `raster.size` pixels across and gets blown up to
- * fill the screen; if the scale factor is fractional, nearest-neighbour sampling gives some
- * modules one more pixel than others. The receiver's decoder estimates module boundaries from a
- * uniform grid, so uneven modules measurably raise the failure rate — which shows up as "it just
- * won't scan", not as an obvious rendering bug. So the scale is floored to a whole number and the
- * canvas is sized to match exactly.
+ * INTEGER SCALING IS MANDATORY — see `utils/optical/qrCanvasLayout.ts`, which owns that rule for
+ * this canvas and its web counterpart alike.
  *
  * Colours are hard-coded black on white regardless of app theme: this is not UI, it is a signal
  * being transmitted, and a dark-mode grey-on-grey QR code loses the contrast the decoder needs.
@@ -28,6 +24,7 @@ import {
 import { useEffect, useMemo } from 'react';
 import { PixelRatio, View } from 'react-native';
 
+import { qrCanvasLayout } from '@/utils/optical/qrCanvasLayout';
 import { type QrRaster } from '@/utils/optical/qrRaster';
 
 interface OpticalQrCanvasProps {
@@ -66,13 +63,10 @@ export function OpticalQrCanvas({ raster, budgetDp }: OpticalQrCanvasProps) {
   );
 
   const density = PixelRatio.get();
-  const sizeDp = useMemo(() => {
-    if (!raster) {
-      return 0;
-    }
-    const scale = Math.max(1, Math.floor((budgetDp * density) / raster.size));
-    return (raster.size * scale) / density;
-  }, [raster, budgetDp, density]);
+  const sizeDp = useMemo(
+    () => qrCanvasLayout(raster?.size ?? 0, budgetDp, density).sizeDp,
+    [raster, budgetDp, density]
+  );
 
   if (!raster || !image) {
     return <View style={{ backgroundColor: '#ffffff', height: budgetDp, width: budgetDp }} />;

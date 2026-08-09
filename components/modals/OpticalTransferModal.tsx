@@ -98,10 +98,11 @@ export function OpticalTransferModal({ visible, onClose }: OpticalTransferModalP
           ) : null}
         </View>
 
+        {/* Web is a first-class end of a transfer, not a degraded one — a laptop screen is a
+            better sender than a phone, and its webcam a workable receiver. What is worth saying is
+            which half of the hardware each direction uses. */}
         {Platform.OS === 'web' ? (
-          <Text className="text-xs" style={{ color: theme.colors.status.warning }}>
-            {t('opticalTransfer.nativeOnly')}
-          </Text>
+          <Text className="text-xs text-text-tertiary">{t('opticalTransfer.webNote')}</Text>
         ) : null}
       </View>
 

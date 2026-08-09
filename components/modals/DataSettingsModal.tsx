@@ -21,7 +21,7 @@ import {
 } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
 import { SettingsCard } from '@/components/cards/SettingsCard';
@@ -307,24 +307,19 @@ export function DataSettingsModal({ visible, onClose }: AdvancedDataModalProps) 
             onPress={() => setImportModalVisible(true)}
             rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
           />
-          {/* Phone-to-phone only: it needs a camera on one device and a screen on the other. */}
-          {Platform.OS === 'web' ? null : (
-            <SettingsCard
-              icon={<ScanLine size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
-              iconContainerStyle={{
-                width: theme.size['16'],
-                height: theme.size['16'],
-                borderRadius: theme.borderRadius.sm,
-                backgroundColor: theme.colors.accent.primary20,
-              }}
-              title={t('settings.advancedSettings.opticalTransfer')}
-              subtitle={t('settings.advancedSettings.opticalTransferSubtitle')}
-              onPress={() => setOpticalTransferVisible(true)}
-              rightIcon={
-                <ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />
-              }
-            />
-          )}
+          <SettingsCard
+            icon={<ScanLine size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
+            iconContainerStyle={{
+              width: theme.size['16'],
+              height: theme.size['16'],
+              borderRadius: theme.borderRadius.sm,
+              backgroundColor: theme.colors.accent.primary20,
+            }}
+            title={t('settings.advancedSettings.opticalTransfer')}
+            subtitle={t('settings.advancedSettings.opticalTransferSubtitle')}
+            onPress={() => setOpticalTransferVisible(true)}
+            rightIcon={<ChevronRight size={theme.iconSize.lg} color={theme.colors.text.tertiary} />}
+          />
           <View className="mt-4" />
           <ToggleInput
             items={[

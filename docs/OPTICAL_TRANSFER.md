@@ -236,41 +236,108 @@ clamp does not — or the sender generates live forever, which is slower but alw
 
 ## Files
 
-| path                                          | role                                                    |
-| --------------------------------------------- | ------------------------------------------------------- |
-| `utils/optical/fountain.ts`                   | LT encoder/decoder, `dlog`, soliton CDF. **Frozen.**    |
-| `utils/optical/frameProtocol.ts`              | 20-byte frame header, FNV-1a, splitmix32. **Frozen.**   |
-| `utils/optical/base44.ts`                     | binary ⇄ QR-alphanumeric text                           |
-| `utils/optical/presets.ts`                    | density table, derived from zxing's own capacity tables |
-| `utils/optical/qrEncode.ts`                   | QR generation with version and mask pinned              |
-| `utils/optical/qrRaster.ts`                   | module matrix → RGBA pixels                             |
-| `utils/optical/senderSession.ts`              | `OpticalStream` — seq → frame text                      |
-| `utils/optical/receiverSession.ts`            | `OpticalReceiver` — scanned text → payload              |
-| `utils/optical/progress.ts`                   | overhead model, progress and ETA                        |
-| `utils/optical/noSignal.ts`                   | when to show the "nothing is decoding" hint             |
-| `utils/optical/bench.ts`                      | device calibration and the Phase 0 measurements         |
-| `components/optical/OpticalQrCanvas.tsx`      | Skia draw, integer module scaling                       |
-| `components/optical/OpticalScannerCamera.tsx` | receiving camera                                        |
-| `app/app/test/optical-bench.tsx`              | the measurement harness                                 |
+| path                                              | role                                                    |
+| ------------------------------------------------- | ------------------------------------------------------- |
+| `utils/optical/fountain.ts`                       | LT encoder/decoder, `dlog`, soliton CDF. **Frozen.**    |
+| `utils/optical/frameProtocol.ts`                  | 20-byte frame header, FNV-1a, splitmix32. **Frozen.**   |
+| `utils/optical/base44.ts`                         | binary ⇄ QR-alphanumeric text                           |
+| `utils/optical/presets.ts`                        | density table, derived from zxing's own capacity tables |
+| `utils/optical/qrEncode.ts`                       | QR generation with version and mask pinned              |
+| `utils/optical/qrRaster.ts`                       | module matrix → RGBA pixels                             |
+| `utils/optical/senderSession.ts`                  | `OpticalStream` — seq → frame text                      |
+| `utils/optical/receiverSession.ts`                | `OpticalReceiver` — scanned text → payload              |
+| `utils/optical/progress.ts`                       | overhead model, progress and ETA                        |
+| `utils/optical/noSignal.ts`                       | when to show the "nothing is decoding" hint             |
+| `utils/optical/bench.ts`                          | device calibration and the Phase 0 measurements         |
+| `components/optical/OpticalQrCanvas.tsx`          | Skia draw, integer module scaling                       |
+| `components/optical/OpticalScannerCamera.tsx`     | receiving camera (vision-camera)                        |
+| `components/optical/OpticalQrCanvas.web.tsx`      | Skia-free DOM canvas, same integer scaling              |
+| `components/optical/OpticalScannerCamera.web.tsx` | getUserMedia + our own frame pump                       |
+| `utils/optical/qrCanvasLayout.ts`                 | integer module scaling, shared by both canvases         |
+| `utils/optical/webQrDecode.ts`                    | decoder selection and the wasm reader                   |
+| `scripts/sync-web-wasm.js`                        | self-hosts the wasm into `public/`                      |
+| `app/app/test/optical-bench.tsx`                  | the measurement harness (runs on both platforms)        |
 
-### Native only, and the web build depends on that being structural
+## Web
 
-The feature needs a camera on one device and a screen on the other, so it is phone-to-phone by
-definition. `DataSettingsModal` hides its entry card on web and `OpticalTransferModal` shows
-`opticalTransfer.nativeOnly` — but that is runtime gating, and the web bundle still walks the
-import graph. `react-native-vision-camera` **throws at module init** on web
-(`system/camera-module-not-found`), which fails the whole web export from an unrelated route.
+Both directions run in a browser, and web is a first-class end of a transfer rather than a
+degraded one — a laptop screen is a better sender than a phone (bigger, brighter, steadier), and
+a phone browser receiving from a desktop is a real case. Everything above the two device-facing
+components is already platform-agnostic: `useOpticalSender` deliberately returns a plain
+`QrRaster` rather than an `SkImage`, `useOpticalReceiver` only ever sees `Code[]`, and every
+`utils/optical/` module is pure. So the platform split is exactly two files plus a decoder.
 
-So every module that reaches vision-camera needs a platform counterpart, matching
-`components/CameraView.web.tsx`:
+### The parts that differ
 
-- `components/optical/OpticalScannerCamera.web.tsx` — message-only stub with the same props.
-- `app/app/test/optical-bench.web.tsx` — stub route, like `reps-recording.web.tsx`.
-- `hooks/useOpticalReceiver.ts` imports `Code`/`CodeScannerFrame` with `import type`, so the
-  declaration is erased rather than left as a side-effect import.
+| concern            | native                              | web                                                  |
+| ------------------ | ----------------------------------- | ---------------------------------------------------- |
+| draw a frame       | Skia canvas (`OpticalQrCanvas.tsx`) | DOM `<canvas>` + `putImageData` (`.web.tsx`)         |
+| camera             | vision-camera                       | `getUserMedia` + a `<video>` we pump ourselves       |
+| decode             | MLKit, via the code scanner         | `BarcodeDetector` if present, else zxing-cpp in wasm |
+| capture resolution | ~640×480, not ours to choose        | requested — `ideal: 1920×1080`                       |
 
-Skia (`OpticalQrCanvas`) needs no counterpart — `@shopify/react-native-skia` imports cleanly on
-web (`hooks/useChartCapture.ts` already does), and the canvas never renders there.
+`react-native-vision-camera` **throws at module init** on web
+(`system/camera-module-not-found`), so anything that reaches it needs a counterpart even when the
+feature is gated at runtime — that is why `hooks/useOpticalReceiver.ts` imports `Code` and
+`CodeScannerFrame` with `import type` (a value import of type specifiers can survive as a
+side-effect import) and why the web scanner declares its own props rather than importing them.
+Skia needs no counterpart: `@shopify/react-native-skia` imports cleanly on web
+(`hooks/useChartCapture.ts` already does), and the web canvas never touches it.
+
+### Why the decoder is zxing-cpp in wasm, not the zxing already in the tree
+
+`@zxing/library` is a direct dependency (`qrEncode.ts` uses its _encoder_ internals) and decoding
+with it would have added nothing to install. It is not good enough. Measured on simulated camera
+frames built from our own presets — area-sampled at a fractional scale, blurred, noisy,
+off-centre, filling part of the frame; the harness is `utils/__tests__/opticalWebQrDecode.test.ts`
+— the pure-JS reader decoded **5 of 18** frames at 10–280 ms each, failing even at 10 px/module,
+while zxing-cpp compiled to wasm decoded **18 of 18** at 2–12 ms, including `max` at 2.6
+px/module. Those failures do not produce a slow transfer, they produce a progress bar that never
+moves: the fountain only advances on frames that decode.
+
+The browser's own `BarcodeDetector` is tried first where it exists (Chrome/Edge on Android,
+ChromeOS, macOS). It reads the `<video>` element directly — no pixel copy into JS, no wasm
+download — and its QR support is confirmed with `getSupportedFormats()` before it is used, because
+the spec allows an implementation to support any subset.
+
+### The wasm is self-hosted, deliberately
+
+`zxing-wasm` fetches its binary from jsdelivr by default. This feature promises "no internet, no
+account, nothing leaves the room", and a receiver that quietly needs a CDN breaks that on exactly
+the offline case it exists for — while telling a third party when a transfer happens.
+`scripts/sync-web-wasm.js` copies the binary into `public/` (git-ignored, regenerated on
+`postinstall` and on both web build scripts) and `OPTICAL_WASM_URL` points at our own origin via
+`EXPO_BASE_URL`. There is **no CDN fallback**: `prepareZXingModule` is always awaited before the
+first `readBarcodes`, so the packaged default never applies, and a missing copy surfaces as a
+failure on the receive screen rather than as a silent network request.
+
+### Verifying the web halves without two devices
+
+A browser transfer can be driven end to end from a script, which is worth knowing because the
+alternative is two machines and a lot of holding things still.
+
+Chromium accepts `--use-file-for-fake-video-capture=<file.y4m>`, so `getUserMedia` returns a video
+file instead of a camera. Generating that file from our own sender pipeline —
+`packOpticalContainer` → `OpticalStream` → `encodeQrAlphanumericFixed` → `rasterizeQr`, each frame
+scaled into a 640×480 Y plane on a dark background, wrapped in a raw y4m — gives a synthetic camera
+pointed at a real stream. Emit about `2.2 × k` frames so the looping file carries enough distinct
+seqs for the fountain to close.
+
+Run against a production web export served over plain HTTP (`getUserMedia` needs a secure context,
+and `localhost` counts), with `localStorage.onboardingCompleted = 'true'` set before navigating so
+the app does not bounce to onboarding. Note the test routes — including the bench — `Redirect` to
+`/app` in a production export (`app/app/test/_layout.tsx`), so drive the real UI: Settings → Local
+Data Settings → Optical Transfer.
+
+Done that way, the receiver reassembles the payload and lands on "Data received and verified"
+without a camera being involved anywhere.
+
+### Density on web
+
+`MAX_RECOMMENDED_OPTICAL_PRESET_ID` still caps automatic selection at `tiny`, and that is still
+right: calibration runs on the _sender_, which cannot know that the receiver is a browser
+requesting 1080p rather than an Android phone pinned to 640×480. A web receiver can comfortably
+handle denser codes — that is what the manual override in `OpticalQualityControls` is for.
 
 ### Why `qrEncode.ts` reimplements zxing's encoder
 

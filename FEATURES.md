@@ -195,10 +195,11 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 - Sensitive metrics (weight, body fat) and nutrition logs encrypted at rest with AES
 - Fully offline — core features work without internet
 - Full data export (encrypted JSON or Excel) and import for portability
-- **Optical Transfer** — move everything to another phone with nothing but the two screens: one
-  displays an animated stream of QR codes, the other reads them with its camera. No internet, no
-  cable, no account. Optionally passphrase-protected, and verified twice before it replaces
-  anything (see [docs/OPTICAL_TRANSFER.md](docs/OPTICAL_TRANSFER.md))
+- **Optical Transfer** — move everything to another device with nothing but the two screens: one
+  displays an animated stream of QR codes, the other reads them with its camera. Available on
+  Android, iOS and the web app, in any combination (a laptop can send to a phone or receive from
+  one). No internet, no cable, no account. Optionally passphrase-protected, and verified twice
+  before it replaces anything (see [docs/OPTICAL_TRANSFER.md](docs/OPTICAL_TRANSFER.md))
 - Automatic local backups before any restore, browsable and restorable from settings
 - Complete database reset option
 
