@@ -8,30 +8,25 @@ export interface WeightTrendSelection {
   scaleWeight: number | null;
 }
 
-export function averageScaleWeightsByDay(raw: MetricPoint[]): MetricPoint[] {
-  const byDay = new Map<number, number[]>();
-  for (const point of raw) {
-    const values = byDay.get(point.date) ?? [];
-    values.push(point.value);
-    byDay.set(point.date, values);
-  }
-  return Array.from(byDay, ([date, values]) => ({
-    date,
-    value: values.reduce((sum, value) => sum + value, 0) / values.length,
-  })).sort((a, b) => a.date - b.date);
-}
-
+/**
+ * The tooltip's reading for a touched date.
+ *
+ * Takes the already-averaged scale series rather than the raw one: this runs on every pointer
+ * move, and rebuilding the by-day map inside it meant re-grouping and re-sorting the entire
+ * history for a single `find`. The chart computes that series once per render anyway.
+ */
 export function selectWeightTrendPoint(
   trend: MetricPoint[],
-  raw: MetricPoint[],
+  scaleWeightsByDay: MetricPoint[],
   requestedDate: number
 ): WeightTrendSelection | null {
   const trendPoint = trendWeightAtOrBefore(trend, requestedDate);
   if (!trendPoint) {
     return null;
   }
+
   const scaleWeight =
-    averageScaleWeightsByDay(raw).find((point) => point.date === trendPoint.date)?.value ?? null;
+    scaleWeightsByDay.find((point) => point.date === trendPoint.date)?.value ?? null;
   return { date: trendPoint.date, trendWeight: trendPoint.value, scaleWeight };
 }
 
@@ -43,7 +38,9 @@ export function trailingSevenDayTrendChange(
     return null;
   }
   const latest = trend[trend.length - 1];
-  const earliestObservation = Math.min(...raw.map((point) => point.date));
+  // `raw` arrives ascending from ProgressService, so the first entry is the earliest observation.
+  // Reading it directly avoids spreading the whole history through `Math.min`.
+  const earliestObservation = raw[0].date;
   if (latest.date - earliestObservation < 7 * MS_PER_SOLAR_DAY) {
     return null;
   }

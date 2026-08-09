@@ -65,6 +65,7 @@
       "title": "Receive",
       "subtitle": "Point at the other phone's screen",
       "percent": "{{percent}}%",
+      "speed": "{{speed}} KB/s",
       "eta": "About {{seconds}} seconds left",
       "aimHint": "Fill this view with the code on the other phone.",
       "verifying": "Checking the data…",

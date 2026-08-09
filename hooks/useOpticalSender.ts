@@ -6,22 +6,14 @@
  * hook itself stays free of Skia (and so it needs no `.web.ts` stub); turning that into pixels is
  * `components/optical/OpticalQrCanvas.tsx`'s job.
  *
+ * The display loop itself lives in `hooks/useQrFrameLoop.ts`, shared with the bench screen — see
+ * that file for the three hardware-learned behaviours it implements.
+ *
  * WHY THE PACKED CONTAINER IS RETAINED for the whole session: calibration measures *this* phone,
  * but whether a code is readable depends on the *other* phone's camera, which nothing here can
  * observe. So the user has to be able to change density mid-stream, and re-deriving the payload
  * would mean another dump + gzip + hash — seconds of dead time every adjustment. Keeping the
  * container costs one extra copy of a few hundred KB and makes `setPreset` instant.
- *
- * Three things here were learned the hard way on real hardware — see `docs/OPTICAL_TRANSFER.md`:
- *
- *  1. The display loop SELF-SCHEDULES. `setInterval` at a period shorter than a frame's encode
- *     cost queues callbacks faster than they drain, and the frame rate collapses progressively
- *     after a few seconds. Queuing the next tick only once the current one finishes makes an
- *     unreachable target degrade gracefully instead.
- *  2. Frames are CACHED as module matrices and replayed. A frame's contents depend only on its
- *     seq, so the first pass pays the encode cost and every pass after it is nearly free.
- *  3. The fps target is MEASURED, not guessed. Encode cost varies by ~4x across devices at the
- *     same density, so a fixed default is wrong nearly everywhere.
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -29,6 +21,7 @@ import { AppState } from 'react-native';
 
 import { dumpDatabase } from '@/database/exportDb';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
+import { useQrFrameLoop } from '@/hooks/useQrFrameLoop';
 import { calibrateDevice, planFrameCache } from '@/utils/optical/bench';
 import {
   OPTICAL_PAYLOAD_KIND_DATABASE,
@@ -41,11 +34,13 @@ import {
   getOpticalPreset,
   type OpticalPreset,
   type OpticalPresetId,
-  QR_QUIET_ZONE_MODULES,
 } from '@/utils/optical/presets';
-import { encodeQrAlphanumericFixed, type QrMatrix } from '@/utils/optical/qrEncode';
-import { type QrRaster, rasterizeQr } from '@/utils/optical/qrRaster';
-import { newOpticalSessionId, OpticalStream } from '@/utils/optical/senderSession';
+import { type QrRaster } from '@/utils/optical/qrRaster';
+import {
+  estimateStreamSeconds,
+  newOpticalSessionId,
+  OpticalStream,
+} from '@/utils/optical/senderSession';
 
 export type OpticalSenderPhase =
   'idle' | 'calibrating' | 'dumping' | 'packing' | 'ready' | 'streaming' | 'error';
@@ -91,11 +86,6 @@ const buildDatabasePayload: OpticalPayloadBuilder = async () => ({
   payloadKind: OPTICAL_PAYLOAD_KIND_DATABASE,
 });
 
-const nowMs = (): number =>
-  typeof performance !== 'undefined' && typeof performance.now === 'function'
-    ? performance.now()
-    : Date.now();
-
 const idleState = (): OpticalSenderState => ({
   cacheTarget: 0,
   cachedFrames: 0,
@@ -117,14 +107,7 @@ export function useOpticalSender(options: {
 
   const containerRef = useRef<null | Uint8Array>(null);
   const metaRef = useRef<null | OpticalContainerMeta>(null);
-  const streamRef = useRef<null | OpticalStream>(null);
-  const cacheRef = useRef<QrMatrix[]>([]);
-  const cacheTargetRef = useRef(0);
-  const cursorRef = useRef(0);
-  const framesShownRef = useRef(0);
   const fpsRef = useRef(DEFAULT_FPS);
-  const runningRef = useRef(false);
-  const timerRef = useRef<null | ReturnType<typeof setTimeout>>(null);
   /**
    * Bumped on every prepare and stop. `dumpDatabase()` can run for a long time, and the user can
    * back out or restart while it is in flight; a stale continuation must not install its stream
@@ -149,80 +132,83 @@ export function useOpticalSender(options: {
   const isStreaming = state.phase === 'streaming';
   useKeepScreenAwake('optical-send', isStreaming);
 
+  const handleFrame = useCallback(
+    (raster: QrRaster, stats: { cachedFrames: number; framesShown: number }) => {
+      setState((previous) => ({
+        ...previous,
+        cachedFrames: stats.cachedFrames,
+        framesShown: stats.framesShown,
+        raster,
+      }));
+    },
+    []
+  );
+
+  const loop = useQrFrameLoop({ onFrame: handleFrame, running: isStreaming });
+
   /** Build (or rebuild) the stream and frame cache for a density, from the retained container. */
-  const installStream = useCallback((presetId: OpticalPresetId, fps: number) => {
-    const container = containerRef.current;
-    const meta = metaRef.current;
-    if (!container || !meta) {
-      return;
-    }
+  const installStream = useCallback(
+    (presetId: OpticalPresetId, fps: number) => {
+      const container = containerRef.current;
+      const meta = metaRef.current;
+      if (!container || !meta) {
+        return;
+      }
 
-    const preset = getOpticalPreset(presetId);
-    const stream = new OpticalStream(container, preset, newOpticalSessionId());
-    const plan = planFrameCache(stream.k, preset.moduleCount);
+      const preset = getOpticalPreset(presetId);
+      const stream = new OpticalStream(container, preset, newOpticalSessionId());
+      const plan = planFrameCache(stream.k, preset.moduleCount);
 
-    streamRef.current = stream;
-    // A new density invalidates every cached frame: they are a different QR version, and a
-    // receiver that saw one mid-stream would stop decoding.
-    cacheRef.current = [];
-    cacheTargetRef.current = plan.frames;
-    cursorRef.current = 0;
-    framesShownRef.current = 0;
-    fpsRef.current = fps;
-    presetIdRef.current = presetId;
+      loop.install(stream, plan.frames);
+      loop.setFps(fps);
+      fpsRef.current = fps;
+      presetIdRef.current = presetId;
 
-    setState((previous) => ({
-      ...previous,
-      cachedFrames: 0,
-      cacheTarget: plan.frames,
-      fps,
-      framesShown: 0,
-      presetId,
-      raster: null,
-      summary: {
-        containerBytes: container.length,
-        encrypted: meta.encrypted,
-        estimatedSeconds: Math.ceil((stream.k * 1.25) / Math.max(1, fps)),
-        loopSafe: plan.loopSafe,
-        meta,
-        plainBytes: meta.plainLen,
-        preset,
-        sourceBlocks: stream.k,
-      },
-    }));
-  }, []);
+      setState((previous) => ({
+        ...previous,
+        cachedFrames: 0,
+        cacheTarget: plan.frames,
+        fps,
+        framesShown: 0,
+        presetId,
+        raster: null,
+        summary: {
+          containerBytes: container.length,
+          encrypted: meta.encrypted,
+          estimatedSeconds: estimateStreamSeconds(stream.k, fps),
+          loopSafe: plan.loopSafe,
+          meta,
+          plainBytes: meta.plainLen,
+          preset,
+          sourceBlocks: stream.k,
+        },
+      }));
+    },
+    [loop]
+  );
+
+  /** Halt the loop and invalidate any prepare still in flight. Shared by `stop` and `reset`. */
+  const haltStream = useCallback(() => {
+    generationRef.current++;
+    loop.clear();
+  }, [loop]);
 
   const stop = useCallback(() => {
-    generationRef.current++;
-    runningRef.current = false;
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
+    haltStream();
     setState((previous) =>
       previous.phase === 'streaming' ? { ...previous, phase: 'ready', raster: null } : previous
     );
-  }, []);
+  }, [haltStream]);
 
   const reset = useCallback(() => {
-    generationRef.current++;
-    runningRef.current = false;
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
+    haltStream();
     containerRef.current = null;
     metaRef.current = null;
-    streamRef.current = null;
-    cacheRef.current = [];
-    cacheTargetRef.current = 0;
-    cursorRef.current = 0;
-    framesShownRef.current = 0;
     fpsRef.current = DEFAULT_FPS;
     calibrationRef.current = null;
     presetIdRef.current = null;
     setState(idleState());
-  }, []);
+  }, [haltStream]);
 
   const prepare = useCallback(
     async (override?: OpticalPayloadBuilder) => {
@@ -291,11 +277,12 @@ export function useOpticalSender(options: {
   );
 
   const start = useCallback(() => {
-    if (!streamRef.current) {
+    // `presetIdRef` is set by `installStream` and cleared by `reset`, so it is exactly "a stream
+    // is installed" — without the dependency churn that reading `state.summary` would cause.
+    if (!presetIdRef.current) {
       return;
     }
 
-    runningRef.current = true;
     setState((previous) => ({ ...previous, phase: 'streaming' }));
   }, []);
 
@@ -314,78 +301,23 @@ export function useOpticalSender(options: {
   );
 
   /** Change the display rate. Free: the loop reads this from a ref on its next tick. */
-  const setFps = useCallback((fps: number) => {
-    fpsRef.current = fps;
-    setState((previous) => ({
-      ...previous,
-      fps,
-      summary: previous.summary
-        ? {
-            ...previous.summary,
-            estimatedSeconds: Math.ceil((previous.summary.sourceBlocks * 1.25) / Math.max(1, fps)),
-          }
-        : undefined,
-    }));
-  }, []);
-
-  const nextFrame = useCallback((): null | QrRaster => {
-    const stream = streamRef.current;
-    if (!stream) {
-      return null;
-    }
-
-    let matrix: QrMatrix;
-    const target = cacheTargetRef.current;
-
-    if (target > 0 && cacheRef.current.length >= target) {
-      matrix = cacheRef.current[cursorRef.current % cacheRef.current.length];
-      cursorRef.current++;
-    } else {
-      matrix = encodeQrAlphanumericFixed(stream.next(), stream.preset.qrVersion, 'L');
-      // target === 0 means this payload is too large to cache a safely loopable set, so we keep
-      // generating rather than risk looping a set the receiver can exhaust.
-      if (target > 0) {
-        cacheRef.current.push(matrix);
-      }
-    }
-
-    return rasterizeQr(matrix.moduleCount, matrix.modules, QR_QUIET_ZONE_MODULES);
-  }, []);
-
-  useEffect(() => {
-    if (!isStreaming) {
-      return;
-    }
-
-    const tick = () => {
-      if (!runningRef.current) {
-        return;
-      }
-      const started = nowMs();
-      const raster = nextFrame();
-      if (raster) {
-        framesShownRef.current++;
-        setState((previous) => ({
-          ...previous,
-          cachedFrames: cacheRef.current.length,
-          framesShown: framesShownRef.current,
-          raster,
-        }));
-      }
-      // The 16 ms floor guarantees the thread yields between frames, so the controls stay
-      // responsive even while every frame costs an encode.
-      const period = 1000 / Math.max(1, fpsRef.current);
-      timerRef.current = setTimeout(tick, Math.max(16, period - (nowMs() - started)));
-    };
-
-    tick();
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-  }, [isStreaming, nextFrame]);
+  const setFps = useCallback(
+    (fps: number) => {
+      fpsRef.current = fps;
+      loop.setFps(fps);
+      setState((previous) => ({
+        ...previous,
+        fps,
+        summary: previous.summary
+          ? {
+              ...previous.summary,
+              estimatedSeconds: estimateStreamSeconds(previous.summary.sourceBlocks, fps),
+            }
+          : undefined,
+      }));
+    },
+    [loop]
+  );
 
   // Backgrounding the app stops the stream: the screen is the transmitter, so there is nothing to
   // transmit, and continuing would burn battery encoding frames nobody can see.

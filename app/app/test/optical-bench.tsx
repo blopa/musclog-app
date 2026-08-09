@@ -34,6 +34,7 @@ import { OpticalScannerCamera } from '@/components/optical/OpticalScannerCamera'
 import { Button } from '@/components/theme/Button';
 import { dumpDatabase } from '@/database/exportDb';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
+import { useQrFrameLoop } from '@/hooks/useQrFrameLoop';
 import { useTheme } from '@/hooks/useTheme';
 import {
   benchQrEncode,
@@ -44,6 +45,7 @@ import {
   runDlogSweep,
   suggestedFpsForFrameCost,
 } from '@/utils/optical/bench';
+import { monotonicNowMs } from '@/utils/optical/clock';
 import {
   base44CharsForBytes,
   getOpticalPreset,
@@ -52,18 +54,12 @@ import {
   QR_QUIET_ZONE_MODULES,
 } from '@/utils/optical/presets';
 import { estimateTransferProgress } from '@/utils/optical/progress';
-import { encodeQrAlphanumericFixed, type QrMatrix } from '@/utils/optical/qrEncode';
-import { type QrRaster, rasterizeQr } from '@/utils/optical/qrRaster';
+import { type QrRaster } from '@/utils/optical/qrRaster';
 import { OpticalReceiver } from '@/utils/optical/receiverSession';
 import { newOpticalSessionId, OpticalStream } from '@/utils/optical/senderSession';
 
 type BenchMode = 'bench' | 'send' | 'receive';
 type PayloadSourceId = '25kb' | '100kb' | '500kb' | 'realdb';
-
-const nowMs = (): number =>
-  typeof performance !== 'undefined' && typeof performance.now === 'function'
-    ? performance.now()
-    : Date.now();
 
 function fmtBytes(n: number): string {
   if (n < 1024) {
@@ -263,13 +259,13 @@ function BenchPanel() {
     setPayloadRunning(true);
     setPayloadReport(['Dumping database…']);
     try {
-      const dumpStart = nowMs();
+      const dumpStart = monotonicNowMs();
       const json = await dumpDatabase();
-      const dumpMs = nowMs() - dumpStart;
+      const dumpMs = monotonicNowMs() - dumpStart;
 
-      const encodeStart = nowMs();
+      const encodeStart = monotonicNowMs();
       const plain = new TextEncoder().encode(json);
-      const encodeMs = nowMs() - encodeStart;
+      const encodeMs = monotonicNowMs() - encodeStart;
 
       const lines = [
         `dumpDatabase()   ${dumpMs.toFixed(0)} ms`,
@@ -281,9 +277,9 @@ function BenchPanel() {
 
       for (const level of [1, 6, 9] as const) {
         await new Promise<void>((resolve) => setTimeout(resolve, 0));
-        const start = nowMs();
+        const start = monotonicNowMs();
         const gz = gzipSync(plain, { level });
-        const ms = nowMs() - start;
+        const ms = monotonicNowMs() - start;
         const ratio = plain.length / gz.length;
         lines.push(
           `gzip L${level}  ${fmtBytes(gz.length).padEnd(10)} ${ratio.toFixed(1)}x  ${ms.toFixed(0)} ms`
@@ -407,76 +403,35 @@ function SendPanel() {
     realFps: 0,
   });
 
-  const streamRef = useRef<null | OpticalStream>(null);
-  /**
-   * Generated frames, as module matrices rather than rasters: a matrix is 1 byte per module
-   * (~14 KB at v24) against a raster's 4 bytes per pixel (~65 KB), and re-rasterizing costs
-   * ~1 ms — nothing next to the ~175 ms the encode cost.
-   */
-  const cacheRef = useRef<QrMatrix[]>([]);
-  const cacheTargetRef = useRef(0);
-  const cursorRef = useRef(0);
   const encodeTimesRef = useRef<number[]>([]);
-  const displayedRef = useRef(0);
   const lastSampleRef = useRef({ at: 0, displayed: 0 });
-  const runningRef = useRef(false);
-  const timerRef = useRef<null | ReturnType<typeof setTimeout>>(null);
-  // Mirrored into a ref so the self-scheduling loop can read the current target without being
-  // torn down and restarted (which would drop the in-flight frame) every time fps changes.
-  const fpsRef = useRef(fps);
-  useEffect(() => {
-    fpsRef.current = fps;
-  }, [fps]);
 
   useKeepScreenAwake('optical-bench-send', isStreaming);
 
-  /**
-   * The next frame to show. Generates while the cache is filling, then cycles it.
-   *
-   * Frame contents depend only on seq, so a frame generated once can be replayed for free — the
-   * first pass pays the encode cost and every pass after it is nearly free.
-   */
-  const nextFrame = useCallback((): null | QrRaster => {
-    const stream = streamRef.current;
-    if (!stream) {
-      return null;
+  // The display loop is `useQrFrameLoop` — the same one the real send screen runs, so what this
+  // screen measures is what ships. All the bench adds is the encode-cost sample.
+  const handleEncode = useCallback((durationMs: number) => {
+    encodeTimesRef.current.push(durationMs);
+    if (encodeTimesRef.current.length > 120) {
+      encodeTimesRef.current.shift();
     }
-
-    let matrix: QrMatrix;
-    const target = cacheTargetRef.current;
-
-    if (target > 0 && cacheRef.current.length >= target) {
-      // Cache is complete and safe to loop — no encoding at all from here on.
-      matrix = cacheRef.current[cursorRef.current % cacheRef.current.length];
-      cursorRef.current++;
-    } else {
-      const started = nowMs();
-      matrix = encodeQrAlphanumericFixed(stream.next(), stream.preset.qrVersion, 'L');
-      encodeTimesRef.current.push(nowMs() - started);
-      if (encodeTimesRef.current.length > 120) {
-        encodeTimesRef.current.shift();
-      }
-      // target === 0 means this payload is too large to cache a safely loopable set, so we
-      // generate forever rather than risk looping a set the receiver can exhaust.
-      if (target > 0) {
-        cacheRef.current.push(matrix);
-      }
-    }
-
-    return rasterizeQr(matrix.moduleCount, matrix.modules, QR_QUIET_ZONE_MODULES);
   }, []);
+
+  const loop = useQrFrameLoop({
+    onEncode: handleEncode,
+    onFrame: setRaster,
+    running: isStreaming,
+  });
+
+  useEffect(() => {
+    loop.setFps(fps);
+  }, [fps, loop]);
 
   const stop = useCallback(() => {
-    runningRef.current = false;
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
+    loop.clear();
     setIsStreaming(false);
     setRaster(null);
-    cacheRef.current = [];
-    streamRef.current = null;
-  }, []);
+  }, [loop]);
 
   const start = useCallback(async () => {
     setPreparing(true);
@@ -485,14 +440,14 @@ function SendPanel() {
       const notes: string[] = [];
 
       if (payloadSource === 'realdb') {
-        const dumpStart = nowMs();
+        const dumpStart = monotonicNowMs();
         const json = await dumpDatabase();
         const plain = new TextEncoder().encode(json);
         const gz = gzipSync(plain, { level: 6 });
         payload = gz;
         notes.push(
           `real DB: ${fmtBytes(plain.length)} → ${fmtBytes(gz.length)} gz ` +
-            `(${(plain.length / gz.length).toFixed(1)}x, ${(nowMs() - dumpStart).toFixed(0)} ms)`
+            `(${(plain.length / gz.length).toFixed(1)}x, ${(monotonicNowMs() - dumpStart).toFixed(0)} ms)`
         );
       } else {
         const sizes: Record<string, number> = {
@@ -508,13 +463,9 @@ function SendPanel() {
       const stream = new OpticalStream(payload, preset, newOpticalSessionId());
       const plan = planFrameCache(stream.k, preset.moduleCount);
 
-      streamRef.current = stream;
-      cacheRef.current = [];
-      cacheTargetRef.current = plan.frames;
-      cursorRef.current = 0;
+      loop.install(stream, plan.frames);
       encodeTimesRef.current = [];
-      displayedRef.current = 0;
-      lastSampleRef.current = { at: nowMs(), displayed: 0 };
+      lastSampleRef.current = { at: monotonicNowMs(), displayed: 0 };
 
       notes.push(
         `k = ${stream.k} blocks · session ${stream.sessionId} · QR v${preset.qrVersion} · ` +
@@ -527,13 +478,12 @@ function SendPanel() {
       );
       setInfo(notes);
 
-      runningRef.current = true;
       setIsStreaming(true);
     } catch (error) {
       setInfo([`FAILED: ${error instanceof Error ? error.message : String(error)}`]);
     }
     setPreparing(false);
-  }, [payloadSource, presetId]);
+  }, [loop, payloadSource, presetId]);
 
   const useProposed = useCallback(async () => {
     setCalibrating(true);
@@ -559,62 +509,32 @@ function SendPanel() {
     setCalibrating(false);
   }, []);
 
-  // Self-scheduling display loop. The next tick is queued only once this one has finished, so a
-  // target fps the device cannot reach simply runs slower — it can never pile callbacks up the
-  // way setInterval does. (That pile-up was the "fps collapses after a few seconds" bug: a 100 ms
-  // interval against 175 ms of work backs the event loop up permanently.) The 16 ms floor
-  // guarantees the thread yields between frames so Stop stays responsive.
-  useEffect(() => {
-    if (!isStreaming) {
-      return;
-    }
-
-    const tick = () => {
-      if (!runningRef.current) {
-        return;
-      }
-      const started = nowMs();
-      const frame = nextFrame();
-      if (frame) {
-        setRaster(frame);
-        displayedRef.current++;
-      }
-      const period = 1000 / Math.max(1, fpsRef.current);
-      const delay = Math.max(16, period - (nowMs() - started));
-      timerRef.current = setTimeout(tick, delay);
-    };
-
-    tick();
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-  }, [isStreaming, nextFrame]);
-
+  // Sampler only — the display loop itself is `useQrFrameLoop`. Real fps is measured from the
+  // frames it reports rather than from the target, which is the whole point of the bench: a
+  // device that cannot keep up shows the gap here.
   useEffect(() => {
     if (!isStreaming) {
       return;
     }
     const id = setInterval(() => {
       const times = [...encodeTimesRef.current].sort((a, b) => a - b);
-      const at = nowMs();
+      const stats = loop.readStats();
+      const at = monotonicNowMs();
       const elapsed = (at - lastSampleRef.current.at) / 1000;
       const realFps =
-        elapsed > 0 ? (displayedRef.current - lastSampleRef.current.displayed) / elapsed : 0;
-      lastSampleRef.current = { at, displayed: displayedRef.current };
+        elapsed > 0 ? (stats.framesShown - lastSampleRef.current.displayed) / elapsed : 0;
+      lastSampleRef.current = { at, displayed: stats.framesShown };
       setLive({
-        cached: cacheRef.current.length,
-        cacheTarget: cacheTargetRef.current,
-        displayed: displayedRef.current,
+        cached: stats.cachedFrames,
+        cacheTarget: stats.cacheTarget,
+        displayed: stats.framesShown,
         encP50: times.length ? times[Math.floor(times.length * 0.5)] : 0,
         encP90: times.length ? times[Math.floor(times.length * 0.9)] : 0,
         realFps,
       });
     }, 1000);
     return () => clearInterval(id);
-  }, [isStreaming]);
+  }, [isStreaming, loop]);
 
   if (isStreaming) {
     const building = live.cacheTarget === 0 || live.cached < live.cacheTarget;
@@ -771,7 +691,7 @@ function ReceivePanel() {
         }
         codesRef.current++;
         if (startedAtRef.current === 0) {
-          startedAtRef.current = nowMs();
+          startedAtRef.current = monotonicNowMs();
         }
         const result = receiverRef.current.accept(code.value, Date.now());
         if (result === 'accepted' || result === 'reset' || result === 'complete') {
@@ -788,7 +708,7 @@ function ReceivePanel() {
   useEffect(() => {
     const id = setInterval(() => {
       const stats = receiverRef.current.stats;
-      const at = nowMs();
+      const at = monotonicNowMs();
       const win = windowRef.current;
       const elapsedWindow = win.at === 0 ? 0 : (at - win.at) / 1000;
 

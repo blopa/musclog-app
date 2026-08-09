@@ -185,8 +185,23 @@ Use the trend series for:
 Continue using raw observed weights for FFMI calculations and any view that represents a
 measurement. This avoids fabricating body-composition observations on interpolated days.
 
-The `useWeeklyAverages` control must not re-smooth trend weight. When enabled, it may reduce the raw
-point density shown in the chart, but `weightTrendHistory` remains the canonical daily trend.
+The progress screen's `useWeeklyAverages` control must not re-smooth trend weight. When enabled, it
+may reduce the raw point density shown in the chart, but `weightTrendHistory` remains the canonical
+daily trend.
+
+**As built:** `calculateEmpiricalTDEEWindow` takes `weightsArePresmoothed` rather than a single
+`useEndpointAverages` switch. The distinction matters: the flag governs the WEIGHT anchors only (and
+therefore the window, which must match them). Body-fat endpoints are averaged whenever the window is
+long enough either way, because body fat is never smoothed and does not define the window. An
+earlier `useEndpointAverages` governed both at once, which silently downgraded the fat anchors to
+single-day readings and forced `ProgressService.calculateInsights` into a second, duplicate call
+just to recover them.
+
+Collapsing same-day readings is `averagePointsByDay` in `utils/trendWeight.ts` — the single
+definition used by the trend filter, the chart's scatter series, the weekly check-in, and
+`calculateEmpiricalTDEEWindow`. Do not re-inline a by-day grouping; four copies (one of them
+last-wins rather than mean) previously gave "my weight on day X" more than one answer depending on
+which screen asked.
 
 ### `historicalNutritionParams`
 

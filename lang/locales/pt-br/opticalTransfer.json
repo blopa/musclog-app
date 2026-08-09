@@ -65,6 +65,7 @@
       "title": "Receber",
       "subtitle": "Aponte para a tela do outro celular",
       "percent": "{{percent}}%",
+      "speed": "{{speed}} KB/s",
       "eta": "Faltam cerca de {{seconds}} segundos",
       "aimHint": "Preencha esta visualização com o código do outro celular.",
       "verifying": "Conferindo os dados…",

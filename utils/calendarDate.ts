@@ -577,3 +577,18 @@ export function formatUtcNormalizedDayWithWeekdayIntl(dayKeyMs: number, localeTa
     timeZone: 'UTC',
   }).format(dayKeyMs);
 }
+
+/**
+ * Formats an absolute instant (not a day key) as a locale-aware date and time in the viewer's own
+ * timezone — "when did this happen, to me, now". Unlike the day-key formatters above there is
+ * deliberately no `timeZone: 'UTC'`: the instant has no recording timezone to preserve.
+ *
+ * Exists so display code never reaches for bare `Date.prototype.toLocaleString()`, which resolves
+ * whatever locale the JS runtime happens to default to rather than the app's selected language.
+ */
+export function formatLocalInstantIntl(instantMs: number, localeTag: string): string {
+  return new Intl.DateTimeFormat(localeTag, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(instantMs);
+}

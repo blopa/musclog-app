@@ -65,6 +65,7 @@
       "title": "Recibir",
       "subtitle": "Apunta a la pantalla del otro móvil",
       "percent": "{{percent}} %",
+      "speed": "{{speed}} KB/s",
       "eta": "Quedan unos {{seconds}} segundos",
       "aimHint": "Llena esta vista con el código del otro móvil.",
       "verifying": "Comprobando los datos…",

@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { buildMealSharePayload } from '@/database/share/buildMealShare';
+import { MusclogShareError } from '@/utils/share/shareEnvelope';
 
 import { OpticalSendModal } from './OpticalSendModal';
 
@@ -24,7 +25,10 @@ export function MealOpticalSendModal({
       try {
         return await buildMealSharePayload(mealId, { includeImage });
       } catch (error) {
-        if (error instanceof Error && error.message.includes('without ingredients')) {
+        // Matched on the typed code, never on the message text: the send screen renders whatever
+        // this throws, so a reworded English string used to silently drop the user back to a
+        // generic failure with no way to tell what was wrong.
+        if (error instanceof MusclogShareError && error.code === 'no-ingredients') {
           throw new Error(t('opticalTransfer.share.noIngredients'));
         }
         throw error;
@@ -46,8 +50,8 @@ export function MealOpticalSendModal({
     <OpticalSendModal
       buildPayload={buildPayload}
       copy={copy}
+      hasPhoto={hasImage}
       onClose={onClose}
-      photoToggle={{ available: hasImage }}
       visible={visible}
     />
   );

@@ -16,6 +16,7 @@ import {
   type MealShareEnvelope,
   type MealShareIngredient,
   MUSCLOG_SHARE_ENVELOPE_VERSION,
+  MusclogShareError,
   SHARE_ASSET_REF_PREFIX,
   type ShareRow,
 } from '@/utils/share/shareEnvelope';
@@ -106,15 +107,24 @@ export async function buildMealShareEnvelope(
   }
   const { meal } = mealData;
 
+  // Every read below is independent per ingredient, so they run together rather than one
+  // round trip at a time — a 20-ingredient recipe was 60+ serialized queries. Order is preserved
+  // because `Promise.all` resolves positionally, which the envelope's row order depends on.
+  const resolvedMealFoods = await Promise.all(
+    mealData.foods.map(async (model) => ({
+      food: await relatedFood(model),
+      model,
+      portion: await relatedPortion(model),
+    }))
+  );
+
   const foods = new Map<string, Food>();
   const portions = new Map<string, FoodPortion>();
   const mealFoods: { model: MealFood; food: Food; portion?: FoodPortion }[] = [];
-  for (const model of mealData.foods) {
-    const food = await relatedFood(model);
+  for (const { food, model, portion } of resolvedMealFoods) {
     if (!food) {
       continue;
     }
-    const portion = await relatedPortion(model);
     foods.set(food.id, food);
     if (portion) {
       portions.set(portion.id, portion);
@@ -123,48 +133,55 @@ export async function buildMealShareEnvelope(
   }
 
   if (mealFoods.length === 0) {
-    throw new Error('Cannot share a meal without ingredients');
+    throw new MusclogShareError('no-ingredients', 'Cannot share a meal without ingredients');
   }
 
   const mealPortionLinks = await database
     .get<MealFoodPortion>('meal_food_portions')
     .query(Q.where('meal_id', meal.id), Q.where('deleted_at', Q.eq(null)))
     .fetch();
-  const carriedMealPortionLinks: MealFoodPortion[] = [];
-  for (const link of mealPortionLinks) {
-    try {
-      const portion = await link.foodPortion;
-      if (isActive(link) && isActive(portion)) {
-        portions.set(portion.id, portion);
-        carriedMealPortionLinks.push(link);
+  const resolvedMealPortionLinks = await Promise.all(
+    mealPortionLinks.map(async (link) => {
+      try {
+        const portion = await link.foodPortion;
+        return isActive(link) && isActive(portion) ? { link, portion } : undefined;
+      } catch {
+        // A broken optional portion link does not make the meal itself unshareable.
+        return undefined;
       }
-    } catch {
-      // A broken optional portion link does not make the meal itself unshareable.
+    })
+  );
+
+  const carriedMealPortionLinks: MealFoodPortion[] = [];
+  for (const resolved of resolvedMealPortionLinks) {
+    if (resolved) {
+      portions.set(resolved.portion.id, resolved.portion);
+      carriedMealPortionLinks.push(resolved.link);
     }
   }
 
   const defaultFoodLinks: FoodFoodPortion[] = [];
-  for (const food of foods.values()) {
-    const linked = await defaultPortionLink(food);
+  for (const linked of await Promise.all([...foods.values()].map(defaultPortionLink))) {
     if (linked) {
       portions.set(linked.portion.id, linked.portion);
       defaultFoodLinks.push(linked.link);
     }
   }
 
-  const ingredients: MealShareIngredient[] = [];
-  for (const { food, model, portion } of mealFoods) {
-    const nutrients = await model.getNutrients();
-    const unit =
-      food.resolvedNutritionBasis === 'per_serving' ? 'serving' : portion ? 'portion' : 'g';
-    ingredients.push({
-      amount: model.amount,
-      calories: nutrients.calories,
-      name: food.name,
-      ...(unit === 'portion' && portion?.name ? { portionName: portion.name } : undefined),
-      unit,
-    });
-  }
+  const ingredients: MealShareIngredient[] = await Promise.all(
+    mealFoods.map(async ({ food, model, portion }): Promise<MealShareIngredient> => {
+      const nutrients = await model.getNutrients();
+      const unit =
+        food.resolvedNutritionBasis === 'per_serving' ? 'serving' : portion ? 'portion' : 'g';
+      return {
+        amount: model.amount,
+        calories: nutrients.calories,
+        name: food.name,
+        ...(unit === 'portion' && portion?.name ? { portionName: portion.name } : undefined),
+        unit,
+      };
+    })
+  );
 
   const mealRow = shareRow(meal);
   let assets: MealShareEnvelope['assets'];

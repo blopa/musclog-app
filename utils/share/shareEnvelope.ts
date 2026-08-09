@@ -62,8 +62,20 @@ export interface MealShareEnvelope extends ShareEnvelopeBase {
 
 export type MusclogShareEnvelope = MealShareEnvelope;
 
+/**
+ * Split deliberately into "this build is behind the sender" (`unsupported-envelope`,
+ * `unsupported-kind`) and "the payload is broken" (everything else) — see
+ * `components/modals/opticalReceiveScreen.ts`. `no-ingredients` is the one build-side code: a meal
+ * with nothing in it cannot be shared, and the sender needs to say so in the user's language
+ * without the UI matching on an English error message.
+ */
 export type MusclogShareErrorCode =
-  'not-a-share' | 'unsupported-envelope' | 'unsupported-kind' | 'malformed' | 'too-large';
+  | 'not-a-share'
+  | 'unsupported-envelope'
+  | 'unsupported-kind'
+  | 'malformed'
+  | 'too-large'
+  | 'no-ingredients';
 
 export class MusclogShareError extends Error {
   constructor(

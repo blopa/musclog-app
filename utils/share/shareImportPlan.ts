@@ -65,20 +65,38 @@ function sanitizeRow(row: ShareRow): ShareRow | undefined {
   );
 }
 
-function isReferenced(
-  spec: ShareKindSpec,
-  rows: WorkingRow[],
-  targetTable: string,
-  sourceId: string
-): boolean {
-  return rows.some((candidate) =>
-    Object.entries(spec.foreignKeys[candidate.table] ?? {}).some(([column, target]) => {
-      if (candidate.row[column] !== sourceId) {
-        return false;
+/**
+ * The composite key identifying one row across tables. A single helper on purpose: the referenced
+ * set and the lookup that consults it must agree exactly, and two separately-written template
+ * literals are one typo away from silently never matching (which prunes rows that ARE referenced
+ * and then fails the whole import on the dangling foreign key).
+ */
+function referenceKey(table: string, sourceId: string): string {
+  return `${table}::${sourceId}`;
+}
+
+/**
+ * Every row that some other row points at, as {@link referenceKey} strings.
+ *
+ * Built once per prune pass instead of re-scanning every row's foreign keys for every candidate:
+ * the pruning loop repeats until it reaches a fixpoint, so the naive form was a scan inside a
+ * filter inside a loop against a 2000-row ceiling.
+ */
+function referencedKeys(spec: ShareKindSpec, rows: WorkingRow[]): Set<string> {
+  const referenced = new Set<string>();
+  for (const candidate of rows) {
+    for (const [column, target] of Object.entries(spec.foreignKeys[candidate.table] ?? {})) {
+      const value = candidate.row[column];
+      if (!isPresentForeignKey(value)) {
+        continue;
       }
-      return resolveTargetTable(target, candidate.row) === targetTable;
-    })
-  );
+      const targetTable = resolveTargetTable(target, candidate.row);
+      if (targetTable) {
+        referenced.add(referenceKey(targetTable, value));
+      }
+    }
+  }
+  return referenced;
 }
 
 export function planShareImport(
@@ -145,14 +163,16 @@ export function planShareImport(
     });
   }
 
+  // Dropping an unreferenced row can orphan the row IT pointed at, so this repeats to a fixpoint.
   let pruned = true;
   while (pruned) {
     pruned = false;
+    const referenced = referencedKeys(spec, rows);
     rows = rows.filter((row) => {
       if (
         spec.pruneUnreferenced.includes(row.table) &&
         !row.reused &&
-        !isReferenced(spec, rows, row.table, row.sourceId)
+        !referenced.has(referenceKey(row.table, row.sourceId))
       ) {
         delete idMap[row.table][row.sourceId];
         pruned = true;

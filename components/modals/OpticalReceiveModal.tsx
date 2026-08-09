@@ -7,6 +7,9 @@
  * SHA-256 over the decrypted, decompressed JSON), and the wipe itself is behind a version check, a
  * destructive confirmation and device biometrics.
  *
+ * Which of the eight screens is showing is decided once, by `resolveOpticalReceiveScreen` — see
+ * `./opticalReceiveScreen.ts` for why that is not inlined here.
+ *
  * Progress is FRAMES COLLECTED, not blocks solved — see `docs/OPTICAL_TRANSFER.md`.
  */
 
@@ -21,7 +24,6 @@ import { SmartCameraTopActions } from '@/components/SmartCameraActions';
 import { Button } from '@/components/theme/Button';
 import { ProgressIndicator } from '@/components/theme/ProgressIndicator';
 import { SecretInput } from '@/components/theme/SecretInput';
-import { CURRENT_DATABASE_VERSION } from '@/constants/database';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { restoreDatabase } from '@/database/importDb';
 import { importShareEnvelope, type ShareImportResult } from '@/database/share/importShareEnvelope';
@@ -30,16 +32,15 @@ import { useOpticalReceiver } from '@/hooks/useOpticalReceiver';
 import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
 import { reloadApp } from '@/utils/app';
+import { formatLocalInstantIntl } from '@/utils/calendarDate';
 import { authenticateForDangerousAction } from '@/utils/dangerousActionAuth';
 import { handleError } from '@/utils/handleError';
-import {
-  OPTICAL_PAYLOAD_KIND_DATABASE,
-  OPTICAL_PAYLOAD_KIND_SHARE,
-} from '@/utils/optical/container';
+import { OPTICAL_PAYLOAD_KIND_SHARE } from '@/utils/optical/container';
 import { MusclogShareError, parseShareEnvelope } from '@/utils/share/shareEnvelope';
 
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
+import { type ParsedShare, resolveOpticalReceiveScreen } from './opticalReceiveScreen';
 
 interface OpticalReceiveModalProps {
   visible: boolean;
@@ -55,7 +56,7 @@ export function OpticalReceiveModal({
   onShareImported,
 }: OpticalReceiveModalProps) {
   const theme = useTheme();
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const { showSnackbar } = useSnackbar();
   const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
 
@@ -76,12 +77,36 @@ export function OpticalReceiveModal({
   const [torchEnabled, setTorchEnabled] = useState(false);
   const [torchAvailable, setTorchAvailable] = useState(false);
 
-  const { analysisFrame, fraction, meta, phase, showNoSignalHint } = receiver;
+  const { analysisFrame, errorCode, fraction, meta, phase, showNoSignalHint } = receiver;
+
+  // Depends on `takeJson` (a stable `useCallback(…, [])`) rather than on `receiver`, which
+  // `useOpticalReceiver` rebuilds as a fresh object on every render — that would re-run a full
+  // JSON.parse plus envelope validation on each of them.
+  const { takeJson } = receiver;
+  const isShare = phase === 'verified' && meta?.payloadKind === OPTICAL_PAYLOAD_KIND_SHARE;
+  const parsedShare = useMemo<ParsedShare | undefined>(() => {
+    if (!isShare) {
+      return undefined;
+    }
+
+    const json = takeJson();
+    if (!json) {
+      return { code: 'malformed' };
+    }
+
+    try {
+      return { envelope: parseShareEnvelope(json) };
+    } catch (error) {
+      return { code: error instanceof MusclogShareError ? error.code : 'malformed' };
+    }
+  }, [isShare, takeJson]);
+
+  const screen = resolveOpticalReceiveScreen({ accept, errorCode, meta, parsedShare, phase });
 
   // Only the scanning phase goes full-bleed camera; every later phase is an ordinary sheet of text
   // and buttons that still wants the modal's header (and its back arrow, which is the only way out
   // of them — the in-camera close button is gone by then).
-  const isScanning = phase === 'collecting';
+  const isScanning = screen.kind === 'scanning';
 
   // Identity-stable: the scanner reports availability from an effect, so a fresh function each
   // render would re-run it on every parent render.
@@ -91,43 +116,6 @@ export function OpticalReceiveModal({
       setTorchEnabled(false);
     }
   }, []);
-
-  // A backup written by a newer app cannot be understood by this one. Zod would eventually reject
-  // it, but only after the wipe and a wall of validation errors — so refuse up front.
-  const isDatabase = meta?.payloadKind === OPTICAL_PAYLOAD_KIND_DATABASE;
-  const isShare = meta?.payloadKind === OPTICAL_PAYLOAD_KIND_SHARE;
-  const tooNew = Boolean(isDatabase && meta.exportVersion > CURRENT_DATABASE_VERSION);
-  const databaseRefused = Boolean(meta && accept === 'share' && isDatabase);
-  const unknownPayload = Boolean(meta && !isDatabase && !isShare);
-  // Depends on `takeJson` (a stable `useCallback(…, [])`) rather than on `receiver`, which
-  // `useOpticalReceiver` rebuilds as a fresh object on every render — that would re-run a full
-  // JSON.parse plus envelope validation on each of them.
-  const { takeJson } = receiver;
-  const parsedShare = useMemo(() => {
-    if (phase !== 'verified' || !isShare) {
-      return undefined;
-    }
-
-    const json = takeJson();
-    if (!json) {
-      return { code: 'malformed' as const };
-    }
-
-    try {
-      return { envelope: parseShareEnvelope(json) };
-    } catch (error) {
-      return { code: error instanceof MusclogShareError ? error.code : ('malformed' as const) };
-    }
-  }, [isShare, phase, takeJson]);
-
-  const shareEnvelope = parsedShare?.envelope;
-  const invalidShare = phase === 'verified' && isShare && !shareEnvelope;
-  // Only two of the failure codes actually mean "the sender is ahead of this build". The rest are
-  // a broken or unreadable payload, and telling the user to update a phone that is already up to
-  // date sends them chasing a version mismatch that does not exist — which is exactly what a
-  // v2.11.0-to-v2.11.0 meal share did.
-  const shareTooNew =
-    parsedShare?.code === 'unsupported-envelope' || parsedShare?.code === 'unsupported-kind';
 
   const handleClose = useCallback(() => {
     receiver.reset();
@@ -141,10 +129,6 @@ export function OpticalReceiveModal({
   }, [onClose, receiver]);
 
   const handleRestore = useCallback(async () => {
-    if (meta?.payloadKind !== OPTICAL_PAYLOAD_KIND_DATABASE) {
-      return;
-    }
-
     const json = receiver.takeJson();
     if (!json) {
       return;
@@ -178,7 +162,7 @@ export function OpticalReceiveModal({
     } finally {
       setRestoring(false);
     }
-  }, [meta?.payloadKind, receiver, showSnackbar, t]);
+  }, [receiver, showSnackbar, t]);
 
   const handleScanAgain = useCallback(() => {
     setPassphrase('');
@@ -187,40 +171,39 @@ export function OpticalReceiveModal({
     receiver.reset();
   }, [receiver]);
 
-  const handleSaveShare = useCallback(async () => {
-    if (!shareEnvelope) {
-      return;
-    }
-    setSavingShare(true);
-    try {
-      const result = await importShareEnvelope(shareEnvelope);
-      setShareResult(result);
-      showSnackbar('success', t('opticalTransfer.share.savedTitle'));
-      onShareImported?.();
-    } catch (error) {
-      handleError(error, 'OpticalReceiveModal.handleSaveShare', {
-        snackbarMessage: t('opticalTransfer.share.saveFailed'),
-      });
-    } finally {
-      setSavingShare(false);
-    }
-  }, [onShareImported, shareEnvelope, showSnackbar, t]);
-
-  return (
-    <FullScreenModal
-      onClose={handleClose}
-      scrollable={false}
-      showHeader={!isScanning}
-      subtitle={t('opticalTransfer.receive.subtitle')}
-      title={
-        accept === 'share'
-          ? t('opticalTransfer.share.receiveMealTitle')
-          : t('opticalTransfer.receive.title')
+  const handleSaveShare = useCallback(
+    async (envelope: Parameters<typeof importShareEnvelope>[0]) => {
+      setSavingShare(true);
+      try {
+        const result = await importShareEnvelope(envelope);
+        setShareResult(result);
+        showSnackbar('success', t('opticalTransfer.share.savedTitle'));
+        onShareImported?.();
+      } catch (error) {
+        handleError(error, 'OpticalReceiveModal.handleSaveShare', {
+          snackbarMessage: t('opticalTransfer.share.saveFailed'),
+        });
+      } finally {
+        setSavingShare(false);
       }
-      visible={visible}
-    >
-      <View className="flex-1">
-        {isScanning ? (
+    },
+    [onShareImported, showSnackbar, t]
+  );
+
+  const scanAgainButton = (
+    <Button
+      label={t('opticalTransfer.receive.scanAgain')}
+      onPress={handleScanAgain}
+      size="sm"
+      variant="outline"
+      width="full"
+    />
+  );
+
+  const renderScreen = () => {
+    switch (screen.kind) {
+      case 'scanning':
+        return (
           <View className="flex-1">
             <View className="flex-1 overflow-hidden">
               <OpticalScannerCamera
@@ -301,6 +284,13 @@ export function OpticalReceiveModal({
                   }}
                 />
               </View>
+              {receiver.averageBytesPerSecond > 0 ? (
+                <Text className="text-xs text-text-tertiary">
+                  {t('opticalTransfer.receive.speed', {
+                    speed: formatRoundedDecimal(receiver.averageBytesPerSecond / 1024, 1),
+                  })}
+                </Text>
+              ) : null}
               <Text className="text-xs text-text-tertiary">
                 {receiver.etaSeconds
                   ? t('opticalTransfer.receive.eta', {
@@ -310,37 +300,34 @@ export function OpticalReceiveModal({
               </Text>
             </View>
           </View>
-        ) : null}
+        );
 
-        {databaseRefused || unknownPayload ? (
+      case 'refused':
+        return (
           <View className="gap-4 px-4 py-10">
             <Text className="text-center" style={{ color: theme.colors.status.error }}>
-              {databaseRefused
+              {screen.reason === 'not-a-meal'
                 ? t('opticalTransfer.share.notAMeal')
                 : t('opticalTransfer.receive.tooNew')}
             </Text>
-            <Button
-              label={t('opticalTransfer.receive.scanAgain')}
-              onPress={handleScanAgain}
-              size="sm"
-              variant="outline"
-              width="full"
-            />
+            {scanAgainButton}
           </View>
-        ) : null}
+        );
 
-        {phase === 'unpacking' && !databaseRefused && !unknownPayload ? (
+      case 'unpacking':
+        return (
           <View className="flex-1 justify-center px-4">
             <ProgressIndicator message={t('opticalTransfer.receive.verifying')} />
           </View>
-        ) : null}
+        );
 
-        {phase === 'passphrase' && !databaseRefused && !unknownPayload ? (
+      case 'passphrase':
+        return (
           <View className="gap-4 px-4 py-8">
             <Text className="text-text-secondary">
               {t('opticalTransfer.receive.passphrasePrompt')}
             </Text>
-            {receiver.errorCode === 'bad-passphrase' ? (
+            {screen.wrongPassphrase ? (
               <Text className="text-sm" style={{ color: theme.colors.status.error }}>
                 {t('opticalTransfer.receive.passphraseWrong')}
               </Text>
@@ -359,9 +346,10 @@ export function OpticalReceiveModal({
               width="full"
             />
           </View>
-        ) : null}
+        );
 
-        {phase === 'verified' && meta && isDatabase && accept === 'any' ? (
+      case 'database':
+        return (
           <View className="gap-4 px-4 py-6">
             <View
               className="gap-2 rounded-xl p-4"
@@ -372,8 +360,11 @@ export function OpticalReceiveModal({
               </Text>
               <Text className="text-sm text-text-secondary">
                 {t('opticalTransfer.receive.verifiedDetails', {
-                  date: new Date(meta.createdAtSec * 1000).toLocaleString(),
-                  size: `${formatInteger(Math.round(meta.plainLen / 1024))} KB`,
+                  date: formatLocalInstantIntl(
+                    screen.meta.createdAtSec * 1000,
+                    i18n.resolvedLanguage ?? i18n.language
+                  ),
+                  size: formatKb(screen.meta.plainLen),
                 })}
               </Text>
             </View>
@@ -408,7 +399,7 @@ export function OpticalReceiveModal({
 
             {!restored && !restoring ? (
               <>
-                {tooNew ? (
+                {screen.tooNew ? (
                   <Text style={{ color: theme.colors.status.error }}>
                     {t('opticalTransfer.receive.tooNew')}
                   </Text>
@@ -418,7 +409,7 @@ export function OpticalReceiveModal({
                   </Text>
                 )}
                 <Button
-                  disabled={tooNew}
+                  disabled={screen.tooNew}
                   label={t('opticalTransfer.receive.replace')}
                   onPress={() => setConfirmVisible(true)}
                   size="sm"
@@ -428,9 +419,12 @@ export function OpticalReceiveModal({
               </>
             ) : null}
           </View>
-        ) : null}
+        );
 
-        {phase === 'verified' && isShare && shareEnvelope ? (
+      case 'share': {
+        const reusedFoods =
+          shareResult?.reused.filter((item) => item.table === 'foods').length ?? 0;
+        return (
           <View className="gap-4 px-4 py-6">
             {shareResult ? (
               <View className="gap-4">
@@ -440,11 +434,9 @@ export function OpticalReceiveModal({
                 >
                   {t('opticalTransfer.share.savedTitle')}
                 </Text>
-                {shareResult.reused.filter((item) => item.table === 'foods').length > 0 ? (
+                {reusedFoods > 0 ? (
                   <Text className="text-center text-sm text-text-secondary">
-                    {t('opticalTransfer.share.savedReusedFoods', {
-                      count: shareResult.reused.filter((item) => item.table === 'foods').length,
-                    })}
+                    {t('opticalTransfer.share.savedReusedFoods', { count: reusedFoods })}
                   </Text>
                 ) : null}
                 <Button
@@ -457,13 +449,13 @@ export function OpticalReceiveModal({
               </View>
             ) : (
               <>
-                <OpticalMealSharePreview summary={shareEnvelope.summary} />
+                <OpticalMealSharePreview summary={screen.envelope.summary} />
                 {savingShare ? (
                   <ProgressIndicator message={t('opticalTransfer.share.saving')} />
                 ) : (
                   <Button
                     label={t('opticalTransfer.share.saveToMyMeals')}
-                    onPress={() => void handleSaveShare()}
+                    onPress={() => void handleSaveShare(screen.envelope)}
                     size="sm"
                     variant="accent"
                     width="full"
@@ -472,30 +464,27 @@ export function OpticalReceiveModal({
               </>
             )}
           </View>
-        ) : null}
+        );
+      }
 
-        {invalidShare ? (
+      case 'share-unreadable':
+        return (
           <View className="gap-4 px-4 py-10">
             <Text className="text-center" style={{ color: theme.colors.status.error }}>
-              {shareTooNew
+              {screen.tooNew
                 ? t('opticalTransfer.receive.tooNew')
                 : t('opticalTransfer.share.unreadable')}
             </Text>
-            <Button
-              label={t('opticalTransfer.receive.scanAgain')}
-              onPress={handleScanAgain}
-              size="sm"
-              variant="outline"
-              width="full"
-            />
+            {scanAgainButton}
           </View>
-        ) : null}
+        );
 
-        {phase === 'error' ? (
+      case 'error':
+        return (
           <View className="gap-4 px-4 py-10">
             <Text className="text-center" style={{ color: theme.colors.status.error }}>
               {t(
-                receiver.errorCode === 'checksum-failed'
+                screen.checksumFailed
                   ? 'opticalTransfer.receive.checksumFailed'
                   : 'opticalTransfer.receive.failed'
               )}
@@ -504,15 +493,27 @@ export function OpticalReceiveModal({
             <Text className="text-center text-xs text-text-tertiary">
               {t('opticalTransfer.receive.nothingChanged')}
             </Text>
-            <Button
-              label={t('opticalTransfer.receive.scanAgain')}
-              onPress={handleScanAgain}
-              size="sm"
-              variant="outline"
-              width="full"
-            />
+            {scanAgainButton}
           </View>
-        ) : null}
+        );
+    }
+  };
+
+  return (
+    <FullScreenModal
+      onClose={handleClose}
+      scrollable={false}
+      showHeader={!isScanning}
+      subtitle={t('opticalTransfer.receive.subtitle')}
+      title={
+        accept === 'share'
+          ? t('opticalTransfer.share.receiveMealTitle')
+          : t('opticalTransfer.receive.title')
+      }
+      visible={visible}
+    >
+      <View className="flex-1">
+        {renderScreen()}
 
         <ConfirmationModal
           confirmLabel={
@@ -528,7 +529,7 @@ export function OpticalReceiveModal({
           onConfirm={handleRestore}
           title={t('opticalTransfer.receive.confirmTitle')}
           variant="destructive"
-          visible={Boolean(isDatabase && confirmVisible)}
+          visible={Boolean(screen.kind === 'database' && confirmVisible)}
           warning={t('opticalTransfer.receive.confirmWarning')}
         />
       </View>

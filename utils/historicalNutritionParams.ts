@@ -48,8 +48,12 @@ export interface HistoricalNutritionParams {
  */
 export async function getHistoricalNutritionParams(options: {
   asOfDate?: Date;
-  /** Retained for compatibility; affects body-fat anchors only. Weight always uses trend endpoints. */
-  useWeeklyAverages?: boolean;
+  /**
+   * Average the body-fat anchors over the first and last week of the window instead of taking the
+   * single earliest and latest readings. Body fat only: weight anchors always come from the trend
+   * series, which is already smoothed, so there is nothing left for a weekly average to do.
+   */
+  useWeeklyFatAverages?: boolean;
   /** Days to look back. Defaults to {@link HISTORICAL_NUTRITION_LOOKBACK_DAYS}. */
   lookbackDays?: number;
   /** Minimum distinct days with nutrition logs required. Defaults to 7. */
@@ -57,7 +61,7 @@ export async function getHistoricalNutritionParams(options: {
 }): Promise<HistoricalNutritionParams | null> {
   const {
     asOfDate = new Date(),
-    useWeeklyAverages = true,
+    useWeeklyFatAverages = true,
     lookbackDays = HISTORICAL_NUTRITION_LOOKBACK_DAYS,
     minNutritionDays = MIN_DAYS_WITH_NUTRITION,
   } = options;
@@ -142,7 +146,7 @@ export async function getHistoricalNutritionParams(options: {
     bodyFatWithDecrypted.sort(
       (a, b) => utcNormalizedDayKey(a.date, a.timezone) - utcNormalizedDayKey(b.date, b.timezone)
     );
-    if (useWeeklyAverages) {
+    if (useWeeklyFatAverages) {
       const bodyFatByWeek = bucketPointsByUtcWeek(bodyFatWithDecrypted, utcStartKey);
       const weekIndices = Array.from(bodyFatByWeek.keys()).sort((a, b) => a - b);
       if (weekIndices.length >= 2) {

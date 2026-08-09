@@ -16,7 +16,7 @@ export interface UseEmpiricalTDEEConfig {
   /** Minimum days with nutrition data required (default: 7) */
   minNutritionDays?: number;
   /** Use weekly averages for body fat (default: true); weight always uses trend endpoints. */
-  useWeeklyAverages?: boolean;
+  useWeeklyFatAverages?: boolean;
   /** Fallback TDEE value when calculation fails (default: 2850) */
   fallbackValue?: number;
 }
@@ -38,7 +38,7 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
   const {
     lookbackDays = 30,
     minNutritionDays = 7,
-    useWeeklyAverages = true,
+    useWeeklyFatAverages = true,
     fallbackValue = 2850,
   } = config;
 
@@ -59,7 +59,7 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
         const data = await getHistoricalNutritionParams({
           lookbackDays,
           minNutritionDays,
-          useWeeklyAverages,
+          useWeeklyFatAverages,
         });
 
         setHistoricalData(data);
@@ -73,7 +73,7 @@ export function useEmpiricalTDEE(config: UseEmpiricalTDEEConfig = {}): UseEmpiri
     };
 
     fetchHistoricalData();
-  }, [lookbackDays, minNutritionDays, useWeeklyAverages]);
+  }, [lookbackDays, minNutritionDays, useWeeklyFatAverages]);
 
   // Calculate TDEE when data is available
   const { tdee, usedEmpiricalData, calculationError } = useMemo(() => {

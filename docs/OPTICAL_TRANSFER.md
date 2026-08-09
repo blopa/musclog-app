@@ -348,6 +348,10 @@ silently changed which parent was consulted.
 
 Two bugs found on real hardware, both worth not reintroducing:
 
+The loop lives in `hooks/useQrFrameLoop.ts` and is shared by the send screen and the bench screen,
+so both measure and ship the same behaviour. `install()` and the `running` flag may arrive in either
+order — whichever is satisfied second starts the loop.
+
 - **Never drive the display loop with `setInterval`.** At 10 fps the interval fires every 100 ms;
   if a frame costs 175 ms the callbacks queue up and the event loop never catches up, so the rate
   collapses progressively after a few seconds. The loop self-schedules with `setTimeout` — the next
@@ -551,4 +555,7 @@ The percentage is shown to **two decimals** alongside a KB pair — `8.23% (12.3
 Two decimals because a slow transfer moves less than a whole percent per second and a frozen
 number reads as a stall. The KB figures are derived from the same fraction, not from solved
 blocks, for the back-loading reason above: a literal "bytes reconstructed" counter would sit at
-0 KB for almost the whole transfer and then jump to the total.
+0 KB for almost the whole transfer and then jump to the total. The receiver also shows a running
+KB/s average derived from those same estimated payload bytes. It starts with the first valid frame
+of the current stream, so an unrelated QR or a sender-side density change cannot skew it, and the
+average stays readable instead of flickering with the 250 ms publish interval.

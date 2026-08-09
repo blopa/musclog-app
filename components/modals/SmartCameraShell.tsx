@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { FileText, type LucideIcon, ScanBarcode, Sparkles } from 'lucide-react-native';
+import { Sparkles } from 'lucide-react-native';
 import { type ReactNode, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
@@ -9,6 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { CameraProcessingIndicator } from '@/components/CameraProcessingIndicator';
 import { SmartCameraBottomActions, SmartCameraTopActions } from '@/components/SmartCameraActions';
 import { SMALL_SCREEN_HEIGHT, SmartCameraFrame } from '@/components/SmartCameraFrame';
+import { SmartCameraModePicker } from '@/components/SmartCameraModePicker';
 import { useTheme } from '@/hooks/useTheme';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -35,74 +36,6 @@ const CAMERA_MODE_COPY: Record<
     hintKey: 'food.aiCamera.barcodeHint',
   },
 };
-
-type ModePickerTabProps = {
-  mode: CameraMode;
-  activeMode: CameraMode;
-  icon: LucideIcon;
-  label: string;
-  disabled: boolean;
-  isSmallScreen: boolean;
-  onSelect: (mode: CameraMode) => void;
-};
-
-function ModePickerTab({
-  mode,
-  activeMode,
-  icon: Icon,
-  label,
-  disabled,
-  isSmallScreen,
-  onSelect,
-}: ModePickerTabProps) {
-  const theme = useTheme();
-  const isActive = mode === activeMode;
-  const color = isActive ? theme.colors.text.white : theme.colors.text.secondary;
-
-  return (
-    <Pressable
-      onPress={() => onSelect(mode)}
-      disabled={disabled}
-      className="flex-1 rounded-xl px-2"
-      style={[
-        {
-          overflow: 'hidden',
-          paddingVertical: isSmallScreen ? 8 : 10,
-          opacity: disabled ? theme.colors.opacity.medium : 1,
-        },
-        isActive ? { backgroundColor: 'transparent' } : {},
-      ]}
-    >
-      {isActive ? (
-        <LinearGradient
-          colors={theme.colors.gradients.cta}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            borderRadius: theme.borderRadius.md,
-            overflow: 'hidden',
-          }}
-        />
-      ) : null}
-      <View className="flex-row items-center justify-center gap-1.5">
-        <Icon size={theme.iconSize.md} color={color} />
-        {!isSmallScreen ? (
-          <Text
-            className="font-bold uppercase tracking-wide"
-            style={{ fontSize: theme.typography.fontSize.xs, color }}
-          >
-            {label}
-          </Text>
-        ) : null}
-      </View>
-    </Pressable>
-  );
-}
 
 type SmartCameraShellProps = {
   visible: boolean;
@@ -192,53 +125,48 @@ export function SmartCameraShell({
 
   const handleModeSelect = (mode: CameraMode) => onModeChange?.(mode);
 
+  // Every state of this screen is the same chrome-less full-screen modal; only the body differs.
+  // Repeating the wrapper per state is how its five props drifted apart in the past.
+  const shell = (body: ReactNode) => (
+    <FullScreenModal
+      visible={visible}
+      onClose={onClose}
+      title={t('camera.title')}
+      scrollable={false}
+      showHeader={false}
+    >
+      {body}
+    </FullScreenModal>
+  );
+
   if (permissionGranted === null) {
-    return (
-      <FullScreenModal
-        visible={visible}
-        onClose={onClose}
-        title={t('camera.title')}
-        scrollable={false}
-        showHeader={false}
+    return shell(
+      <View
+        className="flex-1 items-center justify-center"
+        style={{ backgroundColor: theme.colors.text.black }}
       >
-        <View
-          className="flex-1 items-center justify-center"
-          style={{ backgroundColor: theme.colors.text.black }}
-        >
-          <Text style={{ color: theme.colors.text.white }}>
-            {t('food.aiCamera.requestingPermission')}
-          </Text>
-        </View>
-      </FullScreenModal>
+        <Text style={{ color: theme.colors.text.white }}>
+          {t('food.aiCamera.requestingPermission')}
+        </Text>
+      </View>
     );
   }
 
   if (!permissionGranted) {
-    return (
-      <FullScreenModal
-        visible={visible}
-        onClose={onClose}
-        title={t('camera.title')}
-        scrollable={false}
-        showHeader={false}
+    return shell(
+      <View
+        className="flex-1 items-center justify-center px-6"
+        style={{ backgroundColor: theme.colors.text.black }}
       >
-        <View
-          className="flex-1 items-center justify-center px-6"
-          style={{ backgroundColor: theme.colors.text.black }}
-        >
-          <Text className="mb-4 text-center text-lg" style={{ color: theme.colors.text.white }}>
-            {t('food.aiCamera.permissionRequired')}
+        <Text className="mb-4 text-center text-lg" style={{ color: theme.colors.text.white }}>
+          {t('food.aiCamera.permissionRequired')}
+        </Text>
+        <Pressable onPress={onRequestPermission} className="rounded-xl bg-accent-primary px-6 py-3">
+          <Text className="font-semibold" style={{ color: theme.colors.text.black }}>
+            {t('food.aiCamera.grantPermission')}
           </Text>
-          <Pressable
-            onPress={onRequestPermission}
-            className="rounded-xl bg-accent-primary px-6 py-3"
-          >
-            <Text className="font-semibold" style={{ color: theme.colors.text.black }}>
-              {t('food.aiCamera.grantPermission')}
-            </Text>
-          </Pressable>
-        </View>
-      </FullScreenModal>
+        </Pressable>
+      </View>
     );
   }
 
@@ -339,50 +267,13 @@ export function SmartCameraShell({
 
             {/* Mode Selector */}
             {showModePicker && isAiEnabled ? (
-              <View
-                className={isSmallScreen ? 'mb-3 w-full items-center' : 'mb-6 w-full items-center'}
-              >
-                <View
-                  className="w-full max-w-sm flex-row items-stretch justify-between rounded-2xl p-1.5"
-                  style={{
-                    backgroundColor: theme.colors.background.darkGray90,
-                    borderWidth: theme.borderWidth.thin,
-                    borderColor: theme.colors.background.white10,
-                  }}
-                >
-                  <ModePickerTab
-                    mode="barcode-scan"
-                    activeMode={cameraMode}
-                    icon={ScanBarcode}
-                    label={t('food.aiCamera.modes.barcodeScan')}
-                    disabled={controlsLocked}
-                    isSmallScreen={isSmallScreen}
-                    onSelect={handleModeSelect}
-                  />
-
-                  <ModePickerTab
-                    mode="ai-label-scan"
-                    activeMode={cameraMode}
-                    icon={FileText}
-                    label={t('food.aiCamera.modes.labelScan')}
-                    disabled={controlsLocked}
-                    isSmallScreen={isSmallScreen}
-                    onSelect={handleModeSelect}
-                  />
-
-                  {isAIVisionEnabled ? (
-                    <ModePickerTab
-                      mode="ai-meal-photo"
-                      activeMode={cameraMode}
-                      icon={Sparkles}
-                      label={t('food.aiCamera.modes.mealPhoto')}
-                      disabled={controlsLocked}
-                      isSmallScreen={isSmallScreen}
-                      onSelect={handleModeSelect}
-                    />
-                  ) : null}
-                </View>
-              </View>
+              <SmartCameraModePicker
+                cameraMode={cameraMode}
+                disabled={controlsLocked}
+                isAIVisionEnabled={isAIVisionEnabled}
+                isSmallScreen={isSmallScreen}
+                onModeChange={handleModeSelect}
+              />
             ) : null}
 
             <SmartCameraBottomActions

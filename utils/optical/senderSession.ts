@@ -20,6 +20,19 @@ export function newOpticalSessionId(): number {
   return 1 + Math.floor(Math.random() * 0xffff);
 }
 
+/**
+ * LT decoding needs a little more than `k` frames to peel — the overhead is what the receiver
+ * spends on frames whose blocks it has already solved. 1.25x is the measured figure for the
+ * degree distribution in `fountain.ts`, so it belongs next to the encoder rather than inline at
+ * each place the sender quotes a duration.
+ */
+export const OPTICAL_FOUNTAIN_OVERHEAD = 1.25;
+
+/** Rough "how long will this take" for a stream of `sourceBlocks` shown at `fps`, in seconds. */
+export function estimateStreamSeconds(sourceBlocks: number, fps: number): number {
+  return Math.ceil((sourceBlocks * OPTICAL_FOUNTAIN_OVERHEAD) / Math.max(1, fps));
+}
+
 export class OpticalStream {
   readonly k: number;
   readonly totalLen: number;

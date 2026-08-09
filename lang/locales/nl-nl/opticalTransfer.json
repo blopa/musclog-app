@@ -65,6 +65,7 @@
       "title": "Ontvangen",
       "subtitle": "Richt op het scherm van de andere telefoon",
       "percent": "{{percent}}%",
+      "speed": "{{speed}} KB/s",
       "eta": "Nog ongeveer {{seconds}} seconden",
       "aimHint": "Vul dit beeld met de code op de andere telefoon.",
       "verifying": "Gegevens controleren…",

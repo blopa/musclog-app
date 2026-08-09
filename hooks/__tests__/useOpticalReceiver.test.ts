@@ -180,6 +180,29 @@ describe('useOpticalReceiver progress', () => {
     expect(result.current.sourceBlocks).toBeGreaterThan(0);
   });
 
+  it('publishes a stable average payload speed and clears it on reset', () => {
+    jest.setSystemTime(new Date('2026-08-09T12:00:00Z'));
+    const stream = new OpticalStream(container, preset, 4242);
+    const { result } = renderHook(() => useOpticalReceiver({ active: true }));
+
+    act(() => {
+      result.current.onCodeScanned([{ type: 'qr', value: stream.next() }], FRAME);
+      jest.advanceTimersByTime(1000);
+    });
+
+    expect(result.current.elapsedSeconds).toBe(1);
+    expect(result.current.averageBytesPerSecond).toBeCloseTo(
+      result.current.fraction * container.length,
+      5
+    );
+    expect(result.current.averageBytesPerSecond).toBeGreaterThan(0);
+
+    act(() => result.current.reset());
+
+    expect(result.current.averageBytesPerSecond).toBe(0);
+    expect(result.current.elapsedSeconds).toBe(0);
+  });
+
   it('stays at 0% and out of the way while nothing is being decoded', () => {
     // The camera hands us every code in view; a cereal box must not move the bar.
     const { result } = renderHook(() => useOpticalReceiver({ active: true }));
@@ -190,6 +213,8 @@ describe('useOpticalReceiver progress', () => {
     });
 
     expect(result.current.fraction).toBe(0);
+    expect(result.current.averageBytesPerSecond).toBe(0);
+    expect(result.current.elapsedSeconds).toBe(0);
     expect(result.current.payloadBytes).toBe(0);
     expect(result.current.phase).toBe('collecting');
   });
