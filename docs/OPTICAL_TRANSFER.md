@@ -251,12 +251,30 @@ clamp does not — or the sender generates live forever, which is slower but alw
 | `utils/optical/bench.ts`                          | device calibration and the Phase 0 measurements         |
 | `components/optical/OpticalQrCanvas.tsx`          | Skia draw, integer module scaling                       |
 | `components/optical/OpticalScannerCamera.tsx`     | receiving camera (vision-camera)                        |
+| `components/SmartCameraFrame.tsx`                 | shared aiming frame + scrim, `portrait` variant here    |
 | `components/optical/OpticalQrCanvas.web.tsx`      | Skia-free DOM canvas, same integer scaling              |
 | `components/optical/OpticalScannerCamera.web.tsx` | getUserMedia + our own frame pump                       |
 | `utils/optical/qrCanvasLayout.ts`                 | integer module scaling, shared by both canvases         |
 | `utils/optical/webQrDecode.ts`                    | decoder selection and the wasm reader                   |
 | `scripts/sync-web-wasm.js`                        | self-hosts the wasm into `public/`                      |
 | `app/app/test/optical-bench.tsx`                  | the measurement harness (runs on both platforms)        |
+
+### The aiming frame is decoration
+
+Both scanner components overlay `SmartCameraFrameOverlay` (`components/SmartCameraFrame.tsx`,
+`variant="portrait"` — the same frame the food camera uses, minus the barcode glyph and sweep). It
+is **purely an aiming aid**: neither reader crops to it. MLKit scans the whole analysis frame on
+native, and the web pump decodes the whole video frame, so a QR that sits outside the window still
+decodes. Do not "optimize" by cropping the decode to the frame — the window is smaller than what
+the camera can read, and on Android the analysis frame is only ~640×480 to begin with (see above),
+so throwing pixels away would cost decodes for nothing.
+
+Two placement rules: the overlay lives **inside** each scanner (not in `OpticalReceiveModal`), so
+the permission and no-camera branches — which render text instead of a feed — never get a frame
+drawn over them; and it must stay `pointerEvents="none"`, because tap-to-refocus on the native feed
+underneath is the one thing a user can do about a stalled transfer. The scrim spills to the nearest
+clipping ancestor, which is the receiver's `overflow-hidden` feed container, so the progress panel
+below stays bright.
 
 ## Web
 

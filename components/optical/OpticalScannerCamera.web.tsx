@@ -31,6 +31,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import type { Code, CodeScannerFrame } from 'react-native-vision-camera';
 
+import { SmartCameraFrameOverlay } from '@/components/SmartCameraFrame';
 import { Button } from '@/components/theme/Button';
 import { handleError } from '@/utils/handleError';
 import {
@@ -265,6 +266,10 @@ export function OpticalScannerCamera({
           width: '100%',
         }}
       />
+
+      {/* Aiming aid only — the decoder reads the whole video frame, not just what is inside the
+          window. Suppressed while blocked, so the permission copy is not dimmed by the scrim. */}
+      {status === 'blocked' ? null : <SmartCameraFrameOverlay variant="portrait" />}
 
       {status === 'blocked' ? (
         <View className="flex-1 items-center justify-center gap-4 p-6">

@@ -32,6 +32,7 @@ import {
   useCodeScanner,
 } from 'react-native-vision-camera';
 
+import { SmartCameraFrameOverlay } from '@/components/SmartCameraFrame';
 import { Button } from '@/components/theme/Button';
 
 /** Module constant so the scanner config is not rebuilt on every render. */
@@ -163,6 +164,10 @@ export function OpticalScannerCamera({
         style={StyleSheet.absoluteFill}
         video={false}
       />
+      {/* Aiming aid only — the scanner reads the whole frame, not just what is inside the window.
+          Rendered here rather than by the screen so the permission and no-camera branches above,
+          which show text instead of a feed, never get a frame drawn over them. */}
+      <SmartCameraFrameOverlay variant="portrait" />
     </View>
   );
 }

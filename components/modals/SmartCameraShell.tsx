@@ -8,13 +8,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CameraProcessingIndicator } from '@/components/CameraProcessingIndicator';
 import { SmartCameraBottomActions, SmartCameraTopActions } from '@/components/SmartCameraActions';
-import { SmartCameraFrame } from '@/components/SmartCameraFrame';
+import { SMALL_SCREEN_HEIGHT, SmartCameraFrame } from '@/components/SmartCameraFrame';
 import { useTheme } from '@/hooks/useTheme';
 
 import { FullScreenModal } from './FullScreenModal';
 import type { CameraMode } from './SmartCameraModal';
-
-const SMALL_SCREEN_HEIGHT = 700;
 
 /** Heading above the frame plus the hint below it, one entry per capture mode. */
 const CAMERA_MODE_COPY: Record<
@@ -306,8 +304,7 @@ export function SmartCameraShell({
             </View>
 
             <SmartCameraFrame
-              cameraMode={cameraMode}
-              isSmallScreen={isSmallScreen}
+              variant={cameraMode === 'barcode-scan' ? 'barcode' : 'portrait'}
               isCapturing={isActionRunning}
             />
 

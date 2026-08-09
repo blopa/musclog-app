@@ -19,7 +19,19 @@ import Animated, {
 import { useTheme } from '@/hooks/useTheme';
 import { addOpacityToHex, type Theme } from '@/theme';
 
-import type { CameraMode } from './modals/SmartCameraModal';
+/**
+ * Below this screen height the frame gives back some of its share so the surrounding chrome still
+ * fits. Exported because `SmartCameraShell` sizes its own margins off the same threshold — two
+ * copies would let the frame and the copy around it disagree about which layout they are in.
+ */
+export const SMALL_SCREEN_HEIGHT = 700;
+
+/**
+ * `barcode` is a short, wide band with the glyph and the sweeping scan line; `portrait` is the
+ * taller 4:5 window with a bare centre, used for a plate, a nutrition label, or the optical
+ * transfer's QR stream.
+ */
+export type SmartCameraFrameVariant = 'barcode' | 'portrait';
 
 /** Height of the glow band that travels with the barcode scan line, capped to a share of the frame. */
 const SCAN_LINE_GLOW_HEIGHT = 56;
@@ -29,8 +41,7 @@ const SCAN_LINE_SWEEP_MS = 1800;
 
 /**
  * Size of the capture frame, which always spans the full content width — only the height differs
- * per mode. Barcode scanning gets a short, wide band; the AI modes keep a taller portrait one that
- * fits a plate or a nutrition label.
+ * per variant.
  *
  * The barcode height is set directly instead of through an `aspectRatio` + `maxHeight` pair,
  * because clamping an aspect-ratio'd box makes Yoga re-derive a *narrower* width to preserve the
@@ -40,12 +51,12 @@ const SCAN_LINE_SWEEP_MS = 1800;
  * instead of squeezing.
  */
 const getFrameSizeStyle = (
-  cameraMode: CameraMode,
+  variant: SmartCameraFrameVariant,
   isSmallScreen: boolean,
   screenHeight: number,
   theme: Theme
 ): ViewStyle => {
-  if (cameraMode === 'barcode-scan') {
+  if (variant === 'barcode') {
     return { height: screenHeight * (isSmallScreen ? 0.15 : 0.2) };
   }
 
@@ -199,30 +210,31 @@ function ScanLine({ active, frameHeight }: ScanLineProps) {
 }
 
 type SmartCameraFrameProps = {
-  cameraMode: CameraMode;
-  /** Drives the per-mode frame height; owned by the shell, which sizes its own chrome from it too. */
-  isSmallScreen: boolean;
-  /** True while a capture or gallery pick runs: pauses the sweep and shows the spinner instead. */
-  isCapturing: boolean;
+  variant: SmartCameraFrameVariant;
+  /**
+   * True while a capture or gallery pick runs: pauses the sweep and shows a spinner instead.
+   * Cameras that never capture a still (the optical receiver just reads the live feed) omit it.
+   */
+  isCapturing?: boolean;
 };
 
 /**
  * The capture frame: an undimmed window onto the camera feed, with everything outside it scrimmed.
- * Barcode mode adds the decorative glyph and the sweeping scan line; the AI modes leave the window
- * empty. The corner markers and the capture spinner are shared by every mode.
+ * The `barcode` variant adds the decorative glyph and the sweeping scan line; `portrait` leaves the
+ * window empty. The corner markers and the capture spinner are shared by both.
  *
  * `overflow: visible` is load-bearing — the corner markers sit outside the border and the scrim
- * spills from the frame's edges out to the screen's, so nothing here may clip its children.
+ * spills from the frame's edges out to the nearest clipping ancestor, so nothing here may clip its
+ * children. How far the dimming reaches is therefore the caller's choice: the smart camera lets it
+ * run to the screen edges, while the optical receiver's `overflow-hidden` feed container stops it
+ * at the camera area so the progress panel below stays bright.
  */
-export function SmartCameraFrame({
-  cameraMode,
-  isCapturing,
-  isSmallScreen,
-}: SmartCameraFrameProps) {
+export function SmartCameraFrame({ isCapturing = false, variant }: SmartCameraFrameProps) {
   const theme = useTheme();
   const { height: screenHeight, width: screenWidth } = useWindowDimensions();
   const [frameHeight, setFrameHeight] = useState(0);
-  const isBarcodeScan = cameraMode === 'barcode-scan';
+  const isBarcodeScan = variant === 'barcode';
+  const isSmallScreen = screenHeight < SMALL_SCREEN_HEIGHT;
   // The frame is roughly centered, so one screen's worth in every direction always reaches the edge.
   const scrimOverscan = Math.max(screenHeight, screenWidth);
 
@@ -231,7 +243,7 @@ export function SmartCameraFrame({
       className="relative w-full rounded-2xl"
       onLayout={(event) => setFrameHeight(event.nativeEvent.layout.height)}
       style={{
-        ...getFrameSizeStyle(cameraMode, isSmallScreen, screenHeight, theme),
+        ...getFrameSizeStyle(variant, isSmallScreen, screenHeight, theme),
         borderWidth: theme.borderWidth.thin,
         borderColor: theme.colors.background.white20,
         overflow: 'visible',
@@ -260,7 +272,7 @@ export function SmartCameraFrame({
         style={{ borderColor: theme.colors.accent.primary }}
       />
 
-      {/* Sweeping scan line, barcode mode only — the AI modes have no center line */}
+      {/* Sweeping scan line, barcode variant only — the portrait window has no center line */}
       {isBarcodeScan ? <ScanLine active={!isCapturing} frameHeight={frameHeight} /> : null}
 
       {isCapturing ? (
@@ -272,6 +284,20 @@ export function SmartCameraFrame({
           />
         </View>
       ) : null}
+    </View>
+  );
+}
+
+/**
+ * The frame as a free-floating overlay, for cameras that fill their container instead of laying the
+ * frame out in a column the way `SmartCameraShell` does. `pointerEvents="none"` is required, not
+ * cosmetic: the optical receiver puts tap-to-refocus on the feed underneath, and a frame that
+ * swallowed touches would break the one thing the user can do about a stalled transfer.
+ */
+export function SmartCameraFrameOverlay(props: SmartCameraFrameProps) {
+  return (
+    <View pointerEvents="none" className="absolute inset-0 items-center justify-center px-6">
+      <SmartCameraFrame {...props} />
     </View>
   );
 }
