@@ -1,6 +1,6 @@
-import { type Href, Link, useLoaderData } from 'expo-router';
+import { useLoaderData } from 'expo-router';
 import { createStaticLoader } from 'expo-router/server';
-import { ArrowRight, CalendarDays, Folder, Tags } from 'lucide-react-native';
+import { ArrowRight, CalendarDays, Folder } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { GridPattern } from '@/components/website/WebsiteBackgrounds';
@@ -34,7 +34,7 @@ export default function Blog() {
         aria-hidden="true"
       />
 
-      <div className="container relative z-10 mx-auto max-w-5xl px-4">
+      <div className="container relative z-10 mx-auto max-w-4xl px-4">
         <header className="mx-auto mb-14 max-w-3xl text-center">
           <p
             className="mb-4 text-sm font-bold uppercase tracking-[0.24em]"
@@ -52,87 +52,85 @@ export default function Blog() {
 
         {posts.length === 0 ? (
           <p
-            className="rounded-2xl border px-6 py-12 text-center"
-            style={{ borderColor: 'rgba(255,255,255,0.1)', color: BODY_TEXT_SOFT }}
+            className="border-white/12 rounded-3xl border border-dashed px-6 py-16 text-center"
+            style={{ color: BODY_TEXT_SOFT }}
           >
             {t('empty')}
           </p>
         ) : (
-          <section className="grid gap-6" aria-label={t('listLabel')}>
+          <section className="grid gap-5" aria-label={t('listLabel')}>
             {posts.map((post) => (
               <article
                 key={post.slug}
-                className="group rounded-3xl border p-6 shadow-2xl backdrop-blur-sm transition-colors hover:border-emerald-400/30 md:p-8"
-                style={{
-                  background:
-                    'linear-gradient(145deg, rgba(255,255,255,0.055) 0%, rgba(255,255,255,0.025) 100%)',
-                  borderColor: 'rgba(255,255,255,0.11)',
-                  boxShadow: '0 22px 70px rgba(0,0,0,0.24)',
-                }}
+                className="group relative rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.06] to-white/[0.015] p-6 shadow-[0_22px_70px_rgba(0,0,0,0.24)] backdrop-blur-sm transition duration-200 hover:border-emerald-400/40 hover:from-white/[0.09] hover:shadow-[0_28px_80px_rgba(0,0,0,0.34)] md:p-8"
               >
-                <div className="mb-5 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm">
-                  <time
-                    dateTime={post.date}
-                    className="inline-flex items-center gap-2"
-                    style={{ color: BODY_TEXT_SOFT }}
-                  >
-                    <CalendarDays className="h-4 w-4" color={BRAND_GREEN_BRIGHT} />
+                <div
+                  className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold uppercase tracking-[0.14em]"
+                  style={{ color: BODY_TEXT_SOFT }}
+                >
+                  <time dateTime={post.date} className="inline-flex items-center gap-2">
+                    <CalendarDays className="h-3.5 w-3.5" color={BRAND_GREEN_BRIGHT} />
                     {formatPostDate(post.date, locale)}
                   </time>
-                  <span
-                    className="inline-flex items-center gap-2"
-                    style={{ color: BODY_TEXT_SOFT }}
-                  >
-                    <Folder className="h-4 w-4" color={BRAND_GREEN_BRIGHT} />
+                  <span className="h-1 w-1 rounded-full bg-white/25" aria-hidden="true" />
+                  <span className="inline-flex items-center gap-2">
+                    <Folder className="h-3.5 w-3.5" color={BRAND_GREEN_BRIGHT} />
                     {post.category}
                   </span>
                 </div>
 
-                <h2 className="text-balance text-2xl font-bold leading-tight text-white md:text-3xl">
-                  <Link
-                    href={`/blog/${post.slug}` as Href}
-                    className="transition-colors group-hover:text-emerald-300"
+                <h2 className="text-balance text-2xl font-bold leading-tight md:text-[2rem]">
+                  {/*
+                   * A plain anchor, not expo-router's `Link`: on web that renders a
+                   * react-native-web `Text`, which neither inherits the heading's color and font
+                   * size nor reacts to `group-hover:` — the title used to paint near-black on the
+                   * dark card. The stretched span below makes the whole card clickable while
+                   * keeping exactly one link per post.
+                   */}
+                  <a
+                    href={`/blog/${post.slug}`}
+                    className="text-white transition-colors group-hover:text-emerald-300"
                   >
                     {post.title}
-                  </Link>
+                    <span className="absolute inset-0 rounded-3xl" aria-hidden="true" />
+                  </a>
                 </h2>
+
                 {post.excerpt ? (
-                  <p className="mt-4 leading-relaxed" style={{ color: BODY_TEXT }}>
+                  <p className="mt-3 line-clamp-3 leading-relaxed" style={{ color: BODY_TEXT }}>
                     {post.excerpt}
                   </p>
                 ) : null}
 
-                {post.tags.length > 0 ? (
-                  <div
-                    className="mt-6 flex flex-wrap items-center gap-2"
-                    aria-label={t('tagsLabel')}
-                  >
-                    <Tags className="mr-1 h-4 w-4" color={BODY_TEXT_SOFT} />
-                    {post.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="rounded-full border px-3 py-1 text-xs font-semibold"
-                        style={{
-                          backgroundColor: 'rgba(34,197,94,0.09)',
-                          borderColor: 'rgba(34,197,94,0.24)',
-                          color: '#A7F3D0',
-                        }}
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                ) : null}
+                <div className="mt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-4">
+                  {post.tags.length > 0 ? (
+                    <div className="flex flex-wrap items-center gap-2" aria-label={t('tagsLabel')}>
+                      {post.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="rounded-full border px-2.5 py-1 text-xs font-semibold"
+                          style={{
+                            backgroundColor: 'rgba(34,197,94,0.09)',
+                            borderColor: 'rgba(34,197,94,0.24)',
+                            color: '#A7F3D0',
+                          }}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <span />
+                  )}
 
-                <Link
-                  href={`/blog/${post.slug}` as Href}
-                  aria-label={`${t('readArticle')}: ${post.title}`}
-                  className="mt-7 inline-flex items-center gap-2 text-sm font-bold transition-colors hover:text-emerald-200"
-                  style={{ color: BRAND_GREEN_BRIGHT }}
-                >
-                  {t('readArticle')}
-                  <ArrowRight className="h-4 w-4" color="currentColor" />
-                </Link>
+                  <span
+                    className="inline-flex items-center gap-2 text-sm font-bold transition-transform duration-200 group-hover:translate-x-1"
+                    style={{ color: BRAND_GREEN_BRIGHT }}
+                  >
+                    {t('readArticle')}
+                    <ArrowRight className="h-4 w-4" color="currentColor" />
+                  </span>
+                </div>
               </article>
             ))}
           </section>

@@ -58,6 +58,7 @@ This repository serves two distinct purposes that share the same Expo Router pro
   Expo Router 57 static manifests retain the unresolved catch-all template alongside generated paths, so `loadBlogPostForRoute` must keep handling the literal `[...slug]` build-time loader call until that behavior changes upstream.
 
 - The website uses standard HTML elements (`<div>`, `<section>`, `<a>`) and Tailwind/NativeWind utility classes — **not** React Native primitives.
+- **Link to another website page with a plain `<a href>`, not expo-router's `Link`.** On web `Link` renders a react-native-web `Text`, which starts a fresh style context: it inherits neither `color` nor `font-size`/`font-weight` from its HTML ancestors, and `group-hover:`/`hover:` classes on it lose to the inline `style` prop that any base color must therefore be set with. The blog list's post titles shipped near-black on a dark card for exactly this reason — an `<h2 className="text-white text-3xl">` wrapping a `Link` styles nothing. The nav in `WebsiteWrapper.web.tsx` still uses `Link` with an explicit inline `color`; that pattern works only because those links need no hover-color change. Reach for `<a>` first, and if you do use `Link`, put every typography and color declaration on the `Link` itself.
 - When working on website files, treat them as a standard React web app, not a React Native app.
 - Website layout is in `app/(website)/_layout.web.tsx`; it wraps pages with the nav/footer chrome.
 
