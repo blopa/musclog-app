@@ -224,6 +224,40 @@ importer always writes the carried rows and never derives authoritative data fro
 Adding a future kind means adding a registry entry, builder, preview branch, and translations — not
 changing fountain frames.
 
+### Optional fields are absent, never `null`
+
+WatermelonDB reads an unset optional column back as `null`, not `undefined`, whatever the model's
+`?: number` typing claims — and `JSON.stringify` drops an `undefined` while preserving a `null`. A
+builder that copies a model getter straight into the envelope therefore ships explicit nulls, and
+v2.11.0's `buildMealShareEnvelope` did exactly that for `preparedWeightGrams`, `recipeServingsCount`
+and `servingGrams`. Since most meals set none of the three, `parseShareEnvelope` rejected nearly
+every meal share as malformed — and the receive screen reported that as _"This data was sent by a
+newer version of Musclog"_ with both phones on the identical build (see below).
+
+Two halves, and both are load-bearing:
+
+- **Builders must not emit them.** `buildMealShare.ts` runs every optional number through
+  `optionalNumber()`. `database/services/__tests__/mealShare.test.ts` pins the builder's output
+  through `JSON.stringify` → `parseShareEnvelope`, which is the contract the original tests never
+  checked: they read the builder's in-memory object, where the distinction is invisible.
+- **The parser reads `null` as absent**, via `readOptional()`, which also deletes the key so the
+  returned envelope really matches its declared type instead of smuggling nulls past the final
+  cast. This is what lets an updated phone receive from one still on v2.11.0 — without it, both
+  phones would have to update. Keep it even once no such sender is left.
+
+Fixture data for either side must use `null`, not `undefined`, for an unset optional column. A
+fixture that uses `undefined` is testing a state the database cannot produce.
+
+### Only two failures mean "the sender is newer"
+
+`MusclogShareError` codes split into "this build is behind" (`unsupported-envelope`,
+`unsupported-kind`) and "the payload is broken" (`malformed`, `not-a-share`, `too-large`). The
+receive screen rendered `receive.tooNew` for all of them, so the null bug above surfaced as an
+instruction to update a phone that was already current — pointing the user at a version mismatch
+that did not exist. `OpticalReceiveModal` keeps the code from the parse attempt and shows
+`share.unreadable` unless it is genuinely one of the two version codes. Any new failure code
+defaults to unreadable; add it to the version pair only if it truly means the sender is ahead.
+
 ### Why shares cannot look like export dumps
 
 `restoreDatabase(json)` wipes the receiver, while its table keys are deliberately permissive for

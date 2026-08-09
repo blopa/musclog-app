@@ -6,6 +6,7 @@ import {
   OPTICAL_EXPORT_VERSION_SHARE,
   OPTICAL_PAYLOAD_KIND_SHARE,
 } from '@/utils/optical/container';
+import { parseShareEnvelope } from '@/utils/share/shareEnvelope';
 
 jest.mock('@nozbe/watermelondb', () => ({
   Q: {
@@ -156,7 +157,10 @@ function fixture() {
     id: 'meal-1',
     imageUrl: 'file:///meal.jpg',
     name: 'Rice bowl',
-    preparedWeightGrams: undefined,
+    // `null`, not `undefined`: that is what WatermelonDB hands back for an unset optional column,
+    // whatever the model's `?: number` typing says. A fixture using `undefined` here is what let
+    // v2.11.0 ship a summary full of explicit nulls that the receiver's validator rejected.
+    preparedWeightGrams: null,
     recipeServingsCount: 2,
     resolvedNutritionBasis: 'per_recipe' as const,
     servingGrams: 250,
@@ -239,6 +243,37 @@ describe('buildMealShareEnvelope', () => {
     });
     expect(envelope.summary.hasImage).toBe(true);
     expect(createThumbnail).toHaveBeenCalledWith('file:///meal.jpg', 400);
+  });
+
+  // The contract that was missing: every previous test read the builder's output directly, so
+  // nothing checked that a receiver could actually parse it. v2.11.0 shipped a builder whose
+  // output `parseShareEnvelope` rejected outright, and the receive screen reported that as "sent
+  // by a newer version of Musclog" on two phones running the identical build.
+  it.each([
+    ['a fully populated meal', {}],
+    [
+      'a meal with every optional measurement unset',
+      {
+        preparedWeightGrams: null,
+        recipeServingsCount: null,
+        servingGrams: null,
+      },
+    ],
+  ])('builds a payload the receiver can parse: %s', async (_label, mealOverrides) => {
+    const { meal, mealFoods, mealPortionLink } = fixture();
+    mockGetMeal.mockResolvedValue({ foods: mealFoods, meal: { ...meal, ...mealOverrides } });
+    mockDatabase.get.mockReturnValue({
+      query: () => ({ fetch: jest.fn().mockResolvedValue([mealPortionLink]) }),
+    } as any);
+
+    const payload = await buildMealSharePayload(meal.id, { includeImage: true });
+
+    // Through JSON, exactly as the optical container carries it — an `undefined` disappears on the
+    // way but an explicit `null` does not, which is the whole distinction being pinned here.
+    expect(payload.json).not.toContain('null');
+    const parsed = parseShareEnvelope(payload.json);
+    expect(parsed.summary.name).toBe('Rice bowl');
+    expect(parsed.rootId).toBe('meal-1');
   });
 
   it('rejects a meal with no surviving ingredients', async () => {

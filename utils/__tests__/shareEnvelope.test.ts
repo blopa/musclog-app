@@ -51,6 +51,31 @@ describe('parseShareEnvelope', () => {
     expect(parseShareEnvelope(JSON.stringify(share))).toEqual(share);
   });
 
+  // v2.11.0's builder wrote WatermelonDB's `null` straight into the summary for every optional
+  // measurement the meal did not set — which is most meals — and the receiver rejected the lot.
+  // Reading null as absent is what lets a phone on this build receive from a phone still on that
+  // one; stripping it is what keeps the returned envelope matching its `?: number` typing.
+  it('reads an explicit null as an absent optional field', () => {
+    const share = mealShare();
+    const withNulls = {
+      ...share,
+      summary: {
+        ...share.summary,
+        description: null,
+        ingredients: [{ ...share.summary.ingredients[0], portionName: null }],
+        preparedWeightGrams: null,
+        recipeServingsCount: null,
+        servingGrams: null,
+      },
+    };
+
+    const parsed = parseShareEnvelope(JSON.stringify(withNulls));
+
+    expect(parsed).toEqual(share);
+    expect(Object.hasOwn(parsed.summary, 'servingGrams')).toBe(false);
+    expect(Object.hasOwn(parsed.summary.ingredients[0], 'portionName')).toBe(false);
+  });
+
   it('rejects a database export as not-a-share', () => {
     expectCode(
       () => parseShareEnvelope(JSON.stringify({ _exportVersion: 24, meals: [] })),

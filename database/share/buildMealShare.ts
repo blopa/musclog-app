@@ -42,6 +42,20 @@ function isActive(model: { deletedAt?: number } | null | undefined): boolean {
   return Boolean(model && model.deletedAt == null);
 }
 
+/**
+ * WatermelonDB reads an unset optional column back as `null`, not `undefined`, whatever the
+ * model's `?: number` typing claims — and `JSON.stringify` keeps a null while it drops an
+ * undefined. Every optional number that reaches the summary goes through this, so the envelope
+ * omits the field rather than carrying an explicit null that the receiver's validator rejects.
+ */
+function optionalNumber(value: null | number | undefined): number | undefined {
+  return isFiniteNumber(value) ? value : undefined;
+}
+
+function isFiniteNumber(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value);
+}
+
 async function relatedFood(mealFood: MealFood): Promise<Food | undefined> {
   try {
     const food = await mealFood.food;
@@ -203,9 +217,9 @@ export async function buildMealShareEnvelope(
       ingredients,
       name: meal.name,
       nutritionBasis: meal.resolvedNutritionBasis,
-      preparedWeightGrams: meal.preparedWeightGrams,
-      recipeServingsCount: meal.recipeServingsCount,
-      servingGrams: meal.servingGrams,
+      preparedWeightGrams: optionalNumber(meal.preparedWeightGrams),
+      recipeServingsCount: optionalNumber(meal.recipeServingsCount),
+      servingGrams: optionalNumber(meal.servingGrams),
       totals: await meal.getTotalNutrients(),
     },
   };

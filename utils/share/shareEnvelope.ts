@@ -87,6 +87,25 @@ function malformed(message: string): never {
   throw new MusclogShareError('malformed', message);
 }
 
+/**
+ * An absent optional field arrives as an explicit `null`, not as a missing key: WatermelonDB reads
+ * an unset optional column back as `null` (never `undefined`, whatever the model's `?:` typing
+ * says), and `JSON.stringify` keeps that null. Every optional field here is therefore read through
+ * this, which also DELETES the key — so the object handed back really matches the declared
+ * `?: number` / `?: string` types instead of smuggling nulls past the `as` cast at the end.
+ *
+ * Builders should not emit those nulls in the first place (`buildMealShareEnvelope` does not), but
+ * v2.11.0 shipped one that did, and its share payloads failed the whole meal-share receive with a
+ * "sent by a newer version of Musclog" error. Reading null as absent is what lets a phone on this
+ * build receive from a phone still on that one, so keep it even once no such sender is left.
+ */
+function readOptional(container: Record<string, unknown>, key: string): unknown {
+  if (container[key] === null) {
+    delete container[key];
+  }
+  return container[key];
+}
+
 function validateMealSummary(value: unknown): asserts value is MealShareSummary {
   if (!isRecord(value)) {
     malformed('Share summary is missing');
@@ -94,7 +113,7 @@ function validateMealSummary(value: unknown): asserts value is MealShareSummary 
 
   if (
     typeof value.name !== 'string' ||
-    (value.description !== undefined && typeof value.description !== 'string') ||
+    (readOptional(value, 'description') !== undefined && typeof value.description !== 'string') ||
     !['per_recipe', 'per_serving', 'per_gram'].includes(String(value.nutritionBasis)) ||
     typeof value.hasImage !== 'boolean' ||
     !Array.isArray(value.ingredients) ||
@@ -105,7 +124,7 @@ function validateMealSummary(value: unknown): asserts value is MealShareSummary 
   }
 
   for (const key of ['recipeServingsCount', 'servingGrams', 'preparedWeightGrams']) {
-    if (value[key] !== undefined && !isFiniteNumber(value[key])) {
+    if (readOptional(value, key) !== undefined && !isFiniteNumber(value[key])) {
       malformed(`Meal share summary has an invalid ${key}`);
     }
   }
@@ -122,7 +141,8 @@ function validateMealSummary(value: unknown): asserts value is MealShareSummary 
       typeof ingredient.name !== 'string' ||
       !isFiniteNumber(ingredient.amount) ||
       !['g', 'serving', 'portion'].includes(String(ingredient.unit)) ||
-      (ingredient.portionName !== undefined && typeof ingredient.portionName !== 'string') ||
+      (readOptional(ingredient, 'portionName') !== undefined &&
+        typeof ingredient.portionName !== 'string') ||
       !isFiniteNumber(ingredient.calories)
     ) {
       malformed('Meal share summary has an invalid ingredient');
@@ -235,7 +255,7 @@ export function parseShareEnvelope(json: string): MusclogShareEnvelope {
     malformed('Share root row is missing or duplicated');
   }
 
-  validateAssets(parsed.assets);
+  validateAssets(readOptional(parsed, 'assets'));
   if (spec.kind === 'meal') {
     const mealFoods = parsed.records.meal_foods;
     if (!Array.isArray(mealFoods) || mealFoods.length === 0) {

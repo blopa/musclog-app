@@ -58,7 +58,8 @@
       "savedReusedFoods_one": "{{count}} ingrediënt kwam overeen met voeding die al op deze telefoon staat.",
       "savedReusedFoods_other": "{{count}} ingrediënten kwamen overeen met voeding die al op deze telefoon staat.",
       "saveFailed": "De maaltijd kon niet worden opgeslagen.",
-      "notAMeal": "Dit is een volledige back-up, geen maaltijd. Ontvang deze via Instellingen → Optische overdracht."
+      "notAMeal": "Dit is een volledige back-up, geen maaltijd. Ontvang deze via Instellingen → Optische overdracht.",
+      "unreadable": "Deze maaltijd kon niet worden gelezen. Probeer hem opnieuw te versturen."
     },
     "receive": {
       "title": "Ontvangen",

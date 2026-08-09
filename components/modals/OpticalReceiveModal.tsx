@@ -35,7 +35,7 @@ import {
   OPTICAL_PAYLOAD_KIND_DATABASE,
   OPTICAL_PAYLOAD_KIND_SHARE,
 } from '@/utils/optical/container';
-import { parseShareEnvelope } from '@/utils/share/shareEnvelope';
+import { MusclogShareError, parseShareEnvelope } from '@/utils/share/shareEnvelope';
 
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -102,21 +102,31 @@ export function OpticalReceiveModal({
   // `useOpticalReceiver` rebuilds as a fresh object on every render — that would re-run a full
   // JSON.parse plus envelope validation on each of them.
   const { takeJson } = receiver;
-  const shareEnvelope = useMemo(() => {
+  const parsedShare = useMemo(() => {
     if (phase !== 'verified' || !isShare) {
       return undefined;
     }
+
     const json = takeJson();
     if (!json) {
-      return undefined;
+      return { code: 'malformed' as const };
     }
+
     try {
-      return parseShareEnvelope(json);
-    } catch {
-      return undefined;
+      return { envelope: parseShareEnvelope(json) };
+    } catch (error) {
+      return { code: error instanceof MusclogShareError ? error.code : ('malformed' as const) };
     }
   }, [isShare, phase, takeJson]);
+
+  const shareEnvelope = parsedShare?.envelope;
   const invalidShare = phase === 'verified' && isShare && !shareEnvelope;
+  // Only two of the failure codes actually mean "the sender is ahead of this build". The rest are
+  // a broken or unreadable payload, and telling the user to update a phone that is already up to
+  // date sends them chasing a version mismatch that does not exist — which is exactly what a
+  // v2.11.0-to-v2.11.0 meal share did.
+  const shareTooNew =
+    parsedShare?.code === 'unsupported-envelope' || parsedShare?.code === 'unsupported-kind';
 
   const handleClose = useCallback(() => {
     receiver.reset();
@@ -133,6 +143,7 @@ export function OpticalReceiveModal({
     if (meta?.payloadKind !== OPTICAL_PAYLOAD_KIND_DATABASE) {
       return;
     }
+
     const json = receiver.takeJson();
     if (!json) {
       return;
@@ -470,7 +481,9 @@ export function OpticalReceiveModal({
         {invalidShare ? (
           <View className="gap-4 px-4 py-10">
             <Text className="text-center" style={{ color: theme.colors.status.error }}>
-              {t('opticalTransfer.receive.tooNew')}
+              {shareTooNew
+                ? t('opticalTransfer.receive.tooNew')
+                : t('opticalTransfer.share.unreadable')}
             </Text>
             <Button
               label={t('opticalTransfer.receive.scanAgain')}

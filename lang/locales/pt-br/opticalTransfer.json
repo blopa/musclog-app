@@ -58,7 +58,8 @@
       "savedReusedFoods_one": "{{count}} ingrediente correspondeu a um alimento que já estava neste celular.",
       "savedReusedFoods_other": "{{count}} ingredientes corresponderam a alimentos que já estavam neste celular.",
       "saveFailed": "Não foi possível salvar a refeição.",
-      "notAMeal": "Este é um backup completo, não uma refeição. Receba-o em Configurações → Transferência óptica."
+      "notAMeal": "Este é um backup completo, não uma refeição. Receba-o em Configurações → Transferência óptica.",
+      "unreadable": "Não foi possível ler esta refeição. Tente enviá-la novamente."
     },
     "receive": {
       "title": "Receber",

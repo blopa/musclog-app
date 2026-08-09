@@ -58,7 +58,8 @@
       "savedReusedFoods_one": "{{count}} ingredient matched a food already on this phone.",
       "savedReusedFoods_other": "{{count}} ingredients matched foods already on this phone.",
       "saveFailed": "Could not save the meal.",
-      "notAMeal": "This is a full backup, not a meal. Receive it from Settings → Optical Transfer instead."
+      "notAMeal": "This is a full backup, not a meal. Receive it from Settings → Optical Transfer instead.",
+      "unreadable": "This meal could not be read. Try sending it again."
     },
     "receive": {
       "title": "Receive",
