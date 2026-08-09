@@ -15,7 +15,9 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
-import { type Code, type CodeScannerFrame } from 'react-native-vision-camera';
+// `import type` (not a value import of type specifiers): the module throws at init on web, so the
+// declaration must be erased at build time rather than left as a side-effect import.
+import type { Code, CodeScannerFrame } from 'react-native-vision-camera';
 
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import {

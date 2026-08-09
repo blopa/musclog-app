@@ -253,6 +253,25 @@ clamp does not — or the sender generates live forever, which is slower but alw
 | `components/optical/OpticalScannerCamera.tsx` | receiving camera                                        |
 | `app/app/test/optical-bench.tsx`              | the measurement harness                                 |
 
+### Native only, and the web build depends on that being structural
+
+The feature needs a camera on one device and a screen on the other, so it is phone-to-phone by
+definition. `DataSettingsModal` hides its entry card on web and `OpticalTransferModal` shows
+`opticalTransfer.nativeOnly` — but that is runtime gating, and the web bundle still walks the
+import graph. `react-native-vision-camera` **throws at module init** on web
+(`system/camera-module-not-found`), which fails the whole web export from an unrelated route.
+
+So every module that reaches vision-camera needs a platform counterpart, matching
+`components/CameraView.web.tsx`:
+
+- `components/optical/OpticalScannerCamera.web.tsx` — message-only stub with the same props.
+- `app/app/test/optical-bench.web.tsx` — stub route, like `reps-recording.web.tsx`.
+- `hooks/useOpticalReceiver.ts` imports `Code`/`CodeScannerFrame` with `import type`, so the
+  declaration is erased rather than left as a side-effect import.
+
+Skia (`OpticalQrCanvas`) needs no counterpart — `@shopify/react-native-skia` imports cleanly on
+web (`hooks/useChartCapture.ts` already does), and the canvas never renders there.
+
 ### Why `qrEncode.ts` reimplements zxing's encoder
 
 `@zxing/library` is already a dependency and exposes every public static piece of
