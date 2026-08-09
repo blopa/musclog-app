@@ -6,6 +6,7 @@ import { calculateWorkoutVolume, type ExerciseWithSets } from '@/utils/workoutCa
 import Exercise from './Exercise';
 import WorkoutLogExercise from './WorkoutLogExercise';
 import WorkoutLogSet from './WorkoutLogSet';
+import WorkoutPlan from './WorkoutPlan';
 import WorkoutTemplate from './WorkoutTemplate';
 
 export default class WorkoutLog extends Model {
@@ -14,9 +15,11 @@ export default class WorkoutLog extends Model {
   static associations = {
     workout_log_exercises: { type: 'has_many' as const, foreignKey: 'workout_log_id' },
     workout_templates: { type: 'belongs_to' as const, key: 'template_id' },
+    workout_plans: { type: 'belongs_to' as const, key: 'plan_id' },
   };
 
   @field('template_id') templateId?: string;
+  @field('plan_id') planId?: string;
   @field('external_id') externalId?: string;
   @field('workout_name') declare workoutName: string;
   @field('started_at') declare startedAt: number;
@@ -34,6 +37,7 @@ export default class WorkoutLog extends Model {
 
   @children('workout_log_exercises') declare logExercises: Query<WorkoutLogExercise>;
   @relation('workout_templates', 'template_id') template?: WorkoutTemplate;
+  @relation('workout_plans', 'plan_id') plan?: WorkoutPlan;
 
   async getAllSets(): Promise<WorkoutLogSet[]> {
     const logExercises = await this.logExercises.fetch();

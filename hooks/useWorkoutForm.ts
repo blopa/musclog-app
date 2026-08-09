@@ -8,6 +8,7 @@ import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
+import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanRepository';
 import { WorkoutTemplateService } from '@/database/services';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { handleError } from '@/utils/handleError';
@@ -60,6 +61,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
   const [workoutType, setWorkoutType] = useState<WorkoutType>(DEFAULT_WORKOUT_TYPE);
   const [icon, setIcon] = useState<string | undefined>(undefined);
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
+  const [selectedPlanIds, setSelectedPlanIds] = useState<string[]>([]);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(isEditMode);
   const [isSaving, setIsSaving] = useState(false);
@@ -77,8 +79,10 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
 
     setIsLoading(true);
     try {
-      const { template, templateExercises, sets, schedule } =
-        await WorkoutTemplateService.getTemplateWithDetails(templateId);
+      const [{ template, templateExercises, sets, schedule }, planMemberships] = await Promise.all([
+        WorkoutTemplateService.getTemplateWithDetails(templateId),
+        WorkoutPlanRepository.getMembershipsForTemplate(templateId).fetch(),
+      ]);
 
       setWorkoutTitle(template.name ?? '');
       setDescription(template.description || '');
@@ -86,12 +90,9 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
       setWorkoutType(isWorkoutType(template.type) ? template.type : DEFAULT_WORKOUT_TYPE);
       setIcon(template.icon ?? undefined);
 
-      if (template.weekDaysJson && template.weekDaysJson.length > 0) {
-        setSelectedDays(template.weekDaysJson);
-      } else {
-        const dayIndices = transformScheduleDays(schedule);
-        setSelectedDays(dayIndices);
-      }
+      const standaloneDays = transformScheduleDays(schedule);
+      setSelectedDays(standaloneDays.length > 0 ? standaloneDays : (template.weekDaysJson ?? []));
+      setSelectedPlanIds(planMemberships.map((membership) => membership.planId));
 
       const exercisesInWorkout = await WorkoutTemplateService.convertTemplateExercisesToUI(
         templateExercises,
@@ -194,9 +195,9 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
         workoutInsightsType: workoutInsights,
         type: workoutType,
         icon: icon ?? undefined,
-        weekDaysJson: selectedDays.length > 0 ? selectedDays : undefined,
         exercises: exercisesInWorkout,
         selectedDays,
+        planIds: selectedPlanIds,
       });
 
       if (!isEditMode) {
@@ -225,6 +226,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
     workoutType,
     icon,
     selectedDays,
+    selectedPlanIds,
     onSaveSuccess,
     triggerConfetti,
   ]);
@@ -298,6 +300,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
     workoutType,
     icon,
     selectedDays,
+    selectedPlanIds,
     focusedField,
     isLoading,
     isSaving,
@@ -312,6 +315,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
     setWorkoutInsights,
     setWorkoutType,
     setIcon,
+    setSelectedPlanIds,
     setFocusedField,
     setSelectedExercises,
     setExercises,

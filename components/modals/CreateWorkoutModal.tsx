@@ -1,4 +1,4 @@
-import { Plus, PlusSquare, Sparkles } from 'lucide-react-native';
+import { ChevronRight, Plus, PlusSquare, Sparkles } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
@@ -15,12 +15,15 @@ import { WORKOUT_TYPES } from '@/constants/workoutTypes';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { useWorkoutForm } from '@/hooks/useWorkoutForm';
+import { useWorkoutPlans } from '@/hooks/useWorkoutPlans';
 import { getWeekdayLabels } from '@/utils/workout';
 import { getWorkoutIcon, WORKOUT_ICON_OPTIONS } from '@/utils/workoutIconUtils';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
 import { AddExerciseModal } from './AddExerciseModal';
+import { CreateEditPlanModal } from './CreateEditPlanModal';
 import { FullScreenModal } from './FullScreenModal';
+import { WorkoutPlanPickerModal } from './WorkoutPlanPickerModal';
 
 type CreateWorkoutModalProps = {
   visible: boolean;
@@ -38,11 +41,16 @@ export default function CreateWorkoutModal({
   const { isAiConfigured } = useSettings();
 
   const [addExerciseVisible, setAddExerciseVisible] = useState(false);
+  const [planPickerVisible, setPlanPickerVisible] = useState(false);
+  const [createPlanVisible, setCreatePlanVisible] = useState(false);
+  const { plans } = useWorkoutPlans();
 
   useEffect(() => {
     if (!visible) {
       const reset = () => {
         setAddExerciseVisible(false);
+        setPlanPickerVisible(false);
+        setCreatePlanVisible(false);
       };
       reset();
     }
@@ -55,6 +63,7 @@ export default function CreateWorkoutModal({
     workoutType,
     icon,
     selectedDays,
+    selectedPlanIds,
     focusedField,
     isLoading,
     isSaving,
@@ -66,6 +75,7 @@ export default function CreateWorkoutModal({
     setWorkoutInsights,
     setWorkoutType,
     setIcon,
+    setSelectedPlanIds,
     setFocusedField,
     setSelectedExercises,
     toggleDay,
@@ -408,39 +418,70 @@ export default function CreateWorkoutModal({
               borderColor: theme.colors.border.light,
             }}
           >
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: theme.spacing.padding.base,
-              }}
+            <Pressable
+              onPress={() => setPlanPickerVisible(true)}
+              className="mb-4 flex-row items-center justify-between rounded-lg border border-border-light bg-bg-secondary p-4"
             >
-              <Text
-                style={{
-                  fontSize: theme.typography.fontSize.sm,
-                  fontWeight: theme.typography.fontWeight.medium,
-                  color: theme.colors.text.primary,
-                }}
-              >
-                {t('createWorkout.repeatOnDays')}
-              </Text>
-              <Text
-                style={{
-                  fontSize: theme.typography.fontSize.xs,
-                  fontWeight: theme.typography.fontWeight.medium,
-                  color: theme.colors.accent.primary,
-                }}
-              >
-                {t('createWorkout.weekly')}
-              </Text>
-            </View>
+              <View className="min-w-0 flex-1">
+                <Text className="text-sm font-medium text-text-primary">
+                  {t('createWorkout.plan.label')}
+                </Text>
+                <Text className="mt-1 text-xs text-text-secondary" numberOfLines={2}>
+                  {selectedPlanIds.length > 0
+                    ? plans
+                        .filter((plan) => selectedPlanIds.includes(plan.id))
+                        .map((plan) => plan.name)
+                        .join(', ')
+                    : t('createWorkout.plan.none')}
+                </Text>
+              </View>
+              <ChevronRight size={theme.iconSize.md} color={theme.colors.text.tertiary} />
+            </Pressable>
 
-            <WeekdayPicker
-              days={getWeekdayLabels()}
-              selectedDays={selectedDays}
-              onToggleDay={toggleDay}
-            />
+            {selectedPlanIds.length === 0 ? (
+              <>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: theme.spacing.padding.base,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: theme.typography.fontSize.sm,
+                      fontWeight: theme.typography.fontWeight.medium,
+                      color: theme.colors.text.primary,
+                    }}
+                  >
+                    {t('createWorkout.standaloneSchedule.label')}
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: theme.typography.fontSize.xs,
+                      fontWeight: theme.typography.fontWeight.medium,
+                      color: theme.colors.accent.primary,
+                    }}
+                  >
+                    {t('createWorkout.weekly')}
+                  </Text>
+                </View>
+
+                <WeekdayPicker
+                  days={getWeekdayLabels()}
+                  selectedDays={selectedDays}
+                  onToggleDay={toggleDay}
+                />
+                <Text className="mt-3 text-xs text-text-secondary">
+                  {t('createWorkout.standaloneSchedule.description')}
+                </Text>
+              </>
+            ) : (
+              <Text className="text-xs text-text-secondary">
+                {t('createWorkout.plan.scheduleHint')}
+              </Text>
+            )}
           </View>
         </View>
 
@@ -516,6 +557,27 @@ export default function CreateWorkoutModal({
           visible={addExerciseVisible}
           onClose={() => setAddExerciseVisible(false)}
           onAddExercise={handleAddExerciseWithMetadata}
+        />
+      ) : null}
+      <WorkoutPlanPickerModal
+        visible={planPickerVisible}
+        plans={plans}
+        selectedPlanIds={selectedPlanIds}
+        onChange={setSelectedPlanIds}
+        onClose={() => setPlanPickerVisible(false)}
+        onCreatePlan={() => {
+          setPlanPickerVisible(false);
+          setCreatePlanVisible(true);
+        }}
+      />
+      {createPlanVisible ? (
+        <CreateEditPlanModal
+          visible={true}
+          onClose={() => setCreatePlanVisible(false)}
+          onSaved={(createdPlanId) => {
+            setSelectedPlanIds((current) => [...new Set([...current, createdPlanId])]);
+            setCreatePlanVisible(false);
+          }}
         />
       ) : null}
     </FullScreenModal>

@@ -265,6 +265,44 @@ export function createMockWorkoutTemplate(overrides: Partial<any> = {}) {
   };
 }
 
+export function createMockWorkoutPlan(overrides: Partial<any> = {}) {
+  const plan = {
+    id: 'plan-1',
+    name: 'Test Plan',
+    cycleType: 'weekly',
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    deletedAt: null,
+    memberships: { fetch: jest.fn().mockResolvedValue([]) },
+    prepareUpdate: jest.fn((callback) => {
+      callback(plan);
+      return plan;
+    }),
+    markAsDeleted: jest.fn().mockResolvedValue(undefined),
+    ...overrides,
+  };
+  return plan;
+}
+
+export function createMockWorkoutPlanTemplate(overrides: Partial<any> = {}) {
+  const membership = {
+    id: 'membership-1',
+    planId: 'plan-1',
+    templateId: 'template-1',
+    weekDays: undefined,
+    position: 0,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    deletedAt: null,
+    prepareUpdate: jest.fn((callback) => {
+      callback(membership);
+      return membership;
+    }),
+    ...overrides,
+  };
+  return membership;
+}
+
 /**
  * Creates a mock WorkoutTemplateExercise model
  */

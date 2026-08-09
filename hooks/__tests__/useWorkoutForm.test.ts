@@ -7,6 +7,7 @@ import { Alert } from 'react-native';
 
 import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
+import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanRepository';
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 import { type AddExerciseData, useWorkoutForm } from '@/hooks/useWorkoutForm';
 import { handleError } from '@/utils/handleError';
@@ -67,6 +68,14 @@ jest.mock('../../database/services/WorkoutTemplateService', () => ({
   },
 }));
 
+jest.mock('../../database/repositories/WorkoutPlanRepository', () => ({
+  WorkoutPlanRepository: {
+    getMembershipsForTemplate: jest.fn(() => ({
+      fetch: jest.fn().mockResolvedValue([]),
+    })),
+  },
+}));
+
 // The hook reads three contexts. Stub them so it can be rendered without a provider tree.
 const mockShowSnackbar = jest.fn();
 jest.mock('../../context/SnackbarContext', () => ({
@@ -98,6 +107,9 @@ jest.mock('../../utils/workout', () => ({
 
 const mockWorkoutTemplateService = WorkoutTemplateService as jest.Mocked<
   typeof WorkoutTemplateService
+>;
+const mockWorkoutPlanRepository = WorkoutPlanRepository as jest.Mocked<
+  typeof WorkoutPlanRepository
 >;
 const mockDatabase = database as jest.Mocked<typeof database>;
 const mockWorkoutUtils = workoutUtils as jest.Mocked<typeof workoutUtils>;
@@ -156,6 +168,9 @@ describe('hooks/useWorkoutForm', () => {
     });
     mockWorkoutTemplateService.convertTemplateExercisesToUI.mockResolvedValue([]);
     mockWorkoutTemplateService.saveTemplate.mockResolvedValue(mockTemplate);
+    mockWorkoutPlanRepository.getMembershipsForTemplate.mockReturnValue({
+      fetch: jest.fn().mockResolvedValue([]),
+    } as any);
   });
 
   describe('initial state', () => {
@@ -227,11 +242,34 @@ describe('hooks/useWorkoutForm', () => {
       expect(result.current.workoutTitle).toBe('My Workout');
       expect(result.current.description).toBe('Workout description');
       expect(result.current.selectedDays).toEqual([0, 2]);
+      expect(result.current.selectedPlanIds).toEqual([]);
       expect(mockWorkoutTemplateService.getTemplateWithDetails).toHaveBeenCalledWith('template-1');
       expect(mockWorkoutTemplateService.convertTemplateExercisesToUI).toHaveBeenCalledWith(
         mockTemplateExercises,
         mockSets
       );
+    });
+
+    it('should load active plan memberships separately from a standalone schedule', async () => {
+      mockWorkoutTemplateService.getTemplateWithDetails.mockResolvedValue({
+        template: { name: 'Push', weekDaysJson: [6] } as any,
+        templateExercises: [],
+        sets: [],
+        schedule: [{ dayOfWeek: 'Tuesday' }] as any,
+      });
+      mockWorkoutPlanRepository.getMembershipsForTemplate.mockReturnValue({
+        fetch: jest.fn().mockResolvedValue([{ planId: 'plan-1' }, { planId: 'plan-2' }]),
+      } as any);
+      mockWorkoutUtils.transformScheduleDays.mockReturnValue([1]);
+
+      const { result } = renderHook(() => useWorkoutForm({ templateId: 'template-1' }));
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(result.current.selectedDays).toEqual([1]);
+      expect(result.current.selectedPlanIds).toEqual(['plan-1', 'plan-2']);
     });
 
     it('should handle loading error', async () => {
@@ -463,9 +501,9 @@ describe('hooks/useWorkoutForm', () => {
         workoutInsightsType: 'none',
         type: 'strength',
         icon: undefined,
-        weekDaysJson: undefined,
         exercises: [],
         selectedDays: [],
+        planIds: [],
       });
       expect(mockOnSaveSuccess).toHaveBeenCalled();
       expect(result.current.isSaving).toBe(false);
@@ -517,7 +555,7 @@ describe('hooks/useWorkoutForm', () => {
           name: 'Trimmed Title',
           description: 'Trimmed Description',
           workoutInsightsType: 'none',
-          weekDaysJson: undefined,
+          planIds: [],
         })
       );
       expect(mockOnSaveSuccess).toHaveBeenCalled();
@@ -544,9 +582,9 @@ describe('hooks/useWorkoutForm', () => {
         workoutInsightsType: 'none',
         type: 'strength',
         icon: undefined,
-        weekDaysJson: undefined,
         exercises: [],
         selectedDays: [],
+        planIds: [],
       });
     });
 

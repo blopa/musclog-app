@@ -164,6 +164,21 @@ describe('WorkoutService', () => {
       expect(result).toBeDefined();
     });
 
+    it('threads the selected plan context into the workout log creation', async () => {
+      const mockTemplate = createMockWorkoutTemplate({
+        id: 'template-1',
+        deletedAt: null,
+        startWorkout: jest.fn().mockResolvedValue(createMockWorkoutLog()),
+      });
+      mockDatabase.get.mockReturnValue(
+        collection({ find: jest.fn().mockResolvedValue(mockTemplate) }) as any
+      );
+
+      await WorkoutService.startWorkoutFromTemplate('template-1', 'plan-1');
+
+      expect(mockTemplate.startWorkout).toHaveBeenCalledWith('plan-1');
+    });
+
     it('should throw error when template is deleted', async () => {
       const mockTemplate = createMockWorkoutTemplate({
         id: 'template-1',
@@ -481,7 +496,6 @@ describe('WorkoutService', () => {
   describe('getUpcomingScheduledWorkouts', () => {
     it('should return templates for correct day of week', async () => {
       const date = new Date('2024-01-15'); // Monday
-      const localizedDateSpy = jest.spyOn(date, 'toLocaleDateString').mockReturnValue('maandag');
       const schedule = createMockSchedule({
         templateId: 'template-1',
         dayOfWeek: 'Monday',
@@ -492,54 +506,63 @@ describe('WorkoutService', () => {
         deletedAt: null,
       });
 
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValueOnce([schedule]).mockResolvedValueOnce([template]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
+      installTables({
+        workout_plans: [],
+        workout_plan_templates: [],
+        schedules: [schedule],
+        workout_templates: [template],
+      });
 
       const result = await WorkoutService.getUpcomingScheduledWorkouts(date);
 
       expect(result).toEqual([template]);
-      expect(Q.where).toHaveBeenCalledWith('day_of_week', 'Monday');
-      expect(localizedDateSpy).not.toHaveBeenCalled();
+      expect(Q.where).toHaveBeenCalledWith('deleted_at', null);
     });
 
     it('should return empty array when no schedules for day', async () => {
       const date = new Date('2024-01-15'); // Monday
 
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
+      installTables({ workout_plans: [], workout_plan_templates: [], schedules: [] });
 
       const result = await WorkoutService.getUpcomingScheduledWorkouts(date);
 
       expect(result).toEqual([]);
     });
 
-    it('should filter out deleted templates and schedules', async () => {
+    it('uses weekly membership days and ignores a planned template standalone schedule', async () => {
       const date = new Date('2024-01-15'); // Monday
-
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
+      const template = createMockWorkoutTemplate({ id: 'template-1', deletedAt: null });
+      installTables({
+        workout_plans: [{ id: 'plan-1', cycleType: 'weekly' }],
+        workout_plan_templates: [{ planId: 'plan-1', templateId: 'template-1', weekDays: [0] }],
+        schedules: [createMockSchedule({ templateId: 'template-1', dayOfWeek: 'Friday' })],
+        workout_templates: [template],
+      });
 
       const result = await WorkoutService.getUpcomingScheduledWorkouts(date);
 
-      expect(result).toEqual([]);
+      expect(result).toEqual([template]);
+    });
+
+    it('excludes rotating members and reactivates standalone rows after unfiling', async () => {
+      const date = new Date('2024-01-19'); // Friday
+      const template = createMockWorkoutTemplate({ id: 'template-1', deletedAt: null });
+      installTables({
+        workout_plans: [{ id: 'rotation', cycleType: 'rotating' }],
+        workout_plan_templates: [{ planId: 'rotation', templateId: 'template-1', position: 0 }],
+        schedules: [createMockSchedule({ templateId: 'template-1', dayOfWeek: 'Friday' })],
+        workout_templates: [template],
+      });
+
+      expect(await WorkoutService.getUpcomingScheduledWorkouts(date)).toEqual([]);
+
+      installTables({
+        workout_plans: [{ id: 'rotation', cycleType: 'rotating' }],
+        workout_plan_templates: [],
+        schedules: [createMockSchedule({ templateId: 'template-1', dayOfWeek: 'Friday' })],
+        workout_templates: [template],
+      });
+      expect(await WorkoutService.getUpcomingScheduledWorkouts(date)).toEqual([template]);
     });
   });
 

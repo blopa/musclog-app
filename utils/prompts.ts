@@ -703,6 +703,7 @@ export const createWorkoutPlanPrompt = async (
   return [
     await getBaseSystemPrompt(language, context),
     "Generate a workout plan with exercises, reps, sets, and percentages of 1 rep max based on the user's fitness goals, activity level, weight, height and available equipment.",
+    'Give the plan as a whole a concise planTitle (for example "Push Pull Legs"); do not reuse a single workout title.',
     "If you can't infer what workout the user wants you to generate from the messages, simply generate a basic weekly workout plan, like a 3-day split.",
     'You MUST only use exercises from the list below. For each exercise in your plan, return the exact "id" from this list (do not invent IDs).',
     `Available exercises (id, name):`,
@@ -1478,6 +1479,11 @@ export const getGenerateWorkoutPlanFunctions = ():
       parameters: {
         type: 'object',
         properties: {
+          planTitle: {
+            type: 'string',
+            description:
+              'Name of the plan as a whole (for example "Push Pull Legs"), not one workout',
+          },
           description: {
             type: 'string',
             description: 'A brief description of the workout plan to show the user',
@@ -1535,7 +1541,7 @@ export const getGenerateWorkoutPlanFunctions = ():
             },
           },
         },
-        required: ['workoutPlan', 'description'],
+        required: ['planTitle', 'workoutPlan', 'description'],
       },
     },
   ];

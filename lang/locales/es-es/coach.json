@@ -52,6 +52,7 @@
     "goToSettings": "Ir a Ajustes",
     "success": {
       "workoutPlanGenerated": "¡He creado {{count}} entrenamientos para ti! 💪 {{description}}",
+      "workoutPlanGeneratedWithName": "¡He creado {{planName}} con {{count}} entrenamientos para ti! 💪 {{description}}",
       "mealPlanGenerated": "¡He creado un plan de comidas de 3 días con {{count}} comidas para ti! 🥗 {{description}}",
       "trackMealSuccess": "He registrado {{count}} ingredientes para tu comida: {{ingredients}}. Total: {{calories}} kcal.",
       "trackMealReady": "He analizado {{count}} comida(s): {{meals}} ({{calories}} kcal en total). ¡Toca una comida para revisarla y registrarla!",

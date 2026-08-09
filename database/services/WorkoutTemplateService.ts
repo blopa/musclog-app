@@ -11,6 +11,7 @@ import Schedule from '@/database/models/Schedule';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import type WorkoutPlan from '@/database/models/WorkoutPlan';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import WorkoutTemplateExercise from '@/database/models/WorkoutTemplateExercise';
 import WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
@@ -30,6 +31,7 @@ import {
 import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
 import { UserService } from './UserService';
+import { WorkoutPlanService } from './WorkoutPlanService';
 
 /**
  * Exercise data for workout template creation/editing.
@@ -58,9 +60,13 @@ export interface SaveTemplateData {
   workoutInsightsType?: string;
   type?: string;
   icon?: string;
-  weekDaysJson?: number[];
   exercises: ExerciseInWorkout[];
   selectedDays: number[];
+  /**
+   * Replacement plan membership. undefined leaves memberships untouched; [] moves the template
+   * to Unplanned. Never default this field to an empty array.
+   */
+  planIds?: string[];
 }
 
 export class WorkoutTemplateService {
@@ -247,7 +253,8 @@ export class WorkoutTemplateService {
               : parseWorkoutInsightsType(t.workoutInsightsType);
           t.type = data.type ?? t.type;
           t.icon = data.icon ?? t.icon;
-          t.weekDaysJson = data.weekDaysJson ?? t.weekDaysJson;
+          // Standalone calendar data lives in schedules. Clear any deprecated compatibility copy.
+          t.weekDaysJson = undefined;
           t.updatedAt = now;
         });
 
@@ -300,7 +307,7 @@ export class WorkoutTemplateService {
           t.workoutInsightsType = parseWorkoutInsightsType(data.workoutInsightsType);
           t.type = data.type ?? DEFAULT_WORKOUT_TYPE;
           t.icon = data.icon ?? undefined;
-          t.weekDaysJson = data.weekDaysJson || undefined;
+          t.weekDaysJson = undefined;
           t.isArchived = false;
           t.createdAt = now;
           t.updatedAt = now;
@@ -368,6 +375,17 @@ export class WorkoutTemplateService {
 
       if (preparedSchedules.length > 0) {
         await database.batch(...preparedSchedules);
+      }
+
+      if (data.planIds !== undefined) {
+        const membershipRecords = await WorkoutPlanService.prepareSyncTemplateMemberships(
+          template.id,
+          data.planIds,
+          now
+        );
+        if (membershipRecords.length > 0) {
+          await database.batch(...membershipRecords);
+        }
       }
 
       return template;
@@ -447,7 +465,8 @@ export class WorkoutTemplateService {
         Q.where('template_id', template.id),
         Q.where('completed_at', Q.notEq(null)),
         Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('completed_at', Q.desc)
+        Q.sortBy('completed_at', Q.desc),
+        Q.take(1)
       )
       .fetch();
 
@@ -819,7 +838,7 @@ export class WorkoutTemplateService {
    */
   static async createWorkoutsFromJsonTemplate(
     rawTemplate: RawWorkoutTemplate
-  ): Promise<WorkoutTemplate[]> {
+  ): Promise<{ plan: WorkoutPlan | null; templates: WorkoutTemplate[] }> {
     const theme = await getTheme();
     // Validate that exercises is an array
     if (!Array.isArray(rawTemplate.exercises)) {
@@ -962,7 +981,8 @@ export class WorkoutTemplateService {
           iconBgColor,
           iconColor,
           groupId: exerciseData.supersetGroup
-            ? `${rawTemplate.title}-day-${day}-${exerciseData.supersetGroup}`
+            ? // Group ids are only compared within one template, so repeat imports may safely reuse it.
+              `${rawTemplate.title}-day-${day}-${exerciseData.supersetGroup}`
             : undefined,
           notes:
             [
@@ -988,7 +1008,8 @@ export class WorkoutTemplateService {
 
       // Create workout template name
       const dayName = rawTemplate.dayNames?.[String(day)];
-      const templateName = `${rawTemplate.title} - ${dayName ?? `Day ${day}`}`;
+      const templateName =
+        dayName ?? i18n.t('workouts.plans.defaultDayName', { day, defaultValue: `Day ${day}` });
 
       // Create the template using saveTemplate
       const template = await this.saveTemplate({
@@ -1003,7 +1024,23 @@ export class WorkoutTemplateService {
       createdTemplates.push(template);
     }
 
-    return createdTemplates;
+    if (createdTemplates.length === 0) {
+      return { plan: null, templates: [] };
+    }
+
+    const plan = await WorkoutPlanService.createPlan({
+      name: rawTemplate.title,
+      description: rawTemplate.description,
+      difficulty: rawTemplate.difficulty,
+      icon: rawTemplate.icon,
+      cycleType: 'rotating',
+      memberships: createdTemplates.map((template, position) => ({
+        templateId: template.id,
+        position,
+      })),
+    });
+
+    return { plan, templates: createdTemplates };
   }
 
   /**
@@ -1042,7 +1079,7 @@ export class WorkoutTemplateService {
         t.workoutInsightsType = parseWorkoutInsightsType(template.workoutInsightsType);
         t.type = template.type ?? DEFAULT_WORKOUT_TYPE;
         t.icon = template.icon ?? undefined;
-        t.weekDaysJson = template.weekDaysJson || undefined;
+        t.weekDaysJson = undefined;
         t.isArchived = false;
         t.createdAt = now;
         t.updatedAt = now;
@@ -1092,15 +1129,25 @@ export class WorkoutTemplateService {
       }
 
       const schedulesCollection = database.get<Schedule>('schedules');
-      const preparedSchedules = schedule.map((sched) =>
-        schedulesCollection.prepareCreate((s) => {
-          s.templateId = newTemplate.id;
-          s.dayOfWeek = sched.dayOfWeek;
-          s.reminderTime = sched.reminderTime;
-          s.createdAt = now;
-          s.updatedAt = now;
-        })
-      );
+      const preparedSchedules =
+        schedule.length > 0
+          ? schedule.map((sched) =>
+              schedulesCollection.prepareCreate((s) => {
+                s.templateId = newTemplate.id;
+                s.dayOfWeek = sched.dayOfWeek;
+                s.reminderTime = sched.reminderTime;
+                s.createdAt = now;
+                s.updatedAt = now;
+              })
+            )
+          : (template.weekDaysJson ?? []).map((dayIndex) =>
+              schedulesCollection.prepareCreate((s) => {
+                s.templateId = newTemplate.id;
+                s.dayOfWeek = indexToDayName(dayIndex);
+                s.createdAt = now;
+                s.updatedAt = now;
+              })
+            );
 
       await database.batch(...preparedExercises, ...preparedSets, ...preparedSchedules);
 

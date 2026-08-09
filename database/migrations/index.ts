@@ -23,6 +23,7 @@ import migrationV21 from '@/database/migrations/2026/06/migration-v21';
 import migrationV22 from '@/database/migrations/2026/06/migration-v22';
 import migrationV23 from '@/database/migrations/2026/07/migration-v23';
 import migrationV24 from '@/database/migrations/2026/08/migration-v24';
+import migrationV25 from '@/database/migrations/2026/08/migration-v25';
 
 export const migrations = schemaMigrations({
   migrations: [
@@ -116,5 +117,7 @@ export const migrations = schemaMigrations({
     // jots down without committing to a nutrition log; a note can later be handed to the
     // coach's TRACK_MEAL flow. Stored in plaintext so the paged list query stays SQL-side.
     migrationV24,
+    // Version 25: Add named workout plans, their template memberships, and plan attribution on logs.
+    migrationV25,
   ],
 });

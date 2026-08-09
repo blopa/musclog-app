@@ -25,6 +25,15 @@
       "ai": "AI"
     },
     "routine": "Routine",
+    "plan": {
+      "label": "Workoutplannen",
+      "none": "Maakt geen deel uit van een plan",
+      "scheduleHint": "Weekdagen worden afzonderlijk ingesteld in elk workoutplan."
+    },
+    "standaloneSchedule": {
+      "label": "Zelfstandige planning",
+      "description": "Alleen gebruikt zolang deze workout niet in een plan staat."
+    },
     "repeatOnDays": "Herhalen op dagen",
     "weekly": "Wekelijks",
     "exercises": "Oefeningen",

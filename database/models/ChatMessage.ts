@@ -36,6 +36,8 @@ export type WorkoutPlanPayload = {
   type: 'workoutPlan';
   templateIds: string[]; // Array of workout template IDs created
   count: number; // Number of workout templates generated
+  planId?: string;
+  planName?: string;
 };
 
 // Track meal payload - when AI analyzes and tracks a meal

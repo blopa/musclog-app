@@ -6,6 +6,9 @@ import { database } from '@/database';
 import MenstrualCycle from '@/database/models/MenstrualCycle';
 import NutritionCheckin from '@/database/models/NutritionCheckin';
 import Schedule from '@/database/models/Schedule';
+import WorkoutPlan from '@/database/models/WorkoutPlan';
+import WorkoutPlanTemplate from '@/database/models/WorkoutPlanTemplate';
+import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import { PeriodLogRepository } from '@/database/repositories/PeriodLogRepository';
 import { MenstrualService } from '@/database/services/MenstrualService';
 import { SettingsService } from '@/database/services/SettingsService';
@@ -16,6 +19,7 @@ import {
   localDayStartMs,
   MS_PER_SOLAR_DAY,
 } from '@/utils/calendarDate';
+import { resolveWorkoutSchedules } from '@/utils/workoutScheduleOwnership';
 
 export class NotificationService {
   private static isConfigured = false;
@@ -283,30 +287,38 @@ export class NotificationService {
       return;
     }
 
-    // Fetch all active schedules
-    const schedules = await database
-      .get<Schedule>('schedules')
-      .query(Q.where('deleted_at', Q.eq(null)))
-      .fetch();
+    const [plans, memberships, standaloneSchedules] = await Promise.all([
+      database
+        .get<WorkoutPlan>('workout_plans')
+        .query(Q.where('deleted_at', Q.eq(null)))
+        .fetch(),
+      database
+        .get<WorkoutPlanTemplate>('workout_plan_templates')
+        .query(Q.where('deleted_at', Q.eq(null)))
+        .fetch(),
+      database
+        .get<Schedule>('schedules')
+        .query(Q.where('deleted_at', Q.eq(null)))
+        .fetch(),
+    ]);
+    const resolvedSchedules = resolveWorkoutSchedules(plans, memberships, standaloneSchedules);
+    const templateIds = [...new Set(resolvedSchedules.map((schedule) => schedule.templateId))];
+    const templates =
+      templateIds.length > 0
+        ? await database
+            .get<WorkoutTemplate>('workout_templates')
+            .query(Q.where('id', Q.oneOf(templateIds)), Q.where('deleted_at', Q.eq(null)))
+            .fetch()
+        : [];
+    const templatesById = new Map(templates.map((template) => [template.id, template]));
 
-    // TODO: do we need to translate these?
-    const expoDayMap: Record<string, number> = {
-      Sunday: 1,
-      Monday: 2,
-      Tuesday: 3,
-      Wednesday: 4,
-      Thursday: 5,
-      Friday: 6,
-      Saturday: 7,
-    };
-
-    for (const schedule of schedules) {
-      const template = await schedule.template;
+    for (const schedule of resolvedSchedules) {
+      const template = templatesById.get(schedule.templateId);
       if (!template || template.deletedAt || template.isArchived) {
         continue;
       }
 
-      const [hours, minutes] = (schedule.reminderTime || '08:00').split(':').map(Number);
+      const [hours, minutes] = schedule.reminderTime.split(':').map(Number);
 
       await Notifications.scheduleNotificationAsync({
         content: {
@@ -314,11 +326,15 @@ export class NotificationService {
           body: i18n.t('notifications.types.workoutReminderMorning.body', {
             workoutName: template.name,
           }),
-          data: { type: 'workout-reminder', templateId: template.id },
+          data: {
+            type: 'workout-reminder',
+            templateId: template.id,
+            planId: schedule.planId,
+          },
         },
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
-          weekday: expoDayMap[schedule.dayOfWeek],
+          weekday: ((schedule.dayIndex + 1) % 7) + 1,
           hour: hours,
           minute: minutes,
         },

@@ -1,6 +1,16 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useFocusEffect } from 'expo-router/react-navigation';
-import { Dumbbell, Plus, Repeat, Search, Target, WifiOff } from 'lucide-react-native';
+import {
+  Dumbbell,
+  Layers3,
+  Pencil,
+  Plus,
+  Repeat,
+  Search,
+  Target,
+  Trash2,
+  WifiOff,
+} from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
@@ -14,12 +24,15 @@ import { GradientText } from '@/components/GradientText';
 import { MasterLayout } from '@/components/MasterLayout';
 import { BrowseTemplatesModal, getRawTemplateById } from '@/components/modals/BrowseTemplatesModal';
 import { ConfirmationModal } from '@/components/modals/ConfirmationModal';
+import { CreateEditPlanModal } from '@/components/modals/CreateEditPlanModal';
 import CreateWorkoutModal from '@/components/modals/CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from '@/components/modals/CreateWorkoutOptionsModal';
 import { GenerateWorkoutWithAiModal } from '@/components/modals/GenerateWorkoutWithAiModal';
 import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
+import { WorkoutPlanPickerModal } from '@/components/modals/WorkoutPlanPickerModal';
 import { WorkoutSessionHistoryModal } from '@/components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '@/components/modals/WorkoutSessionOverviewModal';
+import { Accordion } from '@/components/theme/Accordion';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { Button } from '@/components/theme/Button';
 import DashedButton from '@/components/theme/DashedButton';
@@ -28,20 +41,25 @@ import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { TextInput } from '@/components/theme/TextInput';
+import { WorkoutPlanSection } from '@/components/workout/WorkoutPlanSection';
 import { WorkoutDetailsMenu } from '@/components/WorkoutDetailsMenu';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { database, WorkoutLog, WorkoutTemplate } from '@/database';
-import { WorkoutService, WorkoutTemplateService } from '@/database/services';
+import { WorkoutPlanService, WorkoutService, WorkoutTemplateService } from '@/database/services';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { useWorkoutPlans } from '@/hooks/useWorkoutPlans';
 import { useWorkoutTemplateDetails } from '@/hooks/useWorkoutTemplateDetails';
 import { useWorkoutTemplates } from '@/hooks/useWorkoutTemplates';
 import { clearActiveWorkoutLogId } from '@/utils/activeWorkoutStorage';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { handleError } from '@/utils/handleError';
+import { groupTemplatesByPlan } from '@/utils/workoutPlanGrouping';
+
+type PlanEditorOrigin = 'workout-picker' | 'plan-menu' | 'screen-menu';
 
 export default function WorkoutsScreen() {
   const theme = useTheme();
@@ -98,6 +116,15 @@ export default function WorkoutsScreen() {
   const [isDiscardInterruptedConfirmVisible, setIsDiscardInterruptedConfirmVisible] =
     useState(false);
   const [isDiscardingInterrupted, setIsDiscardingInterrupted] = useState(false);
+  const [openAccordions, setOpenAccordions] = useState<Record<string, boolean>>({});
+  const [planEditorOrigin, setPlanEditorOrigin] = useState<PlanEditorOrigin | null>(null);
+  const [editingPlanId, setEditingPlanId] = useState<string | undefined>();
+  const [isPlanMenuVisible, setIsPlanMenuVisible] = useState(false);
+  const [selectedPlanId, setSelectedPlanId] = useState<string>('');
+  const [isDeletePlanConfirmationVisible, setIsDeletePlanConfirmationVisible] = useState(false);
+  const [isDeletingPlan, setIsDeletingPlan] = useState(false);
+  const [isPlanPickerVisible, setIsPlanPickerVisible] = useState(false);
+  const [pendingPlanIds, setPendingPlanIds] = useState<string[]>([]);
 
   useFocusEffect(
     useCallback(() => {
@@ -147,6 +174,47 @@ export default function WorkoutsScreen() {
   const { templates, isLoading, error } = useWorkoutTemplates({
     scope: activeFilter === 'archived' ? 'archived' : 'active',
   });
+  const { plans, memberships, isLoading: isLoadingPlans } = useWorkoutPlans();
+  const isLoadingScreen = isLoading || isLoadingPlans;
+  const hasPlans = activeFilter !== 'archived' && plans.length > 0;
+
+  const templatesForPlans = useMemo(() => {
+    if (
+      activeFilter !== 'strength' &&
+      activeFilter !== 'cardio' &&
+      activeFilter !== 'flexibility'
+    ) {
+      return templates;
+    }
+    return templates.filter((template) => template.type === activeFilter);
+  }, [templates, activeFilter]);
+
+  const groupedWorkouts = useMemo(
+    () =>
+      groupTemplatesByPlan(
+        plans,
+        memberships.map((membership) => ({
+          id: membership.id,
+          planId: membership.planId,
+          templateId: membership.templateId,
+          weekDays: membership.weekDays,
+          position: membership.position,
+        })),
+        templatesForPlans,
+        searchQuery
+      ),
+    [plans, memberships, templatesForPlans, searchQuery]
+  );
+
+  const flatPlanSearchResults = useMemo(
+    () => [
+      ...groupedWorkouts.sections.flatMap((section) =>
+        section.workouts.map(({ template }) => ({ template, plan: section.plan }))
+      ),
+      ...groupedWorkouts.unplanned.map((template) => ({ template, plan: undefined })),
+    ],
+    [groupedWorkouts]
+  );
 
   // Process templates to separate featured vs regular
   const { featuredWorkout, workouts } = useMemo(() => {
@@ -250,9 +318,9 @@ export default function WorkoutsScreen() {
 
   // Helper function to start a workout and show overview modal
   const handleStartWorkout = useCallback(
-    async (templateId: string) => {
+    async (templateId: string, planId?: string) => {
       try {
-        const workoutLog = await WorkoutService.startWorkoutFromTemplate(templateId);
+        const workoutLog = await WorkoutService.startWorkoutFromTemplate(templateId, planId);
         setSelectedWorkoutLogId(workoutLog.id);
         setIsWorkoutOverviewVisible(true);
         triggerConfetti(ConfettiActivity.FIRST_WORKOUT_CREATED);
@@ -264,6 +332,20 @@ export default function WorkoutsScreen() {
     },
     [t, triggerConfetti]
   );
+
+  const openWorkoutMenu = useCallback(
+    (templateId: string, workoutName: string, planId?: string) => {
+      setSelectedWorkoutName(workoutName);
+      setSelectedWorkoutId(templateId);
+      setSelectedPlanId(planId ?? '');
+      setIsMenuVisible(true);
+    },
+    []
+  );
+
+  const toggleAccordion = useCallback((id: string) => {
+    setOpenAccordions((current) => ({ ...current, [id]: !(current[id] ?? true) }));
+  }, []);
 
   // Helper function to open preview modal (now synchronous!)
   const handlePreviewWorkout = (templateId: string) => {
@@ -404,7 +486,7 @@ export default function WorkoutsScreen() {
             ) : null}
 
             {/* Loading State */}
-            {isLoading && !error ? (
+            {isLoadingScreen && !error ? (
               <>
                 {/* Featured Workout Skeleton */}
                 <View
@@ -471,10 +553,11 @@ export default function WorkoutsScreen() {
                 ))}
               </>
             ) : null}
-            {!isLoading &&
+            {!isLoadingScreen &&
             !error &&
-            !filteredFeaturedWorkout &&
-            filteredWorkouts.length === 0 &&
+            (hasPlans
+              ? groupedWorkouts.sections.length === 0 && groupedWorkouts.unplanned.length === 0
+              : !filteredFeaturedWorkout && filteredWorkouts.length === 0) &&
             !searchQuery ? (
               <EmptyStateCard
                 icon={Dumbbell}
@@ -488,11 +571,12 @@ export default function WorkoutsScreen() {
                 }}
               />
             ) : null}
-            {!isLoading &&
+            {!isLoadingScreen &&
             !error &&
             searchQuery &&
-            filteredFeaturedWorkout === null &&
-            filteredWorkouts.length === 0 ? (
+            (hasPlans
+              ? flatPlanSearchResults.length === 0
+              : filteredFeaturedWorkout === null && filteredWorkouts.length === 0) ? (
               <EmptyStateCard
                 icon={Search}
                 title={t('workouts.noSearchResults')}
@@ -504,7 +588,7 @@ export default function WorkoutsScreen() {
             ) : null}
 
             {/* Normal State - Featured Workout */}
-            {!isLoading && !error && filteredFeaturedWorkout ? (
+            {!isLoadingScreen && !error && !hasPlans && filteredFeaturedWorkout ? (
               <AnimatedContent>
                 <WorkoutCard
                   name={filteredFeaturedWorkout.name}
@@ -519,16 +603,14 @@ export default function WorkoutsScreen() {
                     }
                   }}
                   onMore={() => {
-                    setSelectedWorkoutName(filteredFeaturedWorkout.name);
-                    setSelectedWorkoutId(filteredFeaturedWorkout.id);
-                    setIsMenuVisible(true);
+                    openWorkoutMenu(filteredFeaturedWorkout.id, filteredFeaturedWorkout.name);
                   }}
                 />
               </AnimatedContent>
             ) : null}
 
             {/* Normal State - Regular Workouts */}
-            {!isLoading && !error && filteredWorkouts.length > 0 ? (
+            {!isLoadingScreen && !error && !hasPlans && filteredWorkouts.length > 0 ? (
               <AnimatedContent style={{ gap: theme.spacing.gap.base }}>
                 <>
                   {filteredWorkouts.map((workout) => (
@@ -553,19 +635,89 @@ export default function WorkoutsScreen() {
                           showSnackbar('error', t('workouts.archiveError'));
                         }
                       }}
-                      onMore={() => {
-                        setSelectedWorkoutName(workout.name);
-                        setSelectedWorkoutId(workout.id);
-                        setIsMenuVisible(true);
-                      }}
+                      onMore={() => openWorkoutMenu(workout.id, workout.name)}
                     />
                   ))}
                 </>
               </AnimatedContent>
             ) : null}
 
+            {!isLoadingScreen && !error && hasPlans && !searchQuery ? (
+              <AnimatedContent style={{ gap: theme.spacing.gap.base }}>
+                <>
+                  {groupedWorkouts.sections.map((section) => (
+                    <WorkoutPlanSection
+                      key={section.plan.id}
+                      section={section}
+                      isOpen={openAccordions[section.plan.id] ?? true}
+                      onToggle={() => toggleAccordion(section.plan.id)}
+                      onPlanMenu={() => {
+                        setSelectedPlanId(section.plan.id);
+                        setIsPlanMenuVisible(true);
+                      }}
+                      onStartWorkout={handleStartWorkout}
+                      onWorkoutMenu={(templateId, workoutName, planId) =>
+                        openWorkoutMenu(templateId, workoutName, planId)
+                      }
+                    />
+                  ))}
+                  {groupedWorkouts.unplanned.length > 0 ? (
+                    <Accordion
+                      title={t('workouts.plans.unplanned')}
+                      count={groupedWorkouts.unplanned.length}
+                      isOpen={openAccordions.unplanned ?? true}
+                      onToggle={() => toggleAccordion('unplanned')}
+                      maxHeight={Math.max(480, groupedWorkouts.unplanned.length * 240 + 80)}
+                    >
+                      <View className="gap-4 p-4">
+                        {groupedWorkouts.unplanned.map((workout) => (
+                          <WorkoutCard
+                            key={workout.id}
+                            name={workout.name}
+                            lastCompleted={workout.lastCompleted}
+                            lastCompletedTimestamp={workout.lastCompletedTimestamp}
+                            exerciseCount={workout.exerciseCount}
+                            duration={workout.duration}
+                            icon={workout.icon}
+                            variant="standard"
+                            onStart={() => handleStartWorkout(workout.id)}
+                            onMore={() => openWorkoutMenu(workout.id, workout.name)}
+                          />
+                        ))}
+                      </View>
+                    </Accordion>
+                  ) : null}
+                </>
+              </AnimatedContent>
+            ) : null}
+
+            {!isLoadingScreen && !error && hasPlans && Boolean(searchQuery) ? (
+              <AnimatedContent style={{ gap: theme.spacing.gap.base }}>
+                <>
+                  {flatPlanSearchResults.map(({ template, plan }) => (
+                    <View key={`${plan?.id ?? 'unplanned'}:${template.id}`} className="gap-2">
+                      <Text className="self-start rounded-full bg-accent-primary/10 px-2 py-1 text-xs font-medium text-text-accent">
+                        {plan?.name ?? t('workouts.plans.unplanned')}
+                      </Text>
+                      <WorkoutCard
+                        name={template.name}
+                        lastCompleted={template.lastCompleted}
+                        lastCompletedTimestamp={template.lastCompletedTimestamp}
+                        exerciseCount={template.exerciseCount}
+                        duration={template.duration}
+                        icon={template.icon}
+                        variant="standard"
+                        onStart={() => handleStartWorkout(template.id, plan?.id)}
+                        onMore={() => openWorkoutMenu(template.id, template.name, plan?.id)}
+                      />
+                    </View>
+                  ))}
+                </>
+              </AnimatedContent>
+            ) : null}
+
             {/* Create Template Button - Only show when there are workouts */}
-            {!isLoading && !error && (filteredFeaturedWorkout || filteredWorkouts.length > 0) ? (
+            {!isLoadingScreen && !error && templates.length > 0 ? (
               <DashedButton
                 label={t('workouts.createTemplate.title')}
                 onPress={() => {
@@ -633,6 +785,67 @@ export default function WorkoutsScreen() {
             handlePreviewWorkout(selectedWorkoutId);
           }
         }}
+        onAddToPlan={() => {
+          if (!selectedWorkoutId) {
+            return;
+          }
+          setPendingPlanIds(
+            memberships
+              .filter((membership) => membership.templateId === selectedWorkoutId)
+              .map((membership) => membership.planId)
+          );
+          setIsMenuVisible(false);
+          setIsPlanPickerVisible(true);
+        }}
+        nestedModals={
+          <WorkoutPlanPickerModal
+            visible={isPlanPickerVisible}
+            plans={plans}
+            selectedPlanIds={pendingPlanIds}
+            onChange={setPendingPlanIds}
+            onClose={async () => {
+              if (selectedWorkoutId) {
+                try {
+                  await WorkoutPlanService.setTemplatePlans(selectedWorkoutId, pendingPlanIds);
+                } catch (error) {
+                  await handleError(error, 'workouts.setTemplatePlans', {
+                    snackbarMessage: t('workouts.plans.saveError'),
+                  });
+                }
+              }
+              setIsPlanPickerVisible(false);
+            }}
+            onCreatePlan={() => {
+              setIsPlanPickerVisible(false);
+              setEditingPlanId(undefined);
+              setPlanEditorOrigin('workout-picker');
+            }}
+            nestedModals={
+              planEditorOrigin === 'workout-picker' ? (
+                <CreateEditPlanModal
+                  visible={true}
+                  onClose={() => {
+                    setPlanEditorOrigin(null);
+                    setEditingPlanId(undefined);
+                  }}
+                  onSaved={async (savedPlanId) => {
+                    if (selectedWorkoutId) {
+                      const nextPlanIds = [...new Set([...pendingPlanIds, savedPlanId])];
+                      setPendingPlanIds(nextPlanIds);
+                      try {
+                        await WorkoutPlanService.setTemplatePlans(selectedWorkoutId, nextPlanIds);
+                      } catch (error) {
+                        await handleError(error, 'workouts.setTemplatePlansAfterCreate', {
+                          snackbarMessage: t('workouts.plans.saveError'),
+                        });
+                      }
+                    }
+                  }}
+                />
+              ) : null
+            }
+          />
+        }
       />
       <CreateWorkoutOptionsModal
         visible={isCreateOptionsVisible}
@@ -663,14 +876,16 @@ export default function WorkoutsScreen() {
           setIsBrowseTemplatesVisible(true);
         }}
       />
-      <CreateWorkoutModal
-        visible={isCreateWorkoutModalVisible}
-        onClose={() => {
-          setIsCreateWorkoutModalVisible(false);
-          setEditingTemplateId(undefined);
-        }}
-        templateId={editingTemplateId}
-      />
+      {isCreateWorkoutModalVisible ? (
+        <CreateWorkoutModal
+          visible={true}
+          onClose={() => {
+            setIsCreateWorkoutModalVisible(false);
+            setEditingTemplateId(undefined);
+          }}
+          templateId={editingTemplateId}
+        />
+      ) : null}
       <GenerateWorkoutWithAiModal
         visible={isGenerateWithAiModalVisible}
         onClose={() => setIsGenerateWithAiModalVisible(false)}
@@ -717,8 +932,17 @@ export default function WorkoutsScreen() {
                 return;
               }
 
-              await WorkoutTemplateService.createWorkoutsFromJsonTemplate(rawTemplate);
-              showSnackbar('success', t('workouts.createFromTemplate.successMessage'));
+              const created =
+                await WorkoutTemplateService.createWorkoutsFromJsonTemplate(rawTemplate);
+              showSnackbar(
+                'success',
+                created.plan
+                  ? t('workouts.createFromTemplate.successMessageWithPlan', {
+                      planName: created.plan.name,
+                      count: created.templates.length,
+                    })
+                  : t('workouts.createFromTemplate.successMessage')
+              );
               setIsBrowseTemplatesVisible(false);
             } catch (error) {
               console.error('Error creating workouts from template:', error);
@@ -776,10 +1000,95 @@ export default function WorkoutsScreen() {
       />
 
       <BottomPopUpMenu
+        visible={isPlanMenuVisible}
+        onClose={() => setIsPlanMenuVisible(false)}
+        title={plans.find((plan) => plan.id === selectedPlanId)?.name ?? t('workouts.plans.title')}
+        items={[
+          {
+            icon: Pencil,
+            iconColor: theme.colors.text.primary,
+            iconBgColor: theme.colors.text.primary20,
+            title: t('workouts.plans.editTitle'),
+            description: t('workouts.plans.editDescription'),
+            onPress: () => {
+              setEditingPlanId(selectedPlanId);
+              setIsPlanMenuVisible(false);
+              setPlanEditorOrigin('plan-menu');
+            },
+          },
+          {
+            icon: Trash2,
+            iconColor: theme.colors.status.error,
+            iconBgColor: theme.colors.status.error20,
+            title: t('workouts.plans.deleteTitle'),
+            description: t('workouts.plans.deleteDescription'),
+            titleColor: theme.colors.status.error,
+            descriptionColor: theme.colors.status.error,
+            onPress: () => {
+              setIsPlanMenuVisible(false);
+              setIsDeletePlanConfirmationVisible(true);
+            },
+          },
+        ]}
+        nestedModals={
+          planEditorOrigin === 'plan-menu' ? (
+            <CreateEditPlanModal
+              visible={true}
+              planId={editingPlanId}
+              onClose={() => {
+                setPlanEditorOrigin(null);
+                setEditingPlanId(undefined);
+              }}
+            />
+          ) : (
+            <ConfirmationModal
+              visible={isDeletePlanConfirmationVisible}
+              onClose={() => setIsDeletePlanConfirmationVisible(false)}
+              onConfirm={async () => {
+                if (!selectedPlanId) {
+                  return;
+                }
+                setIsDeletingPlan(true);
+                try {
+                  await WorkoutPlanService.deletePlan(selectedPlanId);
+                  showSnackbar('success', t('workouts.plans.deleteSuccess'));
+                } catch (error) {
+                  await handleError(error, 'workouts.deletePlan', {
+                    snackbarMessage: t('workouts.plans.deleteError'),
+                  });
+                } finally {
+                  setIsDeletingPlan(false);
+                  setIsDeletePlanConfirmationVisible(false);
+                }
+              }}
+              title={t('workouts.plans.deleteConfirmation.title')}
+              message={t('workouts.plans.deleteConfirmation.message', {
+                name: plans.find((plan) => plan.id === selectedPlanId)?.name,
+              })}
+              confirmLabel={t('common.delete')}
+              variant="destructive"
+              isLoading={isDeletingPlan}
+            />
+          )
+        }
+      />
+
+      <BottomPopUpMenu
         visible={isScreenMenuVisible}
         onClose={() => setIsScreenMenuVisible(false)}
         title={t('workouts.title')}
         items={[
+          {
+            icon: Layers3,
+            iconColor: theme.colors.accent.primary,
+            iconBgColor: `${theme.colors.accent.primary}20`,
+            title: t('workouts.plans.createTitle'),
+            description: t('workouts.plans.createDescription'),
+            onPress: () => {
+              setEditingPlanId(undefined);
+              setPlanEditorOrigin('screen-menu');
+            },
+          },
           {
             icon: Plus,
             iconColor: theme.colors.accent.primary,
@@ -801,6 +1110,17 @@ export default function WorkoutsScreen() {
             },
           },
         ]}
+        nestedModals={
+          planEditorOrigin === 'screen-menu' ? (
+            <CreateEditPlanModal
+              visible={true}
+              onClose={() => {
+                setPlanEditorOrigin(null);
+                setEditingPlanId(undefined);
+              }}
+            />
+          ) : null
+        }
       />
 
       <GoalsManagementModal

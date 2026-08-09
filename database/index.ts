@@ -16,10 +16,13 @@ export { default as User } from './models/User';
 export { default as UserMetric } from './models/UserMetric';
 export { default as WorkoutLog } from './models/WorkoutLog';
 export { default as WorkoutLogSet } from './models/WorkoutLogSet';
+export { default as WorkoutPlan } from './models/WorkoutPlan';
+export { default as WorkoutPlanTemplate } from './models/WorkoutPlanTemplate';
 export { default as WorkoutTemplate } from './models/WorkoutTemplate';
 export { default as WorkoutTemplateSet } from './models/WorkoutTemplateSet';
 
 // Export repositories for query methods
 export { ScheduleRepository } from './repositories/ScheduleRepository';
 export { WorkoutLogRepository } from './repositories/WorkoutLogRepository';
+export { WorkoutPlanRepository } from './repositories/WorkoutPlanRepository';
 export { WorkoutTemplateRepository } from './repositories/WorkoutTemplateRepository';

@@ -4,12 +4,14 @@ import {
   ChatService,
   ExerciseService,
   WorkoutAnalytics,
+  WorkoutPlanService,
   WorkoutService,
 } from '@/database/services';
 import {
   type ExerciseInWorkout,
   WorkoutTemplateService,
 } from '@/database/services/WorkoutTemplateService';
+import i18n from '@/lang/lang';
 
 import type {
   CalculateVolumeResponse,
@@ -78,11 +80,15 @@ export async function processFeedbackResponse(feedbackMessage: string): Promise<
  * Process generated workout plan response from AI
  * Creates new workout templates in the database and saves feedback to chat
  */
-export async function processWorkoutPlanResponse(
-  response: GenerateWorkoutPlanResponse
-): Promise<{ templateIds: string[]; description: string }> {
+export async function processWorkoutPlanResponse(response: GenerateWorkoutPlanResponse): Promise<{
+  templateIds: string[];
+  description: string;
+  planId: string | null;
+  planName: string;
+}> {
   try {
     const createdTemplateIds: string[] = [];
+    const memberships: { templateId: string; weekDays: number[]; position: number }[] = [];
 
     // Get all exercises to look up by id (AI returns exerciseId)
     const allExercises = await ExerciseService.getAllExercises();
@@ -152,16 +158,34 @@ export async function processWorkoutPlanResponse(
         name: plan.title,
         description: plan.description,
         exercises,
-        selectedDays: [dayIndex],
+        selectedDays: [],
       });
 
       createdTemplateIds.push(template.id);
+      memberships.push({
+        templateId: template.id,
+        weekDays: [dayIndex],
+        position: memberships.length,
+      });
     }
+
+    const planName = response.planTitle?.trim() || i18n.t('workouts.plans.defaultAiPlanName');
+    const workoutPlan =
+      memberships.length > 0
+        ? await WorkoutPlanService.createPlan({
+            name: planName,
+            description: response.description,
+            cycleType: 'weekly',
+            memberships,
+          })
+        : null;
 
     // reply that combines "I've created N workouts for you!" with response.description
     return {
       templateIds: createdTemplateIds,
       description: response.description,
+      planId: workoutPlan?.id ?? null,
+      planName,
     };
   } catch (error) {
     console.error('[workoutAI] Error processing workout plan:', error);

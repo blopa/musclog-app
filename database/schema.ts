@@ -83,6 +83,35 @@ export const schema = appSchema({
       ],
     }),
 
+    // Named workout programs. Calendar placement belongs to each plan/template membership.
+    tableSchema({
+      name: 'workout_plans',
+      columns: [
+        { name: 'name', type: 'string' },
+        { name: 'description', type: 'string', isOptional: true },
+        { name: 'cycle_type', type: 'string' },
+        { name: 'icon', type: 'string', isOptional: true },
+        { name: 'difficulty', type: 'string', isOptional: true },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
+    // A workout can participate in multiple plans with a different position/schedule in each.
+    tableSchema({
+      name: 'workout_plan_templates',
+      columns: [
+        { name: 'plan_id', type: 'string', isIndexed: true },
+        { name: 'template_id', type: 'string', isIndexed: true },
+        { name: 'week_days_json', type: 'string', isOptional: true },
+        { name: 'position', type: 'number' },
+        { name: 'created_at', type: 'number' },
+        { name: 'updated_at', type: 'number' },
+        { name: 'deleted_at', type: 'number', isOptional: true },
+      ],
+    }),
+
     // 3. Scheduling (Separated for flexibility)
     tableSchema({
       name: 'schedules',
@@ -134,6 +163,7 @@ export const schema = appSchema({
       name: 'workout_logs',
       columns: [
         { name: 'template_id', type: 'string', isIndexed: true }, // Optional link to blueprint
+        { name: 'plan_id', type: 'string', isOptional: true, isIndexed: true },
         { name: 'external_id', type: 'string', isOptional: true, isIndexed: true }, // ID from external data integrations (e.g. Health Connect) for sync deduplication
         { name: 'workout_name', type: 'string' }, // We save the name here so it's permanent
         { name: 'started_at', type: 'number', isIndexed: true },

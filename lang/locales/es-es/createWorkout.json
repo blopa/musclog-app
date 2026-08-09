@@ -25,6 +25,15 @@
       "ai": "IA"
     },
     "routine": "Rutina",
+    "plan": {
+      "label": "Planes de entrenamiento",
+      "none": "No pertenece a un plan",
+      "scheduleHint": "Los días se configuran por separado en cada plan."
+    },
+    "standaloneSchedule": {
+      "label": "Horario independiente",
+      "description": "Solo se usa mientras este entrenamiento no pertenece a un plan."
+    },
     "repeatOnDays": "Repetir en los días",
     "weekly": "Semanal",
     "exercises": "Ejercicios",

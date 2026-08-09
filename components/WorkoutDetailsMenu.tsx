@@ -1,4 +1,5 @@
-import { Copy, Eye, Pencil, Share2, Trash2 } from 'lucide-react-native';
+import { Copy, Eye, FolderPlus, Pencil, Share2, Trash2 } from 'lucide-react-native';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -14,6 +15,8 @@ type WorkoutDetailsMenuProps = {
   onShare?: () => void;
   onDelete?: () => void;
   onPreview?: () => void;
+  onAddToPlan?: () => void;
+  nestedModals?: ReactNode;
 };
 
 export function WorkoutDetailsMenu({
@@ -25,6 +28,8 @@ export function WorkoutDetailsMenu({
   onShare,
   onDelete,
   onPreview,
+  onAddToPlan,
+  nestedModals,
 }: WorkoutDetailsMenuProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -55,6 +60,14 @@ export function WorkoutDetailsMenu({
       onPress: () => onDuplicate?.(),
     },
     {
+      icon: FolderPlus,
+      iconColor: theme.colors.text.primary,
+      iconBgColor: theme.colors.text.primary20,
+      title: t('workouts.plans.addToPlan'),
+      description: t('workouts.plans.addToPlanDescription'),
+      onPress: () => onAddToPlan?.(),
+    },
+    {
       icon: Share2,
       iconColor: theme.colors.text.primary,
       iconBgColor: theme.colors.text.primary20,
@@ -81,6 +94,7 @@ export function WorkoutDetailsMenu({
       title={workoutName}
       subtitle={t('workoutDetails.subtitle')}
       items={items}
+      nestedModals={nestedModals}
     />
   );
 }

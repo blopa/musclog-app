@@ -47,5 +47,6 @@ export { TimezoneMigrationService } from './TimezoneMigrationService';
 export { UserMetricService } from './UserMetricService';
 export { UserService } from './UserService';
 export { WorkoutAnalytics } from './WorkoutAnalytics';
+export { WorkoutPlanService } from './WorkoutPlanService';
 export { type EnrichedWorkoutLogSet, WorkoutService } from './WorkoutService';
 export { WorkoutTemplateService } from './WorkoutTemplateService';

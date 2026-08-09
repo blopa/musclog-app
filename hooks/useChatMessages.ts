@@ -679,9 +679,10 @@ export function useChatMessages(
             const processResult = await processWorkoutPlanResponse(workoutPlan);
 
             reply = {
-              msg4User: t('coach.success.workoutPlanGenerated', {
+              msg4User: t('coach.success.workoutPlanGeneratedWithName', {
                 count: processResult.templateIds.length,
                 description: processResult.description,
+                planName: processResult.planName,
               }),
               sumMsg: 'Generated workout plan',
             };
@@ -691,6 +692,8 @@ export function useChatMessages(
               type: 'workoutPlan',
               templateIds: processResult.templateIds,
               count: processResult.templateIds.length,
+              planId: processResult.planId ?? undefined,
+              planName: processResult.planName,
             };
             payloadJson = JSON.stringify(workoutPlanPayload);
 
