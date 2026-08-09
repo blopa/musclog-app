@@ -5,8 +5,15 @@ sending phone displays an endless stream of animated QR codes; the receiving pho
 camera at it and reconstructs the export. No network, no cable, no account, no pairing.
 
 Built on the LT-fountain protocol from
-[decimen-optical-transfer](https://github.com/BashAlarmist/decimen-optical-transfer) (MIT), whose
+[decimen-optical-transfer](https://github.com/bashalarmistalt/decimen-optical-transfer), whose
 `fountain.ts` and frame header we port **verbatim** — see "Frozen wire format" below.
+
+**Licence — check before copying anything further from upstream.** Our port is from decimen's
+**MIT** releases (v0.3.0 and earlier, © 2026 Evan Crawley), which remain available under those
+terms. Upstream **relicensed to AGPL-3.0-or-later as of v0.4.0** (2026-08-09). Every
+"Ported verbatim from decimen-optical-transfer (MIT)" header in `utils/optical/` refers to the
+MIT-era source and is accurate as written; pulling a fix or a new helper from v0.4.0+ would import
+AGPL code into this app and is not a like-for-like update.
 
 ## Why a fountain code
 

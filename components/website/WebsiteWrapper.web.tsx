@@ -336,6 +336,13 @@ export function Header() {
             {t('features')}
           </Link>
           <Link
+            href="/blog"
+            className="text-sm transition-colors hover:text-[#22C55E]"
+            style={{ color: '#F3F4F6' }}
+          >
+            {t('blog')}
+          </Link>
+          <Link
             href="/calculator"
             className="text-sm transition-colors hover:text-[#22C55E]"
             style={{ color: '#F3F4F6' }}
@@ -369,13 +376,6 @@ export function Header() {
             style={{ color: '#F3F4F6' }}
           >
             {t('alternatives')}
-          </Link>
-          <Link
-            href="/blog"
-            className="text-sm transition-colors hover:text-[#22C55E]"
-            style={{ color: '#F3F4F6' }}
-          >
-            {t('blog')}
           </Link>
           <a
             href="https://github.com/blopa/musclog-app"
