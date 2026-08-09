@@ -21,27 +21,37 @@ describe('blogPosts.server', () => {
     );
   });
 
-  it('loads the repository example from frontmatter', async () => {
+  // These two run against the posts actually shipped in `app/(website)/posts`. They assert
+  // structure, never prose: pinning a sentence would turn every edit to a published post into a
+  // failing build, which is what the previous "Lorem ipsum" assertions did.
+  it('loads every shipped post with valid frontmatter, newest first', async () => {
     const posts = await loadBlogPostSummaries();
 
-    expect(posts).toContainEqual({
-      category: 'development',
-      date: '2026-08-09',
-      excerpt: 'Lorem ipsum dolor sit amet.',
-      slug: '2026/08/using-decimen-optical-transfer-foss-to-transfer-data-between-devices',
-      tags: ['JavaScript', 'Markdown'],
-      title: 'Using Decimen Optical Transfer FOSS to transfer data between devices',
-    });
+    expect(posts.length).toBeGreaterThan(0);
+    expect(new Set(posts.map((post) => post.slug)).size).toBe(posts.length);
+
+    for (const post of posts) {
+      expect(post.slug).toMatch(/^[a-z0-9]+(?:[-_][a-z0-9]+)*(?:\/[a-z0-9]+(?:[-_][a-z0-9]+)*)*$/i);
+      expect(post.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(post.title.trim()).not.toBe('');
+      expect(post.category.trim()).not.toBe('');
+      expect(post.excerpt.trim()).not.toBe('');
+    }
+
+    const dates = posts.map((post) => post.date);
+    expect(dates).toEqual([...dates].sort().reverse());
   });
 
-  it('loads and renders a post body without exposing Markdown to the client', async () => {
-    const post = await loadBlogPost(
-      '2026/08/using-decimen-optical-transfer-foss-to-transfer-data-between-devices'
-    );
+  it('renders a shipped post body to HTML without exposing Markdown to the client', async () => {
+    const [newest] = await loadBlogPostSummaries();
+    const post = await loadBlogPost(newest.slug);
 
-    expect(post.html).toContain('<p>Lorem ipsum dolor sit amet.</p>');
-    expect(post.html).toContain('<pre class="hljs"><code class="language-javascript">');
-    expect(post.html).toContain('<span class="hljs-keyword">const</span>');
+    expect(post.html).toContain('<p>');
+    expect(post.html).toContain('<h2>');
+    // Fenced code arrives highlighted, not as Markdown backticks.
+    expect(post.html).toMatch(/<pre class="hljs"><code class="language-[a-z]+">/);
+    expect(post.html).toContain('<span class="hljs-keyword">');
+    expect(post.html).not.toContain('```');
   });
 
   it('renders rich Markdown and keeps raw HTML and unsafe links inert', () => {

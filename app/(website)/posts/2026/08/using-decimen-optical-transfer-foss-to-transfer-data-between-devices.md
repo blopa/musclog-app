@@ -1,12 +1,12 @@
 ---
 title: 'Using Decimen Optical Transfer FOSS to transfer data between devices'
-date: '2026-08-09'
+date: '2026-08-03'
 category: 'development'
 description: 'I saw a repo that sends files between two devices using only a screen and a camera, and I could not stop thinking about it. So I built it into Musclog — here is how fountain-coded QR streams actually work.'
 tags: ['Open Source', 'QR Codes', 'Privacy', 'React Native', 'TypeScript']
 ---
 
-A couple of weeks ago I ran into [decimen-optical-transfer](https://github.com/bashalarmistalt/decimen-optical-transfer) and lost an evening to it. The pitch is one sentence: _send a file between two devices using nothing but a screen and a camera._ One device animates QR codes, the other points its camera at them, and the file arrives. No network. No pairing. No account. No cable. No server in the middle that has to be trusted, or funded, or kept alive.
+Last week I ran into [decimen-optical-transfer](https://github.com/bashalarmistalt/decimen-optical-transfer) and lost an evening to it. The pitch is one sentence: _send a file between two devices using nothing but a screen and a camera._ One device animates QR codes, the other points its camera at them, and the file arrives. No network. No pairing. No account. No cable. No server in the middle that has to be trusted, or funded, or kept alive.
 
 I sat there thinking about it for way too long, and then I realised Musclog had exactly the problem it solves.
 
@@ -228,7 +228,7 @@ One deliberate decision there: the wasm QR decoder is **self-hosted**. Its libra
 
 The idea, the protocol, the fountain implementation and several of the shared helpers are [Evan Crawley's](https://github.com/bashalarmistalt/decimen-optical-transfer) work, not mine. I ported them. The parts I built are the phone-specific plumbing around them: the camera path, the text armoring, the density controls, the container format, and everything about meals.
 
-One note for anyone else thinking of doing this: Musclog's port is from the **MIT-licensed releases, v0.3.0 and earlier**. Decimen relicensed to AGPL-3.0-or-later as of v0.4.0, published today, with earlier releases remaining available under their original terms. If you are starting now, read the current licence before you copy anything.
+One note for anyone else thinking of doing this: Musclog's port is from decimen's **MIT-licensed releases, v0.3.0 and earlier**. The project has since moved to AGPL-3.0-or-later, with those earlier releases remaining available under their original terms. Check which licence applies to the version you are looking at before you copy anything out of it.
 
 Go and look at the project anyway. It is a genuinely great idea, executed carefully, and the web version works in any browser with a camera.
 
