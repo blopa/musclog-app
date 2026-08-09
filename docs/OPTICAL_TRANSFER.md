@@ -269,6 +269,18 @@ decodes. Do not "optimize" by cropping the decode to the frame — the window is
 the camera can read, and on Android the analysis frame is only ~640×480 to begin with (see above),
 so throwing pixels away would cost decodes for nothing.
 
+While scanning, the receive screen drops `FullScreenModal`'s header (`showHeader={!isScanning}`)
+and wears the food camera's chrome instead: `SmartCameraTopActions` overlaid on the feed, close on
+the left and the torch on the right. There is no shutter, gallery button or bottom-right slot —
+nothing here captures a still. The header comes **back** for every later phase (unpacking,
+passphrase, verified, error), which are sheets of text whose only way out is its back arrow.
+
+The torch reverses this component's original "no torch" rule: a flashlight aimed at an emissive
+screen usually just adds glare, but it can rescue an autofocus lock in a dark room, so it is offered
+and defaults to off. The button is hidden — not disabled — when the device has no torch, which the
+scanner reports through `onTorchAvailabilityChange` rather than the screen guessing from
+`Platform.OS`; the web scanner accepts the same props and always answers `false`.
+
 Two placement rules: the overlay lives **inside** each scanner (not in `OpticalReceiveModal`), so
 the permission and no-camera branches — which render text instead of a feed — never get a frame
 drawn over them; and it must stay `pointerEvents="none"`, because tap-to-refocus on the native feed

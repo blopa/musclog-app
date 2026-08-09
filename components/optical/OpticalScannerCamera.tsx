@@ -15,7 +15,10 @@
  * AVCaptureMetadataOutput samples `device.activeFormat`. Reporting `frame` upward is how we find
  * out what we actually got rather than what we asked for.
  *
- * No torch: the thing being read is an emissive screen, so a flashlight only adds glare.
+ * The torch is off by default and stays the user's call. What is being read is an emissive screen,
+ * so a flashlight normally only adds glare — but the receive screen offers the same flash toggle as
+ * the food camera, because a torch is occasionally the difference between a focus lock and endless
+ * hunting in a dark room. `torchEnabled` is only ever honoured when the device reports a torch.
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -48,6 +51,14 @@ interface OpticalScannerCameraProps {
   onError?: (error: Error) => void;
   /** Fires when the session is actually streaming — not when this component mounts. */
   onStarted?: () => void;
+  /** Ignored unless the resolved device reports a torch. */
+  torchEnabled?: boolean;
+  /**
+   * Reports whether this device can light a torch at all, so the screen knows whether to offer the
+   * flash button. Answering from here rather than from a `Platform.OS` check in the screen keeps
+   * the web build — which has no torch API — honest through the same prop.
+   */
+  onTorchAvailabilityChange?: (available: boolean) => void;
 }
 
 export function OpticalScannerCamera({
@@ -55,6 +66,8 @@ export function OpticalScannerCamera({
   onCodeScanned,
   onError,
   onStarted,
+  onTorchAvailabilityChange,
+  torchEnabled = false,
 }: OpticalScannerCameraProps) {
   const { t } = useTranslation();
   const device = useCameraDevice('back');
@@ -77,6 +90,12 @@ export function OpticalScannerCamera({
       void requestPermission();
     }
   }, [active, hasPermission, requestPermission]);
+
+  const hasTorch = device?.hasTorch ?? false;
+
+  useEffect(() => {
+    onTorchAvailabilityChange?.(hasTorch);
+  }, [hasTorch, onTorchAvailabilityChange]);
 
   const handleAllowPress = useCallback(async () => {
     const granted = await requestPermission();
@@ -162,6 +181,7 @@ export function OpticalScannerCamera({
         photo={false}
         ref={cameraRef}
         style={StyleSheet.absoluteFill}
+        torch={hasTorch && torchEnabled ? 'on' : 'off'}
         video={false}
       />
       {/* Aiming aid only — the scanner reads the whole frame, not just what is inside the window.

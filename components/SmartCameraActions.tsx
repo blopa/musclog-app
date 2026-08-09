@@ -6,16 +6,20 @@ import { useTheme } from '@/hooks/useTheme';
 
 type SmartCameraTopActionsProps = {
   onClose: () => void;
-  flashEnabled: boolean;
-  onFlashToggle: () => void;
+  flashEnabled?: boolean;
+  /**
+   * Omit to hide the flash button entirely — the optical receiver drops it on web and on any
+   * device whose camera has no torch, leaving close on its own.
+   */
+  onFlashToggle?: () => void;
   /** True while a capture/pick or the processing overlay runs; dims and disables everything but close. */
-  controlsLocked: boolean;
+  controlsLocked?: boolean;
 };
 
 /** Close and flash, pinned above the frame's scrim (z-20) so they stay undimmed. */
 export function SmartCameraTopActions({
-  controlsLocked,
-  flashEnabled,
+  controlsLocked = false,
+  flashEnabled = false,
   onClose,
   onFlashToggle,
 }: SmartCameraTopActionsProps) {
@@ -38,18 +42,20 @@ export function SmartCameraTopActions({
         <X size={theme.iconSize.lg} color={theme.colors.text.primary} />
       </Pressable>
 
-      <Pressable
-        onPress={onFlashToggle}
-        disabled={controlsLocked}
-        className="h-10 w-10 items-center justify-center rounded-full"
-        style={[roundButtonStyle, { opacity: controlsLocked ? theme.colors.opacity.medium : 1 }]}
-      >
-        {flashEnabled ? (
-          <Lightbulb size={theme.iconSize.lg} color={theme.colors.text.primary} />
-        ) : (
-          <LightbulbOff size={theme.iconSize.lg} color={theme.colors.text.primary} />
-        )}
-      </Pressable>
+      {onFlashToggle ? (
+        <Pressable
+          onPress={onFlashToggle}
+          disabled={controlsLocked}
+          className="h-10 w-10 items-center justify-center rounded-full"
+          style={[roundButtonStyle, { opacity: controlsLocked ? theme.colors.opacity.medium : 1 }]}
+        >
+          {flashEnabled ? (
+            <Lightbulb size={theme.iconSize.lg} color={theme.colors.text.primary} />
+          ) : (
+            <LightbulbOff size={theme.iconSize.lg} color={theme.colors.text.primary} />
+          )}
+        </Pressable>
+      ) : null}
     </View>
   );
 }

@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { OpticalScannerCamera } from '@/components/optical/OpticalScannerCamera';
+import { SmartCameraTopActions } from '@/components/SmartCameraActions';
 import { Button } from '@/components/theme/Button';
 import { ProgressIndicator } from '@/components/theme/ProgressIndicator';
 import { SecretInput } from '@/components/theme/SecretInput';
@@ -55,8 +56,24 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
   const [passphrase, setPassphrase] = useState('');
   const [restoring, setRestoring] = useState(false);
   const [restored, setRestored] = useState(false);
+  const [torchEnabled, setTorchEnabled] = useState(false);
+  const [torchAvailable, setTorchAvailable] = useState(false);
 
   const { analysisFrame, fraction, meta, phase, showNoSignalHint } = receiver;
+
+  // Only the scanning phase goes full-bleed camera; every later phase is an ordinary sheet of text
+  // and buttons that still wants the modal's header (and its back arrow, which is the only way out
+  // of them — the in-camera close button is gone by then).
+  const isScanning = phase === 'collecting';
+
+  // Identity-stable: the scanner reports availability from an effect, so a fresh function each
+  // render would re-run it on every parent render.
+  const handleTorchAvailabilityChange = useCallback((available: boolean) => {
+    setTorchAvailable(available);
+    if (!available) {
+      setTorchEnabled(false);
+    }
+  }, []);
 
   // A backup written by a newer app cannot be understood by this one. Zod would eventually reject
   // it, but only after the wipe and a wall of validation errors — so refuse up front.
@@ -66,6 +83,8 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
     receiver.reset();
     setPassphrase('');
     setRestored(false);
+    // Never leave the torch burning behind a closed modal.
+    setTorchEnabled(false);
     onClose();
   }, [onClose, receiver]);
 
@@ -109,19 +128,37 @@ export function OpticalReceiveModal({ visible, onClose }: OpticalReceiveModalPro
     <FullScreenModal
       onClose={handleClose}
       scrollable={false}
+      showHeader={!isScanning}
       subtitle={t('opticalTransfer.receive.subtitle')}
       title={t('opticalTransfer.receive.title')}
       visible={visible}
     >
       <View className="flex-1">
-        {phase === 'collecting' ? (
+        {isScanning ? (
           <View className="flex-1">
             <View className="flex-1 overflow-hidden">
               <OpticalScannerCamera
                 active={visible}
                 onCodeScanned={receiver.onCodeScanned}
                 onStarted={receiver.cameraStarted}
+                onTorchAvailabilityChange={handleTorchAvailabilityChange}
+                torchEnabled={torchEnabled}
               />
+
+              {/* The camera's own chrome, in place of the modal header: close on the left, torch on
+                  the right (dropped entirely on web and on torchless devices). Absolute so it floats
+                  over the feed on both platforms — the native scanner fills its parent, the web one
+                  lays out in flow. */}
+              <View className="absolute inset-x-0 top-0">
+                <SmartCameraTopActions
+                  flashEnabled={torchEnabled}
+                  onClose={handleClose}
+                  onFlashToggle={
+                    torchAvailable ? () => setTorchEnabled((enabled) => !enabled) : undefined
+                  }
+                />
+              </View>
+
               {showNoSignalHint ? (
                 <View
                   className="absolute inset-x-4 bottom-4 gap-2 rounded-xl p-4"

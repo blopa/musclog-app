@@ -21,6 +21,9 @@
  *    that cannot do it still starts.
  *  - NO TAP-TO-FOCUS. `applyConstraints` focus control is not meaningfully supported across
  *    browsers; the native component's focus tap has no equivalent worth faking.
+ *  - NO TORCH. Same reason: browser torch control is not portable. The component still accepts the
+ *    native props and simply reports the torch as unavailable, so the screen hides its flash button
+ *    without needing a `Platform.OS` check of its own.
  *
  * The permission flow deliberately mirrors the native one, including asking once automatically:
  * `getUserMedia` IS the browser's prompt, so there is nothing to request separately.
@@ -50,6 +53,10 @@ interface OpticalScannerCameraProps {
   onError?: (error: Error) => void;
   /** Fires when the camera is actually producing frames — not when this component mounts. */
   onStarted?: () => void;
+  /** Accepted for parity with native; a browser gives us no torch control, so it does nothing. */
+  torchEnabled?: boolean;
+  /** Always reports `false` here — see the torch note in the header. */
+  onTorchAvailabilityChange?: (available: boolean) => void;
 }
 
 type ScannerStatus = 'blocked' | 'idle' | 'no-camera' | 'starting' | 'streaming';
@@ -62,8 +69,13 @@ export function OpticalScannerCamera({
   onCodeScanned,
   onError,
   onStarted,
+  onTorchAvailabilityChange,
 }: OpticalScannerCameraProps) {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    onTorchAvailabilityChange?.(false);
+  }, [onTorchAvailabilityChange]);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
