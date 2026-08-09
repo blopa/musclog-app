@@ -8,7 +8,7 @@ diff --git a/node_modules/expo-router/build/loaders/utils.js b/node_modules/expo
 -    const normalizedPath = pathname === '/' ? '/' : pathname.replace(/\/$/, '');
 +    // `useLoaderData` currently passes the filesystem context key for platform-specific routes.
 +    // Strip web-only route syntax so the request matches the public loader manifest path.
-+    const publicPath = pathname.endsWith('.web')
++    const publicPath = process.env.NODE_ENV !== 'production' && pathname.endsWith('.web')
 +        ? pathname
 +            .split('/')
 +            .filter((segment) => !/^\(.+\)$/.test(segment))

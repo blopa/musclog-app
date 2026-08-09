@@ -5,13 +5,28 @@ const { getLoaderModulePath } = require('expo-router/build/loaders/utils') as {
 };
 
 describe('Expo Router loader path patch', () => {
+  const nodeEnv = process.env.NODE_ENV;
+
+  afterEach(() => {
+    process.env.NODE_ENV = nodeEnv;
+  });
+
   it('maps a grouped web route context key to its public loader path', () => {
+    process.env.NODE_ENV = 'development';
     expect(getLoaderModulePath('/(website)/blog.web')).toBe('/_expo/loaders/blog');
   });
 
   it('preserves search parameters while normalizing the route', () => {
+    process.env.NODE_ENV = 'development';
     expect(getLoaderModulePath('/(website)/blog.web?draft=true')).toBe(
       '/_expo/loaders/blog?draft=true'
+    );
+  });
+
+  it('preserves the exported static loader path in production', () => {
+    process.env.NODE_ENV = 'production';
+    expect(getLoaderModulePath('/(website)/blog.web')).toBe(
+      '/_expo/loaders/(website)/blog.web'
     );
   });
 

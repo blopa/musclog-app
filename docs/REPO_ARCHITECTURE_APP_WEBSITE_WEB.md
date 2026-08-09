@@ -113,9 +113,10 @@ Expo Router 57.0.11 still labels data loaders as alpha. Its client-side loader p
 the filesystem context key for this platform-specific grouped route (`/(website)/blog.web`) during
 development, while the dev-server manifest correctly exposes the loader at `/blog`.
 [`patches/expo-router+57.0.11.patch`](/patches/expo-router+57.0.11.patch) normalizes that context key
-only when it has a `.web` suffix, removing route-group segments and the suffix before requesting the
-loader. Remove the patch once Expo Router includes an equivalent upstream fix, and recheck both
-`npm run web` navigation and static export when upgrading it.
+only in development and when it has a `.web` suffix, removing route-group segments and the suffix
+before requesting the loader. Production deliberately keeps the context key because static export
+writes `_expo/loaders/(website)/blog.web`. Remove the patch once Expo Router includes an equivalent
+upstream fix, and recheck both `npm run web` navigation and static export when upgrading it.
 
 `generateStaticParams` is intentionally not exported by the index because `/blog` has no dynamic
 segment. When individual post pages are added, their dynamic route (for example,
