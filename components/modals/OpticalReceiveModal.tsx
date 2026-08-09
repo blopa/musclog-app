@@ -14,6 +14,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
+import { OpticalCameraHintCard } from '@/components/optical/OpticalCameraHintCard';
 import { OpticalMealSharePreview } from '@/components/optical/OpticalMealSharePreview';
 import { OpticalScannerCamera } from '@/components/optical/OpticalScannerCamera';
 import { SmartCameraTopActions } from '@/components/SmartCameraActions';
@@ -245,30 +246,25 @@ export function OpticalReceiveModal({
               </View>
 
               {showNoSignalHint ? (
-                <View
-                  className="absolute inset-x-4 bottom-4 gap-2 rounded-xl p-4"
-                  style={{ backgroundColor: theme.colors.background.card }}
+                <OpticalCameraHintCard
+                  className="absolute inset-x-4 bottom-4"
+                  // Every tip is something to change on the OTHER phone or in the setup: the
+                  // receiver is where the problem is visible, the sender is where it is fixable.
+                  message={t('opticalTransfer.receive.noSignalTips')}
+                  title={t('opticalTransfer.receive.noSignalTitle')}
+                  warning={
+                    analysisFrame && Math.min(analysisFrame.width, analysisFrame.height) < 600
+                      ? t('opticalTransfer.receive.noSignalLowResolution')
+                      : undefined
+                  }
                 >
-                  <Text className="font-bold text-text-primary">
-                    {t('opticalTransfer.receive.noSignalTitle')}
-                  </Text>
-                  <Text className="text-xs text-text-secondary">
-                    {/* Every tip is something to change on the OTHER phone or in the setup: the
-                        receiver is where the problem is visible, the sender is where it is fixable. */}
-                    {t('opticalTransfer.receive.noSignalTips')}
-                  </Text>
-                  {analysisFrame && Math.min(analysisFrame.width, analysisFrame.height) < 600 ? (
-                    <Text className="text-xs" style={{ color: theme.colors.status.warning }}>
-                      {t('opticalTransfer.receive.noSignalLowResolution')}
-                    </Text>
-                  ) : null}
                   <Button
                     label={t('opticalTransfer.receive.noSignalDismiss')}
                     onPress={receiver.dismissNoSignalHint}
                     size="xs"
                     variant="outline"
                   />
-                </View>
+                </OpticalCameraHintCard>
               ) : null}
             </View>
 

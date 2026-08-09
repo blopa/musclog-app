@@ -127,6 +127,12 @@ type SmartCameraShellProps = {
   onShutterPress?: () => void | Promise<void>;
   /** Slot for the bottom-right control button (text search, AI context, or empty). */
   bottomRightControl?: ReactNode;
+  /**
+   * A card shown above the bottom controls — currently the "that is an optical transfer, not a
+   * barcode" offer. In flow rather than absolutely positioned on purpose: floated over the feed it
+   * would land on the shutter, and this is a slot for things the user is meant to act on.
+   */
+  noticeSlot?: ReactNode;
   /** When true, renders the three-tab mode picker. */
   showModePicker?: boolean;
   isAiEnabled?: boolean;
@@ -148,6 +154,7 @@ export function SmartCameraShell({
   onGalleryPress,
   onShutterPress,
   bottomRightControl,
+  noticeSlot,
   showModePicker = false,
   isAiEnabled = false,
   isAIVisionEnabled = false,
@@ -328,6 +335,8 @@ export function SmartCameraShell({
             className="relative z-20 px-4 pt-4"
             style={{ paddingBottom: isSmallScreen ? 16 : 40 }}
           >
+            {noticeSlot ? <View className="mb-4">{noticeSlot}</View> : null}
+
             {/* Mode Selector */}
             {showModePicker && isAiEnabled ? (
               <View

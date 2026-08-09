@@ -204,7 +204,9 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
   camera. Whole-profile transfers remain optionally passphrase-protected and replace only after
   verification; meal shares preview ingredients/macros and save non-destructively into the existing
   database. Send from a meal's ⋮ menu and receive from My Meals → +, or receive either payload from
-  Settings. Available on Android, iOS and web in any combination, with no internet, cable, or account
+  Settings. Point a food barcode scanner at a sending phone by mistake and it recognises the stream
+  instead of failing a product lookup, offering to hand you straight to the optical reader.
+  Available on Android, iOS and web in any combination, with no internet, cable, or account
   (see [docs/OPTICAL_TRANSFER.md](docs/OPTICAL_TRANSFER.md))
 - Automatic local backups before any restore, browsable and restorable from settings
 - Complete database reset option

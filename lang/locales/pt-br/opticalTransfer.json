@@ -121,6 +121,12 @@
         "dense": "Denso",
         "max": "Mais denso"
       }
+    },
+    "probe": {
+      "title": "Quer importar dados ópticos?",
+      "message": "Esse código faz parte de uma transferência do Musclog entre celulares, não é um código de barras de alimento. Abra o leitor óptico para receber a refeição.",
+      "open": "Abrir leitor óptico",
+      "dismiss": "Agora não"
     }
   }
 }

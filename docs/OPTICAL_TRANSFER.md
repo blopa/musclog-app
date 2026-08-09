@@ -248,6 +248,45 @@ Two halves, and both are load-bearing:
 Fixture data for either side must use `null`, not `undefined`, for an unset optional column. A
 fixture that uses `undefined` is testing a state the database cannot produce.
 
+### The food scanners recognise a stream they cannot use
+
+`SmartCameraModal` (barcode mode) and `BarcodeCameraModal` both list `qr` among their code types,
+so pointing either at a sending phone used to hand `useBarcodeScanner` a fountain frame, which went
+looking for a product with that barcode. The lookup failed, the camera tore down for a "food not
+found" sheet, and the user was told the wrong thing about a transfer that was working perfectly.
+
+`utils/optical/frameProbe.ts` is the cheap check that catches it: base44-decode, parse the header,
+take its `streamIdentity`. It deliberately does **not** reuse `OpticalReceiver` — that allocates an
+`LTDecoder` and accumulates blocks, which is real work to do on a scanner that has no intention of
+finishing the transfer. It reads no payload at all, so a stream can never end up half-received by a
+camera that is only asking "should I still treat this as a barcode?".
+
+Three properties are load-bearing, and `hooks/__tests__/useBarcodeScanner.test.ts` pins all of them
+against frames built by the shipping encoder:
+
+- **The first frame is already suppressed**, before the prompt threshold and before the search
+  latch. Letting it through opens the food-not-found sheet and tears the camera down, so the second
+  frame — the one that confirms the stream — never arrives.
+- **Two frames sharing a `streamIdentity` before prompting.** One parse is already near-impossible
+  by accident (base44 rules out any lowercase character, then the 0xD1 0x0C magic, then a length
+  matching the frame's own declared `blockLen`), but a false prompt would land over a camera the
+  user is actively using, and the second frame costs ~60 ms.
+- **`'detected'` fires at most once per stream.** MLKit calls back 15–30×/s; re-announcing on every
+  one would thrash React state on the scanner's hot path.
+
+A dismissal is remembered per `streamIdentity`, so holding the phone still does not re-prompt while
+a sender that restarts on a different payload does. Frames stay swallowed after a dismissal — the
+user waving the offer away does not make it a food barcode.
+
+The offer opens `OpticalReceiveModal` with `accept="share"`, and not because the probe can tell a
+meal from a database — it cannot, since `payloadKind` lives in the container and the container does
+not exist until the stream is fully reassembled. The reason is that a full-backup restore wipes the
+phone, and a wipe is not something to offer from a camera the user opened to scan a cereal box.
+Someone who genuinely wants that loses nothing: the receive screen names the right place to go.
+`useOpticalStreamOffer` returns the notice and the receive modal as two separate elements because
+they belong in two different places — the notice in `SmartCameraShell`'s `noticeSlot`, the modal in
+its `children`, never as a sibling of the camera modal (`docs/modals-problem-on-ios.md`).
+
 ### Only two failures mean "the sender is newer"
 
 `MusclogShareError` codes split into "this build is behind" (`unsupported-envelope`,

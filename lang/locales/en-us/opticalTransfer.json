@@ -121,6 +121,12 @@
         "dense": "Dense",
         "max": "Densest"
       }
+    },
+    "probe": {
+      "title": "Trying to import optical data?",
+      "message": "That code is part of a Musclog transfer between phones, not a food barcode. Open the optical reader to receive the meal.",
+      "open": "Open optical reader",
+      "dismiss": "Not now"
     }
   }
 }

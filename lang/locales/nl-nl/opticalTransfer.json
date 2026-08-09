@@ -121,6 +121,12 @@
         "dense": "Dicht",
         "max": "Dichtst"
       }
+    },
+    "probe": {
+      "title": "Wil je optische gegevens importeren?",
+      "message": "Die code hoort bij een Musclog-overdracht tussen telefoons, het is geen voedingsbarcode. Open de optische lezer om de maaltijd te ontvangen.",
+      "open": "Optische lezer openen",
+      "dismiss": "Niet nu"
     }
   }
 }
