@@ -211,3 +211,23 @@ export async function loadBlogPost(
     html: renderBlogPostMarkdown(content),
   };
 }
+
+export async function loadBlogPostForRoute(
+  slug: string | string[],
+  postsDirectory = path.join(process.cwd(), 'app', '(website)', 'posts')
+): Promise<BlogPost> {
+  const routeSlug = Array.isArray(slug) ? slug.join('/') : slug;
+
+  // Expo Router 57 keeps the unresolved catch-all route in the static manifest alongside the
+  // paths returned by generateStaticParams, so its loader also runs once with this literal value.
+  if (routeSlug === '[...slug]') {
+    const [fallbackPost] = await loadBlogPostSummaries(postsDirectory);
+    if (!fallbackPost) {
+      throw new Error('Cannot render the static blog route template without any posts');
+    }
+
+    return loadBlogPost(fallbackPost.slug, postsDirectory);
+  }
+
+  return loadBlogPost(slug, postsDirectory);
+}

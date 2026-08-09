@@ -4,6 +4,7 @@ import path from 'node:path';
 
 import {
   loadBlogPost,
+  loadBlogPostForRoute,
   loadBlogPostSummaries,
   parseBlogPostSummary,
   renderBlogPostMarkdown,
@@ -90,6 +91,10 @@ const answer: number = 42;
 
     expect(posts.map((post) => post.slug)).toEqual(['2026/08/new', '2025/12/old']);
     expect(posts[1].excerpt).toBe('A custom summary.');
+
+    const templatePost = await loadBlogPostForRoute('[...slug]', directory);
+    expect(templatePost.slug).toBe('2026/08/new');
+    expect(templatePost.html).toContain('<p>Newest body.</p>');
   });
 
   it('rejects invalid required metadata with the source path', () => {

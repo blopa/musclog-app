@@ -113,7 +113,9 @@ The catch-all [`blog/[...slug].tsx`](/app/%28website%29/blog/%5B...slug%5D.tsx) 
 `generateStaticParams` from those discovered slugs, so Expo emits one HTML page per post. Its
 `[...slug].native.tsx` sibling redirects native users to `/app`; using an unsuffixed `.tsx` for the web
 implementation is deliberate because Expo Router 57.0.11 cannot interpolate a catch-all parameter
-from a platform-suffixed `[...slug].web.tsx` loader context.
+from a platform-suffixed `[...slug].web.tsx` loader context. Expo Router 57 also retains the
+unresolved catch-all template in its static manifest, so `loadBlogPostForRoute` handles the literal
+`[...slug]` loader call that occurs during export in addition to the generated post paths.
 
 Post bodies are converted to HTML inside the server loader with `markdown-it` and `highlight.js`.
 That supports standard rich Markdown (headings, emphasis, links, lists, tables, blockquotes, images,

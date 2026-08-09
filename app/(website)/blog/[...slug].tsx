@@ -8,16 +8,16 @@ import { BODY_TEXT_SOFT, BRAND_GREEN_BRIGHT } from '@/components/website/website
 import { BlogPostSeo } from '@/components/website/WebsiteSeo';
 import { BlogPostingJsonLd } from '@/components/website/WebsiteStructuredData';
 
-export async function generateStaticParams(): Promise<{ slug: string[] }[]> {
+export async function generateStaticParams(): Promise<{ slug: string }[]> {
   const { loadBlogPostSummaries } = await import('@/utils/blogPosts.server');
   const posts = await loadBlogPostSummaries();
 
-  return posts.map((post) => ({ slug: post.slug.split('/') }));
+  return posts.map((post) => ({ slug: post.slug }));
 }
 
 export const loader = createStaticLoader(async (params) => {
-  const { loadBlogPost } = await import('@/utils/blogPosts.server');
-  return loadBlogPost(params.slug);
+  const { loadBlogPostForRoute } = await import('@/utils/blogPosts.server');
+  return loadBlogPostForRoute(params.slug);
 });
 
 function formatPostDate(date: string, locale: string): string {
