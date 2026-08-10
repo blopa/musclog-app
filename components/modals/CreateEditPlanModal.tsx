@@ -138,13 +138,16 @@ export function CreateEditPlanModal({
         }));
       let savedPlanId = planId;
       if (planId) {
-        await WorkoutPlanService.updatePlan(planId, {
-          name,
-          description: description || null,
-          cycleType,
-          icon: icon ?? null,
-        });
-        await WorkoutPlanService.setPlanMemberships(planId, planMemberships);
+        await WorkoutPlanService.savePlan(
+          planId,
+          {
+            name,
+            description: description || null,
+            cycleType,
+            icon: icon ?? null,
+          },
+          planMemberships
+        );
       } else {
         const created = await WorkoutPlanService.createPlan({
           name,

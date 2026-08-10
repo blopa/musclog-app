@@ -144,6 +144,37 @@ describe('WorkoutPlanService', () => {
     expect(events).toEqual(['writer', 'membership-read']);
   });
 
+  it('saves plan fields and membership changes in one writer and batch', async () => {
+    const plan = createMockWorkoutPlan({ name: 'Old', cycleType: 'weekly' });
+    const removed = createMockWorkoutPlanTemplate({ templateId: 'old', weekDays: [1] });
+    const created: any[] = [];
+    mockRepository.getMembershipsForPlan.mockReturnValue({
+      fetch: jest.fn().mockResolvedValue([removed]),
+    } as any);
+    mockDatabase.get.mockImplementation((table: string) =>
+      table === 'workout_plans'
+        ? ({ find: jest.fn().mockResolvedValue(plan) } as any)
+        : (prepareCollection(created) as any)
+    );
+
+    await WorkoutPlanService.savePlan('plan-1', { name: ' Updated ', cycleType: 'rotating' }, [
+      { templateId: 'new', weekDays: [0, 4] },
+    ]);
+
+    expect(mockDatabase.write).toHaveBeenCalledTimes(1);
+    expect(mockRepository.getMembershipsForPlan).toHaveBeenCalledWith('plan-1');
+    expect(plan).toMatchObject({ name: 'Updated', cycleType: 'rotating' });
+    expect(created[0]).toMatchObject({
+      planId: 'plan-1',
+      templateId: 'new',
+      weekDays: undefined,
+      position: 0,
+    });
+    expect(removed.deletedAt).toEqual(expect.any(Number));
+    expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
+    expect(mockDatabase.batch).toHaveBeenCalledWith(plan, created[0], removed);
+  });
+
   it('never persists weekdays for a rotating plan', async () => {
     const created: any[] = [];
     mockRepository.getMembershipsForPlan.mockReturnValue({

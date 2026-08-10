@@ -18,6 +18,7 @@ interface WorkoutPlanPickerModalProps {
   selectedPlanIds: string[];
   onChange: (planIds: string[]) => void;
   onClose: () => void;
+  onSave: () => void | Promise<void>;
   onCreatePlan?: () => void;
   nestedModals?: ReactNode;
 }
@@ -28,6 +29,7 @@ export function WorkoutPlanPickerModal({
   selectedPlanIds,
   onChange,
   onClose,
+  onSave,
   onCreatePlan,
   nestedModals,
 }: WorkoutPlanPickerModalProps) {
@@ -53,11 +55,11 @@ export function WorkoutPlanPickerModal({
       title={t('workouts.plans.picker.title')}
       footer={
         <Button
-          label={t('common.close')}
+          label={t('common.save')}
           variant="gradientCta"
           size="md"
           width="full"
-          onPress={onClose}
+          onPress={onSave}
         />
       }
     >

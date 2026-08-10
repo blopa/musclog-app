@@ -4,11 +4,11 @@ import {
   ChatService,
   ExerciseService,
   WorkoutAnalytics,
-  WorkoutPlanService,
   WorkoutService,
 } from '@/database/services';
 import {
   type ExerciseInWorkout,
+  type PlanTemplateInput,
   WorkoutTemplateService,
 } from '@/database/services/WorkoutTemplateService';
 import i18n from '@/lang/lang';
@@ -87,8 +87,7 @@ export async function processWorkoutPlanResponse(response: GenerateWorkoutPlanRe
   planName: string;
 }> {
   try {
-    const createdTemplateIds: string[] = [];
-    const memberships: { templateId: string; weekDays: number[]; position: number }[] = [];
+    const planTemplates: PlanTemplateInput[] = [];
 
     // Get all exercises to look up by id (AI returns exerciseId)
     const allExercises = await ExerciseService.getAllExercises();
@@ -153,38 +152,36 @@ export async function processWorkoutPlanResponse(response: GenerateWorkoutPlanRe
       };
       const dayIndex = dayMap[plan.recurringOnWeekDay.toLowerCase()] ?? 0;
 
-      // Create the workout template
-      const template = await WorkoutTemplateService.saveTemplate({
-        name: plan.title,
-        description: plan.description,
-        exercises,
-        selectedDays: [],
-      });
-
-      createdTemplateIds.push(template.id);
-      memberships.push({
-        templateId: template.id,
+      planTemplates.push({
+        template: {
+          name: plan.title,
+          description: plan.description,
+          exercises,
+          selectedDays: [],
+        },
         weekDays: [dayIndex],
-        position: memberships.length,
+        position: planTemplates.length,
       });
     }
 
     const planName = response.planTitle?.trim() || i18n.t('workouts.plans.defaultAiPlanName');
-    const workoutPlan =
-      memberships.length > 0
-        ? await WorkoutPlanService.createPlan({
-            name: planName,
-            description: response.description,
-            cycleType: 'weekly',
-            memberships,
-          })
+    const created =
+      planTemplates.length > 0
+        ? await WorkoutTemplateService.createPlanWithTemplates(
+            {
+              name: planName,
+              description: response.description,
+              cycleType: 'weekly',
+            },
+            planTemplates
+          )
         : null;
 
     // reply that combines "I've created N workouts for you!" with response.description
     return {
-      templateIds: createdTemplateIds,
+      templateIds: created?.templates.map((template) => template.id) ?? [],
       description: response.description,
-      planId: workoutPlan?.id ?? null,
+      planId: created?.plan.id ?? null,
       planName,
     };
   } catch (error) {

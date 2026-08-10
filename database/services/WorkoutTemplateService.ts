@@ -31,7 +31,7 @@ import {
 import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
 import { UserService } from './UserService';
-import { WorkoutPlanService } from './WorkoutPlanService';
+import { type CreateWorkoutPlanData, WorkoutPlanService } from './WorkoutPlanService';
 
 /**
  * Exercise data for workout template creation/editing.
@@ -67,6 +67,12 @@ export interface SaveTemplateData {
    * to Unplanned. Never default this field to an empty array.
    */
   planIds?: string[];
+}
+
+export interface PlanTemplateInput {
+  template: SaveTemplateData;
+  weekDays?: number[];
+  position?: number;
 }
 
 export class WorkoutTemplateService {
@@ -239,156 +245,193 @@ export class WorkoutTemplateService {
   static async saveTemplate(data: SaveTemplateData): Promise<WorkoutTemplate> {
     const now = Date.now();
 
-    return await database.write(async () => {
-      let template: WorkoutTemplate;
+    return database.write(() => this.saveTemplateInWriter(data, now));
+  }
 
-      if (data.templateId) {
-        template = await database.get<WorkoutTemplate>('workout_templates').find(data.templateId);
-        await template.update((t) => {
-          t.name = data.name;
-          t.description = data.description || undefined;
-          t.workoutInsightsType =
-            data.workoutInsightsType != null
-              ? parseWorkoutInsightsType(data.workoutInsightsType)
-              : parseWorkoutInsightsType(t.workoutInsightsType);
-          t.type = data.type ?? t.type;
-          t.icon = data.icon ?? t.icon;
-          // Standalone calendar data lives in schedules. Clear any deprecated compatibility copy.
-          t.weekDaysJson = undefined;
-          t.updatedAt = now;
-        });
+  private static async saveTemplateInWriter(
+    data: SaveTemplateData,
+    now: number
+  ): Promise<WorkoutTemplate> {
+    let template: WorkoutTemplate;
 
-        const existingTemplateExercises = await database
-          .get<WorkoutTemplateExercise>('workout_template_exercises')
-          .query(Q.where('template_id', data.templateId), Q.where('deleted_at', Q.eq(null)))
+    if (data.templateId) {
+      template = await database.get<WorkoutTemplate>('workout_templates').find(data.templateId);
+      await template.update((t) => {
+        t.name = data.name;
+        t.description = data.description || undefined;
+        t.workoutInsightsType =
+          data.workoutInsightsType != null
+            ? parseWorkoutInsightsType(data.workoutInsightsType)
+            : parseWorkoutInsightsType(t.workoutInsightsType);
+        t.type = data.type ?? t.type;
+        t.icon = data.icon ?? t.icon;
+        // Standalone calendar data lives in schedules. Clear any deprecated compatibility copy.
+        t.weekDaysJson = undefined;
+        t.updatedAt = now;
+      });
+
+      const existingTemplateExercises = await database
+        .get<WorkoutTemplateExercise>('workout_template_exercises')
+        .query(Q.where('template_id', data.templateId), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+
+      const existingTemplateExerciseIds = existingTemplateExercises.map((te) => te.id);
+
+      if (existingTemplateExerciseIds.length > 0) {
+        const existingSets = await database
+          .get<WorkoutTemplateSet>('workout_template_sets')
+          .query(
+            Q.where('template_exercise_id', Q.oneOf(existingTemplateExerciseIds)),
+            Q.where('deleted_at', Q.eq(null))
+          )
           .fetch();
 
-        const existingTemplateExerciseIds = existingTemplateExercises.map((te) => te.id);
-
-        if (existingTemplateExerciseIds.length > 0) {
-          const existingSets = await database
-            .get<WorkoutTemplateSet>('workout_template_sets')
-            .query(
-              Q.where('template_exercise_id', Q.oneOf(existingTemplateExerciseIds)),
-              Q.where('deleted_at', Q.eq(null))
-            )
-            .fetch();
-
-          for (const set of existingSets) {
-            await set.update((s) => {
-              s.deletedAt = now;
-              s.updatedAt = now;
-            });
-          }
-        }
-
-        for (const te of existingTemplateExercises) {
-          await te.update((record) => {
-            record.deletedAt = now;
-            record.updatedAt = now;
-          });
-        }
-
-        const existingSchedule = await database
-          .get<Schedule>('schedules')
-          .query(Q.where('template_id', data.templateId), Q.where('deleted_at', Q.eq(null)))
-          .fetch();
-
-        for (const schedule of existingSchedule) {
-          await schedule.update((s) => {
+        for (const set of existingSets) {
+          await set.update((s) => {
             s.deletedAt = now;
             s.updatedAt = now;
           });
         }
-      } else {
-        template = await database.get<WorkoutTemplate>('workout_templates').create((t) => {
-          t.name = data.name;
-          t.description = data.description || undefined;
-          t.workoutInsightsType = parseWorkoutInsightsType(data.workoutInsightsType);
-          t.type = data.type ?? DEFAULT_WORKOUT_TYPE;
-          t.icon = data.icon ?? undefined;
-          t.weekDaysJson = undefined;
-          t.isArchived = false;
-          t.createdAt = now;
-          t.updatedAt = now;
+      }
+
+      for (const te of existingTemplateExercises) {
+        await te.update((record) => {
+          record.deletedAt = now;
+          record.updatedAt = now;
         });
       }
 
-      const templateExercisesCollection = database.get<WorkoutTemplateExercise>(
-        'workout_template_exercises'
-      );
-      const templateSetsCollection = database.get<WorkoutTemplateSet>('workout_template_sets');
+      const existingSchedule = await database
+        .get<Schedule>('schedules')
+        .query(Q.where('template_id', data.templateId), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
 
-      const preparedExercises: WorkoutTemplateExercise[] = [];
-      const preparedSets: WorkoutTemplateSet[] = [];
-
-      let currentSetOrder = 0;
-
-      data.exercises.forEach((exercise, exerciseIndex) => {
-        const templateExercise = templateExercisesCollection.prepareCreate((te) => {
-          te.templateId = template.id;
-          te.exerciseId = exercise.id;
-          te.notes = exercise.notes;
-          te.exerciseOrder = exerciseIndex + 1;
-          te.groupId = exercise.groupId;
-          te.createdAt = now;
-          te.updatedAt = now;
+      for (const schedule of existingSchedule) {
+        await schedule.update((s) => {
+          s.deletedAt = now;
+          s.updatedAt = now;
         });
-        preparedExercises.push(templateExercise);
-
-        for (let setNum = 1; setNum <= exercise.sets; setNum++) {
-          currentSetOrder++;
-          preparedSets.push(
-            templateSetsCollection.prepareCreate((ts) => {
-              ts.templateExerciseId = templateExercise.id;
-              ts.targetReps = exercise.reps;
-              ts.targetWeight = exercise.isBodyweight ? 0 : exercise.weight;
-              ts.restTimeAfter = exercise.restTimeAfter ?? 60;
-              ts.setOrder = currentSetOrder;
-              ts.setType = exercise.setType ?? 'normal';
-              ts.createdAt = now;
-              ts.updatedAt = now;
-            })
-          );
-        }
-      });
-
-      if (preparedExercises.length > 0 || preparedSets.length > 0) {
-        await database.batch(...preparedExercises, ...preparedSets);
       }
-
-      const schedulesCollection = database.get<Schedule>('schedules');
-      const preparedSchedules: Schedule[] = [];
-
-      data.selectedDays.forEach((dayIndex) => {
-        if (dayIndex >= 0 && dayIndex < WEEKDAY_NAMES.length) {
-          preparedSchedules.push(
-            schedulesCollection.prepareCreate((s) => {
-              s.templateId = template.id;
-              s.dayOfWeek = indexToDayName(dayIndex);
-              s.createdAt = now;
-              s.updatedAt = now;
-            })
-          );
-        }
+    } else {
+      template = await database.get<WorkoutTemplate>('workout_templates').create((t) => {
+        t.name = data.name;
+        t.description = data.description || undefined;
+        t.workoutInsightsType = parseWorkoutInsightsType(data.workoutInsightsType);
+        t.type = data.type ?? DEFAULT_WORKOUT_TYPE;
+        t.icon = data.icon ?? undefined;
+        t.weekDaysJson = undefined;
+        t.isArchived = false;
+        t.createdAt = now;
+        t.updatedAt = now;
       });
+    }
 
-      if (preparedSchedules.length > 0) {
-        await database.batch(...preparedSchedules);
-      }
+    const templateExercisesCollection = database.get<WorkoutTemplateExercise>(
+      'workout_template_exercises'
+    );
+    const templateSetsCollection = database.get<WorkoutTemplateSet>('workout_template_sets');
 
-      if (data.planIds !== undefined) {
-        const membershipRecords = await WorkoutPlanService.prepareSyncTemplateMemberships(
-          template.id,
-          data.planIds,
-          now
+    const preparedExercises: WorkoutTemplateExercise[] = [];
+    const preparedSets: WorkoutTemplateSet[] = [];
+
+    let currentSetOrder = 0;
+
+    data.exercises.forEach((exercise, exerciseIndex) => {
+      const templateExercise = templateExercisesCollection.prepareCreate((te) => {
+        te.templateId = template.id;
+        te.exerciseId = exercise.id;
+        te.notes = exercise.notes;
+        te.exerciseOrder = exerciseIndex + 1;
+        te.groupId = exercise.groupId;
+        te.createdAt = now;
+        te.updatedAt = now;
+      });
+      preparedExercises.push(templateExercise);
+
+      for (let setNum = 1; setNum <= exercise.sets; setNum++) {
+        currentSetOrder++;
+        preparedSets.push(
+          templateSetsCollection.prepareCreate((ts) => {
+            ts.templateExerciseId = templateExercise.id;
+            ts.targetReps = exercise.reps;
+            ts.targetWeight = exercise.isBodyweight ? 0 : exercise.weight;
+            ts.restTimeAfter = exercise.restTimeAfter ?? 60;
+            ts.setOrder = currentSetOrder;
+            ts.setType = exercise.setType ?? 'normal';
+            ts.createdAt = now;
+            ts.updatedAt = now;
+          })
         );
-        if (membershipRecords.length > 0) {
-          await database.batch(...membershipRecords);
-        }
+      }
+    });
+
+    if (preparedExercises.length > 0 || preparedSets.length > 0) {
+      await database.batch(...preparedExercises, ...preparedSets);
+    }
+
+    const schedulesCollection = database.get<Schedule>('schedules');
+    const preparedSchedules: Schedule[] = [];
+
+    data.selectedDays.forEach((dayIndex) => {
+      if (dayIndex >= 0 && dayIndex < WEEKDAY_NAMES.length) {
+        preparedSchedules.push(
+          schedulesCollection.prepareCreate((s) => {
+            s.templateId = template.id;
+            s.dayOfWeek = indexToDayName(dayIndex);
+            s.createdAt = now;
+            s.updatedAt = now;
+          })
+        );
+      }
+    });
+
+    if (preparedSchedules.length > 0) {
+      await database.batch(...preparedSchedules);
+    }
+
+    if (data.planIds !== undefined) {
+      const membershipRecords = await WorkoutPlanService.prepareSyncTemplateMemberships(
+        template.id,
+        data.planIds,
+        now
+      );
+      if (membershipRecords.length > 0) {
+        await database.batch(...membershipRecords);
+      }
+    }
+
+    return template;
+  }
+
+  static async createPlanWithTemplates(
+    planData: Omit<CreateWorkoutPlanData, 'memberships'>,
+    inputs: PlanTemplateInput[]
+  ): Promise<{ plan: WorkoutPlan; templates: WorkoutTemplate[] }> {
+    if (inputs.length === 0) {
+      throw new Error('A workout plan requires at least one template');
+    }
+
+    return database.write(async () => {
+      const now = Date.now();
+      const templates: WorkoutTemplate[] = [];
+      for (const input of inputs) {
+        templates.push(await this.saveTemplateInWriter(input.template, now));
       }
 
-      return template;
+      const { plan, records } = WorkoutPlanService.prepareCreatePlan(
+        {
+          ...planData,
+          memberships: templates.map((template, index) => ({
+            templateId: template.id,
+            weekDays: inputs[index].weekDays,
+            position: inputs[index].position ?? index,
+          })),
+        },
+        now
+      );
+      await database.batch(...records);
+
+      return { plan, templates };
     });
   }
 
@@ -922,8 +965,7 @@ export class WorkoutTemplateService {
     // Get unique days and sort them
     const days = Array.from(exercisesByDay.keys()).sort((a, b) => a - b);
 
-    // Create workout template for each day
-    const createdTemplates: WorkoutTemplate[] = [];
+    const planTemplates: PlanTemplateInput[] = [];
 
     for (const day of days) {
       const dayExercises = exercisesByDay.get(day)!;
@@ -1011,36 +1053,33 @@ export class WorkoutTemplateService {
       const templateName =
         dayName ?? i18n.t('workouts.plans.defaultDayName', { day, defaultValue: `Day ${day}` });
 
-      // Create the template using saveTemplate
-      const template = await this.saveTemplate({
-        name: templateName,
-        description: rawTemplate.description,
-        type: DEFAULT_WORKOUT_TYPE,
-        icon: undefined,
-        exercises: exercisesInWorkout,
-        selectedDays: [], // No schedule days selected
+      planTemplates.push({
+        template: {
+          name: templateName,
+          description: rawTemplate.description,
+          type: DEFAULT_WORKOUT_TYPE,
+          icon: undefined,
+          exercises: exercisesInWorkout,
+          selectedDays: [],
+        },
+        position: planTemplates.length,
       });
-
-      createdTemplates.push(template);
     }
 
-    if (createdTemplates.length === 0) {
+    if (planTemplates.length === 0) {
       return { plan: null, templates: [] };
     }
 
-    const plan = await WorkoutPlanService.createPlan({
-      name: rawTemplate.title,
-      description: rawTemplate.description,
-      difficulty: rawTemplate.difficulty,
-      icon: rawTemplate.icon,
-      cycleType: 'rotating',
-      memberships: createdTemplates.map((template, position) => ({
-        templateId: template.id,
-        position,
-      })),
-    });
-
-    return { plan, templates: createdTemplates };
+    return this.createPlanWithTemplates(
+      {
+        name: rawTemplate.title,
+        description: rawTemplate.description,
+        difficulty: rawTemplate.difficulty,
+        icon: rawTemplate.icon,
+        cycleType: 'rotating',
+      },
+      planTemplates
+    );
   }
 
   /**

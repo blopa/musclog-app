@@ -1504,6 +1504,68 @@ describe('WorkoutTemplateService', () => {
     });
   });
 
+  describe('createPlanWithTemplates', () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('creates every template and the parent plan in one writer', async () => {
+      const firstTemplate = createMockWorkoutTemplate({ id: 'first-template' });
+      const secondTemplate = createMockWorkoutTemplate({ id: 'second-template' });
+      const plan = { id: 'plan-1' } as any;
+      const planRecords = [{ id: 'plan-1' }, { id: 'membership-1' }] as any[];
+      const saveTemplateInWriter = jest
+        .spyOn(WorkoutTemplateService as any, 'saveTemplateInWriter')
+        .mockResolvedValueOnce(firstTemplate)
+        .mockResolvedValueOnce(secondTemplate);
+      const prepareCreatePlan = jest
+        .spyOn(WorkoutPlanService, 'prepareCreatePlan')
+        .mockReturnValue({ plan, records: planRecords as any });
+
+      const result = await WorkoutTemplateService.createPlanWithTemplates(
+        { name: 'Atomic Plan', cycleType: 'weekly' },
+        [
+          {
+            template: { name: 'Monday', exercises: [], selectedDays: [] },
+            weekDays: [0],
+          },
+          {
+            template: { name: 'Friday', exercises: [], selectedDays: [] },
+            weekDays: [4],
+            position: 5,
+          },
+        ]
+      );
+
+      expect(mockDatabase.write).toHaveBeenCalledTimes(1);
+      expect(saveTemplateInWriter).toHaveBeenCalledTimes(2);
+      expect(prepareCreatePlan).toHaveBeenCalledWith(
+        {
+          name: 'Atomic Plan',
+          cycleType: 'weekly',
+          memberships: [
+            { templateId: 'first-template', weekDays: [0], position: 0 },
+            { templateId: 'second-template', weekDays: [4], position: 5 },
+          ],
+        },
+        expect.any(Number)
+      );
+      expect(mockDatabase.batch).toHaveBeenCalledWith(...planRecords);
+      expect(result).toEqual({ plan, templates: [firstTemplate, secondTemplate] });
+    });
+
+    it('rejects an empty aggregate before opening a writer', async () => {
+      await expect(
+        WorkoutTemplateService.createPlanWithTemplates(
+          { name: 'Empty Plan', cycleType: 'rotating' },
+          []
+        )
+      ).rejects.toThrow('A workout plan requires at least one template');
+
+      expect(mockDatabase.write).not.toHaveBeenCalled();
+    });
+  });
+
   describe('createWorkoutsFromJsonTemplate', () => {
     afterEach(() => {
       jest.restoreAllMocks();
@@ -1537,14 +1599,13 @@ describe('WorkoutTemplateService', () => {
       jest.spyOn(WorkoutTemplateService as any, 'calculateSuggestedWeight').mockResolvedValue(40);
 
       const createdTemplate = createMockWorkoutTemplate({ id: 'created-template' });
-      const saveTemplate = jest
-        .spyOn(WorkoutTemplateService, 'saveTemplate')
-        .mockResolvedValue(createdTemplate);
-
-      const createPlan = jest.spyOn(WorkoutPlanService, 'createPlan').mockResolvedValue({
+      const createdPlan = {
         id: 'plan-1',
         name: 'Test Cable Program',
-      } as any);
+      } as any;
+      const createPlanWithTemplates = jest
+        .spyOn(WorkoutTemplateService, 'createPlanWithTemplates')
+        .mockResolvedValue({ plan: createdPlan, templates: [createdTemplate] });
 
       const result = await WorkoutTemplateService.createWorkoutsFromJsonTemplate({
         title: 'Test Cable Program',
@@ -1575,36 +1636,40 @@ describe('WorkoutTemplateService', () => {
         ],
       });
 
-      expect(saveTemplate).toHaveBeenCalledTimes(1);
-      expect(saveTemplate).toHaveBeenCalledWith(
-        expect.objectContaining({
-          name: 'Upper A',
-          exercises: [
-            expect.objectContaining({
-              id: 'bench-id',
-              groupId: 'Test Cable Program-day-1-A',
-              notes: 'Target 4–6 reps • 1–2 RIR',
-              reps: 6,
-              restTimeAfter: 45,
+      expect(createPlanWithTemplates).toHaveBeenCalledTimes(1);
+      expect(createPlanWithTemplates).toHaveBeenCalledWith(
+        {
+          name: 'Test Cable Program',
+          description: 'A complete cable program',
+          difficulty: 'intermediate',
+          icon: 'dumbbell',
+          cycleType: 'rotating',
+        },
+        [
+          expect.objectContaining({
+            template: expect.objectContaining({
+              name: 'Upper A',
+              exercises: [
+                expect.objectContaining({
+                  id: 'bench-id',
+                  groupId: 'Test Cable Program-day-1-A',
+                  notes: 'Target 4–6 reps • 1–2 RIR',
+                  reps: 6,
+                  restTimeAfter: 45,
+                }),
+                expect.objectContaining({
+                  id: 'pull-up-id',
+                  groupId: 'Test Cable Program-day-1-A',
+                  notes: 'Target 3–6 reps',
+                  reps: 6,
+                  restTimeAfter: 210,
+                }),
+              ],
             }),
-            expect.objectContaining({
-              id: 'pull-up-id',
-              groupId: 'Test Cable Program-day-1-A',
-              notes: 'Target 3–6 reps',
-              reps: 6,
-              restTimeAfter: 210,
-            }),
-          ],
-        })
+            position: 0,
+          }),
+        ]
       );
-      expect(createPlan).toHaveBeenCalledWith({
-        name: 'Test Cable Program',
-        description: 'A complete cable program',
-        difficulty: 'intermediate',
-        icon: 'dumbbell',
-        cycleType: 'rotating',
-        memberships: [{ templateId: 'created-template', position: 0 }],
-      });
       expect(result).toEqual({
         plan: expect.objectContaining({ id: 'plan-1', name: 'Test Cable Program' }),
         templates: [createdTemplate],
@@ -1620,7 +1685,7 @@ describe('WorkoutTemplateService', () => {
       });
       jest.spyOn(UserService, 'getCurrentUser').mockResolvedValue(null);
       jest.spyOn(UserMetricService, 'getLatest').mockResolvedValue(null);
-      const createPlan = jest.spyOn(WorkoutPlanService, 'createPlan');
+      const createPlanWithTemplates = jest.spyOn(WorkoutTemplateService, 'createPlanWithTemplates');
 
       const result = await WorkoutTemplateService.createWorkoutsFromJsonTemplate({
         title: 'Unavailable Program',
@@ -1628,7 +1693,7 @@ describe('WorkoutTemplateService', () => {
       });
 
       expect(result).toEqual({ plan: null, templates: [] });
-      expect(createPlan).not.toHaveBeenCalled();
+      expect(createPlanWithTemplates).not.toHaveBeenCalled();
     });
   });
 

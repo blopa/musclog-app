@@ -1,23 +1,12 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useFocusEffect } from 'expo-router/react-navigation';
-import {
-  Dumbbell,
-  Layers3,
-  Pencil,
-  Plus,
-  Repeat,
-  Search,
-  Target,
-  Trash2,
-  WifiOff,
-} from 'lucide-react-native';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Layers3, Pencil, Plus, Repeat, Search, Target, Trash2 } from 'lucide-react-native';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
-import { WorkoutCard } from '@/components/cards/WorkoutCard';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { FilterTabs } from '@/components/FilterTabs';
 import { GradientText } from '@/components/GradientText';
@@ -32,16 +21,10 @@ import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
 import { WorkoutPlanPickerModal } from '@/components/modals/WorkoutPlanPickerModal';
 import { WorkoutSessionHistoryModal } from '@/components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '@/components/modals/WorkoutSessionOverviewModal';
-import { Accordion } from '@/components/theme/Accordion';
-import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { Button } from '@/components/theme/Button';
-import DashedButton from '@/components/theme/DashedButton';
-import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
-import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
 import { MenuButton } from '@/components/theme/MenuButton';
-import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { TextInput } from '@/components/theme/TextInput';
-import { WorkoutPlanSection } from '@/components/workout/WorkoutPlanSection';
+import { WorkoutLibraryContent } from '@/components/workout/WorkoutLibraryContent';
 import { WorkoutDetailsMenu } from '@/components/WorkoutDetailsMenu';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { useSnackbar } from '@/context/SnackbarContext';
@@ -57,7 +40,6 @@ import { useWorkoutTemplates } from '@/hooks/useWorkoutTemplates';
 import { clearActiveWorkoutLogId } from '@/utils/activeWorkoutStorage';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { handleError } from '@/utils/handleError';
-import { groupTemplatesByPlan } from '@/utils/workoutPlanGrouping';
 
 type PlanEditorOrigin = 'workout-picker' | 'plan-menu' | 'screen-menu';
 
@@ -176,145 +158,6 @@ export default function WorkoutsScreen() {
   });
   const { plans, memberships, isLoading: isLoadingPlans } = useWorkoutPlans();
   const isLoadingScreen = isLoading || isLoadingPlans;
-  const hasPlans = activeFilter !== 'archived' && plans.length > 0;
-
-  const templatesForPlans = useMemo(() => {
-    if (
-      activeFilter !== 'strength' &&
-      activeFilter !== 'cardio' &&
-      activeFilter !== 'flexibility'
-    ) {
-      return templates;
-    }
-    return templates.filter((template) => template.type === activeFilter);
-  }, [templates, activeFilter]);
-
-  const groupedWorkouts = useMemo(
-    () =>
-      groupTemplatesByPlan(
-        plans,
-        memberships.map((membership) => ({
-          id: membership.id,
-          planId: membership.planId,
-          templateId: membership.templateId,
-          weekDays: membership.weekDays,
-          position: membership.position,
-        })),
-        templatesForPlans,
-        searchQuery
-      ),
-    [plans, memberships, templatesForPlans, searchQuery]
-  );
-
-  const flatPlanSearchResults = useMemo(
-    () => [
-      ...groupedWorkouts.sections.flatMap((section) =>
-        section.workouts.map(({ template }) => ({ template, plan: section.plan }))
-      ),
-      ...groupedWorkouts.unplanned.map((template) => ({ template, plan: undefined })),
-    ],
-    [groupedWorkouts]
-  );
-
-  // Process templates to separate featured vs regular
-  const { featuredWorkout, workouts } = useMemo(() => {
-    if (templates.length === 0) {
-      return { featuredWorkout: null, workouts: [] };
-    }
-
-    // First template is the featured workout (most recently completed, or most recently created)
-    const featured = templates[0];
-    const featuredWorkoutData = {
-      id: featured.id,
-      name: featured.name,
-      description: featured.description,
-      type: featured.type,
-      lastCompleted: featured.lastCompleted,
-      lastCompletedTimestamp: featured.lastCompletedTimestamp,
-      exerciseCount: featured.exerciseCount,
-      duration: featured.duration,
-      icon: featured.icon,
-    };
-
-    // Rest are regular workouts
-    const regularWorkouts = templates.slice(1).map((template) => ({
-      id: template.id,
-      name: template.name,
-      description: template.description,
-      type: template.type,
-      lastCompleted: template.lastCompleted,
-      lastCompletedTimestamp: template.lastCompletedTimestamp,
-      exerciseCount: template.exerciseCount,
-      duration: template.duration,
-      icon: template.icon,
-    }));
-
-    return {
-      featuredWorkout: featuredWorkoutData,
-      workouts: regularWorkouts,
-    };
-  }, [templates]);
-
-  // Filter workouts based on search query and active filter
-  const filteredWorkouts = useMemo(() => {
-    const normalizedQuery = searchQuery.trim().toLowerCase();
-
-    return workouts.filter((workout) => {
-      // Apply search filter
-      if (normalizedQuery) {
-        const matchesName = workout.name.toLowerCase().includes(normalizedQuery);
-        const matchesDescription = workout.description?.toLowerCase().includes(normalizedQuery);
-        if (!matchesName && !matchesDescription) {
-          return false;
-        }
-      }
-
-      // Apply type filter (strength/cardio/flexibility)
-      if (activeFilter === 'all' || activeFilter === 'archived') {
-        return true;
-      }
-
-      if (
-        activeFilter === 'strength' ||
-        activeFilter === 'cardio' ||
-        activeFilter === 'flexibility'
-      ) {
-        return workout.type === activeFilter;
-      }
-
-      return true;
-    });
-  }, [workouts, searchQuery, activeFilter]);
-
-  // Filter featured workout based on search query and type
-  const filteredFeaturedWorkout = useMemo(() => {
-    if (!featuredWorkout) {
-      return null;
-    }
-
-    if (
-      activeFilter === 'strength' ||
-      activeFilter === 'cardio' ||
-      activeFilter === 'flexibility'
-    ) {
-      if (featuredWorkout.type !== activeFilter) {
-        return null;
-      }
-    }
-
-    const normalizedQuery = searchQuery.trim().toLowerCase();
-    if (normalizedQuery) {
-      const matchesName = featuredWorkout.name.toLowerCase().includes(normalizedQuery);
-      const matchesDescription = featuredWorkout.description
-        ?.toLowerCase()
-        .includes(normalizedQuery);
-      if (!matchesName && !matchesDescription) {
-        return null;
-      }
-    }
-
-    return featuredWorkout;
-  }, [featuredWorkout, searchQuery, activeFilter]);
 
   // Helper function to start a workout and show overview modal
   const handleStartWorkout = useCallback(
@@ -471,262 +314,34 @@ export default function WorkoutsScreen() {
               </View>
             ) : null}
 
-            {/* Error State */}
-            {error ? (
-              <ErrorStateCard
-                icon={WifiOff}
-                title={t('errors.connectionTimeout.title')}
-                description={t('errors.connectionTimeout.description')}
-                buttonLabel={t('errors.connectionTimeout.tryAgain')}
-                onButtonPress={() => {
-                  // Error will clear automatically when data updates
-                  // No manual reload needed with reactive hooks
-                }}
-              />
-            ) : null}
-
-            {/* Loading State */}
-            {isLoadingScreen && !error ? (
-              <>
-                {/* Featured Workout Skeleton */}
-                <View
-                  className="rounded-lg border bg-bg-card p-5"
-                  style={{ borderColor: theme.colors.background.white5 }}
-                >
-                  <View className="mb-4 flex-row items-start justify-between">
-                    <View className="flex-1 gap-2">
-                      <SkeletonLoader width="40%" height={theme.size['5']} />
-                      <SkeletonLoader width="60%" height={theme.size['6']} />
-                      <SkeletonLoader width="50%" height={theme.size['4']} />
-                    </View>
-                    <SkeletonLoader
-                      width={theme.size['16']}
-                      height={theme.size['16']}
-                      borderRadius={theme.borderRadius.md}
-                    />
-                  </View>
-                  <View className="flex-row gap-3">
-                    <SkeletonLoader
-                      width={theme.size['120']}
-                      height={theme.size['44']}
-                      borderRadius={theme.borderRadius.md}
-                    />
-                    <SkeletonLoader
-                      width={theme.size['12']}
-                      height={theme.size['44']}
-                      borderRadius={theme.borderRadius.md}
-                    />
-                  </View>
-                </View>
-
-                {/* Workout Cards Skeletons */}
-                {[1, 2, 3].map((i) => (
-                  <View
-                    key={i}
-                    className="rounded-lg border bg-bg-card p-4"
-                    style={{ borderColor: theme.colors.background.white5 }}
-                  >
-                    <View className="flex-row items-center gap-3">
-                      <SkeletonLoader
-                        width={theme.size['12']}
-                        height={theme.size['12']}
-                        borderRadius={theme.borderRadius.md}
-                      />
-                      <View className="flex-1 gap-2">
-                        <SkeletonLoader width="75%" height={theme.size['4']} />
-                        <SkeletonLoader width="50%" height={theme.size['3']} />
-                      </View>
-                    </View>
-                    <View className="mt-4 flex-row gap-2">
-                      <SkeletonLoader
-                        width={theme.size['20']}
-                        height={theme.size['8']}
-                        borderRadius={theme.borderRadius.lg}
-                      />
-                      <SkeletonLoader
-                        width={theme.size['20']}
-                        height={theme.size['8']}
-                        borderRadius={theme.borderRadius.lg}
-                      />
-                    </View>
-                  </View>
-                ))}
-              </>
-            ) : null}
-            {!isLoadingScreen &&
-            !error &&
-            (hasPlans
-              ? groupedWorkouts.sections.length === 0 && groupedWorkouts.unplanned.length === 0
-              : !filteredFeaturedWorkout && filteredWorkouts.length === 0) &&
-            !searchQuery ? (
-              <EmptyStateCard
-                icon={Dumbbell}
-                title={t('emptyStates.workouts.title')}
-                description={t('emptyStates.workouts.description')}
-                buttonLabel={t('emptyStates.workouts.buttonLabel')}
-                iconGradient={true}
-                buttonVariant="gradientCta"
-                onButtonPress={() => {
-                  setIsCreateOptionsVisible(true);
-                }}
-              />
-            ) : null}
-            {!isLoadingScreen &&
-            !error &&
-            searchQuery &&
-            (hasPlans
-              ? flatPlanSearchResults.length === 0
-              : filteredFeaturedWorkout === null && filteredWorkouts.length === 0) ? (
-              <EmptyStateCard
-                icon={Search}
-                title={t('workouts.noSearchResults')}
-                description={t('workouts.noSearchResultsDescription', { query: searchQuery })}
-                iconGradient={false}
-                buttonLabel={t('workouts.noSearchResultsButtonLabel')}
-                onButtonPress={() => setSearchQuery('')}
-              />
-            ) : null}
-
-            {/* Normal State - Featured Workout */}
-            {!isLoadingScreen && !error && !hasPlans && filteredFeaturedWorkout ? (
-              <AnimatedContent>
-                <WorkoutCard
-                  name={filteredFeaturedWorkout.name}
-                  lastCompleted={filteredFeaturedWorkout.lastCompleted}
-                  lastCompletedTimestamp={filteredFeaturedWorkout.lastCompletedTimestamp}
-                  exerciseCount={filteredFeaturedWorkout.exerciseCount}
-                  duration={filteredFeaturedWorkout.duration}
-                  icon={filteredFeaturedWorkout.icon}
-                  onStart={async () => {
-                    if (filteredFeaturedWorkout.id) {
-                      await handleStartWorkout(filteredFeaturedWorkout.id);
-                    }
-                  }}
-                  onMore={() => {
-                    openWorkoutMenu(filteredFeaturedWorkout.id, filteredFeaturedWorkout.name);
-                  }}
-                />
-              </AnimatedContent>
-            ) : null}
-
-            {/* Normal State - Regular Workouts */}
-            {!isLoadingScreen && !error && !hasPlans && filteredWorkouts.length > 0 ? (
-              <AnimatedContent style={{ gap: theme.spacing.gap.base }}>
-                <>
-                  {filteredWorkouts.map((workout) => (
-                    <WorkoutCard
-                      key={workout.id}
-                      name={workout.name}
-                      lastCompleted={workout.lastCompleted}
-                      lastCompletedTimestamp={workout.lastCompletedTimestamp}
-                      exerciseCount={workout.exerciseCount}
-                      duration={workout.duration}
-                      icon={workout.icon}
-                      variant="standard"
-                      onStart={async () => {
-                        await handleStartWorkout(workout.id);
-                      }}
-                      onArchive={async () => {
-                        try {
-                          await WorkoutTemplateService.archiveTemplate(workout.id);
-                          showSnackbar('success', t('workouts.archiveSuccess'));
-                        } catch (err) {
-                          console.error('Error archiving workout:', err);
-                          showSnackbar('error', t('workouts.archiveError'));
-                        }
-                      }}
-                      onMore={() => openWorkoutMenu(workout.id, workout.name)}
-                    />
-                  ))}
-                </>
-              </AnimatedContent>
-            ) : null}
-
-            {!isLoadingScreen && !error && hasPlans && !searchQuery ? (
-              <AnimatedContent style={{ gap: theme.spacing.gap.base }}>
-                <>
-                  {groupedWorkouts.sections.map((section) => (
-                    <WorkoutPlanSection
-                      key={section.plan.id}
-                      section={section}
-                      isOpen={openAccordions[section.plan.id] ?? true}
-                      onToggle={() => toggleAccordion(section.plan.id)}
-                      onPlanMenu={() => {
-                        setSelectedPlanId(section.plan.id);
-                        setIsPlanMenuVisible(true);
-                      }}
-                      onStartWorkout={handleStartWorkout}
-                      onWorkoutMenu={(templateId, workoutName, planId) =>
-                        openWorkoutMenu(templateId, workoutName, planId)
-                      }
-                    />
-                  ))}
-                  {groupedWorkouts.unplanned.length > 0 ? (
-                    <Accordion
-                      title={t('workouts.plans.unplanned')}
-                      count={groupedWorkouts.unplanned.length}
-                      isOpen={openAccordions.unplanned ?? true}
-                      onToggle={() => toggleAccordion('unplanned')}
-                      maxHeight={Math.max(480, groupedWorkouts.unplanned.length * 240 + 80)}
-                    >
-                      <View className="gap-4 p-4">
-                        {groupedWorkouts.unplanned.map((workout) => (
-                          <WorkoutCard
-                            key={workout.id}
-                            name={workout.name}
-                            lastCompleted={workout.lastCompleted}
-                            lastCompletedTimestamp={workout.lastCompletedTimestamp}
-                            exerciseCount={workout.exerciseCount}
-                            duration={workout.duration}
-                            icon={workout.icon}
-                            variant="standard"
-                            onStart={() => handleStartWorkout(workout.id)}
-                            onMore={() => openWorkoutMenu(workout.id, workout.name)}
-                          />
-                        ))}
-                      </View>
-                    </Accordion>
-                  ) : null}
-                </>
-              </AnimatedContent>
-            ) : null}
-
-            {!isLoadingScreen && !error && hasPlans && Boolean(searchQuery) ? (
-              <AnimatedContent style={{ gap: theme.spacing.gap.base }}>
-                <>
-                  {flatPlanSearchResults.map(({ template, plan }) => (
-                    <View key={`${plan?.id ?? 'unplanned'}:${template.id}`} className="gap-2">
-                      <Text className="self-start rounded-full bg-accent-primary/10 px-2 py-1 text-xs font-medium text-text-accent">
-                        {plan?.name ?? t('workouts.plans.unplanned')}
-                      </Text>
-                      <WorkoutCard
-                        name={template.name}
-                        lastCompleted={template.lastCompleted}
-                        lastCompletedTimestamp={template.lastCompletedTimestamp}
-                        exerciseCount={template.exerciseCount}
-                        duration={template.duration}
-                        icon={template.icon}
-                        variant="standard"
-                        onStart={() => handleStartWorkout(template.id, plan?.id)}
-                        onMore={() => openWorkoutMenu(template.id, template.name, plan?.id)}
-                      />
-                    </View>
-                  ))}
-                </>
-              </AnimatedContent>
-            ) : null}
-
-            {/* Create Template Button - Only show when there are workouts */}
-            {!isLoadingScreen && !error && templates.length > 0 ? (
-              <DashedButton
-                label={t('workouts.createTemplate.title')}
-                onPress={() => {
-                  setIsCreateOptionsVisible(true);
-                }}
-                size="lg"
-                icon={<Plus size={theme.iconSize.lg} color={theme.colors.text.primary} />}
-              />
-            ) : null}
+            <WorkoutLibraryContent
+              activeFilter={activeFilter}
+              error={error}
+              isLoading={isLoadingScreen}
+              memberships={memberships}
+              openAccordions={openAccordions}
+              plans={plans}
+              searchQuery={searchQuery}
+              templates={templates}
+              onArchiveWorkout={async (templateId) => {
+                try {
+                  await WorkoutTemplateService.archiveTemplate(templateId);
+                  showSnackbar('success', t('workouts.archiveSuccess'));
+                } catch (err) {
+                  console.error('Error archiving workout:', err);
+                  showSnackbar('error', t('workouts.archiveError'));
+                }
+              }}
+              onClearSearch={() => setSearchQuery('')}
+              onCreateWorkout={() => setIsCreateOptionsVisible(true)}
+              onOpenPlanMenu={(planId) => {
+                setSelectedPlanId(planId);
+                setIsPlanMenuVisible(true);
+              }}
+              onOpenWorkoutMenu={openWorkoutMenu}
+              onStartWorkout={handleStartWorkout}
+              onToggleAccordion={toggleAccordion}
+            />
           </View>
           <View className="h-32" />
         </KeyboardAwareScrollView>
@@ -803,7 +418,8 @@ export default function WorkoutsScreen() {
             plans={plans}
             selectedPlanIds={pendingPlanIds}
             onChange={setPendingPlanIds}
-            onClose={async () => {
+            onClose={() => setIsPlanPickerVisible(false)}
+            onSave={async () => {
               if (selectedWorkoutId) {
                 try {
                   await WorkoutPlanService.setTemplatePlans(selectedWorkoutId, pendingPlanIds);
@@ -811,6 +427,7 @@ export default function WorkoutsScreen() {
                   await handleError(error, 'workouts.setTemplatePlans', {
                     snackbarMessage: t('workouts.plans.saveError'),
                   });
+                  return;
                 }
               }
               setIsPlanPickerVisible(false);

@@ -67,35 +67,61 @@ function uniqueMembershipInputs(inputs: PlanMembershipInput[]): PlanMembershipIn
 }
 
 export class WorkoutPlanService {
-  static async createPlan(data: CreateWorkoutPlanData): Promise<WorkoutPlan> {
-    const now = Date.now();
+  static prepareCreatePlan(
+    data: CreateWorkoutPlanData,
+    now = Date.now()
+  ): { plan: WorkoutPlan; records: Model[] } {
     const cycleType = data.cycleType ?? DEFAULT_WORKOUT_PLAN_CYCLE_TYPE;
     const memberships = uniqueMembershipInputs(data.memberships ?? []);
-
-    return database.write(async () => {
-      const plan = database.get<WorkoutPlan>('workout_plans').prepareCreate((record) => {
-        record.name = data.name.trim();
-        record.description = data.description?.trim() || undefined;
-        record.cycleType = cycleType;
-        record.icon = data.icon;
-        record.difficulty = data.difficulty;
+    const plan = database.get<WorkoutPlan>('workout_plans').prepareCreate((record) => {
+      record.name = data.name.trim();
+      record.description = data.description?.trim() || undefined;
+      record.cycleType = cycleType;
+      record.icon = data.icon;
+      record.difficulty = data.difficulty;
+      record.createdAt = now;
+      record.updatedAt = now;
+    });
+    const membershipCollection = database.get<WorkoutPlanTemplate>('workout_plan_templates');
+    const preparedMemberships = memberships.map((membership, index) =>
+      membershipCollection.prepareCreate((record) => {
+        record.planId = plan.id;
+        record.templateId = membership.templateId;
+        record.weekDays = normalizeWeekDays(cycleType, membership.weekDays);
+        record.position = membership.position ?? index;
         record.createdAt = now;
         record.updatedAt = now;
-      });
-      const membershipCollection = database.get<WorkoutPlanTemplate>('workout_plan_templates');
-      const preparedMemberships = memberships.map((membership, index) =>
-        membershipCollection.prepareCreate((record) => {
-          record.planId = plan.id;
-          record.templateId = membership.templateId;
-          record.weekDays = normalizeWeekDays(cycleType, membership.weekDays);
-          record.position = membership.position ?? index;
-          record.createdAt = now;
-          record.updatedAt = now;
-        })
-      );
+      })
+    );
 
-      await database.batch(plan, ...preparedMemberships);
+    return { plan, records: [plan, ...preparedMemberships] };
+  }
+
+  static async createPlan(data: CreateWorkoutPlanData): Promise<WorkoutPlan> {
+    return database.write(async () => {
+      const { plan, records } = this.prepareCreatePlan(data);
+      await database.batch(...records);
       return plan;
+    });
+  }
+
+  static async savePlan(
+    planId: string,
+    patch: UpdateWorkoutPlanData,
+    memberships: PlanMembershipInput[]
+  ): Promise<void> {
+    const normalizedInputs = uniqueMembershipInputs(memberships);
+    await database.write(async () => {
+      const plan = await database.get<WorkoutPlan>('workout_plans').find(planId);
+      const existing = await WorkoutPlanRepository.getMembershipsForPlan(planId).fetch();
+      const nextCycleType = patch.cycleType ?? plan.cycleType;
+      const now = Date.now();
+      const records: Model[] = [
+        this.preparePlanUpdate(plan, patch, now),
+        ...this.prepareMembershipChanges(planId, nextCycleType, existing, normalizedInputs, now),
+      ];
+
+      await database.batch(...records);
     });
   }
 
@@ -105,26 +131,7 @@ export class WorkoutPlanService {
       const previousCycleType = plan.cycleType;
       const nextCycleType = patch.cycleType ?? plan.cycleType;
       const now = Date.now();
-      const records: Model[] = [
-        plan.prepareUpdate((record) => {
-          if (patch.name !== undefined) {
-            record.name = patch.name.trim();
-          }
-          if (patch.description !== undefined) {
-            record.description = patch.description?.trim() || undefined;
-          }
-          if (patch.cycleType !== undefined) {
-            record.cycleType = patch.cycleType;
-          }
-          if (patch.icon !== undefined) {
-            record.icon = patch.icon || undefined;
-          }
-          if (patch.difficulty !== undefined) {
-            record.difficulty = patch.difficulty || undefined;
-          }
-          record.updatedAt = now;
-        }),
-      ];
+      const records: Model[] = [this.preparePlanUpdate(plan, patch, now)];
 
       if (previousCycleType === 'weekly' && nextCycleType === 'rotating') {
         const memberships = await WorkoutPlanRepository.getMembershipsForPlan(planId).fetch();
@@ -144,6 +151,31 @@ export class WorkoutPlanService {
     });
   }
 
+  private static preparePlanUpdate(
+    plan: WorkoutPlan,
+    patch: UpdateWorkoutPlanData,
+    now: number
+  ): WorkoutPlan {
+    return plan.prepareUpdate((record) => {
+      if (patch.name !== undefined) {
+        record.name = patch.name.trim();
+      }
+      if (patch.description !== undefined) {
+        record.description = patch.description?.trim() || undefined;
+      }
+      if (patch.cycleType !== undefined) {
+        record.cycleType = patch.cycleType;
+      }
+      if (patch.icon !== undefined) {
+        record.icon = patch.icon || undefined;
+      }
+      if (patch.difficulty !== undefined) {
+        record.difficulty = patch.difficulty || undefined;
+      }
+      record.updatedAt = now;
+    });
+  }
+
   static async deletePlan(planId: string): Promise<void> {
     const plan = await database.get<WorkoutPlan>('workout_plans').find(planId);
     await plan.markAsDeleted();
@@ -157,60 +189,76 @@ export class WorkoutPlanService {
     await database.write(async () => {
       const plan = await database.get<WorkoutPlan>('workout_plans').find(planId);
       const existing = await WorkoutPlanRepository.getMembershipsForPlan(planId).fetch();
-      const existingByTemplate = new Map(
-        existing.map((membership) => [membership.templateId, membership])
-      );
-      const desiredTemplateIds = new Set(
-        normalizedInputs.map((membership) => membership.templateId)
-      );
-      const collection = database.get<WorkoutPlanTemplate>('workout_plan_templates');
       const now = Date.now();
-      const records: Model[] = [];
-
-      normalizedInputs.forEach((input, index) => {
-        const position = input.position ?? index;
-        const weekDays = normalizeWeekDays(plan.cycleType, input.weekDays);
-        const current = existingByTemplate.get(input.templateId);
-        if (!current) {
-          records.push(
-            collection.prepareCreate((record) => {
-              record.planId = planId;
-              record.templateId = input.templateId;
-              record.weekDays = weekDays;
-              record.position = position;
-              record.createdAt = now;
-              record.updatedAt = now;
-            })
-          );
-          return;
-        }
-
-        if (current.position !== position || !sameWeekDays(current.weekDays, weekDays)) {
-          records.push(
-            current.prepareUpdate((record) => {
-              record.position = position;
-              record.weekDays = weekDays;
-              record.updatedAt = now;
-            })
-          );
-        }
-      });
-
-      for (const membership of existing) {
-        if (!desiredTemplateIds.has(membership.templateId)) {
-          records.push(
-            membership.prepareUpdate((record) => {
-              record.deletedAt = now;
-              record.updatedAt = now;
-            })
-          );
-        }
-      }
+      const records = this.prepareMembershipChanges(
+        planId,
+        plan.cycleType,
+        existing,
+        normalizedInputs,
+        now
+      );
 
       if (records.length > 0) {
         await database.batch(...records);
       }
     });
+  }
+
+  private static prepareMembershipChanges(
+    planId: string,
+    cycleType: WorkoutPlanCycleType,
+    existing: WorkoutPlanTemplate[],
+    memberships: PlanMembershipInput[],
+    now: number
+  ): Model[] {
+    const existingByTemplate = new Map(
+      existing.map((membership) => [membership.templateId, membership])
+    );
+    const desiredTemplateIds = new Set(memberships.map((membership) => membership.templateId));
+    const collection = database.get<WorkoutPlanTemplate>('workout_plan_templates');
+    const records: Model[] = [];
+
+    memberships.forEach((input, index) => {
+      const position = input.position ?? index;
+      const weekDays = normalizeWeekDays(cycleType, input.weekDays);
+      const current = existingByTemplate.get(input.templateId);
+      if (!current) {
+        records.push(
+          collection.prepareCreate((record) => {
+            record.planId = planId;
+            record.templateId = input.templateId;
+            record.weekDays = weekDays;
+            record.position = position;
+            record.createdAt = now;
+            record.updatedAt = now;
+          })
+        );
+        return;
+      }
+
+      if (current.position !== position || !sameWeekDays(current.weekDays, weekDays)) {
+        records.push(
+          current.prepareUpdate((record) => {
+            record.position = position;
+            record.weekDays = weekDays;
+            record.updatedAt = now;
+          })
+        );
+      }
+    });
+
+    for (const membership of existing) {
+      if (!desiredTemplateIds.has(membership.templateId)) {
+        records.push(
+          membership.prepareUpdate((record) => {
+            record.deletedAt = now;
+            record.updatedAt = now;
+          })
+        );
+      }
+    }
+
+    return records;
   }
 
   static async setTemplatePlans(templateId: string, planIds: string[]): Promise<void> {

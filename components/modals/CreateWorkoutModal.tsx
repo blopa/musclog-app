@@ -565,6 +565,7 @@ export default function CreateWorkoutModal({
         selectedPlanIds={selectedPlanIds}
         onChange={setSelectedPlanIds}
         onClose={() => setPlanPickerVisible(false)}
+        onSave={() => setPlanPickerVisible(false)}
         onCreatePlan={() => {
           setPlanPickerVisible(false);
           setCreatePlanVisible(true);
