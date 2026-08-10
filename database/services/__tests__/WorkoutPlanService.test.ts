@@ -246,7 +246,7 @@ describe('WorkoutPlanService', () => {
       throw new Error(`Unexpected collection ${table}`);
     });
 
-    const records = await WorkoutPlanService.prepareSyncTemplateMemberships(
+    const { activePlanIds, records } = await WorkoutPlanService.prepareSyncTemplateMemberships(
       'template-1',
       ['new-plan'],
       123
@@ -260,6 +260,7 @@ describe('WorkoutPlanService', () => {
       position: 0,
     });
     expect(records).toEqual([removed, preparedMemberships[0]]);
+    expect(activePlanIds).toEqual(['new-plan']);
     expect(mockDatabase.write).not.toHaveBeenCalled();
     expect(mockDatabase.get).not.toHaveBeenCalledWith('schedules');
   });
@@ -269,10 +270,45 @@ describe('WorkoutPlanService', () => {
       fetch: jest.fn().mockResolvedValue([]),
     } as any);
 
-    const records = await WorkoutPlanService.prepareSyncTemplateMemberships('template-1', [], 123);
+    const { activePlanIds, records } = await WorkoutPlanService.prepareSyncTemplateMemberships(
+      'template-1',
+      [],
+      123
+    );
 
     expect(records).toEqual([]);
+    expect(activePlanIds).toEqual([]);
     expect(mockDatabase.write).not.toHaveBeenCalled();
     expect(mockDatabase.get).not.toHaveBeenCalledWith('schedules');
+  });
+
+  it('omits plan ids whose plan is deleted or missing from the resolved membership set', async () => {
+    // A stale plan id must not suppress standalone schedules in saveTemplate: the membership
+    // would never be created, so the workout really is Unplanned and still owns its own calendar.
+    mockRepository.getMembershipsForTemplate.mockReturnValue({
+      fetch: jest.fn().mockResolvedValue([]),
+    } as any);
+    mockDatabase.get.mockImplementation((table: string) => {
+      if (table === 'workout_plans') {
+        return {
+          query: jest.fn().mockReturnValue({ fetch: jest.fn().mockResolvedValue([]) }),
+        } as any;
+      }
+      if (table === 'workout_plan_templates') {
+        const collection = prepareCollection([]);
+        collection.query.mockReturnValue({ fetch: jest.fn().mockResolvedValue([]) });
+        return collection as any;
+      }
+      throw new Error(`Unexpected collection ${table}`);
+    });
+
+    const { activePlanIds, records } = await WorkoutPlanService.prepareSyncTemplateMemberships(
+      'template-1',
+      ['deleted-plan'],
+      123
+    );
+
+    expect(activePlanIds).toEqual([]);
+    expect(records).toEqual([]);
   });
 });

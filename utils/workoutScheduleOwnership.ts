@@ -45,6 +45,17 @@ export function resolveWorkoutLogPlanId(
   return activeMemberships.length === 1 ? activeMemberships[0].planId : undefined;
 }
 
+/**
+ * Fallback reminder time for every resolved schedule.
+ *
+ * Standalone `schedules` rows carry an optional `reminder_time`, but `workout_plan_templates` has
+ * no such column, so a planned workout can only ever use this default. That is invisible today —
+ * no UI has ever written `reminder_time`, so every reminder already fires at this time — but a
+ * future per-workout reminder-time setting would be unreachable for planned workouts until the
+ * junction gains its own column.
+ */
+export const DEFAULT_WORKOUT_REMINDER_TIME = '08:00';
+
 export function resolveWorkoutSchedules(
   plans: SchedulePlanSummary[],
   memberships: ScheduleMembershipSummary[],
@@ -65,7 +76,7 @@ export function resolveWorkoutSchedules(
         templateId: membership.templateId,
         planId: membership.planId,
         dayIndex,
-        reminderTime: '08:00',
+        reminderTime: DEFAULT_WORKOUT_REMINDER_TIME,
       });
     }
   }
@@ -79,7 +90,7 @@ export function resolveWorkoutSchedules(
       resolved.push({
         templateId: schedule.templateId,
         dayIndex,
-        reminderTime: schedule.reminderTime || '08:00',
+        reminderTime: schedule.reminderTime || DEFAULT_WORKOUT_REMINDER_TIME,
       });
     }
   }

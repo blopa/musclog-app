@@ -205,7 +205,6 @@
       "preferencesLabel": "Je voorkeuren",
       "preferencesPlaceholder": "Bijv. ik wil spieren opbouwen, ik kan 4 dagen per week trainen, ik heb toegang tot een volledige sportschool, ik ben een gevorderde lifter...",
       "generateButton": "Plan genereren",
-      "successMessage": "Je workout-plan is klaar! {{count}} workout(s) toegevoegd.",
       "successMessageWithPlan": "{{planName}} is klaar met {{count}} workouts.",
       "errorMessage": "Kon geen plan genereren. Probeer het opnieuw.",
       "aiNotConfigured": "AI-functies zijn niet geconfigureerd. Voeg een Gemini- of OpenAI API-sleutel toe bij de Instellingen."

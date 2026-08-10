@@ -825,7 +825,7 @@ describe('WorkoutTemplateService', () => {
       const preparedRemoval = { id: 'membership-removal' } as any;
       const prepareMemberships = jest
         .spyOn(WorkoutPlanService, 'prepareSyncTemplateMemberships')
-        .mockResolvedValue([preparedRemoval]);
+        .mockResolvedValue({ activePlanIds: [], records: [preparedRemoval] });
       mockDatabase.get.mockImplementation((table: string) => {
         if (table === 'workout_templates') {
           return { create: jest.fn().mockResolvedValue(createdTemplate) } as any;
@@ -844,6 +844,106 @@ describe('WorkoutTemplateService', () => {
       expect(prepareMemberships).toHaveBeenCalledWith('template-1', [], expect.any(Number));
       expect(mockDatabase.batch).toHaveBeenCalledWith(preparedRemoval);
       expect(mockDatabase.write).toHaveBeenCalledTimes(1);
+    });
+
+    // Calendar ownership is enforced on write, not just on read. A workout that ends up in a
+    // plan must not also keep standalone schedules: those rows would sit dormant (the notification
+    // resolver ignores them while a membership exists) and silently resurrect the old weekdays if
+    // the workout later leaves the plan.
+    function stubTemplateAndScheduleCollections(
+      createdTemplate: ReturnType<typeof createMockWorkoutTemplate>,
+      preparedSchedules: any[]
+    ) {
+      mockDatabase.get.mockImplementation((table: string) => {
+        if (table === 'workout_templates') {
+          return { create: jest.fn().mockResolvedValue(createdTemplate) } as any;
+        }
+        if (table === 'schedules') {
+          return {
+            prepareCreate: jest.fn((callback) => {
+              const schedule: any = {};
+              callback(schedule);
+              preparedSchedules.push(schedule);
+              return schedule;
+            }),
+          } as any;
+        }
+        return { prepareCreate: jest.fn() } as any;
+      });
+      mockDatabase.write.mockImplementation(async (callback) => callback({} as any));
+    }
+
+    it('skips standalone schedules for a workout that joins a plan', async () => {
+      const createdTemplate = createMockWorkoutTemplate({ id: 'template-1' });
+      const preparedMembership = { id: 'membership-1' } as any;
+      const preparedSchedules: any[] = [];
+      jest
+        .spyOn(WorkoutPlanService, 'prepareSyncTemplateMemberships')
+        .mockResolvedValue({ activePlanIds: ['plan-1'], records: [preparedMembership] });
+      stubTemplateAndScheduleCollections(createdTemplate, preparedSchedules);
+
+      await WorkoutTemplateService.saveTemplate({
+        name: 'Push',
+        exercises: [],
+        selectedDays: [0, 2],
+        planIds: ['plan-1'],
+      });
+
+      expect(preparedSchedules).toEqual([]);
+      expect(mockDatabase.batch).toHaveBeenCalledWith(preparedMembership);
+    });
+
+    it('keeps standalone schedules when the requested plan no longer exists', async () => {
+      const createdTemplate = createMockWorkoutTemplate({ id: 'template-1' });
+      const preparedSchedules: any[] = [];
+      jest
+        .spyOn(WorkoutPlanService, 'prepareSyncTemplateMemberships')
+        .mockResolvedValue({ activePlanIds: [], records: [] });
+      stubTemplateAndScheduleCollections(createdTemplate, preparedSchedules);
+
+      await WorkoutTemplateService.saveTemplate({
+        name: 'Push',
+        exercises: [],
+        selectedDays: [0, 2],
+        planIds: ['deleted-plan'],
+      });
+
+      expect(preparedSchedules).toEqual([
+        expect.objectContaining({ templateId: 'template-1', dayOfWeek: 'Monday' }),
+        expect.objectContaining({ templateId: 'template-1', dayOfWeek: 'Wednesday' }),
+      ]);
+    });
+
+    it('skips standalone schedules when plan intent is omitted but memberships already exist', async () => {
+      const createdTemplate = createMockWorkoutTemplate({ id: 'template-1' });
+      const preparedSchedules: any[] = [];
+      const getActivePlanIds = jest
+        .spyOn(WorkoutPlanService, 'getActivePlanIdsForTemplate')
+        .mockResolvedValue(['plan-1']);
+      stubTemplateAndScheduleCollections(createdTemplate, preparedSchedules);
+
+      await WorkoutTemplateService.saveTemplate({
+        name: 'Push',
+        exercises: [],
+        selectedDays: [0, 2],
+      });
+
+      expect(getActivePlanIds).toHaveBeenCalledWith('template-1');
+      expect(preparedSchedules).toEqual([]);
+    });
+
+    it('does not query memberships when there are no days to suppress', async () => {
+      const createdTemplate = createMockWorkoutTemplate({ id: 'template-1' });
+      const getActivePlanIds = jest.spyOn(WorkoutPlanService, 'getActivePlanIdsForTemplate');
+      stubTemplateAndScheduleCollections(createdTemplate, []);
+
+      await WorkoutTemplateService.saveTemplate({
+        name: 'Push',
+        exercises: [],
+        selectedDays: [],
+      });
+
+      expect(getActivePlanIds).not.toHaveBeenCalled();
     });
 
     it('should create new template successfully', async () => {

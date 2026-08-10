@@ -205,7 +205,6 @@
       "preferencesLabel": "Suas preferências",
       "preferencesPlaceholder": "Ex: Quero ganhar massa muscular, posso treinar 4 dias por semana, tenho acesso a uma academia completa, sou um praticante intermediário...",
       "generateButton": "Gerar Plano",
-      "successMessage": "Seu plano de treino está pronto! {{count}} treino(s) adicionado(s).",
       "successMessageWithPlan": "{{planName}} está pronto com {{count}} treinos.",
       "errorMessage": "Não foi possível gerar um plano. Por favor, tente novamente.",
       "aiNotConfigured": "Os recursos de IA não estão configurados. Adicione uma chave de API do Gemini ou OpenAI nas Configurações."

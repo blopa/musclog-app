@@ -263,22 +263,45 @@ export class WorkoutPlanService {
 
   static async setTemplatePlans(templateId: string, planIds: string[]): Promise<void> {
     await database.write(async () => {
-      const records = await this.prepareSyncTemplateMemberships(templateId, planIds, Date.now());
+      const { records } = await this.prepareSyncTemplateMemberships(
+        templateId,
+        planIds,
+        Date.now()
+      );
       if (records.length > 0) {
         await database.batch(...records);
       }
     });
   }
 
+  /**
+   * Active plan ids a template currently belongs to. Callers use this to decide calendar
+   * ownership: a template with at least one active membership takes its weekdays from that
+   * membership, so it must not also carry standalone `schedules` rows.
+   */
+  static async getActivePlanIdsForTemplate(templateId: string): Promise<string[]> {
+    const memberships = await WorkoutPlanRepository.getMembershipsForTemplate(templateId).fetch();
+    return [...new Set(memberships.map((membership) => membership.planId))];
+  }
+
+  /**
+   * Returns UNSAVED prepared records for the caller to `database.batch()` — it never opens a
+   * writer itself, because `saveTemplate` already owns one and WatermelonDB writers must not nest.
+   *
+   * `activePlanIds` is the membership set the template will have once `records` are committed,
+   * with plan ids that reference a deleted or missing plan already dropped. It exists so the
+   * caller can enforce calendar ownership in the same writer without re-deriving that filtering.
+   */
   static async prepareSyncTemplateMemberships(
     templateId: string,
     planIds: string[],
     now: number
-  ): Promise<Model[]> {
+  ): Promise<{ activePlanIds: string[]; records: Model[] }> {
     const desiredPlanIds = [...new Set(planIds.filter(Boolean))];
     const existing = await WorkoutPlanRepository.getMembershipsForTemplate(templateId).fetch();
     const existingByPlan = new Map(existing.map((membership) => [membership.planId, membership]));
     const records: Model[] = [];
+    const activePlanIds = desiredPlanIds.filter((planId) => existingByPlan.has(planId));
 
     for (const membership of existing) {
       if (!desiredPlanIds.includes(membership.planId)) {
@@ -293,7 +316,7 @@ export class WorkoutPlanService {
 
     const missingPlanIds = desiredPlanIds.filter((planId) => !existingByPlan.has(planId));
     if (missingPlanIds.length === 0) {
-      return records;
+      return { activePlanIds, records };
     }
 
     const activePlans = await database
@@ -318,6 +341,7 @@ export class WorkoutPlanService {
       if (!validPlanIds.has(planId)) {
         continue;
       }
+      activePlanIds.push(planId);
       records.push(
         collection.prepareCreate((record) => {
           record.planId = planId;
@@ -330,7 +354,7 @@ export class WorkoutPlanService {
       );
     }
 
-    return records;
+    return { activePlanIds, records };
   }
 
   static async getPlansWithMemberships(): Promise<PlanWithMemberships[]> {

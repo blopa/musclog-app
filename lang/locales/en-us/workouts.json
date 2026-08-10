@@ -211,7 +211,6 @@
       "preferencesLabel": "Your preferences",
       "preferencesPlaceholder": "E.g. I want to build muscle, I can train 4 days a week, I have access to a full gym, I'm an intermediate lifter...",
       "generateButton": "Generate Plan",
-      "successMessage": "Your workout plan is ready! {{count}} workout(s) added.",
       "successMessageWithPlan": "{{planName}} is ready with {{count}} workouts.",
       "errorMessage": "Couldn't generate a plan. Please try again.",
       "aiNotConfigured": "AI features are not configured. Please add a Gemini or OpenAI API key in Settings."

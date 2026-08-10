@@ -1,4 +1,4 @@
-import { Q } from '@nozbe/watermelondb';
+import { type Model, Q } from '@nozbe/watermelondb';
 import convert from 'convert';
 import { Dumbbell, type LucideIcon, User } from 'lucide-react-native';
 import type { ComponentType } from 'react';
@@ -369,35 +369,42 @@ export class WorkoutTemplateService {
       await database.batch(...preparedExercises, ...preparedSets);
     }
 
+    // Resolve plan membership BEFORE writing schedules: calendar ownership depends on the
+    // outcome. A template with at least one active membership takes its weekdays from that
+    // membership, so writing standalone `schedules` for it too would leave two live calendar
+    // stores for one workout — dormant rows that silently resurrect if it later leaves the plan.
+    let membershipRecords: Model[] = [];
+    let activePlanIds: string[] = [];
+
+    if (data.planIds !== undefined) {
+      ({ activePlanIds, records: membershipRecords } =
+        await WorkoutPlanService.prepareSyncTemplateMemberships(template.id, data.planIds, now));
+    } else if (data.selectedDays.length > 0) {
+      // planIds omitted means "leave memberships alone", so read the current set. Only worth a
+      // query when there are days that would otherwise be written.
+      activePlanIds = await WorkoutPlanService.getActivePlanIdsForTemplate(template.id);
+    }
+
     const schedulesCollection = database.get<Schedule>('schedules');
     const preparedSchedules: Schedule[] = [];
 
-    data.selectedDays.forEach((dayIndex) => {
-      if (dayIndex >= 0 && dayIndex < WEEKDAY_NAMES.length) {
-        preparedSchedules.push(
-          schedulesCollection.prepareCreate((s) => {
-            s.templateId = template.id;
-            s.dayOfWeek = indexToDayName(dayIndex);
-            s.createdAt = now;
-            s.updatedAt = now;
-          })
-        );
-      }
-    });
-
-    if (preparedSchedules.length > 0) {
-      await database.batch(...preparedSchedules);
+    if (activePlanIds.length === 0) {
+      data.selectedDays.forEach((dayIndex) => {
+        if (dayIndex >= 0 && dayIndex < WEEKDAY_NAMES.length) {
+          preparedSchedules.push(
+            schedulesCollection.prepareCreate((s) => {
+              s.templateId = template.id;
+              s.dayOfWeek = indexToDayName(dayIndex);
+              s.createdAt = now;
+              s.updatedAt = now;
+            })
+          );
+        }
+      });
     }
 
-    if (data.planIds !== undefined) {
-      const membershipRecords = await WorkoutPlanService.prepareSyncTemplateMemberships(
-        template.id,
-        data.planIds,
-        now
-      );
-      if (membershipRecords.length > 0) {
-        await database.batch(...membershipRecords);
-      }
+    if (preparedSchedules.length > 0 || membershipRecords.length > 0) {
+      await database.batch(...preparedSchedules, ...membershipRecords);
     }
 
     return template;
