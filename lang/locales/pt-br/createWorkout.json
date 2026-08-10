@@ -34,7 +34,6 @@
       "label": "Agenda independente",
       "description": "Usada apenas enquanto este treino não fizer parte de um plano."
     },
-    "repeatOnDays": "Repetir nos dias",
     "weekly": "Semanal",
     "exercises": "Exercícios",
     "exercisesInWorkout": "Exercícios no treino",

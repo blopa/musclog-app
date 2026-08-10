@@ -53,16 +53,22 @@ function resolveTargetTable(target: ShareForeignKeyTarget, row: ShareRow): strin
   return typeof type === 'string' ? target.polymorphic.typeToTable[type] : undefined;
 }
 
-function sanitizeRow(row: ShareRow): ShareRow | undefined {
+/**
+ * Reduces an incoming row to `id` plus the columns its table declares in `ShareKindSpec.columns`.
+ *
+ * An allowlist rather than a denylist of control fields: the row comes from another phone over a
+ * camera, and everything that survives here is eventually handed to `assignRawColumns`, which
+ * assigns each key onto a WatermelonDB model instance. A denylist would have to anticipate every
+ * property worth shadowing (`collection`, `markAsDeleted`, `_raw`, …); an allowlist only has to
+ * know what the table legitimately holds.
+ */
+function sanitizeRow(row: ShareRow, allowedColumns: readonly string[]): ShareRow | undefined {
   if (row.deleted_at != null || row._status === 'deleted') {
     return undefined;
   }
 
-  return Object.fromEntries(
-    Object.entries(row).filter(
-      ([key]) => !['_changed', '_decrypted', '_status', 'deleted_at'].includes(key)
-    )
-  );
+  const allowed = new Set<string>([...allowedColumns, 'id']);
+  return Object.fromEntries(Object.entries(row).filter(([key]) => allowed.has(key)));
 }
 
 /**
@@ -117,7 +123,7 @@ export function planShareImport(
   for (const table of spec.tables) {
     idMap[table] = {};
     for (const input of records[table] ?? []) {
-      const sanitized = sanitizeRow(input);
+      const sanitized = sanitizeRow(input, spec.columns[table] ?? []);
       if (!sanitized) {
         continue;
       }

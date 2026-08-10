@@ -20,6 +20,9 @@ import {
 
 import { WorkoutPlanSection } from './WorkoutPlanSection';
 
+/** Archived workouts are listed flat: a plan lists what you would train next, not your history. */
+const FLAT_FILTERS = new Set(['archived']);
+
 interface WorkoutLibraryContentProps {
   activeFilter: string;
   error: string | null;
@@ -36,13 +39,6 @@ interface WorkoutLibraryContentProps {
   onOpenWorkoutMenu: (templateId: string, workoutName: string, planId?: string) => void;
   onStartWorkout: (templateId: string, planId?: string) => Promise<void>;
   onToggleAccordion: (id: string) => void;
-}
-
-function matchesQuery(template: WorkoutTemplateWithMetadata, query: string): boolean {
-  return (
-    template.name.toLowerCase().includes(query) ||
-    Boolean(template.description?.toLowerCase().includes(query))
-  );
 }
 
 export function WorkoutLibraryContent({
@@ -64,43 +60,44 @@ export function WorkoutLibraryContent({
 }: WorkoutLibraryContentProps) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const normalizedQuery = searchQuery.trim().toLowerCase();
   const hasSearchQuery = Boolean(searchQuery);
-  const showPlanSections = activeFilter !== 'archived' && plans.length > 0;
+  const showPlanSections = !FLAT_FILTERS.has(activeFilter) && plans.length > 0;
 
-  const filteredTemplates = useMemo(
-    () =>
-      templates.filter((template) => {
-        const matchesType =
-          activeFilter === 'all' || activeFilter === 'archived' || template.type === activeFilter;
-        return matchesType && (!normalizedQuery || matchesQuery(template, normalizedQuery));
-      }),
-    [activeFilter, normalizedQuery, templates]
-  );
-
-  const grouped = useMemo(
+  /**
+   * One grouping pass feeds every layout below.
+   *
+   * When plan sections are off, `plans` is passed as empty and `unplanned` comes back as the whole
+   * filtered library — which is exactly the flat list. That is why there is no second filter here:
+   * a parallel "filteredTemplates" had to re-implement the type filter and the search matcher, and
+   * both copies had already drifted from the ones in `groupTemplatesByPlan`.
+   */
+  const { sections, unplanned } = useMemo(
     () =>
       groupTemplatesByPlan(
-        plans,
+        showPlanSections ? plans : [],
         memberships,
         templates.filter(
           (template) =>
-            activeFilter === 'all' || activeFilter === 'archived' || template.type === activeFilter
+            activeFilter === 'all' ||
+            FLAT_FILTERS.has(activeFilter) ||
+            template.type === activeFilter
         ),
         searchQuery
       ),
-    [activeFilter, memberships, plans, searchQuery, templates]
+    [activeFilter, memberships, plans, searchQuery, showPlanSections, templates]
   );
+
+  /** Searching flattens the sections: a plan heading per result reads better than empty groups. */
   const searchResults = useMemo(
     () => [
-      ...grouped.sections.flatMap((section) =>
+      ...sections.flatMap((section) =>
         section.workouts.map(({ template }) => ({ plan: section.plan, template }))
       ),
-      ...grouped.unplanned.map((template) => ({ plan: undefined, template })),
+      ...unplanned.map((template) => ({ plan: undefined, template })),
     ],
-    [grouped]
+    [sections, unplanned]
   );
-  const resultCount = showPlanSections ? searchResults.length : filteredTemplates.length;
+  const resultCount = searchResults.length;
   const createWorkoutButton =
     templates.length > 0 ? (
       <DashedButton
@@ -218,95 +215,82 @@ export function WorkoutLibraryContent({
     );
   }
 
-  return (
-    <>
-      {showPlanSections && hasSearchQuery ? (
+  // Flat list: no plans to group by, or searching (where a heading per result beats empty groups).
+  if (!showPlanSections || hasSearchQuery) {
+    return (
+      <>
         <AnimatedContent style={{ gap: theme.spacing.gap.base }}>
-          {searchResults.map(({ template, plan }) => (
-            <View key={`${plan?.id ?? 'unplanned'}:${template.id}`} className="gap-2">
-              <Text className="self-start rounded-full bg-accent-primary/10 px-2 py-1 text-xs font-medium text-text-accent">
-                {plan?.name ?? t('workouts.plans.unplanned')}
-              </Text>
-              <WorkoutCard
-                name={template.name}
-                lastCompleted={template.lastCompleted}
-                lastCompletedTimestamp={template.lastCompletedTimestamp}
-                exerciseCount={template.exerciseCount}
-                duration={template.duration}
-                icon={template.icon}
-                variant="standard"
-                onStart={() => onStartWorkout(template.id, plan?.id)}
-                onMore={() => onOpenWorkoutMenu(template.id, template.name, plan?.id)}
-              />
-            </View>
-          ))}
-        </AnimatedContent>
-      ) : null}
-
-      {showPlanSections && !hasSearchQuery ? (
-        <AnimatedContent style={{ gap: theme.spacing.gap.base }}>
-          {grouped.sections.map((section) => (
-            <WorkoutPlanSection
-              key={section.plan.id}
-              section={section}
-              isOpen={openAccordions[section.plan.id] ?? true}
-              onToggle={() => onToggleAccordion(section.plan.id)}
-              onPlanMenu={() => onOpenPlanMenu(section.plan.id)}
-              onStartWorkout={(templateId, planId) => onStartWorkout(templateId, planId)}
-              onWorkoutMenu={onOpenWorkoutMenu}
-            />
-          ))}
-          {grouped.unplanned.length > 0 ? (
-            <Accordion
-              title={t('workouts.plans.unplanned')}
-              count={grouped.unplanned.length}
-              isOpen={openAccordions.unplanned ?? true}
-              onToggle={() => onToggleAccordion('unplanned')}
-              maxHeight={Math.max(480, grouped.unplanned.length * 240 + 80)}
-            >
-              <View className="gap-4 p-4">
-                {grouped.unplanned.map((template) => (
-                  <WorkoutCard
-                    key={template.id}
-                    name={template.name}
-                    lastCompleted={template.lastCompleted}
-                    lastCompletedTimestamp={template.lastCompletedTimestamp}
-                    exerciseCount={template.exerciseCount}
-                    duration={template.duration}
-                    icon={template.icon}
-                    variant="standard"
-                    onStart={() => onStartWorkout(template.id)}
-                    onMore={() => onOpenWorkoutMenu(template.id, template.name)}
-                  />
-                ))}
-              </View>
-            </Accordion>
-          ) : null}
-        </AnimatedContent>
-      ) : null}
-
-      {!showPlanSections ? (
-        <AnimatedContent style={{ gap: theme.spacing.gap.base }}>
-          {filteredTemplates.map((template) => {
-            const featured = template.id === templates[0]?.id;
+          {searchResults.map(({ template, plan }) => {
+            const featured = !hasSearchQuery && template.id === templates[0]?.id;
             return (
-              <WorkoutCard
-                key={template.id}
-                name={template.name}
-                lastCompleted={template.lastCompleted}
-                lastCompletedTimestamp={template.lastCompletedTimestamp}
-                exerciseCount={template.exerciseCount}
-                duration={template.duration}
-                icon={template.icon}
-                variant={featured ? undefined : 'standard'}
-                onStart={() => onStartWorkout(template.id)}
-                onArchive={featured ? undefined : () => onArchiveWorkout(template.id)}
-                onMore={() => onOpenWorkoutMenu(template.id, template.name)}
-              />
+              <View key={`${plan?.id ?? 'unplanned'}:${template.id}`} className="gap-2">
+                {hasSearchQuery && showPlanSections ? (
+                  <Text className="self-start rounded-full bg-accent-primary/10 px-2 py-1 text-xs font-medium text-text-accent">
+                    {plan?.name ?? t('workouts.plans.unplanned')}
+                  </Text>
+                ) : null}
+                <WorkoutCard
+                  name={template.name}
+                  lastCompleted={template.lastCompleted}
+                  lastCompletedTimestamp={template.lastCompletedTimestamp}
+                  exerciseCount={template.exerciseCount}
+                  duration={template.duration}
+                  icon={template.icon}
+                  variant={featured ? undefined : 'standard'}
+                  onStart={() => onStartWorkout(template.id, plan?.id)}
+                  onArchive={featured ? undefined : () => onArchiveWorkout(template.id)}
+                  onMore={() => onOpenWorkoutMenu(template.id, template.name, plan?.id)}
+                />
+              </View>
             );
           })}
         </AnimatedContent>
-      ) : null}
+        {createWorkoutButton}
+      </>
+    );
+  }
+
+  return (
+    <>
+      <AnimatedContent style={{ gap: theme.spacing.gap.base }}>
+        {sections.map((section) => (
+          <WorkoutPlanSection
+            key={section.plan.id}
+            section={section}
+            isOpen={openAccordions[section.plan.id] ?? true}
+            onToggle={() => onToggleAccordion(section.plan.id)}
+            onPlanMenu={() => onOpenPlanMenu(section.plan.id)}
+            onStartWorkout={(templateId, planId) => onStartWorkout(templateId, planId)}
+            onWorkoutMenu={onOpenWorkoutMenu}
+          />
+        ))}
+        {unplanned.length > 0 ? (
+          <Accordion
+            title={t('workouts.plans.unplanned')}
+            count={unplanned.length}
+            isOpen={openAccordions.unplanned ?? true}
+            onToggle={() => onToggleAccordion('unplanned')}
+            maxHeight={Math.max(480, unplanned.length * 240 + 80)}
+          >
+            <View className="gap-4 p-4">
+              {unplanned.map((template) => (
+                <WorkoutCard
+                  key={template.id}
+                  name={template.name}
+                  lastCompleted={template.lastCompleted}
+                  lastCompletedTimestamp={template.lastCompletedTimestamp}
+                  exerciseCount={template.exerciseCount}
+                  duration={template.duration}
+                  icon={template.icon}
+                  variant="standard"
+                  onStart={() => onStartWorkout(template.id)}
+                  onMore={() => onOpenWorkoutMenu(template.id, template.name)}
+                />
+              ))}
+            </View>
+          </Accordion>
+        ) : null}
+      </AnimatedContent>
 
       {createWorkoutButton}
     </>

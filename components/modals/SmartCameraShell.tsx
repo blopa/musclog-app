@@ -10,10 +10,10 @@ import { CameraProcessingIndicator } from '@/components/CameraProcessingIndicato
 import { SmartCameraBottomActions, SmartCameraTopActions } from '@/components/SmartCameraActions';
 import { SMALL_SCREEN_HEIGHT, SmartCameraFrame } from '@/components/SmartCameraFrame';
 import { SmartCameraModePicker } from '@/components/SmartCameraModePicker';
+import type { CameraMode } from '@/constants/camera';
 import { useTheme } from '@/hooks/useTheme';
 
 import { FullScreenModal } from './FullScreenModal';
-import type { CameraMode } from './SmartCameraModal';
 
 /** Heading above the frame plus the hint below it, one entry per capture mode. */
 const CAMERA_MODE_COPY: Record<

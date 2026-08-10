@@ -34,7 +34,6 @@
       "label": "Zelfstandige planning",
       "description": "Alleen gebruikt zolang deze workout niet in een plan staat."
     },
-    "repeatOnDays": "Herhalen op dagen",
     "weekly": "Wekelijks",
     "exercises": "Oefeningen",
     "exercisesInWorkout": "Oefeningen in de workout",

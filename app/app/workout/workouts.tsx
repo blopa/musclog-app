@@ -18,12 +18,12 @@ import CreateWorkoutModal from '@/components/modals/CreateWorkoutModal';
 import { CreateWorkoutOptionsModal } from '@/components/modals/CreateWorkoutOptionsModal';
 import { GenerateWorkoutWithAiModal } from '@/components/modals/GenerateWorkoutWithAiModal';
 import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
-import { WorkoutPlanPickerModal } from '@/components/modals/WorkoutPlanPickerModal';
 import { WorkoutSessionHistoryModal } from '@/components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '@/components/modals/WorkoutSessionOverviewModal';
 import { Button } from '@/components/theme/Button';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { TextInput } from '@/components/theme/TextInput';
+import { usePlanAssignment } from '@/components/workout/usePlanAssignment';
 import { WorkoutLibraryContent } from '@/components/workout/WorkoutLibraryContent';
 import { WorkoutDetailsMenu } from '@/components/WorkoutDetailsMenu';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
@@ -42,11 +42,17 @@ import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { handleError } from '@/utils/handleError';
 
 /**
- * Where the plan editor was opened from. Only the post-save follow-up differs: a plan created from
- * the workout's plan picker files that workout into it, while one created from a menu does not
- * (`selectedWorkoutId` may still hold whatever workout the user last opened a menu for).
+ * The workout a preview is showing, and the plan it was opened from.
+ *
+ * The plan travels WITH the template id rather than being read back off a separate state slot:
+ * starting a workout stamps `workout_logs.plan_id`, and a workout that belongs to several plans
+ * cannot have that inferred after the fact. Previewing used to drop it, so every session started
+ * from a preview was recorded as unaffiliated.
  */
-type PlanEditorOrigin = 'plan-list' | 'workout-picker';
+interface PreviewTarget {
+  templateId: string;
+  planId?: string;
+}
 
 export default function WorkoutsScreen() {
   const theme = useTheme();
@@ -55,14 +61,15 @@ export default function WorkoutsScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ previewTemplateId?: string }>();
   const { isAiConfigured } = useSettings();
-  const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
+  const [previewTarget, setPreviewTarget] = useState<PreviewTarget | null>(null);
+  const previewTemplateId = previewTarget?.templateId ?? null;
 
   // Open template preview when navigating from ViewExerciseModal (e.g. "Workouts using this")
   useEffect(() => {
     const id = params.previewTemplateId;
     if (id?.trim()) {
       const sync = () => {
-        setPreviewTemplateId(id.trim());
+        setPreviewTarget({ templateId: id.trim() });
       };
       sync();
     }
@@ -104,13 +111,12 @@ export default function WorkoutsScreen() {
     useState(false);
   const [isDiscardingInterrupted, setIsDiscardingInterrupted] = useState(false);
   const [openAccordions, setOpenAccordions] = useState<Record<string, boolean>>({});
-  const [planEditorOrigin, setPlanEditorOrigin] = useState<PlanEditorOrigin | null>(null);
   const [editingPlanId, setEditingPlanId] = useState<string | undefined>();
+  const [isPlanEditorVisible, setIsPlanEditorVisible] = useState(false);
   const [isPlanMenuVisible, setIsPlanMenuVisible] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<string>('');
   const [isDeletePlanConfirmationVisible, setIsDeletePlanConfirmationVisible] = useState(false);
   const [isDeletingPlan, setIsDeletingPlan] = useState(false);
-  const [isPlanPickerVisible, setIsPlanPickerVisible] = useState(false);
   const [pendingPlanIds, setPendingPlanIds] = useState<string[]>([]);
 
   useFocusEffect(
@@ -181,11 +187,14 @@ export default function WorkoutsScreen() {
     [t, triggerConfetti]
   );
 
+  // `planId` is the section the workout was tapped in. It is carried on `menuPlanId` rather than
+  // written to `selectedPlanId`, which belongs to the plan menu and its delete confirmation.
+  const [menuPlanId, setMenuPlanId] = useState<string | undefined>();
   const openWorkoutMenu = useCallback(
     (templateId: string, workoutName: string, planId?: string) => {
       setSelectedWorkoutName(workoutName);
       setSelectedWorkoutId(templateId);
-      setSelectedPlanId(planId ?? '');
+      setMenuPlanId(planId);
       setIsMenuVisible(true);
     },
     []
@@ -196,7 +205,7 @@ export default function WorkoutsScreen() {
   }, []);
 
   // Helper function to open preview modal (now synchronous!)
-  const handlePreviewWorkout = (templateId: string) => {
+  const handlePreviewWorkout = (templateId: string, planId?: string) => {
     // Verify template exists in already loaded templates
     const templateMetadata = templates.find((t) => t.id === templateId);
     if (!templateMetadata) {
@@ -205,23 +214,44 @@ export default function WorkoutsScreen() {
     }
 
     setIsMenuVisible(false);
-    setPreviewTemplateId(templateId);
+    setPreviewTarget({ planId, templateId });
   };
 
   // Helper function to start workout from preview
   const handleStartWorkoutFromPreview = async () => {
-    if (!previewTemplateId) {
+    if (!previewTarget) {
       return;
     }
 
-    setPreviewTemplateId(null);
+    const { planId, templateId } = previewTarget;
+    setPreviewTarget(null);
     try {
-      await handleStartWorkout(previewTemplateId);
+      await handleStartWorkout(templateId, planId);
     } catch (err) {
       console.error('Error starting workout from preview:', err);
       showSnackbar('error', t('common.error'));
     }
   };
+
+  const planAssignment = usePlanAssignment({
+    onChange: setPendingPlanIds,
+    onConfirm: async () => {
+      if (!selectedWorkoutId) {
+        return;
+      }
+      try {
+        await WorkoutPlanService.setTemplatePlans(selectedWorkoutId, pendingPlanIds);
+      } catch (error) {
+        await handleError(error, 'workouts.setTemplatePlans', {
+          snackbarMessage: t('workouts.plans.saveError'),
+        });
+        // Rethrown so the picker stays open with the user's selection intact to retry.
+        throw error;
+      }
+    },
+    selectedPlanIds: pendingPlanIds,
+    templateId: selectedWorkoutId || undefined,
+  });
 
   return (
     <MasterLayout>
@@ -402,7 +432,7 @@ export default function WorkoutsScreen() {
         }}
         onPreview={() => {
           if (selectedWorkoutId) {
-            handlePreviewWorkout(selectedWorkoutId);
+            handlePreviewWorkout(selectedWorkoutId, menuPlanId);
           }
         }}
         onAddToPlan={() => {
@@ -415,7 +445,7 @@ export default function WorkoutsScreen() {
               .map((membership) => membership.planId)
           );
           setIsMenuVisible(false);
-          setIsPlanPickerVisible(true);
+          planAssignment.openPicker();
         }}
       />
       <CreateWorkoutOptionsModal
@@ -584,7 +614,7 @@ export default function WorkoutsScreen() {
             onPress: () => {
               setEditingPlanId(selectedPlanId);
               setIsPlanMenuVisible(false);
-              setPlanEditorOrigin('plan-list');
+              setIsPlanEditorVisible(true);
             },
           },
           {
@@ -616,7 +646,7 @@ export default function WorkoutsScreen() {
             description: t('workouts.plans.createDescription'),
             onPress: () => {
               setEditingPlanId(undefined);
-              setPlanEditorOrigin('plan-list');
+              setIsPlanEditorVisible(true);
             },
           },
           {
@@ -650,53 +680,15 @@ export default function WorkoutsScreen() {
         here for the reason docs/modals-problem-on-ios.md allows it: only one of these is ever
         visible at a time, so no dismissed modal is left holding the iOS presenter.
       */}
-      <WorkoutPlanPickerModal
-        visible={isPlanPickerVisible}
-        plans={plans}
-        selectedPlanIds={pendingPlanIds}
-        onChange={setPendingPlanIds}
-        onClose={() => setIsPlanPickerVisible(false)}
-        onSave={async () => {
-          if (selectedWorkoutId) {
-            try {
-              await WorkoutPlanService.setTemplatePlans(selectedWorkoutId, pendingPlanIds);
-            } catch (error) {
-              await handleError(error, 'workouts.setTemplatePlans', {
-                snackbarMessage: t('workouts.plans.saveError'),
-              });
-              return;
-            }
-          }
-          setIsPlanPickerVisible(false);
-        }}
-        onCreatePlan={() => {
-          setIsPlanPickerVisible(false);
-          setEditingPlanId(undefined);
-          setPlanEditorOrigin('workout-picker');
-        }}
-      />
-      {planEditorOrigin ? (
+      {planAssignment.modals}
+      {/* Editing an existing plan, which the assignment flow (create-only) does not cover. */}
+      {isPlanEditorVisible ? (
         <CreateEditPlanModal
           visible={true}
           planId={editingPlanId}
           onClose={() => {
-            setPlanEditorOrigin(null);
+            setIsPlanEditorVisible(false);
             setEditingPlanId(undefined);
-          }}
-          onSaved={async (savedPlanId) => {
-            if (planEditorOrigin !== 'workout-picker' || !selectedWorkoutId) {
-              return;
-            }
-
-            const nextPlanIds = [...new Set([...pendingPlanIds, savedPlanId])];
-            setPendingPlanIds(nextPlanIds);
-            try {
-              await WorkoutPlanService.setTemplatePlans(selectedWorkoutId, nextPlanIds);
-            } catch (error) {
-              await handleError(error, 'workouts.setTemplatePlansAfterCreate', {
-                snackbarMessage: t('workouts.plans.saveError'),
-              });
-            }
           }}
         />
       ) : null}
@@ -781,7 +773,7 @@ export default function WorkoutsScreen() {
       <WorkoutSessionHistoryModal
         visible={isPreviewModalVisible && !!previewTemplate ? !isLoadingPreview : false}
         onClose={() => {
-          setPreviewTemplateId(null);
+          setPreviewTarget(null);
         }}
         isPreview={true}
         workoutTemplate={previewTemplate || undefined}

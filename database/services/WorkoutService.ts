@@ -20,6 +20,7 @@ import { deleteBleDataPointsFiles } from '@/utils/bleWorkoutDataStorage';
 import { handleError } from '@/utils/handleError';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { getRollingWeeklyWorkoutRange } from '@/utils/weeklyWorkoutProgress';
+import { jsDayToWeekdayIndex } from '@/utils/weekdays';
 import { calculateWorkoutKcal, type MWEMInput } from '@/utils/workoutEnergyCalculator';
 import { resolveWorkoutSchedules } from '@/utils/workoutScheduleOwnership';
 import {
@@ -397,7 +398,7 @@ export class WorkoutService {
         .query(Q.where('deleted_at', Q.eq(null)))
         .fetch(),
     ]);
-    const dayIndex = (date.getDay() + 6) % 7;
+    const dayIndex = jsDayToWeekdayIndex(date.getDay());
     const templateIds = [
       ...new Set(
         resolveWorkoutSchedules(plans, memberships, schedules)

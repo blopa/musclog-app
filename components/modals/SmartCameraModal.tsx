@@ -5,6 +5,7 @@ import { Pressable, View } from 'react-native';
 
 import { CameraView, type CameraViewRef } from '@/components/CameraView';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
+import type { CameraMode } from '@/constants/camera';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { type MealType } from '@/database/models';
 import { NutritionService } from '@/database/services';
@@ -44,8 +45,6 @@ import { FoodSearchModal } from './FoodSearchModal';
 import { LogMealModal } from './LogMealModal';
 import { SmartCameraShell } from './SmartCameraShell';
 import { useOpticalStreamOffer } from './useOpticalStreamOffer';
-
-export type CameraMode = 'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan';
 
 const getSafeCameraMode = (
   mode: CameraMode,

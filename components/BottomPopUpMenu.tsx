@@ -108,54 +108,49 @@ export function BottomPopUpMenu({
       footer={footer}
       scrollable={scrollable}
     >
-      <>
-        {isLoading ? (
-          <View className="items-center justify-center p-12">
-            <ActivityIndicator size="large" color={theme.colors.accent.primary} />
-            {loadingTitle ? (
-              <Text className="mt-4 text-center text-lg font-bold text-text-primary">
-                {loadingTitle}
-              </Text>
-            ) : null}
-          </View>
-        ) : (
-          children ||
-          (items && (
-            <View className="p-6">
-              {items.map((item, index) => (
-                <View
-                  key={index}
-                  style={
-                    index < items.length - 1
-                      ? {
-                          borderBottomWidth: 1,
-                          borderBottomColor: theme.colors.background.white10,
-                        }
-                      : undefined
-                  }
-                >
-                  <OptionItem
-                    icon={item.icon}
-                    iconColor={item.iconColor}
-                    iconBgColor={item.iconBgColor}
-                    title={item.title}
-                    description={item.description}
-                    titleColor={item.titleColor}
-                    descriptionColor={item.descriptionColor}
-                    onPress={() => {
-                      if (!item.keepOpenOnPress) {
-                        onClose?.();
-                      }
+      {isLoading ? (
+        <View className="items-center justify-center p-12">
+          <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+          {loadingTitle ? (
+            <Text className="mt-4 text-center text-lg font-bold text-text-primary">
+              {loadingTitle}
+            </Text>
+          ) : null}
+        </View>
+      ) : (
+        children ||
+        (items && (
+          <View className="p-6">
+            {items.map((item, index) => (
+              <View
+                key={index}
+                style={
+                  index < items.length - 1
+                    ? { borderBottomWidth: 1, borderBottomColor: theme.colors.background.white10 }
+                    : undefined
+                }
+              >
+                <OptionItem
+                  icon={item.icon}
+                  iconColor={item.iconColor}
+                  iconBgColor={item.iconBgColor}
+                  title={item.title}
+                  description={item.description}
+                  titleColor={item.titleColor}
+                  descriptionColor={item.descriptionColor}
+                  onPress={() => {
+                    if (!item.keepOpenOnPress) {
+                      onClose?.();
+                    }
 
-                      item.onPress();
-                    }}
-                  />
-                </View>
-              ))}
-            </View>
-          ))
-        )}
-      </>
+                    item.onPress();
+                  }}
+                />
+              </View>
+            ))}
+          </View>
+        ))
+      )}
     </BottomPopUp>
   );
 }

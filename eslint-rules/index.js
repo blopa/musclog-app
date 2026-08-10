@@ -4,6 +4,7 @@ const noReactLazy = require('./no-react-lazy');
 const noThemeImport = require('./no-theme-import');
 const requireSubModalCleanup = require('./require-sub-modal-cleanup');
 const noSiblingModals = require('./no-sibling-modals');
+const noKeyboardAwareContentContainerClass = require('./no-keyboard-aware-content-container-class');
 
 module.exports = {
   meta: {},
@@ -14,5 +15,6 @@ module.exports = {
     'no-theme-import': noThemeImport,
     'require-sub-modal-cleanup': requireSubModalCleanup,
     'no-sibling-modals': noSiblingModals,
+    'no-keyboard-aware-content-container-class': noKeyboardAwareContentContainerClass,
   },
 };

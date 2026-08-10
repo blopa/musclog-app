@@ -14,16 +14,14 @@ import type { WorkoutType } from '@/constants/workoutTypes';
 import { WORKOUT_TYPES } from '@/constants/workoutTypes';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { usePlanAssignment } from '@/components/workout/usePlanAssignment';
 import { useWorkoutForm } from '@/hooks/useWorkoutForm';
-import { useWorkoutPlans } from '@/hooks/useWorkoutPlans';
 import { getWeekdayLabels } from '@/utils/workout';
 import { getWorkoutIcon, WORKOUT_ICON_OPTIONS } from '@/utils/workoutIconUtils';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
 import { AddExerciseModal } from './AddExerciseModal';
-import { CreateEditPlanModal } from './CreateEditPlanModal';
 import { FullScreenModal } from './FullScreenModal';
-import { WorkoutPlanPickerModal } from './WorkoutPlanPickerModal';
 
 type CreateWorkoutModalProps = {
   visible: boolean;
@@ -41,16 +39,11 @@ export default function CreateWorkoutModal({
   const { isAiConfigured } = useSettings();
 
   const [addExerciseVisible, setAddExerciseVisible] = useState(false);
-  const [planPickerVisible, setPlanPickerVisible] = useState(false);
-  const [createPlanVisible, setCreatePlanVisible] = useState(false);
-  const { plans } = useWorkoutPlans();
 
   useEffect(() => {
     if (!visible) {
       const reset = () => {
         setAddExerciseVisible(false);
-        setPlanPickerVisible(false);
-        setCreatePlanVisible(false);
       };
       reset();
     }
@@ -85,6 +78,14 @@ export default function CreateWorkoutModal({
     handleDeleteExercises,
     showConfetti,
   } = useWorkoutForm({ templateId, onSaveSuccess: onClose });
+
+  // Membership is written by this form's own Save, so confirming the picker only closes it.
+  const planAssignment = usePlanAssignment({
+    onChange: setSelectedPlanIds,
+    onConfirm: () => {},
+    selectedPlanIds,
+    templateId,
+  });
 
   const workoutInsightOptions = [
     { label: t('createWorkout.workoutInsight.none'), value: 'none' },
@@ -419,7 +420,7 @@ export default function CreateWorkoutModal({
             }}
           >
             <Pressable
-              onPress={() => setPlanPickerVisible(true)}
+              onPress={planAssignment.openPicker}
               className="mb-4 flex-row items-center justify-between rounded-lg border border-border-light bg-bg-secondary p-4"
             >
               <View className="min-w-0 flex-1">
@@ -428,7 +429,7 @@ export default function CreateWorkoutModal({
                 </Text>
                 <Text className="mt-1 text-xs text-text-secondary" numberOfLines={2}>
                   {selectedPlanIds.length > 0
-                    ? plans
+                    ? planAssignment.plans
                         .filter((plan) => selectedPlanIds.includes(plan.id))
                         .map((plan) => plan.name)
                         .join(', ')
@@ -559,28 +560,7 @@ export default function CreateWorkoutModal({
           onAddExercise={handleAddExerciseWithMetadata}
         />
       ) : null}
-      <WorkoutPlanPickerModal
-        visible={planPickerVisible}
-        plans={plans}
-        selectedPlanIds={selectedPlanIds}
-        onChange={setSelectedPlanIds}
-        onClose={() => setPlanPickerVisible(false)}
-        onSave={() => setPlanPickerVisible(false)}
-        onCreatePlan={() => {
-          setPlanPickerVisible(false);
-          setCreatePlanVisible(true);
-        }}
-      />
-      {createPlanVisible ? (
-        <CreateEditPlanModal
-          visible={true}
-          onClose={() => setCreatePlanVisible(false)}
-          onSaved={(createdPlanId) => {
-            setSelectedPlanIds((current) => [...new Set([...current, createdPlanId])]);
-            setCreatePlanVisible(false);
-          }}
-        />
-      ) : null}
+      {planAssignment.modals}
     </FullScreenModal>
   );
 }

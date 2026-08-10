@@ -54,14 +54,11 @@ export interface MWEMInput {
 
 // `muscle_group` holds either the coarse or the fine-grained vocabulary, so neither can be
 // matched by name here. `muscleGroupFamily` collapses both — see `MUSCLE_GROUP_FAMILY` in
-// `database/models/Exercise.ts` for why a local Set of group names is a silent, total miss rather
-// than a type error.
-function isLegMovement(muscleGroup: MuscleGroup): boolean {
-  return muscleGroupFamily(muscleGroup) === 'legs';
-}
+// `database/models/muscleGroupFamily.ts` for why a local Set of group names is a silent, total
+// miss rather than a type error.
 
 function resolveDisplacementFactor(muscleGroup: MuscleGroup, mechanicType: MechanicType): number {
-  if (isLegMovement(muscleGroup)) {
+  if (muscleGroupFamily(muscleGroup) === 'legs') {
     return 0.45;
   }
 
@@ -82,7 +79,7 @@ function resolveBodyweightContribution(
     return weightKg;
   }
 
-  if (mechanicType === 'compound' && isLegMovement(muscleGroup)) {
+  if (mechanicType === 'compound' && muscleGroupFamily(muscleGroup) === 'legs') {
     return 0.88 * weightKg;
   }
 

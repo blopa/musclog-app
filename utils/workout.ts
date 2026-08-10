@@ -4,7 +4,7 @@ import { Dumbbell, User } from 'lucide-react-native';
 import type { SelectorOption } from '@/components/theme/OptionsMultiSelector/utils';
 import type { Units } from '@/constants/settings';
 import Exercise, { type EquipmentType } from '@/database/models/Exercise';
-import Schedule, { type DayOfWeek } from '@/database/models/Schedule';
+import Schedule from '@/database/models/Schedule';
 import type { ExerciseInWorkout } from '@/database/services/WorkoutTemplateService';
 import i18n, { DEFAULT_LANG } from '@/lang/lang';
 import { Theme } from '@/theme';
@@ -12,6 +12,7 @@ import { Theme } from '@/theme';
 import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
 import { kgToDisplay } from './unitConversion';
 import { getWeightUnit } from './units';
+import { dayNameToIndex } from './weekdays';
 
 // ============================================================================
 // Duration Formatting
@@ -49,31 +50,8 @@ export function getWeekdayLabels(): string[] {
   ];
 }
 
-// Day names mapping for database: WeekdayPicker index -> Day name
-// WeekdayPicker uses: 0 = Monday, 1 = Tuesday, ..., 6 = Sunday
-export const WEEKDAY_NAMES: DayOfWeek[] = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday',
-];
-
-/**
- * Convert day name from database to WeekdayPicker index
- */
-export function dayNameToIndex(dayName: DayOfWeek | string): number {
-  return WEEKDAY_NAMES.indexOf(dayName as DayOfWeek);
-}
-
-/**
- * Convert WeekdayPicker index to day name for database
- */
-export function indexToDayName(index: number): DayOfWeek {
-  return (WEEKDAY_NAMES[index] || WEEKDAY_NAMES[0]) as DayOfWeek;
-}
+// The index ↔ day-name mapping lives in `utils/weekdays.ts` so pure consumers can import it
+// without dragging this module's icons, theme and i18n along.
 
 // ============================================================================
 // Exercise UI Helpers

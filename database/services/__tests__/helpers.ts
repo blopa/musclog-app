@@ -246,7 +246,7 @@ export function createMockWorkoutLogSet(overrides: Partial<any> = {}) {
  * Creates a mock WorkoutTemplate model
  */
 export function createMockWorkoutTemplate(overrides: Partial<any> = {}) {
-  return {
+  const template: any = {
     id: 'template-1',
     name: 'Test Template',
     description: 'Test Description',
@@ -261,8 +261,13 @@ export function createMockWorkoutTemplate(overrides: Partial<any> = {}) {
       callback({ updatedAt: Date.now() });
       return Promise.resolve();
     }),
+    prepareUpdate: jest.fn((callback) => {
+      callback(template);
+      return template;
+    }),
     ...overrides,
   };
+  return template;
 }
 
 export function createMockWorkoutPlan(overrides: Partial<any> = {}) {
@@ -307,7 +312,7 @@ export function createMockWorkoutPlanTemplate(overrides: Partial<any> = {}) {
  * Creates a mock WorkoutTemplateExercise model
  */
 export function createMockWorkoutTemplateExercise(overrides: Partial<any> = {}) {
-  return {
+  const templateExercise: any = {
     id: 'template-exercise-1',
     templateId: 'template-1',
     exerciseId: 'exercise-1',
@@ -321,15 +326,20 @@ export function createMockWorkoutTemplateExercise(overrides: Partial<any> = {}) 
       callback({ updatedAt: Date.now() });
       return Promise.resolve();
     }),
+    prepareUpdate: jest.fn((callback) => {
+      callback(templateExercise);
+      return templateExercise;
+    }),
     ...overrides,
   };
+  return templateExercise;
 }
 
 /**
  * Creates a mock WorkoutTemplateSet model
  */
 export function createMockWorkoutTemplateSet(overrides: Partial<any> = {}) {
-  return {
+  const templateSet: any = {
     id: 'template-set-1',
     templateExerciseId: 'template-exercise-1',
     targetReps: 10,
@@ -342,15 +352,20 @@ export function createMockWorkoutTemplateSet(overrides: Partial<any> = {}) {
       callback({ updatedAt: Date.now() });
       return Promise.resolve();
     }),
+    prepareUpdate: jest.fn((callback) => {
+      callback(templateSet);
+      return templateSet;
+    }),
     ...overrides,
   };
+  return templateSet;
 }
 
 /**
  * Creates a mock Schedule model
  */
 export function createMockSchedule(overrides: Partial<any> = {}) {
-  return {
+  const schedule: any = {
     id: 'schedule-1',
     templateId: 'template-1',
     dayOfWeek: 'Monday',
@@ -361,8 +376,13 @@ export function createMockSchedule(overrides: Partial<any> = {}) {
       callback({ updatedAt: Date.now() });
       return Promise.resolve();
     }),
+    prepareUpdate: jest.fn((callback) => {
+      callback(schedule);
+      return schedule;
+    }),
     ...overrides,
   };
+  return schedule;
 }
 
 /**

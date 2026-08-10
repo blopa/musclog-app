@@ -82,6 +82,15 @@ export function useOpticalReceiver(options: { active: boolean }) {
   const containerRef = useRef<null | Uint8Array>(null);
   const jsonRef = useRef<null | string>(null);
   const unpackingRef = useRef(false);
+  /**
+   * Bumped by every `reset`. `unpackOpticalContainer` decompresses and verifies — and decrypts,
+   * when a passphrase is involved — which takes long enough for the user to close the modal or
+   * start a new scan while it is in flight. The hook stays mounted when the modal closes, so
+   * without this a stale continuation would publish its JSON over whatever came after it: a
+   * reopened screen landing straight in `verified` on the PREVIOUS payload, or a newer scan being
+   * silently replaced by an older one. Mirrors the sender's `generationRef`.
+   */
+  const generationRef = useRef(0);
 
   useKeepScreenAwake('optical-receive', active);
 
@@ -120,14 +129,28 @@ export function useOpticalReceiver(options: { active: boolean }) {
       return;
     }
 
+    const generation = generationRef.current;
+    // Every publish below is gated on this: a `reset` during the await makes the result obsolete,
+    // and obsolete results are dropped rather than written over the newer state.
+    const isCurrent = () => generationRef.current === generation;
+
     unpackingRef.current = true;
     try {
       const headerMeta = parseOpticalContainerHeader(container);
+      if (!isCurrent()) {
+        return;
+      }
       setState((previous) => ({ ...previous, meta: headerMeta, phase: 'unpacking' }));
       const { json, meta } = await unpackOpticalContainer(container, { passphrase });
+      if (!isCurrent()) {
+        return;
+      }
       jsonRef.current = json;
       setState((previous) => ({ ...previous, meta, phase: 'verified' }));
     } catch (error) {
+      if (!isCurrent()) {
+        return;
+      }
       const code =
         error instanceof OpticalContainerError
           ? error.code
@@ -142,11 +165,16 @@ export function useOpticalReceiver(options: { active: boolean }) {
         phase: code === 'needs-passphrase' || code === 'bad-passphrase' ? 'passphrase' : 'error',
       }));
     } finally {
-      unpackingRef.current = false;
+      // A newer generation owns the flag now, so a stale run must not clear it out from under the
+      // unpack that replaced it.
+      if (isCurrent()) {
+        unpackingRef.current = false;
+      }
     }
   }, []);
 
   const reset = useCallback(() => {
+    generationRef.current++;
     receiverRef.current.reset();
     noSignalRef.current = new NoSignalHintTimer();
     noSignalRef.current.cameraStarted(Date.now());

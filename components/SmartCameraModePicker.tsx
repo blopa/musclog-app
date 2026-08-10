@@ -3,9 +3,8 @@ import { FileText, type LucideIcon, ScanBarcode, Sparkles } from 'lucide-react-n
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
+import type { CameraMode } from '@/constants/camera';
 import { useTheme } from '@/hooks/useTheme';
-
-import type { CameraMode } from './modals/SmartCameraModal';
 
 type ModePickerTabProps = {
   mode: CameraMode;

@@ -130,6 +130,35 @@ describe('planShareImport', () => {
     );
   });
 
+  it('strips columns the table does not declare, so a crafted row cannot reach the model', () => {
+    // Everything that survives planning is handed to `assignRawColumns`, which assigns each key
+    // onto a WatermelonDB model instance. A share arrives from an unknown phone over a camera, so
+    // a row carrying `collection` or `mark_as_deleted` would shadow the model's own members.
+    const hostile = records();
+    Object.assign(hostile.foods[0], {
+      __proto__: { polluted: true },
+      _raw: { id: 'spoofed' },
+      collection: 'hijacked',
+      mark_as_deleted: 1,
+      unknown_future_column: 'from a newer app version',
+    });
+
+    const plan = planShareImport(MEAL_SHARE_SPEC, hostile, {
+      generateId: ids(),
+      nowMs: 1,
+      resolutions: { foods: { 'food-reused': 'local-existing-food' } },
+    });
+    const food = plan.creates.find((item) => item.sourceId === 'food-created')?.row;
+
+    expect(food).toBeDefined();
+    for (const key of ['_raw', 'collection', 'mark_as_deleted', 'unknown_future_column']) {
+      expect(food).not.toHaveProperty(key);
+    }
+    // The legitimate columns still come through — this is a filter, not a rejection.
+    expect(food).toMatchObject({ calories: 100, name: 'Created food' });
+    expect(Object.prototype.hasOwnProperty.call({}, 'polluted')).toBe(false);
+  });
+
   it('throws instead of leaking a sender id through a missing foreign key', () => {
     const broken = records();
     broken.meal_foods[0].food_id = 'absent-food';

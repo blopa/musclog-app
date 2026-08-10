@@ -19,6 +19,7 @@ import {
   localDayStartMs,
   MS_PER_SOLAR_DAY,
 } from '@/utils/calendarDate';
+import { toExpoWeekday } from '@/utils/weekdays';
 import { resolveWorkoutSchedules } from '@/utils/workoutScheduleOwnership';
 
 export class NotificationService {
@@ -334,7 +335,7 @@ export class NotificationService {
         },
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
-          weekday: ((schedule.dayIndex + 1) % 7) + 1,
+          weekday: toExpoWeekday(schedule.dayIndex),
           hour: hours,
           minute: minutes,
         },

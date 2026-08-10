@@ -34,7 +34,6 @@
       "label": "Horario independiente",
       "description": "Solo se usa mientras este entrenamiento no pertenece a un plan."
     },
-    "repeatOnDays": "Repetir en los días",
     "weekly": "Semanal",
     "exercises": "Ejercicios",
     "exercisesInWorkout": "Ejercicios en el entrenamiento",

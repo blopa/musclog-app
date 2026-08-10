@@ -57,6 +57,8 @@ module.exports = defineConfig([
       'local/require-sub-modal-cleanup': 'warn',
       // Prevent modal components from being rendered as siblings (iOS UIViewController bug)
       'local/no-sibling-modals': 'warn',
+      // NativeWind drops contentContainerClassName on KeyboardAwareScrollView (silent layout bug)
+      'local/no-keyboard-aware-content-container-class': 'error',
       // Sort and group imports
       'simple-import-sort/imports': 'warn',
       'simple-import-sort/exports': 'warn',

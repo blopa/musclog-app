@@ -39,7 +39,13 @@ export interface PlanSection<T extends WorkoutTemplateSummary = WorkoutTemplateS
   workouts: PlannedWorkout<T>[];
 }
 
-function templateMatches(template: WorkoutTemplateSummary, query: string): boolean {
+/**
+ * Whether a workout matches a search box query, which must already be trimmed and lowercased.
+ *
+ * Exported because the library screen filters with the same rule and had a byte-for-byte copy of
+ * this function under a different name.
+ */
+export function templateMatches(template: WorkoutTemplateSummary, query: string): boolean {
   return (
     template.name.toLowerCase().includes(query) ||
     Boolean(template.description?.toLowerCase().includes(query))

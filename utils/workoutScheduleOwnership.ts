@@ -1,14 +1,5 @@
 import type { WorkoutPlanCycleType } from '@/constants/workoutPlans';
-
-const WEEKDAY_NAMES = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday',
-] as const;
+import { dayNameToIndex } from '@/utils/weekdays';
 
 export interface SchedulePlanSummary {
   id: string;
@@ -85,7 +76,7 @@ export function resolveWorkoutSchedules(
     if (plannedTemplateIds.has(schedule.templateId)) {
       continue;
     }
-    const dayIndex = WEEKDAY_NAMES.indexOf(schedule.dayOfWeek as (typeof WEEKDAY_NAMES)[number]);
+    const dayIndex = dayNameToIndex(schedule.dayOfWeek);
     if (dayIndex >= 0) {
       resolved.push({
         templateId: schedule.templateId,

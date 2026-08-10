@@ -34,6 +34,27 @@ describe('groupTemplatesByPlan', () => {
     expect(result.unplanned.map((template) => template.id)).toEqual(['legs', 'cardio']);
   });
 
+  it('returns the whole filtered library as unplanned when given no plans', () => {
+    // `WorkoutLibraryContent` leans on this for its flat layouts (archived filter, no plans yet):
+    // it passes `plans: []` and renders `unplanned`, instead of keeping a second filtering pass
+    // that had to re-implement the type filter and the search matcher.
+    const memberships: PlanMembershipSummary[] = [
+      { planId: 'weekly', templateId: 'push', weekDays: [0], position: 0 },
+    ];
+
+    const result = groupTemplatesByPlan([], memberships, templates);
+
+    expect(result.sections).toEqual([]);
+    expect(result.unplanned).toEqual(templates);
+  });
+
+  it('applies the search query to the flat, plan-less list too', () => {
+    const result = groupTemplatesByPlan([], [], templates, 'easy run');
+
+    expect(result.sections).toEqual([]);
+    expect(result.unplanned.map((template) => template.id)).toEqual(['cardio']);
+  });
+
   it('sorts weekly days first and unscheduled members last', () => {
     const memberships: PlanMembershipSummary[] = [
       { planId: 'weekly', templateId: 'push', weekDays: [4], position: 0 },

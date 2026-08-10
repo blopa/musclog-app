@@ -5,6 +5,7 @@ import {
   type WorkoutPlanCycleType,
 } from '@/constants/workoutPlans';
 import { database } from '@/database/database-instance';
+import Schedule from '@/database/models/Schedule';
 import WorkoutPlan from '@/database/models/WorkoutPlan';
 import WorkoutPlanTemplate from '@/database/models/WorkoutPlanTemplate';
 import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanRepository';
@@ -66,11 +67,59 @@ function uniqueMembershipInputs(inputs: PlanMembershipInput[]): PlanMembershipIn
   });
 }
 
+/**
+ * Plans and the workouts filed under them.
+ *
+ * Two rules are enforced here rather than left to callers, because a caller that forgets either one
+ * leaves the database in a state the readers cannot describe:
+ *
+ *  1. **Plan fields and the plan's full membership are one write.** `savePlan` is the only way to
+ *     change an existing plan. There is deliberately no `updatePlan` + `setPlanMemberships` pair:
+ *     splitting them lets a cycle-type change commit while the weekday clearing it implies does
+ *     not, and the plan editor edits both at once anyway.
+ *  2. **A workout has exactly one calendar owner.** The moment a workout gains a plan membership,
+ *     its standalone `schedules` rows are soft-deleted in the SAME batch — see
+ *     {@link WorkoutPlanService.prepareStandaloneScheduleCleanup}. Leaving them behind is not
+ *     cosmetic: `resolveWorkoutSchedules` ignores them while a membership exists, so they are
+ *     invisible right up until the workout leaves the plan and its old schedule silently returns.
+ */
 export class WorkoutPlanService {
-  static prepareCreatePlan(
+  /**
+   * Soft-deletes the standalone `schedules` of workouts that now belong to a plan.
+   *
+   * Called on every path that can create a membership. Passing a template that already had one
+   * costs nothing — it has no active schedules left to find — so callers pass their whole
+   * membership set rather than trying to work out which ones are new.
+   */
+  private static async prepareStandaloneScheduleCleanup(
+    templateIds: string[],
+    now: number
+  ): Promise<Model[]> {
+    if (templateIds.length === 0) {
+      return [];
+    }
+
+    const schedules = await database
+      .get<Schedule>('schedules')
+      .query(Q.where('template_id', Q.oneOf(templateIds)), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    return schedules.map((schedule) =>
+      schedule.prepareUpdate((record) => {
+        record.deletedAt = now;
+        record.updatedAt = now;
+      })
+    );
+  }
+
+  /**
+   * Returns UNSAVED prepared records — a caller inside a writer batches them itself, and
+   * WatermelonDB writers must not nest.
+   */
+  static async prepareCreatePlan(
     data: CreateWorkoutPlanData,
     now = Date.now()
-  ): { plan: WorkoutPlan; records: Model[] } {
+  ): Promise<{ plan: WorkoutPlan; records: Model[] }> {
     const cycleType = data.cycleType ?? DEFAULT_WORKOUT_PLAN_CYCLE_TYPE;
     const memberships = uniqueMembershipInputs(data.memberships ?? []);
     const plan = database.get<WorkoutPlan>('workout_plans').prepareCreate((record) => {
@@ -82,29 +131,31 @@ export class WorkoutPlanService {
       record.createdAt = now;
       record.updatedAt = now;
     });
-    const membershipCollection = database.get<WorkoutPlanTemplate>('workout_plan_templates');
-    const preparedMemberships = memberships.map((membership, index) =>
-      membershipCollection.prepareCreate((record) => {
-        record.planId = plan.id;
-        record.templateId = membership.templateId;
-        record.weekDays = normalizeWeekDays(cycleType, membership.weekDays);
-        record.position = membership.position ?? index;
-        record.createdAt = now;
-        record.updatedAt = now;
-      })
-    );
 
-    return { plan, records: [plan, ...preparedMemberships] };
+    return {
+      plan,
+      // A brand-new plan has no existing memberships, so the same diff that powers `savePlan`
+      // produces exactly the creates a bespoke loop used to.
+      records: [
+        plan,
+        ...this.prepareMembershipChanges(plan.id, cycleType, [], memberships, now),
+        ...(await this.prepareStandaloneScheduleCleanup(
+          memberships.map((membership) => membership.templateId),
+          now
+        )),
+      ],
+    };
   }
 
   static async createPlan(data: CreateWorkoutPlanData): Promise<WorkoutPlan> {
     return database.write(async () => {
-      const { plan, records } = this.prepareCreatePlan(data);
+      const { plan, records } = await this.prepareCreatePlan(data);
       await database.batch(...records);
       return plan;
     });
   }
 
+  /** The only way to change an existing plan: fields and full membership, in one batch. */
   static async savePlan(
     planId: string,
     patch: UpdateWorkoutPlanData,
@@ -116,38 +167,15 @@ export class WorkoutPlanService {
       const existing = await WorkoutPlanRepository.getMembershipsForPlan(planId).fetch();
       const nextCycleType = patch.cycleType ?? plan.cycleType;
       const now = Date.now();
-      const records: Model[] = [
+
+      await database.batch(
         this.preparePlanUpdate(plan, patch, now),
         ...this.prepareMembershipChanges(planId, nextCycleType, existing, normalizedInputs, now),
-      ];
-
-      await database.batch(...records);
-    });
-  }
-
-  static async updatePlan(planId: string, patch: UpdateWorkoutPlanData): Promise<void> {
-    await database.write(async () => {
-      const plan = await database.get<WorkoutPlan>('workout_plans').find(planId);
-      const previousCycleType = plan.cycleType;
-      const nextCycleType = patch.cycleType ?? plan.cycleType;
-      const now = Date.now();
-      const records: Model[] = [this.preparePlanUpdate(plan, patch, now)];
-
-      if (previousCycleType === 'weekly' && nextCycleType === 'rotating') {
-        const memberships = await WorkoutPlanRepository.getMembershipsForPlan(planId).fetch();
-        for (const membership of memberships) {
-          if (membership.weekDays?.length) {
-            records.push(
-              membership.prepareUpdate((record) => {
-                record.weekDays = undefined;
-                record.updatedAt = now;
-              })
-            );
-          }
-        }
-      }
-
-      await database.batch(...records);
+        ...(await this.prepareStandaloneScheduleCleanup(
+          normalizedInputs.map((membership) => membership.templateId),
+          now
+        ))
+      );
     });
   }
 
@@ -181,29 +209,10 @@ export class WorkoutPlanService {
     await plan.markAsDeleted();
   }
 
-  static async setPlanMemberships(
-    planId: string,
-    memberships: PlanMembershipInput[]
-  ): Promise<void> {
-    const normalizedInputs = uniqueMembershipInputs(memberships);
-    await database.write(async () => {
-      const plan = await database.get<WorkoutPlan>('workout_plans').find(planId);
-      const existing = await WorkoutPlanRepository.getMembershipsForPlan(planId).fetch();
-      const now = Date.now();
-      const records = this.prepareMembershipChanges(
-        planId,
-        plan.cycleType,
-        existing,
-        normalizedInputs,
-        now
-      );
-
-      if (records.length > 0) {
-        await database.batch(...records);
-      }
-    });
-  }
-
+  /**
+   * The membership diff for one plan. Pure record preparation — `normalizeWeekDays` is what makes
+   * a switch to a rotating cycle drop every stored weekday, so no caller needs to do that itself.
+   */
   private static prepareMembershipChanges(
     planId: string,
     cycleType: WorkoutPlanCycleType,
@@ -278,10 +287,28 @@ export class WorkoutPlanService {
    * Active plan ids a template currently belongs to. Callers use this to decide calendar
    * ownership: a template with at least one active membership takes its weekdays from that
    * membership, so it must not also carry standalone `schedules` rows.
+   *
+   * Memberships whose plan no longer exists are excluded — that plan cannot schedule anything, so
+   * treating the workout as planned would strand it with no calendar owner at all.
    */
   static async getActivePlanIdsForTemplate(templateId: string): Promise<string[]> {
     const memberships = await WorkoutPlanRepository.getMembershipsForTemplate(templateId).fetch();
-    return [...new Set(memberships.map((membership) => membership.planId))];
+    return this.filterLivePlanIds(memberships.map((membership) => membership.planId));
+  }
+
+  /** The subset of `planIds` naming a plan that exists and is not deleted. */
+  private static async filterLivePlanIds(planIds: string[]): Promise<string[]> {
+    const unique = [...new Set(planIds.filter(Boolean))];
+    if (unique.length === 0) {
+      return [];
+    }
+
+    const plans = await database
+      .get<WorkoutPlan>('workout_plans')
+      .query(Q.where('id', Q.oneOf(unique)), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+    const live = new Set(plans.map((plan) => plan.id));
+    return unique.filter((planId) => live.has(planId));
   }
 
   /**
@@ -289,69 +316,66 @@ export class WorkoutPlanService {
    * writer itself, because `saveTemplate` already owns one and WatermelonDB writers must not nest.
    *
    * `activePlanIds` is the membership set the template will have once `records` are committed,
-   * with plan ids that reference a deleted or missing plan already dropped. It exists so the
-   * caller can enforce calendar ownership in the same writer without re-deriving that filtering.
+   * with plan ids that reference a deleted or missing plan already dropped — including ids that
+   * an EXISTING junction row points at, whose memberships are soft-deleted here rather than left
+   * to make the workout look planned to a plan that is gone.
    */
   static async prepareSyncTemplateMemberships(
     templateId: string,
     planIds: string[],
     now: number
   ): Promise<{ activePlanIds: string[]; records: Model[] }> {
-    const desiredPlanIds = [...new Set(planIds.filter(Boolean))];
     const existing = await WorkoutPlanRepository.getMembershipsForTemplate(templateId).fetch();
-    const existingByPlan = new Map(existing.map((membership) => [membership.planId, membership]));
-    const records: Model[] = [];
-    const activePlanIds = desiredPlanIds.filter((planId) => existingByPlan.has(planId));
+    const desiredPlanIds = [...new Set(planIds.filter(Boolean))];
+    // One liveness query covering both halves of the diff: an id we are about to add and an id an
+    // existing row already points at are equally worthless if the plan behind them is gone.
+    const livePlanIds = new Set(
+      await this.filterLivePlanIds([
+        ...desiredPlanIds,
+        ...existing.map((membership) => membership.planId),
+      ])
+    );
+    const activePlanIds = desiredPlanIds.filter((planId) => livePlanIds.has(planId));
+    const keep = new Set(activePlanIds);
+    const records: Model[] = existing
+      .filter((membership) => !keep.has(membership.planId))
+      .map((membership) =>
+        membership.prepareUpdate((record) => {
+          record.deletedAt = now;
+          record.updatedAt = now;
+        })
+      );
 
-    for (const membership of existing) {
-      if (!desiredPlanIds.includes(membership.planId)) {
+    const existingPlanIds = new Set(existing.map((membership) => membership.planId));
+    const missingPlanIds = activePlanIds.filter((planId) => !existingPlanIds.has(planId));
+
+    if (missingPlanIds.length > 0) {
+      const siblings = await database
+        .get<WorkoutPlanTemplate>('workout_plan_templates')
+        .query(Q.where('plan_id', Q.oneOf(missingPlanIds)), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+      const collection = database.get<WorkoutPlanTemplate>('workout_plan_templates');
+
+      for (const planId of missingPlanIds) {
+        const positions = siblings
+          .filter((membership) => membership.planId === planId)
+          .map((membership) => membership.position);
         records.push(
-          membership.prepareUpdate((record) => {
-            record.deletedAt = now;
+          collection.prepareCreate((record) => {
+            record.planId = planId;
+            record.templateId = templateId;
+            record.weekDays = undefined;
+            record.position = positions.length > 0 ? Math.max(...positions) + 1 : 0;
+            record.createdAt = now;
             record.updatedAt = now;
           })
         );
       }
     }
 
-    const missingPlanIds = desiredPlanIds.filter((planId) => !existingByPlan.has(planId));
-    if (missingPlanIds.length === 0) {
-      return { activePlanIds, records };
-    }
-
-    const activePlans = await database
-      .get<WorkoutPlan>('workout_plans')
-      .query(Q.where('id', Q.oneOf(missingPlanIds)), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-    const validPlanIds = new Set(activePlans.map((plan) => plan.id));
-    const planMemberships = await database
-      .get<WorkoutPlanTemplate>('workout_plan_templates')
-      .query(Q.where('plan_id', Q.oneOf(missingPlanIds)), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-    const nextPositionByPlan = new Map<string, number>();
-    for (const planId of missingPlanIds) {
-      const positions = planMemberships
-        .filter((membership) => membership.planId === planId)
-        .map((membership) => membership.position);
-      nextPositionByPlan.set(planId, positions.length > 0 ? Math.max(...positions) + 1 : 0);
-    }
-
-    const collection = database.get<WorkoutPlanTemplate>('workout_plan_templates');
-    for (const planId of missingPlanIds) {
-      if (!validPlanIds.has(planId)) {
-        continue;
-      }
-      activePlanIds.push(planId);
-      records.push(
-        collection.prepareCreate((record) => {
-          record.planId = planId;
-          record.templateId = templateId;
-          record.weekDays = undefined;
-          record.position = nextPositionByPlan.get(planId) ?? 0;
-          record.createdAt = now;
-          record.updatedAt = now;
-        })
-      );
+    if (activePlanIds.length > 0) {
+      // The workout is planned, so the plan owns its calendar. See the class doc.
+      records.push(...(await this.prepareStandaloneScheduleCleanup([templateId], now)));
     }
 
     return { activePlanIds, records };

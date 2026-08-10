@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, View } from 'react-native';
 
 import { CameraView, type CameraViewRef } from '@/components/CameraView';
+import type { CameraMode } from '@/constants/camera';
 import type { MealType } from '@/database/models';
 import { useBarcodeScanner } from '@/hooks/useBarcodeScanner';
 import { BARCODE_PHOTO_QUALITY, useCameraCaptureFlow } from '@/hooks/useCameraCaptureFlow';
@@ -12,7 +13,6 @@ import { useTheme } from '@/hooks/useTheme';
 import { BarcodeTextSearchSheet } from './BarcodeTextSearchSheet';
 import { FoodMealTrackingDetailsModal } from './FoodMealTrackingDetailsModal';
 import { FoodNotFoundModal } from './FoodNotFoundModal';
-import type { CameraMode } from './SmartCameraModal';
 import { SmartCameraShell } from './SmartCameraShell';
 import { useOpticalStreamOffer } from './useOpticalStreamOffer';
 
