@@ -12,7 +12,7 @@
  * photo toggle only where there is a photo, and translating the builder's typed "nothing to send".
  */
 
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import { createElement } from 'react';
 
 import { ShareOpticalSendModal } from '@/components/modals/ShareOpticalSendModal';
@@ -48,6 +48,11 @@ function renderSender(target: any) {
   render(
     createElement(ShareOpticalSendModal, { onClose: jest.fn(), target, visible: true } as any)
   );
+  return latestProps();
+}
+
+/** The props of the most recent render — a build publishes its outcome by re-rendering. */
+function latestProps() {
   return sendProps[sendProps.length - 1];
 }
 
@@ -55,9 +60,9 @@ describe('ShareOpticalSendModal', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     sendProps.length = 0;
-    mockFood.mockResolvedValue({ json: '{}' });
-    mockMeal.mockResolvedValue({ json: '{}' });
-    mockLoggedMeal.mockResolvedValue({ json: '{}' });
+    mockFood.mockResolvedValue({ json: '{}', photo: 'none' });
+    mockMeal.mockResolvedValue({ json: '{}', photo: 'none' });
+    mockLoggedMeal.mockResolvedValue({ json: '{}', photo: 'none' });
   });
 
   it('sends a food through the food builder and offers its photo', async () => {
@@ -110,5 +115,54 @@ describe('ShareOpticalSendModal', () => {
     const props = renderSender({ foodId: 'food-1', hasImage: true, kind: 'food' });
 
     await expect(props.buildPayload({ includeImage: true })).rejects.toBe(failure);
+  });
+
+  // Each outcome is invisible in the size card for its own reason, so each gets a sentence. `none`
+  // is the exception: no photo, or the user turned it off, and both are already on screen.
+  it.each([
+    ['embedded', 'opticalTransfer.share.photoEmbedded'],
+    ['linked', 'opticalTransfer.share.photoLinked'],
+    ['unavailable', 'opticalTransfer.share.photoUnavailable'],
+    ['none', undefined],
+  ])('captions a %s photo', async (photo, expected) => {
+    mockFood.mockResolvedValue({ json: '{}', photo });
+    const props = renderSender({ foodId: 'food-1', hasImage: true, kind: 'food' });
+
+    // Nothing is claimed before a build has actually run.
+    expect(props.photoNotice).toBeUndefined();
+
+    await act(async () => {
+      await props.buildPayload({ includeImage: true });
+    });
+
+    expect(latestProps().photoNotice).toBe(expected);
+  });
+
+  // Toggling twice quickly leaves two builds in flight. `useOpticalSender` drops the stale one's
+  // size, so publishing the stale one's outcome here would caption a payload that is not being
+  // sent.
+  it('ignores the outcome of a build that a newer one superseded', async () => {
+    let finishStale: (payload: unknown) => void = () => {};
+    mockFood.mockReturnValueOnce(
+      new Promise((resolve) => {
+        finishStale = resolve;
+      })
+    );
+    mockFood.mockResolvedValueOnce({ json: '{}', photo: 'linked' });
+
+    const props = renderSender({ foodId: 'food-1', hasImage: true, kind: 'food' });
+    const stale = props.buildPayload({ includeImage: true });
+    await act(async () => {
+      await props.buildPayload({ includeImage: false });
+    });
+
+    expect(latestProps().photoNotice).toBe('opticalTransfer.share.photoLinked');
+
+    await act(async () => {
+      finishStale({ json: '{}', photo: 'embedded' });
+      await stale;
+    });
+
+    expect(latestProps().photoNotice).toBe('opticalTransfer.share.photoLinked');
   });
 });

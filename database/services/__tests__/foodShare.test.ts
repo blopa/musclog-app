@@ -103,7 +103,7 @@ describe('buildFoodShareEnvelope', () => {
   it('carries the food, its portions and their links', async () => {
     fixture();
 
-    const envelope = await buildFoodShareEnvelope('food-1', { includeImage: false });
+    const { envelope } = await buildFoodShareEnvelope('food-1', { includeImage: false });
 
     expect(envelope.rootTable).toBe('foods');
     expect(envelope.rootId).toBe('food-1');
@@ -135,7 +135,7 @@ describe('buildFoodShareEnvelope', () => {
     const own = portion('portion-scoop', 'Scoop');
     fixture({ links: [link('link-bowl', foreign, false), link('link-scoop', own, true)] });
 
-    const envelope = await buildFoodShareEnvelope('food-1', { includeImage: false });
+    const { envelope } = await buildFoodShareEnvelope('food-1', { includeImage: false });
 
     expect(envelope.records.food_portions.map((row) => row.id)).toEqual(['portion-scoop']);
     expect(envelope.records.food_food_portions.map((row) => row.id)).toEqual(['link-scoop']);
@@ -145,10 +145,11 @@ describe('buildFoodShareEnvelope', () => {
   it('drops the photo entirely when the sender opts out', async () => {
     fixture({ imageUrl: 'file:///food.jpg' });
 
-    const envelope = await buildFoodShareEnvelope('food-1', { includeImage: false });
+    const { envelope, photo } = await buildFoodShareEnvelope('food-1', { includeImage: false });
 
     expect(envelope.records.foods[0]).not.toHaveProperty('image_url');
     expect(envelope.assets).toBeUndefined();
+    expect(photo).toBe('none');
     expect(createThumbnail).not.toHaveBeenCalled();
   });
 
@@ -167,6 +168,9 @@ describe('buildFoodShareEnvelope', () => {
       width: 400,
     });
     expect(envelope.summary.hasImage).toBe(true);
+    // The only outcome that costs real transfer time, and so the only one the size card can
+    // explain on its own.
+    expect(payload.photo).toBe('embedded');
     expect(createThumbnail).toHaveBeenCalledWith('file:///food.jpg', 400);
   });
 
@@ -175,11 +179,14 @@ describe('buildFoodShareEnvelope', () => {
   it('sends a remote photo as its URL, with no asset', async () => {
     fixture({ imageUrl: 'https://images.example.org/whey.jpg' });
 
-    const envelope = await buildFoodShareEnvelope('food-1', { includeImage: true });
+    const { envelope, photo } = await buildFoodShareEnvelope('food-1', { includeImage: true });
 
     expect(envelope.records.foods[0].image_url).toBe('https://images.example.org/whey.jpg');
     expect(envelope.assets).toBeUndefined();
     expect(envelope.summary.hasImage).toBe(true);
+    // ~90 bytes on a payload measured in KB: invisible in the size readout, so the send screen has
+    // to say it in words or the toggle looks like it did nothing.
+    expect(photo).toBe('linked');
     expect(createThumbnail).not.toHaveBeenCalled();
   });
 
@@ -188,10 +195,13 @@ describe('buildFoodShareEnvelope', () => {
     fixture({ imageUrl: 'file:///gone.jpg' });
     (createThumbnail as jest.Mock).mockRejectedValueOnce(new Error('no such file'));
 
-    const envelope = await buildFoodShareEnvelope('food-1', { includeImage: true });
+    const { envelope, photo } = await buildFoodShareEnvelope('food-1', { includeImage: true });
 
     expect(envelope.records.foods[0]).not.toHaveProperty('image_url');
     expect(envelope.summary.hasImage).toBe(false);
+    // Reported rather than swallowed: `hasImage: false` alone cannot tell "no photo" from "the
+    // photo file is gone", and only the second is worth telling the user about.
+    expect(photo).toBe('unavailable');
   });
 
   // The contract that matters: a receiver has to be able to parse what this writes, through JSON,

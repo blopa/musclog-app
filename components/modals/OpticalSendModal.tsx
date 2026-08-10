@@ -21,6 +21,7 @@ import { type OpticalSenderPayload, useOpticalSender } from '@/hooks/useOpticalS
 import { useTheme } from '@/hooks/useTheme';
 
 import { FullScreenModal } from './FullScreenModal';
+import { formatTransferBytes } from './opticalSendBytes';
 
 export interface OpticalSendCopy {
   title: string;
@@ -41,6 +42,16 @@ interface OpticalSendModalProps {
   buildPayload?: (options: { includeImage: boolean }) => Promise<OpticalSenderPayload>;
   /** Offers the "include the photo" toggle. Only a payload builder can act on it. */
   hasPhoto?: boolean;
+  /**
+   * What the last build actually did with the photo, already translated by whoever owns the
+   * payload — embedded it, linked it, or could not read it.
+   *
+   * The size readout cannot carry this: a linked photo costs ~90 bytes and a photo whose file has
+   * gone missing costs nothing at all, so both leave the number where it was and the toggle looks
+   * like it did nothing. This modal only renders the sentence; deciding which one it is belongs to
+   * the builder, which is the only thing that knows.
+   */
+  photoNotice?: string;
   copy?: Partial<OpticalSendCopy>;
 }
 
@@ -50,6 +61,7 @@ export function OpticalSendModal({
   passphrase,
   buildPayload,
   hasPhoto = false,
+  photoNotice,
   copy,
 }: OpticalSendModalProps) {
   const theme = useTheme();
@@ -73,10 +85,7 @@ export function OpticalSendModal({
   const { cachedFrames, cacheTarget, framesShown, phase, prepareStep, raster, summary } = sender;
 
   const formatBytes = useCallback(
-    (bytes: number) =>
-      bytes < 1024 * 1024
-        ? `${formatInteger(Math.round(bytes / 1024))} KB`
-        : `${formatRoundedDecimal(bytes / 1048576, 1)} MB`,
+    (bytes: number) => formatTransferBytes(bytes, { formatInteger, formatRoundedDecimal }),
     [formatInteger, formatRoundedDecimal]
   );
 
@@ -210,7 +219,16 @@ export function OpticalSendModal({
             ) : null}
           </View>
 
-          {hasPhoto ? <ToggleInput items={photoItems} /> : null}
+          {hasPhoto ? (
+            <View>
+              <ToggleInput items={photoItems} />
+              {/* Suppressed mid-repack: the notice describes the build the size card is showing,
+                  and the one being rebuilt may reach a different outcome. */}
+              {repacking || !photoNotice ? null : (
+                <Text className="text-sm text-text-secondary">{photoNotice}</Text>
+              )}
+            </View>
+          ) : null}
 
           {repacking ? (
             <ProgressIndicator message={t('opticalTransfer.share.recalculating')} />

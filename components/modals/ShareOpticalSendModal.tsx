@@ -1,10 +1,11 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type NutritionLog from '@/database/models/NutritionLog';
 import { buildFoodSharePayload } from '@/database/share/buildFoodShare';
 import { buildLoggedMealSharePayload } from '@/database/share/buildLoggedMealShare';
 import { buildMealSharePayload } from '@/database/share/buildMealShare';
+import type { SharePhotoOutcome } from '@/database/share/shareRecords';
 import { MusclogShareError } from '@/utils/share/shareEnvelope';
 
 import { OpticalSendModal } from './OpticalSendModal';
@@ -53,6 +54,24 @@ const SHARE_COPY_KEYS = {
   { title: string; readyTitle: string; instructions: string }
 >;
 
+/**
+ * What to say under the photo toggle for each outcome a build can reach.
+ *
+ * All three are worth a sentence because none of them are visible in the size readout, which is
+ * what made the toggle look broken: only `embedded` moves the number, `linked` costs ~90 bytes,
+ * and `unavailable` costs nothing and silently sends no photo at all. `none` says nothing — either
+ * there is no photo or the user turned it off, and both are already on screen.
+ *
+ * Held as `labelKey` fields rather than inside literal `t('…')` calls so `check-translations`
+ * still sees them, the same way `components/coach/coachIntentions.ts` does.
+ */
+const SHARE_PHOTO_NOTICE = {
+  embedded: { labelKey: 'opticalTransfer.share.photoEmbedded' },
+  linked: { labelKey: 'opticalTransfer.share.photoLinked' },
+  none: undefined,
+  unavailable: { labelKey: 'opticalTransfer.share.photoUnavailable' },
+} as const satisfies Record<SharePhotoOutcome, undefined | { labelKey: string }>;
+
 /** Only a food or a saved meal has a photo of its own to offer. */
 function targetHasImage(target: ShareSendTarget): boolean {
   return target.kind === 'loggedMeal' ? false : target.hasImage;
@@ -78,18 +97,33 @@ interface ShareOpticalSendModalProps {
 /**
  * The send screen for one shared record, whatever the record is.
  *
- * What lives here is the part that must not diverge between kinds: translating the builder's typed
- * "nothing to send" failure. It is matched on the code, never on the message text, because the
- * send screen renders whatever the builder throws and a reworded English string used to drop the
- * user into a generic failure with no way to tell what was wrong.
+ * What lives here is the part that must not diverge between kinds, and that the generic send screen
+ * cannot own because it also sends whole databases: translating the builder's typed "nothing to
+ * send" failure, and saying what became of the record's photo. The failure is matched on the code,
+ * never on the message text, because the send screen renders whatever the builder throws and a
+ * reworded English string used to drop the user into a generic failure with no way to tell what was
+ * wrong.
  */
 export function ShareOpticalSendModal({ visible, onClose, target }: ShareOpticalSendModalProps) {
   const { t } = useTranslation();
 
+  const [photo, setPhoto] = useState<SharePhotoOutcome>('none');
+  /**
+   * Bumped per build for the same reason `useOpticalSender` bumps its own: toggling the photo twice
+   * quickly leaves two builds in flight, and the sender drops the stale one's size — so publishing
+   * the stale one's outcome here would caption the wrong payload.
+   */
+  const buildGeneration = useRef(0);
+
   const build = useCallback(
     async ({ includeImage }: { includeImage: boolean }) => {
+      const generation = ++buildGeneration.current;
       try {
-        return await buildTargetPayload(target, includeImage);
+        const payload = await buildTargetPayload(target, includeImage);
+        if (buildGeneration.current === generation) {
+          setPhoto(payload.photo);
+        }
+        return payload;
       } catch (error) {
         if (error instanceof MusclogShareError && error.code === 'no-ingredients') {
           throw new Error(t('opticalTransfer.share.noIngredients'));
@@ -111,12 +145,15 @@ export function ShareOpticalSendModal({ visible, onClose, target }: ShareOptical
     [copy, t]
   );
 
+  const notice = SHARE_PHOTO_NOTICE[photo];
+
   return (
     <OpticalSendModal
       buildPayload={build}
       copy={labels}
       hasPhoto={targetHasImage(target)}
       onClose={onClose}
+      photoNotice={notice ? t(notice.labelKey) : undefined}
       visible={visible}
     />
   );

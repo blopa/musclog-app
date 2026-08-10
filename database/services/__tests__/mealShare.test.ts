@@ -193,7 +193,7 @@ describe('buildMealShareEnvelope', () => {
       query: () => ({ fetch: jest.fn().mockResolvedValue([mealPortionLink]) }),
     } as any);
 
-    const envelope = await buildMealShareEnvelope(meal.id, { includeImage: false });
+    const { envelope, photo } = await buildMealShareEnvelope(meal.id, { includeImage: false });
 
     expect(envelope.records.food_portions.map((row) => row.id).sort()).toEqual([
       'portion-default-1',
@@ -211,6 +211,7 @@ describe('buildMealShareEnvelope', () => {
     expect(envelope.records.foods[0]).not.toHaveProperty('description');
     expect(envelope.records.meals[0]).not.toHaveProperty('image_url');
     expect(envelope.assets).toBeUndefined();
+    expect(photo).toBe('none');
     expect(envelope.summary.totals).toEqual({
       calories: 400,
       carbs: 40,
@@ -244,7 +245,34 @@ describe('buildMealShareEnvelope', () => {
       width: 400,
     });
     expect(envelope.summary.hasImage).toBe(true);
+    expect(payload.photo).toBe('embedded');
     expect(createThumbnail).toHaveBeenCalledWith('file:///meal.jpg', 400);
+  });
+
+  // Only the meal's OWN photo can be embedded or go missing. An ingredient's photo is never
+  // carried as an asset, so it must not colour what the send screen tells the user about the
+  // transfer it is about to make.
+  it('reports no photo when only an ingredient has one', async () => {
+    const { meal, mealFoods } = fixture();
+    const withPhoto = food(
+      'food-1',
+      'Rice',
+      'per_100g',
+      defaultLink('food-1', portion('p', 'P')),
+      'file:///ingredient.jpg'
+    );
+    mockGetMeal.mockResolvedValue({
+      foods: [{ ...mealFoods[0], food: withPhoto, foodId: withPhoto.id }],
+      meal: { ...meal, imageUrl: undefined },
+    });
+    mockDatabase.get.mockReturnValue({
+      query: () => ({ fetch: jest.fn().mockResolvedValue([]) }),
+    } as any);
+
+    const { photo } = await buildMealShareEnvelope(meal.id, { includeImage: true });
+
+    expect(photo).toBe('none');
+    expect(createThumbnail).not.toHaveBeenCalled();
   });
 
   // The contract that was missing: every previous test read the builder's output directly, so
@@ -302,7 +330,7 @@ describe('buildMealShareEnvelope', () => {
       query: () => ({ fetch: jest.fn().mockResolvedValue([]) }),
     } as any);
 
-    const envelope = await buildMealShareEnvelope(meal.id, { includeImage });
+    const { envelope } = await buildMealShareEnvelope(meal.id, { includeImage });
 
     expect(envelope.records.foods[0].image_url).toBe(carried ? imageUrl : undefined);
     expect(envelope.assets?.foodImage).toBeUndefined();

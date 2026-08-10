@@ -22,6 +22,7 @@ import {
   isActive,
   optionalNumber,
   prepareShareImage,
+  type ShareBuild,
   shareRow,
   shareSenderPayload,
 } from './shareRecords';
@@ -54,7 +55,7 @@ async function relatedPortion(mealFood: MealFood): Promise<FoodPortion | undefin
 export async function buildMealShareEnvelope(
   mealId: string,
   options: BuildMealShareOptions
-): Promise<MealShareEnvelope> {
+): Promise<ShareBuild<MealShareEnvelope>> {
   const mealData = await MealService.getMealWithFoods(mealId);
   if (!mealData) {
     throw new Error('Meal not found');
@@ -159,33 +160,38 @@ export async function buildMealShareEnvelope(
   });
 
   return {
-    _musclogShare: MUSCLOG_SHARE_ENVELOPE_VERSION,
-    ...(assets ? { assets } : undefined),
-    createdAtMs: Date.now(),
-    kind: 'meal',
-    kindVersion: MEAL_SHARE_SPEC.kindVersion,
-    records: {
-      food_food_portions: defaultFoodLinks.map(shareRow),
-      food_portions: [...portions.values()].map(shareRow),
-      foods: foodRows,
-      meal_food_portions: carriedMealPortionLinks.map(shareRow),
-      meal_foods: mealFoodRows,
-      meals: [mealRow],
+    envelope: {
+      _musclogShare: MUSCLOG_SHARE_ENVELOPE_VERSION,
+      ...(assets ? { assets } : undefined),
+      createdAtMs: Date.now(),
+      kind: 'meal',
+      kindVersion: MEAL_SHARE_SPEC.kindVersion,
+      records: {
+        food_food_portions: defaultFoodLinks.map(shareRow),
+        food_portions: [...portions.values()].map(shareRow),
+        foods: foodRows,
+        meal_food_portions: carriedMealPortionLinks.map(shareRow),
+        meal_foods: mealFoodRows,
+        meals: [mealRow],
+      },
+      rootId: meal.id,
+      rootTable: MEAL_SHARE_SPEC.rootTable,
+      summary: {
+        description: meal.description || undefined,
+        // The value, not the asset: a remote photo rides along as a URL and embeds nothing.
+        hasImage: Boolean(mealImage.value),
+        ingredients,
+        name: meal.name,
+        nutritionBasis: meal.resolvedNutritionBasis,
+        preparedWeightGrams: optionalNumber(meal.preparedWeightGrams),
+        recipeServingsCount: optionalNumber(meal.recipeServingsCount),
+        servingGrams: optionalNumber(meal.servingGrams),
+        totals: await meal.getTotalNutrients(),
+      },
     },
-    rootId: meal.id,
-    rootTable: MEAL_SHARE_SPEC.rootTable,
-    summary: {
-      description: meal.description || undefined,
-      // The value, not the asset: a remote photo rides along as a URL and embeds nothing.
-      hasImage: Boolean(mealImage.value),
-      ingredients,
-      name: meal.name,
-      nutritionBasis: meal.resolvedNutritionBasis,
-      preparedWeightGrams: optionalNumber(meal.preparedWeightGrams),
-      recipeServingsCount: optionalNumber(meal.recipeServingsCount),
-      servingGrams: optionalNumber(meal.servingGrams),
-      totals: await meal.getTotalNutrients(),
-    },
+    // Only the meal's OWN photo counts here: an ingredient's photo is never embedded
+    // (`applyCarriedFoodImage`), so it can neither cost transfer time nor go missing.
+    photo: mealImage.outcome,
   };
 }
 

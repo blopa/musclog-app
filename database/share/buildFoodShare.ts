@@ -22,6 +22,7 @@ import {
   isActive,
   optionalNumber,
   prepareShareImage,
+  type ShareBuild,
   shareRow,
   shareSenderPayload,
 } from './shareRecords';
@@ -43,7 +44,7 @@ function isCarriablePortion(portion: FoodPortion, foodId: string): boolean {
 export async function buildFoodShareEnvelope(
   foodId: string,
   options: BuildFoodShareOptions
-): Promise<FoodShareEnvelope> {
+): Promise<ShareBuild<FoodShareEnvelope>> {
   const food = await database.get<Food>('foods').find(foodId);
   if (!isActive(food)) {
     throw new Error('Food not found');
@@ -88,34 +89,37 @@ export async function buildFoodShareEnvelope(
   applyShareImage(foodRow, 'image_url', image);
 
   return {
-    _musclogShare: MUSCLOG_SHARE_ENVELOPE_VERSION,
-    ...(image.asset ? { assets: { foodImage: image.asset } } : undefined),
-    createdAtMs: Date.now(),
-    kind: 'food',
-    kindVersion: FOOD_SHARE_SPEC.kindVersion,
-    records: {
-      food_food_portions: portionLinks.map(shareRow),
-      food_portions: [...portions.values()].map(shareRow),
-      foods: [foodRow],
-    },
-    rootId: food.id,
-    rootTable: FOOD_SHARE_SPEC.rootTable,
-    summary: {
-      brand: food.brand || undefined,
-      description: food.description || undefined,
-      // The value, not the asset: a remote photo rides along as a URL and embeds nothing.
-      hasImage: Boolean(image.value),
-      name: food.name,
-      nutrients: {
-        calories: food.calories,
-        carbs: food.carbs,
-        fat: food.fat,
-        fiber: food.fiber,
-        protein: food.protein,
+    envelope: {
+      _musclogShare: MUSCLOG_SHARE_ENVELOPE_VERSION,
+      ...(image.asset ? { assets: { foodImage: image.asset } } : undefined),
+      createdAtMs: Date.now(),
+      kind: 'food',
+      kindVersion: FOOD_SHARE_SPEC.kindVersion,
+      records: {
+        food_food_portions: portionLinks.map(shareRow),
+        food_portions: [...portions.values()].map(shareRow),
+        foods: [foodRow],
       },
-      nutritionBasis: food.resolvedNutritionBasis,
-      portions: summaryPortions,
+      rootId: food.id,
+      rootTable: FOOD_SHARE_SPEC.rootTable,
+      summary: {
+        brand: food.brand || undefined,
+        description: food.description || undefined,
+        // The value, not the asset: a remote photo rides along as a URL and embeds nothing.
+        hasImage: Boolean(image.value),
+        name: food.name,
+        nutrients: {
+          calories: food.calories,
+          carbs: food.carbs,
+          fat: food.fat,
+          fiber: food.fiber,
+          protein: food.protein,
+        },
+        nutritionBasis: food.resolvedNutritionBasis,
+        portions: summaryPortions,
+      },
     },
+    photo: image.outcome,
   };
 }
 

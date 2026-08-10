@@ -26,6 +26,40 @@ import {
 const SHARE_THUMBNAIL_WIDTH = 400;
 
 /**
+ * What became of the record's photo while the payload was built.
+ *
+ * The size readout cannot express this, which is what made the photo toggle look broken: a linked
+ * photo adds ~90 bytes to a payload measured in KB, so the number does not move — and a photo whose
+ * file has gone missing is dropped silently, which does not move it either. Three materially
+ * different outcomes, one unchanged "1 KB to transfer". The send screen states which one happened
+ * rather than leaving the user to infer it from a byte count that cannot show it.
+ *
+ * Sender-local, never on the wire: the receiver can see for itself whether an asset arrived.
+ */
+export type SharePhotoOutcome =
+  /** A thumbnail is embedded in the payload. The only outcome that costs real transfer time. */
+  | 'embedded'
+  /** A URL both phones can fetch rides along. Costs ~90 bytes; the receiver needs a connection. */
+  | 'linked'
+  /** Nothing to send: no photo on the record, or the sender opted out. */
+  | 'none'
+  /** There is a photo, but its file could not be read. Nothing is sent, and nobody was told. */
+  | 'unavailable';
+
+/**
+ * A built envelope plus what happened to its photo — the two things the sender screen needs.
+ *
+ * The outcome cannot be recovered from the envelope alone: `summary.hasImage: false` covers both
+ * "there was no photo" and "the photo file could not be read", and only the second is worth telling
+ * the user about. So the builder that ran `prepareShareImage` reports it rather than leaving the UI
+ * to guess.
+ */
+export interface ShareBuild<TEnvelope extends MusclogShareEnvelope = MusclogShareEnvelope> {
+  envelope: TEnvelope;
+  photo: SharePhotoOutcome;
+}
+
+/**
  * A built envelope as the optical sender wants it.
  *
  * Every kind's builder ended in a byte-identical copy of this, which is three chances to disagree
@@ -33,11 +67,12 @@ const SHARE_THUMBNAIL_WIDTH = 400;
  * side refuses to act on a payload whose `payloadKind` it does not recognise, so a divergence here
  * fails on the OTHER phone.
  */
-export function shareSenderPayload(envelope: MusclogShareEnvelope) {
+export function shareSenderPayload(build: ShareBuild) {
   return {
     exportVersion: OPTICAL_EXPORT_VERSION_SHARE,
-    json: JSON.stringify(envelope),
+    json: JSON.stringify(build.envelope),
     payloadKind: OPTICAL_PAYLOAD_KIND_SHARE,
+    photo: build.photo,
   };
 }
 
@@ -110,15 +145,17 @@ export interface PreparedShareImage {
   /** What to write into the row's image column; `undefined` means carry no image at all. */
   value?: string;
   asset?: ShareAsset;
+  outcome: SharePhotoOutcome;
 }
 
 /**
  * Resolves a record's own photo for the wire.
  *
- * A remote URL rides along as a string — ~60 bytes, and the receiver fetches the same picture the
+ * A remote URL rides along as a string — ~90 bytes, and the receiver fetches the same picture the
  * sender sees. A local path has to be embedded as an asset, because the path itself means nothing
  * on the other phone. If the file is gone the share still goes, without the photo: a missing
- * thumbnail is not a reason to refuse to send a meal.
+ * thumbnail is not a reason to refuse to send a meal — but it IS reported, because a silently
+ * photo-less share is indistinguishable on screen from one that worked.
  */
 export async function prepareShareImage(
   imageUrl: null | string | undefined,
@@ -126,17 +163,17 @@ export async function prepareShareImage(
   includeImage: boolean
 ): Promise<PreparedShareImage> {
   if (!includeImage || !imageUrl) {
-    return {};
+    return { outcome: 'none' };
   }
 
   if (isRemoteImageUrl(imageUrl)) {
-    return { value: imageUrl };
+    return { outcome: 'linked', value: imageUrl };
   }
 
   try {
     const thumbnail = await createThumbnail(imageUrl, SHARE_THUMBNAIL_WIDTH);
     if (!thumbnail.base64) {
-      return {};
+      return { outcome: 'unavailable' };
     }
 
     return {
@@ -146,10 +183,11 @@ export async function prepareShareImage(
         mime: 'image/jpeg',
         width: thumbnail.width,
       },
+      outcome: 'embedded',
       value: `${SHARE_ASSET_REF_PREFIX}${assetId}`,
     };
   } catch {
-    return {};
+    return { outcome: 'unavailable' };
   }
 }
 

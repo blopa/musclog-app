@@ -321,12 +321,30 @@ uses only that group's logs and displayed name; the surrounding breakfast/lunch/
 not included. The tradeoff is straightforward: while the codes are visible, another camera could
 read the shared item.
 
-The photo toggle defaults off because the image dominates transfer time. A five-ingredient meal is
-about 2.5 KB of JSON, roughly 1 KB after gzip (`k ≈ 2` at `tiny`), so it completes in under a second.
-A 60 KB JPEG becomes about 80 KB of base64 and still compresses to roughly 62 KB (`k ≈ 110`), or
-about 17 seconds at 8 fps. `useOpticalSender` computes the displayed estimate from the actual
-packed container. Repacking after a toggle reuses the device calibration; changing density still
-re-slices the retained container without rebuilding the meal.
+The photo toggle defaults off because an embedded image dominates transfer time. A five-ingredient
+meal is about 2.5 KB of JSON, roughly 1 KB after gzip (`k ≈ 2` at `tiny`), so it completes in under a
+second. A 60 KB JPEG becomes about 80 KB of base64 and still compresses to roughly 62 KB
+(`k ≈ 110`), or about 17 seconds at 8 fps. `useOpticalSender` computes the displayed estimate from
+the actual packed container. Repacking after a toggle reuses the device calibration; changing
+density still re-slices the retained container without rebuilding the meal.
+
+**Turning the toggle on does not always change the size, and the screen has to say which case it
+is.** `prepareShareImage` reaches three outcomes, reported as `SharePhotoOutcome` on the builder's
+result (`database/share/shareRecords.ts`) rather than inferred by the UI:
+
+| outcome       | when                                                                      | cost           | why it is not visible in the size card                               |
+| ------------- | ------------------------------------------------------------------------- | -------------- | -------------------------------------------------------------------- |
+| `embedded`    | the photo is a local `file://` path                                       | tens of KB     | it IS visible — this is the only case the byte count explains itself |
+| `linked`      | the photo is a remote URL (Open Food Facts and every other food database) | ~90 bytes      | disappears into a payload measured in KB                             |
+| `unavailable` | there is a photo, but its file is gone                                    | nothing at all | the share still goes, silently without the picture                   |
+
+Two of the three leave the number where it was, which reads as a broken toggle — the reported bug.
+The outcome cannot be recovered from the envelope afterwards (`summary.hasImage: false` covers both
+`none` and `unavailable`), so the builder that ran `prepareShareImage` carries it out on
+`ShareBuild.photo` and `ShareOpticalSendModal` renders the matching sentence under the toggle. It is
+sender-local and never on the wire; the receiver can see for itself whether an asset arrived. The
+size readout also keeps one decimal below 10 KB (`components/modals/opticalSendBytes.ts`) — whole-KB
+rounding was right for a database dump and useless for a 1–5 KB share.
 
 **Calibration seeds only the first stream.** The quality controls and the photo toggle sit on the
 same screen, so a re-pack reinstalls the stream at the density and speed already showing

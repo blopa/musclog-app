@@ -111,7 +111,7 @@ describe('buildLoggedMealShareEnvelope', () => {
     const bar = food('food-2', 'Protein bar', 'per_serving');
     const scoop = portion('portion-scoop', 'Scoop');
 
-    const envelope = await buildLoggedMealShareEnvelope(
+    const { envelope } = await buildLoggedMealShareEnvelope(
       [log('log-1', rice, { portion: scoop }), log('log-2', bar)],
       { name: 'Breakfast · 10/8/2026' }
     );
@@ -163,7 +163,7 @@ describe('buildLoggedMealShareEnvelope', () => {
     const rice = food('food-1', 'Rice', 'per_100g');
     const bowl = portion('portion-bowl', 'Bowl', { owner_id: 'meal-9', owner_type: 'meal' });
 
-    const envelope = await buildLoggedMealShareEnvelope(
+    const { envelope } = await buildLoggedMealShareEnvelope(
       [log('log-1', rice, { amount: 2, gramWeight: 500, portion: bowl })],
       { name: 'Dinner' }
     );
@@ -177,9 +177,12 @@ describe('buildLoggedMealShareEnvelope', () => {
   it('skips a log whose food is gone and refuses a section with nothing left', async () => {
     const rice = food('food-1', 'Rice', 'per_100g');
 
-    const envelope = await buildLoggedMealShareEnvelope([log('log-1', null), log('log-2', rice)], {
-      name: 'Lunch',
-    });
+    const { envelope } = await buildLoggedMealShareEnvelope(
+      [log('log-1', null), log('log-2', rice)],
+      {
+        name: 'Lunch',
+      }
+    );
     expect(envelope.records.meal_foods).toHaveLength(1);
 
     await expect(
@@ -197,6 +200,9 @@ describe('buildLoggedMealShareEnvelope', () => {
     // here fails on the OTHER phone.
     expect(payload.payloadKind).toBe(OPTICAL_PAYLOAD_KIND_SHARE);
     expect(payload.exportVersion).toBe(OPTICAL_EXPORT_VERSION_SHARE);
+    // A logged meal has no photo of its own, so the send screen offers no toggle and says nothing
+    // about photos.
+    expect(payload.photo).toBe('none');
     expect(payload.json).not.toContain('null');
     const parsed = parseShareEnvelope(payload.json);
     expect(parsed.kind).toBe('meal');

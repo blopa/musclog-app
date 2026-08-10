@@ -30,6 +30,7 @@ import {
   applyCarriedFoodImage,
   defaultPortionLink,
   isActive,
+  type ShareBuild,
   shareRow,
   shareSenderPayload,
 } from './shareRecords';
@@ -108,7 +109,7 @@ async function resolveIngredient(log: NutritionLog): Promise<LoggedIngredient | 
 export async function buildLoggedMealShareEnvelope(
   logs: NutritionLog[],
   options: BuildLoggedMealShareOptions
-): Promise<MealShareEnvelope> {
+): Promise<ShareBuild<MealShareEnvelope>> {
   const resolved = await Promise.all(logs.filter(isActive).map(resolveIngredient));
   const ingredients = resolved.filter((entry): entry is LoggedIngredient => Boolean(entry));
 
@@ -183,34 +184,38 @@ export async function buildLoggedMealShareEnvelope(
   );
 
   return {
-    _musclogShare: MUSCLOG_SHARE_ENVELOPE_VERSION,
-    createdAtMs: now,
-    kind: 'meal',
-    kindVersion: MEAL_SHARE_SPEC.kindVersion,
-    records: {
-      food_food_portions: defaultFoodLinks.map(shareRow),
-      food_portions: [...portions.values()].map(shareRow),
-      foods: [...foods.values()].map((food) => {
-        const row = shareRow(food);
-        // A logged meal has no photo of its own, and its ingredients' photos are not what the user
-        // asked to send.
-        applyCarriedFoodImage(row, false);
-        return row;
-      }),
-      meal_food_portions: [],
-      meal_foods: mealFoodRows,
-      meals: [mealRow],
+    envelope: {
+      _musclogShare: MUSCLOG_SHARE_ENVELOPE_VERSION,
+      createdAtMs: now,
+      kind: 'meal',
+      kindVersion: MEAL_SHARE_SPEC.kindVersion,
+      records: {
+        food_food_portions: defaultFoodLinks.map(shareRow),
+        food_portions: [...portions.values()].map(shareRow),
+        foods: [...foods.values()].map((food) => {
+          const row = shareRow(food);
+          // A logged meal has no photo of its own, and its ingredients' photos are not what the
+          // user asked to send.
+          applyCarriedFoodImage(row, false);
+          return row;
+        }),
+        meal_food_portions: [],
+        meal_foods: mealFoodRows,
+        meals: [mealRow],
+      },
+      rootId: SYNTHETIC_MEAL_ID,
+      rootTable: MEAL_SHARE_SPEC.rootTable,
+      summary: {
+        hasImage: false,
+        ingredients: summaryIngredients,
+        name: options.name,
+        nutritionBasis: 'per_recipe',
+        recipeServingsCount: 1,
+        totals,
+      },
     },
-    rootId: SYNTHETIC_MEAL_ID,
-    rootTable: MEAL_SHARE_SPEC.rootTable,
-    summary: {
-      hasImage: false,
-      ingredients: summaryIngredients,
-      name: options.name,
-      nutritionBasis: 'per_recipe',
-      recipeServingsCount: 1,
-      totals,
-    },
+    // There is no photo to offer, so the send screen never shows the toggle for this kind.
+    photo: 'none',
   };
 }
 
