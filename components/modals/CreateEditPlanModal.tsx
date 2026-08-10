@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp } from 'lucide-react-native';
+import { ArrowDown, ArrowUp, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
@@ -96,6 +96,25 @@ export function CreateEditPlanModal({
       ...ids.filter((id) => !current.includes(id)),
     ]);
   }, []);
+
+  const removeMember = useCallback(
+    (templateId: string) =>
+      handleMembershipChange(selectedTemplateIds.filter((id) => id !== templateId)),
+    [handleMembershipChange, selectedTemplateIds]
+  );
+
+  /**
+   * The plan's membership, in plan order. A membership whose workout is missing from `templates`
+   * (archived, say) has nothing to render but is deliberately kept in `orderedTemplateIds` so
+   * saving does not silently unfile it.
+   */
+  const members = useMemo(
+    () =>
+      orderedTemplateIds
+        .filter((templateId) => selectedTemplateIds.includes(templateId))
+        .flatMap((templateId) => templates.find((candidate) => candidate.id === templateId) ?? []),
+    [orderedTemplateIds, selectedTemplateIds, templates]
+  );
 
   const moveMember = useCallback((templateId: string, direction: -1 | 1) => {
     setOrderedTemplateIds((current) => {
@@ -215,126 +234,151 @@ export function CreateEditPlanModal({
         />
       }
     >
-      <KeyboardAwareScrollView
-        className="flex-1"
-        contentContainerClassName="gap-5 px-4 pb-32 pt-6"
-        bottomOffset={16}
-      >
-        <TextInput
-          label={t('workouts.plans.nameLabel')}
-          value={name}
-          onChangeText={setName}
-          placeholder={t('workouts.plans.namePlaceholder')}
-        />
-        <TextInput
-          label={t('workouts.plans.descriptionLabel')}
-          value={description}
-          onChangeText={setDescription}
-          placeholder={t('workouts.plans.descriptionPlaceholder')}
-          multiline
-          numberOfLines={3}
-        />
-        <View className="gap-2">
-          <Text className="text-sm font-medium text-text-primary">
-            {t('workouts.plans.cycleType.label')}
-          </Text>
-          <SegmentedControl
-            options={[
-              { label: t('workouts.plans.cycleType.weekly'), value: 'weekly' },
-              { label: t('workouts.plans.cycleType.rotating'), value: 'rotating' },
-            ]}
-            value={cycleType}
-            onValueChange={(value) => setCycleType(value as WorkoutPlanCycleType)}
+      {/*
+        Padding lives on an inner View, not on `contentContainerClassName`: NativeWind only maps
+        that prop for the components it registers (RN's ScrollView/FlatList/VirtualizedList), and
+        `KeyboardAwareScrollView` is not one of them — so the classes were silently dropped and the
+        form rendered edge to edge with the last row hidden under the footer.
+      */}
+      <KeyboardAwareScrollView className="flex-1" bottomOffset={16}>
+        <View className="gap-5 px-4 pb-32 pt-6">
+          <TextInput
+            label={t('workouts.plans.nameLabel')}
+            value={name}
+            onChangeText={setName}
+            placeholder={t('workouts.plans.namePlaceholder')}
           />
-        </View>
-        <View className="gap-2">
-          <Text className="text-sm font-medium text-text-primary">
-            {t('workouts.plans.iconLabel')}
-          </Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <View className="flex-row gap-2">
-              {WORKOUT_ICON_OPTIONS.map((option) => {
-                const Icon = getWorkoutIcon(option.value);
-                const selected = icon === option.value;
-                return (
-                  <Pressable
-                    key={option.value}
-                    onPress={() => setIcon(option.value)}
-                    className={`h-12 w-12 items-center justify-center rounded-lg ${selected ? 'bg-accent-primary' : 'bg-bg-secondary'}`}
-                  >
-                    <Icon
-                      size={theme.iconSize.md}
-                      color={selected ? theme.colors.text.white : theme.colors.text.secondary}
-                    />
-                  </Pressable>
-                );
-              })}
-            </View>
-          </ScrollView>
-        </View>
-        <OptionsMultiSelector
-          title={t('workouts.plans.membersLabel')}
-          options={templateOptions}
-          selectedIds={selectedTemplateIds}
-          onChange={handleMembershipChange}
-          hasGroups={false}
-        />
-        {orderedTemplateIds
-          .filter((templateId) => selectedTemplateIds.includes(templateId))
-          .map((templateId, index, ordered) => {
-            const template = templates.find((candidate) => candidate.id === templateId);
-            if (!template) {
-              return null;
-            }
-            const days = weekDaysByTemplate[templateId] ?? [];
-            return (
-              <View key={templateId} className="gap-3 rounded-lg bg-bg-card p-4">
-                <View className="flex-row items-center gap-2">
-                  <Text className="min-w-0 flex-1 font-semibold text-text-primary">
-                    {template.name}
-                  </Text>
-                  <Pressable
-                    onPress={() => moveMember(templateId, -1)}
-                    disabled={index === 0}
-                    className="p-2"
-                  >
-                    <ArrowUp
-                      size={theme.iconSize.sm}
-                      color={index === 0 ? theme.colors.text.tertiary : theme.colors.text.secondary}
-                    />
-                  </Pressable>
-                  <Pressable
-                    onPress={() => moveMember(templateId, 1)}
-                    disabled={index === ordered.length - 1}
-                    className="p-2"
-                  >
-                    <ArrowDown
-                      size={theme.iconSize.sm}
-                      color={
-                        index === ordered.length - 1
-                          ? theme.colors.text.tertiary
-                          : theme.colors.text.secondary
-                      }
-                    />
-                  </Pressable>
-                </View>
-                {cycleType === 'weekly' ? (
-                  <>
-                    <WeekdayPicker
-                      days={getWeekdayLabels()}
-                      selectedDays={days}
-                      onToggleDay={(day) => toggleMemberDay(templateId, day)}
-                    />
-                    {days.length === 0 ? (
-                      <Text className="text-status-warning text-xs">
-                        {t('workouts.plans.unscheduled')}
-                      </Text>
-                    ) : null}
-                  </>
-                ) : null}
+          <TextInput
+            label={t('workouts.plans.descriptionLabel')}
+            value={description}
+            onChangeText={setDescription}
+            placeholder={t('workouts.plans.descriptionPlaceholder')}
+            multiline
+            numberOfLines={3}
+          />
+          <View className="gap-2">
+            <Text className="ml-1 text-sm font-medium text-text-secondary">
+              {t('workouts.plans.cycleType.label')}
+            </Text>
+            <SegmentedControl
+              options={[
+                { label: t('workouts.plans.cycleType.weekly'), value: 'weekly' },
+                { label: t('workouts.plans.cycleType.rotating'), value: 'rotating' },
+              ]}
+              value={cycleType}
+              onValueChange={(value) => setCycleType(value as WorkoutPlanCycleType)}
+            />
+          </View>
+          <View className="gap-2">
+            <Text className="ml-1 text-sm font-medium text-text-secondary">
+              {t('workouts.plans.iconLabel')}
+            </Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              <View className="flex-row gap-2">
+                {WORKOUT_ICON_OPTIONS.map((option) => {
+                  const Icon = getWorkoutIcon(option.value);
+                  const selected = icon === option.value;
+                  return (
+                    <Pressable
+                      key={option.value}
+                      onPress={() => setIcon(option.value)}
+                      className={`h-12 w-12 items-center justify-center rounded-lg ${selected ? 'bg-accent-primary' : 'bg-bg-secondary'}`}
+                    >
+                      <Icon
+                        size={theme.iconSize.md}
+                        color={selected ? theme.colors.text.white : theme.colors.text.secondary}
+                      />
+                    </Pressable>
+                  );
+                })}
               </View>
-            );
-          })}
+            </ScrollView>
+          </View>
+          {/*
+            This selector lists EVERY workout in the library, not the plan's members — ticking one
+            adds it, unticking removes it. It used to carry the "Workouts in this plan" heading,
+            which read as a member list you could only shrink: an unticked workout stayed on screen,
+            so removal looked like it had not been saved and there was no obvious way to add one.
+            The plan's actual membership is the separate, shorter list below.
+          */}
+          <OptionsMultiSelector
+            title={t('workouts.plans.selectorLabel')}
+            options={templateOptions}
+            selectedIds={selectedTemplateIds}
+            onChange={handleMembershipChange}
+            hasGroups={false}
+          />
+          <View className="gap-3">
+            <Text className="ml-1 text-sm font-medium text-text-secondary">
+              {t('workouts.plans.membersLabel')}
+            </Text>
+            {members.length === 0 ? (
+              <Text className="ml-1 text-xs text-text-tertiary">
+                {t('workouts.plans.membersEmpty')}
+              </Text>
+            ) : null}
+            {members.map((template, index) => {
+              const days = weekDaysByTemplate[template.id] ?? [];
+              return (
+                <View key={template.id} className="gap-3 rounded-lg bg-bg-card p-4">
+                  <View className="flex-row items-center gap-2">
+                    <Text className="min-w-0 flex-1 font-semibold text-text-primary">
+                      {template.name}
+                    </Text>
+                    <Pressable
+                      onPress={() => moveMember(template.id, -1)}
+                      disabled={index === 0}
+                      className="p-2"
+                    >
+                      <ArrowUp
+                        size={theme.iconSize.sm}
+                        color={
+                          index === 0 ? theme.colors.text.tertiary : theme.colors.text.secondary
+                        }
+                      />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => moveMember(template.id, 1)}
+                      disabled={index === members.length - 1}
+                      className="p-2"
+                    >
+                      <ArrowDown
+                        size={theme.iconSize.sm}
+                        color={
+                          index === members.length - 1
+                            ? theme.colors.text.tertiary
+                            : theme.colors.text.secondary
+                        }
+                      />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => removeMember(template.id)}
+                      className="p-2"
+                      accessibilityRole="button"
+                      accessibilityLabel={t('workouts.plans.removeMember')}
+                    >
+                      <X size={theme.iconSize.sm} color={theme.colors.status.error} />
+                    </Pressable>
+                  </View>
+                  {cycleType === 'weekly' ? (
+                    <>
+                      <WeekdayPicker
+                        days={getWeekdayLabels()}
+                        selectedDays={days}
+                        onToggleDay={(day) => toggleMemberDay(template.id, day)}
+                      />
+                      {days.length === 0 ? (
+                        <Text className="text-status-warning text-xs">
+                          {t('workouts.plans.unscheduled')}
+                        </Text>
+                      ) : null}
+                    </>
+                  ) : null}
+                </View>
+              );
+            })}
+          </View>
+        </View>
       </KeyboardAwareScrollView>
       <ConfirmationModal
         visible={isCycleConfirmationVisible}

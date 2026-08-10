@@ -28,6 +28,9 @@
       "descriptionPlaceholder": "Descreva o objetivo deste programa",
       "iconLabel": "Ícone do plano",
       "membersLabel": "Treinos deste plano",
+      "selectorLabel": "Adicionar ou remover treinos",
+      "membersEmpty": "Nenhum treino ainda. Marque um treino acima para adicioná-lo a este plano.",
+      "removeMember": "Remover do plano",
       "workoutCount": "{{count}} treinos",
       "cycleType": { "label": "Tipo de agenda", "weekly": "Semanal", "rotating": "Rotativo" },
       "picker": {

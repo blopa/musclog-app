@@ -28,6 +28,9 @@
       "descriptionPlaceholder": "Beschrijf het doel van dit programma",
       "iconLabel": "Planicoon",
       "membersLabel": "Workouts in dit plan",
+      "selectorLabel": "Workouts toevoegen of verwijderen",
+      "membersEmpty": "Nog geen workouts. Vink hierboven een workout aan om die aan dit plan toe te voegen.",
+      "removeMember": "Uit plan verwijderen",
       "workoutCount": "{{count}} workouts",
       "cycleType": { "label": "Planningstype", "weekly": "Wekelijks", "rotating": "Roterend" },
       "picker": {

@@ -1,10 +1,27 @@
-import { readFileSync } from 'fs';
+import { readdirSync, readFileSync } from 'fs';
 import { join } from 'path';
 
 const repositoryRoot = join(__dirname, '..', '..');
 
 function source(path: string): string {
   return readFileSync(join(repositoryRoot, path), 'utf8');
+}
+
+function componentFiles(): string[] {
+  const found: string[] = [];
+  const walk = (relative: string) => {
+    for (const entry of readdirSync(join(repositoryRoot, relative), { withFileTypes: true })) {
+      const child = join(relative, entry.name);
+      if (entry.isDirectory()) {
+        walk(child);
+      } else if (entry.name.endsWith('.tsx')) {
+        found.push(child);
+      }
+    }
+  };
+  walk('app');
+  walk('components');
+  return found;
 }
 
 describe('workout plan architecture', () => {
@@ -70,6 +87,33 @@ describe('workout plan architecture', () => {
     expect(source('app/app/workout/workouts.tsx')).toMatch(
       /planEditorOrigin !== 'workout-picker' \|\| !selectedWorkoutId/
     );
+  });
+
+  it('never styles a KeyboardAwareScrollView through contentContainerClassName', () => {
+    // NativeWind maps that prop only for the components css-interop registers (RN's ScrollView,
+    // FlatList, VirtualizedList, KeyboardAvoidingView). `react-native-keyboard-controller`'s
+    // KeyboardAwareScrollView is not one of them, so the classes are dropped without any warning —
+    // the plan editor lost its horizontal padding and bottom inset that way. Pad an inner View.
+    const offenders = componentFiles().filter((file) =>
+      /<KeyboardAwareScrollView[^>]*\scontentContainerClassName/.test(source(file))
+    );
+
+    expect(offenders).toEqual([]);
+  });
+
+  it('separates the workout picker from the list of the plan members', () => {
+    const editorSource = source('components/modals/CreateEditPlanModal.tsx');
+
+    // The selector lists every workout in the library, so labelling it "Workouts in this plan"
+    // made an unticked workout look like it was still a member. That heading now belongs to the
+    // members list, which renders only actual members and offers an explicit remove.
+    expect(editorSource).toMatch(
+      /<OptionsMultiSelector\s+title=\{t\('workouts\.plans\.selectorLabel'\)\}/
+    );
+    expect(editorSource).toContain("t('workouts.plans.membersLabel')");
+    expect(editorSource).toContain("t('workouts.plans.membersEmpty')");
+    expect(editorSource).toContain("accessibilityLabel={t('workouts.plans.removeMember')}");
+    expect(editorSource).toMatch(/onPress=\{\(\) => removeMember\(template\.id\)\}/);
   });
 
   it('routes aggregate edits and generated plans through atomic service methods', () => {

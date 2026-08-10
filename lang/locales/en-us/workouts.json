@@ -28,6 +28,9 @@
       "descriptionPlaceholder": "Describe the goal of this program",
       "iconLabel": "Plan icon",
       "membersLabel": "Workouts in this plan",
+      "selectorLabel": "Add or remove workouts",
+      "membersEmpty": "No workouts yet. Tick a workout above to add it to this plan.",
+      "removeMember": "Remove from plan",
       "workoutCount": "{{count}} workouts",
       "cycleType": {
         "label": "Schedule type",

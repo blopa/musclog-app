@@ -28,6 +28,9 @@
       "descriptionPlaceholder": "Опишите цель этой программы",
       "iconLabel": "Значок плана",
       "membersLabel": "Тренировки в этом плане",
+      "selectorLabel": "Добавить или убрать тренировки",
+      "membersEmpty": "Пока нет тренировок. Отметьте тренировку выше, чтобы добавить её в план.",
+      "removeMember": "Убрать из плана",
       "workoutCount": "Тренировок: {{count}}",
       "cycleType": { "label": "Тип расписания", "weekly": "Еженедельно", "rotating": "По циклу" },
       "picker": {
