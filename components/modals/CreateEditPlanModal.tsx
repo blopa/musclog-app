@@ -22,6 +22,13 @@ import { getWorkoutIcon, WORKOUT_ICON_OPTIONS } from '@/utils/workoutIconUtils';
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 
+/**
+ * How many workouts the picker renders per page. The library is unbounded — every workout the user
+ * has ever made is a candidate for a plan — and rendering them all pushed the plan's own membership
+ * list far below the fold.
+ */
+const WORKOUT_PICKER_PAGE_SIZE = 10;
+
 interface CreateEditPlanModalProps {
   visible: boolean;
   planId?: string;
@@ -50,6 +57,22 @@ export function CreateEditPlanModal({
   const [weekDaysByTemplate, setWeekDaysByTemplate] = useState<Record<string, number[]>>({});
   const [isSaving, setIsSaving] = useState(false);
   const [isCycleConfirmationVisible, setIsCycleConfirmationVisible] = useState(false);
+  const [visibleWorkoutCount, setVisibleWorkoutCount] = useState(WORKOUT_PICKER_PAGE_SIZE);
+
+  // Closing rewinds the picker so a reopen starts at the first page. Deliberately not folded into
+  // the load effect below, which re-runs on every membership emission and would collapse the picker
+  // under the user mid-edit.
+  useEffect(() => {
+    if (visible) {
+      return;
+    }
+
+    const rewindPicker = () => {
+      setVisibleWorkoutCount(WORKOUT_PICKER_PAGE_SIZE);
+    };
+
+    rewindPicker();
+  }, [visible]);
 
   useEffect(() => {
     if (!visible) {
@@ -87,6 +110,11 @@ export function CreateEditPlanModal({
         iconColor: theme.colors.accent.primary,
       })),
     [templates, t, theme]
+  );
+
+  const visibleTemplateOptions = useMemo(
+    () => templateOptions.slice(0, visibleWorkoutCount),
+    [templateOptions, visibleWorkoutCount]
   );
 
   const handleMembershipChange = useCallback((ids: string[]) => {
@@ -303,11 +331,24 @@ export function CreateEditPlanModal({
           */}
           <OptionsMultiSelector
             title={t('workouts.plans.selectorLabel')}
-            options={templateOptions}
+            options={visibleTemplateOptions}
             selectedIds={selectedTemplateIds}
             onChange={handleMembershipChange}
             hasGroups={false}
           />
+          {templateOptions.length > visibleWorkoutCount ? (
+            <View className="items-center">
+              <Button
+                label={t('common.loadMore')}
+                variant="outline"
+                size="sm"
+                width="auto"
+                onPress={() =>
+                  setVisibleWorkoutCount((current) => current + WORKOUT_PICKER_PAGE_SIZE)
+                }
+              />
+            </View>
+          ) : null}
           <View className="gap-3">
             <Text className="ml-1 text-sm font-medium text-text-secondary">
               {t('workouts.plans.membersLabel')}

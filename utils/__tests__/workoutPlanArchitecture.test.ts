@@ -116,6 +116,26 @@ describe('workout plan architecture', () => {
     expect(editorSource).toMatch(/onPress=\{\(\) => removeMember\(template\.id\)\}/);
   });
 
+  it('pages the workout picker while keeping the member list whole', () => {
+    const editorSource = source('components/modals/CreateEditPlanModal.tsx');
+
+    // The picker renders a page at a time so an unbounded library cannot bury the rest of the form.
+    expect(editorSource).toContain('const WORKOUT_PICKER_PAGE_SIZE = 10;');
+    expect(editorSource).toMatch(
+      /visibleTemplateOptions = useMemo\(\s*\(\) => templateOptions\.slice\(0, visibleWorkoutCount\)/
+    );
+    expect(editorSource).toContain('options={visibleTemplateOptions}');
+    expect(editorSource).toMatch(
+      /templateOptions\.length > visibleWorkoutCount \?[\s\S]*t\('common\.loadMore'\)/
+    );
+
+    // `members` must keep resolving against the full template list: a member past the current page
+    // would otherwise vanish from the plan, taking its remove and reorder controls with it.
+    const membersMemo = /const members = useMemo\(\n([\s\S]*?)\n {2}\);/.exec(editorSource)?.[1];
+    expect(membersMemo).toContain('templates.find');
+    expect(membersMemo).not.toContain('visible');
+  });
+
   it('routes aggregate edits and generated plans through atomic service methods', () => {
     const editorSource = source('components/modals/CreateEditPlanModal.tsx');
     const jsonImporterSource = source('database/services/WorkoutTemplateService.ts');
