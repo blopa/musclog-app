@@ -30,7 +30,10 @@ export type ParsedShare =
 export interface OpticalReceiveScreenInput {
   phase: OpticalReceiverPhase;
   meta?: OpticalContainerMeta;
-  /** `'share'` when the caller will only accept a meal — a food camera must never offer a wipe. */
+  /**
+   * `'share'` when the caller will only accept a shared record (a meal, a food) — a food camera
+   * must never offer a wipe.
+   */
   accept: 'any' | 'share';
   errorCode?: OpticalReceiverState['errorCode'];
   parsedShare?: ParsedShare;
@@ -39,7 +42,7 @@ export interface OpticalReceiveScreenInput {
 export type OpticalReceiveScreen =
   | { kind: 'scanning' }
   /** A payload this entry point will not act on. Nothing has been written. */
-  | { kind: 'refused'; reason: 'not-a-meal' | 'unknown-payload' }
+  | { kind: 'refused'; reason: 'database' | 'unknown-payload' }
   | { kind: 'unpacking' }
   | { kind: 'passphrase'; wrongPassphrase: boolean }
   | { kind: 'database'; meta: OpticalContainerMeta; tooNew: boolean }
@@ -68,7 +71,7 @@ export function resolveOpticalReceiveScreen(
   // act on, there is nothing to unpack, verify or offer.
   if (meta) {
     if (accept === 'share' && isDatabase) {
-      return { kind: 'refused', reason: 'not-a-meal' };
+      return { kind: 'refused', reason: 'database' };
     }
     if (!isDatabase && !isShare) {
       return { kind: 'refused', reason: 'unknown-payload' };

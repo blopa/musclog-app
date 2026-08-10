@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { OpticalCameraHintCard } from '@/components/optical/OpticalCameraHintCard';
+import { OpticalFoodSharePreview } from '@/components/optical/OpticalFoodSharePreview';
 import { OpticalMealSharePreview } from '@/components/optical/OpticalMealSharePreview';
 import { OpticalScannerCamera } from '@/components/optical/OpticalScannerCamera';
 import { SmartCameraTopActions } from '@/components/SmartCameraActions';
@@ -177,7 +178,18 @@ export function OpticalReceiveModal({
       try {
         const result = await importShareEnvelope(envelope);
         setShareResult(result);
-        showSnackbar('success', t('opticalTransfer.share.savedTitle'));
+        const alreadyHadFood =
+          envelope.kind === 'food' && result.reused.some((item) => item.table === 'foods');
+        showSnackbar(
+          'success',
+          t(
+            envelope.kind === 'food'
+              ? alreadyHadFood
+                ? 'opticalTransfer.share.savedFoodExisted'
+                : 'opticalTransfer.share.savedFoodTitle'
+              : 'opticalTransfer.share.savedTitle'
+          )
+        );
         onShareImported?.();
       } catch (error) {
         handleError(error, 'OpticalReceiveModal.handleSaveShare', {
@@ -306,8 +318,8 @@ export function OpticalReceiveModal({
         return (
           <View className="gap-4 px-4 py-10">
             <Text className="text-center" style={{ color: theme.colors.status.error }}>
-              {screen.reason === 'not-a-meal'
-                ? t('opticalTransfer.share.notAMeal')
+              {screen.reason === 'database'
+                ? t('opticalTransfer.share.notShareable')
                 : t('opticalTransfer.receive.tooNew')}
             </Text>
             {scanAgainButton}
@@ -422,6 +434,13 @@ export function OpticalReceiveModal({
         );
 
       case 'share': {
+        const { envelope } = screen;
+        const isFood = envelope.kind === 'food';
+        // A food share collapses to nothing when the receiver already had that food: the whole
+        // envelope is one food, so "saved" would be a lie. A meal is always created, and the reused
+        // count is about its ingredients.
+        const reusedRootFood =
+          isFood && shareResult?.reused.some((item) => item.table === 'foods') === true;
         const reusedFoods =
           shareResult?.reused.filter((item) => item.table === 'foods').length ?? 0;
         return (
@@ -432,9 +451,15 @@ export function OpticalReceiveModal({
                   className="text-center text-lg font-bold"
                   style={{ color: theme.colors.status.success }}
                 >
-                  {t('opticalTransfer.share.savedTitle')}
+                  {t(
+                    isFood
+                      ? reusedRootFood
+                        ? 'opticalTransfer.share.savedFoodExisted'
+                        : 'opticalTransfer.share.savedFoodTitle'
+                      : 'opticalTransfer.share.savedTitle'
+                  )}
                 </Text>
-                {reusedFoods > 0 ? (
+                {!isFood && reusedFoods > 0 ? (
                   <Text className="text-center text-sm text-text-secondary">
                     {t('opticalTransfer.share.savedReusedFoods', { count: reusedFoods })}
                   </Text>
@@ -449,13 +474,25 @@ export function OpticalReceiveModal({
               </View>
             ) : (
               <>
-                <OpticalMealSharePreview summary={screen.envelope.summary} />
+                {envelope.kind === 'food' ? (
+                  <OpticalFoodSharePreview summary={envelope.summary} />
+                ) : (
+                  <OpticalMealSharePreview summary={envelope.summary} />
+                )}
                 {savingShare ? (
-                  <ProgressIndicator message={t('opticalTransfer.share.saving')} />
+                  <ProgressIndicator
+                    message={t(
+                      isFood ? 'opticalTransfer.share.savingFood' : 'opticalTransfer.share.saving'
+                    )}
+                  />
                 ) : (
                   <Button
-                    label={t('opticalTransfer.share.saveToMyMeals')}
-                    onPress={() => void handleSaveShare(screen.envelope)}
+                    label={t(
+                      isFood
+                        ? 'opticalTransfer.share.saveToMyFoods'
+                        : 'opticalTransfer.share.saveToMyMeals'
+                    )}
+                    onPress={() => void handleSaveShare(envelope)}
                     size="sm"
                     variant="accent"
                     width="full"
@@ -505,9 +542,11 @@ export function OpticalReceiveModal({
       scrollable={false}
       showHeader={!isScanning}
       subtitle={t('opticalTransfer.receive.subtitle')}
+      // Generic on purpose: which kind of share is arriving is unknowable until the whole stream
+      // has been reassembled, and this header is up from the first frame.
       title={
         accept === 'share'
-          ? t('opticalTransfer.share.receiveMealTitle')
+          ? t('opticalTransfer.share.receiveTitle')
           : t('opticalTransfer.receive.title')
       }
       visible={visible}

@@ -4,7 +4,12 @@ import { assignRawColumns } from '@/database/assignRawColumns';
 import { database } from '@/database/database-instance';
 import Food from '@/database/models/Food';
 import FoodPortion from '@/database/models/FoodPortion';
-import { deleteMealImage, saveBase64MealImage } from '@/utils/file';
+import {
+  deleteFoodImage,
+  deleteMealImage,
+  saveBase64ImageToFile,
+  saveBase64MealImage,
+} from '@/utils/file';
 import { type MusclogShareEnvelope, type ShareRow } from '@/utils/share/shareEnvelope';
 import {
   planShareImport,
@@ -13,12 +18,26 @@ import {
 } from '@/utils/share/shareImportPlan';
 import {
   getShareKindSpec,
+  type ShareAssetStore,
   type ShareDedupeStrategy,
   type ShareKindSpec,
 } from '@/utils/share/shareKinds';
 
 const MACRO_COLUMNS = ['calories', 'protein', 'carbs', 'fat', 'fiber'] as const;
 const IDENTITY_EPSILON = 1e-6;
+
+/**
+ * Where a received photo is written, and how it is taken back if the write that follows fails. The
+ * kind picks the store (`ShareKindSpec.assetStore`) so a shared food's photo lands beside the app's
+ * other food photos rather than in the meals directory.
+ */
+const ASSET_STORES: Record<
+  ShareAssetStore,
+  { save: (base64: string) => Promise<string>; remove: (uri: string) => Promise<void> }
+> = {
+  food: { remove: deleteFoodImage, save: saveBase64ImageToFile },
+  meal: { remove: deleteMealImage, save: saveBase64MealImage },
+};
 
 export interface ShareImportResult {
   kind: MusclogShareEnvelope['kind'];
@@ -231,11 +250,12 @@ export async function importShareEnvelope(
     throw new Error(`Unsupported share kind: ${envelope.kind}`);
   }
 
+  const assetStore = ASSET_STORES[spec.assetStore];
   const resolvedAssets: Record<string, string | undefined> = {};
   const writtenAssetUris: string[] = [];
   for (const [assetId, asset] of Object.entries(envelope.assets ?? {})) {
     try {
-      const uri = await saveBase64MealImage(asset.base64);
+      const uri = await assetStore.save(asset.base64);
       resolvedAssets[assetId] = uri;
       writtenAssetUris.push(uri);
     } catch {
@@ -263,7 +283,7 @@ export async function importShareEnvelope(
       return { kind: envelope.kind, reused: plan.reused, rootId: plan.rootId };
     });
   } catch (error) {
-    await Promise.all(writtenAssetUris.map((uri) => deleteMealImage(uri)));
+    await Promise.all(writtenAssetUris.map((uri) => assetStore.remove(uri)));
     throw error;
   }
 }

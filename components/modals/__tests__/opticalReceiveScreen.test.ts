@@ -38,11 +38,11 @@ describe('resolveOpticalReceiveScreen', () => {
     expect(resolve({ phase: 'collecting' })).toEqual({ kind: 'scanning' });
   });
 
-  it('refuses a database payload when the caller only accepts a meal', () => {
+  it('refuses a database payload when the caller only accepts a share', () => {
     // A food camera must never offer a full restore: that wipes the phone.
     expect(resolve({ accept: 'share', meta: meta(), phase: 'verified' })).toEqual({
       kind: 'refused',
-      reason: 'not-a-meal',
+      reason: 'database',
     });
   });
 

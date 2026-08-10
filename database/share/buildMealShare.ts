@@ -7,7 +7,6 @@ import type FoodPortion from '@/database/models/FoodPortion';
 import type MealFood from '@/database/models/MealFood';
 import type MealFoodPortion from '@/database/models/MealFoodPortion';
 import { MealService } from '@/database/services/MealService';
-import { createThumbnail } from '@/utils/file';
 import {
   OPTICAL_EXPORT_VERSION_SHARE,
   OPTICAL_PAYLOAD_KIND_SHARE,
@@ -17,44 +16,21 @@ import {
   type MealShareIngredient,
   MUSCLOG_SHARE_ENVELOPE_VERSION,
   MusclogShareError,
-  SHARE_ASSET_REF_PREFIX,
-  type ShareRow,
 } from '@/utils/share/shareEnvelope';
 import { MEAL_SHARE_SPEC } from '@/utils/share/shareKinds';
 
+import {
+  applyCarriedFoodImage,
+  applyShareImage,
+  defaultPortionLink,
+  isActive,
+  optionalNumber,
+  prepareShareImage,
+  shareRow,
+} from './shareRecords';
+
 export interface BuildMealShareOptions {
   includeImage: boolean;
-}
-
-function shareRow(model: { id: string; _raw?: Record<string, unknown> }): ShareRow {
-  const raw = { ...(model._raw ?? {}), id: model.id };
-  return Object.fromEntries(
-    Object.entries(raw).filter(
-      ([key, value]) =>
-        !['_changed', '_status', 'deleted_at'].includes(key) &&
-        value !== null &&
-        value !== undefined &&
-        value !== ''
-    )
-  );
-}
-
-function isActive(model: { deletedAt?: number } | null | undefined): boolean {
-  return Boolean(model && model.deletedAt == null);
-}
-
-/**
- * WatermelonDB reads an unset optional column back as `null`, not `undefined`, whatever the
- * model's `?: number` typing claims — and `JSON.stringify` keeps a null while it drops an
- * undefined. Every optional number that reaches the summary goes through this, so the envelope
- * omits the field rather than carrying an explicit null that the receiver's validator rejects.
- */
-function optionalNumber(value: null | number | undefined): number | undefined {
-  return isFiniteNumber(value) ? value : undefined;
-}
-
-function isFiniteNumber(value: unknown): value is number {
-  return typeof value === 'number' && Number.isFinite(value);
 }
 
 async function relatedFood(mealFood: MealFood): Promise<Food | undefined> {
@@ -76,25 +52,6 @@ async function relatedPortion(mealFood: MealFood): Promise<FoodPortion | undefin
   } catch {
     return undefined;
   }
-}
-
-async function defaultPortionLink(
-  food: Food
-): Promise<{ link: FoodFoodPortion; portion: FoodPortion } | undefined> {
-  try {
-    const links = await food.foodPortions.fetch();
-    for (const link of links) {
-      if (link.isDefault && isActive(link)) {
-        const portion = await link.foodPortion;
-        if (isActive(portion)) {
-          return { link, portion };
-        }
-      }
-    }
-  } catch {
-    return undefined;
-  }
-  return undefined;
 }
 
 export async function buildMealShareEnvelope(
@@ -184,25 +141,17 @@ export async function buildMealShareEnvelope(
   );
 
   const mealRow = shareRow(meal);
-  let assets: MealShareEnvelope['assets'];
-  if (options.includeImage && meal.imageUrl) {
-    const thumbnail = await createThumbnail(meal.imageUrl, 400);
-    if (thumbnail.base64) {
-      assets = {
-        mealImage: {
-          base64: thumbnail.base64,
-          height: thumbnail.height,
-          mime: 'image/jpeg',
-          width: thumbnail.width,
-        },
-      };
-      mealRow.image_url = `${SHARE_ASSET_REF_PREFIX}mealImage`;
-    } else {
-      delete mealRow.image_url;
-    }
-  } else {
-    delete mealRow.image_url;
-  }
+  const mealImage = await prepareShareImage(meal.imageUrl, 'mealImage', options.includeImage);
+  applyShareImage(mealRow, 'image_url', mealImage);
+  const assets: MealShareEnvelope['assets'] = mealImage.asset
+    ? { mealImage: mealImage.asset }
+    : undefined;
+
+  const foodRows = [...foods.values()].map((food) => {
+    const row = shareRow(food);
+    applyCarriedFoodImage(row, options.includeImage);
+    return row;
+  });
 
   const mealFoodRows = mealFoods.map(({ model, portion }) => {
     const row = shareRow(model);
@@ -221,7 +170,7 @@ export async function buildMealShareEnvelope(
     records: {
       food_food_portions: defaultFoodLinks.map(shareRow),
       food_portions: [...portions.values()].map(shareRow),
-      foods: [...foods.values()].map(shareRow),
+      foods: foodRows,
       meal_food_portions: carriedMealPortionLinks.map(shareRow),
       meal_foods: mealFoodRows,
       meals: [mealRow],
@@ -230,7 +179,8 @@ export async function buildMealShareEnvelope(
     rootTable: MEAL_SHARE_SPEC.rootTable,
     summary: {
       description: meal.description || undefined,
-      hasImage: Boolean(assets),
+      // The value, not the asset: a remote photo rides along as a URL and embeds nothing.
+      hasImage: Boolean(mealImage.value),
       ingredients,
       name: meal.name,
       nutritionBasis: meal.resolvedNutritionBasis,

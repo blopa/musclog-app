@@ -71,7 +71,8 @@ function food(
   id: string,
   name: string,
   basis: 'per_100g' | 'per_serving',
-  link: ReturnType<typeof defaultLink>
+  link: ReturnType<typeof defaultLink>,
+  imageUrl?: string
 ) {
   return {
     _raw: {
@@ -83,6 +84,7 @@ function food(
       fat: 3,
       fiber: 1,
       id,
+      image_url: imageUrl,
       is_favorite: true,
       name,
       nutrition_basis: basis,
@@ -274,6 +276,30 @@ describe('buildMealShareEnvelope', () => {
     const parsed = parseShareEnvelope(payload.json);
     expect(parsed.summary.name).toBe('Rice bowl');
     expect(parsed.rootId).toBe('meal-1');
+  });
+
+  // An ingredient's photo is never embedded — twenty ingredients would blow the asset budget on
+  // pictures nobody asked for. A remote URL is free and works on the other phone; a sender-local
+  // path names a file that does not exist there, so carrying it would only produce a broken image.
+  it.each([
+    ['a sender-local path', 'file:///ingredient.jpg', false, false],
+    ['a remote URL, photos off', 'https://images.example.org/rice.jpg', false, false],
+    ['a remote URL, photos on', 'https://images.example.org/rice.jpg', true, true],
+  ])('carries an ingredient photo for %s', async (_label, imageUrl, includeImage, carried) => {
+    const { meal, mealFoods } = fixture();
+    const withPhoto = food('food-1', 'Rice', 'per_100g', defaultLink('food-1', portion('p', 'P')), imageUrl);
+    mockGetMeal.mockResolvedValue({
+      foods: [{ ...mealFoods[0], food: withPhoto, foodId: withPhoto.id }],
+      meal,
+    });
+    mockDatabase.get.mockReturnValue({
+      query: () => ({ fetch: jest.fn().mockResolvedValue([]) }),
+    } as any);
+
+    const envelope = await buildMealShareEnvelope(meal.id, { includeImage });
+
+    expect(envelope.records.foods[0].image_url).toBe(carried ? imageUrl : undefined);
+    expect(envelope.assets?.foodImage).toBeUndefined();
   });
 
   it('rejects a meal with no surviving ingredients', async () => {

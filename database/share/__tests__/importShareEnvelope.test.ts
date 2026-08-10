@@ -1,7 +1,12 @@
 import { database } from '@/database/database-instance';
 import { importShareEnvelope } from '@/database/share/importShareEnvelope';
-import { deleteMealImage, saveBase64MealImage } from '@/utils/file';
-import type { MealShareEnvelope, ShareRow } from '@/utils/share/shareEnvelope';
+import {
+  deleteFoodImage,
+  deleteMealImage,
+  saveBase64ImageToFile,
+  saveBase64MealImage,
+} from '@/utils/file';
+import type { FoodShareEnvelope, MealShareEnvelope, ShareRow } from '@/utils/share/shareEnvelope';
 
 jest.mock('@nozbe/watermelondb', () => ({
   Q: {
@@ -30,7 +35,9 @@ jest.mock('@/database/database-instance', () => ({
 }));
 
 jest.mock('@/utils/file', () => ({
+  deleteFoodImage: jest.fn(async () => undefined),
   deleteMealImage: jest.fn(async () => undefined),
+  saveBase64ImageToFile: jest.fn(async () => 'file:///food_images/imported.jpg'),
   saveBase64MealImage: jest.fn(async () => 'file:///meals/imported.jpg'),
 }));
 
@@ -108,6 +115,75 @@ function envelope(options: EnvelopeOptions = {}): MealShareEnvelope {
       name: 'Shared meal',
       nutritionBasis: 'per_recipe',
       totals: { calories: 100, carbs: 10, fat: 3, fiber: 1, protein: 5 },
+    },
+  };
+}
+
+interface FoodEnvelopeOptions {
+  image?: boolean;
+  /** A portion private to the shared food, the shape a per-serving custom food stores. */
+  ownedPortion?: boolean;
+}
+
+/**
+ * A `food` share: the same food graph a meal share carries per ingredient, rooted at the food. It
+ * reuses the meal envelope's food row deliberately — the two must dedupe against the same identity.
+ */
+function foodEnvelope(options: FoodEnvelopeOptions = {}): FoodShareEnvelope {
+  return {
+    _musclogShare: 1,
+    assets: options.image
+      ? { foodImage: { base64: 'AQIDBA==', height: 1, mime: 'image/jpeg', width: 1 } }
+      : undefined,
+    createdAtMs: 1,
+    kind: 'food',
+    kindVersion: 1,
+    records: {
+      food_food_portions: [
+        {
+          food_id: 'sender-food',
+          food_portion_id: 'sender-portion',
+          id: 'sender-link',
+          is_default: true,
+        },
+      ],
+      food_portions: [
+        {
+          gram_weight: 50,
+          id: 'sender-portion',
+          kind: 'mass',
+          name: 'Scoop',
+          scope: options.ownedPortion ? 'private' : 'global',
+          source: 'basic',
+          ...(options.ownedPortion
+            ? { owner_id: 'sender-food', owner_type: 'food' }
+            : undefined),
+        },
+      ],
+      foods: [
+        {
+          barcode: '123',
+          calories: 100,
+          carbs: 10,
+          external_id: 'external-1',
+          fat: 3,
+          fiber: 1,
+          id: 'sender-food',
+          image_url: options.image ? 'share-asset:foodImage' : undefined,
+          name: 'Shared food',
+          nutrition_basis: 'per_100g',
+          protein: 5,
+        },
+      ],
+    },
+    rootId: 'sender-food',
+    rootTable: 'foods',
+    summary: {
+      hasImage: Boolean(options.image),
+      name: 'Shared food',
+      nutrients: { calories: 100, carbs: 10, fat: 3, fiber: 1, protein: 5 },
+      nutritionBasis: 'per_100g',
+      portions: [{ gramWeight: 50, isDefault: true, name: 'Scoop' }],
     },
   };
 }
@@ -315,6 +391,82 @@ describe('importShareEnvelope', () => {
     expect(deleteMealImage).toHaveBeenCalledWith('file:///meals/imported.jpg');
     expect(mockDatabase.write).toHaveBeenCalledTimes(1);
     expect(mockUnsafeResetDatabase).not.toHaveBeenCalled();
+  });
+
+  describe('food share', () => {
+    it('creates the food, its portions and their links when nothing matches', async () => {
+      const { created } = wire();
+      const result = await importShareEnvelope(foodEnvelope());
+
+      expect(created.foods).toHaveLength(1);
+      expect(created.food_portions).toHaveLength(1);
+      expect(created.food_food_portions).toHaveLength(1);
+      expect(createdField(created.food_food_portions, 'foodId')).toBe(createdId(created.foods));
+      expect(createdField(created.food_food_portions, 'foodPortionId')).toBe(
+        createdId(created.food_portions)
+      );
+      expect(result.rootId).toBe(createdId(created.foods));
+    });
+
+    // A food-private portion is only meaningful under its owner, and in this kind the only owner is
+    // the shared food itself — so it must point at the copy that was just created.
+    it('repoints a food-private portion at the newly created food', async () => {
+      const { created } = wire();
+      await importShareEnvelope(foodEnvelope({ ownedPortion: true }));
+
+      expect(createdField(created.food_portions, 'ownerId')).toBe(createdId(created.foods));
+      expect(createdField(created.food_portions, 'ownerType')).toBe('food');
+    });
+
+    // The whole envelope is one food. When the receiver already has it, the share collapses to
+    // nothing written at all — the existing food keeps the portions it already had.
+    it('writes nothing when the receiver already has the food', async () => {
+      const { created } = wire({ foods: [storedFood()] });
+      const result = await importShareEnvelope(foodEnvelope());
+
+      expect(created.foods).toBeUndefined();
+      expect(created.food_portions).toBeUndefined();
+      expect(created.food_food_portions).toBeUndefined();
+      expect(result.rootId).toBe('local-food');
+      expect(result.reused).toContainEqual({
+        localId: 'local-food',
+        sourceId: 'sender-food',
+        table: 'foods',
+      });
+    });
+
+    it('reuses a portion the receiver already has under the same food', async () => {
+      const { created } = wire({
+        foods: [storedFood()],
+        food_portions: [
+          storedPortion({ owner_id: 'local-food', owner_type: 'food', scope: 'private' }),
+        ],
+      });
+      const result = await importShareEnvelope(foodEnvelope({ ownedPortion: true }));
+
+      expect(created.food_portions).toBeUndefined();
+      expect(result.reused).toContainEqual({
+        localId: 'local-portion',
+        sourceId: 'sender-portion',
+        table: 'food_portions',
+      });
+    });
+
+    // A shared food's photo belongs beside the app's other food photos, not in the meals folder.
+    it('writes its photo to the food image store and takes it back if the batch fails', async () => {
+      wire();
+      await importShareEnvelope(foodEnvelope({ image: true }));
+
+      expect(saveBase64ImageToFile).toHaveBeenCalledTimes(1);
+      expect(saveBase64MealImage).not.toHaveBeenCalled();
+
+      (mockDatabase.batch as jest.Mock).mockRejectedValueOnce(new Error('batch failed'));
+      await expect(importShareEnvelope(foodEnvelope({ image: true }))).rejects.toThrow(
+        'batch failed'
+      );
+      expect(deleteFoodImage).toHaveBeenCalledWith('file:///food_images/imported.jpg');
+      expect(deleteMealImage).not.toHaveBeenCalled();
+    });
   });
 
   describe('portion dedupe', () => {

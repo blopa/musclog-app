@@ -1,34 +1,34 @@
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { buildMealSharePayload } from '@/database/share/buildMealShare';
+import { buildFoodSharePayload } from '@/database/share/buildFoodShare';
 
 import { ShareOpticalSendModal } from './ShareOpticalSendModal';
 
-interface MealOpticalSendModalProps {
+interface FoodOpticalSendModalProps {
   visible: boolean;
   onClose: () => void;
-  mealId: string;
+  foodId: string;
   hasImage: boolean;
 }
 
-/** Sends a saved meal (a recipe from My Meals). */
-export function MealOpticalSendModal({
+/** Sends one food and the portions linked to it. */
+export function FoodOpticalSendModal({
   visible,
   onClose,
-  mealId,
+  foodId,
   hasImage,
-}: MealOpticalSendModalProps) {
+}: FoodOpticalSendModalProps) {
   const { t } = useTranslation();
   const buildPayload = useCallback(
-    ({ includeImage }: { includeImage: boolean }) => buildMealSharePayload(mealId, { includeImage }),
-    [mealId]
+    ({ includeImage }: { includeImage: boolean }) => buildFoodSharePayload(foodId, { includeImage }),
+    [foodId]
   );
   const copy = useMemo(
     () => ({
-      instructions: t('opticalTransfer.share.sendMealInstructions'),
-      readyTitle: t('opticalTransfer.share.sendMealReadyTitle'),
-      title: t('opticalTransfer.share.sendMealTitle'),
+      instructions: t('opticalTransfer.share.sendFoodInstructions'),
+      readyTitle: t('opticalTransfer.share.sendFoodReadyTitle'),
+      title: t('opticalTransfer.share.sendFoodTitle'),
     }),
     [t]
   );

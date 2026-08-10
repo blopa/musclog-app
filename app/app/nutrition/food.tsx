@@ -5,6 +5,7 @@ import {
   Edit,
   GitMerge,
   ListPlus,
+  QrCode,
   Save,
   Scale,
   ScanLine,
@@ -31,8 +32,10 @@ import CreateCustomFoodModal from '@/components/modals/CreateCustomFoodModal';
 import { CreateMealModal } from '@/components/modals/CreateMealModal';
 import { FoodMealDetailsModal } from '@/components/modals/FoodMealDetailsModal';
 import { FoodMealTrackingDetailsModal } from '@/components/modals/FoodMealTrackingDetailsModal';
+import { FoodOpticalSendModal } from '@/components/modals/FoodOpticalSendModal';
 import { FoodSearchModal } from '@/components/modals/FoodSearchModal';
 import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
+import { LoggedMealOpticalSendModal } from '@/components/modals/LoggedMealOpticalSendModal';
 import { MealGroupDetailsModal } from '@/components/modals/MealGroupDetailsModal';
 import { MealInsightsModal } from '@/components/modals/MealInsightsModal';
 import { MoveCopyMealModal } from '@/components/modals/MoveCopyMealModal';
@@ -84,6 +87,7 @@ import AiService from '@/services/AiService';
 import {
   calendarDateFromRecordDay,
   formatLocalCalendarDayIso,
+  formatLocalCalendarDayNumericIntl,
   localCalendarDayDate,
 } from '@/utils/calendarDate';
 import { digestibleCarbs } from '@/utils/carbsConvention';
@@ -289,6 +293,14 @@ export default function FoodScreen() {
 
   const screenModals = useFoodScreenModals();
   const [selectedDate, setSelectedDate] = useState(() => localCalendarDayDate(new Date()));
+
+  // Optical send targets. Captured at press time rather than read from the menu's selection: a
+  // BottomPopUpMenu item closes its menu before it runs, and closing clears that selection.
+  const [foodToSend, setFoodToSend] = useState<null | { foodId: string; hasImage: boolean }>(null);
+  const [loggedMealToSend, setLoggedMealToSend] = useState<null | {
+    logs: NutritionLog[];
+    name: string;
+  }>(null);
 
   // Keep camera context aware of the current date so the nav-bar camera button
   // (which has no logDate) also opens FoodMealTrackingDetailsModal on the right date.
@@ -848,6 +860,14 @@ export default function FoodScreen() {
 
   const handleCancelDelete = () => closeDeleteConfirm();
 
+  const handleSendFoodToPhone = () => {
+    const food = selectedFoodItem?.food;
+    closeFoodMenu(true);
+    if (food) {
+      setFoodToSend({ foodId: food.id, hasImage: Boolean(food.imageUrl) });
+    }
+  };
+
   const foodMenuItems = [
     {
       icon: Edit,
@@ -889,6 +909,20 @@ export default function FoodScreen() {
       description: t('food.actions.createMealDesc'),
       onPress: handleFoodCreateMeal,
     },
+    // Only a real food row can be sent: a log whose food was deleted carries an encrypted snapshot,
+    // which is not something the other phone could save.
+    ...(selectedFoodItem?.food
+      ? [
+          {
+            icon: QrCode,
+            iconColor: theme.colors.status.purple,
+            iconBgColor: theme.colors.status.purple10,
+            title: t('food.actions.sendToPhone'),
+            description: t('food.actions.sendFoodToPhoneDesc'),
+            onPress: handleSendFoodToPhone,
+          },
+        ]
+      : []),
     {
       icon: Save,
       iconColor: theme.colors.accent.primary,
@@ -980,6 +1014,32 @@ export default function FoodScreen() {
 
   const handleSplitMeal = () => {
     openMealAction('split');
+  };
+
+  const handleSendMealToPhone = () => {
+    const mealType = selectedMealForMenu;
+    closeMealMenu();
+    if (!mealType) {
+      return;
+    }
+
+    const logs = (mealsByType[mealType] || []).map((entry) => entry.log);
+    if (logs.length === 0) {
+      showSnackbar('error', t('food.createMeal.noFoods'));
+      clearMealSelection();
+      return;
+    }
+
+    // The receiver saves this as an ordinary meal, so it needs a name it can be recognised by
+    // later — "Breakfast" alone would collide with every other breakfast ever received.
+    setLoggedMealToSend({
+      logs,
+      name: t('opticalTransfer.share.loggedMealName', {
+        date: formatLocalCalendarDayNumericIntl(selectedDate, appLocale),
+        meal: t(`food.meals.${mealType}`),
+      }),
+    });
+    clearMealSelection();
   };
 
   const handleScaleMealPortion = () => {
@@ -1302,6 +1362,14 @@ export default function FoodScreen() {
       title: t('food.actions.splitMeal'),
       description: t('food.actions.splitMealDesc'),
       onPress: handleSplitMeal,
+    },
+    {
+      icon: QrCode,
+      iconColor: theme.colors.status.purple,
+      iconBgColor: theme.colors.status.purple10,
+      title: t('food.actions.sendToPhone'),
+      description: t('food.actions.sendMealToPhoneDesc'),
+      onPress: handleSendMealToPhone,
     },
     {
       icon: Save,
@@ -1864,6 +1932,27 @@ export default function FoodScreen() {
         subtitle={t('food.actions.mealMenuSubtitle')}
         items={mealMenuItems}
       />
+
+      {/* Optical send. Screen-level siblings on purpose: the menu that opens them dismisses itself
+          first, so a modal parked in its children would unmount before it could appear
+          (docs/modals-problem-on-ios.md). */}
+      {foodToSend ? (
+        <FoodOpticalSendModal
+          foodId={foodToSend.foodId}
+          hasImage={foodToSend.hasImage}
+          onClose={() => setFoodToSend(null)}
+          visible={true}
+        />
+      ) : null}
+
+      {loggedMealToSend ? (
+        <LoggedMealOpticalSendModal
+          logs={loggedMealToSend.logs}
+          name={loggedMealToSend.name}
+          onClose={() => setLoggedMealToSend(null)}
+          visible={true}
+        />
+      ) : null}
 
       {/* Delete All Meal Confirmation Modal */}
       <ConfirmationModal
