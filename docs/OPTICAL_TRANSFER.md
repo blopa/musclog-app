@@ -344,6 +344,33 @@ meal. And `dropWhenParentReused` maps each table to the **named** foreign key of
 once inferred from the first key of `foreignKeys[table]`, which meant reordering two properties
 silently changed which parent was consulted.
 
+### What counts as "the receiver already has this"
+
+Both identities live in `database/share/importShareEnvelope.ts`. Receiving a meal twice, or
+receiving two meals that share an ingredient, must not grow the food or portion catalogue.
+
+A **food** matches on `external_id`, then `barcode`, then exact `name` + `brand` + macros. Every
+branch also requires the same `nutrition_basis`: per-100 g and per-serving rows carry the same
+numbers meaning different things, so reusing across that would silently rescale the meal.
+
+A **portion** matches on `name` + gram weight, plus `kind` (a named portion is not a mass one) and
+`scope`. `source` is deliberately **excluded**: `forcedColumns` stamps every imported portion
+`custom`, so matching on it would make the second receive duplicate every `basic` portion the first
+receive had already localized.
+
+Portion lookup is scoped by owner, because `owner_id` changes what a portion _means_:
+
+| Incoming portion           | Looked up among                   | Why                                                                                                                  |
+| -------------------------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| unowned (`owner_id` null)  | the receiver's unowned portions   | a global portion is global on both phones                                                                            |
+| owned by a **reused** food | that existing food's own portions | this is the case that used to duplicate: a per-serving custom food stores its serving as a portion private to itself |
+| owned by a **new** food    | nothing — always created          | the food is being created fresh, so it has no portions to reuse                                                      |
+| owned by the **meal**      | nothing — always created          | the meal is the share's root and is always new, so no existing meal's portions could be borrowed                     |
+
+Reading the food resolutions while resolving a portion is what makes `ShareKindSpec.tables`
+dependency order load-bearing beyond foreign keys: `buildResolutions` walks it in order, so `foods`
+must stay ahead of `food_portions` or an owned portion can never see that its owner was reused.
+
 ## Sender pacing
 
 Two bugs found on real hardware, both worth not reintroducing:

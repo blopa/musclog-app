@@ -26,8 +26,26 @@ export interface ShareImportResult {
   reused: ReusedShareRow[];
 }
 
+/**
+ * What a dedupe resolver may know about the rows resolved before it. Populated table by table in
+ * `spec.tables` order, which is why that list is documented as dependency order: a portion can only
+ * ask whether its owning food was reused because `foods` is resolved first.
+ */
+export interface ShareDedupeContext {
+  /**
+   * The receiver's existing record that an already-resolved row matched, or `undefined` when the
+   * row will be created fresh. Never a generated id — `planShareImport` mints those later, so a
+   * value here always names a record the receiver already had.
+   */
+  reusedLocalId: (table: string, sourceId: string | undefined) => string | undefined;
+}
+
 function stringValue(value: unknown): string | undefined {
   return typeof value === 'string' && value ? value : undefined;
+}
+
+function isFiniteNumber(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value);
 }
 
 function incomingFoodBasis(row: ShareRow): 'per_100g' | 'per_serving' {
@@ -88,29 +106,78 @@ function incomingPortionKind(row: ShareRow): 'mass' | 'named' {
   return row.kind === 'named' ? 'named' : 'mass';
 }
 
-function incomingPortionSource(row: ShareRow): 'basic' | 'custom' {
-  return row.source === 'custom' ? 'custom' : 'basic';
+function incomingPortionScope(row: ShareRow): 'global' | 'private' {
+  return row.scope === 'private' ? 'private' : 'global';
 }
 
-async function resolvePortion(row: ShareRow): Promise<FoodPortion | undefined> {
-  if (row.scope === 'private' || stringValue(row.owner_type)) {
-    return undefined;
+function portionSizeMatches(stored: null | number | undefined, incoming: unknown): boolean {
+  const storedGrams = isFiniteNumber(stored) ? stored : undefined;
+  const incomingGrams = isFiniteNumber(incoming) ? incoming : undefined;
+  if (storedGrams === undefined || incomingGrams === undefined) {
+    return storedGrams === incomingGrams;
   }
+  return Math.abs(storedGrams - incomingGrams) <= IDENTITY_EPSILON;
+}
+
+/**
+ * Name + size is the identity a user reasons about. `kind` and `scope` come along because a named
+ * portion and a mass portion are not the same thing, and neither are a globally offered portion and
+ * one private to a single item.
+ *
+ * `source` is deliberately NOT part of it: `MEAL_SHARE_SPEC.forcedColumns` stamps every imported
+ * portion `custom`, so matching on it would make receiving the same meal twice duplicate every
+ * `basic` portion the first receive had already localized.
+ */
+function portionIdentityMatches(portion: FoodPortion, row: ShareRow): boolean {
+  return (
+    portion.name === stringValue(row.name) &&
+    portionSizeMatches(portion.gramWeight, row.gram_weight) &&
+    portion.resolvedKind === incomingPortionKind(row) &&
+    portion.resolvedScope === incomingPortionScope(row)
+  );
+}
+
+async function activePortionsWhere(...clauses: Q.Clause[]): Promise<FoodPortion[]> {
+  return database
+    .get<FoodPortion>('food_portions')
+    .query(...clauses, Q.where('deleted_at', Q.eq(null)))
+    .fetch();
+}
+
+async function resolvePortion(
+  row: ShareRow,
+  context: ShareDedupeContext
+): Promise<FoodPortion | undefined> {
   const name = stringValue(row.name);
   if (!name) {
     return undefined;
   }
 
-  const candidates = await database
-    .get<FoodPortion>('food_portions')
-    .query(Q.where('name', name), Q.where('deleted_at', Q.eq(null)))
-    .fetch();
-  return candidates.find(
-    (portion) =>
-      (portion.gramWeight ?? null) === (row.gram_weight ?? null) &&
-      portion.resolvedKind === incomingPortionKind(row) &&
-      portion.resolvedSource === incomingPortionSource(row)
+  const ownerType = stringValue(row.owner_type);
+  if (!ownerType) {
+    const candidates = await activePortionsWhere(
+      Q.where('name', name),
+      Q.where('owner_id', Q.eq(null))
+    );
+    return candidates.find((portion) => portionIdentityMatches(portion, row));
+  }
+
+  // An owned portion only means anything under its owner, so it can be reused only when that owner
+  // is a record the receiver ALREADY had. A meal-owned one never qualifies: the meal is the share's
+  // root and is always created fresh, so there is no existing meal whose portions could be reused.
+  if (ownerType !== 'food') {
+    return undefined;
+  }
+  const ownerLocalId = context.reusedLocalId('foods', stringValue(row.owner_id));
+  if (!ownerLocalId) {
+    return undefined;
+  }
+
+  const candidates = await activePortionsWhere(
+    Q.where('owner_type', 'food'),
+    Q.where('owner_id', ownerLocalId)
   );
+  return candidates.find((portion) => portionIdentityMatches(portion, row));
 }
 
 /**
@@ -119,7 +186,7 @@ async function resolvePortion(row: ShareRow): Promise<FoodPortion | undefined> {
  */
 const DEDUPE_RESOLVERS: Record<
   Exclude<ShareDedupeStrategy, 'create'>,
-  (row: ShareRow) => Promise<{ id: string } | undefined>
+  (row: ShareRow, context: ShareDedupeContext) => Promise<{ id: string } | undefined>
 > = {
   'food-identity': resolveFood,
   'portion-identity': resolvePortion,
@@ -130,6 +197,9 @@ async function buildResolutions(
   records: Record<string, ShareRow[]>
 ): Promise<ShareImportResolutions> {
   const resolutions: ShareImportResolutions = {};
+  const context: ShareDedupeContext = {
+    reusedLocalId: (table, sourceId) => (sourceId ? resolutions[table]?.[sourceId] : undefined),
+  };
 
   for (const table of spec.tables) {
     const strategy = spec.dedupe[table] ?? 'create';
@@ -143,7 +213,7 @@ async function buildResolutions(
       if (row.deleted_at != null || row._status === 'deleted' || typeof row.id !== 'string') {
         continue;
       }
-      const match = await resolve(row);
+      const match = await resolve(row, context);
       if (match) {
         resolutions[table][row.id] = match.id;
       }

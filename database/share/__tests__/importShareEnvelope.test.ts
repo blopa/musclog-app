@@ -1,7 +1,7 @@
 import { database } from '@/database/database-instance';
 import { importShareEnvelope } from '@/database/share/importShareEnvelope';
 import { deleteMealImage, saveBase64MealImage } from '@/utils/file';
-import type { MealShareEnvelope } from '@/utils/share/shareEnvelope';
+import type { MealShareEnvelope, ShareRow } from '@/utils/share/shareEnvelope';
 
 jest.mock('@nozbe/watermelondb', () => ({
   Q: {
@@ -36,7 +36,16 @@ jest.mock('@/utils/file', () => ({
 
 const mockDatabase = database as jest.Mocked<typeof database>;
 
-function envelope(options: { image?: boolean } = {}): MealShareEnvelope {
+interface EnvelopeOptions {
+  image?: boolean;
+  foodPortions?: ShareRow[];
+  /** Attaches the ingredient to this portion, the way a real per-serving ingredient is stored. */
+  ingredientPortionId?: string;
+  /** Links the meal itself to this portion, the way a recipe serving size is stored. */
+  mealPortionId?: string;
+}
+
+function envelope(options: EnvelopeOptions = {}): MealShareEnvelope {
   return {
     _musclogShare: 1,
     assets: options.image
@@ -47,7 +56,7 @@ function envelope(options: { image?: boolean } = {}): MealShareEnvelope {
     kindVersion: 1,
     records: {
       food_food_portions: [],
-      food_portions: [],
+      food_portions: options.foodPortions ?? [],
       foods: [
         {
           barcode: '123',
@@ -62,9 +71,26 @@ function envelope(options: { image?: boolean } = {}): MealShareEnvelope {
           protein: 5,
         },
       ],
-      meal_food_portions: [],
+      meal_food_portions: options.mealPortionId
+        ? [
+            {
+              food_portion_id: options.mealPortionId,
+              id: 'sender-mfp',
+              is_default: true,
+              meal_id: 'sender-meal',
+            },
+          ]
+        : [],
       meal_foods: [
-        { amount: 100, food_id: 'sender-food', id: 'sender-mf', meal_id: 'sender-meal' },
+        {
+          amount: 100,
+          food_id: 'sender-food',
+          id: 'sender-mf',
+          meal_id: 'sender-meal',
+          ...(options.ingredientPortionId
+            ? { portion_id: options.ingredientPortionId }
+            : undefined),
+        },
       ],
       meals: [
         {
@@ -86,24 +112,65 @@ function envelope(options: { image?: boolean } = {}): MealShareEnvelope {
   };
 }
 
-function storedFood(nutritionBasis: 'per_100g' | 'per_serving') {
-  return {
+/**
+ * A food the receiver already has, carrying BOTH its raw columns (what the query clauses filter on)
+ * and the model accessors the identity checks read. Keeping the two derived from one bag is what
+ * lets the mock below apply clauses for real, so a test can no longer pass by handing every query
+ * the same candidate.
+ */
+function storedFood(overrides: Record<string, unknown> = {}) {
+  const columns = {
     barcode: '123',
-    brand: undefined,
+    brand: null,
     calories: 100,
     carbs: 10,
-    externalId: 'external-1',
+    deleted_at: null,
+    external_id: 'external-1',
     fat: 3,
     fiber: 1,
     id: 'local-food',
     name: 'Shared food',
-    nutritionBasis,
+    nutrition_basis: 'per_100g',
     protein: 5,
-    resolvedNutritionBasis: nutritionBasis,
+    ...overrides,
+  };
+  return {
+    ...columns,
+    brand: columns.brand ?? undefined,
+    resolvedNutritionBasis: columns.nutrition_basis,
   };
 }
 
-function wire(foodCandidates: unknown[]) {
+function storedPortion(overrides: Record<string, unknown> = {}) {
+  const columns = {
+    deleted_at: null,
+    gram_weight: 50,
+    id: 'local-portion',
+    kind: 'mass',
+    name: 'Scoop',
+    owner_id: null,
+    owner_type: null,
+    scope: 'global',
+    source: 'basic',
+    ...overrides,
+  };
+  return {
+    ...columns,
+    gramWeight: columns.gram_weight ?? undefined,
+    resolvedKind: columns.kind === 'named' ? 'named' : 'mass',
+    resolvedScope: columns.scope === 'private' ? 'private' : 'global',
+    resolvedSource: columns.source === 'custom' ? 'custom' : 'basic',
+  };
+}
+
+function matchesClauses(record: Record<string, unknown>, clauses: any[]): boolean {
+  return clauses.every(({ field, value }) => {
+    const expected = value && typeof value === 'object' && 'kind' in value ? value.value : value;
+    return (record[field] ?? null) === (expected ?? null);
+  });
+}
+
+function wire(stored: { foods?: unknown[]; food_portions?: unknown[] } = {}) {
   const created: Record<string, any[]> = {};
   const queriedTables: string[] = [];
   mockDatabase.get.mockImplementation(((table: string) => ({
@@ -113,13 +180,26 @@ function wire(foodCandidates: unknown[]) {
       (created[table] ??= []).push(record);
       return record;
     },
-    query: () => {
+    query: (...clauses: any[]) => {
       queriedTables.push(table);
-      return { fetch: jest.fn().mockResolvedValue(table === 'foods' ? foodCandidates : []) };
+      const rows = (stored as Record<string, unknown[]>)[table] ?? [];
+      return {
+        fetch: jest
+          .fn()
+          .mockResolvedValue(rows.filter((row) => matchesClauses(row as any, clauses))),
+      };
     },
   })) as any);
   return { created, queriedTables };
 }
+
+/**
+ * `assignRawColumns` writes through camelCase model setters and only the id lands on `_raw`, so a
+ * created record is read the same way the real models expose it.
+ */
+const createdId = (records: any[] | undefined, index = 0) => records?.[index]?._raw?.id;
+const createdField = (records: any[] | undefined, field: string, index = 0) =>
+  records?.[index]?.[field];
 
 describe('importShareEnvelope', () => {
   beforeEach(() => {
@@ -130,7 +210,7 @@ describe('importShareEnvelope', () => {
   });
 
   it('dedupes an external-id match and performs one non-destructive write', async () => {
-    const { created } = wire([storedFood('per_100g')]);
+    const { created } = wire({ foods: [storedFood()] });
     const result = await importShareEnvelope(envelope());
 
     expect(mockDatabase.write).toHaveBeenCalledTimes(1);
@@ -144,8 +224,52 @@ describe('importShareEnvelope', () => {
     });
   });
 
+  it('dedupes a barcode match even when no external id lines up', async () => {
+    const { created } = wire({ foods: [storedFood({ external_id: 'other-external' })] });
+    const result = await importShareEnvelope(envelope());
+
+    expect(created.foods).toBeUndefined();
+    expect(result.reused).toContainEqual({
+      localId: 'local-food',
+      sourceId: 'sender-food',
+      table: 'foods',
+    });
+  });
+
+  it('dedupes on exact name and macros when there is no barcode or external id', async () => {
+    const { created } = wire({
+      foods: [storedFood({ barcode: null, external_id: null })],
+    });
+    const bare = envelope();
+    delete bare.records.foods[0].barcode;
+    delete bare.records.foods[0].external_id;
+
+    const result = await importShareEnvelope(bare);
+
+    expect(created.foods).toBeUndefined();
+    expect(result.reused).toContainEqual({
+      localId: 'local-food',
+      sourceId: 'sender-food',
+      table: 'foods',
+    });
+  });
+
+  it('never reuses a same-named food whose macros differ', async () => {
+    const { created } = wire({
+      foods: [storedFood({ barcode: null, external_id: null, protein: 6 })],
+    });
+    const bare = envelope();
+    delete bare.records.foods[0].barcode;
+    delete bare.records.foods[0].external_id;
+
+    const result = await importShareEnvelope(bare);
+
+    expect(created.foods).toHaveLength(1);
+    expect(result.reused.filter((item) => item.table === 'foods')).toHaveLength(0);
+  });
+
   it('never reuses a food across a nutrition-basis mismatch', async () => {
-    const { created } = wire([storedFood('per_serving')]);
+    const { created } = wire({ foods: [storedFood({ nutrition_basis: 'per_serving' })] });
     const result = await importShareEnvelope(envelope());
 
     expect(created.foods).toHaveLength(1);
@@ -155,7 +279,7 @@ describe('importShareEnvelope', () => {
   it('only looks for matches in the tables the kind spec marks for dedupe', async () => {
     // The strategy per table lives in MEAL_SHARE_SPEC.dedupe, not in this module. Tables left at
     // the default 'create' must never be queried, so an imported meal is always a new meal.
-    const { created, queriedTables } = wire([storedFood('per_100g')]);
+    const { created, queriedTables } = wire({ foods: [storedFood()] });
     const result = await importShareEnvelope(envelope());
 
     expect(queriedTables).toContain('foods');
@@ -166,7 +290,7 @@ describe('importShareEnvelope', () => {
   });
 
   it('removes a written asset when the batch fails', async () => {
-    wire([]);
+    wire();
 
     (mockDatabase.batch as jest.Mock).mockRejectedValueOnce(new Error('batch failed'));
 
@@ -175,5 +299,188 @@ describe('importShareEnvelope', () => {
     expect(deleteMealImage).toHaveBeenCalledWith('file:///meals/imported.jpg');
     expect(mockDatabase.write).toHaveBeenCalledTimes(1);
     expect(mockUnsafeResetDatabase).not.toHaveBeenCalled();
+  });
+
+  describe('portion dedupe', () => {
+    const globalPortion = (overrides: ShareRow = {}): ShareRow => ({
+      gram_weight: 50,
+      id: 'sender-portion',
+      kind: 'mass',
+      name: 'Scoop',
+      scope: 'global',
+      source: 'basic',
+      ...overrides,
+    });
+
+    // A per-serving custom food stores its serving as a portion PRIVATE to that food
+    // (`FoodService.createCustomFood`), which is the shape that used to be recreated every time.
+    const ownedPortion = (overrides: ShareRow = {}): ShareRow => ({
+      id: 'sender-portion',
+      kind: 'named',
+      name: '1 serving',
+      owner_id: 'sender-food',
+      owner_type: 'food',
+      scope: 'private',
+      source: 'custom',
+      ...overrides,
+    });
+
+    it('reuses a global portion with the same name and size', async () => {
+      const { created } = wire({ food_portions: [storedPortion()] });
+      const result = await importShareEnvelope(
+        envelope({ foodPortions: [globalPortion()], ingredientPortionId: 'sender-portion' })
+      );
+
+      expect(created.food_portions).toBeUndefined();
+      expect(result.reused).toContainEqual({
+        localId: 'local-portion',
+        sourceId: 'sender-portion',
+        table: 'food_portions',
+      });
+      expect(createdField(created.meal_foods, 'portionId')).toBe('local-portion');
+    });
+
+    // `forcedColumns` stamps every imported portion `custom`, so a first receive turns the sender's
+    // `basic` portion into a local `custom` one. Matching on source would make the second receive
+    // duplicate it, and the third duplicate it again.
+    it('reuses a portion whose source differs, so receiving the same meal twice adds nothing', async () => {
+      const { created } = wire({ food_portions: [storedPortion({ source: 'custom' })] });
+      const result = await importShareEnvelope(
+        envelope({ foodPortions: [globalPortion()], ingredientPortionId: 'sender-portion' })
+      );
+
+      expect(created.food_portions).toBeUndefined();
+      expect(result.reused.filter((item) => item.table === 'food_portions')).toHaveLength(1);
+    });
+
+    it.each([
+      ['the size differs', { gram_weight: 60 }],
+      ['the name differs', { name: 'Ladle' }],
+      ['a mass portion faces a named one', { gram_weight: null, kind: 'named' }],
+      ['a global portion faces a private one', { scope: 'private' }],
+    ])('never reuses a global portion when %s', async (_label, overrides) => {
+      const { created } = wire({ food_portions: [storedPortion(overrides)] });
+      const result = await importShareEnvelope(
+        envelope({ foodPortions: [globalPortion()], ingredientPortionId: 'sender-portion' })
+      );
+
+      expect(created.food_portions).toHaveLength(1);
+      expect(result.reused.filter((item) => item.table === 'food_portions')).toHaveLength(0);
+    });
+
+    it('reuses a food-private portion when the receiver already had the owning food', async () => {
+      const { created } = wire({
+        foods: [storedFood()],
+        food_portions: [
+          storedPortion({
+            gram_weight: null,
+            id: 'local-serving',
+            kind: 'named',
+            name: '1 serving',
+            owner_id: 'local-food',
+            owner_type: 'food',
+            scope: 'private',
+            source: 'custom',
+          }),
+        ],
+      });
+      const result = await importShareEnvelope(
+        envelope({ foodPortions: [ownedPortion()], ingredientPortionId: 'sender-portion' })
+      );
+
+      expect(created.food_portions).toBeUndefined();
+      expect(result.reused).toContainEqual({
+        localId: 'local-serving',
+        sourceId: 'sender-portion',
+        table: 'food_portions',
+      });
+      expect(createdField(created.meal_foods, 'portionId')).toBe('local-serving');
+    });
+
+    // Scoping is enforced by the query, not by the identity check: an identical portion hanging off
+    // some other food must not be borrowed.
+    it('never reuses an identical portion owned by a different food', async () => {
+      const { created } = wire({
+        foods: [storedFood()],
+        food_portions: [
+          storedPortion({
+            gram_weight: null,
+            id: 'other-foods-serving',
+            kind: 'named',
+            name: '1 serving',
+            owner_id: 'some-other-food',
+            owner_type: 'food',
+            scope: 'private',
+            source: 'custom',
+          }),
+        ],
+      });
+      const result = await importShareEnvelope(
+        envelope({ foodPortions: [ownedPortion()], ingredientPortionId: 'sender-portion' })
+      );
+
+      expect(created.food_portions).toHaveLength(1);
+      expect(result.reused.filter((item) => item.table === 'food_portions')).toHaveLength(0);
+      expect(createdField(created.food_portions, 'ownerId')).toBe('local-food');
+    });
+
+    it('never reuses a food-private portion when the owning food is created fresh', async () => {
+      const { created } = wire({
+        food_portions: [
+          storedPortion({
+            gram_weight: null,
+            id: 'local-serving',
+            kind: 'named',
+            name: '1 serving',
+            owner_id: 'local-food',
+            owner_type: 'food',
+            scope: 'private',
+            source: 'custom',
+          }),
+        ],
+      });
+      const result = await importShareEnvelope(
+        envelope({ foodPortions: [ownedPortion()], ingredientPortionId: 'sender-portion' })
+      );
+
+      expect(result.reused.filter((item) => item.table === 'food_portions')).toHaveLength(0);
+      expect(created.food_portions).toHaveLength(1);
+      // The fresh portion hangs off the food that was just created, never off the receiver's.
+      expect(createdField(created.food_portions, 'ownerId')).toBe(createdId(created.foods));
+      expect(createdField(created.food_portions, 'ownerId')).not.toBe('local-food');
+    });
+
+    // The meal is the share's root and is always new, so there is no existing owner to match
+    // against — a meal-owned portion must be recreated even when its name and size look familiar.
+    it('never reuses a meal-owned portion', async () => {
+      const { created } = wire({
+        foods: [storedFood()],
+        food_portions: [
+          storedPortion({
+            gram_weight: null,
+            id: 'local-bowl',
+            kind: 'named',
+            name: 'Bowl',
+            owner_id: 'local-meal',
+            owner_type: 'meal',
+            scope: 'private',
+            source: 'custom',
+          }),
+        ],
+      });
+      const senderBowl = ownedPortion({
+        id: 'sender-bowl',
+        name: 'Bowl',
+        owner_id: 'sender-meal',
+        owner_type: 'meal',
+      });
+      const result = await importShareEnvelope(
+        envelope({ foodPortions: [senderBowl], mealPortionId: 'sender-bowl' })
+      );
+
+      expect(result.reused.filter((item) => item.table === 'food_portions')).toHaveLength(0);
+      expect(created.food_portions).toHaveLength(1);
+      expect(createdField(created.food_portions, 'ownerId')).toBe(createdId(created.meals));
+    });
   });
 });

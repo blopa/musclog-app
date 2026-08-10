@@ -20,7 +20,11 @@ export interface ShareKindSpec {
   /**
    * How a row of each table is matched against what the receiver already has. Tables left out
    * default to `'create'`. Read by `buildResolutions` in `database/share/importShareEnvelope.ts`,
-   * which owns the per-strategy queries.
+   * which owns the per-strategy queries and the identity each one compares on.
+   *
+   * Resolution runs in `tables` order and a resolver may consult the tables resolved before it —
+   * `'portion-identity'` asks whether a portion's owning food was reused — so that order is a
+   * dependency for dedupe as much as it is for foreign keys.
    */
   dedupe: Record<string, ShareDedupeStrategy>;
   assetColumns: Record<string, readonly string[]>;

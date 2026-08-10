@@ -204,7 +204,9 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
   but the two screens: one displays an animated stream of QR codes, the other reads them with its
   camera. Whole-profile transfers remain optionally passphrase-protected and replace only after
   verification; meal shares preview ingredients/macros and save non-destructively into the existing
-  database. Send from a meal's ⋮ menu and receive from My Meals → +, or receive either payload from
+  database, matching each ingredient and serving size against what the receiving phone already has
+  so a received meal reuses your existing foods and portions rather than duplicating them.
+  Send from a meal's ⋮ menu and receive from My Meals → +, or receive either payload from
   Settings. Point a food barcode scanner at a sending phone by mistake and it recognises the stream
   instead of failing a product lookup, offering to hand you straight to the optical reader. The
   receiving screen shows live percentage, transferred KB, KB/s throughput, and remaining time.
