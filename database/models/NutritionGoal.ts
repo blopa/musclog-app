@@ -1,5 +1,5 @@
 import { Model, Query } from '@nozbe/watermelondb';
-import { children, field } from '@nozbe/watermelondb/decorators';
+import { children, field, writer } from '@nozbe/watermelondb/decorators';
 
 import type NutritionCheckin from './NutritionCheckin';
 
@@ -31,4 +31,15 @@ export default class NutritionGoal extends Model {
   @field('deleted_at') deletedAt?: number;
 
   @children('nutrition_checkins') declare checkins: Query<NutritionCheckin>;
+
+  // Only the goal itself — its check-ins are soft-deleted separately by
+  // `NutritionCheckinService.deleteByGoalId`, which the delete paths already call.
+  @writer
+  async markAsDeleted(): Promise<void> {
+    const now = Date.now();
+    await this.update((record) => {
+      record.deletedAt = now;
+      record.updatedAt = now;
+    });
+  }
 }

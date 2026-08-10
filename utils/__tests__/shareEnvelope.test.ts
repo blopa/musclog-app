@@ -1,6 +1,7 @@
 import { RESTORE_ORDER } from '@/constants/exportImport';
 import { schema } from '@/database/schema';
 import {
+  type FoodShareEnvelope,
   MUSCLOG_SHARE_ENVELOPE_VERSION,
   MusclogShareError,
   parseShareEnvelope,
@@ -35,6 +36,29 @@ const mealShare = (): MealShareEnvelope => ({
   },
 });
 
+const foodShare = (): FoodShareEnvelope => ({
+  _musclogShare: MUSCLOG_SHARE_ENVELOPE_VERSION,
+  createdAtMs: 1_754_000_000_000,
+  kind: 'food',
+  kindVersion: 1,
+  records: {
+    food_food_portions: [
+      { food_id: 'food-1', food_portion_id: 'portion-1', id: 'link-1', is_default: true },
+    ],
+    food_portions: [{ gram_weight: 30, id: 'portion-1', name: 'Scoop' }],
+    foods: [{ id: 'food-1', name: 'Whey' }],
+  },
+  rootId: 'food-1',
+  rootTable: 'foods',
+  summary: {
+    hasImage: false,
+    name: 'Whey',
+    nutrients: { calories: 380, carbs: 6, fat: 7, fiber: 0, protein: 76 },
+    nutritionBasis: 'per_100g',
+    portions: [{ gramWeight: 30, isDefault: true, name: 'Scoop' }],
+  },
+});
+
 function expectCode(fn: () => unknown, code: MusclogShareError['code']): void {
   try {
     fn();
@@ -49,6 +73,73 @@ describe('parseShareEnvelope', () => {
   it('round-trips a meal share including assets', () => {
     const share = mealShare();
     expect(parseShareEnvelope(JSON.stringify(share))).toEqual(share);
+  });
+
+  // v2.11.0's builder wrote WatermelonDB's `null` straight into the summary for every optional
+  // measurement the meal did not set — which is most meals — and the receiver rejected the lot.
+  // Reading null as absent is what lets a phone on this build receive from a phone still on that
+  // one; stripping it is what keeps the returned envelope matching its `?: number` typing.
+  it('reads an explicit null as an absent optional field', () => {
+    const share = mealShare();
+    const withNulls = {
+      ...share,
+      summary: {
+        ...share.summary,
+        description: null,
+        ingredients: [{ ...share.summary.ingredients[0], portionName: null }],
+        preparedWeightGrams: null,
+        recipeServingsCount: null,
+        servingGrams: null,
+      },
+    };
+
+    const parsed = parseShareEnvelope(JSON.stringify(withNulls));
+
+    expect(parsed).toEqual(share);
+    expect(Object.hasOwn(parsed.summary, 'servingGrams')).toBe(false);
+    expect(Object.hasOwn(parsed.summary.ingredients[0], 'portionName')).toBe(false);
+  });
+
+  it('round-trips a food share', () => {
+    const share = foodShare();
+    expect(parseShareEnvelope(JSON.stringify(share))).toEqual(share);
+  });
+
+  // Same treatment as the meal summary's optional measurements: WatermelonDB hands a builder
+  // `null` for an unset optional column, and an explicit null must read as "not set" rather than
+  // failing the whole receive.
+  it('reads an explicit null as an absent optional food field', () => {
+    const share = foodShare();
+    const withNulls = {
+      ...share,
+      summary: {
+        ...share.summary,
+        brand: null,
+        description: null,
+        portions: [{ ...share.summary.portions[0], gramWeight: null }],
+      },
+    };
+
+    const parsed = parseShareEnvelope(JSON.stringify(withNulls));
+
+    expect(Object.hasOwn(parsed.summary, 'brand')).toBe(false);
+    expect(parsed.kind).toBe('food');
+  });
+
+  it('rejects a food share whose summary is missing macros', () => {
+    const share = foodShare();
+    // @ts-expect-error deliberately malformed: a sender that dropped a macro
+    delete share.summary.nutrients.protein;
+    expectCode(() => parseShareEnvelope(JSON.stringify(share)), 'malformed');
+  });
+
+  // A kind this build has never heard of is the one case that really does mean "the other phone is
+  // newer", so it must not fall through to the generic malformed message.
+  it('rejects a kind this build does not know', () => {
+    expectCode(
+      () => parseShareEnvelope(JSON.stringify({ ...foodShare(), kind: 'workout' })),
+      'unsupported-kind'
+    );
   });
 
   it('rejects a database export as not-a-share', () => {

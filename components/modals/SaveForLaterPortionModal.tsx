@@ -162,7 +162,7 @@ export function SaveForLaterPortionModal({
           <Text className="text-center text-sm" style={{ color: theme.colors.text.secondary }}>
             {t('food.mealGroup.saveForLaterPortionHint', {
               remaining,
-              mealType: mealType ? t(`food.meals.${mealType}`) : t('food.mealGroup.meal'),
+              mealType: mealType ? t(`food.meals.${mealType}`) : t('food.mealGroup.badge'),
             })}
           </Text>
         ) : (

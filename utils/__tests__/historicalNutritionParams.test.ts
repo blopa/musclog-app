@@ -250,7 +250,7 @@ describe('getHistoricalNutritionParams', () => {
 
     const result = await getHistoricalNutritionParams({
       asOfDate: fixedEndDate,
-      useWeeklyAverages: true,
+      useWeeklyFatAverages: true,
     });
     expect(result).not.toBeNull();
     expect(result!.historicalInitialWeightKg).toBe(72);

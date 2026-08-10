@@ -52,6 +52,7 @@
     "goToSettings": "Перейти в Настройки",
     "success": {
       "workoutPlanGenerated": "Я создал {{count}} тренировок для вас! 💪 {{description}}",
+      "workoutPlanGeneratedWithName": "Я создал план «{{planName}}» с {{count}} тренировками! 💪 {{description}}",
       "mealPlanGenerated": "Я создал трёхдневный план питания с {{count}} приёмами пищи для вас! 🥗 {{description}}",
       "trackMealSuccess": "Я записал {{count}} ингредиентов для вашего приёма пищи: {{ingredients}}. Итого: {{calories}} ккал.",
       "trackMealReady": "Я проанализировал {{count}} приём(ов) пищи: {{meals}} ({{calories}} ккал всего). Нажмите на приём пищи, чтобы просмотреть и записать!",

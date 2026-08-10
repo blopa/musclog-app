@@ -211,7 +211,9 @@ bench is the other half of that guarantee.
 
 ## Carrying something smaller than a database
 
-The optical pipeline also carries a single meal and the food/portion rows it depends on. The wire
+The optical pipeline also carries a single food or meal and the food/portion rows it depends on.
+A meal may come from My Meals, a named group in the nutrition diary, or a whole diary section; the
+latter two are synthesized as an ordinary saved-meal envelope by `buildLoggedMealShare.ts`. The wire
 below the container is unchanged: byte 54 of the v1 container header, formerly the low byte of a
 zeroed reserved `u16`, is now `payloadKind` (`0` database, `1` share envelope). Byte 55 remains
 reserved. A database container still writes zero at both positions and is therefore byte-identical
@@ -223,6 +225,79 @@ columns, and asset columns. Meals are the first kind. Their preview summary is d
 importer always writes the carried rows and never derives authoritative data from summary totals.
 Adding a future kind means adding a registry entry, builder, preview branch, and translations — not
 changing fountain frames.
+
+### Optional fields are absent, never `null`
+
+WatermelonDB reads an unset optional column back as `null`, not `undefined`, whatever the model's
+`?: number` typing claims — and `JSON.stringify` drops an `undefined` while preserving a `null`. A
+builder that copies a model getter straight into the envelope therefore ships explicit nulls, and
+v2.11.0's `buildMealShareEnvelope` did exactly that for `preparedWeightGrams`, `recipeServingsCount`
+and `servingGrams`. Since most meals set none of the three, `parseShareEnvelope` rejected nearly
+every meal share as malformed — and the receive screen reported that as _"This data was sent by a
+newer version of Musclog"_ with both phones on the identical build (see below).
+
+Two halves, and both are load-bearing:
+
+- **Builders must not emit them.** `buildMealShare.ts` runs every optional number through
+  `optionalNumber()`. `database/services/__tests__/mealShare.test.ts` pins the builder's output
+  through `JSON.stringify` → `parseShareEnvelope`, which is the contract the original tests never
+  checked: they read the builder's in-memory object, where the distinction is invisible.
+- **The parser reads `null` as absent**, via `readOptional()`, which also deletes the key so the
+  returned envelope really matches its declared type instead of smuggling nulls past the final
+  cast. This is what lets an updated phone receive from one still on v2.11.0 — without it, both
+  phones would have to update. Keep it even once no such sender is left.
+
+Fixture data for either side must use `null`, not `undefined`, for an unset optional column. A
+fixture that uses `undefined` is testing a state the database cannot produce.
+
+### The food scanners recognise a stream they cannot use
+
+`SmartCameraModal` (barcode mode) and `BarcodeCameraModal` both list `qr` among their code types,
+so pointing either at a sending phone used to hand `useBarcodeScanner` a fountain frame, which went
+looking for a product with that barcode. The lookup failed, the camera tore down for a "food not
+found" sheet, and the user was told the wrong thing about a transfer that was working perfectly.
+
+`utils/optical/frameProbe.ts` is the cheap check that catches it: base44-decode, parse the header,
+take its `streamIdentity`. It deliberately does **not** reuse `OpticalReceiver` — that allocates an
+`LTDecoder` and accumulates blocks, which is real work to do on a scanner that has no intention of
+finishing the transfer. It reads no payload at all, so a stream can never end up half-received by a
+camera that is only asking "should I still treat this as a barcode?".
+
+Three properties are load-bearing, and `hooks/__tests__/useBarcodeScanner.test.ts` pins all of them
+against frames built by the shipping encoder:
+
+- **The first frame is already suppressed**, before the prompt threshold and before the search
+  latch. Letting it through opens the food-not-found sheet and tears the camera down, so the second
+  frame — the one that confirms the stream — never arrives.
+- **Two frames sharing a `streamIdentity` before prompting.** One parse is already near-impossible
+  by accident (base44 rules out any lowercase character, then the 0xD1 0x0C magic, then a length
+  matching the frame's own declared `blockLen`), but a false prompt would land over a camera the
+  user is actively using, and the second frame costs ~60 ms.
+- **`'detected'` fires at most once per stream.** MLKit calls back 15–30×/s; re-announcing on every
+  one would thrash React state on the scanner's hot path.
+
+A dismissal is remembered per `streamIdentity`, so holding the phone still does not re-prompt while
+a sender that restarts on a different payload does. Frames stay swallowed after a dismissal — the
+user waving the offer away does not make it a food barcode.
+
+The offer opens `OpticalReceiveModal` with `accept="share"`, and not because the probe can tell a
+meal from a database — it cannot, since `payloadKind` lives in the container and the container does
+not exist until the stream is fully reassembled. The reason is that a full-backup restore wipes the
+phone, and a wipe is not something to offer from a camera the user opened to scan a cereal box.
+Someone who genuinely wants that loses nothing: the receive screen names the right place to go.
+`useOpticalStreamOffer` returns the notice and the receive modal as two separate elements because
+they belong in two different places — the notice in `SmartCameraShell`'s `noticeSlot`, the modal in
+its `children`, never as a sibling of the camera modal (`docs/modals-problem-on-ios.md`).
+
+### Only two failures mean "the sender is newer"
+
+`MusclogShareError` codes split into "this build is behind" (`unsupported-envelope`,
+`unsupported-kind`) and "the payload is broken" (`malformed`, `not-a-share`, `too-large`). The
+receive screen rendered `receive.tooNew` for all of them, so the null bug above surfaced as an
+instruction to update a phone that was already current — pointing the user at a version mismatch
+that did not exist. `OpticalReceiveModal` keeps the code from the parse attempt and shows
+`share.unreadable` unless it is genuinely one of the two version codes. Any new failure code
+defaults to unreadable; add it to the version pair only if it truly means the sender is ahead.
 
 ### Why shares cannot look like export dumps
 
@@ -239,17 +314,37 @@ compatibility contracts. A new receiver additionally requires `payloadKind === 0
 the destructive restore path. Never express that check as “not a share”: an unknown future kind
 must be refused, not treated as a database.
 
-Meal sending has no passphrase path. It is an explicit nearby-device share of one recipe rather
-than an archive of the user's whole profile, so the UI avoids suggesting it inherits the export
-encryption setting. The tradeoff is straightforward: while the codes are visible, another camera
-could read the recipe.
+Food and meal sending have no passphrase path. They are explicit nearby-device shares of one item
+rather than archives of the user's whole profile, so the UI avoids suggesting they inherit the
+export encryption setting. A named meal group's send action lives in its nutrition-card ⋮ menu and
+uses only that group's logs and displayed name; the surrounding breakfast/lunch/dinner section is
+not included. The tradeoff is straightforward: while the codes are visible, another camera could
+read the shared item.
 
-The photo toggle defaults off because the image dominates transfer time. A five-ingredient meal is
-about 2.5 KB of JSON, roughly 1 KB after gzip (`k ≈ 2` at `tiny`), so it completes in under a second.
-A 60 KB JPEG becomes about 80 KB of base64 and still compresses to roughly 62 KB (`k ≈ 110`), or
-about 17 seconds at 8 fps. `useOpticalSender` computes the displayed estimate from the actual
-packed container. Repacking after a toggle reuses the device calibration; changing density still
-re-slices the retained container without rebuilding the meal.
+The photo toggle defaults off because an embedded image dominates transfer time. A five-ingredient
+meal is about 2.5 KB of JSON, roughly 1 KB after gzip (`k ≈ 2` at `tiny`), so it completes in under a
+second. A 60 KB JPEG becomes about 80 KB of base64 and still compresses to roughly 62 KB
+(`k ≈ 110`), or about 17 seconds at 8 fps. `useOpticalSender` computes the displayed estimate from
+the actual packed container. Repacking after a toggle reuses the device calibration; changing
+density still re-slices the retained container without rebuilding the meal.
+
+**Turning the toggle on does not always change the size, and the screen has to say which case it
+is.** `prepareShareImage` reaches three outcomes, reported as `SharePhotoOutcome` on the builder's
+result (`database/share/shareRecords.ts`) rather than inferred by the UI:
+
+| outcome       | when                                                                      | cost           | why it is not visible in the size card                               |
+| ------------- | ------------------------------------------------------------------------- | -------------- | -------------------------------------------------------------------- |
+| `embedded`    | the photo is a local `file://` path                                       | tens of KB     | it IS visible — this is the only case the byte count explains itself |
+| `linked`      | the photo is a remote URL (Open Food Facts and every other food database) | ~90 bytes      | disappears into a payload measured in KB                             |
+| `unavailable` | there is a photo, but its file is gone                                    | nothing at all | the share still goes, silently without the picture                   |
+
+Two of the three leave the number where it was, which reads as a broken toggle — the reported bug.
+The outcome cannot be recovered from the envelope afterwards (`summary.hasImage: false` covers both
+`none` and `unavailable`), so the builder that ran `prepareShareImage` carries it out on
+`ShareBuild.photo` and `ShareOpticalSendModal` renders the matching sentence under the toggle. It is
+sender-local and never on the wire; the receiver can see for itself whether an asset arrived. The
+size readout also keeps one decimal below 10 KB (`components/modals/opticalSendBytes.ts`) — whole-KB
+rounding was right for a database dump and useless for a 1–5 KB share.
 
 **Calibration seeds only the first stream.** The quality controls and the photo toggle sit on the
 same screen, so a re-pack reinstalls the stream at the density and speed already showing
@@ -271,9 +366,60 @@ meal. And `dropWhenParentReused` maps each table to the **named** foreign key of
 once inferred from the first key of `foreignKeys[table]`, which meant reordering two properties
 silently changed which parent was consulted.
 
+### What counts as "the receiver already has this"
+
+Both identities live in `database/share/importShareEnvelope.ts`. Receiving a meal twice, or
+receiving two meals that share an ingredient, must not grow the food or portion catalogue.
+
+A **food** matches on `external_id`, then `barcode`, then exact `name` + `brand` + macros. Every
+branch also requires the same `nutrition_basis`: per-100 g and per-serving rows carry the same
+numbers meaning different things, so reusing across that would silently rescale the meal.
+
+A **portion** matches on `name` + gram weight, plus `kind` (a named portion is not a mass one) and
+`scope`. `source` is deliberately **excluded**: `forcedColumns` stamps every imported portion
+`custom`, so matching on it would make the second receive duplicate every `basic` portion the first
+receive had already localized.
+
+Portion lookup is scoped by owner, because `owner_id` changes what a portion _means_:
+
+| Incoming portion           | Looked up among                   | Why                                                                                                                  |
+| -------------------------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| unowned (`owner_id` null)  | the receiver's unowned portions   | a global portion is global on both phones                                                                            |
+| owned by a **reused** food | that existing food's own portions | this is the case that used to duplicate: a per-serving custom food stores its serving as a portion private to itself |
+| owned by a **new** food    | nothing — always created          | the food is being created fresh, so it has no portions to reuse                                                      |
+| owned by the **meal**      | nothing — always created          | the meal is the share's root and is always new, so no existing meal's portions could be borrowed                     |
+
+Reading the food resolutions while resolving a portion is what makes `ShareKindSpec.tables`
+dependency order load-bearing beyond foreign keys: `buildResolutions` walks it in order, so `foods`
+must stay ahead of `food_portions` or an owned portion can never see that its owner was reused.
+
+**One send screen for every shareable record.** `components/modals/ShareOpticalSendModal.tsx` takes
+a tagged `ShareSendTarget` (`food` / `meal` / `loggedMeal`) and owns the builder dispatch, the
+per-kind copy table and the translation of the builder's typed `no-ingredients` failure. There were
+briefly three wrapper components around it that differed only in which builder they called and
+which three translation keys they picked — and two of them picked the same three keys. Do not add a
+fourth wrapper for a new kind; add a variant to the union and a row to `SHARE_COPY_KEYS`. Likewise,
+every builder ends in `shareSenderPayload()` (`database/share/shareRecords.ts`) rather than its own
+copy of the container fields: the receiver refuses a payload whose `payloadKind` it does not
+recognise, so a divergence there fails on the _other_ phone.
+
 ## Sender pacing
 
 Two bugs found on real hardware, both worth not reintroducing:
+
+The loop lives in `hooks/useQrFrameLoop.ts` and is shared by the send screen and the bench screen,
+so both measure and ship the same behaviour. `install()` and the `running` flag may arrive in either
+order — whichever is satisfied second starts the loop.
+
+The hook returns a **memoized** controller. Its methods were always identity-stable, but the object
+wrapping them was rebuilt each render, and that churn propagated: the bench puts the loop in a
+`useEffect` dep array to push fps, so that effect ran on every render, and `useOpticalSender`'s
+whole public API (`stop`, `reset`, `setPreset`, `setFps`) takes `[loop]` and became unstable with
+it. A hook whose reason for existing is "never tear the loop down" must not hand out churn.
+
+The loop also owns the current fps: `readFps()` reads it back. `useOpticalSender` used to mirror it
+in an `fpsRef` kept in lockstep with `setFps` — two sources of truth for one number, where
+`state.fps` is only the copy rendered to screen.
 
 - **Never drive the display loop with `setInterval`.** At 10 fps the interval fires every 100 ms;
   if a frame costs 175 ms the callbacks queue up and the event loop never catches up, so the rate
@@ -478,4 +624,7 @@ The percentage is shown to **two decimals** alongside a KB pair — `8.23% (12.3
 Two decimals because a slow transfer moves less than a whole percent per second and a frozen
 number reads as a stall. The KB figures are derived from the same fraction, not from solved
 blocks, for the back-loading reason above: a literal "bytes reconstructed" counter would sit at
-0 KB for almost the whole transfer and then jump to the total.
+0 KB for almost the whole transfer and then jump to the total. The receiver also shows a running
+KB/s average derived from those same estimated payload bytes. It starts with the first valid frame
+of the current stream, so an unrelated QR or a sender-side density change cannot skew it, and the
+average stays readable instead of flickering with the 250 ms publish interval.

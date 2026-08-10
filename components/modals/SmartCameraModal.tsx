@@ -5,6 +5,7 @@ import { Pressable, View } from 'react-native';
 
 import { CameraView, type CameraViewRef } from '@/components/CameraView';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
+import type { CameraMode } from '@/constants/camera';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { type MealType } from '@/database/models';
 import { NutritionService } from '@/database/services';
@@ -43,8 +44,7 @@ import { FoodNotFoundModal } from './FoodNotFoundModal';
 import { FoodSearchModal } from './FoodSearchModal';
 import { LogMealModal } from './LogMealModal';
 import { SmartCameraShell } from './SmartCameraShell';
-
-export type CameraMode = 'ai-meal-photo' | 'ai-label-scan' | 'barcode-scan';
+import { useOpticalStreamOffer } from './useOpticalStreamOffer';
 
 const getSafeCameraMode = (
   mode: CameraMode,
@@ -178,6 +178,18 @@ export default function SmartCameraModal({
 
   const isFoodDetailsModalVisible = barcode.detectedBarcode !== null || productFromAiLabel !== null;
 
+  const handleClose = useCallback(() => {
+    isSearchingBarcodeRef.current = false;
+    onClose();
+  }, [isSearchingBarcodeRef, onClose]);
+
+  const opticalOffer = useOpticalStreamOffer({
+    detected: barcode.isOpticalStreamDetected,
+    hostVisible: visible,
+    onDismiss: barcode.dismissOpticalStreamHint,
+    onFinished: handleClose,
+  });
+
   // Every conditionally-rendered child modal in the JSX below MUST have its visibility
   // flag listed here — the camera is active only while none of them covers it. A flag
   // missing from this list leaves the camera feed live behind that modal.
@@ -190,6 +202,7 @@ export default function SmartCameraModal({
     isNewCustomFoodModalVisible,
     isFoodSearchModalVisible,
     isLogMealModalVisible,
+    opticalOffer.isReceiveVisible,
   ].some(Boolean);
 
   const isCameraActive =
@@ -432,11 +445,6 @@ export default function SmartCameraModal({
   // what hides the button (see SmartCameraShell's `onShutterPress`).
   const shutterPress = isBarcodeScanning ? undefined : takePicture;
 
-  const handleClose = useCallback(() => {
-    isSearchingBarcodeRef.current = false;
-    onClose();
-  }, [isSearchingBarcodeRef, onClose]);
-
   const handleFlashToggle = useCallback(() => {
     setFlashEnabled((prev) => !prev);
   }, []);
@@ -648,11 +656,17 @@ export default function SmartCameraModal({
         onGalleryPress={pickFromGallery}
         onShutterPress={shutterPress}
         bottomRightControl={bottomRightControl}
+        // Barcode mode only. The other modes disable the live scanner, so nothing feeds the probe
+        // there — but a mode switch must also take a notice already on screen away with it.
+        noticeSlot={isBarcodeScanning ? opticalOffer.notice : null}
         showModePicker={!hideCameraModePicker}
         isAiEnabled={isAiEnabled}
         isAIVisionEnabled={isAIVisionEnabled}
         onModeChange={handleModeChange}
       >
+        {/* Optical transfer offer — the receive screen must live inside this modal's tree. */}
+        {opticalOffer.receiver}
+
         {/* Context Modal */}
         {isContextModalVisible ? (
           <AINutritionTrackingContextModal

@@ -52,6 +52,7 @@
     "goToSettings": "Ga naar Instellingen",
     "success": {
       "workoutPlanGenerated": "Ik heb {{count}} workouts voor je gemaakt! 💪 {{description}}",
+      "workoutPlanGeneratedWithName": "Ik heb {{planName}} met {{count}} workouts voor je gemaakt! 💪 {{description}}",
       "mealPlanGenerated": "Ik heb een maaltijdplan van 3 dagen met {{count}} maaltijden voor je gemaakt! 🥗 {{description}}",
       "trackMealSuccess": "Ik heb {{count}} ingrediënten bijgehouden voor je maaltijd: {{ingredients}}. Totaal: {{calories}} kcal.",
       "trackMealReady": "Ik heb {{count}} maaltijd(en) geanalyseerd: {{meals}} (totaal {{calories}} kcal). Tik op een maaltijd om deze te bekijken en te loggen!",

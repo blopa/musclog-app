@@ -42,28 +42,44 @@
       "sendMealTitle": "Send meal",
       "sendMealReadyTitle": "Meal ready to send",
       "sendMealInstructions": "On the other phone, open My Meals, tap +, choose Import from another phone, then point its camera at this screen.",
-      "buildingStep": "Building the meal…",
+      "sendFoodTitle": "Send food",
+      "sendFoodReadyTitle": "Food ready to send",
+      "sendFoodInstructions": "On the other phone, open the barcode scanner (or Settings → Optical Transfer → Receive) and point its camera at this screen.",
+      "buildingStep": "Preparing what to send…",
       "recalculating": "Recalculating…",
       "noIngredients": "This meal has no ingredients to send.",
       "includePhoto": "Include photo",
-      "includePhotoHint": "Photos take much longer to transfer. Leave this off for the fastest send.",
-      "receiveMealTitle": "Receive meal",
+      "includePhotoHint": "Photos stored on this phone make the transfer much slower. Leave this off for the fastest send.",
+      "photoEmbedded": "The photo is being sent with the transfer, and is most of its size.",
+      "photoLinked": "The photo is sent as a link, so it barely adds to the transfer. The other phone needs internet to load it.",
+      "photoUnavailable": "This photo's file could not be read, so no photo will be sent.",
+      "receiveTitle": "Receive from another phone",
       "ingredientGrams": "{{amount}} g of {{name}}",
       "ingredientServings": "{{amount}} servings of {{name}}",
       "ingredientPortions": "{{amount}} × {{portion}} of {{name}}",
+      "portionWithWeight": "{{name}} · {{amount}} {{unit}}",
+      "foodPer100g": "Per 100 g",
+      "foodPerServing": "Per serving",
       "hasPhoto": "Includes a photo",
+      "loggedMealName": "{{meal}} · {{date}}",
       "saveToMyMeals": "Save to My Meals",
+      "saveToMyFoods": "Save to My Foods",
       "saving": "Saving meal…",
+      "savingFood": "Saving food…",
       "savedTitle": "Meal saved",
+      "savedFoodTitle": "Food saved",
+      "savedFoodExisted": "You already had this food — nothing was changed.",
       "savedReusedFoods_one": "{{count}} ingredient matched a food already on this phone.",
       "savedReusedFoods_other": "{{count}} ingredients matched foods already on this phone.",
-      "saveFailed": "Could not save the meal.",
-      "notAMeal": "This is a full backup, not a meal. Receive it from Settings → Optical Transfer instead."
+      "saveFailed": "Could not save what was received.",
+      "notShareable": "This is a full backup, not a meal or a food. Receive it from Settings → Optical Transfer instead.",
+      "unreadable": "This could not be read. Try sending it again."
     },
     "receive": {
       "title": "Receive",
       "subtitle": "Point at the other phone's screen",
       "percent": "{{percent}}%",
+      "speed": "{{speed}} KB/s",
       "eta": "About {{seconds}} seconds left",
       "aimHint": "Fill this view with the code on the other phone.",
       "verifying": "Checking the data…",
@@ -120,6 +136,12 @@
         "dense": "Dense",
         "max": "Densest"
       }
+    },
+    "probe": {
+      "title": "Trying to import optical data?",
+      "message": "That code is part of a Musclog transfer between phones, not a food barcode. Open the optical reader to receive it.",
+      "open": "Open optical reader",
+      "dismiss": "Not now"
     }
   }
 }

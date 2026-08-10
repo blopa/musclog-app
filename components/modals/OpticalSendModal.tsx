@@ -21,19 +21,38 @@ import { type OpticalSenderPayload, useOpticalSender } from '@/hooks/useOpticalS
 import { useTheme } from '@/hooks/useTheme';
 
 import { FullScreenModal } from './FullScreenModal';
+import { formatTransferBytes } from './opticalSendBytes';
+
+export interface OpticalSendCopy {
+  title: string;
+  readyTitle: string;
+  instructions: string;
+  /** Shown while the payload is being assembled, in place of the generic "dumping" step. */
+  buildingStep: string;
+}
 
 interface OpticalSendModalProps {
   visible: boolean;
   onClose: () => void;
   passphrase?: string;
+  /**
+   * Omit to send the whole database — `useOpticalSender` owns that default, so there is exactly
+   * one place the fallback lives and no unreachable "no builder provided" branch here.
+   */
   buildPayload?: (options: { includeImage: boolean }) => Promise<OpticalSenderPayload>;
-  photoToggle?: { available: boolean };
-  copy?: {
-    title: string;
-    readyTitle: string;
-    instructions: string;
-    buildingStep: string;
-  };
+  /** Offers the "include the photo" toggle. Only a payload builder can act on it. */
+  hasPhoto?: boolean;
+  /**
+   * What the last build actually did with the photo, already translated by whoever owns the
+   * payload — embedded it, linked it, or could not read it.
+   *
+   * The size readout cannot carry this: a linked photo costs ~90 bytes and a photo whose file has
+   * gone missing costs nothing at all, so both leave the number where it was and the toggle looks
+   * like it did nothing. This modal only renders the sentence; deciding which one it is belongs to
+   * the builder, which is the only thing that knows.
+   */
+  photoNotice?: string;
+  copy?: Partial<OpticalSendCopy>;
 }
 
 export function OpticalSendModal({
@@ -41,7 +60,8 @@ export function OpticalSendModal({
   onClose,
   passphrase,
   buildPayload,
-  photoToggle,
+  hasPhoto = false,
+  photoNotice,
   copy,
 }: OpticalSendModalProps) {
   const theme = useTheme();
@@ -50,24 +70,22 @@ export function OpticalSendModal({
   const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
 
   const [includeImage, setIncludeImage] = useState(false);
-  const boundBuildPayload = useCallback(
-    () =>
-      buildPayload
-        ? buildPayload({ includeImage })
-        : Promise.reject(new Error('No optical payload builder was provided')),
+  const boundBuildPayload = useMemo(
+    () => (buildPayload ? () => buildPayload({ includeImage }) : undefined),
     [buildPayload, includeImage]
   );
-  const sender = useOpticalSender({
-    buildPayload: buildPayload ? boundBuildPayload : undefined,
-    passphrase,
-  });
+  const sender = useOpticalSender({ buildPayload: boundBuildPayload, passphrase });
+
+  const labels: OpticalSendCopy = {
+    buildingStep: copy?.buildingStep ?? t('opticalTransfer.send.step.dumping'),
+    instructions: copy?.instructions ?? t('opticalTransfer.send.readyInstructions'),
+    readyTitle: copy?.readyTitle ?? t('opticalTransfer.send.readyTitle'),
+    title: copy?.title ?? t('opticalTransfer.send.title'),
+  };
   const { cachedFrames, cacheTarget, framesShown, phase, prepareStep, raster, summary } = sender;
 
   const formatBytes = useCallback(
-    (bytes: number) =>
-      bytes < 1024 * 1024
-        ? `${formatInteger(Math.round(bytes / 1024))} KB`
-        : `${formatRoundedDecimal(bytes / 1048576, 1)} MB`,
+    (bytes: number) => formatTransferBytes(bytes, { formatInteger, formatRoundedDecimal }),
     [formatInteger, formatRoundedDecimal]
   );
 
@@ -100,6 +118,18 @@ export function OpticalSendModal({
     [buildPayload, sender]
   );
 
+  // Identical on the ready card and mid-stream: the same knobs, wired to the same sender. The
+  // only difference is where they sit, so they are built once.
+  const qualityControls = (
+    <OpticalQualityControls
+      estimatedSeconds={summary?.estimatedSeconds}
+      fps={sender.fps}
+      onFpsChange={sender.setFps}
+      onPresetChange={sender.setPreset}
+      presetId={sender.presetId}
+    />
+  );
+
   const photoItems = useMemo(
     () => [
       {
@@ -119,7 +149,7 @@ export function OpticalSendModal({
       onShow={handleShow}
       scrollable={phase !== 'streaming'}
       subtitle={phase === 'streaming' ? t('opticalTransfer.send.streamingSubtitle') : undefined}
-      title={copy?.title ?? t('opticalTransfer.send.title')}
+      title={labels.title}
       visible={visible}
     >
       {phase === 'streaming' ? (
@@ -137,13 +167,7 @@ export function OpticalSendModal({
 
           {/* Reachable here on purpose: a stuck transfer is discovered while it is running, and
               sending the user back to a setup screen to fix it is where they give up. */}
-          <OpticalQualityControls
-            estimatedSeconds={summary?.estimatedSeconds}
-            fps={sender.fps}
-            onFpsChange={sender.setFps}
-            onPresetChange={sender.setPreset}
-            presetId={sender.presetId}
-          />
+          {qualityControls}
 
           <Button
             label={t('opticalTransfer.send.stop')}
@@ -159,8 +183,8 @@ export function OpticalSendModal({
         <View className="gap-2 px-4 py-10">
           <ProgressIndicator
             message={
-              prepareStep === 'dumping' && copy?.buildingStep
-                ? copy.buildingStep
+              prepareStep === 'dumping'
+                ? labels.buildingStep
                 : t(`opticalTransfer.send.step.${prepareStep ?? 'calibrating'}`)
             }
           />
@@ -176,9 +200,7 @@ export function OpticalSendModal({
             className="gap-2 rounded-xl p-4"
             style={{ backgroundColor: theme.colors.background.card }}
           >
-            <Text className="font-bold text-text-primary">
-              {copy?.readyTitle ?? t('opticalTransfer.send.readyTitle')}
-            </Text>
+            <Text className="font-bold text-text-primary">{labels.readyTitle}</Text>
             <Text className="text-sm text-text-secondary">
               {t('opticalTransfer.send.readySize', {
                 compressed: formatBytes(summary.containerBytes),
@@ -197,15 +219,22 @@ export function OpticalSendModal({
             ) : null}
           </View>
 
-          {photoToggle?.available ? <ToggleInput items={photoItems} /> : null}
+          {hasPhoto ? (
+            <View>
+              <ToggleInput items={photoItems} />
+              {/* Suppressed mid-repack: the notice describes the build the size card is showing,
+                  and the one being rebuilt may reach a different outcome. */}
+              {repacking || !photoNotice ? null : (
+                <Text className="text-sm text-text-secondary">{photoNotice}</Text>
+              )}
+            </View>
+          ) : null}
 
           {repacking ? (
             <ProgressIndicator message={t('opticalTransfer.share.recalculating')} />
           ) : null}
 
-          <Text className="text-sm text-text-secondary">
-            {copy?.instructions ?? t('opticalTransfer.send.readyInstructions')}
-          </Text>
+          <Text className="text-sm text-text-secondary">{labels.instructions}</Text>
 
           <Button
             disabled={repacking}
@@ -216,13 +245,7 @@ export function OpticalSendModal({
             width="full"
           />
 
-          <OpticalQualityControls
-            estimatedSeconds={summary.estimatedSeconds}
-            fps={sender.fps}
-            onFpsChange={sender.setFps}
-            onPresetChange={sender.setPreset}
-            presetId={sender.presetId}
-          />
+          {qualityControls}
         </View>
       ) : null}
 

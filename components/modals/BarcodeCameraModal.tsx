@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, View } from 'react-native';
 
 import { CameraView, type CameraViewRef } from '@/components/CameraView';
+import type { CameraMode } from '@/constants/camera';
 import type { MealType } from '@/database/models';
 import { useBarcodeScanner } from '@/hooks/useBarcodeScanner';
 import { BARCODE_PHOTO_QUALITY, useCameraCaptureFlow } from '@/hooks/useCameraCaptureFlow';
@@ -12,8 +13,8 @@ import { useTheme } from '@/hooks/useTheme';
 import { BarcodeTextSearchSheet } from './BarcodeTextSearchSheet';
 import { FoodMealTrackingDetailsModal } from './FoodMealTrackingDetailsModal';
 import { FoodNotFoundModal } from './FoodNotFoundModal';
-import type { CameraMode } from './SmartCameraModal';
 import { SmartCameraShell } from './SmartCameraShell';
+import { useOpticalStreamOffer } from './useOpticalStreamOffer';
 
 type BarcodeCameraModalProps = {
   visible: boolean;
@@ -60,22 +61,30 @@ export function BarcodeCameraModal({
 
   const isFoodDetailsModalVisible = barcode.detectedBarcode !== null;
 
+  const handleClose = useCallback(() => {
+    isSearchingBarcodeRef.current = false;
+    onClose();
+  }, [isSearchingBarcodeRef, onClose]);
+
+  const opticalOffer = useOpticalStreamOffer({
+    detected: barcode.isOpticalStreamDetected,
+    hostVisible: visible,
+    onDismiss: barcode.dismissOpticalStreamHint,
+    onFinished: handleClose,
+  });
+
   // Every conditionally-rendered child modal in the JSX below MUST have its visibility
   // flag listed here — the camera is active only while none of them covers it.
   const isAnyChildModalVisible = [
     isBarcodeTextSearchModalVisible,
     barcode.isFoodNotFoundModalVisible,
     isFoodDetailsModalVisible,
+    opticalOffer.isReceiveVisible,
   ].some(Boolean);
 
   const isCameraActive = visible && !barcode.isSearchingBarcode && !isAnyChildModalVisible;
 
   useKeepScreenAwake('barcode-camera-processing', visible && barcode.isSearchingBarcode);
-
-  const handleClose = useCallback(() => {
-    isSearchingBarcodeRef.current = false;
-    onClose();
-  }, [isSearchingBarcodeRef, onClose]);
 
   const handleFlashToggle = useCallback(() => {
     setFlashEnabled((prev) => !prev);
@@ -156,8 +165,12 @@ export function BarcodeCameraModal({
         onFlashToggle={handleFlashToggle}
         onGalleryPress={pickFromGallery}
         bottomRightControl={bottomRightControl}
+        noticeSlot={opticalOffer.notice}
         showModePicker={false}
       >
+        {/* Optical transfer offer — the receive screen must live inside this modal's tree. */}
+        {opticalOffer.receiver}
+
         {/* Barcode Text Search Sheet */}
         {isBarcodeTextSearchModalVisible ? (
           <BarcodeTextSearchSheet

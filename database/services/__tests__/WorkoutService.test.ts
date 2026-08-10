@@ -50,7 +50,13 @@ jest.mock('../../database-instance', () => {
     fetch: jest.fn().mockResolvedValue([]),
   };
 
-  const mockWriter = {} as any;
+  // Model `markAsDeleted` methods are `@writer`s, so a service holding an open write block
+  // has to reach them through `writer.callWriter`. Real WatermelonDB throws
+  // "callReader/callWriter call must call a reader/writer synchronously" when the callback
+  // is not a writer, and deadlocks when a writer is called without it — neither is
+  // observable through a bare `{}` writer, so expose the spy and let tests assert on it.
+  const mockCallWriter = jest.fn((work: () => unknown) => Promise.resolve(work()));
+  const mockWriter = { callWriter: mockCallWriter } as any;
 
   return {
     database: {
@@ -61,6 +67,7 @@ jest.mock('../../database-instance', () => {
         get: jest.fn().mockReturnValue(mockCollection),
       },
     },
+    __callWriter: mockCallWriter,
   };
 });
 
@@ -95,6 +102,9 @@ jest.mock('../UserService', () => ({
 }));
 
 const mockDatabase = database as jest.Mocked<typeof database>;
+const { __callWriter: mockCallWriter } = jest.requireMock('../../database-instance') as {
+  __callWriter: jest.Mock;
+};
 const mockWorkoutAnalytics = WorkoutAnalytics as jest.Mocked<typeof WorkoutAnalytics>;
 const mockGetActiveWorkoutLogId = getActiveWorkoutLogId as jest.MockedFunction<
   typeof getActiveWorkoutLogId
@@ -162,6 +172,21 @@ describe('WorkoutService', () => {
       expect(mockDatabase.get).toHaveBeenCalledWith('workout_templates');
       expect(mockTemplate.startWorkout).toHaveBeenCalled();
       expect(result).toBeDefined();
+    });
+
+    it('threads the selected plan context into the workout log creation', async () => {
+      const mockTemplate = createMockWorkoutTemplate({
+        id: 'template-1',
+        deletedAt: null,
+        startWorkout: jest.fn().mockResolvedValue(createMockWorkoutLog()),
+      });
+      mockDatabase.get.mockReturnValue(
+        collection({ find: jest.fn().mockResolvedValue(mockTemplate) }) as any
+      );
+
+      await WorkoutService.startWorkoutFromTemplate('template-1', 'plan-1');
+
+      expect(mockTemplate.startWorkout).toHaveBeenCalledWith('plan-1');
     });
 
     it('should throw error when template is deleted', async () => {
@@ -481,7 +506,6 @@ describe('WorkoutService', () => {
   describe('getUpcomingScheduledWorkouts', () => {
     it('should return templates for correct day of week', async () => {
       const date = new Date('2024-01-15'); // Monday
-      const localizedDateSpy = jest.spyOn(date, 'toLocaleDateString').mockReturnValue('maandag');
       const schedule = createMockSchedule({
         templateId: 'template-1',
         dayOfWeek: 'Monday',
@@ -492,54 +516,63 @@ describe('WorkoutService', () => {
         deletedAt: null,
       });
 
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValueOnce([schedule]).mockResolvedValueOnce([template]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
+      installTables({
+        workout_plans: [],
+        workout_plan_templates: [],
+        schedules: [schedule],
+        workout_templates: [template],
+      });
 
       const result = await WorkoutService.getUpcomingScheduledWorkouts(date);
 
       expect(result).toEqual([template]);
-      expect(Q.where).toHaveBeenCalledWith('day_of_week', 'Monday');
-      expect(localizedDateSpy).not.toHaveBeenCalled();
+      expect(Q.where).toHaveBeenCalledWith('deleted_at', null);
     });
 
     it('should return empty array when no schedules for day', async () => {
       const date = new Date('2024-01-15'); // Monday
 
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
+      installTables({ workout_plans: [], workout_plan_templates: [], schedules: [] });
 
       const result = await WorkoutService.getUpcomingScheduledWorkouts(date);
 
       expect(result).toEqual([]);
     });
 
-    it('should filter out deleted templates and schedules', async () => {
+    it('uses weekly membership days and ignores a planned template standalone schedule', async () => {
       const date = new Date('2024-01-15'); // Monday
-
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      mockDatabase.get.mockReturnValue({
-        query: jest.fn().mockReturnValue(mockQuery),
-      } as any);
+      const template = createMockWorkoutTemplate({ id: 'template-1', deletedAt: null });
+      installTables({
+        workout_plans: [{ id: 'plan-1', cycleType: 'weekly' }],
+        workout_plan_templates: [{ planId: 'plan-1', templateId: 'template-1', weekDays: [0] }],
+        schedules: [createMockSchedule({ templateId: 'template-1', dayOfWeek: 'Friday' })],
+        workout_templates: [template],
+      });
 
       const result = await WorkoutService.getUpcomingScheduledWorkouts(date);
 
-      expect(result).toEqual([]);
+      expect(result).toEqual([template]);
+    });
+
+    it('excludes rotating members and reactivates standalone rows after unfiling', async () => {
+      const date = new Date('2024-01-19'); // Friday
+      const template = createMockWorkoutTemplate({ id: 'template-1', deletedAt: null });
+      installTables({
+        workout_plans: [{ id: 'rotation', cycleType: 'rotating' }],
+        workout_plan_templates: [{ planId: 'rotation', templateId: 'template-1', position: 0 }],
+        schedules: [createMockSchedule({ templateId: 'template-1', dayOfWeek: 'Friday' })],
+        workout_templates: [template],
+      });
+
+      expect(await WorkoutService.getUpcomingScheduledWorkouts(date)).toEqual([]);
+
+      installTables({
+        workout_plans: [{ id: 'rotation', cycleType: 'rotating' }],
+        workout_plan_templates: [],
+        schedules: [createMockSchedule({ templateId: 'template-1', dayOfWeek: 'Friday' })],
+        workout_templates: [template],
+      });
+      expect(await WorkoutService.getUpcomingScheduledWorkouts(date)).toEqual([template]);
     });
   });
 
@@ -1090,6 +1123,38 @@ describe('WorkoutService', () => {
       const result = await WorkoutService.getWorkoutLogsByTemplate('template-1');
 
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('deleteWorkoutLog', () => {
+    /**
+     * `WorkoutLog` was the one model that never overrode `markAsDeleted`, so this call
+     * landed on WatermelonDB's base implementation — which is not a `@writer` and so never
+     * satisfies `callWriter`'s "must call a writer synchronously" invariant. Every delete
+     * threw, after the log itself had already been tombstoned, leaving its exercises and
+     * sets behind. Assert the whole tree is soft-deleted through the open writer.
+     */
+    it('soft-deletes the log and its exercises and sets through the open writer', async () => {
+      const workoutLog = createMockWorkoutLog({ markAsDeleted: jest.fn() });
+      const logExercise = createMockWorkoutLogExercise({
+        id: 'log-exercise-1',
+        markAsDeleted: jest.fn(),
+      });
+      const set = createMockWorkoutLogSet({ id: 'set-1', markAsDeleted: jest.fn() });
+
+      installTables({
+        workout_log_exercises: [logExercise],
+        workout_log_sets: [set],
+        workout_logs: { find: jest.fn().mockResolvedValue(workoutLog) },
+      });
+
+      await WorkoutService.deleteWorkoutLog(workoutLog.id);
+
+      expect(workoutLog.markAsDeleted).toHaveBeenCalledTimes(1);
+      expect(logExercise.markAsDeleted).toHaveBeenCalledTimes(1);
+      expect(set.markAsDeleted).toHaveBeenCalledTimes(1);
+      // Every one of them is a `@writer`, so every one has to join the open transaction.
+      expect(mockCallWriter).toHaveBeenCalledTimes(3);
     });
   });
 });

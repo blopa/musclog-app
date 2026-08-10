@@ -114,7 +114,7 @@ The catch-all [`blog/[...slug].web.tsx`](/app/%28website%29/blog/%5B...slug%5D.w
 the same convention as every other website route: the `.web.tsx` file is the implementation and the
 unsuffixed [`blog/[...slug].tsx`](/app/%28website%29/blog/%5B...slug%5D.tsx) sibling redirects native
 users to `/app`. That convention only works because of
-[`patches/expo-router+57.0.11.patch`](/patches/expo-router+57.0.11.patch) — see below. Expo Router 57
+[`patches/expo-router+57.0.12.patch`](/patches/expo-router+57.0.12.patch) — see below. Expo Router 57
 also retains the unresolved catch-all template in its static manifest, so `loadBlogPostForRoute`
 handles the literal `[...slug]` loader call that occurs during export in addition to the generated
 post paths.
@@ -138,8 +138,8 @@ also discovers Markdown paths for `public/sitemap.xml`; the fixed-route registry
 for robots rules and `llms.txt`. `unstable_useServerDataLoaders` must remain enabled on the
 `expo-router` plugin in `app.json` for these build-time content steps.
 
-Expo Router 57.0.11 still labels data loaders as alpha.
-[`patches/expo-router+57.0.11.patch`](/patches/expo-router+57.0.11.patch) carries three fixes, all
+Expo Router 57.0.12 still labels data loaders as alpha.
+[`patches/expo-router+57.0.12.patch`](/patches/expo-router+57.0.12.patch) carries three fixes, all
 pinned by [`utils/__tests__/expoRouterLoaderPatch.test.ts`](/utils/__tests__/expoRouterLoaderPatch.test.ts):
 
 1. **`getRoutesCore.js` — platform extensions on catch-all routes.** `getFileMeta` read the platform

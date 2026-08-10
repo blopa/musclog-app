@@ -1,10 +1,20 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Platform } from 'react-native';
 
 import { isStaticExport } from '@/constants/platform';
 import { useSnackbar } from '@/context/SnackbarContext';
-import { HealthConnectError } from '@/services/healthConnectErrors';
-import { healthDataSyncService, SyncResult, SyncStatus } from '@/services/healthDataSync';
+import {
+  HealthConnectError,
+  HealthConnectErrorFactory,
+  isHealthPermissionError,
+} from '@/services/healthConnectErrors';
+import {
+  healthDataSyncService,
+  SyncResult,
+  SyncStatus,
+  type SyncTrigger,
+} from '@/services/healthDataSync';
 
 export interface UseSyncTrackingResult {
   // Sync status
@@ -15,6 +25,7 @@ export interface UseSyncTrackingResult {
 
   // Actions
   syncNow: (config?: { lookbackDays?: number }) => Promise<SyncResult>;
+  syncInBackground: (config?: { lookbackDays?: number }) => Promise<SyncResult>;
   enableSync: () => Promise<void>;
   disableSync: () => Promise<void>;
   refreshSyncStatus: () => Promise<void>;
@@ -55,23 +66,24 @@ export const useSyncTracking = (): UseSyncTrackingResult => {
     }
   }, []);
 
-  /**
-   * Trigger manual sync
-   */
-  const syncNow = useCallback(
-    async (config?: { lookbackDays?: number }): Promise<SyncResult> => {
+  const runSync = useCallback(
+    async (
+      config: { lookbackDays?: number } | undefined,
+      trigger: SyncTrigger
+    ): Promise<SyncResult> => {
       setError(null);
       setIsSyncing(true);
+      const shouldShowFeedback = trigger === 'manual' && Platform.OS !== 'web';
 
       try {
-        const result = await healthDataSyncService.syncFromHealthConnect(config);
+        const result = await healthDataSyncService.syncFromHealthConnect({ ...config, trigger });
         setLastSyncResult(result);
 
         if (result.status === SyncStatus.SUCCESS) {
           setLastSyncTime(result.endTime);
 
           // Show success notification - silently skip unavailable metrics
-          if (result.recordsWritten > 0 || result.recordsSkipped > 0) {
+          if (shouldShowFeedback && (result.recordsWritten > 0 || result.recordsSkipped > 0)) {
             const message =
               result.recordsWritten > 0
                 ? t('snackbar.syncedRecords', { count: result.recordsWritten })
@@ -80,41 +92,29 @@ export const useSyncTracking = (): UseSyncTrackingResult => {
             showSnackbar('success', message);
           }
         } else if (result.status === SyncStatus.ERROR && result.errors.length > 0) {
-          // Show first error to user (but only if it's a real error, not missing permission)
           const firstError = result.errors[0];
-          // Silent skip for permission errors - don't show alert
-          if (
-            firstError.code !== 'INSUFFICIENT_PERMISSIONS' &&
-            firstError.code !== 'PERMISSION_DENIED'
-          ) {
+          if (shouldShowFeedback) {
             showSnackbar('error', firstError.getUserMessage());
+          }
+
+          if (trigger === 'manual' && !isHealthPermissionError(firstError)) {
             setError(firstError);
           }
         }
 
         return result;
       } catch (err) {
-        const hcError = err as HealthConnectError;
-        console.error('Sync failed:', hcError);
+        const hcError =
+          err instanceof HealthConnectError
+            ? err
+            : HealthConnectErrorFactory.unknownError(err as Error);
 
-        // Silent skip for no permissions scenario
-        if (hcError.code === 'INSUFFICIENT_PERMISSIONS' || hcError.code === 'PERMISSION_DENIED') {
-          const errorResult: SyncResult = {
-            status: SyncStatus.ERROR,
-            recordsRead: 0,
-            recordsWritten: 0,
-            recordsSkipped: 0,
-            errors: [hcError],
-            startTime: Date.now(),
-            endTime: Date.now(),
-            duration: 0,
-          };
-          setLastSyncResult(errorResult);
-          return errorResult;
+        if (shouldShowFeedback) {
+          showSnackbar('error', hcError.getUserMessage());
         }
-
-        setError(hcError);
-        showSnackbar('error', hcError.getUserMessage());
+        if (trigger === 'manual' && !isHealthPermissionError(hcError)) {
+          setError(hcError);
+        }
 
         // Return error result
         const errorResult: SyncResult = {
@@ -137,6 +137,18 @@ export const useSyncTracking = (): UseSyncTrackingResult => {
     [refreshSyncStatus, showSnackbar, t]
   );
 
+  /** Trigger a user-initiated sync and show native snackbar feedback. */
+  const syncNow = useCallback(
+    (config?: { lookbackDays?: number }) => runSync(config, 'manual'),
+    [runSync]
+  );
+
+  /** Trigger an automatic sync without user feedback or error state. */
+  const syncInBackground = useCallback(
+    (config?: { lookbackDays?: number }) => runSync(config, 'background'),
+    [runSync]
+  );
+
   /**
    * Enable automatic syncing
    */
@@ -152,7 +164,9 @@ export const useSyncTracking = (): UseSyncTrackingResult => {
       const hcError = err as HealthConnectError;
       console.error('Error enabling sync:', hcError);
       setError(hcError);
-      showSnackbar('error', t('snackbar.failedToEnableSync'));
+      if (Platform.OS !== 'web') {
+        showSnackbar('error', t('snackbar.failedToEnableSync'));
+      }
     }
   }, [showSnackbar, syncNow, t]);
 
@@ -164,12 +178,16 @@ export const useSyncTracking = (): UseSyncTrackingResult => {
       setError(null);
       await healthDataSyncService.disableSync();
       setIsSyncEnabled(false);
-      showSnackbar('success', t('snackbar.syncDisabledMessage'));
+      if (Platform.OS !== 'web') {
+        showSnackbar('success', t('snackbar.syncDisabledMessage'));
+      }
     } catch (err) {
       const hcError = err as HealthConnectError;
       console.error('Error disabling sync:', hcError);
       setError(hcError);
-      showSnackbar('error', t('snackbar.failedToDisableSync'));
+      if (Platform.OS !== 'web') {
+        showSnackbar('error', t('snackbar.failedToDisableSync'));
+      }
     }
   }, [showSnackbar, t]);
 
@@ -212,6 +230,7 @@ export const useSyncTracking = (): UseSyncTrackingResult => {
 
     // Actions
     syncNow,
+    syncInBackground,
     enableSync,
     disableSync,
     refreshSyncStatus,

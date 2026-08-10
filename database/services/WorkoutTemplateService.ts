@@ -1,4 +1,4 @@
-import { Q } from '@nozbe/watermelondb';
+import { type Model, Q } from '@nozbe/watermelondb';
 import convert from 'convert';
 import { Dumbbell, type LucideIcon, User } from 'lucide-react-native';
 import type { ComponentType } from 'react';
@@ -11,6 +11,7 @@ import Schedule from '@/database/models/Schedule';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import type WorkoutPlan from '@/database/models/WorkoutPlan';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import WorkoutTemplateExercise from '@/database/models/WorkoutTemplateExercise';
 import WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
@@ -19,7 +20,7 @@ import i18n from '@/lang/lang';
 import { getTheme } from '@/theme';
 import { handleError } from '@/utils/handleError';
 import { getWeightUnit } from '@/utils/units';
-import { indexToDayName, WEEKDAY_NAMES } from '@/utils/workout';
+import { indexToDayName, WEEKDAY_NAMES } from '@/utils/weekdays';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
 import {
@@ -30,6 +31,7 @@ import {
 import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
 import { UserService } from './UserService';
+import { type CreateWorkoutPlanData, WorkoutPlanService } from './WorkoutPlanService';
 
 /**
  * Exercise data for workout template creation/editing.
@@ -58,9 +60,19 @@ export interface SaveTemplateData {
   workoutInsightsType?: string;
   type?: string;
   icon?: string;
-  weekDaysJson?: number[];
   exercises: ExerciseInWorkout[];
   selectedDays: number[];
+  /**
+   * Replacement plan membership. undefined leaves memberships untouched; [] moves the template
+   * to Unplanned. Never default this field to an empty array.
+   */
+  planIds?: string[];
+}
+
+export interface PlanTemplateInput {
+  template: SaveTemplateData;
+  weekDays?: number[];
+  position?: number;
 }
 
 export class WorkoutTemplateService {
@@ -233,12 +245,189 @@ export class WorkoutTemplateService {
   static async saveTemplate(data: SaveTemplateData): Promise<WorkoutTemplate> {
     const now = Date.now();
 
-    return await database.write(async () => {
-      let template: WorkoutTemplate;
+    return database.write(() => this.saveTemplateInWriter(data, now));
+  }
 
-      if (data.templateId) {
-        template = await database.get<WorkoutTemplate>('workout_templates').find(data.templateId);
-        await template.update((t) => {
+  /**
+   * The exercise and set rows for one template, as unsaved prepared creates.
+   *
+   * Set order runs across the whole template rather than restarting per exercise, which is what
+   * `set_order` means everywhere else in the app.
+   */
+  private static prepareTemplateExerciseGraph(
+    templateId: string,
+    exercises: ExerciseInWorkout[],
+    now: number
+  ): Model[] {
+    const exerciseCollection = database.get<WorkoutTemplateExercise>('workout_template_exercises');
+    const setCollection = database.get<WorkoutTemplateSet>('workout_template_sets');
+    const records: Model[] = [];
+    let setOrder = 0;
+
+    exercises.forEach((exercise, exerciseIndex) => {
+      const templateExercise = exerciseCollection.prepareCreate((te) => {
+        te.templateId = templateId;
+        te.exerciseId = exercise.id;
+        te.notes = exercise.notes;
+        te.exerciseOrder = exerciseIndex + 1;
+        te.groupId = exercise.groupId;
+        te.createdAt = now;
+        te.updatedAt = now;
+      });
+      records.push(templateExercise);
+
+      for (let setNumber = 1; setNumber <= exercise.sets; setNumber++) {
+        setOrder++;
+        const currentSetOrder = setOrder;
+        records.push(
+          setCollection.prepareCreate((ts) => {
+            ts.templateExerciseId = templateExercise.id;
+            ts.targetReps = exercise.reps;
+            ts.targetWeight = exercise.isBodyweight ? 0 : exercise.weight;
+            ts.restTimeAfter = exercise.restTimeAfter ?? 60;
+            ts.setOrder = currentSetOrder;
+            ts.setType = exercise.setType ?? 'normal';
+            ts.createdAt = now;
+            ts.updatedAt = now;
+          })
+        );
+      }
+    });
+
+    return records;
+  }
+
+  /**
+   * A brand-new template and its whole graph, prepared and unsaved. Pure — no reads, no writes —
+   * so a caller building several templates can commit all of them in one batch.
+   */
+  private static prepareNewTemplate(
+    data: SaveTemplateData,
+    now: number
+  ): { template: WorkoutTemplate; records: Model[] } {
+    const template = database.get<WorkoutTemplate>('workout_templates').prepareCreate((t) => {
+      t.name = data.name;
+      t.description = data.description || undefined;
+      t.workoutInsightsType = parseWorkoutInsightsType(data.workoutInsightsType);
+      t.type = data.type ?? DEFAULT_WORKOUT_TYPE;
+      t.icon = data.icon ?? undefined;
+      t.weekDaysJson = undefined;
+      t.isArchived = false;
+      t.createdAt = now;
+      t.updatedAt = now;
+    });
+
+    return {
+      template,
+      records: [template, ...this.prepareTemplateExerciseGraph(template.id, data.exercises, now)],
+    };
+  }
+
+  /** Standalone weekday rows for a template that owns its own calendar. */
+  private static prepareSchedules(templateId: string, days: number[], now: number): Model[] {
+    const collection = database.get<Schedule>('schedules');
+    return days
+      .filter((dayIndex) => dayIndex >= 0 && dayIndex < WEEKDAY_NAMES.length)
+      .map((dayIndex) =>
+        collection.prepareCreate((s) => {
+          s.templateId = templateId;
+          s.dayOfWeek = indexToDayName(dayIndex);
+          s.createdAt = now;
+          s.updatedAt = now;
+        })
+      );
+  }
+
+  /**
+   * Every record a save implies, prepared but uncommitted, plus the template it targets.
+   *
+   * Reads first, then a single pure prepare pass. `database.write()` serialises writers but does
+   * NOT roll back a batch that already landed, so anything committed before a later step throws
+   * stays committed — the reason this returns records instead of writing them itself.
+   */
+  private static async prepareSaveTemplate(
+    data: SaveTemplateData,
+    now: number
+  ): Promise<{ template: WorkoutTemplate; records: Model[] }> {
+    if (!data.templateId) {
+      const created = this.prepareNewTemplate(data, now);
+      // Nothing exists to conflict with a brand-new template, so membership and schedules are the
+      // only remaining question and `activePlanIds` decides it exactly as in the edit path — which
+      // is why this is written the same way, rather than as a ternary whose empty arm needs casts
+      // to line up with the call's return type.
+      let activePlanIds: string[] = [];
+      let membershipRecords: Model[] = [];
+
+      if (data.planIds?.length) {
+        ({ activePlanIds, records: membershipRecords } =
+          await WorkoutPlanService.prepareSyncTemplateMemberships(
+            created.template.id,
+            data.planIds,
+            now
+          ));
+      }
+
+      return {
+        template: created.template,
+        records: [
+          ...created.records,
+          ...membershipRecords,
+          ...(activePlanIds.length === 0
+            ? this.prepareSchedules(created.template.id, data.selectedDays, now)
+            : []),
+        ],
+      };
+    }
+
+    const templateId = data.templateId;
+    const template = await database.get<WorkoutTemplate>('workout_templates').find(templateId);
+    const existingExercises = await database
+      .get<WorkoutTemplateExercise>('workout_template_exercises')
+      .query(Q.where('template_id', templateId), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+    const existingExerciseIds = existingExercises.map((te) => te.id);
+    const [existingSets, existingSchedules] = await Promise.all([
+      existingExerciseIds.length > 0
+        ? database
+            .get<WorkoutTemplateSet>('workout_template_sets')
+            .query(
+              Q.where('template_exercise_id', Q.oneOf(existingExerciseIds)),
+              Q.where('deleted_at', Q.eq(null))
+            )
+            .fetch()
+        : Promise.resolve([]),
+      database
+        .get<Schedule>('schedules')
+        .query(Q.where('template_id', templateId), Q.where('deleted_at', Q.eq(null)))
+        .fetch(),
+    ]);
+
+    // Resolve plan membership BEFORE deciding schedules: calendar ownership depends on the
+    // outcome. A template with at least one active membership takes its weekdays from that
+    // membership, so writing standalone `schedules` for it too would leave two live calendar
+    // stores for one workout — dormant rows that silently resurrect if it later leaves the plan.
+    let membershipRecords: Model[] = [];
+    let activePlanIds: string[] = [];
+
+    if (data.planIds !== undefined) {
+      ({ activePlanIds, records: membershipRecords } =
+        await WorkoutPlanService.prepareSyncTemplateMemberships(templateId, data.planIds, now));
+    } else if (data.selectedDays.length > 0) {
+      // planIds omitted means "leave memberships alone", so read the current set. Only worth a
+      // query when there are days that would otherwise be written.
+      activePlanIds = await WorkoutPlanService.getActivePlanIdsForTemplate(templateId);
+    }
+
+    const softDelete = <T extends Model & { deletedAt?: number; updatedAt: number }>(record: T) =>
+      record.prepareUpdate((draft) => {
+        draft.deletedAt = now;
+        draft.updatedAt = now;
+      });
+
+    return {
+      template,
+      records: [
+        template.prepareUpdate((t) => {
           t.name = data.name;
           t.description = data.description || undefined;
           t.workoutInsightsType =
@@ -247,130 +436,64 @@ export class WorkoutTemplateService {
               : parseWorkoutInsightsType(t.workoutInsightsType);
           t.type = data.type ?? t.type;
           t.icon = data.icon ?? t.icon;
-          t.weekDaysJson = data.weekDaysJson ?? t.weekDaysJson;
+          // Standalone calendar data lives in schedules. Clear any deprecated compatibility copy.
+          t.weekDaysJson = undefined;
           t.updatedAt = now;
-        });
+        }),
+        ...existingSets.map(softDelete),
+        ...existingExercises.map(softDelete),
+        ...existingSchedules.map(softDelete),
+        ...this.prepareTemplateExerciseGraph(templateId, data.exercises, now),
+        ...membershipRecords,
+        ...(activePlanIds.length === 0
+          ? this.prepareSchedules(templateId, data.selectedDays, now)
+          : []),
+      ],
+    };
+  }
 
-        const existingTemplateExercises = await database
-          .get<WorkoutTemplateExercise>('workout_template_exercises')
-          .query(Q.where('template_id', data.templateId), Q.where('deleted_at', Q.eq(null)))
-          .fetch();
+  private static async saveTemplateInWriter(
+    data: SaveTemplateData,
+    now: number
+  ): Promise<WorkoutTemplate> {
+    const { records, template } = await this.prepareSaveTemplate(data, now);
+    await database.batch(...records);
+    return template;
+  }
 
-        const existingTemplateExerciseIds = existingTemplateExercises.map((te) => te.id);
+  /**
+   * Creates a plan and all of its workouts as ONE batch.
+   *
+   * The whole graph is prepared before anything is written, because a WatermelonDB writer
+   * serialises work but does not roll it back: committing template by template and then failing on
+   * the plan would leave orphaned workouts, exercises and sets behind with no plan to reach them.
+   */
+  static async createPlanWithTemplates(
+    planData: Omit<CreateWorkoutPlanData, 'memberships'>,
+    inputs: PlanTemplateInput[]
+  ): Promise<{ plan: WorkoutPlan; templates: WorkoutTemplate[] }> {
+    if (inputs.length === 0) {
+      throw new Error('A workout plan requires at least one template');
+    }
 
-        if (existingTemplateExerciseIds.length > 0) {
-          const existingSets = await database
-            .get<WorkoutTemplateSet>('workout_template_sets')
-            .query(
-              Q.where('template_exercise_id', Q.oneOf(existingTemplateExerciseIds)),
-              Q.where('deleted_at', Q.eq(null))
-            )
-            .fetch();
-
-          for (const set of existingSets) {
-            await set.update((s) => {
-              s.deletedAt = now;
-              s.updatedAt = now;
-            });
-          }
-        }
-
-        for (const te of existingTemplateExercises) {
-          await te.update((record) => {
-            record.deletedAt = now;
-            record.updatedAt = now;
-          });
-        }
-
-        const existingSchedule = await database
-          .get<Schedule>('schedules')
-          .query(Q.where('template_id', data.templateId), Q.where('deleted_at', Q.eq(null)))
-          .fetch();
-
-        for (const schedule of existingSchedule) {
-          await schedule.update((s) => {
-            s.deletedAt = now;
-            s.updatedAt = now;
-          });
-        }
-      } else {
-        template = await database.get<WorkoutTemplate>('workout_templates').create((t) => {
-          t.name = data.name;
-          t.description = data.description || undefined;
-          t.workoutInsightsType = parseWorkoutInsightsType(data.workoutInsightsType);
-          t.type = data.type ?? DEFAULT_WORKOUT_TYPE;
-          t.icon = data.icon ?? undefined;
-          t.weekDaysJson = data.weekDaysJson || undefined;
-          t.isArchived = false;
-          t.createdAt = now;
-          t.updatedAt = now;
-        });
-      }
-
-      const templateExercisesCollection = database.get<WorkoutTemplateExercise>(
-        'workout_template_exercises'
+    return database.write(async () => {
+      const now = Date.now();
+      const prepared = inputs.map((input) => this.prepareNewTemplate(input.template, now));
+      const { plan, records: planRecords } = await WorkoutPlanService.prepareCreatePlan(
+        {
+          ...planData,
+          memberships: prepared.map(({ template }, index) => ({
+            templateId: template.id,
+            weekDays: inputs[index].weekDays,
+            position: inputs[index].position ?? index,
+          })),
+        },
+        now
       );
-      const templateSetsCollection = database.get<WorkoutTemplateSet>('workout_template_sets');
 
-      const preparedExercises: WorkoutTemplateExercise[] = [];
-      const preparedSets: WorkoutTemplateSet[] = [];
+      await database.batch(...prepared.flatMap(({ records }) => records), ...planRecords);
 
-      let currentSetOrder = 0;
-
-      data.exercises.forEach((exercise, exerciseIndex) => {
-        const templateExercise = templateExercisesCollection.prepareCreate((te) => {
-          te.templateId = template.id;
-          te.exerciseId = exercise.id;
-          te.notes = exercise.notes;
-          te.exerciseOrder = exerciseIndex + 1;
-          te.groupId = exercise.groupId;
-          te.createdAt = now;
-          te.updatedAt = now;
-        });
-        preparedExercises.push(templateExercise);
-
-        for (let setNum = 1; setNum <= exercise.sets; setNum++) {
-          currentSetOrder++;
-          preparedSets.push(
-            templateSetsCollection.prepareCreate((ts) => {
-              ts.templateExerciseId = templateExercise.id;
-              ts.targetReps = exercise.reps;
-              ts.targetWeight = exercise.isBodyweight ? 0 : exercise.weight;
-              ts.restTimeAfter = exercise.restTimeAfter ?? 60;
-              ts.setOrder = currentSetOrder;
-              ts.setType = exercise.setType ?? 'normal';
-              ts.createdAt = now;
-              ts.updatedAt = now;
-            })
-          );
-        }
-      });
-
-      if (preparedExercises.length > 0 || preparedSets.length > 0) {
-        await database.batch(...preparedExercises, ...preparedSets);
-      }
-
-      const schedulesCollection = database.get<Schedule>('schedules');
-      const preparedSchedules: Schedule[] = [];
-
-      data.selectedDays.forEach((dayIndex) => {
-        if (dayIndex >= 0 && dayIndex < WEEKDAY_NAMES.length) {
-          preparedSchedules.push(
-            schedulesCollection.prepareCreate((s) => {
-              s.templateId = template.id;
-              s.dayOfWeek = indexToDayName(dayIndex);
-              s.createdAt = now;
-              s.updatedAt = now;
-            })
-          );
-        }
-      });
-
-      if (preparedSchedules.length > 0) {
-        await database.batch(...preparedSchedules);
-      }
-
-      return template;
+      return { plan, templates: prepared.map(({ template }) => template) };
     });
   }
 
@@ -447,7 +570,8 @@ export class WorkoutTemplateService {
         Q.where('template_id', template.id),
         Q.where('completed_at', Q.notEq(null)),
         Q.where('deleted_at', Q.eq(null)),
-        Q.sortBy('completed_at', Q.desc)
+        Q.sortBy('completed_at', Q.desc),
+        Q.take(1)
       )
       .fetch();
 
@@ -819,7 +943,7 @@ export class WorkoutTemplateService {
    */
   static async createWorkoutsFromJsonTemplate(
     rawTemplate: RawWorkoutTemplate
-  ): Promise<WorkoutTemplate[]> {
+  ): Promise<{ plan: WorkoutPlan | null; templates: WorkoutTemplate[] }> {
     const theme = await getTheme();
     // Validate that exercises is an array
     if (!Array.isArray(rawTemplate.exercises)) {
@@ -903,8 +1027,7 @@ export class WorkoutTemplateService {
     // Get unique days and sort them
     const days = Array.from(exercisesByDay.keys()).sort((a, b) => a - b);
 
-    // Create workout template for each day
-    const createdTemplates: WorkoutTemplate[] = [];
+    const planTemplates: PlanTemplateInput[] = [];
 
     for (const day of days) {
       const dayExercises = exercisesByDay.get(day)!;
@@ -962,7 +1085,8 @@ export class WorkoutTemplateService {
           iconBgColor,
           iconColor,
           groupId: exerciseData.supersetGroup
-            ? `${rawTemplate.title}-day-${day}-${exerciseData.supersetGroup}`
+            ? // Group ids are only compared within one template, so repeat imports may safely reuse it.
+              `${rawTemplate.title}-day-${day}-${exerciseData.supersetGroup}`
             : undefined,
           notes:
             [
@@ -988,22 +1112,36 @@ export class WorkoutTemplateService {
 
       // Create workout template name
       const dayName = rawTemplate.dayNames?.[String(day)];
-      const templateName = `${rawTemplate.title} - ${dayName ?? `Day ${day}`}`;
+      const templateName =
+        dayName ?? i18n.t('workouts.plans.defaultDayName', { day, defaultValue: `Day ${day}` });
 
-      // Create the template using saveTemplate
-      const template = await this.saveTemplate({
-        name: templateName,
-        description: rawTemplate.description,
-        type: DEFAULT_WORKOUT_TYPE,
-        icon: undefined,
-        exercises: exercisesInWorkout,
-        selectedDays: [], // No schedule days selected
+      planTemplates.push({
+        template: {
+          name: templateName,
+          description: rawTemplate.description,
+          type: DEFAULT_WORKOUT_TYPE,
+          icon: undefined,
+          exercises: exercisesInWorkout,
+          selectedDays: [],
+        },
+        position: planTemplates.length,
       });
-
-      createdTemplates.push(template);
     }
 
-    return createdTemplates;
+    if (planTemplates.length === 0) {
+      return { plan: null, templates: [] };
+    }
+
+    return this.createPlanWithTemplates(
+      {
+        name: rawTemplate.title,
+        description: rawTemplate.description,
+        difficulty: rawTemplate.difficulty,
+        icon: rawTemplate.icon,
+        cycleType: 'rotating',
+      },
+      planTemplates
+    );
   }
 
   /**
@@ -1042,7 +1180,7 @@ export class WorkoutTemplateService {
         t.workoutInsightsType = parseWorkoutInsightsType(template.workoutInsightsType);
         t.type = template.type ?? DEFAULT_WORKOUT_TYPE;
         t.icon = template.icon ?? undefined;
-        t.weekDaysJson = template.weekDaysJson || undefined;
+        t.weekDaysJson = undefined;
         t.isArchived = false;
         t.createdAt = now;
         t.updatedAt = now;
@@ -1092,15 +1230,25 @@ export class WorkoutTemplateService {
       }
 
       const schedulesCollection = database.get<Schedule>('schedules');
-      const preparedSchedules = schedule.map((sched) =>
-        schedulesCollection.prepareCreate((s) => {
-          s.templateId = newTemplate.id;
-          s.dayOfWeek = sched.dayOfWeek;
-          s.reminderTime = sched.reminderTime;
-          s.createdAt = now;
-          s.updatedAt = now;
-        })
-      );
+      const preparedSchedules =
+        schedule.length > 0
+          ? schedule.map((sched) =>
+              schedulesCollection.prepareCreate((s) => {
+                s.templateId = newTemplate.id;
+                s.dayOfWeek = sched.dayOfWeek;
+                s.reminderTime = sched.reminderTime;
+                s.createdAt = now;
+                s.updatedAt = now;
+              })
+            )
+          : (template.weekDaysJson ?? []).map((dayIndex) =>
+              schedulesCollection.prepareCreate((s) => {
+                s.templateId = newTemplate.id;
+                s.dayOfWeek = indexToDayName(dayIndex);
+                s.createdAt = now;
+                s.updatedAt = now;
+              })
+            );
 
       await database.batch(...preparedExercises, ...preparedSets, ...preparedSchedules);
 

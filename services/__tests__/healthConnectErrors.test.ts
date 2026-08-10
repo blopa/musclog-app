@@ -2,6 +2,7 @@ import {
   HealthConnectError,
   HealthConnectErrorCode,
   HealthConnectErrorFactory,
+  isHealthPermissionError,
   RETRY_CONFIG,
 } from '@/services/healthConnectErrors';
 
@@ -101,6 +102,10 @@ describe('HealthConnectError', () => {
       [HealthConnectErrorCode.SDK_NOT_AVAILABLE, 'snackbar.healthConnect.sdkNotAvailable'],
       [HealthConnectErrorCode.PERMISSION_DENIED, 'snackbar.healthConnect.permissionDenied'],
       [HealthConnectErrorCode.PERMISSION_REVOKED, 'snackbar.healthConnect.permissionRevoked'],
+      [
+        HealthConnectErrorCode.INSUFFICIENT_PERMISSIONS,
+        'snackbar.healthConnect.noPermissionsGranted',
+      ],
       [HealthConnectErrorCode.OFFLINE, 'snackbar.healthConnect.offline'],
       [HealthConnectErrorCode.SYNC_CONFLICT, 'snackbar.healthConnect.syncConflict'],
       [HealthConnectErrorCode.INVALID_VALUE_RANGE, 'snackbar.healthConnect.invalidValueRange'],
@@ -118,6 +123,26 @@ describe('HealthConnectError', () => {
       );
 
       expect(error.getUserMessage()).toBe('snackbar.healthConnect.unknownError');
+    });
+  });
+
+  describe('isHealthPermissionError', () => {
+    it.each([
+      HealthConnectErrorCode.PERMISSION_DENIED,
+      HealthConnectErrorCode.PERMISSION_REVOKED,
+      HealthConnectErrorCode.PERMISSION_REQUEST_FAILED,
+      HealthConnectErrorCode.INSUFFICIENT_PERMISSIONS,
+    ])('recognizes %s as an expected permission outcome', (code) => {
+      expect(isHealthPermissionError(new HealthConnectError(code, 'permission issue'))).toBe(true);
+    });
+
+    it('does not hide operational failures or arbitrary errors', () => {
+      expect(
+        isHealthPermissionError(
+          new HealthConnectError(HealthConnectErrorCode.READ_FAILED, 'read failed')
+        )
+      ).toBe(false);
+      expect(isHealthPermissionError(new Error('plain error'))).toBe(false);
     });
   });
 });

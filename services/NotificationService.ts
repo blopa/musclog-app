@@ -5,8 +5,9 @@ import { Platform } from 'react-native';
 import { database } from '@/database';
 import MenstrualCycle from '@/database/models/MenstrualCycle';
 import NutritionCheckin from '@/database/models/NutritionCheckin';
-import Schedule from '@/database/models/Schedule';
+import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import { PeriodLogRepository } from '@/database/repositories/PeriodLogRepository';
+import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanRepository';
 import { MenstrualService } from '@/database/services/MenstrualService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n from '@/lang/lang';
@@ -16,6 +17,7 @@ import {
   localDayStartMs,
   MS_PER_SOLAR_DAY,
 } from '@/utils/calendarDate';
+import { toExpoWeekday } from '@/utils/weekdays';
 
 export class NotificationService {
   private static isConfigured = false;
@@ -283,30 +285,24 @@ export class NotificationService {
       return;
     }
 
-    // Fetch all active schedules
-    const schedules = await database
-      .get<Schedule>('schedules')
-      .query(Q.where('deleted_at', Q.eq(null)))
-      .fetch();
+    const resolvedSchedules = await WorkoutPlanRepository.getResolvedSchedules();
+    const templateIds = [...new Set(resolvedSchedules.map((schedule) => schedule.templateId))];
+    const templates =
+      templateIds.length > 0
+        ? await database
+            .get<WorkoutTemplate>('workout_templates')
+            .query(Q.where('id', Q.oneOf(templateIds)), Q.where('deleted_at', Q.eq(null)))
+            .fetch()
+        : [];
+    const templatesById = new Map(templates.map((template) => [template.id, template]));
 
-    // TODO: do we need to translate these?
-    const expoDayMap: Record<string, number> = {
-      Sunday: 1,
-      Monday: 2,
-      Tuesday: 3,
-      Wednesday: 4,
-      Thursday: 5,
-      Friday: 6,
-      Saturday: 7,
-    };
-
-    for (const schedule of schedules) {
-      const template = await schedule.template;
+    for (const schedule of resolvedSchedules) {
+      const template = templatesById.get(schedule.templateId);
       if (!template || template.deletedAt || template.isArchived) {
         continue;
       }
 
-      const [hours, minutes] = (schedule.reminderTime || '08:00').split(':').map(Number);
+      const [hours, minutes] = schedule.reminderTime.split(':').map(Number);
 
       await Notifications.scheduleNotificationAsync({
         content: {
@@ -314,11 +310,15 @@ export class NotificationService {
           body: i18n.t('notifications.types.workoutReminderMorning.body', {
             workoutName: template.name,
           }),
-          data: { type: 'workout-reminder', templateId: template.id },
+          data: {
+            type: 'workout-reminder',
+            templateId: template.id,
+            planId: schedule.planId,
+          },
         },
         trigger: {
           type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
-          weekday: expoDayMap[schedule.dayOfWeek],
+          weekday: toExpoWeekday(schedule.dayIndex),
           hour: hours,
           minute: minutes,
         },

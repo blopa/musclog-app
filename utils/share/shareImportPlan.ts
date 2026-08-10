@@ -53,32 +53,56 @@ function resolveTargetTable(target: ShareForeignKeyTarget, row: ShareRow): strin
   return typeof type === 'string' ? target.polymorphic.typeToTable[type] : undefined;
 }
 
-function sanitizeRow(row: ShareRow): ShareRow | undefined {
+/**
+ * Reduces an incoming row to `id` plus the columns its table declares in `ShareKindSpec.columns`.
+ *
+ * An allowlist rather than a denylist of control fields: the row comes from another phone over a
+ * camera, and everything that survives here is eventually handed to `assignRawColumns`, which
+ * assigns each key onto a WatermelonDB model instance. A denylist would have to anticipate every
+ * property worth shadowing (`collection`, `markAsDeleted`, `_raw`, …); an allowlist only has to
+ * know what the table legitimately holds.
+ */
+function sanitizeRow(row: ShareRow, allowedColumns: readonly string[]): ShareRow | undefined {
   if (row.deleted_at != null || row._status === 'deleted') {
     return undefined;
   }
 
-  return Object.fromEntries(
-    Object.entries(row).filter(
-      ([key]) => !['_changed', '_decrypted', '_status', 'deleted_at'].includes(key)
-    )
-  );
+  const allowed = new Set<string>([...allowedColumns, 'id']);
+  return Object.fromEntries(Object.entries(row).filter(([key]) => allowed.has(key)));
 }
 
-function isReferenced(
-  spec: ShareKindSpec,
-  rows: WorkingRow[],
-  targetTable: string,
-  sourceId: string
-): boolean {
-  return rows.some((candidate) =>
-    Object.entries(spec.foreignKeys[candidate.table] ?? {}).some(([column, target]) => {
-      if (candidate.row[column] !== sourceId) {
-        return false;
+/**
+ * The composite key identifying one row across tables. A single helper on purpose: the referenced
+ * set and the lookup that consults it must agree exactly, and two separately-written template
+ * literals are one typo away from silently never matching (which prunes rows that ARE referenced
+ * and then fails the whole import on the dangling foreign key).
+ */
+function referenceKey(table: string, sourceId: string): string {
+  return `${table}::${sourceId}`;
+}
+
+/**
+ * Every row that some other row points at, as {@link referenceKey} strings.
+ *
+ * Built once per prune pass instead of re-scanning every row's foreign keys for every candidate:
+ * the pruning loop repeats until it reaches a fixpoint, so the naive form was a scan inside a
+ * filter inside a loop against a 2000-row ceiling.
+ */
+function referencedKeys(spec: ShareKindSpec, rows: WorkingRow[]): Set<string> {
+  const referenced = new Set<string>();
+  for (const candidate of rows) {
+    for (const [column, target] of Object.entries(spec.foreignKeys[candidate.table] ?? {})) {
+      const value = candidate.row[column];
+      if (!isPresentForeignKey(value)) {
+        continue;
       }
-      return resolveTargetTable(target, candidate.row) === targetTable;
-    })
-  );
+      const targetTable = resolveTargetTable(target, candidate.row);
+      if (targetTable) {
+        referenced.add(referenceKey(targetTable, value));
+      }
+    }
+  }
+  return referenced;
 }
 
 export function planShareImport(
@@ -99,7 +123,7 @@ export function planShareImport(
   for (const table of spec.tables) {
     idMap[table] = {};
     for (const input of records[table] ?? []) {
-      const sanitized = sanitizeRow(input);
+      const sanitized = sanitizeRow(input, spec.columns[table] ?? []);
       if (!sanitized) {
         continue;
       }
@@ -145,14 +169,16 @@ export function planShareImport(
     });
   }
 
+  // Dropping an unreferenced row can orphan the row IT pointed at, so this repeats to a fixpoint.
   let pruned = true;
   while (pruned) {
     pruned = false;
+    const referenced = referencedKeys(spec, rows);
     rows = rows.filter((row) => {
       if (
         spec.pruneUnreferenced.includes(row.table) &&
         !row.reused &&
-        !isReferenced(spec, rows, row.table, row.sourceId)
+        !referenced.has(referenceKey(row.table, row.sourceId))
       ) {
         delete idMap[row.table][row.sourceId];
         pruned = true;

@@ -1,5 +1,5 @@
 import { Model } from '@nozbe/watermelondb';
-import { field, relation } from '@nozbe/watermelondb/decorators';
+import { field, relation, writer } from '@nozbe/watermelondb/decorators';
 
 import NutritionGoal from './NutritionGoal';
 
@@ -25,4 +25,13 @@ export default class NutritionCheckin extends Model {
   @field('deleted_at') deletedAt?: number;
 
   @relation('nutrition_goals', 'nutrition_goal_id') declare nutritionGoal: NutritionGoal;
+
+  @writer
+  async markAsDeleted(): Promise<void> {
+    const now = Date.now();
+    await this.update((record) => {
+      record.deletedAt = now;
+      record.updatedAt = now;
+    });
+  }
 }

@@ -127,8 +127,10 @@ export function AppBoot() {
     void Promise.all([
       waitForDbReady().then(() =>
         healthDataSyncService
-          .syncFromHealthPlatform({ lookbackDays: 7 })
-          .catch((err) => captureBootException(err, 'HealthDataSync.bootSync'))
+          .syncFromHealthPlatform({ lookbackDays: 7, trigger: 'background' })
+          // .catch((err) => captureBootException(err, 'HealthDataSync.bootSync'))
+          // purposely error silently since the user choose to not allow it.
+          .catch(() => undefined)
       ),
       configureDailyTasks().catch((err) =>
         captureBootException(err, 'configureDailyTasks.bootStartup')

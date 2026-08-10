@@ -25,7 +25,15 @@
       "ai": "AI"
     },
     "routine": "Routine",
-    "repeatOnDays": "Repeat on days",
+    "plan": {
+      "label": "Workout plans",
+      "none": "Not part of a plan",
+      "scheduleHint": "Weekdays are configured separately for each workout plan."
+    },
+    "standaloneSchedule": {
+      "label": "Standalone schedule",
+      "description": "Used only while this workout is not part of a plan."
+    },
     "weekly": "Weekly",
     "exercises": "Exercises",
     "exercisesInWorkout": "Exercises in the workout",

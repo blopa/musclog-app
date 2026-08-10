@@ -48,6 +48,11 @@
         "iDontKnow": "Não sei / pular",
         "skipInstead": "Limpar data — não tenho certeza"
       },
+      "length": {
+        "cycleLength": "Duração do ciclo",
+        "cycleLengthLabel": "Ciclo",
+        "periodDurationLabel": "Menstruação"
+      },
       "birthControl": {
         "title": "Anticoncepcional Hormonal",
         "description": "Você está usando algum anticoncepcional hormonal? Isso afeta as previsões de fase hormonal.",

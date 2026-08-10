@@ -291,6 +291,7 @@ export type WorkoutPlan = {
 };
 
 export type GenerateWorkoutPlanResponse = {
+  planTitle: string;
   workoutPlan: WorkoutPlan[];
   description: string;
 };

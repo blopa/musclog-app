@@ -7,39 +7,28 @@ import type FoodPortion from '@/database/models/FoodPortion';
 import type MealFood from '@/database/models/MealFood';
 import type MealFoodPortion from '@/database/models/MealFoodPortion';
 import { MealService } from '@/database/services/MealService';
-import { createThumbnail } from '@/utils/file';
-import {
-  OPTICAL_EXPORT_VERSION_SHARE,
-  OPTICAL_PAYLOAD_KIND_SHARE,
-} from '@/utils/optical/container';
 import {
   type MealShareEnvelope,
   type MealShareIngredient,
   MUSCLOG_SHARE_ENVELOPE_VERSION,
-  SHARE_ASSET_REF_PREFIX,
-  type ShareRow,
+  MusclogShareError,
 } from '@/utils/share/shareEnvelope';
 import { MEAL_SHARE_SPEC } from '@/utils/share/shareKinds';
 
+import {
+  applyCarriedFoodImage,
+  applyShareImage,
+  defaultPortionLink,
+  isActive,
+  optionalNumber,
+  prepareShareImage,
+  type ShareBuild,
+  shareRow,
+  shareSenderPayload,
+} from './shareRecords';
+
 export interface BuildMealShareOptions {
   includeImage: boolean;
-}
-
-function shareRow(model: { id: string; _raw?: Record<string, unknown> }): ShareRow {
-  const raw = { ...(model._raw ?? {}), id: model.id };
-  return Object.fromEntries(
-    Object.entries(raw).filter(
-      ([key, value]) =>
-        !['_changed', '_status', 'deleted_at'].includes(key) &&
-        value !== null &&
-        value !== undefined &&
-        value !== ''
-    )
-  );
-}
-
-function isActive(model: { deletedAt?: number } | null | undefined): boolean {
-  return Boolean(model && model.deletedAt == null);
 }
 
 async function relatedFood(mealFood: MealFood): Promise<Food | undefined> {
@@ -63,44 +52,34 @@ async function relatedPortion(mealFood: MealFood): Promise<FoodPortion | undefin
   }
 }
 
-async function defaultPortionLink(
-  food: Food
-): Promise<{ link: FoodFoodPortion; portion: FoodPortion } | undefined> {
-  try {
-    const links = await food.foodPortions.fetch();
-    for (const link of links) {
-      if (link.isDefault && isActive(link)) {
-        const portion = await link.foodPortion;
-        if (isActive(portion)) {
-          return { link, portion };
-        }
-      }
-    }
-  } catch {
-    return undefined;
-  }
-  return undefined;
-}
-
 export async function buildMealShareEnvelope(
   mealId: string,
   options: BuildMealShareOptions
-): Promise<MealShareEnvelope> {
+): Promise<ShareBuild<MealShareEnvelope>> {
   const mealData = await MealService.getMealWithFoods(mealId);
   if (!mealData) {
     throw new Error('Meal not found');
   }
   const { meal } = mealData;
 
+  // Every read below is independent per ingredient, so they run together rather than one
+  // round trip at a time — a 20-ingredient recipe was 60+ serialized queries. Order is preserved
+  // because `Promise.all` resolves positionally, which the envelope's row order depends on.
+  const resolvedMealFoods = await Promise.all(
+    mealData.foods.map(async (model) => ({
+      food: await relatedFood(model),
+      model,
+      portion: await relatedPortion(model),
+    }))
+  );
+
   const foods = new Map<string, Food>();
   const portions = new Map<string, FoodPortion>();
   const mealFoods: { model: MealFood; food: Food; portion?: FoodPortion }[] = [];
-  for (const model of mealData.foods) {
-    const food = await relatedFood(model);
+  for (const { food, model, portion } of resolvedMealFoods) {
     if (!food) {
       continue;
     }
-    const portion = await relatedPortion(model);
     foods.set(food.id, food);
     if (portion) {
       portions.set(portion.id, portion);
@@ -109,69 +88,68 @@ export async function buildMealShareEnvelope(
   }
 
   if (mealFoods.length === 0) {
-    throw new Error('Cannot share a meal without ingredients');
+    throw new MusclogShareError('no-ingredients', 'Cannot share a meal without ingredients');
   }
 
   const mealPortionLinks = await database
     .get<MealFoodPortion>('meal_food_portions')
     .query(Q.where('meal_id', meal.id), Q.where('deleted_at', Q.eq(null)))
     .fetch();
-  const carriedMealPortionLinks: MealFoodPortion[] = [];
-  for (const link of mealPortionLinks) {
-    try {
-      const portion = await link.foodPortion;
-      if (isActive(link) && isActive(portion)) {
-        portions.set(portion.id, portion);
-        carriedMealPortionLinks.push(link);
+  const resolvedMealPortionLinks = await Promise.all(
+    mealPortionLinks.map(async (link) => {
+      try {
+        const portion = await link.foodPortion;
+        return isActive(link) && isActive(portion) ? { link, portion } : undefined;
+      } catch {
+        // A broken optional portion link does not make the meal itself unshareable.
+        return undefined;
       }
-    } catch {
-      // A broken optional portion link does not make the meal itself unshareable.
+    })
+  );
+
+  const carriedMealPortionLinks: MealFoodPortion[] = [];
+  for (const resolved of resolvedMealPortionLinks) {
+    if (resolved) {
+      portions.set(resolved.portion.id, resolved.portion);
+      carriedMealPortionLinks.push(resolved.link);
     }
   }
 
   const defaultFoodLinks: FoodFoodPortion[] = [];
-  for (const food of foods.values()) {
-    const linked = await defaultPortionLink(food);
+  for (const linked of await Promise.all([...foods.values()].map(defaultPortionLink))) {
     if (linked) {
       portions.set(linked.portion.id, linked.portion);
       defaultFoodLinks.push(linked.link);
     }
   }
 
-  const ingredients: MealShareIngredient[] = [];
-  for (const { food, model, portion } of mealFoods) {
-    const nutrients = await model.getNutrients();
-    const unit =
-      food.resolvedNutritionBasis === 'per_serving' ? 'serving' : portion ? 'portion' : 'g';
-    ingredients.push({
-      amount: model.amount,
-      calories: nutrients.calories,
-      name: food.name,
-      ...(unit === 'portion' && portion?.name ? { portionName: portion.name } : undefined),
-      unit,
-    });
-  }
+  const ingredients: MealShareIngredient[] = await Promise.all(
+    mealFoods.map(async ({ food, model, portion }): Promise<MealShareIngredient> => {
+      const nutrients = await model.getNutrients();
+      const unit =
+        food.resolvedNutritionBasis === 'per_serving' ? 'serving' : portion ? 'portion' : 'g';
+      return {
+        amount: model.amount,
+        calories: nutrients.calories,
+        name: food.name,
+        ...(unit === 'portion' && portion?.name ? { portionName: portion.name } : undefined),
+        unit,
+      };
+    })
+  );
 
   const mealRow = shareRow(meal);
-  let assets: MealShareEnvelope['assets'];
-  if (options.includeImage && meal.imageUrl) {
-    const thumbnail = await createThumbnail(meal.imageUrl, 400);
-    if (thumbnail.base64) {
-      assets = {
-        mealImage: {
-          base64: thumbnail.base64,
-          height: thumbnail.height,
-          mime: 'image/jpeg',
-          width: thumbnail.width,
-        },
-      };
-      mealRow.image_url = `${SHARE_ASSET_REF_PREFIX}mealImage`;
-    } else {
-      delete mealRow.image_url;
-    }
-  } else {
-    delete mealRow.image_url;
-  }
+  const mealImage = await prepareShareImage(meal.imageUrl, 'mealImage', options.includeImage);
+  applyShareImage(mealRow, 'image_url', mealImage);
+  const assets: MealShareEnvelope['assets'] = mealImage.asset
+    ? { mealImage: mealImage.asset }
+    : undefined;
+
+  const foodRows = [...foods.values()].map((food) => {
+    const row = shareRow(food);
+    applyCarriedFoodImage(row, options.includeImage);
+    return row;
+  });
 
   const mealFoodRows = mealFoods.map(({ model, portion }) => {
     const row = shareRow(model);
@@ -182,40 +160,41 @@ export async function buildMealShareEnvelope(
   });
 
   return {
-    _musclogShare: MUSCLOG_SHARE_ENVELOPE_VERSION,
-    ...(assets ? { assets } : undefined),
-    createdAtMs: Date.now(),
-    kind: 'meal',
-    kindVersion: MEAL_SHARE_SPEC.kindVersion,
-    records: {
-      food_food_portions: defaultFoodLinks.map(shareRow),
-      food_portions: [...portions.values()].map(shareRow),
-      foods: [...foods.values()].map(shareRow),
-      meal_food_portions: carriedMealPortionLinks.map(shareRow),
-      meal_foods: mealFoodRows,
-      meals: [mealRow],
+    envelope: {
+      _musclogShare: MUSCLOG_SHARE_ENVELOPE_VERSION,
+      ...(assets ? { assets } : undefined),
+      createdAtMs: Date.now(),
+      kind: 'meal',
+      kindVersion: MEAL_SHARE_SPEC.kindVersion,
+      records: {
+        food_food_portions: defaultFoodLinks.map(shareRow),
+        food_portions: [...portions.values()].map(shareRow),
+        foods: foodRows,
+        meal_food_portions: carriedMealPortionLinks.map(shareRow),
+        meal_foods: mealFoodRows,
+        meals: [mealRow],
+      },
+      rootId: meal.id,
+      rootTable: MEAL_SHARE_SPEC.rootTable,
+      summary: {
+        description: meal.description || undefined,
+        // The value, not the asset: a remote photo rides along as a URL and embeds nothing.
+        hasImage: Boolean(mealImage.value),
+        ingredients,
+        name: meal.name,
+        nutritionBasis: meal.resolvedNutritionBasis,
+        preparedWeightGrams: optionalNumber(meal.preparedWeightGrams),
+        recipeServingsCount: optionalNumber(meal.recipeServingsCount),
+        servingGrams: optionalNumber(meal.servingGrams),
+        totals: await meal.getTotalNutrients(),
+      },
     },
-    rootId: meal.id,
-    rootTable: MEAL_SHARE_SPEC.rootTable,
-    summary: {
-      description: meal.description || undefined,
-      hasImage: Boolean(assets),
-      ingredients,
-      name: meal.name,
-      nutritionBasis: meal.resolvedNutritionBasis,
-      preparedWeightGrams: meal.preparedWeightGrams,
-      recipeServingsCount: meal.recipeServingsCount,
-      servingGrams: meal.servingGrams,
-      totals: await meal.getTotalNutrients(),
-    },
+    // Only the meal's OWN photo counts here: an ingredient's photo is never embedded
+    // (`applyCarriedFoodImage`), so it can neither cost transfer time nor go missing.
+    photo: mealImage.outcome,
   };
 }
 
 export async function buildMealSharePayload(mealId: string, options: BuildMealShareOptions) {
-  const envelope = await buildMealShareEnvelope(mealId, options);
-  return {
-    exportVersion: OPTICAL_EXPORT_VERSION_SHARE,
-    json: JSON.stringify(envelope),
-    payloadKind: OPTICAL_PAYLOAD_KIND_SHARE,
-  };
+  return shareSenderPayload(await buildMealShareEnvelope(mealId, options));
 }

@@ -37,8 +37,8 @@ import { CreateMealModal } from './CreateMealModal';
 import DynamicMealCreatorModal from './DynamicMealCreatorModal';
 import { FoodMealTrackingDetailsModal } from './FoodMealTrackingDetailsModal';
 import { FullScreenModal } from './FullScreenModal';
-import { MealOpticalSendModal } from './MealOpticalSendModal';
 import { OpticalReceiveModal } from './OpticalReceiveModal';
+import { ShareOpticalSendModal } from './ShareOpticalSendModal';
 
 // Type for transformed meal data that matches MealItemCard props
 type MealCardData = {
@@ -712,11 +712,14 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
           />
         ) : null}
         {sendMealId ? (
-          <MealOpticalSendModal
-            hasImage={Boolean(mealsMap.get(sendMealId)?.imageUrl)}
-            mealId={sendMealId}
+          <ShareOpticalSendModal
             onClose={() => setSendMealId(null)}
-            visible={Boolean(sendMealId)}
+            target={{
+              hasImage: Boolean(mealsMap.get(sendMealId)?.imageUrl),
+              kind: 'meal',
+              mealId: sendMealId,
+            }}
+            visible={true}
           />
         ) : null}
         {importVisible ? (

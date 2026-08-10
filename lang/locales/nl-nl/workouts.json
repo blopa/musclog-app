@@ -8,6 +8,59 @@
       "flexibility": "Flexibiliteit",
       "archived": "Gearchiveerd"
     },
+    "plans": {
+      "title": "Workoutplannen",
+      "unplanned": "Zonder plan",
+      "unscheduled": "Niet ingepland",
+      "defaultDayName": "Dag {{day}}",
+      "defaultAiPlanName": "AI-workoutplan",
+      "addToPlan": "Aan plan toevoegen",
+      "addToPlanDescription": "Kies in welke workoutplannen deze workout voorkomt",
+      "createTitle": "Nieuw workoutplan",
+      "editTitle": "Workoutplan bewerken",
+      "createDescription": "Groepeer workouts in een wekelijks of roterend programma",
+      "editDescription": "Wijzig de workouts en planning van dit plan",
+      "deleteTitle": "Plan verwijderen",
+      "deleteDescription": "Verwijder het plan zonder de workouts te verwijderen",
+      "nameLabel": "Plannaam",
+      "namePlaceholder": "bijv. Push Pull Legs",
+      "descriptionLabel": "Beschrijving",
+      "descriptionPlaceholder": "Beschrijf het doel van dit programma",
+      "iconLabel": "Planicoon",
+      "membersLabel": "Workouts in dit plan",
+      "selectorLabel": "Workouts toevoegen of verwijderen",
+      "membersEmpty": "Nog geen workouts. Vink hierboven een workout aan om die aan dit plan toe te voegen.",
+      "removeMember": "Uit plan verwijderen",
+      "workoutCount": "{{count}} workouts",
+      "cycleType": {
+        "label": "Planningstype",
+        "weekly": "Wekelijks",
+        "rotating": "Roterend"
+      },
+      "picker": {
+        "title": "Workoutplannen kiezen",
+        "description": "Plannen",
+        "create": "Nieuw plan maken",
+        "exerciseCount": "{{count}} oefeningen"
+      },
+      "schedule": {
+        "clearTitle": "Overschakelen naar een roterend plan?",
+        "clearMessage": "De weekdagen van dit plan worden gewist en komen niet terug wanneer je terugschakelt.",
+        "clearConfirm": "Overschakelen en dagen wissen"
+      },
+      "validation": {
+        "nameRequired": "Vul een plannaam in"
+      },
+      "saveSuccess": "Workoutplan opgeslagen",
+      "saveError": "Workoutplan opslaan mislukt",
+      "loadError": "Kon dit plan niet laden",
+      "deleteSuccess": "Workoutplan verwijderd",
+      "deleteError": "Workoutplan verwijderen mislukt",
+      "deleteConfirmation": {
+        "title": "Workoutplan verwijderen?",
+        "message": "\"{{name}}\" verwijderen? De workouts worden niet verwijderd."
+      }
+    },
     "archive": "Archiveren",
     "archiveSuccess": "Workout succesvol gearchiveerd",
     "archiveError": "Archiveren van workout mislukt",
@@ -152,7 +205,8 @@
       "message": "Dit zal afzonderlijke workout-sjablonen maken voor elke dag in dit programma. Elke workout bevat de oefeningen, sets en herhalingen die voor die dag zijn opgegeven.",
       "confirm": "Workouts maken",
       "cancel": "Annuleren",
-      "successMessage": "Workouts succesvol gemaakt"
+      "successMessage": "Workouts succesvol gemaakt",
+      "successMessageWithPlan": "{{planName}} gemaakt met {{count}} workouts"
     },
     "aiGeneration": {
       "comingSoon": "AI workout-generatie komt binnenkort!",
@@ -161,7 +215,7 @@
       "preferencesLabel": "Je voorkeuren",
       "preferencesPlaceholder": "Bijv. ik wil spieren opbouwen, ik kan 4 dagen per week trainen, ik heb toegang tot een volledige sportschool, ik ben een gevorderde lifter...",
       "generateButton": "Plan genereren",
-      "successMessage": "Je workout-plan is klaar! {{count}} workout(s) toegevoegd.",
+      "successMessageWithPlan": "{{planName}} is klaar met {{count}} workouts.",
       "errorMessage": "Kon geen plan genereren. Probeer het opnieuw.",
       "aiNotConfigured": "AI-functies zijn niet geconfigureerd. Voeg een Gemini- of OpenAI API-sleutel toe bij de Instellingen."
     },

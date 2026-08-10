@@ -25,11 +25,13 @@ export const RESTORE_ORDER: string[] = [
   'ble_devices',
   'meals',
   'workout_templates',
+  'workout_plans',
   'settings',
   'debug_dump',
 
   // Template-dependent tables
   'schedules',
+  'workout_plan_templates',
   'workout_template_exercises',
   'workout_template_sets',
 

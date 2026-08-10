@@ -139,7 +139,7 @@ async function resolveDynamicGoalLike(
     UserMetricService.getLatestOnOrBefore('body_fat', asOfMetricMaxMs),
     hasExplicitTrajectoryTarget
       ? Promise.resolve(null)
-      : getHistoricalNutritionParams({ asOfDate: date, useWeeklyAverages: true }),
+      : getHistoricalNutritionParams({ asOfDate: date, useWeeklyFatAverages: true }),
     SettingsService.getDisableMinimumCalories(),
     SettingsService.getUseBfForCalculations(),
   ]);

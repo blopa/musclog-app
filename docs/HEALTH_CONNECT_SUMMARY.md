@@ -53,7 +53,8 @@ Sync orchestration service with:
 - Enable/disable sync functionality
 - Last sync time tracking in database
 - Sync lock to prevent concurrent operations
-- Configurable sync (lookback days, batch size, retries)
+- Configurable sync (lookback days, retries, manual/background trigger)
+- Native manual syncs show snackbar feedback; automatic syncs fail silently
 - Retry logic with exponential backoff per metric type
 - Batch processing with database transactions
 - Deduplication and existing record checking
@@ -82,10 +83,12 @@ Sync operations and status tracking hook:
 - Sync status (in progress, enabled)
 - Last sync time and result
 - Manual sync trigger with configuration
+- Silent background sync trigger for lifecycle-driven refreshes
 - Enable/disable sync
 - Refresh status from database
 - Periodic status polling (30 seconds)
-- Success/error notifications
+- Native-only success/error notifications for user-initiated syncs
+- Missing/revoked permissions treated as expected state rather than Sentry errors
 - Comprehensive error handling
 
 ### 3. UI Integration (1 file)

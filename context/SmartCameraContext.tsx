@@ -11,7 +11,8 @@ import {
 
 import { useCameraPermissions } from '@/components/CameraView';
 import { BarcodeCameraModal } from '@/components/modals/BarcodeCameraModal';
-import SmartCameraModal, { type CameraMode } from '@/components/modals/SmartCameraModal';
+import SmartCameraModal from '@/components/modals/SmartCameraModal';
+import type { CameraMode } from '@/constants/camera';
 import type { MealType } from '@/database/models';
 import { useSettings } from '@/hooks/useSettings';
 

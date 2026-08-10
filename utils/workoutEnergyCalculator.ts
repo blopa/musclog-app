@@ -10,6 +10,9 @@
 import convert from 'convert';
 
 import type { EquipmentType, Gender, MechanicType, MuscleGroup } from '@/database/models';
+// From the pure family module, not the model file: this is a value import, and pulling in
+// `Exercise.ts` would drag the WatermelonDB model class into a module that must stay pure.
+import { muscleGroupFamily } from '@/database/models/muscleGroupFamily';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -49,20 +52,17 @@ export interface MWEMInput {
 // Helpers
 // ---------------------------------------------------------------------------
 
-// `muscle_group` holds either vocabulary (see the `MuscleGroup` union), so both
-// spellings of a group belong in these sets. Listing only the fine-grained names
-// silently routed every bundled leg exercise — all 60 of them are stored as
-// `legs`, none as `quads` — down the generic branch, costing them both the longer
-// leg displacement and the 0.88x bodyweight contribution below.
-const LEG_GROUPS = new Set<MuscleGroup>(['legs', 'quads', 'hamstrings', 'glutes', 'calves']);
-const SMALL_ISOLATION_GROUPS = new Set<MuscleGroup>(['arms', 'biceps', 'triceps', 'forearms']);
+// `muscle_group` holds either the coarse or the fine-grained vocabulary, so neither can be
+// matched by name here. `muscleGroupFamily` collapses both — see `MUSCLE_GROUP_FAMILY` in
+// `database/models/muscleGroupFamily.ts` for why a local Set of group names is a silent, total
+// miss rather than a type error.
 
 function resolveDisplacementFactor(muscleGroup: MuscleGroup, mechanicType: MechanicType): number {
-  if (LEG_GROUPS.has(muscleGroup)) {
+  if (muscleGroupFamily(muscleGroup) === 'legs') {
     return 0.45;
   }
 
-  if (mechanicType === 'isolation' && SMALL_ISOLATION_GROUPS.has(muscleGroup)) {
+  if (mechanicType === 'isolation' && muscleGroupFamily(muscleGroup) === 'arms') {
     return 0.25;
   }
 
@@ -79,7 +79,7 @@ function resolveBodyweightContribution(
     return weightKg;
   }
 
-  if (mechanicType === 'compound' && LEG_GROUPS.has(muscleGroup)) {
+  if (mechanicType === 'compound' && muscleGroupFamily(muscleGroup) === 'legs') {
     return 0.88 * weightKg;
   }
 

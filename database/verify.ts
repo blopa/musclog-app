@@ -17,6 +17,8 @@ export async function verifyDatabaseTables(): Promise<{
   const requiredTables = [
     'exercises',
     'workout_templates',
+    'workout_plans',
+    'workout_plan_templates',
     'schedules',
     'workout_template_exercises',
     'workout_template_sets',

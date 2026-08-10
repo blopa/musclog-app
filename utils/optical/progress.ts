@@ -41,6 +41,15 @@ export interface TransferProgressEstimate {
   phase: 'collecting' | 'decoding';
 }
 
+/** Running payload throughput, kept consistent with the estimated bytes shown in the receiver UI. */
+export function averagePayloadBytesPerSecond(
+  payloadBytes: number,
+  fraction: number,
+  elapsedSeconds: number
+): number {
+  return elapsedSeconds > 0 ? (payloadBytes * fraction) / elapsedSeconds : 0;
+}
+
 export function estimateTransferProgress(
   sourceBlocks: number,
   uniqueFrames: number,

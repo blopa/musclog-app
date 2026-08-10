@@ -30,6 +30,8 @@ export { default as UserMetricsNote } from './UserMetricsNote';
 export { default as WorkoutLog } from './WorkoutLog';
 export { default as WorkoutLogExercise } from './WorkoutLogExercise';
 export { default as WorkoutLogSet } from './WorkoutLogSet';
+export { default as WorkoutPlan } from './WorkoutPlan';
+export { default as WorkoutPlanTemplate } from './WorkoutPlanTemplate';
 export { default as WorkoutTemplate } from './WorkoutTemplate';
 export { default as WorkoutTemplateExercise } from './WorkoutTemplateExercise';
 export { default as WorkoutTemplateSet } from './WorkoutTemplateSet';

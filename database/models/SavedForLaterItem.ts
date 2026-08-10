@@ -1,5 +1,5 @@
 import { Model } from '@nozbe/watermelondb';
-import { field, relation } from '@nozbe/watermelondb/decorators';
+import { field, relation, writer } from '@nozbe/watermelondb/decorators';
 
 import { decryptJson, decryptNumber, decryptOptionalString } from '@/database/encryptionHelpers';
 
@@ -96,5 +96,14 @@ export default class SavedForLaterItem extends Model {
       fiber: (s.loggedFiber ?? 0) * scale,
       alcohol: (s.loggedMicros?.alcohol ?? 0) * scale,
     };
+  }
+
+  @writer
+  async markAsDeleted(): Promise<void> {
+    const now = Date.now();
+    await this.update((record) => {
+      record.deletedAt = now;
+      record.updatedAt = now;
+    });
   }
 }

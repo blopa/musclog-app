@@ -2,6 +2,7 @@ import { database } from '@/database/database-instance';
 import { WorkoutTemplateRepository } from '@/database/repositories/WorkoutTemplateRepository';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import { UserService } from '@/database/services/UserService';
+import { WorkoutPlanService } from '@/database/services/WorkoutPlanService';
 import {
   ExerciseInWorkout,
   SaveTemplateData,
@@ -24,6 +25,7 @@ jest.mock('@nozbe/watermelondb', () => ({
     notEq: jest.fn((value: any) => value),
     oneOf: jest.fn((values: any[]) => values),
     sortBy: jest.fn((field: string, direction: any) => ({ field, direction })),
+    take: jest.fn((count: number) => count),
     desc: 'desc' as const,
     asc: 'asc' as const,
   },
@@ -69,13 +71,8 @@ jest.mock('../../repositories/WorkoutTemplateRepository', () => ({
   },
 }));
 
-jest.mock('../../../utils/workout', () => ({
-  WEEKDAY_NAMES: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-  indexToDayName: jest.fn((index: number) => {
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    return days[index] || days[0];
-  }),
-}));
+// `utils/weekdays` is deliberately not mocked: it is a pure index ↔ day-name table with no
+// runtime dependencies, so the real one is both safe here and what production actually runs.
 
 jest.mock('lucide-react-native', () => ({
   Dumbbell: jest.fn(),
@@ -753,6 +750,10 @@ describe('WorkoutTemplateService', () => {
   });
 
   describe('saveTemplate', () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
     const mockExercises: ExerciseInWorkout[] = [
       {
         id: 'ex-1',
@@ -787,661 +788,520 @@ describe('WorkoutTemplateService', () => {
       selectedDays: [0, 2], // Monday, Wednesday
     };
 
-    it('should create new template successfully', async () => {
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
+    interface PreparedRecords {
+      templates: any[];
+      exercises: any[];
+      sets: any[];
+      schedules: any[];
+    }
+
+    /**
+     * Wires the four collections `saveTemplate` touches.
+     *
+     * Everything is `prepareCreate`/`prepareUpdate`: the service reads first and then commits one
+     * batch, precisely so a failure part-way cannot leave a half-written template behind. A mock
+     * that offered `create()` would let that guarantee regress unnoticed.
+     */
+    function stubCollections(
+      options: {
+        existingTemplate?: any;
+        rowsByTable?: Record<string, any[]>;
+      } = {}
+    ): PreparedRecords {
+      const prepared: PreparedRecords = { exercises: [], schedules: [], sets: [], templates: [] };
+      const rowsByTable = options.rowsByTable ?? {};
+      const bucket: Record<string, keyof PreparedRecords> = {
+        schedules: 'schedules',
+        workout_template_exercises: 'exercises',
+        workout_template_sets: 'sets',
+        workout_templates: 'templates',
       };
 
-      const mockTemplate = createMockWorkoutTemplate();
-      const mockCreate = jest.fn().mockResolvedValue(mockTemplate);
-      const mockPrepareCreate = jest.fn().mockReturnValue({});
-      const mockCollection = {
-        query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
-        prepareCreate: mockPrepareCreate,
-      };
-
-      mockDatabase.get.mockReturnValue(mockCollection as any);
-      mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
-        return await callback(mockWriter);
+      mockDatabase.get.mockImplementation((table: string) => {
+        const target = prepared[bucket[table] ?? 'templates'];
+        return {
+          find: jest.fn().mockResolvedValue(options.existingTemplate),
+          prepareCreate: jest.fn((callback: (record: any) => void) => {
+            const record: any = { id: `${table}-prepared-${target.length + 1}` };
+            callback(record);
+            target.push(record);
+            return record;
+          }),
+          query: jest.fn().mockReturnValue({
+            extend: jest.fn().mockReturnThis(),
+            fetch: jest.fn().mockResolvedValue(rowsByTable[table] ?? []),
+          }),
+        } as any;
       });
+      mockDatabase.write.mockImplementation(async (callback) => callback({} as any));
       mockDatabase.batch.mockResolvedValue(undefined);
 
-      const result = await WorkoutTemplateService.saveTemplate(saveData);
+      return prepared;
+    }
 
-      expect(mockCreate).toHaveBeenCalled();
+    /** Every record handed to `database.batch`, across all calls. */
+    function batchedRecords(): any[] {
+      return mockDatabase.batch.mock.calls.flat();
+    }
+
+    it('commits the whole template in exactly one batch', async () => {
+      // `database.write()` serialises writers but does NOT roll back a batch that already landed,
+      // so a save split across several batches can half-commit. One batch is the only way the
+      // "a template is created whole or not at all" promise actually holds.
+      stubCollections();
+
+      await WorkoutTemplateService.saveTemplate(saveData);
+
+      expect(mockDatabase.write).toHaveBeenCalledTimes(1);
+      expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
+    });
+
+    it('keeps omitted plan intent untouched and stops writing legacy weekday JSON', async () => {
+      const prepareMemberships = jest.spyOn(WorkoutPlanService, 'prepareSyncTemplateMemberships');
+      const prepared = stubCollections();
+
+      await WorkoutTemplateService.saveTemplate({
+        name: 'Standalone',
+        exercises: [],
+        selectedDays: [],
+      });
+
+      expect(prepared.templates[0].weekDaysJson).toBeUndefined();
+      expect(prepareMemberships).not.toHaveBeenCalled();
+      expect(mockDatabase.write).toHaveBeenCalledTimes(1);
+    });
+
+    it('treats an empty plan id array as explicit unfiling inside the existing writer', async () => {
+      const preparedRemoval = { id: 'membership-removal' } as any;
+      const prepareMemberships = jest
+        .spyOn(WorkoutPlanService, 'prepareSyncTemplateMemberships')
+        .mockResolvedValue({ activePlanIds: [], records: [preparedRemoval] });
+      stubCollections();
+
+      await WorkoutTemplateService.saveTemplate({
+        name: 'Unplanned',
+        exercises: [],
+        selectedDays: [],
+        planIds: [],
+      });
+
+      // A brand-new template has no memberships to remove, so the sync is skipped entirely.
+      expect(prepareMemberships).not.toHaveBeenCalled();
+      expect(mockDatabase.write).toHaveBeenCalledTimes(1);
+    });
+
+    it('syncs memberships for an edited template asked to unfile itself', async () => {
+      const existingTemplate = createMockWorkoutTemplate({ id: 'template-1' });
+      const preparedRemoval = { id: 'membership-removal' } as any;
+      const prepareMemberships = jest
+        .spyOn(WorkoutPlanService, 'prepareSyncTemplateMemberships')
+        .mockResolvedValue({ activePlanIds: [], records: [preparedRemoval] });
+      stubCollections({ existingTemplate });
+
+      await WorkoutTemplateService.saveTemplate({
+        templateId: 'template-1',
+        name: 'Unplanned',
+        exercises: [],
+        selectedDays: [],
+        planIds: [],
+      });
+
+      expect(prepareMemberships).toHaveBeenCalledWith('template-1', [], expect.any(Number));
+      expect(batchedRecords()).toContain(preparedRemoval);
+      expect(mockDatabase.write).toHaveBeenCalledTimes(1);
+    });
+
+    // Calendar ownership is enforced on write, not just on read. A workout that ends up in a
+    // plan must not also keep standalone schedules: those rows would sit dormant (the notification
+    // resolver ignores them while a membership exists) and silently resurrect the old weekdays if
+    // the workout later leaves the plan.
+    it('skips standalone schedules for a workout that joins a plan', async () => {
+      const preparedMembership = { id: 'membership-1' } as any;
+      jest
+        .spyOn(WorkoutPlanService, 'prepareSyncTemplateMemberships')
+        .mockResolvedValue({ activePlanIds: ['plan-1'], records: [preparedMembership] });
+      const prepared = stubCollections();
+
+      await WorkoutTemplateService.saveTemplate({
+        name: 'Push',
+        exercises: [],
+        selectedDays: [0, 2],
+        planIds: ['plan-1'],
+      });
+
+      expect(prepared.schedules).toEqual([]);
+      expect(batchedRecords()).toContain(preparedMembership);
+    });
+
+    it('keeps standalone schedules when the requested plan no longer exists', async () => {
+      jest
+        .spyOn(WorkoutPlanService, 'prepareSyncTemplateMemberships')
+        .mockResolvedValue({ activePlanIds: [], records: [] });
+      const prepared = stubCollections();
+
+      await WorkoutTemplateService.saveTemplate({
+        name: 'Push',
+        exercises: [],
+        selectedDays: [0, 2],
+        planIds: ['deleted-plan'],
+      });
+
+      expect(prepared.schedules).toEqual([
+        expect.objectContaining({ dayOfWeek: 'Monday' }),
+        expect.objectContaining({ dayOfWeek: 'Wednesday' }),
+      ]);
+    });
+
+    it('skips standalone schedules when plan intent is omitted but memberships already exist', async () => {
+      const getActivePlanIds = jest
+        .spyOn(WorkoutPlanService, 'getActivePlanIdsForTemplate')
+        .mockResolvedValue(['plan-1']);
+      const prepared = stubCollections({
+        existingTemplate: createMockWorkoutTemplate({ id: 'template-1' }),
+      });
+
+      await WorkoutTemplateService.saveTemplate({
+        templateId: 'template-1',
+        name: 'Push',
+        exercises: [],
+        selectedDays: [0, 2],
+      });
+
+      expect(getActivePlanIds).toHaveBeenCalledWith('template-1');
+      expect(prepared.schedules).toEqual([]);
+    });
+
+    it('does not query memberships when there are no days to suppress', async () => {
+      const getActivePlanIds = jest.spyOn(WorkoutPlanService, 'getActivePlanIdsForTemplate');
+      stubCollections({ existingTemplate: createMockWorkoutTemplate({ id: 'template-1' }) });
+
+      await WorkoutTemplateService.saveTemplate({
+        templateId: 'template-1',
+        name: 'Push',
+        exercises: [],
+        selectedDays: [],
+      });
+
+      expect(getActivePlanIds).not.toHaveBeenCalled();
+    });
+
+    it('should create new template successfully', async () => {
+      const prepared = stubCollections();
+
+      await WorkoutTemplateService.saveTemplate(saveData);
+
+      expect(prepared.templates[0]).toMatchObject({
+        name: 'Test Workout',
+        description: 'Test Description',
+        isArchived: false,
+      });
+      expect(prepared.templates[0].createdAt).toBeDefined();
+      expect(prepared.templates[0].updatedAt).toBeDefined();
       expect(mockDatabase.batch).toHaveBeenCalled();
-
-      // Verify the create callback sets correct values
-      const createCall = mockCreate.mock.calls[0][0];
-      expect(createCall).toBeInstanceOf(Function);
-      const mockTemplateObj = {} as any;
-      createCall(mockTemplateObj);
-      expect(mockTemplateObj.name).toBe('Test Workout');
-      expect(mockTemplateObj.description).toBe('Test Description');
-      expect(mockTemplateObj.createdAt).toBeDefined();
-      expect(mockTemplateObj.updatedAt).toBeDefined();
     });
 
     it('should create new template with undefined description', async () => {
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
+      const prepared = stubCollections();
 
-      const mockTemplate = createMockWorkoutTemplate({ id: 'template-1' });
-      const mockCreate = jest.fn().mockResolvedValue(mockTemplate);
-      const mockPrepareCreate = jest.fn().mockReturnValue({});
-      const mockCollection = {
-        query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
-        prepareCreate: mockPrepareCreate,
-      };
-
-      mockDatabase.get.mockReturnValue(mockCollection as any);
-      mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
-        return await callback(mockWriter);
-      });
-      mockDatabase.batch.mockResolvedValue(undefined);
-
-      const newTemplateData: SaveTemplateData = {
+      await WorkoutTemplateService.saveTemplate({
         name: 'New Template',
         description: undefined,
         exercises: mockExercises,
         selectedDays: [0],
-      };
+      });
 
-      await WorkoutTemplateService.saveTemplate(newTemplateData);
-
-      // Verify the create callback sets description to undefined
-      const createCall = mockCreate.mock.calls[0][0];
-      const mockTemplateObj = {} as any;
-      createCall(mockTemplateObj);
-      expect(mockTemplateObj.description).toBeUndefined();
-      expect(mockTemplateObj.createdAt).toBeDefined();
-      expect(mockTemplateObj.updatedAt).toBeDefined();
+      expect(prepared.templates[0].description).toBeUndefined();
+      expect(prepared.templates[0].createdAt).toBeDefined();
+      expect(prepared.templates[0].updatedAt).toBeDefined();
     });
 
     it('should create template sets with bodyweight exercises (weight = 0)', async () => {
-      const bodyweightExercise: ExerciseInWorkout = {
-        id: 'ex-1',
-        label: 'Push-ups',
-        description: '',
-        icon: jest.fn(),
-        iconBgColor: '',
-        iconColor: '',
-        sets: 3,
-        reps: 10,
-        weight: 0,
-        isBodyweight: true,
-      };
+      const prepared = stubCollections();
 
-      const bodyweightData: SaveTemplateData = {
+      await WorkoutTemplateService.saveTemplate({
         name: 'Bodyweight Workout',
-        exercises: [bodyweightExercise],
+        exercises: [
+          {
+            id: 'ex-1',
+            label: 'Push-ups',
+            description: '',
+            icon: jest.fn(),
+            iconBgColor: '',
+            iconColor: '',
+            sets: 3,
+            reps: 10,
+            weight: 0,
+            isBodyweight: true,
+          },
+        ],
         selectedDays: [0],
-      };
-
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      const mockTemplate = createMockWorkoutTemplate({ id: 'template-1' });
-      const mockCreate = jest.fn().mockResolvedValue(mockTemplate);
-      const setCallbacks: ((obj: any) => void)[] = [];
-      const mockSetsPrepareCreate = jest.fn((callback: (obj: any) => void) => {
-        setCallbacks.push(callback);
-        return {};
       });
 
-      const mockCollection = {
-        query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
-        prepareCreate: mockSetsPrepareCreate,
-      };
-
-      // Sets now hang off a `workout_template_exercises` row, so the two collections need
-      // to be told apart — otherwise the exercise's prepareCreate lands in `setCallbacks`.
-      const exerciseCallbacks: ((obj: any) => void)[] = [];
-      const mockExercisesPrepareCreate = jest.fn((callback: (obj: any) => void) => {
-        exerciseCallbacks.push(callback);
-        return { id: 'template-exercise-1' };
+      expect(prepared.exercises).toHaveLength(1);
+      expect(prepared.exercises[0].exerciseId).toBe('ex-1');
+      expect(prepared.sets).toHaveLength(3);
+      expect(prepared.sets[0]).toMatchObject({
+        targetWeight: 0,
+        targetReps: 10,
+        templateExerciseId: prepared.exercises[0].id,
       });
-
-      mockDatabase.get.mockImplementation((collection: string) => {
-        if (collection === 'workout_templates') {
-          return {
-            query: jest.fn().mockReturnValue(mockQuery),
-            create: mockCreate,
-          } as any;
-        } else if (collection === 'workout_template_sets') {
-          return mockCollection as any;
-        } else if (collection === 'workout_template_exercises') {
-          return {
-            query: jest.fn().mockReturnValue(mockQuery),
-            prepareCreate: mockExercisesPrepareCreate,
-          } as any;
-        } else if (collection === 'schedules') {
-          return {
-            query: jest.fn().mockReturnValue(mockQuery),
-            prepareCreate: jest.fn().mockReturnValue({}),
-          } as any;
-        }
-        return mockCollection as any;
-      });
-
-      mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
-        await callback(mockWriter);
-        return mockTemplate;
-      });
-      mockDatabase.batch.mockResolvedValue(undefined);
-
-      await WorkoutTemplateService.saveTemplate(bodyweightData);
-
-      // One template exercise, carrying the exercise id...
-      expect(exerciseCallbacks).toHaveLength(1);
-      const mockTemplateExercise = {} as any;
-      exerciseCallbacks[0](mockTemplateExercise);
-      expect(mockTemplateExercise.exerciseId).toBe('ex-1');
-
-      // ...and three sets under it, with weight zeroed out for a bodyweight exercise.
-      expect(setCallbacks).toHaveLength(3);
-      const mockSet = {} as any;
-      setCallbacks[0](mockSet);
-      expect(mockSet.targetWeight).toBe(0);
-      expect(mockSet.templateExerciseId).toBe('template-exercise-1');
-      expect(mockSet.targetReps).toBe(10);
     });
 
     it('should update existing template (soft deletes old sets/schedule)', async () => {
-      const existingTemplate = createMockWorkoutTemplate({
-        id: 'template-1',
-        update: jest.fn((callback) => {
-          callback({ updatedAt: Date.now() });
-          return Promise.resolve();
-        }),
+      const existingTemplate = createMockWorkoutTemplate({ id: 'template-1' });
+      const existingSet = createMockWorkoutTemplateSet({ id: 'set-1' });
+      const existingSchedule = createMockSchedule({ id: 'schedule-1' });
+      const existingTemplateExercise = createMockWorkoutTemplateExercise({ id: 'te-1' });
+
+      stubCollections({
+        existingTemplate,
+        rowsByTable: {
+          schedules: [existingSchedule],
+          workout_template_exercises: [existingTemplateExercise],
+          workout_template_sets: [existingSet],
+        },
       });
 
-      const existingSet = createMockWorkoutTemplateSet({
-        id: 'set-1',
-        templateId: 'template-1',
-        update: jest.fn((callback) => {
-          callback({ deletedAt: Date.now(), updatedAt: Date.now() });
-          return Promise.resolve();
-        }),
-      });
+      await WorkoutTemplateService.saveTemplate({ ...saveData, templateId: 'template-1' });
 
-      const existingSchedule = createMockSchedule({
-        id: 'schedule-1',
-        templateId: 'template-1',
-        update: jest.fn((callback) => {
-          callback({ deletedAt: Date.now(), updatedAt: Date.now() });
-          return Promise.resolve();
-        }),
-      });
-
-      const existingTemplateExercise = createMockWorkoutTemplateExercise({
-        id: 'te-1',
-        templateId: 'template-1',
-        update: jest.fn((callback) => {
-          callback({ deletedAt: Date.now(), updatedAt: Date.now() });
-          return Promise.resolve();
-        }),
-      });
-
-      // The soft-delete pass walks template exercises -> their sets -> schedules, so each
-      // table has to answer with its own rows.
-      const rowsByTable: Record<string, any[]> = {
-        workout_template_exercises: [existingTemplateExercise],
-        workout_template_sets: [existingSet],
-        schedules: [existingSchedule],
-      };
-
-      const mockPrepareCreate = jest.fn().mockReturnValue({ id: 'template-exercise-1' });
-
-      mockDatabase.get.mockImplementation(
-        (table: string) =>
-          ({
-            find: jest.fn().mockResolvedValue(existingTemplate),
-            prepareCreate: mockPrepareCreate,
-            query: jest.fn().mockReturnValue({
-              extend: jest.fn().mockReturnThis(),
-              fetch: jest.fn().mockResolvedValue(rowsByTable[table] ?? []),
-            }),
-          }) as any
-      );
-
-      mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
-        return await callback(mockWriter);
-      });
-      mockDatabase.batch.mockResolvedValue(undefined);
-
-      const updateData: SaveTemplateData = {
-        ...saveData,
-        templateId: 'template-1',
-      };
-
-      await WorkoutTemplateService.saveTemplate(updateData);
-
-      expect(existingTemplate.update).toHaveBeenCalled();
-      expect(existingTemplateExercise.update).toHaveBeenCalled();
-      expect(existingSet.update).toHaveBeenCalled();
-      expect(existingSchedule.update).toHaveBeenCalled();
+      // The soft deletes and the replacements ride in the SAME batch as the template update, so a
+      // failure cannot wipe the old exercises without writing the new ones.
+      expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
+      for (const record of [existingTemplateExercise, existingSet, existingSchedule]) {
+        expect(record.deletedAt).toEqual(expect.any(Number));
+        expect(batchedRecords()).toContain(record);
+      }
+      expect(batchedRecords()).toContain(existingTemplate);
     });
 
     it('should update template with null description', async () => {
-      const existingTemplate = createMockWorkoutTemplate({
-        id: 'template-1',
-        update: jest.fn((callback) => {
-          const mockObj = {} as any;
-          callback(mockObj);
-          return Promise.resolve();
-        }),
-      });
+      const existingTemplate = createMockWorkoutTemplate({ id: 'template-1' });
+      stubCollections({ existingTemplate });
 
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      const mockPrepareCreate = jest.fn().mockReturnValue({});
-      const mockCollection = {
-        find: jest.fn().mockResolvedValue(existingTemplate),
-        query: jest.fn().mockReturnValue(mockQuery),
-        prepareCreate: mockPrepareCreate,
-      };
-
-      mockDatabase.get.mockReturnValue(mockCollection as any);
-      mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
-        return await callback(mockWriter);
-      });
-      mockDatabase.batch.mockResolvedValue(undefined);
-
-      const updateData: SaveTemplateData = {
+      await WorkoutTemplateService.saveTemplate({
         name: 'Updated Template',
         description: undefined,
         exercises: mockExercises,
         selectedDays: [0],
         templateId: 'template-1',
-      };
+      });
 
-      await WorkoutTemplateService.saveTemplate(updateData);
-
-      expect(existingTemplate.update).toHaveBeenCalled();
-      const updateCallback = existingTemplate.update.mock.calls[0][0];
-      const mockObj = {} as any;
-      updateCallback(mockObj);
-      expect(mockObj.description).toBeUndefined();
+      expect(existingTemplate.prepareUpdate).toHaveBeenCalled();
+      expect(existingTemplate.description).toBeUndefined();
+      expect(existingTemplate.name).toBe('Updated Template');
     });
 
     it('should create template sets with correct set_order (continuous)', async () => {
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      const mockCreate = jest.fn().mockResolvedValue(createMockWorkoutTemplate());
-      const mockPrepareCreate = jest.fn().mockReturnValue({});
-      const mockCollection = {
-        query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
-        prepareCreate: mockPrepareCreate,
-      };
-
-      mockDatabase.get.mockReturnValue(mockCollection as any);
-      mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
-        return await callback(mockWriter);
-      });
-      mockDatabase.batch.mockResolvedValue(undefined);
+      // Set order runs across the whole template rather than restarting per exercise.
+      const prepared = stubCollections();
 
       await WorkoutTemplateService.saveTemplate(saveData);
 
-      // 2 template exercises (one per exercise)
-      // Exercise 1 has 3 sets, Exercise 2 has 2 sets = 5 template sets
-      // selectedDays: [0, 2] = 2 schedule entries
-      // Total: 2 exercises + 5 sets + 2 schedules = 9 prepareCreate calls
-      expect(mockPrepareCreate).toHaveBeenCalledTimes(9);
+      expect(prepared.exercises).toHaveLength(2);
+      expect(prepared.sets.map((set) => set.setOrder)).toEqual([1, 2, 3, 4, 5]);
+      expect(prepared.schedules).toHaveLength(2);
     });
 
     it('should create schedule entries from selectedDays', async () => {
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      const mockCreate = jest.fn().mockResolvedValue(createMockWorkoutTemplate());
-      const mockPrepareCreate = jest.fn().mockReturnValue({});
-      const mockCollection = {
-        query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
-        prepareCreate: mockPrepareCreate,
-      };
-
-      mockDatabase.get.mockReturnValue(mockCollection as any);
-      mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
-        return await callback(mockWriter);
-      });
-      mockDatabase.batch.mockResolvedValue(undefined);
+      const prepared = stubCollections();
 
       await WorkoutTemplateService.saveTemplate(saveData);
 
-      // selectedDays is [0, 2] which should create 2 schedule entries
-      const schedulePrepares = mockPrepareCreate.mock.calls.filter((call) => {
-        // Check if it's a schedule prepare (we can't easily distinguish, but we know the count)
-        return true;
-      });
-
-      expect(mockDatabase.batch).toHaveBeenCalled();
+      expect(prepared.schedules).toEqual([
+        expect.objectContaining({ dayOfWeek: 'Monday' }),
+        expect.objectContaining({ dayOfWeek: 'Wednesday' }),
+      ]);
     });
 
     it('should handle empty exercises array', async () => {
-      const emptyData: SaveTemplateData = {
+      const prepared = stubCollections();
+
+      await WorkoutTemplateService.saveTemplate({
         name: 'Empty Workout',
         exercises: [],
         selectedDays: [0],
-      };
-
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      const mockCreate = jest.fn().mockResolvedValue(createMockWorkoutTemplate());
-      const mockCollection = {
-        query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
-        prepareCreate: jest.fn().mockReturnValue({}),
-      };
-
-      mockDatabase.get.mockReturnValue(mockCollection as any);
-      mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
-        return await callback(mockWriter);
       });
-      mockDatabase.batch.mockResolvedValue(undefined);
 
-      await WorkoutTemplateService.saveTemplate(emptyData);
-
+      expect(prepared.exercises).toEqual([]);
+      expect(prepared.sets).toEqual([]);
       expect(mockDatabase.batch).toHaveBeenCalled();
     });
 
     it('should handle empty selectedDays array', async () => {
-      const noDaysData: SaveTemplateData = {
+      const prepared = stubCollections();
+
+      await WorkoutTemplateService.saveTemplate({
         name: 'No Schedule',
         exercises: mockExercises,
         selectedDays: [],
-      };
-
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      const mockCreate = jest.fn().mockResolvedValue(createMockWorkoutTemplate());
-      const mockCollection = {
-        query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
-        prepareCreate: jest.fn().mockReturnValue({}),
-      };
-
-      mockDatabase.get.mockReturnValue(mockCollection as any);
-      mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
-        return await callback(mockWriter);
       });
-      mockDatabase.batch.mockResolvedValue(undefined);
 
-      await WorkoutTemplateService.saveTemplate(noDaysData);
-
+      expect(prepared.schedules).toEqual([]);
       expect(mockDatabase.batch).toHaveBeenCalled();
     });
 
     it('should verify template sets prepareCreate callback sets correct values', async () => {
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      const mockTemplate = createMockWorkoutTemplate({ id: 'template-1' });
-      const mockCreate = jest.fn().mockResolvedValue(mockTemplate);
-
-      // Store callbacks as they're created to execute them in order
-      const setCallbacks: ((obj: any) => void)[] = [];
-      const mockSetsPrepareCreate = jest.fn((callback: (obj: any) => void) => {
-        setCallbacks.push(callback);
-        return {};
-      });
-      const mockSchedulesPrepareCreate = jest.fn().mockReturnValue({});
-
-      const mockSetsCollection = {
-        query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
-        prepareCreate: mockSetsPrepareCreate,
-      };
-
-      const mockSchedulesCollection = {
-        query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
-        prepareCreate: mockSchedulesPrepareCreate,
-      };
-
-      // Each exercise gets a `workout_template_exercises` row that its sets point at.
-      const exerciseCallbacks: ((obj: any) => void)[] = [];
-      let preparedExerciseCount = 0;
-      const mockExercisesPrepareCreate = jest.fn((callback: (obj: any) => void) => {
-        exerciseCallbacks.push(callback);
-        preparedExerciseCount += 1;
-        return { id: `template-exercise-${preparedExerciseCount}` };
-      });
-
-      mockDatabase.get.mockImplementation((collection: string) => {
-        if (collection === 'workout_templates') {
-          return {
-            find: jest.fn().mockResolvedValue(mockTemplate),
-            query: jest.fn().mockReturnValue(mockQuery),
-            create: mockCreate,
-          } as any;
-        } else if (collection === 'workout_template_sets') {
-          return mockSetsCollection as any;
-        } else if (collection === 'workout_template_exercises') {
-          return {
-            query: jest.fn().mockReturnValue(mockQuery),
-            prepareCreate: mockExercisesPrepareCreate,
-          } as any;
-        } else if (collection === 'schedules') {
-          return mockSchedulesCollection as any;
-        }
-        return {
-          query: jest.fn().mockReturnValue(mockQuery),
-          create: mockCreate,
-          prepareCreate: jest.fn().mockReturnValue({}),
-        } as any;
-      });
-
-      mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
-        await callback(mockWriter);
-        return mockTemplate;
-      });
-      mockDatabase.batch.mockResolvedValue(undefined);
+      const prepared = stubCollections();
 
       await WorkoutTemplateService.saveTemplate(saveData);
 
-      // Exercise 1 has 3 sets, Exercise 2 has 2 sets = 5 prepareCreate calls for sets
-      expect(mockSetsPrepareCreate).toHaveBeenCalledTimes(5);
-      expect(setCallbacks).toHaveLength(5);
-
       // The exercise id lives on the template exercise now...
-      expect(exerciseCallbacks).toHaveLength(2);
-      const mockTemplateExercise1 = {} as any;
-      exerciseCallbacks[0](mockTemplateExercise1);
-      expect(mockTemplateExercise1.templateId).toBe('template-1');
-      expect(mockTemplateExercise1.exerciseId).toBe('ex-1');
-      expect(mockTemplateExercise1.exerciseOrder).toBe(1);
+      expect(prepared.exercises).toHaveLength(2);
+      expect(prepared.exercises[0]).toMatchObject({
+        templateId: prepared.templates[0].id,
+        exerciseId: 'ex-1',
+        exerciseOrder: 1,
+      });
+      expect(prepared.exercises[1].exerciseId).toBe('ex-2');
 
       // ...and each set points back at it.
-      const mockSet1 = {} as any;
-      setCallbacks[0](mockSet1);
-      expect(mockSet1.templateExerciseId).toBe('template-exercise-1');
-      expect(mockSet1.targetReps).toBe(10);
-      expect(mockSet1.targetWeight).toBe(100);
-      expect(mockSet1.setOrder).toBeDefined();
-      expect(mockSet1.createdAt).toBeDefined();
-      expect(mockSet1.updatedAt).toBeDefined();
-
-      // Verify Exercise 2's sets
-      const mockTemplateExercise2 = {} as any;
-      exerciseCallbacks[1](mockTemplateExercise2);
-      expect(mockTemplateExercise2.exerciseId).toBe('ex-2');
-
-      const mockSet4 = {} as any;
-      setCallbacks[3](mockSet4);
-      expect(mockSet4.templateExerciseId).toBe('template-exercise-2');
-      expect(mockSet4.targetReps).toBe(12);
-      expect(mockSet4.targetWeight).toBe(80);
-      expect(mockSet4.setOrder).toBeDefined();
+      expect(prepared.sets).toHaveLength(5);
+      expect(prepared.sets[0]).toMatchObject({
+        templateExerciseId: prepared.exercises[0].id,
+        targetReps: 10,
+        targetWeight: 100,
+      });
+      expect(prepared.sets[0].createdAt).toBeDefined();
+      expect(prepared.sets[0].updatedAt).toBeDefined();
+      expect(prepared.sets[3]).toMatchObject({
+        templateExerciseId: prepared.exercises[1].id,
+        targetReps: 12,
+        targetWeight: 80,
+      });
     });
 
     it('should verify schedule prepareCreate callback sets correct values', async () => {
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      const mockTemplate = createMockWorkoutTemplate({ id: 'template-1' });
-      const mockCreate = jest.fn().mockResolvedValue(mockTemplate);
-      const mockSetsPrepareCreate = jest.fn().mockReturnValue({});
-      const mockSchedulesPrepareCreate = jest.fn().mockReturnValue({});
-
-      const mockSetsCollection = {
-        query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
-        prepareCreate: mockSetsPrepareCreate,
-      };
-
-      const mockSchedulesCollection = {
-        query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
-        prepareCreate: mockSchedulesPrepareCreate,
-      };
-
-      mockDatabase.get.mockImplementation((collection: string) => {
-        if (collection === 'workout_templates') {
-          return {
-            find: jest.fn().mockResolvedValue(mockTemplate),
-            query: jest.fn().mockReturnValue(mockQuery),
-            create: mockCreate,
-          } as any;
-        } else if (collection === 'workout_template_sets') {
-          return mockSetsCollection as any;
-        } else if (collection === 'schedules') {
-          return mockSchedulesCollection as any;
-        }
-        return {
-          query: jest.fn().mockReturnValue(mockQuery),
-          create: mockCreate,
-          prepareCreate: jest.fn().mockReturnValue({}),
-        } as any;
-      });
-
-      mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
-        return await callback(mockWriter);
-      });
-      mockDatabase.batch.mockResolvedValue(undefined);
+      const prepared = stubCollections();
 
       // selectedDays: [0, 2] = Monday, Wednesday
       await WorkoutTemplateService.saveTemplate(saveData);
 
-      // Should have 2 schedule calls
-      expect(mockSchedulesPrepareCreate).toHaveBeenCalledTimes(2);
-
-      // First schedule (index 0 = Monday)
-      const firstScheduleCall = mockSchedulesPrepareCreate.mock.calls[0];
-      expect(firstScheduleCall).toBeDefined();
-      const mockSchedule1 = {} as any;
-      firstScheduleCall[0](mockSchedule1);
-      expect(mockSchedule1.templateId).toBe('template-1');
-      expect(mockSchedule1.dayOfWeek).toBe('Monday'); // index 0
-      expect(mockSchedule1.createdAt).toBeDefined();
-      expect(mockSchedule1.updatedAt).toBeDefined();
-
-      // Second schedule (index 2 = Wednesday)
-      const secondScheduleCall = mockSchedulesPrepareCreate.mock.calls[1];
-      const mockSchedule2 = {} as any;
-      secondScheduleCall[0](mockSchedule2);
-      expect(mockSchedule2.dayOfWeek).toBe('Wednesday'); // index 2
+      expect(prepared.schedules).toHaveLength(2);
+      expect(prepared.schedules[0]).toMatchObject({
+        templateId: prepared.templates[0].id,
+        dayOfWeek: 'Monday',
+      });
+      expect(prepared.schedules[0].createdAt).toBeDefined();
+      expect(prepared.schedules[0].updatedAt).toBeDefined();
+      expect(prepared.schedules[1].dayOfWeek).toBe('Wednesday');
     });
 
     it('should skip invalid day indices in selectedDays', async () => {
-      const invalidDaysData: SaveTemplateData = {
+      const prepared = stubCollections();
+
+      await WorkoutTemplateService.saveTemplate({
         name: 'Invalid Days',
         exercises: mockExercises,
         selectedDays: [-1, 0, 7, 10], // -1 and 7+ are invalid, 0 is valid
-      };
-
-      const mockQuery = {
-        fetch: jest.fn().mockResolvedValue([]),
-        extend: jest.fn().mockReturnThis(),
-      };
-
-      const mockTemplate = createMockWorkoutTemplate();
-      const mockCreate = jest.fn().mockResolvedValue(mockTemplate);
-      const mockSetsPrepareCreate = jest.fn().mockReturnValue({});
-      const mockSchedulesPrepareCreate = jest.fn().mockReturnValue({});
-
-      const mockSetsCollection = {
-        query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
-        prepareCreate: mockSetsPrepareCreate,
-      };
-
-      const mockSchedulesCollection = {
-        query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
-        prepareCreate: mockSchedulesPrepareCreate,
-      };
-
-      mockDatabase.get.mockImplementation((collection: string) => {
-        if (collection === 'workout_templates') {
-          return {
-            find: jest.fn().mockResolvedValue(mockTemplate),
-            query: jest.fn().mockReturnValue(mockQuery),
-            create: mockCreate,
-          } as any;
-        } else if (collection === 'workout_template_sets') {
-          return mockSetsCollection as any;
-        } else if (collection === 'schedules') {
-          return mockSchedulesCollection as any;
-        }
-        return {
-          query: jest.fn().mockReturnValue(mockQuery),
-          create: mockCreate,
-          prepareCreate: jest.fn().mockReturnValue({}),
-        } as any;
       });
 
-      mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
-        return await callback(mockWriter);
-      });
-      mockDatabase.batch.mockResolvedValue(undefined);
+      expect(prepared.sets).toHaveLength(5);
+      expect(prepared.schedules).toEqual([expect.objectContaining({ dayOfWeek: 'Monday' })]);
+    });
+  });
 
-      await WorkoutTemplateService.saveTemplate(invalidDaysData);
+  describe('createPlanWithTemplates', () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
 
-      // Should have 5 sets (2 exercises with 3+2 sets)
-      expect(mockSetsPrepareCreate).toHaveBeenCalledTimes(5);
-      // Should have 1 valid schedule (index 0) - invalid indices -1, 7, 10 should be skipped
-      expect(mockSchedulesPrepareCreate).toHaveBeenCalledTimes(1);
+    it('commits every template and the parent plan in ONE batch', async () => {
+      // Entering one writer is not atomicity: WatermelonDB serialises writers but never rolls a
+      // committed batch back. Writing template-by-template and then failing on the plan would
+      // leave orphaned workouts, exercises and sets with no plan to reach them — so the whole
+      // graph has to land in a single batch call.
+      const plan = { id: 'plan-1' } as any;
+      const planRecords = [{ id: 'plan-1' }, { id: 'membership-1' }] as any[];
+      const prepared: any[] = [];
+      mockDatabase.get.mockImplementation(
+        (table: string) =>
+          ({
+            prepareCreate: jest.fn((callback: (record: any) => void) => {
+              const record: any = { id: `${table}-${prepared.length + 1}` };
+              callback(record);
+              prepared.push(record);
+              return record;
+            }),
+            query: jest.fn().mockReturnValue({ fetch: jest.fn().mockResolvedValue([]) }),
+          }) as any
+      );
+      mockDatabase.write.mockImplementation(async (callback) => callback({} as any));
+      const prepareCreatePlan = jest
+        .spyOn(WorkoutPlanService, 'prepareCreatePlan')
+        .mockResolvedValue({ plan, records: planRecords as any });
+
+      const result = await WorkoutTemplateService.createPlanWithTemplates(
+        { name: 'Atomic Plan', cycleType: 'weekly' },
+        [
+          {
+            template: { name: 'Monday', exercises: [], selectedDays: [] },
+            weekDays: [0],
+          },
+          {
+            template: { name: 'Friday', exercises: [], selectedDays: [] },
+            weekDays: [4],
+            position: 5,
+          },
+        ]
+      );
+
+      expect(mockDatabase.write).toHaveBeenCalledTimes(1);
+      expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
+      expect(prepareCreatePlan).toHaveBeenCalledWith(
+        {
+          name: 'Atomic Plan',
+          cycleType: 'weekly',
+          memberships: [
+            { templateId: prepared[0].id, weekDays: [0], position: 0 },
+            { templateId: prepared[1].id, weekDays: [4], position: 5 },
+          ],
+        },
+        expect.any(Number)
+      );
+      // Both templates and every plan record are in that single call.
+      expect(mockDatabase.batch).toHaveBeenCalledWith(
+        prepared[0],
+        prepared[1],
+        ...(planRecords as any[])
+      );
+      expect(result).toEqual({ plan, templates: [prepared[0], prepared[1]] });
+    });
+
+    it('writes nothing at all when preparing the plan fails', async () => {
+      mockDatabase.get.mockImplementation(
+        () =>
+          ({
+            prepareCreate: jest.fn((callback: (record: any) => void) => {
+              const record: any = { id: 'prepared' };
+              callback(record);
+              return record;
+            }),
+            query: jest.fn().mockReturnValue({ fetch: jest.fn().mockResolvedValue([]) }),
+          }) as any
+      );
+      mockDatabase.write.mockImplementation(async (callback) => callback({} as any));
+      jest
+        .spyOn(WorkoutPlanService, 'prepareCreatePlan')
+        .mockRejectedValue(new Error('plan blew up'));
+
+      await expect(
+        WorkoutTemplateService.createPlanWithTemplates({ name: 'Doomed' }, [
+          { template: { name: 'Monday', exercises: [], selectedDays: [] } },
+        ])
+      ).rejects.toThrow('plan blew up');
+
+      expect(mockDatabase.batch).not.toHaveBeenCalled();
+    });
+
+    it('rejects an empty aggregate before opening a writer', async () => {
+      await expect(
+        WorkoutTemplateService.createPlanWithTemplates(
+          { name: 'Empty Plan', cycleType: 'rotating' },
+          []
+        )
+      ).rejects.toThrow('A workout plan requires at least one template');
+
+      expect(mockDatabase.write).not.toHaveBeenCalled();
     });
   });
 
@@ -1478,12 +1338,19 @@ describe('WorkoutTemplateService', () => {
       jest.spyOn(WorkoutTemplateService as any, 'calculateSuggestedWeight').mockResolvedValue(40);
 
       const createdTemplate = createMockWorkoutTemplate({ id: 'created-template' });
-      const saveTemplate = jest
-        .spyOn(WorkoutTemplateService, 'saveTemplate')
-        .mockResolvedValue(createdTemplate);
+      const createdPlan = {
+        id: 'plan-1',
+        name: 'Test Cable Program',
+      } as any;
+      const createPlanWithTemplates = jest
+        .spyOn(WorkoutTemplateService, 'createPlanWithTemplates')
+        .mockResolvedValue({ plan: createdPlan, templates: [createdTemplate] });
 
-      await WorkoutTemplateService.createWorkoutsFromJsonTemplate({
+      const result = await WorkoutTemplateService.createWorkoutsFromJsonTemplate({
         title: 'Test Cable Program',
+        description: 'A complete cable program',
+        difficulty: 'intermediate',
+        icon: 'dumbbell',
         dayNames: { '1': 'Upper A' },
         exercises: [
           {
@@ -1508,28 +1375,118 @@ describe('WorkoutTemplateService', () => {
         ],
       });
 
-      expect(saveTemplate).toHaveBeenCalledTimes(1);
-      expect(saveTemplate).toHaveBeenCalledWith(
-        expect.objectContaining({
-          name: 'Test Cable Program - Upper A',
-          exercises: [
-            expect.objectContaining({
-              id: 'bench-id',
-              groupId: 'Test Cable Program-day-1-A',
-              notes: 'Target 4–6 reps • 1–2 RIR',
-              reps: 6,
-              restTimeAfter: 45,
+      expect(createPlanWithTemplates).toHaveBeenCalledTimes(1);
+      expect(createPlanWithTemplates).toHaveBeenCalledWith(
+        {
+          name: 'Test Cable Program',
+          description: 'A complete cable program',
+          difficulty: 'intermediate',
+          icon: 'dumbbell',
+          cycleType: 'rotating',
+        },
+        [
+          expect.objectContaining({
+            template: expect.objectContaining({
+              name: 'Upper A',
+              exercises: [
+                expect.objectContaining({
+                  id: 'bench-id',
+                  groupId: 'Test Cable Program-day-1-A',
+                  notes: 'Target 4–6 reps • 1–2 RIR',
+                  reps: 6,
+                  restTimeAfter: 45,
+                }),
+                expect.objectContaining({
+                  id: 'pull-up-id',
+                  groupId: 'Test Cable Program-day-1-A',
+                  notes: 'Target 3–6 reps',
+                  reps: 6,
+                  restTimeAfter: 210,
+                }),
+              ],
             }),
-            expect.objectContaining({
-              id: 'pull-up-id',
-              groupId: 'Test Cable Program-day-1-A',
-              notes: 'Target 3–6 reps',
-              reps: 6,
-              restTimeAfter: 210,
-            }),
-          ],
-        })
+            position: 0,
+          }),
+        ]
       );
+      expect(result).toEqual({
+        plan: expect.objectContaining({ id: 'plan-1', name: 'Test Cable Program' }),
+        templates: [createdTemplate],
+      });
+    });
+
+    it('does not create an empty plan when every day has no matching exercises', async () => {
+      mockDatabase.get.mockImplementation((table: string) => {
+        if (table === 'exercises') {
+          return collection({ fetch: jest.fn().mockResolvedValue([]) }) as any;
+        }
+        return collection() as any;
+      });
+      jest.spyOn(UserService, 'getCurrentUser').mockResolvedValue(null);
+      jest.spyOn(UserMetricService, 'getLatest').mockResolvedValue(null);
+      const createPlanWithTemplates = jest.spyOn(WorkoutTemplateService, 'createPlanWithTemplates');
+
+      const result = await WorkoutTemplateService.createWorkoutsFromJsonTemplate({
+        title: 'Unavailable Program',
+        exercises: [{ exerciseId: 999, day: 1, sets: 3, reps: 10 }],
+      });
+
+      expect(result).toEqual({ plan: null, templates: [] });
+      expect(createPlanWithTemplates).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('duplicateTemplate', () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('copies a legacy standalone schedule into schedule rows without copying memberships', async () => {
+      const original = createMockWorkoutTemplate({
+        id: 'original',
+        name: 'Legacy Workout',
+        weekDaysJson: [0, 4],
+      });
+      jest.spyOn(WorkoutTemplateService, 'getTemplateWithDetails').mockResolvedValue({
+        template: original,
+        templateExercises: [],
+        sets: [],
+        schedule: [],
+      });
+
+      const copied = createMockWorkoutTemplate({ id: 'copy' });
+      const preparedSchedules: any[] = [];
+      mockDatabase.get.mockImplementation((table: string) => {
+        if (table === 'workout_templates') {
+          return {
+            create: jest.fn(async (callback) => {
+              callback(copied);
+              return copied;
+            }),
+          } as any;
+        }
+        if (table === 'schedules') {
+          return {
+            prepareCreate: jest.fn((callback) => {
+              const schedule: any = {};
+              callback(schedule);
+              preparedSchedules.push(schedule);
+              return schedule;
+            }),
+          } as any;
+        }
+        return { prepareCreate: jest.fn() } as any;
+      });
+
+      const result = await WorkoutTemplateService.duplicateTemplate('original');
+
+      expect(result).toBe(copied);
+      expect(copied.weekDaysJson).toBeUndefined();
+      expect(preparedSchedules).toEqual([
+        expect.objectContaining({ templateId: 'copy', dayOfWeek: 'Monday' }),
+        expect.objectContaining({ templateId: 'copy', dayOfWeek: 'Friday' }),
+      ]);
+      expect(mockDatabase.get).not.toHaveBeenCalledWith('workout_plan_templates');
     });
   });
 

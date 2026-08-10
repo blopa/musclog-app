@@ -48,6 +48,11 @@
         "iDontKnow": "I don't know / skip",
         "skipInstead": "Clear date — I'm not sure"
       },
+      "length": {
+        "cycleLength": "Cycle length",
+        "cycleLengthLabel": "Cycle",
+        "periodDurationLabel": "Period"
+      },
       "birthControl": {
         "title": "Hormonal Birth Control",
         "description": "Are you currently using any hormonal birth control? This affects hormonal phase predictions.",

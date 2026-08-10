@@ -42,28 +42,44 @@
       "sendMealTitle": "Maaltijd versturen",
       "sendMealReadyTitle": "Maaltijd klaar om te versturen",
       "sendMealInstructions": "Open op de andere telefoon Mijn maaltijden, tik op +, kies Importeren vanaf een andere telefoon en richt de camera op dit scherm.",
-      "buildingStep": "Maaltijd voorbereiden…",
+      "sendFoodTitle": "Voedingsmiddel versturen",
+      "sendFoodReadyTitle": "Voedingsmiddel klaar om te versturen",
+      "sendFoodInstructions": "Open op de andere telefoon de barcodescanner (of Instellingen → Optische overdracht → Ontvangen) en richt de camera op dit scherm.",
+      "buildingStep": "Voorbereiden wat je verstuurt…",
       "recalculating": "Opnieuw berekenen…",
       "noIngredients": "Deze maaltijd heeft geen ingrediënten om te versturen.",
       "includePhoto": "Foto toevoegen",
-      "includePhotoHint": "Foto's duren veel langer om over te zetten. Laat dit uit voor de snelste overdracht.",
-      "receiveMealTitle": "Maaltijd ontvangen",
+      "includePhotoHint": "Foto's die op deze telefoon staan maken de overdracht veel langzamer. Laat dit uit voor de snelste overdracht.",
+      "photoEmbedded": "De foto gaat mee met de overdracht en vormt het grootste deel van de omvang.",
+      "photoLinked": "De foto wordt als link verstuurd en voegt dus nauwelijks iets toe aan de overdracht. De andere telefoon heeft internet nodig om hem te laden.",
+      "photoUnavailable": "Het bestand van deze foto kon niet worden gelezen, dus er wordt geen foto verstuurd.",
+      "receiveTitle": "Ontvangen van een andere telefoon",
       "ingredientGrams": "{{amount}} g {{name}}",
       "ingredientServings": "{{amount}} porties {{name}}",
       "ingredientPortions": "{{amount}} × {{portion}} {{name}}",
+      "portionWithWeight": "{{name}} · {{amount}} {{unit}}",
+      "foodPer100g": "Per 100 g",
+      "foodPerServing": "Per portie",
       "hasPhoto": "Bevat een foto",
+      "loggedMealName": "{{meal}} · {{date}}",
       "saveToMyMeals": "Opslaan in Mijn maaltijden",
+      "saveToMyFoods": "Opslaan in Mijn voeding",
       "saving": "Maaltijd opslaan…",
+      "savingFood": "Voedingsmiddel opslaan…",
       "savedTitle": "Maaltijd opgeslagen",
+      "savedFoodTitle": "Voedingsmiddel opgeslagen",
+      "savedFoodExisted": "Je had dit voedingsmiddel al — er is niets gewijzigd.",
       "savedReusedFoods_one": "{{count}} ingrediënt kwam overeen met voeding die al op deze telefoon staat.",
       "savedReusedFoods_other": "{{count}} ingrediënten kwamen overeen met voeding die al op deze telefoon staat.",
-      "saveFailed": "De maaltijd kon niet worden opgeslagen.",
-      "notAMeal": "Dit is een volledige back-up, geen maaltijd. Ontvang deze via Instellingen → Optische overdracht."
+      "saveFailed": "Kon het ontvangen item niet opslaan.",
+      "notShareable": "Dit is een volledige back-up, geen maaltijd of voedingsmiddel. Ontvang die via Instellingen → Optische overdracht.",
+      "unreadable": "Dit kon niet worden gelezen. Probeer het opnieuw te versturen."
     },
     "receive": {
       "title": "Ontvangen",
       "subtitle": "Richt op het scherm van de andere telefoon",
       "percent": "{{percent}}%",
+      "speed": "{{speed}} KB/s",
       "eta": "Nog ongeveer {{seconds}} seconden",
       "aimHint": "Vul dit beeld met de code op de andere telefoon.",
       "verifying": "Gegevens controleren…",
@@ -120,6 +136,12 @@
         "dense": "Dicht",
         "max": "Dichtst"
       }
+    },
+    "probe": {
+      "title": "Wil je optische gegevens importeren?",
+      "message": "Die code hoort bij een Musclog-overdracht tussen telefoons, het is geen voedingsbarcode. Open de optische lezer om hem te ontvangen.",
+      "open": "Optische lezer openen",
+      "dismiss": "Niet nu"
     }
   }
 }

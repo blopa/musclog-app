@@ -5,23 +5,21 @@ import Exercise from '@/database/models/Exercise';
 import Schedule, { type DayOfWeek } from '@/database/models/Schedule';
 import type { ExerciseInWorkout } from '@/database/services/WorkoutTemplateService';
 import { darkTheme as theme } from '@/theme';
+import { WEEKDAY_NAMES } from '@/utils/weekdays';
 import {
   createExerciseOption,
   type CreateExerciseOptionParams,
-  dayNameToIndex,
   type ExerciseMetadata,
   exercisesToWorkoutFormat,
   extractExerciseMetadata,
   formatExerciseDescription,
   getExerciseIconConfig,
   getWeekdayLabels,
-  indexToDayName,
   isBodyweightExercise,
   transformExercisesToOptions,
   transformScheduleDays,
   updateMetadataWithGroupIds,
   validateWorkoutTitle,
-  WEEKDAY_NAMES,
 } from '@/utils/workout';
 
 // Mock Exercise model
@@ -86,93 +84,7 @@ describe('utils/workout', () => {
       });
     });
 
-    describe('WEEKDAY_NAMES', () => {
-      it('should have 7 elements', () => {
-        expect(WEEKDAY_NAMES).toHaveLength(7);
-      });
-
-      it('should have correct day names', () => {
-        expect(WEEKDAY_NAMES).toEqual([
-          'Monday',
-          'Tuesday',
-          'Wednesday',
-          'Thursday',
-          'Friday',
-          'Saturday',
-          'Sunday',
-        ]);
-      });
-    });
-
-    describe('dayNameToIndex', () => {
-      it('should return correct index for valid day names', () => {
-        expect(dayNameToIndex('Monday')).toBe(0);
-        expect(dayNameToIndex('Tuesday')).toBe(1);
-        expect(dayNameToIndex('Wednesday')).toBe(2);
-        expect(dayNameToIndex('Thursday')).toBe(3);
-        expect(dayNameToIndex('Friday')).toBe(4);
-        expect(dayNameToIndex('Saturday')).toBe(5);
-        expect(dayNameToIndex('Sunday')).toBe(6);
-      });
-
-      it('should be case-sensitive', () => {
-        expect(dayNameToIndex('monday')).toBe(-1);
-        expect(dayNameToIndex('MONDAY')).toBe(-1);
-        expect(dayNameToIndex('Monday')).toBe(0);
-      });
-
-      it('should return -1 for invalid day name', () => {
-        expect(dayNameToIndex('InvalidDay')).toBe(-1);
-      });
-
-      it('should return -1 for empty string', () => {
-        expect(dayNameToIndex('')).toBe(-1);
-      });
-
-      it('should return -1 for partial match', () => {
-        expect(dayNameToIndex('Mon')).toBe(-1);
-      });
-    });
-
-    describe('indexToDayName', () => {
-      it('should return correct day name for valid indices', () => {
-        expect(indexToDayName(0)).toBe('Monday');
-        expect(indexToDayName(1)).toBe('Tuesday');
-        expect(indexToDayName(2)).toBe('Wednesday');
-        expect(indexToDayName(3)).toBe('Thursday');
-        expect(indexToDayName(4)).toBe('Friday');
-        expect(indexToDayName(5)).toBe('Saturday');
-        expect(indexToDayName(6)).toBe('Sunday');
-      });
-
-      it('should return Monday for boundary index 0', () => {
-        expect(indexToDayName(0)).toBe('Monday');
-      });
-
-      it('should return Sunday for boundary index 6', () => {
-        expect(indexToDayName(6)).toBe('Sunday');
-      });
-
-      it('should return Monday (fallback) for negative index', () => {
-        expect(indexToDayName(-1)).toBe('Monday');
-        expect(indexToDayName(-10)).toBe('Monday');
-      });
-
-      it('should return Monday (fallback) for index too large', () => {
-        expect(indexToDayName(7)).toBe('Monday');
-        expect(indexToDayName(10)).toBe('Monday');
-        expect(indexToDayName(100)).toBe('Monday');
-      });
-
-      it('should handle -0', () => {
-        expect(indexToDayName(-0)).toBe('Monday');
-      });
-
-      it('should handle decimal indices', () => {
-        expect(indexToDayName(0.5)).toBe('Monday');
-        expect(indexToDayName(1.9)).toBe('Monday');
-      });
-    });
+    // The index ↔ day-name table itself is covered by `utils/__tests__/weekdays.test.ts`.
   });
 
   describe('Exercise UI Helpers', () => {

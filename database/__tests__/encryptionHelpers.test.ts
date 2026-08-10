@@ -15,6 +15,7 @@ import {
   readPlainNutritionLogSnapshotRow,
   readSavedForLaterGroupNote,
 } from '@/database/encryptionHelpers';
+import * as encryption from '@/utils/encryption';
 
 // Deterministic key so every round trip is reproducible; the AES itself stays real, which
 // is the point — these helpers are the only thing standing between a weight/nutrition row
@@ -116,6 +117,15 @@ describe('encryptionHelpers', () => {
       await expect(decryptNumber('72.5')).resolves.toBe(72.5);
     });
 
+    it('falls back when CryptoJS rejects a legacy plaintext number', async () => {
+      const decrypt = jest
+        .spyOn(encryption, 'decryptDatabaseValue')
+        .mockRejectedValueOnce(new Error('Malformed UTF-8 data'));
+
+      await expect(decryptNumber('72.5')).resolves.toBe(72.5);
+      decrypt.mockRestore();
+    });
+
     it('round-trips a timestamp through the date helpers', async () => {
       const timestamp = Date.UTC(2026, 0, 15, 9, 30);
       const cipher = await encryptDate(timestamp);
@@ -159,6 +169,15 @@ describe('encryptionHelpers', () => {
         sodium: 310,
       });
     });
+
+    it('falls back when CryptoJS rejects legacy plain JSON', async () => {
+      const decrypt = jest
+        .spyOn(encryption, 'decryptDatabaseValue')
+        .mockRejectedValueOnce(new Error('Malformed UTF-8 data'));
+
+      await expect(decryptJson('{"iron":2.4}')).resolves.toEqual({ iron: 2.4 });
+      decrypt.mockRestore();
+    });
   });
 
   describe('nutrition log snapshot', () => {
@@ -180,13 +199,25 @@ describe('encryptionHelpers', () => {
       );
     });
 
-    it('leaves no macro readable in the stored columns', async () => {
+    it('stores every snapshot field as ciphertext rather than plaintext', async () => {
       const encrypted = await encryptNutritionLogSnapshot(plain);
 
-      for (const value of Object.values(encrypted)) {
+      const plaintextByField: Record<keyof typeof encrypted, string> = {
+        loggedFoodName: plain.loggedFoodName!,
+        loggedCalories: String(plain.loggedCalories),
+        loggedProtein: String(plain.loggedProtein),
+        loggedCarbs: String(plain.loggedCarbs),
+        loggedFat: String(plain.loggedFat),
+        loggedFiber: String(plain.loggedFiber),
+        loggedMicrosJson: JSON.stringify(plain.loggedMicros),
+      };
+
+      for (const [field, value] of Object.entries(encrypted) as [
+        keyof typeof encrypted,
+        string,
+      ][]) {
         expect(value).not.toBe('');
-        expect(value).not.toContain('Chicken');
-        expect(value).not.toContain('165');
+        expect(value).not.toBe(plaintextByField[field]);
       }
     });
 

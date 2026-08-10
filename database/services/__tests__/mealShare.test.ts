@@ -6,6 +6,7 @@ import {
   OPTICAL_EXPORT_VERSION_SHARE,
   OPTICAL_PAYLOAD_KIND_SHARE,
 } from '@/utils/optical/container';
+import { parseShareEnvelope } from '@/utils/share/shareEnvelope';
 
 jest.mock('@nozbe/watermelondb', () => ({
   Q: {
@@ -70,7 +71,8 @@ function food(
   id: string,
   name: string,
   basis: 'per_100g' | 'per_serving',
-  link: ReturnType<typeof defaultLink>
+  link: ReturnType<typeof defaultLink>,
+  imageUrl?: string
 ) {
   return {
     _raw: {
@@ -82,6 +84,7 @@ function food(
       fat: 3,
       fiber: 1,
       id,
+      image_url: imageUrl,
       is_favorite: true,
       name,
       nutrition_basis: basis,
@@ -156,7 +159,10 @@ function fixture() {
     id: 'meal-1',
     imageUrl: 'file:///meal.jpg',
     name: 'Rice bowl',
-    preparedWeightGrams: undefined,
+    // `null`, not `undefined`: that is what WatermelonDB hands back for an unset optional column,
+    // whatever the model's `?: number` typing says. A fixture using `undefined` here is what let
+    // v2.11.0 ship a summary full of explicit nulls that the receiver's validator rejected.
+    preparedWeightGrams: null,
     recipeServingsCount: 2,
     resolvedNutritionBasis: 'per_recipe' as const,
     servingGrams: 250,
@@ -187,7 +193,7 @@ describe('buildMealShareEnvelope', () => {
       query: () => ({ fetch: jest.fn().mockResolvedValue([mealPortionLink]) }),
     } as any);
 
-    const envelope = await buildMealShareEnvelope(meal.id, { includeImage: false });
+    const { envelope, photo } = await buildMealShareEnvelope(meal.id, { includeImage: false });
 
     expect(envelope.records.food_portions.map((row) => row.id).sort()).toEqual([
       'portion-default-1',
@@ -205,6 +211,7 @@ describe('buildMealShareEnvelope', () => {
     expect(envelope.records.foods[0]).not.toHaveProperty('description');
     expect(envelope.records.meals[0]).not.toHaveProperty('image_url');
     expect(envelope.assets).toBeUndefined();
+    expect(photo).toBe('none');
     expect(envelope.summary.totals).toEqual({
       calories: 400,
       carbs: 40,
@@ -238,7 +245,95 @@ describe('buildMealShareEnvelope', () => {
       width: 400,
     });
     expect(envelope.summary.hasImage).toBe(true);
+    expect(payload.photo).toBe('embedded');
     expect(createThumbnail).toHaveBeenCalledWith('file:///meal.jpg', 400);
+  });
+
+  // Only the meal's OWN photo can be embedded or go missing. An ingredient's photo is never
+  // carried as an asset, so it must not colour what the send screen tells the user about the
+  // transfer it is about to make.
+  it('reports no photo when only an ingredient has one', async () => {
+    const { meal, mealFoods } = fixture();
+    const withPhoto = food(
+      'food-1',
+      'Rice',
+      'per_100g',
+      defaultLink('food-1', portion('p', 'P')),
+      'file:///ingredient.jpg'
+    );
+    mockGetMeal.mockResolvedValue({
+      foods: [{ ...mealFoods[0], food: withPhoto, foodId: withPhoto.id }],
+      meal: { ...meal, imageUrl: undefined },
+    });
+    mockDatabase.get.mockReturnValue({
+      query: () => ({ fetch: jest.fn().mockResolvedValue([]) }),
+    } as any);
+
+    const { photo } = await buildMealShareEnvelope(meal.id, { includeImage: true });
+
+    expect(photo).toBe('none');
+    expect(createThumbnail).not.toHaveBeenCalled();
+  });
+
+  // The contract that was missing: every previous test read the builder's output directly, so
+  // nothing checked that a receiver could actually parse it. v2.11.0 shipped a builder whose
+  // output `parseShareEnvelope` rejected outright, and the receive screen reported that as "sent
+  // by a newer version of Musclog" on two phones running the identical build.
+  it.each([
+    ['a fully populated meal', {}],
+    [
+      'a meal with every optional measurement unset',
+      {
+        preparedWeightGrams: null,
+        recipeServingsCount: null,
+        servingGrams: null,
+      },
+    ],
+  ])('builds a payload the receiver can parse: %s', async (_label, mealOverrides) => {
+    const { meal, mealFoods, mealPortionLink } = fixture();
+    mockGetMeal.mockResolvedValue({ foods: mealFoods, meal: { ...meal, ...mealOverrides } });
+    mockDatabase.get.mockReturnValue({
+      query: () => ({ fetch: jest.fn().mockResolvedValue([mealPortionLink]) }),
+    } as any);
+
+    const payload = await buildMealSharePayload(meal.id, { includeImage: true });
+
+    // Through JSON, exactly as the optical container carries it — an `undefined` disappears on the
+    // way but an explicit `null` does not, which is the whole distinction being pinned here.
+    expect(payload.json).not.toContain('null');
+    const parsed = parseShareEnvelope(payload.json);
+    expect(parsed.summary.name).toBe('Rice bowl');
+    expect(parsed.rootId).toBe('meal-1');
+  });
+
+  // An ingredient's photo is never embedded — twenty ingredients would blow the asset budget on
+  // pictures nobody asked for. A remote URL is free and works on the other phone; a sender-local
+  // path names a file that does not exist there, so carrying it would only produce a broken image.
+  it.each([
+    ['a sender-local path', 'file:///ingredient.jpg', false, false],
+    ['a remote URL, photos off', 'https://images.example.org/rice.jpg', false, false],
+    ['a remote URL, photos on', 'https://images.example.org/rice.jpg', true, true],
+  ])('carries an ingredient photo for %s', async (_label, imageUrl, includeImage, carried) => {
+    const { meal, mealFoods } = fixture();
+    const withPhoto = food(
+      'food-1',
+      'Rice',
+      'per_100g',
+      defaultLink('food-1', portion('p', 'P')),
+      imageUrl
+    );
+    mockGetMeal.mockResolvedValue({
+      foods: [{ ...mealFoods[0], food: withPhoto, foodId: withPhoto.id }],
+      meal,
+    });
+    mockDatabase.get.mockReturnValue({
+      query: () => ({ fetch: jest.fn().mockResolvedValue([]) }),
+    } as any);
+
+    const { envelope } = await buildMealShareEnvelope(meal.id, { includeImage });
+
+    expect(envelope.records.foods[0].image_url).toBe(carried ? imageUrl : undefined);
+    expect(envelope.assets?.foodImage).toBeUndefined();
   });
 
   it('rejects a meal with no surviving ingredients', async () => {

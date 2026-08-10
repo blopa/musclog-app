@@ -48,10 +48,13 @@ export function GenerateWorkoutWithAiModal({ visible, onClose }: Props) {
         return;
       }
 
-      const { templateIds } = await processWorkoutPlanResponse(result);
+      const { templateIds, planName } = await processWorkoutPlanResponse(result);
       showSnackbar(
         'success',
-        t('workouts.aiGeneration.successMessage', { count: templateIds.length })
+        t('workouts.aiGeneration.successMessageWithPlan', {
+          count: templateIds.length,
+          planName,
+        })
       );
       setPreferences('');
       onClose();

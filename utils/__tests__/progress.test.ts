@@ -131,7 +131,7 @@ describe('calculateEmpiricalTDEEWindow', () => {
     expect(result.empiricalDays).toBe(8);
   });
 
-  it('uses exact endpoints when the input is already a smoothed trend', () => {
+  it('uses exact weight endpoints when the input is already a smoothed trend', () => {
     const weightPoints: MetricPoint[] = [];
     const fatPoints: MetricPoint[] = [];
     for (let i = 0; i < 15; i++) {
@@ -140,13 +140,35 @@ describe('calculateEmpiricalTDEEWindow', () => {
     }
 
     const result = calculateEmpiricalTDEEWindow(weightPoints, fatPoints, 0, 0, {
-      useEndpointAverages: false,
+      weightsArePresmoothed: true,
     });
 
     expect(result.empiricalStart).toBe(dayKey(0));
     expect(result.empiricalEnd).toBe(dayKey(14));
     expect(result.initialWeight).toBe(100);
     expect(result.finalWeight).toBe(86);
+  });
+
+  it('still averages the body-fat endpoints when the weight series is presmoothed', () => {
+    // `weightsArePresmoothed` describes the WEIGHT series only. Body fat is never smoothed and
+    // does not define the window, so a long window averages it either way — the flag must not
+    // silently downgrade it to a single-day reading.
+    const weightPoints: MetricPoint[] = [];
+    const fatPoints: MetricPoint[] = [];
+    for (let i = 0; i < 15; i++) {
+      weightPoints.push({ date: dayKey(i), value: 100 - i });
+      fatPoints.push({ date: dayKey(i), value: 20 - i * 0.1 });
+    }
+
+    const presmoothed = calculateEmpiricalTDEEWindow(weightPoints, fatPoints, 0, 0, {
+      weightsArePresmoothed: true,
+    });
+    const raw = calculateEmpiricalTDEEWindow(weightPoints, fatPoints, 0, 0);
+
+    expect(presmoothed.initialFat).toBeCloseTo(19.7, 5);
+    expect(presmoothed.finalFat).toBeCloseTo(18.9, 5);
+    expect(presmoothed.initialFat).toBeCloseTo(raw.initialFat as number, 5);
+    expect(presmoothed.finalFat).toBeCloseTo(raw.finalFat as number, 5);
   });
 
   it('handles large dataset (70 points) correctly with averaging', () => {

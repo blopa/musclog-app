@@ -9,13 +9,10 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { formatUtcNormalizedDayIntl } from '@/utils/calendarDate';
 import { getXAxisLabels, getYAxisLabels } from '@/utils/chartUtils';
+import { averagePointsByDay } from '@/utils/trendWeight';
 
 import { ProgressChartSection } from './ProgressChartSection';
-import {
-  averageScaleWeightsByDay,
-  selectWeightTrendPoint,
-  trailingSevenDayTrendChange,
-} from './weightTrendChartModel';
+import { selectWeightTrendPoint, trailingSevenDayTrendChange } from './weightTrendChartModel';
 
 export interface WeightTrendChartProps {
   weightHistory: MetricPoint[];
@@ -45,7 +42,7 @@ export function WeightTrendChart({
   const sevenDayChange = hasTrend
     ? trailingSevenDayTrendChange(weightTrendHistory, weightHistory)
     : null;
-  const scaleWeightsByDay = averageScaleWeightsByDay(weightHistory);
+  const scaleWeightsByDay = averagePointsByDay(weightHistory);
   const allValues = [...weightHistory, ...weightTrendHistory].map((point) => point.value);
   const min = Math.min(...allValues);
   const max = Math.max(...allValues);
@@ -109,7 +106,11 @@ export function WeightTrendChart({
             dateFnsLocale
           )}
           tooltipFormatter={(point) => {
-            const selection = selectWeightTrendPoint(weightTrendHistory, weightHistory, point.x);
+            const selection = selectWeightTrendPoint(
+              weightTrendHistory,
+              scaleWeightsByDay,
+              point.x
+            );
             if (!selection) {
               return '';
             }

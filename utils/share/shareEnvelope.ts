@@ -15,7 +15,7 @@ export interface ShareAsset {
   base64: string;
 }
 
-export interface MealShareNutrients {
+export interface ShareNutrients {
   calories: number;
   protein: number;
   carbs: number;
@@ -38,9 +38,26 @@ export interface MealShareSummary {
   recipeServingsCount?: number;
   servingGrams?: number;
   preparedWeightGrams?: number;
-  totals: MealShareNutrients;
+  totals: ShareNutrients;
   hasImage: boolean;
   ingredients: MealShareIngredient[];
+}
+
+export interface FoodSharePortion {
+  name: string;
+  gramWeight?: number;
+  isDefault: boolean;
+}
+
+export interface FoodShareSummary {
+  name: string;
+  brand?: string;
+  description?: string;
+  /** What the macros below are per: 100 g, or one serving. */
+  nutritionBasis: 'per_100g' | 'per_serving';
+  nutrients: ShareNutrients;
+  hasImage: boolean;
+  portions: FoodSharePortion[];
 }
 
 interface ShareEnvelopeBase {
@@ -60,10 +77,27 @@ export interface MealShareEnvelope extends ShareEnvelopeBase {
   summary: MealShareSummary;
 }
 
-export type MusclogShareEnvelope = MealShareEnvelope;
+export interface FoodShareEnvelope extends ShareEnvelopeBase {
+  kind: 'food';
+  summary: FoodShareSummary;
+}
 
+export type MusclogShareEnvelope = FoodShareEnvelope | MealShareEnvelope;
+
+/**
+ * Split deliberately into "this build is behind the sender" (`unsupported-envelope`,
+ * `unsupported-kind`) and "the payload is broken" (everything else) — see
+ * `components/modals/opticalReceiveScreen.ts`. `no-ingredients` is the one build-side code: a meal
+ * with nothing in it cannot be shared, and the sender needs to say so in the user's language
+ * without the UI matching on an English error message.
+ */
 export type MusclogShareErrorCode =
-  'not-a-share' | 'unsupported-envelope' | 'unsupported-kind' | 'malformed' | 'too-large';
+  | 'not-a-share'
+  | 'unsupported-envelope'
+  | 'unsupported-kind'
+  | 'malformed'
+  | 'too-large'
+  | 'no-ingredients';
 
 export class MusclogShareError extends Error {
   constructor(
@@ -87,6 +121,37 @@ function malformed(message: string): never {
   throw new MusclogShareError('malformed', message);
 }
 
+/**
+ * An absent optional field arrives as an explicit `null`, not as a missing key: WatermelonDB reads
+ * an unset optional column back as `null` (never `undefined`, whatever the model's `?:` typing
+ * says), and `JSON.stringify` keeps that null. Every optional field here is therefore read through
+ * this, which also DELETES the key — so the object handed back really matches the declared
+ * `?: number` / `?: string` types instead of smuggling nulls past the `as` cast at the end.
+ *
+ * Builders should not emit those nulls in the first place (`buildMealShareEnvelope` does not), but
+ * v2.11.0 shipped one that did, and its share payloads failed the whole meal-share receive with a
+ * "sent by a newer version of Musclog" error. Reading null as absent is what lets a phone on this
+ * build receive from a phone still on that one, so keep it even once no such sender is left.
+ */
+function readOptional(container: Record<string, unknown>, key: string): unknown {
+  if (container[key] === null) {
+    delete container[key];
+  }
+  return container[key];
+}
+
+function validateNutrients(value: unknown, label: string): void {
+  if (!isRecord(value)) {
+    malformed(`${label} summary is missing its macros`);
+  }
+
+  for (const key of ['calories', 'protein', 'carbs', 'fat', 'fiber']) {
+    if (!isFiniteNumber(value[key])) {
+      malformed(`${label} share summary has an invalid ${key}`);
+    }
+  }
+}
+
 function validateMealSummary(value: unknown): asserts value is MealShareSummary {
   if (!isRecord(value)) {
     malformed('Share summary is missing');
@@ -94,27 +159,22 @@ function validateMealSummary(value: unknown): asserts value is MealShareSummary 
 
   if (
     typeof value.name !== 'string' ||
-    (value.description !== undefined && typeof value.description !== 'string') ||
+    (readOptional(value, 'description') !== undefined && typeof value.description !== 'string') ||
     !['per_recipe', 'per_serving', 'per_gram'].includes(String(value.nutritionBasis)) ||
     typeof value.hasImage !== 'boolean' ||
     !Array.isArray(value.ingredients) ||
-    value.ingredients.length === 0 ||
-    !isRecord(value.totals)
+    value.ingredients.length === 0
   ) {
     malformed('Meal share summary has an invalid shape');
   }
 
   for (const key of ['recipeServingsCount', 'servingGrams', 'preparedWeightGrams']) {
-    if (value[key] !== undefined && !isFiniteNumber(value[key])) {
+    if (readOptional(value, key) !== undefined && !isFiniteNumber(value[key])) {
       malformed(`Meal share summary has an invalid ${key}`);
     }
   }
 
-  for (const key of ['calories', 'protein', 'carbs', 'fat', 'fiber']) {
-    if (!isFiniteNumber(value.totals[key])) {
-      malformed(`Meal share summary has an invalid total for ${key}`);
-    }
-  }
+  validateNutrients(value.totals, 'Meal');
 
   for (const ingredient of value.ingredients) {
     if (
@@ -122,13 +182,60 @@ function validateMealSummary(value: unknown): asserts value is MealShareSummary 
       typeof ingredient.name !== 'string' ||
       !isFiniteNumber(ingredient.amount) ||
       !['g', 'serving', 'portion'].includes(String(ingredient.unit)) ||
-      (ingredient.portionName !== undefined && typeof ingredient.portionName !== 'string') ||
+      (readOptional(ingredient, 'portionName') !== undefined &&
+        typeof ingredient.portionName !== 'string') ||
       !isFiniteNumber(ingredient.calories)
     ) {
       malformed('Meal share summary has an invalid ingredient');
     }
   }
 }
+
+function validateFoodSummary(value: unknown): asserts value is FoodShareSummary {
+  if (!isRecord(value)) {
+    malformed('Share summary is missing');
+  }
+
+  if (
+    typeof value.name !== 'string' ||
+    (readOptional(value, 'brand') !== undefined && typeof value.brand !== 'string') ||
+    (readOptional(value, 'description') !== undefined && typeof value.description !== 'string') ||
+    !['per_100g', 'per_serving'].includes(String(value.nutritionBasis)) ||
+    typeof value.hasImage !== 'boolean' ||
+    !Array.isArray(value.portions)
+  ) {
+    malformed('Food share summary has an invalid shape');
+  }
+
+  validateNutrients(value.nutrients, 'Food');
+
+  for (const portion of value.portions) {
+    if (
+      !isRecord(portion) ||
+      typeof portion.name !== 'string' ||
+      typeof portion.isDefault !== 'boolean' ||
+      (readOptional(portion, 'gramWeight') !== undefined && !isFiniteNumber(portion.gramWeight))
+    ) {
+      malformed('Food share summary has an invalid portion');
+    }
+  }
+}
+
+/**
+ * What each kind requires beyond the shape every envelope shares. Keyed by kind so adding one is a
+ * registry entry rather than another `if (spec.kind === …)` in the middle of the parser — and the
+ * `Record` typing makes the compiler ask for it.
+ */
+const KIND_VALIDATORS: Record<MusclogShareKind, (parsed: Record<string, unknown>) => void> = {
+  food: (parsed) => validateFoodSummary(parsed.summary),
+  meal: (parsed) => {
+    const mealFoods = (parsed.records as Record<string, unknown>).meal_foods;
+    if (!Array.isArray(mealFoods) || mealFoods.length === 0) {
+      malformed('Meal share has no ingredients');
+    }
+    validateMealSummary(parsed.summary);
+  },
+};
 
 function decodedBase64Bytes(base64: string): number {
   const compact = base64.replace(/\s/g, '');
@@ -235,14 +342,8 @@ export function parseShareEnvelope(json: string): MusclogShareEnvelope {
     malformed('Share root row is missing or duplicated');
   }
 
-  validateAssets(parsed.assets);
-  if (spec.kind === 'meal') {
-    const mealFoods = parsed.records.meal_foods;
-    if (!Array.isArray(mealFoods) || mealFoods.length === 0) {
-      malformed('Meal share has no ingredients');
-    }
-    validateMealSummary(parsed.summary);
-  }
+  validateAssets(readOptional(parsed, 'assets'));
+  KIND_VALIDATORS[spec.kind](parsed);
 
   return parsed as unknown as MusclogShareEnvelope;
 }

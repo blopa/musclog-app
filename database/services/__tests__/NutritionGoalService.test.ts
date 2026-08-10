@@ -33,7 +33,9 @@ jest.mock('../../database-instance', () => {
     fetch: jest.fn().mockResolvedValue([]),
   };
 
-  const mockWriter = {} as any;
+  // Model `markAsDeleted` methods are `@writer`s, so a service holding an open write block
+  // reaches them through `writer.callWriter` rather than nesting a second writer.
+  const mockWriter = { callWriter: (work: () => unknown) => Promise.resolve(work()) } as any;
 
   return {
     database: {
@@ -137,7 +139,7 @@ describe('NutritionGoalService', () => {
 
       mockDatabase.get.mockReturnValue(mockCollection as any);
       mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
+        const mockWriter = { callWriter: (work: () => unknown) => Promise.resolve(work()) } as any;
         return await callback(mockWriter);
       });
 
@@ -188,7 +190,7 @@ describe('NutritionGoalService', () => {
 
       mockDatabase.get.mockReturnValue(mockCollection as any);
       mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
+        const mockWriter = { callWriter: (work: () => unknown) => Promise.resolve(work()) } as any;
         return await callback(mockWriter);
       });
 
@@ -216,7 +218,7 @@ describe('NutritionGoalService', () => {
 
       mockDatabase.get.mockReturnValue(mockCollection as any);
       mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
+        const mockWriter = { callWriter: (work: () => unknown) => Promise.resolve(work()) } as any;
         return await callback(mockWriter);
       });
 
@@ -247,7 +249,7 @@ describe('NutritionGoalService', () => {
 
       mockDatabase.get.mockReturnValue(mockCollection as any);
       mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
+        const mockWriter = { callWriter: (work: () => unknown) => Promise.resolve(work()) } as any;
         return await callback(mockWriter);
       });
 
@@ -278,7 +280,7 @@ describe('NutritionGoalService', () => {
 
       mockDatabase.get.mockReturnValue(mockCollection as any);
       mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
+        const mockWriter = { callWriter: (work: () => unknown) => Promise.resolve(work()) } as any;
         return await callback(mockWriter);
       });
 
@@ -311,7 +313,7 @@ describe('NutritionGoalService', () => {
 
       mockDatabase.get.mockReturnValue(mockCollection as any);
       mockDatabase.write.mockImplementation(async (callback) => {
-        const mockWriter = {} as any;
+        const mockWriter = { callWriter: (work: () => unknown) => Promise.resolve(work()) } as any;
         return await callback(mockWriter);
       });
 

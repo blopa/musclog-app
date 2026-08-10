@@ -33,9 +33,8 @@ import { useAiEnabled } from '@/hooks/useAiEnabled';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useProgressData } from '@/hooks/useProgressData';
 import { useSettings } from '@/hooks/useSettings';
+import { useSyncTracking } from '@/hooks/useSyncTracking';
 import { useTheme } from '@/hooks/useTheme';
-import { healthDataSyncService } from '@/services/healthDataSync';
-import { handleError } from '@/utils/handleError';
 
 export default function ProgressScreen() {
   const { t } = useTranslation();
@@ -58,7 +57,7 @@ export default function ProgressScreen() {
     hasAnyAggregationData,
   } = useProgressData();
 
-  const [isSyncing, setIsSyncing] = useState(false);
+  const { isSyncing, syncNow } = useSyncTracking();
   const [showMenu, setShowMenu] = useState(false);
   const [isAdvancedSettingsVisible, setAdvancedSettingsVisible] = useState(false);
 
@@ -101,15 +100,10 @@ export default function ProgressScreen() {
   }, [isLoading]);
 
   const handleSync = async () => {
-    setIsSyncing(true);
     try {
-      await healthDataSyncService.syncFromHealthConnect({ lookbackDays: 30 });
+      await syncNow({ lookbackDays: 30 });
       refresh();
-    } catch (e) {
-      handleError(e, 'progress.handleSync');
-      console.error(e);
     } finally {
-      setIsSyncing(false);
       setShowMenu(false);
     }
   };

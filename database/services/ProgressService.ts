@@ -28,7 +28,7 @@ import {
   ffmiFromWeightHeightAndBodyFat,
   isValidBodyFat,
 } from '@/utils/nutritionCalculator';
-import { calculateEmpiricalTDEEWindow } from '@/utils/progress';
+import { calculateEmpiricalTDEEWindow, type EmpiricalTDEEWindow } from '@/utils/progress';
 import { prepareProgressWeightHistory } from '@/utils/progressWeightHistory';
 import { TREND_WEIGHT_WARMUP_DAYS } from '@/utils/trendWeight';
 import { cmToDisplay, kgToDisplay, storedWeightToKg } from '@/utils/unitConversion';
@@ -739,37 +739,33 @@ export class ProgressService {
     ]);
     const eatingPhase = currentGoal?.eatingPhase || 'maintain';
 
-    // For empirical TDEE, we find the tracking window and anchor values.
-    const {
-      empiricalStart,
-      empiricalEnd,
-      initialWeight: initW,
-      finalWeight: finW,
-      initialFat: rawInitialFat,
-      finalFat: rawFinalFat,
-      empiricalDays,
-    } = calculateEmpiricalTDEEWindow(trendWeightPoints, fatPoints, startDate, endDate, {
-      // Weight points are already the canonical smoothed trend; averaging them again would
-      // introduce extra lag and make these anchors differ from the other trend consumers.
-      useEndpointAverages: false,
+    // Two windows, because they anchor on different weight series: TDEE reads the smoothed trend
+    // (so day-to-day water swings don't masquerade as energy balance), while body composition
+    // reads the raw scale weights it is meant to describe. `anchorsInKg` is the single place the
+    // imperial conversion and the body-fat gate are applied, so the two can never drift apart.
+    const anchorsInKg = (window: EmpiricalTDEEWindow) => ({
+      initialWeight: isImperial
+        ? (convert(window.initialWeight, 'lb').to('kg') as number)
+        : window.initialWeight,
+      finalWeight: isImperial
+        ? (convert(window.finalWeight, 'lb').to('kg') as number)
+        : window.finalWeight,
+      initialFat: useBfForCalculations ? window.initialFat : undefined,
+      finalFat: useBfForCalculations ? window.finalFat : undefined,
     });
 
-    const initialFat = useBfForCalculations ? rawInitialFat : undefined;
-    const finalFat = useBfForCalculations ? rawFinalFat : undefined;
-
-    const compositionWindow = calculateEmpiricalTDEEWindow(
-      rawWeightPoints,
+    const trendWindow = calculateEmpiricalTDEEWindow(
+      trendWeightPoints,
       fatPoints,
       startDate,
-      endDate
+      endDate,
+      { weightsArePresmoothed: true }
     );
-    let compositionInitialWeight = compositionWindow.initialWeight;
-    let compositionFinalWeight = compositionWindow.finalWeight;
-    const compositionInitialFat = useBfForCalculations ? compositionWindow.initialFat : undefined;
-    const compositionFinalFat = useBfForCalculations ? compositionWindow.finalFat : undefined;
-
-    let initialWeight = initW;
-    let finalWeight = finW;
+    const { empiricalStart, empiricalEnd, empiricalDays } = trendWindow;
+    const { initialWeight, finalWeight, initialFat, finalFat } = anchorsInKg(trendWindow);
+    const composition = anchorsInKg(
+      calculateEmpiricalTDEEWindow(rawWeightPoints, fatPoints, startDate, endDate)
+    );
 
     // Only include calories within the period covered by the measurements.
     // We use [start, end) interval for calories because the final weight measurement
@@ -787,13 +783,6 @@ export class ProgressService {
       useEffectiveNutritionDays && empiricalDayEntries.length > 0
         ? empiricalDayEntries.length
         : empiricalDays;
-
-    if (isImperial) {
-      initialWeight = convert(initialWeight, 'lb').to('kg') as number;
-      finalWeight = convert(finalWeight, 'lb').to('kg') as number;
-      compositionInitialWeight = convert(compositionInitialWeight, 'lb').to('kg') as number;
-      compositionFinalWeight = convert(compositionFinalWeight, 'lb').to('kg') as number;
-    }
 
     const gender = user?.gender || 'other';
     const weightKg =
@@ -847,15 +836,15 @@ export class ProgressService {
     let leanBodyMassChange = 0;
     let fatMassChange = 0;
     if (
-      compositionInitialWeight > 0 &&
-      compositionFinalWeight > 0 &&
-      compositionInitialFat !== undefined &&
-      compositionFinalFat !== undefined
+      composition.initialWeight > 0 &&
+      composition.finalWeight > 0 &&
+      composition.initialFat !== undefined &&
+      composition.finalFat !== undefined
     ) {
-      const initialLBM = compositionInitialWeight * (1 - compositionInitialFat / 100);
-      const finalLBM = compositionFinalWeight * (1 - compositionFinalFat / 100);
-      const initialFatMass = compositionInitialWeight * (compositionInitialFat / 100);
-      const finalFatMass = compositionFinalWeight * (compositionFinalFat / 100);
+      const initialLBM = composition.initialWeight * (1 - composition.initialFat / 100);
+      const finalLBM = composition.finalWeight * (1 - composition.finalFat / 100);
+      const initialFatMass = composition.initialWeight * (composition.initialFat / 100);
+      const finalFatMass = composition.finalWeight * (composition.finalFat / 100);
 
       leanBodyMassChange = finalLBM - initialLBM;
       fatMassChange = finalFatMass - initialFatMass;
@@ -867,8 +856,8 @@ export class ProgressService {
     }
 
     let targetWeights = { bf5: 0, bf10: 0, bf15: 0, bf20: 0 };
-    if (compositionFinalWeight > 0 && compositionFinalFat !== undefined) {
-      const currentLBM = compositionFinalWeight * (1 - compositionFinalFat / 100);
+    if (composition.finalWeight > 0 && composition.finalFat !== undefined) {
+      const currentLBM = composition.finalWeight * (1 - composition.finalFat / 100);
       targetWeights = {
         bf5: currentLBM / (1 - 0.05),
         bf10: currentLBM / (1 - 0.1),

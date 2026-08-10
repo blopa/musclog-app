@@ -180,6 +180,29 @@ describe('useOpticalReceiver progress', () => {
     expect(result.current.sourceBlocks).toBeGreaterThan(0);
   });
 
+  it('publishes a stable average payload speed and clears it on reset', () => {
+    jest.setSystemTime(new Date('2026-08-09T12:00:00Z'));
+    const stream = new OpticalStream(container, preset, 4242);
+    const { result } = renderHook(() => useOpticalReceiver({ active: true }));
+
+    act(() => {
+      result.current.onCodeScanned([{ type: 'qr', value: stream.next() }], FRAME);
+      jest.advanceTimersByTime(1000);
+    });
+
+    expect(result.current.elapsedSeconds).toBe(1);
+    expect(result.current.averageBytesPerSecond).toBeCloseTo(
+      result.current.fraction * container.length,
+      5
+    );
+    expect(result.current.averageBytesPerSecond).toBeGreaterThan(0);
+
+    act(() => result.current.reset());
+
+    expect(result.current.averageBytesPerSecond).toBe(0);
+    expect(result.current.elapsedSeconds).toBe(0);
+  });
+
   it('stays at 0% and out of the way while nothing is being decoded', () => {
     // The camera hands us every code in view; a cereal box must not move the bar.
     const { result } = renderHook(() => useOpticalReceiver({ active: true }));
@@ -190,8 +213,58 @@ describe('useOpticalReceiver progress', () => {
     });
 
     expect(result.current.fraction).toBe(0);
+    expect(result.current.averageBytesPerSecond).toBe(0);
+    expect(result.current.elapsedSeconds).toBe(0);
     expect(result.current.payloadBytes).toBe(0);
     expect(result.current.phase).toBe('collecting');
+  });
+
+  it('discards an unpack that a reset has already made obsolete', async () => {
+    // The hook stays mounted when the receive modal closes, and unpacking (decompress + verify,
+    // plus decrypt when a passphrase is involved) runs long enough for the user to close or
+    // rescan mid-flight. Without a generation token the stale continuation publishes over the
+    // newer state — a reopened screen would land straight in `verified` on the PREVIOUS payload.
+    const { result } = renderHook(() => useOpticalReceiver({ active: true }));
+    runTransfer(result, 50, shareContainer);
+
+    // Reset while the unpack kicked off by the completing transfer is still in flight.
+    act(() => result.current.reset());
+
+    await act(async () => {
+      for (let i = 0; i < 100; i++) {
+        jest.advanceTimersByTime(50);
+        await Promise.resolve();
+      }
+    });
+
+    expect(result.current.phase).toBe('collecting');
+    expect(result.current.takeJson()).toBeNull();
+    expect(result.current.meta).toBeUndefined();
+  });
+
+  it('lets a fresh transfer verify normally after a reset mid-unpack', async () => {
+    // The flip side: cancelling the stale run must not wedge `unpackingRef` and lock out the
+    // transfer that replaces it.
+    const { result } = renderHook(() => useOpticalReceiver({ active: true }));
+    runTransfer(result, 50, shareContainer);
+    act(() => result.current.reset());
+    await act(async () => {
+      for (let i = 0; i < 50; i++) {
+        jest.advanceTimersByTime(50);
+        await Promise.resolve();
+      }
+    });
+
+    runTransfer(result, 50, shareContainer);
+    await act(async () => {
+      for (let i = 0; i < 100 && result.current.phase !== 'verified'; i++) {
+        jest.advanceTimersByTime(50);
+        await Promise.resolve();
+      }
+    });
+
+    expect(result.current.phase).toBe('verified');
+    expect(parseShareEnvelope(result.current.takeJson() as string).summary.name).toBe('Rice bowl');
   });
 
   it('publishes and parses a tiny share payload through the real stream', async () => {

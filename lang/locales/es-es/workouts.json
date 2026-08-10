@@ -8,6 +8,59 @@
       "flexibility": "Flexibilidad",
       "archived": "Archivados"
     },
+    "plans": {
+      "title": "Planes de entrenamiento",
+      "unplanned": "Sin plan",
+      "unscheduled": "Sin programar",
+      "defaultDayName": "Día {{day}}",
+      "defaultAiPlanName": "Plan de entrenamiento de IA",
+      "addToPlan": "Añadir a un plan",
+      "addToPlanDescription": "Elige qué planes incluyen este entrenamiento",
+      "createTitle": "Nuevo plan de entrenamiento",
+      "editTitle": "Editar plan de entrenamiento",
+      "createDescription": "Agrupa entrenamientos en un programa semanal o rotativo",
+      "editDescription": "Cambia los entrenamientos y el horario del plan",
+      "deleteTitle": "Eliminar plan",
+      "deleteDescription": "Elimina el plan sin borrar sus entrenamientos",
+      "nameLabel": "Nombre del plan",
+      "namePlaceholder": "p. ej., Empuje Tirón Piernas",
+      "descriptionLabel": "Descripción",
+      "descriptionPlaceholder": "Describe el objetivo de este programa",
+      "iconLabel": "Icono del plan",
+      "membersLabel": "Entrenamientos del plan",
+      "selectorLabel": "Añadir o quitar entrenamientos",
+      "membersEmpty": "Aún no hay entrenamientos. Marca uno arriba para añadirlo a este plan.",
+      "removeMember": "Quitar del plan",
+      "workoutCount": "{{count}} entrenamientos",
+      "cycleType": {
+        "label": "Tipo de horario",
+        "weekly": "Semanal",
+        "rotating": "Rotativo"
+      },
+      "picker": {
+        "title": "Elegir planes de entrenamiento",
+        "description": "Planes",
+        "create": "Crear un plan nuevo",
+        "exerciseCount": "{{count}} ejercicios"
+      },
+      "schedule": {
+        "clearTitle": "¿Cambiar a un plan rotativo?",
+        "clearMessage": "Se borrarán los días asignados a este plan y no volverán al cambiar de nuevo.",
+        "clearConfirm": "Cambiar y borrar días"
+      },
+      "validation": {
+        "nameRequired": "Introduce un nombre para el plan"
+      },
+      "saveSuccess": "Plan de entrenamiento guardado",
+      "saveError": "No se pudo guardar el plan",
+      "loadError": "No se pudo cargar este plan",
+      "deleteSuccess": "Plan de entrenamiento eliminado",
+      "deleteError": "No se pudo eliminar el plan",
+      "deleteConfirmation": {
+        "title": "¿Eliminar plan de entrenamiento?",
+        "message": "¿Eliminar \"{{name}}\"? Sus entrenamientos no se eliminarán."
+      }
+    },
     "archive": "Archivar",
     "archiveSuccess": "Entrenamiento archivado con éxito",
     "archiveError": "Error al archivar el entrenamiento",
@@ -152,7 +205,8 @@
       "message": "Esto creará plantillas de entrenamiento separadas para cada día de este programa. Cada entrenamiento incluirá los ejercicios, series y repeticiones especificados para ese día.",
       "confirm": "Crear Entrenamientos",
       "cancel": "Cancelar",
-      "successMessage": "Entrenamientos creados con éxito"
+      "successMessage": "Entrenamientos creados con éxito",
+      "successMessageWithPlan": "{{planName}} creado con {{count}} entrenamientos"
     },
     "aiGeneration": {
       "comingSoon": "¡La generación de entrenamientos por IA llegará pronto!",
@@ -161,7 +215,7 @@
       "preferencesLabel": "Tus preferencias",
       "preferencesPlaceholder": "Ej. Quiero ganar músculo, puedo entrenar 4 días a la semana, tengo acceso a un gimnasio completo, soy un levantador intermedio...",
       "generateButton": "Generar Plan",
-      "successMessage": "¡Tu plan de entrenamiento está listo! {{count}} entrenamiento(s) añadido(s).",
+      "successMessageWithPlan": "{{planName}} está listo con {{count}} entrenamientos.",
       "errorMessage": "No se pudo generar un plan. Por favor, inténtalo de nuevo.",
       "aiNotConfigured": "Las funciones de IA no están configuradas. Por favor, añade una clave API de Gemini o OpenAI en Ajustes."
     },

@@ -3,11 +3,11 @@ import convert, { type Unit } from 'convert';
 
 import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
-import Schedule, { type DayOfWeek } from '@/database/models/Schedule';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
+import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanRepository';
 import { writeWorkoutToHealthConnect } from '@/services/healthConnectWorkout';
 import {
   clearActiveWorkoutLogId,
@@ -17,6 +17,7 @@ import {
 import { deleteBleDataPointsFiles } from '@/utils/bleWorkoutDataStorage';
 import { handleError } from '@/utils/handleError';
 import { getCurrentTimezone } from '@/utils/timezone';
+import { jsDayToWeekdayIndex } from '@/utils/weekdays';
 import { getRollingWeeklyWorkoutRange } from '@/utils/weeklyWorkoutProgress';
 import { calculateWorkoutKcal, type MWEMInput } from '@/utils/workoutEnergyCalculator';
 import {
@@ -36,16 +37,6 @@ export type EnrichedWorkoutLogSet = WorkoutLogSet & {
   notes?: string;
   isAutoAdjusted?: boolean;
 };
-
-const DATABASE_DAY_NAMES_BY_JS_DAY: readonly DayOfWeek[] = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-];
 
 export class WorkoutService {
   private static async retryAfterWorkoutRepair<T>(
@@ -79,12 +70,13 @@ export class WorkoutService {
   /**
    * Start a workout from a template (deep copy operation)
    */
-  static async startWorkoutFromTemplate(templateId: string): Promise<WorkoutLog> {
-    return this.startWorkoutFromTemplateInternal(templateId);
+  static async startWorkoutFromTemplate(templateId: string, planId?: string): Promise<WorkoutLog> {
+    return this.startWorkoutFromTemplateInternal(templateId, planId);
   }
 
   private static async startWorkoutFromTemplateInternal(
     templateId: string,
+    planId?: string,
     repairAttempted = false
   ): Promise<WorkoutLog> {
     try {
@@ -118,7 +110,7 @@ export class WorkoutService {
         }
       }
 
-      const workoutLog = await template.startWorkout();
+      const workoutLog = await template.startWorkout(planId);
 
       // Store the active workout log ID in AsyncStorage
       await setActiveWorkoutLogId(workoutLog.id);
@@ -127,7 +119,7 @@ export class WorkoutService {
     } catch (error) {
       if (!repairAttempted) {
         const repaired = await this.retryAfterWorkoutRepair(error, () =>
-          this.startWorkoutFromTemplateInternal(templateId, true)
+          this.startWorkoutFromTemplateInternal(templateId, planId, true)
         );
 
         if (repaired) {
@@ -389,14 +381,15 @@ export class WorkoutService {
    * Get upcoming scheduled workouts for a specific date
    */
   static async getUpcomingScheduledWorkouts(date: Date): Promise<WorkoutTemplate[]> {
-    const dayOfWeek = DATABASE_DAY_NAMES_BY_JS_DAY[date.getDay()];
-
-    const schedules = await database
-      .get<Schedule>('schedules')
-      .query(Q.where('day_of_week', dayOfWeek), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-
-    const templateIds = [...new Set(schedules.map((s) => s.templateId ?? ''))].filter(Boolean);
+    const dayIndex = jsDayToWeekdayIndex(date.getDay());
+    const resolved = await WorkoutPlanRepository.getResolvedSchedules();
+    const templateIds = [
+      ...new Set(
+        resolved
+          .filter((schedule) => schedule.dayIndex === dayIndex)
+          .map((schedule) => schedule.templateId)
+      ),
+    ];
 
     if (templateIds.length === 0) {
       return [];

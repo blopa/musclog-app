@@ -258,9 +258,9 @@ async function getOrCreateSentinelFood(): Promise<Food> {
  */
 export async function syncNutritionFromHealthConnect(
   timeRange: { startTime: number; endTime: number },
-  options: { retryAttempts?: number } = {}
+  options: { retryAttempts?: number; reportErrors?: boolean } = {}
 ): Promise<NutritionSyncCounts> {
-  const { retryAttempts = RETRY_CONFIG.maxAttempts } = options;
+  const { retryAttempts = RETRY_CONFIG.maxAttempts, reportErrors = true } = options;
 
   if (!(await isReadSyncEnabled())) {
     return { totalRead: 0, written: 0, updated: 0, deleted: 0, skipped: 0 };
@@ -277,7 +277,10 @@ export async function syncNutritionFromHealthConnect(
       return await syncNutritionOnce(timeRange);
     } catch (err) {
       lastError = err;
-      console.warn(`[healthConnectNutrition] Attempt ${attempt}/${retryAttempts} failed:`, err);
+      if (reportErrors) {
+        console.warn(`[healthConnectNutrition] Attempt ${attempt}/${retryAttempts} failed:`, err);
+      }
+
       if (attempt < retryAttempts) {
         await new Promise((resolve) => setTimeout(resolve, 1000 * Math.pow(2, attempt - 1)));
       }

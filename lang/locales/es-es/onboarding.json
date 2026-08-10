@@ -48,6 +48,11 @@
         "iDontKnow": "No lo sé / omitir",
         "skipInstead": "Borrar fecha — no estoy segura"
       },
+      "length": {
+        "cycleLength": "Duración del ciclo",
+        "cycleLengthLabel": "Ciclo",
+        "periodDurationLabel": "Periodo"
+      },
       "birthControl": {
         "title": "Control de Natalidad Hormonal",
         "description": "¿Estás usando algún método anticonceptivo hormonal? Esto afecta las predicciones de las fases hormonales.",

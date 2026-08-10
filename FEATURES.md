@@ -19,9 +19,10 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 
 - Log sets, reps, weight, rest times, and RPE for any exercise
 - Workout types: Strength, Cardio, Flexibility, Calisthenics
-- Create and save custom workout templates (e.g., PPL, Upper/Lower splits)
+- Create and save custom workout templates (e.g., Push Day or Leg Day)
+- Organize workouts into named plans with weekly weekday assignments or ordered rotating cycles; workouts can belong to multiple plans, while standalone routines remain in an Unplanned section
 - Browse a built-in template library, including a five-session cable superset program
-- AI-generated workout plans based on your equipment and goals
+- Built-in programs and AI-generated routines create complete named workout plans based on your equipment and goals
 - Drag-and-drop exercise reordering during or after a session
 - Superset / exercise grouping via shared group ID
 - Built-in rest timer with customizable duration and haptic alerts
@@ -199,12 +200,18 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 - Sensitive metrics (weight, body fat) and nutrition logs encrypted at rest with AES
 - Fully offline — core features work without internet
 - Full data export (encrypted JSON or Excel) and import for portability
-- **Optical Transfer** — move everything, or just one saved meal, to another device with nothing
-  but the two screens: one displays an animated stream of QR codes, the other reads them with its
-  camera. Whole-profile transfers remain optionally passphrase-protected and replace only after
-  verification; meal shares preview ingredients/macros and save non-destructively into the existing
-  database. Send from a meal's ⋮ menu and receive from My Meals → +, or receive either payload from
-  Settings. Available on Android, iOS and web in any combination, with no internet, cable, or account
+- **Optical Transfer** — move everything, an individual food, a saved meal, a named meal from the
+  nutrition diary, or a whole breakfast/lunch/dinner section to another device with nothing but the
+  two screens: one displays an animated stream of QR codes, the other reads them with its camera.
+  Whole-profile transfers remain optionally passphrase-protected and replace only after verification;
+  food and meal shares preview and save non-destructively into the existing database, matching each
+  ingredient and serving size against what the receiving phone already has so a received meal reuses
+  your existing foods and portions rather than duplicating them. Send from the food or meal's ⋮ menu
+  and receive from My Meals → +, or receive either payload from
+  Settings. Point a food barcode scanner at a sending phone by mistake and it recognises the stream
+  instead of failing a product lookup, offering to hand you straight to the optical reader. The
+  receiving screen shows live percentage, transferred KB, KB/s throughput, and remaining time.
+  Available on Android, iOS and web in any combination, with no internet, cable, or account
   (see [docs/OPTICAL_TRANSFER.md](docs/OPTICAL_TRANSFER.md))
 - Automatic local backups before any restore, browsable and restorable from settings
 - Complete database reset option

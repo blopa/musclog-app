@@ -42,28 +42,44 @@
       "sendMealTitle": "Enviar refeição",
       "sendMealReadyTitle": "Refeição pronta para enviar",
       "sendMealInstructions": "No outro celular, abra Minhas refeições, toque em +, escolha Importar de outro celular e aponte a câmera para esta tela.",
-      "buildingStep": "Preparando a refeição…",
+      "sendFoodTitle": "Enviar alimento",
+      "sendFoodReadyTitle": "Alimento pronto para enviar",
+      "sendFoodInstructions": "No outro celular, abra o leitor de código de barras (ou Configurações → Transferência óptica → Receber) e aponte a câmera para esta tela.",
+      "buildingStep": "Preparando o que será enviado…",
       "recalculating": "Recalculando…",
       "noIngredients": "Esta refeição não tem ingredientes para enviar.",
       "includePhoto": "Incluir foto",
-      "includePhotoHint": "Fotos demoram muito mais para transferir. Deixe desativado para enviar mais rápido.",
-      "receiveMealTitle": "Receber refeição",
+      "includePhotoHint": "Fotos salvas neste celular deixam a transferência muito mais lenta. Deixe desativado para enviar mais rápido.",
+      "photoEmbedded": "A foto está sendo enviada junto e representa a maior parte do tamanho.",
+      "photoLinked": "A foto é enviada como link, então quase não aumenta a transferência. O outro celular precisa de internet para carregá-la.",
+      "photoUnavailable": "Não foi possível ler o arquivo desta foto, então nenhuma foto será enviada.",
+      "receiveTitle": "Receber de outro celular",
       "ingredientGrams": "{{amount}} g de {{name}}",
       "ingredientServings": "{{amount}} porções de {{name}}",
       "ingredientPortions": "{{amount}} × {{portion}} de {{name}}",
+      "portionWithWeight": "{{name}} · {{amount}} {{unit}}",
+      "foodPer100g": "Por 100 g",
+      "foodPerServing": "Por porção",
       "hasPhoto": "Inclui uma foto",
+      "loggedMealName": "{{meal}} · {{date}}",
       "saveToMyMeals": "Salvar em Minhas refeições",
+      "saveToMyFoods": "Salvar em Meus alimentos",
       "saving": "Salvando refeição…",
+      "savingFood": "Salvando alimento…",
       "savedTitle": "Refeição salva",
+      "savedFoodTitle": "Alimento salvo",
+      "savedFoodExisted": "Você já tinha este alimento — nada foi alterado.",
       "savedReusedFoods_one": "{{count}} ingrediente correspondeu a um alimento que já estava neste celular.",
       "savedReusedFoods_other": "{{count}} ingredientes corresponderam a alimentos que já estavam neste celular.",
-      "saveFailed": "Não foi possível salvar a refeição.",
-      "notAMeal": "Este é um backup completo, não uma refeição. Receba-o em Configurações → Transferência óptica."
+      "saveFailed": "Não foi possível salvar o que foi recebido.",
+      "notShareable": "Este é um backup completo, não uma refeição nem um alimento. Receba-o em Configurações → Transferência óptica.",
+      "unreadable": "Não foi possível ler isto. Tente enviar novamente."
     },
     "receive": {
       "title": "Receber",
       "subtitle": "Aponte para a tela do outro celular",
       "percent": "{{percent}}%",
+      "speed": "{{speed}} KB/s",
       "eta": "Faltam cerca de {{seconds}} segundos",
       "aimHint": "Preencha esta visualização com o código do outro celular.",
       "verifying": "Conferindo os dados…",
@@ -120,6 +136,12 @@
         "dense": "Denso",
         "max": "Mais denso"
       }
+    },
+    "probe": {
+      "title": "Quer importar dados ópticos?",
+      "message": "Esse código faz parte de uma transferência do Musclog entre celulares, não é um código de barras de alimento. Abra o leitor óptico para recebê-lo.",
+      "open": "Abrir leitor óptico",
+      "dismiss": "Agora não"
     }
   }
 }

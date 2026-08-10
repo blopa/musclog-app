@@ -8,6 +8,42 @@ export interface WeightPoint {
 export const TREND_WEIGHT_ALPHA = 0.1;
 export const TREND_WEIGHT_WARMUP_DAYS = 28;
 
+/**
+ * Collapses every reading that shares a day key into one point at that day's mean, ascending.
+ *
+ * Someone who weighs in morning and evening has two readings for one day, and every consumer of a
+ * daily series — the trend filter, the chart's scatter dots, the weekly check-in — needs them to
+ * be one. This was implemented separately in each of those places (and a fourth time, as
+ * last-wins rather than mean, in the empirical-TDEE window), so "what is my weight on day X" had
+ * more than one answer depending on which screen asked.
+ *
+ * `skipNonPositive` drops zero/negative and non-finite readings, which only the trend filter wants:
+ * a 0 kg reading is corrupt data that would drag the whole exponential filter down for weeks,
+ * whereas a chart series has already been validated upstream and should plot what it was given.
+ */
+export function averagePointsByDay(
+  points: WeightPoint[],
+  options: { skipNonPositive?: boolean } = {}
+): WeightPoint[] {
+  const valuesByDay = new Map<number, number[]>();
+  for (const point of points) {
+    if (
+      options.skipNonPositive &&
+      (!Number.isFinite(point.date) || !Number.isFinite(point.value) || point.value <= 0)
+    ) {
+      continue;
+    }
+    const values = valuesByDay.get(point.date) ?? [];
+    values.push(point.value);
+    valuesByDay.set(point.date, values);
+  }
+
+  return Array.from(valuesByDay, ([date, values]) => ({
+    date,
+    value: values.reduce((sum, value) => sum + value, 0) / values.length,
+  })).sort((a, b) => a.date - b.date);
+}
+
 export function calculateTrendWeightSeries(
   observedWeightsKg: WeightPoint[],
   options: { alpha?: number } = {}
@@ -17,20 +53,7 @@ export function calculateTrendWeightSeries(
     throw new RangeError('Trend weight alpha must be greater than 0 and at most 1');
   }
 
-  const valuesByDay = new Map<number, number[]>();
-  for (const point of observedWeightsKg) {
-    if (!Number.isFinite(point.date) || !Number.isFinite(point.value) || point.value <= 0) {
-      continue;
-    }
-    const values = valuesByDay.get(point.date) ?? [];
-    values.push(point.value);
-    valuesByDay.set(point.date, values);
-  }
-
-  const observed = Array.from(valuesByDay, ([date, values]) => ({
-    date,
-    value: values.reduce((sum, value) => sum + value, 0) / values.length,
-  })).sort((a, b) => a.date - b.date);
+  const observed = averagePointsByDay(observedWeightsKg, { skipNonPositive: true });
 
   if (observed.length <= 1) {
     return observed;

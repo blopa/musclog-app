@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { detectBarcodes } from '@/utils/file';
+import { OpticalFrameProbe } from '@/utils/optical/frameProbe';
 import { showSnackbar } from '@/utils/snackbarService';
 
 type UseBarcodeScanner = {
@@ -18,6 +19,11 @@ export function useBarcodeScanner({ visible, onBarcodeScanned, onClose }: UseBar
   const [detectedBarcode, setDetectedBarcode] = useState<string | null>(null);
   const [isFoodNotFoundModalVisible, setIsFoodNotFoundModalVisible] = useState(false);
   const [cameraResumeKey, setCameraResumeKey] = useState(0);
+  // These scanners list `qr` among their code types, so a phone streaming an optical transfer
+  // reads as a barcode here. See `utils/optical/frameProbe.ts` for why that must be caught before
+  // the lookup rather than after it.
+  const opticalProbeRef = useRef(new OpticalFrameProbe());
+  const [isOpticalStreamDetected, setIsOpticalStreamDetected] = useState(false);
 
   useEffect(() => {
     if (!visible) {
@@ -25,15 +31,33 @@ export function useBarcodeScanner({ visible, onBarcodeScanned, onClose }: UseBar
         setIsSearchingBarcode(false);
         setDetectedBarcode(null);
         setIsFoodNotFoundModalVisible(false);
+        setIsOpticalStreamDetected(false);
       };
       reset();
       isSearchingBarcodeRef.current = false;
+      opticalProbeRef.current.reset();
     }
   }, [visible]);
+
+  const dismissOpticalStreamHint = useCallback(() => {
+    opticalProbeRef.current.dismiss();
+    setIsOpticalStreamDetected(false);
+  }, []);
 
   const handleLiveBarcodeScanned = useCallback(
     ({ data }: { data: string }) => {
       if (isSearchingBarcodeRef.current) {
+        return;
+      }
+
+      // Before the search latch, so a stream the user is pointed at keeps feeding the probe
+      // instead of being swallowed by the first frame's own lookup. `'detected'` fires at most
+      // once per stream, which is what keeps a 15–30/s callback from thrashing React state.
+      const probed = opticalProbeRef.current.observe(data);
+      if (probed !== 'ignored') {
+        if (probed === 'detected') {
+          setIsOpticalStreamDetected(true);
+        }
         return;
       }
 
@@ -127,6 +151,8 @@ export function useBarcodeScanner({ visible, onBarcodeScanned, onClose }: UseBar
     isSearchingBarcodeRef,
     detectedBarcode,
     isFoodNotFoundModalVisible,
+    isOpticalStreamDetected,
+    dismissOpticalStreamHint,
     cameraResumeKey,
     handleLiveBarcodeScanned,
     handleBarcodeTextSearchSubmit,

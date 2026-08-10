@@ -41,6 +41,8 @@ import UserMetricsNote from './models/UserMetricsNote';
 import WorkoutLog from './models/WorkoutLog';
 import WorkoutLogExercise from './models/WorkoutLogExercise';
 import WorkoutLogSet from './models/WorkoutLogSet';
+import WorkoutPlan from './models/WorkoutPlan';
+import WorkoutPlanTemplate from './models/WorkoutPlanTemplate';
 import WorkoutTemplate from './models/WorkoutTemplate';
 import WorkoutTemplateExercise from './models/WorkoutTemplateExercise';
 import WorkoutTemplateSet from './models/WorkoutTemplateSet';
@@ -65,6 +67,8 @@ export const database = new Database({
     PeriodLog,
     Setting,
     WorkoutTemplate,
+    WorkoutPlan,
+    WorkoutPlanTemplate,
     WorkoutTemplateExercise,
     Schedule,
     WorkoutTemplateSet,

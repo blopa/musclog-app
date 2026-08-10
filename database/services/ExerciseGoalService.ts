@@ -226,7 +226,7 @@ export class ExerciseGoalService {
   }
 
   static async deleteGoal(id: string): Promise<void> {
-    await database.write(async () => {
+    await database.write(async (writer) => {
       const goal = await database.get<ExerciseGoal>('exercise_goals').find(id);
 
       const wasActive = goal.effectiveUntil === null;
@@ -234,7 +234,9 @@ export class ExerciseGoalService {
       const goalType = goal.goalType;
       const exerciseId = goal.exerciseId;
 
-      await goal.markAsDeleted();
+      // markAsDeleted is a @writer, so it has to join this transaction via callWriter
+      // rather than nest a new one (which would stall the queue).
+      await writer.callWriter(() => goal.markAsDeleted());
 
       // If this was an active goal, try to restore the previous one
       if (wasActive) {

@@ -28,7 +28,7 @@ import {
   unpackOpticalContainer,
 } from '@/utils/optical/container';
 import { NoSignalHintTimer } from '@/utils/optical/noSignal';
-import { estimateTransferProgress } from '@/utils/optical/progress';
+import { averagePayloadBytesPerSecond, estimateTransferProgress } from '@/utils/optical/progress';
 import { OpticalReceiver } from '@/utils/optical/receiverSession';
 
 export type OpticalReceiverPhase = 'collecting' | 'unpacking' | 'passphrase' | 'verified' | 'error';
@@ -43,6 +43,7 @@ export interface OpticalReceiverState {
   solvedBlocks: number;
   payloadBytes: number;
   elapsedSeconds: number;
+  averageBytesPerSecond: number;
   /** The code scanner's analysis resolution. Drives the density advice in the no-signal hint. */
   analysisFrame?: { width: number; height: number };
   showNoSignalHint: boolean;
@@ -52,6 +53,7 @@ export interface OpticalReceiverState {
 }
 
 const initialState: OpticalReceiverState = {
+  averageBytesPerSecond: 0,
   elapsedSeconds: 0,
   fraction: 0,
   framesDup: 0,
@@ -70,12 +72,25 @@ export function useOpticalReceiver(options: { active: boolean }) {
   const receiverRef = useRef(new OpticalReceiver());
   const noSignalRef = useRef(new NoSignalHintTimer());
   const analysisRef = useRef<undefined | { width: number; height: number }>(undefined);
-  const startedAtRef = useRef(0);
   const outcomeRef = useRef<null | 'checksum-failed' | 'complete'>(null);
+  /**
+   * One-way latch: the publishing interval has already acted on `outcomeRef` and moved the flow
+   * out of `collecting`. Cleared only by `reset`.
+   */
+  const leftCollectingRef = useRef(false);
   /** The reassembled container, held so a wrong passphrase costs a re-prompt and not a rescan. */
   const containerRef = useRef<null | Uint8Array>(null);
   const jsonRef = useRef<null | string>(null);
   const unpackingRef = useRef(false);
+  /**
+   * Bumped by every `reset`. `unpackOpticalContainer` decompresses and verifies — and decrypts,
+   * when a passphrase is involved — which takes long enough for the user to close the modal or
+   * start a new scan while it is in flight. The hook stays mounted when the modal closes, so
+   * without this a stale continuation would publish its JSON over whatever came after it: a
+   * reopened screen landing straight in `verified` on the PREVIOUS payload, or a newer scan being
+   * silently replaced by an older one. Mirrors the sender's `generationRef`.
+   */
+  const generationRef = useRef(0);
 
   useKeepScreenAwake('optical-receive', active);
 
@@ -89,19 +104,18 @@ export function useOpticalReceiver(options: { active: boolean }) {
       if (!code.value) {
         continue;
       }
-      if (startedAtRef.current === 0) {
-        startedAtRef.current = Date.now();
-      }
 
       const result = receiverRef.current.accept(code.value, Date.now());
       if (result !== 'ignored') {
         noSignalRef.current.frameDecoded();
       }
+
       if (result === 'complete') {
         containerRef.current = receiverRef.current.takeContainer();
         outcomeRef.current = 'complete';
         return;
       }
+
       if (result === 'checksum-failed') {
         outcomeRef.current = 'checksum-failed';
         return;
@@ -115,18 +129,33 @@ export function useOpticalReceiver(options: { active: boolean }) {
       return;
     }
 
+    const generation = generationRef.current;
+    // Every publish below is gated on this: a `reset` during the await makes the result obsolete,
+    // and obsolete results are dropped rather than written over the newer state.
+    const isCurrent = () => generationRef.current === generation;
+
     unpackingRef.current = true;
     try {
       const headerMeta = parseOpticalContainerHeader(container);
+      if (!isCurrent()) {
+        return;
+      }
       setState((previous) => ({ ...previous, meta: headerMeta, phase: 'unpacking' }));
       const { json, meta } = await unpackOpticalContainer(container, { passphrase });
+      if (!isCurrent()) {
+        return;
+      }
       jsonRef.current = json;
       setState((previous) => ({ ...previous, meta, phase: 'verified' }));
     } catch (error) {
+      if (!isCurrent()) {
+        return;
+      }
       const code =
         error instanceof OpticalContainerError
           ? error.code
           : ('checksum' as OpticalContainerErrorCode);
+
       setState((previous) => ({
         ...previous,
         errorCode: code,
@@ -136,16 +165,21 @@ export function useOpticalReceiver(options: { active: boolean }) {
         phase: code === 'needs-passphrase' || code === 'bad-passphrase' ? 'passphrase' : 'error',
       }));
     } finally {
-      unpackingRef.current = false;
+      // A newer generation owns the flag now, so a stale run must not clear it out from under the
+      // unpack that replaced it.
+      if (isCurrent()) {
+        unpackingRef.current = false;
+      }
     }
   }, []);
 
   const reset = useCallback(() => {
+    generationRef.current++;
     receiverRef.current.reset();
     noSignalRef.current = new NoSignalHintTimer();
     noSignalRef.current.cameraStarted(Date.now());
-    startedAtRef.current = 0;
     outcomeRef.current = null;
+    leftCollectingRef.current = false;
     containerRef.current = null;
     jsonRef.current = null;
     unpackingRef.current = false;
@@ -186,7 +220,10 @@ export function useOpticalReceiver(options: { active: boolean }) {
     const id = setInterval(() => {
       const stats = receiverRef.current.stats;
       const now = Date.now();
-      const elapsed = startedAtRef.current ? (now - startedAtRef.current) / 1000 : 0;
+      // The receiver starts this clock only after a valid optical frame and restarts it when the
+      // sender changes streams. Unrelated QR codes and a density change must not dilute the ETA or
+      // throughput with time spent on a different payload.
+      const elapsed = stats.startedAtMs ? (now - stats.startedAtMs) / 1000 : 0;
       const progress = estimateTransferProgress(
         stats.k,
         stats.framesNew,
@@ -205,32 +242,41 @@ export function useOpticalReceiver(options: { active: boolean }) {
       // remaining block in a single step, so the blocks-based term never gets a tick of its own —
       // straight to the verified screen, and 100% was never displayed.
       const isComplete = outcomeRef.current === 'complete';
+      const fraction = isComplete ? 1 : progress.fraction;
 
-      setState((previous) => {
-        // The completion transition is taken here rather than in the scanner callback, so the
-        // camera is never torn down from inside a native callback.
-        if (isComplete && previous.phase === 'collecting') {
+      // The collecting → unpacking/error transition is taken HERE, in the interval, rather than in
+      // the scanner callback: camera teardown and container unpacking must never run inside a
+      // native callback.
+      //
+      // It is also taken BEFORE `setState` rather than inside the updater. React may invoke an
+      // updater more than once, and kicking off an async unpack from inside one is a side effect
+      // in a place required to be pure. `leftCollectingRef` is a one-way latch rather than a read
+      // of the published phase, so the decision needs no render to have committed first.
+      const failed = !leftCollectingRef.current && outcomeRef.current === 'checksum-failed';
+      if (!leftCollectingRef.current && outcomeRef.current) {
+        leftCollectingRef.current = true;
+        if (isComplete) {
           void unpack();
         }
+      }
 
-        const failed = outcomeRef.current === 'checksum-failed' && previous.phase === 'collecting';
-        return {
-          ...previous,
-          analysisFrame: analysisRef.current,
-          elapsedSeconds: elapsed,
-          etaSeconds: isComplete ? undefined : progress.etaSeconds,
-          fraction: isComplete ? 1 : progress.fraction,
-          framesDup: stats.framesDup,
-          framesNew: stats.framesNew,
-          payloadBytes: stats.totalLen,
-          ...(failed
-            ? { errorCode: 'checksum-failed' as const, phase: 'error' as const }
-            : undefined),
-          showNoSignalHint: noSignalRef.current.isVisible,
-          solvedBlocks: stats.solvedBlocks,
-          sourceBlocks: stats.k,
-        };
-      });
+      setState((previous) => ({
+        ...previous,
+        analysisFrame: analysisRef.current,
+        averageBytesPerSecond: averagePayloadBytesPerSecond(stats.totalLen, fraction, elapsed),
+        elapsedSeconds: elapsed,
+        etaSeconds: isComplete ? undefined : progress.etaSeconds,
+        fraction,
+        framesDup: stats.framesDup,
+        framesNew: stats.framesNew,
+        payloadBytes: stats.totalLen,
+        ...(failed
+          ? { errorCode: 'checksum-failed' as const, phase: 'error' as const }
+          : undefined),
+        showNoSignalHint: noSignalRef.current.isVisible,
+        solvedBlocks: stats.solvedBlocks,
+        sourceBlocks: stats.k,
+      }));
     }, 250);
 
     return () => clearInterval(id);
@@ -242,6 +288,7 @@ export function useOpticalReceiver(options: { active: boolean }) {
     if (!active) {
       return;
     }
+
     const subscription = AppState.addEventListener('change', (next) => {
       if (next === 'active') {
         noSignalRef.current.cameraStarted(Date.now());

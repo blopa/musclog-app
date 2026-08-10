@@ -16,9 +16,11 @@ import {
 } from '@/utils/calendarDate';
 import { getTimezoneAt } from '@/utils/timezone';
 import {
+  averagePointsByDay,
   calculateTrendWeightSeries,
   TREND_WEIGHT_WARMUP_DAYS,
   trendWeightAtOrBefore,
+  type WeightPoint,
 } from '@/utils/trendWeight';
 import { storedWeightToKg } from '@/utils/unitConversion';
 
@@ -144,30 +146,34 @@ export class NutritionCheckinService {
 
     const weightMetrics = weightRange.filterRecords(weightMetricsRaw);
 
-    // Build daily weights array (7 slots, one per day)
-    const dailyWeights: number[] = Array(7).fill(0);
-    const observedWeights: { date: number; value: number }[] = [];
-    const currentWeightsByDay = new Map<number, number[]>();
+    const observedWeights: WeightPoint[] = [];
+    // Keyed by slot in the 7-day period rather than by day key, because that is what the returned
+    // `dailyWeights` array is indexed by — but the collapse itself is `averagePointsByDay`, the
+    // same one the trend filter and the chart use, so a two-weigh-in day means one thing app-wide.
+    const currentWeightsInPeriod: WeightPoint[] = [];
     for (const metric of weightMetrics) {
       const { value, unit } = await metric.getDecrypted();
       const valueKg = storedWeightToKg(value, unit);
-      const date = utcNormalizedDayKey(metric.date, metric.timezone);
-      observedWeights.push({ date, value: valueKg });
+      observedWeights.push({
+        date: utcNormalizedDayKey(metric.date, metric.timezone),
+        value: valueKg,
+      });
       const dayIndex = dayIndexInPeriod(metric.date, metric.timezone);
       if (dayIndex >= 0 && dayIndex < 7) {
-        const values = currentWeightsByDay.get(dayIndex) ?? [];
-        values.push(valueKg);
-        currentWeightsByDay.set(dayIndex, values);
+        currentWeightsInPeriod.push({ date: dayIndex, value: valueKg });
       }
     }
-    for (const [dayIndex, values] of currentWeightsByDay) {
-      dailyWeights[dayIndex] = values.reduce((sum, value) => sum + value, 0) / values.length;
+
+    // Build daily weights array (7 slots, one per day)
+    const dailyWeights: number[] = Array(7).fill(0);
+    for (const { date: dayIndex, value } of averagePointsByDay(currentWeightsInPeriod)) {
+      dailyWeights[dayIndex] = value;
     }
 
-    const currentWeights = Array.from(currentWeightsByDay.values()).flat();
     const scaleWeightAverage =
-      currentWeights.length > 0
-        ? currentWeights.reduce((a, b) => a + b, 0) / currentWeights.length
+      currentWeightsInPeriod.length > 0
+        ? currentWeightsInPeriod.reduce((sum, point) => sum + point.value, 0) /
+          currentWeightsInPeriod.length
         : checkin.targetWeight;
     const trendSeries = calculateTrendWeightSeries(observedWeights);
     const hasTrendData = new Set(observedWeights.map((point) => point.date)).size >= 2;
@@ -263,7 +269,7 @@ export class NutritionCheckinService {
       status = 'behind';
     }
 
-    const hasEnoughData = currentWeights.length >= 3 && daysWithLogs >= 3;
+    const hasEnoughData = currentWeightsInPeriod.length >= 3 && daysWithLogs >= 3;
 
     return {
       scaleWeightAverage,
@@ -396,9 +402,11 @@ export class NutritionCheckinService {
    * Soft-delete a check-in.
    */
   static async delete(id: string): Promise<void> {
-    await database.write(async () => {
+    await database.write(async (writer) => {
       const checkin = await database.get<NutritionCheckin>('nutrition_checkins').find(id);
-      await checkin.markAsDeleted();
+      // markAsDeleted is a @writer, so it has to join this transaction via callWriter
+      // rather than nest a new one (which would stall the queue).
+      await writer.callWriter(() => checkin.markAsDeleted());
     });
   }
 
@@ -407,14 +415,14 @@ export class NutritionCheckinService {
    * Called when a goal is superseded so its check-ins don't linger as dead data.
    */
   static async deleteByGoalId(goalId: string): Promise<void> {
-    await database.write(async () => {
+    await database.write(async (writer) => {
       const checkins = await database
         .get<NutritionCheckin>('nutrition_checkins')
         .query(Q.where('nutrition_goal_id', goalId), Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
       for (const checkin of checkins) {
-        await checkin.markAsDeleted();
+        await writer.callWriter(() => checkin.markAsDeleted());
       }
     });
   }

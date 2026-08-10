@@ -1,6 +1,6 @@
 export const DEFAULT_BATCH_SIZE = 5;
 
-export const CURRENT_DATABASE_VERSION = 24;
+export const CURRENT_DATABASE_VERSION = 25;
 
 // Build-time toggle for the nutrition-log loss detection/telemetry in dbDurability.ts.
 // Flip per build to enable/disable the baseline writes and Sentry loss reports.
@@ -42,7 +42,12 @@ export const REPAIR_DESCRIPTORS = {
         children: [{ table: 'workout_template_sets', fkColumn: 'template_exercise_id' }],
       },
       { table: 'schedules', fkColumn: 'template_id' },
+      { table: 'workout_plan_templates', fkColumn: 'template_id' },
     ],
+  },
+  workoutPlans: {
+    rootTable: 'workout_plans',
+    children: [{ table: 'workout_plan_templates', fkColumn: 'plan_id' }],
   },
   nutritionLogs: {
     rootTable: 'nutrition_logs',

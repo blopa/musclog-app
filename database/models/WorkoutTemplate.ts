@@ -3,11 +3,14 @@ import { children, field, json, writer } from '@nozbe/watermelondb/decorators';
 
 import { DEFAULT_WORKOUT_TYPE } from '@/constants/workoutTypes';
 import { getCurrentTimezone } from '@/utils/timezone';
+import { resolveWorkoutLogPlanId } from '@/utils/workoutScheduleOwnership';
 
 import Schedule from './Schedule';
+import { sanitizeWeekDaysJson } from './weekDaysJson';
 import WorkoutLog from './WorkoutLog';
 import WorkoutLogExercise from './WorkoutLogExercise';
 import WorkoutLogSet from './WorkoutLogSet';
+import WorkoutPlanTemplate from './WorkoutPlanTemplate';
 import WorkoutTemplateExercise from './WorkoutTemplateExercise';
 import WorkoutTemplateSet from './WorkoutTemplateSet';
 
@@ -18,6 +21,7 @@ export default class WorkoutTemplate extends Model {
     workout_template_exercises: { type: 'has_many' as const, foreignKey: 'template_id' },
     schedules: { type: 'has_many' as const, foreignKey: 'template_id' },
     workout_logs: { type: 'has_many' as const, foreignKey: 'template_id' },
+    workout_plan_templates: { type: 'has_many' as const, foreignKey: 'template_id' },
   };
 
   @field('name') declare name: string;
@@ -25,26 +29,7 @@ export default class WorkoutTemplate extends Model {
   @field('workout_insights_type') workoutInsightsType?: string;
   @field('icon') icon?: string;
   @field('type') type?: string;
-  @json('week_days_json', (data: any) => {
-    if (data === null || data === undefined) {
-      return undefined;
-    }
-
-    if (!Array.isArray(data)) {
-      throw new Error('week_days_json must be an array of day indices');
-    }
-
-    for (const day of data) {
-      if (typeof day !== 'number' || !Number.isInteger(day) || day < 0 || day > 6) {
-        throw new Error(
-          'Each day in week_days_json must be an integer between 0 (Monday) and 6 (Sunday)'
-        );
-      }
-    }
-
-    return [...new Set(data)].sort((a, b) => a - b);
-  })
-  weekDaysJson?: number[];
+  @json('week_days_json', sanitizeWeekDaysJson) weekDaysJson?: number[];
   @field('is_archived') declare isArchived: boolean;
   @field('created_at') declare createdAt: number;
   @field('updated_at') declare updatedAt: number;
@@ -53,20 +38,24 @@ export default class WorkoutTemplate extends Model {
   @children('workout_template_exercises') declare templateExercises: Query<WorkoutTemplateExercise>;
   @children('schedules') declare schedules: Query<Schedule>;
   @children('workout_logs') declare workoutLogs: Query<WorkoutLog>;
+  @children('workout_plan_templates') declare planMemberships: Query<WorkoutPlanTemplate>;
 
   @writer
-  async startWorkout(): Promise<WorkoutLog> {
+  async startWorkout(planId?: string): Promise<WorkoutLog> {
     const templateExercises = (await this.templateExercises?.fetch()) ?? [];
     const activeTemplateExercises = templateExercises.filter(
       (te: WorkoutTemplateExercise) => !te.deletedAt
     );
     const now = Date.now();
+    const memberships = planId ? [] : ((await this.planMemberships?.fetch()) ?? []);
+    const resolvedPlanId = resolveWorkoutLogPlanId(planId, memberships);
 
     // Create the workout log
     const workoutLogsCollection = this.collections.get<WorkoutLog>('workout_logs');
     const workoutLog = await workoutLogsCollection.create((log) => {
       log.workoutName = this.name;
       log.templateId = this.id;
+      log.planId = resolvedPlanId;
       log.type = this.type ?? DEFAULT_WORKOUT_TYPE;
       log.icon = this.icon ?? undefined;
       log.startedAt = now;

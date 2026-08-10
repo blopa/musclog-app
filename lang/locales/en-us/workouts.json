@@ -8,6 +8,59 @@
       "flexibility": "Flexibility",
       "archived": "Archived"
     },
+    "plans": {
+      "title": "Workout plans",
+      "unplanned": "Unplanned",
+      "unscheduled": "Unscheduled",
+      "defaultDayName": "Day {{day}}",
+      "defaultAiPlanName": "AI workout plan",
+      "addToPlan": "Add to plan",
+      "addToPlanDescription": "Choose which workout plans include this workout",
+      "createTitle": "New workout plan",
+      "editTitle": "Edit workout plan",
+      "createDescription": "Group workouts into a weekly or rotating program",
+      "editDescription": "Change this plan's workouts and schedule",
+      "deleteTitle": "Delete plan",
+      "deleteDescription": "Delete the plan without deleting its workouts",
+      "nameLabel": "Plan name",
+      "namePlaceholder": "e.g. Push Pull Legs",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Describe the goal of this program",
+      "iconLabel": "Plan icon",
+      "membersLabel": "Workouts in this plan",
+      "selectorLabel": "Add or remove workouts",
+      "membersEmpty": "No workouts yet. Tick a workout above to add it to this plan.",
+      "removeMember": "Remove from plan",
+      "workoutCount": "{{count}} workouts",
+      "cycleType": {
+        "label": "Schedule type",
+        "weekly": "Weekly",
+        "rotating": "Rotating"
+      },
+      "picker": {
+        "title": "Choose workout plans",
+        "description": "Plans",
+        "create": "Create a new plan",
+        "exerciseCount": "{{count}} exercises"
+      },
+      "schedule": {
+        "clearTitle": "Switch to a rotating plan?",
+        "clearMessage": "The weekday assignments in this plan will be cleared. They will not return if you switch back.",
+        "clearConfirm": "Switch and clear days"
+      },
+      "validation": {
+        "nameRequired": "Enter a plan name"
+      },
+      "saveSuccess": "Workout plan saved",
+      "saveError": "Failed to save workout plan",
+      "loadError": "Could not load this plan",
+      "deleteSuccess": "Workout plan deleted",
+      "deleteError": "Failed to delete workout plan",
+      "deleteConfirmation": {
+        "title": "Delete workout plan?",
+        "message": "Delete \"{{name}}\"? Its workouts will not be deleted."
+      }
+    },
     "archive": "Archive",
     "archiveSuccess": "Workout archived successfully",
     "archiveError": "Failed to archive workout",
@@ -152,7 +205,8 @@
       "message": "This will create separate workout templates for each day in this program. Each workout will include the exercises, sets, and reps specified for that day.",
       "confirm": "Create Workouts",
       "cancel": "Cancel",
-      "successMessage": "Workouts created successfully"
+      "successMessage": "Workouts created successfully",
+      "successMessageWithPlan": "{{planName}} created with {{count}} workouts"
     },
     "aiGeneration": {
       "comingSoon": "AI workout generation coming soon!",
@@ -161,7 +215,7 @@
       "preferencesLabel": "Your preferences",
       "preferencesPlaceholder": "E.g. I want to build muscle, I can train 4 days a week, I have access to a full gym, I'm an intermediate lifter...",
       "generateButton": "Generate Plan",
-      "successMessage": "Your workout plan is ready! {{count}} workout(s) added.",
+      "successMessageWithPlan": "{{planName}} is ready with {{count}} workouts.",
       "errorMessage": "Couldn't generate a plan. Please try again.",
       "aiNotConfigured": "AI features are not configured. Please add a Gemini or OpenAI API key in Settings."
     },

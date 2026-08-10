@@ -92,6 +92,8 @@ export class HealthConnectError extends Error {
         return i18n.t('snackbar.healthConnect.permissionDenied');
       case HealthConnectErrorCode.PERMISSION_REVOKED:
         return i18n.t('snackbar.healthConnect.permissionRevoked');
+      case HealthConnectErrorCode.INSUFFICIENT_PERMISSIONS:
+        return i18n.t('snackbar.healthConnect.noPermissionsGranted');
       case HealthConnectErrorCode.OFFLINE:
         return i18n.t('snackbar.healthConnect.offline');
       case HealthConnectErrorCode.SYNC_CONFLICT:
@@ -131,6 +133,17 @@ export class HealthConnectError extends Error {
     const jitter = delay * 0.25 * (Math.random() * 2 - 1);
     return Math.floor(delay + jitter);
   }
+}
+
+const HEALTH_PERMISSION_ERROR_CODES = new Set<HealthConnectErrorCode>([
+  HealthConnectErrorCode.PERMISSION_DENIED,
+  HealthConnectErrorCode.PERMISSION_REVOKED,
+  HealthConnectErrorCode.PERMISSION_REQUEST_FAILED,
+  HealthConnectErrorCode.INSUFFICIENT_PERMISSIONS,
+]);
+
+export function isHealthPermissionError(error: unknown): error is HealthConnectError {
+  return error instanceof HealthConnectError && HEALTH_PERMISSION_ERROR_CODES.has(error.code);
 }
 
 /**

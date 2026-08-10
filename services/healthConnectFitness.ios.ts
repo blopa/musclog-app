@@ -221,9 +221,13 @@ export async function writeUserMetricToHealthConnect(
 
 export async function syncFitnessMetrics(
   timeRange: { startTime: number; endTime: number },
-  options: { retryAttempts?: number; skipValidation?: boolean } = {}
+  options: { retryAttempts?: number; skipValidation?: boolean; reportErrors?: boolean } = {}
 ): Promise<FitnessSyncCounts> {
-  const { retryAttempts = RETRY_CONFIG.maxAttempts, skipValidation = false } = options;
+  const {
+    retryAttempts = RETRY_CONFIG.maxAttempts,
+    skipValidation = false,
+    reportErrors = true,
+  } = options;
 
   if (!(await isReadSyncEnabled())) {
     return { totalRead: 0, written: 0, updated: 0, deleted: 0, skipped: 0 };
@@ -255,8 +259,9 @@ export async function syncFitnessMetrics(
       totals.deleted += counts.deleted;
       totals.skipped += counts.skipped;
     } catch (err) {
-      handleError(err, 'healthConnectFitness.ios.syncLoop');
-      console.warn(`[healthConnectFitness.iOS] Failed to sync ${def.hkId}:`, err);
+      if (reportErrors) {
+        handleError(err, 'healthConnectFitness.ios.syncLoop');
+      }
     }
   }
 
@@ -268,8 +273,9 @@ export async function syncFitnessMetrics(
       totals.updated += stepsCounts.updated;
     }
   } catch (err) {
-    handleError(err, 'healthConnectFitness.ios.syncDailySteps');
-    console.warn('[healthConnectFitness.iOS] Failed to sync daily steps:', err);
+    if (reportErrors) {
+      handleError(err, 'healthConnectFitness.ios.syncDailySteps');
+    }
   }
 
   return totals;

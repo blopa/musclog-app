@@ -120,7 +120,7 @@ export function AiCustomPromptEditModal({
         <View className="mb-4 mt-2 flex-row gap-4">
           <Button label={t('common.cancel')} onPress={onClose} variant="outline" width="flex-1" />
           <Button
-            label={t('save')}
+            label={t('common.save')}
             onPress={handleSave}
             disabled={isSaveDisabled}
             variant="accent"
