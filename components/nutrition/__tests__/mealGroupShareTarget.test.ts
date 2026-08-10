@@ -13,6 +13,7 @@ describe('mealGroupShareTarget', () => {
     } as MealGroup;
 
     expect(mealGroupShareTarget(group)).toEqual({
+      kind: 'loggedMeal',
       logs: [first, second],
       name: 'Studocou Lunch',
     });

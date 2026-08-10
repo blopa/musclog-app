@@ -3,6 +3,10 @@ import {
   buildLoggedMealShareEnvelope,
   buildLoggedMealSharePayload,
 } from '@/database/share/buildLoggedMealShare';
+import {
+  OPTICAL_EXPORT_VERSION_SHARE,
+  OPTICAL_PAYLOAD_KIND_SHARE,
+} from '@/utils/optical/container';
 import { parseShareEnvelope } from '@/utils/share/shareEnvelope';
 
 jest.mock('@/utils/file', () => ({ createThumbnail: jest.fn() }));
@@ -188,6 +192,11 @@ describe('buildLoggedMealShareEnvelope', () => {
 
     const payload = await buildLoggedMealSharePayload([log('log-1', rice)], { name: 'Breakfast' });
 
+    // The container fields come from the one `shareSenderPayload` helper all three builders share.
+    // The receiver refuses a payload whose `payloadKind` it does not recognise, so a divergence
+    // here fails on the OTHER phone.
+    expect(payload.payloadKind).toBe(OPTICAL_PAYLOAD_KIND_SHARE);
+    expect(payload.exportVersion).toBe(OPTICAL_EXPORT_VERSION_SHARE);
     expect(payload.json).not.toContain('null');
     const parsed = parseShareEnvelope(payload.json);
     expect(parsed.kind).toBe('meal');

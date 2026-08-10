@@ -77,6 +77,39 @@ describe('WorkoutPlanRepository', () => {
     expect(query.mock.calls[0]).toEqual([where('deleted_at', eq(null)), sortBy('position', 'asc')]);
   });
 
+  it('resolves schedules from all three calendar stores in one read', async () => {
+    // The read `NotificationService` and `WorkoutService.getUpcomingScheduledWorkouts` had a copy
+    // of each. Its job is to consult exactly these three tables and hand them to the ownership
+    // rule — a caller that reads only `schedules` silently loses every planned workout.
+    const rows: Record<string, unknown[]> = {
+      schedules: [
+        { templateId: 'planned', dayOfWeek: 'Friday', reminderTime: '17:30' },
+        { templateId: 'standalone', dayOfWeek: 'Tuesday', reminderTime: '09:15' },
+      ],
+      workout_plan_templates: [{ planId: 'p1', templateId: 'planned', weekDays: [0] }],
+      workout_plans: [{ id: 'p1', cycleType: 'weekly' }],
+    };
+    mockDatabase.get.mockImplementation(
+      (table: string) =>
+        ({
+          query: jest.fn(() => ({ fetch: jest.fn().mockResolvedValue(rows[table] ?? []) })),
+        }) as any
+    );
+
+    const resolved = await WorkoutPlanRepository.getResolvedSchedules();
+
+    expect(mockDatabase.get.mock.calls.map(([table]) => table).sort()).toEqual([
+      'schedules',
+      'workout_plan_templates',
+      'workout_plans',
+    ]);
+    // The plan owns `planned`'s calendar, so its standalone Friday row is ignored entirely.
+    expect(resolved).toEqual([
+      { templateId: 'planned', planId: 'p1', dayIndex: 0, reminderTime: '08:00' },
+      { templateId: 'standalone', dayIndex: 1, reminderTime: '09:15' },
+    ]);
+  });
+
   it('keeps every query lazy', () => {
     for (const call of [
       () => WorkoutPlanRepository.getAll(),

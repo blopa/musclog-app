@@ -53,6 +53,7 @@
       },
       "saveSuccess": "Workout plan saved",
       "saveError": "Failed to save workout plan",
+      "loadError": "Could not load this plan",
       "deleteSuccess": "Workout plan deleted",
       "deleteError": "Failed to delete workout plan",
       "deleteConfirmation": {

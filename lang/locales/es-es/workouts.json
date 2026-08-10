@@ -32,7 +32,11 @@
       "membersEmpty": "Aún no hay entrenamientos. Marca uno arriba para añadirlo a este plan.",
       "removeMember": "Quitar del plan",
       "workoutCount": "{{count}} entrenamientos",
-      "cycleType": { "label": "Tipo de horario", "weekly": "Semanal", "rotating": "Rotativo" },
+      "cycleType": {
+        "label": "Tipo de horario",
+        "weekly": "Semanal",
+        "rotating": "Rotativo"
+      },
       "picker": {
         "title": "Elegir planes de entrenamiento",
         "description": "Planes",
@@ -44,9 +48,12 @@
         "clearMessage": "Se borrarán los días asignados a este plan y no volverán al cambiar de nuevo.",
         "clearConfirm": "Cambiar y borrar días"
       },
-      "validation": { "nameRequired": "Introduce un nombre para el plan" },
+      "validation": {
+        "nameRequired": "Introduce un nombre para el plan"
+      },
       "saveSuccess": "Plan de entrenamiento guardado",
       "saveError": "No se pudo guardar el plan",
+      "loadError": "No se pudo cargar este plan",
       "deleteSuccess": "Plan de entrenamiento eliminado",
       "deleteError": "No se pudo eliminar el plan",
       "deleteConfirmation": {

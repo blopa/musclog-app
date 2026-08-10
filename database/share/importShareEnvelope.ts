@@ -1,6 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 
-import { assignRawColumns } from '@/database/assignRawColumns';
+import { assignRawColumns, type RawColumnTarget } from '@/database/assignRawColumns';
 import { database } from '@/database/database-instance';
 import Food from '@/database/models/Food';
 import FoodPortion from '@/database/models/FoodPortion';
@@ -90,7 +90,7 @@ function foodMacrosMatch(food: Food, row: ShareRow): boolean {
   });
 }
 
-function uniqueStrings(values: Array<string | undefined>): string[] {
+function uniqueStrings(values: (string | undefined)[]): string[] {
   return [...new Set(values.filter((value): value is string => Boolean(value)))];
 }
 
@@ -333,9 +333,12 @@ export async function importShareEnvelope(
         rootId: envelope.rootId,
       });
       const operations = plan.creates.map(({ localId, row, table }) =>
-        database.get(table).prepareCreate((record: any) => {
+        database.get(table).prepareCreate((record) => {
           record._raw.id = localId;
-          assignRawColumns(record, row);
+          // `row` reached here through `spec.columns`, so every key on it is an allowlisted column
+          // of `table` — that allowlist is what makes assigning them by name safe. See
+          // `ShareKindSpec.columns`.
+          assignRawColumns(record as unknown as RawColumnTarget, row);
         })
       );
 

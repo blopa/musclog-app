@@ -11,10 +11,6 @@ import type Food from '@/database/models/Food';
 import type FoodFoodPortion from '@/database/models/FoodFoodPortion';
 import type FoodPortion from '@/database/models/FoodPortion';
 import {
-  OPTICAL_EXPORT_VERSION_SHARE,
-  OPTICAL_PAYLOAD_KIND_SHARE,
-} from '@/utils/optical/container';
-import {
   type FoodShareEnvelope,
   type FoodSharePortion,
   MUSCLOG_SHARE_ENVELOPE_VERSION,
@@ -27,6 +23,7 @@ import {
   optionalNumber,
   prepareShareImage,
   shareRow,
+  shareSenderPayload,
 } from './shareRecords';
 
 export interface BuildFoodShareOptions {
@@ -123,10 +120,5 @@ export async function buildFoodShareEnvelope(
 }
 
 export async function buildFoodSharePayload(foodId: string, options: BuildFoodShareOptions) {
-  const envelope = await buildFoodShareEnvelope(foodId, options);
-  return {
-    exportVersion: OPTICAL_EXPORT_VERSION_SHARE,
-    json: JSON.stringify(envelope),
-    payloadKind: OPTICAL_PAYLOAD_KIND_SHARE,
-  };
+  return shareSenderPayload(await buildFoodShareEnvelope(foodId, options));
 }

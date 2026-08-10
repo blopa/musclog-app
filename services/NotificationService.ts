@@ -5,11 +5,9 @@ import { Platform } from 'react-native';
 import { database } from '@/database';
 import MenstrualCycle from '@/database/models/MenstrualCycle';
 import NutritionCheckin from '@/database/models/NutritionCheckin';
-import Schedule from '@/database/models/Schedule';
-import WorkoutPlan from '@/database/models/WorkoutPlan';
-import WorkoutPlanTemplate from '@/database/models/WorkoutPlanTemplate';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import { PeriodLogRepository } from '@/database/repositories/PeriodLogRepository';
+import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanRepository';
 import { MenstrualService } from '@/database/services/MenstrualService';
 import { SettingsService } from '@/database/services/SettingsService';
 import i18n from '@/lang/lang';
@@ -20,7 +18,6 @@ import {
   MS_PER_SOLAR_DAY,
 } from '@/utils/calendarDate';
 import { toExpoWeekday } from '@/utils/weekdays';
-import { resolveWorkoutSchedules } from '@/utils/workoutScheduleOwnership';
 
 export class NotificationService {
   private static isConfigured = false;
@@ -288,21 +285,7 @@ export class NotificationService {
       return;
     }
 
-    const [plans, memberships, standaloneSchedules] = await Promise.all([
-      database
-        .get<WorkoutPlan>('workout_plans')
-        .query(Q.where('deleted_at', Q.eq(null)))
-        .fetch(),
-      database
-        .get<WorkoutPlanTemplate>('workout_plan_templates')
-        .query(Q.where('deleted_at', Q.eq(null)))
-        .fetch(),
-      database
-        .get<Schedule>('schedules')
-        .query(Q.where('deleted_at', Q.eq(null)))
-        .fetch(),
-    ]);
-    const resolvedSchedules = resolveWorkoutSchedules(plans, memberships, standaloneSchedules);
+    const resolvedSchedules = await WorkoutPlanRepository.getResolvedSchedules();
     const templateIds = [...new Set(resolvedSchedules.map((schedule) => schedule.templateId))];
     const templates =
       templateIds.length > 0

@@ -23,7 +23,7 @@
  * would drop the in-flight frame).
  */
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { monotonicNowMs } from '@/utils/optical/clock';
 import { QR_QUIET_ZONE_MODULES } from '@/utils/optical/presets';
@@ -51,6 +51,11 @@ export interface QrFrameLoop {
   install: (stream: OpticalStream, cacheFrames: number) => void;
   clear: () => void;
   setFps: (fps: number) => void;
+  /**
+   * The rate the loop is currently pacing to. The loop owns this value — callers read it back
+   * rather than mirroring it in a ref of their own, which is two sources of truth for one number.
+   */
+  readFps: () => number;
   /** Current counters, read straight off refs — safe to poll. */
   readStats: () => QrFrameLoopStats;
 }
@@ -136,6 +141,8 @@ export function useQrFrameLoop(options: QrFrameLoopOptions): QrFrameLoop {
     fpsRef.current = fps;
   }, []);
 
+  const readFps = useCallback(() => fpsRef.current, []);
+
   const tick = useCallback((): void => {
     const stream = streamRef.current;
     if (!stream || !runningRef.current) {
@@ -195,5 +202,13 @@ export function useQrFrameLoop(options: QrFrameLoopOptions): QrFrameLoop {
     };
   }, [running, start]);
 
-  return { clear, install, readStats, setFps };
+  // Memoized, not a fresh literal per render. Every member is already identity-stable, so a new
+  // wrapper object would be the ONLY unstable thing this hook produces — and it propagates: a
+  // consumer that puts the loop in a dep array (the bench does, to push fps) re-runs that effect
+  // on every render, and `useOpticalSender`'s whole public API becomes unstable by taking `[loop]`.
+  // A hook whose reason for existing is "never tear the loop down" must not hand out churn.
+  return useMemo(
+    () => ({ clear, install, readFps, readStats, setFps }),
+    [clear, install, readFps, readStats, setFps]
+  );
 }

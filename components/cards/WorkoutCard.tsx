@@ -106,14 +106,16 @@ export function WorkoutCard({
           </View>
         ) : (
           <View className="flex-row gap-3">
-            <Button
-              label={t('workouts.archive')}
-              icon={Archive}
-              variant="secondary"
-              size="sm"
-              width="auto"
-              onPress={onArchive}
-            />
+            {onArchive ? (
+              <Button
+                label={t('workouts.archive')}
+                icon={Archive}
+                variant="secondary"
+                size="sm"
+                width="auto"
+                onPress={onArchive}
+              />
+            ) : null}
             <StartWorkoutButton variant="secondary" onPress={onStart} />
             <MenuButton size="sm" onPress={onMore} className="ml-auto w-14" />
           </View>

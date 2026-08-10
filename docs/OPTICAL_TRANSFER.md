@@ -375,6 +375,16 @@ Reading the food resolutions while resolving a portion is what makes `ShareKindS
 dependency order load-bearing beyond foreign keys: `buildResolutions` walks it in order, so `foods`
 must stay ahead of `food_portions` or an owned portion can never see that its owner was reused.
 
+**One send screen for every shareable record.** `components/modals/ShareOpticalSendModal.tsx` takes
+a tagged `ShareSendTarget` (`food` / `meal` / `loggedMeal`) and owns the builder dispatch, the
+per-kind copy table and the translation of the builder's typed `no-ingredients` failure. There were
+briefly three wrapper components around it that differed only in which builder they called and
+which three translation keys they picked — and two of them picked the same three keys. Do not add a
+fourth wrapper for a new kind; add a variant to the union and a row to `SHARE_COPY_KEYS`. Likewise,
+every builder ends in `shareSenderPayload()` (`database/share/shareRecords.ts`) rather than its own
+copy of the container fields: the receiver refuses a payload whose `payloadKind` it does not
+recognise, so a divergence there fails on the _other_ phone.
+
 ## Sender pacing
 
 Two bugs found on real hardware, both worth not reintroducing:
@@ -382,6 +392,16 @@ Two bugs found on real hardware, both worth not reintroducing:
 The loop lives in `hooks/useQrFrameLoop.ts` and is shared by the send screen and the bench screen,
 so both measure and ship the same behaviour. `install()` and the `running` flag may arrive in either
 order — whichever is satisfied second starts the loop.
+
+The hook returns a **memoized** controller. Its methods were always identity-stable, but the object
+wrapping them was rebuilt each render, and that churn propagated: the bench puts the loop in a
+`useEffect` dep array to push fps, so that effect ran on every render, and `useOpticalSender`'s
+whole public API (`stop`, `reset`, `setPreset`, `setFps`) takes `[loop]` and became unstable with
+it. A hook whose reason for existing is "never tear the loop down" must not hand out churn.
+
+The loop also owns the current fps: `readFps()` reads it back. `useOpticalSender` used to mirror it
+in an `fpsRef` kept in lockstep with `setFps` — two sources of truth for one number, where
+`state.fps` is only the copy rendered to screen.
 
 - **Never drive the display loop with `setInterval`.** At 10 fps the interval fires every 100 ms;
   if a frame costs 175 ms the callbacks queue up and the event loop never catches up, so the rate

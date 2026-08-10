@@ -32,7 +32,11 @@
       "membersEmpty": "Nog geen workouts. Vink hierboven een workout aan om die aan dit plan toe te voegen.",
       "removeMember": "Uit plan verwijderen",
       "workoutCount": "{{count}} workouts",
-      "cycleType": { "label": "Planningstype", "weekly": "Wekelijks", "rotating": "Roterend" },
+      "cycleType": {
+        "label": "Planningstype",
+        "weekly": "Wekelijks",
+        "rotating": "Roterend"
+      },
       "picker": {
         "title": "Workoutplannen kiezen",
         "description": "Plannen",
@@ -44,9 +48,12 @@
         "clearMessage": "De weekdagen van dit plan worden gewist en komen niet terug wanneer je terugschakelt.",
         "clearConfirm": "Overschakelen en dagen wissen"
       },
-      "validation": { "nameRequired": "Vul een plannaam in" },
+      "validation": {
+        "nameRequired": "Vul een plannaam in"
+      },
       "saveSuccess": "Workoutplan opgeslagen",
       "saveError": "Workoutplan opslaan mislukt",
+      "loadError": "Kon dit plan niet laden",
       "deleteSuccess": "Workoutplan verwijderd",
       "deleteError": "Workoutplan verwijderen mislukt",
       "deleteConfirmation": {

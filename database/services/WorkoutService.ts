@@ -3,13 +3,11 @@ import convert, { type Unit } from 'convert';
 
 import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
-import Schedule from '@/database/models/Schedule';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
-import WorkoutPlan from '@/database/models/WorkoutPlan';
-import WorkoutPlanTemplate from '@/database/models/WorkoutPlanTemplate';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
+import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanRepository';
 import { writeWorkoutToHealthConnect } from '@/services/healthConnectWorkout';
 import {
   clearActiveWorkoutLogId,
@@ -22,7 +20,6 @@ import { getCurrentTimezone } from '@/utils/timezone';
 import { jsDayToWeekdayIndex } from '@/utils/weekdays';
 import { getRollingWeeklyWorkoutRange } from '@/utils/weeklyWorkoutProgress';
 import { calculateWorkoutKcal, type MWEMInput } from '@/utils/workoutEnergyCalculator';
-import { resolveWorkoutSchedules } from '@/utils/workoutScheduleOwnership';
 import {
   getFirstUnloggedInEffectiveOrder,
   getNextSetInEffectiveOrder,
@@ -384,24 +381,11 @@ export class WorkoutService {
    * Get upcoming scheduled workouts for a specific date
    */
   static async getUpcomingScheduledWorkouts(date: Date): Promise<WorkoutTemplate[]> {
-    const [plans, memberships, schedules] = await Promise.all([
-      database
-        .get<WorkoutPlan>('workout_plans')
-        .query(Q.where('deleted_at', Q.eq(null)))
-        .fetch(),
-      database
-        .get<WorkoutPlanTemplate>('workout_plan_templates')
-        .query(Q.where('deleted_at', Q.eq(null)))
-        .fetch(),
-      database
-        .get<Schedule>('schedules')
-        .query(Q.where('deleted_at', Q.eq(null)))
-        .fetch(),
-    ]);
     const dayIndex = jsDayToWeekdayIndex(date.getDay());
+    const resolved = await WorkoutPlanRepository.getResolvedSchedules();
     const templateIds = [
       ...new Set(
-        resolveWorkoutSchedules(plans, memberships, schedules)
+        resolved
           .filter((schedule) => schedule.dayIndex === dayIndex)
           .map((schedule) => schedule.templateId)
       ),

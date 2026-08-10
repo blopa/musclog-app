@@ -123,8 +123,6 @@ export function SmartCameraShell({
 
   const controlsLocked = isLoading || isActionRunning;
 
-  const handleModeSelect = (mode: CameraMode) => onModeChange?.(mode);
-
   // Every state of this screen is the same chrome-less full-screen modal; only the body differs.
   // Repeating the wrapper per state is how its five props drifted apart in the past.
   const shell = (body: ReactNode) => (
@@ -265,14 +263,18 @@ export function SmartCameraShell({
           >
             {noticeSlot ? <View className="mb-4">{noticeSlot}</View> : null}
 
-            {/* Mode Selector */}
-            {showModePicker && isAiEnabled ? (
+            {/*
+              Mode Selector. `onModeChange` is part of the condition, not defaulted to a no-op:
+              a picker whose tabs do nothing is worse than no picker, and requiring the handler
+              here is what lets `SmartCameraModePicker` take a non-optional one.
+            */}
+            {showModePicker && isAiEnabled && onModeChange ? (
               <SmartCameraModePicker
                 cameraMode={cameraMode}
                 disabled={controlsLocked}
                 isAIVisionEnabled={isAIVisionEnabled}
                 isSmallScreen={isSmallScreen}
-                onModeChange={handleModeSelect}
+                onModeChange={onModeChange}
               />
             ) : null}
 

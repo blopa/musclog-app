@@ -42,19 +42,16 @@ function mean(values: number[]): number {
 }
 
 /**
- * The value of `byDay` at one end of the window: either the mean across that end's days, or the
- * single reading on the boundary day. Returns undefined when the series has no reading there,
- * which is how an absent body-fat anchor stays absent.
+ * The value of `byDay` across one end of the window: the mean of the readings it actually has.
+ * Returns undefined when the series has none there, which is how an absent body-fat anchor stays
+ * absent.
+ *
+ * Whether an end is averaged or read as a single day is expressed by the `days` array the caller
+ * builds — a one-element array IS the unaveraged case, and this returns that day's reading for it.
+ * There is deliberately no `average` flag: it was always redundant with the array's length, and a
+ * second way to say the same thing is a second way to say it inconsistently.
  */
-function anchorValue(
-  byDay: Map<number, number>,
-  days: number[],
-  average: boolean
-): number | undefined {
-  if (!average) {
-    return byDay.get(days[0]);
-  }
-
+function anchorValue(byDay: Map<number, number>, days: number[]): number | undefined {
   const values = days
     .map((day) => byDay.get(day))
     .filter((value): value is number => value !== undefined);
@@ -106,26 +103,34 @@ export function calculateEmpiricalTDEEWindow(
 
   const longEnoughToAverage = commonDays.length > MIN_DAYS_FOR_ENDPOINT_AVERAGES;
   const averageWeights = longEnoughToAverage && !options.weightsArePresmoothed;
-  const startDays = averageWeights ? commonDays.slice(0, ENDPOINT_WINDOW_DAYS) : [commonDays[0]];
-  const endDays = averageWeights
-    ? commonDays.slice(-ENDPOINT_WINDOW_DAYS)
-    : [commonDays[commonDays.length - 1]];
+  /** The days one end of the window anchors on: its whole slice, or just the boundary day. */
+  const endpointDays = (average: boolean, end: 'start' | 'finish') => {
+    if (!average) {
+      return end === 'start' ? [commonDays[0]] : [commonDays[commonDays.length - 1]];
+    }
+    return end === 'start'
+      ? commonDays.slice(0, ENDPOINT_WINDOW_DAYS)
+      : commonDays.slice(-ENDPOINT_WINDOW_DAYS);
+  };
+
+  const startDays = endpointDays(averageWeights, 'start');
+  const endDays = endpointDays(averageWeights, 'finish');
+  // Body fat neither defines the window nor arrives pre-smoothed, so it averages on its own terms.
+  const fatDaysStart = endpointDays(longEnoughToAverage, 'start');
+  const fatDaysEnd = endpointDays(longEnoughToAverage, 'finish');
 
   // The window has to match the weight anchors: TDEE compares the calories eaten across it
   // against the weight change measured at its ends.
   const empiricalStart = mean(startDays);
   const empiricalEnd = mean(endDays);
-  // Body fat neither defines the window nor arrives pre-smoothed, so it averages on its own terms.
-  const fatDaysStart = longEnoughToAverage ? commonDays.slice(0, ENDPOINT_WINDOW_DAYS) : startDays;
-  const fatDaysEnd = longEnoughToAverage ? commonDays.slice(-ENDPOINT_WINDOW_DAYS) : endDays;
 
   return {
     empiricalStart,
     empiricalEnd,
-    initialWeight: anchorValue(weightByDay, startDays, averageWeights) ?? 0,
-    finalWeight: anchorValue(weightByDay, endDays, averageWeights) ?? 0,
-    initialFat: anchorValue(fatByDay, fatDaysStart, longEnoughToAverage),
-    finalFat: anchorValue(fatByDay, fatDaysEnd, longEnoughToAverage),
+    initialWeight: anchorValue(weightByDay, startDays) ?? 0,
+    finalWeight: anchorValue(weightByDay, endDays) ?? 0,
+    initialFat: anchorValue(fatByDay, fatDaysStart),
+    finalFat: anchorValue(fatByDay, fatDaysEnd),
     empiricalDays: empiricalDaysBetween(empiricalStart, empiricalEnd),
   };
 }

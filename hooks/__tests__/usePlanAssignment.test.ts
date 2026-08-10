@@ -181,7 +181,25 @@ describe('usePlanAssignment', () => {
     expect(flow.latestPicker().selectedPlanIds).toEqual(['plan-1']);
   });
 
-  it('leaves the picker open when confirming fails, so the selection survives a retry', async () => {
+  it('leaves the picker open when confirming reports failure, so the selection survives a retry', async () => {
+    const onChange = jest.fn();
+    const onConfirm = jest.fn().mockResolvedValue(false);
+    const flow = renderFlow({ onChange, onConfirm, selectedPlanIds: [] });
+
+    act(() => flow.captured.current!.openPicker());
+    act(() => flow.latestPicker().onChange(['plan-1']));
+    await act(async () => {
+      await flow.latestPicker().onSave();
+    });
+
+    expect(flow.latestPicker().visible).toBe(true);
+    expect(flow.latestPicker().selectedPlanIds).toEqual(['plan-1']);
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('swallows a throwing onConfirm rather than rejecting out of a press handler', async () => {
+    // `onSave` reaches a Pressable's `onPress`, which neither awaits nor catches — a rejection
+    // escaping here would be an unhandled rejection that only happened to produce the right UI.
     const onChange = jest.fn();
     const onConfirm = jest.fn().mockRejectedValue(new Error('write failed'));
     const flow = renderFlow({ onChange, onConfirm, selectedPlanIds: [] });
@@ -189,11 +207,29 @@ describe('usePlanAssignment', () => {
     act(() => flow.captured.current!.openPicker());
     act(() => flow.latestPicker().onChange(['plan-1']));
     await act(async () => {
-      await expect(flow.latestPicker().onSave()).rejects.toThrow('write failed');
+      await expect(flow.latestPicker().onSave()).resolves.toBeUndefined();
     });
 
     expect(flow.latestPicker().visible).toBe(true);
     expect(flow.latestPicker().selectedPlanIds).toEqual(['plan-1']);
     expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('works for a host that tracks no selection of its own', async () => {
+    // The workout library persists on confirm and reads nothing back, so it passes neither
+    // `selectedPlanIds` nor `onChange`. It used to keep a state slot for them that was written
+    // twice and never read.
+    const onConfirm = jest.fn().mockResolvedValue(undefined);
+    const flow = renderFlow({ onConfirm });
+
+    act(() => flow.captured.current!.openPicker(['plan-1']));
+    expect(flow.latestPicker().selectedPlanIds).toEqual(['plan-1']);
+
+    await act(async () => {
+      await flow.latestPicker().onSave();
+    });
+
+    expect(onConfirm).toHaveBeenCalledWith(['plan-1']);
+    expect(flow.latestPicker().visible).toBe(false);
   });
 });

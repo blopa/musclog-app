@@ -17,10 +17,6 @@ import type FoodFoodPortion from '@/database/models/FoodFoodPortion';
 import type FoodPortion from '@/database/models/FoodPortion';
 import type NutritionLog from '@/database/models/NutritionLog';
 import {
-  OPTICAL_EXPORT_VERSION_SHARE,
-  OPTICAL_PAYLOAD_KIND_SHARE,
-} from '@/utils/optical/container';
-import {
   type MealShareEnvelope,
   type MealShareIngredient,
   MUSCLOG_SHARE_ENVELOPE_VERSION,
@@ -30,7 +26,13 @@ import {
 } from '@/utils/share/shareEnvelope';
 import { MEAL_SHARE_SPEC } from '@/utils/share/shareKinds';
 
-import { applyCarriedFoodImage, defaultPortionLink, isActive, shareRow } from './shareRecords';
+import {
+  applyCarriedFoodImage,
+  defaultPortionLink,
+  isActive,
+  shareRow,
+  shareSenderPayload,
+} from './shareRecords';
 
 /**
  * The envelope-local id of the meal that never existed on this phone. Ids are namespaced per table
@@ -216,10 +218,5 @@ export async function buildLoggedMealSharePayload(
   logs: NutritionLog[],
   options: BuildLoggedMealShareOptions
 ) {
-  const envelope = await buildLoggedMealShareEnvelope(logs, options);
-  return {
-    exportVersion: OPTICAL_EXPORT_VERSION_SHARE,
-    json: JSON.stringify(envelope),
-    payloadKind: OPTICAL_PAYLOAD_KIND_SHARE,
-  };
+  return shareSenderPayload(await buildLoggedMealShareEnvelope(logs, options));
 }

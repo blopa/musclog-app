@@ -352,14 +352,20 @@ export class WorkoutTemplateService {
     if (!data.templateId) {
       const created = this.prepareNewTemplate(data, now);
       // Nothing exists to conflict with a brand-new template, so membership and schedules are the
-      // only remaining question and `activePlanIds` decides it exactly as in the edit path.
-      const { activePlanIds, records: membershipRecords } = data.planIds?.length
-        ? await WorkoutPlanService.prepareSyncTemplateMemberships(
+      // only remaining question and `activePlanIds` decides it exactly as in the edit path — which
+      // is why this is written the same way, rather than as a ternary whose empty arm needs casts
+      // to line up with the call's return type.
+      let activePlanIds: string[] = [];
+      let membershipRecords: Model[] = [];
+
+      if (data.planIds?.length) {
+        ({ activePlanIds, records: membershipRecords } =
+          await WorkoutPlanService.prepareSyncTemplateMemberships(
             created.template.id,
             data.planIds,
             now
-          )
-        : { activePlanIds: [] as string[], records: [] as Model[] };
+          ));
+      }
 
       return {
         template: created.template,

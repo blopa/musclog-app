@@ -1,3 +1,4 @@
+import type { ShareSendTarget } from '@/components/modals/ShareOpticalSendModal';
 import type Food from '@/database/models/Food';
 import type NutritionLog from '@/database/models/NutritionLog';
 import type { MealType } from '@/database/models/NutritionLog';
@@ -50,14 +51,16 @@ export type MealGroup = {
   totalNutrients: MacroTotals;
 };
 
-export type LoggedMealShareTarget = {
-  logs: NutritionLog[];
-  name: string;
-};
-
-/** Capture a named diary group as the meal the optical sender will turn into a saved recipe. */
-export function mealGroupShareTarget(group: MealGroup): LoggedMealShareTarget {
+/**
+ * Capture a named diary group as the meal the optical sender will turn into a saved recipe.
+ *
+ * Returns the sender's own `ShareSendTarget` rather than a local `{logs, name}` shape: the diary's
+ * other send path (a whole meal section) builds that target inline, and two spellings of one
+ * concept is how the two paths drift.
+ */
+export function mealGroupShareTarget(group: MealGroup): ShareSendTarget {
   return {
+    kind: 'loggedMeal',
     logs: group.entries.map((entry) => entry.log),
     name: group.mealName,
   };

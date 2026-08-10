@@ -1,7 +1,7 @@
 import { ArrowDown, ArrowUp, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { Button } from '@/components/theme/Button';
@@ -12,8 +12,8 @@ import { WeekdayPicker } from '@/components/theme/WeekdayPicker';
 import type { WorkoutPlanCycleType } from '@/constants/workoutPlans';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { WorkoutPlanService } from '@/database/services/WorkoutPlanService';
+import { usePlanDraft } from '@/hooks/usePlanDraft';
 import { useTheme } from '@/hooks/useTheme';
-import { useWorkoutPlans } from '@/hooks/useWorkoutPlans';
 import { useWorkoutTemplates } from '@/hooks/useWorkoutTemplates';
 import { handleError } from '@/utils/handleError';
 import { getWeekdayLabels } from '@/utils/workout';
@@ -29,19 +29,6 @@ import { FullScreenModal } from './FullScreenModal';
  */
 const WORKOUT_PICKER_PAGE_SIZE = 10;
 
-/**
- * One row of the plan's membership: which workout, and (for a weekly plan) which days.
- *
- * Membership, order and schedule are ONE concept and so are one piece of state: the array order is
- * the plan order, presence in the array is selection, and `weekDays` rides along. Holding them as
- * three parallel structures — a selected-id set, an ordered-id list and an id → days record — meant
- * every read had to re-intersect them, and the intersection was written out twice.
- */
-interface PlanMemberDraft {
-  templateId: string;
-  weekDays: number[];
-}
-
 interface CreateEditPlanModalProps {
   visible: boolean;
   planId?: string;
@@ -49,6 +36,9 @@ interface CreateEditPlanModalProps {
    * Workouts a NEW plan starts out containing. The plan and this membership are created in one
    * `WorkoutPlanService.createPlan` call, so "create a plan from this workout" cannot half-succeed
    * and leave an empty plan behind. Ignored when editing, where the stored membership wins.
+   *
+   * Read once, at mount — it is an INITIAL value, and re-reading it would let a caller that
+   * rebuilds the array each render (they all do) reset the form under the user.
    */
   initialTemplateIds?: string[];
   onClose: () => void;
@@ -65,56 +55,43 @@ export function CreateEditPlanModal({
   const { t } = useTranslation();
   const theme = useTheme();
   const { showSnackbar } = useSnackbar();
-  const { plans, memberships } = useWorkoutPlans();
   const { templates } = useWorkoutTemplates();
-  const plan = plans.find((candidate) => candidate.id === planId);
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [cycleType, setCycleType] = useState<WorkoutPlanCycleType>('weekly');
-  const [icon, setIcon] = useState<string | undefined>();
-  const [members, setMembers] = useState<PlanMemberDraft[]>([]);
+  const {
+    name,
+    description,
+    cycleType,
+    icon,
+    members,
+    savedCycleType,
+    isLoading,
+    loadError,
+    setName,
+    setDescription,
+    setCycleType,
+    setIcon,
+    setMembers,
+  } = usePlanDraft(planId, initialTemplateIds);
   const [isSaving, setIsSaving] = useState(false);
   const [isCycleConfirmationVisible, setIsCycleConfirmationVisible] = useState(false);
   const [visibleWorkoutCount, setVisibleWorkoutCount] = useState(WORKOUT_PICKER_PAGE_SIZE);
 
-  // Closing rewinds the picker so a reopen starts at the first page. Deliberately not folded into
-  // the load effect below, which re-runs on every membership emission and would collapse the picker
-  // under the user mid-edit.
   useEffect(() => {
-    if (visible) {
-      return;
+    if (loadError) {
+      void handleError(loadError, 'CreateEditPlanModal.load', {
+        snackbarMessage: t('workouts.plans.loadError'),
+      });
     }
+  }, [loadError, t]);
 
-    const rewindPicker = () => {
-      setVisibleWorkoutCount(WORKOUT_PICKER_PAGE_SIZE);
-    };
-
-    rewindPicker();
-  }, [visible]);
-
+  // Closing rewinds the workout picker so a reopen starts at the first page. The setState goes
+  // through a named helper for the `react-hooks/set-state-in-effect` reason documented in
+  // `usePlanDraft`.
   useEffect(() => {
     if (!visible) {
-      return;
+      const rewindPicker = () => setVisibleWorkoutCount(WORKOUT_PICKER_PAGE_SIZE);
+      rewindPicker();
     }
-    const loadPlan = () => {
-      setName(plan?.name ?? '');
-      setDescription(plan?.description ?? '');
-      setCycleType(plan?.cycleType ?? 'weekly');
-      setIcon(plan?.icon);
-      setMembers(
-        planId
-          ? memberships
-              .filter((membership) => membership.planId === planId)
-              .sort((left, right) => left.position - right.position)
-              .map((membership) => ({
-                templateId: membership.templateId,
-                weekDays: membership.weekDays ?? [],
-              }))
-          : (initialTemplateIds ?? []).map((templateId) => ({ templateId, weekDays: [] }))
-      );
-    };
-    loadPlan();
-  }, [visible, planId, plan, memberships, initialTemplateIds]);
+  }, [visible]);
 
   const templateOptions = useMemo(
     () =>
@@ -139,33 +116,42 @@ export function CreateEditPlanModal({
   const selectedTemplateIds = useMemo(() => members.map((member) => member.templateId), [members]);
 
   /** Ticking a workout appends it; unticking drops it. Existing rows keep their order and days. */
-  const handleSelectionChange = useCallback((ids: string[]) => {
-    setMembers((current) => [
-      ...current.filter((member) => ids.includes(member.templateId)),
-      ...ids
-        .filter((id) => !current.some((member) => member.templateId === id))
-        .map((templateId) => ({ templateId, weekDays: [] })),
-    ]);
-  }, []);
+  const handleSelectionChange = useCallback(
+    (ids: string[]) => {
+      setMembers((current) => [
+        ...current.filter((member) => ids.includes(member.templateId)),
+        ...ids
+          .filter((id) => !current.some((member) => member.templateId === id))
+          .map((templateId) => ({ templateId, weekDays: [] })),
+      ]);
+    },
+    [setMembers]
+  );
 
-  const removeMember = useCallback((templateId: string) => {
-    setMembers((current) => current.filter((member) => member.templateId !== templateId));
-  }, []);
+  const removeMember = useCallback(
+    (templateId: string) => {
+      setMembers((current) => current.filter((member) => member.templateId !== templateId));
+    },
+    [setMembers]
+  );
 
-  const toggleMemberDay = useCallback((templateId: string, day: number) => {
-    setMembers((current) =>
-      current.map((member) =>
-        member.templateId === templateId
-          ? {
-              ...member,
-              weekDays: member.weekDays.includes(day)
-                ? member.weekDays.filter((candidate) => candidate !== day)
-                : [...member.weekDays, day].sort((left, right) => left - right),
-            }
-          : member
-      )
-    );
-  }, []);
+  const toggleMemberDay = useCallback(
+    (templateId: string, day: number) => {
+      setMembers((current) =>
+        current.map((member) =>
+          member.templateId === templateId
+            ? {
+                ...member,
+                weekDays: member.weekDays.includes(day)
+                  ? member.weekDays.filter((candidate) => candidate !== day)
+                  : [...member.weekDays, day].sort((left, right) => left - right),
+              }
+            : member
+        )
+      );
+    },
+    [setMembers]
+  );
 
   /**
    * The members that have a workout to render. One whose workout is missing from `templates`
@@ -201,7 +187,7 @@ export function CreateEditPlanModal({
         return next;
       });
     },
-    [visibleMembers]
+    [visibleMembers, setMembers]
   );
 
   const performSave = useCallback(async () => {
@@ -250,12 +236,12 @@ export function CreateEditPlanModal({
 
   const handleSave = useCallback(() => {
     const hasAssignedDays = members.some((member) => member.weekDays.length > 0);
-    if (plan?.cycleType === 'weekly' && cycleType === 'rotating' && hasAssignedDays) {
+    if (savedCycleType === 'weekly' && cycleType === 'rotating' && hasAssignedDays) {
       setIsCycleConfirmationVisible(true);
       return;
     }
     void performSave();
-  }, [plan?.cycleType, cycleType, members, performSave]);
+  }, [savedCycleType, cycleType, members, performSave]);
 
   return (
     <FullScreenModal
@@ -271,7 +257,7 @@ export function CreateEditPlanModal({
           width="full"
           onPress={handleSave}
           loading={isSaving}
-          disabled={isSaving}
+          disabled={isSaving || isLoading}
         />
       }
     >
@@ -281,154 +267,162 @@ export function CreateEditPlanModal({
         `KeyboardAwareScrollView` is not one of them — so the classes were silently dropped and the
         form rendered edge to edge with the last row hidden under the footer.
       */}
-      <KeyboardAwareScrollView className="flex-1" bottomOffset={16}>
-        <View className="gap-5 px-4 pb-32 pt-6">
-          <TextInput
-            label={t('workouts.plans.nameLabel')}
-            value={name}
-            onChangeText={setName}
-            placeholder={t('workouts.plans.namePlaceholder')}
-          />
-          <TextInput
-            label={t('workouts.plans.descriptionLabel')}
-            value={description}
-            onChangeText={setDescription}
-            placeholder={t('workouts.plans.descriptionPlaceholder')}
-            multiline
-            numberOfLines={3}
-          />
-          <View className="gap-2">
-            <Text className="ml-1 text-sm font-medium text-text-secondary">
-              {t('workouts.plans.cycleType.label')}
-            </Text>
-            <SegmentedControl
-              options={[
-                { label: t('workouts.plans.cycleType.weekly'), value: 'weekly' },
-                { label: t('workouts.plans.cycleType.rotating'), value: 'rotating' },
-              ]}
-              value={cycleType}
-              onValueChange={(value) => setCycleType(value as WorkoutPlanCycleType)}
+      {isLoading ? (
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color={theme.colors.accent.primary} />
+        </View>
+      ) : (
+        <KeyboardAwareScrollView className="flex-1" bottomOffset={16}>
+          <View className="gap-5 px-4 pb-32 pt-6">
+            <TextInput
+              label={t('workouts.plans.nameLabel')}
+              value={name}
+              onChangeText={setName}
+              placeholder={t('workouts.plans.namePlaceholder')}
             />
-          </View>
-          <View className="gap-2">
-            <Text className="ml-1 text-sm font-medium text-text-secondary">
-              {t('workouts.plans.iconLabel')}
-            </Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <View className="flex-row gap-2">
-                {WORKOUT_ICON_OPTIONS.map((option) => {
-                  const Icon = getWorkoutIcon(option.value);
-                  const selected = icon === option.value;
-                  return (
-                    <Pressable
-                      key={option.value}
-                      onPress={() => setIcon(option.value)}
-                      className={`h-12 w-12 items-center justify-center rounded-lg ${selected ? 'bg-accent-primary' : 'bg-bg-secondary'}`}
-                    >
-                      <Icon
-                        size={theme.iconSize.md}
-                        color={selected ? theme.colors.text.white : theme.colors.text.secondary}
-                      />
-                    </Pressable>
-                  );
-                })}
-              </View>
-            </ScrollView>
-          </View>
-          {/*
+            <TextInput
+              label={t('workouts.plans.descriptionLabel')}
+              value={description}
+              onChangeText={setDescription}
+              placeholder={t('workouts.plans.descriptionPlaceholder')}
+              multiline
+              numberOfLines={3}
+            />
+            <View className="gap-2">
+              <Text className="ml-1 text-sm font-medium text-text-secondary">
+                {t('workouts.plans.cycleType.label')}
+              </Text>
+              <SegmentedControl
+                options={[
+                  { label: t('workouts.plans.cycleType.weekly'), value: 'weekly' },
+                  { label: t('workouts.plans.cycleType.rotating'), value: 'rotating' },
+                ]}
+                value={cycleType}
+                onValueChange={(value) => setCycleType(value as WorkoutPlanCycleType)}
+              />
+            </View>
+            <View className="gap-2">
+              <Text className="ml-1 text-sm font-medium text-text-secondary">
+                {t('workouts.plans.iconLabel')}
+              </Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <View className="flex-row gap-2">
+                  {WORKOUT_ICON_OPTIONS.map((option) => {
+                    const Icon = getWorkoutIcon(option.value);
+                    const selected = icon === option.value;
+                    return (
+                      <Pressable
+                        key={option.value}
+                        onPress={() => setIcon(option.value)}
+                        className={`h-12 w-12 items-center justify-center rounded-lg ${selected ? 'bg-accent-primary' : 'bg-bg-secondary'}`}
+                      >
+                        <Icon
+                          size={theme.iconSize.md}
+                          color={selected ? theme.colors.text.white : theme.colors.text.secondary}
+                        />
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </ScrollView>
+            </View>
+            {/*
             This selector lists EVERY workout in the library, not the plan's members — ticking one
             adds it, unticking removes it. It used to carry the "Workouts in this plan" heading,
             which read as a member list you could only shrink: an unticked workout stayed on screen,
             so removal looked like it had not been saved and there was no obvious way to add one.
             The plan's actual membership is the separate, shorter list below.
           */}
-          <OptionsMultiSelector
-            title={t('workouts.plans.selectorLabel')}
-            options={visibleTemplateOptions}
-            selectedIds={selectedTemplateIds}
-            onChange={handleSelectionChange}
-            hasGroups={false}
-          />
-          {templateOptions.length > visibleWorkoutCount ? (
-            <View className="items-center">
-              <Button
-                label={t('common.loadMore')}
-                variant="outline"
-                size="sm"
-                width="auto"
-                onPress={() =>
-                  setVisibleWorkoutCount((current) => current + WORKOUT_PICKER_PAGE_SIZE)
-                }
-              />
-            </View>
-          ) : null}
-          <View className="gap-3">
-            <Text className="ml-1 text-sm font-medium text-text-secondary">
-              {t('workouts.plans.membersLabel')}
-            </Text>
-            {visibleMembers.length === 0 ? (
-              <Text className="ml-1 text-xs text-text-tertiary">
-                {t('workouts.plans.membersEmpty')}
-              </Text>
-            ) : null}
-            {visibleMembers.map((member, index) => (
-              <View key={member.templateId} className="gap-3 rounded-lg bg-bg-card p-4">
-                <View className="flex-row items-center gap-2">
-                  <Text className="min-w-0 flex-1 font-semibold text-text-primary">
-                    {member.template.name}
-                  </Text>
-                  <Pressable
-                    onPress={() => moveMember(member.templateId, -1)}
-                    disabled={index === 0}
-                    className="p-2"
-                  >
-                    <ArrowUp
-                      size={theme.iconSize.sm}
-                      color={index === 0 ? theme.colors.text.tertiary : theme.colors.text.secondary}
-                    />
-                  </Pressable>
-                  <Pressable
-                    onPress={() => moveMember(member.templateId, 1)}
-                    disabled={index === visibleMembers.length - 1}
-                    className="p-2"
-                  >
-                    <ArrowDown
-                      size={theme.iconSize.sm}
-                      color={
-                        index === visibleMembers.length - 1
-                          ? theme.colors.text.tertiary
-                          : theme.colors.text.secondary
-                      }
-                    />
-                  </Pressable>
-                  <Pressable
-                    onPress={() => removeMember(member.templateId)}
-                    className="p-2"
-                    accessibilityRole="button"
-                    accessibilityLabel={t('workouts.plans.removeMember')}
-                  >
-                    <X size={theme.iconSize.sm} color={theme.colors.status.error} />
-                  </Pressable>
-                </View>
-                {cycleType === 'weekly' ? (
-                  <>
-                    <WeekdayPicker
-                      days={getWeekdayLabels()}
-                      selectedDays={member.weekDays}
-                      onToggleDay={(day) => toggleMemberDay(member.templateId, day)}
-                    />
-                    {member.weekDays.length === 0 ? (
-                      <Text className="text-status-warning text-xs">
-                        {t('workouts.plans.unscheduled')}
-                      </Text>
-                    ) : null}
-                  </>
-                ) : null}
+            <OptionsMultiSelector
+              title={t('workouts.plans.selectorLabel')}
+              options={visibleTemplateOptions}
+              selectedIds={selectedTemplateIds}
+              onChange={handleSelectionChange}
+              hasGroups={false}
+            />
+            {templateOptions.length > visibleWorkoutCount ? (
+              <View className="items-center">
+                <Button
+                  label={t('common.loadMore')}
+                  variant="outline"
+                  size="sm"
+                  width="auto"
+                  onPress={() =>
+                    setVisibleWorkoutCount((current) => current + WORKOUT_PICKER_PAGE_SIZE)
+                  }
+                />
               </View>
-            ))}
+            ) : null}
+            <View className="gap-3">
+              <Text className="ml-1 text-sm font-medium text-text-secondary">
+                {t('workouts.plans.membersLabel')}
+              </Text>
+              {visibleMembers.length === 0 ? (
+                <Text className="ml-1 text-xs text-text-tertiary">
+                  {t('workouts.plans.membersEmpty')}
+                </Text>
+              ) : null}
+              {visibleMembers.map((member, index) => (
+                <View key={member.templateId} className="gap-3 rounded-lg bg-bg-card p-4">
+                  <View className="flex-row items-center gap-2">
+                    <Text className="min-w-0 flex-1 font-semibold text-text-primary">
+                      {member.template.name}
+                    </Text>
+                    <Pressable
+                      onPress={() => moveMember(member.templateId, -1)}
+                      disabled={index === 0}
+                      className="p-2"
+                    >
+                      <ArrowUp
+                        size={theme.iconSize.sm}
+                        color={
+                          index === 0 ? theme.colors.text.tertiary : theme.colors.text.secondary
+                        }
+                      />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => moveMember(member.templateId, 1)}
+                      disabled={index === visibleMembers.length - 1}
+                      className="p-2"
+                    >
+                      <ArrowDown
+                        size={theme.iconSize.sm}
+                        color={
+                          index === visibleMembers.length - 1
+                            ? theme.colors.text.tertiary
+                            : theme.colors.text.secondary
+                        }
+                      />
+                    </Pressable>
+                    <Pressable
+                      onPress={() => removeMember(member.templateId)}
+                      className="p-2"
+                      accessibilityRole="button"
+                      accessibilityLabel={t('workouts.plans.removeMember')}
+                    >
+                      <X size={theme.iconSize.sm} color={theme.colors.status.error} />
+                    </Pressable>
+                  </View>
+                  {cycleType === 'weekly' ? (
+                    <>
+                      <WeekdayPicker
+                        days={getWeekdayLabels()}
+                        selectedDays={member.weekDays}
+                        onToggleDay={(day) => toggleMemberDay(member.templateId, day)}
+                      />
+                      {member.weekDays.length === 0 ? (
+                        <Text className="text-status-warning text-xs">
+                          {t('workouts.plans.unscheduled')}
+                        </Text>
+                      ) : null}
+                    </>
+                  ) : null}
+                </View>
+              ))}
+            </View>
           </View>
-        </View>
-      </KeyboardAwareScrollView>
+        </KeyboardAwareScrollView>
+      )}
       <ConfirmationModal
         visible={isCycleConfirmationVisible}
         onClose={() => setIsCycleConfirmationVisible(false)}

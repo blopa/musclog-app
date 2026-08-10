@@ -32,10 +32,8 @@ import CreateCustomFoodModal from '@/components/modals/CreateCustomFoodModal';
 import { CreateMealModal } from '@/components/modals/CreateMealModal';
 import { FoodMealDetailsModal } from '@/components/modals/FoodMealDetailsModal';
 import { FoodMealTrackingDetailsModal } from '@/components/modals/FoodMealTrackingDetailsModal';
-import { FoodOpticalSendModal } from '@/components/modals/FoodOpticalSendModal';
 import { FoodSearchModal } from '@/components/modals/FoodSearchModal';
 import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
-import { LoggedMealOpticalSendModal } from '@/components/modals/LoggedMealOpticalSendModal';
 import { MealGroupDetailsModal } from '@/components/modals/MealGroupDetailsModal';
 import { MealInsightsModal } from '@/components/modals/MealInsightsModal';
 import { MoveCopyMealModal } from '@/components/modals/MoveCopyMealModal';
@@ -44,10 +42,13 @@ import { type NutritionGoals, NutritionGoalsModal } from '@/components/modals/Nu
 import { SavedForLaterModal } from '@/components/modals/SavedForLaterModal';
 import { SaveForLaterPortionModal } from '@/components/modals/SaveForLaterPortionModal';
 import { ScaleMealPortionModal } from '@/components/modals/ScaleMealPortionModal';
+import {
+  ShareOpticalSendModal,
+  type ShareSendTarget,
+} from '@/components/modals/ShareOpticalSendModal';
 import { CopyDayPromptCard } from '@/components/nutrition/CopyDayPromptCard';
 import { FastingDayCard } from '@/components/nutrition/FastingDayCard';
 import {
-  type LoggedMealShareTarget,
   type MealGroup,
   mealGroupShareTarget,
   type ResolvedLogEntry,
@@ -296,10 +297,10 @@ export default function FoodScreen() {
   const screenModals = useFoodScreenModals();
   const [selectedDate, setSelectedDate] = useState(() => localCalendarDayDate(new Date()));
 
-  // Optical send targets are captured before each share handler clears its menu selection, so the
-  // screen-level sender can outlive the menu that launched it.
-  const [foodToSend, setFoodToSend] = useState<null | { foodId: string; hasImage: boolean }>(null);
-  const [loggedMealToSend, setLoggedMealToSend] = useState<LoggedMealShareTarget | null>(null);
+  // The optical send target is captured before each share handler clears its menu selection, so the
+  // screen-level sender can outlive the menu that launched it. One slot, not one per kind: only
+  // one send screen can be open at a time, and `ShareSendTarget` already discriminates the kinds.
+  const [shareTarget, setShareTarget] = useState<ShareSendTarget | null>(null);
 
   // Keep camera context aware of the current date so the nav-bar camera button
   // (which has no logDate) also opens FoodMealTrackingDetailsModal on the right date.
@@ -640,7 +641,7 @@ export default function FoodScreen() {
     const mealGroup = selectedMealGroup;
     closeMealGroupMenu(true);
     if (mealGroup) {
-      setLoggedMealToSend(mealGroupShareTarget(mealGroup));
+      setShareTarget(mealGroupShareTarget(mealGroup));
     }
   };
 
@@ -871,9 +872,23 @@ export default function FoodScreen() {
     const food = selectedFoodItem?.food;
     closeFoodMenu(true);
     if (food) {
-      setFoodToSend({ foodId: food.id, hasImage: Boolean(food.imageUrl) });
+      setShareTarget({ foodId: food.id, hasImage: Boolean(food.imageUrl), kind: 'food' });
     }
   };
+
+  /**
+   * The "Send to phone" row. Identical on all three menus but for its description and what it
+   * captures — it was pasted out three times, so a change to the icon or the shared title had to
+   * be made three times to stay consistent.
+   */
+  const sendToPhoneMenuItem = (descriptionKey: string, onPress: () => void) => ({
+    icon: QrCode,
+    iconColor: theme.colors.status.purple,
+    iconBgColor: theme.colors.status.purple10,
+    title: t('food.actions.sendToPhone'),
+    description: t(descriptionKey),
+    onPress,
+  });
 
   const foodMenuItems = [
     {
@@ -919,16 +934,7 @@ export default function FoodScreen() {
     // Only a real food row can be sent: a log whose food was deleted carries an encrypted snapshot,
     // which is not something the other phone could save.
     ...(selectedFoodItem?.food
-      ? [
-          {
-            icon: QrCode,
-            iconColor: theme.colors.status.purple,
-            iconBgColor: theme.colors.status.purple10,
-            title: t('food.actions.sendToPhone'),
-            description: t('food.actions.sendFoodToPhoneDesc'),
-            onPress: handleSendFoodToPhone,
-          },
-        ]
+      ? [sendToPhoneMenuItem('food.actions.sendFoodToPhoneDesc', handleSendFoodToPhone)]
       : []),
     {
       icon: Save,
@@ -1039,7 +1045,8 @@ export default function FoodScreen() {
 
     // The receiver saves this as an ordinary meal, so it needs a name it can be recognised by
     // later — "Breakfast" alone would collide with every other breakfast ever received.
-    setLoggedMealToSend({
+    setShareTarget({
+      kind: 'loggedMeal',
       logs,
       name: t('opticalTransfer.share.loggedMealName', {
         date: formatLocalCalendarDayNumericIntl(selectedDate, appLocale),
@@ -1370,14 +1377,7 @@ export default function FoodScreen() {
       description: t('food.actions.splitMealDesc'),
       onPress: handleSplitMeal,
     },
-    {
-      icon: QrCode,
-      iconColor: theme.colors.status.purple,
-      iconBgColor: theme.colors.status.purple10,
-      title: t('food.actions.sendToPhone'),
-      description: t('food.actions.sendMealToPhoneDesc'),
-      onPress: handleSendMealToPhone,
-    },
+    sendToPhoneMenuItem('food.actions.sendMealToPhoneDesc', handleSendMealToPhone),
     {
       icon: Save,
       iconColor: theme.colors.accent.primary,
@@ -1452,14 +1452,7 @@ export default function FoodScreen() {
       description: t('food.actions.splitMealDesc'),
       onPress: handleMealGroupSplit,
     },
-    {
-      icon: QrCode,
-      iconColor: theme.colors.status.purple,
-      iconBgColor: theme.colors.status.purple10,
-      title: t('food.actions.sendToPhone'),
-      description: t('food.actions.sendMealToPhoneDesc'),
-      onPress: handleSendMealGroupToPhone,
-    },
+    sendToPhoneMenuItem('food.actions.sendMealToPhoneDesc', handleSendMealGroupToPhone),
     {
       icon: Save,
       iconColor: theme.colors.accent.primary,
@@ -1948,23 +1941,13 @@ export default function FoodScreen() {
         items={mealMenuItems}
       />
 
-      {/* Optical send. Screen-level siblings on purpose: the menu that opens them dismisses itself
+      {/* Optical send. A screen-level sibling on purpose: the menu that opens it dismisses itself
           first, so a modal parked in its children would unmount before it could appear
           (docs/modals-problem-on-ios.md). */}
-      {foodToSend ? (
-        <FoodOpticalSendModal
-          foodId={foodToSend.foodId}
-          hasImage={foodToSend.hasImage}
-          onClose={() => setFoodToSend(null)}
-          visible={true}
-        />
-      ) : null}
-
-      {loggedMealToSend ? (
-        <LoggedMealOpticalSendModal
-          logs={loggedMealToSend.logs}
-          name={loggedMealToSend.name}
-          onClose={() => setLoggedMealToSend(null)}
+      {shareTarget ? (
+        <ShareOpticalSendModal
+          onClose={() => setShareTarget(null)}
+          target={shareTarget}
           visible={true}
         />
       ) : null}

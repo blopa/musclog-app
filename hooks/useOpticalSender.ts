@@ -107,7 +107,6 @@ export function useOpticalSender(options: {
 
   const containerRef = useRef<null | Uint8Array>(null);
   const metaRef = useRef<null | OpticalContainerMeta>(null);
-  const fpsRef = useRef(DEFAULT_FPS);
   /**
    * Bumped on every prepare and stop. `dumpDatabase()` can run for a long time, and the user can
    * back out or restart while it is in flight; a stale continuation must not install its stream
@@ -161,7 +160,6 @@ export function useOpticalSender(options: {
 
       loop.install(stream, plan.frames);
       loop.setFps(fps);
-      fpsRef.current = fps;
       presetIdRef.current = presetId;
 
       setState((previous) => ({
@@ -204,11 +202,11 @@ export function useOpticalSender(options: {
     haltStream();
     containerRef.current = null;
     metaRef.current = null;
-    fpsRef.current = DEFAULT_FPS;
+    loop.setFps(DEFAULT_FPS);
     calibrationRef.current = null;
     presetIdRef.current = null;
     setState(idleState());
-  }, [haltStream]);
+  }, [haltStream, loop]);
 
   const prepare = useCallback(
     async (override?: OpticalPayloadBuilder) => {
@@ -258,7 +256,7 @@ export function useOpticalSender(options: {
         // density or speed, and a re-pack (the photo toggle) must preserve that rather than reset it.
         installStream(
           presetIdRef.current ?? calibration.recommendedPresetId,
-          presetIdRef.current ? fpsRef.current : calibration.recommendedFps
+          presetIdRef.current ? loop.readFps() : calibration.recommendedFps
         );
         setState((previous) => ({ ...previous, phase: 'ready', prepareFraction: 1 }));
       } catch (error) {
@@ -273,7 +271,7 @@ export function useOpticalSender(options: {
         }));
       }
     },
-    [installStream, passphrase]
+    [installStream, loop, passphrase]
   );
 
   const start = useCallback(() => {
@@ -295,15 +293,19 @@ export function useOpticalSender(options: {
    */
   const setPreset = useCallback(
     (presetId: OpticalPresetId) => {
-      installStream(presetId, fpsRef.current);
+      installStream(presetId, loop.readFps());
     },
-    [installStream]
+    [installStream, loop]
   );
 
-  /** Change the display rate. Free: the loop reads this from a ref on its next tick. */
+  /**
+   * Change the display rate. Free: the loop reads this from a ref on its next tick.
+   *
+   * `state.fps` is a copy for rendering only — the loop owns the live value, which is why every
+   * read here goes through `loop.readFps()` rather than a ref mirrored on this side.
+   */
   const setFps = useCallback(
     (fps: number) => {
-      fpsRef.current = fps;
       loop.setFps(fps);
       setState((previous) => ({
         ...previous,

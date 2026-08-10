@@ -66,12 +66,13 @@ export default function WorkoutsScreen() {
 
   // Open template preview when navigating from ViewExerciseModal (e.g. "Workouts using this")
   useEffect(() => {
-    const id = params.previewTemplateId;
-    if (id?.trim()) {
-      const sync = () => {
-        setPreviewTarget({ templateId: id.trim() });
-      };
-      sync();
+    const id = params.previewTemplateId?.trim();
+    if (id) {
+      // Through a named helper rather than a bare setState in the effect body:
+      // `react-hooks/set-state-in-effect` is an error in this repo, and this is the wrapper idiom
+      // it already uses elsewhere (`useCopyDaySource`, `CoachQuickSettingsModal`). Don't inline it.
+      const openPreview = () => setPreviewTarget({ templateId: id });
+      openPreview();
     }
   }, [params.previewTemplateId]);
 
@@ -117,7 +118,6 @@ export default function WorkoutsScreen() {
   const [selectedPlanId, setSelectedPlanId] = useState<string>('');
   const [isDeletePlanConfirmationVisible, setIsDeletePlanConfirmationVisible] = useState(false);
   const [isDeletingPlan, setIsDeletingPlan] = useState(false);
-  const [pendingPlanIds, setPendingPlanIds] = useState<string[]>([]);
 
   useFocusEffect(
     useCallback(() => {
@@ -233,23 +233,24 @@ export default function WorkoutsScreen() {
     }
   };
 
+  // No `selectedPlanIds`/`onChange`: this screen persists the membership on confirm and reads the
+  // result back off the `memberships` subscription, so there is nothing for the hook to hand back.
   const planAssignment = usePlanAssignment({
-    onChange: setPendingPlanIds,
     onConfirm: async (planIds) => {
       if (!selectedWorkoutId) {
-        return;
+        return false;
       }
       try {
         await WorkoutPlanService.setTemplatePlans(selectedWorkoutId, planIds);
+        return true;
       } catch (error) {
         await handleError(error, 'workouts.setTemplatePlans', {
           snackbarMessage: t('workouts.plans.saveError'),
         });
-        // Rethrown so the picker stays open with the user's selection intact to retry.
-        throw error;
+        // Reported as a refusal so the picker stays open with the user's selection intact to retry.
+        return false;
       }
     },
-    selectedPlanIds: pendingPlanIds,
     templateId: selectedWorkoutId || undefined,
   });
 
@@ -439,12 +440,12 @@ export default function WorkoutsScreen() {
           if (!selectedWorkoutId) {
             return;
           }
-          const currentPlanIds = memberships
-            .filter((membership) => membership.templateId === selectedWorkoutId)
-            .map((membership) => membership.planId);
-          setPendingPlanIds(currentPlanIds);
           setIsMenuVisible(false);
-          planAssignment.openPicker(currentPlanIds);
+          planAssignment.openPicker(
+            memberships
+              .filter((membership) => membership.templateId === selectedWorkoutId)
+              .map((membership) => membership.planId)
+          );
         }}
       />
       <CreateWorkoutOptionsModal

@@ -13,12 +13,33 @@ import type FoodFoodPortion from '@/database/models/FoodFoodPortion';
 import type FoodPortion from '@/database/models/FoodPortion';
 import { createThumbnail } from '@/utils/file';
 import {
+  OPTICAL_EXPORT_VERSION_SHARE,
+  OPTICAL_PAYLOAD_KIND_SHARE,
+} from '@/utils/optical/container';
+import {
+  type MusclogShareEnvelope,
   SHARE_ASSET_REF_PREFIX,
   type ShareAsset,
   type ShareRow,
 } from '@/utils/share/shareEnvelope';
 
 const SHARE_THUMBNAIL_WIDTH = 400;
+
+/**
+ * A built envelope as the optical sender wants it.
+ *
+ * Every kind's builder ended in a byte-identical copy of this, which is three chances to disagree
+ * about the container fields that make a payload a share rather than a database — and the receive
+ * side refuses to act on a payload whose `payloadKind` it does not recognise, so a divergence here
+ * fails on the OTHER phone.
+ */
+export function shareSenderPayload(envelope: MusclogShareEnvelope) {
+  return {
+    exportVersion: OPTICAL_EXPORT_VERSION_SHARE,
+    json: JSON.stringify(envelope),
+    payloadKind: OPTICAL_PAYLOAD_KIND_SHARE,
+  };
+}
 
 /**
  * A model's raw columns, minus WatermelonDB's sync bookkeeping and every empty value. The empties

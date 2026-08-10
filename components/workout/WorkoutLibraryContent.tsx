@@ -9,7 +9,6 @@ import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import DashedButton from '@/components/theme/DashedButton';
 import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
 import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
-import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { useTheme } from '@/hooks/useTheme';
 import type { WorkoutTemplateWithMetadata } from '@/hooks/useWorkoutTemplates';
 import {
@@ -18,6 +17,7 @@ import {
   type WorkoutPlanSummary,
 } from '@/utils/workoutPlanGrouping';
 
+import { WorkoutLibrarySkeleton } from './WorkoutLibrarySkeleton';
 import { WorkoutPlanSection } from './WorkoutPlanSection';
 
 /** Archived workouts are listed flat: a plan lists what you would train next, not your history. */
@@ -123,92 +123,28 @@ export function WorkoutLibraryContent({
   }
 
   if (isLoading) {
-    return (
-      <>
-        <View
-          className="rounded-lg border bg-bg-card p-5"
-          style={{ borderColor: theme.colors.background.white5 }}
-        >
-          <View className="mb-4 flex-row items-start justify-between">
-            <View className="flex-1 gap-2">
-              <SkeletonLoader width="40%" height={theme.size['5']} />
-              <SkeletonLoader width="60%" height={theme.size['6']} />
-              <SkeletonLoader width="50%" height={theme.size['4']} />
-            </View>
-            <SkeletonLoader
-              width={theme.size['16']}
-              height={theme.size['16']}
-              borderRadius={theme.borderRadius.md}
-            />
-          </View>
-          <View className="flex-row gap-3">
-            <SkeletonLoader
-              width={theme.size['120']}
-              height={theme.size['44']}
-              borderRadius={theme.borderRadius.md}
-            />
-            <SkeletonLoader
-              width={theme.size['12']}
-              height={theme.size['44']}
-              borderRadius={theme.borderRadius.md}
-            />
-          </View>
-        </View>
-        {[1, 2, 3].map((index) => (
-          <View
-            key={index}
-            className="rounded-lg border bg-bg-card p-4"
-            style={{ borderColor: theme.colors.background.white5 }}
-          >
-            <View className="flex-row items-center gap-3">
-              <SkeletonLoader
-                width={theme.size['12']}
-                height={theme.size['12']}
-                borderRadius={theme.borderRadius.md}
-              />
-              <View className="flex-1 gap-2">
-                <SkeletonLoader width="75%" height={theme.size['4']} />
-                <SkeletonLoader width="50%" height={theme.size['3']} />
-              </View>
-            </View>
-            <View className="mt-4 flex-row gap-2">
-              <SkeletonLoader
-                width={theme.size['20']}
-                height={theme.size['8']}
-                borderRadius={theme.borderRadius.lg}
-              />
-              <SkeletonLoader
-                width={theme.size['20']}
-                height={theme.size['8']}
-                borderRadius={theme.borderRadius.lg}
-              />
-            </View>
-          </View>
-        ))}
-      </>
-    );
+    return <WorkoutLibrarySkeleton />;
   }
 
   if (resultCount === 0) {
-    const isSearch = hasSearchQuery;
     return (
       <>
         <EmptyStateCard
-          icon={isSearch ? Search : Dumbbell}
-          title={isSearch ? t('workouts.noSearchResults') : t('emptyStates.workouts.title')}
+          icon={hasSearchQuery ? Search : Dumbbell}
+          title={hasSearchQuery ? t('workouts.noSearchResults') : t('emptyStates.workouts.title')}
           description={
-            isSearch
+            hasSearchQuery
               ? t('workouts.noSearchResultsDescription', { query: searchQuery })
               : t('emptyStates.workouts.description')
           }
           buttonLabel={
-            isSearch
+            hasSearchQuery
               ? t('workouts.noSearchResultsButtonLabel')
               : t('emptyStates.workouts.buttonLabel')
           }
-          iconGradient={!isSearch}
-          buttonVariant={isSearch ? undefined : 'gradientCta'}
-          onButtonPress={isSearch ? onClearSearch : onCreateWorkout}
+          iconGradient={!hasSearchQuery}
+          buttonVariant={hasSearchQuery ? undefined : 'gradientCta'}
+          onButtonPress={hasSearchQuery ? onClearSearch : onCreateWorkout}
         />
         {createWorkoutButton}
       </>
@@ -238,6 +174,7 @@ export function WorkoutLibraryContent({
                   icon={template.icon}
                   variant={featured ? undefined : 'standard'}
                   onStart={() => onStartWorkout(template.id, plan?.id)}
+                  // TODO: check why can't archive featured workout
                   onArchive={featured ? undefined : () => onArchiveWorkout(template.id)}
                   onMore={() => onOpenWorkoutMenu(template.id, template.name, plan?.id)}
                 />

@@ -135,4 +135,38 @@ describe('useQrFrameLoop', () => {
       framesShown: 0,
     });
   });
+
+  it('hands out an identity-stable controller', () => {
+    // A fresh object literal per render was the only unstable thing this hook produced, and it
+    // propagated: the bench puts the loop in a `useEffect` dep array to push fps (so that effect
+    // ran on every render), and `useOpticalSender`'s whole public API takes `[loop]`, which made
+    // `stop`/`reset`/`setPreset` unstable too. A hook whose reason for existing is "never tear the
+    // loop down" must not hand out churn.
+    const onFrame = jest.fn();
+    const { rerender, result } = renderHook(
+      ({ running }: { running: boolean }) => useQrFrameLoop({ onFrame, running }),
+      { initialProps: { running: false } }
+    );
+
+    const first = result.current;
+    rerender({ running: false });
+    expect(result.current).toBe(first);
+
+    // A caller that rebuilds its handlers each render must not churn it either.
+    const { rerender: rerenderHandlers, result: handlerResult } = renderHook(() =>
+      useQrFrameLoop({ onFrame: () => {}, running: false })
+    );
+    const firstHandlers = handlerResult.current;
+    rerenderHandlers();
+    expect(handlerResult.current).toBe(firstHandlers);
+  });
+
+  it('reports the rate it is pacing to, so callers need no mirrored ref', () => {
+    const { result } = renderHook(() => useQrFrameLoop({ onFrame: jest.fn(), running: false }));
+
+    // `useOpticalSender` kept its own `fpsRef` in lockstep with `setFps` — two sources of truth
+    // for one number. The loop owns it; callers read it back.
+    act(() => result.current.setFps(23));
+    expect(result.current.readFps()).toBe(23);
+  });
 });

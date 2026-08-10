@@ -381,6 +381,30 @@ export class WorkoutPlanService {
     return { activePlanIds, records };
   }
 
+  /**
+   * A plan and its memberships as a ONE-SHOT read, for the plan editor.
+   *
+   * Deliberately not the `useWorkoutPlans()` subscription the rest of the UI uses: a form is not a
+   * live view of the database. Seeding editable state from an observable means every unrelated
+   * membership emission re-seeds it, and the user's half-typed name, chosen icon and reordered
+   * workouts are replaced by whatever is on disk. Read it once when the editor opens; the editor's
+   * own Save is what puts it back.
+   */
+  static async getPlanSnapshot(
+    planId: string
+  ): Promise<null | { plan: WorkoutPlan; memberships: WorkoutPlanTemplate[] }> {
+    const plans = await database
+      .get<WorkoutPlan>('workout_plans')
+      .query(Q.where('id', planId), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+    const plan = plans[0];
+    if (!plan) {
+      return null;
+    }
+
+    return { plan, memberships: await WorkoutPlanRepository.getMembershipsForPlan(planId).fetch() };
+  }
+
   static async getPlansWithMemberships(): Promise<PlanWithMemberships[]> {
     const [plans, memberships] = await Promise.all([
       WorkoutPlanRepository.getAll().fetch(),
