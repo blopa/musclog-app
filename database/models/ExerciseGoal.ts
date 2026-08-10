@@ -1,5 +1,5 @@
 import { Model } from '@nozbe/watermelondb';
-import { field } from '@nozbe/watermelondb/decorators';
+import { field, writer } from '@nozbe/watermelondb/decorators';
 
 export type ExerciseGoalType =
   '1rm' | 'consistency' | 'steps_per_day' | 'distance_per_session' | 'pace' | 'duration';
@@ -37,5 +37,14 @@ export default class ExerciseGoal extends Model {
   // Helper: Is this goal currently active?
   get isActive(): boolean {
     return this.effectiveUntil === null && !this.deletedAt;
+  }
+
+  @writer
+  async markAsDeleted(): Promise<void> {
+    const now = Date.now();
+    await this.update((record) => {
+      record.deletedAt = now;
+      record.updatedAt = now;
+    });
   }
 }

@@ -1,5 +1,5 @@
 import { Model, type Relation } from '@nozbe/watermelondb';
-import { field, immutableRelation } from '@nozbe/watermelondb/decorators';
+import { field, immutableRelation, writer } from '@nozbe/watermelondb/decorators';
 
 import Exercise from './Exercise';
 import Muscle from './Muscle';
@@ -23,4 +23,13 @@ export default class ExerciseMuscle extends Model {
 
   @immutableRelation('exercises', 'exercise_id') declare exercise: Relation<Exercise>;
   @immutableRelation('muscles', 'muscle_id') declare muscle: Relation<Muscle>;
+
+  @writer
+  async markAsDeleted(): Promise<void> {
+    const now = Date.now();
+    await this.update((record) => {
+      record.deletedAt = now;
+      record.updatedAt = now;
+    });
+  }
 }

@@ -20,7 +20,11 @@ jest.mock('@nozbe/watermelondb', () => ({
 jest.mock('@/database/database-instance', () => ({
   database: {
     get: jest.fn(),
-    write: jest.fn(async (callback: (writer?: unknown) => unknown) => callback({})),
+    // `ExerciseGoal.markAsDeleted` is a `@writer`, so a service with an open write block has
+    // to reach it through `writer.callWriter` rather than nesting a second writer.
+    write: jest.fn(async (callback: (writer?: unknown) => unknown) =>
+      callback({ callWriter: (work: () => unknown) => Promise.resolve(work()) })
+    ),
   },
 }));
 

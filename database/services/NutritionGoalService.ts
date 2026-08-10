@@ -517,7 +517,7 @@ export class NutritionGoalService {
    * goal to current by clearing its effectiveUntil.
    */
   static async deleteGoal(id: string): Promise<void> {
-    await database.write(async () => {
+    await database.write(async (writer) => {
       const goal = await database.get<NutritionGoal>('nutrition_goals').find(id);
 
       if (goal.effectiveUntil == null) {
@@ -540,7 +540,9 @@ export class NutritionGoalService {
         }
       }
 
-      await goal.markAsDeleted();
+      // markAsDeleted is a @writer, so it has to join this transaction via callWriter
+      // rather than nest a new one (which would stall the queue).
+      await writer.callWriter(() => goal.markAsDeleted());
 
       triggerWidgetUpdate();
     });

@@ -62,43 +62,65 @@ export default class User extends Model {
       if (data.fullName !== undefined) {
         user.fullName = data.fullName ?? '';
       }
+
       if (data.email !== undefined) {
         user.email = data.email ?? '';
       }
+
       if (data.dateOfBirth !== undefined) {
         user.dateOfBirth = data.dateOfBirth;
       }
+
       if (data.gender !== undefined) {
         user.gender = data.gender;
       }
+
       if (data.fitnessGoal !== undefined) {
         user.fitnessGoal = data.fitnessGoal;
       }
+
       if (data.weightGoal !== undefined) {
         user.weightGoal = data.weightGoal;
       }
+
       if (data.activityLevel !== undefined) {
         if (data.activityLevel < 1 || data.activityLevel > 5) {
           throw new Error('Activity level must be between 1 and 5');
         }
+
         user.activityLevel = data.activityLevel;
       }
+
       if (data.liftingExperience !== undefined) {
         user.liftingExperience = data.liftingExperience;
       }
+
       if (data.avatarIcon !== undefined && data.avatarIcon !== null) {
         user.avatarIcon = data.avatarIcon;
       }
+
       if (data.avatarColor !== undefined && data.avatarColor !== null) {
         user.avatarColor = data.avatarColor;
       }
+
       if (data.externalAccountId !== undefined) {
         user.externalAccountId = data.externalAccountId ?? '';
       }
+
       if (data.externalAccountProvider !== undefined) {
         user.externalAccountProvider = data.externalAccountProvider ?? '';
       }
+
       user.updatedAt = Date.now();
+    });
+  }
+
+  @writer
+  async markAsDeleted(): Promise<void> {
+    const now = Date.now();
+    await this.update((record) => {
+      record.deletedAt = now;
+      record.updatedAt = now;
     });
   }
 }

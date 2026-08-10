@@ -1,5 +1,5 @@
 import { Model } from '@nozbe/watermelondb';
-import { field, relation } from '@nozbe/watermelondb/decorators';
+import { field, relation, writer } from '@nozbe/watermelondb/decorators';
 
 import WorkoutTemplate from './WorkoutTemplate';
 
@@ -21,4 +21,13 @@ export default class Schedule extends Model {
   @field('deleted_at') deletedAt?: number;
 
   @relation('workout_templates', 'template_id') declare template: WorkoutTemplate;
+
+  @writer
+  async markAsDeleted(): Promise<void> {
+    const now = Date.now();
+    await this.update((record) => {
+      record.deletedAt = now;
+      record.updatedAt = now;
+    });
+  }
 }

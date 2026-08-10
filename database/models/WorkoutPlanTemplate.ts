@@ -1,5 +1,5 @@
 import { Model, type Relation } from '@nozbe/watermelondb';
-import { field, immutableRelation, json } from '@nozbe/watermelondb/decorators';
+import { field, immutableRelation, json, writer } from '@nozbe/watermelondb/decorators';
 
 import { sanitizeWeekDaysJson } from './weekDaysJson';
 import WorkoutPlan from './WorkoutPlan';
@@ -24,4 +24,13 @@ export default class WorkoutPlanTemplate extends Model {
   @immutableRelation('workout_plans', 'plan_id') declare plan: Relation<WorkoutPlan>;
   @immutableRelation('workout_templates', 'template_id')
   declare template: Relation<WorkoutTemplate>;
+
+  @writer
+  async markAsDeleted(): Promise<void> {
+    const now = Date.now();
+    await this.update((record) => {
+      record.deletedAt = now;
+      record.updatedAt = now;
+    });
+  }
 }

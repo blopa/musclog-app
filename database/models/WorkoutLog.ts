@@ -39,6 +39,17 @@ export default class WorkoutLog extends Model {
   @relation('workout_templates', 'template_id') template?: WorkoutTemplate;
   @relation('workout_plans', 'plan_id') plan?: WorkoutPlan;
 
+  // Only the log itself — its exercises and sets are cascaded by
+  // `WorkoutService.deleteWorkoutLog`, which also cleans up the BLE data-point files.
+  @writer
+  async markAsDeleted(): Promise<void> {
+    const now = Date.now();
+    await this.update((record) => {
+      record.deletedAt = now;
+      record.updatedAt = now;
+    });
+  }
+
   async getAllSets(): Promise<WorkoutLogSet[]> {
     const logExercises = await this.logExercises.fetch();
     const activeExercises = logExercises.filter((le) => !le.deletedAt);
@@ -299,7 +310,9 @@ export default class WorkoutLog extends Model {
       throw new Error(`Set with id ${setId} not found`);
     }
 
-    await set.markAsDeleted();
+    // `WorkoutLogSet.markAsDeleted` is a @writer; nesting it inside this one would enqueue a
+    // second writer behind the one already running and deadlock the queue.
+    await this.callWriter(() => set.markAsDeleted());
 
     await this.update((log) => {
       log.updatedAt = Date.now();

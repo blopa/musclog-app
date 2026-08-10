@@ -50,7 +50,13 @@ jest.mock('../../database-instance', () => {
     fetch: jest.fn().mockResolvedValue([]),
   };
 
-  const mockWriter = {} as any;
+  // Model `markAsDeleted` methods are `@writer`s, so a service holding an open write block
+  // has to reach them through `writer.callWriter`. Real WatermelonDB throws
+  // "callReader/callWriter call must call a reader/writer synchronously" when the callback
+  // is not a writer, and deadlocks when a writer is called without it — neither is
+  // observable through a bare `{}` writer, so expose the spy and let tests assert on it.
+  const mockCallWriter = jest.fn((work: () => unknown) => Promise.resolve(work()));
+  const mockWriter = { callWriter: mockCallWriter } as any;
 
   return {
     database: {
@@ -61,6 +67,7 @@ jest.mock('../../database-instance', () => {
         get: jest.fn().mockReturnValue(mockCollection),
       },
     },
+    __callWriter: mockCallWriter,
   };
 });
 
@@ -95,6 +102,9 @@ jest.mock('../UserService', () => ({
 }));
 
 const mockDatabase = database as jest.Mocked<typeof database>;
+const { __callWriter: mockCallWriter } = jest.requireMock('../../database-instance') as {
+  __callWriter: jest.Mock;
+};
 const mockWorkoutAnalytics = WorkoutAnalytics as jest.Mocked<typeof WorkoutAnalytics>;
 const mockGetActiveWorkoutLogId = getActiveWorkoutLogId as jest.MockedFunction<
   typeof getActiveWorkoutLogId
@@ -1113,6 +1123,38 @@ describe('WorkoutService', () => {
       const result = await WorkoutService.getWorkoutLogsByTemplate('template-1');
 
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('deleteWorkoutLog', () => {
+    /**
+     * `WorkoutLog` was the one model that never overrode `markAsDeleted`, so this call
+     * landed on WatermelonDB's base implementation — which is not a `@writer` and so never
+     * satisfies `callWriter`'s "must call a writer synchronously" invariant. Every delete
+     * threw, after the log itself had already been tombstoned, leaving its exercises and
+     * sets behind. Assert the whole tree is soft-deleted through the open writer.
+     */
+    it('soft-deletes the log and its exercises and sets through the open writer', async () => {
+      const workoutLog = createMockWorkoutLog({ markAsDeleted: jest.fn() });
+      const logExercise = createMockWorkoutLogExercise({
+        id: 'log-exercise-1',
+        markAsDeleted: jest.fn(),
+      });
+      const set = createMockWorkoutLogSet({ id: 'set-1', markAsDeleted: jest.fn() });
+
+      installTables({
+        workout_log_exercises: [logExercise],
+        workout_log_sets: [set],
+        workout_logs: { find: jest.fn().mockResolvedValue(workoutLog) },
+      });
+
+      await WorkoutService.deleteWorkoutLog(workoutLog.id);
+
+      expect(workoutLog.markAsDeleted).toHaveBeenCalledTimes(1);
+      expect(logExercise.markAsDeleted).toHaveBeenCalledTimes(1);
+      expect(set.markAsDeleted).toHaveBeenCalledTimes(1);
+      // Every one of them is a `@writer`, so every one has to join the open transaction.
+      expect(mockCallWriter).toHaveBeenCalledTimes(3);
     });
   });
 });

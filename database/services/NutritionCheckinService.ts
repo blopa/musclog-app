@@ -402,9 +402,11 @@ export class NutritionCheckinService {
    * Soft-delete a check-in.
    */
   static async delete(id: string): Promise<void> {
-    await database.write(async () => {
+    await database.write(async (writer) => {
       const checkin = await database.get<NutritionCheckin>('nutrition_checkins').find(id);
-      await checkin.markAsDeleted();
+      // markAsDeleted is a @writer, so it has to join this transaction via callWriter
+      // rather than nest a new one (which would stall the queue).
+      await writer.callWriter(() => checkin.markAsDeleted());
     });
   }
 
@@ -413,14 +415,14 @@ export class NutritionCheckinService {
    * Called when a goal is superseded so its check-ins don't linger as dead data.
    */
   static async deleteByGoalId(goalId: string): Promise<void> {
-    await database.write(async () => {
+    await database.write(async (writer) => {
       const checkins = await database
         .get<NutritionCheckin>('nutrition_checkins')
         .query(Q.where('nutrition_goal_id', goalId), Q.where('deleted_at', Q.eq(null)))
         .fetch();
 
       for (const checkin of checkins) {
-        await checkin.markAsDeleted();
+        await writer.callWriter(() => checkin.markAsDeleted());
       }
     });
   }
