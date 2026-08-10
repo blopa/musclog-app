@@ -1,12 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 
-const DIRNAME = path.resolve(process.cwd());
-
-function bumpBuildNumber(buildNumber) {
-  return (parseInt(buildNumber, 10) + 1).toString();
-}
-
 function parseBumpType(argv) {
   const allowedFlags = new Set(['--major', '--minor']);
   const unknownFlags = argv.filter((arg) => !allowedFlags.has(arg));
@@ -17,89 +11,177 @@ function parseBumpType(argv) {
 
   const hasMajor = argv.includes('--major');
   const hasMinor = argv.includes('--minor');
-
   if (hasMajor && hasMinor) {
     throw new Error('Use only one of --major or --minor at a time');
   }
-
-  if (hasMajor) {
-    return 'major';
-  }
-
-  if (hasMinor) {
-    return 'minor';
-  }
-
-  return 'patch';
+  return hasMajor ? 'major' : hasMinor ? 'minor' : 'patch';
 }
 
 function bumpVersion(version, bumpType) {
-  const versionParts = version.split('.').map((part) => Number.parseInt(part, 10));
-
-  if (versionParts.length !== 3 || versionParts.some(Number.isNaN)) {
+  const parts = version.split('.').map((part) => Number.parseInt(part, 10));
+  if (parts.length !== 3 || parts.some(Number.isNaN)) {
     throw new Error(`Invalid version format: ${version}`);
   }
-
   if (bumpType === 'major') {
-    versionParts[0] += 1;
+    parts[0] += 1;
   } else if (bumpType === 'minor') {
-    versionParts[1] += 1;
+    parts[1] += 1;
   } else {
-    versionParts[2] += 1;
+    parts[2] += 1;
   }
-
-  return versionParts.join('.');
+  return parts.join('.');
 }
 
-function bumpVersionCode(versionCode) {
-  return parseInt(versionCode, 10) + 1;
+function readJson(filePath) {
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
-function updateVersion(filePath, bumpType) {
-  const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-  const oldVersion = data.version || (data.expo && data.expo.version);
-  const newVersion = bumpVersion(oldVersion, bumpType);
-
-  if (data.version) {
-    data.version = newVersion;
-  } else if (data.expo && data.expo.version) {
-    data.expo.version = newVersion;
+function readRequiredMatch(content, pattern, label) {
+  const match = content.match(pattern);
+  if (!match) {
+    throw new Error(`Could not read ${label}`);
   }
+  return match[1];
+}
 
-  if (data.expo) {
-    if (data.expo.ios && data.expo.ios.buildNumber) {
-      data.expo.ios.buildNumber = bumpBuildNumber(data.expo.ios.buildNumber);
+function replaceRequired(content, pattern, replacement, label) {
+  if (!pattern.test(content)) {
+    throw new Error(`Could not update ${label}`);
+  }
+  pattern.lastIndex = 0;
+  return content.replace(pattern, replacement);
+}
+
+function releasePaths(projectDir) {
+  return {
+    android: path.join(projectDir, 'android/app/build.gradle'),
+    app: path.join(projectDir, 'app.json'),
+    ios: path.join(projectDir, 'ios/MusclogLiftLogRepeat/Info.plist'),
+    lock: path.join(projectDir, 'package-lock.json'),
+    package: path.join(projectDir, 'package.json'),
+  };
+}
+
+function readReleaseVersions(projectDir) {
+  const files = releasePaths(projectDir);
+  const app = readJson(files.app);
+  const packageJson = readJson(files.package);
+  const packageLock = fs.existsSync(files.lock) ? readJson(files.lock) : undefined;
+  const android = fs.readFileSync(files.android, 'utf8');
+  const ios = fs.readFileSync(files.ios, 'utf8');
+
+  return {
+    androidBuild: Number(
+      readRequiredMatch(android, /\bversionCode\s+(\d+)/, 'Android versionCode')
+    ),
+    androidVersion: readRequiredMatch(android, /\bversionName\s+"([^"]+)"/, 'Android versionName'),
+    appBuild: Number(app.expo.android.versionCode),
+    appIosBuild: String(app.expo.ios.buildNumber),
+    appVersion: app.expo.version,
+    iosBuild: readRequiredMatch(
+      ios,
+      /<key>CFBundleVersion<\/key>\s*<string>([^<]+)<\/string>/,
+      'iOS CFBundleVersion'
+    ),
+    iosVersion: readRequiredMatch(
+      ios,
+      /<key>CFBundleShortVersionString<\/key>\s*<string>([^<]+)<\/string>/,
+      'iOS CFBundleShortVersionString'
+    ),
+    hasLock: Boolean(packageLock),
+    lockRootVersion: packageLock?.packages?.['']?.version,
+    lockVersion: packageLock?.version,
+    packageVersion: packageJson.version,
+  };
+}
+
+function assertReleaseVersionsMatch(projectDir) {
+  const versions = readReleaseVersions(projectDir);
+  const versionValues = [
+    versions.packageVersion,
+    versions.androidVersion,
+    versions.iosVersion,
+    ...(versions.hasLock ? [versions.lockVersion, versions.lockRootVersion] : []),
+  ];
+  const buildValues = [versions.appIosBuild, String(versions.androidBuild), versions.iosBuild];
+  if (versionValues.some((version) => version !== versions.appVersion)) {
+    throw new Error(`Release version mismatch: ${JSON.stringify(versions)}`);
+  }
+  if (buildValues.some((build) => build !== String(versions.appBuild))) {
+    throw new Error(`Release build-number mismatch: ${JSON.stringify(versions)}`);
+  }
+  return versions;
+}
+
+function bumpProjectVersions(projectDir, bumpType) {
+  const current = assertReleaseVersionsMatch(projectDir);
+  const files = releasePaths(projectDir);
+  const nextVersion = bumpVersion(current.appVersion, bumpType);
+  const nextBuild = current.appBuild + 1;
+  const packageJson = readJson(files.package);
+  const app = readJson(files.app);
+  const packageLock = fs.existsSync(files.lock) ? readJson(files.lock) : undefined;
+
+  packageJson.version = nextVersion;
+  app.expo.version = nextVersion;
+  app.expo.android.versionCode = nextBuild;
+  app.expo.ios.buildNumber = String(nextBuild);
+  if (packageLock) {
+    packageLock.version = nextVersion;
+    if (packageLock.packages?.['']) {
+      packageLock.packages[''].version = nextVersion;
     }
-
-    if (data.expo.android && data.expo.android.versionCode) {
-      data.expo.android.versionCode = bumpVersionCode(data.expo.android.versionCode);
-    }
   }
 
-  const isPackLock = filePath.endsWith('package-lock.json');
-  if (isPackLock && data.packages && data.packages['']) {
-    data.packages[''].version = newVersion;
-  }
+  let android = fs.readFileSync(files.android, 'utf8');
+  android = replaceRequired(
+    android,
+    /\bversionCode\s+\d+/,
+    `versionCode ${nextBuild}`,
+    'Android versionCode'
+  );
+  android = replaceRequired(
+    android,
+    /\bversionName\s+"[^"]+"/,
+    `versionName "${nextVersion}"`,
+    'Android versionName'
+  );
 
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-  console.log(`${path.relative(DIRNAME, filePath)}: ${oldVersion} → ${newVersion}`);
+  let ios = fs.readFileSync(files.ios, 'utf8');
+  ios = replaceRequired(
+    ios,
+    /(<key>CFBundleShortVersionString<\/key>\s*<string>)[^<]+(<\/string>)/,
+    `$1${nextVersion}$2`,
+    'iOS CFBundleShortVersionString'
+  );
+  ios = replaceRequired(
+    ios,
+    /(<key>CFBundleVersion<\/key>\s*<string>)[^<]+(<\/string>)/,
+    `$1${nextBuild}$2`,
+    'iOS CFBundleVersion'
+  );
+
+  fs.writeFileSync(files.package, `${JSON.stringify(packageJson, null, 2)}\n`);
+  fs.writeFileSync(files.app, `${JSON.stringify(app, null, 2)}\n`);
+  if (packageLock) {
+    fs.writeFileSync(files.lock, `${JSON.stringify(packageLock, null, 2)}\n`);
+  }
+  fs.writeFileSync(files.android, android);
+  fs.writeFileSync(files.ios, ios);
+  assertReleaseVersionsMatch(projectDir);
+  return { build: nextBuild, version: nextVersion };
 }
 
-const doTask = () => {
-  const bumpType = parseBumpType(process.argv.slice(2));
-  const packageJsonPath = path.join(DIRNAME, 'package.json');
-  const packageLockJsonPath = path.join(DIRNAME, 'package-lock.json');
-  const appJsonPath = path.join(DIRNAME, 'app.json');
+if (require.main === module) {
+  const projectDir = path.resolve(process.cwd());
+  const result = bumpProjectVersions(projectDir, parseBumpType(process.argv.slice(2)));
+  console.log(`Release: ${result.version} (${result.build})`);
+}
 
-  updateVersion(packageJsonPath, bumpType);
-
-  if (fs.existsSync(packageLockJsonPath)) {
-    updateVersion(packageLockJsonPath, bumpType);
-  } else {
-    console.log(`${path.relative(DIRNAME, packageLockJsonPath)} not found, skipping`);
-  }
-
-  updateVersion(appJsonPath, bumpType);
+module.exports = {
+  assertReleaseVersionsMatch,
+  bumpProjectVersions,
+  bumpVersion,
+  parseBumpType,
+  readReleaseVersions,
 };
-
-doTask();

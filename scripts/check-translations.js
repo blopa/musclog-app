@@ -4,10 +4,22 @@
 const fs = require('fs');
 const path = require('path');
 const glob = require('glob');
+const ts = require('typescript');
+
+const TRANSLATION_KEY_PROPERTIES = new Set([
+  'titleKey',
+  'subtitleKey',
+  'descriptionKey',
+  'labelKey',
+  'messageKey',
+  'promptKey',
+  'hintKey',
+]);
 
 // Configuration
 const CONFIG = {
   localeDir: path.join(__dirname, '../lang/locales/en-us'),
+  sharedLocaleFiles: [path.join(__dirname, '../lang/locales/untranslated.json')],
   scanPaths: [
     '../app/**/*.tsx',
     '../components/**/*.tsx',
@@ -18,17 +30,6 @@ const CONFIG = {
     '../components/**/*.ts',
     '../types/**/*.ts',
     '../services/**/*.ts',
-  ],
-  patterns: [
-    /t\(['"`]([^'"`]+)['"`]\)/g, // t('key')
-    /t\(`([^`]+)`\)/g, // t(`key`)
-    /t\(['"`]([^'"`]+)['"`]\s*,/g, // t('key', options)
-    /t\(`([^`]+)`\s*,/g, // t(`key`, options)
-    // Keys passed via variables: titleKey: 'profile.stats.weight', descriptionKey: '...', etc.
-    /(?:titleKey|subtitleKey|descriptionKey|labelKey|messageKey|promptKey|hintKey)\s*:\s*['"]([^'"]+)['"]/g,
-    // Keys in ternary branches: condition ? 'profile.gender.male' : 'profile.gender.female'
-    /\?\s*['"]([^'"]+\.[^'"]+)['"]\s*:/g,
-    /:\s*['"]([^'"]+\.[^'"]+)['"]\s*[;),]/g,
   ],
   ignorePatterns: [
     '**/node_modules/**',
@@ -49,6 +50,8 @@ class TranslationScanner {
     this.missingKeyLocations = new Map();
     this.keyToFile = new Map(); // key -> path to JSON file (for cleanup)
     this.namespaceToFile = new Map(); // namespace -> path (for add-missing)
+    this.dynamicPrefixes = new Set();
+    this.scanErrors = [];
     this.cleanup = options.cleanup || false;
     this.addMissing = options.addMissing || false;
   }
@@ -56,7 +59,10 @@ class TranslationScanner {
   // Load existing translations from all JSON files in locale directory
   loadExistingTranslations() {
     try {
-      const files = glob.sync('*.json', { cwd: CONFIG.localeDir, absolute: true });
+      const files = [
+        ...glob.sync('*.json', { cwd: CONFIG.localeDir, absolute: true }),
+        ...CONFIG.sharedLocaleFiles,
+      ];
       if (files.length === 0) {
         console.error('✗ No JSON files found in', CONFIG.localeDir);
         process.exit(1);
@@ -134,78 +140,147 @@ class TranslationScanner {
     try {
       const content = fs.readFileSync(filePath, 'utf8');
       const fileKeys = new Set();
-      const lines = content.split('\n');
+      const sourceFile = ts.createSourceFile(
+        filePath,
+        content,
+        ts.ScriptTarget.Latest,
+        true,
+        filePath.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS
+      );
 
-      for (const pattern of CONFIG.patterns) {
-        let match;
-        // Reset regex lastIndex for each pattern
-        pattern.lastIndex = 0;
+      const addKey = (key, node, dynamic = false) => {
+        if (!key || !this.isValidTranslationKey(key)) {
+          return;
+        }
+        fileKeys.add(key);
+        if (dynamic) {
+          this.dynamicPrefixes.add(key);
+        }
+        if (this.existingKeys.has(key)) {
+          return;
+        }
+        const line = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;
+        const locations = this.missingKeyLocations.get(key) ?? [];
+        if (!locations.some((location) => location.file === filePath && location.line === line)) {
+          locations.push({ file: filePath, line });
+          this.missingKeyLocations.set(key, locations);
+        }
+      };
 
-        while ((match = pattern.exec(content)) !== null) {
-          const key = match[1];
+      const literalKey = (node) => {
+        if (ts.isStringLiteralLike(node)) {
+          return node.text;
+        }
+        if (ts.isTemplateExpression(node)) {
+          return node.head.text.replace(/\.$/, '');
+        }
+        return undefined;
+      };
 
-          // Find line number for this match
-          const matchIndex = match.index;
-          const lineNumber = lines.slice(
-            0,
-            content.substring(0, matchIndex).split('\n').length
-          ).length;
-
-          if (key) {
-            // Filter out invalid keys
-            if (!this.isValidTranslationKey(key)) {
-              continue;
-            }
-            // Keys from property assignments (titleKey, descriptionKey, etc.) must look like namespaced keys
-            if (pattern.source.includes('titleKey') && !key.includes('.')) {
-              continue;
-            }
-
-            // If the key contains a template literal with a variable, extract the static part
-            const dynamicMatch = key.match(/^(.*?)\$\{[^}]+}/);
-            if (dynamicMatch) {
-              const staticKey = dynamicMatch[1].replace(/\.$/, '');
-              fileKeys.add(staticKey);
-
-              // Track location for missing keys (dedupe by file+line)
-              if (!this.existingKeys.has(staticKey)) {
-                if (!this.missingKeyLocations.has(staticKey)) {
-                  this.missingKeyLocations.set(staticKey, []);
-                }
-                const locs = this.missingKeyLocations.get(staticKey);
-                const already = locs.some(
-                  (loc) => loc.file === filePath && loc.line === lineNumber
-                );
-
-                if (!already) {
-                  locs.push({ file: filePath, line: lineNumber });
-                }
+      const ownTranslationBindings = (scopeNode) => {
+        const result = new Map();
+        const search = (node) => {
+          if (node !== scopeNode && ts.isFunctionLike(node)) {
+            return;
+          }
+          if (
+            ts.isVariableDeclaration(node) &&
+            ts.isObjectBindingPattern(node.name) &&
+            node.initializer &&
+            ts.isCallExpression(node.initializer) &&
+            ts.isIdentifier(node.initializer.expression) &&
+            node.initializer.expression.text === 'useTranslation'
+          ) {
+            const options = node.initializer.arguments[1];
+            let prefix;
+            if (options && ts.isObjectLiteralExpression(options)) {
+              const keyPrefix = options.properties.find(
+                (property) =>
+                  ts.isPropertyAssignment(property) &&
+                  property.name.getText(sourceFile) === 'keyPrefix'
+              );
+              if (keyPrefix && ts.isPropertyAssignment(keyPrefix)) {
+                prefix = literalKey(keyPrefix.initializer);
               }
-            } else {
-              fileKeys.add(key);
-
-              // Track location for missing keys (dedupe by file+line when multiple patterns match)
-              if (!this.existingKeys.has(key)) {
-                if (!this.missingKeyLocations.has(key)) {
-                  this.missingKeyLocations.set(key, []);
-                }
-                const locs = this.missingKeyLocations.get(key);
-                const already = locs.some(
-                  (loc) => loc.file === filePath && loc.line === lineNumber
-                );
-
-                if (!already) {
-                  locs.push({ file: filePath, line: lineNumber });
-                }
+            }
+            for (const element of node.name.elements) {
+              if (
+                ts.isIdentifier(element.name) &&
+                ((!element.propertyName && element.name.text === 't') ||
+                  (element.propertyName &&
+                    ts.isIdentifier(element.propertyName) &&
+                    element.propertyName.text === 't'))
+              ) {
+                result.set(element.name.text, prefix);
               }
             }
           }
+          ts.forEachChild(node, search);
+        };
+        search(scopeNode);
+        return result;
+      };
+
+      const visit = (node, translationBindings) => {
+        let bindings = translationBindings;
+        if (ts.isSourceFile(node) || ts.isFunctionLike(node)) {
+          const ownBindings = ownTranslationBindings(node);
+          if (ownBindings.size > 0) {
+            bindings = new Map([...translationBindings, ...ownBindings]);
+          }
         }
-      }
+
+        if (ts.isStringLiteralLike(node) && this.existingKeys.has(node.text)) {
+          addKey(node.text, node);
+        }
+
+        if (ts.isCallExpression(node) && node.arguments[0]) {
+          const isBoundT = ts.isIdentifier(node.expression) && bindings.has(node.expression.text);
+          const isI18nT =
+            ts.isPropertyAccessExpression(node.expression) && node.expression.name.text === 't';
+          if (isBoundT || isI18nT) {
+            const key = literalKey(node.arguments[0]);
+            if (key) {
+              addKey(
+                isBoundT && bindings.get(node.expression.text)
+                  ? `${bindings.get(node.expression.text)}.${key}`
+                  : key,
+                node.arguments[0],
+                ts.isTemplateExpression(node.arguments[0])
+              );
+            }
+          }
+        }
+
+        if (
+          ts.isPropertyAssignment(node) &&
+          TRANSLATION_KEY_PROPERTIES.has(node.name.getText(sourceFile))
+        ) {
+          const key = literalKey(node.initializer);
+          if (key?.includes('.')) {
+            addKey(key, node.initializer);
+          }
+        }
+
+        if (
+          ts.isJsxAttribute(node) &&
+          TRANSLATION_KEY_PROPERTIES.has(node.name.text) &&
+          node.initializer &&
+          ts.isStringLiteral(node.initializer) &&
+          node.initializer.text.includes('.')
+        ) {
+          addKey(node.initializer.text, node.initializer);
+        }
+
+        ts.forEachChild(node, (child) => visit(child, bindings));
+      };
+
+      visit(sourceFile, new Map());
 
       return fileKeys;
     } catch (error) {
       console.error(`✗ Error reading file ${filePath}:`, error.message);
+      this.scanErrors.push({ filePath, error });
       return new Set();
     }
   }
@@ -233,7 +308,14 @@ class TranslationScanner {
   findMissingTranslations() {
     // Helper: key exists if it's in existingKeys or is a prefix of an existing key (parent key)
     const keyExists = (key) =>
-      this.existingKeys.has(key) || [...this.existingKeys].some((ek) => ek.startsWith(key + '.'));
+      this.existingKeys.has(key) ||
+      (this.dynamicPrefixes.has(key) &&
+        [...this.existingKeys].some((existingKey) => existingKey.startsWith(key))) ||
+      [...this.existingKeys].some((existingKey) =>
+        [key + '.', key + '_one', key + '_other', key + '_zero'].some((prefix) =>
+          existingKey.startsWith(prefix)
+        )
+      );
 
     // First, add all exact matches
     for (const key of this.usedKeys) {
@@ -245,7 +327,11 @@ class TranslationScanner {
     // Then, handle dynamic prefixes - mark all nested keys as used
     for (const usedKey of this.usedKeys) {
       for (const existingKey of this.existingKeys) {
-        if (existingKey.startsWith(usedKey + '.')) {
+        if (
+          existingKey.startsWith(usedKey + '.') ||
+          existingKey.startsWith(usedKey + '_') ||
+          (this.dynamicPrefixes.has(usedKey) && existingKey.startsWith(usedKey))
+        ) {
           this.usedKeys.add(existingKey);
         }
       }
@@ -494,7 +580,7 @@ class TranslationScanner {
     }
 
     // Exit with error code if missing translations found (but only if not cleaning up)
-    if (this.missingKeys.size > 0 && !this.cleanup) {
+    if ((this.missingKeys.size > 0 || this.scanErrors.length > 0) && !this.cleanup) {
       process.exit(1);
     }
   }

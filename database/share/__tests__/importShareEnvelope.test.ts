@@ -11,6 +11,7 @@ import type { FoodShareEnvelope, MealShareEnvelope, ShareRow } from '@/utils/sha
 jest.mock('@nozbe/watermelondb', () => ({
   Q: {
     eq: jest.fn((value: unknown) => ({ kind: 'eq', value })),
+    oneOf: jest.fn((values: unknown[]) => ({ kind: 'oneOf', values })),
     where: jest.fn((field: string, value: unknown) => ({ field, value })),
   },
 }));
@@ -211,6 +212,7 @@ function storedFood(overrides: Record<string, unknown> = {}) {
   return {
     ...columns,
     brand: columns.brand ?? undefined,
+    externalId: columns.external_id ?? undefined,
     resolvedNutritionBasis: columns.nutrition_basis,
   };
 }
@@ -231,6 +233,8 @@ function storedPortion(overrides: Record<string, unknown> = {}) {
   return {
     ...columns,
     gramWeight: columns.gram_weight ?? undefined,
+    ownerId: columns.owner_id ?? undefined,
+    ownerType: columns.owner_type ?? undefined,
     resolvedKind: columns.kind === 'named' ? 'named' : 'mass',
     resolvedScope: columns.scope === 'private' ? 'private' : 'global',
     resolvedSource: columns.source === 'custom' ? 'custom' : 'basic',
@@ -239,7 +243,10 @@ function storedPortion(overrides: Record<string, unknown> = {}) {
 
 function matchesClauses(record: Record<string, unknown>, clauses: any[]): boolean {
   return clauses.every(({ field, value }) => {
-    const expected = value && typeof value === 'object' && 'kind' in value ? value.value : value;
+    if (value?.kind === 'oneOf') {
+      return value.values.includes(record[field] ?? null);
+    }
+    const expected = value?.kind === 'eq' ? value.value : value;
     return (record[field] ?? null) === (expected ?? null);
   });
 }
@@ -296,6 +303,33 @@ describe('importShareEnvelope', () => {
       sourceId: 'sender-food',
       table: 'foods',
     });
+  });
+
+  it('resolves many foods with one bounded query per populated identity field', async () => {
+    const shared = envelope();
+    shared.records.foods = Array.from({ length: 20 }, (_, index) => ({
+      ...shared.records.foods[0],
+      barcode: undefined,
+      external_id: `external-${index}`,
+      id: `sender-food-${index}`,
+      name: `Shared food ${index}`,
+    }));
+    shared.records.meal_foods = [];
+    const { queriedTables } = wire({
+      foods: Array.from({ length: 20 }, (_, index) =>
+        storedFood({
+          barcode: null,
+          external_id: `external-${index}`,
+          id: `local-food-${index}`,
+          name: `Shared food ${index}`,
+        })
+      ),
+    });
+
+    const result = await importShareEnvelope(shared);
+
+    expect(result.reused.filter((item) => item.table === 'foods')).toHaveLength(20);
+    expect(queriedTables.filter((table) => table === 'foods')).toHaveLength(2);
   });
 
   it('dedupes a barcode match even when no external id lines up', async () => {
@@ -391,6 +425,15 @@ describe('importShareEnvelope', () => {
     expect(mockUnsafeResetDatabase).not.toHaveBeenCalled();
   });
 
+  it('preserves the database error when best-effort asset cleanup also fails', async () => {
+    wire();
+    (mockDatabase.batch as jest.Mock).mockRejectedValueOnce(new Error('batch failed'));
+    (deleteMealImage as jest.Mock).mockRejectedValueOnce(new Error('cleanup failed'));
+
+    await expect(importShareEnvelope(envelope({ image: true }))).rejects.toThrow('batch failed');
+    expect(deleteMealImage).toHaveBeenCalledWith('file:///meals/imported.jpg');
+  });
+
   describe('food share', () => {
     it('creates the food, its portions and their links when nothing matches', async () => {
       const { created } = wire();
@@ -431,6 +474,15 @@ describe('importShareEnvelope', () => {
         sourceId: 'sender-food',
         table: 'foods',
       });
+    });
+
+    it('removes an incoming photo when the existing food makes it unused', async () => {
+      wire({ foods: [storedFood()] });
+
+      await importShareEnvelope(foodEnvelope({ image: true }));
+
+      expect(saveBase64ImageToFile).toHaveBeenCalledTimes(1);
+      expect(deleteFoodImage).toHaveBeenCalledWith('file:///food_images/imported.jpg');
     });
 
     it('reuses a portion the receiver already has under the same food', async () => {

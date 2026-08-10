@@ -179,8 +179,12 @@ export async function decryptNumber(cipher: string | undefined | null): Promise<
     return 0;
   }
   const trimmed = String(cipher).trim();
-  // Try decrypt first (encrypted payload)
-  const decrypted = await decryptDatabaseValue(cipher);
+  let decrypted: string | undefined;
+  try {
+    decrypted = await decryptDatabaseValue(cipher);
+  } catch {
+    // Pre-encryption rows are not valid ciphertext and some byte sequences make CryptoJS throw.
+  }
   if (decrypted && decrypted.trim()) {
     const n = parseFloat(decrypted);
     if (!Number.isNaN(n)) {
@@ -224,11 +228,11 @@ export async function decryptJson(
   }
 
   const trimmed = String(cipher).trim();
-  const tryParse = (s: string): Record<string, number> => {
+  const tryParse = (s: string): Record<string, number> | undefined => {
     try {
       const parsed = JSON.parse(s);
       if (typeof parsed !== 'object' || parsed === null) {
-        return {};
+        return undefined;
       }
       const out: Record<string, number> = {};
       for (const k of Object.keys(parsed)) {
@@ -239,16 +243,24 @@ export async function decryptJson(
       }
       return out;
     } catch {
-      return {};
+      return undefined;
     }
   };
 
-  const decrypted = await decryptDatabaseValue(cipher);
+  let decrypted: string | undefined;
+  try {
+    decrypted = await decryptDatabaseValue(cipher);
+  } catch {
+    // Legacy JSON is plaintext, so feeding it to the cipher can fail before fallback parsing.
+  }
   if (decrypted && decrypted.trim()) {
-    return tryParse(decrypted);
+    const parsed = tryParse(decrypted);
+    if (parsed) {
+      return parsed;
+    }
   }
 
-  return tryParse(trimmed);
+  return tryParse(trimmed) ?? {};
 }
 
 /** Batch-encrypt nutrition log snapshot for create/update. */

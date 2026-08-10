@@ -37,5 +37,15 @@ jobs:
       - name: Check types
         run: npm run typecheck
 
+# maybe enable these later, but not now
+#      - name: Check release version sync
+#        run: npm run check-version-sync
+#
+#      - name: Check translations
+#        run: npm run check-translations
+#
+#      - name: Check locale consistency
+#        run: npm run check-locale-consistency
+
       - name: Run tests
         run: npm run test:ci

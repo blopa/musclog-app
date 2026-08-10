@@ -235,12 +235,12 @@ export default function WorkoutsScreen() {
 
   const planAssignment = usePlanAssignment({
     onChange: setPendingPlanIds,
-    onConfirm: async () => {
+    onConfirm: async (planIds) => {
       if (!selectedWorkoutId) {
         return;
       }
       try {
-        await WorkoutPlanService.setTemplatePlans(selectedWorkoutId, pendingPlanIds);
+        await WorkoutPlanService.setTemplatePlans(selectedWorkoutId, planIds);
       } catch (error) {
         await handleError(error, 'workouts.setTemplatePlans', {
           snackbarMessage: t('workouts.plans.saveError'),
@@ -439,13 +439,12 @@ export default function WorkoutsScreen() {
           if (!selectedWorkoutId) {
             return;
           }
-          setPendingPlanIds(
-            memberships
-              .filter((membership) => membership.templateId === selectedWorkoutId)
-              .map((membership) => membership.planId)
-          );
+          const currentPlanIds = memberships
+            .filter((membership) => membership.templateId === selectedWorkoutId)
+            .map((membership) => membership.planId);
+          setPendingPlanIds(currentPlanIds);
           setIsMenuVisible(false);
-          planAssignment.openPicker();
+          planAssignment.openPicker(currentPlanIds);
         }}
       />
       <CreateWorkoutOptionsModal

@@ -420,7 +420,7 @@ export default function CreateWorkoutModal({
             }}
           >
             <Pressable
-              onPress={planAssignment.openPicker}
+              onPress={() => planAssignment.openPicker()}
               className="mb-4 flex-row items-center justify-between rounded-lg border border-border-light bg-bg-secondary p-4"
             >
               <View className="min-w-0 flex-1">

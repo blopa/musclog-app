@@ -19,7 +19,9 @@
 - `npm run lint:eslint`: Run ESLint check
 - `npm run format`: Format code with Prettier and Tailwind plugin
 - `npm run typecheck`: Run TypeScript type checking
-- `npm run check-translations`: Validate i18n keys and locale consistency
+- `npm run check-translations`: Validate translation keys used by the app
+- `npm run check-locale-consistency`: Validate translation-key parity across locales
+- `npm run check-version-sync`: Verify Expo, package, Android, and iOS release versions match
 - `npm run reset-project`: Reset project to initial state via script
 - `npm run build-android`: Production build for Android via EAS (AAB for Google Play)
 - `npm run build-android-apk`: Production build as an installable, release-signed APK (for direct download / GitHub release attachment); `build-android-apk-local` builds it locally

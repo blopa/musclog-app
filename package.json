@@ -23,6 +23,7 @@
     "bump-major": "node scripts/bump.js --major",
     "report-modal-issue": "node scripts/report-modal-issues.js",
     "check-translations": "node scripts/check-translations.js",
+    "check-version-sync": "node scripts/check-version-sync.js",
     "check-locale-consistency": "node scripts/check-locale-consistency.js",
     "generate-lang": "node scripts/generateLangFile.js",
     "convert-exercise-images": "node scripts/convert-exercise-images-to-png.js",

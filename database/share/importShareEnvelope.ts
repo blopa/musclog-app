@@ -25,6 +25,7 @@ import {
 
 const MACRO_COLUMNS = ['calories', 'protein', 'carbs', 'fat', 'fiber'] as const;
 const IDENTITY_EPSILON = 1e-6;
+const QUERY_VALUE_BATCH_SIZE = 500;
 
 /**
  * Where a received photo is written, and how it is taken back if the write that follows fails. The
@@ -38,6 +39,13 @@ const ASSET_STORES: Record<
   food: { remove: deleteFoodImage, save: saveBase64ImageToFile },
   meal: { remove: deleteMealImage, save: saveBase64MealImage },
 };
+
+async function removeAssetUris(
+  assetStore: { remove: (uri: string) => Promise<void> },
+  uris: string[]
+): Promise<void> {
+  await Promise.allSettled(uris.map((uri) => assetStore.remove(uri)));
+}
 
 export interface ShareImportResult {
   kind: MusclogShareEnvelope['kind'];
@@ -82,43 +90,88 @@ function foodMacrosMatch(food: Food, row: ShareRow): boolean {
   });
 }
 
-async function activeFoodsWhere(column: string, value: string): Promise<Food[]> {
-  return database
-    .get<Food>('foods')
-    .query(Q.where(column, value), Q.where('deleted_at', Q.eq(null)))
-    .fetch();
+function uniqueStrings(values: Array<string | undefined>): string[] {
+  return [...new Set(values.filter((value): value is string => Boolean(value)))];
 }
 
-async function resolveFood(row: ShareRow): Promise<Food | undefined> {
-  const externalId = stringValue(row.external_id);
-  if (externalId) {
-    const match = (await activeFoodsWhere('external_id', externalId)).find((food) =>
-      foodBasisMatches(food, row)
-    );
+function batches<T>(values: T[]): T[][] {
+  const result: T[][] = [];
+  for (let index = 0; index < values.length; index += QUERY_VALUE_BATCH_SIZE) {
+    result.push(values.slice(index, index + QUERY_VALUE_BATCH_SIZE));
+  }
+  return result;
+}
+
+async function activeFoodsWhereAny(column: string, values: string[]): Promise<Food[]> {
+  return (
+    await Promise.all(
+      batches(values).map((batch) =>
+        database
+          .get<Food>('foods')
+          .query(Q.where(column, Q.oneOf(batch)), Q.where('deleted_at', Q.eq(null)))
+          .fetch()
+      )
+    )
+  ).flat();
+}
+
+function indexBy<T>(items: T[], getKey: (item: T) => string | undefined): Map<string, T[]> {
+  const index = new Map<string, T[]>();
+  for (const item of items) {
+    const key = getKey(item);
+    if (!key) {
+      continue;
+    }
+    const matches = index.get(key);
+    if (matches) {
+      matches.push(item);
+    } else {
+      index.set(key, [item]);
+    }
+  }
+  return index;
+}
+
+async function resolveFoods(rows: ShareRow[]): Promise<Record<string, string>> {
+  const externalIds = uniqueStrings(rows.map((row) => stringValue(row.external_id)));
+  const barcodes = uniqueStrings(rows.map((row) => stringValue(row.barcode)));
+  const names = uniqueStrings(rows.map((row) => stringValue(row.name)));
+  const [externalMatches, barcodeMatches, nameMatches] = await Promise.all([
+    activeFoodsWhereAny('external_id', externalIds),
+    activeFoodsWhereAny('barcode', barcodes),
+    activeFoodsWhereAny('name', names),
+  ]);
+  const byExternalId = indexBy(externalMatches, (food) => food.externalId);
+  const byBarcode = indexBy(barcodeMatches, (food) => food.barcode);
+  const byName = indexBy(nameMatches, (food) => food.name);
+  const resolutions: Record<string, string> = {};
+
+  for (const row of rows) {
+    const sourceId = stringValue(row.id);
+    if (!sourceId) {
+      continue;
+    }
+    const externalId = stringValue(row.external_id);
+    const barcode = stringValue(row.barcode);
+    const name = stringValue(row.name);
+    const brand = stringValue(row.brand);
+    const match =
+      byExternalId.get(externalId ?? '')?.find((food) => foodBasisMatches(food, row)) ??
+      byBarcode.get(barcode ?? '')?.find((food) => foodBasisMatches(food, row)) ??
+      byName
+        .get(name ?? '')
+        ?.find(
+          (food) =>
+            stringValue(food.brand) === brand &&
+            foodBasisMatches(food, row) &&
+            foodMacrosMatch(food, row)
+        );
     if (match) {
-      return match;
+      resolutions[sourceId] = match.id;
     }
   }
 
-  const barcode = stringValue(row.barcode);
-  if (barcode) {
-    const match = (await activeFoodsWhere('barcode', barcode)).find((food) =>
-      foodBasisMatches(food, row)
-    );
-    if (match) {
-      return match;
-    }
-  }
-
-  const name = stringValue(row.name);
-  if (!name) {
-    return undefined;
-  }
-  const brand = stringValue(row.brand);
-  return (await activeFoodsWhere('name', name)).find(
-    (food) =>
-      stringValue(food.brand) === brand && foodBasisMatches(food, row) && foodMacrosMatch(food, row)
-  );
+  return resolutions;
 }
 
 function incomingPortionKind(row: ShareRow): 'mass' | 'named' {
@@ -163,40 +216,53 @@ async function activePortionsWhere(...clauses: Q.Clause[]): Promise<FoodPortion[
     .fetch();
 }
 
-async function resolvePortion(
-  row: ShareRow,
+async function resolvePortions(
+  rows: ShareRow[],
   context: ShareDedupeContext
-): Promise<FoodPortion | undefined> {
-  const name = stringValue(row.name);
-  if (!name) {
-    return undefined;
-  }
-
-  const ownerType = stringValue(row.owner_type);
-  if (!ownerType) {
-    const candidates = await activePortionsWhere(
-      Q.where('name', name),
-      Q.where('owner_id', Q.eq(null))
-    );
-    return candidates.find((portion) => portionIdentityMatches(portion, row));
-  }
-
-  // An owned portion only means anything under its owner, so it can be reused only when that owner
-  // is a record the receiver ALREADY had. A meal-owned one never qualifies: the meal is the share's
-  // root and is always created fresh, so there is no existing meal whose portions could be reused.
-  if (ownerType !== 'food') {
-    return undefined;
-  }
-  const ownerLocalId = context.reusedLocalId('foods', stringValue(row.owner_id));
-  if (!ownerLocalId) {
-    return undefined;
-  }
-
-  const candidates = await activePortionsWhere(
-    Q.where('owner_type', 'food'),
-    Q.where('owner_id', ownerLocalId)
+): Promise<Record<string, string>> {
+  const globalNames = uniqueStrings(
+    rows.filter((row) => !stringValue(row.owner_type)).map((row) => stringValue(row.name))
   );
-  return candidates.find((portion) => portionIdentityMatches(portion, row));
+  const ownerLocalIds = uniqueStrings(
+    rows
+      .filter((row) => stringValue(row.owner_type) === 'food')
+      .map((row) => context.reusedLocalId('foods', stringValue(row.owner_id)))
+  );
+  const [globalMatches, ownedMatches] = await Promise.all([
+    Promise.all(
+      batches(globalNames).map((batch) =>
+        activePortionsWhere(Q.where('name', Q.oneOf(batch)), Q.where('owner_id', Q.eq(null)))
+      )
+    ).then((matches) => matches.flat()),
+    Promise.all(
+      batches(ownerLocalIds).map((batch) =>
+        activePortionsWhere(Q.where('owner_type', 'food'), Q.where('owner_id', Q.oneOf(batch)))
+      )
+    ).then((matches) => matches.flat()),
+  ]);
+  const globalsByName = indexBy(globalMatches, (portion) => portion.name);
+  const ownedByOwnerId = indexBy(ownedMatches, (portion) => portion.ownerId);
+  const resolutions: Record<string, string> = {};
+
+  for (const row of rows) {
+    const sourceId = stringValue(row.id);
+    const name = stringValue(row.name);
+    if (!sourceId || !name) {
+      continue;
+    }
+    const ownerType = stringValue(row.owner_type);
+    const candidates = !ownerType
+      ? globalsByName.get(name)
+      : ownerType === 'food'
+        ? ownedByOwnerId.get(context.reusedLocalId('foods', stringValue(row.owner_id)) ?? '')
+        : undefined;
+    const match = candidates?.find((portion) => portionIdentityMatches(portion, row));
+    if (match) {
+      resolutions[sourceId] = match.id;
+    }
+  }
+
+  return resolutions;
 }
 
 /**
@@ -205,10 +271,10 @@ async function resolvePortion(
  */
 const DEDUPE_RESOLVERS: Record<
   Exclude<ShareDedupeStrategy, 'create'>,
-  (row: ShareRow, context: ShareDedupeContext) => Promise<{ id: string } | undefined>
+  (rows: ShareRow[], context: ShareDedupeContext) => Promise<Record<string, string>>
 > = {
-  'food-identity': resolveFood,
-  'portion-identity': resolvePortion,
+  'food-identity': resolveFoods,
+  'portion-identity': resolvePortions,
 };
 
 async function buildResolutions(
@@ -225,18 +291,10 @@ async function buildResolutions(
     if (strategy === 'create') {
       continue;
     }
-    const resolve = DEDUPE_RESOLVERS[strategy];
-    resolutions[table] = {};
-
-    for (const row of records[table] ?? []) {
-      if (row.deleted_at != null || row._status === 'deleted' || typeof row.id !== 'string') {
-        continue;
-      }
-      const match = await resolve(row, context);
-      if (match) {
-        resolutions[table][row.id] = match.id;
-      }
-    }
+    const rows = (records[table] ?? []).filter(
+      (row) => row.deleted_at == null && row._status !== 'deleted' && typeof row.id === 'string'
+    );
+    resolutions[table] = await DEDUPE_RESOLVERS[strategy](rows, context);
   }
 
   return resolutions;
@@ -262,9 +320,11 @@ export async function importShareEnvelope(
       resolvedAssets[assetId] = undefined;
     }
   }
+  const writtenAssetUriSet = new Set(writtenAssetUris);
 
+  let committed: { result: ShareImportResult; usedAssetUris: Set<string> };
   try {
-    return await database.write(async () => {
+    committed = await database.write(async () => {
       const resolutions = await buildResolutions(spec, envelope.records);
       const plan = planShareImport(spec, envelope.records, {
         assets: resolvedAssets,
@@ -280,10 +340,28 @@ export async function importShareEnvelope(
       );
 
       await database.batch(...operations);
-      return { kind: envelope.kind, reused: plan.reused, rootId: plan.rootId };
+      const usedAssetUris = new Set<string>();
+      for (const { row, table } of plan.creates) {
+        for (const column of spec.assetColumns[table] ?? []) {
+          const value = row[column];
+          if (typeof value === 'string' && writtenAssetUriSet.has(value)) {
+            usedAssetUris.add(value);
+          }
+        }
+      }
+      return {
+        result: { kind: envelope.kind, reused: plan.reused, rootId: plan.rootId },
+        usedAssetUris,
+      };
     });
   } catch (error) {
-    await Promise.all(writtenAssetUris.map((uri) => assetStore.remove(uri)));
+    await removeAssetUris(assetStore, writtenAssetUris);
     throw error;
   }
+
+  await removeAssetUris(
+    assetStore,
+    writtenAssetUris.filter((uri) => !committed.usedAssetUris.has(uri))
+  );
+  return committed.result;
 }

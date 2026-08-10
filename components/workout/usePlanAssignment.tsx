@@ -16,7 +16,7 @@ interface PlanAssignmentOptions {
    * The picker closes once this resolves. Throwing keeps it open, which is how a failed write
    * leaves the user's selection on screen to retry instead of silently discarding it.
    */
-  onConfirm: () => void | Promise<void>;
+  onConfirm: (planIds: string[]) => void | Promise<void>;
   /**
    * The workout being filed, when it already exists. A plan created from the picker starts out
    * containing it — one `createPlan` call, so there is no window where the plan exists empty.
@@ -27,7 +27,7 @@ interface PlanAssignmentOptions {
 
 interface PlanAssignment {
   plans: WorkoutPlan[];
-  openPicker: () => void;
+  openPicker: (initialPlanIds?: readonly string[]) => void;
   /** The picker and the plan editor it can open. Render once, anywhere in the host's tree. */
   modals: ReactNode;
 }
@@ -49,13 +49,21 @@ export function usePlanAssignment({
   const { plans } = useWorkoutPlans();
   const [isPickerVisible, setIsPickerVisible] = useState(false);
   const [isEditorVisible, setIsEditorVisible] = useState(false);
+  const [draftPlanIds, setDraftPlanIds] = useState<string[]>(selectedPlanIds);
 
-  const openPicker = useCallback(() => setIsPickerVisible(true), []);
+  const openPicker = useCallback(
+    (initialPlanIds: readonly string[] = selectedPlanIds) => {
+      setDraftPlanIds([...initialPlanIds]);
+      setIsPickerVisible(true);
+    },
+    [selectedPlanIds]
+  );
 
   const handleConfirm = useCallback(async () => {
-    await onConfirm();
+    await onConfirm(draftPlanIds);
+    onChange(draftPlanIds);
     setIsPickerVisible(false);
-  }, [onConfirm]);
+  }, [draftPlanIds, onChange, onConfirm]);
 
   const handlePlanCreated = useCallback(
     (createdPlanId: string) => {
@@ -73,8 +81,8 @@ export function usePlanAssignment({
         <WorkoutPlanPickerModal
           visible={isPickerVisible}
           plans={plans}
-          selectedPlanIds={selectedPlanIds}
-          onChange={onChange}
+          selectedPlanIds={draftPlanIds}
+          onChange={setDraftPlanIds}
           onClose={() => setIsPickerVisible(false)}
           onSave={handleConfirm}
           onCreatePlan={() => {

@@ -141,27 +141,59 @@ describe('usePlanAssignment', () => {
   });
 
   it('closes the picker once confirming resolves', async () => {
+    const onChange = jest.fn();
     const onConfirm = jest.fn().mockResolvedValue(undefined);
-    const flow = renderFlow({ onChange: jest.fn(), onConfirm, selectedPlanIds: [] });
+    const flow = renderFlow({ onChange, onConfirm, selectedPlanIds: [] });
 
     act(() => flow.captured.current!.openPicker());
+    act(() => flow.latestPicker().onChange(['plan-1']));
     await act(async () => {
       await flow.latestPicker().onSave();
     });
 
-    expect(onConfirm).toHaveBeenCalledTimes(1);
+    expect(onConfirm).toHaveBeenCalledWith(['plan-1']);
+    expect(onChange).toHaveBeenCalledWith(['plan-1']);
     expect(flow.latestPicker().visible).toBe(false);
   });
 
-  it('leaves the picker open when confirming fails, so the selection survives a retry', async () => {
-    const onConfirm = jest.fn().mockRejectedValue(new Error('write failed'));
-    const flow = renderFlow({ onChange: jest.fn(), onConfirm, selectedPlanIds: [] });
+  it('discards draft changes when the picker is closed without saving', () => {
+    const onChange = jest.fn();
+    const flow = renderFlow({ onChange, onConfirm: jest.fn(), selectedPlanIds: ['plan-1'] });
 
     act(() => flow.captured.current!.openPicker());
+    act(() => flow.latestPicker().onChange([]));
+
+    expect(flow.latestPicker().selectedPlanIds).toEqual([]);
+    expect(onChange).not.toHaveBeenCalled();
+
+    act(() => flow.latestPicker().onClose());
+    act(() => flow.captured.current!.openPicker());
+
+    expect(flow.latestPicker().selectedPlanIds).toEqual(['plan-1']);
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it('can open with a freshly computed selection before its host rerenders', () => {
+    const flow = renderFlow({ onChange: jest.fn(), onConfirm: jest.fn(), selectedPlanIds: [] });
+
+    act(() => flow.captured.current!.openPicker(['plan-1']));
+
+    expect(flow.latestPicker().selectedPlanIds).toEqual(['plan-1']);
+  });
+
+  it('leaves the picker open when confirming fails, so the selection survives a retry', async () => {
+    const onChange = jest.fn();
+    const onConfirm = jest.fn().mockRejectedValue(new Error('write failed'));
+    const flow = renderFlow({ onChange, onConfirm, selectedPlanIds: [] });
+
+    act(() => flow.captured.current!.openPicker());
+    act(() => flow.latestPicker().onChange(['plan-1']));
     await act(async () => {
       await expect(flow.latestPicker().onSave()).rejects.toThrow('write failed');
     });
 
     expect(flow.latestPicker().visible).toBe(true);
+    expect(flow.latestPicker().selectedPlanIds).toEqual(['plan-1']);
+    expect(onChange).not.toHaveBeenCalled();
   });
 });

@@ -48,6 +48,11 @@
         "iDontKnow": "Ik weet het niet / overslaan",
         "skipInstead": "Datum wissen — ik weet het niet zeker"
       },
+      "length": {
+        "cycleLength": "Cyclusduur",
+        "cycleLengthLabel": "Cyclus",
+        "periodDurationLabel": "Menstruatie"
+      },
       "birthControl": {
         "title": "Hormonale anticonceptie",
         "description": "Gebruik je momenteel hormonale anticonceptie? Dit beïnvloedt de voorspelling van je hormonale fasen.",
