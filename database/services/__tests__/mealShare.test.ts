@@ -287,7 +287,13 @@ describe('buildMealShareEnvelope', () => {
     ['a remote URL, photos on', 'https://images.example.org/rice.jpg', true, true],
   ])('carries an ingredient photo for %s', async (_label, imageUrl, includeImage, carried) => {
     const { meal, mealFoods } = fixture();
-    const withPhoto = food('food-1', 'Rice', 'per_100g', defaultLink('food-1', portion('p', 'P')), imageUrl);
+    const withPhoto = food(
+      'food-1',
+      'Rice',
+      'per_100g',
+      defaultLink('food-1', portion('p', 'P')),
+      imageUrl
+    );
     mockGetMeal.mockResolvedValue({
       foods: [{ ...mealFoods[0], food: withPhoto, foodId: withPhoto.id }],
       meal,

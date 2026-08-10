@@ -26,10 +26,7 @@ export function LoggedMealOpticalSendModal({
   name,
 }: LoggedMealOpticalSendModalProps) {
   const { t } = useTranslation();
-  const buildPayload = useCallback(
-    () => buildLoggedMealSharePayload(logs, { name }),
-    [logs, name]
-  );
+  const buildPayload = useCallback(() => buildLoggedMealSharePayload(logs, { name }), [logs, name]);
   const copy = useMemo(
     () => ({
       instructions: t('opticalTransfer.share.sendMealInstructions'),

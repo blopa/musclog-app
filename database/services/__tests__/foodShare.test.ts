@@ -161,7 +161,11 @@ describe('buildFoodShareEnvelope', () => {
     expect(payload.payloadKind).toBe(OPTICAL_PAYLOAD_KIND_SHARE);
     expect(payload.exportVersion).toBe(OPTICAL_EXPORT_VERSION_SHARE);
     expect(envelope.records.foods[0].image_url).toBe('share-asset:foodImage');
-    expect(envelope.assets.foodImage).toMatchObject({ base64: 'AQIDBA==', height: 300, width: 400 });
+    expect(envelope.assets.foodImage).toMatchObject({
+      base64: 'AQIDBA==',
+      height: 300,
+      width: 400,
+    });
     expect(envelope.summary.hasImage).toBe(true);
     expect(createThumbnail).toHaveBeenCalledWith('file:///food.jpg', 400);
   });

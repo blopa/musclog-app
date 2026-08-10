@@ -155,9 +155,7 @@ function foodEnvelope(options: FoodEnvelopeOptions = {}): FoodShareEnvelope {
           name: 'Scoop',
           scope: options.ownedPortion ? 'private' : 'global',
           source: 'basic',
-          ...(options.ownedPortion
-            ? { owner_id: 'sender-food', owner_type: 'food' }
-            : undefined),
+          ...(options.ownedPortion ? { owner_id: 'sender-food', owner_type: 'food' } : undefined),
         },
       ],
       foods: [

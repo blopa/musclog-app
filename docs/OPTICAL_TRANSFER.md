@@ -211,7 +211,9 @@ bench is the other half of that guarantee.
 
 ## Carrying something smaller than a database
 
-The optical pipeline also carries a single meal and the food/portion rows it depends on. The wire
+The optical pipeline also carries a single food or meal and the food/portion rows it depends on.
+A meal may come from My Meals, a named group in the nutrition diary, or a whole diary section; the
+latter two are synthesized as an ordinary saved-meal envelope by `buildLoggedMealShare.ts`. The wire
 below the container is unchanged: byte 54 of the v1 container header, formerly the low byte of a
 zeroed reserved `u16`, is now `payloadKind` (`0` database, `1` share envelope). Byte 55 remains
 reserved. A database container still writes zero at both positions and is therefore byte-identical
@@ -312,10 +314,12 @@ compatibility contracts. A new receiver additionally requires `payloadKind === 0
 the destructive restore path. Never express that check as “not a share”: an unknown future kind
 must be refused, not treated as a database.
 
-Meal sending has no passphrase path. It is an explicit nearby-device share of one recipe rather
-than an archive of the user's whole profile, so the UI avoids suggesting it inherits the export
-encryption setting. The tradeoff is straightforward: while the codes are visible, another camera
-could read the recipe.
+Food and meal sending have no passphrase path. They are explicit nearby-device shares of one item
+rather than archives of the user's whole profile, so the UI avoids suggesting they inherit the
+export encryption setting. A named meal group's send action lives in its nutrition-card ⋮ menu and
+uses only that group's logs and displayed name; the surrounding breakfast/lunch/dinner section is
+not included. The tradeoff is straightforward: while the codes are visible, another camera could
+read the shared item.
 
 The photo toggle defaults off because the image dominates transfer time. A five-ingredient meal is
 about 2.5 KB of JSON, roughly 1 KB after gzip (`k ≈ 2` at `tiny`), so it completes in under a second.

@@ -21,7 +21,8 @@ export function FoodOpticalSendModal({
 }: FoodOpticalSendModalProps) {
   const { t } = useTranslation();
   const buildPayload = useCallback(
-    ({ includeImage }: { includeImage: boolean }) => buildFoodSharePayload(foodId, { includeImage }),
+    ({ includeImage }: { includeImage: boolean }) =>
+      buildFoodSharePayload(foodId, { includeImage }),
     [foodId]
   );
   const copy = useMemo(

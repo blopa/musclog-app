@@ -12,7 +12,11 @@ import type Food from '@/database/models/Food';
 import type FoodFoodPortion from '@/database/models/FoodFoodPortion';
 import type FoodPortion from '@/database/models/FoodPortion';
 import { createThumbnail } from '@/utils/file';
-import { type ShareAsset, SHARE_ASSET_REF_PREFIX, type ShareRow } from '@/utils/share/shareEnvelope';
+import {
+  SHARE_ASSET_REF_PREFIX,
+  type ShareAsset,
+  type ShareRow,
+} from '@/utils/share/shareEnvelope';
 
 const SHARE_THUMBNAIL_WIDTH = 400;
 

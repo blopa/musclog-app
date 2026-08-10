@@ -21,7 +21,13 @@ import {
 } from '@/utils/share/shareEnvelope';
 import { FOOD_SHARE_SPEC } from '@/utils/share/shareKinds';
 
-import { applyShareImage, isActive, optionalNumber, prepareShareImage, shareRow } from './shareRecords';
+import {
+  applyShareImage,
+  isActive,
+  optionalNumber,
+  prepareShareImage,
+  shareRow,
+} from './shareRecords';
 
 export interface BuildFoodShareOptions {
   includeImage: boolean;

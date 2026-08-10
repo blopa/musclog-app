@@ -3,8 +3,8 @@ import { Text, View } from 'react-native';
 
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
-import { getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
 import type { FoodShareSummary } from '@/utils/share/shareEnvelope';
+import { getMassUnitLabel, gramsToDisplay } from '@/utils/unitConversion';
 
 interface OpticalFoodSharePreviewProps {
   summary: FoodShareSummary;

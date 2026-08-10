@@ -19,8 +19,8 @@ import {
 import { deleteBleDataPointsFiles } from '@/utils/bleWorkoutDataStorage';
 import { handleError } from '@/utils/handleError';
 import { getCurrentTimezone } from '@/utils/timezone';
-import { getRollingWeeklyWorkoutRange } from '@/utils/weeklyWorkoutProgress';
 import { jsDayToWeekdayIndex } from '@/utils/weekdays';
+import { getRollingWeeklyWorkoutRange } from '@/utils/weeklyWorkoutProgress';
 import { calculateWorkoutKcal, type MWEMInput } from '@/utils/workoutEnergyCalculator';
 import { resolveWorkoutSchedules } from '@/utils/workoutScheduleOwnership';
 import {

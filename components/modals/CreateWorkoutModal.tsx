@@ -10,11 +10,11 @@ import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/Op
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { TextInput } from '@/components/theme/TextInput';
 import { WeekdayPicker } from '@/components/theme/WeekdayPicker';
+import { usePlanAssignment } from '@/components/workout/usePlanAssignment';
 import type { WorkoutType } from '@/constants/workoutTypes';
 import { WORKOUT_TYPES } from '@/constants/workoutTypes';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
-import { usePlanAssignment } from '@/components/workout/usePlanAssignment';
 import { useWorkoutForm } from '@/hooks/useWorkoutForm';
 import { getWeekdayLabels } from '@/utils/workout';
 import { getWorkoutIcon, WORKOUT_ICON_OPTIONS } from '@/utils/workoutIconUtils';

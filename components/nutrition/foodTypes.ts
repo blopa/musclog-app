@@ -50,6 +50,19 @@ export type MealGroup = {
   totalNutrients: MacroTotals;
 };
 
+export type LoggedMealShareTarget = {
+  logs: NutritionLog[];
+  name: string;
+};
+
+/** Capture a named diary group as the meal the optical sender will turn into a saved recipe. */
+export function mealGroupShareTarget(group: MealGroup): LoggedMealShareTarget {
+  return {
+    logs: group.entries.map((entry) => entry.log),
+    name: group.mealName,
+  };
+}
+
 const EMPTY_MACROS: MacroTotals = { calories: 0, protein: 0, carbs: 0, fat: 0 };
 const EMPTY_NUTRIENTS: NutrientTotals = { ...EMPTY_MACROS, fiber: 0, alcohol: 0 };
 

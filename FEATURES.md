@@ -200,13 +200,14 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 - Sensitive metrics (weight, body fat) and nutrition logs encrypted at rest with AES
 - Fully offline — core features work without internet
 - Full data export (encrypted JSON or Excel) and import for portability
-- **Optical Transfer** — move everything, or just one saved meal, to another device with nothing
-  but the two screens: one displays an animated stream of QR codes, the other reads them with its
-  camera. Whole-profile transfers remain optionally passphrase-protected and replace only after
-  verification; meal shares preview ingredients/macros and save non-destructively into the existing
-  database, matching each ingredient and serving size against what the receiving phone already has
-  so a received meal reuses your existing foods and portions rather than duplicating them.
-  Send from a meal's ⋮ menu and receive from My Meals → +, or receive either payload from
+- **Optical Transfer** — move everything, an individual food, a saved meal, a named meal from the
+  nutrition diary, or a whole breakfast/lunch/dinner section to another device with nothing but the
+  two screens: one displays an animated stream of QR codes, the other reads them with its camera.
+  Whole-profile transfers remain optionally passphrase-protected and replace only after verification;
+  food and meal shares preview and save non-destructively into the existing database, matching each
+  ingredient and serving size against what the receiving phone already has so a received meal reuses
+  your existing foods and portions rather than duplicating them. Send from the food or meal's ⋮ menu
+  and receive from My Meals → +, or receive either payload from
   Settings. Point a food barcode scanner at a sending phone by mistake and it recognises the stream
   instead of failing a product lookup, offering to hand you straight to the optical reader. The
   receiving screen shows live percentage, transferred KB, KB/s throughput, and remaining time.

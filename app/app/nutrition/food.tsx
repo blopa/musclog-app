@@ -47,7 +47,9 @@ import { ScaleMealPortionModal } from '@/components/modals/ScaleMealPortionModal
 import { CopyDayPromptCard } from '@/components/nutrition/CopyDayPromptCard';
 import { FastingDayCard } from '@/components/nutrition/FastingDayCard';
 import {
+  type LoggedMealShareTarget,
   type MealGroup,
+  mealGroupShareTarget,
   type ResolvedLogEntry,
   sumMacros,
   sumNutrients,
@@ -294,13 +296,10 @@ export default function FoodScreen() {
   const screenModals = useFoodScreenModals();
   const [selectedDate, setSelectedDate] = useState(() => localCalendarDayDate(new Date()));
 
-  // Optical send targets. Captured at press time rather than read from the menu's selection: a
-  // BottomPopUpMenu item closes its menu before it runs, and closing clears that selection.
+  // Optical send targets are captured before each share handler clears its menu selection, so the
+  // screen-level sender can outlive the menu that launched it.
   const [foodToSend, setFoodToSend] = useState<null | { foodId: string; hasImage: boolean }>(null);
-  const [loggedMealToSend, setLoggedMealToSend] = useState<null | {
-    logs: NutritionLog[];
-    name: string;
-  }>(null);
+  const [loggedMealToSend, setLoggedMealToSend] = useState<LoggedMealShareTarget | null>(null);
 
   // Keep camera context aware of the current date so the nav-bar camera button
   // (which has no logDate) also opens FoodMealTrackingDetailsModal on the right date.
@@ -635,6 +634,14 @@ export default function FoodScreen() {
 
   const handleMealGroupSplit = () => {
     openGroupAction('split');
+  };
+
+  const handleSendMealGroupToPhone = () => {
+    const mealGroup = selectedMealGroup;
+    closeMealGroupMenu(true);
+    if (mealGroup) {
+      setLoggedMealToSend(mealGroupShareTarget(mealGroup));
+    }
   };
 
   const handleConfirmMealGroupAction = async (
@@ -1444,6 +1451,14 @@ export default function FoodScreen() {
       title: t('food.actions.splitMeal'),
       description: t('food.actions.splitMealDesc'),
       onPress: handleMealGroupSplit,
+    },
+    {
+      icon: QrCode,
+      iconColor: theme.colors.status.purple,
+      iconBgColor: theme.colors.status.purple10,
+      title: t('food.actions.sendToPhone'),
+      description: t('food.actions.sendMealToPhoneDesc'),
+      onPress: handleSendMealGroupToPhone,
     },
     {
       icon: Save,
