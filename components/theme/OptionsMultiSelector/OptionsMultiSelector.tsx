@@ -1,5 +1,5 @@
 import { Check, ChevronDown, ChevronUp } from 'lucide-react-native';
-import { useEffect, useMemo, useState } from 'react';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import Animated, { LinearTransition } from 'react-native-reanimated';
@@ -29,6 +29,17 @@ type OptionsMultiSelectorProps<T extends string | number> = {
   hideCheckboxes?: boolean;
   /** When true, disables the press animation on items. */
   disablePressAnimation?: boolean;
+  /**
+   * Extra content rendered inside an option's card, under its main row — e.g. the weekday picker a
+   * workout plan's member carries. Returning `null` leaves the row exactly as it renders without
+   * this prop.
+   */
+  renderOptionFooter?: (option: SelectorOption<T>) => ReactNode;
+  /**
+   * Label for the delete action, for lists that are not exercises. Defaults to the exercise
+   * wording. The caller already owns `selectedIds`, so a count-dependent label is its to build.
+   */
+  deleteLabel?: string;
 };
 
 export function OptionsMultiSelector<T extends string | number>({
@@ -42,6 +53,8 @@ export function OptionsMultiSelector<T extends string | number>({
   onDelete,
   hideCheckboxes = false,
   disablePressAnimation = false,
+  renderOptionFooter,
+  deleteLabel,
 }: OptionsMultiSelectorProps<T>) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -69,9 +82,11 @@ export function OptionsMultiSelector<T extends string | number>({
   const showCheckboxes = !hideCheckboxes && (!isEditable || selectionEnabled);
   const showArrows = isEditable && selectionEnabled;
 
-  // Check if we can group/ungroup selected items
+  // Check if we can group/ungroup selected items. A list that renders no group indicators
+  // (`hasGroups={false}` — a workout plan's members, say) must not offer grouping either: the
+  // resulting groupIds would be invisible and would still drag their whole group when reordered.
   const selectedCount = selectedIds.length;
-  const canGroup = selectedCount >= 2 && isEditable && selectionEnabled;
+  const canGroup = selectedCount >= 2 && isEditable && selectionEnabled && hasGroups;
   const canDelete = selectedCount >= 1 && isEditable && selectionEnabled && !!onDelete;
 
   // Check if all selected items are already in the same group
@@ -253,6 +268,7 @@ export function OptionsMultiSelector<T extends string | number>({
     const groupIndices = getGroupIndices(index);
     const isGroupFirst = groupIndices[0] === 0;
     const isGroupLast = groupIndices[groupIndices.length - 1] === orderedOptions.length - 1;
+    const footer = renderOptionFooter?.(option);
 
     return (
       <Animated.View
@@ -313,9 +329,6 @@ export function OptionsMultiSelector<T extends string | number>({
               <View
                 style={{
                   flex: 1,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
                   padding: theme.spacing.padding.base,
                   borderRadius: theme.borderRadius.md,
                   borderWidth: theme.borderWidth.thin,
@@ -330,96 +343,110 @@ export function OptionsMultiSelector<T extends string | number>({
                   ...(selected ? theme.shadows.accentGlow : {}),
                 }}
               >
+                {/*
+                  The card is a column so `renderOptionFooter` can sit under the row; the row's own
+                  layout lives on this inner View, which is what it was on the card itself before
+                  footers existed.
+                */}
                 <View
                   style={{
                     flexDirection: 'row',
                     alignItems: 'center',
-                    gap: theme.spacing.gap.base,
-                    flex: 1,
-                    minWidth: 0,
+                    justifyContent: 'space-between',
                   }}
                 >
                   <View
                     style={{
-                      width: theme.size['10'],
-                      height: theme.size['10'],
-                      borderRadius: theme.borderRadius.full,
-                      backgroundColor: option.iconBgColor,
+                      flexDirection: 'row',
                       alignItems: 'center',
-                      justifyContent: 'center',
+                      gap: theme.spacing.gap.base,
+                      flex: 1,
+                      minWidth: 0,
                     }}
                   >
-                    <Icon size={theme.iconSize.lg} color={option.iconColor} />
-                  </View>
-                  <View style={{ flex: 1, minWidth: 0 }}>
-                    <Text
-                      style={{
-                        fontSize: theme.typography.fontSize.base,
-                        fontWeight: theme.typography.fontWeight.bold,
-                        color: theme.colors.text.primary,
-                      }}
-                    >
-                      {option.label}
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: theme.typography.fontSize.xs,
-                        color: theme.colors.text.secondary,
-                        marginTop: theme.spacing.padding.xsHalf,
-                      }}
-                    >
-                      {option.description}
-                    </Text>
-                  </View>
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    flexShrink: 0,
-                    gap: theme.spacing.gap.sm,
-                    marginLeft: theme.spacing.gap.sm,
-                  }}
-                >
-                  {option.trailingHighlight ? (
-                    <Text
-                      numberOfLines={1}
-                      style={{
-                        fontSize: theme.typography.fontSize.lg,
-                        fontWeight: theme.typography.fontWeight.bold,
-                        color: theme.colors.accent.primary,
-                      }}
-                    >
-                      {option.trailingHighlight}
-                    </Text>
-                  ) : null}
-                  {showCheckboxes ? (
                     <View
                       style={{
-                        width: theme.size['6'],
-                        height: theme.size['6'],
-                        borderRadius: theme.borderRadius.sm,
-                        borderWidth: theme.borderWidth.medium,
-                        borderColor: selected
-                          ? theme.colors.accent.primary
-                          : theme.colors.border.default,
-                        backgroundColor: selected ? theme.colors.accent.primary : 'transparent',
+                        width: theme.size['10'],
+                        height: theme.size['10'],
+                        borderRadius: theme.borderRadius.full,
+                        backgroundColor: option.iconBgColor,
                         alignItems: 'center',
                         justifyContent: 'center',
                       }}
                     >
-                      {selected ? (
-                        <Check
-                          size={theme.iconSize.xs}
-                          color={theme.colors.text.black}
-                          strokeWidth={theme.strokeWidth.thick}
-                        />
-                      ) : null}
+                      <Icon size={theme.iconSize.lg} color={option.iconColor} />
                     </View>
-                  ) : option.trailingHighlight ? null : (
-                    <View />
-                  )}
+                    <View style={{ flex: 1, minWidth: 0 }}>
+                      <Text
+                        style={{
+                          fontSize: theme.typography.fontSize.base,
+                          fontWeight: theme.typography.fontWeight.bold,
+                          color: theme.colors.text.primary,
+                        }}
+                      >
+                        {option.label}
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: theme.typography.fontSize.xs,
+                          color: theme.colors.text.secondary,
+                          marginTop: theme.spacing.padding.xsHalf,
+                        }}
+                      >
+                        {option.description}
+                      </Text>
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      flexShrink: 0,
+                      gap: theme.spacing.gap.sm,
+                      marginLeft: theme.spacing.gap.sm,
+                    }}
+                  >
+                    {option.trailingHighlight ? (
+                      <Text
+                        numberOfLines={1}
+                        style={{
+                          fontSize: theme.typography.fontSize.lg,
+                          fontWeight: theme.typography.fontWeight.bold,
+                          color: theme.colors.accent.primary,
+                        }}
+                      >
+                        {option.trailingHighlight}
+                      </Text>
+                    ) : null}
+                    {showCheckboxes ? (
+                      <View
+                        style={{
+                          width: theme.size['6'],
+                          height: theme.size['6'],
+                          borderRadius: theme.borderRadius.sm,
+                          borderWidth: theme.borderWidth.medium,
+                          borderColor: selected
+                            ? theme.colors.accent.primary
+                            : theme.colors.border.default,
+                          backgroundColor: selected ? theme.colors.accent.primary : 'transparent',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        {selected ? (
+                          <Check
+                            size={theme.iconSize.xs}
+                            color={theme.colors.text.black}
+                            strokeWidth={theme.strokeWidth.thick}
+                          />
+                        ) : null}
+                      </View>
+                    ) : option.trailingHighlight ? null : (
+                      <View />
+                    )}
+                  </View>
                 </View>
+                {footer ? <View style={{ marginTop: theme.spacing.gap.md }}>{footer}</View> : null}
               </View>
             )}
           </Pressable>
@@ -502,6 +529,7 @@ export function OptionsMultiSelector<T extends string | number>({
           selectedCount={selectedCount}
           onGroupAction={handleGroupAction}
           onDelete={handleDelete}
+          deleteLabel={deleteLabel}
         />
       ) : null}
 

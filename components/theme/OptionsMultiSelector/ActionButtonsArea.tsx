@@ -13,6 +13,8 @@ type ActionButtonsAreaProps = {
   selectedCount: number;
   onGroupAction: () => void;
   onDelete: () => void;
+  /** Overrides the delete button's exercise wording for lists that hold something else. */
+  deleteLabel?: string;
 };
 
 export const ActionButtonsArea: FC<ActionButtonsAreaProps> = ({
@@ -22,6 +24,7 @@ export const ActionButtonsArea: FC<ActionButtonsAreaProps> = ({
   selectedCount,
   onGroupAction,
   onDelete,
+  deleteLabel,
 }) => {
   const theme = useTheme();
   const showGroupButton = canGroup;
@@ -49,7 +52,7 @@ export const ActionButtonsArea: FC<ActionButtonsAreaProps> = ({
         />
       ) : null}
       {showDeleteButton ? (
-        <DeleteActionButton onPress={onDelete} selectedCount={selectedCount} />
+        <DeleteActionButton onPress={onDelete} selectedCount={selectedCount} label={deleteLabel} />
       ) : null}
     </View>
   );

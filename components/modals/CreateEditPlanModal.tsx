@@ -1,4 +1,3 @@
-import { ArrowDown, ArrowUp, X } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
@@ -16,6 +15,7 @@ import { usePlanDraft } from '@/hooks/usePlanDraft';
 import { useTheme } from '@/hooks/useTheme';
 import { useWorkoutTemplates } from '@/hooks/useWorkoutTemplates';
 import { handleError } from '@/utils/handleError';
+import { reorderPlanMembers } from '@/utils/planMemberOrder';
 import { getWeekdayLabels } from '@/utils/workout';
 import { getWorkoutIcon, WORKOUT_ICON_OPTIONS } from '@/utils/workoutIconUtils';
 
@@ -43,6 +43,30 @@ interface CreateEditPlanModalProps {
   initialTemplateIds?: string[];
   onClose: () => void;
   onSaved?: (planId: string) => void;
+}
+
+/**
+ * A weekly plan member's day assignment, rendered inside its row's card. Its own component so the
+ * `renderOptionFooter` callback stays a one-liner and the "unscheduled" warning lives next to the
+ * picker that clears it.
+ */
+function MemberWeekdays({
+  weekDays,
+  onToggleDay,
+}: {
+  weekDays: number[];
+  onToggleDay: (day: number) => void;
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <View className="gap-3">
+      <WeekdayPicker days={getWeekdayLabels()} selectedDays={weekDays} onToggleDay={onToggleDay} />
+      {weekDays.length === 0 ? (
+        <Text className="text-status-warning text-xs">{t('workouts.plans.unscheduled')}</Text>
+      ) : null}
+    </View>
+  );
 }
 
 export function CreateEditPlanModal({
@@ -74,6 +98,11 @@ export function CreateEditPlanModal({
   const [isSaving, setIsSaving] = useState(false);
   const [isCycleConfirmationVisible, setIsCycleConfirmationVisible] = useState(false);
   const [visibleWorkoutCount, setVisibleWorkoutCount] = useState(WORKOUT_PICKER_PAGE_SIZE);
+  /**
+   * The member list's own edit-mode selection — which rows the "Remove from plan" action applies
+   * to. Deliberately separate from the picker above, whose ticks mean membership itself.
+   */
+  const [memberSelection, setMemberSelection] = useState<string[]>([]);
 
   useEffect(() => {
     if (loadError) {
@@ -128,9 +157,10 @@ export function CreateEditPlanModal({
     [setMembers]
   );
 
-  const removeMember = useCallback(
-    (templateId: string) => {
-      setMembers((current) => current.filter((member) => member.templateId !== templateId));
+  const removeMembers = useCallback(
+    (templateIds: string[]) => {
+      setMembers((current) => current.filter((member) => !templateIds.includes(member.templateId)));
+      setMemberSelection([]);
     },
     [setMembers]
   );
@@ -167,27 +197,38 @@ export function CreateEditPlanModal({
     [members, templates]
   );
 
-  /** Swaps with the neighbouring VISIBLE member, so an invisible row cannot swallow a tap. */
-  const moveMember = useCallback(
-    (templateId: string, direction: -1 | 1) => {
-      const visibleIndex = visibleMembers.findIndex((member) => member.templateId === templateId);
-      const neighbour = visibleMembers[visibleIndex + direction];
-      if (visibleIndex < 0 || !neighbour) {
-        return;
-      }
+  /**
+   * The member list renders through the same `OptionsMultiSelector` as a workout's exercises, so
+   * the plan gets that list's chevrons, edit mode and spring reordering animation for free. Its
+   * rows are `visibleMembers`, hence the re-slotting in `reorderPlanMembers`.
+   */
+  const memberOptions = useMemo(
+    () =>
+      visibleMembers.map((member) => ({
+        id: member.templateId,
+        label: member.template.name,
+        description: t('workouts.plans.picker.exerciseCount', {
+          count: member.template.exerciseCount,
+        }),
+        icon: getWorkoutIcon(member.template.icon),
+        iconBgColor: theme.colors.accent.primary10,
+        iconColor: theme.colors.accent.primary,
+      })),
+    [visibleMembers, t, theme]
+  );
 
-      setMembers((current) => {
-        const from = current.findIndex((member) => member.templateId === templateId);
-        const to = current.findIndex((member) => member.templateId === neighbour.templateId);
-        if (from < 0 || to < 0) {
-          return current;
-        }
-        const next = [...current];
-        [next[from], next[to]] = [next[to], next[from]];
-        return next;
-      });
+  /** Drops ids whose row has gone — unticking a workout in the picker removes it from the list. */
+  const selectedMemberIds = useMemo(
+    () => memberSelection.filter((id) => visibleMembers.some((member) => member.templateId === id)),
+    [memberSelection, visibleMembers]
+  );
+
+  const handleMemberOrderChange = useCallback(
+    (reordered: { id: string }[]) => {
+      const orderedIds = reordered.map((option) => option.id);
+      setMembers((current) => reorderPlanMembers(current, orderedIds));
     },
-    [visibleMembers, setMembers]
+    [setMembers]
   );
 
   const performSave = useCallback(async () => {
@@ -354,71 +395,35 @@ export function CreateEditPlanModal({
               </View>
             ) : null}
             <View className="gap-3">
-              <Text className="ml-1 text-sm font-medium text-text-secondary">
-                {t('workouts.plans.membersLabel')}
-              </Text>
+              <OptionsMultiSelector
+                title={t('workouts.plans.membersLabel')}
+                options={memberOptions}
+                selectedIds={selectedMemberIds}
+                onChange={setMemberSelection}
+                onOrderChange={handleMemberOrderChange}
+                onDelete={removeMembers}
+                deleteLabel={t('workouts.plans.removeMember')}
+                // Workouts inside a plan have nothing analogous to a superset, so no grouping.
+                hasGroups={false}
+                // Nothing to edit in an empty list, so no "Edit" affordance either.
+                isEditable={memberOptions.length > 0}
+                renderOptionFooter={(option) =>
+                  cycleType === 'weekly' ? (
+                    <MemberWeekdays
+                      weekDays={
+                        visibleMembers.find((member) => member.templateId === option.id)
+                          ?.weekDays ?? []
+                      }
+                      onToggleDay={(day) => toggleMemberDay(option.id, day)}
+                    />
+                  ) : null
+                }
+              />
               {visibleMembers.length === 0 ? (
                 <Text className="ml-1 text-xs text-text-tertiary">
                   {t('workouts.plans.membersEmpty')}
                 </Text>
               ) : null}
-              {visibleMembers.map((member, index) => (
-                <View key={member.templateId} className="gap-3 rounded-lg bg-bg-card p-4">
-                  <View className="flex-row items-center gap-2">
-                    <Text className="min-w-0 flex-1 font-semibold text-text-primary">
-                      {member.template.name}
-                    </Text>
-                    <Pressable
-                      onPress={() => moveMember(member.templateId, -1)}
-                      disabled={index === 0}
-                      className="p-2"
-                    >
-                      <ArrowUp
-                        size={theme.iconSize.sm}
-                        color={
-                          index === 0 ? theme.colors.text.tertiary : theme.colors.text.secondary
-                        }
-                      />
-                    </Pressable>
-                    <Pressable
-                      onPress={() => moveMember(member.templateId, 1)}
-                      disabled={index === visibleMembers.length - 1}
-                      className="p-2"
-                    >
-                      <ArrowDown
-                        size={theme.iconSize.sm}
-                        color={
-                          index === visibleMembers.length - 1
-                            ? theme.colors.text.tertiary
-                            : theme.colors.text.secondary
-                        }
-                      />
-                    </Pressable>
-                    <Pressable
-                      onPress={() => removeMember(member.templateId)}
-                      className="p-2"
-                      accessibilityRole="button"
-                      accessibilityLabel={t('workouts.plans.removeMember')}
-                    >
-                      <X size={theme.iconSize.sm} color={theme.colors.status.error} />
-                    </Pressable>
-                  </View>
-                  {cycleType === 'weekly' ? (
-                    <>
-                      <WeekdayPicker
-                        days={getWeekdayLabels()}
-                        selectedDays={member.weekDays}
-                        onToggleDay={(day) => toggleMemberDay(member.templateId, day)}
-                      />
-                      {member.weekDays.length === 0 ? (
-                        <Text className="text-status-warning text-xs">
-                          {t('workouts.plans.unscheduled')}
-                        </Text>
-                      ) : null}
-                    </>
-                  ) : null}
-                </View>
-              ))}
             </View>
           </View>
         </KeyboardAwareScrollView>

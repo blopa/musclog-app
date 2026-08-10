@@ -8,9 +8,15 @@ import { useTheme } from '@/hooks/useTheme';
 type DeleteActionButtonProps = {
   onPress: () => void;
   selectedCount: number;
+  /** Overrides the exercise wording; the caller supplies it already resolved for the count. */
+  label?: string;
 };
 
-export const DeleteActionButton: FC<DeleteActionButtonProps> = ({ onPress, selectedCount }) => {
+export const DeleteActionButton: FC<DeleteActionButtonProps> = ({
+  onPress,
+  selectedCount,
+  label,
+}) => {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -60,9 +66,10 @@ export const DeleteActionButton: FC<DeleteActionButtonProps> = ({ onPress, selec
               letterSpacing: theme.typography.letterSpacing.extraWide,
             }}
           >
-            {selectedCount === 1
-              ? t('optionsSelector.deleteExercise')
-              : t('optionsSelector.deleteExercises')}
+            {label ??
+              (selectedCount === 1
+                ? t('optionsSelector.deleteExercise')
+                : t('optionsSelector.deleteExercises'))}
           </Text>
         </View>
       </TouchableOpacity>
