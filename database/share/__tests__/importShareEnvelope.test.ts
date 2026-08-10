@@ -254,6 +254,22 @@ describe('importShareEnvelope', () => {
     });
   });
 
+  // The three lookups are an OR, not a short circuit: a barcoded ingredient whose barcode nothing
+  // answers still gets the name + macros check, so it matches the copy a receiver typed in by hand.
+  it('falls through to name and macros when the incoming barcode matches nothing', async () => {
+    const { created } = wire({
+      foods: [storedFood({ barcode: null, external_id: null })],
+    });
+    const result = await importShareEnvelope(envelope());
+
+    expect(created.foods).toBeUndefined();
+    expect(result.reused).toContainEqual({
+      localId: 'local-food',
+      sourceId: 'sender-food',
+      table: 'foods',
+    });
+  });
+
   it('never reuses a same-named food whose macros differ', async () => {
     const { created } = wire({
       foods: [storedFood({ barcode: null, external_id: null, protein: 6 })],
