@@ -28,7 +28,7 @@ export async function writeNutritionLogToHealthConnect(
 
 export async function syncNutritionFromHealthConnect(
   _timeRange?: { startTime: number; endTime: number },
-  _options?: { retryAttempts?: number }
+  _options?: { retryAttempts?: number; reportErrors?: boolean }
 ): Promise<NutritionSyncCounts> {
   return { totalRead: 0, written: 0, updated: 0, deleted: 0, skipped: 0 };
 }

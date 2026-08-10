@@ -21,7 +21,7 @@ export async function writeUserMetricToHealthConnect(
 
 export async function syncFitnessMetrics(
   _timeRange?: { startTime: number; endTime: number },
-  _options?: { retryAttempts?: number; skipValidation?: boolean }
+  _options?: { retryAttempts?: number; skipValidation?: boolean; reportErrors?: boolean }
 ): Promise<FitnessSyncCounts> {
   return { totalRead: 0, written: 0, updated: 0, deleted: 0, skipped: 0 };
 }

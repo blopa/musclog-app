@@ -110,7 +110,7 @@ export default function ProfileScreen() {
 
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
   const { metrics, isLoading: isLoadingMetrics } = useUserMetrics();
-  const { isSyncing, syncNow } = useSyncTracking();
+  const { isSyncing, syncInBackground } = useSyncTracking();
   const weightPrediction = useWeightPrediction();
   const [isBodyMetricsHistoryVisible, setIsBodyMetricsHistoryVisible] = useState(false);
   const [isEditPersonalVisible, setIsEditPersonalVisible] = useState(false);
@@ -144,8 +144,8 @@ export default function ProfileScreen() {
   );
 
   useEffect(() => {
-    syncNow();
-  }, [syncNow]);
+    void syncInBackground();
+  }, [syncInBackground]);
 
   // Transform metrics and user data into stats array format
   const stats: {

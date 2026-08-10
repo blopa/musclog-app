@@ -22,6 +22,15 @@ export interface SyncResult {
   duration: number;
 }
 
+export type SyncTrigger = 'background' | 'manual';
+
+export interface SyncConfig {
+  lookbackDays?: number;
+  retryAttempts?: number;
+  skipValidation?: boolean;
+  trigger?: SyncTrigger;
+}
+
 const emptyResult = (): SyncResult => ({
   status: SyncStatus.SUCCESS,
   recordsRead: 0,
@@ -34,7 +43,7 @@ const emptyResult = (): SyncResult => ({
 });
 
 class HealthDataSyncServiceWebStub {
-  async isSyncEnabled(): Promise<boolean> {
+  async isSyncEnabled(_options: { reportErrors?: boolean } = {}): Promise<boolean> {
     return false;
   }
 
@@ -50,11 +59,11 @@ class HealthDataSyncServiceWebStub {
     return false;
   }
 
-  async syncFromHealthPlatform(): Promise<SyncResult> {
+  async syncFromHealthPlatform(_config: SyncConfig = {}): Promise<SyncResult> {
     return emptyResult();
   }
 
-  async syncFromHealthConnect(): Promise<SyncResult> {
+  async syncFromHealthConnect(_config: SyncConfig = {}): Promise<SyncResult> {
     return emptyResult();
   }
 }

@@ -538,7 +538,9 @@ Stores Health Connect configuration:
 
 **useSyncTracking()**
 
-- Returns: `{ isSyncing, lastSyncTime, syncNow, enableSync, disableSync, ... }`
+- Returns: `{ isSyncing, lastSyncTime, syncNow, syncInBackground, enableSync, disableSync, ... }`
+- `syncNow(config?)` shows native snackbar feedback for a user-triggered sync.
+- `syncInBackground(config?)` runs silently for automatic lifecycle syncs.
 
 ## Conclusion
 

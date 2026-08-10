@@ -254,7 +254,7 @@ async function getOrCreateSentinelFood(): Promise<Food> {
 
 export async function syncNutritionFromHealthConnect(
   timeRange: { startTime: number; endTime: number },
-  options: { retryAttempts?: number } = {}
+  options: { retryAttempts?: number; reportErrors?: boolean } = {}
 ): Promise<NutritionSyncCounts> {
   const { retryAttempts = RETRY_CONFIG.maxAttempts } = options;
 

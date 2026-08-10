@@ -20,6 +20,7 @@ import {
   HealthConnectError,
   HealthConnectErrorCode,
   HealthConnectErrorFactory,
+  isHealthPermissionError,
   RETRY_CONFIG,
 } from './healthConnectErrors';
 import { syncFitnessMetrics } from './healthConnectFitness';
@@ -57,10 +58,13 @@ export interface SyncResult {
 /**
  * Sync configuration
  */
-interface SyncConfig {
+export type SyncTrigger = 'background' | 'manual';
+
+export interface SyncConfig {
   lookbackDays?: number; // How many days to look back (default: 30)
   retryAttempts?: number; // Max retry attempts (default: 3)
   skipValidation?: boolean; // Skip validation (default: false)
+  trigger?: SyncTrigger; // Background syncs are silent; manual syncs report unexpected failures
 }
 
 /** Upsert a boolean setting (stored as 'true'/'false') by type key. */
@@ -98,7 +102,8 @@ class HealthDataSyncService {
   /**
    * Check if Health Connect sync is enabled (master toggle = connect_health_data).
    */
-  async isSyncEnabled(): Promise<boolean> {
+  async isSyncEnabled(options: { reportErrors?: boolean } = {}): Promise<boolean> {
+    const { reportErrors = true } = options;
     try {
       const settings = await database
         .get<Setting>('settings')
@@ -107,8 +112,10 @@ class HealthDataSyncService {
 
       return settings.length > 0 && settings[0].value === 'true';
     } catch (error) {
-      handleError(error, 'healthDataSync.isSyncEnabled');
-      console.error('Error checking sync enabled status:', error);
+      if (reportErrors) {
+        handleError(error, 'healthDataSync.isSyncEnabled');
+      }
+
       return false;
     }
   }
@@ -188,20 +195,14 @@ class HealthDataSyncService {
    * Full sync from the platform health store (Health Connect on Android, HealthKit on iOS).
    */
   async syncFromHealthPlatform(config: SyncConfig = {}): Promise<SyncResult> {
-    // Prevent concurrent syncs
-    if (this.syncInProgress) {
-      throw HealthConnectErrorFactory.syncInProgress();
-    }
-
     const {
       lookbackDays = 30,
       retryAttempts = RETRY_CONFIG.maxAttempts,
       skipValidation = false,
+      trigger = 'background',
     } = config;
 
     const startTime = Date.now();
-    this.syncInProgress = true;
-
     const result: SyncResult = {
       status: SyncStatus.SYNCING,
       recordsRead: 0,
@@ -213,11 +214,22 @@ class HealthDataSyncService {
       duration: 0,
     };
 
+    // A concurrent background attempt is expected and must remain silent. A manual
+    // attempt returns the same structured error so the button flow can show feedback.
+    if (this.syncInProgress) {
+      result.status = SyncStatus.ERROR;
+      result.errors.push(HealthConnectErrorFactory.syncInProgress());
+      result.endTime = Date.now();
+      result.duration = result.endTime - result.startTime;
+      return result;
+    }
+
+    this.syncInProgress = true;
+
     try {
       // Check if sync is enabled
-      const syncEnabled = await this.isSyncEnabled();
+      const syncEnabled = await this.isSyncEnabled({ reportErrors: trigger === 'manual' });
       if (!syncEnabled) {
-        console.log('Health Connect sync is disabled');
         result.status = SyncStatus.SUCCESS;
         return result;
       }
@@ -225,11 +237,16 @@ class HealthDataSyncService {
       // Check if at least one permission is granted (no longer requiring all)
       const hasAnyPermission = await healthConnectService.hasAnyPermission();
       if (!hasAnyPermission) {
-        throw new HealthConnectError(
-          HealthConnectErrorCode.INSUFFICIENT_PERMISSIONS,
-          i18n.t('snackbar.healthConnect.noPermissionsGranted'),
-          { retryable: false }
+        result.status = SyncStatus.ERROR;
+        result.errors.push(
+          new HealthConnectError(
+            HealthConnectErrorCode.INSUFFICIENT_PERMISSIONS,
+            i18n.t('snackbar.healthConnect.noPermissionsGranted'),
+            { retryable: false }
+          )
         );
+
+        return result;
       }
 
       // Calculate time range aligned to local calendar day boundaries (DST-safe)
@@ -247,16 +264,21 @@ class HealthDataSyncService {
         const fitnessResult = await syncFitnessMetrics(timeRange, {
           retryAttempts,
           skipValidation,
+          reportErrors: trigger === 'manual',
         });
         result.recordsRead += fitnessResult.totalRead;
         result.recordsWritten += fitnessResult.written + fitnessResult.updated;
         result.recordsSkipped += fitnessResult.skipped + fitnessResult.deleted;
       } catch (error) {
-        console.error('Error syncing fitness metrics:', error);
-        if (error instanceof HealthConnectError) {
-          result.errors.push(error);
-        } else {
-          result.errors.push(HealthConnectErrorFactory.unknownError(error as Error));
+        const syncError =
+          error instanceof HealthConnectError
+            ? error
+            : HealthConnectErrorFactory.unknownError(error as Error);
+        result.errors.push(syncError);
+        if (trigger === 'manual' && !isHealthPermissionError(syncError)) {
+          await handleError(syncError, 'healthDataSync.syncFitnessMetrics', {
+            showSnackbar: false,
+          });
         }
       }
 
@@ -264,16 +286,21 @@ class HealthDataSyncService {
       try {
         const nutritionResult = await syncNutritionFromHealthConnect(timeRange, {
           retryAttempts,
+          reportErrors: trigger === 'manual',
         });
         result.recordsRead += nutritionResult.totalRead;
         result.recordsWritten += nutritionResult.written + nutritionResult.updated;
         result.recordsSkipped += nutritionResult.skipped + nutritionResult.deleted;
       } catch (error) {
-        console.error('Error syncing nutrition:', error);
-        if (error instanceof HealthConnectError) {
-          result.errors.push(error);
-        } else {
-          result.errors.push(HealthConnectErrorFactory.unknownError(error as Error));
+        const syncError =
+          error instanceof HealthConnectError
+            ? error
+            : HealthConnectErrorFactory.unknownError(error as Error);
+        result.errors.push(syncError);
+        if (trigger === 'manual' && !isHealthPermissionError(syncError)) {
+          await handleError(syncError, 'healthDataSync.syncNutrition', {
+            showSnackbar: false,
+          });
         }
       }
 
@@ -282,13 +309,17 @@ class HealthDataSyncService {
 
       result.status = result.errors.length === 0 ? SyncStatus.SUCCESS : SyncStatus.ERROR;
     } catch (error) {
-      handleError(error, 'healthDataSync.syncHealthData');
-      console.error('Critical error during Health Connect sync:', error);
+      const syncError =
+        error instanceof HealthConnectError
+          ? error
+          : HealthConnectErrorFactory.unknownError(error as Error);
       result.status = SyncStatus.ERROR;
-      if (error instanceof HealthConnectError) {
-        result.errors.push(error);
-      } else {
-        result.errors.push(HealthConnectErrorFactory.unknownError(error as Error));
+      result.errors.push(syncError);
+
+      if (trigger === 'manual' && !isHealthPermissionError(syncError)) {
+        await handleError(syncError, 'healthDataSync.syncHealthData', {
+          showSnackbar: false,
+        });
       }
     } finally {
       this.syncInProgress = false;

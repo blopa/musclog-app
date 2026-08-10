@@ -115,11 +115,16 @@ const display = HeightConverter.formatHeight(175, UnitSystem.IMPERIAL); // "5' 9
 ```typescript
 await healthDataSyncService.syncFromHealthConnect({
   lookbackDays: 14, // Look back 2 weeks
-  batchSize: 200, // Process 200 at a time
   retryAttempts: 5, // Retry up to 5 times
   skipValidation: false, // Don't skip validation
+  trigger: 'background', // Silent by default; use the hook for manual syncs
 });
 ```
+
+`trigger: 'background'` suppresses user feedback and sync error reporting from automatic syncs.
+Button-driven syncs should call `useSyncTracking().syncNow()`: on Android and iOS it shows a
+snackbar for missing permissions or another sync failure, while web remains silent. Missing or
+revoked health permissions are expected user state and are never sent to Sentry.
 
 ### Enable/Disable Sync
 
@@ -298,6 +303,7 @@ TaskManager.defineTask(SYNC_TASK, async () => {
 
     const result = await healthDataSyncService.syncFromHealthConnect({
       lookbackDays: 1, // Only sync last day in background
+      trigger: 'background',
     });
 
     return result.recordsWritten > 0
