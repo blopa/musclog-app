@@ -34,7 +34,6 @@ type BottomPopUpMenuProps = {
   scrollable?: boolean;
   isLoading?: boolean;
   loadingTitle?: string;
-  nestedModals?: ReactNode;
 };
 
 type OptionItemProps = BottomPopUpMenuItem;
@@ -95,7 +94,6 @@ export function BottomPopUpMenu({
   scrollable = true,
   isLoading = false,
   loadingTitle,
-  nestedModals,
 }: BottomPopUpMenuProps) {
   const theme = useTheme();
 
@@ -157,7 +155,6 @@ export function BottomPopUpMenu({
             </View>
           ))
         )}
-        {nestedModals}
       </>
     </BottomPopUp>
   );

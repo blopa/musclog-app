@@ -1,5 +1,5 @@
 import { Plus } from 'lucide-react-native';
-import { type ReactNode, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 
@@ -20,7 +20,6 @@ interface WorkoutPlanPickerModalProps {
   onClose: () => void;
   onSave: () => void | Promise<void>;
   onCreatePlan?: () => void;
-  nestedModals?: ReactNode;
 }
 
 export function WorkoutPlanPickerModal({
@@ -31,7 +30,6 @@ export function WorkoutPlanPickerModal({
   onClose,
   onSave,
   onCreatePlan,
-  nestedModals,
 }: WorkoutPlanPickerModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -80,7 +78,6 @@ export function WorkoutPlanPickerModal({
           />
         ) : null}
       </View>
-      {nestedModals}
     </FullScreenModal>
   );
 }

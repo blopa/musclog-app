@@ -41,7 +41,12 @@ import { clearActiveWorkoutLogId } from '@/utils/activeWorkoutStorage';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { handleError } from '@/utils/handleError';
 
-type PlanEditorOrigin = 'workout-picker' | 'plan-menu' | 'screen-menu';
+/**
+ * Where the plan editor was opened from. Only the post-save follow-up differs: a plan created from
+ * the workout's plan picker files that workout into it, while one created from a menu does not
+ * (`selectedWorkoutId` may still hold whatever workout the user last opened a menu for).
+ */
+type PlanEditorOrigin = 'plan-list' | 'workout-picker';
 
 export default function WorkoutsScreen() {
   const theme = useTheme();
@@ -412,57 +417,6 @@ export default function WorkoutsScreen() {
           setIsMenuVisible(false);
           setIsPlanPickerVisible(true);
         }}
-        nestedModals={
-          <WorkoutPlanPickerModal
-            visible={isPlanPickerVisible}
-            plans={plans}
-            selectedPlanIds={pendingPlanIds}
-            onChange={setPendingPlanIds}
-            onClose={() => setIsPlanPickerVisible(false)}
-            onSave={async () => {
-              if (selectedWorkoutId) {
-                try {
-                  await WorkoutPlanService.setTemplatePlans(selectedWorkoutId, pendingPlanIds);
-                } catch (error) {
-                  await handleError(error, 'workouts.setTemplatePlans', {
-                    snackbarMessage: t('workouts.plans.saveError'),
-                  });
-                  return;
-                }
-              }
-              setIsPlanPickerVisible(false);
-            }}
-            onCreatePlan={() => {
-              setIsPlanPickerVisible(false);
-              setEditingPlanId(undefined);
-              setPlanEditorOrigin('workout-picker');
-            }}
-            nestedModals={
-              planEditorOrigin === 'workout-picker' ? (
-                <CreateEditPlanModal
-                  visible={true}
-                  onClose={() => {
-                    setPlanEditorOrigin(null);
-                    setEditingPlanId(undefined);
-                  }}
-                  onSaved={async (savedPlanId) => {
-                    if (selectedWorkoutId) {
-                      const nextPlanIds = [...new Set([...pendingPlanIds, savedPlanId])];
-                      setPendingPlanIds(nextPlanIds);
-                      try {
-                        await WorkoutPlanService.setTemplatePlans(selectedWorkoutId, nextPlanIds);
-                      } catch (error) {
-                        await handleError(error, 'workouts.setTemplatePlansAfterCreate', {
-                          snackbarMessage: t('workouts.plans.saveError'),
-                        });
-                      }
-                    }
-                  }}
-                />
-              ) : null
-            }
-          />
-        }
       />
       <CreateWorkoutOptionsModal
         visible={isCreateOptionsVisible}
@@ -630,7 +584,7 @@ export default function WorkoutsScreen() {
             onPress: () => {
               setEditingPlanId(selectedPlanId);
               setIsPlanMenuVisible(false);
-              setPlanEditorOrigin('plan-menu');
+              setPlanEditorOrigin('plan-list');
             },
           },
           {
@@ -647,47 +601,6 @@ export default function WorkoutsScreen() {
             },
           },
         ]}
-        nestedModals={
-          planEditorOrigin === 'plan-menu' ? (
-            <CreateEditPlanModal
-              visible={true}
-              planId={editingPlanId}
-              onClose={() => {
-                setPlanEditorOrigin(null);
-                setEditingPlanId(undefined);
-              }}
-            />
-          ) : (
-            <ConfirmationModal
-              visible={isDeletePlanConfirmationVisible}
-              onClose={() => setIsDeletePlanConfirmationVisible(false)}
-              onConfirm={async () => {
-                if (!selectedPlanId) {
-                  return;
-                }
-                setIsDeletingPlan(true);
-                try {
-                  await WorkoutPlanService.deletePlan(selectedPlanId);
-                  showSnackbar('success', t('workouts.plans.deleteSuccess'));
-                } catch (error) {
-                  await handleError(error, 'workouts.deletePlan', {
-                    snackbarMessage: t('workouts.plans.deleteError'),
-                  });
-                } finally {
-                  setIsDeletingPlan(false);
-                  setIsDeletePlanConfirmationVisible(false);
-                }
-              }}
-              title={t('workouts.plans.deleteConfirmation.title')}
-              message={t('workouts.plans.deleteConfirmation.message', {
-                name: plans.find((plan) => plan.id === selectedPlanId)?.name,
-              })}
-              confirmLabel={t('common.delete')}
-              variant="destructive"
-              isLoading={isDeletingPlan}
-            />
-          )
-        }
       />
 
       <BottomPopUpMenu
@@ -703,7 +616,7 @@ export default function WorkoutsScreen() {
             description: t('workouts.plans.createDescription'),
             onPress: () => {
               setEditingPlanId(undefined);
-              setPlanEditorOrigin('screen-menu');
+              setPlanEditorOrigin('plan-list');
             },
           },
           {
@@ -727,17 +640,93 @@ export default function WorkoutsScreen() {
             },
           },
         ]}
-        nestedModals={
-          planEditorOrigin === 'screen-menu' ? (
-            <CreateEditPlanModal
-              visible={true}
-              onClose={() => {
-                setPlanEditorOrigin(null);
-                setEditingPlanId(undefined);
-              }}
-            />
-          ) : null
-        }
+      />
+
+      {/*
+        The plan picker, the plan editor and the delete-plan confirmation are screen-level siblings
+        of the menus that open them, not `children` of those menus: every menu item closes its menu
+        before running its handler, and a hidden `Modal` renders no children — so a follow-up modal
+        parked inside one is unmounted the moment it is meant to appear. Sibling placement is safe
+        here for the reason docs/modals-problem-on-ios.md allows it: only one of these is ever
+        visible at a time, so no dismissed modal is left holding the iOS presenter.
+      */}
+      <WorkoutPlanPickerModal
+        visible={isPlanPickerVisible}
+        plans={plans}
+        selectedPlanIds={pendingPlanIds}
+        onChange={setPendingPlanIds}
+        onClose={() => setIsPlanPickerVisible(false)}
+        onSave={async () => {
+          if (selectedWorkoutId) {
+            try {
+              await WorkoutPlanService.setTemplatePlans(selectedWorkoutId, pendingPlanIds);
+            } catch (error) {
+              await handleError(error, 'workouts.setTemplatePlans', {
+                snackbarMessage: t('workouts.plans.saveError'),
+              });
+              return;
+            }
+          }
+          setIsPlanPickerVisible(false);
+        }}
+        onCreatePlan={() => {
+          setIsPlanPickerVisible(false);
+          setEditingPlanId(undefined);
+          setPlanEditorOrigin('workout-picker');
+        }}
+      />
+      {planEditorOrigin ? (
+        <CreateEditPlanModal
+          visible={true}
+          planId={editingPlanId}
+          onClose={() => {
+            setPlanEditorOrigin(null);
+            setEditingPlanId(undefined);
+          }}
+          onSaved={async (savedPlanId) => {
+            if (planEditorOrigin !== 'workout-picker' || !selectedWorkoutId) {
+              return;
+            }
+
+            const nextPlanIds = [...new Set([...pendingPlanIds, savedPlanId])];
+            setPendingPlanIds(nextPlanIds);
+            try {
+              await WorkoutPlanService.setTemplatePlans(selectedWorkoutId, nextPlanIds);
+            } catch (error) {
+              await handleError(error, 'workouts.setTemplatePlansAfterCreate', {
+                snackbarMessage: t('workouts.plans.saveError'),
+              });
+            }
+          }}
+        />
+      ) : null}
+      <ConfirmationModal
+        visible={isDeletePlanConfirmationVisible}
+        onClose={() => setIsDeletePlanConfirmationVisible(false)}
+        onConfirm={async () => {
+          if (!selectedPlanId) {
+            return;
+          }
+          setIsDeletingPlan(true);
+          try {
+            await WorkoutPlanService.deletePlan(selectedPlanId);
+            showSnackbar('success', t('workouts.plans.deleteSuccess'));
+          } catch (error) {
+            await handleError(error, 'workouts.deletePlan', {
+              snackbarMessage: t('workouts.plans.deleteError'),
+            });
+          } finally {
+            setIsDeletingPlan(false);
+            setIsDeletePlanConfirmationVisible(false);
+          }
+        }}
+        title={t('workouts.plans.deleteConfirmation.title')}
+        message={t('workouts.plans.deleteConfirmation.message', {
+          name: plans.find((plan) => plan.id === selectedPlanId)?.name,
+        })}
+        confirmLabel={t('common.delete')}
+        variant="destructive"
+        isLoading={isDeletingPlan}
       />
 
       <GoalsManagementModal

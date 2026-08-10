@@ -358,11 +358,44 @@ return (
 The same rule applies to `CenteredModal`, `BottomPopUp`, `BottomPopUpMenu`, `SmartCameraShell`,
 and any wrapper that ultimately uses React Native's `Modal`.
 
+## Counter-Rule: A Host That Closes Cannot Host
+
+The nesting rule only applies while the host **stays open**. React Native's `Modal` renders `null`
+when `visible` is false, so a follow-up parked inside a host that dismisses itself is unmounted at
+the exact moment it is supposed to appear.
+
+`BottomPopUpMenu` is the case that bites: `OptionItem` calls `onClose()` _before_ `item.onPress()`
+unless the item sets `keepOpenOnPress`, so **every** menu item closes its menu. A follow-up modal
+rendered in that menu's children therefore never shows on the first tap — and shows on the _second_
+tap only because reopening the menu remounts it, leaving both on screen at once.
+
+That is what happened to the workout plan flows in `app/app/workout/workouts.tsx`: "Edit workout
+plan", "Delete plan", "Create plan" and the workout's "Add to plan" picker were all parked in the
+children of the menu that dismissed them. They are screen-level siblings now, which is safe because
+the menu is already gone when they mount:
+
+```tsx
+// Unsafe — the menu closes on select, so this never mounts when it should
+<BottomPopUpMenu visible={menuVisible} items={items}>
+  <CreateEditPlanModal visible={editorVisible} ... />
+</BottomPopUpMenu>
+
+// Safe — sibling, and only one of the two is ever visible
+<BottomPopUpMenu visible={menuVisible} items={items} />
+{editorVisible ? <CreateEditPlanModal visible={true} ... /> : null}
+```
+
+Deciding between the two rules comes down to one question: **is the host still visible while the
+follow-up is?** If yes, nest it. If the action dismisses the host first, make it a sibling —
+`local/no-sibling-modals` will warn, and that warning is the accepted false positive described in
+its own docblock.
+
 ## Practical Notes
 
 - If a modal is only opened from a screen while no other modal is active, sibling placement is
   usually fine.
-- The bug matters when a modal is opened **from inside another modal**.
+- The bug matters when a modal is opened **from inside another modal that stays open**. If the
+  opener dismisses itself first, nesting is what breaks — see the counter-rule above.
 - A child modal can be rendered anywhere inside the active modal tree. It does not need to be
   visually inside the section that triggers it.
 - `pointerEvents="box-none"` in `FullScreenModal` is already compatible with this pattern, so

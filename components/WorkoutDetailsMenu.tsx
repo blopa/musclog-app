@@ -1,5 +1,4 @@
 import { Copy, Eye, FolderPlus, Pencil, Share2, Trash2 } from 'lucide-react-native';
-import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useTheme } from '@/hooks/useTheme';
@@ -16,7 +15,6 @@ type WorkoutDetailsMenuProps = {
   onDelete?: () => void;
   onPreview?: () => void;
   onAddToPlan?: () => void;
-  nestedModals?: ReactNode;
 };
 
 export function WorkoutDetailsMenu({
@@ -29,7 +27,6 @@ export function WorkoutDetailsMenu({
   onDelete,
   onPreview,
   onAddToPlan,
-  nestedModals,
 }: WorkoutDetailsMenuProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -94,7 +91,6 @@ export function WorkoutDetailsMenu({
       title={workoutName}
       subtitle={t('workoutDetails.subtitle')}
       items={items}
-      nestedModals={nestedModals}
     />
   );
 }
