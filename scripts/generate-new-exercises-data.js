@@ -41,7 +41,7 @@ const sourceRepo = process.argv[2] || path.join(repoRoot, '..', 'free-exercise-d
 const sourceFile = path.join(sourceRepo, 'dist', 'exercises.json');
 const outputFile = path.join(repoRoot, 'data', 'newExercisesData.json');
 
-const INDEX_OFFSET = 256;
+const INDEX_OFFSET = 1;
 
 // ---------------------------------------------------------------------------
 // equipmentType
