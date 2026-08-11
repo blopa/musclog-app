@@ -1,4 +1,5 @@
 import exercisesData from '@/data/exercisesData.json';
+import newExerciseEnUs from '@/data/newExerciseEnUs.json';
 import newExercisesData from '@/data/newExercisesData.json';
 import { MUSCLE_SEED_DATA } from '@/database/services/MuscleService';
 
@@ -47,6 +48,25 @@ const MECHANIC_TYPES = [
 ];
 
 const KNOWN_MUSCLES = new Set(MUSCLE_SEED_DATA.map(({ name }) => name));
+
+describe('newExerciseEnUs locale data', () => {
+  it('provides an English name and description for every staged exercise', () => {
+    expect(newExerciseEnUs).toHaveLength(newExercisesData.length);
+    expect(newExerciseEnUs).toEqual(
+      newExercisesData.map(({ __exerciseName, exerciseIndex }) => ({
+        name: __exerciseName,
+        description: expect.stringMatching(/\S/),
+        exerciseIndex,
+      }))
+    );
+  });
+
+  it('uses only the locale-copy fields', () => {
+    const keys = new Set(newExerciseEnUs.flatMap((entry) => Object.keys(entry)));
+
+    expect([...keys].sort()).toEqual(['description', 'exerciseIndex', 'name']);
+  });
+});
 
 describe('newExercisesData schema', () => {
   it('carries the whole free-exercise-db catalogue', () => {

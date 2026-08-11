@@ -2,8 +2,9 @@
 /* eslint-disable no-undef */
 
 /**
- * Generates `data/newExercisesData.json` — the full free-exercise-db catalogue
- * (873 exercises, CC0) re-expressed in this repo's exercise schema.
+ * Generates the staged free-exercise-db catalogue (873 exercises, CC0):
+ *   - `data/newExercisesData.json` contains the structural exercise data.
+ *   - `data/newExerciseEnUs.json` contains its English names and descriptions.
  *
  * The output is NOT wired into the app. It exists so the catalogue can be
  * reviewed and merged deliberately; nothing imports it yet.
@@ -12,7 +13,8 @@
  *   node scripts/generate-new-exercises-data.js [path-to-free-exercise-db]
  *
  * The source repo is expected at `../free-exercise-db` relative to this repo
- * unless a path is given. Only `dist/exercises.json` is read.
+ * unless a path is given. Only `dist/exercises.json` is read. Locale
+ * descriptions are assembled from each source exercise's instructions.
  *
  * Field derivation:
  *   - `exerciseIndex`  continues after the bundled catalogue (257+) so the two
@@ -40,8 +42,37 @@ const repoRoot = path.join(__dirname, '..');
 const sourceRepo = process.argv[2] || path.join(repoRoot, '..', 'free-exercise-db');
 const sourceFile = path.join(sourceRepo, 'dist', 'exercises.json');
 const outputFile = path.join(repoRoot, 'data', 'newExercisesData.json');
+const enUsOutputFile = path.join(repoRoot, 'data', 'newExerciseEnUs.json');
 
-const INDEX_OFFSET = 1;
+// free-exercise-db currently leaves these five instruction arrays empty.
+const DESCRIPTION_FALLBACKS = {
+  Iron_Cross:
+    'Hold your arms straight out to the sides at shoulder height while supporting your body on gymnastics rings, keeping your core braced and your body still.',
+  'One-Arm_Kettlebell_Swings':
+    'Hinge at the hips and swing a kettlebell forward with one arm, using powerful hip extension while keeping the working arm relaxed and controlled.',
+  Push_Press:
+    'Dip slightly through the knees and hips, then drive a barbell overhead with your legs before finishing with your arms fully extended.',
+  Side_Bridge:
+    'Support your body on one forearm and the side of one foot, keeping your hips lifted and your body in a straight line.',
+  Side_Jackknife:
+    'Lie on your side and bring your upper leg and torso toward each other, using your obliques to lift and control the movement.',
+};
+
+function descriptionFor(entry) {
+  const instructions = entry.instructions
+    .filter((instruction) => typeof instruction === 'string' && instruction.trim().length > 0)
+    .map((instruction) => instruction.trim());
+
+  if (instructions.length > 0) {
+    return instructions.join(' ');
+  }
+
+  const fallback = DESCRIPTION_FALLBACKS[entry.id];
+  if (!fallback) {
+    throw new Error(`Exercise "${entry.name}" has no English description`);
+  }
+  return fallback;
+}
 
 // ---------------------------------------------------------------------------
 // equipmentType
@@ -1023,6 +1054,8 @@ async function main() {
     fs.readFileSync(path.join(repoRoot, 'data', 'exercisesData.json'), 'utf8')
   );
   const anchorMultipliers = new Map(bundled.map((e) => [e.__exerciseName, e.loadMultiplier]));
+  // const firstExerciseIndex = Math.max(...bundled.map((e) => e.exerciseIndex)) + 1;
+  const firstExerciseIndex = 1;
 
   const stats = { anchored: 0, ruled: 0, zeroed: 0, fallback: [] };
 
@@ -1032,7 +1065,7 @@ async function main() {
     const mechanicType = resolveMechanic(entry);
 
     return {
-      exerciseIndex: INDEX_OFFSET + i + 1,
+      exerciseIndex: firstExerciseIndex + i,
       muscleGroup: resolveMuscleGroup(entry, equipmentType),
       equipmentType,
       mechanicType,
@@ -1049,18 +1082,31 @@ async function main() {
     };
   });
 
+  const enUsOutput = sorted.map((entry, i) => ({
+    name: entry.name,
+    description: descriptionFor(entry),
+    exerciseIndex: firstExerciseIndex + i,
+  }));
+
   // Formatted the way `npm run format` would, so regenerating leaves no diff
   // for the lint suite to pick up.
   const prettier = require('prettier');
-  const config = await prettier.resolveConfig(outputFile);
-  const json = await prettier.format(JSON.stringify(output), {
-    ...config,
-    filepath: outputFile,
-    parser: 'json',
-  });
-  fs.writeFileSync(outputFile, json);
+  const writeJson = async (file, value) => {
+    const config = await prettier.resolveConfig(file);
+    const json = await prettier.format(JSON.stringify(value), {
+      ...config,
+      filepath: file,
+      parser: 'json',
+    });
+    fs.writeFileSync(file, json);
+  };
+
+  await Promise.all([writeJson(outputFile, output), writeJson(enUsOutputFile, enUsOutput)]);
 
   console.log(`Wrote ${output.length} exercises to ${path.relative(repoRoot, outputFile)}`);
+  console.log(
+    `Wrote ${enUsOutput.length} English descriptions to ${path.relative(repoRoot, enUsOutputFile)}`
+  );
   console.log(`  loadMultiplier from a bundled anchor : ${stats.anchored}`);
   console.log(`  loadMultiplier from a family rule    : ${stats.ruled}`);
   console.log(`  loadMultiplier zeroed (stretch/cardio): ${stats.zeroed}`);
