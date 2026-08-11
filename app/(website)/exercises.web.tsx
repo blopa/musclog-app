@@ -13,27 +13,7 @@ import {
 } from '@/components/website/websiteColors';
 import exercisesData from '@/data/exercisesData.json';
 import i18n, { DEFAULT_LANG, EXERCISES_JSON } from '@/lang/lang';
-
-function withExpoBaseUrl(path: string): string {
-  if (/^https?:\/\//i.test(path)) {
-    return path;
-  }
-
-  const base = process.env.EXPO_BASE_URL;
-  if (base == null || base === '') {
-    return path;
-  }
-
-  const basePath = String(base).replace(/^\/+|\/+$/g, '');
-  const normalized = path.startsWith('/') ? path : `/${path}`;
-  if (normalized === `/${basePath}` || normalized.startsWith(`/${basePath}/`)) {
-    return normalized;
-  }
-
-  return `/${basePath}${normalized}`;
-}
-
-const EXERCISE_IMAGE = (index: number) => withExpoBaseUrl(`/images/exercises/exercise${index}.png`);
+import { buildExerciseCloudUrl } from '@/utils/exerciseImage';
 
 type LocaleExerciseEntry = { exerciseIndex: number; name: string; description: string };
 
@@ -97,6 +77,7 @@ interface Exercise {
   targetMuscles: string[];
   loadMultiplier: number;
   __exerciseName: string;
+  __freeExerciseDbId: string;
 }
 
 interface ExerciseCardProps {
@@ -137,13 +118,15 @@ function ExerciseCard({
         borderColor: 'rgba(255,255,255,0.08)',
         backgroundColor: 'rgba(255,255,255,0.03)',
         backdropFilter: 'blur(8px)',
+        contentVisibility: 'auto',
+        containIntrinsicSize: '420px 520px',
       }}
     >
       {/* Image */}
       <div className="relative overflow-hidden bg-black/25" style={{ aspectRatio: '1/1' }}>
         {!imgError ? (
           <img
-            src={EXERCISE_IMAGE(exercise.exerciseIndex)}
+            src={buildExerciseCloudUrl(exercise.__freeExerciseDbId)}
             alt={localizedName}
             loading="lazy"
             className="h-full w-full object-contain p-4 transition-transform duration-300 group-hover:scale-105"
@@ -558,6 +541,17 @@ export default function ExercisesPage() {
                 })}
               </div>
             )}
+
+            <p className="mt-8 text-center text-xs" style={{ color: BODY_TEXT_SOFT }}>
+              {t('sourceCredit')}{' '}
+              <a
+                href="https://github.com/yuhonas/free-exercise-db"
+                className="underline decoration-white/30 underline-offset-2 hover:text-white"
+              >
+                free-exercise-db
+              </a>{' '}
+              (CC0).
+            </p>
           </div>
         </section>
       </main>

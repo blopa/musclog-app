@@ -5,16 +5,14 @@ import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import ExerciseMuscle, { type MuscleRole } from '@/database/models/ExerciseMuscle';
 import Muscle from '@/database/models/Muscle';
-import i18n, { EXERCISES_JSON } from '@/lang/lang';
+import i18n from '@/lang/lang';
+import { exerciseSlugFromId } from '@/utils/exerciseImage';
 
 interface ExerciseDataEntry {
+  __exerciseName: string;
+  __freeExerciseDbId: string;
   exerciseIndex: number;
   targetMuscles?: string[];
-}
-
-interface ExerciseLocaleEntry {
-  exerciseIndex: number;
-  name: string;
 }
 
 // Canonical muscle catalogue — single source of truth for seeding.
@@ -349,8 +347,10 @@ export class MuscleService {
   }
 
   /**
-   * Backfills exercise_muscles for all app exercises that currently have no
-   * muscle links. Reads targetMuscles from the bundled JSON (all languages).
+   * Backfills exercise_muscles for exercises that currently have no muscle links.
+   * Catalogue rows resolve by their `fx-` id. User rows may fall back to a canonical
+   * English name match, which preserves the pre-slug behavior without making catalogue
+   * integrity depend on editable or localized names.
    * Safe to call repeatedly — exercises that already have links are skipped.
    *
    * @param muscleNameToId Optional pre-fetched map from seedMuscles(). When
@@ -358,48 +358,45 @@ export class MuscleService {
    *   where the map is already in hand).
    */
   static async backfillExerciseMuscles(muscleNameToId?: Map<string, string>): Promise<void> {
-    // Build exerciseIndex->targetMuscles from the shared data file
-    const indexToTargetMuscles = new Map<number, string[]>(
+    // Keyed on the free-exercise-db slug carried by every catalogue exercise's id. Matching
+    // on the exercise name instead would be locale-dependent, defeated by a user renaming
+    // a catalogue exercise, and — while a database still holds the retired catalogue — it
+    // would mislink the 54 exercises whose names the two catalogues share.
+    const slugToTargetMuscles = new Map<string, string[]>(
       (exercisesData as ExerciseDataEntry[])
         .filter((d) => d.targetMuscles?.length)
-        .map((d) => [d.exerciseIndex, d.targetMuscles!])
+        .map((d) => [d.__freeExerciseDbId, d.targetMuscles!])
     );
-
-    // Build name->targetMuscles across all locales using locale names + data file muscles
-    const nameToTargetMuscles = new Map<string, string[]>();
-    for (const lang of Object.keys(EXERCISES_JSON) as (keyof typeof EXERCISES_JSON)[]) {
-      for (const ex of EXERCISES_JSON[lang] as ExerciseLocaleEntry[]) {
-        const muscles = indexToTargetMuscles.get(ex.exerciseIndex);
-        if (muscles?.length) {
-          nameToTargetMuscles.set(ex.name.toLowerCase(), muscles);
-        }
-      }
-    }
+    const nameToTargetMuscles = new Map<string, string[]>(
+      (exercisesData as ExerciseDataEntry[])
+        .filter((d) => d.targetMuscles?.length)
+        .map((d) => [d.__exerciseName.toLowerCase(), d.targetMuscles!])
+    );
 
     const nameToId = muscleNameToId ?? (await MuscleService.seedMuscles());
 
-    const appExercises = await database
+    const activeExercises = await database
       .get<Exercise>('exercises')
-      .query(Q.where('source', 'app'), Q.where('deleted_at', Q.eq(null)))
+      .query(Q.where('deleted_at', Q.eq(null)))
       .fetch();
 
-    if (appExercises.length === 0) {
+    if (activeExercises.length === 0) {
       return;
     }
 
-    // Scope the exercise_muscles scan to app exercise IDs only so we never
-    // load links belonging to user-created exercises.
-    const appExerciseIds = appExercises.map((ex) => ex.id);
+    const activeExerciseIds = new Set(activeExercises.map((exercise) => exercise.id));
     const linkedExerciseIds = new Set(
       (
         await database
           .get<ExerciseMuscle>('exercise_muscles')
-          .query(Q.where('exercise_id', Q.oneOf(appExerciseIds)), Q.where('deleted_at', Q.eq(null)))
+          .query(Q.where('deleted_at', Q.eq(null)))
           .fetch()
-      ).map((l) => l.exerciseId)
+      )
+        .filter((link) => activeExerciseIds.has(link.exerciseId))
+        .map((link) => link.exerciseId)
     );
 
-    const toProcess = appExercises.filter((ex) => !linkedExerciseIds.has(ex.id));
+    const toProcess = activeExercises.filter((exercise) => !linkedExerciseIds.has(exercise.id));
 
     if (toProcess.length === 0) {
       return;
@@ -409,7 +406,13 @@ export class MuscleService {
 
     // Collect all junction records up front so the write block is a single batch
     const junctionRecords = toProcess.flatMap((exercise) => {
-      const muscles = nameToTargetMuscles.get((exercise.name ?? '').toLowerCase());
+      const slug = exercise.source === 'app' ? exerciseSlugFromId(exercise.id) : null;
+      let muscles: string[] | undefined;
+      if (slug) {
+        muscles = slugToTargetMuscles.get(slug);
+      } else if (exercise.source === 'user') {
+        muscles = nameToTargetMuscles.get((exercise.name ?? '').toLowerCase());
+      }
       if (!muscles?.length) {
         return [];
       }

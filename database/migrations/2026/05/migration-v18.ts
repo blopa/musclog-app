@@ -1,6 +1,11 @@
 import { unsafeExecuteSql } from '@nozbe/watermelondb/Schema/migrations';
 
-import exercisesData from '@/data/exercisesData.json';
+// The FROZEN 256-entry catalogue this migration was written against — deliberately not
+// `data/exercisesData.json`, which now holds the 873-entry free-exercise-db catalogue whose
+// rows use `fx-<slug>` ids. A historical migration must keep seeing the data that existed
+// when it shipped; running the new catalogue's statements against a pre-v18 database would
+// stamp 873 unrelated rows and insert exercise_muscles links for ids that never existed.
+import exercisesData from '@/data/legacyExercisesData.json';
 
 // NOTE: unsafeExecuteSql is silently ignored on the web (LokiJS) adapter.
 // If this migration is needed on web, a JS-based fallback must be added separately.

@@ -249,8 +249,9 @@ async function runSeedProductionData(options?: SeedProductionDataOptions): Promi
     // Check if seeding has already been completed
     const seedingComplete = await AsyncStorage.getItem(SEEDING_COMPLETE_KEY);
     if (seedingComplete === 'true') {
-      // Repair any exercises that were seeded without an image due to a prior bug
-      await ExerciseService.repairMissingExerciseImages();
+      // No exercise repair here: it used to scan the whole exercises table on every boot,
+      // before markDbReady(). `ExerciseService.syncAppExerciseFields` does the same repair
+      // id-keyed, from the boot-migration chain, off the critical path.
       console.log('Production data seeding already completed, skipping');
       // Signal that the DB is ready for queries (fast-path: no reset was needed).
       markDbReady();
@@ -320,15 +321,12 @@ async function runSeedProductionData(options?: SeedProductionDataOptions): Promi
     const muscleNameToId = await MuscleService.seedMuscles();
     console.log(`Muscle catalogue ready (${muscleNameToId.size} muscles)`);
 
-    // 3. Seed common exercises from JSON first; migration will then add any from the old DB that are not already present (by name)
-    const existingExercises = await ExerciseService.getAllExercises();
-
-    if (existingExercises.length > 0) {
-      console.log(`Skipping exercise seeding: ${existingExercises.length} exercises already exist`);
-    } else {
-      const createdExercises = await ExerciseService.createCommonExercises(muscleNameToId);
-      console.log(`Seeded ${createdExercises.length} common exercises`);
-    }
+    // 3. Seed the bundled catalogue first; migration will then add any from the old DB
+    // that are not already present (by name). `syncAppExercises` is the single seeding
+    // path — it is id-keyed and self-guarding, so it also completes a partially seeded
+    // database rather than skipping it the way a "has any exercises?" check would.
+    const createdCount = await ExerciseService.syncAppExercises(muscleNameToId);
+    console.log(`Seeded ${createdCount} catalogue exercises`);
 
     // 4. Link exercises to muscles (pass the already-fetched map to skip a redundant seedMuscles call)
     await MuscleService.backfillExerciseMuscles(muscleNameToId);

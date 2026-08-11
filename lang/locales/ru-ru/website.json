@@ -927,6 +927,7 @@
       "clearFilters": "Сбросить фильтры",
       "noResults": "Упражнения не найдены.",
       "showing": "Показано {{count}} упражнений",
+      "sourceCredit": "Данные и фотографии упражнений:",
       "stat": {
         "exercises": "Упражнений",
         "muscleGroups": "Группы мышц",

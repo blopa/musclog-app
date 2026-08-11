@@ -58,8 +58,8 @@ async function seedExercisesIfEmpty(): Promise<boolean> {
     }
 
     // Database is empty, seed it using the service
-    const createdExercises = await ExerciseService.createCommonExercises();
-    console.log(`Seeded exercises database: ${createdExercises.length} exercises created`);
+    const createdCount = await ExerciseService.syncAppExercises();
+    console.log(`Seeded exercises database: ${createdCount} exercises created`);
     return true;
   } catch (error) {
     console.error('Error seeding exercises database:', error);

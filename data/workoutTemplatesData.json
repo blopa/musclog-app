@@ -4,27 +4,132 @@
     "difficulty": "advanced",
     "duration": 75,
     "exercises": [
-      { "exerciseId": 1, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 2, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 6, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 5, "day": 2, "sets": 3, "reps": 10 },
-      { "exerciseId": 11, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 13, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 26, "day": 2, "sets": 3, "reps": 10 },
-      { "exerciseId": 4, "day": 3, "sets": 3, "reps": 12 },
-      { "exerciseId": 17, "day": 3, "sets": 3, "reps": 15 },
-      { "exerciseId": 30, "day": 3, "sets": 3, "reps": 15 },
-      { "exerciseId": 49, "day": 3, "sets": 3, "reps": 15 },
-      { "exerciseId": 9, "day": 4, "sets": 3, "reps": 10 },
-      { "exerciseId": 10, "day": 4, "sets": 3, "reps": 12 },
-      { "exerciseId": 16, "day": 4, "sets": 3, "reps": 12 },
-      { "exerciseId": 7, "day": 4, "sets": 3, "reps": 12 },
-      { "exerciseId": 35, "day": 4, "sets": 3, "reps": 12 },
-      { "exerciseId": 19, "day": 4, "sets": 3, "reps": 15 },
-      { "exerciseId": 14, "day": 5, "sets": 3, "reps": 12 },
-      { "exerciseId": 20, "day": 5, "sets": 3, "reps": 12 },
-      { "exerciseId": 15, "day": 5, "sets": 3, "reps": 12 },
-      { "exerciseId": 22, "day": 5, "sets": 3, "reps": 12 }
+      {
+        "exerciseSlug": "Barbell_Bench_Press_-_Medium_Grip",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Barbell_Incline_Bench_Press_-_Medium_Grip",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Butterfly",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Barbell_Deadlift",
+        "day": 2,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Wide-Grip_Lat_Pulldown",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Seated_Cable_Rows",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Bent_Over_Barbell_Row",
+        "day": 2,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Barbell_Shoulder_Press",
+        "day": 3,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Side_Lateral_Raise",
+        "day": 3,
+        "sets": 3,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Machine_Shoulder_Military_Press",
+        "day": 3,
+        "sets": 3,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Face_Pull",
+        "day": 3,
+        "sets": 3,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Barbell_Squat",
+        "day": 4,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Leg_Press",
+        "day": 4,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Lying_Leg_Curls",
+        "day": 4,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Leg_Extensions",
+        "day": 4,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Romanian_Deadlift",
+        "day": 4,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Rocking_Standing_Calf_Raise",
+        "day": 4,
+        "sets": 3,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Dumbbell_Bicep_Curl",
+        "day": 5,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Hammer_Curls",
+        "day": 5,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Seated_Triceps_Press",
+        "day": 5,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Triceps_Pushdown",
+        "day": 5,
+        "sets": 3,
+        "reps": 12
+      }
     ],
     "icon": "fitness-center"
   },
@@ -33,26 +138,126 @@
     "difficulty": "intermediate",
     "duration": 60,
     "exercises": [
-      { "exerciseId": 1, "day": 1, "sets": 3, "reps": 10 },
-      { "exerciseId": 2, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 4, "day": 1, "sets": 3, "reps": 10 },
-      { "exerciseId": 17, "day": 1, "sets": 3, "reps": 15 },
-      { "exerciseId": 6, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 15, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 22, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 5, "day": 2, "sets": 3, "reps": 8 },
-      { "exerciseId": 11, "day": 2, "sets": 3, "reps": 10 },
-      { "exerciseId": 13, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 26, "day": 2, "sets": 3, "reps": 10 },
-      { "exerciseId": 30, "day": 2, "sets": 3, "reps": 15 },
-      { "exerciseId": 14, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 20, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 9, "day": 3, "sets": 3, "reps": 10 },
-      { "exerciseId": 10, "day": 3, "sets": 3, "reps": 12 },
-      { "exerciseId": 35, "day": 3, "sets": 3, "reps": 12 },
-      { "exerciseId": 16, "day": 3, "sets": 3, "reps": 12 },
-      { "exerciseId": 7, "day": 3, "sets": 3, "reps": 12 },
-      { "exerciseId": 19, "day": 3, "sets": 3, "reps": 15 }
+      {
+        "exerciseSlug": "Barbell_Bench_Press_-_Medium_Grip",
+        "day": 1,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Barbell_Incline_Bench_Press_-_Medium_Grip",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Barbell_Shoulder_Press",
+        "day": 1,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Side_Lateral_Raise",
+        "day": 1,
+        "sets": 3,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Butterfly",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Seated_Triceps_Press",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Triceps_Pushdown",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Barbell_Deadlift",
+        "day": 2,
+        "sets": 3,
+        "reps": 8
+      },
+      {
+        "exerciseSlug": "Wide-Grip_Lat_Pulldown",
+        "day": 2,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Seated_Cable_Rows",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Bent_Over_Barbell_Row",
+        "day": 2,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Machine_Shoulder_Military_Press",
+        "day": 2,
+        "sets": 3,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Dumbbell_Bicep_Curl",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Hammer_Curls",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Barbell_Squat",
+        "day": 3,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Leg_Press",
+        "day": 3,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Romanian_Deadlift",
+        "day": 3,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Lying_Leg_Curls",
+        "day": 3,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Leg_Extensions",
+        "day": 3,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Rocking_Standing_Calf_Raise",
+        "day": 3,
+        "sets": 3,
+        "reps": 15
+      }
     ],
     "icon": "fitness-center"
   },
@@ -61,31 +266,156 @@
     "difficulty": "intermediate",
     "duration": 65,
     "exercises": [
-      { "exerciseId": 1, "day": 1, "sets": 3, "reps": 10 },
-      { "exerciseId": 4, "day": 1, "sets": 3, "reps": 10 },
-      { "exerciseId": 11, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 13, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 17, "day": 1, "sets": 3, "reps": 15 },
-      { "exerciseId": 14, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 22, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 9, "day": 2, "sets": 3, "reps": 10 },
-      { "exerciseId": 10, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 35, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 16, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 7, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 19, "day": 2, "sets": 3, "reps": 15 },
-      { "exerciseId": 2, "day": 3, "sets": 3, "reps": 12 },
-      { "exerciseId": 29, "day": 3, "sets": 3, "reps": 12 },
-      { "exerciseId": 12, "day": 3, "sets": 3, "reps": 10 },
-      { "exerciseId": 65, "day": 3, "sets": 3, "reps": 10 },
-      { "exerciseId": 49, "day": 3, "sets": 3, "reps": 15 },
-      { "exerciseId": 20, "day": 3, "sets": 3, "reps": 12 },
-      { "exerciseId": 15, "day": 3, "sets": 3, "reps": 12 },
-      { "exerciseId": 24, "day": 4, "sets": 3, "reps": 10 },
-      { "exerciseId": 41, "day": 4, "sets": 3, "reps": 12 },
-      { "exerciseId": 35, "day": 4, "sets": 3, "reps": 12 },
-      { "exerciseId": 93, "day": 4, "sets": 3, "reps": 12 },
-      { "exerciseId": 34, "day": 4, "sets": 3, "reps": 15 }
+      {
+        "exerciseSlug": "Barbell_Bench_Press_-_Medium_Grip",
+        "day": 1,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Barbell_Shoulder_Press",
+        "day": 1,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Wide-Grip_Lat_Pulldown",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Seated_Cable_Rows",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Side_Lateral_Raise",
+        "day": 1,
+        "sets": 3,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Dumbbell_Bicep_Curl",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Triceps_Pushdown",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Barbell_Squat",
+        "day": 2,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Leg_Press",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Romanian_Deadlift",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Lying_Leg_Curls",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Leg_Extensions",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Rocking_Standing_Calf_Raise",
+        "day": 2,
+        "sets": 3,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Barbell_Incline_Bench_Press_-_Medium_Grip",
+        "day": 3,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Incline_Dumbbell_Press",
+        "day": 3,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Pullups",
+        "day": 3,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Leverage_Iso_Row",
+        "day": 3,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Face_Pull",
+        "day": 3,
+        "sets": 3,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Hammer_Curls",
+        "day": 3,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Seated_Triceps_Press",
+        "day": 3,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Smith_Machine_Squat",
+        "day": 4,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Hack_Squat",
+        "day": 4,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Romanian_Deadlift",
+        "day": 4,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Dumbbell_Shrug",
+        "day": 4,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Standing_Barbell_Calf_Raise",
+        "day": 4,
+        "sets": 3,
+        "reps": 15
+      }
     ],
     "icon": "fitness-center"
   },
@@ -94,29 +424,144 @@
     "difficulty": "beginner",
     "duration": 55,
     "exercises": [
-      { "exerciseId": 9, "day": 1, "sets": 3, "reps": 10 },
-      { "exerciseId": 1, "day": 1, "sets": 3, "reps": 10 },
-      { "exerciseId": 26, "day": 1, "sets": 3, "reps": 10 },
-      { "exerciseId": 4, "day": 1, "sets": 3, "reps": 10 },
-      { "exerciseId": 35, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 14, "day": 1, "sets": 2, "reps": 12 },
-      { "exerciseId": 15, "day": 1, "sets": 2, "reps": 12 },
-      { "exerciseId": 5, "day": 2, "sets": 3, "reps": 8 },
-      { "exerciseId": 2, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 11, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 17, "day": 2, "sets": 2, "reps": 15 },
-      { "exerciseId": 10, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 16, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 20, "day": 2, "sets": 2, "reps": 12 },
-      { "exerciseId": 22, "day": 2, "sets": 2, "reps": 12 },
-      { "exerciseId": 8, "day": 3, "sets": 3, "reps": 10 },
-      { "exerciseId": 23, "day": 3, "sets": 3, "reps": 12 },
-      { "exerciseId": 13, "day": 3, "sets": 3, "reps": 12 },
-      { "exerciseId": 39, "day": 3, "sets": 3, "reps": 12 },
-      { "exerciseId": 7, "day": 3, "sets": 3, "reps": 12 },
-      { "exerciseId": 19, "day": 3, "sets": 2, "reps": 15 },
-      { "exerciseId": 14, "day": 3, "sets": 2, "reps": 12 },
-      { "exerciseId": 15, "day": 3, "sets": 2, "reps": 12 }
+      {
+        "exerciseSlug": "Barbell_Squat",
+        "day": 1,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Barbell_Bench_Press_-_Medium_Grip",
+        "day": 1,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Bent_Over_Barbell_Row",
+        "day": 1,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Barbell_Shoulder_Press",
+        "day": 1,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Romanian_Deadlift",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Dumbbell_Bicep_Curl",
+        "day": 1,
+        "sets": 2,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Seated_Triceps_Press",
+        "day": 1,
+        "sets": 2,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Barbell_Deadlift",
+        "day": 2,
+        "sets": 3,
+        "reps": 8
+      },
+      {
+        "exerciseSlug": "Barbell_Incline_Bench_Press_-_Medium_Grip",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Wide-Grip_Lat_Pulldown",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Side_Lateral_Raise",
+        "day": 2,
+        "sets": 2,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Leg_Press",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Lying_Leg_Curls",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Hammer_Curls",
+        "day": 2,
+        "sets": 2,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Triceps_Pushdown",
+        "day": 2,
+        "sets": 2,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Barbell_Full_Squat",
+        "day": 3,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Leverage_Chest_Press",
+        "day": 3,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Seated_Cable_Rows",
+        "day": 3,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Dumbbell_Shoulder_Press",
+        "day": 3,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Leg_Extensions",
+        "day": 3,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Rocking_Standing_Calf_Raise",
+        "day": 3,
+        "sets": 2,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Dumbbell_Bicep_Curl",
+        "day": 3,
+        "sets": 2,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Seated_Triceps_Press",
+        "day": 3,
+        "sets": 2,
+        "reps": 12
+      }
     ],
     "icon": "fitness-center"
   },
@@ -125,26 +570,126 @@
     "difficulty": "advanced",
     "duration": 70,
     "exercises": [
-      { "exerciseId": 1, "day": 1, "sets": 4, "reps": 10 },
-      { "exerciseId": 2, "day": 1, "sets": 4, "reps": 10 },
-      { "exerciseId": 31, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 5, "day": 1, "sets": 3, "reps": 8 },
-      { "exerciseId": 11, "day": 1, "sets": 4, "reps": 10 },
-      { "exerciseId": 26, "day": 1, "sets": 4, "reps": 10 },
-      { "exerciseId": 4, "day": 2, "sets": 4, "reps": 10 },
-      { "exerciseId": 17, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 18, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 30, "day": 2, "sets": 3, "reps": 15 },
-      { "exerciseId": 14, "day": 2, "sets": 4, "reps": 12 },
-      { "exerciseId": 20, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 15, "day": 2, "sets": 4, "reps": 12 },
-      { "exerciseId": 66, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 9, "day": 3, "sets": 4, "reps": 10 },
-      { "exerciseId": 41, "day": 3, "sets": 4, "reps": 10 },
-      { "exerciseId": 10, "day": 3, "sets": 4, "reps": 12 },
-      { "exerciseId": 16, "day": 3, "sets": 4, "reps": 12 },
-      { "exerciseId": 35, "day": 3, "sets": 3, "reps": 10 },
-      { "exerciseId": 19, "day": 3, "sets": 3, "reps": 15 }
+      {
+        "exerciseSlug": "Barbell_Bench_Press_-_Medium_Grip",
+        "day": 1,
+        "sets": 4,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Barbell_Incline_Bench_Press_-_Medium_Grip",
+        "day": 1,
+        "sets": 4,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Reverse_Machine_Flyes",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Barbell_Deadlift",
+        "day": 1,
+        "sets": 3,
+        "reps": 8
+      },
+      {
+        "exerciseSlug": "Wide-Grip_Lat_Pulldown",
+        "day": 1,
+        "sets": 4,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Bent_Over_Barbell_Row",
+        "day": 1,
+        "sets": 4,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Barbell_Shoulder_Press",
+        "day": 2,
+        "sets": 4,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Side_Lateral_Raise",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Front_Dumbbell_Raise",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Machine_Shoulder_Military_Press",
+        "day": 2,
+        "sets": 3,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Dumbbell_Bicep_Curl",
+        "day": 2,
+        "sets": 4,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Hammer_Curls",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Seated_Triceps_Press",
+        "day": 2,
+        "sets": 4,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Bent_Over_Two-Arm_Long_Bar_Row",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Barbell_Squat",
+        "day": 3,
+        "sets": 4,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Hack_Squat",
+        "day": 3,
+        "sets": 4,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Leg_Press",
+        "day": 3,
+        "sets": 4,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Lying_Leg_Curls",
+        "day": 3,
+        "sets": 4,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Romanian_Deadlift",
+        "day": 3,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Rocking_Standing_Calf_Raise",
+        "day": 3,
+        "sets": 3,
+        "reps": 15
+      }
     ],
     "icon": "fitness-center"
   },
@@ -153,32 +698,162 @@
     "difficulty": "intermediate",
     "duration": 55,
     "exercises": [
-      { "exerciseId": 1, "day": 1, "sets": 4, "reps": 10 },
-      { "exerciseId": 29, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 6, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 31, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 50, "day": 1, "sets": 3, "reps": 10 },
-      { "exerciseId": 5, "day": 2, "sets": 3, "reps": 8 },
-      { "exerciseId": 11, "day": 2, "sets": 4, "reps": 10 },
-      { "exerciseId": 13, "day": 2, "sets": 4, "reps": 12 },
-      { "exerciseId": 65, "day": 2, "sets": 3, "reps": 10 },
-      { "exerciseId": 91, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 9, "day": 3, "sets": 4, "reps": 10 },
-      { "exerciseId": 10, "day": 3, "sets": 4, "reps": 12 },
-      { "exerciseId": 35, "day": 3, "sets": 3, "reps": 12 },
-      { "exerciseId": 16, "day": 3, "sets": 3, "reps": 12 },
-      { "exerciseId": 43, "day": 3, "sets": 3, "reps": 10 },
-      { "exerciseId": 19, "day": 3, "sets": 3, "reps": 15 },
-      { "exerciseId": 4, "day": 4, "sets": 4, "reps": 10 },
-      { "exerciseId": 17, "day": 4, "sets": 4, "reps": 15 },
-      { "exerciseId": 18, "day": 4, "sets": 3, "reps": 15 },
-      { "exerciseId": 30, "day": 4, "sets": 3, "reps": 15 },
-      { "exerciseId": 49, "day": 4, "sets": 3, "reps": 15 },
-      { "exerciseId": 14, "day": 5, "sets": 4, "reps": 12 },
-      { "exerciseId": 21, "day": 5, "sets": 3, "reps": 12 },
-      { "exerciseId": 20, "day": 5, "sets": 3, "reps": 12 },
-      { "exerciseId": 66, "day": 5, "sets": 4, "reps": 12 },
-      { "exerciseId": 22, "day": 5, "sets": 3, "reps": 12 }
+      {
+        "exerciseSlug": "Barbell_Bench_Press_-_Medium_Grip",
+        "day": 1,
+        "sets": 4,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Incline_Dumbbell_Press",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Butterfly",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Reverse_Machine_Flyes",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Incline_Dumbbell_Flyes",
+        "day": 1,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Barbell_Deadlift",
+        "day": 2,
+        "sets": 3,
+        "reps": 8
+      },
+      {
+        "exerciseSlug": "Wide-Grip_Lat_Pulldown",
+        "day": 2,
+        "sets": 4,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Seated_Cable_Rows",
+        "day": 2,
+        "sets": 4,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Leverage_Iso_Row",
+        "day": 2,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Standing_Low-Pulley_Deltoid_Raise",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Barbell_Squat",
+        "day": 3,
+        "sets": 4,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Leg_Press",
+        "day": 3,
+        "sets": 4,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Romanian_Deadlift",
+        "day": 3,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Lying_Leg_Curls",
+        "day": 3,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Dumbbell_Step_Ups",
+        "day": 3,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Rocking_Standing_Calf_Raise",
+        "day": 3,
+        "sets": 3,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Barbell_Shoulder_Press",
+        "day": 4,
+        "sets": 4,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Side_Lateral_Raise",
+        "day": 4,
+        "sets": 4,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Front_Dumbbell_Raise",
+        "day": 4,
+        "sets": 3,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Machine_Shoulder_Military_Press",
+        "day": 4,
+        "sets": 3,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Face_Pull",
+        "day": 4,
+        "sets": 3,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Dumbbell_Bicep_Curl",
+        "day": 5,
+        "sets": 4,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Preacher_Curl",
+        "day": 5,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Hammer_Curls",
+        "day": 5,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Bent_Over_Two-Arm_Long_Bar_Row",
+        "day": 5,
+        "sets": 4,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Triceps_Pushdown",
+        "day": 5,
+        "sets": 3,
+        "reps": 12
+      }
     ],
     "icon": "fitness-center"
   },
@@ -187,31 +862,156 @@
     "difficulty": "intermediate",
     "duration": 60,
     "exercises": [
-      { "exerciseId": 1, "day": 1, "sets": 4, "reps": 5 },
-      { "exerciseId": 4, "day": 1, "sets": 3, "reps": 8 },
-      { "exerciseId": 11, "day": 1, "sets": 3, "reps": 8 },
-      { "exerciseId": 26, "day": 1, "sets": 3, "reps": 8 },
-      { "exerciseId": 14, "day": 1, "sets": 3, "reps": 10 },
-      { "exerciseId": 22, "day": 1, "sets": 3, "reps": 10 },
-      { "exerciseId": 9, "day": 2, "sets": 4, "reps": 5 },
-      { "exerciseId": 5, "day": 2, "sets": 3, "reps": 8 },
-      { "exerciseId": 10, "day": 2, "sets": 3, "reps": 8 },
-      { "exerciseId": 16, "day": 2, "sets": 3, "reps": 10 },
-      { "exerciseId": 19, "day": 2, "sets": 3, "reps": 15 },
-      { "exerciseId": 2, "day": 3, "sets": 3, "reps": 10 },
-      { "exerciseId": 39, "day": 3, "sets": 3, "reps": 10 },
-      { "exerciseId": 28, "day": 3, "sets": 3, "reps": 12 },
-      { "exerciseId": 12, "day": 3, "sets": 3, "reps": 10 },
-      { "exerciseId": 13, "day": 3, "sets": 3, "reps": 12 },
-      { "exerciseId": 17, "day": 3, "sets": 3, "reps": 15 },
-      { "exerciseId": 20, "day": 3, "sets": 3, "reps": 12 },
-      { "exerciseId": 15, "day": 3, "sets": 3, "reps": 12 },
-      { "exerciseId": 24, "day": 4, "sets": 3, "reps": 10 },
-      { "exerciseId": 35, "day": 4, "sets": 3, "reps": 12 },
-      { "exerciseId": 10, "day": 4, "sets": 3, "reps": 12 },
-      { "exerciseId": 7, "day": 4, "sets": 3, "reps": 12 },
-      { "exerciseId": 93, "day": 4, "sets": 3, "reps": 12 },
-      { "exerciseId": 34, "day": 4, "sets": 3, "reps": 15 }
+      {
+        "exerciseSlug": "Barbell_Bench_Press_-_Medium_Grip",
+        "day": 1,
+        "sets": 4,
+        "reps": 5
+      },
+      {
+        "exerciseSlug": "Barbell_Shoulder_Press",
+        "day": 1,
+        "sets": 3,
+        "reps": 8
+      },
+      {
+        "exerciseSlug": "Wide-Grip_Lat_Pulldown",
+        "day": 1,
+        "sets": 3,
+        "reps": 8
+      },
+      {
+        "exerciseSlug": "Bent_Over_Barbell_Row",
+        "day": 1,
+        "sets": 3,
+        "reps": 8
+      },
+      {
+        "exerciseSlug": "Dumbbell_Bicep_Curl",
+        "day": 1,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Triceps_Pushdown",
+        "day": 1,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Barbell_Squat",
+        "day": 2,
+        "sets": 4,
+        "reps": 5
+      },
+      {
+        "exerciseSlug": "Barbell_Deadlift",
+        "day": 2,
+        "sets": 3,
+        "reps": 8
+      },
+      {
+        "exerciseSlug": "Leg_Press",
+        "day": 2,
+        "sets": 3,
+        "reps": 8
+      },
+      {
+        "exerciseSlug": "Lying_Leg_Curls",
+        "day": 2,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Rocking_Standing_Calf_Raise",
+        "day": 2,
+        "sets": 3,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Barbell_Incline_Bench_Press_-_Medium_Grip",
+        "day": 3,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Dumbbell_Shoulder_Press",
+        "day": 3,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Dumbbell_Flyes",
+        "day": 3,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Pullups",
+        "day": 3,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Seated_Cable_Rows",
+        "day": 3,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Side_Lateral_Raise",
+        "day": 3,
+        "sets": 3,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Hammer_Curls",
+        "day": 3,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Seated_Triceps_Press",
+        "day": 3,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Smith_Machine_Squat",
+        "day": 4,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Romanian_Deadlift",
+        "day": 4,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Leg_Press",
+        "day": 4,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Leg_Extensions",
+        "day": 4,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Dumbbell_Shrug",
+        "day": 4,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Standing_Barbell_Calf_Raise",
+        "day": 4,
+        "sets": 3,
+        "reps": 15
+      }
     ],
     "icon": "fitness-center"
   },
@@ -220,16 +1020,66 @@
     "difficulty": "beginner",
     "duration": 50,
     "exercises": [
-      { "exerciseId": 1, "day": 1, "sets": 3, "reps": 10 },
-      { "exerciseId": 11, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 9, "day": 1, "sets": 3, "reps": 10 },
-      { "exerciseId": 16, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 39, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 2, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 13, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 10, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 35, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 17, "day": 2, "sets": 3, "reps": 15 }
+      {
+        "exerciseSlug": "Barbell_Bench_Press_-_Medium_Grip",
+        "day": 1,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Wide-Grip_Lat_Pulldown",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Barbell_Squat",
+        "day": 1,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Lying_Leg_Curls",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Dumbbell_Shoulder_Press",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Barbell_Incline_Bench_Press_-_Medium_Grip",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Seated_Cable_Rows",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Leg_Press",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Romanian_Deadlift",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Side_Lateral_Raise",
+        "day": 2,
+        "sets": 3,
+        "reps": 15
+      }
     ],
     "icon": "fitness-center"
   },
@@ -238,23 +1088,108 @@
     "difficulty": "beginner",
     "duration": 50,
     "exercises": [
-      { "exerciseId": 9, "day": 1, "sets": 4, "reps": 6 },
-      { "exerciseId": 1, "day": 1, "sets": 4, "reps": 6 },
-      { "exerciseId": 26, "day": 1, "sets": 4, "reps": 6 },
-      { "exerciseId": 4, "day": 1, "sets": 3, "reps": 8 },
-      { "exerciseId": 35, "day": 1, "sets": 3, "reps": 8 },
-      { "exerciseId": 5, "day": 2, "sets": 4, "reps": 5 },
-      { "exerciseId": 2, "day": 2, "sets": 4, "reps": 8 },
-      { "exerciseId": 11, "day": 2, "sets": 4, "reps": 8 },
-      { "exerciseId": 17, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 10, "day": 2, "sets": 4, "reps": 8 },
-      { "exerciseId": 16, "day": 2, "sets": 3, "reps": 10 },
-      { "exerciseId": 8, "day": 3, "sets": 4, "reps": 6 },
-      { "exerciseId": 23, "day": 3, "sets": 4, "reps": 8 },
-      { "exerciseId": 13, "day": 3, "sets": 4, "reps": 8 },
-      { "exerciseId": 39, "day": 3, "sets": 3, "reps": 8 },
-      { "exerciseId": 7, "day": 3, "sets": 3, "reps": 10 },
-      { "exerciseId": 19, "day": 3, "sets": 2, "reps": 15 }
+      {
+        "exerciseSlug": "Barbell_Squat",
+        "day": 1,
+        "sets": 4,
+        "reps": 6
+      },
+      {
+        "exerciseSlug": "Barbell_Bench_Press_-_Medium_Grip",
+        "day": 1,
+        "sets": 4,
+        "reps": 6
+      },
+      {
+        "exerciseSlug": "Bent_Over_Barbell_Row",
+        "day": 1,
+        "sets": 4,
+        "reps": 6
+      },
+      {
+        "exerciseSlug": "Barbell_Shoulder_Press",
+        "day": 1,
+        "sets": 3,
+        "reps": 8
+      },
+      {
+        "exerciseSlug": "Romanian_Deadlift",
+        "day": 1,
+        "sets": 3,
+        "reps": 8
+      },
+      {
+        "exerciseSlug": "Barbell_Deadlift",
+        "day": 2,
+        "sets": 4,
+        "reps": 5
+      },
+      {
+        "exerciseSlug": "Barbell_Incline_Bench_Press_-_Medium_Grip",
+        "day": 2,
+        "sets": 4,
+        "reps": 8
+      },
+      {
+        "exerciseSlug": "Wide-Grip_Lat_Pulldown",
+        "day": 2,
+        "sets": 4,
+        "reps": 8
+      },
+      {
+        "exerciseSlug": "Side_Lateral_Raise",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Leg_Press",
+        "day": 2,
+        "sets": 4,
+        "reps": 8
+      },
+      {
+        "exerciseSlug": "Lying_Leg_Curls",
+        "day": 2,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Barbell_Full_Squat",
+        "day": 3,
+        "sets": 4,
+        "reps": 6
+      },
+      {
+        "exerciseSlug": "Leverage_Chest_Press",
+        "day": 3,
+        "sets": 4,
+        "reps": 8
+      },
+      {
+        "exerciseSlug": "Seated_Cable_Rows",
+        "day": 3,
+        "sets": 4,
+        "reps": 8
+      },
+      {
+        "exerciseSlug": "Dumbbell_Shoulder_Press",
+        "day": 3,
+        "sets": 3,
+        "reps": 8
+      },
+      {
+        "exerciseSlug": "Leg_Extensions",
+        "day": 3,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Rocking_Standing_Calf_Raise",
+        "day": 3,
+        "sets": 2,
+        "reps": 15
+      }
     ],
     "icon": "fitness-center"
   },
@@ -263,26 +1198,126 @@
     "difficulty": "intermediate",
     "duration": 55,
     "exercises": [
-      { "exerciseId": 1, "day": 1, "sets": 4, "reps": 10 },
-      { "exerciseId": 2, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 6, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 15, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 22, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 50, "day": 1, "sets": 2, "reps": 10 },
-      { "exerciseId": 5, "day": 2, "sets": 3, "reps": 8 },
-      { "exerciseId": 11, "day": 2, "sets": 4, "reps": 10 },
-      { "exerciseId": 26, "day": 2, "sets": 4, "reps": 10 },
-      { "exerciseId": 13, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 30, "day": 2, "sets": 3, "reps": 15 },
-      { "exerciseId": 14, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 20, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 9, "day": 3, "sets": 4, "reps": 10 },
-      { "exerciseId": 10, "day": 3, "sets": 3, "reps": 12 },
-      { "exerciseId": 35, "day": 3, "sets": 3, "reps": 12 },
-      { "exerciseId": 16, "day": 3, "sets": 3, "reps": 12 },
-      { "exerciseId": 4, "day": 3, "sets": 3, "reps": 10 },
-      { "exerciseId": 17, "day": 3, "sets": 3, "reps": 15 },
-      { "exerciseId": 19, "day": 3, "sets": 3, "reps": 15 }
+      {
+        "exerciseSlug": "Barbell_Bench_Press_-_Medium_Grip",
+        "day": 1,
+        "sets": 4,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Barbell_Incline_Bench_Press_-_Medium_Grip",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Butterfly",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Seated_Triceps_Press",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Triceps_Pushdown",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Incline_Dumbbell_Flyes",
+        "day": 1,
+        "sets": 2,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Barbell_Deadlift",
+        "day": 2,
+        "sets": 3,
+        "reps": 8
+      },
+      {
+        "exerciseSlug": "Wide-Grip_Lat_Pulldown",
+        "day": 2,
+        "sets": 4,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Bent_Over_Barbell_Row",
+        "day": 2,
+        "sets": 4,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Seated_Cable_Rows",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Machine_Shoulder_Military_Press",
+        "day": 2,
+        "sets": 3,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Dumbbell_Bicep_Curl",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Hammer_Curls",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Barbell_Squat",
+        "day": 3,
+        "sets": 4,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Leg_Press",
+        "day": 3,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Romanian_Deadlift",
+        "day": 3,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Lying_Leg_Curls",
+        "day": 3,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Barbell_Shoulder_Press",
+        "day": 3,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Side_Lateral_Raise",
+        "day": 3,
+        "sets": 3,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Rocking_Standing_Calf_Raise",
+        "day": 3,
+        "sets": 3,
+        "reps": 15
+      }
     ],
     "icon": "fitness-center"
   },
@@ -291,18 +1326,78 @@
     "difficulty": "intermediate",
     "duration": 50,
     "exercises": [
-      { "exerciseId": 1, "day": 1, "sets": 4, "reps": 10 },
-      { "exerciseId": 2, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 29, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 6, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 31, "day": 1, "sets": 3, "reps": 12 },
-      { "exerciseId": 50, "day": 1, "sets": 3, "reps": 10 },
-      { "exerciseId": 4, "day": 2, "sets": 4, "reps": 10 },
-      { "exerciseId": 39, "day": 2, "sets": 3, "reps": 12 },
-      { "exerciseId": 17, "day": 2, "sets": 4, "reps": 15 },
-      { "exerciseId": 18, "day": 2, "sets": 3, "reps": 15 },
-      { "exerciseId": 30, "day": 2, "sets": 3, "reps": 15 },
-      { "exerciseId": 49, "day": 2, "sets": 3, "reps": 15 }
+      {
+        "exerciseSlug": "Barbell_Bench_Press_-_Medium_Grip",
+        "day": 1,
+        "sets": 4,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Barbell_Incline_Bench_Press_-_Medium_Grip",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Incline_Dumbbell_Press",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Butterfly",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Reverse_Machine_Flyes",
+        "day": 1,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Incline_Dumbbell_Flyes",
+        "day": 1,
+        "sets": 3,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Barbell_Shoulder_Press",
+        "day": 2,
+        "sets": 4,
+        "reps": 10
+      },
+      {
+        "exerciseSlug": "Dumbbell_Shoulder_Press",
+        "day": 2,
+        "sets": 3,
+        "reps": 12
+      },
+      {
+        "exerciseSlug": "Side_Lateral_Raise",
+        "day": 2,
+        "sets": 4,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Front_Dumbbell_Raise",
+        "day": 2,
+        "sets": 3,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Machine_Shoulder_Military_Press",
+        "day": 2,
+        "sets": 3,
+        "reps": 15
+      },
+      {
+        "exerciseSlug": "Face_Pull",
+        "day": 2,
+        "sets": 3,
+        "reps": 15
+      }
     ],
     "icon": "fitness-center"
   },
@@ -319,7 +1414,7 @@
     },
     "exercises": [
       {
-        "exerciseId": 220,
+        "exerciseSlug": "Incline_Cable_Chest_Press",
         "day": 1,
         "sets": 4,
         "minReps": 4,
@@ -329,7 +1424,7 @@
         "notes": "1–2 RIR"
       },
       {
-        "exerciseId": 213,
+        "exerciseSlug": "Pullups",
         "day": 1,
         "sets": 4,
         "minReps": 3,
@@ -339,7 +1434,7 @@
         "notes": "Use added weight when appropriate; 1–2 RIR"
       },
       {
-        "exerciseId": 209,
+        "exerciseSlug": "Seated_One-arm_Cable_Pulley_Rows",
         "day": 1,
         "sets": 3,
         "minReps": 5,
@@ -349,7 +1444,7 @@
         "notes": "Chest supported; complete both arms; 1–2 RIR"
       },
       {
-        "exerciseId": 238,
+        "exerciseSlug": "Cable_Shoulder_Press",
         "day": 1,
         "sets": 3,
         "minReps": 5,
@@ -359,7 +1454,7 @@
         "notes": "Use both cables; 1–2 RIR"
       },
       {
-        "exerciseId": 256,
+        "exerciseSlug": "Low_Cable_Crossover",
         "day": 1,
         "sets": 2,
         "minReps": 8,
@@ -369,7 +1464,7 @@
         "notes": "Do not reach failure before the lateral raise; 1–2 RIR"
       },
       {
-        "exerciseId": 91,
+        "exerciseSlug": "Standing_Low-Pulley_Deltoid_Raise",
         "day": 1,
         "sets": 2,
         "minReps": 12,
@@ -379,7 +1474,7 @@
         "notes": "Final set may reach 0–1 RIR"
       },
       {
-        "exerciseId": 245,
+        "exerciseSlug": "Cable_Deadlifts",
         "day": 2,
         "sets": 4,
         "minReps": 4,
@@ -388,7 +1483,7 @@
         "notes": "Straight sets; use both cables; 1–2 RIR"
       },
       {
-        "exerciseId": 112,
+        "exerciseSlug": "One-Legged_Cable_Kickback",
         "day": 2,
         "sets": 3,
         "minReps": 6,
@@ -397,7 +1492,7 @@
         "notes": "Straight sets; 1–2 RIR"
       },
       {
-        "exerciseId": 244,
+        "exerciseSlug": "Dumbbell_Rear_Lunge",
         "day": 2,
         "sets": 3,
         "minReps": 6,
@@ -406,7 +1501,7 @@
         "notes": "Per leg; straight sets; 1–2 RIR"
       },
       {
-        "exerciseId": 246,
+        "exerciseSlug": "Standing_Leg_Curl",
         "day": 2,
         "sets": 3,
         "minReps": 8,
@@ -416,7 +1511,7 @@
         "notes": "Use one low pulley; 1–2 RIR"
       },
       {
-        "exerciseId": 105,
+        "exerciseSlug": "Cable_Crunch",
         "day": 2,
         "sets": 3,
         "minReps": 8,
@@ -426,7 +1521,7 @@
         "notes": "Use the other high pulley; final set may reach 0–1 RIR"
       },
       {
-        "exerciseId": 250,
+        "exerciseSlug": "Standing_Calf_Raises",
         "day": 2,
         "sets": 4,
         "minReps": 8,
@@ -435,7 +1530,7 @@
         "notes": "Straight sets; final set may reach 0–1 RIR"
       },
       {
-        "exerciseId": 204,
+        "exerciseSlug": "Standing_Biceps_Cable_Curl",
         "day": 3,
         "sets": 3,
         "minReps": 6,
@@ -445,7 +1540,7 @@
         "notes": "Keep one pulley low; 1–2 RIR"
       },
       {
-        "exerciseId": 22,
+        "exerciseSlug": "Triceps_Pushdown",
         "day": 3,
         "sets": 3,
         "minReps": 6,
@@ -455,7 +1550,7 @@
         "notes": "Keep one pulley high; 1–2 RIR"
       },
       {
-        "exerciseId": 251,
+        "exerciseSlug": "Standing_One-Arm_Cable_Curl",
         "day": 3,
         "sets": 3,
         "minReps": 8,
@@ -465,7 +1560,7 @@
         "notes": "1–2 RIR"
       },
       {
-        "exerciseId": 141,
+        "exerciseSlug": "Cable_Rope_Overhead_Triceps_Extension",
         "day": 3,
         "sets": 3,
         "minReps": 8,
@@ -475,7 +1570,7 @@
         "notes": "Final set may reach 0–1 RIR"
       },
       {
-        "exerciseId": 205,
+        "exerciseSlug": "Cable_Hammer_Curls_-_Rope_Attachment",
         "day": 3,
         "sets": 2,
         "minReps": 8,
@@ -485,7 +1580,7 @@
         "notes": "1–2 RIR"
       },
       {
-        "exerciseId": 252,
+        "exerciseSlug": "Standing_Low-Pulley_One-Arm_Triceps_Extension",
         "day": 3,
         "sets": 2,
         "minReps": 10,
@@ -495,7 +1590,7 @@
         "notes": "Final set may reach 0–1 RIR"
       },
       {
-        "exerciseId": 253,
+        "exerciseSlug": "Cable_Wrist_Curl",
         "day": 3,
         "sets": 2,
         "minReps": 10,
@@ -505,7 +1600,7 @@
         "notes": "1–2 RIR"
       },
       {
-        "exerciseId": 254,
+        "exerciseSlug": "Palms-Down_Wrist_Curl_Over_A_Bench",
         "day": 3,
         "sets": 2,
         "minReps": 10,
@@ -515,7 +1610,7 @@
         "notes": "Final set may reach 0–1 RIR"
       },
       {
-        "exerciseId": 216,
+        "exerciseSlug": "Full_Range-Of-Motion_Lat_Pulldown",
         "day": 5,
         "sets": 4,
         "minReps": 6,
@@ -525,7 +1620,7 @@
         "notes": "Use both cables; 1–2 RIR"
       },
       {
-        "exerciseId": 219,
+        "exerciseSlug": "Cable_Chest_Press",
         "day": 5,
         "sets": 4,
         "minReps": 6,
@@ -535,7 +1630,7 @@
         "notes": "Reposition the pulleys without rushing; 1–2 RIR"
       },
       {
-        "exerciseId": 218,
+        "exerciseSlug": "Shotgun_Row",
         "day": 5,
         "sets": 3,
         "minReps": 8,
@@ -545,7 +1640,7 @@
         "notes": "Per arm; complete both arms before the press; 1–2 RIR"
       },
       {
-        "exerciseId": 235,
+        "exerciseSlug": "Seated_Cable_Shoulder_Press",
         "day": 5,
         "sets": 3,
         "minReps": 6,
@@ -555,7 +1650,7 @@
         "notes": "1–2 RIR"
       },
       {
-        "exerciseId": 223,
+        "exerciseSlug": "Cable_Crossover",
         "day": 5,
         "sets": 2,
         "minReps": 10,
@@ -565,7 +1660,7 @@
         "notes": "Use a high-to-low cable path; 1–2 RIR"
       },
       {
-        "exerciseId": 49,
+        "exerciseSlug": "Face_Pull",
         "day": 5,
         "sets": 3,
         "minReps": 12,
@@ -575,7 +1670,7 @@
         "notes": "The third set is standalone; final set may reach 0–1 RIR"
       },
       {
-        "exerciseId": 255,
+        "exerciseSlug": "Hack_Squat",
         "day": 6,
         "sets": 4,
         "minReps": 6,
@@ -584,7 +1679,7 @@
         "notes": "Straight sets; avoid low-rep grinding; 1–2 RIR"
       },
       {
-        "exerciseId": 112,
+        "exerciseSlug": "One-Legged_Cable_Kickback",
         "day": 6,
         "sets": 3,
         "minReps": 8,
@@ -594,7 +1689,7 @@
         "notes": "Perform with a cable pull-through setup; 1–2 RIR"
       },
       {
-        "exerciseId": 250,
+        "exerciseSlug": "Standing_Calf_Raises",
         "day": 6,
         "sets": 4,
         "minReps": 10,
@@ -604,7 +1699,7 @@
         "notes": "The fourth set is standalone; final set may reach 0–1 RIR"
       },
       {
-        "exerciseId": 247,
+        "exerciseSlug": "Single-Leg_Leg_Extension",
         "day": 6,
         "sets": 3,
         "minReps": 10,
@@ -614,7 +1709,7 @@
         "notes": "Per leg; 1–2 RIR"
       },
       {
-        "exerciseId": 246,
+        "exerciseSlug": "Standing_Leg_Curl",
         "day": 6,
         "sets": 3,
         "minReps": 10,
@@ -624,7 +1719,7 @@
         "notes": "Final set may reach 0–1 RIR"
       },
       {
-        "exerciseId": 241,
+        "exerciseSlug": "Thigh_Abductor",
         "day": 6,
         "sets": 2,
         "minReps": 12,
@@ -634,7 +1729,7 @@
         "notes": "Per leg; use one low pulley; 1–2 RIR"
       },
       {
-        "exerciseId": 69,
+        "exerciseSlug": "Pallof_Press",
         "day": 6,
         "sets": 2,
         "minReps": 10,

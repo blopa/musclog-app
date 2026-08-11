@@ -29,7 +29,9 @@ describe('workout template copies', () => {
         {
           __title: 'Reference title',
           duration: 45,
-          exercises: [{ exerciseId: 1, day: 1, sets: 3, reps: 8 }],
+          exercises: [
+            { exerciseSlug: 'Barbell_Bench_Press_-_Medium_Grip', day: 1, sets: 3, reps: 8 },
+          ],
         },
       ],
       [{ title: 'Localized title', description: 'Localized description' }]
@@ -39,7 +41,7 @@ describe('workout template copies', () => {
       title: 'Localized title',
       description: 'Localized description',
       duration: 45,
-      exercises: [{ exerciseId: 1, day: 1, sets: 3, reps: 8 }],
+      exercises: [{ exerciseSlug: 'Barbell_Bench_Press_-_Medium_Grip', day: 1, sets: 3, reps: 8 }],
     });
   });
 
@@ -137,13 +139,31 @@ describe('Cable Superset Workout', () => {
       throw new Error('Cable Superset Workout is missing');
     }
 
-    const exerciseIds = new Set(exercisesData.map(({ exerciseIndex }) => exerciseIndex));
+    const exerciseSlugs = new Set(
+      exercisesData.map(({ __freeExerciseDbId }) => __freeExerciseDbId)
+    );
 
     for (const exercise of program.exercises) {
-      expect(exerciseIds.has(exercise.exerciseId)).toBe(true);
+      expect(exerciseSlugs.has(exercise.exerciseSlug)).toBe(true);
       expect(exercise.minReps).toBeLessThanOrEqual(exercise.reps);
       expect(exercise.restTimeAfter).toBeGreaterThan(0);
       expect(exercise.notes).toEqual(expect.any(String));
+    }
+  });
+});
+
+describe('bundled workout exercise references', () => {
+  it('resolves every slug in every program without positional catalogue coupling', () => {
+    const exerciseSlugs = new Set(
+      exercisesData.map(({ __freeExerciseDbId }) => __freeExerciseDbId)
+    );
+
+    for (const template of workoutTemplatesData) {
+      expect(Array.isArray(template.exercises)).toBe(true);
+      for (const exercise of template.exercises) {
+        expect(exerciseSlugs.has(exercise.exerciseSlug)).toBe(true);
+        expect('exerciseId' in exercise).toBe(false);
+      }
     }
   });
 });

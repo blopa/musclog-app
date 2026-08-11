@@ -927,6 +927,7 @@
       "clearFilters": "Limpiar filtros",
       "noResults": "Ningún ejercicio coincide con tus filtros.",
       "showing": "Mostrando {{count}} ejercicios",
+      "sourceCredit": "Datos y fotos de ejercicios:",
       "stat": {
         "exercises": "Ejercicios",
         "muscleGroups": "Grupos Musculares",

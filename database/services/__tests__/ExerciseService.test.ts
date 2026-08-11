@@ -1,26 +1,9 @@
 import { ExerciseService } from '@/database/services/ExerciseService';
+import { purgeRetiredExerciseImageCache } from '@/utils/exerciseImageCache';
 
-/**
- * Regression tests for ExerciseService.syncAppExercises().
- *
- * syncAppExercises seeds any bundled app exercises that are missing from the DB,
- * inserting each with a FIXED primary key of `String(exerciseIndex)`. Because that
- * id is fixed, the sync must be idempotent by id — otherwise it re-inserts a row
- * whose primary key already exists and SQLite throws:
- *
- *   sqlite error 1555 (UNIQUE constraint failed: exercises.id)
- *
- * This crashed production builds 270 (Android/pt-BR) and 272 (iOS/en-US): those
- * versions deduped by translated NAME only, so after a locale switch or a JSON
- * name refinement an exercise whose id is already present looked "missing" by its
- * new name and got re-inserted with the same fixed id. The guard under test is the
- * id-based dedup (`existingIds`) that makes the sync locale-independent.
- */
-
-// Deterministic, self-contained catalogue: three app exercises, indices 1..3.
 jest.mock('@/lang/lang', () => ({
   __esModule: true,
-  default: { language: 'en-US', t: (k: string) => k, exists: () => false },
+  default: { language: 'en-US', t: (key: string) => key, exists: () => false },
   EN_US: 'en-US',
   EXERCISES_JSON: {
     'en-US': [
@@ -34,6 +17,7 @@ jest.mock('@/lang/lang', () => ({
 jest.mock('@/data/exercisesData.json', () => [
   {
     exerciseIndex: 1,
+    __freeExerciseDbId: 'Bench_Press',
     muscleGroup: 'chest',
     equipmentType: 'barbell',
     mechanicType: 'compound',
@@ -42,6 +26,7 @@ jest.mock('@/data/exercisesData.json', () => [
   },
   {
     exerciseIndex: 2,
+    __freeExerciseDbId: 'Squat',
     muscleGroup: 'legs',
     equipmentType: 'barbell',
     mechanicType: 'compound',
@@ -50,6 +35,7 @@ jest.mock('@/data/exercisesData.json', () => [
   },
   {
     exerciseIndex: 3,
+    __freeExerciseDbId: 'Deadlift',
     muscleGroup: 'back',
     equipmentType: 'barbell',
     mechanicType: 'compound',
@@ -58,15 +44,23 @@ jest.mock('@/data/exercisesData.json', () => [
   },
 ]);
 
-// Models are imported only as generic type args (`get<Exercise>(...)`); stub them
-// so the real WatermelonDB model classes (which `extends Model`) never load.
 jest.mock('@/database/models/Exercise', () => ({ __esModule: true, default: class {} }));
+jest.mock('@/database/models/ExerciseGoal', () => ({ __esModule: true, default: class {} }));
 jest.mock('@/database/models/ExerciseMuscle', () => ({ __esModule: true, default: class {} }));
+jest.mock('@/database/models/WorkoutLogExercise', () => ({ __esModule: true, default: class {} }));
+jest.mock('@/database/models/WorkoutTemplateExercise', () => ({
+  __esModule: true,
+  default: class {},
+}));
 
 jest.mock('@nozbe/watermelondb', () => ({
+  Model: class {},
   Q: {
-    where: jest.fn((field: string, condition: unknown) => ({ field, condition })),
+    where: jest.fn((field: string, condition: unknown) => ({ condition, field })),
     eq: jest.fn((value: unknown) => value),
+    oneOf: jest.fn((values: unknown[]) => ({ oneOf: values })),
+    sortBy: jest.fn(),
+    asc: 'asc',
   },
 }));
 
@@ -74,77 +68,115 @@ jest.mock('../MuscleService', () => ({
   MuscleService: { seedMuscles: jest.fn(async () => new Map<string, string>()) },
 }));
 
-// Controllable database mock: `mockDb.setExisting()` drives what the exercises
-// query returns; every `prepareCreate` is captured with the id its callback set.
+jest.mock('@/utils/exerciseImageCache', () => ({
+  purgeRetiredExerciseImageCache: jest.fn(),
+}));
+
 jest.mock('../../index', () => {
-  let existing: any[] = [];
+  let tables: Record<string, any[]> = {
+    exercise_goals: [],
+    exercise_muscles: [],
+    exercises: [],
+    workout_log_exercises: [],
+    workout_template_exercises: [],
+  };
   const preparedExercises: any[] = [];
   const preparedJunctions: any[] = [];
   const batched: any[][] = [];
-
-  // Model WatermelonDB's serialized writer: write callbacks run one at a time,
-  // and a committed batch is reflected into `existing` so a later reader (inside
-  // its own writer turn) observes it. This lets the concurrency test exercise the
-  // read-inside-writer guarantee — reading outside the writer would let two runs
-  // both see an empty DB and prepare the same fixed id twice.
   let writeChain: Promise<unknown> = Promise.resolve();
 
-  const exercisesCollection = {
-    // Return a snapshot, not the live array: a real query result is a point-in-time
-    // read, so a stale read must NOT observe rows a later batch commits in place.
-    query: jest.fn(() => ({ fetch: jest.fn(async () => [...existing]) })),
-    prepareCreate: jest.fn((cb: (rec: any) => void) => {
-      const rec: any = { _raw: {} };
-      cb(rec);
-      rec.id = rec._raw.id; // WatermelonDB exposes the assigned id as record.id
-      preparedExercises.push(rec);
-      return rec;
-    }),
+  const decorate = (row: any) => {
+    row.prepareUpdate ??= (updater: (record: any) => void) => {
+      updater(row);
+      row.__operation = 'update';
+      return row;
+    };
+    row.prepareDestroyPermanently ??= () => {
+      row.__operation = 'destroy';
+      return row;
+    };
+    return row;
   };
 
-  const junctionCollection = {
-    prepareCreate: jest.fn((cb: (rec: any) => void) => {
-      const rec: any = { _raw: {} };
-      cb(rec);
-      preparedJunctions.push(rec);
-      return rec;
+  const collection = (table: string) => ({
+    query: jest.fn((...clauses: { condition: any; field: string }[]) => ({
+      fetch: jest.fn(async () => {
+        let rows = [...(tables[table] ?? [])];
+        for (const clause of clauses.filter(Boolean)) {
+          const property = clause.field.replace(/_([a-z])/g, (_match, letter) =>
+            letter.toUpperCase()
+          );
+          if (clause.condition?.oneOf) {
+            rows = rows.filter((row) => clause.condition.oneOf.includes(row[property]));
+          } else {
+            rows = rows.filter((row) => row[property] === clause.condition);
+          }
+        }
+        return rows;
+      }),
+    })),
+    prepareCreate: jest.fn((callback: (record: any) => void) => {
+      const record = decorate({ _raw: {}, __operation: 'create', __table: table });
+      callback(record);
+      record.id = record._raw.id;
+      if (table === 'exercises') {
+        preparedExercises.push(record);
+      } else {
+        preparedJunctions.push(record);
+      }
+      return record;
     }),
-  };
+  });
 
   const database = {
-    get: jest.fn((table: string) =>
-      table === 'exercises' ? exercisesCollection : junctionCollection
-    ),
-    write: jest.fn((cb: (writer: unknown) => Promise<unknown>) => {
-      const run = writeChain.then(() => cb({}));
-      writeChain = run.catch(() => undefined); // keep the queue alive past a failed write
+    get: jest.fn((table: string) => collection(table)),
+    write: jest.fn((callback: () => Promise<unknown>) => {
+      const run = writeChain.then(callback);
+      writeChain = run.catch(() => undefined);
       return run;
     }),
     batch: jest.fn(async (...records: any[]) => {
       batched.push(records);
-      for (const rec of records) {
-        if (rec?.source === 'app') {
-          existing.push({
-            id: rec.id,
-            name: rec.name,
-            source: rec.source,
-            deletedAt: rec.deletedAt ?? null,
-          });
+      for (const record of records) {
+        if (record.__operation === 'create') {
+          tables[record.__table].push(record);
+        } else if (record.__operation === 'destroy') {
+          for (const rows of Object.values(tables)) {
+            const index = rows.indexOf(record);
+            if (index >= 0) rows.splice(index, 1);
+          }
         }
+        delete record.__operation;
       }
     }),
   };
 
   const mockDb = {
     database,
-    setExisting: (rows: any[]) => {
-      existing = rows;
+    getTable: (table: string) => tables[table],
+    setTables: (next: Record<string, any[]>) => {
+      tables = {
+        exercise_goals: [],
+        exercise_muscles: [],
+        exercises: [],
+        workout_log_exercises: [],
+        workout_template_exercises: [],
+        ...Object.fromEntries(
+          Object.entries(next).map(([table, rows]) => [table, rows?.map(decorate) ?? []])
+        ),
+      };
     },
     preparedExercises,
     preparedJunctions,
     batched,
     reset: () => {
-      existing = [];
+      tables = {
+        exercise_goals: [],
+        exercise_muscles: [],
+        exercises: [],
+        workout_log_exercises: [],
+        workout_template_exercises: [],
+      };
       preparedExercises.length = 0;
       preparedJunctions.length = 0;
       batched.length = 0;
@@ -158,123 +190,165 @@ jest.mock('../../index', () => {
 
 const { mockDb } = jest.requireMock('../../index') as {
   mockDb: {
-    setExisting: (rows: any[]) => void;
-    preparedExercises: { id: string }[];
     batched: any[][];
+    getTable: (table: string) => any[];
+    preparedExercises: any[];
     reset: () => void;
+    setTables: (tables: Record<string, any[]>) => void;
   };
 };
 
 const appExercise = (id: string, name: string, deletedAt: number | null = null) => ({
+  createdAt: 1,
+  deletedAt,
+  description: `${name} description`,
+  equipmentType: 'barbell',
   id,
+  imageUrl: `https://musclog.app/images/exercises/exercise${id}.png`,
+  loadMultiplier: 1,
+  mechanicType: 'compound',
+  muscleGroup: 'chest',
   name,
   source: 'app' as const,
-  deletedAt,
+  updatedAt: 1,
 });
 
-const preparedIds = () => mockDb.preparedExercises.map((e) => e.id);
+const preparedIds = () => mockDb.preparedExercises.map((exercise) => exercise.id);
+const currentCatalogue = () => [
+  appExercise('fx-Bench_Press', 'Bench Press'),
+  appExercise('fx-Squat', 'Squat'),
+  appExercise('fx-Deadlift', 'Deadlift'),
+];
 
 describe('ExerciseService.syncAppExercises', () => {
   beforeEach(() => {
     mockDb.reset();
   });
 
-  it('seeds every bundled exercise with a fixed id on a fresh database', async () => {
-    mockDb.setExisting([]);
-
+  it('seeds every bundled exercise in the slug id namespace', async () => {
     const created = await ExerciseService.syncAppExercises();
 
     expect(created).toBe(3);
-    expect(preparedIds()).toEqual(['1', '2', '3']);
+    expect(preparedIds()).toEqual(['fx-Bench_Press', 'fx-Squat', 'fx-Deadlift']);
     expect(mockDb.batched).toHaveLength(1);
   });
 
-  it('is a no-op when all exercises are already present (matching names and ids)', async () => {
-    mockDb.setExisting([
-      appExercise('1', 'Bench Press'),
-      appExercise('2', 'Squat'),
-      appExercise('3', 'Deadlift'),
-    ]);
+  it('is a no-op when all slug ids already exist, regardless of stored names', async () => {
+    mockDb.setTables({
+      exercises: [
+        appExercise('fx-Bench_Press', 'Supino'),
+        appExercise('fx-Squat', 'Agachamento'),
+        appExercise('fx-Deadlift', 'Levantamento Terra'),
+      ],
+    });
 
-    const created = await ExerciseService.syncAppExercises();
-
-    expect(created).toBe(0);
+    expect(await ExerciseService.syncAppExercises()).toBe(0);
     expect(preparedIds()).toEqual([]);
-    expect(mockDb.batched).toHaveLength(0);
   });
 
-  // The exact 270/272 crash: ids are present but under stale (differently-localised)
-  // names. Name-only dedup would re-insert ids "1"/"2"/"3" → UNIQUE constraint 1555.
-  it('does NOT re-insert an existing id when the stored name is stale (locale switch)', async () => {
-    mockDb.setExisting([
-      appExercise('1', 'Supino'), // pt-BR name for index 1
-      appExercise('2', 'Agachamento'), // pt-BR name for index 2
-      appExercise('3', 'Levantamento Terra'), // pt-BR name for index 3
-    ]);
-
-    const created = await ExerciseService.syncAppExercises();
-
-    expect(created).toBe(0);
-    expect(preparedIds()).toEqual([]);
-    expect(mockDb.batched).toHaveLength(0);
-  });
-
-  it('only seeds genuinely missing exercises, skipping ids that already exist under a stale name', async () => {
-    mockDb.setExisting([
-      appExercise('1', 'Bench Press'), // present, name matches
-      appExercise('2', 'Agachamento'), // present by id, stale name
-      // index 3 absent entirely
-    ]);
-
-    const created = await ExerciseService.syncAppExercises();
-
-    expect(created).toBe(1);
-    expect(preparedIds()).toEqual(['3']);
-    expect(mockDb.batched).toHaveLength(1);
-  });
-
-  // existingIds is built from ALL rows including soft-deleted ones, because a
-  // soft-deleted app exercise still occupies its primary key in SQLite.
-  it('does NOT re-insert an id occupied by a soft-deleted exercise', async () => {
-    mockDb.setExisting([appExercise('2', 'Squat', 1_700_000_000)]);
-
-    const created = await ExerciseService.syncAppExercises();
-
-    expect(created).toBe(2);
-    expect(preparedIds()).toEqual(['1', '3']);
-    expect(preparedIds()).not.toContain('2');
-  });
-
-  // Guards the read-inside-writer restructure: the existence check and the insert
-  // run inside one serialized writer, so two concurrent boots can't both read an
-  // empty DB and insert the same fixed id (which would throw sqlite 1555). Reading
-  // outside the writer would prepare '1'/'2'/'3' twice and fail the uniqueness
-  // assertion below.
-  it('is race-safe: two concurrent runs never prepare the same fixed id twice', async () => {
-    mockDb.setExisting([]);
-
-    await Promise.all([ExerciseService.syncAppExercises(), ExerciseService.syncAppExercises()]);
-
-    const ids = preparedIds();
-    expect(new Set(ids).size).toBe(ids.length); // each id inserted at most once
-    expect(new Set(ids)).toEqual(new Set(['1', '2', '3'])); // catalogue seeded exactly once
-  });
-
-  it('never prepares an exercise whose id already exists (core 1555 invariant)', async () => {
-    const existing = [
-      appExercise('1', 'Supino'),
-      appExercise('2', 'Squat'),
-      appExercise('3', 'Deadlift', 42),
-    ];
-    mockDb.setExisting(existing);
-    const existingIds = new Set(existing.map((e) => e.id));
+  it('does not let an old numeric id or a duplicate name suppress the new catalogue row', async () => {
+    mockDb.setTables({ exercises: [appExercise('1', 'Bench Press')] });
 
     await ExerciseService.syncAppExercises();
 
-    for (const id of preparedIds()) {
-      expect(existingIds.has(id)).toBe(false);
-    }
-    // No duplicate ids within a single batch either.
+    expect(preparedIds()).toContain('fx-Bench_Press');
+  });
+
+  it('does not reuse an id occupied by a soft-deleted row', async () => {
+    mockDb.setTables({ exercises: [appExercise('fx-Squat', 'Squat', 1_700_000_000)] });
+
+    await ExerciseService.syncAppExercises();
+
+    expect(preparedIds()).toEqual(['fx-Bench_Press', 'fx-Deadlift']);
+  });
+
+  it('serializes the authoritative read so concurrent runs never prepare an id twice', async () => {
+    await Promise.all([ExerciseService.syncAppExercises(), ExerciseService.syncAppExercises()]);
+
     expect(new Set(preparedIds()).size).toBe(preparedIds().length);
+    expect(new Set(preparedIds())).toEqual(new Set(['fx-Bench_Press', 'fx-Squat', 'fx-Deadlift']));
+  });
+});
+
+describe('ExerciseService.migrateLegacyAppExercises', () => {
+  beforeEach(() => {
+    mockDb.reset();
+  });
+
+  it('clones referenced exercises, repoints every foreign key, and removes all old app rows in one launch', async () => {
+    mockDb.setTables({
+      exercises: [
+        ...currentCatalogue(),
+        appExercise('1', 'Bench Press'),
+        appExercise('2', 'Squat'),
+        appExercise('3', 'Curl'),
+      ],
+      workout_template_exercises: [{ exerciseId: '1', updatedAt: 1 }],
+      workout_log_exercises: [{ exerciseId: '2', updatedAt: 1 }],
+      exercise_goals: [{ exerciseId: '2', updatedAt: 1 }],
+      exercise_muscles: [
+        { exerciseId: '1', muscleId: 'chest', updatedAt: 1 },
+        { exerciseId: '3', muscleId: 'biceps', updatedAt: 1 },
+      ],
+    });
+
+    const report = await ExerciseService.migrateLegacyAppExercises();
+
+    expect(report).toEqual({
+      cloned: 2,
+      destroyed: 3,
+      repointed: 4,
+      skippedStillReferenced: 0,
+    });
+    const migratedExercises = mockDb.getTable('exercises').filter(({ id }) => id.startsWith('lx-'));
+    expect(
+      mockDb
+        .getTable('exercises')
+        .map(({ id }) => id)
+        .sort()
+    ).toEqual(['fx-Bench_Press', 'fx-Deadlift', 'fx-Squat', 'lx-1', 'lx-2']);
+    expect(migratedExercises.every(({ source }) => source === 'user')).toBe(true);
+    expect(migratedExercises.map(({ imageUrl }) => imageUrl)).toEqual([
+      'https://musclog.app/images/exercises/legacy/exercise1.webp',
+      'https://musclog.app/images/exercises/legacy/exercise2.webp',
+    ]);
+    expect(mockDb.getTable('workout_template_exercises')[0].exerciseId).toBe('lx-1');
+    expect(mockDb.getTable('workout_log_exercises')[0].exerciseId).toBe('lx-2');
+    expect(mockDb.getTable('exercise_goals')[0].exerciseId).toBe('lx-2');
+    expect(mockDb.getTable('exercise_muscles')).toHaveLength(1);
+    expect(mockDb.getTable('exercise_muscles')[0].exerciseId).toBe('lx-1');
+    expect(purgeRetiredExerciseImageCache).toHaveBeenCalledTimes(1);
+    expect(await ExerciseService.migrateLegacyAppExercises()).toBeNull();
+  });
+
+  it('resumes onto an existing deterministic clone without duplicating it', async () => {
+    const existingClone = { ...appExercise('lx-1', 'Bench Press'), source: 'user' };
+    mockDb.setTables({
+      exercises: [...currentCatalogue(), appExercise('1', 'Bench Press'), existingClone],
+      workout_template_exercises: [{ exerciseId: '1', updatedAt: 1 }],
+    });
+
+    const report = await ExerciseService.migrateLegacyAppExercises();
+
+    expect(report).toEqual({
+      cloned: 0,
+      destroyed: 1,
+      repointed: 1,
+      skippedStillReferenced: 0,
+    });
+    expect(mockDb.getTable('exercises')).toContainEqual(expect.objectContaining({ id: 'lx-1' }));
+    expect(mockDb.getTable('workout_template_exercises')[0].exerciseId).toBe('lx-1');
+  });
+
+  it('defers retirement when the replacement catalogue is incomplete', async () => {
+    mockDb.setTables({
+      exercises: [appExercise('fx-Bench_Press', 'Bench Press'), appExercise('1', 'Bench Press')],
+      workout_template_exercises: [{ exerciseId: '1', updatedAt: 1 }],
+    });
+
+    expect(await ExerciseService.migrateLegacyAppExercises()).toBeNull();
+    expect(mockDb.getTable('exercises').map(({ id }) => id)).toEqual(['fx-Bench_Press', '1']);
+    expect(mockDb.getTable('workout_template_exercises')[0].exerciseId).toBe('1');
+    expect(purgeRetiredExerciseImageCache).not.toHaveBeenCalled();
   });
 });

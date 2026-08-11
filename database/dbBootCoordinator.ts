@@ -101,24 +101,26 @@ const BOOT_MIGRATIONS: BootMigration[] = [
   },
   {
     tag: 'ExerciseService.syncAppExercises',
-    run: async () => {
-      await ExerciseService.syncAppExercises();
-      await ExerciseService.syncExerciseMultipliers();
-    },
+    // Seed before retirement. The cutover independently verifies that every `fx-` row is
+    // present, so a swallowed seed failure leaves the old catalogue (and any partial new
+    // rows) intact for the next boot instead of emptying the exercise library.
+    run: () => ExerciseService.syncAppExercises(),
   },
   {
-    tag: 'ExerciseService.backfillExerciseOrderIndex',
-    run: () => ExerciseService.backfillExerciseOrderIndex(),
+    tag: 'ExerciseService.migrateLegacyAppExercises',
+    // Retires the pre-free-exercise-db catalogue, cloning anything the user's workouts,
+    // logs or goals still point at. Idempotent by data — deliberately not `runOnce`,
+    // because restoring a backup rewrites AsyncStorage and could suppress the flag on a
+    // database that still needs the work. Not `webOnly`: web carries retired rows too.
+    run: () => ExerciseService.migrateLegacyAppExercises(),
+  },
+  {
+    tag: 'ExerciseService.syncAppExerciseFields',
+    run: () => ExerciseService.syncAppExerciseFields(),
   },
   {
     tag: 'MuscleService.backfillExerciseMuscles',
     run: () => MuscleService.backfillExerciseMuscles(),
-  },
-  {
-    tag: 'ExerciseService.migrateExerciseImageUrlsToCloud',
-    // Web skipped the native migration path that rewrites bundled image URLs.
-    webOnly: true,
-    run: () => ExerciseService.migrateExerciseImageUrlsToCloud(),
   },
   {
     tag: 'WorkoutService.backfillNullTotalVolumes',

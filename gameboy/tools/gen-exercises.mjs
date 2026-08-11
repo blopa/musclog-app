@@ -28,7 +28,10 @@ const dataDir = join(repoRoot, 'data');
 const outDir = join(repoRoot, 'gameboy', 'src', 'generated');
 mkdirSync(outDir, { recursive: true });
 
-const SOURCE_FILE = 'exercisesData.json';
+// Frozen 256-exercise catalogue. The ROM stores a 1-byte exercise index and existing
+// `.sav` files decode names through this table's order, so it must NEVER be repointed
+// at `data/exercisesData.json` (now the 873-entry free-exercise-db catalogue).
+const SOURCE_FILE = 'legacyExercisesData.json';
 const EXERCISES_BANK = 6;
 
 function cString(name) {

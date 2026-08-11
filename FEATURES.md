@@ -22,6 +22,7 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 - Create and save custom workout templates (e.g., Push Day or Leg Day)
 - Organize workouts into named plans with weekly weekday assignments or ordered rotating cycles; workouts can belong to multiple plans, while standalone routines remain in an Unplanned section
 - Browse a built-in template library, including a five-session cable superset program
+- Browse 873 built-in exercises with muscle-group filters and two-frame technique photos
 - Built-in programs and AI-generated routines create complete named workout plans based on your equipment and goals
 - Drag-and-drop exercise reordering during or after a session
 - Superset / exercise grouping via shared group ID

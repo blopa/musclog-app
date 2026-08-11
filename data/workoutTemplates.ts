@@ -17,7 +17,7 @@ export type RawWorkoutTemplate = {
 };
 
 export type RawWorkoutTemplateExercise = {
-  exerciseId?: number;
+  exerciseSlug?: string;
   day?: number;
   sets?: number;
   reps?: number;
