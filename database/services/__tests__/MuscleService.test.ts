@@ -2,22 +2,35 @@ import { MuscleService } from '@/database/services/MuscleService';
 
 jest.mock('@/data/exercisesData.json', () => [
   {
-    __exerciseName: 'Bench Press',
     __freeExerciseDbId: 'Bench_Press',
     exerciseIndex: 1,
+    muscleGroup: 'chest',
+    equipmentType: 'barbell',
+    mechanicType: 'compound',
     targetMuscles: ['pectoralis_major'],
+    loadMultiplier: 1,
   },
   {
-    __exerciseName: 'Squat',
     __freeExerciseDbId: 'Squat',
     exerciseIndex: 2,
+    muscleGroup: 'legs',
+    equipmentType: 'barbell',
+    mechanicType: 'compound',
     targetMuscles: ['quadriceps'],
+    loadMultiplier: 1.4,
   },
 ]);
 
 jest.mock('@/lang/lang', () => ({
   __esModule: true,
-  default: { t: (key: string) => key },
+  default: { language: 'en-US', t: (key: string) => key },
+  EN_US: 'en-US',
+  EXERCISES_JSON: {
+    'en-US': [
+      { exerciseSlug: 'Bench_Press', name: 'Bench Press', description: 'Press' },
+      { exerciseSlug: 'Squat', name: 'Squat', description: 'Squat' },
+    ],
+  },
 }));
 
 jest.mock('@/database/models/Exercise', () => ({ __esModule: true, default: class {} }));
@@ -44,7 +57,9 @@ jest.mock('../../database-instance', () => {
   const database = {
     get: jest.fn((table: string) => ({
       query: jest.fn(() => ({
-        fetch: jest.fn(async () => (table === 'exercises' ? exercises : links)),
+        fetch: jest.fn(async () =>
+          table === 'exercises' ? exercises.filter(({ source }) => source === 'user') : links
+        ),
       })),
       prepareCreate: jest.fn((callback: (record: any) => void) => {
         const record: any = {};
@@ -70,7 +85,7 @@ describe('MuscleService.backfillExerciseMuscles', () => {
     jest.clearAllMocks();
   });
 
-  it('keys app rows by slug and only falls back to names for user exercises', async () => {
+  it('only falls back to English names for user exercises', async () => {
     await MuscleService.backfillExerciseMuscles(
       new Map([
         ['pectoralis_major', 'muscle-chest'],
@@ -79,7 +94,6 @@ describe('MuscleService.backfillExerciseMuscles', () => {
     );
 
     expect(mockPreparedMuscleLinks).toEqual([
-      expect.objectContaining({ exerciseId: 'fx-Bench_Press', muscleId: 'muscle-chest' }),
       expect.objectContaining({ exerciseId: 'user-bench', muscleId: 'muscle-chest' }),
     ]);
   });

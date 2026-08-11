@@ -35,6 +35,7 @@ import {
   SettingsService,
   UserService,
 } from '@/database/services';
+import { AppExerciseCatalogueService } from '@/database/services/AppExerciseCatalogueService';
 import { consumedDateTimeOnDay, localDayStartMs, MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { calculateWorkoutVolume } from '@/utils/workoutCalculator';
@@ -58,8 +59,8 @@ async function seedExercisesIfEmpty(): Promise<boolean> {
     }
 
     // Database is empty, seed it using the service
-    const createdCount = await ExerciseService.syncAppExercises();
-    console.log(`Seeded exercises database: ${createdCount} exercises created`);
+    const report = await AppExerciseCatalogueService.sync();
+    console.log(`Seeded exercises database: ${report.exercisesCreated} exercises created`);
     return true;
   } catch (error) {
     console.error('Error seeding exercises database:', error);

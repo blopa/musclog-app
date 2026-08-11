@@ -27,7 +27,7 @@ const dataUpdateSteps = exercisesData.map((ex) =>
 // Rebuild exercise_muscles from the JSON's targetMuscles arrays.
 // muscle_id is resolved by name via subquery — if the muscles catalogue hasn't been
 // seeded yet (fresh install migration order), the SELECT returns nothing and the
-// INSERT is a no-op. backfillExerciseMuscles() handles that case during app seeding.
+// INSERT is a no-op. AppExerciseCatalogueService repairs that case during app seeding.
 const exerciseMuscleSteps = [
   // Wipe existing app exercise links; Phase 1 updated exercise_id references but we
   // do a full rebuild from the canonical JSON for a clean slate.

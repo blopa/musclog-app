@@ -33,25 +33,7 @@ import {
 } from '@/components/website/websiteColors';
 import { SoftwareApplicationJsonLd } from '@/components/website/WebsiteStructuredData';
 import { DownloadModal } from '@/components/website/WebsiteWrapper';
-
-function withExpoBaseUrl(path: string): string {
-  if (/^https?:\/\//i.test(path)) {
-    return path;
-  }
-
-  const base = process.env.EXPO_BASE_URL;
-  if (base == null || base === '') {
-    return path;
-  }
-
-  const basePath = String(base).replace(/^\/+|\/+$/g, '');
-  const normalized = path.startsWith('/') ? path : `/${path}`;
-  if (normalized === `/${basePath}` || normalized.startsWith(`/${basePath}/`)) {
-    return normalized;
-  }
-
-  return `/${basePath}${normalized}`;
-}
+import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
 
 const STATIC_IMAGE = (filename: string) => withExpoBaseUrl(`/images/${filename}`);
 const PHONE_SCREENSHOT = (filename: string) => STATIC_IMAGE(`phone/${filename}`);

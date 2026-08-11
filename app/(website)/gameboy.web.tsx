@@ -11,6 +11,7 @@ import {
   seedGameBoyTodayDate,
 } from '@/utils/decodeGameBoySave';
 import { shouldSeedDevData } from '@/utils/file';
+import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
 
 const GB_SCREEN_WIDTH = 160;
 const GB_SCREEN_HEIGHT = 144;
@@ -19,25 +20,6 @@ const GB_SCREEN_HEIGHT = 144;
 // per-frame joypad poll reliably samples it, even when the press and release
 // land within a single frame.
 const MIN_PRESS_MS = 90;
-
-function withExpoBaseUrl(path: string): string {
-  if (/^https?:\/\//i.test(path)) {
-    return path;
-  }
-
-  const base = process.env.EXPO_BASE_URL;
-  if (base == null || base === '') {
-    return path;
-  }
-
-  const basePath = String(base).replace(/^\/+|\/+$/g, '');
-  const normalized = path.startsWith('/') ? path : `/${path}`;
-  if (normalized === `/${basePath}` || normalized.startsWith(`/${basePath}/`)) {
-    return normalized;
-  }
-
-  return `/${basePath}${normalized}`;
-}
 
 const ROM_URL = withExpoBaseUrl('/images/musclog.gbc');
 const MANUAL_URL = withExpoBaseUrl('/images/musclog-manual.pdf');

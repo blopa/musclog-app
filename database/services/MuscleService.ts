@@ -1,19 +1,11 @@
 import { Q } from '@nozbe/watermelondb';
 
-import exercisesData from '@/data/exercisesData.json';
+import { getExerciseCatalogue } from '@/data/exerciseCatalogue';
 import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import ExerciseMuscle, { type MuscleRole } from '@/database/models/ExerciseMuscle';
 import Muscle from '@/database/models/Muscle';
 import i18n from '@/lang/lang';
-import { exerciseSlugFromId } from '@/utils/exerciseImage';
-
-interface ExerciseDataEntry {
-  __exerciseName: string;
-  __freeExerciseDbId: string;
-  exerciseIndex: number;
-  targetMuscles?: string[];
-}
 
 // Canonical muscle catalogue — single source of truth for seeding.
 // displayNameKey must resolve via i18n.t(); all keys exist under exercises.muscleGroups.* in
@@ -347,10 +339,10 @@ export class MuscleService {
   }
 
   /**
-   * Backfills exercise_muscles for exercises that currently have no muscle links.
-   * Catalogue rows resolve by their `fx-` id. User rows may fall back to a canonical
-   * English name match, which preserves the pre-slug behavior without making catalogue
-   * integrity depend on editable or localized names.
+   * Backfills exercise_muscles for user exercises that currently have no muscle links.
+   * Bundled catalogue links are owned and exactly reconciled by
+   * `AppExerciseCatalogueService`; this fallback only preserves links for user exercises
+   * imported from older databases by matching their canonical English name.
    * Safe to call repeatedly — exercises that already have links are skipped.
    *
    * @param muscleNameToId Optional pre-fetched map from seedMuscles(). When
@@ -358,26 +350,18 @@ export class MuscleService {
    *   where the map is already in hand).
    */
   static async backfillExerciseMuscles(muscleNameToId?: Map<string, string>): Promise<void> {
-    // Keyed on the free-exercise-db slug carried by every catalogue exercise's id. Matching
-    // on the exercise name instead would be locale-dependent, defeated by a user renaming
-    // a catalogue exercise, and — while a database still holds the retired catalogue — it
-    // would mislink the 54 exercises whose names the two catalogues share.
-    const slugToTargetMuscles = new Map<string, string[]>(
-      (exercisesData as ExerciseDataEntry[])
-        .filter((d) => d.targetMuscles?.length)
-        .map((d) => [d.__freeExerciseDbId, d.targetMuscles!])
-    );
     const nameToTargetMuscles = new Map<string, string[]>(
-      (exercisesData as ExerciseDataEntry[])
-        .filter((d) => d.targetMuscles?.length)
-        .map((d) => [d.__exerciseName.toLowerCase(), d.targetMuscles!])
+      getExerciseCatalogue('en-US').map(({ name, targetMuscles }) => [
+        name.toLowerCase(),
+        targetMuscles,
+      ])
     );
 
     const nameToId = muscleNameToId ?? (await MuscleService.seedMuscles());
 
     const activeExercises = await database
       .get<Exercise>('exercises')
-      .query(Q.where('deleted_at', Q.eq(null)))
+      .query(Q.where('source', 'user'), Q.where('deleted_at', Q.eq(null)))
       .fetch();
 
     if (activeExercises.length === 0) {
@@ -406,13 +390,7 @@ export class MuscleService {
 
     // Collect all junction records up front so the write block is a single batch
     const junctionRecords = toProcess.flatMap((exercise) => {
-      const slug = exercise.source === 'app' ? exerciseSlugFromId(exercise.id) : null;
-      let muscles: string[] | undefined;
-      if (slug) {
-        muscles = slugToTargetMuscles.get(slug);
-      } else if (exercise.source === 'user') {
-        muscles = nameToTargetMuscles.get((exercise.name ?? '').toLowerCase());
-      }
+      const muscles = nameToTargetMuscles.get((exercise.name ?? '').toLowerCase());
       if (!muscles?.length) {
         return [];
       }

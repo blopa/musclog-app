@@ -4,6 +4,7 @@ import exercisesEsEs from '@/data/exercisesEsEs.json';
 import exercisesNlNl from '@/data/exercisesNlNl.json';
 import exercisesPtBr from '@/data/exercisesPtBr.json';
 import exercisesRuRu from '@/data/exercisesRuRu.json';
+import { getExerciseCatalogue } from '@/data/exerciseCatalogue';
 import legacyExercisesData from '@/data/legacyExercisesData.json';
 import { MUSCLE_SEED_DATA } from '@/database/services/MuscleService';
 
@@ -59,8 +60,8 @@ describe('exercise catalogue copy', () => {
     'provides a %s name and description for every exercise',
     (_locale, copy) => {
       expect(copy).toHaveLength(exercisesData.length);
-      expect(copy.map(({ exerciseIndex }) => exerciseIndex)).toEqual(
-        exercisesData.map(({ exerciseIndex }) => exerciseIndex)
+      expect(copy.map(({ exerciseSlug }) => exerciseSlug)).toEqual(
+        exercisesData.map(({ __freeExerciseDbId }) => __freeExerciseDbId)
       );
       expect(copy.every(({ description, name }) => /\S/.test(name) && /\S/.test(description))).toBe(
         true
@@ -73,13 +74,21 @@ describe('exercise catalogue copy', () => {
     (_locale, copy) => {
       const keys = new Set(copy.flatMap((entry) => Object.keys(entry)));
 
-      expect([...keys].sort()).toEqual(['description', 'exerciseIndex', 'name']);
+      expect([...keys].sort()).toEqual(['description', 'exerciseSlug', 'name']);
     }
   );
 
   it('keeps the generated English names aligned with the structural catalogue', () => {
     expect(exercisesEnUs.map(({ name }) => name)).toEqual(
       exercisesData.map(({ __exerciseName }) => __exerciseName)
+    );
+  });
+
+  it.each(Object.keys(EXERCISE_COPIES))('joins %s copy to structure by stable slug', (locale) => {
+    const catalogue = getExerciseCatalogue(locale);
+
+    expect(catalogue.map(({ exerciseSlug }) => exerciseSlug)).toEqual(
+      exercisesData.map(({ __freeExerciseDbId }) => __freeExerciseDbId)
     );
   });
 });
@@ -134,6 +143,17 @@ describe('exercise catalogue schema', () => {
       .map((entry) => `${entry.__exerciseName}: ${entry[field]}`);
 
     expect(offenders).toEqual([]);
+  });
+
+  it('keeps every Smith movement in the dedicated equipment family', () => {
+    const smithExercises = exercisesData.filter(({ __exerciseName }) =>
+      /smith/i.test(__exerciseName)
+    );
+
+    expect(smithExercises).toHaveLength(20);
+    expect(smithExercises.every(({ equipmentType }) => equipmentType === 'smith_machine')).toBe(
+      true
+    );
   });
 
   it('targets only muscles that MUSCLE_SEED_DATA seeds', () => {

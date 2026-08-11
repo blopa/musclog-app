@@ -18,7 +18,7 @@
  * `--legacy` converts the retired AI illustrations in `assets/exercises/` into
  * `public/images/exercises/legacy/exercise<N>.webp`. Those are kept only so that
  * exercises cloned out of the pre-free-exercise-db catalogue (see
- * `ExerciseService.migrateLegacyAppExercises`) keep their picture. It is a one-shot
+ * `LegacyExerciseCatalogueMigration`) keep their picture. It is a one-shot
  * conversion — `assets/exercises/` is deleted afterwards.
  *
  * Like the Game Boy asset tools, this runs locally and its output is committed, so

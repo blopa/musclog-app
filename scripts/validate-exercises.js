@@ -4,100 +4,50 @@
 const fs = require('fs');
 const path = require('path');
 
-// Path to data directory relative to scripts folder
 const dataDir = path.join(__dirname, '..', 'data');
-
-// Get all exercises*.json files
-const exerciseFiles = fs
+const structuralFile = path.join(dataDir, 'exercisesData.json');
+const copyFiles = fs
   .readdirSync(dataDir)
-  .filter((file) => file.startsWith('exercises') && file.endsWith('.json'))
+  .filter((file) => file !== 'exercisesData.json' && /^exercises[A-Z][A-Za-z]+\.json$/.test(file))
   .sort();
 
-console.log(`Found ${exerciseFiles.length} exercise files:`);
-exerciseFiles.forEach((file) => console.log(`  - ${file}`));
-console.log('');
-
-// Load all exercise data
-const exerciseData = {};
-let totalExercises = null;
+const structural = JSON.parse(fs.readFileSync(structuralFile, 'utf8'));
+const expectedSlugs = structural.map(({ __freeExerciseDbId }) => __freeExerciseDbId);
+const expectedSlugSet = new Set(expectedSlugs);
 let hasErrors = false;
 
-for (const file of exerciseFiles) {
-  const filePath = path.join(dataDir, file);
-  try {
-    const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-    exerciseData[file] = data;
+if (expectedSlugSet.size !== structural.length) {
+  console.error('exercisesData.json contains duplicate free-exercise-db slugs');
+  hasErrors = true;
+}
 
-    if (totalExercises === null) {
-      totalExercises = data.length;
-      console.log(`Reference file ${file} has ${totalExercises} exercises`);
-    } else if (data.length !== totalExercises) {
-      console.error(`❌ ERROR: ${file} has ${data.length} exercises, expected ${totalExercises}`);
-      hasErrors = true;
-    } else {
-      console.log(`✅ ${file} has correct count: ${data.length} exercises`);
-    }
-  } catch (error) {
-    console.error(`❌ ERROR reading ${file}: ${error.message}`);
+for (const file of copyFiles) {
+  const copies = JSON.parse(fs.readFileSync(path.join(dataDir, file), 'utf8'));
+  const slugs = copies.map(({ exerciseSlug }) => exerciseSlug);
+  const slugSet = new Set(slugs);
+
+  if (copies.length !== structural.length) {
+    console.error(`${file} has ${copies.length} rows; expected ${structural.length}`);
+    hasErrors = true;
+  }
+
+  if (slugSet.size !== copies.length) {
+    console.error(`${file} contains duplicate exerciseSlug values`);
+    hasErrors = true;
+  }
+
+  const missing = expectedSlugs.filter((slug) => !slugSet.has(slug));
+  const unknown = slugs.filter((slug) => !expectedSlugSet.has(slug));
+  if (missing.length > 0 || unknown.length > 0) {
+    console.error(`${file} slug mismatch: ${missing.length} missing, ${unknown.length} unknown`);
     hasErrors = true;
   }
 }
 
-console.log('');
-
 if (hasErrors) {
-  console.log('❌ Validation failed due to count errors');
   process.exit(1);
 }
 
-// Compare fields by index
-const fieldsToCheck = ['muscleGroup', 'type', 'targetMuscles', 'loadMultiplier'];
-const referenceFile = 'exercisesData.json';
-const referenceData = exerciseData[referenceFile];
-
-console.log(`Comparing fields using ${referenceFile} as reference:`);
-
-for (let i = 0; i < totalExercises; i++) {
-  const referenceExercise = referenceData[i];
-
-  for (const file of exerciseFiles) {
-    if (file === referenceFile) {
-      continue;
-    }
-
-    const currentExercise = exerciseData[file][i];
-
-    for (const field of fieldsToCheck) {
-      const refValue = referenceExercise[field];
-      const currentValue = currentExercise[field];
-
-      if (currentValue === undefined) {
-        continue;
-      }
-
-      // Deep comparison for arrays
-      const isEqual =
-        Array.isArray(refValue) && Array.isArray(currentValue)
-          ? JSON.stringify([...refValue].sort()) === JSON.stringify([...currentValue].sort())
-          : refValue === currentValue;
-
-      if (!isEqual) {
-        console.error(`❌ Exercise ${i + 1} (${referenceExercise.__exerciseName}) - ${field}:`);
-        console.error(`   ${referenceFile}: ${JSON.stringify(refValue)}`);
-        console.error(`   ${file}: ${JSON.stringify(currentValue)}`);
-        hasErrors = true;
-      }
-    }
-  }
-}
-
-console.log('');
-
-if (hasErrors) {
-  console.log('❌ Validation failed - field mismatches found');
-  process.exit(1);
-} else {
-  console.log('✅ All validations passed!');
-  console.log(`- All ${exerciseFiles.length} files have ${totalExercises} exercises`);
-  console.log(`- All common fields match ${referenceFile} by index: ${fieldsToCheck.join(', ')}`);
-}
+console.log(
+  `Validated ${structural.length} stable exercise slugs across ${copyFiles.length} locale files`
+);

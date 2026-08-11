@@ -22,6 +22,10 @@ export function exerciseSlugFromId(id: string): null | string {
     : null;
 }
 
+export function buildExerciseImagePath(freeExerciseDbId: string, frame: 0 | 1 = 0): string {
+  return `/images/exercises/${freeExerciseDbId}/${frame}.webp`;
+}
+
 /**
  * Returns the hosted URL for a catalogue exercise photo. Frame 0 is the start position and
  * frame 1 the end position; only frame 0 is stored on the exercise row.
@@ -30,15 +34,19 @@ export function exerciseSlugFromId(id: string): null | string {
  * with `app/(website)/exercises.web.tsx`, which renders them.
  */
 export function buildExerciseCloudUrl(freeExerciseDbId: string, frame: 0 | 1 = 0): string {
-  return `https://musclog.app/images/exercises/${freeExerciseDbId}/${frame}.webp`;
+  return `https://musclog.app${buildExerciseImagePath(freeExerciseDbId, frame)}`;
+}
+
+export function buildLegacyExerciseImagePath(exerciseNumber: number): string {
+  return `/images/exercises/legacy/exercise${exerciseNumber}.webp`;
 }
 
 /**
  * Returns the hosted URL for one of the retired AI illustrations. These exist only for
  * exercises cloned out of the pre-free-exercise-db catalogue by
- * `ExerciseService.migrateLegacyAppExercises`, so that a workout a user has been running
+ * `LegacyExerciseCatalogueMigration`, so that a workout a user has been running
  * for a year keeps its picture. Nothing new is ever given one of these URLs.
  */
 export function buildLegacyExerciseCloudUrl(exerciseNumber: number): string {
-  return `https://musclog.app/images/exercises/legacy/exercise${exerciseNumber}.webp`;
+  return `https://musclog.app${buildLegacyExerciseImagePath(exerciseNumber)}`;
 }

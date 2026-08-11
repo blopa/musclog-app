@@ -32,6 +32,7 @@ import {
 import { createPreRestoreBackup } from './preMigrationBackup';
 import { validateExportDump, type ValidationResult } from './schemaToZod';
 import { ExerciseService, FoodPortionService, MuscleService, SettingsService } from './services';
+import { AppExerciseCatalogueService } from './services/AppExerciseCatalogueService';
 
 export type ExportDump = {
   _exportVersion: number;
@@ -401,19 +402,20 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     });
   }
 
-  // Rebuild the muscle catalogue and app-exercise muscle links. Backups created
-  // before muscles/exercise_muscles were added to RESTORE_ORDER don't contain them,
-  // and the boot-time seeder is skipped after restore (SEEDING_COMPLETE_KEY is
-  // restored as 'true'), so without this the tables would stay empty forever.
-  // Both calls are idempotent, so running them on newer backups is a no-op.
+  // Rebuild the muscle catalogue. Backups created before muscles/exercise_muscles
+  // were added to RESTORE_ORDER do not contain it.
   const muscleNameToId = await MuscleService.seedMuscles();
-  await MuscleService.backfillExerciseMuscles(muscleNameToId);
 
   // Backfill exercises.source for backups created before export version 2 (when
   // the source column didn't exist yet). Safe no-op if all rows already have a value.
   if (dbData._exportVersion < 2) {
     await ExerciseService.backfillExerciseSources();
   }
+
+  // Reconcile every bundled row and its exact target-muscle set, then preserve the
+  // old English-name fallback only for imported user exercises.
+  await AppExerciseCatalogueService.sync(muscleNameToId);
+  await MuscleService.backfillExerciseMuscles(muscleNameToId);
 
   // Backfill food_portions.source for backups created before export version 3 (when
   // the source column didn't exist yet). Safe no-op if all rows already have a value.

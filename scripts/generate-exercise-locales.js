@@ -8,7 +8,7 @@
  *   node scripts/generate-exercise-locales.js
  *   node scripts/generate-exercise-locales.js es nl pt ru
  *
- * The generated files contain copy only. `exerciseIndex` joins them to the structural
+ * The generated files contain copy only. `exerciseSlug` joins them to the structural
  * catalogue in `data/exercisesData.json`; names and descriptions come from
  * `data/exercisesEnUS.json`. Requests are batched while numeric markers keep every field
  * associated with its exercise.
@@ -32,15 +32,15 @@ const TARGETS = {
   ru: 'exercisesRuRu.json',
 };
 
-function marker(exerciseIndex, field) {
-  return `${MARKER_PREFIX}${String(exerciseIndex).padStart(4, '0')}0${field}`;
+function marker(markerIndex, field) {
+  return `${MARKER_PREFIX}${String(markerIndex).padStart(4, '0')}0${field}`;
 }
 
 function textForEntry(entry) {
   return [
-    marker(entry.exerciseIndex, 1),
+    marker(entry.markerIndex, 1),
     entry.name,
-    marker(entry.exerciseIndex, 2),
+    marker(entry.markerIndex, 2),
     entry.description,
   ].join('\n');
 }
@@ -57,6 +57,7 @@ function createBatches(entries) {
       batch = [];
       characters = 0;
     }
+
     batch.push(entry);
     characters += entryCharacters;
   }
@@ -64,6 +65,7 @@ function createBatches(entries) {
   if (batch.length > 0) {
     batches.push(batch);
   }
+
   return batches;
 }
 
@@ -87,6 +89,7 @@ async function translatedText(text, target) {
       if (!Array.isArray(payload?.[0])) {
         throw new Error('translation response has an unexpected shape');
       }
+
       return payload[0].map((segment) => segment[0]).join('');
     } catch (error) {
       lastError = error;
@@ -106,21 +109,22 @@ function parseBatch(text, entries) {
 
   for (let i = 0; i < matches.length; i += 1) {
     const match = matches[i];
-    const exerciseIndex = Number(match[1]);
+    const markerIndex = Number(match[1]);
     const field = match[2] === '01' ? 'name' : 'description';
     const start = match.index + match[0].length;
     const end = matches[i + 1]?.index ?? text.length;
-    const entry = values.get(exerciseIndex) ?? {};
+    const entry = values.get(markerIndex) ?? {};
     entry[field] = text.slice(start, end).trim();
-    values.set(exerciseIndex, entry);
+    values.set(markerIndex, entry);
   }
 
-  return entries.map(({ exerciseIndex }) => {
-    const value = values.get(exerciseIndex);
+  return entries.map(({ exerciseSlug, markerIndex }) => {
+    const value = values.get(markerIndex);
     if (!value?.name || !value?.description) {
-      throw new Error(`could not recover translated fields for exercise ${exerciseIndex}`);
+      throw new Error(`could not recover translated fields for exercise ${exerciseSlug}`);
     }
-    return { exerciseIndex, name: value.name, description: value.description };
+
+    return { exerciseSlug, name: value.name, description: value.description };
   });
 }
 
@@ -138,6 +142,7 @@ async function translateBatch(entries, target) {
       translateBatch(entries.slice(0, middle), target),
       translateBatch(entries.slice(middle), target),
     ]);
+
     return halves.flat();
   }
 }
@@ -162,6 +167,7 @@ async function translateLocale(entries, target) {
     Array.from({ length: Math.min(REQUEST_CONCURRENCY, batches.length) }, () => worker())
   );
   process.stdout.write('\n');
+
   return translated.flat();
 }
 
@@ -183,7 +189,10 @@ async function main() {
     throw new Error(`unsupported translation target(s): ${unknown.join(', ')}`);
   }
 
-  const source = JSON.parse(fs.readFileSync(SOURCE_FILE, 'utf8'));
+  const source = JSON.parse(fs.readFileSync(SOURCE_FILE, 'utf8')).map((entry, index) => ({
+    ...entry,
+    markerIndex: index + 1,
+  }));
   for (const target of targets) {
     const outputFile = path.join(ROOT, 'data', TARGETS[target]);
     const translated = await translateLocale(source, target);

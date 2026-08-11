@@ -1,20 +1,20 @@
 # Exercise catalogue cutover
 
-Musclog replaced its production 256-exercise catalogue with the 873 exercises and 1,746 photos from [free-exercise-db](https://github.com/yuhonas/free-exercise-db) (CC0). The current structural catalogue is `data/exercisesData.json`; `data/exercisesEnUS.json`, `data/exercisesEsEs.json`, `data/exercisesNlNl.json`, `data/exercisesPtBr.json`, and `data/exercisesRuRu.json` contain the localized names and descriptions joined through `exerciseIndex`.
+Musclog replaced its production 256-exercise catalogue with the 873 exercises and 1,746 photos from [free-exercise-db](https://github.com/yuhonas/free-exercise-db) (CC0). The current structural catalogue is `data/exercisesData.json`; `data/exercisesEnUS.json`, `data/exercisesEsEs.json`, `data/exercisesNlNl.json`, `data/exercisesPtBr.json`, and `data/exercisesRuRu.json` contain localized names and descriptions joined through stable `exerciseSlug` values.
 
-`scripts/generate-exercises-data.js` regenerates the structural and English files from the upstream checkout. Run `npm run generate-exercise-locales` immediately afterwards to regenerate every translated copy before committing a catalogue update; `npm run generate-lang` then discovers those files and rebuilds `EXERCISES_JSON` in `lang/lang.ts`.
+`npm run generate-exercises-data -- [path-to-free-exercise-db]` regenerates the structural and English files from the upstream checkout. Its entry point delegates structural mapping and multiplier policy to focused modules under `scripts/`. Run `npm run generate-exercise-locales` immediately afterwards to regenerate every translated copy before committing a catalogue update; `npm run generate-lang` then discovers those files and rebuilds `EXERCISES_JSON` in `lang/lang.ts`.
 
 ## Stable identity and images
 
-Catalogue rows use `fx-<free-exercise-db slug>` primary keys. `exerciseIndex` remains only a display-order and locale-join field; it is never a database id. Bundled workout programs also store `exerciseSlug`, so adding or reordering upstream exercises cannot silently redirect a program to a different movement.
+Catalogue rows use `fx-<free-exercise-db slug>` primary keys. `exerciseIndex` is display order only; localized copy and bundled workout programs both use `exerciseSlug`, so adding or reordering upstream exercises cannot silently redirect text or a program to a different movement.
 
-Each catalogue slug has start/end WebP frames at `public/images/exercises/<slug>/0.webp` and `1.webp`. `utils/exerciseImage.ts` owns the hosted URL convention. The on-device cache includes the slug in its flattened filename because the basename alone is `0.webp` for every exercise.
+Each catalogue slug has start/end WebP frames at `public/images/exercises/<slug>/0.webp` and `1.webp`. `utils/exerciseImage.ts` owns both the relative asset path and hosted URL conventions. Website renderers apply `EXPO_BASE_URL` to the relative path, so local development and subpath exports load their own assets instead of hard-coding the production origin. The on-device cache includes the slug in its flattened filename because the basename alone is `0.webp` for every exercise.
 
 The old catalogue is frozen in `data/legacyExercisesData.json`. Historical schema migration v18 and the Game Boy generator must continue reading that file: old database ids and Game Boy save indexes depend on its original ordering.
 
 ## Production upgrade
 
-The boot coordinator first seeds any missing `fx-` catalogue rows, then runs `ExerciseService.migrateLegacyAppExercises`. Before retiring anything, the cutover verifies that all 873 replacement ids exist; if seeding failed or stopped partway, the old catalogue remains intact for the next boot. The cutover is data-idempotent rather than guarded by AsyncStorage, so restoring an old backup safely arms it again.
+The boot coordinator first runs `AppExerciseCatalogueService.sync`, then `LegacyExerciseCatalogueMigration.run`. The reconciler repairs missing rows, every generated structural field, and the exact active target-muscle link set in bounded batches. Before retiring anything, the cutover independently verifies all of those rows and links; an interrupted or partial reconciliation leaves the old catalogue intact for the next boot. Both steps are data-idempotent rather than guarded by AsyncStorage, so restoring an old backup safely arms them again.
 
 Within one serialized writer it:
 

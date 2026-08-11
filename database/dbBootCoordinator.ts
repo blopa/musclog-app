@@ -9,7 +9,6 @@ import {
   ExerciseService,
   FoodPortionService,
   FoodService,
-  MuscleService,
   NutritionGoalService,
   NutritionService,
   SettingsService,
@@ -17,6 +16,8 @@ import {
   UserMetricService,
   WorkoutService,
 } from '@/database/services';
+import { AppExerciseCatalogueService } from '@/database/services/AppExerciseCatalogueService';
+import { LegacyExerciseCatalogueMigration } from '@/database/services/LegacyExerciseCatalogueMigration';
 import { captureBootException } from '@/utils/bootErrorReporting';
 import {
   advanceBootProgressStep,
@@ -100,27 +101,18 @@ const BOOT_MIGRATIONS: BootMigration[] = [
     run: () => FoodPortionService.backfillPortionSources(),
   },
   {
-    tag: 'ExerciseService.syncAppExercises',
-    // Seed before retirement. The cutover independently verifies that every `fx-` row is
-    // present, so a swallowed seed failure leaves the old catalogue (and any partial new
-    // rows) intact for the next boot instead of emptying the exercise library.
-    run: () => ExerciseService.syncAppExercises(),
+    tag: 'AppExerciseCatalogueService.sync',
+    // The exact reconciler owns both catalogue rows and their complete muscle-link sets.
+    // It is resumable at every bounded batch boundary and runs before legacy retirement.
+    run: () => AppExerciseCatalogueService.sync(),
   },
   {
-    tag: 'ExerciseService.migrateLegacyAppExercises',
+    tag: 'LegacyExerciseCatalogueMigration.run',
     // Retires the pre-free-exercise-db catalogue, cloning anything the user's workouts,
     // logs or goals still point at. Idempotent by data — deliberately not `runOnce`,
     // because restoring a backup rewrites AsyncStorage and could suppress the flag on a
     // database that still needs the work. Not `webOnly`: web carries retired rows too.
-    run: () => ExerciseService.migrateLegacyAppExercises(),
-  },
-  {
-    tag: 'ExerciseService.syncAppExerciseFields',
-    run: () => ExerciseService.syncAppExerciseFields(),
-  },
-  {
-    tag: 'MuscleService.backfillExerciseMuscles',
-    run: () => MuscleService.backfillExerciseMuscles(),
+    run: () => LegacyExerciseCatalogueMigration.run(),
   },
   {
     tag: 'WorkoutService.backfillNullTotalVolumes',

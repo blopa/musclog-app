@@ -6,10 +6,12 @@ import legacyExercisesData from '@/data/legacyExercisesData.json';
 import {
   appExerciseId,
   buildExerciseCloudUrl,
+  buildExerciseImagePath,
   buildLegacyExerciseCloudUrl,
   exerciseSlugFromId,
 } from '@/utils/exerciseImage';
 import { exerciseImageCacheKey } from '@/utils/exerciseImageCache';
+import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
 
 jest.mock('expo-file-system', () => ({
   Directory: class {},
@@ -35,6 +37,7 @@ describe('exercise image identity', () => {
   });
 
   it('builds the hosted start/end and legacy URL conventions', () => {
+    expect(buildExerciseImagePath('Pullups')).toBe('/images/exercises/Pullups/0.webp');
     expect(buildExerciseCloudUrl('Pullups')).toBe(
       'https://musclog.app/images/exercises/Pullups/0.webp'
     );
@@ -43,6 +46,15 @@ describe('exercise image identity', () => {
     );
     expect(buildLegacyExerciseCloudUrl(12)).toBe(
       'https://musclog.app/images/exercises/legacy/exercise12.webp'
+    );
+  });
+
+  it('keeps website assets on the current Expo base instead of the production origin', () => {
+    expect(withExpoBaseUrl(buildExerciseImagePath('Pullups'), '/musclog-app')).toBe(
+      '/musclog-app/images/exercises/Pullups/0.webp'
+    );
+    expect(withExpoBaseUrl(buildExerciseImagePath('Pullups'), '/')).toBe(
+      '/images/exercises/Pullups/0.webp'
     );
   });
 
@@ -95,7 +107,7 @@ describe('exercise catalogue rendering architecture', () => {
       'utf8'
     );
 
-    expect(source).toContain('buildExerciseCloudUrl(exercise.__freeExerciseDbId)');
+    expect(source).toContain('withExpoBaseUrl(buildExerciseImagePath(exercise.exerciseSlug))');
     expect(source).toContain("contentVisibility: 'auto'");
     expect(source).not.toMatch(/exercise\$\{.*exerciseIndex.*\}\.png/);
   });

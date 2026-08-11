@@ -11,30 +11,10 @@ import {
   BRAND_GREEN,
   BRAND_GREEN_BRIGHT,
 } from '@/components/website/websiteColors';
-import exercisesData from '@/data/exercisesData.json';
-import i18n, { DEFAULT_LANG, EXERCISES_JSON } from '@/lang/lang';
-import { buildExerciseCloudUrl } from '@/utils/exerciseImage';
-
-type LocaleExerciseEntry = { exerciseIndex: number; name: string; description: string };
-
-const LOCALE_NAMES: Record<string, Record<number, LocaleExerciseEntry>> = Object.fromEntries(
-  Object.entries(EXERCISES_JSON).map(([locale, entries]) => [
-    locale,
-    Object.fromEntries((entries as LocaleExerciseEntry[]).map((e) => [e.exerciseIndex, e])),
-  ])
-);
-
-const EN_US_NAMES = LOCALE_NAMES[DEFAULT_LANG] ?? {};
-
-function getLocalizedName(exerciseIndex: number, locale: string, fallback: string): string {
-  const map = LOCALE_NAMES[locale] ?? EN_US_NAMES;
-  return map?.[exerciseIndex]?.name ?? EN_US_NAMES?.[exerciseIndex]?.name ?? fallback;
-}
-
-function getLocalizedDescription(exerciseIndex: number, locale: string): string {
-  const map = LOCALE_NAMES[locale] ?? EN_US_NAMES;
-  return map?.[exerciseIndex]?.description ?? EN_US_NAMES?.[exerciseIndex]?.description ?? '';
-}
+import { type ExerciseCatalogueEntry, getExerciseCatalogue } from '@/data/exerciseCatalogue';
+import i18n from '@/lang/lang';
+import { buildExerciseImagePath } from '@/utils/exerciseImage';
+import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
 
 const MUSCLE_GROUPS = [
   'chest',
@@ -69,16 +49,7 @@ const MECHANIC_COLORS: Record<string, { bg: string; text: string }> = {
   plyometric: { bg: 'rgba(236,72,153,0.14)', text: '#F9A8D4' },
 };
 
-interface Exercise {
-  exerciseIndex: number;
-  muscleGroup: string;
-  equipmentType: string;
-  mechanicType: string;
-  targetMuscles: string[];
-  loadMultiplier: number;
-  __exerciseName: string;
-  __freeExerciseDbId: string;
-}
+type Exercise = ExerciseCatalogueEntry;
 
 interface ExerciseCardProps {
   exercise: Exercise;
@@ -126,7 +97,7 @@ function ExerciseCard({
       <div className="relative overflow-hidden bg-black/25" style={{ aspectRatio: '1/1' }}>
         {!imgError ? (
           <img
-            src={buildExerciseCloudUrl(exercise.__freeExerciseDbId)}
+            src={withExpoBaseUrl(buildExerciseImagePath(exercise.exerciseSlug))}
             alt={localizedName}
             loading="lazy"
             className="h-full w-full object-contain p-4 transition-transform duration-300 group-hover:scale-105"
@@ -260,18 +231,17 @@ export default function ExercisesPage() {
   const [muscleGroup, setMuscleGroup] = useState('');
   const [mechanic, setMechanic] = useState('');
 
-  const exercises = exercisesData as Exercise[];
+  const exercises = useMemo(() => getExerciseCatalogue(locale), [locale]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
     return exercises.filter((ex) => {
-      const name = getLocalizedName(ex.exerciseIndex, locale, ex.__exerciseName);
-      const matchesSearch = !q || name.toLowerCase().includes(q);
+      const matchesSearch = !q || ex.name.toLowerCase().includes(q);
       const matchesMuscle = !muscleGroup || ex.muscleGroup === muscleGroup;
       const matchesMechanic = !mechanic || ex.mechanicType === mechanic;
       return matchesSearch && matchesMuscle && matchesMechanic;
     });
-  }, [exercises, search, muscleGroup, mechanic, locale]);
+  }, [exercises, search, muscleGroup, mechanic]);
 
   const hasFilters = Boolean(search || muscleGroup || mechanic);
 
@@ -528,10 +498,10 @@ export default function ExercisesPage() {
                   const ex = exercise as Exercise;
                   return (
                     <ExerciseCard
-                      key={ex.exerciseIndex}
+                      key={ex.exerciseSlug}
                       exercise={ex}
-                      localizedName={getLocalizedName(ex.exerciseIndex, locale, ex.__exerciseName)}
-                      description={getLocalizedDescription(ex.exerciseIndex, locale)}
+                      localizedName={ex.name}
+                      description={ex.description}
                       muscleGroupLabel={getMuscleGroupLabel(ex.muscleGroup)}
                       equipmentLabel={getEquipmentLabel(ex.equipmentType)}
                       mechanicLabel={getMechanicLabel(ex.mechanicType)}
