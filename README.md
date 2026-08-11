@@ -65,7 +65,7 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 - Browse built-in workout programs, including a five-session cable superset split
 - Schedule workouts on a weekly basis with reminders
 - View lifting volume stats and progression over time
-- Browse 873 built-in exercises with muscle-group categorization and two-frame technique photos
+- Browse 873 built-in exercises with localized names and instructions, muscle-group categorization, and two-frame technique photos
 - **Superset support**: Group exercises with a shared group ID for superset tracking
 - **Exercise reordering**: Drag-and-drop reordering of exercises in both active and past workouts
 - **Rest timer**: Built-in rest timer with customizable duration and alerts

@@ -16,6 +16,10 @@ import { initReactI18next } from 'react-i18next';
 
 // Exercise data
 import exercisesEnUs from '@/data/exercisesEnUS.json';
+import exercisesEsEs from '@/data/exercisesEsEs.json';
+import exercisesNlNl from '@/data/exercisesNlNl.json';
+import exercisesPtBr from '@/data/exercisesPtBr.json';
+import exercisesRuRu from '@/data/exercisesRuRu.json';
 // Workout template copies
 import workoutTemplatesEnUs from '@/data/workoutTemplatesEnUS.json';
 import workoutTemplatesEsEs from '@/data/workoutTemplatesEsEs.json';
@@ -421,6 +425,10 @@ export const DEFAULT_LANG = EN_US;
 // Exercise exports
 export const EXERCISES_JSON = {
   [EN_US]: exercisesEnUs,
+  [ES_ES]: exercisesEsEs,
+  [NL_NL]: exercisesNlNl,
+  [PT_BR]: exercisesPtBr,
+  [RU_RU]: exercisesRuRu,
 };
 
 // Workout template copy exports

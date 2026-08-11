@@ -1,6 +1,8 @@
 # Exercise catalogue cutover
 
-Musclog replaced its production 256-exercise catalogue with the 873 exercises and 1,746 photos from [free-exercise-db](https://github.com/yuhonas/free-exercise-db) (CC0). The current structural catalogue is `data/exercisesData.json`; its only locale copy is `data/exercisesEnUS.json`, so every app language intentionally falls back to English exercise names and descriptions.
+Musclog replaced its production 256-exercise catalogue with the 873 exercises and 1,746 photos from [free-exercise-db](https://github.com/yuhonas/free-exercise-db) (CC0). The current structural catalogue is `data/exercisesData.json`; `data/exercisesEnUS.json`, `data/exercisesEsEs.json`, `data/exercisesNlNl.json`, `data/exercisesPtBr.json`, and `data/exercisesRuRu.json` contain the localized names and descriptions joined through `exerciseIndex`.
+
+`scripts/generate-exercises-data.js` regenerates the structural and English files from the upstream checkout. Run `npm run generate-exercise-locales` immediately afterwards to regenerate every translated copy before committing a catalogue update; `npm run generate-lang` then discovers those files and rebuilds `EXERCISES_JSON` in `lang/lang.ts`.
 
 ## Stable identity and images
 

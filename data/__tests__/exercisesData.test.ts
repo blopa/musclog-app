@@ -1,5 +1,9 @@
 import exercisesData from '@/data/exercisesData.json';
 import exercisesEnUs from '@/data/exercisesEnUS.json';
+import exercisesEsEs from '@/data/exercisesEsEs.json';
+import exercisesNlNl from '@/data/exercisesNlNl.json';
+import exercisesPtBr from '@/data/exercisesPtBr.json';
+import exercisesRuRu from '@/data/exercisesRuRu.json';
 import legacyExercisesData from '@/data/legacyExercisesData.json';
 import { MUSCLE_SEED_DATA } from '@/database/services/MuscleService';
 
@@ -42,22 +46,41 @@ const MECHANIC_TYPES = [
 
 const KNOWN_MUSCLES = new Set(MUSCLE_SEED_DATA.map(({ name }) => name));
 
+const EXERCISE_COPIES = {
+  'en-US': exercisesEnUs,
+  'es-ES': exercisesEsEs,
+  'nl-NL': exercisesNlNl,
+  'pt-BR': exercisesPtBr,
+  'ru-RU': exercisesRuRu,
+};
+
 describe('exercise catalogue copy', () => {
-  it('provides an English name and description for every exercise', () => {
-    expect(exercisesEnUs).toHaveLength(exercisesData.length);
-    expect(exercisesEnUs).toEqual(
-      exercisesData.map(({ __exerciseName, exerciseIndex }) => ({
-        name: __exerciseName,
-        description: expect.stringMatching(/\S/),
-        exerciseIndex,
-      }))
+  it.each(Object.entries(EXERCISE_COPIES))(
+    'provides a %s name and description for every exercise',
+    (_locale, copy) => {
+      expect(copy).toHaveLength(exercisesData.length);
+      expect(copy.map(({ exerciseIndex }) => exerciseIndex)).toEqual(
+        exercisesData.map(({ exerciseIndex }) => exerciseIndex)
+      );
+      expect(copy.every(({ description, name }) => /\S/.test(name) && /\S/.test(description))).toBe(
+        true
+      );
+    }
+  );
+
+  it.each(Object.entries(EXERCISE_COPIES))(
+    'uses only locale-copy fields in %s',
+    (_locale, copy) => {
+      const keys = new Set(copy.flatMap((entry) => Object.keys(entry)));
+
+      expect([...keys].sort()).toEqual(['description', 'exerciseIndex', 'name']);
+    }
+  );
+
+  it('keeps the generated English names aligned with the structural catalogue', () => {
+    expect(exercisesEnUs.map(({ name }) => name)).toEqual(
+      exercisesData.map(({ __exerciseName }) => __exerciseName)
     );
-  });
-
-  it('uses only locale-copy fields', () => {
-    const keys = new Set(exercisesEnUs.flatMap((entry) => Object.keys(entry)));
-
-    expect([...keys].sort()).toEqual(['description', 'exerciseIndex', 'name']);
   });
 });
 
