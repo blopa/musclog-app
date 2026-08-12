@@ -312,7 +312,7 @@ Contributions are welcome! Please open an issue or pull request. For larger chan
 
 This project is open source. See the [LICENSE](LICENSE) file for details.
 
-Exercise data and photos come from [free-exercise-db](https://github.com/yuhonas/free-exercise-db), released under CC0.
+The bundled exercise data and photos come from [free-exercise-db](https://github.com/yuhonas/free-exercise-db), a public-domain project released under CC0.
 
 ---
 

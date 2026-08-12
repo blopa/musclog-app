@@ -519,8 +519,8 @@ export default function ExercisesPage() {
                 className="underline decoration-white/30 underline-offset-2 hover:text-white"
               >
                 free-exercise-db
-              </a>{' '}
-              (CC0).
+              </a>
+              {t('sourceCreditSuffix')}
             </p>
           </div>
         </section>

@@ -101,14 +101,19 @@ describe('exercise catalogue rendering architecture', () => {
     expect(source).not.toContain("database.get<Exercise>('exercises')");
   });
 
-  it('renders website photos through the shared slug URL helper with deferred cards', () => {
+  it('renders website photos through the shared slug URL helper with source credit', () => {
     const source = readFileSync(
       join(repositoryRoot, 'app', '(website)', 'exercises.web.tsx'),
       'utf8'
     );
+    const websiteCopy = JSON.parse(
+      readFileSync(join(repositoryRoot, 'lang', 'locales', 'en-us', 'website.json'), 'utf8')
+    );
 
     expect(source).toContain('withExpoBaseUrl(buildExerciseImagePath(exercise.exerciseSlug))');
     expect(source).toContain("contentVisibility: 'auto'");
+    expect(source).toContain('href="https://github.com/yuhonas/free-exercise-db"');
+    expect(websiteCopy.website.exercises.sourceCreditSuffix).toContain('public-domain project');
     expect(source).not.toMatch(/exercise\$\{.*exerciseIndex.*\}\.png/);
   });
 });

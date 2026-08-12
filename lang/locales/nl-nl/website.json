@@ -927,7 +927,8 @@
       "clearFilters": "Filters wissen",
       "noResults": "Geen oefeningen komen overeen met je filters.",
       "showing": "{{count}} oefeningen weergegeven",
-      "sourceCredit": "Oefeningsgegevens en foto's:",
+      "sourceCredit": "Deze oefeningen en foto's zijn afkomstig van",
+      "sourceCreditSuffix": ", een publiekdomeinproject dat onder CC0 is uitgebracht.",
       "stat": {
         "exercises": "Oefeningen",
         "muscleGroups": "Spiergroepen",

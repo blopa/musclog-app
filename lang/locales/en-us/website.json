@@ -927,7 +927,8 @@
       "clearFilters": "Clear filters",
       "noResults": "No exercises match your filters.",
       "showing": "Showing {{count}} exercises",
-      "sourceCredit": "Exercise data and photos:",
+      "sourceCredit": "These exercises and photos come from",
+      "sourceCreditSuffix": ", a public-domain project released under CC0.",
       "stat": {
         "exercises": "Exercises",
         "muscleGroups": "Muscle Groups",

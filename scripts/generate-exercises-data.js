@@ -2,7 +2,8 @@
 /* eslint-disable no-undef */
 
 /**
- * Generates the app's exercise catalogue (873 exercises, CC0) from free-exercise-db:
+ * Generates the app's exercise catalogue (873 public-domain exercises, CC0) from
+ * free-exercise-db:
  *   - `data/exercisesData.json` contains the structural exercise data.
  *   - `data/exercisesEnUS.json` contains its English names and descriptions.
  *
