@@ -21,9 +21,12 @@ jest.mock('@/database/database-instance', () => ({
   },
 }));
 
+let writerActive = false;
+
 const prepareUpdate = <T extends Record<string, unknown>>(record: T) => {
   Object.assign(record, {
     prepareUpdate: jest.fn((callback: (value: T) => void) => {
+      expect(writerActive).toBe(true);
       callback(record);
       return record;
     }),
@@ -34,6 +37,18 @@ const prepareUpdate = <T extends Record<string, unknown>>(record: T) => {
 describe('WorkoutSetStatusMigration', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    writerActive = false;
+    jest.mocked(database.write).mockImplementation(async (callback) => {
+      writerActive = true;
+      try {
+        return await callback({} as never);
+      } finally {
+        writerActive = false;
+      }
+    });
+    jest.mocked(database.batch).mockImplementation(async () => {
+      expect(writerActive).toBe(true);
+    });
   });
 
   it('backfills legacy rows in a bounded batch and invalidates affected volume totals', async () => {
@@ -84,7 +99,10 @@ describe('WorkoutSetStatusMigration', () => {
         updatedAt: 0,
       }),
     ];
-    const setFetch = jest.fn().mockResolvedValueOnce(sets).mockResolvedValueOnce([]);
+    const setFetch = jest.fn(async () => {
+      expect(writerActive).toBe(true);
+      return setFetch.mock.calls.length === 1 ? sets : [];
+    });
     const rowsByTable: Record<string, unknown[]> = {
       workout_log_exercises: [
         { id: 'template-exercise', workoutLogId: templateWorkout.id },
@@ -115,5 +133,6 @@ describe('WorkoutSetStatusMigration', () => {
     expect(importedWorkout.totalVolume).toBe(800);
     expect(activeWorkout.totalVolume).toBeUndefined();
     expect(database.batch).toHaveBeenCalledTimes(1);
+    expect(database.write).toHaveBeenCalledTimes(2);
   });
 });

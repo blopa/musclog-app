@@ -95,7 +95,10 @@ single user action.
    runs after WatermelonDB is live. `LegacyExerciseCatalogueMigration` therefore
    creates its required portable JSON snapshot through `dumpDatabase()` and the
    live WatermelonDB connection. If that snapshot cannot be stored and indexed,
-   the destructive retirement is aborted and retried on a later boot.
+   the destructive retirement is aborted and retried on a later boot. The backup
+   metadata index is the commit point: native and web commit it before pruning old
+   payloads, and remove a newly written payload if the index commit fails. This
+   preserves every previously indexed recovery point across partial failures.
 
 4. **A different database file is fine.** `database/services/MigrationService.ts`
    opens the _legacy_ `workoutLoggerDatabase.db` with `expo-sqlite`. That's a

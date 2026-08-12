@@ -83,21 +83,40 @@ async function deleteBackupFiles(file: BackupFileMeta): Promise<void> {
 export async function deleteBackup(uri: string): Promise<void> {
   const backups = await getStoredBackups();
   const backup = backups.find((b) => b.uri === uri);
-  // Fall back to a bare file delete when the index has no entry for this URI.
-  await (backup ? deleteBackupFiles(backup) : safeDelete(uri));
   await writeStoredBackups(backups.filter((b) => b.uri !== uri));
+  // Commit the index first so a metadata failure never leaves a broken indexed entry.
+  await (backup ? deleteBackupFiles(backup) : safeDelete(uri));
 }
 
-async function pruneOldBackups(backups: BackupFileMeta[]): Promise<BackupFileMeta[]> {
-  if (backups.length <= PRE_MIGRATION_BACKUPS_MAX_FILES) {
-    return backups;
-  }
-
+async function commitStoredBackups(backups: BackupFileMeta[]): Promise<BackupFileMeta[]> {
   const keep = backups.slice(0, PRE_MIGRATION_BACKUPS_MAX_FILES);
   const remove = backups.slice(PRE_MIGRATION_BACKUPS_MAX_FILES);
 
+  // Metadata is the commit point. Once it succeeds, stale files are harmless orphans
+  // if cleanup is interrupted; deleting files before it succeeds would break old entries.
+  await writeStoredBackups(keep);
   await Promise.all(remove.map(deleteBackupFiles));
   return keep;
+}
+
+/** Write a portable payload and atomically replace the native backup index. */
+export async function writePortableBackup(
+  backup: BackupFileMeta,
+  backupJson: string
+): Promise<void> {
+  const existing = await getStoredBackups();
+  const wasAlreadyIndexed = existing.some((entry) => entry.uri === backup.uri);
+
+  await writeAsStringAsync(backup.uri, backupJson);
+  try {
+    await commitStoredBackups([backup, ...existing.filter((entry) => entry.uri !== backup.uri)]);
+  } catch (error) {
+    if (!wasAlreadyIndexed) {
+      await safeDelete(backup.uri);
+    }
+
+    throw error;
+  }
 }
 
 async function executeBackup(
@@ -115,15 +134,10 @@ async function executeBackup(
   const createdAtDate = new Date();
   const createdAt = createdAtDate.toISOString();
   const uri = `${cacheDirectory}${timestampSlug(createdAtDate)}-${nameInfix}.json`;
-
-  await writeAsStringAsync(uri, backupJson);
-
-  const existing = await getStoredBackups();
-  const next = await pruneOldBackups([
+  await writePortableBackup(
     { uri, createdAt, fromVersion, toVersion, format: 'json', reason },
-    ...existing,
-  ]);
-  await writeStoredBackups(next);
+    backupJson
+  );
 
   return uri;
 }
@@ -239,8 +253,12 @@ export function registerPreMigrationDbBackup(
     };
 
     const existing = await getStoredBackups();
-    const next = await pruneOldBackups([meta, ...existing]);
-    await writeStoredBackups(next);
+    try {
+      await commitStoredBackups([meta, ...existing.filter((backup) => backup.uri !== uri)]);
+    } catch (error) {
+      await deleteBackupFiles(meta);
+      throw error;
+    }
 
     completedBackupSignature = signature;
     console.log(`[PreMigrationBackup] Created (sqlite snapshot): ${uri}`);

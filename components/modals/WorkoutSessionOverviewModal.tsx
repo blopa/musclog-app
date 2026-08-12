@@ -17,7 +17,7 @@ import { Button } from '@/components/theme/Button';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { isWorkoutType } from '@/constants/workoutTypes';
 import WorkoutLog from '@/database/models/WorkoutLog';
-import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
 import { useActiveWorkout } from '@/hooks/useActiveWorkout';
 import { useTheme } from '@/hooks/useTheme';
 import {
@@ -333,7 +333,7 @@ export default function WorkoutSessionOverviewModal({
     }
 
     // Group sets by exercise
-    const exerciseGroups = new Map<string, WorkoutLogSet[]>();
+    const exerciseGroups = new Map<string, EnrichedWorkoutLogSet[]>();
     sets.forEach((set) => {
       const exerciseId = set.exerciseId ?? '';
       if (!exerciseGroups.has(exerciseId)) {

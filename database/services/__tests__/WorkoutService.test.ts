@@ -879,6 +879,62 @@ describe('WorkoutService', () => {
     });
   });
 
+  describe('updateWorkoutSets', () => {
+    it('rejects the complete edit before opening a writer when any set is invalid', async () => {
+      await expect(
+        WorkoutService.updateWorkoutSets('workout-1', [
+          { setId: 'valid-set', difficultyLevel: 8 },
+          { setId: 'invalid-set', difficultyLevel: 0 },
+        ])
+      ).rejects.toThrow('Difficulty level must be between 1 and 10');
+
+      expect(mockDatabase.write).not.toHaveBeenCalled();
+      expect(mockDatabase.batch).not.toHaveBeenCalled();
+    });
+
+    it('resolves every set before preparing changes, so a lookup failure leaves no partial edit', async () => {
+      const firstSet = {
+        id: 'set-1',
+        logExerciseId: 'log-exercise-1',
+        prepareUpdate: jest.fn(),
+      };
+      const setFind = jest.fn(async (setId: string) => {
+        if (setId === firstSet.id) {
+          return firstSet;
+        }
+        throw new Error('set not found');
+      });
+      const workoutLog = createMockWorkoutLog({ id: 'workout-1', deletedAt: null });
+      const logExercise = createMockWorkoutLogExercise({
+        id: 'log-exercise-1',
+        workoutLogId: workoutLog.id,
+      });
+
+      mockDatabase.get.mockImplementation((table: string) => {
+        if (table === 'workout_logs') {
+          return collection({ find: jest.fn().mockResolvedValue(workoutLog) }) as never;
+        }
+        if (table === 'workout_log_exercises') {
+          return collection({ fetch: jest.fn().mockResolvedValue([logExercise]) }) as never;
+        }
+        if (table === 'workout_log_sets') {
+          return collection({ find: setFind }) as never;
+        }
+        return collection() as never;
+      });
+
+      await expect(
+        WorkoutService.updateWorkoutSets('workout-1', [
+          { setId: 'set-1', reps: 10 },
+          { setId: 'missing-set', reps: 12 },
+        ])
+      ).rejects.toThrow('set not found');
+
+      expect(firstSet.prepareUpdate).not.toHaveBeenCalled();
+      expect(mockDatabase.batch).not.toHaveBeenCalled();
+    });
+  });
+
   describe('getWorkoutWithDetails', () => {
     it('should return workout with sets and exercises', async () => {
       const workoutLog = createMockWorkoutLog({

@@ -51,7 +51,10 @@ tracked and awaited via `waitForPreMigrationBackup()` before the boot sequence
 proceeds. It captures AsyncStorage in a sidecar and records both files in the
 `pre_migration_backups_v1` index (kept to the 3 most recent). Conversion to the
 portable JSON export format is deferred until restore or download, avoiding a
-minutes-long upgrade boot for a large database.
+minutes-long upgrade boot for a large database. Index replacement is the commit
+point: the new index is written before obsolete payloads are pruned. If the index
+write fails, existing indexed files remain untouched and newly created unindexed
+payloads are cleaned up.
 
 `database/preMigrationBackup.ts` itself imports **no** `expo-sqlite` — keeping
 the dangerous open isolated in `preMigrationCapture.ts` makes the invariant
@@ -98,7 +101,9 @@ before the migration enters its writer. Failure is reported, the migration
 rejects, and boot can retry later with every retired row still intact. The backup
 is labeled “Before exercise catalogue update” in `LocalBackupsModal`. On web,
 quota recovery never deletes the last existing recovery point to make room for
-this required replacement.
+this required replacement. On native, the metadata index is likewise committed
+before any old file is pruned, so an AsyncStorage failure cannot invalidate an
+existing recovery point.
 
 ## Shared serialization core
 

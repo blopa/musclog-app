@@ -10,6 +10,7 @@ import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import { SettingsService, UserMetricService, WorkoutService } from '@/database/services';
+import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
 import {
   calculateAverage1RM,
   calculateRepsForTargetRIR,
@@ -47,13 +48,6 @@ export type PreviousSetInfo = {
   weight: number;
   reps: number;
   exerciseId: string;
-};
-
-export type EnrichedWorkoutLogSet = WorkoutLogSet & {
-  exerciseId: string;
-  groupId?: string;
-  notes?: string;
-  isAutoAdjusted?: boolean;
 };
 
 /**

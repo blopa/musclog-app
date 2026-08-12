@@ -1,8 +1,10 @@
 import { normalizeWorkoutSetCompletionForImport } from '@/database/workoutSetImportNormalization';
+import { validateExportDump } from '@/database/schemaToZod';
 
 describe('normalizeWorkoutSetCompletionForImport', () => {
   it('uses workout relationships to distinguish imports from template placeholders', () => {
     const dump = {
+      _exportVersion: 25,
       workout_logs: [
         { id: 'template-log', template_id: 'template-1', completed_at: 1, total_volume: 900 },
         { id: 'import-log', template_id: null, completed_at: 1, total_volume: 800 },
@@ -56,6 +58,7 @@ describe('normalizeWorkoutSetCompletionForImport', () => {
 
   it('preserves an explicit status while normalizing the obsolete zero RPE sentinel', () => {
     const dump = {
+      _exportVersion: 25,
       workout_logs: [{ id: 'log', completed_at: 1, total_volume: 100 }],
       workout_log_exercises: [{ id: 'exercise', workout_log_id: 'log' }],
       workout_log_sets: [
@@ -75,5 +78,71 @@ describe('normalizeWorkoutSetCompletionForImport', () => {
       difficulty_level: null,
     });
     expect(dump.workout_logs[0].total_volume).toBe(100);
+  });
+
+  it('leaves current-format lifecycle values untouched so validation can reject corruption', () => {
+    const dump = {
+      _exportVersion: 26,
+      workout_log_sets: [
+        {
+          id: 'set',
+          log_exercise_id: 'exercise',
+          reps: 10,
+          weight: 100,
+          rest_time_after: 60,
+          reps_in_reserve: 0,
+          completion_status: 'done',
+          difficulty_level: 0,
+          set_type: 'normal',
+          set_order: 1,
+          created_at: 1,
+          updated_at: 1,
+        },
+      ],
+    };
+
+    normalizeWorkoutSetCompletionForImport(dump);
+
+    expect(dump.workout_log_sets[0]).toMatchObject({
+      completion_status: 'done',
+      difficulty_level: 0,
+    });
+    expect(validateExportDump(dump).success).toBe(false);
+  });
+
+  it('requires current-format rows to carry an explicit lifecycle status', () => {
+    const dump = {
+      _exportVersion: 26,
+      workout_log_sets: [
+        {
+          id: 'set',
+          log_exercise_id: 'exercise',
+          reps: 10,
+          weight: 100,
+          rest_time_after: 60,
+          reps_in_reserve: 0,
+          set_type: 'normal',
+          set_order: 1,
+          created_at: 1,
+          updated_at: 1,
+        },
+      ],
+    };
+
+    normalizeWorkoutSetCompletionForImport(dump);
+
+    expect(validateExportDump(dump).success).toBe(false);
+  });
+
+  it('does not crash on malformed legacy rows before schema validation', () => {
+    const dump = {
+      _exportVersion: 25,
+      workout_logs: [null],
+      workout_log_exercises: [7],
+      workout_log_sets: [null],
+    };
+
+    expect(() => normalizeWorkoutSetCompletionForImport(dump)).not.toThrow();
+    expect(validateExportDump(dump).success).toBe(false);
   });
 });

@@ -368,7 +368,7 @@ export async function processParsedWorkouts(
             reps: set.reps,
             weight: set.weight,
             completionStatus: 'performed' as const,
-            isNew: true,
+            isNew: true as const,
             setOrder: setCount,
           });
         }

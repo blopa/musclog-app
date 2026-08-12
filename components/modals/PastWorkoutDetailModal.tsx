@@ -859,18 +859,24 @@ export default function PastWorkoutDetailModal({
             const updates = updatedSets.map((s, idx) => {
               // Check if this is a new set (temporary ID from Date.now())
               const isNew = !rawSets?.some((rs) => rs.id === s.id);
-              return {
+              const fields = {
                 setId: s.id,
-                exerciseId: isNew ? editingExerciseId : undefined,
                 reps: s.reps,
                 weight: displayToKg(s.weight, units),
                 partials: s.partialReps,
                 restTimeAfter: s.rest,
                 repsInReserve: s.repsInReserve,
-                completionStatus: isNew ? ('performed' as const) : undefined,
-                isNew,
                 setOrder: idx, // Consecutive order: 0, 1, 2, 3, ...
               };
+
+              return isNew
+                ? {
+                    ...fields,
+                    exerciseId: editingExerciseId,
+                    completionStatus: 'performed' as const,
+                    isNew: true as const,
+                  }
+                : fields;
             });
             try {
               await saveSets(workoutId, updates, deletedSetIds);

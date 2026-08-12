@@ -42,6 +42,10 @@ export type ExportDump = {
 
 type ImportRow = Record<string, unknown>;
 
+function isImportRow(value: unknown): value is ImportRow {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
 const NUTRITION_SNAPSHOT_NUMBER_KEYS = [
   'logged_calories',
   'logged_protein',
@@ -139,7 +143,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     jsonString = await decrypt(jsonString, decryptionPhrase.trim());
   }
 
-  const parsed = JSON.parse(jsonString) as Record<string, unknown>;
+  const parsed: unknown = JSON.parse(jsonString);
 
   // Pre-v26 exports used RPE=0 and is_skipped as an implicit lifecycle. Normalize that
   // relationship-aware legacy shape once, before validation and persistence.
@@ -148,11 +152,19 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
   // Pre-validate migration: exports before v16 store is_drop_set (boolean) instead of
   // set_type (string) on workout_log_sets and workout_template_sets.
   // Normalise in-place before Zod validation so old backups pass schema validation.
-  if (typeof parsed._exportVersion === 'number' && parsed._exportVersion < 16) {
+  if (
+    isImportRow(parsed) &&
+    typeof parsed._exportVersion === 'number' &&
+    parsed._exportVersion < 16
+  ) {
     for (const table of ['workout_log_sets', 'workout_template_sets'] as const) {
       const rows = parsed[table];
       if (Array.isArray(rows)) {
         for (const row of rows) {
+          if (!isImportRow(row)) {
+            continue;
+          }
+
           if (row.set_type == null) {
             row.set_type = row.is_drop_set ? 'drop_set' : 'normal';
           }
