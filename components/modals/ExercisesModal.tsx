@@ -1,15 +1,14 @@
-import { Q } from '@nozbe/watermelondb';
 import { Activity, ChevronRight, Dumbbell, Footprints, Search } from 'lucide-react-native';
-import { ComponentType, useEffect, useMemo, useState } from 'react';
+import { ComponentType, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Pressable, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { Accordion } from '@/components/theme/Accordion';
+import { Button } from '@/components/theme/Button';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { TextInput } from '@/components/theme/TextInput';
-import { database } from '@/database';
-import Exercise from '@/database/models/Exercise';
+import { useExercises } from '@/hooks/useExercises';
 import { useTheme } from '@/hooks/useTheme';
 import { FALLBACK_EXERCISE_IMAGE } from '@/utils/exerciseImage';
 
@@ -115,8 +114,6 @@ export default function ExercisesModal({
   const { t } = useTranslation();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [exercises, setExercises] = useState<ExerciseData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [viewExerciseId, setViewExerciseId] = useState<string | null>(null);
   const [openAccordions, setOpenAccordions] = useState<Record<string, boolean>>({
     chest: true, // Chest starts open
@@ -138,6 +135,34 @@ export default function ExercisesModal({
     full_body: { name: t('exercises.muscleGroups.fullBody'), icon: Activity },
   };
 
+  const {
+    exercises: exerciseRecords,
+    isLoading,
+    isLoadingMore,
+    hasMore,
+    loadMore,
+    refresh,
+  } = useExercises({
+    mode: 'list',
+    searchTerm: searchQuery,
+    initialLimit: 40,
+    batchSize: 40,
+    visible,
+  });
+
+  const exercises = useMemo<ExerciseData[]>(
+    () =>
+      exerciseRecords.map((exercise) => ({
+        id: exercise.id,
+        name: exercise.name ?? '',
+        type: mapEquipmentTypeToType(exercise.equipmentType ?? ''),
+        muscleGroup: exercise.muscleGroup ?? '',
+        imageUrl: exercise.imageUrl || undefined,
+        loadMultiplier: exercise.loadMultiplier,
+      })),
+    [exerciseRecords]
+  );
+
   // Map exercise types to tag display (using translations)
   const getExerciseTypeTag = (type: string) => {
     switch (type) {
@@ -150,67 +175,6 @@ export default function ExercisesModal({
         return { label: t('exercises.typeTags.equipment'), variant: 'secondary' as const };
     }
   };
-
-  const loadExercises = async () => {
-    try {
-      setIsLoading(true);
-      const exercisesCollection = database.get<Exercise>('exercises');
-      let fetchedExercises = await exercisesCollection
-        .query(
-          Q.where('deleted_at', Q.eq(null)),
-          Q.sortBy('source', Q.asc),
-          Q.sortBy('order_index', Q.asc),
-          Q.sortBy('name', Q.asc)
-        )
-        .fetch();
-      if (fetchedExercises.length === 0) {
-        const allExercises = await exercisesCollection.query().fetch();
-        fetchedExercises = allExercises
-          .filter((e) => !e.deletedAt)
-          .sort((a, b) => {
-            // Sort by source (app first), then by order_index, then by name
-            const sourceCompare = (a.source ?? 'user').localeCompare(b.source ?? 'user');
-            if (sourceCompare !== 0) {
-              return sourceCompare;
-            }
-            // For app exercises, sort by order_index (JSON order)
-            if (a.source === 'app' && b.source === 'app') {
-              const orderCompare = (a.orderIndex ?? 0) - (b.orderIndex ?? 0);
-              if (orderCompare !== 0) {
-                return orderCompare;
-              }
-            }
-
-            return (a.name ?? '').localeCompare(b.name ?? '');
-          });
-      }
-      const exercisesData: ExerciseData[] = fetchedExercises.map((exercise) => ({
-        id: exercise.id,
-        name: exercise.name ?? '',
-        type: mapEquipmentTypeToType(exercise.equipmentType ?? ''),
-        muscleGroup: exercise.muscleGroup ?? '',
-        imageUrl: exercise.imageUrl || undefined,
-        loadMultiplier: exercise.loadMultiplier,
-      }));
-      setExercises(exercisesData);
-    } catch (error) {
-      console.error('Error loading exercises:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Load exercises from database only when modal becomes visible
-  useEffect(() => {
-    if (!visible) {
-      return;
-    }
-
-    const run = () => {
-      void loadExercises();
-    };
-    run();
-  }, [visible]);
 
   // Group exercises by muscle group
   const exercisesByGroup = useMemo(() => {
@@ -226,26 +190,6 @@ export default function ExercisesModal({
 
     return grouped;
   }, [exercises]);
-
-  // Filter exercises based on search
-  const filteredExercisesByGroup = useMemo(() => {
-    if (!searchQuery.trim()) {
-      return exercisesByGroup;
-    }
-
-    const filtered: Record<string, ExerciseData[]> = {};
-    Object.keys(exercisesByGroup).forEach((group) => {
-      const filteredInGroup = exercisesByGroup[group].filter((exercise) =>
-        exercise.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-
-      if (filteredInGroup.length > 0) {
-        filtered[group] = filteredInGroup;
-      }
-    });
-
-    return filtered;
-  }, [exercisesByGroup, searchQuery]);
 
   const toggleAccordion = (group: string) => {
     setOpenAccordions((prev) => ({
@@ -268,7 +212,7 @@ export default function ExercisesModal({
   };
 
   const handleExerciseDeletedOrUpdated = () => {
-    loadExercises();
+    void refresh();
   };
 
   const getExerciseImageUrl = (exercise: ExerciseData) => exercise.imageUrl ?? '';
@@ -325,14 +269,14 @@ export default function ExercisesModal({
             ))}
           </>
         ) : (
-          Object.keys(filteredExercisesByGroup)
+          Object.keys(exercisesByGroup)
             .sort()
             .map((group) => {
               const config = MUSCLE_GROUP_CONFIG[group] || {
                 name: group.charAt(0).toUpperCase() + group.slice(1),
                 icon: Dumbbell,
               };
-              const groupExercises = filteredExercisesByGroup[group];
+              const groupExercises = exercisesByGroup[group];
 
               return (
                 <Accordion
@@ -367,6 +311,20 @@ export default function ExercisesModal({
               );
             })
         )}
+
+        {hasMore && !isLoading ? (
+          <View className="py-4">
+            <Button
+              label={isLoadingMore ? t('common.loading') : t('common.loadMore')}
+              variant="outline"
+              size="md"
+              width="full"
+              onPress={loadMore}
+              disabled={isLoadingMore}
+              loading={isLoadingMore}
+            />
+          </View>
+        ) : null}
       </KeyboardAwareScrollView>
 
       <ViewExerciseModal

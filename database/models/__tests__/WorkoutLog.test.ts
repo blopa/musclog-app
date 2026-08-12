@@ -1,4 +1,5 @@
 import WorkoutLog from '@/database/models/WorkoutLog';
+import { calculateWorkoutVolume } from '@/utils/workoutCalculator';
 
 jest.mock('@nozbe/watermelondb', () => ({
   Model: class {},
@@ -16,6 +17,19 @@ jest.mock('@/database/models/WorkoutLogSet', () => ({ __esModule: true, default:
 jest.mock('@/database/models/WorkoutPlan', () => ({ __esModule: true, default: class {} }));
 jest.mock('@/database/models/WorkoutTemplate', () => ({ __esModule: true, default: class {} }));
 jest.mock('@/utils/workoutCalculator', () => ({ calculateWorkoutVolume: jest.fn() }));
+
+const mockCalculateWorkoutVolume = calculateWorkoutVolume as jest.MockedFunction<
+  typeof calculateWorkoutVolume
+>;
+
+function updatable<T extends Record<string, unknown>>(fields: T): T & { prepareUpdate: jest.Mock } {
+  const record = fields as T & { prepareUpdate: jest.Mock };
+  record.prepareUpdate = jest.fn((callback) => {
+    callback(record);
+    return record;
+  });
+  return record;
+}
 
 /**
  * `WorkoutLog` shipped without this override in 2.10.5, so `markAsDeleted` fell through to
@@ -43,5 +57,125 @@ describe('WorkoutLog.markAsDeleted', () => {
     // Exercises and sets are soft-deleted by `WorkoutService.deleteWorkoutLog`, which also
     // cleans up the BLE data-point files — doing it here too would double up.
     expect(log.logExercises.fetch).not.toHaveBeenCalled();
+  });
+});
+
+describe('WorkoutLog completion', () => {
+  afterEach(() => jest.restoreAllMocks());
+
+  it('calculates volume from submitted sets only', async () => {
+    const loggedSet = {
+      logExerciseId: 'log-exercise-1',
+      completionStatus: 'performed',
+      difficultyLevel: 7,
+      weight: 80,
+      reps: 8,
+      repsInReserve: 2,
+    };
+    const templatePlaceholder = {
+      logExerciseId: 'log-exercise-1',
+      completionStatus: 'planned',
+      difficultyLevel: undefined,
+      weight: 100,
+      reps: 10,
+      repsInReserve: 0,
+    };
+    const log: any = Object.assign(Object.create(WorkoutLog.prototype), {
+      logExercises: {
+        fetch: jest
+          .fn()
+          .mockResolvedValue([{ id: 'log-exercise-1', exerciseId: 'exercise-1', deletedAt: null }]),
+      },
+      collections: {
+        get: jest.fn().mockReturnValue({
+          query: jest.fn().mockReturnValue({
+            fetch: jest.fn().mockResolvedValue([{ id: 'exercise-1', equipmentType: 'barbell' }]),
+          }),
+        }),
+      },
+      getAllSets: jest.fn().mockResolvedValue([loggedSet, templatePlaceholder]),
+    });
+    mockCalculateWorkoutVolume.mockReturnValue(123);
+
+    await expect(log.calculateVolume(75)).resolves.toBe(123);
+
+    expect(mockCalculateWorkoutVolume).toHaveBeenCalledWith(
+      [
+        {
+          exercise: { equipmentType: 'barbell' },
+          sets: [{ weight: 80, reps: 8, repsInReserve: 2 }],
+        },
+      ],
+      75
+    );
+  });
+
+  it('preserves the plan and marks every unsubmitted set skipped when finishing early', async () => {
+    const performedExercise = updatable({ id: 'performed-exercise', deletedAt: null });
+    const untouchedExercise = updatable({ id: 'untouched-exercise', deletedAt: null });
+    const skippedExercise = updatable({ id: 'skipped-exercise', deletedAt: null });
+    const performedSet = updatable({
+      id: 'performed-set',
+      logExerciseId: performedExercise.id,
+      completionStatus: 'performed',
+      difficultyLevel: 8,
+    });
+    const leftoverSetInPerformedExercise = updatable({
+      id: 'leftover-set',
+      logExerciseId: performedExercise.id,
+      completionStatus: 'planned',
+      difficultyLevel: undefined,
+    });
+    const untouchedSet = updatable({
+      id: 'untouched-set',
+      logExerciseId: untouchedExercise.id,
+      completionStatus: 'planned',
+      difficultyLevel: undefined,
+    });
+    const skippedSet = updatable({
+      id: 'skipped-set',
+      logExerciseId: skippedExercise.id,
+      completionStatus: 'skipped',
+      difficultyLevel: undefined,
+    });
+    const batch = jest.fn().mockResolvedValue(undefined);
+    const log: any = Object.assign(Object.create(WorkoutLog.prototype), {
+      completedAt: undefined,
+      collection: { database: { batch } },
+      getAllSets: jest
+        .fn()
+        .mockResolvedValue([
+          performedSet,
+          leftoverSetInPerformedExercise,
+          untouchedSet,
+          skippedSet,
+        ]),
+      calculateVolume: jest.fn().mockResolvedValue(456),
+    });
+    log.prepareUpdate = jest.fn((callback) => {
+      callback(log);
+      return log;
+    });
+    jest.spyOn(Date, 'now').mockReturnValue(999);
+
+    await log.completeWorkout(75);
+
+    expect(performedSet.prepareUpdate).not.toHaveBeenCalled();
+    expect(performedExercise.prepareUpdate).not.toHaveBeenCalled();
+    expect(untouchedExercise.prepareUpdate).not.toHaveBeenCalled();
+    expect(skippedExercise.prepareUpdate).not.toHaveBeenCalled();
+    expect(leftoverSetInPerformedExercise).toMatchObject({
+      completionStatus: 'skipped',
+      updatedAt: 999,
+    });
+    expect(untouchedSet).toMatchObject({ completionStatus: 'skipped', updatedAt: 999 });
+    expect(skippedSet).toMatchObject({ completionStatus: 'skipped' });
+    expect(skippedSet.updatedAt).toBeUndefined();
+    expect(leftoverSetInPerformedExercise.deletedAt).toBeUndefined();
+    expect(untouchedSet.deletedAt).toBeUndefined();
+    expect(skippedSet.deletedAt).toBeUndefined();
+    expect(log.completedAt).toBe(999);
+    expect(log.totalVolume).toBe(456);
+    expect(batch).toHaveBeenCalledWith(leftoverSetInPerformedExercise, untouchedSet, log);
   });
 });

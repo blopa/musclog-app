@@ -18,6 +18,7 @@ import WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
 import { WorkoutTemplateRepository } from '@/database/repositories/WorkoutTemplateRepository';
 import i18n from '@/lang/lang';
 import { getTheme } from '@/theme';
+import { appExerciseId } from '@/utils/exerciseImage';
 import { handleError } from '@/utils/handleError';
 import { getWeightUnit } from '@/utils/units';
 import { indexToDayName, WEEKDAY_NAMES } from '@/utils/weekdays';
@@ -849,7 +850,7 @@ export class WorkoutTemplateService {
           .query(
             Q.where('log_exercise_id', logExercises[0].id),
             Q.where('deleted_at', Q.eq(null)),
-            Q.where('difficulty_level', Q.gt(0)),
+            Q.where('completion_status', 'performed'),
             Q.sortBy('set_order', Q.asc)
           )
           .fetch();
@@ -954,14 +955,15 @@ export class WorkoutTemplateService {
       (
         e
       ): e is RawWorkoutTemplateExercise & {
-        exerciseId: number;
+        exerciseSlug: string;
         day: number;
         sets: number;
         reps: number;
       } =>
         typeof e === 'object' &&
         e !== null &&
-        typeof e.exerciseId === 'number' &&
+        typeof e.exerciseSlug === 'string' &&
+        e.exerciseSlug.length > 0 &&
         typeof e.day === 'number' &&
         typeof e.sets === 'number' &&
         typeof e.reps === 'number'
@@ -991,28 +993,11 @@ export class WorkoutTemplateService {
     // Get user age (default to 30 if not available, which gives ageFactor 1.0)
     const age = user ? user.getAge() : 30;
 
-    // App exercise order_index is the stable, zero-based counterpart of exerciseId in the JSON.
-    // Fall back to creation order only for legacy databases that have not completed the backfill.
     const allExercises = await database
       .get<Exercise>('exercises')
       .query(Q.where('deleted_at', Q.eq(null)), Q.sortBy('created_at', Q.asc))
       .fetch();
-
-    // Create mapping: exerciseId (1-based) -> database exercise ID
-    const exerciseIdMap = new Map<number, string>();
-    const indexedExercises = allExercises.filter(
-      (exercise) => exercise.orderIndex !== null && exercise.orderIndex !== undefined
-    );
-
-    if (indexedExercises.length > 0) {
-      indexedExercises.forEach((exercise) => {
-        exerciseIdMap.set((exercise.orderIndex ?? 0) + 1, exercise.id);
-      });
-    } else {
-      allExercises.forEach((exercise, index) => {
-        exerciseIdMap.set(index + 1, exercise.id);
-      });
-    }
+    const exerciseById = new Map(allExercises.map((exercise) => [exercise.id, exercise]));
 
     // Group exercises by day
     const exercisesByDay = new Map<number, typeof exercises>();
@@ -1032,28 +1017,22 @@ export class WorkoutTemplateService {
     for (const day of days) {
       const dayExercises = exercisesByDay.get(day)!;
 
-      // Group exercises by exerciseId (in case same exercise appears multiple times)
+      // Group exercises by catalogue slug (in case the same exercise appears multiple times)
       // We'll combine them into a single exercise entry with the sets/reps from the first occurrence
-      const exerciseMap = new Map<number, (typeof exercises)[0]>();
+      const exerciseMap = new Map<string, (typeof exercises)[0]>();
       dayExercises.forEach((exercise) => {
-        if (!exerciseMap.has(exercise.exerciseId)) {
-          exerciseMap.set(exercise.exerciseId, exercise);
+        if (!exerciseMap.has(exercise.exerciseSlug)) {
+          exerciseMap.set(exercise.exerciseSlug, exercise);
         }
       });
 
       // Convert to ExerciseInWorkout format
       const exercisesInWorkout: ExerciseInWorkout[] = [];
-      for (const [exerciseId, exerciseData] of exerciseMap) {
-        const databaseExerciseId = exerciseIdMap.get(exerciseId);
-        if (!databaseExerciseId) {
-          console.warn(`Exercise ID ${exerciseId} not found in database, skipping`);
-          continue;
-        }
-
-        // Get exercise from database to determine if it's bodyweight
-        const dbExercise = allExercises.find((ex) => ex.id === databaseExerciseId);
+      for (const [exerciseSlug, exerciseData] of exerciseMap) {
+        const databaseExerciseId = appExerciseId(exerciseSlug);
+        const dbExercise = exerciseById.get(databaseExerciseId);
         if (!dbExercise) {
-          console.warn(`Exercise with ID ${databaseExerciseId} not found, skipping`);
+          console.warn(`Exercise slug ${exerciseSlug} not found in database, skipping`);
           continue;
         }
 

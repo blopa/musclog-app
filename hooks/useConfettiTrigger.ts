@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { Platform } from 'react-native';
 
 import { ConfettiActivity, useConfettiInteractions } from '@/context/ConfettiInteractionsContext';
+
+const CONFETTI_VISIBLE_MS = Platform.OS === 'web' ? 5000 : 8000;
 
 export function useConfettiTrigger() {
   const { completeActivity } = useConfettiInteractions();
@@ -51,7 +54,7 @@ export function useConfettiTrigger() {
             if (isMountedRef.current) {
               setShowConfetti(false);
             }
-          }, 5000);
+          }, CONFETTI_VISIBLE_MS);
         };
 
         if (!isMountedRef.current) {

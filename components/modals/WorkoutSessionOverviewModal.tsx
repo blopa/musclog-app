@@ -17,9 +17,14 @@ import { Button } from '@/components/theme/Button';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { isWorkoutType } from '@/constants/workoutTypes';
 import WorkoutLog from '@/database/models/WorkoutLog';
-import WorkoutLogSet from '@/database/models/WorkoutLogSet';
+import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
 import { useActiveWorkout } from '@/hooks/useActiveWorkout';
 import { useTheme } from '@/hooks/useTheme';
+import {
+  isPerformedWorkoutSet,
+  isResolvedWorkoutSet,
+  isSkippedWorkoutSet,
+} from '@/utils/workoutSetCompletion';
 
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
@@ -328,7 +333,7 @@ export default function WorkoutSessionOverviewModal({
     }
 
     // Group sets by exercise
-    const exerciseGroups = new Map<string, WorkoutLogSet[]>();
+    const exerciseGroups = new Map<string, EnrichedWorkoutLogSet[]>();
     sets.forEach((set) => {
       const exerciseId = set.exerciseId ?? '';
       if (!exerciseGroups.has(exerciseId)) {
@@ -345,14 +350,15 @@ export default function WorkoutSessionOverviewModal({
         return;
       }
 
-      const completedSets = exerciseSets.filter((set) => (set.difficultyLevel ?? 0) > 0).length;
-      const skippedSets = exerciseSets.filter((set) => set.isSkipped).length;
+      const completedSets = exerciseSets.filter(isPerformedWorkoutSet).length;
+      const skippedSets = exerciseSets.filter(isSkippedWorkoutSet).length;
+      const resolvedSets = exerciseSets.filter(isResolvedWorkoutSet).length;
       const totalSets = exerciseSets.length;
 
       let status: ExerciseStatus;
       if (skippedSets === totalSets) {
         status = 'skipped';
-      } else if (completedSets === totalSets) {
+      } else if (resolvedSets === totalSets) {
         status = 'completed';
       } else if (completedSets > 0) {
         status = 'in-progress';

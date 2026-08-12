@@ -168,6 +168,22 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
 
   const canExport = !requireExportEncryption || databaseFailedToInitiate;
 
+  const backupTitle = (backup: BackupFileMeta) => {
+    if (backup.reason === 'exercise-catalogue') {
+      return t('settings.advancedSettings.localBackups.exerciseCatalogueBackup');
+    }
+    if (backup.reason === 'pre-restore') {
+      return t('settings.advancedSettings.localBackups.preRestoreBackup');
+    }
+    if (backup.fromVersion !== null && backup.toVersion !== null) {
+      return t('settings.advancedSettings.localBackups.backupFromTo', {
+        from: backup.fromVersion,
+        to: backup.toVersion,
+      });
+    }
+    return t('settings.advancedSettings.localBackups.automaticBackup');
+  };
+
   const menuItems: BottomPopUpMenuItem[] = [
     {
       icon: (props) => <MaterialIcons name="share" {...props} />,
@@ -237,10 +253,7 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
                 <View className="flex-row items-center justify-between p-4">
                   <View className="flex-1 gap-1">
                     <Text className="text-base font-semibold text-text-primary">
-                      {t('settings.advancedSettings.localBackups.backupFromTo', {
-                        from: backup.fromVersion || '?',
-                        to: backup.toVersion || '?',
-                      })}
+                      {backupTitle(backup)}
                     </Text>
                     <Text className="text-sm text-text-secondary">
                       {t('settings.advancedSettings.localBackups.backupDate', {

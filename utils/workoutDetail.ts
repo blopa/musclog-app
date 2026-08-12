@@ -19,6 +19,7 @@ import { displayWeightKgNumeric } from './formatDisplayWeight';
 import { getWeightUnitI18nKey } from './units';
 import { calculateSetVolume } from './workoutCalculator';
 import { getWorkoutIcon } from './workoutHistory';
+import { isPerformedWorkoutSet, isSkippedWorkoutSet } from './workoutSetCompletion';
 
 /**
  * Set data for workout detail display.
@@ -29,6 +30,7 @@ export type WorkoutSet = Pick<WorkoutLogSet, 'reps' | 'repsInReserve'> & {
   weight: string; // Formatted weight string
   partial: string; // Formatted partial reps count
   isHighlighted: boolean;
+  isSkipped: boolean;
 };
 
 /**
@@ -42,6 +44,7 @@ export type WorkoutExercise = Pick<Exercise, 'id' | 'name'> & {
   iconBgColor: string;
   icon: LucideIcon | ComponentType<{ size: number; color: string }>;
   sets: WorkoutSet[];
+  isSkipped: boolean;
 };
 
 export type WorkoutDetailData = {
@@ -212,7 +215,7 @@ export async function transformWorkoutToDetailData(
   const personalRecords = await WorkoutAnalytics.detectPersonalRecords(workoutLog, bodyWeightKg);
   const prSetIds = new Set<string>();
   personalRecords.forEach((pr) => {
-    sets.forEach((set) => {
+    sets.filter(isPerformedWorkoutSet).forEach((set) => {
       if (set.exerciseId === pr.exerciseId) {
         const exercise = exerciseMap.get(pr.exerciseId);
         const setVol = calculateSetVolume(
@@ -259,7 +262,8 @@ export async function transformWorkoutToDetailData(
     const sortedSets = exerciseSets.sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0));
 
     const workoutSets: WorkoutSet[] = sortedSets.map((set, index) => {
-      const isHighlighted = prSetIds.has(set.id);
+      const isSkipped = isSkippedWorkoutSet(set);
+      const isHighlighted = !isSkipped && prSetIds.has(set.id);
       return {
         setNumber: index + 1,
         weight: formatWeight(set.weight ?? 0, isBodyweight, t, units, appNumberLocale),
@@ -267,10 +271,12 @@ export async function transformWorkoutToDetailData(
         partial: (set.partials ?? 0) > 0 ? (set.partials ?? 0).toString() : '-',
         repsInReserve: set.repsInReserve ?? 0,
         isHighlighted,
+        isSkipped,
       };
     });
 
-    const timeSpent = exerciseSets.length * 2;
+    const loggedSetCount = exerciseSets.filter(isPerformedWorkoutSet).length;
+    const timeSpent = loggedSetCount * 2;
 
     return {
       id: exerciseId,
@@ -281,6 +287,7 @@ export async function transformWorkoutToDetailData(
       iconBgColor: iconData.iconBgOpacity,
       icon: iconData.icon,
       sets: workoutSets,
+      isSkipped: loggedSetCount === 0,
     };
   });
 

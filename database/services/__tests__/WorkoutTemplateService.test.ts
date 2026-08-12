@@ -1312,14 +1312,14 @@ describe('WorkoutTemplateService', () => {
 
     it('imports rep ranges, rest timers, day names, and superset groups', async () => {
       const bench = createMockExercise({
-        id: 'bench-id',
+        id: 'fx-Cable_Chest_Press',
         name: 'Cable Bench Press',
         equipmentType: 'cable',
         loadMultiplier: 1,
         orderIndex: 0,
       });
       const pullUp = createMockExercise({
-        id: 'pull-up-id',
+        id: 'fx-Pullups',
         name: 'Cable Pull Up',
         equipmentType: 'bodyweight',
         loadMultiplier: 0,
@@ -1354,7 +1354,7 @@ describe('WorkoutTemplateService', () => {
         dayNames: { '1': 'Upper A' },
         exercises: [
           {
-            exerciseId: 1,
+            exerciseSlug: 'Cable_Chest_Press',
             day: 1,
             sets: 4,
             minReps: 4,
@@ -1364,7 +1364,7 @@ describe('WorkoutTemplateService', () => {
             notes: '1–2 RIR',
           },
           {
-            exerciseId: 2,
+            exerciseSlug: 'Pullups',
             day: 1,
             sets: 4,
             minReps: 3,
@@ -1390,14 +1390,14 @@ describe('WorkoutTemplateService', () => {
               name: 'Upper A',
               exercises: [
                 expect.objectContaining({
-                  id: 'bench-id',
+                  id: 'fx-Cable_Chest_Press',
                   groupId: 'Test Cable Program-day-1-A',
                   notes: 'Target 4–6 reps • 1–2 RIR',
                   reps: 6,
                   restTimeAfter: 45,
                 }),
                 expect.objectContaining({
-                  id: 'pull-up-id',
+                  id: 'fx-Pullups',
                   groupId: 'Test Cable Program-day-1-A',
                   notes: 'Target 3–6 reps',
                   reps: 6,
@@ -1428,7 +1428,7 @@ describe('WorkoutTemplateService', () => {
 
       const result = await WorkoutTemplateService.createWorkoutsFromJsonTemplate({
         title: 'Unavailable Program',
-        exercises: [{ exerciseId: 999, day: 1, sets: 3, reps: 10 }],
+        exercises: [{ exerciseSlug: 'Missing_Exercise', day: 1, sets: 3, reps: 10 }],
       });
 
       expect(result).toEqual({ plan: null, templates: [] });

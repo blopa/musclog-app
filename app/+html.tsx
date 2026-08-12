@@ -6,6 +6,7 @@ import esEsWebsite from '@/lang/locales/es-es/website.json';
 import nlNlWebsite from '@/lang/locales/nl-nl/website.json';
 import ptBrWebsite from '@/lang/locales/pt-br/website.json';
 import ruRuWebsite from '@/lang/locales/ru-ru/website.json';
+import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
 
 /**
  * Root HTML runs only in Node (static render). Use `public/` static files
@@ -39,26 +40,6 @@ const LANDING_TRANSLATIONS: Record<string, LandingCopy> = {
   'pt-BR': ptBrWebsite.website.landing,
   'ru-RU': ruRuWebsite.website.landing,
 };
-
-/** Prefix URLs when `experiments.baseUrl` is set (e.g. `/musclog-app`). */
-function withExpoBaseUrl(path: string): string {
-  if (/^https?:\/\//i.test(path)) {
-    return path;
-  }
-
-  const base = process.env.EXPO_BASE_URL;
-  if (base == null || base === '') {
-    return path;
-  }
-
-  const basePath = String(base).replace(/^\/+|\/+$/g, '');
-  const normalized = path.startsWith('/') ? path : `/${path}`;
-  if (normalized === `/${basePath}` || normalized.startsWith(`/${basePath}/`)) {
-    return normalized;
-  }
-
-  return `/${basePath}${normalized}`;
-}
 
 /**
  * Patches the landing panel text from localStorage before React boots.

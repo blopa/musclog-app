@@ -24,6 +24,7 @@ import {
   calculatePreviewVolumeFromTemplateSets,
   calculateSessionVolumeFromSets,
 } from '@/utils/workoutCalculator';
+import { isPerformedWorkoutSet, isSkippedWorkoutSet } from '@/utils/workoutSetCompletion';
 
 import { FullScreenModal } from './FullScreenModal';
 
@@ -216,17 +217,17 @@ export function WorkoutSessionHistoryModal({
             reps: set.reps ?? 0,
             partials: set.partials || 0,
             isCurrent,
-            isSkipped: set.isSkipped ?? false,
+            isSkipped: isSkippedWorkoutSet(set),
           };
         });
 
         // Calculate set progress (100% if completed, 0% if not started, partial if current)
         const setProgress = exerciseSets.map((set) => {
-          if (set.isSkipped) {
+          if (isSkippedWorkoutSet(set)) {
             return 0;
           }
 
-          if ((set.difficultyLevel ?? 0) > 0) {
+          if (isPerformedWorkoutSet(set)) {
             return 100; // Completed
           } else if (set.setOrder === currentSetOrder) {
             return 50; // Current set (in progress)
@@ -280,7 +281,7 @@ export function WorkoutSessionHistoryModal({
     if (isPreview) {
       return 0; // No completed sets in preview
     }
-    return sets.filter((set) => (set.difficultyLevel ?? 0) > 0).length;
+    return sets.filter(isPerformedWorkoutSet).length;
   }, [isPreview, sets]);
 
   let shareDuration: string | null = null;

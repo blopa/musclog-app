@@ -91,6 +91,15 @@ single user action.
    `database/preMigrationBackup.ts` (runtime backup paths) imports **no**
    `expo-sqlite`, so the invariant is structural, not advisory.
 
+   The exercise-catalogue data cutover is different from a schema migration: it
+   runs after WatermelonDB is live. `LegacyExerciseCatalogueMigration` therefore
+   creates its required portable JSON snapshot through `dumpDatabase()` and the
+   live WatermelonDB connection. If that snapshot cannot be stored and indexed,
+   the destructive retirement is aborted and retried on a later boot. The backup
+   metadata index is the commit point: native and web commit it before pruning old
+   payloads, and remove a newly written payload if the index commit fails. This
+   preserves every previously indexed recovery point across partial failures.
+
 4. **A different database file is fine.** `database/services/MigrationService.ts`
    opens the _legacy_ `workoutLoggerDatabase.db` with `expo-sqlite`. That's a
    separate file WatermelonDB never touches, so there is no shared-file lock

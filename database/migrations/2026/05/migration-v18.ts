@@ -1,6 +1,11 @@
 import { unsafeExecuteSql } from '@nozbe/watermelondb/Schema/migrations';
 
-import exercisesData from '@/data/exercisesData.json';
+// The FROZEN 256-entry catalogue this migration was written against — deliberately not
+// `data/exercisesData.json`, which now holds the 873-entry free-exercise-db catalogue whose
+// rows use `fx-<slug>` ids. A historical migration must keep seeing the data that existed
+// when it shipped; running the new catalogue's statements against a pre-v18 database would
+// stamp 873 unrelated rows and insert exercise_muscles links for ids that never existed.
+import exercisesData from '@/data/legacyExercisesData.json';
 
 // NOTE: unsafeExecuteSql is silently ignored on the web (LokiJS) adapter.
 // If this migration is needed on web, a JS-based fallback must be added separately.
@@ -22,7 +27,7 @@ const dataUpdateSteps = exercisesData.map((ex) =>
 // Rebuild exercise_muscles from the JSON's targetMuscles arrays.
 // muscle_id is resolved by name via subquery — if the muscles catalogue hasn't been
 // seeded yet (fresh install migration order), the SELECT returns nothing and the
-// INSERT is a no-op. backfillExerciseMuscles() handles that case during app seeding.
+// INSERT is a no-op. AppExerciseCatalogueService repairs that case during app seeding.
 const exerciseMuscleSteps = [
   // Wipe existing app exercise links; Phase 1 updated exercise_id references but we
   // do a full rebuild from the canonical JSON for a clean slate.

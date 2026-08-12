@@ -18,6 +18,7 @@ import type {
   GenerateWorkoutPlanResponse,
   ParsedWorkout,
 } from './coachAI';
+import { isPerformedWorkoutSet } from './workoutSetCompletion';
 
 /**
  * Process workout volume calculation response from AI
@@ -214,7 +215,7 @@ export async function buildWorkoutCompletedSummaryForLLM(
       await WorkoutService.getWorkoutWithDetails(workoutLogId);
     const exerciseMap = new Map(exercises.map((ex) => [ex.id, ex]));
     const byExercise = new Map<string, { reps: number; weight: number }[]>();
-    for (const set of sets) {
+    for (const set of sets.filter(isPerformedWorkoutSet)) {
       const ex = exerciseMap.get(set.exerciseId ?? '');
       if (!ex) {
         continue;
@@ -283,7 +284,7 @@ export async function prepareWorkoutDataForAI(workoutLogId: string): Promise<str
       { sets: typeof sets; exercise: (typeof exercises)[0] }
     >();
 
-    for (const set of sets) {
+    for (const set of sets.filter(isPerformedWorkoutSet)) {
       const exercise = exerciseMap.get(set.exerciseId);
       if (!exercise) {
         continue;
@@ -366,7 +367,8 @@ export async function processParsedWorkouts(
             exerciseId: matchedExercise.id,
             reps: set.reps,
             weight: set.weight,
-            isNew: true,
+            completionStatus: 'performed' as const,
+            isNew: true as const,
             setOrder: setCount,
           });
         }

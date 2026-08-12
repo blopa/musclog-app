@@ -23,7 +23,7 @@ const WORKOUT_LOG_SET_COLUMNS = [
   'rest_time_after',
   'reps_in_reserve',
   'difficulty_level',
-  'is_skipped',
+  'completion_status',
   'set_type',
   'set_order',
   'deleted_at',
@@ -118,13 +118,16 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
               externalId: null,
             });
           }
+
           const leMap = logExs.map((le) => ({
             id: le.id,
             exerciseId: le.exerciseId,
             groupId: le.groupId,
             notes: le.notes,
           }));
+
           const enrichedSets = WorkoutService.buildEnrichedSetsFromRecords(leMap, rawSetsArr);
+
           return from(
             transformWorkoutToDetailData(
               log,

@@ -1,21 +1,11 @@
 import { Q } from '@nozbe/watermelondb';
 
-import exercisesData from '@/data/exercisesData.json';
+import { getExerciseCatalogue } from '@/data/exerciseCatalogue';
 import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import ExerciseMuscle, { type MuscleRole } from '@/database/models/ExerciseMuscle';
 import Muscle from '@/database/models/Muscle';
-import i18n, { EXERCISES_JSON } from '@/lang/lang';
-
-interface ExerciseDataEntry {
-  exerciseIndex: number;
-  targetMuscles?: string[];
-}
-
-interface ExerciseLocaleEntry {
-  exerciseIndex: number;
-  name: string;
-}
+import i18n from '@/lang/lang';
 
 // Canonical muscle catalogue — single source of truth for seeding.
 // displayNameKey must resolve via i18n.t(); all keys exist under exercises.muscleGroups.* in
@@ -349,8 +339,10 @@ export class MuscleService {
   }
 
   /**
-   * Backfills exercise_muscles for all app exercises that currently have no
-   * muscle links. Reads targetMuscles from the bundled JSON (all languages).
+   * Backfills exercise_muscles for user exercises that currently have no muscle links.
+   * Bundled catalogue links are owned and exactly reconciled by
+   * `AppExerciseCatalogueService`; this fallback only preserves links for user exercises
+   * imported from older databases by matching their canonical English name.
    * Safe to call repeatedly — exercises that already have links are skipped.
    *
    * @param muscleNameToId Optional pre-fetched map from seedMuscles(). When
@@ -358,48 +350,37 @@ export class MuscleService {
    *   where the map is already in hand).
    */
   static async backfillExerciseMuscles(muscleNameToId?: Map<string, string>): Promise<void> {
-    // Build exerciseIndex->targetMuscles from the shared data file
-    const indexToTargetMuscles = new Map<number, string[]>(
-      (exercisesData as ExerciseDataEntry[])
-        .filter((d) => d.targetMuscles?.length)
-        .map((d) => [d.exerciseIndex, d.targetMuscles!])
+    const nameToTargetMuscles = new Map<string, string[]>(
+      getExerciseCatalogue('en-US').map(({ name, targetMuscles }) => [
+        name.toLowerCase(),
+        targetMuscles,
+      ])
     );
-
-    // Build name->targetMuscles across all locales using locale names + data file muscles
-    const nameToTargetMuscles = new Map<string, string[]>();
-    for (const lang of Object.keys(EXERCISES_JSON) as (keyof typeof EXERCISES_JSON)[]) {
-      for (const ex of EXERCISES_JSON[lang] as ExerciseLocaleEntry[]) {
-        const muscles = indexToTargetMuscles.get(ex.exerciseIndex);
-        if (muscles?.length) {
-          nameToTargetMuscles.set(ex.name.toLowerCase(), muscles);
-        }
-      }
-    }
 
     const nameToId = muscleNameToId ?? (await MuscleService.seedMuscles());
 
-    const appExercises = await database
+    const activeExercises = await database
       .get<Exercise>('exercises')
-      .query(Q.where('source', 'app'), Q.where('deleted_at', Q.eq(null)))
+      .query(Q.where('source', 'user'), Q.where('deleted_at', Q.eq(null)))
       .fetch();
 
-    if (appExercises.length === 0) {
+    if (activeExercises.length === 0) {
       return;
     }
 
-    // Scope the exercise_muscles scan to app exercise IDs only so we never
-    // load links belonging to user-created exercises.
-    const appExerciseIds = appExercises.map((ex) => ex.id);
+    const activeExerciseIds = new Set(activeExercises.map((exercise) => exercise.id));
     const linkedExerciseIds = new Set(
       (
         await database
           .get<ExerciseMuscle>('exercise_muscles')
-          .query(Q.where('exercise_id', Q.oneOf(appExerciseIds)), Q.where('deleted_at', Q.eq(null)))
+          .query(Q.where('deleted_at', Q.eq(null)))
           .fetch()
-      ).map((l) => l.exerciseId)
+      )
+        .filter((link) => activeExerciseIds.has(link.exerciseId))
+        .map((link) => link.exerciseId)
     );
 
-    const toProcess = appExercises.filter((ex) => !linkedExerciseIds.has(ex.id));
+    const toProcess = activeExercises.filter((exercise) => !linkedExerciseIds.has(exercise.id));
 
     if (toProcess.length === 0) {
       return;

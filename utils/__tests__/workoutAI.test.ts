@@ -1,6 +1,11 @@
-import { ExerciseService, WorkoutAnalytics } from '@/database/services';
+import { ExerciseService, WorkoutAnalytics, WorkoutService } from '@/database/services';
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
-import { processWorkoutPlanResponse } from '@/utils/workoutAI';
+import {
+  buildWorkoutCompletedSummaryForLLM,
+  prepareWorkoutDataForAI,
+  processParsedWorkouts,
+  processWorkoutPlanResponse,
+} from '@/utils/workoutAI';
 
 jest.mock('lucide-react-native', () => ({ Dumbbell: jest.fn() }));
 
@@ -8,7 +13,12 @@ jest.mock('@/database/services', () => ({
   ChatService: { saveMessage: jest.fn() },
   ExerciseService: { getAllExercises: jest.fn() },
   WorkoutAnalytics: { getProgressiveOverloadData: jest.fn() },
-  WorkoutService: { updateWorkoutSets: jest.fn() },
+  WorkoutService: {
+    completeWorkout: jest.fn(),
+    getWorkoutWithDetails: jest.fn(),
+    startFreeWorkout: jest.fn(),
+    updateWorkoutSets: jest.fn(),
+  },
 }));
 
 jest.mock('@/database/services/WorkoutTemplateService', () => ({
@@ -22,6 +32,7 @@ jest.mock('@/lang/lang', () => ({
 
 const mockExerciseService = ExerciseService as jest.Mocked<typeof ExerciseService>;
 const mockWorkoutAnalytics = WorkoutAnalytics as jest.Mocked<typeof WorkoutAnalytics>;
+const mockWorkoutService = WorkoutService as jest.Mocked<typeof WorkoutService>;
 const mockWorkoutTemplateService = WorkoutTemplateService as jest.Mocked<
   typeof WorkoutTemplateService
 >;
@@ -79,5 +90,91 @@ describe('processWorkoutPlanResponse', () => {
       planId: 'plan-1',
       planName: 'My Workout Plan',
     });
+  });
+});
+
+describe('processParsedWorkouts', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockExerciseService.getAllExercises.mockResolvedValue([
+      { id: 'bench', name: 'Bench Press', equipmentType: 'barbell' } as any,
+    ]);
+    mockWorkoutService.startFreeWorkout.mockResolvedValue({ id: 'imported-workout' } as any);
+    mockWorkoutService.completeWorkout.mockResolvedValue({
+      workoutLog: { id: 'imported-workout' },
+      personalRecords: [],
+    } as any);
+  });
+
+  it('marks imported sets as logged so completion does not discard them', async () => {
+    await processParsedWorkouts([
+      {
+        title: 'Imported Push Day',
+        date: '2026-08-12',
+        exercises: [{ name: 'Bench Press', sets: [{ reps: 8, weight: 80 }] }],
+      } as any,
+    ]);
+
+    expect(mockWorkoutService.updateWorkoutSets).toHaveBeenCalledWith('imported-workout', [
+      expect.objectContaining({
+        exerciseId: 'bench',
+        reps: 8,
+        weight: 80,
+        completionStatus: 'performed',
+        isNew: true,
+      }),
+    ]);
+    expect(mockWorkoutService.completeWorkout).toHaveBeenCalledWith('imported-workout');
+  });
+});
+
+describe('completed workout AI summaries', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockWorkoutService.getWorkoutWithDetails.mockResolvedValue({
+      workoutLog: {
+        workoutName: 'Push Day',
+        startedAt: Date.UTC(2026, 7, 12, 18),
+        completedAt: Date.UTC(2026, 7, 12, 19),
+      },
+      exercises: [
+        { id: 'bench', name: 'Bench Press', muscleGroup: 'chest' },
+        { id: 'fly', name: 'Cable Fly', muscleGroup: 'chest' },
+      ],
+      sets: [
+        {
+          exerciseId: 'bench',
+          reps: 8,
+          weight: 80,
+          completionStatus: 'performed',
+          difficultyLevel: 7,
+        },
+        {
+          exerciseId: 'fly',
+          reps: 12,
+          weight: 30,
+          completionStatus: 'skipped',
+        },
+      ],
+    } as any);
+  });
+
+  it('omits skipped sets from completion and analysis payloads', async () => {
+    const completionSummary = await buildWorkoutCompletedSummaryForLLM('workout-1', {
+      volumeStr: '800 kg',
+      durationStr: '60 min',
+      personalRecords: 0,
+    });
+    const analysisPayload = await prepareWorkoutDataForAI('workout-1');
+
+    expect(completionSummary).toContain('Bench Press');
+    expect(completionSummary).not.toContain('Cable Fly');
+    expect(JSON.parse(analysisPayload).exercises).toEqual([
+      {
+        name: 'Bench Press',
+        muscleGroup: 'chest',
+        sets: [{ reps: 8, weight: 80, partials: 0, repsInReserve: 0 }],
+      },
+    ]);
   });
 });

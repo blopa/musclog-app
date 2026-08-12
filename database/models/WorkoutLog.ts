@@ -2,6 +2,12 @@ import { Model, Q, Query } from '@nozbe/watermelondb';
 import { children, field, relation, writer } from '@nozbe/watermelondb/decorators';
 
 import { calculateWorkoutVolume, type ExerciseWithSets } from '@/utils/workoutCalculator';
+import {
+  assertValidWorkoutSetDifficultyLevel,
+  isPerformedWorkoutSet,
+  isPlannedWorkoutSet,
+  type WorkoutSetCompletionStatus,
+} from '@/utils/workoutSetCompletion';
 
 import Exercise from './Exercise';
 import WorkoutLogExercise from './WorkoutLogExercise';
@@ -83,7 +89,7 @@ export default class WorkoutLog extends Model {
     const exerciseById = new Map(exercises.map((e) => [e.id, e]));
 
     // Fetch all sets in a single query (getAllSets already filters deleted)
-    const allSets = await this.getAllSets();
+    const allSets = (await this.getAllSets()).filter(isPerformedWorkoutSet);
     const setsByLogExId = new Map<string, WorkoutLogSet[]>();
     for (const set of allSets) {
       const id = set.logExerciseId;
@@ -118,8 +124,8 @@ export default class WorkoutLog extends Model {
       partials?: number;
       restTimeAfter?: number;
       repsInReserve?: number;
-      difficultyLevel?: number;
-      isSkipped?: boolean;
+      difficultyLevel?: number | null;
+      completionStatus?: WorkoutSetCompletionStatus;
       setType?: string;
     }
   ): Promise<void> {
@@ -152,17 +158,12 @@ export default class WorkoutLog extends Model {
       if (data.repsInReserve !== undefined) {
         updatedSet.repsInReserve = data.repsInReserve;
       }
-      if (data.isSkipped !== undefined) {
-        updatedSet.isSkipped = data.isSkipped;
-      }
       if (data.difficultyLevel !== undefined) {
-        const isActuallySkipped = data.isSkipped ?? updatedSet.isSkipped;
-        if (data.difficultyLevel === 0 && isActuallySkipped) {
-          // Allow 0 only for skipped sets
-        } else if (data.difficultyLevel < 1 || data.difficultyLevel > 10) {
-          throw new Error('Difficulty level must be between 1 and 10');
-        }
-        updatedSet.difficultyLevel = data.difficultyLevel;
+        assertValidWorkoutSetDifficultyLevel(data.difficultyLevel);
+        updatedSet.difficultyLevel = data.difficultyLevel ?? undefined;
+      }
+      if (data.completionStatus !== undefined) {
+        updatedSet.completionStatus = data.completionStatus;
       }
       if (data.setType !== undefined) {
         updatedSet.setType = data.setType;
@@ -216,7 +217,8 @@ export default class WorkoutLog extends Model {
       logSet.partials = partials ?? 0;
       logSet.restTimeAfter = 0;
       logSet.repsInReserve = 0;
-      logSet.difficultyLevel = 0;
+      logSet.difficultyLevel = undefined;
+      logSet.completionStatus = 'planned';
       logSet.setType = 'normal';
       logSet.setOrder = newSetOrder;
       logSet.createdAt = now;
@@ -276,8 +278,8 @@ export default class WorkoutLog extends Model {
         logSet.partials = 0;
         logSet.restTimeAfter = 60;
         logSet.repsInReserve = 0;
-        logSet.difficultyLevel = 0;
-        logSet.isSkipped = false;
+        logSet.difficultyLevel = undefined;
+        logSet.completionStatus = 'planned';
         logSet.setType = 'normal';
         logSet.setOrder = maxSetOrder + i + 1;
         logSet.createdAt = now;
@@ -327,12 +329,23 @@ export default class WorkoutLog extends Model {
 
     const totalVolume = await this.calculateVolume(bodyWeightKg);
     const now = Date.now();
+    const sets = await this.getAllSets();
 
-    await this.update((log) => {
+    // Preserve planned sets in history, but mark every unsubmitted one skipped so the detail
+    // screen can distinguish the original plan from work the user actually performed.
+    const skippedSetUpdates = sets.filter(isPlannedWorkoutSet).map((set) =>
+      set.prepareUpdate((record) => {
+        record.completionStatus = 'skipped';
+        record.updatedAt = now;
+      })
+    );
+    const completedLog = this.prepareUpdate((log) => {
       log.completedAt = now;
       log.totalVolume = totalVolume;
       log.updatedAt = now;
     });
+
+    await this.collection.database.batch(...skippedSetUpdates, completedLog);
   }
 
   @writer
@@ -345,9 +358,11 @@ export default class WorkoutLog extends Model {
       if (feedback.exhaustionLevel !== undefined) {
         log.exhaustionLevel = feedback.exhaustionLevel;
       }
+
       if (feedback.workoutScore !== undefined) {
         log.workoutScore = feedback.workoutScore;
       }
+
       log.updatedAt = now;
     });
   }

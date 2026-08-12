@@ -32,6 +32,8 @@ import {
 import { createPreRestoreBackup } from './preMigrationBackup';
 import { validateExportDump, type ValidationResult } from './schemaToZod';
 import { ExerciseService, FoodPortionService, MuscleService, SettingsService } from './services';
+import { AppExerciseCatalogueService } from './services/AppExerciseCatalogueService';
+import { normalizeWorkoutSetCompletionForImport } from './workoutSetImportNormalization';
 
 export type ExportDump = {
   _exportVersion: number;
@@ -39,6 +41,10 @@ export type ExportDump = {
 };
 
 type ImportRow = Record<string, unknown>;
+
+function isImportRow(value: unknown): value is ImportRow {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
 
 const NUTRITION_SNAPSHOT_NUMBER_KEYS = [
   'logged_calories',
@@ -137,16 +143,28 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     jsonString = await decrypt(jsonString, decryptionPhrase.trim());
   }
 
-  const parsed = JSON.parse(jsonString);
+  const parsed: unknown = JSON.parse(jsonString);
+
+  // Pre-v26 exports used RPE=0 and is_skipped as an implicit lifecycle. Normalize that
+  // relationship-aware legacy shape once, before validation and persistence.
+  normalizeWorkoutSetCompletionForImport(parsed);
 
   // Pre-validate migration: exports before v16 store is_drop_set (boolean) instead of
   // set_type (string) on workout_log_sets and workout_template_sets.
   // Normalise in-place before Zod validation so old backups pass schema validation.
-  if (typeof parsed._exportVersion === 'number' && parsed._exportVersion < 16) {
+  if (
+    isImportRow(parsed) &&
+    typeof parsed._exportVersion === 'number' &&
+    parsed._exportVersion < 16
+  ) {
     for (const table of ['workout_log_sets', 'workout_template_sets'] as const) {
       const rows = parsed[table];
       if (Array.isArray(rows)) {
         for (const row of rows) {
+          if (!isImportRow(row)) {
+            continue;
+          }
+
           if (row.set_type == null) {
             row.set_type = row.is_drop_set ? 'drop_set' : 'normal';
           }
@@ -401,19 +419,20 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     });
   }
 
-  // Rebuild the muscle catalogue and app-exercise muscle links. Backups created
-  // before muscles/exercise_muscles were added to RESTORE_ORDER don't contain them,
-  // and the boot-time seeder is skipped after restore (SEEDING_COMPLETE_KEY is
-  // restored as 'true'), so without this the tables would stay empty forever.
-  // Both calls are idempotent, so running them on newer backups is a no-op.
+  // Rebuild the muscle catalogue. Backups created before muscles/exercise_muscles
+  // were added to RESTORE_ORDER do not contain it.
   const muscleNameToId = await MuscleService.seedMuscles();
-  await MuscleService.backfillExerciseMuscles(muscleNameToId);
 
   // Backfill exercises.source for backups created before export version 2 (when
   // the source column didn't exist yet). Safe no-op if all rows already have a value.
   if (dbData._exportVersion < 2) {
     await ExerciseService.backfillExerciseSources();
   }
+
+  // Reconcile every bundled row and its exact target-muscle set, then preserve the
+  // old English-name fallback only for imported user exercises.
+  await AppExerciseCatalogueService.sync(muscleNameToId);
+  await MuscleService.backfillExerciseMuscles(muscleNameToId);
 
   // Backfill food_portions.source for backups created before export version 3 (when
   // the source column didn't exist yet). Safe no-op if all rows already have a value.

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { WorkoutService } from '@/database/services';
+import { WorkoutService, type WorkoutSetUpdate } from '@/database/services/WorkoutService';
 import { handleError } from '@/utils/handleError';
 
 export function useEditWorkoutSets() {
@@ -9,23 +9,13 @@ export function useEditWorkoutSets() {
 
   const saveSets = async (
     workoutId: string,
-    updates: {
-      setId: string;
-      reps?: number;
-      weight?: number;
-      partials?: number;
-      restTimeAfter?: number;
-      repsInReserve?: number;
-      difficultyLevel?: number;
-      isSkipped?: boolean;
-      setType?: string;
-    }[],
+    updates: WorkoutSetUpdate[],
     deletedSetIds?: string[]
   ) => {
     setIsSaving(true);
     setError(null);
     try {
-      const res = await WorkoutService.updateWorkoutSets(workoutId, updates as any, deletedSetIds);
+      const res = await WorkoutService.updateWorkoutSets(workoutId, updates, deletedSetIds);
       setIsSaving(false);
       return res;
     } catch (err) {

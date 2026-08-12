@@ -15,7 +15,6 @@ import FoodFoodPortion from '@/database/models/FoodFoodPortion';
 import Setting from '@/database/models/Setting';
 import {
   ChatService,
-  ExerciseService,
   FoodPortionService,
   FoodService,
   type MigrationProgressInfo,
@@ -24,6 +23,7 @@ import {
   MuscleService,
   SettingsService,
 } from '@/database/services';
+import { AppExerciseCatalogueService } from '@/database/services/AppExerciseCatalogueService';
 import i18n, { AVAILABLE_LANGUAGES, EN_US } from '@/lang/lang';
 import { getEncryptionKey } from '@/utils/encryption';
 import { getDefaultUnits } from '@/utils/units';
@@ -249,8 +249,7 @@ async function runSeedProductionData(options?: SeedProductionDataOptions): Promi
     // Check if seeding has already been completed
     const seedingComplete = await AsyncStorage.getItem(SEEDING_COMPLETE_KEY);
     if (seedingComplete === 'true') {
-      // Repair any exercises that were seeded without an image due to a prior bug
-      await ExerciseService.repairMissingExerciseImages();
+      // Catalogue reconciliation belongs to the boot-migration chain, off this fast path.
       console.log('Production data seeding already completed, skipping');
       // Signal that the DB is ready for queries (fast-path: no reset was needed).
       markDbReady();
@@ -320,21 +319,12 @@ async function runSeedProductionData(options?: SeedProductionDataOptions): Promi
     const muscleNameToId = await MuscleService.seedMuscles();
     console.log(`Muscle catalogue ready (${muscleNameToId.size} muscles)`);
 
-    // 3. Seed common exercises from JSON first; migration will then add any from the old DB that are not already present (by name)
-    const existingExercises = await ExerciseService.getAllExercises();
-
-    if (existingExercises.length > 0) {
-      console.log(`Skipping exercise seeding: ${existingExercises.length} exercises already exist`);
-    } else {
-      const createdExercises = await ExerciseService.createCommonExercises(muscleNameToId);
-      console.log(`Seeded ${createdExercises.length} common exercises`);
-    }
-
-    // 4. Link exercises to muscles (pass the already-fetched map to skip a redundant seedMuscles call)
-    await MuscleService.backfillExerciseMuscles(muscleNameToId);
+    // 3. Reconcile catalogue rows and their exact muscle-link sets as one invariant.
+    const catalogueReport = await AppExerciseCatalogueService.sync(muscleNameToId);
+    console.log(`Seeded ${catalogueReport.exercisesCreated} catalogue exercises`);
     console.log('Exercise-muscle links ready');
 
-    // 5. Seed initial chat messages with welcome messages for each context using i18n
+    // 4. Seed initial chat messages with welcome messages for each context using i18n
     const existingMessages = await ChatService.getAllMessages(1, 0);
 
     if (existingMessages.length === 0) {

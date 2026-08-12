@@ -6,6 +6,10 @@ import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import {
+  toPerformedWorkoutLogSetSnapshots,
+  type WorkoutLogSetSnapshot,
+} from '@/database/workoutLogSetSnapshot';
+import {
   localCalendarWeekIndexSince,
   localDayKeyPlusCalendarDaysFromNow,
   MS_PER_SOLAR_DAY,
@@ -15,7 +19,7 @@ import { calculateEstimated1RMForSet, calculateSetVolume } from '@/utils/workout
 import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
 
-type EnrichedSet = WorkoutLogSet & {
+type EnrichedSet = WorkoutLogSetSnapshot & {
   exerciseId: string;
   workoutLogId: string;
 };
@@ -66,7 +70,11 @@ export class WorkoutAnalytics {
     const logExerciseIds = activeExercises.map((le) => le.id);
     const rawSets = await database
       .get<WorkoutLogSet>('workout_log_sets')
-      .query(Q.where('log_exercise_id', Q.oneOf(logExerciseIds)), Q.where('deleted_at', Q.eq(null)))
+      .query(
+        Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
+        Q.where('completion_status', 'performed'),
+        Q.where('deleted_at', Q.eq(null))
+      )
       .fetch();
 
     const logExerciseMap = new Map<string, { exerciseId: string; workoutLogId: string }>();
@@ -74,28 +82,13 @@ export class WorkoutAnalytics {
       logExerciseMap.set(le.id, { exerciseId: le.exerciseId, workoutLogId: le.workoutLogId });
     });
 
-    // Build plain objects from _raw so we always read actual DB values
-    return rawSets.map((set) => {
+    return toPerformedWorkoutLogSetSnapshots(rawSets).map((set) => {
       const data = logExerciseMap.get(set.logExerciseId);
-      const r = (set as unknown as { _raw: Record<string, unknown> })._raw;
       return {
-        id: set.id,
-        logExerciseId: (r.log_exercise_id as string) ?? set.logExerciseId,
-        reps: (r.reps as number) ?? 0,
-        weight: (r.weight as number) ?? 0,
-        partials: r.partials as number | undefined,
-        restTimeAfter: (r.rest_time_after as number) ?? 0,
-        repsInReserve: (r.reps_in_reserve as number) ?? 0,
-        isSkipped: r.is_skipped as boolean | undefined,
-        difficultyLevel: (r.difficulty_level as number) ?? 0,
-        setType: (r.set_type as string) ?? 'normal',
-        setOrder: (r.set_order as number) ?? 0,
-        createdAt: (r.created_at as number) ?? 0,
-        updatedAt: (r.updated_at as number) ?? 0,
-        deletedAt: r.deleted_at as number | undefined,
+        ...set,
         exerciseId: data?.exerciseId ?? '',
         workoutLogId: data?.workoutLogId ?? '',
-      } as EnrichedSet;
+      };
     });
   }
 
@@ -122,7 +115,11 @@ export class WorkoutAnalytics {
     const logExerciseIds = logExercises.map((le) => le.id);
     const rawSets = await database
       .get<WorkoutLogSet>('workout_log_sets')
-      .query(Q.where('log_exercise_id', Q.oneOf(logExerciseIds)), Q.where('deleted_at', Q.eq(null)))
+      .query(
+        Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
+        Q.where('completion_status', 'performed'),
+        Q.where('deleted_at', Q.eq(null))
+      )
       .fetch();
 
     const logExerciseMap = new Map<string, { exerciseId: string; workoutLogId: string }>();
@@ -130,28 +127,13 @@ export class WorkoutAnalytics {
       logExerciseMap.set(le.id, { exerciseId: le.exerciseId, workoutLogId: le.workoutLogId });
     });
 
-    // Build plain objects from _raw so we always read actual DB values
-    return rawSets.map((set) => {
+    return toPerformedWorkoutLogSetSnapshots(rawSets).map((set) => {
       const data = logExerciseMap.get(set.logExerciseId);
-      const r = (set as unknown as { _raw: Record<string, unknown> })._raw;
       return {
-        id: set.id,
-        logExerciseId: (r.log_exercise_id as string) ?? set.logExerciseId,
-        reps: (r.reps as number) ?? 0,
-        weight: (r.weight as number) ?? 0,
-        partials: r.partials as number | undefined,
-        restTimeAfter: (r.rest_time_after as number) ?? 0,
-        repsInReserve: (r.reps_in_reserve as number) ?? 0,
-        isSkipped: r.is_skipped as boolean | undefined,
-        difficultyLevel: (r.difficulty_level as number) ?? 0,
-        setType: (r.set_type as string) ?? 'normal',
-        setOrder: (r.set_order as number) ?? 0,
-        createdAt: (r.created_at as number) ?? 0,
-        updatedAt: (r.updated_at as number) ?? 0,
-        deletedAt: r.deleted_at as number | undefined,
+        ...set,
         exerciseId: data?.exerciseId ?? '',
         workoutLogId: data?.workoutLogId ?? '',
-      } as EnrichedSet;
+      };
     });
   }
 
@@ -348,7 +330,11 @@ export class WorkoutAnalytics {
     const logExerciseIds = logExercises.map((le) => le.id);
     const rawSets = await database
       .get<WorkoutLogSet>('workout_log_sets')
-      .query(Q.where('log_exercise_id', Q.oneOf(logExerciseIds)), Q.where('deleted_at', Q.eq(null)))
+      .query(
+        Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
+        Q.where('completion_status', 'performed'),
+        Q.where('deleted_at', Q.eq(null))
+      )
       .fetch();
 
     // Create a map to get workoutLogId from logExerciseId
@@ -357,27 +343,10 @@ export class WorkoutAnalytics {
       logExerciseMap.set(le.id, le.workoutLogId);
     });
 
-    // Build plain objects from _raw so we always read actual DB values
-    const sets = rawSets.map((set) => {
-      const r = (set as unknown as { _raw: Record<string, unknown> })._raw;
-      return {
-        id: set.id,
-        logExerciseId: (r.log_exercise_id as string) ?? set.logExerciseId,
-        reps: (r.reps as number) ?? 0,
-        weight: (r.weight as number) ?? 0,
-        partials: r.partials as number | undefined,
-        restTimeAfter: (r.rest_time_after as number) ?? 0,
-        repsInReserve: (r.reps_in_reserve as number) ?? 0,
-        isSkipped: r.is_skipped as boolean | undefined,
-        difficultyLevel: (r.difficulty_level as number) ?? 0,
-        setType: (r.set_type as string) ?? 'normal',
-        setOrder: (r.set_order as number) ?? 0,
-        createdAt: (r.created_at as number) ?? 0,
-        updatedAt: (r.updated_at as number) ?? 0,
-        deletedAt: r.deleted_at as number | undefined,
-        workoutLogId: logExerciseMap.get(set.logExerciseId) ?? '',
-      };
-    });
+    const sets = toPerformedWorkoutLogSetSnapshots(rawSets).map((set) => ({
+      ...set,
+      workoutLogId: logExerciseMap.get(set.logExerciseId) ?? '',
+    }));
 
     // Filter by timeframe if provided
     let validSets = sets;
@@ -483,6 +452,7 @@ export class WorkoutAnalytics {
       .get<WorkoutLogSet>('workout_log_sets')
       .query(
         Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
+        Q.where('completion_status', 'performed'),
         Q.where('reps', 1),
         Q.where('weight', Q.gte(targetWeight)),
         Q.where('deleted_at', Q.eq(null))
@@ -494,7 +464,7 @@ export class WorkoutAnalytics {
     }
 
     const workoutLogIds = Array.from(
-      new Set(sets.map((s) => logExerciseMap.get(s.logExerciseId) ?? '').filter(Boolean))
+      new Set(sets.map((set) => logExerciseMap.get(set.logExerciseId) ?? '').filter(Boolean))
     );
 
     const workouts = await database
@@ -561,23 +531,16 @@ export class WorkoutAnalytics {
 
     const rawSets = await database
       .get<WorkoutLogSet>('workout_log_sets')
-      .query(Q.where('log_exercise_id', Q.oneOf(logExerciseIds)), Q.where('deleted_at', Q.eq(null)))
+      .query(
+        Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
+        Q.where('completion_status', 'performed'),
+        Q.where('deleted_at', Q.eq(null))
+      )
       .fetch();
 
     const logExerciseMap = new Map(validLogExercises.map((le) => [le.id, le.workoutLogId]));
 
-    // Build plain objects from _raw so we always read actual DB values
-    const sets = rawSets.map((set) => {
-      const r = (set as unknown as { _raw: Record<string, unknown> })._raw;
-      return {
-        logExerciseId: (r.log_exercise_id as string) ?? set.logExerciseId,
-        weight: (r.weight as number) ?? 0,
-        reps: (r.reps as number) ?? 0,
-        repsInReserve: (r.reps_in_reserve as number) ?? 0,
-        setOrder: (r.set_order as number) ?? 0,
-        createdAt: (r.created_at as number) ?? 0,
-      };
-    });
+    const sets = toPerformedWorkoutLogSetSnapshots(rawSets);
 
     // Group by workout and pick the true first set (lowest set_order, then earliest created_at)
     const setsByWorkout = new Map<string, typeof sets>();
@@ -714,7 +677,27 @@ export class WorkoutAnalytics {
       return { value: 0, unit: 'perWeek' };
     }
 
-    const workoutLogIds = [...new Set(logExercises.map((le) => le.workoutLogId))];
+    const logExerciseIds = logExercises.map((logExercise) => logExercise.id);
+    const loggedSets = await database
+      .get<WorkoutLogSet>('workout_log_sets')
+      .query(
+        Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
+        Q.where('completion_status', 'performed'),
+        Q.where('deleted_at', Q.eq(null))
+      )
+      .fetch();
+    const performedLogExerciseIds = new Set(loggedSets.map((set) => set.logExerciseId));
+    const workoutLogIds = [
+      ...new Set(
+        logExercises
+          .filter((logExercise) => performedLogExerciseIds.has(logExercise.id))
+          .map((logExercise) => logExercise.workoutLogId)
+      ),
+    ];
+
+    if (workoutLogIds.length === 0) {
+      return { value: 0, unit: 'perWeek' };
+    }
     const rangeStartDayMs = localDayKeyPlusCalendarDaysFromNow(-weeks * 7);
 
     const completedLogs = await database

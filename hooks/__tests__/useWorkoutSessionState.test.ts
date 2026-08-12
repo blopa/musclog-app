@@ -63,20 +63,20 @@ describe('useWorkoutSessionState', () => {
         exerciseId: 'ex-1',
         weight: 12,
         reps: 11,
+        completionStatus: 'performed',
         difficultyLevel: 8,
         repsInReserve: 0,
         setOrder: 1,
-        isSkipped: false,
       },
       {
         id: 'set-2',
         exerciseId: 'ex-1',
         weight: 18,
         reps: 14,
-        difficultyLevel: 0,
+        completionStatus: 'planned',
+        difficultyLevel: undefined,
         repsInReserve: 2,
         setOrder: 2,
-        isSkipped: false,
       },
     ];
 
@@ -141,20 +141,20 @@ describe('useWorkoutSessionState', () => {
         exerciseId: 'ex-1',
         weight: 12,
         reps: 11,
+        completionStatus: 'performed',
         difficultyLevel: 8,
         repsInReserve: 0,
         setOrder: 1,
-        isSkipped: false,
       },
       {
         id: 'set-2',
         exerciseId: 'ex-1',
         weight: 18,
         reps: 11, // Planned for 11 reps
-        difficultyLevel: 0,
+        completionStatus: 'planned',
+        difficultyLevel: undefined,
         repsInReserve: 0, // Target 0 RIR
         setOrder: 2,
-        isSkipped: false,
       },
     ];
 

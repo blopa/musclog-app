@@ -1,73 +1,12 @@
 import { Q } from '@nozbe/watermelondb';
 
-import exercisesData from '@/data/exercisesData.json';
-import { database } from '@/database';
+import { database } from '@/database/database-instance';
 import Exercise, {
   type EquipmentType,
   type ExerciseSource,
   type MechanicType,
   type MuscleGroup,
 } from '@/database/models/Exercise';
-import ExerciseMuscle from '@/database/models/ExerciseMuscle';
-import i18n, { EN_US, EXERCISES_JSON } from '@/lang/lang';
-import { buildExerciseCloudUrl } from '@/utils/exerciseImage';
-
-import { MuscleService } from './MuscleService';
-
-const EXERCISE_JSON_MUSCLE_GROUPS = [
-  'abdomen',
-  'arms',
-  'back',
-  'chest',
-  'core',
-  'full_body',
-  'glutes',
-  'legs',
-  'shoulders',
-] as const;
-
-type ExerciseJsonMuscleGroup = (typeof EXERCISE_JSON_MUSCLE_GROUPS)[number];
-
-interface ExerciseJsonData {
-  exerciseIndex: number;
-  name: string;
-  description: string;
-  muscleGroup: ExerciseJsonMuscleGroup;
-  equipmentType: EquipmentType;
-  mechanicType: MechanicType;
-  targetMuscles?: string[];
-  loadMultiplier?: number;
-}
-
-const exercisesDataMap = new Map(exercisesData.map((d) => [d.exerciseIndex, d]));
-
-function buildMergedExercisesJson(locale: keyof typeof EXERCISES_JSON): ExerciseJsonData[] {
-  const result: ExerciseJsonData[] = [];
-  for (const localeEntry of EXERCISES_JSON[locale]) {
-    const data = exercisesDataMap.get(localeEntry.exerciseIndex);
-    if (!data) {
-      continue;
-    }
-
-    result.push({
-      exerciseIndex: localeEntry.exerciseIndex,
-      name: localeEntry.name,
-      description: localeEntry.description,
-      muscleGroup: data.muscleGroup as ExerciseJsonMuscleGroup,
-      equipmentType: data.equipmentType as EquipmentType,
-      mechanicType: data.mechanicType as MechanicType,
-      targetMuscles: data.targetMuscles,
-      loadMultiplier: data.loadMultiplier,
-    });
-  }
-
-  return result;
-}
-
-const exercisesLocale = (
-  i18n.language in EXERCISES_JSON ? i18n.language : EN_US
-) as keyof typeof EXERCISES_JSON;
-const exercisesJson = buildMergedExercisesJson(exercisesLocale);
 
 export class ExerciseService {
   /**
@@ -160,7 +99,7 @@ export class ExerciseService {
     try {
       const exercise = await database.get<Exercise>('exercises').find(id);
       return exercise.deletedAt ? null : exercise;
-    } catch (error) {
+    } catch {
       return null;
     }
   }
@@ -257,36 +196,6 @@ export class ExerciseService {
   }
 
   /**
-   * Get all muscle groups
-   */
-  static async getMuscleGroups(): Promise<string[]> {
-    const exercises = await database
-      .get<Exercise>('exercises')
-      .query(Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-
-    // Extract unique muscle groups
-    const muscleGroups = [...new Set(exercises.map((e) => e.muscleGroup ?? ''))].filter((m) => m);
-    return muscleGroups.sort();
-  }
-
-  /**
-   * Get all equipment types
-   */
-  static async getEquipmentTypes(): Promise<string[]> {
-    const exercises = await database
-      .get<Exercise>('exercises')
-      .query(Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-
-    // Extract unique equipment types
-    const equipmentTypes = [...new Set(exercises.map((e) => e.equipmentType ?? ''))].filter(
-      (t) => t
-    );
-    return equipmentTypes.sort();
-  }
-
-  /**
    * Get exercises with pagination (for Manage Exercise Data modal).
    * Ordered by created_at desc. Most recent first.
    */
@@ -308,7 +217,8 @@ export class ExerciseService {
 
   /**
    * Get exercises with pagination and optional filters (for Replace Exercise modal).
-   * Ordered by name asc. Supports filter by muscle group and/or search by name.
+   * Ordered by catalogue position, then user name, with id as a stable page tiebreaker.
+   * Supports filter by muscle group and/or search by name.
    */
   static async getExercisesPaginatedFiltered(
     limit: number,
@@ -327,7 +237,8 @@ export class ExerciseService {
     query = query.extend(
       Q.sortBy('source', Q.asc),
       Q.sortBy('order_index', Q.asc),
-      Q.sortBy('name', Q.asc)
+      Q.sortBy('name', Q.asc),
+      Q.sortBy('id', Q.asc)
     );
     if (limit > 0) {
       if (offset > 0) {
@@ -360,21 +271,6 @@ export class ExerciseService {
   }
 
   /**
-   * Get exercises count
-   */
-  static async getExercisesCount(): Promise<number> {
-    const exercises = await database
-      .get<Exercise>('exercises')
-      .query(
-        Q.where('deleted_at', Q.eq(null)),
-        Q.take(0) // Just get count
-      )
-      .fetch();
-
-    return exercises.length;
-  }
-
-  /**
    * Duplicate exercise (create a copy)
    */
   static async duplicateExercise(id: string): Promise<Exercise> {
@@ -404,112 +300,12 @@ export class ExerciseService {
   }
 
   /**
-   * Infers equipment type from exercise name
-   * This is a helper to improve accuracy of equipment type mapping
-   */
-  private static inferEquipmentFromName(
-    name: string,
-    defaultEquipment: EquipmentType
-  ): EquipmentType {
-    const lowerName = name.toLowerCase();
-
-    if (lowerName.includes('dumbbell') || lowerName.includes('db ')) {
-      return 'dumbbell' as EquipmentType;
-    }
-    if (lowerName.includes('barbell') || lowerName.includes('bb ')) {
-      return 'barbell' as EquipmentType;
-    }
-    if (lowerName.includes('cable')) {
-      return 'cable' as EquipmentType;
-    }
-    if (lowerName.includes('kettlebell')) {
-      return 'kettlebell' as EquipmentType;
-    }
-    if (lowerName.includes('machine') || lowerName.includes(' smith')) {
-      return 'plate_machine' as EquipmentType;
-    }
-
-    return defaultEquipment;
-  }
-
-  /**
-   * Create common exercises from the exercises JSON data.
-   * Sets exercise.imageUrl to the GitHub raw-content cloud URL for the corresponding image.
-   * Returns array of created exercises.
-   */
-  static async createCommonExercises(muscleNameToId?: Map<string, string>): Promise<Exercise[]> {
-    const exercises: Exercise[] = [];
-    const now = Date.now();
-
-    const nameToId = muscleNameToId ?? (await MuscleService.seedMuscles());
-
-    await database.write(async () => {
-      const existingExercises = await database.get<Exercise>('exercises').query().fetch();
-      const existingNames = new Set(
-        existingExercises.map((ex: Exercise) => (ex.name ?? '').toLowerCase())
-      );
-
-      const filteredData = exercisesJson.filter(
-        (exerciseData) => !existingNames.has(exerciseData.name.toLowerCase())
-      );
-
-      // prepareCreate assigns IDs synchronously — collect both exercises and junction records
-      const exercisesToCreate = filteredData.map((exerciseData) => {
-        const jsonIndex = exercisesJson.indexOf(exerciseData);
-        const mechanicType = exerciseData.mechanicType;
-        const equipmentType = this.inferEquipmentFromName(
-          exerciseData.name,
-          exerciseData.equipmentType
-        );
-
-        return database.get<Exercise>('exercises').prepareCreate((exercise) => {
-          exercise.name = exerciseData.name;
-          exercise.description = exerciseData.description;
-          exercise.muscleGroup = exerciseData.muscleGroup as MuscleGroup;
-          exercise.equipmentType = equipmentType as EquipmentType;
-          exercise.mechanicType = mechanicType as MechanicType;
-          exercise.source = 'app';
-          exercise.loadMultiplier = exerciseData.loadMultiplier ?? 1.0;
-          exercise.imageUrl = buildExerciseCloudUrl(jsonIndex + 1);
-          exercise.createdAt = now;
-          exercise.updatedAt = now;
-          exercise.deletedAt = undefined;
-        });
-      });
-
-      // Prepare junction records using IDs already assigned by prepareCreate above
-      const junctionRecords = filteredData.flatMap((exerciseData, i) =>
-        (exerciseData.targetMuscles ?? []).flatMap((muscleName) => {
-          const muscleId = nameToId.get(muscleName);
-          if (!muscleId) {
-            return [];
-          }
-          return [
-            database.get<ExerciseMuscle>('exercise_muscles').prepareCreate((link) => {
-              link.exerciseId = exercisesToCreate[i].id;
-              link.muscleId = muscleId;
-              link.role = 'primary';
-              link.createdAt = now;
-              link.updatedAt = now;
-              link.deletedAt = undefined;
-            }),
-          ];
-        })
-      );
-
-      if (exercisesToCreate.length > 0) {
-        await database.batch(...exercisesToCreate, ...junctionRecords);
-        exercises.push(...exercisesToCreate);
-      }
-    });
-
-    return exercises;
-  }
-
-  /**
    * Backfills the `source` field for exercises that predate the column addition.
    * Exercises with no source are ordered by creation date (oldest first); the first
    * `appExerciseCount` are assumed to be app-seeded and get `'app'`, the rest get `'user'`.
+   * The default count is a frozen historical heuristic, not the current catalogue size.
+   * Anything it identifies as an old app exercise is retired by
+   * `LegacyExerciseCatalogueMigration` later in the same boot, which is the intended outcome.
    * Safe to call on every app start — it's a no-op when all exercises already have a source.
    */
   static async backfillExerciseSources(appExerciseCount: number = 183): Promise<void> {
@@ -536,318 +332,5 @@ export class ExerciseService {
     });
 
     console.log(`Backfilled source for ${unsourced.length} exercise(s)`);
-  }
-
-  /**
-   * Backfills order_index for app exercises based on their position in the JSON file.
-   * This ensures app exercises appear in the same order as the JSON file.
-   * Searches both enUS and ptBR JSON files since we don't know which language was used during seeding.
-   * order_index starts at 0 (but exercise images use index + 1).
-   * Safe to call repeatedly — already-correct exercises are left untouched.
-   */
-  static async backfillExerciseOrderIndex(): Promise<void> {
-    const nameToIndexMaps = (Object.keys(EXERCISES_JSON) as (keyof typeof EXERCISES_JSON)[]).map(
-      (lang) =>
-        new Map(buildMergedExercisesJson(lang).map((ex, index) => [ex.name.toLowerCase(), index]))
-    );
-
-    // Find app exercises without order_index (null/undefined)
-    const appExercises = await database
-      .get<Exercise>('exercises')
-      .query(Q.where('source', 'app'), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-
-    const toUpdate: { exercise: Exercise; jsonIndex: number }[] = [];
-
-    for (const exercise of appExercises) {
-      // Skip if already has order_index set (not null/undefined)
-      if (exercise.orderIndex !== null && exercise.orderIndex !== undefined) {
-        continue;
-      }
-
-      const exerciseName = (exercise.name ?? '').toLowerCase();
-      let jsonIndex: number | undefined;
-      for (const map of nameToIndexMaps) {
-        jsonIndex = map.get(exerciseName);
-        if (jsonIndex !== undefined) {
-          break;
-        }
-      }
-
-      if (jsonIndex !== undefined) {
-        toUpdate.push({ exercise, jsonIndex });
-      }
-    }
-
-    if (toUpdate.length === 0) {
-      return;
-    }
-
-    await database.write(async () => {
-      for (const { exercise, jsonIndex } of toUpdate) {
-        await exercise.update((e) => {
-          e.orderIndex = jsonIndex;
-        });
-      }
-    });
-
-    console.log(
-      `[backfillExerciseOrderIndex] Backfilled order_index for ${toUpdate.length} exercise(s)`
-    );
-  }
-
-  /**
-   * Repairs app exercises that are missing an imageUrl by setting the cloud URL.
-   * Safe to call on every app start — it's a no-op when all images are already present.
-   */
-  static async repairMissingExerciseImages(): Promise<void> {
-    const allExercises = await database.get<Exercise>('exercises').query().fetch();
-    const broken = allExercises.filter(
-      (ex) => !ex.imageUrl && !ex.deletedAt && ex.source === 'app'
-    );
-
-    if (broken.length === 0) {
-      return;
-    }
-
-    await database.write(async () => {
-      for (const exercise of broken) {
-        const jsonIndex = exercisesJson.findIndex(
-          (j) => j.name.toLowerCase() === (exercise.name ?? '').toLowerCase()
-        );
-
-        if (jsonIndex < 0) {
-          continue;
-        }
-
-        await exercise.update((e) => {
-          e.imageUrl = buildExerciseCloudUrl(jsonIndex + 1);
-        });
-      }
-    });
-
-    console.log(`Repaired ${broken.length} exercise image(s)`);
-  }
-
-  /**
-   * JS equivalent of the v7 SQL migration for the LokiJS (web) adapter, which
-   * silently ignores unsafeExecuteSql. Replaces file:// exercise image URIs with
-   * cloud URLs for all app-seeded exercises. Safe to call repeatedly — exits
-   * immediately when there is nothing to migrate.
-   */
-  static async migrateExerciseImageUrlsToCloud(): Promise<void> {
-    const allExercises = await database
-      .get<Exercise>('exercises')
-      .query(Q.where('source', 'app'))
-      .fetch();
-
-    const toMigrate = allExercises.filter(
-      (ex) => ex.imageUrl?.startsWith('file://') && ex.imageUrl.includes('/exercises/')
-    );
-
-    if (toMigrate.length === 0) {
-      return;
-    }
-
-    await database.write(async () => {
-      for (const exercise of toMigrate) {
-        const imageUrl = exercise.imageUrl ?? '';
-        const filename = imageUrl.split('/exercises/').pop() ?? '';
-
-        if (filename === 'exercise-fallback.png' || filename === 'fallback.png') {
-          await exercise.update((e) => {
-            e.imageUrl = undefined;
-          });
-          continue;
-        }
-
-        // Derive exercise number from filename (e.g. "1.png" → 1)
-        const exerciseNumber = parseInt(filename.replace('.png', ''), 10);
-        if (!Number.isNaN(exerciseNumber)) {
-          await exercise.update((e) => {
-            e.imageUrl = buildExerciseCloudUrl(exerciseNumber);
-          });
-          continue;
-        }
-
-        // Filename doesn't match expected pattern — fall back to JSON lookup
-        const jsonIndex = exercisesJson.findIndex(
-          (j) => j.name.toLowerCase() === (exercise.name ?? '').toLowerCase()
-        );
-        if (jsonIndex >= 0) {
-          await exercise.update((e) => {
-            e.imageUrl = buildExerciseCloudUrl(jsonIndex + 1);
-          });
-        }
-      }
-    });
-
-    console.log(`[migrateExerciseImageUrlsToCloud] Migrated ${toMigrate.length} exercise(s)`);
-  }
-
-  /**
-   * Returns the bundled JSON exercises that are missing from `existingExercises`,
-   * deduped by BOTH translated name and fixed id (`String(exerciseIndex)`).
-   *
-   * The id check is what keeps the sync idempotent. Entries are inserted with a
-   * fixed id, and the name check alone is locale-dependent — exercise names are
-   * translated per language, so after a language switch (or a JSON name refinement
-   * between versions) an already-present exercise looks "missing" by its new name
-   * while its id is unchanged. Skipping by id prevents re-inserting an existing
-   * primary key, which throws `UNIQUE constraint failed: exercises.id` (sqlite
-   * error 1555). `existingIds` intentionally includes rows of every source and
-   * soft-deleted rows, because those still occupy their id in SQLite.
-   */
-  private static computeMissingAppExercises(existingExercises: Exercise[]): ExerciseJsonData[] {
-    const existingNames = new Set(
-      existingExercises
-        .filter((exercise) => exercise.source === 'app' && exercise.deletedAt == null)
-        .map((exercise) => (exercise.name ?? '').toLowerCase())
-    );
-    const existingIds = new Set(existingExercises.map((exercise) => exercise.id));
-
-    return exercisesJson.filter(
-      (data) =>
-        !existingNames.has(data.name.toLowerCase()) && !existingIds.has(String(data.exerciseIndex))
-    );
-  }
-
-  /**
-   * Compares the bundled exercisesEnUS.json against the exercises in the DB that
-   * have source='app', and creates any entries that are missing. Intended to run
-   * on every app boot so that new exercises added to the JSON in a future update
-   * are automatically seeded for existing users.
-   *
-   * Safe to call repeatedly — exits immediately when nothing is missing.
-   * Returns the number of exercises created (0 on a no-op boot).
-   */
-  static async syncAppExercises(): Promise<number> {
-    // Fast path: skip all work — and avoid opening a writer — when nothing is
-    // missing. This read is only an optimization; the authoritative check runs
-    // inside the writer below, so a stale result here can never cause a bad write.
-    const preCheck = await database.get<Exercise>('exercises').query().fetch();
-    if (this.computeMissingAppExercises(preCheck).length === 0) {
-      return 0;
-    }
-
-    const now = Date.now();
-
-    // Ensure muscles are seeded and get the name→id map for junction records.
-    // Done before the write block below because seedMuscles() opens its own
-    // writer, and nesting database.write() calls deadlocks (see AGENTS.md).
-    const muscleNameToId = await MuscleService.seedMuscles();
-
-    let createdCount = 0;
-
-    // The existence check and the insert MUST happen inside a single writer.
-    // WatermelonDB serialises write blocks, so re-reading the existing rows here
-    // (instead of reusing the pre-check above) closes the TOCTOU window: a second
-    // concurrent syncAppExercises() run cannot read a stale "missing" set — before
-    // this run's rows are committed — and then re-insert a fixed id we already
-    // wrote, which would throw `sqlite error 1555 (UNIQUE constraint failed:
-    // exercises.id)`. Never read-then-write across a writer boundary here.
-    await database.write(async () => {
-      const existingExercises = await database.get<Exercise>('exercises').query().fetch();
-      const missing = this.computeMissingAppExercises(existingExercises);
-
-      if (missing.length === 0) {
-        return;
-      }
-
-      // prepareCreate assigns IDs synchronously
-      const prepared = missing.map((data) => {
-        const jsonIndex = exercisesJson.indexOf(data);
-        const mechanicType = data.mechanicType;
-        const equipmentType = this.inferEquipmentFromName(data.name, data.equipmentType);
-
-        return database.get<Exercise>('exercises').prepareCreate((exercise) => {
-          exercise._raw.id = String(data.exerciseIndex);
-          exercise.name = data.name;
-          exercise.description = data.description;
-          exercise.muscleGroup = data.muscleGroup as MuscleGroup;
-          exercise.equipmentType = equipmentType as EquipmentType;
-          exercise.mechanicType = mechanicType as MechanicType;
-          exercise.source = 'app';
-          exercise.loadMultiplier = data.loadMultiplier ?? 1.0;
-          exercise.orderIndex = jsonIndex;
-          exercise.imageUrl = buildExerciseCloudUrl(jsonIndex + 1);
-          exercise.createdAt = now;
-          exercise.updatedAt = now;
-          exercise.deletedAt = undefined;
-        });
-      });
-
-      const junctionRecords = missing.flatMap((data, i) =>
-        (data.targetMuscles ?? []).flatMap((muscleName) => {
-          const muscleId = muscleNameToId.get(muscleName);
-          if (!muscleId) {
-            return [];
-          }
-          return [
-            database.get<ExerciseMuscle>('exercise_muscles').prepareCreate((link) => {
-              link.exerciseId = prepared[i].id;
-              link.muscleId = muscleId;
-              link.role = 'primary';
-              link.createdAt = now;
-              link.updatedAt = now;
-              link.deletedAt = undefined;
-            }),
-          ];
-        })
-      );
-
-      await database.batch(...prepared, ...junctionRecords);
-      createdCount = prepared.length;
-    });
-
-    if (createdCount > 0) {
-      console.log(`[syncAppExercises] Created ${createdCount} new app exercise(s)`);
-    }
-
-    return createdCount;
-  }
-
-  /**
-   * Updates `loadMultiplier` for existing app exercises to match the latest values
-   * in the bundled JSON files. This ensures that users who already have these
-   * exercises in their DB get the refined scientific multipliers.
-   */
-  static async syncExerciseMultipliers(): Promise<void> {
-    // Map of name -> loadMultiplier from JSON
-    const multiplierMap = new Map(
-      exercisesJson.map((ex): [string, number] => [ex.name.toLowerCase(), ex.loadMultiplier ?? 1.0])
-    );
-
-    // Fetch all app exercises
-    const appExercises = await database
-      .get<Exercise>('exercises')
-      .query(Q.where('source', 'app'), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-
-    const toUpdate: { exercise: Exercise; newMultiplier: number }[] = [];
-
-    for (const exercise of appExercises) {
-      const newMultiplier = multiplierMap.get((exercise.name ?? '').toLowerCase());
-      if (
-        newMultiplier !== undefined &&
-        Math.abs((exercise.loadMultiplier ?? 0) - newMultiplier) > 0.001
-      ) {
-        toUpdate.push({ exercise, newMultiplier });
-      }
-    }
-
-    if (toUpdate.length === 0) {
-      return;
-    }
-
-    await database.write(async () => {
-      for (const { exercise, newMultiplier } of toUpdate) {
-        await exercise.update((e) => {
-          e.loadMultiplier = newMultiplier;
-        });
-      }
-    });
-
-    console.log(`[syncExerciseMultipliers] Updated ${toUpdate.length} exercise(s)`);
   }
 }

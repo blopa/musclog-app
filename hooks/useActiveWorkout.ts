@@ -2,14 +2,16 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import Exercise from '@/database/models/Exercise';
 import { WorkoutService } from '@/database/services';
+import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
 import { handleError } from '@/utils/handleError';
+import { isPlannedWorkoutSet } from '@/utils/workoutSetCompletion';
 import {
   getEffectiveOrder,
   getFirstUnloggedInEffectiveOrder,
   getNextSetInEffectiveOrder,
 } from '@/utils/workoutSupersetOrder';
 
-import { type EnrichedWorkoutLogSet, useWorkoutSessionState } from './useWorkoutSessionState';
+import { useWorkoutSessionState } from './useWorkoutSessionState';
 
 export type CurrentSetData = {
   set: EnrichedWorkoutLogSet;
@@ -99,12 +101,8 @@ export function useActiveWorkout(workoutLogId?: string) {
 
     if (targetExerciseId) {
       currentSet =
-        effectiveOrder.find(
-          (s) =>
-            s.exerciseId === targetExerciseId &&
-            (s.difficultyLevel ?? 0) === 0 &&
-            !(s.isSkipped ?? false)
-        ) ?? null;
+        effectiveOrder.find((s) => s.exerciseId === targetExerciseId && isPlannedWorkoutSet(s)) ??
+        null;
     }
     if (!currentSet) {
       currentSet = getFirstUnloggedInEffectiveOrder(sets);

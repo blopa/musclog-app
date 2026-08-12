@@ -11,6 +11,9 @@ web-build/
 # Generated web mirror of experiments.baseUrl (see scripts/sync-web-images.js)
 public/musclog-app/
 
+# Copied from node_modules on postinstall (see scripts/sync-web-wasm.js)
+public/zxing_reader.wasm
+
 # Native
 *.orig.*
 *.jks
@@ -18,6 +21,19 @@ public/musclog-app/
 *.p12
 *.key
 *.mobileprovision
+
+# Native build outputs and local tool caches. Keep the committed android/ios
+# source projects; EAS builds those directly, but none of these generated files.
+android/.gradle
+android/.kotlin
+android/build
+android/app/.cxx
+android/app/build
+modules/*/android/.gradle
+modules/*/android/build
+**/.gradle
+**/.cxx
+**/android/build
 
 # Metro
 .metro-health-check*
@@ -71,6 +87,11 @@ coverage/
 .cursor/
 .cursor/*
 
+.codex
+.claude
+.agents
+.github
+
 # ignore all files on data/dev
 data/dev/*
 /data/dev/*
@@ -94,26 +115,38 @@ devenv.local.yaml
 # --- Additional EAS Build exclusions ---
 
 # Large assets used only for documentation/marketing or fetched from cloud
-screenshots/
-docs/
-examples/
-data/examples/
-data/dev/
-data/usda/
-.git/
-.git/**
+screenshots
+docs
+examples
+data/examples
+data/dev
+data/usda
+
+# EAS CLI creates a shallow clone before applying .easignore. The exact .git
+# entry is required to remove that clone; `.git/` only ignores its contents.
+.git
 
 # ML training pipeline (~1.5 GB): Python scripts, raw recordings, intermediate
 # data, and the venv. The trained model is vendored at utils/repCountingModel.js
 # (npm run sync-ml-model), so the app build needs none of this.
-training-data/
+training-data
 
 # Game Boy ROM C sources, build artifacts, and tooling (~23 MB). The ROM the app
 # ships is assets/musclog.gbc (and public/images/musclog.gbc for the web emulator).
-gameboy/
+gameboy
+
+# Automated-test and development-only sources are not part of native bundles.
+**/__tests__
+__mocks__
+tests
+playwright.config.ts
+jest.config.js
+jest.setup.js
+jest.setup.jsdom.js
 
 # Exercise images (~64 MB) are fetched from GitHub raw content at runtime
 # (see utils/exerciseImage.ts). The fallback image lives at
 # assets/exercise-fallback.png (outside this dir), so it still ships.
-assets/exercises/
-assets/workouts/
+assets/exercises
+assets/workouts
+public/images/exercises

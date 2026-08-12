@@ -17,8 +17,7 @@ function set(
     setOrder,
     exerciseId,
     groupId: groupId ?? undefined,
-    difficultyLevel: 0,
-    isSkipped: false,
+    completionStatus: 'planned',
     ...overrides,
   };
 }
@@ -94,9 +93,9 @@ describe('workoutSupersetOrder', () => {
 
     it('skips completed and skipped sets', () => {
       const sets = [
-        set(1, 'exA', undefined, { difficultyLevel: 8 }),
+        set(1, 'exA', undefined, { completionStatus: 'performed', difficultyLevel: 8 }),
         set(2, 'exA'),
-        set(3, 'exA', undefined, { isSkipped: true }),
+        set(3, 'exA', undefined, { completionStatus: 'skipped' }),
         set(4, 'exB'),
       ];
       const first = getFirstUnloggedInEffectiveOrder(sets);
@@ -105,7 +104,7 @@ describe('workoutSupersetOrder', () => {
 
     it('returns first unlogged in superset order', () => {
       const sets = [
-        set(1, 'exA', 'g1', { difficultyLevel: 8 }),
+        set(1, 'exA', 'g1', { completionStatus: 'performed', difficultyLevel: 8 }),
         set(2, 'exA', 'g1'),
         set(3, 'exA', 'g1'),
         set(4, 'exB', 'g1'),

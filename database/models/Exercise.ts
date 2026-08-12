@@ -7,7 +7,7 @@ import WorkoutTemplateExercise from './WorkoutTemplateExercise';
 
 // Two vocabularies coexist in `muscle_group` and both must stay in this union.
 // The bundled catalogue and `CreateExerciseModal` write the coarse names
-// (`EXERCISE_JSON_MUSCLE_GROUPS` in `database/services/ExerciseService.ts`);
+// (declared by the generated entries in `data/exercisesData.json`);
 // exercises migrated from the legacy database carry the fine-grained ones.
 // Anything reading `muscleGroup` has to handle both — see the group sets in
 // `utils/workoutEnergyCalculator.ts`.

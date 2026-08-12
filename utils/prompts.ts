@@ -35,6 +35,7 @@ import { formatDisplayWeightKg } from './formatDisplayWeight';
 import { wrapUserContent } from './promptSanitizer';
 import { kgToDisplay, storedWeightToKg } from './unitConversion';
 import { getWeightUnit } from './units';
+import { isPerformedWorkoutSet, type WorkoutSetCompletionStatus } from './workoutSetCompletion';
 
 export const WORDS_SOFT_LIMIT = 100;
 export const BE_CONCISE_PROMPT = `Be concise and limit your message to ${WORDS_SOFT_LIMIT} words.`;
@@ -407,9 +408,10 @@ export const getMinimalWorkoutSummary = async (
 ): Promise<string> => {
   try {
     const details = await WorkoutService.getWorkoutWithDetails(workoutLogId);
-    const { workoutLog, sets, exercises } = details;
-    const exerciseCount = exercises.length;
-    const setCount = sets.length;
+    const { workoutLog, sets } = details;
+    const loggedSets = sets.filter(isPerformedWorkoutSet);
+    const exerciseCount = new Set(loggedSets.map((set) => set.exerciseId).filter(Boolean)).size;
+    const setCount = loggedSets.length;
 
     const resolvedUnits = units ?? (await SettingsService.getUnits());
     const totalVolumeKg = workoutLog.totalVolume ?? 0;
@@ -482,6 +484,7 @@ function buildWorkoutSummaryFromDetails(
       weight?: number;
       partials?: number;
       repsInReserve?: number;
+      completionStatus?: WorkoutSetCompletionStatus;
     }[];
     exercises: { id: string; name?: string; muscleGroup?: string }[];
   },
@@ -491,15 +494,17 @@ function buildWorkoutSummaryFromDetails(
   const { workoutLog, sets, exercises } = details;
   const exerciseMap = new Map(exercises.map((ex) => [ex.id, ex]));
   const exercisesByName = new Map<string, { sets: typeof sets; exercise: (typeof exercises)[0] }>();
-  for (const set of sets) {
+  for (const set of sets.filter(isPerformedWorkoutSet)) {
     const exercise = exerciseMap.get(set.exerciseId ?? '');
     if (!exercise) {
       continue;
     }
+
     const name = exercise.name ?? 'Unknown';
     if (!exercisesByName.has(name)) {
       exercisesByName.set(name, { sets: [], exercise });
     }
+
     exercisesByName.get(name)!.sets.push(set);
   }
 

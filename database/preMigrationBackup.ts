@@ -11,6 +11,7 @@ export type BackupFileMeta = {
   createdAt: string;
   fromVersion: number | null;
   toVersion: number | null;
+  reason?: 'schema-migration' | 'pre-restore' | 'exercise-catalogue';
   // Storage format of the backup file. 'sqlite' is a raw `VACUUM INTO` copy of
   // musclog.db (native pre-migration snapshots — fast to create, converted to
   // JSON lazily at restore/download time). 'json' (or absent, for older entries
@@ -82,25 +83,45 @@ async function deleteBackupFiles(file: BackupFileMeta): Promise<void> {
 export async function deleteBackup(uri: string): Promise<void> {
   const backups = await getStoredBackups();
   const backup = backups.find((b) => b.uri === uri);
-  // Fall back to a bare file delete when the index has no entry for this URI.
-  await (backup ? deleteBackupFiles(backup) : safeDelete(uri));
   await writeStoredBackups(backups.filter((b) => b.uri !== uri));
+  // Commit the index first so a metadata failure never leaves a broken indexed entry.
+  await (backup ? deleteBackupFiles(backup) : safeDelete(uri));
 }
 
-async function pruneOldBackups(backups: BackupFileMeta[]): Promise<BackupFileMeta[]> {
-  if (backups.length <= PRE_MIGRATION_BACKUPS_MAX_FILES) {
-    return backups;
-  }
-
+async function commitStoredBackups(backups: BackupFileMeta[]): Promise<BackupFileMeta[]> {
   const keep = backups.slice(0, PRE_MIGRATION_BACKUPS_MAX_FILES);
   const remove = backups.slice(PRE_MIGRATION_BACKUPS_MAX_FILES);
 
+  // Metadata is the commit point. Once it succeeds, stale files are harmless orphans
+  // if cleanup is interrupted; deleting files before it succeeds would break old entries.
+  await writeStoredBackups(keep);
   await Promise.all(remove.map(deleteBackupFiles));
   return keep;
 }
 
+/** Write a portable payload and atomically replace the native backup index. */
+export async function writePortableBackup(
+  backup: BackupFileMeta,
+  backupJson: string
+): Promise<void> {
+  const existing = await getStoredBackups();
+  const wasAlreadyIndexed = existing.some((entry) => entry.uri === backup.uri);
+
+  await writeAsStringAsync(backup.uri, backupJson);
+  try {
+    await commitStoredBackups([backup, ...existing.filter((entry) => entry.uri !== backup.uri)]);
+  } catch (error) {
+    if (!wasAlreadyIndexed) {
+      await safeDelete(backup.uri);
+    }
+
+    throw error;
+  }
+}
+
 async function executeBackup(
   nameInfix: string,
+  reason: BackupFileMeta['reason'],
   fromVersion: number | null = null,
   toVersion: number | null = null,
   jsonString?: string
@@ -113,15 +134,10 @@ async function executeBackup(
   const createdAtDate = new Date();
   const createdAt = createdAtDate.toISOString();
   const uri = `${cacheDirectory}${timestampSlug(createdAtDate)}-${nameInfix}.json`;
-
-  await writeAsStringAsync(uri, backupJson);
-
-  const existing = await getStoredBackups();
-  const next = await pruneOldBackups([
-    { uri, createdAt, fromVersion, toVersion, format: 'json' },
-    ...existing,
-  ]);
-  await writeStoredBackups(next);
+  await writePortableBackup(
+    { uri, createdAt, fromVersion, toVersion, format: 'json', reason },
+    backupJson
+  );
 
   return uri;
 }
@@ -144,11 +160,28 @@ export async function runWebPreMigrationBackupIfNeeded(): Promise<void> {}
  */
 export async function createPreRestoreBackup(): Promise<void> {
   try {
-    const uri = await executeBackup('pre-restore');
+    const uri = await executeBackup('pre-restore', 'pre-restore');
     console.log(`[PreRestoreBackup] Created: ${uri}`);
   } catch (error) {
     console.error('[PreRestoreBackup] Failed to create backup:', error);
     await reportBackupError(error, 'database.preRestoreBackup');
+  }
+}
+
+/**
+ * Create the required safety backup before the legacy exercise catalogue is retired.
+ * Unlike the best-effort pre-restore backup, failure is propagated so the caller can
+ * leave every legacy row untouched and retry the cutover on a later boot.
+ */
+export async function createPreExerciseCatalogueBackup(): Promise<string> {
+  try {
+    const uri = await executeBackup('pre-exercise-catalogue', 'exercise-catalogue');
+    console.log(`[PreExerciseCatalogueBackup] Created: ${uri}`);
+    return uri;
+  } catch (error) {
+    console.error('[PreExerciseCatalogueBackup] Failed to create backup:', error);
+    await reportBackupError(error, 'database.preExerciseCatalogueBackup');
+    throw error;
   }
 }
 
@@ -214,13 +247,18 @@ export function registerPreMigrationDbBackup(
       createdAt,
       fromVersion,
       toVersion,
+      reason: 'schema-migration',
       format: 'sqlite',
       asyncStorageUri,
     };
 
     const existing = await getStoredBackups();
-    const next = await pruneOldBackups([meta, ...existing]);
-    await writeStoredBackups(next);
+    try {
+      await commitStoredBackups([meta, ...existing.filter((backup) => backup.uri !== uri)]);
+    } catch (error) {
+      await deleteBackupFiles(meta);
+      throw error;
+    }
 
     completedBackupSignature = signature;
     console.log(`[PreMigrationBackup] Created (sqlite snapshot): ${uri}`);

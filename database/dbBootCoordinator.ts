@@ -9,7 +9,6 @@ import {
   ExerciseService,
   FoodPortionService,
   FoodService,
-  MuscleService,
   NutritionGoalService,
   NutritionService,
   SettingsService,
@@ -17,6 +16,9 @@ import {
   UserMetricService,
   WorkoutService,
 } from '@/database/services';
+import { AppExerciseCatalogueService } from '@/database/services/AppExerciseCatalogueService';
+import { LegacyExerciseCatalogueMigration } from '@/database/services/LegacyExerciseCatalogueMigration';
+import { WorkoutSetStatusMigration } from '@/database/services/WorkoutSetStatusMigration';
 import { captureBootException } from '@/utils/bootErrorReporting';
 import {
   advanceBootProgressStep,
@@ -100,25 +102,26 @@ const BOOT_MIGRATIONS: BootMigration[] = [
     run: () => FoodPortionService.backfillPortionSources(),
   },
   {
-    tag: 'ExerciseService.syncAppExercises',
-    run: async () => {
-      await ExerciseService.syncAppExercises();
-      await ExerciseService.syncExerciseMultipliers();
-    },
+    tag: 'AppExerciseCatalogueService.sync',
+    // The exact reconciler owns both catalogue rows and their complete muscle-link sets.
+    // It is resumable at every bounded batch boundary and runs before legacy retirement.
+    run: () => AppExerciseCatalogueService.sync(),
   },
   {
-    tag: 'ExerciseService.backfillExerciseOrderIndex',
-    run: () => ExerciseService.backfillExerciseOrderIndex(),
+    tag: 'LegacyExerciseCatalogueMigration.run',
+    // Retires the pre-free-exercise-db catalogue, cloning anything the user's workouts,
+    // logs or goals still point at. Idempotent by data — deliberately not `runOnce`,
+    // because restoring a backup rewrites AsyncStorage and could suppress the flag on a
+    // database that still needs the work. Not `webOnly`: web carries retired rows too.
+    run: () => LegacyExerciseCatalogueMigration.run(),
   },
   {
-    tag: 'MuscleService.backfillExerciseMuscles',
-    run: () => MuscleService.backfillExerciseMuscles(),
-  },
-  {
-    tag: 'ExerciseService.migrateExerciseImageUrlsToCloud',
-    // Web skipped the native migration path that rewrites bundled image URLs.
+    tag: 'WorkoutSetStatusMigration.run',
+    // Native rows are rewritten by migration-v26. LokiJS ignores unsafe SQL, so web performs
+    // the same rewrite in bounded batches once; an interrupted run resumes from null statuses.
     webOnly: true,
-    run: () => ExerciseService.migrateExerciseImageUrlsToCloud(),
+    runOnce: true,
+    run: () => WorkoutSetStatusMigration.run(),
   },
   {
     tag: 'WorkoutService.backfillNullTotalVolumes',

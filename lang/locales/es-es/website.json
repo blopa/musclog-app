@@ -927,6 +927,8 @@
       "clearFilters": "Limpiar filtros",
       "noResults": "Ningún ejercicio coincide con tus filtros.",
       "showing": "Mostrando {{count}} ejercicios",
+      "sourceCredit": "Estos ejercicios y sus fotos proceden de",
+      "sourceCreditSuffix": ", un proyecto de dominio público publicado bajo CC0.",
       "stat": {
         "exercises": "Ejercicios",
         "muscleGroups": "Grupos Musculares",

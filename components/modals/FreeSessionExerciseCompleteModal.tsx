@@ -15,6 +15,7 @@ import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 import { getExerciseIconConfig, isBodyweightExercise } from '@/utils/workout';
 import { calculateExerciseVolume } from '@/utils/workoutCalculator';
+import { isPerformedWorkoutSet, isResolvedWorkoutSet } from '@/utils/workoutSetCompletion';
 
 import { FullScreenModal } from './FullScreenModal';
 
@@ -70,12 +71,11 @@ export function FreeSessionExerciseCompleteModal({
 
   const { setsCompleted, totalVolumeKg } = useMemo(() => {
     const exerciseSets = sets.filter((s) => s.exerciseId === exerciseId);
-    const completed = exerciseSets.filter(
-      (s) => (s.difficultyLevel ?? 0) > 0 || (s.isSkipped ?? false)
-    ).length;
+    const completed = exerciseSets.filter(isResolvedWorkoutSet).length;
+    const performedSets = exerciseSets.filter(isPerformedWorkoutSet);
 
     const volume = calculateExerciseVolume(
-      exerciseSets.map((s) => ({
+      performedSets.map((s) => ({
         weight: s.weight ?? 0,
         reps: s.reps ?? 0,
         repsInReserve: s.repsInReserve ?? 0,

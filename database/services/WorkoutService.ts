@@ -1,4 +1,4 @@
-import { Q } from '@nozbe/watermelondb';
+import { type Model, Q } from '@nozbe/watermelondb';
 import convert, { type Unit } from 'convert';
 
 import { database } from '@/database/database-instance';
@@ -8,6 +8,10 @@ import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanRepository';
+import {
+  toWorkoutLogSetSnapshot,
+  type WorkoutLogSetSnapshot,
+} from '@/database/workoutLogSetSnapshot';
 import { writeWorkoutToHealthConnect } from '@/services/healthConnectWorkout';
 import {
   clearActiveWorkoutLogId,
@@ -21,6 +25,12 @@ import { jsDayToWeekdayIndex } from '@/utils/weekdays';
 import { getRollingWeeklyWorkoutRange } from '@/utils/weeklyWorkoutProgress';
 import { calculateWorkoutKcal, type MWEMInput } from '@/utils/workoutEnergyCalculator';
 import {
+  assertValidWorkoutSetDifficultyLevel,
+  isPerformedWorkoutSet,
+  isWorkoutSetCompletionStatus,
+  type WorkoutSetCompletionStatus,
+} from '@/utils/workoutSetCompletion';
+import {
   getFirstUnloggedInEffectiveOrder,
   getNextSetInEffectiveOrder,
 } from '@/utils/workoutSupersetOrder';
@@ -31,12 +41,37 @@ import { UserMetricService } from './UserMetricService';
 import { UserService } from './UserService';
 import { WorkoutAnalytics } from './WorkoutAnalytics';
 
-export type EnrichedWorkoutLogSet = WorkoutLogSet & {
+export type EnrichedWorkoutLogSet = WorkoutLogSetSnapshot & {
   exerciseId: string;
   groupId?: string;
   notes?: string;
   isAutoAdjusted?: boolean;
+  isSkipped: boolean;
 };
+
+type WorkoutSetUpdateFields = {
+  setId: string;
+  reps?: number;
+  weight?: number;
+  partials?: number;
+  restTimeAfter?: number;
+  repsInReserve?: number;
+  difficultyLevel?: number | null;
+  completionStatus?: WorkoutSetCompletionStatus;
+  setType?: string;
+  groupId?: string;
+  setOrder?: number;
+};
+
+export type WorkoutSetUpdate =
+  | (WorkoutSetUpdateFields & {
+      isNew: true;
+      exerciseId: string;
+    })
+  | (WorkoutSetUpdateFields & {
+      isNew?: false;
+      exerciseId?: never;
+    });
 
 export class WorkoutService {
   private static async retryAfterWorkoutRepair<T>(
@@ -465,10 +500,10 @@ export class WorkoutService {
           if (weightKg > 0 && heightCm > 0) {
             const { sets, exercises } = await this.getWorkoutWithDetails(workoutLogId);
             const exerciseMap = new Map(exercises.map((e) => [e.id, e]));
-            const setsByExercise = new Map<string, WorkoutLogSet[]>();
+            const setsByExercise = new Map<string, EnrichedWorkoutLogSet[]>();
             for (const set of sets) {
               // Only include completed and non-skipped sets for calorie calculation
-              if ((set.difficultyLevel ?? 0) === 0 || set.isSkipped) {
+              if (!isPerformedWorkoutSet(set)) {
                 continue;
               }
 
@@ -525,8 +560,8 @@ export class WorkoutService {
         const units = await SettingsService.getUnits();
         const { sets, exercises } = await this.getWorkoutWithDetails(workoutLogId);
         const exerciseMap = new Map(exercises.map((e) => [e.id, e]));
-        const byExercise = new Map<string, WorkoutLogSet[]>();
-        for (const set of sets) {
+        const byExercise = new Map<string, EnrichedWorkoutLogSet[]>();
+        for (const set of sets.filter(isPerformedWorkoutSet)) {
           const eid = set.exerciseId ?? '';
           if (!byExercise.has(eid)) {
             byExercise.set(eid, []);
@@ -636,14 +671,12 @@ export class WorkoutService {
 
   /**
    * Pure helper: build enriched set objects from log exercises and raw set records.
-   * Uses _raw on set records so we always read actual DB values.
+   * Uses the canonical snapshot adapter so every consumer sees the same DB projection.
    * Shared by getWorkoutWithDetails and reactive observable pipelines.
    */
   static buildEnrichedSetsFromRecords(
     logExercises: { id: string; exerciseId: string; groupId?: string; notes?: string }[],
-    rawSets: (
-      WorkoutLogSet | { id: string; logExerciseId: string; _raw: Record<string, unknown> }
-    )[]
+    rawSets: WorkoutLogSet[]
   ): EnrichedWorkoutLogSet[] {
     const logExerciseMap = new Map<
       string,
@@ -659,28 +692,16 @@ export class WorkoutService {
     });
 
     return rawSets.map((set) => {
-      const logExercise = logExerciseMap.get(set.logExerciseId);
-      const r = (set as unknown as { _raw: Record<string, unknown> })._raw;
+      const snapshot = toWorkoutLogSetSnapshot(set);
+      const logExercise = logExerciseMap.get(snapshot.logExerciseId);
 
       return {
-        id: set.id,
-        logExerciseId: (r.log_exercise_id as string) ?? set.logExerciseId,
-        reps: (r.reps as number) ?? 0,
-        weight: (r.weight as number) ?? 0,
-        partials: (r.partials as number | undefined) ?? (set as WorkoutLogSet).partials,
-        restTimeAfter: (r.rest_time_after as number) ?? 0,
-        repsInReserve: (r.reps_in_reserve as number) ?? 0,
-        isSkipped: (r.is_skipped as boolean | undefined) ?? (set as WorkoutLogSet).isSkipped,
-        difficultyLevel: (r.difficulty_level as number) ?? 0,
-        setType: (r.set_type as string) ?? 'normal',
-        setOrder: (r.set_order as number) ?? 0,
-        createdAt: (r.created_at as number) ?? 0,
-        updatedAt: (r.updated_at as number) ?? 0,
-        deletedAt: (r.deleted_at as number | undefined) ?? (set as WorkoutLogSet).deletedAt,
+        ...snapshot,
+        isSkipped: snapshot.completionStatus === 'skipped',
         exerciseId: logExercise?.exerciseId ?? '',
         groupId: logExercise?.groupId,
         notes: logExercise?.notes,
-      } as EnrichedWorkoutLogSet;
+      };
     });
   }
 
@@ -782,28 +803,47 @@ export class WorkoutService {
    */
   static async updateWorkoutSets(
     workoutLogId: string,
-    updates: {
-      setId: string;
-      exerciseId?: string; // Required for new sets
-      reps?: number;
-      weight?: number;
-      partials?: number;
-      restTimeAfter?: number;
-      repsInReserve?: number;
-      difficultyLevel?: number;
-      isSkipped?: boolean;
-      setType?: string;
-      groupId?: string;
-      isNew?: boolean; // Flag to indicate if this is a new set
-      setOrder?: number; // Optional: explicit ordering for the set
-    }[],
+    updates: WorkoutSetUpdate[],
     deletedSetIds?: string[] // IDs of sets to delete
   ): Promise<{ workoutLogId: string; totalVolume: number }> {
     try {
-      const workoutLog = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
+      const deletionIds = [...new Set(deletedSetIds ?? [])];
+      const existingUpdateIds = new Set<string>();
+      const desiredGroupIdByExerciseId = new Map<string, string>();
 
-      if (workoutLog.deletedAt) {
-        throw new Error('Workout log has been deleted');
+      for (const update of updates) {
+        assertValidWorkoutSetDifficultyLevel(update.difficultyLevel);
+        if (
+          update.completionStatus !== undefined &&
+          !isWorkoutSetCompletionStatus(update.completionStatus)
+        ) {
+          throw new Error(`Invalid workout set completion status: ${update.completionStatus}`);
+        }
+
+        if (update.isNew && update.exerciseId.length === 0) {
+          throw new Error('New workout sets require an exercise id');
+        }
+
+        if (!update.isNew) {
+          if (existingUpdateIds.has(update.setId)) {
+            throw new Error(`Workout set ${update.setId} appears more than once`);
+          }
+          existingUpdateIds.add(update.setId);
+        } else if (update.groupId !== undefined) {
+          const previousGroupId = desiredGroupIdByExerciseId.get(update.exerciseId);
+          if (
+            desiredGroupIdByExerciseId.has(update.exerciseId) &&
+            previousGroupId !== update.groupId
+          ) {
+            throw new Error(`Conflicting group ids for exercise ${update.exerciseId}`);
+          }
+          desiredGroupIdByExerciseId.set(update.exerciseId, update.groupId);
+        }
+      }
+
+      const overlappingSetId = deletionIds.find((setId) => existingUpdateIds.has(setId));
+      if (overlappingSetId) {
+        throw new Error(`Workout set ${overlappingSetId} cannot be updated and deleted together`);
       }
 
       const logSetsCollection = database.get<WorkoutLogSet>('workout_log_sets');
@@ -811,142 +851,165 @@ export class WorkoutService {
 
       // Perform direct writes so we can edit sets even if the workout is marked completed.
       // This intentionally bypasses WorkoutLog.updateSet which prevents edits on completed workouts.
-      await database.write(async (writer) => {
-        // Delete removed sets
-        if (deletedSetIds && deletedSetIds.length > 0) {
-          for (const deletedId of deletedSetIds) {
-            try {
-              const setToDelete = await logSetsCollection.find(deletedId);
-              // `WorkoutLogSet.markAsDeleted` is a @writer; call it via callWriter
-              // so it joins this transaction instead of nesting a new one.
-              await writer.callWriter(() => setToDelete.markAsDeleted());
-            } catch (err) {
-              console.warn(`Failed to delete set ${deletedId}:`, err);
-              handleError(err, 'WorkoutService.updateWorkoutLogExercises.deleteSet');
-            }
-          }
+      const workoutLog = await database.write(async () => {
+        const log = await database.get<WorkoutLog>('workout_logs').find(workoutLogId);
+        if (log.deletedAt) {
+          throw new Error('Workout log has been deleted');
         }
 
-        // Get existing log exercises for this workout
         const existingLogExercises = await logExercisesCollection
           .query(Q.where('workout_log_id', workoutLogId), Q.where('deleted_at', Q.eq(null)))
           .fetch();
-
-        // Create a map of exerciseId -> logExerciseId for quick lookup
-        const exerciseToLogExerciseMap = new Map<string, string>();
+        const logExerciseByExerciseId = new Map<string, WorkoutLogExercise>();
         existingLogExercises.forEach((le) => {
-          exerciseToLogExerciseMap.set(le.exerciseId, le.id);
+          logExerciseByExerciseId.set(le.exerciseId, le);
         });
+        const logExerciseIds = new Set(existingLogExercises.map((record) => record.id));
+        const setsToDelete: WorkoutLogSet[] = [];
+        const existingSetById = new Map<string, WorkoutLogSet>();
 
-        // Track max exercise order for creating new log exercises
-        let maxExerciseOrder = existingLogExercises.reduce(
-          (max, le) => Math.max(max, le.exerciseOrder ?? 0),
-          0
-        );
+        // Resolve every fallible lookup before preparing any model changes. A missing or
+        // cross-workout id therefore aborts without leaving a model in prepared state.
+        for (const deletedId of deletionIds) {
+          const setToDelete = await logSetsCollection.find(deletedId);
+          if (!logExerciseIds.has(setToDelete.logExerciseId)) {
+            throw new Error(`Workout set ${deletedId} does not belong to workout ${workoutLogId}`);
+          }
+          setsToDelete.push(setToDelete);
+        }
 
         for (const update of updates) {
-          try {
-            if (update.isNew && update.exerciseId) {
-              // For new sets, find or create the log exercise block
-              let logExerciseId = exerciseToLogExerciseMap.get(update.exerciseId);
+          if (update.isNew) {
+            continue;
+          }
 
-              if (!logExerciseId) {
-                // Create a new log exercise block for this exercise
-                maxExerciseOrder++;
-                const newLogExercise = await logExercisesCollection.create((le) => {
-                  le.workoutLogId = workoutLogId;
-                  le.exerciseId = update.exerciseId!;
-                  le.exerciseOrder = maxExerciseOrder;
-                  le.groupId = update.groupId;
-                  le.createdAt = Date.now();
-                  le.updatedAt = Date.now();
-                });
-                logExerciseId = newLogExercise.id;
-                exerciseToLogExerciseMap.set(update.exerciseId, logExerciseId);
-              } else if (update.groupId !== undefined) {
-                // Update groupId on existing log exercise if provided
-                const existingLE = existingLogExercises.find((le) => le.id === logExerciseId);
-                if (existingLE && existingLE.groupId !== update.groupId) {
-                  await existingLE.update((le) => {
-                    le.groupId = update.groupId;
-                    le.updatedAt = Date.now();
-                  });
-                }
-              }
+          const setModel = await logSetsCollection.find(update.setId);
+          if (!logExerciseIds.has(setModel.logExerciseId)) {
+            throw new Error(
+              `Workout set ${update.setId} does not belong to workout ${workoutLogId}`
+            );
+          }
+          existingSetById.set(update.setId, setModel);
+        }
 
-              // Create a new set linked to the log exercise
-              await logSetsCollection.create((logSet) => {
-                logSet.logExerciseId = logExerciseId!;
-                logSet.reps = update.reps ?? 0;
-                logSet.weight = update.weight ?? 0;
-                logSet.partials = update.partials ?? 0;
-                logSet.restTimeAfter = update.restTimeAfter ?? 0;
-                logSet.repsInReserve = update.repsInReserve ?? 0;
-                logSet.difficultyLevel = update.difficultyLevel ?? 0;
-                logSet.isSkipped = update.isSkipped ?? false;
-                logSet.setType = update.setType ?? 'normal';
-                logSet.setOrder = update.setOrder ?? 0;
-                logSet.createdAt = Date.now();
-                logSet.updatedAt = Date.now();
-              });
-            } else {
-              // Update an existing set
-              const setModel = await logSetsCollection.find(update.setId);
-              await setModel.update((s: WorkoutLogSet) => {
-                if (update.reps !== undefined) {
-                  s.reps = update.reps;
-                }
+        const now = Date.now();
+        let maxExerciseOrder = existingLogExercises.reduce(
+          (max, record) => Math.max(max, record.exerciseOrder ?? 0),
+          0
+        );
+        const operations: Model[] = [];
 
-                if (update.weight !== undefined) {
-                  s.weight = update.weight;
-                }
+        for (const setToDelete of setsToDelete) {
+          operations.push(
+            setToDelete.prepareUpdate((record) => {
+              record.deletedAt = now;
+              record.updatedAt = now;
+            })
+          );
+        }
 
-                if (update.partials !== undefined) {
-                  s.partials = update.partials;
-                }
-
-                if (update.restTimeAfter !== undefined) {
-                  s.restTimeAfter = update.restTimeAfter;
-                }
-
-                if (update.repsInReserve !== undefined) {
-                  s.repsInReserve = update.repsInReserve;
-                }
-
-                if (update.difficultyLevel !== undefined) {
-                  const isActuallySkipped = update.isSkipped ?? s.isSkipped;
-                  if (update.difficultyLevel === 0 && isActuallySkipped) {
-                    // Allow 0 only for skipped sets
-                  } else if (update.difficultyLevel < 1 || update.difficultyLevel > 10) {
-                    throw new Error('Difficulty level must be between 1 and 10');
-                  }
-                  s.difficultyLevel = update.difficultyLevel;
-                }
-
-                if (update.isSkipped !== undefined) {
-                  s.isSkipped = update.isSkipped;
-                }
-
-                if (update.setType !== undefined) {
-                  s.setType = update.setType;
-                }
-
-                if (update.setOrder !== undefined) {
-                  s.setOrder = update.setOrder;
-                }
-
-                s.updatedAt = Date.now();
-              });
-            }
-          } catch (err) {
-            console.warn(`Failed to update set ${update.setId}:`, err);
-            handleError(err, 'WorkoutService.updateWorkoutLogExercises.updateSet');
+        for (const [exerciseId, groupId] of desiredGroupIdByExerciseId) {
+          const logExercise = logExerciseByExerciseId.get(exerciseId);
+          if (logExercise && logExercise.groupId !== groupId) {
+            operations.push(
+              logExercise.prepareUpdate((record) => {
+                record.groupId = groupId;
+                record.updatedAt = now;
+              })
+            );
           }
         }
+
+        for (const update of updates) {
+          if (update.isNew) {
+            let logExercise = logExerciseByExerciseId.get(update.exerciseId);
+
+            if (!logExercise) {
+              maxExerciseOrder += 1;
+              logExercise = logExercisesCollection.prepareCreate((record) => {
+                record.workoutLogId = workoutLogId;
+                record.exerciseId = update.exerciseId;
+                record.exerciseOrder = maxExerciseOrder;
+                record.groupId = desiredGroupIdByExerciseId.get(update.exerciseId);
+                record.createdAt = now;
+                record.updatedAt = now;
+              });
+              operations.push(logExercise);
+              logExerciseByExerciseId.set(update.exerciseId, logExercise);
+            }
+
+            operations.push(
+              logSetsCollection.prepareCreate((record) => {
+                record.logExerciseId = logExercise.id;
+                record.reps = update.reps ?? 0;
+                record.weight = update.weight ?? 0;
+                record.partials = update.partials ?? 0;
+                record.restTimeAfter = update.restTimeAfter ?? 0;
+                record.repsInReserve = update.repsInReserve ?? 0;
+                record.difficultyLevel = update.difficultyLevel ?? undefined;
+                record.completionStatus = update.completionStatus ?? 'performed';
+                record.setType = update.setType ?? 'normal';
+                record.setOrder = update.setOrder ?? 0;
+                record.createdAt = now;
+                record.updatedAt = now;
+              })
+            );
+            continue;
+          }
+
+          const setModel = existingSetById.get(update.setId)!;
+          operations.push(
+            setModel.prepareUpdate((record) => {
+              if (update.reps !== undefined) {
+                record.reps = update.reps;
+              }
+
+              if (update.weight !== undefined) {
+                record.weight = update.weight;
+              }
+
+              if (update.partials !== undefined) {
+                record.partials = update.partials;
+              }
+
+              if (update.restTimeAfter !== undefined) {
+                record.restTimeAfter = update.restTimeAfter;
+              }
+
+              if (update.repsInReserve !== undefined) {
+                record.repsInReserve = update.repsInReserve;
+              }
+
+              if (update.difficultyLevel !== undefined) {
+                record.difficultyLevel = update.difficultyLevel ?? undefined;
+              }
+
+              if (update.completionStatus !== undefined) {
+                record.completionStatus = update.completionStatus;
+              }
+
+              if (update.setType !== undefined) {
+                record.setType = update.setType;
+              }
+
+              if (update.setOrder !== undefined) {
+                record.setOrder = update.setOrder;
+              }
+
+              record.updatedAt = now;
+            })
+          );
+        }
+
+        if (operations.length > 0) {
+          await database.batch(...operations);
+        }
+
+        return log;
       });
 
-      if (deletedSetIds && deletedSetIds.length > 0) {
-        void deleteBleDataPointsFiles(deletedSetIds).catch(() => {});
+      if (deletionIds.length > 0) {
+        void deleteBleDataPointsFiles(deletionIds).catch(() => {});
       }
 
       const bodyWeightKg = await UserMetricService.getUserBodyWeightKgForVolume();
@@ -1273,8 +1336,8 @@ export class WorkoutService {
             set.partials = 0;
             set.restTimeAfter = originalSet.restTimeAfter;
             set.repsInReserve = 0;
-            set.difficultyLevel = 0; // Unlogged
-            set.isSkipped = false;
+            set.difficultyLevel = undefined;
+            set.completionStatus = 'planned';
             set.setType = originalSet.setType ?? 'normal';
             set.createdAt = now;
             set.updatedAt = now;

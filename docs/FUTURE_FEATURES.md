@@ -1,8 +1,9 @@
 # Future Features
 
-A product-level roadmap derived from researching two well-regarded apps in adjacent categories:
+A product-level roadmap derived from researching three well-regarded apps in adjacent categories:
 one built around adaptive nutrition coaching, one built around recovery and whole-health
-presentation. Neither is named here — what matters is the pattern, not the source.
+presentation, and one open-source local-first calorie tracker with unusually strong capture and
+platform integrations. They are not named here — what matters is the pattern, not the source.
 
 **Scope guard:** this app is workouts + nutrition, with sleep read only as an input that tells the
 user whether to push hard today. Everything below respects that. Features that would drag the app
@@ -167,16 +168,52 @@ The quietly decisive half. None of this is glamorous; all of it is felt daily.
 
 - **Personal-history search ranking** — the user's own foods, ranked by frequency × recency, above
   database results, rather than in a separate "recent" list they must remember to open.
+- **A first-class Saved Meals hub: Recents / Frequent / Favorites.** We have recent-food previews
+  and saved meal templates, but not one reusable surface that derives frequent meals from history,
+  lets the user favorite from either the diary or reuse flow, searches all three lists, and supports
+  drag-to-reorder favorites. Tapping an item should create a new log on the selected day while
+  preserving nutrition, image, portions, and meal identity — never mutate or move the source log.
 - **Remember the last-used serving per food** — re-logging the usual coffee should be one tap with
   the right amount already filled in.
 - **Quick add** — calories/macros only, no food record. Restaurant meals, someone else's cooking.
   Its absence is what makes people abandon logging on hard days.
 - **Multi-select from search** — tick four foods, add all at once, instead of four round trips.
 - **Serving editor with fraction shortcuts** (½, 1, 1½, 2) and visible gram-equivalence per unit.
+- **Reusable custom named portions.** Let the user define “my bowl = 250 g,” “one scoop = 32 g,” or
+  another personal unit from the food review/editor and reuse it later. Grams remain the canonical
+  source of truth; nutrition scales from them, portion identities are deduped, and historic logs
+  retain the gram weight they were recorded with if the reusable definition changes later.
 - **Let users correct bad database entries.** The adaptive-nutrition app built an entire curated
   database because public food data is frequently wrong. We can't fund that — but we _own a barcode
   database_. Letting a user fix an entry, having the correction stick locally, and optionally
   feeding it upstream is a differentiator a closed database cannot match.
+
+### AI-assisted capture, review and correction
+
+- **Multi-photo meal analysis with one optional context note.** Camera and library flows should
+  accept a small bounded set of images for meals that cannot be represented by one shot — for
+  example, plate + packaging or several dishes — show a review strip, compress each image once, and
+  submit them as one analysis. Keep a retryable draft until the user logs or explicitly discards it.
+- **Share a food photo into Musclog.** Add an iOS Share Extension and Android share target so a user
+  can send an image from Photos, a browser, or messaging app straight into the same crop → optional
+  note → AI review flow. Use a short-lived file in app-group/shared storage, consume it exactly once,
+  and preserve the normal AI-consent gate. This is an import path, not a second analysis pipeline.
+- **Unlock nutrition for review before logging.** Every AI result should expose calories, macros,
+  micronutrients, serving amount, meal type, and time as editable fields behind an explicit
+  Review/Unlock control. Edits update one base nutrition object; changing the serving derives scaled
+  display values from that base instead of accumulating rounding error across dozens of fields.
+- **Persistent notes plus in-place AI reprocessing for an existing log.** Store a user note on each
+  log and allow “Reprocess with AI” from its edit screen. Use image + food name + serving + note when
+  an image exists and text otherwise; replace the nutrition fields reactively while preserving the
+  entry's identity, date, meal grouping, and original image. Disable competing edits while the
+  request runs, show a recoverable error, and require an explicit Save after the preview updates.
+- **Meal “What if?” before commit.** On the review screen, preview how the proposed meal changes
+  today's calories and macros and optionally ask the configured model for one short, practical
+  suggestion. Keep this advisory and non-blocking; the meal must remain loggable without another AI
+  request.
+- **Unlimited Retry / Cancel for failed analysis.** Preserve the selected images, note, target date,
+  and meal type after a network/provider failure. Retry must rerun the same draft rather than force
+  another camera or gallery round trip, and Cancel must clean up temporary files deterministically.
 
 ---
 
@@ -197,6 +234,19 @@ The quietly decisive half. None of this is glamorous; all of it is felt daily.
   A static RDA table by age/sex turns a data dump into a percentage.
 - **Weekly nutrition report** — adherence %, average intake vs target, days logged, macro
   distribution. We have the charts; we lack the digest.
+
+### Optional nutrition-adjacent utilities
+
+- **Real water logging, not only a hydration prompt.** Keep it off by default; when enabled, support
+  a daily goal, configurable ml/fl-oz display, one-to-three-glass quick actions, custom amounts,
+  history, and an optional local reminder. Water stays separate from calorie and macro totals but
+  can feed a compact Home card, widget, and future Watch complication.
+- **Explicit fasting sessions.** The existing fasting-day flag answers an empirical-TDEE question;
+  it is not a timer or history. A separate opt-in local model can support a 1–168-hour goal,
+  start/end/cancel, persistence across restarts, optional goal notification, and editable completed
+  sessions. Never infer a fast from a missing meal log, never change nutrition totals, and do not
+  sync sessions to Health Connect/HealthKit unless those platforms gain an appropriate, reliable
+  data type.
 
 ---
 
@@ -305,6 +355,68 @@ readiness proposal rather than a separate feature.
 
 ---
 
+## AI reliability, platform automation and continuity
+
+- **Inline voice input for Loggy.** Put a microphone in the existing Coach composer and route the
+  transcript through the same send function so an attached image and armed intention survive.
+  Support hold-to-record/release-to-send, slide-to-cancel, tap-to-lock hands-free recording, live
+  partial text for native recognition, a visible timer, and the configured remote STT provider as
+  fallback. This is voice input only; spoken Coach replies are a separate accessibility/product
+  decision.
+- **Ordered AI-provider failover.** Extend the current OpenAI / Gemini / local choice into an
+  explicit primary + fallback policy with per-provider model, key, endpoint, and timeout. Food
+  analysis and Coach should classify errors consistently, retry transient 429/503/529 responses
+  with bounded exponential backoff, then fail over only when safe. A malformed request must not be
+  disguised as provider downtime.
+- **Actionable credential errors and live settings refresh.** Some providers return an invalid or
+  expired key as HTTP 400 rather than 401/403. Inspect structured reason codes and conservative text
+  markers, then point the user to the exact provider setting; preserve unrelated 400 messages.
+  Provider/model/masked-key state must reload after onboarding and whenever Settings opens so a
+  long-lived ViewModel/store cannot show a stale pre-onboarding snapshot.
+- **On-device food-description fallback where the OS supports it.** On compatible iPhones, use
+  Apple Foundation Models for structured text/voice-transcript/Siri food analysis only after the
+  configured network providers fail. Gate by runtime availability and supported script, return the
+  same internal nutrition schema, and leave photo analysis and Coach on the configured provider
+  path. Never market this as universally offline when hardware, OS, or language support is absent.
+- **Siri / App Intents for the three high-frequency actions.** “Log food,” “calories today,” and
+  “log weight” should work without manual shortcut setup and call the same storage, health-sync,
+  widget-refresh, and validation paths as the UI. Cross-process writes need an explicit reload or
+  notification contract so the foreground store cannot overwrite a Siri-created entry with stale
+  in-memory state.
+- **Spotlight indexing for user-owned records.** Index foods, saved meals, exercises, and workout
+  templates with stable identifiers and deep links. Reindex on create/update/delete, expire from
+  index time rather than the record's historic date, and provide one privacy setting to disable and
+  purge the index.
+- **Apple Watch glance surface and complications.** Start read-only: calories/macros, optional water
+  progress, and today's workout/readiness summary. Mirror a compact snapshot from the phone through
+  persistent context, immediate reachable messages, and a deduplicated background queue; cache it
+  on-watch and refresh timelines on receipt. Register connectivity at process launch so updates do
+  not depend on the Watch app first opening. Logging from Watch can follow only after snapshot
+  delivery is reliable.
+- **Widget parity and background freshness.** Expand beyond the current Android Nutrition Progress
+  and Smart Camera widgets with small focused surfaces for calories, protein, today, and optional
+  water, plus iOS Home/Lock Screen equivalents. Widgets read versioned snapshots rather than the
+  live database, refresh after every relevant mutation, normalize stale snapshots at day rollover,
+  and use the platform background budget as a fallback rather than promising 15-minute precision.
+- **Focus-aware reminders.** Let iOS Focus filters suppress meal, water, or supplement reminders
+  without deleting their schedules; expose equivalent notification-channel controls on Android.
+- **Health-backed recovery after reinstall.** Where Musclog wrote records with stable metadata,
+  offer an explicit import of supported nutrition, weight, body-fat, and calculated workout-burn
+  samples from HealthKit/Health Connect on a fresh install. Deduplicate by Musclog identifiers and
+  explain that local-only meal composition, workout sets/plans, notes, water, and fasting sessions
+  still require a real backup or device transfer.
+
+### Cross-platform numeric and inset quality bar
+
+Every new numeric editor must accept the decimal separator produced by the active keyboard — both
+`0.5` and locale-valid `0,5` — while formatting output with the user's locale. Parsing and display
+are separate concerns and need unit tests for representative comma- and period-decimal locales.
+Every new bottom bar, recording composer, and sheet must also be verified against gesture and
+three-button navigation, device safe areas, and the animated keyboard inset; edge-to-edge drawing
+must never put a primary action under a system bar.
+
+---
+
 ## Cross-cutting UX — the actual differentiator
 
 This section matters more than any individual feature above.
@@ -358,18 +470,31 @@ Ordered by value-per-effort, with dependencies respected.
 3. **Expenditure hero screen** — turns our best hidden asset into the reason people stay.
 4. **Muscle-group body map** — data layer already exists; pure presentation work.
 5. ~~**Copy day / repeat meal**~~ — ✅ shipped.
-6. **Quick add + last-used serving + personal search ranking** — the logging-speed cluster; ship together.
-7. **Daily nutrition quality score** — ~80% of the pipeline already exists.
-8. **Non-punitive copy pass** — cheap, cross-cutting, no schema changes.
-9. **Coaching modes (Coached / Collaborative / Manual)** — reframes existing multi-goal support.
-10. **Overload nudges at point of entry + rest-timer auto-start** — small, high-frequency wins.
-11. **Readiness verdict, then volume auto-adjustment** — combine existing mood, sleep, and training
+6. **Saved Meals hub + quick add + last-used/custom servings + personal search ranking** — the
+   logging-speed cluster; ship together.
+7. **Retryable multi-photo capture + editable nutrition review** — improve the highest-friction AI
+   path before adding more intelligence to it.
+8. **Share-to-log + persistent notes and in-place reprocessing** — reuse the same capture/review
+   pipeline rather than create new analysis paths.
+9. **Meal What if?** — daily totals already exist; keep the optional AI suggestion asynchronous.
+10. **Daily nutrition quality score** — ~80% of the pipeline already exists.
+11. **Non-punitive copy pass** — cheap, cross-cutting, no schema changes.
+12. **Coaching modes (Coached / Collaborative / Manual)** — reframes existing multi-goal support.
+13. **Inline Coach voice + provider error taxonomy and failover** — one high-frequency input feature
+    paired with the reliability work it depends on.
+14. **Overload nudges at point of entry + rest-timer auto-start** — small, high-frequency wins.
+15. **Readiness verdict, then volume auto-adjustment** — combine existing mood, sleep, and training
     load; make the output actionable and explained.
-12. **Weekly micro coverage, micro targets, weekly report** — the analytics digest cluster.
-13. **Diet breaks, calorie cycling, rate-of-change goals** — the advanced-goal cluster.
-14. **Plate calculator, then gym profiles** — ship the immediate set-logging utility before the
+16. **Weekly micro coverage, micro targets, weekly report** — the analytics digest cluster.
+17. **Diet breaks, calorie cycling, rate-of-change goals** — the advanced-goal cluster.
+18. **Optional water logging, then explicit fasting sessions** — local and opt-in; keep both out of
+    calorie/macro totals.
+19. **Siri intents + Spotlight, then widgets and Watch snapshots** — build phone-side mutation and
+    snapshot contracts before exposing more wearable actions.
+20. **Health-backed reinstall recovery** — only after stable cross-source dedupe identifiers exist.
+21. **Plate calculator, then gym profiles** — ship the immediate set-logging utility before the
     larger multi-location equipment model.
-15. **Smart warm-ups and explicit advanced set types** — add volume-exclusion semantics alongside
+22. **Smart warm-ups and explicit advanced set types** — add volume-exclusion semantics alongside
     the new logging mechanics.
-16. **Asymmetrical logging, workout sections, and periodization** — valuable structural changes
+23. **Asymmetrical logging, workout sections, and periodization** — valuable structural changes
     that each require coordinated schema, editor, session, history, and analytics work.

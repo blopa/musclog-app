@@ -7,6 +7,7 @@ import { type ColumnSchema, type TableSchema } from '@nozbe/watermelondb/Schema'
 import { z } from 'zod';
 
 import { EXPORT_PLATFORMS } from '@/constants/platform';
+import { WORKOUT_SET_COMPLETION_STATUSES } from '@/utils/workoutSetCompletion';
 
 import { schema as watermelonSchema } from './schema';
 
@@ -64,6 +65,18 @@ function columnToZodType(
     isOptional?: boolean;
   }
 ): z.ZodTypeAny {
+  if (tableName === 'workout_log_sets' && column.name === 'completion_status') {
+    // The Watermelon column is nullable only so v26 can add it before the migration
+    // backfill. Import normalization fills legacy rows first; persisted exports must
+    // always carry the canonical lifecycle value.
+    return z.enum(WORKOUT_SET_COMPLETION_STATUSES);
+  }
+
+  if (tableName === 'workout_log_sets' && column.name === 'difficulty_level') {
+    const difficultyLevel = z.number().finite().min(1).max(10);
+    return column.isOptional ? difficultyLevel.optional().nullable() : difficultyLevel;
+  }
+
   // Check if this is an encrypted field that might be exported as a number
   const encryptedFields = ENCRYPTED_NUMBER_FIELDS[tableName] || [];
   if (encryptedFields.includes(column.name)) {

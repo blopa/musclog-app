@@ -3,7 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Download, Edit, Info, RefreshCw, Share2, Trophy } from 'lucide-react-native';
 import { createElement, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, Text, View } from 'react-native';
 import { KeyboardAwareScrollViewRef } from 'react-native-keyboard-controller';
 
 import { GenericCard } from '@/components/cards/GenericCard';
@@ -34,6 +34,7 @@ import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 import { formatWorkoutDuration } from '@/utils/workout';
 import type { WorkoutExercise, WorkoutSet } from '@/utils/workoutDetail';
+import { isPerformedWorkoutSet } from '@/utils/workoutSetCompletion';
 
 import EditPastWorkoutDataModal from './EditPastWorkoutDataModal';
 import EditWorkoutMetadataModal from './EditWorkoutMetadataModal';
@@ -216,21 +217,29 @@ type SetRowProps = {
 
 function SetRow({ set }: SetRowProps) {
   const theme = useTheme();
+  const textDecorationLine = set.isSkipped ? ('line-through' as const) : ('none' as const);
+  const valueColor = set.isSkipped ? theme.colors.text.tertiary : theme.colors.text.primary;
+
   return (
     <View
       className="flex-row items-center border-b"
       style={{
-        backgroundColor: set.isHighlighted ? theme.colors.accent.primary5 : 'transparent',
+        backgroundColor:
+          set.isHighlighted && !set.isSkipped ? theme.colors.accent.primary5 : 'transparent',
         borderBottomColor: theme.colors.background.white5,
+        opacity: set.isSkipped ? 0.6 : 1,
       }}
     >
       <View className="w-12 items-center py-3">
         <View className="flex-row items-center gap-1">
-          {set.isHighlighted ? <Trophy size={12} color={theme.colors.accent.primary} /> : null}
+          {set.isHighlighted && !set.isSkipped ? (
+            <Trophy size={12} color={theme.colors.accent.primary} />
+          ) : null}
           <Text
             className="font-bold"
             style={{
               color: set.isHighlighted ? theme.colors.accent.primary : theme.colors.text.tertiary,
+              textDecorationLine,
             }}
           >
             {set.setNumber}
@@ -238,16 +247,24 @@ function SetRow({ set }: SetRowProps) {
         </View>
       </View>
       <View className="flex-1 items-center py-3">
-        <Text className="text-sm text-text-primary">{set.weight}</Text>
+        <Text className="text-sm" style={{ color: valueColor, textDecorationLine }}>
+          {set.weight}
+        </Text>
       </View>
       <View className="flex-1 items-center py-3">
-        <Text className="text-sm text-text-primary">{set.reps}</Text>
+        <Text className="text-sm" style={{ color: valueColor, textDecorationLine }}>
+          {set.reps}
+        </Text>
       </View>
       <View className="flex-1 items-center py-3">
-        <Text className="text-sm text-text-primary">{set.partial}</Text>
+        <Text className="text-sm" style={{ color: valueColor, textDecorationLine }}>
+          {set.partial}
+        </Text>
       </View>
       <View className="flex-1 items-center py-3">
-        <Text className="text-sm text-text-primary">{set.repsInReserve}</Text>
+        <Text className="text-sm" style={{ color: valueColor, textDecorationLine }}>
+          {set.repsInReserve}
+        </Text>
       </View>
     </View>
   );
@@ -328,7 +345,7 @@ function ExerciseCard({ exercise, onEdit, onInfo, onClose }: ExerciseCardProps) 
   const { t } = useTranslation();
 
   return (
-    <GenericCard variant="card">
+    <GenericCard variant="card" containerStyle={{ opacity: exercise.isSkipped ? 0.7 : 1 }}>
       {/* Exercise Header */}
       <View
         className="mb-0 flex-row items-center justify-between border-b pb-4"
@@ -348,12 +365,19 @@ function ExerciseCard({ exercise, onEdit, onInfo, onClose }: ExerciseCardProps) 
             })}
           </View>
           <View>
-            <Text className="font-bold text-text-primary">{exercise.name}</Text>
+            <Text
+              className="font-bold text-text-primary"
+              style={{ textDecorationLine: exercise.isSkipped ? 'line-through' : 'none' }}
+            >
+              {exercise.name}
+            </Text>
             <Text
               className="text-[10px] font-medium text-text-tertiary"
               style={{ marginTop: theme.spacing.gap.xs }}
             >
-              {t('workoutDetail.minsSpent', { minutes: exercise.timeSpent })}
+              {exercise.isSkipped
+                ? t('workout.skipped')
+                : t('workoutDetail.minsSpent', { minutes: exercise.timeSpent })}
             </Text>
           </View>
         </View>
@@ -478,7 +502,7 @@ export default function PastWorkoutDetailModal({
 
     async function loadAllMuscles() {
       const collected: string[] = [];
-      for (const exercise of workout!.exercises) {
+      for (const exercise of workout!.exercises.filter((item) => !item.isSkipped)) {
         try {
           const muscles = await MuscleService.getMusclesForExercise(exercise.id);
           if (muscles.length > 0) {
@@ -492,6 +516,7 @@ export default function PastWorkoutDetailModal({
           }
         }
       }
+
       setAllWorkoutMuscles([...new Set(collected)]);
     }
 
@@ -568,13 +593,15 @@ export default function PastWorkoutDetailModal({
 
       const exerciseMap = new Map(exercises.map((e) => [e.id, e]));
       const byExercise = new Map<string, (typeof sets)[number][]>();
-      for (const set of sets) {
+      for (const set of sets.filter(isPerformedWorkoutSet)) {
         const eid = set.exerciseId ?? '';
         if (!byExercise.has(eid)) {
           byExercise.set(eid, []);
         }
+
         byExercise.get(eid)!.push(set);
       }
+
       const orderedHcIds = hcLogExercises.map((le) => le.exerciseId);
       const segmentItems = [...byExercise.entries()]
         .sort(
@@ -832,20 +859,27 @@ export default function PastWorkoutDetailModal({
             const updates = updatedSets.map((s, idx) => {
               // Check if this is a new set (temporary ID from Date.now())
               const isNew = !rawSets?.some((rs) => rs.id === s.id);
-              return {
+              const fields = {
                 setId: s.id,
-                exerciseId: isNew ? editingExerciseId : undefined,
                 reps: s.reps,
                 weight: displayToKg(s.weight, units),
                 partials: s.partialReps,
                 restTimeAfter: s.rest,
                 repsInReserve: s.repsInReserve,
-                isNew,
                 setOrder: idx, // Consecutive order: 0, 1, 2, 3, ...
               };
+
+              return isNew
+                ? {
+                    ...fields,
+                    exerciseId: editingExerciseId,
+                    completionStatus: 'performed' as const,
+                    isNew: true as const,
+                  }
+                : fields;
             });
             try {
-              await saveSets(workoutId, updates as any, deletedSetIds);
+              await saveSets(workoutId, updates, deletedSetIds);
               // reload handled reactively by subscription, but keep reload for safety
               await reload();
             } catch (err) {

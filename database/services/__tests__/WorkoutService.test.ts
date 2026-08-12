@@ -879,6 +879,62 @@ describe('WorkoutService', () => {
     });
   });
 
+  describe('updateWorkoutSets', () => {
+    it('rejects the complete edit before opening a writer when any set is invalid', async () => {
+      await expect(
+        WorkoutService.updateWorkoutSets('workout-1', [
+          { setId: 'valid-set', difficultyLevel: 8 },
+          { setId: 'invalid-set', difficultyLevel: 0 },
+        ])
+      ).rejects.toThrow('Difficulty level must be between 1 and 10');
+
+      expect(mockDatabase.write).not.toHaveBeenCalled();
+      expect(mockDatabase.batch).not.toHaveBeenCalled();
+    });
+
+    it('resolves every set before preparing changes, so a lookup failure leaves no partial edit', async () => {
+      const firstSet = {
+        id: 'set-1',
+        logExerciseId: 'log-exercise-1',
+        prepareUpdate: jest.fn(),
+      };
+      const setFind = jest.fn(async (setId: string) => {
+        if (setId === firstSet.id) {
+          return firstSet;
+        }
+        throw new Error('set not found');
+      });
+      const workoutLog = createMockWorkoutLog({ id: 'workout-1', deletedAt: null });
+      const logExercise = createMockWorkoutLogExercise({
+        id: 'log-exercise-1',
+        workoutLogId: workoutLog.id,
+      });
+
+      mockDatabase.get.mockImplementation((table: string) => {
+        if (table === 'workout_logs') {
+          return collection({ find: jest.fn().mockResolvedValue(workoutLog) }) as never;
+        }
+        if (table === 'workout_log_exercises') {
+          return collection({ fetch: jest.fn().mockResolvedValue([logExercise]) }) as never;
+        }
+        if (table === 'workout_log_sets') {
+          return collection({ find: setFind }) as never;
+        }
+        return collection() as never;
+      });
+
+      await expect(
+        WorkoutService.updateWorkoutSets('workout-1', [
+          { setId: 'set-1', reps: 10 },
+          { setId: 'missing-set', reps: 12 },
+        ])
+      ).rejects.toThrow('set not found');
+
+      expect(firstSet.prepareUpdate).not.toHaveBeenCalled();
+      expect(mockDatabase.batch).not.toHaveBeenCalled();
+    });
+  });
+
   describe('getWorkoutWithDetails', () => {
     it('should return workout with sets and exercises', async () => {
       const workoutLog = createMockWorkoutLog({
@@ -920,6 +976,102 @@ describe('WorkoutService', () => {
         ['set-2', 'ex-2'],
       ]);
       expect(result.exercises).toEqual([exercise1, exercise2]);
+    });
+
+    it('returns migrated skipped template placeholders without read-time repair', async () => {
+      const workoutLog = createMockWorkoutLog({
+        id: 'workout-1',
+        completedAt: Date.now(),
+        deletedAt: null,
+      });
+      const performedLogExercise = createMockWorkoutLogExercise({
+        id: 'le-performed',
+        exerciseId: 'ex-performed',
+      });
+      const untouchedLogExercise = createMockWorkoutLogExercise({
+        id: 'le-untouched',
+        exerciseId: 'ex-untouched',
+      });
+      const skippedLogExercise = createMockWorkoutLogExercise({
+        id: 'le-skipped',
+        exerciseId: 'ex-skipped',
+      });
+      const performedSet = createMockWorkoutLogSet({
+        id: 'set-performed',
+        logExerciseId: performedLogExercise.id,
+        completionStatus: 'performed',
+        difficultyLevel: 8,
+      });
+      const untouchedSet = createMockWorkoutLogSet({
+        id: 'set-untouched',
+        logExerciseId: untouchedLogExercise.id,
+        completionStatus: 'skipped',
+        difficultyLevel: undefined,
+      });
+      const skippedSet = createMockWorkoutLogSet({
+        id: 'set-skipped',
+        logExerciseId: skippedLogExercise.id,
+        completionStatus: 'skipped',
+        difficultyLevel: undefined,
+      });
+      const performedExercise = createMockExercise({ id: 'ex-performed' });
+      const untouchedExercise = createMockExercise({ id: 'ex-untouched' });
+      const skippedExercise = createMockExercise({ id: 'ex-skipped' });
+
+      installTables({
+        exercises: [performedExercise, untouchedExercise, skippedExercise],
+        workout_log_exercises: [performedLogExercise, untouchedLogExercise, skippedLogExercise],
+        workout_log_sets: [performedSet, untouchedSet, skippedSet],
+        workout_logs: { find: jest.fn().mockResolvedValue(workoutLog) },
+      });
+
+      const result = await WorkoutService.getWorkoutWithDetails('workout-1');
+
+      expect(result.sets.map((set) => [set.id, set.isSkipped])).toEqual([
+        ['set-performed', false],
+        ['set-untouched', true],
+        ['set-skipped', true],
+      ]);
+      expect(result.logExercises.map((exercise) => exercise.id)).toEqual([
+        'le-performed',
+        'le-untouched',
+        'le-skipped',
+      ]);
+      expect(result.exercises).toEqual([performedExercise, untouchedExercise, skippedExercise]);
+      expect(Q.oneOf).toHaveBeenLastCalledWith(['ex-performed', 'ex-untouched', 'ex-skipped']);
+    });
+
+    it('keeps explicitly performed imported sets without fabricating an RPE', async () => {
+      const workoutLog = createMockWorkoutLog({
+        id: 'imported-workout',
+        templateId: undefined,
+        completedAt: Date.now(),
+        deletedAt: null,
+      });
+      const logExercise = createMockWorkoutLogExercise({
+        id: 'imported-log-exercise',
+        exerciseId: 'imported-exercise',
+      });
+      const importedSet = createMockWorkoutLogSet({
+        id: 'imported-set',
+        logExerciseId: logExercise.id,
+        completionStatus: 'performed',
+        difficultyLevel: undefined,
+      });
+      const exercise = createMockExercise({ id: 'imported-exercise' });
+
+      installTables({
+        exercises: [exercise],
+        workout_log_exercises: [logExercise],
+        workout_log_sets: [importedSet],
+        workout_logs: { find: jest.fn().mockResolvedValue(workoutLog) },
+      });
+
+      const result = await WorkoutService.getWorkoutWithDetails(workoutLog.id);
+
+      expect(result.sets.map((set) => set.id)).toEqual(['imported-set']);
+      expect(result.logExercises).toEqual([logExercise]);
+      expect(result.exercises).toEqual([exercise]);
     });
 
     it('should get sets ordered by set_order asc', async () => {

@@ -1,6 +1,11 @@
 import { Model } from '@nozbe/watermelondb';
 import { field, json, relation, writer } from '@nozbe/watermelondb/decorators';
 
+import {
+  isValidWorkoutSetDifficultyLevel,
+  type WorkoutSetCompletionStatus,
+} from '@/utils/workoutSetCompletion';
+
 import WorkoutLogExercise from './WorkoutLogExercise';
 
 export type RepPhaseData = {
@@ -28,8 +33,9 @@ export default class WorkoutLogSet extends Model {
   @field('partials') partials?: number;
   @field('rest_time_after') declare restTimeAfter: number;
   @field('reps_in_reserve') declare repsInReserve: number;
-  @field('is_skipped') isSkipped?: boolean;
-  @field('difficulty_level') declare difficultyLevel: number;
+  @field('completion_status') completionStatus?: WorkoutSetCompletionStatus;
+  @field('difficulty_level') difficultyLevel?: number;
+  @field('is_skipped') legacyIsSkipped?: boolean;
   @field('set_type') declare setType: string;
   @field('set_order') declare setOrder: number;
   @json('rep_data_json', (val) => val ?? null) declare repDataJson: RepPhaseData[] | null;
@@ -40,10 +46,11 @@ export default class WorkoutLogSet extends Model {
   @relation('workout_log_exercises', 'log_exercise_id') declare logExercise: WorkoutLogExercise;
 
   get isValidDifficultyLevel(): boolean {
-    if (this.isSkipped && this.difficultyLevel === 0) {
-      return true;
-    }
-    return this.difficultyLevel >= 1 && this.difficultyLevel <= 10;
+    return isValidWorkoutSetDifficultyLevel(this.difficultyLevel);
+  }
+
+  get isSkipped(): boolean {
+    return this.completionStatus === 'skipped';
   }
 
   get isValidReps(): boolean {

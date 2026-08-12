@@ -281,11 +281,17 @@ describe('coachPromptHistory', () => {
         totalVolume: 5000,
         ...overrides.workoutLog,
       },
-      sets: overrides.sets ?? [
-        { exerciseId: 'ex-1', weight: 100, reps: 5 },
-        { exerciseId: 'ex-1', weight: 100, reps: 4 },
-        { exerciseId: 'ex-2', weight: 40, reps: 12 },
-      ],
+      sets: (
+        overrides.sets ?? [
+          { exerciseId: 'ex-1', weight: 100, reps: 5 },
+          { exerciseId: 'ex-1', weight: 100, reps: 4 },
+          { exerciseId: 'ex-2', weight: 40, reps: 12 },
+        ]
+      ).map((set: Record<string, unknown>) => ({
+        completionStatus: 'performed',
+        difficultyLevel: 5,
+        ...set,
+      })),
       exercises: overrides.exercises ?? [
         { id: 'ex-1', name: 'Bench Press' },
         { id: 'ex-2', name: 'Lateral Raise' },
@@ -348,6 +354,32 @@ describe('coachPromptHistory', () => {
             { name: 'Lateral Raise', sets: [{ weight: '40kg', reps: 12 }] },
           ],
         },
+      ]);
+    });
+
+    it('does not tell the coach that skipped sets were performed', async () => {
+      mockGetWorkoutHistoryDays.mockResolvedValue('30');
+      mockGetUnits.mockResolvedValue('metric');
+      mockGetWorkoutHistory.mockResolvedValue([{ id: 'w1' }]);
+      mockGetWorkoutWithDetails.mockResolvedValue(
+        workoutDetails({
+          sets: [
+            { exerciseId: 'ex-1', weight: 100, reps: 5 },
+            {
+              exerciseId: 'ex-2',
+              weight: 40,
+              reps: 12,
+              completionStatus: 'skipped',
+              difficultyLevel: undefined,
+            },
+          ],
+        })
+      );
+
+      const grouped = parsePromptJson(await getWorkoutLogHistoryPrompt());
+
+      expect(grouped['05/20/26'][0].exercises).toEqual([
+        { name: 'Bench Press', sets: [{ weight: '100kg', reps: 5 }] },
       ]);
     });
 

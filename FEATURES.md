@@ -22,12 +22,14 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 - Create and save custom workout templates (e.g., Push Day or Leg Day)
 - Organize workouts into named plans with weekly weekday assignments or ordered rotating cycles; workouts can belong to multiple plans, while standalone routines remain in an Unplanned section
 - Browse a built-in template library, including a five-session cable superset program
+- Browse 873 built-in exercises with localized names and instructions, muscle-group filters, and two-frame technique photos
 - Built-in programs and AI-generated routines create complete named workout plans based on your equipment and goals
 - Drag-and-drop exercise reordering during or after a session
 - Superset / exercise grouping via shared group ID
 - Built-in rest timer with customizable duration and haptic alerts
 - Real-time session stats: elapsed time, calories burned, total volume
 - Automatic personal record (PR) detection
+- Review the full planned set list in workout history, with unfinished sets and exercises marked skipped and excluded from volume, records, trends, and other performance calculations
 - Import workouts by pasting text — AI parses it into a session
 - Keep screen awake during active workout sessions
 - End-of-session feedback (difficulty, energy, notes)
@@ -156,7 +158,7 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 
 - Set name, email, gender, date of birth, and avatar
 - Fitness profile: weight, height, body fat %, goal type, activity level, experience level
-- Language selection and full multilingual support (English, Portuguese, German, French, Spanish, Russian, and more)
+- Language selection and full multilingual support for English, Spanish, Dutch, Brazilian Portuguese, and Russian, including the built-in exercise catalogue
 - Metric or imperial units applied consistently throughout the app
 - Theme selection (dark mode)
 - Home summary card choice: Daily Summary vs. Weekly Streak
@@ -213,7 +215,7 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
   receiving screen shows live percentage, transferred KB, KB/s throughput, and remaining time.
   Available on Android, iOS and web in any combination, with no internet, cable, or account
   (see [docs/OPTICAL_TRANSFER.md](docs/OPTICAL_TRANSFER.md))
-- Automatic local backups before any restore, browsable and restorable from settings
+- Automatic local backups before any restore or destructive exercise-catalogue cutover, browsable and restorable from settings
 - Complete database reset option
 
 ---
