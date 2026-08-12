@@ -33,15 +33,16 @@ AR_HEADER_SIZE = 60
 def patch_macho_in_place(data, offset, size):
     """Walk a Mach-O at data[offset:offset+size], patch load commands."""
     if size < 8:
-        return 0
+        return 0, 0
     magic = struct.unpack_from("<I", data, offset)[0]
     if magic != MH_MAGIC_64:
-        return 0
+        return 0, 0
     # Mach-O 64 header: magic(4) cpu_type(4) cpu_subtype(4) filetype(4)
     #                   ncmds(4) sizeofcmds(4) flags(4) reserved(4) = 32 bytes
     ncmds = struct.unpack_from("<I", data, offset + 16)[0]
     lc_offset = offset + 32
     patched = 0
+    already_patched = 0
     for _ in range(ncmds):
         if lc_offset + 8 > offset + size:
             break
@@ -49,6 +50,8 @@ def patch_macho_in_place(data, offset, size):
         if cmd == LC_VERSION_MIN_IPHONEOS:
             struct.pack_into("<I", data, lc_offset, PATCHED_CMD)
             patched += 1
+        elif cmd == PATCHED_CMD:
+            already_patched += 1
         elif cmd == LC_BUILD_VERSION:
             # LC_BUILD_VERSION structure:
             # cmd (4) + cmdsize (4) + platform (4) + minos (4) + sdk (4) + ntools (4) = 24 bytes
@@ -57,8 +60,10 @@ def patch_macho_in_place(data, offset, size):
                 if platform == PLATFORM_IOS:
                     struct.pack_into("<I", data, lc_offset + 8, PLATFORM_IOSSIMULATOR)
                     patched += 1
+                elif platform == PLATFORM_IOSSIMULATOR:
+                    already_patched += 1
         lc_offset += cmdsize
-    return patched
+    return patched, already_patched
 
 def patch_ar_slice(data, ar_start, ar_size):
     """Walk an AR archive, patching each Mach-O member."""
@@ -70,6 +75,7 @@ def patch_ar_slice(data, ar_start, ar_size):
     pos += 8
     total_members = 0
     total_patched = 0
+    total_already_patched = 0
     while pos + AR_HEADER_SIZE <= end:
         # AR header: name(16) date(12) uid(6) gid(6) mode(8) size(10) end(2)
         header = data[pos:pos + AR_HEADER_SIZE]
@@ -89,28 +95,30 @@ def patch_ar_slice(data, ar_start, ar_size):
         obj_size  = member_size  - name_len
         if obj_size > 0:
             total_members += 1
-            total_patched += patch_macho_in_place(data, obj_start, obj_size)
+            p, a_p = patch_macho_in_place(data, obj_start, obj_size)
+            total_patched += p
+            total_already_patched += a_p
         pos += member_size
         if pos % 2 != 0:
             pos += 1  # AR members are 2-byte aligned
-    return total_members, total_patched
+    return total_members, total_patched, total_already_patched
 
 def patch_framework(framework_path):
     """Patch a single framework."""
     if not os.path.exists(framework_path):
         print(f"  Skip: {framework_path} not found")
-        return 0, 0
+        return 0, 0, 0
     
     # Check architectures
     try:
         info = subprocess.check_output(["lipo", "-info", framework_path], stderr=subprocess.DEVNULL).decode()
     except subprocess.CalledProcessError:
         print(f"  Error: Cannot get info for {framework_path}")
-        return 0, 0
+        return 0, 0, 0
     
     if "arm64" not in info:
         print(f"  Skip: {framework_path} has no arm64 slice")
-        return 0, 0
+        return 0, 0, 0
     
     # Extract arm64 slice to a temp file
     with tempfile.NamedTemporaryFile(suffix=".arm64", delete=False) as tf:
@@ -127,7 +135,12 @@ def patch_framework(framework_path):
         result = patch_ar_slice(data, 0, len(data))
         
         if isinstance(result, tuple):
-            members, patched = result
+            if len(result) == 3:
+                members, patched, already_patched = result
+            else:
+                members, patched = result
+                already_patched = 0
+
             if patched > 0:
                 # Write patched slice back
                 with open(arm64_path, "wb") as f:
@@ -136,9 +149,11 @@ def patch_framework(framework_path):
                 subprocess.check_call(["lipo", framework_path, "-replace", "arm64", arm64_path, "-output", framework_path],
                                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 print(f"  Patched {patched}/{members} objects in {os.path.basename(framework_path)}")
-                return members, patched
+                return members, patched, already_patched
             else:
-                return members, 0
+                if already_patched > 0:
+                    print(f"  Already patched {already_patched}/{members} objects in {os.path.basename(framework_path)}")
+                return members, 0, already_patched
         else:
             if result > 0:
                 with open(arm64_path, "wb") as f:
@@ -146,7 +161,7 @@ def patch_framework(framework_path):
                 subprocess.check_call(["lipo", framework_path, "-replace", "arm64", arm64_path, "-output", framework_path],
                                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
                 print(f"  Patched {result} objects in {os.path.basename(framework_path)}")
-            return result, result
+            return result, result, 0
     finally:
         if os.path.exists(arm64_path):
             os.unlink(arm64_path)
@@ -157,10 +172,15 @@ print("Patching MLKit frameworks for iOS Simulator...\n")
 
 total_members = 0
 total_patched = 0
+total_already_patched = 0
 
 for framework in FRAMEWORKS:
-    m, p = patch_framework(framework)
+    m, p, a_p = patch_framework(framework)
     total_members += m
     total_patched += p
+    total_already_patched += a_p
 
-print(f"\nDone! Patched {total_patched}/{total_members} objects across all MLKit frameworks.")
+if total_patched == 0 and total_already_patched > 0:
+    print(f"\nDone! Already patched {total_already_patched}/{total_members} objects across all MLKit frameworks.")
+else:
+    print(f"\nDone! Patched {total_patched}/{total_members} objects across all MLKit frameworks.")

@@ -17,15 +17,16 @@ AR_HEADER_SIZE = 60
 def patch_macho_in_place(data, offset, size):
     """Walk a Mach-O at data[offset:offset+size], patch load commands."""
     if size < 8:
-        return 0
+        return 0, 0
     magic = struct.unpack_from("<I", data, offset)[0]
     if magic != MH_MAGIC_64:
-        return 0
+        return 0, 0
     # Mach-O 64 header: magic(4) cpu_type(4) cpu_subtype(4) filetype(4)
     #                   ncmds(4) sizeofcmds(4) flags(4) reserved(4) = 32 bytes
     ncmds = struct.unpack_from("<I", data, offset + 16)[0]
     lc_offset = offset + 32
     patched = 0
+    already_patched = 0
     for _ in range(ncmds):
         if lc_offset + 8 > offset + size:
             break
@@ -33,8 +34,10 @@ def patch_macho_in_place(data, offset, size):
         if cmd == LC_VERSION_MIN_IPHONEOS:
             struct.pack_into("<I", data, lc_offset, PATCHED_CMD)
             patched += 1
+        elif cmd == PATCHED_CMD:
+            already_patched += 1
         lc_offset += cmdsize
-    return patched
+    return patched, already_patched
 
 def patch_ar_slice(data, ar_start, ar_size):
     """Walk an AR archive, patching each Mach-O member."""
@@ -44,6 +47,7 @@ def patch_ar_slice(data, ar_start, ar_size):
     pos += 8
     total_members = 0
     total_patched = 0
+    total_already_patched = 0
     while pos + AR_HEADER_SIZE <= end:
         # AR header: name(16) date(12) uid(6) gid(6) mode(8) size(10) end(2)
         header = data[pos:pos + AR_HEADER_SIZE]
@@ -60,11 +64,13 @@ def patch_ar_slice(data, ar_start, ar_size):
         obj_size  = member_size  - name_len
         if obj_size > 0:
             total_members += 1
-            total_patched += patch_macho_in_place(data, obj_start, obj_size)
+            p, a_p = patch_macho_in_place(data, obj_start, obj_size)
+            total_patched += p
+            total_already_patched += a_p
         pos += member_size
         if pos % 2 != 0:
             pos += 1  # AR members are 2-byte aligned
-    return total_members, total_patched
+    return total_members, total_patched, total_already_patched
 
 # ── main ──────────────────────────────────────────────────────────────────────
 
@@ -86,8 +92,11 @@ with open(arm64_path, "rb") as f:
     data = bytearray(f.read())
 
 # 3. Patch in-place
-members, patched = patch_ar_slice(data, 0, len(data))
-print(f"Found {members} Mach-O members, patched {patched} LC_VERSION_MIN_IPHONEOS commands.")
+members, patched, already_patched = patch_ar_slice(data, 0, len(data))
+if patched == 0 and already_patched > 0:
+    print(f"Found {members} Mach-O members, already patched {already_patched} LC_VERSION_MIN_IPHONEOS commands.")
+else:
+    print(f"Found {members} Mach-O members, patched {patched} LC_VERSION_MIN_IPHONEOS commands.")
 
 # 4. Write patched slice back
 with open(arm64_path, "wb") as f:

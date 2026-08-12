@@ -18,15 +18,16 @@ AR_HEADER_SIZE = 60
 def patch_macho_in_place(data, offset, size):
     """Walk a Mach-O at data[offset:offset+size], patch load commands."""
     if size < 8:
-        return 0
+        return 0, 0
     magic = struct.unpack_from("<I", data, offset)[0]
     if magic != MH_MAGIC_64:
-        return 0
+        return 0, 0
     # Mach-O 64 header: magic(4) cpu_type(4) cpu_subtype(4) filetype(4)
     #                   ncmds(4) sizeofcmds(4) flags(4) reserved(4) = 32 bytes
     ncmds = struct.unpack_from("<I", data, offset + 16)[0]
     lc_offset = offset + 32
     patched = 0
+    already_patched = 0
     for _ in range(ncmds):
         if lc_offset + 24 > offset + size:
             break
@@ -40,8 +41,10 @@ def patch_macho_in_place(data, offset, size):
                 struct.pack_into("<I", data, lc_offset + 8, PLATFORM_IOSSIMULATOR)
                 patched += 1
                 print(f"  Patched LC_BUILD_VERSION platform: {platform} -> {PLATFORM_IOSSIMULATOR} at offset {lc_offset}")
+            elif platform == PLATFORM_IOSSIMULATOR:
+                already_patched += 1
         lc_offset += cmdsize
-    return patched
+    return patched, already_patched
 
 def patch_ar_slice(data, ar_start, ar_size):
     """Walk an AR archive, patching each Mach-O member."""
@@ -53,6 +56,7 @@ def patch_ar_slice(data, ar_start, ar_size):
     pos += 8
     total_members = 0
     total_patched = 0
+    total_already_patched = 0
     while pos + AR_HEADER_SIZE <= end:
         # AR header: name(16) date(12) uid(6) gid(6) mode(8) size(10) end(2)
         header = data[pos:pos + AR_HEADER_SIZE]
@@ -72,14 +76,15 @@ def patch_ar_slice(data, ar_start, ar_size):
         obj_size  = member_size  - name_len
         if obj_size > 0:
             total_members += 1
-            p = patch_macho_in_place(data, obj_start, obj_size)
+            p, a_p = patch_macho_in_place(data, obj_start, obj_size)
             if p > 0:
                 print(f"  Patched member at offset {obj_start}, size {obj_size}")
             total_patched += p
+            total_already_patched += a_p
         pos += member_size
         if pos % 2 != 0:
             pos += 1  # AR members are 2-byte aligned
-    return total_members, total_patched
+    return total_members, total_patched, total_already_patched
 
 # ── main ──────────────────────────────────────────────────────────────────────
 
@@ -103,8 +108,15 @@ data = bytearray(open(arm64_path, "rb").read())
 print("Patching arm64 slice...")
 result = patch_ar_slice(data, 0, len(data))
 if isinstance(result, tuple):
-    members, patched = result
-    print(f"Found {members} members, patched {patched} LC_BUILD_VERSION commands.")
+    if len(result) == 3:
+        members, patched, already_patched = result
+        if patched == 0 and already_patched > 0:
+            print(f"Found {members} members, already patched {already_patched} LC_BUILD_VERSION commands.")
+        else:
+            print(f"Found {members} members, patched {patched} LC_BUILD_VERSION commands.")
+    else:
+        members, patched = result
+        print(f"Found {members} members, patched {patched} LC_BUILD_VERSION commands.")
 else:
     patched = result
     print(f"Patched {patched} LC_BUILD_VERSION commands.")
@@ -121,12 +133,14 @@ print("\nVerifying patch...")
 info = subprocess.check_output(["otool", "-l", FRAMEWORK]).decode()
 lines = info.split('\n')
 for i, line in enumerate(lines):
-    if 'LC_BUILD_VERSION' in line and i + 3 < len(lines):
-        platform_line = lines[i + 3]
-        if 'platform' in platform_line:
-            print(f"  {line.strip()}")
-            print(f"  {lines[i+1].strip()}")
-            print(f"  {lines[i+2].strip()}")
-            print(f"  {platform_line.strip()}")
+    if 'LC_BUILD_VERSION' in line:
+        for j in range(1, 6):
+            if i + j < len(lines):
+                platform_line = lines[i + j]
+                if 'platform' in platform_line:
+                    print(f"  {line.strip()}")
+                    for k in range(1, j + 1):
+                        print(f"  {lines[i+k].strip()}")
+                    break
 
 print("\nDone! Patched MLImage in-place.")
