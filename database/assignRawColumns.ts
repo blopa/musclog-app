@@ -37,6 +37,24 @@ export function assignRawColumns(record: RawColumnTarget, raw: Record<string, un
     }
 
     const camel = key.replace(/_([a-z0-9])/g, (_, character: string) => character.toUpperCase());
-    record[camel] = assignValue;
+
+    let current: object | null = record;
+    let isReadOnly = false;
+    while (current && current !== Object.prototype) {
+      const desc = Object.getOwnPropertyDescriptor(current, camel);
+      if (desc) {
+        if (desc.get && !desc.set) {
+          isReadOnly = true;
+        }
+        break;
+      }
+      current = Object.getPrototypeOf(current);
+    }
+
+    if (isReadOnly) {
+      record._raw[key] = assignValue;
+    } else {
+      record[camel] = assignValue;
+    }
   }
 }
