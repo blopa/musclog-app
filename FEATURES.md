@@ -214,7 +214,7 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
   receiving screen shows live percentage, transferred KB, KB/s throughput, and remaining time.
   Available on Android, iOS and web in any combination, with no internet, cable, or account
   (see [docs/OPTICAL_TRANSFER.md](docs/OPTICAL_TRANSFER.md))
-- Automatic local backups before any restore, browsable and restorable from settings
+- Automatic local backups before any restore or destructive exercise-catalogue cutover, browsable and restorable from settings
 - Complete database reset option
 
 ---

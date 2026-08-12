@@ -14,7 +14,7 @@ The old catalogue is frozen in `data/legacyExercisesData.json`. Historical schem
 
 ## Production upgrade
 
-The boot coordinator first runs `AppExerciseCatalogueService.sync`, then `LegacyExerciseCatalogueMigration.run`. The reconciler repairs missing rows, every generated structural field, and the exact active target-muscle link set in bounded batches. Before retiring anything, the cutover independently verifies all of those rows and links; an interrupted or partial reconciliation leaves the old catalogue intact for the next boot. Both steps are data-idempotent rather than guarded by AsyncStorage, so restoring an old backup safely arms them again.
+The boot coordinator first runs `AppExerciseCatalogueService.sync`, then `LegacyExerciseCatalogueMigration.run`. The reconciler repairs missing rows, every generated structural field, and the exact active target-muscle link set in bounded batches. Before retiring anything, the cutover independently verifies all of those rows and links, then creates a full portable database backup through `createPreExerciseCatalogueBackup`. The backup appears in Settings → Local Backups and is retained under the same three-file policy as schema-migration and pre-restore backups. Backup failure aborts retirement, so every legacy row remains available for a retry on the next boot. An interrupted or partial reconciliation likewise leaves the old catalogue intact. Both steps are data-idempotent rather than guarded by AsyncStorage, so restoring an old backup safely arms them again.
 
 Within one serialized writer it:
 

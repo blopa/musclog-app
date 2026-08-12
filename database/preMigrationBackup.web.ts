@@ -112,50 +112,66 @@ export async function deleteBackup(uri: string): Promise<void> {
 
 export async function waitForPreMigrationBackup(): Promise<void> {}
 
-/**
- * Create a backup before restoring a database dump on Web.
- * Stores the current database content in localStorage.
- */
+function canCreateWebBackup(): boolean {
+  return !isStaticExport && typeof window !== 'undefined' && typeof localStorage !== 'undefined';
+}
+
+async function executeLiveBackup(reason: BackupFileMeta['reason']): Promise<string> {
+  const jsonString = await dumpDatabase();
+  const hash = await computeHash(jsonString);
+  const uri = `web-backup://${hash}`;
+  const createdAt = new Date().toISOString();
+
+  try {
+    localStorage.setItem(`${WEB_BACKUP_DATA_PREFIX}${hash}`, jsonString);
+  } catch {
+    const existing = await getStoredBackups();
+    for (const backup of existing) {
+      const existingHash = backup.uri.replace('web-backup://', '');
+      localStorage.removeItem(`${WEB_BACKUP_DATA_PREFIX}${existingHash}`);
+    }
+    localStorage.removeItem(WEB_BACKUPS_KEY);
+    localStorage.setItem(`${WEB_BACKUP_DATA_PREFIX}${hash}`, jsonString);
+  }
+
+  const existing = await getStoredBackups();
+  const next = pruneOldBackups([
+    { uri, createdAt, fromVersion: null, toVersion: null, reason },
+    ...existing.filter((backup) => backup.uri !== uri),
+  ]);
+  saveBackupIndex(next);
+  return hash;
+}
+
+/** Create a best-effort backup before restoring a database dump on Web. */
 export async function createPreRestoreBackup(): Promise<void> {
-  if (isStaticExport || typeof window === 'undefined' || typeof localStorage === 'undefined') {
+  if (!canCreateWebBackup()) {
     return;
   }
 
   try {
-    const jsonString = await dumpDatabase();
-    const hash = await computeHash(jsonString);
-    const createdAt = new Date().toISOString();
-
-    // Store content — handle QuotaExceededError by clearing older backups first.
-    try {
-      localStorage.setItem(`${WEB_BACKUP_DATA_PREFIX}${hash}`, jsonString);
-    } catch {
-      const existing = await getStoredBackups();
-      for (const b of existing) {
-        const h = b.uri.replace('web-backup://', '');
-        localStorage.removeItem(`${WEB_BACKUP_DATA_PREFIX}${h}`);
-      }
-      localStorage.removeItem(WEB_BACKUPS_KEY);
-      try {
-        localStorage.setItem(`${WEB_BACKUP_DATA_PREFIX}${hash}`, jsonString);
-      } catch {
-        console.warn('[WebBackup] Database dump too large for localStorage, skipping backup');
-        return;
-      }
-    }
-
-    // Update metadata index.
-    const existing = await getStoredBackups();
-    const next = pruneOldBackups([
-      { uri: `web-backup://${hash}`, createdAt, fromVersion: null, toVersion: null },
-      ...existing,
-    ]);
-    saveBackupIndex(next);
-
+    const hash = await executeLiveBackup('pre-restore');
     console.log(`[WebBackup] Created pre-restore backup (hash: ${hash})`);
   } catch (error) {
     console.error('[WebBackup] Failed to create pre-restore backup:', error);
     handleError(error, 'preMigrationBackup.web.preRestore');
+  }
+}
+
+/** Create a required backup before retiring the legacy exercise catalogue on Web. */
+export async function createPreExerciseCatalogueBackup(): Promise<string> {
+  if (!canCreateWebBackup()) {
+    throw new Error('Web backup storage is not available');
+  }
+
+  try {
+    const hash = await executeLiveBackup('exercise-catalogue');
+    console.log(`[WebBackup] Created pre-exercise-catalogue backup (hash: ${hash})`);
+    return `web-backup://${hash}`;
+  } catch (error) {
+    console.error('[WebBackup] Failed to create pre-exercise-catalogue backup:', error);
+    handleError(error, 'preMigrationBackup.web.preExerciseCatalogue');
+    throw error;
   }
 }
 
@@ -233,7 +249,13 @@ export async function runWebPreMigrationBackupIfNeeded(): Promise<void> {
     // Update metadata index.
     const existing = await getStoredBackups();
     const next = pruneOldBackups([
-      { uri: `web-backup://${hash}`, createdAt, fromVersion, toVersion },
+      {
+        uri: `web-backup://${hash}`,
+        createdAt,
+        fromVersion,
+        toVersion,
+        reason: 'schema-migration',
+      },
       ...existing,
     ]);
     saveBackupIndex(next);

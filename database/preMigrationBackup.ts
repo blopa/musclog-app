@@ -11,6 +11,7 @@ export type BackupFileMeta = {
   createdAt: string;
   fromVersion: number | null;
   toVersion: number | null;
+  reason?: 'schema-migration' | 'pre-restore' | 'exercise-catalogue';
   // Storage format of the backup file. 'sqlite' is a raw `VACUUM INTO` copy of
   // musclog.db (native pre-migration snapshots — fast to create, converted to
   // JSON lazily at restore/download time). 'json' (or absent, for older entries
@@ -101,6 +102,7 @@ async function pruneOldBackups(backups: BackupFileMeta[]): Promise<BackupFileMet
 
 async function executeBackup(
   nameInfix: string,
+  reason: BackupFileMeta['reason'],
   fromVersion: number | null = null,
   toVersion: number | null = null,
   jsonString?: string
@@ -118,7 +120,7 @@ async function executeBackup(
 
   const existing = await getStoredBackups();
   const next = await pruneOldBackups([
-    { uri, createdAt, fromVersion, toVersion, format: 'json' },
+    { uri, createdAt, fromVersion, toVersion, format: 'json', reason },
     ...existing,
   ]);
   await writeStoredBackups(next);
@@ -144,11 +146,28 @@ export async function runWebPreMigrationBackupIfNeeded(): Promise<void> {}
  */
 export async function createPreRestoreBackup(): Promise<void> {
   try {
-    const uri = await executeBackup('pre-restore');
+    const uri = await executeBackup('pre-restore', 'pre-restore');
     console.log(`[PreRestoreBackup] Created: ${uri}`);
   } catch (error) {
     console.error('[PreRestoreBackup] Failed to create backup:', error);
     await reportBackupError(error, 'database.preRestoreBackup');
+  }
+}
+
+/**
+ * Create the required safety backup before the legacy exercise catalogue is retired.
+ * Unlike the best-effort pre-restore backup, failure is propagated so the caller can
+ * leave every legacy row untouched and retry the cutover on a later boot.
+ */
+export async function createPreExerciseCatalogueBackup(): Promise<string> {
+  try {
+    const uri = await executeBackup('pre-exercise-catalogue', 'exercise-catalogue');
+    console.log(`[PreExerciseCatalogueBackup] Created: ${uri}`);
+    return uri;
+  } catch (error) {
+    console.error('[PreExerciseCatalogueBackup] Failed to create backup:', error);
+    await reportBackupError(error, 'database.preExerciseCatalogueBackup');
+    throw error;
   }
 }
 
@@ -214,6 +233,7 @@ export function registerPreMigrationDbBackup(
       createdAt,
       fromVersion,
       toVersion,
+      reason: 'schema-migration',
       format: 'sqlite',
       asyncStorageUri,
     };

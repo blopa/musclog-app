@@ -1,5 +1,6 @@
 import { AppExerciseCatalogueService } from '@/database/services/AppExerciseCatalogueService';
 import { LegacyExerciseCatalogueMigration } from '@/database/services/LegacyExerciseCatalogueMigration';
+import { createPreExerciseCatalogueBackup } from '@/database/preMigrationBackup';
 import { purgeRetiredExerciseImageCache } from '@/utils/exerciseImageCache';
 
 jest.mock('@/lang/lang', () => ({
@@ -100,6 +101,10 @@ jest.mock('../MuscleService', () => ({
 
 jest.mock('@/utils/exerciseImageCache', () => ({
   purgeRetiredExerciseImageCache: jest.fn(),
+}));
+
+jest.mock('@/database/preMigrationBackup', () => ({
+  createPreExerciseCatalogueBackup: jest.fn(async () => 'cache://exercise-backup.json'),
 }));
 
 jest.mock('../../database-instance', () => {
@@ -204,7 +209,8 @@ jest.mock('../../database-instance', () => {
   return { __esModule: true, database, mockDb };
 });
 
-const { mockDb } = jest.requireMock('../../database-instance') as {
+const { database, mockDb } = jest.requireMock('../../database-instance') as {
+  database: { write: jest.Mock };
   mockDb: {
     batched: any[][];
     getTable: (table: string) => any[];
@@ -363,11 +369,17 @@ describe('LegacyExerciseCatalogueMigration', () => {
       exercise_goals: [{ exerciseId: '2', updatedAt: 1 }],
     });
 
-    expect(await LegacyExerciseCatalogueMigration.run()).toEqual({
+    const result = await LegacyExerciseCatalogueMigration.run();
+
+    expect(result).toEqual({
       cloned: 2,
       destroyed: 3,
       repointed: 4,
     });
+    expect(createPreExerciseCatalogueBackup).toHaveBeenCalledTimes(1);
+    expect(jest.mocked(createPreExerciseCatalogueBackup).mock.invocationCallOrder[0]).toBeLessThan(
+      database.write.mock.invocationCallOrder[0]
+    );
     expect(mockDb.getTable('workout_template_exercises')[0].exerciseId).toBe('lx-1');
     expect(mockDb.getTable('workout_log_exercises')[0].exerciseId).toBe('lx-2');
     expect(mockDb.getTable('exercise_goals')[0].exerciseId).toBe('lx-2');
@@ -376,6 +388,7 @@ describe('LegacyExerciseCatalogueMigration', () => {
     ).toBeDefined();
     expect(purgeRetiredExerciseImageCache).toHaveBeenCalledTimes(1);
     expect(await LegacyExerciseCatalogueMigration.run()).toBeNull();
+    expect(createPreExerciseCatalogueBackup).toHaveBeenCalledTimes(1);
   });
 
   it('resumes onto an existing deterministic clone', async () => {
@@ -404,7 +417,27 @@ describe('LegacyExerciseCatalogueMigration', () => {
     });
 
     expect(await LegacyExerciseCatalogueMigration.run()).toBeNull();
+    expect(createPreExerciseCatalogueBackup).not.toHaveBeenCalled();
     expect(mockDb.getTable('workout_template_exercises')[0].exerciseId).toBe('1');
+    expect(purgeRetiredExerciseImageCache).not.toHaveBeenCalled();
+  });
+
+  it('leaves the legacy catalogue untouched when its safety backup fails', async () => {
+    mockDb.setTables({
+      exercises: [...currentCatalogue(), retiredExercise('1', 'Bench Press')],
+      exercise_muscles: currentCatalogueLinks(),
+      workout_template_exercises: [{ exerciseId: '1', updatedAt: 1 }],
+    });
+    jest
+      .mocked(createPreExerciseCatalogueBackup)
+      .mockRejectedValueOnce(new Error('backup unavailable'));
+
+    await expect(LegacyExerciseCatalogueMigration.run()).rejects.toThrow('backup unavailable');
+
+    expect(mockDb.getTable('exercises').some(({ id }) => id === '1')).toBe(true);
+    expect(mockDb.getTable('exercises').some(({ id }) => id === 'lx-1')).toBe(false);
+    expect(mockDb.getTable('workout_template_exercises')[0].exerciseId).toBe('1');
+    expect(database.write).not.toHaveBeenCalled();
     expect(purgeRetiredExerciseImageCache).not.toHaveBeenCalled();
   });
 });

@@ -6,6 +6,7 @@ import ExerciseGoal from '@/database/models/ExerciseGoal';
 import ExerciseMuscle from '@/database/models/ExerciseMuscle';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutTemplateExercise from '@/database/models/WorkoutTemplateExercise';
+import { createPreExerciseCatalogueBackup } from '@/database/preMigrationBackup';
 import { APP_EXERCISE_ID_PREFIX, buildLegacyExerciseCloudUrl } from '@/utils/exerciseImage';
 import { purgeRetiredExerciseImageCache } from '@/utils/exerciseImageCache';
 
@@ -81,6 +82,11 @@ export class LegacyExerciseCatalogueMigration {
     if (!(await AppExerciseCatalogueService.isComplete())) {
       return null;
     }
+
+    // The current catalogue has only been added/reconciled so far. Capture the
+    // complete live database at this last non-destructive point; a failed backup
+    // aborts the cutover and leaves every retired row available for the next boot.
+    await createPreExerciseCatalogueBackup();
 
     const report: LegacyCatalogueMigrationReport = { cloned: 0, destroyed: 0, repointed: 0 };
     let migrated = false;

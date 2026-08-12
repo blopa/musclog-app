@@ -8,10 +8,12 @@
 
 ## Why a pre-migration backup exists
 
-A schema migration can fail or corrupt data. Capturing a full JSON snapshot of
-the database immediately before the migration runs gives the user a restore
-point. Backups are best-effort: a failure to create one never blocks the
-migration or the app.
+A schema migration or destructive runtime data cutover can fail or corrupt data.
+Capturing a snapshot immediately before existing rows are changed gives the user
+a restore point. Schema-migration and pre-restore backups are best-effort. A
+destructive data cutover may instead make its backup mandatory; the exercise
+catalogue replacement does so and leaves the retired catalogue untouched when
+backup creation fails.
 
 ## The hard constraint that shapes the native design
 
@@ -35,21 +37,21 @@ the native capture runs there and nowhere else.
 
 1. `preparePreMigrationBackupBeforeAdapter(toVersion)` opens a raw connection and
    reads `PRAGMA user_version` (`fromVersion`).
-2. If `0 < fromVersion < toVersion`, it captures every table in `RESTORE_ORDER`
-   **synchronously** (`db.getAllSync`) into memory. Sync is required: the
-   snapshot must finish before the adapter opens the file and the migration
-   starts mutating it. This is bounded to migration boots only.
-3. It hands the rows to `persistCapturedPreMigrationBackup()` (in
-   `preMigrationBackup.ts`), then closes the raw connection. `adapter.ts`'s
-   `migrationEvents.onStart` is a deliberate no-op — never open `expo-sqlite`
-   from a migration callback.
+2. If `0 < fromVersion < toVersion` and `migrationSafety.ts` finds a pending step
+   that can touch existing rows, it uses synchronous `VACUUM INTO` to write a
+   consistent standalone `.db` copy. Purely additive schema changes skip the
+   snapshot. Sync is required: the copy must finish before the adapter opens the
+   file and the migration starts mutating it.
+3. It passes the completed copy to `registerPreMigrationDbBackup()` and closes
+   the raw connection. `adapter.ts`'s `migrationEvents.onStart` remains a
+   deliberate no-op — never open `expo-sqlite` from a migration callback.
 
-`persistCapturedPreMigrationBackup` is fire-and-forget at module-eval, so the
-in-flight promise is tracked and awaited via `waitForPreMigrationBackup()` before
-the boot sequence proceeds (see `database/dbBootCoordinator.ts`). It serializes
-the captured rows with `dumpRowsToJson` and writes
-`pre-migration-v{from}-to-v{to}.json` to the cache directory, tracking the file
-in the `pre_migration_backups_v1` AsyncStorage index (kept to the 3 most recent).
+Registration is fire-and-forget at module-eval, so the in-flight promise is
+tracked and awaited via `waitForPreMigrationBackup()` before the boot sequence
+proceeds. It captures AsyncStorage in a sidecar and records both files in the
+`pre_migration_backups_v1` index (kept to the 3 most recent). Conversion to the
+portable JSON export format is deferred until restore or download, avoiding a
+minutes-long upgrade boot for a large database.
 
 `database/preMigrationBackup.ts` itself imports **no** `expo-sqlite` — keeping
 the dangerous open isolated in `preMigrationCapture.ts` makes the invariant
@@ -78,6 +80,21 @@ during startup captures the correct user data.
 4. Always advances the stored version in `finally`, so a failed dump doesn't
    retry forever.
 
+## Runtime data cutovers
+
+The legacy exercise-catalogue replacement runs after WatermelonDB is live, so it
+cannot use the pre-adapter raw SQLite path. Once the new catalogue is complete,
+but before any retired exercise or reference is changed,
+`LegacyExerciseCatalogueMigration` calls
+`createPreExerciseCatalogueBackup()`. That function uses the live
+WatermelonDB-backed `dumpDatabase()` path on native and the normal LokiJS export
+path on web, then indexes the portable JSON with reason `exercise-catalogue`.
+
+This backup is required: writing the file and its metadata must both succeed
+before the migration enters its writer. Failure is reported, the migration
+rejects, and boot can retry later with every retired row still intact. The backup
+is labeled “Before exercise catalogue update” in `LocalBackupsModal`.
+
 ## Shared serialization core
 
 Both platforms converge on `dumpRowsToJson` in `database/exportDbCore.ts`, which
@@ -87,11 +104,11 @@ takes a `CapturedTableRows` map and produces the export JSON: it applies the
 filtered AsyncStorage dump, and optionally encrypts with a passphrase. The only
 difference between callers is **how rows are captured**:
 
-| Caller                           | Row source                                                          |
-| -------------------------------- | ------------------------------------------------------------------- |
-| Native live export / pre-restore | `dumpDatabaseWithQueryRunner` → `rawQueryViaWatermelon` (live WMDB) |
-| Native pre-migration             | `preMigrationCapture.ts` raw `expo-sqlite` (pre-adapter, sync)      |
-| Web (all paths)                  | `exportDb.web.ts` reads LokiJS rows (`getRawRowsFromLoki`)          |
+| Caller                                              | Row source                                                          |
+| --------------------------------------------------- | ------------------------------------------------------------------- |
+| Native live export / pre-restore / exercise cutover | `dumpDatabaseWithQueryRunner` → `rawQueryViaWatermelon` (live WMDB) |
+| Native pre-migration                                | `preMigrationCapture.ts` raw `expo-sqlite` (pre-adapter, sync)      |
+| Web (all paths)                                     | `exportDb.web.ts` reads LokiJS rows (`getRawRowsFromLoki`)          |
 
 This is why the export format is identical across native export, web export, and
 either platform's pre-migration backup, and why a backup taken on one platform
@@ -109,3 +126,7 @@ restores on the other.
 3. Cross-platform: import a web-created backup on native (and vice versa) — data
    restores correctly, with no API keys in `settings` and decrypted metric/log
    values.
+4. Exercise cutover: start with retired `source='app'` rows, allow boot to finish,
+   and confirm Settings → Local Backups lists “Before exercise catalogue update”.
+   Simulate a write/index failure and confirm the retired rows and their foreign
+   keys remain unchanged.

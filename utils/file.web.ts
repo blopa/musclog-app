@@ -34,8 +34,14 @@ export async function downloadFile(uri: string, fileName?: string): Promise<void
       meta?.fromVersion != null && meta?.toVersion != null
         ? `-v${meta.fromVersion}-to-v${meta.toVersion}`
         : '';
+    let reason = 'pre-migration';
+    if (meta?.reason === 'exercise-catalogue') {
+      reason = 'pre-exercise-catalogue';
+    } else if (meta?.reason === 'pre-restore') {
+      reason = 'pre-restore';
+    }
     const resolvedFileName =
-      fileName && fileName !== hash ? fileName : `${ts}-pre-migration${versionStr}.json`;
+      fileName && fileName !== hash ? fileName : `${ts}-${reason}${versionStr}.json`;
 
     const blob = new Blob([content], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
