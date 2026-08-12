@@ -20,7 +20,7 @@ import { getCurrentTimezone } from '@/utils/timezone';
 import { jsDayToWeekdayIndex } from '@/utils/weekdays';
 import { getRollingWeeklyWorkoutRange } from '@/utils/weeklyWorkoutProgress';
 import { calculateWorkoutKcal, type MWEMInput } from '@/utils/workoutEnergyCalculator';
-import { isLoggedWorkoutSet } from '@/utils/workoutSetCompletion';
+import { isLoggedWorkoutSet, markUnloggedWorkoutSetsSkipped } from '@/utils/workoutSetCompletion';
 import {
   getFirstUnloggedInEffectiveOrder,
   getNextSetInEffectiveOrder,
@@ -527,7 +527,7 @@ export class WorkoutService {
         const { sets, exercises } = await this.getWorkoutWithDetails(workoutLogId);
         const exerciseMap = new Map(exercises.map((e) => [e.id, e]));
         const byExercise = new Map<string, WorkoutLogSet[]>();
-        for (const set of sets) {
+        for (const set of sets.filter(isLoggedWorkoutSet)) {
           const eid = set.exerciseId ?? '';
           if (!byExercise.has(eid)) {
             byExercise.set(eid, []);
@@ -746,18 +746,14 @@ export class WorkoutService {
         rawSets
       );
 
-      // Older completed logs may predate completion-time pruning. Hide their copied template
-      // placeholders on read as well, so existing history immediately reflects performed work.
+      // Older completed template logs predate completion-time skipped markers. Represent their
+      // unlogged placeholders as skipped on read so history remains truthful without a migration.
       const hasCopiedTemplatePlaceholders = !!workoutLog.completedAt && !!workoutLog.templateId;
-      const sets = hasCopiedTemplatePlaceholders ? allSets.filter(isLoggedWorkoutSet) : allSets;
-      const visibleLogExerciseIds = new Set(sets.map((set) => set.logExerciseId));
-      const visibleLogExercises = hasCopiedTemplatePlaceholders
-        ? logExercises.filter((exercise) => visibleLogExerciseIds.has(exercise.id))
-        : logExercises;
+      const sets = hasCopiedTemplatePlaceholders
+        ? markUnloggedWorkoutSetsSkipped(allSets)
+        : allSets;
 
-      const exerciseIds = [...new Set(visibleLogExercises.map((le) => le.exerciseId))].filter(
-        Boolean
-      );
+      const exerciseIds = [...new Set(logExercises.map((le) => le.exerciseId))].filter(Boolean);
       const exercises =
         exerciseIds.length > 0
           ? await database
@@ -770,7 +766,7 @@ export class WorkoutService {
         workoutLog,
         sets,
         exercises,
-        logExercises: visibleLogExercises,
+        logExercises,
       };
     } catch (error) {
       if (!repairAttempted) {
@@ -1329,6 +1325,80 @@ export class WorkoutService {
           log.prepareUpdate((l) => {
             l.totalVolume = volume;
             l.updatedAt = now;
+          })
+        )
+      );
+    });
+  }
+
+  /**
+   * Repair completed template workouts saved before unsubmitted placeholders were marked skipped.
+   * The affected rows also have their stored volume recalculated from submitted sets only.
+   */
+  static async repairLegacyCompletedTemplatePlaceholders(): Promise<void> {
+    const logs = await database
+      .get<WorkoutLog>('workout_logs')
+      .query(
+        Q.where('template_id', Q.notEq(null)),
+        Q.where('completed_at', Q.notEq(null)),
+        Q.where('deleted_at', Q.eq(null))
+      )
+      .fetch();
+
+    if (logs.length === 0) {
+      return;
+    }
+
+    const logIds = logs.map((log) => log.id);
+    const logExercises = await database
+      .get<WorkoutLogExercise>('workout_log_exercises')
+      .query(Q.where('workout_log_id', Q.oneOf(logIds)), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    if (logExercises.length === 0) {
+      return;
+    }
+
+    const workoutIdByLogExerciseId = new Map(
+      logExercises.map((logExercise) => [logExercise.id, logExercise.workoutLogId])
+    );
+    const sets = await database
+      .get<WorkoutLogSet>('workout_log_sets')
+      .query(
+        Q.where('log_exercise_id', Q.oneOf(logExercises.map((logExercise) => logExercise.id))),
+        Q.where('deleted_at', Q.eq(null))
+      )
+      .fetch();
+    const legacyPlaceholders = sets.filter((set) => !isLoggedWorkoutSet(set) && !set.isSkipped);
+
+    if (legacyPlaceholders.length === 0) {
+      return;
+    }
+
+    const affectedWorkoutIds = new Set(
+      legacyPlaceholders
+        .map((set) => workoutIdByLogExerciseId.get(set.logExerciseId))
+        .filter((workoutId): workoutId is string => !!workoutId)
+    );
+    const affectedLogs = logs.filter((log) => affectedWorkoutIds.has(log.id));
+    const bodyWeightKg = await UserMetricService.getUserBodyWeightKgForVolume();
+    const correctedVolumes = await Promise.all(
+      affectedLogs.map(async (log) => ({ log, volume: await log.calculateVolume(bodyWeightKg) }))
+    );
+    const now = Date.now();
+
+    await database.write(async () => {
+      await database.batch(
+        ...legacyPlaceholders.map((set) =>
+          set.prepareUpdate((record) => {
+            record.isSkipped = true;
+            record.updatedAt = now;
+          })
+        ),
+        ...correctedVolumes.map(({ log, volume }) =>
+          log.prepareUpdate((record) => {
+            record.totalVolume = volume;
+            record.updatedAt = now;
           })
         )
       );

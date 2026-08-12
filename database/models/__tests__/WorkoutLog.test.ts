@@ -108,7 +108,7 @@ describe('WorkoutLog completion', () => {
     );
   });
 
-  it('soft-deletes every unsubmitted set and exercise block when finishing early', async () => {
+  it('preserves the plan and marks every unsubmitted set skipped when finishing early', async () => {
     const performedExercise = updatable({ id: 'performed-exercise', deletedAt: null });
     const untouchedExercise = updatable({ id: 'untouched-exercise', deletedAt: null });
     const skippedExercise = updatable({ id: 'skipped-exercise', deletedAt: null });
@@ -139,9 +139,6 @@ describe('WorkoutLog completion', () => {
     const batch = jest.fn().mockResolvedValue(undefined);
     const log: any = Object.assign(Object.create(WorkoutLog.prototype), {
       completedAt: undefined,
-      logExercises: {
-        fetch: jest.fn().mockResolvedValue([performedExercise, untouchedExercise, skippedExercise]),
-      },
       collection: { database: { batch } },
       getAllSets: jest
         .fn()
@@ -163,19 +160,20 @@ describe('WorkoutLog completion', () => {
 
     expect(performedSet.prepareUpdate).not.toHaveBeenCalled();
     expect(performedExercise.prepareUpdate).not.toHaveBeenCalled();
-    expect(leftoverSetInPerformedExercise.deletedAt).toBe(999);
-    expect(untouchedSet.deletedAt).toBe(999);
-    expect(skippedSet.deletedAt).toBe(999);
-    expect(untouchedExercise.deletedAt).toBe(999);
-    expect(skippedExercise.deletedAt).toBe(999);
+    expect(untouchedExercise.prepareUpdate).not.toHaveBeenCalled();
+    expect(skippedExercise.prepareUpdate).not.toHaveBeenCalled();
+    expect(leftoverSetInPerformedExercise).toMatchObject({ isSkipped: true, updatedAt: 999 });
+    expect(untouchedSet).toMatchObject({ isSkipped: true, updatedAt: 999 });
+    expect(skippedSet).toMatchObject({ isSkipped: true, updatedAt: 999 });
+    expect(leftoverSetInPerformedExercise.deletedAt).toBeUndefined();
+    expect(untouchedSet.deletedAt).toBeUndefined();
+    expect(skippedSet.deletedAt).toBeUndefined();
     expect(log.completedAt).toBe(999);
     expect(log.totalVolume).toBe(456);
     expect(batch).toHaveBeenCalledWith(
       leftoverSetInPerformedExercise,
       untouchedSet,
       skippedSet,
-      untouchedExercise,
-      skippedExercise,
       log
     );
   });

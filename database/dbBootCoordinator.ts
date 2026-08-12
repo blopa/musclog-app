@@ -115,6 +115,11 @@ const BOOT_MIGRATIONS: BootMigration[] = [
     run: () => LegacyExerciseCatalogueMigration.run(),
   },
   {
+    tag: 'WorkoutService.repairLegacyCompletedTemplatePlaceholders',
+    // Data-driven and idempotent so restoring an older backup is repaired on the next boot too.
+    run: () => WorkoutService.repairLegacyCompletedTemplatePlaceholders(),
+  },
+  {
     tag: 'WorkoutService.backfillNullTotalVolumes',
     run: () => WorkoutService.backfillNullTotalVolumes(),
   },

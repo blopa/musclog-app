@@ -922,7 +922,7 @@ describe('WorkoutService', () => {
       expect(result.exercises).toEqual([exercise1, exercise2]);
     });
 
-    it('hides copied template placeholders from legacy completed workouts', async () => {
+    it('marks copied template placeholders skipped in legacy completed workouts', async () => {
       const workoutLog = createMockWorkoutLog({
         id: 'workout-1',
         completedAt: Date.now(),
@@ -957,11 +957,11 @@ describe('WorkoutService', () => {
         isSkipped: true,
       });
       const performedExercise = createMockExercise({ id: 'ex-performed' });
+      const untouchedExercise = createMockExercise({ id: 'ex-untouched' });
+      const skippedExercise = createMockExercise({ id: 'ex-skipped' });
 
       installTables({
-        // `installTables` does not evaluate Q clauses; return the row that the real oneOf query
-        // below selects, then assert that selection separately.
-        exercises: [performedExercise],
+        exercises: [performedExercise, untouchedExercise, skippedExercise],
         workout_log_exercises: [performedLogExercise, untouchedLogExercise, skippedLogExercise],
         workout_log_sets: [performedSet, untouchedSet, skippedSet],
         workout_logs: { find: jest.fn().mockResolvedValue(workoutLog) },
@@ -969,10 +969,18 @@ describe('WorkoutService', () => {
 
       const result = await WorkoutService.getWorkoutWithDetails('workout-1');
 
-      expect(result.sets.map((set) => set.id)).toEqual(['set-performed']);
-      expect(result.logExercises.map((exercise) => exercise.id)).toEqual(['le-performed']);
-      expect(result.exercises).toEqual([performedExercise]);
-      expect(Q.oneOf).toHaveBeenLastCalledWith(['ex-performed']);
+      expect(result.sets.map((set) => [set.id, set.isSkipped])).toEqual([
+        ['set-performed', false],
+        ['set-untouched', true],
+        ['set-skipped', true],
+      ]);
+      expect(result.logExercises.map((exercise) => exercise.id)).toEqual([
+        'le-performed',
+        'le-untouched',
+        'le-skipped',
+      ]);
+      expect(result.exercises).toEqual([performedExercise, untouchedExercise, skippedExercise]);
+      expect(Q.oneOf).toHaveBeenLastCalledWith(['ex-performed', 'ex-untouched', 'ex-skipped']);
     });
 
     it('keeps legacy imported sets that predate explicit logged-state values', async () => {
@@ -1208,6 +1216,54 @@ describe('WorkoutService', () => {
       const result = await WorkoutService.getWorkoutLogsByTemplate('template-1');
 
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('repairLegacyCompletedTemplatePlaceholders', () => {
+    it('marks old placeholders skipped and recalculates their workout volume', async () => {
+      const workoutLog = createMockWorkoutLog({
+        id: 'legacy-workout',
+        completedAt: Date.now(),
+        totalVolume: 9999,
+        calculateVolume: jest.fn().mockResolvedValue(321),
+      });
+      workoutLog.prepareUpdate = jest.fn((callback) => {
+        callback(workoutLog);
+        return workoutLog;
+      });
+      const logExercise = createMockWorkoutLogExercise({
+        id: 'legacy-log-exercise',
+        workoutLogId: workoutLog.id,
+      });
+      const loggedSet = createMockWorkoutLogSet({
+        id: 'logged-set',
+        logExerciseId: logExercise.id,
+        difficultyLevel: 7,
+      });
+      const placeholder = createMockWorkoutLogSet({
+        id: 'placeholder-set',
+        logExerciseId: logExercise.id,
+        difficultyLevel: 0,
+        isSkipped: false,
+      });
+      placeholder.prepareUpdate = jest.fn((callback) => {
+        callback(placeholder);
+        return placeholder;
+      });
+
+      installTables({
+        workout_logs: [workoutLog],
+        workout_log_exercises: [logExercise],
+        workout_log_sets: [loggedSet, placeholder],
+      });
+
+      await WorkoutService.repairLegacyCompletedTemplatePlaceholders();
+
+      expect(loggedSet.prepareUpdate).toBeUndefined();
+      expect(placeholder.isSkipped).toBe(true);
+      expect(workoutLog.calculateVolume).toHaveBeenCalledWith(0);
+      expect(workoutLog.totalVolume).toBe(321);
+      expect(mockDatabase.batch).toHaveBeenCalledWith(placeholder, workoutLog);
     });
   });
 

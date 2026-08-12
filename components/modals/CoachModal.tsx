@@ -66,6 +66,7 @@ import { createThumbnail } from '@/utils/file';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { pickAndCropImageFromGallery } from '@/utils/galleryImagePicker';
 import { handleError } from '@/utils/handleError';
+import { isLoggedWorkoutSet } from '@/utils/workoutSetCompletion';
 
 import { CoachQuickSettingsModal } from './CoachQuickSettingsModal';
 import { ConfirmationModal } from './ConfirmationModal';
@@ -865,8 +866,16 @@ export function CoachModal({
 
   const handleViewMuscles = useCallback(async (workoutLogId: string, workoutName: string) => {
     try {
-      const { exercises } = await WorkoutService.getWorkoutWithDetails(workoutLogId);
-      const exerciseIds = exercises.map((e) => e.id);
+      const { exercises, sets } = await WorkoutService.getWorkoutWithDetails(workoutLogId);
+      const performedExerciseIds = new Set(
+        sets.filter(isLoggedWorkoutSet).map((set) => set.exerciseId)
+      );
+
+      const performedExercises = exercises.filter((exercise) =>
+        performedExerciseIds.has(exercise.id)
+      );
+
+      const exerciseIds = performedExercises.map((exercise) => exercise.id);
       const musclesByExercise = await MuscleService.getMusclesForExercises(exerciseIds);
 
       let muscleNames: string[];
@@ -880,7 +889,9 @@ export function CoachModal({
         ];
       } else {
         // Backfill may not have run yet — fall back to coarse muscle groups
-        muscleNames = [...new Set(exercises.map((e) => e.muscleGroup).filter(Boolean) as string[])];
+        muscleNames = [
+          ...new Set(performedExercises.map((e) => e.muscleGroup).filter(Boolean) as string[]),
+        ];
       }
 
       setMusclesWorkoutName(workoutName);

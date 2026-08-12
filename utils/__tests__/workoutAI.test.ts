@@ -1,6 +1,11 @@
 import { ExerciseService, WorkoutAnalytics, WorkoutService } from '@/database/services';
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
-import { processParsedWorkouts, processWorkoutPlanResponse } from '@/utils/workoutAI';
+import {
+  buildWorkoutCompletedSummaryForLLM,
+  prepareWorkoutDataForAI,
+  processParsedWorkouts,
+  processWorkoutPlanResponse,
+} from '@/utils/workoutAI';
 import { DEFAULT_LOGGED_DIFFICULTY_LEVEL } from '@/utils/workoutSetCompletion';
 
 jest.mock('lucide-react-native', () => ({ Dumbbell: jest.fn() }));
@@ -11,6 +16,7 @@ jest.mock('@/database/services', () => ({
   WorkoutAnalytics: { getProgressiveOverloadData: jest.fn() },
   WorkoutService: {
     completeWorkout: jest.fn(),
+    getWorkoutWithDetails: jest.fn(),
     startFreeWorkout: jest.fn(),
     updateWorkoutSets: jest.fn(),
   },
@@ -120,5 +126,57 @@ describe('processParsedWorkouts', () => {
       }),
     ]);
     expect(mockWorkoutService.completeWorkout).toHaveBeenCalledWith('imported-workout');
+  });
+});
+
+describe('completed workout AI summaries', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockWorkoutService.getWorkoutWithDetails.mockResolvedValue({
+      workoutLog: {
+        workoutName: 'Push Day',
+        startedAt: Date.UTC(2026, 7, 12, 18),
+        completedAt: Date.UTC(2026, 7, 12, 19),
+      },
+      exercises: [
+        { id: 'bench', name: 'Bench Press', muscleGroup: 'chest' },
+        { id: 'fly', name: 'Cable Fly', muscleGroup: 'chest' },
+      ],
+      sets: [
+        {
+          exerciseId: 'bench',
+          reps: 8,
+          weight: 80,
+          difficultyLevel: 7,
+          isSkipped: false,
+        },
+        {
+          exerciseId: 'fly',
+          reps: 12,
+          weight: 30,
+          difficultyLevel: 0,
+          isSkipped: true,
+        },
+      ],
+    } as any);
+  });
+
+  it('omits skipped sets from completion and analysis payloads', async () => {
+    const completionSummary = await buildWorkoutCompletedSummaryForLLM('workout-1', {
+      volumeStr: '800 kg',
+      durationStr: '60 min',
+      personalRecords: 0,
+    });
+    const analysisPayload = await prepareWorkoutDataForAI('workout-1');
+
+    expect(completionSummary).toContain('Bench Press');
+    expect(completionSummary).not.toContain('Cable Fly');
+    expect(JSON.parse(analysisPayload).exercises).toEqual([
+      {
+        name: 'Bench Press',
+        muscleGroup: 'chest',
+        sets: [{ reps: 8, weight: 80, partials: 0, repsInReserve: 0 }],
+      },
+    ]);
   });
 });

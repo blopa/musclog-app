@@ -73,6 +73,8 @@ interface SetSpec {
   weight: number;
   reps: number;
   repsInReserve?: number;
+  difficultyLevel?: number;
+  isSkipped?: boolean;
   deleted?: boolean;
 }
 
@@ -128,7 +130,12 @@ function buildFixture(options: {
 
     workoutLogSets.push(
       row(
-        { id: setId, logExerciseId: logExercise.id },
+        {
+          id: setId,
+          logExerciseId: logExercise.id,
+          difficultyLevel: spec.difficultyLevel ?? 5,
+          isSkipped: spec.isSkipped ?? false,
+        },
         {
           id: setId,
           log_exercise_id: logExercise.id,
@@ -136,7 +143,8 @@ function buildFixture(options: {
           weight: spec.weight,
           reps_in_reserve: spec.repsInReserve ?? 0,
           rest_time_after: 60,
-          difficulty_level: 5,
+          difficulty_level: spec.difficultyLevel ?? 5,
+          is_skipped: spec.isSkipped ?? false,
           set_type: 'normal',
           set_order: index + 1,
           created_at: Date.now(),
@@ -620,6 +628,32 @@ describe('WorkoutAnalytics', () => {
       );
     });
 
+    it('excludes skipped template sets from progress calculations', async () => {
+      const fixture = buildFixture({
+        exercises: [benchPress],
+        sets: [
+          { exerciseId: 'ex-1', workoutLogId: 'workout-1', weight: 100, reps: 8 },
+          {
+            exerciseId: 'ex-1',
+            workoutLogId: 'workout-1',
+            weight: 200,
+            reps: 10,
+            difficultyLevel: 0,
+            isSkipped: true,
+          },
+        ],
+        workouts: [
+          { id: 'workout-1', startedAt: Date.now() - 1000, completedAt: Date.now() - 500 },
+        ],
+      });
+      installFixture(fixture);
+
+      const result = await WorkoutAnalytics.getProgressiveOverloadData('ex-1');
+
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({ weight: 100, reps: 8 });
+    });
+
     it('should sort by date ascending', async () => {
       const fixture = buildFixture({
         exercises: [benchPress],
@@ -756,6 +790,31 @@ describe('WorkoutAnalytics', () => {
       expect(result[0].exerciseCount).toBe(1);
     });
 
+    it('excludes skipped sets from muscle-group volume', async () => {
+      const fixture = buildFixture({
+        exercises: [createMockExercise({ id: 'ex-1', muscleGroup: 'chest' })],
+        sets: [
+          { exerciseId: 'ex-1', workoutLogId: 'workout-1', weight: 100, reps: 10 },
+          {
+            exerciseId: 'ex-1',
+            workoutLogId: 'workout-1',
+            weight: 200,
+            reps: 10,
+            difficultyLevel: 0,
+            isSkipped: true,
+          },
+        ],
+        workouts: [{ id: 'workout-1', startedAt: Date.now(), completedAt: Date.now() }],
+      });
+      installFixture(fixture);
+
+      const result = await WorkoutAnalytics.calculateMuscleGroupVolume([
+        fixture.workout_logs[0] as any,
+      ]);
+
+      expect(result[0].totalVolume).toBe(vol(100, 10));
+    });
+
     it('should count unique exercises per muscle group', async () => {
       const fixture = buildFixture({
         exercises: [
@@ -842,6 +901,88 @@ describe('WorkoutAnalytics', () => {
 
       expect(result[0].totalVolume).toBeCloseTo(vol(100, 10) + vol(105, 10), 5);
       expect(result[0].exerciseCount).toBe(1); // Same exercise
+    });
+  });
+
+  describe('skipped-set exclusions in exercise metrics', () => {
+    const benchPress = createMockExercise({ id: 'ex-1', name: 'Bench Press' });
+
+    it('does not accept a skipped single as a performed 1RM', async () => {
+      const now = Date.now();
+      const fixture = buildFixture({
+        exercises: [benchPress],
+        sets: [
+          {
+            exerciseId: 'ex-1',
+            workoutLogId: 'workout-1',
+            weight: 200,
+            reps: 1,
+            difficultyLevel: 0,
+            isSkipped: true,
+          },
+        ],
+        workouts: [{ id: 'workout-1', startedAt: now - 1000, completedAt: now - 500 }],
+      });
+      installFixture(fixture);
+
+      await expect(
+        WorkoutAnalytics.getPerformed1RMDate('ex-1', 150, now - 2000)
+      ).resolves.toBeNull();
+    });
+
+    it('uses the first logged set, not an earlier skipped set, for recent 1RM averages', async () => {
+      const now = Date.now();
+      const fixture = buildFixture({
+        exercises: [benchPress],
+        sets: [
+          {
+            exerciseId: 'ex-1',
+            workoutLogId: 'workout-1',
+            weight: 200,
+            reps: 10,
+            difficultyLevel: 0,
+            isSkipped: true,
+          },
+          { exerciseId: 'ex-1', workoutLogId: 'workout-1', weight: 100, reps: 5 },
+        ],
+        workouts: [{ id: 'workout-1', startedAt: now - 1000, completedAt: now - 500 }],
+      });
+      installFixture(fixture);
+
+      const result = await WorkoutAnalytics.getRecentFirstSetAverage1RM('ex-1', 2);
+
+      expect(result).toEqual({
+        average1RM: calculateEstimated1RMForSet(100, 5, 0, 'barbell', BODY_WEIGHT_KG),
+        setCount: 1,
+      });
+    });
+
+    it('does not count a workout toward frequency when that exercise was entirely skipped', async () => {
+      const now = Date.now();
+      const fixture = buildFixture({
+        exercises: [benchPress],
+        sets: [
+          { exerciseId: 'ex-1', workoutLogId: 'workout-logged', weight: 100, reps: 5 },
+          {
+            exerciseId: 'ex-1',
+            workoutLogId: 'workout-skipped',
+            weight: 100,
+            reps: 5,
+            difficultyLevel: 0,
+            isSkipped: true,
+          },
+        ],
+        workouts: [
+          { id: 'workout-logged', startedAt: now - 1000, completedAt: now - 500 },
+          { id: 'workout-skipped', startedAt: now - 2000, completedAt: now - 1500 },
+        ],
+      });
+      installFixture(fixture);
+
+      await expect(WorkoutAnalytics.getAverageFrequencyPerWeek('ex-1', 1)).resolves.toEqual({
+        value: 1,
+        unit: 'perWeek',
+      });
     });
   });
 });

@@ -29,6 +29,7 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 - Built-in rest timer with customizable duration and haptic alerts
 - Real-time session stats: elapsed time, calories burned, total volume
 - Automatic personal record (PR) detection
+- Review the full planned set list in workout history, with unfinished sets and exercises marked skipped and excluded from volume, records, trends, and other performance calculations
 - Import workouts by pasting text — AI parses it into a session
 - Keep screen awake during active workout sessions
 - End-of-session feedback (difficulty, energy, notes)

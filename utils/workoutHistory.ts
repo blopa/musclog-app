@@ -7,6 +7,7 @@ import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
+import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import { WorkoutAnalytics } from '@/database/services';
 import i18n from '@/lang/lang';
 import { type Theme } from '@/theme';
@@ -19,6 +20,7 @@ import {
 import { getDateFnsLocale } from './dateFnsLocale';
 import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
 import { getWeightUnitI18nKey } from './units';
+import { isLoggedWorkoutSet } from './workoutSetCompletion';
 
 // Type definitions
 export type WorkoutType = 'strength' | 'cardio' | 'hiit' | 'yoga';
@@ -160,8 +162,31 @@ export async function getMuscleGroupsFromWorkout(workoutId: string): Promise<str
       .query(Q.where('workout_log_id', workoutId), Q.where('deleted_at', Q.eq(null)))
       .fetch();
 
-    // Get unique exercise IDs from log exercises
-    const exerciseIds = [...new Set(logExercises.map((le) => le.exerciseId))];
+    const logExerciseIds = logExercises.map((logExercise) => logExercise.id);
+
+    if (logExerciseIds.length === 0) {
+      return [];
+    }
+
+    const loggedSets = (
+      await database
+        .get<WorkoutLogSet>('workout_log_sets')
+        .query(
+          Q.where('log_exercise_id', Q.oneOf(logExerciseIds)),
+          Q.where('deleted_at', Q.eq(null))
+        )
+        .fetch()
+    ).filter(isLoggedWorkoutSet);
+    const performedLogExerciseIds = new Set(loggedSets.map((set) => set.logExerciseId));
+
+    // Get unique exercise IDs only for exercise blocks with at least one submitted set.
+    const exerciseIds = [
+      ...new Set(
+        logExercises
+          .filter((logExercise) => performedLogExerciseIds.has(logExercise.id))
+          .map((logExercise) => logExercise.exerciseId)
+      ),
+    ];
 
     if (exerciseIds.length === 0) {
       return [];

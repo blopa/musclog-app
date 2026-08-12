@@ -46,6 +46,8 @@ type SetOverrides = {
   repsInReserve?: number | null;
   partials?: number | null;
   setOrder?: number | null;
+  difficultyLevel?: number;
+  isSkipped?: boolean;
 };
 
 function logSet(overrides: SetOverrides = {}) {
@@ -57,6 +59,8 @@ function logSet(overrides: SetOverrides = {}) {
     repsInReserve: 2,
     partials: 0,
     setOrder: 1,
+    difficultyLevel: 5,
+    isSkipped: false,
     ...overrides,
   } as never;
 }
@@ -243,6 +247,36 @@ describe('transformWorkoutToDetailData — exercise grouping', () => {
     });
   });
 
+  it('keeps skipped sets in the plan but excludes them from time spent', async () => {
+    const result = await transform(
+      workoutLog(),
+      [
+        logSet({ id: 'logged', setOrder: 1 }),
+        logSet({
+          id: 'skipped',
+          setOrder: 2,
+          difficultyLevel: 0,
+          isSkipped: true,
+        }),
+      ],
+      [exercise()]
+    );
+
+    expect(result.exercises[0]).toMatchObject({ timeSpent: 2, isSkipped: false });
+    expect(result.exercises[0].sets.map((set) => set.isSkipped)).toEqual([false, true]);
+  });
+
+  it('marks an exercise skipped when none of its planned sets were logged', async () => {
+    const result = await transform(
+      workoutLog(),
+      [logSet({ difficultyLevel: 0, isSkipped: true })],
+      [exercise()]
+    );
+
+    expect(result.exercises[0]).toMatchObject({ timeSpent: 0, isSkipped: true });
+    expect(result.exercises[0].sets[0].isSkipped).toBe(true);
+  });
+
   it('normalizes a missing muscle group to null', async () => {
     const result = await transform(
       workoutLog(),
@@ -376,6 +410,24 @@ describe('transformWorkoutToDetailData — personal record highlighting', () => 
     ]);
 
     const result = await transform(workoutLog(), [logSet({ id: 's1', weight: 60 })], [exercise()]);
+
+    expect(result.exercises[0].sets[0].isHighlighted).toBe(false);
+  });
+
+  it('never highlights a skipped set as a personal record', async () => {
+    detectPersonalRecords.mockResolvedValue([
+      {
+        exerciseId: 'ex-1',
+        type: 'weight',
+        newRecord: { weight: 100, reps: 0, volume: 0 },
+      },
+    ]);
+
+    const result = await transform(
+      workoutLog(),
+      [logSet({ weight: 100, difficultyLevel: 0, isSkipped: true })],
+      [exercise()]
+    );
 
     expect(result.exercises[0].sets[0].isHighlighted).toBe(false);
   });

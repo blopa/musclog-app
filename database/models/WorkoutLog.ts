@@ -328,29 +328,15 @@ export default class WorkoutLog extends Model {
 
     const totalVolume = await this.calculateVolume(bodyWeightKg);
     const now = Date.now();
-    const logExercises = (await this.logExercises.fetch()).filter(
-      (exercise) => !exercise.deletedAt
-    );
     const sets = await this.getAllSets();
-    const loggedExerciseIds = new Set(
-      sets.filter(isLoggedWorkoutSet).map((set) => set.logExerciseId)
-    );
 
-    // Template sets are copied into the live log as placeholders. Once the session ends they
-    // must not become history: only sets the user actually submitted belong to a completed log.
-    const unloggedSetUpdates = sets
+    // Preserve planned sets in history, but mark every unsubmitted one skipped so the detail
+    // screen can distinguish the original plan from work the user actually performed.
+    const skippedSetUpdates = sets
       .filter((set) => !isLoggedWorkoutSet(set))
       .map((set) =>
         set.prepareUpdate((record) => {
-          record.deletedAt = now;
-          record.updatedAt = now;
-        })
-      );
-    const emptyExerciseUpdates = logExercises
-      .filter((exercise) => !loggedExerciseIds.has(exercise.id))
-      .map((exercise) =>
-        exercise.prepareUpdate((record) => {
-          record.deletedAt = now;
+          record.isSkipped = true;
           record.updatedAt = now;
         })
       );
@@ -360,11 +346,7 @@ export default class WorkoutLog extends Model {
       log.updatedAt = now;
     });
 
-    await this.collection.database.batch(
-      ...unloggedSetUpdates,
-      ...emptyExerciseUpdates,
-      completedLog
-    );
+    await this.collection.database.batch(...skippedSetUpdates, completedLog);
   }
 
   @writer
