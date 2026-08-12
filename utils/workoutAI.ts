@@ -18,6 +18,7 @@ import type {
   GenerateWorkoutPlanResponse,
   ParsedWorkout,
 } from './coachAI';
+import { DEFAULT_LOGGED_DIFFICULTY_LEVEL } from './workoutSetCompletion';
 
 /**
  * Process workout volume calculation response from AI
@@ -366,6 +367,7 @@ export async function processParsedWorkouts(
             exerciseId: matchedExercise.id,
             reps: set.reps,
             weight: set.weight,
+            difficultyLevel: DEFAULT_LOGGED_DIFFICULTY_LEVEL,
             isNew: true,
             setOrder: setCount,
           });

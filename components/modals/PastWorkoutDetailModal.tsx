@@ -34,6 +34,7 @@ import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 import { formatWorkoutDuration } from '@/utils/workout';
 import type { WorkoutExercise, WorkoutSet } from '@/utils/workoutDetail';
+import { DEFAULT_LOGGED_DIFFICULTY_LEVEL } from '@/utils/workoutSetCompletion';
 
 import EditPastWorkoutDataModal from './EditPastWorkoutDataModal';
 import EditWorkoutMetadataModal from './EditWorkoutMetadataModal';
@@ -840,6 +841,7 @@ export default function PastWorkoutDetailModal({
                 partials: s.partialReps,
                 restTimeAfter: s.rest,
                 repsInReserve: s.repsInReserve,
+                difficultyLevel: isNew ? DEFAULT_LOGGED_DIFFICULTY_LEVEL : undefined,
                 isNew,
                 setOrder: idx, // Consecutive order: 0, 1, 2, 3, ...
               };

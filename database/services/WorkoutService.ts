@@ -20,6 +20,7 @@ import { getCurrentTimezone } from '@/utils/timezone';
 import { jsDayToWeekdayIndex } from '@/utils/weekdays';
 import { getRollingWeeklyWorkoutRange } from '@/utils/weeklyWorkoutProgress';
 import { calculateWorkoutKcal, type MWEMInput } from '@/utils/workoutEnergyCalculator';
+import { isLoggedWorkoutSet } from '@/utils/workoutSetCompletion';
 import {
   getFirstUnloggedInEffectiveOrder,
   getNextSetInEffectiveOrder,
@@ -735,7 +736,7 @@ export class WorkoutService {
               .fetch()
           : [];
 
-      const sets = WorkoutService.buildEnrichedSetsFromRecords(
+      const allSets = WorkoutService.buildEnrichedSetsFromRecords(
         logExercises.map((le) => ({
           id: le.id,
           exerciseId: le.exerciseId,
@@ -745,7 +746,18 @@ export class WorkoutService {
         rawSets
       );
 
-      const exerciseIds = [...new Set(logExercises.map((le) => le.exerciseId))].filter(Boolean);
+      // Older completed logs may predate completion-time pruning. Hide their copied template
+      // placeholders on read as well, so existing history immediately reflects performed work.
+      const hasCopiedTemplatePlaceholders = !!workoutLog.completedAt && !!workoutLog.templateId;
+      const sets = hasCopiedTemplatePlaceholders ? allSets.filter(isLoggedWorkoutSet) : allSets;
+      const visibleLogExerciseIds = new Set(sets.map((set) => set.logExerciseId));
+      const visibleLogExercises = hasCopiedTemplatePlaceholders
+        ? logExercises.filter((exercise) => visibleLogExerciseIds.has(exercise.id))
+        : logExercises;
+
+      const exerciseIds = [...new Set(visibleLogExercises.map((le) => le.exerciseId))].filter(
+        Boolean
+      );
       const exercises =
         exerciseIds.length > 0
           ? await database
@@ -758,7 +770,7 @@ export class WorkoutService {
         workoutLog,
         sets,
         exercises,
-        logExercises,
+        logExercises: visibleLogExercises,
       };
     } catch (error) {
       if (!repairAttempted) {

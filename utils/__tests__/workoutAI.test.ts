@@ -1,6 +1,7 @@
-import { ExerciseService, WorkoutAnalytics } from '@/database/services';
+import { ExerciseService, WorkoutAnalytics, WorkoutService } from '@/database/services';
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
-import { processWorkoutPlanResponse } from '@/utils/workoutAI';
+import { processParsedWorkouts, processWorkoutPlanResponse } from '@/utils/workoutAI';
+import { DEFAULT_LOGGED_DIFFICULTY_LEVEL } from '@/utils/workoutSetCompletion';
 
 jest.mock('lucide-react-native', () => ({ Dumbbell: jest.fn() }));
 
@@ -8,7 +9,11 @@ jest.mock('@/database/services', () => ({
   ChatService: { saveMessage: jest.fn() },
   ExerciseService: { getAllExercises: jest.fn() },
   WorkoutAnalytics: { getProgressiveOverloadData: jest.fn() },
-  WorkoutService: { updateWorkoutSets: jest.fn() },
+  WorkoutService: {
+    completeWorkout: jest.fn(),
+    startFreeWorkout: jest.fn(),
+    updateWorkoutSets: jest.fn(),
+  },
 }));
 
 jest.mock('@/database/services/WorkoutTemplateService', () => ({
@@ -22,6 +27,7 @@ jest.mock('@/lang/lang', () => ({
 
 const mockExerciseService = ExerciseService as jest.Mocked<typeof ExerciseService>;
 const mockWorkoutAnalytics = WorkoutAnalytics as jest.Mocked<typeof WorkoutAnalytics>;
+const mockWorkoutService = WorkoutService as jest.Mocked<typeof WorkoutService>;
 const mockWorkoutTemplateService = WorkoutTemplateService as jest.Mocked<
   typeof WorkoutTemplateService
 >;
@@ -79,5 +85,40 @@ describe('processWorkoutPlanResponse', () => {
       planId: 'plan-1',
       planName: 'My Workout Plan',
     });
+  });
+});
+
+describe('processParsedWorkouts', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockExerciseService.getAllExercises.mockResolvedValue([
+      { id: 'bench', name: 'Bench Press', equipmentType: 'barbell' } as any,
+    ]);
+    mockWorkoutService.startFreeWorkout.mockResolvedValue({ id: 'imported-workout' } as any);
+    mockWorkoutService.completeWorkout.mockResolvedValue({
+      workoutLog: { id: 'imported-workout' },
+      personalRecords: [],
+    } as any);
+  });
+
+  it('marks imported sets as logged so completion does not discard them', async () => {
+    await processParsedWorkouts([
+      {
+        title: 'Imported Push Day',
+        date: '2026-08-12',
+        exercises: [{ name: 'Bench Press', sets: [{ reps: 8, weight: 80 }] }],
+      } as any,
+    ]);
+
+    expect(mockWorkoutService.updateWorkoutSets).toHaveBeenCalledWith('imported-workout', [
+      expect.objectContaining({
+        exerciseId: 'bench',
+        reps: 8,
+        weight: 80,
+        difficultyLevel: DEFAULT_LOGGED_DIFFICULTY_LEVEL,
+        isNew: true,
+      }),
+    ]);
+    expect(mockWorkoutService.completeWorkout).toHaveBeenCalledWith('imported-workout');
   });
 });

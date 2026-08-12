@@ -922,6 +922,91 @@ describe('WorkoutService', () => {
       expect(result.exercises).toEqual([exercise1, exercise2]);
     });
 
+    it('hides copied template placeholders from legacy completed workouts', async () => {
+      const workoutLog = createMockWorkoutLog({
+        id: 'workout-1',
+        completedAt: Date.now(),
+        deletedAt: null,
+      });
+      const performedLogExercise = createMockWorkoutLogExercise({
+        id: 'le-performed',
+        exerciseId: 'ex-performed',
+      });
+      const untouchedLogExercise = createMockWorkoutLogExercise({
+        id: 'le-untouched',
+        exerciseId: 'ex-untouched',
+      });
+      const skippedLogExercise = createMockWorkoutLogExercise({
+        id: 'le-skipped',
+        exerciseId: 'ex-skipped',
+      });
+      const performedSet = createMockWorkoutLogSet({
+        id: 'set-performed',
+        logExerciseId: performedLogExercise.id,
+        difficultyLevel: 8,
+      });
+      const untouchedSet = createMockWorkoutLogSet({
+        id: 'set-untouched',
+        logExerciseId: untouchedLogExercise.id,
+        difficultyLevel: 0,
+      });
+      const skippedSet = createMockWorkoutLogSet({
+        id: 'set-skipped',
+        logExerciseId: skippedLogExercise.id,
+        difficultyLevel: 0,
+        isSkipped: true,
+      });
+      const performedExercise = createMockExercise({ id: 'ex-performed' });
+
+      installTables({
+        // `installTables` does not evaluate Q clauses; return the row that the real oneOf query
+        // below selects, then assert that selection separately.
+        exercises: [performedExercise],
+        workout_log_exercises: [performedLogExercise, untouchedLogExercise, skippedLogExercise],
+        workout_log_sets: [performedSet, untouchedSet, skippedSet],
+        workout_logs: { find: jest.fn().mockResolvedValue(workoutLog) },
+      });
+
+      const result = await WorkoutService.getWorkoutWithDetails('workout-1');
+
+      expect(result.sets.map((set) => set.id)).toEqual(['set-performed']);
+      expect(result.logExercises.map((exercise) => exercise.id)).toEqual(['le-performed']);
+      expect(result.exercises).toEqual([performedExercise]);
+      expect(Q.oneOf).toHaveBeenLastCalledWith(['ex-performed']);
+    });
+
+    it('keeps legacy imported sets that predate explicit logged-state values', async () => {
+      const workoutLog = createMockWorkoutLog({
+        id: 'imported-workout',
+        templateId: undefined,
+        completedAt: Date.now(),
+        deletedAt: null,
+      });
+      const logExercise = createMockWorkoutLogExercise({
+        id: 'imported-log-exercise',
+        exerciseId: 'imported-exercise',
+      });
+      const importedSet = createMockWorkoutLogSet({
+        id: 'imported-set',
+        logExerciseId: logExercise.id,
+        difficultyLevel: 0,
+      });
+      const exercise = createMockExercise({ id: 'imported-exercise' });
+
+      installTables({
+        exercises: [exercise],
+        workout_log_exercises: [logExercise],
+        workout_log_sets: [importedSet],
+        workout_logs: { find: jest.fn().mockResolvedValue(workoutLog) },
+      });
+
+      const result = await WorkoutService.getWorkoutWithDetails(workoutLog.id);
+
+      expect(result.sets.map((set) => set.id)).toEqual(['imported-set']);
+      expect(result.logExercises).toEqual([logExercise]);
+      expect(result.exercises).toEqual([exercise]);
+    });
+
     it('should get sets ordered by set_order asc', async () => {
       const workoutLog = createMockWorkoutLog({
         id: 'workout-1',

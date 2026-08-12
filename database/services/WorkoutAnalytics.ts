@@ -11,6 +11,7 @@ import {
   MS_PER_SOLAR_DAY,
 } from '@/utils/calendarDate';
 import { calculateEstimated1RMForSet, calculateSetVolume } from '@/utils/workoutCalculator';
+import { isLoggedWorkoutSet } from '@/utils/workoutSetCompletion';
 
 import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
@@ -75,7 +76,7 @@ export class WorkoutAnalytics {
     });
 
     // Build plain objects from _raw so we always read actual DB values
-    return rawSets.map((set) => {
+    const sets = rawSets.map((set) => {
       const data = logExerciseMap.get(set.logExerciseId);
       const r = (set as unknown as { _raw: Record<string, unknown> })._raw;
       return {
@@ -97,6 +98,8 @@ export class WorkoutAnalytics {
         workoutLogId: data?.workoutLogId ?? '',
       } as EnrichedSet;
     });
+
+    return workoutLog.completedAt && workoutLog.templateId ? sets.filter(isLoggedWorkoutSet) : sets;
   }
 
   /**

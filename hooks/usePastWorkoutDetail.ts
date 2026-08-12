@@ -11,6 +11,7 @@ import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import { EnrichedWorkoutLogSet, WorkoutService } from '@/database/services';
 import { transformWorkoutToDetailData, type WorkoutDetailData } from '@/utils/workoutDetail';
+import { isLoggedWorkoutSet } from '@/utils/workoutSetCompletion';
 
 import { useDateFnsLocale } from './useDateFnsLocale';
 import { useSettings } from './useSettings';
@@ -118,31 +119,51 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
               externalId: null,
             });
           }
+
           const leMap = logExs.map((le) => ({
             id: le.id,
             exerciseId: le.exerciseId,
             groupId: le.groupId,
             notes: le.notes,
           }));
-          const enrichedSets = WorkoutService.buildEnrichedSetsFromRecords(leMap, rawSetsArr);
+
+          const allSets = WorkoutService.buildEnrichedSetsFromRecords(leMap, rawSetsArr);
+          const hasCopiedTemplatePlaceholders = !!log.completedAt && !!log.templateId;
+          const enrichedSets = hasCopiedTemplatePlaceholders
+            ? allSets.filter(isLoggedWorkoutSet)
+            : allSets;
+
+          const visibleLogExerciseIds = new Set(enrichedSets.map((set) => set.logExerciseId));
+          const visibleLogExercises = hasCopiedTemplatePlaceholders
+            ? logExs.filter((exercise) => visibleLogExerciseIds.has(exercise.id))
+            : logExs;
+
+          const visibleExerciseIds = new Set(
+            visibleLogExercises.map((exercise) => exercise.exerciseId)
+          );
+
+          const visibleExercises = hasCopiedTemplatePlaceholders
+            ? exercisesArr.filter((exercise) => visibleExerciseIds.has(exercise.id))
+            : exercisesArr;
+
           return from(
             transformWorkoutToDetailData(
               log,
               enrichedSets,
-              exercisesArr,
+              visibleExercises,
               t,
               units,
               dateFnsLocale,
               theme,
               appNumberLocale,
-              logExs.map((le) => le.exerciseId)
+              visibleLogExercises.map((le) => le.exerciseId)
             )
           ).pipe(
             map((transformed) => ({
               transformed,
               rawSets: enrichedSets,
-              logExercises: logExs,
-              exercises: exercisesArr,
+              logExercises: visibleLogExercises,
+              exercises: visibleExercises,
               externalId: log.externalId ?? null,
             })),
             catchError((err) => {

@@ -2,6 +2,7 @@ import { Model, Q, Query } from '@nozbe/watermelondb';
 import { children, field, relation, writer } from '@nozbe/watermelondb/decorators';
 
 import { calculateWorkoutVolume, type ExerciseWithSets } from '@/utils/workoutCalculator';
+import { isLoggedWorkoutSet } from '@/utils/workoutSetCompletion';
 
 import Exercise from './Exercise';
 import WorkoutLogExercise from './WorkoutLogExercise';
@@ -83,7 +84,7 @@ export default class WorkoutLog extends Model {
     const exerciseById = new Map(exercises.map((e) => [e.id, e]));
 
     // Fetch all sets in a single query (getAllSets already filters deleted)
-    const allSets = await this.getAllSets();
+    const allSets = (await this.getAllSets()).filter(isLoggedWorkoutSet);
     const setsByLogExId = new Map<string, WorkoutLogSet[]>();
     for (const set of allSets) {
       const id = set.logExerciseId;
@@ -327,12 +328,43 @@ export default class WorkoutLog extends Model {
 
     const totalVolume = await this.calculateVolume(bodyWeightKg);
     const now = Date.now();
+    const logExercises = (await this.logExercises.fetch()).filter(
+      (exercise) => !exercise.deletedAt
+    );
+    const sets = await this.getAllSets();
+    const loggedExerciseIds = new Set(
+      sets.filter(isLoggedWorkoutSet).map((set) => set.logExerciseId)
+    );
 
-    await this.update((log) => {
+    // Template sets are copied into the live log as placeholders. Once the session ends they
+    // must not become history: only sets the user actually submitted belong to a completed log.
+    const unloggedSetUpdates = sets
+      .filter((set) => !isLoggedWorkoutSet(set))
+      .map((set) =>
+        set.prepareUpdate((record) => {
+          record.deletedAt = now;
+          record.updatedAt = now;
+        })
+      );
+    const emptyExerciseUpdates = logExercises
+      .filter((exercise) => !loggedExerciseIds.has(exercise.id))
+      .map((exercise) =>
+        exercise.prepareUpdate((record) => {
+          record.deletedAt = now;
+          record.updatedAt = now;
+        })
+      );
+    const completedLog = this.prepareUpdate((log) => {
       log.completedAt = now;
       log.totalVolume = totalVolume;
       log.updatedAt = now;
     });
+
+    await this.collection.database.batch(
+      ...unloggedSetUpdates,
+      ...emptyExerciseUpdates,
+      completedLog
+    );
   }
 
   @writer
@@ -345,9 +377,11 @@ export default class WorkoutLog extends Model {
       if (feedback.exhaustionLevel !== undefined) {
         log.exhaustionLevel = feedback.exhaustionLevel;
       }
+
       if (feedback.workoutScore !== undefined) {
         log.workoutScore = feedback.workoutScore;
       }
+
       log.updatedAt = now;
     });
   }
