@@ -5,7 +5,7 @@ import { Confetti } from 'react-native-fast-confetti';
 const ConfettiOverlay = () => {
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-      <Confetti autoplay={true} />
+      <Confetti autoplay={true} gravity={0.5} />
     </View>
   );
 };
