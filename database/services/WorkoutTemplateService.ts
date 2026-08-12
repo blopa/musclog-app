@@ -850,7 +850,7 @@ export class WorkoutTemplateService {
           .query(
             Q.where('log_exercise_id', logExercises[0].id),
             Q.where('deleted_at', Q.eq(null)),
-            Q.where('difficulty_level', Q.gt(0)),
+            Q.where('completion_status', 'performed'),
             Q.sortBy('set_order', Q.asc)
           )
           .fetch();

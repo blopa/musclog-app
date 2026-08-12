@@ -4,18 +4,18 @@
  * exercise in the group, round 1 = second set of each, etc.
  */
 
+import { isPlannedWorkoutSet, type WorkoutSetCompletionState } from './workoutSetCompletion';
+
 /** Minimal shape needed for superset ordering; WorkoutLogSet and plain objects satisfy this. */
-export interface SetLike {
+export interface SetLike extends WorkoutSetCompletionState {
   setOrder: number;
   groupId?: string | null;
   exerciseId?: string | null;
-  difficultyLevel?: number | null;
-  isSkipped?: boolean | null;
   id?: string;
 }
 
 function isUnlogged(set: SetLike): boolean {
-  return (set.difficultyLevel ?? 0) === 0 && !(set.isSkipped ?? false);
+  return isPlannedWorkoutSet(set);
 }
 
 /**

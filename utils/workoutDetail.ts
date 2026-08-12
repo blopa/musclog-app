@@ -19,7 +19,7 @@ import { displayWeightKgNumeric } from './formatDisplayWeight';
 import { getWeightUnitI18nKey } from './units';
 import { calculateSetVolume } from './workoutCalculator';
 import { getWorkoutIcon } from './workoutHistory';
-import { isLoggedWorkoutSet } from './workoutSetCompletion';
+import { isPerformedWorkoutSet, isSkippedWorkoutSet } from './workoutSetCompletion';
 
 /**
  * Set data for workout detail display.
@@ -215,7 +215,7 @@ export async function transformWorkoutToDetailData(
   const personalRecords = await WorkoutAnalytics.detectPersonalRecords(workoutLog, bodyWeightKg);
   const prSetIds = new Set<string>();
   personalRecords.forEach((pr) => {
-    sets.filter(isLoggedWorkoutSet).forEach((set) => {
+    sets.filter(isPerformedWorkoutSet).forEach((set) => {
       if (set.exerciseId === pr.exerciseId) {
         const exercise = exerciseMap.get(pr.exerciseId);
         const setVol = calculateSetVolume(
@@ -262,7 +262,7 @@ export async function transformWorkoutToDetailData(
     const sortedSets = exerciseSets.sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0));
 
     const workoutSets: WorkoutSet[] = sortedSets.map((set, index) => {
-      const isSkipped = set.isSkipped ?? false;
+      const isSkipped = isSkippedWorkoutSet(set);
       const isHighlighted = !isSkipped && prSetIds.has(set.id);
       return {
         setNumber: index + 1,
@@ -275,7 +275,7 @@ export async function transformWorkoutToDetailData(
       };
     });
 
-    const loggedSetCount = exerciseSets.filter((set) => !set.isSkipped).length;
+    const loggedSetCount = exerciseSets.filter(isPerformedWorkoutSet).length;
     const timeSpent = loggedSetCount * 2;
 
     return {

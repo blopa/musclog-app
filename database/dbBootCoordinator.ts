@@ -18,6 +18,7 @@ import {
 } from '@/database/services';
 import { AppExerciseCatalogueService } from '@/database/services/AppExerciseCatalogueService';
 import { LegacyExerciseCatalogueMigration } from '@/database/services/LegacyExerciseCatalogueMigration';
+import { WorkoutSetStatusMigration } from '@/database/services/WorkoutSetStatusMigration';
 import { captureBootException } from '@/utils/bootErrorReporting';
 import {
   advanceBootProgressStep,
@@ -115,9 +116,12 @@ const BOOT_MIGRATIONS: BootMigration[] = [
     run: () => LegacyExerciseCatalogueMigration.run(),
   },
   {
-    tag: 'WorkoutService.repairLegacyCompletedTemplatePlaceholders',
-    // Data-driven and idempotent so restoring an older backup is repaired on the next boot too.
-    run: () => WorkoutService.repairLegacyCompletedTemplatePlaceholders(),
+    tag: 'WorkoutSetStatusMigration.run',
+    // Native rows are rewritten by migration-v26. LokiJS ignores unsafe SQL, so web performs
+    // the same rewrite in bounded batches once; an interrupted run resumes from null statuses.
+    webOnly: true,
+    runOnce: true,
+    run: () => WorkoutSetStatusMigration.run(),
   },
   {
     tag: 'WorkoutService.backfillNullTotalVolumes',

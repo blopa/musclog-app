@@ -75,8 +75,11 @@ during startup captures the correct user data.
 3. On a version bump, calls `dumpDatabase()` (web), computes a SHA-256 content
    hash, and stores the JSON under `localStorage[<WEB_BACKUP_DATA_PREFIX><hash>]`
    plus a metadata entry in the `musclog_pre_migration_backups_v1` index (kept to
-   3, with quota-exceeded fallback that clears older backups). Backups are
-   surfaced for restore/export/delete by `LocalBackupsModal`.
+   3). On quota exhaustion it evicts the oldest backup one at a time, committing
+   each smaller index before deleting that payload, while protecting the newest
+   recovery point until the replacement payload and metadata are committed. If the
+   replacement still cannot fit, it aborts and leaves that protected backup intact.
+   Backups are surfaced for restore/export/delete by `LocalBackupsModal`.
 4. Always advances the stored version in `finally`, so a failed dump doesn't
    retry forever.
 
@@ -93,7 +96,9 @@ path on web, then indexes the portable JSON with reason `exercise-catalogue`.
 This backup is required: writing the file and its metadata must both succeed
 before the migration enters its writer. Failure is reported, the migration
 rejects, and boot can retry later with every retired row still intact. The backup
-is labeled “Before exercise catalogue update” in `LocalBackupsModal`.
+is labeled “Before exercise catalogue update” in `LocalBackupsModal`. On web,
+quota recovery never deletes the last existing recovery point to make room for
+this required replacement.
 
 ## Shared serialization core
 

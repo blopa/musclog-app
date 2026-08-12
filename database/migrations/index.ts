@@ -24,6 +24,7 @@ import migrationV22 from '@/database/migrations/2026/06/migration-v22';
 import migrationV23 from '@/database/migrations/2026/07/migration-v23';
 import migrationV24 from '@/database/migrations/2026/08/migration-v24';
 import migrationV25 from '@/database/migrations/2026/08/migration-v25';
+import migrationV26 from '@/database/migrations/2026/08/migration-v26';
 
 export const migrations = schemaMigrations({
   migrations: [
@@ -119,5 +120,8 @@ export const migrations = schemaMigrations({
     migrationV24,
     // Version 25: Add named workout plans, their template memberships, and plan attribution on logs.
     migrationV25,
+
+    // Version 26: Give logged sets an explicit lifecycle status instead of overloading RPE.
+    migrationV26,
   ],
 });

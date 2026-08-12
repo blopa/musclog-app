@@ -207,8 +207,13 @@ export const schema = appSchema({
         { name: 'partials', type: 'number', isOptional: true }, // Partial reps (defaults to 0)
         { name: 'rest_time_after', type: 'number' },
         { name: 'reps_in_reserve', type: 'number' },
+        // Canonical lifecycle state: 'planned' | 'performed' | 'skipped'.
+        { name: 'completion_status', type: 'string', isOptional: true, isIndexed: true },
+        // RPE is independent from completion. Null means the set has no effort rating.
+        { name: 'difficulty_level', type: 'number', isOptional: true },
+        // Read only during the v26 web backfill and when restoring old exports.
+        // New code must use completion_status; remove this compatibility column in a later schema.
         { name: 'is_skipped', type: 'boolean', isOptional: true },
-        { name: 'difficulty_level', type: 'number' }, // 1-10 (RPE)
         { name: 'set_type', type: 'string' }, // 'normal' | 'warmup' | 'failure' | 'drop_set' | 'myo_rep'
         { name: 'set_order', type: 'number' },
         { name: 'rep_data_json', type: 'string', isOptional: true },

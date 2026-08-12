@@ -84,20 +84,83 @@ function saveBackupIndex(backups: BackupFileMeta[]): void {
 
 // ─── Pruning ───────────────────────────────────────────────────────────────
 
-function pruneOldBackups(backups: BackupFileMeta[]): BackupFileMeta[] {
-  if (backups.length <= MAX_BACKUPS) {
-    return backups;
-  }
+function backupContentKey(uri: string): string {
+  return `${WEB_BACKUP_DATA_PREFIX}${uri.replace('web-backup://', '')}`;
+}
 
+function isQuotaExceededError(error: unknown): boolean {
+  return (
+    error instanceof DOMException &&
+    (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED')
+  );
+}
+
+function commitBackupIndex(backups: BackupFileMeta[]): void {
   const keep = backups.slice(0, MAX_BACKUPS);
   const remove = backups.slice(MAX_BACKUPS);
 
-  for (const b of remove) {
-    const hash = b.uri.replace('web-backup://', '');
-    localStorage.removeItem(`${WEB_BACKUP_DATA_PREFIX}${hash}`);
+  // Commit the index first. If that fails, every existing indexed recovery point
+  // still has its content. Removed payloads become harmless orphans, never broken links.
+  saveBackupIndex(keep);
+  for (const backup of remove) {
+    localStorage.removeItem(backupContentKey(backup.uri));
+  }
+}
+
+function storeBackupContentWithRecovery(
+  uri: string,
+  content: string,
+  existing: BackupFileMeta[]
+): BackupFileMeta[] {
+  let retained = existing.filter((backup) => backup.uri !== uri);
+  const existingPayload = localStorage.getItem(backupContentKey(uri));
+
+  // The URI is content-addressed. A present matching key already contains this dump,
+  // so only its metadata needs to be refreshed.
+  if (existingPayload !== null) {
+    return retained;
   }
 
-  return keep;
+  try {
+    localStorage.setItem(backupContentKey(uri), content);
+    return retained;
+  } catch (error) {
+    if (!isQuotaExceededError(error)) {
+      throw error;
+    }
+  }
+
+  // Keep the newest existing recovery point until the replacement payload exists.
+  // Evict older entries one at a time so a failed retry never empties the backup set.
+  const protectedUri = retained[0]?.uri;
+  while (retained.length > 0) {
+    let victimIndex = -1;
+    for (let index = retained.length - 1; index >= 0; index--) {
+      if (retained[index].uri !== protectedUri) {
+        victimIndex = index;
+        break;
+      }
+    }
+    if (victimIndex === -1) {
+      throw new Error('Web backup quota exceeded while preserving the latest recovery point');
+    }
+
+    const victim = retained[victimIndex];
+    retained = retained.filter((_, index) => index !== victimIndex);
+    saveBackupIndex(retained);
+    localStorage.removeItem(backupContentKey(victim.uri));
+
+    try {
+      localStorage.setItem(backupContentKey(uri), content);
+      return retained;
+    } catch (error) {
+      if (!isQuotaExceededError(error)) {
+        throw error;
+      }
+    }
+  }
+
+  throw new Error('Web backup quota exceeded');
 }
 
 // ─── Public API (matches preMigrationBackup.ts) ────────────────────────────
@@ -105,8 +168,7 @@ function pruneOldBackups(backups: BackupFileMeta[]): BackupFileMeta[] {
 export async function deleteBackup(uri: string): Promise<void> {
   const backups = await getStoredBackups();
   const next = backups.filter((b) => b.uri !== uri);
-  const hash = uri.replace('web-backup://', '');
-  localStorage.removeItem(`${WEB_BACKUP_DATA_PREFIX}${hash}`);
+  localStorage.removeItem(backupContentKey(uri));
   saveBackupIndex(next);
 }
 
@@ -121,25 +183,20 @@ async function executeLiveBackup(reason: BackupFileMeta['reason']): Promise<stri
   const hash = await computeHash(jsonString);
   const uri = `web-backup://${hash}`;
   const createdAt = new Date().toISOString();
-
-  try {
-    localStorage.setItem(`${WEB_BACKUP_DATA_PREFIX}${hash}`, jsonString);
-  } catch {
-    const existing = await getStoredBackups();
-    for (const backup of existing) {
-      const existingHash = backup.uri.replace('web-backup://', '');
-      localStorage.removeItem(`${WEB_BACKUP_DATA_PREFIX}${existingHash}`);
-    }
-    localStorage.removeItem(WEB_BACKUPS_KEY);
-    localStorage.setItem(`${WEB_BACKUP_DATA_PREFIX}${hash}`, jsonString);
-  }
-
   const existing = await getStoredBackups();
-  const next = pruneOldBackups([
-    { uri, createdAt, fromVersion: null, toVersion: null, reason },
-    ...existing.filter((backup) => backup.uri !== uri),
-  ]);
-  saveBackupIndex(next);
+  const hadExistingPayload = localStorage.getItem(backupContentKey(uri)) !== null;
+  const retained = storeBackupContentWithRecovery(uri, jsonString, existing);
+  try {
+    commitBackupIndex([
+      { uri, createdAt, fromVersion: null, toVersion: null, reason },
+      ...retained,
+    ]);
+  } catch (error) {
+    if (!hadExistingPayload) {
+      localStorage.removeItem(backupContentKey(uri));
+    }
+    throw error;
+  }
   return hash;
 }
 
@@ -221,44 +278,27 @@ export async function runWebPreMigrationBackupIfNeeded(): Promise<void> {
     const hash = await computeHash(jsonString);
     const createdAt = new Date().toISOString();
 
-    // Store content — handle QuotaExceededError by clearing older backups first.
-    let stored = false;
-    try {
-      localStorage.setItem(`${WEB_BACKUP_DATA_PREFIX}${hash}`, jsonString);
-      stored = true;
-    } catch {
-      console.warn('[WebBackup] localStorage quota exceeded, clearing old backups before retry');
-      const existing = await getStoredBackups();
-      for (const b of existing) {
-        const h = b.uri.replace('web-backup://', '');
-        localStorage.removeItem(`${WEB_BACKUP_DATA_PREFIX}${h}`);
-      }
-      localStorage.removeItem(WEB_BACKUPS_KEY);
-      try {
-        localStorage.setItem(`${WEB_BACKUP_DATA_PREFIX}${hash}`, jsonString);
-        stored = true;
-      } catch {
-        console.warn('[WebBackup] Database dump too large for localStorage, skipping web backup');
-      }
-    }
-
-    if (!stored) {
-      return;
-    }
-
-    // Update metadata index.
     const existing = await getStoredBackups();
-    const next = pruneOldBackups([
-      {
-        uri: `web-backup://${hash}`,
-        createdAt,
-        fromVersion,
-        toVersion,
-        reason: 'schema-migration',
-      },
-      ...existing,
-    ]);
-    saveBackupIndex(next);
+    const uri = `web-backup://${hash}`;
+    const hadExistingPayload = localStorage.getItem(backupContentKey(uri)) !== null;
+    const retained = storeBackupContentWithRecovery(uri, jsonString, existing);
+    try {
+      commitBackupIndex([
+        {
+          uri,
+          createdAt,
+          fromVersion,
+          toVersion,
+          reason: 'schema-migration',
+        },
+        ...retained,
+      ]);
+    } catch (error) {
+      if (!hadExistingPayload) {
+        localStorage.removeItem(backupContentKey(uri));
+      }
+      throw error;
+    }
 
     console.log(`[WebBackup] Created backup v${fromVersion}→v${toVersion} (hash: ${hash})`);
   } catch (error) {

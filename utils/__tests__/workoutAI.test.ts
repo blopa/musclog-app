@@ -6,7 +6,6 @@ import {
   processParsedWorkouts,
   processWorkoutPlanResponse,
 } from '@/utils/workoutAI';
-import { DEFAULT_LOGGED_DIFFICULTY_LEVEL } from '@/utils/workoutSetCompletion';
 
 jest.mock('lucide-react-native', () => ({ Dumbbell: jest.fn() }));
 
@@ -121,7 +120,7 @@ describe('processParsedWorkouts', () => {
         exerciseId: 'bench',
         reps: 8,
         weight: 80,
-        difficultyLevel: DEFAULT_LOGGED_DIFFICULTY_LEVEL,
+        completionStatus: 'performed',
         isNew: true,
       }),
     ]);
@@ -147,15 +146,14 @@ describe('completed workout AI summaries', () => {
           exerciseId: 'bench',
           reps: 8,
           weight: 80,
+          completionStatus: 'performed',
           difficultyLevel: 7,
-          isSkipped: false,
         },
         {
           exerciseId: 'fly',
           reps: 12,
           weight: 30,
-          difficultyLevel: 0,
-          isSkipped: true,
+          completionStatus: 'skipped',
         },
       ],
     } as any);

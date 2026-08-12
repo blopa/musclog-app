@@ -20,7 +20,11 @@ import { getCurrentTimezone } from '@/utils/timezone';
 import { jsDayToWeekdayIndex } from '@/utils/weekdays';
 import { getRollingWeeklyWorkoutRange } from '@/utils/weeklyWorkoutProgress';
 import { calculateWorkoutKcal, type MWEMInput } from '@/utils/workoutEnergyCalculator';
-import { isLoggedWorkoutSet, markUnloggedWorkoutSetsSkipped } from '@/utils/workoutSetCompletion';
+import {
+  assertValidWorkoutSetDifficultyLevel,
+  isPerformedWorkoutSet,
+  type WorkoutSetCompletionStatus,
+} from '@/utils/workoutSetCompletion';
 import {
   getFirstUnloggedInEffectiveOrder,
   getNextSetInEffectiveOrder,
@@ -37,6 +41,22 @@ export type EnrichedWorkoutLogSet = WorkoutLogSet & {
   groupId?: string;
   notes?: string;
   isAutoAdjusted?: boolean;
+};
+
+export type WorkoutSetUpdate = {
+  setId: string;
+  exerciseId?: string;
+  reps?: number;
+  weight?: number;
+  partials?: number;
+  restTimeAfter?: number;
+  repsInReserve?: number;
+  difficultyLevel?: number | null;
+  completionStatus?: WorkoutSetCompletionStatus;
+  setType?: string;
+  groupId?: string;
+  isNew?: boolean;
+  setOrder?: number;
 };
 
 export class WorkoutService {
@@ -469,7 +489,7 @@ export class WorkoutService {
             const setsByExercise = new Map<string, WorkoutLogSet[]>();
             for (const set of sets) {
               // Only include completed and non-skipped sets for calorie calculation
-              if ((set.difficultyLevel ?? 0) === 0 || set.isSkipped) {
+              if (!isPerformedWorkoutSet(set)) {
                 continue;
               }
 
@@ -527,7 +547,7 @@ export class WorkoutService {
         const { sets, exercises } = await this.getWorkoutWithDetails(workoutLogId);
         const exerciseMap = new Map(exercises.map((e) => [e.id, e]));
         const byExercise = new Map<string, WorkoutLogSet[]>();
-        for (const set of sets.filter(isLoggedWorkoutSet)) {
+        for (const set of sets.filter(isPerformedWorkoutSet)) {
           const eid = set.exerciseId ?? '';
           if (!byExercise.has(eid)) {
             byExercise.set(eid, []);
@@ -662,6 +682,9 @@ export class WorkoutService {
     return rawSets.map((set) => {
       const logExercise = logExerciseMap.get(set.logExerciseId);
       const r = (set as unknown as { _raw: Record<string, unknown> })._raw;
+      const completionStatus =
+        (r.completion_status as WorkoutSetCompletionStatus | undefined) ??
+        (set as WorkoutLogSet).completionStatus;
 
       return {
         id: set.id,
@@ -671,8 +694,11 @@ export class WorkoutService {
         partials: (r.partials as number | undefined) ?? (set as WorkoutLogSet).partials,
         restTimeAfter: (r.rest_time_after as number) ?? 0,
         repsInReserve: (r.reps_in_reserve as number) ?? 0,
-        isSkipped: (r.is_skipped as boolean | undefined) ?? (set as WorkoutLogSet).isSkipped,
-        difficultyLevel: (r.difficulty_level as number) ?? 0,
+        completionStatus,
+        isSkipped: completionStatus === 'skipped',
+        difficultyLevel:
+          (r.difficulty_level as number | null | undefined) ??
+          (set as WorkoutLogSet).difficultyLevel,
         setType: (r.set_type as string) ?? 'normal',
         setOrder: (r.set_order as number) ?? 0,
         createdAt: (r.created_at as number) ?? 0,
@@ -736,7 +762,7 @@ export class WorkoutService {
               .fetch()
           : [];
 
-      const allSets = WorkoutService.buildEnrichedSetsFromRecords(
+      const sets = WorkoutService.buildEnrichedSetsFromRecords(
         logExercises.map((le) => ({
           id: le.id,
           exerciseId: le.exerciseId,
@@ -745,13 +771,6 @@ export class WorkoutService {
         })),
         rawSets
       );
-
-      // Older completed template logs predate completion-time skipped markers. Represent their
-      // unlogged placeholders as skipped on read so history remains truthful without a migration.
-      const hasCopiedTemplatePlaceholders = !!workoutLog.completedAt && !!workoutLog.templateId;
-      const sets = hasCopiedTemplatePlaceholders
-        ? markUnloggedWorkoutSetsSkipped(allSets)
-        : allSets;
 
       const exerciseIds = [...new Set(logExercises.map((le) => le.exerciseId))].filter(Boolean);
       const exercises =
@@ -790,21 +809,7 @@ export class WorkoutService {
    */
   static async updateWorkoutSets(
     workoutLogId: string,
-    updates: {
-      setId: string;
-      exerciseId?: string; // Required for new sets
-      reps?: number;
-      weight?: number;
-      partials?: number;
-      restTimeAfter?: number;
-      repsInReserve?: number;
-      difficultyLevel?: number;
-      isSkipped?: boolean;
-      setType?: string;
-      groupId?: string;
-      isNew?: boolean; // Flag to indicate if this is a new set
-      setOrder?: number; // Optional: explicit ordering for the set
-    }[],
+    updates: WorkoutSetUpdate[],
     deletedSetIds?: string[] // IDs of sets to delete
   ): Promise<{ workoutLogId: string; totalVolume: number }> {
     try {
@@ -854,6 +859,7 @@ export class WorkoutService {
 
         for (const update of updates) {
           try {
+            assertValidWorkoutSetDifficultyLevel(update.difficultyLevel);
             if (update.isNew && update.exerciseId) {
               // For new sets, find or create the log exercise block
               let logExerciseId = exerciseToLogExerciseMap.get(update.exerciseId);
@@ -890,8 +896,8 @@ export class WorkoutService {
                 logSet.partials = update.partials ?? 0;
                 logSet.restTimeAfter = update.restTimeAfter ?? 0;
                 logSet.repsInReserve = update.repsInReserve ?? 0;
-                logSet.difficultyLevel = update.difficultyLevel ?? 0;
-                logSet.isSkipped = update.isSkipped ?? false;
+                logSet.difficultyLevel = update.difficultyLevel ?? undefined;
+                logSet.completionStatus = update.completionStatus ?? 'performed';
                 logSet.setType = update.setType ?? 'normal';
                 logSet.setOrder = update.setOrder ?? 0;
                 logSet.createdAt = Date.now();
@@ -922,17 +928,11 @@ export class WorkoutService {
                 }
 
                 if (update.difficultyLevel !== undefined) {
-                  const isActuallySkipped = update.isSkipped ?? s.isSkipped;
-                  if (update.difficultyLevel === 0 && isActuallySkipped) {
-                    // Allow 0 only for skipped sets
-                  } else if (update.difficultyLevel < 1 || update.difficultyLevel > 10) {
-                    throw new Error('Difficulty level must be between 1 and 10');
-                  }
-                  s.difficultyLevel = update.difficultyLevel;
+                  s.difficultyLevel = update.difficultyLevel ?? undefined;
                 }
 
-                if (update.isSkipped !== undefined) {
-                  s.isSkipped = update.isSkipped;
+                if (update.completionStatus !== undefined) {
+                  s.completionStatus = update.completionStatus;
                 }
 
                 if (update.setType !== undefined) {
@@ -1281,8 +1281,8 @@ export class WorkoutService {
             set.partials = 0;
             set.restTimeAfter = originalSet.restTimeAfter;
             set.repsInReserve = 0;
-            set.difficultyLevel = 0; // Unlogged
-            set.isSkipped = false;
+            set.difficultyLevel = undefined;
+            set.completionStatus = 'planned';
             set.setType = originalSet.setType ?? 'normal';
             set.createdAt = now;
             set.updatedAt = now;
@@ -1325,80 +1325,6 @@ export class WorkoutService {
           log.prepareUpdate((l) => {
             l.totalVolume = volume;
             l.updatedAt = now;
-          })
-        )
-      );
-    });
-  }
-
-  /**
-   * Repair completed template workouts saved before unsubmitted placeholders were marked skipped.
-   * The affected rows also have their stored volume recalculated from submitted sets only.
-   */
-  static async repairLegacyCompletedTemplatePlaceholders(): Promise<void> {
-    const logs = await database
-      .get<WorkoutLog>('workout_logs')
-      .query(
-        Q.where('template_id', Q.notEq(null)),
-        Q.where('completed_at', Q.notEq(null)),
-        Q.where('deleted_at', Q.eq(null))
-      )
-      .fetch();
-
-    if (logs.length === 0) {
-      return;
-    }
-
-    const logIds = logs.map((log) => log.id);
-    const logExercises = await database
-      .get<WorkoutLogExercise>('workout_log_exercises')
-      .query(Q.where('workout_log_id', Q.oneOf(logIds)), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
-
-    if (logExercises.length === 0) {
-      return;
-    }
-
-    const workoutIdByLogExerciseId = new Map(
-      logExercises.map((logExercise) => [logExercise.id, logExercise.workoutLogId])
-    );
-    const sets = await database
-      .get<WorkoutLogSet>('workout_log_sets')
-      .query(
-        Q.where('log_exercise_id', Q.oneOf(logExercises.map((logExercise) => logExercise.id))),
-        Q.where('deleted_at', Q.eq(null))
-      )
-      .fetch();
-    const legacyPlaceholders = sets.filter((set) => !isLoggedWorkoutSet(set) && !set.isSkipped);
-
-    if (legacyPlaceholders.length === 0) {
-      return;
-    }
-
-    const affectedWorkoutIds = new Set(
-      legacyPlaceholders
-        .map((set) => workoutIdByLogExerciseId.get(set.logExerciseId))
-        .filter((workoutId): workoutId is string => !!workoutId)
-    );
-    const affectedLogs = logs.filter((log) => affectedWorkoutIds.has(log.id));
-    const bodyWeightKg = await UserMetricService.getUserBodyWeightKgForVolume();
-    const correctedVolumes = await Promise.all(
-      affectedLogs.map(async (log) => ({ log, volume: await log.calculateVolume(bodyWeightKg) }))
-    );
-    const now = Date.now();
-
-    await database.write(async () => {
-      await database.batch(
-        ...legacyPlaceholders.map((set) =>
-          set.prepareUpdate((record) => {
-            record.isSkipped = true;
-            record.updatedAt = now;
-          })
-        ),
-        ...correctedVolumes.map(({ log, volume }) =>
-          log.prepareUpdate((record) => {
-            record.totalVolume = volume;
-            record.updatedAt = now;
           })
         )
       );

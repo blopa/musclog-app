@@ -33,6 +33,7 @@ import { createPreRestoreBackup } from './preMigrationBackup';
 import { validateExportDump, type ValidationResult } from './schemaToZod';
 import { ExerciseService, FoodPortionService, MuscleService, SettingsService } from './services';
 import { AppExerciseCatalogueService } from './services/AppExerciseCatalogueService';
+import { normalizeWorkoutSetCompletionForImport } from './workoutSetImportNormalization';
 
 export type ExportDump = {
   _exportVersion: number;
@@ -138,7 +139,11 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     jsonString = await decrypt(jsonString, decryptionPhrase.trim());
   }
 
-  const parsed = JSON.parse(jsonString);
+  const parsed = JSON.parse(jsonString) as Record<string, unknown>;
+
+  // Pre-v26 exports used RPE=0 and is_skipped as an implicit lifecycle. Normalize that
+  // relationship-aware legacy shape once, before validation and persistence.
+  normalizeWorkoutSetCompletionForImport(parsed);
 
   // Pre-validate migration: exports before v16 store is_drop_set (boolean) instead of
   // set_type (string) on workout_log_sets and workout_template_sets.

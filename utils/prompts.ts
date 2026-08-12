@@ -35,7 +35,7 @@ import { formatDisplayWeightKg } from './formatDisplayWeight';
 import { wrapUserContent } from './promptSanitizer';
 import { kgToDisplay, storedWeightToKg } from './unitConversion';
 import { getWeightUnit } from './units';
-import { isLoggedWorkoutSet } from './workoutSetCompletion';
+import { isPerformedWorkoutSet, type WorkoutSetCompletionStatus } from './workoutSetCompletion';
 
 export const WORDS_SOFT_LIMIT = 100;
 export const BE_CONCISE_PROMPT = `Be concise and limit your message to ${WORDS_SOFT_LIMIT} words.`;
@@ -409,7 +409,7 @@ export const getMinimalWorkoutSummary = async (
   try {
     const details = await WorkoutService.getWorkoutWithDetails(workoutLogId);
     const { workoutLog, sets } = details;
-    const loggedSets = sets.filter(isLoggedWorkoutSet);
+    const loggedSets = sets.filter(isPerformedWorkoutSet);
     const exerciseCount = new Set(loggedSets.map((set) => set.exerciseId).filter(Boolean)).size;
     const setCount = loggedSets.length;
 
@@ -484,8 +484,7 @@ function buildWorkoutSummaryFromDetails(
       weight?: number;
       partials?: number;
       repsInReserve?: number;
-      difficultyLevel?: number;
-      isSkipped?: boolean;
+      completionStatus?: WorkoutSetCompletionStatus;
     }[];
     exercises: { id: string; name?: string; muscleGroup?: string }[];
   },
@@ -495,7 +494,7 @@ function buildWorkoutSummaryFromDetails(
   const { workoutLog, sets, exercises } = details;
   const exerciseMap = new Map(exercises.map((ex) => [ex.id, ex]));
   const exercisesByName = new Map<string, { sets: typeof sets; exercise: (typeof exercises)[0] }>();
-  for (const set of sets.filter(isLoggedWorkoutSet)) {
+  for (const set of sets.filter(isPerformedWorkoutSet)) {
     const exercise = exerciseMap.get(set.exerciseId ?? '');
     if (!exercise) {
       continue;

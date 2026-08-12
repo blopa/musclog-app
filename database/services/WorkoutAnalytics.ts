@@ -11,7 +11,10 @@ import {
   MS_PER_SOLAR_DAY,
 } from '@/utils/calendarDate';
 import { calculateEstimated1RMForSet, calculateSetVolume } from '@/utils/workoutCalculator';
-import { isLoggedWorkoutSet } from '@/utils/workoutSetCompletion';
+import {
+  isPerformedWorkoutSet,
+  type WorkoutSetCompletionStatus,
+} from '@/utils/workoutSetCompletion';
 
 import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
@@ -87,8 +90,8 @@ export class WorkoutAnalytics {
         partials: r.partials as number | undefined,
         restTimeAfter: (r.rest_time_after as number) ?? 0,
         repsInReserve: (r.reps_in_reserve as number) ?? 0,
-        isSkipped: r.is_skipped as boolean | undefined,
-        difficultyLevel: (r.difficulty_level as number) ?? 0,
+        completionStatus: r.completion_status as WorkoutSetCompletionStatus,
+        difficultyLevel: r.difficulty_level as number | undefined,
         setType: (r.set_type as string) ?? 'normal',
         setOrder: (r.set_order as number) ?? 0,
         createdAt: (r.created_at as number) ?? 0,
@@ -99,7 +102,7 @@ export class WorkoutAnalytics {
       } as EnrichedSet;
     });
 
-    return sets.filter(isLoggedWorkoutSet);
+    return sets.filter(isPerformedWorkoutSet);
   }
 
   /**
@@ -146,8 +149,8 @@ export class WorkoutAnalytics {
           partials: r.partials as number | undefined,
           restTimeAfter: (r.rest_time_after as number) ?? 0,
           repsInReserve: (r.reps_in_reserve as number) ?? 0,
-          isSkipped: r.is_skipped as boolean | undefined,
-          difficultyLevel: (r.difficulty_level as number) ?? 0,
+          completionStatus: r.completion_status as WorkoutSetCompletionStatus,
+          difficultyLevel: r.difficulty_level as number | undefined,
           setType: (r.set_type as string) ?? 'normal',
           setOrder: (r.set_order as number) ?? 0,
           createdAt: (r.created_at as number) ?? 0,
@@ -157,7 +160,7 @@ export class WorkoutAnalytics {
           workoutLogId: data?.workoutLogId ?? '',
         } as EnrichedSet;
       })
-      .filter(isLoggedWorkoutSet);
+      .filter(isPerformedWorkoutSet);
   }
 
   /**
@@ -374,8 +377,8 @@ export class WorkoutAnalytics {
           partials: r.partials as number | undefined,
           restTimeAfter: (r.rest_time_after as number) ?? 0,
           repsInReserve: (r.reps_in_reserve as number) ?? 0,
-          isSkipped: r.is_skipped as boolean | undefined,
-          difficultyLevel: (r.difficulty_level as number) ?? 0,
+          completionStatus: r.completion_status as WorkoutSetCompletionStatus,
+          difficultyLevel: r.difficulty_level as number | undefined,
           setType: (r.set_type as string) ?? 'normal',
           setOrder: (r.set_order as number) ?? 0,
           createdAt: (r.created_at as number) ?? 0,
@@ -384,7 +387,7 @@ export class WorkoutAnalytics {
           workoutLogId: logExerciseMap.get(set.logExerciseId) ?? '',
         };
       })
-      .filter(isLoggedWorkoutSet);
+      .filter(isPerformedWorkoutSet);
 
     // Filter by timeframe if provided
     let validSets = sets;
@@ -496,7 +499,7 @@ export class WorkoutAnalytics {
       )
       .fetch();
 
-    const loggedSets = sets.filter(isLoggedWorkoutSet);
+    const loggedSets = sets.filter(isPerformedWorkoutSet);
 
     if (loggedSets.length === 0) {
       return null;
@@ -584,13 +587,13 @@ export class WorkoutAnalytics {
           weight: (r.weight as number) ?? 0,
           reps: (r.reps as number) ?? 0,
           repsInReserve: (r.reps_in_reserve as number) ?? 0,
-          difficultyLevel: (r.difficulty_level as number) ?? 0,
-          isSkipped: r.is_skipped as boolean | undefined,
+          difficultyLevel: r.difficulty_level as number | undefined,
+          completionStatus: r.completion_status as WorkoutSetCompletionStatus,
           setOrder: (r.set_order as number) ?? 0,
           createdAt: (r.created_at as number) ?? 0,
         };
       })
-      .filter(isLoggedWorkoutSet);
+      .filter(isPerformedWorkoutSet);
 
     // Group by workout and pick the true first set (lowest set_order, then earliest created_at)
     const setsByWorkout = new Map<string, typeof sets>();
@@ -736,7 +739,7 @@ export class WorkoutAnalytics {
           Q.where('deleted_at', Q.eq(null))
         )
         .fetch()
-    ).filter(isLoggedWorkoutSet);
+    ).filter(isPerformedWorkoutSet);
     const performedLogExerciseIds = new Set(loggedSets.map((set) => set.logExerciseId));
     const workoutLogIds = [
       ...new Set(

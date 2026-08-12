@@ -20,7 +20,7 @@ import {
 import { getDateFnsLocale } from './dateFnsLocale';
 import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
 import { getWeightUnitI18nKey } from './units';
-import { isLoggedWorkoutSet } from './workoutSetCompletion';
+import { isPerformedWorkoutSet } from './workoutSetCompletion';
 
 // Type definitions
 export type WorkoutType = 'strength' | 'cardio' | 'hiit' | 'yoga';
@@ -176,7 +176,7 @@ export async function getMuscleGroupsFromWorkout(workoutId: string): Promise<str
           Q.where('deleted_at', Q.eq(null))
         )
         .fetch()
-    ).filter(isLoggedWorkoutSet);
+    ).filter(isPerformedWorkoutSet);
     const performedLogExerciseIds = new Set(loggedSets.map((set) => set.logExerciseId));
 
     // Get unique exercise IDs only for exercise blocks with at least one submitted set.

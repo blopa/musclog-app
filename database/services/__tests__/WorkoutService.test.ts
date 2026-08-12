@@ -922,7 +922,7 @@ describe('WorkoutService', () => {
       expect(result.exercises).toEqual([exercise1, exercise2]);
     });
 
-    it('marks copied template placeholders skipped in legacy completed workouts', async () => {
+    it('returns migrated skipped template placeholders without read-time repair', async () => {
       const workoutLog = createMockWorkoutLog({
         id: 'workout-1',
         completedAt: Date.now(),
@@ -943,18 +943,20 @@ describe('WorkoutService', () => {
       const performedSet = createMockWorkoutLogSet({
         id: 'set-performed',
         logExerciseId: performedLogExercise.id,
+        completionStatus: 'performed',
         difficultyLevel: 8,
       });
       const untouchedSet = createMockWorkoutLogSet({
         id: 'set-untouched',
         logExerciseId: untouchedLogExercise.id,
-        difficultyLevel: 0,
+        completionStatus: 'skipped',
+        difficultyLevel: undefined,
       });
       const skippedSet = createMockWorkoutLogSet({
         id: 'set-skipped',
         logExerciseId: skippedLogExercise.id,
-        difficultyLevel: 0,
-        isSkipped: true,
+        completionStatus: 'skipped',
+        difficultyLevel: undefined,
       });
       const performedExercise = createMockExercise({ id: 'ex-performed' });
       const untouchedExercise = createMockExercise({ id: 'ex-untouched' });
@@ -983,7 +985,7 @@ describe('WorkoutService', () => {
       expect(Q.oneOf).toHaveBeenLastCalledWith(['ex-performed', 'ex-untouched', 'ex-skipped']);
     });
 
-    it('keeps legacy imported sets that predate explicit logged-state values', async () => {
+    it('keeps explicitly performed imported sets without fabricating an RPE', async () => {
       const workoutLog = createMockWorkoutLog({
         id: 'imported-workout',
         templateId: undefined,
@@ -997,7 +999,8 @@ describe('WorkoutService', () => {
       const importedSet = createMockWorkoutLogSet({
         id: 'imported-set',
         logExerciseId: logExercise.id,
-        difficultyLevel: 0,
+        completionStatus: 'performed',
+        difficultyLevel: undefined,
       });
       const exercise = createMockExercise({ id: 'imported-exercise' });
 
@@ -1216,54 +1219,6 @@ describe('WorkoutService', () => {
       const result = await WorkoutService.getWorkoutLogsByTemplate('template-1');
 
       expect(result).toEqual([]);
-    });
-  });
-
-  describe('repairLegacyCompletedTemplatePlaceholders', () => {
-    it('marks old placeholders skipped and recalculates their workout volume', async () => {
-      const workoutLog = createMockWorkoutLog({
-        id: 'legacy-workout',
-        completedAt: Date.now(),
-        totalVolume: 9999,
-        calculateVolume: jest.fn().mockResolvedValue(321),
-      });
-      workoutLog.prepareUpdate = jest.fn((callback) => {
-        callback(workoutLog);
-        return workoutLog;
-      });
-      const logExercise = createMockWorkoutLogExercise({
-        id: 'legacy-log-exercise',
-        workoutLogId: workoutLog.id,
-      });
-      const loggedSet = createMockWorkoutLogSet({
-        id: 'logged-set',
-        logExerciseId: logExercise.id,
-        difficultyLevel: 7,
-      });
-      const placeholder = createMockWorkoutLogSet({
-        id: 'placeholder-set',
-        logExerciseId: logExercise.id,
-        difficultyLevel: 0,
-        isSkipped: false,
-      });
-      placeholder.prepareUpdate = jest.fn((callback) => {
-        callback(placeholder);
-        return placeholder;
-      });
-
-      installTables({
-        workout_logs: [workoutLog],
-        workout_log_exercises: [logExercise],
-        workout_log_sets: [loggedSet, placeholder],
-      });
-
-      await WorkoutService.repairLegacyCompletedTemplatePlaceholders();
-
-      expect(loggedSet.prepareUpdate).toBeUndefined();
-      expect(placeholder.isSkipped).toBe(true);
-      expect(workoutLog.calculateVolume).toHaveBeenCalledWith(0);
-      expect(workoutLog.totalVolume).toBe(321);
-      expect(mockDatabase.batch).toHaveBeenCalledWith(placeholder, workoutLog);
     });
   });
 

@@ -243,8 +243,8 @@ describe('getMuscleGroupsFromWorkout', () => {
         { id: 'le-2', exerciseId: 'ex-2' },
       ],
       workout_log_sets: [
-        { logExerciseId: 'le-1', difficultyLevel: 5, isSkipped: false },
-        { logExerciseId: 'le-2', difficultyLevel: 5, isSkipped: false },
+        { logExerciseId: 'le-1', completionStatus: 'performed', difficultyLevel: 5 },
+        { logExerciseId: 'le-2', completionStatus: 'performed', difficultyLevel: 5 },
       ],
       exercises: [{ muscleGroup: 'Chest' }, { muscleGroup: 'CHEST' }, { muscleGroup: 'Back' }],
     });
@@ -265,7 +265,9 @@ describe('getMuscleGroupsFromWorkout', () => {
   it('maps a missing muscle group to an empty string rather than dropping the exercise', () => {
     stubTables({
       workout_log_exercises: [{ id: 'le-1', exerciseId: 'ex-1' }],
-      workout_log_sets: [{ logExerciseId: 'le-1', difficultyLevel: 5, isSkipped: false }],
+      workout_log_sets: [
+        { logExerciseId: 'le-1', completionStatus: 'performed', difficultyLevel: 5 },
+      ],
       exercises: [{ muscleGroup: null }],
     });
 
@@ -279,8 +281,8 @@ describe('getMuscleGroupsFromWorkout', () => {
         { id: 'le-skipped', exerciseId: 'ex-skipped' },
       ],
       workout_log_sets: [
-        { logExerciseId: 'le-logged', difficultyLevel: 5, isSkipped: false },
-        { logExerciseId: 'le-skipped', difficultyLevel: 0, isSkipped: true },
+        { logExerciseId: 'le-logged', completionStatus: 'performed', difficultyLevel: 5 },
+        { logExerciseId: 'le-skipped', completionStatus: 'skipped' },
       ],
       exercises: [{ muscleGroup: 'Chest' }],
     });
@@ -403,7 +405,9 @@ describe('processWorkouts', () => {
   it('keeps a workout when any of its muscle groups matches the filter', async () => {
     stubTables({
       workout_log_exercises: [{ id: 'le-1', exerciseId: 'ex-1' }],
-      workout_log_sets: [{ logExerciseId: 'le-1', difficultyLevel: 5, isSkipped: false }],
+      workout_log_sets: [
+        { logExerciseId: 'le-1', completionStatus: 'performed', difficultyLevel: 5 },
+      ],
       exercises: [{ muscleGroup: 'Chest' }],
     });
 
@@ -422,7 +426,9 @@ describe('processWorkouts', () => {
     // Stored 'Upper Back' vs filter id 'upper-back' must still match.
     stubTables({
       workout_log_exercises: [{ id: 'le-1', exerciseId: 'ex-1' }],
-      workout_log_sets: [{ logExerciseId: 'le-1', difficultyLevel: 5, isSkipped: false }],
+      workout_log_sets: [
+        { logExerciseId: 'le-1', completionStatus: 'performed', difficultyLevel: 5 },
+      ],
       exercises: [{ muscleGroup: 'Upper Back' }],
     });
 
@@ -440,7 +446,9 @@ describe('processWorkouts', () => {
   it('drops workouts with no matching muscle group, including ones with none recorded', async () => {
     stubTables({
       workout_log_exercises: [{ id: 'le-1', exerciseId: 'ex-1' }],
-      workout_log_sets: [{ logExerciseId: 'le-1', difficultyLevel: 5, isSkipped: false }],
+      workout_log_sets: [
+        { logExerciseId: 'le-1', completionStatus: 'performed', difficultyLevel: 5 },
+      ],
       exercises: [{ muscleGroup: 'Legs' }],
     });
     await expect(

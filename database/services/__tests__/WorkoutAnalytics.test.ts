@@ -74,7 +74,7 @@ interface SetSpec {
   reps: number;
   repsInReserve?: number;
   difficultyLevel?: number;
-  isSkipped?: boolean;
+  completionStatus?: 'planned' | 'performed' | 'skipped';
   deleted?: boolean;
 }
 
@@ -133,8 +133,8 @@ function buildFixture(options: {
         {
           id: setId,
           logExerciseId: logExercise.id,
+          completionStatus: spec.completionStatus ?? 'performed',
           difficultyLevel: spec.difficultyLevel ?? 5,
-          isSkipped: spec.isSkipped ?? false,
         },
         {
           id: setId,
@@ -143,8 +143,9 @@ function buildFixture(options: {
           weight: spec.weight,
           reps_in_reserve: spec.repsInReserve ?? 0,
           rest_time_after: 60,
+          completion_status: spec.completionStatus ?? 'performed',
           difficulty_level: spec.difficultyLevel ?? 5,
-          is_skipped: spec.isSkipped ?? false,
+          is_skipped: false,
           set_type: 'normal',
           set_order: index + 1,
           created_at: Date.now(),
@@ -639,7 +640,7 @@ describe('WorkoutAnalytics', () => {
             weight: 200,
             reps: 10,
             difficultyLevel: 0,
-            isSkipped: true,
+            completionStatus: 'skipped',
           },
         ],
         workouts: [
@@ -801,7 +802,7 @@ describe('WorkoutAnalytics', () => {
             weight: 200,
             reps: 10,
             difficultyLevel: 0,
-            isSkipped: true,
+            completionStatus: 'skipped',
           },
         ],
         workouts: [{ id: 'workout-1', startedAt: Date.now(), completedAt: Date.now() }],
@@ -918,7 +919,7 @@ describe('WorkoutAnalytics', () => {
             weight: 200,
             reps: 1,
             difficultyLevel: 0,
-            isSkipped: true,
+            completionStatus: 'skipped',
           },
         ],
         workouts: [{ id: 'workout-1', startedAt: now - 1000, completedAt: now - 500 }],
@@ -941,7 +942,7 @@ describe('WorkoutAnalytics', () => {
             weight: 200,
             reps: 10,
             difficultyLevel: 0,
-            isSkipped: true,
+            completionStatus: 'skipped',
           },
           { exerciseId: 'ex-1', workoutLogId: 'workout-1', weight: 100, reps: 5 },
         ],
@@ -969,7 +970,7 @@ describe('WorkoutAnalytics', () => {
             weight: 100,
             reps: 5,
             difficultyLevel: 0,
-            isSkipped: true,
+            completionStatus: 'skipped',
           },
         ],
         workouts: [

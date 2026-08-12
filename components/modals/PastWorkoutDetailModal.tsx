@@ -34,7 +34,7 @@ import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 import { formatWorkoutDuration } from '@/utils/workout';
 import type { WorkoutExercise, WorkoutSet } from '@/utils/workoutDetail';
-import { DEFAULT_LOGGED_DIFFICULTY_LEVEL, isLoggedWorkoutSet } from '@/utils/workoutSetCompletion';
+import { isPerformedWorkoutSet } from '@/utils/workoutSetCompletion';
 
 import EditPastWorkoutDataModal from './EditPastWorkoutDataModal';
 import EditWorkoutMetadataModal from './EditWorkoutMetadataModal';
@@ -593,7 +593,7 @@ export default function PastWorkoutDetailModal({
 
       const exerciseMap = new Map(exercises.map((e) => [e.id, e]));
       const byExercise = new Map<string, (typeof sets)[number][]>();
-      for (const set of sets.filter(isLoggedWorkoutSet)) {
+      for (const set of sets.filter(isPerformedWorkoutSet)) {
         const eid = set.exerciseId ?? '';
         if (!byExercise.has(eid)) {
           byExercise.set(eid, []);
@@ -867,13 +867,13 @@ export default function PastWorkoutDetailModal({
                 partials: s.partialReps,
                 restTimeAfter: s.rest,
                 repsInReserve: s.repsInReserve,
-                difficultyLevel: isNew ? DEFAULT_LOGGED_DIFFICULTY_LEVEL : undefined,
+                completionStatus: isNew ? ('performed' as const) : undefined,
                 isNew,
                 setOrder: idx, // Consecutive order: 0, 1, 2, 3, ...
               };
             });
             try {
-              await saveSets(workoutId, updates as any, deletedSetIds);
+              await saveSets(workoutId, updates, deletedSetIds);
               // reload handled reactively by subscription, but keep reload for safety
               await reload();
             } catch (err) {

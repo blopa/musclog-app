@@ -97,6 +97,7 @@ import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 import { generateUUID } from '@/utils/uuid';
 import { formatDuration } from '@/utils/workout';
+import { isResolvedWorkoutSet } from '@/utils/workoutSetCompletion';
 
 // Helper function to get hormonal insight text based on current phase
 const getHormonalInsightText = (
@@ -474,9 +475,7 @@ export default function WorkoutSessionScreen() {
     if (logSets.length === 0) {
       return false;
     }
-    const done = logSets.filter(
-      (s) => (s.difficultyLevel ?? 0) > 0 || (s.isSkipped ?? false)
-    ).length;
+    const done = logSets.filter(isResolvedWorkoutSet).length;
     return done === logSets.length;
   }, []);
 
@@ -749,6 +748,7 @@ export default function WorkoutSessionScreen() {
 
       const completedSetId = currentSetData.set.id;
       await workoutLog.updateSet(completedSetId, {
+        completionStatus: 'performed',
         difficultyLevel: data.rpe,
         weight: displayToKg(data.weight, units),
         reps: data.reps,
@@ -811,8 +811,8 @@ export default function WorkoutSessionScreen() {
     await flushLoadingPaint();
     try {
       await workoutLog.updateSet(currentSetData.set.id, {
-        isSkipped: true,
-        difficultyLevel: 0,
+        completionStatus: 'skipped',
+        difficultyLevel: null,
       });
 
       const allSetsDone = await checkAllSetsDoneFromDb(workoutLog.id);

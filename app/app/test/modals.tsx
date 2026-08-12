@@ -2233,7 +2233,7 @@ export default function ModalsTestScreen() {
               reps: 10,
               weight: 80,
               difficultyLevel: 8,
-              isSkipped: false,
+              completionStatus: 'performed',
             },
             {
               id: '2',
@@ -2242,7 +2242,7 @@ export default function ModalsTestScreen() {
               reps: 8,
               weight: 85,
               difficultyLevel: 9,
-              isSkipped: false,
+              completionStatus: 'performed',
             },
           ] as EnrichedWorkoutLogSet[]
         }

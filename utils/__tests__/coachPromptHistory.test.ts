@@ -288,8 +288,8 @@ describe('coachPromptHistory', () => {
           { exerciseId: 'ex-2', weight: 40, reps: 12 },
         ]
       ).map((set: Record<string, unknown>) => ({
+        completionStatus: 'performed',
         difficultyLevel: 5,
-        isSkipped: false,
         ...set,
       })),
       exercises: overrides.exercises ?? [
@@ -369,8 +369,8 @@ describe('coachPromptHistory', () => {
               exerciseId: 'ex-2',
               weight: 40,
               reps: 12,
-              difficultyLevel: 0,
-              isSkipped: true,
+              completionStatus: 'skipped',
+              difficultyLevel: undefined,
             },
           ],
         })

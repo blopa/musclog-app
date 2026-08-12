@@ -120,7 +120,8 @@ export default class WorkoutTemplate extends Model {
         ls.partials = 0;
         ls.restTimeAfter = templateSet.restTimeAfter ?? 0;
         ls.repsInReserve = 0;
-        ls.difficultyLevel = 0;
+        ls.difficultyLevel = undefined;
+        ls.completionStatus = 'planned';
         ls.setType = templateSet.setType ?? 'normal';
         ls.setOrder = templateSet.setOrder;
         ls.createdAt = now;

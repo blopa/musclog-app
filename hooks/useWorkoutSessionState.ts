@@ -15,6 +15,7 @@ import {
   calculateRepsForTargetRIR,
   calculateWeightForTargetRIR,
 } from '@/utils/workoutCalculator';
+import { isPerformedWorkoutSet, isResolvedWorkoutSet } from '@/utils/workoutSetCompletion';
 import {
   getEffectiveOrder,
   getFirstUnloggedInEffectiveOrder,
@@ -27,8 +28,8 @@ const WORKOUT_LOG_SET_COLUMNS = [
   'partials',
   'rest_time_after',
   'reps_in_reserve',
+  'completion_status',
   'difficulty_level',
-  'is_skipped',
   'set_type',
   'set_order',
   'deleted_at',
@@ -176,8 +177,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
             if (currentIdx > 0) {
               const lastSet = effectiveOrder[currentIdx - 1];
               if (
-                (lastSet.difficultyLevel ?? 0) > 0 &&
-                !(lastSet.isSkipped ?? false) &&
+                isPerformedWorkoutSet(lastSet) &&
                 lastSet.exerciseId === currentActive.exerciseId
               ) {
                 // Adjust current set based on lastSet
@@ -236,9 +236,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
           }
 
           const totalSets = enrichedSets.length;
-          const completedSets = enrichedSets.filter(
-            (s) => (s.difficultyLevel ?? 0) > 0 || (s.isSkipped ?? false)
-          ).length;
+          const completedSets = enrichedSets.filter(isResolvedWorkoutSet).length;
           const isComplete = totalSets > 0 && completedSets === totalSets;
           const current = currentActive;
           const next = current
@@ -252,7 +250,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
             if (currentIdx > 0) {
               for (let i = currentIdx - 1; i >= 0; i--) {
                 const s = effectiveOrder[i];
-                if ((s.difficultyLevel ?? 0) > 0) {
+                if (isPerformedWorkoutSet(s)) {
                   prev = {
                     weight: s.weight ?? 0,
                     reps: s.reps ?? 0,
@@ -339,9 +337,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
         setSets(s);
         setExercises(ex);
         const totalSets = s.length;
-        const completedSets = s.filter(
-          (x) => (x.difficultyLevel ?? 0) > 0 || (x.isSkipped ?? false)
-        ).length;
+        const completedSets = s.filter(isResolvedWorkoutSet).length;
         const isComplete = totalSets > 0 && completedSets === totalSets;
         const current = getFirstUnloggedInEffectiveOrder(s);
         const next = current ? getNextSetInEffectiveOrder(s, current.setOrder ?? 0) : null;
@@ -352,7 +348,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
           if (currentIdx > 0) {
             for (let i = currentIdx - 1; i >= 0; i--) {
               const set = effectiveOrder[i];
-              if ((set.difficultyLevel ?? 0) > 0) {
+              if (isPerformedWorkoutSet(set)) {
                 prev = {
                   weight: set.weight ?? 0,
                   reps: set.reps ?? 0,

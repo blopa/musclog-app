@@ -2,6 +2,7 @@ import type { EquipmentType, Gender } from '@/database/models';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 
 import { roundToDecimalPlaces } from './roundDecimal';
+import { isPerformedWorkoutSet, type WorkoutSetCompletionStatus } from './workoutSetCompletion';
 
 /**
  * Set fields needed for volume calculation (matches WorkoutLogSet subset).
@@ -91,13 +92,13 @@ export function calculateSessionVolumeFromSets(
     weight?: number;
     reps?: number;
     repsInReserve?: number;
-    difficultyLevel?: number;
+    completionStatus?: WorkoutSetCompletionStatus | null;
   }[],
   exerciseById: Map<string, ExerciseVolumeData>,
   bodyWeightKg: number,
   options?: { onlyCompletedSets?: boolean }
 ): number {
-  const list = options?.onlyCompletedSets ? sets.filter((s) => (s.difficultyLevel ?? 0) > 0) : sets;
+  const list = options?.onlyCompletedSets ? sets.filter(isPerformedWorkoutSet) : sets;
   const byExercise = new Map<string, typeof list>();
   for (const s of list) {
     const id = s.exerciseId ?? '';

@@ -47,7 +47,7 @@ type SetOverrides = {
   partials?: number | null;
   setOrder?: number | null;
   difficultyLevel?: number;
-  isSkipped?: boolean;
+  completionStatus?: 'planned' | 'performed' | 'skipped';
 };
 
 function logSet(overrides: SetOverrides = {}) {
@@ -59,8 +59,8 @@ function logSet(overrides: SetOverrides = {}) {
     repsInReserve: 2,
     partials: 0,
     setOrder: 1,
+    completionStatus: 'performed',
     difficultyLevel: 5,
-    isSkipped: false,
     ...overrides,
   } as never;
 }
@@ -255,8 +255,8 @@ describe('transformWorkoutToDetailData — exercise grouping', () => {
         logSet({
           id: 'skipped',
           setOrder: 2,
-          difficultyLevel: 0,
-          isSkipped: true,
+          difficultyLevel: undefined,
+          completionStatus: 'skipped',
         }),
       ],
       [exercise()]
@@ -269,7 +269,7 @@ describe('transformWorkoutToDetailData — exercise grouping', () => {
   it('marks an exercise skipped when none of its planned sets were logged', async () => {
     const result = await transform(
       workoutLog(),
-      [logSet({ difficultyLevel: 0, isSkipped: true })],
+      [logSet({ difficultyLevel: undefined, completionStatus: 'skipped' })],
       [exercise()]
     );
 
@@ -425,7 +425,7 @@ describe('transformWorkoutToDetailData — personal record highlighting', () => 
 
     const result = await transform(
       workoutLog(),
-      [logSet({ weight: 100, difficultyLevel: 0, isSkipped: true })],
+      [logSet({ weight: 100, difficultyLevel: undefined, completionStatus: 'skipped' })],
       [exercise()]
     );
 

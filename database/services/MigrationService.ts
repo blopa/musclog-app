@@ -1518,7 +1518,11 @@ export class MigrationService {
 
           // Create sets linked to the exercise block
           for (const oldSet of exerciseSets) {
-            const difficultyLevel = Math.min(10, Math.max(1, Number(oldSet.difficultyLevel) ?? 0));
+            const parsedDifficultyLevel = Number(oldSet.difficultyLevel);
+            const difficultyLevel =
+              Number.isFinite(parsedDifficultyLevel) && parsedDifficultyLevel >= 1
+                ? Math.min(10, parsedDifficultyLevel)
+                : undefined;
 
             await database.write(async () => {
               await database.get<WorkoutLogSet>('workout_log_sets').create((ls) => {
@@ -1529,6 +1533,7 @@ export class MigrationService {
                 ls.restTimeAfter = Number(oldSet.restTime) ?? 0;
                 ls.repsInReserve = 0;
                 ls.difficultyLevel = difficultyLevel;
+                ls.completionStatus = 'performed';
                 ls.setType = oldSet.isDropSet ? 'drop_set' : 'normal';
                 ls.setOrder = Number(oldSet.setOrder) ?? 0;
                 const createdAt = this.convertTimestamp(oldSet.createdAt);
@@ -1537,7 +1542,7 @@ export class MigrationService {
                 ls.deletedAt = oldSet.deletedAt
                   ? this.convertTimestamp(oldSet.deletedAt)
                   : undefined;
-                ls.isSkipped = undefined;
+                ls.legacyIsSkipped = undefined;
               });
             });
             migratedCount++;

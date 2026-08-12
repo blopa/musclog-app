@@ -66,7 +66,7 @@ import { createThumbnail } from '@/utils/file';
 import { flushLoadingPaint } from '@/utils/flushLoadingPaint';
 import { pickAndCropImageFromGallery } from '@/utils/galleryImagePicker';
 import { handleError } from '@/utils/handleError';
-import { isLoggedWorkoutSet } from '@/utils/workoutSetCompletion';
+import { isPerformedWorkoutSet } from '@/utils/workoutSetCompletion';
 
 import { CoachQuickSettingsModal } from './CoachQuickSettingsModal';
 import { ConfirmationModal } from './ConfirmationModal';
@@ -868,7 +868,7 @@ export function CoachModal({
     try {
       const { exercises, sets } = await WorkoutService.getWorkoutWithDetails(workoutLogId);
       const performedExerciseIds = new Set(
-        sets.filter(isLoggedWorkoutSet).map((set) => set.exerciseId)
+        sets.filter(isPerformedWorkoutSet).map((set) => set.exerciseId)
       );
 
       const performedExercises = exercises.filter((exercise) =>

@@ -66,6 +66,7 @@ describe('WorkoutLog completion', () => {
   it('calculates volume from submitted sets only', async () => {
     const loggedSet = {
       logExerciseId: 'log-exercise-1',
+      completionStatus: 'performed',
       difficultyLevel: 7,
       weight: 80,
       reps: 8,
@@ -73,7 +74,8 @@ describe('WorkoutLog completion', () => {
     };
     const templatePlaceholder = {
       logExerciseId: 'log-exercise-1',
-      difficultyLevel: 0,
+      completionStatus: 'planned',
+      difficultyLevel: undefined,
       weight: 100,
       reps: 10,
       repsInReserve: 0,
@@ -115,26 +117,26 @@ describe('WorkoutLog completion', () => {
     const performedSet = updatable({
       id: 'performed-set',
       logExerciseId: performedExercise.id,
+      completionStatus: 'performed',
       difficultyLevel: 8,
-      isSkipped: false,
     });
     const leftoverSetInPerformedExercise = updatable({
       id: 'leftover-set',
       logExerciseId: performedExercise.id,
-      difficultyLevel: 0,
-      isSkipped: false,
+      completionStatus: 'planned',
+      difficultyLevel: undefined,
     });
     const untouchedSet = updatable({
       id: 'untouched-set',
       logExerciseId: untouchedExercise.id,
-      difficultyLevel: 0,
-      isSkipped: false,
+      completionStatus: 'planned',
+      difficultyLevel: undefined,
     });
     const skippedSet = updatable({
       id: 'skipped-set',
       logExerciseId: skippedExercise.id,
-      difficultyLevel: 0,
-      isSkipped: true,
+      completionStatus: 'skipped',
+      difficultyLevel: undefined,
     });
     const batch = jest.fn().mockResolvedValue(undefined);
     const log: any = Object.assign(Object.create(WorkoutLog.prototype), {
@@ -162,19 +164,18 @@ describe('WorkoutLog completion', () => {
     expect(performedExercise.prepareUpdate).not.toHaveBeenCalled();
     expect(untouchedExercise.prepareUpdate).not.toHaveBeenCalled();
     expect(skippedExercise.prepareUpdate).not.toHaveBeenCalled();
-    expect(leftoverSetInPerformedExercise).toMatchObject({ isSkipped: true, updatedAt: 999 });
-    expect(untouchedSet).toMatchObject({ isSkipped: true, updatedAt: 999 });
-    expect(skippedSet).toMatchObject({ isSkipped: true, updatedAt: 999 });
+    expect(leftoverSetInPerformedExercise).toMatchObject({
+      completionStatus: 'skipped',
+      updatedAt: 999,
+    });
+    expect(untouchedSet).toMatchObject({ completionStatus: 'skipped', updatedAt: 999 });
+    expect(skippedSet).toMatchObject({ completionStatus: 'skipped' });
+    expect(skippedSet.updatedAt).toBeUndefined();
     expect(leftoverSetInPerformedExercise.deletedAt).toBeUndefined();
     expect(untouchedSet.deletedAt).toBeUndefined();
     expect(skippedSet.deletedAt).toBeUndefined();
     expect(log.completedAt).toBe(999);
     expect(log.totalVolume).toBe(456);
-    expect(batch).toHaveBeenCalledWith(
-      leftoverSetInPerformedExercise,
-      untouchedSet,
-      skippedSet,
-      log
-    );
+    expect(batch).toHaveBeenCalledWith(leftoverSetInPerformedExercise, untouchedSet, log);
   });
 });
