@@ -90,14 +90,13 @@
     "build-ios-preview-nowait": "node scripts/prepare-for-eas.js && eas build -p ios --profile preview --clear-cache --no-wait",
     "submit-ios": "eas submit --platform ios",
     "prebuild-ios": "expo prebuild -p ios --clean",
-    "prebuild-ios-simulator": "expo prebuild -p ios --clean && npm run patch-ios-project && cd ios && pod install",
-    "prebuild-ios-device": "EXPO_IS_SIMULATOR_BUILD=false expo prebuild -p ios --clean && npm run patch-ios-project && cd ios && pod install",
+    "prebuild-ios-simulator": "expo prebuild -p ios --clean",
+    "prebuild-ios-device": "MUSCLOG_IOS_SIMULATOR_BUILD_FIX=0 expo prebuild -p ios --clean",
     "run-ios": "expo run:ios",
     "build-and-submit-ios": "eas build --platform ios --profile production --auto-submit",
     "run-ios-device": "expo run:ios --device",
     "ios-simulator": "expo run:ios --device",
-    "patch-ios-project": "node -v",
-    "prebuild:ios": "expo prebuild -p ios --clean && npm run patch-ios-project && cd ios && pod install"
+    "prebuild:ios": "expo prebuild -p ios --clean"
   },
   "optionalDependencies": {
     "@babel/plugin-transform-react-jsx": "7.29.7",
