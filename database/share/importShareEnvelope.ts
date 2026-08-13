@@ -1,9 +1,9 @@
 import { Q } from '@nozbe/watermelondb';
 
-import { assignRawColumns, type RawColumnTarget } from '@/database/assignRawColumns';
 import { database } from '@/database/database-instance';
 import Food from '@/database/models/Food';
 import FoodPortion from '@/database/models/FoodPortion';
+import { prepareLocalCreateFromRaw } from '@/database/prepareLocalCreateFromRaw';
 import {
   deleteFoodImage,
   deleteMealImage,
@@ -332,14 +332,11 @@ export async function importShareEnvelope(
         resolutions,
         rootId: envelope.rootId,
       });
-      const operations = plan.creates.map(({ localId, row, table }) =>
-        database.get(table).prepareCreate((record) => {
-          record._raw.id = localId;
-          // `row` reached here through `spec.columns`, so every key on it is an allowlisted column
-          // of `table` — that allowlist is what makes assigning them by name safe. See
-          // `ShareKindSpec.columns`.
-          assignRawColumns(record as unknown as RawColumnTarget, row);
-        })
+      const operations = plan.creates.map(({ row, table }) =>
+        // `row` contains raw schema column names and reached here through `spec.columns`. The
+        // allowlist is the trust boundary; WatermelonDB then sanitizes every value against the
+        // collection schema without assigning attacker-controlled properties onto a model.
+        prepareLocalCreateFromRaw(database.get(table), row)
       );
 
       await database.batch(...operations);

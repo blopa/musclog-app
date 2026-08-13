@@ -57,10 +57,9 @@ function resolveTargetTable(target: ShareForeignKeyTarget, row: ShareRow): strin
  * Reduces an incoming row to `id` plus the columns its table declares in `ShareKindSpec.columns`.
  *
  * An allowlist rather than a denylist of control fields: the row comes from another phone over a
- * camera, and everything that survives here is eventually handed to `assignRawColumns`, which
- * assigns each key onto a WatermelonDB model instance. A denylist would have to anticipate every
- * property worth shadowing (`collection`, `markAsDeleted`, `_raw`, …); an allowlist only has to
- * know what the table legitimately holds.
+ * camera, so it may only carry columns this share kind deliberately exposes. Everything that
+ * survives is handed to WatermelonDB's `prepareCreateFromDirtyRaw`, which applies the table schema
+ * and ignores non-columns instead of assigning keys onto the model instance.
  */
 function sanitizeRow(row: ShareRow, allowedColumns: readonly string[]): ShareRow | undefined {
   if (row.deleted_at != null || row._status === 'deleted') {

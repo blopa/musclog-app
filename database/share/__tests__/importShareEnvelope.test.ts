@@ -255,9 +255,8 @@ function wire(stored: { foods?: unknown[]; food_portions?: unknown[] } = {}) {
   const created: Record<string, any[]> = {};
   const queriedTables: string[] = [];
   mockDatabase.get.mockImplementation(((table: string) => ({
-    prepareCreate: (callback: (record: any) => void) => {
-      const record = { _raw: {}, table };
-      callback(record);
+    prepareCreateFromDirtyRaw: (raw: Record<string, unknown>) => {
+      const record = { _raw: { ...raw }, table };
       (created[table] ??= []).push(record);
       return record;
     },
@@ -274,13 +273,10 @@ function wire(stored: { foods?: unknown[]; food_portions?: unknown[] } = {}) {
   return { created, queriedTables };
 }
 
-/**
- * `assignRawColumns` writes through camelCase model setters and only the id lands on `_raw`, so a
- * created record is read the same way the real models expose it.
- */
+/** Created records stay in their raw schema shape, just like `prepareCreateFromDirtyRaw` input. */
 const createdId = (records: any[] | undefined, index = 0) => records?.[index]?._raw?.id;
-const createdField = (records: any[] | undefined, field: string, index = 0) =>
-  records?.[index]?.[field];
+const createdColumn = (records: any[] | undefined, column: string, index = 0) =>
+  records?.[index]?._raw?.[column];
 
 describe('importShareEnvelope', () => {
   beforeEach(() => {
@@ -442,8 +438,8 @@ describe('importShareEnvelope', () => {
       expect(created.foods).toHaveLength(1);
       expect(created.food_portions).toHaveLength(1);
       expect(created.food_food_portions).toHaveLength(1);
-      expect(createdField(created.food_food_portions, 'foodId')).toBe(createdId(created.foods));
-      expect(createdField(created.food_food_portions, 'foodPortionId')).toBe(
+      expect(createdColumn(created.food_food_portions, 'food_id')).toBe(createdId(created.foods));
+      expect(createdColumn(created.food_food_portions, 'food_portion_id')).toBe(
         createdId(created.food_portions)
       );
       expect(result.rootId).toBe(createdId(created.foods));
@@ -455,8 +451,8 @@ describe('importShareEnvelope', () => {
       const { created } = wire();
       await importShareEnvelope(foodEnvelope({ ownedPortion: true }));
 
-      expect(createdField(created.food_portions, 'ownerId')).toBe(createdId(created.foods));
-      expect(createdField(created.food_portions, 'ownerType')).toBe('food');
+      expect(createdColumn(created.food_portions, 'owner_id')).toBe(createdId(created.foods));
+      expect(createdColumn(created.food_portions, 'owner_type')).toBe('food');
     });
 
     // The whole envelope is one food. When the receiver already has it, the share collapses to
@@ -555,7 +551,7 @@ describe('importShareEnvelope', () => {
         sourceId: 'sender-portion',
         table: 'food_portions',
       });
-      expect(createdField(created.meal_foods, 'portionId')).toBe('local-portion');
+      expect(createdColumn(created.meal_foods, 'portion_id')).toBe('local-portion');
     });
 
     // `forcedColumns` stamps every imported portion `custom`, so a first receive turns the sender's
@@ -612,7 +608,7 @@ describe('importShareEnvelope', () => {
         sourceId: 'sender-portion',
         table: 'food_portions',
       });
-      expect(createdField(created.meal_foods, 'portionId')).toBe('local-serving');
+      expect(createdColumn(created.meal_foods, 'portion_id')).toBe('local-serving');
     });
 
     // Scoping is enforced by the query, not by the identity check: an identical portion hanging off
@@ -639,7 +635,7 @@ describe('importShareEnvelope', () => {
 
       expect(created.food_portions).toHaveLength(1);
       expect(result.reused.filter((item) => item.table === 'food_portions')).toHaveLength(0);
-      expect(createdField(created.food_portions, 'ownerId')).toBe('local-food');
+      expect(createdColumn(created.food_portions, 'owner_id')).toBe('local-food');
     });
 
     it('never reuses a food-private portion when the owning food is created fresh', async () => {
@@ -664,8 +660,8 @@ describe('importShareEnvelope', () => {
       expect(result.reused.filter((item) => item.table === 'food_portions')).toHaveLength(0);
       expect(created.food_portions).toHaveLength(1);
       // The fresh portion hangs off the food that was just created, never off the receiver's.
-      expect(createdField(created.food_portions, 'ownerId')).toBe(createdId(created.foods));
-      expect(createdField(created.food_portions, 'ownerId')).not.toBe('local-food');
+      expect(createdColumn(created.food_portions, 'owner_id')).toBe(createdId(created.foods));
+      expect(createdColumn(created.food_portions, 'owner_id')).not.toBe('local-food');
     });
 
     // The meal is the share's root and is always new, so there is no existing owner to match
@@ -698,7 +694,7 @@ describe('importShareEnvelope', () => {
 
       expect(result.reused.filter((item) => item.table === 'food_portions')).toHaveLength(0);
       expect(created.food_portions).toHaveLength(1);
-      expect(createdField(created.food_portions, 'ownerId')).toBe(createdId(created.meals));
+      expect(createdColumn(created.food_portions, 'owner_id')).toBe(createdId(created.meals));
     });
   });
 });

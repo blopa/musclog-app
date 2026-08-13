@@ -131,9 +131,9 @@ describe('planShareImport', () => {
   });
 
   it('strips columns the table does not declare, so a crafted row cannot reach the model', () => {
-    // Everything that survives planning is handed to `assignRawColumns`, which assigns each key
-    // onto a WatermelonDB model instance. A share arrives from an unknown phone over a camera, so
-    // a row carrying `collection` or `mark_as_deleted` would shadow the model's own members.
+    // Everything that survives planning is handed to WatermelonDB's raw-record sanitizer. The
+    // allowlist remains the app-level trust boundary: a remote phone may only control the columns
+    // this share kind deliberately exposes.
     const hostile = records();
     Object.assign(hostile.foods[0], {
       __proto__: { polluted: true },

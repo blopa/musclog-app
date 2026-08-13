@@ -37,12 +37,12 @@ export interface ShareKindSpec {
   dedupe: Record<string, ShareDedupeStrategy>;
   /**
    * The ONLY columns an incoming row may carry into the database, per table. Everything else is
-   * dropped by `planShareImport` before a row can reach `assignRawColumns`.
+   * dropped by `planShareImport` before a row reaches WatermelonDB's raw-record sanitizer.
    *
    * This is a security boundary, not tidiness. A share arrives over a camera from a phone we do
-   * not control, and `assignRawColumns` writes `record[camelCase(key)] = value` for every key it
-   * is handed — so without an allowlist a crafted payload could set `collection`, or shadow a
-   * method like `markAsDeleted`, on the WatermelonDB model instance being built.
+   * not control, so it may only control the columns this share kind deliberately exposes.
+   * `prepareCreateFromDirtyRaw` then applies the actual table schema as a second boundary; it never
+   * assigns incoming keys as JavaScript properties on the model instance.
    *
    * Unknown columns are dropped silently rather than rejected: the two phones in a transfer can be
    * months apart in app version, and a column this build has never heard of is the expected shape

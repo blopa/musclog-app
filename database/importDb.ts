@@ -17,7 +17,6 @@ import { isMusclogGatewayAvailable } from '@/utils/musclogGatewayAvailability';
 import { normalizeTimezoneToOffset } from '@/utils/timezone';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
-import { assignRawColumns } from './assignRawColumns';
 import { database } from './database-instance';
 import { updateNutritionLogCountBaseline } from './dbDurability';
 import {
@@ -30,6 +29,7 @@ import {
   readSavedForLaterGroupNote,
 } from './encryptionHelpers';
 import { createPreRestoreBackup } from './preMigrationBackup';
+import { prepareLocalCreateFromRaw } from './prepareLocalCreateFromRaw';
 import { validateExportDump, type ValidationResult } from './schemaToZod';
 import { ExerciseService, FoodPortionService, MuscleService, SettingsService } from './services';
 import { AppExerciseCatalogueService } from './services/AppExerciseCatalogueService';
@@ -364,17 +364,14 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
         continue;
       }
 
-      createOperations.push(
-        collection.prepareCreate((rec: any) => {
-          rec._raw.id = oldId;
+      if (tableName === 'nutrition_checkins' && dbData._exportVersion < 2) {
+        raw.completed = false;
+      }
 
-          if (tableName === 'nutrition_checkins' && dbData._exportVersion < 2) {
-            rec.completed = false;
-          }
-
-          assignRawColumns(rec, raw);
-        })
-      );
+      // These rows have already passed schema-derived Zod validation and use physical database
+      // column names. Raw creation sanitizes against the collection schema, so model property
+      // aliases and computed getters are deliberately bypassed.
+      createOperations.push(prepareLocalCreateFromRaw(collection, raw));
     }
   }
 
