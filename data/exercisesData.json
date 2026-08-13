@@ -26,6 +26,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["rectus_abdominis"],
     "loadMultiplier": 0.5,
+    "isPopular": true,
     "__exerciseName": "Ab Crunch Machine",
     "__freeExerciseDbId": "Ab_Crunch_Machine"
   },
@@ -277,6 +278,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["anterior_deltoid", "triceps"],
     "loadMultiplier": 0.22,
+    "isPopular": true,
     "__exerciseName": "Arnold Dumbbell Press",
     "__freeExerciseDbId": "Arnold_Dumbbell_Press"
   },
@@ -487,6 +489,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
     "loadMultiplier": 1,
+    "isPopular": true,
     "__exerciseName": "Barbell Bench Press - Medium Grip",
     "__freeExerciseDbId": "Barbell_Bench_Press_-_Medium_Grip"
   },
@@ -497,6 +500,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["biceps", "forearms"],
     "loadMultiplier": 0.42,
+    "isPopular": true,
     "__exerciseName": "Barbell Curl",
     "__freeExerciseDbId": "Barbell_Curl"
   },
@@ -527,6 +531,7 @@
       "traps"
     ],
     "loadMultiplier": 1.8,
+    "isPopular": true,
     "__exerciseName": "Barbell Deadlift",
     "__freeExerciseDbId": "Barbell_Deadlift"
   },
@@ -577,6 +582,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["glutes", "calves", "hamstrings"],
     "loadMultiplier": 1.4,
+    "isPopular": true,
     "__exerciseName": "Barbell Hip Thrust",
     "__freeExerciseDbId": "Barbell_Hip_Thrust"
   },
@@ -587,6 +593,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
     "loadMultiplier": 0.9,
+    "isPopular": true,
     "__exerciseName": "Barbell Incline Bench Press - Medium Grip",
     "__freeExerciseDbId": "Barbell_Incline_Bench_Press_-_Medium_Grip"
   },
@@ -654,6 +661,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["anterior_deltoid", "pectoralis_major", "triceps"],
     "loadMultiplier": 0.6,
+    "isPopular": true,
     "__exerciseName": "Barbell Shoulder Press",
     "__freeExerciseDbId": "Barbell_Shoulder_Press"
   },
@@ -664,6 +672,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["traps"],
     "loadMultiplier": 0.85,
+    "isPopular": true,
     "__exerciseName": "Barbell Shrug",
     "__freeExerciseDbId": "Barbell_Shrug"
   },
@@ -704,6 +713,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "calves", "glutes", "hamstrings", "erector_spinae"],
     "loadMultiplier": 1.4,
+    "isPopular": true,
     "__exerciseName": "Barbell Squat",
     "__freeExerciseDbId": "Barbell_Squat"
   },
@@ -834,6 +844,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["rhomboids", "biceps", "lats", "anterior_deltoid"],
     "loadMultiplier": 0.8,
+    "isPopular": true,
     "__exerciseName": "Bent Over Barbell Row",
     "__freeExerciseDbId": "Bent_Over_Barbell_Row"
   },
@@ -1022,6 +1033,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 0.88,
+    "isPopular": true,
     "__exerciseName": "Bodyweight Squat",
     "__freeExerciseDbId": "Bodyweight_Squat"
   },
@@ -1099,6 +1111,7 @@
       "erector_spinae"
     ],
     "loadMultiplier": 0.95,
+    "isPopular": true,
     "__exerciseName": "Box Squat",
     "__freeExerciseDbId": "Box_Squat"
   },
@@ -1185,6 +1198,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["pectoralis_major"],
     "loadMultiplier": 0.5,
+    "isPopular": true,
     "__exerciseName": "Butterfly",
     "__freeExerciseDbId": "Butterfly"
   },
@@ -1205,6 +1219,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.45,
+    "isPopular": true,
     "__exerciseName": "Cable Crossover",
     "__freeExerciseDbId": "Cable_Crossover"
   },
@@ -1215,6 +1230,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["rectus_abdominis"],
     "loadMultiplier": 0.6,
+    "isPopular": true,
     "__exerciseName": "Cable Crunch",
     "__freeExerciseDbId": "Cable_Crunch"
   },
@@ -1713,6 +1729,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["lats", "biceps", "forearms", "rhomboids"],
     "loadMultiplier": 0.99,
+    "isPopular": true,
     "__exerciseName": "Chin-Up",
     "__freeExerciseDbId": "Chin-Up"
   },
@@ -1750,6 +1767,7 @@
       "traps"
     ],
     "loadMultiplier": 0.75,
+    "isPopular": true,
     "__exerciseName": "Clean",
     "__freeExerciseDbId": "Clean"
   },
@@ -1769,6 +1787,7 @@
       "triceps"
     ],
     "loadMultiplier": 0.9,
+    "isPopular": true,
     "__exerciseName": "Clean and Jerk",
     "__freeExerciseDbId": "Clean_and_Jerk"
   },
@@ -1790,6 +1809,7 @@
       "triceps"
     ],
     "loadMultiplier": 0.65,
+    "isPopular": true,
     "__exerciseName": "Clean and Press",
     "__freeExerciseDbId": "Clean_and_Press"
   },
@@ -1858,6 +1878,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["triceps", "pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.9,
+    "isPopular": true,
     "__exerciseName": "Close-Grip Barbell Bench Press",
     "__freeExerciseDbId": "Close-Grip_Barbell_Bench_Press"
   },
@@ -1908,6 +1929,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["lats", "biceps", "rhomboids", "anterior_deltoid"],
     "loadMultiplier": 0.7,
+    "isPopular": true,
     "__exerciseName": "Close-Grip Front Lat Pulldown",
     "__freeExerciseDbId": "Close-Grip_Front_Lat_Pulldown"
   },
@@ -1967,6 +1989,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["biceps", "forearms"],
     "loadMultiplier": 0.22,
+    "isPopular": true,
     "__exerciseName": "Concentration Curls",
     "__freeExerciseDbId": "Concentration_Curls"
   },
@@ -2054,6 +2077,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["rectus_abdominis"],
     "loadMultiplier": 0.3,
+    "isPopular": true,
     "__exerciseName": "Crunches",
     "__freeExerciseDbId": "Crunches"
   },
@@ -2130,6 +2154,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
     "loadMultiplier": 1.1,
+    "isPopular": true,
     "__exerciseName": "Decline Barbell Bench Press",
     "__freeExerciseDbId": "Decline_Barbell_Bench_Press"
   },
@@ -2210,6 +2235,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
     "loadMultiplier": 0.75,
+    "isPopular": true,
     "__exerciseName": "Decline Push-Up",
     "__freeExerciseDbId": "Decline_Push-Up"
   },
@@ -2268,6 +2294,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["triceps", "pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.8,
+    "isPopular": true,
     "__exerciseName": "Dip Machine",
     "__freeExerciseDbId": "Dip_Machine"
   },
@@ -2288,6 +2315,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["triceps", "pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.99,
+    "isPopular": true,
     "__exerciseName": "Dips - Triceps Version",
     "__freeExerciseDbId": "Dips_-_Triceps_Version"
   },
@@ -2424,6 +2452,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
     "loadMultiplier": 0.35,
+    "isPopular": true,
     "__exerciseName": "Dumbbell Bench Press",
     "__freeExerciseDbId": "Dumbbell_Bench_Press"
   },
@@ -2444,6 +2473,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["biceps", "forearms"],
     "loadMultiplier": 0.35,
+    "isPopular": true,
     "__exerciseName": "Dumbbell Bicep Curl",
     "__freeExerciseDbId": "Dumbbell_Bicep_Curl"
   },
@@ -2483,6 +2513,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["pectoralis_major"],
     "loadMultiplier": 0.15,
+    "isPopular": true,
     "__exerciseName": "Dumbbell Flyes",
     "__freeExerciseDbId": "Dumbbell_Flyes"
   },
@@ -2493,6 +2524,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["rhomboids", "biceps", "forearms", "lats", "anterior_deltoid"],
     "loadMultiplier": 0.3,
+    "isPopular": true,
     "__exerciseName": "Dumbbell Incline Row",
     "__freeExerciseDbId": "Dumbbell_Incline_Row"
   },
@@ -2513,6 +2545,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "calves", "glutes", "hamstrings"],
     "loadMultiplier": 0.3,
+    "isPopular": true,
     "__exerciseName": "Dumbbell Lunges",
     "__freeExerciseDbId": "Dumbbell_Lunges"
   },
@@ -2653,6 +2686,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["anterior_deltoid", "triceps"],
     "loadMultiplier": 0.25,
+    "isPopular": true,
     "__exerciseName": "Dumbbell Shoulder Press",
     "__freeExerciseDbId": "Dumbbell_Shoulder_Press"
   },
@@ -2663,6 +2697,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["traps"],
     "loadMultiplier": 0.5,
+    "isPopular": true,
     "__exerciseName": "Dumbbell Shrug",
     "__freeExerciseDbId": "Dumbbell_Shrug"
   },
@@ -2863,6 +2898,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["biceps"],
     "loadMultiplier": 0.4,
+    "isPopular": true,
     "__exerciseName": "EZ-Bar Curl",
     "__freeExerciseDbId": "EZ-Bar_Curl"
   },
@@ -2883,6 +2919,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["posterior_deltoid", "rhomboids"],
     "loadMultiplier": 0.35,
+    "isPopular": true,
     "__exerciseName": "Face Pull",
     "__freeExerciseDbId": "Face_Pull"
   },
@@ -2981,6 +3018,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["triceps", "pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.85,
+    "isPopular": true,
     "__exerciseName": "Floor Press",
     "__freeExerciseDbId": "Floor_Press"
   },
@@ -3079,6 +3117,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "calves", "glutes", "hamstrings"],
     "loadMultiplier": 0.85,
+    "isPopular": true,
     "__exerciseName": "Front Barbell Squat",
     "__freeExerciseDbId": "Front_Barbell_Squat"
   },
@@ -3129,6 +3168,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["anterior_deltoid"],
     "loadMultiplier": 0.08,
+    "isPopular": true,
     "__exerciseName": "Front Dumbbell Raise",
     "__freeExerciseDbId": "Front_Dumbbell_Raise"
   },
@@ -3249,6 +3289,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "calves", "glutes", "hamstrings", "anterior_deltoid"],
     "loadMultiplier": 0.4,
+    "isPopular": true,
     "__exerciseName": "Goblet Squat",
     "__freeExerciseDbId": "Goblet_Squat"
   },
@@ -3259,6 +3300,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["hamstrings", "rectus_abdominis", "glutes", "erector_spinae"],
     "loadMultiplier": 0.7,
+    "isPopular": true,
     "__exerciseName": "Good Morning",
     "__freeExerciseDbId": "Good_Morning"
   },
@@ -3309,6 +3351,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "calves", "glutes", "hamstrings"],
     "loadMultiplier": 1.5,
+    "isPopular": true,
     "__exerciseName": "Hack Squat",
     "__freeExerciseDbId": "Hack_Squat"
   },
@@ -3319,6 +3362,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["biceps"],
     "loadMultiplier": 0.18,
+    "isPopular": true,
     "__exerciseName": "Hammer Curls",
     "__freeExerciseDbId": "Hammer_Curls"
   },
@@ -3378,6 +3422,7 @@
       "traps"
     ],
     "loadMultiplier": 0.6,
+    "isPopular": true,
     "__exerciseName": "Hang Clean",
     "__freeExerciseDbId": "Hang_Clean"
   },
@@ -3457,6 +3502,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["rectus_abdominis"],
     "loadMultiplier": 0.41,
+    "isPopular": true,
     "__exerciseName": "Hanging Leg Raise",
     "__freeExerciseDbId": "Hanging_Leg_Raise"
   },
@@ -3585,6 +3631,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["erector_spinae", "glutes", "hamstrings"],
     "loadMultiplier": 0.45,
+    "isPopular": true,
     "__exerciseName": "Hyperextensions (Back Extensions)",
     "__freeExerciseDbId": "Hyperextensions_Back_Extensions"
   },
@@ -3675,6 +3722,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["biceps"],
     "loadMultiplier": 0.18,
+    "isPopular": true,
     "__exerciseName": "Incline Dumbbell Curl",
     "__freeExerciseDbId": "Incline_Dumbbell_Curl"
   },
@@ -3685,6 +3733,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.15,
+    "isPopular": true,
     "__exerciseName": "Incline Dumbbell Flyes",
     "__freeExerciseDbId": "Incline_Dumbbell_Flyes"
   },
@@ -3705,6 +3754,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
     "loadMultiplier": 0.3,
+    "isPopular": true,
     "__exerciseName": "Incline Dumbbell Press",
     "__freeExerciseDbId": "Incline_Dumbbell_Press"
   },
@@ -4420,6 +4470,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["quadriceps"],
     "loadMultiplier": 0.5,
+    "isPopular": true,
     "__exerciseName": "Leg Extensions",
     "__freeExerciseDbId": "Leg_Extensions"
   },
@@ -4440,6 +4491,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "calves", "glutes", "hamstrings"],
     "loadMultiplier": 3.5,
+    "isPopular": true,
     "__exerciseName": "Leg Press",
     "__freeExerciseDbId": "Leg_Press"
   },
@@ -4480,6 +4532,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
     "loadMultiplier": 0.9,
+    "isPopular": true,
     "__exerciseName": "Leverage Chest Press",
     "__freeExerciseDbId": "Leverage_Chest_Press"
   },
@@ -4771,6 +4824,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["triceps", "pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.2,
+    "isPopular": true,
     "__exerciseName": "Lying Dumbbell Tricep Extension",
     "__freeExerciseDbId": "Lying_Dumbbell_Tricep_Extension"
   },
@@ -4831,6 +4885,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["hamstrings"],
     "loadMultiplier": 0.4,
+    "isPopular": true,
     "__exerciseName": "Lying Leg Curls",
     "__freeExerciseDbId": "Lying_Leg_Curls"
   },
@@ -4901,6 +4956,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.3,
+    "isPopular": true,
     "__exerciseName": "Lying Triceps Press",
     "__freeExerciseDbId": "Lying_Triceps_Press"
   },
@@ -4921,6 +4977,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["biceps"],
     "loadMultiplier": 0.3,
+    "isPopular": true,
     "__exerciseName": "Machine Bicep Curl",
     "__freeExerciseDbId": "Machine_Bicep_Curl"
   },
@@ -4941,6 +4998,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["anterior_deltoid", "triceps"],
     "loadMultiplier": 0.6,
+    "isPopular": true,
     "__exerciseName": "Machine Shoulder (Military) Press",
     "__freeExerciseDbId": "Machine_Shoulder_Military_Press"
   },
@@ -5077,6 +5135,7 @@
       "triceps"
     ],
     "loadMultiplier": 0.99,
+    "isPopular": true,
     "__exerciseName": "Muscle Up",
     "__freeExerciseDbId": "Muscle_Up"
   },
@@ -5317,6 +5376,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["rhomboids", "biceps", "lats", "anterior_deltoid"],
     "loadMultiplier": 0.4,
+    "isPopular": true,
     "__exerciseName": "One-Arm Dumbbell Row",
     "__freeExerciseDbId": "One-Arm_Dumbbell_Row"
   },
@@ -5900,6 +5960,7 @@
       "triceps"
     ],
     "loadMultiplier": 0.85,
+    "isPopular": true,
     "__exerciseName": "Power Clean",
     "__freeExerciseDbId": "Power_Clean"
   },
@@ -6006,6 +6067,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["biceps"],
     "loadMultiplier": 0.25,
+    "isPopular": true,
     "__exerciseName": "Preacher Curl",
     "__freeExerciseDbId": "Preacher_Curl"
   },
@@ -6073,6 +6135,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["lats", "biceps", "rhomboids"],
     "loadMultiplier": 0.99,
+    "isPopular": true,
     "__exerciseName": "Pullups",
     "__freeExerciseDbId": "Pullups"
   },
@@ -6083,6 +6146,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["anterior_deltoid", "quadriceps", "triceps"],
     "loadMultiplier": 0.55,
+    "isPopular": true,
     "__exerciseName": "Push Press",
     "__freeExerciseDbId": "Push_Press"
   },
@@ -6123,6 +6187,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["triceps", "pectoralis_major", "anterior_deltoid"],
     "loadMultiplier": 0.7,
+    "isPopular": true,
     "__exerciseName": "Push-Ups - Close Triceps Position",
     "__freeExerciseDbId": "Push-Ups_-_Close_Triceps_Position"
   },
@@ -6153,6 +6218,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
     "loadMultiplier": 0.7,
+    "isPopular": true,
     "__exerciseName": "Pushups",
     "__freeExerciseDbId": "Pushups"
   },
@@ -6233,6 +6299,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["erector_spinae", "forearms", "glutes", "hamstrings", "traps"],
     "loadMultiplier": 1.3,
+    "isPopular": true,
     "__exerciseName": "Rack Pulls",
     "__freeExerciseDbId": "Rack_Pulls"
   },
@@ -6404,6 +6471,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["posterior_deltoid"],
     "loadMultiplier": 0.12,
+    "isPopular": true,
     "__exerciseName": "Reverse Flyes",
     "__freeExerciseDbId": "Reverse_Flyes"
   },
@@ -6563,6 +6631,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["hamstrings", "calves", "glutes", "erector_spinae"],
     "loadMultiplier": 1,
+    "isPopular": true,
     "__exerciseName": "Romanian Deadlift",
     "__freeExerciseDbId": "Romanian_Deadlift"
   },
@@ -6743,6 +6812,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["anterior_deltoid", "triceps"],
     "loadMultiplier": 0.6,
+    "isPopular": true,
     "__exerciseName": "Seated Barbell Military Press",
     "__freeExerciseDbId": "Seated_Barbell_Military_Press"
   },
@@ -6803,6 +6873,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["rhomboids", "biceps", "lats", "anterior_deltoid"],
     "loadMultiplier": 0.7,
+    "isPopular": true,
     "__exerciseName": "Seated Cable Rows",
     "__freeExerciseDbId": "Seated_Cable_Rows"
   },
@@ -6823,6 +6894,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["calves"],
     "loadMultiplier": 0.8,
+    "isPopular": true,
     "__exerciseName": "Seated Calf Raise",
     "__freeExerciseDbId": "Seated_Calf_Raise"
   },
@@ -6893,6 +6965,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["anterior_deltoid", "triceps"],
     "loadMultiplier": 0.25,
+    "isPopular": true,
     "__exerciseName": "Seated Dumbbell Press",
     "__freeExerciseDbId": "Seated_Dumbbell_Press"
   },
@@ -6983,6 +7056,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["hamstrings"],
     "loadMultiplier": 0.4,
+    "isPopular": true,
     "__exerciseName": "Seated Leg Curl",
     "__freeExerciseDbId": "Seated_Leg_Curl"
   },
@@ -7188,6 +7262,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["lateral_deltoid"],
     "loadMultiplier": 0.1,
+    "isPopular": true,
     "__exerciseName": "Side Lateral Raise",
     "__freeExerciseDbId": "Side_Lateral_Raise"
   },
@@ -7348,6 +7423,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
     "loadMultiplier": 0.7,
+    "isPopular": true,
     "__exerciseName": "Single-Arm Push-Up",
     "__freeExerciseDbId": "Single-Arm_Push-Up"
   },
@@ -7428,6 +7504,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["rectus_abdominis"],
     "loadMultiplier": 0.35,
+    "isPopular": true,
     "__exerciseName": "Sit-Up",
     "__freeExerciseDbId": "Sit-Up"
   },
@@ -7552,6 +7629,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["pectoralis_major", "anterior_deltoid", "triceps"],
     "loadMultiplier": 1,
+    "isPopular": true,
     "__exerciseName": "Smith Machine Bench Press",
     "__freeExerciseDbId": "Smith_Machine_Bench_Press"
   },
@@ -7689,6 +7767,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "calves", "glutes", "hamstrings", "erector_spinae"],
     "loadMultiplier": 1.3,
+    "isPopular": true,
     "__exerciseName": "Smith Machine Squat",
     "__freeExerciseDbId": "Smith_Machine_Squat"
   },
@@ -7738,6 +7817,7 @@
       "triceps"
     ],
     "loadMultiplier": 0.7,
+    "isPopular": true,
     "__exerciseName": "Snatch",
     "__freeExerciseDbId": "Snatch"
   },
@@ -7944,6 +8024,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 0.4,
+    "isPopular": true,
     "__exerciseName": "Split Squat with Dumbbells",
     "__freeExerciseDbId": "Split_Squat_with_Dumbbells"
   },
@@ -8095,6 +8176,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["biceps"],
     "loadMultiplier": 0.42,
+    "isPopular": true,
     "__exerciseName": "Standing Biceps Cable Curl",
     "__freeExerciseDbId": "Standing_Biceps_Cable_Curl"
   },
@@ -8155,6 +8237,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["calves"],
     "loadMultiplier": 1,
+    "isPopular": true,
     "__exerciseName": "Standing Calf Raises",
     "__freeExerciseDbId": "Standing_Calf_Raises"
   },
@@ -8215,6 +8298,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.25,
+    "isPopular": true,
     "__exerciseName": "Standing Dumbbell Triceps Extension",
     "__freeExerciseDbId": "Standing_Dumbbell_Triceps_Extension"
   },
@@ -8335,6 +8419,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["lateral_deltoid", "forearms"],
     "loadMultiplier": 0.1,
+    "isPopular": true,
     "__exerciseName": "Standing Low-Pulley Deltoid Raise",
     "__freeExerciseDbId": "Standing_Low-Pulley_Deltoid_Raise"
   },
@@ -8355,6 +8440,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["anterior_deltoid", "triceps"],
     "loadMultiplier": 0.6,
+    "isPopular": true,
     "__exerciseName": "Standing Military Press",
     "__freeExerciseDbId": "Standing_Military_Press"
   },
@@ -8405,6 +8491,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["triceps", "anterior_deltoid"],
     "loadMultiplier": 0.3,
+    "isPopular": true,
     "__exerciseName": "Standing Overhead Barbell Triceps Extension",
     "__freeExerciseDbId": "Standing_Overhead_Barbell_Triceps_Extension"
   },
@@ -8505,6 +8592,7 @@
     "mechanicType": "plyometric",
     "targetMuscles": ["quadriceps", "calves", "glutes", "hamstrings", "anterior_deltoid"],
     "loadMultiplier": 0.88,
+    "isPopular": true,
     "__exerciseName": "Star Jump",
     "__freeExerciseDbId": "Star_Jump"
   },
@@ -8545,6 +8633,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["hamstrings", "glutes", "erector_spinae"],
     "loadMultiplier": 1,
+    "isPopular": true,
     "__exerciseName": "Stiff-Legged Barbell Deadlift",
     "__freeExerciseDbId": "Stiff-Legged_Barbell_Deadlift"
   },
@@ -8555,6 +8644,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["hamstrings", "glutes", "erector_spinae"],
     "loadMultiplier": 0.5,
+    "isPopular": true,
     "__exerciseName": "Stiff-Legged Dumbbell Deadlift",
     "__freeExerciseDbId": "Stiff-Legged_Dumbbell_Deadlift"
   },
@@ -8634,6 +8724,7 @@
       "traps"
     ],
     "loadMultiplier": 1.8,
+    "isPopular": true,
     "__exerciseName": "Sumo Deadlift",
     "__freeExerciseDbId": "Sumo_Deadlift"
   },
@@ -8789,6 +8880,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["rhomboids", "biceps", "lats"],
     "loadMultiplier": 0.9,
+    "isPopular": true,
     "__exerciseName": "T-Bar Row with Handle",
     "__freeExerciseDbId": "T-Bar_Row_with_Handle"
   },
@@ -8829,6 +8921,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["adductors", "glutes", "hamstrings"],
     "loadMultiplier": 0.6,
+    "isPopular": true,
     "__exerciseName": "Thigh Adductor",
     "__freeExerciseDbId": "Thigh_Adductor"
   },
@@ -8890,6 +8983,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "glutes", "hamstrings"],
     "loadMultiplier": 1.45,
+    "isPopular": true,
     "__exerciseName": "Trap Bar Deadlift",
     "__freeExerciseDbId": "Trap_Bar_Deadlift"
   },
@@ -8930,6 +9024,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.5,
+    "isPopular": true,
     "__exerciseName": "Triceps Pushdown",
     "__freeExerciseDbId": "Triceps_Pushdown"
   },
@@ -8940,6 +9035,7 @@
     "mechanicType": "isolation",
     "targetMuscles": ["triceps"],
     "loadMultiplier": 0.5,
+    "isPopular": true,
     "__exerciseName": "Triceps Pushdown - Rope Attachment",
     "__freeExerciseDbId": "Triceps_Pushdown_-_Rope_Attachment"
   },
@@ -9060,6 +9156,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["shoulders", "traps"],
     "loadMultiplier": 0.4,
+    "isPopular": true,
     "__exerciseName": "Upright Barbell Row",
     "__freeExerciseDbId": "Upright_Barbell_Row"
   },
@@ -9110,6 +9207,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["lats", "biceps", "rhomboids", "anterior_deltoid"],
     "loadMultiplier": 0.99,
+    "isPopular": true,
     "__exerciseName": "V-Bar Pullup",
     "__freeExerciseDbId": "V-Bar_Pullup"
   },
@@ -9280,6 +9378,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["lats", "biceps", "rhomboids", "anterior_deltoid"],
     "loadMultiplier": 0.7,
+    "isPopular": true,
     "__exerciseName": "Wide-Grip Lat Pulldown",
     "__freeExerciseDbId": "Wide-Grip_Lat_Pulldown"
   },
@@ -9399,6 +9498,7 @@
     "mechanicType": "compound",
     "targetMuscles": ["quadriceps", "calves", "glutes", "hamstrings"],
     "loadMultiplier": 0.85,
+    "isPopular": true,
     "__exerciseName": "Zercher Squats",
     "__freeExerciseDbId": "Zercher_Squats"
   },
