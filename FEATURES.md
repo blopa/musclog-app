@@ -174,6 +174,7 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 ## Onboarding
 
 - Quick or detailed guided setup flow
+- Restore a full profile either from a JSON backup or directly from another device via optical QR transfer on the first screen
 - Personalized nutrition goal calculation based on age, weight, height, activity level, and weight goal
 - Optional Health Connect / HealthKit setup during onboarding
 - AI provider configuration during setup

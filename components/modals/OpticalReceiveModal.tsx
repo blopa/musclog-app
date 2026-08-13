@@ -46,7 +46,7 @@ import { type ParsedShare, resolveOpticalReceiveScreen } from './opticalReceiveS
 interface OpticalReceiveModalProps {
   visible: boolean;
   onClose: () => void;
-  accept?: 'any' | 'share';
+  accept?: 'any' | 'database' | 'share';
   onShareImported?: () => void;
 }
 
@@ -314,17 +314,22 @@ export function OpticalReceiveModal({
           </View>
         );
 
-      case 'refused':
+      case 'refused': {
+        const messageKey = {
+          database: 'opticalTransfer.share.notShareable',
+          share: 'opticalTransfer.receive.notDatabaseBackup',
+          'unknown-payload': 'opticalTransfer.receive.tooNew',
+        }[screen.reason];
+
         return (
           <View className="gap-4 px-4 py-10">
             <Text className="text-center" style={{ color: theme.colors.status.error }}>
-              {screen.reason === 'database'
-                ? t('opticalTransfer.share.notShareable')
-                : t('opticalTransfer.receive.tooNew')}
+              {t(messageKey)}
             </Text>
             {scanAgainButton}
           </View>
         );
+      }
 
       case 'unpacking':
         return (

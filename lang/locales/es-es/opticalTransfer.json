@@ -106,6 +106,7 @@
       "checksumFailed": "Los datos no sobrevivieron a la transferencia.",
       "failed": "Algo salió mal al leer la transferencia.",
       "nothingChanged": "No se cambió nada en este móvil.",
+      "notDatabaseBackup": "Esto es un alimento o una comida compartidos, no una copia de seguridad completa. Termina la configuración y recíbelo desde la aplicación.",
       "scanAgain": "Escanear de nuevo",
       "replacing": "Reemplazando…",
       "restoring": "Reemplazando tus datos…",

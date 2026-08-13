@@ -106,6 +106,7 @@
       "checksumFailed": "The data did not survive the transfer.",
       "failed": "Something went wrong reading the transfer.",
       "nothingChanged": "Nothing on this phone was changed.",
+      "notDatabaseBackup": "This is a shared food or meal, not a full backup. Finish setup first, then receive it from inside the app.",
       "scanAgain": "Scan again",
       "replacing": "Replacing…",
       "restoring": "Replacing your data…",

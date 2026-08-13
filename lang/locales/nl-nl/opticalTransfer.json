@@ -106,6 +106,7 @@
       "checksumFailed": "De gegevens hebben de overdracht niet overleefd.",
       "failed": "Er ging iets mis bij het lezen van de overdracht.",
       "nothingChanged": "Er is niets op deze telefoon gewijzigd.",
+      "notDatabaseBackup": "Dit is een gedeeld voedingsmiddel of een gedeelde maaltijd, geen volledige back-up. Rond eerst de installatie af en ontvang het daarna vanuit de app.",
       "scanAgain": "Opnieuw scannen",
       "replacing": "Bezig met vervangen…",
       "restoring": "Je gegevens worden vervangen…",

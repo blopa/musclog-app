@@ -129,7 +129,7 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 ### 🔄 Import & Export
 
 - Export your full database as an encrypted JSON file (encryption optional, configurable)
-- Import data across devices or as a backup
+- Import data across devices or as a backup, including optical QR transfer directly from the first onboarding screen
 - Support for JSON format
 
 ### 🔒 Privacy & Security

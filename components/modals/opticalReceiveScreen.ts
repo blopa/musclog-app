@@ -31,10 +31,11 @@ export interface OpticalReceiveScreenInput {
   phase: OpticalReceiverPhase;
   meta?: OpticalContainerMeta;
   /**
-   * `'share'` when the caller will only accept a shared record (a meal, a food) — a food camera
-   * must never offer a wipe.
+   * `'database'` when onboarding will only accept a full backup, or `'share'` when a food camera
+   * will only accept a shared record (a meal, a food). These entry points must not expose actions
+   * that depend on app state the user has not reached, or offer a wipe from a food scanner.
    */
-  accept: 'any' | 'share';
+  accept: 'any' | 'database' | 'share';
   errorCode?: OpticalReceiverState['errorCode'];
   parsedShare?: ParsedShare;
 }
@@ -42,7 +43,7 @@ export interface OpticalReceiveScreenInput {
 export type OpticalReceiveScreen =
   | { kind: 'scanning' }
   /** A payload this entry point will not act on. Nothing has been written. */
-  | { kind: 'refused'; reason: 'database' | 'unknown-payload' }
+  | { kind: 'refused'; reason: 'database' | 'share' | 'unknown-payload' }
   | { kind: 'unpacking' }
   | { kind: 'passphrase'; wrongPassphrase: boolean }
   | { kind: 'database'; meta: OpticalContainerMeta; tooNew: boolean }
@@ -73,6 +74,11 @@ export function resolveOpticalReceiveScreen(
     if (accept === 'share' && isDatabase) {
       return { kind: 'refused', reason: 'database' };
     }
+
+    if (accept === 'database' && isShare) {
+      return { kind: 'refused', reason: 'share' };
+    }
+
     if (!isDatabase && !isShare) {
       return { kind: 'refused', reason: 'unknown-payload' };
     }
@@ -93,11 +99,13 @@ export function resolveOpticalReceiveScreen(
           ? { kind: 'share', envelope: parsedShare.envelope }
           : { kind: 'share-unreadable', tooNew: shareErrorMeansTooNew(parsedShare?.code) };
       }
+
       if (meta && isDatabase) {
         // A backup written by a newer app cannot be understood by this one. Zod would eventually
         // reject it, but only after the wipe and a wall of validation errors — so refuse up front.
         return { kind: 'database', meta, tooNew: meta.exportVersion > CURRENT_DATABASE_VERSION };
       }
+
       // Verified with no container metadata is unreachable (`unpack` always sets it before the
       // phase moves), but a blank screen is the worst possible way to be wrong about that.
       return { kind: 'error', checksumFailed: false };

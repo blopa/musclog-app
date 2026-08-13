@@ -4,6 +4,11 @@ Move a Musclog profile between two phones using nothing but one screen and one c
 sending phone displays an endless stream of animated QR codes; the receiving phone points its
 camera at it and reconstructs the export. No network, no cable, no account, no pairing.
 
+A fresh install can receive a full backup from the first onboarding screen, before a user record
+exists. That entry point mounts the same `OpticalReceiveModal` as Settings in database-only mode;
+it does not duplicate the scanner or restore pipeline, and it refuses single-food and meal shares
+until onboarding is complete. Settings remains the full send/receive entry point.
+
 Built on the LT-fountain protocol from
 [decimen-optical-transfer](https://github.com/bashalarmistalt/decimen-optical-transfer), whose
 `fountain.ts` and frame header we port **verbatim** — see "Frozen wire format" below.
@@ -472,6 +477,7 @@ clamp does not — or the sender generates live forever, which is slower but alw
 | `components/optical/OpticalQrCanvas.tsx`          | Skia draw, integer module scaling                       |
 | `components/optical/OpticalMealSharePreview.tsx`  | verified meal preview before saving                     |
 | `components/optical/OpticalScannerCamera.tsx`     | receiving camera (vision-camera)                        |
+| `components/modals/OpticalReceiveModal.tsx`       | shared receiver for Settings and first-run onboarding   |
 | `components/SmartCameraFrame.tsx`                 | shared aiming frame + scrim, `portrait` variant here    |
 | `components/optical/OpticalQrCanvas.web.tsx`      | Skia-free DOM canvas, same integer scaling              |
 | `components/optical/OpticalScannerCamera.web.tsx` | getUserMedia + our own frame pump                       |
