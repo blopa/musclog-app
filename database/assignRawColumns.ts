@@ -8,7 +8,29 @@
  */
 export type RawColumnTarget = Record<string, unknown> & { _raw: Record<string, unknown> };
 
-/** Assigns snake_case export/share columns through WatermelonDB model setters. */
+function isReadOnlyProperty(record: RawColumnTarget, property: string): boolean {
+  let owner: object | null = record;
+
+  while (owner) {
+    const descriptor = Object.getOwnPropertyDescriptor(owner, property);
+    if (descriptor) {
+      return 'value' in descriptor ? descriptor.writable === false : descriptor.set == null;
+    }
+
+    owner = Object.getPrototypeOf(owner) as object | null;
+  }
+
+  return false;
+}
+
+/**
+ * Assigns snake_case export/share columns through WatermelonDB model setters.
+ *
+ * A model may expose a computed getter whose camelCase name collides with a differently named
+ * decorated field (for example the `is_skipped` column and `WorkoutLogSet.isSkipped`). When that
+ * happens, the validated physical column is written to its existing raw slot instead of assigning
+ * to the read-only getter.
+ */
 export function assignRawColumns(record: RawColumnTarget, raw: Record<string, unknown>): void {
   for (const [key, value] of Object.entries(raw)) {
     if (key === 'id' || key === '_decrypted' || value === undefined) {
@@ -37,6 +59,11 @@ export function assignRawColumns(record: RawColumnTarget, raw: Record<string, un
     }
 
     const camel = key.replace(/_([a-z0-9])/g, (_, character: string) => character.toUpperCase());
+    if (Object.hasOwn(record._raw, key) && isReadOnlyProperty(record, camel)) {
+      record._raw[key] = assignValue;
+      continue;
+    }
+
     record[camel] = assignValue;
   }
 }
