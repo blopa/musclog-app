@@ -43,6 +43,8 @@ uint8_t workoutlog_get_summary(uint8_t newest_idx, WorkoutLogSummary *out) BANKE
  * range). Used by the workout detail screen.
  */
 uint8_t workoutlog_get_sets(uint8_t newest_idx, WorkoutLogSet *out, uint8_t max) BANKED;
+/* Fetch one set without allocating a maximum-size workout array. */
+uint8_t workoutlog_get_set(uint8_t newest_idx, uint8_t set_idx, WorkoutLogSet *out) BANKED;
 uint8_t workoutlog_add(uint16_t day_num, uint8_t dominant_muscle, uint8_t exercise_count,
                        uint8_t set_count, const WorkoutLogSet *sets) BANKED;
 

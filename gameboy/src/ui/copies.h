@@ -69,6 +69,11 @@
 #define STR_ABOUT "ABOUT"
 #define STR_RESET_DATA "RESET DATA"
 #define STR_RESET_DATA_Q "ERASE ALL DATA?"
+#define STR_SHARE_DATA "SHARE DATA"
+#define STR_SHARE_ALL_Q "SHARE ALL DATA?"
+#define STR_SHARE_PREPARING "PREPARING DATABASE"
+#define STR_SHARE_KEEP_POWER "KEEP POWER ON"
+#define STR_SHARE_FAILED "COULD NOT PREPARE"
 
 /* ── About screen ──────────────────────────────────────────────────────── */
 #define STR_ABOUT_L1 "MUSCLOG GB IS A"

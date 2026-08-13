@@ -122,6 +122,7 @@ void ui_init_text(void) {
     font_t font;
 
     DISPLAY_OFF;
+    LCDC_REG &= (uint8_t)(~LCDCF_BG8000);
     set_bkg_palette(0u, 4u, ui_palettes);
 
     /*

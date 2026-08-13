@@ -14,6 +14,7 @@ import { reloadApp } from '@/utils/app';
 import { decrypt } from '@/utils/encryption';
 import { handleError } from '@/utils/handleError';
 import { isMusclogGatewayAvailable } from '@/utils/musclogGatewayAvailability';
+import { expandGameBoyExportIfNeeded } from '@/utils/optical/gameBoyExport';
 import { normalizeTimezoneToOffset } from '@/utils/timezone';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
@@ -143,7 +144,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     jsonString = await decrypt(jsonString, decryptionPhrase.trim());
   }
 
-  const parsed: unknown = JSON.parse(jsonString);
+  const parsed: unknown = expandGameBoyExportIfNeeded(JSON.parse(jsonString));
 
   // Pre-v26 exports used RPE=0 and is_skipped as an implicit lifecycle. Normalize that
   // relationship-aware legacy shape once, before validation and persistence.

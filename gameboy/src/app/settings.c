@@ -6,6 +6,7 @@
 #include "game_data.h"
 #include "input.h"
 #include "onboarding.h"
+#include "optical_share.h"
 #include "profile.h"
 #include "spinner.h"
 #include "ui_text.h"
@@ -469,20 +470,23 @@ static void about_show(void) {
 }
 
 uint8_t settings_menu(SaveData *data) BANKED {
-    const char *options[3];
+    const char *options[4];
     uint8_t choice;
 
     options[0] = STR_SETTINGS;
-    options[1] = STR_ABOUT;
-    options[2] = STR_RESET_DATA;
+    options[1] = STR_SHARE_DATA;
+    options[2] = STR_ABOUT;
+    options[3] = STR_RESET_DATA;
 
-    choice = ui_menu_select(STR_MENU, options, 3u);
+    choice = ui_menu_select(STR_MENU, options, 4u);
 
     if (choice == 0u) {
         settings_show(data);
     } else if (choice == 1u) {
-        about_show();
+        optical_share_show(data);
     } else if (choice == 2u) {
+        about_show();
+    } else if (choice == 3u) {
         if (ui_confirm(STR_RESET_DATA, STR_RESET_DATA_Q)) {
             game_data_erase_all();
             /* SRAM was just erased, so there is no pre-seeded RTC date to honor. */

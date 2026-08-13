@@ -1,8 +1,9 @@
 # Optical Transfer
 
-Move a Musclog profile between two phones using nothing but one screen and one camera. The
-sending phone displays an endless stream of animated QR codes; the receiving phone points its
-camera at it and reconstructs the export. No network, no cable, no account, no pairing.
+Move Musclog data between devices using nothing but one screen and one camera. A sending phone,
+browser, or Game Boy Color displays an endless stream of animated QR codes; an Android, iOS, or
+web receiver points its camera at the screen and reconstructs the export. No network, cable,
+account, or pairing is involved.
 
 A fresh install can receive a full backup from the first onboarding screen, before a user record
 exists. That entry point mounts the same `OpticalReceiveModal` as Settings in database-only mode;
@@ -19,6 +20,10 @@ terms. Upstream **relicensed to AGPL-3.0-or-later as of v0.4.0** (2026-08-09). E
 "Ported verbatim from decimen-optical-transfer (MIT)" header in `utils/optical/` refers to the
 MIT-era source and is accurate as written; pulling a fix or a new helper from v0.4.0+ would import
 AGPL code into this app and is not a like-for-like update.
+
+Musclog GB's QR encoder is adapted from Project Nayuki's MIT-licensed QR Code generator and the
+MIT-licensed GBDK runtime port in `bbbbbr/gameboy_qrcode`. Their license notices remain in the
+source files.
 
 ## Why a fountain code
 
@@ -50,6 +55,65 @@ dumpDatabase()  →  JSON string
       ↓  AES → gunzip → SHA-256 check
       ↓  restoreDatabase(json)
 ```
+
+### Game Boy sender pipeline
+
+Musclog GB is deliberately **sender-only**. It has no camera, does not expose a receive action,
+and does not define a Game Boy-to-Game Boy exchange. Settings contains one action, `SHARE DATA`,
+which always exports the whole cartridge database for import as a destructive database
+replacement by Android, iOS, or web.
+
+The cartridge has no JSON or compression library and cannot hold its complete save as one string,
+so `optical_export.c` renders a deliberately compact JSON schema as a reproducible virtual byte
+stream. It first streams the bytes through SHA-256 to determine the size and digest, streams them
+again for the container FNV, and then regenerates only the source blocks selected by each fountain
+frame. The payload therefore never needs to exist contiguously in WRAM or SRAM.
+
+```text
+profile + SRAM stores + referenced ROM records
+      ↓  compact JSON schema v1, streamed as bytes
+      ↓  SHA-256
+      ↓  MLOG container v1 (plain, uncompressed, database payload kind)
+      ↓  LT fountain, 202-byte blocks, frozen 20-byte frame header
+      ↓  base44 (333 alphanumeric characters per frame)
+      ↓  QR version 9-L, mask 0, 53×53 modules at 2 Game Boy pixels/module
+      ↓  phone/web scanner and existing OpticalReceiver
+      ↓  container FNV + SHA-256 verification
+      ↓  gameBoyExport.ts strict parse and WatermelonDB-row expansion
+      ↓  normal database validation, confirmation, backup, and replacement
+```
+
+The JSON marker is `_gameBoyExport: 1`; `_exportVersion` remains the regular database export
+version so the container and restore compatibility checks keep their existing meaning. Compact
+arrays contain:
+
+- `profile`: user choices, metric measurements, macro goals, and the current cartridge day;
+- `foods`: every live custom food plus only bundled foods referenced by a food log;
+- `foodLogs`: day, global food index, and serving grams;
+- `weights`: dated body-weight measurements;
+- `exercises`: only exercises referenced by saved workouts; and
+- `workouts`: oldest-first workout summaries and all performed sets.
+
+`utils/optical/gameBoyExport.ts` rejects unknown schema versions, duplicate indexes, and missing
+food/exercise references before it maps the tuples into a regular export dump. `database/importDb.ts`
+performs that expansion immediately after `JSON.parse`, before schema validation and before any
+backup or database wipe. Imported workout sets are explicitly `performed`; no RPE is invented.
+
+The fountain implementation is a full C port of the frozen PRNG, seeding, degree distribution,
+index selection, XOR framing, and base44 protocol. GBDK provides no floating-point runtime, so the
+robust-soliton calculation uses fixed-point arithmetic. A sequence is omitted if it lands within
+1% of a CDF boundary or selects more than the 64 indexes held in WRAM; arbitrary sequence gaps are
+legal, and every frame that is actually emitted derives exactly the same source indexes as the
+TypeScript receiver. `gameBoyFountainPort.test.ts` pins that emitted-frame compatibility across
+representative block counts.
+
+SRAM bank 3 is shared without touching saved data: custom foods occupy `0x0000..0x0A2F`, while
+the optical transfer uses `0x0B00` and above for QR work buffers, a binary frame, and base44 text.
+The QR remains visible while the next frame is generated and is held for at least 45 VBlanks.
+The renderer uploads all 256 background tiles at `0x8000` and must select unsigned
+`LCDCF_BG8000` tile addressing before displaying them; the text UI uses signed `0x8800`
+addressing, which would otherwise render font glyphs for QR tile IDs 0–127.
+pressing B stops the stream and restores the normal text UI.
 
 **gzip strictly before AES.** Ciphertext is incompressible, so encrypting first would cost ~9× the
 transfer time. This is why the passphrase lives at our container layer and _not_ in
@@ -469,6 +533,7 @@ clamp does not — or the sender generates live forever, which is slower but alw
 | `utils/optical/progress.ts`                       | overhead model, progress and ETA                        |
 | `utils/optical/noSignal.ts`                       | when to show the "nothing is decoding" hint             |
 | `utils/optical/bench.ts`                          | device calibration and the Phase 0 measurements         |
+| `utils/optical/gameBoyExport.ts`                  | strict compact-GB parser and normal-export expansion    |
 | `utils/share/shareEnvelope.ts`                    | bounded, versioned share envelope parser                |
 | `utils/share/shareKinds.ts`                       | share-kind table/FK/dedupe registry                     |
 | `utils/share/shareImportPlan.ts`                  | pure ID/FK rewrite and prune planner                    |
@@ -485,6 +550,10 @@ clamp does not — or the sender generates live forever, which is slower but alw
 | `utils/optical/webQrDecode.ts`                    | decoder selection and the wasm reader                   |
 | `scripts/sync-web-wasm.js`                        | self-hosts the wasm into `public/`                      |
 | `app/app/test/optical-bench.tsx`                  | the measurement harness (runs on both platforms)        |
+| `gameboy/src/features/optical/optical_export.c`   | virtual JSON/container exporter and SRAM-store scan     |
+| `gameboy/src/features/optical/fountain.c`         | fixed-point C fountain/frame/base44 encoder             |
+| `gameboy/src/features/optical/qrcodegen.c`        | fixed version 9-L QR encoder                            |
+| `gameboy/src/features/optical/optical_share.c`    | Share Data confirmation, frame loop, and tile renderer  |
 
 ### The aiming frame is decoration
 

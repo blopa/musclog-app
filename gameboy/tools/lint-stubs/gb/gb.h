@@ -138,6 +138,7 @@ extern volatile uint8_t _vbl_done;
 #define LCDCF_OFF    0x00U
 #define LCDCF_ON     0x01U
 #define LCDCF_WINON  0x04U
+#define LCDCF_BG8000 0x10U
 #define LCDCF_BGON   0x80U
 #define LCDCF_OBJON  0x40U
 #define LCDCF_OBJ16  0x20U

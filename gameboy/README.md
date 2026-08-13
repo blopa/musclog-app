@@ -3,7 +3,7 @@
 Musclog GB is a small, playable Game Boy Color edition of Musclog. It brings the
 core loop of the main app to a 160x144 cartridge UI: first-run onboarding,
 macro tracking, custom foods, body-weight logging, free workouts, rest timers,
-and battery-backed history.
+battery-backed history, and optical export to the full app.
 
 The ROM is built with [GBDK-2020](https://github.com/gbdk-2020/gbdk-2020) and
 targets Game Boy Color only. It uses an MBC3 cartridge layout with RTC, RAM, and
@@ -58,9 +58,15 @@ battery so dates and logs can survive emulator or flash-cart restarts.
 - Free workout sessions support muscle-group exercise filtering, suggested
   starting weights, editable sets/weight/reps, set editing, a 60-second rest
   timer, and saved workout history.
-- 198 bundled exercises are compiled into ROM, grouped by 9 muscle groups.
-- Settings let players update profile fields, macro goals, units, and reset all
+- 247 bundled exercises are compiled into ROM, grouped by 9 muscle groups.
+- Settings let players update profile fields, macro goals, and units; share the
+  entire cartridge database with the Android, iOS, or web app; and reset all
   saved data.
+- `SHARE DATA` displays an endless fountain-coded QR stream containing the whole
+  save as a compact, versioned JSON export. A phone or computer running Musclog
+  can scan, verify, preview, and import it as a full database replacement. The
+  cartridge is sender-only: it has no camera and does not receive from another
+  Game Boy.
 - MBC3 RTC calibration powers calendar dates. If no clock has been set, the ROM
   falls back to `2026-01-01`. When a save already carries a calibrated RTC base
   date as onboarding begins — e.g. one pre-seeded into SRAM by the website
@@ -172,7 +178,7 @@ gameboy/
     app/        Boot flow and top-level screens
     audio/      APU driver and interrupt glue
     data/       SRAM/RTC/storage logic and shared data math
-    features/   Nutrition and workout feature flows
+    features/   Nutrition, workout, and optical-export feature flows
     generated/  Build-generated assets and committed ROM tables
     shared/     Cross-cutting utility headers
     ui/         Text UI/input helpers and copy strings
@@ -216,13 +222,17 @@ Important source modules:
   implement the food diary, search, serving picker, detail, and delete flows.
 - `src/data/food_db.c` reads bundled ROM food tables and custom foods behind one
   global food index space.
-- `src/data/custom_foods.c` persists user-created foods in SRAM bank 3.
+- `src/data/custom_foods.c` persists user-created foods in the low region of SRAM
+  bank 3; the optical sender uses a separate high region as transient QR scratch.
 - `src/data/body_weight.c` and `src/data/metrics.c` implement dated weigh-ins and the
   body-weight trend chart.
 - `src/features/workouts/workouts.c`, `src/features/workouts/workout_session.c`,
   `src/features/workouts/workoutlog.c`, and `src/features/workouts/exercise_db.c`
   implement free sessions, exercise lookup, recommendations,
   rest timers, saved workouts, and workout details.
+- `src/features/optical/optical_export.c` streams a compact JSON snapshot without
+  buffering it in RAM; `fountain.c` emits the app's frozen LT frame format, and
+  `qrcodegen.c` plus `optical_share.c` render QR version 9-L frames for scanning.
 
 ## Cartridge Layout
 
@@ -247,6 +257,11 @@ ROM banks are used deliberately:
 - Bank 8 contains the start screen and its title art (`gb_background`).
 - Bank 9 contains the audio driver (`audio.c`) and the generated APU data
   (`music_data.c`), co-located so the sequencer reads the tables directly.
+- Bank 10 contains the optical Share Data UI and QR encoder.
+- Bank 11 contains the streaming JSON/container exporter and SHA-256.
+- Bank 12 contains the LT fountain encoder.
+- Bank 13 contains the persistent food-log operations moved out of the nearly
+  full fixed bank; its small serving-math helpers remain non-banked.
 
 SRAM stores are separate and checksummed:
 
@@ -255,7 +270,10 @@ SRAM stores are separate and checksummed:
   free part of the profile-reserved region, and survive a NEW GAME erase.
 - Bank 1 stores food log records: day number, food index, and grams.
 - Bank 2 stores workout records with summary data plus every logged set.
-- Bank 3 stores custom foods in fixed tombstoned slots.
+- Bank 3 stores custom foods in fixed tombstoned slots through offset `0x0A2F`.
+  Offsets `0x0B00` and above are transient optical scratch for the QR workspace,
+  frame bytes, and base44 text; they are overwritten during sharing and are not
+  authoritative saved data.
 
 Custom food slots are never compacted. Deleting a custom food clears its name but
 keeps the slot stable, so old food-log records never point at a different food.
@@ -272,6 +290,14 @@ digestible carbs (`carbs - fiber`) against the user's carbs goal.
 
 Workout weights are always stored metrically as kg tenths. When the player uses
 imperial units, display pounds are converted at the UI boundary.
+
+The Share Data path writes its JSON as a virtual byte stream: one pass measures
+and hashes it, and later passes reproduce only the source blocks needed for each
+fountain frame. The compact schema includes the profile and macro goals, every
+food log, every live custom food, only the bundled foods referenced by logs, all
+weight measurements, and every saved workout plus its referenced exercises. The
+app expands that schema into its normal WatermelonDB-shaped export before the
+usual validation and replacement flow.
 
 Calendar values are stored as day numbers from `2000-01-01`. The RTC setup
 screen stores a base date and resets the MBC3 day counter; current date is
@@ -302,8 +328,10 @@ pre-fill the hour and minute without touching the save format.
 - Prefer keeping ROM-bank-sensitive readers non-banked when they call
   `SWITCH_ROM()`. `food_db.c` and `exercise_db.c` show the pattern.
 - Use raw `_SRAM[]` access only through the existing store modules and checksum
-  helpers. Profile, food log, workout log, metrics, and custom foods each own
-  their layout.
+  helpers. The optical exporter may read the documented store layouts directly
+  while streaming, and its QR code may use only the reserved bank-3 scratch
+  offsets. Profile, food log, workout log, metrics, and custom foods each retain
+  ownership of their authoritative data.
 
 ## License
 

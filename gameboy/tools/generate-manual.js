@@ -292,7 +292,7 @@ const featureChapters = [
     heading: 'FREE WORKOUTS',
     body:
       'Start a free session, filter exercises by muscle group, and lift. The game ' +
-      'suggests starting weights; you edit sets, weights, and reps as you go. 198 ' +
+      'suggests starting weights; you edit sets, weights, and reps as you go. 247 ' +
       'exercises across 9 muscle groups are built in. Finished sessions are saved.',
   },
   {
@@ -324,8 +324,9 @@ const featureChapters = [
     heading: 'SETTINGS',
     body:
       'Update your profile, macro goals, and unit system whenever your journey changes. ' +
-      'Toggle sound effects and the soundtrack, or reset all saved data to begin a new ' +
-      'legend from scratch.',
+      'Share Data turns the whole cartridge save into QR codes that the Musclog phone or ' +
+      'web app can scan and replace its database with after confirmation. You can also ' +
+      'toggle sound effects and the soundtrack, or reset the cartridge.',
   },
 ];
 
