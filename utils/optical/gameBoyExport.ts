@@ -406,3 +406,8 @@ export function expandGameBoyExportIfNeeded(value: unknown): unknown {
   }
   return gameBoyExportToDatabaseDump(parseGameBoyExport(value));
 }
+
+/** Parse received database JSON and expand the cartridge tuple schema before normal validation. */
+export function parseDatabaseExportJson(value: string): unknown {
+  return expandGameBoyExportIfNeeded(JSON.parse(value));
+}

@@ -3,6 +3,7 @@ import {
   expandGameBoyExportIfNeeded,
   GameBoyExportError,
   gameBoyExportToDatabaseDump,
+  parseDatabaseExportJson,
   parseGameBoyExport,
 } from '@/utils/optical/gameBoyExport';
 
@@ -104,6 +105,17 @@ describe('Musclog GB compact database export', () => {
         expect.objectContaining({ id: 'gb-m-current', type: 'weight', value: 81.4 }),
       ])
     );
+  });
+
+  it('expands the serialized optical payload at the restore parsing boundary', () => {
+    const parsed = parseDatabaseExportJson(JSON.stringify(compactFixture()));
+    const validation = validateExportDump(parsed);
+
+    expect(validation.success).toBe(true);
+    expect(parsed).toMatchObject({ _exportVersion: 26 });
+    const foods = (parsed as { foods: unknown[] }).foods;
+    expect(foods[0]).toEqual(expect.objectContaining({ id: 'gb-f-12', name: 'APPLE' }));
+    expect(Array.isArray(foods[0])).toBe(false);
   });
 
   it('rejects dangling references and duplicate catalogue indexes before restore', () => {
