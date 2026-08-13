@@ -326,7 +326,8 @@ const featureChapters = [
       'Update your profile, macro goals, and unit system whenever your journey changes. ' +
       'Share Data turns the whole cartridge save into QR codes that the Musclog phone or ' +
       'web app can scan and replace its database with after confirmation. You can also ' +
-      'toggle sound effects and the soundtrack, or reset the cartridge.',
+      'press B while sharing to choose Continue or Stop Sharing. Toggle sound effects and ' +
+      'the soundtrack here too, or reset the cartridge.',
   },
 ];
 

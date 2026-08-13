@@ -3,6 +3,9 @@
  *
  * Copyright (c) Project Nayuki. (MIT License)
  * https://www.nayuki.io/page/qr-code-generator-library
+ * Pointer-based module writer adapted from Game Boy QR-Paint.
+ * Copyright (c) 2026 bbbbbr. (MIT License)
+ * https://github.com/bbbbbr/gameboy_qr_paint
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -32,28 +35,26 @@
 #include <stdint.h>
 
 #include "qrcodegen.h"
+#include "qr_rs_products.generated.h"
 #define INLINE inline
 #define size_t uint16_t
 
 #define assert(a)
 
-/* This cartridge encoder intentionally supports exactly QR version 9-L,
+/* This cartridge encoder intentionally supports exactly QR version 11-L,
  * alphanumeric mode, and mask 0. Specializing the upstream lookup tables keeps
  * both ROM usage and SDCC compile time bounded. */
 #define MASK 0u
 #define MODE 2u
 #define ECC_CODEWORDS_PER_BLOCK 30u
 #define NUM_ERROR_CORRECTION_BLOCKS 2u
-#define RS_DEGREE ECC_CODEWORDS_PER_BLOCK
-#define CHAR_COUNT_BITS 9u
+#define CHAR_COUNT_BITS 11u
 
 // #define qrcodegen_BUFFER_SZ  (QRPAD * QRSIZE/8)
 #define qrcodegen_BUFFER_SZ (QR_OUTPUT_ROW_SZ_BYTES * QRSIZE)
 
 #define QRCODE ((uint8_t *)_SRAM + QR_SRAM_CODE_OFFSET)
 #define TMPBUFFER ((uint8_t *)_SRAM + QR_SRAM_TMP_OFFSET)
-
-#define qrcodegen_REED_SOLOMON_DEGREE_MAX RS_DEGREE
 
 /*---- Basic QR Code information ----*/
 
@@ -78,10 +79,6 @@ static const uint8_t qr_bitmask[] = {
 
 INLINE int int_abs(int value) {
     return value >= 0 ? value : -value;
-}
-
-INLINE bool getBit(int x, int i) {
-    return ((x >> i) & 1) != 0;
 }
 
 INLINE bool getModule(const uint8_t qrcode[], uint8_t x, uint8_t y) {
@@ -143,148 +140,21 @@ INLINE int getNumDataCodewords(void) {
 
 /*---- Reed-Solomon ECC generator functions ----*/
 
-static uint8_t rs_y;
-static uint8_t reedSolomonMultiply(uint8_t x_) {
-    // Russian peasant multiplication
-    uint8_t x = x_, y = rs_y, z = 0;
-    if (z & 0x80) {
-        z = ((z << 1) ^ 0x1D);
-    } else {
-        z = (z << 1);
-    }
-    if (y & 0x80) z ^= x;
-    if (z & 0x80) {
-        z = ((z << 1) ^ 0x1D);
-    } else {
-        z = (z << 1);
-    }
-    if (y & 0x40) z ^= x;
-    if (z & 0x80) {
-        z = ((z << 1) ^ 0x1D);
-    } else {
-        z = (z << 1);
-    }
-    if (y & 0x20) z ^= x;
-    if (z & 0x80) {
-        z = ((z << 1) ^ 0x1D);
-    } else {
-        z = (z << 1);
-    }
-    if (y & 0x10) z ^= x;
-    if (z & 0x80) {
-        z = ((z << 1) ^ 0x1D);
-    } else {
-        z = (z << 1);
-    }
-    if (y & 0x08) z ^= x;
-    if (z & 0x80) {
-        z = ((z << 1) ^ 0x1D);
-    } else {
-        z = (z << 1);
-    }
-    if (y & 0x04) z ^= x;
-    if (z & 0x80) {
-        z = ((z << 1) ^ 0x1D);
-    } else {
-        z = (z << 1);
-    }
-    if (y & 0x02) z ^= x;
-    if (z & 0x80) {
-        z = ((z << 1) ^ 0x1D);
-    } else {
-        z = (z << 1);
-    }
-    if (y & 0x01) z ^= x;
-    return z;
-}
-
-static uint8_t reedSolomonMultiply02(uint8_t x_) {
-    // Russian peasant multiplication
-    uint8_t x = x_, y = 0x02, z = 0;
-    if (z & 0x80) {
-        z = ((z << 1) ^ 0x1D);
-    } else {
-        z = (z << 1);
-    }
-    if (y & 0x80) z ^= x;
-    if (z & 0x80) {
-        z = ((z << 1) ^ 0x1D);
-    } else {
-        z = (z << 1);
-    }
-    if (y & 0x40) z ^= x;
-    if (z & 0x80) {
-        z = ((z << 1) ^ 0x1D);
-    } else {
-        z = (z << 1);
-    }
-    if (y & 0x20) z ^= x;
-    if (z & 0x80) {
-        z = ((z << 1) ^ 0x1D);
-    } else {
-        z = (z << 1);
-    }
-    if (y & 0x10) z ^= x;
-    if (z & 0x80) {
-        z = ((z << 1) ^ 0x1D);
-    } else {
-        z = (z << 1);
-    }
-    if (y & 0x08) z ^= x;
-    if (z & 0x80) {
-        z = ((z << 1) ^ 0x1D);
-    } else {
-        z = (z << 1);
-    }
-    if (y & 0x04) z ^= x;
-    if (z & 0x80) {
-        z = ((z << 1) ^ 0x1D);
-    } else {
-        z = (z << 1);
-    }
-    if (y & 0x02) z ^= x;
-    if (z & 0x80) {
-        z = ((z << 1) ^ 0x1D);
-    } else {
-        z = (z << 1);
-    }
-    if (y & 0x01) z ^= x;
-    return z;
-}
-
-/////// SLOWISH
-static uint8_t rsdiv[qrcodegen_REED_SOLOMON_DEGREE_MAX];
-static uint8_t rsremainder[qrcodegen_REED_SOLOMON_DEGREE_MAX];
-static const uint8_t *rsdata;
+static uint8_t rsremainder[QR_RS_DEGREE];
 static void reedSolomonComputeRemainder(const uint8_t data_[], uint8_t dataLen) {
+    const uint8_t *data = data_;
+    const uint8_t *products;
+    uint8_t factor;
+    uint8_t i;
+    uint8_t j;
 
-    rsdata = data_;
-    memset(rsremainder, 0, RS_DEGREE);
-
-    for (uint8_t i = 0; i < dataLen; i++) { // Polynomial division
-        rs_y = (*rsdata++) ^ rsremainder[0];
-
-        for (uint8_t j = 0; j < RS_DEGREE - 1u; j++)
-            rsremainder[j] = reedSolomonMultiply(rsdiv[j]) ^ rsremainder[j + 1];
-
-        rsremainder[RS_DEGREE - 1u] = reedSolomonMultiply(rsdiv[RS_DEGREE - 1u]);
-    }
-}
-
-/////// FAST
-static void reedSolomonComputeDivisor(void) {
-
-    memset(rsdiv, 0, RS_DEGREE);
-
-    rsdiv[RS_DEGREE - 1u] = 1; // Start off with the monomial x^0
-
-    rs_y = 1;
-    for (uint8_t i = 0; i < RS_DEGREE; i++) {
-        for (uint8_t j = 0; j < RS_DEGREE; j++) {
-            rsdiv[j] = reedSolomonMultiply(rsdiv[j]);
-            if (j + 1u < RS_DEGREE) rsdiv[j] ^= rsdiv[j + 1u];
-        }
-        rs_y = reedSolomonMultiply02(rs_y);
+    memset(rsremainder, 0, QR_RS_DEGREE);
+    for (i = 0u; i != dataLen; ++i) {
+        factor = *data++ ^ rsremainder[0];
+        products = qr_rs_products + (uint16_t)factor * QR_RS_DEGREE;
+        for (j = 0u; j != QR_RS_DEGREE - 1u; ++j)
+            rsremainder[j] = products[j] ^ rsremainder[j + 1u];
+        rsremainder[QR_RS_DEGREE - 1u] = products[QR_RS_DEGREE - 1u];
     }
 }
 
@@ -301,7 +171,6 @@ static void addEccAndInterleave(uint8_t data[], uint8_t result[]) {
     int numShortBlocks = numBlocks - rawCodewords % numBlocks;
     int shortBlockDataLen = rawCodewords / numBlocks - blockEccLen;
 
-    reedSolomonComputeDivisor();
     const uint8_t *dat = data;
     for (int i = 0; i < numBlocks; i++) {
         int datLen = shortBlockDataLen + (i < numShortBlocks ? 0 : 1);
@@ -503,34 +372,74 @@ static void drawFormatBits(void) {
 
 /*---- Drawing data modules and masking ----*/
 static uint16_t dc_i;
+static const uint8_t data_bitmasks[8] = {0x80u, 0x40u, 0x20u, 0x10u, 0x08u, 0x04u, 0x02u, 0x01u};
 
 static void drawCodewordsLR(uint8_t x) {
     uint8_t y = 0;
+    const uint8_t *data = TMPBUFFER + (dc_i >> 3u);
+    uint8_t data_mask = data_bitmasks[dc_i & 7u];
+    uint8_t *right = QRCODE + (x >> 3u);
+    uint8_t *left = QRCODE + ((x - 1u) >> 3u);
+    const uint8_t right_mask = qr_bitmask[x];
+    const uint8_t left_mask = qr_bitmask[x - 1u];
+
     while (y < QRSIZE) {
-        if (!getModule(QRCODE, x, y)) {
-            setModule(QRCODE, x, y, getBit(TMPBUFFER[dc_i >> 3], 7 - (dc_i & 7)));
-            dc_i++;
+        if (!(*right & right_mask)) {
+            if (*data & data_mask) *right |= right_mask;
+            ++dc_i;
+            data_mask >>= 1u;
+            if (data_mask == 0u) {
+                data_mask = 0x80u;
+                ++data;
+            }
         }
-        if (!getModule(QRCODE, x - 1, y)) {
-            setModule(QRCODE, x - 1, y, getBit(TMPBUFFER[dc_i >> 3], 7 - (dc_i & 7)));
-            dc_i++;
+        if (!(*left & left_mask)) {
+            if (*data & data_mask) *left |= left_mask;
+            ++dc_i;
+            data_mask >>= 1u;
+            if (data_mask == 0u) {
+                data_mask = 0x80u;
+                ++data;
+            }
         }
-        y++;
+        ++y;
+        right += QR_OUTPUT_ROW_SZ_BYTES;
+        left += QR_OUTPUT_ROW_SZ_BYTES;
     }
 }
 
 static void drawCodewordsRL(uint8_t x) {
-    uint8_t y = QRSIZE;
-    while (y) {
-        y--;
-        if (!getModule(QRCODE, x, y)) {
-            setModule(QRCODE, x, y, getBit(TMPBUFFER[dc_i >> 3], 7 - (dc_i & 7)));
-            dc_i++;
+    uint8_t y = QRSIZE - 1u;
+    const uint8_t *data = TMPBUFFER + (dc_i >> 3u);
+    uint8_t data_mask = data_bitmasks[dc_i & 7u];
+    uint8_t *right = QRCODE + (uint16_t)y * QR_OUTPUT_ROW_SZ_BYTES + (x >> 3u);
+    uint8_t *left = QRCODE + (uint16_t)y * QR_OUTPUT_ROW_SZ_BYTES + ((x - 1u) >> 3u);
+    const uint8_t right_mask = qr_bitmask[x];
+    const uint8_t left_mask = qr_bitmask[x - 1u];
+
+    while (1) {
+        if (!(*right & right_mask)) {
+            if (*data & data_mask) *right |= right_mask;
+            ++dc_i;
+            data_mask >>= 1u;
+            if (data_mask == 0u) {
+                data_mask = 0x80u;
+                ++data;
+            }
         }
-        if (!getModule(QRCODE, x - 1, y)) {
-            setModule(QRCODE, x - 1, y, getBit(TMPBUFFER[dc_i >> 3], 7 - (dc_i & 7)));
-            dc_i++;
+        if (!(*left & left_mask)) {
+            if (*data & data_mask) *left |= left_mask;
+            ++dc_i;
+            data_mask >>= 1u;
+            if (data_mask == 0u) {
+                data_mask = 0x80u;
+                ++data;
+            }
         }
+        if (y == 0u) return;
+        --y;
+        right -= QR_OUTPUT_ROW_SZ_BYTES;
+        left -= QR_OUTPUT_ROW_SZ_BYTES;
     }
 }
 

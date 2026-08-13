@@ -2,6 +2,7 @@
 
 #include "optical_share.h"
 
+#include <gb/cgb.h>
 #include <gb/gb.h>
 #include <gbdk/console.h>
 #include <gbdk/platform.h>
@@ -13,12 +14,12 @@
 #include "qrcodegen.h"
 #include "ui_text.h"
 
-#define QR_TILE_LEFT 2u
-#define QR_TILE_TOP 1u
-#define QR_TILE_GRID 16u
-#define QR_LOGICAL_SIZE 64u
+#define QR_TILE_LEFT 1u
+#define QR_TILE_TOP 0u
+#define QR_TILE_GRID 18u
+#define QR_LOGICAL_SIZE 72u
 #define QR_MODULE_OFFSET 5u
-#define QR_DWELL_FRAMES 45u
+#define QR_DWELL_FRAMES 30u
 
 static const palette_color_t qr_palette[4] = {
     RGB8(0xFF, 0xFF, 0xFF),
@@ -63,14 +64,16 @@ static void upload_qr(void) {
     uint8_t attr[20];
     uint8_t x;
     uint8_t y;
-    uint8_t tile_id = 0u;
     uint8_t byte;
+    uint8_t tile_id;
+    uint8_t tile_bank;
+    uint16_t tile_number = 0u;
 
     DISPLAY_OFF;
     /* The console font uses signed background tile addressing (0x8800). QR
-     * frames upload all 256 tiles starting at 0x8000, so select the unsigned
-     * tile-data region before tile IDs 0-127 are displayed. Without this bit,
-     * the upper half of the tile map resolves to font glyphs at 0x9000. */
+     * frames upload tiles starting at 0x8000 in both VRAM banks, so select the
+     * unsigned tile-data region before tile IDs 0-127 are displayed. Without
+     * this bit, the upper half of the tile map resolves to font glyphs. */
     LCDC_REG |= LCDCF_BG8000;
     set_bkg_palette(0u, 1u, qr_palette);
     for (x = 0u; x != 20u; ++x) {
@@ -88,17 +91,33 @@ static void upload_qr(void) {
     for (y = 0u; y != QR_TILE_GRID; ++y) {
         for (x = 0u; x != QR_TILE_GRID; ++x) {
             make_qr_tile(x, y, tile);
+            tile_bank = (uint8_t)(tile_number >= 256u);
+            tile_id = (uint8_t)tile_number;
             /* LCD is off, so a direct VRAM copy avoids pulling another generic
-             * tile-upload helper into the full fixed ROM bank. */
+             * tile-upload helper into the full fixed ROM bank. Version 11 needs
+             * 324 tiles, so the final 68 live in CGB VRAM bank 1. */
+            VBK_REG = tile_bank;
             vram = (uint8_t *)0x8000u + (uint16_t)tile_id * 16u;
             for (byte = 0u; byte != 16u; ++byte)
                 vram[byte] = tile[byte];
-            map[x] = tile_id++;
+            map[x] = tile_id;
+            attr[x] = tile_bank ? S_BANK : 0u;
+            ++tile_number;
         }
+        VBK_REG = 0u;
         set_bkg_tiles(QR_TILE_LEFT, (uint8_t)(QR_TILE_TOP + y), QR_TILE_GRID, 1u, map);
+        VBK_REG = 1u;
+        set_bkg_tiles(QR_TILE_LEFT, (uint8_t)(QR_TILE_TOP + y), QR_TILE_GRID, 1u, attr);
     }
+    VBK_REG = 0u;
     SHOW_BKG;
     DISPLAY_ON;
+}
+
+static uint8_t confirm_stop_sharing(void) {
+    static const char *options[] = {STR_CONTINUE, STR_STOP_SHARING};
+    ui_init_text();
+    return (uint8_t)(ui_menu_select(STR_SHARE_DATA, options, 2u) == 1u);
 }
 
 void optical_share_show(const SaveData *data) BANKED {
@@ -111,12 +130,15 @@ void optical_share_show(const SaveData *data) BANKED {
 
     if (!ui_confirm(STR_SHARE_DATA, STR_SHARE_ALL_Q)) return;
 
+    cpu_fast();
+
     ui_title(STR_SHARE_DATA);
     ui_print_center(7u, STR_SHARE_PREPARING);
     ui_print_center(9u, STR_SHARE_KEEP_POWER);
     ui_footer(STR_FOOTER_CANCEL, "");
 
     if (!optical_export_prepare(data, &info)) {
+        cpu_slow();
         ui_title(STR_SHARE_DATA);
         ui_print_center(8u, STR_SHARE_FAILED);
         ui_footer(STR_FOOTER_BACK, "");
@@ -128,6 +150,7 @@ void optical_share_show(const SaveData *data) BANKED {
         return;
     }
 
+    fountain_prepare(info.block_count);
     input_init(&input);
     while (!stop) {
         fountain_build_next(&info, &next_seq);
@@ -143,13 +166,22 @@ void optical_share_show(const SaveData *data) BANKED {
             wait_vbl_done();
             ui_input_update(&input);
             if (input_pressed(&input, J_B)) {
-                stop = 1u;
+                stop = confirm_stop_sharing();
+                if (!stop) {
+                    ENABLE_RAM;
+                    SWITCH_RAM(QR_SRAM_BANK);
+                    upload_qr();
+                    SWITCH_RAM(0u);
+                    DISABLE_RAM;
+                    input_init(&input);
+                }
                 break;
             }
         }
     }
 
-    /* QR frames consume all 256 background tiles. Restore the font, palettes,
+    cpu_slow();
+    /* QR frames replace both background tile banks. Restore the font, palettes,
      * tilemap, and UI shadow before returning to the menu. */
     ui_init_text();
 }

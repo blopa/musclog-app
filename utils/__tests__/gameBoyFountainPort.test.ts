@@ -93,6 +93,33 @@ function gameBoyIndices(k: number, sessionId: number, seq: number): number[] | n
   return selected.sort((a, b) => a - b);
 }
 
+function gfMultiply(left: number, right: number): number {
+  let result = 0;
+  let y = right;
+  for (let bit = 0; bit < 8; bit++) {
+    result = ((result << 1) ^ ((result & 0x80) === 0 ? 0 : 0x11d)) & 0xff;
+    if ((y & 0x80) !== 0) result ^= left;
+    y = (y << 1) & 0xff;
+  }
+  return result;
+}
+
+function expectedRsProducts(): number[] {
+  const divisor = Array.from({ length: 30 }, () => 0);
+  divisor[29] = 1;
+  let root = 1;
+  for (let i = 0; i < 30; i++) {
+    for (let j = 0; j < 30; j++) {
+      divisor[j] = gfMultiply(divisor[j], root);
+      if (j + 1 < 30) divisor[j] ^= divisor[j + 1];
+    }
+    root = gfMultiply(root, 2);
+  }
+  return Array.from({ length: 256 }, (_, factor) =>
+    divisor.map((coefficient) => gfMultiply(coefficient, factor))
+  ).flat();
+}
+
 describe('Game Boy optical wire port', () => {
   it('only emits fixed-point frames whose indices match the frozen JS decoder', () => {
     const sessionId = 0x4321;
@@ -125,23 +152,41 @@ describe('Game Boy optical wire port', () => {
       'utf8'
     );
     const textUiSource = readFileSync(join(root, 'gameboy/src/ui/ui_text.c'), 'utf8');
+    const rsProducts = readFileSync(
+      join(root, 'gameboy/src/features/optical/qr_rs_products.generated.h'),
+      'utf8'
+    );
 
     expect(exportHeader).toContain('#define OPTICAL_EXPORT_DATABASE_VERSION 26u');
     expect(exportHeader).toContain('#define OPTICAL_CONTAINER_HEADER_LEN 92u');
-    expect(exportHeader).toContain('#define OPTICAL_FOUNTAIN_BLOCK_LEN 202u');
+    expect(exportHeader).toContain('#define OPTICAL_FOUNTAIN_BLOCK_LEN 292u');
+    expect(exportHeader).toContain('#define OPTICAL_SRAM_CACHE_BLOCKS 12u');
     expect(fountainSource).toContain('frame[0] = 0xD1u;');
     expect(fountainSource).toContain('frame[1] = 0x0Cu;');
     expect(fountainSource).toContain('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$%*+-./:');
-    expect(qrHeader).toContain('#define QRVERSION 9');
-    expect(qrHeader).toContain('#define QR_MAX_ALPHANUMERIC_CHARS 335u');
+    expect(qrHeader).toContain('#define QRVERSION 11');
+    expect(qrHeader).toContain('#define QR_MAX_ALPHANUMERIC_CHARS 468u');
     expect(opticalShareSource).toMatch(
       /DISPLAY_OFF;\s*\/\*[\s\S]*?\*\/\s*LCDC_REG \|= LCDCF_BG8000;\s*set_bkg_palette/
     );
+    expect(opticalShareSource).toContain('tile_bank ? S_BANK : 0u');
+    expect(opticalShareSource).toContain('cpu_fast();');
+    expect(opticalShareSource).toContain('cpu_slow();');
+    expect(opticalShareSource).toContain('STR_STOP_SHARING');
     expect(textUiSource).toMatch(
       /void ui_init_text\(void\)[\s\S]*?DISPLAY_OFF;\s*LCDC_REG &= \(uint8_t\)\(~LCDCF_BG8000\);/
     );
-    expect(alphanumericCapacity(9, 'L')).toBe(335);
-    expect((20 + 202) * 1.5).toBe(333);
+    const generatedProducts = [...rsProducts.matchAll(/0x([0-9a-f]{2})u/g)].map((match) =>
+      Number.parseInt(match[1], 16)
+    );
+    expect(generatedProducts).toEqual(expectedRsProducts());
+    expect(alphanumericCapacity(11, 'L')).toBe(468);
+    expect((20 + 292) * 1.5).toBe(468);
+    expect(0x0b00 + 61 * 8).toBeLessThanOrEqual(0x0d00);
+    expect(0x0d00 + 61 * 8).toBeLessThanOrEqual(0x0f00);
+    expect(0x0f00 + 20 + 292).toBeLessThanOrEqual(0x1040);
+    expect(0x1040 + 468).toBeLessThanOrEqual(0x1250);
+    expect(0x1250 + 12 * 292).toBe(0x2000);
   });
 
   it('retains the deterministic log approximation used by the frozen receiver', () => {

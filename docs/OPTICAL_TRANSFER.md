@@ -21,9 +21,11 @@ terms. Upstream **relicensed to AGPL-3.0-or-later as of v0.4.0** (2026-08-09). E
 MIT-era source and is accurate as written; pulling a fix or a new helper from v0.4.0+ would import
 AGPL code into this app and is not a like-for-like update.
 
-Musclog GB's QR encoder is adapted from Project Nayuki's MIT-licensed QR Code generator and the
-MIT-licensed GBDK runtime port in `bbbbbr/gameboy_qrcode`. Their license notices remain in the
-source files.
+Musclog GB's QR encoder is adapted from Project Nayuki's MIT-licensed QR Code generator, the
+MIT-licensed GBDK runtime port in [`bbbbbr/gameboy_qrcode`](https://github.com/bbbbbr/gameboy_qrcode),
+and its faster pointer-based module writer from MIT-licensed
+[`bbbbbr/gameboy_qr_paint`](https://github.com/bbbbbr/gameboy_qr_paint). Their license notices
+remain in the source files.
 
 ## Why a fountain code
 
@@ -66,17 +68,20 @@ replacement by Android, iOS, or web.
 The cartridge has no JSON or compression library and cannot hold its complete save as one string,
 so `optical_export.c` renders a deliberately compact JSON schema as a reproducible virtual byte
 stream. It first streams the bytes through SHA-256 to determine the size and digest, streams them
-again for the container FNV, and then regenerates only the source blocks selected by each fountain
-frame. The payload therefore never needs to exist contiguously in WRAM or SRAM.
+again for the container FNV, and then caches the first 12 finalized 292-byte source blocks in the
+unused high end of SRAM bank 3. Normal-sized saves fit entirely in that cache; for larger saves,
+the snapshot is streamed again only when a frame selects at least one uncached source block. The
+complete payload therefore never needs to exist contiguously in scarce WRAM or overwrite
+authoritative SRAM data.
 
 ```text
 profile + SRAM stores + referenced ROM records
       ↓  compact JSON schema v1, streamed as bytes
       ↓  SHA-256
       ↓  MLOG container v1 (plain, uncompressed, database payload kind)
-      ↓  LT fountain, 202-byte blocks, frozen 20-byte frame header
-      ↓  base44 (333 alphanumeric characters per frame)
-      ↓  QR version 9-L, mask 0, 53×53 modules at 2 Game Boy pixels/module
+      ↓  LT fountain, 292-byte blocks, frozen 20-byte frame header
+      ↓  base44 (468 alphanumeric characters per frame)
+      ↓  QR version 11-L, mask 0, 61×61 modules at 2 Game Boy pixels/module
       ↓  phone/web scanner and existing OpticalReceiver
       ↓  container FNV + SHA-256 verification
       ↓  gameBoyExport.ts strict parse and WatermelonDB-row expansion
@@ -105,15 +110,23 @@ robust-soliton calculation uses fixed-point arithmetic. A sequence is omitted if
 1% of a CDF boundary or selects more than the 64 indexes held in WRAM; arbitrary sequence gaps are
 legal, and every frame that is actually emitted derives exactly the same source indexes as the
 TypeScript receiver. `gameBoyFountainPort.test.ts` pins that emitted-frame compatibility across
-representative block counts.
+representative block counts. The distribution constants are calculated once per sharing session,
+not once per candidate sequence.
 
 SRAM bank 3 is shared without touching saved data: custom foods occupy `0x0000..0x0A2F`, while
-the optical transfer uses `0x0B00` and above for QR work buffers, a binary frame, and base44 text.
-The QR remains visible while the next frame is generated and is held for at least 45 VBlanks.
-The renderer uploads all 256 background tiles at `0x8000` and must select unsigned
+the optical transfer uses `0x0B00` and above for QR work buffers, the binary frame, base44 text,
+and the 12-block source cache ending exactly at `0x1FFF`. The QR remains visible while the next
+frame is generated and is held for at least 30 VBlanks. Encoding runs in CGB double-speed CPU mode;
+the fixed QR version also uses a generated degree-30 Reed–Solomon product table and pointer-based
+module writer instead of recomputing GF(256) multiplication at runtime.
+
+The 72×72-logical-module canvas occupies the full 144-pixel screen height. Its 324 background
+tiles span both CGB VRAM banks, selected per tile through the attribute map, while retaining a
+5-module left/top and 6-module right/bottom quiet zone. The renderer must select unsigned
 `LCDCF_BG8000` tile addressing before displaying them; the text UI uses signed `0x8800`
-addressing, which would otherwise render font glyphs for QR tile IDs 0–127.
-pressing B stops the stream and restores the normal text UI.
+addressing, which would otherwise render font glyphs for QR tile IDs 0–127. Pressing B opens a
+Continue / Stop Sharing menu. Continuing restores the already-encoded QR before work on the next
+frame begins; stopping restores normal CPU speed and the text UI.
 
 **gzip strictly before AES.** Ciphertext is incompressible, so encrypting first would cost ~9× the
 transfer time. This is why the passphrase lives at our container layer and _not_ in
@@ -552,7 +565,7 @@ clamp does not — or the sender generates live forever, which is slower but alw
 | `app/app/test/optical-bench.tsx`                  | the measurement harness (runs on both platforms)        |
 | `gameboy/src/features/optical/optical_export.c`   | virtual JSON/container exporter and SRAM-store scan     |
 | `gameboy/src/features/optical/fountain.c`         | fixed-point C fountain/frame/base44 encoder             |
-| `gameboy/src/features/optical/qrcodegen.c`        | fixed version 9-L QR encoder                            |
+| `gameboy/src/features/optical/qrcodegen.c`        | optimized fixed version 11-L QR encoder                 |
 | `gameboy/src/features/optical/optical_share.c`    | Share Data confirmation, frame loop, and tile renderer  |
 
 ### The aiming frame is decoration

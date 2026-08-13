@@ -74,6 +74,7 @@
 #define STR_SHARE_PREPARING "PREPARING DATABASE"
 #define STR_SHARE_KEEP_POWER "KEEP POWER ON"
 #define STR_SHARE_FAILED "COULD NOT PREPARE"
+#define STR_STOP_SHARING "STOP SHARING"
 
 /* ── About screen ──────────────────────────────────────────────────────── */
 #define STR_ABOUT_L1 "MUSCLOG GB IS A"

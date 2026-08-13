@@ -66,7 +66,8 @@ battery so dates and logs can survive emulator or flash-cart restarts.
   save as a compact, versioned JSON export. A phone or computer running Musclog
   can scan, verify, preview, and import it as a full database replacement. The
   cartridge is sender-only: it has no camera and does not receive from another
-  Game Boy.
+  Game Boy. The stream uses a screen-filling QR symbol and the CGB double-speed
+  CPU; pressing B opens a Continue / Stop Sharing confirmation.
 - MBC3 RTC calibration powers calendar dates. If no clock has been set, the ROM
   falls back to `2026-01-01`. When a save already carries a calibrated RTC base
   date as onboarding begins — e.g. one pre-seeded into SRAM by the website
@@ -231,8 +232,9 @@ Important source modules:
   implement free sessions, exercise lookup, recommendations,
   rest timers, saved workouts, and workout details.
 - `src/features/optical/optical_export.c` streams a compact JSON snapshot without
-  buffering it in RAM; `fountain.c` emits the app's frozen LT frame format, and
-  `qrcodegen.c` plus `optical_share.c` render QR version 9-L frames for scanning.
+  buffering the whole save in RAM and caches its first 12 source blocks in
+  transient SRAM; `fountain.c` emits the app's frozen LT frame format, and
+  `qrcodegen.c` plus `optical_share.c` render QR version 11-L frames for scanning.
 
 ## Cartridge Layout
 
@@ -272,8 +274,8 @@ SRAM stores are separate and checksummed:
 - Bank 2 stores workout records with summary data plus every logged set.
 - Bank 3 stores custom foods in fixed tombstoned slots through offset `0x0A2F`.
   Offsets `0x0B00` and above are transient optical scratch for the QR workspace,
-  frame bytes, and base44 text; they are overwritten during sharing and are not
-  authoritative saved data.
+  frame bytes, base44 text, and the 12-block source cache through `0x1FFF`; they
+  are overwritten during sharing and are not authoritative saved data.
 
 Custom food slots are never compacted. Deleting a custom food clears its name but
 keeps the slot stable, so old food-log records never point at a different food.
@@ -292,12 +294,13 @@ Workout weights are always stored metrically as kg tenths. When the player uses
 imperial units, display pounds are converted at the UI boundary.
 
 The Share Data path writes its JSON as a virtual byte stream: one pass measures
-and hashes it, and later passes reproduce only the source blocks needed for each
-fountain frame. The compact schema includes the profile and macro goals, every
-food log, every live custom food, only the bundled foods referenced by logs, all
-weight measurements, and every saved workout plus its referenced exercises. The
-app expands that schema into its normal WatermelonDB-shaped export before the
-usual validation and replacement flow.
+and hashes it, then the first 12 source blocks are cached. Cache-only fountain
+frames avoid regenerating the snapshot; a larger save is streamed again when a
+frame selects an uncached block. The compact schema includes the profile and
+macro goals, every food log, every live custom food, only the bundled foods
+referenced by logs, all weight measurements, and every saved workout plus its
+referenced exercises. The app expands that schema into its normal
+WatermelonDB-shaped export before the usual validation and replacement flow.
 
 Calendar values are stored as day numbers from `2000-01-01`. The RTC setup
 screen stores a base date and resets the MBC3 day counter; current date is
@@ -330,8 +333,10 @@ pre-fill the hour and minute without touching the save format.
 - Use raw `_SRAM[]` access only through the existing store modules and checksum
   helpers. The optical exporter may read the documented store layouts directly
   while streaming, and its QR code may use only the reserved bank-3 scratch
-  offsets. Profile, food log, workout log, metrics, and custom foods each retain
-  ownership of their authoritative data.
+  offsets. QR version 11 uses 324 tiles across both CGB VRAM banks; keep the bank
+  bit in the attribute map and unsigned `LCDCF_BG8000` tile addressing. Profile,
+  food log, workout log, metrics, and custom foods each retain ownership of their
+  authoritative data.
 
 ## License
 

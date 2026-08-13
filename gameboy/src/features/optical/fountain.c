@@ -21,6 +21,10 @@
 static uint16_t selected[MAX_SELECTED_BLOCKS];
 static uint16_t scratch[MAX_SELECTED_BLOCKS];
 static uint8_t fountain_block[OPTICAL_FOUNTAIN_BLOCK_LEN];
+static uint16_t distribution_k;
+static uint16_t distribution_spike;
+static int32_t distribution_r_q12;
+static uint32_t distribution_total;
 
 typedef struct Splitmix32 {
     uint32_t state;
@@ -110,39 +114,54 @@ static uint32_t degree_weight(uint16_t k, uint16_t degree, int32_t r_q12, uint16
     return rho + tau;
 }
 
-static uint8_t sample_degree(uint16_t k, Splitmix32 *rnd) {
+void fountain_prepare(uint16_t block_count) BANKED {
     int32_t log_q12;
     int32_t sqrt_q12;
-    int32_t r_q12;
-    uint32_t total = 0ul;
+    uint16_t degree;
+
+    distribution_k = block_count;
+    distribution_spike = 1u;
+    distribution_r_q12 = Q12_ONE;
+    distribution_total = Q24_ONE;
+    if (block_count <= 1u) return;
+
+    log_q12 = dlog_q12((int32_t)block_count * 2l * Q12_ONE);
+    sqrt_q12 = (int32_t)integer_sqrt((uint32_t)block_count << 12u) * 64l;
+    distribution_r_q12 = q12_mul(q12_mul(Q12_SOLITON_C, log_q12), sqrt_q12);
+    if (distribution_r_q12 < Q12_ONE) distribution_r_q12 = Q12_ONE;
+    distribution_spike = (uint16_t)(((uint32_t)block_count << 12u) / (uint32_t)distribution_r_q12);
+    if (optical_mul32(distribution_spike, (uint32_t)distribution_r_q12) <
+        ((uint32_t)block_count << 12u)) {
+        ++distribution_spike;
+    }
+    if (distribution_spike > block_count) distribution_spike = block_count;
+
+    distribution_total = 0ul;
+    for (degree = 1u; degree <= block_count; ++degree) {
+        distribution_total +=
+            degree_weight(block_count, degree, distribution_r_q12, distribution_spike);
+    }
+}
+
+static uint8_t sample_degree(uint16_t k, Splitmix32 *rnd) {
     uint32_t cumulative = 0ul;
     uint32_t target;
     uint32_t difference;
     uint16_t u_q12;
-    uint16_t spike;
     uint16_t degree;
 
     if (k == 1u) {
         (void)splitmix32_next(rnd);
         return 1u;
     }
-    log_q12 = dlog_q12((int32_t)k * 2l * Q12_ONE);
-    sqrt_q12 = (int32_t)integer_sqrt((uint32_t)k << 12u) * 64l;
-    r_q12 = q12_mul(q12_mul(Q12_SOLITON_C, log_q12), sqrt_q12);
-    if (r_q12 < Q12_ONE) r_q12 = Q12_ONE;
-    spike = (uint16_t)(((uint32_t)k << 12u) / (uint32_t)r_q12);
-    if (optical_mul32(spike, (uint32_t)r_q12) < ((uint32_t)k << 12u)) ++spike;
-    if (spike > k) spike = k;
-
-    for (degree = 1u; degree <= k; ++degree)
-        total += degree_weight(k, degree, r_q12, spike);
+    if (distribution_k != k) fountain_prepare(k);
 
     u_q12 = (uint16_t)(splitmix32_next(rnd) >> 20u);
-    target = optical_mul32(total >> 12u, u_q12);
+    target = optical_mul32(distribution_total >> 12u, u_q12);
     for (degree = 1u; degree <= k; ++degree) {
-        cumulative += degree_weight(k, degree, r_q12, spike);
+        cumulative += degree_weight(k, degree, distribution_r_q12, distribution_spike);
         difference = cumulative > target ? cumulative - target : target - cumulative;
-        if (difference < total / CDF_GUARD_DIVISOR) return 0u;
+        if (difference < distribution_total / CDF_GUARD_DIVISOR) return 0u;
         if (cumulative >= target) return degree > 255u ? 0u : (uint8_t)degree;
     }
     return k > 255u ? 0u : (uint8_t)k;
