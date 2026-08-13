@@ -4,416 +4,188 @@
 #include "exercises.h"
 
 const char *const exercise_muscle_group_names[EXERCISE_MUSCLE_GROUP_COUNT] = {
-    "abdomen", "arms", "back", "chest", "core", "full_body", "glutes", "legs", "shoulders",
+    "abdomen", "arms", "back", "chest", "full_body", "glutes", "legs", "shoulders",
 };
 
 const char *const exercise_equipment_type_names[EXERCISE_EQUIPMENT_TYPE_COUNT] = {
-    "barbell",       "bodyweight",      "cable",         "cardio",
-    "dumbbell",      "kettlebell",      "medicine_ball", "other",
-    "plate_machine", "resistance_band", "smith_machine",
+    "barbell",    "bodyweight", "cable",         "dumbbell",
+    "kettlebell", "other",      "plate_machine", "smith_machine",
 };
 
 const char *const exercise_mechanic_type_names[EXERCISE_MECHANIC_TYPE_COUNT] = {
-    "cardio",
     "compound",
     "isolation",
     "plyometric",
 };
 
 const exercise_t exercises[EXERCISE_COUNT] = {
-    {"Bench Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 100u}, /* 1 */
-    {"Inclined Bench Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
-     90u}, /* 2 */
-    {"Declined Bench Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
-     110u}, /* 3 */
-    {"Overhead Shoulder Press", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
-     60u},                                                                                /* 4 */
-    {"Deadlift", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 180u},  /* 5 */
-    {"Pec Fly Machine", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION, 50u}, /* 6 */
-    {"Leg Extension Machine", EX_MUSCLE_LEGS, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_ISOLATION,
-     50u},                                                                       /* 7 */
-    {"Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 140u}, /* 8 */
-    {"Barbell Back Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
-     140u}, /* 9 */
-    {"Leg Press Machine", EX_MUSCLE_LEGS, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_COMPOUND,
-     350u}, /* 10 */
-    {"Lat Pulldown", EX_MUSCLE_BACK, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_COMPOUND,
-     70u},                                                                                 /* 11 */
-    {"Pull-Up", EX_MUSCLE_BACK, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND, 0u},        /* 12 */
-    {"Seated Row", EX_MUSCLE_BACK, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_COMPOUND, 70u}, /* 13 */
-    {"Bicep Curl", EX_MUSCLE_ARMS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION, 35u},     /* 14 */
-    {"Tricep Overhead Extension", EX_MUSCLE_ARMS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION,
-     25u}, /* 15 */
-    {"Leg Curl Machine", EX_MUSCLE_LEGS, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_ISOLATION,
-     40u}, /* 16 */
-    {"Lateral Raise", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION,
-     10u},                                                                                  /* 17 */
-    {"Front Raise", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION, 8u}, /* 18 */
-    {"Calf Raise", EX_MUSCLE_LEGS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_ISOLATION, 100u},      /* 19 */
-    {"Hammer Curl", EX_MUSCLE_ARMS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION, 18u},     /* 20 */
-    {"Preacher Curl", EX_MUSCLE_ARMS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_ISOLATION, 25u},    /* 21 */
-    {"Cable Tricep Pushdown", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     35u}, /* 22 */
-    {"Chest Press Machine", EX_MUSCLE_CHEST, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_COMPOUND,
-     90u}, /* 23 */
-    {"Smith Machine Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_SMITH_MACHINE, EX_MECHANIC_COMPOUND,
-     130u},                                                                                /* 24 */
-    {"T-Bar Row", EX_MUSCLE_BACK, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 90u},        /* 25 */
-    {"Bent Over Row", EX_MUSCLE_BACK, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 80u},    /* 26 */
-    {"Upright Row", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 40u}, /* 27 */
-    {"Dumbbell Fly", EX_MUSCLE_CHEST, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION, 15u},  /* 28 */
-    {"Incline Dumbbell Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
-     30u}, /* 29 */
-    {"Machine Shoulder Press", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_PLATE_MACHINE,
-     EX_MECHANIC_COMPOUND, 60u}, /* 30 */
-    {"Reverse Pec Deck Fly", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_ISOLATION,
-     50u},                                                                                /* 31 */
-    {"Cable Crossover", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION, 30u}, /* 32 */
-    {"Seated Calf Raise", EX_MUSCLE_LEGS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION,
-     80u}, /* 33 */
-    {"Standing Calf Raise", EX_MUSCLE_LEGS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_ISOLATION,
-     100u}, /* 34 */
-    {"Romanian Deadlift", EX_MUSCLE_LEGS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
-     100u},                                                                                /* 35 */
-    {"Glute Bridge", EX_MUSCLE_GLUTES, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND, 0u}, /* 36 */
-    {"Hip Thrust", EX_MUSCLE_GLUTES, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 140u},    /* 37 */
-    {"Cable Bicep Curl", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION, 25u},  /* 38 */
-    {"Dumbbell Shoulder Press", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
-     25u}, /* 39 */
-    {"Smith Machine Bench Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_SMITH_MACHINE, EX_MECHANIC_COMPOUND,
-     100u},                                                                                 /* 40 */
-    {"Hack Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_COMPOUND, 150u}, /* 41 */
-    {"Reverse Lunge", EX_MUSCLE_LEGS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND, 30u},    /* 42 */
-    {"Step-Up", EX_MUSCLE_LEGS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND, 50u},          /* 43 */
-    {"Kettlebell Swing", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_KETTLEBELL, EX_MECHANIC_COMPOUND,
-     40u},                                                                                /* 44 */
-    {"Goblet Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_KETTLEBELL, EX_MECHANIC_COMPOUND, 40u}, /* 45 */
-    {"Sumo Deadlift", EX_MUSCLE_LEGS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 180u},  /* 46 */
-    {"Hip Abduction Machine", EX_MUSCLE_LEGS, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_ISOLATION,
-     60u}, /* 47 */
-    {"Hip Adduction Machine", EX_MUSCLE_LEGS, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_ISOLATION,
-     60u}, /* 48 */
-    {"Cable Face Pull", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     30u}, /* 49 */
-    {"Incline Dumbbell Fly", EX_MUSCLE_CHEST, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION,
-     15u},                                                                               /* 50 */
-    {"Dips", EX_MUSCLE_ARMS, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND, 0u},         /* 51 */
-    {"Push-Up", EX_MUSCLE_CHEST, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND, 0u},     /* 52 */
-    {"Plank", EX_MUSCLE_CORE, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND, 0u},        /* 53 */
-    {"Russian Twist", EX_MUSCLE_CORE, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND, 10u}, /* 54 */
-    {"Hanging Leg Raise", EX_MUSCLE_ABDOMEN, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND,
-     0u}, /* 55 */
-    {"Mountain Climbers", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND,
-     0u},                                                                                /* 56 */
-    {"Burpees", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND, 0u}, /* 57 */
-    {"Box Jump", EX_MUSCLE_LEGS, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_PLYOMETRIC, 0u},   /* 58 */
-    {"Turkish Get-Up", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_KETTLEBELL, EX_MECHANIC_COMPOUND,
-     20u}, /* 59 */
-    {"Farmer's Walk", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
-     60u},                                                                            /* 60 */
-    {"Snatch", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 70u}, /* 61 */
-    {"Clean and Jerk", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
-     90u},                                                                               /* 62 */
-    {"Battle Ropes", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_OTHER, EX_MECHANIC_COMPOUND, 0u}, /* 63 */
-    {"Crunch Machine", EX_MUSCLE_ABDOMEN, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_ISOLATION,
-     50u}, /* 64 */
-    {"Chest Supported Row Machine", EX_MUSCLE_BACK, EX_EQUIPMENT_PLATE_MACHINE,
-     EX_MECHANIC_COMPOUND, 80u},                                                         /* 65 */
-    {"Barbell Row", EX_MUSCLE_BACK, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 80u},    /* 66 */
-    {"Skull Crusher", EX_MUSCLE_ARMS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_ISOLATION, 30u}, /* 67 */
-    {"Bulgarian Split Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
-     40u},                                                                            /* 68 */
-    {"Pallof Press", EX_MUSCLE_CORE, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION, 20u}, /* 69 */
-    {"Hanging Knee Raise", EX_MUSCLE_ABDOMEN, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND,
-     0u}, /* 70 */
-    {"Landmine Press", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
-     50u},                                                                                  /* 71 */
-    {"Landmine Row", EX_MUSCLE_BACK, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 60u},      /* 72 */
-    {"Donkey Calf Raise", EX_MUSCLE_LEGS, EX_EQUIPMENT_OTHER, EX_MECHANIC_ISOLATION, 100u}, /* 73 */
-    {"Jump Rope", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_CARDIO, EX_MECHANIC_CARDIO, 0u},        /* 74 */
-    {"Running", EX_MUSCLE_LEGS, EX_EQUIPMENT_CARDIO, EX_MECHANIC_CARDIO, 0u},               /* 75 */
-    {"Cycling", EX_MUSCLE_LEGS, EX_EQUIPMENT_CARDIO, EX_MECHANIC_CARDIO, 0u},               /* 76 */
-    {"Rowing Machine", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_CARDIO, EX_MECHANIC_CARDIO, 0u},   /* 77 */
-    {"Elliptical Trainer", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_CARDIO, EX_MECHANIC_CARDIO,
-     0u}, /* 78 */
-    {"High-Intensity Interval Training (HIIT)", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_CARDIO,
-     EX_MECHANIC_CARDIO, 0u},                                                            /* 79 */
-    {"Stair Climber", EX_MUSCLE_LEGS, EX_EQUIPMENT_CARDIO, EX_MECHANIC_CARDIO, 0u},      /* 80 */
-    {"Aerobics", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_CARDIO, EX_MECHANIC_CARDIO, 0u},      /* 81 */
-    {"Dance Cardio", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_CARDIO, EX_MECHANIC_CARDIO, 0u},  /* 82 */
-    {"Shadow Boxing", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_CARDIO, EX_MECHANIC_CARDIO, 0u}, /* 83 */
-    {"Narrow Grip Lat Pulldown", EX_MUSCLE_BACK, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_COMPOUND,
-     70u}, /* 84 */
-    {"Supinated Lat Pulldown", EX_MUSCLE_BACK, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_COMPOUND,
-     70u},                                                                              /* 85 */
-    {"Cable Pullover", EX_MUSCLE_BACK, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION, 30u}, /* 86 */
-    {"Dumbbell Pullover", EX_MUSCLE_CHEST, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION,
-     30u}, /* 87 */
-    {"Reverse Grip Bench Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
-     80u},                                                                                 /* 88 */
-    {"Cable Chest Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND, 30u}, /* 89 */
-    {"Cable Front Raise", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     8u}, /* 90 */
-    {"Cable Lateral Raise", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     10u}, /* 91 */
-    {"Single-Arm Dumbbell Row", EX_MUSCLE_BACK, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
-     40u}, /* 92 */
-    {"Dumbbell Shrug", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION,
-     50u}, /* 93 */
-    {"Lying Leg Curl", EX_MUSCLE_LEGS, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_ISOLATION,
-     40u},                                                                               /* 94 */
-    {"Good Morning", EX_MUSCLE_LEGS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 70u},   /* 95 */
-    {"Zercher Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 85u},  /* 96 */
-    {"Sissy Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_ISOLATION, 0u}, /* 97 */
-    {"Jefferson Deadlift", EX_MUSCLE_LEGS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
-     140u},                                                                              /* 98 */
-    {"Cossack Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND, 30u}, /* 99 */
-    {"Dragon Flag", EX_MUSCLE_CORE, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND, 0u},  /* 100 */
-    {"Hollow Body Hold", EX_MUSCLE_CORE, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND,
-     0u}, /* 101 */
-    {"Reverse Crunch", EX_MUSCLE_ABDOMEN, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND,
-     0u},                                                                               /* 102 */
-    {"Ab Wheel Rollout", EX_MUSCLE_CORE, EX_EQUIPMENT_OTHER, EX_MECHANIC_COMPOUND, 0u}, /* 103 */
-    {"Pike Push-Up", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND,
-     0u},                                                                                /* 104 */
-    {"Cable Crunch", EX_MUSCLE_ABDOMEN, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION, 40u}, /* 105 */
-    {"Dumbbell Triceps Kickback", EX_MUSCLE_ARMS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION,
-     20u}, /* 106 */
-    {"Two-Arm Dumbbell Triceps Kickback", EX_MUSCLE_ARMS, EX_EQUIPMENT_DUMBBELL,
-     EX_MECHANIC_ISOLATION, 22u}, /* 107 */
-    {"Seated Bent-Over Dumbbell Triceps Kickback", EX_MUSCLE_ARMS, EX_EQUIPMENT_DUMBBELL,
-     EX_MECHANIC_ISOLATION, 20u}, /* 108 */
-    {"Incline Bench Dumbbell Triceps Kickback", EX_MUSCLE_ARMS, EX_EQUIPMENT_DUMBBELL,
-     EX_MECHANIC_ISOLATION, 20u}, /* 109 */
-    {"Cable Triceps Kickback", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     28u}, /* 110 */
-    {"Cable Triceps Kickback from High Pulley", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE,
-     EX_MECHANIC_ISOLATION, 26u}, /* 111 */
-    {"Cable Glute Kickback", EX_MUSCLE_GLUTES, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     20u}, /* 112 */
-    {"Glute Kickback Machine", EX_MUSCLE_GLUTES, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_ISOLATION,
-     45u}, /* 113 */
-    {"Banded Glute Kickback", EX_MUSCLE_GLUTES, EX_EQUIPMENT_RESISTANCE_BAND, EX_MECHANIC_ISOLATION,
-     12u}, /* 114 */
-    {"Bodyweight Quadruped Glute Kickback", EX_MUSCLE_GLUTES, EX_EQUIPMENT_BODYWEIGHT,
-     EX_MECHANIC_ISOLATION, 0u}, /* 115 */
-    {"Standing Bodyweight Glute Kickback", EX_MUSCLE_GLUTES, EX_EQUIPMENT_BODYWEIGHT,
-     EX_MECHANIC_ISOLATION, 0u}, /* 116 */
-    {"Concentration Biceps", EX_MUSCLE_ARMS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION,
-     22u}, /* 117 */
-    {"Dumbbell Bench Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
-     35u}, /* 118 */
-    {"Decline Dumbbell Bench Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
-     32u}, /* 119 */
-    {"Close-Grip Bench Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
-     90u}, /* 120 */
-    {"Arnold Press", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
-     22u},                                                                                /* 121 */
-    {"Push Press", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 55u}, /* 122 */
-    {"Chin-Up", EX_MUSCLE_BACK, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND, 0u},       /* 123 */
-    {"Straight-Arm Pulldown", EX_MUSCLE_BACK, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     30u}, /* 124 */
-    {"Dumbbell Romanian Deadlift", EX_MUSCLE_LEGS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
-     50u}, /* 125 */
-    {"Trap Bar Deadlift", EX_MUSCLE_LEGS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
-     145u},                                                                              /* 126 */
-    {"Rack Pull", EX_MUSCLE_BACK, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 130u},     /* 127 */
-    {"Front Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 85u},    /* 128 */
-    {"Walking Lunge", EX_MUSCLE_LEGS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND, 30u}, /* 129 */
-    {"Forward Lunge", EX_MUSCLE_LEGS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND, 30u}, /* 130 */
-    {"Wall Sit", EX_MUSCLE_LEGS, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND, 0u},     /* 131 */
-    {"Pistol Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND, 0u}, /* 132 */
-    {"Nordic Hamstring Curl", EX_MUSCLE_LEGS, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_ISOLATION,
-     0u}, /* 133 */
-    {"Glute-Ham Raise", EX_MUSCLE_LEGS, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND,
-     0u},                                                                                /* 134 */
-    {"Pendlay Row", EX_MUSCLE_BACK, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 85u},    /* 135 */
-    {"Inverted Row", EX_MUSCLE_BACK, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND, 0u}, /* 136 */
-    {"Barbell Curl", EX_MUSCLE_ARMS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_ISOLATION, 42u},  /* 137 */
-    {"EZ Bar Curl", EX_MUSCLE_ARMS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_ISOLATION, 40u},   /* 138 */
-    {"Incline Dumbbell Curl", EX_MUSCLE_ARMS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION,
-     18u},                                                                               /* 139 */
-    {"Zottman Curl", EX_MUSCLE_ARMS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION, 20u}, /* 140 */
-    {"Cable Overhead Tricep Extension", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     28u}, /* 141 */
-    {"Diamond Push-Up", EX_MUSCLE_CHEST, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND,
-     0u},                                                                             /* 142 */
-    {"Bench Dip", EX_MUSCLE_ARMS, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND, 0u}, /* 143 */
-    {"Lying Leg Raise", EX_MUSCLE_ABDOMEN, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND,
-     0u},                                                                                 /* 144 */
-    {"Dead Bug", EX_MUSCLE_CORE, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND, 0u},      /* 145 */
-    {"Side Plank", EX_MUSCLE_CORE, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND, 0u},    /* 146 */
-    {"Cable Woodchopper", EX_MUSCLE_CORE, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND, 35u}, /* 147 */
-    {"Bent-Over Dumbbell Rear Delt Fly", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_DUMBBELL,
-     EX_MECHANIC_ISOLATION, 12u}, /* 148 */
+    {"Ab Crunch Machine", EX_MUSCLE_ABDOMEN, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_ISOLATION,
+     50u}, /* 3 */
+    {"Arnold Dumbbell Press", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
+     22u}, /* 26 */
+    {"Barbell Bench Press - Medium Grip", EX_MUSCLE_CHEST, EX_EQUIPMENT_BARBELL,
+     EX_MECHANIC_COMPOUND, 100u},                                                       /* 44 */
+    {"Barbell Curl", EX_MUSCLE_ARMS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_ISOLATION, 42u}, /* 45 */
+    {"Barbell Deadlift", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
+     180u}, /* 47 */
+    {"Barbell Hip Thrust", EX_MUSCLE_GLUTES, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
+     140u}, /* 52 */
+    {"Barbell Incline Bench Press - Medium Grip", EX_MUSCLE_CHEST, EX_EQUIPMENT_BARBELL,
+     EX_MECHANIC_COMPOUND, 90u}, /* 53 */
+    {"Barbell Shoulder Press", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
+     60u}, /* 59 */
     {"Barbell Shrug", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_ISOLATION,
-     85u},                                                                                 /* 149 */
-    {"Power Clean", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 85u}, /* 150 */
+     85u},                                                                               /* 60 */
+    {"Barbell Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 140u}, /* 64 */
+    {"Bent Over Barbell Row", EX_MUSCLE_BACK, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
+     80u}, /* 77 */
+    {"Bodyweight Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND,
+     88u},                                                                          /* 95 */
+    {"Box Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 95u}, /* 102 */
+    {"Butterfly", EX_MUSCLE_CHEST, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_ISOLATION,
+     50u},                                                                                /* 109 */
+    {"Cable Crossover", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION, 45u}, /* 111 */
+    {"Cable Crunch", EX_MUSCLE_ABDOMEN, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION, 60u},  /* 112 */
+    {"Chin-Up", EX_MUSCLE_BACK, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND, 99u},      /* 161 */
+    {"Clean", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 75u},      /* 163 */
+    {"Clean and Jerk", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
+     90u}, /* 164 */
     {"Clean and Press", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
-     65u},                                                                                /* 151 */
-    {"Hang Clean", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 60u}, /* 152 */
-    {"Power Snatch", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
-     55u},                                                                                 /* 153 */
-    {"Hang Snatch", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 50u}, /* 154 */
-    {"Squat Clean", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 75u}, /* 155 */
-    {"Squat Snatch", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
-     60u},                                                                                /* 156 */
-    {"Push Jerk", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 70u},  /* 157 */
-    {"Split Jerk", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 75u}, /* 158 */
-    {"Thruster", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 50u},   /* 159 */
-    {"Overhead Squat", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
-     50u}, /* 160 */
-    {"Snatch Balance", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
-     50u}, /* 161 */
-    {"Muscle Snatch", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
-     45u},                                                                                 /* 162 */
-    {"Clean Pull", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 110u}, /* 163 */
-    {"Snatch Pull", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 90u}, /* 164 */
-    {"High Pull", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 60u},   /* 165 */
-    {"Pause Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 90u},      /* 166 */
-    {"Pin Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 100u},       /* 167 */
-    {"Box Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 95u},        /* 168 */
-    {"Safety Bar Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
-     100u}, /* 169 */
-    {"Pause Bench Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
-     85u},                                                                                 /* 170 */
-    {"Floor Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 85u},     /* 171 */
-    {"Deficit Deadlift", EX_MUSCLE_BACK, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 90u}, /* 172 */
-    {"Block Pull", EX_MUSCLE_BACK, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 160u},      /* 173 */
-    {"One Arm Kettlebell Snatch", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_KETTLEBELL,
-     EX_MECHANIC_COMPOUND, 35u}, /* 174 */
-    {"Kettlebell Clean and Press", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_KETTLEBELL,
-     EX_MECHANIC_COMPOUND, 40u}, /* 175 */
-    {"Dumbbell Snatch", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
-     30u}, /* 176 */
-    {"Single Arm Dumbbell Press", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
-     25u}, /* 177 */
-    {"Dumbbell Step-Up", EX_MUSCLE_LEGS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
-     35u}, /* 178 */
-    {"Single Leg Romanian Deadlift", EX_MUSCLE_LEGS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
-     35u},                                                                              /* 179 */
-    {"Renegade Row", EX_MUSCLE_BACK, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND, 25u}, /* 180 */
-    {"Dumbbell Thruster", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
-     25u}, /* 181 */
-    {"Waiter's Carry", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
-     20u},                                                                                /* 182 */
-    {"Suitcase Carry", EX_MUSCLE_CORE, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND, 30u}, /* 183 */
-    {"Seated Chest Press Machine", EX_MUSCLE_CHEST, EX_EQUIPMENT_PLATE_MACHINE,
-     EX_MECHANIC_COMPOUND, 90u}, /* 184 */
-    {"Flat Dumbbell Bench Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
-     30u}, /* 185 */
-    {"Hip Thrust Machine", EX_MUSCLE_GLUTES, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_COMPOUND,
-     140u}, /* 186 */
-    {"Unilateral Leg Extension Machine", EX_MUSCLE_LEGS, EX_EQUIPMENT_PLATE_MACHINE,
-     EX_MECHANIC_ISOLATION, 50u}, /* 187 */
-    {"Unilateral Leg Curl Machine", EX_MUSCLE_LEGS, EX_EQUIPMENT_PLATE_MACHINE,
-     EX_MECHANIC_ISOLATION, 40u}, /* 188 */
-    {"Oblique Crunch Machine", EX_MUSCLE_CORE, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_ISOLATION,
-     40u}, /* 189 */
-    {"Unilateral Row Machine", EX_MUSCLE_BACK, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_COMPOUND,
-     75u}, /* 190 */
-    {"Unilateral High Row Machine", EX_MUSCLE_BACK, EX_EQUIPMENT_PLATE_MACHINE,
-     EX_MECHANIC_COMPOUND, 75u}, /* 191 */
-    {"Unilateral Shoulder Press Machine", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_PLATE_MACHINE,
-     EX_MECHANIC_COMPOUND, 55u}, /* 192 */
-    {"Belt Squat Machine", EX_MUSCLE_LEGS, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_COMPOUND,
-     150u}, /* 193 */
-    {"Hamstring Curl Machine", EX_MUSCLE_LEGS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     50u},                                                                      /* 194 */
-    {"Treadmill", EX_MUSCLE_LEGS, EX_EQUIPMENT_CARDIO, EX_MECHANIC_CARDIO, 0u}, /* 195 */
-    {"Medicine Ball Slam", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_MEDICINE_BALL, EX_MECHANIC_PLYOMETRIC,
-     0u},                                                                                 /* 196 */
-    {"Swiss Ball Crunch", EX_MUSCLE_CORE, EX_EQUIPMENT_OTHER, EX_MECHANIC_ISOLATION, 0u}, /* 197 */
-    {"Bosu Ball Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_OTHER, EX_MECHANIC_COMPOUND, 0u},    /* 198 */
-    {"Cable Concentration Curl", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     20u}, /* 199 */
-    {"Cable One Arm Curl-Supinating", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     15u}, /* 200 */
-    {"Cable One Arm Overhead Triceps Extension", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE,
-     EX_MECHANIC_ISOLATION, 15u}, /* 201 */
-    {"Cable One Arm Underhand Push Down", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     15u}, /* 202 */
-    {"Cable One Arm Push Down", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     15u}, /* 203 */
-    {"Cable Standing Arm Curl", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     25u}, /* 204 */
-    {"Cable Standing Hammer Curl", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     25u}, /* 205 */
-    {"Cable Underhand Push Down", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     28u}, /* 206 */
-    {"Cable Hanging Knee Raise", EX_MUSCLE_ABDOMEN, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     40u}, /* 207 */
-    {"Cable Reverse Ab Crunch", EX_MUSCLE_ABDOMEN, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     35u}, /* 208 */
-    {"Cable Bench One Arm Row", EX_MUSCLE_BACK, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
-     30u}, /* 209 */
-    {"Cable Kneeling High Row", EX_MUSCLE_BACK, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
-     30u}, /* 210 */
-    {"Cable Kneeling Lat Pull Down", EX_MUSCLE_BACK, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
-     30u}, /* 211 */
-    {"Cable Mid Diverging Row", EX_MUSCLE_BACK, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
-     30u},                                                                            /* 212 */
-    {"Cable Pull Up", EX_MUSCLE_BACK, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND, 50u}, /* 213 */
-    {"Cable Assisted Pull Up", EX_MUSCLE_BACK, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
-     40u}, /* 214 */
-    {"Cable Reverse Fly", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     25u}, /* 215 */
-    {"Cable Seated Lat Pull Down", EX_MUSCLE_BACK, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
-     35u}, /* 216 */
-    {"Cable Seated Rear Delt Row", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     25u}, /* 217 */
-    {"Cable Standing One Arm Row", EX_MUSCLE_BACK, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
-     25u},                                                                                 /* 218 */
-    {"Cable Bench Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND, 30u}, /* 219 */
-    {"Cable Bench Press-Converging", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
-     30u}, /* 220 */
-    {"Cable Low Pec Fly", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     28u},                                                                              /* 221 */
-    {"Cable Pec Fly", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION, 30u}, /* 222 */
-    {"Cable Pec Fly-Standing", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     28u}, /* 223 */
-    {"Cable Seated Incline Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
-     30u}, /* 224 */
-    {"Cable Seated Incline Press-Converging", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE,
-     EX_MECHANIC_COMPOUND, 30u}, /* 225 */
-    {"Cable Standing Chest Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
-     30u}, /* 226 */
-    {"Cable Standing Chest Press-Converging", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE,
-     EX_MECHANIC_COMPOUND, 30u}, /* 227 */
-    {"Cable Standing Incline Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
-     30u}, /* 228 */
-    {"Cable Standing Incline Press-Converging", EX_MUSCLE_CHEST, EX_EQUIPMENT_CABLE,
-     EX_MECHANIC_COMPOUND, 30u}, /* 229 */
-    {"Cable External Rotator", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     8u}, /* 230 */
-    {"Cable Internal Rotator", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     8u}, /* 231 */
-    {"Cable One Arm Rear Delt", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     15u}, /* 232 */
-    {"Cable One Arm Lateral Raise", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     6u}, /* 233 */
-    {"Cable One Arm Shoulder Press", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
-     15u}, /* 234 */
-    {"Cable Seated Shoulder Press", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
-     30u}, /* 235 */
-    {"Cable Seated Shoulder Press-Converging", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE,
-     EX_MECHANIC_COMPOUND, 30u},                                                           /* 236 */
-    {"Cable Shrugs", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION, 30u}, /* 237 */
-    {"Cable Standing Shoulder Press", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
-     30u}, /* 238 */
-    {"Cable Upright Row", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
-     30u},                                                                                /* 239 */
-    {"Cable Front Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND, 50u}, /* 240 */
-    {"Cable Hip Abduction", EX_MUSCLE_GLUTES, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     15u}, /* 241 */
-    {"Cable Hip Adduction", EX_MUSCLE_GLUTES, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     15u},                                                                          /* 242 */
-    {"Cable Lunge", EX_MUSCLE_LEGS, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND, 40u}, /* 243 */
-    {"Cable Reverse Lunge", EX_MUSCLE_LEGS, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
-     40u},                                                                          /* 244 */
-    {"Cable Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND, 50u}, /* 245 */
-    {"Cable Standing Leg Curl", EX_MUSCLE_LEGS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     15u}, /* 246 */
-    {"Cable Standing Leg Extension", EX_MUSCLE_LEGS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
-     20u}, /* 247 */
+     65u}, /* 165 */
+    {"Close-Grip Barbell Bench Press", EX_MUSCLE_ARMS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
+     90u}, /* 171 */
+    {"Close-Grip Front Lat Pulldown", EX_MUSCLE_BACK, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
+     70u}, /* 176 */
+    {"Concentration Curls", EX_MUSCLE_ARMS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION,
+     22u},                                                                                /* 181 */
+    {"Crunches", EX_MUSCLE_ABDOMEN, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_ISOLATION, 30u}, /* 189 */
+    {"Decline Barbell Bench Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
+     110u}, /* 195 */
+    {"Decline Push-Up", EX_MUSCLE_CHEST, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND,
+     75u}, /* 203 */
+    {"Dip Machine", EX_MUSCLE_ARMS, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_COMPOUND,
+     80u}, /* 208 */
+    {"Dips - Triceps Version", EX_MUSCLE_ARMS, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND,
+     99u}, /* 210 */
+    {"Dumbbell Bench Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
+     35u}, /* 222 */
+    {"Dumbbell Bicep Curl", EX_MUSCLE_ARMS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION,
+     35u}, /* 224 */
+    {"Dumbbell Flyes", EX_MUSCLE_CHEST, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION,
+     15u}, /* 227 */
+    {"Dumbbell Incline Row", EX_MUSCLE_BACK, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
+     30u},                                                                                 /* 228 */
+    {"Dumbbell Lunges", EX_MUSCLE_LEGS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND, 30u}, /* 230 */
+    {"Dumbbell Shoulder Press", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
+     25u}, /* 244 */
+    {"Dumbbell Shrug", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION,
+     50u},                                                                             /* 245 */
+    {"EZ-Bar Curl", EX_MUSCLE_ARMS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_ISOLATION, 40u}, /* 265 */
+    {"Face Pull", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND, 35u}, /* 267 */
+    {"Floor Press", EX_MUSCLE_ARMS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 85u},  /* 276 */
+    {"Front Barbell Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
+     85u}, /* 285 */
+    {"Front Dumbbell Raise", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION,
+     8u},                                                                                 /* 290 */
+    {"Goblet Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_KETTLEBELL, EX_MECHANIC_COMPOUND, 40u}, /* 302 */
+    {"Good Morning", EX_MUSCLE_LEGS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 70u},    /* 303 */
+    {"Hack Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_COMPOUND,
+     150u},                                                                               /* 308 */
+    {"Hammer Curls", EX_MUSCLE_ARMS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION, 18u},  /* 309 */
+    {"Hang Clean", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 60u}, /* 314 */
+    {"Hanging Leg Raise", EX_MUSCLE_ABDOMEN, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_ISOLATION,
+     41u}, /* 319 */
+    {"Hyperextensions (Back Extensions)", EX_MUSCLE_BACK, EX_EQUIPMENT_OTHER, EX_MECHANIC_ISOLATION,
+     45u}, /* 331 */
+    {"Incline Dumbbell Curl", EX_MUSCLE_ARMS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION,
+     18u}, /* 340 */
+    {"Incline Dumbbell Flyes", EX_MUSCLE_CHEST, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
+     15u}, /* 341 */
+    {"Incline Dumbbell Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
+     30u}, /* 343 */
+    {"Leg Extensions", EX_MUSCLE_LEGS, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_ISOLATION,
+     50u},                                                                                 /* 408 */
+    {"Leg Press", EX_MUSCLE_LEGS, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_COMPOUND, 350u}, /* 410 */
+    {"Leverage Chest Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_COMPOUND,
+     90u}, /* 414 */
+    {"Lying Dumbbell Tricep Extension", EX_MUSCLE_ARMS, EX_EQUIPMENT_DUMBBELL,
+     EX_MECHANIC_ISOLATION, 20u}, /* 442 */
+    {"Lying Leg Curls", EX_MUSCLE_LEGS, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_ISOLATION,
+     40u}, /* 448 */
+    {"Lying Triceps Press", EX_MUSCLE_ARMS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_ISOLATION,
+     30u}, /* 455 */
+    {"Machine Bicep Curl", EX_MUSCLE_ARMS, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_ISOLATION,
+     30u}, /* 457 */
+    {"Machine Shoulder (Military) Press", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_PLATE_MACHINE,
+     EX_MECHANIC_COMPOUND, 60u},                                                       /* 459 */
+    {"Muscle Up", EX_MUSCLE_BACK, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND, 99u}, /* 471 */
+    {"One-Arm Dumbbell Row", EX_MUSCLE_BACK, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
+     40u},                                                                                 /* 495 */
+    {"Power Clean", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 85u}, /* 547 */
+    {"Preacher Curl", EX_MUSCLE_ARMS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_ISOLATION, 25u},   /* 554 */
+    {"Pullups", EX_MUSCLE_BACK, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND, 99u},       /* 560 */
+    {"Push Press", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 55u},  /* 561 */
+    {"Push-Ups - Close Triceps Position", EX_MUSCLE_ARMS, EX_EQUIPMENT_BODYWEIGHT,
+     EX_MECHANIC_COMPOUND, 70u},                                                      /* 565 */
+    {"Pushups", EX_MUSCLE_CHEST, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND, 70u}, /* 568 */
+    {"Rack Pulls", EX_MUSCLE_BACK, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 130u}, /* 576 */
+    {"Reverse Flyes", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION,
+     12u}, /* 589 */
+    {"Romanian Deadlift", EX_MUSCLE_LEGS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
+     100u}, /* 604 */
+    {"Seated Barbell Military Press", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_BARBELL,
+     EX_MECHANIC_COMPOUND, 60u},                                                          /* 620 */
+    {"Seated Cable Rows", EX_MUSCLE_BACK, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND, 70u}, /* 626 */
+    {"Seated Calf Raise", EX_MUSCLE_LEGS, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_ISOLATION,
+     80u}, /* 628 */
+    {"Seated Dumbbell Press", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
+     25u}, /* 635 */
+    {"Seated Leg Curl", EX_MUSCLE_LEGS, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_ISOLATION,
+     40u}, /* 644 */
+    {"Side Lateral Raise", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_ISOLATION,
+     10u}, /* 664 */
+    {"Single-Arm Push-Up", EX_MUSCLE_CHEST, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND,
+     70u},                                                                              /* 680 */
+    {"Sit-Up", EX_MUSCLE_ABDOMEN, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_ISOLATION, 35u}, /* 688 */
+    {"Smith Machine Bench Press", EX_MUSCLE_CHEST, EX_EQUIPMENT_SMITH_MACHINE, EX_MECHANIC_COMPOUND,
+     100u}, /* 699 */
+    {"Smith Machine Squat", EX_MUSCLE_LEGS, EX_EQUIPMENT_SMITH_MACHINE, EX_MECHANIC_COMPOUND,
+     130u},                                                                           /* 712 */
+    {"Snatch", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 70u}, /* 716 */
+    {"Split Squat with Dumbbells", EX_MUSCLE_LEGS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
+     40u}, /* 733 */
+    {"Standing Biceps Cable Curl", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION,
+     42u}, /* 746 */
+    {"Standing Calf Raises", EX_MUSCLE_LEGS, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_ISOLATION,
+     100u}, /* 752 */
+    {"Standing Dumbbell Triceps Extension", EX_MUSCLE_ARMS, EX_EQUIPMENT_DUMBBELL,
+     EX_MECHANIC_ISOLATION, 25u}, /* 758 */
+    {"Standing Low-Pulley Deltoid Raise", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_CABLE,
+     EX_MECHANIC_ISOLATION, 10u}, /* 770 */
+    {"Standing Military Press", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
+     60u}, /* 772 */
+    {"Standing Overhead Barbell Triceps Extension", EX_MUSCLE_ARMS, EX_EQUIPMENT_BARBELL,
+     EX_MECHANIC_ISOLATION, 30u},                                                        /* 777 */
+    {"Star Jump", EX_MUSCLE_LEGS, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_PLYOMETRIC, 88u}, /* 787 */
+    {"Stiff-Legged Barbell Deadlift", EX_MUSCLE_LEGS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
+     100u}, /* 791 */
+    {"Stiff-Legged Dumbbell Deadlift", EX_MUSCLE_LEGS, EX_EQUIPMENT_DUMBBELL, EX_MECHANIC_COMPOUND,
+     50u}, /* 792 */
+    {"Sumo Deadlift", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
+     180u}, /* 799 */
+    {"T-Bar Row with Handle", EX_MUSCLE_BACK, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
+     90u}, /* 812 */
+    {"Thigh Adductor", EX_MUSCLE_LEGS, EX_EQUIPMENT_PLATE_MACHINE, EX_MECHANIC_ISOLATION,
+     60u}, /* 816 */
+    {"Trap Bar Deadlift", EX_MUSCLE_FULL_BODY, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
+     145u},                                                                               /* 821 */
+    {"Triceps Pushdown", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE, EX_MECHANIC_ISOLATION, 50u}, /* 825 */
+    {"Triceps Pushdown - Rope Attachment", EX_MUSCLE_ARMS, EX_EQUIPMENT_CABLE,
+     EX_MECHANIC_ISOLATION, 50u}, /* 826 */
+    {"Upright Barbell Row", EX_MUSCLE_SHOULDERS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND,
+     40u},                                                                                /* 838 */
+    {"V-Bar Pullup", EX_MUSCLE_BACK, EX_EQUIPMENT_BODYWEIGHT, EX_MECHANIC_COMPOUND, 99u}, /* 843 */
+    {"Wide-Grip Lat Pulldown", EX_MUSCLE_BACK, EX_EQUIPMENT_CABLE, EX_MECHANIC_COMPOUND,
+     70u},                                                                               /* 860 */
+    {"Zercher Squats", EX_MUSCLE_LEGS, EX_EQUIPMENT_BARBELL, EX_MECHANIC_COMPOUND, 85u}, /* 871 */
 };

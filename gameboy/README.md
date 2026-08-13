@@ -58,7 +58,8 @@ battery so dates and logs can survive emulator or flash-cart restarts.
 - Free workout sessions support muscle-group exercise filtering, suggested
   starting weights, editable sets/weight/reps, set editing, a 60-second rest
   timer, and saved workout history.
-- 247 bundled exercises are compiled into ROM, grouped by 9 muscle groups.
+- The 100 exercises marked `isPopular: true` in the app's current exercise
+  catalogue are compiled into ROM, grouped by 8 muscle groups.
 - Settings let players update profile fields, macro goals, and units; share the
   entire cartridge database with the Android, iOS, or web app; and reset all
   saved data.
@@ -135,7 +136,7 @@ npm run gb:lint          # Run clang-tidy on gameboy/src recursively
 npm run gb:prepare-logo  # Regenerate gameboy/assets/logo.png from the app icon
 npm run gb:prepare-bg    # Regenerate gameboy/assets/gb_background.png (4-color title art)
 npm run gb:gen-foods     # Regenerate ROM food tables from data/*.json
-npm run gb:gen-exercises # Regenerate the ROM exercise table from data/exercisesData.json
+npm run gb:gen-exercises # Regenerate the ROM table from popular exercisesData.json rows
 npm run gb:gen-music     # Reduce assets/*.mid to APU data (src/generated/music_data.{c,h})
 npm run gb:build         # Build the .gbc ROM
 npm run gb:copy-rom      # Copy the ROM into app + website emulator assets
@@ -318,6 +319,10 @@ pre-fill the hour and minute without touching the save format.
 
 - Keep generated tables in sync with their source data by using
   `npm run gb:gen-foods`, `npm run gb:gen-exercises`, and `npm run gb:gen-music`.
+- The Game Boy exercise generator reads the current `data/exercisesData.json`,
+  includes only rows whose `isPopular` value is exactly `true`, preserves their
+  source catalogue order, and assigns compact cartridge IDs from 1 to 100. A
+  regenerated table therefore intentionally remaps exercise references in old saves.
 - Keep `gameboy/assets/logo.png` and `gameboy/assets/gb_background.png` committed.
   The build converts them into generated `src/generated/logo.c`/`src/generated/logo.h`
   and `src/generated/gb_background.c`/`src/generated/gb_background.h`, which are

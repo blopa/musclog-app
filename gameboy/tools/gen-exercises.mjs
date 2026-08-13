@@ -3,7 +3,8 @@
 // Source:
 //   - data/exercisesData.json -> exercises.{c,h}  (bank 6)
 //
-// For every exercise only the fields the Game Boy workout shell needs are kept:
+// Only rows explicitly marked `isPopular: true` are included. For every selected
+// exercise only the fields the Game Boy workout shell needs are kept:
 //   - name (`__exerciseName`)
 //   - primary muscle group
 //   - equipment type
@@ -13,8 +14,9 @@
 // Muscle groups, equipment types, and mechanic types are emitted as compact
 // uint8 enum values.
 // Load multipliers are stored as centi-units in uint16 (1.45 -> 145) because the
-// source data uses two-decimal precision. The table order follows exerciseIndex,
-// so exercise ID remains implicit as `array index + 1`.
+// source data uses two-decimal precision. The selected rows retain the source
+// catalogue's exerciseIndex order, while their Game Boy ID is reassigned as the
+// compact `array index + 1`.
 //
 // The generated files are committed so the ROM build does not depend on the app
 // seed JSON. Re-run with `npm run gb:gen-exercises` if the dataset changes.
@@ -28,10 +30,8 @@ const dataDir = join(repoRoot, 'data');
 const outDir = join(repoRoot, 'gameboy', 'src', 'generated');
 mkdirSync(outDir, { recursive: true });
 
-// Frozen 256-exercise catalogue. The ROM stores a 1-byte exercise index and existing
-// `.sav` files decode names through this table's order, so it must NEVER be repointed
-// at `data/exercisesData.json` (now the 873-entry free-exercise-db catalogue).
-const SOURCE_FILE = 'legacyExercisesData.json';
+const SOURCE_FILE = 'exercisesData.json';
+const POPULAR_EXERCISE_COUNT = 100;
 const EXERCISES_BANK = 6;
 
 function cString(name) {
@@ -66,19 +66,31 @@ function sortedUnique(rows, field) {
   return [...new Set(rows.map((row) => row[field]))].sort();
 }
 
-function validateExerciseRows(rawRows) {
+function selectPopularExerciseRows(rawRows) {
   if (!Array.isArray(rawRows)) {
     throw new Error(`data/${SOURCE_FILE} must contain a JSON array.`);
   }
 
-  const sortedRows = [...rawRows].sort(
-    (a, b) => numberFromField(a.exerciseIndex) - numberFromField(b.exerciseIndex)
+  const invalidPopularityRows = rawRows.filter(
+    (row) => Object.hasOwn(row, 'isPopular') && row.isPopular !== true
   );
+  if (invalidPopularityRows.length > 0) {
+    throw new Error(`data/${SOURCE_FILE} must omit isPopular or set it to true.`);
+  }
+
+  const sortedRows = rawRows
+    .filter((row) => row.isPopular === true)
+    .sort((a, b) => numberFromField(a.exerciseIndex) - numberFromField(b.exerciseIndex));
+  if (sortedRows.length !== POPULAR_EXERCISE_COUNT) {
+    throw new Error(
+      `data/${SOURCE_FILE} must contain exactly ${POPULAR_EXERCISE_COUNT} popular exercises; found ${sortedRows.length}.`
+    );
+  }
+
   const errors = [];
   const seenIndexes = new Set();
 
   sortedRows.forEach((row, index) => {
-    const expectedIndex = index + 1;
     const exerciseIndex = numberFromField(row.exerciseIndex);
     const name = row.__exerciseName;
     const muscleGroup = row.muscleGroup;
@@ -88,8 +100,6 @@ function validateExerciseRows(rawRows) {
     const reasons = [];
 
     if (!Number.isInteger(exerciseIndex)) reasons.push('missing integer exerciseIndex');
-    else if (exerciseIndex !== expectedIndex)
-      reasons.push(`exerciseIndex must be ${expectedIndex}`);
     else if (seenIndexes.has(exerciseIndex)) reasons.push('duplicate exerciseIndex');
 
     if (typeof name !== 'string' || name.trim().length === 0) reasons.push('missing exercise name');
@@ -147,7 +157,7 @@ function rowLiterals(rows, muscleMap, equipmentMap, mechanicMap) {
 const sourcePath = join(dataDir, SOURCE_FILE);
 console.log(`Reading ${sourcePath} ...`);
 
-const rows = validateExerciseRows(JSON.parse(readFileSync(sourcePath, 'utf8')));
+const rows = selectPopularExerciseRows(JSON.parse(readFileSync(sourcePath, 'utf8')));
 const muscleGroups = sortedUnique(rows, 'muscleGroup');
 const equipmentTypes = sortedUnique(rows, 'equipmentType');
 const mechanicTypes = sortedUnique(rows, 'mechanicType');
@@ -175,8 +185,8 @@ ${enumDefinitions(equipmentTypes, 'EX_EQUIPMENT', 'exercise_equipment_type_t')}
 ${enumDefinitions(mechanicTypes, 'EX_MECHANIC', 'exercise_mechanic_type_t')}
 #define EXERCISE_MECHANIC_TYPE_COUNT ${mechanicTypes.length}u
 
-/* One bundled exercise. The table order follows exerciseIndex, so the stable
- * exercise id is the zero-based array index + 1.
+/* One bundled exercise. Popular rows retain the source exerciseIndex order;
+ * the Game Boy exercise id is the zero-based array index + 1.
  * load_multiplier_centi stores loadMultiplier * 100 (1.45 -> 145). */
 typedef struct {
     const char *name;
