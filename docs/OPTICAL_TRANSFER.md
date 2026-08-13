@@ -117,7 +117,7 @@ SRAM bank 3 is shared without touching saved data: custom foods occupy `0x0000..
 the optical transfer uses `0x0B00` and above for QR work buffers, the binary frame, base44 text,
 and the 12-block source cache ending exactly at `0x1FFF`. The QR remains visible while the next
 frame is generated and is held for at least 30 VBlanks. Encoding runs in CGB double-speed CPU mode;
-the fixed QR version also uses a generated degree-30 Reed–Solomon product table and pointer-based
+the fixed QR version also uses a generated degree-20 Reed–Solomon product table and pointer-based
 module writer instead of recomputing GF(256) multiplication at runtime.
 
 The 72×72-logical-module canvas occupies the full 144-pixel screen height. Its 324 background

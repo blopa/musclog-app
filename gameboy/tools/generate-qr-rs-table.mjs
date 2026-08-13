@@ -1,5 +1,5 @@
 // Generate the fixed QR version 11-L Reed-Solomon product table used by the
-// cartridge encoder. The QR generator always uses the same degree-30 divisor,
+// cartridge encoder. The QR generator always uses the same degree-20 divisor,
 // so doing this multiplication at build time saves thousands of slow GF(256)
 // operations for every displayed frame.
 
@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 
 const toolsDir = fileURLToPath(new URL('.', import.meta.url));
 const outputPath = join(toolsDir, '..', 'src', 'features', 'optical', 'qr_rs_products.generated.h');
-const degree = 30;
+const degree = 20;
 
 function multiply(left, right) {
   let x = left;
@@ -61,7 +61,7 @@ writeFileSync(
 
 #define QR_RS_DEGREE ${degree}u
 
-/* Row N contains divisor[0..29] multiplied by GF(256) factor N. */
+/* Row N contains divisor[0..19] multiplied by GF(256) factor N. */
 static const uint8_t qr_rs_products[256u * QR_RS_DEGREE] = {
 ${rows.join('\n')}
 };

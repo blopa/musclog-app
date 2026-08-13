@@ -46,8 +46,8 @@
  * both ROM usage and SDCC compile time bounded. */
 #define MASK 0u
 #define MODE 2u
-#define ECC_CODEWORDS_PER_BLOCK 30u
-#define NUM_ERROR_CORRECTION_BLOCKS 2u
+#define ECC_CODEWORDS_PER_BLOCK 20u
+#define NUM_ERROR_CORRECTION_BLOCKS 4u
 #define CHAR_COUNT_BITS 11u
 
 // #define qrcodegen_BUFFER_SZ  (QRPAD * QRSIZE/8)
@@ -529,6 +529,8 @@ INLINE void appendBitsToBuffer(unsigned int val, int numBits, uint8_t buffer[], 
 
 // uint8_t *qrcodegen(const char *text) {
 void qrcodegen(const char *text, uint16_t len) {
+    int dataCapacityBits = getNumDataCodewords() * 8;
+    int terminatorBits;
 
     // uint8_t len = 0;
     // while (text[len]!=0) len++;
@@ -548,12 +550,14 @@ void qrcodegen(const char *text, uint16_t len) {
         if (j < len) appendBitsToBuffer(alphaValue(text[j]), 6, QRCODE, &bitLen);
     }
 
-    // Add terminator and pad up to a byte if applicable
-    appendBitsToBuffer(0, 4, QRCODE, &bitLen);
+    // Add as much of the four-bit terminator as fits. A full 468-character
+    // QR11-L payload leaves exactly three bits, which is valid per ISO/IEC
+    // 18004 and must not spill into a codeword the symbol does not carry.
+    terminatorBits = dataCapacityBits - bitLen;
+    if (terminatorBits > 4) terminatorBits = 4;
+    if (terminatorBits > 0) appendBitsToBuffer(0, terminatorBits, QRCODE, &bitLen);
     while ((bitLen & 7) != 0)
         appendBitsToBuffer(0, 1, QRCODE, &bitLen);
-
-    int dataCapacityBits = getNumDataCodewords() * 8;
 
     // Pad with alternating bytes until data capacity is reached
     for (uint8_t padByte = 0xEC; bitLen < dataCapacityBits; padByte ^= 0xEC ^ 0x11)

@@ -1,6 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+import ErrorCorrectionLevel from '@zxing/library/cjs/core/qrcode/decoder/ErrorCorrectionLevel';
+import Version from '@zxing/library/cjs/core/qrcode/decoder/Version';
+
 import { dlog, frameIndices, frameSeed, solitonCdf } from '@/utils/optical/fountain';
 import { splitmix32 } from '@/utils/optical/frameProtocol';
 import { alphanumericCapacity } from '@/utils/optical/qrEncode';
@@ -104,14 +107,14 @@ function gfMultiply(left: number, right: number): number {
   return result;
 }
 
-function expectedRsProducts(): number[] {
-  const divisor = Array.from({ length: 30 }, () => 0);
-  divisor[29] = 1;
+function expectedRsProducts(degree: number): number[] {
+  const divisor = Array.from({ length: degree }, () => 0);
+  divisor[degree - 1] = 1;
   let root = 1;
-  for (let i = 0; i < 30; i++) {
-    for (let j = 0; j < 30; j++) {
+  for (let i = 0; i < degree; i++) {
+    for (let j = 0; j < degree; j++) {
       divisor[j] = gfMultiply(divisor[j], root);
-      if (j + 1 < 30) divisor[j] ^= divisor[j + 1];
+      if (j + 1 < degree) divisor[j] ^= divisor[j + 1];
     }
     root = gfMultiply(root, 2);
   }
@@ -156,6 +159,7 @@ describe('Game Boy optical wire port', () => {
       join(root, 'gameboy/src/features/optical/qr_rs_products.generated.h'),
       'utf8'
     );
+    const qrSource = readFileSync(join(root, 'gameboy/src/features/optical/qrcodegen.c'), 'utf8');
 
     expect(exportHeader).toContain('#define OPTICAL_EXPORT_DATABASE_VERSION 26u');
     expect(exportHeader).toContain('#define OPTICAL_CONTAINER_HEADER_LEN 92u');
@@ -166,6 +170,9 @@ describe('Game Boy optical wire port', () => {
     expect(fountainSource).toContain('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$%*+-./:');
     expect(qrHeader).toContain('#define QRVERSION 11');
     expect(qrHeader).toContain('#define QR_MAX_ALPHANUMERIC_CHARS 468u');
+    expect(qrSource).toContain('#define ECC_CODEWORDS_PER_BLOCK 20u');
+    expect(qrSource).toContain('#define NUM_ERROR_CORRECTION_BLOCKS 4u');
+    expect(qrSource).toContain('terminatorBits = dataCapacityBits - bitLen;');
     expect(opticalShareSource).toMatch(
       /DISPLAY_OFF;\s*\/\*[\s\S]*?\*\/\s*LCDC_REG \|= LCDCF_BG8000;\s*set_bkg_palette/
     );
@@ -179,7 +186,14 @@ describe('Game Boy optical wire port', () => {
     const generatedProducts = [...rsProducts.matchAll(/0x([0-9a-f]{2})u/g)].map((match) =>
       Number.parseInt(match[1], 16)
     );
-    expect(generatedProducts).toEqual(expectedRsProducts());
+    expect(rsProducts).toContain('#define QR_RS_DEGREE 20u');
+    expect(generatedProducts).toEqual(expectedRsProducts(20));
+    const version = Version.getVersionForNumber(11);
+    const ecBlocks = version.getECBlocksForLevel(ErrorCorrectionLevel.L);
+    expect(ecBlocks.getECCodewordsPerBlock()).toBe(20);
+    expect(ecBlocks.getNumBlocks()).toBe(4);
+    expect(version.getTotalCodewords() - ecBlocks.getTotalECCodewords()).toBe(324);
+    expect(324 * 8 - (4 + 11 + (468 / 2) * 11)).toBe(3);
     expect(alphanumericCapacity(11, 'L')).toBe(468);
     expect((20 + 292) * 1.5).toBe(468);
     expect(0x0b00 + 61 * 8).toBeLessThanOrEqual(0x0d00);
