@@ -5,6 +5,7 @@ import { Platform } from 'react-native';
 import { ASYNC_STORAGE_EXCLUDED_KEYS, RESTORE_ORDER } from '@/constants/exportImport';
 import {
   CURRENT_ONBOARDING_VERSION,
+  CURRENT_USER_SYNC_ID,
   ONBOARDING_COMPLETED,
   ONBOARDING_VERSION,
 } from '@/constants/misc';
@@ -29,6 +30,7 @@ import {
   readPlainNutritionLogSnapshotRow,
   readSavedForLaterGroupNote,
 } from './encryptionHelpers';
+import { findImportedCurrentUserSyncId } from './importCurrentUser';
 import { createPreRestoreBackup } from './preMigrationBackup';
 import { prepareLocalCreateFromRaw } from './prepareLocalCreateFromRaw';
 import { validateExportDump, type ValidationResult } from './schemaToZod';
@@ -467,12 +469,22 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
       await AsyncStorage.multiSet(pairs);
     }
   } else {
-    // If no async storage data was imported, set onboarding as completed
-    await AsyncStorage.multiSet([
+    // Compact and older exports have no app metadata. Mark their complete profile as
+    // onboarded and select the imported user instead of retaining a stale local user ID.
+    const importedCurrentUserSyncId = findImportedCurrentUserSyncId(dbData);
+    const fallbackPairs: [string, string][] = [
       [ONBOARDING_COMPLETED, 'true'],
       // TODO: we might not want to force it to be the current version
       [ONBOARDING_VERSION, CURRENT_ONBOARDING_VERSION],
-    ]);
+    ];
+
+    if (importedCurrentUserSyncId) {
+      fallbackPairs.push([CURRENT_USER_SYNC_ID, importedCurrentUserSyncId]);
+    } else {
+      await AsyncStorage.removeItem(CURRENT_USER_SYNC_ID);
+    }
+
+    await AsyncStorage.multiSet(fallbackPairs);
   }
 
   // On web, force Loki to persist to IndexedDB before triggering a page reload.

@@ -1,5 +1,8 @@
 import { z } from 'zod';
 
+import { INCLUDE_FIBER_IN_CARBS_SETTING_TYPE, UNITS_SETTING_TYPE } from '@/constants/settings';
+import { generateUUID } from '@/utils/uuid';
+
 /**
  * Compact, sender-friendly database snapshot emitted by Musclog GB.
  *
@@ -97,6 +100,9 @@ const EXPERIENCES = ['beginner', 'intermediate', 'advanced'] as const;
 const FITNESS_GOALS = ['hypertrophy', 'strength', 'endurance', 'general'] as const;
 const WEIGHT_GOALS = ['lose', 'maintain', 'gain'] as const;
 const EATING_PHASES = ['cut', 'maintain', 'bulk'] as const;
+const DEFAULT_PROFILE_NAME = 'GameBoyPlayer';
+const DEFAULT_AVATAR_ICON = 'person';
+const DEFAULT_AVATAR_COLOR = 'blue';
 const MUSCLE_GROUPS = [
   'abdomen',
   'arms',
@@ -130,12 +136,12 @@ function dayToUtcMs(day: number): number {
   return DAY_ZERO_UTC_MS + day * DAY_MS;
 }
 
-function dateOfBirthMs(todayMs: number, age: number): number {
-  const today = new Date(todayMs);
+function inferredDateOfBirthMs(todayDay: number, age: number): number {
+  const today = new Date(dayToUtcMs(todayDay));
   const year = today.getUTCFullYear() - age;
   const month = today.getUTCMonth();
   const day = Math.min(today.getUTCDate(), new Date(Date.UTC(year, month + 1, 0)).getUTCDate());
-  return Date.UTC(year, month, day);
+  return new Date(year, month, day).getTime();
 }
 
 function assertUniqueIndexes(
@@ -199,6 +205,7 @@ export function gameBoyExportToDatabaseDump(
 ): Record<string, unknown> {
   const { profile } = compact;
   const now = dayToUtcMs(profile.todayDay);
+  const userSyncId = generateUUID();
   const foods = compact.foods.map(
     ([index, name, calories, proteinDg, fatDg, carbsDg, fiberDg]) => ({
       id: `gb-f-${index}`,
@@ -341,14 +348,17 @@ export function gameBoyExportToDatabaseDump(
     users: [
       {
         id: 'gb-user',
-        full_name: 'Game Boy Player',
-        date_of_birth: dateOfBirthMs(now, profile.age),
+        full_name: DEFAULT_PROFILE_NAME,
+        email: '',
+        date_of_birth: inferredDateOfBirthMs(profile.todayDay, profile.age),
         gender: GENDERS[profile.gender],
         fitness_goal: FITNESS_GOALS[profile.focus],
         weight_goal: WEIGHT_GOALS[profile.weightGoal],
         activity_level: profile.activity,
         lifting_experience: EXPERIENCES[profile.experience],
-        sync_id: 'gameboy-export',
+        avatar_icon: DEFAULT_AVATAR_ICON,
+        avatar_color: DEFAULT_AVATAR_COLOR,
+        sync_id: userSyncId,
         created_at: now,
         updated_at: now,
       },
@@ -357,8 +367,15 @@ export function gameBoyExportToDatabaseDump(
     settings: [
       {
         id: 'gb-units',
-        type: 'unit_system',
+        type: UNITS_SETTING_TYPE,
         value: String(profile.units),
+        created_at: now,
+        updated_at: now,
+      },
+      {
+        id: 'gb-carbs-convention',
+        type: INCLUDE_FIBER_IN_CARBS_SETTING_TYPE,
+        value: profile.units === 1 ? 'true' : 'false',
         created_at: now,
         updated_at: now,
       },

@@ -63,14 +63,17 @@ describe('Musclog GB compact database export', () => {
       _exportVersion: 26,
       users: [
         expect.objectContaining({
+          full_name: 'Game Boy Player',
+          email: '',
           gender: 'other',
           fitness_goal: 'hypertrophy',
           weight_goal: 'gain',
           activity_level: 4,
           lifting_experience: 'intermediate',
+          avatar_icon: 'person',
+          avatar_color: 'blue',
         }),
       ],
-      settings: [expect.objectContaining({ type: 'unit_system', value: '1' })],
       nutrition_goals: [
         expect.objectContaining({
           total_calories: 2600,
@@ -78,9 +81,37 @@ describe('Musclog GB compact database export', () => {
           carbs: 285,
           fats: 80,
           fiber: 32,
+          target_weight: 81.4,
         }),
       ],
     });
+
+    expect(dump.settings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'unit_system', value: '1' }),
+        expect.objectContaining({ type: 'include_fiber_in_carbs', value: 'true' }),
+      ])
+    );
+
+    const user = (dump.users as Record<string, unknown>[])[0];
+    expect(user.sync_id).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+    );
+    const cartridgeToday = new Date(
+      Date.UTC(2000, 0, 1) + compactFixture().profile.todayDay * 86_400_000
+    );
+    const inferredBirthday = new Date(user.date_of_birth as number);
+    expect([
+      inferredBirthday.getFullYear(),
+      inferredBirthday.getMonth(),
+      inferredBirthday.getDate(),
+      inferredBirthday.getHours(),
+    ]).toEqual([
+      cartridgeToday.getUTCFullYear() - compactFixture().profile.age,
+      cartridgeToday.getUTCMonth(),
+      cartridgeToday.getUTCDate(),
+      0,
+    ]);
 
     expect(dump.foods).toEqual([
       expect.objectContaining({ id: 'gb-f-12', source: 'gameboy', carbs: 13.8, fiber: 2.4 }),
@@ -105,6 +136,25 @@ describe('Musclog GB compact database export', () => {
         expect.objectContaining({ id: 'gb-m-current', type: 'weight', value: 81.4 }),
       ])
     );
+    expect((dump.user_metrics as { type: string }[]).some(({ type }) => type === 'body_fat')).toBe(
+      false
+    );
+  });
+
+  it('uses the metric manual-entry convention without inventing optional health data', () => {
+    const fixture = compactFixture();
+    fixture.profile.units = 0;
+    const dump = gameBoyExportToDatabaseDump(parseGameBoyExport(fixture));
+
+    expect(dump.settings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ type: 'unit_system', value: '0' }),
+        expect.objectContaining({ type: 'include_fiber_in_carbs', value: 'false' }),
+      ])
+    );
+    expect(dump).not.toHaveProperty('menstrual_cycles');
+    expect(dump).not.toHaveProperty('cycle_settings');
+    expect((dump.users as Record<string, unknown>[])[0]).not.toHaveProperty('external_account_id');
   });
 
   it('expands the serialized optical payload at the restore parsing boundary', () => {

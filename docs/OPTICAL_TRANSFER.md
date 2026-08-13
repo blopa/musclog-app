@@ -102,7 +102,12 @@ arrays contain:
 `utils/optical/gameBoyExport.ts` rejects unknown schema versions, duplicate indexes, and missing
 food/exercise references before it maps the tuples into a regular export dump. `database/importDb.ts`
 performs that expansion immediately after `JSON.parse`, before schema validation and before any
-backup or database wipe. Imported workout sets are explicitly `performed`; no RPE is invented.
+backup or database wipe. The receiver completes the app profile with an editable `Game Boy Player`
+name, blank optional email, default avatar, valid sync UUID, and a birthday inferred from the
+cartridge date and age. It also selects that profile as the current user, marks onboarding complete,
+and initializes the manual-food carbs convention from the cartridge's unit system. Body-fat, cycle,
+cloud-account, and health-permission data stay absent because the cartridge cannot know them.
+Imported workout sets are explicitly `performed`; no RPE is invented.
 
 The fountain implementation is a full C port of the frozen PRNG, seeding, degree distribution,
 index selection, XOR framing, and base44 protocol. GBDK provides no floating-point runtime, so the
