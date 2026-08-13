@@ -64,7 +64,7 @@ static int32_t dlog_q12(int32_t x) {
     int32_t sum = 0l;
     uint8_t n;
     while (m >= 6144l) {
-        m /= 2l;
+        m >>= 1u;
         ++e;
     }
     while (m < 3072l) {

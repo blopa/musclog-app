@@ -103,7 +103,8 @@ The build script:
 2. Converts `gameboy/assets/logo.png` and `gameboy/assets/gb_background.png` into
    generated GBDK asset sources.
 3. Compiles every `gameboy/src/**/*.c` file.
-4. Writes `gameboy/build/musclog.gbc`.
+4. Writes `gameboy/build/musclog.gbc`, then applies the `MLOG` game code and ROM
+   revision with `gameboy/tools/rom-header.cjs`, recalculating both cartridge checksums.
 5. Checks `gameboy/build/musclog.map` for ROM bank overflows.
 
 To open the last built ROM with the repo's mGBA Flatpak shortcut:
@@ -245,7 +246,7 @@ The ROM is linked as a 256 KB CGB-only MBC3 cartridge:
 - `-Wm-ya4`: four 8 KB SRAM banks
 - `-Wm-yo16`: sixteen 16 KB ROM banks
 - Header title: `MUSCLOG`
-- Header product/manufacturer patch: `MLOG`
+- Header product/manufacturer code: `MLOG`; ROM revision: `1`
 
 ROM banks are used deliberately:
 

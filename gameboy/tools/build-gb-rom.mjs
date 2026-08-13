@@ -14,6 +14,9 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { ensureGbdk } from './fetch-gbdk.mjs';
+import romHeader from './rom-header.cjs';
+
+const { patchMusclogRomHeaderFile } = romHeader;
 
 const repoRoot = join(fileURLToPath(import.meta.url), '..', '..', '..');
 const gameboyDir = join(repoRoot, 'gameboy');
@@ -190,14 +193,15 @@ assertGeneratedBackgroundFits(join(generatedDir, 'gb_background.h'));
 //    Cartridge product code: CGB-MLOG-HOL (modelled on Nintendo's DMG-TR-USA scheme):
 //      - CGB     : Game Boy Color title, set by -Wm-yC.
 //      - MLOG    : 4-char manufacturer/game code, written into header 0x13F-0x142
-//                  ("MLOG" = 0x4D 0x4C 0x4F 0x47) via -Wm-yp patches. This field sits
-//                  just past the "MUSCLOG" title (0x134-0x13A) and is otherwise blank.
+//                  after linking. This field sits just past the "MUSCLOG" title
+//                  (0x134-0x13A) and is otherwise blank.
 //      - HOL     : Netherlands (non-Japanese) region. The header only carries a
 //                  Japanese / non-Japanese destination flag (0x14A); -Wm-yj sets it
 //                  to 0x01 (non-Japanese), the closest the hardware encodes for HOL.
-//    -Wm-yp0x14C=0 sets the mask-ROM version/revision byte (0x14C) to 0 — i.e. first
-//    revision, so the code reads CGB-MLOG-HOL with no trailing "-1". (makebin has no
-//    GameBoy version flag, so this is done with a header patch.)
+//    The post-link header patch also sets the mask-ROM version/revision byte (0x14C)
+//    to 1, making this CGB-MLOG-HOL-1, then recalculates both cartridge checksums.
+//    GBDK has no dedicated Game Boy flags for the game code or revision, while its
+//    arbitrary -yp byte patches are deprecated.
 //    -Wl-m emits gameboy/build/musclog.map so the build can catch bank overflows.
 console.log('Compiling ROM ...');
 const cSources = collectFilesRecursive(srcDir, '.c');
@@ -212,11 +216,6 @@ run(
     '-Wm-yo16',
     '-Wm-yn"MUSCLOG"',
     '-Wm-yj',
-    '-Wm-yp0x13F=0x4D', // 'M'
-    '-Wm-yp0x140=0x4C', // 'L'
-    '-Wm-yp0x141=0x4F', // 'O'
-    '-Wm-yp0x142=0x47', // 'G'
-    '-Wm-yp0x14C=0x00', // revision 0 (no trailing "-1")
     '-Wl-m',
     ...includeDirs.map((dir) => `-I${dir}`),
     '-o',
@@ -225,6 +224,7 @@ run(
   ],
   gameboyDir
 );
+patchMusclogRomHeaderFile(romPath);
 
 const mapPath = join(buildDir, 'musclog.map');
 checkBankLayout(mapPath);

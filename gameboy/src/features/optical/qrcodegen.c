@@ -192,7 +192,6 @@ static void addEccAndInterleave(uint8_t data[], uint8_t result[]) {
 // Each position is in the range [0,177), and are used on both the x and y axes.
 // This could be implemented as lookup table of 40 variable-length lists of unsigned bytes.
 static int getAlignmentPatternPositions(uint8_t result[7]) {
-    if (QRVERSION == 1) return 0;
     int step = (QRVERSION == 32) ? 26
                                  : (QRVERSION * 4 + (QRVERSION / 7 + 2) * 2 + 1) /
                                        ((QRVERSION / 7 + 2) * 2 - 2) * 2;
