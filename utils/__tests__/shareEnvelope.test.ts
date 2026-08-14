@@ -4,6 +4,7 @@ import {
   type FoodShareEnvelope,
   MUSCLOG_SHARE_ENVELOPE_VERSION,
   MusclogShareError,
+  type NutritionDayShareEnvelope,
   parseShareEnvelope,
   type MealShareEnvelope,
 } from '@/utils/share/shareEnvelope';
@@ -56,6 +57,33 @@ const foodShare = (): FoodShareEnvelope => ({
     nutrients: { calories: 380, carbs: 6, fat: 7, fiber: 0, protein: 76 },
     nutritionBasis: 'per_100g',
     portions: [{ gramWeight: 30, isDefault: true, name: 'Scoop' }],
+  },
+});
+
+const dayShare = (): NutritionDayShareEnvelope => ({
+  _musclogShare: MUSCLOG_SHARE_ENVELOPE_VERSION,
+  createdAtMs: 1_754_000_000_000,
+  kind: 'nutritionDay',
+  kindVersion: 1,
+  records: {
+    food_food_portions: [],
+    food_portions: [],
+    foods: [{ id: 'food-1', name: 'Rice' }],
+    nutrition_logs: [
+      {
+        amount: 150,
+        date: 1_754_000_000_000,
+        food_id: 'food-1',
+        id: 'log-1',
+        timezone: '+02:00',
+        type: 'lunch',
+      },
+    ],
+  },
+  summary: {
+    dayKey: '2026-08-14',
+    entries: [{ amount: 150, calories: 195, mealType: 'lunch', name: 'Rice', unit: 'g' }],
+    totals: { calories: 195, carbs: 42, fat: 0.5, fiber: 0.6, protein: 4 },
   },
 });
 
@@ -169,6 +197,36 @@ describe('parseShareEnvelope', () => {
     );
   });
 
+  it('round-trips a day share, which has no root row at all', () => {
+    const parsed = parseShareEnvelope(JSON.stringify(dayShare()));
+
+    expect(parsed.kind).toBe('nutritionDay');
+    expect(parsed).not.toHaveProperty('rootId');
+  });
+
+  it('rejects a day share that claims a root nobody will read', () => {
+    // Both directions are enforced: a rooted kind must name its root, a rootless one must not
+    // smuggle one past a parser that would ignore it.
+    const rooted = { ...dayShare(), rootId: 'log-1', rootTable: 'nutrition_logs' };
+    expectCode(() => parseShareEnvelope(JSON.stringify(rooted)), 'malformed');
+  });
+
+  it('rejects a day share with no entries', () => {
+    const empty = dayShare();
+    empty.records.nutrition_logs = [];
+    expectCode(() => parseShareEnvelope(JSON.stringify(empty)), 'malformed');
+  });
+
+  it('rejects a day summary with an invalid date or meal type', () => {
+    const badDay = dayShare();
+    badDay.summary.dayKey = '14/08/2026';
+    expectCode(() => parseShareEnvelope(JSON.stringify(badDay)), 'malformed');
+
+    const badMeal = dayShare();
+    (badMeal.summary.entries[0] as { mealType: string }).mealType = 'brunch';
+    expectCode(() => parseShareEnvelope(JSON.stringify(badMeal)), 'malformed');
+  });
+
   it('rejects a missing root row', () => {
     const share = mealShare();
     share.records.meals = [];
@@ -221,7 +279,11 @@ describe('share registry', () => {
         }
       }
 
-      expect(spec.tables.includes(spec.rootTable)).toBe(true);
+      // A rootless kind (a day of eating) carries no root row at all; a rooted one must ship the
+      // table its envelope points into.
+      if (spec.rootTable !== null) {
+        expect(spec.tables.includes(spec.rootTable)).toBe(true);
+      }
       for (const table of [
         ...Object.keys(spec.dedupe),
         ...Object.keys(spec.dropWhenParentReused),

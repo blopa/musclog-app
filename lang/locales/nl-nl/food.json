@@ -210,7 +210,9 @@
       "scaleMealPortionSuccess": "Maaltijdporties bijgewerkt",
       "scaleMealPortionError": "Bijwerken van maaltijdporties mislukt",
       "scaleMealPortionInvalid": "Voer ten minste 1 g in",
-      "scaleMealPortionPreview": "Geschatte totalen voor deze portie"
+      "scaleMealPortionPreview": "Geschatte totalen voor deze portie",
+      "sendDayToPhone": "Dag naar telefoon sturen",
+      "sendDayToPhoneDesc": "Zet het eten van deze hele dag over met bewegende QR-codes"
     },
     "mealInsights": {
       "title": "Maaltijdinzichten",

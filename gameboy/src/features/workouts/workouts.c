@@ -126,7 +126,7 @@ static WorkoutLogSet workout_detail_sets[WORKOUT_DETAIL_SET_CAP];
 static WorkoutDetailRow workout_detail_rows[WORKOUT_DETAIL_SET_CAP * 2u];
 
 static const char *const MUSCLE_FILTER_LABELS[EXERCISE_MUSCLE_GROUP_COUNT] = {
-    "ABDOMEN", "ARMS", "BACK", "CHEST", "CORE", "FULL BODY", "GLUTES", "LEGS", "SHOULDERS",
+    "ABDOMEN", "ARMS", "BACK", "CHEST", "FULL BODY", "GLUTES", "LEGS", "SHOULDERS",
 };
 
 static void print_right(uint8_t y, const char *text) {

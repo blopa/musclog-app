@@ -13,6 +13,13 @@ import { createRequire } from 'node:module';
 const repoRoot = join(fileURLToPath(import.meta.url), '..', '..', '..');
 const gameboyDir = join(repoRoot, 'gameboy');
 const srcDir = join(gameboyDir, 'src');
+const generatedDir = join(srcDir, 'generated');
+const ignoredGeneratedAssetFiles = new Set([
+    'gb_background.c',
+    'gb_background.h',
+    'logo.c',
+    'logo.h',
+]);
 
 const checkOnly = process.argv.includes('--check');
 
@@ -48,6 +55,7 @@ function collectFiles(dir, ext) {
         if (entry.isDirectory()) {
             files.push(...collectFiles(full, ext));
         } else if (entry.isFile() && entry.name.endsWith(ext)) {
+            if (dir === generatedDir && ignoredGeneratedAssetFiles.has(entry.name)) continue;
             files.push(full);
         }
     }

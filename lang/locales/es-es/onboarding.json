@@ -164,6 +164,7 @@
         "validating": "datos"
       },
       "importData": "Importar Datos",
+      "importOptically": "Importar datos desde otro móvil",
       "storedLocally": "Todos los datos almacenados localmente en tu dispositivo",
       "recommended": "Recomendado",
       "personalizedSetup": "Configuración Personalizada",

@@ -210,7 +210,9 @@
       "scaleMealPortionSuccess": "Porciones de la comida actualizadas",
       "scaleMealPortionError": "Error al actualizar las porciones de la comida",
       "scaleMealPortionInvalid": "Introduce al menos 1 g",
-      "scaleMealPortionPreview": "Totales estimados para esta porción"
+      "scaleMealPortionPreview": "Totales estimados para esta porción",
+      "sendDayToPhone": "Enviar el día a otro teléfono",
+      "sendDayToPhoneDesc": "Transfiere toda la comida de este día con códigos QR animados"
     },
     "mealInsights": {
       "title": "Información de la Comida",

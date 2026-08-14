@@ -23,10 +23,11 @@
 void settings_show(SaveData *data) BANKED;
 
 /*
- * Home-screen SELECT menu: lets the user open the settings screen or erase all
- * data (after a confirmation) and re-run onboarding. Lives in the same banked
- * module so the menu/reset code stays out of the full _HOME bank. Returns 1 if
- * the save was erased (so the caller can reset its home selection), else 0.
+ * Home-screen SELECT menu: lets the user open settings, share the whole database
+ * as an optical QR stream, view About, or erase all data (after a confirmation)
+ * and re-run onboarding. Lives in the same banked module so the menu/reset code
+ * stays out of the full _HOME bank. Returns 1 if the save was erased (so the
+ * caller can reset its home selection), else 0.
  */
 uint8_t settings_menu(SaveData *data) BANKED;
 

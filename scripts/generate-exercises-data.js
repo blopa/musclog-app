@@ -33,6 +33,8 @@
  *                      rest are derived from the movement family by the rules
  *                      in AGENTS.md — bodyweight entries carry the fraction of
  *                      body mass moved, holds and cardio stay a hard 0.
+ *   - `isPopular`      `true` for the 100 usage-ranked slugs curated in
+ *                      `exercise-popularity-policy.js`; omitted otherwise.
  */
 
 const fs = require('fs');
@@ -47,6 +49,7 @@ const {
   resolveTargetMuscles,
 } = require('./exercise-catalogue-mapping');
 const { resolveLoadMultiplier } = require('./exercise-load-multiplier-policy');
+const { POPULAR_EXERCISE_SLUGS } = require('./exercise-popularity-policy');
 
 const repoRoot = path.join(__dirname, '..');
 const sourceRepo = process.argv[2] || path.join(repoRoot, '..', 'free-exercise-db');
@@ -64,6 +67,20 @@ async function main() {
   const source = JSON.parse(fs.readFileSync(sourceFile, 'utf8'));
 
   assertSourceMusclesMapped(source);
+
+  if (POPULAR_EXERCISE_SLUGS.size !== 100) {
+    throw new Error(
+      `Exercise popularity policy must contain exactly 100 unique slugs; found ${POPULAR_EXERCISE_SLUGS.size}`
+    );
+  }
+
+  const sourceSlugs = new Set(source.map(({ id }) => id));
+  const missingPopularSlugs = [...POPULAR_EXERCISE_SLUGS].filter((slug) => !sourceSlugs.has(slug));
+  if (missingPopularSlugs.length > 0) {
+    throw new Error(
+      `Popular exercise slugs missing from free-exercise-db: ${missingPopularSlugs.join(', ')}`
+    );
+  }
 
   // The frozen pre-free-exercise-db catalogue, kept only as the loadMultiplier anchor
   // scale (and as the Game Boy ROM's source). Reading the generator's own output here
@@ -94,6 +111,7 @@ async function main() {
         anchorMultipliers,
         stats
       ),
+      ...(POPULAR_EXERCISE_SLUGS.has(entry.id) ? { isPopular: true } : {}),
       __exerciseName: entry.name,
       __freeExerciseDbId: entry.id,
     };

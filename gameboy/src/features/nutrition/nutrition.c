@@ -11,6 +11,7 @@
 #include "nutrition_date.h"
 #include "nutrition_detail.h"
 #include "nutrition_search.h"
+#include "optical_share.h"
 #include "rtc.h"
 #include "ui_text.h"
 
@@ -118,23 +119,36 @@ typedef enum NutritionAction {
     NUTRITION_ACTION_GO_TO_DATE = 1u,
     NUTRITION_ACTION_TRACK_FOOD = 2u,
     NUTRITION_ACTION_CUSTOM = 3u,
-    NUTRITION_ACTION_HOME = 4u,
+    NUTRITION_ACTION_SHARE_DAY = 4u,
+    NUTRITION_ACTION_HOME = 5u,
 } NutritionAction;
 
-static NutritionAction nutrition_action_menu(void) {
-    const char *options[4];
+/*
+ * SHARE DAY appears only when the viewed day has something logged: an empty day would prepare a
+ * payload with no entries, which the receiver rejects as malformed — and offering it at all invites
+ * the user to stream QR codes at another phone for nothing.
+ */
+static NutritionAction nutrition_action_menu(uint8_t can_share_day) {
+    const char *options[5];
+    uint8_t count = 0u;
+    uint8_t share_index = 0xFFu;
     uint8_t selected;
 
-    options[0] = STR_GO_TO_DATE;
-    options[1] = STR_TRACK_FOOD;
-    options[2] = STR_CUSTOM_FOODS;
-    options[3] = STR_HOME;
+    options[count++] = STR_GO_TO_DATE;
+    options[count++] = STR_TRACK_FOOD;
+    options[count++] = STR_CUSTOM_FOODS;
+    if (can_share_day) {
+        share_index = count;
+        options[count++] = STR_SHARE_DAY;
+    }
+    options[count++] = STR_HOME;
 
-    selected = ui_menu_select(STR_NUTRITION, options, 4u);
+    selected = ui_menu_select(STR_NUTRITION, options, count);
     if (selected == UI_MENU_CANCEL) return NUTRITION_ACTION_NONE;
     if (selected == 0u) return NUTRITION_ACTION_GO_TO_DATE;
     if (selected == 1u) return NUTRITION_ACTION_TRACK_FOOD;
     if (selected == 2u) return NUTRITION_ACTION_CUSTOM;
+    if (selected == share_index) return NUTRITION_ACTION_SHARE_DAY;
     return NUTRITION_ACTION_HOME;
 }
 
@@ -153,7 +167,8 @@ static void custom_foods_submenu(SaveData *data) {
 }
 
 static uint8_t run_action(NutritionState *state) {
-    NutritionAction action = nutrition_action_menu();
+    NutritionAction action =
+        nutrition_action_menu((uint8_t)(foodlog_count_for_day(state->day_num) != 0u));
 
     if (action == NUTRITION_ACTION_GO_TO_DATE) {
         nutrition_date_picker(state->today, &state->viewing_date);
@@ -163,6 +178,8 @@ static uint8_t run_action(NutritionState *state) {
         nutrition_food_search_track(state->data, state->viewing_date);
     } else if (action == NUTRITION_ACTION_CUSTOM) {
         custom_foods_submenu(state->data);
+    } else if (action == NUTRITION_ACTION_SHARE_DAY) {
+        optical_share_show_day(state->data, state->day_num);
     } else if (action == NUTRITION_ACTION_HOME) {
         return 1u;
     }

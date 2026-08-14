@@ -22,7 +22,8 @@ export interface ShareImportPlan {
   creates: PlannedShareRow[];
   reused: ReusedShareRow[];
   idMap: Record<string, Record<string, string>>;
-  rootId: string;
+  /** The local id of the share's root row, or `undefined` for a kind with no root row. */
+  rootId?: string;
 }
 
 export interface PlanShareImportOptions {
@@ -57,10 +58,9 @@ function resolveTargetTable(target: ShareForeignKeyTarget, row: ShareRow): strin
  * Reduces an incoming row to `id` plus the columns its table declares in `ShareKindSpec.columns`.
  *
  * An allowlist rather than a denylist of control fields: the row comes from another phone over a
- * camera, and everything that survives here is eventually handed to `assignRawColumns`, which
- * assigns each key onto a WatermelonDB model instance. A denylist would have to anticipate every
- * property worth shadowing (`collection`, `markAsDeleted`, `_raw`, …); an allowlist only has to
- * know what the table legitimately holds.
+ * camera, so it may only carry columns this share kind deliberately exposes. Everything that
+ * survives is handed to WatermelonDB's `prepareCreateFromDirtyRaw`, which applies the table schema
+ * and ignores non-columns instead of assigning keys onto the model instance.
  */
 function sanitizeRow(row: ShareRow, allowedColumns: readonly string[]): ShareRow | undefined {
   if (row.deleted_at != null || row._status === 'deleted') {
@@ -118,6 +118,30 @@ export function planShareImport(
       usedLocalIds.add(localId);
     }
   }
+
+  const mintId = (): string => {
+    let localId = generateId();
+    while (!localId || usedLocalIds.has(localId)) {
+      localId = generateId();
+    }
+    usedLocalIds.add(localId);
+    return localId;
+  };
+
+  // One fresh id per DISTINCT incoming grouping value, keyed by `table::column::value` so two
+  // tables (or two columns) that happen to carry the same string are not fused into one group.
+  const regeneratedValues = new Map<string, string>();
+  const regeneratedValue = (table: string, column: string, incoming: string): string => {
+    const key = `${table}::${column}::${incoming}`;
+    const existing = regeneratedValues.get(key);
+    if (existing) {
+      return existing;
+    }
+    const minted = mintId();
+    regeneratedValues.set(key, minted);
+    return minted;
+  };
+
   let rows: WorkingRow[] = [];
 
   for (const table of spec.tables) {
@@ -133,12 +157,7 @@ export function planShareImport(
       }
 
       const resolvedId = resolutions[table]?.[sourceId];
-      let localId = resolvedId;
-      if (!localId) {
-        do {
-          localId = generateId();
-        } while (!localId || usedLocalIds.has(localId));
-      }
+      const localId = resolvedId ?? mintId();
       usedLocalIds.add(localId);
       idMap[table][sourceId] = localId;
       rows.push({
@@ -216,6 +235,13 @@ export function planShareImport(
       rewritten[column] = localTargetId;
     }
 
+    for (const column of spec.regeneratedColumns?.[working.table] ?? []) {
+      const incoming = rewritten[column];
+      if (isPresentForeignKey(incoming)) {
+        rewritten[column] = regeneratedValue(working.table, column, incoming);
+      }
+    }
+
     for (const column of spec.assetColumns[working.table] ?? []) {
       const value = rewritten[column];
       if (typeof value !== 'string' || !value.startsWith(SHARE_ASSET_REF_PREFIX)) {
@@ -239,6 +265,12 @@ export function planShareImport(
       sourceId: working.sourceId,
       table: working.table,
     });
+  }
+
+  // A kind with no root row (a day of eating) plans nothing extra here: there is no record the
+  // import is "about", so there is nothing to hand back and nothing to fail on.
+  if (spec.rootTable === null) {
+    return { creates, idMap, reused };
   }
 
   const rootSourceId = options.rootId ?? records[spec.rootTable]?.[0]?.id;

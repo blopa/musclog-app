@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { Download, Lock, Settings2, Star, Zap } from 'lucide-react-native';
+import { Download, Lock, ScanLine, Settings2, Star, Zap } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Dimensions, Linking, Text, TouchableOpacity, View } from 'react-native';
@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MasterLayout } from '@/components/MasterLayout';
 import { CenteredModal } from '@/components/modals/CenteredModal';
+import { OpticalReceiveModal } from '@/components/modals/OpticalReceiveModal';
 import { Button } from '@/components/theme/Button';
 import { TextInput } from '@/components/theme/TextInput';
 import { useSnackbar } from '@/context/SnackbarContext';
@@ -50,6 +51,7 @@ export default function LandingScreen() {
 
   // Import functionality state
   const [importModalVisible, setImportModalVisible] = useState(false);
+  const [opticalImportVisible, setOpticalImportVisible] = useState(false);
   const [decryptionPhrase, setDecryptionPhrase] = useState('');
   const [loading, setLoading] = useState(false);
   const { showSnackbar } = useSnackbar();
@@ -152,20 +154,35 @@ export default function LandingScreen() {
 
       {/* Main Content */}
       <SafeAreaView className="flex-1" edges={['top', 'bottom']}>
-        {/* Import Button - Top Right */}
-        <TouchableOpacity
-          className="absolute right-4 top-4 z-10 rounded-lg p-2"
-          style={{
-            backgroundColor: theme.colors.background.black30,
-            opacity: isInitializing ? theme.colors.opacity.medium : theme.colors.opacity.full,
-          }}
-          onPress={() => setImportModalVisible(true)}
-          disabled={isInitializing}
-          accessibilityLabel={t('onboarding.landing.importData')}
-          accessibilityRole="button"
-        >
-          <Download size={20} color={theme.colors.text.white} />
-        </TouchableOpacity>
+        {/* Import actions - Top Right */}
+        <View className="absolute right-4 top-4 z-10 flex-row gap-2">
+          <TouchableOpacity
+            className="rounded-lg p-2"
+            style={{
+              backgroundColor: theme.colors.background.black30,
+              opacity: isInitializing ? theme.colors.opacity.medium : theme.colors.opacity.full,
+            }}
+            onPress={() => setImportModalVisible(true)}
+            disabled={isInitializing}
+            accessibilityLabel={t('onboarding.landing.importData')}
+            accessibilityRole="button"
+          >
+            <Download size={20} color={theme.colors.text.white} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="rounded-lg p-2"
+            style={{
+              backgroundColor: theme.colors.background.black30,
+              opacity: isInitializing ? theme.colors.opacity.medium : theme.colors.opacity.full,
+            }}
+            onPress={() => setOpticalImportVisible(true)}
+            disabled={isInitializing}
+            accessibilityLabel={t('onboarding.landing.importOptically')}
+            accessibilityRole="button"
+          >
+            <ScanLine size={20} color={theme.colors.text.white} />
+          </TouchableOpacity>
+        </View>
 
         <View className="w-full max-w-md flex-1 justify-between self-center px-6">
           {/* Top Spacer */}
@@ -459,6 +476,15 @@ export default function LandingScreen() {
           />
         </View>
       </CenteredModal>
+
+      {/* Both imports are independent screen actions and can never be visible together. Nesting
+          this under the file-import modal would unmount it when that modal is closed. */}
+      {/* eslint-disable-next-line local/no-sibling-modals */}
+      <OpticalReceiveModal
+        accept="database"
+        onClose={() => setOpticalImportVisible(false)}
+        visible={opticalImportVisible}
+      />
     </MasterLayout>
   );
 }

@@ -10,8 +10,8 @@
  * Stored in cartridge SRAM bank 0 — the SAME bank as the profile (profile.c) —
  * but in a fixed, disjoint sub-region starting at 0x40, so the two never collide
  * and each checksums only its own bytes. The profile occupies 0x00..0x16; metrics
- * own 0x40 onward. This keeps the one free SRAM bank (bank 3) available for future
- * features instead of spending it on a tiny weight log.
+ * own 0x40 onward. This leaves bank 3 available for the larger custom-food store
+ * and the optical sender's disjoint transient QR workspace.
  *
  * Bank-0 metrics layout:
  *   0x40  2  magic 'BW' (0x4257)

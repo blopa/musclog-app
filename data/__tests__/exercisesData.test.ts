@@ -8,6 +8,10 @@ import { getExerciseCatalogue } from '@/data/exerciseCatalogue';
 import legacyExercisesData from '@/data/legacyExercisesData.json';
 import { MUSCLE_SEED_DATA } from '@/database/services/MuscleService';
 
+const { POPULAR_EXERCISE_SLUGS } = require('../../scripts/exercise-popularity-policy') as {
+  POPULAR_EXERCISE_SLUGS: Set<string>;
+};
+
 const EXERCISE_JSON_MUSCLE_GROUPS = [
   'abdomen',
   'arms',
@@ -106,11 +110,22 @@ describe('exercise catalogue schema', () => {
       '__freeExerciseDbId',
       'equipmentType',
       'exerciseIndex',
+      'isPopular',
       'loadMultiplier',
       'mechanicType',
       'muscleGroup',
       'targetMuscles',
     ]);
+  });
+
+  it('marks exactly the 100 curated popular exercise slugs', () => {
+    const popularExercises = exercisesData.filter((entry) => 'isPopular' in entry);
+
+    expect(popularExercises).toHaveLength(100);
+    expect(popularExercises.every(({ isPopular }) => isPopular === true)).toBe(true);
+    expect(new Set(popularExercises.map(({ __freeExerciseDbId }) => __freeExerciseDbId))).toEqual(
+      POPULAR_EXERCISE_SLUGS
+    );
   });
 
   it('numbers display order contiguously from one without using it as a database id', () => {

@@ -64,8 +64,6 @@ function ExercisePickerModal({
   const { exercises, isLoading, isLoadingMore, hasMore, loadMore } = useExercises({
     visible,
     enableReactivity: true,
-    sortBy: 'name',
-    sortOrder: 'asc',
     searchTerm: searchQuery.trim() || undefined,
     initialLimit: 20,
     batchSize: 20,

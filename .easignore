@@ -8,12 +8,6 @@ node_modules/
 dist/
 web-build/
 
-# Generated web mirror of experiments.baseUrl (see scripts/sync-web-images.js)
-public/musclog-app/
-
-# Copied from node_modules on postinstall (see scripts/sync-web-wasm.js)
-public/zxing_reader.wasm
-
 # Native
 *.orig.*
 *.jks
@@ -149,4 +143,7 @@ jest.setup.jsdom.js
 # assets/exercise-fallback.png (outside this dir), so it still ships.
 assets/exercises
 assets/workouts
-public/images/exercises
+
+# Static public assets and blog source are only used by the website export.
+public
+app/(website)/posts

@@ -129,7 +129,8 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 ### 🔄 Import & Export
 
 - Export your full database as an encrypted JSON file (encryption optional, configurable)
-- Import data across devices or as a backup
+- Import data across devices or as a backup, including optical QR transfer directly from the first onboarding screen
+- Import the complete Musclog GB cartridge database by scanning its Share Data QR stream on Android, iOS, or web
 - Support for JSON format
 
 ### 🔒 Privacy & Security
@@ -138,10 +139,11 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 - Sensitive fields (nutrition logs, user metrics) encrypted at rest with AES
 - AI features are fully optional — app works offline without them
 - **Optical Transfer**: move your whole profile, an individual food, a saved meal, a named meal in
-  the nutrition diary, or an entire meal section using only the two screens — one shows a stream of
-  QR codes, the other reads them with its camera. Food and meal shares preview and save without
-  replacing existing data. Works phone-to-phone and in the browser, in any combination. No internet,
-  cable, account, or third party
+  the nutrition diary, an entire meal section, or a full day of eating using only the two screens —
+  one shows a stream of QR codes, the other reads them with its camera. Food, meal and day shares
+  preview and save without replacing existing data. Android, iOS, and web work in any combination,
+  and Musclog GB can send its whole cartridge database, or one day of its food log, to any of them.
+  No internet, cable, account, or third party
 
 ---
 

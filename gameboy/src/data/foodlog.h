@@ -2,8 +2,17 @@
 #define MUSCLOG_FOODLOG_H
 
 #include <stdint.h>
+#include <gb/gb.h>
 
 #include "food_db.h" /* FoodCache */
+
+/* Public because the optical exporter streams the complete store directly
+ * instead of copying up to 8 KB of records into WRAM. */
+#define FOODLOG_SRAM_BANK 1u
+#define FOODLOG_OFF_COUNT 0x03u
+#define FOODLOG_ENTRIES_OFFSET 0x08u
+#define FOODLOG_ENTRY_SIZE 6u
+#define FOODLOG_CAPACITY ((uint16_t)((8192u - FOODLOG_ENTRIES_OFFSET) / FOODLOG_ENTRY_SIZE))
 
 /*
  * Persistent food log.
@@ -29,39 +38,40 @@
  * restore the caller's active ROM bank on return.
  */
 
-void foodlog_init(void);  /* validate header on boot; reset region if corrupt */
-void foodlog_erase(void); /* clear all entries (called from the reset path)    */
+void foodlog_init(void) BANKED;  /* validate header on boot; reset region if corrupt */
+void foodlog_erase(void) BANKED; /* clear all entries (called from the reset path)    */
 
 /* Returns 1 if the log is at capacity (no room for another entry). */
-uint8_t foodlog_is_full(void);
+uint8_t foodlog_is_full(void) BANKED;
 
 /* Append an entry. Returns 1 on success. When full, the oldest entry is dropped. */
-uint8_t foodlog_add(uint16_t day_num, uint16_t food_idx, uint16_t grams);
+uint8_t foodlog_add(uint16_t day_num, uint16_t food_idx, uint16_t grams) BANKED;
 
 /* Number of entries logged on `day_num` (capped at 255). */
-uint8_t foodlog_count_for_day(uint16_t day_num);
+uint8_t foodlog_count_for_day(uint16_t day_num) BANKED;
 
 /*
  * Fetch the `nth` (0-based) entry logged on `day_num`.
  * Returns 1 and fills *food_idx / *grams if found, 0 otherwise.
  */
-uint8_t foodlog_get_for_day(uint16_t day_num, uint8_t nth, uint16_t *food_idx, uint16_t *grams);
+uint8_t foodlog_get_for_day(uint16_t day_num, uint8_t nth, uint16_t *food_idx,
+                            uint16_t *grams) BANKED;
 
 /* Remove the `nth` (0-based) entry logged on `day_num` and compact the store. */
-void foodlog_delete_for_day(uint16_t day_num, uint8_t nth);
+void foodlog_delete_for_day(uint16_t day_num, uint8_t nth) BANKED;
 
 /* Sum the macros of every entry logged on `day_num` (kcal + grams; carbs include fiber). */
 void foodlog_sum_day(uint16_t day_num, uint16_t *cal, uint16_t *pro, uint16_t *carb, uint16_t *fat,
-                     uint16_t *fib);
+                     uint16_t *fib) BANKED;
 
 /* Food rows store total carbs including fiber; carb goals use digestible carbs. */
-uint16_t foodlog_digestible_carbs(uint16_t carbs, uint16_t fiber);
+uint16_t foodlog_digestible_carbs(uint16_t carbs, uint16_t fiber) NONBANKED;
 
 /*
  * Scale a loaded food's per-100g values to `grams`: calories in kcal, macros in
  * whole grams (rounded). Pure arithmetic — shared by the log summing and the UI.
  */
 void foodlog_scale(const FoodCache *fc, uint16_t grams, uint16_t *cal, uint16_t *pro,
-                   uint16_t *carb, uint16_t *fat, uint16_t *fib);
+                   uint16_t *carb, uint16_t *fat, uint16_t *fib) NONBANKED;
 
 #endif /* MUSCLOG_FOODLOG_H */

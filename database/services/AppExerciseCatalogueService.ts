@@ -16,13 +16,31 @@ import { MuscleService } from './MuscleService';
 const MAX_BATCH_OPERATIONS = 500;
 const MAX_QUERY_IDS = 300;
 
-interface CatalogueExerciseChanges {
-  muscleGroup?: MuscleGroup;
-  equipmentType?: EquipmentType;
-  mechanicType?: MechanicType;
-  loadMultiplier?: number;
-  orderIndex?: number;
-  imageUrl?: string;
+/**
+ * The fields the catalogue owns on an exercise row — the single definition of the
+ * catalogue-entry-to-database projection, used to create a row, to detect drift on an
+ * existing one, and to repair it. Adding a catalogue-owned column is one edit here.
+ */
+interface CatalogueExerciseFields {
+  muscleGroup: MuscleGroup;
+  equipmentType: EquipmentType;
+  mechanicType: MechanicType;
+  loadMultiplier: number;
+  orderIndex: number;
+  imageUrl: string;
+}
+
+type CatalogueExerciseChanges = Partial<CatalogueExerciseFields>;
+
+function catalogueExerciseFields(entry: ExerciseCatalogueEntry): CatalogueExerciseFields {
+  return {
+    muscleGroup: entry.muscleGroup,
+    equipmentType: entry.equipmentType,
+    mechanicType: entry.mechanicType,
+    loadMultiplier: entry.loadMultiplier,
+    orderIndex: entry.exerciseIndex - 1,
+    imageUrl: buildExerciseCloudUrl(entry.exerciseSlug),
+  };
 }
 
 export interface AppExerciseCatalogueSyncReport {
@@ -73,36 +91,32 @@ function desiredLinkIds(
   return ids;
 }
 
+/**
+ * `loadMultiplier` is the one field a strict comparison gets wrong: it round-trips through
+ * SQLite as a float, so an exact check would rewrite every catalogue row on every boot.
+ */
+function fieldMatches<TKey extends keyof CatalogueExerciseFields>(
+  key: TKey,
+  stored: CatalogueExerciseFields[TKey] | undefined,
+  desired: CatalogueExerciseFields[TKey]
+): boolean {
+  if (key === 'loadMultiplier') {
+    return Math.abs((stored as number) - (desired as number)) <= 0.001;
+  }
+  return stored === desired;
+}
+
 function exerciseChanges(
   exercise: Exercise,
   entry: ExerciseCatalogueEntry
 ): CatalogueExerciseChanges {
+  const desired = catalogueExerciseFields(entry);
   const changes: CatalogueExerciseChanges = {};
-  const orderIndex = entry.exerciseIndex - 1;
-  const imageUrl = buildExerciseCloudUrl(entry.exerciseSlug);
 
-  if (exercise.muscleGroup !== entry.muscleGroup) {
-    changes.muscleGroup = entry.muscleGroup;
-  }
-
-  if (exercise.equipmentType !== entry.equipmentType) {
-    changes.equipmentType = entry.equipmentType;
-  }
-
-  if (exercise.mechanicType !== entry.mechanicType) {
-    changes.mechanicType = entry.mechanicType;
-  }
-
-  if (Math.abs(exercise.loadMultiplier - entry.loadMultiplier) > 0.001) {
-    changes.loadMultiplier = entry.loadMultiplier;
-  }
-
-  if (exercise.orderIndex !== orderIndex) {
-    changes.orderIndex = orderIndex;
-  }
-
-  if (exercise.imageUrl !== imageUrl) {
-    changes.imageUrl = imageUrl;
+  for (const key of Object.keys(desired) as (keyof CatalogueExerciseFields)[]) {
+    if (!fieldMatches(key, exercise[key], desired[key])) {
+      Object.assign(changes, { [key]: desired[key] });
+    }
   }
 
   return changes;
@@ -139,6 +153,35 @@ function operationBatches(groups: Model[][]): Model[][] {
   return batches;
 }
 
+interface CatalogueDatabaseState {
+  exerciseById: Map<string, Exercise>;
+  linksByExerciseId: Map<string, ExerciseMuscle[]>;
+}
+
+/**
+ * Loads every row `sync` and `isComplete` reason about. Both need the same two independent
+ * queries, so they run together; callers filter soft-deleted links themselves, because
+ * `sync` has to see them (to destroy them) and `isComplete` must not count them.
+ */
+async function loadCatalogueDatabaseState(catalogueIds: string[]): Promise<CatalogueDatabaseState> {
+  const [allExercises, links] = await Promise.all([
+    database.get<Exercise>('exercises').query().fetch(),
+    fetchExerciseMuscles(catalogueIds),
+  ]);
+
+  const linksByExerciseId = new Map<string, ExerciseMuscle[]>();
+  for (const link of links) {
+    const exerciseLinks = linksByExerciseId.get(link.exerciseId) ?? [];
+    exerciseLinks.push(link);
+    linksByExerciseId.set(link.exerciseId, exerciseLinks);
+  }
+
+  return {
+    exerciseById: new Map(allExercises.map((exercise) => [exercise.id, exercise])),
+    linksByExerciseId,
+  };
+}
+
 async function activeMuscleIdsByName(): Promise<Map<string, string>> {
   const muscles = await database
     .get<Muscle>('muscles')
@@ -164,16 +207,8 @@ export class AppExerciseCatalogueService {
     };
 
     await database.write(async () => {
-      const allExercises = await database.get<Exercise>('exercises').query().fetch();
-      const exerciseById = new Map(allExercises.map((exercise) => [exercise.id, exercise]));
       const catalogueIds = catalogue.map(({ exerciseSlug }) => appExerciseId(exerciseSlug));
-      const links = await fetchExerciseMuscles(catalogueIds);
-      const linksByExerciseId = new Map<string, ExerciseMuscle[]>();
-      for (const link of links) {
-        const exerciseLinks = linksByExerciseId.get(link.exerciseId) ?? [];
-        exerciseLinks.push(link);
-        linksByExerciseId.set(link.exerciseId, exerciseLinks);
-      }
+      const { exerciseById, linksByExerciseId } = await loadCatalogueDatabaseState(catalogueIds);
 
       const now = Date.now();
       const groups: Model[][] = [];
@@ -199,13 +234,8 @@ export class AppExerciseCatalogueService {
               exercise._raw.id = exerciseId;
               exercise.name = entry.name;
               exercise.description = entry.description;
-              exercise.muscleGroup = entry.muscleGroup;
-              exercise.equipmentType = entry.equipmentType;
-              exercise.mechanicType = entry.mechanicType;
               exercise.source = 'app';
-              exercise.loadMultiplier = entry.loadMultiplier;
-              exercise.orderIndex = entry.exerciseIndex - 1;
-              exercise.imageUrl = buildExerciseCloudUrl(entry.exerciseSlug);
+              Object.assign(exercise, catalogueExerciseFields(entry));
               exercise.createdAt = now;
               exercise.updatedAt = now;
               exercise.deletedAt = undefined;
@@ -217,30 +247,7 @@ export class AppExerciseCatalogueService {
           if (Object.keys(changes).length > 0) {
             operations.push(
               existing.prepareUpdate((exercise) => {
-                if (changes.muscleGroup !== undefined) {
-                  exercise.muscleGroup = changes.muscleGroup;
-                }
-
-                if (changes.equipmentType !== undefined) {
-                  exercise.equipmentType = changes.equipmentType;
-                }
-
-                if (changes.mechanicType !== undefined) {
-                  exercise.mechanicType = changes.mechanicType;
-                }
-
-                if (changes.loadMultiplier !== undefined) {
-                  exercise.loadMultiplier = changes.loadMultiplier;
-                }
-
-                if (changes.orderIndex !== undefined) {
-                  exercise.orderIndex = changes.orderIndex;
-                }
-
-                if (changes.imageUrl !== undefined) {
-                  exercise.imageUrl = changes.imageUrl;
-                }
-
+                Object.assign(exercise, changes);
                 exercise.updatedAt = now;
               })
             );
@@ -309,20 +316,11 @@ export class AppExerciseCatalogueService {
   /** May be called inside an existing writer; it never opens a write action itself. */
   static async isComplete(): Promise<boolean> {
     const catalogue = getExerciseCatalogue();
-    const muscleNameToId = await activeMuscleIdsByName();
-    const allExercises = await database.get<Exercise>('exercises').query().fetch();
-    const exerciseById = new Map(allExercises.map((exercise) => [exercise.id, exercise]));
     const catalogueIds = catalogue.map(({ exerciseSlug }) => appExerciseId(exerciseSlug));
-    const links = await fetchExerciseMuscles(catalogueIds);
-    const linksByExerciseId = new Map<string, ExerciseMuscle[]>();
-    for (const link of links) {
-      if (link.deletedAt) {
-        continue;
-      }
-      const exerciseLinks = linksByExerciseId.get(link.exerciseId) ?? [];
-      exerciseLinks.push(link);
-      linksByExerciseId.set(link.exerciseId, exerciseLinks);
-    }
+    const [muscleNameToId, { exerciseById, linksByExerciseId }] = await Promise.all([
+      activeMuscleIdsByName(),
+      loadCatalogueDatabaseState(catalogueIds),
+    ]);
 
     return catalogue.every((entry) => {
       const exerciseId = appExerciseId(entry.exerciseSlug);
@@ -332,7 +330,9 @@ export class AppExerciseCatalogueService {
         return false;
       }
 
-      const exerciseLinks = linksByExerciseId.get(exerciseId) ?? [];
+      const exerciseLinks = (linksByExerciseId.get(exerciseId) ?? []).filter(
+        (link) => !link.deletedAt
+      );
       return (
         exerciseLinks.length === expectedMuscleIds.size &&
         exerciseLinks.every(

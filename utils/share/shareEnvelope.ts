@@ -31,6 +31,28 @@ export interface MealShareIngredient {
   calories: number;
 }
 
+/** One diary entry in a day share: an ingredient plus which meal it was eaten as. */
+export interface NutritionDayShareEntry extends MealShareIngredient {
+  mealType: 'breakfast' | 'dinner' | 'lunch' | 'other' | 'snack';
+}
+
+export interface NutritionDayShareSummary {
+  /**
+   * The calendar day these entries belong to, `YYYY-MM-DD` in the SENDER's timezone. Display only:
+   * the rows carry their own `date` + `timezone`, which is what actually files them, so a receiver
+   * in another timezone still sees them land on this date.
+   */
+  dayKey: string;
+  totals: ShareNutrients;
+  entries: NutritionDayShareEntry[];
+  /**
+   * True when the sender could not record a time of day or a meal type — a Game Boy cartridge
+   * stores only day + food + grams. The preview says so, because everything then arrives at midday
+   * under "Other" and that would otherwise look like the transfer lost something.
+   */
+  timesUnknown?: boolean;
+}
+
 export interface MealShareSummary {
   name: string;
   description?: string;
@@ -67,22 +89,36 @@ interface ShareEnvelopeBase {
   kindVersion: number;
   createdAtMs: number;
   records: Record<string, ShareRow[]>;
-  rootTable: string;
-  rootId: string;
   assets?: Record<string, ShareAsset>;
 }
 
-export interface MealShareEnvelope extends ShareEnvelopeBase {
+/**
+ * A share that is ABOUT one row — a food, a meal. `rootId` names it, and the importer reports back
+ * which local record it became. Kinds whose spec has `rootTable: null` (a day of eating) omit both
+ * fields entirely; the parser enforces each side of that.
+ */
+interface RootedShareEnvelope extends ShareEnvelopeBase {
+  rootTable: string;
+  rootId: string;
+}
+
+export interface MealShareEnvelope extends RootedShareEnvelope {
   kind: 'meal';
   summary: MealShareSummary;
 }
 
-export interface FoodShareEnvelope extends ShareEnvelopeBase {
+export interface FoodShareEnvelope extends RootedShareEnvelope {
   kind: 'food';
   summary: FoodShareSummary;
 }
 
-export type MusclogShareEnvelope = FoodShareEnvelope | MealShareEnvelope;
+export interface NutritionDayShareEnvelope extends ShareEnvelopeBase {
+  kind: 'nutritionDay';
+  summary: NutritionDayShareSummary;
+}
+
+export type MusclogShareEnvelope =
+  FoodShareEnvelope | MealShareEnvelope | NutritionDayShareEnvelope;
 
 /**
  * Split deliberately into "this build is behind the sender" (`unsupported-envelope`,
@@ -152,6 +188,19 @@ function validateNutrients(value: unknown, label: string): void {
   }
 }
 
+/** One `{ name, amount, unit, portionName?, calories }` entry, shared by meals and days. */
+function isValidIngredient(ingredient: unknown): ingredient is MealShareIngredient {
+  return (
+    isRecord(ingredient) &&
+    typeof ingredient.name === 'string' &&
+    isFiniteNumber(ingredient.amount) &&
+    ['g', 'serving', 'portion'].includes(String(ingredient.unit)) &&
+    (readOptional(ingredient, 'portionName') === undefined ||
+      typeof ingredient.portionName === 'string') &&
+    isFiniteNumber(ingredient.calories)
+  );
+}
+
 function validateMealSummary(value: unknown): asserts value is MealShareSummary {
   if (!isRecord(value)) {
     malformed('Share summary is missing');
@@ -177,16 +226,36 @@ function validateMealSummary(value: unknown): asserts value is MealShareSummary 
   validateNutrients(value.totals, 'Meal');
 
   for (const ingredient of value.ingredients) {
-    if (
-      !isRecord(ingredient) ||
-      typeof ingredient.name !== 'string' ||
-      !isFiniteNumber(ingredient.amount) ||
-      !['g', 'serving', 'portion'].includes(String(ingredient.unit)) ||
-      (readOptional(ingredient, 'portionName') !== undefined &&
-        typeof ingredient.portionName !== 'string') ||
-      !isFiniteNumber(ingredient.calories)
-    ) {
+    if (!isValidIngredient(ingredient)) {
       malformed('Meal share summary has an invalid ingredient');
+    }
+  }
+}
+
+function validateNutritionDaySummary(value: unknown): asserts value is NutritionDayShareSummary {
+  if (!isRecord(value)) {
+    malformed('Share summary is missing');
+  }
+
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(String(value.dayKey)) ||
+    !Array.isArray(value.entries) ||
+    value.entries.length === 0 ||
+    (readOptional(value, 'timesUnknown') !== undefined && typeof value.timesUnknown !== 'boolean')
+  ) {
+    malformed('Day share summary has an invalid shape');
+  }
+
+  validateNutrients(value.totals, 'Day');
+
+  for (const entry of value.entries) {
+    if (
+      !isValidIngredient(entry) ||
+      !['breakfast', 'lunch', 'dinner', 'snack', 'other'].includes(
+        String((entry as NutritionDayShareEntry).mealType)
+      )
+    ) {
+      malformed('Day share summary has an invalid entry');
     }
   }
 }
@@ -235,6 +304,13 @@ const KIND_VALIDATORS: Record<MusclogShareKind, (parsed: Record<string, unknown>
     }
     validateMealSummary(parsed.summary);
   },
+  nutritionDay: (parsed) => {
+    const logs = (parsed.records as Record<string, unknown>).nutrition_logs;
+    if (!Array.isArray(logs) || logs.length === 0) {
+      malformed('Day share has no entries');
+    }
+    validateNutritionDaySummary(parsed.summary);
+  },
 };
 
 function decodedBase64Bytes(base64: string): number {
@@ -272,14 +348,16 @@ function validateAssets(value: unknown): asserts value is Record<string, ShareAs
   }
 }
 
-export function parseShareEnvelope(json: string): MusclogShareEnvelope {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(json);
-  } catch {
-    throw new MusclogShareError('malformed', 'Share payload is not valid JSON');
-  }
-
+/**
+ * Validate an already-parsed value as a share envelope.
+ *
+ * Split out from {@link parseShareEnvelope} for the one caller that does not start from an app-built
+ * JSON string: a Musclog GB `SHARE DAY` payload arrives as a compact tuple schema and is expanded
+ * into an envelope object first (`utils/share/parseIncomingShare.ts`). Running the expansion through
+ * the same validator as any other sender is deliberate — the expander gets no privileges the wire
+ * does not have.
+ */
+export function validateShareEnvelope(parsed: unknown): MusclogShareEnvelope {
   if (!isRecord(parsed)) {
     throw new MusclogShareError('not-a-share', 'Payload is not a Musclog share envelope');
   }
@@ -311,10 +389,21 @@ export function parseShareEnvelope(json: string): MusclogShareEnvelope {
   if (
     typeof parsed.createdAtMs !== 'number' ||
     !Number.isFinite(parsed.createdAtMs) ||
+    !isRecord(parsed.records)
+  ) {
+    malformed('Share envelope metadata is invalid');
+  }
+
+  // Both directions: a rooted kind must name its root row, and a rootless one must not smuggle a
+  // root the importer would never look at.
+  if (spec.rootTable === null) {
+    if (parsed.rootTable !== undefined || parsed.rootId !== undefined) {
+      malformed(`A ${spec.kind} share has no root row`);
+    }
+  } else if (
     parsed.rootTable !== spec.rootTable ||
     typeof parsed.rootId !== 'string' ||
-    !parsed.rootId ||
-    !isRecord(parsed.records)
+    !parsed.rootId
   ) {
     malformed('Share envelope metadata is invalid');
   }
@@ -337,13 +426,26 @@ export function parseShareEnvelope(json: string): MusclogShareEnvelope {
     }
   }
 
-  const roots = parsed.records[spec.rootTable];
-  if (!Array.isArray(roots) || roots.filter((row) => row.id === parsed.rootId).length !== 1) {
-    malformed('Share root row is missing or duplicated');
+  if (spec.rootTable !== null) {
+    const roots = parsed.records[spec.rootTable];
+    if (!Array.isArray(roots) || roots.filter((row) => row.id === parsed.rootId).length !== 1) {
+      malformed('Share root row is missing or duplicated');
+    }
   }
 
   validateAssets(readOptional(parsed, 'assets'));
   KIND_VALIDATORS[spec.kind](parsed);
 
   return parsed as unknown as MusclogShareEnvelope;
+}
+
+export function parseShareEnvelope(json: string): MusclogShareEnvelope {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(json);
+  } catch {
+    throw new MusclogShareError('malformed', 'Share payload is not valid JSON');
+  }
+
+  return validateShareEnvelope(parsed);
 }

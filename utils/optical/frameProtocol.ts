@@ -32,8 +32,9 @@
 
 export const HEADER_LEN = 20;
 
-const MAGIC0 = 0xd1;
-const MAGIC1 = 0x0c;
+/** Exported so the Game Boy port's tests can pin its C literals to these, not to copies. */
+export const MAGIC0 = 0xd1;
+export const MAGIC1 = 0x0c;
 
 export interface FrameHeader {
   sessionId: number;

@@ -90,7 +90,7 @@ const RUBY_BLOCK = `    ${START}
           next
         end
 
-        system('python3', script_path) || Pod::UI.warn("[Musclog simulator fix] #{script} failed")
+        system('python3', '-B', script_path) || Pod::UI.warn("[Musclog simulator fix] #{script} failed")
       end
     else
       Pod::UI.puts("[Musclog simulator fix] Skipped; host/env/pods do not require it")

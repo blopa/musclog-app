@@ -146,8 +146,6 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
   } = useExercises({
     visible,
     enableReactivity: true,
-    sortBy: 'name',
-    sortOrder: 'asc',
     searchTerm: searchQuery.trim() || undefined,
     initialLimit: 20,
     batchSize: 20,

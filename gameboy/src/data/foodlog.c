@@ -1,3 +1,5 @@
+#pragma bank 13
+
 #include "foodlog.h"
 
 #include <gb/gb.h>
@@ -11,13 +13,13 @@
 
 #define FL_OFF_MAGIC 0x00u
 #define FL_OFF_VERSION 0x02u
-#define FL_OFF_COUNT 0x03u
+#define FL_OFF_COUNT FOODLOG_OFF_COUNT
 #define FL_OFF_CHECKSUM 0x05u
-#define FL_ENTRIES_OFFSET 0x08u
+#define FL_ENTRIES_OFFSET FOODLOG_ENTRIES_OFFSET
 
-#define FL_ENTRY_SIZE 6u
+#define FL_ENTRY_SIZE FOODLOG_ENTRY_SIZE
 /* 8 KB bank minus the 8-byte header, in whole 6-byte records. */
-#define FL_CAPACITY ((uint16_t)((8192u - FL_ENTRIES_OFFSET) / FL_ENTRY_SIZE))
+#define FL_CAPACITY FOODLOG_CAPACITY
 
 /* ── Raw SRAM bank-1 access (caller must have ENABLE_RAM + SWITCH_RAM(1u)) ──── */
 
@@ -56,7 +58,7 @@ static uint8_t fl_header_ok(void) {
 
 /* ── Public API ───────────────────────────────────────────────────────────── */
 
-uint8_t foodlog_is_full(void) {
+uint8_t foodlog_is_full(void) BANKED {
     uint8_t full;
 
     ENABLE_RAM;
@@ -67,7 +69,7 @@ uint8_t foodlog_is_full(void) {
     return full;
 }
 
-void foodlog_init(void) {
+void foodlog_init(void) BANKED {
     uint8_t valid;
     uint16_t count;
 
@@ -87,7 +89,7 @@ void foodlog_init(void) {
     DISABLE_RAM;
 }
 
-void foodlog_erase(void) {
+void foodlog_erase(void) BANKED {
     ENABLE_RAM;
     SWITCH_RAM(1u);
     fl_finalize(0u);
@@ -95,7 +97,7 @@ void foodlog_erase(void) {
     DISABLE_RAM;
 }
 
-uint8_t foodlog_add(uint16_t day_num, uint16_t food_idx, uint16_t grams) {
+uint8_t foodlog_add(uint16_t day_num, uint16_t food_idx, uint16_t grams) BANKED {
     uint16_t count;
     uint16_t i;
     uint16_t off;
@@ -125,7 +127,7 @@ uint8_t foodlog_add(uint16_t day_num, uint16_t food_idx, uint16_t grams) {
     return 1u;
 }
 
-uint8_t foodlog_count_for_day(uint16_t day_num) {
+uint8_t foodlog_count_for_day(uint16_t day_num) BANKED {
     uint16_t count;
     uint16_t i;
     uint8_t n = 0u;
@@ -145,7 +147,8 @@ uint8_t foodlog_count_for_day(uint16_t day_num) {
     return n;
 }
 
-uint8_t foodlog_get_for_day(uint16_t day_num, uint8_t nth, uint16_t *food_idx, uint16_t *grams) {
+uint8_t foodlog_get_for_day(uint16_t day_num, uint8_t nth, uint16_t *food_idx,
+                            uint16_t *grams) BANKED {
     uint16_t count;
     uint16_t i;
     uint8_t seen = 0u;
@@ -175,7 +178,7 @@ uint8_t foodlog_get_for_day(uint16_t day_num, uint8_t nth, uint16_t *food_idx, u
     return found;
 }
 
-void foodlog_delete_for_day(uint16_t day_num, uint8_t nth) {
+void foodlog_delete_for_day(uint16_t day_num, uint8_t nth) BANKED {
     uint16_t count;
     uint16_t i;
     uint8_t seen = 0u;
@@ -214,7 +217,7 @@ void foodlog_delete_for_day(uint16_t day_num, uint8_t nth) {
 }
 
 void foodlog_scale(const FoodCache *fc, uint16_t grams, uint16_t *cal, uint16_t *pro,
-                   uint16_t *carb, uint16_t *fat, uint16_t *fib) {
+                   uint16_t *carb, uint16_t *fat, uint16_t *fib) NONBANKED {
     *cal = (uint16_t)(((uint32_t)fc->kcal * grams + 50u) / 100u);
     *pro = (uint16_t)(((uint32_t)fc->protein_dg * grams + 500u) / 1000u);
     *carb = (uint16_t)(((uint32_t)fc->carbs_dg * grams + 500u) / 1000u);
@@ -222,12 +225,12 @@ void foodlog_scale(const FoodCache *fc, uint16_t grams, uint16_t *cal, uint16_t 
     *fib = (uint16_t)(((uint32_t)fc->fiber_dg * grams + 500u) / 1000u);
 }
 
-uint16_t foodlog_digestible_carbs(uint16_t carbs, uint16_t fiber) {
+uint16_t foodlog_digestible_carbs(uint16_t carbs, uint16_t fiber) NONBANKED {
     return carbs > fiber ? (uint16_t)(carbs - fiber) : 0u;
 }
 
 void foodlog_sum_day(uint16_t day_num, uint16_t *cal, uint16_t *pro, uint16_t *carb, uint16_t *fat,
-                     uint16_t *fib) {
+                     uint16_t *fib) BANKED {
     uint16_t count;
     uint16_t i;
     uint16_t off;

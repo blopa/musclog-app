@@ -210,7 +210,9 @@
       "scaleMealPortionSuccess": "Meal portions updated",
       "scaleMealPortionError": "Failed to update meal portions",
       "scaleMealPortionInvalid": "Enter at least 1 g",
-      "scaleMealPortionPreview": "Estimated totals for this portion"
+      "scaleMealPortionPreview": "Estimated totals for this portion",
+      "sendDayToPhone": "Send day to phone",
+      "sendDayToPhoneDesc": "Transfer this whole day's food with animated QR codes"
     },
     "mealInsights": {
       "title": "Meal Insights",

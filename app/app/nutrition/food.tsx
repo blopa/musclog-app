@@ -75,6 +75,7 @@ import {
   scaleMealNutritionLogsToTotalGrams,
   SettingsService,
 } from '@/database/services';
+import { nutritionDayShareKey } from '@/database/share/buildNutritionDayShare';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
@@ -1056,6 +1057,17 @@ export default function FoodScreen() {
     clearMealSelection();
   };
 
+  const handleSendDayToPhone = () => {
+    screenModals.dailySummaryMenu.close();
+    // The whole day, in one payload the receiver files back into its own diary — not a recipe, the
+    // way `handleSendMealToPhone` sends a section. Musclog GB's SHARE DAY sends the same kind.
+    setShareTarget({
+      dayKey: nutritionDayShareKey(selectedDate),
+      kind: 'nutritionDay',
+      logs,
+    });
+  };
+
   const handleScaleMealPortion = () => {
     openScalePortion();
   };
@@ -1912,6 +1924,7 @@ export default function FoodScreen() {
         onGoalsManagementPress={screenModals.goalsManagement.open}
         showEditCurrentGoal={currentNutritionGoal != null}
         onCopyDayFromHistoryPress={screenModals.copyDay.open}
+        onSendDayToPhonePress={logs.length > 0 ? handleSendDayToPhone : undefined}
       />
 
       <CopyDayFromHistoryModal

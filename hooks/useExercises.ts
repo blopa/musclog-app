@@ -19,8 +19,6 @@ export interface UseExercisesParams {
   getAll?: boolean; // If true, fetch all exercises (no pagination)
   enableReactivity?: boolean; // Default: true
   visible?: boolean; // For modal visibility control, default: true
-  sortBy?: 'name' | 'created_at' | 'updated_at' | 'muscle_group'; // Default: 'name'
-  sortOrder?: 'asc' | 'desc'; // Default: 'asc'
 }
 
 // Return type
@@ -32,6 +30,28 @@ export type UseExercisesResult = {
   loadMore: () => Promise<void>;
   refresh: () => Promise<void>;
 };
+
+/**
+ * Display order for the modes that fetch without an ORDER BY: bundled exercises first in
+ * catalogue order, then the user's own alphabetically. `list` mode does not use this —
+ * `getExercisesPaginatedFiltered` already sorts, and re-sorting a single page would only
+ * shuffle that page rather than the whole result set.
+ */
+function compareForDisplay(a: Exercise, b: Exercise): number {
+  const sourceCompare = (a.source ?? 'user').localeCompare(b.source ?? 'user');
+  if (sourceCompare !== 0) {
+    return sourceCompare;
+  }
+
+  if (a.source === 'app' && b.source === 'app') {
+    const orderCompare = (a.orderIndex ?? 0) - (b.orderIndex ?? 0);
+    if (orderCompare !== 0) {
+      return orderCompare;
+    }
+  }
+
+  return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+}
 
 /**
  * Hook for managing exercises data with reactive updates
@@ -47,8 +67,6 @@ export function useExercises({
   getAll = false,
   enableReactivity = true,
   visible = true,
-  sortBy = 'name',
-  sortOrder = 'asc',
 }: UseExercisesParams = {}): UseExercisesResult {
   // State
   const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -122,56 +140,9 @@ export function useExercises({
         }
       }
 
-      // Paginated list queries use the database's stable catalogue ordering.
+      // Paginated list queries already come back in the database's stable catalogue order.
       if (mode !== 'list' || getAll) {
-        exercisesList = exercisesList.sort((a, b) => {
-          // First sort by source (app exercises first)
-          const aSource = a.source ?? 'user';
-          const bSource = b.source ?? 'user';
-          const sourceCompare = aSource.localeCompare(bSource);
-          if (sourceCompare !== 0) {
-            return sourceCompare;
-          }
-
-          // For app exercises, sort by order_index (JSON order)
-          if (a.source === 'app' && b.source === 'app') {
-            const orderCompare = (a.orderIndex ?? 0) - (b.orderIndex ?? 0);
-            if (orderCompare !== 0) {
-              return orderCompare;
-            }
-          }
-
-          // Then sort by the specified field
-          let aValue: any = a[sortBy as keyof Exercise];
-          let bValue: any = b[sortBy as keyof Exercise];
-
-          if (typeof aValue === 'string') {
-            aValue = aValue.toLowerCase();
-            bValue = (bValue as string).toLowerCase();
-          }
-
-          if (sortOrder === 'asc') {
-            if (aValue > bValue) {
-              return 1;
-            }
-
-            if (aValue < bValue) {
-              return -1;
-            }
-
-            return 0;
-          }
-
-          if (aValue < bValue) {
-            return 1;
-          }
-
-          if (aValue > bValue) {
-            return -1;
-          }
-
-          return 0;
-        });
+        exercisesList = exercisesList.sort(compareForDisplay);
       }
 
       setExercises(exercisesList);
@@ -183,18 +154,7 @@ export function useExercises({
     } finally {
       setIsLoading(false);
     }
-  }, [
-    visible,
-    mode,
-    searchTerm,
-    muscleGroup,
-    equipmentType,
-    mechanicType,
-    initialLimit,
-    getAll,
-    sortBy,
-    sortOrder,
-  ]);
+  }, [visible, mode, searchTerm, muscleGroup, equipmentType, mechanicType, initialLimit, getAll]);
 
   // Load more exercises (pagination)
   const loadMore = useCallback(async () => {
@@ -264,10 +224,12 @@ export function useExercises({
       return;
     }
 
-    // Build query based on mode
+    // Build query based on mode. This is a change sentinel, not a listing: `updated_at desc`
+    // means any create or edit moves a different row into the single observed slot, which
+    // an alphabetical sort would miss for every exercise except the first.
     let query = database.get<Exercise>('exercises').query(
       Q.where('deleted_at', Q.eq(null)),
-      Q.sortBy(sortBy, sortOrder === 'asc' ? Q.asc : Q.desc),
+      Q.sortBy('updated_at', Q.desc),
       Q.take(1) // Only need to know if there are any changes
     );
 
@@ -304,8 +266,6 @@ export function useExercises({
     muscleGroup,
     equipmentType,
     mechanicType,
-    sortBy,
-    sortOrder,
     loadInitialExercises,
   ]);
 

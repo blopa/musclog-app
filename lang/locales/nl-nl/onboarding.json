@@ -164,6 +164,7 @@
         "validating": "gegevens"
       },
       "importData": "Gegevens importeren",
+      "importOptically": "Gegevens importeren vanaf een andere telefoon",
       "storedLocally": "Alle gegevens lokaal opgeslagen op uw apparaat",
       "recommended": "Aanbevolen",
       "personalizedSetup": "Gepersonaliseerde Installatie",

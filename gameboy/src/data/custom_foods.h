@@ -9,9 +9,11 @@
 #include "profile.h" /* SaveData  */
 
 /*
- * User-created custom foods, persisted in SRAM bank 3 (the only free SRAM bank —
- * bank 0 = profile + metrics, bank 1 = food log, bank 2 = workout log). The
- * cartridge already declares four SRAM banks via -Wm-ya4 in build-gb-rom.mjs.
+ * User-created custom foods, persisted in the low region of SRAM bank 3 (bank 0 =
+ * profile + metrics, bank 1 = food log, bank 2 = workout log). The cartridge
+ * declares four SRAM banks via -Wm-ya4 in build-gb-rom.mjs. The optical sender
+ * reserves bank-3 offsets 0x0B00 and above as transient QR scratch; the 100 fixed
+ * custom-food slots end at 0x0A2F, so the regions cannot overlap.
  *
  * Custom foods share the global food_idx namespace used by the food log and the
  * bundled ROM tables: a food_idx >= CUSTOM_FOOD_BASE is a custom food whose slot

@@ -14,6 +14,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { ensureGbdk } from './fetch-gbdk.mjs';
+import { patchMusclogRomHeaderFile } from './rom-header.cjs';
 
 const repoRoot = join(fileURLToPath(import.meta.url), '..', '..', '..');
 const gameboyDir = join(repoRoot, 'gameboy');
@@ -22,6 +23,7 @@ const generatedDir = join(srcDir, 'generated');
 const buildDir = join(gameboyDir, 'build');
 const logoPng = join(gameboyDir, 'assets', 'logo.png');
 const backgroundPng = join(gameboyDir, 'assets', 'gb_background.png');
+const qrRsGenerator = join(gameboyDir, 'tools', 'generate-qr-rs-table.mjs');
 const romPath = join(buildDir, 'musclog.gbc');
 
 // The start-screen art is the largest single asset; it lives in its own ROM bank
@@ -30,35 +32,35 @@ const romPath = join(buildDir, 'musclog.gbc');
 const BACKGROUND_BANK = 8;
 
 function run(bin, args, cwd) {
-    execFileSync(bin, args, { cwd, stdio: 'inherit' });
+  execFileSync(bin, args, { cwd, stdio: 'inherit' });
 }
 
 function collectFilesRecursive(rootDir, extension) {
-    const files = [];
+  const files = [];
 
-    for (const entry of readdirSync(rootDir, { withFileTypes: true })) {
-        const fullPath = join(rootDir, entry.name);
-        if (entry.isDirectory()) {
-            files.push(...collectFilesRecursive(fullPath, extension));
-            continue;
-        }
-        if (entry.isFile() && entry.name.endsWith(extension)) {
-            files.push(fullPath);
-        }
+  for (const entry of readdirSync(rootDir, { withFileTypes: true })) {
+    const fullPath = join(rootDir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...collectFilesRecursive(fullPath, extension));
+      continue;
     }
+    if (entry.isFile() && entry.name.endsWith(extension)) {
+      files.push(fullPath);
+    }
+  }
 
-    return files.sort();
+  return files.sort();
 }
 
 function collectIncludeDirs(rootDir) {
-    const dirs = [rootDir];
+  const dirs = [rootDir];
 
-    for (const entry of readdirSync(rootDir, { withFileTypes: true })) {
-        if (!entry.isDirectory()) continue;
-        dirs.push(...collectIncludeDirs(join(rootDir, entry.name)));
-    }
+  for (const entry of readdirSync(rootDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    dirs.push(...collectIncludeDirs(join(rootDir, entry.name)));
+  }
 
-    return dirs;
+  return dirs;
 }
 
 const gbdkDir = ensureGbdk();
@@ -66,94 +68,98 @@ const png2asset = join(gbdkDir, 'bin', 'png2asset');
 const lcc = join(gbdkDir, 'bin', 'lcc');
 
 function parseMapAreas(mapPath) {
-    const areas = [];
-    const areaPattern = /^(_[A-Z][A-Z0-9_]*|\.\s+\.ABS\.)\s+([0-9A-F]{8})\s+([0-9A-F]{8})/;
+  const areas = [];
+  const areaPattern = /^(_[A-Z][A-Z0-9_]*|\.\s+\.ABS\.)\s+([0-9A-F]{8})\s+([0-9A-F]{8})/;
 
-    for (const line of readFileSync(mapPath, 'utf8').split('\n')) {
-        const match = line.match(areaPattern);
-        if (!match) continue;
+  for (const line of readFileSync(mapPath, 'utf8').split('\n')) {
+    const match = line.match(areaPattern);
+    if (!match) continue;
 
-        areas.push({
-            name: match[1].trim(),
-            addr: Number.parseInt(match[2], 16),
-            size: Number.parseInt(match[3], 16),
-        });
-    }
+    areas.push({
+      name: match[1].trim(),
+      addr: Number.parseInt(match[2], 16),
+      size: Number.parseInt(match[3], 16),
+    });
+  }
 
-    return areas;
+  return areas;
 }
 
 function checkBankLayout(mapPath) {
-    const areas = parseMapAreas(mapPath);
-    const fixedAreaNames = new Set(['_CODE', '_HOME', '_INITIALIZER', '_GSINIT', '_GSFINAL']);
-    const fixedLimit = 0x4000;
-    const warnings = [];
-    let fixedEnd = 0;
+  const areas = parseMapAreas(mapPath);
+  const fixedAreaNames = new Set(['_CODE', '_HOME', '_INITIALIZER', '_GSINIT', '_GSFINAL']);
+  const fixedLimit = 0x4000;
+  const warnings = [];
+  let fixedEnd = 0;
 
-    for (const area of areas) {
-        const end = area.addr + area.size;
+  for (const area of areas) {
+    const end = area.addr + area.size;
 
-        if (fixedAreaNames.has(area.name)) {
-            fixedEnd = Math.max(fixedEnd, end);
-            if (area.size !== 0 && end > fixedLimit) {
-                warnings.push(
-                    `${area.name} is outside bank 0: 0x${area.addr.toString(16)} -> 0x${(end - 1).toString(16)}`,
-                );
-            }
-        }
-
-        if (/^_CODE_\d+$/.test(area.name) && area.size > fixedLimit) {
-            warnings.push(`${area.name} exceeds 16 KB: ${area.size} bytes`);
-        }
+    if (fixedAreaNames.has(area.name)) {
+      fixedEnd = Math.max(fixedEnd, end);
+      if (area.size !== 0 && end > fixedLimit) {
+        warnings.push(
+          `${area.name} is outside bank 0: 0x${area.addr.toString(16)} -> 0x${(end - 1).toString(16)}`
+        );
+      }
     }
 
-    console.log(`\nBank layout: ROM_0 uses ${fixedEnd} / ${fixedLimit} bytes`);
-    for (const area of areas.filter((candidate) => /^_CODE_\d+$/.test(candidate.name))) {
-        console.log(`Bank layout: ${area.name} uses ${area.size} / ${fixedLimit} bytes`);
+    if (/^_CODE_\d+$/.test(area.name) && area.size > fixedLimit) {
+      warnings.push(`${area.name} exceeds 16 KB: ${area.size} bytes`);
     }
+  }
 
-    if (warnings.length !== 0) {
-        throw new Error(`GB ROM bank layout is invalid:\n${warnings.join('\n')}`);
-    }
+  console.log(`\nBank layout: ROM_0 uses ${fixedEnd} / ${fixedLimit} bytes`);
+  for (const area of areas.filter((candidate) => /^_CODE_\d+$/.test(candidate.name))) {
+    console.log(`Bank layout: ${area.name} uses ${area.size} / ${fixedLimit} bytes`);
+  }
+
+  if (warnings.length !== 0) {
+    throw new Error(`GB ROM bank layout is invalid:\n${warnings.join('\n')}`);
+  }
 }
 
 function assertGeneratedBackgroundFits(tileHeaderPath) {
-    const header = readFileSync(tileHeaderPath, 'utf8');
-    const match = header.match(/^#define gb_background_TILE_COUNT\s+(\d+)$/m);
-    if (!match) {
-        throw new Error(`Could not read gb_background_TILE_COUNT from ${tileHeaderPath}`);
-    }
+  const header = readFileSync(tileHeaderPath, 'utf8');
+  const match = header.match(/^#define gb_background_TILE_COUNT\s+(\d+)$/m);
+  if (!match) {
+    throw new Error(`Could not read gb_background_TILE_COUNT from ${tileHeaderPath}`);
+  }
 
-    const tileCount = Number.parseInt(match[1], 10);
-    if (tileCount > 256) {
-        throw new Error(
-            `The title background generated ${tileCount} unique tiles, but the start screen can address only 256. ` +
-                'Simplify assets/gb_background.png slightly, then run "npm run gb:prepare-bg" and "npm run gb:build" again.',
-        );
-    }
+  const tileCount = Number.parseInt(match[1], 10);
+  if (tileCount > 256) {
+    throw new Error(
+      `The title background generated ${tileCount} unique tiles, but the start screen can address only 256. ` +
+        'Simplify assets/gb_background.png slightly, then run "npm run gb:prepare-bg" and "npm run gb:build" again.'
+    );
+  }
 }
 
 if (!existsSync(logoPng)) {
-    throw new Error(`Missing ${logoPng}. Run "npm run gb:prepare-logo" first to generate it.`);
+  throw new Error(`Missing ${logoPng}. Run "npm run gb:prepare-logo" first to generate it.`);
 }
 
 if (!existsSync(backgroundPng)) {
-    throw new Error(`Missing ${backgroundPng}. Run "npm run gb:prepare-bg" first to generate it.`);
+  throw new Error(`Missing ${backgroundPng}. Run "npm run gb:prepare-bg" first to generate it.`);
 }
 
 mkdirSync(srcDir, { recursive: true });
 mkdirSync(generatedDir, { recursive: true });
 mkdirSync(buildDir, { recursive: true });
 
+console.log('Generating fixed QR Reed-Solomon table ...');
+run(process.execPath, [qrRsGenerator], gameboyDir);
+
 // 2. Logo -> generated C tile/map/palette data (CGB attributes, fixed palette order, no tile flipping).
 console.log('Converting logo.png -> src/generated/logo.c ...');
 run(png2asset, [
-    logoPng,
-    '-c', join(generatedDir, 'logo.c'),
-    '-map',
-    '-use_map_attributes',
-    '-keep_palette_order',
-    '-noflip',
+  logoPng,
+  '-c',
+  join(generatedDir, 'logo.c'),
+  '-map',
+  '-use_map_attributes',
+  '-keep_palette_order',
+  '-noflip',
 ]);
 
 // 2b. Start-screen art -> C data, pinned to BACKGROUND_BANK so it co-locates with
@@ -162,12 +168,14 @@ run(png2asset, [
 // the flip flags survive alongside the CGB palette and VRAM-bank attributes.
 console.log('Converting gb_background.png -> src/generated/gb_background.c ...');
 run(png2asset, [
-    backgroundPng,
-    '-c', join(generatedDir, 'gb_background.c'),
-    '-map',
-    '-use_map_attributes',
-    '-keep_palette_order',
-    '-b', String(BACKGROUND_BANK),
+  backgroundPng,
+  '-c',
+  join(generatedDir, 'gb_background.c'),
+  '-map',
+  '-use_map_attributes',
+  '-keep_palette_order',
+  '-b',
+  String(BACKGROUND_BANK),
 ]);
 assertGeneratedBackgroundFits(join(generatedDir, 'gb_background.h'));
 
@@ -183,36 +191,38 @@ assertGeneratedBackgroundFits(join(generatedDir, 'gb_background.h'));
 //    Cartridge product code: CGB-MLOG-HOL (modelled on Nintendo's DMG-TR-USA scheme):
 //      - CGB     : Game Boy Color title, set by -Wm-yC.
 //      - MLOG    : 4-char manufacturer/game code, written into header 0x13F-0x142
-//                  ("MLOG" = 0x4D 0x4C 0x4F 0x47) via -Wm-yp patches. This field sits
-//                  just past the "MUSCLOG" title (0x134-0x13A) and is otherwise blank.
+//                  after linking. This field sits just past the "MUSCLOG" title
+//                  (0x134-0x13A) and is otherwise blank.
 //      - HOL     : Netherlands (non-Japanese) region. The header only carries a
 //                  Japanese / non-Japanese destination flag (0x14A); -Wm-yj sets it
 //                  to 0x01 (non-Japanese), the closest the hardware encodes for HOL.
-//    -Wm-yp0x14C=0 sets the mask-ROM version/revision byte (0x14C) to 0 — i.e. first
-//    revision, so the code reads CGB-MLOG-HOL with no trailing "-1". (makebin has no
-//    GameBoy version flag, so this is done with a header patch.)
+//    The post-link header patch also sets the mask-ROM version/revision byte (0x14C)
+//    to 1, making this CGB-MLOG-HOL-1, then recalculates both cartridge checksums.
+//    GBDK has no dedicated Game Boy flags for the game code or revision, while its
+//    arbitrary -yp byte patches are deprecated.
 //    -Wl-m emits gameboy/build/musclog.map so the build can catch bank overflows.
 console.log('Compiling ROM ...');
 const cSources = collectFilesRecursive(srcDir, '.c');
 const includeDirs = collectIncludeDirs(srcDir).sort();
 
-run(lcc, [
+run(
+  lcc,
+  [
     '-Wm-yC',
     '-Wm-yt0x10',
     '-Wm-ya4',
     '-Wm-yo16',
     '-Wm-yn"MUSCLOG"',
     '-Wm-yj',
-    '-Wm-yp0x13F=0x4D', // 'M'
-    '-Wm-yp0x140=0x4C', // 'L'
-    '-Wm-yp0x141=0x4F', // 'O'
-    '-Wm-yp0x142=0x47', // 'G'
-    '-Wm-yp0x14C=0x00', // revision 0 (no trailing "-1")
     '-Wl-m',
     ...includeDirs.map((dir) => `-I${dir}`),
-    '-o', romPath,
+    '-o',
+    romPath,
     ...cSources,
-], gameboyDir);
+  ],
+  gameboyDir
+);
+patchMusclogRomHeaderFile(romPath);
 
 const mapPath = join(buildDir, 'musclog.map');
 checkBankLayout(mapPath);

@@ -26,6 +26,7 @@ import {
 import { AppExerciseCatalogueService } from '@/database/services/AppExerciseCatalogueService';
 import i18n, { AVAILABLE_LANGUAGES, EN_US } from '@/lang/lang';
 import { getEncryptionKey } from '@/utils/encryption';
+import { parseFoundationFoodSeed } from '@/utils/foundationFoodSeed';
 import { getDefaultUnits } from '@/utils/units';
 
 export type InitProgressPhase = 'seeding' | 'migrating';
@@ -115,65 +116,27 @@ async function seedUSDAFoundationFoods(): Promise<void> {
           }
 
           try {
-            // Parse numeric values
-            const kcal = parseFloat(row.kcal || '0') || 0;
-            const protein = parseFloat(row.protein || '0') || 0;
-            const carbs = parseFloat(row.carbs || '0') || 0;
-            const fat = parseFloat(row.fat || '0') || 0;
-            const fiber = parseFloat(row.fiber || '0') || 0;
-            const sugar = parseFloat(row.sugar || '0') || undefined;
-            const sodium = parseFloat(row.sodium || '0') || undefined;
-            const magnesium = parseFloat(row.magnesium || '0') || undefined;
-            const vitaminC = parseFloat(row.vitamin_c || '0') || undefined;
-            const vitaminD = parseFloat(row.vitamin_d || '0') || undefined;
-
-            // Build micros object (only include non-zero values)
-            const micros: Record<string, number> = {};
-            if (sugar && sugar > 0) {
-              micros.sugar = sugar;
-            }
-
-            if (sodium && sodium > 0) {
-              micros.sodium = sodium;
-            }
-
-            if (magnesium && magnesium > 0) {
-              micros.magnesium = magnesium;
-            }
-
-            if (vitaminC && vitaminC > 0) {
-              micros.vitaminC = vitaminC;
-            }
-
-            if (vitaminD && vitaminD > 0) {
-              micros.vitaminD = vitaminD;
-            }
+            // One definition of what a seed row means, shared with the Game Boy day-share
+            // receiver, which rebuilds this same record for a food a cartridge referenced by
+            // index. Carbs arrive already total (fiber included) — see utils/foundationFoodSeed.ts.
+            const seed = parseFoundationFoodSeed(row);
 
             // Create food directly in the write transaction (avoid nested writes)
             const food = await database.get<Food>('foods').create((food) => {
               food.isAiGenerated = false;
-              food.name = row.name || '';
-              food.description = row.description || ''; // TODO
+              food.name = seed.name;
+              food.description = seed.description;
               food.brand = undefined;
-              food.barcode = row.barcode || undefined;
+              food.barcode = seed.barcode;
               food.externalId = externalId;
 
-              food.calories = kcal;
-              food.protein = protein;
-              food.carbs = carbs;
-              food.fat = fat;
-              food.fiber = fiber;
+              food.calories = seed.calories;
+              food.protein = seed.protein;
+              food.carbs = seed.carbs;
+              food.fat = seed.fat;
+              food.fiber = seed.fiber;
 
-              // Store micros
-              const microsData = {
-                sugar: sugar && sugar > 0 ? sugar : undefined,
-                sodium: sodium && sodium > 0 ? sodium : undefined,
-                ...micros,
-              };
-
-              food.micros = Object.fromEntries(
-                Object.entries(microsData).filter(([_, value]) => value !== undefined)
-              );
+              food.micros = seed.micros;
 
               food.isFavorite = false;
               food.source = 'foundation';

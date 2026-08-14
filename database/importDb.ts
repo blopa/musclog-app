@@ -5,6 +5,7 @@ import { Platform } from 'react-native';
 import { ASYNC_STORAGE_EXCLUDED_KEYS, RESTORE_ORDER } from '@/constants/exportImport';
 import {
   CURRENT_ONBOARDING_VERSION,
+  CURRENT_USER_SYNC_ID,
   ONBOARDING_COMPLETED,
   ONBOARDING_VERSION,
 } from '@/constants/misc';
@@ -14,10 +15,10 @@ import { reloadApp } from '@/utils/app';
 import { decrypt } from '@/utils/encryption';
 import { handleError } from '@/utils/handleError';
 import { isMusclogGatewayAvailable } from '@/utils/musclogGatewayAvailability';
+import { parseDatabaseExportJson } from '@/utils/optical/gameBoyExport';
 import { normalizeTimezoneToOffset } from '@/utils/timezone';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
-import { assignRawColumns } from './assignRawColumns';
 import { database } from './database-instance';
 import { updateNutritionLogCountBaseline } from './dbDurability';
 import {
@@ -29,7 +30,9 @@ import {
   readPlainNutritionLogSnapshotRow,
   readSavedForLaterGroupNote,
 } from './encryptionHelpers';
+import { findImportedCurrentUserSyncId } from './importCurrentUser';
 import { createPreRestoreBackup } from './preMigrationBackup';
+import { prepareLocalCreateFromRaw } from './prepareLocalCreateFromRaw';
 import { validateExportDump, type ValidationResult } from './schemaToZod';
 import { ExerciseService, FoodPortionService, MuscleService, SettingsService } from './services';
 import { AppExerciseCatalogueService } from './services/AppExerciseCatalogueService';
@@ -143,7 +146,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     jsonString = await decrypt(jsonString, decryptionPhrase.trim());
   }
 
-  const parsed: unknown = JSON.parse(jsonString);
+  const parsed: unknown = parseDatabaseExportJson(jsonString);
 
   // Pre-v26 exports used RPE=0 and is_skipped as an implicit lifecycle. Normalize that
   // relationship-aware legacy shape once, before validation and persistence.
@@ -364,17 +367,14 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
         continue;
       }
 
-      createOperations.push(
-        collection.prepareCreate((rec: any) => {
-          rec._raw.id = oldId;
+      if (tableName === 'nutrition_checkins' && dbData._exportVersion < 2) {
+        raw.completed = false;
+      }
 
-          if (tableName === 'nutrition_checkins' && dbData._exportVersion < 2) {
-            rec.completed = false;
-          }
-
-          assignRawColumns(rec, raw);
-        })
-      );
+      // These rows have already passed schema-derived Zod validation and use physical database
+      // column names. Raw creation sanitizes against the collection schema, so model property
+      // aliases and computed getters are deliberately bypassed.
+      createOperations.push(prepareLocalCreateFromRaw(collection, raw));
     }
   }
 
@@ -469,12 +469,22 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
       await AsyncStorage.multiSet(pairs);
     }
   } else {
-    // If no async storage data was imported, set onboarding as completed
-    await AsyncStorage.multiSet([
+    // Compact and older exports have no app metadata. Mark their complete profile as
+    // onboarded and select the imported user instead of retaining a stale local user ID.
+    const importedCurrentUserSyncId = findImportedCurrentUserSyncId(dbData);
+    const fallbackPairs: [string, string][] = [
       [ONBOARDING_COMPLETED, 'true'],
       // TODO: we might not want to force it to be the current version
       [ONBOARDING_VERSION, CURRENT_ONBOARDING_VERSION],
-    ]);
+    ];
+
+    if (importedCurrentUserSyncId) {
+      fallbackPairs.push([CURRENT_USER_SYNC_ID, importedCurrentUserSyncId]);
+    } else {
+      await AsyncStorage.removeItem(CURRENT_USER_SYNC_ID);
+    }
+
+    await AsyncStorage.multiSet(fallbackPairs);
   }
 
   // On web, force Loki to persist to IndexedDB before triggering a page reload.

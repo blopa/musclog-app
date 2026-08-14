@@ -46,6 +46,26 @@ describe('resolveOpticalReceiveScreen', () => {
     });
   });
 
+  it('refuses a share payload when onboarding only accepts a database backup', () => {
+    expect(
+      resolve({
+        accept: 'database',
+        meta: meta({ payloadKind: OPTICAL_PAYLOAD_KIND_SHARE }),
+        phase: 'verified',
+      })
+    ).toEqual({ kind: 'refused', reason: 'share' });
+  });
+
+  it('offers a database restore when onboarding accepts database backups', () => {
+    const databaseMeta = meta();
+
+    expect(resolve({ accept: 'database', meta: databaseMeta, phase: 'verified' })).toMatchObject({
+      kind: 'database',
+      meta: databaseMeta,
+      tooNew: false,
+    });
+  });
+
   it('refuses an unrecognised payload kind from any entry point', () => {
     expect(resolve({ meta: meta({ payloadKind: 99 }), phase: 'verified' })).toEqual({
       kind: 'refused',

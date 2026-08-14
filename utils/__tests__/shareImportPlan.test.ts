@@ -1,5 +1,5 @@
 import { planShareImport } from '@/utils/share/shareImportPlan';
-import { MEAL_SHARE_SPEC } from '@/utils/share/shareKinds';
+import { MEAL_SHARE_SPEC, NUTRITION_DAY_SHARE_SPEC } from '@/utils/share/shareKinds';
 
 const records = () => ({
   food_food_portions: [
@@ -131,9 +131,9 @@ describe('planShareImport', () => {
   });
 
   it('strips columns the table does not declare, so a crafted row cannot reach the model', () => {
-    // Everything that survives planning is handed to `assignRawColumns`, which assigns each key
-    // onto a WatermelonDB model instance. A share arrives from an unknown phone over a camera, so
-    // a row carrying `collection` or `mark_as_deleted` would shadow the model's own members.
+    // Everything that survives planning is handed to WatermelonDB's raw-record sanitizer. The
+    // allowlist remains the app-level trust boundary: a remote phone may only control the columns
+    // this share kind deliberately exposes.
     const hostile = records();
     Object.assign(hostile.foods[0], {
       __proto__: { polluted: true },
@@ -169,5 +169,64 @@ describe('planShareImport', () => {
         resolutions: { foods: { 'food-reused': 'local-existing-food' } },
       })
     ).toThrow(/references missing food_id:absent-food/);
+  });
+
+  describe('a kind with no root row', () => {
+    const dayRecords = () => ({
+      food_portions: [],
+      food_food_portions: [],
+      foods: [{ calories: 100, id: 'food-1', name: 'Oats' }],
+      nutrition_logs: [
+        { amount: 80, date: 10, food_id: 'food-1', group_id: 'sender-meal', id: 'log-1' },
+        { amount: 40, date: 10, food_id: 'food-1', group_id: 'sender-meal', id: 'log-2' },
+        { amount: 20, date: 10, food_id: 'food-1', group_id: 'sender-other', id: 'log-3' },
+        { amount: 10, date: 10, food_id: 'food-1', id: 'log-4' },
+      ],
+    });
+
+    it('plans the whole graph and returns no root id', () => {
+      const plan = planShareImport(NUTRITION_DAY_SHARE_SPEC, dayRecords(), {
+        generateId: ids(),
+        nowMs: 1,
+      });
+
+      // A day of eating is not a record, so there is nothing to be "about" — and nothing to fail
+      // on either, which is what the rooted kinds do when their root is missing.
+      expect(plan.rootId).toBeUndefined();
+      expect(plan.creates.filter((item) => item.table === 'nutrition_logs')).toHaveLength(4);
+    });
+
+    it('mints one new group id per distinct incoming group', () => {
+      const plan = planShareImport(NUTRITION_DAY_SHARE_SPEC, dayRecords(), {
+        generateId: ids(),
+        nowMs: 1,
+      });
+      const groups = plan.creates
+        .filter((item) => item.table === 'nutrition_logs')
+        .map((item) => item.row.group_id);
+
+      // Entries logged as one meal stay one meal; a different group stays different; and no id the
+      // sender chose survives, since it may name a `meals` row that means something else here.
+      expect(groups[0]).toBe(groups[1]);
+      expect(groups[2]).not.toBe(groups[0]);
+      expect(groups[3]).toBeUndefined();
+      expect(groups).not.toContain('sender-meal');
+    });
+
+    it('never mints a group id that collides with a row id', () => {
+      const plan = planShareImport(NUTRITION_DAY_SHARE_SPEC, dayRecords(), {
+        generateId: ids(),
+        nowMs: 1,
+      });
+      const rowIds = plan.creates.map((item) => item.localId);
+      const groups = plan.creates
+        .filter((item) => item.table === 'nutrition_logs')
+        .map((item) => item.row.group_id)
+        .filter(Boolean);
+
+      for (const group of groups) {
+        expect(rowIds).not.toContain(group);
+      }
+    });
   });
 });

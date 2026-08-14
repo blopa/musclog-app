@@ -4,7 +4,7 @@ import path from 'node:path';
 const PROJECT_ROOT = path.resolve(__dirname, '../..');
 
 describe('EAS archive exclusions', () => {
-  it('keeps generated native artifacts and shallow Git metadata out of uploads', () => {
+  it('keeps generated and web-only inputs out of native uploads', () => {
     const patterns = new Set(
       fs
         .readFileSync(path.join(PROJECT_ROOT, '.easignore'), 'utf8')
@@ -23,7 +23,8 @@ describe('EAS archive exclusions', () => {
       '**/.gradle',
       '**/.cxx',
       '**/android/build',
-      'public/images/exercises',
+      'public',
+      'app/(website)/posts',
     ];
 
     for (const pattern of requiredPatterns) {
