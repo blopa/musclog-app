@@ -330,7 +330,8 @@
       "paginationLabel": "Blog pagination",
       "previousPage": "Previous page",
       "nextPage": "Next page",
-      "pageStatus": "Page {{current}} of {{total}}"
+      "pageStatus": "Page {{current}} of {{total}}",
+      "pageLabel": "Page {{page}}"
     },
     "gameboy": {
       "pageTitle": "Play Musclog on Game Boy",

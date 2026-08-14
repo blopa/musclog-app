@@ -1,7 +1,7 @@
 ---
 title: 'I trained my own model to get rep insights'
 date: '2026-07-14'
-category: 'development'
+category: 'machineLearning'
 description: 'A €20 sensor, a RandomForest, and Claude writing the ML code because I have no idea what spectral entropy means.'
 tags:
   [

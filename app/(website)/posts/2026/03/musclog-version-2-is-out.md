@@ -1,7 +1,7 @@
 ---
 title: 'Musclog version 2 is out!'
 date: '2026-03-19'
-category: 'development'
+category: 'productUpdates'
 description: 'Musclog started in 2024 as an app I built for myself. Version 2 is a full rewrite — new UI layer, one database instead of two, and a much clearer answer to the question of where your data lives.'
 tags: ['Release', 'React Native', 'Rewrite', 'Privacy', 'TypeScript']
 ---

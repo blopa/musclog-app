@@ -1,6 +1,7 @@
 import { ArrowRight, CalendarDays, ChevronLeft, ChevronRight, Folder } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
+import { getBlogPaginationItems } from '@/utils/blogPagination';
 import type { BlogPostPage } from '@/utils/blogPosts.server';
 
 import { GridPattern } from './WebsiteBackgrounds';
@@ -30,6 +31,7 @@ export function BlogPostListing({ currentPage, posts, totalPages }: BlogPostPage
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const previousPage = currentPage > 1 ? currentPage - 1 : null;
   const nextPage = currentPage < totalPages ? currentPage + 1 : null;
+  const paginationItems = getBlogPaginationItems(currentPage, totalPages);
 
   return (
     <main className="relative min-h-[70vh] overflow-hidden pb-24 pt-28">
@@ -158,9 +160,47 @@ export function BlogPostListing({ currentPage, posts, totalPages }: BlogPostPage
               </a>
             )}
 
-            <span className="text-sm font-semibold" style={{ color: BODY_TEXT_SOFT }}>
-              {t('pageStatus', { current: currentPage, total: totalPages })}
-            </span>
+            <div className="flex items-center justify-center gap-2">
+              <span className="sr-only">
+                {t('pageStatus', { current: currentPage, total: totalPages })}
+              </span>
+              {paginationItems.map((item) => {
+                if (typeof item !== 'number') {
+                  return (
+                    <span
+                      key={item}
+                      className="w-5 text-center text-sm"
+                      style={{ color: BODY_TEXT_SOFT }}
+                      aria-hidden="true"
+                    >
+                      …
+                    </span>
+                  );
+                }
+
+                return item === currentPage ? (
+                  <span
+                    key={item}
+                    aria-current="page"
+                    aria-label={t('pageLabel', { page: item })}
+                    className="inline-flex h-10 min-w-10 items-center justify-center rounded-full px-3 text-sm font-extrabold text-black"
+                    style={{ backgroundColor: BRAND_GREEN_BRIGHT }}
+                  >
+                    {item}
+                  </span>
+                ) : (
+                  <a
+                    key={item}
+                    href={pageHref(item)}
+                    aria-label={t('pageLabel', { page: item })}
+                    className="inline-flex h-10 min-w-10 items-center justify-center rounded-full border border-white/10 px-3 text-sm font-bold transition hover:border-emerald-300/50 hover:bg-emerald-400/[0.12] hover:text-emerald-200"
+                    style={{ color: BODY_TEXT }}
+                  >
+                    {item}
+                  </a>
+                );
+              })}
+            </div>
 
             {nextPage == null ? (
               <span className={disabledPaginationClass} style={{ color: BODY_TEXT_SOFT }}>
