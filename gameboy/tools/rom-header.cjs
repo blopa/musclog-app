@@ -41,6 +41,10 @@ function patchMusclogRomHeaderFile(romPath) {
   writeFileSync(romPath, rom);
 }
 
+/**
+ * CommonJS on purpose: `build-gb-rom.mjs` can import it and the Jest `node` project can
+ * require it, whereas that project's React Native preset does not transform `.mjs`.
+ */
 module.exports = {
   applyMusclogRomHeader,
   patchMusclogRomHeaderFile,

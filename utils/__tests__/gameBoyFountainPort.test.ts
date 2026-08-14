@@ -5,9 +5,28 @@ import ErrorCorrectionLevel from '@zxing/library/cjs/core/qrcode/decoder/ErrorCo
 import Version from '@zxing/library/cjs/core/qrcode/decoder/Version';
 
 import gameBoyOpticalProtocol from '@/data/gameBoyOpticalProtocol.json';
+import { OPTICAL_CONTAINER_HEADER_LEN } from '@/utils/optical/container';
 import { dlog, frameIndices, frameSeed, solitonCdf } from '@/utils/optical/fountain';
-import { splitmix32 } from '@/utils/optical/frameProtocol';
+import { HEADER_LEN, MAGIC0, MAGIC1, splitmix32 } from '@/utils/optical/frameProtocol';
 import { alphanumericCapacity } from '@/utils/optical/qrEncode';
+
+/**
+ * Reads a numeric `#define` out of a C header so the assertions below can compare the
+ * cartridge's constants against the app's own, rather than against a literal typed twice.
+ * A test that only checks the C file still says "92" cannot notice the day container.ts
+ * stops saying 92 — which is the exact incompatibility it exists to catch.
+ */
+function cMacroValue(source: string, name: string): number {
+  const match = source.match(new RegExp(String.raw`#define ${name} (\d+)u`));
+  if (!match) {
+    throw new Error(`Missing #define ${name}`);
+  }
+  return Number(match[1]);
+}
+
+function cHexByte(value: number): string {
+  return `0x${value.toString(16).toUpperCase().padStart(2, '0')}u`;
+}
 
 const Q12 = 4096;
 const Q24 = 16_777_216;
@@ -173,11 +192,15 @@ describe('Game Boy optical wire port', () => {
     expect(generatedProtocol).toContain(
       `#define OPTICAL_EXPORT_SCHEMA_VERSION ${gameBoyOpticalProtocol.gameBoyExportVersion}u`
     );
-    expect(exportHeader).toContain('#define OPTICAL_CONTAINER_HEADER_LEN 92u');
-    expect(exportHeader).toContain('#define OPTICAL_FOUNTAIN_BLOCK_LEN 292u');
-    expect(exportHeader).toContain('#define OPTICAL_SRAM_CACHE_BLOCKS 12u');
-    expect(fountainSource).toContain('frame[0] = 0xD1u;');
-    expect(fountainSource).toContain('frame[1] = 0x0Cu;');
+    const blockLen = cMacroValue(exportHeader, 'OPTICAL_FOUNTAIN_BLOCK_LEN');
+    const cacheBlocks = cMacroValue(exportHeader, 'OPTICAL_SRAM_CACHE_BLOCKS');
+    expect(cMacroValue(exportHeader, 'OPTICAL_CONTAINER_HEADER_LEN')).toBe(
+      OPTICAL_CONTAINER_HEADER_LEN
+    );
+    expect(blockLen).toBe(292);
+    expect(cacheBlocks).toBe(12);
+    expect(fountainSource).toContain(`frame[0] = ${cHexByte(MAGIC0)};`);
+    expect(fountainSource).toContain(`frame[1] = ${cHexByte(MAGIC1)};`);
     expect(fountainSource).toContain('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ$%*+-./:');
     expect(qrHeader).toContain('#define QRVERSION 11');
     expect(qrHeader).toContain('#define QR_MAX_ALPHANUMERIC_CHARS 468u');
@@ -206,12 +229,12 @@ describe('Game Boy optical wire port', () => {
     expect(version.getTotalCodewords() - ecBlocks.getTotalECCodewords()).toBe(324);
     expect(324 * 8 - (4 + 11 + (468 / 2) * 11)).toBe(3);
     expect(alphanumericCapacity(11, 'L')).toBe(468);
-    expect((20 + 292) * 1.5).toBe(468);
+    expect((HEADER_LEN + blockLen) * 1.5).toBe(468);
     expect(0x0b00 + 61 * 8).toBeLessThanOrEqual(0x0d00);
     expect(0x0d00 + 61 * 8).toBeLessThanOrEqual(0x0f00);
-    expect(0x0f00 + 20 + 292).toBeLessThanOrEqual(0x1040);
+    expect(0x0f00 + HEADER_LEN + blockLen).toBeLessThanOrEqual(0x1040);
     expect(0x1040 + 468).toBeLessThanOrEqual(0x1250);
-    expect(0x1250 + 12 * 292).toBe(0x2000);
+    expect(0x1250 + cacheBlocks * blockLen).toBe(0x2000);
   });
 
   it('retains the deterministic log approximation used by the frozen receiver', () => {

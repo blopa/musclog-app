@@ -1,9 +1,11 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const { applyMusclogRomHeader } = require('../../gameboy/tools/rom-header.cjs') as {
-  applyMusclogRomHeader: (rom: Buffer) => Buffer;
-};
+// `gameboy/` is outside the app's tsconfig, so this is a plain require rather than an
+// import with a hand-written type assertion that nothing would ever check against the
+// real signature.
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { applyMusclogRomHeader } = require('../../gameboy/tools/rom-header.cjs');
 
 const HEADER_CHECKSUM_OFFSET = 0x14d;
 const GLOBAL_CHECKSUM_OFFSET = 0x14e;

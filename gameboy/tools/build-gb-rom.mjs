@@ -14,9 +14,7 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { ensureGbdk } from './fetch-gbdk.mjs';
-import romHeader from './rom-header.cjs';
-
-const { patchMusclogRomHeaderFile } = romHeader;
+import { patchMusclogRomHeaderFile } from './rom-header.cjs';
 
 const repoRoot = join(fileURLToPath(import.meta.url), '..', '..', '..');
 const gameboyDir = join(repoRoot, 'gameboy');

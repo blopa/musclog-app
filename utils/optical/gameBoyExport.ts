@@ -3,6 +3,10 @@ import { z } from 'zod';
 import { INCLUDE_FIBER_IN_CARBS_SETTING_TYPE, UNITS_SETTING_TYPE } from '@/constants/settings';
 import gameBoyOpticalProtocol from '@/data/gameBoyOpticalProtocol.json';
 import { localDayStartMs } from '@/utils/calendarDate';
+import {
+  catalogueExerciseIdForCartridgeIndex,
+  unmappedGameBoyExerciseId,
+} from '@/utils/optical/gameBoyExerciseMapping';
 import { getTimezoneAt } from '@/utils/timezone';
 import { generateUUID } from '@/utils/uuid';
 
@@ -162,6 +166,10 @@ function inferredDateOfBirthMs(todayDay: number, age: number): number {
   return localDayStartMs(new Date(year, month, date, 12));
 }
 
+function missingFoodMessage(foodIndex: number): string {
+  return `Food log references missing food ${foodIndex}`;
+}
+
 function assertUniqueIndexes(
   rows: readonly (readonly [number, ...unknown[]])[],
   label: string
@@ -198,7 +206,7 @@ export function parseGameBoyExport(value: unknown): CompactGameBoyExport {
   const foodIds = new Set(result.data.foods.map(([index]) => index));
   for (const [, foodIndex] of result.data.foodLogs) {
     if (!foodIds.has(foodIndex)) {
-      throw new GameBoyExportError('malformed', `Food log references missing food ${foodIndex}`);
+      throw new GameBoyExportError('malformed', missingFoodMessage(foodIndex));
     }
   }
 
@@ -245,7 +253,11 @@ export function gameBoyExportToDatabaseDump(
 
   const foodByIndex = new Map(compact.foods.map((food) => [food[0], food]));
   const nutritionLogs = compact.foodLogs.map(([day, foodIndex, grams], index) => {
-    const food = foodByIndex.get(foodIndex) as (typeof compact.foods)[number];
+    const food = foodByIndex.get(foodIndex);
+    if (!food) {
+      throw new GameBoyExportError('malformed', missingFoodMessage(foodIndex));
+    }
+
     const consumedDay = cartridgeDay(day);
     const consumedAt = consumedDay.eventTimestamp;
     return {
@@ -267,9 +279,26 @@ export function gameBoyExportToDatabaseDump(
     };
   });
 
-  const exercises = compact.exercises.map(
-    ([index, name, muscle, equipment, mechanic, multiplierCenti]) => ({
-      id: `gb-e-${index}`,
+  // A cartridge exercise is an index into the frozen Game Boy table, so it resolves to the
+  // bundled catalogue row the app already owns — keeping the user's localized name, photos
+  // and target muscles instead of a stub rebuilt from the cartridge's 64-char uppercase
+  // label. `AppExerciseCatalogueService.sync` reconciles those rows right after the restore
+  // populates the database, so the dump carries only the identity, never the content.
+  // Anything the frozen list does not cover comes from a newer cartridge and is imported as
+  // a plain user exercise from the tuple it sent.
+  const exerciseIdByIndex = new Map<number, string>();
+  const exercises: Record<string, unknown>[] = [];
+  for (const [index, name, muscle, equipment, mechanic, multiplierCenti] of compact.exercises) {
+    const catalogueId = catalogueExerciseIdForCartridgeIndex(index);
+    if (catalogueId) {
+      exerciseIdByIndex.set(index, catalogueId);
+      continue;
+    }
+
+    const importedId = unmappedGameBoyExerciseId(index);
+    exerciseIdByIndex.set(index, importedId);
+    exercises.push({
+      id: importedId,
       name,
       description: 'Imported from Musclog GB',
       muscle_group: MUSCLE_GROUPS[muscle],
@@ -279,8 +308,8 @@ export function gameBoyExportToDatabaseDump(
       load_multiplier: multiplierCenti / 100,
       created_at: now,
       updated_at: now,
-    })
-  );
+    });
+  }
 
   const workoutLogs: Record<string, unknown>[] = [];
   const workoutLogExercises: Record<string, unknown>[] = [];
@@ -314,7 +343,8 @@ export function gameBoyExportToDatabaseDump(
         workoutLogExercises.push({
           id: `gb-x-${workoutIndex}-${group}`,
           workout_log_id: workoutId,
-          exercise_id: `gb-e-${exerciseIndex}`,
+          // parseGameBoyExport already rejected a workout referencing an absent tuple.
+          exercise_id: exerciseIdByIndex.get(exerciseIndex),
           exercise_order: group,
           created_at: timestamp,
           updated_at: timestamp,
@@ -438,7 +468,7 @@ export function gameBoyExportToDatabaseDump(
 }
 
 /** Leave regular exports untouched; reject marked-but-unknown cartridge exports before a wipe. */
-export function expandGameBoyExportIfNeeded(value: unknown): unknown {
+function expandGameBoyExportIfNeeded(value: unknown): unknown {
   if (typeof value !== 'object' || value === null || !Object.hasOwn(value, '_gameBoyExport')) {
     return value;
   }

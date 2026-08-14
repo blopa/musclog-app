@@ -141,8 +141,6 @@ export default function ExerciseGoalCreationModal({
   } = useExercises({
     visible: step === 'exercise',
     enableReactivity: true,
-    sortBy: 'name',
-    sortOrder: 'asc',
     searchTerm: searchQuery.trim() || undefined,
     initialLimit: 20,
     batchSize: 20,

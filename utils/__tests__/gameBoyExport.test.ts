@@ -2,12 +2,12 @@ import { validateExportDump } from '@/database/schemaToZod';
 import gameBoyOpticalProtocol from '@/data/gameBoyOpticalProtocol.json';
 import { getTimezoneAt } from '@/utils/timezone';
 import {
-  expandGameBoyExportIfNeeded,
   GameBoyExportError,
   gameBoyExportToDatabaseDump,
   parseDatabaseExportJson,
   parseGameBoyExport,
 } from '@/utils/optical/gameBoyExport';
+import { GAME_BOY_EXERCISE_SLUGS } from '@/utils/optical/gameBoyExerciseMapping';
 
 const compactFixture = () => ({
   _exportVersion: 26,
@@ -124,21 +124,10 @@ describe('Musclog GB compact database export', () => {
       expect.objectContaining({ food_id: 'gb-f-32770', amount: 80 }),
     ]);
 
+    // Both cartridge indices sit inside the frozen table, so they resolve to bundled
+    // catalogue rows and the dump creates no exercises of its own.
     expect(dump.workout_log_exercises).toHaveLength(2);
-    expect(dump.exercises).toEqual([
-      expect.objectContaining({
-        name: 'BENCH PRESS',
-        muscle_group: 'chest',
-        equipment_type: 'barbell',
-        mechanic_type: 'compound',
-      }),
-      expect.objectContaining({
-        name: 'CABLE FLY',
-        muscle_group: 'chest',
-        equipment_type: 'cable',
-        mechanic_type: 'isolation',
-      }),
-    ]);
+    expect(dump.exercises).toEqual([]);
     expect(dump.workout_log_sets).toEqual([
       expect.objectContaining({ log_exercise_id: 'gb-x-0-0', completion_status: 'performed' }),
       expect.objectContaining({ log_exercise_id: 'gb-x-0-0', completion_status: 'performed' }),
@@ -204,12 +193,15 @@ describe('Musclog GB compact database export', () => {
     );
   });
 
-  it('decodes every exercise enum from the shared wire contract', () => {
+  // The enums only decode on the fallback path: an index inside the frozen table resolves to
+  // a catalogue row that already carries these fields, so the cartridge's copy is ignored.
+  it('decodes every exercise enum from the shared wire contract for unmapped exercises', () => {
+    const unmapped = GAME_BOY_EXERCISE_SLUGS.length;
     const fixture = compactFixture();
     fixture.workouts = [];
     fixture.exercises = [
       ...gameBoyOpticalProtocol.exerciseEnums.muscleGroups.map((value, index) => [
-        index,
+        unmapped + index,
         `MUSCLE ${value}`,
         index,
         0,
@@ -217,7 +209,7 @@ describe('Musclog GB compact database export', () => {
         100,
       ]),
       ...gameBoyOpticalProtocol.exerciseEnums.equipmentTypes.map((value, index) => [
-        32 + index,
+        unmapped + 32 + index,
         `EQUIPMENT ${value}`,
         0,
         index,
@@ -225,7 +217,7 @@ describe('Musclog GB compact database export', () => {
         100,
       ]),
       ...gameBoyOpticalProtocol.exerciseEnums.mechanicTypes.map((value, index) => [
-        64 + index,
+        unmapped + 64 + index,
         `MECHANIC ${value}`,
         0,
         0,
@@ -300,6 +292,41 @@ describe('Musclog GB compact database export', () => {
     );
 
     const ordinary = { _exportVersion: 26, foods: [] };
-    expect(expandGameBoyExportIfNeeded(ordinary)).toBe(ordinary);
+    expect(parseDatabaseExportJson(JSON.stringify(ordinary))).toEqual(ordinary);
+  });
+
+  it('maps cartridge exercises onto the bundled catalogue instead of cloning them', () => {
+    const dump = gameBoyExportToDatabaseDump(parseGameBoyExport(compactFixture()));
+
+    // Index 3 and 9 in the frozen cartridge table; the app owns their real rows, so the
+    // dump must reference them rather than re-create "BENCH PRESS" as a user exercise.
+    const benchId = `fx-${GAME_BOY_EXERCISE_SLUGS[3]}`;
+    const flyId = `fx-${GAME_BOY_EXERCISE_SLUGS[9]}`;
+    expect(dump.exercises).toEqual([]);
+    expect(dump.workout_log_exercises).toEqual([
+      expect.objectContaining({ exercise_id: benchId, exercise_order: 0 }),
+      expect.objectContaining({ exercise_id: flyId, exercise_order: 1 }),
+    ]);
+  });
+
+  it('imports an exercise a newer cartridge added as a plain user exercise', () => {
+    const fixture = compactFixture();
+    const unknownIndex = GAME_BOY_EXERCISE_SLUGS.length;
+    fixture.exercises = [[unknownIndex, 'FUTURE LIFT', 3, 0, 0, 100]];
+    fixture.workouts = [[9698, 4200, [[unknownIndex, 8, 800]]]];
+
+    const dump = gameBoyExportToDatabaseDump(parseGameBoyExport(fixture));
+
+    expect(dump.exercises).toEqual([
+      expect.objectContaining({
+        id: `gb-e-${unknownIndex}`,
+        name: 'FUTURE LIFT',
+        source: 'user',
+      }),
+    ]);
+    expect(dump.workout_log_exercises).toEqual([
+      expect.objectContaining({ exercise_id: `gb-e-${unknownIndex}` }),
+    ]);
+    expect(validateExportDump(dump).success).toBe(true);
   });
 });

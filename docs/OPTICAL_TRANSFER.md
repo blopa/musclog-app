@@ -99,12 +99,33 @@ arrays contain:
 - `exercises`: only exercises referenced by saved workouts; and
 - `workouts`: oldest-first workout summaries and all performed sets.
 
-`data/gameBoyOpticalProtocol.json` is the single source for both version values and for the compact
-exercise enum ordinals. The Game Boy generator validates every selected exercise against that
-contract and emits `gameboy/src/generated/optical_protocol.generated.h`; the TypeScript receiver
-reads the same JSON directly. Existing enum entries must never be reordered or derived from the
-current popular subset. Additions are appended deliberately before regenerating with
-`npm run gb:gen-exercises`.
+`data/gameBoyOpticalProtocol.json` is the single source for both version values, the compact
+exercise enum ordinals, and the frozen `exerciseSlugs` table order. The Game Boy generator
+validates every selected exercise against that contract and emits
+`gameboy/src/generated/optical_protocol.generated.h`; the TypeScript receiver reads the same JSON
+directly. Existing entries must never be reordered or derived from the current popular subset.
+Additions are appended deliberately before regenerating with `npm run gb:gen-exercises`.
+
+### Exercise identity across the two wires
+
+`exerciseSlugs` is frozen because a row's position is an identifier in two places at once: a
+cartridge `.sav` stores a logged set's exercise as that 0-based index, and the optical export
+sends the same index. It is deliberately not the catalogue's `exerciseIndex`, which is
+alphabetical display order over all 873 entries and shifts whenever free-exercise-db gains a row.
+
+`utils/optical/gameBoyExerciseMapping.ts` resolves the index back to `appExerciseId(slug)`
+(`fx-<slug>`), so an imported Game Boy workout points at the bundled catalogue row the receiving
+app already owns — keeping the localized name, exercise photos and target muscles instead of a
+stub rebuilt from the cartridge's 64-character uppercase label. The dump therefore carries only
+exercise identity and creates no `exercises` rows for mapped indices; `AppExerciseCatalogueService.sync`
+runs immediately after the restore populates the database and owns their content.
+
+An index past the end of the frozen list means the sending cartridge is newer than the receiving
+build. That is the one case where the receiver falls back to creating a plain user exercise from
+the tuple the cartridge sent, so a newer ROM still imports rather than failing the transfer.
+`selectPopularExerciseRows` in `gameboy/tools/gen-exercises.mjs` diffs the frozen list against the
+catalogue's `isPopular` flag in both directions, so re-running the popularity policy without
+appending to the contract fails the build instead of silently renumbering the table.
 
 `utils/optical/gameBoyExport.ts` rejects unknown schema versions, duplicate indexes, and missing
 food/exercise references before it maps the tuples into a regular export dump. `database/importDb.ts`
@@ -565,7 +586,8 @@ clamp does not — or the sender generates live forever, which is slower but alw
 | `utils/optical/noSignal.ts`                          | when to show the "nothing is decoding" hint             |
 | `utils/optical/bench.ts`                             | device calibration and the Phase 0 measurements         |
 | `utils/optical/gameBoyExport.ts`                     | strict compact-GB parser and normal-export expansion    |
-| `data/gameBoyOpticalProtocol.json`                   | GB versions and immutable exercise wire-enum ordinals   |
+| `utils/optical/gameBoyExerciseMapping.ts`            | cartridge exercise index → bundled catalogue row id     |
+| `data/gameBoyOpticalProtocol.json`                   | GB versions, wire-enum ordinals, frozen exercise slugs  |
 | `gameboy/src/generated/optical_protocol.generated.h` | C version constants generated from the shared contract  |
 | `utils/share/shareEnvelope.ts`                       | bounded, versioned share envelope parser                |
 | `utils/share/shareKinds.ts`                          | share-kind table/FK/dedupe registry                     |

@@ -21,18 +21,35 @@ describe('Game Boy exercise catalogue', () => {
       'utf8'
     );
     const popularExercises = exercisesData.filter(({ isPopular }) => isPopular === true);
+    const frozenSlugs = gameBoyOpticalProtocol.exerciseSlugs;
+    const nameBySlug = new Map(
+      exercisesData.map(({ __freeExerciseDbId, __exerciseName }) => [
+        __freeExerciseDbId,
+        __exerciseName,
+      ])
+    );
     const exerciseTable = generatedSource.slice(
       generatedSource.indexOf('const exercise_t exercises')
     );
-    const generatedRows = [...exerciseTable.matchAll(/\{\s*"([^"]+)"[\s\S]*?\/\* (\d+) \*\//g)];
+    const generatedRows = [
+      ...exerciseTable.matchAll(/\{\s*"([^"]+)"[\s\S]*?\/\* (\d+) (\S+) \*\//g),
+    ];
 
-    expect(popularExercises).toHaveLength(100);
-    expect(generatedHeader).toContain('#define EXERCISE_COUNT 100u');
-    expect(generatedRows.map((match) => match[1])).toEqual(
-      popularExercises.map(({ __exerciseName }) => __exerciseName)
+    // The frozen list is the ROM table's order, and `isPopular` only decides membership.
+    // Both directions matter: an unfrozen popular row would append itself at an arbitrary
+    // position, and a frozen slug that lost the flag would shift every row after it —
+    // silently re-pointing existing .sav files and past optical exports.
+    expect([...frozenSlugs].sort()).toEqual(
+      popularExercises.map(({ __freeExerciseDbId }) => __freeExerciseDbId).sort()
     );
+    expect(new Set(frozenSlugs).size).toBe(frozenSlugs.length);
+    expect(generatedHeader).toContain(`#define EXERCISE_COUNT ${frozenSlugs.length}u`);
+    expect(generatedRows.map((match) => match[3])).toEqual([...frozenSlugs]);
     expect(generatedRows.map((match) => Number(match[2]))).toEqual(
-      popularExercises.map(({ exerciseIndex }) => exerciseIndex)
+      frozenSlugs.map((_slug, index) => index)
+    );
+    expect(generatedRows.map((match) => match[1])).toEqual(
+      frozenSlugs.map((slug) => nameBySlug.get(slug))
     );
 
     const enumSuffix = (value: string) => value.toUpperCase().replaceAll(/[^A-Z0-9]+/g, '_');

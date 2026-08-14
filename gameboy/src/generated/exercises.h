@@ -39,8 +39,9 @@ typedef enum {
 
 #define EXERCISE_MECHANIC_TYPE_COUNT 3u
 
-/* One bundled exercise. Popular rows retain the source exerciseIndex order;
- * the Game Boy exercise id is the zero-based array index + 1.
+/* One bundled exercise. The table order is frozen by exerciseSlugs in
+ * data/gameBoyOpticalProtocol.json: a row's zero-based index is what .sav files store for a
+ * logged set and what an optical export sends for the app to map back to a slug.
  * load_multiplier_centi stores loadMultiplier * 100 (1.45 -> 145). */
 typedef struct {
     const char *name;

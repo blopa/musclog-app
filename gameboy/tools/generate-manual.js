@@ -18,6 +18,25 @@ const OUTPUT_FILE = path.join(__dirname, '../../musclog-manual.pdf');
 const PUBLIC_OUTPUT_FILE = path.join(__dirname, '../../public/images/musclog-manual.pdf');
 const SCREENSHOT_DIR = path.join(__dirname, '../screenshots');
 const CARTRIDGE_LABEL_IMAGE = path.join(__dirname, '../assets/gameboy-cover.png');
+const GENERATED_EXERCISES_HEADER = path.join(__dirname, '../src/generated/exercises.h');
+
+/**
+ * Reads a count out of the generated exercise header rather than restating it in prose.
+ * The booklet is printed and shipped, so a hand-typed figure here is a number the reader
+ * can check against the cartridge and find wrong — as "247 exercises across 9 muscle
+ * groups" was for a ROM carrying 100 across 8.
+ */
+function generatedExerciseCount(macro) {
+  const header = fs.readFileSync(GENERATED_EXERCISES_HEADER, 'utf8');
+  const match = header.match(new RegExp(`#define ${macro} (\\d+)u`));
+  if (!match) {
+    throw new Error(`Could not read ${macro} from ${GENERATED_EXERCISES_HEADER}`);
+  }
+  return Number(match[1]);
+}
+
+const EXERCISE_COUNT = generatedExerciseCount('EXERCISE_COUNT');
+const MUSCLE_GROUP_COUNT = generatedExerciseCount('EXERCISE_MUSCLE_GROUP_COUNT');
 
 // Page geometry (landscape: wider than tall)
 const PAGE_WIDTH = 324; // 4.5"
@@ -292,8 +311,8 @@ const featureChapters = [
     heading: 'FREE WORKOUTS',
     body:
       'Start a free session, filter exercises by muscle group, and lift. The game ' +
-      'suggests starting weights; you edit sets, weights, and reps as you go. 247 ' +
-      'exercises across 9 muscle groups are built in. Finished sessions are saved.',
+      `suggests starting weights; you edit sets, weights, and reps as you go. ${EXERCISE_COUNT} ` +
+      `exercises across ${MUSCLE_GROUP_COUNT} muscle groups are built in. Finished sessions are saved.`,
   },
   {
     tocName: 'REST TIMER',

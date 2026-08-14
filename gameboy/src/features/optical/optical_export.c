@@ -71,13 +71,6 @@ static uint32_t fnv_byte(uint32_t hash, uint8_t value) {
     return hash + (hash << 1u) + (hash << 4u) + (hash << 7u) + (hash << 8u) + (hash << 24u);
 }
 
-static void sink_resume_cache(const JsonSink *sink) {
-    if (sink->mode == SINK_CACHE) {
-        ENABLE_RAM;
-        SWITCH_RAM(QR_SRAM_BANK);
-    }
-}
-
 static void sink_byte(JsonSink *sink, uint8_t value) {
     if (sink->mode == SINK_COUNT_SHA) {
         optical_sha256_byte(sink->sha, value);
@@ -85,6 +78,14 @@ static void sink_byte(JsonSink *sink, uint8_t value) {
         sink->fnv = fnv_byte(sink->fnv, value);
     } else if (sink->mode == SINK_CACHE) {
         if (sink->pos < OPTICAL_SRAM_CACHE_LEN) {
+            /* The renderers read the food log, metrics and workout log straight out of
+             * their own SRAM banks, so the selected bank is not ours to assume. Owning it
+             * here keeps that a local concern: a renderer can read whatever it likes
+             * between two emitted bytes and cannot silently divert the cache into another
+             * bank (dropping it when RAM is disabled, or overwriting the workout log when
+             * bank 2 happens to be selected). */
+            ENABLE_RAM;
+            SWITCH_RAM(QR_SRAM_BANK);
             _SRAM[OPTICAL_SRAM_CACHE_OFFSET + (uint16_t)sink->pos] = value;
         }
     } else {
@@ -274,7 +275,6 @@ static void render_foods(JsonSink *sink) {
     for (slot = 0u; slot != MAX_CUSTOM_FOODS; ++slot) {
         if (!bitmap_get(custom_live, slot) && !bitmap_get(custom_referenced, slot)) continue;
         custom_foods_load(slot, &food);
-        sink_resume_cache(sink);
         render_food_tuple(sink, (uint16_t)(CUSTOM_FOOD_BASE + slot), &food, &first);
     }
     sink_byte(sink, ']');
@@ -293,14 +293,14 @@ static void render_food_logs(JsonSink *sink) {
     SWITCH_RAM(FOODLOG_SRAM_BANK);
     count = sram_rd16(_SRAM, FOODLOG_OFF_COUNT);
     if (count > FOODLOG_CAPACITY) count = 0u;
-    sink_resume_cache(sink);
     for (i = 0u; i != count; ++i) {
+        /* sink_byte may have selected the QR bank to cache the previous tuple. */
+        ENABLE_RAM;
         SWITCH_RAM(FOODLOG_SRAM_BANK);
         off = foodlog_entry_offset(i);
         day = sram_rd16(_SRAM, off);
         food_index = sram_rd16(_SRAM, (uint16_t)(off + 2u));
         grams = sram_rd16(_SRAM, (uint16_t)(off + 4u));
-        sink_resume_cache(sink);
         tuple_separator(sink, &first);
         sink_byte(sink, '[');
         json_uint32(sink, day);
@@ -322,11 +322,9 @@ static void render_weights(JsonSink *sink) {
     uint16_t weight;
     uint8_t first = 1u;
     uint8_t valid;
-    sink_resume_cache(sink);
     json_text(sink, ",\"weights\":[");
     for (i = 0u; i != count; ++i) {
         valid = metrics_get(i, &day, &weight);
-        sink_resume_cache(sink);
         if (!valid) continue;
         tuple_separator(sink, &first);
         sink_byte(sink, '[');
@@ -370,15 +368,14 @@ static void render_workouts(JsonSink *sink) {
     uint8_t newest_index;
     uint8_t set;
     uint8_t first_workout = 1u;
+    uint8_t first_set;
     WorkoutLogSummary summary;
     WorkoutLogSet workout_set;
     uint8_t valid;
-    sink_resume_cache(sink);
     json_text(sink, ",\"workouts\":[");
     for (ordinal = 0u; ordinal != count; ++ordinal) {
         newest_index = (uint8_t)(count - 1u - ordinal); /* oldest first */
         valid = workoutlog_get_summary(newest_index, &summary);
-        sink_resume_cache(sink);
         if (!valid) continue;
         tuple_separator(sink, &first_workout);
         sink_byte(sink, '[');
@@ -386,11 +383,14 @@ static void render_workouts(JsonSink *sink) {
         sink_byte(sink, ',');
         json_uint32(sink, summary.volume_kg);
         json_text(sink, ",[");
+        first_set = 1u;
         for (set = 0u; set != summary.set_count; ++set) {
             valid = workoutlog_get_set(newest_index, set, &workout_set);
-            sink_resume_cache(sink);
             if (!valid) continue;
-            if (set != 0u) sink_byte(sink, ',');
+            /* Same first-element flag as every other list here: keying the comma off the
+             * loop index instead would emit "[,[...]]" whenever a set is skipped, and the
+             * receiver only discovers that after reassembling the whole transfer. */
+            tuple_separator(sink, &first_set);
             sink_byte(sink, '[');
             json_uint32(sink, workout_set.exercise_idx);
             sink_byte(sink, ',');
@@ -438,8 +438,6 @@ static void cache_export(void) {
 
     sink.mode = SINK_CACHE;
     sink.pos = 0ul;
-    ENABLE_RAM;
-    SWITCH_RAM(QR_SRAM_BANK);
     for (i = 0u; i != OPTICAL_CONTAINER_HEADER_LEN; ++i)
         sink_byte(&sink, container_byte(i));
     render_json(&sink);
