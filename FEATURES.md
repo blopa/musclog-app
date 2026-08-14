@@ -188,6 +188,7 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 - Game Boy Start Workout prototype for free sessions: pick an exercise, filter by muscle group with left/right arrows, edit suggested sets/weight/reps, run active set screens, adjust set targets, use a 60-second rest timer, save completed workouts to cartridge SRAM, and return to exercise selection for the next movement
 - Game Boy exercise catalogue: the 100 exercises marked popular in the app's current free-exercise-db catalogue, stored under compact cartridge-local IDs in a frozen order, so an optically transferred workout maps straight back onto the matching app exercise with its localized name and photos
 - Game Boy Progress dashboard: a paged charts screen over a rolling 7-day or 30-day window (toggled with up/down), with a summary page (distinct muscle groups hit, workout count, days logged, average daily calories/protein/carbs/fat) plus per-day bar charts for calories, protein, digestible carbs, fat, and a body-weight trend (left/right cycles pages)
+- Game Boy day sharing: on the nutrition screen, SELECT → Share Day sends just the day on screen as a non-destructive share the app merges into its own diary — every entry filed on the same calendar date at midday (the cartridge records no times), each food matched to the app's own catalogue entry by its bundled index rather than by its 16-character truncated name, so a shared day reuses the foods you already have instead of duplicating them, and the receiving phone asks whether to add to that day or replace it
 - Game Boy optical export: Settings → Share Data sends the entire cartridge database as an optimized, screen-filling fountain-coded QR stream. The Android, iOS, or web app verifies it, expands its compact versioned JSON schema into a complete app profile (including safe defaults for app-only identity fields), reconnects every logged set to the matching bundled exercise so imported workouts keep their localized names, photos and target muscles, previews it as a database restore, and replaces the receiving database only after confirmation; pressing B asks whether to continue or stop, and the Game Boy remains sender-only with no Game Boy-to-Game Boy transfer
 - Home Select menu with a scrollable Settings screen to re-edit every profile field (units, sex, age, height, weight, activity, experience, focus, weight goal) and all macro targets, a whole-database Share Data action, an About screen linking to the full app at https://musclog.app/, and a confirmation-gated Reset Data option
 - Game Boy sound: a UI blip on every selection/confirm/back press across the app, plus a soundtrack that plays on every Game Boy screen after the splash while enabled, mixed live from the four APU channels (pulse lead, wave bass, noise drums). Both .mid assets are reduced to Game Boy sound data at build time (`npm run gb:gen-music`); the soundtrack converter auto-detects a repeating section to loop. A title-screen Options menu toggles SFX and the soundtrack independently, persisted to battery-backed SRAM so the choice survives resets
@@ -206,18 +207,21 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
 - Fully offline — core features work without internet
 - Full data export (encrypted JSON or Excel) and import for portability
 - **Optical Transfer** — move everything, an individual food, a saved meal, a named meal from the
-  nutrition diary, or a whole breakfast/lunch/dinner section to another device with nothing but the
-  two screens: one displays an animated stream of QR codes, the other reads them with its camera.
+  nutrition diary, a whole breakfast/lunch/dinner section, or an entire day of eating to another
+  device with nothing but the two screens: one displays an animated stream of QR codes, the other
+  reads them with its camera.
   Whole-profile transfers remain optionally passphrase-protected and replace only after verification;
-  food and meal shares preview and save non-destructively into the existing database, matching each
+  food, meal and day shares preview and save non-destructively into the existing database, matching each
   ingredient and serving size against what the receiving phone already has so a received meal reuses
-  your existing foods and portions rather than duplicating them. Send from the food or meal's ⋮ menu
-  and receive from My Meals → +, or receive either payload from
-  Settings. Point a food barcode scanner at a sending phone by mistake and it recognises the stream
+  your existing foods and portions rather than duplicating them. Send a food or meal from its ⋮ menu,
+  a day from the daily summary's ⋮ menu, and receive from My Meals → +, or receive any payload from
+  Settings. A received day lands on the same calendar date it was logged on, with each entry's
+  amount, meal and time of day intact, and you choose whether to add it to that day or replace what
+  is already there. Point a food barcode scanner at a sending phone by mistake and it recognises the stream
   instead of failing a product lookup, offering to hand you straight to the optical reader. The
   receiving screen shows live percentage, transferred KB, KB/s throughput, and remaining time.
   Android, iOS, and web can send or receive in any combination; Musclog GB can send its whole
-  cartridge database to any of those receivers. No internet, cable, or account is required
+  cartridge database, or one day of its food log, to any of those receivers. No internet, cable, or account is required
   (see [docs/OPTICAL_TRANSFER.md](docs/OPTICAL_TRANSFER.md))
 - Automatic local backups before any restore or destructive exercise-catalogue cutover, browsable and restorable from settings
 - Complete database reset option

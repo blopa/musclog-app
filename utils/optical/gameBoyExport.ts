@@ -65,8 +65,15 @@ const profileSchema = z
   })
   .strict();
 
-// [global food index, name, kcal, protein dg, fat dg, total-carbs dg, fiber dg]
-const foodSchema = z.tuple([
+/**
+ * [global food index, name, kcal, protein dg, fat dg, total-carbs dg, fiber dg]
+ *
+ * Exported because `render_food_tuple` in `gameboy/src/features/optical/optical_export.c` emits
+ * this exact tuple for BOTH cartridge payloads — the whole-database export and `SHARE DAY` — so
+ * `utils/optical/gameBoyDayShare.ts` must read the same shape rather than its own copy of it.
+ * Names arrive truncated to `FF_NAME_VISIBLE` (16) characters for a bundled food.
+ */
+export const cartridgeFoodTupleSchema = z.tuple([
   uint16Schema,
   z.string().min(1).max(32),
   uint16Schema,
@@ -78,6 +85,9 @@ const foodSchema = z.tuple([
 
 // [day since 2000-01-01, global food index, grams]
 const foodLogSchema = z.tuple([daySchema, uint16Schema, uint16Schema]);
+
+/** Days since 2000-01-01, the cartridge's only notion of a date. */
+export const cartridgeDaySchema = daySchema;
 
 // [day since 2000-01-01, weight in kg tenths]
 const weightSchema = z.tuple([daySchema, uint16Schema]);
@@ -103,7 +113,7 @@ const compactGameBoyExportSchema = z
     _exportVersion: z.literal(GAME_BOY_EXPORT_DATABASE_VERSION),
     _gameBoyExport: z.literal(GAME_BOY_EXPORT_VERSION),
     profile: profileSchema,
-    foods: z.array(foodSchema).max(2048),
+    foods: z.array(cartridgeFoodTupleSchema).max(2048),
     foodLogs: z.array(foodLogSchema).max(2048),
     weights: z.array(weightSchema).max(2048),
     exercises: z.array(exerciseSchema).max(255),
@@ -135,7 +145,7 @@ const DEFAULT_AVATAR_COLOR = 'blue';
 const DAY_ZERO_UTC_MS = Date.UTC(2000, 0, 1);
 const DAY_MS = 86_400_000;
 
-type CartridgeDay = {
+export type CartridgeDay = {
   dayStartMs: number;
   dayTimezone: string;
   eventTimestamp: number;
@@ -147,7 +157,19 @@ function cartridgeDayParts(day: number): [year: number, month: number, date: num
   return [utcDate.getUTCFullYear(), utcDate.getUTCMonth(), utcDate.getUTCDate()];
 }
 
-function cartridgeDay(day: number): CartridgeDay {
+/**
+ * A cartridge day number as instants this app can store.
+ *
+ * The cartridge records calendar days and no times at all, so every event it sends is anchored to
+ * device-local NOON: far enough from both midnights that no timezone the receiver might be in can
+ * drag the entry onto the day before or after. Metrics use the day's local midnight instead,
+ * because `user_metrics.date` is a day key rather than a datetime.
+ *
+ * Shared with `utils/optical/gameBoyDayShare.ts` — a day share and a whole-database import must
+ * place a cartridge day at exactly the same instant, or the same data would land on two different
+ * days depending on which way it arrived.
+ */
+export function cartridgeDay(day: number): CartridgeDay {
   const [year, month, date] = cartridgeDayParts(day);
   const dayStartMs = localDayStartMs(new Date(year, month, date, 12));
   const eventDate = new Date(year, month, date, 12);

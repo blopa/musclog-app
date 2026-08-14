@@ -5,6 +5,7 @@ import type NutritionLog from '@/database/models/NutritionLog';
 import { buildFoodSharePayload } from '@/database/share/buildFoodShare';
 import { buildLoggedMealSharePayload } from '@/database/share/buildLoggedMealShare';
 import { buildMealSharePayload } from '@/database/share/buildMealShare';
+import { buildNutritionDaySharePayload } from '@/database/share/buildNutritionDayShare';
 import type { SharePhotoOutcome } from '@/database/share/shareRecords';
 import { MusclogShareError } from '@/utils/share/shareEnvelope';
 
@@ -25,7 +26,13 @@ export type ShareSendTarget =
    * option: a logged meal has no photo of its own, and its ingredients' photos are not what the
    * user asked to send.
    */
-  | { kind: 'loggedMeal'; logs: NutritionLog[]; name: string };
+  | { kind: 'loggedMeal'; logs: NutritionLog[]; name: string }
+  /**
+   * One calendar day of the diary, sent as diary entries rather than as a recipe: the receiver
+   * files it on the same date, with each entry's amount, meal type and time intact. Musclog GB's
+   * `SHARE DAY` produces the same payload, so both land on one receive screen.
+   */
+  | { kind: 'nutritionDay'; logs: NutritionLog[]; dayKey: string };
 
 /**
  * Title / ready-title / instructions per kind. A logged meal is presented as a meal because that
@@ -48,6 +55,11 @@ const SHARE_COPY_KEYS = {
     instructions: 'opticalTransfer.share.sendMealInstructions',
     readyTitle: 'opticalTransfer.share.sendMealReadyTitle',
     title: 'opticalTransfer.share.sendMealTitle',
+  },
+  nutritionDay: {
+    instructions: 'opticalTransfer.share.sendDayInstructions',
+    readyTitle: 'opticalTransfer.share.sendDayReadyTitle',
+    title: 'opticalTransfer.share.sendDayTitle',
   },
 } as const satisfies Record<
   ShareSendTarget['kind'],
@@ -74,7 +86,7 @@ const SHARE_PHOTO_NOTICE = {
 
 /** Only a food or a saved meal has a photo of its own to offer. */
 function targetHasImage(target: ShareSendTarget): boolean {
-  return target.kind === 'loggedMeal' ? false : target.hasImage;
+  return target.kind === 'food' || target.kind === 'meal' ? target.hasImage : false;
 }
 
 function buildTargetPayload(target: ShareSendTarget, includeImage: boolean) {
@@ -85,6 +97,8 @@ function buildTargetPayload(target: ShareSendTarget, includeImage: boolean) {
       return buildMealSharePayload(target.mealId, { includeImage });
     case 'loggedMeal':
       return buildLoggedMealSharePayload(target.logs, { name: target.name });
+    case 'nutritionDay':
+      return buildNutritionDaySharePayload(target.logs, { dayKey: target.dayKey });
   }
 }
 

@@ -120,26 +120,35 @@ static uint8_t confirm_stop_sharing(void) {
     return (uint8_t)(ui_menu_select(STR_SHARE_DATA, options, 2u) == 1u);
 }
 
-void optical_share_show(const SaveData *data) BANKED {
+/*
+ * Stream a prepared payload as QR frames until the user stops.
+ *
+ * Shared by both share actions rather than copied: the frame loop owns the CPU speed switch, the
+ * SRAM bank dance around the encoder, and the VRAM restore on the way out — three things that must
+ * not drift between "share everything" and "share this day".
+ */
+static void share_stream(const SaveData *data, uint8_t day_share, uint16_t day_num,
+                         const char *title) {
     OpticalExportInfo info;
     InputState input;
     uint32_t next_seq = 0ul;
     uint8_t frame;
     uint8_t stop = 0u;
+    uint8_t prepared;
     const char *text;
-
-    if (!ui_confirm(STR_SHARE_DATA, STR_SHARE_ALL_Q)) return;
 
     cpu_fast();
 
-    ui_title(STR_SHARE_DATA);
-    ui_print_center(7u, STR_SHARE_PREPARING);
+    ui_title(title);
+    ui_print_center(7u, day_share ? STR_SHARE_PREPARING_DAY : STR_SHARE_PREPARING);
     ui_print_center(9u, STR_SHARE_KEEP_POWER);
     ui_footer(STR_FOOTER_CANCEL, "");
 
-    if (!optical_export_prepare(data, &info)) {
+    prepared = day_share ? optical_export_prepare_day(data, day_num, &info)
+                         : optical_export_prepare(data, &info);
+    if (!prepared) {
         cpu_slow();
-        ui_title(STR_SHARE_DATA);
+        ui_title(title);
         ui_print_center(8u, STR_SHARE_FAILED);
         ui_footer(STR_FOOTER_BACK, "");
         input_init(&input);
@@ -184,4 +193,14 @@ void optical_share_show(const SaveData *data) BANKED {
     /* QR frames replace both background tile banks. Restore the font, palettes,
      * tilemap, and UI shadow before returning to the menu. */
     ui_init_text();
+}
+
+void optical_share_show(const SaveData *data) BANKED {
+    if (!ui_confirm(STR_SHARE_DATA, STR_SHARE_ALL_Q)) return;
+    share_stream(data, 0u, 0u, STR_SHARE_DATA);
+}
+
+void optical_share_show_day(const SaveData *data, uint16_t day_num) BANKED {
+    if (!ui_confirm(STR_SHARE_DAY, STR_SHARE_DAY_Q)) return;
+    share_stream(data, 1u, day_num, STR_SHARE_DAY);
 }

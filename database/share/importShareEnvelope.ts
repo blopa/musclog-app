@@ -1,9 +1,16 @@
 import { Q } from '@nozbe/watermelondb';
 
 import { database } from '@/database/database-instance';
+import { dayRangeClauses } from '@/database/dayKeyQuery';
+import {
+  encryptNutritionLogSnapshot,
+  readPlainNutritionLogSnapshotRow,
+} from '@/database/encryptionHelpers';
 import Food from '@/database/models/Food';
 import FoodPortion from '@/database/models/FoodPortion';
+import type NutritionLog from '@/database/models/NutritionLog';
 import { prepareLocalCreateFromRaw } from '@/database/prepareLocalCreateFromRaw';
+import { dayKeyRange, utcNormalizedDayKey } from '@/utils/calendarDate';
 import {
   deleteFoodImage,
   deleteMealImage,
@@ -20,6 +27,7 @@ import {
   getShareKindSpec,
   type ShareAssetStore,
   type ShareDedupeStrategy,
+  type ShareEncryptStrategy,
   type ShareKindSpec,
 } from '@/utils/share/shareKinds';
 
@@ -49,8 +57,26 @@ async function removeAssetUris(
 
 export interface ShareImportResult {
   kind: MusclogShareEnvelope['kind'];
-  rootId: string;
+  /** The record the share was about, for kinds that are about one — see `ShareKindSpec.rootTable`. */
+  rootId?: string;
   reused: ReusedShareRow[];
+  /** Rows this import soft-deleted to make room, per table. Only `'replace'` produces any. */
+  replaced: number;
+}
+
+/**
+ * What to do when the receiver already has entries on the day a `nutritionDay` share covers.
+ *
+ * There is no safe default, which is why the receive screen asks: `'add'` on a day that was already
+ * logged double-counts it, and `'replace'` on a day the user has since edited by hand throws that
+ * work away. Both are legitimate — re-importing a cartridge day you already scanned wants
+ * `'replace'`, adding a friend's lunch to your own day wants `'add'`.
+ */
+export type NutritionDayImportMode = 'add' | 'replace';
+
+export interface ImportShareEnvelopeOptions {
+  /** Required for a `nutritionDay` share; ignored by every other kind. */
+  dayMode?: NutritionDayImportMode;
 }
 
 /**
@@ -277,6 +303,98 @@ const DEDUPE_RESOLVERS: Record<
   'portion-identity': resolvePortions,
 };
 
+/**
+ * The transform behind each `ShareKindSpec.encrypt` strategy: plaintext on the wire in, this
+ * device's ciphertext out. Registry-shaped for the same reason `DEDUPE_RESOLVERS` is — the loop
+ * that applies it never learns a table name.
+ *
+ * A share is written with the SENDER's encryption key, which the receiver does not have, so these
+ * columns cross the wire in the clear and are re-encrypted here. That mirrors what a database
+ * restore does with `nutrition_logs` (`database/importDb.ts`), and it is why the plaintext form is
+ * the builder's responsibility rather than a raw `_raw` copy.
+ */
+const ENCRYPT_TRANSFORMS: Record<
+  ShareEncryptStrategy,
+  (row: ShareRow) => Promise<Record<string, unknown>>
+> = {
+  'nutrition-log-snapshot': async (row) => {
+    const encrypted = await encryptNutritionLogSnapshot(readPlainNutritionLogSnapshotRow(row));
+    return {
+      logged_calories: encrypted.loggedCalories,
+      logged_carbs: encrypted.loggedCarbs,
+      logged_fat: encrypted.loggedFat,
+      logged_fiber: encrypted.loggedFiber,
+      logged_food_name: encrypted.loggedFoodName,
+      logged_micros_json: encrypted.loggedMicrosJson,
+      logged_protein: encrypted.loggedProtein,
+    };
+  },
+};
+
+/**
+ * Re-encrypts the columns each table declares, BEFORE the writer opens.
+ *
+ * Deliberately not done inside the transaction with the rest of the row work: every value goes
+ * through `getEncryptionKey()`, and WatermelonDB serialises writers — holding the write lock across
+ * dozens of key reads and AES calls would block every other write in the app for no reason. Nothing
+ * here reads the database, so there is no time-of-check window to protect.
+ */
+async function encryptShareRecords(
+  spec: ShareKindSpec,
+  records: Record<string, ShareRow[]>
+): Promise<Record<string, ShareRow[]>> {
+  if (!spec.encrypt) {
+    return records;
+  }
+
+  const encrypted = { ...records };
+  for (const [table, strategy] of Object.entries(spec.encrypt)) {
+    const rows = records[table];
+    if (!rows) {
+      continue;
+    }
+    encrypted[table] = await Promise.all(
+      rows.map(async (row) => ({ ...row, ...(await ENCRYPT_TRANSFORMS[strategy](row)) }))
+    );
+  }
+  return encrypted;
+}
+
+/**
+ * The receiver's own live logs on the calendar days a `nutritionDay` share covers.
+ *
+ * Day membership is decided the way every other day-bucketed read in the app decides it: by each
+ * row's own stored `date` + `timezone` through `utcNormalizedDayKey`, with the widened DB bounds
+ * from `dayRangeClauses` trimmed by `filterRecords`. Deriving the target day from the incoming rows
+ * rather than from `summary.dayKey` keeps the rows that get removed and the rows that get written
+ * in exact agreement — a summary is display metadata, and nothing destructive should hinge on it.
+ */
+async function existingLogsOnSharedDays(rows: ShareRow[]): Promise<NutritionLog[]> {
+  const dayKeys = rows
+    .map((row) =>
+      typeof row.date === 'number'
+        ? utcNormalizedDayKey(row.date, typeof row.timezone === 'string' ? row.timezone : undefined)
+        : undefined
+    )
+    .filter((key): key is number => key !== undefined);
+  if (dayKeys.length === 0) {
+    return [];
+  }
+
+  // One range over min..max: a day share is a single day in practice, and a contiguous range is
+  // one indexed query instead of one per day.
+  const range = dayKeyRange(Math.min(...dayKeys), Math.max(...dayKeys));
+  const shared = new Set(dayKeys);
+  const candidates = await database
+    .get<NutritionLog>('nutrition_logs')
+    .query(...dayRangeClauses(range), Q.where('deleted_at', Q.eq(null)))
+    .fetch();
+
+  return range
+    .filterRecords(candidates)
+    .filter((log) => shared.has(utcNormalizedDayKey(log.date, log.timezone)));
+}
+
 async function buildResolutions(
   spec: ShareKindSpec,
   records: Record<string, ShareRow[]>
@@ -301,11 +419,18 @@ async function buildResolutions(
 }
 
 export async function importShareEnvelope(
-  envelope: MusclogShareEnvelope
+  envelope: MusclogShareEnvelope,
+  options: ImportShareEnvelopeOptions = {}
 ): Promise<ShareImportResult> {
   const spec = getShareKindSpec(envelope.kind);
   if (!spec) {
     throw new Error(`Unsupported share kind: ${envelope.kind}`);
+  }
+
+  // Refuse rather than pick one: silently defaulting to `'add'` double-logs a re-scanned day, and
+  // silently defaulting to `'replace'` deletes entries the user typed in themselves.
+  if (envelope.kind === 'nutritionDay' && !options.dayMode) {
+    throw new Error('A day share needs an explicit add-or-replace choice');
   }
 
   const assetStore = ASSET_STORES[spec.assetStore];
@@ -321,23 +446,44 @@ export async function importShareEnvelope(
     }
   }
   const writtenAssetUriSet = new Set(writtenAssetUris);
+  const records = await encryptShareRecords(spec, envelope.records);
 
   let committed: { result: ShareImportResult; usedAssetUris: Set<string> };
   try {
     committed = await database.write(async () => {
-      const resolutions = await buildResolutions(spec, envelope.records);
-      const plan = planShareImport(spec, envelope.records, {
+      const now = Date.now();
+      const resolutions = await buildResolutions(spec, records);
+      const plan = planShareImport(spec, records, {
         assets: resolvedAssets,
-        nowMs: Date.now(),
+        nowMs: now,
         resolutions,
-        rootId: envelope.rootId,
+        rootId: 'rootId' in envelope ? envelope.rootId : undefined,
       });
-      const operations = plan.creates.map(({ row, table }) =>
-        // `row` contains raw schema column names and reached here through `spec.columns`. The
-        // allowlist is the trust boundary; WatermelonDB then sanitizes every value against the
-        // collection schema without assigning attacker-controlled properties onto a model.
-        prepareLocalCreateFromRaw(database.get(table), row)
-      );
+
+      // Read AND write inside the one writer: the rows to retire are chosen from the same
+      // serialized transaction that inserts their replacements, so a second import cannot observe
+      // the pre-delete state and leave both copies behind.
+      const replacing =
+        options.dayMode === 'replace'
+          ? await existingLogsOnSharedDays(records.nutrition_logs ?? [])
+          : [];
+
+      const operations = [
+        ...replacing.map((log) =>
+          // Soft delete, stamped the way every model's own `markAsDeleted` stamps it. Prepared
+          // rather than called, because a `@writer` cannot be invoked from inside an open writer.
+          log.prepareUpdate((record) => {
+            record.deletedAt = now;
+            record.updatedAt = now;
+          })
+        ),
+        ...plan.creates.map(({ row, table }) =>
+          // `row` contains raw schema column names and reached here through `spec.columns`. The
+          // allowlist is the trust boundary; WatermelonDB then sanitizes every value against the
+          // collection schema without assigning attacker-controlled properties onto a model.
+          prepareLocalCreateFromRaw(database.get(table), row)
+        ),
+      ];
 
       await database.batch(...operations);
       const usedAssetUris = new Set<string>();
@@ -350,7 +496,12 @@ export async function importShareEnvelope(
         }
       }
       return {
-        result: { kind: envelope.kind, reused: plan.reused, rootId: plan.rootId },
+        result: {
+          kind: envelope.kind,
+          replaced: replacing.length,
+          reused: plan.reused,
+          rootId: plan.rootId,
+        },
         usedAssetUris,
       };
     });

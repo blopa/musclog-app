@@ -1,4 +1,4 @@
-import { CalendarPlus, Pencil, Scale } from 'lucide-react-native';
+import { CalendarPlus, Pencil, QrCode, Scale } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { BottomPopUpMenu, type BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
@@ -11,6 +11,8 @@ type DailySummaryBottomMenuProps = {
   onEditCurrentGoalPress?: () => void;
   showEditCurrentGoal?: boolean;
   onCopyDayFromHistoryPress?: () => void;
+  /** Omitted when the day has nothing logged — there would be nothing to send. */
+  onSendDayToPhonePress?: () => void;
 };
 
 export function DailySummaryBottomMenu({
@@ -20,6 +22,7 @@ export function DailySummaryBottomMenu({
   onEditCurrentGoalPress,
   showEditCurrentGoal = false,
   onCopyDayFromHistoryPress,
+  onSendDayToPhonePress,
 }: DailySummaryBottomMenuProps) {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -46,6 +49,18 @@ export function DailySummaryBottomMenu({
             title: t('food.actions.copyDayFromHistory'),
             description: t('food.actions.copyDayFromHistoryDesc'),
             onPress: onCopyDayFromHistoryPress,
+          },
+        ]
+      : []),
+    ...(onSendDayToPhonePress
+      ? [
+          {
+            icon: QrCode,
+            iconColor: theme.colors.status.purple,
+            iconBgColor: theme.colors.status.purple10,
+            title: t('food.actions.sendDayToPhone'),
+            description: t('food.actions.sendDayToPhoneDesc'),
+            onPress: onSendDayToPhonePress,
           },
         ]
       : []),

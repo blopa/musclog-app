@@ -6,14 +6,43 @@ import {
   saveBase64ImageToFile,
   saveBase64MealImage,
 } from '@/utils/file';
-import type { FoodShareEnvelope, MealShareEnvelope, ShareRow } from '@/utils/share/shareEnvelope';
+import type {
+  FoodShareEnvelope,
+  MealShareEnvelope,
+  NutritionDayShareEnvelope,
+  ShareRow,
+} from '@/utils/share/shareEnvelope';
 
 jest.mock('@nozbe/watermelondb', () => ({
   Q: {
     eq: jest.fn((value: unknown) => ({ kind: 'eq', value })),
+    gte: jest.fn((value: unknown) => ({ kind: 'gte', value })),
+    lt: jest.fn((value: unknown) => ({ kind: 'lt', value })),
     oneOf: jest.fn((values: unknown[]) => ({ kind: 'oneOf', values })),
     where: jest.fn((field: string, value: unknown) => ({ field, value })),
   },
+}));
+
+// The receiver re-encrypts the plaintext macro snapshot with ITS key; the values themselves are not
+// what these tests are about, so the transform is stubbed to something recognisable.
+jest.mock('@/database/encryptionHelpers', () => ({
+  encryptNutritionLogSnapshot: jest.fn(async (plain: Record<string, unknown>) => ({
+    loggedCalories: `enc:${plain.loggedCalories}`,
+    loggedCarbs: `enc:${plain.loggedCarbs}`,
+    loggedFat: `enc:${plain.loggedFat}`,
+    loggedFiber: `enc:${plain.loggedFiber}`,
+    loggedFoodName: `enc:${plain.loggedFoodName ?? ''}`,
+    loggedMicrosJson: 'enc:{}',
+    loggedProtein: `enc:${plain.loggedProtein}`,
+  })),
+  readPlainNutritionLogSnapshotRow: jest.fn((row: Record<string, unknown>) => ({
+    loggedCalories: Number(row.logged_calories ?? 0),
+    loggedCarbs: Number(row.logged_carbs ?? 0),
+    loggedFat: Number(row.logged_fat ?? 0),
+    loggedFiber: Number(row.logged_fiber ?? 0),
+    loggedFoodName: row.logged_food_name,
+    loggedProtein: Number(row.logged_protein ?? 0),
+  })),
 }));
 
 let mockInsideWrite = false;
@@ -246,12 +275,20 @@ function matchesClauses(record: Record<string, unknown>, clauses: any[]): boolea
     if (value?.kind === 'oneOf') {
       return value.values.includes(record[field] ?? null);
     }
+    if (value?.kind === 'gte') {
+      return Number(record[field]) >= Number(value.value);
+    }
+    if (value?.kind === 'lt') {
+      return Number(record[field]) < Number(value.value);
+    }
     const expected = value?.kind === 'eq' ? value.value : value;
     return (record[field] ?? null) === (expected ?? null);
   });
 }
 
-function wire(stored: { foods?: unknown[]; food_portions?: unknown[] } = {}) {
+function wire(
+  stored: { foods?: unknown[]; food_portions?: unknown[]; nutrition_logs?: unknown[] } = {}
+) {
   const created: Record<string, any[]> = {};
   const queriedTables: string[] = [];
   mockDatabase.get.mockImplementation(((table: string) => ({
@@ -696,5 +733,207 @@ describe('importShareEnvelope', () => {
       expect(created.food_portions).toHaveLength(1);
       expect(createdColumn(created.food_portions, 'owner_id')).toBe(createdId(created.meals));
     });
+  });
+});
+
+/**
+ * A `nutritionDay` share: one day of the diary, which the receiver MERGES rather than restores.
+ *
+ * Two things separate it from the other kinds and are what these tests hold down — the macro
+ * snapshot crosses the wire in plaintext and has to be re-encrypted with this device's key, and the
+ * user picks between adding to the day and replacing it, which is the only destructive path any
+ * share has.
+ */
+const DAY_MS = Date.UTC(2026, 7, 14, 12, 0, 0);
+
+function dayEnvelope(overrides: Partial<ShareRow>[] = []): NutritionDayShareEnvelope {
+  const logs =
+    overrides.length > 0
+      ? overrides.map((override, index) => ({
+          amount: 150,
+          date: DAY_MS,
+          food_id: 'sender-food',
+          id: `sender-log-${index}`,
+          logged_calories: 100,
+          logged_carbs: 10,
+          logged_fat: 3,
+          logged_fiber: 1,
+          logged_food_name: 'Shared food',
+          logged_protein: 5,
+          snapshot_basis: 'per_100g',
+          timezone: '+00:00',
+          type: 'lunch',
+          ...override,
+        }))
+      : [
+          {
+            amount: 150,
+            date: DAY_MS,
+            food_id: 'sender-food',
+            id: 'sender-log-0',
+            logged_calories: 100,
+            logged_carbs: 10,
+            logged_fat: 3,
+            logged_fiber: 1,
+            logged_food_name: 'Shared food',
+            logged_protein: 5,
+            snapshot_basis: 'per_100g',
+            timezone: '+00:00',
+            type: 'lunch',
+          },
+        ];
+
+  return {
+    _musclogShare: 1,
+    createdAtMs: 1,
+    kind: 'nutritionDay',
+    kindVersion: 1,
+    records: {
+      food_food_portions: [],
+      food_portions: [],
+      foods: [
+        {
+          barcode: '123',
+          calories: 100,
+          carbs: 10,
+          external_id: 'external-1',
+          fat: 3,
+          fiber: 1,
+          id: 'sender-food',
+          name: 'Shared food',
+          nutrition_basis: 'per_100g',
+          protein: 5,
+        },
+      ],
+      nutrition_logs: logs,
+    },
+    summary: {
+      dayKey: '2026-08-14',
+      entries: [{ amount: 150, calories: 150, mealType: 'lunch', name: 'Shared food', unit: 'g' }],
+      totals: { calories: 150, carbs: 15, fat: 4.5, fiber: 1.5, protein: 7.5 },
+    },
+  };
+}
+
+/** A log the receiver already has, in both its raw and accessor shapes (see `storedFood`). */
+function storedLog(overrides: Record<string, unknown> = {}) {
+  const columns = {
+    date: DAY_MS,
+    deleted_at: null,
+    id: 'local-log',
+    timezone: '+00:00',
+    ...overrides,
+  };
+  return {
+    ...columns,
+    prepareUpdate: jest.fn((mutator: (record: any) => void) => {
+      const record: any = { id: columns.id };
+      mutator(record);
+      return { table: 'nutrition_logs', update: record };
+    }),
+  };
+}
+
+describe('importShareEnvelope — nutritionDay', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (mockDatabase.batch as jest.Mock).mockImplementation(async () => {
+      expect(mockInsideWrite).toBe(true);
+    });
+  });
+
+  it('refuses to guess between adding to a day and replacing it', async () => {
+    wire({ foods: [storedFood()] });
+
+    // Defaulting either way is a data-loss bug in one direction and a double-counted day in the
+    // other, so the caller must have asked the user.
+    await expect(importShareEnvelope(dayEnvelope())).rejects.toThrow(/add-or-replace/);
+    expect(mockDatabase.write).not.toHaveBeenCalled();
+  });
+
+  it('re-encrypts the plaintext snapshot with this device key before writing', async () => {
+    const { created } = wire({ foods: [storedFood()] });
+
+    await importShareEnvelope(dayEnvelope(), { dayMode: 'add' });
+
+    // The wire carries plaintext because the sender's key means nothing here; what lands in the
+    // database must be ciphertext all the same.
+    expect(createdColumn(created.nutrition_logs, 'logged_calories')).toBe('enc:100');
+    expect(createdColumn(created.nutrition_logs, 'logged_food_name')).toBe('enc:Shared food');
+  });
+
+  it('keeps each entry on its own day and reuses the food the receiver already had', async () => {
+    const { created } = wire({ foods: [storedFood()] });
+
+    const result = await importShareEnvelope(dayEnvelope(), { dayMode: 'add' });
+
+    expect(created.foods).toBeUndefined();
+    expect(createdColumn(created.nutrition_logs, 'food_id')).toBe('local-food');
+    // `date` + `timezone` travel unchanged: that pair is what files the entry on the sender's
+    // calendar day no matter which timezone the receiver is in.
+    expect(createdColumn(created.nutrition_logs, 'date')).toBe(DAY_MS);
+    expect(createdColumn(created.nutrition_logs, 'timezone')).toBe('+00:00');
+    expect(result.replaced).toBe(0);
+  });
+
+  it('adds without touching what the day already had', async () => {
+    const existing = storedLog();
+    wire({ foods: [storedFood()], nutrition_logs: [existing] });
+
+    const result = await importShareEnvelope(dayEnvelope(), { dayMode: 'add' });
+
+    expect(existing.prepareUpdate).not.toHaveBeenCalled();
+    expect(result.replaced).toBe(0);
+  });
+
+  it('replaces only the days it is actually writing to', async () => {
+    const sameDay = storedLog({ id: 'local-same-day' });
+    const otherDay = storedLog({ date: DAY_MS - 3 * 86_400_000, id: 'local-other-day' });
+    wire({ foods: [storedFood()], nutrition_logs: [sameDay, otherDay] });
+
+    const result = await importShareEnvelope(dayEnvelope(), { dayMode: 'replace' });
+
+    // Membership is decided by each row's own date + timezone, the way every day-bucketed read in
+    // the app decides it — never by the summary's dayKey, which is display metadata.
+    expect(sameDay.prepareUpdate).toHaveBeenCalledTimes(1);
+    expect(otherDay.prepareUpdate).not.toHaveBeenCalled();
+    expect(result.replaced).toBe(1);
+  });
+
+  it('soft-deletes the replaced rows in the same batch as the new ones', async () => {
+    const existing = storedLog();
+    wire({ foods: [storedFood()], nutrition_logs: [existing] });
+
+    await importShareEnvelope(dayEnvelope(), { dayMode: 'replace' });
+
+    // One batch, one writer: a delete that commits without its replacement would leave the user
+    // with an emptied day.
+    expect(mockDatabase.write).toHaveBeenCalledTimes(1);
+    expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
+    const [mutator] = existing.prepareUpdate.mock.calls[0];
+    const record: any = {};
+    mutator(record);
+    expect(record.deletedAt).toEqual(expect.any(Number));
+    expect(record.updatedAt).toEqual(expect.any(Number));
+  });
+
+  it("rewrites a meal group id instead of pointing at the sender's", async () => {
+    const { created } = wire({ foods: [storedFood()] });
+
+    await importShareEnvelope(
+      dayEnvelope([
+        { group_id: 'sender-group' },
+        { group_id: 'sender-group' },
+        { group_id: 'sender-other' },
+      ]),
+      { dayMode: 'add' }
+    );
+
+    const groups = created.nutrition_logs.map((record: any) => record._raw.group_id);
+    // Entries logged together stay together, but under an id minted here — the sender's may be a
+    // `meals` id, and reusing it could collide with an unrelated local group.
+    expect(groups[0]).toBe(groups[1]);
+    expect(groups[2]).not.toBe(groups[0]);
+    expect(groups).not.toContain('sender-group');
   });
 });

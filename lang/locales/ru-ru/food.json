@@ -210,7 +210,9 @@
       "scaleMealPortionSuccess": "Порции приёма пищи обновлены",
       "scaleMealPortionError": "Не удалось обновить порции приёма пищи",
       "scaleMealPortionInvalid": "Введите не менее 1 г",
-      "scaleMealPortionPreview": "Примерные итоги для этой порции"
+      "scaleMealPortionPreview": "Примерные итоги для этой порции",
+      "sendDayToPhone": "Отправить день на телефон",
+      "sendDayToPhoneDesc": "Передать всю еду за этот день с помощью анимированных QR-кодов"
     },
     "mealInsights": {
       "title": "Аналитика приёма пищи",

@@ -61,9 +61,14 @@ dumpDatabase()  →  JSON string
 ### Game Boy sender pipeline
 
 Musclog GB is deliberately **sender-only**. It has no camera, does not expose a receive action,
-and does not define a Game Boy-to-Game Boy exchange. Settings contains one action, `SHARE DATA`,
-which always exports the whole cartridge database for import as a destructive database
-replacement by Android, iOS, or web.
+and does not define a Game Boy-to-Game Boy exchange. It sends two things:
+
+- **`SHARE DATA`**, under Settings, exports the whole cartridge database for import as a
+  destructive database replacement by Android, iOS, or web.
+- **`SHARE DAY`**, on the nutrition screen's SELECT menu, exports the day currently on screen as a
+  **share envelope** the receiver merges into its own diary. It is offered only when that day has
+  something logged, and it is non-destructive on the receiving side, so it is the action to reach
+  for when the other phone is already in use. See "One day of eating" below.
 
 The cartridge has no JSON or compression library and cannot hold its complete save as one string,
 so `optical_export.c` renders a deliberately compact JSON schema as a reproducible virtual byte
@@ -105,6 +110,56 @@ validates every selected exercise against that contract and emits
 `gameboy/src/generated/optical_protocol.generated.h`; the TypeScript receiver reads the same JSON
 directly. Existing entries must never be reordered or derived from the current popular subset.
 Additions are appended deliberately before regenerating with `npm run gb:gen-exercises`.
+
+### One day of eating
+
+`SHARE DAY` reuses every part of the pipeline above — the same streaming JSON sink, the same
+container, fountain, base44 and QR encoder — and changes exactly three things:
+
+- the rendered schema is `{"_gameBoyShare":1,"kind":"day","day":N,"foods":[…],"logs":[[index,grams]]}`,
+  with the **same food tuple** `render_food_tuple` emits for a database export, so the receiver
+  parses one food tuple rather than two;
+- `scan_references` narrows to that day and stops, so only the foods that day used are sent — no
+  unreferenced custom foods, no exercises, no profile, no metrics; and
+- the container declares `payloadKind = 1` and the compatibility sentinel `exportVersion = 0xFFFF`,
+  the two fields that stop any receiver — including one built before day shares existed — offering
+  its destructive restore for a day of food.
+
+`utils/optical/gameBoyDayShare.ts` expands that payload into an ordinary `nutritionDay` share
+envelope and hands it to the same `parseShareEnvelope` every other sender goes through, so the
+expander is trusted no further than the wire is. `utils/share/parseIncomingShare.ts` is the single
+receive entry point that decides which of the two forms arrived.
+
+A cartridge cannot record a time of day or a meal type — its food log is `{ day, food index, grams }`
+and nothing else — so every entry is filed at device-local **noon** under `other`, the same anchor
+the whole-database import uses, and the envelope sets `summary.timesUnknown` so the receive screen
+says so rather than letting it look like the transfer lost something.
+
+### Food identity across the two wires
+
+The cartridge keeps only 16 characters of a food's name (`FF_NAME_VISIBLE`), so
+"Lettuce, leaf, green, raw" reaches the receiver as "Lettuce, leaf, g". Matching that against the
+receiver's catalogue by name would miss essentially every bundled food and grow a second,
+worse-named copy of it on every share — which matters far more here than for a database dump,
+because a day share MERGES into a populated database instead of replacing it.
+
+So a food travels as its **index**, exactly like an exercise. `foodExternalIds` in
+`data/gameBoyOpticalProtocol.json` freezes the `external_id` at each position, and
+`utils/optical/gameBoyFoodMapping.ts` resolves an index to that id plus the full seed row from
+`data/usda_foundation_foods.json` / `data/common_foundation_foods.json`. The importer's food dedupe
+then takes its first branch — the same `external_id` the receiver's own seeding wrote — and reuses
+the food instead of recreating it. `utils/foundationFoodSeed.ts` is the single parse of a seed row,
+shared with the first-install seeder, so the two cannot disagree about what a food is.
+
+That list is append-only for the same reason `exerciseSlugs` is: a `.sav` stores a logged food as
+its index. `gameboy/tools/gen-foundation-foods.mjs` regenerates it alongside the C tables and fails
+the build if a regenerated table would change an existing entry. Two indices MAY share an
+`external_id` — the USDA set ships a few rows that differ only in `description` — and both
+resolving to the receiver's single copy is the wanted outcome.
+
+A custom food has no bundled identity, and an index past the end of the frozen list comes from a
+newer cartridge. Both fall back to the tuple the cartridge sends alongside the index, so a newer ROM
+still imports rather than failing the transfer.
 
 ### Exercise identity across the two wires
 
@@ -332,20 +387,65 @@ bench is the other half of that guarantee.
 
 ## Carrying something smaller than a database
 
-The optical pipeline also carries a single food or meal and the food/portion rows it depends on.
-A meal may come from My Meals, a named group in the nutrition diary, or a whole diary section; the
-latter two are synthesized as an ordinary saved-meal envelope by `buildLoggedMealShare.ts`. The wire
-below the container is unchanged: byte 54 of the v1 container header, formerly the low byte of a
+The optical pipeline also carries a single food, a meal, or one day of the food diary, together with
+the food/portion rows they depend on. A meal may come from My Meals, a named group in the nutrition
+diary, or a whole diary section; the latter two are synthesized as an ordinary saved-meal envelope by
+`buildLoggedMealShare.ts`. The wire below the container is unchanged: byte 54 of the v1 container header, formerly the low byte of a
 zeroed reserved `u16`, is now `payloadKind` (`0` database, `1` share envelope). Byte 55 remains
 reserved. A database container still writes zero at both positions and is therefore byte-identical
 to one produced before shares existed.
 
-Share JSON is wrapped as `{ _musclogShare, kind, kindVersion, records, rootTable, rootId, ... }`.
+Share JSON is wrapped as `{ _musclogShare, kind, kindVersion, records, rootTable?, rootId?, ... }`.
 `utils/share/shareKinds.ts` is the registry of allowed tables, foreign keys, dedupe rules, forced
-columns, and asset columns. Meals are the first kind. Their preview summary is display-only; the
-importer always writes the carried rows and never derives authoritative data from summary totals.
-Adding a future kind means adding a registry entry, builder, preview branch, and translations — not
-changing fountain frames.
+columns, and asset columns. Meals were the first kind; foods and `nutritionDay` followed. Every
+kind's preview summary is display-only; the importer always writes the carried rows and never
+derives authoritative data from summary totals. Adding a future kind means adding a registry entry,
+builder, preview branch, and translations — not changing fountain frames.
+
+### A day of eating is a kind with no root row
+
+`rootTable` is `null` for `nutritionDay`, and the parser then REQUIRES the envelope to omit
+`rootTable`/`rootId` — both directions, so a rooted kind cannot forget its root and a rootless one
+cannot smuggle one past code that would ignore it. A food share IS a food and a meal share IS a
+meal, but a day is not a row: there is no `days` table, and anointing one arbitrary log as the day's
+representative would be a lie the importer then has to carry.
+
+Three further things separate it from the other kinds:
+
+- **`date` + `timezone` travel unchanged, and nothing rewrites them.** That pair is how the app
+  buckets a log into a calendar day (`utcNormalizedDayKey` re-applies the stored offset), so passing
+  it through is exactly what makes a day sent from UTC+2 still read as that day on a phone in UTC-5.
+- **The encrypted macro snapshot crosses the wire as plaintext.** `logged_*` columns are encrypted
+  with the sender's key, which the receiver does not have, so the builder decrypts them and
+  `ShareKindSpec.encrypt` re-encrypts them with this device's key before the batch — the same
+  handoff a database export/restore performs. The re-encryption happens BEFORE the writer opens:
+  every value goes through `getEncryptionKey()`, and holding the write lock across dozens of key
+  reads would block every other write in the app for nothing.
+- **`nutrition_logs.external_id` is deliberately not shareable.** It is the Health Connect /
+  integration sync key; importing another device's would make this phone's next sync mistake a
+  received log for a record it had already synced. `utils/__tests__/shareKindColumns.test.ts`
+  records that exclusion explicitly, so a NEW schema column still fails the build until someone
+  decides about it.
+
+`group_id` is neither passed through nor dropped. It ties the five logs of one AI-detected meal
+together but points at no table the share carries (on the sender it may be a `meals` id), so
+`ShareKindSpec.regeneratedColumns` mints one fresh id per distinct incoming value: entries logged
+together stay together, without colliding with an unrelated local group.
+
+### Adding to a day, or replacing it
+
+`nutritionDay` is the one share the user can aim at data they already have, so
+`importShareEnvelope` **refuses to guess**: it throws unless the caller passes
+`dayMode: 'add' | 'replace'`, and the receive screen asks. There is no safe default — `add` on a day
+that was already logged double-counts it, and `replace` on a day the user has since edited by hand
+throws that work away. Both are legitimate: re-scanning a cartridge day you already imported wants
+`replace`, adding a friend's lunch to your own day wants `add`.
+
+`replace` is the only destructive path any share has. It soft-deletes the receiver's live logs on
+the days the incoming rows land on, in the same writer and the same batch as the inserts, so a
+delete can never commit without its replacement. Membership is decided from the INCOMING ROWS'
+own `date`/`timezone`, never from `summary.dayKey`: a summary is display metadata, and nothing
+destructive should hinge on it.
 
 ### Optional fields are absent, never `null`
 
@@ -435,7 +535,7 @@ compatibility contracts. A new receiver additionally requires `payloadKind === 0
 the destructive restore path. Never express that check as “not a share”: an unknown future kind
 must be refused, not treated as a database.
 
-Food and meal sending have no passphrase path. They are explicit nearby-device shares of one item
+Food, meal and day sending have no passphrase path. They are explicit nearby-device shares of one item
 rather than archives of the user's whole profile, so the UI avoids suggesting they inherit the
 export encryption setting. A named meal group's send action lives in its nutrition-card ⋮ menu and
 uses only that group's logs and displayed name; the surrounding breakfast/lunch/dinner section is
@@ -572,43 +672,49 @@ clamp does not — or the sender generates live forever, which is slower but alw
 
 ## Files
 
-| path                                                 | role                                                    |
-| ---------------------------------------------------- | ------------------------------------------------------- |
-| `utils/optical/fountain.ts`                          | LT encoder/decoder, `dlog`, soliton CDF. **Frozen.**    |
-| `utils/optical/frameProtocol.ts`                     | 20-byte frame header, FNV-1a, splitmix32. **Frozen.**   |
-| `utils/optical/base44.ts`                            | binary ⇄ QR-alphanumeric text                           |
-| `utils/optical/presets.ts`                           | density table, derived from zxing's own capacity tables |
-| `utils/optical/qrEncode.ts`                          | QR generation with version and mask pinned              |
-| `utils/optical/qrRaster.ts`                          | module matrix → RGBA pixels                             |
-| `utils/optical/senderSession.ts`                     | `OpticalStream` — seq → frame text                      |
-| `utils/optical/receiverSession.ts`                   | `OpticalReceiver` — scanned text → payload              |
-| `utils/optical/progress.ts`                          | overhead model, progress and ETA                        |
-| `utils/optical/noSignal.ts`                          | when to show the "nothing is decoding" hint             |
-| `utils/optical/bench.ts`                             | device calibration and the Phase 0 measurements         |
-| `utils/optical/gameBoyExport.ts`                     | strict compact-GB parser and normal-export expansion    |
-| `utils/optical/gameBoyExerciseMapping.ts`            | cartridge exercise index → bundled catalogue row id     |
-| `data/gameBoyOpticalProtocol.json`                   | GB versions, wire-enum ordinals, frozen exercise slugs  |
-| `gameboy/src/generated/optical_protocol.generated.h` | C version constants generated from the shared contract  |
-| `utils/share/shareEnvelope.ts`                       | bounded, versioned share envelope parser                |
-| `utils/share/shareKinds.ts`                          | share-kind table/FK/dedupe registry                     |
-| `utils/share/shareImportPlan.ts`                     | pure ID/FK rewrite and prune planner                    |
-| `database/share/buildMealShare.ts`                   | builds one meal and its dependency graph                |
-| `database/share/importShareEnvelope.ts`              | atomic, non-destructive share importer                  |
-| `components/optical/OpticalQrCanvas.tsx`             | Skia draw, integer module scaling                       |
-| `components/optical/OpticalMealSharePreview.tsx`     | verified meal preview before saving                     |
-| `components/optical/OpticalScannerCamera.tsx`        | receiving camera (vision-camera)                        |
-| `components/modals/OpticalReceiveModal.tsx`          | shared receiver for Settings and first-run onboarding   |
-| `components/SmartCameraFrame.tsx`                    | shared aiming frame + scrim, `portrait` variant here    |
-| `components/optical/OpticalQrCanvas.web.tsx`         | Skia-free DOM canvas, same integer scaling              |
-| `components/optical/OpticalScannerCamera.web.tsx`    | getUserMedia + our own frame pump                       |
-| `utils/optical/qrCanvasLayout.ts`                    | integer module scaling, shared by both canvases         |
-| `utils/optical/webQrDecode.ts`                       | decoder selection and the wasm reader                   |
-| `scripts/sync-web-wasm.js`                           | self-hosts the wasm into `public/`                      |
-| `app/app/test/optical-bench.tsx`                     | the measurement harness (runs on both platforms)        |
-| `gameboy/src/features/optical/optical_export.c`      | virtual JSON/container exporter and SRAM-store scan     |
-| `gameboy/src/features/optical/fountain.c`            | fixed-point C fountain/frame/base44 encoder             |
-| `gameboy/src/features/optical/qrcodegen.c`           | optimized fixed version 11-L QR encoder                 |
-| `gameboy/src/features/optical/optical_share.c`       | Share Data confirmation, frame loop, and tile renderer  |
+| path                                                     | role                                                    |
+| -------------------------------------------------------- | ------------------------------------------------------- |
+| `utils/optical/fountain.ts`                              | LT encoder/decoder, `dlog`, soliton CDF. **Frozen.**    |
+| `utils/optical/frameProtocol.ts`                         | 20-byte frame header, FNV-1a, splitmix32. **Frozen.**   |
+| `utils/optical/base44.ts`                                | binary ⇄ QR-alphanumeric text                           |
+| `utils/optical/presets.ts`                               | density table, derived from zxing's own capacity tables |
+| `utils/optical/qrEncode.ts`                              | QR generation with version and mask pinned              |
+| `utils/optical/qrRaster.ts`                              | module matrix → RGBA pixels                             |
+| `utils/optical/senderSession.ts`                         | `OpticalStream` — seq → frame text                      |
+| `utils/optical/receiverSession.ts`                       | `OpticalReceiver` — scanned text → payload              |
+| `utils/optical/progress.ts`                              | overhead model, progress and ETA                        |
+| `utils/optical/noSignal.ts`                              | when to show the "nothing is decoding" hint             |
+| `utils/optical/bench.ts`                                 | device calibration and the Phase 0 measurements         |
+| `utils/optical/gameBoyExport.ts`                         | strict compact-GB parser and normal-export expansion    |
+| `utils/optical/gameBoyExerciseMapping.ts`                | cartridge exercise index → bundled catalogue row id     |
+| `utils/optical/gameBoyDayShare.ts`                       | strict SHARE DAY parser and `nutritionDay` expansion    |
+| `utils/optical/gameBoyFoodMapping.ts`                    | cartridge food index → frozen external id + seed row    |
+| `utils/foundationFoodSeed.ts`                            | one parse of a bundled seed row, shared with seeding    |
+| `data/gameBoyOpticalProtocol.json`                       | GB versions, wire enums, frozen exercise/food identity  |
+| `gameboy/src/generated/optical_protocol.generated.h`     | C version constants generated from the shared contract  |
+| `utils/share/shareEnvelope.ts`                           | bounded, versioned share envelope parser                |
+| `utils/share/shareKinds.ts`                              | share-kind table/FK/dedupe registry                     |
+| `utils/share/shareImportPlan.ts`                         | pure ID/FK rewrite and prune planner                    |
+| `utils/share/parseIncomingShare.ts`                      | one receive entry point for app and cartridge payloads  |
+| `database/share/buildMealShare.ts`                       | builds one meal and its dependency graph                |
+| `database/share/buildNutritionDayShare.ts`               | builds one diary day, with its snapshot decrypted       |
+| `database/share/importShareEnvelope.ts`                  | atomic, non-destructive share importer                  |
+| `components/optical/OpticalQrCanvas.tsx`                 | Skia draw, integer module scaling                       |
+| `components/optical/OpticalMealSharePreview.tsx`         | verified meal preview before saving                     |
+| `components/optical/OpticalNutritionDaySharePreview.tsx` | verified day preview before adding or replacing         |
+| `components/optical/OpticalScannerCamera.tsx`            | receiving camera (vision-camera)                        |
+| `components/modals/OpticalReceiveModal.tsx`              | shared receiver for Settings and first-run onboarding   |
+| `components/SmartCameraFrame.tsx`                        | shared aiming frame + scrim, `portrait` variant here    |
+| `components/optical/OpticalQrCanvas.web.tsx`             | Skia-free DOM canvas, same integer scaling              |
+| `components/optical/OpticalScannerCamera.web.tsx`        | getUserMedia + our own frame pump                       |
+| `utils/optical/qrCanvasLayout.ts`                        | integer module scaling, shared by both canvases         |
+| `utils/optical/webQrDecode.ts`                           | decoder selection and the wasm reader                   |
+| `scripts/sync-web-wasm.js`                               | self-hosts the wasm into `public/`                      |
+| `app/app/test/optical-bench.tsx`                         | the measurement harness (runs on both platforms)        |
+| `gameboy/src/features/optical/optical_export.c`          | virtual JSON/container exporter and SRAM-store scan     |
+| `gameboy/src/features/optical/fountain.c`                | fixed-point C fountain/frame/base44 encoder             |
+| `gameboy/src/features/optical/qrcodegen.c`               | optimized fixed version 11-L QR encoder                 |
+| `gameboy/src/features/optical/optical_share.c`           | Share Data/Share Day confirmation, loop, tile renderer  |
 
 ### The aiming frame is decoration
 

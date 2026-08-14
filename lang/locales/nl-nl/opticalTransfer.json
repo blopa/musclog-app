@@ -73,7 +73,22 @@
       "savedReusedFoods_other": "{{count}} ingrediënten kwamen overeen met voeding die al op deze telefoon staat.",
       "saveFailed": "Kon het ontvangen item niet opslaan.",
       "notShareable": "Dit is een volledige back-up, geen maaltijd of voedingsmiddel. Ontvang die via Instellingen → Optische overdracht.",
-      "unreadable": "Dit kon niet worden gelezen. Probeer het opnieuw te versturen."
+      "unreadable": "Dit kon niet worden gelezen. Probeer het opnieuw te versturen.",
+      "sendDayTitle": "Dag versturen",
+      "sendDayReadyTitle": "Dag klaar om te versturen",
+      "sendDayInstructions": "Open op de andere telefoon Instellingen → Optische overdracht → Ontvangen en richt de camera op dit scherm.",
+      "dayEntryCount_one": "{{count}} item",
+      "dayEntryCount_other": "{{count}} items",
+      "dayTimesUnknown": "Musclog GB bewaart alleen de dag, dus alles komt binnen op het middaguur onder Overig.",
+      "dayModeExplainer": "Voeg deze items toe aan deze dag of vervang wat er al staat.",
+      "dayAdd": "Aan deze dag toevoegen",
+      "dayReplace": "Items van deze dag vervangen",
+      "dayReplaceConfirmTitle": "Items van deze dag vervangen?",
+      "dayReplaceConfirmMessage": "Alles wat op deze dag is vastgelegd wordt verwijderd en vervangen door wat is ontvangen.",
+      "savingDay": "Dag opslaan…",
+      "savedDayTitle": "Dag opgeslagen",
+      "savedDayAdded": "{{added}} items toegevoegd.",
+      "savedDayReplaced": "{{added}} items toegevoegd, {{replaced}} verwijderd."
     },
     "receive": {
       "title": "Ontvangen",

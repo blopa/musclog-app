@@ -89,6 +89,7 @@ function validFoodRow(food, nameField) {
         reasons,
         row: {
             name: cString(String(name ?? '')),
+            externalId: String(food.external_id ?? ''),
             kcal: Math.round(kcal ?? 0),
             protein: decigrams(protein),
             fat: decigrams(fat),
@@ -191,10 +192,65 @@ ${rowLiterals(rows)}
     writeFileSync(join(outDir, `${base}.h`), header);
     writeFileSync(join(outDir, `${base}.c`), body);
     console.log(`Wrote ${base}.{c,h} (${count} foods, bank ${bank}).`);
-    return count;
+    return rows;
 }
 
-const usdaCount = emitDataset({
+/**
+ * Reconcile the frozen `foodExternalIds` wire contract with the tables just emitted.
+ *
+ * A food's position in the global index space is its IDENTITY on two wires at once: a cartridge
+ * `.sav` stores a logged food as that index, and `SHARE DAY` sends the same index. So the list is
+ * append-only — changing an existing entry re-points every save file and every past share at a
+ * different food. Appending is fine (a receiver that has never heard of an index falls back to the
+ * food tuple the cartridge sends alongside it).
+ *
+ * The app reads this list in `utils/optical/gameBoyFoodMapping.ts` to resolve an index back to the
+ * seed row it already owns, which is what makes a shared day dedupe against the receiver's own
+ * catalogue instead of creating near-duplicates from 16-char truncated names.
+ */
+function reconcileFoodIdentities(rows) {
+    const externalIds = rows.map((row) => row.externalId);
+
+    // Only "every index names something" is required. Two indices MAY carry the same external_id —
+    // the USDA set ships a few rows that differ in `description` but describe one underlying food
+    // (e.g. 578455, "Egg, whole, raw, frozen, pasteurized" and "Eggs, Grade A, Large") — and both
+    // resolving to the receiver's single copy of that food is the wanted outcome, not a collision.
+    const missing = externalIds.filter((id) => !id).length;
+    if (missing > 0) {
+        throw new Error(`${missing} bundled foods have no external_id; the wire contract needs one per food.`);
+    }
+
+    const protocolPath = join(dataDir, 'gameBoyOpticalProtocol.json');
+    const protocol = JSON.parse(readFileSync(protocolPath, 'utf8'));
+    const frozen = protocol.foodExternalIds ?? [];
+    if (!Array.isArray(frozen)) {
+        throw new Error('data/gameBoyOpticalProtocol.json has an invalid foodExternalIds list.');
+    }
+
+    const changed = frozen
+        .map((id, index) => (externalIds[index] === id ? undefined : `#${index}: ${id} -> ${externalIds[index] ?? '<removed>'}`))
+        .filter(Boolean);
+    if (changed.length > 0) {
+        throw new Error(
+            'The bundled food tables changed an index that data/gameBoyOpticalProtocol.json has frozen. ' +
+                'Cartridge save files and past optical shares reference these positions, so entries may only ' +
+                `be appended, never reordered or removed:\n  ${changed.join('\n  ')}`
+        );
+    }
+
+    if (frozen.length === externalIds.length) {
+        console.log(`Food identity contract unchanged (${externalIds.length} entries).`);
+        return;
+    }
+
+    protocol.foodExternalIds = externalIds;
+    writeFileSync(protocolPath, `${JSON.stringify(protocol, null, 2)}\n`);
+    console.log(
+        `Appended ${externalIds.length - frozen.length} food identities to data/gameBoyOpticalProtocol.json.`
+    );
+}
+
+const usdaRows = emitDataset({
     srcName: 'usda_foundation_foods.json',
     nameField: 'description',
     array: 'foundation_foods',
@@ -206,7 +262,7 @@ const usdaCount = emitDataset({
     defineStruct: true,
 });
 
-const commonCount = emitDataset({
+const commonRows = emitDataset({
     srcName: 'common_foundation_foods.json',
     nameField: 'name',
     array: 'common_foods',
@@ -217,4 +273,9 @@ const commonCount = emitDataset({
     base: 'common_foods',
     defineStruct: false,
 });
-console.log(`Done: ${usdaCount + commonCount} foods total (USDA ${usdaCount} + common ${commonCount}).`);
+// food_db.c reads both tables behind one global index space: USDA first, the common set appended
+// after it. The identity contract has to be built in exactly that order.
+reconcileFoodIdentities([...usdaRows, ...commonRows]);
+console.log(
+    `Done: ${usdaRows.length + commonRows.length} foods total (USDA ${usdaRows.length} + common ${commonRows.length}).`
+);

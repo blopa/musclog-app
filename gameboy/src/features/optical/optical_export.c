@@ -36,6 +36,13 @@ typedef enum SinkMode {
     SINK_XOR,
 } SinkMode;
 
+/* Which payload the three streaming passes are rendering. Every pass must agree, so it is a
+ * static set once by the preparer rather than an argument threaded through the sinks. */
+typedef enum ExportMode {
+    EXPORT_MODE_DATABASE,
+    EXPORT_MODE_DAY_SHARE,
+} ExportMode;
+
 typedef struct JsonSink {
     SinkMode mode;
     uint32_t pos;
@@ -48,6 +55,8 @@ typedef struct JsonSink {
 } JsonSink;
 
 static const SaveData *export_data;
+static ExportMode export_mode;
+static uint16_t export_share_day;
 static uint16_t export_today_day;
 static uint32_t export_plain_len;
 static uint32_t export_payload_fnv;
@@ -154,6 +163,13 @@ static uint16_t foodlog_entry_offset(uint16_t index) {
     return (uint16_t)(FOODLOG_ENTRIES_OFFSET + index * FOODLOG_ENTRY_SIZE);
 }
 
+/*
+ * Mark every food the export will need.
+ *
+ * A day share narrows this to one day and stops there: the whole point is to send what was eaten
+ * on that day, so an unreferenced custom food (which a full export carries, to keep the receiver's
+ * "My Foods" complete) has no business in it, and neither do the exercises.
+ */
 static void scan_references(void) {
     uint16_t count;
     uint16_t i;
@@ -178,6 +194,9 @@ static void scan_references(void) {
     if (count > FOODLOG_CAPACITY) count = 0u;
     for (i = 0u; i != count; ++i) {
         off = foodlog_entry_offset(i);
+        if (export_mode == EXPORT_MODE_DAY_SHARE && sram_rd16(_SRAM, off) != export_share_day) {
+            continue;
+        }
         food_index = sram_rd16(_SRAM, (uint16_t)(off + 2u));
         if (food_index < BUNDLED_FOOD_COUNT) {
             bitmap_set(food_referenced, food_index);
@@ -188,6 +207,8 @@ static void scan_references(void) {
     }
     SWITCH_RAM(0u);
     DISABLE_RAM;
+
+    if (export_mode == EXPORT_MODE_DAY_SHARE) return;
 
     for (slot = 0u; slot != MAX_CUSTOM_FOODS; ++slot) {
         custom_foods_load(slot, &food);
@@ -404,7 +425,55 @@ static void render_workouts(JsonSink *sink) {
     sink_byte(sink, ']');
 }
 
-static void render_json(JsonSink *sink) {
+/* [global food index, grams] for every entry logged on the shared day, oldest first. */
+static void render_day_logs(JsonSink *sink) {
+    uint16_t count;
+    uint16_t i;
+    uint16_t off;
+    uint16_t food_index;
+    uint16_t grams;
+    uint8_t first = 1u;
+    json_text(sink, ",\"logs\":[");
+    ENABLE_RAM;
+    SWITCH_RAM(FOODLOG_SRAM_BANK);
+    count = sram_rd16(_SRAM, FOODLOG_OFF_COUNT);
+    if (count > FOODLOG_CAPACITY) count = 0u;
+    for (i = 0u; i != count; ++i) {
+        /* sink_byte may have selected the QR bank to cache the previous tuple. */
+        ENABLE_RAM;
+        SWITCH_RAM(FOODLOG_SRAM_BANK);
+        off = foodlog_entry_offset(i);
+        if (sram_rd16(_SRAM, off) != export_share_day) continue;
+        food_index = sram_rd16(_SRAM, (uint16_t)(off + 2u));
+        grams = sram_rd16(_SRAM, (uint16_t)(off + 4u));
+        tuple_separator(sink, &first);
+        sink_byte(sink, '[');
+        json_uint32(sink, food_index);
+        sink_byte(sink, ',');
+        json_uint32(sink, grams);
+        sink_byte(sink, ']');
+    }
+    sink_byte(sink, ']');
+    SWITCH_RAM(0u);
+    DISABLE_RAM;
+}
+
+/*
+ * One day of eating, as the compact schema utils/optical/gameBoyDayShare.ts expands into a
+ * `nutritionDay` share envelope. The food tuples are the SAME shape the database export emits
+ * (render_foods), so the receiver parses one food tuple, not two.
+ */
+static void render_day_share_json(JsonSink *sink) {
+    json_text(sink, "{\"_gameBoyShare\":");
+    json_uint32(sink, OPTICAL_DAY_SHARE_SCHEMA_VERSION);
+    json_text(sink, ",\"kind\":\"day\",\"day\":");
+    json_uint32(sink, export_share_day);
+    render_foods(sink);
+    render_day_logs(sink);
+    sink_byte(sink, '}');
+}
+
+static void render_database_json(JsonSink *sink) {
     json_text(sink, "{\"_exportVersion\":");
     json_uint32(sink, OPTICAL_EXPORT_DATABASE_VERSION);
     json_text(sink, ",\"_gameBoyExport\":");
@@ -419,17 +488,34 @@ static void render_json(JsonSink *sink) {
     sink_byte(sink, '}');
 }
 
+static void render_json(JsonSink *sink) {
+    if (export_mode == EXPORT_MODE_DAY_SHARE) {
+        render_day_share_json(sink);
+    } else {
+        render_database_json(sink);
+    }
+}
+
 static uint8_t container_byte(uint8_t offset) {
     uint32_t created = DAY_ZERO_UNIX_SECONDS + optical_mul32(export_today_day, DAY_SECONDS);
+    uint16_t export_version = export_mode == EXPORT_MODE_DAY_SHARE
+                                  ? OPTICAL_SHARE_EXPORT_VERSION
+                                  : (uint16_t)CONTAINER_EXPORT_VERSION;
     if (offset < 4u) return (uint8_t) "MLOG"[offset];
     if (offset == 4u) return CONTAINER_VERSION;
     if (offset == 5u) return 0u;
-    if (offset < 8u) return (uint8_t)(CONTAINER_EXPORT_VERSION >> ((offset - 6u) * 8u));
+    if (offset < 8u) return (uint8_t)(export_version >> ((offset - 6u) * 8u));
     if (offset < 12u) return (uint8_t)(created >> ((offset - 8u) * 8u));
     if (offset < 16u) return (uint8_t)(export_plain_len >> ((offset - 12u) * 8u));
     if (offset < 20u) return (uint8_t)(export_plain_len >> ((offset - 16u) * 8u));
     if (offset < 52u) return export_digest[offset - 20u];
-    return 0u; /* no KDF, cipher, share kind, salt, or IV */
+    /* Byte 54 tells the receiver whether this is a database it may restore over everything, or a
+     * share it merges. Everything else past the digest stays zero: no KDF, cipher, salt, or IV. */
+    if (offset == 54u) {
+        return export_mode == EXPORT_MODE_DAY_SHARE ? OPTICAL_PAYLOAD_KIND_SHARE
+                                                    : OPTICAL_PAYLOAD_KIND_DATABASE;
+    }
+    return 0u;
 }
 
 static void cache_export(void) {
@@ -445,7 +531,7 @@ static void cache_export(void) {
     DISABLE_RAM;
 }
 
-uint8_t optical_export_prepare(const SaveData *data, OpticalExportInfo *info) BANKED {
+static uint8_t prepare_export(const SaveData *data, OpticalExportInfo *info) {
     JsonSink sink;
     CalDate today;
     uint8_t i;
@@ -483,6 +569,19 @@ uint8_t optical_export_prepare(const SaveData *data, OpticalExportInfo *info) BA
     if (info->block_count == 0u || info->block_count > 512u) return 0u;
     cache_export();
     return 1u;
+}
+
+uint8_t optical_export_prepare(const SaveData *data, OpticalExportInfo *info) BANKED {
+    export_mode = EXPORT_MODE_DATABASE;
+    export_share_day = 0u;
+    return prepare_export(data, info);
+}
+
+uint8_t optical_export_prepare_day(const SaveData *data, uint16_t day_num,
+                                   OpticalExportInfo *info) BANKED {
+    export_mode = EXPORT_MODE_DAY_SHARE;
+    export_share_day = day_num;
+    return prepare_export(data, info);
 }
 
 void optical_export_xor_blocks(const uint16_t *selected, uint8_t degree, uint8_t *out) BANKED {

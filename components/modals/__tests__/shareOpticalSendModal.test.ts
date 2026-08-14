@@ -19,6 +19,7 @@ import { ShareOpticalSendModal } from '@/components/modals/ShareOpticalSendModal
 import { buildFoodSharePayload } from '@/database/share/buildFoodShare';
 import { buildLoggedMealSharePayload } from '@/database/share/buildLoggedMealShare';
 import { buildMealSharePayload } from '@/database/share/buildMealShare';
+import { buildNutritionDaySharePayload } from '@/database/share/buildNutritionDayShare';
 import { MusclogShareError } from '@/utils/share/shareEnvelope';
 
 const sendProps: any[] = [];
@@ -35,6 +36,9 @@ jest.mock('@/database/share/buildMealShare', () => ({ buildMealSharePayload: jes
 jest.mock('@/database/share/buildLoggedMealShare', () => ({
   buildLoggedMealSharePayload: jest.fn(),
 }));
+jest.mock('@/database/share/buildNutritionDayShare', () => ({
+  buildNutritionDaySharePayload: jest.fn(),
+}));
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
@@ -43,6 +47,7 @@ jest.mock('react-i18next', () => ({
 const mockFood = buildFoodSharePayload as jest.Mock;
 const mockMeal = buildMealSharePayload as jest.Mock;
 const mockLoggedMeal = buildLoggedMealSharePayload as jest.Mock;
+const mockNutritionDay = buildNutritionDaySharePayload as jest.Mock;
 
 function renderSender(target: any) {
   render(
@@ -63,6 +68,7 @@ describe('ShareOpticalSendModal', () => {
     mockFood.mockResolvedValue({ json: '{}', photo: 'none' });
     mockMeal.mockResolvedValue({ json: '{}', photo: 'none' });
     mockLoggedMeal.mockResolvedValue({ json: '{}', photo: 'none' });
+    mockNutritionDay.mockResolvedValue({ json: '{}', photo: 'none' });
   });
 
   it('sends a food through the food builder and offers its photo', async () => {
@@ -96,6 +102,18 @@ describe('ShareOpticalSendModal', () => {
 
     await props.buildPayload({ includeImage: true });
     expect(mockLoggedMeal).toHaveBeenCalledWith(logs, { name: 'Lunch, 2 Aug' });
+  });
+
+  it('sends a diary day through the day builder', async () => {
+    const logs = [{ id: 'log-1' }];
+    const props = renderSender({ dayKey: '2026-08-14', kind: 'nutritionDay', logs });
+
+    // A day is diary entries, not a recipe, so it gets its own copy — and carries no photo.
+    expect(props.hasPhoto).toBe(false);
+    expect(props.copy.title).toBe('opticalTransfer.share.sendDayTitle');
+
+    await props.buildPayload({ includeImage: true });
+    expect(mockNutritionDay).toHaveBeenCalledWith(logs, { dayKey: '2026-08-14' });
   });
 
   it('translates the builder’s typed empty-share failure', async () => {

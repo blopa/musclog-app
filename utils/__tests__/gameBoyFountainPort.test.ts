@@ -5,7 +5,12 @@ import ErrorCorrectionLevel from '@zxing/library/cjs/core/qrcode/decoder/ErrorCo
 import Version from '@zxing/library/cjs/core/qrcode/decoder/Version';
 
 import gameBoyOpticalProtocol from '@/data/gameBoyOpticalProtocol.json';
-import { OPTICAL_CONTAINER_HEADER_LEN } from '@/utils/optical/container';
+import {
+  OPTICAL_CONTAINER_HEADER_LEN,
+  OPTICAL_EXPORT_VERSION_SHARE,
+  OPTICAL_PAYLOAD_KIND_DATABASE,
+  OPTICAL_PAYLOAD_KIND_SHARE,
+} from '@/utils/optical/container';
 import { dlog, frameIndices, frameSeed, solitonCdf } from '@/utils/optical/fountain';
 import { HEADER_LEN, MAGIC0, MAGIC1, splitmix32 } from '@/utils/optical/frameProtocol';
 import { alphanumericCapacity } from '@/utils/optical/qrEncode';
@@ -192,6 +197,32 @@ describe('Game Boy optical wire port', () => {
     expect(generatedProtocol).toContain(
       `#define OPTICAL_EXPORT_SCHEMA_VERSION ${gameBoyOpticalProtocol.gameBoyExportVersion}u`
     );
+    expect(generatedProtocol).toContain(
+      `#define OPTICAL_DAY_SHARE_SCHEMA_VERSION ${gameBoyOpticalProtocol.gameBoyDayShareVersion}u`
+    );
+
+    // SHARE DAY writes a share container, not a database one. Both header fields matter and both
+    // are read from the app's own constants: byte 54 is what stops a receiver offering its
+    // destructive restore for a day of food, and the impossible export version is what makes a
+    // build too old to know about byte 54 say "sent by a newer version of Musclog" instead.
+    const exportSource = readFileSync(
+      join(root, 'gameboy/src/features/optical/optical_export.c'),
+      'utf8'
+    );
+    expect(cMacroValue(exportHeader, 'OPTICAL_PAYLOAD_KIND_DATABASE')).toBe(
+      OPTICAL_PAYLOAD_KIND_DATABASE
+    );
+    expect(cMacroValue(exportHeader, 'OPTICAL_PAYLOAD_KIND_SHARE')).toBe(
+      OPTICAL_PAYLOAD_KIND_SHARE
+    );
+    expect(exportHeader).toContain(
+      `#define OPTICAL_SHARE_EXPORT_VERSION 0x${OPTICAL_EXPORT_VERSION_SHARE.toString(16).toUpperCase()}u`
+    );
+    expect(exportSource).toContain('if (offset == 54u)');
+    // The compact schema the app expands in utils/optical/gameBoyDayShare.ts.
+    expect(exportSource).toContain('json_text(sink, "{\\"_gameBoyShare\\":");');
+    expect(exportSource).toContain('json_text(sink, ",\\"kind\\":\\"day\\",\\"day\\":");');
+    expect(exportSource).toContain('json_text(sink, ",\\"logs\\":[");');
     const blockLen = cMacroValue(exportHeader, 'OPTICAL_FOUNTAIN_BLOCK_LEN');
     const cacheBlocks = cMacroValue(exportHeader, 'OPTICAL_SRAM_CACHE_BLOCKS');
     expect(cMacroValue(exportHeader, 'OPTICAL_CONTAINER_HEADER_LEN')).toBe(

@@ -17,6 +17,18 @@ import { SHARE_KINDS } from '@/utils/share/shareKinds';
  */
 const NEVER_SHARED = new Set(['deleted_at']);
 
+/**
+ * Columns a kind deliberately refuses to carry, and why. Listed here rather than simply left out of
+ * the spec so the omission is a decision on the record: the parity check above is what makes a
+ * NEW schema column fail the build until someone chooses, and an unexplained gap would quietly
+ * turn that guarantee off for the whole table.
+ */
+const DELIBERATELY_UNSHARED: Record<string, Record<string, string[]>> = {
+  // `external_id` is the Health Connect / integration sync key. Importing another device's would
+  // make this phone's next sync mistake a received log for a record it had already synced.
+  nutritionDay: { nutrition_logs: ['external_id'] },
+};
+
 describe('share kind column allowlists', () => {
   for (const [kind, spec] of Object.entries(SHARE_KINDS)) {
     describe(kind, () => {
@@ -28,10 +40,19 @@ describe('share kind column allowlists', () => {
         const tableSchema = schema.tables[table];
         expect(tableSchema).toBeDefined();
 
+        const excluded = new Set(DELIBERATELY_UNSHARED[kind]?.[table] ?? []);
         const schemaColumns = Object.keys(tableSchema.columns)
-          .filter((column) => !NEVER_SHARED.has(column))
+          .filter((column) => !NEVER_SHARED.has(column) && !excluded.has(column))
           .sort();
         expect([...spec.columns[table]].sort()).toEqual(schemaColumns);
+      });
+
+      it('does not list a column it declares as deliberately unshared', () => {
+        for (const [table, columns] of Object.entries(DELIBERATELY_UNSHARED[kind] ?? {})) {
+          for (const column of columns) {
+            expect(spec.columns[table]).not.toContain(column);
+          }
+        }
       });
 
       it('covers every foreign key and asset column it relies on', () => {
