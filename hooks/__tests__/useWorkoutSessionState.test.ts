@@ -123,7 +123,15 @@ describe('useWorkoutSessionState', () => {
     expect(result.current.currentSet?.id).toBe('set-2');
     expect(result.current.currentSet?.weight).toBe(12);
     expect(result.current.currentSet?.reps).toBe(9);
-    expect(result.current.currentSet?.isAutoAdjusted).toBe(true);
+    // The set carries the reason for the change, so the session can explain it rather than
+    // silently rewriting the user's planned numbers.
+    expect(result.current.currentSet?.adjustment).toMatchObject({
+      cause: 'target_rir',
+      field: 'reps',
+      from: 14,
+      to: 9,
+      targetRepsInReserve: 2,
+    });
   });
 
   it('should adjust weight in weight_first mode after carrying over manual adjustment', async () => {
@@ -192,5 +200,13 @@ describe('useWorkoutSessionState', () => {
     expect(result.current.currentSet?.id).toBe('set-2');
     expect(result.current.currentSet?.weight).toBe(12);
     // It should be 12 because it carried over 12 from last set, AND the calculated weight for 11 reps @ 0 RIR is also 12.
+    // Only the carry-over moved the number, so that — not a target-RIR recalculation — is
+    // what the session reports.
+    expect(result.current.currentSet?.adjustment).toMatchObject({
+      cause: 'carry_over',
+      field: 'weight',
+      from: 18,
+      to: 12,
+    });
   });
 });

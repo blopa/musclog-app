@@ -138,7 +138,12 @@
       "deleteDescription": "Verwijder deze oefening permanent",
       "duplicateSuccess": "Oefening gedupliceerd",
       "couldNotOpenLink": "Kon link niet openen",
-      "usedInTemplatesShort": "Sjabloon"
+      "usedInTemplatesShort": "Sjabloon",
+      "oneRepMaxTrend": "Geschatte 1RM",
+      "oneRepMaxTrendEmpty": "Log deze oefening in twee workouts om te zien hoe je geschatte 1RM zich ontwikkelt.",
+      "oneRepMaxTrendUp": "{{change}} {{unit}} omhoog over {{sessions}} sessies.",
+      "oneRepMaxTrendDown": "{{change}} {{unit}} omlaag over {{sessions}} sessies.",
+      "oneRepMaxTrendSteady": "Blijft gelijk over {{sessions}} sessies."
     },
     "manageExerciseData": {
       "deleteExerciseWarning": "Weet je zeker dat je deze oefening wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",

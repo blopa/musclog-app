@@ -138,7 +138,12 @@
       "deleteDescription": "Eliminar este ejercicio permanentemente",
       "duplicateSuccess": "Ejercicio duplicado",
       "couldNotOpenLink": "No se pudo abrir el enlace",
-      "usedInTemplatesShort": "Plantilla"
+      "usedInTemplatesShort": "Plantilla",
+      "oneRepMaxTrend": "1RM Estimado",
+      "oneRepMaxTrendEmpty": "Registra este ejercicio en dos entrenamientos para ver cómo evoluciona tu 1RM estimado.",
+      "oneRepMaxTrendUp": "Sube {{change}} {{unit}} en {{sessions}} sesiones.",
+      "oneRepMaxTrendDown": "Baja {{change}} {{unit}} en {{sessions}} sesiones.",
+      "oneRepMaxTrendSteady": "Se mantiene estable en {{sessions}} sesiones."
     },
     "manageExerciseData": {
       "deleteExerciseWarning": "¿Estás seguro de que deseas eliminar este ejercicio? Esta acción no se puede deshacer.",

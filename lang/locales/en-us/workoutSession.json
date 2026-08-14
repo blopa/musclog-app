@@ -43,6 +43,12 @@
     "sensorConnected": "Connected to {{name}}",
     "sensorDisconnectedTracking": "Sensor disconnected — tracking data discarded",
     "sensorDisconnected": "Sensor disconnected",
-    "disconnect": "Disconnect"
+    "disconnect": "Disconnect",
+    "adjustment": {
+      "label": "Adjusted",
+      "carryOver": "Weight follows your last set ({{to}} {{unit}}) instead of the planned {{from}} {{unit}}.",
+      "targetRirWeight": "Weight changed from {{from}} to {{to}} {{unit}} — your last set puts your estimated 1RM at {{oneRepMax}} {{unit}}, so this keeps {{rir}} reps in reserve.",
+      "targetRirReps": "Reps changed from {{from}} to {{to}} — your last set puts your estimated 1RM at {{oneRepMax}} {{unit}}, so this keeps {{rir}} reps in reserve at the current weight."
+    }
   }
 }

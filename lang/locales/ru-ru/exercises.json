@@ -138,7 +138,12 @@
       "deleteDescription": "Безвозвратно удалить это упражнение",
       "duplicateSuccess": "Упражнение дублировано",
       "couldNotOpenLink": "Не удалось открыть ссылку",
-      "usedInTemplatesShort": "Шаблон"
+      "usedInTemplatesShort": "Шаблон",
+      "oneRepMaxTrend": "Расчётный 1ПМ",
+      "oneRepMaxTrendEmpty": "Запишите это упражнение в двух тренировках, чтобы увидеть динамику расчётного 1ПМ.",
+      "oneRepMaxTrendUp": "Рост на {{change}} {{unit}} за {{sessions}} тренировок.",
+      "oneRepMaxTrendDown": "Снижение на {{change}} {{unit}} за {{sessions}} тренировок.",
+      "oneRepMaxTrendSteady": "Без изменений за {{sessions}} тренировок."
     },
     "manageExerciseData": {
       "deleteExerciseWarning": "Вы уверены, что хотите удалить это упражнение? Это действие нельзя отменить.",

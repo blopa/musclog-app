@@ -21,6 +21,7 @@ import {
 } from '@/utils/activeWorkoutStorage';
 import { deleteBleDataPointsFiles } from '@/utils/bleWorkoutDataStorage';
 import { handleError } from '@/utils/handleError';
+import type { SetAdjustment } from '@/utils/setAdjustment';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { jsDayToWeekdayIndex } from '@/utils/weekdays';
 import { getRollingWeeklyWorkoutRange } from '@/utils/weeklyWorkoutProgress';
@@ -46,7 +47,8 @@ export type EnrichedWorkoutLogSet = WorkoutLogSetSnapshot & {
   exerciseId: string;
   groupId?: string;
   notes?: string;
-  isAutoAdjusted?: boolean;
+  /** Set by the live session when it re-targets the planned set — see `computeIntraSessionAdjustment`. */
+  adjustment?: SetAdjustment;
   isSkipped: boolean;
 };
 

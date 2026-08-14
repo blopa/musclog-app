@@ -65,9 +65,14 @@ collects.
 
 ### High-value session improvements
 
-- Progressive-overload nudges at set entry using the existing recent-set and 1RM calculations.
-- Per-exercise estimated-1RM trend charts and explicit post-workout PR highlights.
-- Optional automatic rest-timer start when a performed set is completed.
+- Extend the between-set explanation to the rest of the session: a look-ahead nudge before the
+  set is logged, and the same treatment for the values `WorkoutTemplateService` picks when a
+  template is instantiated.
+- Name the records in the post-workout summary. `detectPersonalRecords` already returns each PR
+  with its exercise and previous value, but the celebration screen shows only a count and any
+  1RM-goal progress the PRs happen to touch.
+- An opt-out for the automatic rest-timer start. Completing a set already routes straight to a
+  running rest timer; only the setting is missing.
 - Contextual exercise substitutions based on equipment, muscle group, session, and history.
 - A plate calculator, followed later by named gym profiles with bars, plates, machines, and minimum
   increments.

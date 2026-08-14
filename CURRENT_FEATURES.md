@@ -23,11 +23,13 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Organize workouts into named plans with weekly weekday assignments or ordered rotating cycles; workouts can belong to multiple plans, while standalone routines remain in an Unplanned section
 - Browse a built-in template library, including a five-session cable superset program
 - Browse 873 built-in exercises with localized names and instructions, muscle-group filters, and two-frame technique photos
+- Per-exercise estimated-1RM trend chart with a plain-language read of the change across logged sessions
 - Built-in programs and AI-generated routines create complete named workout plans based on your equipment and goals
 - Drag-and-drop exercise reordering during or after a session
 - Superset / exercise grouping via shared group ID
 - Built-in rest timer with customizable duration and haptic alerts
 - Real-time session stats: elapsed time, calories burned, total volume
+- Between-set weight/rep re-targeting that states what it changed and why (carried-over load, or a recalculation that holds your target reps in reserve), with the marker on the field it actually moved
 - Automatic personal record (PR) detection
 - Review the full planned set list in workout history, with unfinished sets and exercises marked skipped and excluded from volume, records, trends, and other performance calculations
 - Import workouts by pasting text — AI parses it into a session

@@ -43,6 +43,12 @@
     "sensorConnected": "Verbonden met {{name}}",
     "sensorDisconnectedTracking": "Sensor verbroken — trackinggegevens verwijderd",
     "sensorDisconnected": "Sensor verbroken",
-    "disconnect": "Verbinding verbreken"
+    "disconnect": "Verbinding verbreken",
+    "adjustment": {
+      "label": "Aangepast",
+      "carryOver": "Het gewicht volgt je vorige set ({{to}} {{unit}}) in plaats van de geplande {{from}} {{unit}}.",
+      "targetRirWeight": "Gewicht gewijzigd van {{from}} naar {{to}} {{unit}} — je vorige set schat je 1RM op {{oneRepMax}} {{unit}}, dus zo houd je {{rir}} herhalingen in reserve.",
+      "targetRirReps": "Herhalingen gewijzigd van {{from}} naar {{to}} — je vorige set schat je 1RM op {{oneRepMax}} {{unit}}, dus zo houd je {{rir}} herhalingen in reserve bij dit gewicht."
+    }
   }
 }

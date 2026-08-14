@@ -43,6 +43,12 @@
     "sensorConnected": "Conectado a {{name}}",
     "sensorDisconnectedTracking": "Sensor desconectado — dados de rastreamento descartados",
     "sensorDisconnected": "Sensor desconectado",
-    "disconnect": "Desconectar"
+    "disconnect": "Desconectar",
+    "adjustment": {
+      "label": "Ajustado",
+      "carryOver": "O peso segue sua última série ({{to}} {{unit}}) em vez dos {{from}} {{unit}} planejados.",
+      "targetRirWeight": "Peso alterado de {{from}} para {{to}} {{unit}} — sua última série coloca seu 1RM estimado em {{oneRepMax}} {{unit}}, então isso mantém {{rir}} repetições de reserva.",
+      "targetRirReps": "Repetições alteradas de {{from}} para {{to}} — sua última série coloca seu 1RM estimado em {{oneRepMax}} {{unit}}, então isso mantém {{rir}} repetições de reserva no peso atual."
+    }
   }
 }

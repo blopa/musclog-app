@@ -50,6 +50,7 @@ import ShowMoreButton from '@/components/ShowMoreButton';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { Button } from '@/components/theme/Button';
 import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
+import { SetAdjustmentNotice } from '@/components/workout/SetAdjustmentNotice';
 import { WorkoutActionButton } from '@/components/WorkoutActionButton';
 import { WorkoutTimeTracker } from '@/components/WorkoutTimeTracker';
 import { useSnackbar } from '@/context/SnackbarContext';
@@ -1146,6 +1147,14 @@ export default function WorkoutSessionScreen() {
   } else if (currentSetData) {
     const exerciseCategory = getExerciseCategory();
     const previousSet = currentSetData.previousSet;
+    const setAdjustment = currentSetData.set.adjustment;
+    // Only the target-RIR step badges a stat card: a carry-over shows the weight the user
+    // themselves last lifted, so a "we calculated this" marker would misattribute it. The
+    // marker goes on the field that actually moved, which in the default reps_first mode is
+    // reps, not weight.
+    const isRetargeted = setAdjustment?.cause === 'target_rir';
+    const isWeightRetargeted = isRetargeted && setAdjustment?.field === 'weight';
+    const isRepsRetargeted = isRetargeted && setAdjustment?.field === 'reps';
     let partialsValue;
 
     if (!isStatsDataLoaded) {
@@ -1286,7 +1295,7 @@ export default function WorkoutSessionScreen() {
               onPress={() => {
                 setIsEditSetModalVisible(true);
               }}
-              isAdjusted={currentSetData.set.isAutoAdjusted}
+              isAdjusted={isWeightRetargeted}
             />
             <WorkoutStatCard
               title={t('workoutSession.reps')}
@@ -1300,6 +1309,7 @@ export default function WorkoutSessionScreen() {
               onPress={() => {
                 setIsEditSetModalVisible(true);
               }}
+              isAdjusted={isRepsRetargeted}
             />
             <WorkoutStatCard
               title={t('workoutSession.partials')}
@@ -1309,6 +1319,13 @@ export default function WorkoutSessionScreen() {
               }}
             />
           </View>
+
+          {/* Why these numbers differ from the plan */}
+          {setAdjustment && isStatsDataLoaded ? (
+            <View className="mt-4 px-6">
+              <SetAdjustmentNotice adjustment={setAdjustment} />
+            </View>
+          ) : null}
 
           {/* Previous & History */}
           <View className="mt-6 flex-row items-center justify-between px-6">

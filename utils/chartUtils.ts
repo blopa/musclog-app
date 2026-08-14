@@ -84,6 +84,50 @@ export function getXAxisLabels<T extends { x: number }>(
   return labels;
 }
 
+/** One day in ms — the padding a single-point time series gets so it still has a domain. */
+const SINGLE_POINT_X_PADDING_MS = 86400000;
+
+/**
+ * X domain for a time series, assuming `data` is sorted ascending.
+ *
+ * A single point has no span, so it is widened by a day either side; charting it as
+ * `[x, x]` collapses the domain and the line disappears.
+ */
+export function getTimeSeriesXDomain<T extends { x: number }>(data: T[]): [number, number] {
+  if (data.length === 0) {
+    return [0, 1];
+  }
+
+  const first = data[0].x;
+  const last = data[data.length - 1].x;
+  if (first === last) {
+    return [first - SINGLE_POINT_X_PADDING_MS, last + SINGLE_POINT_X_PADDING_MS];
+  }
+
+  return [first, last];
+}
+
+/**
+ * Y domain padded by 15% of the series' own spread, so a trend fills the plot instead of
+ * hugging a zero baseline. Falls back to 10% of the value for a flat series, then to a
+ * fixed band when even that is zero. Never returns a negative floor.
+ */
+export function getPaddedYDomain<T extends { y: number }>(
+  data: T[],
+  emptyDomain: [number, number] = [0, 100]
+): [number, number] {
+  if (data.length === 0) {
+    return emptyDomain;
+  }
+
+  const values = data.map((d) => d.y);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const padding = (max - min) * 0.15 || max * 0.1 || 10;
+
+  return [Math.max(0, min - padding), max + padding];
+}
+
 /**
  * Generates Y-axis labels for a given range.
  *
@@ -99,6 +143,7 @@ export function getYAxisLabels(
   if (count <= 0) {
     return [];
   }
+
   const labels: YAxisLabel[] = [];
   const range = max - min;
   const step = count > 1 ? range / (count - 1) : 0;

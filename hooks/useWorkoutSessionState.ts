@@ -11,11 +11,7 @@ import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import { SettingsService, UserMetricService, WorkoutService } from '@/database/services';
 import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
-import {
-  calculateAverage1RM,
-  calculateRepsForTargetRIR,
-  calculateWeightForTargetRIR,
-} from '@/utils/workoutCalculator';
+import { computeIntraSessionAdjustment } from '@/utils/setAdjustment';
 import { isPerformedWorkoutSet, isResolvedWorkoutSet } from '@/utils/workoutSetCompletion';
 import {
   getEffectiveOrder,
@@ -177,54 +173,17 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
                 // Adjust current set based on lastSet
                 const exercise = exerciseList.find((e) => e.id === lastSet.exerciseId);
                 const equipmentType = exercise?.equipmentType;
-                const isBodyweight = equipmentType?.toLowerCase().includes('bodyweight');
-                const oneRM = calculateAverage1RM(
-                  lastSet.weight + (isBodyweight ? bodyWeightKg : 0),
-                  lastSet.reps,
-                  lastSet.repsInReserve ?? 0
-                );
+                const { weight, reps, adjustment } = computeIntraSessionAdjustment({
+                  previousSet: lastSet,
+                  plannedSet: currentActive,
+                  progressionMode,
+                  isBodyweight: !!equipmentType?.toLowerCase().includes('bodyweight'),
+                  bodyWeightKg,
+                });
 
-                const targetRIR = currentActive.repsInReserve ?? 2;
-
-                // Carry over weight from last set if it differs from current planned weight
-                // This respects manual adjustments made by the user in the previous set
-                const lastWeight = lastSet.weight ?? 0;
-                const currentPlannedWeight = currentActive.weight ?? 0;
-                if (
-                  lastWeight > 0 &&
-                  currentPlannedWeight > 0 &&
-                  Math.abs(lastWeight - currentPlannedWeight) >= 0.1
-                ) {
-                  currentActive.weight = lastWeight;
-                }
-
-                if (progressionMode === 'weight_first') {
-                  const adjustedWeight = calculateWeightForTargetRIR(
-                    oneRM,
-                    currentActive.reps,
-                    targetRIR
-                  );
-
-                  const roundedWeight = Math.round(adjustedWeight);
-                  if (Math.abs(roundedWeight - (currentActive.weight ?? 0)) >= 1) {
-                    currentActive.weight = roundedWeight;
-                    currentActive.isAutoAdjusted = true;
-                  }
-                } else {
-                  // reps_first: keep (newly carried over) weight, adjust reps to match 1RM at target RIR
-                  const adjustedReps = calculateRepsForTargetRIR(
-                    oneRM,
-                    isBodyweight
-                      ? (currentActive.weight ?? 0) + bodyWeightKg
-                      : (currentActive.weight ?? 0),
-                    targetRIR
-                  );
-
-                  if (Math.abs(adjustedReps - (currentActive.reps ?? 0)) >= 1) {
-                    currentActive.reps = adjustedReps;
-                    currentActive.isAutoAdjusted = true;
-                  }
-                }
+                currentActive.weight = weight;
+                currentActive.reps = reps;
+                currentActive.adjustment = adjustment ?? undefined;
               }
             }
           }
