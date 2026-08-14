@@ -332,12 +332,19 @@
       "nextPage": "Próxima página",
       "pageStatus": "Página {{current}} de {{total}}",
       "pageLabel": "Página {{page}}",
+      "categoryPage": {
+        "eyebrow": "Explorar por categoria",
+        "title": "Artigos sobre {{category}}",
+        "description": "Todos os artigos do blog do Musclog na categoria {{category}}.",
+        "empty": "Nenhum artigo foi encontrado em {{category}}.",
+        "listLabel": "Artigos do blog sobre {{category}}"
+      },
       "categories": {
-        "productUpdates": "Atualizações do produto",
-        "webDevelopment": "Desenvolvimento web",
+        "product-updates": "Atualizações do produto",
+        "web-development": "Desenvolvimento web",
         "engineering": "Engenharia",
         "retro": "Retrô",
-        "machineLearning": "Aprendizado de máquina"
+        "machine-learning": "Aprendizado de máquina"
       }
     },
     "gameboy": {

@@ -18,7 +18,7 @@ const categoryTranslations = {
 };
 
 describe('blog category translations', () => {
-  it('renders frontmatter category keys through the blog translation namespace', () => {
+  it('renders translated category labels as links to their static category pages', () => {
     const listingSource = readFileSync(
       path.join(process.cwd(), 'components', 'website', 'BlogPostListing.tsx'),
       'utf8'
@@ -29,8 +29,45 @@ describe('blog category translations', () => {
     );
 
     expect(listingSource).toContain('t(`categories.${post.category}`)');
+    expect(listingSource).toContain('href={`/blog/category/${post.category}`}');
     expect(articleSource).toContain('const category = t(`categories.${post.category}`);');
+    expect(articleSource).toContain('href={`/blog/category/${post.category}`}');
     expect(articleSource.match(/category=\{category\}/g)).toHaveLength(2);
+  });
+
+  it('defines static loaders for category indexes and paginated category pages', () => {
+    const categoryIndexSource = readFileSync(
+      path.join(
+        process.cwd(),
+        'app',
+        '(website)',
+        'blog',
+        'category',
+        '[category]',
+        'index.web.tsx'
+      ),
+      'utf8'
+    );
+    const categoryPageSource = readFileSync(
+      path.join(
+        process.cwd(),
+        'app',
+        '(website)',
+        'blog',
+        'category',
+        '[category]',
+        'page',
+        '[page].web.tsx'
+      ),
+      'utf8'
+    );
+
+    expect(categoryIndexSource).toContain('generateStaticParams');
+    expect(categoryIndexSource).toContain('loadBlogCategoryPageForRoute(params.category, 1)');
+    expect(categoryPageSource).toContain('generateStaticParams');
+    expect(categoryPageSource).toContain(
+      'loadBlogCategoryPageForRoute(params.category, params.page)'
+    );
   });
 
   it('has a non-empty translation for every shipped category in every locale', async () => {
@@ -44,6 +81,23 @@ describe('blog category translations', () => {
         expect({ [locale]: { [category]: translation } }).toEqual({
           [locale]: { [category]: expect.any(String) },
         });
+        expect(translation.trim()).not.toBe('');
+      }
+    }
+  });
+
+  it('localizes the category listing copy in every locale', () => {
+    for (const website of [enUsWebsite, esEsWebsite, nlNlWebsite, ptBrWebsite, ruRuWebsite]) {
+      const categoryPage = website.website.blog.categoryPage;
+
+      expect(Object.keys(categoryPage).sort()).toEqual([
+        'description',
+        'empty',
+        'eyebrow',
+        'listLabel',
+        'title',
+      ]);
+      for (const translation of Object.values(categoryPage)) {
         expect(translation.trim()).not.toBe('');
       }
     }

@@ -1,7 +1,7 @@
 ---
 title: 'This blog was built using Expo'
 date: '2026-08-09'
-category: 'webDevelopment'
+category: 'web-development'
 description: 'The page you are reading is a statically exported Expo Router route. Here is how generateStaticParams turns a folder of Markdown into HTML — and the three-hunk patch to expo-router I needed to make catch-all routes work at all.'
 tags: ['Expo', 'Expo Router', 'Static Site', 'React Native', 'TypeScript']
 ---

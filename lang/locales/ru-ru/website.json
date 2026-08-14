@@ -332,12 +332,19 @@
       "nextPage": "Следующая страница",
       "pageStatus": "Страница {{current}} из {{total}}",
       "pageLabel": "Страница {{page}}",
+      "categoryPage": {
+        "eyebrow": "Просмотр по категориям",
+        "title": "Статьи в категории «{{category}}»",
+        "description": "Все статьи блога Musclog в категории «{{category}}».",
+        "empty": "В категории «{{category}}» статей не найдено.",
+        "listLabel": "Статьи блога в категории «{{category}}»"
+      },
       "categories": {
-        "productUpdates": "Обновления продукта",
-        "webDevelopment": "Веб-разработка",
+        "product-updates": "Обновления продукта",
+        "web-development": "Веб-разработка",
         "engineering": "Инженерия",
-        "retro": "Retro",
-        "machineLearning": "Машинное обучение"
+        "retro": "Ретро",
+        "machine-learning": "Машинное обучение"
       }
     },
     "gameboy": {

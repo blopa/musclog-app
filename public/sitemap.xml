@@ -41,10 +41,19 @@
     <loc>https://musclog.app/gameboy</loc>
   </url>
   <url>
-    <loc>https://musclog.app/blog/page/2</loc>
+    <loc>https://musclog.app/blog/category/engineering</loc>
   </url>
   <url>
-    <loc>https://musclog.app/blog/page/3</loc>
+    <loc>https://musclog.app/blog/category/machine-learning</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/category/product-updates</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/category/retro</loc>
+  </url>
+  <url>
+    <loc>https://musclog.app/blog/category/web-development</loc>
   </url>
   <url>
     <loc>https://musclog.app/blog/2026/03/musclog-version-2-is-out</loc>

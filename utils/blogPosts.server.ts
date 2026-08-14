@@ -27,6 +27,10 @@ export interface BlogPostPage {
   totalPosts: number;
 }
 
+export interface BlogCategoryPostPage extends BlogPostPage {
+  category: string;
+}
+
 interface BlogPostFrontmatter {
   category?: unknown;
   date?: unknown;
@@ -38,6 +42,7 @@ interface BlogPostFrontmatter {
 const MARKDOWN_EXTENSION = /\.md$/i;
 const ISO_CALENDAR_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const SAFE_SLUG_SEGMENT = /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/i;
+const SAFE_CATEGORY_KEY = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export const BLOG_POSTS_PER_PAGE = blogConfig.postsPerPage;
 
@@ -105,6 +110,18 @@ function normalizeTags(value: unknown, relativePath: string): string[] {
   return value.map((tag) => tag.trim());
 }
 
+function normalizeCategory(value: unknown, relativePath: string): string {
+  const category = requiredString(value, 'category', relativePath);
+  if (!SAFE_CATEGORY_KEY.test(category)) {
+    throw frontmatterError(
+      relativePath,
+      '"category" must be a lowercase, kebab-case translation key'
+    );
+  }
+
+  return category;
+}
+
 function excerptFromContent(content: string): string {
   const prose = content
     .replace(/```[\s\S]*?```/g, ' ')
@@ -159,7 +176,7 @@ export function parseBlogPostSummary(markdown: string, relativePath: string): Bl
       : requiredString(frontmatter.description, 'description', normalizedPath);
 
   return {
-    category: requiredString(frontmatter.category, 'category', normalizedPath),
+    category: normalizeCategory(frontmatter.category, normalizedPath),
     date: normalizeDate(frontmatter.date, normalizedPath),
     excerpt: description,
     slug: slugFromRelativePath(normalizedPath),
@@ -203,6 +220,18 @@ export async function loadBlogPostSummaries(
     const dateOrder = right.date.localeCompare(left.date);
     return dateOrder !== 0 ? dateOrder : left.title.localeCompare(right.title);
   });
+}
+
+export function getBlogCategories(posts: BlogPostSummary[]): string[] {
+  return [...new Set(posts.map((post) => post.category))].sort((left, right) =>
+    left.localeCompare(right)
+  );
+}
+
+export async function loadBlogCategories(
+  postsDirectory = path.join(process.cwd(), 'app', '(website)', 'posts')
+): Promise<string[]> {
+  return getBlogCategories(await loadBlogPostSummaries(postsDirectory));
 }
 
 export function paginateBlogPosts(
@@ -254,6 +283,58 @@ export async function loadBlogPostPageForRoute(
   }
 
   return loadBlogPostPage(Number(routePage), postsDirectory);
+}
+
+export async function loadBlogCategoryPage(
+  category: string,
+  currentPage: number,
+  postsDirectory = path.join(process.cwd(), 'app', '(website)', 'posts')
+): Promise<BlogCategoryPostPage> {
+  if (!SAFE_CATEGORY_KEY.test(category)) {
+    throw new Error('Invalid blog category');
+  }
+
+  const categoryPosts = (await loadBlogPostSummaries(postsDirectory)).filter(
+    (post) => post.category === category
+  );
+  if (categoryPosts.length === 0) {
+    throw new Error(`Blog category ${category} does not exist`);
+  }
+
+  return {
+    category,
+    ...paginateBlogPosts(categoryPosts, currentPage),
+  };
+}
+
+export async function loadBlogCategoryPageForRoute(
+  category: string | string[],
+  page: number | string | string[],
+  postsDirectory = path.join(process.cwd(), 'app', '(website)', 'posts')
+): Promise<BlogCategoryPostPage> {
+  const routeCategory = Array.isArray(category) ? category.join('/') : category;
+  const categories = await loadBlogCategories(postsDirectory);
+  const resolvedCategory = routeCategory === '[category]' ? categories[0] : routeCategory;
+
+  if (resolvedCategory == null) {
+    throw new Error('Cannot render the static blog category template without any categories');
+  }
+
+  let routePage: string;
+  if (typeof page === 'number') {
+    routePage = String(page);
+  } else {
+    routePage = Array.isArray(page) ? page.join('/') : page;
+  }
+  if (routePage !== '[page]' && !/^[1-9]\d*$/.test(routePage)) {
+    throw new Error('Invalid blog category page');
+  }
+
+  return loadBlogCategoryPage(
+    resolvedCategory,
+    routePage === '[page]' ? 1 : Number(routePage),
+    postsDirectory
+  );
 }
 
 export async function loadBlogPost(

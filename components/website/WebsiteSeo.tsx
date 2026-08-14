@@ -136,6 +136,62 @@ export function WebsiteSeo({
   );
 }
 
+export interface BlogCategorySeoProps {
+  canonicalPath: string;
+  category: string;
+  description: string;
+  title: string;
+}
+
+export function BlogCategorySeo({
+  canonicalPath,
+  category,
+  description,
+  title,
+}: BlogCategorySeoProps) {
+  const { i18n, t } = useTranslation();
+  const siteName = t('website.seo.siteName');
+  const imageAlt = t('website.seo.imageAlt');
+  const pageTitle = `${title} | ${siteName}`;
+  const pageUrl = absoluteUrl(canonicalPath);
+  const imageUrl = absoluteUrl(SEO_IMAGE_PATH);
+  const locale = ogLocaleForLanguage(i18n.resolvedLanguage ?? i18n.language);
+  const alternateLocales = Object.values(OG_LOCALE_BY_LANGUAGE).filter((l) => l !== locale);
+  const keywords = `${t('website.seo.keywords')}, ${category}`;
+
+  return (
+    <Head>
+      <title>{pageTitle}</title>
+      <meta name="description" content={description} />
+      <meta name="keywords" content={keywords} />
+      <meta name="robots" content="index, follow" />
+      <link rel="canonical" href={pageUrl} />
+
+      <meta property="og:type" content="website" />
+      <meta property="og:site_name" content={siteName} />
+      <meta property="og:locale" content={locale} />
+      {alternateLocales.map((alt) => (
+        <meta key={alt} property="og:locale:alternate" content={alt} />
+      ))}
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
+      <meta property="og:url" content={pageUrl} />
+      <meta property="og:image" content={imageUrl} />
+      <meta property="og:image:secure_url" content={imageUrl} />
+      <meta property="og:image:type" content="image/png" />
+      <meta property="og:image:width" content={SEO_IMAGE_WIDTH} />
+      <meta property="og:image:height" content={SEO_IMAGE_HEIGHT} />
+      <meta property="og:image:alt" content={imageAlt} />
+
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={imageUrl} />
+      <meta name="twitter:image:alt" content={imageAlt} />
+    </Head>
+  );
+}
+
 export interface BlogPostSeoProps {
   canonicalPath: string;
   category: string;

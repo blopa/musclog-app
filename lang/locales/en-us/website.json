@@ -332,12 +332,19 @@
       "nextPage": "Next page",
       "pageStatus": "Page {{current}} of {{total}}",
       "pageLabel": "Page {{page}}",
+      "categoryPage": {
+        "eyebrow": "Browse by category",
+        "title": "{{category}} articles",
+        "description": "All Musclog blog posts filed under {{category}}.",
+        "empty": "No posts were found in {{category}}.",
+        "listLabel": "{{category}} blog posts"
+      },
       "categories": {
-        "productUpdates": "Product updates",
-        "webDevelopment": "Web development",
+        "product-updates": "Product updates",
+        "web-development": "Web development",
         "engineering": "Engineering",
         "retro": "Retro",
-        "machineLearning": "Machine learning"
+        "machine-learning": "Machine learning"
       }
     },
     "gameboy": {

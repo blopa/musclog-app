@@ -83,9 +83,14 @@ export default function BlogPostPage() {
                 <CalendarDays className="h-4 w-4" color={BRAND_GREEN_BRIGHT} />
                 {formatPostDate(post.date, locale)}
               </time>
-              <span className="inline-flex items-center gap-2" style={{ color: BODY_TEXT_SOFT }}>
-                <Folder className="h-4 w-4" color={BRAND_GREEN_BRIGHT} />
-                {category}
+              <span style={{ color: BODY_TEXT_SOFT }}>
+                <a
+                  href={`/blog/category/${post.category}`}
+                  className="inline-flex items-center gap-2 transition-colors hover:text-emerald-200"
+                >
+                  <Folder className="h-4 w-4" color={BRAND_GREEN_BRIGHT} />
+                  {category}
+                </a>
               </span>
             </div>
 

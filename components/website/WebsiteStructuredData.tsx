@@ -106,6 +106,53 @@ export function FaqPageJsonLd({ items }: { items: FaqPageJsonLdItem[] }) {
   );
 }
 
+interface BlogCategoryJsonLdPost {
+  slug: string;
+  title: string;
+}
+
+interface BlogCategoryJsonLdProps {
+  canonicalPath: string;
+  description: string;
+  positionOffset: number;
+  posts: BlogCategoryJsonLdPost[];
+  title: string;
+}
+
+/** CollectionPage JSON-LD for one statically generated page of a blog category. */
+export function BlogCategoryJsonLd({
+  canonicalPath,
+  description,
+  positionOffset,
+  posts,
+  title,
+}: BlogCategoryJsonLdProps) {
+  const url = `${SITE_ORIGIN}${canonicalPath}`;
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: title,
+    description,
+    url,
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: posts.length,
+      itemListElement: posts.map((post, index) => ({
+        '@type': 'ListItem',
+        position: positionOffset + index + 1,
+        name: post.title,
+        url: `${SITE_ORIGIN}/blog/${post.slug}`,
+      })),
+    },
+  };
+
+  return (
+    <Head>
+      <script type="application/ld+json">{jsonLdText(schema)}</script>
+    </Head>
+  );
+}
+
 interface BlogPostingJsonLdProps {
   canonicalPath: string;
   category: string;

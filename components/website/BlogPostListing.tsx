@@ -1,4 +1,11 @@
-import { ArrowRight, CalendarDays, ChevronLeft, ChevronRight, Folder } from 'lucide-react-native';
+import {
+  ArrowLeft,
+  ArrowRight,
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  Folder,
+} from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { getBlogPaginationItems } from '@/utils/blogPagination';
@@ -16,7 +23,11 @@ function formatPostDate(date: string, locale: string): string {
   }).format(new Date(`${date}T00:00:00.000Z`));
 }
 
-function pageHref(page: number): string {
+function pageHref(page: number, category?: string): string {
+  if (category) {
+    return page === 1 ? `/blog/category/${category}` : `/blog/category/${category}/page/${page}`;
+  }
+
   return page === 1 ? '/blog' : `/blog/page/${page}`;
 }
 
@@ -26,9 +37,19 @@ const paginationLinkClass =
 const disabledPaginationClass =
   'inline-flex min-w-32 items-center justify-center gap-2 rounded-full border border-white/10 px-5 py-3 text-sm font-bold opacity-40';
 
-export function BlogPostListing({ currentPage, posts, totalPages }: BlogPostPage) {
+interface BlogPostListingProps extends BlogPostPage {
+  category?: string;
+}
+
+export function BlogPostListing({
+  category,
+  currentPage,
+  posts,
+  totalPages,
+}: BlogPostListingProps) {
   const { i18n, t } = useTranslation(undefined, { keyPrefix: 'website.blog' });
   const locale = i18n.resolvedLanguage ?? i18n.language;
+  const categoryLabel = category ? t(`categories.${category}`) : null;
   const previousPage = currentPage > 1 ? currentPage - 1 : null;
   const nextPage = currentPage < totalPages ? currentPage + 1 : null;
   const paginationItems = getBlogPaginationItems(currentPage, totalPages);
@@ -43,18 +64,31 @@ export function BlogPostListing({ currentPage, posts, totalPages }: BlogPostPage
       />
 
       <div className="container relative z-10 mx-auto max-w-4xl px-4">
+        {category ? (
+          <a
+            href="/blog"
+            className="mb-8 inline-flex items-center gap-2 text-sm font-bold transition-colors hover:text-emerald-200"
+            style={{ color: BRAND_GREEN_BRIGHT }}
+          >
+            <ArrowLeft className="h-4 w-4" color="currentColor" />
+            {t('backToBlog')}
+          </a>
+        ) : null}
+
         <header className="mx-auto mb-14 max-w-3xl text-center">
           <p
             className="mb-4 text-sm font-bold uppercase tracking-[0.24em]"
             style={{ color: BRAND_GREEN_BRIGHT }}
           >
-            {t('eyebrow')}
+            {category ? t('categoryPage.eyebrow') : t('eyebrow')}
           </p>
           <h1 className="text-balance text-4xl font-extrabold text-white md:text-6xl">
-            {t('title')}
+            {category ? t('categoryPage.title', { category: categoryLabel }) : t('title')}
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-balance text-lg" style={{ color: BODY_TEXT }}>
-            {t('description')}
+            {category
+              ? t('categoryPage.description', { category: categoryLabel })
+              : t('description')}
           </p>
         </header>
 
@@ -63,10 +97,15 @@ export function BlogPostListing({ currentPage, posts, totalPages }: BlogPostPage
             className="border-white/12 rounded-3xl border border-dashed px-6 py-16 text-center"
             style={{ color: BODY_TEXT_SOFT }}
           >
-            {t('empty')}
+            {category ? t('categoryPage.empty', { category: categoryLabel }) : t('empty')}
           </p>
         ) : (
-          <section className="grid gap-5" aria-label={t('listLabel')}>
+          <section
+            className="grid gap-5"
+            aria-label={
+              category ? t('categoryPage.listLabel', { category: categoryLabel }) : t('listLabel')
+            }
+          >
             {posts.map((post) => (
               <article
                 key={post.slug}
@@ -81,10 +120,13 @@ export function BlogPostListing({ currentPage, posts, totalPages }: BlogPostPage
                     {formatPostDate(post.date, locale)}
                   </time>
                   <span className="h-1 w-1 rounded-full bg-white/25" aria-hidden="true" />
-                  <span className="inline-flex items-center gap-2">
+                  <a
+                    href={`/blog/category/${post.category}`}
+                    className="relative z-10 inline-flex items-center gap-2 transition-colors hover:text-emerald-200"
+                  >
                     <Folder className="h-3.5 w-3.5" color={BRAND_GREEN_BRIGHT} />
                     {t(`categories.${post.category}`)}
-                  </span>
+                  </a>
                 </div>
 
                 <h2 className="text-balance text-2xl font-bold leading-tight md:text-[2rem]">
@@ -150,7 +192,7 @@ export function BlogPostListing({ currentPage, posts, totalPages }: BlogPostPage
               </span>
             ) : (
               <a
-                href={pageHref(previousPage)}
+                href={pageHref(previousPage, category)}
                 rel="prev"
                 className={paginationLinkClass}
                 style={{ color: BRAND_GREEN_BRIGHT }}
@@ -191,7 +233,7 @@ export function BlogPostListing({ currentPage, posts, totalPages }: BlogPostPage
                 ) : (
                   <a
                     key={item}
-                    href={pageHref(item)}
+                    href={pageHref(item, category)}
                     aria-label={t('pageLabel', { page: item })}
                     className="inline-flex h-10 min-w-10 items-center justify-center rounded-full border border-white/10 px-3 text-sm font-bold transition hover:border-emerald-300/50 hover:bg-emerald-400/[0.12] hover:text-emerald-200"
                     style={{ color: BODY_TEXT }}
@@ -209,7 +251,7 @@ export function BlogPostListing({ currentPage, posts, totalPages }: BlogPostPage
               </span>
             ) : (
               <a
-                href={pageHref(nextPage)}
+                href={pageHref(nextPage, category)}
                 rel="next"
                 className={paginationLinkClass}
                 style={{ color: BRAND_GREEN_BRIGHT }}
