@@ -782,7 +782,7 @@ export default function PastWorkoutDetailModal({
 
       {/* Sub-modals are rendered inside FullScreenModal so iOS presents them from
             the active UIViewController rather than the blocked host controller.
-            See docs/modals-problem-on-ios.md for the fix pattern. */}
+            See FIXES.md for the fix pattern. */}
       <PastWorkoutBottomMenu
         visible={isMenuVisible}
         onClose={() => setIsMenuVisible(false)}

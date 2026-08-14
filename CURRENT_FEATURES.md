@@ -1,6 +1,6 @@
-# Musclog — Feature List
+# Musclog — Current Features
 
-A comprehensive list of every user-facing feature in the app, grouped by area.
+The source of truth for user-facing features that ship today, grouped by area.
 
 ---
 
@@ -221,8 +221,9 @@ A comprehensive list of every user-facing feature in the app, grouped by area.
   instead of failing a product lookup, offering to hand you straight to the optical reader. The
   receiving screen shows live percentage, transferred KB, KB/s throughput, and remaining time.
   Android, iOS, and web can send or receive in any combination; Musclog GB can send its whole
-  cartridge database, or one day of its food log, to any of those receivers. No internet, cable, or account is required
-  (see [docs/OPTICAL_TRANSFER.md](docs/OPTICAL_TRANSFER.md))
+  cartridge database, or one day of its food log, to any of those receivers. No internet, cable,
+  or account is required. Protocol rationale and measurements are in
+  [RESEARCH.md](RESEARCH.md#optical-transfer).
 - Automatic local backups before any restore or destructive exercise-catalogue cutover, browsable and restorable from settings
 - Complete database reset option
 

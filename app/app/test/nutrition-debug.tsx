@@ -248,7 +248,7 @@ export default function NutritionDebugScreen() {
   const [isBulkTrackVisible, setIsBulkTrackVisible] = useState(false);
 
   // Keep the search modal mounted so the bulk-track modal is presented from its controller
-  // (iOS presenter safety — see docs/modals-problem-on-ios.md).
+  // (iOS presenter safety — see FIXES.md).
   const handleFoodPicked = useCallback((food: UnifiedFoodResult) => {
     setPickedFood(food);
     setIsBulkTrackVisible(true);

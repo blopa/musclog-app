@@ -33,7 +33,7 @@
  * `payloadKind` claims the low byte of what used to be a zeroed `reserved` u16, so a container
  * carrying a database dump is byte-identical to one written before the field existed — which is
  * what lets an already-shipped receiver keep reading our dumps unchanged. See
- * `docs/OPTICAL_TRANSFER.md` for what an OLD build does when it receives a share payload, and for
+ * `RESEARCH.md` for what an OLD build does when it receives a share payload, and for
  * why `containerVersion` was deliberately NOT bumped for this.
  *
  * BODY ORDER IS FIXED: utf8 → sha256 → gzip → aes. **gzip strictly before aes** — ciphertext is

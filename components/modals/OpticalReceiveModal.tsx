@@ -10,7 +10,7 @@
  * Which of the eight screens is showing is decided once, by `resolveOpticalReceiveScreen` — see
  * `./opticalReceiveScreen.ts` for why that is not inlined here.
  *
- * Progress is FRAMES COLLECTED, not blocks solved — see `docs/OPTICAL_TRANSFER.md`.
+ * Progress is FRAMES COLLECTED, not blocks solved — see `RESEARCH.md`.
  */
 
 import { useCallback, useMemo, useState } from 'react';

@@ -14,7 +14,7 @@ import { Platform } from 'react-native';
  *
  * ⚠️ DANGER: do NOT use this to open `musclog.db` with expo-sqlite while the app
  * is running. A second SQLite library closing its connection unlinks the live
- * WAL and silently loses committed data (see docs/DATABASE_DURABILITY.md). The
+ * WAL and silently loses committed data (see FIXES.md). The
  * only sanctioned raw open is the pre-adapter capture in preMigrationCapture.ts;
  * everywhere else use rawQueryViaWatermelon (database/wmdbRaw.ts).
  */

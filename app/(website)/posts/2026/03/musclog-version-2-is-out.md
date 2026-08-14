@@ -122,7 +122,7 @@ Honestly? The middle was rough.
 
 The first few weeks were great, because rebuilding something you have already designed once is fast and you get to fix every decision you regretted. Workouts, sets, the rest timer, the exercise library, food logging, barcode scanning — all of that came back quickly and came back better.
 
-Then I hit the long tail, and the long tail is where a rewrite either ships or quietly dies. Around the five-week mark I stopped and wrote out an honest inventory of what version 1 did that version 2 did not. That document is still in the repo (`docs/NEW_MUSCLOG.md`) and it is not flattering — the AI coach was a mock that appended messages locally and talked to nothing, the smart camera had `// Implement actual AI processing here` sitting in it, and the progress screen was a menu item pointing at a route that did not exist.
+Then I hit the long tail, and the long tail is where a rewrite either ships or quietly dies. Around the five-week mark I stopped and wrote out an honest inventory of what version 1 did that version 2 did not. The temporary audit has since been folded into the repo's current-feature list and roadmap, but it was not flattering — the AI coach was a mock that appended messages locally and talked to nothing, the smart camera had `// Implement actual AI processing here` sitting in it, and the progress screen was a menu item pointing at a route that did not exist.
 
 Writing it down was the thing that made it finishable. The gap stopped being a vague feeling that the app was not ready and became a list, and lists get shorter.
 

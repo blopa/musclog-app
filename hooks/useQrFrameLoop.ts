@@ -4,7 +4,7 @@
  * This is the one place three behaviours learned the hard way on real hardware are implemented.
  * They were previously copied between `useOpticalSender` and the bench screen, which is the worst
  * possible split: the bench is the instrument used to VALIDATE these behaviours, so a copy there
- * can silently stop measuring what ships. See `docs/OPTICAL_TRANSFER.md`.
+ * can silently stop measuring what ships. See `RESEARCH.md`.
  *
  *  1. The loop SELF-SCHEDULES. `setInterval` at a period shorter than a frame's encode cost queues
  *     callbacks faster than they drain and the frame rate collapses progressively after a few

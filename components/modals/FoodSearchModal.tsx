@@ -119,7 +119,7 @@ type FoodSearchModalProps = {
   /**
    * Follow-up modals opened from this modal (e.g. after {@link onFoodPicked}). Rendered inside the
    * outer `FullScreenModal` so iOS presents them from the active controller — see
-   * `docs/modals-problem-on-ios.md`. Not for visible content; use only to host child modals.
+   * `FIXES.md`. Not for visible content; use only to host child modals.
    */
   children?: ReactNode;
   /** Called when food(s) have been tracked so the parent can refresh logs (e.g. daily nutrition list). */

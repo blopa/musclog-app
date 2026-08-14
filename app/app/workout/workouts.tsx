@@ -677,7 +677,7 @@ export default function WorkoutsScreen() {
         of the menus that open them, not `children` of those menus: every menu item closes its menu
         before running its handler, and a hidden `Modal` renders no children — so a follow-up modal
         parked inside one is unmounted the moment it is meant to appear. Sibling placement is safe
-        here for the reason docs/modals-problem-on-ios.md allows it: only one of these is ever
+        here for the reason FIXES.md allows it: only one of these is ever
         visible at a time, so no dismissed modal is left holding the iOS presenter.
       */}
       {planAssignment.modals}

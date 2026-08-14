@@ -73,6 +73,6 @@ if (totalViolations === 0) {
 } else {
   process.stdout.write(
     `\n${totalViolations} violation(s) across ${affectedFiles} file(s).\n` +
-      'See docs/modals-problem-on-ios.md for the fix pattern.\n'
+      'See FIXES.md for the fix pattern.\n'
   );
 }
