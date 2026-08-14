@@ -7,6 +7,7 @@ import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
+import { prepareSoftDelete } from '@/database/prepareSoftDelete';
 import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanRepository';
 import {
   toWorkoutLogSetSnapshot,
@@ -900,12 +901,7 @@ export class WorkoutService {
         const operations: Model[] = [];
 
         for (const setToDelete of setsToDelete) {
-          operations.push(
-            setToDelete.prepareUpdate((record) => {
-              record.deletedAt = now;
-              record.updatedAt = now;
-            })
-          );
+          operations.push(prepareSoftDelete(setToDelete, now));
         }
 
         for (const [exerciseId, groupId] of desiredGroupIdByExerciseId) {

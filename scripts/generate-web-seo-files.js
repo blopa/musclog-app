@@ -9,21 +9,26 @@
  * Fixed routes are derived from components/website/websiteRoutes.json — the
  * same registry components/website/WebsiteSeo.tsx reads for titles, canonical
  * URLs and robots directives. Blog post and category sitemap paths are derived
- * from the Markdown files that generate those dynamic routes.
+ * from the Markdown files that generate those dynamic routes, and their URL
+ * shapes come from components/website/blogRoutes.js — the same module the Expo
+ * Router loaders and the listing components use, so this file cannot advertise
+ * a page the router does not build.
  */
 const fs = require('fs');
 const path = require('path');
 const matter = require('gray-matter');
 
-const blogConfig = require('../components/website/blogConfig.json');
+const {
+  blogCategoryPath,
+  blogPagePathsAfterFirst,
+  SAFE_CATEGORY_KEY,
+  SAFE_SLUG_SEGMENT,
+} = require('../components/website/blogRoutes');
 const websiteRoutes = require('../components/website/websiteRoutes.json');
 
 const SITE_ORIGIN = 'https://musclog.app';
 const BLOG_POSTS_DIRECTORY = path.join(path.resolve(__dirname, '..'), 'app', '(website)', 'posts');
 const MARKDOWN_EXTENSION = /\.md$/i;
-const SAFE_SLUG_SEGMENT = /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/i;
-const SAFE_CATEGORY_KEY = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-const BLOG_POSTS_PER_PAGE = blogConfig.postsPerPage;
 
 // Order the llms.txt sections appear in. A route naming a section outside this
 // list is a typo, and fails the build rather than vanishing from the output.
@@ -129,25 +134,13 @@ function discoverBlogCategoryPostCounts(postsDirectory = BLOG_POSTS_DIRECTORY) {
 const blogPostPaths = discoverBlogPostPaths();
 const blogCategoryPostCounts = discoverBlogCategoryPostCounts();
 
-function blogPaginationPaths(postCount, postsPerPage = BLOG_POSTS_PER_PAGE) {
-  if (!Number.isInteger(postsPerPage) || postsPerPage < 1) {
-    throw new Error('Blog posts per page must be a positive integer');
-  }
-
-  const totalPages = Math.ceil(postCount / postsPerPage);
-  return Array.from(
-    { length: Math.max(0, totalPages - 1) },
-    (_, index) => `/blog/page/${index + 2}`
-  );
+function blogPaginationPaths(postCount, postsPerPage) {
+  return blogPagePathsAfterFirst(postCount, postsPerPage);
 }
 
 const blogPagePaths = blogPaginationPaths(blogPostPaths.length);
 
-function blogCategoryPaths(categoryPostCounts, postsPerPage = BLOG_POSTS_PER_PAGE) {
-  if (!Number.isInteger(postsPerPage) || postsPerPage < 1) {
-    throw new Error('Blog posts per page must be a positive integer');
-  }
-
+function blogCategoryPaths(categoryPostCounts, postsPerPage) {
   return Object.entries(categoryPostCounts)
     .sort(([left], [right]) => left.localeCompare(right))
     .flatMap(([category, postCount]) => {
@@ -155,14 +148,9 @@ function blogCategoryPaths(categoryPostCounts, postsPerPage = BLOG_POSTS_PER_PAG
         throw new Error('Blog category counts must use URL-safe categories and positive integers');
       }
 
-      const categoryRoot = `/blog/category/${category}`;
-      const totalPages = Math.ceil(postCount / postsPerPage);
       return [
-        categoryRoot,
-        ...Array.from(
-          { length: Math.max(0, totalPages - 1) },
-          (_, index) => `${categoryRoot}/page/${index + 2}`
-        ),
+        blogCategoryPath(category),
+        ...blogPagePathsAfterFirst(postCount, postsPerPage, category),
       ];
     });
 }

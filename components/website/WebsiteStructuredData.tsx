@@ -106,27 +106,30 @@ export function FaqPageJsonLd({ items }: { items: FaqPageJsonLdItem[] }) {
   );
 }
 
-interface BlogCategoryJsonLdPost {
+interface BlogListingJsonLdPost {
   slug: string;
   title: string;
 }
 
-interface BlogCategoryJsonLdProps {
+interface BlogListingJsonLdProps {
   canonicalPath: string;
   description: string;
   positionOffset: number;
-  posts: BlogCategoryJsonLdPost[];
+  posts: BlogListingJsonLdPost[];
   title: string;
 }
 
-/** CollectionPage JSON-LD for one statically generated page of a blog category. */
-export function BlogCategoryJsonLd({
+/**
+ * CollectionPage JSON-LD for one statically generated page of the blog index — all posts or one
+ * category. Nothing here is category-specific; the caller passes the page's own title and posts.
+ */
+export function BlogListingJsonLd({
   canonicalPath,
   description,
   positionOffset,
   posts,
   title,
-}: BlogCategoryJsonLdProps) {
+}: BlogListingJsonLdProps) {
   const url = `${SITE_ORIGIN}${canonicalPath}`;
   const schema = {
     '@context': 'https://schema.org',

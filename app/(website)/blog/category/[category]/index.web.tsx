@@ -1,7 +1,7 @@
 import { useLoaderData } from 'expo-router';
 import { createStaticLoader } from 'expo-router/server';
 
-import { BlogCategoryPage } from '@/components/website/BlogCategoryPage';
+import { BlogListingPage } from '@/components/website/BlogListingPage';
 
 export async function generateStaticParams(): Promise<{ category: string }[]> {
   const { loadBlogCategories } = await import('@/utils/blogPosts.server');
@@ -12,9 +12,9 @@ export async function generateStaticParams(): Promise<{ category: string }[]> {
 
 export const loader = createStaticLoader(async (params) => {
   const { loadBlogCategoryPageForRoute } = await import('@/utils/blogPosts.server');
-  return loadBlogCategoryPageForRoute(params.category, 1);
+  return loadBlogCategoryPageForRoute(params.category);
 });
 
 export default function BlogCategory() {
-  return <BlogCategoryPage {...useLoaderData<typeof loader>()} />;
+  return <BlogListingPage {...useLoaderData<typeof loader>()} />;
 }

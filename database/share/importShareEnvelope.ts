@@ -10,6 +10,7 @@ import Food from '@/database/models/Food';
 import FoodPortion from '@/database/models/FoodPortion';
 import type NutritionLog from '@/database/models/NutritionLog';
 import { prepareLocalCreateFromRaw } from '@/database/prepareLocalCreateFromRaw';
+import { prepareSoftDelete } from '@/database/prepareSoftDelete';
 import { dayKeyRange, utcNormalizedDayKey } from '@/utils/calendarDate';
 import {
   deleteFoodImage,
@@ -60,7 +61,7 @@ export interface ShareImportResult {
   /** The record the share was about, for kinds that are about one — see `ShareKindSpec.rootTable`. */
   rootId?: string;
   reused: ReusedShareRow[];
-  /** Rows this import soft-deleted to make room, per table. Only `'replace'` produces any. */
+  /** How many existing rows this import soft-deleted to make room. Only `'replace'` produces any. */
   replaced: number;
 }
 
@@ -276,12 +277,22 @@ async function resolvePortions(
     if (!sourceId || !name) {
       continue;
     }
-    const ownerType = stringValue(row.owner_type);
-    const candidates = !ownerType
-      ? globalsByName.get(name)
-      : ownerType === 'food'
-        ? ownedByOwnerId.get(context.reusedLocalId('foods', stringValue(row.owner_id)) ?? '')
-        : undefined;
+    // Owner scoping, not just name matching: an unowned portion may only match the receiver's
+    // unowned ones, and an owned one only the portions of the food it came in with — and only when
+    // that food was REUSED, since a newly created food has no existing portions to borrow. A
+    // portion owned by the meal (the share's root, always new) has no candidates at all.
+    const candidates = ((): FoodPortion[] | undefined => {
+      const ownerType = stringValue(row.owner_type);
+      if (!ownerType) {
+        return globalsByName.get(name);
+      }
+      if (ownerType !== 'food') {
+        return undefined;
+      }
+
+      const reusedOwnerId = context.reusedLocalId('foods', stringValue(row.owner_id));
+      return reusedOwnerId ? ownedByOwnerId.get(reusedOwnerId) : undefined;
+    })();
     const match = candidates?.find((portion) => portionIdentityMatches(portion, row));
     if (match) {
       resolutions[sourceId] = match.id;
@@ -469,14 +480,9 @@ export async function importShareEnvelope(
           : [];
 
       const operations = [
-        ...replacing.map((log) =>
-          // Soft delete, stamped the way every model's own `markAsDeleted` stamps it. Prepared
-          // rather than called, because a `@writer` cannot be invoked from inside an open writer.
-          log.prepareUpdate((record) => {
-            record.deletedAt = now;
-            record.updatedAt = now;
-          })
-        ),
+        // Soft delete, stamped the way every model's own `markAsDeleted` stamps it. Prepared
+        // rather than called, because a `@writer` cannot be invoked from inside an open writer.
+        ...replacing.map((log) => prepareSoftDelete(log, now)),
         ...plan.creates.map(({ row, table }) =>
           // `row` contains raw schema column names and reached here through `spec.columns`. The
           // allowlist is the trust boundary; WatermelonDB then sanitizes every value against the

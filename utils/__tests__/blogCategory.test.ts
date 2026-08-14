@@ -29,7 +29,7 @@ describe('blog category translations', () => {
     );
 
     expect(listingSource).toContain('t(`categories.${post.category}`)');
-    expect(listingSource).toContain('href={`/blog/category/${post.category}`}');
+    expect(listingSource).toContain('href={blogCategoryPath(post.category)}');
     expect(articleSource).toContain('const category = t(`categories.${post.category}`);');
     expect(articleSource).toContain('href={`/blog/category/${post.category}`}');
     expect(articleSource.match(/category=\{category\}/g)).toHaveLength(2);
@@ -63,7 +63,7 @@ describe('blog category translations', () => {
     );
 
     expect(categoryIndexSource).toContain('generateStaticParams');
-    expect(categoryIndexSource).toContain('loadBlogCategoryPageForRoute(params.category, 1)');
+    expect(categoryIndexSource).toContain('loadBlogCategoryPageForRoute(params.category)');
     expect(categoryPageSource).toContain('generateStaticParams');
     expect(categoryPageSource).toContain(
       'loadBlogCategoryPageForRoute(params.category, params.page)'

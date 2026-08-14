@@ -1,13 +1,13 @@
 import { useLoaderData } from 'expo-router';
 import { createStaticLoader } from 'expo-router/server';
 
-import { BlogPostListing } from '@/components/website/BlogPostListing';
-import { WebsiteSeo } from '@/components/website/WebsiteSeo';
+import { BlogListingPage } from '@/components/website/BlogListingPage';
 
 export async function generateStaticParams(): Promise<{ page: string }[]> {
   const { loadBlogPostPage } = await import('@/utils/blogPosts.server');
   const { totalPages } = await loadBlogPostPage(1);
 
+  // Page 1 is `/blog`, which is its own route — see `blogRoutes.js`.
   return Array.from({ length: Math.max(0, totalPages - 1) }, (_, index) => ({
     page: String(index + 2),
   }));
@@ -19,13 +19,5 @@ export const loader = createStaticLoader(async (params) => {
 });
 
 export default function PaginatedBlog() {
-  const page = useLoaderData<typeof loader>();
-  const canonicalPath = page.currentPage === 1 ? '/blog' : `/blog/page/${page.currentPage}`;
-
-  return (
-    <>
-      <WebsiteSeo canonicalPath={canonicalPath} routeKey="blog" />
-      <BlogPostListing {...page} />
-    </>
-  );
+  return <BlogListingPage {...useLoaderData<typeof loader>()} />;
 }

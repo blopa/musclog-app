@@ -6,11 +6,14 @@ import {
   ChevronRight,
   Folder,
 } from 'lucide-react-native';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getBlogPaginationItems } from '@/utils/blogPagination';
 import type { BlogPostPage } from '@/utils/blogPosts.server';
 
+import { useBlogListingCopy } from './blogListingCopy';
+import { blogCategoryPath, blogListingPath } from './blogRoutes';
 import { GridPattern } from './WebsiteBackgrounds';
 import { BODY_TEXT, BODY_TEXT_SOFT, BRAND_GREEN_BRIGHT } from './websiteColors';
 
@@ -23,19 +26,56 @@ function formatPostDate(date: string, locale: string): string {
   }).format(new Date(`${date}T00:00:00.000Z`));
 }
 
-function pageHref(page: number, category?: string): string {
-  if (category) {
-    return page === 1 ? `/blog/category/${category}` : `/blog/category/${category}/page/${page}`;
-  }
-
-  return page === 1 ? '/blog' : `/blog/page/${page}`;
-}
-
 const paginationLinkClass =
   'inline-flex min-w-32 items-center justify-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/[0.08] px-5 py-3 text-sm font-bold transition hover:border-emerald-300/50 hover:bg-emerald-400/[0.14] hover:text-emerald-200';
 
 const disabledPaginationClass =
   'inline-flex min-w-32 items-center justify-center gap-2 rounded-full border border-white/10 px-5 py-3 text-sm font-bold opacity-40';
+
+/**
+ * A previous/next control, rendered as a dead label when there is no such page. Both ends are the
+ * same control with the chevron on the other side, so they share one implementation rather than
+ * two mirrored JSX blocks that have to be kept in visual sync.
+ */
+function PaginationStep({
+  href,
+  label,
+  rel,
+  side,
+}: {
+  href: null | string;
+  label: string;
+  rel: 'next' | 'prev';
+  side: 'left' | 'right';
+}) {
+  const chevron: ReactNode =
+    side === 'left' ? (
+      <ChevronLeft className="h-4 w-4" color="currentColor" />
+    ) : (
+      <ChevronRight className="h-4 w-4" color="currentColor" />
+    );
+  const content = (
+    <>
+      {side === 'left' ? chevron : null}
+      {label}
+      {side === 'right' ? chevron : null}
+    </>
+  );
+
+  if (href == null) {
+    return (
+      <span className={disabledPaginationClass} style={{ color: BODY_TEXT_SOFT }}>
+        {content}
+      </span>
+    );
+  }
+
+  return (
+    <a href={href} rel={rel} className={paginationLinkClass} style={{ color: BRAND_GREEN_BRIGHT }}>
+      {content}
+    </a>
+  );
+}
 
 interface BlogPostListingProps extends BlogPostPage {
   category?: string;
@@ -49,7 +89,7 @@ export function BlogPostListing({
 }: BlogPostListingProps) {
   const { i18n, t } = useTranslation(undefined, { keyPrefix: 'website.blog' });
   const locale = i18n.resolvedLanguage ?? i18n.language;
-  const categoryLabel = category ? t(`categories.${category}`) : null;
+  const copy = useBlogListingCopy(category);
   const previousPage = currentPage > 1 ? currentPage - 1 : null;
   const nextPage = currentPage < totalPages ? currentPage + 1 : null;
   const paginationItems = getBlogPaginationItems(currentPage, totalPages);
@@ -80,15 +120,13 @@ export function BlogPostListing({
             className="mb-4 text-sm font-bold uppercase tracking-[0.24em]"
             style={{ color: BRAND_GREEN_BRIGHT }}
           >
-            {category ? t('categoryPage.eyebrow') : t('eyebrow')}
+            {copy.eyebrow}
           </p>
           <h1 className="text-balance text-4xl font-extrabold text-white md:text-6xl">
-            {category ? t('categoryPage.title', { category: categoryLabel }) : t('title')}
+            {copy.title}
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-balance text-lg" style={{ color: BODY_TEXT }}>
-            {category
-              ? t('categoryPage.description', { category: categoryLabel })
-              : t('description')}
+            {copy.description}
           </p>
         </header>
 
@@ -97,15 +135,10 @@ export function BlogPostListing({
             className="border-white/12 rounded-3xl border border-dashed px-6 py-16 text-center"
             style={{ color: BODY_TEXT_SOFT }}
           >
-            {category ? t('categoryPage.empty', { category: categoryLabel }) : t('empty')}
+            {copy.empty}
           </p>
         ) : (
-          <section
-            className="grid gap-5"
-            aria-label={
-              category ? t('categoryPage.listLabel', { category: categoryLabel }) : t('listLabel')
-            }
-          >
+          <section className="grid gap-5" aria-label={copy.listLabel}>
             {posts.map((post) => (
               <article
                 key={post.slug}
@@ -121,7 +154,7 @@ export function BlogPostListing({
                   </time>
                   <span className="h-1 w-1 rounded-full bg-white/25" aria-hidden="true" />
                   <a
-                    href={`/blog/category/${post.category}`}
+                    href={blogCategoryPath(post.category)}
                     className="relative z-10 inline-flex items-center gap-2 transition-colors hover:text-emerald-200"
                   >
                     <Folder className="h-3.5 w-3.5" color={BRAND_GREEN_BRIGHT} />
@@ -185,22 +218,12 @@ export function BlogPostListing({
             className="mt-10 flex flex-col items-center justify-between gap-4 sm:flex-row"
             aria-label={t('paginationLabel')}
           >
-            {previousPage == null ? (
-              <span className={disabledPaginationClass} style={{ color: BODY_TEXT_SOFT }}>
-                <ChevronLeft className="h-4 w-4" color="currentColor" />
-                {t('previousPage')}
-              </span>
-            ) : (
-              <a
-                href={pageHref(previousPage, category)}
-                rel="prev"
-                className={paginationLinkClass}
-                style={{ color: BRAND_GREEN_BRIGHT }}
-              >
-                <ChevronLeft className="h-4 w-4" color="currentColor" />
-                {t('previousPage')}
-              </a>
-            )}
+            <PaginationStep
+              href={previousPage == null ? null : blogListingPath(previousPage, category)}
+              label={t('previousPage')}
+              rel="prev"
+              side="left"
+            />
 
             <div className="flex items-center justify-center gap-2">
               <span className="sr-only">
@@ -233,7 +256,7 @@ export function BlogPostListing({
                 ) : (
                   <a
                     key={item}
-                    href={pageHref(item, category)}
+                    href={blogListingPath(item, category)}
                     aria-label={t('pageLabel', { page: item })}
                     className="inline-flex h-10 min-w-10 items-center justify-center rounded-full border border-white/10 px-3 text-sm font-bold transition hover:border-emerald-300/50 hover:bg-emerald-400/[0.12] hover:text-emerald-200"
                     style={{ color: BODY_TEXT }}
@@ -244,22 +267,12 @@ export function BlogPostListing({
               })}
             </div>
 
-            {nextPage == null ? (
-              <span className={disabledPaginationClass} style={{ color: BODY_TEXT_SOFT }}>
-                {t('nextPage')}
-                <ChevronRight className="h-4 w-4" color="currentColor" />
-              </span>
-            ) : (
-              <a
-                href={pageHref(nextPage, category)}
-                rel="next"
-                className={paginationLinkClass}
-                style={{ color: BRAND_GREEN_BRIGHT }}
-              >
-                {t('nextPage')}
-                <ChevronRight className="h-4 w-4" color="currentColor" />
-              </a>
-            )}
+            <PaginationStep
+              href={nextPage == null ? null : blogListingPath(nextPage, category)}
+              label={t('nextPage')}
+              rel="next"
+              side="right"
+            />
           </nav>
         ) : null}
       </div>

@@ -1,7 +1,7 @@
 import { useLoaderData } from 'expo-router';
 import { createStaticLoader } from 'expo-router/server';
 
-import { BlogPostListing } from '@/components/website/BlogPostListing';
+import { BlogListingPage } from '@/components/website/BlogListingPage';
 
 export const loader = createStaticLoader(async () => {
   const { loadBlogPostPage } = await import('@/utils/blogPosts.server');
@@ -9,5 +9,5 @@ export const loader = createStaticLoader(async () => {
 });
 
 export default function Blog() {
-  return <BlogPostListing {...useLoaderData<typeof loader>()} />;
+  return <BlogListingPage {...useLoaderData<typeof loader>()} />;
 }

@@ -18,10 +18,8 @@ import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { OpticalCameraHintCard } from '@/components/optical/OpticalCameraHintCard';
-import { OpticalFoodSharePreview } from '@/components/optical/OpticalFoodSharePreview';
-import { OpticalMealSharePreview } from '@/components/optical/OpticalMealSharePreview';
-import { OpticalNutritionDaySharePreview } from '@/components/optical/OpticalNutritionDaySharePreview';
 import { OpticalScannerCamera } from '@/components/optical/OpticalScannerCamera';
+import { ShareImportPanel } from '@/components/optical/ShareImportPanel';
 import { SmartCameraTopActions } from '@/components/SmartCameraActions';
 import { Button } from '@/components/theme/Button';
 import { ProgressIndicator } from '@/components/theme/ProgressIndicator';
@@ -44,31 +42,29 @@ import { handleError } from '@/utils/handleError';
 import { OPTICAL_PAYLOAD_KIND_SHARE } from '@/utils/optical/container';
 import { parseIncomingShareJson } from '@/utils/share/parseIncomingShare';
 import { MusclogShareError } from '@/utils/share/shareEnvelope';
-import type { MusclogShareKind } from '@/utils/share/shareKinds';
 
 import { ConfirmationModal } from './ConfirmationModal';
 import { FullScreenModal } from './FullScreenModal';
 import { type ParsedShare, resolveOpticalReceiveScreen } from './opticalReceiveScreen';
-
-/**
- * The "it worked" snackbar per kind. A `Record<MusclogShareKind, …>` so a new kind is a compiler
- * error here rather than a share that saves silently — `alreadyHadFood` only means anything to the
- * food kind, whose entire payload collapses to "you already have this one".
- */
-const SHARE_SAVED_SNACKBAR_KEYS: Record<MusclogShareKind, (alreadyHadFood: boolean) => string> = {
-  food: (alreadyHadFood) =>
-    alreadyHadFood
-      ? 'opticalTransfer.share.savedFoodExisted'
-      : 'opticalTransfer.share.savedFoodTitle',
-  meal: () => 'opticalTransfer.share.savedTitle',
-  nutritionDay: () => 'opticalTransfer.share.savedDayTitle',
-};
+import { resolveShareImportPanel } from './shareImportPanels';
+import { shareSavedSentence } from './shareSavedSentence';
 
 interface OpticalReceiveModalProps {
   visible: boolean;
   onClose: () => void;
   accept?: 'any' | 'database' | 'share';
   onShareImported?: () => void;
+}
+
+/** A destructive action awaiting confirmation, in the shape the shared `ConfirmationModal` takes. */
+interface DestructiveConfirmation {
+  confirmLabel: string;
+  isLoading?: boolean;
+  message: string;
+  onClose: () => void;
+  onConfirm: () => void;
+  title: string;
+  warning?: string;
 }
 
 export function OpticalReceiveModal({
@@ -205,9 +201,9 @@ export function OpticalReceiveModal({
       try {
         const result = await importShareEnvelope(envelope, options);
         setShareResult(result);
-        const alreadyHadFood =
-          envelope.kind === 'food' && result.reused.some((item) => item.table === 'foods');
-        showSnackbar('success', t(SHARE_SAVED_SNACKBAR_KEYS[envelope.kind](alreadyHadFood)));
+        // The same sentence the success panel shows — the snackbar used to keep a second table of
+        // the identical keys.
+        showSnackbar('success', shareSavedSentence({ envelope, formatInteger, result, t }).title);
         onShareImported?.();
       } catch (error) {
         handleError(error, 'OpticalReceiveModal.handleSaveShare', {
@@ -217,7 +213,7 @@ export function OpticalReceiveModal({
         setSavingShare(false);
       }
     },
-    [onShareImported, showSnackbar, t]
+    [formatInteger, onShareImported, showSnackbar, t]
   );
 
   const scanAgainButton = (
@@ -229,6 +225,45 @@ export function OpticalReceiveModal({
       width="full"
     />
   );
+
+  /**
+   * The destructive step waiting on the user, if any. Both of this screen's destructive actions
+   * resolve here so they can share one `ConfirmationModal` — see the note where it is rendered.
+   */
+  const resolveConfirmation = (): DestructiveConfirmation | undefined => {
+    if (screen.kind === 'database' && confirmVisible) {
+      return {
+        confirmLabel: restoring
+          ? t('opticalTransfer.receive.replacing')
+          : t('opticalTransfer.receive.replace'),
+        isLoading: restoring,
+        message: t('opticalTransfer.receive.confirmMessage'),
+        onClose: () => setConfirmVisible(false),
+        onConfirm: handleRestore,
+        title: t('opticalTransfer.receive.confirmTitle'),
+        warning: t('opticalTransfer.receive.confirmWarning'),
+      };
+    }
+
+    if (screen.kind === 'share' && replaceDayConfirmVisible) {
+      const { envelope } = screen;
+
+      return {
+        confirmLabel: t('opticalTransfer.share.dayReplace'),
+        message: t('opticalTransfer.share.dayReplaceConfirmMessage'),
+        onClose: () => setReplaceDayConfirmVisible(false),
+        onConfirm: () => {
+          setReplaceDayConfirmVisible(false);
+          void handleSaveShare(envelope, { dayMode: 'replace' });
+        },
+        title: t('opticalTransfer.share.dayReplaceConfirmTitle'),
+      };
+    }
+
+    return undefined;
+  };
+
+  const confirmation = resolveConfirmation();
 
   const renderScreen = () => {
     switch (screen.kind) {
@@ -458,153 +493,26 @@ export function OpticalReceiveModal({
 
       case 'share': {
         const { envelope } = screen;
+        const panel = resolveShareImportPanel({
+          envelope,
+          formatInteger,
+          onRequestReplaceDay: () => setReplaceDayConfirmVisible(true),
+          onSave: (options) => void handleSaveShare(envelope, options),
+          result: shareResult,
+          t,
+        });
 
-        if (envelope.kind === 'nutritionDay') {
-          return (
-            <View className="gap-4 px-4 py-6">
-              {shareResult ? (
-                <View className="gap-4">
-                  <Text
-                    className="text-center text-lg font-bold"
-                    style={{ color: theme.colors.status.success }}
-                  >
-                    {t('opticalTransfer.share.savedDayTitle')}
-                  </Text>
-                  <Text className="text-center text-sm text-text-secondary">
-                    {/* Two keys rather than one with a `{{replaced}}` that is usually 0: a
-                        sentence that ends "and removed 0 entries" reads like something went
-                        wrong. */}
-                    {shareResult.replaced > 0
-                      ? t('opticalTransfer.share.savedDayReplaced', {
-                          added: formatInteger(envelope.summary.entries.length),
-                          replaced: formatInteger(shareResult.replaced),
-                        })
-                      : t('opticalTransfer.share.savedDayAdded', {
-                          added: formatInteger(envelope.summary.entries.length),
-                        })}
-                  </Text>
-                  <Button
-                    label={t('common.close')}
-                    onPress={handleClose}
-                    size="sm"
-                    variant="accent"
-                    width="full"
-                  />
-                </View>
-              ) : (
-                <>
-                  <OpticalNutritionDaySharePreview summary={envelope.summary} />
-                  {savingShare ? (
-                    <ProgressIndicator message={t('opticalTransfer.share.savingDay')} />
-                  ) : (
-                    <>
-                      {/* Two buttons rather than a toggle plus one: which of these the user wants
-                          is the whole decision, and neither is safe to preselect — adding to a day
-                          that was already logged double-counts it, replacing throws away entries
-                          they may have typed themselves. */}
-                      <Text className="text-sm text-text-secondary">
-                        {t('opticalTransfer.share.dayModeExplainer')}
-                      </Text>
-                      <Button
-                        label={t('opticalTransfer.share.dayAdd')}
-                        onPress={() => void handleSaveShare(envelope, { dayMode: 'add' })}
-                        size="sm"
-                        variant="accent"
-                        width="full"
-                      />
-                      <Button
-                        label={t('opticalTransfer.share.dayReplace')}
-                        onPress={() => setReplaceDayConfirmVisible(true)}
-                        size="sm"
-                        variant="outline"
-                        width="full"
-                      />
-                    </>
-                  )}
-                </>
-              )}
-
-              <ConfirmationModal
-                confirmLabel={t('opticalTransfer.share.dayReplace')}
-                message={t('opticalTransfer.share.dayReplaceConfirmMessage')}
-                onClose={() => setReplaceDayConfirmVisible(false)}
-                onConfirm={() => {
-                  setReplaceDayConfirmVisible(false);
-                  void handleSaveShare(envelope, { dayMode: 'replace' });
-                }}
-                title={t('opticalTransfer.share.dayReplaceConfirmTitle')}
-                variant="destructive"
-                visible={replaceDayConfirmVisible}
-              />
-            </View>
-          );
-        }
-
-        const isFood = envelope.kind === 'food';
-        // A food share collapses to nothing when the receiver already had that food: the whole
-        // envelope is one food, so "saved" would be a lie. A meal is always created, and the reused
-        // count is about its ingredients.
-        const reusedRootFood =
-          isFood && shareResult?.reused.some((item) => item.table === 'foods') === true;
-        const reusedFoods =
-          shareResult?.reused.filter((item) => item.table === 'foods').length ?? 0;
         return (
           <View className="gap-4 px-4 py-6">
-            {shareResult ? (
-              <View className="gap-4">
-                <Text
-                  className="text-center text-lg font-bold"
-                  style={{ color: theme.colors.status.success }}
-                >
-                  {t(
-                    isFood
-                      ? reusedRootFood
-                        ? 'opticalTransfer.share.savedFoodExisted'
-                        : 'opticalTransfer.share.savedFoodTitle'
-                      : 'opticalTransfer.share.savedTitle'
-                  )}
-                </Text>
-                {!isFood && reusedFoods > 0 ? (
-                  <Text className="text-center text-sm text-text-secondary">
-                    {t('opticalTransfer.share.savedReusedFoods', { count: reusedFoods })}
-                  </Text>
-                ) : null}
-                <Button
-                  label={t('common.close')}
-                  onPress={handleClose}
-                  size="sm"
-                  variant="accent"
-                  width="full"
-                />
-              </View>
-            ) : (
-              <>
-                {envelope.kind === 'food' ? (
-                  <OpticalFoodSharePreview summary={envelope.summary} />
-                ) : (
-                  <OpticalMealSharePreview summary={envelope.summary} />
-                )}
-                {savingShare ? (
-                  <ProgressIndicator
-                    message={t(
-                      isFood ? 'opticalTransfer.share.savingFood' : 'opticalTransfer.share.saving'
-                    )}
-                  />
-                ) : (
-                  <Button
-                    label={t(
-                      isFood
-                        ? 'opticalTransfer.share.saveToMyFoods'
-                        : 'opticalTransfer.share.saveToMyMeals'
-                    )}
-                    onPress={() => void handleSaveShare(envelope)}
-                    size="sm"
-                    variant="accent"
-                    width="full"
-                  />
-                )}
-              </>
-            )}
+            <ShareImportPanel
+              actions={panel.actions}
+              closeLabel={t('common.close')}
+              isSaving={savingShare}
+              onClose={handleClose}
+              preview={panel.preview}
+              saved={panel.saved}
+              savingMessage={panel.savingMessage}
+            />
           </View>
         );
       }
@@ -659,22 +567,22 @@ export function OpticalReceiveModal({
       <View className="flex-1">
         {renderScreen()}
 
+        {/* ONE destructive confirmation for the whole screen, not one per action. Two of these as
+            siblings is the iOS presenter bug `local/no-sibling-modals` exists to catch (see
+            FIXES.md), and they could never both be up anyway: a restore belongs to the `database`
+            screen and a day replace to the `share` screen. */}
         <ConfirmationModal
-          confirmLabel={
-            restoring
-              ? t('opticalTransfer.receive.replacing')
-              : t('opticalTransfer.receive.replace')
-          }
+          confirmLabel={confirmation?.confirmLabel ?? ''}
           // Disables both buttons, spins the confirm button, and blocks backdrop/back dismissal
           // for the whole biometric-plus-write sequence.
-          isLoading={restoring}
-          message={t('opticalTransfer.receive.confirmMessage')}
-          onClose={() => setConfirmVisible(false)}
-          onConfirm={handleRestore}
-          title={t('opticalTransfer.receive.confirmTitle')}
+          isLoading={confirmation?.isLoading ?? false}
+          message={confirmation?.message ?? ''}
+          onClose={() => confirmation?.onClose()}
+          onConfirm={() => confirmation?.onConfirm()}
+          title={confirmation?.title ?? ''}
           variant="destructive"
-          visible={Boolean(screen.kind === 'database' && confirmVisible)}
-          warning={t('opticalTransfer.receive.confirmWarning')}
+          visible={confirmation != null}
+          warning={confirmation?.warning}
         />
       </View>
     </FullScreenModal>

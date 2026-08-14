@@ -5,7 +5,12 @@ import matter from 'gray-matter';
 import hljs from 'highlight.js/lib/common';
 import MarkdownIt from 'markdown-it';
 
-import blogConfig from '@/components/website/blogConfig.json';
+import {
+  BLOG_POSTS_PER_PAGE,
+  SAFE_CATEGORY_KEY,
+  SAFE_SLUG_SEGMENT,
+  totalBlogPages,
+} from '@/components/website/blogRoutes';
 
 export interface BlogPostSummary {
   category: string;
@@ -41,10 +46,12 @@ interface BlogPostFrontmatter {
 
 const MARKDOWN_EXTENSION = /\.md$/i;
 const ISO_CALENDAR_DATE = /^\d{4}-\d{2}-\d{2}$/;
-const SAFE_SLUG_SEGMENT = /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/i;
-const SAFE_CATEGORY_KEY = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const ROUTE_PAGE_NUMBER = /^[1-9]\d*$/;
 
-export const BLOG_POSTS_PER_PAGE = blogConfig.postsPerPage;
+/** Where posts live, unless a test points the loaders somewhere else. */
+const DEFAULT_POSTS_DIRECTORY = path.join(process.cwd(), 'app', '(website)', 'posts');
+
+export { BLOG_POSTS_PER_PAGE };
 
 function escapeHtml(value: string): string {
   return value
@@ -205,9 +212,7 @@ async function markdownFiles(directory: string): Promise<string[]> {
   return files.flat();
 }
 
-export async function loadBlogPostSummaries(
-  postsDirectory = path.join(process.cwd(), 'app', '(website)', 'posts')
-): Promise<BlogPostSummary[]> {
+async function readBlogPostSummaries(postsDirectory: string): Promise<BlogPostSummary[]> {
   const files = await markdownFiles(postsDirectory);
   const posts = await Promise.all(
     files.map(async (file) => {
@@ -222,6 +227,41 @@ export async function loadBlogPostSummaries(
   });
 }
 
+/**
+ * One parse of the corpus per directory, for the life of the process.
+ *
+ * Every route below starts by reading every post: the index, each of N listing pages, each of M
+ * category pages, and both `generateStaticParams` passes. Without this, a static export re-walks
+ * the directory and re-runs `gray-matter` over every file once per generated page — and
+ * `loadBlogCategoryPageForRoute` did it twice for a single page, since resolving the category and
+ * paginating it each started from scratch.
+ *
+ * Safe because these loaders only ever run in a build/test process, where the Markdown cannot
+ * change underneath us: the app ships the rendered HTML, not the parser (see the Metro stub rule
+ * in `AGENTS.md`). The cache is keyed by directory so a test pointing at a temporary folder never
+ * sees another test's posts.
+ */
+const summariesByDirectory = new Map<string, Promise<BlogPostSummary[]>>();
+
+export function loadBlogPostSummaries(
+  postsDirectory = DEFAULT_POSTS_DIRECTORY
+): Promise<BlogPostSummary[]> {
+  const cached = summariesByDirectory.get(postsDirectory);
+  if (cached) {
+    return cached;
+  }
+
+  // Cached as the promise, not the result, so concurrent loaders share one directory walk.
+  // Dropped again on failure, so a transient read error is not remembered forever.
+  const pending = readBlogPostSummaries(postsDirectory).catch((error: unknown) => {
+    summariesByDirectory.delete(postsDirectory);
+    throw error;
+  });
+  summariesByDirectory.set(postsDirectory, pending);
+
+  return pending;
+}
+
 export function getBlogCategories(posts: BlogPostSummary[]): string[] {
   return [...new Set(posts.map((post) => post.category))].sort((left, right) =>
     left.localeCompare(right)
@@ -229,7 +269,7 @@ export function getBlogCategories(posts: BlogPostSummary[]): string[] {
 }
 
 export async function loadBlogCategories(
-  postsDirectory = path.join(process.cwd(), 'app', '(website)', 'posts')
+  postsDirectory = DEFAULT_POSTS_DIRECTORY
 ): Promise<string[]> {
   return getBlogCategories(await loadBlogPostSummaries(postsDirectory));
 }
@@ -239,14 +279,13 @@ export function paginateBlogPosts(
   currentPage: number,
   postsPerPage = BLOG_POSTS_PER_PAGE
 ): BlogPostPage {
-  if (!Number.isInteger(postsPerPage) || postsPerPage < 1) {
-    throw new Error('Blog posts per page must be a positive integer');
-  }
   if (!Number.isInteger(currentPage) || currentPage < 1) {
     throw new Error('Blog page must be a positive integer');
   }
 
-  const totalPages = Math.max(1, Math.ceil(posts.length / postsPerPage));
+  // Page count comes from `blogRoutes.js`, the same arithmetic the sitemap generator uses, so a
+  // page this rejects can never appear in sitemap.xml (or vice versa).
+  const totalPages = totalBlogPages(posts.length, postsPerPage);
   if (currentPage > totalPages) {
     throw new Error(`Blog page ${currentPage} does not exist`);
   }
@@ -261,34 +300,51 @@ export function paginateBlogPosts(
   };
 }
 
+/**
+ * A dynamic route parameter as a single string.
+ *
+ * Expo's static manifest evaluates the UNRESOLVED route template too, so every loader is also
+ * called once with the literal segment (`[page]`, `[category]`, `[...slug]`) alongside the paths
+ * `generateStaticParams` returned. `templateFallback` is what that call renders instead — the
+ * loaders below cannot simply reject it, or the export fails.
+ */
+function resolveRouteParam(
+  value: string | string[],
+  template: string,
+  templateFallback: string
+): string {
+  const joined = Array.isArray(value) ? value.join('/') : value;
+  return joined === template ? templateFallback : joined;
+}
+
+/** A `page` route segment as a 1-based page number, rejecting anything that is not one. */
+function routePageNumber(page: string | string[], invalidMessage: string): number {
+  const resolved = resolveRouteParam(page, '[page]', '1');
+  if (!ROUTE_PAGE_NUMBER.test(resolved)) {
+    throw new Error(invalidMessage);
+  }
+
+  return Number(resolved);
+}
+
 export async function loadBlogPostPage(
   currentPage: number,
-  postsDirectory = path.join(process.cwd(), 'app', '(website)', 'posts')
+  postsDirectory = DEFAULT_POSTS_DIRECTORY
 ): Promise<BlogPostPage> {
   return paginateBlogPosts(await loadBlogPostSummaries(postsDirectory), currentPage);
 }
 
 export async function loadBlogPostPageForRoute(
   page: string | string[],
-  postsDirectory = path.join(process.cwd(), 'app', '(website)', 'posts')
+  postsDirectory = DEFAULT_POSTS_DIRECTORY
 ): Promise<BlogPostPage> {
-  const routePage = Array.isArray(page) ? page.join('/') : page;
-
-  // Expo's static manifest also evaluates unresolved dynamic route templates at build time.
-  if (routePage === '[page]') {
-    return loadBlogPostPage(1, postsDirectory);
-  }
-  if (!/^[1-9]\d*$/.test(routePage)) {
-    throw new Error('Invalid blog page');
-  }
-
-  return loadBlogPostPage(Number(routePage), postsDirectory);
+  return loadBlogPostPage(routePageNumber(page, 'Invalid blog page'), postsDirectory);
 }
 
 export async function loadBlogCategoryPage(
   category: string,
   currentPage: number,
-  postsDirectory = path.join(process.cwd(), 'app', '(website)', 'posts')
+  postsDirectory = DEFAULT_POSTS_DIRECTORY
 ): Promise<BlogCategoryPostPage> {
   if (!SAFE_CATEGORY_KEY.test(category)) {
     throw new Error('Invalid blog category');
@@ -307,39 +363,33 @@ export async function loadBlogCategoryPage(
   };
 }
 
+/**
+ * Route parameters straight from Expo, both optional-shaped for the same reason: the category
+ * index route has no `page` segment at all, and either segment may arrive as the unresolved
+ * template. Deliberately NOT `number | string | string[]` — the one caller that used to pass a
+ * literal `1` was the category index, which now just omits the argument.
+ */
 export async function loadBlogCategoryPageForRoute(
   category: string | string[],
-  page: number | string | string[],
-  postsDirectory = path.join(process.cwd(), 'app', '(website)', 'posts')
+  page: string | string[] = '1',
+  postsDirectory = DEFAULT_POSTS_DIRECTORY
 ): Promise<BlogCategoryPostPage> {
-  const routeCategory = Array.isArray(category) ? category.join('/') : category;
-  const categories = await loadBlogCategories(postsDirectory);
-  const resolvedCategory = routeCategory === '[category]' ? categories[0] : routeCategory;
-
-  if (resolvedCategory == null) {
+  const [firstCategory] = await loadBlogCategories(postsDirectory);
+  const resolvedCategory = resolveRouteParam(category, '[category]', firstCategory ?? '');
+  if (!resolvedCategory) {
     throw new Error('Cannot render the static blog category template without any categories');
-  }
-
-  let routePage: string;
-  if (typeof page === 'number') {
-    routePage = String(page);
-  } else {
-    routePage = Array.isArray(page) ? page.join('/') : page;
-  }
-  if (routePage !== '[page]' && !/^[1-9]\d*$/.test(routePage)) {
-    throw new Error('Invalid blog category page');
   }
 
   return loadBlogCategoryPage(
     resolvedCategory,
-    routePage === '[page]' ? 1 : Number(routePage),
+    routePageNumber(page, 'Invalid blog category page'),
     postsDirectory
   );
 }
 
 export async function loadBlogPost(
   slug: string | string[],
-  postsDirectory = path.join(process.cwd(), 'app', '(website)', 'posts')
+  postsDirectory = DEFAULT_POSTS_DIRECTORY
 ): Promise<BlogPost> {
   const postSlug = normalizedSlug(slug);
   const relativePath = `${postSlug}.md`;
@@ -357,20 +407,13 @@ export async function loadBlogPost(
 
 export async function loadBlogPostForRoute(
   slug: string | string[],
-  postsDirectory = path.join(process.cwd(), 'app', '(website)', 'posts')
+  postsDirectory = DEFAULT_POSTS_DIRECTORY
 ): Promise<BlogPost> {
-  const routeSlug = Array.isArray(slug) ? slug.join('/') : slug;
-
-  // Expo Router 57 keeps the unresolved catch-all route in the static manifest alongside the
-  // paths returned by generateStaticParams, so its loader also runs once with this literal value.
-  if (routeSlug === '[...slug]') {
-    const [fallbackPost] = await loadBlogPostSummaries(postsDirectory);
-    if (!fallbackPost) {
-      throw new Error('Cannot render the static blog route template without any posts');
-    }
-
-    return loadBlogPost(fallbackPost.slug, postsDirectory);
+  const [firstPost] = await loadBlogPostSummaries(postsDirectory);
+  const resolvedSlug = resolveRouteParam(slug, '[...slug]', firstPost?.slug ?? '');
+  if (!resolvedSlug) {
+    throw new Error('Cannot render the static blog route template without any posts');
   }
 
-  return loadBlogPost(slug, postsDirectory);
+  return loadBlogPost(resolvedSlug, postsDirectory);
 }
