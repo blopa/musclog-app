@@ -331,7 +331,14 @@
       "previousPage": "Предыдущая страница",
       "nextPage": "Следующая страница",
       "pageStatus": "Страница {{current}} из {{total}}",
-      "pageLabel": "Страница {{page}}"
+      "pageLabel": "Страница {{page}}",
+      "categories": {
+        "productUpdates": "Обновления продукта",
+        "webDevelopment": "Веб-разработка",
+        "engineering": "Инженерия",
+        "retro": "Retro",
+        "machineLearning": "Машинное обучение"
+      }
     },
     "gameboy": {
       "pageTitle": "Играть в Musclog на Game Boy",

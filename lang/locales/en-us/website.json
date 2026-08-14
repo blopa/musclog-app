@@ -331,7 +331,14 @@
       "previousPage": "Previous page",
       "nextPage": "Next page",
       "pageStatus": "Page {{current}} of {{total}}",
-      "pageLabel": "Page {{page}}"
+      "pageLabel": "Page {{page}}",
+      "categories": {
+        "productUpdates": "Product updates",
+        "webDevelopment": "Web development",
+        "engineering": "Engineering",
+        "retro": "Retro",
+        "machineLearning": "Machine learning"
+      }
     },
     "gameboy": {
       "pageTitle": "Play Musclog on Game Boy",

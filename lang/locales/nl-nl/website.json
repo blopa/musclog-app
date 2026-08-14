@@ -331,7 +331,14 @@
       "previousPage": "Vorige pagina",
       "nextPage": "Volgende pagina",
       "pageStatus": "Pagina {{current}} van {{total}}",
-      "pageLabel": "Pagina {{page}}"
+      "pageLabel": "Pagina {{page}}",
+      "categories": {
+        "productUpdates": "Productupdates",
+        "webDevelopment": "Webontwikkeling",
+        "engineering": "Techniek",
+        "retro": "Retro",
+        "machineLearning": "Machinelearning"
+      }
     },
     "gameboy": {
       "pageTitle": "Speel Musclog op Game Boy",

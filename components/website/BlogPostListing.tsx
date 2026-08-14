@@ -83,7 +83,7 @@ export function BlogPostListing({ currentPage, posts, totalPages }: BlogPostPage
                   <span className="h-1 w-1 rounded-full bg-white/25" aria-hidden="true" />
                   <span className="inline-flex items-center gap-2">
                     <Folder className="h-3.5 w-3.5" color={BRAND_GREEN_BRIGHT} />
-                    {post.category}
+                    {t(`categories.${post.category}`)}
                   </span>
                 </div>
 

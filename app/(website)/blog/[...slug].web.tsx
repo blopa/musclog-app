@@ -34,12 +34,13 @@ export default function BlogPostPage() {
   const { i18n, t } = useTranslation(undefined, { keyPrefix: 'website.blog' });
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const canonicalPath = `/blog/${post.slug}`;
+  const category = t(`categories.${post.category}`);
 
   return (
     <>
       <BlogPostSeo
         canonicalPath={canonicalPath}
-        category={post.category}
+        category={category}
         date={post.date}
         description={post.excerpt}
         tags={post.tags}
@@ -47,7 +48,7 @@ export default function BlogPostPage() {
       />
       <BlogPostingJsonLd
         canonicalPath={canonicalPath}
-        category={post.category}
+        category={category}
         date={post.date}
         description={post.excerpt}
         tags={post.tags}
@@ -84,7 +85,7 @@ export default function BlogPostPage() {
               </time>
               <span className="inline-flex items-center gap-2" style={{ color: BODY_TEXT_SOFT }}>
                 <Folder className="h-4 w-4" color={BRAND_GREEN_BRIGHT} />
-                {post.category}
+                {category}
               </span>
             </div>
 

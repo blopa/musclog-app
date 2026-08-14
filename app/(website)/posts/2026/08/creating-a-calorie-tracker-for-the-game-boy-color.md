@@ -1,7 +1,7 @@
 ---
 title: 'Creating a calorie tracker for the Game Boy Color'
 date: '2026-08-14'
-category: 'retroComputing'
+category: 'retro'
 description: 'I put Musclog on a 1998 cartridge — 517 foods in ROM, macro goals packed into 23 bytes of battery-backed SRAM, and a way to beam the whole save, or just one day of eating, into your phone using nothing but light.'
 tags: ['Game Boy', 'GBDK', 'C', 'Retro', 'Homebrew', 'Nutrition', 'WasmBoy']
 ---

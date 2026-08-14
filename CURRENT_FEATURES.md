@@ -196,7 +196,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 
 ## Public Website
 
-- Markdown-powered blog at `/blog`: the index, paginated listing pages, and individual post URLs are statically generated from files under `app/(website)/posts`; the listing currently shows two newest-first posts per page with previous/next and compact numbered navigation, YAML frontmatter supplies metadata, and post bodies support headings, links, lists, tables, blockquotes, images, inline code, and syntax-highlighted fenced code blocks
+- Markdown-powered blog at `/blog`: the index, paginated listing pages, and individual post URLs are statically generated from files under `app/(website)/posts`; the listing shows up to ten newest-first posts per page with previous/next and compact numbered navigation, YAML frontmatter supplies metadata with localized category labels, and post bodies support headings, links, lists, tables, blockquotes, images, inline code, and syntax-highlighted fenced code blocks
 
 ---
 
