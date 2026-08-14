@@ -14,12 +14,14 @@
 const fs = require('fs');
 const path = require('path');
 
+const blogConfig = require('../components/website/blogConfig.json');
 const websiteRoutes = require('../components/website/websiteRoutes.json');
 
 const SITE_ORIGIN = 'https://musclog.app';
 const BLOG_POSTS_DIRECTORY = path.join(path.resolve(__dirname, '..'), 'app', '(website)', 'posts');
 const MARKDOWN_EXTENSION = /\.md$/i;
 const SAFE_SLUG_SEGMENT = /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/i;
+const BLOG_POSTS_PER_PAGE = blogConfig.postsPerPage;
 
 // Order the llms.txt sections appear in. A route naming a section outside this
 // list is a typo, and fails the build rather than vanishing from the output.
@@ -96,6 +98,20 @@ function discoverBlogPostPaths(postsDirectory = BLOG_POSTS_DIRECTORY) {
 
 const blogPostPaths = discoverBlogPostPaths();
 
+function blogPaginationPaths(postCount, postsPerPage = BLOG_POSTS_PER_PAGE) {
+  if (!Number.isInteger(postsPerPage) || postsPerPage < 1) {
+    throw new Error('Blog posts per page must be a positive integer');
+  }
+
+  const totalPages = Math.ceil(postCount / postsPerPage);
+  return Array.from(
+    { length: Math.max(0, totalPages - 1) },
+    (_, index) => `/blog/page/${index + 2}`
+  );
+}
+
+const blogPagePaths = blogPaginationPaths(blogPostPaths.length);
+
 /**
  * Matches `absoluteUrl` in WebsiteSeo.tsx, so a page's sitemap <loc> is
  * byte-identical to the canonical URL it advertises — including the trailing
@@ -131,7 +147,7 @@ function generateRobotsTxt() {
  * web` dirty the working tree with a meaningless diff.
  */
 function generateSitemapXml() {
-  const urls = [...indexableRoutes.map((route) => route.path), ...blogPostPaths]
+  const urls = [...indexableRoutes.map((route) => route.path), ...blogPagePaths, ...blogPostPaths]
     .map((routePath) => `  <url>\n    <loc>${absoluteUrl(routePath)}</loc>\n  </url>`)
     .join('\n');
 
@@ -181,7 +197,7 @@ function main() {
 
   console.log(
     '[generate-web-seo-files] wrote public/robots.txt, public/sitemap.xml and public/llms.txt',
-    `(${indexableRoutes.length + blogPostPaths.length} indexable routes)`
+    `(${indexableRoutes.length + blogPagePaths.length + blogPostPaths.length} indexable routes)`
   );
 }
 
@@ -189,4 +205,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { discoverBlogPostPaths, generateSitemapXml };
+module.exports = { blogPaginationPaths, discoverBlogPostPaths, generateSitemapXml };

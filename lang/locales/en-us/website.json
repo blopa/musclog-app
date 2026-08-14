@@ -326,7 +326,11 @@
       "listLabel": "Blog posts",
       "tagsLabel": "Post tags",
       "readArticle": "Read article",
-      "backToBlog": "Back to all posts"
+      "backToBlog": "Back to all posts",
+      "paginationLabel": "Blog pagination",
+      "previousPage": "Previous page",
+      "nextPage": "Next page",
+      "pageStatus": "Page {{current}} of {{total}}"
     },
     "gameboy": {
       "pageTitle": "Play Musclog on Game Boy",

@@ -323,7 +323,7 @@ The bundled exercise data and photos come from [free-exercise-db](https://github
 
 ## Resources
 
-- [Musclog Blog](https://musclog.app/blog) — statically generated from Markdown with rich prose and syntax-highlighted code
+- [Musclog Blog](https://musclog.app/blog) — statically generated from Markdown, with paginated post listings, rich prose, and syntax-highlighted code
 - [Blog post: How Musclog came to be](https://pablo.gg/en/blog/coding/musclog-leveraging-my-reactjs-experience-to-build-a-react-native-app/)
 - [Expo Documentation](https://docs.expo.dev/)
 - [WatermelonDB Documentation](https://watermelondb.dev/)

@@ -326,7 +326,11 @@
       "listLabel": "Статьи блога",
       "tagsLabel": "Теги статьи",
       "readArticle": "Читать статью",
-      "backToBlog": "Назад ко всем статьям"
+      "backToBlog": "Назад ко всем статьям",
+      "paginationLabel": "Навигация по страницам блога",
+      "previousPage": "Предыдущая страница",
+      "nextPage": "Следующая страница",
+      "pageStatus": "Страница {{current}} из {{total}}"
     },
     "gameboy": {
       "pageTitle": "Играть в Musclog на Game Boy",

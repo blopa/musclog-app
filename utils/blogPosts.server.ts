@@ -5,6 +5,8 @@ import matter from 'gray-matter';
 import hljs from 'highlight.js/lib/common';
 import MarkdownIt from 'markdown-it';
 
+import blogConfig from '@/components/website/blogConfig.json';
+
 export interface BlogPostSummary {
   category: string;
   date: string;
@@ -18,6 +20,13 @@ export interface BlogPost extends BlogPostSummary {
   html: string;
 }
 
+export interface BlogPostPage {
+  currentPage: number;
+  posts: BlogPostSummary[];
+  totalPages: number;
+  totalPosts: number;
+}
+
 interface BlogPostFrontmatter {
   category?: unknown;
   date?: unknown;
@@ -29,6 +38,8 @@ interface BlogPostFrontmatter {
 const MARKDOWN_EXTENSION = /\.md$/i;
 const ISO_CALENDAR_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const SAFE_SLUG_SEGMENT = /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/i;
+
+export const BLOG_POSTS_PER_PAGE = blogConfig.postsPerPage;
 
 function escapeHtml(value: string): string {
   return value
@@ -192,6 +203,57 @@ export async function loadBlogPostSummaries(
     const dateOrder = right.date.localeCompare(left.date);
     return dateOrder !== 0 ? dateOrder : left.title.localeCompare(right.title);
   });
+}
+
+export function paginateBlogPosts(
+  posts: BlogPostSummary[],
+  currentPage: number,
+  postsPerPage = BLOG_POSTS_PER_PAGE
+): BlogPostPage {
+  if (!Number.isInteger(postsPerPage) || postsPerPage < 1) {
+    throw new Error('Blog posts per page must be a positive integer');
+  }
+  if (!Number.isInteger(currentPage) || currentPage < 1) {
+    throw new Error('Blog page must be a positive integer');
+  }
+
+  const totalPages = Math.max(1, Math.ceil(posts.length / postsPerPage));
+  if (currentPage > totalPages) {
+    throw new Error(`Blog page ${currentPage} does not exist`);
+  }
+
+  const start = (currentPage - 1) * postsPerPage;
+
+  return {
+    currentPage,
+    posts: posts.slice(start, start + postsPerPage),
+    totalPages,
+    totalPosts: posts.length,
+  };
+}
+
+export async function loadBlogPostPage(
+  currentPage: number,
+  postsDirectory = path.join(process.cwd(), 'app', '(website)', 'posts')
+): Promise<BlogPostPage> {
+  return paginateBlogPosts(await loadBlogPostSummaries(postsDirectory), currentPage);
+}
+
+export async function loadBlogPostPageForRoute(
+  page: string | string[],
+  postsDirectory = path.join(process.cwd(), 'app', '(website)', 'posts')
+): Promise<BlogPostPage> {
+  const routePage = Array.isArray(page) ? page.join('/') : page;
+
+  // Expo's static manifest also evaluates unresolved dynamic route templates at build time.
+  if (routePage === '[page]') {
+    return loadBlogPostPage(1, postsDirectory);
+  }
+  if (!/^[1-9]\d*$/.test(routePage)) {
+    throw new Error('Invalid blog page');
+  }
+
+  return loadBlogPostPage(Number(routePage), postsDirectory);
 }
 
 export async function loadBlogPost(

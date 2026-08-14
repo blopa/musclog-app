@@ -326,7 +326,11 @@
       "listLabel": "Blogartikelen",
       "tagsLabel": "Artikeltags",
       "readArticle": "Artikel lezen",
-      "backToBlog": "Terug naar alle artikelen"
+      "backToBlog": "Terug naar alle artikelen",
+      "paginationLabel": "Blogpaginering",
+      "previousPage": "Vorige pagina",
+      "nextPage": "Volgende pagina",
+      "pageStatus": "Pagina {{current}} van {{total}}"
     },
     "gameboy": {
       "pageTitle": "Speel Musclog op Game Boy",

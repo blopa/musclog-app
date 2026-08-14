@@ -326,7 +326,11 @@
       "listLabel": "Artigos do blog",
       "tagsLabel": "Tags do artigo",
       "readArticle": "Ler artigo",
-      "backToBlog": "Voltar para todos os artigos"
+      "backToBlog": "Voltar para todos os artigos",
+      "paginationLabel": "Paginação do blog",
+      "previousPage": "Página anterior",
+      "nextPage": "Próxima página",
+      "pageStatus": "Página {{current}} de {{total}}"
     },
     "gameboy": {
       "pageTitle": "Jogue Musclog no Game Boy",

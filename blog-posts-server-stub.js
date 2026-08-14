@@ -18,7 +18,10 @@ const unavailable = (name) => () => {
 module.exports = {
   loadBlogPost: unavailable('loadBlogPost'),
   loadBlogPostForRoute: unavailable('loadBlogPostForRoute'),
+  loadBlogPostPage: unavailable('loadBlogPostPage'),
+  loadBlogPostPageForRoute: unavailable('loadBlogPostPageForRoute'),
   loadBlogPostSummaries: unavailable('loadBlogPostSummaries'),
+  paginateBlogPosts: unavailable('paginateBlogPosts'),
   parseBlogPostSummary: unavailable('parseBlogPostSummary'),
   renderBlogPostMarkdown: unavailable('renderBlogPostMarkdown'),
 };

@@ -2,7 +2,8 @@ import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
-const { discoverBlogPostPaths } = require('../generate-web-seo-files') as {
+const { blogPaginationPaths, discoverBlogPostPaths } = require('../generate-web-seo-files') as {
+  blogPaginationPaths: (postCount: number) => string[];
   discoverBlogPostPaths: (postsDirectory: string) => string[];
 };
 
@@ -31,5 +32,12 @@ describe('generate-web-seo-files blog routes', () => {
     expect(() => discoverBlogPostPaths(directory)).toThrow(
       'Invalid blog post path for a public URL: bad post.md'
     );
+  });
+
+  it('adds sitemap paths for every blog page after the index', () => {
+    expect(blogPaginationPaths(0)).toEqual([]);
+    expect(blogPaginationPaths(2)).toEqual([]);
+    expect(blogPaginationPaths(3)).toEqual(['/blog/page/2']);
+    expect(blogPaginationPaths(5)).toEqual(['/blog/page/2', '/blog/page/3']);
   });
 });

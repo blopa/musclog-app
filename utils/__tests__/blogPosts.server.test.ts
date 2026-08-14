@@ -5,7 +5,10 @@ import path from 'node:path';
 import {
   loadBlogPost,
   loadBlogPostForRoute,
+  loadBlogPostPage,
+  loadBlogPostPageForRoute,
   loadBlogPostSummaries,
+  paginateBlogPosts,
   parseBlogPostSummary,
   renderBlogPostMarkdown,
 } from '../blogPosts.server';
@@ -105,6 +108,43 @@ const answer: number = 42;
     const templatePost = await loadBlogPostForRoute('[...slug]', directory);
     expect(templatePost.slug).toBe('2026/08/new');
     expect(templatePost.html).toContain('<p>Newest body.</p>');
+  });
+
+  it('paginates sorted summaries without repeating posts', () => {
+    const posts = Array.from({ length: 5 }, (_, index) => ({
+      category: 'Updates',
+      date: `2026-08-0${5 - index}`,
+      excerpt: `Summary ${index + 1}`,
+      slug: `post-${index + 1}`,
+      tags: [],
+      title: `Post ${index + 1}`,
+    }));
+    const firstPage = paginateBlogPosts(posts, 1, 2);
+    const secondPage = paginateBlogPosts(posts, 2, 2);
+    const lastPage = paginateBlogPosts(posts, 3, 2);
+
+    expect(firstPage).toMatchObject({ currentPage: 1, totalPages: 3, totalPosts: 5 });
+    expect(firstPage.posts).toEqual(posts.slice(0, 2));
+    expect(secondPage.posts).toEqual(posts.slice(2, 4));
+    expect(lastPage.posts).toEqual(posts.slice(4, 5));
+    expect([...firstPage.posts, ...secondPage.posts, ...lastPage.posts]).toEqual(posts);
+  });
+
+  it('loads configured pages and handles Expo dynamic route templates', async () => {
+    const firstPage = await loadBlogPostPage(1);
+    const secondPage = await loadBlogPostPageForRoute('2');
+    const templatePage = await loadBlogPostPageForRoute('[page]');
+
+    expect(firstPage.posts).toHaveLength(2);
+    expect(secondPage.currentPage).toBe(2);
+    expect(secondPage.posts).toHaveLength(2);
+    expect(templatePage).toEqual(firstPage);
+  });
+
+  it('rejects invalid and out-of-range blog pages', async () => {
+    await expect(loadBlogPostPageForRoute('0')).rejects.toThrow('Invalid blog page');
+    await expect(loadBlogPostPageForRoute('2.5')).rejects.toThrow('Invalid blog page');
+    await expect(loadBlogPostPage(999)).rejects.toThrow('Blog page 999 does not exist');
   });
 
   it('rejects invalid required metadata with the source path', () => {
