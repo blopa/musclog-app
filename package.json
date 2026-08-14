@@ -22,6 +22,7 @@
     "bump-minor": "node scripts/bump.js --minor",
     "bump-major": "node scripts/bump.js --major",
     "report-modal-issue": "node scripts/report-modal-issues.js",
+    "compress-blog-images": "node scripts/compress-blog-images.js",
     "check-translations": "node scripts/check-translations.js",
     "check-version-sync": "node scripts/check-version-sync.js",
     "check-locale-consistency": "node scripts/check-locale-consistency.js",

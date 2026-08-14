@@ -29,7 +29,7 @@ I already [wrote a post about fitness app subscriptions being a scam](https://pa
 
 [Musclog](https://musclog.app/) is my open-source React Native / Expo workout tracker. It's free, with no subscription and no account needed. I [started building it in 2024](/blog/2026/03/musclog-version-2-is-out) because Google Fit was being deprecated and the apps I tried all wanted my credit card to show me a rep chart. I've been writing about it and using it daily ever since, including the time it ate a user's nutrition logs because of a SQLite WAL problem.
 
-![Musclog workout logging screen, where the reps actually get entered](/images/blog/2026/08/musclog-workout-logging.png)
+![Musclog workout logging screen, where the reps actually get entered](/images/blog/2026/08/musclog-workout-logging.webp)
 
 The whole repo is at [github.com/blopa/musclog-app](https://github.com/blopa/musclog-app). This post is about a new feature I've been hacking on: using a cheap BLE motion sensor to automatically count reps and measure velocity, so you don't have to type anything in the gym.
 
@@ -104,7 +104,7 @@ I should also clear something up, because this kept happening every time I broug
 
 This is the boring kind, the machine learning that existed before any of that. It's a RandomForest, an algorithm from 2001, with 200 trees and a max depth of 6, trained on 30 JSON files on the same laptop I'm writing this post on. The finished model is a 496 KB JavaScript file, which makes it smaller than the Tinkercad screenshot further down this page. There's no GPU, no cluster, no API key, and no tokens getting burned anywhere.
 
-![It's all AI](/images/blog/2026/08/ai-ai-ai-ai.png)
+![It's all AI](/images/blog/2026/08/ai-ai-ai-ai.webp)
 
 ## Training the model
 
@@ -209,7 +209,7 @@ raw_js = m2c.export_to_javascript(clf, function_name="classifySegment")
 
 That's [m2cgen](https://github.com/BayesWitnesses/m2cgen). Out comes a pure JS function. No ONNX runtime, no TensorFlow.js, no 40MB dependency. The app imports it directly and runs the full pipeline on-device, in TypeScript, with no network calls.
 
-![Pushup set analyzed: 10 reps detected, avg 1.43s per rep, Phase A vs Phase B breakdown per rep](/images/blog/2026/08/pushups-insights.png)
+![Pushup set analyzed: 10 reps detected, avg 1.43s per rep, Phase A vs Phase B breakdown per rep](/images/blog/2026/08/pushups-insights.webp)
 
 The chart above is a pushup set from my own data. Ground truth was 10 reps and the model predicted 10. Phase A and B durations stay consistent through reps 1-7, then Phase B starts stretching out toward the end because the last few reps were harder, for a total time under tension of 14.3s.
 
@@ -239,15 +239,15 @@ The problem: Tinkercad needs a reference model of the device to design around. W
 
 So I built a web app with [v0](https://v0.dev/) to solve it. Upload the official product photo as background, adjust a rounded-rectangle overlay with sliders until it traces the device outline, then export an STL from the matched dimensions. Trial and error until the numbers stabilize.
 
-![The v0-built overlay editor: drag sliders until the red outline matches the device photo, then download the STL](/images/blog/2026/08/v0-sketch-to-stl.png)
+![The v0-built overlay editor: drag sliders until the red outline matches the device photo, then download the STL](/images/blog/2026/08/v0-sketch-to-stl.webp)
 
 It took maybe 45 minutes of nudging sliders. The final dimensions: 23.5mm × 32.5mm × 11.6mm. I had an STL of the device.
 
 From there I took it into Tinkercad and built the case around it.
 
-![The case (blue) and the device model (tan) in Tinkercad](/images/blog/2026/08/tinkercad-modeling.png)
+![The case (blue) and the device model (tan) in Tinkercad](/images/blog/2026/08/tinkercad-modeling.webp)
 
-![Same device next to a barbell model for scale](/images/blog/2026/08/tinkercad-modeling-barbell.png)
+![Same device next to a barbell model for scale](/images/blog/2026/08/tinkercad-modeling-barbell.webp)
 
 The case holds the device and has a velcro strap slot. It looks like the first house you ever build in Minecraft, and I am ok with this. Both files are in the Musclog repo: [`wit-motion-model.stl`](https://github.com/blopa/musclog-app/blob/main/assets/wit-motion-model.stl) is the device itself, and `wit-motion-holder.stl` next to it is my Minecraft house. If anyone with actual Fusion 360 skills wants to build something better around the device model, please do.
 

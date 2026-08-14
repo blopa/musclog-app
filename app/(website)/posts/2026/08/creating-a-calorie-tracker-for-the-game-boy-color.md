@@ -45,7 +45,7 @@ That `-Wm-yt0x10` picks the MBC3 mapper, the same chip Pokémon Gold/Silver used
 
 GBDK gives you the title and the cartridge type, but not the rest of the header, so after linking there's a small patch step that writes the four-character game code `MLOG` at `0x13F`, sets the mask-ROM revision byte, and recalculates both cartridge checksums. The result is `CGB-MLOG-HOL-1`, modelled on Nintendo's own `DMG-TR-USA` scheme. Which is how I ended up designing a cartridge label for a game that will never be manufactured.
 
-![The cartridge label: CGB-MLOG-NL-0, made in Holland, gluten free, no cloud](/images/blog/2026/08/gameboy-cartridge-label.png)
+![The cartridge label: CGB-MLOG-NL-0, made in Holland, gluten free, no cloud](/images/blog/2026/08/gameboy-cartridge-label.webp)
 
 _Palm oil free, gluten free, cloud free._
 
@@ -251,7 +251,7 @@ So Settings now has one more entry, `SHARE DATA`, and it puts your whole cartrid
 
 There is nothing new to build on the phone side, which is the nicest part. It's the same receive screen you'd use to move a database between two phones — Settings, Data, Optical Transfer, Receive — and it has no idea it's talking to a 1998 console.
 
-![The Musclog app's optical receiver pointed at a screen running SHARE DATA](/images/blog/2026/08/gameboy-optical-share-scan.png)
+![The Musclog app's optical receiver pointed at a screen running SHARE DATA](/images/blog/2026/08/gameboy-optical-share-scan.webp)
 
 _Caught at 0%, which is exactly the moment that hint card exists for. This is a real screen-to-camera link with no back-channel, so when nothing is arriving the only thing the app can do is tell you to fill the frame and hold still. It's also mGBA rather than a cartridge — the ROM doesn't care what's drawing its pixels, so the emulator on the website beams a save just as happily as the real thing._
 
