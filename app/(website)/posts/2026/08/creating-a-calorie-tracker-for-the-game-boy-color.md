@@ -247,7 +247,13 @@ That bridge exists now. It just doesn't work the way I expected, because in the 
 
 A Game Boy has a screen. That is the entire requirement.
 
-So Settings now has one more entry, `SHARE DATA`, and it puts your whole cartridge save on screen as an endless stream of QR codes. You point your phone at it, hold it there while the bar fills, and your Game Boy's food logs, weigh-ins, workouts and custom foods land in the app. The cartridge is sender-only — it has no camera, so there is no receive path and no Game Boy-to-Game Boy exchange to design.
+So Settings now has one more entry, `SHARE DATA`, and it puts your whole cartridge save on screen as an endless stream of QR codes. You point your phone at it, hold it there while the bar fills, and your Game Boy's food logs, weigh-ins, workouts and custom foods land in the app — mapped onto the app's own exercises and foods, previewed before anything is written. The cartridge is sender-only: it has no camera, so there is no receive path and no Game Boy-to-Game Boy exchange to design.
+
+There is nothing new to build on the phone side, which is the nicest part. It's the same receive screen you'd use to move a database between two phones — Settings, Data, Optical Transfer, Receive — and it has no idea it's talking to a 1998 console.
+
+![The Musclog app's optical receiver pointed at a screen running SHARE DATA](/images/blog/2026/08/gameboy-optical-share-scan.png)
+
+_Caught at 0%, which is exactly the moment that hint card exists for. This is a real screen-to-camera link with no back-channel, so when nothing is arriving the only thing the app can do is tell you to fill the frame and hold still. It's also mGBA rather than a cartridge — the ROM doesn't care what's drawing its pixels, so the emulator on the website beams a save just as happily as the real thing._
 
 The pipeline is the same one the phones use, which is the point:
 
