@@ -2,7 +2,7 @@
 title: 'Creating a calorie tracker for the Game Boy Color'
 date: '2026-08-14'
 category: 'development'
-description: 'I put Musclog on a 1998 cartridge — 517 foods in ROM, macro goals packed into 23 bytes of battery-backed SRAM, and a way to beam the whole save into your phone using nothing but light.'
+description: 'I put Musclog on a 1998 cartridge — 517 foods in ROM, macro goals packed into 23 bytes of battery-backed SRAM, and a way to beam the whole save, or just one day of eating, into your phone using nothing but light.'
 tags: ['Game Boy', 'GBDK', 'C', 'Retro', 'Homebrew', 'Nutrition', 'WasmBoy']
 ---
 
@@ -71,6 +71,7 @@ So I cut it down to the parts that actually make sense on a cartridge:
 - A progress dashboard with charts
 - Settings to re-edit everything, plus a reset
 - `SHARE DATA`, which throws your entire cartridge save at your phone's camera as a stream of QR codes
+- `SHARE DAY`, which throws just one day of eating at it instead, and merges into the phone rather than replacing it
 
 The neat part: the foods and exercises come from the exact same `data/*.json` files the React Native app uses. A Node script ports them into hardcoded, ROM-banked C tables, so the cartridge and the phone app share one source of truth. Change the dataset, re-run `npm run gb:gen-foods`, rebuild.
 
@@ -280,6 +281,28 @@ The QR rendering has its own set of indignities. QR version 11 is 61×61 modules
 
 The thing I keep turning over is that the cartridge and the phone never negotiate anything. There's no handshake, no version exchange, no retry request. One device emits light in a format frozen months ago and the other one reconstructs a database from it. It's the least modern data transfer I've ever built and it's the only one in the app that doesn't depend on a single third party.
 
+## Sending one day instead of everything
+
+`SHARE DATA` is a migration. It hands over the whole save, and the phone treats it the way it treats any full backup: it previews it, asks, and then replaces everything on the receiving device. That's the right shape exactly once, when you're moving in.
+
+It is the wrong shape for the thing I actually kept doing, which was logging a day of food on the couch with the cartridge and then wanting it on my phone. Nobody wipes their phone to import a Tuesday.
+
+So the nutrition screen's Select menu has a second action, `SHARE DAY`. It sends only the day you're looking at, and the phone _merges_ it: it previews what's coming, matches every food against what you already have, and adds the entries to that date in your diary. It only shows up when the day has something logged, because streaming QR codes at someone to transfer nothing is a poor use of both our time.
+
+The cartridge side turned out to be almost free. Same streaming byte-walk, same container, same fountain, same QR encoder. Three things change: the reference scan stops at that one day, so only the foods it used get sent; the schema it renders is a much smaller one; and two bytes in the container header flip. Those two bytes are load-bearing — one marks the payload as a share rather than a database, and the other declares a version number so implausible that a copy of the app built _before_ day sharing existed reads it, decides the sender is from the future, and refuses to offer its destructive restore. An old build can't be taught anything, so the format had to be shaped so that the wrong thing was impossible rather than merely discouraged.
+
+**The hard part was food identity, and the reason is a 16-character buffer.** When the cartridge loads a food out of ROM it copies the name into a buffer sized for exactly what fits the UI: sixteen characters and a terminator. Which means "Lettuce, leaf, green, raw" reaches your phone as `Lettuce, leaf, g`.
+
+That's fine when you're replacing the whole database — nothing is there to conflict with. It is not fine when you're merging into a phone that already has a food catalogue, because matching on a truncated name misses essentially every bundled food, and the punishment is a second, worse-named copy of it appearing every single time you share a day.
+
+The fix was the exercise trick again, one layer down: send the index, not the name. The generator that builds the ROM's food tables now also freezes each food's identity into that same protocol file, so position 0 is permanently that lettuce, and the phone resolves the index back to the food it already seeded — real name, barcode, micronutrients and all. Your existing food gets reused instead of duplicated. A food you typed in on the cartridge has no bundled identity to look up, so it falls back to the truncated tuple, which is correct: it's genuinely a new food.
+
+Freezing that list has the same rule as the exercises, and the generator enforces it — regenerating the tables in a way that would change an existing position fails the build with a message about save files, rather than silently re-pointing every logged meal at a different food.
+
+**The cartridge does not know what time you ate.** A food log entry is six bytes: day number, food index, grams. There's no clock field and nowhere to put one. So every imported entry lands at midday, filed under "Other", and the receiving screen says so in plain words — an entry arriving at 12:00 under a generic meal looks like the transfer lost something, and it's better to admit the cartridge never knew than to invent a breakfast.
+
+The last decision was the one I couldn't make on your behalf. If the day you're importing already has entries on the phone, adding to it double-counts everything, and replacing it throws away anything you typed there yourself. Both are things people genuinely want — re-scanning a day you already imported wants replace, adding your Game Boy lunch to a day you'd already logged breakfast on wants add. So the import refuses to guess: the receiving screen asks, and there is no default. Replacing is the only destructive thing any share in the app does, and it happens in the same database transaction as the insert, so it can't half-succeed and leave you with an emptied day.
+
 ## Other challenges
 
 The thing that almost ended the project was running out of space in the wrong place. The Game Boy splits ROM into 16 KB banks, and bank 0 is special: it's always mapped, so all the shared code and helpers live there, and it can't be paged out. When I finished the progress screen and ran the build, bank 0 was at 16,093 bytes out of 16,384. **291 bytes free.** Not kilobytes. Bytes.
@@ -292,8 +315,8 @@ Bank layout: _CODE_2 uses 9591 / 16384 bytes     (USDA foundation foods)
 Bank layout: _CODE_6 uses 2893 / 16384 bytes     (exercise table)
 Bank layout: _CODE_8 uses 6266 / 16384 bytes     (title screen + art)
 Bank layout: _CODE_9 uses 6627 / 16384 bytes     (audio driver + APU data)
-Bank layout: _CODE_10 uses 11345 / 16384 bytes   (Share Data UI + QR encoder)
-Bank layout: _CODE_11 uses 9779 / 16384 bytes    (streaming exporter + SHA-256)
+Bank layout: _CODE_10 uses 11488 / 16384 bytes   (sharing UI + QR encoder)
+Bank layout: _CODE_11 uses 10296 / 16384 bytes   (streaming exporter + SHA-256)
 Bank layout: _CODE_12 uses 4519 / 16384 bytes    (fountain encoder)
 ```
 
