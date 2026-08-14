@@ -49,7 +49,12 @@ import { ChatMealPlanCarousel } from '@/components/chat/ChatMealPlanCarousel';
 import { COACH_INTENTIONS } from '@/components/coach/coachIntentions';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
-import { CHAT_INTENTIONS, type ChatIntention, TRACK_MEAL } from '@/constants/chat';
+import {
+  CHAT_INTENTIONS,
+  type ChatIntention,
+  type ConversationContext,
+  TRACK_MEAL,
+} from '@/constants/chat';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { useUnreadChat } from '@/context/UnreadChatContext';
 import { ChatService, MuscleService, WorkoutService } from '@/database/services';
@@ -662,7 +667,7 @@ export function CoachModal({
     showConfetti,
   } = useChatMessages(conversationContext, initialIntention);
 
-  const { clearUnreadCount } = useUnreadChat();
+  const { clearUnreadCount, unreadCountsByContext } = useUnreadChat();
   const { showSnackbar } = useSnackbar();
   const { shareText } = useNativeShareText();
   const [isOnline, setIsOnline] = useState(false);
@@ -699,12 +704,14 @@ export function CoachModal({
     });
   }, []);
 
-  // Clear unread badge whenever the modal becomes visible
+  // Only the mode being read gets marked as read: a message that arrived for another mode keeps
+  // its badge on the switcher until the user actually switches to it. Re-running on
+  // `conversationContext` covers both entry points — opening the modal and switching modes.
   useEffect(() => {
     if (visible) {
-      clearUnreadCount();
+      clearUnreadCount(conversationContext);
     }
-  }, [visible, clearUnreadCount]);
+  }, [visible, conversationContext, clearUnreadCount]);
 
   // Ensure attached image is cleared if intention is no longer Track Meal
   useEffect(() => {
@@ -1320,6 +1327,7 @@ export function CoachModal({
       {
         value: 'general',
         label: t('coach.context.general'),
+        badge: unreadCountsByContext.general,
         icon: (
           <Zap
             size={theme.iconSize.sm}
@@ -1334,6 +1342,7 @@ export function CoachModal({
       {
         value: 'exercise',
         label: t('coach.context.exercise'),
+        badge: unreadCountsByContext.exercise,
         icon: (
           <Dumbbell
             size={theme.iconSize.sm}
@@ -1348,6 +1357,7 @@ export function CoachModal({
       {
         value: 'nutrition',
         label: t('coach.context.nutrition'),
+        badge: unreadCountsByContext.nutrition,
         icon: (
           <UtensilsCrossed
             size={theme.iconSize.sm}
@@ -1360,7 +1370,7 @@ export function CoachModal({
         ),
       },
     ],
-    [conversationContext, theme, t]
+    [conversationContext, theme, t, unreadCountsByContext]
   );
 
   return (
@@ -1434,9 +1444,7 @@ export function CoachModal({
           <SegmentedControl
             options={conversationContextOptions}
             value={conversationContext}
-            onValueChange={(value) =>
-              handleConversationContextChange(value as 'general' | 'exercise' | 'nutrition')
-            }
+            onValueChange={(value) => handleConversationContextChange(value as ConversationContext)}
             variant="elevated"
           />
         </View>

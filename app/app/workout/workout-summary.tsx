@@ -189,7 +189,8 @@ export default function WorkoutSummaryScreen() {
           payloadJson: JSON.stringify(workoutCompletedPayload),
         });
 
-        setUnreadCount((prev) => prev + 1);
+        // Badge the mode the message was saved under, not the coach as a whole.
+        setUnreadCount('exercise', (prev) => prev + 1);
 
         setShowConfetti(true);
         setIsLoading(false);
@@ -252,7 +253,8 @@ export default function WorkoutSummaryScreen() {
 
       if (feedback) {
         await processFeedbackResponse(feedback);
-        setUnreadCount((prev) => prev + 1);
+        // `processFeedbackResponse` saves into the exercise context.
+        setUnreadCount('exercise', (prev) => prev + 1);
         showSnackbar('success', t('workout.summary.feedbackReceived'));
         router.replace('/app');
       } else {
