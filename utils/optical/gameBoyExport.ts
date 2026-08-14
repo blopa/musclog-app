@@ -1,6 +1,9 @@
 import { z } from 'zod';
 
 import { INCLUDE_FIBER_IN_CARBS_SETTING_TYPE, UNITS_SETTING_TYPE } from '@/constants/settings';
+import gameBoyOpticalProtocol from '@/data/gameBoyOpticalProtocol.json';
+import { localDayStartMs } from '@/utils/calendarDate';
+import { getTimezoneAt } from '@/utils/timezone';
 import { generateUUID } from '@/utils/uuid';
 
 /**
@@ -10,12 +13,33 @@ import { generateUUID } from '@/utils/uuid';
  * deliberately small tuple schema as a virtual string. The regular import path expands it to
  * WatermelonDB-shaped rows before validation and before the destructive restore begins.
  */
-export const GAME_BOY_EXPORT_VERSION = 1;
-export const GAME_BOY_EXPORT_DATABASE_VERSION = 26;
+export const GAME_BOY_EXPORT_VERSION = gameBoyOpticalProtocol.gameBoyExportVersion;
+export const GAME_BOY_EXPORT_DATABASE_VERSION = gameBoyOpticalProtocol.databaseExportVersion;
+
+const {
+  muscleGroups: MUSCLE_GROUPS,
+  equipmentTypes: EQUIPMENT_TYPES,
+  mechanicTypes: MECHANIC_TYPES,
+} = gameBoyOpticalProtocol.exerciseEnums;
 
 const daySchema = z.number().int().min(0).max(65_535);
 const uint8Schema = z.number().int().min(0).max(255);
 const uint16Schema = z.number().int().min(0).max(65_535);
+const muscleGroupSchema = z
+  .number()
+  .int()
+  .min(0)
+  .max(MUSCLE_GROUPS.length - 1);
+const equipmentTypeSchema = z
+  .number()
+  .int()
+  .min(0)
+  .max(EQUIPMENT_TYPES.length - 1);
+const mechanicTypeSchema = z
+  .number()
+  .int()
+  .min(0)
+  .max(MECHANIC_TYPES.length - 1);
 
 const profileSchema = z
   .object({
@@ -58,9 +82,9 @@ const weightSchema = z.tuple([daySchema, uint16Schema]);
 const exerciseSchema = z.tuple([
   uint8Schema,
   z.string().min(1).max(64),
-  uint8Schema,
-  uint8Schema,
-  uint8Schema,
+  muscleGroupSchema,
+  equipmentTypeSchema,
+  mechanicTypeSchema,
   uint16Schema,
 ]);
 
@@ -100,48 +124,42 @@ const EXPERIENCES = ['beginner', 'intermediate', 'advanced'] as const;
 const FITNESS_GOALS = ['hypertrophy', 'strength', 'endurance', 'general'] as const;
 const WEIGHT_GOALS = ['lose', 'maintain', 'gain'] as const;
 const EATING_PHASES = ['cut', 'maintain', 'bulk'] as const;
-const DEFAULT_PROFILE_NAME = 'GameBoyPlayer';
+const DEFAULT_PROFILE_NAME = 'Game Boy Player';
 const DEFAULT_AVATAR_ICON = 'person';
 const DEFAULT_AVATAR_COLOR = 'blue';
-const MUSCLE_GROUPS = [
-  'abdomen',
-  'arms',
-  'back',
-  'chest',
-  'core',
-  'full_body',
-  'glutes',
-  'legs',
-  'shoulders',
-] as const;
-const EQUIPMENT_TYPES = [
-  'barbell',
-  'bodyweight',
-  'cable',
-  'cardio',
-  'dumbbell',
-  'kettlebell',
-  'medicine_ball',
-  'other',
-  'plate_machine',
-  'resistance_band',
-  'smith_machine',
-] as const;
-const MECHANIC_TYPES = ['cardio', 'compound', 'isolation', 'plyometric'] as const;
 
 const DAY_ZERO_UTC_MS = Date.UTC(2000, 0, 1);
 const DAY_MS = 86_400_000;
 
-function dayToUtcMs(day: number): number {
-  return DAY_ZERO_UTC_MS + day * DAY_MS;
+type CartridgeDay = {
+  dayStartMs: number;
+  dayTimezone: string;
+  eventTimestamp: number;
+  eventTimezone: string;
+};
+
+function cartridgeDayParts(day: number): [year: number, month: number, date: number] {
+  const utcDate = new Date(DAY_ZERO_UTC_MS + day * DAY_MS);
+  return [utcDate.getUTCFullYear(), utcDate.getUTCMonth(), utcDate.getUTCDate()];
+}
+
+function cartridgeDay(day: number): CartridgeDay {
+  const [year, month, date] = cartridgeDayParts(day);
+  const dayStartMs = localDayStartMs(new Date(year, month, date, 12));
+  const eventDate = new Date(year, month, date, 12);
+  return {
+    dayStartMs,
+    dayTimezone: getTimezoneAt(dayStartMs),
+    eventTimestamp: eventDate.getTime(),
+    eventTimezone: getTimezoneAt(eventDate),
+  };
 }
 
 function inferredDateOfBirthMs(todayDay: number, age: number): number {
-  const today = new Date(dayToUtcMs(todayDay));
-  const year = today.getUTCFullYear() - age;
-  const month = today.getUTCMonth();
-  const day = Math.min(today.getUTCDate(), new Date(Date.UTC(year, month + 1, 0)).getUTCDate());
-  return new Date(year, month, day).getTime();
+  const [todayYear, month, todayDate] = cartridgeDayParts(todayDay);
+  const year = todayYear - age;
+  const date = Math.min(todayDate, new Date(year, month + 1, 0).getDate());
+  return localDayStartMs(new Date(year, month, date, 12));
 }
 
 function assertUniqueIndexes(
@@ -204,7 +222,8 @@ export function gameBoyExportToDatabaseDump(
   compact: CompactGameBoyExport
 ): Record<string, unknown> {
   const { profile } = compact;
-  const now = dayToUtcMs(profile.todayDay);
+  const today = cartridgeDay(profile.todayDay);
+  const now = today.eventTimestamp;
   const userSyncId = generateUUID();
   const foods = compact.foods.map(
     ([index, name, calories, proteinDg, fatDg, carbsDg, fiberDg]) => ({
@@ -227,7 +246,8 @@ export function gameBoyExportToDatabaseDump(
   const foodByIndex = new Map(compact.foods.map((food) => [food[0], food]));
   const nutritionLogs = compact.foodLogs.map(([day, foodIndex, grams], index) => {
     const food = foodByIndex.get(foodIndex) as (typeof compact.foods)[number];
-    const consumedAt = dayToUtcMs(day);
+    const consumedDay = cartridgeDay(day);
+    const consumedAt = consumedDay.eventTimestamp;
     return {
       id: `gb-n-${index}`,
       food_id: `gb-f-${foodIndex}`,
@@ -241,7 +261,7 @@ export function gameBoyExportToDatabaseDump(
       logged_fiber: food[6] / 10,
       snapshot_basis: 'per_100g',
       date: consumedAt,
-      timezone: '+00:00',
+      timezone: consumedDay.eventTimezone,
       created_at: consumedAt,
       updated_at: consumedAt,
     };
@@ -252,9 +272,9 @@ export function gameBoyExportToDatabaseDump(
       id: `gb-e-${index}`,
       name,
       description: 'Imported from Musclog GB',
-      muscle_group: MUSCLE_GROUPS[muscle] ?? 'full_body',
-      equipment_type: EQUIPMENT_TYPES[equipment] ?? 'other',
-      mechanic_type: MECHANIC_TYPES[mechanic] ?? 'compound',
+      muscle_group: MUSCLE_GROUPS[muscle],
+      equipment_type: EQUIPMENT_TYPES[equipment],
+      mechanic_type: MECHANIC_TYPES[mechanic],
       source: 'user',
       load_multiplier: multiplierCenti / 100,
       created_at: now,
@@ -267,7 +287,8 @@ export function gameBoyExportToDatabaseDump(
   const workoutLogSets: Record<string, unknown>[] = [];
 
   compact.workouts.forEach(([day, volumeKg, sets], workoutIndex) => {
-    const timestamp = dayToUtcMs(day);
+    const workoutDay = cartridgeDay(day);
+    const timestamp = workoutDay.eventTimestamp;
     const workoutId = `gb-w-${workoutIndex}`;
     workoutLogs.push({
       id: workoutId,
@@ -275,7 +296,7 @@ export function gameBoyExportToDatabaseDump(
       workout_name: 'Game Boy Workout',
       started_at: timestamp,
       completed_at: timestamp,
-      timezone: '+00:00',
+      timezone: workoutDay.eventTimezone,
       total_volume: volumeKg,
       type: 'free',
       exhaustion_level: 0,
@@ -317,16 +338,16 @@ export function gameBoyExportToDatabaseDump(
   });
 
   const weightMetrics = compact.weights.map(([day, weightKgTenths], index) => {
-    const timestamp = dayToUtcMs(day);
+    const metricDay = cartridgeDay(day);
     return {
       id: `gb-m-${index}`,
       type: 'weight',
       value: weightKgTenths / 10,
       unit: 'kg',
-      date: timestamp,
-      timezone: '+00:00',
-      created_at: timestamp,
-      updated_at: timestamp,
+      date: metricDay.dayStartMs,
+      timezone: metricDay.dayTimezone,
+      created_at: metricDay.eventTimestamp,
+      updated_at: metricDay.eventTimestamp,
     };
   });
   if (!compact.weights.some(([day]) => day === profile.todayDay)) {
@@ -335,8 +356,8 @@ export function gameBoyExportToDatabaseDump(
       type: 'weight',
       value: profile.weightKgTenths / 10,
       unit: 'kg',
-      date: now,
-      timezone: '+00:00',
+      date: today.dayStartMs,
+      timezone: today.dayTimezone,
       created_at: now,
       updated_at: now,
     });
@@ -390,7 +411,7 @@ export function gameBoyExportToDatabaseDump(
         fiber: profile.fiber,
         eating_phase: EATING_PHASES[profile.weightGoal],
         target_weight: profile.weightKgTenths / 10,
-        timezone: '+00:00',
+        timezone: today.eventTimezone,
         is_dynamic: false,
         created_at: now,
         updated_at: now,
@@ -406,8 +427,8 @@ export function gameBoyExportToDatabaseDump(
         type: 'height',
         value: profile.heightCm,
         unit: 'cm',
-        date: now,
-        timezone: '+00:00',
+        date: today.dayStartMs,
+        timezone: today.dayTimezone,
         created_at: now,
         updated_at: now,
       },

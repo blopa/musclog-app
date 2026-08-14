@@ -1,0 +1,27 @@
+{
+  "databaseExportVersion": 26,
+  "gameBoyExportVersion": 1,
+  "exerciseEnums": {
+    "muscleGroups": [
+      "abdomen",
+      "arms",
+      "back",
+      "chest",
+      "full_body",
+      "glutes",
+      "legs",
+      "shoulders"
+    ],
+    "equipmentTypes": [
+      "barbell",
+      "bodyweight",
+      "cable",
+      "dumbbell",
+      "kettlebell",
+      "other",
+      "plate_machine",
+      "smith_machine"
+    ],
+    "mechanicTypes": ["compound", "isolation", "plyometric"]
+  }
+}

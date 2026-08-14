@@ -323,6 +323,11 @@ pre-fill the hour and minute without touching the save format.
   includes only rows whose `isPopular` value is exactly `true`, preserves their
   source catalogue order, and assigns compact cartridge IDs from 1 to 100. A
   regenerated table therefore intentionally remaps exercise references in old saves.
+- `data/gameBoyOpticalProtocol.json` freezes the compact export versions and exercise
+  enum ordinals shared with the app receiver. Never reorder an existing enum entry or
+  derive the ordinals from the selected catalogue. Append deliberate additions, then
+  run `npm run gb:gen-exercises`; the command also regenerates
+  `src/generated/optical_protocol.generated.h` and rejects unsupported catalogue values.
 - Keep `gameboy/assets/logo.png` and `gameboy/assets/gb_background.png` committed.
   The build converts them into generated `src/generated/logo.c`/`src/generated/logo.h`
   and `src/generated/gb_background.c`/`src/generated/gb_background.h`, which are

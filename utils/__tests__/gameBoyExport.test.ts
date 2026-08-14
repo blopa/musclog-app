@@ -1,4 +1,6 @@
 import { validateExportDump } from '@/database/schemaToZod';
+import gameBoyOpticalProtocol from '@/data/gameBoyOpticalProtocol.json';
+import { getTimezoneAt } from '@/utils/timezone';
 import {
   expandGameBoyExportIfNeeded,
   GameBoyExportError,
@@ -37,8 +39,8 @@ const compactFixture = () => ({
   ],
   weights: [[9699, 808]],
   exercises: [
-    [3, 'BENCH PRESS', 3, 0, 1, 100],
-    [9, 'CABLE FLY', 3, 2, 2, 100],
+    [3, 'BENCH PRESS', 3, 0, 0, 100],
+    [9, 'CABLE FLY', 3, 2, 1, 100],
   ],
   workouts: [
     [
@@ -123,6 +125,20 @@ describe('Musclog GB compact database export', () => {
     ]);
 
     expect(dump.workout_log_exercises).toHaveLength(2);
+    expect(dump.exercises).toEqual([
+      expect.objectContaining({
+        name: 'BENCH PRESS',
+        muscle_group: 'chest',
+        equipment_type: 'barbell',
+        mechanic_type: 'compound',
+      }),
+      expect.objectContaining({
+        name: 'CABLE FLY',
+        muscle_group: 'chest',
+        equipment_type: 'cable',
+        mechanic_type: 'isolation',
+      }),
+    ]);
     expect(dump.workout_log_sets).toEqual([
       expect.objectContaining({ log_exercise_id: 'gb-x-0-0', completion_status: 'performed' }),
       expect.objectContaining({ log_exercise_id: 'gb-x-0-0', completion_status: 'performed' }),
@@ -180,6 +196,102 @@ describe('Musclog GB compact database export', () => {
     expect(() => parseGameBoyExport(duplicateExercise)).toThrow(
       new GameBoyExportError('malformed', 'Duplicate exercise index 3')
     );
+
+    const invalidMechanic = compactFixture();
+    invalidMechanic.exercises[0][4] = gameBoyOpticalProtocol.exerciseEnums.mechanicTypes.length;
+    expect(() => parseGameBoyExport(invalidMechanic)).toThrow(
+      expect.objectContaining({ code: 'malformed' })
+    );
+  });
+
+  it('decodes every exercise enum from the shared wire contract', () => {
+    const fixture = compactFixture();
+    fixture.workouts = [];
+    fixture.exercises = [
+      ...gameBoyOpticalProtocol.exerciseEnums.muscleGroups.map((value, index) => [
+        index,
+        `MUSCLE ${value}`,
+        index,
+        0,
+        0,
+        100,
+      ]),
+      ...gameBoyOpticalProtocol.exerciseEnums.equipmentTypes.map((value, index) => [
+        32 + index,
+        `EQUIPMENT ${value}`,
+        0,
+        index,
+        0,
+        100,
+      ]),
+      ...gameBoyOpticalProtocol.exerciseEnums.mechanicTypes.map((value, index) => [
+        64 + index,
+        `MECHANIC ${value}`,
+        0,
+        0,
+        index,
+        100,
+      ]),
+    ];
+
+    const dump = gameBoyExportToDatabaseDump(parseGameBoyExport(fixture));
+    const exercises = dump.exercises as Record<string, unknown>[];
+
+    expect(exercises.slice(0, gameBoyOpticalProtocol.exerciseEnums.muscleGroups.length)).toEqual(
+      gameBoyOpticalProtocol.exerciseEnums.muscleGroups.map((muscleGroup) =>
+        expect.objectContaining({ muscle_group: muscleGroup })
+      )
+    );
+    expect(
+      exercises.slice(
+        gameBoyOpticalProtocol.exerciseEnums.muscleGroups.length,
+        gameBoyOpticalProtocol.exerciseEnums.muscleGroups.length +
+          gameBoyOpticalProtocol.exerciseEnums.equipmentTypes.length
+      )
+    ).toEqual(
+      gameBoyOpticalProtocol.exerciseEnums.equipmentTypes.map((equipmentType) =>
+        expect.objectContaining({ equipment_type: equipmentType })
+      )
+    );
+    expect(exercises.slice(-gameBoyOpticalProtocol.exerciseEnums.mechanicTypes.length)).toEqual(
+      gameBoyOpticalProtocol.exerciseEnums.mechanicTypes.map((mechanicType) =>
+        expect.objectContaining({ mechanic_type: mechanicType })
+      )
+    );
+  });
+
+  it('preserves cartridge calendar days in the receiving device timezone', () => {
+    const fixture = compactFixture();
+    const dump = gameBoyExportToDatabaseDump(parseGameBoyExport(fixture));
+    const metric = (dump.user_metrics as Record<string, unknown>[]).find(
+      ({ id }) => id === 'gb-m-0'
+    )!;
+    const nutritionLog = (dump.nutrition_logs as Record<string, unknown>[])[0];
+    const workout = (dump.workout_logs as Record<string, unknown>[])[0];
+
+    const expectLocalDayAndHour = (timestamp: number, cartridgeDay: number, hour: number) => {
+      const expectedDay = new Date(Date.UTC(2000, 0, 1) + cartridgeDay * 86_400_000);
+      const actual = new Date(timestamp);
+      expect([
+        actual.getFullYear(),
+        actual.getMonth(),
+        actual.getDate(),
+        actual.getHours(),
+      ]).toEqual([
+        expectedDay.getUTCFullYear(),
+        expectedDay.getUTCMonth(),
+        expectedDay.getUTCDate(),
+        hour,
+      ]);
+      expect(getTimezoneAt(timestamp)).not.toBe('');
+    };
+
+    expectLocalDayAndHour(metric.date as number, fixture.weights[0][0], 0);
+    expect(metric.timezone).toBe(getTimezoneAt(metric.date as number));
+    expectLocalDayAndHour(nutritionLog.date as number, fixture.foodLogs[0][0], 12);
+    expect(nutritionLog.timezone).toBe(getTimezoneAt(nutritionLog.date as number));
+    expectLocalDayAndHour(workout.started_at as number, fixture.workouts[0][0], 12);
+    expect(workout.timezone).toBe(getTimezoneAt(workout.started_at as number));
   });
 
   it('rejects unknown cartridge schema versions and leaves ordinary backups untouched', () => {

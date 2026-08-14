@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import ErrorCorrectionLevel from '@zxing/library/cjs/core/qrcode/decoder/ErrorCorrectionLevel';
 import Version from '@zxing/library/cjs/core/qrcode/decoder/Version';
 
+import gameBoyOpticalProtocol from '@/data/gameBoyOpticalProtocol.json';
 import { dlog, frameIndices, frameSeed, solitonCdf } from '@/utils/optical/fountain';
 import { splitmix32 } from '@/utils/optical/frameProtocol';
 import { alphanumericCapacity } from '@/utils/optical/qrEncode';
@@ -145,6 +146,10 @@ describe('Game Boy optical wire port', () => {
       join(root, 'gameboy/src/features/optical/optical_export.h'),
       'utf8'
     );
+    const generatedProtocol = readFileSync(
+      join(root, 'gameboy/src/generated/optical_protocol.generated.h'),
+      'utf8'
+    );
     const fountainSource = readFileSync(
       join(root, 'gameboy/src/features/optical/fountain.c'),
       'utf8'
@@ -161,7 +166,13 @@ describe('Game Boy optical wire port', () => {
     );
     const qrSource = readFileSync(join(root, 'gameboy/src/features/optical/qrcodegen.c'), 'utf8');
 
-    expect(exportHeader).toContain('#define OPTICAL_EXPORT_DATABASE_VERSION 26u');
+    expect(exportHeader).toContain('#include "optical_protocol.generated.h"');
+    expect(generatedProtocol).toContain(
+      `#define OPTICAL_EXPORT_DATABASE_VERSION ${gameBoyOpticalProtocol.databaseExportVersion}u`
+    );
+    expect(generatedProtocol).toContain(
+      `#define OPTICAL_EXPORT_SCHEMA_VERSION ${gameBoyOpticalProtocol.gameBoyExportVersion}u`
+    );
     expect(exportHeader).toContain('#define OPTICAL_CONTAINER_HEADER_LEN 92u');
     expect(exportHeader).toContain('#define OPTICAL_FOUNTAIN_BLOCK_LEN 292u');
     expect(exportHeader).toContain('#define OPTICAL_SRAM_CACHE_BLOCKS 12u');

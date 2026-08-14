@@ -4,10 +4,9 @@
 #include <gb/gb.h>
 #include <stdint.h>
 
+#include "optical_protocol.generated.h"
 #include "profile.h"
 
-#define OPTICAL_EXPORT_DATABASE_VERSION 26u
-#define OPTICAL_EXPORT_SCHEMA_VERSION 1u
 #define OPTICAL_CONTAINER_HEADER_LEN 92u
 #define OPTICAL_FOUNTAIN_BLOCK_LEN 292u
 #define OPTICAL_SRAM_CACHE_OFFSET 0x1250u

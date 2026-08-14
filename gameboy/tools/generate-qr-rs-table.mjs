@@ -62,9 +62,11 @@ writeFileSync(
 #define QR_RS_DEGREE ${degree}u
 
 /* Row N contains divisor[0..19] multiplied by GF(256) factor N. */
+// clang-format off
 static const uint8_t qr_rs_products[256u * QR_RS_DEGREE] = {
 ${rows.join('\n')}
 };
+// clang-format on
 
 #endif /* MUSCLOG_QR_RS_PRODUCTS_GENERATED_H */
 `

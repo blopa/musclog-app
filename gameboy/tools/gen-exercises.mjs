@@ -11,8 +11,8 @@
 //   - mechanic type
 //   - load multiplier
 //
-// Muscle groups, equipment types, and mechanic types are emitted as compact
-// uint8 enum values.
+// Muscle groups, equipment types, and mechanic types use the frozen compact
+// uint8 wire values in data/gameBoyOpticalProtocol.json.
 // Load multipliers are stored as centi-units in uint16 (1.45 -> 145) because the
 // source data uses two-decimal precision. The selected rows retain the source
 // catalogue's exerciseIndex order, while their Game Boy ID is reassigned as the
@@ -21,6 +21,8 @@
 // The generated files are committed so the ROM build does not depend on the app
 // seed JSON. Re-run with `npm run gb:gen-exercises` if the dataset changes.
 
+import { execFileSync } from 'node:child_process';
+import { createRequire } from 'node:module';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -28,9 +30,11 @@ import { fileURLToPath } from 'node:url';
 const repoRoot = join(fileURLToPath(import.meta.url), '..', '..', '..');
 const dataDir = join(repoRoot, 'data');
 const outDir = join(repoRoot, 'gameboy', 'src', 'generated');
+const clangFormat = createRequire(import.meta.url)('clang-format');
 mkdirSync(outDir, { recursive: true });
 
 const SOURCE_FILE = 'exercisesData.json';
+const PROTOCOL_FILE = 'gameBoyOpticalProtocol.json';
 const POPULAR_EXERCISE_COUNT = 100;
 const EXERCISES_BANK = 6;
 
@@ -62,11 +66,28 @@ function centiMultiplier(value) {
   return Math.abs(n * 100 - centi) < 0.000001 ? centi : undefined;
 }
 
-function sortedUnique(rows, field) {
-  return [...new Set(rows.map((row) => row[field]))].sort();
+function protocolEnumValues(protocol, field) {
+  const values = protocol.exerciseEnums?.[field];
+  if (
+    !Array.isArray(values) ||
+    values.length === 0 ||
+    values.some((value) => typeof value !== 'string' || value.trim().length === 0) ||
+    new Set(values).size !== values.length
+  ) {
+    throw new Error(`data/${PROTOCOL_FILE} has an invalid ${field} enum.`);
+  }
+  return values;
 }
 
-function selectPopularExerciseRows(rawRows) {
+function protocolVersion(protocol, field) {
+  const value = protocol[field];
+  if (!Number.isInteger(value) || value < 0 || value > 65_535) {
+    throw new Error(`data/${PROTOCOL_FILE} has an invalid ${field}.`);
+  }
+  return value;
+}
+
+function selectPopularExerciseRows(rawRows, enumSets) {
   if (!Array.isArray(rawRows)) {
     throw new Error(`data/${SOURCE_FILE} must contain a JSON array.`);
   }
@@ -105,10 +126,16 @@ function selectPopularExerciseRows(rawRows) {
     if (typeof name !== 'string' || name.trim().length === 0) reasons.push('missing exercise name');
     if (typeof muscleGroup !== 'string' || muscleGroup.trim().length === 0)
       reasons.push('missing muscleGroup');
+    else if (!enumSets.muscleGroups.has(muscleGroup))
+      reasons.push(`muscleGroup "${muscleGroup}" is missing from ${PROTOCOL_FILE}`);
     if (typeof equipmentType !== 'string' || equipmentType.trim().length === 0)
       reasons.push('missing equipmentType');
+    else if (!enumSets.equipmentTypes.has(equipmentType))
+      reasons.push(`equipmentType "${equipmentType}" is missing from ${PROTOCOL_FILE}`);
     if (typeof mechanicType !== 'string' || mechanicType.trim().length === 0)
       reasons.push('missing mechanicType');
+    else if (!enumSets.mechanicTypes.has(mechanicType))
+      reasons.push(`mechanicType "${mechanicType}" is missing from ${PROTOCOL_FILE}`);
     if (loadMultiplierCenti === undefined)
       reasons.push('loadMultiplier must fit two-decimal precision');
     else if (loadMultiplierCenti < 0) reasons.push('negative loadMultiplier');
@@ -155,12 +182,20 @@ function rowLiterals(rows, muscleMap, equipmentMap, mechanicMap) {
 }
 
 const sourcePath = join(dataDir, SOURCE_FILE);
+const protocolPath = join(dataDir, PROTOCOL_FILE);
 console.log(`Reading ${sourcePath} ...`);
 
-const rows = selectPopularExerciseRows(JSON.parse(readFileSync(sourcePath, 'utf8')));
-const muscleGroups = sortedUnique(rows, 'muscleGroup');
-const equipmentTypes = sortedUnique(rows, 'equipmentType');
-const mechanicTypes = sortedUnique(rows, 'mechanicType');
+const protocol = JSON.parse(readFileSync(protocolPath, 'utf8'));
+const muscleGroups = protocolEnumValues(protocol, 'muscleGroups');
+const equipmentTypes = protocolEnumValues(protocol, 'equipmentTypes');
+const mechanicTypes = protocolEnumValues(protocol, 'mechanicTypes');
+const databaseExportVersion = protocolVersion(protocol, 'databaseExportVersion');
+const gameBoyExportVersion = protocolVersion(protocol, 'gameBoyExportVersion');
+const rows = selectPopularExerciseRows(JSON.parse(readFileSync(sourcePath, 'utf8')), {
+  muscleGroups: new Set(muscleGroups),
+  equipmentTypes: new Set(equipmentTypes),
+  mechanicTypes: new Set(mechanicTypes),
+});
 const muscleMap = new Map(muscleGroups.map((value) => [value, `EX_MUSCLE_${enumSuffix(value)}`]));
 const equipmentMap = new Map(
   equipmentTypes.map((value) => [value, `EX_EQUIPMENT_${enumSuffix(value)}`])
@@ -170,7 +205,7 @@ const mechanicMap = new Map(
 );
 
 const header = `/* Auto-generated by gameboy/tools/gen-exercises.mjs — do not edit by hand. */
-/* Source: data/${SOURCE_FILE}. */
+/* Sources: data/${SOURCE_FILE}, data/${PROTOCOL_FILE}. */
 #ifndef MUSCLOG_EXERCISES_H
 #define MUSCLOG_EXERCISES_H
 
@@ -212,7 +247,7 @@ extern const exercise_t exercises[EXERCISE_COUNT];
 `;
 
 const body = `/* Auto-generated by gameboy/tools/gen-exercises.mjs — do not edit by hand. */
-/* Source: data/${SOURCE_FILE}. */
+/* Sources: data/${SOURCE_FILE}, data/${PROTOCOL_FILE}. */
 #pragma bank ${EXERCISES_BANK}
 #include "exercises.h"
 
@@ -224,11 +259,39 @@ ${rowLiterals(rows, muscleMap, equipmentMap, mechanicMap)}
 };
 `;
 
-writeFileSync(join(outDir, 'exercises.h'), header);
-writeFileSync(join(outDir, 'exercises.c'), body);
+const protocolHeader = `/* Auto-generated by gameboy/tools/gen-exercises.mjs — do not edit by hand. */
+/* Source: data/${PROTOCOL_FILE}. */
+#ifndef MUSCLOG_OPTICAL_PROTOCOL_GENERATED_H
+#define MUSCLOG_OPTICAL_PROTOCOL_GENERATED_H
+
+#define OPTICAL_EXPORT_DATABASE_VERSION ${databaseExportVersion}u
+#define OPTICAL_EXPORT_SCHEMA_VERSION ${gameBoyExportVersion}u
+
+#endif /* MUSCLOG_OPTICAL_PROTOCOL_GENERATED_H */
+`;
+
+const generatedFiles = [
+  join(outDir, 'exercises.h'),
+  join(outDir, 'exercises.c'),
+  join(outDir, 'optical_protocol.generated.h'),
+];
+writeFileSync(generatedFiles[0], header);
+writeFileSync(generatedFiles[1], body);
+writeFileSync(generatedFiles[2], protocolHeader);
+execFileSync(
+  process.execPath,
+  [
+    clangFormat.location,
+    '-i',
+    `--style=file:${join(repoRoot, 'gameboy', '.clang-format')}`,
+    ...generatedFiles,
+  ],
+  { cwd: repoRoot, stdio: 'inherit' }
+);
 
 console.log(
-  `Wrote exercises.{c,h} (${rows.length} exercises, ${muscleGroups.length} muscle groups, ` +
+  `Wrote exercises.{c,h} and optical_protocol.generated.h (${rows.length} exercises, ` +
+    `${muscleGroups.length} muscle groups, ` +
     `${equipmentTypes.length} equipment types, ${mechanicTypes.length} mechanic types, ` +
     `bank ${EXERCISES_BANK}).`
 );

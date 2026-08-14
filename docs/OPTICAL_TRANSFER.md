@@ -99,6 +99,13 @@ arrays contain:
 - `exercises`: only exercises referenced by saved workouts; and
 - `workouts`: oldest-first workout summaries and all performed sets.
 
+`data/gameBoyOpticalProtocol.json` is the single source for both version values and for the compact
+exercise enum ordinals. The Game Boy generator validates every selected exercise against that
+contract and emits `gameboy/src/generated/optical_protocol.generated.h`; the TypeScript receiver
+reads the same JSON directly. Existing enum entries must never be reordered or derived from the
+current popular subset. Additions are appended deliberately before regenerating with
+`npm run gb:gen-exercises`.
+
 `utils/optical/gameBoyExport.ts` rejects unknown schema versions, duplicate indexes, and missing
 food/exercise references before it maps the tuples into a regular export dump. `database/importDb.ts`
 performs that expansion immediately after `JSON.parse`, before schema validation and before any
@@ -108,6 +115,12 @@ cartridge date and age. It also selects that profile as the current user, marks 
 and initializes the manual-food carbs convention from the cartridge's unit system. Body-fat, cycle,
 cloud-account, and health-permission data stay absent because the cartridge cannot know them.
 Imported workout sets are explicitly `performed`; no RPE is invented.
+
+The cartridge stores calendar-day numbers without a wall-clock time or timezone. During expansion,
+the receiver reconstructs the same Y/M/D in its device timezone: metric day keys and the inferred
+birthday use local midnight, while nutrition and workout events use local noon to stay clear of DST
+boundaries. Every generated row captures the offset in effect at its reconstructed instant, so a
+day exported by the cartridge does not move backward or forward when displayed by the app.
 
 The fountain implementation is a full C port of the frozen PRNG, seeding, degree distribution,
 index selection, XOR framing, and base44 protocol. GBDK provides no floating-point runtime, so the
@@ -538,40 +551,42 @@ clamp does not — or the sender generates live forever, which is slower but alw
 
 ## Files
 
-| path                                              | role                                                    |
-| ------------------------------------------------- | ------------------------------------------------------- |
-| `utils/optical/fountain.ts`                       | LT encoder/decoder, `dlog`, soliton CDF. **Frozen.**    |
-| `utils/optical/frameProtocol.ts`                  | 20-byte frame header, FNV-1a, splitmix32. **Frozen.**   |
-| `utils/optical/base44.ts`                         | binary ⇄ QR-alphanumeric text                           |
-| `utils/optical/presets.ts`                        | density table, derived from zxing's own capacity tables |
-| `utils/optical/qrEncode.ts`                       | QR generation with version and mask pinned              |
-| `utils/optical/qrRaster.ts`                       | module matrix → RGBA pixels                             |
-| `utils/optical/senderSession.ts`                  | `OpticalStream` — seq → frame text                      |
-| `utils/optical/receiverSession.ts`                | `OpticalReceiver` — scanned text → payload              |
-| `utils/optical/progress.ts`                       | overhead model, progress and ETA                        |
-| `utils/optical/noSignal.ts`                       | when to show the "nothing is decoding" hint             |
-| `utils/optical/bench.ts`                          | device calibration and the Phase 0 measurements         |
-| `utils/optical/gameBoyExport.ts`                  | strict compact-GB parser and normal-export expansion    |
-| `utils/share/shareEnvelope.ts`                    | bounded, versioned share envelope parser                |
-| `utils/share/shareKinds.ts`                       | share-kind table/FK/dedupe registry                     |
-| `utils/share/shareImportPlan.ts`                  | pure ID/FK rewrite and prune planner                    |
-| `database/share/buildMealShare.ts`                | builds one meal and its dependency graph                |
-| `database/share/importShareEnvelope.ts`           | atomic, non-destructive share importer                  |
-| `components/optical/OpticalQrCanvas.tsx`          | Skia draw, integer module scaling                       |
-| `components/optical/OpticalMealSharePreview.tsx`  | verified meal preview before saving                     |
-| `components/optical/OpticalScannerCamera.tsx`     | receiving camera (vision-camera)                        |
-| `components/modals/OpticalReceiveModal.tsx`       | shared receiver for Settings and first-run onboarding   |
-| `components/SmartCameraFrame.tsx`                 | shared aiming frame + scrim, `portrait` variant here    |
-| `components/optical/OpticalQrCanvas.web.tsx`      | Skia-free DOM canvas, same integer scaling              |
-| `components/optical/OpticalScannerCamera.web.tsx` | getUserMedia + our own frame pump                       |
-| `utils/optical/qrCanvasLayout.ts`                 | integer module scaling, shared by both canvases         |
-| `utils/optical/webQrDecode.ts`                    | decoder selection and the wasm reader                   |
-| `scripts/sync-web-wasm.js`                        | self-hosts the wasm into `public/`                      |
-| `app/app/test/optical-bench.tsx`                  | the measurement harness (runs on both platforms)        |
-| `gameboy/src/features/optical/optical_export.c`   | virtual JSON/container exporter and SRAM-store scan     |
-| `gameboy/src/features/optical/fountain.c`         | fixed-point C fountain/frame/base44 encoder             |
-| `gameboy/src/features/optical/qrcodegen.c`        | optimized fixed version 11-L QR encoder                 |
-| `gameboy/src/features/optical/optical_share.c`    | Share Data confirmation, frame loop, and tile renderer  |
+| path                                                 | role                                                    |
+| ---------------------------------------------------- | ------------------------------------------------------- |
+| `utils/optical/fountain.ts`                          | LT encoder/decoder, `dlog`, soliton CDF. **Frozen.**    |
+| `utils/optical/frameProtocol.ts`                     | 20-byte frame header, FNV-1a, splitmix32. **Frozen.**   |
+| `utils/optical/base44.ts`                            | binary ⇄ QR-alphanumeric text                           |
+| `utils/optical/presets.ts`                           | density table, derived from zxing's own capacity tables |
+| `utils/optical/qrEncode.ts`                          | QR generation with version and mask pinned              |
+| `utils/optical/qrRaster.ts`                          | module matrix → RGBA pixels                             |
+| `utils/optical/senderSession.ts`                     | `OpticalStream` — seq → frame text                      |
+| `utils/optical/receiverSession.ts`                   | `OpticalReceiver` — scanned text → payload              |
+| `utils/optical/progress.ts`                          | overhead model, progress and ETA                        |
+| `utils/optical/noSignal.ts`                          | when to show the "nothing is decoding" hint             |
+| `utils/optical/bench.ts`                             | device calibration and the Phase 0 measurements         |
+| `utils/optical/gameBoyExport.ts`                     | strict compact-GB parser and normal-export expansion    |
+| `data/gameBoyOpticalProtocol.json`                   | GB versions and immutable exercise wire-enum ordinals   |
+| `gameboy/src/generated/optical_protocol.generated.h` | C version constants generated from the shared contract  |
+| `utils/share/shareEnvelope.ts`                       | bounded, versioned share envelope parser                |
+| `utils/share/shareKinds.ts`                          | share-kind table/FK/dedupe registry                     |
+| `utils/share/shareImportPlan.ts`                     | pure ID/FK rewrite and prune planner                    |
+| `database/share/buildMealShare.ts`                   | builds one meal and its dependency graph                |
+| `database/share/importShareEnvelope.ts`              | atomic, non-destructive share importer                  |
+| `components/optical/OpticalQrCanvas.tsx`             | Skia draw, integer module scaling                       |
+| `components/optical/OpticalMealSharePreview.tsx`     | verified meal preview before saving                     |
+| `components/optical/OpticalScannerCamera.tsx`        | receiving camera (vision-camera)                        |
+| `components/modals/OpticalReceiveModal.tsx`          | shared receiver for Settings and first-run onboarding   |
+| `components/SmartCameraFrame.tsx`                    | shared aiming frame + scrim, `portrait` variant here    |
+| `components/optical/OpticalQrCanvas.web.tsx`         | Skia-free DOM canvas, same integer scaling              |
+| `components/optical/OpticalScannerCamera.web.tsx`    | getUserMedia + our own frame pump                       |
+| `utils/optical/qrCanvasLayout.ts`                    | integer module scaling, shared by both canvases         |
+| `utils/optical/webQrDecode.ts`                       | decoder selection and the wasm reader                   |
+| `scripts/sync-web-wasm.js`                           | self-hosts the wasm into `public/`                      |
+| `app/app/test/optical-bench.tsx`                     | the measurement harness (runs on both platforms)        |
+| `gameboy/src/features/optical/optical_export.c`      | virtual JSON/container exporter and SRAM-store scan     |
+| `gameboy/src/features/optical/fountain.c`            | fixed-point C fountain/frame/base44 encoder             |
+| `gameboy/src/features/optical/qrcodegen.c`           | optimized fixed version 11-L QR encoder                 |
+| `gameboy/src/features/optical/optical_share.c`       | Share Data confirmation, frame loop, and tile renderer  |
 
 ### The aiming frame is decoration
 

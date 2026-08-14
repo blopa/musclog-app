@@ -405,7 +405,11 @@ static void render_workouts(JsonSink *sink) {
 }
 
 static void render_json(JsonSink *sink) {
-    json_text(sink, "{\"_exportVersion\":26,\"_gameBoyExport\":1,");
+    json_text(sink, "{\"_exportVersion\":");
+    json_uint32(sink, OPTICAL_EXPORT_DATABASE_VERSION);
+    json_text(sink, ",\"_gameBoyExport\":");
+    json_uint32(sink, OPTICAL_EXPORT_SCHEMA_VERSION);
+    sink_byte(sink, ',');
     render_profile(sink);
     render_foods(sink);
     render_food_logs(sink);
