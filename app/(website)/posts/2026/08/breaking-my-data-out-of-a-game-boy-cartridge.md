@@ -125,14 +125,16 @@ What fixed it was not new work, it was noticing that the work was already done. 
 
 So: the battery in that cartridge will still die one day. But it will take nothing with it.
 
-The ROM, the build scripts, and the firmware are all open source in the same repo as the app: [github.com/blopa/musclog-app](https://github.com/blopa/musclog-app), under `gameboy/`. You can run the whole thing, sharing included, in your browser at [musclog.app/gameboy](https://musclog.app/gameboy) — point your phone at your monitor and watch a webpage hand a database to an app.
+Every side of this is in [github.com/blopa/musclog-app](https://github.com/blopa/musclog-app), and it is worth knowing which is which: the cartridge encoder is `gameboy/src/features/optical/`, the phone receiver is `utils/optical/` and did not change by one line, and `data/gameBoyOpticalProtocol.json` is the frozen table both ends agree on without ever asking each other. You can also just try it at [musclog.app/gameboy](https://musclog.app/gameboy) — point your phone at your monitor and watch a webpage hand a database to an app.
 
 ## What's next?
 
-Musclog on J2ME? Symbian S60v3? I'm still only half joking, and now there's an actual reason beyond the bit. A 2006 Nokia has more RAM than the entire Game Boy has address space, it has a real filesystem, and — this is the part that keeps nagging at me — **it has a camera**. Which means the optical transfer could finally go both ways instead of one device only ever shouting into another.
+The obvious one is a camera on the other end.
 
-A Nokia N70 receiving a database from a Pixel, with no cable, no account, and no server, using a protocol neither device's manufacturer has ever heard of. I would very much like to see that work.
+Musclog on J2ME, or Symbian S60v3 — I've been joking about this for a while, but the joke now has a reason behind it. A 2006 Nokia has more RAM than the entire Game Boy has address space, it has a real filesystem, and it has a lens. Which means the transfer could finally go **both ways** instead of one device shouting into another: a Nokia N70 receiving a database from a Pixel, no cable, no account, no server, over a protocol neither manufacturer has heard of.
 
-Lift, Log, Repeat. And now it leaves the cartridge.
+Before that, though, there's a smaller thing I want to know, and I can't answer it from an emulator. An original Game Boy Color screen is unlit, reflective, and ghosts like mad — and a 61×61 QR code drawn on it at two pixels per module is right at the edge of what a phone camera should be able to resolve off a surface like that. mGBA renders it perfectly, which proves nothing at all about a 27-year-old LCD in a badly lit room.
+
+So if you flash this onto a real cartridge, tell me how the scan goes. That failure is the one thing the design cannot report: the Game Boy has no idea whether anybody is reading it. It just keeps flashing.
 
 See you in the next one!
