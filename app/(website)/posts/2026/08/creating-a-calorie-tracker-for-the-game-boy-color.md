@@ -2,7 +2,7 @@
 title: 'Creating a calorie tracker for the Game Boy Color'
 date: '2026-08-01'
 category: 'retro'
-description: 'I put Musclog on a 1998 cartridge — 517 foods in ROM, macro goals packed into 23 bytes of battery-backed SRAM, and a way to beam the whole save, or just one day of eating, into your phone using nothing but light.'
+description: 'I put Musclog on a 1998 cartridge — 517 foods in ROM, macro goals packed into 23 bytes of battery-backed SRAM, charts drawn with background tiles, and 291 free bytes in the one bank that cannot be paged out.'
 tags: ['Game Boy', 'GBDK', 'C', 'Retro', 'Homebrew', 'Nutrition', 'WasmBoy']
 ---
 
@@ -70,8 +70,6 @@ So I cut it down to the parts that actually make sense on a cartridge:
 - 100 bundled exercises across 8 muscle groups
 - A progress dashboard with charts
 - Settings to re-edit everything, plus a reset
-- `SHARE DATA`, which throws your entire cartridge save at your phone's camera as a stream of QR codes
-- `SHARE DAY`, which throws just one day of eating at it instead, and merges into the phone rather than replacing it
 
 The neat part: the foods and exercises come from the exact same `data/*.json` files the React Native app uses. A Node script ports them into hardcoded, ROM-banked C tables, so the cartridge and the phone app share one source of truth. Change the dataset, re-run `npm run gb:gen-foods`, rebuild.
 
@@ -238,76 +236,13 @@ The Select button opens a menu, and Settings lets you re-edit every profile fiel
 
 ![The settings list](/images/blog/2026/08/gameboy-settings.png)
 
-Nothing exciting here — except for the entry I added last, which is the whole reason this section is no longer boring.
-
-## Getting the data off the cartridge
-
-For most of this project, getting data _off_ the cartridge was a `TODO`. I had written a decoder that reads the cartridge's SRAM image back into JavaScript objects, it was dev-only, and the obvious endgame — actually moving what you logged on the Game Boy into the real app — stayed a comment in the code for months. The hard half, understanding the format on both ends, was done. The half that actually moves bytes was not.
-
-That bridge exists now. It just doesn't work the way I expected, because along the way I built [optical transfer](/blog/2026/08/using-decimen-optical-transfer-foss-to-transfer-data-between-devices) for the phone app: moving a database between two devices by animating fountain-coded QR codes on one screen and pointing the other device's camera at them. No network, no cable, no server.
-
-A Game Boy has a screen. That is the entire requirement.
-
-So Settings now has one more entry, `SHARE DATA`, and it puts your whole cartridge save on screen as an endless stream of QR codes. You point your phone at it, hold it there while the bar fills, and your Game Boy's food logs, weigh-ins, workouts and custom foods land in the app — mapped onto the app's own exercises and foods, previewed before anything is written. The cartridge is sender-only: it has no camera, so there is no receive path and no Game Boy-to-Game Boy exchange to design.
-
-There is nothing new to build on the phone side, which is the nicest part. It's the same receive screen you'd use to move a database between two phones — Settings, Data, Optical Transfer, Receive — and it has no idea it's talking to a 1998 console.
-
-![The Musclog app's optical receiver pointed at a screen running SHARE DATA](/images/blog/2026/08/gameboy-optical-share-scan.webp)
-
-_Caught at 0%, which is exactly the moment that hint card exists for. This is a real screen-to-camera link with no back-channel, so when nothing is arriving the only thing the app can do is tell you to fill the frame and hold still. It's also mGBA rather than a cartridge — the ROM doesn't care what's drawing its pixels, so the emulator on the website beams a save just as happily as the real thing._
-
-The pipeline is the same one the phones use, which is the point:
-
-```text
-profile + SRAM stores + referenced ROM records
-      ↓  compact JSON schema v1, streamed as bytes
-      ↓  SHA-256
-      ↓  MLOG container v1 (plain, uncompressed, database payload kind)
-      ↓  LT fountain, 292-byte blocks, frozen 20-byte frame header
-      ↓  base44 (468 alphanumeric characters per frame)
-      ↓  QR version 11-L, mask 0, 61×61 modules at 2 Game Boy pixels/module
-      ↓  phone scanner and the existing receiver
-```
-
-Every line of that was a problem.
-
-**The cartridge cannot hold its own save as a string.** There's no JSON library, and more importantly there's nowhere to put the result — the Game Boy's work RAM is measured in kilobytes and most of it is already spoken for. So `optical_export.c` never builds the payload. It renders it as a _virtual_ byte stream — a function that walks the SRAM stores and emits bytes — and runs that same walk multiple times for different purposes. First pass measures the length and hashes it with SHA-256. Second pass computes the container checksum. Then it caches the first twelve finalized 292-byte blocks into the unused high end of SRAM bank 3, which is enough that a normal save is served entirely from cache and never re-streamed. The payload only has to be _reproducible_, never _resident_.
-
-**There's no floating point, and the fountain code needs a logarithm.** The frame format decides which source blocks to XOR together using a robust soliton distribution, and both devices have to derive the identical subset from a sequence number with no handshake at all — the phone might be running a version of the app from months later. On the phone that's `Math.log`. GBDK has no floating-point runtime, so the C side is fixed point, and it deliberately skips sequence numbers that land on an ambiguous CDF boundary rather than risk disagreeing with the TypeScript by one block. Arbitrary gaps in the sequence are legal; a frame the two sides decode differently is not. There's a test that pins the C encoder's emitted frames against the app's own constants, because "the bar fills to 98% and stops forever" is the failure mode here and it comes with no error message.
-
-**Exercise identity has to survive on two wires at once.** A cartridge `.sav` stores a logged set's exercise as a 0-based index into a frozen table, and the optical export sends that same index. So the table order in `data/gameBoyOpticalProtocol.json` can never change — not sorted, not regenerated from whatever the current "popular" 100 happen to be. Reordering it would silently re-point every existing save file and every past export at a different movement. On the receiving side the app maps the index back to the bundled catalogue's stable slug, so an imported Game Boy workout arrives with its real name, photos and target muscles instead of a text stub. And an index past the end of the list means the cartridge is newer than the phone, which creates a plain user exercise rather than rejecting the transfer.
-
-The QR rendering has its own set of indignities. QR version 11 is 61×61 modules, drawn at 2 pixels per module, which needs 324 background tiles — more than the 256 a single VRAM bank addresses, so the tile map has to keep the bank bit set in its attribute map across both CGB VRAM banks. Encoding runs with the CGB double-speed CPU switched on, each frame is held for at least 30 VBlanks so a phone camera can actually focus on it, and the whole QR workspace lives in that same transient bank-3 scratch region — carefully above the custom foods, which end at `0x0A2F`, because overwriting somebody's saved foods to display a QR code would be a genuinely spectacular bug.
-
-The thing I keep turning over is that the cartridge and the phone never negotiate anything. There's no handshake, no version exchange, no retry request. One device emits light in a format frozen months ago and the other one reconstructs a database from it. It's the least modern data transfer I've ever built and it's the only one in the app that doesn't depend on a single third party.
-
-## Sending one day instead of everything
-
-`SHARE DATA` is a migration. It hands over the whole save, and the phone treats it the way it treats any full backup: it previews it, asks, and then replaces everything on the receiving device. That's the right shape exactly once, when you're moving in.
-
-It is the wrong shape for the thing I actually kept doing, which was logging a day of food on the couch with the cartridge and then wanting it on my phone. Nobody wipes their phone to import a Tuesday.
-
-So the nutrition screen's Select menu has a second action, `SHARE DAY`. It sends only the day you're looking at, and the phone _merges_ it: it previews what's coming, matches every food against what you already have, and adds the entries to that date in your diary. It only shows up when the day has something logged, because streaming QR codes at someone to transfer nothing is a poor use of both our time.
-
-The cartridge side turned out to be almost free. Same streaming byte-walk, same container, same fountain, same QR encoder. Three things change: the reference scan stops at that one day, so only the foods it used get sent; the schema it renders is a much smaller one; and two bytes in the container header flip. Those two bytes are load-bearing — one marks the payload as a share rather than a database, and the other declares a version number so implausible that a copy of the app built _before_ day sharing existed reads it, decides the sender is from the future, and refuses to offer its destructive restore. An old build can't be taught anything, so the format had to be shaped so that the wrong thing was impossible rather than merely discouraged.
-
-**The hard part was food identity, and the reason is a 16-character buffer.** When the cartridge loads a food out of ROM it copies the name into a buffer sized for exactly what fits the UI: sixteen characters and a terminator. Which means "Lettuce, leaf, green, raw" reaches your phone as `Lettuce, leaf, g`.
-
-That's fine when you're replacing the whole database — nothing is there to conflict with. It is not fine when you're merging into a phone that already has a food catalogue, because matching on a truncated name misses essentially every bundled food, and the punishment is a second, worse-named copy of it appearing every single time you share a day.
-
-The fix was the exercise trick again, one layer down: send the index, not the name. The generator that builds the ROM's food tables now also freezes each food's identity into that same protocol file, so position 0 is permanently that lettuce, and the phone resolves the index back to the food it already seeded — real name, barcode, micronutrients and all. Your existing food gets reused instead of duplicated. A food you typed in on the cartridge has no bundled identity to look up, so it falls back to the truncated tuple, which is correct: it's genuinely a new food.
-
-Freezing that list has the same rule as the exercises, and the generator enforces it — regenerating the tables in a way that would change an existing position fails the build with a message about save files, rather than silently re-pointing every logged meal at a different food.
-
-**The cartridge does not know what time you ate.** A food log entry is six bytes: day number, food index, grams. There's no clock field and nowhere to put one. So every imported entry lands at midday, filed under "Other", and the receiving screen says so in plain words — an entry arriving at 12:00 under a generic meal looks like the transfer lost something, and it's better to admit the cartridge never knew than to invent a breakfast.
-
-The last decision was the one I couldn't make on your behalf. If the day you're importing already has entries on the phone, adding to it double-counts everything, and replacing it throws away anything you typed there yourself. Both are things people genuinely want — re-scanning a day you already imported wants replace, adding your Game Boy lunch to a day you'd already logged breakfast on wants add. So the import refuses to guess: the receiving screen asks, and there is no default. Replacing is the only destructive thing any share in the app does, and it happens in the same database transaction as the insert, so it can't half-succeed and leave you with an emptied day.
+Nothing exciting, which is the point. Onboarding asks you nine questions once; Settings is the promise that none of those answers are permanent.
 
 ## Other challenges
 
 The thing that almost ended the project was running out of space in the wrong place. The Game Boy splits ROM into 16 KB banks, and bank 0 is special: it's always mapped, so all the shared code and helpers live there, and it can't be paged out. When I finished the progress screen and ran the build, bank 0 was at 16,093 bytes out of 16,384. **291 bytes free.** Not kilobytes. Bytes.
 
-So the whole progress screen had to go into a numbered, paged bank, and the home loop calls into it through a banked function trampoline that swaps the active ROM bank and restores it on return. Then the title screen, the audio driver, and three banks' worth of optical export needed to land somewhere too, so the cartridge grew from 128 KB to 256 KB and the persistent food-log operations got evicted from bank 0 as well. The current layout:
+So the whole progress screen had to go into a numbered, paged bank, and the home loop calls into it through a banked function trampoline that swaps the active ROM bank and restores it on return. Then the title screen and the audio driver needed to land somewhere too, so the cartridge grew from 128 KB to 256 KB and the persistent food-log operations got evicted from bank 0 as well. The layout:
 
 ```
 Bank layout: ROM_0 uses 14880 / 16384 bytes
@@ -315,9 +250,6 @@ Bank layout: _CODE_2 uses 9591 / 16384 bytes     (USDA foundation foods)
 Bank layout: _CODE_6 uses 2893 / 16384 bytes     (exercise table)
 Bank layout: _CODE_8 uses 6266 / 16384 bytes     (title screen + art)
 Bank layout: _CODE_9 uses 6627 / 16384 bytes     (audio driver + APU data)
-Bank layout: _CODE_10 uses 11488 / 16384 bytes   (sharing UI + QR encoder)
-Bank layout: _CODE_11 uses 10296 / 16384 bytes   (streaming exporter + SHA-256)
-Bank layout: _CODE_12 uses 4519 / 16384 bytes    (fountain encoder)
 ```
 
 1,504 bytes free in bank 0 now, which after the 291-byte era feels like a mansion. The build script parses the linker map and fails the build if any bank overflows, because a ROM that overflows a bank doesn't error, it just maps the wrong code in and crashes when you walk into that menu. Ask me how I learned that.
@@ -326,7 +258,7 @@ The other recurring tax is that there's no `malloc`. No heap, basically. Everyth
 
 And this is where Claude and I disagreed most. An LLM has read a million heap-allocating, float-using, malloc-happy C tutorials, so its instinct is to write that C. On a Game Boy that C is a slow-motion crash. A lot of the work was catching "this looks right" code that would have quietly stepped on an unlinked SRAM bank or overflowed a `uint16_t`. The model is a fantastic accelerator and a terrible substitute for understanding the hardware. Both things are true.
 
-The thing that helped most was making the machine check the machine. There's `clang-tidy` and `clang-format` wired up over the C sources against stub GBDK headers, the linker map check fails the build on bank overflow, and the parts with real algorithms — the MIDI arrangement reducer, the fountain port, the chart bucketing — have host-side tests that run in Node instead of on a 1 MHz CPU I can't set a breakpoint in.
+The thing that helped most was making the machine check the machine. There's `clang-tidy` and `clang-format` wired up over the C sources against stub GBDK headers, the linker map check fails the build on bank overflow, and the parts with real algorithms — the MIDI arrangement reducer, the chart bucketing — have host-side tests that run in Node instead of on a 1 MHz CPU I can't set a breakpoint in.
 
 19 years between C sessions, and the language was the easy part. The platform was the teacher.
 
@@ -343,7 +275,11 @@ await WasmBoy.loadROM(rom);
 
 The fun problem is saves. A Game Boy battery save is just the cartridge's SRAM image, and WasmBoy persists it to IndexedDB. So I flush it on an interval and when you leave the page, and on the next load it comes right back. Your in-browser weigh-ins survive a refresh.
 
-That decoder I mentioned — the one that reads the SRAM image back into JavaScript objects, mirroring the exact byte layouts from the C firmware — turned out to be useful in the opposite direction. There's no real-time clock in a browser tab, so a web player would otherwise be stuck setting the date by hand on a virtual cartridge. Instead the page now _writes_ a valid profile block into the save before the ROM boots, complete with a matching checksum, handing the cartridge today's real date. The hour and minute ride along in two extra bytes that sit just outside the checksummed region, so the picker can pre-fill the time too without touching the save format.
+Which brings up the one piece of tooling I haven't mentioned. Somewhere in the middle of all this I wrote a decoder that reads a cartridge's SRAM image back into JavaScript objects, mirroring the exact byte layouts from the C firmware. It started as debugging equipment — being able to print what the cartridge thinks it stored beats staring at a hex dump and counting offsets on your fingers — and on the website it turned out to be far more useful pointed the other way.
+
+There's no real-time clock in a browser tab, so a web player would otherwise be stuck setting the date by hand on a virtual cartridge. Instead the page now _writes_ a valid profile block into the save before the ROM boots, complete with a matching checksum, handing the cartridge today's real date. The hour and minute ride along in two extra bytes that sit just outside the checksummed region, so the picker can pre-fill the time too without touching the save format.
+
+It is a save file forged by a webpage, and the firmware cannot tell. Which felt like a slightly illicit thing to be able to do to my own cartridge, and it is the sort of trick that turns out to matter later.
 
 There's also a PDF instruction manual, generated from a script and linked on that page, because if you're going to do a fake cartridge you may as well do a fake manual.
 
@@ -353,13 +289,13 @@ The thing that surprised me wasn't C. It was how much modern app development hid
 
 What I did not expect was that the cartridge would end up teaching the phone app something. The seven-formula volume model became a 30-entry lookup table because the Game Boy couldn't afford the multiplications, and it turns out the phone couldn't really justify them either. Constraints kept turning into simplifications that were just... better.
 
-It's also a genuinely good way to understand the hardware that raised me. I grew up on this thing. Now I can tell it how many grams of chicken I ate and then beam that confession into my phone with a flashing square, which is either the most or least productive use of a Game Boy Color ever shipped, and I refuse to decide which.
+It's also a genuinely good way to understand the hardware that raised me. I grew up on this thing. Now I can confess to it how many grams of chicken I ate, which is either the most or least productive use of a Game Boy Color ever shipped, and I refuse to decide which.
 
 The ROM, the build scripts, and the firmware are all open source in the same repo as the app: [github.com/blopa/musclog-app](https://github.com/blopa/musclog-app), under `gameboy/`. If you want to actually mash the buttons without building anything, it runs in your browser at [musclog.app/gameboy](https://musclog.app/gameboy). Bring your own greek yogurt.
 
 ## What's next?
 
-Musclog on J2ME? Symbian S60v3? I'm only half joking. A 2006 Nokia has more RAM than the entire Game Boy has address space, it has a real filesystem, and — this is the part that keeps nagging at me — it has a camera, which means the optical transfer could finally go both ways instead of the cartridge only ever shouting into a phone.
+Musclog on J2ME? Symbian S60v3? I'm only half joking. A 2006 Nokia has more RAM than the entire Game Boy has address space, it has a real filesystem, and it has a keypad that can actually type a food name instead of making you walk an alphabet with a D-pad one letter at a time.
 
 The honest answer is that I don't know yet. But the pattern is clear enough by now: constrain the platform hard enough and the app gets better everywhere else. If a MIDI reducer and a lookup table came out of a 1 MHz CPU, I'd like to see what falls out of a device with a keypad and no touchscreen.
 
