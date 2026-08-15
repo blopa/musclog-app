@@ -437,7 +437,7 @@ export function Footer() {
       <SectionBackground variant="grid" />
       <div className="container mx-auto px-4">
         <div
-          className="mb-8 flex flex-wrap items-center justify-center gap-3 [@media(min-width:767px)]:hidden"
+          className="mb-8 flex flex-wrap items-center justify-center gap-3 md:hidden"
           aria-label={navT('appName')}
         >
           <Link
@@ -446,6 +446,13 @@ export function Footer() {
             style={{ color: '#F3F4F6', borderColor: 'rgba(255,255,255,0.08)' }}
           >
             {navT('features')}
+          </Link>
+          <Link
+            href="/blog"
+            className="inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold transition-colors hover:border-white/20 hover:bg-white/10"
+            style={{ color: '#F3F4F6', borderColor: 'rgba(255,255,255,0.08)' }}
+          >
+            {navT('blog')}
           </Link>
           <Link
             href="/calculator"
@@ -509,7 +516,7 @@ export function Footer() {
             </div>
           </Link>
 
-          <nav className="grid grid-cols-2 gap-x-8 gap-y-3 text-center sm:grid-cols-3 md:text-left">
+          <nav className="grid grid-cols-2 justify-items-center gap-x-8 gap-y-3 text-center sm:grid-cols-3 md:justify-items-start md:text-left">
             {footerLinks.map((link) =>
               link.href.startsWith('http') ? (
                 <a
@@ -535,7 +542,7 @@ export function Footer() {
             )}
             <button
               onClick={resetAnalyticsConsent}
-              className="cursor-pointer text-sm transition-colors hover:text-[#22C55E]"
+              className="col-span-2 cursor-pointer text-sm transition-colors hover:text-[#22C55E] sm:col-span-1"
               style={{ color: BODY_TEXT_SOFT }}
             >
               {consentT('cookieSettings')}
