@@ -295,9 +295,13 @@ The ROM, the build scripts, and the firmware are all open source in the same rep
 
 ## What's next?
 
-Musclog on J2ME? Symbian S60v3? I'm only half joking. A 2006 Nokia has more RAM than the entire Game Boy has address space, it has a real filesystem, and it has a keypad that can actually type a food name instead of making you walk an alphabet with a D-pad one letter at a time.
+A cartridge that only exists as a `.gbc` file is still, if I'm honest, a screenshot with extra steps.
 
-The honest answer is that I don't know yet. But the pattern is clear enough by now: constrain the platform hard enough and the app gets better everywhere else. If a MIDI reducer and a lookup table came out of a 1 MHz CPU, I'd like to see what falls out of a device with a keypad and no touchscreen.
+Everything around it is already finished. The label is designed. The manual is written and typeset. The header says `CGB-MLOG-HOL-1` as if it came off a production line in Holland in 1998. The only missing part is the plastic.
+
+So the next step is an actual object: an MBC3 board with the battery and the real-time clock populated, the ROM flashed onto it, the label printed and trimmed badly by me with a craft knife, and the whole thing in a Game Boy Color on a train. It will be worse than the emulator on this website in every measurable way — dimmer, slower to boot, and the RTC will quietly drain that coin cell for as long as I own it, which is precisely what killed everyone's Pokémon Gold saves.
+
+That is the version I want anyway. The entire premise was to build it the way it would have been built, and the way it would have been built ends in something you can drop on the floor.
 
 Lift, Log, Repeat. On a cartridge now.
 
