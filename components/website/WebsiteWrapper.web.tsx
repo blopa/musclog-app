@@ -329,13 +329,6 @@ export function Header() {
 
         <nav className="hidden items-center gap-6 md:flex">
           <Link
-            href="/home#features"
-            className="text-sm transition-colors hover:text-[#22C55E]"
-            style={{ color: '#F3F4F6' }}
-          >
-            {t('features')}
-          </Link>
-          <Link
             href="/blog"
             className="text-sm transition-colors hover:text-[#22C55E]"
             style={{ color: '#F3F4F6' }}
@@ -347,7 +340,7 @@ export function Header() {
             className="text-sm transition-colors hover:text-[#22C55E]"
             style={{ color: '#F3F4F6' }}
           >
-            Calculator
+            {t('calculator')}
           </Link>
           <Link
             href="/exercises"
@@ -363,29 +356,6 @@ export function Header() {
           >
             {t('progress')}
           </Link>
-          <Link
-            href="/faq"
-            className="text-sm transition-colors hover:text-[#22C55E]"
-            style={{ color: '#F3F4F6' }}
-          >
-            FAQ
-          </Link>
-          <Link
-            href="/alternatives"
-            className="text-sm transition-colors hover:text-[#22C55E]"
-            style={{ color: '#F3F4F6' }}
-          >
-            {t('alternatives')}
-          </Link>
-          <a
-            href="https://github.com/blopa/musclog-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm transition-colors hover:text-[#22C55E]"
-            style={{ color: '#F3F4F6' }}
-          >
-            {t('github')}
-          </a>
           <DownloadModal
             variant="default"
             className="px-5 py-2.5 text-sm font-bold transition-transform hover:scale-[1.01]"
