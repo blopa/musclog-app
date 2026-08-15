@@ -28,12 +28,12 @@ import { useSnackbar } from '@/context/SnackbarContext';
 import { restoreDatabase } from '@/database/importDb';
 import {
   importShareEnvelope,
-  type ImportShareEnvelopeOptions,
+  type ShareImportRequest,
   type ShareImportResult,
 } from '@/database/share/importShareEnvelope';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useOpticalReceiver } from '@/hooks/useOpticalReceiver';
-import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
+import { useSubModalState, useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
 import { reloadApp } from '@/utils/app';
 import { formatLocalInstantIntl } from '@/utils/calendarDate';
@@ -92,7 +92,12 @@ export function OpticalReceiveModal({
   const [restored, setRestored] = useState(false);
   const [savingShare, setSavingShare] = useState(false);
   const [shareResult, setShareResult] = useState<ShareImportResult>();
-  const [replaceDayConfirmVisible, setReplaceDayConfirmVisible] = useSubModalVisibility(visible);
+  // The replace request itself, not a boolean: it is built by the panel that knows the share's
+  // kind, so the confirmation below commits it without re-deriving what it is confirming.
+  const [pendingReplace, setPendingReplace] = useSubModalState<ShareImportRequest | undefined>(
+    visible,
+    undefined
+  );
   const [torchEnabled, setTorchEnabled] = useState(false);
   const [torchAvailable, setTorchAvailable] = useState(false);
 
@@ -142,11 +147,11 @@ export function OpticalReceiveModal({
     setRestored(false);
     setSavingShare(false);
     setShareResult(undefined);
-    setReplaceDayConfirmVisible(false);
+    setPendingReplace(undefined);
     // Never leave the torch burning behind a closed modal.
     setTorchEnabled(false);
     onClose();
-  }, [onClose, receiver, setReplaceDayConfirmVisible]);
+  }, [onClose, receiver, setPendingReplace]);
 
   const handleRestore = useCallback(async () => {
     const json = receiver.takeJson();
@@ -188,18 +193,16 @@ export function OpticalReceiveModal({
     setPassphrase('');
     setSavingShare(false);
     setShareResult(undefined);
-    setReplaceDayConfirmVisible(false);
+    setPendingReplace(undefined);
     receiver.reset();
-  }, [receiver, setReplaceDayConfirmVisible]);
+  }, [receiver, setPendingReplace]);
 
   const handleSaveShare = useCallback(
-    async (
-      envelope: Parameters<typeof importShareEnvelope>[0],
-      options?: ImportShareEnvelopeOptions
-    ) => {
+    async (request: ShareImportRequest) => {
+      const { envelope } = request;
       setSavingShare(true);
       try {
-        const result = await importShareEnvelope(envelope, options);
+        const result = await importShareEnvelope(request);
         setShareResult(result);
         // The same sentence the success panel shows — the snackbar used to keep a second table of
         // the identical keys.
@@ -245,16 +248,14 @@ export function OpticalReceiveModal({
       };
     }
 
-    if (screen.kind === 'share' && replaceDayConfirmVisible) {
-      const { envelope } = screen;
-
+    if (screen.kind === 'share' && pendingReplace) {
       return {
         confirmLabel: t('opticalTransfer.share.dayReplace'),
         message: t('opticalTransfer.share.dayReplaceConfirmMessage'),
-        onClose: () => setReplaceDayConfirmVisible(false),
+        onClose: () => setPendingReplace(undefined),
         onConfirm: () => {
-          setReplaceDayConfirmVisible(false);
-          void handleSaveShare(envelope, { dayMode: 'replace' });
+          setPendingReplace(undefined);
+          void handleSaveShare(pendingReplace);
         },
         title: t('opticalTransfer.share.dayReplaceConfirmTitle'),
       };
@@ -496,8 +497,8 @@ export function OpticalReceiveModal({
         const panel = resolveShareImportPanel({
           envelope,
           formatInteger,
-          onRequestReplaceDay: () => setReplaceDayConfirmVisible(true),
-          onSave: (options) => void handleSaveShare(envelope, options),
+          onRequestReplaceDay: setPendingReplace,
+          onSave: (request) => void handleSaveShare(request),
           result: shareResult,
           t,
         });

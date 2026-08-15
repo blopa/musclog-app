@@ -99,6 +99,17 @@ export interface ShareKindSpec {
   dropWhenParentReused: Record<string, string>;
   pruneUnreferenced: readonly string[];
   forcedColumns: Record<string, Record<string, unknown>>;
+  /**
+   * The table whose existing rows a "replace" import retires, for the kinds that offer that choice.
+   *
+   * Named here rather than inlined in the importer for the same reason `dedupe` and `encrypt` are:
+   * `database/share/importShareEnvelope.ts` drives every per-table decision off this spec and never
+   * writes a table name of its own. Rows of this table are matched by CALENDAR DAY, so it must
+   * carry `date` + `timezone`; the importer derives the days from the incoming rows themselves.
+   *
+   * Absent means the kind cannot be replaced — importing it only ever adds.
+   */
+  replaceable?: string;
 }
 
 /**
@@ -365,6 +376,7 @@ export const NUTRITION_DAY_SHARE_SPEC: ShareKindSpec = {
   kindVersion: 1,
   pruneUnreferenced: ['food_portions'],
   regeneratedColumns: { nutrition_logs: ['group_id'] },
+  replaceable: 'nutrition_logs',
   rootTable: null,
   // Dependency order. Keep this a subsequence of RESTORE_ORDER.
   tables: ['foods', 'food_portions', 'food_food_portions', 'nutrition_logs'],

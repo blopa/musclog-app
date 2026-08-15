@@ -45,18 +45,19 @@ describe('computeIntraSessionAdjustment', () => {
       field: 'weight',
       from: 60,
       to: result.weight,
-      targetRepsInReserve: 0,
+      targetRepsInReserve: DEFAULT_TARGET_REPS_IN_RESERVE,
     });
   });
 
   it('reports a bare carry-over when the target RIR needs no further change', () => {
-    // The planned 18 kg gives way to the 12 kg actually lifted, and 12 kg is already the
-    // weight that matches the previous set's 1RM at 11 reps / 0 RIR.
+    // The planned 18 kg gives way to the 12 kg actually lifted, and 12 kg is already the weight
+    // that matches the previous set's 1RM at 11 reps held at 2 RIR — same total effort, so the
+    // target-RIR step has nothing left to change and only the carry-over is reported.
     const result = computeIntraSessionAdjustment({
       ...base,
       progressionMode: 'weight_first',
-      previousSet: { weight: 12, reps: 11, repsInReserve: 0 },
-      plannedSet: { weight: 18, reps: 11, repsInReserve: 0 },
+      previousSet: { weight: 12, reps: 11, repsInReserve: 2 },
+      plannedSet: { weight: 18, reps: 11, repsInReserve: 2 },
     });
 
     expect(result.weight).toBe(12);
@@ -124,17 +125,34 @@ describe('computeIntraSessionAdjustment', () => {
 
     expect(loaded.adjustment?.estimatedOneRepMaxKg).toBeCloseTo(89.78, 1);
     expect(unloaded.adjustment?.estimatedOneRepMaxKg).toBe(0);
-    expect(loaded.reps).toBe(10);
+    // 10 reps matched the previous set exactly; the plan names no target, so the set is held two
+    // reps short of it. Without the bodyweight term there is no load to estimate from at all and
+    // the set collapses to the single-rep floor.
+    expect(loaded.reps).toBe(10 - DEFAULT_TARGET_REPS_IN_RESERVE);
     expect(unloaded.reps).toBe(1);
   });
 
-  it('falls back to the default target RIR when the plan does not name one', () => {
+  // A planned set carries 0 until something names a target, which is the shape every set reaching
+  // the live session actually has — `reps_in_reserve` is a non-null column and `repeatWorkout`
+  // resets it to 0. Constructing these with the field absent would test a value the app cannot
+  // produce, and would let the default silently stop applying.
+  it('falls back to the default target RIR when the plan names no target', () => {
     const result = computeIntraSessionAdjustment({
       ...base,
-      previousSet: { weight: 12, reps: 11 },
-      plannedSet: { weight: 18, reps: 14 },
+      previousSet: { weight: 12, reps: 11, repsInReserve: 0 },
+      plannedSet: { weight: 18, reps: 14, repsInReserve: 0 },
     });
 
     expect(result.adjustment?.targetRepsInReserve).toBe(DEFAULT_TARGET_REPS_IN_RESERVE);
+  });
+
+  it('holds a set at an explicitly named target rather than the default', () => {
+    const result = computeIntraSessionAdjustment({
+      ...base,
+      previousSet: { weight: 12, reps: 11, repsInReserve: 0 },
+      plannedSet: { weight: 18, reps: 14, repsInReserve: 4 },
+    });
+
+    expect(result.adjustment?.targetRepsInReserve).toBe(4);
   });
 });

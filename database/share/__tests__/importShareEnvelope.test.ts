@@ -325,7 +325,7 @@ describe('importShareEnvelope', () => {
 
   it('dedupes an external-id match and performs one non-destructive write', async () => {
     const { created } = wire({ foods: [storedFood()] });
-    const result = await importShareEnvelope(envelope());
+    const result = await importShareEnvelope({ envelope: envelope() });
 
     expect(mockDatabase.write).toHaveBeenCalledTimes(1);
     expect(mockDatabase.batch).toHaveBeenCalledTimes(1);
@@ -359,7 +359,7 @@ describe('importShareEnvelope', () => {
       ),
     });
 
-    const result = await importShareEnvelope(shared);
+    const result = await importShareEnvelope({ envelope: shared });
 
     expect(result.reused.filter((item) => item.table === 'foods')).toHaveLength(20);
     expect(queriedTables.filter((table) => table === 'foods')).toHaveLength(2);
@@ -367,7 +367,7 @@ describe('importShareEnvelope', () => {
 
   it('dedupes a barcode match even when no external id lines up', async () => {
     const { created } = wire({ foods: [storedFood({ external_id: 'other-external' })] });
-    const result = await importShareEnvelope(envelope());
+    const result = await importShareEnvelope({ envelope: envelope() });
 
     expect(created.foods).toBeUndefined();
     expect(result.reused).toContainEqual({
@@ -385,7 +385,7 @@ describe('importShareEnvelope', () => {
     delete bare.records.foods[0].barcode;
     delete bare.records.foods[0].external_id;
 
-    const result = await importShareEnvelope(bare);
+    const result = await importShareEnvelope({ envelope: bare });
 
     expect(created.foods).toBeUndefined();
     expect(result.reused).toContainEqual({
@@ -401,7 +401,7 @@ describe('importShareEnvelope', () => {
     const { created } = wire({
       foods: [storedFood({ barcode: null, external_id: null })],
     });
-    const result = await importShareEnvelope(envelope());
+    const result = await importShareEnvelope({ envelope: envelope() });
 
     expect(created.foods).toBeUndefined();
     expect(result.reused).toContainEqual({
@@ -419,7 +419,7 @@ describe('importShareEnvelope', () => {
     delete bare.records.foods[0].barcode;
     delete bare.records.foods[0].external_id;
 
-    const result = await importShareEnvelope(bare);
+    const result = await importShareEnvelope({ envelope: bare });
 
     expect(created.foods).toHaveLength(1);
     expect(result.reused.filter((item) => item.table === 'foods')).toHaveLength(0);
@@ -427,7 +427,7 @@ describe('importShareEnvelope', () => {
 
   it('never reuses a food across a nutrition-basis mismatch', async () => {
     const { created } = wire({ foods: [storedFood({ nutrition_basis: 'per_serving' })] });
-    const result = await importShareEnvelope(envelope());
+    const result = await importShareEnvelope({ envelope: envelope() });
 
     expect(created.foods).toHaveLength(1);
     expect(result.reused.filter((item) => item.table === 'foods')).toHaveLength(0);
@@ -437,7 +437,7 @@ describe('importShareEnvelope', () => {
     // The strategy per table lives in MEAL_SHARE_SPEC.dedupe, not in this module. Tables left at
     // the default 'create' must never be queried, so an imported meal is always a new meal.
     const { created, queriedTables } = wire({ foods: [storedFood()] });
-    const result = await importShareEnvelope(envelope());
+    const result = await importShareEnvelope({ envelope: envelope() });
 
     expect(queriedTables).toContain('foods');
     expect(queriedTables).not.toContain('meals');
@@ -451,7 +451,9 @@ describe('importShareEnvelope', () => {
 
     (mockDatabase.batch as jest.Mock).mockRejectedValueOnce(new Error('batch failed'));
 
-    await expect(importShareEnvelope(envelope({ image: true }))).rejects.toThrow('batch failed');
+    await expect(importShareEnvelope({ envelope: envelope({ image: true }) })).rejects.toThrow(
+      'batch failed'
+    );
     expect(saveBase64MealImage).toHaveBeenCalledTimes(1);
     expect(deleteMealImage).toHaveBeenCalledWith('file:///meals/imported.jpg');
     expect(mockDatabase.write).toHaveBeenCalledTimes(1);
@@ -463,14 +465,16 @@ describe('importShareEnvelope', () => {
     (mockDatabase.batch as jest.Mock).mockRejectedValueOnce(new Error('batch failed'));
     (deleteMealImage as jest.Mock).mockRejectedValueOnce(new Error('cleanup failed'));
 
-    await expect(importShareEnvelope(envelope({ image: true }))).rejects.toThrow('batch failed');
+    await expect(importShareEnvelope({ envelope: envelope({ image: true }) })).rejects.toThrow(
+      'batch failed'
+    );
     expect(deleteMealImage).toHaveBeenCalledWith('file:///meals/imported.jpg');
   });
 
   describe('food share', () => {
     it('creates the food, its portions and their links when nothing matches', async () => {
       const { created } = wire();
-      const result = await importShareEnvelope(foodEnvelope());
+      const result = await importShareEnvelope({ envelope: foodEnvelope() });
 
       expect(created.foods).toHaveLength(1);
       expect(created.food_portions).toHaveLength(1);
@@ -486,7 +490,7 @@ describe('importShareEnvelope', () => {
     // the shared food itself — so it must point at the copy that was just created.
     it('repoints a food-private portion at the newly created food', async () => {
       const { created } = wire();
-      await importShareEnvelope(foodEnvelope({ ownedPortion: true }));
+      await importShareEnvelope({ envelope: foodEnvelope({ ownedPortion: true }) });
 
       expect(createdColumn(created.food_portions, 'owner_id')).toBe(createdId(created.foods));
       expect(createdColumn(created.food_portions, 'owner_type')).toBe('food');
@@ -496,7 +500,7 @@ describe('importShareEnvelope', () => {
     // nothing written at all — the existing food keeps the portions it already had.
     it('writes nothing when the receiver already has the food', async () => {
       const { created } = wire({ foods: [storedFood()] });
-      const result = await importShareEnvelope(foodEnvelope());
+      const result = await importShareEnvelope({ envelope: foodEnvelope() });
 
       expect(created.foods).toBeUndefined();
       expect(created.food_portions).toBeUndefined();
@@ -512,7 +516,7 @@ describe('importShareEnvelope', () => {
     it('removes an incoming photo when the existing food makes it unused', async () => {
       wire({ foods: [storedFood()] });
 
-      await importShareEnvelope(foodEnvelope({ image: true }));
+      await importShareEnvelope({ envelope: foodEnvelope({ image: true }) });
 
       expect(saveBase64ImageToFile).toHaveBeenCalledTimes(1);
       expect(deleteFoodImage).toHaveBeenCalledWith('file:///food_images/imported.jpg');
@@ -525,7 +529,7 @@ describe('importShareEnvelope', () => {
           storedPortion({ owner_id: 'local-food', owner_type: 'food', scope: 'private' }),
         ],
       });
-      const result = await importShareEnvelope(foodEnvelope({ ownedPortion: true }));
+      const result = await importShareEnvelope({ envelope: foodEnvelope({ ownedPortion: true }) });
 
       expect(created.food_portions).toBeUndefined();
       expect(result.reused).toContainEqual({
@@ -538,15 +542,15 @@ describe('importShareEnvelope', () => {
     // A shared food's photo belongs beside the app's other food photos, not in the meals folder.
     it('writes its photo to the food image store and takes it back if the batch fails', async () => {
       wire();
-      await importShareEnvelope(foodEnvelope({ image: true }));
+      await importShareEnvelope({ envelope: foodEnvelope({ image: true }) });
 
       expect(saveBase64ImageToFile).toHaveBeenCalledTimes(1);
       expect(saveBase64MealImage).not.toHaveBeenCalled();
 
       (mockDatabase.batch as jest.Mock).mockRejectedValueOnce(new Error('batch failed'));
-      await expect(importShareEnvelope(foodEnvelope({ image: true }))).rejects.toThrow(
-        'batch failed'
-      );
+      await expect(
+        importShareEnvelope({ envelope: foodEnvelope({ image: true }) })
+      ).rejects.toThrow('batch failed');
       expect(deleteFoodImage).toHaveBeenCalledWith('file:///food_images/imported.jpg');
       expect(deleteMealImage).not.toHaveBeenCalled();
     });
@@ -578,9 +582,12 @@ describe('importShareEnvelope', () => {
 
     it('reuses a global portion with the same name and size', async () => {
       const { created } = wire({ food_portions: [storedPortion()] });
-      const result = await importShareEnvelope(
-        envelope({ foodPortions: [globalPortion()], ingredientPortionId: 'sender-portion' })
-      );
+      const result = await importShareEnvelope({
+        envelope: envelope({
+          foodPortions: [globalPortion()],
+          ingredientPortionId: 'sender-portion',
+        }),
+      });
 
       expect(created.food_portions).toBeUndefined();
       expect(result.reused).toContainEqual({
@@ -596,9 +603,12 @@ describe('importShareEnvelope', () => {
     // duplicate it, and the third duplicate it again.
     it('reuses a portion whose source differs, so receiving the same meal twice adds nothing', async () => {
       const { created } = wire({ food_portions: [storedPortion({ source: 'custom' })] });
-      const result = await importShareEnvelope(
-        envelope({ foodPortions: [globalPortion()], ingredientPortionId: 'sender-portion' })
-      );
+      const result = await importShareEnvelope({
+        envelope: envelope({
+          foodPortions: [globalPortion()],
+          ingredientPortionId: 'sender-portion',
+        }),
+      });
 
       expect(created.food_portions).toBeUndefined();
       expect(result.reused.filter((item) => item.table === 'food_portions')).toHaveLength(1);
@@ -611,9 +621,12 @@ describe('importShareEnvelope', () => {
       ['a global portion faces a private one', { scope: 'private' }],
     ])('never reuses a global portion when %s', async (_label, overrides) => {
       const { created } = wire({ food_portions: [storedPortion(overrides)] });
-      const result = await importShareEnvelope(
-        envelope({ foodPortions: [globalPortion()], ingredientPortionId: 'sender-portion' })
-      );
+      const result = await importShareEnvelope({
+        envelope: envelope({
+          foodPortions: [globalPortion()],
+          ingredientPortionId: 'sender-portion',
+        }),
+      });
 
       expect(created.food_portions).toHaveLength(1);
       expect(result.reused.filter((item) => item.table === 'food_portions')).toHaveLength(0);
@@ -635,9 +648,12 @@ describe('importShareEnvelope', () => {
           }),
         ],
       });
-      const result = await importShareEnvelope(
-        envelope({ foodPortions: [ownedPortion()], ingredientPortionId: 'sender-portion' })
-      );
+      const result = await importShareEnvelope({
+        envelope: envelope({
+          foodPortions: [ownedPortion()],
+          ingredientPortionId: 'sender-portion',
+        }),
+      });
 
       expect(created.food_portions).toBeUndefined();
       expect(result.reused).toContainEqual({
@@ -666,9 +682,12 @@ describe('importShareEnvelope', () => {
           }),
         ],
       });
-      const result = await importShareEnvelope(
-        envelope({ foodPortions: [ownedPortion()], ingredientPortionId: 'sender-portion' })
-      );
+      const result = await importShareEnvelope({
+        envelope: envelope({
+          foodPortions: [ownedPortion()],
+          ingredientPortionId: 'sender-portion',
+        }),
+      });
 
       expect(created.food_portions).toHaveLength(1);
       expect(result.reused.filter((item) => item.table === 'food_portions')).toHaveLength(0);
@@ -690,9 +709,12 @@ describe('importShareEnvelope', () => {
           }),
         ],
       });
-      const result = await importShareEnvelope(
-        envelope({ foodPortions: [ownedPortion()], ingredientPortionId: 'sender-portion' })
-      );
+      const result = await importShareEnvelope({
+        envelope: envelope({
+          foodPortions: [ownedPortion()],
+          ingredientPortionId: 'sender-portion',
+        }),
+      });
 
       expect(result.reused.filter((item) => item.table === 'food_portions')).toHaveLength(0);
       expect(created.food_portions).toHaveLength(1);
@@ -725,9 +747,9 @@ describe('importShareEnvelope', () => {
         owner_id: 'sender-meal',
         owner_type: 'meal',
       });
-      const result = await importShareEnvelope(
-        envelope({ foodPortions: [senderBowl], mealPortionId: 'sender-bowl' })
-      );
+      const result = await importShareEnvelope({
+        envelope: envelope({ foodPortions: [senderBowl], mealPortionId: 'sender-bowl' }),
+      });
 
       expect(result.reused.filter((item) => item.table === 'food_portions')).toHaveLength(0);
       expect(created.food_portions).toHaveLength(1);
@@ -842,19 +864,17 @@ describe('importShareEnvelope — nutritionDay', () => {
     });
   });
 
-  it('refuses to guess between adding to a day and replacing it', async () => {
-    wire({ foods: [storedFood()] });
-
-    // Defaulting either way is a data-loss bug in one direction and a double-counted day in the
-    // other, so the caller must have asked the user.
-    await expect(importShareEnvelope(dayEnvelope())).rejects.toThrow(/add-or-replace/);
-    expect(mockDatabase.write).not.toHaveBeenCalled();
-  });
+  // There is deliberately no "refuses to guess between adding and replacing" test here any more.
+  // Defaulting either way is a data-loss bug in one direction and a double-counted day in the
+  // other, and that used to be a runtime throw worth asserting. `ShareImportRequest` now pairs a
+  // `nutritionDay` envelope with its mode in a discriminated union, so a day import naming no mode
+  // does not compile — and this file is not typechecked (`tsconfig.json` excludes `__tests__`, and
+  // Jest transforms via Babel), so a `@ts-expect-error` here would assert nothing at all.
 
   it('re-encrypts the plaintext snapshot with this device key before writing', async () => {
     const { created } = wire({ foods: [storedFood()] });
 
-    await importShareEnvelope(dayEnvelope(), { dayMode: 'add' });
+    await importShareEnvelope({ dayMode: 'add', envelope: dayEnvelope() });
 
     // The wire carries plaintext because the sender's key means nothing here; what lands in the
     // database must be ciphertext all the same.
@@ -865,7 +885,7 @@ describe('importShareEnvelope — nutritionDay', () => {
   it('keeps each entry on its own day and reuses the food the receiver already had', async () => {
     const { created } = wire({ foods: [storedFood()] });
 
-    const result = await importShareEnvelope(dayEnvelope(), { dayMode: 'add' });
+    const result = await importShareEnvelope({ dayMode: 'add', envelope: dayEnvelope() });
 
     expect(created.foods).toBeUndefined();
     expect(createdColumn(created.nutrition_logs, 'food_id')).toBe('local-food');
@@ -880,7 +900,7 @@ describe('importShareEnvelope — nutritionDay', () => {
     const existing = storedLog();
     wire({ foods: [storedFood()], nutrition_logs: [existing] });
 
-    const result = await importShareEnvelope(dayEnvelope(), { dayMode: 'add' });
+    const result = await importShareEnvelope({ dayMode: 'add', envelope: dayEnvelope() });
 
     expect(existing.prepareUpdate).not.toHaveBeenCalled();
     expect(result.replaced).toBe(0);
@@ -891,7 +911,7 @@ describe('importShareEnvelope — nutritionDay', () => {
     const otherDay = storedLog({ date: DAY_MS - 3 * 86_400_000, id: 'local-other-day' });
     wire({ foods: [storedFood()], nutrition_logs: [sameDay, otherDay] });
 
-    const result = await importShareEnvelope(dayEnvelope(), { dayMode: 'replace' });
+    const result = await importShareEnvelope({ dayMode: 'replace', envelope: dayEnvelope() });
 
     // Membership is decided by each row's own date + timezone, the way every day-bucketed read in
     // the app decides it — never by the summary's dayKey, which is display metadata.
@@ -904,7 +924,7 @@ describe('importShareEnvelope — nutritionDay', () => {
     const existing = storedLog();
     wire({ foods: [storedFood()], nutrition_logs: [existing] });
 
-    await importShareEnvelope(dayEnvelope(), { dayMode: 'replace' });
+    await importShareEnvelope({ dayMode: 'replace', envelope: dayEnvelope() });
 
     // One batch, one writer: a delete that commits without its replacement would leave the user
     // with an emptied day.
@@ -920,14 +940,14 @@ describe('importShareEnvelope — nutritionDay', () => {
   it("rewrites a meal group id instead of pointing at the sender's", async () => {
     const { created } = wire({ foods: [storedFood()] });
 
-    await importShareEnvelope(
-      dayEnvelope([
+    await importShareEnvelope({
+      dayMode: 'add',
+      envelope: dayEnvelope([
         { group_id: 'sender-group' },
         { group_id: 'sender-group' },
         { group_id: 'sender-other' },
       ]),
-      { dayMode: 'add' }
-    );
+    });
 
     const groups = created.nutrition_logs.map((record: any) => record._raw.group_id);
     // Entries logged together stay together, but under an id minted here — the sender's may be a

@@ -6,7 +6,18 @@ import {
   calculateWeightForTargetRIR,
 } from './workoutCalculator';
 
-/** Reps in reserve a set is held at when its plan does not name one. */
+/**
+ * Reps in reserve a set is held at when its plan does not name one.
+ *
+ * `workout_log_sets.reps_in_reserve` is a non-null number column with no "unset" value, and a
+ * planned set is created carrying 0 as a reset placeholder (`WorkoutService.repeatWorkout`). So a
+ * PLANNED target of 0 is read as "no target named" and takes this default. A user who deliberately
+ * holds a set at 0 RIR is indistinguishable from that in the schema and gets the same treatment —
+ * separating the two needs a nullable column, not a branch here.
+ *
+ * This only ever applies to the plan's target. The reps in reserve actually PERFORMED on the
+ * previous set are used as recorded, including a genuine 0.
+ */
 export const DEFAULT_TARGET_REPS_IN_RESERVE = 2;
 
 /** Smallest weight difference (kg) that counts as the user having changed the load. */
@@ -42,9 +53,12 @@ export type SetAdjustment = {
 
 export type IntraSessionAdjustmentInput = {
   /** The last performed set of the same exercise in this session. */
-  previousSet: { weight: number; reps: number; repsInReserve?: number };
-  /** The set the plan asks for next. */
-  plannedSet: { weight: number; reps: number; repsInReserve?: number };
+  previousSet: { weight: number; reps: number; repsInReserve: number };
+  /**
+   * The set the plan asks for next. `repsInReserve` of 0 means the plan names no target — see
+   * {@link DEFAULT_TARGET_REPS_IN_RESERVE}.
+   */
+  plannedSet: { weight: number; reps: number; repsInReserve: number };
   progressionMode: ProgressionMode;
   isBodyweight: boolean;
   bodyWeightKg: number;
@@ -74,18 +88,19 @@ export function computeIntraSessionAdjustment({
   isBodyweight,
   bodyWeightKg,
 }: IntraSessionAdjustmentInput): IntraSessionAdjustment {
-  const plannedWeight = plannedSet.weight ?? 0;
-  const plannedReps = plannedSet.reps ?? 0;
-  const targetRepsInReserve = plannedSet.repsInReserve ?? DEFAULT_TARGET_REPS_IN_RESERVE;
+  const plannedWeight = plannedSet.weight;
+  const plannedReps = plannedSet.reps;
+  const targetRepsInReserve =
+    plannedSet.repsInReserve > 0 ? plannedSet.repsInReserve : DEFAULT_TARGET_REPS_IN_RESERVE;
 
   const estimatedOneRepMaxKg = calculateAverage1RM(
     previousSet.weight + (isBodyweight ? bodyWeightKg : 0),
     previousSet.reps,
-    previousSet.repsInReserve ?? 0
+    previousSet.repsInReserve
   );
 
   // Carry the previous set's actual load over so a manual change there is respected.
-  const previousWeight = previousSet.weight ?? 0;
+  const previousWeight = previousSet.weight;
   const didCarryOver =
     previousWeight > 0 &&
     plannedWeight > 0 &&

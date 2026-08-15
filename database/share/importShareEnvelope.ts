@@ -1,4 +1,4 @@
-import { Q } from '@nozbe/watermelondb';
+import { type Model, Q } from '@nozbe/watermelondb';
 
 import { database } from '@/database/database-instance';
 import { dayRangeClauses } from '@/database/dayKeyQuery';
@@ -8,7 +8,6 @@ import {
 } from '@/database/encryptionHelpers';
 import Food from '@/database/models/Food';
 import FoodPortion from '@/database/models/FoodPortion';
-import type NutritionLog from '@/database/models/NutritionLog';
 import { prepareLocalCreateFromRaw } from '@/database/prepareLocalCreateFromRaw';
 import { prepareSoftDelete } from '@/database/prepareSoftDelete';
 import { dayKeyRange, utcNormalizedDayKey } from '@/utils/calendarDate';
@@ -18,7 +17,13 @@ import {
   saveBase64ImageToFile,
   saveBase64MealImage,
 } from '@/utils/file';
-import { type MusclogShareEnvelope, type ShareRow } from '@/utils/share/shareEnvelope';
+import {
+  type FoodShareEnvelope,
+  type MealShareEnvelope,
+  type MusclogShareEnvelope,
+  type NutritionDayShareEnvelope,
+  type ShareRow,
+} from '@/utils/share/shareEnvelope';
 import {
   planShareImport,
   type ReusedShareRow,
@@ -75,10 +80,19 @@ export interface ShareImportResult {
  */
 export type NutritionDayImportMode = 'add' | 'replace';
 
-export interface ImportShareEnvelopeOptions {
-  /** Required for a `nutritionDay` share; ignored by every other kind. */
-  dayMode?: NutritionDayImportMode;
-}
+/**
+ * An envelope together with whatever that KIND of envelope needs in order to be imported.
+ *
+ * One argument rather than `(envelope, options?)` so the two cannot drift apart: a day share is the
+ * only kind with a choice to make, and pairing the choice with the envelope in a discriminated
+ * union is what makes "a day share with no mode" unrepresentable instead of a runtime error thrown
+ * two layers below the screen that should have asked. Callers narrow on `envelope.kind` — which
+ * `components/modals/shareImportPanels.tsx` already does to pick the buttons — and the request
+ * falls out of the arm they are already in.
+ */
+export type ShareImportRequest =
+  | { envelope: FoodShareEnvelope | MealShareEnvelope }
+  | { dayMode: NutritionDayImportMode; envelope: NutritionDayShareEnvelope };
 
 /**
  * What a dedupe resolver may know about the rows resolved before it. Populated table by table in
@@ -371,16 +385,29 @@ async function encryptShareRecords(
   return encrypted;
 }
 
+/** The shape `ShareKindSpec.replaceable` promises: a day-bucketed row that can be soft-deleted. */
+interface ReplaceableRecord extends Model {
+  date: number;
+  deletedAt?: number;
+  timezone?: string;
+  updatedAt: number;
+}
+
 /**
- * The receiver's own live logs on the calendar days a `nutritionDay` share covers.
+ * The receiver's own live rows of `table` on the calendar days the incoming rows cover.
  *
  * Day membership is decided the way every other day-bucketed read in the app decides it: by each
  * row's own stored `date` + `timezone` through `utcNormalizedDayKey`, with the widened DB bounds
- * from `dayRangeClauses` trimmed by `filterRecords`. Deriving the target day from the incoming rows
+ * from `dayRangeClauses` trimmed by `filterRecords`. Deriving the target days from the incoming rows
  * rather than from `summary.dayKey` keeps the rows that get removed and the rows that get written
  * in exact agreement — a summary is display metadata, and nothing destructive should hinge on it.
+ *
+ * The table comes from the spec, so this never names one itself.
  */
-async function existingLogsOnSharedDays(rows: ShareRow[]): Promise<NutritionLog[]> {
+async function existingRowsOnSharedDays(
+  table: string,
+  rows: ShareRow[]
+): Promise<ReplaceableRecord[]> {
   const dayKeys = rows
     .map((row) =>
       typeof row.date === 'number'
@@ -397,13 +424,13 @@ async function existingLogsOnSharedDays(rows: ShareRow[]): Promise<NutritionLog[
   const range = dayKeyRange(Math.min(...dayKeys), Math.max(...dayKeys));
   const shared = new Set(dayKeys);
   const candidates = await database
-    .get<NutritionLog>('nutrition_logs')
+    .get<ReplaceableRecord>(table)
     .query(...dayRangeClauses(range), Q.where('deleted_at', Q.eq(null)))
     .fetch();
 
   return range
     .filterRecords(candidates)
-    .filter((log) => shared.has(utcNormalizedDayKey(log.date, log.timezone)));
+    .filter((row) => shared.has(utcNormalizedDayKey(row.date, row.timezone)));
 }
 
 async function buildResolutions(
@@ -429,20 +456,17 @@ async function buildResolutions(
   return resolutions;
 }
 
-export async function importShareEnvelope(
-  envelope: MusclogShareEnvelope,
-  options: ImportShareEnvelopeOptions = {}
-): Promise<ShareImportResult> {
+export async function importShareEnvelope(request: ShareImportRequest): Promise<ShareImportResult> {
+  const { envelope } = request;
   const spec = getShareKindSpec(envelope.kind);
   if (!spec) {
     throw new Error(`Unsupported share kind: ${envelope.kind}`);
   }
 
-  // Refuse rather than pick one: silently defaulting to `'add'` double-logs a re-scanned day, and
-  // silently defaulting to `'replace'` deletes entries the user typed in themselves.
-  if (envelope.kind === 'nutritionDay' && !options.dayMode) {
-    throw new Error('A day share needs an explicit add-or-replace choice');
-  }
+  // A kind that offers no choice cannot be asked to replace, and a kind that does cannot arrive
+  // without one — `ShareImportRequest` pairs the two, so there is nothing to validate here.
+  const replaceTable =
+    'dayMode' in request && request.dayMode === 'replace' ? spec.replaceable : undefined;
 
   const assetStore = ASSET_STORES[spec.assetStore];
   const resolvedAssets: Record<string, string | undefined> = {};
@@ -474,10 +498,9 @@ export async function importShareEnvelope(
       // Read AND write inside the one writer: the rows to retire are chosen from the same
       // serialized transaction that inserts their replacements, so a second import cannot observe
       // the pre-delete state and leave both copies behind.
-      const replacing =
-        options.dayMode === 'replace'
-          ? await existingLogsOnSharedDays(records.nutrition_logs ?? [])
-          : [];
+      const replacing = replaceTable
+        ? await existingRowsOnSharedDays(replaceTable, records[replaceTable] ?? [])
+        : [];
 
       const operations = [
         // Soft delete, stamped the way every model's own `markAsDeleted` stamps it. Prepared

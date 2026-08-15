@@ -151,7 +151,7 @@ describe('useWorkoutSessionState', () => {
         reps: 11,
         completionStatus: 'performed',
         difficultyLevel: 8,
-        repsInReserve: 0,
+        repsInReserve: 2,
         setOrder: 1,
       },
       {
@@ -161,7 +161,7 @@ describe('useWorkoutSessionState', () => {
         reps: 11, // Planned for 11 reps
         completionStatus: 'planned',
         difficultyLevel: undefined,
-        repsInReserve: 0, // Target 0 RIR
+        repsInReserve: 2, // Explicit target: 0 would mean "no target named" and take the default
         setOrder: 2,
       },
     ];
@@ -194,14 +194,13 @@ describe('useWorkoutSessionState', () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    // 1RM of 12kg x 11 reps is approx 16.4kg.
-    // Target RIR is 0. Target Reps is 11.
-    // Weight = 1RM / (1 + (reps + RIR)/30) = 16.4 / (1 + 11/30) = 16.4 / 1.3666 = 12kg.
+    // The previous set (12 kg x 11 @ 2 RIR) and the plan (11 reps @ 2 RIR) are the same total
+    // effort, so the target-RIR step has nothing left to change once the load carries over.
     expect(result.current.currentSet?.id).toBe('set-2');
     expect(result.current.currentSet?.weight).toBe(12);
-    // It should be 12 because it carried over 12 from last set, AND the calculated weight for 11 reps @ 0 RIR is also 12.
-    // Only the carry-over moved the number, so that — not a target-RIR recalculation — is
-    // what the session reports.
+    // 12 because it carried over 12 from the last set, and 12 is already the weight that holds
+    // 11 reps at 2 RIR. Only the carry-over moved the number, so that — not a target-RIR
+    // recalculation — is what the session reports.
     expect(result.current.currentSet?.adjustment).toMatchObject({
       cause: 'carry_over',
       field: 'weight',

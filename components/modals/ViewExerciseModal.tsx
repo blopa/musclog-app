@@ -633,8 +633,6 @@ export default function ViewExerciseModal({
                     <LineChart
                       data={oneRepMaxTrend}
                       height={180}
-                      chartWidth={trendXDomain[1] - trendXDomain[0]}
-                      chartHeight={150}
                       xDomain={trendXDomain}
                       yDomain={trendYDomain}
                       xAxisLabels={trendXAxisLabels}

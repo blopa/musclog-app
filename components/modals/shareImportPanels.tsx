@@ -20,10 +20,7 @@ import { OpticalFoodSharePreview } from '@/components/optical/OpticalFoodSharePr
 import { OpticalMealSharePreview } from '@/components/optical/OpticalMealSharePreview';
 import { OpticalNutritionDaySharePreview } from '@/components/optical/OpticalNutritionDaySharePreview';
 import { Button } from '@/components/theme/Button';
-import type {
-  ImportShareEnvelopeOptions,
-  ShareImportResult,
-} from '@/database/share/importShareEnvelope';
+import type { ShareImportRequest, ShareImportResult } from '@/database/share/importShareEnvelope';
 import type { MusclogShareEnvelope } from '@/utils/share/shareEnvelope';
 
 import { type ShareSavedSentence, shareSavedSentence } from './shareSavedSentence';
@@ -31,10 +28,14 @@ import { type ShareSavedSentence, shareSavedSentence } from './shareSavedSentenc
 export interface ShareImportPanelContext {
   envelope: MusclogShareEnvelope;
   formatInteger: (value: number) => string;
-  /** Opens the destructive confirmation in front of a day share's "replace" action. */
-  onRequestReplaceDay: () => void;
-  /** Commits the import. A day share must pass `dayMode`; every other kind passes nothing. */
-  onSave: (options?: ImportShareEnvelopeOptions) => void;
+  /**
+   * Opens the destructive confirmation in front of a day share's "replace" action, carrying the
+   * request it will commit once confirmed — so the confirmation step never has to re-derive which
+   * kind of share it is looking at.
+   */
+  onRequestReplaceDay: (request: ShareImportRequest) => void;
+  /** Commits the import. Each arm below builds the request its own kind needs. */
+  onSave: (request: ShareImportRequest) => void;
   result?: ShareImportResult;
   t: TFunction;
 }
@@ -57,7 +58,7 @@ export function resolveShareImportPanel(context: ShareImportPanelContext): Share
         actions: (
           <Button
             label={t('opticalTransfer.share.saveToMyFoods')}
-            onPress={() => onSave()}
+            onPress={() => onSave({ envelope })}
             size="sm"
             variant="accent"
             width="full"
@@ -73,7 +74,7 @@ export function resolveShareImportPanel(context: ShareImportPanelContext): Share
         actions: (
           <Button
             label={t('opticalTransfer.share.saveToMyMeals')}
-            onPress={() => onSave()}
+            onPress={() => onSave({ envelope })}
             size="sm"
             variant="accent"
             width="full"
@@ -96,14 +97,14 @@ export function resolveShareImportPanel(context: ShareImportPanelContext): Share
             </Text>
             <Button
               label={t('opticalTransfer.share.dayAdd')}
-              onPress={() => onSave({ dayMode: 'add' })}
+              onPress={() => onSave({ dayMode: 'add', envelope })}
               size="sm"
               variant="accent"
               width="full"
             />
             <Button
               label={t('opticalTransfer.share.dayReplace')}
-              onPress={onRequestReplaceDay}
+              onPress={() => onRequestReplaceDay({ dayMode: 'replace', envelope })}
               size="sm"
               variant="outline"
               width="full"
