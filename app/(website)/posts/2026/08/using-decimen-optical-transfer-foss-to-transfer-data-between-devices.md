@@ -1,6 +1,6 @@
 ---
 title: 'Using Decimen Optical Transfer FOSS to transfer data between devices'
-date: '2026-08-03'
+date: '2026-08-06'
 category: 'engineering'
 description: 'I saw a repo that sends files between two devices using only a screen and a camera, and I could not stop thinking about it. So I built it into Musclog — here is how fountain-coded QR streams actually work.'
 tags: ['Open Source', 'QR Codes', 'Privacy', 'React Native', 'TypeScript']
