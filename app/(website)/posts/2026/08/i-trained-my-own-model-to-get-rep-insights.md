@@ -23,7 +23,7 @@ Barbell velocity tracking is a real thing that serious lifters and coaches use. 
 
 They also cost ~€150 plus a monthly subscription, and the monthly part is the bit that gets me, because you end up paying rent on a graph of how fast you moved a bar, which is something your phone can already calculate on its own.
 
-I already [wrote a post about fitness app subscriptions being a scam](https://pablo.gg/en/blog/coding/musclog-redesign-nutrition-tracking-and-why-your-fitness-app-subscription-is-a-scam/) so I won't go down that road again. I'll just say: the IMU sensor inside those devices costs about €20 on AliExpress. So that's what I bought.
+I've made my feelings about fitness app subscriptions clear enough elsewhere, so I won't go down that road again. I'll just say: the IMU sensor inside those devices costs about €20 on AliExpress. So that's what I bought.
 
 ## Musclog, quick recap
 

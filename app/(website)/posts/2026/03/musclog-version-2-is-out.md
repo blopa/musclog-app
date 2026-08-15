@@ -154,6 +154,5 @@ There is a lot more coming — I have a long list, and now I have somewhere sane
 - [Download Musclog for Android](https://play.google.com/store/apps/details?id=com.werules.logger)
 - [Join the iOS TestFlight](https://testflight.apple.com/join/mq3QMSHU)
 - [Browse the source on GitHub](https://github.com/blopa/musclog-app) — it is all there, including the parts I am not proud of
-- [How Musclog came to be](https://pablo.gg/en/blog/coding/musclog-leveraging-my-reactjs-experience-to-build-a-react-native-app/), written back when version 1 was new
 
 If you use it and something is broken, please open an issue. It is one person building this, and I genuinely cannot see your device from here.
