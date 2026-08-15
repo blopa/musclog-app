@@ -1,0 +1,22 @@
+{
+  "category": "engineering",
+  "currentPage": 1,
+  "posts": [
+    {
+      "category": "engineering",
+      "date": "2026-08-06",
+      "excerpt": "I saw a repo that sends files between two devices using only a screen and a camera, and I could not stop thinking about it. So I built it into Musclog — here is how fountain-coded QR streams actually work.",
+      "slug": "2026/08/using-decimen-optical-transfer-foss-to-transfer-data-between-devices",
+      "tags": [
+        "Open Source",
+        "QR Codes",
+        "Privacy",
+        "React Native",
+        "TypeScript"
+      ],
+      "title": "Using Decimen Optical Transfer FOSS to transfer data between devices"
+    }
+  ],
+  "totalPages": 1,
+  "totalPosts": 1
+}

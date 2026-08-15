@@ -1,0 +1,22 @@
+{
+  "category": "product-updates",
+  "currentPage": 1,
+  "posts": [
+    {
+      "category": "product-updates",
+      "date": "2026-03-19",
+      "excerpt": "Musclog started in 2024 as an app I built for myself. Version 2 is a full rewrite — new UI layer, one database instead of two, and a much clearer answer to the question of where your data lives.",
+      "slug": "2026/03/musclog-version-2-is-out",
+      "tags": [
+        "Release",
+        "React Native",
+        "Rewrite",
+        "Privacy",
+        "TypeScript"
+      ],
+      "title": "Musclog version 2 is out!"
+    }
+  ],
+  "totalPages": 1,
+  "totalPosts": 1
+}
