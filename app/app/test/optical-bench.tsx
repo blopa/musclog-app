@@ -5,7 +5,7 @@
  * talks to `utils/optical/*` directly with no container, compression, encryption or restore, so
  * a bad number here points at the channel rather than at the pipeline around it.
  *
- * It answered the feasibility questions in `docs/OPTICAL_TRANSFER.md`; keep it for re-measuring
+ * It answered the feasibility questions in `RESEARCH.md`; keep it for re-measuring
  * on new hardware, for bisecting a "won't scan" report, and for re-running the determinism sweep
  * after any Hermes or Expo upgrade.
  *

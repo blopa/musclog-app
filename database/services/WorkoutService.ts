@@ -7,6 +7,7 @@ import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
+import { prepareSoftDelete } from '@/database/prepareSoftDelete';
 import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanRepository';
 import {
   toWorkoutLogSetSnapshot,
@@ -20,6 +21,7 @@ import {
 } from '@/utils/activeWorkoutStorage';
 import { deleteBleDataPointsFiles } from '@/utils/bleWorkoutDataStorage';
 import { handleError } from '@/utils/handleError';
+import type { SetAdjustment } from '@/utils/setAdjustment';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { jsDayToWeekdayIndex } from '@/utils/weekdays';
 import { getRollingWeeklyWorkoutRange } from '@/utils/weeklyWorkoutProgress';
@@ -45,7 +47,8 @@ export type EnrichedWorkoutLogSet = WorkoutLogSetSnapshot & {
   exerciseId: string;
   groupId?: string;
   notes?: string;
-  isAutoAdjusted?: boolean;
+  /** Set by the live session when it re-targets the planned set — see `computeIntraSessionAdjustment`. */
+  adjustment?: SetAdjustment;
   isSkipped: boolean;
 };
 
@@ -900,12 +903,7 @@ export class WorkoutService {
         const operations: Model[] = [];
 
         for (const setToDelete of setsToDelete) {
-          operations.push(
-            setToDelete.prepareUpdate((record) => {
-              record.deletedAt = now;
-              record.updatedAt = now;
-            })
-          );
+          operations.push(prepareSoftDelete(setToDelete, now));
         }
 
         for (const [exerciseId, groupId] of desiredGroupIdByExerciseId) {

@@ -16,9 +16,16 @@ const unavailable = (name) => () => {
 };
 
 module.exports = {
+  getBlogCategories: unavailable('getBlogCategories'),
+  loadBlogCategories: unavailable('loadBlogCategories'),
+  loadBlogCategoryPage: unavailable('loadBlogCategoryPage'),
+  loadBlogCategoryPageForRoute: unavailable('loadBlogCategoryPageForRoute'),
   loadBlogPost: unavailable('loadBlogPost'),
   loadBlogPostForRoute: unavailable('loadBlogPostForRoute'),
+  loadBlogPostPage: unavailable('loadBlogPostPage'),
+  loadBlogPostPageForRoute: unavailable('loadBlogPostPageForRoute'),
   loadBlogPostSummaries: unavailable('loadBlogPostSummaries'),
+  paginateBlogPosts: unavailable('paginateBlogPosts'),
   parseBlogPostSummary: unavailable('parseBlogPostSummary'),
   renderBlogPostMarkdown: unavailable('renderBlogPostMarkdown'),
 };

@@ -1,9 +1,10 @@
 import { Link } from 'expo-router';
-import { Check, ChevronDown, Download, Dumbbell } from 'lucide-react-native';
+import { Check, ChevronDown, Download, Dumbbell, Menu, X } from 'lucide-react-native';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
+import { computePopoverTop } from '@/components/website/popoverPlacement';
 import { StoreButtons } from '@/components/website/StoreButtons';
 import { SectionBackground } from '@/components/website/WebsiteBackgrounds';
 import { BODY_TEXT, BODY_TEXT_SOFT, BRAND_GREEN } from '@/components/website/websiteColors';
@@ -106,15 +107,11 @@ export function DownloadModal({
           viewportWidth - modalWidth - 16
         )
       : 16;
-  const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 0;
-  const spaceBelow = triggerRect != null ? viewportHeight - triggerRect.bottom - 16 : 0;
-  const shouldOpenUpward = popoverHeight > 0 && spaceBelow < popoverHeight + 12;
-  let popoverTop = 0;
-  if (triggerRect) {
-    popoverTop = shouldOpenUpward
-      ? Math.max(triggerRect.top - popoverHeight - 12, 16)
-      : triggerRect.bottom + 12;
-  }
+  const popoverTop = computePopoverTop({
+    triggerRect,
+    popoverHeight,
+    viewportHeight: typeof window !== 'undefined' ? window.innerHeight : 0,
+  });
 
   const buttonStyleByVariant: Record<
     NonNullable<DownloadModalProps['variant']>,
@@ -303,6 +300,165 @@ export function LanguagePicker() {
   );
 }
 
+const MOBILE_MENU_ID = 'website-mobile-menu';
+
+export function MobileMenu() {
+  const { t } = useTranslation(undefined, { keyPrefix: 'website.navigation' });
+  const [isOpen, setIsOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+
+    // The trigger is `lg:hidden`, so a viewport that grows past the desktop
+    // breakpoint would otherwise leave the panel open with the scroll locked.
+    const desktopQuery = window.matchMedia('(min-width: 1024px)');
+    const handleBreakpointChange = (event: MediaQueryListEvent) => {
+      if (event.matches) {
+        setIsOpen(false);
+      }
+    };
+
+    const previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    window.addEventListener('keydown', handleKeyDown);
+    desktopQuery.addEventListener('change', handleBreakpointChange);
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+      desktopQuery.removeEventListener('change', handleBreakpointChange);
+    };
+  }, [isOpen]);
+
+  useEffect(() => {
+    // The panel is portalled to the end of `<body>`, so move focus into it on
+    // open and hand it back to the trigger on close to keep tabbing coherent.
+    if (isOpen) {
+      panelRef.current?.focus();
+    } else {
+      triggerRef.current?.focus();
+    }
+  }, [isOpen]);
+
+  const menuLinks = [
+    { text: t('features'), href: '/home#features' },
+    { text: t('blog'), href: '/blog' },
+    { text: t('calculator'), href: '/calculator' },
+    { text: t('exercises'), href: '/exercises' },
+    { text: t('progress'), href: '/progress' },
+    { text: 'FAQ', href: '/faq' },
+    { text: t('gameboy'), href: '/gameboy' },
+    { text: t('alternatives'), href: '/alternatives' },
+    { text: t('github'), href: 'https://github.com/blopa/musclog-app' },
+  ];
+  const linkClasses =
+    'rounded-xl px-4 py-3 text-base font-semibold transition-colors hover:bg-white/10';
+
+  return (
+    <>
+      <button
+        type="button"
+        ref={triggerRef}
+        aria-label={isOpen ? t('closeMenu') : t('openMenu')}
+        aria-expanded={isOpen}
+        aria-controls={MOBILE_MENU_ID}
+        onClick={() => setIsOpen((current) => !current)}
+        className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition-colors hover:border-white/20 hover:bg-white/10 lg:hidden"
+        style={{
+          borderColor: isOpen ? 'rgba(34, 197, 94, 0.4)' : 'rgba(255,255,255,0.08)',
+          backgroundColor: isOpen ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)',
+        }}
+      >
+        {isOpen ? (
+          <X className="h-5 w-5" color="#F3F4F6" />
+        ) : (
+          <Menu className="h-5 w-5" color="#F3F4F6" />
+        )}
+      </button>
+
+      {isOpen && typeof document !== 'undefined'
+        ? createPortal(
+            <div className="fixed inset-0 top-16 z-[140] lg:hidden">
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                onClick={() => setIsOpen(false)}
+              />
+
+              <div
+                ref={panelRef}
+                id={MOBILE_MENU_ID}
+                tabIndex={-1}
+                className="absolute inset-x-0 top-0 max-h-full overflow-y-auto border-b shadow-2xl backdrop-blur-xl"
+                style={{
+                  borderColor: 'rgba(255,255,255,0.08)',
+                  background:
+                    'linear-gradient(180deg, rgba(10,18,16,0.98) 0%, rgba(6,12,11,0.97) 100%)',
+                }}
+              >
+                <nav
+                  aria-label={t('menu')}
+                  className="container mx-auto flex flex-col gap-1 px-4 py-4"
+                >
+                  {menuLinks.map((link) =>
+                    link.href.startsWith('http') ? (
+                      <a
+                        key={link.text}
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => setIsOpen(false)}
+                        className={linkClasses}
+                        style={{ color: '#F3F4F6' }}
+                      >
+                        {link.text}
+                      </a>
+                    ) : (
+                      <Link
+                        key={link.text}
+                        href={link.href}
+                        onPress={() => setIsOpen(false)}
+                        className={linkClasses}
+                        style={{ color: '#F3F4F6' }}
+                      >
+                        {link.text}
+                      </Link>
+                    )
+                  )}
+                </nav>
+
+                <div
+                  className="container mx-auto border-t px-4 py-5"
+                  style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+                >
+                  <p
+                    className="mb-3 text-[11px] font-semibold uppercase tracking-[0.22em]"
+                    style={{ color: BODY_TEXT_SOFT }}
+                  >
+                    {t('download')}
+                  </p>
+                  <StoreButtons />
+                </div>
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
+    </>
+  );
+}
+
 export function Header() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.navigation' });
 
@@ -312,7 +468,7 @@ export function Header() {
       style={{ backgroundColor: 'rgba(4, 10, 9, 0.86)', borderColor: 'rgba(255,255,255,0.08)' }}
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex shrink-0 items-center gap-2">
           <div
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
             style={{ backgroundColor: BRAND_GREEN }}
@@ -320,21 +476,14 @@ export function Header() {
             <Dumbbell className="h-5 w-5 text-black" />
           </div>
           <div className="flex flex-col leading-tight">
-            <span className="text-base font-bold text-white">{t('appName')}</span>
-            <span className="text-xs" style={{ color: BODY_TEXT_SOFT }}>
+            <span className="whitespace-nowrap text-base font-bold text-white">{t('appName')}</span>
+            <span className="whitespace-nowrap text-xs" style={{ color: BODY_TEXT_SOFT }}>
               {t('appTagline')}
             </span>
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-6 md:flex">
-          <Link
-            href="/home#features"
-            className="text-sm transition-colors hover:text-[#22C55E]"
-            style={{ color: '#F3F4F6' }}
-          >
-            {t('features')}
-          </Link>
+        <nav className="hidden items-center gap-6 lg:flex">
           <Link
             href="/blog"
             className="text-sm transition-colors hover:text-[#22C55E]"
@@ -347,7 +496,7 @@ export function Header() {
             className="text-sm transition-colors hover:text-[#22C55E]"
             style={{ color: '#F3F4F6' }}
           >
-            Calculator
+            {t('calculator')}
           </Link>
           <Link
             href="/exercises"
@@ -363,32 +512,9 @@ export function Header() {
           >
             {t('progress')}
           </Link>
-          <Link
-            href="/faq"
-            className="text-sm transition-colors hover:text-[#22C55E]"
-            style={{ color: '#F3F4F6' }}
-          >
-            FAQ
-          </Link>
-          <Link
-            href="/alternatives"
-            className="text-sm transition-colors hover:text-[#22C55E]"
-            style={{ color: '#F3F4F6' }}
-          >
-            {t('alternatives')}
-          </Link>
-          <a
-            href="https://github.com/blopa/musclog-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm transition-colors hover:text-[#22C55E]"
-            style={{ color: '#F3F4F6' }}
-          >
-            {t('github')}
-          </a>
           <DownloadModal
             variant="default"
-            className="px-5 py-2.5 text-sm font-bold transition-transform hover:scale-[1.01]"
+            className="shrink-0 whitespace-nowrap px-5 py-2.5 text-sm font-bold transition-transform hover:scale-[1.01]"
             style={{ backgroundColor: BRAND_GREEN, color: '#000000' }}
           >
             {t('download')}
@@ -396,7 +522,7 @@ export function Header() {
           <LanguagePicker />
         </nav>
 
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center gap-2 lg:hidden">
           <DownloadModal
             variant="default"
             className="hidden min-h-11 shrink-0 whitespace-nowrap px-4 py-2 text-sm font-bold shadow-[0_10px_30px_rgba(34,197,94,0.18)] [@media(min-width:550px)]:inline-flex"
@@ -405,6 +531,7 @@ export function Header() {
             <span>{t('download')}</span>
           </DownloadModal>
           <LanguagePicker />
+          <MobileMenu />
         </div>
       </div>
     </header>
@@ -436,63 +563,6 @@ export function Footer() {
     >
       <SectionBackground variant="grid" />
       <div className="container mx-auto px-4">
-        <div
-          className="mb-8 flex flex-wrap items-center justify-center gap-3 [@media(min-width:767px)]:hidden"
-          aria-label={navT('appName')}
-        >
-          <Link
-            href="/home#features"
-            className="inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold transition-colors hover:border-white/20 hover:bg-white/10"
-            style={{ color: '#F3F4F6', borderColor: 'rgba(255,255,255,0.08)' }}
-          >
-            {navT('features')}
-          </Link>
-          <Link
-            href="/calculator"
-            className="inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold transition-colors hover:border-white/20 hover:bg-white/10"
-            style={{ color: '#F3F4F6', borderColor: 'rgba(255,255,255,0.08)' }}
-          >
-            Calculator
-          </Link>
-          <Link
-            href="/exercises"
-            className="inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold transition-colors hover:border-white/20 hover:bg-white/10"
-            style={{ color: '#F3F4F6', borderColor: 'rgba(255,255,255,0.08)' }}
-          >
-            {navT('exercises')}
-          </Link>
-          <Link
-            href="/progress"
-            className="inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold transition-colors hover:border-white/20 hover:bg-white/10"
-            style={{ color: '#F3F4F6', borderColor: 'rgba(255,255,255,0.08)' }}
-          >
-            {navT('progress')}
-          </Link>
-          <Link
-            href="/faq"
-            className="inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold transition-colors hover:border-white/20 hover:bg-white/10"
-            style={{ color: '#F3F4F6', borderColor: 'rgba(255,255,255,0.08)' }}
-          >
-            FAQ
-          </Link>
-          <a
-            href="https://github.com/blopa/musclog-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold transition-colors hover:border-white/20 hover:bg-white/10"
-            style={{ color: '#F3F4F6', borderColor: 'rgba(255,255,255,0.08)' }}
-          >
-            {navT('github')}
-          </a>
-          <DownloadModal
-            variant="default"
-            className="min-h-10 shrink-0 whitespace-nowrap px-4 py-2 text-sm font-bold shadow-[0_10px_30px_rgba(34,197,94,0.18)]"
-          >
-            <Download className="h-4 w-4" />
-            <span>{navT('download')}</span>
-          </DownloadModal>
-        </div>
-
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
           <Link href="/" className="flex items-center gap-3">
             <div
@@ -509,7 +579,7 @@ export function Footer() {
             </div>
           </Link>
 
-          <nav className="grid grid-cols-2 gap-x-8 gap-y-3 text-center sm:grid-cols-3 md:text-left">
+          <nav className="grid grid-cols-2 justify-items-center gap-x-8 gap-y-3 text-center sm:grid-cols-3 md:justify-items-start md:text-left">
             {footerLinks.map((link) =>
               link.href.startsWith('http') ? (
                 <a
@@ -535,7 +605,7 @@ export function Footer() {
             )}
             <button
               onClick={resetAnalyticsConsent}
-              className="cursor-pointer text-sm transition-colors hover:text-[#22C55E]"
+              className="col-span-2 cursor-pointer text-sm transition-colors hover:text-[#22C55E] sm:col-span-1"
               style={{ color: BODY_TEXT_SOFT }}
             >
               {consentT('cookieSettings')}

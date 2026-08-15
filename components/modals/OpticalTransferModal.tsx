@@ -2,7 +2,7 @@
  * Optical transfer — the entry point.
  *
  * Picks a direction and collects the optional passphrase, then hands off to the send or receive
- * screen. Both are mounted as children rather than siblings (see `docs/modals-problem-on-ios.md`).
+ * screen. Both are mounted as children rather than siblings (see `FIXES.md`).
  *
  * On the passphrase: the QR stream is plaintext light — anything on the sending screen is readable
  * by any camera pointed at it for the duration. A passphrase is what makes a bystander's recording

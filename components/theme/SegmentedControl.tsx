@@ -8,6 +8,8 @@ type Option = {
   label: string;
   value: string;
   icon?: ReactNode;
+  /** Unread-style count pinned to the segment's top-right corner. Hidden when 0 or omitted. */
+  badge?: number;
 };
 
 type SegmentedControlVariant = 'elevated' | 'outline' | 'gradient';
@@ -102,6 +104,19 @@ export function SegmentedControl({
                 </Text>
               </View>
             )}
+            {option.badge ? (
+              <View
+                className="absolute -right-1 -top-1 h-4 items-center justify-center rounded-full px-1"
+                style={{
+                  backgroundColor: theme.colors.status.notificationBadge,
+                  minWidth: theme.size['4'],
+                }}
+              >
+                <Text className="text-[10px] font-bold leading-none text-white">
+                  {option.badge > 9 ? '9+' : option.badge}
+                </Text>
+              </View>
+            ) : null}
           </Pressable>
         );
       })}

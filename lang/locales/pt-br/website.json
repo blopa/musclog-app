@@ -312,11 +312,15 @@
       "progress": "Progresso",
       "github": "GitHub",
       "download": "Baixar Agora",
+      "calculator": "Calculadora",
       "exercises": "Exercícios",
       "gameboy": "Game Boy",
       "language": "Idioma",
       "alternatives": "Alternativas",
-      "blog": "Blog"
+      "blog": "Blog",
+      "menu": "Menu",
+      "openMenu": "Abrir menu",
+      "closeMenu": "Fechar menu"
     },
     "blog": {
       "eyebrow": "Direto da oficina",
@@ -326,7 +330,31 @@
       "listLabel": "Artigos do blog",
       "tagsLabel": "Tags do artigo",
       "readArticle": "Ler artigo",
-      "backToBlog": "Voltar para todos os artigos"
+      "backToBlog": "Voltar para todos os artigos",
+      "englishOnlyNotice": "Desculpe, os artigos do blog estão disponíveis apenas em inglês.",
+      "share": {
+        "title": "Compartilhe este artigo",
+        "shareOn": "Compartilhar no {{network}}"
+      },
+      "paginationLabel": "Paginação do blog",
+      "previousPage": "Página anterior",
+      "nextPage": "Próxima página",
+      "pageStatus": "Página {{current}} de {{total}}",
+      "pageLabel": "Página {{page}}",
+      "categoryPage": {
+        "eyebrow": "Explorar por categoria",
+        "title": "Artigos sobre {{category}}",
+        "description": "Todos os artigos do blog do Musclog na categoria {{category}}.",
+        "empty": "Nenhum artigo foi encontrado em {{category}}.",
+        "listLabel": "Artigos do blog sobre {{category}}"
+      },
+      "categories": {
+        "product-updates": "Atualizações do produto",
+        "web-development": "Desenvolvimento web",
+        "engineering": "Engenharia",
+        "retro": "Retrô",
+        "machine-learning": "Aprendizado de máquina"
+      }
     },
     "gameboy": {
       "pageTitle": "Jogue Musclog no Game Boy",

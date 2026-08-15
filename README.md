@@ -55,7 +55,8 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 
 ## Key Features
 
-> See [FEATURES.md](FEATURES.md) for the full, detailed feature list.
+> See [CURRENT_FEATURES.md](CURRENT_FEATURES.md) for the complete shipped feature list and
+> [FUTURE_FEATURES.md](FUTURE_FEATURES.md) for the roadmap.
 
 ### 🏋️ Track Workouts
 
@@ -151,7 +152,7 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 
 | Layer          | Technology                                                           |
 | -------------- | -------------------------------------------------------------------- |
-| Framework      | React Native 0.81 + Expo Router 6                                    |
+| Framework      | React Native 0.86 + Expo SDK / Router 57                             |
 | Language       | TypeScript 5.9                                                       |
 | Database       | WatermelonDB 0.28 (SQLite-backed, reactive)                          |
 | Styling        | NativeWind 4.2 (Tailwind CSS for React Native)                       |
@@ -177,37 +178,21 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 
 ```
 musclog/
-├── app/                        # Expo Router screens
-│   ├── _layout.tsx             # Root layout
-│   ├── index.tsx               # Dashboard / home
-│   ├── onboarding/             # Onboarding flow
-│   ├── workout/                # Workout screens
-│   ├── nutrition/              # Nutrition/food screens
-│   ├── cycle.tsx               # Menstrual cycle tracking
-│   ├── progress.tsx            # Analytics & charts
-│   ├── profile.tsx             # User profile & metrics
-│   ├── settings.tsx            # App settings
-│   ├── chat.tsx                # AI coach chat
-│   └── aiSettings.tsx          # AI configuration
-├── components/                 # Reusable UI components
-│   ├── NavigationMenu.tsx      # Custom bottom nav bar
-│   ├── MasterLayout.tsx        # Root layout wrapper
-│   ├── CoachModal.tsx          # AI coach chat modal
-│   ├── SmartCameraModal.tsx    # AI photo analysis modal
-│   ├── PhaseWheel.tsx          # Cycle phase visualization
-│   └── ...
-├── database/                   # WatermelonDB models & services
-│   ├── models/                 # Database models
-│   ├── services/               # Service layer (CRUD + business logic)
-│   ├── migrations/             # DB schema migrations
-│   └── seeders/                # Initial data seeding
-├── hooks/                      # Custom React hooks
-├── lang/locales/en-us/         # Localization strings
-├── assets/                     # Bundled app images and icons
-├── public/images/exercises/    # Generated WebP exercise photos served on demand
-├── constants/                  # App-wide constants
-├── utils/                      # Utility functions
-└── widgets/                    # Android/iOS home screen widgets (NutritionWidget, SmartCameraWidget)
+├── app/
+│   ├── app/                    # Product app routes (native + web app)
+│   └── (website)/              # Public website and blog routes
+├── components/                 # Shared UI, modals, charts, and website components
+├── context/                    # Cross-screen React providers
+├── database/                   # WatermelonDB schema, models, repositories, and services
+├── services/                   # AI, health, notification, and other app services
+├── hooks/                      # Reusable reactive hooks
+├── utils/                      # Pure and platform-specific utilities
+├── data/                       # Generated exercise/food catalogues and wire contracts
+├── lang/locales/               # App and website translations
+├── gameboy/                    # Musclog GB ROM source and build tools
+├── public/                     # Website assets and generated SEO outputs
+├── scripts/                    # Build, generation, validation, and maintenance scripts
+└── widgets/                    # Android Nutrition and Smart Camera widgets
 ```
 
 ---
@@ -278,11 +263,14 @@ npm test
 ### Other Scripts
 
 ```bash
-npm run lint                # Lint code
-npm run format              # Format with Prettier
-npm run typecheck           # TypeScript type checking
-npm run check-translations  # Validate i18n keys
-npm run start-clear         # Start with cleared cache
+npm run lint:all                  # ESLint fixes, formatting, prebuild, and typecheck
+npm run lint:eslint               # ESLint without the full suite
+npm run format                    # Format with Prettier
+npm run typecheck                 # TypeScript type checking
+npm run check-translations        # Validate used i18n keys
+npm run check-locale-consistency  # Validate key parity across locales
+npm run screenshots               # Build web and capture Playwright screenshots
+npm run start-clear               # Start Expo with a cleared cache
 ```
 
 ---
@@ -295,12 +283,27 @@ If a local EAS Android build fails during Sentry sourcemap upload, make sure `SE
 
 ```bash
 # Android
-npm run build-android          # Production APK/AAB
-npm run build-android-preview  # Preview/internal testing build
+npm run build-android             # Production AAB
+npm run build-android-apk         # Installable release APK
+npm run build-android-preview     # Preview/internal build
 
 # Submit to Google Play
 npm run submit-android
+
+# iOS
+npm run build-ios                 # Production build
+npm run build-ios-preview         # Preview/internal build
+npm run submit-ios                # Submit to App Store Connect
 ```
+
+## Project Documentation
+
+- [AGENTS.md](AGENTS.md): implementation rules and repository invariants
+- [CURRENT_FEATURES.md](CURRENT_FEATURES.md): complete shipped feature list
+- [FUTURE_FEATURES.md](FUTURE_FEATURES.md): prioritized backlog and scope decisions
+- [DESIGN.md](DESIGN.md): visual system and interaction standards
+- [FIXES.md](FIXES.md): incidents, workarounds, and regression guardrails
+- [RESEARCH.md](RESEARCH.md): consolidated technical and product research
 
 ---
 
@@ -320,7 +323,7 @@ The bundled exercise data and photos come from [free-exercise-db](https://github
 
 ## Resources
 
-- [Musclog Blog](https://musclog.app/blog) — statically generated from Markdown with rich prose and syntax-highlighted code
+- [Musclog Blog](https://musclog.app/blog) — statically generated from Markdown, with paginated all-post and category listings, rich prose, and syntax-highlighted code
 - [Blog post: How Musclog came to be](https://pablo.gg/en/blog/coding/musclog-leveraging-my-reactjs-experience-to-build-a-react-native-app/)
 - [Expo Documentation](https://docs.expo.dev/)
 - [WatermelonDB Documentation](https://watermelondb.dev/)

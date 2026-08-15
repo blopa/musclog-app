@@ -26,7 +26,7 @@ import { rawQueryViaWatermelon } from './wmdbRaw';
  *     including the adapter mode and the pre-open WAL file sizes captured in
  *     dbBootStats.ts.
  *
- * Full root-cause write-up: docs/DATABASE_DURABILITY.md.
+ * Full root-cause write-up: FIXES.md.
  */
 
 const NUTRITION_LOG_COUNT_BASELINE_KEY = 'nutrition_log_count_baseline_v1';

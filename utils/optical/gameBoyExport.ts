@@ -205,35 +205,59 @@ function assertUniqueIndexes(
   }
 }
 
-export function parseGameBoyExport(value: unknown): CompactGameBoyExport {
-  if (
-    typeof value === 'object' &&
-    value !== null &&
-    Object.hasOwn(value, '_gameBoyExport') &&
-    (value as { _gameBoyExport?: unknown })._gameBoyExport !== GAME_BOY_EXPORT_VERSION
-  ) {
-    throw new GameBoyExportError('unsupported-version', 'Unsupported Musclog GB export version');
+/** Does this payload claim to be the cartridge schema named by `marker`? */
+export function hasCartridgeMarker(value: unknown, marker: string): boolean {
+  return typeof value === 'object' && value !== null && Object.hasOwn(value, marker);
+}
+
+/**
+ * The shared front half of every cartridge payload parse: the version check, then the schema.
+ *
+ * The version is read BEFORE validating, and separately, so a cartridge newer than this build is
+ * reported as "update this phone" rather than as a hundred schema errors — the receive screen says
+ * a different sentence for each (`components/modals/opticalReceiveScreen.ts`). Both cartridge
+ * schemas need exactly this, which is why it is not written twice; `label` only names the payload
+ * in the error text.
+ */
+export function parseCartridgePayload<TSchema extends z.ZodType>(
+  value: unknown,
+  options: { label: string; marker: string; schema: TSchema; version: number }
+): z.infer<TSchema> {
+  const { label, marker, schema, version } = options;
+  if (hasCartridgeMarker(value, marker) && (value as Record<string, unknown>)[marker] !== version) {
+    throw new GameBoyExportError('unsupported-version', `Unsupported Musclog GB ${label} version`);
   }
 
-  const result = compactGameBoyExportSchema.safeParse(value);
+  const result = schema.safeParse(value);
   if (!result.success) {
     const first = result.error.issues[0];
-    const path = first?.path.map(String).join('.') || 'export';
+    const path = first?.path.map(String).join('.') || label;
     throw new GameBoyExportError('malformed', `${path}: ${first?.message ?? 'Invalid data'}`);
   }
 
-  assertUniqueIndexes(result.data.foods, 'food');
-  assertUniqueIndexes(result.data.exercises, 'exercise');
+  return result.data;
+}
 
-  const foodIds = new Set(result.data.foods.map(([index]) => index));
-  for (const [, foodIndex] of result.data.foodLogs) {
+export function parseGameBoyExport(value: unknown): CompactGameBoyExport {
+  const compact = parseCartridgePayload(value, {
+    label: 'export',
+    marker: '_gameBoyExport',
+    schema: compactGameBoyExportSchema,
+    version: GAME_BOY_EXPORT_VERSION,
+  });
+
+  assertUniqueIndexes(compact.foods, 'food');
+  assertUniqueIndexes(compact.exercises, 'exercise');
+
+  const foodIds = new Set(compact.foods.map(([index]) => index));
+  for (const [, foodIndex] of compact.foodLogs) {
     if (!foodIds.has(foodIndex)) {
       throw new GameBoyExportError('malformed', missingFoodMessage(foodIndex));
     }
   }
 
-  const exerciseIds = new Set(result.data.exercises.map(([index]) => index));
-  for (const [, , sets] of result.data.workouts) {
+  const exerciseIds = new Set(compact.exercises.map(([index]) => index));
+  for (const [, , sets] of compact.workouts) {
     for (const [exerciseIndex] of sets) {
       if (!exerciseIds.has(exerciseIndex)) {
         throw new GameBoyExportError(
@@ -244,7 +268,7 @@ export function parseGameBoyExport(value: unknown): CompactGameBoyExport {
     }
   }
 
-  return result.data;
+  return compact;
 }
 
 /** Expand the compact cartridge schema into the regular portable database dump schema. */
@@ -491,10 +515,9 @@ export function gameBoyExportToDatabaseDump(
 
 /** Leave regular exports untouched; reject marked-but-unknown cartridge exports before a wipe. */
 function expandGameBoyExportIfNeeded(value: unknown): unknown {
-  if (typeof value !== 'object' || value === null || !Object.hasOwn(value, '_gameBoyExport')) {
-    return value;
-  }
-  return gameBoyExportToDatabaseDump(parseGameBoyExport(value));
+  return hasCartridgeMarker(value, '_gameBoyExport')
+    ? gameBoyExportToDatabaseDump(parseGameBoyExport(value))
+    : value;
 }
 
 /** Parse received database JSON and expand the cartridge tuple schema before normal validation. */

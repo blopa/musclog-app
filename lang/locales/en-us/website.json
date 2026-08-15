@@ -312,11 +312,15 @@
       "progress": "Progress",
       "github": "GitHub",
       "download": "Download Now",
+      "calculator": "Calculator",
       "exercises": "Exercises",
       "gameboy": "Game Boy",
       "language": "Language",
       "alternatives": "Alternatives",
-      "blog": "Blog"
+      "blog": "Blog",
+      "menu": "Menu",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu"
     },
     "blog": {
       "eyebrow": "From the workshop",
@@ -326,7 +330,31 @@
       "listLabel": "Blog posts",
       "tagsLabel": "Post tags",
       "readArticle": "Read article",
-      "backToBlog": "Back to all posts"
+      "backToBlog": "Back to all posts",
+      "englishOnlyNotice": "Sorry, blog posts are only available in English.",
+      "share": {
+        "title": "Share this post",
+        "shareOn": "Share on {{network}}"
+      },
+      "paginationLabel": "Blog pagination",
+      "previousPage": "Previous page",
+      "nextPage": "Next page",
+      "pageStatus": "Page {{current}} of {{total}}",
+      "pageLabel": "Page {{page}}",
+      "categoryPage": {
+        "eyebrow": "Browse by category",
+        "title": "{{category}} articles",
+        "description": "All Musclog blog posts filed under {{category}}.",
+        "empty": "No posts were found in {{category}}.",
+        "listLabel": "{{category}} blog posts"
+      },
+      "categories": {
+        "product-updates": "Product updates",
+        "web-development": "Web development",
+        "engineering": "Engineering",
+        "retro": "Retro",
+        "machine-learning": "Machine learning"
+      }
     },
     "gameboy": {
       "pageTitle": "Play Musclog on Game Boy",

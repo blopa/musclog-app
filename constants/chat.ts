@@ -6,6 +6,15 @@
 export const CHAT_INTENTION_KEY = 'chatIntention';
 
 /**
+ * The coach's conversation modes, in the order the mode switcher lists them. Each mode keeps its
+ * own message history (`ChatService.getMessagesByContext`) and its own unread count, so a message
+ * that arrives for one mode never shows up in another.
+ */
+export const CONVERSATION_CONTEXTS = ['general', 'exercise', 'nutrition'] as const;
+
+export type ConversationContext = (typeof CONVERSATION_CONTEXTS)[number];
+
+/**
  * User wants to generate a workout plan
  */
 export const GENERATE_MY_WORKOUTS = 'GENERATE_MY_WORKOUTS';

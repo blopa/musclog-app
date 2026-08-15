@@ -14,7 +14,7 @@ import { OpticalReceiveModal } from './OpticalReceiveModal';
  * Returns two elements because they belong in two different places: `notice` goes in
  * `SmartCameraShell`'s `noticeSlot`, and `receiver` goes in its `children` — never as a sibling of
  * the camera modal, or iOS presents it from the wrong controller and it silently never appears
- * (see `docs/modals-problem-on-ios.md`). `isReceiveVisible` is returned so the host can add it to
+ * (see `FIXES.md`). `isReceiveVisible` is returned so the host can add it to
  * the list of child modals that put the camera to sleep.
  *
  * `accept="share"` rather than `"any"`, and not because a scanner can tell the two apart — it

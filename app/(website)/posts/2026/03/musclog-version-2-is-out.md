@@ -1,7 +1,7 @@
 ---
 title: 'Musclog version 2 is out!'
 date: '2026-03-19'
-category: 'development'
+category: 'product-updates'
 description: 'Musclog started in 2024 as an app I built for myself. Version 2 is a full rewrite — new UI layer, one database instead of two, and a much clearer answer to the question of where your data lives.'
 tags: ['Release', 'React Native', 'Rewrite', 'Privacy', 'TypeScript']
 ---
@@ -122,7 +122,7 @@ Honestly? The middle was rough.
 
 The first few weeks were great, because rebuilding something you have already designed once is fast and you get to fix every decision you regretted. Workouts, sets, the rest timer, the exercise library, food logging, barcode scanning — all of that came back quickly and came back better.
 
-Then I hit the long tail, and the long tail is where a rewrite either ships or quietly dies. Around the five-week mark I stopped and wrote out an honest inventory of what version 1 did that version 2 did not. That document is still in the repo (`docs/NEW_MUSCLOG.md`) and it is not flattering — the AI coach was a mock that appended messages locally and talked to nothing, the smart camera had `// Implement actual AI processing here` sitting in it, and the progress screen was a menu item pointing at a route that did not exist.
+Then I hit the long tail, and the long tail is where a rewrite either ships or quietly dies. Around the five-week mark I stopped and wrote out an honest inventory of what version 1 did that version 2 did not. The temporary audit has since been folded into the repo's current-feature list and roadmap, but it was not flattering — the AI coach was a mock that appended messages locally and talked to nothing, the smart camera had `// Implement actual AI processing here` sitting in it, and the progress screen was a menu item pointing at a route that did not exist.
 
 Writing it down was the thing that made it finishable. The gap stopped being a vague feeling that the app was not ready and became a list, and lists get shorter.
 
@@ -154,6 +154,5 @@ There is a lot more coming — I have a long list, and now I have somewhere sane
 - [Download Musclog for Android](https://play.google.com/store/apps/details?id=com.werules.logger)
 - [Join the iOS TestFlight](https://testflight.apple.com/join/mq3QMSHU)
 - [Browse the source on GitHub](https://github.com/blopa/musclog-app) — it is all there, including the parts I am not proud of
-- [How Musclog came to be](https://pablo.gg/en/blog/coding/musclog-leveraging-my-reactjs-experience-to-build-a-react-native-app/), written back when version 1 was new
 
 If you use it and something is broken, please open an issue. It is one person building this, and I genuinely cannot see your device from here.

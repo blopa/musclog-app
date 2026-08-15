@@ -312,11 +312,15 @@
       "progress": "Прогресс",
       "github": "GitHub",
       "download": "Скачать Сейчас",
+      "calculator": "Калькулятор",
       "exercises": "Упражнения",
       "gameboy": "Game Boy",
       "language": "Язык",
       "alternatives": "Альтернативы",
-      "blog": "Блог"
+      "blog": "Блог",
+      "menu": "Меню",
+      "openMenu": "Открыть меню",
+      "closeMenu": "Закрыть меню"
     },
     "blog": {
       "eyebrow": "Из мастерской",
@@ -326,7 +330,31 @@
       "listLabel": "Статьи блога",
       "tagsLabel": "Теги статьи",
       "readArticle": "Читать статью",
-      "backToBlog": "Назад ко всем статьям"
+      "backToBlog": "Назад ко всем статьям",
+      "englishOnlyNotice": "Извините, статьи блога доступны только на английском языке.",
+      "share": {
+        "title": "Поделиться статьёй",
+        "shareOn": "Поделиться в {{network}}"
+      },
+      "paginationLabel": "Навигация по страницам блога",
+      "previousPage": "Предыдущая страница",
+      "nextPage": "Следующая страница",
+      "pageStatus": "Страница {{current}} из {{total}}",
+      "pageLabel": "Страница {{page}}",
+      "categoryPage": {
+        "eyebrow": "Просмотр по категориям",
+        "title": "Статьи в категории «{{category}}»",
+        "description": "Все статьи блога Musclog в категории «{{category}}».",
+        "empty": "В категории «{{category}}» статей не найдено.",
+        "listLabel": "Статьи блога в категории «{{category}}»"
+      },
+      "categories": {
+        "product-updates": "Обновления продукта",
+        "web-development": "Веб-разработка",
+        "engineering": "Инженерия",
+        "retro": "Ретро",
+        "machine-learning": "Машинное обучение"
+      }
     },
     "gameboy": {
       "pageTitle": "Играть в Musclog на Game Boy",

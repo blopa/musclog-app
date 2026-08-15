@@ -2,13 +2,14 @@ import { Q } from '@nozbe/watermelondb';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { ChevronRight, Copy, Pencil, Share2, Trash2, Video, Zap } from 'lucide-react-native';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Linking, ScrollView, Text, View } from 'react-native';
 
 import { BottomPopUpMenu, BottomPopUpMenuItem } from '@/components/BottomPopUpMenu';
 import { GenericCard } from '@/components/cards/GenericCard';
 import { SettingsCard } from '@/components/cards/SettingsCard';
+import { LineChart, type LineChartDataPoint } from '@/components/charts/LineChart';
 import { Button } from '@/components/theme/Button';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { useSnackbar } from '@/context/SnackbarContext';
@@ -23,10 +24,18 @@ import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import {
+  getPaddedYDomain,
+  getTimeSeriesXDomain,
+  getXAxisLabels,
+  type XAxisLabel,
+} from '@/utils/chartUtils';
+import {
   getExerciseTypeTranslationKey,
   getMuscleGroupTranslationKey,
 } from '@/utils/exerciseTranslation';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { summarizeOneRepMaxTrend } from '@/utils/oneRepMaxTrend';
+import { getWeightUnitI18nKey } from '@/utils/units';
 
 import { ConfirmationModal } from './ConfirmationModal';
 import type { DataLogModalVariant } from './DataLogModal';
@@ -74,6 +83,7 @@ export default function ViewExerciseModal({
   const [workouts, setWorkouts] = useState<
     { id: string; name: string; subtitle: string; icon: typeof Zap }[]
   >([]);
+  const [oneRepMaxTrend, setOneRepMaxTrend] = useState<LineChartDataPoint[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [deleteConfirmVisible, setDeleteConfirmVisible] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -112,17 +122,20 @@ export default function ViewExerciseModal({
       if (!ex?.id) {
         setPersonalBest(null);
         setAvgFrequency({ value: 0, unit: 'perWeek' });
+        setOneRepMaxTrend([]);
         setWorkouts([]);
         return;
       }
       try {
-        const [pb, freq] = await Promise.all([
+        const [pb, freq, overload] = await Promise.all([
           WorkoutAnalytics.getPersonalBestForExercise(ex.id),
           WorkoutAnalytics.getAverageFrequencyPerWeek(ex.id),
+          WorkoutAnalytics.getProgressiveOverloadData(ex.id),
         ]);
 
         setPersonalBest(pb ? { value: pb.weight, unit: pb.unit } : null);
         setAvgFrequency(freq);
+        setOneRepMaxTrend(overload.map((point) => ({ x: point.date, y: point.estimated1RM })));
 
         const templateExercises = await database
           .get<WorkoutTemplateExercise>('workout_template_exercises')
@@ -152,6 +165,7 @@ export default function ViewExerciseModal({
       } catch {
         setPersonalBest(null);
         setAvgFrequency({ value: 0, unit: 'perWeek' });
+        setOneRepMaxTrend([]);
         setWorkouts([]);
       }
     },
@@ -182,6 +196,29 @@ export default function ViewExerciseModal({
   }, [exercise, exercise?.id, loadStatsAndWorkouts]);
 
   const backgroundImage = useExerciseImageSource(exercise?.imageUrl);
+
+  const weightUnitKey = getWeightUnitI18nKey(units);
+
+  const trendXAxisLabels = useMemo<XAxisLabel[]>(
+    () =>
+      getXAxisLabels(oneRepMaxTrend, (x) =>
+        new Date(x).toLocaleDateString(locale, { month: 'short', day: 'numeric' })
+      ),
+    [oneRepMaxTrend, locale]
+  );
+
+  const trendYDomain = useMemo(() => getPaddedYDomain(oneRepMaxTrend), [oneRepMaxTrend]);
+
+  const trendXDomain = useMemo(() => getTimeSeriesXDomain(oneRepMaxTrend), [oneRepMaxTrend]);
+
+  const trendSummary = useMemo(
+    () => summarizeOneRepMaxTrend(oneRepMaxTrend, units),
+    [oneRepMaxTrend, units]
+  );
+
+  const hasOneRepMaxTrend = trendSummary.kind !== 'none';
+
+  const latestOneRepMaxKg = hasOneRepMaxTrend ? oneRepMaxTrend[oneRepMaxTrend.length - 1].y : 0;
 
   const handleWatchTechnique = () => {
     const name = encodeURIComponent(exercise?.name ?? '');
@@ -382,6 +419,29 @@ export default function ViewExerciseModal({
     iconGradient: [theme.colors.status.indigo600, theme.colors.status.indigo600] as const,
   }));
 
+  const oneRepMaxTrendSummary = () => {
+    if (trendSummary.kind === 'none') {
+      return '';
+    }
+
+    // `sessions` is always at least 2 here, so the copy needs no plural forms.
+    const sessions = formatRoundedDecimal(trendSummary.sessions, 0);
+    if (trendSummary.kind === 'steady') {
+      return t('exercises.viewExercise.oneRepMaxTrendSteady', { sessions });
+    }
+
+    return t(
+      trendSummary.kind === 'up'
+        ? 'exercises.viewExercise.oneRepMaxTrendUp'
+        : 'exercises.viewExercise.oneRepMaxTrendDown',
+      {
+        change: formatDisplayWeightKg(locale, units, trendSummary.changeKg),
+        unit: t(weightUnitKey),
+        sessions,
+      }
+    );
+  };
+
   if (!visible) {
     return null;
   }
@@ -558,6 +618,45 @@ export default function ViewExerciseModal({
                     })}
                   </Text>
                 </View>
+              </View>
+            </GenericCard>
+          </View>
+
+          <View className="px-4 pb-2">
+            <Text className="mb-4 text-2xl font-bold" style={{ color: theme.colors.text.white }}>
+              {t('exercises.viewExercise.oneRepMaxTrend')}
+            </Text>
+            <GenericCard variant="default" size="default">
+              <View className="p-4">
+                {hasOneRepMaxTrend ? (
+                  <View>
+                    <LineChart
+                      data={oneRepMaxTrend}
+                      height={180}
+                      xDomain={trendXDomain}
+                      yDomain={trendYDomain}
+                      xAxisLabels={trendXAxisLabels}
+                      lineColor={theme.colors.accent.secondary}
+                      areaColor={theme.colors.accent.secondary20}
+                      marginTop={8}
+                      marginBottom={8}
+                      accessibilityLabel={t('exercises.viewExercise.oneRepMaxTrend')}
+                      yAxisLabels={[
+                        {
+                          label: `${formatDisplayWeightKg(locale, units, latestOneRepMaxKg)} ${t(weightUnitKey)}`,
+                          yDomainValue: latestOneRepMaxKg,
+                        },
+                      ]}
+                    />
+                    <Text className="mt-2 text-sm" style={{ color: theme.colors.text.secondary }}>
+                      {oneRepMaxTrendSummary()}
+                    </Text>
+                  </View>
+                ) : (
+                  <Text className="text-sm" style={{ color: theme.colors.text.secondary }}>
+                    {t('exercises.viewExercise.oneRepMaxTrendEmpty')}
+                  </Text>
+                )}
               </View>
             </GenericCard>
           </View>

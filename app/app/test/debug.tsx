@@ -10,6 +10,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { MasterLayout } from '@/components/MasterLayout';
 import { MigrationSection } from '@/components/MigrationSection';
 import { Button } from '@/components/theme/Button';
+import { CONVERSATION_CONTEXTS, type ConversationContext } from '@/constants/chat';
 import { ENCRYPTION_KEY } from '@/constants/database';
 import { UNITS_SETTING_TYPE } from '@/constants/settings';
 import { useUnreadChat } from '@/context/UnreadChatContext';
@@ -120,7 +121,7 @@ export default function DebugTestScreen() {
   const [migrationService] = useState(() => new MigrationService());
   const [unreadInput, setUnreadInput] = useState('');
   const unreadCount = useUnreadChatMessages();
-  const { setUnreadCount, clearUnreadCount } = useUnreadChat();
+  const { setUnreadCount, clearUnreadCount, unreadCountsByContext } = useUnreadChat();
 
   // Fetch exercises manually
   const fetchExercises = async () => {
@@ -320,14 +321,14 @@ export default function DebugTestScreen() {
     setExpandedTables(newExpanded);
   };
 
-  const applyUnreadCount = async () => {
+  const applyUnreadCount = async (conversationContext: ConversationContext) => {
     const count = parseInt(unreadInput, 10);
     if (isNaN(count) || count < 0) {
       return;
     }
 
-    await setUnreadCount(count);
-    console.log(`Unread count set to ${count}`);
+    await setUnreadCount(conversationContext, count);
+    console.log(`Unread count for ${conversationContext} set to ${count}`);
   };
 
   const clearUnread = async () => {
@@ -688,11 +689,16 @@ export default function DebugTestScreen() {
             <View className="rounded-lg border border-border-light bg-bg-primary p-3">
               <Text className="text-xs font-bold uppercase text-text-tertiary">Current Count</Text>
               <Text className="text-2xl font-bold text-accent-primary">{unreadCount}</Text>
+              <Text className="text-xs text-text-tertiary">
+                {CONVERSATION_CONTEXTS.map(
+                  (context) => `${context}: ${unreadCountsByContext[context]}`
+                ).join('  ·  ')}
+              </Text>
             </View>
 
             <View>
               <Text className="mb-1 text-xs font-bold uppercase text-text-tertiary">
-                Set unread count
+                Set unread count for a conversation mode
               </Text>
               <TextInput
                 className="rounded-lg border border-border-light bg-bg-primary p-3 text-text-primary"
@@ -703,9 +709,17 @@ export default function DebugTestScreen() {
                 keyboardType="numeric"
               />
             </View>
-            <View className="flex-row gap-2">
-              <Button onPress={applyUnreadCount} label="Set Count" size="sm" variant="accent" />
-              <Button onPress={clearUnread} label="Clear" size="sm" variant="secondary" />
+            <View className="flex-row flex-wrap gap-2">
+              {CONVERSATION_CONTEXTS.map((context) => (
+                <Button
+                  key={context}
+                  onPress={() => applyUnreadCount(context)}
+                  label={context}
+                  size="sm"
+                  variant="accent"
+                />
+              ))}
+              <Button onPress={clearUnread} label="Clear All" size="sm" variant="secondary" />
             </View>
           </View>
 

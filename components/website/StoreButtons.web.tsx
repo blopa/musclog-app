@@ -3,6 +3,7 @@ import { ReactNode, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 
+import { computePopoverTop } from '@/components/website/popoverPlacement';
 import { GOOGLE_PLAY_URL, TESTFLIGHT_URL } from '@/components/website/storeLinks';
 import { trackStoreButtonClick } from '@/utils/websiteAnalytics';
 
@@ -162,7 +163,8 @@ function QRCodeCard({
 export function StoreButtons() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.storeButtons' });
   const [isQrOpen, setIsQrOpen] = useState(false);
-  const [qrPopoverPos, setQrPopoverPos] = useState({ top: 0, left: 16 });
+  const [qrTriggerRect, setQrTriggerRect] = useState<DOMRect | null>(null);
+  const [qrPopoverHeight, setQrPopoverHeight] = useState(0);
   const qrButtonRef = useRef<HTMLDivElement>(null);
   const qrPopoverRef = useRef<HTMLDivElement>(null);
 
@@ -171,15 +173,10 @@ export function StoreButtons() {
       return;
     }
 
-    if (qrButtonRef.current) {
-      const rect = qrButtonRef.current.getBoundingClientRect();
-      setQrPopoverPos({
-        top: rect.bottom + 12,
-        left: Math.min(
-          Math.max(rect.left - 180, 16),
-          window.innerWidth - 16 - Math.min(window.innerWidth - 32, 480)
-        ),
-      });
+    setQrTriggerRect(qrButtonRef.current?.getBoundingClientRect() ?? null);
+
+    if (qrPopoverRef.current) {
+      setQrPopoverHeight(qrPopoverRef.current.getBoundingClientRect().height);
     }
   }, [isQrOpen]);
 
@@ -216,6 +213,20 @@ export function StoreButtons() {
       document.removeEventListener('touchstart', handlePointerDown);
     };
   }, [isQrOpen]);
+
+  const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 0;
+  const qrPopoverLeft =
+    qrTriggerRect != null && viewportWidth > 0
+      ? Math.min(
+          Math.max(qrTriggerRect.left - 180, 16),
+          viewportWidth - 16 - Math.min(viewportWidth - 32, 480)
+        )
+      : 16;
+  const qrPopoverTop = computePopoverTop({
+    triggerRect: qrTriggerRect,
+    popoverHeight: qrPopoverHeight,
+    viewportHeight: typeof window !== 'undefined' ? window.innerHeight : 0,
+  });
 
   return (
     <div className="flex flex-wrap gap-3">
@@ -255,10 +266,10 @@ export function StoreButtons() {
                 ref={qrPopoverRef}
                 role="dialog"
                 aria-labelledby="store-qr-popover-title"
-                className="border-white/12 fixed z-[170] w-[min(calc(100vw-2rem),30rem)] rounded-3xl border bg-[rgba(7,13,12,0.97)] p-5 shadow-2xl backdrop-blur-xl"
+                className="border-white/12 fixed z-[170] max-h-[calc(100vh-2rem)] w-[min(calc(100vw-2rem),30rem)] overflow-y-auto rounded-3xl border bg-[rgba(7,13,12,0.97)] p-5 shadow-2xl backdrop-blur-xl"
                 style={{
-                  top: qrPopoverPos.top,
-                  left: qrPopoverPos.left,
+                  top: qrPopoverTop,
+                  left: qrPopoverLeft,
                 }}
               >
                 <div className="mb-4 flex items-start justify-between gap-4">

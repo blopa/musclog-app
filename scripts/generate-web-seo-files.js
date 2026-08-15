@@ -8,18 +8,27 @@
  *
  * Fixed routes are derived from components/website/websiteRoutes.json — the
  * same registry components/website/WebsiteSeo.tsx reads for titles, canonical
- * URLs and robots directives. Blog post sitemap paths are derived from the
- * Markdown files that generate those dynamic routes.
+ * URLs and robots directives. Blog post and category sitemap paths are derived
+ * from the Markdown files that generate those dynamic routes, and their URL
+ * shapes come from components/website/blogRoutes.js — the same module the Expo
+ * Router loaders and the listing components use, so this file cannot advertise
+ * a page the router does not build.
  */
 const fs = require('fs');
 const path = require('path');
+const matter = require('gray-matter');
 
+const {
+  blogCategoryPath,
+  blogPagePathsAfterFirst,
+  SAFE_CATEGORY_KEY,
+  SAFE_SLUG_SEGMENT,
+} = require('../components/website/blogRoutes');
 const websiteRoutes = require('../components/website/websiteRoutes.json');
 
 const SITE_ORIGIN = 'https://musclog.app';
 const BLOG_POSTS_DIRECTORY = path.join(path.resolve(__dirname, '..'), 'app', '(website)', 'posts');
 const MARKDOWN_EXTENSION = /\.md$/i;
-const SAFE_SLUG_SEGMENT = /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/i;
 
 // Order the llms.txt sections appear in. A route naming a section outside this
 // list is a typo, and fails the build rather than vanishing from the output.
@@ -71,8 +80,8 @@ const routes = Object.values(websiteRoutes);
 const indexableRoutes = routes.filter(isIndexable);
 const noindexRoutes = routes.filter((route) => !isIndexable(route));
 
-function discoverBlogPostPaths(postsDirectory = BLOG_POSTS_DIRECTORY) {
-  const paths = [];
+function discoverBlogPostFiles(postsDirectory) {
+  const files = [];
 
   function visit(directory) {
     for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
@@ -80,21 +89,73 @@ function discoverBlogPostPaths(postsDirectory = BLOG_POSTS_DIRECTORY) {
       if (entry.isDirectory()) {
         visit(entryPath);
       } else if (entry.isFile() && MARKDOWN_EXTENSION.test(entry.name)) {
-        const relativePath = path.relative(postsDirectory, entryPath).replaceAll('\\', '/');
-        const slug = relativePath.replace(MARKDOWN_EXTENSION, '');
-        if (slug.split('/').some((segment) => !SAFE_SLUG_SEGMENT.test(segment))) {
-          throw new Error(`Invalid blog post path for a public URL: ${relativePath}`);
-        }
-        paths.push(`/blog/${slug}`);
+        files.push(entryPath);
       }
     }
   }
 
   visit(postsDirectory);
-  return paths.sort();
+  return files.sort();
+}
+
+function discoverBlogPostPaths(postsDirectory = BLOG_POSTS_DIRECTORY) {
+  return discoverBlogPostFiles(postsDirectory).map((file) => {
+    const relativePath = path.relative(postsDirectory, file).replaceAll('\\', '/');
+    const slug = relativePath.replace(MARKDOWN_EXTENSION, '');
+    if (slug.split('/').some((segment) => !SAFE_SLUG_SEGMENT.test(segment))) {
+      throw new Error(`Invalid blog post path for a public URL: ${relativePath}`);
+    }
+
+    return `/blog/${slug}`;
+  });
+}
+
+function discoverBlogCategoryPostCounts(postsDirectory = BLOG_POSTS_DIRECTORY) {
+  const counts = new Map();
+
+  for (const file of discoverBlogPostFiles(postsDirectory)) {
+    const relativePath = path.relative(postsDirectory, file).replaceAll('\\', '/');
+    const { category } = matter(fs.readFileSync(file, 'utf8')).data;
+    if (typeof category !== 'string' || !SAFE_CATEGORY_KEY.test(category.trim())) {
+      throw new Error(
+        `Invalid blog category in ${relativePath}: category must be a lowercase, kebab-case translation key`
+      );
+    }
+
+    const normalizedCategory = category.trim();
+    counts.set(normalizedCategory, (counts.get(normalizedCategory) ?? 0) + 1);
+  }
+
+  return Object.fromEntries(
+    [...counts.entries()].sort(([left], [right]) => left.localeCompare(right))
+  );
 }
 
 const blogPostPaths = discoverBlogPostPaths();
+const blogCategoryPostCounts = discoverBlogCategoryPostCounts();
+
+function blogPaginationPaths(postCount, postsPerPage) {
+  return blogPagePathsAfterFirst(postCount, postsPerPage);
+}
+
+const blogPagePaths = blogPaginationPaths(blogPostPaths.length);
+
+function blogCategoryPaths(categoryPostCounts, postsPerPage) {
+  return Object.entries(categoryPostCounts)
+    .sort(([left], [right]) => left.localeCompare(right))
+    .flatMap(([category, postCount]) => {
+      if (!SAFE_CATEGORY_KEY.test(category) || !Number.isInteger(postCount) || postCount < 1) {
+        throw new Error('Blog category counts must use URL-safe categories and positive integers');
+      }
+
+      return [
+        blogCategoryPath(category),
+        ...blogPagePathsAfterFirst(postCount, postsPerPage, category),
+      ];
+    });
+}
+
+const blogCategoryPagePaths = blogCategoryPaths(blogCategoryPostCounts);
 
 /**
  * Matches `absoluteUrl` in WebsiteSeo.tsx, so a page's sitemap <loc> is
@@ -131,7 +192,12 @@ function generateRobotsTxt() {
  * web` dirty the working tree with a meaningless diff.
  */
 function generateSitemapXml() {
-  const urls = [...indexableRoutes.map((route) => route.path), ...blogPostPaths]
+  const urls = [
+    ...indexableRoutes.map((route) => route.path),
+    ...blogPagePaths,
+    ...blogCategoryPagePaths,
+    ...blogPostPaths,
+  ]
     .map((routePath) => `  <url>\n    <loc>${absoluteUrl(routePath)}</loc>\n  </url>`)
     .join('\n');
 
@@ -181,7 +247,7 @@ function main() {
 
   console.log(
     '[generate-web-seo-files] wrote public/robots.txt, public/sitemap.xml and public/llms.txt',
-    `(${indexableRoutes.length + blogPostPaths.length} indexable routes)`
+    `(${indexableRoutes.length + blogPagePaths.length + blogCategoryPagePaths.length + blogPostPaths.length} indexable routes)`
   );
 }
 
@@ -189,4 +255,10 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { discoverBlogPostPaths, generateSitemapXml };
+module.exports = {
+  blogCategoryPaths,
+  blogPaginationPaths,
+  discoverBlogCategoryPostCounts,
+  discoverBlogPostPaths,
+  generateSitemapXml,
+};

@@ -460,3 +460,27 @@ html.hide-desktop-wrapper .expo-web-app-shell {
 .blog-prose .hljs-function,
 .blog-prose .hljs-title.function_ { color: #67e8f9; }
 .blog-prose .hljs-deletion { color: #fca5a5; }
+
+/*
+ * Share buttons at the end of a blog post (BlogPostShare.tsx). The glyphs inherit this `color`
+ * through `iconFillColor="currentColor"`, so the row is monochrome at rest and each button lights
+ * up in its own network color on hover. That color cannot be a Tailwind class or an inline style —
+ * it differs per button and only applies on hover — so it arrives as the `--share-color` custom
+ * property the component sets inline.
+ */
+.blog-share-button {
+	color: #9ca3af;
+}
+
+.blog-share-button:hover,
+.blog-share-button:focus-visible {
+	transform: translateY(-2px);
+	border-color: var(--share-color);
+	background-color: rgb(255 255 255 / 10%);
+	color: var(--share-color);
+}
+
+.blog-share-button:focus-visible {
+	outline: 2px solid var(--share-color);
+	outline-offset: 2px;
+}

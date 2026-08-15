@@ -1,12 +1,12 @@
 ---
 title: 'Creating a calorie tracker for the Game Boy Color'
 date: '2026-08-14'
-category: 'development'
+category: 'retro'
 description: 'I put Musclog on a 1998 cartridge — 517 foods in ROM, macro goals packed into 23 bytes of battery-backed SRAM, and a way to beam the whole save, or just one day of eating, into your phone using nothing but light.'
 tags: ['Game Boy', 'GBDK', 'C', 'Retro', 'Homebrew', 'Nutrition', 'WasmBoy']
 ---
 
-I like to build things, many times not because of how useful they are, but just to see if I can. Like integrating React with Phaser.js, or adding Reels to my blog. Not only because I like the challenge, but also because it's so hard to write something in my blog that hasn't been written before, therefore I need to go beyond what's possible, beyond creativity, beyond the impossible, where the possible and impossible meet: the possimpible.
+I like to build things, many times not because of how useful they are, but just to see if I can. Like teaching a €20 motion sensor to count my reps, or moving an entire database between two devices with nothing but a screen and a camera. Not only because I like the challenge, but also because it's so hard to build something that hasn't been built before, therefore I need to go beyond what's possible, beyond creativity, beyond the impossible, where the possible and impossible meet: the possimpible.
 
 So I put [Musclog](https://musclog.app/), my open source fitness tracker, on a Game Boy Color. A real cartridge layout, battery-backed saves, 517 foods baked into the ROM, the whole thing. You can track your macros and your workouts on hardware from 1998.
 
@@ -242,9 +242,9 @@ Nothing exciting here — except for the entry I added last, which is the whole 
 
 ## Getting the data off the cartridge
 
-The first version of this post ended with an admission: I had written a decoder that reads the cartridge's SRAM image back into JavaScript objects, it was dev-only, and the obvious endgame — actually moving what you logged on the Game Boy into the real app — was sitting in the code as a `TODO`. I said the hard half, understanding the format on both ends, was done.
+For most of this project, getting data _off_ the cartridge was a `TODO`. I had written a decoder that reads the cartridge's SRAM image back into JavaScript objects, it was dev-only, and the obvious endgame — actually moving what you logged on the Game Boy into the real app — stayed a comment in the code for months. The hard half, understanding the format on both ends, was done. The half that actually moves bytes was not.
 
-That bridge exists now. It just doesn't work the way I expected, because in the meantime I built [optical transfer](/blog/2026/08/using-decimen-optical-transfer-foss-to-transfer-data-between-devices) for the phone app: moving a database between two devices by animating fountain-coded QR codes on one screen and pointing the other device's camera at them. No network, no cable, no server.
+That bridge exists now. It just doesn't work the way I expected, because along the way I built [optical transfer](/blog/2026/08/using-decimen-optical-transfer-foss-to-transfer-data-between-devices) for the phone app: moving a database between two devices by animating fountain-coded QR codes on one screen and pointing the other device's camera at them. No network, no cable, no server.
 
 A Game Boy has a screen. That is the entire requirement.
 
@@ -356,6 +356,12 @@ What I did not expect was that the cartridge would end up teaching the phone app
 It's also a genuinely good way to understand the hardware that raised me. I grew up on this thing. Now I can tell it how many grams of chicken I ate and then beam that confession into my phone with a flashing square, which is either the most or least productive use of a Game Boy Color ever shipped, and I refuse to decide which.
 
 The ROM, the build scripts, and the firmware are all open source in the same repo as the app: [github.com/blopa/musclog-app](https://github.com/blopa/musclog-app), under `gameboy/`. If you want to actually mash the buttons without building anything, it runs in your browser at [musclog.app/gameboy](https://musclog.app/gameboy). Bring your own greek yogurt.
+
+## What's next?
+
+Musclog on J2ME? Symbian S60v3? I'm only half joking. A 2006 Nokia has more RAM than the entire Game Boy has address space, it has a real filesystem, and — this is the part that keeps nagging at me — it has a camera, which means the optical transfer could finally go both ways instead of the cartridge only ever shouting into a phone.
+
+The honest answer is that I don't know yet. But the pattern is clear enough by now: constrain the platform hard enough and the app gets better everywhere else. If a MIDI reducer and a lookup table came out of a 1 MHz CPU, I'd like to see what falls out of a device with a keypad and no touchscreen.
 
 Lift, Log, Repeat. On a cartridge now.
 

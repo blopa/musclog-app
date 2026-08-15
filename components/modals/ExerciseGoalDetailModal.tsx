@@ -11,7 +11,12 @@ import { useExerciseGoalProgress } from '@/hooks/useExerciseGoalProgress';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
-import { getXAxisLabels, type XAxisLabel } from '@/utils/chartUtils';
+import {
+  getPaddedYDomain,
+  getTimeSeriesXDomain,
+  getXAxisLabels,
+  type XAxisLabel,
+} from '@/utils/chartUtils';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
@@ -57,28 +62,9 @@ export function ExerciseGoalDetailModal({
     );
   }, [chartData, locale]);
 
-  const yDomain = useMemo<[number, number]>(() => {
-    if (chartData.length === 0) {
-      return [0, 100];
-    }
-    const values = chartData.map((d) => d.y);
-    const min = Math.min(...values);
-    const max = Math.max(...values);
-    const padding = (max - min) * 0.15 || max * 0.1 || 10;
-    return [Math.max(0, min - padding), max + padding];
-  }, [chartData]);
+  const yDomain = useMemo(() => getPaddedYDomain(chartData), [chartData]);
 
-  const xDomain = useMemo<[number, number]>(() => {
-    if (chartData.length === 0) {
-      return [0, 1];
-    }
-    const first = chartData[0].x;
-    const last = chartData[chartData.length - 1].x;
-    if (first === last) {
-      return [first - 86400000, last + 86400000];
-    }
-    return [first, last];
-  }, [chartData]);
+  const xDomain = useMemo(() => getTimeSeriesXDomain(chartData), [chartData]);
 
   const targetWeightDisplay =
     goal?.targetWeight != null ? formatDisplayWeightKg(locale, units, goal.targetWeight) : '-';

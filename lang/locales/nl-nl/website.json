@@ -312,11 +312,15 @@
       "progress": "Voortgang",
       "github": "GitHub",
       "download": "Nu Downloaden",
+      "calculator": "Calculator",
       "exercises": "Oefeningen",
       "gameboy": "Game Boy",
       "language": "Taal",
       "alternatives": "Alternatieven",
-      "blog": "Blog"
+      "blog": "Blog",
+      "menu": "Menu",
+      "openMenu": "Menu openen",
+      "closeMenu": "Menu sluiten"
     },
     "blog": {
       "eyebrow": "Uit de werkplaats",
@@ -326,7 +330,31 @@
       "listLabel": "Blogartikelen",
       "tagsLabel": "Artikeltags",
       "readArticle": "Artikel lezen",
-      "backToBlog": "Terug naar alle artikelen"
+      "backToBlog": "Terug naar alle artikelen",
+      "englishOnlyNotice": "Sorry, blogartikelen zijn alleen in het Engels beschikbaar.",
+      "share": {
+        "title": "Deel dit artikel",
+        "shareOn": "Delen op {{network}}"
+      },
+      "paginationLabel": "Blogpaginering",
+      "previousPage": "Vorige pagina",
+      "nextPage": "Volgende pagina",
+      "pageStatus": "Pagina {{current}} van {{total}}",
+      "pageLabel": "Pagina {{page}}",
+      "categoryPage": {
+        "eyebrow": "Bekijken per categorie",
+        "title": "Artikelen over {{category}}",
+        "description": "Alle Musclog-blogartikelen in de categorie {{category}}.",
+        "empty": "Er zijn geen artikelen gevonden in {{category}}.",
+        "listLabel": "Blogartikelen over {{category}}"
+      },
+      "categories": {
+        "product-updates": "Productupdates",
+        "web-development": "Webontwikkeling",
+        "engineering": "Techniek",
+        "retro": "Retro",
+        "machine-learning": "Machinelearning"
+      }
     },
     "gameboy": {
       "pageTitle": "Speel Musclog op Game Boy",

@@ -23,6 +23,8 @@ const WEBSITE_ROUTE_FILES = [
   './(website)/blog/index.web.tsx',
   './(website)/blog/[...slug].tsx',
   './(website)/blog/[...slug].web.tsx',
+  './(website)/blog/page/[page].tsx',
+  './(website)/blog/page/[page].web.tsx',
 ];
 
 function routeTreeFor(platform: string, files = WEBSITE_ROUTE_FILES): Record<string, string> {
@@ -54,6 +56,7 @@ describe('Expo Router platform extension patch', () => {
 
     expect(routes['blog/[...slug]']).toBe('./(website)/blog/[...slug].web.tsx');
     expect(routes['blog/index']).toBe('./(website)/blog/index.web.tsx');
+    expect(routes['blog/page/[page]']).toBe('./(website)/blog/page/[page].web.tsx');
     expect(routes['(website)']).toBe('./(website)/_layout.web.tsx');
   });
 
@@ -62,6 +65,7 @@ describe('Expo Router platform extension patch', () => {
 
     expect(routes['blog/[...slug]']).toBe('./(website)/blog/[...slug].tsx');
     expect(routes['blog/index']).toBe('./(website)/blog/index.tsx');
+    expect(routes['blog/page/[page]']).toBe('./(website)/blog/page/[page].tsx');
     expect(routes['(website)']).toBe('./(website)/_layout.tsx');
   });
 
@@ -79,6 +83,9 @@ describe('Expo Router platform extension patch', () => {
   it('keeps the platform extension out of the loader context key', () => {
     expect(getContextKey('./(website)/blog/[...slug].web.tsx')).toBe('/(website)/blog/[...slug]');
     expect(getContextKey('./(website)/blog/index.web.tsx')).toBe('/(website)/blog/index');
+    expect(getContextKey('./(website)/blog/page/[page].web.tsx')).toBe(
+      '/(website)/blog/page/[page]'
+    );
     expect(getContextKey('./(website)/_layout.web.tsx')).toBe('/(website)');
   });
 
@@ -111,6 +118,11 @@ describe('Expo Router loader path patch', () => {
     expect(getLoaderModulePath('/(website)/blog/2026/08/example')).toBe(
       '/_expo/loaders/blog/2026/08/example'
     );
+  });
+
+  it('maps a paginated blog route to its public loader path', () => {
+    process.env.NODE_ENV = 'development';
+    expect(getLoaderModulePath('/(website)/blog/page/2')).toBe('/_expo/loaders/blog/page/2');
   });
 
   it('preserves the exported static loader path in production', () => {
