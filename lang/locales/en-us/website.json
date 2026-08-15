@@ -331,6 +331,10 @@
       "tagsLabel": "Post tags",
       "readArticle": "Read article",
       "backToBlog": "Back to all posts",
+      "share": {
+        "title": "Share this post",
+        "shareOn": "Share on {{network}}"
+      },
       "paginationLabel": "Blog pagination",
       "previousPage": "Previous page",
       "nextPage": "Next page",

@@ -3,6 +3,7 @@ import { createStaticLoader } from 'expo-router/server';
 import { ArrowLeft, CalendarDays, Folder, Tags } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
+import { BlogPostShare } from '@/components/website/BlogPostShare';
 import { GridPattern } from '@/components/website/WebsiteBackgrounds';
 import { BODY_TEXT_SOFT, BRAND_GREEN_BRIGHT } from '@/components/website/websiteColors';
 import { BlogPostSeo } from '@/components/website/WebsiteSeo';
@@ -121,9 +122,15 @@ export default function BlogPostPage() {
           <div className="blog-prose py-10" dangerouslySetInnerHTML={{ __html: post.html }} />
 
           <footer className="border-t border-white/10 pt-8">
+            <BlogPostShare
+              canonicalPath={canonicalPath}
+              description={post.excerpt}
+              title={post.title}
+            />
+
             <Link
               href="/blog"
-              className="inline-flex items-center gap-2 text-sm font-bold transition-colors hover:text-emerald-200"
+              className="mt-8 inline-flex items-center gap-2 text-sm font-bold transition-colors hover:text-emerald-200"
               style={{ color: BRAND_GREEN_BRIGHT }}
             >
               <ArrowLeft className="h-4 w-4" color="currentColor" />

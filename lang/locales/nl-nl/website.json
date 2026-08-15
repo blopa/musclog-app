@@ -331,6 +331,10 @@
       "tagsLabel": "Artikeltags",
       "readArticle": "Artikel lezen",
       "backToBlog": "Terug naar alle artikelen",
+      "share": {
+        "title": "Deel dit artikel",
+        "shareOn": "Delen op {{network}}"
+      },
       "paginationLabel": "Blogpaginering",
       "previousPage": "Vorige pagina",
       "nextPage": "Volgende pagina",

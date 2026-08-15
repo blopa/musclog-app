@@ -331,6 +331,10 @@
       "tagsLabel": "Теги статьи",
       "readArticle": "Читать статью",
       "backToBlog": "Назад ко всем статьям",
+      "share": {
+        "title": "Поделиться статьёй",
+        "shareOn": "Поделиться в {{network}}"
+      },
       "paginationLabel": "Навигация по страницам блога",
       "previousPage": "Предыдущая страница",
       "nextPage": "Следующая страница",

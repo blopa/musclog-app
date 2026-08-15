@@ -44,13 +44,19 @@ const ROUTE_KEY_BY_PATH: Record<string, WebsiteSeoRouteKey> = {
   '/home': 'home',
 };
 
-function absoluteUrl(path: string): string {
+export function absoluteUrl(path: string): string {
   if (/^https?:\/\//i.test(path)) {
     return path;
   }
 
   return `${SITE_ORIGIN}${path.startsWith('/') ? path : `/${path}`}`;
 }
+
+/**
+ * The sharing/preview image, absolute. Exported because anything that hands a page URL to a third
+ * party (the blog post share row) needs the same image these meta tags advertise.
+ */
+export const SEO_IMAGE_URL = absoluteUrl(SEO_IMAGE_PATH);
 
 function ogLocaleForLanguage(language: string | undefined): string {
   if (language == null) {
@@ -98,7 +104,6 @@ export function WebsiteSeo({
   const imageAlt = t('website.seo.imageAlt');
   const keywords = t('website.seo.keywords');
   const pageUrl = absoluteUrl(canonicalPath ?? WEBSITE_ROUTES[routeKey].path);
-  const imageUrl = absoluteUrl(SEO_IMAGE_PATH);
   const robots = WEBSITE_ROUTES[routeKey].robots ?? 'index, follow';
   const locale = ogLocaleForLanguage(i18n.resolvedLanguage ?? i18n.language);
   const alternateLocales = Object.values(OG_LOCALE_BY_LANGUAGE).filter((l) => l !== locale);
@@ -120,8 +125,8 @@ export function WebsiteSeo({
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={pageUrl} />
-      <meta property="og:image" content={imageUrl} />
-      <meta property="og:image:secure_url" content={imageUrl} />
+      <meta property="og:image" content={SEO_IMAGE_URL} />
+      <meta property="og:image:secure_url" content={SEO_IMAGE_URL} />
       <meta property="og:image:type" content="image/png" />
       <meta property="og:image:width" content={SEO_IMAGE_WIDTH} />
       <meta property="og:image:height" content={SEO_IMAGE_HEIGHT} />
@@ -130,7 +135,7 @@ export function WebsiteSeo({
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={imageUrl} />
+      <meta name="twitter:image" content={SEO_IMAGE_URL} />
       <meta name="twitter:image:alt" content={imageAlt} />
     </Head>
   );
@@ -154,7 +159,6 @@ export function BlogCategorySeo({
   const imageAlt = t('website.seo.imageAlt');
   const pageTitle = `${title} | ${siteName}`;
   const pageUrl = absoluteUrl(canonicalPath);
-  const imageUrl = absoluteUrl(SEO_IMAGE_PATH);
   const locale = ogLocaleForLanguage(i18n.resolvedLanguage ?? i18n.language);
   const alternateLocales = Object.values(OG_LOCALE_BY_LANGUAGE).filter((l) => l !== locale);
   const keywords = `${t('website.seo.keywords')}, ${category}`;
@@ -176,8 +180,8 @@ export function BlogCategorySeo({
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:url" content={pageUrl} />
-      <meta property="og:image" content={imageUrl} />
-      <meta property="og:image:secure_url" content={imageUrl} />
+      <meta property="og:image" content={SEO_IMAGE_URL} />
+      <meta property="og:image:secure_url" content={SEO_IMAGE_URL} />
       <meta property="og:image:type" content="image/png" />
       <meta property="og:image:width" content={SEO_IMAGE_WIDTH} />
       <meta property="og:image:height" content={SEO_IMAGE_HEIGHT} />
@@ -186,7 +190,7 @@ export function BlogCategorySeo({
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={imageUrl} />
+      <meta name="twitter:image" content={SEO_IMAGE_URL} />
       <meta name="twitter:image:alt" content={imageAlt} />
     </Head>
   );
@@ -215,7 +219,6 @@ export function BlogPostSeo({
   const pageTitle = `${title} | ${siteName}`;
   const pageDescription = description || title;
   const pageUrl = absoluteUrl(canonicalPath);
-  const imageUrl = absoluteUrl(SEO_IMAGE_PATH);
   const locale = ogLocaleForLanguage(i18n.resolvedLanguage ?? i18n.language);
   const alternateLocales = Object.values(OG_LOCALE_BY_LANGUAGE).filter((l) => l !== locale);
   const keywords = [t('website.seo.keywords'), ...tags].join(', ');
@@ -237,8 +240,8 @@ export function BlogPostSeo({
       <meta property="og:title" content={title} />
       <meta property="og:description" content={pageDescription} />
       <meta property="og:url" content={pageUrl} />
-      <meta property="og:image" content={imageUrl} />
-      <meta property="og:image:secure_url" content={imageUrl} />
+      <meta property="og:image" content={SEO_IMAGE_URL} />
+      <meta property="og:image:secure_url" content={SEO_IMAGE_URL} />
       <meta property="og:image:type" content="image/png" />
       <meta property="og:image:width" content={SEO_IMAGE_WIDTH} />
       <meta property="og:image:height" content={SEO_IMAGE_HEIGHT} />
@@ -252,7 +255,7 @@ export function BlogPostSeo({
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={pageDescription} />
-      <meta name="twitter:image" content={imageUrl} />
+      <meta name="twitter:image" content={SEO_IMAGE_URL} />
       <meta name="twitter:image:alt" content={imageAlt} />
     </Head>
   );

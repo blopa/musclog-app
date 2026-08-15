@@ -331,6 +331,10 @@
       "tagsLabel": "Tags do artigo",
       "readArticle": "Ler artigo",
       "backToBlog": "Voltar para todos os artigos",
+      "share": {
+        "title": "Compartilhe este artigo",
+        "shareOn": "Compartilhar no {{network}}"
+      },
       "paginationLabel": "Paginação do blog",
       "previousPage": "Página anterior",
       "nextPage": "Próxima página",
