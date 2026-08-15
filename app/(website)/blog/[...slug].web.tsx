@@ -1,6 +1,6 @@
 import { Link, useLoaderData } from 'expo-router';
 import { createStaticLoader } from 'expo-router/server';
-import { ArrowLeft, CalendarDays, Folder, Tags } from 'lucide-react-native';
+import { ArrowLeft, CalendarDays, Folder, Languages, Tags } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { BlogPostShare } from '@/components/website/BlogPostShare';
@@ -36,6 +36,9 @@ export default function BlogPostPage() {
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const canonicalPath = `/blog/${post.slug}`;
   const category = t(`categories.${post.category}`);
+  // The site chrome is translated, the posts themselves are not — so every non-English reader gets
+  // told that up front, in their own language, instead of hitting a wall of English mid-scroll.
+  const isEnglish = locale.toLowerCase().startsWith('en');
 
   return (
     <>
@@ -118,6 +121,21 @@ export default function BlogPostPage() {
               </div>
             ) : null}
           </header>
+
+          {!isEnglish ? (
+            <p
+              role="note"
+              className="mt-10 flex items-center gap-3 rounded-xl border px-4 py-3 text-sm font-medium"
+              style={{
+                backgroundColor: 'rgba(251,191,36,0.08)',
+                borderColor: 'rgba(251,191,36,0.24)',
+                color: '#FDE68A',
+              }}
+            >
+              <Languages className="h-4 w-4 shrink-0" color="currentColor" />
+              {t('englishOnlyNotice')}
+            </p>
+          ) : null}
 
           <div className="blog-prose py-10" dangerouslySetInnerHTML={{ __html: post.html }} />
 

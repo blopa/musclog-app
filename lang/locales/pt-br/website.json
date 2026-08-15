@@ -331,6 +331,7 @@
       "tagsLabel": "Tags do artigo",
       "readArticle": "Ler artigo",
       "backToBlog": "Voltar para todos os artigos",
+      "englishOnlyNotice": "Desculpe, os artigos do blog estão disponíveis apenas em inglês.",
       "share": {
         "title": "Compartilhe este artigo",
         "shareOn": "Compartilhar no {{network}}"

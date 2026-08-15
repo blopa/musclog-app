@@ -331,6 +331,7 @@
       "tagsLabel": "Post tags",
       "readArticle": "Read article",
       "backToBlog": "Back to all posts",
+      "englishOnlyNotice": "Sorry, blog posts are only available in English.",
       "share": {
         "title": "Share this post",
         "shareOn": "Share on {{network}}"

@@ -331,6 +331,7 @@
       "tagsLabel": "Artikeltags",
       "readArticle": "Artikel lezen",
       "backToBlog": "Terug naar alle artikelen",
+      "englishOnlyNotice": "Sorry, blogartikelen zijn alleen in het Engels beschikbaar.",
       "share": {
         "title": "Deel dit artikel",
         "shareOn": "Delen op {{network}}"
