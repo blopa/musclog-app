@@ -15,6 +15,10 @@ export function LanguagePicker() {
   return null;
 }
 
+export function MobileMenu() {
+  return null;
+}
+
 export function Header() {
   return null;
 }

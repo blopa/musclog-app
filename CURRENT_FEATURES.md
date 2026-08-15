@@ -198,6 +198,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 
 ## Public Website
 
+- Responsive navigation: the full link bar on desktop collapses below 1024px into a burger menu in the header, holding every primary destination (features, blog, calculator, exercises, progress, FAQ, Game Boy, alternatives, GitHub) plus the store download buttons. It closes on Escape, on a tap outside, and on choosing a destination. The footer keeps the secondary and legal links (privacy, terms, contact, license, cookie settings) at every width
 - Markdown-powered blog at `/blog`: the index, category-filtered listings, their paginated pages, and individual post URLs are statically generated from files under `app/(website)/posts`; category labels on listings and articles link to localized category pages, each listing shows up to ten newest-first posts per page with previous/next and compact numbered navigation, YAML frontmatter supplies metadata, and post bodies support headings, links, lists, tables, blockquotes, images, inline code, and syntax-highlighted fenced code blocks
 
 ---

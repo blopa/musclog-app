@@ -133,6 +133,10 @@ brand palette but not the mobile component primitives. Use semantic elements, vi
 responsive content width, and plain `<a href>` links for website navigation unless a documented
 router exception applies.
 
+Narrow viewports get the primary navigation from the header's burger menu, not from a duplicated set
+of links in the footer. The footer is for secondary and legal links only. A new primary destination
+belongs in both the desktop nav bar and the burger menu.
+
 ## Review checklist
 
 - Uses semantic tokens and existing shared components.

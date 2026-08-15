@@ -317,7 +317,10 @@
       "gameboy": "Game Boy",
       "language": "Language",
       "alternatives": "Alternatives",
-      "blog": "Blog"
+      "blog": "Blog",
+      "menu": "Menu",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu"
     },
     "blog": {
       "eyebrow": "From the workshop",
