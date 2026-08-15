@@ -312,7 +312,7 @@ export function Header() {
       style={{ backgroundColor: 'rgba(4, 10, 9, 0.86)', borderColor: 'rgba(255,255,255,0.08)' }}
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex shrink-0 items-center gap-2">
           <div
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
             style={{ backgroundColor: BRAND_GREEN }}
@@ -320,14 +320,14 @@ export function Header() {
             <Dumbbell className="h-5 w-5 text-black" />
           </div>
           <div className="flex flex-col leading-tight">
-            <span className="text-base font-bold text-white">{t('appName')}</span>
-            <span className="text-xs" style={{ color: BODY_TEXT_SOFT }}>
+            <span className="whitespace-nowrap text-base font-bold text-white">{t('appName')}</span>
+            <span className="whitespace-nowrap text-xs" style={{ color: BODY_TEXT_SOFT }}>
               {t('appTagline')}
             </span>
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-6 md:flex">
+        <nav className="hidden items-center gap-6 lg:flex">
           <Link
             href="/blog"
             className="text-sm transition-colors hover:text-[#22C55E]"
@@ -358,7 +358,7 @@ export function Header() {
           </Link>
           <DownloadModal
             variant="default"
-            className="px-5 py-2.5 text-sm font-bold transition-transform hover:scale-[1.01]"
+            className="shrink-0 whitespace-nowrap px-5 py-2.5 text-sm font-bold transition-transform hover:scale-[1.01]"
             style={{ backgroundColor: BRAND_GREEN, color: '#000000' }}
           >
             {t('download')}
@@ -366,7 +366,7 @@ export function Header() {
           <LanguagePicker />
         </nav>
 
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center gap-2 lg:hidden">
           <DownloadModal
             variant="default"
             className="hidden min-h-11 shrink-0 whitespace-nowrap px-4 py-2 text-sm font-bold shadow-[0_10px_30px_rgba(34,197,94,0.18)] [@media(min-width:550px)]:inline-flex"
