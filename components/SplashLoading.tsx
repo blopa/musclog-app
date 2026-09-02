@@ -17,7 +17,7 @@ export function SplashLoading() {
       <Text className="mt-1.5 text-xs uppercase tracking-widest text-text-muted">
         Lift, Log, Repeat
       </Text>
-      <ActivityIndicator size="small" color={colors.jade} className="mt-12" />
+      <ActivityIndicator size="small" color={colors.brandVivid} className="mt-12" />
       <BootProgressBar />
     </View>
   );

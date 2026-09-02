@@ -16,19 +16,40 @@ components; the local ESLint rule enforces the preferred access pattern.
 
 ## Color
 
+The primary palette is 23 colors, defined once in `kineticDepth` and grouped by role rather than by
+hue name: six surfaces, three text steps, six brand greens, and eight status hues. Anything softer
+than a primary is derived — `addOpacityToHex` for translucent washes, `mixHex` for opaque tinted
+surfaces — so a new hex value in `kineticDepth` should be rare and deliberate.
+
 ### Core surfaces
+
+Surfaces form a four-step tonal ladder plus two tinted branches. Each step of the ladder is at least
+1.09x contrast from the one below it, which is the point at which a layer edge is actually visible
+without a border.
 
 | Role           | Token                                       | Current value |
 | -------------- | ------------------------------------------- | ------------- |
-| App background | `background.primary` / `swampGreen`         | `#091310`     |
-| Neutral base   | `surfaceBlack`                              | `#0d1511`     |
-| Card           | `background.card` / `charcoalGreen`         | `#111a15`     |
-| Elevated card  | `background.cardElevated` / `gunmetalGreen` | `#152020`     |
-| Primary text   | `text.primary` / `white`                    | `#dce5de`     |
-| Primary action | `accent.primary` / `jade`                   | `#10b981`     |
+| App background | `background.primary` / `surfaceBase`        | `#091310`     |
+| Card           | `background.card` / `surfaceCard`           | `#131d18`     |
+| Elevated card  | `background.cardElevated` / `surfaceRaised` | `#1b2721`     |
+| Tinted overlay | `background.overlay` / `surfaceTint`        | `#0c2419`     |
+| Accent surface | `border.accent` / `surfaceAccent`           | `#1c3829`     |
+| Hairline       | `border.dashed` / `borderHairline`          | `#2c3a32`     |
+| Primary text   | `text.primary` / `textPrimary`              | `#dce5de`     |
+| Primary action | `accent.primary` / `brandPrimary`           | `#29a577`     |
 
 Use semantic theme paths rather than copying these hex values. Raw values are listed only to make
 the visual direction explicit.
+
+### Text contrast
+
+The three text steps all clear WCAG AA on every surface above: `text.primary` at 12:1 or better,
+`text.secondary` at 6.8:1, and `text.tertiary` at 4.6:1. `text.tertiary` is the floor — do not
+introduce a dimmer neutral for label or caption text.
+
+A handful of saturated accents (`accent.tertiary`, `status.indigo`, `rose.brand`) sit between 3:1
+and 4.5:1 on the darker surfaces. They are fine for icons, chart series, borders and large type,
+which need 3:1, but should not be used for body copy.
 
 ### Functional color
 

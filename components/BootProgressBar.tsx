@@ -46,7 +46,7 @@ export function BootProgressBar() {
         <Text
           style={{
             marginBottom: 12,
-            color: colors.gray500,
+            color: colors.textTertiary,
             fontSize: 13,
             textAlign: 'center',
           }}
@@ -59,7 +59,7 @@ export function BootProgressBar() {
             height: 6,
             borderRadius: 999,
             overflow: 'hidden',
-            backgroundColor: colors.darkViridian,
+            backgroundColor: colors.surfaceAccent,
           }}
         >
           <View
@@ -67,14 +67,14 @@ export function BootProgressBar() {
               width: `${ratio * 100}%`,
               height: '100%',
               borderRadius: 999,
-              backgroundColor: colors.jade,
+              backgroundColor: colors.brandVivid,
             }}
           />
         </View>
         <Text
           style={{
             marginTop: 8,
-            color: colors.gray500,
+            color: colors.textTertiary,
             fontSize: 12,
             fontWeight: '600',
           }}

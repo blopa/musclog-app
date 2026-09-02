@@ -21,7 +21,7 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.darkMint }}>
+    <View style={{ flex: 1, backgroundColor: colors.surfaceCard }}>
       <DeferredAppBoot />
       <Slot />
     </View>

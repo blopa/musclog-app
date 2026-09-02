@@ -475,7 +475,7 @@ export type ThemeTypography = typeof theme.typography;
 
 /**
  * Get a color value from the theme
- * @example getColor('background.primary') => colors.swampGreen
+ * @example getColor('background.primary') => colors.surfaceBase
  */
 export function getColor(path: string): string {
   const parts = path.split('.');
@@ -484,7 +484,7 @@ export function getColor(path: string): string {
     value = value[part];
     if (value === undefined) {
       console.warn(`Theme color path "${path}" not found`);
-      return colors.surfaceBlack;
+      return colors.surfaceBase;
     }
   }
 
