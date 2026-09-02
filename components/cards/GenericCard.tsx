@@ -232,7 +232,7 @@ export function GenericCard({
     if (hasColorfulGradientBackground) {
       return (
         <LinearGradient
-          colors={theme.colors.gradients.progress}
+          colors={theme.colors.gradients.colorfulCard}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={{ flex: 1 }}

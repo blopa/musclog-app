@@ -22,15 +22,19 @@ preferred access pattern.
 
 ### Surfaces that do not follow the theme
 
-Some surfaces are not the app's background: a camera viewfinder, a photo, a scrim over either, or a
-card whose ground is a fixed colorful gradient. Their content is white-on-dark whatever the user
-picked, so they pin their own palette with `ForcedDarkTheme` / `ForcedDarkThemeScope`
+Some surfaces are not the app's background: a camera viewfinder, a photo, or a scrim over either.
+Their content is white-on-dark whatever the user picked, so they pin their own palette with
+`ForcedDarkTheme` / `ForcedDarkThemeScope`
 (`context/ForcedThemeContext.tsx`) rather than hand-picking tokens. Use the scope form around a
 whole component — a component reads `useTheme()` during its own render, so a provider wrapped around
 its output cannot reach its inline styles.
 
 Text drawn on a colorful gradient uses the fixed-white tokens (`text.onColorful`,
 `overlay.onColorful*`), never the on-surface ink.
+
+The Daily Summary card is different: its `gradients.colorfulCard` surface follows the theme. It uses
+the saturated indigo-to-emerald treatment with light ink in dark mode and opaque pastel lavender,
+teal, and mint with normal on-surface ink in light mode.
 
 ### Role tokens
 

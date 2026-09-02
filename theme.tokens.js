@@ -105,6 +105,8 @@ const kineticDepth = {
     borderGray600: 0.2, // border.gray600 — lighter hairline
     hairlineFill: 0.05, // status.gray10 — neutral fill wash
   },
+  colorfulCardBlend: { start: 1, middle: 1, end: 1 },
+  colorfulCardUsesSurfaceInk: false,
 };
 
 /**
@@ -160,6 +162,9 @@ const kineticDepthLight = {
     borderGray600: 0.26,
     hairlineFill: 0.09,
   },
+  // A light, colorful surface rather than a dark saturated island.
+  colorfulCardBlend: { start: 0.14, middle: 0.18, end: 0.22 },
+  colorfulCardUsesSurfaceInk: true,
 };
 
 /** Pure white, for the handful of surfaces that are white in every theme. */
@@ -171,6 +176,7 @@ const ALWAYS_WHITE = '#ffffff';
  */
 function createColors(palette) {
   const { alphas } = palette;
+  const colorfulCardInk = palette.colorfulCardUsesSurfaceInk ? palette.textPrimary : ALWAYS_WHITE;
 
   return {
     ...palette,
@@ -213,6 +219,24 @@ function createColors(palette) {
     surfacePurpleTint: mixHex(palette.surfaceBase, palette.statusPurple, 0.33), // was #3d3162
     surfaceBrandTint: mixHex(palette.surfaceBase, palette.brandPrimary, 0.39), // was #0d4a2d
     surfaceNotification: mixHex(palette.surfaceBase, palette.brandPrimary, 0.15), // was #132a1e
+    colorfulCardStart: mixHex(
+      palette.surfaceCard,
+      palette.statusIndigo,
+      palette.colorfulCardBlend.start
+    ),
+    colorfulCardMiddle: mixHex(
+      palette.surfaceCard,
+      palette.brandDeep,
+      palette.colorfulCardBlend.middle
+    ),
+    colorfulCardEnd: mixHex(palette.surfaceCard, palette.brandVivid, palette.colorfulCardBlend.end),
+    colorfulCardInk,
+    colorfulCardInkAlpha30: addOpacityToHex(colorfulCardInk, 0.3),
+    colorfulCardInkAlpha70: addOpacityToHex(colorfulCardInk, 0.7),
+    colorfulCardInkAlpha90: addOpacityToHex(colorfulCardInk, 0.9),
+    colorfulCardTrack: palette.colorfulCardUsesSurfaceInk
+      ? addOpacityToHex(palette.textPrimary, 0.2)
+      : addOpacityToHex(palette.scrimBase, 0.6),
     // Darker shades of an accent, for the outline on a solid accent-filled button.
     // Mixed towards the scrim (dark in both themes) so the outline stays darker
     // than its fill even when the surfaces invert.
@@ -384,6 +408,14 @@ function createThemeColors(colors) {
       primary12: colors.textPrimaryAlpha12, // Primary with 12.5% opacity
       primary20: colors.textPrimaryAlpha20, // Primary with 20% opacity
       primary30: colors.textPrimaryAlpha30, // Primary with 30% opacity
+    },
+
+    colorfulCard: {
+      ink: colors.colorfulCardInk,
+      ink30: colors.colorfulCardInkAlpha30,
+      ink70: colors.colorfulCardInkAlpha70,
+      ink90: colors.colorfulCardInkAlpha90,
+      track: colors.colorfulCardTrack,
     },
 
     // Drop-shadow / text-shadow colour. Dark in both themes; a shadow tinted with
@@ -600,6 +632,7 @@ function createThemeColors(colors) {
       card: [colors.surfaceRaised, colors.surfaceCardAlpha50],
       button: [colors.surfaceTint, colors.surfaceCard],
       progress: [colors.statusIndigo, colors.brandDeep, colors.brandVivid],
+      colorfulCard: [colors.colorfulCardStart, colors.colorfulCardMiddle, colors.colorfulCardEnd],
       workoutsTitle: [colors.statusPurple, colors.statusInfo, colors.brandVivid],
       notification: [colors.surfaceNotification, colors.surfaceCard],
       upNextCard: [colors.surfaceTint, colors.surfaceCard, colors.surfaceRaised],

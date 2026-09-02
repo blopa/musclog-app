@@ -61,8 +61,7 @@ export function getProgressBarColor(status: GoalStatus, theme: Theme): string {
     case 'exceeded':
       return theme.colors.status.red400;
     default:
-      // The bar is drawn on the card's colourful gradient, not on a surface.
-      return theme.colors.text.onColorful;
+      return theme.colors.colorfulCard.ink;
   }
 }
 
