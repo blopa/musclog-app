@@ -1,15 +1,16 @@
-import { ColorSchemeName, useColorScheme } from 'react-native';
+import { useColorScheme } from 'react-native';
 
-import type { ThemeOption } from '@/constants/settings';
+import type { ThemeId } from '@/constants/settings';
 import { useForcedTheme } from '@/context/ForcedThemeContext';
 // only place that it's ok to import from theme
-import { darkTheme, lightTheme, type Theme } from '@/theme';
+import { type Theme, THEMES } from '@/theme';
+import { getThemeMode, resolveThemeId } from '@/utils/themeSelection';
 
 import { useSettings } from './useSettings';
 
 /**
  * Custom hook to get the active theme based on user preference and system settings
- * @returns The active theme object (dark or light)
+ * @returns The active named theme object
  */
 export function useTheme(): Theme {
   // A surface that pins its own palette (a camera viewfinder) wins over the preference
@@ -22,13 +23,13 @@ export function useTheme(): Theme {
   const systemColorScheme = useColorScheme();
 
   // Determine the effective theme
-  const effectiveTheme = getEffectiveTheme(themePreference, systemColorScheme);
+  const themeId = resolveThemeId(themePreference, systemColorScheme);
 
   if (forced) {
     return forced.theme;
   }
 
-  return effectiveTheme === 'dark' ? darkTheme : lightTheme;
+  return THEMES[themeId];
 }
 
 /**
@@ -44,21 +45,18 @@ export function useThemeMode(): 'dark' | 'light' {
     return forced.themeMode;
   }
 
-  return getEffectiveTheme(themePreference, systemColorScheme);
+  return getThemeMode(resolveThemeId(themePreference, systemColorScheme));
 }
 
-/**
- * Determine the effective theme based on preference and system settings
- */
-function getEffectiveTheme(
-  preference: ThemeOption,
-  systemColorScheme: ColorSchemeName
-): 'dark' | 'light' {
-  if (preference === 'system') {
-    // Follow system preference
-    return systemColorScheme === 'light' ? 'light' : 'dark';
+/** Resolve the palette identity, independently from its light/dark display mode. */
+export function useThemeId(): ThemeId {
+  const forced = useForcedTheme();
+  const { theme: themePreference } = useSettings();
+  const systemColorScheme = useColorScheme();
+
+  if (forced) {
+    return 'kinetic-depth';
   }
 
-  // Use explicit preference
-  return preference === 'light' ? 'light' : 'dark';
+  return resolveThemeId(themePreference, systemColorScheme);
 }

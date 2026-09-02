@@ -422,13 +422,17 @@
           "label": "Systeem",
           "description": "Volg de instelling van je apparaat"
         },
-        "light": {
-          "label": "Licht",
-          "description": "Gebruik altijd het lichte thema"
+        "kinetic-depth": {
+          "label": "Kinetic Depth",
+          "description": "Diepe oppervlakken met smaragdgroene accenten"
         },
-        "dark": {
-          "label": "Donker",
-          "description": "Gebruik altijd het donkere thema"
+        "kinetic-light": {
+          "label": "Kinetic Light",
+          "description": "Lichte oppervlakken met smaragdgroene accenten"
+        },
+        "kinetic-pink": {
+          "label": "Kinetic Pink",
+          "description": "Diepe rozetinten met roze accenten"
         }
       }
     }

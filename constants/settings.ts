@@ -6,7 +6,7 @@ export const UNITS_SETTING_TYPE = 'unit_system';
 
 /**
  * Setting type for theme preference (stored in WatermelonDB settings table).
- * value: 'system' | 'light' | 'dark'.
+ * value: 'system' | one of THEME_IDS.
  */
 export const THEME_SETTING_TYPE = 'theme';
 
@@ -369,7 +369,23 @@ export type NavItemKey = (typeof NAV_ITEM_KEYS)[number];
 export type NavItemKeyList = readonly NavItemKey[] & { length: (typeof NAV_ITEM_KEYS)['length'] };
 
 export type Units = 'metric' | 'imperial';
-export type ThemeOption = 'system' | 'light' | 'dark';
+export const THEME_IDS = ['kinetic-depth', 'kinetic-light', 'kinetic-pink'] as const;
+export type ThemeId = (typeof THEME_IDS)[number];
+export type ThemeOption = 'system' | ThemeId;
+
+/** Preserve preferences written before themes gained stable, named identities. */
+export function normalizeThemeOption(value: string | null | undefined): ThemeOption {
+  if (value === 'dark') {
+    return 'kinetic-depth';
+  }
+  if (value === 'light') {
+    return 'kinetic-light';
+  }
+  if (value === 'system' || THEME_IDS.some((themeId) => themeId === value)) {
+    return value as ThemeOption;
+  }
+  return 'system';
+}
 export type ProgressionMode = 'reps_first' | 'weight_first';
 export type FoodSearchSource = 'both' | 'openfood' | 'usda' | 'musclog' | 'none';
 export type FoodSource = 'user' | 'usda' | 'ai' | 'openfood' | 'foundation' | 'musclog';

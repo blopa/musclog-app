@@ -7,6 +7,7 @@ import {
   Languages,
   Leaf,
   Moon,
+  Palette,
   RefreshCw,
   Ruler,
   Scale,
@@ -24,7 +25,7 @@ import { Button } from '@/components/theme/Button';
 import { PickerButton } from '@/components/theme/PickerButton';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { ToggleInput } from '@/components/theme/ToggleInput';
-import { type FoodSearchSource } from '@/constants/settings';
+import { type FoodSearchSource, type ThemeOption } from '@/constants/settings';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useSyncTracking } from '@/hooks/useSyncTracking';
 import { useTheme } from '@/hooks/useTheme';
@@ -32,9 +33,7 @@ import i18n, { AVAILABLE_LANGUAGES, EN_US, languageLabels } from '@/lang/lang';
 
 import { FullScreenModal } from './FullScreenModal';
 
-type ThemeOption = 'system' | 'light' | 'dark';
-
-const HAS_THEMES = false; // TODO: remove this once we have option to pick dark or light theme
+const HAS_THEMES = false;
 
 type BasicSettingsModalProps = {
   visible: boolean;
@@ -75,7 +74,6 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
     }
   }, [visible, flushAllPendingChanges]);
 
-  // TODO: actually implement light theme OR remove/hide this option
   const themeOptions = [
     {
       value: 'system',
@@ -88,22 +86,42 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
       ),
     },
     {
-      value: 'light',
-      label: t('settings.basicSettings.themeLight'),
+      value: 'kinetic-depth',
+      label: t('settings.theme.options.kinetic-depth.label'),
       icon: (
-        <Sun
+        <Moon
           size={theme.iconSize.md}
-          color={themeValue === 'light' ? theme.colors.accent.primary : theme.colors.text.tertiary}
+          color={
+            themeValue === 'kinetic-depth'
+              ? theme.colors.accent.primary
+              : theme.colors.text.tertiary
+          }
         />
       ),
     },
     {
-      value: 'dark',
-      label: t('settings.basicSettings.themeDark'),
+      value: 'kinetic-light',
+      label: t('settings.theme.options.kinetic-light.label'),
       icon: (
-        <Moon
+        <Sun
           size={theme.iconSize.md}
-          color={themeValue === 'dark' ? theme.colors.accent.primary : theme.colors.text.tertiary}
+          color={
+            themeValue === 'kinetic-light'
+              ? theme.colors.accent.primary
+              : theme.colors.text.tertiary
+          }
+        />
+      ),
+    },
+    {
+      value: 'kinetic-pink',
+      label: t('settings.theme.options.kinetic-pink.label'),
+      icon: (
+        <Palette
+          size={theme.iconSize.md}
+          color={
+            themeValue === 'kinetic-pink' ? theme.colors.accent.primary : theme.colors.text.tertiary
+          }
         />
       ),
     },

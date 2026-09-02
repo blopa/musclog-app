@@ -32,7 +32,7 @@ const DARK_VARS = vars(
  * Pins a subtree to the dark palette regardless of the user's theme preference.
  *
  * For surfaces whose background is not the app's — a live camera preview, a photo,
- * or a scrim over either. Their content is white-on-dark in both themes, so
+ * or a scrim over either. Their content is white-on-dark in every theme, so
  * following the light palette would print near-black controls onto a dark
  * viewfinder.
  *

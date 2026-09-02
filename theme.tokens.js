@@ -119,7 +119,7 @@ const kineticDepth = {
  * elevation moves AWAY from the base, which is downward in luminance here — and
  * each step keeps the same >= 1.09x separation the dark ladder uses.
  */
-const kineticDepthLight = {
+const kineticLight = {
   // --- Surfaces: a four-step tonal ladder plus two tinted branches ---
   surfaceBase: '#fafcfb', // Level 0: app background, screens
   surfaceCard: '#eef2f0', // Level 1: card backgrounds — 1.10x from base
@@ -165,6 +165,54 @@ const kineticDepthLight = {
   // A light, colorful surface rather than a dark saturated island.
   colorfulCardBlend: { start: 0.14, middle: 0.18, end: 0.22 },
   colorfulCardUsesSurfaceInk: true,
+};
+
+/**
+ * A dark, rose-led palette. It keeps the Kinetic surface hierarchy and semantic
+ * status colours, while moving the app's identity and tinted surfaces from
+ * emerald into pink. The named palette is intentionally independent from the
+ * binary light/dark display mode used by the OS and NativeWind variants.
+ */
+const kineticPink = {
+  surfaceBase: '#160b14',
+  surfaceCard: '#21101e',
+  surfaceRaised: '#2d1829',
+  surfaceTint: '#351226',
+  surfaceAccent: '#51203f',
+  borderHairline: '#503248',
+
+  textPrimary: '#f5e4ef',
+  textSecondary: '#ceb0c2',
+  textTertiary: '#b895aa',
+
+  brandPrimary: '#e85d9e',
+  brandVivid: '#f472b6',
+  brandBright: '#f9a8d4',
+  brandPale: '#fbcfe8',
+  brandDeep: '#db2777',
+  brandSurface: '#831843',
+
+  statusError: '#f87171',
+  statusRose: '#fb7185',
+  statusWarning: '#fb923c',
+  statusAmber: '#fbbf24',
+  statusInfo: '#60a5fa',
+  statusIndigo: '#818cf8',
+  statusPurple: '#c084fc',
+  statusPink: '#f472b6',
+
+  inkOnAccent: '#160b14',
+  scrimBase: '#0d070c',
+  surfacePlaceholder: '#f5e4ef',
+
+  alphas: {
+    borderDefault: 0.3,
+    borderLight: 0.28,
+    borderGray600: 0.22,
+    hairlineFill: 0.06,
+  },
+  colorfulCardBlend: { start: 1, middle: 1, end: 1 },
+  colorfulCardUsesSurfaceInk: false,
 };
 
 /** Pure white, for the handful of surfaces that are white in every theme. */
@@ -245,7 +293,7 @@ function createColors(palette) {
       ? addOpacityToHex(colorfulCardInk, 0.25)
       : addOpacityToHex(palette.scrimBase, 0.6),
     // Darker shades of an accent, for the outline on a solid accent-filled button.
-    // Mixed towards the scrim (dark in both themes) so the outline stays darker
+    // Mixed towards the scrim (dark in every theme) so the outline stays darker
     // than its fill even when the surfaces invert.
     statusErrorShade: mixHex(palette.scrimBase, palette.statusError, 0.52), // was #7f1d1d
     statusRoseShade: mixHex(palette.scrimBase, palette.statusRose, 0.7), // was #9f1239
@@ -425,7 +473,7 @@ function createThemeColors(colors) {
       track: colors.colorfulCardTrack,
     },
 
-    // Drop-shadow / text-shadow colour. Dark in both themes; a shadow tinted with
+    // Drop-shadow / text-shadow colour. Dark in every theme; a shadow tinted with
     // the light theme's surface would simply not render.
     shadow: colors.scrimBase,
 
@@ -661,7 +709,7 @@ function createThemeColors(colors) {
       pinkRose: [colors.statusPink, colors.statusRose], // Pink to rose gradient
       blueEmerald: [colors.statusInfo, colors.brandVivid], // Blue to emerald gradient
       overlayDark: ['transparent', colors.surfaceWashTeal, colors.surfaceTint], // Dark overlay gradient
-      // Camera scrim: sits over a live preview, so it darkens in both themes.
+      // Camera scrim: sits over a live preview, so it darkens in every theme.
       cameraOverlay: [colors.scrimAlpha60, 'transparent', colors.scrimAlpha90],
       onboardingAmbient: [
         colors.statusIndigoAlpha20, // indigo/20
@@ -675,36 +723,46 @@ function createThemeColors(colors) {
   };
 }
 
-const darkColors = createColors(kineticDepth);
-const lightColors = createColors(kineticDepthLight);
+const kineticDepthColors = createColors(kineticDepth);
+const kineticLightColors = createColors(kineticLight);
+const kineticPinkColors = createColors(kineticPink);
 
-const darkThemeColors = createThemeColors(darkColors);
-const lightThemeColors = createThemeColors(lightColors);
+const kineticDepthThemeColors = createThemeColors(kineticDepthColors);
+const kineticLightThemeColors = createThemeColors(kineticLightColors);
+const kineticPinkThemeColors = createThemeColors(kineticPinkColors);
 
 module.exports = {
   addOpacityToHex,
   mixHex,
   createColors,
   createThemeColors,
-  darkColors,
-  lightColors,
-  darkThemeColors,
-  lightThemeColors,
+  kineticDepthColors,
+  kineticLightColors,
+  kineticPinkColors,
+  kineticDepthThemeColors,
+  kineticLightThemeColors,
+  kineticPinkThemeColors,
+  // Compatibility names for code whose concern is display mode rather than
+  // the palette's product name.
+  darkColors: kineticDepthColors,
+  lightColors: kineticLightColors,
+  darkThemeColors: kineticDepthThemeColors,
+  lightThemeColors: kineticLightThemeColors,
   // Default exports stay on the dark palette: Tailwind's static build, the
   // pre-boot splash screens and the token tests all consume these.
-  colors: darkColors,
-  themeColors: darkThemeColors,
+  colors: kineticDepthColors,
+  themeColors: kineticDepthThemeColors,
 };
 
 /**
  * --- Tailwind / NativeWind bridge ---------------------------------------------
  *
  * NativeWind compiles `className` colours at build time, so a Tailwind class
- * cannot resolve to two different palettes on its own. The way out is CSS custom
- * properties: every Tailwind colour below is emitted as `var(--c-*)`, and the two
- * palettes are written into `:root` (light) and `.dark:root` (dark) by the base
- * plugin in `tailwind.config.js`. NativeWind then swaps the whole set at runtime
- * when the colour scheme changes — on native as well as web.
+ * cannot resolve to several palettes on its own. The way out is CSS custom
+ * properties: every Tailwind colour below is emitted as `var(--c-*)`, and
+ * `ThemeProvider` publishes the active named palette's values at runtime.
+ * `tailwind.config.js` still provides Kinetic Light/Depth defaults before the
+ * provider mounts.
  *
  * The map is deliberately the SAME set of tokens the Tailwind theme exposes, so
  * there is one place to add a themed utility class.
@@ -791,8 +849,8 @@ function createTailwindColors() {
     for (const [key, pick] of Object.entries(tokens)) {
       const name = cssVariableName(group, key);
       // The reference form has to match how the value is stored, and the dark
-      // palette decides it — both palettes use the same token shapes.
-      result[group][key] = HEX_COLOR.test(pick(darkThemeColors))
+      // reference palette decides it — every palette uses the same token shapes.
+      result[group][key] = HEX_COLOR.test(pick(kineticDepthThemeColors))
         ? `rgb(var(${name}) / <alpha-value>)`
         : `var(${name})`;
     }
@@ -816,8 +874,11 @@ function createCssVariables(themeColors) {
 
 module.exports.createTailwindColors = createTailwindColors;
 module.exports.createCssVariables = createCssVariables;
-module.exports.darkCssVariables = createCssVariables(darkThemeColors);
-module.exports.lightCssVariables = createCssVariables(lightThemeColors);
+module.exports.kineticDepthCssVariables = createCssVariables(kineticDepthThemeColors);
+module.exports.kineticLightCssVariables = createCssVariables(kineticLightThemeColors);
+module.exports.kineticPinkCssVariables = createCssVariables(kineticPinkThemeColors);
+module.exports.darkCssVariables = module.exports.kineticDepthCssVariables;
+module.exports.lightCssVariables = module.exports.kineticLightCssVariables;
 
 /**
  * The same variable map for NativeWind's runtime `vars()` helper.
@@ -838,5 +899,8 @@ function createRuntimeCssVariables(themeColors, { web = false } = {}) {
   return result;
 }
 
-module.exports.darkNativeCssVariables = createRuntimeCssVariables(darkThemeColors);
-module.exports.lightNativeCssVariables = createRuntimeCssVariables(lightThemeColors);
+module.exports.kineticDepthNativeCssVariables = createRuntimeCssVariables(kineticDepthThemeColors);
+module.exports.kineticLightNativeCssVariables = createRuntimeCssVariables(kineticLightThemeColors);
+module.exports.kineticPinkNativeCssVariables = createRuntimeCssVariables(kineticPinkThemeColors);
+module.exports.darkNativeCssVariables = module.exports.kineticDepthNativeCssVariables;
+module.exports.lightNativeCssVariables = module.exports.kineticLightNativeCssVariables;

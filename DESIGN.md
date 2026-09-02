@@ -1,21 +1,24 @@
 # Musclog — Design System
 
-The app uses a high-contrast performance aesthetic built from green-tinted surfaces, emerald
-actions, restrained supporting color, and dense data displays. `theme.tokens.js` and `theme.ts` are
-the implementation sources of truth; this document describes how to use them.
+The app uses a high-contrast performance aesthetic built from tinted surfaces, vivid actions,
+restrained supporting color, and dense data displays. `theme.tokens.js` and `theme.ts` are the
+implementation sources of truth; this document describes how to use them.
 
 ## Theme status
 
-Both palettes ship. Dark is the reference design; light is the same structure re-picked for a bright
-ground. Users choose Appearance — System, Light or Dark — under Settings → Interface, and the
-preference is stored in the settings table, so writing that row re-themes the app.
+Three named palettes ship: Kinetic Depth is the dark emerald reference design, Kinetic Light is the
+same structure re-picked for a bright ground, and Kinetic Pink is a dark rose-led alternative.
+Users choose one of them, or System, under Settings → Interface → Appearance. System resolves to
+Kinetic Light or Kinetic Depth from the device's light/dark setting. The preference is stored in the
+settings table, so writing that row re-themes the app.
 
 Both halves of the styling system follow that choice:
 
 - React components read dynamic tokens through `useTheme()` or `useThemeContext()`.
-- NativeWind `className` colors resolve to CSS custom properties, written into `:root` (light) and
-  `.dark:root` (dark) by the base plugin in `tailwind.config.js`. `ThemeProvider` pushes the stored
-  preference into NativeWind's color scheme, which swaps the whole set at runtime on native and web.
+- NativeWind `className` colors resolve to CSS custom properties. `ThemeProvider` publishes the
+  selected named palette's variable set on its root View (and on `:root` for web portals), while
+  NativeWind's binary color scheme remains responsible only for `dark:` variants. The light/dark
+  defaults in `tailwind.config.js` cover pre-provider rendering.
 
 Avoid direct imports of `theme` in interactive components; the local ESLint rule enforces the
 preferred access pattern.
@@ -32,9 +35,9 @@ its output cannot reach its inline styles.
 Text drawn on a colorful gradient uses the fixed-white tokens (`text.onColorful`,
 `overlay.onColorful*`), never the on-surface ink.
 
-The Daily Summary card uses its `gradients.colorfulCard` surface in dark mode and the standard card
-surface in light mode. Its foreground uses the matching `colorfulCard` ink tokens: white in dark
-mode and opaque deep green-slate in light mode.
+The Daily Summary card uses its `gradients.colorfulCard` surface in Kinetic Depth and Kinetic Pink,
+and the standard card surface in Kinetic Light. Its foreground uses the matching `colorfulCard` ink
+tokens: white in dark mode and opaque deep green-slate in light mode.
 
 ### Role tokens
 
@@ -55,12 +58,12 @@ hairlines and washes instead of a literal `border-white/10`, which only reads on
 ## Color
 
 The primary palette is 23 colors plus a short tail of role primaries, defined once per theme in
-`kineticDepth` / `kineticDepthLight` and grouped by role rather than by hue name: six surfaces, three
-text steps, six brand greens, and eight status hues. Everything else — the semantic token tree, the
-Tailwind colors, the CSS variables — is derived from a palette by `createColors` and
-`createThemeColors`, so both themes stay the same shape by construction. Anything softer than a
+`kineticDepth`, `kineticLight`, and `kineticPink`, and grouped by role rather than by hue name: six
+surfaces, three text steps, six brand colors, and eight status hues. Everything else — the semantic
+token tree, the Tailwind colors, and the CSS variables — is derived from a palette by `createColors`
+and `createThemeColors`, so all themes stay the same shape by construction. Anything softer than a
 primary is derived too: `addOpacityToHex` for translucent washes, `mixHex` for opaque tinted
-surfaces. A new hex value in either palette should be rare and deliberate.
+surfaces. A new hex value in a palette should be rare and deliberate.
 
 ### Core surfaces
 
@@ -69,16 +72,16 @@ Surfaces form a four-step tonal ladder plus two tinted branches. Each step of th
 without a border. The ladder inverts between themes: elevation moves _away_ from the base, which is
 lighter on dark and darker on light.
 
-| Role           | Token                                       | Dark      | Light     |
-| -------------- | ------------------------------------------- | --------- | --------- |
-| App background | `background.primary` / `surfaceBase`        | `#091310` | `#fafcfb` |
-| Card           | `background.card` / `surfaceCard`           | `#131d18` | `#eef2f0` |
-| Elevated card  | `background.cardElevated` / `surfaceRaised` | `#1b2721` | `#e0e7e3` |
-| Tinted overlay | `background.overlay` / `surfaceTint`        | `#0c2419` | `#dff0e7` |
-| Accent surface | `border.accent` / `surfaceAccent`           | `#1c3829` | `#c6e6d4` |
-| Hairline       | `border.dashed` / `borderHairline`          | `#2c3a32` | `#c2cfc8` |
-| Primary text   | `text.primary` / `textPrimary`              | `#dce5de` | `#0f1a16` |
-| Primary action | `accent.primary` / `brandPrimary`           | `#29a577` | `#0e7a54` |
+| Role           | Token                                       | Kinetic Depth | Kinetic Light | Kinetic Pink |
+| -------------- | ------------------------------------------- | ------------- | ------------- | ------------ |
+| App background | `background.primary` / `surfaceBase`        | `#091310`     | `#fafcfb`     | `#160b14`    |
+| Card           | `background.card` / `surfaceCard`           | `#131d18`     | `#eef2f0`     | `#21101e`    |
+| Elevated card  | `background.cardElevated` / `surfaceRaised` | `#1b2721`     | `#e0e7e3`     | `#2d1829`    |
+| Tinted overlay | `background.overlay` / `surfaceTint`        | `#0c2419`     | `#dff0e7`     | `#351226`    |
+| Accent surface | `border.accent` / `surfaceAccent`           | `#1c3829`     | `#c6e6d4`     | `#51203f`    |
+| Hairline       | `border.dashed` / `borderHairline`          | `#2c3a32`     | `#c2cfc8`     | `#503248`    |
+| Primary text   | `text.primary` / `textPrimary`              | `#dce5de`     | `#0f1a16`     | `#f5e4ef`    |
+| Primary action | `accent.primary` / `brandPrimary`           | `#29a577`     | `#0e7a54`     | `#e85d9e`    |
 
 Accents get _darker_ on light, not lighter: every brand and status hue in the light palette clears
 4.5:1 as text on `surfaceBase` and `surfaceCard`, and carries white ink at 4.5:1 or better when it is
@@ -90,7 +93,7 @@ the visual direction explicit.
 
 ### Text contrast
 
-The three text steps all clear WCAG AA on every surface above, in both themes: `text.primary` at 12:1
+The three text steps all clear WCAG AA on every surface above, in all themes: `text.primary` at 10:1
 or better, `text.secondary` at 5.8:1, and `text.tertiary` at 4.6:1. `text.tertiary` is the floor — do
 not introduce a dimmer neutral for label or caption text.
 
@@ -100,7 +103,7 @@ which need 3:1, but should not be used for body copy.
 
 ### Functional color
 
-- Emerald/green: primary actions, completion, positive progress.
+- The active palette's brand hue (emerald or pink): primary actions, completion, positive progress.
 - Red/rose: destructive actions and errors.
 - Amber/orange: warnings, energy, and attention without failure semantics.
 - Blue/teal: information, hydration, and secondary data.
@@ -213,6 +216,6 @@ belongs in both the desktop nav bar and the burger menu.
 - Touch targets remain inside parent bounds.
 - Status remains understandable without color.
 - Numbers parse and format correctly in both comma- and period-decimal locales.
-- Works in both themes: check a switch to Light, and confirm nothing relies on a literal `text-white`
-  or a dark-only accent.
+- Works in all themes: check Kinetic Light and Kinetic Pink, and confirm nothing relies on a literal
+  `text-white` or an emerald-only accent.
 - Loading, empty, error, disabled, and offline states are designed—not left to defaults.

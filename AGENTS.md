@@ -164,7 +164,12 @@ This repository serves two distinct purposes that share the same Expo Router pro
 
 ### Component Design
 
-- **Theme**: Use components from `components/theme/` and follow `theme.ts` conventions.
+- **Theme**: Use components from `components/theme/` and follow `theme.ts` conventions. User
+  preferences are named palette IDs (`kinetic-depth`, `kinetic-light`, `kinetic-pink`) plus
+  `system`; never reduce the stored preference to a boolean. System resolves to Kinetic Light or
+  Kinetic Depth, while `themeMode` remains the derived light/dark value for status bars and
+  NativeWind `dark:` variants. Add a palette through `THEME_IDS`, `theme.tokens.js`, and the
+  `THEMES`/runtime-variable maps together so inline styles and `className` colors cannot diverge.
 - **Navigation destinations are table-driven — adding one is a data edit, not a new JSX branch**: `NAV_ITEM_KEYS` (`constants/settings.ts`) is the ordered, canonical list and `NavItemKey` is **derived** from it (`(typeof NAV_ITEM_KEYS)[number]`), so the type and the enumeration can never drift. Everything else hangs off that:
   - `NAV_DESTINATIONS` (`components/navigation/navDestinations.ts`) holds each destination's icon, bottom-bar `labelKey`, account-menu `menuLabelKey` and `route` — the facts **all three** listing surfaces need. A destination picks its icon and route exactly once.
   - `NAV_SLOTS` (`components/NavigationMenu.tsx`) holds only bottom-bar routing modifiers (`activePath` when it must be broader than the route, `alsoActiveFor`/`replace`/`prefetch`/`navigateWhenActive`); every slot renders through the one `NavSlotButton`.

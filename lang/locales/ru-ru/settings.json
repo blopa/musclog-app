@@ -422,13 +422,17 @@
           "label": "Системная",
           "description": "Следовать настройке устройства"
         },
-        "light": {
-          "label": "Светлая",
-          "description": "Всегда использовать светлую тему"
+        "kinetic-depth": {
+          "label": "Kinetic Depth",
+          "description": "Глубокие тона с изумрудными акцентами"
         },
-        "dark": {
-          "label": "Тёмная",
-          "description": "Всегда использовать тёмную тему"
+        "kinetic-light": {
+          "label": "Kinetic Light",
+          "description": "Светлые тона с изумрудными акцентами"
+        },
+        "kinetic-pink": {
+          "label": "Kinetic Pink",
+          "description": "Глубокие розовые тона с яркими акцентами"
         }
       }
     }

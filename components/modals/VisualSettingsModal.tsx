@@ -7,6 +7,7 @@ import {
   Leaf,
   Monitor,
   Moon,
+  Palette,
   Sun,
   Wheat,
   Wine,
@@ -24,6 +25,7 @@ import {
   type HomeSummaryCard,
   NAV_ITEM_KEYS,
   type NavItemKey,
+  THEME_IDS,
   type ThemeOption,
 } from '@/constants/settings';
 import SettingsService from '@/database/services/SettingsService';
@@ -61,12 +63,13 @@ const HOME_SUMMARY_CARD_ICON: Record<HomeSummaryCard, typeof LayoutGrid> = {
 };
 
 /** Appearance options, in the order they are offered. */
-const THEME_OPTIONS = ['system', 'light', 'dark'] as const satisfies readonly ThemeOption[];
+const THEME_OPTIONS = ['system', ...THEME_IDS] as const satisfies readonly ThemeOption[];
 
 const THEME_ICON: Record<ThemeOption, typeof Monitor> = {
   system: Monitor,
-  light: Sun,
-  dark: Moon,
+  'kinetic-depth': Moon,
+  'kinetic-light': Sun,
+  'kinetic-pink': Palette,
 };
 
 /** Convert a 5-char binary string to an array of visible macro keys. */

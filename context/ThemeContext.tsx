@@ -1,10 +1,19 @@
-import { colorScheme } from 'nativewind';
+import { colorScheme, vars } from 'nativewind';
 import { createContext, ReactNode, useContext, useEffect, useMemo } from 'react';
-import { Platform } from 'react-native';
+import { Platform, View } from 'react-native';
 
+import type { ThemeId } from '@/constants/settings';
 import { useSettings } from '@/hooks/useSettings';
-import { useTheme, useThemeMode } from '@/hooks/useTheme';
+import { useTheme, useThemeId, useThemeMode } from '@/hooks/useTheme';
 import type { Theme } from '@/theme';
+import {
+  kineticDepthCssVariables,
+  kineticDepthNativeCssVariables,
+  kineticLightCssVariables,
+  kineticLightNativeCssVariables,
+  kineticPinkCssVariables,
+  kineticPinkNativeCssVariables,
+} from '@/theme.tokens';
 
 type ThemeContextType = {
   theme: Theme;
@@ -14,29 +23,68 @@ type ThemeContextType = {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+type CssVariableMap = Record<`--${string}`, string | number>;
+
+function runtimeVariables(webVariables: unknown, nativeVariables: unknown) {
+  return vars(
+    (Platform.OS === 'web' ? webVariables : nativeVariables) as Record<
+      `--${string}`,
+      string | number
+    >
+  );
+}
+
+const THEME_VARIABLES: Record<ThemeId, ReturnType<typeof vars>> = {
+  'kinetic-depth': runtimeVariables(kineticDepthCssVariables, kineticDepthNativeCssVariables),
+  'kinetic-light': runtimeVariables(kineticLightCssVariables, kineticLightNativeCssVariables),
+  'kinetic-pink': runtimeVariables(kineticPinkCssVariables, kineticPinkNativeCssVariables),
+};
+
+const WEB_THEME_VARIABLES: Record<ThemeId, CssVariableMap> = {
+  'kinetic-depth': kineticDepthCssVariables as CssVariableMap,
+  'kinetic-light': kineticLightCssVariables as CssVariableMap,
+  'kinetic-pink': kineticPinkCssVariables as CssVariableMap,
+};
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const theme = useTheme();
+  const themeId = useThemeId();
   const themeMode = useThemeMode();
   const { theme: themePreference } = useSettings();
   const isDark = themeMode === 'dark';
 
-  // NativeWind resolves `className` colours from its own colour scheme, so the
-  // stored preference has to be pushed into it or Tailwind classes would keep
-  // rendering the dark palette while `useTheme()` returned the light one.
-  //
-  // The two platforms want different arguments. On native, 'system' clears the
-  // app's Appearance override so OS changes keep flowing through; passing a
-  // resolved value there would pin the app to whatever the OS happened to be at
-  // that moment. On web there is no override to clear — 'system' just drops the
-  // `dark` class, which resolves to the light palette — so it gets the mode we
-  // already resolved.
+  // NativeWind still has a binary colour scheme for dark: variants. Named theme
+  // colours come from the variable set on the root below. On native, preserving
+  // 'system' clears the Appearance override so later OS changes keep flowing.
   useEffect(() => {
-    colorScheme.set(Platform.OS === 'web' ? themeMode : themePreference);
+    colorScheme.set(Platform.OS === 'web' || themePreference !== 'system' ? themeMode : 'system');
   }, [themeMode, themePreference]);
+
+  // Web modals may portal to <body>, outside the provider View. Publishing the
+  // variables on :root keeps those surfaces on the selected named palette too.
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof document === 'undefined') {
+      return;
+    }
+    for (const [name, value] of Object.entries(WEB_THEME_VARIABLES[themeId])) {
+      document.documentElement.style.setProperty(name, String(value));
+    }
+  }, [themeId]);
 
   const value = useMemo(() => ({ theme, isDark, themeMode }), [theme, isDark, themeMode]);
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+  return (
+    <ThemeContext.Provider value={value}>
+      <View
+        style={[
+          Platform.OS === 'web' ? { flex: 1, minHeight: '100%', width: '100%' } : { flex: 1 },
+          THEME_VARIABLES[themeId],
+        ]}
+      >
+        {children}
+      </View>
+    </ThemeContext.Provider>
+  );
 }
 
 export function useThemeContext(): ThemeContextType {

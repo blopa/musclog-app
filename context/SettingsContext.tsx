@@ -35,6 +35,7 @@ import {
   NAV_SLOT_2_SETTING_TYPE,
   NAV_SLOT_3_SETTING_TYPE,
   type NavItemKey,
+  normalizeThemeOption,
   NOTIFICATIONS_ACTIVE_WORKOUT_SETTING_TYPE,
   NOTIFICATIONS_MENSTRUAL_CYCLE_SETTING_TYPE,
   NOTIFICATIONS_NUTRITION_OVERVIEW_SETTING_TYPE,
@@ -237,7 +238,7 @@ function getNumber(map: Map<string, string>, type: string, defaultVal = 0): numb
 
 function deriveStateFromMap(map: Map<string, string>): SettingsState {
   const rawTheme = getString(map, THEME_SETTING_TYPE);
-  const theme: ThemeOption = rawTheme === 'light' || rawTheme === 'dark' ? rawTheme : 'system';
+  const theme = normalizeThemeOption(rawTheme);
 
   const rawUnits = getString(map, UNITS_SETTING_TYPE);
   let units: Units;

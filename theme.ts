@@ -4,8 +4,15 @@
  */
 import { Appearance } from 'react-native';
 
+import type { ThemeId } from './constants/settings';
 import { SettingsService } from './database/services/SettingsService';
-import { colors, darkThemeColors, lightThemeColors } from './theme.tokens';
+import {
+  colors,
+  kineticDepthThemeColors,
+  kineticLightThemeColors,
+  kineticPinkThemeColors,
+} from './theme.tokens';
+import { resolveThemeId } from './utils/themeSelection';
 
 export { addOpacityToHex } from './theme.tokens';
 
@@ -16,7 +23,7 @@ type FixGradientTokens<T> = {
   [K in keyof T]: T[K] extends readonly unknown[] ? GradientStops : T[K];
 };
 
-/** Everything that does not depend on the palette. Shared by both themes. */
+/** Everything that does not depend on the palette. Shared by every theme. */
 const staticTokens = {
   typography: {
     // Font sizes
@@ -381,7 +388,7 @@ export function getBorderRadius(size: keyof typeof theme.borderRadius): number {
 
 /**
  * Shadows are palette-dependent: `palette.shadow` is the scrim colour, which stays
- * dark in both themes, and the coloured glows follow their accent.
+ * dark in every theme, and the coloured glows follow their accent.
  */
 function createShadows(palette: ThemePalette) {
   return {
@@ -510,7 +517,7 @@ function createShadows(palette: ThemePalette) {
   };
 }
 
-type ThemePalette = typeof darkThemeColors;
+type ThemePalette = typeof kineticDepthThemeColors;
 
 function createTheme(palette: ThemePalette) {
   return {
@@ -523,17 +530,29 @@ function createTheme(palette: ThemePalette) {
   };
 }
 
-export const darkTheme = createTheme(darkThemeColors);
-export const lightTheme: typeof darkTheme = createTheme(lightThemeColors);
+export const kineticDepthTheme = createTheme(kineticDepthThemeColors);
+export type Theme = typeof kineticDepthTheme;
+export const kineticLightTheme: Theme = createTheme(kineticLightThemeColors);
+export const kineticPinkTheme: Theme = createTheme(kineticPinkThemeColors);
+
+export const THEMES = {
+  'kinetic-depth': kineticDepthTheme,
+  'kinetic-light': kineticLightTheme,
+  'kinetic-pink': kineticPinkTheme,
+} satisfies Record<ThemeId, Theme>;
+
+// Compatibility aliases for call sites whose concern is specifically display
+// mode (for example, camera surfaces that must always be dark).
+export const darkTheme = kineticDepthTheme;
+export const lightTheme = kineticLightTheme;
 
 /**
  * The default theme, for the few non-React call sites that cannot resolve the
  * user's preference (see `getTheme` for the async alternative).
  */
-export const theme = darkTheme;
+export const theme = kineticDepthTheme;
 
 // Type exports for TypeScript
-export type Theme = typeof darkTheme;
 export type ThemeColors = Theme['colors'];
 export type ThemeTypography = Theme['typography'];
 
@@ -545,19 +564,10 @@ export type ThemeTypography = Theme['typography'];
 export async function getTheme(): Promise<Theme> {
   try {
     const preference = await SettingsService.getThemePreference();
-    const systemColorScheme = Appearance.getColorScheme();
-
-    let effectiveTheme: 'dark' | 'light' = 'dark';
-
-    if (preference === 'system') {
-      effectiveTheme = systemColorScheme === 'light' ? 'light' : 'dark';
-    } else {
-      effectiveTheme = preference === 'light' ? 'light' : 'dark';
-    }
-
-    return effectiveTheme === 'dark' ? darkTheme : lightTheme;
+    const themeId = resolveThemeId(preference, Appearance.getColorScheme());
+    return THEMES[themeId];
   } catch (error) {
-    console.error('[Theme] Error fetching theme preference, defaulting to dark:', error);
+    console.error('[Theme] Error fetching theme preference, defaulting to Kinetic Depth:', error);
     return darkTheme;
   }
 }

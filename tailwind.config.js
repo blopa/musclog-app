@@ -6,12 +6,11 @@ const { createTailwindColors, darkCssVariables, lightCssVariables } = require('.
 /**
  * Tailwind Configuration for NativeWind
  *
- * NativeWind compiles styles at build time, so a Tailwind class cannot pick
- * between two palettes on its own. Every themed colour below therefore resolves
- * to a CSS custom property, and the two palettes are written into `:root` (light)
- * and `.dark:root` (dark) by the base plugin. NativeWind swaps the whole set at
- * runtime — on native as well as web — whenever the colour scheme changes, which
- * `ThemeProvider` drives from the stored theme preference.
+ * NativeWind compiles styles at build time, so a Tailwind class cannot pick among
+ * named palettes on its own. Every themed colour below therefore resolves to a
+ * CSS custom property. These base rules supply the Kinetic Light/Depth defaults;
+ * `ThemeProvider` overrides the variables with the selected named palette at
+ * runtime and uses NativeWind's binary scheme only for `dark:` variants.
  *
  * So both of these follow the active theme, and either is fine to use:
  *

@@ -122,7 +122,7 @@ type CameraModalProps = {
   onRequestPermission: () => void;
 };
 
-/** Same reason as BarcodeCameraModal: the viewfinder stays dark in both themes. */
+/** Same reason as BarcodeCameraModal: the viewfinder stays dark in every theme. */
 export default function SmartCameraModal(props: CameraModalProps) {
   return (
     <ForcedDarkThemeScope>

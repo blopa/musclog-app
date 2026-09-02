@@ -33,7 +33,7 @@ const mockUseSettings = useSettings as jest.Mock;
 const baseSettings = {
   isLoading: false,
   showDailyMoodPrompt: false,
-  theme: 'light',
+  theme: 'kinetic-light',
   useOcrBeforeAi: false,
   useOnDeviceAi: false,
 };
@@ -106,11 +106,11 @@ describe('useDebouncedSettings', () => {
     act(() => result.current.handleShowDailyMoodPromptChange(true));
     expect(result.current.hasPendingChanges).toBe(true);
 
-    setSettings({ theme: 'dark' });
+    setSettings({ theme: 'kinetic-depth' });
     act(() => rerender());
 
     expect(result.current.showDailyMoodPrompt).toBe(true);
-    expect(result.current.theme).toBe('dark');
+    expect(result.current.theme).toBe('kinetic-depth');
   });
 
   it('lets the database win again once the pending write has settled', async () => {
@@ -130,14 +130,14 @@ describe('useDebouncedSettings', () => {
   it('writes a pending change immediately on flush and does not write it twice', async () => {
     const { result } = renderHook(() => useDebouncedSettings());
 
-    act(() => result.current.handleThemeChange('dark'));
+    act(() => result.current.handleThemeChange('kinetic-pink'));
 
     await act(async () => {
       await result.current.flushAllPendingChanges();
     });
 
     expect(SettingsService.setTheme).toHaveBeenCalledTimes(1);
-    expect(SettingsService.setTheme).toHaveBeenCalledWith('dark');
+    expect(SettingsService.setTheme).toHaveBeenCalledWith('kinetic-pink');
     expect(result.current.hasPendingChanges).toBe(false);
 
     await runDebounce();
@@ -174,7 +174,7 @@ describe('useDebouncedSettings', () => {
   it('cancels pending timers on cleanup so no write escapes after teardown', async () => {
     const { result } = renderHook(() => useDebouncedSettings());
 
-    act(() => result.current.handleThemeChange('dark'));
+    act(() => result.current.handleThemeChange('kinetic-depth'));
     act(() => result.current.cleanup());
 
     await runDebounce();
@@ -188,13 +188,13 @@ describe('useDebouncedSettings', () => {
 
     const { result } = renderHook(() => useDebouncedSettings());
 
-    act(() => result.current.handleThemeChange('dark'));
+    act(() => result.current.handleThemeChange('kinetic-depth'));
     await runDebounce();
 
     expect(consoleError).toHaveBeenCalled();
     expect(result.current.hasPendingChanges).toBe(false);
     // The optimistic value stays on screen until the next DB emission corrects it.
-    expect(result.current.theme).toBe('dark');
+    expect(result.current.theme).toBe('kinetic-depth');
     consoleError.mockRestore();
   });
 });

@@ -422,13 +422,17 @@
           "label": "Sistema",
           "description": "Seguir la configuración del dispositivo"
         },
-        "light": {
-          "label": "Claro",
-          "description": "Usar siempre el tema claro"
+        "kinetic-depth": {
+          "label": "Kinetic Depth",
+          "description": "Superficies profundas con acentos esmeralda"
         },
-        "dark": {
-          "label": "Oscuro",
-          "description": "Usar siempre el tema oscuro"
+        "kinetic-light": {
+          "label": "Kinetic Light",
+          "description": "Superficies luminosas con acentos esmeralda"
+        },
+        "kinetic-pink": {
+          "label": "Kinetic Pink",
+          "description": "Superficies rosa oscuro con acentos rosados"
         }
       }
     }

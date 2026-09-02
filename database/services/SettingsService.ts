@@ -34,6 +34,7 @@ import {
   NAV_SLOT_2_SETTING_TYPE,
   NAV_SLOT_3_SETTING_TYPE,
   type NavItemKey,
+  normalizeThemeOption,
   NOTIFICATIONS_ACTIVE_WORKOUT_SETTING_TYPE,
   NOTIFICATIONS_MENSTRUAL_CYCLE_SETTING_TYPE,
   NOTIFICATIONS_NUTRITION_OVERVIEW_SETTING_TYPE,
@@ -56,6 +57,7 @@ import {
   SHOW_DAILY_WATER_PROMPT_SETTING_TYPE,
   SHOW_WEIGHT_PREDICTION_SETTING_TYPE,
   THEME_SETTING_TYPE,
+  type ThemeOption,
   UNITS_SETTING_TYPE,
   USE_BF_FOR_CALCULATIONS_SETTING_TYPE,
   USE_MUSCLOG_FREE_TIER_SETTING_TYPE,
@@ -140,19 +142,15 @@ export class SettingsService {
     });
   }
 
-  /**
-   * Get the theme preference setting ('system' | 'light' | 'dark').
-   * Defaults to 'system' if not set.
-   */
-  static async getThemePreference(): Promise<'system' | 'light' | 'dark'> {
-    return (await SettingsService.getStringSetting(THEME_SETTING_TYPE, 'system')) as
-      'system' | 'light' | 'dark';
+  /** Get the named theme preference, normalizing values written by older releases. */
+  static async getThemePreference(): Promise<ThemeOption> {
+    return normalizeThemeOption(
+      await SettingsService.getStringSetting(THEME_SETTING_TYPE, 'system')
+    );
   }
 
-  /**
-   * Upsert the theme setting ('system' | 'light' | 'dark')
-   */
-  static async setTheme(theme: 'system' | 'light' | 'dark') {
+  /** Upsert the system preference or a named theme. */
+  static async setTheme(theme: ThemeOption) {
     const now = Date.now();
 
     const existingThemeSetting = await database

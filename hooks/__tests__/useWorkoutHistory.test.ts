@@ -177,8 +177,8 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
-// `useTheme()` picks between `darkTheme` and `lightTheme`, so both have to exist —
-// otherwise it returns undefined and every workout fails to process.
+// `useTheme()` selects from the named theme map, so the mock keeps that public
+// shape even though every palette can be identical for this hook test.
 jest.mock('../../theme', () => {
   const mockTheme = {
     colors: {
@@ -188,7 +188,16 @@ jest.mock('../../theme', () => {
     },
   };
 
-  return { darkTheme: mockTheme, lightTheme: mockTheme, theme: mockTheme };
+  return {
+    THEMES: {
+      'kinetic-depth': mockTheme,
+      'kinetic-light': mockTheme,
+      'kinetic-pink': mockTheme,
+    },
+    darkTheme: mockTheme,
+    lightTheme: mockTheme,
+    theme: mockTheme,
+  };
 });
 
 jest.mock('../useSettings', () => ({
