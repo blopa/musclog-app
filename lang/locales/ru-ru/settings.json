@@ -430,8 +430,8 @@
           "label": "Kinetic Light",
           "description": "Светлые тона с изумрудными акцентами"
         },
-        "kinetic-pink": {
-          "label": "Kinetic Pink",
+        "kinetic-shock": {
+          "label": "Kinetic Shock",
           "description": "Глубокие розовые тона с яркими акцентами"
         }
       }

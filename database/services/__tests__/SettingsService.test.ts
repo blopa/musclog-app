@@ -200,10 +200,10 @@ describe('SettingsService', () => {
 
       expect(await SettingsService.getThemePreference()).toBe('system');
 
-      await SettingsService.setTheme('kinetic-pink');
+      await SettingsService.setTheme('kinetic-shock');
 
-      expect(valuesFor(rows, THEME_SETTING_TYPE)).toEqual(['kinetic-pink']);
-      expect(await SettingsService.getThemePreference()).toBe('kinetic-pink');
+      expect(valuesFor(rows, THEME_SETTING_TYPE)).toEqual(['kinetic-shock']);
+      expect(await SettingsService.getThemePreference()).toBe('kinetic-shock');
     });
 
     it('maps legacy dark and light preferences to their named Kinetic themes', async () => {

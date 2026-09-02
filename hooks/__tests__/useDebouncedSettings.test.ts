@@ -130,14 +130,14 @@ describe('useDebouncedSettings', () => {
   it('writes a pending change immediately on flush and does not write it twice', async () => {
     const { result } = renderHook(() => useDebouncedSettings());
 
-    act(() => result.current.handleThemeChange('kinetic-pink'));
+    act(() => result.current.handleThemeChange('kinetic-shock'));
 
     await act(async () => {
       await result.current.flushAllPendingChanges();
     });
 
     expect(SettingsService.setTheme).toHaveBeenCalledTimes(1);
-    expect(SettingsService.setTheme).toHaveBeenCalledWith('kinetic-pink');
+    expect(SettingsService.setTheme).toHaveBeenCalledWith('kinetic-shock');
     expect(result.current.hasPendingChanges).toBe(false);
 
     await runDebounce();

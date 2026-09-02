@@ -114,13 +114,15 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
       ),
     },
     {
-      value: 'kinetic-pink',
-      label: t('settings.theme.options.kinetic-pink.label'),
+      value: 'kinetic-shock',
+      label: t('settings.theme.options.kinetic-shock.label'),
       icon: (
         <Palette
           size={theme.iconSize.md}
           color={
-            themeValue === 'kinetic-pink' ? theme.colors.accent.primary : theme.colors.text.tertiary
+            themeValue === 'kinetic-shock'
+              ? theme.colors.accent.primary
+              : theme.colors.text.tertiary
           }
         />
       ),

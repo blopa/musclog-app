@@ -69,7 +69,7 @@ const THEME_ICON: Record<ThemeOption, typeof Monitor> = {
   system: Monitor,
   'kinetic-depth': Moon,
   'kinetic-light': Sun,
-  'kinetic-pink': Palette,
+  'kinetic-shock': Palette,
 };
 
 /** Convert a 5-char binary string to an array of visible macro keys. */

@@ -7,7 +7,7 @@ implementation sources of truth; this document describes how to use them.
 ## Theme status
 
 Three named palettes ship: Kinetic Depth is the dark emerald reference design, Kinetic Light is the
-same structure re-picked for a bright ground, and Kinetic Pink is a dark rose-led alternative.
+same structure re-picked for a bright ground, and Kinetic Shock is a dark rose-led alternative.
 Users choose one of them, or System, under Settings → Interface → Appearance. System resolves to
 Kinetic Light or Kinetic Depth from the device's light/dark setting. The preference is stored in the
 settings table, so writing that row re-themes the app.
@@ -35,7 +35,7 @@ its output cannot reach its inline styles.
 Text drawn on a colorful gradient uses the fixed-white tokens (`text.onColorful`,
 `overlay.onColorful*`), never the on-surface ink.
 
-The Daily Summary card uses its `gradients.colorfulCard` surface in Kinetic Depth and Kinetic Pink,
+The Daily Summary card uses its `gradients.colorfulCard` surface in Kinetic Depth and Kinetic Shock,
 and the standard card surface in Kinetic Light. Its foreground uses the matching `colorfulCard` ink
 tokens: white in dark mode and opaque deep green-slate in light mode.
 
@@ -58,7 +58,7 @@ hairlines and washes instead of a literal `border-white/10`, which only reads on
 ## Color
 
 The primary palette is 23 colors plus a short tail of role primaries, defined once per theme in
-`kineticDepth`, `kineticLight`, and `kineticPink`, and grouped by role rather than by hue name: six
+`kineticDepth`, `kineticLight`, and `kineticShock`, and grouped by role rather than by hue name: six
 surfaces, three text steps, six brand colors, and eight status hues. Everything else — the semantic
 token tree, the Tailwind colors, and the CSS variables — is derived from a palette by `createColors`
 and `createThemeColors`, so all themes stay the same shape by construction. Anything softer than a
@@ -72,16 +72,16 @@ Surfaces form a four-step tonal ladder plus two tinted branches. Each step of th
 without a border. The ladder inverts between themes: elevation moves _away_ from the base, which is
 lighter on dark and darker on light.
 
-| Role           | Token                                       | Kinetic Depth | Kinetic Light | Kinetic Pink |
-| -------------- | ------------------------------------------- | ------------- | ------------- | ------------ |
-| App background | `background.primary` / `surfaceBase`        | `#091310`     | `#fafcfb`     | `#160b14`    |
-| Card           | `background.card` / `surfaceCard`           | `#131d18`     | `#eef2f0`     | `#21101e`    |
-| Elevated card  | `background.cardElevated` / `surfaceRaised` | `#1b2721`     | `#e0e7e3`     | `#2d1829`    |
-| Tinted overlay | `background.overlay` / `surfaceTint`        | `#0c2419`     | `#dff0e7`     | `#351226`    |
-| Accent surface | `border.accent` / `surfaceAccent`           | `#1c3829`     | `#c6e6d4`     | `#51203f`    |
-| Hairline       | `border.dashed` / `borderHairline`          | `#2c3a32`     | `#c2cfc8`     | `#503248`    |
-| Primary text   | `text.primary` / `textPrimary`              | `#dce5de`     | `#0f1a16`     | `#f5e4ef`    |
-| Primary action | `accent.primary` / `brandPrimary`           | `#29a577`     | `#0e7a54`     | `#e85d9e`    |
+| Role           | Token                                       | Kinetic Depth | Kinetic Light | Kinetic Shock |
+| -------------- | ------------------------------------------- | ------------- | ------------- | ------------- |
+| App background | `background.primary` / `surfaceBase`        | `#091310`     | `#fafcfb`     | `#160b14`     |
+| Card           | `background.card` / `surfaceCard`           | `#131d18`     | `#eef2f0`     | `#21101e`     |
+| Elevated card  | `background.cardElevated` / `surfaceRaised` | `#1b2721`     | `#e0e7e3`     | `#2d1829`     |
+| Tinted overlay | `background.overlay` / `surfaceTint`        | `#0c2419`     | `#dff0e7`     | `#351226`     |
+| Accent surface | `border.accent` / `surfaceAccent`           | `#1c3829`     | `#c6e6d4`     | `#51203f`     |
+| Hairline       | `border.dashed` / `borderHairline`          | `#2c3a32`     | `#c2cfc8`     | `#503248`     |
+| Primary text   | `text.primary` / `textPrimary`              | `#dce5de`     | `#0f1a16`     | `#f5e4ef`     |
+| Primary action | `accent.primary` / `brandPrimary`           | `#29a577`     | `#0e7a54`     | `#e85d9e`     |
 
 Accents get _darker_ on light, not lighter: every brand and status hue in the light palette clears
 4.5:1 as text on `surfaceBase` and `surfaceCard`, and carries white ink at 4.5:1 or better when it is
@@ -216,6 +216,6 @@ belongs in both the desktop nav bar and the burger menu.
 - Touch targets remain inside parent bounds.
 - Status remains understandable without color.
 - Numbers parse and format correctly in both comma- and period-decimal locales.
-- Works in all themes: check Kinetic Light and Kinetic Pink, and confirm nothing relies on a literal
+- Works in all themes: check Kinetic Light and Kinetic Shock, and confirm nothing relies on a literal
   `text-white` or an emerald-only accent.
 - Loading, empty, error, disabled, and offline states are designed—not left to defaults.

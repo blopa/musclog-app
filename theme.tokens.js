@@ -173,7 +173,7 @@ const kineticLight = {
  * emerald into pink. The named palette is intentionally independent from the
  * binary light/dark display mode used by the OS and NativeWind variants.
  */
-const kineticPink = {
+const kineticShock = {
   surfaceBase: '#160b14',
   surfaceCard: '#21101e',
   surfaceRaised: '#2d1829',
@@ -725,11 +725,11 @@ function createThemeColors(colors) {
 
 const kineticDepthColors = createColors(kineticDepth);
 const kineticLightColors = createColors(kineticLight);
-const kineticPinkColors = createColors(kineticPink);
+const kineticShockColors = createColors(kineticShock);
 
 const kineticDepthThemeColors = createThemeColors(kineticDepthColors);
 const kineticLightThemeColors = createThemeColors(kineticLightColors);
-const kineticPinkThemeColors = createThemeColors(kineticPinkColors);
+const kineticShockThemeColors = createThemeColors(kineticShockColors);
 
 module.exports = {
   addOpacityToHex,
@@ -738,10 +738,10 @@ module.exports = {
   createThemeColors,
   kineticDepthColors,
   kineticLightColors,
-  kineticPinkColors,
+  kineticShockColors,
   kineticDepthThemeColors,
   kineticLightThemeColors,
-  kineticPinkThemeColors,
+  kineticShockThemeColors,
   // Compatibility names for code whose concern is display mode rather than
   // the palette's product name.
   darkColors: kineticDepthColors,
@@ -876,7 +876,7 @@ module.exports.createTailwindColors = createTailwindColors;
 module.exports.createCssVariables = createCssVariables;
 module.exports.kineticDepthCssVariables = createCssVariables(kineticDepthThemeColors);
 module.exports.kineticLightCssVariables = createCssVariables(kineticLightThemeColors);
-module.exports.kineticPinkCssVariables = createCssVariables(kineticPinkThemeColors);
+module.exports.kineticShockCssVariables = createCssVariables(kineticShockThemeColors);
 module.exports.darkCssVariables = module.exports.kineticDepthCssVariables;
 module.exports.lightCssVariables = module.exports.kineticLightCssVariables;
 
@@ -901,6 +901,6 @@ function createRuntimeCssVariables(themeColors, { web = false } = {}) {
 
 module.exports.kineticDepthNativeCssVariables = createRuntimeCssVariables(kineticDepthThemeColors);
 module.exports.kineticLightNativeCssVariables = createRuntimeCssVariables(kineticLightThemeColors);
-module.exports.kineticPinkNativeCssVariables = createRuntimeCssVariables(kineticPinkThemeColors);
+module.exports.kineticShockNativeCssVariables = createRuntimeCssVariables(kineticShockThemeColors);
 module.exports.darkNativeCssVariables = module.exports.kineticDepthNativeCssVariables;
 module.exports.lightNativeCssVariables = module.exports.kineticLightNativeCssVariables;

@@ -11,8 +11,8 @@ import {
   kineticDepthNativeCssVariables,
   kineticLightCssVariables,
   kineticLightNativeCssVariables,
-  kineticPinkCssVariables,
-  kineticPinkNativeCssVariables,
+  kineticShockCssVariables,
+  kineticShockNativeCssVariables,
 } from '@/theme.tokens';
 
 type ThemeContextType = {
@@ -37,13 +37,13 @@ function runtimeVariables(webVariables: unknown, nativeVariables: unknown) {
 const THEME_VARIABLES: Record<ThemeId, ReturnType<typeof vars>> = {
   'kinetic-depth': runtimeVariables(kineticDepthCssVariables, kineticDepthNativeCssVariables),
   'kinetic-light': runtimeVariables(kineticLightCssVariables, kineticLightNativeCssVariables),
-  'kinetic-pink': runtimeVariables(kineticPinkCssVariables, kineticPinkNativeCssVariables),
+  'kinetic-shock': runtimeVariables(kineticShockCssVariables, kineticShockNativeCssVariables),
 };
 
 const WEB_THEME_VARIABLES: Record<ThemeId, CssVariableMap> = {
   'kinetic-depth': kineticDepthCssVariables as CssVariableMap,
   'kinetic-light': kineticLightCssVariables as CssVariableMap,
-  'kinetic-pink': kineticPinkCssVariables as CssVariableMap,
+  'kinetic-shock': kineticShockCssVariables as CssVariableMap,
 };
 
 export function ThemeProvider({ children }: { children: ReactNode }) {

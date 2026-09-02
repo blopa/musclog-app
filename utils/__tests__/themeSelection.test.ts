@@ -2,7 +2,7 @@ import { normalizeThemeOption, THEME_IDS } from '@/constants/settings';
 import {
   kineticDepthThemeColors,
   kineticLightThemeColors,
-  kineticPinkThemeColors,
+  kineticShockThemeColors,
 } from '@/theme.tokens';
 import { getThemeMode, resolveThemeId } from '@/utils/themeSelection';
 
@@ -40,43 +40,43 @@ describe('named theme selection', () => {
     expect(resolveThemeId('system', 'light')).toBe('kinetic-light');
     expect(resolveThemeId('system', 'dark')).toBe('kinetic-depth');
     expect(resolveThemeId('system', null)).toBe('kinetic-depth');
-    expect(resolveThemeId('kinetic-pink', 'light')).toBe('kinetic-pink');
+    expect(resolveThemeId('kinetic-shock', 'light')).toBe('kinetic-shock');
   });
 
-  it('treats Kinetic Pink as dark for status bars and dark variants', () => {
+  it('treats Kinetic Shock as dark for status bars and dark variants', () => {
     expect(getThemeMode('kinetic-depth')).toBe('dark');
-    expect(getThemeMode('kinetic-pink')).toBe('dark');
+    expect(getThemeMode('kinetic-shock')).toBe('dark');
     expect(getThemeMode('kinetic-light')).toBe('light');
   });
 
-  it('gives Kinetic Pink the same semantic shape and a distinct palette', () => {
-    expect(Object.keys(kineticPinkThemeColors)).toEqual(Object.keys(kineticDepthThemeColors));
-    expect(Object.keys(kineticPinkThemeColors.background)).toEqual(
+  it('gives Kinetic Shock the same semantic shape and a distinct palette', () => {
+    expect(Object.keys(kineticShockThemeColors)).toEqual(Object.keys(kineticDepthThemeColors));
+    expect(Object.keys(kineticShockThemeColors.background)).toEqual(
       Object.keys(kineticLightThemeColors.background)
     );
-    expect(kineticPinkThemeColors.background.primary).not.toBe(
+    expect(kineticShockThemeColors.background.primary).not.toBe(
       kineticDepthThemeColors.background.primary
     );
-    expect(kineticPinkThemeColors.accent.primary).not.toBe(kineticDepthThemeColors.accent.primary);
+    expect(kineticShockThemeColors.accent.primary).not.toBe(kineticDepthThemeColors.accent.primary);
   });
 
-  it('keeps Kinetic Pink text and button ink at WCAG AA contrast', () => {
+  it('keeps Kinetic Shock text and button ink at WCAG AA contrast', () => {
     const mainSurfaces = [
-      kineticPinkThemeColors.background.primary,
-      kineticPinkThemeColors.background.card,
-      kineticPinkThemeColors.background.cardElevated,
+      kineticShockThemeColors.background.primary,
+      kineticShockThemeColors.background.card,
+      kineticShockThemeColors.background.cardElevated,
     ];
     for (const textColor of [
-      kineticPinkThemeColors.text.primary,
-      kineticPinkThemeColors.text.secondary,
-      kineticPinkThemeColors.text.tertiary,
+      kineticShockThemeColors.text.primary,
+      kineticShockThemeColors.text.secondary,
+      kineticShockThemeColors.text.tertiary,
     ]) {
       for (const surface of mainSurfaces) {
         expect(contrastRatio(textColor, surface)).toBeGreaterThanOrEqual(4.5);
       }
     }
     expect(
-      contrastRatio(kineticPinkThemeColors.text.black, kineticPinkThemeColors.accent.primary)
+      contrastRatio(kineticShockThemeColors.text.black, kineticShockThemeColors.accent.primary)
     ).toBeGreaterThanOrEqual(4.5);
   });
 });
