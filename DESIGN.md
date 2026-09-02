@@ -6,8 +6,9 @@ implementation sources of truth; this document describes how to use them.
 
 ## Theme status
 
-Three named palettes ship: Kinetic Depth is the dark emerald reference design, Kinetic Light is the
-same structure re-picked for a bright ground, and Kinetic Shock is a dark rose-led alternative.
+Four named palettes ship: Kinetic Depth is the dark emerald reference design, Kinetic Light is the
+same structure re-picked for a bright ground, Kinetic Shock is a dark rose-led alternative, and
+Kinetic Volt pairs warm near-black surfaces with electric yellow accents.
 Users choose one of them, or System, under Settings → Interface → Appearance. System resolves to
 Kinetic Light or Kinetic Depth from the device's light/dark setting. The preference is stored in the
 settings table, so writing that row re-themes the app.
@@ -32,12 +33,13 @@ Their content is white-on-dark whatever the user picked, so they pin their own p
 whole component — a component reads `useTheme()` during its own render, so a provider wrapped around
 its output cannot reach its inline styles.
 
-Text drawn on a colorful gradient uses the fixed-white tokens (`text.onColorful`,
-`overlay.onColorful*`), never the on-surface ink.
+Text drawn on a colorful gradient uses the dedicated `colorfulCard` ink tokens, never a literal
+white or the regular on-surface ink.
 
-The Daily Summary card uses its `gradients.colorfulCard` surface in Kinetic Depth and Kinetic Shock,
-and the standard card surface in Kinetic Light. Its foreground uses the matching `colorfulCard` ink
-tokens: white in dark mode and opaque deep green-slate in light mode.
+The Daily Summary card uses its `gradients.colorfulCard` surface in Kinetic Depth, Kinetic Shock,
+and Kinetic Volt, and the standard card surface in Kinetic Light. Its foreground uses the matching
+`colorfulCard` ink tokens: white in Kinetic Depth and Kinetic Shock, warm black in Kinetic Volt,
+and opaque deep green-slate in Kinetic Light.
 
 ### Role tokens
 
@@ -58,12 +60,12 @@ hairlines and washes instead of a literal `border-white/10`, which only reads on
 ## Color
 
 The primary palette is 23 colors plus a short tail of role primaries, defined once per theme in
-`kineticDepth`, `kineticLight`, and `kineticShock`, and grouped by role rather than by hue name: six
-surfaces, three text steps, six brand colors, and eight status hues. Everything else — the semantic
-token tree, the Tailwind colors, and the CSS variables — is derived from a palette by `createColors`
-and `createThemeColors`, so all themes stay the same shape by construction. Anything softer than a
-primary is derived too: `addOpacityToHex` for translucent washes, `mixHex` for opaque tinted
-surfaces. A new hex value in a palette should be rare and deliberate.
+`kineticDepth`, `kineticLight`, `kineticShock`, and `kineticVolt`, and grouped by role rather than by
+hue name: six surfaces, three text steps, six brand colors, and eight status hues. Everything else —
+the semantic token tree, the Tailwind colors, and the CSS variables — is derived from a palette by
+`createColors` and `createThemeColors`, so all themes stay the same shape by construction. Anything
+softer than a primary is derived too: `addOpacityToHex` for translucent washes, `mixHex` for opaque
+tinted surfaces. A new hex value in a palette should be rare and deliberate.
 
 ### Core surfaces
 
@@ -72,16 +74,16 @@ Surfaces form a four-step tonal ladder plus two tinted branches. Each step of th
 without a border. The ladder inverts between themes: elevation moves _away_ from the base, which is
 lighter on dark and darker on light.
 
-| Role           | Token                                       | Kinetic Depth | Kinetic Light | Kinetic Shock |
-| -------------- | ------------------------------------------- | ------------- | ------------- | ------------- |
-| App background | `background.primary` / `surfaceBase`        | `#091310`     | `#fafcfb`     | `#160b14`     |
-| Card           | `background.card` / `surfaceCard`           | `#131d18`     | `#eef2f0`     | `#21101e`     |
-| Elevated card  | `background.cardElevated` / `surfaceRaised` | `#1b2721`     | `#e0e7e3`     | `#2d1829`     |
-| Tinted overlay | `background.overlay` / `surfaceTint`        | `#0c2419`     | `#dff0e7`     | `#351226`     |
-| Accent surface | `border.accent` / `surfaceAccent`           | `#1c3829`     | `#c6e6d4`     | `#51203f`     |
-| Hairline       | `border.dashed` / `borderHairline`          | `#2c3a32`     | `#c2cfc8`     | `#503248`     |
-| Primary text   | `text.primary` / `textPrimary`              | `#dce5de`     | `#0f1a16`     | `#f5e4ef`     |
-| Primary action | `accent.primary` / `brandPrimary`           | `#29a577`     | `#0e7a54`     | `#e85d9e`     |
+| Role           | Token                                       | Kinetic Depth | Kinetic Light | Kinetic Shock | Kinetic Volt |
+| -------------- | ------------------------------------------- | ------------- | ------------- | ------------- | ------------ |
+| App background | `background.primary` / `surfaceBase`        | `#091310`     | `#fafcfb`     | `#160b14`     | `#151208`    |
+| Card           | `background.card` / `surfaceCard`           | `#131d18`     | `#eef2f0`     | `#21101e`     | `#201b0c`    |
+| Elevated card  | `background.cardElevated` / `surfaceRaised` | `#1b2721`     | `#e0e7e3`     | `#2d1829`     | `#2c2510`    |
+| Tinted overlay | `background.overlay` / `surfaceTint`        | `#0c2419`     | `#dff0e7`     | `#351226`     | `#30270a`    |
+| Accent surface | `border.accent` / `surfaceAccent`           | `#1c3829`     | `#c6e6d4`     | `#51203f`     | `#4a3b08`    |
+| Hairline       | `border.dashed` / `borderHairline`          | `#2c3a32`     | `#c2cfc8`     | `#503248`     | `#4a4126`    |
+| Primary text   | `text.primary` / `textPrimary`              | `#dce5de`     | `#0f1a16`     | `#f5e4ef`     | `#f6f0d5`    |
+| Primary action | `accent.primary` / `brandPrimary`           | `#29a577`     | `#0e7a54`     | `#e85d9e`     | `#f5c842`    |
 
 Accents get _darker_ on light, not lighter: every brand and status hue in the light palette clears
 4.5:1 as text on `surfaceBase` and `surfaceCard`, and carries white ink at 4.5:1 or better when it is
@@ -103,7 +105,7 @@ which need 3:1, but should not be used for body copy.
 
 ### Functional color
 
-- The active palette's brand hue (emerald or pink): primary actions, completion, positive progress.
+- The active palette's brand hue (emerald, pink, or yellow): primary actions, completion, positive progress.
 - Red/rose: destructive actions and errors.
 - Amber/orange: warnings, energy, and attention without failure semantics.
 - Blue/teal: information, hydration, and secondary data.
@@ -216,6 +218,6 @@ belongs in both the desktop nav bar and the burger menu.
 - Touch targets remain inside parent bounds.
 - Status remains understandable without color.
 - Numbers parse and format correctly in both comma- and period-decimal locales.
-- Works in all themes: check Kinetic Light and Kinetic Shock, and confirm nothing relies on a literal
-  `text-white` or an emerald-only accent.
+- Works in all themes: check Kinetic Light, Kinetic Shock, and Kinetic Volt, and confirm nothing
+  relies on a literal `text-white` or an emerald-only accent.
 - Loading, empty, error, disabled, and offline states are designed—not left to defaults.

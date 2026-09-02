@@ -162,7 +162,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Fitness profile: weight, height, body fat %, goal type, activity level, experience level
 - Language selection and full multilingual support for English, Spanish, Dutch, Brazilian Portuguese, and Russian, including the built-in exercise catalogue
 - Metric or imperial units applied consistently throughout the app
-- Named theme selection: Kinetic Depth, Kinetic Light, or Kinetic Shock, plus a System option that
+- Named theme selection: Kinetic Depth, Kinetic Light, Kinetic Shock, or Kinetic Volt, plus a System option that
   follows the device's light/dark appearance
 - Home summary card choice: Daily Summary vs. Weekly Streak; the Daily Summary uses the standard
   card surface in Kinetic Light and a contrast-matched colorful gradient in the dark themes

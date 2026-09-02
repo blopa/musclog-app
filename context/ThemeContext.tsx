@@ -13,6 +13,8 @@ import {
   kineticLightNativeCssVariables,
   kineticShockCssVariables,
   kineticShockNativeCssVariables,
+  kineticVoltCssVariables,
+  kineticVoltNativeCssVariables,
 } from '@/theme.tokens';
 
 type ThemeContextType = {
@@ -38,12 +40,14 @@ const THEME_VARIABLES: Record<ThemeId, ReturnType<typeof vars>> = {
   'kinetic-depth': runtimeVariables(kineticDepthCssVariables, kineticDepthNativeCssVariables),
   'kinetic-light': runtimeVariables(kineticLightCssVariables, kineticLightNativeCssVariables),
   'kinetic-shock': runtimeVariables(kineticShockCssVariables, kineticShockNativeCssVariables),
+  'kinetic-volt': runtimeVariables(kineticVoltCssVariables, kineticVoltNativeCssVariables),
 };
 
 const WEB_THEME_VARIABLES: Record<ThemeId, CssVariableMap> = {
   'kinetic-depth': kineticDepthCssVariables as CssVariableMap,
   'kinetic-light': kineticLightCssVariables as CssVariableMap,
   'kinetic-shock': kineticShockCssVariables as CssVariableMap,
+  'kinetic-volt': kineticVoltCssVariables as CssVariableMap,
 };
 
 export function ThemeProvider({ children }: { children: ReactNode }) {

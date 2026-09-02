@@ -433,6 +433,10 @@
         "kinetic-shock": {
           "label": "Kinetic Shock",
           "description": "Superficies rosa oscuro con acentos rosados"
+        },
+        "kinetic-volt": {
+          "label": "Kinetic Volt",
+          "description": "Superficies oscuras cálidas con acentos amarillo eléctrico"
         }
       }
     }

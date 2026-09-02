@@ -1,4 +1,4 @@
-import { darkTheme, lightTheme } from '@/theme';
+import { darkTheme, kineticVoltTheme, lightTheme } from '@/theme';
 
 const relativeLuminance = (hex: string): number => {
   const channels = hex
@@ -36,6 +36,23 @@ describe('Daily Summary card theme', () => {
     expect(
       lightTheme.colors.gradients.colorfulCard.every(
         (stop) => contrastRatio(stop, lightTheme.colors.colorfulCard.ink70) >= 4.5
+      )
+    ).toBe(true);
+  });
+
+  it('uses warm-black ink on Kinetic Volt’s bright gradient', () => {
+    expect(kineticVoltTheme.colors.gradients.colorfulCard).toEqual([
+      '#818cf8',
+      '#ca8a04',
+      '#eab308',
+    ]);
+    expect(kineticVoltTheme.colors.colorfulCard.ink).toBe('#151208');
+    expect(kineticVoltTheme.colors.colorfulCard.ink70).toBe('#30280d');
+    expect(
+      kineticVoltTheme.colors.gradients.colorfulCard.every(
+        (stop) =>
+          contrastRatio(stop, kineticVoltTheme.colors.colorfulCard.ink) >= 4.5 &&
+          contrastRatio(stop, kineticVoltTheme.colors.colorfulCard.ink70) >= 4.5
       )
     ).toBe(true);
   });

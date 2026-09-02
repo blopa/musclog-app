@@ -14,6 +14,7 @@ import {
   Search,
   Settings,
   Sun,
+  Zap,
 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -123,6 +124,18 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
             themeValue === 'kinetic-shock'
               ? theme.colors.accent.primary
               : theme.colors.text.tertiary
+          }
+        />
+      ),
+    },
+    {
+      value: 'kinetic-volt',
+      label: t('settings.theme.options.kinetic-volt.label'),
+      icon: (
+        <Zap
+          size={theme.iconSize.md}
+          color={
+            themeValue === 'kinetic-volt' ? theme.colors.accent.primary : theme.colors.text.tertiary
           }
         />
       ),

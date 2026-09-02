@@ -11,6 +11,7 @@ import {
   kineticDepthThemeColors,
   kineticLightThemeColors,
   kineticShockThemeColors,
+  kineticVoltThemeColors,
 } from './theme.tokens';
 import { resolveThemeId } from './utils/themeSelection';
 
@@ -534,11 +535,13 @@ export const kineticDepthTheme = createTheme(kineticDepthThemeColors);
 export type Theme = typeof kineticDepthTheme;
 export const kineticLightTheme: Theme = createTheme(kineticLightThemeColors);
 export const kineticShockTheme: Theme = createTheme(kineticShockThemeColors);
+export const kineticVoltTheme: Theme = createTheme(kineticVoltThemeColors);
 
 export const THEMES = {
   'kinetic-depth': kineticDepthTheme,
   'kinetic-light': kineticLightTheme,
   'kinetic-shock': kineticShockTheme,
+  'kinetic-volt': kineticVoltTheme,
 } satisfies Record<ThemeId, Theme>;
 
 // Compatibility aliases for call sites whose concern is specifically display

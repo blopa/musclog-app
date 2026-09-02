@@ -369,7 +369,12 @@ export type NavItemKey = (typeof NAV_ITEM_KEYS)[number];
 export type NavItemKeyList = readonly NavItemKey[] & { length: (typeof NAV_ITEM_KEYS)['length'] };
 
 export type Units = 'metric' | 'imperial';
-export const THEME_IDS = ['kinetic-depth', 'kinetic-light', 'kinetic-shock'] as const;
+export const THEME_IDS = [
+  'kinetic-depth',
+  'kinetic-light',
+  'kinetic-shock',
+  'kinetic-volt',
+] as const;
 export type ThemeId = (typeof THEME_IDS)[number];
 export type ThemeOption = 'system' | ThemeId;
 
@@ -381,10 +386,6 @@ export function normalizeThemeOption(value: string | null | undefined): ThemeOpt
 
   if (value === 'light') {
     return 'kinetic-light';
-  }
-
-  if (value === 'kinetic-pink') {
-    return 'kinetic-shock';
   }
 
   if (value === 'system' || THEME_IDS.some((themeId) => themeId === value)) {

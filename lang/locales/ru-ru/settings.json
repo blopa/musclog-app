@@ -433,6 +433,10 @@
         "kinetic-shock": {
           "label": "Kinetic Shock",
           "description": "Глубокие розовые тона с яркими акцентами"
+        },
+        "kinetic-volt": {
+          "label": "Kinetic Volt",
+          "description": "Тёплые тёмные тона с электрически-жёлтыми акцентами"
         }
       }
     }

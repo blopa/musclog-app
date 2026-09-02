@@ -165,7 +165,8 @@ This repository serves two distinct purposes that share the same Expo Router pro
 ### Component Design
 
 - **Theme**: Use components from `components/theme/` and follow `theme.ts` conventions. User
-  preferences are named palette IDs (`kinetic-depth`, `kinetic-light`, `kinetic-shock`) plus
+  preferences are named palette IDs (`kinetic-depth`, `kinetic-light`, `kinetic-shock`,
+  `kinetic-volt`) plus
   `system`; never reduce the stored preference to a boolean. System resolves to Kinetic Light or
   Kinetic Depth, while `themeMode` remains the derived light/dark value for status bars and
   NativeWind `dark:` variants. Add a palette through `THEME_IDS`, `theme.tokens.js`, and the

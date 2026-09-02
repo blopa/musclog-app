@@ -193,6 +193,7 @@ jest.mock('../../theme', () => {
       'kinetic-depth': mockTheme,
       'kinetic-light': mockTheme,
       'kinetic-shock': mockTheme,
+      'kinetic-volt': mockTheme,
     },
     darkTheme: mockTheme,
     lightTheme: mockTheme,

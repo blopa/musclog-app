@@ -11,6 +11,7 @@ import {
   Sun,
   Wheat,
   Wine,
+  Zap,
 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -70,6 +71,7 @@ const THEME_ICON: Record<ThemeOption, typeof Monitor> = {
   'kinetic-depth': Moon,
   'kinetic-light': Sun,
   'kinetic-shock': Palette,
+  'kinetic-volt': Zap,
 };
 
 /** Convert a 5-char binary string to an array of visible macro keys. */

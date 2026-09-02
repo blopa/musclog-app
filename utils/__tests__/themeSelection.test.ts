@@ -3,6 +3,7 @@ import {
   kineticDepthThemeColors,
   kineticLightThemeColors,
   kineticShockThemeColors,
+  kineticVoltThemeColors,
 } from '@/theme.tokens';
 import { getThemeMode, resolveThemeId } from '@/utils/themeSelection';
 
@@ -41,11 +42,13 @@ describe('named theme selection', () => {
     expect(resolveThemeId('system', 'dark')).toBe('kinetic-depth');
     expect(resolveThemeId('system', null)).toBe('kinetic-depth');
     expect(resolveThemeId('kinetic-shock', 'light')).toBe('kinetic-shock');
+    expect(resolveThemeId('kinetic-volt', 'light')).toBe('kinetic-volt');
   });
 
-  it('treats Kinetic Shock as dark for status bars and dark variants', () => {
+  it('treats Kinetic Shock and Kinetic Volt as dark for status bars and dark variants', () => {
     expect(getThemeMode('kinetic-depth')).toBe('dark');
     expect(getThemeMode('kinetic-shock')).toBe('dark');
+    expect(getThemeMode('kinetic-volt')).toBe('dark');
     expect(getThemeMode('kinetic-light')).toBe('light');
   });
 
@@ -77,6 +80,37 @@ describe('named theme selection', () => {
     }
     expect(
       contrastRatio(kineticShockThemeColors.text.black, kineticShockThemeColors.accent.primary)
+    ).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('gives Kinetic Volt the same semantic shape and a distinct palette', () => {
+    expect(Object.keys(kineticVoltThemeColors)).toEqual(Object.keys(kineticDepthThemeColors));
+    expect(Object.keys(kineticVoltThemeColors.background)).toEqual(
+      Object.keys(kineticLightThemeColors.background)
+    );
+    expect(kineticVoltThemeColors.background.primary).not.toBe(
+      kineticDepthThemeColors.background.primary
+    );
+    expect(kineticVoltThemeColors.accent.primary).not.toBe(kineticDepthThemeColors.accent.primary);
+  });
+
+  it('keeps Kinetic Volt text and button ink at WCAG AA contrast', () => {
+    const mainSurfaces = [
+      kineticVoltThemeColors.background.primary,
+      kineticVoltThemeColors.background.card,
+      kineticVoltThemeColors.background.cardElevated,
+    ];
+    for (const textColor of [
+      kineticVoltThemeColors.text.primary,
+      kineticVoltThemeColors.text.secondary,
+      kineticVoltThemeColors.text.tertiary,
+    ]) {
+      for (const surface of mainSurfaces) {
+        expect(contrastRatio(textColor, surface)).toBeGreaterThanOrEqual(4.5);
+      }
+    }
+    expect(
+      contrastRatio(kineticVoltThemeColors.text.black, kineticVoltThemeColors.accent.primary)
     ).toBeGreaterThanOrEqual(4.5);
   });
 });

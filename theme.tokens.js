@@ -215,6 +215,55 @@ const kineticShock = {
   colorfulCardUsesSurfaceInk: false,
 };
 
+/**
+ * A dark, yellow-led palette with warm near-black surfaces. Bright electric
+ * accents carry the Kinetic Volt identity without sacrificing text contrast or
+ * changing the semantic status colours used throughout the app.
+ */
+const kineticVolt = {
+  surfaceBase: '#151208',
+  surfaceCard: '#201b0c',
+  surfaceRaised: '#2c2510',
+  surfaceTint: '#30270a',
+  surfaceAccent: '#4a3b08',
+  borderHairline: '#4a4126',
+
+  textPrimary: '#f6f0d5',
+  textSecondary: '#d0c59a',
+  textTertiary: '#b4a978',
+
+  brandPrimary: '#f5c842',
+  brandVivid: '#eab308',
+  brandBright: '#facc15',
+  brandPale: '#fef08a',
+  brandDeep: '#ca8a04',
+  brandSurface: '#713f12',
+
+  statusError: '#f87171',
+  statusRose: '#fb7185',
+  statusWarning: '#fb923c',
+  statusAmber: '#fde047',
+  statusInfo: '#60a5fa',
+  statusIndigo: '#818cf8',
+  statusPurple: '#c084fc',
+  statusPink: '#f472b6',
+
+  inkOnAccent: '#151208',
+  scrimBase: '#0d0b05',
+  surfacePlaceholder: '#f6f0d5',
+  colorfulCardInk: '#151208',
+  colorfulCardSupportingInk: '#30280d',
+
+  alphas: {
+    borderDefault: 0.3,
+    borderLight: 0.28,
+    borderGray600: 0.22,
+    hairlineFill: 0.06,
+  },
+  colorfulCardBlend: { start: 1, middle: 1, end: 1 },
+  colorfulCardUsesSurfaceInk: false,
+};
+
 /** Pure white, for the handful of surfaces that are white in every theme. */
 const ALWAYS_WHITE = '#ffffff';
 
@@ -224,12 +273,16 @@ const ALWAYS_WHITE = '#ffffff';
  */
 function createColors(palette) {
   const { alphas } = palette;
-  const colorfulCardInk = palette.colorfulCardUsesSurfaceInk
-    ? mixHex(palette.textPrimary, palette.textSecondary, 0.65)
-    : ALWAYS_WHITE;
-  const colorfulCardSupportingInk = palette.colorfulCardUsesSurfaceInk
-    ? palette.textSecondary
-    : addOpacityToHex(colorfulCardInk, 0.7);
+  const colorfulCardInk =
+    palette.colorfulCardInk ??
+    (palette.colorfulCardUsesSurfaceInk
+      ? mixHex(palette.textPrimary, palette.textSecondary, 0.65)
+      : ALWAYS_WHITE);
+  const colorfulCardSupportingInk =
+    palette.colorfulCardSupportingInk ??
+    (palette.colorfulCardUsesSurfaceInk
+      ? palette.textSecondary
+      : addOpacityToHex(colorfulCardInk, 0.7));
 
   return {
     ...palette,
@@ -726,10 +779,12 @@ function createThemeColors(colors) {
 const kineticDepthColors = createColors(kineticDepth);
 const kineticLightColors = createColors(kineticLight);
 const kineticShockColors = createColors(kineticShock);
+const kineticVoltColors = createColors(kineticVolt);
 
 const kineticDepthThemeColors = createThemeColors(kineticDepthColors);
 const kineticLightThemeColors = createThemeColors(kineticLightColors);
 const kineticShockThemeColors = createThemeColors(kineticShockColors);
+const kineticVoltThemeColors = createThemeColors(kineticVoltColors);
 
 module.exports = {
   addOpacityToHex,
@@ -739,9 +794,11 @@ module.exports = {
   kineticDepthColors,
   kineticLightColors,
   kineticShockColors,
+  kineticVoltColors,
   kineticDepthThemeColors,
   kineticLightThemeColors,
   kineticShockThemeColors,
+  kineticVoltThemeColors,
   // Compatibility names for code whose concern is display mode rather than
   // the palette's product name.
   darkColors: kineticDepthColors,
@@ -877,6 +934,7 @@ module.exports.createCssVariables = createCssVariables;
 module.exports.kineticDepthCssVariables = createCssVariables(kineticDepthThemeColors);
 module.exports.kineticLightCssVariables = createCssVariables(kineticLightThemeColors);
 module.exports.kineticShockCssVariables = createCssVariables(kineticShockThemeColors);
+module.exports.kineticVoltCssVariables = createCssVariables(kineticVoltThemeColors);
 module.exports.darkCssVariables = module.exports.kineticDepthCssVariables;
 module.exports.lightCssVariables = module.exports.kineticLightCssVariables;
 
@@ -902,5 +960,6 @@ function createRuntimeCssVariables(themeColors, { web = false } = {}) {
 module.exports.kineticDepthNativeCssVariables = createRuntimeCssVariables(kineticDepthThemeColors);
 module.exports.kineticLightNativeCssVariables = createRuntimeCssVariables(kineticLightThemeColors);
 module.exports.kineticShockNativeCssVariables = createRuntimeCssVariables(kineticShockThemeColors);
+module.exports.kineticVoltNativeCssVariables = createRuntimeCssVariables(kineticVoltThemeColors);
 module.exports.darkNativeCssVariables = module.exports.kineticDepthNativeCssVariables;
 module.exports.lightNativeCssVariables = module.exports.kineticLightNativeCssVariables;
