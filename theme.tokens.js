@@ -176,7 +176,12 @@ const ALWAYS_WHITE = '#ffffff';
  */
 function createColors(palette) {
   const { alphas } = palette;
-  const colorfulCardInk = palette.colorfulCardUsesSurfaceInk ? palette.textPrimary : ALWAYS_WHITE;
+  const colorfulCardInk = palette.colorfulCardUsesSurfaceInk
+    ? mixHex(palette.textPrimary, palette.textSecondary, 0.65)
+    : ALWAYS_WHITE;
+  const colorfulCardSupportingInk = palette.colorfulCardUsesSurfaceInk
+    ? palette.textSecondary
+    : addOpacityToHex(colorfulCardInk, 0.7);
 
   return {
     ...palette,
@@ -232,10 +237,12 @@ function createColors(palette) {
     colorfulCardEnd: mixHex(palette.surfaceCard, palette.brandVivid, palette.colorfulCardBlend.end),
     colorfulCardInk,
     colorfulCardInkAlpha30: addOpacityToHex(colorfulCardInk, 0.3),
-    colorfulCardInkAlpha70: addOpacityToHex(colorfulCardInk, 0.7),
-    colorfulCardInkAlpha90: addOpacityToHex(colorfulCardInk, 0.9),
+    colorfulCardInkAlpha70: colorfulCardSupportingInk,
+    colorfulCardInkAlpha90: palette.colorfulCardUsesSurfaceInk
+      ? colorfulCardInk
+      : addOpacityToHex(colorfulCardInk, 0.9),
     colorfulCardTrack: palette.colorfulCardUsesSurfaceInk
-      ? addOpacityToHex(palette.textPrimary, 0.2)
+      ? addOpacityToHex(colorfulCardInk, 0.25)
       : addOpacityToHex(palette.scrimBase, 0.6),
     // Darker shades of an accent, for the outline on a solid accent-filled button.
     // Mixed towards the scrim (dark in both themes) so the outline stays darker
