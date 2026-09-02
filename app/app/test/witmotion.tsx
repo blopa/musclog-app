@@ -1131,7 +1131,7 @@ export default function WitMotionTestScreen() {
             <Text className="text-sm text-text-primary">
               Connected: {wit.connectedDevice?.name ?? 'no device'}
             </Text>
-            {wit.error ? <Text className="text-status-error mt-2 text-sm">{wit.error}</Text> : null}
+            {wit.error ? <Text className="mt-2 text-sm text-status-error">{wit.error}</Text> : null}
           </View>
 
           <View className="rounded-xl border border-border-accent bg-bg-overlay p-4">

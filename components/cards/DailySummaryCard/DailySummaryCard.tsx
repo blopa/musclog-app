@@ -6,13 +6,14 @@ import { ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme, useThemeMode } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
 
 import {
   calculateDailySummaryMetrics,
   getProgressBarColor,
   getStatusLabel,
+  getSummaryCardBackgroundVariant,
   isNarrowLayout,
   MacroValue,
 } from './utils';
@@ -69,6 +70,7 @@ export function DailySummaryCard({
   const showAlcohol = nutritionDisplay[4] !== '0';
   const { width: windowWidth } = useWindowDimensions();
   const theme = useTheme();
+  const themeMode = useThemeMode();
   const { t } = useTranslation();
   const { formatInteger, formatDecimal } = useFormatAppNumber();
 
@@ -219,10 +221,11 @@ export function DailySummaryCard({
       : [];
 
   return (
-    <GenericCard variant="default" size="lg" backgroundVariant={
-      // TODO: add isLightTheme check and if so, make it default
-      'colorful-gradient' || 'default'
-    }>
+    <GenericCard
+      variant="default"
+      size="lg"
+      backgroundVariant={getSummaryCardBackgroundVariant(themeMode)}
+    >
       <View
         onLayout={(e) => {
           const w = e.nativeEvent.layout.width;

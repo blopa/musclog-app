@@ -163,8 +163,8 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Language selection and full multilingual support for English, Spanish, Dutch, Brazilian Portuguese, and Russian, including the built-in exercise catalogue
 - Metric or imperial units applied consistently throughout the app
 - Theme selection (dark mode)
-- Home summary card choice: Daily Summary vs. Weekly Streak; the Daily Summary gradient adapts to
-  light and dark themes with a contrast-matched foreground palette
+- Home summary card choice: Daily Summary vs. Weekly Streak; the Daily Summary uses the standard
+  card surface in light mode and a contrast-matched colorful gradient in dark mode
 - Configurable AI provider (OpenAI / Google Gemini / local LLM) with model and API key settings
 - Food search source configuration
 - Toggle: OCR before AI, intuitive eating mode, weight prediction, daily prompts, cycle tracking

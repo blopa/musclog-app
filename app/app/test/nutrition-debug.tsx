@@ -174,12 +174,12 @@ function BulkTrackFoodModal({ visible, food, onClose, onTracked }: BulkTrackModa
             variant="default"
           />
           {dayCount > 366 ? (
-            <Text className="text-status-error text-xs font-medium">
+            <Text className="text-xs font-medium text-status-error">
               Range too large ({dayCount} days). Max 366.
             </Text>
           ) : null}
           {dayCount === 0 ? (
-            <Text className="text-status-error text-xs font-medium">
+            <Text className="text-xs font-medium text-status-error">
               End date must be on or after the start date.
             </Text>
           ) : null}

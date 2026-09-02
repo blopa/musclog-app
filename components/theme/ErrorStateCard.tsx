@@ -23,7 +23,7 @@ export function ErrorStateCard({
   const { t } = useTranslation();
   const defaultButtonLabel = buttonLabel || t('common.tryAgain');
   return (
-    <View className="border-status-error/20 bg-status-error/5 flex-col items-center gap-4 rounded-lg border-2 border-dashed p-6">
+    <View className="flex-col items-center gap-4 rounded-lg border-2 border-dashed border-status-error/20 bg-status-error/5 p-6">
       {/* Icon */}
       <View
         className="h-12 w-12 items-center justify-center rounded-full"

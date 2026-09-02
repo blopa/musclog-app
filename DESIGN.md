@@ -32,10 +32,9 @@ its output cannot reach its inline styles.
 Text drawn on a colorful gradient uses the fixed-white tokens (`text.onColorful`,
 `overlay.onColorful*`), never the on-surface ink.
 
-The Daily Summary card is different: its `gradients.colorfulCard` surface follows the theme. It uses
-the saturated indigo-to-emerald treatment in dark mode and opaque pastel lavender, teal, and mint in
-light mode. Dark mode uses white foreground ink; light mode uses opaque deep green-slate ink rather
-than either harsh near-black or low-contrast white.
+The Daily Summary card uses its `gradients.colorfulCard` surface in dark mode and the standard card
+surface in light mode. Its foreground uses the matching `colorfulCard` ink tokens: white in dark
+mode and opaque deep green-slate in light mode.
 
 ### Role tokens
 
