@@ -219,7 +219,10 @@ export function DailySummaryCard({
       : [];
 
   return (
-    <GenericCard variant="default" size="lg" backgroundVariant="colorful-gradient">
+    <GenericCard variant="default" size="lg" backgroundVariant={
+      // TODO: add isLightTheme check and if so, make it default
+      'colorful-gradient' || 'default'
+    }>
       <View
         onLayout={(e) => {
           const w = e.nativeEvent.layout.width;
