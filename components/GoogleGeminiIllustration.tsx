@@ -46,7 +46,7 @@ export const GoogleGeminiIllustration = () => {
         </View>
         {/* Main card */}
         <View
-          className="relative flex-1 rounded-2xl border border-white/5 bg-bg-cardDark"
+          className="relative flex-1 rounded-2xl border border-ink/5 bg-bg-cardDark"
           style={{ overflow: 'hidden' }}
         >
           {/* Background image */}
@@ -78,7 +78,7 @@ export const GoogleGeminiIllustration = () => {
           >
             {/* Single pill container */}
             <View
-              className="flex-row items-center gap-3 rounded-full border border-white/20 px-4 py-2.5"
+              className="flex-row items-center gap-3 rounded-full border border-ink/20 px-4 py-2.5"
               style={{
                 backgroundColor: theme.colors.background.white10,
                 ...theme.shadows.lg,

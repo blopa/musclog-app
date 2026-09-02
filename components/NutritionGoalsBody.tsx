@@ -1162,7 +1162,7 @@ export function NutritionGoalsBody({
 
         {/* Goal Start Date (only shown in create mode) */}
         {showGoalStartDate ? (
-          <View className="flex-row items-center justify-between gap-3 overflow-hidden rounded-xl border border-emerald-900/20 bg-bg-card p-4">
+          <View className="flex-row items-center justify-between gap-3 overflow-hidden rounded-xl border border-border-accent bg-bg-card p-4">
             <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-2">
               {showIcons ? (
                 <View
@@ -1173,10 +1173,10 @@ export function NutritionGoalsBody({
                 </View>
               ) : null}
               <View className="min-w-0 flex-1">
-                <Text className="font-semibold text-white">
+                <Text className="font-semibold text-text-primary">
                   {t('nutritionGoals.goalStartDate')}
                 </Text>
-                <Text className="text-xs text-gray-500" numberOfLines={1}>
+                <Text className="text-xs text-text-tertiary" numberOfLines={1}>
                   {t('nutritionGoals.goalStartDateSublabel')}
                 </Text>
               </View>
@@ -1595,11 +1595,11 @@ export function NutritionGoalsBody({
                 </View>
               ) : null}
               <View className="min-w-0 flex-1">
-                <Text className="font-semibold text-white">
+                <Text className="font-semibold text-text-primary">
                   {t('nutritionGoals.targetDate')}
                   {isDynamic ? <Text style={{ color: theme.colors.status.error }}> *</Text> : null}
                 </Text>
-                <Text className="text-xs text-gray-500" numberOfLines={1}>
+                <Text className="text-xs text-text-tertiary" numberOfLines={1}>
                   {t('nutritionGoals.targetDateSublabel')}
                 </Text>
               </View>

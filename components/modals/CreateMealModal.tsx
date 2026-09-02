@@ -812,7 +812,7 @@ export function CreateMealModal({
               ) : (
                 <Pressable
                   onPress={handlePickImage}
-                  className="h-32 w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed border-white/10 bg-white/5"
+                  className="h-32 w-full flex-col items-center justify-center rounded-2xl border-2 border-dashed border-ink/10 bg-ink/5"
                 >
                   <Camera size={theme.iconSize.xl} color={theme.colors.text.tertiary} />
                   <Text className="mt-2 text-sm text-text-tertiary">

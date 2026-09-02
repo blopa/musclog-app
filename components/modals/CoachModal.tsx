@@ -1198,7 +1198,7 @@ export function CoachModal({
         onPress={() => {
           setIsMenuVisible(true);
         }}
-        className="h-10 w-10 active:bg-white/5"
+        className="h-10 w-10 active:bg-ink/5"
       />
     ),
     []

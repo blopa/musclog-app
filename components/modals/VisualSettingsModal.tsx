@@ -5,6 +5,9 @@ import {
   Flame,
   LayoutGrid,
   Leaf,
+  Monitor,
+  Moon,
+  Sun,
   Wheat,
   Wine,
 } from 'lucide-react-native';
@@ -17,9 +20,15 @@ import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
 import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/OptionsMultiSelector';
 import { PickerButton } from '@/components/theme/PickerButton';
-import { type HomeSummaryCard, NAV_ITEM_KEYS, type NavItemKey } from '@/constants/settings';
+import {
+  type HomeSummaryCard,
+  NAV_ITEM_KEYS,
+  type NavItemKey,
+  type ThemeOption,
+} from '@/constants/settings';
 import SettingsService from '@/database/services/SettingsService';
 import { isNavItemAvailable, useNavigationItems } from '@/hooks/useNavigationItems';
+import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -51,6 +60,15 @@ const HOME_SUMMARY_CARD_ICON: Record<HomeSummaryCard, typeof LayoutGrid> = {
   weekly_streak: Flame,
 };
 
+/** Appearance options, in the order they are offered. */
+const THEME_OPTIONS = ['system', 'light', 'dark'] as const satisfies readonly ThemeOption[];
+
+const THEME_ICON: Record<ThemeOption, typeof Monitor> = {
+  system: Monitor,
+  light: Sun,
+  dark: Moon,
+};
+
 /** Convert a 5-char binary string to an array of visible macro keys. */
 function binaryToSelected(binary: string): MacroKey[] {
   return MACRO_KEYS.filter((_, i) => binary[i] === '1');
@@ -65,7 +83,11 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   const theme = useTheme();
   const { t } = useTranslation();
   const { rawSlots, isCycleActive, setNavSlot } = useNavigationItems();
+  // The stored preference, not the resolved mode: 'system' has to stay selectable
+  // and visible as itself.
+  const { theme: themePreference } = useSettings();
 
+  const [themePopupVisible, setThemePopupVisible] = useState(false);
   const [activeSlot, setActiveSlot] = useState<SlotNumber | null>(null);
   const [macrosPopupVisible, setMacrosPopupVisible] = useState(false);
   const [selectedMacros, setSelectedMacros] = useState<MacroKey[]>([...MACRO_KEYS]);
@@ -82,6 +104,13 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     SettingsService.getHomeSummaryCard().then(setHomeSummaryCard);
   }, [visible]);
 
+  const handleThemeChange = async (option: ThemeOption) => {
+    setThemePopupVisible(false);
+    // No local state: SettingsProvider observes the settings table, so writing the
+    // row is what re-themes the app.
+    await SettingsService.setTheme(option);
+  };
+
   const handleHomeSummaryCardChange = async (card: HomeSummaryCard) => {
     setHomeSummaryCard(card);
     setHomeCardPopupVisible(false);
@@ -89,6 +118,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   };
 
   const HomeSummaryCardIcon = HOME_SUMMARY_CARD_ICON[homeSummaryCard];
+  const ThemeIcon = THEME_ICON[themePreference];
 
   const handleMacrosChange = async (ids: MacroKey[]) => {
     setSelectedMacros(ids);
@@ -160,6 +190,24 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.visualSettings.title')}>
       <View className="gap-2 py-6">
+        <View
+          style={{
+            marginHorizontal: theme.spacing.padding.base,
+          }}
+        >
+          <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
+            {t('settings.theme.sectionTitle')}
+          </Text>
+          <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+            {t('settings.theme.sectionSubtitle')}
+          </Text>
+          <PickerButton
+            icon={<ThemeIcon size={theme.iconSize.md} color={theme.colors.accent.primary} />}
+            label={t(`settings.theme.options.${themePreference}.label`)}
+            onPress={() => setThemePopupVisible(true)}
+          />
+        </View>
+
         <View
           style={{
             marginHorizontal: theme.spacing.padding.base,
@@ -242,6 +290,20 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
         title={activeSlot !== null ? slotLabels[activeSlot] : ''}
         subtitle={t('settings.visualSettings.selectItem')}
         items={menuItems}
+      />
+      <BottomPopUpMenu
+        visible={themePopupVisible}
+        onClose={() => setThemePopupVisible(false)}
+        title={t('settings.theme.popupTitle')}
+        subtitle={t('settings.theme.popupSubtitle')}
+        items={THEME_OPTIONS.map((option) => ({
+          icon: THEME_ICON[option],
+          iconColor: theme.colors.accent.primary,
+          iconBgColor: theme.colors.background.iconDark,
+          title: t(`settings.theme.options.${option}.label`),
+          description: t(`settings.theme.options.${option}.description`),
+          onPress: () => handleThemeChange(option),
+        }))}
       />
       <BottomPopUpMenu
         visible={homeCardPopupVisible}

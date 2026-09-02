@@ -411,6 +411,26 @@
           "description": "Workouts this week and your tracking streak"
         }
       }
+    },
+    "theme": {
+      "sectionTitle": "Appearance",
+      "sectionSubtitle": "Choose how Musclog looks. System follows your device setting.",
+      "popupTitle": "Appearance",
+      "popupSubtitle": "Select a theme",
+      "options": {
+        "system": {
+          "label": "System",
+          "description": "Follow your device setting"
+        },
+        "light": {
+          "label": "Light",
+          "description": "Always use the light theme"
+        },
+        "dark": {
+          "label": "Dark",
+          "description": "Always use the dark theme"
+        }
+      }
     }
   }
 }

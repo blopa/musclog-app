@@ -16,7 +16,7 @@ import type { Theme } from '@/theme';
 const theme = {
   colors: {
     status: { emeraldLight: '#emerald', red400: '#red' },
-    text: { primary: '#text' },
+    text: { onColorful: '#on-colorful', primary: '#text' },
   },
 } as unknown as Theme;
 
@@ -95,8 +95,10 @@ describe('getProgressBarColor', () => {
     expect(getProgressBarColor('exceeded', theme)).toBe('#red');
   });
 
-  it('falls back to the neutral text colour while the goal is still open', () => {
-    expect(getProgressBarColor('not-reached', theme)).toBe('#text');
+  it('falls back to on-colorful ink while the goal is still open', () => {
+    // The bar sits on the card's gradient, so the neutral fill is the fixed white
+    // one rather than the theme's on-surface ink.
+    expect(getProgressBarColor('not-reached', theme)).toBe('#on-colorful');
   });
 });
 

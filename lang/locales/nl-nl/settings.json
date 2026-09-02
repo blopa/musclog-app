@@ -411,6 +411,26 @@
           "description": "Trainingen deze week en je bijhoudreeks"
         }
       }
+    },
+    "theme": {
+      "sectionTitle": "Weergave",
+      "sectionSubtitle": "Kies hoe Musclog eruitziet. 'Systeem' volgt de instelling van je apparaat.",
+      "popupTitle": "Weergave",
+      "popupSubtitle": "Kies een thema",
+      "options": {
+        "system": {
+          "label": "Systeem",
+          "description": "Volg de instelling van je apparaat"
+        },
+        "light": {
+          "label": "Licht",
+          "description": "Gebruik altijd het lichte thema"
+        },
+        "dark": {
+          "label": "Donker",
+          "description": "Gebruik altijd het donkere thema"
+        }
+      }
     }
   }
 }

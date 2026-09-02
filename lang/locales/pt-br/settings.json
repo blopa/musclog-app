@@ -411,6 +411,26 @@
           "description": "Treinos desta semana e sua sequência de registro"
         }
       }
+    },
+    "theme": {
+      "sectionTitle": "Aparência",
+      "sectionSubtitle": "Escolha como o Musclog aparece. «Sistema» segue a configuração do seu dispositivo.",
+      "popupTitle": "Aparência",
+      "popupSubtitle": "Selecione um tema",
+      "options": {
+        "system": {
+          "label": "Sistema",
+          "description": "Seguir a configuração do dispositivo"
+        },
+        "light": {
+          "label": "Claro",
+          "description": "Sempre usar o tema claro"
+        },
+        "dark": {
+          "label": "Escuro",
+          "description": "Sempre usar o tema escuro"
+        }
+      }
     }
   }
 }

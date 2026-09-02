@@ -281,7 +281,7 @@ export function FilterWorkoutsModal({
                 >
                   <Text
                     className={`text-sm ${
-                      isSelected ? 'font-bold text-black' : 'font-semibold text-text-secondary'
+                      isSelected ? 'font-bold text-text-black' : 'font-semibold text-text-secondary'
                     }`}
                   >
                     {muscle.label}

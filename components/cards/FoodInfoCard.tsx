@@ -136,7 +136,7 @@ export function FoodInfoCard({
           {/* Grid View — inset lives on page 2 so the chart border is not flush with the page seam (avoids 1px bleed) */}
           <View className="flex-none" style={{ width: scrollViewWidth || '100%' }}>
             <View className="mb-2 flex-row gap-3">
-              <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
+              <View className="flex-1 overflow-hidden rounded-xl border border-ink/5 bg-ink/5 p-3">
                 <View className="absolute bottom-0 left-0 h-1 w-full bg-indigo-500 opacity-50" />
                 <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
                   {windowWidth < 380 ? t('food.macros.proteinShort') : t('food.macros.protein')}
@@ -150,7 +150,7 @@ export function FoodInfoCard({
                   })}
                 </Text>
               </View>
-              <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
+              <View className="flex-1 overflow-hidden rounded-xl border border-ink/5 bg-ink/5 p-3">
                 <View className="absolute bottom-0 left-0 h-1 w-full bg-emerald-500 opacity-50" />
                 <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
                   {windowWidth < 380 ? t('food.macros.carbsShort') : t('food.macros.carbs')}
@@ -164,7 +164,7 @@ export function FoodInfoCard({
                   })}
                 </Text>
               </View>
-              <View className="flex-1 overflow-hidden rounded-xl border border-white/5 bg-white/5 p-3">
+              <View className="flex-1 overflow-hidden rounded-xl border border-ink/5 bg-ink/5 p-3">
                 <View className="absolute bottom-0 left-0 h-1 w-full bg-yellow-500 opacity-50" />
                 <Text className="mb-1 text-xs font-medium uppercase tracking-wider text-text-secondary">
                   {windowWidth < 380 ? t('food.macros.fatShort') : t('food.macros.fat')}
@@ -184,7 +184,7 @@ export function FoodInfoCard({
           {/* Circular Chart View — margin insets the bordered card from the page seam (avoid padding on the page width, which can break paging) */}
           <View className="flex-none" style={{ width: scrollViewWidth || '100%' }}>
             <View
-              className="flex-row items-center gap-4 rounded-xl border border-white/5 bg-white/5 p-3"
+              className="flex-row items-center gap-4 rounded-xl border border-ink/5 bg-ink/5 p-3"
               style={{ marginLeft: 2 }}
             >
               <View className="h-24 w-24 flex-none">

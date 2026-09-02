@@ -116,21 +116,21 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
               ? renderStat(
                   t('progress.weeklyWeightChange'),
                   `${insights.weightChangeWeekly > 0 ? '+' : ''}${formatDecimal(insights.weightChangeWeekly, 2)}`,
-                  insights.weightChangeWeekly > 0 ? 'text-red-500' : 'text-green-500'
+                  insights.weightChangeWeekly > 0 ? 'text-status-error' : 'text-status-success'
                 )
               : null}
             {hasFatMassChange
               ? renderStat(
                   t('progress.fatMassChange'),
                   `${insights.fatMassChange > 0 ? '+' : ''}${formatDecimal(insights.fatMassChange, 2)}`,
-                  insights.fatMassChange > 0 ? 'text-red-500' : 'text-green-500'
+                  insights.fatMassChange > 0 ? 'text-status-error' : 'text-status-success'
                 )
               : null}
             {hasLeanMassChange
               ? renderStat(
                   t('progress.leanMassChange'),
                   `${insights.leanBodyMassChange > 0 ? '+' : ''}${formatDecimal(insights.leanBodyMassChange, 2)}`,
-                  insights.leanBodyMassChange > 0 ? 'text-green-500' : 'text-red-500'
+                  insights.leanBodyMassChange > 0 ? 'text-status-success' : 'text-status-error'
                 )
               : null}
           </View>

@@ -155,7 +155,7 @@ export function StepperInlineInput({
   );
 
   return (
-    <View className="flex-row items-center justify-between overflow-hidden rounded-xl border border-emerald-900/20 bg-bg-card p-5">
+    <View className="flex-row items-center justify-between overflow-hidden rounded-xl border border-border-accent bg-bg-card p-5">
       <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-3">
         {Icon ? (
           <View
@@ -169,11 +169,11 @@ export function StepperInlineInput({
           </View>
         ) : null}
         <View className="min-w-0 flex-1">
-          <Text className="font-semibold text-white" numberOfLines={1} ellipsizeMode="tail">
+          <Text className="font-semibold text-text-primary" numberOfLines={1} ellipsizeMode="tail">
             {label}
           </Text>
           {subtitle ? (
-            <Text className="text-xs text-gray-500" numberOfLines={1} ellipsizeMode="tail">
+            <Text className="text-xs text-text-tertiary" numberOfLines={1} ellipsizeMode="tail">
               {subtitle}
             </Text>
           ) : null}
@@ -204,7 +204,7 @@ export function StepperInlineInput({
               onBlur={handleInputBlur}
               onSubmitEditing={handleInputSubmit}
               keyboardType={maxFractionDigits === 0 ? 'numeric' : 'decimal-pad'}
-              className="p-0 text-center text-xl font-bold text-white"
+              className="p-0 text-center text-xl font-bold text-text-primary"
               style={{
                 width: theme.size['4xl'],
                 padding: theme.spacing.padding.zero,
@@ -222,7 +222,7 @@ export function StepperInlineInput({
             />
             {unit ? (
               <Text
-                className="text-xs text-gray-500"
+                className="text-xs text-text-tertiary"
                 style={{ fontSize: theme.typography.fontSize.xs }}
               >
                 {unit}
@@ -231,10 +231,10 @@ export function StepperInlineInput({
           </View>
         ) : (
           <Pressable onPress={handleValuePress} className="w-16 items-center">
-            <Text className="text-xl font-bold text-white">{formatValue(value)}</Text>
+            <Text className="text-xl font-bold text-text-primary">{formatValue(value)}</Text>
             {unit ? (
               <Text
-                className="text-xs text-gray-500"
+                className="text-xs text-text-tertiary"
                 style={{ fontSize: theme.typography.fontSize.xs }}
               >
                 {unit}

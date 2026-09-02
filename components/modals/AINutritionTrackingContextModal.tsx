@@ -195,7 +195,7 @@ export function AINutritionTrackingContextModal({
               }}
             />
             <View className="flex-row items-center justify-center gap-2">
-              <Text className="text-sm font-bold text-white">
+              <Text className="text-sm font-bold text-text-primary">
                 {applyLabel ?? t('food.aiNutritionContext.applyContext')}
               </Text>
               <CheckCircle size={theme.iconSize.md} color={theme.colors.text.white} />

@@ -51,7 +51,7 @@ export function EmptyStateCard({
               }}
             >
               <View
-                className="h-36 w-36 items-center justify-center bg-white/10"
+                className="h-36 w-36 items-center justify-center bg-ink/10"
                 style={{ borderRadius: 144 }}
               >
                 <Icon size={theme.iconSize['6xl']} color={theme.colors.text.primary} />

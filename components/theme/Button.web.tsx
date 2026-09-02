@@ -115,7 +115,9 @@ function getTextColor(theme: Theme, variant: ThemeButtonVariant, isDisabled: boo
     return theme.colors.text.secondary;
   }
 
-  if (variant === 'secondary') {
+  // `secondaryGradient` fills with `gradients.button`, which is a SURFACE gradient
+  // rather than a colourful one, so its label is on-surface ink like `secondary`.
+  if (variant === 'secondary' || variant === 'secondaryGradient') {
     return theme.colors.text.primary;
   }
 

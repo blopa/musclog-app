@@ -96,7 +96,7 @@ export function CaloriesBurnedCard() {
             </Pressable>
           </View>
 
-          <Text className="text-3xl font-bold tracking-tight text-white">
+          <Text className="text-3xl font-bold tracking-tight text-text-primary">
             {formatInteger(caloriesBurned)}{' '}
             <Text className="text-lg font-normal text-text-secondary">{t('progress.kcal')}</Text>
           </Text>

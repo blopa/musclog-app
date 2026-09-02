@@ -125,7 +125,7 @@ export function ExerciseTransitionScreen({
               />
               <View className="absolute bottom-0 left-0 right-0 flex flex-col items-start gap-1 p-5">
                 <Text
-                  className="text-2xl font-bold leading-tight text-white"
+                  className="text-2xl font-bold leading-tight text-text-on-colorful"
                   style={{
                     textShadowColor: theme.colors.overlay.black90,
                     textShadowOffset: { width: 0, height: 1 },

@@ -37,7 +37,7 @@ export function FoodNotFoundModal({
         "We couldn't find this item in our database. What would you like to do?"
       )}
       headerIcon={
-        <View className="size-16 items-center justify-center rounded-full bg-orange-500/10">
+        <View className="size-16 items-center justify-center rounded-full bg-status-warning/10">
           <AlertTriangle size={theme.iconSize['2xl']} color={theme.colors.status.warning} />
         </View>
       }
@@ -63,14 +63,18 @@ export function FoodNotFoundModal({
                 padding: 16,
               }}
             >
-              <View className="h-12 w-12 items-center justify-center rounded-lg bg-white/20">
+              <View className="h-12 w-12 items-center justify-center rounded-lg bg-text-on-colorful/20">
                 <Text className="text-2xl">✨</Text>
               </View>
               <View className="flex-1">
-                <Text className="text-lg font-bold text-white">{t('nutrition.tryAICamera')}</Text>
-                <Text className="text-xs text-white/80">{t('nutrition.tryAICameraDesc')}</Text>
+                <Text className="text-lg font-bold text-text-on-colorful">
+                  {t('nutrition.tryAICamera')}
+                </Text>
+                <Text className="text-xs text-text-on-colorful/80">
+                  {t('nutrition.tryAICameraDesc')}
+                </Text>
               </View>
-              <ChevronRight size={theme.iconSize.md} color={theme.colors.text.primary} />
+              <ChevronRight size={theme.iconSize.md} color={theme.colors.text.onColorful} />
             </LinearGradient>
           </Pressable>
         ) : null}
@@ -83,7 +87,7 @@ export function FoodNotFoundModal({
           }}
           className="flex-row items-center gap-4 rounded-2xl border border-border-default bg-bg-overlay p-4"
         >
-          <View className="h-12 w-12 items-center justify-center rounded-lg bg-white/10">
+          <View className="h-12 w-12 items-center justify-center rounded-lg bg-ink/10">
             <Search size={theme.iconSize.md} color={theme.colors.accent.primary} />
           </View>
           <View className="flex-1">
@@ -103,7 +107,7 @@ export function FoodNotFoundModal({
           }}
           className="flex-row items-center gap-4 rounded-2xl border border-border-default bg-bg-overlay p-4"
         >
-          <View className="h-12 w-12 items-center justify-center rounded-lg bg-white/10">
+          <View className="h-12 w-12 items-center justify-center rounded-lg bg-ink/10">
             <Edit
               size={theme.iconSize.md}
               color={theme.colors.gradients.accent?.[0] || theme.colors.status.indigo}

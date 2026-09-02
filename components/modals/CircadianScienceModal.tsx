@@ -106,7 +106,7 @@ function RateStat({ label, value }: { label: string; value: string }) {
         borderColor: theme.colors.background.white5,
       }}
     >
-      <Text className="text-base font-bold text-white">{value}</Text>
+      <Text className="text-base font-bold text-text-primary">{value}</Text>
       <Text
         className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider"
         style={{ color: theme.colors.text.secondary }}
@@ -160,7 +160,7 @@ function PhaseCard({
           <View className="mb-1 flex-row items-center justify-between">
             <View className="flex-row items-center gap-2">
               {isActive ? <LiveDot /> : null}
-              <Text className="text-sm font-bold text-white">
+              <Text className="text-sm font-bold text-text-primary">
                 {t(`progress.circadianPhase.${blockKey}`)}
               </Text>
             </View>
@@ -250,7 +250,7 @@ export function CircadianScienceModal({ visible, onClose, tdee }: Props) {
           </View>
 
           <Text
-            className="mt-2 font-bold tracking-tight text-white"
+            className="mt-2 font-bold tracking-tight text-text-primary"
             style={{ fontSize: 52, lineHeight: 56 }}
           >
             {formatInteger(Math.floor(burned))}

@@ -411,6 +411,26 @@
           "description": "Entrenamientos de esta semana y tu racha de registro"
         }
       }
+    },
+    "theme": {
+      "sectionTitle": "Apariencia",
+      "sectionSubtitle": "Elige cómo se ve Musclog. «Sistema» sigue la configuración de tu dispositivo.",
+      "popupTitle": "Apariencia",
+      "popupSubtitle": "Selecciona un tema",
+      "options": {
+        "system": {
+          "label": "Sistema",
+          "description": "Seguir la configuración del dispositivo"
+        },
+        "light": {
+          "label": "Claro",
+          "description": "Usar siempre el tema claro"
+        },
+        "dark": {
+          "label": "Oscuro",
+          "description": "Usar siempre el tema oscuro"
+        }
+      }
     }
   }
 }

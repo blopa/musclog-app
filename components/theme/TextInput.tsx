@@ -110,7 +110,7 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
               {label}
             </Animated.Text>
           )}
-          {required ? <Text className="ml-1 text-sm font-medium text-red-500">*</Text> : null}
+          {required ? <Text className="ml-1 text-sm font-medium text-status-error">*</Text> : null}
         </View>
         {Platform.OS === 'web' ? (
           <View
@@ -120,7 +120,7 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
                 'min-h-14 items-start py-3': multiline,
                 'h-14 items-center': !multiline,
               },
-              'border-white/10 focus-within:border-accent-primary/50 focus-within:shadow-md'
+              'border-ink/10 focus-within:border-accent-primary/50 focus-within:shadow-md'
             )}
           >
             <RNTextInput

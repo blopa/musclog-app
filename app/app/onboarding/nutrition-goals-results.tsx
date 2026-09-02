@@ -542,16 +542,16 @@ export default function NutritionGoalsResults() {
               <MaterialIcons
                 name="bolt"
                 size={96}
-                color={theme.colors.text.white}
+                color={theme.colors.text.onColorful}
                 style={{ opacity: 0.2 }}
               />
             </View>
 
             <View className="relative z-10">
               <Text
-                className="mb-1 text-sm font-semibold uppercase tracking-widest text-white/80"
+                className="mb-1 text-sm font-semibold uppercase tracking-widest text-text-on-colorful/80"
                 style={{
-                  color: `${theme.colors.text.white}CC`,
+                  color: `${theme.colors.text.onColorful}CC`,
                   fontSize: theme.typography.fontSize.sm,
                   fontWeight: theme.typography.fontWeight.semibold,
                   letterSpacing: 2,
@@ -562,9 +562,9 @@ export default function NutritionGoalsResults() {
 
               <View className="flex-row items-baseline gap-2">
                 <Text
-                  className="text-5xl font-black text-white"
+                  className="text-5xl font-black text-text-on-colorful"
                   style={{
-                    color: theme.colors.text.white,
+                    color: theme.colors.text.onColorful,
                     fontSize: theme.typography.fontSize['5xl'],
                     fontWeight: theme.typography.fontWeight.black,
                   }}
@@ -572,9 +572,9 @@ export default function NutritionGoalsResults() {
                   {formattedCalories}
                 </Text>
                 <Text
-                  className="text-xl font-bold text-white/90"
+                  className="text-xl font-bold text-text-on-colorful/90"
                   style={{
-                    color: `${theme.colors.text.white}E6`,
+                    color: `${theme.colors.text.onColorful}E6`,
                     fontSize: theme.typography.fontSize.xl,
                     fontWeight: theme.typography.fontWeight.bold,
                   }}
@@ -588,7 +588,7 @@ export default function NutritionGoalsResults() {
                   <Text
                     className="text-sm font-medium"
                     style={{
-                      color: `${theme.colors.text.white}B3`,
+                      color: `${theme.colors.text.onColorful}B3`,
                       fontSize: theme.typography.fontSize.sm,
                       fontWeight: theme.typography.fontWeight.medium,
                     }}
@@ -600,7 +600,7 @@ export default function NutritionGoalsResults() {
                   <Text
                     className="mt-1 text-xs"
                     style={{
-                      color: `${theme.colors.text.white}80`,
+                      color: `${theme.colors.text.onColorful}80`,
                       fontSize: theme.typography.fontSize.xxs,
                       fontWeight: theme.typography.fontWeight.normal,
                     }}
@@ -616,7 +616,7 @@ export default function NutritionGoalsResults() {
                   <Text
                     className="text-sm font-medium"
                     style={{
-                      color: `${theme.colors.text.white}E6`,
+                      color: `${theme.colors.text.onColorful}E6`,
                       fontSize: theme.typography.fontSize.sm,
                       fontWeight: theme.typography.fontWeight.medium,
                     }}
@@ -636,16 +636,16 @@ export default function NutritionGoalsResults() {
                 <View
                   className="mt-4 flex-row items-center justify-between border-t pt-4"
                   style={{
-                    borderTopColor: `${theme.colors.text.white}1A`,
+                    borderTopColor: `${theme.colors.text.onColorful}1A`,
                     borderTopWidth: 1,
                     marginTop: theme.spacing.margin.md,
                     paddingTop: theme.spacing.padding.md,
                   }}
                 >
                   <Text
-                    className="text-xs font-medium text-white/70"
+                    className="text-xs font-medium text-text-on-colorful/70"
                     style={{
-                      color: `${theme.colors.text.white}B3`,
+                      color: `${theme.colors.text.onColorful}B3`,
                       fontSize: theme.typography.fontSize.xxs,
                       fontWeight: theme.typography.fontWeight.medium,
                     }}
@@ -682,7 +682,7 @@ export default function NutritionGoalsResults() {
                 {t('nutritionGoals.results.protein')}
               </Text>
               <Text
-                className="text-center text-lg font-bold leading-tight text-white"
+                className="text-center text-lg font-bold leading-tight text-text-primary"
                 style={{
                   color: theme.colors.text.primary,
                   fontSize: theme.typography.fontSize.lg,
@@ -692,7 +692,7 @@ export default function NutritionGoalsResults() {
                 {t('common.weightFormatG', { value: formatInteger(displayData?.protein ?? 0) })}
               </Text>
               <Text
-                className="text-center text-[11px] font-medium text-slate-500"
+                className="text-center text-[11px] font-medium text-text-tertiary"
                 style={{
                   color: theme.colors.text.tertiary,
                   fontSize: theme.typography.fontSize.xs,
@@ -726,7 +726,7 @@ export default function NutritionGoalsResults() {
                 {t('nutritionGoals.results.carbs')}
               </Text>
               <Text
-                className="text-center text-lg font-bold leading-tight text-white"
+                className="text-center text-lg font-bold leading-tight text-text-primary"
                 style={{
                   color: theme.colors.text.primary,
                   fontSize: theme.typography.fontSize.lg,
@@ -736,7 +736,7 @@ export default function NutritionGoalsResults() {
                 {t('common.weightFormatG', { value: formatInteger(displayData?.carbs ?? 0) })}
               </Text>
               <Text
-                className="text-center text-[11px] font-medium text-slate-500"
+                className="text-center text-[11px] font-medium text-text-tertiary"
                 style={{
                   color: theme.colors.text.tertiary,
                   fontSize: theme.typography.fontSize.xxs,
@@ -770,7 +770,7 @@ export default function NutritionGoalsResults() {
                 {t('nutritionGoals.results.fats')}
               </Text>
               <Text
-                className="text-center text-lg font-bold leading-tight text-white"
+                className="text-center text-lg font-bold leading-tight text-text-primary"
                 style={{
                   color: theme.colors.text.primary,
                   fontSize: theme.typography.fontSize.lg,
@@ -780,7 +780,7 @@ export default function NutritionGoalsResults() {
                 {t('common.weightFormatG', { value: formatInteger(displayData?.fats ?? 0) })}
               </Text>
               <Text
-                className="text-center text-[11px] font-medium text-slate-500"
+                className="text-center text-[11px] font-medium text-text-tertiary"
                 style={{
                   color: theme.colors.text.tertiary,
                   fontSize: theme.typography.fontSize.xs,
@@ -959,7 +959,7 @@ export default function NutritionGoalsResults() {
                   color={theme.colors.accent.primary}
                 />
                 <Text
-                  className="text-sm font-bold text-white"
+                  className="text-sm font-bold text-text-primary"
                   style={{
                     color: theme.colors.text.primary,
                     fontSize: theme.typography.fontSize.sm,
@@ -975,7 +975,7 @@ export default function NutritionGoalsResults() {
               {isMaintenance ? (
                 <View className="flex-col items-center justify-center py-2">
                   <Text
-                    className="mb-2 text-base font-semibold text-white"
+                    className="mb-2 text-base font-semibold text-text-primary"
                     style={{
                       color: theme.colors.text.primary,
                       fontSize: theme.typography.fontSize.base,
@@ -986,7 +986,7 @@ export default function NutritionGoalsResults() {
                     {t('nutritionGoals.results.projectionMaintenanceTitle')}
                   </Text>
                   <Text
-                    className="max-w-[280px] text-center text-sm leading-relaxed text-slate-400"
+                    className="max-w-[280px] text-center text-sm leading-relaxed text-text-tertiary"
                     style={{
                       color: theme.colors.text.secondary,
                       fontSize: theme.typography.fontSize.sm,
@@ -1006,7 +1006,7 @@ export default function NutritionGoalsResults() {
                 <>
                   <View className="flex-col items-center justify-center py-1">
                     <Text
-                      className="mb-1 text-xs font-medium text-slate-400"
+                      className="mb-1 text-xs font-medium text-text-tertiary"
                       style={{
                         color: theme.colors.text.secondary,
                         fontSize: theme.typography.fontSize.xxs,
@@ -1018,7 +1018,7 @@ export default function NutritionGoalsResults() {
                     </Text>
                     <View className="flex-row items-baseline">
                       <Text
-                        className="mr-2 text-4xl font-black tracking-tight text-white"
+                        className="mr-2 text-4xl font-black tracking-tight text-text-primary"
                         style={{
                           color: theme.colors.text.primary,
                           fontSize: theme.typography.fontSize['4xl'],
@@ -1040,7 +1040,7 @@ export default function NutritionGoalsResults() {
                       </Text>
                     </View>
                     <Text
-                      className="max-w-[200px] text-center text-[11px] text-slate-500"
+                      className="max-w-[200px] text-center text-[11px] text-text-tertiary"
                       style={{
                         color: theme.colors.text.tertiary,
                         fontSize: theme.typography.fontSize.xxs,

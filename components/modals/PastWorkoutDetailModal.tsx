@@ -93,17 +93,17 @@ function WorkoutSummaryCard({
           {/* Total Time */}
           <Pressable className="flex-1 flex-col" onPress={onEditTime}>
             <Text
-              className="text-[10px] font-bold uppercase tracking-wider text-white"
+              className="text-[10px] font-bold uppercase tracking-wider text-text-primary"
               style={{ opacity: 0.8 }}
             >
               {t('workoutDetail.totalTime')}
             </Text>
             <View className="flex-row items-baseline gap-1">
-              <Text className="text-2xl font-extrabold tracking-tight text-white">
+              <Text className="text-2xl font-extrabold tracking-tight text-text-primary">
                 {durationDisplay.value}
               </Text>
               {durationDisplay.suffix ? (
-                <Text className="text-xs font-medium text-white" style={{ opacity: 0.8 }}>
+                <Text className="text-xs font-medium text-text-primary" style={{ opacity: 0.8 }}>
                   {durationDisplay.suffix}
                 </Text>
               ) : null}
@@ -116,16 +116,16 @@ function WorkoutSummaryCard({
             style={{ borderLeftColor: theme.colors.background.white2 }}
           >
             <Text
-              className="text-[10px] font-bold uppercase tracking-wider text-white"
+              className="text-[10px] font-bold uppercase tracking-wider text-text-primary"
               style={{ opacity: 0.8 }}
             >
               {t('workoutDetail.volume')}
             </Text>
             <View className="flex-row items-baseline gap-1">
-              <Text className="text-2xl font-extrabold tracking-tight text-white">
+              <Text className="text-2xl font-extrabold tracking-tight text-text-primary">
                 {formatDisplayWeightKg(locale, units, volume)}
               </Text>
-              <Text className="text-xs font-medium text-white" style={{ opacity: 0.8 }}>
+              <Text className="text-xs font-medium text-text-primary" style={{ opacity: 0.8 }}>
                 {t(weightUnitKey)}
               </Text>
             </View>
@@ -137,16 +137,16 @@ function WorkoutSummaryCard({
             style={{ borderLeftColor: theme.colors.background.white2 }}
           >
             <Text
-              className="text-[10px] font-bold uppercase tracking-wider text-white"
+              className="text-[10px] font-bold uppercase tracking-wider text-text-primary"
               style={{ opacity: 0.8 }}
             >
               {t('workoutDetail.calories')}
             </Text>
             <View className="flex-row items-baseline gap-1">
-              <Text className="text-2xl font-extrabold tracking-tight text-white">
+              <Text className="text-2xl font-extrabold tracking-tight text-text-primary">
                 {formatInteger(calories)}
               </Text>
-              <Text className="text-xs font-medium text-white" style={{ opacity: 0.8 }}>
+              <Text className="text-xs font-medium text-text-primary" style={{ opacity: 0.8 }}>
                 {t('common.kcal')}
               </Text>
             </View>

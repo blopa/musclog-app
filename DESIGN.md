@@ -1,51 +1,94 @@
 # Musclog — Design System
 
-The app uses a dark, high-contrast performance aesthetic built from green-black surfaces, emerald
+The app uses a high-contrast performance aesthetic built from green-tinted surfaces, emerald
 actions, restrained supporting color, and dense data displays. `theme.tokens.js` and `theme.ts` are
 the implementation sources of truth; this document describes how to use them.
 
 ## Theme status
 
-Only the dark palette ships. `lightTheme` currently aliases `darkTheme`, even though a future light
-palette is reserved in `theme.tokens.js`. Do not describe light/system selection as a visual feature
-until a distinct palette is implemented and tested.
+Both palettes ship. Dark is the reference design; light is the same structure re-picked for a bright
+ground. Users choose Appearance — System, Light or Dark — under Settings → Interface, and the
+preference is stored in the settings table, so writing that row re-themes the app.
 
-React components obtain dynamic tokens through `useTheme()` or `useThemeContext()`. NativeWind
-classes compile against the static dark tokens. Avoid direct imports of `theme` in interactive
-components; the local ESLint rule enforces the preferred access pattern.
+Both halves of the styling system follow that choice:
+
+- React components read dynamic tokens through `useTheme()` or `useThemeContext()`.
+- NativeWind `className` colors resolve to CSS custom properties, written into `:root` (light) and
+  `.dark:root` (dark) by the base plugin in `tailwind.config.js`. `ThemeProvider` pushes the stored
+  preference into NativeWind's color scheme, which swaps the whole set at runtime on native and web.
+
+Avoid direct imports of `theme` in interactive components; the local ESLint rule enforces the
+preferred access pattern.
+
+### Surfaces that do not follow the theme
+
+Some surfaces are not the app's background: a camera viewfinder, a photo, a scrim over either, or a
+card whose ground is a fixed colorful gradient. Their content is white-on-dark whatever the user
+picked, so they pin their own palette with `ForcedDarkTheme` / `ForcedDarkThemeScope`
+(`context/ForcedThemeContext.tsx`) rather than hand-picking tokens. Use the scope form around a
+whole component — a component reads `useTheme()` during its own render, so a provider wrapped around
+its output cannot reach its inline styles.
+
+Text drawn on a colorful gradient uses the fixed-white tokens (`text.onColorful`,
+`overlay.onColorful*`), never the on-surface ink.
+
+### Role tokens
+
+A few primaries keep their job across themes instead of their lightness, and reading them by name is
+what keeps a theme switch from inverting something that should not move:
+
+| Token                                    | Job                                                  |
+| ---------------------------------------- | ---------------------------------------------------- |
+| `text.black` / `inkOnAccent`             | Ink printed on a solid brand or status fill          |
+| `shadow` / `scrimBase`                   | Backdrops, camera scrims, drop shadows — dark always |
+| `background.white`                       | Fixed-white fills: slider and switch thumbs          |
+| `text.onColorful`, `overlay.onColorful*` | Ink on a colorful gradient or a photo                |
+| `background.separatorLight`              | Image placeholder and separator fill                 |
+
+The `ink` Tailwind color is the on-surface ink at an alpha — `border-ink/10`, `bg-ink/5`. Use it for
+hairlines and washes instead of a literal `border-white/10`, which only reads on a dark ground.
 
 ## Color
 
-The primary palette is 23 colors, defined once in `kineticDepth` and grouped by role rather than by
-hue name: six surfaces, three text steps, six brand greens, and eight status hues. Anything softer
-than a primary is derived — `addOpacityToHex` for translucent washes, `mixHex` for opaque tinted
-surfaces — so a new hex value in `kineticDepth` should be rare and deliberate.
+The primary palette is 23 colors plus a short tail of role primaries, defined once per theme in
+`kineticDepth` / `kineticDepthLight` and grouped by role rather than by hue name: six surfaces, three
+text steps, six brand greens, and eight status hues. Everything else — the semantic token tree, the
+Tailwind colors, the CSS variables — is derived from a palette by `createColors` and
+`createThemeColors`, so both themes stay the same shape by construction. Anything softer than a
+primary is derived too: `addOpacityToHex` for translucent washes, `mixHex` for opaque tinted
+surfaces. A new hex value in either palette should be rare and deliberate.
 
 ### Core surfaces
 
 Surfaces form a four-step tonal ladder plus two tinted branches. Each step of the ladder is at least
 1.09x contrast from the one below it, which is the point at which a layer edge is actually visible
-without a border.
+without a border. The ladder inverts between themes: elevation moves _away_ from the base, which is
+lighter on dark and darker on light.
 
-| Role           | Token                                       | Current value |
-| -------------- | ------------------------------------------- | ------------- |
-| App background | `background.primary` / `surfaceBase`        | `#091310`     |
-| Card           | `background.card` / `surfaceCard`           | `#131d18`     |
-| Elevated card  | `background.cardElevated` / `surfaceRaised` | `#1b2721`     |
-| Tinted overlay | `background.overlay` / `surfaceTint`        | `#0c2419`     |
-| Accent surface | `border.accent` / `surfaceAccent`           | `#1c3829`     |
-| Hairline       | `border.dashed` / `borderHairline`          | `#2c3a32`     |
-| Primary text   | `text.primary` / `textPrimary`              | `#dce5de`     |
-| Primary action | `accent.primary` / `brandPrimary`           | `#29a577`     |
+| Role           | Token                                       | Dark      | Light     |
+| -------------- | ------------------------------------------- | --------- | --------- |
+| App background | `background.primary` / `surfaceBase`        | `#091310` | `#fafcfb` |
+| Card           | `background.card` / `surfaceCard`           | `#131d18` | `#eef2f0` |
+| Elevated card  | `background.cardElevated` / `surfaceRaised` | `#1b2721` | `#e0e7e3` |
+| Tinted overlay | `background.overlay` / `surfaceTint`        | `#0c2419` | `#dff0e7` |
+| Accent surface | `border.accent` / `surfaceAccent`           | `#1c3829` | `#c6e6d4` |
+| Hairline       | `border.dashed` / `borderHairline`          | `#2c3a32` | `#c2cfc8` |
+| Primary text   | `text.primary` / `textPrimary`              | `#dce5de` | `#0f1a16` |
+| Primary action | `accent.primary` / `brandPrimary`           | `#29a577` | `#0e7a54` |
+
+Accents get _darker_ on light, not lighter: every brand and status hue in the light palette clears
+4.5:1 as text on `surfaceBase` and `surfaceCard`, and carries white ink at 4.5:1 or better when it is
+used as a solid fill. Copying a dark-theme accent into the light palette is the mistake that makes an
+emerald button vanish.
 
 Use semantic theme paths rather than copying these hex values. Raw values are listed only to make
 the visual direction explicit.
 
 ### Text contrast
 
-The three text steps all clear WCAG AA on every surface above: `text.primary` at 12:1 or better,
-`text.secondary` at 6.8:1, and `text.tertiary` at 4.6:1. `text.tertiary` is the floor — do not
-introduce a dimmer neutral for label or caption text.
+The three text steps all clear WCAG AA on every surface above, in both themes: `text.primary` at 12:1
+or better, `text.secondary` at 5.8:1, and `text.tertiary` at 4.6:1. `text.tertiary` is the floor — do
+not introduce a dimmer neutral for label or caption text.
 
 A handful of saturated accents (`accent.tertiary`, `status.indigo`, `rose.brand`) sit between 3:1
 and 4.5:1 on the darker surfaces. They are fine for icons, chart series, borders and large type,
@@ -166,4 +209,6 @@ belongs in both the desktop nav bar and the burger menu.
 - Touch targets remain inside parent bounds.
 - Status remains understandable without color.
 - Numbers parse and format correctly in both comma- and period-decimal locales.
+- Works in both themes: check a switch to Light, and confirm nothing relies on a literal `text-white`
+  or a dark-only accent.
 - Loading, empty, error, disabled, and offline states are designed—not left to defaults.

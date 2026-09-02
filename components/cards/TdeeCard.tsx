@@ -34,7 +34,7 @@ export function TdeeCard({ tdeeValue = 2000, subtitle, tagText }: TdeeCardProps)
         </View>
 
         {/* Main TDEE value */}
-        <Text className="text-3xl font-bold tracking-tight text-white">
+        <Text className="text-3xl font-bold tracking-tight text-text-primary">
           {formatInteger(tdeeValue)}{' '}
           <Text className="text-lg font-normal text-text-secondary">
             {t('progress.kcalPerDay')}

@@ -83,7 +83,7 @@ export function BarcodeTextSearchSheet({
             style={StyleSheet.absoluteFill}
           />
           <View className="flex-row items-center justify-center gap-2">
-            <Text className="text-sm font-bold text-white">
+            <Text className="text-sm font-bold text-text-primary">
               {t('food.aiCamera.barcodeTextSearchSubmit')}
             </Text>
             <Search size={theme.iconSize.md} color={theme.colors.text.white} />

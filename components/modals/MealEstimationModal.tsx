@@ -129,7 +129,7 @@ export function MealEstimationModal({
           }}
         >
           <Camera size={16} color="white" />
-          <Text className="text-sm font-medium text-white">
+          <Text className="text-sm font-medium text-text-primary">
             {t('nutrition.mealEstimation.retake')}
           </Text>
         </TouchableOpacity>

@@ -46,7 +46,7 @@ export function ChatWorkoutCard({
           }}
         />
         <View className="absolute bottom-3 left-4">
-          <Text className="mb-1 text-lg font-bold text-white">{title}</Text>
+          <Text className="mb-1 text-lg font-bold text-text-primary">{title}</Text>
           <Text className="text-sm font-medium" style={{ color: theme.colors.accent.primary }}>
             {duration} • {level}
           </Text>

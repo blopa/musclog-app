@@ -131,7 +131,8 @@ const getTextColor = (
   isDisabled: boolean,
   isOutlineVariant: boolean,
   isDashedVariant: boolean,
-  isSecondaryVariant: boolean
+  isSecondaryVariant: boolean,
+  isSecondaryGradientVariant: boolean
 ): string => {
   if (isDisabled) {
     return theme.colors.text.primary30;
@@ -145,7 +146,9 @@ const getTextColor = (
     return theme.colors.text.secondary;
   }
 
-  if (isSecondaryVariant) {
+  // `secondaryGradient` fills with `gradients.button`, which is a SURFACE gradient
+  // rather than a colourful one, so its label is on-surface ink like `secondary`.
+  if (isSecondaryVariant || isSecondaryGradientVariant) {
     return theme.colors.text.primary;
   }
 
@@ -157,7 +160,8 @@ const getIconColor = (
   isDisabled: boolean,
   isOutlineVariant: boolean,
   isDashedVariant: boolean,
-  isSecondaryVariant: boolean
+  isSecondaryVariant: boolean,
+  isSecondaryGradientVariant: boolean
 ): string => {
   if (isDisabled) {
     return theme.colors.text.primary30;
@@ -173,6 +177,10 @@ const getIconColor = (
 
   if (isSecondaryVariant) {
     return theme.colors.accent.secondary;
+  }
+
+  if (isSecondaryGradientVariant) {
+    return theme.colors.text.primary;
   }
 
   return theme.colors.text.onColorful;
@@ -214,21 +222,22 @@ const getButtonTextClassName = (
   isDisabled: boolean,
   isOutlineVariant: boolean,
   isDashedVariant: boolean,
-  isSecondaryVariant: boolean
+  isSecondaryVariant: boolean,
+  isSecondaryGradientVariant: boolean
 ): string => {
   if (isDisabled) {
-    return 'text-white/30';
+    return 'text-ink/30';
   }
 
   if (isOutlineVariant) {
-    return 'text-gray-300';
+    return 'text-text-secondary';
   }
 
   if (isDashedVariant) {
     return 'text-text-secondary';
   }
 
-  if (isSecondaryVariant) {
+  if (isSecondaryVariant || isSecondaryGradientVariant) {
     return 'text-text-primary';
   }
 
@@ -334,7 +343,8 @@ export function Button({
     isDisabled,
     isOutlineVariant,
     isDashedVariant,
-    isSecondaryVariant
+    isSecondaryVariant,
+    isSecondaryGradientVariant
   );
 
   const iconColor = getIconColor(
@@ -342,7 +352,8 @@ export function Button({
     isDisabled,
     isOutlineVariant,
     isDashedVariant,
-    isSecondaryVariant
+    isSecondaryVariant,
+    isSecondaryGradientVariant
   );
 
   const shadow = getShadowStyle(
@@ -423,7 +434,7 @@ export function Button({
 
   const textElement = (
     <Text
-      className={`tracking-wide ${getButtonTextClassName(isDisabled, isOutlineVariant, isDashedVariant, isSecondaryVariant)}`}
+      className={`tracking-wide ${getButtonTextClassName(isDisabled, isOutlineVariant, isDashedVariant, isSecondaryVariant, isSecondaryGradientVariant)}`}
       style={{
         fontSize: config.fontSize,
         fontWeight: config.fontWeight,

@@ -7,6 +7,7 @@ import { CameraView, type CameraViewRef } from '@/components/CameraView';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
 import type { CameraMode } from '@/constants/camera';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
+import { ForcedDarkThemeScope } from '@/context/ForcedThemeContext';
 import { type MealType } from '@/database/models';
 import { NutritionService } from '@/database/services';
 import { useBarcodeScanner } from '@/hooks/useBarcodeScanner';
@@ -121,7 +122,16 @@ type CameraModalProps = {
   onRequestPermission: () => void;
 };
 
-export default function SmartCameraModal({
+/** Same reason as BarcodeCameraModal: the viewfinder stays dark in both themes. */
+export default function SmartCameraModal(props: CameraModalProps) {
+  return (
+    <ForcedDarkThemeScope>
+      <SmartCameraModalContent {...props} />
+    </ForcedDarkThemeScope>
+  );
+}
+
+function SmartCameraModalContent({
   visible,
   onClose,
   mode = 'barcode-scan',

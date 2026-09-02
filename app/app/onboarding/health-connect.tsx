@@ -129,7 +129,7 @@ export default function HealthConnectScreen() {
             <View className="mb-8 w-full gap-4 text-center">
               <View className="flex-row flex-wrap items-center justify-center">
                 <Text
-                  className="text-center font-bold tracking-tight text-white"
+                  className="text-center font-bold tracking-tight text-text-primary"
                   style={{
                     fontSize: theme.typography.fontSize['3xl'],
                     lineHeight: theme.typography.fontSize['3xl'] * 1.1,

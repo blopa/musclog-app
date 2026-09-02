@@ -112,7 +112,7 @@ export function StackedBarLineChart({
     stackColors?.[2] ?? DEFAULT_STACK_COLORS[2],
     stackColors?.[3] ?? DEFAULT_STACK_COLORS[3],
   ];
-  const lineColorResolved = lineColor ?? theme.colors.background.white;
+  const lineColorResolved = lineColor ?? theme.colors.text.primary;
 
   if (data.length === 0) {
     return null;
@@ -163,7 +163,7 @@ export function StackedBarLineChart({
     paddingHorizontal: theme.spacing.padding.sm,
     justifyContent: 'center' as const,
     alignItems: 'center' as const,
-    shadowColor: theme.colors.text.black,
+    shadowColor: theme.colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,

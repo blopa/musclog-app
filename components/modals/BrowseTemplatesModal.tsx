@@ -221,7 +221,7 @@ export function BrowseTemplatesModal({
           <Text className="mb-4 text-lg font-bold text-text-primary">{template.title}</Text>
 
           {/* Stats */}
-          <View className="flex-row items-center gap-6 border-t border-white/5 pt-3">
+          <View className="flex-row items-center gap-6 border-t border-ink/5 pt-3">
             <View className="flex-col gap-0.5">
               <Text className="text-[10px] font-semibold uppercase tracking-widest text-text-secondary">
                 {t('workouts.browseTemplatesModal.stats.duration')}

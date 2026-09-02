@@ -30,7 +30,7 @@ export function HealthCategoryCard({
               strokeWidth={theme.strokeWidth.medium}
             />
           </View>
-          <Text className="text-sm font-medium text-white">{label}</Text>
+          <Text className="text-sm font-medium text-text-primary">{label}</Text>
         </View>
       </GenericCard>
     </View>

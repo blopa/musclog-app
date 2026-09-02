@@ -186,7 +186,7 @@ export function EditPersonalInfoBody({
         ) : null}
 
         {hideGender || gender === 'female' || gender === 'other' ? (
-          <View className="mt-2 rounded-2xl border-2 border-white/5 bg-bg-card p-4">
+          <View className="mt-2 rounded-2xl border-2 border-ink/5 bg-bg-card p-4">
             <View className="flex-row items-center justify-between">
               <View className="flex-1 pr-4">
                 <Text className="text-lg font-bold text-text-primary">

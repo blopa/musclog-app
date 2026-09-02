@@ -11,6 +11,7 @@ import { SmartCameraBottomActions, SmartCameraTopActions } from '@/components/Sm
 import { SMALL_SCREEN_HEIGHT, SmartCameraFrame } from '@/components/SmartCameraFrame';
 import { SmartCameraModePicker } from '@/components/SmartCameraModePicker';
 import type { CameraMode } from '@/constants/camera';
+import { ForcedDarkTheme } from '@/context/ForcedThemeContext';
 import { useTheme } from '@/hooks/useTheme';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -133,7 +134,8 @@ export function SmartCameraShell({
       scrollable={false}
       showHeader={false}
     >
-      {body}
+      {/* The viewfinder is a dark surface in every theme; see ForcedDarkTheme. */}
+      <ForcedDarkTheme>{body}</ForcedDarkTheme>
     </FullScreenModal>
   );
 
@@ -141,9 +143,9 @@ export function SmartCameraShell({
     return shell(
       <View
         className="flex-1 items-center justify-center"
-        style={{ backgroundColor: theme.colors.text.black }}
+        style={{ backgroundColor: theme.colors.background.primary }}
       >
-        <Text style={{ color: theme.colors.text.white }}>
+        <Text style={{ color: theme.colors.text.onColorful }}>
           {t('food.aiCamera.requestingPermission')}
         </Text>
       </View>
@@ -154,9 +156,9 @@ export function SmartCameraShell({
     return shell(
       <View
         className="flex-1 items-center justify-center px-6"
-        style={{ backgroundColor: theme.colors.text.black }}
+        style={{ backgroundColor: theme.colors.background.primary }}
       >
-        <Text className="mb-4 text-center text-lg" style={{ color: theme.colors.text.white }}>
+        <Text className="mb-4 text-center text-lg" style={{ color: theme.colors.text.onColorful }}>
           {t('food.aiCamera.permissionRequired')}
         </Text>
         <Pressable onPress={onRequestPermission} className="rounded-xl bg-accent-primary px-6 py-3">
@@ -176,117 +178,122 @@ export function SmartCameraShell({
       scrollable={false}
       showHeader={false}
     >
-      <View className="flex-1" style={{ backgroundColor: theme.colors.text.black }}>
-        <SystemBars style="light" />
-        <SafeAreaView className="flex-1" edges={['top']}>
-          {/* Camera Background */}
-          <View className="absolute inset-0">
-            {cameraSlot}
-            {/* Gradient Overlay */}
-            <LinearGradient
-              colors={theme.colors.gradients.cameraOverlay}
-              locations={[0, 0.5, 1]}
-              style={StyleSheet.absoluteFill}
-            />
-            {/* Opaque capture state. The spinner is rendered in the camera frame below so it
-                stays centered in the capture area on every screen size. */}
-            {isActionRunning ? (
-              <View
-                pointerEvents="none"
-                style={[StyleSheet.absoluteFill, { backgroundColor: theme.colors.text.black }]}
+      <ForcedDarkTheme>
+        <View className="flex-1" style={{ backgroundColor: theme.colors.background.primary }}>
+          <SystemBars style="light" />
+          <SafeAreaView className="flex-1" edges={['top']}>
+            {/* Camera Background */}
+            <View className="absolute inset-0">
+              {cameraSlot}
+              {/* Gradient Overlay */}
+              <LinearGradient
+                colors={theme.colors.gradients.cameraOverlay}
+                locations={[0, 0.5, 1]}
+                style={StyleSheet.absoluteFill}
               />
-            ) : null}
-          </View>
-
-          <SmartCameraTopActions
-            onClose={onClose}
-            flashEnabled={flashEnabled}
-            onFlashToggle={onFlashToggle}
-            controlsLocked={controlsLocked}
-          />
-
-          {/* Loading Overlay */}
-          {isLoading ? (
-            <View
-              className="absolute inset-0 z-30"
-              style={{ backgroundColor: theme.colors.overlay.black90 }}
-            >
-              <CameraProcessingIndicator cameraMode={cameraMode} />
-            </View>
-          ) : null}
-
-          {/* Main Content - Camera Frame */}
-          <View className="relative z-10 flex-1 items-center justify-center px-6">
-            {/* Heading. zIndex lifts it over the frame's scrim, which spills across the screen. */}
-            <View
-              className="items-center"
-              style={{ marginBottom: isSmallScreen ? 16 : 24, zIndex: 1 }}
-            >
-              <Text
-                className="text-center text-2xl font-bold drop-shadow-md"
-                style={{ color: theme.colors.text.white }}
-              >
-                {t(modeCopy.titleKey)}
-              </Text>
-              <Text
-                className="mt-2 text-center text-sm font-medium drop-shadow-md"
-                style={{ color: theme.colors.overlay.white70 }}
-              >
-                {t(modeCopy.subtitleKey)}
-              </Text>
+              {/* Opaque capture state. The spinner is rendered in the camera frame below so it
+                stays centered in the capture area on every screen size. */}
+              {isActionRunning ? (
+                <View
+                  pointerEvents="none"
+                  style={[
+                    StyleSheet.absoluteFill,
+                    { backgroundColor: theme.colors.background.primary },
+                  ]}
+                />
+              ) : null}
             </View>
 
-            <SmartCameraFrame
-              variant={cameraMode === 'barcode-scan' ? 'barcode' : 'portrait'}
-              isCapturing={isActionRunning}
+            <SmartCameraTopActions
+              onClose={onClose}
+              flashEnabled={flashEnabled}
+              onFlashToggle={onFlashToggle}
+              controlsLocked={controlsLocked}
             />
 
-            {/* Hint. Same zIndex reason as the heading above. */}
-            <View
-              className="flex-row items-center justify-center gap-2"
-              style={{ marginTop: isSmallScreen ? 12 : 20, zIndex: 1 }}
-            >
-              <Sparkles size={theme.iconSize.md} color={theme.colors.overlay.white70} />
-              <Text
-                className="text-center text-sm font-medium drop-shadow-md"
-                style={{ color: theme.colors.overlay.white70 }}
+            {/* Loading Overlay */}
+            {isLoading ? (
+              <View
+                className="absolute inset-0 z-30"
+                style={{ backgroundColor: theme.colors.overlay.black90 }}
               >
-                {t(modeCopy.hintKey)}
-              </Text>
+                <CameraProcessingIndicator cameraMode={cameraMode} />
+              </View>
+            ) : null}
+
+            {/* Main Content - Camera Frame */}
+            <View className="relative z-10 flex-1 items-center justify-center px-6">
+              {/* Heading. zIndex lifts it over the frame's scrim, which spills across the screen. */}
+              <View
+                className="items-center"
+                style={{ marginBottom: isSmallScreen ? 16 : 24, zIndex: 1 }}
+              >
+                <Text
+                  className="text-center text-2xl font-bold drop-shadow-md"
+                  style={{ color: theme.colors.text.onColorful }}
+                >
+                  {t(modeCopy.titleKey)}
+                </Text>
+                <Text
+                  className="mt-2 text-center text-sm font-medium drop-shadow-md"
+                  style={{ color: theme.colors.overlay.onColorful70 }}
+                >
+                  {t(modeCopy.subtitleKey)}
+                </Text>
+              </View>
+
+              <SmartCameraFrame
+                variant={cameraMode === 'barcode-scan' ? 'barcode' : 'portrait'}
+                isCapturing={isActionRunning}
+              />
+
+              {/* Hint. Same zIndex reason as the heading above. */}
+              <View
+                className="flex-row items-center justify-center gap-2"
+                style={{ marginTop: isSmallScreen ? 12 : 20, zIndex: 1 }}
+              >
+                <Sparkles size={theme.iconSize.md} color={theme.colors.overlay.onColorful70} />
+                <Text
+                  className="text-center text-sm font-medium drop-shadow-md"
+                  style={{ color: theme.colors.overlay.onColorful70 }}
+                >
+                  {t(modeCopy.hintKey)}
+                </Text>
+              </View>
             </View>
-          </View>
 
-          {/* Bottom Controls */}
-          <View
-            className="relative z-20 px-4 pt-4"
-            style={{ paddingBottom: isSmallScreen ? 16 : 40 }}
-          >
-            {noticeSlot ? <View className="mb-4">{noticeSlot}</View> : null}
+            {/* Bottom Controls */}
+            <View
+              className="relative z-20 px-4 pt-4"
+              style={{ paddingBottom: isSmallScreen ? 16 : 40 }}
+            >
+              {noticeSlot ? <View className="mb-4">{noticeSlot}</View> : null}
 
-            {/*
+              {/*
               Mode Selector. `onModeChange` is part of the condition, not defaulted to a no-op:
               a picker whose tabs do nothing is worse than no picker, and requiring the handler
               here is what lets `SmartCameraModePicker` take a non-optional one.
             */}
-            {showModePicker && isAiEnabled && onModeChange ? (
-              <SmartCameraModePicker
-                cameraMode={cameraMode}
-                disabled={controlsLocked}
-                isAIVisionEnabled={isAIVisionEnabled}
-                isSmallScreen={isSmallScreen}
-                onModeChange={onModeChange}
-              />
-            ) : null}
+              {showModePicker && isAiEnabled && onModeChange ? (
+                <SmartCameraModePicker
+                  cameraMode={cameraMode}
+                  disabled={controlsLocked}
+                  isAIVisionEnabled={isAIVisionEnabled}
+                  isSmallScreen={isSmallScreen}
+                  onModeChange={onModeChange}
+                />
+              ) : null}
 
-            <SmartCameraBottomActions
-              onGalleryPress={() => runExclusive(onGalleryPress)}
-              onShutterPress={onShutterPress ? () => runExclusive(onShutterPress) : undefined}
-              bottomRightControl={bottomRightControl}
-              controlsLocked={controlsLocked}
-            />
-          </View>
-        </SafeAreaView>
-      </View>
+              <SmartCameraBottomActions
+                onGalleryPress={() => runExclusive(onGalleryPress)}
+                onShutterPress={onShutterPress ? () => runExclusive(onShutterPress) : undefined}
+                bottomRightControl={bottomRightControl}
+                controlsLocked={controlsLocked}
+              />
+            </View>
+          </SafeAreaView>
+        </View>
+      </ForcedDarkTheme>
       {children}
     </FullScreenModal>
   );

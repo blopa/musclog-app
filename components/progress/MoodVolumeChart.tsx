@@ -43,7 +43,7 @@ export function MoodVolumeChart({ allData, units }: MoodVolumeChartProps) {
           }`}
         >
           <Text
-            className={`text-xs font-bold ${aggregation === agg ? 'text-white' : 'text-text-tertiary'}`}
+            className={`text-xs font-bold ${aggregation === agg ? 'text-text-black' : 'text-text-tertiary'}`}
           >
             {t(`common.time.${agg}`)}
           </Text>

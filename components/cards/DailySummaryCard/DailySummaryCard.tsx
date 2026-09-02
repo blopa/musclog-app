@@ -6,6 +6,7 @@ import { ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
+import { ForcedDarkThemeScope } from '@/context/ForcedThemeContext';
 import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
 
@@ -52,7 +53,21 @@ type DailySummaryCardProps = {
   weeklyAverages?: WeeklyAverages;
 };
 
-export function DailySummaryCard({
+/**
+ * The card's ground is the `progress` gradient, which is the same saturated indigo→
+ * emerald in both themes. Its content therefore needs the palette meant for a
+ * colourful ground — bright progress bars, white ink — not the app's current one,
+ * so the whole component renders under a dark scope. See `ForcedDarkThemeScope`.
+ */
+export function DailySummaryCard(props: DailySummaryCardProps) {
+  return (
+    <ForcedDarkThemeScope>
+      <DailySummaryCardContent {...props} />
+    </ForcedDarkThemeScope>
+  );
+}
+
+function DailySummaryCardContent({
   calories,
   macros,
   secondaryNutrients,
@@ -439,7 +454,7 @@ export function DailySummaryCard({
                 className="flex-row items-center justify-start pt-2"
                 style={{
                   borderTopWidth: 1,
-                  borderTopColor: theme.colors.overlay.white30,
+                  borderTopColor: theme.colors.overlay.onColorful30,
                   marginTop: theme.spacing.margin.xs,
                 }}
               >
@@ -447,7 +462,7 @@ export function DailySummaryCard({
                   className="font-medium"
                   style={{
                     fontSize: theme.typography.fontSize.xxs,
-                    color: theme.colors.overlay.white70,
+                    color: theme.colors.overlay.onColorful70,
                   }}
                 >
                   {t('dailySummaryCard.alcoholLabel')}

@@ -105,8 +105,8 @@ export function ImportNutritionModal({
             editable={!isProcessing}
           />
           {/* Format Info */}
-          <View className="mb-6 rounded-lg bg-amber-500/10 p-4">
-            <Text className="mb-2 text-xs font-semibold text-amber-600">
+          <View className="mb-6 rounded-lg bg-status-warning/10 p-4">
+            <Text className="mb-2 text-xs font-semibold text-status-warning">
               {t('nutrition.supportedFormats')}
             </Text>
             <Text className="text-xs text-text-secondary">{t('nutrition.importFormatInfo')}</Text>

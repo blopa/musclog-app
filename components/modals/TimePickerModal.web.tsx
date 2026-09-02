@@ -209,7 +209,7 @@ export function TimePickerModal({
         <View className="items-center gap-2">
           <View className="flex-row items-end">
             <Text
-              className="font-bold tracking-tight text-white"
+              className="font-bold tracking-tight text-text-primary"
               style={{
                 fontSize: theme.typography.fontSize['8xl'],
                 textShadowColor: theme.colors.background.black30,

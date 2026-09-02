@@ -317,7 +317,7 @@ export function LineChart({
                 borderRadius: theme.borderRadius.xs,
                 paddingHorizontal: theme.spacing.padding.sm,
                 paddingVertical: theme.spacing.padding['1half'],
-                shadowColor: theme.colors.text.black,
+                shadowColor: theme.colors.shadow,
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.15,
                 shadowRadius: 4,

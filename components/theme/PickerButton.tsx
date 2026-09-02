@@ -14,7 +14,7 @@ export function PickerButton({ label, icon, onPress }: TestPickerButtonProps) {
   const theme = useTheme();
   return (
     <Pressable
-      className="h-14 w-full overflow-hidden rounded-lg border border-white/10 bg-bg-card active:bg-white/5"
+      className="h-14 w-full overflow-hidden rounded-lg border border-ink/10 bg-bg-card active:bg-ink/5"
       onPress={onPress}
     >
       <View className="h-14 flex-row items-center justify-between px-4">

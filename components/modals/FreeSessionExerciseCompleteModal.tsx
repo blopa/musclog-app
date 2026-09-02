@@ -167,7 +167,7 @@ export function FreeSessionExerciseCompleteModal({
 
           <View className="mb-10 items-center gap-2">
             <Text
-              className="text-center font-bold tracking-tight text-white"
+              className="text-center font-bold tracking-tight text-text-primary"
               style={{ fontSize: theme.typography.fontSize['3xl'] }}
             >
               {t('freeTraining.exerciseComplete.title')}
@@ -214,7 +214,7 @@ export function FreeSessionExerciseCompleteModal({
               </View>
               <View className="min-w-0 flex-1">
                 <Text
-                  className="truncate font-bold text-white"
+                  className="truncate font-bold text-text-primary"
                   numberOfLines={1}
                   style={{ fontSize: theme.typography.fontSize.xl }}
                 >
@@ -243,7 +243,7 @@ export function FreeSessionExerciseCompleteModal({
                     {t('freeTraining.exerciseComplete.totalVolume')}
                   </Text>
                   <Text
-                    className="font-bold tracking-tight text-white"
+                    className="font-bold tracking-tight text-text-primary"
                     style={{ fontSize: theme.typography.fontSize['2xl'] }}
                   >
                     {displayVolumeStr}{' '}

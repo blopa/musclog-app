@@ -4,13 +4,21 @@ import { Text, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { Button } from '@/components/theme/Button';
+import { ForcedDarkThemeScope } from '@/context/ForcedThemeContext';
 import { useTheme } from '@/hooks/useTheme';
 
 interface DailySummaryEmptyStateProps {
   onSetGoals?: () => void;
 }
 
-export const DailySummaryEmptyState: FC<DailySummaryEmptyStateProps> = ({ onSetGoals }) => {
+/** Same colourful ground as `DailySummaryCard`; see the note there. */
+export const DailySummaryEmptyState: FC<DailySummaryEmptyStateProps> = (props) => (
+  <ForcedDarkThemeScope>
+    <DailySummaryEmptyStateContent {...props} />
+  </ForcedDarkThemeScope>
+);
+
+const DailySummaryEmptyStateContent: FC<DailySummaryEmptyStateProps> = ({ onSetGoals }) => {
   const theme = useTheme();
   const { t } = useTranslation();
 
@@ -23,7 +31,7 @@ export const DailySummaryEmptyState: FC<DailySummaryEmptyStateProps> = ({ onSetG
             className="font-medium uppercase tracking-wider"
             style={{
               fontSize: theme.typography.fontSize.xs,
-              color: theme.colors.overlay.white70,
+              color: theme.colors.overlay.onColorful70,
             }}
           >
             {t('dailySummaryCard.dailySummary')}
@@ -34,7 +42,7 @@ export const DailySummaryEmptyState: FC<DailySummaryEmptyStateProps> = ({ onSetG
         <View className="flex flex-1 flex-col items-center justify-center gap-4 py-1">
           <Text
             className="text-center text-sm font-medium"
-            style={{ color: theme.colors.overlay.white70 }}
+            style={{ color: theme.colors.overlay.onColorful70 }}
           >
             {t('dailySummaryCard.setGoalsToTrack')}
           </Text>

@@ -91,7 +91,7 @@ export default function InputsTestScreen() {
     <SafeAreaView className="flex-1 bg-bg-primary" edges={['top']}>
       {/* Header */}
       <View className="flex-row items-center justify-between bg-bg-primary/90 px-4 pb-2 pt-4">
-        <Pressable className="h-12 w-12 shrink-0 items-center justify-center rounded-full active:bg-white/10">
+        <Pressable className="h-12 w-12 shrink-0 items-center justify-center rounded-full active:bg-ink/10">
           <ArrowLeft size={theme.iconSize.xl} color={theme.colors.text.primary} />
         </Pressable>
         <Text className="flex-1 pr-12 text-center text-lg font-bold leading-tight tracking-tight text-text-primary">

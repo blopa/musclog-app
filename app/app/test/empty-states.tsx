@@ -26,7 +26,7 @@ export default function EmptyStatesTestScreen() {
         <Text className="flex-1 text-center text-lg font-bold leading-tight tracking-tight text-text-primary">
           System Specs
         </Text>
-        <Pressable className="h-10 w-10 items-center justify-center rounded-full active:bg-white/10">
+        <Pressable className="h-10 w-10 items-center justify-center rounded-full active:bg-ink/10">
           <Settings size={theme.iconSize.lg} color={theme.colors.accent.primary} />
         </Pressable>
       </View>

@@ -5,7 +5,7 @@
 import { Appearance } from 'react-native';
 
 import { SettingsService } from './database/services/SettingsService';
-import { colors, themeColors } from './theme.tokens';
+import { colors, darkThemeColors, lightThemeColors } from './theme.tokens';
 
 export { addOpacityToHex } from './theme.tokens';
 
@@ -16,11 +16,8 @@ type FixGradientTokens<T> = {
   [K in keyof T]: T[K] extends readonly unknown[] ? GradientStops : T[K];
 };
 
-export const theme = {
-  colors: {
-    ...themeColors,
-    gradients: themeColors.gradients as unknown as FixGradientTokens<typeof themeColors.gradients>,
-  },
+/** Everything that does not depend on the palette. Shared by both themes. */
+const staticTokens = {
   typography: {
     // Font sizes
     fontSize: {
@@ -184,131 +181,6 @@ export const theme = {
     thick: 3,
   },
 
-  shadows: {
-    sm: {
-      shadowColor: themeColors.text.black,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.05,
-      shadowRadius: 2,
-      elevation: 1,
-    },
-    md: {
-      shadowColor: themeColors.text.black,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
-    },
-    lg: {
-      shadowColor: themeColors.text.black,
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.15,
-      shadowRadius: 8,
-      elevation: 5,
-    },
-    accent: {
-      shadowColor: themeColors.accent.primary,
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.3,
-      shadowRadius: 8,
-      elevation: 5,
-    },
-    // Additional shadow variants
-    none: {
-      shadowColor: themeColors.text.black,
-      shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: 0,
-      shadowRadius: 0,
-      elevation: 0,
-    },
-    // Specific shadow radius values
-    radius3: {
-      shadowColor: themeColors.text.black,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.2,
-      shadowRadius: 3,
-      elevation: 3,
-    },
-    radius4: {
-      shadowColor: themeColors.text.black,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.3,
-      shadowRadius: 4,
-      elevation: 3,
-    },
-    radius8: {
-      shadowColor: themeColors.text.black,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.2,
-      shadowRadius: 8,
-      elevation: 3,
-    },
-    radius15: {
-      shadowColor: themeColors.text.black,
-      shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: 0.3,
-      shadowRadius: 15,
-      elevation: 5,
-    },
-    radius20: {
-      shadowColor: themeColors.text.black,
-      shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: 0.3,
-      shadowRadius: 20,
-      elevation: 10,
-    },
-    radius40: {
-      shadowColor: themeColors.text.black,
-      shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: 0.1,
-      shadowRadius: 40,
-      elevation: 20,
-    },
-    // Custom shadow for sliders
-    slider: {
-      shadowColor: themeColors.text.black,
-      shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: 0.4,
-      shadowRadius: 6,
-      elevation: 5,
-    },
-    accentGlow: {
-      shadowColor: themeColors.accent.primary,
-      shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: 0.3,
-      shadowRadius: 15,
-      elevation: 5,
-    },
-    error: {
-      shadowColor: themeColors.status.error,
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.3,
-      shadowRadius: 12,
-      elevation: 4,
-    },
-    purpleGlow: {
-      shadowColor: themeColors.status.purple,
-      shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: 0.8,
-      shadowRadius: 200,
-      elevation: 0,
-    },
-    accentGlowLarge: {
-      shadowColor: themeColors.accent.primary,
-      shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: 0.4,
-      shadowRadius: 10,
-      elevation: 5,
-    },
-    roseGlow: {
-      shadowColor: themeColors.rose.brand,
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.2,
-      shadowRadius: 8,
-      elevation: 5,
-    },
-  },
-
   // Shadow offset values (for individual shadow properties)
   shadowOffset: {
     zero: { width: 0, height: 0 }, // No offset
@@ -464,11 +336,6 @@ export const theme = {
   },
 } as const;
 
-// Type exports for TypeScript
-export type Theme = typeof theme;
-export type ThemeColors = typeof theme.colors;
-export type ThemeTypography = typeof theme.typography;
-
 /**
  * Utility functions for accessing theme values
  */
@@ -512,9 +379,163 @@ export function getBorderRadius(size: keyof typeof theme.borderRadius): number {
   return theme.borderRadius[size];
 }
 
-// TODO: implement option to pick dark and light theme
-export const darkTheme = theme;
-export const lightTheme = theme;
+/**
+ * Shadows are palette-dependent: `palette.shadow` is the scrim colour, which stays
+ * dark in both themes, and the coloured glows follow their accent.
+ */
+function createShadows(palette: ThemePalette) {
+  return {
+    sm: {
+      shadowColor: palette.shadow,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 2,
+      elevation: 1,
+    },
+    md: {
+      shadowColor: palette.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    lg: {
+      shadowColor: palette.shadow,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.15,
+      shadowRadius: 8,
+      elevation: 5,
+    },
+    accent: {
+      shadowColor: palette.accent.primary,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+      elevation: 5,
+    },
+    // Additional shadow variants
+    none: {
+      shadowColor: palette.shadow,
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0,
+      shadowRadius: 0,
+      elevation: 0,
+    },
+    // Specific shadow radius values
+    radius3: {
+      shadowColor: palette.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 3,
+      elevation: 3,
+    },
+    radius4: {
+      shadowColor: palette.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    radius8: {
+      shadowColor: palette.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
+      elevation: 3,
+    },
+    radius15: {
+      shadowColor: palette.shadow,
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.3,
+      shadowRadius: 15,
+      elevation: 5,
+    },
+    radius20: {
+      shadowColor: palette.shadow,
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.3,
+      shadowRadius: 20,
+      elevation: 10,
+    },
+    radius40: {
+      shadowColor: palette.shadow,
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.1,
+      shadowRadius: 40,
+      elevation: 20,
+    },
+    // Custom shadow for sliders
+    slider: {
+      shadowColor: palette.shadow,
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.4,
+      shadowRadius: 6,
+      elevation: 5,
+    },
+    accentGlow: {
+      shadowColor: palette.accent.primary,
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.3,
+      shadowRadius: 15,
+      elevation: 5,
+    },
+    error: {
+      shadowColor: palette.status.error,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 12,
+      elevation: 4,
+    },
+    purpleGlow: {
+      shadowColor: palette.status.purple,
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.8,
+      shadowRadius: 200,
+      elevation: 0,
+    },
+    accentGlowLarge: {
+      shadowColor: palette.accent.primary,
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.4,
+      shadowRadius: 10,
+      elevation: 5,
+    },
+    roseGlow: {
+      shadowColor: palette.rose.brand,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
+      elevation: 5,
+    },
+  };
+}
+
+type ThemePalette = typeof darkThemeColors;
+
+function createTheme(palette: ThemePalette) {
+  return {
+    ...staticTokens,
+    colors: {
+      ...palette,
+      gradients: palette.gradients as unknown as FixGradientTokens<typeof palette.gradients>,
+    },
+    shadows: createShadows(palette),
+  };
+}
+
+export const darkTheme = createTheme(darkThemeColors);
+export const lightTheme: typeof darkTheme = createTheme(lightThemeColors);
+
+/**
+ * The default theme, for the few non-React call sites that cannot resolve the
+ * user's preference (see `getTheme` for the async alternative).
+ */
+export const theme = darkTheme;
+
+// Type exports for TypeScript
+export type Theme = typeof darkTheme;
+export type ThemeColors = Theme['colors'];
+export type ThemeTypography = Theme['typography'];
 
 /**
  * Asynchronously get the active theme based on user preference and system settings.
@@ -544,16 +565,15 @@ export async function getTheme(): Promise<Theme> {
 /**
  * Usage Examples:
  *
- * 1. Using with NativeWind classes:
- *    <View className="bg-bg-primary text-text-primary">
+ * Both of these follow the active theme — NativeWind class colours resolve to the
+ * CSS variables that `ThemeProvider` swaps, so either is fine:
  *
- * 2. Using with inline styles:
- *    <View style={{ backgroundColor: theme.colors.background.primary }}>
- *
- * 3. Using utility functions:
- *    <View style={{ backgroundColor: getColor('background.primary') }}>
- *
- * 4. Using Tailwind classes (recommended for NativeWind):
+ * 1. NativeWind classes (preferred for static styling):
  *    <View className="bg-bg-primary p-base rounded-2xl">
  *    <Text className="text-text-primary text-lg font-semibold">
+ *
+ * 2. Inline styles, for the colours Tailwind does not expose (status hues,
+ *    gradients, washes):
+ *    const theme = useTheme();
+ *    <View style={{ backgroundColor: theme.colors.background.primary }}>
  */

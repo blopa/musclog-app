@@ -28,7 +28,7 @@ export function DateTimeSelectorCard({
     <View className="flex-col gap-2">
       <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
       <Pressable
-        className="h-14 w-full overflow-hidden rounded-lg border-2 border-white/10 bg-bg-card active:opacity-80"
+        className="h-14 w-full overflow-hidden rounded-lg border-2 border-ink/10 bg-bg-card active:opacity-80"
         onPress={onEdit}
       >
         <View className="h-14 flex-row items-center justify-between px-4">

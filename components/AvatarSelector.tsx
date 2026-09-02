@@ -46,7 +46,7 @@ export function AvatarSelector({
     <View className="flex-col gap-2">
       <Text className="ml-1 text-sm font-medium text-text-secondary">{label}</Text>
 
-      <View className="flex-row items-center gap-4 rounded-2xl border border-white/10 bg-bg-card p-4">
+      <View className="flex-row items-center gap-4 rounded-2xl border border-ink/10 bg-bg-card p-4">
         {/* Default avatar with gradient background */}
         <View className="flex-shrink-0">
           <View
@@ -64,7 +64,7 @@ export function AvatarSelector({
         </View>
 
         {/* Divider */}
-        <View className="h-12 w-px flex-shrink-0 bg-white/10" />
+        <View className="h-12 w-px flex-shrink-0 bg-ink/10" />
 
         {/* Avatar options */}
         <ScrollView
@@ -101,7 +101,7 @@ export function AvatarSelector({
             {t('editPersonalInfo.chooseColor')}
           </Text>
           <View
-            className="rounded-2xl border border-white/10 bg-bg-card"
+            className="rounded-2xl border border-ink/10 bg-bg-card"
             style={{
               paddingHorizontal: theme.spacing.padding['3half'],
             }}
@@ -118,7 +118,7 @@ export function AvatarSelector({
                 <Pressable
                   key={color}
                   className={`h-12 w-12 items-center justify-center rounded-full border-2 ${
-                    selectedColor === color ? 'border-white/50' : 'border-transparent'
+                    selectedColor === color ? 'border-ink/50' : 'border-transparent'
                   }`}
                   style={{ backgroundColor: getAvatarColor(theme, color) }}
                   onPress={() => onColorSelect?.(color)}

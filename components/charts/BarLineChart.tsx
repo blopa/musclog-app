@@ -98,7 +98,7 @@ export function BarLineChart({
   }, [chartId, registerChart, unregisterChart]);
 
   const barColorResolved = barColor ?? theme.colors.accent.primary;
-  const lineColorResolved = lineColor ?? theme.colors.background.white;
+  const lineColorResolved = lineColor ?? theme.colors.text.primary;
 
   if (data.length === 0) {
     return null;

@@ -69,7 +69,7 @@ export function MealEstimationScreen({
             className="absolute left-4 top-4 rounded-full px-3 py-1.5"
             style={{ backgroundColor: theme.colors.accent.primary }}
           >
-            <Text className="text-xs font-semibold uppercase text-white">
+            <Text className="text-xs font-semibold uppercase text-text-black">
               {t('nutrition.aiCamera.modes.mealPhoto')} {t('nutrition.aiCamera.estimated')}
             </Text>
           </View>
