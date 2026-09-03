@@ -244,6 +244,52 @@ const THEME_DEFINITIONS = /** @type {const} */ ({
       colorfulCardUsesSurfaceInk: true,
     },
   },
+  'kinetic-varia': {
+    mode: 'dark',
+    palette: {
+      surfaceBase: '#0d0a12',
+      surfaceCard: '#181123',
+      surfaceRaised: '#241a33',
+      surfaceTint: '#291509',
+      surfaceAccent: '#4a220d',
+      borderHairline: '#463355',
+
+      textPrimary: '#f6e9dd',
+      textSecondary: '#c4b2c9',
+      textTertiary: '#a695ad',
+
+      brandPrimary: '#f97316',
+      brandVivid: '#fb923c',
+      brandBright: '#fdba74',
+      brandPale: '#fed7aa',
+      brandDeep: '#ea580c',
+      brandSurface: '#7c2d12',
+
+      statusError: '#f43f5e',
+      statusRose: '#fb7185',
+      statusWarning: '#facc15',
+      statusAmber: '#fde047',
+      statusInfo: '#38bdf8',
+      statusIndigo: '#818cf8',
+      statusPurple: '#c084fc',
+      statusPink: '#f472b6',
+
+      inkOnAccent: '#0d0a12',
+      scrimBase: '#080610',
+      surfacePlaceholder: '#f6e9dd',
+      colorfulCardInk: '#1a0d04',
+      colorfulCardSupportingInk: '#3a1c08',
+
+      alphas: {
+        borderDefault: 0.3,
+        borderLight: 0.28,
+        borderSubtle: 0.22,
+        hairlineFill: 0.06,
+      },
+      colorfulCardBlend: { start: 1, middle: 1, end: 1 },
+      colorfulCardUsesSurfaceInk: false,
+    },
+  },
 });
 
 const THEME_IDS = Object.freeze(Object.keys(THEME_DEFINITIONS));

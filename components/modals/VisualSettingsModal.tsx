@@ -9,6 +9,7 @@ import {
   Monitor,
   Moon,
   Palette,
+  Rocket,
   Sun,
   Wheat,
   Wine,
@@ -76,6 +77,7 @@ const THEME_ICON: Record<ThemeOption, typeof Monitor> = {
   'kinetic-shock': Palette,
   'kinetic-volt': Zap,
   'kinetic-blush': Heart,
+  'kinetic-varia': Rocket,
 };
 
 /** Convert a 5-char binary string to an array of visible macro keys. */

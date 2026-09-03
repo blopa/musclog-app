@@ -436,6 +436,10 @@
         "kinetic-blush": {
           "label": "Kinetic Blush",
           "description": "Zachtroze oppervlakken met frambozenrode accenten"
+        },
+        "kinetic-varia": {
+          "label": "Kinetic Varia",
+          "description": "Diepviolette oppervlakken met oranje accenten"
         }
       }
     }

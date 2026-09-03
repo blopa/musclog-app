@@ -436,6 +436,10 @@
         "kinetic-blush": {
           "label": "Kinetic Blush",
           "description": "Superficies rosa suave con acentos frambuesa"
+        },
+        "kinetic-varia": {
+          "label": "Kinetic Varia",
+          "description": "Superficies violeta profundo con acentos naranja"
         }
       }
     }

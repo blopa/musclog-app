@@ -436,6 +436,10 @@
         "kinetic-blush": {
           "label": "Kinetic Blush",
           "description": "Нежно-розовые тона с малиновыми акцентами"
+        },
+        "kinetic-varia": {
+          "label": "Kinetic Varia",
+          "description": "Глубокие фиолетовые тона с оранжевыми акцентами"
         }
       }
     }
