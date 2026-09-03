@@ -1,0 +1,42 @@
+diff --git a/node_modules/lokijs/src/lokijs.wmelon.js b/node_modules/lokijs/src/lokijs.wmelon.js
+index b590589..c84292e 100644
+--- a/node_modules/lokijs/src/lokijs.wmelon.js
++++ b/node_modules/lokijs/src/lokijs.wmelon.js
+@@ -1303,17 +1303,35 @@
+           copyColl.dirty = false;
+         }
+ 
+-        if (coll.getData) {
++        // Only a raw source (a plain object handed over by the adapter) may pass its lazy loader
++        // to the copy. A live Collection must not: its loader consumes the adapter's data chunks
++        // and can only run once, so letting a copy (the one every save takes) run it would leave
++        // the live collection permanently empty and make the next save throw on a null chunk.
++        var lazySource = coll.getData && !(coll instanceof Collection);
++        if (coll.getData && !lazySource) {
++          coll.data; // eslint-disable-line no-unused-expressions -- materialize on the source
++        }
++
++        if (lazySource) {
+           if ((options && options.hasOwnProperty(coll.name)) || !copyColl.disableFreeze || copyColl.autoupdate) {
+             throw new Error("this collection cannot be loaded lazily: " + coll.name);
+           }
+           copyColl.getData = coll.getData;
+           Object.defineProperty(copyColl, 'data', {
+             /* jshint loopfunc:true */
++            configurable: true,
++            enumerable: true,
+             get: function() {
+               var data = this.getData();
+               this.getData = null;
+-              Object.defineProperty(this, 'data', { value: data });
++              // Must stay writable: the incremental IndexedDB adapter blanks `collection.data`
++              // before serializing collection metadata, and a read-only memo makes that throw.
++              Object.defineProperty(this, 'data', {
++                value: data,
++                writable: true,
++                configurable: true,
++                enumerable: true
++              });
+               return data;
+             }
+             /* jshint loopfunc:false */
