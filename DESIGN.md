@@ -1,8 +1,9 @@
 # Musclog — Design System
 
 The app uses a high-contrast performance aesthetic built from tinted surfaces, vivid actions,
-restrained supporting color, and dense data displays. `theme.tokens.js` and `theme.ts` are the
-implementation sources of truth; this document describes how to use them.
+restrained supporting color, and dense data displays. `theme.registry.js` is the theme catalogue;
+`theme.tokens.js` and `theme.ts` derive the two runtime representations from it. This document
+describes how to use them.
 
 ## Theme status
 
@@ -27,19 +28,20 @@ preferred access pattern.
 ### Surfaces that do not follow the theme
 
 Some surfaces are not the app's background: a camera viewfinder, a photo, or a scrim over either.
-Their content is white-on-dark whatever the user picked, so they pin their own palette with
-`ForcedDarkTheme` / `ForcedDarkThemeScope`
-(`context/ForcedThemeContext.tsx`) rather than hand-picking tokens. Use the scope form around a
-whole component — a component reads `useTheme()` during its own render, so a provider wrapped around
-its output cannot reach its inline styles.
+Their content is white-on-dark whatever the user picked, so the camera surface pins Kinetic Depth
+with `ThemeScope` from `context/ThemeContext.tsx`. A scope changes the context value and NativeWind
+variables together; do not add a second forced-theme context or hand-pick a parallel set of tokens.
+Components outside the viewfinder keep following the user's selected theme.
 
 Text drawn on a colorful gradient uses the dedicated `colorfulCard` ink tokens, never a literal
 white or the regular on-surface ink.
 
-The Daily Summary card uses its `gradients.colorfulCard` surface in Kinetic Depth, Kinetic Shock,
-and Kinetic Volt, and the standard card surface in Kinetic Light. Its foreground uses the matching
-`colorfulCard` ink tokens: white in Kinetic Depth and Kinetic Shock, warm black in Kinetic Volt,
-and opaque deep green-slate in Kinetic Light.
+The Daily Summary card reads `theme.components.dailySummaryCardBackground`: Kinetic Depth, Kinetic
+Shock, and Kinetic Volt select `gradients.colorfulCard`, while Kinetic Light selects the standard
+card surface. The component must not derive this presentation decision from `themeMode`; another
+light theme may legitimately choose a gradient. Its foreground uses the matching `colorfulCard` ink
+tokens: white in Kinetic Depth and Kinetic Shock, warm black in Kinetic Volt, and opaque deep
+green-slate in Kinetic Light.
 
 ### Role tokens
 
@@ -60,12 +62,13 @@ hairlines and washes instead of a literal `border-white/10`, which only reads on
 ## Color
 
 The primary palette is 23 colors plus a short tail of role primaries, defined once per theme in
-`kineticDepth`, `kineticLight`, `kineticShock`, and `kineticVolt`, and grouped by role rather than by
-hue name: six surfaces, three text steps, six brand colors, and eight status hues. Everything else —
-the semantic token tree, the Tailwind colors, and the CSS variables — is derived from a palette by
-`createColors` and `createThemeColors`, so all themes stay the same shape by construction. Anything
-softer than a primary is derived too: `addOpacityToHex` for translucent washes, `mixHex` for opaque
-tinted surfaces. A new hex value in a palette should be rare and deliberate.
+`THEME_DEFINITIONS` (`theme.registry.js`) and grouped by role rather than by hue name: six surfaces,
+three text steps, six brand colors, and eight status hues. The registry also owns each theme's mode
+and component-level presentation choices. Everything else — the semantic token tree, Tailwind
+colors, CSS variables, runtime theme map, and `ThemeId` union — is derived from that catalogue, so
+adding a theme cannot silently omit one styling path. Anything softer than a primary is derived too:
+`addOpacityToHex` for translucent washes, `mixHex` for opaque tinted surfaces. A new hex value in a
+palette should be rare and deliberate.
 
 ### Core surfaces
 

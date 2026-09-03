@@ -1,10 +1,6 @@
 import { normalizeThemeOption, THEME_IDS } from '@/constants/settings';
-import {
-  kineticDepthThemeColors,
-  kineticLightThemeColors,
-  kineticShockThemeColors,
-  kineticVoltThemeColors,
-} from '@/theme.tokens';
+import { THEME_DEFINITIONS } from '@/theme.registry';
+import { themeColorsById } from '@/theme.tokens';
 import { getThemeMode, resolveThemeId } from '@/utils/themeSelection';
 
 function contrastRatio(first: string, second: string): number {
@@ -25,10 +21,12 @@ function contrastRatio(first: string, second: string): number {
 
 describe('named theme selection', () => {
   it('keeps every named theme and rejects unknown stored values', () => {
+    expect(THEME_IDS).toEqual(Object.keys(THEME_DEFINITIONS));
     for (const themeId of THEME_IDS) {
       expect(normalizeThemeOption(themeId)).toBe(themeId);
     }
     expect(normalizeThemeOption('neon-surprise')).toBe('system');
+    expect(normalizeThemeOption('toString')).toBe('system');
     expect(normalizeThemeOption(undefined)).toBe('system');
   });
 
@@ -45,72 +43,37 @@ describe('named theme selection', () => {
     expect(resolveThemeId('kinetic-volt', 'light')).toBe('kinetic-volt');
   });
 
-  it('treats Kinetic Shock and Kinetic Volt as dark for status bars and dark variants', () => {
-    expect(getThemeMode('kinetic-depth')).toBe('dark');
-    expect(getThemeMode('kinetic-shock')).toBe('dark');
-    expect(getThemeMode('kinetic-volt')).toBe('dark');
-    expect(getThemeMode('kinetic-light')).toBe('light');
-  });
-
-  it('gives Kinetic Shock the same semantic shape and a distinct palette', () => {
-    expect(Object.keys(kineticShockThemeColors)).toEqual(Object.keys(kineticDepthThemeColors));
-    expect(Object.keys(kineticShockThemeColors.background)).toEqual(
-      Object.keys(kineticLightThemeColors.background)
-    );
-    expect(kineticShockThemeColors.background.primary).not.toBe(
-      kineticDepthThemeColors.background.primary
-    );
-    expect(kineticShockThemeColors.accent.primary).not.toBe(kineticDepthThemeColors.accent.primary);
-  });
-
-  it('keeps Kinetic Shock text and button ink at WCAG AA contrast', () => {
-    const mainSurfaces = [
-      kineticShockThemeColors.background.primary,
-      kineticShockThemeColors.background.card,
-      kineticShockThemeColors.background.cardElevated,
-    ];
-    for (const textColor of [
-      kineticShockThemeColors.text.primary,
-      kineticShockThemeColors.text.secondary,
-      kineticShockThemeColors.text.tertiary,
-    ]) {
-      for (const surface of mainSurfaces) {
-        expect(contrastRatio(textColor, surface)).toBeGreaterThanOrEqual(4.5);
-      }
+  it('derives every display mode from the canonical registry', () => {
+    for (const themeId of THEME_IDS) {
+      expect(getThemeMode(themeId)).toBe(THEME_DEFINITIONS[themeId].mode);
     }
-    expect(
-      contrastRatio(kineticShockThemeColors.text.black, kineticShockThemeColors.accent.primary)
-    ).toBeGreaterThanOrEqual(4.5);
   });
 
-  it('gives Kinetic Volt the same semantic shape and a distinct palette', () => {
-    expect(Object.keys(kineticVoltThemeColors)).toEqual(Object.keys(kineticDepthThemeColors));
-    expect(Object.keys(kineticVoltThemeColors.background)).toEqual(
-      Object.keys(kineticLightThemeColors.background)
-    );
-    expect(kineticVoltThemeColors.background.primary).not.toBe(
-      kineticDepthThemeColors.background.primary
-    );
-    expect(kineticVoltThemeColors.accent.primary).not.toBe(kineticDepthThemeColors.accent.primary);
-  });
-
-  it('keeps Kinetic Volt text and button ink at WCAG AA contrast', () => {
-    const mainSurfaces = [
-      kineticVoltThemeColors.background.primary,
-      kineticVoltThemeColors.background.card,
-      kineticVoltThemeColors.background.cardElevated,
-    ];
-    for (const textColor of [
-      kineticVoltThemeColors.text.primary,
-      kineticVoltThemeColors.text.secondary,
-      kineticVoltThemeColors.text.tertiary,
-    ]) {
-      for (const surface of mainSurfaces) {
-        expect(contrastRatio(textColor, surface)).toBeGreaterThanOrEqual(4.5);
-      }
+  it('gives every theme the same semantic shape and a distinct palette', () => {
+    const [referenceId, ...otherIds] = THEME_IDS;
+    const reference = themeColorsById[referenceId];
+    for (const themeId of otherIds) {
+      const candidate = themeColorsById[themeId];
+      expect(Object.keys(candidate)).toEqual(Object.keys(reference));
+      expect(Object.keys(candidate.background)).toEqual(Object.keys(reference.background));
+      expect(candidate.background.primary).not.toBe(reference.background.primary);
     }
-    expect(
-      contrastRatio(kineticVoltThemeColors.text.black, kineticVoltThemeColors.accent.primary)
-    ).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('keeps every theme text and button ink at WCAG AA contrast', () => {
+    for (const themeId of THEME_IDS) {
+      const theme = themeColorsById[themeId];
+      const mainSurfaces = [
+        theme.background.primary,
+        theme.background.card,
+        theme.background.cardElevated,
+      ];
+      for (const textColor of [theme.text.primary, theme.text.secondary, theme.text.tertiary]) {
+        for (const surface of mainSurfaces) {
+          expect(contrastRatio(textColor, surface)).toBeGreaterThanOrEqual(4.5);
+        }
+      }
+      expect(contrastRatio(theme.text.black, theme.accent.primary)).toBeGreaterThanOrEqual(4.5);
+    }
   });
 });

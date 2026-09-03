@@ -17,10 +17,6 @@ export type MacroDailyData = {
   fiber: MacroValue;
 };
 
-export function getSummaryCardBackgroundVariant(themeMode: 'dark' | 'light') {
-  return themeMode === 'light' ? ('default' as const) : ('colorful-gradient' as const);
-}
-
 /**
  * Calculates the goal status based on consumed value and goal
  */

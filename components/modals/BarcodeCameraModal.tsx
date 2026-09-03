@@ -4,12 +4,11 @@ import { Pressable, View } from 'react-native';
 
 import { CameraView, type CameraViewRef } from '@/components/CameraView';
 import type { CameraMode } from '@/constants/camera';
-import { ForcedDarkThemeScope } from '@/context/ForcedThemeContext';
 import type { MealType } from '@/database/models';
 import { useBarcodeScanner } from '@/hooks/useBarcodeScanner';
 import { BARCODE_PHOTO_QUALITY, useCameraCaptureFlow } from '@/hooks/useCameraCaptureFlow';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
-import { useTheme } from '@/hooks/useTheme';
+import { darkTheme } from '@/theme';
 
 import { BarcodeTextSearchSheet } from './BarcodeTextSearchSheet';
 import { FoodMealTrackingDetailsModal } from './FoodMealTrackingDetailsModal';
@@ -30,20 +29,7 @@ type BarcodeCameraModalProps = {
 
 const CAMERA_MODE: CameraMode = 'barcode-scan';
 
-/**
- * The viewfinder is dark whatever the app theme is, and this component computes
- * inline styles for content it hands to the shell — so the scope has to sit above
- * its own render, not around its output. See `ForcedDarkThemeScope`.
- */
-export function BarcodeCameraModal(props: BarcodeCameraModalProps) {
-  return (
-    <ForcedDarkThemeScope>
-      <BarcodeCameraModalContent {...props} />
-    </ForcedDarkThemeScope>
-  );
-}
-
-function BarcodeCameraModalContent({
+export function BarcodeCameraModal({
   visible,
   onClose,
   onBarcodeScanned,
@@ -53,7 +39,8 @@ function BarcodeCameraModalContent({
   permissionGranted,
   onRequestPermission,
 }: BarcodeCameraModalProps) {
-  const theme = useTheme();
+  // Camera chrome is a fixed dark surface, independent of the app preference.
+  const theme = darkTheme;
   const cameraRef = useRef<CameraViewRef>(null);
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [isBarcodeTextSearchModalVisible, setIsBarcodeTextSearchModalVisible] = useState(false);

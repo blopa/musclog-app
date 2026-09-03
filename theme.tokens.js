@@ -1,5 +1,7 @@
 'use strict';
 
+const { THEME_DEFINITIONS, THEME_IDS } = require('./theme.registry');
+
 function addOpacityToHex(hexColor, opacity) {
   // Remove # if present
   const hex = hexColor.replace('#', '');
@@ -43,226 +45,6 @@ function mixHex(baseHex, tintHex, ratio) {
 
   return `#${channel(r1, r2)}${channel(g1, g2)}${channel(b1, b2)}`;
 }
-
-/**
- * The dark palette — 23 colours, every one of which is visually distinct, plus a
- * short tail of theme-role primaries that must NOT invert between themes.
- *
- * Grouped by role, not by hue name. Each surface step is at least 1.09x contrast
- * from its neighbour so tonal layering is actually visible, and every text token
- * clears WCAG AA on all three main surfaces. Anything softer than these values is
- * derived with `addOpacityToHex` or `mixHex` rather than added here.
- */
-const kineticDepth = {
-  // --- Surfaces: a four-step tonal ladder plus two tinted branches ---
-  surfaceBase: '#091310', // Level 0: app background, screens, scrims
-  surfaceCard: '#131d18', // Level 1: card backgrounds
-  surfaceRaised: '#1b2721', // Level 2: elevated cards, wells, active states
-  surfaceTint: '#0c2419', // Tinted branch: overlays, filter tabs, icon wells
-  surfaceAccent: '#1c3829', // Tinted branch: accent borders, exercise cards
-  borderHairline: '#2c3a32', // Hairlines and dashed borders
-
-  // --- Text: three steps, all AA on every surface above ---
-  textPrimary: '#dce5de', // On-surface off-white (not pure white)
-  textSecondary: '#9cb0a8', // Supporting text
-  textTertiary: '#7d918a', // Labels, captions, disabled — 5.17:1 on surfaceCard
-
-  // --- Brand emerald ---
-  brandPrimary: '#29a577', // The primary action colour
-  brandVivid: '#10b981', // Deeper emerald for icons and small glyphs
-  brandBright: '#34d399', // Bright mint: highlights, data series 1
-  brandPale: '#a7f3d0', // Pale mint: chips, washes, gradient text
-  brandDeep: '#0f766e', // Deep teal: gradient end, tertiary accent
-  brandSurface: '#064e3b', // Deep brand surface: forest accent, borders
-
-  // --- Status and data series: eight distinct hues ---
-  statusError: '#ef4444', // Errors, destructive actions
-  statusRose: '#da2552', // Rose brand variant
-  statusWarning: '#f97316', // Warnings, energy
-  statusAmber: '#fbbf24', // Attention, streaks, fat macro
-  statusInfo: '#3b82f6', // Information, hydration
-  statusIndigo: '#6366f1', // Recovery, AI accents, protein macro
-  statusPurple: '#a855f7', // Supporting series
-  statusPink: '#ec4899', // Fiber macro, accent series
-
-  // --- Role primaries: these keep their JOB across themes, not their lightness ---
-  // Ink printed on a solid brand/status fill. Dark theme fills are light enough
-  // that the readable ink is the near-black surface.
-  inkOnAccent: '#091310',
-  // Modal backdrops, camera scrims and drop shadows. A scrim darkens whatever is
-  // behind it, so it stays dark in BOTH themes — deriving it from `surfaceBase`
-  // would turn every light-theme backdrop into a white-out.
-  scrimBase: '#091310',
-  // Image/avatar placeholder and separator fill: a flat block that has to read as
-  // "nothing here yet" against the card behind it.
-  surfacePlaceholder: '#dce5de',
-
-  // --- Alpha ratios for hairlines. Tuned per theme: the same 23% wash that reads
-  // as a border over a near-black card is invisible over a near-white one. ---
-  alphas: {
-    borderDefault: 0.26, // border.default — textTertiary over a card
-    borderLight: 0.23, // border.light — borderHairline, the softest rule
-    borderGray600: 0.2, // border.gray600 — lighter hairline
-    hairlineFill: 0.05, // status.gray10 — neutral fill wash
-  },
-  colorfulCardBlend: { start: 1, middle: 1, end: 1 },
-  colorfulCardUsesSurfaceInk: false,
-};
-
-/**
- * The light palette. Same roles, same structure, re-picked for a light ground.
- *
- * The important difference is that accents get DARKER, not lighter: a light theme
- * puts saturated colour on a bright surface, so every brand/status hue is chosen
- * so it clears 4.5:1 on `surfaceBase`/`surfaceCard` as text and carries white ink
- * at 4.5:1 or better when it is used as a solid fill. The surface ladder inverts —
- * elevation moves AWAY from the base, which is downward in luminance here — and
- * each step keeps the same >= 1.09x separation the dark ladder uses.
- */
-const kineticLight = {
-  // --- Surfaces: a four-step tonal ladder plus two tinted branches ---
-  surfaceBase: '#fafcfb', // Level 0: app background, screens
-  surfaceCard: '#eef2f0', // Level 1: card backgrounds — 1.10x from base
-  surfaceRaised: '#e0e7e3', // Level 2: elevated cards, wells, active states
-  surfaceTint: '#dff0e7', // Tinted branch: overlays, filter tabs, icon wells
-  surfaceAccent: '#c6e6d4', // Tinted branch: accent borders, exercise cards
-  borderHairline: '#c2cfc8', // Hairlines and dashed borders
-
-  // --- Text: three steps, all AA on every surface above ---
-  textPrimary: '#0f1a16', // On-surface near-black (not pure black)
-  textSecondary: '#41564d', // Supporting text — 6.98:1 on surfaceCard
-  textTertiary: '#4f645a', // Labels, captions, disabled — 5.63:1 on surfaceCard
-
-  // --- Brand emerald, darkened so it reads as ink on a bright ground ---
-  brandPrimary: '#0e7a54', // The primary action colour — white ink at 5.34:1
-  brandVivid: '#0a6647', // Deeper emerald for icons and small glyphs
-  brandBright: '#0f8f63', // Highlights, data series 1 — 3.6:1 on card
-  brandPale: '#0b7d57', // The readable end of the brand ramp (foreground use)
-  brandDeep: '#0b6b64', // Deep teal: gradient end, tertiary accent
-  brandSurface: '#075038', // Deep brand surface: forest accent, borders
-
-  // --- Status and data series: eight distinct hues, all >= 4.3:1 on a card ---
-  statusError: '#c62222', // Errors, destructive actions
-  statusRose: '#c0184a', // Rose brand variant
-  statusWarning: '#b4530a', // Warnings, energy
-  statusAmber: '#8a6100', // Attention, streaks, fat macro
-  statusInfo: '#1d6fd6', // Information, hydration
-  statusIndigo: '#4f46e5', // Recovery, AI accents, protein macro
-  statusPurple: '#8626d4', // Supporting series
-  statusPink: '#c02a72', // Fiber macro, accent series
-
-  // --- Role primaries (see the dark palette for what each one is for) ---
-  inkOnAccent: '#ffffff', // Light-theme fills are dark, so the ink is white
-  scrimBase: '#0f1a16', // Backdrops and shadows stay dark on a light theme
-  surfacePlaceholder: '#d6ded9', // A light neutral block, not the near-black ink
-
-  alphas: {
-    borderDefault: 0.34, // 1.62:1 hairline, matching the dark theme's weight
-    borderLight: 0.55,
-    borderGray600: 0.26,
-    hairlineFill: 0.09,
-  },
-  // A light, colorful surface rather than a dark saturated island.
-  colorfulCardBlend: { start: 0.14, middle: 0.18, end: 0.22 },
-  colorfulCardUsesSurfaceInk: true,
-};
-
-/**
- * A dark, rose-led palette. It keeps the Kinetic surface hierarchy and semantic
- * status colours, while moving the app's identity and tinted surfaces from
- * emerald into pink. The named palette is intentionally independent from the
- * binary light/dark display mode used by the OS and NativeWind variants.
- */
-const kineticShock = {
-  surfaceBase: '#160b14',
-  surfaceCard: '#21101e',
-  surfaceRaised: '#2d1829',
-  surfaceTint: '#351226',
-  surfaceAccent: '#51203f',
-  borderHairline: '#503248',
-
-  textPrimary: '#f5e4ef',
-  textSecondary: '#ceb0c2',
-  textTertiary: '#b895aa',
-
-  brandPrimary: '#e85d9e',
-  brandVivid: '#f472b6',
-  brandBright: '#f9a8d4',
-  brandPale: '#fbcfe8',
-  brandDeep: '#db2777',
-  brandSurface: '#831843',
-
-  statusError: '#f87171',
-  statusRose: '#fb7185',
-  statusWarning: '#fb923c',
-  statusAmber: '#fbbf24',
-  statusInfo: '#60a5fa',
-  statusIndigo: '#818cf8',
-  statusPurple: '#c084fc',
-  statusPink: '#f472b6',
-
-  inkOnAccent: '#160b14',
-  scrimBase: '#0d070c',
-  surfacePlaceholder: '#f5e4ef',
-
-  alphas: {
-    borderDefault: 0.3,
-    borderLight: 0.28,
-    borderGray600: 0.22,
-    hairlineFill: 0.06,
-  },
-  colorfulCardBlend: { start: 1, middle: 1, end: 1 },
-  colorfulCardUsesSurfaceInk: false,
-};
-
-/**
- * A dark, yellow-led palette with warm near-black surfaces. Bright electric
- * accents carry the Kinetic Volt identity without sacrificing text contrast or
- * changing the semantic status colours used throughout the app.
- */
-const kineticVolt = {
-  surfaceBase: '#151208',
-  surfaceCard: '#201b0c',
-  surfaceRaised: '#2c2510',
-  surfaceTint: '#30270a',
-  surfaceAccent: '#4a3b08',
-  borderHairline: '#4a4126',
-
-  textPrimary: '#f6f0d5',
-  textSecondary: '#d0c59a',
-  textTertiary: '#b4a978',
-
-  brandPrimary: '#f5c842',
-  brandVivid: '#eab308',
-  brandBright: '#facc15',
-  brandPale: '#fef08a',
-  brandDeep: '#ca8a04',
-  brandSurface: '#713f12',
-
-  statusError: '#f87171',
-  statusRose: '#fb7185',
-  statusWarning: '#fb923c',
-  statusAmber: '#fde047',
-  statusInfo: '#60a5fa',
-  statusIndigo: '#818cf8',
-  statusPurple: '#c084fc',
-  statusPink: '#f472b6',
-
-  inkOnAccent: '#151208',
-  scrimBase: '#0d0b05',
-  surfacePlaceholder: '#f6f0d5',
-  colorfulCardInk: '#151208',
-  colorfulCardSupportingInk: '#30280d',
-
-  alphas: {
-    borderDefault: 0.3,
-    borderLight: 0.28,
-    borderGray600: 0.22,
-    hairlineFill: 0.06,
-  },
-  colorfulCardBlend: { start: 1, middle: 1, end: 1 },
-  colorfulCardUsesSurfaceInk: false,
-};
 
 /** Pure white, for the handful of surfaces that are white in every theme. */
 const ALWAYS_WHITE = '#ffffff';
@@ -776,39 +558,33 @@ function createThemeColors(colors) {
   };
 }
 
-const kineticDepthColors = createColors(kineticDepth);
-const kineticLightColors = createColors(kineticLight);
-const kineticShockColors = createColors(kineticShock);
-const kineticVoltColors = createColors(kineticVolt);
+const themeColorSets = Object.fromEntries(
+  THEME_IDS.map((themeId) => [themeId, createColors(THEME_DEFINITIONS[themeId].palette)])
+);
+const themeColorsById = Object.fromEntries(
+  THEME_IDS.map((themeId) => [themeId, createThemeColors(themeColorSets[themeId])])
+);
 
-const kineticDepthThemeColors = createThemeColors(kineticDepthColors);
-const kineticLightThemeColors = createThemeColors(kineticLightColors);
-const kineticShockThemeColors = createThemeColors(kineticShockColors);
-const kineticVoltThemeColors = createThemeColors(kineticVoltColors);
+const darkColors = themeColorSets['kinetic-depth'];
+const lightColors = themeColorSets['kinetic-light'];
+const darkThemeColors = themeColorsById['kinetic-depth'];
+const lightThemeColors = themeColorsById['kinetic-light'];
 
 module.exports = {
   addOpacityToHex,
   mixHex,
   createColors,
   createThemeColors,
-  kineticDepthColors,
-  kineticLightColors,
-  kineticShockColors,
-  kineticVoltColors,
-  kineticDepthThemeColors,
-  kineticLightThemeColors,
-  kineticShockThemeColors,
-  kineticVoltThemeColors,
-  // Compatibility names for code whose concern is display mode rather than
-  // the palette's product name.
-  darkColors: kineticDepthColors,
-  lightColors: kineticLightColors,
-  darkThemeColors: kineticDepthThemeColors,
-  lightThemeColors: kineticLightThemeColors,
+  themeColorSets,
+  themeColorsById,
+  darkColors,
+  lightColors,
+  darkThemeColors,
+  lightThemeColors,
   // Default exports stay on the dark palette: Tailwind's static build, the
   // pre-boot splash screens and the token tests all consume these.
-  colors: kineticDepthColors,
-  themeColors: kineticDepthThemeColors,
+  colors: darkColors,
+  themeColors: darkThemeColors,
 };
 
 /**
@@ -907,7 +683,7 @@ function createTailwindColors() {
       const name = cssVariableName(group, key);
       // The reference form has to match how the value is stored, and the dark
       // reference palette decides it — every palette uses the same token shapes.
-      result[group][key] = HEX_COLOR.test(pick(kineticDepthThemeColors))
+      result[group][key] = HEX_COLOR.test(pick(darkThemeColors))
         ? `rgb(var(${name}) / <alpha-value>)`
         : `var(${name})`;
     }
@@ -931,12 +707,11 @@ function createCssVariables(themeColors) {
 
 module.exports.createTailwindColors = createTailwindColors;
 module.exports.createCssVariables = createCssVariables;
-module.exports.kineticDepthCssVariables = createCssVariables(kineticDepthThemeColors);
-module.exports.kineticLightCssVariables = createCssVariables(kineticLightThemeColors);
-module.exports.kineticShockCssVariables = createCssVariables(kineticShockThemeColors);
-module.exports.kineticVoltCssVariables = createCssVariables(kineticVoltThemeColors);
-module.exports.darkCssVariables = module.exports.kineticDepthCssVariables;
-module.exports.lightCssVariables = module.exports.kineticLightCssVariables;
+module.exports.themeCssVariables = Object.fromEntries(
+  THEME_IDS.map((themeId) => [themeId, createCssVariables(themeColorsById[themeId])])
+);
+module.exports.darkCssVariables = module.exports.themeCssVariables['kinetic-depth'];
+module.exports.lightCssVariables = module.exports.themeCssVariables['kinetic-light'];
 
 /**
  * The same variable map for NativeWind's runtime `vars()` helper.
@@ -957,9 +732,6 @@ function createRuntimeCssVariables(themeColors, { web = false } = {}) {
   return result;
 }
 
-module.exports.kineticDepthNativeCssVariables = createRuntimeCssVariables(kineticDepthThemeColors);
-module.exports.kineticLightNativeCssVariables = createRuntimeCssVariables(kineticLightThemeColors);
-module.exports.kineticShockNativeCssVariables = createRuntimeCssVariables(kineticShockThemeColors);
-module.exports.kineticVoltNativeCssVariables = createRuntimeCssVariables(kineticVoltThemeColors);
-module.exports.darkNativeCssVariables = module.exports.kineticDepthNativeCssVariables;
-module.exports.lightNativeCssVariables = module.exports.kineticLightNativeCssVariables;
+module.exports.themeNativeCssVariables = Object.fromEntries(
+  THEME_IDS.map((themeId) => [themeId, createRuntimeCssVariables(themeColorsById[themeId])])
+);

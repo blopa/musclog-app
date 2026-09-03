@@ -177,29 +177,15 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
-// `useTheme()` selects from the named theme map, so the mock keeps that public
-// shape even though every palette can be identical for this hook test.
-jest.mock('../../theme', () => {
-  const mockTheme = {
+jest.mock('../useTheme', () => ({
+  useTheme: () => ({
     colors: {
       background: {
         imageLight: '#d4b5a0',
       },
     },
-  };
-
-  return {
-    THEMES: {
-      'kinetic-depth': mockTheme,
-      'kinetic-light': mockTheme,
-      'kinetic-shock': mockTheme,
-      'kinetic-volt': mockTheme,
-    },
-    darkTheme: mockTheme,
-    lightTheme: mockTheme,
-    theme: mockTheme,
-  };
-});
+  }),
+}));
 
 jest.mock('../useSettings', () => ({
   useSettings: () => ({

@@ -4,9 +4,7 @@ import { Text, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { Button } from '@/components/theme/Button';
-import { useTheme, useThemeMode } from '@/hooks/useTheme';
-
-import { getSummaryCardBackgroundVariant } from './utils';
+import { useTheme } from '@/hooks/useTheme';
 
 interface DailySummaryEmptyStateProps {
   onSetGoals?: () => void;
@@ -14,14 +12,13 @@ interface DailySummaryEmptyStateProps {
 
 export const DailySummaryEmptyState: FC<DailySummaryEmptyStateProps> = ({ onSetGoals }) => {
   const theme = useTheme();
-  const themeMode = useThemeMode();
   const { t } = useTranslation();
 
   return (
     <GenericCard
       variant="default"
       size="lg"
-      backgroundVariant={getSummaryCardBackgroundVariant(themeMode)}
+      backgroundVariant={theme.components.dailySummaryCardBackground}
     >
       <View className="relative z-10 flex h-full flex-col gap-4 p-5">
         {/* Header */}

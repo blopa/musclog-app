@@ -1,3 +1,5 @@
+import { THEME_DEFINITIONS, THEME_IDS as REGISTRY_THEME_IDS } from '@/theme.registry';
+
 /**
  * Setting type for units preference (stored in WatermelonDB settings table).
  * value: '0' = metric, '1' = imperial.
@@ -369,13 +371,8 @@ export type NavItemKey = (typeof NAV_ITEM_KEYS)[number];
 export type NavItemKeyList = readonly NavItemKey[] & { length: (typeof NAV_ITEM_KEYS)['length'] };
 
 export type Units = 'metric' | 'imperial';
-export const THEME_IDS = [
-  'kinetic-depth',
-  'kinetic-light',
-  'kinetic-shock',
-  'kinetic-volt',
-] as const;
-export type ThemeId = (typeof THEME_IDS)[number];
+export type ThemeId = keyof typeof THEME_DEFINITIONS;
+export const THEME_IDS = REGISTRY_THEME_IDS as readonly ThemeId[];
 export type ThemeOption = 'system' | ThemeId;
 
 /** Preserve preferences written before themes gained stable, named identities. */
@@ -388,7 +385,7 @@ export function normalizeThemeOption(value: string | null | undefined): ThemeOpt
     return 'kinetic-light';
   }
 
-  if (value === 'system' || THEME_IDS.some((themeId) => themeId === value)) {
+  if (value === 'system' || THEME_IDS.includes(value as ThemeId)) {
     return value as ThemeOption;
   }
 

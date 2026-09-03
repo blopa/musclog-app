@@ -11,8 +11,8 @@ import { SmartCameraBottomActions, SmartCameraTopActions } from '@/components/Sm
 import { SMALL_SCREEN_HEIGHT, SmartCameraFrame } from '@/components/SmartCameraFrame';
 import { SmartCameraModePicker } from '@/components/SmartCameraModePicker';
 import type { CameraMode } from '@/constants/camera';
-import { ForcedDarkTheme } from '@/context/ForcedThemeContext';
-import { useTheme } from '@/hooks/useTheme';
+import { ThemeScope } from '@/context/ThemeContext';
+import { darkTheme } from '@/theme';
 
 import { FullScreenModal } from './FullScreenModal';
 
@@ -94,7 +94,7 @@ export function SmartCameraShell({
   isAIVisionEnabled = false,
   onModeChange,
 }: SmartCameraShellProps) {
-  const theme = useTheme();
+  const theme = darkTheme;
   const { t } = useTranslation();
   const { height: screenHeight } = useWindowDimensions();
   const isSmallScreen = screenHeight < SMALL_SCREEN_HEIGHT;
@@ -134,8 +134,7 @@ export function SmartCameraShell({
       scrollable={false}
       showHeader={false}
     >
-      {/* The viewfinder is a dark surface in every theme; see ForcedDarkTheme. */}
-      <ForcedDarkTheme>{body}</ForcedDarkTheme>
+      <ThemeScope themeId="kinetic-depth">{body}</ThemeScope>
     </FullScreenModal>
   );
 
@@ -178,7 +177,7 @@ export function SmartCameraShell({
       scrollable={false}
       showHeader={false}
     >
-      <ForcedDarkTheme>
+      <ThemeScope themeId="kinetic-depth">
         <View className="flex-1" style={{ backgroundColor: theme.colors.background.primary }}>
           <SystemBars style="light" />
           <SafeAreaView className="flex-1" edges={['top']}>
@@ -293,7 +292,7 @@ export function SmartCameraShell({
             </View>
           </SafeAreaView>
         </View>
-      </ForcedDarkTheme>
+      </ThemeScope>
       {children}
     </FullScreenModal>
   );

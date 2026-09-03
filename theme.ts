@@ -4,15 +4,10 @@
  */
 import { Appearance } from 'react-native';
 
-import type { ThemeId } from './constants/settings';
+import { THEME_IDS, type ThemeId } from './constants/settings';
 import { SettingsService } from './database/services/SettingsService';
-import {
-  colors,
-  kineticDepthThemeColors,
-  kineticLightThemeColors,
-  kineticShockThemeColors,
-  kineticVoltThemeColors,
-} from './theme.tokens';
+import { THEME_DEFINITIONS } from './theme.registry';
+import { colors, themeColorsById } from './theme.tokens';
 import { resolveThemeId } from './utils/themeSelection';
 
 export { addOpacityToHex } from './theme.tokens';
@@ -518,11 +513,17 @@ function createShadows(palette: ThemePalette) {
   };
 }
 
-type ThemePalette = typeof kineticDepthThemeColors;
+type ThemePalette = (typeof themeColorsById)[ThemeId];
 
-function createTheme(palette: ThemePalette) {
+type SummaryCardBackground = 'default' | 'colorful-gradient';
+
+function createTheme(palette: ThemePalette, summaryCardBackground: SummaryCardBackground) {
   return {
     ...staticTokens,
+    components: {
+      ...staticTokens.components,
+      dailySummaryCardBackground: summaryCardBackground,
+    },
     colors: {
       ...palette,
       gradients: palette.gradients as unknown as FixGradientTokens<typeof palette.gradients>,
@@ -531,18 +532,18 @@ function createTheme(palette: ThemePalette) {
   };
 }
 
-export const kineticDepthTheme = createTheme(kineticDepthThemeColors);
-export type Theme = typeof kineticDepthTheme;
-export const kineticLightTheme: Theme = createTheme(kineticLightThemeColors);
-export const kineticShockTheme: Theme = createTheme(kineticShockThemeColors);
-export const kineticVoltTheme: Theme = createTheme(kineticVoltThemeColors);
+export type Theme = ReturnType<typeof createTheme>;
+export const THEMES = Object.fromEntries(
+  THEME_IDS.map((themeId) => [
+    themeId,
+    createTheme(themeColorsById[themeId], THEME_DEFINITIONS[themeId].summaryCardBackground),
+  ])
+) as Record<ThemeId, Theme>;
 
-export const THEMES = {
-  'kinetic-depth': kineticDepthTheme,
-  'kinetic-light': kineticLightTheme,
-  'kinetic-shock': kineticShockTheme,
-  'kinetic-volt': kineticVoltTheme,
-} satisfies Record<ThemeId, Theme>;
+export const kineticDepthTheme = THEMES['kinetic-depth'];
+export const kineticLightTheme = THEMES['kinetic-light'];
+export const kineticShockTheme = THEMES['kinetic-shock'];
+export const kineticVoltTheme = THEMES['kinetic-volt'];
 
 // Compatibility aliases for call sites whose concern is specifically display
 // mode (for example, camera surfaces that must always be dark).

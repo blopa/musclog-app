@@ -6,15 +6,10 @@ import {
   Heart,
   Languages,
   Leaf,
-  Moon,
-  Palette,
   RefreshCw,
   Ruler,
   Scale,
   Search,
-  Settings,
-  Sun,
-  Zap,
 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,15 +21,13 @@ import { Button } from '@/components/theme/Button';
 import { PickerButton } from '@/components/theme/PickerButton';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { ToggleInput } from '@/components/theme/ToggleInput';
-import { type FoodSearchSource, type ThemeOption } from '@/constants/settings';
+import { type FoodSearchSource } from '@/constants/settings';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useSyncTracking } from '@/hooks/useSyncTracking';
 import { useTheme } from '@/hooks/useTheme';
 import i18n, { AVAILABLE_LANGUAGES, EN_US, languageLabels } from '@/lang/lang';
 
 import { FullScreenModal } from './FullScreenModal';
-
-const HAS_THEMES = false;
 
 type BasicSettingsModalProps = {
   visible: boolean;
@@ -48,12 +41,10 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
 
   // Use debounced settings for instant UI updates
   const {
-    theme: themeValue,
     units,
     connectHealthData: debouncedConnectHealthData,
     readHealthData: debouncedReadHealthData,
     writeHealthData: debouncedWriteHealthData,
-    handleThemeChange,
     foodSearchSource,
     language,
     handleUnitsChange,
@@ -74,73 +65,6 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
       flushAllPendingChanges();
     }
   }, [visible, flushAllPendingChanges]);
-
-  const themeOptions = [
-    {
-      value: 'system',
-      label: t('settings.basicSettings.themeSystem'),
-      icon: (
-        <Settings
-          size={theme.iconSize.md}
-          color={themeValue === 'system' ? theme.colors.accent.primary : theme.colors.text.tertiary}
-        />
-      ),
-    },
-    {
-      value: 'kinetic-depth',
-      label: t('settings.theme.options.kinetic-depth.label'),
-      icon: (
-        <Moon
-          size={theme.iconSize.md}
-          color={
-            themeValue === 'kinetic-depth'
-              ? theme.colors.accent.primary
-              : theme.colors.text.tertiary
-          }
-        />
-      ),
-    },
-    {
-      value: 'kinetic-light',
-      label: t('settings.theme.options.kinetic-light.label'),
-      icon: (
-        <Sun
-          size={theme.iconSize.md}
-          color={
-            themeValue === 'kinetic-light'
-              ? theme.colors.accent.primary
-              : theme.colors.text.tertiary
-          }
-        />
-      ),
-    },
-    {
-      value: 'kinetic-shock',
-      label: t('settings.theme.options.kinetic-shock.label'),
-      icon: (
-        <Palette
-          size={theme.iconSize.md}
-          color={
-            themeValue === 'kinetic-shock'
-              ? theme.colors.accent.primary
-              : theme.colors.text.tertiary
-          }
-        />
-      ),
-    },
-    {
-      value: 'kinetic-volt',
-      label: t('settings.theme.options.kinetic-volt.label'),
-      icon: (
-        <Zap
-          size={theme.iconSize.md}
-          color={
-            themeValue === 'kinetic-volt' ? theme.colors.accent.primary : theme.colors.text.tertiary
-          }
-        />
-      ),
-    },
-  ];
 
   const hasUsdaApiKey = !!process.env.EXPO_PUBLIC_USDA_API_KEY;
 
@@ -274,34 +198,6 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.basicSettings.title')}>
       <View className="gap-8 py-6">
-        {/* Appearance Section */}
-        {HAS_THEMES ? (
-          <View>
-            <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
-              {t('settings.basicSettings.appearance')}
-            </Text>
-            <View
-              style={{
-                backgroundColor: theme.colors.background.card,
-                borderRadius: theme.borderRadius.lg,
-                marginHorizontal: theme.spacing.padding.base,
-                padding: theme.spacing.padding.base,
-                borderWidth: theme.borderWidth.thin,
-                borderColor: theme.colors.border.light,
-              }}
-            >
-              <Text className="mb-3 text-sm font-medium text-text-secondary">
-                {t('settings.basicSettings.appTheme')}
-              </Text>
-              <SegmentedControl
-                options={themeOptions}
-                value={themeValue}
-                onValueChange={(val) => handleThemeChange(val as ThemeOption)}
-              />
-            </View>
-          </View>
-        ) : null}
-
         {/* Units Section */}
         <View
           style={{

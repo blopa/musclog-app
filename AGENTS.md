@@ -169,8 +169,14 @@ This repository serves two distinct purposes that share the same Expo Router pro
   `kinetic-volt`) plus
   `system`; never reduce the stored preference to a boolean. System resolves to Kinetic Light or
   Kinetic Depth, while `themeMode` remains the derived light/dark value for status bars and
-  NativeWind `dark:` variants. Add a palette through `THEME_IDS`, `theme.tokens.js`, and the
-  `THEMES`/runtime-variable maps together so inline styles and `className` colors cannot diverge.
+  NativeWind `dark:` variants. `theme.registry.js` is the canonical catalogue: it owns every theme
+  ID, mode, primitive palette, and component-level presentation choice; `ThemeId`, semantic token
+  trees, CSS/native variables, and `THEMES` are derived from it. Add a palette there rather than
+  editing parallel maps. `ThemeProvider` resolves the preference once, and every `useTheme*` hook
+  selects from that context value. A surface that must pin a palette (currently the camera
+  viewfinder) uses `ThemeScope`, which changes inline tokens and NativeWind variables together — do
+  not create another forced-theme context. Theme-specific component presentation belongs in
+  `theme.components`, not in a component branch on `themeMode`.
 - **Navigation destinations are table-driven — adding one is a data edit, not a new JSX branch**: `NAV_ITEM_KEYS` (`constants/settings.ts`) is the ordered, canonical list and `NavItemKey` is **derived** from it (`(typeof NAV_ITEM_KEYS)[number]`), so the type and the enumeration can never drift. Everything else hangs off that:
   - `NAV_DESTINATIONS` (`components/navigation/navDestinations.ts`) holds each destination's icon, bottom-bar `labelKey`, account-menu `menuLabelKey` and `route` — the facts **all three** listing surfaces need. A destination picks its icon and route exactly once.
   - `NAV_SLOTS` (`components/NavigationMenu.tsx`) holds only bottom-bar routing modifiers (`activePath` when it must be broader than the route, `alsoActiveFor`/`replace`/`prefetch`/`navigateWhenActive`); every slot renders through the one `NavSlotButton`.

@@ -95,6 +95,10 @@ jest.mock('../useSettings', () => ({
   useSettings: () => ({ heightUnit: 'cm', isLoading: false, units: 'metric', weightUnit: 'kg' }),
 }));
 
+jest.mock('../useTheme', () => ({
+  useTheme: () => ({}),
+}));
+
 jest.mock('../../utils/workout', () => ({
   transformExercisesToOptions: jest.fn(),
   transformScheduleDays: jest.fn(),

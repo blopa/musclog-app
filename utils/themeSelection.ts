@@ -1,4 +1,5 @@
 import { normalizeThemeOption, type ThemeId, type ThemeOption } from '@/constants/settings';
+import { THEME_DEFINITIONS } from '@/theme.registry';
 
 export function resolveThemeId(
   preference: ThemeOption | string | null | undefined,
@@ -13,5 +14,5 @@ export function resolveThemeId(
 }
 
 export function getThemeMode(themeId: ThemeId): 'dark' | 'light' {
-  return themeId === 'kinetic-light' ? 'light' : 'dark';
+  return THEME_DEFINITIONS[themeId].mode;
 }

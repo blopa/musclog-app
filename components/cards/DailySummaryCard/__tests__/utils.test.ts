@@ -6,7 +6,6 @@ import {
   getGoalStatus,
   getMacroGoalStatus,
   getProgressBarColor,
-  getSummaryCardBackgroundVariant,
   getStatusLabel,
   isNarrowLayout,
   type MacroDailyData,
@@ -34,16 +33,6 @@ const macros = (
   fats: macro(0, 60),
   fiber: macro(0, 30),
   ...overrides,
-});
-
-describe('getSummaryCardBackgroundVariant', () => {
-  it('uses the standard card surface in light mode', () => {
-    expect(getSummaryCardBackgroundVariant('light')).toBe('default');
-  });
-
-  it('keeps the colorful gradient in dark mode', () => {
-    expect(getSummaryCardBackgroundVariant('dark')).toBe('colorful-gradient');
-  });
 });
 
 describe('calculateProgress', () => {

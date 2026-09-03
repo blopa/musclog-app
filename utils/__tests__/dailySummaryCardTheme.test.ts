@@ -1,4 +1,4 @@
-import { darkTheme, kineticVoltTheme, lightTheme } from '@/theme';
+import { darkTheme, kineticShockTheme, kineticVoltTheme, lightTheme } from '@/theme';
 
 const relativeLuminance = (hex: string): number => {
   const channels = hex
@@ -21,23 +21,24 @@ const contrastRatio = (first: string, second: string): number => {
 };
 
 describe('Daily Summary card theme', () => {
-  it('keeps the established saturated gradient and white ink in dark mode', () => {
+  it('keeps the established saturated presentation in every dark theme', () => {
     expect(darkTheme.colors.gradients.colorfulCard).toEqual(darkTheme.colors.gradients.progress);
     expect(darkTheme.colors.colorfulCard.ink).toBe('#ffffff');
+    expect(darkTheme.components.dailySummaryCardBackground).toBe('colorful-gradient');
+    expect(kineticShockTheme.components.dailySummaryCardBackground).toBe('colorful-gradient');
+    expect(kineticVoltTheme.components.dailySummaryCardBackground).toBe('colorful-gradient');
   });
 
-  it('uses a distinct light gradient with softer high-contrast ink in light mode', () => {
-    expect(lightTheme.colors.gradients.colorfulCard).not.toEqual(
-      lightTheme.colors.gradients.progress
-    );
-    expect(lightTheme.colors.gradients.colorfulCard).toEqual(['#d8daee', '#c5dad7', '#bcd3cb']);
+  it('uses the standard surface and matching ink in Kinetic Light', () => {
+    expect(lightTheme.components.dailySummaryCardBackground).toBe('default');
     expect(lightTheme.colors.colorfulCard.ink).toBe('#30413a');
     expect(lightTheme.colors.colorfulCard.ink70).toBe(lightTheme.colors.text.secondary);
     expect(
-      lightTheme.colors.gradients.colorfulCard.every(
-        (stop) => contrastRatio(stop, lightTheme.colors.colorfulCard.ink70) >= 4.5
-      )
-    ).toBe(true);
+      contrastRatio(lightTheme.colors.background.overlay, lightTheme.colors.colorfulCard.ink70)
+    ).toBeGreaterThanOrEqual(4.5);
+    expect(
+      contrastRatio(lightTheme.colors.background.overlay, lightTheme.colors.colorfulCard.ink)
+    ).toBeGreaterThanOrEqual(4.5);
   });
 
   it('uses warm-black ink on Kinetic Volt’s bright gradient', () => {
