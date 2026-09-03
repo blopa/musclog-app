@@ -94,7 +94,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
           {
             icon: Leaf,
             iconColor: theme.colors.status.success,
-            iconBgColor: theme.colors.status.emerald10,
+            iconBgColor: theme.colors.status.brandVivid10,
             title: t('settings.basicSettings.foodSearchUSDA'),
             description: t('settings.basicSettings.foodSearchUSDADescription'),
             onPress: () => handleFoodSearchSourceChange('usda'),
@@ -292,7 +292,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
                 <View className="mb-2 flex-row items-center gap-3">
                   <View
                     className="h-10 w-10 items-center justify-center rounded-full"
-                    style={{ backgroundColor: theme.colors.background.white }}
+                    style={{ backgroundColor: theme.colors.background.alwaysWhite }}
                   >
                     <Heart
                       size={theme.iconSize.xl}

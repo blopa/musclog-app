@@ -425,8 +425,8 @@ function ProgressScreenContent({
                       }}
                       positiveLabel={t('bodyMetrics.addEntry.taken')}
                       negativeLabel={t('bodyMetrics.addEntry.notTaken')}
-                      lineColor={theme.colors.status.emerald}
-                      areaColor={theme.colors.status.emerald10}
+                      lineColor={theme.colors.status.brandVivid}
+                      areaColor={theme.colors.status.brandVivid10}
                     />
                   ))}
 

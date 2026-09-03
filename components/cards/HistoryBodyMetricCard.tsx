@@ -74,7 +74,7 @@ export function HistoryBodyMetricCard({ entry }: { entry: HistoryEntry }) {
             {!entry.change ? (
               <View
                 className="flex-row items-center rounded-full px-2.5 py-1"
-                style={{ backgroundColor: theme.colors.status.gray10 }}
+                style={{ backgroundColor: theme.colors.status.neutralWash }}
               >
                 <Text className="text-xs font-bold text-text-tertiary">{entry.note}</Text>
               </View>

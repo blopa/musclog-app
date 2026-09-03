@@ -242,7 +242,7 @@ export default function InputsTestScreen() {
         <TestSection title="Interactive Sliders" subtitle="Difficulty & Goals">
           <View
             className="rounded-lg border bg-bg-card p-6"
-            style={{ borderColor: theme.colors.background.white10 }}
+            style={{ borderColor: theme.colors.background.ink10 }}
           >
             <View className="mb-6 flex-row items-center justify-between">
               <Text className="text-sm font-medium text-text-secondary">Workout Difficulty</Text>

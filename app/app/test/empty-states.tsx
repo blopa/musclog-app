@@ -19,7 +19,7 @@ export default function EmptyStatesTestScreen() {
       <View className="flex-row items-center justify-between bg-bg-primary/90 px-4 pb-2 pt-4">
         <Pressable
           className="h-10 w-10 shrink-0 items-center justify-center rounded-full"
-          style={{ backgroundColor: theme.colors.background.white10 }}
+          style={{ backgroundColor: theme.colors.background.ink10 }}
         >
           <ArrowLeft size={theme.iconSize.xl} color={theme.colors.text.primary} />
         </Pressable>
@@ -76,7 +76,7 @@ export default function EmptyStatesTestScreen() {
             {/* Workout Card Skeleton */}
             <View
               className="flex-col gap-4 rounded-lg border bg-bg-card p-4"
-              style={{ borderColor: theme.colors.background.white5 }}
+              style={{ borderColor: theme.colors.background.ink5 }}
             >
               <View className="flex-row items-center gap-3">
                 <SkeletonLoader
@@ -106,7 +106,7 @@ export default function EmptyStatesTestScreen() {
             {/* Food Item Skeleton */}
             <View
               className="flex-row items-center justify-between rounded-lg border bg-bg-card p-4"
-              style={{ borderColor: theme.colors.background.white5 }}
+              style={{ borderColor: theme.colors.background.ink5 }}
             >
               <View className="flex-row items-center gap-3">
                 <SkeletonLoader

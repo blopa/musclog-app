@@ -83,7 +83,7 @@ function FoodResultCard({
             {isSelected ? (
               <Check
                 size={theme.iconSize.sm}
-                color={theme.colors.text.black}
+                color={theme.colors.text.onAccent}
                 strokeWidth={theme.strokeWidth.thick}
               />
             ) : null}
@@ -115,7 +115,7 @@ function FoodResultCard({
               style={{
                 backgroundColor: isSelected
                   ? theme.colors.accent.primary10
-                  : theme.colors.background.white5,
+                  : theme.colors.background.ink5,
                 paddingHorizontal: theme.spacing.padding.sm,
                 paddingVertical: theme.spacing.padding.xs,
                 borderRadius: theme.borderRadius.md,

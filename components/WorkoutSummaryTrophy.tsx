@@ -69,7 +69,7 @@ export function WorkoutSummaryTrophy() {
         className="relative z-10 h-32 w-32 items-center justify-center rounded-full border"
         style={{
           backgroundColor: theme.colors.status.indigo10,
-          borderColor: theme.colors.background.white5,
+          borderColor: theme.colors.background.ink5,
           shadowColor: theme.colors.accent.primary,
           shadowOffset: theme.shadowOffset.zero,
           shadowOpacity: theme.shadowOpacity.light,
@@ -78,7 +78,7 @@ export function WorkoutSummaryTrophy() {
         }}
       >
         <LinearGradient
-          colors={[theme.colors.status.indigo10, theme.colors.status.emerald10]}
+          colors={[theme.colors.status.indigo10, theme.colors.status.brandVivid10]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{

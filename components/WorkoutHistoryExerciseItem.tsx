@@ -72,7 +72,7 @@ export function ExerciseItem({
             <Text className="text-sm font-bold uppercase text-text-secondary">{exercise.time}</Text>
             <View
               className="h-1 w-1 rounded-full"
-              style={{ backgroundColor: theme.colors.text.gray300 }}
+              style={{ backgroundColor: theme.colors.text.secondary }}
             />
             <Text className="text-sm font-medium text-text-secondary">
               {t('workoutHistory.exercise', { number: exercise.exerciseNumber })}
@@ -103,7 +103,7 @@ export function ExerciseItem({
             className="flex-row border-b"
             style={{
               borderBottomColor: theme.colors.border.light,
-              backgroundColor: theme.colors.background.white3,
+              backgroundColor: theme.colors.background.ink3,
             }}
           >
             <View className="w-8 items-center py-2">
@@ -166,7 +166,7 @@ export function ExerciseItem({
                   <View key={index} className="flex-1 gap-1">
                     <View
                       className="h-1 overflow-hidden rounded-full"
-                      style={{ backgroundColor: theme.colors.background.gray800 }}
+                      style={{ backgroundColor: theme.colors.background.raised }}
                     >
                       <View
                         className="h-full rounded-full"

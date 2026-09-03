@@ -59,13 +59,13 @@ export function useScrollFade() {
             width: 44,
             height: 44,
             borderRadius: 22,
-            backgroundColor: theme.colors.background.white10,
+            backgroundColor: theme.colors.background.ink10,
             borderWidth: 1,
-            borderColor: theme.colors.background.white10,
+            borderColor: theme.colors.background.ink10,
             opacity: 0.6,
           }}
         >
-          <ChevronDown size={22} color={theme.colors.text.white} strokeWidth={2} />
+          <ChevronDown size={22} color={theme.colors.text.primary} strokeWidth={2} />
         </TouchableOpacity>
       </>
     ) : null;

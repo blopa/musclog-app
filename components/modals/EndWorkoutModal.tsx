@@ -76,7 +76,7 @@ export function EndWorkoutModal({
       {/* Backdrop */}
       <Pressable
         className="flex-1 items-center justify-center p-4"
-        style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}
+        style={[{ backgroundColor: theme.colors.overlay.scrim60 }, webBackdropStyle]}
         onPress={isBusy ? undefined : onClose}
       >
         {/* Modal Content */}

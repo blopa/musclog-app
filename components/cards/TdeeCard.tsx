@@ -26,9 +26,9 @@ export function TdeeCard({ tdeeValue = 2000, subtitle, tagText }: TdeeCardProps)
           <MaterialIcons
             name="bolt"
             size={theme.iconSize.lg}
-            color={theme.colors.status.emeraldLight}
+            color={theme.colors.status.brandBright}
           />
-          <Text className="text-sm font-medium" style={{ color: theme.colors.status.emeraldLight }}>
+          <Text className="text-sm font-medium" style={{ color: theme.colors.status.brandBright }}>
             {t('progress.metabolicSummary')}
           </Text>
         </View>
@@ -49,11 +49,11 @@ export function TdeeCard({ tdeeValue = 2000, subtitle, tagText }: TdeeCardProps)
         {/* Tag at bottom */}
         <View
           className="mt-4 flex-row items-center self-start rounded-full px-3 py-1.5"
-          style={{ backgroundColor: theme.colors.status.emerald400_10 }}
+          style={{ backgroundColor: theme.colors.status.brandBright10 }}
         >
           <Text
             className="text-[10px] font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.status.emeraldLight }}
+            style={{ color: theme.colors.status.brandBright }}
           >
             {tagText || t('progress.basedOnRecentActivity')}
           </Text>

@@ -86,7 +86,7 @@ function ExerciseListItem({
                 color:
                   tag.variant === 'primary'
                     ? theme.colors.accent.primary
-                    : theme.colors.status.customGreen,
+                    : theme.colors.status.brandPale,
               }}
             >
               {tag.label}
@@ -237,7 +237,7 @@ export default function ExercisesModal({
               value={searchQuery}
               onChangeText={setSearchQuery}
               placeholder={t('exercises.searchPlaceholder')}
-              icon={<Search size={theme.iconSize.md} color={theme.colors.status.customGreen} />}
+              icon={<Search size={theme.iconSize.md} color={theme.colors.status.brandPale} />}
             />
           </View>
         </View>
@@ -289,7 +289,7 @@ export default function ExercisesModal({
                 >
                   {groupExercises.length === 0 ? (
                     <View className="border-t border-border-dark px-4 py-2">
-                      <Text className="text-sm" style={{ color: theme.colors.status.customGreen }}>
+                      <Text className="text-sm" style={{ color: theme.colors.status.brandPale }}>
                         {t('exercises.emptyGroupMessage', {
                           muscleGroup: config.name.toLowerCase(),
                         })}

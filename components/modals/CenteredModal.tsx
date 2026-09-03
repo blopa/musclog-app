@@ -43,7 +43,7 @@ export function CenteredModal({
       {/* Root fills the screen; backdrop tap is a sibling behind the sheet so ScrollView inside the sheet can scroll on native (Pressable ancestors steal pan gestures). */}
       <View
         className="flex-1"
-        style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}
+        style={[{ backgroundColor: theme.colors.overlay.scrim60 }, webBackdropStyle]}
       >
         <Pressable style={StyleSheet.absoluteFill} onPress={isLoading ? undefined : onClose} />
         <View className="flex-1 items-center justify-center p-4" pointerEvents="box-none">

@@ -66,7 +66,7 @@ export default function CheckinListScreen() {
         label = t('nutrition.checkin.status.ahead');
         break;
       case 'onTrack':
-        color = theme.colors.status.emerald;
+        color = theme.colors.status.brandVivid;
         label = t('nutrition.checkin.status.onTrack');
         break;
       case 'behind':

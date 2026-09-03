@@ -50,7 +50,7 @@ export function GradientText({ colors, style, children }: GradientTextProps) {
             style,
             {
               backgroundColor: 'transparent',
-              color: theme.colors.text.black,
+              color: theme.colors.text.onAccent,
             },
           ]}
         >

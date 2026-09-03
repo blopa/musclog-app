@@ -214,14 +214,14 @@ export function useUserMetricDataLogs({
   const iconColors = useMemo(
     () => ({
       'monitor-weight': { color: theme.colors.status.info, bg: theme.colors.status.info10 },
-      percent: { color: theme.colors.status.violet500, bg: theme.colors.status.purple10 },
+      percent: { color: theme.colors.status.purple, bg: theme.colors.status.purple10 },
       straighten: { color: theme.colors.accent.tertiary, bg: theme.colors.status.info10 },
-      'trending-up': { color: theme.colors.accent.secondary, bg: theme.colors.status.emerald10 },
+      'trending-up': { color: theme.colors.accent.secondary, bg: theme.colors.status.brandVivid10 },
       mood: { color: theme.colors.macros.fat.text, bg: theme.colors.status.amber10 },
       'water-drop': { color: theme.colors.status.info, bg: theme.colors.status.info10 },
       'fitness-center': {
-        color: theme.colors.status.emeraldLight,
-        bg: theme.colors.status.emerald400_10,
+        color: theme.colors.status.brandBright,
+        bg: theme.colors.status.brandBright10,
       },
       'local-fire-department': {
         color: theme.colors.status.error,

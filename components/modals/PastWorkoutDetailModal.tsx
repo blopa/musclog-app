@@ -113,7 +113,7 @@ function WorkoutSummaryCard({
           {/* Volume */}
           <View
             className="flex-1 flex-col border-l pl-4"
-            style={{ borderLeftColor: theme.colors.background.white2 }}
+            style={{ borderLeftColor: theme.colors.background.ink2 }}
           >
             <Text
               className="text-[10px] font-bold uppercase tracking-wider text-text-primary"
@@ -134,7 +134,7 @@ function WorkoutSummaryCard({
           {/* Calories */}
           <View
             className="flex-1 flex-col border-l pl-4"
-            style={{ borderLeftColor: theme.colors.background.white2 }}
+            style={{ borderLeftColor: theme.colors.background.ink2 }}
           >
             <Text
               className="text-[10px] font-bold uppercase tracking-wider text-text-primary"
@@ -226,7 +226,7 @@ function SetRow({ set }: SetRowProps) {
       style={{
         backgroundColor:
           set.isHighlighted && !set.isSkipped ? theme.colors.accent.primary5 : 'transparent',
-        borderBottomColor: theme.colors.background.white5,
+        borderBottomColor: theme.colors.background.ink5,
         opacity: set.isSkipped ? 0.6 : 1,
       }}
     >
@@ -291,8 +291,8 @@ function SetsTable({ sets }: SetsTableProps) {
       <View
         className="flex-row border-b"
         style={{
-          backgroundColor: theme.colors.background.white5,
-          borderBottomColor: theme.colors.background.white5,
+          backgroundColor: theme.colors.background.ink5,
+          borderBottomColor: theme.colors.background.ink5,
         }}
       >
         <View className="w-12 items-center py-2">
@@ -351,7 +351,7 @@ function ExerciseCard({ exercise, onEdit, onInfo, onClose }: ExerciseCardProps) 
         className="mb-0 flex-row items-center justify-between border-b pb-4"
         style={{
           padding: theme.spacing.padding.base,
-          borderBottomColor: theme.colors.background.white5,
+          borderBottomColor: theme.colors.background.ink5,
         }}
       >
         <View className="flex-row items-center gap-3">
@@ -681,9 +681,9 @@ export default function PastWorkoutDetailModal({
         {saveError ? (
           <View
             className="rounded-xl px-4 py-3"
-            style={{ backgroundColor: theme.colors.status.errorSolid + '20' }}
+            style={{ backgroundColor: theme.colors.status.error + '20' }}
           >
-            <Text className="text-sm font-medium" style={{ color: theme.colors.status.errorSolid }}>
+            <Text className="text-sm font-medium" style={{ color: theme.colors.status.error }}>
               {t('workoutDetail.saveError')}
             </Text>
           </View>

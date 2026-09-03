@@ -31,7 +31,7 @@ const Macro = ({ label, value, color, intuitiveMode = false }: MacroProps) => {
       <Text
         className="font-bold"
         style={[
-          { color: theme.colors.text.gray300, fontSize: theme.typography.fontSize.sm },
+          { color: theme.colors.text.secondary, fontSize: theme.typography.fontSize.sm },
           intuitiveMode ? blurFilter(4) : undefined,
         ]}
       >
@@ -94,7 +94,7 @@ export function MealItemCard({
             <Text
               className="font-bold"
               style={[
-                { color: theme.colors.text.black, fontSize: theme.typography.fontSize.xs },
+                { color: theme.colors.text.onAccent, fontSize: theme.typography.fontSize.xs },
                 intuitiveEatingMode ? blurFilter(4) : undefined,
               ]}
             >
@@ -109,7 +109,7 @@ export function MealItemCard({
               <Text
                 className="mb-0.5 font-bold"
                 style={{
-                  color: theme.colors.text.gray300,
+                  color: theme.colors.text.secondary,
                   fontSize: theme.typography.fontSize.base,
                 }}
               >
@@ -118,7 +118,7 @@ export function MealItemCard({
               <Text
                 className="font-medium"
                 style={{
-                  color: theme.colors.text.gray500,
+                  color: theme.colors.text.tertiary,
                   fontSize: theme.typography.fontSize.xs,
                 }}
               >
@@ -131,26 +131,26 @@ export function MealItemCard({
             <Macro
               label={t('food.macros.proteinLegend')}
               value={macros.protein}
-              color={theme.colors.status.red400}
+              color={theme.colors.status.errorLight}
               intuitiveMode={intuitiveEatingMode}
             />
             <View
               className="w-[1px]"
               style={{
-                backgroundColor: theme.colors.border.gray600,
+                backgroundColor: theme.colors.border.subtle,
                 height: theme.size[5],
               }}
             />
             <Macro
               label={t('food.macros.carbsLegend')}
               value={macros.carbs}
-              color={theme.colors.status.teal400}
+              color={theme.colors.status.brandPale}
               intuitiveMode={intuitiveEatingMode}
             />
             <View
               className="w-[1px]"
               style={{
-                backgroundColor: theme.colors.border.gray600,
+                backgroundColor: theme.colors.border.subtle,
                 height: theme.size[5],
               }}
             />

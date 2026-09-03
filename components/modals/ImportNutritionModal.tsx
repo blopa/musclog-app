@@ -134,13 +134,16 @@ export function ImportNutritionModal({
         >
           {isProcessing ? (
             <View className="flex-row items-center justify-center gap-2">
-              <ActivityIndicator color={theme.colors.text.black} size="small" />
-              <Text className="font-semibold" style={{ color: theme.colors.text.black }}>
+              <ActivityIndicator color={theme.colors.text.onAccent} size="small" />
+              <Text className="font-semibold" style={{ color: theme.colors.text.onAccent }}>
                 {t('nutrition.processing')}
               </Text>
             </View>
           ) : (
-            <Text className="text-center font-semibold" style={{ color: theme.colors.text.black }}>
+            <Text
+              className="text-center font-semibold"
+              style={{ color: theme.colors.text.onAccent }}
+            >
               {t('nutrition.import')}
             </Text>
           )}

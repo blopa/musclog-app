@@ -87,7 +87,7 @@ export default function NewNumericalInput({
           onChangeText={handleInputChange}
           onBlur={handleInputBlur}
           className={`min-w-0 flex-1 bg-transparent text-center font-bold ${isCompact ? 'text-lg' : 'text-2xl'}`}
-          style={{ color: theme.colors.text.white }}
+          style={{ color: theme.colors.text.primary }}
           keyboardType="numeric"
           placeholderTextColor={theme.colors.text.secondary}
           selectTextOnFocus={true}

@@ -128,7 +128,7 @@ export function WorkoutSummaryCelebration({
             style={{
               height: theme.size['48'],
               width: theme.size['48'],
-              backgroundColor: theme.colors.status.emerald20,
+              backgroundColor: theme.colors.status.brandVivid20,
               borderRadius: theme.size['48'] / 2,
               transform: [{ translateX: -theme.size['24'] }, { translateY: -theme.size['24'] }],
               opacity: glowAnim2,

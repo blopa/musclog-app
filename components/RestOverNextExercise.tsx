@@ -21,8 +21,8 @@ export function RestOverNextExercise({ exercise }: RestOverNextExerciseProps) {
     <View
       className="mt-4 w-full max-w-sm rounded-xl border p-5"
       style={{
-        backgroundColor: theme.colors.background.darkGreen50,
-        borderColor: theme.colors.background.white5,
+        backgroundColor: theme.colors.background.brandWash,
+        borderColor: theme.colors.background.ink5,
         ...theme.shadows.lg,
       }}
     >

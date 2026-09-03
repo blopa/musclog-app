@@ -89,7 +89,7 @@ export function AINutritionTrackingContextModal({
               overflow: 'hidden',
             }}
           />
-          <Sparkles size={theme.iconSize.xl} color={theme.colors.text.white} />
+          <Sparkles size={theme.iconSize.xl} color={theme.colors.text.primary} />
         </View>
       }
     >
@@ -102,8 +102,8 @@ export function AINutritionTrackingContextModal({
           <View
             className="w-full rounded-lg border p-4"
             style={{
-              backgroundColor: theme.colors.background.darkGraySolid,
-              borderColor: theme.colors.background.white10,
+              backgroundColor: theme.colors.background.primary,
+              borderColor: theme.colors.background.ink10,
             }}
             collapsable={false}
           >
@@ -116,7 +116,7 @@ export function AINutritionTrackingContextModal({
                 textAlignVertical: 'top',
               }}
               placeholder={placeholder ?? t('food.aiNutritionContext.placeholder')}
-              placeholderTextColor={theme.colors.background.white20}
+              placeholderTextColor={theme.colors.background.ink20}
               value={mealDescription}
               onChangeText={(text) => {
                 setMealDescription(text);
@@ -148,7 +148,7 @@ export function AINutritionTrackingContextModal({
                   <Text
                     className={`text-sm font-medium ${isSelected ? 'font-semibold' : ''}`}
                     style={{
-                      color: isSelected ? theme.colors.text.black : theme.colors.text.gray300,
+                      color: isSelected ? theme.colors.text.onAccent : theme.colors.text.secondary,
                     }}
                   >
                     {tag}
@@ -166,8 +166,8 @@ export function AINutritionTrackingContextModal({
             className="flex-1 rounded-xl border px-6 py-4"
             {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
             style={{
-              backgroundColor: theme.colors.background.darkGreenSolidAlt,
-              borderColor: theme.colors.background.white5,
+              backgroundColor: theme.colors.background.neutralWashStrong,
+              borderColor: theme.colors.background.ink5,
             }}
           >
             <Text className="text-center text-sm font-bold text-text-primary">
@@ -198,7 +198,7 @@ export function AINutritionTrackingContextModal({
               <Text className="text-sm font-bold text-text-primary">
                 {applyLabel ?? t('food.aiNutritionContext.applyContext')}
               </Text>
-              <CheckCircle size={theme.iconSize.md} color={theme.colors.text.white} />
+              <CheckCircle size={theme.iconSize.md} color={theme.colors.text.primary} />
             </View>
           </Pressable>
         </View>

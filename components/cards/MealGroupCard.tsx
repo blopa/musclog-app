@@ -92,8 +92,8 @@ const getMealIconAndColor = (
     case 'lunch':
       return {
         Icon: Soup,
-        bgColor: theme.colors.status.emerald10,
-        iconColor: theme.colors.status.emerald,
+        bgColor: theme.colors.status.brandVivid10,
+        iconColor: theme.colors.status.brandVivid,
       };
     case 'dinner':
       return {
@@ -104,13 +104,13 @@ const getMealIconAndColor = (
     case 'snack':
       return {
         Icon: Apple,
-        bgColor: theme.colors.status.yellow10,
-        iconColor: theme.colors.status.yellow,
+        bgColor: theme.colors.status.amber10,
+        iconColor: theme.colors.status.amber,
       };
     case 'other':
       return {
         Icon: Coffee,
-        bgColor: theme.colors.status.gray10,
+        bgColor: theme.colors.status.neutralWash,
         iconColor: theme.colors.text.secondary,
       };
     default:

@@ -161,7 +161,7 @@ export function SmartCameraShell({
           {t('food.aiCamera.permissionRequired')}
         </Text>
         <Pressable onPress={onRequestPermission} className="rounded-xl bg-accent-primary px-6 py-3">
-          <Text className="font-semibold" style={{ color: theme.colors.text.black }}>
+          <Text className="font-semibold" style={{ color: theme.colors.text.onAccent }}>
             {t('food.aiCamera.grantPermission')}
           </Text>
         </Pressable>
@@ -214,7 +214,7 @@ export function SmartCameraShell({
             {isLoading ? (
               <View
                 className="absolute inset-0 z-30"
-                style={{ backgroundColor: theme.colors.overlay.black90 }}
+                style={{ backgroundColor: theme.colors.overlay.scrim90 }}
               >
                 <CameraProcessingIndicator cameraMode={cameraMode} />
               </View>

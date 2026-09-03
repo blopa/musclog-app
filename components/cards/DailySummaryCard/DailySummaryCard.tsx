@@ -519,7 +519,7 @@ export function DailySummaryCard({
               {weeklyMacroItems.length > 0 ? (
                 <View
                   className="flex-row justify-around rounded-2xl px-2 py-3"
-                  style={{ backgroundColor: theme.colors.background.black30 }}
+                  style={{ backgroundColor: theme.colors.background.scrim30 }}
                 >
                   {weeklyMacroItems.map((macro) => (
                     <View key={macro.label} className="items-center gap-1">

@@ -722,8 +722,8 @@ export default function RepsRecordingScreen() {
                 icon={
                   <Circle
                     size={theme.iconSize.sm}
-                    color={theme.colors.text.white}
-                    fill={theme.colors.text.white}
+                    color={theme.colors.text.primary}
+                    fill={theme.colors.text.primary}
                   />
                 }
                 onPress={() => void handleStop()}

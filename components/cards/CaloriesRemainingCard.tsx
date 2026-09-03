@@ -91,7 +91,7 @@ export function CaloriesRemainingCard({
         {/* Progress Bar */}
         <View
           className="mb-6 h-3 overflow-hidden rounded-full"
-          style={{ backgroundColor: theme.colors.background.gray800Opacity50 }}
+          style={{ backgroundColor: theme.colors.background.raised50 }}
         >
           <LinearGradient
             colors={theme.colors.gradients.progress}

@@ -319,7 +319,7 @@ export default function ExerciseGoalCreationModal({
         icon: Icon,
         iconBgColor:
           exerciseType === 'bodyweight'
-            ? theme.colors.background.white5
+            ? theme.colors.background.ink5
             : theme.colors.accent.primary10,
         iconColor:
           exerciseType === 'bodyweight' ? theme.colors.text.secondary : theme.colors.accent.primary,

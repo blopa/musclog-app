@@ -184,7 +184,7 @@ export function ExerciseGoalDetailModal({
             <View className="mb-4 flex-row flex-wrap gap-3">
               <View
                 className="min-w-[45%] flex-1 rounded-xl p-3"
-                style={{ backgroundColor: theme.colors.background.white5 }}
+                style={{ backgroundColor: theme.colors.background.ink5 }}
               >
                 <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
                   {t('exerciseGoals.card.target')}
@@ -196,7 +196,7 @@ export function ExerciseGoalDetailModal({
 
               <View
                 className="min-w-[45%] flex-1 rounded-xl p-3"
-                style={{ backgroundColor: theme.colors.background.white5 }}
+                style={{ backgroundColor: theme.colors.background.ink5 }}
               >
                 <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
                   {t('exerciseGoals.card.currentEstimate')}
@@ -210,7 +210,7 @@ export function ExerciseGoalDetailModal({
 
               <View
                 className="min-w-[45%] flex-1 rounded-xl p-3"
-                style={{ backgroundColor: theme.colors.background.white5 }}
+                style={{ backgroundColor: theme.colors.background.ink5 }}
               >
                 <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
                   {t('exerciseGoals.detail.progress')}
@@ -222,7 +222,7 @@ export function ExerciseGoalDetailModal({
 
               <View
                 className="min-w-[45%] flex-1 rounded-xl p-3"
-                style={{ backgroundColor: theme.colors.background.white5 }}
+                style={{ backgroundColor: theme.colors.background.ink5 }}
               >
                 <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
                   {t('exerciseGoals.detail.baseline')}
@@ -334,7 +334,7 @@ export function ExerciseGoalDetailModal({
             <View className="mb-4 flex-row flex-wrap gap-3">
               <View
                 className="min-w-[45%] flex-1 rounded-xl p-3"
-                style={{ backgroundColor: theme.colors.background.white5 }}
+                style={{ backgroundColor: theme.colors.background.ink5 }}
               >
                 <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
                   {t('exerciseGoals.creation.sessionsPerWeek')}
@@ -346,7 +346,7 @@ export function ExerciseGoalDetailModal({
 
               <View
                 className="min-w-[45%] flex-1 rounded-xl p-3"
-                style={{ backgroundColor: theme.colors.background.white5 }}
+                style={{ backgroundColor: theme.colors.background.ink5 }}
               >
                 <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
                   {t('exerciseGoals.card.sessionsThisWeek', {

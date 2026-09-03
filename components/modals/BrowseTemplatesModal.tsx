@@ -135,9 +135,9 @@ export function BrowseTemplatesModal({
     switch (difficulty) {
       case 'beginner':
         return {
-          bg: theme.colors.status.emerald10,
-          text: theme.colors.status.emerald,
-          border: theme.colors.status.emerald20,
+          bg: theme.colors.status.brandVivid10,
+          text: theme.colors.status.brandVivid,
+          border: theme.colors.status.brandVivid20,
         };
       case 'intermediate':
         return {

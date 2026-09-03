@@ -87,7 +87,7 @@ export const TextInput = forwardRef<RNTextInput, TestInputProps>(
     // Interpolate colors based on focus state
     const borderColor = focusAnim.interpolate({
       inputRange: [0, 1],
-      outputRange: [theme.colors.background.white10, theme.colors.accent.primary50],
+      outputRange: [theme.colors.background.ink10, theme.colors.accent.primary50],
     });
 
     const labelColor = focusAnim.interpolate({

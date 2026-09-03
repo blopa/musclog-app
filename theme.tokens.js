@@ -97,9 +97,9 @@ function createColors(palette) {
     // --- Opaque tinted surfaces, blended rather than added to the palette ---
     // Deep washes that used to be one-off hex literals.
     surfaceWashNeutral: mixHex(palette.surfaceBase, palette.textPrimary, 0.09), // was #1e2321
-    surfaceWashTaupe: mixHex(palette.surfaceBase, palette.textPrimary, 0.15), // was #2a322e
-    surfaceWashGreen: mixHex(palette.surfaceRaised, palette.brandSurface, 0.09), // was #192b23
-    surfaceWashTeal: mixHex(palette.surfaceRaised, palette.brandDeep, 0.09), // was #1a2e2a
+    surfaceWashNeutralStrong: mixHex(palette.surfaceBase, palette.textPrimary, 0.15), // was #2a322e
+    surfaceWashBrand: mixHex(palette.surfaceRaised, palette.brandSurface, 0.09), // was #192b23
+    surfaceWashBrandDeep: mixHex(palette.surfaceRaised, palette.brandDeep, 0.09), // was #1a2e2a
     surfaceWashTint: mixHex(palette.surfaceTint, palette.textPrimary, 0.07), // was #1b3227
     // Tinted surfaces that must stay opaque because they float over arbitrary content.
     surfaceErrorTint: mixHex(palette.surfaceBase, palette.statusError, 0.25), // was #3d1515
@@ -234,31 +234,26 @@ function createThemeColors(colors) {
       imageLight: colors.surfaceAccent, // Image placeholder background
       imageMedium: colors.surfaceRaised, // Medium image background
       notificationCard: colors.surfaceNotification, // Notification card gradient start
-      gray700: colors.borderHairline, // Hairline-weight fill
-      gray800: colors.surfaceRaised, // Raised fill
-      gray800Opacity50: colors.surfaceRaisedAlpha49, // Raised fill at 50%
-      white: colors.alwaysWhite, // Fixed-white fill: slider/switch thumbs, icon wells
+      hairline: colors.borderHairline, // Hairline-weight fill
+      raised: colors.surfaceRaised, // Raised fill
+      raised50: colors.surfaceRaisedAlpha49, // Raised fill at 50%
+      alwaysWhite: colors.alwaysWhite, // Fixed-white fill: slider/switch thumbs, icon wells
       overlayDark: colors.scrimAlpha60, // Scrim with 60% opacity
       purpleBlob: colors.surfacePurpleTint, // Purple blob background
-      greenBlob: colors.surfaceBrandTint, // Green blob background
-      darkGreen50: colors.surfaceWashGreen, // Dark green wash
-      darkGreen80: colors.surfaceWashTint, // Dark green wash, stronger
-      black10: colors.scrimAlpha10, // Scrim with 10% opacity
-      black15: colors.scrimAlpha15, // Scrim with 15% opacity
-      black20: colors.scrimAlpha20, // Scrim with 20% opacity
-      black30: colors.scrimAlpha30, // Scrim with 30% opacity
-      black40: colors.scrimAlpha40, // Scrim with 40% opacity
-      black80: colors.scrimAlpha80, // Scrim with 80% opacity
-      black90: colors.scrimAlpha90, // Scrim with 90% opacity
+      brandBlob: colors.surfaceBrandTint, // Brand blob background
+      brandWash: colors.surfaceWashBrand, // Brand wash over the raised surface
+      tintWash: colors.surfaceWashTint, // Tinted surface, lifted towards ink
+      scrim10: colors.scrimAlpha10, // Scrim with 10% opacity
+      scrim15: colors.scrimAlpha15, // Scrim with 15% opacity
+      scrim20: colors.scrimAlpha20, // Scrim with 20% opacity
+      scrim30: colors.scrimAlpha30, // Scrim with 30% opacity
+      scrim40: colors.scrimAlpha40, // Scrim with 40% opacity
+      scrim80: colors.scrimAlpha80, // Scrim with 80% opacity
+      scrim90: colors.scrimAlpha90, // Scrim with 90% opacity
       aiCardBackground: colors.surfaceBase, // Dark green for AI card background
-      darkGreenVariant: colors.surfaceNotification, // Dark green variant for tags/badges
-      darkGreenOverlay: colors.surfaceWashTeal, // Dark green overlay
-      darkGreenSolid: colors.surfaceTint, // Dark green solid color
-      darkGray: colors.surfaceWashNeutral, // Dark neutral wash
-      darkGray50: colors.surfaceWashNeutral, // Dark neutral wash
-      darkGray90: colors.surfaceWashNeutral, // Dark neutral wash
-      darkGraySolid: colors.surfaceBase, // Dark base wash
-      darkGreenSolidAlt: colors.surfaceWashTaupe, // Alternative dark green solid
+      tint: colors.surfaceTint, // Tinted surface, solid
+      neutralWash: colors.surfaceWashNeutral, // Neutral wash over the base
+      neutralWashStrong: colors.surfaceWashNeutralStrong, // Neutral wash, stronger
       exerciseCardBackground: colors.surfaceAccent, // Exercise card background
       darkBackground: colors.surfaceBase, // Dark background color (landing page, etc.)
       snackbarSuccess: colors.surfaceSuccessTint, // Success snackbar background
@@ -267,13 +262,13 @@ function createThemeColors(colors) {
       buttonCardActive: colors.surfaceTint, // Active button/card background
       separatorLight: colors.surfacePlaceholder, // Separator and image placeholder fill
       // On-surface ink at low opacity — a wash, not a colour
-      white2: colors.textPrimaryAlpha02, // Ink with ~2% opacity
-      white3: colors.textPrimaryAlpha03, // Ink with ~3% opacity
-      white5: colors.textPrimaryAlpha05, // Ink with 5% opacity
-      white10: colors.textPrimaryAlpha10, // Ink with 10% opacity
-      white12: colors.textPrimaryAlpha12, // Ink with ~12.5% opacity
-      white20: colors.textPrimaryAlpha20, // Ink with 20% opacity
-      white30: colors.textPrimaryAlpha30, // Ink with 30% opacity
+      ink2: colors.textPrimaryAlpha02, // Ink with ~2% opacity
+      ink3: colors.textPrimaryAlpha03, // Ink with ~3% opacity
+      ink5: colors.textPrimaryAlpha05, // Ink with 5% opacity
+      ink10: colors.textPrimaryAlpha10, // Ink with 10% opacity
+      ink12: colors.textPrimaryAlpha12, // Ink with ~12.5% opacity
+      ink20: colors.textPrimaryAlpha20, // Ink with 20% opacity
+      ink30: colors.textPrimaryAlpha30, // Ink with 30% opacity
       // Background primary with opacity
       primary20: colors.surfaceBaseAlpha20, // Background primary with 20% opacity
     },
@@ -288,10 +283,7 @@ function createThemeColors(colors) {
       accentLight: colors.brandVivid, // Light accent text (emerald)
       // Ink printed ON a solid accent fill — near-black on the dark theme's light
       // greens, white on the light theme's dark ones.
-      black: colors.inkOnAccent,
-      gray300: colors.textSecondary, // Supporting text
-      gray500: colors.textTertiary, // Tertiary text
-      white: colors.textPrimary, // On-surface ink
+      onAccent: colors.inkOnAccent,
       // Fixed-white token: always pure white regardless of theme, for text on colorful gradient surfaces
       onColorful: colors.alwaysWhite,
       // Text colors with opacity
@@ -340,9 +332,9 @@ function createThemeColors(colors) {
       dark: colors.surfaceTint, // Dark border
       accent: colors.surfaceAccent, // Accent border
       dashed: colors.borderHairline, // Dashed border
-      emerald: colors.brandSurfaceAlpha30, // Brand surface at 30%
-      blue: colors.statusInfoAlpha40, // Info at 40%
-      gray600: colors.textTertiarySoft, // Hairline, lighter
+      brand: colors.brandSurfaceAlpha30, // Brand surface at 30%
+      info: colors.statusInfoAlpha40, // Info at 40%
+      subtle: colors.textTertiarySoft, // Hairline, lighter
     },
 
     // Status colors
@@ -354,14 +346,11 @@ function createThemeColors(colors) {
       purple: colors.statusPurple, // Purple
       notificationBadge: colors.statusError, // Red notification badge (same as error)
       amber: colors.statusAmber, // Amber
-      yellow: colors.statusAmber, // Amber
       indigo: colors.statusIndigo, // Indigo
       indigoLight: colors.statusIndigoLight, // Indigo, lighter — used for label text
-      emerald: colors.brandVivid, // Emerald
-      emeraldLight: colors.brandBright, // Bright mint
-      greenDark: colors.brandVivid, // Deep emerald
-      indigoVeryLight: colors.brandPale, // Pale accent
-      emeraldVeryLight: colors.brandPale, // Pale mint
+      brandVivid: colors.brandVivid, // Brand, vivid
+      brandBright: colors.brandBright, // Brand, bright
+      brandPale: colors.brandPale, // Brand, pale — readable on every dark surface
       // Status colors with opacity
       success20: colors.brandPrimaryAlpha20, // Success with 20% opacity
       error8: colors.statusErrorAlpha08, // Error with 8% opacity
@@ -380,36 +369,22 @@ function createThemeColors(colors) {
       amber10: colors.statusAmberAlpha10, // Amber with 10% opacity
       amber20: colors.statusAmberAlpha20, // Amber with 20% opacity
       warning10: colors.statusWarningAlpha10, // Warning with 10% opacity
-      emerald10: colors.brandVividAlpha10, // Emerald with 10% opacity
-      emerald20: colors.brandVividAlpha20, // Emerald with 20% opacity
-      emerald30: colors.brandVividAlpha30, // Emerald with 30% opacity
-      emerald400_10: colors.brandBrightAlpha10, // Bright mint with 10% opacity
-      emerald400_20: colors.brandBrightAlpha20, // Bright mint with 20% opacity
-      yellow10: colors.statusAmberAlpha10, // Amber with 10% opacity
+      brandVivid10: colors.brandVividAlpha10, // Brand vivid with 10% opacity
+      brandVivid20: colors.brandVividAlpha20, // Brand vivid with 20% opacity
+      brandVivid30: colors.brandVividAlpha30, // Brand vivid with 30% opacity
+      brandBright10: colors.brandBrightAlpha10, // Brand bright with 10% opacity
+      brandBright20: colors.brandBrightAlpha20, // Brand bright with 20% opacity
       indigo10: colors.statusIndigoAlpha10, // Indigo with 10% opacity
       indigo20: colors.statusIndigoAlpha20, // Indigo with 20% opacity
       indigo30: colors.statusIndigoAlpha30, // Indigo with 30% opacity
-      indigo600: colors.statusIndigo, // Indigo
-      // Red border colors for ungroup action
-      redDark: colors.statusErrorShade, // Darker red outline on the solid error fill
-      // Emerald border colors for group action
-      emeraldDark: colors.brandSurface, // Deep emerald border
-      indigo600Purple: colors.statusPurple, // Purple (for indigo gradients)
-      blue600: colors.statusInfo, // Blue
-      pink500: colors.statusPink, // Pink
-      rose600: colors.statusRose, // Rose
-      customGreen: colors.brandPale, // Readable brand green used in components
-      emeraldTeal: colors.brandDeep, // Deep teal (for emerald-teal gradient)
-      gray10: colors.textTertiaryFill, // Neutral wash
-      // Error colors for ungroup action
-      errorSolid: colors.statusError, // Solid red for ungroup
-      // Success colors for group action
-      emeraldSolid: colors.brandVivid, // Solid emerald for group
-      // Additional status colors
-      red400: colors.statusErrorLight, // Red, higher legibility (fat icons, etc.)
-      teal400: colors.brandPale, // Readable brand green (monounsat fat, etc.)
-      purple400: colors.statusPurpleLight, // Purple, higher legibility (fiber icons, etc.)
-      violet500: colors.statusPurple, // Purple (for polyunsat fat, etc.)
+      errorShade: colors.statusErrorShade, // Darker outline on the solid error fill
+      brandSurface: colors.brandSurface, // Brand surface
+      pink: colors.statusPink, // Pink
+      rose: colors.statusRose, // Rose
+      brandDeep: colors.brandDeep, // Brand, deep
+      neutralWash: colors.textTertiaryFill, // Neutral wash
+      errorLight: colors.statusErrorLight, // Error, higher legibility (fat icons, etc.)
+      purpleLight: colors.statusPurpleLight, // Purple, higher legibility (fiber icons, etc.)
     },
 
     // Rose colors (for red button variant)
@@ -465,37 +440,20 @@ function createThemeColors(colors) {
       indigo: colors.statusIndigoAlpha20, // indigo/20
     },
 
-    // Google brand colors
-    google: {
-      borderLight: colors.textTertiary, // Light border for Google button
-      borderDark: colors.textSecondary, // Dark border for Google button
-      backgroundDark: colors.surfaceBase, // Dark background for Google button
-      textLight: colors.surfaceCard, // Light text for Google button
-      textDark: colors.textPrimary, // Dark text for Google button
-      overlayDark: colors.surfaceRaised, // Dark overlay for Google button
-      overlayLight: colors.textPrimary, // Light overlay for Google button
-      disabledBorderLight: colors.surfaceRaisedAlpha09, // Disabled border (light variant)
-      disabledBorderDark: colors.textSecondaryAlpha11, // Disabled border (dark variant)
-      disabledBgLight: colors.surfaceBaseAlpha38, // Disabled background (light variant)
-      disabledBgDark: colors.surfaceBaseAlpha38, // Disabled background (dark variant)
-    },
-
     // Overlay and opacity colors
     overlay: {
-      black60: colors.scrimAlpha60, // Scrim with 60% opacity
-      black90: colors.scrimAlpha90, // Scrim with 90% opacity
-      white50: colors.textPrimaryAlpha50, // On-surface ink with 50% opacity
-      white60: colors.textPrimaryAlpha60, // On-surface ink with 60% opacity
-      white70: colors.textPrimaryAlpha70, // On-surface ink with 70% opacity
-      white90: colors.textPrimaryAlpha90, // On-surface ink with 90% opacity
-      white80: colors.textPrimaryAlpha80, // On-surface ink with 80% opacity
-      white30: colors.textPrimaryAlpha30, // On-surface ink with 30% opacity
-      white20: colors.textPrimaryAlpha20, // On-surface ink with 20% opacity
-      white5: colors.textPrimaryAlpha05, // On-surface ink with 5% opacity
-      black60Opacity: colors.scrimAlpha60, // Scrim with 60% opacity (for gradients)
+      scrim60: colors.scrimAlpha60, // Scrim with 60% opacity
+      scrim90: colors.scrimAlpha90, // Scrim with 90% opacity
+      ink50: colors.textPrimaryAlpha50, // On-surface ink with 50% opacity
+      ink60: colors.textPrimaryAlpha60, // On-surface ink with 60% opacity
+      ink70: colors.textPrimaryAlpha70, // On-surface ink with 70% opacity
+      ink90: colors.textPrimaryAlpha90, // On-surface ink with 90% opacity
+      ink80: colors.textPrimaryAlpha80, // On-surface ink with 80% opacity
+      ink30: colors.textPrimaryAlpha30, // On-surface ink with 30% opacity
+      ink20: colors.textPrimaryAlpha20, // On-surface ink with 20% opacity
+      ink5: colors.textPrimaryAlpha05, // On-surface ink with 5% opacity
       backdrop: colors.scrimAlpha80, // Modal backdrop
       backdrop90: colors.scrimAlpha90, // Modal backdrop, stronger
-      darkGreenOverlayGradient: colors.surfaceWashTeal, // Dark green overlay gradient
       // Fixed-white tokens: always pure white regardless of theme, for content on
       // colorful gradients and camera previews
       onColorful20: colors.alwaysWhiteAlpha20,
@@ -543,7 +501,7 @@ function createThemeColors(colors) {
       emeraldTeal: [colors.brandVivid, colors.brandDeep], // Emerald to teal gradient
       pinkRose: [colors.statusPink, colors.statusRose], // Pink to rose gradient
       blueEmerald: [colors.statusInfo, colors.brandVivid], // Blue to emerald gradient
-      overlayDark: ['transparent', colors.surfaceWashTeal, colors.surfaceTint], // Dark overlay gradient
+      overlayDark: ['transparent', colors.surfaceWashBrandDeep, colors.surfaceTint], // Dark overlay gradient
       // Camera scrim: sits over a live preview, so it darkens in every theme.
       cameraOverlay: [colors.scrimAlpha60, 'transparent', colors.scrimAlpha90],
       onboardingAmbient: [
@@ -552,7 +510,7 @@ function createThemeColors(colors) {
         colors.brandVividAlpha20, // emerald/20
       ],
       landingBackground: [colors.surfaceBase, colors.surfaceBase, colors.surfaceBase], // Landing page background gradient
-      whiteSubtle: [colors.textPrimaryAlpha10, colors.textPrimaryAlpha05], // Subtle ink gradient
+      inkSubtle: [colors.textPrimaryAlpha10, colors.textPrimaryAlpha05], // Subtle ink gradient
       backdrop90: colors.scrimAlpha90, // Backdrop with 90% opacity
     },
   };
@@ -627,7 +585,7 @@ const TAILWIND_TOKEN_MAP = {
     muted: (t) => t.text.muted,
     accent: (t) => t.text.accent,
     accentLight: (t) => t.text.accentLight,
-    black: (t) => t.text.black,
+    'on-accent': (t) => t.text.onAccent,
     'on-colorful': (t) => t.text.onColorful,
   },
   accent: {

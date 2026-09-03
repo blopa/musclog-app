@@ -36,7 +36,7 @@ export function ChatWorkoutCard({
       <View className="relative h-32">
         <Image source={image} className="h-full w-full" resizeMode="cover" />
         <LinearGradient
-          colors={['transparent', theme.colors.background.black80]}
+          colors={['transparent', theme.colors.background.scrim80]}
           style={{
             position: 'absolute',
             top: 0,
@@ -77,10 +77,10 @@ export function ChatWorkoutCard({
           style={{ backgroundColor: theme.colors.accent.primary }}
           onPress={onStartWorkout}
         >
-          <Text className="font-bold" style={{ color: theme.colors.text.black }}>
+          <Text className="font-bold" style={{ color: theme.colors.text.onAccent }}>
             {t('startWorkout.label')}
           </Text>
-          <ArrowRight size={theme.iconSize.md} color={theme.colors.text.black} />
+          <ArrowRight size={theme.iconSize.md} color={theme.colors.text.onAccent} />
         </Pressable>
       </View>
     </GenericCard>

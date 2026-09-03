@@ -25,9 +25,9 @@ export function SmartCameraTopActions({
 }: SmartCameraTopActionsProps) {
   const theme = useTheme();
   const roundButtonStyle = {
-    backgroundColor: theme.colors.background.darkGray,
+    backgroundColor: theme.colors.background.neutralWash,
     borderWidth: theme.borderWidth.thin,
-    borderColor: theme.colors.background.white10,
+    borderColor: theme.colors.background.ink10,
   };
 
   return (
@@ -89,9 +89,9 @@ export function SmartCameraBottomActions({
         className="h-12 w-12 items-center justify-center rounded-lg active:scale-95"
         style={[
           {
-            backgroundColor: theme.colors.background.darkGray50,
+            backgroundColor: theme.colors.background.neutralWash,
             borderWidth: theme.borderWidth.thin,
-            borderColor: theme.colors.background.white20,
+            borderColor: theme.colors.background.ink20,
           },
           { opacity: controlsLocked ? theme.colors.opacity.medium : 1 },
         ]}
@@ -110,7 +110,7 @@ export function SmartCameraBottomActions({
           className="h-20 w-20 items-center justify-center rounded-full active:scale-95"
           style={{
             borderWidth: theme.borderWidth.thick,
-            borderColor: theme.colors.text.white,
+            borderColor: theme.colors.text.primary,
             opacity: controlsLocked ? theme.colors.opacity.strong : 1,
           }}
         >
@@ -118,12 +118,12 @@ export function SmartCameraBottomActions({
             className="absolute inset-0 rounded-full"
             style={{
               borderWidth: theme.borderWidth.thin,
-              borderColor: theme.colors.background.black20,
+              borderColor: theme.colors.background.scrim20,
             }}
           />
           <View
             className="h-16 w-16 rounded-full bg-white"
-            style={{ backgroundColor: theme.colors.text.white }}
+            style={{ backgroundColor: theme.colors.text.primary }}
           />
         </Pressable>
       ) : (

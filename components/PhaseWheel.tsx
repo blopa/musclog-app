@@ -37,7 +37,7 @@ function calculatePhaseProportions(
     { key: 'menstrual' as const, color: theme.colors.status.error, length: menstrualLength },
     {
       key: 'follicular' as const,
-      color: theme.colors.status.emeraldLight,
+      color: theme.colors.status.brandBright,
       length: follicularLength,
     },
     { key: 'ovulatory' as const, color: theme.colors.status.amber, length: ovulationLength },
@@ -123,7 +123,7 @@ export function PhaseWheel({
               cx={center + radius}
               cy={center}
               r={markerRadius}
-              fill={theme.colors.text.white}
+              fill={theme.colors.text.primary}
               stroke={theme.colors.background.primary}
               strokeWidth={2}
             />
@@ -134,7 +134,7 @@ export function PhaseWheel({
       {/* Center overlay */}
       <View className="absolute items-center justify-center">
         <View className="mb-2 h-14 w-14 items-center justify-center rounded-full bg-accent-primary">
-          <Zap size={28} color={theme.colors.text.black} />
+          <Zap size={28} color={theme.colors.text.onAccent} />
         </View>
         <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
           {t('focus.energyLevel')}

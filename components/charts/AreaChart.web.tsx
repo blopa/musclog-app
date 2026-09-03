@@ -228,7 +228,7 @@ export function AreaChart({
                 size={8}
                 style={{
                   data: {
-                    fill: theme.colors.text.white,
+                    fill: theme.colors.text.primary,
                   },
                 }}
               />
@@ -247,7 +247,7 @@ export function AreaChart({
                         fontFamily: 'Inter, sans-serif',
                       }}
                       backgroundStyle={{
-                        fill: theme.colors.text.white,
+                        fill: theme.colors.text.primary,
                         rx: 4,
                         ry: 4,
                       }}
@@ -329,7 +329,7 @@ export function AreaChart({
               borderRadius: theme.borderRadius.xs,
               paddingHorizontal: theme.spacing.padding.sm,
               paddingVertical: theme.spacing.padding.sm,
-              boxShadow: `0 2px 4px ${theme.colors.background.black15}`,
+              boxShadow: `0 2px 4px ${theme.colors.background.scrim15}`,
               zIndex: 100,
               alignItems: 'center',
               justifyContent: 'center',

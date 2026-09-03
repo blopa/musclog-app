@@ -128,7 +128,8 @@ const THEME_DEFINITIONS = /** @type {const} */ ({
       statusInfo: '#60a5fa',
       statusIndigo: '#818cf8',
       statusPurple: '#c084fc',
-      statusPink: '#f472b6',
+      statusPink: '#e879f9', // Fuchsia, not pink: the brand IS pink here, and
+      // macros.carbs (brandVivid) and macros.fiber (statusPink) share a legend.
 
       inkOnAccent: '#160b14',
       scrimBase: '#0d070c',

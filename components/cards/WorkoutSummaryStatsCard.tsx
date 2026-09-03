@@ -38,8 +38,8 @@ export function WorkoutSummaryStatsCard({
           label={t('workoutSummary.volume')}
           value={volume.replace(/\s*(kg|g|lbs?)/i, '').trim()}
           valueSuffix={volume.match(/\s*(kg|g|lbs?)/i)?.[1] || 'kg'}
-          iconBgColor={theme.colors.status.emerald10}
-          iconColor={theme.colors.status.emeraldLight}
+          iconBgColor={theme.colors.status.brandVivid10}
+          iconColor={theme.colors.status.brandBright}
         />
         {caloriesBurned && caloriesBurned > 0 ? (
           <WorkoutSummaryStatRow

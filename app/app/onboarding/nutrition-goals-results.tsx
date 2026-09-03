@@ -760,7 +760,7 @@ export default function NutritionGoalsResults() {
               <Text
                 className="mb-1 text-center text-[10px] font-bold uppercase tracking-tighter text-pink-400"
                 style={{
-                  color: theme.colors.status.pink500,
+                  color: theme.colors.status.pink,
                   fontSize: theme.typography.fontSize.xxs,
                   fontWeight: theme.typography.fontWeight.bold,
                   letterSpacing: -0.5,
@@ -849,7 +849,7 @@ export default function NutritionGoalsResults() {
                   <View
                     style={{
                       width: `${displayData.fatsPct ?? 0}%`,
-                      backgroundColor: theme.colors.status.pink500,
+                      backgroundColor: theme.colors.status.pink,
                       minWidth: displayData.fatsPct ? 4 : 0,
                     }}
                   />
@@ -878,7 +878,7 @@ export default function NutritionGoalsResults() {
                   <Text
                     className="text-[10px] font-medium"
                     style={{
-                      color: theme.colors.status.pink500,
+                      color: theme.colors.status.pink,
                       fontSize: theme.typography.fontSize.xxs,
                       fontWeight: theme.typography.fontWeight.medium,
                     }}
@@ -1161,7 +1161,7 @@ export default function NutritionGoalsResults() {
           width="full"
           size="md"
           icon={() => (
-            <MaterialIcons name="arrow-forward" size={20} color={theme.colors.text.white} />
+            <MaterialIcons name="arrow-forward" size={20} color={theme.colors.text.primary} />
           )}
           iconPosition="right"
           onPress={handleAccept}

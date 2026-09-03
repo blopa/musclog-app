@@ -104,7 +104,7 @@ export function NutritionWidget({
         style={{
           height: 6,
           width: 'match_parent',
-          backgroundColor: theme.colors.background.white10 as ColorProp,
+          backgroundColor: theme.colors.background.ink10 as ColorProp,
           borderRadius: 4,
           marginBottom: 6,
         }}
@@ -114,7 +114,7 @@ export function NutritionWidget({
             height: 'match_parent',
             width: calorieBarWidth,
             backgroundGradient: {
-              from: theme.colors.status.violet500 as ColorProp,
+              from: theme.colors.status.purple as ColorProp,
               to: theme.colors.accent.tertiary as ColorProp,
               orientation: 'LEFT_RIGHT',
             },
@@ -156,7 +156,7 @@ export function NutritionWidget({
             style={{
               height: 3,
               width: 'match_parent',
-              backgroundColor: theme.colors.background.white10 as ColorProp,
+              backgroundColor: theme.colors.background.ink10 as ColorProp,
               borderRadius: 2,
             }}
           >
@@ -195,7 +195,7 @@ export function NutritionWidget({
             style={{
               height: 3,
               width: 'match_parent',
-              backgroundColor: theme.colors.background.white10 as ColorProp,
+              backgroundColor: theme.colors.background.ink10 as ColorProp,
               borderRadius: 2,
             }}
           >
@@ -234,7 +234,7 @@ export function NutritionWidget({
             style={{
               height: 3,
               width: 'match_parent',
-              backgroundColor: theme.colors.background.white10 as ColorProp,
+              backgroundColor: theme.colors.background.ink10 as ColorProp,
               borderRadius: 2,
             }}
           >

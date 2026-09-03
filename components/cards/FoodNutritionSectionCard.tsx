@@ -180,7 +180,7 @@ export function FoodNutritionSectionCard({
             className="absolute bottom-3 right-3 z-10 h-9 w-9 items-center justify-center rounded-full bg-bg-overlay"
             style={{
               elevation: 2,
-              shadowColor: theme.colors.text.black,
+              shadowColor: theme.colors.text.onAccent,
               shadowOffset: { width: 0, height: 1 },
               shadowOpacity: 0.2,
               shadowRadius: 2,

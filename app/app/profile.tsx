@@ -362,7 +362,7 @@ export default function ProfileScreen() {
                     style={{ backgroundColor: theme.colors.accent.primary }}
                     onPress={() => setIsEditPersonalVisible(true)}
                   >
-                    <Edit size={theme.iconSize.sm} color={theme.colors.text.black} />
+                    <Edit size={theme.iconSize.sm} color={theme.colors.text.onAccent} />
                   </Pressable>
                 </View>
                 <Text className="mb-3 text-center text-3xl font-bold text-text-primary">
@@ -435,7 +435,7 @@ export default function ProfileScreen() {
               <View className="flex-row items-center gap-3 p-4">
                 <View
                   className="h-10 w-10 items-center justify-center rounded-full"
-                  style={{ backgroundColor: theme.colors.status.emerald400_10 }}
+                  style={{ backgroundColor: theme.colors.status.brandBright10 }}
                 >
                   <BrainCircuit size={theme.iconSize.md} color={theme.colors.status.info} />
                 </View>

@@ -1423,7 +1423,7 @@ export function DataLogModal({
                   className="rounded-lg border p-4"
                   style={{
                     backgroundColor: theme.colors.background.card,
-                    borderColor: theme.colors.background.white5,
+                    borderColor: theme.colors.background.ink5,
                   }}
                 >
                   <View className="flex-row items-center gap-4">

@@ -122,11 +122,11 @@ export function SaveForLaterPortionModal({
                 borderColor:
                   percentage === preset
                     ? theme.colors.accent.primary
-                    : theme.colors.background.white10,
+                    : theme.colors.background.ink10,
                 backgroundColor:
                   percentage === preset
                     ? theme.colors.accent.primary10
-                    : theme.colors.background.white5,
+                    : theme.colors.background.ink5,
               }}
               onPress={() => setPercentage(preset)}
             >

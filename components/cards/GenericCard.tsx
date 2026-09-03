@@ -123,15 +123,15 @@ export function GenericCard({
     if (isCardVariant) {
       return {
         backgroundColor: theme.colors.background.card,
-        borderColor: theme.colors.background.white5,
+        borderColor: theme.colors.background.ink5,
         borderWidth: theme.borderWidth.thin,
       };
     }
 
     if (isDarkGreenBackground) {
       return {
-        backgroundColor: theme.colors.background.darkGreen80,
-        borderColor: theme.colors.background.white5,
+        backgroundColor: theme.colors.background.tintWash,
+        borderColor: theme.colors.background.ink5,
         borderWidth: theme.borderWidth.thin,
         ...theme.shadows.lg,
       };
@@ -140,7 +140,7 @@ export function GenericCard({
     if (isTdeeBackground) {
       return {
         backgroundColor: theme.colors.background.card,
-        borderColor: theme.colors.status.emerald400_10,
+        borderColor: theme.colors.status.brandBright10,
         borderWidth: theme.borderWidth.thin,
         ...theme.shadows.lg,
       };
@@ -152,7 +152,7 @@ export function GenericCard({
         ? theme.colors.background.secondaryDark
         : theme.colors.background.cardElevated,
       borderWidth: theme.borderWidth.thin,
-      borderColor: theme.colors.background.white5,
+      borderColor: theme.colors.background.ink5,
       ...theme.shadows.md,
     };
   };
@@ -265,7 +265,7 @@ export function GenericCard({
       return (
         <View
           className="absolute -right-12 -top-12 h-48 w-48 rounded-full blur-3xl"
-          style={{ backgroundColor: theme.colors.status.emerald400_10 }}
+          style={{ backgroundColor: theme.colors.status.brandBright10 }}
         />
       );
     }

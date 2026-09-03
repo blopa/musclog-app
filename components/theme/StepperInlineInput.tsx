@@ -160,11 +160,11 @@ export function StepperInlineInput({
         {Icon ? (
           <View
             className={`${iconSize === 'sm' ? 'h-8 w-8' : 'h-10 w-10'} flex-shrink-0 items-center justify-center rounded-lg`}
-            style={{ backgroundColor: theme.colors.status.emerald20 }}
+            style={{ backgroundColor: theme.colors.status.brandVivid20 }}
           >
             <Icon
               size={iconSize === 'sm' ? theme.iconSize.sm : theme.iconSize.md}
-              color={theme.colors.status.emeraldLight}
+              color={theme.colors.status.brandBright}
             />
           </View>
         ) : null}
@@ -193,7 +193,7 @@ export function StepperInlineInput({
             onDecrement();
           }}
         >
-          <Minus size={theme.iconSize.lg} color={theme.colors.status.emeraldLight} />
+          <Minus size={theme.iconSize.lg} color={theme.colors.status.brandBright} />
         </Pressable>
         {editing ? (
           <View className="w-16 items-center">
@@ -209,7 +209,7 @@ export function StepperInlineInput({
                 width: theme.size['4xl'],
                 padding: theme.spacing.padding.zero,
                 margin: theme.spacing.margin.zero,
-                color: theme.colors.text.white,
+                color: theme.colors.text.primary,
               }}
               returnKeyType="done"
               selectTextOnFocus={Platform.OS === 'ios'}
@@ -255,7 +255,7 @@ export function StepperInlineInput({
             onIncrement();
           }}
         >
-          <Plus size={theme.iconSize.lg} color={theme.colors.status.emeraldLight} />
+          <Plus size={theme.iconSize.lg} color={theme.colors.status.brandBright} />
         </Pressable>
       </View>
     </View>

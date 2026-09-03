@@ -193,7 +193,7 @@ export default function EditWorkoutMetadataModal({
         <View className="gap-6 p-4">
           <View
             className="items-center justify-center rounded-2xl p-6"
-            style={{ backgroundColor: theme.colors.background.white5 }}
+            style={{ backgroundColor: theme.colors.background.ink5 }}
           >
             <Text className="text-xs font-bold uppercase tracking-widest text-text-tertiary">
               {t('workoutDetail.totalTime')}

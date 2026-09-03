@@ -183,7 +183,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
         icon: Icon,
         iconBgColor:
           exerciseType === 'bodyweight'
-            ? theme.colors.background.white5
+            ? theme.colors.background.ink5
             : theme.colors.accent.primary10,
         iconColor:
           exerciseType === 'bodyweight' ? theme.colors.text.secondary : theme.colors.accent.primary,
@@ -203,7 +203,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
     allExercises,
     theme.colors.accent.primary,
     theme.colors.accent.primary10,
-    theme.colors.background.white5,
+    theme.colors.background.ink5,
     theme.colors.text.secondary,
     t,
   ]);
@@ -537,7 +537,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
         {/* Create Set Card */}
         <View
           className="rounded-2xl border bg-bg-card p-5"
-          style={{ borderColor: theme.colors.background.white5 }}
+          style={{ borderColor: theme.colors.background.ink5 }}
         >
           <View className="mb-6 flex-row items-center justify-between">
             <Text
@@ -566,7 +566,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
                   false: theme.colors.background.overlay,
                   true: theme.colors.accent.primary,
                 }}
-                thumbColor={theme.colors.text.white}
+                thumbColor={theme.colors.text.primary}
               />
             </View>
           </View>
@@ -619,7 +619,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
             <View
               style={{
                 height: theme.spacing.gap['1'],
-                backgroundColor: theme.colors.background.white5,
+                backgroundColor: theme.colors.background.ink5,
                 marginVertical: theme.spacing.gap.sm,
               }}
             />
@@ -639,7 +639,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
             <View
               style={{
                 height: theme.spacing.gap['1'],
-                backgroundColor: theme.colors.background.white5,
+                backgroundColor: theme.colors.background.ink5,
                 marginVertical: theme.spacing.gap.sm,
               }}
             />

@@ -208,7 +208,7 @@ export class WorkoutTemplateService {
 
       const Icon = isBodyweight ? User : Dumbbell;
       const iconBgColor = isBodyweight
-        ? theme.colors.background.white5
+        ? theme.colors.background.ink5
         : theme.colors.accent.primary10;
       const iconColor = isBodyweight ? theme.colors.text.secondary : theme.colors.accent.primary;
 
@@ -1042,7 +1042,7 @@ export class WorkoutTemplateService {
 
         const Icon = isBodyweight ? User : Dumbbell;
         const iconBgColor = isBodyweight
-          ? theme.colors.background.white5
+          ? theme.colors.background.ink5
           : theme.colors.accent.primary10;
         const iconColor = isBodyweight ? theme.colors.text.secondary : theme.colors.accent.primary;
 

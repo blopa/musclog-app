@@ -204,7 +204,7 @@ export default function CardsTestScreen() {
                 percentage: 40,
                 amount: '120g',
                 goal: 150,
-                color: theme.colors.status.emeraldLight,
+                color: theme.colors.status.brandBright,
                 progressColor: theme.colors.status.indigo,
               },
               carbs: {
@@ -212,7 +212,7 @@ export default function CardsTestScreen() {
                 amount: '200g',
                 goal: 250,
                 color: theme.colors.status.indigo,
-                progressColor: theme.colors.status.emeraldLight,
+                progressColor: theme.colors.status.brandBright,
               },
               fat: {
                 percentage: 10,
@@ -338,13 +338,13 @@ export default function CardsTestScreen() {
         <TestSection title="New Workout Card" subtitle="Add new workout options">
           <NewWorkoutCard
             variant="popular"
-            icon={<Sparkles size={theme.iconSize.lg} color={theme.colors.text.white} />}
+            icon={<Sparkles size={theme.iconSize.lg} color={theme.colors.text.primary} />}
             title="Generate with AI"
             subtitle="Let Musclog build a personalized routine based on your goals and equipment."
             onPress={() => console.log('New workout pressed')}
           />
           <NewWorkoutCard
-            icon={<Sparkles size={theme.iconSize.lg} color={theme.colors.text.white} />}
+            icon={<Sparkles size={theme.iconSize.lg} color={theme.colors.text.primary} />}
             title="Create New Workout"
             subtitle="Start from a template or build your own"
             onPress={() => console.log('New workout pressed')}
@@ -538,14 +538,14 @@ export default function CardsTestScreen() {
             <HealthCategoryCard
               icon={Scale}
               label="Weight"
-              backgroundColor={theme.colors.status.emerald20}
-              iconColor={theme.colors.status.emeraldLight}
+              backgroundColor={theme.colors.status.brandVivid20}
+              iconColor={theme.colors.status.brandBright}
             />
             <HealthCategoryCard
               icon={Moon}
               label="Sleep"
-              backgroundColor={theme.colors.status.emerald10}
-              iconColor={theme.colors.status.emerald}
+              backgroundColor={theme.colors.status.brandVivid10}
+              iconColor={theme.colors.status.brandVivid}
             />
             <HealthCategoryCard
               icon={Heart}

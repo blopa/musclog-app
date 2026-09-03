@@ -26,6 +26,7 @@
     "check-translations": "node scripts/check-translations.js",
     "check-version-sync": "node scripts/check-version-sync.js",
     "check-locale-consistency": "node scripts/check-locale-consistency.js",
+    "check-palette": "node scripts/check-palette.js",
     "generate-lang": "node scripts/generateLangFile.js",
     "generate-exercises-data": "node scripts/generate-exercises-data.js",
     "generate-exercise-locales": "node scripts/generate-exercise-locales.js",

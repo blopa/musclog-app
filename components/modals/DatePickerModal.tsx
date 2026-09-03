@@ -191,7 +191,7 @@ export function DatePickerModal({
           <View className="px-4">
             <View
               className="rounded-2xl border bg-bg-cardDark p-5"
-              style={{ borderColor: theme.colors.background.white5 }}
+              style={{ borderColor: theme.colors.background.ink5 }}
             >
               {/* Month Navigation */}
               <View className="mb-6 flex-row items-center justify-between px-1">
@@ -260,7 +260,7 @@ export function DatePickerModal({
                             style={{
                               color: isDisabled
                                 ? theme.colors.text.secondary
-                                : theme.colors.text.black,
+                                : theme.colors.text.onAccent,
                             }}
                           >
                             {format(day, 'd')}
@@ -339,7 +339,7 @@ export function DatePickerModal({
           <View
             className="mb-6 h-px"
             style={{
-              backgroundColor: theme.colors.background.white10,
+              backgroundColor: theme.colors.background.ink10,
             }}
           />
           <View className="flex-row items-center gap-4" pointerEvents="auto">
@@ -374,12 +374,12 @@ export function DatePickerModal({
         >
           <Pressable
             className="flex-1 items-center justify-center p-4"
-            style={[{ backgroundColor: theme.colors.overlay.black60 }, webMonthYearLayerStyle]}
+            style={[{ backgroundColor: theme.colors.overlay.scrim60 }, webMonthYearLayerStyle]}
             onPress={() => setIsMonthYearPickerVisible(false)}
           >
             <Pressable
               className="w-full max-w-sm rounded-2xl border bg-bg-cardDark p-6"
-              style={{ borderColor: theme.colors.background.white10 }}
+              style={{ borderColor: theme.colors.background.ink10 }}
               onPress={(e) => e.stopPropagation()}
             >
               <Text className="mb-4 text-lg font-bold text-text-primary">
@@ -404,11 +404,11 @@ export function DatePickerModal({
                         borderColor:
                           selectedMonthIndex === index
                             ? theme.colors.accent.primary
-                            : theme.colors.background.white10,
+                            : theme.colors.background.ink10,
                         backgroundColor:
                           selectedMonthIndex === index
                             ? theme.colors.accent.primary10
-                            : theme.colors.background.white5,
+                            : theme.colors.background.ink5,
                         minWidth: '30%',
                         maxWidth: '30%',
                       }}
@@ -434,8 +434,8 @@ export function DatePickerModal({
                 <ScrollView
                   className="max-h-48 rounded-lg border"
                   style={{
-                    borderColor: theme.colors.background.white10,
-                    backgroundColor: theme.colors.background.white5,
+                    borderColor: theme.colors.background.ink10,
+                    backgroundColor: theme.colors.background.ink5,
                   }}
                   showsVerticalScrollIndicator={false}
                 >
@@ -446,7 +446,7 @@ export function DatePickerModal({
                         selectedYear === year ? 'bg-accent-primary/10' : ''
                       }`}
                       style={{
-                        borderBottomColor: theme.colors.background.white5,
+                        borderBottomColor: theme.colors.background.ink5,
                       }}
                       onPress={() => setSelectedYear(year)}
                     >

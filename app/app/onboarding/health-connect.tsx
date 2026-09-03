@@ -138,7 +138,7 @@ export default function HealthConnectScreen() {
                   {t('onboarding.healthConnect.connectYour')}{' '}
                 </Text>
                 <GradientText
-                  colors={[theme.colors.status.indigoLight, theme.colors.status.emeraldLight]}
+                  colors={[theme.colors.status.indigoLight, theme.colors.status.brandBright]}
                   style={{
                     fontSize: theme.typography.fontSize['3xl'],
                     fontWeight: theme.typography.fontWeight.bold,
@@ -175,16 +175,16 @@ export default function HealthConnectScreen() {
               <HealthCategoryCard
                 icon={Scale}
                 label={t('onboarding.healthConnect.categories.weight')}
-                backgroundColor={theme.colors.status.emerald20}
-                iconColor={theme.colors.status.emeraldLight}
+                backgroundColor={theme.colors.status.brandVivid20}
+                iconColor={theme.colors.status.brandBright}
               />
 
               {/* Sleep */}
               <HealthCategoryCard
                 icon={Moon}
                 label={t('onboarding.healthConnect.categories.sleep')}
-                backgroundColor={theme.colors.status.emerald10}
-                iconColor={theme.colors.status.emerald}
+                backgroundColor={theme.colors.status.brandVivid10}
+                iconColor={theme.colors.status.brandVivid}
               />
 
               {/* Body Composition */}
@@ -239,7 +239,7 @@ export default function HealthConnectScreen() {
                     className="mb-3 text-center"
                     style={{
                       fontSize: theme.typography.fontSize.xs,
-                      color: theme.colors.text.gray500,
+                      color: theme.colors.text.tertiary,
                     }}
                   >
                     {Platform.OS === 'ios'
@@ -257,7 +257,7 @@ export default function HealthConnectScreen() {
             {/* Loading State */}
             {isInitializing || isSyncing || isProcessing ? (
               <View className="mb-4 flex-row items-center justify-center gap-2">
-                <ActivityIndicator size="small" color={theme.colors.status.emeraldLight} />
+                <ActivityIndicator size="small" color={theme.colors.status.brandBright} />
                 <Text
                   style={{
                     fontSize: theme.typography.fontSize.sm,
@@ -332,7 +332,7 @@ export default function HealthConnectScreen() {
               className="mt-4 text-center leading-relaxed"
               style={{
                 fontSize: theme.typography.fontSize.xs,
-                color: theme.colors.text.gray500,
+                color: theme.colors.text.tertiary,
               }}
             >
               {t('onboarding.healthConnect.privacyStatement')}

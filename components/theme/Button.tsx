@@ -104,7 +104,7 @@ const getGradientColors = (
   isSecondaryVariant: boolean
 ): readonly [string, string, ...string[]] => {
   if (isDisabled) {
-    return [theme.colors.background.white10, theme.colors.background.white10] as const;
+    return [theme.colors.background.ink10, theme.colors.background.ink10] as const;
   }
 
   if (isGradientCtaVariant) {
@@ -139,7 +139,7 @@ const getTextColor = (
   }
 
   if (isOutlineVariant) {
-    return theme.colors.text.gray300;
+    return theme.colors.text.secondary;
   }
 
   if (isDashedVariant) {
@@ -168,7 +168,7 @@ const getIconColor = (
   }
 
   if (isOutlineVariant) {
-    return theme.colors.text.gray300;
+    return theme.colors.text.secondary;
   }
 
   if (isDashedVariant) {
@@ -251,7 +251,7 @@ const getOutlineBackgroundColor = (
   isPressed: boolean
 ): string | undefined => {
   if (isOutlineVariant && !isDisabled && isPressed) {
-    return theme.colors.background.white5;
+    return theme.colors.background.ink5;
   }
   if (isOutlineVariant && !isDisabled) {
     return 'transparent';
@@ -281,7 +281,7 @@ const getBorderColor = (
   isSecondaryVariant: boolean
 ): string => {
   if (isOutlineVariant) {
-    return theme.colors.background.white10;
+    return theme.colors.background.ink10;
   }
 
   if (isDashedVariant) {
@@ -289,7 +289,7 @@ const getBorderColor = (
   }
 
   if (isSecondaryGradientVariant) {
-    return theme.colors.border.emerald;
+    return theme.colors.border.brand;
   }
 
   if (isSecondaryVariant) {
@@ -425,7 +425,7 @@ export function Button({
   }
 
   const accessoryTextStyle: TextStyle = {
-    color: isOutlineVariant ? theme.colors.text.gray500 : textColor,
+    color: isOutlineVariant ? theme.colors.text.tertiary : textColor,
     fontSize: Math.max(theme.typography.fontSize.sm, config.fontSize - 6),
     fontWeight: theme.typography.fontWeight.semibold,
     letterSpacing: theme.typography.letterSpacing.normal,
@@ -669,7 +669,7 @@ export function Button({
                 left: 0,
                 right: 0,
                 bottom: 0,
-                backgroundColor: theme.colors.background.black10,
+                backgroundColor: theme.colors.background.scrim10,
                 borderRadius: config.borderRadius,
               }}
             />

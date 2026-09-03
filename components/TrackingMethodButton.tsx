@@ -41,7 +41,7 @@ export function TrackingMethodButton({
         ...theme.shadows.md,
       }}
     >
-      <Icon size={theme.iconSize.lg} color={theme.colors.text.white} />
+      <Icon size={theme.iconSize.lg} color={theme.colors.text.primary} />
     </LinearGradient>
   ) : (
     <View
@@ -75,7 +75,7 @@ export function TrackingMethodButton({
               style={{ backgroundColor: theme.colors.accent.primary }}
             >
               <Text
-                className="font-extrabold uppercase text-text-black"
+                className="font-extrabold uppercase text-text-on-accent"
                 style={{ fontSize: theme.typography.fontSize.xs }}
               >
                 {badge}

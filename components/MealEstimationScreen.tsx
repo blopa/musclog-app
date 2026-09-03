@@ -50,8 +50,8 @@ export function MealEstimationScreen({
   const { formatInteger } = useFormatAppNumber();
 
   const macroColors = {
-    protein: theme.colors.status.emerald10,
-    proteinProgress: theme.colors.status.emerald30,
+    protein: theme.colors.status.brandVivid10,
+    proteinProgress: theme.colors.status.brandVivid30,
     carbs: theme.colors.status.amber,
     carbsProgress: theme.colors.status.amber10,
     fat: theme.colors.status.warning,
@@ -69,7 +69,7 @@ export function MealEstimationScreen({
             className="absolute left-4 top-4 rounded-full px-3 py-1.5"
             style={{ backgroundColor: theme.colors.accent.primary }}
           >
-            <Text className="text-xs font-semibold uppercase text-text-black">
+            <Text className="text-xs font-semibold uppercase text-text-on-accent">
               {t('nutrition.aiCamera.modes.mealPhoto')} {t('nutrition.aiCamera.estimated')}
             </Text>
           </View>

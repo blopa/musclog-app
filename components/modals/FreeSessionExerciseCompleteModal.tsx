@@ -91,9 +91,9 @@ export function FreeSessionExerciseCompleteModal({
   const displayVolumeStr =
     displayVolume % 1 === 0 ? formatInteger(displayVolume) : formatDecimal(displayVolume, 1);
 
-  const emerald = theme.colors.status.emerald;
+  const emerald = theme.colors.status.brandVivid;
   const indigo = theme.colors.status.indigo;
-  const emerald20 = theme.colors.status.emerald20;
+  const emerald20 = theme.colors.status.brandVivid20;
   const borderDark = theme.colors.border.dark;
   const textMuted = theme.colors.text.muted;
 
@@ -160,7 +160,7 @@ export function FreeSessionExerciseCompleteModal({
                   overflow: 'hidden',
                 }}
               >
-                <CheckCircle size={48} color={theme.colors.text.white} strokeWidth={2.5} />
+                <CheckCircle size={48} color={theme.colors.text.primary} strokeWidth={2.5} />
               </LinearGradient>
             </View>
           </View>
@@ -266,7 +266,7 @@ export function FreeSessionExerciseCompleteModal({
           <View className="w-full gap-3">
             <Button
               label={t('freeTraining.exerciseComplete.addNextExercise')}
-              icon={<Plus size={theme.iconSize.lg} color={theme.colors.text.white} />}
+              icon={<Plus size={theme.iconSize.lg} color={theme.colors.text.primary} />}
               size="md"
               width="full"
               variant="gradientCta"

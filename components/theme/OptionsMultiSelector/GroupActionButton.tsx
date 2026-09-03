@@ -83,10 +83,8 @@ export const GroupActionButton: FC<GroupActionButtonProps> = ({
   const { t } = useTranslation();
 
   const isUngroup = allSelectedInSameGroup;
-  const backgroundColor = isUngroup
-    ? theme.colors.status.errorSolid
-    : theme.colors.status.emeraldSolid;
-  const borderColor = isUngroup ? theme.colors.status.redDark : theme.colors.status.emeraldDark;
+  const backgroundColor = isUngroup ? theme.colors.status.error : theme.colors.status.brandVivid;
+  const borderColor = isUngroup ? theme.colors.status.errorShade : theme.colors.status.brandSurface;
 
   return (
     <View
@@ -97,7 +95,7 @@ export const GroupActionButton: FC<GroupActionButtonProps> = ({
         backgroundColor,
         borderWidth: theme.borderWidth.medium,
         borderColor,
-        shadowColor: theme.colors.text.black,
+        shadowColor: theme.colors.text.onAccent,
         shadowOffset: theme.shadowOffset.md,
         shadowOpacity: theme.colors.opacity.subtle,
         shadowRadius: theme.shadows.radius3.shadowRadius,
@@ -122,10 +120,10 @@ export const GroupActionButton: FC<GroupActionButtonProps> = ({
             gap: theme.spacing.gap.sm,
           }}
         >
-          <ActionIcon color={theme.colors.text.white} theme={theme} />
+          <ActionIcon color={theme.colors.text.primary} theme={theme} />
           <Text
             style={{
-              color: theme.colors.text.white,
+              color: theme.colors.text.primary,
               fontWeight: theme.typography.fontWeight.black,
               fontSize: theme.typography.fontSize.sm,
               textTransform: 'uppercase',

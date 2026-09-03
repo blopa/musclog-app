@@ -99,7 +99,7 @@ export default function CreateWorkoutModal({
               <Sparkles
                 size={theme.iconSize.xs}
                 color={
-                  workoutInsights === 'ai' ? theme.colors.text.white : theme.colors.text.tertiary
+                  workoutInsights === 'ai' ? theme.colors.text.primary : theme.colors.text.tertiary
                 }
               />
             ),
@@ -241,14 +241,14 @@ export default function CreateWorkoutModal({
                       borderRadius: theme.borderRadius.lg,
                       backgroundColor: isSelected
                         ? theme.colors.accent.primary
-                        : theme.colors.background.white5,
+                        : theme.colors.background.ink5,
                     }}
                   >
                     <Text
                       style={{
                         fontSize: theme.typography.fontSize.sm,
                         fontWeight: theme.typography.fontWeight.medium,
-                        color: isSelected ? theme.colors.text.white : theme.colors.text.secondary,
+                        color: isSelected ? theme.colors.text.primary : theme.colors.text.secondary,
                       }}
                     >
                       {t(`createWorkout.types.${type}`)}
@@ -294,9 +294,7 @@ export default function CreateWorkoutModal({
                   justifyContent: 'center',
                   borderRadius: theme.borderRadius.lg,
                   backgroundColor:
-                    icon === undefined
-                      ? theme.colors.accent.primary
-                      : theme.colors.background.white5,
+                    icon === undefined ? theme.colors.accent.primary : theme.colors.background.ink5,
                 }}
               >
                 <Text
@@ -304,7 +302,7 @@ export default function CreateWorkoutModal({
                     fontSize: theme.typography.fontSize.xs,
                     fontWeight: theme.typography.fontWeight.medium,
                     color:
-                      icon === undefined ? theme.colors.text.white : theme.colors.text.tertiary,
+                      icon === undefined ? theme.colors.text.primary : theme.colors.text.tertiary,
                   }}
                 >
                   {t('common.none')}
@@ -325,12 +323,12 @@ export default function CreateWorkoutModal({
                       borderRadius: theme.borderRadius.lg,
                       backgroundColor: isSelected
                         ? theme.colors.accent.primary
-                        : theme.colors.background.white5,
+                        : theme.colors.background.ink5,
                     }}
                   >
                     <IconComponent
                       size={theme.iconSize.md}
-                      color={isSelected ? theme.colors.text.white : theme.colors.text.secondary}
+                      color={isSelected ? theme.colors.text.primary : theme.colors.text.secondary}
                     />
                   </Pressable>
                 );

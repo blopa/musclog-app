@@ -82,7 +82,7 @@ export function StackedBarChart({
   const DEFAULT_COLORS = [
     theme.colors.status.info,
     theme.colors.status.error,
-    theme.colors.status.yellow,
+    theme.colors.status.amber,
     theme.colors.accent.primary,
   ];
   const chartId = useId();
@@ -211,7 +211,7 @@ export function StackedBarChart({
               borderRadius: theme.borderRadius.xs,
               paddingHorizontal: theme.spacing.padding.sm,
               paddingVertical: theme.spacing.padding['1half'],
-              shadowColor: theme.colors.text.black,
+              shadowColor: theme.colors.text.onAccent,
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.15,
               shadowRadius: 4,

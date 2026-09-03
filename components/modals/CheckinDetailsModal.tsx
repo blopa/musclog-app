@@ -206,11 +206,11 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
   const displayTargetWeight = kgToDisplay(checkin.targetWeight, units);
   const displayTrend = kgToDisplay(Math.abs(targetWeightDelta), units);
   const trendColor =
-    targetWeightDelta <= 0 ? theme.colors.status.emerald : theme.colors.status.warning;
+    targetWeightDelta <= 0 ? theme.colors.status.brandVivid : theme.colors.status.warning;
   const weightUnitKey = getWeightUnitI18nKey(units);
   let statusColor = theme.colors.status.warning;
   if (status === 'onTrack') {
-    statusColor = theme.colors.status.emerald;
+    statusColor = theme.colors.status.brandVivid;
   } else if (status === 'ahead') {
     statusColor = theme.colors.status.info;
   }
@@ -303,7 +303,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
           containerStyle={{
             padding: 20,
             marginBottom: 32,
-            backgroundColor: theme.colors.background.darkGray,
+            backgroundColor: theme.colors.background.neutralWash,
             borderColor: theme.colors.border.accent,
           }}
         >
@@ -348,7 +348,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
           <BarChart
             data={dailyWeights.map((y: number, i: number): BarChartDataPoint => ({ x: i, y }))}
             height={100}
-            barColor={theme.colors.status.emerald}
+            barColor={theme.colors.status.brandVivid}
             innerPadding={0.3}
             xAxisLabels={dailyWeights.map((_w: number, i: number) => {
               const dayInstant = localCalendarDayPlusDays(
@@ -394,7 +394,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
           containerStyle={{
             padding: 20,
             marginBottom: 24,
-            backgroundColor: theme.colors.background.darkGray,
+            backgroundColor: theme.colors.background.neutralWash,
             borderColor: theme.colors.border.accent,
           }}
         >
@@ -420,7 +420,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
             <Text
               style={{
                 color:
-                  workoutsCount > 0 ? theme.colors.status.emerald : theme.colors.status.warning,
+                  workoutsCount > 0 ? theme.colors.status.brandVivid : theme.colors.status.warning,
               }}
             >
               {' '}
@@ -514,7 +514,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                   style={{
                     color:
                       activeMinutesTrend >= 0
-                        ? theme.colors.status.emerald
+                        ? theme.colors.status.brandVivid
                         : theme.colors.status.warning,
                   }}
                 >

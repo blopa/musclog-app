@@ -79,7 +79,7 @@ export function CreateWorkoutOptionsModal({
             style={{
               fontSize: theme.typography.fontSize['3xl'],
               fontWeight: theme.typography.fontWeight.extrabold,
-              color: theme.colors.text.white,
+              color: theme.colors.text.primary,
               lineHeight: theme.typography.fontSize['3xl'] * 1.2,
             }}
           >
@@ -110,7 +110,7 @@ export function CreateWorkoutOptionsModal({
           {isAiEnabled ? (
             <NewWorkoutCard
               variant="popular"
-              icon={<Sparkles size={theme.iconSize.lg} color={theme.colors.text.white} />}
+              icon={<Sparkles size={theme.iconSize.lg} color={theme.colors.text.primary} />}
               title={t('workouts.createWorkoutOptions.generateWithAi')}
               subtitle={t('workouts.createWorkoutOptions.generateWithAiSubtitle')}
               onPress={onGenerateWithAi}
@@ -119,7 +119,7 @@ export function CreateWorkoutOptionsModal({
 
           <NewWorkoutCard
             variant="default"
-            icon={<PlusCircle size={theme.iconSize.xl} color={theme.colors.text.gray300} />}
+            icon={<PlusCircle size={theme.iconSize.xl} color={theme.colors.text.secondary} />}
             title={t('workouts.createWorkoutOptions.createFromEmptyTemplate')}
             subtitle={t('workouts.createWorkoutOptions.createFromEmptyTemplateSubtitle')}
             onPress={onCreateEmptyTemplate}
@@ -127,7 +127,7 @@ export function CreateWorkoutOptionsModal({
 
           <NewWorkoutCard
             variant="default"
-            icon={<Library size={theme.iconSize.xl} color={theme.colors.text.gray300} />}
+            icon={<Library size={theme.iconSize.xl} color={theme.colors.text.secondary} />}
             title={t('workouts.createWorkoutOptions.browseTemplates')}
             subtitle={t('workouts.createWorkoutOptions.browseTemplatesSubtitle')}
             onPress={onBrowseTemplates}

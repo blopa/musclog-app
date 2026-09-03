@@ -315,7 +315,7 @@ export default function BodyMetricsHistoryModal({
           note,
           icon: index === 0 ? Calendar : Calendar,
           iconColor: index === 0 ? theme.colors.text.primary : theme.colors.text.secondary,
-          iconBg: index === 0 ? theme.colors.status.indigo600 : theme.colors.border.light,
+          iconBg: index === 0 ? theme.colors.status.indigo : theme.colors.border.light,
           opacity: index === metrics.length - 1 ? 0.7 : 1,
         });
       });
@@ -327,7 +327,7 @@ export default function BodyMetricsHistoryModal({
       t,
       dateFnsLocale,
       theme.colors.border.light,
-      theme.colors.status.indigo600,
+      theme.colors.status.indigo,
       theme.colors.text.primary,
       theme.colors.text.secondary,
       getDisplayValue,
@@ -535,7 +535,7 @@ export default function BodyMetricsHistoryModal({
                     </View>
                     <View
                       className="flex-row gap-1 rounded-lg p-1"
-                      style={{ backgroundColor: theme.colors.background.gray800Opacity50 }}
+                      style={{ backgroundColor: theme.colors.background.raised50 }}
                     >
                       <SkeletonLoader
                         width={theme.size['12']}
@@ -583,7 +583,7 @@ export default function BodyMetricsHistoryModal({
                     </View>
                     <View
                       className="flex-row rounded-lg p-1"
-                      style={{ backgroundColor: theme.colors.background.gray800Opacity50 }}
+                      style={{ backgroundColor: theme.colors.background.raised50 }}
                     >
                       <Pressable
                         onPress={() => setSelectedPeriod('30D')}

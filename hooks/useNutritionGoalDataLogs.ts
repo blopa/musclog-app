@@ -182,7 +182,7 @@ export function useNutritionGoalDataLogs({
   const { t } = useTranslation();
   const dateFnsLocale = useDateFnsLocale();
   const iconColors = useMemo(
-    () => ({ color: theme.colors.status.violet500, bg: theme.colors.status.purple10 }),
+    () => ({ color: theme.colors.status.purple, bg: theme.colors.status.purple10 }),
     [theme]
   );
   const [dayGroups, setDayGroups] = useState<NutritionGoalDayGroup[]>([]);

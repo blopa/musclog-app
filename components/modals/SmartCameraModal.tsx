@@ -81,10 +81,10 @@ const getContextButtonOpacity = (
 const getContextIconColor = (
   cameraMode: CameraMode,
   aiContext: { description: string; tags: string[] } | null,
-  colors: { gray500: string; accent: string; primary: string }
+  colors: { tertiary: string; accent: string; primary: string }
 ): string => {
   if (cameraMode === 'barcode-scan') {
-    return colors.gray500;
+    return colors.tertiary;
   }
 
   if (aiContext) {
@@ -576,9 +576,9 @@ export default function SmartCameraModal({
         onPress={() => setIsBarcodeTextSearchModalVisible(true)}
         className="h-12 w-12 items-center justify-center rounded-full"
         style={{
-          backgroundColor: theme.colors.background.darkGray50,
+          backgroundColor: theme.colors.background.neutralWash,
           borderWidth: theme.borderWidth.thin,
-          borderColor: theme.colors.background.white10,
+          borderColor: theme.colors.background.ink10,
         }}
       >
         <Search size={theme.iconSize.lg} color={theme.colors.text.primary} />
@@ -590,9 +590,9 @@ export default function SmartCameraModal({
         onPress={() => setIsContextModalVisible(true)}
         className="h-12 w-12 items-center justify-center rounded-full"
         style={{
-          backgroundColor: theme.colors.background.darkGray50,
+          backgroundColor: theme.colors.background.neutralWash,
           borderWidth: theme.borderWidth.thin,
-          borderColor: theme.colors.background.white10,
+          borderColor: theme.colors.background.ink10,
           opacity: getContextButtonOpacity(
             hideCameraModePicker,
             cameraMode,
@@ -603,7 +603,7 @@ export default function SmartCameraModal({
         <MessageSquareText
           size={theme.iconSize.lg}
           color={getContextIconColor(cameraMode, aiContext, {
-            gray500: theme.colors.text.gray500,
+            tertiary: theme.colors.text.tertiary,
             accent: theme.colors.text.accent,
             primary: theme.colors.text.primary,
           })}
@@ -647,7 +647,7 @@ export default function SmartCameraModal({
               }}
             />
           ) : (
-            <View style={{ flex: 1, backgroundColor: theme.colors.background.darkGreenSolid }} />
+            <View style={{ flex: 1, backgroundColor: theme.colors.background.tint }} />
           )
         }
         isLoading={barcode.isSearchingBarcode || isProcessingAi}

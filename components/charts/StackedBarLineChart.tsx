@@ -89,7 +89,7 @@ export function StackedBarLineChart({
   const DEFAULT_STACK_COLORS = [
     theme.colors.status.info,
     theme.colors.status.error,
-    theme.colors.status.yellow,
+    theme.colors.status.amber,
     theme.colors.accent.primary,
   ];
   const chartId = useId();

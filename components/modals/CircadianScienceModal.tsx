@@ -103,7 +103,7 @@ function RateStat({ label, value }: { label: string; value: string }) {
       style={{
         backgroundColor: theme.colors.background.card,
         borderWidth: 1,
-        borderColor: theme.colors.background.white5,
+        borderColor: theme.colors.background.ink5,
       }}
     >
       <Text className="text-base font-bold text-text-primary">{value}</Text>
@@ -133,7 +133,7 @@ function PhaseCard({
     earlySlеep: { color: theme.colors.status.info, bg: theme.colors.status.info10 },
     nadir: { color: theme.colors.status.indigo, bg: theme.colors.status.indigo10 },
     morning: { color: theme.colors.status.amber, bg: theme.colors.status.amber10 },
-    midday: { color: theme.colors.status.emeraldLight, bg: theme.colors.status.emerald10 },
+    midday: { color: theme.colors.status.brandBright, bg: theme.colors.status.brandVivid10 },
     peak: { color: theme.colors.status.warning, bg: theme.colors.status.warning10 },
     evening: { color: theme.colors.status.purple, bg: theme.colors.status.purple10 },
   };
@@ -148,7 +148,7 @@ function PhaseCard({
       style={{
         backgroundColor: isActive ? bg : theme.colors.background.card,
         borderWidth: 1,
-        borderColor: isActive ? color + '55' : theme.colors.background.white5,
+        borderColor: isActive ? color + '55' : theme.colors.background.ink5,
       }}
     >
       <View className="flex-row items-start gap-3 p-4">
@@ -296,7 +296,7 @@ export function CircadianScienceModal({ visible, onClose, tdee }: Props) {
             style={{
               backgroundColor: theme.colors.background.card,
               borderWidth: 1,
-              borderColor: theme.colors.background.white5,
+              borderColor: theme.colors.background.ink5,
             }}
           >
             <Text

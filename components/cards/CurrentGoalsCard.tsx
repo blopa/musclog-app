@@ -139,7 +139,7 @@ export function CurrentGoalsCard({
             <Text
               className="mt-1"
               style={{
-                color: theme.colors.status.emeraldLight,
+                color: theme.colors.status.brandBright,
                 fontSize: theme.typography.fontSize.xs,
               }}
             >
@@ -222,7 +222,7 @@ export function CurrentGoalsCard({
         goal.bmi != null ? (
           <View
             className="mt-4 flex-row flex-wrap gap-4 rounded-lg p-3"
-            style={{ backgroundColor: theme.colors.background.darkGreen50 }}
+            style={{ backgroundColor: theme.colors.background.brandWash }}
           >
             {targetWeightDisplay != null ? (
               <View className="min-w-[45%] flex-1 flex-row items-center gap-3">
@@ -309,15 +309,15 @@ export function CurrentGoalsCard({
             <View
               className="rounded-full border px-2"
               style={{
-                borderColor: theme.colors.status.emerald,
-                backgroundColor: theme.colors.status.emerald10,
+                borderColor: theme.colors.status.brandVivid,
+                backgroundColor: theme.colors.status.brandVivid10,
                 paddingVertical: 2,
               }}
             >
               <Text
                 className="font-bold uppercase"
                 style={{
-                  color: theme.colors.status.emeraldLight,
+                  color: theme.colors.status.brandBright,
                   fontSize: theme.typography.fontSize.xxs,
                 }}
               >

@@ -125,7 +125,7 @@ export function MealEstimationModal({
           onPress={handleRetake}
           className="flex-row items-center gap-2 rounded-lg px-3 py-2"
           style={{
-            backgroundColor: theme.colors.background.white10,
+            backgroundColor: theme.colors.background.ink10,
           }}
         >
           <Camera size={16} color="white" />

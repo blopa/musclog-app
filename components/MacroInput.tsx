@@ -80,7 +80,7 @@ export function MacroInput({
         {
           width: size === 'half' ? '47%' : '100%',
           padding: config.padding,
-          borderColor: isFocused ? borderColor : theme.colors.background.white10,
+          borderColor: isFocused ? borderColor : theme.colors.background.ink10,
           shadowColor: highlightColor,
           shadowOffset: theme.shadowOffset.zero,
           shadowOpacity: theme.shadowOpacity.veryLight,

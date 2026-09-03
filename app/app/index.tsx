@@ -589,7 +589,7 @@ export default function HomeScreen() {
                 <View
                   key={i}
                   className="rounded-lg border bg-bg-card p-4"
-                  style={{ borderColor: theme.colors.background.white5 }}
+                  style={{ borderColor: theme.colors.background.ink5 }}
                 >
                   <View className="flex-row items-center gap-3">
                     <SkeletonLoader

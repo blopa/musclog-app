@@ -188,7 +188,7 @@ export function UserMenuModal({
       {/* Backdrop */}
       <Pressable
         className="flex-1"
-        style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}
+        style={[{ backgroundColor: theme.colors.overlay.scrim60 }, webBackdropStyle]}
         onPress={onClose}
       >
         <SafeAreaView

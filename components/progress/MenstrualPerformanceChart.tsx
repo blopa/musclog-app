@@ -48,7 +48,7 @@ export function MenstrualPerformanceChart({ allData }: MenstrualPerformanceChart
               }`}
             >
               <Text
-                className={`text-xs font-bold ${aggregation === agg ? 'text-text-black' : 'text-text-tertiary'}`}
+                className={`text-xs font-bold ${aggregation === agg ? 'text-text-on-accent' : 'text-text-tertiary'}`}
               >
                 {t(`common.time.${agg}`)}
               </Text>
@@ -88,7 +88,7 @@ export function MenstrualPerformanceChart({ allData }: MenstrualPerformanceChart
             }`}
           >
             <Text
-              className={`text-xs font-bold ${aggregation === agg ? 'text-text-black' : 'text-text-tertiary'}`}
+              className={`text-xs font-bold ${aggregation === agg ? 'text-text-on-accent' : 'text-text-tertiary'}`}
             >
               {t(`common.time.${agg}`)}
             </Text>

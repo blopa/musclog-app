@@ -107,7 +107,7 @@ export function CaloriesBurnedCard() {
 
           <View
             className="mt-4 overflow-hidden rounded-full"
-            style={{ height: 4, backgroundColor: theme.colors.background.white5 }}
+            style={{ height: 4, backgroundColor: theme.colors.background.ink5 }}
           >
             <View
               className="h-full rounded-full"

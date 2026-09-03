@@ -95,7 +95,7 @@ export function MealNutritionHighlightCard({
               <View
                 className="flex-1 flex-col items-center rounded-lg p-2"
                 style={{
-                  backgroundColor: theme.colors.background.white5,
+                  backgroundColor: theme.colors.background.ink5,
                   alignItems: 'center',
                 }}
               >
@@ -122,7 +122,7 @@ export function MealNutritionHighlightCard({
               <View
                 className="flex-1 flex-col items-center rounded-lg p-2"
                 style={{
-                  backgroundColor: theme.colors.background.white5,
+                  backgroundColor: theme.colors.background.ink5,
                   alignItems: 'center',
                 }}
               >
@@ -149,7 +149,7 @@ export function MealNutritionHighlightCard({
               <View
                 className="flex-1 flex-col items-center rounded-lg p-2"
                 style={{
-                  backgroundColor: theme.colors.background.white5,
+                  backgroundColor: theme.colors.background.ink5,
                   alignItems: 'center',
                 }}
               >
@@ -176,7 +176,7 @@ export function MealNutritionHighlightCard({
               <View
                 className="flex-1 flex-col items-center rounded-lg p-2"
                 style={{
-                  backgroundColor: theme.colors.background.white5,
+                  backgroundColor: theme.colors.background.ink5,
                   alignItems: 'center',
                 }}
               >

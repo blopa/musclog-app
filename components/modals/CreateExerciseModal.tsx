@@ -211,7 +211,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
                   </Text>
                   <View
                     className="h-14 w-full flex-row items-center justify-between rounded-lg border bg-bg-card px-4"
-                    style={{ borderColor: theme.colors.background.white10 }}
+                    style={{ borderColor: theme.colors.background.ink10 }}
                   >
                     <Text
                       className="font-medium"
@@ -294,7 +294,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
                 style={{
                   borderColor: imageUri
                     ? theme.colors.accent.primary
-                    : theme.colors.background.white10,
+                    : theme.colors.background.ink10,
                   backgroundColor: imageUri
                     ? theme.colors.accent.primary10
                     : theme.colors.background.cardElevated,
@@ -326,7 +326,7 @@ export default function CreateExerciseModal({ visible, onClose }: CreateExercise
                 style={{
                   borderColor: videoUrl
                     ? theme.colors.accent.primary
-                    : theme.colors.background.white10,
+                    : theme.colors.background.ink10,
                   backgroundColor: videoUrl
                     ? theme.colors.accent.primary10
                     : theme.colors.background.cardElevated,

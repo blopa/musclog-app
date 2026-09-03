@@ -70,8 +70,8 @@ export function AddFoodModal({
     {
       icon: UtensilsCrossed,
       label: t('food.meals.lunch'),
-      iconBgColor: theme.colors.status.emerald10,
-      iconColor: theme.colors.status.emerald,
+      iconBgColor: theme.colors.status.brandVivid10,
+      iconColor: theme.colors.status.brandVivid,
       mealType: 'lunch',
     },
     {
@@ -84,8 +84,8 @@ export function AddFoodModal({
     {
       icon: UtensilsCrossed,
       label: t('food.meals.snacks'),
-      iconBgColor: theme.colors.status.yellow10,
-      iconColor: theme.colors.status.yellow,
+      iconBgColor: theme.colors.status.amber10,
+      iconColor: theme.colors.status.amber,
       mealType: 'snack',
     },
   ];
@@ -136,7 +136,7 @@ export function AddFoodModal({
                   <MealTypeButton
                     icon={MoreHorizontal}
                     label={t('food.meals.other')}
-                    iconBgColor={theme.colors.status.gray10}
+                    iconBgColor={theme.colors.status.neutralWash}
                     iconColor={theme.colors.text.secondary}
                     span={2}
                     onPress={() => {
@@ -184,7 +184,7 @@ export function AddFoodModal({
                   title={t('food.addFoodModal.aiCamera.title')}
                   description={t('food.addFoodModal.aiCamera.description')}
                   iconGradient={
-                    [theme.colors.status.indigo, theme.colors.status.emeraldLight] as const
+                    [theme.colors.status.indigo, theme.colors.status.brandBright] as const
                   }
                   highlighted={true}
                   onPress={() => {
@@ -208,7 +208,7 @@ export function AddFoodModal({
                   icon={Clock}
                   title={t('food.addFoodModal.trackFromSaved')}
                   description={t('food.addFoodModal.trackFromSavedDescription')}
-                  iconBgColor={theme.colors.status.emerald10}
+                  iconBgColor={theme.colors.status.brandVivid10}
                   onPress={() => {
                     onTrackFromSavedPress?.();
                     onClose();

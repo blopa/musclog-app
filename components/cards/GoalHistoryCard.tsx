@@ -116,7 +116,7 @@ export function GoalHistoryCard({
           style={{
             bottom: -24,
             width: 0.5,
-            backgroundColor: theme.colors.border.emerald,
+            backgroundColor: theme.colors.border.brand,
           }}
         />
       ) : null}
@@ -124,7 +124,7 @@ export function GoalHistoryCard({
       {/* Timeline dot */}
       <View
         className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border bg-bg-card"
-        style={{ borderColor: theme.colors.border.emerald }}
+        style={{ borderColor: theme.colors.border.brand }}
       >
         <History size={theme.iconSize.lg} color={theme.colors.text.secondary} />
       </View>

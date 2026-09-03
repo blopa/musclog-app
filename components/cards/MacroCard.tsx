@@ -88,7 +88,7 @@ export function MacroCard({
 
         <View
           className="h-1.5 overflow-hidden rounded-full"
-          style={{ backgroundColor: theme.colors.background.gray800Opacity50 }}
+          style={{ backgroundColor: theme.colors.background.raised50 }}
         >
           <View
             className="h-full rounded-full"

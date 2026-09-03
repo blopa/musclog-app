@@ -187,7 +187,7 @@ export function HeightPickerModal({
   }, [feetIndex, inchesIndex, onHeightSelect, onClose]);
 
   const cardBg = theme.colors.background.card;
-  const highlightBg = theme.colors.background.white12;
+  const highlightBg = theme.colors.background.ink12;
   const textPrimary = theme.colors.text.primary;
   const textMuted = theme.colors.text.secondary;
 

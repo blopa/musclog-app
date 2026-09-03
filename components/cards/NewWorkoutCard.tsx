@@ -66,9 +66,9 @@ export function NewWorkoutCard({
                 justifyContent: 'center',
               },
               !isPopular && {
-                backgroundColor: theme.colors.background.white5,
+                backgroundColor: theme.colors.background.ink5,
                 borderWidth: theme.borderWidth.thin,
-                borderColor: theme.colors.background.white5,
+                borderColor: theme.colors.background.ink5,
               },
             ]}
           >
@@ -95,7 +95,7 @@ export function NewWorkoutCard({
           {isPopular ? (
             <View
               style={{
-                backgroundColor: theme.colors.background.white10,
+                backgroundColor: theme.colors.background.ink10,
                 paddingHorizontal: theme.spacing.padding.sm,
                 paddingVertical: theme.spacing.padding.xsHalf,
                 borderRadius: theme.borderRadius.sm,
@@ -120,7 +120,7 @@ export function NewWorkoutCard({
             style={{
               fontSize: theme.typography.fontSize.lg,
               fontWeight: theme.typography.fontWeight.bold,
-              color: theme.colors.text.white,
+              color: theme.colors.text.primary,
             }}
           >
             {title}

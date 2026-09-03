@@ -50,9 +50,9 @@ what keeps a theme switch from inverting something that should not move:
 
 | Token                                    | Job                                                  |
 | ---------------------------------------- | ---------------------------------------------------- |
-| `text.black` / `inkOnAccent`             | Ink printed on a solid brand or status fill          |
+| `text.onAccent` / `inkOnAccent`          | Ink printed on a solid brand or status fill          |
 | `shadow` / `scrimBase`                   | Backdrops, camera scrims, drop shadows — dark always |
-| `background.white`                       | Fixed-white fills: slider and switch thumbs          |
+| `background.alwaysWhite`                 | Fixed-white fills: slider and switch thumbs          |
 | `text.onColorful`, `overlay.onColorful*` | Ink on a colorful gradient or a photo                |
 | `background.separatorLight`              | Image placeholder and separator fill                 |
 
@@ -96,11 +96,33 @@ emerald button vanish.
 Use semantic theme paths rather than copying these hex values. Raw values are listed only to make
 the visual direction explicit.
 
+### Naming
+
+A semantic key names the **role** it resolves to, never a hue. With one palette `status.emerald`
+was harmless; with four it was a lie — the same key is emerald on Kinetic Depth and pink on Kinetic
+Shock. So the tree reads `status.brandVivid`, `text.tertiary`, `background.scrim30`,
+`overlay.ink70`, and a key like `status.teal400` or `background.gray800` should not come back. The
+one exception is `avatar.*` / `avatarBg.*`, which are keyed by the persisted `AvatarColor` enum
+rather than by palette role.
+
+`npm run check-palette` enforces this across all four themes: it fails if a hue-named token swings
+more than 40 degrees of hue between themes, which is exactly how `status.emerald` went wrong. It
+also enforces the color rules below. `utils/__tests__/themeSelection.test.ts` covers the same
+ground from the test suite.
+
 ### Text contrast
 
-The three text steps all clear WCAG AA on every surface above, in all themes: `text.primary` at 10:1
-or better, `text.secondary` at 5.8:1, and `text.tertiary` at 4.6:1. `text.tertiary` is the floor — do
-not introduce a dimmer neutral for label or caption text.
+The three text steps all clear WCAG AA on every surface that carries body copy — `background.primary`,
+`.card`, `.cardElevated` and `.overlay` — in all themes: `text.primary` at 10:1 or better,
+`text.secondary` at 5.8:1, and `text.tertiary` at 4.6:1. `text.tertiary` is the floor — do not
+introduce a dimmer neutral for label or caption text.
+
+The accent surface is the exception. It is the lightest and most saturated step of the dark ladder,
+built for borders and image wells, and on Kinetic Depth `text.tertiary` lands at 3.82:1 on it.
+Neither value can move: lifting `text.tertiary` to clear it pushes tertiary to 6.17:1 on the card,
+collapsing it into `text.secondary`, and darkening the surface drops its seam against
+`background.cardElevated` to 1.03x, which is invisible. **So the accent surface takes `text.primary`
+or `text.secondary` ink only** — both clear 4.5:1 on it in every theme.
 
 A handful of saturated accents (`accent.tertiary`, `status.indigo`, `rose.brand`) sit between 3:1
 and 4.5:1 on the darker surfaces. They are fine for icons, chart series, borders and large type,
@@ -117,7 +139,7 @@ which need 3:1, but should not be used for body copy.
 Macro colors must remain stable across cards and charts:
 
 - Protein: indigo.
-- Digestible carbs: emerald.
+- Digestible carbs: the palette's brand hue.
 - Fat: amber.
 - Fiber: pink.
 

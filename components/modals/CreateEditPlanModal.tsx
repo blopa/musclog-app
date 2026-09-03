@@ -318,7 +318,7 @@ export function CreateEditPlanModal({
                       >
                         <Icon
                           size={theme.iconSize.md}
-                          color={selected ? theme.colors.text.white : theme.colors.text.secondary}
+                          color={selected ? theme.colors.text.primary : theme.colors.text.secondary}
                         />
                       </Pressable>
                     );

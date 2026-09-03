@@ -1946,7 +1946,7 @@ export function FoodMealTrackingDetailsModal({
                   onChange={handleEditFormNumericChange('protein')}
                   allowDecimals
                   topRightElement={
-                    <Dumbbell size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
+                    <Dumbbell size={theme.iconSize.sm} color={theme.colors.status.brandBright} />
                   }
                   variant="success"
                   size="half"
@@ -1968,7 +1968,7 @@ export function FoodMealTrackingDetailsModal({
                   onChange={handleEditFormNumericChange('fat')}
                   allowDecimals
                   topRightElement={
-                    <Droplet size={theme.iconSize.sm} color={theme.colors.status.red400} />
+                    <Droplet size={theme.iconSize.sm} color={theme.colors.status.errorLight} />
                   }
                   variant="error"
                   size="half"
@@ -1979,7 +1979,7 @@ export function FoodMealTrackingDetailsModal({
                   onChange={handleEditFormNumericChange('fiber')}
                   allowDecimals
                   topRightElement={
-                    <Leaf size={theme.iconSize.sm} color={theme.colors.status.emerald} />
+                    <Leaf size={theme.iconSize.sm} color={theme.colors.status.brandVivid} />
                   }
                   variant="success"
                   size="half"

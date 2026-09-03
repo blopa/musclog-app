@@ -31,7 +31,7 @@ export function RestOverStatusIcon() {
       <Animated.View
         className="absolute inset-0 rounded-full"
         style={{
-          backgroundColor: theme.colors.status.emerald20,
+          backgroundColor: theme.colors.status.brandVivid20,
           transform: [{ scale: glowAnim }],
         }}
       />
@@ -39,7 +39,7 @@ export function RestOverStatusIcon() {
         className="relative z-10 h-24 w-24 items-center justify-center rounded-full border"
         style={{
           backgroundColor: theme.colors.background.secondaryDark,
-          borderColor: theme.colors.status.emerald20,
+          borderColor: theme.colors.status.brandVivid20,
           shadowColor: theme.colors.accent.primary,
           shadowOffset: theme.shadowOffset.zero,
           shadowOpacity: theme.shadowOpacity.medium,
@@ -63,7 +63,7 @@ export function RestOverStatusIcon() {
       >
         <AlertCircle
           size={theme.iconSize.sm}
-          color={theme.colors.text.white}
+          color={theme.colors.text.primary}
           strokeWidth={theme.borderWidth.thick}
         />
       </View>

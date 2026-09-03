@@ -322,7 +322,7 @@ export default function CreateCustomFoodModal({
       label: t('food.newCustomFood.sugar'),
       value: micronutrients.sugar,
       icon: IceCream,
-      iconColor: theme.colors.status.pink500,
+      iconColor: theme.colors.status.pink,
       variant: 'accent' as const,
     },
     {
@@ -338,7 +338,7 @@ export default function CreateCustomFoodModal({
       label: t('food.newCustomFood.monounsatFat'),
       value: micronutrients.monoFat,
       icon: Droplet,
-      iconColor: theme.colors.status.teal400,
+      iconColor: theme.colors.status.brandPale,
       variant: 'success' as const,
     },
     {
@@ -346,7 +346,7 @@ export default function CreateCustomFoodModal({
       label: t('food.newCustomFood.polyunsatFat'),
       value: micronutrients.polyFat,
       icon: Waves,
-      iconColor: theme.colors.status.violet500,
+      iconColor: theme.colors.status.purple,
       variant: 'warning' as const,
     },
     {
@@ -354,7 +354,7 @@ export default function CreateCustomFoodModal({
       label: t('food.newCustomFood.monounsatFat'),
       value: micronutrients.monounsaturatedFat,
       icon: Droplet,
-      iconColor: theme.colors.status.emerald,
+      iconColor: theme.colors.status.brandVivid,
       variant: 'success' as const,
     },
     {
@@ -362,7 +362,7 @@ export default function CreateCustomFoodModal({
       label: 'Saturated Fat',
       value: micronutrients.saturatedFat,
       icon: Heart,
-      iconColor: theme.colors.status.red400,
+      iconColor: theme.colors.status.errorLight,
       variant: 'error' as const,
     },
     {
@@ -378,7 +378,7 @@ export default function CreateCustomFoodModal({
       label: 'Unsaturated Fat',
       value: micronutrients.unsaturatedFat,
       icon: Waves,
-      iconColor: theme.colors.status.teal400,
+      iconColor: theme.colors.status.brandPale,
       variant: 'success' as const,
     },
     {
@@ -386,7 +386,7 @@ export default function CreateCustomFoodModal({
       label: 'Zinc',
       value: micronutrients.zinc,
       icon: Shield,
-      iconColor: theme.colors.status.emeraldVeryLight,
+      iconColor: theme.colors.status.brandPale,
       variant: 'default' as const,
     },
     {
@@ -394,7 +394,7 @@ export default function CreateCustomFoodModal({
       label: 'Vitamin K',
       value: micronutrients.vitaminK,
       icon: Pill,
-      iconColor: theme.colors.status.purple400,
+      iconColor: theme.colors.status.purpleLight,
       variant: 'accent' as const,
     },
     {
@@ -410,7 +410,7 @@ export default function CreateCustomFoodModal({
       label: 'Vitamin B12',
       value: micronutrients.vitaminB12,
       icon: Thermometer,
-      iconColor: theme.colors.status.pink500,
+      iconColor: theme.colors.status.pink,
       variant: 'accent' as const,
     },
     {
@@ -426,7 +426,7 @@ export default function CreateCustomFoodModal({
       label: 'Vitamin E',
       value: micronutrients.vitaminE,
       icon: Sparkles,
-      iconColor: theme.colors.status.yellow,
+      iconColor: theme.colors.status.amber,
       variant: 'warning' as const,
     },
     {
@@ -442,7 +442,7 @@ export default function CreateCustomFoodModal({
       label: 'Selenium',
       value: micronutrients.selenium,
       icon: Beaker,
-      iconColor: theme.colors.status.emeraldVeryLight,
+      iconColor: theme.colors.status.brandPale,
       variant: 'default' as const,
     },
     {
@@ -450,7 +450,7 @@ export default function CreateCustomFoodModal({
       label: 'Vitamin B6',
       value: micronutrients.vitaminB6,
       icon: Thermometer,
-      iconColor: theme.colors.status.purple400,
+      iconColor: theme.colors.status.purpleLight,
       variant: 'accent' as const,
     },
     {
@@ -458,7 +458,7 @@ export default function CreateCustomFoodModal({
       label: 'Pantothenic Acid',
       value: micronutrients.pantothenicAcid,
       icon: Apple,
-      iconColor: theme.colors.status.teal400,
+      iconColor: theme.colors.status.brandPale,
       variant: 'success' as const,
     },
     {
@@ -474,7 +474,7 @@ export default function CreateCustomFoodModal({
       label: 'Calcium',
       value: micronutrients.calcium,
       icon: Battery,
-      iconColor: theme.colors.status.emeraldVeryLight,
+      iconColor: theme.colors.status.brandPale,
       variant: 'default' as const,
     },
     {
@@ -482,7 +482,7 @@ export default function CreateCustomFoodModal({
       label: 'Iodine',
       value: micronutrients.iodine,
       icon: TestTube,
-      iconColor: theme.colors.status.purple400,
+      iconColor: theme.colors.status.purpleLight,
       variant: 'accent' as const,
     },
     {
@@ -490,7 +490,7 @@ export default function CreateCustomFoodModal({
       label: 'Molybdenum',
       value: micronutrients.molybdenum,
       icon: Beaker,
-      iconColor: theme.colors.status.emeraldVeryLight,
+      iconColor: theme.colors.status.brandPale,
       variant: 'default' as const,
     },
     {
@@ -506,7 +506,7 @@ export default function CreateCustomFoodModal({
       label: 'Manganese',
       value: micronutrients.manganese,
       icon: Beaker,
-      iconColor: theme.colors.status.emeraldVeryLight,
+      iconColor: theme.colors.status.brandPale,
       variant: 'default' as const,
     },
     {
@@ -514,7 +514,7 @@ export default function CreateCustomFoodModal({
       label: 'Magnesium',
       value: micronutrients.magnesium,
       icon: Battery,
-      iconColor: theme.colors.status.emeraldVeryLight,
+      iconColor: theme.colors.status.brandPale,
       variant: 'default' as const,
     },
     {
@@ -522,7 +522,7 @@ export default function CreateCustomFoodModal({
       label: 'Folic Acid',
       value: micronutrients.folicAcid,
       icon: Pill,
-      iconColor: theme.colors.status.pink500,
+      iconColor: theme.colors.status.pink,
       variant: 'accent' as const,
     },
     {
@@ -538,7 +538,7 @@ export default function CreateCustomFoodModal({
       label: 'Iron',
       value: micronutrients.iron,
       icon: Battery,
-      iconColor: theme.colors.status.red400,
+      iconColor: theme.colors.status.errorLight,
       variant: 'error' as const,
     },
     {
@@ -546,7 +546,7 @@ export default function CreateCustomFoodModal({
       label: 'Chromium',
       value: micronutrients.chromium,
       icon: Beaker,
-      iconColor: theme.colors.status.emeraldVeryLight,
+      iconColor: theme.colors.status.brandPale,
       variant: 'default' as const,
     },
     {
@@ -562,7 +562,7 @@ export default function CreateCustomFoodModal({
       label: 'Cholesterol',
       value: micronutrients.cholesterol,
       icon: Heart,
-      iconColor: theme.colors.status.red400,
+      iconColor: theme.colors.status.errorLight,
       variant: 'error' as const,
     },
     {
@@ -570,7 +570,7 @@ export default function CreateCustomFoodModal({
       label: 'Phosphorus',
       value: micronutrients.phosphorus,
       icon: Battery,
-      iconColor: theme.colors.status.emeraldVeryLight,
+      iconColor: theme.colors.status.brandPale,
       variant: 'default' as const,
     },
     {
@@ -578,7 +578,7 @@ export default function CreateCustomFoodModal({
       label: 'Chloride',
       value: micronutrients.chloride,
       icon: TestTube,
-      iconColor: theme.colors.status.emeraldVeryLight,
+      iconColor: theme.colors.status.brandPale,
       variant: 'default' as const,
     },
     {
@@ -586,7 +586,7 @@ export default function CreateCustomFoodModal({
       label: 'Folate',
       value: micronutrients.folate,
       icon: Pill,
-      iconColor: theme.colors.status.greenDark,
+      iconColor: theme.colors.status.brandVivid,
       variant: 'success' as const,
     },
     {
@@ -594,7 +594,7 @@ export default function CreateCustomFoodModal({
       label: 'Biotin',
       value: micronutrients.biotin,
       icon: Stethoscope,
-      iconColor: theme.colors.status.purple400,
+      iconColor: theme.colors.status.purpleLight,
       variant: 'accent' as const,
     },
     {
@@ -602,7 +602,7 @@ export default function CreateCustomFoodModal({
       label: 'Sodium',
       value: micronutrients.sodium,
       icon: Battery,
-      iconColor: theme.colors.status.emeraldVeryLight,
+      iconColor: theme.colors.status.brandPale,
       variant: 'default' as const,
     },
     {
@@ -618,7 +618,7 @@ export default function CreateCustomFoodModal({
       label: 'Potassium',
       value: micronutrients.potassium,
       icon: Battery,
-      iconColor: theme.colors.status.emeraldVeryLight,
+      iconColor: theme.colors.status.brandPale,
       variant: 'default' as const,
     },
   ];
@@ -755,8 +755,10 @@ export default function CreateCustomFoodModal({
                   icon: (
                     <Heart
                       size={theme.iconSize.md}
-                      color={isFavorite ? theme.colors.status.red400 : theme.colors.text.tertiary}
-                      fill={isFavorite ? theme.colors.status.red400 : 'transparent'}
+                      color={
+                        isFavorite ? theme.colors.status.errorLight : theme.colors.text.tertiary
+                      }
+                      fill={isFavorite ? theme.colors.status.errorLight : 'transparent'}
                     />
                   ),
                   value: isFavorite,
@@ -825,7 +827,7 @@ export default function CreateCustomFoodModal({
                           alignItems: 'center',
                           borderRadius: theme.borderRadius.lg,
                           borderWidth: 1,
-                          borderColor: theme.colors.background.white20,
+                          borderColor: theme.colors.background.ink20,
                           backgroundColor: theme.colors.background.secondary,
                           paddingHorizontal: theme.spacing.padding.md,
                           paddingVertical: theme.spacing.padding.sm,
@@ -858,7 +860,7 @@ export default function CreateCustomFoodModal({
                           style={{
                             flexShrink: 0,
                             borderRadius: theme.borderRadius.full,
-                            backgroundColor: theme.colors.status.emerald,
+                            backgroundColor: theme.colors.status.brandVivid,
                             paddingHorizontal: theme.spacing.padding.sm,
                             paddingVertical: theme.spacing.padding.xs,
                           }}
@@ -867,7 +869,7 @@ export default function CreateCustomFoodModal({
                             style={{
                               fontSize: theme.typography.fontSize.sm,
                               fontWeight: theme.typography.fontWeight.semibold,
-                              color: theme.colors.text.white,
+                              color: theme.colors.text.primary,
                             }}
                           >
                             {displayWeight != null
@@ -949,7 +951,7 @@ export default function CreateCustomFoodModal({
                 onChange={(value) => handleNumericChange(value, setProtein)}
                 allowDecimals
                 topRightElement={
-                  <Dumbbell size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
+                  <Dumbbell size={theme.iconSize.sm} color={theme.colors.status.brandBright} />
                 }
                 variant="success"
                 size="half"
@@ -975,7 +977,7 @@ export default function CreateCustomFoodModal({
                 onChange={(value) => handleNumericChange(value, setFat)}
                 allowDecimals
                 topRightElement={
-                  <Droplet size={theme.iconSize.sm} color={theme.colors.status.red400} />
+                  <Droplet size={theme.iconSize.sm} color={theme.colors.status.errorLight} />
                 }
                 variant="error"
                 size="half"
@@ -986,7 +988,7 @@ export default function CreateCustomFoodModal({
                 onChange={(value) => handleNumericChange(value, setFiber)}
                 allowDecimals
                 topRightElement={
-                  <Leaf size={theme.iconSize.sm} color={theme.colors.status.purple400} />
+                  <Leaf size={theme.iconSize.sm} color={theme.colors.status.purpleLight} />
                 }
                 variant="accent"
                 size="half"

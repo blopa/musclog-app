@@ -114,8 +114,8 @@ export function ExerciseTransitionScreen({
               />
               <LinearGradient
                 colors={[
-                  theme.colors.background.black90,
-                  theme.colors.background.black40,
+                  theme.colors.background.scrim90,
+                  theme.colors.background.scrim40,
                   'transparent',
                 ]}
                 locations={[0, 0.5, 1]}
@@ -127,7 +127,7 @@ export function ExerciseTransitionScreen({
                 <Text
                   className="text-2xl font-bold leading-tight text-text-on-colorful"
                   style={{
-                    textShadowColor: theme.colors.overlay.black90,
+                    textShadowColor: theme.colors.overlay.scrim90,
                     textShadowOffset: { width: 0, height: 1 },
                     textShadowRadius: 3,
                   }}
@@ -138,7 +138,7 @@ export function ExerciseTransitionScreen({
                   className="text-sm font-semibold uppercase tracking-wide"
                   style={{
                     color: theme.colors.accent.primary,
-                    textShadowColor: theme.colors.overlay.black60,
+                    textShadowColor: theme.colors.overlay.scrim60,
                     textShadowOffset: { width: 0, height: 1 },
                     textShadowRadius: 2,
                   }}

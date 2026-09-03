@@ -32,7 +32,7 @@ export function RecoveryTrainingChart({ allData }: RecoveryTrainingChartProps) {
             >
               <Text
                 className={`text-xs font-bold ${
-                  aggregation === agg ? 'text-text-black' : 'text-text-tertiary'
+                  aggregation === agg ? 'text-text-on-accent' : 'text-text-tertiary'
                 }`}
               >
                 {t(`common.time.${agg}`)}
@@ -71,7 +71,7 @@ export function RecoveryTrainingChart({ allData }: RecoveryTrainingChartProps) {
           >
             <Text
               className={`text-xs font-bold ${
-                aggregation === agg ? 'text-text-black' : 'text-text-tertiary'
+                aggregation === agg ? 'text-text-on-accent' : 'text-text-tertiary'
               }`}
             >
               {t(`common.time.${agg}`)}

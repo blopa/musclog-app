@@ -78,7 +78,7 @@ export function Accordion({
                       {' '}
                       <Text
                         className="text-sm font-normal"
-                        style={{ color: theme.colors.status.customGreen }}
+                        style={{ color: theme.colors.status.brandPale }}
                       >
                         ({count})
                       </Text>

@@ -149,7 +149,7 @@ export function MicronutrientsExpandableSection({
         label: t('food.newCustomFood.sugar'),
         value: values.sugar,
         icon: IceCream,
-        iconColor: theme.colors.status.pink500,
+        iconColor: theme.colors.status.pink,
         variant: 'accent' as const,
       },
       {
@@ -165,7 +165,7 @@ export function MicronutrientsExpandableSection({
         label: t('food.newCustomFood.monounsatFat'),
         value: values.monoFat,
         icon: Droplet,
-        iconColor: theme.colors.status.teal400,
+        iconColor: theme.colors.status.brandPale,
         variant: 'success' as const,
       },
       {
@@ -173,7 +173,7 @@ export function MicronutrientsExpandableSection({
         label: t('food.newCustomFood.polyunsatFat'),
         value: values.polyFat,
         icon: Waves,
-        iconColor: theme.colors.status.violet500,
+        iconColor: theme.colors.status.purple,
         variant: 'warning' as const,
       },
       {
@@ -181,7 +181,7 @@ export function MicronutrientsExpandableSection({
         label: t('food.newCustomFood.monounsatFat'),
         value: values.monounsaturatedFat,
         icon: Droplet,
-        iconColor: theme.colors.status.emerald,
+        iconColor: theme.colors.status.brandVivid,
         variant: 'success' as const,
       },
       {
@@ -189,7 +189,7 @@ export function MicronutrientsExpandableSection({
         label: 'Saturated Fat',
         value: values.saturatedFat,
         icon: Heart,
-        iconColor: theme.colors.status.red400,
+        iconColor: theme.colors.status.errorLight,
         variant: 'error' as const,
       },
       {
@@ -205,7 +205,7 @@ export function MicronutrientsExpandableSection({
         label: 'Unsaturated Fat',
         value: values.unsaturatedFat,
         icon: Waves,
-        iconColor: theme.colors.status.teal400,
+        iconColor: theme.colors.status.brandPale,
         variant: 'success' as const,
       },
       {
@@ -213,7 +213,7 @@ export function MicronutrientsExpandableSection({
         label: 'Zinc',
         value: values.zinc,
         icon: Shield,
-        iconColor: theme.colors.status.emeraldVeryLight,
+        iconColor: theme.colors.status.brandPale,
         variant: 'default' as const,
       },
       {
@@ -221,7 +221,7 @@ export function MicronutrientsExpandableSection({
         label: 'Vitamin K',
         value: values.vitaminK,
         icon: Pill,
-        iconColor: theme.colors.status.purple400,
+        iconColor: theme.colors.status.purpleLight,
         variant: 'accent' as const,
       },
       {
@@ -237,7 +237,7 @@ export function MicronutrientsExpandableSection({
         label: 'Vitamin B12',
         value: values.vitaminB12,
         icon: Thermometer,
-        iconColor: theme.colors.status.pink500,
+        iconColor: theme.colors.status.pink,
         variant: 'accent' as const,
       },
       {
@@ -253,7 +253,7 @@ export function MicronutrientsExpandableSection({
         label: 'Vitamin E',
         value: values.vitaminE,
         icon: Sparkles,
-        iconColor: theme.colors.status.yellow,
+        iconColor: theme.colors.status.amber,
         variant: 'warning' as const,
       },
       {
@@ -269,7 +269,7 @@ export function MicronutrientsExpandableSection({
         label: 'Selenium',
         value: values.selenium,
         icon: Beaker,
-        iconColor: theme.colors.status.emeraldVeryLight,
+        iconColor: theme.colors.status.brandPale,
         variant: 'default' as const,
       },
       {
@@ -277,7 +277,7 @@ export function MicronutrientsExpandableSection({
         label: 'Vitamin B6',
         value: values.vitaminB6,
         icon: Thermometer,
-        iconColor: theme.colors.status.purple400,
+        iconColor: theme.colors.status.purpleLight,
         variant: 'accent' as const,
       },
       {
@@ -285,7 +285,7 @@ export function MicronutrientsExpandableSection({
         label: 'Pantothenic Acid',
         value: values.pantothenicAcid,
         icon: Apple,
-        iconColor: theme.colors.status.teal400,
+        iconColor: theme.colors.status.brandPale,
         variant: 'success' as const,
       },
       {
@@ -301,7 +301,7 @@ export function MicronutrientsExpandableSection({
         label: 'Calcium',
         value: values.calcium,
         icon: Battery,
-        iconColor: theme.colors.status.emeraldVeryLight,
+        iconColor: theme.colors.status.brandPale,
         variant: 'default' as const,
       },
       {
@@ -309,7 +309,7 @@ export function MicronutrientsExpandableSection({
         label: 'Iodine',
         value: values.iodine,
         icon: TestTube,
-        iconColor: theme.colors.status.purple400,
+        iconColor: theme.colors.status.purpleLight,
         variant: 'accent' as const,
       },
       {
@@ -317,7 +317,7 @@ export function MicronutrientsExpandableSection({
         label: 'Molybdenum',
         value: values.molybdenum,
         icon: Beaker,
-        iconColor: theme.colors.status.emeraldVeryLight,
+        iconColor: theme.colors.status.brandPale,
         variant: 'default' as const,
       },
       {
@@ -333,7 +333,7 @@ export function MicronutrientsExpandableSection({
         label: 'Manganese',
         value: values.manganese,
         icon: Beaker,
-        iconColor: theme.colors.status.emeraldVeryLight,
+        iconColor: theme.colors.status.brandPale,
         variant: 'default' as const,
       },
       {
@@ -341,7 +341,7 @@ export function MicronutrientsExpandableSection({
         label: 'Magnesium',
         value: values.magnesium,
         icon: Battery,
-        iconColor: theme.colors.status.emeraldVeryLight,
+        iconColor: theme.colors.status.brandPale,
         variant: 'default' as const,
       },
       {
@@ -349,7 +349,7 @@ export function MicronutrientsExpandableSection({
         label: 'Folic Acid',
         value: values.folicAcid,
         icon: Pill,
-        iconColor: theme.colors.status.pink500,
+        iconColor: theme.colors.status.pink,
         variant: 'accent' as const,
       },
       {
@@ -365,7 +365,7 @@ export function MicronutrientsExpandableSection({
         label: 'Iron',
         value: values.iron,
         icon: Battery,
-        iconColor: theme.colors.status.red400,
+        iconColor: theme.colors.status.errorLight,
         variant: 'error' as const,
       },
       {
@@ -373,7 +373,7 @@ export function MicronutrientsExpandableSection({
         label: 'Chromium',
         value: values.chromium,
         icon: Beaker,
-        iconColor: theme.colors.status.emeraldVeryLight,
+        iconColor: theme.colors.status.brandPale,
         variant: 'default' as const,
       },
       {
@@ -389,7 +389,7 @@ export function MicronutrientsExpandableSection({
         label: 'Cholesterol',
         value: values.cholesterol,
         icon: Heart,
-        iconColor: theme.colors.status.red400,
+        iconColor: theme.colors.status.errorLight,
         variant: 'error' as const,
       },
       {
@@ -397,7 +397,7 @@ export function MicronutrientsExpandableSection({
         label: 'Phosphorus',
         value: values.phosphorus,
         icon: Battery,
-        iconColor: theme.colors.status.emeraldVeryLight,
+        iconColor: theme.colors.status.brandPale,
         variant: 'default' as const,
       },
       {
@@ -405,7 +405,7 @@ export function MicronutrientsExpandableSection({
         label: 'Chloride',
         value: values.chloride,
         icon: TestTube,
-        iconColor: theme.colors.status.emeraldVeryLight,
+        iconColor: theme.colors.status.brandPale,
         variant: 'default' as const,
       },
       {
@@ -413,7 +413,7 @@ export function MicronutrientsExpandableSection({
         label: 'Folate',
         value: values.folate,
         icon: Pill,
-        iconColor: theme.colors.status.greenDark,
+        iconColor: theme.colors.status.brandVivid,
         variant: 'success' as const,
       },
       {
@@ -421,7 +421,7 @@ export function MicronutrientsExpandableSection({
         label: 'Biotin',
         value: values.biotin,
         icon: Stethoscope,
-        iconColor: theme.colors.status.purple400,
+        iconColor: theme.colors.status.purpleLight,
         variant: 'accent' as const,
       },
       {
@@ -429,7 +429,7 @@ export function MicronutrientsExpandableSection({
         label: 'Sodium',
         value: values.sodium,
         icon: Battery,
-        iconColor: theme.colors.status.emeraldVeryLight,
+        iconColor: theme.colors.status.brandPale,
         variant: 'default' as const,
       },
       {
@@ -445,7 +445,7 @@ export function MicronutrientsExpandableSection({
         label: 'Potassium',
         value: values.potassium,
         icon: Battery,
-        iconColor: theme.colors.status.emeraldVeryLight,
+        iconColor: theme.colors.status.brandPale,
         variant: 'default' as const,
       },
     ],

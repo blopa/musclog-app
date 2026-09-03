@@ -147,7 +147,7 @@ export default function LandingScreen() {
             right: -SCREEN_WIDTH * 0.2,
             width: SCREEN_WIDTH * 0.8,
             height: SCREEN_HEIGHT * 0.5,
-            backgroundColor: theme.colors.status.emerald20, // primary/10 equivalent
+            backgroundColor: theme.colors.status.brandVivid20, // primary/10 equivalent
           }}
         />
       </View>
@@ -159,7 +159,7 @@ export default function LandingScreen() {
           <TouchableOpacity
             className="rounded-lg p-2"
             style={{
-              backgroundColor: theme.colors.background.black30,
+              backgroundColor: theme.colors.background.scrim30,
               opacity: isInitializing ? theme.colors.opacity.medium : theme.colors.opacity.full,
             }}
             onPress={() => setImportModalVisible(true)}
@@ -167,12 +167,12 @@ export default function LandingScreen() {
             accessibilityLabel={t('onboarding.landing.importData')}
             accessibilityRole="button"
           >
-            <Download size={20} color={theme.colors.text.white} />
+            <Download size={20} color={theme.colors.text.primary} />
           </TouchableOpacity>
           <TouchableOpacity
             className="rounded-lg p-2"
             style={{
-              backgroundColor: theme.colors.background.black30,
+              backgroundColor: theme.colors.background.scrim30,
               opacity: isInitializing ? theme.colors.opacity.medium : theme.colors.opacity.full,
             }}
             onPress={() => setOpticalImportVisible(true)}
@@ -180,7 +180,7 @@ export default function LandingScreen() {
             accessibilityLabel={t('onboarding.landing.importOptically')}
             accessibilityRole="button"
           >
-            <ScanLine size={20} color={theme.colors.text.white} />
+            <ScanLine size={20} color={theme.colors.text.primary} />
           </TouchableOpacity>
         </View>
 
@@ -216,7 +216,7 @@ export default function LandingScreen() {
               <Text
                 className="font-black leading-none tracking-tight"
                 style={{
-                  color: theme.colors.text.white,
+                  color: theme.colors.text.primary,
                   fontSize: theme.typography.fontSize['4xl'],
                   letterSpacing: theme.typography.letterSpacing.tight,
                   lineHeight: theme.typography.fontSize['4xl'] * 1.1,
@@ -241,7 +241,7 @@ export default function LandingScreen() {
               <Text
                 className="mt-2 text-center"
                 style={{
-                  color: theme.colors.text.gray500,
+                  color: theme.colors.text.tertiary,
                   fontSize: theme.typography.fontSize.sm,
                   maxWidth: theme.maxWidth.md,
                   lineHeight: theme.typography.fontSize.sm * 1.5,
@@ -253,7 +253,7 @@ export default function LandingScreen() {
               {/* Privacy badge */}
               <View
                 className="mt-3 flex-row items-center gap-2 rounded-full px-4 py-2"
-                style={{ backgroundColor: theme.colors.background.black30 }}
+                style={{ backgroundColor: theme.colors.background.scrim30 }}
               >
                 <Lock size={14} color={theme.colors.text.secondary} />
                 <Text
@@ -285,7 +285,7 @@ export default function LandingScreen() {
                     {t('onboarding.landing.migratingPreamble')}
                   </Text>
                 ) : null}
-                <ActivityIndicator size="large" color={theme.colors.text.white} />
+                <ActivityIndicator size="large" color={theme.colors.text.primary} />
                 <View className="items-center gap-1">
                   {initPhase === 'migrating' &&
                   initStep &&
@@ -295,7 +295,7 @@ export default function LandingScreen() {
                     <Text
                       className="text-center font-medium tabular-nums"
                       style={{
-                        color: theme.colors.text.white,
+                        color: theme.colors.text.primary,
                         fontSize: theme.typography.fontSize.xl,
                       }}
                     >
@@ -306,7 +306,7 @@ export default function LandingScreen() {
                   <Text
                     className="text-center"
                     style={{
-                      color: theme.colors.text.white,
+                      color: theme.colors.text.primary,
                       fontSize: theme.typography.fontSize.lg,
                     }}
                   >
@@ -329,12 +329,12 @@ export default function LandingScreen() {
                     >
                       <Star
                         size={10}
-                        color={theme.colors.text.white}
-                        fill={theme.colors.text.white}
+                        color={theme.colors.text.primary}
+                        fill={theme.colors.text.primary}
                       />
                       <Text
                         style={{
-                          color: theme.colors.text.white,
+                          color: theme.colors.text.primary,
                           fontSize: theme.typography.fontSize.xs,
                           fontWeight: theme.typography.fontWeight.bold,
                         }}
@@ -358,7 +358,7 @@ export default function LandingScreen() {
                 <Text
                   className="text-center"
                   style={{
-                    color: theme.colors.text.gray500,
+                    color: theme.colors.text.tertiary,
                     fontSize: theme.typography.fontSize.xs,
                   }}
                 >
@@ -379,7 +379,7 @@ export default function LandingScreen() {
                 <Text
                   className="text-center"
                   style={{
-                    color: theme.colors.text.gray500,
+                    color: theme.colors.text.tertiary,
                     fontSize: theme.typography.fontSize.xs,
                   }}
                 >
@@ -391,7 +391,7 @@ export default function LandingScreen() {
                   <Text
                     className="text-center"
                     style={{
-                      color: theme.colors.text.gray500,
+                      color: theme.colors.text.tertiary,
                       fontSize: theme.typography.fontSize.xs,
                     }}
                   >

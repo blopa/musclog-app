@@ -37,7 +37,7 @@ export function HealthConnectIllustration() {
           height: theme.size['256'],
           right: -theme.size['48'],
           bottom: -theme.size['32'],
-          backgroundColor: theme.colors.status.emerald20,
+          backgroundColor: theme.colors.status.brandVivid20,
           opacity: theme.colors.opacity.medium,
         }}
       />
@@ -51,7 +51,7 @@ export function HealthConnectIllustration() {
         }}
       >
         <LinearGradient
-          colors={[theme.colors.status.indigo, theme.colors.status.emeraldLight]}
+          colors={[theme.colors.status.indigo, theme.colors.status.brandBright]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{
@@ -61,12 +61,12 @@ export function HealthConnectIllustration() {
             alignItems: 'center',
             justifyContent: 'center',
             borderWidth: theme.borderWidth.thin,
-            borderColor: theme.colors.background.white20,
+            borderColor: theme.colors.background.ink20,
           }}
         >
           <Shield
             size={illustrationSize * 0.5}
-            color={theme.colors.text.white}
+            color={theme.colors.text.primary}
             strokeWidth={theme.strokeWidth.medium}
           />
         </LinearGradient>
@@ -98,7 +98,7 @@ export function HealthConnectIllustration() {
       >
         <Scale
           size={theme.iconSize.lg}
-          color={theme.colors.status.emerald}
+          color={theme.colors.status.brandVivid}
           strokeWidth={theme.strokeWidth.medium}
         />
       </View>
@@ -113,7 +113,7 @@ export function HealthConnectIllustration() {
       >
         <Apple
           size={theme.iconSize.lg}
-          color={theme.colors.status.emeraldLight}
+          color={theme.colors.status.brandBright}
           strokeWidth={theme.strokeWidth.medium}
         />
       </View>

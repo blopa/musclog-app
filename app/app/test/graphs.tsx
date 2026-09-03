@@ -66,8 +66,8 @@ export default function GraphsTestScreen() {
   // Sample data for AreaChart (Metabolic Flow: fat, carb & protein burn over time)
   const areaChartSeries: AreaChartSeriesConfig[] = [
     { key: 'protein', label: 'Protein', color: theme.colors.status.purple, value: '23%' },
-    { key: 'fats', label: 'Fats', color: theme.colors.status.teal400, value: '35%' },
-    { key: 'carbs', label: 'Carbs', color: theme.colors.status.emeraldLight, value: '42%' },
+    { key: 'fats', label: 'Fats', color: theme.colors.status.brandPale, value: '35%' },
+    { key: 'carbs', label: 'Carbs', color: theme.colors.status.brandBright, value: '42%' },
   ];
   const [areaChartData, setAreaChartData] = useState<AreaChartDatum[]>([
     { x: 0, protein: 20, fats: 50, carbs: 70 },
@@ -82,13 +82,13 @@ export default function GraphsTestScreen() {
     {
       key: 'active',
       label: 'Active',
-      color: theme.colors.status.emeraldLight,
+      color: theme.colors.status.brandBright,
       value: '2,450 kcal',
     },
     {
       key: 'resting',
       label: 'Resting',
-      color: theme.colors.status.teal400,
+      color: theme.colors.status.brandPale,
       value: '1,820 kcal',
       dashed: true,
     },
@@ -355,7 +355,7 @@ export default function GraphsTestScreen() {
                 stackColors={[
                   theme.colors.status.info,
                   theme.colors.status.error,
-                  theme.colors.status.yellow,
+                  theme.colors.status.amber,
                   theme.colors.accent.primary,
                 ]}
                 leftAxisLabels={['0', '10', '20', '25']}
@@ -393,13 +393,13 @@ export default function GraphsTestScreen() {
                   rings={[
                     {
                       progress: 0.8,
-                      color: theme.colors.status.emeraldLight,
+                      color: theme.colors.status.brandBright,
                       label: 'Move',
                       value: '80%',
                     },
                     {
                       progress: 0.65,
-                      color: theme.colors.status.teal400,
+                      color: theme.colors.status.brandPale,
                       label: 'Steps',
                       value: '65%',
                     },
@@ -431,7 +431,7 @@ export default function GraphsTestScreen() {
                   },
                   {
                     width: 0.3,
-                    color: theme.colors.status.emeraldLight,
+                    color: theme.colors.status.brandBright,
                     label: 'Follicular',
                     opacity: 0.4,
                   },
@@ -443,7 +443,7 @@ export default function GraphsTestScreen() {
                   },
                   {
                     width: 0.35,
-                    color: theme.colors.status.teal400,
+                    color: theme.colors.status.brandPale,
                     label: 'Luteal',
                     opacity: 0.4,
                   },
@@ -581,7 +581,7 @@ export default function GraphsTestScreen() {
                 stackColors={[
                   theme.colors.status.info,
                   theme.colors.status.error,
-                  theme.colors.status.yellow,
+                  theme.colors.status.amber,
                   theme.colors.accent.primary,
                 ]}
                 xAxisLabels={getXAxisLabels(
@@ -709,7 +709,7 @@ export default function GraphsTestScreen() {
                 rowsPerColumn={7}
                 columns={12}
                 gridHeight={128}
-                accentColor={theme.colors.status.emeraldLight}
+                accentColor={theme.colors.status.brandBright}
               />
             </View>
           </View>
@@ -730,7 +730,7 @@ export default function GraphsTestScreen() {
                 centerScoreLabel="PTS"
                 primaryFocus="Power Output"
                 areaToImprove="Flexibility"
-                dataColor={theme.colors.status.emeraldLight}
+                dataColor={theme.colors.status.brandBright}
                 size={280}
               />
             </View>

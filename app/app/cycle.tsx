@@ -323,7 +323,7 @@ export default function CycleScreen() {
                   onPress={() => setIsLogModalVisible(true)}
                   className="h-10 w-10 items-center justify-center rounded-full bg-accent-primary"
                 >
-                  <Plus size={24} color={theme.colors.text.black} />
+                  <Plus size={24} color={theme.colors.text.onAccent} />
                 </Pressable>
               </View>
 

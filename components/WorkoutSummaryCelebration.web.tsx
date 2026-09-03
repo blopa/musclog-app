@@ -158,7 +158,7 @@ export function WorkoutSummaryCelebration({
           width: 192,
           height: 192,
           borderRadius: 96,
-          backgroundColor: theme.colors.status.emerald20,
+          backgroundColor: theme.colors.status.brandVivid20,
           filter: 'blur(48px)',
           opacity: 0.6,
           pointerEvents: 'none',
@@ -172,13 +172,13 @@ export function WorkoutSummaryCelebration({
             width: 128,
             height: 128,
             borderRadius: 64,
-            border: `1px solid ${theme.colors.background.white5}`,
+            border: `1px solid ${theme.colors.background.ink5}`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             position: 'relative',
             overflow: 'hidden',
-            background: `linear-gradient(135deg, ${theme.colors.status.indigo10}, ${theme.colors.status.emerald10})`,
+            background: `linear-gradient(135deg, ${theme.colors.status.indigo10}, ${theme.colors.status.brandVivid10})`,
           }}
         >
           <Trophy
@@ -246,7 +246,7 @@ export function WorkoutSummaryCelebration({
           width: '100%',
           borderRadius: theme.borderRadius.xl,
           backgroundColor: theme.colors.background.cardElevated,
-          border: `1px solid ${theme.colors.background.white5}`,
+          border: `1px solid ${theme.colors.background.ink5}`,
           padding: theme.spacing.padding.xl,
           boxSizing: 'border-box',
           marginBottom: theme.spacing.padding.xl,
@@ -281,8 +281,8 @@ export function WorkoutSummaryCelebration({
             label={t('workoutSummary.volume')}
             value={volumeValue}
             valueSuffix={volumeSuffix}
-            iconBgColor={theme.colors.status.emerald10}
-            iconColor={theme.colors.status.emeraldLight}
+            iconBgColor={theme.colors.status.brandVivid10}
+            iconColor={theme.colors.status.brandBright}
             iconSize={theme.iconSize.lg}
             showDivider
           />

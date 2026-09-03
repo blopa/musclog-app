@@ -370,7 +370,7 @@ export default function RestTimerScreen() {
           className="absolute bottom-[-40%] left-[-20%] h-[50%] w-[110%] overflow-hidden rounded-full"
           style={{
             ...theme.shadows.purpleGlow,
-            backgroundColor: theme.colors.background.greenBlob,
+            backgroundColor: theme.colors.background.brandBlob,
           }}
         />
 
@@ -404,16 +404,16 @@ export default function RestTimerScreen() {
           <View className="flex-row items-center justify-between px-2">
             <View className="flex-row items-center gap-2">
               <CheckCircle size={theme.iconSize.md} color={theme.colors.accent.primary} />
-              <Text className="text-sm" style={{ color: theme.colors.overlay.white50 }}>
+              <Text className="text-sm" style={{ color: theme.colors.overlay.ink50 }}>
                 {t('restTimer.done')}:{' '}
                 <Text className="font-medium text-text-primary">
                   {completedSet.exercise.name ?? ''}
                 </Text>
               </Text>
             </View>
-            <Text className="font-medium" style={{ color: theme.colors.overlay.white70 }}>
+            <Text className="font-medium" style={{ color: theme.colors.overlay.ink70 }}>
               {formatDisplayWeight(completedSet.set.weight ?? 0)} {t(weightUnitKey)}{' '}
-              <Text style={{ color: theme.colors.overlay.white30 }}>×</Text>{' '}
+              <Text style={{ color: theme.colors.overlay.ink30 }}>×</Text>{' '}
               {completedSet.set.reps ?? 0} {t('restTimer.reps')}
             </Text>
           </View>

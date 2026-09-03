@@ -17,10 +17,7 @@ export function QuoteCallout({ text }: QuoteCalloutProps) {
   return (
     <View className="flex-row overflow-hidden rounded-sm">
       <View className="w-1" style={{ backgroundColor: theme.colors.accent.primary }} />
-      <View
-        className="flex-1 px-5 py-4"
-        style={{ backgroundColor: theme.colors.background.white5 }}
-      >
+      <View className="flex-1 px-5 py-4" style={{ backgroundColor: theme.colors.background.ink5 }}>
         <Quote
           size={18}
           color={theme.colors.accent.primary}

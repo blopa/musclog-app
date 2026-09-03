@@ -47,7 +47,7 @@ function SetCard({
   const theme = useTheme();
   const accentStyle = item.isPR
     ? { borderLeftColor: theme.colors.accent.primary, borderLeftWidth: theme.borderWidth.thick6 }
-    : { borderLeftColor: theme.colors.border.gray600, borderLeftWidth: theme.borderWidth.thin };
+    : { borderLeftColor: theme.colors.border.subtle, borderLeftWidth: theme.borderWidth.thin };
   const displayIndex = Number.isFinite(index) ? index + 1 : 1;
 
   const { t } = useTranslation();
@@ -124,7 +124,7 @@ function SetCard({
               <Trash2 size={theme.iconSize.xs} color={theme.colors.status.error} />
               <Text
                 className="text-xs font-bold uppercase tracking-wider"
-                style={{ color: theme.colors.status.errorSolid }}
+                style={{ color: theme.colors.status.error }}
               >
                 {t('workoutDetail.remove')}
               </Text>

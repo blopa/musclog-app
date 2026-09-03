@@ -20,7 +20,7 @@ export function PhysiologicalInsightsCard({
   const getTrendIcon = () => {
     switch (trend) {
       case 'up':
-        return <TrendingUp size={16} color={theme.colors.status.emerald} />;
+        return <TrendingUp size={16} color={theme.colors.status.brandVivid} />;
       case 'down':
         return <TrendingDown size={16} color={theme.colors.status.error} />;
       default:

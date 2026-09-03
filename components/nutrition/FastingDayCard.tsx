@@ -32,9 +32,9 @@ export function FastingDayCard({
       <View className="flex-col items-center gap-4 p-6">
         <View
           className="h-16 w-16 items-center justify-center rounded-full"
-          style={{ backgroundColor: theme.colors.status.emerald20 }}
+          style={{ backgroundColor: theme.colors.status.brandVivid20 }}
         >
-          <Coffee size={theme.iconSize['3xl']} color={theme.colors.status.emeraldLight} />
+          <Coffee size={theme.iconSize['3xl']} color={theme.colors.status.brandBright} />
         </View>
 
         <View className="flex-col items-center gap-1" style={{ maxWidth: theme.maxWidth['480'] }}>

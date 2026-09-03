@@ -80,7 +80,7 @@ export function SpiderChart({
   const { t } = useTranslation();
   const theme = useTheme();
 
-  const DEFAULT_DATA_COLOR = theme.colors.status.emeraldLight;
+  const DEFAULT_DATA_COLOR = theme.colors.status.brandBright;
   const DEFAULT_GRID_COLOR = theme.colors.border.dark;
   const n = Math.min(axes.length, values.length, 12);
   if (n === 0) {

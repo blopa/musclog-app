@@ -35,11 +35,11 @@ export const MigrationSection = () => {
         >
           <Database
             size={theme.iconSize.md}
-            color={checkingOldDatabase ? theme.colors.text.tertiary : theme.colors.text.black}
+            color={checkingOldDatabase ? theme.colors.text.tertiary : theme.colors.text.onAccent}
           />
           <Text
             className={`text-sm font-bold ${
-              checkingOldDatabase ? 'text-text-tertiary' : 'text-text-black'
+              checkingOldDatabase ? 'text-text-tertiary' : 'text-text-on-accent'
             }`}
           >
             {t('settings.migration.checkMigrationData')}
@@ -55,10 +55,10 @@ export const MigrationSection = () => {
         >
           <Download
             size={theme.iconSize.md}
-            color={migrating ? theme.colors.text.tertiary : theme.colors.text.black}
+            color={migrating ? theme.colors.text.tertiary : theme.colors.text.onAccent}
           />
           <Text
-            className={`text-sm font-bold ${migrating ? 'text-text-tertiary' : 'text-text-black'}`}
+            className={`text-sm font-bold ${migrating ? 'text-text-tertiary' : 'text-text-on-accent'}`}
           >
             {migrating ? t('settings.migration.migrating') : t('settings.migration.importData')}
           </Text>

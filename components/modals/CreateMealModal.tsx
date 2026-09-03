@@ -90,7 +90,7 @@ const getMealTypeOptions = (theme: Theme, t: TFunction): SelectorOption<MealType
     label: t('food.meals.other'),
     description: t('food.meals.descriptions.other'),
     icon: MoreHorizontal,
-    iconBgColor: theme.colors.status.gray10,
+    iconBgColor: theme.colors.status.neutralWash,
     iconColor: theme.colors.text.secondary,
   },
 ];
@@ -751,7 +751,7 @@ export function CreateMealModal({
                 top: theme.spacing.padding.lg,
               }}
             >
-              <ActivityIndicator size="small" color={theme.colors.text.black} />
+              <ActivityIndicator size="small" color={theme.colors.text.onAccent} />
             </View>
           ) : null}
         </View>
@@ -1172,7 +1172,7 @@ export function CreateMealModal({
                 value={saveToMyMeals}
                 onValueChange={setSaveToMyMeals}
                 trackColor={{
-                  false: theme.colors.background.white10,
+                  false: theme.colors.background.ink10,
                   true: theme.colors.accent.primary40,
                 }}
                 thumbColor={

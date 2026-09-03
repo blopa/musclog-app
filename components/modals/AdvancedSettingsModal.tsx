@@ -105,12 +105,12 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
             width: theme.size['10'],
             height: theme.size['10'],
             borderRadius: theme.borderRadius.sm,
-            backgroundColor: theme.colors.status.emerald20,
+            backgroundColor: theme.colors.status.brandVivid20,
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Activity size={theme.iconSize.xl} color={theme.colors.status.emerald} />
+          <Activity size={theme.iconSize.xl} color={theme.colors.status.brandVivid} />
         </View>
       ),
       value: debouncedShowDailyMoodPrompt,
@@ -147,12 +147,12 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
             width: theme.size['10'],
             height: theme.size['10'],
             borderRadius: theme.borderRadius.sm,
-            backgroundColor: theme.colors.status.emerald20,
+            backgroundColor: theme.colors.status.brandVivid20,
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Pill size={theme.iconSize.xl} color={theme.colors.status.emerald} />
+          <Pill size={theme.iconSize.xl} color={theme.colors.status.brandVivid} />
         </View>
       ),
       value: debouncedShowDailySupplementPrompt,
@@ -213,12 +213,12 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
             width: theme.size['10'],
             height: theme.size['10'],
             borderRadius: theme.borderRadius.sm,
-            backgroundColor: theme.colors.status.emerald20,
+            backgroundColor: theme.colors.status.brandVivid20,
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Coffee size={theme.iconSize.xl} color={theme.colors.status.emerald} />
+          <Coffee size={theme.iconSize.xl} color={theme.colors.status.brandVivid} />
         </View>
       ),
       value: debouncedIntuitiveEatingMode,
@@ -298,12 +298,12 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
             width: theme.size['10'],
             height: theme.size['10'],
             borderRadius: theme.borderRadius.sm,
-            backgroundColor: theme.colors.status.emerald20,
+            backgroundColor: theme.colors.status.brandVivid20,
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Activity size={theme.iconSize.xl} color={theme.colors.status.emerald} />
+          <Activity size={theme.iconSize.xl} color={theme.colors.status.brandVivid} />
         </View>
       ),
       value: debouncedUseBfForCalculations,
@@ -340,12 +340,12 @@ export function AdvancedSettingsModal({ visible, onClose }: AdvancedSettingsModa
             width: theme.size['10'],
             height: theme.size['10'],
             borderRadius: theme.borderRadius.sm,
-            backgroundColor: theme.colors.status.emerald20,
+            backgroundColor: theme.colors.status.brandVivid20,
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Coffee size={theme.iconSize.xl} color={theme.colors.status.emerald} />
+          <Coffee size={theme.iconSize.xl} color={theme.colors.status.brandVivid} />
         </View>
       ),
       value: debouncedEnableFastedDay,

@@ -176,13 +176,13 @@ export function useFoodPortionDataLogs({
   const dateFnsLocale = useDateFnsLocale();
   const iconColors = useMemo(
     () => ({
-      scale: { color: theme.colors.text.secondary, bg: theme.colors.status.gray10 },
+      scale: { color: theme.colors.text.secondary, bg: theme.colors.status.neutralWash },
       egg: { color: theme.colors.status.indigo, bg: theme.colors.status.indigo10 },
-      'local-cafe': { color: theme.colors.text.muted, bg: theme.colors.status.gray10 },
+      'local-cafe': { color: theme.colors.text.muted, bg: theme.colors.status.neutralWash },
       'water-drop': { color: theme.colors.status.info, bg: theme.colors.status.info10 },
       restaurant: {
-        color: theme.colors.status.emeraldLight,
-        bg: theme.colors.status.emerald400_10,
+        color: theme.colors.status.brandBright,
+        bg: theme.colors.status.brandBright10,
       },
     }),
     [theme]

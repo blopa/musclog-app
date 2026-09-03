@@ -1000,8 +1000,8 @@ export function NutritionGoalsBody({
           <View
             className="rounded-xl border p-4"
             style={{
-              borderColor: theme.colors.border.emerald,
-              backgroundColor: theme.colors.status.emerald10,
+              borderColor: theme.colors.border.brand,
+              backgroundColor: theme.colors.status.brandVivid10,
             }}
           >
             <Text className="text-sm text-text-secondary">
@@ -1017,7 +1017,7 @@ export function NutritionGoalsBody({
           <View
             className="relative mb-6 overflow-hidden rounded-2xl border p-6"
             style={{
-              borderColor: theme.colors.border.emerald,
+              borderColor: theme.colors.border.brand,
               backgroundColor: theme.colors.background.cardElevated,
             }}
           >
@@ -1039,7 +1039,7 @@ export function NutritionGoalsBody({
                     }
                   }}
                   className="h-10 w-10 items-center justify-center rounded-full active:opacity-70"
-                  style={{ backgroundColor: theme.colors.background.white10 }}
+                  style={{ backgroundColor: theme.colors.background.ink10 }}
                   hitSlop={12}
                   disabled={isDynamic}
                 >
@@ -1090,7 +1090,7 @@ export function NutritionGoalsBody({
                     }
                   }}
                   className="h-10 w-10 items-center justify-center rounded-full active:opacity-70"
-                  style={{ backgroundColor: theme.colors.background.white10 }}
+                  style={{ backgroundColor: theme.colors.background.ink10 }}
                   hitSlop={12}
                   disabled={isDynamic}
                 >
@@ -1110,7 +1110,7 @@ export function NutritionGoalsBody({
                         color:
                           effectiveCalories < effectiveTdeeEstimate
                             ? theme.colors.status.error
-                            : theme.colors.status.emeraldLight,
+                            : theme.colors.status.brandBright,
                       }}
                     >
                       {effectiveCalories < effectiveTdeeEstimate
@@ -1167,9 +1167,9 @@ export function NutritionGoalsBody({
               {showIcons ? (
                 <View
                   className="h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: theme.colors.status.emerald20 }}
+                  style={{ backgroundColor: theme.colors.status.brandVivid20 }}
                 >
-                  <Calendar size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
+                  <Calendar size={theme.iconSize.sm} color={theme.colors.status.brandBright} />
                 </View>
               ) : null}
               <View className="min-w-0 flex-1">
@@ -1582,16 +1582,16 @@ export function NutritionGoalsBody({
               borderColor:
                 isDynamic && targetDate === null
                   ? theme.colors.status.error
-                  : theme.colors.border.emerald,
+                  : theme.colors.border.brand,
             }}
           >
             <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-2">
               {showIcons ? (
                 <View
                   className="h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: theme.colors.status.emerald20 }}
+                  style={{ backgroundColor: theme.colors.status.brandVivid20 }}
                 >
-                  <Calendar size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
+                  <Calendar size={theme.iconSize.sm} color={theme.colors.status.brandBright} />
                 </View>
               ) : null}
               <View className="min-w-0 flex-1">
@@ -1643,7 +1643,7 @@ export function NutritionGoalsBody({
         {showSaveButton ? (
           <View
             className="mt-8 border-t pt-6"
-            style={{ borderTopColor: theme.colors.background.white5 }}
+            style={{ borderTopColor: theme.colors.background.ink5 }}
           >
             {isDynamic && !isDynamicValid ? (
               <Text

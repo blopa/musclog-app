@@ -143,7 +143,7 @@ export const FoodItemCard = memo(function FoodItemCard({
           className={`flex-shrink-0 overflow-hidden rounded-xl ${
             variant === 'compact' ? 'h-12 w-12' : 'h-16 w-16'
           }`}
-          style={{ backgroundColor: theme.colors.background.gray700 }}
+          style={{ backgroundColor: theme.colors.background.hairline }}
         >
           {!image || imageError ? (
             <View className="flex-1 items-center justify-center">

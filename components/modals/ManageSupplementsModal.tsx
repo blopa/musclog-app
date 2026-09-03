@@ -165,7 +165,7 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
         <View className="px-4 py-6">
           {supplements.length === 0 && !isLoading ? (
             <View className="items-center rounded-3xl border border-border-light bg-bg-card px-6 py-10">
-              <Pill size={theme.iconSize.xl} color={theme.colors.status.emerald} />
+              <Pill size={theme.iconSize.xl} color={theme.colors.status.brandVivid} />
               <Text className="mt-4 text-center text-base font-bold text-text-primary">
                 {t('settings.advancedSettings.manageSupplementsEmpty')}
               </Text>
@@ -191,12 +191,12 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
                             width: theme.size['12'],
                             height: theme.size['12'],
                             borderRadius: theme.borderRadius['2xl'],
-                            backgroundColor: theme.colors.status.emerald20,
+                            backgroundColor: theme.colors.status.brandVivid20,
                             alignItems: 'center',
                             justifyContent: 'center',
                           }}
                         >
-                          <Pill size={theme.iconSize.xl} color={theme.colors.status.emerald} />
+                          <Pill size={theme.iconSize.xl} color={theme.colors.status.brandVivid} />
                         </View>
                         <View className="flex-1">
                           <Text className="text-base font-bold text-text-primary">
@@ -312,7 +312,7 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
         items={[
           {
             icon: Plus,
-            iconColor: theme.colors.text.black,
+            iconColor: theme.colors.text.onAccent,
             iconBgColor: theme.colors.accent.primary,
             title: t('settings.advancedSettings.addSupplement'),
             description: t('settings.advancedSettings.addSupplementDescription'),

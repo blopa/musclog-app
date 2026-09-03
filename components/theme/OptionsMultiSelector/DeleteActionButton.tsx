@@ -25,7 +25,7 @@ export const DeleteActionButton: FC<DeleteActionButtonProps> = ({ onPress, selec
         backgroundColor: errorBg,
         borderWidth: theme.borderWidth.medium,
         borderColor: errorBg,
-        shadowColor: theme.colors.text.black,
+        shadowColor: theme.colors.text.onAccent,
         shadowOffset: theme.shadowOffset.md,
         shadowOpacity: theme.colors.opacity.subtle,
         shadowRadius: theme.shadows.radius3.shadowRadius,
@@ -50,10 +50,10 @@ export const DeleteActionButton: FC<DeleteActionButtonProps> = ({ onPress, selec
             gap: theme.spacing.gap.sm,
           }}
         >
-          <Trash2 size={theme.iconSize.sm} color={theme.colors.text.white} />
+          <Trash2 size={theme.iconSize.sm} color={theme.colors.text.primary} />
           <Text
             style={{
-              color: theme.colors.text.white,
+              color: theme.colors.text.primary,
               fontWeight: theme.typography.fontWeight.black,
               fontSize: theme.typography.fontSize.sm,
               textTransform: 'uppercase',

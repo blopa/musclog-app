@@ -158,7 +158,7 @@ describe('getWorkoutIcon', () => {
   it('picks the cardio icon for run/cardio names', () => {
     expect(getWorkoutIcon(theme, 'Morning Run').icon).toBe(Activity);
     expect(getWorkoutIcon(theme, 'CARDIO blast').icon).toBe(Activity);
-    expect(getWorkoutIcon(theme, 'Morning Run').iconBgColor).toBe(theme.colors.status.emerald);
+    expect(getWorkoutIcon(theme, 'Morning Run').iconBgColor).toBe(theme.colors.status.brandVivid);
   });
 
   it('picks the leg icon for leg/squat names', () => {
@@ -170,7 +170,7 @@ describe('getWorkoutIcon', () => {
   it('falls back to the dumbbell icon for anything else, including an empty name', () => {
     expect(getWorkoutIcon(theme, 'Push Day').icon).toBe(Dumbbell);
     expect(getWorkoutIcon(theme, '').icon).toBe(Dumbbell);
-    expect(getWorkoutIcon(theme, '').iconBgColor).toBe(theme.colors.status.indigo600);
+    expect(getWorkoutIcon(theme, '').iconBgColor).toBe(theme.colors.status.indigo);
   });
 
   it('checks cardio before legs, so a name matching both is cardio', () => {

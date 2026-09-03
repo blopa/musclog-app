@@ -111,9 +111,9 @@ export function BarcodeCameraModal({
       onPress={() => setIsBarcodeTextSearchModalVisible(true)}
       className="h-12 w-12 items-center justify-center rounded-full"
       style={{
-        backgroundColor: theme.colors.background.darkGray50,
+        backgroundColor: theme.colors.background.neutralWash,
         borderWidth: theme.borderWidth.thin,
-        borderColor: theme.colors.background.white10,
+        borderColor: theme.colors.background.ink10,
       }}
     >
       <Search size={theme.iconSize.lg} color={theme.colors.text.primary} />
@@ -157,7 +157,7 @@ export function BarcodeCameraModal({
               }}
             />
           ) : (
-            <View style={{ flex: 1, backgroundColor: theme.colors.background.darkGreenSolid }} />
+            <View style={{ flex: 1, backgroundColor: theme.colors.background.tint }} />
           )
         }
         isLoading={barcode.isSearchingBarcode}

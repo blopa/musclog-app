@@ -80,7 +80,7 @@ const getSizeConfig = (theme: Theme) => ({
 
 function getBackground(theme: Theme, variant: ThemeButtonVariant, isDisabled: boolean): string {
   if (isDisabled) {
-    return theme.colors.background.white10;
+    return theme.colors.background.ink10;
   }
 
   const g = (colors: readonly string[]) => `linear-gradient(90deg, ${colors[0]}, ${colors[1]})`;
@@ -108,7 +108,7 @@ function getTextColor(theme: Theme, variant: ThemeButtonVariant, isDisabled: boo
   }
 
   if (variant === 'outline') {
-    return theme.colors.text.gray300;
+    return theme.colors.text.secondary;
   }
 
   if (variant === 'dashed') {
@@ -132,7 +132,7 @@ function getBorder(
     return {
       borderWidth: theme.borderWidth.medium,
       borderStyle: 'solid',
-      borderColor: theme.colors.background.white10,
+      borderColor: theme.colors.background.ink10,
     };
   }
 
@@ -156,7 +156,7 @@ function getBorder(
     return {
       borderWidth: theme.borderWidth.thin,
       borderStyle: 'solid',
-      borderColor: theme.colors.border.emerald,
+      borderColor: theme.colors.border.brand,
     };
   }
 
