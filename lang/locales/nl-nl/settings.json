@@ -5,11 +5,6 @@
     "basicSettings": {
       "title": "Basisinstellingen",
       "subtitle": "Profiel, eenheden en voorkeuren",
-      "appearance": "Uiterlijk",
-      "appTheme": "App-thema",
-      "themeSystem": "Systeem",
-      "themeLight": "Licht",
-      "themeDark": "Donker",
       "localization": "Lokalisatie",
       "language": "Taal",
       "languageSubtitle": "Kies de gewenste taal",
@@ -437,6 +432,10 @@
         "kinetic-volt": {
           "label": "Kinetic Volt",
           "description": "Warme donkere oppervlakken met elektrisch gele accenten"
+        },
+        "kinetic-blush": {
+          "label": "Kinetic Blush",
+          "description": "Zachtroze oppervlakken met frambozenrode accenten"
         }
       }
     }

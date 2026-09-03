@@ -5,11 +5,6 @@
     "basicSettings": {
       "title": "Basic Settings",
       "subtitle": "Profile, units, and preferences",
-      "appearance": "Appearance",
-      "appTheme": "App Theme",
-      "themeSystem": "System",
-      "themeLight": "Light",
-      "themeDark": "Dark",
       "localization": "Localization",
       "language": "Language",
       "languageSubtitle": "Pick preferred language",
@@ -437,6 +432,10 @@
         "kinetic-volt": {
           "label": "Kinetic Volt",
           "description": "Warm dark surfaces with electric yellow accents"
+        },
+        "kinetic-blush": {
+          "label": "Kinetic Blush",
+          "description": "Soft pink surfaces with a raspberry accent"
         }
       }
     }

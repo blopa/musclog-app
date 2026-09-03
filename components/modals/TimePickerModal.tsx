@@ -358,7 +358,7 @@ export function TimePickerModal({
                     >
                       <Text
                         style={{
-                          color: theme.colors.text.onColorful,
+                          color: theme.colors.text.alwaysWhite,
                           fontSize: 15,
                           fontWeight: '700',
                         }}

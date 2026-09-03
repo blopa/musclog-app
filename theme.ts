@@ -6,8 +6,8 @@ import { Appearance } from 'react-native';
 
 import { THEME_IDS, type ThemeId } from './constants/settings';
 import { SettingsService } from './database/services/SettingsService';
-import { THEME_DEFINITIONS } from './theme.registry';
-import { colors, themeColorsById } from './theme.tokens';
+import { DEFAULT_THEME_BY_MODE } from './theme.registry';
+import { themeColorsById } from './theme.tokens';
 import { resolveThemeId } from './utils/themeSelection';
 
 export { addOpacityToHex } from './theme.tokens';
@@ -340,49 +340,6 @@ const staticTokens = {
 } as const;
 
 /**
- * Utility functions for accessing theme values
- */
-
-/**
- * Get a color value from the theme
- * @example getColor('background.primary') => colors.surfaceBase
- */
-export function getColor(path: string): string {
-  const parts = path.split('.');
-  let value: any = theme.colors;
-  for (const part of parts) {
-    value = value[part];
-    if (value === undefined) {
-      console.warn(`Theme color path "${path}" not found`);
-      return colors.surfaceBase;
-    }
-  }
-
-  return value as string;
-}
-
-/**
- * Get a spacing value from the theme
- */
-export function getSpacing(size: keyof typeof theme.spacing.padding): number {
-  return theme.spacing.padding[size];
-}
-
-/**
- * Get a font size from the theme
- */
-export function getFontSize(size: keyof typeof theme.typography.fontSize): number {
-  return theme.typography.fontSize[size];
-}
-
-/**
- * Get a border radius from the theme
- */
-export function getBorderRadius(size: keyof typeof theme.borderRadius): number {
-  return theme.borderRadius[size];
-}
-
-/**
  * Shadows are palette-dependent: `palette.shadow` is the scrim colour, which stays
  * dark in every theme, and the coloured glows follow their accent.
  */
@@ -515,15 +472,9 @@ function createShadows(palette: ThemePalette) {
 
 type ThemePalette = (typeof themeColorsById)[ThemeId];
 
-type SummaryCardBackground = 'default' | 'colorful-gradient';
-
-function createTheme(palette: ThemePalette, summaryCardBackground: SummaryCardBackground) {
+function createTheme(palette: ThemePalette) {
   return {
     ...staticTokens,
-    components: {
-      ...staticTokens.components,
-      dailySummaryCardBackground: summaryCardBackground,
-    },
     colors: {
       ...palette,
       gradients: palette.gradients as unknown as FixGradientTokens<typeof palette.gradients>,
@@ -534,27 +485,13 @@ function createTheme(palette: ThemePalette, summaryCardBackground: SummaryCardBa
 
 export type Theme = ReturnType<typeof createTheme>;
 export const THEMES = Object.fromEntries(
-  THEME_IDS.map((themeId) => [
-    themeId,
-    createTheme(themeColorsById[themeId], THEME_DEFINITIONS[themeId].summaryCardBackground),
-  ])
+  THEME_IDS.map((themeId) => [themeId, createTheme(themeColorsById[themeId])])
 ) as Record<ThemeId, Theme>;
 
-export const kineticDepthTheme = THEMES['kinetic-depth'];
-export const kineticLightTheme = THEMES['kinetic-light'];
-export const kineticShockTheme = THEMES['kinetic-shock'];
-export const kineticVoltTheme = THEMES['kinetic-volt'];
-
-// Compatibility aliases for call sites whose concern is specifically display
-// mode (for example, camera surfaces that must always be dark).
-export const darkTheme = kineticDepthTheme;
-export const lightTheme = kineticLightTheme;
-
-/**
- * The default theme, for the few non-React call sites that cannot resolve the
- * user's preference (see `getTheme` for the async alternative).
- */
-export const theme = kineticDepthTheme;
+// Aliases for the call sites whose concern is specifically display mode — a
+// push notification's accent, or a widget that cannot read the preference.
+export const darkTheme = THEMES[DEFAULT_THEME_BY_MODE.dark];
+export const lightTheme = THEMES[DEFAULT_THEME_BY_MODE.light];
 
 // Type exports for TypeScript
 export type ThemeColors = Theme['colors'];

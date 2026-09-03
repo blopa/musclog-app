@@ -1,43 +1,37 @@
-import { darkTheme, kineticShockTheme, kineticVoltTheme, lightTheme } from '@/theme';
+import { contrast } from '@/theme.audit';
+import { darkTheme, lightTheme, THEMES } from '@/theme';
 
-const relativeLuminance = (hex: string): number => {
-  const channels = hex
-    .slice(1)
-    .match(/.{2}/g)!
-    .map((channel) => parseInt(channel, 16) / 255)
-    .map((channel) => (channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4));
+const kineticShockTheme = THEMES['kinetic-shock'];
+const kineticVoltTheme = THEMES['kinetic-volt'];
 
-  return channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722;
-};
-
-const contrastRatio = (first: string, second: string): number => {
-  const firstLuminance = relativeLuminance(first);
-  const secondLuminance = relativeLuminance(second);
-
-  return (
-    (Math.max(firstLuminance, secondLuminance) + 0.05) /
-    (Math.min(firstLuminance, secondLuminance) + 0.05)
-  );
-};
-
+/**
+ * The Daily Summary card always renders the `colorful-gradient` background; a
+ * theme decides how that reads purely through its gradient stops. These are the
+ * per-theme intentions — the rule that every theme's ink stays legible on its own
+ * stops lives in `theme.audit.js` and is asserted for all of them at once.
+ */
 describe('Daily Summary card theme', () => {
-  it('keeps the established saturated presentation in every dark theme', () => {
+  it('keeps the established saturated sweep in every dark theme', () => {
     expect(darkTheme.colors.gradients.colorfulCard).toEqual(darkTheme.colors.gradients.progress);
     expect(darkTheme.colors.colorfulCard.ink).toBe('#ffffff');
-    expect(darkTheme.components.dailySummaryCardBackground).toBe('colorful-gradient');
-    expect(kineticShockTheme.components.dailySummaryCardBackground).toBe('colorful-gradient');
-    expect(kineticVoltTheme.components.dailySummaryCardBackground).toBe('colorful-gradient');
+    expect(kineticShockTheme.colors.colorfulCard.ink).toBe('#ffffff');
   });
 
-  it('uses the standard surface and matching ink in Kinetic Light', () => {
-    expect(lightTheme.components.dailySummaryCardBackground).toBe('default');
+  it('collapses the sweep to a flat card surface in Kinetic Light', () => {
+    // Kinetic Light wants an ordinary card here. It says so with its stops rather
+    // than by asking the component for a different background variant.
+    expect(lightTheme.colors.gradients.colorfulCard).toEqual([
+      lightTheme.colors.background.card,
+      lightTheme.colors.background.card,
+      lightTheme.colors.background.card,
+    ]);
     expect(lightTheme.colors.colorfulCard.ink).toBe('#30413a');
     expect(lightTheme.colors.colorfulCard.ink70).toBe(lightTheme.colors.text.secondary);
     expect(
-      contrastRatio(lightTheme.colors.background.overlay, lightTheme.colors.colorfulCard.ink70)
+      contrast(lightTheme.colors.background.card, lightTheme.colors.colorfulCard.ink70)
     ).toBeGreaterThanOrEqual(4.5);
     expect(
-      contrastRatio(lightTheme.colors.background.overlay, lightTheme.colors.colorfulCard.ink)
+      contrast(lightTheme.colors.background.card, lightTheme.colors.colorfulCard.ink)
     ).toBeGreaterThanOrEqual(4.5);
   });
 
@@ -49,11 +43,13 @@ describe('Daily Summary card theme', () => {
     ]);
     expect(kineticVoltTheme.colors.colorfulCard.ink).toBe('#151208');
     expect(kineticVoltTheme.colors.colorfulCard.ink70).toBe('#30280d');
+    // Volt's stops are bright enough that its dark ink clears full AA, not just
+    // the audit's display-type floor.
     expect(
       kineticVoltTheme.colors.gradients.colorfulCard.every(
         (stop) =>
-          contrastRatio(stop, kineticVoltTheme.colors.colorfulCard.ink) >= 4.5 &&
-          contrastRatio(stop, kineticVoltTheme.colors.colorfulCard.ink70) >= 4.5
+          contrast(stop, kineticVoltTheme.colors.colorfulCard.ink) >= 4.5 &&
+          contrast(stop, kineticVoltTheme.colors.colorfulCard.ink70) >= 4.5
       )
     ).toBe(true);
   });

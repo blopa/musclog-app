@@ -112,7 +112,7 @@ export function SegmentedControl({
                   minWidth: theme.size['4'],
                 }}
               >
-                <Text className="text-[10px] font-bold leading-none text-text-on-colorful">
+                <Text className="text-[10px] font-bold leading-none text-text-always-white">
                   {option.badge > 9 ? '9+' : option.badge}
                 </Text>
               </View>

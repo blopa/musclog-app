@@ -198,7 +198,11 @@ export function BrowseTemplatesModal({
                   overflow: 'hidden',
                 }}
               >
-                <MaterialIcons name={template.icon} size={24} color="white" />
+                <MaterialIcons
+                  name={template.icon}
+                  size={24}
+                  color={theme.colors.text.alwaysWhite}
+                />
               </LinearGradient>
             </View>
             <View

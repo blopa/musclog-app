@@ -5,11 +5,6 @@
     "basicSettings": {
       "title": "Основные настройки",
       "subtitle": "Профиль, единицы измерения и предпочтения",
-      "appearance": "Внешний вид",
-      "appTheme": "Тема приложения",
-      "themeSystem": "Системная",
-      "themeLight": "Светлая",
-      "themeDark": "Тёмная",
       "localization": "Локализация",
       "language": "Язык",
       "languageSubtitle": "Выберите предпочитаемый язык",
@@ -437,6 +432,10 @@
         "kinetic-volt": {
           "label": "Kinetic Volt",
           "description": "Тёплые тёмные тона с электрически-жёлтыми акцентами"
+        },
+        "kinetic-blush": {
+          "label": "Kinetic Blush",
+          "description": "Нежно-розовые тона с малиновыми акцентами"
         }
       }
     }

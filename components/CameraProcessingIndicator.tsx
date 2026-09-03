@@ -78,7 +78,7 @@ export const CameraProcessingIndicator = ({
         <View
           className="absolute inset-0 rounded-full border-4"
           style={{
-            borderColor: theme.colors.overlay.onColorful90,
+            borderColor: theme.colors.overlay.alwaysWhite90,
           }}
         />
 
@@ -86,10 +86,10 @@ export const CameraProcessingIndicator = ({
         <Animated.View
           className="absolute inset-0 rounded-full border-4"
           style={{
-            borderTopColor: theme.colors.overlay.onColorful70,
+            borderTopColor: theme.colors.overlay.alwaysWhite70,
             borderRightColor: theme.colors.status.indigo,
             borderBottomColor: theme.colors.status.indigo,
-            borderLeftColor: theme.colors.overlay.onColorful70,
+            borderLeftColor: theme.colors.overlay.alwaysWhite70,
             transform: [{ rotate: spin }],
           }}
         />
@@ -104,7 +104,7 @@ export const CameraProcessingIndicator = ({
               width={32}
               height={32}
               fill="none"
-              stroke={theme.colors.overlay.onColorful70}
+              stroke={theme.colors.overlay.alwaysWhite70}
               strokeWidth={1.8}
               viewBox="0 0 24 24"
             >
@@ -122,14 +122,14 @@ export const CameraProcessingIndicator = ({
       <View className="mt-6">
         <Text
           className="text-center text-xl font-semibold"
-          style={{ color: theme.colors.text.onColorful }}
+          style={{ color: theme.colors.text.alwaysWhite }}
         >
           {getProcessingText()}
         </Text>
 
         <Text
           className="mt-2 text-center text-xs uppercase tracking-widest"
-          style={{ color: theme.colors.overlay.onColorful70 }}
+          style={{ color: theme.colors.overlay.alwaysWhite70 }}
         >
           {getSubText()}
         </Text>

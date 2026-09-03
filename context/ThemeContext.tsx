@@ -11,7 +11,6 @@ import { getThemeMode, resolveThemeId } from '@/utils/themeSelection';
 type ThemeContextValue = {
   theme: Theme;
   themeId: ThemeId;
-  isDark: boolean;
   themeMode: 'dark' | 'light';
 };
 
@@ -32,12 +31,10 @@ const THEME_VARIABLES = Object.fromEntries(
 ) as Record<ThemeId, ReturnType<typeof vars>>;
 
 function valueForTheme(themeId: ThemeId): ThemeContextValue {
-  const themeMode = getThemeMode(themeId);
   return {
     theme: THEMES[themeId],
     themeId,
-    themeMode,
-    isDark: themeMode === 'dark',
+    themeMode: getThemeMode(themeId),
   };
 }
 
@@ -89,8 +86,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
 /**
  * Pins one visual surface to a named theme without changing the app preference.
+ *
  * Context and NativeWind variables move together, so inline and className styles
- * can never observe different palettes inside the scope.
+ * inside the scope's subtree can never observe different palettes. Content that
+ * leaves that subtree does not follow: on web a modal portalled to `<body>` sees
+ * the `:root` variables `ThemeProvider` publishes, which are the app's theme.
  */
 export function ThemeScope({ children, themeId }: { children: ReactNode; themeId: ThemeId }) {
   const value = useMemo(() => valueForTheme(themeId), [themeId]);

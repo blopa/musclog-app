@@ -128,7 +128,7 @@ export function MealEstimationModal({
             backgroundColor: theme.colors.background.ink10,
           }}
         >
-          <Camera size={16} color="white" />
+          <Camera size={16} color={theme.colors.text.primary} />
           <Text className="text-sm font-medium text-text-primary">
             {t('nutrition.mealEstimation.retake')}
           </Text>

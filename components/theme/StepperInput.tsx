@@ -183,7 +183,7 @@ export const StepperInput: FC<StepperInputProps> = ({
         >
           <Minus
             size={theme.iconSize.lg}
-            color={isPortion ? theme.colors.text.onColorful : theme.colors.accent.primary}
+            color={isPortion ? theme.colors.text.alwaysWhite : theme.colors.accent.primary}
           />
         </Pressable>
         {editing ? (
@@ -269,7 +269,7 @@ export const StepperInput: FC<StepperInputProps> = ({
         >
           <Plus
             size={theme.iconSize.lg}
-            color={isPortion ? theme.colors.text.onColorful : theme.colors.accent.primary}
+            color={isPortion ? theme.colors.text.alwaysWhite : theme.colors.accent.primary}
           />
         </Pressable>
       </View>

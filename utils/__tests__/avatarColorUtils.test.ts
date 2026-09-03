@@ -1,4 +1,4 @@
-import { themeColors } from '@/theme.tokens';
+import { darkThemeColors as themeColors } from '@/theme.tokens';
 import type { AvatarColor } from '@/types/AvatarColor';
 
 import { getAvatarBackgroundColor, getAvatarColor } from '@/utils/avatarColorUtils';

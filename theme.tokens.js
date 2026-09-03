@@ -1,6 +1,6 @@
 'use strict';
 
-const { THEME_DEFINITIONS, THEME_IDS } = require('./theme.registry');
+const { DEFAULT_THEME_BY_MODE, THEME_DEFINITIONS, THEME_IDS } = require('./theme.registry');
 
 function addOpacityToHex(hexColor, opacity) {
   // Remove # if present
@@ -158,7 +158,7 @@ function createColors(palette) {
     // Border alphas are tuned per theme (see `alphas`) so the composite lands at
     // the same visual weight on a near-black card and a near-white one.
     textTertiaryFill: addOpacityToHex(palette.textTertiary, alphas.hairlineFill),
-    textTertiarySoft: addOpacityToHex(palette.textTertiary, alphas.borderGray600),
+    textTertiarySoft: addOpacityToHex(palette.textTertiary, alphas.borderSubtle),
     textTertiaryBorder: addOpacityToHex(palette.textTertiary, alphas.borderDefault),
 
     // --- Fixed white, for ink and surfaces that stay white in every theme ---
@@ -284,8 +284,10 @@ function createThemeColors(colors) {
       // Ink printed ON a solid accent fill — near-black on the dark theme's light
       // greens, white on the light theme's dark ones.
       onAccent: colors.inkOnAccent,
-      // Fixed-white token: always pure white regardless of theme, for text on colorful gradient surfaces
-      onColorful: colors.alwaysWhite,
+      // Always pure white regardless of theme: ink on a photo, a camera preview or
+      // any other surface that is not the app's own background. Gradient-card ink
+      // is `colorfulCard.*`, which does follow the theme.
+      alwaysWhite: colors.alwaysWhite,
       // Text colors with opacity
       primary12: colors.textPrimaryAlpha12, // Primary with 12.5% opacity
       primary20: colors.textPrimaryAlpha20, // Primary with 20% opacity
@@ -454,12 +456,12 @@ function createThemeColors(colors) {
       ink5: colors.textPrimaryAlpha05, // On-surface ink with 5% opacity
       backdrop: colors.scrimAlpha80, // Modal backdrop
       backdrop90: colors.scrimAlpha90, // Modal backdrop, stronger
-      // Fixed-white tokens: always pure white regardless of theme, for content on
-      // colorful gradients and camera previews
-      onColorful20: colors.alwaysWhiteAlpha20,
-      onColorful30: colors.alwaysWhiteAlpha30,
-      onColorful70: colors.alwaysWhiteAlpha70,
-      onColorful90: colors.alwaysWhiteAlpha90,
+      // Always pure white regardless of theme, for content over photos and camera
+      // previews.
+      alwaysWhite20: colors.alwaysWhiteAlpha20,
+      alwaysWhite30: colors.alwaysWhiteAlpha30,
+      alwaysWhite70: colors.alwaysWhiteAlpha70,
+      alwaysWhite90: colors.alwaysWhiteAlpha90,
     },
 
     // Opacity values (for use in style objects)
@@ -523,26 +525,17 @@ const themeColorsById = Object.fromEntries(
   THEME_IDS.map((themeId) => [themeId, createThemeColors(themeColorSets[themeId])])
 );
 
-const darkColors = themeColorSets['kinetic-depth'];
-const lightColors = themeColorSets['kinetic-light'];
-const darkThemeColors = themeColorsById['kinetic-depth'];
-const lightThemeColors = themeColorsById['kinetic-light'];
+const darkColors = themeColorSets[DEFAULT_THEME_BY_MODE.dark];
+const lightColors = themeColorSets[DEFAULT_THEME_BY_MODE.light];
+const darkThemeColors = themeColorsById[DEFAULT_THEME_BY_MODE.dark];
 
 module.exports = {
   addOpacityToHex,
-  mixHex,
-  createColors,
-  createThemeColors,
-  themeColorSets,
   themeColorsById,
+  // The two mode defaults, for the pre-boot surfaces and Tailwind's static build.
   darkColors,
   lightColors,
   darkThemeColors,
-  lightThemeColors,
-  // Default exports stay on the dark palette: Tailwind's static build, the
-  // pre-boot splash screens and the token tests all consume these.
-  colors: darkColors,
-  themeColors: darkThemeColors,
 };
 
 /**
@@ -586,7 +579,7 @@ const TAILWIND_TOKEN_MAP = {
     accent: (t) => t.text.accent,
     accentLight: (t) => t.text.accentLight,
     'on-accent': (t) => t.text.onAccent,
-    'on-colorful': (t) => t.text.onColorful,
+    'always-white': (t) => t.text.alwaysWhite,
   },
   accent: {
     primary: (t) => t.accent.primary,
@@ -664,12 +657,11 @@ function createCssVariables(themeColors) {
 }
 
 module.exports.createTailwindColors = createTailwindColors;
-module.exports.createCssVariables = createCssVariables;
 module.exports.themeCssVariables = Object.fromEntries(
   THEME_IDS.map((themeId) => [themeId, createCssVariables(themeColorsById[themeId])])
 );
-module.exports.darkCssVariables = module.exports.themeCssVariables['kinetic-depth'];
-module.exports.lightCssVariables = module.exports.themeCssVariables['kinetic-light'];
+module.exports.darkCssVariables = module.exports.themeCssVariables[DEFAULT_THEME_BY_MODE.dark];
+module.exports.lightCssVariables = module.exports.themeCssVariables[DEFAULT_THEME_BY_MODE.light];
 
 /**
  * The same variable map for NativeWind's runtime `vars()` helper.

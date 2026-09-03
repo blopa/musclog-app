@@ -3,6 +3,7 @@ import {
   Beef,
   Droplets,
   Flame,
+  Heart,
   LayoutGrid,
   Leaf,
   Monitor,
@@ -66,12 +67,15 @@ const HOME_SUMMARY_CARD_ICON: Record<HomeSummaryCard, typeof LayoutGrid> = {
 /** Appearance options, in the order they are offered. */
 const THEME_OPTIONS = ['system', ...THEME_IDS] as const satisfies readonly ThemeOption[];
 
+// Exhaustive by type: adding a palette to the registry fails the build here until
+// it has an icon, which is the reminder that a theme needs a face in the picker.
 const THEME_ICON: Record<ThemeOption, typeof Monitor> = {
   system: Monitor,
   'kinetic-depth': Moon,
   'kinetic-light': Sun,
   'kinetic-shock': Palette,
   'kinetic-volt': Zap,
+  'kinetic-blush': Heart,
 };
 
 /** Convert a 5-char binary string to an array of visible macro keys. */

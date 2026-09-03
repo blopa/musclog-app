@@ -166,17 +166,19 @@ This repository serves two distinct purposes that share the same Expo Router pro
 
 - **Theme**: Use components from `components/theme/` and follow `theme.ts` conventions. User
   preferences are named palette IDs (`kinetic-depth`, `kinetic-light`, `kinetic-shock`,
-  `kinetic-volt`) plus
-  `system`; never reduce the stored preference to a boolean. System resolves to Kinetic Light or
-  Kinetic Depth, while `themeMode` remains the derived light/dark value for status bars and
-  NativeWind `dark:` variants. `theme.registry.js` is the canonical catalogue: it owns every theme
-  ID, mode, primitive palette, and component-level presentation choice; `ThemeId`, semantic token
-  trees, CSS/native variables, and `THEMES` are derived from it. Add a palette there rather than
-  editing parallel maps. `ThemeProvider` resolves the preference once, and every `useTheme*` hook
-  selects from that context value. A surface that must pin a palette (currently the camera
-  viewfinder) uses `ThemeScope`, which changes inline tokens and NativeWind variables together — do
-  not create another forced-theme context. Theme-specific component presentation belongs in
-  `theme.components`, not in a component branch on `themeMode`.
+  `kinetic-volt`, `kinetic-blush`) plus
+  `system`; never reduce the stored preference to a boolean. `DEFAULT_THEME_BY_MODE` in the registry
+  is the single answer to "the system says light, now what?" — do not spell those two IDs anywhere
+  else. `themeMode` remains the derived light/dark value for status bars and NativeWind `dark:`
+  variants. `theme.registry.js` is the canonical catalogue: it owns every theme ID, mode and
+  primitive palette; `ThemeId`, semantic token trees, CSS/native variables, and `THEMES` are derived
+  from it. Add a palette there rather than editing parallel maps, and run `npm run check-palette`.
+  A theme carries no component-level presentation flags: anything a component would branch on is
+  expressed as palette values instead (a theme wanting a flat summary card sets its gradient stops
+  flat). `ThemeProvider` resolves the preference once, and every `useTheme*` hook selects from that
+  context value. A surface that must pin a palette (currently the camera viewfinder) wraps it in
+  `ThemeScope` and everything inside keeps using the ordinary `useTheme()` — do not create another
+  forced-theme context and do not read `darkTheme`/`lightTheme` from a React component.
 - **Navigation destinations are table-driven — adding one is a data edit, not a new JSX branch**: `NAV_ITEM_KEYS` (`constants/settings.ts`) is the ordered, canonical list and `NavItemKey` is **derived** from it (`(typeof NAV_ITEM_KEYS)[number]`), so the type and the enumeration can never drift. Everything else hangs off that:
   - `NAV_DESTINATIONS` (`components/navigation/navDestinations.ts`) holds each destination's icon, bottom-bar `labelKey`, account-menu `menuLabelKey` and `route` — the facts **all three** listing surfaces need. A destination picks its icon and route exactly once.
   - `NAV_SLOTS` (`components/NavigationMenu.tsx`) holds only bottom-bar routing modifiers (`activePath` when it must be broader than the route, `alsoActiveFor`/`replace`/`prefetch`/`navigateWhenActive`); every slot renders through the one `NavSlotButton`.

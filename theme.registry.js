@@ -4,14 +4,17 @@
  * The canonical catalogue of selectable themes.
  *
  * This file stays plain JavaScript because both the React Native bundle and
- * Tailwind's Node process consume it. A theme's identity, display mode,
- * component-level presentation choices and primitive palette belong together;
- * every downstream representation is derived from this object.
+ * Tailwind's Node process consume it. A theme's identity, display mode and
+ * primitive palette belong together; every downstream representation is derived
+ * from this object.
+ *
+ * A theme carries no component-level presentation flags. Anything a component
+ * would branch on is expressed as palette values instead — a theme that wants a
+ * flat summary card sets its gradient stops flat (see `colorfulCardBlend`).
  */
 const THEME_DEFINITIONS = /** @type {const} */ ({
   'kinetic-depth': {
     mode: 'dark',
-    summaryCardBackground: 'colorful-gradient',
     palette: {
       surfaceBase: '#091310',
       surfaceCard: '#131d18',
@@ -47,7 +50,7 @@ const THEME_DEFINITIONS = /** @type {const} */ ({
       alphas: {
         borderDefault: 0.26,
         borderLight: 0.23,
-        borderGray600: 0.2,
+        borderSubtle: 0.2,
         hairlineFill: 0.05,
       },
       colorfulCardBlend: { start: 1, middle: 1, end: 1 },
@@ -56,7 +59,6 @@ const THEME_DEFINITIONS = /** @type {const} */ ({
   },
   'kinetic-light': {
     mode: 'light',
-    summaryCardBackground: 'default',
     palette: {
       surfaceBase: '#fafcfb',
       surfaceCard: '#eef2f0',
@@ -92,16 +94,18 @@ const THEME_DEFINITIONS = /** @type {const} */ ({
       alphas: {
         borderDefault: 0.34,
         borderLight: 0.55,
-        borderGray600: 0.26,
+        borderSubtle: 0.26,
         hairlineFill: 0.09,
       },
-      colorfulCardBlend: { start: 0.14, middle: 0.18, end: 0.22 },
+      // A flat gradient: every stop collapses to `surfaceCard`, so the summary
+      // card renders as an ordinary card without the component branching on a
+      // presentation flag. See `gradients.landingBackground` for the same idiom.
+      colorfulCardBlend: { start: 0, middle: 0, end: 0 },
       colorfulCardUsesSurfaceInk: true,
     },
   },
   'kinetic-shock': {
     mode: 'dark',
-    summaryCardBackground: 'colorful-gradient',
     palette: {
       surfaceBase: '#160b14',
       surfaceCard: '#21101e',
@@ -138,7 +142,7 @@ const THEME_DEFINITIONS = /** @type {const} */ ({
       alphas: {
         borderDefault: 0.3,
         borderLight: 0.28,
-        borderGray600: 0.22,
+        borderSubtle: 0.22,
         hairlineFill: 0.06,
       },
       colorfulCardBlend: { start: 1, middle: 1, end: 1 },
@@ -147,7 +151,6 @@ const THEME_DEFINITIONS = /** @type {const} */ ({
   },
   'kinetic-volt': {
     mode: 'dark',
-    summaryCardBackground: 'colorful-gradient',
     palette: {
       surfaceBase: '#151208',
       surfaceCard: '#201b0c',
@@ -185,15 +188,76 @@ const THEME_DEFINITIONS = /** @type {const} */ ({
       alphas: {
         borderDefault: 0.3,
         borderLight: 0.28,
-        borderGray600: 0.22,
+        borderSubtle: 0.22,
         hairlineFill: 0.06,
       },
       colorfulCardBlend: { start: 1, middle: 1, end: 1 },
       colorfulCardUsesSurfaceInk: false,
     },
   },
+  'kinetic-blush': {
+    mode: 'light',
+    palette: {
+      surfaceBase: '#fff7fa',
+      surfaceCard: '#fbe9f1',
+      surfaceRaised: '#f2d6e3',
+      surfaceTint: '#fadeeb',
+      surfaceAccent: '#eec0d6',
+      borderHairline: '#d9b3c5',
+
+      textPrimary: '#2b101d',
+      textSecondary: '#5c2b40',
+      textTertiary: '#6a3549',
+
+      brandPrimary: '#c2185b',
+      brandVivid: '#ad1457',
+      brandBright: '#d81b60',
+      brandPale: '#b81a5c',
+      brandDeep: '#96114b',
+      brandSurface: '#7a0c3d',
+
+      statusError: '#c62222',
+      statusRose: '#b3123f',
+      statusWarning: '#b4530a',
+      statusAmber: '#8a6100',
+      statusInfo: '#1d6fd6',
+      statusIndigo: '#4f46e5',
+      statusPurple: '#8626d4',
+      statusPink: '#b5179e', // Magenta, not pink: the brand IS pink here, so
+      // macros.carbs (brandVivid) and macros.fiber (statusPink) would otherwise
+      // be the same swatch in a shared legend. Same reason as Kinetic Shock.
+
+      inkOnAccent: '#ffffff',
+      scrimBase: '#2b101d',
+      surfacePlaceholder: '#eed3de',
+
+      alphas: {
+        borderDefault: 0.34,
+        borderLight: 0.55,
+        borderSubtle: 0.26,
+        hairlineFill: 0.09,
+      },
+      // A light theme that still wants the summary card to sweep — a pale wash of
+      // the palette rather than the flat card Kinetic Light chooses. Display mode
+      // does not decide this; the stops do.
+      colorfulCardBlend: { start: 0.16, middle: 0.14, end: 0.2 },
+      colorfulCardUsesSurfaceInk: true,
+    },
+  },
 });
 
 const THEME_IDS = Object.freeze(Object.keys(THEME_DEFINITIONS));
 
-module.exports = { THEME_DEFINITIONS, THEME_IDS };
+/**
+ * Which named theme a display mode falls back to.
+ *
+ * This is the answer to "the system says light, now what?", and it is also what
+ * `darkTheme`/`lightTheme`, `darkColors`/`lightColors` and the Tailwind base
+ * variables mean. One definition so those cannot drift apart.
+ */
+const DEFAULT_THEME_BY_MODE = Object.freeze({
+  dark: 'kinetic-depth',
+  light: 'kinetic-light',
+});
+
+module.exports = { DEFAULT_THEME_BY_MODE, THEME_DEFINITIONS, THEME_IDS };

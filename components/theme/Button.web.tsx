@@ -121,7 +121,7 @@ function getTextColor(theme: Theme, variant: ThemeButtonVariant, isDisabled: boo
     return theme.colors.text.primary;
   }
 
-  return theme.colors.text.onColorful;
+  return theme.colors.text.alwaysWhite;
 }
 
 function getBorder(

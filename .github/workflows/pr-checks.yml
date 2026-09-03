@@ -37,6 +37,11 @@ jobs:
       - name: Check types
         run: npm run typecheck
 
+      # The same rules the test suite asserts; this step is here for the readable
+      # report when a palette change fails.
+      - name: Check palette
+        run: npm run check-palette -- --quiet
+
 # maybe enable these later, but not now
 #      - name: Check release version sync
 #        run: npm run check-version-sync

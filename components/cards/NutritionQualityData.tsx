@@ -107,7 +107,7 @@ function NovaRow({ group, description }: { group: number; description: string })
     >
       <View
         className="h-10 w-10 items-center justify-center rounded-xl"
-        style={{ backgroundColor: 'rgba(255,255,255,0.07)' }}
+        style={{ backgroundColor: theme.colors.background.ink5 }}
       >
         <Layers size={18} color={theme.colors.text.secondary} />
       </View>
@@ -161,7 +161,7 @@ function LabelsRow({ activeLabels }: { activeLabels: typeof LABEL_KEYS }) {
     >
       <View
         className="h-10 w-10 items-center justify-center rounded-xl"
-        style={{ backgroundColor: 'rgba(255,255,255,0.07)' }}
+        style={{ backgroundColor: theme.colors.background.ink5 }}
       >
         <Tag size={18} color={theme.colors.text.secondary} />
       </View>

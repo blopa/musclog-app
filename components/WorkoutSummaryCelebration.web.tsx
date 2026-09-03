@@ -363,7 +363,7 @@ export function WorkoutSummaryCelebration({
           borderRadius: theme.borderRadius.xl,
           border: 'none',
           background: gradientCtaStr,
-          color: theme.colors.text.onColorful,
+          color: theme.colors.text.alwaysWhite,
           fontSize: theme.typography.fontSize.base,
           fontWeight: theme.typography.fontWeight.bold,
           cursor: 'pointer',
@@ -372,7 +372,7 @@ export function WorkoutSummaryCelebration({
           letterSpacing: '0.05em',
         }}
       >
-        <Home size={theme.iconSize.md} color={theme.colors.text.onColorful} />
+        <Home size={theme.iconSize.md} color={theme.colors.text.alwaysWhite} />
         <span>{t('workoutSummary.goHome')}</span>
       </button>
 

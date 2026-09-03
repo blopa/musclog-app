@@ -1,8 +1,69 @@
-import { Images, Lightbulb, LightbulbOff, X } from 'lucide-react-native';
+import { Images, Lightbulb, LightbulbOff, Search, X } from 'lucide-react-native';
 import type { ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
+
+type SmartCameraRoundButtonProps = {
+  children: ReactNode;
+  disabled?: boolean;
+  onPress: () => void;
+  /** Dims the button without disabling it — the AI context button uses this. */
+  opacity?: number;
+  /** `sm` for the top row, `md` for the bottom-right slot. */
+  size?: 'sm' | 'md';
+};
+
+/**
+ * The circular control on the camera chrome.
+ *
+ * It reads its own colours, so a caller that builds it outside the viewfinder's
+ * `ThemeScope` still gets the pinned palette: the hook runs where the element is
+ * rendered, not where it was constructed.
+ */
+export function SmartCameraRoundButton({
+  children,
+  disabled = false,
+  onPress,
+  opacity,
+  size = 'sm',
+}: SmartCameraRoundButtonProps) {
+  const theme = useTheme();
+
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      className={`${size === 'sm' ? 'h-10 w-10' : 'h-12 w-12'} items-center justify-center rounded-full`}
+      style={{
+        backgroundColor: theme.colors.background.neutralWash,
+        borderWidth: theme.borderWidth.thin,
+        borderColor: theme.colors.background.ink10,
+        ...(opacity === undefined ? {} : { opacity }),
+      }}
+    >
+      {children}
+    </Pressable>
+  );
+}
+
+/** Opens the manual barcode entry sheet. Identical in both camera modals. */
+export function SmartCameraTextSearchButton({ onPress }: { onPress: () => void }) {
+  const theme = useTheme();
+
+  return (
+    <SmartCameraRoundButton size="md" onPress={onPress}>
+      <Search size={theme.iconSize.lg} color={theme.colors.text.primary} />
+    </SmartCameraRoundButton>
+  );
+}
+
+/** Stands in for the live preview when the camera is not mounted. */
+export function SmartCameraPlaceholder() {
+  const theme = useTheme();
+
+  return <View style={{ backgroundColor: theme.colors.background.tint, flex: 1 }} />;
+}
 
 type SmartCameraTopActionsProps = {
   onClose: () => void;
@@ -24,37 +85,27 @@ export function SmartCameraTopActions({
   onFlashToggle,
 }: SmartCameraTopActionsProps) {
   const theme = useTheme();
-  const roundButtonStyle = {
-    backgroundColor: theme.colors.background.neutralWash,
-    borderWidth: theme.borderWidth.thin,
-    borderColor: theme.colors.background.ink10,
-  };
 
   return (
     <View className="relative z-20 flex-row items-center justify-between px-4 pb-2 pt-4">
       {/* Close stays enabled while an action runs — if a native capture hangs, the
           user must still be able to leave the modal. */}
-      <Pressable
-        onPress={onClose}
-        className="h-10 w-10 items-center justify-center rounded-full"
-        style={roundButtonStyle}
-      >
+      <SmartCameraRoundButton onPress={onClose}>
         <X size={theme.iconSize.lg} color={theme.colors.text.primary} />
-      </Pressable>
+      </SmartCameraRoundButton>
 
       {onFlashToggle ? (
-        <Pressable
+        <SmartCameraRoundButton
           onPress={onFlashToggle}
           disabled={controlsLocked}
-          className="h-10 w-10 items-center justify-center rounded-full"
-          style={[roundButtonStyle, { opacity: controlsLocked ? theme.colors.opacity.medium : 1 }]}
+          opacity={controlsLocked ? theme.colors.opacity.medium : 1}
         >
           {flashEnabled ? (
             <Lightbulb size={theme.iconSize.lg} color={theme.colors.text.primary} />
           ) : (
             <LightbulbOff size={theme.iconSize.lg} color={theme.colors.text.primary} />
           )}
-        </Pressable>
+        </SmartCameraRoundButton>
       ) : null}
     </View>
   );

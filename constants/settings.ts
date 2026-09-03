@@ -373,24 +373,8 @@ export type NavItemKeyList = readonly NavItemKey[] & { length: (typeof NAV_ITEM_
 export type Units = 'metric' | 'imperial';
 export type ThemeId = keyof typeof THEME_DEFINITIONS;
 export const THEME_IDS = REGISTRY_THEME_IDS as readonly ThemeId[];
+// Reading and normalizing the stored value lives in `utils/themeSelection`.
 export type ThemeOption = 'system' | ThemeId;
-
-/** Preserve preferences written before themes gained stable, named identities. */
-export function normalizeThemeOption(value: string | null | undefined): ThemeOption {
-  if (value === 'dark') {
-    return 'kinetic-depth';
-  }
-
-  if (value === 'light') {
-    return 'kinetic-light';
-  }
-
-  if (value === 'system' || THEME_IDS.includes(value as ThemeId)) {
-    return value as ThemeOption;
-  }
-
-  return 'system';
-}
 export type ProgressionMode = 'reps_first' | 'weight_first';
 export type FoodSearchSource = 'both' | 'openfood' | 'usda' | 'musclog' | 'none';
 export type FoodSource = 'user' | 'usda' | 'ai' | 'openfood' | 'foundation' | 'musclog';

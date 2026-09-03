@@ -162,10 +162,11 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Fitness profile: weight, height, body fat %, goal type, activity level, experience level
 - Language selection and full multilingual support for English, Spanish, Dutch, Brazilian Portuguese, and Russian, including the built-in exercise catalogue
 - Metric or imperial units applied consistently throughout the app
-- Named theme selection: Kinetic Depth, Kinetic Light, Kinetic Shock, or Kinetic Volt, plus a System option that
-  follows the device's light/dark appearance
-- Home summary card choice: Daily Summary vs. Weekly Streak; the Daily Summary uses the standard
-  card surface in Kinetic Light and a contrast-matched colorful gradient in the dark themes
+- Named theme selection: Kinetic Depth, Kinetic Light, Kinetic Shock, Kinetic Volt, or Kinetic Blush,
+  plus a System option that follows the device's light/dark appearance
+- Home summary card choice: Daily Summary vs. Weekly Streak; the Daily Summary's gradient is chosen
+  by the active theme — a flat card surface in Kinetic Light, a contrast-matched colorful sweep in
+  the dark themes and in Kinetic Blush
 - Configurable AI provider (OpenAI / Google Gemini / local LLM) with model and API key settings
 - Food search source configuration
 - Toggle: OCR before AI, intuitive eating mode, weight prediction, daily prompts, cycle tracking

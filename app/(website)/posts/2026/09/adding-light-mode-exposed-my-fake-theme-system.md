@@ -2,7 +2,7 @@
 title: 'Adding light mode exposed my fake theme system'
 date: '2026-09-03'
 category: 'engineering'
-description: 'Musclog already had a theme file. Then I added four selectable palettes and discovered that colors, NativeWind variables, system mode, camera overlays, and component decisions were all separate systems pretending to be one.'
+description: 'Musclog already had a theme file. Then I added five selectable palettes and discovered that colors, NativeWind variables, system mode, camera overlays, and component decisions were all separate systems pretending to be one.'
 tags: ['Musclog', 'React Native', 'Expo', 'NativeWind', 'TypeScript', 'Design Systems']
 ---
 
@@ -12,7 +12,7 @@ There was a `theme.ts`, components called `useTheme()`, and a dark palette that 
 
 That is roughly how it started. It is not how it ended.
 
-The moment the app could switch between Kinetic Depth, Kinetic Light, Kinetic Shock, and Kinetic Volt, every shortcut that had been harmless with one palette became visible. Some components followed the selected theme through inline styles. Others followed NativeWind's binary dark mode. Portalled modals lived outside the View carrying the variables. Camera controls needed to stay light even when the app became light. One card had quietly decided that “light mode” and “do not use a gradient” were the same fact.
+The moment the app could switch between Kinetic Depth, Kinetic Light, Kinetic Shock, Kinetic Volt, and Kinetic Blush, every shortcut that had been harmless with one palette became visible. Some components followed the selected theme through inline styles. Others followed NativeWind's binary dark mode. Portalled modals lived outside the View carrying the variables. Camera controls needed to stay light even when the app became light. One card had quietly decided that “light mode” and “do not use a gradient” were the same fact.
 
 The colors were the easy part. The real job was making the app have exactly one answer to a deceptively simple question:
 
@@ -54,7 +54,6 @@ So the theme system now begins with one boring plain-JavaScript registry:
 const THEME_DEFINITIONS = {
   'kinetic-depth': {
     mode: 'dark',
-    summaryCardBackground: 'colorful-gradient',
     palette: {
       surfaceBase: '#091310',
       surfaceCard: '#131d18',
@@ -63,20 +62,26 @@ const THEME_DEFINITIONS = {
       // ...the rest of the primitive palette
     },
   },
-  'kinetic-light': {
+  'kinetic-blush': {
     mode: 'light',
-    summaryCardBackground: 'default',
     palette: {
-      surfaceBase: '#fafcfb',
-      surfaceCard: '#eef2f0',
-      textPrimary: '#0f1a16',
-      brandPrimary: '#0e7a54',
+      surfaceBase: '#fff7fa',
+      surfaceCard: '#fbe9f1',
+      textPrimary: '#2b101d',
+      brandPrimary: '#c2185b',
     },
   },
 };
 
 const THEME_IDS = Object.freeze(Object.keys(THEME_DEFINITIONS));
+
+const DEFAULT_THEME_BY_MODE = Object.freeze({
+  dark: 'kinetic-depth',
+  light: 'kinetic-light',
+});
 ```
+
+`DEFAULT_THEME_BY_MODE` is small and easy to skip past, and it was the last thing I fixed. “Which theme does light mean?” had been written out in five different files: the System resolver, the legacy-preference migration, the `darkTheme`/`lightTheme` aliases, the pre-boot color set, and Tailwind's base variables. All five agreed, which is exactly what makes that kind of duplication survive review.
 
 It is JavaScript rather than TypeScript for a practical reason: Metro consumes it for the app and Node consumes it while Tailwind builds the stylesheet. Making either side maintain a translated copy would put the duplication straight back.
 
@@ -86,10 +91,7 @@ Everything else is derived. `ThemeId` comes from the registry keys. The semantic
 export type ThemeId = keyof typeof THEME_DEFINITIONS;
 
 export const THEMES = Object.fromEntries(
-  THEME_IDS.map((themeId) => [
-    themeId,
-    createTheme(themeColorsById[themeId], THEME_DEFINITIONS[themeId].summaryCardBackground),
-  ])
+  THEME_IDS.map((themeId) => [themeId, createTheme(themeColorsById[themeId])])
 ) as Record<ThemeId, Theme>;
 ```
 
@@ -114,7 +116,7 @@ function createColors(palette) {
       primary: palette.textPrimary,
       secondary: palette.textSecondary,
       tertiary: palette.textTertiary,
-      black: palette.inkOnAccent,
+      onAccent: palette.inkOnAccent,
     },
     accent: {
       primary: palette.brandPrimary,
@@ -126,13 +128,13 @@ function createColors(palette) {
 
 This is the distinction that made light mode possible without painting every screen individually. A component asks for the _job_ a color performs, not the hue it happened to have in the original dark design.
 
-`text.black` is a slightly unfortunate historical name, but its job is “ink on a solid accent”. In the dark emerald theme that ink is near-black. In Kinetic Light, whose accents have to become darker to remain visible on a bright surface, it is white. The role stays stable while its literal lightness flips.
+That key used to be called `text.black`, which is a good example of the problem in miniature. Its job is “ink on a solid accent”. In the dark emerald theme that ink is near-black. In Kinetic Light and Kinetic Blush, whose accents have to become darker to stay visible on a bright surface, it is white. A name describing the hue was wrong in three of five themes; a name describing the role is right in all of them.
 
 The same applies to translucent borders. `border-white/10` looks reasonable on dark green and disappears completely on white. `border-ink/10` means “ten percent of the current on-surface ink”, which survives both.
 
 ## Resolving “System” once
 
-There are five choices in Settings but only four palettes. “System” means Kinetic Light when the operating system is light and Kinetic Depth otherwise.
+There are six choices in Settings but only five palettes. “System” means Kinetic Light when the operating system is light and Kinetic Depth otherwise.
 
 Originally, each hook resolved that independently:
 
@@ -205,6 +207,25 @@ The camera surface uses `<ThemeScope themeId="kinetic-depth">`. Context tokens a
 
 That boundary matters. “This feature is always dark” spreads quickly. “This photographic surface owns a dark visual environment” is precise enough to stay contained.
 
+It took me a second pass to actually believe my own abstraction. The first version installed the scope and then, in the same component, wrote `const theme = darkTheme` and read the palette straight out of the module. It rendered correctly, because the two happened to agree — which is the worst possible outcome, since nothing would have told me when they stopped. The shell now renders a body component inside the scope, and that body calls the same `useTheme()` as every other component in the app:
+
+```tsx
+export function SmartCameraShell(props: SmartCameraShellProps) {
+  return (
+    <FullScreenModal /* ... */>
+      <ThemeScope themeId="kinetic-depth">
+        <SmartCameraShellBody {...props} />
+      </ThemeScope>
+      {props.permissionGranted ? props.children : null}
+    </FullScreenModal>
+  );
+}
+```
+
+The `children` sitting outside the scope is deliberate: those are the nutrition detail modals that open on top of the camera, and they are ordinary app surfaces. Having to write that as a separate line, rather than as a comment explaining a nested `View`, is what made me notice it was a decision at all.
+
+The same subtlety bites one level down. The button beside the shutter was built as a value in the modal's own body, outside the scope, so its `useTheme()` resolved to the app's palette even though the element rendered inside the viewfinder. A hook runs where an element is rendered, not where it was constructed. Making it a component instead of a variable was the entire fix.
+
 ## Light mode is not a component API
 
 The Daily Summary card looked good with a saturated gradient in every dark palette and muddy in Kinetic Light. The first fix asked the current mode:
@@ -215,7 +236,7 @@ const backgroundVariant = themeMode === 'light' ? 'default' : 'colorful-gradient
 
 It is a tiny line and a surprisingly expensive assumption. It says every future light theme must use a plain card and every future dark theme must use a gradient. Display mode is about contrast defaults and system chrome; it is not a proxy for art direction.
 
-The decision now lives with the theme:
+So I moved the decision into the theme, as a component-level presentation flag:
 
 ```tsx
 <GenericCard backgroundVariant={theme.components.dailySummaryCardBackground}>
@@ -223,30 +244,64 @@ The decision now lives with the theme:
 </GenericCard>
 ```
 
-Kinetic Light chooses `default`. The three dark palettes choose `colorful-gradient`. A future bright theme can choose either without teaching `DailySummaryCard` its name or adding another conditional.
+Better. Kinetic Light chose `default`, the dark palettes chose `colorful-gradient`, and no component branched on the mode. I wrote a paragraph about it and moved on.
 
-This also deleted a helper whose only purpose was turning `light` into `default`, plus tests that carefully protected that accidental coupling.
+It was still wrong, and the tell was in the registry rather than the component. `THEME_DEFINITIONS` now contained a field named after one card. A palette is a description of color; `summaryCardBackground` is a description of `DailySummaryCard`. Adding a screen would mean adding a field, and the registry would slowly become a settings file for the whole app.
+
+There was also a symptom I had not chased down. Kinetic Light still carried a `colorfulCardBlend` entry — the ratios that build the card's gradient stops — and because the theme had opted out of the gradient entirely, those numbers were computed on every launch and rendered nowhere. Two mechanisms for one decision, and one of them silently dead.
+
+The version I actually kept expresses the choice in the only vocabulary a palette has:
+
+```javascript
+// kinetic-light
+colorfulCardBlend: { start: 0, middle: 0, end: 0 },
+```
+
+At zero, every stop collapses to the card surface. The gradient is still a gradient; it is just flat, and it renders exactly like the plain card that the `default` variant produced. The component goes back to one unconditional line, the registry goes back to describing color, and the theme no longer knows that `DailySummaryCard` exists.
+
+The idiom was already sitting in the same file, in a token I had written months earlier and forgotten:
+
+```javascript
+landingBackground: [colors.surfaceBase, colors.surfaceBase, colors.surfaceBase],
+```
+
+A flat gradient. I had solved this problem once and then invented a whole new axis to solve it again.
+
+Kinetic Blush is the argument for why this ordering matters. It is a light theme that _does_ want the sweep — a pale lilac-to-rose wash instead of a flat card — so it sets real ratios and gets one. Under the flag design that would have been a second value in a two-value enum. Under this one it is three numbers in the same palette as everything else, and `DailySummaryCard` never learned its name.
 
 ## Contrast is data, so test the data
 
-Four palettes multiply the number of combinations faster than screenshots can cover. The durable tests iterate the registry instead of naming themes one by one:
+Five palettes multiply the number of combinations faster than screenshots can cover. The durable checks iterate the registry instead of naming themes one by one: every rung of the surface ladder has to stay visible against the next, every text step has to clear AA on every ground that carries body copy, and no two colors that share a chart legend may land within a just-noticeable difference of each other.
+
+I wrote all of that twice, which I did not notice until I went looking for something else.
+
+There was a `scripts/check-palette.js` that read the registry and used `chroma-js` — a genuinely nice script, with a comment at the top explaining that it existed to stop the palette regressing. It was not wired into CI. Nothing ran it. Meanwhile the test suite, which does run in CI, contained a hand-rolled sRGB luminance function and its own copies of the ladder rule, the AA rule, and the thresholds. A third copy of the same fifteen lines of luminance math lived in the Daily Summary card's test file.
+
+So: two implementations of one guard, in two different vocabularies, with duplicated constants, and the weaker one was the only one enforcing anything.
+
+The rules now live in `theme.audit.js` and nowhere else. The script prints them:
+
+```javascript
+const problems = auditTheme(themeId);
+```
+
+CI asserts them:
 
 ```typescript
-for (const themeId of THEME_IDS) {
-  const theme = themeColorsById[themeId];
-  const surfaces = [theme.background.primary, theme.background.card, theme.background.cardElevated];
-
-  for (const text of [theme.text.primary, theme.text.secondary, theme.text.tertiary]) {
-    for (const surface of surfaces) {
-      expect(contrastRatio(text, surface)).toBeGreaterThanOrEqual(4.5);
-    }
-  }
-}
+it('passes the palette audit on every named theme', () => {
+  expect(auditThemes()).toEqual([]);
+});
 ```
+
+Same function, same thresholds, and the readable report is now a view onto the thing that actually gates the branch rather than a parallel opinion about it.
+
+Consolidating also made it obvious what was missing. Kinetic Volt has a bright gradient on the summary card and needs dark ink on it, which had been handled by a test naming Kinetic Volt specifically. That is fine until a sixth theme is bright too. The rule I could state generally is that the card's ink must sit on one side of the whole sweep — lighter than every stop, or darker than every stop, never in the middle. Kinetic Blush passed it on the first try, which is the only reason I trusted the palette enough to ship it.
 
 Another integration test renders the provider and reads `useTheme()`, `useThemeId()`, and `useThemeMode()` in the same hook. It asserts that Settings is read once, System follows the OS, a nested scope overrides all three values together, and web variables disappear when the provider unmounts.
 
-The useful property of registry-driven tests is that they expand automatically. Adding a fifth entry adds it to theme construction, CSS generation, ID validation, shape checks, and the contrast matrix. Forgetting the tests is harder because the catalogue is what tells the tests what exists.
+The useful property of registry-driven tests is that they expand automatically. Adding a fifth entry added it to theme construction, CSS generation, ID validation, shape checks, and the contrast matrix without my touching any of them. Forgetting the tests is harder because the catalogue is what tells the tests what exists.
+
+Adding Kinetic Blush was, in the end, one object in one file, one icon in the picker, and a line of copy per language. The palette guard caught the one real problem: the brand color is pink, `macros.carbs` reads from the brand, and `macros.fiber` is `status.pink` — so the two would have been the same swatch in a shared legend. Kinetic Shock had hit exactly this and solved it by making its `status.pink` a fuchsia. Blush does the same with a magenta. I did not remember that precedent; the audit did.
 
 ## The code I deleted mattered too
 
@@ -264,6 +319,8 @@ The first lesson is that a theme is not a palette. It is a decision graph connec
 
 The second is that modes describe mechanics, not personality. Light and dark are useful for system UI and `dark:` variants. They should not decide whether one particular card gets a gradient. Put that choice in the theme data and let the component render it.
 
-The third is the one I keep relearning: the best abstraction often has less intelligence at the leaves. `useTheme()` no longer knows how to resolve a preference. The Daily Summary no longer knows which themes like gradients. The camera no longer knows about a special forced context. Each became smaller because the decision moved to the one place that owns it.
+The third is the one I keep relearning: the best abstraction often has less intelligence at the leaves. `useTheme()` no longer knows how to resolve a preference. The Daily Summary no longer knows which themes like gradients — and, on the second pass, the theme stopped knowing that the Daily Summary exists. The camera no longer knows about a special forced context, and no longer reaches around the one it installed. Each became smaller because the decision moved to the one place that owns it.
 
-Musclog now has four themes. More importantly, it has one theme system.
+The fourth only became visible on review: two implementations that agree are not redundancy, they are a deadline. The camera read `darkTheme` and installed a dark scope. The palette had a guard script and a guard test. Kinetic Light had a flag saying “no gradient” and a set of gradient ratios saying how. Every one of those pairs was correct on the day it was written, and every one of them was one edit away from a bug that nothing would report.
+
+Musclog now has five themes. More importantly, it has one theme system.

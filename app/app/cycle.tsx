@@ -287,8 +287,8 @@ export default function CycleScreen() {
                       className="flex-row items-center justify-center gap-2 rounded-2xl px-4 py-4"
                       style={{ backgroundColor: theme.colors.rose.brand }}
                     >
-                      <CircleDot size={20} color={theme.colors.text.onColorful} />
-                      <Text className="font-bold text-text-on-colorful">
+                      <CircleDot size={20} color={theme.colors.text.alwaysWhite} />
+                      <Text className="font-bold text-text-always-white">
                         {t('cycle.actions.periodStarted')}
                       </Text>
                     </TouchableOpacity>

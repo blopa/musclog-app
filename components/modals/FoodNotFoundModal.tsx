@@ -63,18 +63,18 @@ export function FoodNotFoundModal({
                 padding: 16,
               }}
             >
-              <View className="h-12 w-12 items-center justify-center rounded-lg bg-text-on-colorful/20">
+              <View className="h-12 w-12 items-center justify-center rounded-lg bg-text-always-white/20">
                 <Text className="text-2xl">✨</Text>
               </View>
               <View className="flex-1">
-                <Text className="text-lg font-bold text-text-on-colorful">
+                <Text className="text-lg font-bold text-text-always-white">
                   {t('nutrition.tryAICamera')}
                 </Text>
-                <Text className="text-xs text-text-on-colorful/80">
+                <Text className="text-xs text-text-always-white/80">
                   {t('nutrition.tryAICameraDesc')}
                 </Text>
               </View>
-              <ChevronRight size={theme.iconSize.md} color={theme.colors.text.onColorful} />
+              <ChevronRight size={theme.iconSize.md} color={theme.colors.text.alwaysWhite} />
             </LinearGradient>
           </Pressable>
         ) : null}

@@ -1,14 +1,16 @@
-import { Search } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 
 import { CameraView, type CameraViewRef } from '@/components/CameraView';
+import {
+  SmartCameraPlaceholder,
+  SmartCameraTextSearchButton,
+} from '@/components/SmartCameraActions';
 import type { CameraMode } from '@/constants/camera';
 import type { MealType } from '@/database/models';
 import { useBarcodeScanner } from '@/hooks/useBarcodeScanner';
 import { BARCODE_PHOTO_QUALITY, useCameraCaptureFlow } from '@/hooks/useCameraCaptureFlow';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
-import { darkTheme } from '@/theme';
 
 import { BarcodeTextSearchSheet } from './BarcodeTextSearchSheet';
 import { FoodMealTrackingDetailsModal } from './FoodMealTrackingDetailsModal';
@@ -40,7 +42,6 @@ export function BarcodeCameraModal({
   onRequestPermission,
 }: BarcodeCameraModalProps) {
   // Camera chrome is a fixed dark surface, independent of the app preference.
-  const theme = darkTheme;
   const cameraRef = useRef<CameraViewRef>(null);
   const [flashEnabled, setFlashEnabled] = useState(false);
   const [isBarcodeTextSearchModalVisible, setIsBarcodeTextSearchModalVisible] = useState(false);
@@ -107,17 +108,7 @@ export function BarcodeCameraModal({
   }, [barcode, barcodeTextSearchValue]);
 
   const bottomRightControl = showBarcodeTextSearch ? (
-    <Pressable
-      onPress={() => setIsBarcodeTextSearchModalVisible(true)}
-      className="h-12 w-12 items-center justify-center rounded-full"
-      style={{
-        backgroundColor: theme.colors.background.neutralWash,
-        borderWidth: theme.borderWidth.thin,
-        borderColor: theme.colors.background.ink10,
-      }}
-    >
-      <Search size={theme.iconSize.lg} color={theme.colors.text.primary} />
-    </Pressable>
+    <SmartCameraTextSearchButton onPress={() => setIsBarcodeTextSearchModalVisible(true)} />
   ) : (
     <View className="h-12 w-12" />
   );
@@ -157,7 +148,7 @@ export function BarcodeCameraModal({
               }}
             />
           ) : (
-            <View style={{ flex: 1, backgroundColor: theme.colors.background.tint }} />
+            <SmartCameraPlaceholder />
           )
         }
         isLoading={barcode.isSearchingBarcode}

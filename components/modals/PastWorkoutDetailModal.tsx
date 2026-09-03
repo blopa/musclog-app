@@ -84,9 +84,9 @@ function WorkoutSummaryCard({
           <Pressable
             onPress={onEdit}
             className="absolute right-3 top-3 z-10 h-8 w-8 items-center justify-center rounded-full"
-            style={{ backgroundColor: 'rgba(255,255,255,0.15)' }}
+            style={{ backgroundColor: theme.colors.overlay.alwaysWhite20 }}
           >
-            <Edit size={14} color="white" />
+            <Edit size={14} color={theme.colors.text.alwaysWhite} />
           </Pressable>
         ) : null}
         <View className="flex-row gap-4">

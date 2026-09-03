@@ -34,7 +34,6 @@ import {
   NAV_SLOT_2_SETTING_TYPE,
   NAV_SLOT_3_SETTING_TYPE,
   type NavItemKey,
-  normalizeThemeOption,
   NOTIFICATIONS_ACTIVE_WORKOUT_SETTING_TYPE,
   NOTIFICATIONS_MENSTRUAL_CYCLE_SETTING_TYPE,
   NOTIFICATIONS_NUTRITION_OVERVIEW_SETTING_TYPE,
@@ -74,6 +73,7 @@ import { encryptOptionalString } from '@/database/encryptionHelpers';
 import Setting, { type SettingType } from '@/database/models/Setting';
 import { DEFAULT_LANG } from '@/lang/lang';
 import { decryptDatabaseValue } from '@/utils/encryption';
+import { normalizeThemeOption } from '@/utils/themeSelection';
 import { getDefaultUnits } from '@/utils/units';
 
 type SettingValueUpdate = {

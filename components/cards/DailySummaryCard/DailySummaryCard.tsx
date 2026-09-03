@@ -219,11 +219,7 @@ export function DailySummaryCard({
       : [];
 
   return (
-    <GenericCard
-      variant="default"
-      size="lg"
-      backgroundVariant={theme.components.dailySummaryCardBackground}
-    >
+    <GenericCard variant="default" size="lg" backgroundVariant="colorful-gradient">
       <View
         onLayout={(e) => {
           const w = e.nativeEvent.layout.width;

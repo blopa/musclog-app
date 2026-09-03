@@ -67,6 +67,7 @@ function getNow() {
 // ---------------------------------------------------------------------------
 
 function LiveDot() {
+  const theme = useTheme();
   const opacity = useState(() => new Animated.Value(1))[0];
 
   useEffect(() => {
@@ -88,7 +89,7 @@ function LiveDot() {
         width: 8,
         height: 8,
         borderRadius: 4,
-        backgroundColor: '#00FFA3',
+        backgroundColor: theme.colors.status.brandBright,
         opacity,
       }}
     />
@@ -179,7 +180,7 @@ function PhaseCard({
           {/* Description */}
           <Text
             className="text-xs leading-relaxed"
-            style={{ color: isActive ? '#D1D5DB' : theme.colors.text.secondary }}
+            style={{ color: isActive ? theme.colors.text.primary : theme.colors.text.secondary }}
           >
             {t(`progress.circadianModal.phaseDesc.${blockKey}`)}
           </Text>

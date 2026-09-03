@@ -81,6 +81,8 @@ type MenuItemProps = {
 };
 
 function MenuItem({ icon, label, onPress, isLoading }: MenuItemProps) {
+  const theme = useTheme();
+
   return (
     <Pressable
       className="active:bg-bg-card-elevated flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-4"
@@ -91,7 +93,7 @@ function MenuItem({ icon, label, onPress, isLoading }: MenuItemProps) {
         {icon}
       </View>
       <Text className="flex-1 text-lg font-semibold text-text-primary">{label}</Text>
-      {isLoading ? <ActivityIndicator size="small" color="#10B981" /> : null}
+      {isLoading ? <ActivityIndicator size="small" color={theme.colors.accent.primary} /> : null}
     </Pressable>
   );
 }
@@ -287,7 +289,7 @@ export function UserMenuModal({
                     {t('userMenu.debugPage')}
                   </Text>
                   {loadingItem === 'debug' ? (
-                    <ActivityIndicator size="small" color="#10B981" />
+                    <ActivityIndicator size="small" color={theme.colors.accent.primary} />
                   ) : null}
                 </Pressable>
               ) : null}

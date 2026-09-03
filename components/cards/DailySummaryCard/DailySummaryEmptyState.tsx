@@ -15,11 +15,7 @@ export const DailySummaryEmptyState: FC<DailySummaryEmptyStateProps> = ({ onSetG
   const { t } = useTranslation();
 
   return (
-    <GenericCard
-      variant="default"
-      size="lg"
-      backgroundVariant={theme.components.dailySummaryCardBackground}
-    >
+    <GenericCard variant="default" size="lg" backgroundVariant="colorful-gradient">
       <View className="relative z-10 flex h-full flex-col gap-4 p-5">
         {/* Header */}
         <View className="flex-row items-center justify-between">

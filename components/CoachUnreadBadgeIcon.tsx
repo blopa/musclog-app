@@ -20,7 +20,7 @@ export function CoachUnreadBadgeIcon({ color, size, strokeWidth }: CoachUnreadBa
           className="absolute -right-1.5 -top-1.5 h-4 w-4 items-center justify-center rounded-full bg-status-error"
           style={{ minWidth: 14, minHeight: 14 }}
         >
-          <Text className="text-[10px] font-bold leading-none text-text-on-colorful">
+          <Text className="text-[10px] font-bold leading-none text-text-always-white">
             {unreadChatMessages > 9 ? '9+' : unreadChatMessages}
           </Text>
         </View>

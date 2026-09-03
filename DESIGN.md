@@ -7,9 +7,10 @@ describes how to use them.
 
 ## Theme status
 
-Four named palettes ship: Kinetic Depth is the dark emerald reference design, Kinetic Light is the
-same structure re-picked for a bright ground, Kinetic Shock is a dark rose-led alternative, and
-Kinetic Volt pairs warm near-black surfaces with electric yellow accents.
+Five named palettes ship: Kinetic Depth is the dark emerald reference design, Kinetic Light is the
+same structure re-picked for a bright ground, Kinetic Shock is a dark rose-led alternative, Kinetic
+Volt pairs warm near-black surfaces with electric yellow accents, and Kinetic Blush is a bright pink
+ground with a raspberry accent.
 Users choose one of them, or System, under Settings → Interface → Appearance. System resolves to
 Kinetic Light or Kinetic Depth from the device's light/dark setting. The preference is stored in the
 settings table, so writing that row re-themes the app.
@@ -36,11 +37,12 @@ Components outside the viewfinder keep following the user's selected theme.
 Text drawn on a colorful gradient uses the dedicated `colorfulCard` ink tokens, never a literal
 white or the regular on-surface ink.
 
-The Daily Summary card reads `theme.components.dailySummaryCardBackground`: Kinetic Depth, Kinetic
-Shock, and Kinetic Volt select `gradients.colorfulCard`, while Kinetic Light selects the standard
-card surface. The component must not derive this presentation decision from `themeMode`; another
-light theme may legitimately choose a gradient. Its foreground uses the matching `colorfulCard` ink
-tokens: white in Kinetic Depth and Kinetic Shock, warm black in Kinetic Volt, and opaque deep
+The Daily Summary card always renders the `colorful-gradient` background; a theme says how that
+should read through `gradients.colorfulCard` alone. The three dark palettes and Kinetic Blush keep a
+saturated sweep; Kinetic Light collapses its stops to the flat card surface, which renders exactly
+like an ordinary card (`gradients.landingBackground` uses the same flat-gradient idiom). The component must not derive this presentation decision from `themeMode`; another
+light theme may legitimately choose a gradient — Kinetic Blush does. Its foreground uses the matching
+`colorfulCard` ink tokens: white in Kinetic Depth and Kinetic Shock, warm black in Kinetic Volt, and opaque deep
 green-slate in Kinetic Light.
 
 ### Role tokens
@@ -48,13 +50,13 @@ green-slate in Kinetic Light.
 A few primaries keep their job across themes instead of their lightness, and reading them by name is
 what keeps a theme switch from inverting something that should not move:
 
-| Token                                    | Job                                                  |
-| ---------------------------------------- | ---------------------------------------------------- |
-| `text.onAccent` / `inkOnAccent`          | Ink printed on a solid brand or status fill          |
-| `shadow` / `scrimBase`                   | Backdrops, camera scrims, drop shadows — dark always |
-| `background.alwaysWhite`                 | Fixed-white fills: slider and switch thumbs          |
-| `text.onColorful`, `overlay.onColorful*` | Ink on a colorful gradient or a photo                |
-| `background.separatorLight`              | Image placeholder and separator fill                 |
+| Token                                      | Job                                                  |
+| ------------------------------------------ | ---------------------------------------------------- |
+| `text.onAccent` / `inkOnAccent`            | Ink printed on a solid brand or status fill          |
+| `shadow` / `scrimBase`                     | Backdrops, camera scrims, drop shadows — dark always |
+| `background.alwaysWhite`                   | Fixed-white fills: slider and switch thumbs          |
+| `text.alwaysWhite`, `overlay.alwaysWhite*` | Ink over a photo, camera preview or brand gradient   |
+| `background.separatorLight`                | Image placeholder and separator fill                 |
 
 The `ink` Tailwind color is the on-surface ink at an alpha — `border-ink/10`, `bg-ink/5`. Use it for
 hairlines and washes instead of a literal `border-white/10`, which only reads on a dark ground.
@@ -77,16 +79,16 @@ Surfaces form a four-step tonal ladder plus two tinted branches. Each step of th
 without a border. The ladder inverts between themes: elevation moves _away_ from the base, which is
 lighter on dark and darker on light.
 
-| Role           | Token                                       | Kinetic Depth | Kinetic Light | Kinetic Shock | Kinetic Volt |
-| -------------- | ------------------------------------------- | ------------- | ------------- | ------------- | ------------ |
-| App background | `background.primary` / `surfaceBase`        | `#091310`     | `#fafcfb`     | `#160b14`     | `#151208`    |
-| Card           | `background.card` / `surfaceCard`           | `#131d18`     | `#eef2f0`     | `#21101e`     | `#201b0c`    |
-| Elevated card  | `background.cardElevated` / `surfaceRaised` | `#1b2721`     | `#e0e7e3`     | `#2d1829`     | `#2c2510`    |
-| Tinted overlay | `background.overlay` / `surfaceTint`        | `#0c2419`     | `#dff0e7`     | `#351226`     | `#30270a`    |
-| Accent surface | `border.accent` / `surfaceAccent`           | `#1c3829`     | `#c6e6d4`     | `#51203f`     | `#4a3b08`    |
-| Hairline       | `border.dashed` / `borderHairline`          | `#2c3a32`     | `#c2cfc8`     | `#503248`     | `#4a4126`    |
-| Primary text   | `text.primary` / `textPrimary`              | `#dce5de`     | `#0f1a16`     | `#f5e4ef`     | `#f6f0d5`    |
-| Primary action | `accent.primary` / `brandPrimary`           | `#29a577`     | `#0e7a54`     | `#e85d9e`     | `#f5c842`    |
+| Role           | Token                                       | Kinetic Depth | Kinetic Light | Kinetic Shock | Kinetic Volt | Kinetic Blush |
+| -------------- | ------------------------------------------- | ------------- | ------------- | ------------- | ------------ | ------------- |
+| App background | `background.primary` / `surfaceBase`        | `#091310`     | `#fafcfb`     | `#160b14`     | `#151208`    | `#fff7fa`     |
+| Card           | `background.card` / `surfaceCard`           | `#131d18`     | `#eef2f0`     | `#21101e`     | `#201b0c`    | `#fbe9f1`     |
+| Elevated card  | `background.cardElevated` / `surfaceRaised` | `#1b2721`     | `#e0e7e3`     | `#2d1829`     | `#2c2510`    | `#f2d6e3`     |
+| Tinted overlay | `background.overlay` / `surfaceTint`        | `#0c2419`     | `#dff0e7`     | `#351226`     | `#30270a`    | `#fadeeb`     |
+| Accent surface | `border.accent` / `surfaceAccent`           | `#1c3829`     | `#c6e6d4`     | `#51203f`     | `#4a3b08`    | `#eec0d6`     |
+| Hairline       | `border.dashed` / `borderHairline`          | `#2c3a32`     | `#c2cfc8`     | `#503248`     | `#4a4126`    | `#d9b3c5`     |
+| Primary text   | `text.primary` / `textPrimary`              | `#dce5de`     | `#0f1a16`     | `#f5e4ef`     | `#f6f0d5`    | `#2b101d`     |
+| Primary action | `accent.primary` / `brandPrimary`           | `#29a577`     | `#0e7a54`     | `#e85d9e`     | `#f5c842`    | `#c2185b`     |
 
 Accents get _darker_ on light, not lighter: every brand and status hue in the light palette clears
 4.5:1 as text on `surfaceBase` and `surfaceCard`, and carries white ink at 4.5:1 or better when it is
@@ -99,16 +101,17 @@ the visual direction explicit.
 ### Naming
 
 A semantic key names the **role** it resolves to, never a hue. With one palette `status.emerald`
-was harmless; with four it was a lie — the same key is emerald on Kinetic Depth and pink on Kinetic
+was harmless; with five it was a lie — the same key is emerald on Kinetic Depth and pink on Kinetic
 Shock. So the tree reads `status.brandVivid`, `text.tertiary`, `background.scrim30`,
 `overlay.ink70`, and a key like `status.teal400` or `background.gray800` should not come back. The
 one exception is `avatar.*` / `avatarBg.*`, which are keyed by the persisted `AvatarColor` enum
 rather than by palette role.
 
-`npm run check-palette` enforces this across all four themes: it fails if a hue-named token swings
-more than 40 degrees of hue between themes, which is exactly how `status.emerald` went wrong. It
-also enforces the color rules below. `utils/__tests__/themeSelection.test.ts` covers the same
-ground from the test suite.
+The rules live in `theme.audit.js`, once. It fails if a hue-named token swings more than 40 degrees
+of hue between themes — exactly how `status.emerald` went wrong — and it enforces the color rules
+below. `npm run check-palette` prints the report and
+`utils/__tests__/themeSelection.test.ts` asserts the same function in CI, so the report and the gate
+cannot drift apart.
 
 ### Text contrast
 
@@ -243,6 +246,6 @@ belongs in both the desktop nav bar and the burger menu.
 - Touch targets remain inside parent bounds.
 - Status remains understandable without color.
 - Numbers parse and format correctly in both comma- and period-decimal locales.
-- Works in all themes: check Kinetic Light, Kinetic Shock, and Kinetic Volt, and confirm nothing
+- Works in all themes: check Kinetic Light, Kinetic Shock, Kinetic Volt and Kinetic Blush, and confirm nothing
   relies on a literal `text-white` or an emerald-only accent.
 - Loading, empty, error, disabled, and offline states are designed—not left to defaults.

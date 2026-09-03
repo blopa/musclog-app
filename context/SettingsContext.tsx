@@ -35,7 +35,6 @@ import {
   NAV_SLOT_2_SETTING_TYPE,
   NAV_SLOT_3_SETTING_TYPE,
   type NavItemKey,
-  normalizeThemeOption,
   NOTIFICATIONS_ACTIVE_WORKOUT_SETTING_TYPE,
   NOTIFICATIONS_MENSTRUAL_CYCLE_SETTING_TYPE,
   NOTIFICATIONS_NUTRITION_OVERVIEW_SETTING_TYPE,
@@ -78,6 +77,7 @@ import Setting from '@/database/models/Setting';
 import { SettingsService } from '@/database/services/SettingsService';
 import { DEFAULT_LANG } from '@/lang/lang';
 import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
+import { normalizeThemeOption } from '@/utils/themeSelection';
 import { getDefaultUnits, getHeightUnit, getWeightUnit } from '@/utils/units';
 
 type SettingsState = {

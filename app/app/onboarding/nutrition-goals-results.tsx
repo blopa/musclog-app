@@ -30,6 +30,7 @@ import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { addOpacityToHex } from '@/theme';
 import { localDayKeyPlusCalendarDays, localDayStartMs } from '@/utils/calendarDate';
 import {
   fiberFromCalories,
@@ -542,16 +543,16 @@ export default function NutritionGoalsResults() {
               <MaterialIcons
                 name="bolt"
                 size={96}
-                color={theme.colors.text.onColorful}
+                color={theme.colors.text.alwaysWhite}
                 style={{ opacity: 0.2 }}
               />
             </View>
 
             <View className="relative z-10">
               <Text
-                className="mb-1 text-sm font-semibold uppercase tracking-widest text-text-on-colorful/80"
+                className="mb-1 text-sm font-semibold uppercase tracking-widest"
                 style={{
-                  color: `${theme.colors.text.onColorful}CC`,
+                  color: addOpacityToHex(theme.colors.text.alwaysWhite, 0.8),
                   fontSize: theme.typography.fontSize.sm,
                   fontWeight: theme.typography.fontWeight.semibold,
                   letterSpacing: 2,
@@ -562,9 +563,9 @@ export default function NutritionGoalsResults() {
 
               <View className="flex-row items-baseline gap-2">
                 <Text
-                  className="text-5xl font-black text-text-on-colorful"
+                  className="text-5xl font-black"
                   style={{
-                    color: theme.colors.text.onColorful,
+                    color: theme.colors.text.alwaysWhite,
                     fontSize: theme.typography.fontSize['5xl'],
                     fontWeight: theme.typography.fontWeight.black,
                   }}
@@ -572,9 +573,9 @@ export default function NutritionGoalsResults() {
                   {formattedCalories}
                 </Text>
                 <Text
-                  className="text-xl font-bold text-text-on-colorful/90"
+                  className="text-xl font-bold"
                   style={{
-                    color: `${theme.colors.text.onColorful}E6`,
+                    color: addOpacityToHex(theme.colors.text.alwaysWhite, 0.9),
                     fontSize: theme.typography.fontSize.xl,
                     fontWeight: theme.typography.fontWeight.bold,
                   }}
@@ -588,7 +589,7 @@ export default function NutritionGoalsResults() {
                   <Text
                     className="text-sm font-medium"
                     style={{
-                      color: `${theme.colors.text.onColorful}B3`,
+                      color: addOpacityToHex(theme.colors.text.alwaysWhite, 0.7),
                       fontSize: theme.typography.fontSize.sm,
                       fontWeight: theme.typography.fontWeight.medium,
                     }}
@@ -600,7 +601,7 @@ export default function NutritionGoalsResults() {
                   <Text
                     className="mt-1 text-xs"
                     style={{
-                      color: `${theme.colors.text.onColorful}80`,
+                      color: addOpacityToHex(theme.colors.text.alwaysWhite, 0.5),
                       fontSize: theme.typography.fontSize.xxs,
                       fontWeight: theme.typography.fontWeight.normal,
                     }}
@@ -616,7 +617,7 @@ export default function NutritionGoalsResults() {
                   <Text
                     className="text-sm font-medium"
                     style={{
-                      color: `${theme.colors.text.onColorful}E6`,
+                      color: addOpacityToHex(theme.colors.text.alwaysWhite, 0.9),
                       fontSize: theme.typography.fontSize.sm,
                       fontWeight: theme.typography.fontWeight.medium,
                     }}
@@ -636,16 +637,16 @@ export default function NutritionGoalsResults() {
                 <View
                   className="mt-4 flex-row items-center justify-between border-t pt-4"
                   style={{
-                    borderTopColor: `${theme.colors.text.onColorful}1A`,
+                    borderTopColor: addOpacityToHex(theme.colors.text.alwaysWhite, 0.1),
                     borderTopWidth: 1,
                     marginTop: theme.spacing.margin.md,
                     paddingTop: theme.spacing.padding.md,
                   }}
                 >
                   <Text
-                    className="text-xs font-medium text-text-on-colorful/70"
+                    className="text-xs font-medium"
                     style={{
-                      color: `${theme.colors.text.onColorful}B3`,
+                      color: addOpacityToHex(theme.colors.text.alwaysWhite, 0.7),
                       fontSize: theme.typography.fontSize.xxs,
                       fontWeight: theme.typography.fontWeight.medium,
                     }}

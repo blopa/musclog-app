@@ -16,7 +16,7 @@ import type { Theme } from '@/theme';
 const theme = {
   colors: {
     status: { brandBright: '#emerald', errorLight: '#red' },
-    text: { onColorful: '#on-colorful', primary: '#text' },
+    text: { alwaysWhite: '#always-white', primary: '#text' },
     colorfulCard: { ink: '#card-ink' },
   },
 } as unknown as Theme;
