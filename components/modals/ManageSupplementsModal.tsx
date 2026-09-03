@@ -182,7 +182,7 @@ export function ManageSupplementsModal({ visible, onClose }: ManageSupplementsMo
           ) : (
             <View className="gap-3">
               {supplements.map((supplement) => (
-                <GenericCard key={supplement.id} variant="default" size="sm">
+                <GenericCard key={supplement.id} variant="flat">
                   <View className="p-4">
                     <View className="flex-row items-center justify-between gap-3">
                       <View className="flex-1 flex-row items-center gap-3">

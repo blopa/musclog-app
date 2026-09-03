@@ -250,11 +250,8 @@ export default function LandingScreen() {
                 {t('onboarding.landing.description')}
               </Text>
 
-              {/* Privacy badge */}
-              <View
-                className="mt-3 flex-row items-center gap-2 rounded-full px-4 py-2"
-                style={{ backgroundColor: theme.colors.background.scrim30 }}
-              >
+              {/* Privacy note */}
+              <View className="mt-3 flex-row items-center gap-2">
                 <Lock size={14} color={theme.colors.text.secondary} />
                 <Text
                   style={{
@@ -316,34 +313,9 @@ export default function LandingScreen() {
               </View>
             ) : (
               <>
-                {/* Personalized Setup (Recommended) */}
-                <View style={{ position: 'relative' }}>
-                  {/* Recommended badge */}
-                  <View
-                    className="absolute -top-3 left-0 right-0 z-10 flex-row items-center justify-center"
-                    pointerEvents="none"
-                  >
-                    <View
-                      className="flex-row items-center gap-1 rounded-full px-3 py-0.5"
-                      style={{ backgroundColor: theme.colors.accent.primary }}
-                    >
-                      <Star
-                        size={10}
-                        color={theme.colors.text.primary}
-                        fill={theme.colors.text.primary}
-                      />
-                      <Text
-                        style={{
-                          color: theme.colors.text.primary,
-                          fontSize: theme.typography.fontSize.xs,
-                          fontWeight: theme.typography.fontWeight.bold,
-                        }}
-                      >
-                        {t('onboarding.landing.recommended')}
-                      </Text>
-                    </View>
-                  </View>
-
+                {/* Personalized Setup — the gradientCta variant already reads as the
+                    recommended choice against Quick Setup's outline button below. */}
+                <View>
                   <Button
                     label={t('onboarding.landing.personalizedSetup')}
                     labelAccessory={t('onboarding.landing.personalizedSetupSteps')}

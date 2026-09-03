@@ -57,7 +57,7 @@ function SetCard({
 
   return (
     <View className="mb-4">
-      <GenericCard variant="card" containerStyle={accentStyle}>
+      <GenericCard variant="flat" containerStyle={accentStyle}>
         <View className="p-4">
           {/* Header with arrows, title, and remove */}
           <View className="mb-4 flex-row items-center justify-between">
@@ -115,7 +115,7 @@ function SetCard({
                     }}
                     className="text-[10px]"
                   >
-                    PR
+                    {t('workoutDetail.prBadge')}
                   </Text>
                 </View>
               ) : null}

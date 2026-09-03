@@ -43,7 +43,7 @@ export function WorkoutFoodEmptyState({ type, onButtonPress }: WorkoutFoodEmptyS
   const Icon = config.icon;
 
   return (
-    <GenericCard variant="card">
+    <GenericCard variant="flat">
       <View className="flex-row items-center justify-between gap-3 px-4 py-3">
         <View className="flex-1 flex-row items-center gap-3">
           <View

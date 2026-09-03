@@ -23,6 +23,7 @@
     "totalTimeMinutes": "Total Time (minutes)",
     "addSet": "Add New Set",
     "setLabel": "Set {{index}}",
+    "prBadge": "PR",
     "remove": "Remove",
     "rir": "RIR (Reps in Reserve)",
     "syncToHealthConnect": "Sync to Health Connect",

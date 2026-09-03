@@ -138,28 +138,13 @@ export function NutritionGoalsTabContent({
         {/* Current Goals Section */}
         {currentGoal ? (
           <View className="mb-8">
-            <View className="mb-3 flex-row items-center justify-between">
+            <View className="mb-3">
               <Text
                 className="font-bold uppercase tracking-widest text-text-secondary"
                 style={{ fontSize: theme.typography.fontSize.xs }}
               >
                 {t('goalsManagement.currentGoals')}
               </Text>
-              <View
-                className="rounded-full border px-2"
-                style={{
-                  backgroundColor: theme.colors.accent.primary10,
-                  borderColor: theme.colors.accent.primary20,
-                  paddingVertical: theme.spacing.padding.xsHalf,
-                }}
-              >
-                <Text
-                  className="font-bold text-accent-primary"
-                  style={{ fontSize: theme.typography.fontSize.xs }}
-                >
-                  {t('goalsManagement.active')}
-                </Text>
-              </View>
             </View>
 
             <CurrentGoalsCard

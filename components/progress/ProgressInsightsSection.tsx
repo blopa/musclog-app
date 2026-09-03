@@ -33,7 +33,7 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
   return (
     <View>
       {avg ? (
-        <GenericCard variant="card" containerStyle={{ marginBottom: 16 }}>
+        <GenericCard variant="flat" containerStyle={{ marginBottom: 16 }}>
           <View className="p-2">
             <Text className="mb-1 ml-2 mt-2 text-sm font-bold text-text-primary">
               {t('progress.averageIntakeTitle')}
@@ -75,7 +75,7 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
         </GenericCard>
       ) : null}
 
-      <GenericCard variant="card" containerStyle={{ marginBottom: 16 }}>
+      <GenericCard variant="flat" containerStyle={{ marginBottom: 16 }}>
         <View className="p-2">
           <Text className="mb-2 ml-2 mt-2 text-sm font-bold text-text-primary">
             {t('progress.metabolicSummary')}
@@ -110,7 +110,7 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
       </GenericCard>
 
       {hasAnyWeeklyChange ? (
-        <GenericCard variant="card" containerStyle={{ marginBottom: 16 }}>
+        <GenericCard variant="flat" containerStyle={{ marginBottom: 16 }}>
           <View className="flex-row flex-wrap p-2">
             {hasWeightChange
               ? renderStat(
@@ -138,7 +138,7 @@ export function ProgressInsightsSection({ insights }: ProgressInsightsSectionPro
       ) : null}
 
       {insights.targetWeights.bf5 !== 0 ? (
-        <GenericCard variant="card" containerStyle={{ marginBottom: 16 }}>
+        <GenericCard variant="flat" containerStyle={{ marginBottom: 16 }}>
           <View className="p-2">
             <Text className="mb-2 ml-2 mt-2 text-sm font-bold text-text-primary">
               {t('progress.bodyFatGoalWeights')}

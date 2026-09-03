@@ -41,7 +41,7 @@ export function StatCard({
   const changeColor = getChangeColor();
 
   return (
-    <GenericCard variant="default" size="sm">
+    <GenericCard variant="flat" fill>
       <View className="p-4">
         <View className="mb-2 flex-row items-start justify-between">
           <Text className="text-sm text-text-secondary">{title}</Text>

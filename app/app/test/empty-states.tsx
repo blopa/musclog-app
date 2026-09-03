@@ -55,7 +55,6 @@ export default function EmptyStatesTestScreen() {
               title="No Workouts Yet"
               description="Your fitness journey starts with your first rep. Plan your routine and track your progress here."
               buttonLabel="Create Your First Workout"
-              iconGradient={true}
               buttonVariant="gradientCta"
               onButtonPress={() => console.log('Create workout')}
             />

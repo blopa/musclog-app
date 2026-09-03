@@ -446,35 +446,21 @@ export default function NutritionGoalsResults() {
           {/* Header */}
           <View className="mb-8 items-center text-center">
             {aiGenerated ? (
-              <View
-                className="mb-3 flex-row items-center gap-1.5 rounded-full px-3 py-1"
-                style={{ backgroundColor: theme.colors.accent.primary10 }}
-              >
+              <View className="mb-3 flex-row items-center gap-1.5">
                 <MaterialIcons name="auto-awesome" size={14} color={theme.colors.accent.primary} />
                 <Text
-                  className="text-xs font-bold uppercase tracking-wider"
-                  style={{
-                    color: theme.colors.accent.primary,
-                    fontSize: theme.typography.fontSize.xs,
-                    fontWeight: theme.typography.fontWeight.bold,
-                  }}
+                  className="text-xs font-semibold"
+                  style={{ color: theme.colors.accent.primary }}
                 >
                   {t('nutritionGoals.results.aiCalculationComplete')}
                 </Text>
               </View>
             ) : (
-              <View
-                className="mb-3 flex-row items-center gap-1.5 rounded-full px-3 py-1"
-                style={{ backgroundColor: theme.colors.status.indigo10 }}
-              >
+              <View className="mb-3 flex-row items-center gap-1.5">
                 <MaterialIcons name="tune" size={14} color={theme.colors.status.indigoLight} />
                 <Text
-                  className="text-xs font-bold uppercase tracking-wider"
-                  style={{
-                    color: theme.colors.status.indigoLight,
-                    fontSize: theme.typography.fontSize.xs,
-                    fontWeight: theme.typography.fontWeight.bold,
-                  }}
+                  className="text-xs font-semibold"
+                  style={{ color: theme.colors.status.indigoLight }}
                 >
                   {t('nutritionGoals.results.manualPlanBadge')}
                 </Text>
@@ -662,8 +648,7 @@ export default function NutritionGoalsResults() {
           <View className="mb-8 w-full flex-row gap-3">
             {/* Protein */}
             <GenericCard
-              variant="default"
-              size="sm"
+              variant="flat"
               containerStyle={{
                 flex: 1,
                 alignItems: 'center',
@@ -706,8 +691,7 @@ export default function NutritionGoalsResults() {
 
             {/* Carbs */}
             <GenericCard
-              variant="default"
-              size="sm"
+              variant="flat"
               containerStyle={{
                 flex: 1,
                 alignItems: 'center',
@@ -750,8 +734,7 @@ export default function NutritionGoalsResults() {
 
             {/* Fats */}
             <GenericCard
-              variant="default"
-              size="sm"
+              variant="flat"
               containerStyle={{
                 flex: 1,
                 alignItems: 'center',
@@ -890,7 +873,7 @@ export default function NutritionGoalsResults() {
               </View>
 
               <GenericCard
-                variant="default"
+                variant="flat"
                 containerStyle={{
                   width: '100%',
                   marginBottom: theme.spacing.margin.lg,
@@ -941,7 +924,7 @@ export default function NutritionGoalsResults() {
           {/* 90-Day Projection Card (only for AI-generated plans) */}
           {displayData?.hasProjection ? (
             <GenericCard
-              variant="default"
+              variant="flat"
               containerStyle={{
                 width: '100%',
                 borderWidth: 1,

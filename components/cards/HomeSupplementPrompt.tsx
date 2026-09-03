@@ -151,7 +151,7 @@ export function HomeSupplementPrompt({
 
   return (
     <Animated.View style={animatedStyle}>
-      <GenericCard variant="card" size="default">
+      <GenericCard variant="flat">
         <View className="p-4">
           <View className="mb-4 flex-row items-start gap-3">
             <Pill

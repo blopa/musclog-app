@@ -103,7 +103,7 @@ export function ExerciseTransitionScreen({
         {/* Next Exercise Card */}
         {nextExercise ? (
           <GenericCard
-            variant="card"
+            variant="flat"
             containerStyle={{ marginTop: theme.spacing.margin.base, overflow: 'hidden' as const }}
           >
             <View className="relative aspect-[4/3] w-full overflow-hidden bg-gray-200 dark:bg-gray-800">

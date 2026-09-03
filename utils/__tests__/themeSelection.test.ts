@@ -51,4 +51,26 @@ describe('named theme selection', () => {
   it('passes the palette audit on every named theme', () => {
     expect(auditThemes()).toEqual([]);
   });
+
+  // These ten had zero consumers when the card/gradient cleanup landed — pinned
+  // so a future copy-paste doesn't quietly reintroduce an unused gradient.
+  it('keeps the retired gradient tokens gone', () => {
+    const retired = [
+      'primary',
+      'card',
+      'notification',
+      'upNextCard',
+      'indigoPurple',
+      'emeraldTeal',
+      'pinkRose',
+      'onboardingAmbient',
+      'inkSubtle',
+      'backdrop90',
+    ];
+    for (const themeId of THEME_IDS) {
+      for (const key of retired) {
+        expect(themeColorsById[themeId].gradients).not.toHaveProperty(key);
+      }
+    }
+  });
 });

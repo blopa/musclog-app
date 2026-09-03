@@ -137,7 +137,7 @@ export const FoodItemCard = memo(function FoodItemCard({
   }, [image]);
 
   return (
-    <GenericCard variant="default" isPressable={!!onPress} onPress={onPress}>
+    <GenericCard variant="flat" isPressable={!!onPress} onPress={onPress}>
       <View className="flex-row items-center gap-4 p-4">
         <View
           className={`flex-shrink-0 overflow-hidden rounded-xl ${

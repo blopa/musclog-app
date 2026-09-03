@@ -1,8 +1,8 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { X } from 'lucide-react-native';
 import { ReactNode } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { sheetSurfaceColor } from '@/components/sheetSurfaceColor';
 import { Modal } from '@/components/theme/Modal';
 import { useTheme } from '@/hooks/useTheme';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
@@ -50,19 +50,12 @@ export function CenteredModal({
           <View
             className="w-full overflow-hidden rounded-xl border border-border-dark"
             style={{
-              backgroundColor: theme.colors.background.cardElevated,
+              backgroundColor: sheetSurfaceColor(theme),
               maxWidth: maxWidth || theme.size['384'],
             }}
           >
-            {/* Gradient Header */}
-            <LinearGradient
-              colors={[
-                theme.colors.status.purple40,
-                theme.colors.accent.secondary10,
-                'transparent',
-              ]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
+            {/* Header */}
+            <View
               style={{
                 borderBottomWidth: theme.borderWidth.thin,
                 borderBottomColor: theme.colors.border.dark,
@@ -83,7 +76,7 @@ export function CenteredModal({
                   <X size={theme.iconSize.sm} color={theme.colors.text.secondary} />
                 </Pressable>
               </View>
-            </LinearGradient>
+            </View>
 
             {/* Content */}
             <View className="p-6">{children}</View>

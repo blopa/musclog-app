@@ -60,7 +60,7 @@ export function CaloriesRemainingCard({
     willOverflow(macros.fat.amount, macros.fat.goal);
 
   return (
-    <GenericCard variant="highlighted" size="lg" backgroundVariant="gradient">
+    <GenericCard variant="raised">
       <View className="p-6">
         <View className="mb-6">
           <View className="flex-row items-start justify-between">

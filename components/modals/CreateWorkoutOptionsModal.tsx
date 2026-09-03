@@ -35,7 +35,6 @@ export function CreateWorkoutOptionsModal({
       onClose={onClose}
       title={t('workouts.createWorkoutOptionsModal.header')}
       scrollable={true}
-      withGradient={false}
     >
       {/* Background Glows */}
       <View style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
@@ -100,7 +99,6 @@ export function CreateWorkoutOptionsModal({
         <View style={{ gap: theme.spacing.gap.base }}>
           {onStartFreeTraining ? (
             <NewWorkoutCard
-              variant="default"
               icon={<Dumbbell size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
               title={t('freeTraining.startFreeTraining')}
               subtitle={t('freeTraining.startFreeTrainingSubtitle')}
@@ -109,7 +107,6 @@ export function CreateWorkoutOptionsModal({
           ) : null}
           {isAiEnabled ? (
             <NewWorkoutCard
-              variant="popular"
               icon={<Sparkles size={theme.iconSize.lg} color={theme.colors.text.primary} />}
               title={t('workouts.createWorkoutOptions.generateWithAi')}
               subtitle={t('workouts.createWorkoutOptions.generateWithAiSubtitle')}
@@ -118,7 +115,6 @@ export function CreateWorkoutOptionsModal({
           ) : null}
 
           <NewWorkoutCard
-            variant="default"
             icon={<PlusCircle size={theme.iconSize.xl} color={theme.colors.text.secondary} />}
             title={t('workouts.createWorkoutOptions.createFromEmptyTemplate')}
             subtitle={t('workouts.createWorkoutOptions.createFromEmptyTemplateSubtitle')}
@@ -126,7 +122,6 @@ export function CreateWorkoutOptionsModal({
           />
 
           <NewWorkoutCard
-            variant="default"
             icon={<Library size={theme.iconSize.xl} color={theme.colors.text.secondary} />}
             title={t('workouts.createWorkoutOptions.browseTemplates')}
             subtitle={t('workouts.createWorkoutOptions.browseTemplatesSubtitle')}

@@ -68,7 +68,7 @@ export function MealItemCard({
   const { formatRoundedDecimal } = useFormatAppNumber();
   const { intuitiveEatingMode } = useSettings();
   return (
-    <GenericCard variant="default" containerStyle={{}}>
+    <GenericCard variant="flat">
       <View className="flex-row gap-x-4 p-4">
         <View className="relative">
           <View

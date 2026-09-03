@@ -117,7 +117,7 @@ export function CurrentGoalsCard({
   ];
 
   return (
-    <GenericCard variant="card">
+    <GenericCard variant="flat">
       <View className="relative p-5">
         {/* Daily Target */}
         <View className="mb-6">
@@ -303,28 +303,8 @@ export function CurrentGoalsCard({
           </View>
         ) : null}
 
-        {/* Top-right: Dynamic badge + Eating Phase Badge + Menu Button — rendered last to win touch priority */}
+        {/* Top-right: Eating Phase Badge + Menu Button — rendered last to win touch priority */}
         <View className="absolute right-0 top-0 flex-row items-center gap-1 p-3">
-          {goal.isDynamic ? (
-            <View
-              className="rounded-full border px-2"
-              style={{
-                borderColor: theme.colors.status.brandVivid,
-                backgroundColor: theme.colors.status.brandVivid10,
-                paddingVertical: 2,
-              }}
-            >
-              <Text
-                className="font-bold uppercase"
-                style={{
-                  color: theme.colors.status.brandBright,
-                  fontSize: theme.typography.fontSize.xxs,
-                }}
-              >
-                {t('currentGoalsCard.dynamic')}
-              </Text>
-            </View>
-          ) : null}
           <EatingPhaseBadge phase={goal.phase} variant="default" showBorder={false} />
           {hasMenu ? <MenuButton size="sm" onPress={() => setMenuVisible(true)} /> : null}
         </View>

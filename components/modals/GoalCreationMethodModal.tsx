@@ -49,7 +49,6 @@ export function GoalCreationMethodModal({
           description={t('goalsManagement.goalCreationMethod.guidedDescription')}
           onPress={onSelectGuided}
           isRecommended={true}
-          recommendedText={t('goalsManagement.goalCreationMethod.recommended')}
         />
 
         {/* Auto-calculate option */}

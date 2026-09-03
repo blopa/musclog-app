@@ -166,7 +166,6 @@
       "importData": "Importar Dados",
       "importOptically": "Importar dados de outro celular",
       "storedLocally": "Todos os dados armazenados localmente no seu dispositivo",
-      "recommended": "Recomendado",
       "personalizedSetup": "Configuração Personalizada",
       "personalizedSetupSteps": "8 etapas",
       "personalizedSetupSubtitle": "Obtenha TDEE preciso, macros e recomendações personalizadas",
@@ -214,7 +213,7 @@
     },
     "musclogApi": {
       "title": "Musclog AI",
-      "freeBadge": "GRÁTIS",
+      "freeBadge": "Grátis",
       "subtitle": "Melhore sua jornada fitness com insights impulsionados por IA.",
       "features": {
         "coach": {

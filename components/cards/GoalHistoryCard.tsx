@@ -150,7 +150,7 @@ export function GoalHistoryCard({
           />
         ) : null}
 
-        <GenericCard variant="card">
+        <GenericCard variant="flat">
           <View className="p-3">
             <View className="flex-row items-center justify-between">
               <View className="flex-col">

@@ -166,7 +166,6 @@
       },
       "importData": "Import Data",
       "importOptically": "Import data from another phone",
-      "recommended": "Recommended",
       "personalizedSetup": "Personalized Setup",
       "personalizedSetupSteps": "8 steps",
       "personalizedSetupSubtitle": "Get accurate TDEE, macros, and personalized recommendations",
@@ -251,7 +250,7 @@
     },
     "musclogApi": {
       "title": "Musclog AI",
-      "freeBadge": "FREE",
+      "freeBadge": "Free",
       "subtitle": "Enhance your fitness journey with AI-powered insights.",
       "features": {
         "coach": {

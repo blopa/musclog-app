@@ -40,19 +40,14 @@ export function WorkoutPlanSection({
             <Text className="text-base font-semibold text-text-primary" numberOfLines={1}>
               {section.plan.name}
             </Text>
-            <View className="mt-1 flex-row flex-wrap gap-2">
-              <Text className="text-xs text-text-secondary">
-                {t('workouts.plans.workoutCount', { count: section.workouts.length })}
-              </Text>
-              <Text className="rounded-full bg-accent-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase text-text-accent">
-                {t(`workouts.plans.cycleType.${section.plan.cycleType}`)}
-              </Text>
-              {section.plan.difficulty ? (
-                <Text className="rounded-full bg-bg-secondary px-2 py-0.5 text-[10px] font-semibold uppercase text-text-secondary">
-                  {t(`workouts.browseTemplatesModal.tabs.${section.plan.difficulty}`)}
-                </Text>
-              ) : null}
-            </View>
+            <Text className="mt-1 text-xs text-text-secondary" numberOfLines={1}>
+              {t('workouts.plans.workoutCount', { count: section.workouts.length })}
+              {' · '}
+              {t(`workouts.plans.cycleType.${section.plan.cycleType}`)}
+              {section.plan.difficulty
+                ? ` · ${t(`workouts.browseTemplatesModal.tabs.${section.plan.difficulty}`)}`
+                : ''}
+            </Text>
           </View>
           <MenuButton onPress={onPlanMenu} size="sm" />
         </View>

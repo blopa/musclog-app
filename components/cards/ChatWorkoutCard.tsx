@@ -31,7 +31,7 @@ export function ChatWorkoutCard({
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
   return (
-    <GenericCard variant="card" size="sm">
+    <GenericCard variant="flat">
       {/* Hero Image Section */}
       <View className="relative h-32">
         <Image source={image} className="h-full w-full" resizeMode="cover" />

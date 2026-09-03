@@ -246,7 +246,7 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
             {backups.map((backup) => (
               <GenericCard
                 key={backup.uri}
-                variant="card"
+                variant="flat"
                 isPressable
                 onPress={() => handleItemPress(backup)}
               >

@@ -1,5 +1,4 @@
 import MaterialIcons from '@react-native-vector-icons/material-icons/static';
-import { LinearGradient } from 'expo-linear-gradient';
 import type { TFunction } from 'i18next';
 import { Search } from 'lucide-react-native';
 import type { ComponentProps, ReactNode } from 'react';
@@ -177,7 +176,7 @@ export function BrowseTemplatesModal({
     return (
       <GenericCard
         key={template.id}
-        variant="card"
+        variant="flat"
         isPressable
         onPress={() => onTemplateSelect?.(template)}
         containerStyle={{ marginBottom: theme.spacing.padding.md }}
@@ -185,25 +184,11 @@ export function BrowseTemplatesModal({
         <View className="p-4">
           {/* Header with icon and difficulty */}
           <View className="mb-4 flex-row items-start justify-between">
-            <View className="h-12 w-12 overflow-hidden rounded-full">
-              <LinearGradient
-                colors={theme.colors.gradients.cta}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={{
-                  flex: 1,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 48,
-                  overflow: 'hidden',
-                }}
-              >
-                <MaterialIcons
-                  name={template.icon}
-                  size={24}
-                  color={theme.colors.text.alwaysWhite}
-                />
-              </LinearGradient>
+            <View
+              className="h-12 w-12 items-center justify-center overflow-hidden rounded-full"
+              style={{ backgroundColor: theme.colors.accent.primary10 }}
+            >
+              <MaterialIcons name={template.icon} size={24} color={theme.colors.accent.primary} />
             </View>
             <View
               className="rounded-full border px-3 py-1"

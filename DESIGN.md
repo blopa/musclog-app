@@ -199,9 +199,29 @@ appropriate, or both.
 Cards should have one job: a concise heading, one primary value or action, and supporting detail.
 Avoid stacking several unrelated dashboards into one surface.
 
+`components/cards/GenericCard.tsx` has exactly two surface styles, plus one documented brand
+exception — see `components/cards/cardSurface.ts` for the resolver and
+`components/cards/__tests__/cardSurface.test.ts` for the contract it's held to:
+
+- **`flat`** (default) — `background.card` + an `ink/5` hairline, no shadow. Use for almost every
+  card: lists, stats, settings rows.
+- **`raised`** — `background.cardElevated` + the same hairline + `shadows.md`. Reserve for the one
+  emphasis/hero card on a screen. It is illegal inside `BottomPopUp` or `CenteredModal` — their
+  sheet surface is already `cardElevated`, so a raised card disappears into it, and Android
+  elevation can leak through a `SurfaceColorProvider` fade (see `AGENTS.md`).
+- **`hero`** — the `colorfulCard` gradient fill. Reserved for `DailySummaryCard`; do not add a
+  second consumer without updating this section.
+
+One radius throughout: `theme.borderRadius.lg` (16), the same value as Tailwind's `rounded-2xl`.
+Do not introduce a third style, a per-card radius, or a gradient card fill outside `hero` — a
+`GenericCard` call covers the case, and a hand-rolled surface should be migrated to it rather than
+copied.
+
 Use the existing `FullScreenModal`, `CenteredModal`, `BottomPopUp`, and platform variants. A modal
 that opens another modal must follow the presenter rules in `FIXES.md`; visual nesting and React
-tree ownership are separate concerns.
+tree ownership are separate concerns. Modal headers sit on the modal's own surface — none of the
+shared shells route a header through a gradient; a purple-to-transparent wash was a copy-pasted
+pattern across eight files and added nothing over the surface color.
 
 ### Inputs
 

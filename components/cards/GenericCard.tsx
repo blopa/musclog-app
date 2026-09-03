@@ -4,301 +4,77 @@ import { Pressable, StyleProp, View, ViewStyle } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 
+import { CardVariant, resolveCardSurface } from './cardSurface';
+
+export type { CardVariant };
+
 type GenericCardProps = {
   children: ReactNode;
-  isPopular?: boolean;
   onPress?: () => void;
-  variant?: 'default' | 'workout' | 'highlighted' | 'card';
-  backgroundVariant?: 'default' | 'dark-green' | 'gradient' | 'colorful-gradient' | 'tdee';
+  /** 'flat' (default) for almost every card; 'raised' for the one emphasis
+   *  card on a screen; 'hero' is reserved for DailySummaryCard. See
+   *  cardSurface.ts for the full contract. */
+  variant?: CardVariant;
   isPressable?: boolean;
-  size?: 'sm' | 'default' | 'lg';
+  /** Row layouts where the card shares horizontal space with siblings
+   *  (flex: 1 instead of the default full-width). */
+  fill?: boolean;
   containerStyle?: StyleProp<ViewStyle>;
 };
 
 /**
- * GenericCard - A flexible card component with support for different variants
- * and interactive states.
- *
- * Background Variants:
- * - 'default': Default styling based on variant
- * - 'dark-green': Dark green background with elevated shadow
- * - 'gradient': Gradient background with two blurred circles
- * - 'colorful-gradient': Colorful gradient background
- * - 'tdee': Dark card background with neon mint border and single blurred circle effect
+ * GenericCard - the app's one card surface. See cardSurface.ts for the two
+ * styles plus the DailySummaryCard gradient exception.
  */
 export function GenericCard({
   children,
-  isPopular = false,
-  isPressable = false,
   onPress,
-  variant = 'default',
-  backgroundVariant,
-  size = 'default',
+  variant = 'flat',
+  isPressable = false,
+  fill = false,
   containerStyle,
 }: GenericCardProps) {
   const theme = useTheme();
-  const getCardBorderRadius = () => {
-    if (size === 'sm') {
-      return theme.borderRadius.lg;
-    }
+  const surface = resolveCardSurface(variant, theme);
+  const isHero = variant === 'hero';
 
-    if (size === 'lg') {
-      return theme.borderRadius['2xl'];
-    }
-
-    return theme.borderRadius.xl;
+  const cardStyle: ViewStyle = {
+    ...(fill ? { flex: 1 } : { width: '100%' }),
+    overflow: 'hidden',
+    borderRadius: surface.borderRadius,
+    backgroundColor: surface.backgroundColor,
+    borderColor: surface.borderColor,
+    borderWidth: surface.borderWidth,
+    ...surface.shadow,
   };
 
-  // ============================================================================
-  // Computed Values
-  // ============================================================================
-  const isWorkoutVariant = variant === 'workout';
-  const isDefaultVariant = variant === 'default';
-  const isCardVariant = variant === 'card';
-  const effectiveBackgroundVariant = backgroundVariant ?? variant;
-  const isDarkGreenBackground = effectiveBackgroundVariant === 'dark-green';
-  const isTdeeBackground = effectiveBackgroundVariant === 'tdee';
-  const shouldShowPopularGradient = isPopular && !isWorkoutVariant && !isDefaultVariant;
-  const shouldRenderAsPressable = isPressable && !isWorkoutVariant;
-  const hasGradientBackground = effectiveBackgroundVariant === 'gradient';
-  const hasColorfulGradientBackground = effectiveBackgroundVariant === 'colorful-gradient';
-
-  // ============================================================================
-  // Style Helpers
-  // ============================================================================
-  const getStructuralStyle = (pressed: boolean = false): ViewStyle => {
-    // Small cards should use flex-1 instead of full width for row layouts
-    const widthStyle: ViewStyle =
-      size === 'sm' && !isWorkoutVariant
-        ? { flex: 1 } // Allows cards to share space in a row
-        : { width: '100%' };
-
-    const baseStyle: ViewStyle = {
-      ...widthStyle,
-      overflow: 'hidden',
-      transform: [{ scale: pressed ? 0.98 : 1 }],
-    };
-
-    if (isWorkoutVariant) {
-      return {
-        ...baseStyle,
-        borderRadius: theme.borderRadius.xl,
-        padding: theme.spacing.padding.xl,
-      };
-    }
-
-    // Size-based border radius for non-workout variants
-    const borderRadius = getCardBorderRadius();
-
-    return {
-      ...baseStyle,
-      borderRadius,
-    };
-  };
-
-  const getBackgroundStyle = (pressed: boolean = false): ViewStyle => {
-    // Popular cards use gradient wrapper instead of background style
-    if (shouldShowPopularGradient) {
-      return {};
-    }
-
-    // Colorful gradient background uses LinearGradient, so no background style needed
-    if (hasColorfulGradientBackground) {
-      return {
-        borderColor: theme.colors.border.default,
-        borderWidth: theme.borderWidth.thin,
-      };
-    }
-
-    // Default variant: matches FoodItemCard styling (overlay background with default border)
-    if (isDefaultVariant) {
-      return {
-        backgroundColor: theme.colors.background.overlay,
-        borderColor: theme.colors.border.default,
-        borderWidth: theme.borderWidth.thin,
-      };
-    }
-
-    // Card variant: matches HealthCategoryCard styling (card background with white5 border)
-    if (isCardVariant) {
-      return {
-        backgroundColor: theme.colors.background.card,
-        borderColor: theme.colors.background.ink5,
-        borderWidth: theme.borderWidth.thin,
-      };
-    }
-
-    if (isDarkGreenBackground) {
-      return {
-        backgroundColor: theme.colors.background.tintWash,
-        borderColor: theme.colors.background.ink5,
-        borderWidth: theme.borderWidth.thin,
-        ...theme.shadows.lg,
-      };
-    }
-
-    if (isTdeeBackground) {
-      return {
-        backgroundColor: theme.colors.background.card,
-        borderColor: theme.colors.status.brandBright10,
-        borderWidth: theme.borderWidth.thin,
-        ...theme.shadows.lg,
-      };
-    }
-
-    // Highlighted variant (or other variants): elevated card background with pressed state
-    return {
-      backgroundColor: pressed
-        ? theme.colors.background.secondaryDark
-        : theme.colors.background.cardElevated,
-      borderWidth: theme.borderWidth.thin,
-      borderColor: theme.colors.background.ink5,
-      ...theme.shadows.md,
-    };
-  };
-
-  const getCardStyle = (pressed: boolean = false): ViewStyle => {
-    return {
-      ...getStructuralStyle(pressed),
-      ...getBackgroundStyle(pressed),
-    };
-  };
-
-  const getPressableStyle = (): ViewStyle => {
-    // For Pressable, we only need width and overflow, not borderRadius or background
-    const widthStyle: ViewStyle =
-      size === 'sm' && !isWorkoutVariant ? { flex: 1 } : { width: '100%' };
-
-    return {
-      ...widthStyle,
-      overflow: 'hidden',
-    };
-  };
-
-  const getInnerViewStyle = (pressed: boolean = false): ViewStyle => {
-    // Inner view gets the background, border, borderRadius, and transform
-    const borderRadius = getCardBorderRadius();
-
-    return {
-      ...getBackgroundStyle(pressed),
-      borderRadius,
-      transform: [{ scale: pressed ? 0.98 : 1 }],
-      flex: 1,
-    };
-  };
-
-  // ============================================================================
-  // Render Helpers
-  // ============================================================================
-  const renderWorkoutGradientOverlay = () => (
+  const content = isHero ? (
     <LinearGradient
-      colors={theme.colors.gradients.workoutStats}
+      colors={theme.colors.gradients.colorfulCard}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: theme.size['1half'],
-        opacity: theme.colors.opacity.medium,
-      }}
-    />
+      style={{ flex: 1 }}
+    >
+      {children}
+    </LinearGradient>
+  ) : (
+    children
   );
 
-  const renderCardContent = () => {
-    // Popular cards get wrapped in a gradient border
-    if (shouldShowPopularGradient) {
-      // Calculate border radius to match the parent container
-      const borderRadius = getCardBorderRadius();
-
-      return (
-        <LinearGradient
-          colors={theme.colors.gradients.cta}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={{
-            padding: theme.spacing.padding.xs,
-            borderRadius: borderRadius,
-            flex: 1,
-          }}
-        >
-          {children}
-        </LinearGradient>
-      );
-    }
-
-    // Colorful gradient background wraps the content
-    if (hasColorfulGradientBackground) {
-      return (
-        <LinearGradient
-          colors={theme.colors.gradients.colorfulCard}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={{ flex: 1 }}
-        >
-          {children}
-        </LinearGradient>
-      );
-    }
-
-    return children;
-  };
-
-  const renderBackgroundEffects = () => {
-    if (hasGradientBackground) {
-      return (
-        <>
-          <View
-            className="absolute -right-10 -top-10 h-40 w-40 rounded-full blur-3xl"
-            style={{ backgroundColor: theme.colors.accent.primary10 }}
-          />
-          <View
-            className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full blur-3xl"
-            style={{ backgroundColor: theme.colors.accent.secondary10 }}
-          />
-        </>
-      );
-    }
-
-    if (isTdeeBackground) {
-      return (
-        <View
-          className="absolute -right-12 -top-12 h-48 w-48 rounded-full blur-3xl"
-          style={{ backgroundColor: theme.colors.status.brandBright10 }}
-        />
-      );
-    }
-
-    return null;
-  };
-
-  // ============================================================================
-  // Main Render
-  // ============================================================================
-  const cardContent = (
-    <>
-      {isWorkoutVariant ? renderWorkoutGradientOverlay() : null}
-      {renderCardContent()}
-    </>
-  );
-
-  // Pressable card (works for any variant except workout)
-  if (shouldRenderAsPressable) {
+  if (isPressable) {
     return (
-      <Pressable onPress={onPress} style={getPressableStyle()}>
-        {({ pressed }) => <View style={getInnerViewStyle(pressed)}>{cardContent}</View>}
+      <Pressable
+        onPress={onPress}
+        style={({ pressed }) => [
+          cardStyle,
+          containerStyle,
+          { transform: [{ scale: pressed ? 0.98 : 1 }] },
+        ]}
+      >
+        {content}
       </Pressable>
     );
   }
 
-  // Static card
-  const workoutClassName = isWorkoutVariant ? 'mb-8 w-full overflow-hidden border p-6' : undefined;
-
-  return (
-    <View className={workoutClassName} style={[getCardStyle(), containerStyle]}>
-      {renderBackgroundEffects()}
-      {cardContent}
-    </View>
-  );
+  return <View style={[cardStyle, containerStyle]}>{content}</View>;
 }

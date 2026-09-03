@@ -62,8 +62,8 @@ export function FoodInfoCard({
   const fatPercent = totalMacros > 0 ? (food.fat / totalMacros) * 100 : 0;
 
   return (
-    <GenericCard variant="highlighted" backgroundVariant="gradient">
-      <View className="relative z-10 p-5">
+    <GenericCard variant="raised">
+      <View className="p-5">
         {/* Header */}
         <View className="mb-6 flex-row items-start justify-between">
           <View className="flex-1 pr-5">

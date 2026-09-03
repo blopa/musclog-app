@@ -23,6 +23,7 @@
     "totalTimeMinutes": "Totale tijd (minuten)",
     "addSet": "Nieuwe set toevoegen",
     "setLabel": "Set {{index}}",
+    "prBadge": "PR",
     "remove": "Verwijderen",
     "rir": "RIR (Herhalingen in reserve)",
     "syncToHealthConnect": "Synchroniseren met Health Connect",

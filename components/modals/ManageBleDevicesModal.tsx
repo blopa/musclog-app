@@ -183,7 +183,7 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
                   : t('settings.bleDevices.connectButton');
 
                 return (
-                  <GenericCard key={device.id} variant="default">
+                  <GenericCard key={device.id} variant="flat">
                     <View className="p-4">
                       <View className="mb-3 flex-row items-center gap-3">
                         <View className="h-10 w-10 items-center justify-center rounded-lg bg-bg-card">
@@ -352,7 +352,7 @@ export function ManageBleDevicesModal({ visible, onClose }: ManageBleDevicesModa
           {unsavedDiscovered.length > 0 ? (
             <View className="mt-3 gap-3">
               {unsavedDiscovered.map((device) => (
-                <GenericCard key={device.id} variant="default">
+                <GenericCard key={device.id} variant="flat">
                   <View className="flex-row items-center gap-3 p-4">
                     <View className="h-10 w-10 items-center justify-center rounded-lg bg-bg-card">
                       <Bluetooth size={theme.iconSize.md} color={theme.colors.text.secondary} />

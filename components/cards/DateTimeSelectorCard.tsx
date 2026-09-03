@@ -47,9 +47,5 @@ export function DateTimeSelectorCard({
     return content;
   }
 
-  return (
-    <GenericCard variant="card" size="default">
-      {content}
-    </GenericCard>
-  );
+  return <GenericCard variant="flat">{content}</GenericCard>;
 }

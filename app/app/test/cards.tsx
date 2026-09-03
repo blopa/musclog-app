@@ -337,7 +337,6 @@ export default function CardsTestScreen() {
 
         <TestSection title="New Workout Card" subtitle="Add new workout options">
           <NewWorkoutCard
-            variant="popular"
             icon={<Sparkles size={theme.iconSize.lg} color={theme.colors.text.primary} />}
             title="Generate with AI"
             subtitle="Let Musclog build a personalized routine based on your goals and equipment."
@@ -647,33 +646,60 @@ export default function CardsTestScreen() {
           </View>
         </TestSection>
 
-        <TestSection title="Generic Card" subtitle="Flexible card wrapper component">
-          <GenericCard variant="default" size="default">
+        <TestSection
+          title="Generic Card"
+          subtitle="The app's two card styles, plus the DailySummaryCard gradient exception"
+        >
+          <GenericCard variant="flat">
             <View className="p-4">
-              <Text className="text-lg font-bold text-text-primary">Default Card</Text>
+              <Text className="text-lg font-bold text-text-primary">Flat</Text>
               <Text className="mt-2 text-sm text-text-secondary">
-                This is a default generic card with custom content.
+                background.card + an ink/5 hairline, no shadow. The default — use for almost every
+                card.
               </Text>
             </View>
           </GenericCard>
           <View className="mt-4">
-            <GenericCard variant="card" size="sm">
-              <View className="p-3">
-                <Text className="text-base font-bold text-text-primary">Small Card</Text>
-                <Text className="mt-1 text-xs text-text-secondary">A smaller card variant.</Text>
+            <GenericCard variant="raised">
+              <View className="p-4">
+                <Text className="text-lg font-bold text-text-primary">Raised</Text>
+                <Text className="mt-2 text-sm text-text-secondary">
+                  background.cardElevated + the same hairline + shadows.md. Reserve for the one
+                  emphasis card on a screen.
+                </Text>
               </View>
             </GenericCard>
           </View>
           <View className="mt-4">
-            <GenericCard
-              variant="highlighted"
-              size="default"
-              isPressable
-              onPress={() => console.log('Pressed')}
-            >
+            <GenericCard variant="hero">
               <View className="p-4">
-                <Text className="text-lg font-bold text-text-primary">Pressable Card</Text>
-                <Text className="mt-2 text-sm text-text-secondary">This card can be pressed.</Text>
+                <Text className="text-lg font-bold text-text-primary">Hero</Text>
+                <Text className="mt-2 text-sm text-text-secondary">
+                  The colorfulCard gradient. Reserved for DailySummaryCard — do not add a second
+                  consumer without updating DESIGN.md.
+                </Text>
+              </View>
+            </GenericCard>
+          </View>
+          <View className="mt-4">
+            <GenericCard isPressable onPress={() => console.log('Pressed')}>
+              <View className="p-4">
+                <Text className="text-lg font-bold text-text-primary">Pressable</Text>
+                <Text className="mt-2 text-sm text-text-secondary">
+                  Any variant can be pressable; feedback is a scale-down only.
+                </Text>
+              </View>
+            </GenericCard>
+          </View>
+          <View className="mt-4 flex-row gap-3">
+            <GenericCard fill>
+              <View className="p-3">
+                <Text className="text-sm font-bold text-text-primary">fill (row 1/2)</Text>
+              </View>
+            </GenericCard>
+            <GenericCard fill>
+              <View className="p-3">
+                <Text className="text-sm font-bold text-text-primary">fill (row 2/2)</Text>
               </View>
             </GenericCard>
           </View>

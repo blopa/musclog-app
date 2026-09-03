@@ -73,7 +73,7 @@ export function WorkoutCard({
   const formattedLastCompleted = formatLastCompleted();
 
   return (
-    <GenericCard variant="default" size="lg">
+    <GenericCard variant="flat">
       <View className="p-5">
         <View className="mb-4 flex-row items-start justify-between">
           <View className="flex-1">

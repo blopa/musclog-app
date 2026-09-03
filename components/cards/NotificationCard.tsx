@@ -90,7 +90,7 @@ export function NotificationCard({
   );
 
   return (
-    <GenericCard variant="highlighted">
+    <GenericCard variant="flat">
       <View className="p-5">{content}</View>
     </GenericCard>
   );

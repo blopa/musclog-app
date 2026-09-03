@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import {
   ChevronRight,
   Dumbbell,
@@ -276,14 +275,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
           <ToggleInput
             items={healthSettingsItems}
             header={
-              <LinearGradient
-                colors={[
-                  theme.colors.status.purple40,
-                  theme.colors.accent.secondary10,
-                  'transparent',
-                ]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
+              <View
                 className="border-b p-4"
                 style={{
                   borderBottomColor: theme.colors.border.light,
@@ -309,7 +301,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
                     </Text>
                   </View>
                 </View>
-              </LinearGradient>
+              </View>
             }
           />
 

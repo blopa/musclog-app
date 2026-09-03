@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { X } from 'lucide-react-native';
 import { createElement, ReactNode, useCallback, useState } from 'react';
@@ -204,17 +203,8 @@ export function UserMenuModal({
         >
           {/* Modal Content */}
           <View className="overflow-hidden rounded-b-3xl border-b border-border-dark bg-bg-card">
-            {/* Gradient Header */}
-            <LinearGradient
-              colors={[
-                theme.colors.status.purple40,
-                theme.colors.accent.secondary10,
-                'transparent',
-              ]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              className="border-b border-border-dark"
-            >
+            {/* Header */}
+            <View className="border-b border-border-dark">
               <View className="flex-row items-center justify-between p-6">
                 <View className="flex-row items-center gap-4">
                   <View
@@ -263,7 +253,7 @@ export function UserMenuModal({
                   <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
                 </Pressable>
               </View>
-            </LinearGradient>
+            </View>
 
             {/* Menu Items */}
             <View className="gap-3 p-6">

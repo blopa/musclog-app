@@ -19,8 +19,8 @@ export function TdeeCard({ tdeeValue = 2000, subtitle, tagText }: TdeeCardProps)
   const { formatInteger } = useFormatAppNumber();
 
   return (
-    <GenericCard variant="card" backgroundVariant="tdee" size="default">
-      <View className="relative z-10 flex flex-col gap-1 p-6">
+    <GenericCard variant="flat">
+      <View className="flex flex-col gap-1 p-6">
         {/* Header with icon and title */}
         <View className="flex-row items-center gap-2">
           <MaterialIcons
@@ -46,18 +46,9 @@ export function TdeeCard({ tdeeValue = 2000, subtitle, tagText }: TdeeCardProps)
           {subtitle || t('progress.currentTdee')}
         </Text>
 
-        {/* Tag at bottom */}
-        <View
-          className="mt-4 flex-row items-center self-start rounded-full px-3 py-1.5"
-          style={{ backgroundColor: theme.colors.status.brandBright10 }}
-        >
-          <Text
-            className="text-[10px] font-bold uppercase tracking-wider"
-            style={{ color: theme.colors.status.brandBright }}
-          >
-            {tagText || t('progress.basedOnRecentActivity')}
-          </Text>
-        </View>
+        <Text className="mt-4 text-xs text-text-tertiary">
+          {tagText || t('progress.basedOnRecentActivity')}
+        </Text>
       </View>
     </GenericCard>
   );

@@ -26,7 +26,7 @@ export function HistoryBodyMetricCard({ entry }: { entry: HistoryEntry }) {
 
   return (
     <View style={{ opacity: entry.opacity || 1 }}>
-      <GenericCard variant="card" size="default">
+      <GenericCard variant="flat">
         <View className="flex-row items-center justify-between p-5">
           <View className="flex-1 flex-row items-center gap-4">
             <View
@@ -69,14 +69,6 @@ export function HistoryBodyMetricCard({ entry }: { entry: HistoryEntry }) {
                 >
                   {entry.change}
                 </Text>
-              </View>
-            ) : null}
-            {!entry.change ? (
-              <View
-                className="flex-row items-center rounded-full px-2.5 py-1"
-                style={{ backgroundColor: theme.colors.status.neutralWash }}
-              >
-                <Text className="text-xs font-bold text-text-tertiary">{entry.note}</Text>
               </View>
             ) : null}
             <Text className="text-[10px] font-medium text-text-tertiary">{entry.note}</Text>

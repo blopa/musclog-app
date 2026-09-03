@@ -56,11 +56,10 @@ function WorkoutInfo({
 
   if (isLoading) {
     return (
-      <GenericCard variant="card" size="default">
+      <GenericCard variant="flat">
         <View className="p-6">
-          <View className="mb-2 flex-row items-start justify-between">
+          <View className="mb-2">
             <View className="h-8 w-32 rounded bg-bg-secondary" />
-            <View className="h-6 w-20 rounded-full bg-bg-secondary" />
           </View>
           <View className="flex-row items-center gap-4">
             <View className="h-5 w-24 rounded bg-bg-secondary" />
@@ -72,17 +71,12 @@ function WorkoutInfo({
   }
 
   return (
-    <GenericCard variant="card" size="default">
+    <GenericCard variant="flat">
       <View className="p-6">
-        <View className="mb-2 flex-row items-start justify-between">
+        <View className="mb-2">
           <Text className="text-3xl font-extrabold tracking-tight text-text-primary">
             {workoutLog?.workoutName || t('workout.workout')}
           </Text>
-          <View className="rounded-full bg-accent-primary/10 px-3 py-1">
-            <Text className="text-xs font-bold uppercase tracking-widest text-text-accent">
-              In Progress
-            </Text>
-          </View>
         </View>
 
         <View className="flex-row flex-wrap items-center gap-3">
@@ -161,7 +155,7 @@ function ExerciseCard({
   }, [isCompleted, isInProgress, isSkipped]);
 
   return (
-    <GenericCard variant="card" size="default" isPressable onPress={onPress}>
+    <GenericCard variant="flat" isPressable onPress={onPress}>
       <View className="p-4">
         <View className="flex-row items-center justify-between">
           <View className="flex-1 flex-row items-center gap-4">
@@ -440,7 +434,6 @@ export default function WorkoutSessionOverviewModal({
           onPress={() => setIsMenuVisible(true)}
         />
       }
-      withGradient
       footer={
         <Button
           label={buttonProps.label}

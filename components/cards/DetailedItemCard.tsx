@@ -23,7 +23,7 @@ type DetailedItemCardProps = {
 export function DetailedItemCard({ item, onPress, ctaLabel, description }: DetailedItemCardProps) {
   const theme = useTheme();
   return (
-    <GenericCard variant="highlighted" isPressable={true} onPress={onPress} size="sm">
+    <GenericCard variant="flat" isPressable={true} onPress={onPress}>
       <View className="flex-row items-center gap-4 p-4">
         {/* Media */}
         <View className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-bg-overlay">

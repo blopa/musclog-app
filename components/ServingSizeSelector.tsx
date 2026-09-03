@@ -292,7 +292,7 @@ export function ServingSizeSelector({
     }));
 
   return (
-    <GenericCard variant="default">
+    <GenericCard variant="flat">
       {canShowPortionMode ? (
         <View className="mt-4 w-full pl-4 pr-4">
           <SegmentedControl

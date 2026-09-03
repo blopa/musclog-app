@@ -77,8 +77,8 @@ export function CaloriesBurnedCard() {
 
   return (
     <>
-      <GenericCard variant="card" backgroundVariant="gradient" size="default">
-        <View className="relative z-10 flex flex-col gap-1 p-6">
+      <GenericCard variant="flat">
+        <View className="flex flex-col gap-1 p-6">
           {/* Header row */}
           <View className="flex-row items-center justify-between">
             <View className="flex-row items-center gap-2">

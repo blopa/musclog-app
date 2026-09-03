@@ -475,17 +475,14 @@ function createThemeColors(colors) {
       full: 1.0,
     },
 
-    // Gradient colors
+    // Gradient colors — every entry has a live consumer; utils/__tests__/themeSelection.test.ts
+    // asserts the retired tokens below stay gone.
     gradients: {
-      primary: [colors.statusInfo, colors.brandDeep, colors.brandVivid],
       accent: [colors.brandVivid, colors.brandDeep],
-      card: [colors.surfaceRaised, colors.surfaceCardAlpha50],
       button: [colors.surfaceTint, colors.surfaceCard],
       progress: [colors.statusIndigo, colors.brandDeep, colors.brandVivid],
       colorfulCard: [colors.colorfulCardStart, colors.colorfulCardMiddle, colors.colorfulCardEnd],
       workoutsTitle: [colors.statusPurple, colors.statusInfo, colors.brandVivid],
-      notification: [colors.surfaceNotification, colors.surfaceCard],
-      upNextCard: [colors.surfaceTint, colors.surfaceCard, colors.surfaceRaised],
       cta: [colors.statusIndigo, colors.brandBright], // Indigo to primary green gradient
       userBubble: [colors.brandPrimary, colors.brandVivid], // User message bubble gradient
       // GradientText: these stops ARE the text colour, so every stop stays on the
@@ -499,21 +496,11 @@ function createThemeColors(colors) {
         colors.surfaceBaseAlpha85,
         colors.surfaceBaseAlpha70,
       ],
-      indigoPurple: [colors.statusIndigo, colors.statusPurple], // Indigo to purple gradient
-      emeraldTeal: [colors.brandVivid, colors.brandDeep], // Emerald to teal gradient
-      pinkRose: [colors.statusPink, colors.statusRose], // Pink to rose gradient
       blueEmerald: [colors.statusInfo, colors.brandVivid], // Blue to emerald gradient
       overlayDark: ['transparent', colors.surfaceWashBrandDeep, colors.surfaceTint], // Dark overlay gradient
       // Camera scrim: sits over a live preview, so it darkens in every theme.
       cameraOverlay: [colors.scrimAlpha60, 'transparent', colors.scrimAlpha90],
-      onboardingAmbient: [
-        colors.statusIndigoAlpha20, // indigo/20
-        colors.brandBrightAlpha20, // primary/20
-        colors.brandVividAlpha20, // emerald/20
-      ],
       landingBackground: [colors.surfaceBase, colors.surfaceBase, colors.surfaceBase], // Landing page background gradient
-      inkSubtle: [colors.textPrimaryAlpha10, colors.textPrimaryAlpha05], // Subtle ink gradient
-      backdrop90: colors.scrimAlpha90, // Backdrop with 90% opacity
     },
   };
 }

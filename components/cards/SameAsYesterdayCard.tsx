@@ -37,7 +37,7 @@ export function SameAsYesterdayCard({
       <GenericCard
         isPressable
         onPress={onAddAllPress}
-        variant="card"
+        variant="flat"
         containerStyle={{
           borderWidth: theme.borderWidth.thin,
           borderColor: theme.colors.accent.secondary31,

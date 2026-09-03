@@ -1,6 +1,6 @@
 import { Dumbbell, Flame, Timer, TrendingUp } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 
 import { WorkoutSummaryStatRow } from '@/components/WorkoutSummaryStatRow';
 import { useTheme } from '@/hooks/useTheme';
@@ -12,6 +12,7 @@ type WorkoutSummaryStatsCardProps = {
   volume: string;
   personalRecords: number;
   caloriesBurned?: number;
+  containerStyle?: StyleProp<ViewStyle>;
 };
 
 export function WorkoutSummaryStatsCard({
@@ -19,12 +20,13 @@ export function WorkoutSummaryStatsCard({
   volume,
   personalRecords,
   caloriesBurned,
+  containerStyle,
 }: WorkoutSummaryStatsCardProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   return (
-    <GenericCard variant="workout">
-      <View className="gap-6">
+    <GenericCard variant="raised" containerStyle={containerStyle}>
+      <View className="gap-6 p-6">
         <WorkoutSummaryStatRow
           icon={Timer}
           label={t('workoutSummary.totalTime')}

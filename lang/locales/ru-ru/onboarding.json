@@ -166,7 +166,6 @@
       "importData": "Импорт данных",
       "importOptically": "Импортировать данные с другого телефона",
       "storedLocally": "Все данные хранятся локально на вашем устройстве",
-      "recommended": "Рекомендуется",
       "personalizedSetup": "Персонализированная настройка",
       "personalizedSetupSteps": "8 шагов",
       "personalizedSetupSubtitle": "Получите точный TDEE, макросы и персональные рекомендации",
@@ -214,7 +213,7 @@
     },
     "musclogApi": {
       "title": "Musclog AI",
-      "freeBadge": "БЕСПЛАТНО",
+      "freeBadge": "Бесплатно",
       "subtitle": "Улучшите свой фитнес-путь с помощью AI-аналитики.",
       "features": {
         "coach": {

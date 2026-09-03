@@ -463,7 +463,7 @@ export default function AddUserMetricEntryModal({
             />
 
             {/* Metric Entry Group - Input, Date, and Time */}
-            <GenericCard variant="card" size="default">
+            <GenericCard variant="flat">
               <View style={{ overflow: 'hidden' }}>
                 {/* Measure content height on first render */}
                 <View

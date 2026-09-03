@@ -56,7 +56,7 @@ export function WeeklyStreakCard({
   );
 
   return (
-    <GenericCard variant="default" containerStyle={theme.shadows.lg}>
+    <GenericCard variant="raised">
       <View className="flex-row items-stretch" style={{ minHeight: 126 }}>
         <View className="flex-1 justify-center px-5 py-4">
           {!hasWorkoutGoal && onCreateWorkoutGoalPress ? (

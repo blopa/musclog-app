@@ -197,7 +197,7 @@ function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler)
         opacity,
       }}
     >
-      <GenericCard variant="card" isPressable={true} onPress={onPress}>
+      <GenericCard variant="flat" isPressable={true} onPress={onPress}>
         <View className="flex-col gap-4 p-4">
           <View className="flex-row items-start justify-between">
             <View className="flex-row items-center gap-3">

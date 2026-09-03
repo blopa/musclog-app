@@ -103,21 +103,12 @@ export default function MusclogApiScreen() {
                   >
                     {t('onboarding.musclogApi.title')}
                   </Text>
-                  <View
-                    style={{
-                      backgroundColor: theme.colors.status.brandVivid20,
-                      borderRadius: theme.borderRadius.sm,
-                      paddingHorizontal: 8,
-                      paddingVertical: 2,
-                    }}
+                  <Text
+                    className="text-sm font-semibold"
+                    style={{ color: theme.colors.status.brandBright }}
                   >
-                    <Text
-                      className="text-xs font-bold"
-                      style={{ color: theme.colors.status.brandBright }}
-                    >
-                      {t('onboarding.musclogApi.freeBadge')}
-                    </Text>
-                  </View>
+                    {t('onboarding.musclogApi.freeBadge')}
+                  </Text>
                 </View>
                 <Text
                   className="mt-1"

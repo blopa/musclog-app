@@ -299,7 +299,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
 
         {/* Weight Trend Card */}
         <GenericCard
-          variant="card"
+          variant="flat"
           containerStyle={{
             padding: 20,
             marginBottom: 32,
@@ -390,7 +390,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
         </View>
 
         <GenericCard
-          variant="card"
+          variant="flat"
           containerStyle={{
             padding: 20,
             marginBottom: 24,

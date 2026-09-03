@@ -575,7 +575,7 @@ export default function ViewExerciseModal({
           </View>
 
           <View className="px-4 py-6" style={{ flexDirection: 'row', gap: theme.spacing.gap.base }}>
-            <GenericCard variant="default" size="sm">
+            <GenericCard variant="flat" fill>
               <View className="p-6">
                 <Text
                   className="mb-2 text-xs font-medium uppercase tracking-wide"
@@ -600,7 +600,7 @@ export default function ViewExerciseModal({
                 </View>
               </View>
             </GenericCard>
-            <GenericCard variant="default" size="sm">
+            <GenericCard variant="flat" fill>
               <View className="p-6">
                 <Text
                   className="mb-2 text-xs font-medium uppercase tracking-wide"
@@ -629,7 +629,7 @@ export default function ViewExerciseModal({
             <Text className="mb-4 text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
               {t('exercises.viewExercise.oneRepMaxTrend')}
             </Text>
-            <GenericCard variant="default" size="default">
+            <GenericCard variant="flat">
               <View className="p-4">
                 {hasOneRepMaxTrend ? (
                   <View>

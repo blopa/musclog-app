@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { CheckCircle, Flag, Plus } from 'lucide-react-native';
 import { createElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -119,7 +118,7 @@ export function FreeSessionExerciseCompleteModal({
         </View>
 
         <View className="flex-1 items-center justify-center">
-          {/* Success icon: gradient ring + inner gradient circle with check */}
+          {/* Success icon: dual-color ring + solid brand-fill circle with check */}
           <View className="mb-8 items-center justify-center">
             <View
               className="absolute rounded-full"
@@ -140,6 +139,9 @@ export function FreeSessionExerciseCompleteModal({
                 height: SUCCESS_ICON_SIZE - INNER_ICON_OFFSET * 2,
                 borderRadius: theme.borderRadius.full,
                 overflow: 'hidden',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: theme.colors.accent.primary,
                 shadowColor: emerald,
                 shadowOffset: { width: 0, height: 0 },
                 shadowOpacity: 0.2,
@@ -147,21 +149,7 @@ export function FreeSessionExerciseCompleteModal({
                 elevation: 4,
               }}
             >
-              <LinearGradient
-                colors={theme.colors.gradients.cta}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 96,
-                  overflow: 'hidden',
-                }}
-              >
-                <CheckCircle size={48} color={theme.colors.text.primary} strokeWidth={2.5} />
-              </LinearGradient>
+              <CheckCircle size={48} color={theme.colors.text.onAccent} strokeWidth={2.5} />
             </View>
           </View>
 
@@ -182,8 +170,7 @@ export function FreeSessionExerciseCompleteModal({
 
           {/* Exercise summary card */}
           <GenericCard
-            variant="card"
-            size="lg"
+            variant="flat"
             containerStyle={{ marginBottom: theme.spacing.margin['2xl'] }}
           >
             <View

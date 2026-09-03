@@ -87,7 +87,7 @@ export function MealGroupDetailsModal({
         contentContainerStyle={{ padding: theme.spacing.padding.base, paddingBottom: 40 }}
       >
         {/* Totals summary card */}
-        <GenericCard variant="highlighted" backgroundVariant="gradient">
+        <GenericCard variant="raised">
           <View className="p-5">
             <Text className="mb-4 text-xs font-medium uppercase tracking-wider text-text-secondary">
               {t('food.mealGroup.totalNutrients')}
@@ -131,7 +131,7 @@ export function MealGroupDetailsModal({
             const formattedGrams = formatDisplayGrams(locale, units, entry.gramWeight);
 
             return (
-              <GenericCard key={entry.log.id} variant="default">
+              <GenericCard key={entry.log.id} variant="flat">
                 <View className="flex-row items-center gap-3 p-4">
                   <View
                     className="h-9 w-9 items-center justify-center rounded-lg"

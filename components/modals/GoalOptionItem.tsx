@@ -8,8 +8,10 @@ type GoalOptionItemProps = {
   title: string;
   description: string;
   onPress: () => void;
+  /** Applies the same accent-tinted border/background/icon-well treatment as isSelected —
+   *  that tint is the option's whole "this one is preferred" signal; it does not also render
+   *  a "Recommended" badge, which would just repeat what the tint already says. */
   isRecommended?: boolean;
-  recommendedText?: string;
   isSelected?: boolean;
   disabled?: boolean;
   showChevron?: boolean;
@@ -21,7 +23,6 @@ export function GoalOptionItem({
   description,
   onPress,
   isRecommended = false,
-  recommendedText,
   isSelected = false,
   disabled = false,
   showChevron = true,
@@ -67,45 +68,16 @@ export function GoalOptionItem({
             {icon}
           </View>
           <View style={{ flex: 1 }}>
-            <View
+            <Text
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 8,
+                fontSize: theme.typography.fontSize.base,
+                fontWeight: theme.typography.fontWeight.bold,
+                color: disabled ? theme.colors.text.tertiary : theme.colors.text.primary,
                 marginBottom: 4,
-                flexWrap: 'wrap',
               }}
             >
-              <Text
-                style={{
-                  fontSize: theme.typography.fontSize.base,
-                  fontWeight: theme.typography.fontWeight.bold,
-                  color: disabled ? theme.colors.text.tertiary : theme.colors.text.primary,
-                }}
-              >
-                {title}
-              </Text>
-              {isRecommended && recommendedText ? (
-                <View
-                  style={{
-                    borderRadius: 999,
-                    paddingHorizontal: 8,
-                    paddingVertical: 2,
-                    backgroundColor: theme.colors.accent.primary,
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: theme.typography.fontSize.xs,
-                      fontWeight: theme.typography.fontWeight.bold,
-                      color: '#fff',
-                    }}
-                  >
-                    {recommendedText}
-                  </Text>
-                </View>
-              ) : null}
-            </View>
+              {title}
+            </Text>
             <Text
               style={{
                 fontSize: theme.typography.fontSize.sm,

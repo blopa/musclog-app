@@ -106,12 +106,6 @@
     "common": {
       "kcal": "ккал"
     },
-    "aiCamera": {
-      "estimated": "Оценочно",
-      "modes": {
-        "mealPhoto": "ИИ-блюдо"
-      }
-    },
     "createMeal": {
       "estimated": "Оценочно",
       "totalNutrition": "Общая питательная ценность"

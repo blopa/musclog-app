@@ -154,7 +154,7 @@ export function SavedForLaterModal({
 
       return (
         <View className="mb-4">
-          <GenericCard variant="card">
+          <GenericCard variant="flat">
             <View className="flex-row items-center justify-between p-4">
               <View className="flex-1 pr-4">
                 <Text className="text-lg font-bold text-text-primary" numberOfLines={1}>

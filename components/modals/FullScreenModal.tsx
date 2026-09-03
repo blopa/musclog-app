@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowLeft } from 'lucide-react-native';
 import { ReactNode, RefObject, useLayoutEffect, useRef, useState } from 'react';
 import { Platform, Pressable, Text, View } from 'react-native';
@@ -25,7 +24,6 @@ type FullScreenModalProps = {
   footer?: ReactNode;
   children: ReactNode;
   scrollable?: boolean;
-  withGradient?: boolean;
   showHeader?: boolean;
   closable?: boolean;
   scrollViewRef?: RefObject<KeyboardAwareScrollViewRef | null>;
@@ -42,7 +40,6 @@ export function FullScreenModal({
   children,
   scrollable = true,
   footer,
-  withGradient = false,
   showHeader = true,
   closable = true,
   scrollViewRef,
@@ -97,14 +94,7 @@ export function FullScreenModal({
           {/* Header */}
           {showHeader ? (
             <View className="border-b border-border-light bg-bg-primary">
-              <LinearGradient
-                colors={
-                  withGradient
-                    ? [theme.colors.status.purple40, theme.colors.accent.secondary10, 'transparent']
-                    : ['transparent', 'transparent']
-                }
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
+              <View
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -133,7 +123,7 @@ export function FullScreenModal({
                   ) : null}
                 </View>
                 {headerRight ? <View>{headerRight}</View> : null}
-              </LinearGradient>
+              </View>
             </View>
           ) : null}
 

@@ -177,7 +177,7 @@ function VolumeTrendCard({
   const { t } = useTranslation();
 
   return (
-    <GenericCard variant="card">
+    <GenericCard variant="flat">
       <View style={{ padding: theme.spacing.padding.base }}>
         <View className="mb-4 flex-row items-center justify-between">
           <Text className="text-sm font-bold text-text-primary">
@@ -345,7 +345,7 @@ function ExerciseCard({ exercise, onEdit, onInfo, onClose }: ExerciseCardProps) 
   const { t } = useTranslation();
 
   return (
-    <GenericCard variant="card" containerStyle={{ opacity: exercise.isSkipped ? 0.7 : 1 }}>
+    <GenericCard variant="flat" containerStyle={{ opacity: exercise.isSkipped ? 0.7 : 1 }}>
       {/* Exercise Header */}
       <View
         className="mb-0 flex-row items-center justify-between border-b pb-4"

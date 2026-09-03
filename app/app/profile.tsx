@@ -431,7 +431,7 @@ export default function ProfileScreen() {
         weightPrediction.shouldShow &&
         weightPrediction.predictedWeightKg !== null ? (
           <View className="mb-8 px-4">
-            <GenericCard backgroundVariant="tdee">
+            <GenericCard variant="raised">
               <View className="flex-row items-center gap-3 p-4">
                 <View
                   className="h-10 w-10 items-center justify-center rounded-full"
