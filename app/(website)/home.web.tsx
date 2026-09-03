@@ -39,6 +39,20 @@ const STATIC_IMAGE = (filename: string) => withExpoBaseUrl(`/images/${filename}`
 const PHONE_SCREENSHOT = (filename: string) => STATIC_IMAGE(`phone/${filename}`);
 const HERO_APP_SCREENSHOT = STATIC_IMAGE('app-screenshot.png');
 const HERO_AVATAR = STATIC_IMAGE('user-avatar.jpg');
+const THEME_SCREENSHOT = (themeId: ThemeShowcaseId) => STATIC_IMAGE(`themes/${themeId}.webp`);
+
+// Accents mirror `brandPrimary` in theme.registry.js; the labels themselves come from the
+// same `settings.theme.options` strings the in-app picker uses.
+const THEME_SHOWCASE = [
+  { accent: '#29a577', id: 'kinetic-depth' },
+  { accent: '#0e7a54', id: 'kinetic-light' },
+  { accent: '#e85d9e', id: 'kinetic-shock' },
+  { accent: '#f5c842', id: 'kinetic-volt' },
+  { accent: '#c2185b', id: 'kinetic-blush' },
+  { accent: '#f97316', id: 'kinetic-varia' },
+] as const;
+
+type ThemeShowcaseId = (typeof THEME_SHOWCASE)[number]['id'];
 
 export function CTA() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.cta' });
@@ -688,6 +702,122 @@ export function ScreenshotShowcase() {
   );
 }
 
+export function Themes() {
+  const { t } = useTranslation();
+  const [activeThemeId, setActiveThemeId] = useState<ThemeShowcaseId>(THEME_SHOWCASE[0].id);
+
+  const activeTheme =
+    THEME_SHOWCASE.find((theme) => theme.id === activeThemeId) ?? THEME_SHOWCASE[0];
+
+  return (
+    <section id="themes" className="relative overflow-hidden py-16 md:py-20">
+      <SectionBackground variant="dots" />
+      <div className="container relative z-10 mx-auto px-4">
+        <div className="mb-10 text-center md:mb-14">
+          <h2 className="mb-4 text-balance text-3xl font-extrabold text-white md:text-4xl">
+            {t('website.themes.title')}
+          </h2>
+          <p
+            className="mx-auto max-w-xl text-balance text-base md:text-lg"
+            style={{ color: BODY_TEXT }}
+          >
+            {t('website.themes.description')}
+          </p>
+        </div>
+
+        <div className="mb-10 flex flex-wrap justify-center gap-2">
+          {THEME_SHOWCASE.map((theme) => {
+            const isActive = theme.id === activeThemeId;
+
+            return (
+              <button
+                key={theme.id}
+                type="button"
+                onClick={() => setActiveThemeId(theme.id)}
+                aria-pressed={isActive}
+                className="flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors"
+                style={{
+                  backgroundColor: isActive ? `${theme.accent}1f` : 'rgba(255,255,255,0.03)',
+                  borderColor: isActive ? theme.accent : 'rgba(255,255,255,0.1)',
+                  color: isActive ? theme.accent : BODY_TEXT,
+                }}
+              >
+                <span
+                  className="h-3 w-3 rounded-full"
+                  style={{ backgroundColor: theme.accent }}
+                  aria-hidden="true"
+                />
+                {t(`settings.theme.options.${theme.id}.label`)}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="grid items-center gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+          <div className="flex justify-center">
+            <div
+              className="w-full max-w-[16rem] overflow-hidden rounded-[1.75rem] border"
+              style={{
+                borderColor: `${activeTheme.accent}59`,
+                boxShadow: `0 24px 70px ${activeTheme.accent}33`,
+              }}
+            >
+              <img
+                src={THEME_SCREENSHOT(activeTheme.id)}
+                alt={t(`settings.theme.options.${activeTheme.id}.description`)}
+                className="aspect-[1083/2340] w-full object-cover object-top"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-5 text-center md:text-left">
+            <div>
+              <p
+                className="text-xs font-bold uppercase tracking-[0.28em]"
+                style={{ color: activeTheme.accent }}
+              >
+                {t(`settings.theme.options.${activeTheme.id}.label`)}
+              </p>
+              <p className="mt-3 text-lg leading-relaxed text-white md:text-xl">
+                {t(`settings.theme.options.${activeTheme.id}.description`)}
+              </p>
+            </div>
+
+            <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT }}>
+              {t('website.themes.footnote')}
+            </p>
+
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-6 md:max-w-md">
+              {THEME_SHOWCASE.map((theme) => {
+                const isActive = theme.id === activeThemeId;
+
+                return (
+                  <button
+                    key={theme.id}
+                    type="button"
+                    onClick={() => setActiveThemeId(theme.id)}
+                    aria-label={t(`settings.theme.options.${theme.id}.label`)}
+                    className="overflow-hidden rounded-xl border transition-all"
+                    style={{
+                      borderColor: isActive ? theme.accent : 'rgba(255,255,255,0.08)',
+                    }}
+                  >
+                    <img
+                      src={THEME_SCREENSHOT(theme.id)}
+                      alt=""
+                      className="aspect-[1083/2340] w-full object-cover object-top"
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export function Testimonial() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.testimonial' });
 
@@ -1010,6 +1140,7 @@ export default function Home() {
         <Features />
         <FeatureGrid />
         <ScreenshotShowcase />
+        <Themes />
         <Stats />
         <HowItWorks />
         <Testimonial />

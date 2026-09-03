@@ -196,6 +196,11 @@
         }
       }
     },
+    "themes": {
+      "title": "Six Themes, One App",
+      "description": "Pick the palette that fits your training. Every screen follows it, including charts, camera overlays, and the tab bar.",
+      "footnote": "Switch any time in Settings. Musclog also follows your device's light and dark setting if you would rather not choose."
+    },
     "features": {
       "title": "Built for Performance & Privacy",
       "description": "No telemetry, no tracking, no subscription. Just a powerful engine for your fitness journey.",

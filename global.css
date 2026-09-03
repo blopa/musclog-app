@@ -418,8 +418,13 @@ html.hide-desktop-wrapper .expo-web-app-shell {
 
 .blog-prose tr:nth-child(even) { background: rgb(255 255 255 / 3%); }
 
+/* Height is capped as well as width so a portrait screenshot (phone captures are roughly 1:2)
+   does not take over the column the way a landscape one at the same width would. */
 .blog-prose img {
+	display: block;
 	max-width: 100%;
+	max-height: min(80vh, 40rem);
+	width: auto;
 	height: auto;
 	margin: 1.75rem auto;
 	border-radius: 1rem;

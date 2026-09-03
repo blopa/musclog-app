@@ -12,6 +12,8 @@ There was a `theme.ts`, components called `useTheme()`, and a dark palette that 
 
 That is roughly how it started. It is not how it ended.
 
+![Musclog's home screen rendered in every named theme, from pale pink to deep emerald to electric yellow](/images/blog/2026/09/musclog-themes-banner.webp)
+
 The moment the app could switch between Kinetic Depth, Kinetic Light, Kinetic Shock, Kinetic Volt, and Kinetic Blush, every shortcut that had been harmless with one palette became visible. Some components followed the selected theme through inline styles. Others followed NativeWind's binary dark mode. Portalled modals lived outside the View carrying the variables. Camera controls needed to stay light even when the app became light. One card had quietly decided that “light mode” and “do not use a gradient” were the same fact.
 
 The colors were the easy part. The real job was making the app have exactly one answer to a deceptively simple question:
@@ -130,11 +132,17 @@ This is the distinction that made light mode possible without painting every scr
 
 That key used to be called `text.black`, which is a good example of the problem in miniature. Its job is “ink on a solid accent”. In the dark emerald theme that ink is near-black. In Kinetic Light and Kinetic Blush, whose accents have to become darker to stay visible on a bright surface, it is white. A name describing the hue was wrong in three of five themes; a name describing the role is right in all of them.
 
+![Kinetic Depth: the original dark emerald palette, deep near-black surfaces with green accents](/images/blog/2026/09/musclog-theme-kinetic-depth.webp)
+
+![Kinetic Light: the same screen on bright surfaces, where every accent had to darken and the ink on it had to flip to white](/images/blog/2026/09/musclog-theme-kinetic-light.webp)
+
+The two screens above are the same components with the same class names. Nothing in `DailySummaryCard`, the mood picker, or the tab bar knows which of them it is rendering.
+
 The same applies to translucent borders. `border-white/10` looks reasonable on dark green and disappears completely on white. `border-ink/10` means “ten percent of the current on-surface ink”, which survives both.
 
 ## Resolving “System” once
 
-There are six choices in Settings but only five palettes. “System” means Kinetic Light when the operating system is light and Kinetic Depth otherwise.
+There are seven choices in Settings but only six palettes. “System” means Kinetic Light when the operating system is light and Kinetic Depth otherwise.
 
 Originally, each hook resolved that independently:
 
@@ -269,9 +277,13 @@ A flat gradient. I had solved this problem once and then invented a whole new ax
 
 Kinetic Blush is the argument for why this ordering matters. It is a light theme that _does_ want the sweep — a pale lilac-to-rose wash instead of a flat card — so it sets real ratios and gets one. Under the flag design that would have been a second value in a two-value enum. Under this one it is three numbers in the same palette as everything else, and `DailySummaryCard` never learned its name.
 
+![Kinetic Blush: a light theme whose summary card still carries a pale lilac-to-rose sweep](/images/blog/2026/09/musclog-theme-kinetic-blush.webp)
+
+Blush is light and gradient. Kinetic Light is light and flat. Under the mode check, one of those two was unreachable.
+
 ## Contrast is data, so test the data
 
-Five palettes multiply the number of combinations faster than screenshots can cover. The durable checks iterate the registry instead of naming themes one by one: every rung of the surface ladder has to stay visible against the next, every text step has to clear AA on every ground that carries body copy, and no two colors that share a chart legend may land within a just-noticeable difference of each other.
+Six palettes multiply the number of combinations faster than screenshots can cover. The durable checks iterate the registry instead of naming themes one by one: every rung of the surface ladder has to stay visible against the next, every text step has to clear AA on every ground that carries body copy, and no two colors that share a chart legend may land within a just-noticeable difference of each other.
 
 I wrote all of that twice, which I did not notice until I went looking for something else.
 
@@ -297,11 +309,19 @@ Same function, same thresholds, and the readable report is now a view onto the t
 
 Consolidating also made it obvious what was missing. Kinetic Volt has a bright gradient on the summary card and needs dark ink on it, which had been handled by a test naming Kinetic Volt specifically. That is fine until a sixth theme is bright too. The rule I could state generally is that the card's ink must sit on one side of the whole sweep — lighter than every stop, or darker than every stop, never in the middle. Kinetic Blush passed it on the first try, which is the only reason I trusted the palette enough to ship it.
 
+![Kinetic Volt: a dark theme with a bright yellow summary card carrying dark ink](/images/blog/2026/09/musclog-theme-kinetic-volt.webp)
+
+Volt is the case that made the general rule necessary: it is a dark theme, so the card ink defaults to light, and its gradient is bright enough that the default would have been unreadable.
+
 Another integration test renders the provider and reads `useTheme()`, `useThemeId()`, and `useThemeMode()` in the same hook. It asserts that Settings is read once, System follows the OS, a nested scope overrides all three values together, and web variables disappear when the provider unmounts.
 
 The useful property of registry-driven tests is that they expand automatically. Adding a fifth entry added it to theme construction, CSS generation, ID validation, shape checks, and the contrast matrix without my touching any of them. Forgetting the tests is harder because the catalogue is what tells the tests what exists.
 
 Adding Kinetic Blush was, in the end, one object in one file, one icon in the picker, and a line of copy per language. The palette guard caught the one real problem: the brand color is pink, `macros.carbs` reads from the brand, and `macros.fiber` is `status.pink` — so the two would have been the same swatch in a shared legend. Kinetic Shock had hit exactly this and solved it by making its `status.pink` a fuchsia. Blush does the same with a magenta. I did not remember that precedent; the audit did.
+
+![Kinetic Shock: deep rose surfaces with pink accents, whose status pink had to become a fuchsia to stay distinguishable](/images/blog/2026/09/musclog-theme-kinetic-shock.webp)
+
+_Kinetic Shock, where a pink brand color and a pink status color had to learn to be different pinks._
 
 ## The code I deleted mattered too
 
@@ -323,4 +343,14 @@ The third is the one I keep relearning: the best abstraction often has less inte
 
 The fourth only became visible on review: two implementations that agree are not redundancy, they are a deadline. The camera read `darkTheme` and installed a dark scope. The palette had a guard script and a guard test. Kinetic Light had a flag saying “no gradient” and a set of gradient ratios saying how. Every one of those pairs was correct on the day it was written, and every one of them was one edit away from a bug that nothing would report.
 
-Musclog now has five themes. More importantly, it has one theme system.
+## The sixth theme
+
+Kinetic Varia arrived after all of the above was written, which makes it the only honest test of any of it.
+
+![Kinetic Varia: deep violet surfaces with an orange visor accent](/images/blog/2026/09/musclog-theme-kinetic-varia.webp)
+
+It is a dark theme on violet surfaces with an orange accent, and adding it was one object in `theme.registry.js`, one entry in the picker, and a line of copy per language. No new CSS map, no new native variable map, no component learning that a sixth palette exists, and no test naming it. The contrast matrix picked it up on its own, because the matrix iterates the registry rather than a list of theme names I have to remember to extend. Its summary card carries a bright orange sweep, which is the Kinetic Volt situation again — and the rule generalized away from Volt, that the card's ink must sit on one side of the whole gradient, was already waiting.
+
+That is the whole return on the refactor. The first five themes cost me a rewrite. The sixth cost me an afternoon of choosing hex values.
+
+Musclog now has six themes. More importantly, it has one theme system.

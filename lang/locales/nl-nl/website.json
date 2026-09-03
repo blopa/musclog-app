@@ -196,6 +196,11 @@
         }
       }
     },
+    "themes": {
+      "title": "Zes thema's, één app",
+      "description": "Kies het palet dat bij jouw training past. Elk scherm volgt het, inclusief grafieken, camera-overlays en de tabbalk.",
+      "footnote": "Wissel wanneer je wilt in Instellingen. Musclog volgt ook de lichte of donkere modus van je apparaat als je liever niet kiest."
+    },
     "features": {
       "title": "Gebouwd voor Prestatie & Privacy",
       "description": "Geen telemetrie, geen tracking, geen abonnement. Gewoon een krachtige motor voor uw fitnessreis.",
