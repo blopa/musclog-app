@@ -41,12 +41,12 @@ import {
 import { SoftwareApplicationJsonLd } from '@/components/website/WebsiteStructuredData';
 import { DownloadModal } from '@/components/website/WebsiteWrapper';
 import { THEME_IDS, type ThemeId } from '@/constants/settings';
+import { useThemeId } from '@/hooks/useTheme';
 import { THEME_DEFINITIONS } from '@/theme.registry';
 import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
 
 const STATIC_IMAGE = (filename: string) => withExpoBaseUrl(`/images/${filename}`);
 const PHONE_SCREENSHOT = (filename: string) => STATIC_IMAGE(`phone/${filename}`);
-const HERO_APP_SCREENSHOT = STATIC_IMAGE('app-screenshot.png');
 const HERO_AVATAR = STATIC_IMAGE('user-avatar.jpg');
 const THEME_SCREENSHOT = (themeId: ThemeShowcaseId) => STATIC_IMAGE(`themes/${themeId}.webp`);
 
@@ -1020,6 +1020,7 @@ export function HowItWorks() {
 }
 
 export function Hero() {
+  const themeId = useThemeId();
   const { t } = useTranslation(undefined, { keyPrefix: 'website.hero' });
   return (
     <section className="relative overflow-hidden pb-16 pt-24 md:pb-20 md:pt-32">
@@ -1101,7 +1102,7 @@ export function Hero() {
                 >
                   <div className="overflow-hidden rounded-[2rem]">
                     <img
-                      src={HERO_APP_SCREENSHOT}
+                      src={THEME_SCREENSHOT(themeId)}
                       alt="Musclog app screenshot"
                       width={320}
                       height={640}
