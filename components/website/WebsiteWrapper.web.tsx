@@ -1,14 +1,5 @@
 import { Link } from 'expo-router';
-import {
-  Check,
-  ChevronDown,
-  Download,
-  Dumbbell,
-  Menu,
-  Monitor,
-  Palette,
-  X,
-} from 'lucide-react-native';
+import { Download, Dumbbell, Menu, X } from 'lucide-react-native';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
@@ -27,40 +18,11 @@ import {
   scrim,
   surface,
 } from '@/components/website/websiteColors';
-import { THEME_IDS, type ThemeOption } from '@/constants/settings';
-import { SettingsService } from '@/database/services/SettingsService';
-import { useThemePreference } from '@/hooks/useTheme';
-import i18n from '@/lang/lang';
+import { WebsitePreferences } from '@/components/website/WebsitePreferences';
 import packageJson from '@/package.json';
-import { THEME_DEFINITIONS } from '@/theme.registry';
-import { setMirroredThemePreference } from '@/utils/themeMirror';
 import { resetAnalyticsConsent } from '@/utils/websiteAnalytics';
 
 const CARD_BORDER = ink(0.12);
-
-/** Appearance options, in the order the in-app picker offers them. */
-const THEME_OPTIONS = ['system', ...THEME_IDS] as const satisfies readonly ThemeOption[];
-
-/**
- * A dot per palette, painted in that palette's own colours. `system` has no
- * entry — it gets a device glyph, because it has no colours of its own.
- */
-const THEME_SWATCHES = Object.fromEntries(
-  THEME_IDS.map((themeId) => [
-    themeId,
-    {
-      edge: THEME_DEFINITIONS[themeId].palette.borderHairline,
-      fill: THEME_DEFINITIONS[themeId].palette.brandPrimary,
-    },
-  ])
-) as Record<ThemeOption, { edge: string; fill: string } | undefined>;
-
-const languages = [
-  { code: 'en-us', label: 'English', flag: '🇬🇧' },
-  { code: 'es-es', label: 'Español', flag: '🇪🇸' },
-  { code: 'nl-nl', label: 'Nederlands', flag: '🇳🇱' },
-  { code: 'pt-br', label: 'Português', flag: '🇧🇷' },
-];
 
 interface DownloadModalProps {
   children: ReactNode;
@@ -223,281 +185,6 @@ export function DownloadModal({
   );
 }
 
-export function LanguagePicker() {
-  const { t } = useTranslation(undefined, { keyPrefix: 'website.navigation' });
-  const locale = i18n.resolvedLanguage ?? i18n.language;
-  const [isOpen, setIsOpen] = useState(false);
-  const pickerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-      }
-    };
-
-    const handlePointerDown = (event: MouseEvent) => {
-      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('mousedown', handlePointerDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('mousedown', handlePointerDown);
-    };
-  }, [isOpen]);
-
-  const handleLanguageChange = (newLocale: string) => {
-    i18n.changeLanguage(newLocale).catch((err) => {
-      console.warn('[LanguagePicker] Failed to change language:', err);
-    });
-    setIsOpen(false);
-  };
-
-  const currentLanguage = languages.find((language) => language.code === locale);
-  const currentLanguageLabel = currentLanguage?.label ?? t('language');
-
-  return (
-    <div className="relative inline-flex" ref={pickerRef}>
-      <button
-        type="button"
-        aria-label={t('language')}
-        aria-expanded={isOpen}
-        aria-haspopup="menu"
-        title={currentLanguageLabel}
-        onClick={() => setIsOpen((current) => !current)}
-        className="inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm transition-all duration-150 hover:border-ink/20 hover:bg-ink/10"
-        style={{
-          color: HEADING_TEXT,
-          borderColor: isOpen ? brand(0.4) : ink(0.08),
-          backgroundColor: isOpen ? ink(0.08) : ink(0.04),
-          boxShadow: isOpen ? `0 0 0 1px ${brand(0.18)}` : 'none',
-        }}
-      >
-        <span className="text-base leading-none">{currentLanguage?.flag ?? '🌐'}</span>
-        <span className="hidden lg:inline" style={{ color: BODY_TEXT_SOFT }}>
-          {t('language')}
-        </span>
-        <span className="max-w-[7.5rem] truncate font-medium">{currentLanguageLabel}</span>
-        <ChevronDown
-          className={`h-4 w-4 text-text-tertiary transition-transform duration-150 ${isOpen ? 'rotate-180' : ''}`}
-        />
-      </button>
-
-      {isOpen ? (
-        <div
-          role="menu"
-          aria-label={t('language')}
-          className="absolute right-0 top-full z-[170] mt-3 min-w-[220px] overflow-hidden rounded-2xl border shadow-2xl backdrop-blur-xl"
-          style={{
-            borderColor: ink(0.1),
-            background: `linear-gradient(180deg, ${surface(0.98)} 0%, ${scrim(0.96)} 100%)`,
-            boxShadow: `0 24px 70px ${scrim(0.45)}, 0 0 0 1px ${ink(0.03)}, 0 0 30px ${brand(0.08)}`,
-          }}
-        >
-          <div
-            className="border-b px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em]"
-            style={{ color: BODY_TEXT_SOFT, borderColor: ink(0.08) }}
-          >
-            {t('language')}
-          </div>
-
-          <div className="p-2">
-            {languages.map((language) => {
-              const isSelected = language.code === locale;
-
-              return (
-                <button
-                  key={language.code}
-                  type="button"
-                  role="menuitemradio"
-                  aria-checked={isSelected}
-                  onClick={() => handleLanguageChange(language.code)}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-ink/[0.06]"
-                  style={{
-                    backgroundColor: isSelected ? brand(0.14) : 'transparent',
-                    color: isSelected ? HEADING_TEXT : BODY_TEXT,
-                  }}
-                >
-                  <span className="text-lg leading-none">{language.flag}</span>
-                  <span className="flex-1 text-sm font-medium">{language.label}</span>
-                  {isSelected ? <Check className="h-4 w-4 text-accent-bright" /> : null}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-/**
- * Apply an appearance choice.
- *
- * The mirror is what re-themes the site: nobody has onboarded here, so the
- * settings table never opens and `SettingsProvider` never observes it. The row
- * is still written, so the choice carries into the web demo and the app, which
- * do read it. See `utils/themeMirror`.
- */
-function selectTheme(option: ThemeOption) {
-  setMirroredThemePreference(option);
-  SettingsService.setTheme(option).catch((error) => {
-    console.warn('[ThemePicker] Failed to save theme:', error);
-  });
-}
-
-/** The palette list itself, shared by the desktop dropdown and the mobile menu. */
-export function ThemeOptions({ onSelect }: { onSelect?: () => void }) {
-  const { t } = useTranslation();
-  const themePreference = useThemePreference();
-
-  return (
-    <div className="flex flex-col gap-1">
-      {THEME_OPTIONS.map((option) => {
-        const isSelected = option === themePreference;
-        // The swatch has to show the palette it *offers*, not the one in force,
-        // so it is the only colour on the site read straight from the registry
-        // instead of through the active theme.
-        const swatch = THEME_SWATCHES[option];
-
-        return (
-          <button
-            key={option}
-            type="button"
-            role="menuitemradio"
-            aria-checked={isSelected}
-            onClick={() => {
-              selectTheme(option);
-              onSelect?.();
-            }}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-ink/[0.06]"
-            style={{
-              backgroundColor: isSelected ? brand(0.14) : 'transparent',
-              color: isSelected ? HEADING_TEXT : BODY_TEXT,
-            }}
-          >
-            {swatch ? (
-              <span
-                aria-hidden="true"
-                className="h-4 w-4 shrink-0 rounded-full border"
-                style={{ backgroundColor: swatch.fill, borderColor: swatch.edge }}
-              />
-            ) : (
-              <Monitor className="h-4 w-4 shrink-0" />
-            )}
-            <span className="flex-1 text-sm font-medium">
-              {t(`settings.theme.options.${option}.label`)}
-            </span>
-            {isSelected ? <Check className="h-4 w-4 text-accent-bright" /> : null}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-/**
- * Appearance control for the site's desktop header. The mobile header has no
- * room for a third pill, so `MobileMenu` renders `ThemeOptions` inline instead.
- */
-export function ThemePicker() {
-  const { t } = useTranslation();
-  const { t: navT } = useTranslation(undefined, { keyPrefix: 'website.navigation' });
-  const themePreference = useThemePreference();
-  const [isOpen, setIsOpen] = useState(false);
-  const pickerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-      }
-    };
-
-    const handlePointerDown = (event: MouseEvent) => {
-      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('mousedown', handlePointerDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('mousedown', handlePointerDown);
-    };
-  }, [isOpen]);
-
-  const currentLabel = t(`settings.theme.options.${themePreference}.label`);
-
-  return (
-    <div className="relative inline-flex" ref={pickerRef}>
-      <button
-        type="button"
-        aria-label={navT('theme')}
-        aria-expanded={isOpen}
-        aria-haspopup="menu"
-        title={currentLabel}
-        onClick={() => setIsOpen((current) => !current)}
-        className="inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm transition-all duration-150 hover:border-ink/20 hover:bg-ink/10"
-        style={{
-          color: HEADING_TEXT,
-          borderColor: isOpen ? brand(0.4) : ink(0.08),
-          backgroundColor: isOpen ? ink(0.08) : ink(0.04),
-          boxShadow: isOpen ? `0 0 0 1px ${brand(0.18)}` : 'none',
-        }}
-      >
-        <Palette className="h-4 w-4 text-accent-primary" />
-        <span className="hidden lg:inline" style={{ color: BODY_TEXT_SOFT }}>
-          {navT('theme')}
-        </span>
-        <span className="hidden max-w-[8rem] truncate font-medium sm:inline">{currentLabel}</span>
-        <ChevronDown
-          className={`h-4 w-4 text-text-tertiary transition-transform duration-150 ${isOpen ? 'rotate-180' : ''}`}
-        />
-      </button>
-
-      {isOpen ? (
-        <div
-          role="menu"
-          aria-label={navT('theme')}
-          className="absolute right-0 top-full z-[170] mt-3 min-w-[260px] overflow-hidden rounded-2xl border shadow-2xl backdrop-blur-xl"
-          style={{
-            borderColor: ink(0.1),
-            background: `linear-gradient(180deg, ${surface(0.98)} 0%, ${scrim(0.96)} 100%)`,
-            boxShadow: `0 24px 70px ${scrim(0.45)}, 0 0 0 1px ${ink(0.03)}, 0 0 30px ${brand(0.08)}`,
-          }}
-        >
-          <div
-            className="border-b px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em]"
-            style={{ color: BODY_TEXT_SOFT, borderColor: ink(0.08) }}
-          >
-            {t('settings.theme.popupTitle')}
-          </div>
-
-          <div className="p-2">
-            <ThemeOptions onSelect={() => setIsOpen(false)} />
-          </div>
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
 const MOBILE_MENU_ID = 'website-mobile-menu';
 
 export function MobileMenu() {
@@ -642,19 +329,6 @@ export function MobileMenu() {
                     className="mb-3 text-[11px] font-semibold uppercase tracking-[0.22em]"
                     style={{ color: BODY_TEXT_SOFT }}
                   >
-                    {t('theme')}
-                  </p>
-                  <ThemeOptions />
-                </div>
-
-                <div
-                  className="container mx-auto border-t px-4 py-5"
-                  style={{ borderColor: ink(0.08) }}
-                >
-                  <p
-                    className="mb-3 text-[11px] font-semibold uppercase tracking-[0.22em]"
-                    style={{ color: BODY_TEXT_SOFT }}
-                  >
                     {t('download')}
                   </p>
                   <StoreButtons />
@@ -726,8 +400,7 @@ export function Header() {
           >
             {t('download')}
           </DownloadModal>
-          <ThemePicker />
-          <LanguagePicker />
+          <WebsitePreferences />
         </nav>
 
         <div className="flex items-center gap-2 lg:hidden">
@@ -738,7 +411,7 @@ export function Header() {
             <Download className="h-4 w-4" />
             <span>{t('download')}</span>
           </DownloadModal>
-          <LanguagePicker />
+          <WebsitePreferences />
           <MobileMenu />
         </div>
       </div>

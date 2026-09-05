@@ -16,6 +16,12 @@ function sliceBetween(startMarker: string, endMarker: string) {
 }
 
 describe('website header navigation', () => {
+  it('uses one combined preferences control in each responsive header layout', () => {
+    const header = sliceBetween('export function Header()', 'export function Footer()');
+    expect(header.match(/<WebsitePreferences \/>/g)).toHaveLength(2);
+    expect(source).not.toMatch(/LanguagePicker|ThemePicker|ThemeOptions/);
+  });
+
   it('uses the full navigation only when its contents have enough room', () => {
     expect(source).toContain('<nav className="hidden items-center gap-6 lg:flex">');
     expect(source).toContain('<div className="flex items-center gap-2 lg:hidden">');
