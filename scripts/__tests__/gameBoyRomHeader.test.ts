@@ -27,7 +27,7 @@ describe('Game Boy ROM header patch', () => {
 
     expect(applyMusclogRomHeader(rom)).toBe(rom);
     expect(rom.subarray(0x13f, 0x143).toString('ascii')).toBe('MLOG');
-    expect(rom[0x14c]).toBe(1);
+    expect(rom[0x14c]).toBe(2);
 
     let headerChecksum = 0;
     for (let offset = 0x134; offset <= 0x14c; offset++) {

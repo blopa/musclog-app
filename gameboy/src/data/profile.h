@@ -66,13 +66,15 @@ typedef struct CalDate {
  *  ------|-------|---------------------|-------------------------------------------
  *  0x38  |   1   | SRAM_LAYOUT_AUDIO_MAGIC | 0xA7 marks a written audio-settings store
  *  0x39  |   1   | SRAM_LAYOUT_AUDIO_FLAGS | bit0 = SFX on, bit1 = soundtrack on
+ *  0x3A  |   1   | SRAM_LAYOUT_THEME_MAGIC | 0x7C marks a written theme store
+ *  0x3B  |   1   | SRAM_LAYOUT_THEME_VALUE | Selected colour theme (index into gb_theme_palettes)
  *  ------|-------|---------------------|-------------------------------------------
  *  Total: 23 checksummed bytes + 2 seed-hint bytes
  *
- *  The audio-settings micro-store lives in the free part of the profile-reserved
- *  region (the metrics store starts at SRAM_LAYOUT_METRICS_BASE). db_load/db_save/
- *  db_erase only touch the checksummed block, so the audio flags persist across a
- *  NEW GAME erase. Future profile growth from 0x19 must stop before
+ *  The audio-settings and theme micro-stores live in the free part of the
+ *  profile-reserved region (the metrics store starts at SRAM_LAYOUT_METRICS_BASE).
+ *  db_load/db_save/db_erase only touch the checksummed block, so those display
+ *  preferences persist across a NEW GAME erase. Future profile growth from 0x19 must stop before
  *  SRAM_LAYOUT_PROFILE_GROW_LIMIT.
  */
 #define SRAM_MAGIC 0x00u

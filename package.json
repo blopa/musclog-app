@@ -35,6 +35,7 @@
     "gb:gen-foods": "node gameboy/tools/gen-foundation-foods.mjs",
     "gb:gen-exercises": "node gameboy/tools/gen-exercises.mjs",
     "gb:gen-music": "node gameboy/tools/gen-music.mjs",
+    "gb:gen-themes": "node gameboy/tools/gen-themes.mjs",
     "gb:prepare-logo": "node gameboy/tools/prepare-logo.mjs",
     "gb:prepare-bg": "node gameboy/tools/prepare-background.mjs",
     "gb:setup": "node gameboy/tools/fetch-gbdk.mjs",

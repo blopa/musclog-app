@@ -6,7 +6,7 @@ const HEADER_CHECKSUM_OFFSET = 0x14d;
 const GLOBAL_CHECKSUM_OFFSET = 0x14e;
 const MINIMUM_ROM_SIZE = GLOBAL_CHECKSUM_OFFSET + 2;
 const MUSCLOG_GAME_CODE = Buffer.from('MLOG', 'ascii');
-const MUSCLOG_ROM_REVISION = 1;
+const MUSCLOG_ROM_REVISION = 2;
 
 function updateChecksums(rom) {
   let headerChecksum = 0;

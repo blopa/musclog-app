@@ -10,6 +10,7 @@
 #include "profile.h"
 #include "spinner.h"
 #include "ui_text.h"
+#include "ui_theme.h"
 #include "utils.h"
 #include "weight_units.h"
 
@@ -28,10 +29,12 @@
 #define FIBER_MAX 99u
 
 /*
- * Field order in the scrollable list. Profile fields first, macro targets last,
- * matching the order the onboarding flow collects them.
+ * Field order in the scrollable list. The colour theme leads (it is the one row
+ * that changes the screen as you scroll through it), then the profile fields and
+ * the macro targets last, matching the order the onboarding flow collects them.
  */
 typedef enum SettingsField {
+    SET_THEME,
     SET_UNITS,
     SET_SEX,
     SET_AGE,
@@ -102,6 +105,8 @@ static const char *activity_label(uint8_t activity_level) {
 /* Short row label shown on the left of each field. */
 static const char *field_label(uint8_t field) {
     switch (field) {
+    case SET_THEME:
+        return STR_THEME;
     case SET_UNITS:
         return STR_UNITS;
     case SET_SEX:
@@ -156,6 +161,9 @@ static void format_value(const SettingsState *s, char *buf) {
     const SaveData *d = s->data;
 
     switch (s->field) {
+    case SET_THEME:
+        strcpy(buf, ui_theme_name(ui_theme_get()));
+        break;
     case SET_UNITS:
         strcpy(buf, d->units == UNITS_IMPERIAL ? STR_IMPERIAL : STR_METRIC);
         break;
@@ -221,6 +229,19 @@ static void cycle_field(SettingsState *s, uint8_t going_right) {
     SaveData *d = s->data;
 
     switch (s->field) {
+    case SET_THEME: {
+        /* Applied as it is picked: ui_theme_set uploads the palettes, and the
+         * caller's redraw then repaints the list in the new colours. */
+        uint8_t theme = ui_theme_get();
+        uint8_t count = ui_theme_count();
+        if (going_right) {
+            theme = (uint8_t)((theme + 1u) % count);
+        } else {
+            theme = theme == 0u ? (uint8_t)(count - 1u) : (uint8_t)(theme - 1u);
+        }
+        ui_theme_set(theme);
+        break;
+    }
     case SET_UNITS:
         d->units = d->units == UNITS_METRIC ? UNITS_IMPERIAL : UNITS_METRIC;
         s->height_inches = cm_to_inches(d->height_cm);
