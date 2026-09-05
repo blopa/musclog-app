@@ -16,7 +16,19 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FloatingShapes, GridPattern } from '@/components/website/WebsiteBackgrounds';
-import { BODY_TEXT, BRAND_GREEN, BRAND_GREEN_BRIGHT } from '@/components/website/websiteColors';
+import {
+  BODY_TEXT,
+  BODY_TEXT_SOFT,
+  brand,
+  BRAND_GREEN,
+  BRAND_GREEN_BRIGHT,
+  brandBright,
+  HEADING_TEXT,
+  hue,
+  ink,
+  ON_BRAND,
+  surface,
+} from '@/components/website/websiteColors';
 import {
   CALORIES_FOR_CARBS,
   CALORIES_FOR_FAT,
@@ -39,13 +51,13 @@ import { formatUtcNormalizedDayIntl } from '@/utils/calendarDate';
 import { digestibleCarbs } from '@/utils/carbsConvention';
 import { handleError } from '@/utils/handleError';
 
-const CYAN = '#22D3EE';
-const INDIGO = '#818CF8';
-const ROSE = '#FB7185';
-const AMBER = '#F59E0B';
-const CARD_BG = 'rgba(255,255,255,0.04)';
-const CARD_BORDER = 'rgba(255,255,255,0.10)';
-const SOFT_TEXT = '#9CA3AF';
+const CYAN = hue('info');
+const INDIGO = hue('indigo');
+const ROSE = hue('rose');
+const AMBER = hue('amber');
+const CARD_BG = ink(0.04);
+const CARD_BORDER = ink(0.1);
+const SOFT_TEXT = BODY_TEXT_SOFT;
 
 type XYPoint = { x: number; y: number };
 
@@ -141,9 +153,9 @@ function PresetPill({
       onClick={onClick}
       className="rounded-full border px-3 py-2 text-xs font-bold uppercase tracking-[0.18em] transition-colors"
       style={{
-        backgroundColor: active ? BRAND_GREEN : 'rgba(255,255,255,0.04)',
-        borderColor: active ? BRAND_GREEN : 'rgba(255,255,255,0.1)',
-        color: active ? '#03130C' : '#E5E7EB',
+        backgroundColor: active ? BRAND_GREEN : ink(0.04),
+        borderColor: active ? BRAND_GREEN : ink(0.1),
+        color: active ? ON_BRAND : HEADING_TEXT,
       }}
     >
       {label}
@@ -164,12 +176,14 @@ function SectionCard({
 }) {
   return (
     <section
-      className="rounded-[28px] border p-6 shadow-[0_24px_80px_rgba(0,0,0,0.22)] md:p-7"
+      className="rounded-[28px] border p-6 shadow-[0_24px_80px_rgb(var(--c-scrim-base)/0.22)] md:p-7"
       style={{ background: CARD_BG, borderColor: CARD_BORDER }}
     >
       <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <h2 className="text-xl font-black tracking-tight text-white md:text-2xl">{title}</h2>
+          <h2 className="text-xl font-black tracking-tight text-text-primary md:text-2xl">
+            {title}
+          </h2>
           {subtitle ? (
             <p className="mt-1 max-w-3xl text-sm leading-relaxed" style={{ color: SOFT_TEXT }}>
               {subtitle}
@@ -200,8 +214,7 @@ function StatCard({
     <div
       className="rounded-3xl border p-5"
       style={{
-        background:
-          'linear-gradient(180deg, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0.025) 100%)',
+        background: `linear-gradient(180deg, ${ink(0.045)} 0%, ${ink(0.025)} 100%)`,
         borderColor: CARD_BORDER,
       }}
     >
@@ -219,7 +232,7 @@ function StatCard({
           {label}
         </span>
       </div>
-      <div className="text-3xl font-black tracking-tight text-white">{value}</div>
+      <div className="text-3xl font-black tracking-tight text-text-primary">{value}</div>
       {hint ? (
         <p className="mt-2 text-sm leading-relaxed" style={{ color: SOFT_TEXT }}>
           {hint}
@@ -249,7 +262,7 @@ function MiniLineChart({
 
   if (points.length < 2) {
     return (
-      <div className="rounded-2xl border p-4" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+      <div className="rounded-2xl border p-4" style={{ borderColor: ink(0.08) }}>
         <p className="text-sm" style={{ color: SOFT_TEXT }}>
           {labels.title}
         </p>
@@ -265,9 +278,9 @@ function MiniLineChart({
   const maxValue = Math.max(...values);
 
   return (
-    <div className="rounded-2xl border p-4" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+    <div className="rounded-2xl border p-4" style={{ borderColor: ink(0.08) }}>
       <div className="mb-4 flex items-center justify-between gap-3">
-        <p className="text-sm font-semibold text-white">{labels.title}</p>
+        <p className="text-sm font-semibold text-text-primary">{labels.title}</p>
         <p className="text-xs" style={{ color: SOFT_TEXT }}>
           {formatNumber(locale, minValue, 1)}
           {valueSuffix} → {formatNumber(locale, maxValue, 1)}
@@ -320,15 +333,15 @@ function VerticalBarChart({
           <div
             key={item.label}
             className="rounded-2xl border p-4"
-            style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+            style={{ borderColor: ink(0.08) }}
           >
             <div className="mb-4 flex items-start justify-between gap-3">
-              <div className="text-sm font-semibold text-white">{item.label}</div>
+              <div className="text-sm font-semibold text-text-primary">{item.label}</div>
               <div className="text-sm" style={{ color: SOFT_TEXT }}>
                 {formatter ? formatter(item.value) : formatCompactNumber(locale, item.value)}
               </div>
             </div>
-            <div className="flex h-28 items-end rounded-2xl bg-white/[0.03] px-3 py-2">
+            <div className="flex h-28 items-end rounded-2xl bg-ink/[0.03] px-3 py-2">
               <div
                 className="w-full rounded-xl transition-all"
                 style={{
@@ -362,13 +375,13 @@ function HorizontalBars({
       {items.map((item) => (
         <div key={item.label}>
           <div className="mb-1 flex items-center justify-between gap-3 text-sm">
-            <span className="font-medium text-white">{item.label}</span>
+            <span className="font-medium text-text-primary">{item.label}</span>
             <span style={{ color: SOFT_TEXT }}>
               {formatNumber(locale, item.value, 0)}
               {suffix}
             </span>
           </div>
-          <div className="h-3 rounded-full bg-white/[0.05]">
+          <div className="h-3 rounded-full bg-ink/[0.05]">
             <div
               className="h-3 rounded-full"
               style={{
@@ -400,7 +413,7 @@ function ScatterCard({
 
   if (points.length === 0) {
     return (
-      <div className="rounded-2xl border p-5" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+      <div className="rounded-2xl border p-5" style={{ borderColor: ink(0.08) }}>
         <p className="text-sm" style={{ color: SOFT_TEXT }}>
           No data
         </p>
@@ -416,22 +429,16 @@ function ScatterCard({
   const yRange = yMax - yMin || 1;
 
   return (
-    <div className="rounded-2xl border p-5" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+    <div className="rounded-2xl border p-5" style={{ borderColor: ink(0.08) }}>
       <svg viewBox={`0 0 ${width} ${height}`} className="h-64 w-full">
         <line
           x1={padding}
           y1={height - padding}
           x2={width - padding}
           y2={height - padding}
-          stroke="rgba(255,255,255,0.16)"
+          stroke="${ink(0.16)}"
         />
-        <line
-          x1={padding}
-          y1={padding}
-          x2={padding}
-          y2={height - padding}
-          stroke="rgba(255,255,255,0.16)"
-        />
+        <line x1={padding} y1={padding} x2={padding} y2={height - padding} stroke="${ink(0.16)}" />
         {points.map((point, index) => {
           const cx = padding + ((point.x - xMin) / xRange) * (width - padding * 2);
           const cy = height - padding - ((point.y - yMin) / yRange) * (height - padding * 2);
@@ -464,12 +471,14 @@ function MacroComposition({ items, locale }: { items: DailyNutrition[]; locale: 
         return (
           <div key={item.date}>
             <div className="mb-1 flex items-center justify-between gap-3 text-sm">
-              <span className="font-medium text-white">{formatDateLabel(locale, item.date)}</span>
+              <span className="font-medium text-text-primary">
+                {formatDateLabel(locale, item.date)}
+              </span>
               <span style={{ color: SOFT_TEXT }}>
                 {formatCompactNumber(locale, item.calories)} kcal
               </span>
             </div>
-            <div className="flex h-3 overflow-hidden rounded-full bg-white/[0.05]">
+            <div className="flex h-3 overflow-hidden rounded-full bg-ink/[0.05]">
               <div
                 style={{
                   width: `${(protein / total) * 100}%`,
@@ -480,13 +489,12 @@ function MacroComposition({ items, locale }: { items: DailyNutrition[]; locale: 
               <div style={{ width: `${(fat / total) * 100}%`, backgroundColor: CYAN }} />
               <div style={{ width: `${(fiber / total) * 100}%`, backgroundColor: AMBER }} />
             </div>
-            <div className="mt-1 h-1 rounded-full bg-white/[0.04]">
+            <div className="mt-1 h-1 rounded-full bg-ink/[0.04]">
               <div
                 className="h-1 rounded-full"
                 style={{
                   width: `${Math.max((item.calories / maxTotal) * 100, 4)}%`,
-                  background:
-                    'linear-gradient(90deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.38) 100%)',
+                  background: `linear-gradient(90deg, ${ink(0.16)} 0%, ${ink(0.38)} 100%)`,
                 }}
               />
             </div>
@@ -518,15 +526,15 @@ function EmptyState({
 }) {
   return (
     <main className="relative overflow-hidden pb-24 pt-24 md:pt-28">
-      <GridPattern className="text-primary/35" />
+      <GridPattern className="text-accent-primary/35" />
       <FloatingShapes />
       <div
         className="absolute left-1/4 top-36 h-72 w-72 rounded-full blur-[120px]"
-        style={{ backgroundColor: 'rgba(0,255,163,0.10)' }}
+        style={{ backgroundColor: brandBright(0.1) }}
       />
       <div
         className="absolute bottom-16 right-1/4 h-64 w-64 rounded-full blur-[100px]"
-        style={{ backgroundColor: 'rgba(34,211,238,0.08)' }}
+        style={{ backgroundColor: hue('info', 0.08) }}
       />
 
       <div className="container relative z-10 mx-auto max-w-6xl px-4">
@@ -535,16 +543,16 @@ function EmptyState({
             <div
               className="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-[0.22em]"
               style={{
-                borderColor: 'rgba(34,197,94,0.22)',
+                borderColor: brand(0.22),
                 color: BRAND_GREEN_BRIGHT,
-                backgroundColor: 'rgba(34,197,94,0.10)',
+                backgroundColor: brand(0.1),
               }}
             >
               <Sparkles className="h-4 w-4" />
               {t('website.progress.hero.eyebrow')}
             </div>
 
-            <h1 className="max-w-3xl text-4xl font-black tracking-tight text-white md:text-6xl">
+            <h1 className="max-w-3xl text-4xl font-black tracking-tight text-text-primary md:text-6xl">
               {t('website.progress.hero.title')}
             </h1>
             <p className="mt-5 max-w-2xl text-lg leading-relaxed" style={{ color: BODY_TEXT }}>
@@ -572,12 +580,12 @@ function EmptyState({
                 <div
                   key={item.title}
                   className="rounded-3xl border p-5"
-                  style={{ borderColor: CARD_BORDER, backgroundColor: 'rgba(255,255,255,0.03)' }}
+                  style={{ borderColor: CARD_BORDER, backgroundColor: ink(0.03) }}
                 >
-                  <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-white/[0.05] text-[#00FFA3]">
+                  <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-ink/[0.05] text-accent-bright">
                     {item.icon}
                   </div>
-                  <div className="text-base font-bold text-white">{item.title}</div>
+                  <div className="text-base font-bold text-text-primary">{item.title}</div>
                   <p className="mt-2 text-sm leading-relaxed" style={{ color: SOFT_TEXT }}>
                     {item.description}
                   </p>
@@ -587,10 +595,10 @@ function EmptyState({
           </div>
 
           <div
-            className="rounded-[32px] border p-6 shadow-[0_28px_90px_rgba(0,0,0,0.28)] md:p-8"
+            className="rounded-[32px] border p-6 shadow-[0_28px_90px_rgb(var(--c-scrim-base)/0.28)] md:p-8"
             style={{
-              borderColor: 'rgba(255,255,255,0.12)',
-              background: 'linear-gradient(180deg, rgba(7,17,14,0.92) 0%, rgba(5,11,10,0.92) 100%)',
+              borderColor: ink(0.12),
+              background: `linear-gradient(180deg, ${surface(0.92)} 0%, ${surface(0.92)} 100%)`,
             }}
           >
             <div className="mb-6 flex items-center justify-between gap-4">
@@ -601,11 +609,11 @@ function EmptyState({
                 >
                   {t('website.progress.importCard.badge')}
                 </div>
-                <h2 className="mt-2 text-2xl font-black tracking-tight text-white">
+                <h2 className="mt-2 text-2xl font-black tracking-tight text-text-primary">
                   {t('website.progress.importCard.title')}
                 </h2>
               </div>
-              <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-white/[0.05] text-[#00FFA3]">
+              <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-ink/[0.05] text-accent-bright">
                 <Upload className="h-7 w-7" />
               </div>
             </div>
@@ -626,10 +634,10 @@ function EmptyState({
                 value={decryptionPhrase}
                 onChange={(event) => onPhraseChange(event.target.value)}
                 placeholder={t('website.progress.importCard.passphrasePlaceholder')}
-                className="w-full rounded-2xl border px-4 py-3 text-sm text-white outline-none transition-colors"
+                className="w-full rounded-2xl border px-4 py-3 text-sm text-text-primary outline-none transition-colors"
                 style={{
-                  backgroundColor: 'rgba(255,255,255,0.05)',
-                  borderColor: 'rgba(255,255,255,0.10)',
+                  backgroundColor: ink(0.05),
+                  borderColor: ink(0.1),
                 }}
               />
             </label>
@@ -639,7 +647,7 @@ function EmptyState({
               onClick={onImport}
               disabled={isImporting}
               className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-4 text-sm font-bold transition-transform disabled:cursor-wait disabled:opacity-70"
-              style={{ backgroundColor: BRAND_GREEN, color: '#03130C' }}
+              style={{ backgroundColor: BRAND_GREEN, color: ON_BRAND }}
             >
               {isImporting ? (
                 <LoaderCircle className="h-4 w-4 animate-spin" />
@@ -661,9 +669,9 @@ function EmptyState({
               <div
                 className="mt-4 rounded-2xl border px-4 py-3 text-sm"
                 style={{
-                  borderColor: 'rgba(251,113,133,0.30)',
-                  backgroundColor: 'rgba(251,113,133,0.08)',
-                  color: '#FECDD3',
+                  borderColor: hue('rose', 0.3),
+                  backgroundColor: hue('rose', 0.08),
+                  color: hue('rose'),
                 }}
               >
                 {error}
@@ -673,12 +681,12 @@ function EmptyState({
             <div
               className="mt-8 rounded-3xl border p-5"
               style={{
-                borderColor: 'rgba(255,255,255,0.08)',
-                backgroundColor: 'rgba(255,255,255,0.025)',
+                borderColor: ink(0.08),
+                backgroundColor: ink(0.025),
               }}
             >
-              <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-white">
-                <Database className="h-4 w-4 text-[#00FFA3]" />
+              <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-text-primary">
+                <Database className="h-4 w-4 text-accent-bright" />
                 {t('website.progress.importCard.localOnlyTitle')}
               </div>
               <p className="text-sm leading-relaxed" style={{ color: SOFT_TEXT }}>
@@ -914,10 +922,10 @@ export default function ProgressWebsitePage() {
     return (
       <main className="flex min-h-[70vh] items-center justify-center px-4 pt-24">
         <div
-          className="inline-flex items-center gap-3 rounded-full border px-5 py-3 text-sm text-white"
-          style={{ borderColor: CARD_BORDER, backgroundColor: 'rgba(255,255,255,0.04)' }}
+          className="inline-flex items-center gap-3 rounded-full border px-5 py-3 text-sm text-text-primary"
+          style={{ borderColor: CARD_BORDER, backgroundColor: ink(0.04) }}
         >
-          <LoaderCircle className="h-4 w-4 animate-spin text-[#00FFA3]" />
+          <LoaderCircle className="h-4 w-4 animate-spin text-accent-bright" />
           {t('website.progress.loading')}
         </div>
       </main>
@@ -961,15 +969,15 @@ export default function ProgressWebsitePage() {
       />
 
       <main className="relative overflow-hidden pb-24 pt-24 md:pt-28">
-        <GridPattern className="text-primary/35" />
+        <GridPattern className="text-accent-primary/35" />
         <FloatingShapes />
         <div
           className="absolute left-1/4 top-28 h-72 w-72 rounded-full blur-[120px]"
-          style={{ backgroundColor: 'rgba(0,255,163,0.08)' }}
+          style={{ backgroundColor: brandBright(0.08) }}
         />
         <div
           className="absolute bottom-24 right-1/4 h-72 w-72 rounded-full blur-[120px]"
-          style={{ backgroundColor: 'rgba(34,211,238,0.08)' }}
+          style={{ backgroundColor: hue('info', 0.08) }}
         />
 
         <div className="container relative z-10 mx-auto max-w-7xl space-y-8 px-4">
@@ -977,7 +985,7 @@ export default function ProgressWebsitePage() {
             className="rounded-[32px] border p-6 md:p-8"
             style={{
               borderColor: CARD_BORDER,
-              background: 'linear-gradient(180deg, rgba(8,18,15,0.88) 0%, rgba(5,10,9,0.9) 100%)',
+              background: `linear-gradient(180deg, ${surface(0.88)} 0%, ${surface(0.9)} 100%)`,
             }}
           >
             <div className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
@@ -985,15 +993,15 @@ export default function ProgressWebsitePage() {
                 <div
                   className="inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-[0.22em]"
                   style={{
-                    borderColor: 'rgba(34,197,94,0.22)',
+                    borderColor: brand(0.22),
                     color: BRAND_GREEN_BRIGHT,
-                    backgroundColor: 'rgba(34,197,94,0.10)',
+                    backgroundColor: brand(0.1),
                   }}
                 >
                   <Database className="h-4 w-4" />
                   {t('website.progress.dashboard.eyebrow')}
                 </div>
-                <h1 className="mt-5 max-w-4xl text-4xl font-black tracking-tight text-white md:text-6xl">
+                <h1 className="mt-5 max-w-4xl text-4xl font-black tracking-tight text-text-primary md:text-6xl">
                   {t('website.progress.dashboard.title')}
                 </h1>
                 <p className="mt-4 max-w-3xl text-lg leading-relaxed" style={{ color: BODY_TEXT }}>
@@ -1006,7 +1014,7 @@ export default function ProgressWebsitePage() {
                   type="button"
                   onClick={handleImportClick}
                   className="inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-4 text-sm font-bold"
-                  style={{ backgroundColor: BRAND_GREEN, color: '#03130C' }}
+                  style={{ backgroundColor: BRAND_GREEN, color: ON_BRAND }}
                 >
                   {isImporting ? (
                     <LoaderCircle className="h-4 w-4 animate-spin" />
@@ -1017,7 +1025,7 @@ export default function ProgressWebsitePage() {
                 </button>
                 <div
                   className="rounded-2xl border px-5 py-4 text-sm"
-                  style={{ borderColor: 'rgba(255,255,255,0.08)', color: SOFT_TEXT }}
+                  style={{ borderColor: ink(0.08), color: SOFT_TEXT }}
                 >
                   {selectedFileName
                     ? t('website.progress.importCard.selectedFile', { fileName: selectedFileName })
@@ -1040,17 +1048,17 @@ export default function ProgressWebsitePage() {
 
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <label
-                  className="flex items-center gap-3 rounded-full border px-4 py-2 text-sm text-white"
+                  className="flex items-center gap-3 rounded-full border px-4 py-2 text-sm text-text-primary"
                   style={{
-                    borderColor: 'rgba(255,255,255,0.08)',
-                    backgroundColor: 'rgba(255,255,255,0.03)',
+                    borderColor: ink(0.08),
+                    backgroundColor: ink(0.03),
                   }}
                 >
                   <input
                     type="checkbox"
                     checked={useWeeklyAverages}
                     onChange={(event) => setUseWeeklyAverages(event.target.checked)}
-                    className="h-4 w-4 accent-[#22C55E]"
+                    className="h-4 w-4 accent-accent-primary"
                   />
                   {t('progress.weeklyAverages')}
                 </label>
@@ -1064,10 +1072,10 @@ export default function ProgressWebsitePage() {
                       const end = appliedCustomRange?.endDate ?? new Date();
                       applyCustomRange(nextStart, end);
                     }}
-                    className="rounded-full border px-4 py-2 text-sm text-white outline-none"
+                    className="rounded-full border px-4 py-2 text-sm text-text-primary outline-none"
                     style={{
-                      borderColor: 'rgba(255,255,255,0.08)',
-                      backgroundColor: 'rgba(255,255,255,0.03)',
+                      borderColor: ink(0.08),
+                      backgroundColor: ink(0.03),
                       colorScheme: 'dark',
                     }}
                   />
@@ -1080,10 +1088,10 @@ export default function ProgressWebsitePage() {
                       const start = appliedCustomRange?.startDate ?? nextEnd;
                       applyCustomRange(start, nextEnd);
                     }}
-                    className="rounded-full border px-4 py-2 text-sm text-white outline-none"
+                    className="rounded-full border px-4 py-2 text-sm text-text-primary outline-none"
                     style={{
-                      borderColor: 'rgba(255,255,255,0.08)',
-                      backgroundColor: 'rgba(255,255,255,0.03)',
+                      borderColor: ink(0.08),
+                      backgroundColor: ink(0.03),
                       colorScheme: 'dark',
                     }}
                   />
@@ -1095,10 +1103,10 @@ export default function ProgressWebsitePage() {
           {isLoading ? (
             <div className="flex min-h-[40vh] items-center justify-center">
               <div
-                className="inline-flex items-center gap-3 rounded-full border px-5 py-3 text-sm text-white"
-                style={{ borderColor: CARD_BORDER, backgroundColor: 'rgba(255,255,255,0.04)' }}
+                className="inline-flex items-center gap-3 rounded-full border px-5 py-3 text-sm text-text-primary"
+                style={{ borderColor: CARD_BORDER, backgroundColor: ink(0.04) }}
               >
-                <LoaderCircle className="h-4 w-4 animate-spin text-[#00FFA3]" />
+                <LoaderCircle className="h-4 w-4 animate-spin text-accent-bright" />
                 {t('website.progress.loading')}
               </div>
             </div>
@@ -1210,11 +1218,8 @@ export default function ProgressWebsitePage() {
                       locale={locale}
                       formatter={(value) => `${formatCompactNumber(locale, value)} kcal`}
                     />
-                    <div
-                      className="rounded-2xl border p-5"
-                      style={{ borderColor: 'rgba(255,255,255,0.08)' }}
-                    >
-                      <div className="mb-4 text-sm font-semibold text-white">
+                    <div className="rounded-2xl border p-5" style={{ borderColor: ink(0.08) }}>
+                      <div className="mb-4 text-sm font-semibold text-text-primary">
                         {t('website.progress.sections.nutrition.macroSplit')}
                       </div>
                       <MacroComposition items={data?.nutritionHistory ?? []} locale={locale} />
@@ -1244,21 +1249,15 @@ export default function ProgressWebsitePage() {
                   subtitle={t('website.progress.sections.training.description')}
                 >
                   <div className="space-y-6">
-                    <div
-                      className="rounded-2xl border p-5"
-                      style={{ borderColor: 'rgba(255,255,255,0.08)' }}
-                    >
-                      <div className="mb-4 text-sm font-semibold text-white">
+                    <div className="rounded-2xl border p-5" style={{ borderColor: ink(0.08) }}>
+                      <div className="mb-4 text-sm font-semibold text-text-primary">
                         {t('progress.workoutVolume')}
                       </div>
                       <VerticalBarChart items={workoutBars} color={INDIGO} locale={locale} />
                     </div>
                     {muscleGroupItems.length > 0 ? (
-                      <div
-                        className="rounded-2xl border p-5"
-                        style={{ borderColor: 'rgba(255,255,255,0.08)' }}
-                      >
-                        <div className="mb-4 text-sm font-semibold text-white">
+                      <div className="rounded-2xl border p-5" style={{ borderColor: ink(0.08) }}>
+                        <div className="mb-4 text-sm font-semibold text-text-primary">
                           {t('progress.setsPerMuscleGroup')}
                         </div>
                         <HorizontalBars
@@ -1279,7 +1278,7 @@ export default function ProgressWebsitePage() {
               >
                 <div className="grid gap-6 xl:grid-cols-2">
                   <div>
-                    <div className="mb-3 text-sm font-semibold text-white">
+                    <div className="mb-3 text-sm font-semibold text-text-primary">
                       {t('progress.correlationView.volumeCalories')}
                     </div>
                     <ScatterCard
@@ -1290,7 +1289,7 @@ export default function ProgressWebsitePage() {
                     />
                   </div>
                   <div>
-                    <div className="mb-3 text-sm font-semibold text-white">
+                    <div className="mb-3 text-sm font-semibold text-text-primary">
                       {t('progress.correlationView.proteinBodyComp')}
                     </div>
                     <ScatterCard
@@ -1323,33 +1322,30 @@ export default function ProgressWebsitePage() {
                       }}
                       locale={locale}
                     />
-                    <div
-                      className="rounded-2xl border p-5"
-                      style={{ borderColor: 'rgba(255,255,255,0.08)' }}
-                    >
-                      <div className="mb-4 text-sm font-semibold text-white">
+                    <div className="rounded-2xl border p-5" style={{ borderColor: ink(0.08) }}>
+                      <div className="mb-4 text-sm font-semibold text-text-primary">
                         {t('website.progress.sections.mood.summaryTitle')}
                       </div>
                       <div className="grid gap-4 sm:grid-cols-2">
-                        <div className="rounded-2xl bg-white/[0.03] p-4">
+                        <div className="rounded-2xl bg-ink/[0.03] p-4">
                           <div
                             className="text-xs uppercase tracking-[0.18em]"
                             style={{ color: SOFT_TEXT }}
                           >
                             {t('website.progress.sections.mood.totalEntries')}
                           </div>
-                          <div className="mt-2 text-2xl font-black text-white">
+                          <div className="mt-2 text-2xl font-black text-text-primary">
                             {formatNumber(locale, summaryCounts.moodEntries, 0)}
                           </div>
                         </div>
-                        <div className="rounded-2xl bg-white/[0.03] p-4">
+                        <div className="rounded-2xl bg-ink/[0.03] p-4">
                           <div
                             className="text-xs uppercase tracking-[0.18em]"
                             style={{ color: SOFT_TEXT }}
                           >
                             {t('website.progress.sections.mood.averageScore')}
                           </div>
-                          <div className="mt-2 text-2xl font-black text-white">
+                          <div className="mt-2 text-2xl font-black text-text-primary">
                             {aggregationData?.moodHistory?.length
                               ? formatNumber(
                                   locale,
@@ -1396,7 +1392,7 @@ export default function ProgressWebsitePage() {
                   ) : (
                     <div
                       className="rounded-2xl border p-5 text-sm"
-                      style={{ borderColor: 'rgba(255,255,255,0.08)', color: SOFT_TEXT }}
+                      style={{ borderColor: ink(0.08), color: SOFT_TEXT }}
                     >
                       {t('website.progress.sections.measurements.empty')}
                     </div>
@@ -1432,7 +1428,7 @@ export default function ProgressWebsitePage() {
 
                     {supplementReminderSeries.length > 0 ? (
                       <div>
-                        <div className="mb-3 text-sm font-semibold text-white">
+                        <div className="mb-3 text-sm font-semibold text-text-primary">
                           {t('website.progress.sections.reminders.supplementsTitle')}
                         </div>
                         <div className="grid gap-4 md:grid-cols-2">

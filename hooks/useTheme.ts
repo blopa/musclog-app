@@ -1,4 +1,4 @@
-import type { ThemeId } from '@/constants/settings';
+import type { ThemeId, ThemeOption } from '@/constants/settings';
 import { useThemeContext } from '@/context/ThemeContext';
 import type { Theme } from '@/theme';
 
@@ -15,4 +15,9 @@ export function useThemeMode(): 'dark' | 'light' {
 /** Return the active named palette identity. */
 export function useThemeId(): ThemeId {
   return useThemeContext().themeId;
+}
+
+/** Return the stored appearance choice, with `system` preserved as itself. */
+export function useThemePreference(): ThemeOption {
+  return useThemeContext().themePreference;
 }

@@ -6,12 +6,21 @@ import { useTranslation } from 'react-i18next';
 
 import { FloatingShapes, GridPattern } from '@/components/website/WebsiteBackgrounds';
 import {
+  BODY_TEXT,
   BODY_TEXT_SOFT,
+  brand,
   BRAND_GREEN,
   BRAND_GREEN_BRIGHT,
+  brandBright,
+  HEADING_TEXT,
+  hue,
+  ink,
   INPUT_BG,
   INPUT_BORDER,
   MUTED,
+  ON_BRAND,
+  scrim,
+  surface,
 } from '@/components/website/websiteColors';
 import { CALORIES_FOR_CARBS, CALORIES_FOR_FAT, CALORIES_FOR_PROTEIN } from '@/constants/nutrition';
 import type { FitnessGoal, Gender, LiftingExperience, WeightGoal } from '@/database/models';
@@ -22,8 +31,8 @@ import {
   isValidBodyFat,
 } from '@/utils/nutritionCalculator';
 
-const CARD_BG = 'rgba(255,255,255,0.03)';
-const CARD_BORDER = 'rgba(255,255,255,0.10)';
+const CARD_BG = ink(0.03);
+const CARD_BORDER = ink(0.1);
 
 interface WebSelectOption<T extends string | number> {
   label: string;
@@ -64,7 +73,7 @@ const GOAL_LABEL_KEYS: Record<FitnessGoal, string> = {
 
 const MACRO_COLORS = {
   carbs: BRAND_GREEN,
-  fats: '#22D3EE',
+  fats: hue('info'),
   protein: BRAND_GREEN_BRIGHT,
 };
 
@@ -124,7 +133,7 @@ function WebSelect<T extends string | number>({
         <span className="truncate">{selected?.label}</span>
         <ChevronDown
           className={`h-4 w-4 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
-          color="#D1D5DB"
+          color={BODY_TEXT}
         />
       </button>
 
@@ -132,9 +141,9 @@ function WebSelect<T extends string | number>({
         <div
           className="absolute left-0 right-0 top-[calc(100%+8px)] z-30 overflow-hidden rounded-xl border p-1 shadow-2xl backdrop-blur-xl"
           style={{
-            backgroundColor: 'rgba(8,18,14,0.96)',
-            borderColor: 'rgba(0,255,163,0.22)',
-            boxShadow: '0 24px 60px rgba(0,0,0,0.35)',
+            backgroundColor: surface(0.96),
+            borderColor: brandBright(0.22),
+            boxShadow: `0 24px 60px ${scrim(0.35)}`,
           }}
         >
           <div role="listbox" aria-activedescendant={String(value)} className="space-y-1">
@@ -153,8 +162,8 @@ function WebSelect<T extends string | number>({
                   }}
                   className="flex w-full items-center rounded-lg px-3 py-2.5 text-sm transition-colors"
                   style={{
-                    backgroundColor: active ? 'rgba(34,197,94,0.22)' : 'transparent',
-                    color: active ? '#F9FAFB' : '#D1D5DB',
+                    backgroundColor: active ? brand(0.22) : 'transparent',
+                    color: active ? HEADING_TEXT : BODY_TEXT,
                   }}
                 >
                   {option.label}
@@ -210,9 +219,9 @@ export default function Calculator() {
     velocityKey = 'results.velocityBulk';
   }
 
-  const inputStyle = { backgroundColor: INPUT_BG, borderColor: INPUT_BORDER, color: 'white' };
+  const inputStyle = { backgroundColor: INPUT_BG, borderColor: INPUT_BORDER, color: HEADING_TEXT };
   const inputClass =
-    'w-full rounded-lg border px-3 py-2.5 text-sm transition-colors focus:outline-none focus:ring-1 focus:ring-[#00FFA3]/40';
+    'w-full rounded-lg border px-3 py-2.5 text-sm transition-colors focus:outline-none focus:ring-1 focus:ring-accent-bright/40';
   const selectOptions = {
     activity: ([1, 2, 3, 4, 5] as const).map((level) => ({
       label: t(`form.activity${level}`),
@@ -226,8 +235,8 @@ export default function Calculator() {
 
   const toggleStyle = (active: boolean): React.CSSProperties =>
     active
-      ? { backgroundColor: BRAND_GREEN, borderColor: BRAND_GREEN, color: '#000' }
-      : { backgroundColor: INPUT_BG, borderColor: INPUT_BORDER, color: '#D1D5DB' };
+      ? { backgroundColor: BRAND_GREEN, borderColor: BRAND_GREEN, color: ON_BRAND }
+      : { backgroundColor: INPUT_BG, borderColor: INPUT_BORDER, color: BODY_TEXT };
 
   const goalFocusCards: [FitnessGoal, string, string][] = [
     ['hypertrophy', 'form.hypertrophy', 'form.hypertrophyDesc'],
@@ -240,22 +249,22 @@ export default function Calculator() {
   return (
     <>
       <main className="relative overflow-hidden pb-20 pt-28">
-        <GridPattern className="text-primary/50" />
+        <GridPattern className="text-accent-primary/50" />
         <FloatingShapes />
         <div
           className="absolute left-1/4 top-32 h-72 w-72 rounded-full blur-[100px]"
-          style={{ backgroundColor: 'rgba(0,255,163,0.08)' }}
+          style={{ backgroundColor: brandBright(0.08) }}
         />
         <div
           className="absolute bottom-32 right-1/4 h-64 w-64 rounded-full blur-[80px]"
-          style={{ backgroundColor: 'rgba(6,182,212,0.08)' }}
+          style={{ backgroundColor: hue('info', 0.08) }}
         />
-        <div className="from-background/30 to-background/30 absolute inset-0 bg-gradient-to-b via-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-bg-primary/30 via-transparent to-bg-primary/30" />
 
         <div className="container relative z-10 mx-auto max-w-6xl px-4">
           {/* Title */}
           <div className="mb-10 text-center">
-            <h1 className="mb-3 text-4xl font-black tracking-tight text-white md:text-6xl">
+            <h1 className="mb-3 text-4xl font-black tracking-tight text-text-primary md:text-6xl">
               {t('titleStart')}{' '}
               <span className="italic" style={{ color: BRAND_GREEN_BRIGHT }}>
                 {t('titleHighlight')}
@@ -281,13 +290,13 @@ export default function Calculator() {
                 <div
                   className="flex h-7 w-7 items-center justify-center rounded-md border"
                   style={{
-                    backgroundColor: 'rgba(0,255,163,0.12)',
-                    borderColor: 'rgba(0,255,163,0.3)',
+                    backgroundColor: brandBright(0.12),
+                    borderColor: brandBright(0.3),
                   }}
                 >
                   <BarChart3 className="h-4 w-4" color={BRAND_GREEN_BRIGHT} />
                 </div>
-                <span className="text-xs font-bold tracking-widest text-white">
+                <span className="text-xs font-bold tracking-widest text-text-primary">
                   {t('form.title')}
                 </span>
               </div>
@@ -491,13 +500,13 @@ export default function Calculator() {
                         onClick={() => set({ fitnessGoal: goal })}
                         className={`rounded-xl border p-3 text-left transition-colors${isLast ? 'col-span-2' : ''}`}
                         style={{
-                          backgroundColor: active ? 'rgba(0,255,163,0.08)' : INPUT_BG,
-                          borderColor: active ? 'rgba(0,255,163,0.4)' : INPUT_BORDER,
+                          backgroundColor: active ? brandBright(0.08) : INPUT_BG,
+                          borderColor: active ? brandBright(0.4) : INPUT_BORDER,
                         }}
                       >
                         <p
                           className="text-xs font-bold tracking-wider"
-                          style={{ color: active ? BRAND_GREEN_BRIGHT : '#fff' }}
+                          style={{ color: active ? BRAND_GREEN_BRIGHT : HEADING_TEXT }}
                         >
                           {t(labelKey)}
                         </p>
@@ -514,12 +523,11 @@ export default function Calculator() {
               <div
                 className="flex items-center justify-center gap-2 rounded-xl py-3"
                 style={{
-                  background:
-                    'linear-gradient(to right, rgba(79,70,229,0.7), rgba(16,185,129,0.7))',
+                  background: `linear-gradient(to right, ${hue('indigo', 0.7)}, ${brandBright(0.7)})`,
                 }}
               >
-                <Zap className="h-4 w-4" color="#fff" />
-                <span className="text-xs font-bold tracking-widest text-white">
+                <Zap className="h-4 w-4" color={HEADING_TEXT} />
+                <span className="text-xs font-bold tracking-widest text-text-primary">
                   {t('form.realtime')}
                 </span>
               </div>
@@ -539,7 +547,7 @@ export default function Calculator() {
                   >
                     {t('results.bmr')}
                   </p>
-                  <p className="text-3xl font-black text-white">{fmt(bmr)}</p>
+                  <p className="text-3xl font-black text-text-primary">{fmt(bmr)}</p>
                   <p className="mt-2 text-[9px] uppercase leading-relaxed" style={{ color: MUTED }}>
                     {t('results.bmrDesc')}
                   </p>
@@ -551,8 +559,8 @@ export default function Calculator() {
                   <div
                     className="absolute right-3 top-3 rounded-full px-2 py-0.5 text-[9px] font-bold tracking-widest"
                     style={{
-                      backgroundColor: 'rgba(0,255,163,0.15)',
-                      border: '1px solid rgba(0,255,163,0.3)',
+                      backgroundColor: brandBright(0.15),
+                      border: `1px solid ${brandBright(0.3)}`,
                       color: BRAND_GREEN_BRIGHT,
                     }}
                   >
@@ -585,7 +593,7 @@ export default function Calculator() {
                   >
                     {t('results.bmi')}
                   </p>
-                  <p className="text-3xl font-black text-white">{fmt(bmi, 1)}</p>
+                  <p className="text-3xl font-black text-text-primary">{fmt(bmi, 1)}</p>
                   <p className="mt-2 text-[9px] uppercase leading-relaxed" style={{ color: MUTED }}>
                     {t('results.bmiDesc')}
                   </p>
@@ -600,7 +608,7 @@ export default function Calculator() {
                   >
                     {t('results.ffmi')}
                   </p>
-                  <p className="text-3xl font-black text-white">
+                  <p className="text-3xl font-black text-text-primary">
                     {ffmi !== null ? fmt(ffmi, 1) : '–'}
                   </p>
                   <p className="mt-2 text-[9px] uppercase leading-relaxed" style={{ color: MUTED }}>
@@ -615,14 +623,14 @@ export default function Calculator() {
                 style={{ backgroundColor: CARD_BG, borderColor: CARD_BORDER }}
               >
                 <div className="mb-4 flex items-center justify-between">
-                  <p className="text-xs font-bold tracking-widest text-white">
+                  <p className="text-xs font-bold tracking-widest text-text-primary">
                     {t('results.macroProfile')}
                   </p>
                   <span
                     className="rounded-full px-2 py-0.5 text-[9px] font-bold tracking-widest"
                     style={{
-                      backgroundColor: 'rgba(0,255,163,0.1)',
-                      border: '1px solid rgba(0,255,163,0.2)',
+                      backgroundColor: brandBright(0.1),
+                      border: `1px solid ${brandBright(0.2)}`,
                       color: BRAND_GREEN_BRIGHT,
                     }}
                   >
@@ -657,7 +665,7 @@ export default function Calculator() {
                 ).map(([key, grams, pct, color, kcalPerG]) => (
                   <div key={key} className="mb-3 last:mb-0">
                     <div className="mb-1.5 flex items-center justify-between">
-                      <span className="text-[10px] font-bold tracking-widest text-white">
+                      <span className="text-[10px] font-bold tracking-widest text-text-primary">
                         {t(`results.${key}`)} <span style={{ color: MUTED }}>{pct}%</span>
                       </span>
                       <span className="text-[10px] font-bold" style={{ color: BODY_TEXT_SOFT }}>
@@ -666,7 +674,7 @@ export default function Calculator() {
                     </div>
                     <div
                       className="h-1.5 overflow-hidden rounded-full"
-                      style={{ backgroundColor: 'rgba(255,255,255,0.08)' }}
+                      style={{ backgroundColor: ink(0.08) }}
                     >
                       <div
                         className="h-full rounded-full transition-all duration-500"
@@ -686,8 +694,8 @@ export default function Calculator() {
                   <div
                     className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border"
                     style={{
-                      backgroundColor: 'rgba(0,255,163,0.1)',
-                      borderColor: 'rgba(0,255,163,0.2)',
+                      backgroundColor: brandBright(0.1),
+                      borderColor: brandBright(0.2),
                     }}
                   >
                     <Zap className="h-4 w-4" color={BRAND_GREEN_BRIGHT} />
@@ -699,7 +707,7 @@ export default function Calculator() {
                     >
                       {t('results.metabolicVelocity')}
                     </p>
-                    <p className="text-xs font-semibold text-white">{t(velocityKey)}</p>
+                    <p className="text-xs font-semibold text-text-primary">{t(velocityKey)}</p>
                   </div>
                 </div>
               </div>

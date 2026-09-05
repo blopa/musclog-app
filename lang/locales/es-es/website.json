@@ -325,7 +325,8 @@
       "blog": "Blog",
       "menu": "Menú",
       "openMenu": "Abrir menú",
-      "closeMenu": "Cerrar menú"
+      "closeMenu": "Cerrar menú",
+      "theme": "Tema"
     },
     "blog": {
       "eyebrow": "Desde el taller",

@@ -42,9 +42,11 @@ describe('blog post share row', () => {
     expect(source).toContain("bgStyle: { fill: 'transparent' }");
   });
 
-  it('gives X a color that is visible on the dark page', () => {
-    // react-share's own X brand color is #000000.
-    expect(source).toMatch(/x: '#FFFFFF'/);
+  it('gives X a color that is visible in every palette', () => {
+    // react-share's own X brand color is #000000, which vanishes on the dark
+    // palettes; plain white vanishes on the light ones. The page's ink is the
+    // only value that clears both, so X is the one network without a literal.
+    expect(source).toMatch(/x: ink\(1\)/);
   });
 
   it('hands each button its network color as the custom property the stylesheet reads', () => {

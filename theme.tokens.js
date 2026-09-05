@@ -519,6 +519,9 @@ const darkThemeColors = themeColorsById[DEFAULT_THEME_BY_MODE.dark];
 module.exports = {
   addOpacityToHex,
   themeColorsById,
+  // Flat primitive sets, keyed by theme. `useBootColors` picks one before the
+  // settings table is readable.
+  themeColorSetsById: themeColorSets,
   // The two mode defaults, for the pre-boot surfaces and Tailwind's static build.
   darkColors,
   lightColors,
@@ -551,6 +554,16 @@ const TAILWIND_TOKEN_MAP = {
     screen: (t) => t.background.primary,
     overlay: (t) => t.background.overlay,
     filterTab: (t) => t.background.filterTab,
+    raised: (t) => t.background.raised,
+    hairline: (t) => t.background.hairline,
+  },
+  /**
+   * The colour a backdrop darkens *towards*. Published opaque so a caller can
+   * pick its own alpha (`rgb(var(--c-scrim-base) / 0.45)`); the `bg.scrim*`
+   * tokens on the JS theme are the fixed-alpha shorthands for the same value.
+   */
+  scrim: {
+    base: (t) => t.shadow,
   },
   // On-surface ink, for the low-alpha hairlines and washes that used to be written
   // as literal `border-white/10` / `bg-white/5`. Those read as an ink wash, not as
@@ -572,6 +585,10 @@ const TAILWIND_TOKEN_MAP = {
     primary: (t) => t.accent.primary,
     secondary: (t) => t.accent.secondary,
     tertiary: (t) => t.accent.tertiary,
+    // The brand at its most luminous, for glows and hero type — the role the
+    // website used to spell `#00FFA3`.
+    bright: (t) => t.status.brandBright,
+    pale: (t) => t.status.brandPale,
   },
   // Semantic status hues, so a conditional className does not have to reach for a
   // literal Tailwind hue that only clears contrast on one of the two grounds.
@@ -580,6 +597,11 @@ const TAILWIND_TOKEN_MAP = {
     error: (t) => t.status.error,
     warning: (t) => t.status.warning,
     info: (t) => t.status.info,
+    amber: (t) => t.status.amber,
+    indigo: (t) => t.status.indigo,
+    purple: (t) => t.status.purple,
+    pink: (t) => t.status.pink,
+    rose: (t) => t.status.rose,
   },
   border: {
     default: (t) => t.border.default,

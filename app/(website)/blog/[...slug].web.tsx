@@ -5,7 +5,13 @@ import { useTranslation } from 'react-i18next';
 
 import { BlogPostShare } from '@/components/website/BlogPostShare';
 import { GridPattern } from '@/components/website/WebsiteBackgrounds';
-import { BODY_TEXT_SOFT, BRAND_GREEN_BRIGHT } from '@/components/website/websiteColors';
+import {
+  BODY_TEXT_SOFT,
+  brand,
+  BRAND_GREEN_BRIGHT,
+  brandBright,
+  hue,
+} from '@/components/website/websiteColors';
 import { BlogPostSeo } from '@/components/website/WebsiteSeo';
 import { BlogPostingJsonLd } from '@/components/website/WebsiteStructuredData';
 
@@ -60,24 +66,23 @@ export default function BlogPostPage() {
       />
 
       <main className="relative min-h-[70vh] overflow-hidden pb-24 pt-24 md:pt-28">
-        <GridPattern className="text-emerald-400/[0.06]" />
+        <GridPattern className="text-accent-bright/[0.06]" />
         <div
           className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[720px] -translate-x-1/2 rounded-full blur-[160px]"
-          style={{ backgroundColor: 'rgba(0, 255, 163, 0.08)' }}
+          style={{ backgroundColor: brandBright(0.08) }}
           aria-hidden="true"
         />
 
         <article className="container relative z-10 mx-auto max-w-4xl px-4">
           <Link
             href="/blog"
-            className="mb-10 inline-flex items-center gap-2 text-sm font-bold transition-colors hover:text-emerald-200"
-            style={{ color: BRAND_GREEN_BRIGHT }}
+            className="mb-10 inline-flex items-center gap-2 text-sm font-bold text-accent-bright transition-colors hover:text-accent-pale"
           >
             <ArrowLeft className="h-4 w-4" color="currentColor" />
             {t('backToBlog')}
           </Link>
 
-          <header className="border-b border-white/10 pb-10">
+          <header className="border-b border-ink/10 pb-10">
             <div className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm">
               <time
                 dateTime={post.date}
@@ -90,7 +95,7 @@ export default function BlogPostPage() {
               <span style={{ color: BODY_TEXT_SOFT }}>
                 <a
                   href={`/blog/category/${post.category}`}
-                  className="inline-flex items-center gap-2 transition-colors hover:text-emerald-200"
+                  className="inline-flex items-center gap-2 transition-colors hover:text-accent-pale"
                 >
                   <Folder className="h-4 w-4" color={BRAND_GREEN_BRIGHT} />
                   {category}
@@ -98,7 +103,7 @@ export default function BlogPostPage() {
               </span>
             </div>
 
-            <h1 className="text-balance text-4xl font-extrabold leading-tight text-white md:text-6xl">
+            <h1 className="text-balance text-4xl font-extrabold leading-tight text-text-primary md:text-6xl">
               {post.title}
             </h1>
 
@@ -110,9 +115,9 @@ export default function BlogPostPage() {
                     key={tag}
                     className="rounded-full border px-3 py-1 text-xs font-semibold"
                     style={{
-                      backgroundColor: 'rgba(34,197,94,0.09)',
-                      borderColor: 'rgba(34,197,94,0.24)',
-                      color: '#A7F3D0',
+                      backgroundColor: brand(0.09),
+                      borderColor: brand(0.24),
+                      color: BRAND_GREEN_BRIGHT,
                     }}
                   >
                     {tag}
@@ -127,9 +132,9 @@ export default function BlogPostPage() {
               role="note"
               className="mt-10 flex items-center gap-3 rounded-xl border px-4 py-3 text-sm font-medium"
               style={{
-                backgroundColor: 'rgba(251,191,36,0.08)',
-                borderColor: 'rgba(251,191,36,0.24)',
-                color: '#FDE68A',
+                backgroundColor: hue('amber', 0.08),
+                borderColor: hue('amber', 0.24),
+                color: hue('amber'),
               }}
             >
               <Languages className="h-4 w-4 shrink-0" color="currentColor" />
@@ -139,7 +144,7 @@ export default function BlogPostPage() {
 
           <div className="blog-prose py-10" dangerouslySetInnerHTML={{ __html: post.html }} />
 
-          <footer className="border-t border-white/10 pt-8">
+          <footer className="border-t border-ink/10 pt-8">
             <BlogPostShare
               canonicalPath={canonicalPath}
               description={post.excerpt}
@@ -148,8 +153,7 @@ export default function BlogPostPage() {
 
             <Link
               href="/blog"
-              className="mt-8 inline-flex items-center gap-2 text-sm font-bold transition-colors hover:text-emerald-200"
-              style={{ color: BRAND_GREEN_BRIGHT }}
+              className="mt-8 inline-flex items-center gap-2 text-sm font-bold text-accent-bright transition-colors hover:text-accent-pale"
             >
               <ArrowLeft className="h-4 w-4" color="currentColor" />
               {t('backToBlog')}

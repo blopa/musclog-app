@@ -17,18 +17,25 @@ import { GridPattern } from '@/components/website/WebsiteBackgrounds';
 import {
   BODY_TEXT,
   BODY_TEXT_SOFT,
+  brand,
   BRAND_GREEN,
   BRAND_GREEN_BRIGHT,
+  brandBright,
+  CARD_BG,
+  CARD_BORDER,
+  HEADING_TEXT,
+  hue,
+  ink,
   INPUT_BG,
   INPUT_BORDER,
   MUTED,
+  scrim,
+  surface,
 } from '@/components/website/websiteColors';
 import { computePosition, type DeadReckoningSample } from '@/utils/deadReckoning';
 
-const CARD_BG = 'rgba(255,255,255,0.03)';
-const CARD_BORDER = 'rgba(255,255,255,0.10)';
-const ACCENT_YELLOW = '#F59E0B';
-const ACCENT_RED = '#EF4444';
+const ACCENT_YELLOW = hue('amber');
+const ACCENT_RED = hue('error');
 
 // Two complementary views of the same recording, because doubly-integrated
 // position drifts so far it buries the reps (see the chart panels below):
@@ -40,17 +47,17 @@ type ChannelKey =
   'angleX' | 'angleY' | 'angleZ' | 'accelX' | 'accelY' | 'accelZ' | 'accelMag' | 'px' | 'py' | 'pz';
 
 const CHART_COLORS: Record<ChannelKey, string> = {
-  accelMag: '#FFFFFF',
-  accelX: '#F97316',
-  accelY: '#FBBF24',
-  accelZ: '#A3E635',
-  angleX: '#F97316',
-  angleY: '#FBBF24',
-  angleZ: '#A3E635',
+  accelMag: HEADING_TEXT,
+  accelX: hue('warning'),
+  accelY: hue('amber'),
+  accelZ: BRAND_GREEN_BRIGHT,
+  angleX: hue('warning'),
+  angleY: hue('amber'),
+  angleZ: BRAND_GREEN_BRIGHT,
   // Position uses a separate palette so it stays distinct from accel in chart B.
-  px: '#38BDF8',
-  py: '#A78BFA',
-  pz: '#F472B6',
+  px: hue('info'),
+  py: hue('purple'),
+  pz: hue('pink'),
 };
 
 const CHART_LABELS: Record<ChannelKey, string> = {
@@ -177,7 +184,7 @@ function drawChart(
   const chartH = height - pT - pB;
 
   ctx.clearRect(0, 0, width, height);
-  ctx.fillStyle = '#0a0a0a';
+  ctx.fillStyle = surface();
   ctx.fillRect(0, 0, width, height);
 
   const span = domainMaxMs - domainMinMs;
@@ -222,7 +229,7 @@ function drawChart(
   const yForVal = (v: number) => pT + chartH - ((v - yMin) / yRange) * chartH;
 
   // Grid lines
-  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.strokeStyle = ink(0.05);
   ctx.lineWidth = 1;
   for (let i = 0; i <= 5; i++) {
     const y = pT + (chartH * i) / 5;
@@ -245,9 +252,9 @@ function drawChart(
   for (const m of markers) {
     const x1 = xForMs(m.startMs - startedAtMs);
     const x2 = xForMs(m.endMs - startedAtMs);
-    ctx.fillStyle = 'rgba(34,197,94,0.15)';
+    ctx.fillStyle = brand(0.15);
     ctx.fillRect(x1, pT, x2 - x1, chartH);
-    ctx.strokeStyle = 'rgba(34,197,94,0.5)';
+    ctx.strokeStyle = brand(0.5);
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(x1, pT);
@@ -293,7 +300,7 @@ function drawChart(
 
   // Cursor line (current video time, relative ms)
   const x = xForMs(cursorMs);
-  ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+  ctx.strokeStyle = ink(0.85);
   ctx.lineWidth = 1.5;
   ctx.beginPath();
   ctx.moveTo(x, pT);
@@ -365,7 +372,7 @@ function DropZone({
       onDrop={handleDrop}
       className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed p-8 transition-colors"
       style={{
-        backgroundColor: dragging ? 'rgba(0,255,163,0.06)' : CARD_BG,
+        backgroundColor: dragging ? brandBright(0.06) : CARD_BG,
         borderColor,
       }}
     >
@@ -384,8 +391,8 @@ function DropZone({
       <div
         className="flex h-12 w-12 items-center justify-center rounded-xl"
         style={{
-          backgroundColor: isLoaded ? 'rgba(34,197,94,0.15)' : INPUT_BG,
-          border: `1px solid ${isLoaded ? 'rgba(34,197,94,0.4)' : INPUT_BORDER}`,
+          backgroundColor: isLoaded ? brand(0.15) : INPUT_BG,
+          border: `1px solid ${isLoaded ? brand(0.4) : INPUT_BORDER}`,
         }}
       >
         {icon}
@@ -539,7 +546,7 @@ function ChartPanel({
       style={{ backgroundColor: CARD_BG, borderColor: CARD_BORDER }}
     >
       <div className="mb-1 flex items-baseline gap-2">
-        <span className="text-sm font-bold text-white">{title}</span>
+        <span className="text-sm font-bold text-text-primary">{title}</span>
         <span className="truncate text-xs" style={{ color: MUTED }}>
           {subtitle}
         </span>
@@ -742,13 +749,13 @@ export default function RepMarkerPage() {
         <GridPattern className="opacity-30" />
         <div
           className="absolute left-1/4 top-32 h-72 w-72 rounded-full blur-[100px]"
-          style={{ backgroundColor: 'rgba(0,255,163,0.06)' }}
+          style={{ backgroundColor: brandBright(0.06) }}
         />
 
         <div className="container relative z-10 mx-auto max-w-7xl px-4">
           {/* Title */}
           <div className="mb-8 text-center">
-            <h1 className="mb-3 text-4xl font-black tracking-tight text-white md:text-5xl">
+            <h1 className="mb-3 text-4xl font-black tracking-tight text-text-primary md:text-5xl">
               {t('title')}
             </h1>
             <p
@@ -794,7 +801,8 @@ export default function RepMarkerPage() {
                 {/* Video player */}
                 <div
                   className="self-start overflow-hidden rounded-2xl border"
-                  style={{ backgroundColor: '#000', borderColor: CARD_BORDER }}
+                  // The letterbox behind the video stays dark in every palette.
+                  style={{ backgroundColor: scrim(1), borderColor: CARD_BORDER }}
                 >
                   <video
                     ref={videoRef}
@@ -850,7 +858,7 @@ export default function RepMarkerPage() {
                   className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition-colors"
                   style={{
                     backgroundColor:
-                      markState === 'waitingEnd' ? 'rgba(245,158,11,0.2)' : 'rgba(0,255,163,0.15)',
+                      markState === 'waitingEnd' ? hue('amber', 0.2) : brandBright(0.15),
                     border: `1px solid ${markState === 'waitingEnd' ? ACCENT_YELLOW : BRAND_GREEN_BRIGHT}`,
                     color: markState === 'waitingEnd' ? ACCENT_YELLOW : BRAND_GREEN_BRIGHT,
                   }}
@@ -865,7 +873,7 @@ export default function RepMarkerPage() {
                   disabled={markState !== 'waitingEnd'}
                   className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition-colors"
                   style={{
-                    backgroundColor: markState === 'waitingEnd' ? 'rgba(34,197,94,0.2)' : INPUT_BG,
+                    backgroundColor: markState === 'waitingEnd' ? brand(0.2) : INPUT_BG,
                     border: `1px solid ${markState === 'waitingEnd' ? BRAND_GREEN : INPUT_BORDER}`,
                     color: markState === 'waitingEnd' ? BRAND_GREEN : MUTED,
                     cursor: markState !== 'waitingEnd' ? 'not-allowed' : 'pointer',
@@ -904,8 +912,8 @@ export default function RepMarkerPage() {
                     disabled={markerCount === 0}
                     className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition-colors"
                     style={{
-                      backgroundColor: markerCount > 0 ? 'rgba(239,68,68,0.12)' : INPUT_BG,
-                      border: `1px solid ${markerCount > 0 ? 'rgba(239,68,68,0.4)' : INPUT_BORDER}`,
+                      backgroundColor: markerCount > 0 ? hue('error', 0.12) : INPUT_BG,
+                      border: `1px solid ${markerCount > 0 ? hue('error', 0.4) : INPUT_BORDER}`,
                       color: markerCount > 0 ? ACCENT_RED : MUTED,
                       cursor: markerCount === 0 ? 'not-allowed' : 'pointer',
                     }}
@@ -930,7 +938,7 @@ export default function RepMarkerPage() {
                   className="flex items-center justify-between px-5 py-3"
                   style={{ borderBottom: `1px solid ${CARD_BORDER}` }}
                 >
-                  <span className="text-xs font-bold tracking-wider text-white">
+                  <span className="text-xs font-bold tracking-wider text-text-primary">
                     {t('markerCount', { count: markerCount })}
                   </span>
                   <button
@@ -939,7 +947,7 @@ export default function RepMarkerPage() {
                     disabled={markerCount === 0}
                     className="flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-bold transition-colors"
                     style={{
-                      backgroundColor: markerCount > 0 ? 'rgba(0,255,163,0.15)' : INPUT_BG,
+                      backgroundColor: markerCount > 0 ? brandBright(0.15) : INPUT_BG,
                       border: `1px solid ${markerCount > 0 ? BRAND_GREEN_BRIGHT : INPUT_BORDER}`,
                       color: markerCount > 0 ? BRAND_GREEN_BRIGHT : MUTED,
                       cursor: markerCount === 0 ? 'not-allowed' : 'pointer',
@@ -978,7 +986,7 @@ export default function RepMarkerPage() {
                         <tr
                           key={i}
                           style={{ borderBottom: `1px solid ${CARD_BORDER}` }}
-                          className="transition-colors hover:bg-white/[0.02]"
+                          className="transition-colors hover:bg-ink/[0.02]"
                         >
                           <td className="px-4 py-3 font-bold" style={{ color: BRAND_GREEN }}>
                             #{i + 1}
@@ -1002,7 +1010,7 @@ export default function RepMarkerPage() {
                               style={{ border: '1px solid transparent', color: MUTED }}
                               onMouseEnter={(e) => {
                                 e.currentTarget.style.color = ACCENT_RED;
-                                e.currentTarget.style.borderColor = 'rgba(239,68,68,0.3)';
+                                e.currentTarget.style.borderColor = hue('error', 0.3);
                               }}
                               onMouseLeave={(e) => {
                                 e.currentTarget.style.color = MUTED;

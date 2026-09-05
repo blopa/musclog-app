@@ -71,7 +71,7 @@ describe('website mobile menu', () => {
     // The panel is portalled out of the header, so it needs the breakpoint of
     // its own rather than inheriting the header cluster's.
     expect(mobileMenu).toContain(
-      'className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition-colors hover:border-white/20 hover:bg-white/10 lg:hidden"'
+      'className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition-colors hover:border-ink/20 hover:bg-ink/10 lg:hidden"'
     );
     expect(mobileMenu).toContain('<div className="fixed inset-0 top-16 z-[140] lg:hidden">');
   });

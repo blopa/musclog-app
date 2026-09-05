@@ -13,6 +13,8 @@ import {
   trackPageView,
 } from '@/utils/websiteAnalytics';
 
+import { brand, BRAND_GREEN, ink, scrim, surface } from './websiteColors';
+
 const BANNER_DELAY_MS = 400;
 
 export function AnalyticsConsent() {
@@ -78,26 +80,25 @@ export function AnalyticsConsent() {
         aria-label={t('ariaLabel')}
         className="pointer-events-auto flex w-full max-w-2xl flex-col items-start gap-4 rounded-2xl border p-5 shadow-2xl backdrop-blur-xl sm:flex-row sm:items-center"
         style={{
-          background: 'linear-gradient(180deg, rgba(10,18,16,0.98) 0%, rgba(6,12,11,0.96) 100%)',
-          borderColor: 'rgba(255,255,255,0.08)',
-          boxShadow:
-            '0 24px 70px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03), 0 0 30px rgba(34,197,94,0.08)',
+          background: `linear-gradient(180deg, ${surface(0.98)} 0%, ${surface(0.96)} 100%)`,
+          borderColor: ink(0.08),
+          boxShadow: `0 24px 70px ${scrim(0.45)}, 0 0 0 1px ${ink(0.03)}, 0 0 30px ${brand(0.08)}`,
         }}
       >
         <div className="flex min-w-0 flex-1 items-start gap-3">
           <div
             className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border"
             style={{
-              backgroundColor: 'rgba(34,197,94,0.1)',
-              borderColor: 'rgba(34,197,94,0.24)',
+              backgroundColor: brand(0.1),
+              borderColor: brand(0.24),
             }}
           >
-            <Cookie className="h-4 w-4" color="#22C55E" />
+            <Cookie className="h-4 w-4" color={BRAND_GREEN} />
           </div>
 
-          <p className="text-sm leading-relaxed text-slate-300">
+          <p className="text-sm leading-relaxed text-text-tertiary">
             {t('description')}{' '}
-            <Link href="/privacy" className="text-[#22C55E] underline underline-offset-2">
+            <Link href="/privacy" className="text-accent-primary underline underline-offset-2">
               {t('privacyLink')}
             </Link>
             .
@@ -108,16 +109,16 @@ export function AnalyticsConsent() {
           <button
             type="button"
             onClick={reject}
-            className="hover:bg-white/8 flex-1 rounded-full border px-4 py-2 text-sm font-semibold text-white transition-colors sm:flex-none"
-            style={{ borderColor: 'rgba(255,255,255,0.16)' }}
+            className="hover:bg-ink/8 flex-1 rounded-full border px-4 py-2 text-sm font-semibold text-text-primary transition-colors sm:flex-none"
+            style={{ borderColor: ink(0.16) }}
           >
             {t('reject')}
           </button>
           <button
             type="button"
             onClick={accept}
-            className="flex-1 rounded-full px-4 py-2 text-sm font-semibold text-black transition-colors hover:brightness-95 sm:flex-none"
-            style={{ backgroundColor: '#22C55E' }}
+            className="flex-1 rounded-full px-4 py-2 text-sm font-semibold text-text-on-accent transition-colors hover:brightness-95 sm:flex-none"
+            style={{ backgroundColor: BRAND_GREEN }}
           >
             {t('accept')}
           </button>

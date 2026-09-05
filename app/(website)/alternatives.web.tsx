@@ -20,7 +20,12 @@ import {
   BODY_TEXT_SOFT,
   BRAND_GREEN,
   BRAND_GREEN_BRIGHT,
+  brandBright,
+  HEADING_TEXT,
+  hue,
+  ink,
   MUTED,
+  ON_BRAND,
 } from '@/components/website/websiteColors';
 import { DownloadModal } from '@/components/website/WebsiteWrapper';
 
@@ -32,7 +37,7 @@ import { DownloadModal } from '@/components/website/WebsiteWrapper';
 // time from `website.alternatives.*` (see lang/locales/*/website.json).
 // ---------------------------------------------------------------------------
 
-const AMBER = '#F59E0B';
+const AMBER = hue('amber');
 
 // Column order — shared by every table. `musclog` is always first and highlighted.
 interface App {
@@ -156,7 +161,7 @@ const SECTIONS: Section[] = [
   {
     id: 'nutrition',
     icon: Salad,
-    accent: '#38BDF8',
+    accent: hue('info'),
     rows: [
       { id: 'caloriesMacros', cells: [F, F, F, F, N, F, F, F, N] },
       {
@@ -201,7 +206,7 @@ const SECTIONS: Section[] = [
   {
     id: 'workouts',
     icon: Activity,
-    accent: '#A78BFA',
+    accent: hue('purple'),
     rows: [
       {
         id: 'strengthLogging',
@@ -249,7 +254,7 @@ const SECTIONS: Section[] = [
   {
     id: 'wholeHealth',
     icon: HeartPulse,
-    accent: '#F472B6',
+    accent: hue('pink'),
     rows: [
       { id: 'bodyMeasurements', cells: [F, F, F, F, F, F, F, F, F] },
       { id: 'bodyFatBmiFfmi', cells: [F, P, P, P, P, F, P, P, N] },
@@ -348,9 +353,9 @@ const APP_COL_WIDTH = 104;
 function InverseCell({ status, t }: { status: Status; t: (k: string) => string }) {
   // Reversed polarity: "full" = has ads (bad), "none" = no ads (good).
   const map = {
-    full: { key: 'notes.yes', color: AMBER, bg: 'rgba(245,158,11,0.12)' },
-    partial: { key: 'notes.some', color: AMBER, bg: 'rgba(245,158,11,0.10)' },
-    none: { key: 'notes.no', color: BRAND_GREEN_BRIGHT, bg: 'rgba(0,255,163,0.10)' },
+    full: { key: 'notes.yes', color: AMBER, bg: hue('amber', 0.12) },
+    partial: { key: 'notes.some', color: AMBER, bg: hue('amber', 0.1) },
+    none: { key: 'notes.no', color: BRAND_GREEN_BRIGHT, bg: brandBright(0.1) },
   }[status];
 
   return (
@@ -372,18 +377,18 @@ export default function Alternatives() {
 
   return (
     <main className="relative overflow-hidden pb-24 pt-24">
-      <DotPattern className="text-primary/20" />
-      <div className="from-background/60 to-background/60 absolute inset-0 bg-gradient-to-b via-transparent" />
+      <DotPattern className="text-accent-primary/20" />
+      <div className="absolute inset-0 bg-gradient-to-b from-bg-primary/60 via-transparent to-bg-primary/60" />
 
       {/* Ambient glows */}
       <div
         className="absolute left-1/4 top-32 h-96 w-96 rounded-full blur-[120px]"
-        style={{ backgroundColor: 'rgba(0,255,163,0.06)' }}
+        style={{ backgroundColor: brandBright(0.06) }}
         aria-hidden="true"
       />
       <div
         className="absolute bottom-32 right-1/4 h-80 w-80 rounded-full blur-[100px]"
-        style={{ backgroundColor: 'rgba(56,189,248,0.06)' }}
+        style={{ backgroundColor: hue('info', 0.06) }}
         aria-hidden="true"
       />
 
@@ -393,15 +398,15 @@ export default function Alternatives() {
           <div
             className="mb-4 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-widest"
             style={{
-              backgroundColor: 'rgba(0,255,163,0.06)',
-              borderColor: 'rgba(0,255,163,0.25)',
+              backgroundColor: brandBright(0.06),
+              borderColor: brandBright(0.25),
               color: BRAND_GREEN_BRIGHT,
             }}
           >
             <Sparkles size={12} color={BRAND_GREEN_BRIGHT} />
             {t('badge')}
           </div>
-          <h1 className="mb-4 text-4xl font-bold text-white md:text-5xl">
+          <h1 className="mb-4 text-4xl font-bold text-text-primary md:text-5xl">
             {t('titlePrefix')}{' '}
             <span style={{ color: BRAND_GREEN_BRIGHT }}>{t('titleHighlight')}</span>
           </h1>
@@ -417,8 +422,8 @@ export default function Alternatives() {
         <div
           className="mx-auto mb-4 flex max-w-2xl flex-wrap items-center justify-center gap-x-6 gap-y-2 rounded-2xl border px-5 py-3"
           style={{
-            backgroundColor: 'rgba(255,255,255,0.02)',
-            borderColor: 'rgba(255,255,255,0.08)',
+            backgroundColor: ink(0.02),
+            borderColor: ink(0.08),
           }}
         >
           <span
@@ -477,7 +482,7 @@ export default function Alternatives() {
                   >
                     <Icon size={20} color={section.accent} />
                   </div>
-                  <h2 className="text-xl font-bold text-white md:text-2xl">
+                  <h2 className="text-xl font-bold text-text-primary md:text-2xl">
                     {t(`sections.${section.id}.title`)}
                   </h2>
                 </div>
@@ -498,22 +503,21 @@ export default function Alternatives() {
             <div
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border"
               style={{
-                backgroundColor: 'rgba(245,158,11,0.10)',
-                borderColor: 'rgba(245,158,11,0.35)',
+                backgroundColor: hue('amber', 0.1),
+                borderColor: hue('amber', 0.35),
               }}
             >
               <Trophy size={20} color={AMBER} />
             </div>
-            <h2 className="text-xl font-bold text-white md:text-2xl">{t('winners.title')}</h2>
+            <h2 className="text-xl font-bold text-text-primary md:text-2xl">
+              {t('winners.title')}
+            </h2>
           </div>
 
-          <div
-            className="overflow-hidden rounded-2xl border"
-            style={{ borderColor: 'rgba(255,255,255,0.08)' }}
-          >
+          <div className="overflow-hidden rounded-2xl border" style={{ borderColor: ink(0.08) }}>
             <table className="w-full text-sm">
               <thead>
-                <tr style={{ backgroundColor: 'rgba(255,255,255,0.03)' }}>
+                <tr style={{ backgroundColor: ink(0.03) }}>
                   <th
                     className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider"
                     style={{ color: MUTED }}
@@ -534,17 +538,17 @@ export default function Alternatives() {
                     key={w.id}
                     className="border-t"
                     style={{
-                      borderColor: 'rgba(255,255,255,0.05)',
-                      backgroundColor: w.musclog ? 'rgba(0,255,163,0.04)' : 'transparent',
+                      borderColor: ink(0.05),
+                      backgroundColor: w.musclog ? brandBright(0.04) : 'transparent',
                     }}
                   >
-                    <td className="px-5 py-3" style={{ color: '#E5E7EB' }}>
+                    <td className="px-5 py-3" style={{ color: HEADING_TEXT }}>
                       {t(`winners.rows.${w.id}`)}
                     </td>
                     <td className="px-5 py-3">
                       <span
                         className="inline-flex items-center gap-1.5 font-semibold"
-                        style={{ color: w.musclog ? BRAND_GREEN_BRIGHT : '#E5E7EB' }}
+                        style={{ color: w.musclog ? BRAND_GREEN_BRIGHT : HEADING_TEXT }}
                       >
                         {w.musclog ? <Award size={14} color={BRAND_GREEN_BRIGHT} /> : null}
                         {w.app}
@@ -562,14 +566,14 @@ export default function Alternatives() {
         <section className="mt-16">
           <div
             className="rounded-2xl border p-6 md:p-8"
-            style={{ backgroundColor: 'rgba(0,255,163,0.04)', borderColor: 'rgba(0,255,163,0.2)' }}
+            style={{ backgroundColor: brandBright(0.04), borderColor: brandBright(0.2) }}
           >
-            <h2 className="mb-4 text-lg font-bold text-white md:text-xl">
+            <h2 className="mb-4 text-lg font-bold text-text-primary md:text-xl">
               {t('conclusion.title')}
             </h2>
             <blockquote
               className="mb-5 border-l-2 pl-4 text-base font-medium italic leading-relaxed md:text-lg"
-              style={{ borderColor: BRAND_GREEN_BRIGHT, color: '#F3F4F6' }}
+              style={{ borderColor: BRAND_GREEN_BRIGHT, color: HEADING_TEXT }}
             >
               {t('conclusion.quote')}
             </blockquote>
@@ -579,8 +583,8 @@ export default function Alternatives() {
             <div
               className="mb-4 rounded-xl border px-4 py-3 text-center text-sm font-semibold"
               style={{
-                backgroundColor: 'rgba(255,255,255,0.03)',
-                borderColor: 'rgba(255,255,255,0.1)',
+                backgroundColor: ink(0.03),
+                borderColor: ink(0.1),
                 color: BODY_TEXT_SOFT,
               }}
             >
@@ -594,14 +598,16 @@ export default function Alternatives() {
 
         {/* CTA */}
         <section className="mt-16 text-center">
-          <h2 className="mb-3 text-2xl font-bold text-white md:text-3xl">{t('cta.title')}</h2>
+          <h2 className="mb-3 text-2xl font-bold text-text-primary md:text-3xl">
+            {t('cta.title')}
+          </h2>
           <p className="mx-auto mb-6 max-w-md text-sm" style={{ color: BODY_TEXT_SOFT }}>
             {t('cta.description')}
           </p>
           <DownloadModal
             variant="default"
             className="mx-auto text-base font-bold transition-transform hover:scale-[1.01]"
-            style={{ backgroundColor: BRAND_GREEN, color: '#000000' }}
+            style={{ backgroundColor: BRAND_GREEN, color: ON_BRAND }}
           >
             <Download className="h-5 w-5" />
             {t('cta.button')}
@@ -627,19 +633,16 @@ function SectionTable({
   rows: (Row & { label: string })[];
   t: (k: string) => string;
 }) {
-  const musclogTint = 'rgba(0,255,163,0.05)';
+  const musclogTint = brandBright(0.05);
 
   return (
-    <div
-      className="overflow-x-auto rounded-2xl border"
-      style={{ borderColor: 'rgba(255,255,255,0.08)' }}
-    >
+    <div className="overflow-x-auto rounded-2xl border" style={{ borderColor: ink(0.08) }}>
       <table
         className="w-full border-collapse text-left"
         style={{ minWidth: FEATURE_COL_WIDTH + APPS.length * APP_COL_WIDTH }}
       >
         <thead>
-          <tr style={{ backgroundColor: 'rgba(255,255,255,0.03)' }}>
+          <tr style={{ backgroundColor: ink(0.03) }}>
             <th
               className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider"
               style={{ width: FEATURE_COL_WIDTH, minWidth: FEATURE_COL_WIDTH, color: MUTED }}
@@ -653,7 +656,7 @@ function SectionTable({
                 style={{
                   width: APP_COL_WIDTH,
                   minWidth: APP_COL_WIDTH,
-                  color: app.highlight ? BRAND_GREEN_BRIGHT : '#E5E7EB',
+                  color: app.highlight ? BRAND_GREEN_BRIGHT : HEADING_TEXT,
                   backgroundColor: app.highlight ? musclogTint : 'transparent',
                 }}
               >
@@ -664,11 +667,15 @@ function SectionTable({
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={row.id} className="border-t" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
+            <tr key={row.id} className="border-t" style={{ borderColor: ink(0.05) }}>
               <th
                 scope="row"
                 className="px-4 py-3 text-left text-sm font-medium"
-                style={{ width: FEATURE_COL_WIDTH, minWidth: FEATURE_COL_WIDTH, color: '#E5E7EB' }}
+                style={{
+                  width: FEATURE_COL_WIDTH,
+                  minWidth: FEATURE_COL_WIDTH,
+                  color: HEADING_TEXT,
+                }}
               >
                 {row.label}
               </th>

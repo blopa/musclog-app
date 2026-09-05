@@ -325,7 +325,8 @@
       "blog": "Blog",
       "menu": "Menu",
       "openMenu": "Abrir menu",
-      "closeMenu": "Fechar menu"
+      "closeMenu": "Fechar menu",
+      "theme": "Tema"
     },
     "blog": {
       "eyebrow": "Direto da oficina",

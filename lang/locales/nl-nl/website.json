@@ -325,7 +325,8 @@
       "blog": "Blog",
       "menu": "Menu",
       "openMenu": "Menu openen",
-      "closeMenu": "Menu sluiten"
+      "closeMenu": "Menu sluiten",
+      "theme": "Thema"
     },
     "blog": {
       "eyebrow": "Uit de werkplaats",

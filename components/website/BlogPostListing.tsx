@@ -15,7 +15,7 @@ import type { BlogPostPage } from '@/utils/blogPosts.server';
 import { useBlogListingCopy } from './blogListingCopy';
 import { blogCategoryPath, blogListingPath } from './blogRoutes';
 import { GridPattern } from './WebsiteBackgrounds';
-import { BODY_TEXT, BODY_TEXT_SOFT, BRAND_GREEN_BRIGHT } from './websiteColors';
+import { BODY_TEXT, BODY_TEXT_SOFT, brand, BRAND_GREEN_BRIGHT, brandBright } from './websiteColors';
 
 function formatPostDate(date: string, locale: string): string {
   return new Intl.DateTimeFormat(locale, {
@@ -27,10 +27,10 @@ function formatPostDate(date: string, locale: string): string {
 }
 
 const paginationLinkClass =
-  'inline-flex min-w-32 items-center justify-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/[0.08] px-5 py-3 text-sm font-bold transition hover:border-emerald-300/50 hover:bg-emerald-400/[0.14] hover:text-emerald-200';
+  'inline-flex min-w-32 items-center justify-center gap-2 rounded-full border border-accent-bright/25 bg-accent-bright/[0.08] px-5 py-3 text-sm font-bold transition hover:border-accent-bright/50 hover:bg-accent-bright/[0.14] hover:text-accent-pale';
 
 const disabledPaginationClass =
-  'inline-flex min-w-32 items-center justify-center gap-2 rounded-full border border-white/10 px-5 py-3 text-sm font-bold opacity-40';
+  'inline-flex min-w-32 items-center justify-center gap-2 rounded-full border border-ink/10 px-5 py-3 text-sm font-bold opacity-40';
 
 /**
  * A previous/next control, rendered as a dead label when there is no such page. Both ends are the
@@ -96,10 +96,10 @@ export function BlogPostListing({
 
   return (
     <main className="relative min-h-[70vh] overflow-hidden pb-24 pt-28">
-      <GridPattern className="text-emerald-400/10" />
+      <GridPattern className="text-accent-bright/10" />
       <div
         className="pointer-events-none absolute left-1/2 top-0 h-[480px] w-[760px] -translate-x-1/2 rounded-full blur-[150px]"
-        style={{ backgroundColor: 'rgba(0, 255, 163, 0.10)' }}
+        style={{ backgroundColor: brandBright(0.1) }}
         aria-hidden="true"
       />
 
@@ -107,7 +107,7 @@ export function BlogPostListing({
         {category ? (
           <a
             href="/blog"
-            className="mb-8 inline-flex items-center gap-2 text-sm font-bold transition-colors hover:text-emerald-200"
+            className="mb-8 inline-flex items-center gap-2 text-sm font-bold transition-colors hover:text-accent-pale"
             style={{ color: BRAND_GREEN_BRIGHT }}
           >
             <ArrowLeft className="h-4 w-4" color="currentColor" />
@@ -122,7 +122,7 @@ export function BlogPostListing({
           >
             {copy.eyebrow}
           </p>
-          <h1 className="text-balance text-4xl font-extrabold text-white md:text-6xl">
+          <h1 className="text-balance text-4xl font-extrabold text-text-primary md:text-6xl">
             {copy.title}
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-balance text-lg" style={{ color: BODY_TEXT }}>
@@ -132,7 +132,7 @@ export function BlogPostListing({
 
         {posts.length === 0 ? (
           <p
-            className="border-white/12 rounded-3xl border border-dashed px-6 py-16 text-center"
+            className="border-ink/12 rounded-3xl border border-dashed px-6 py-16 text-center"
             style={{ color: BODY_TEXT_SOFT }}
           >
             {copy.empty}
@@ -142,7 +142,7 @@ export function BlogPostListing({
             {posts.map((post) => (
               <article
                 key={post.slug}
-                className="group relative rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.06] to-white/[0.015] p-6 shadow-[0_22px_70px_rgba(0,0,0,0.24)] backdrop-blur-sm transition duration-200 hover:border-emerald-400/40 hover:from-white/[0.09] hover:shadow-[0_28px_80px_rgba(0,0,0,0.34)] md:p-8"
+                className="group relative rounded-3xl border border-ink/10 bg-gradient-to-br from-ink/[0.06] to-ink/[0.015] p-6 shadow-[0_22px_70px_rgb(var(--c-scrim-base)/0.24)] backdrop-blur-sm transition duration-200 hover:border-accent-bright/40 hover:from-ink/[0.09] hover:shadow-[0_28px_80px_rgb(var(--c-scrim-base)/0.34)] md:p-8"
               >
                 <div
                   className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold uppercase tracking-[0.14em]"
@@ -152,10 +152,10 @@ export function BlogPostListing({
                     <CalendarDays className="h-3.5 w-3.5" color={BRAND_GREEN_BRIGHT} />
                     {formatPostDate(post.date, locale)}
                   </time>
-                  <span className="h-1 w-1 rounded-full bg-white/25" aria-hidden="true" />
+                  <span className="h-1 w-1 rounded-full bg-ink/25" aria-hidden="true" />
                   <a
                     href={blogCategoryPath(post.category)}
-                    className="relative z-10 inline-flex items-center gap-2 transition-colors hover:text-emerald-200"
+                    className="relative z-10 inline-flex items-center gap-2 transition-colors hover:text-accent-pale"
                   >
                     <Folder className="h-3.5 w-3.5" color={BRAND_GREEN_BRIGHT} />
                     {t(`categories.${post.category}`)}
@@ -166,7 +166,7 @@ export function BlogPostListing({
                   {/* Plain anchors preserve inherited HTML typography and hover colors here. */}
                   <a
                     href={`/blog/${post.slug}`}
-                    className="text-white transition-colors group-hover:text-emerald-300"
+                    className="text-text-primary transition-colors group-hover:text-accent-bright"
                   >
                     {post.title}
                     <span className="absolute inset-0 rounded-3xl" aria-hidden="true" />
@@ -187,9 +187,9 @@ export function BlogPostListing({
                           key={tag}
                           className="rounded-full border px-2.5 py-1 text-xs font-semibold"
                           style={{
-                            backgroundColor: 'rgba(34,197,94,0.09)',
-                            borderColor: 'rgba(34,197,94,0.24)',
-                            color: '#A7F3D0',
+                            backgroundColor: brand(0.09),
+                            borderColor: brand(0.24),
+                            color: BRAND_GREEN_BRIGHT,
                           }}
                         >
                           {tag}
@@ -248,7 +248,7 @@ export function BlogPostListing({
                     key={item}
                     aria-current="page"
                     aria-label={t('pageLabel', { page: item })}
-                    className="inline-flex h-10 min-w-10 items-center justify-center rounded-full px-3 text-sm font-extrabold text-black"
+                    className="inline-flex h-10 min-w-10 items-center justify-center rounded-full px-3 text-sm font-extrabold text-text-on-accent"
                     style={{ backgroundColor: BRAND_GREEN_BRIGHT }}
                   >
                     {item}
@@ -258,7 +258,7 @@ export function BlogPostListing({
                     key={item}
                     href={blogListingPath(item, category)}
                     aria-label={t('pageLabel', { page: item })}
-                    className="inline-flex h-10 min-w-10 items-center justify-center rounded-full border border-white/10 px-3 text-sm font-bold transition hover:border-emerald-300/50 hover:bg-emerald-400/[0.12] hover:text-emerald-200"
+                    className="inline-flex h-10 min-w-10 items-center justify-center rounded-full border border-ink/10 px-3 text-sm font-bold transition hover:border-accent-bright/50 hover:bg-accent-bright/[0.12] hover:text-accent-pale"
                     style={{ color: BODY_TEXT }}
                   >
                     {item}

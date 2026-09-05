@@ -8,8 +8,16 @@ import { SectionBackground } from '@/components/website/WebsiteBackgrounds';
 import {
   BODY_TEXT,
   BODY_TEXT_SOFT,
+  brand,
   BRAND_GREEN,
   BRAND_GREEN_BRIGHT,
+  brandBright,
+  hue,
+  ink,
+  MUTED,
+  ON_BRAND,
+  scrim,
+  surface,
 } from '@/components/website/websiteColors';
 import { type ExerciseCatalogueEntry, getExerciseCatalogue } from '@/data/exerciseCatalogue';
 import i18n from '@/lang/lang';
@@ -31,22 +39,22 @@ const MUSCLE_GROUPS = [
 const MECHANIC_TYPES = ['compound', 'isolation', 'cardio', 'plyometric'] as const;
 
 const MUSCLE_GROUP_COLORS: Record<string, { active: string; bg: string; text: string }> = {
-  chest: { active: '#F87171', bg: 'rgba(239,68,68,0.14)', text: '#F87171' },
-  back: { active: '#C084FC', bg: 'rgba(168,85,247,0.14)', text: '#C084FC' },
-  legs: { active: '#4ADE80', bg: 'rgba(34,197,94,0.14)', text: '#4ADE80' },
-  arms: { active: '#FB923C', bg: 'rgba(249,115,22,0.14)', text: '#FB923C' },
-  shoulders: { active: '#38BDF8', bg: 'rgba(56,189,248,0.14)', text: '#38BDF8' },
-  glutes: { active: '#F472B6', bg: 'rgba(236,72,153,0.14)', text: '#F472B6' },
-  core: { active: '#FBBF24', bg: 'rgba(245,158,11,0.14)', text: '#FBBF24' },
-  abdomen: { active: '#34D399', bg: 'rgba(16,185,129,0.14)', text: '#34D399' },
-  full_body: { active: '#00FFA3', bg: 'rgba(0,255,163,0.14)', text: '#00FFA3' },
+  chest: { active: hue('error'), bg: hue('error', 0.14), text: hue('error') },
+  back: { active: hue('purple'), bg: hue('purple', 0.14), text: hue('purple') },
+  legs: { active: BRAND_GREEN_BRIGHT, bg: brand(0.14), text: BRAND_GREEN_BRIGHT },
+  arms: { active: hue('warning'), bg: hue('warning', 0.14), text: hue('warning') },
+  shoulders: { active: hue('info'), bg: hue('info', 0.14), text: hue('info') },
+  glutes: { active: hue('pink'), bg: hue('pink', 0.14), text: hue('pink') },
+  core: { active: hue('amber'), bg: hue('amber', 0.14), text: hue('amber') },
+  abdomen: { active: BRAND_GREEN_BRIGHT, bg: brandBright(0.14), text: BRAND_GREEN_BRIGHT },
+  full_body: { active: BRAND_GREEN_BRIGHT, bg: brandBright(0.14), text: BRAND_GREEN_BRIGHT },
 };
 
 const MECHANIC_COLORS: Record<string, { bg: string; text: string }> = {
-  compound: { bg: 'rgba(99,102,241,0.14)', text: '#A5B4FC' },
-  isolation: { bg: 'rgba(245,158,11,0.14)', text: '#FCD34D' },
-  cardio: { bg: 'rgba(239,68,68,0.14)', text: '#FCA5A5' },
-  plyometric: { bg: 'rgba(236,72,153,0.14)', text: '#F9A8D4' },
+  compound: { bg: hue('indigo', 0.14), text: hue('indigo') },
+  isolation: { bg: hue('amber', 0.14), text: hue('amber') },
+  cardio: { bg: hue('error', 0.14), text: hue('error') },
+  plyometric: { bg: hue('pink', 0.14), text: hue('pink') },
 };
 
 type Exercise = ExerciseCatalogueEntry;
@@ -73,28 +81,28 @@ function ExerciseCard({
   const [imgError, setImgError] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const muscleColor = MUSCLE_GROUP_COLORS[exercise.muscleGroup] ?? {
-    bg: 'rgba(255,255,255,0.08)',
-    text: '#D1D5DB',
-    active: '#D1D5DB',
+    bg: ink(0.08),
+    text: BODY_TEXT,
+    active: BODY_TEXT,
   };
   const mechColor = MECHANIC_COLORS[exercise.mechanicType] ?? {
-    bg: 'rgba(255,255,255,0.08)',
-    text: '#D1D5DB',
+    bg: ink(0.08),
+    text: BODY_TEXT,
   };
 
   return (
     <div
-      className="group flex flex-col overflow-hidden rounded-2xl border transition-all duration-200 hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)]"
+      className="group flex flex-col overflow-hidden rounded-2xl border transition-all duration-200 hover:-translate-y-1 hover:border-ink/20 hover:shadow-[0_12px_40px_rgb(var(--c-scrim-base)/0.4)]"
       style={{
-        borderColor: 'rgba(255,255,255,0.08)',
-        backgroundColor: 'rgba(255,255,255,0.03)',
+        borderColor: ink(0.08),
+        backgroundColor: ink(0.03),
         backdropFilter: 'blur(8px)',
         contentVisibility: 'auto',
         containIntrinsicSize: '420px 520px',
       }}
     >
       {/* Image */}
-      <div className="relative overflow-hidden bg-black/25" style={{ aspectRatio: '1/1' }}>
+      <div className="relative overflow-hidden bg-bg-card" style={{ aspectRatio: '1/1' }}>
         {!imgError ? (
           <img
             src={withExpoBaseUrl(buildExerciseImagePath(exercise.exerciseSlug))}
@@ -105,7 +113,7 @@ function ExerciseCard({
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
-            <Dumbbell className="h-10 w-10 opacity-15" color="#9CA3AF" />
+            <Dumbbell className="h-10 w-10 opacity-15" color={BODY_TEXT_SOFT} />
           </div>
         )}
 
@@ -113,7 +121,7 @@ function ExerciseCard({
         <div
           className="absolute left-2 top-2 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider"
           style={{
-            backgroundColor: 'rgba(0,0,0,0.70)',
+            backgroundColor: scrim(0.7),
             color: muscleColor.text,
             border: `1px solid ${muscleColor.active}`,
             backdropFilter: 'blur(6px)',
@@ -129,14 +137,14 @@ function ExerciseCard({
             onClick={() => setShowInfo(true)}
             className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full transition-opacity hover:opacity-100"
             style={{
-              backgroundColor: 'rgba(0,0,0,0.60)',
-              border: '1px solid rgba(255,255,255,0.18)',
+              backgroundColor: scrim(0.6),
+              border: `1px solid ${ink(0.18)}`,
               backdropFilter: 'blur(6px)',
               opacity: 0.7,
             }}
             aria-label="Exercise info"
           >
-            <Info className="h-3.5 w-3.5" color="#D1D5DB" />
+            <Info className="h-3.5 w-3.5" color={BODY_TEXT} />
           </button>
         ) : null}
 
@@ -144,20 +152,20 @@ function ExerciseCard({
         {showInfo && description ? (
           <div
             className="absolute inset-0 z-10 flex flex-col p-4"
-            style={{ backgroundColor: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(6px)' }}
+            style={{ backgroundColor: scrim(0.88), backdropFilter: 'blur(6px)' }}
           >
             <button
               type="button"
               onClick={() => setShowInfo(false)}
               className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full transition-opacity hover:opacity-100"
               style={{
-                backgroundColor: 'rgba(255,255,255,0.10)',
-                border: '1px solid rgba(255,255,255,0.18)',
+                backgroundColor: ink(0.1),
+                border: `1px solid ${ink(0.18)}`,
                 opacity: 0.8,
               }}
               aria-label="Close"
             >
-              <X className="h-3.5 w-3.5" color="#D1D5DB" />
+              <X className="h-3.5 w-3.5" color={BODY_TEXT} />
             </button>
             <p className="mt-4 overflow-auto text-xs leading-relaxed" style={{ color: BODY_TEXT }}>
               {description}
@@ -168,7 +176,7 @@ function ExerciseCard({
 
       {/* Content */}
       <div className="flex flex-1 flex-col gap-2 p-4">
-        <h3 className="text-sm font-bold leading-snug text-white">{localizedName}</h3>
+        <h3 className="text-sm font-bold leading-snug text-text-primary">{localizedName}</h3>
 
         {/* Target muscles */}
         <div className="flex flex-wrap gap-1">
@@ -177,7 +185,7 @@ function ExerciseCard({
               key={i}
               className="rounded-full px-2 py-0.5 text-[10px] font-medium"
               style={{
-                backgroundColor: 'rgba(255,255,255,0.05)',
+                backgroundColor: ink(0.05),
                 color: BODY_TEXT_SOFT,
               }}
             >
@@ -188,7 +196,7 @@ function ExerciseCard({
             <span
               className="rounded-full px-2 py-0.5 text-[10px] font-medium"
               style={{
-                backgroundColor: 'rgba(255,255,255,0.05)',
+                backgroundColor: ink(0.05),
                 color: BODY_TEXT_SOFT,
               }}
             >
@@ -202,9 +210,9 @@ function ExerciseCard({
           <span
             className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
             style={{
-              backgroundColor: 'rgba(255,255,255,0.05)',
-              color: '#6B7280',
-              border: '1px solid rgba(255,255,255,0.06)',
+              backgroundColor: ink(0.05),
+              color: MUTED,
+              border: `1px solid ${ink(0.06)}`,
             }}
           >
             {equipmentLabel}
@@ -288,8 +296,7 @@ export default function ExercisesPage() {
           <div
             className="pointer-events-none absolute left-1/2 top-1/2 h-[480px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[140px]"
             style={{
-              background:
-                'radial-gradient(circle, rgba(0,255,163,0.10) 0%, rgba(34,197,94,0.07) 36%, rgba(0,0,0,0) 72%)',
+              background: `radial-gradient(circle, ${brandBright(0.1)} 0%, ${brand(0.07)} 36%, ${scrim(0)} 72%)`,
             }}
             aria-hidden="true"
           />
@@ -300,7 +307,7 @@ export default function ExercisesPage() {
             >
               {t('eyebrow')}
             </p>
-            <h1 className="mb-4 text-balance text-4xl font-extrabold text-white md:text-5xl">
+            <h1 className="mb-4 text-balance text-4xl font-extrabold text-text-primary md:text-5xl">
               {t('pageTitle')}
             </h1>
             <p className="mx-auto max-w-xl text-balance text-lg" style={{ color: BODY_TEXT }}>
@@ -332,26 +339,23 @@ export default function ExercisesPage() {
         <section
           className="sticky top-16 z-40 border-b backdrop-blur-md"
           style={{
-            backgroundColor: 'rgba(4,10,9,0.94)',
-            borderColor: 'rgba(255,255,255,0.08)',
+            backgroundColor: surface(0.94),
+            borderColor: ink(0.08),
           }}
         >
           <div className="container mx-auto space-y-3 px-4 py-3">
             {/* Search */}
             <div className="relative w-full md:w-80">
-              <Search
-                className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
-                color="#6B7280"
-              />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" color={MUTED} />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch((e.target as HTMLInputElement).value)}
                 placeholder={t('searchPlaceholder')}
-                className="w-full rounded-xl py-2.5 pl-9 pr-9 text-sm text-white outline-none transition-all placeholder:text-gray-500"
+                className="w-full rounded-xl py-2.5 pl-9 pr-9 text-sm text-text-primary outline-none transition-all placeholder:text-text-tertiary"
                 style={{
-                  backgroundColor: 'rgba(255,255,255,0.06)',
-                  boxShadow: '0 0 0 1px rgba(255,255,255,0.10)',
+                  backgroundColor: ink(0.06),
+                  boxShadow: `0 0 0 1px ${ink(0.1)}`,
                 }}
               />
               {search ? (
@@ -361,7 +365,7 @@ export default function ExercisesPage() {
                   className="absolute right-3 top-1/2 -translate-y-1/2"
                   aria-label={t('clearFilters')}
                 >
-                  <X className="h-3.5 w-3.5" color="#6B7280" />
+                  <X className="h-3.5 w-3.5" color={MUTED} />
                 </button>
               ) : null}
             </div>
@@ -375,11 +379,11 @@ export default function ExercisesPage() {
                 className="rounded-full px-3 py-1 text-xs font-semibold transition-all"
                 style={
                   !muscleGroup
-                    ? { backgroundColor: BRAND_GREEN, color: '#000' }
+                    ? { backgroundColor: BRAND_GREEN, color: ON_BRAND }
                     : {
-                        backgroundColor: 'rgba(255,255,255,0.05)',
+                        backgroundColor: ink(0.05),
                         color: BODY_TEXT_SOFT,
-                        border: '1px solid rgba(255,255,255,0.08)',
+                        border: `1px solid ${ink(0.08)}`,
                       }
                 }
               >
@@ -400,12 +404,12 @@ export default function ExercisesPage() {
                       isActive
                         ? {
                             backgroundColor: colors?.active ?? BRAND_GREEN,
-                            color: '#000',
+                            color: ON_BRAND,
                           }
                         : {
-                            backgroundColor: 'rgba(255,255,255,0.05)',
+                            backgroundColor: ink(0.05),
                             color: BODY_TEXT_SOFT,
-                            border: '1px solid rgba(255,255,255,0.08)',
+                            border: `1px solid ${ink(0.08)}`,
                           }
                     }
                   >
@@ -416,7 +420,7 @@ export default function ExercisesPage() {
 
               <span
                 className="h-4 w-px"
-                style={{ backgroundColor: 'rgba(255,255,255,0.12)' }}
+                style={{ backgroundColor: ink(0.12) }}
                 aria-hidden="true"
               />
 
@@ -434,12 +438,12 @@ export default function ExercisesPage() {
                       isActive
                         ? {
                             backgroundColor: colors?.text ?? BRAND_GREEN,
-                            color: '#000',
+                            color: ON_BRAND,
                           }
                         : {
-                            backgroundColor: 'rgba(255,255,255,0.05)',
+                            backgroundColor: ink(0.05),
                             color: BODY_TEXT_SOFT,
-                            border: '1px solid rgba(255,255,255,0.08)',
+                            border: `1px solid ${ink(0.08)}`,
                           }
                     }
                   >
@@ -454,9 +458,9 @@ export default function ExercisesPage() {
                   onClick={clearFilters}
                   className="ml-1 rounded-full px-3 py-1 text-xs font-semibold transition-all"
                   style={{
-                    color: '#F87171',
-                    backgroundColor: 'rgba(239,68,68,0.08)',
-                    border: '1px solid rgba(239,68,68,0.18)',
+                    color: hue('error'),
+                    backgroundColor: hue('error', 0.08),
+                    border: `1px solid ${hue('error', 0.18)}`,
                   }}
                 >
                   {t('clearFilters')}
@@ -478,16 +482,16 @@ export default function ExercisesPage() {
               <div className="py-24 text-center">
                 <div
                   className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full"
-                  style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}
+                  style={{ backgroundColor: ink(0.04) }}
                 >
-                  <Dumbbell className="h-8 w-8" color="#6B7280" />
+                  <Dumbbell className="h-8 w-8" color={MUTED} />
                 </div>
-                <p className="text-lg font-semibold text-white">{t('noResults')}</p>
+                <p className="text-lg font-semibold text-text-primary">{t('noResults')}</p>
                 <button
                   type="button"
                   onClick={clearFilters}
                   className="mt-4 rounded-full px-4 py-2 text-sm font-semibold transition-colors"
-                  style={{ backgroundColor: BRAND_GREEN, color: '#000' }}
+                  style={{ backgroundColor: BRAND_GREEN, color: ON_BRAND }}
                 >
                   {t('clearFilters')}
                 </button>
@@ -516,7 +520,7 @@ export default function ExercisesPage() {
               {t('sourceCredit')}{' '}
               <a
                 href="https://github.com/yuhonas/free-exercise-db"
-                className="underline decoration-white/30 underline-offset-2 hover:text-white"
+                className="underline decoration-ink/30 underline-offset-2 hover:text-text-primary"
               >
                 free-exercise-db
               </a>
