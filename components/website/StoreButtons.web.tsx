@@ -56,7 +56,7 @@ interface StoreButtonProps {
 
 function StoreButton({ logo, title, storeName, onClick, href, onLinkClick }: StoreButtonProps) {
   const className =
-    'inline-flex min-w-[175px] items-center gap-3 rounded-xl border border-ink/30 bg-scrim-base/85 px-4 py-2.5 text-text-primary shadow-[0_0_0_1px_rgb(var(--c-ink-DEFAULT)/0.03)] transition-colors hover:border-ink/50';
+    'inline-flex min-w-[175px] items-center gap-3 rounded-xl border border-ink/15 bg-bg-card px-4 py-2.5 text-text-primary shadow-[0_0_0_1px_rgb(var(--c-ink-DEFAULT)/0.03)] transition-colors hover:border-ink/35';
 
   const content = (
     <>
@@ -254,7 +254,7 @@ export function StoreButtons() {
           aria-label={t('qrButton')}
           aria-expanded={isQrOpen}
           aria-haspopup="dialog"
-          className="inline-flex h-[58px] w-[58px] items-center justify-center rounded-xl border border-ink/30 bg-scrim-base/85 text-text-primary shadow-[0_0_0_1px_rgb(var(--c-ink-DEFAULT)/0.03)] transition-colors hover:border-ink/50"
+          className="inline-flex h-[58px] w-[58px] items-center justify-center rounded-xl border border-ink/15 bg-bg-card text-text-primary shadow-[0_0_0_1px_rgb(var(--c-ink-DEFAULT)/0.03)] transition-colors hover:border-ink/35"
           onClick={() => setIsQrOpen((current) => !current)}
         >
           <QRCodeIcon />

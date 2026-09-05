@@ -477,7 +477,7 @@ export function ScreenshotShowcase() {
         </div>
 
         <div
-          className="relative overflow-hidden rounded-[2.5rem] border border-ink/10 bg-[linear-gradient(180deg,rgb(var(--c-bg-primary)/0.95)_0%,rgb(var(--c-scrim-base)/0.92)_100%)] p-4 shadow-[0_32px_90px_rgb(var(--c-scrim-base)/0.48)] md:p-6"
+          className="relative overflow-hidden rounded-[2.5rem] border border-ink/10 bg-[linear-gradient(180deg,rgb(var(--c-bg-primary)/0.95)_0%,rgb(var(--c-bg-card)/0.92)_100%)] p-4 shadow-[0_32px_90px_rgb(var(--c-scrim-base)/0.48)] md:p-6"
           style={{ backdropFilter: 'blur(16px)' }}
         >
           <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-bg-primary to-transparent" />
@@ -581,7 +581,7 @@ export function ScreenshotShowcase() {
                 role="dialog"
                 aria-modal="true"
                 aria-label={t('modalAriaLabel')}
-                className="relative flex max-h-[calc(100dvh-2rem)] w-full max-w-4xl flex-col overflow-hidden rounded-[2rem] border border-ink/10 bg-[linear-gradient(180deg,rgb(var(--c-bg-primary)/0.98)_0%,rgb(var(--c-scrim-base)/0.96)_100%)] shadow-[0_30px_90px_rgb(var(--c-scrim-base)/0.6)]"
+                className="relative flex max-h-[calc(100dvh-2rem)] w-full max-w-4xl flex-col overflow-hidden rounded-[2rem] border border-ink/10 bg-[linear-gradient(180deg,rgb(var(--c-bg-primary)/0.98)_0%,rgb(var(--c-bg-card)/0.96)_100%)] shadow-[0_30px_90px_rgb(var(--c-scrim-base)/0.6)]"
                 onClick={(event) => event.stopPropagation()}
               >
                 <div className="flex items-start justify-between gap-4 border-b border-ink/10 p-4 md:p-5">

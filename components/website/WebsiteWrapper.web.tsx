@@ -17,6 +17,7 @@ import {
   ON_BRAND,
   scrim,
   surface,
+  surfaceCard,
 } from '@/components/website/websiteColors';
 import { WebsitePreferences } from '@/components/website/WebsitePreferences';
 import packageJson from '@/package.json';
@@ -289,7 +290,7 @@ export function MobileMenu() {
                 className="absolute inset-x-0 top-0 max-h-full overflow-y-auto border-b shadow-2xl backdrop-blur-xl"
                 style={{
                   borderColor: ink(0.08),
-                  background: `linear-gradient(180deg, ${surface(0.98)} 0%, ${scrim(0.97)} 100%)`,
+                  background: `linear-gradient(180deg, ${surface(0.98)} 0%, ${surfaceCard(0.97)} 100%)`,
                 }}
               >
                 <nav
