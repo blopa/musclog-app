@@ -353,4 +353,43 @@ It is a dark theme on violet surfaces with an orange accent, and adding it was o
 
 That is the whole return on the refactor. The first five themes cost me a rewrite. The sixth cost me an afternoon of choosing hex values.
 
+## Four colors per theme?
+
+Musclog also has a Game Boy Color edition — a real `.gbc` ROM with onboarding, macro tracking, and workout logging. It has no `theme.ts`, no NativeWind, and no concept of a CSS variable. It looked like the one place a theme could not follow.
+
+It followed anyway, because by then the registry was plain data that anything could read.
+
+The phone app paints from around thirty colors per theme. The Game Boy Color draws its whole text UI from four background palettes of four colors each, and the font only ever touches color 0 (the cell background) and color 3 (the glyph ink). So porting a theme is a reduction to four background/ink pairs, one per palette slot:
+
+```javascript
+const SLOTS = [
+  { name: 'NORMAL', background: 'surfaceBase' }, // the screen itself
+  { name: 'HEADER', background: 'brandSurface' }, // the title strip
+  { name: 'SELECTED', background: 'brandBright' }, // the focused row
+  { name: 'PANEL', background: 'surfaceAccent' }, // cards, bars, value chips
+];
+```
+
+The ink is the interesting half. It cannot be a fixed token: `textPrimary` is the right ink on a light theme's surfaces and `inkOnAccent` is the right ink on its brand fills, and the two swap roles in a dark theme. Picking whichever of the pair contrasts more with the chosen background gets every slot right in every theme, with no per-theme table:
+
+```javascript
+const inks = [parseHex(palette.textPrimary), parseHex(palette.inkOnAccent)];
+const ink =
+  contrastRatio(background, inks[0]) >= contrastRatio(background, inks[1]) ? inks[0] : inks[1];
+
+return [background, mix(background, ink, 1 / 3), mix(background, ink, 2 / 3), ink];
+```
+
+That is the `text.black` rename paying off in a language with no theme system at all. A name describing the role survived the trip down to four colors; a name describing the hue would not have.
+
+`npm run gb:gen-themes` writes `src/generated/themes.{c,h}`: the palette table, a theme count, a default index read from `DEFAULT_THEME_BY_MODE.dark`, and short uppercase labels derived from the ids — `kinetic-volt` becomes `VOLT`. The generator throws if a label exceeds eight characters, because that is what the settings row's value column fits. A naming mistake is a build failure rather than a truncated word on a real screen.
+
+![The Game Boy Color build's settings screen in Kinetic Volt, with THEME as the first row](/images/blog/2026/09/gameboy-theme-volt.png)
+
+`THEME` leads the settings list on the cartridge because it is the one row that changes the screen as you scroll through it. LEFT/RIGHT cycles the value, `ui_theme_set` uploads the four palettes immediately, and the screen you are already looking at recolors in place. The choice is a display preference rather than profile data, so it lives in its own small SRAM store outside the checksummed save block: it survives a NEW GAME erase and exists before onboarding has produced a save at all.
+
+The test guarding this does not check colors at all. It checks that the generated table lists the same ids as the registry, in the same order, because the byte stored in SRAM is an index. Appending a theme is safe; reordering one would silently repoint every existing cartridge at a different palette.
+
+Adding a seventh theme is now one object in `theme.registry.js` and a re-run of the generator. The cartridge never learned any of their names.
+
 Musclog now has six themes. More importantly, it has one theme system.
