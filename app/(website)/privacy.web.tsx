@@ -2,7 +2,15 @@ import { Database, Globe, Lock, Mail, Shield, Smartphone } from 'lucide-react-na
 import { useTranslation } from 'react-i18next';
 
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
-import { BODY_TEXT_SOFT, BRAND_GREEN_BRIGHT, MUTED } from '@/components/website/websiteColors';
+import {
+  BODY_TEXT_SOFT,
+  brand,
+  BRAND_GREEN_BRIGHT,
+  brandBright,
+  hue,
+  ink,
+  MUTED,
+} from '@/components/website/websiteColors';
 
 const DEFINITION_KEYS = [
   'account',
@@ -61,10 +69,10 @@ export default function Privacy() {
       summary: t('appVsWebsite.app.summary'),
       items: appItems,
       accent: BRAND_GREEN_BRIGHT,
-      borderColor: 'rgba(0,255,163,0.25)',
-      backgroundColor: 'rgba(0,255,163,0.04)',
-      badgeBackground: 'rgba(0,255,163,0.12)',
-      badgeBorder: 'rgba(0,255,163,0.22)',
+      borderColor: 'rgb(var(--c-ink-DEFAULT)/0.25)',
+      backgroundColor: brandBright(0.04),
+      badgeBackground: brandBright(0.12),
+      badgeBorder: brandBright(0.22),
     },
     {
       key: 'website',
@@ -72,24 +80,24 @@ export default function Privacy() {
       title: t('appVsWebsite.website.title'),
       summary: t('appVsWebsite.website.summary'),
       items: websiteItems,
-      accent: '#38BDF8',
-      borderColor: 'rgba(56,189,248,0.25)',
-      backgroundColor: 'rgba(56,189,248,0.04)',
-      badgeBackground: 'rgba(56,189,248,0.12)',
-      badgeBorder: 'rgba(56,189,248,0.22)',
+      accent: hue('info'),
+      borderColor: hue('info', 0.25),
+      backgroundColor: hue('info', 0.04),
+      badgeBackground: hue('info', 0.12),
+      badgeBorder: hue('info', 0.22),
     },
   ];
 
   return (
     <>
       <main className="relative overflow-hidden pb-20 pt-24">
-        <DotPattern className="text-primary/30" />
-        <div className="from-background/50 to-background/50 absolute inset-0 bg-gradient-to-b via-transparent" />
+        <DotPattern className="text-accent-primary/30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-bg-primary/50 via-transparent to-bg-primary/50" />
 
         <div className="container relative z-10 mx-auto max-w-5xl px-4">
           {/* Title */}
           <div className="mb-10 text-center">
-            <h1 className="mb-3 text-4xl font-bold text-white md:text-5xl">
+            <h1 className="mb-3 text-4xl font-bold text-text-primary md:text-5xl">
               {t('titleStart')}{' '}
               <span style={{ color: BRAND_GREEN_BRIGHT }}>{t('titleHighlight')}</span>
             </h1>
@@ -105,21 +113,21 @@ export default function Privacy() {
                 key={title}
                 className="flex flex-col items-center gap-3 rounded-xl border p-5 text-center"
                 style={{
-                  borderColor: 'rgba(255,255,255,0.1)',
-                  backgroundColor: 'rgba(255,255,255,0.03)',
+                  borderColor: ink(0.1),
+                  backgroundColor: ink(0.03),
                 }}
               >
                 <div
                   className="flex h-10 w-10 items-center justify-center rounded-full border"
                   style={{
-                    backgroundColor: 'rgba(34,197,94,0.1)',
-                    borderColor: 'rgba(34,197,94,0.2)',
+                    backgroundColor: brand(0.1),
+                    borderColor: brand(0.2),
                   }}
                 >
                   <Icon className="h-5 w-5" color={BRAND_GREEN_BRIGHT} />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-white">{title}</p>
+                  <p className="text-sm font-semibold text-text-primary">{title}</p>
                   <p className="mt-0.5 text-xs" style={{ color: MUTED }}>
                     {description}
                   </p>
@@ -171,7 +179,7 @@ export default function Privacy() {
                           <Icon className="h-5 w-5" color={accent} />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-white">{title}</h3>
+                          <h3 className="font-semibold text-text-primary">{title}</h3>
                         </div>
                       </div>
 
@@ -213,9 +221,9 @@ export default function Privacy() {
               <ul className="space-y-2 text-sm" style={{ color: BODY_TEXT_SOFT }}>
                 {DEFINITION_KEYS.map((key) => (
                   <li key={key} className="flex gap-2">
-                    <span className="mt-0.5 text-white">›</span>
+                    <span className="mt-0.5 text-text-primary">›</span>
                     <span>
-                      <strong className="text-white">
+                      <strong className="text-text-primary">
                         {t(`sections.definitions.items.${key}.term`)}:
                       </strong>{' '}
                       {t(`sections.definitions.items.${key}.def`)}
@@ -237,7 +245,7 @@ export default function Privacy() {
               <div className="space-y-6">
                 {/* Types of Data Collected */}
                 <div>
-                  <h3 className="mb-2 text-base font-semibold text-white">
+                  <h3 className="mb-2 text-base font-semibold text-text-primary">
                     {t('sections.collecting.typesCollected.title')}
                   </h3>
                   <p className="mb-3 text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
@@ -246,7 +254,7 @@ export default function Privacy() {
                   <ul className="space-y-1.5 text-sm" style={{ color: BODY_TEXT_SOFT }}>
                     {typesCollectedItems.map((item, i) => (
                       <li key={i} className="flex gap-2">
-                        <span className="mt-0.5 text-white">›</span>
+                        <span className="mt-0.5 text-text-primary">›</span>
                         <span>{item}</span>
                       </li>
                     ))}
@@ -255,7 +263,7 @@ export default function Privacy() {
 
                 {/* Google OAuth Data */}
                 <div>
-                  <h3 className="mb-2 text-base font-semibold text-white">
+                  <h3 className="mb-2 text-base font-semibold text-text-primary">
                     {t('sections.collecting.googleOAuth.title')}
                   </h3>
                   <p className="mb-3 text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
@@ -264,7 +272,7 @@ export default function Privacy() {
                   <ul className="space-y-1.5 text-sm" style={{ color: BODY_TEXT_SOFT }}>
                     {googleOAuthItems.map((item, i) => (
                       <li key={i} className="flex gap-2">
-                        <span className="mt-0.5 text-white">›</span>
+                        <span className="mt-0.5 text-text-primary">›</span>
                         <span>{item}</span>
                       </li>
                     ))}
@@ -273,7 +281,7 @@ export default function Privacy() {
 
                 {/* Usage Data */}
                 <div>
-                  <h3 className="mb-2 text-base font-semibold text-white">
+                  <h3 className="mb-2 text-base font-semibold text-text-primary">
                     {t('sections.collecting.usageData.title')}
                   </h3>
                   <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
@@ -283,7 +291,7 @@ export default function Privacy() {
 
                 {/* App Permissions */}
                 <div>
-                  <h3 className="mb-2 text-base font-semibold text-white">
+                  <h3 className="mb-2 text-base font-semibold text-text-primary">
                     {t('sections.collecting.appPermissions.title')}
                   </h3>
                   <p className="mb-3 text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
@@ -292,7 +300,7 @@ export default function Privacy() {
                   <ul className="space-y-1.5 text-sm" style={{ color: BODY_TEXT_SOFT }}>
                     {appPermissionsItems.map((item, i) => (
                       <li key={i} className="flex gap-2">
-                        <span className="mt-0.5 text-white">›</span>
+                        <span className="mt-0.5 text-text-primary">›</span>
                         <span>{item}</span>
                       </li>
                     ))}
@@ -301,7 +309,7 @@ export default function Privacy() {
 
                 {/* Optional AI Providers */}
                 <div>
-                  <h3 className="mb-2 text-base font-semibold text-white">
+                  <h3 className="mb-2 text-base font-semibold text-text-primary">
                     {t('sections.collecting.optionalAi.title')}
                   </h3>
                   <p className="mb-4 text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
@@ -387,7 +395,7 @@ export default function Privacy() {
               <ul className="space-y-2 text-sm" style={{ color: BODY_TEXT_SOFT }}>
                 {useOfDataItems.map((item, i) => (
                   <li key={i} className="flex gap-2">
-                    <span className="mt-0.5 text-white">›</span>
+                    <span className="mt-0.5 text-text-primary">›</span>
                     <span>{item}</span>
                   </li>
                 ))}
@@ -402,7 +410,7 @@ export default function Privacy() {
               <ul className="space-y-2 text-sm" style={{ color: BODY_TEXT_SOFT }}>
                 {sharingItems.map((item, i) => (
                   <li key={i} className="flex gap-2">
-                    <span className="mt-0.5 text-white">›</span>
+                    <span className="mt-0.5 text-text-primary">›</span>
                     <span>{item}</span>
                   </li>
                 ))}
@@ -450,7 +458,7 @@ export default function Privacy() {
               <ul className="space-y-1.5 text-sm" style={{ color: BODY_TEXT_SOFT }}>
                 {disclosureItems.map((item, i) => (
                   <li key={i} className="flex gap-2">
-                    <span className="mt-0.5 text-white">›</span>
+                    <span className="mt-0.5 text-text-primary">›</span>
                     <span>{item}</span>
                   </li>
                 ))}
@@ -534,7 +542,7 @@ export default function Privacy() {
               <ul className="mb-4 space-y-1.5 text-sm" style={{ color: BODY_TEXT_SOFT }}>
                 {analyticsItems.map((item, i) => (
                   <li key={i} className="flex gap-2">
-                    <span className="mt-0.5 text-white">›</span>
+                    <span className="mt-0.5 text-text-primary">›</span>
                     <span>{item}</span>
                   </li>
                 ))}
@@ -565,13 +573,13 @@ export default function Privacy() {
           <div
             className="mt-14 rounded-xl border p-6"
             style={{
-              borderColor: 'rgba(255,255,255,0.1)',
-              backgroundColor: 'rgba(255,255,255,0.03)',
+              borderColor: ink(0.1),
+              backgroundColor: ink(0.03),
             }}
           >
             <div className="mb-2 flex items-center gap-2">
               <Mail className="h-5 w-5" color={BRAND_GREEN_BRIGHT} />
-              <h3 className="font-semibold text-white">{t('contact.title')}</h3>
+              <h3 className="font-semibold text-text-primary">{t('contact.title')}</h3>
             </div>
             <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
               {t('contact.content')}{' '}

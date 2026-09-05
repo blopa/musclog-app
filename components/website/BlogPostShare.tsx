@@ -19,15 +19,16 @@ import {
   XShareButton,
 } from 'react-share';
 
-import { BODY_TEXT_SOFT } from './websiteColors';
+import { BODY_TEXT_SOFT, ink } from './websiteColors';
 import { absoluteUrl, SEO_IMAGE_URL } from './WebsiteSeo';
 
 /**
  * Every icon is drawn monochrome — a transparent background plus `currentColor` on the glyph — so
- * the row reads as one cluster of controls on the dark page instead of eight competing brand
- * blocks. The network's real color still arrives per button as the `--share-color` custom
- * property, which `.blog-share-button:hover` in `global.css` picks up. X's is white rather than its
- * `#000000` brand black, which would be invisible here.
+ * the row reads as one cluster of controls instead of eight competing brand blocks. The network's
+ * real color still arrives per button as the `--share-color` custom property, which
+ * `.blog-share-button:hover` in `global.css` picks up. X is the exception: its brand black
+ * disappears on the dark palettes and its white mark disappears on the light ones, so it hovers to
+ * the page's own ink instead.
  */
 const ICON_PROPS = {
   bgStyle: { fill: 'transparent' },
@@ -44,11 +45,11 @@ const SHARE_COLOR = {
   telegram: '#26A5E4',
   vk: '#0077FF',
   whatsapp: '#25D366',
-  x: '#FFFFFF',
+  x: ink(1),
 } as const;
 
 const BUTTON_CLASS =
-  'blog-share-button inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-white/10 bg-white/[0.04] p-0 transition duration-200';
+  'blog-share-button inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border border-ink/10 bg-ink/[0.04] p-0 transition duration-200';
 
 export interface BlogPostShareProps {
   /** The post's site-relative path, as given to `BlogPostSeo`. */

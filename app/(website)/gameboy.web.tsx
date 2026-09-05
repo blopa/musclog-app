@@ -305,22 +305,22 @@ export default function GameBoy() {
     <button
       type="button"
       onClick={start}
-      className="rounded-full bg-[#00FFA3] px-8 py-3 text-base font-bold text-black shadow-lg transition-transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-[#00FFA3] focus:ring-offset-2 focus:ring-offset-black"
+      className="rounded-full bg-accent-bright px-8 py-3 text-base font-bold text-text-on-accent shadow-lg transition-transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-accent-bright focus:ring-offset-2 focus:ring-offset-bg-primary"
     >
       {t('playButton')}
     </button>
   );
 
   if (status === 'loading') {
-    screenOverlay = <p className="text-sm font-medium text-gray-300">{t('loading')}</p>;
+    screenOverlay = <p className="text-sm font-medium text-text-secondary">{t('loading')}</p>;
   } else if (status === 'error') {
     screenOverlay = (
       <>
-        <p className="text-sm font-medium text-red-400">{t('errorLoad')}</p>
+        <p className="text-sm font-medium text-status-error">{t('errorLoad')}</p>
         <button
           type="button"
           onClick={start}
-          className="rounded-full bg-[#00FFA3] px-6 py-2 text-sm font-bold text-black transition-transform hover:-translate-y-0.5"
+          className="rounded-full bg-accent-bright px-6 py-2 text-sm font-bold text-text-on-accent transition-transform hover:-translate-y-0.5"
         >
           {t('playButton')}
         </button>
@@ -331,20 +331,20 @@ export default function GameBoy() {
   return (
     <>
       <main className="relative flex min-h-[calc(100vh-8rem)] flex-col items-center overflow-hidden px-4 py-16">
-        <DotPattern className="text-primary/30" />
-        <div className="from-background/60 to-background/80 absolute inset-0 bg-gradient-to-b via-transparent" />
+        <DotPattern className="text-accent-primary/30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-bg-primary/60 via-transparent to-bg-primary/80" />
 
         <div className="relative z-10 mx-auto mt-4 flex w-full max-w-xl flex-col items-center text-center">
-          <h1 className="max-w-lg text-balance text-4xl font-black leading-tight text-white sm:text-5xl">
+          <h1 className="max-w-lg text-balance text-4xl font-black leading-tight text-text-primary sm:text-5xl">
             {t('title')}
           </h1>
-          <p className="mt-4 max-w-md text-balance text-base leading-7 text-gray-300 sm:text-lg">
+          <p className="mt-4 max-w-md text-balance text-base leading-7 text-text-secondary sm:text-lg">
             {t('subtitle')}
           </p>
 
           {/* Console screen */}
-          <div className="relative mt-10 w-full max-w-sm rounded-3xl border border-white/10 bg-black/70 p-4 shadow-2xl">
-            <div className="relative aspect-[160/144] w-full overflow-hidden rounded-xl bg-black">
+          <div className="relative mt-10 w-full max-w-sm rounded-3xl border border-ink/10 bg-scrim-base/70 p-4 shadow-2xl">
+            <div className="relative aspect-[160/144] w-full overflow-hidden rounded-xl bg-scrim-base">
               <canvas
                 ref={canvasRef}
                 width={GB_SCREEN_WIDTH}
@@ -354,7 +354,7 @@ export default function GameBoy() {
               />
 
               {status !== 'playing' ? (
-                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-black/80 backdrop-blur-sm">
+                <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-scrim-base/80 backdrop-blur-sm">
                   {screenOverlay}
                 </div>
               ) : null}
@@ -364,20 +364,20 @@ export default function GameBoy() {
           {/* Touch controls */}
           <TouchControls onPress={setButton} disabled={status !== 'playing'} t={t} />
 
-          <p className="mt-8 max-w-md text-xs leading-5 text-gray-500">{t('controlsHint')}</p>
+          <p className="mt-8 max-w-md text-xs leading-5 text-text-tertiary">{t('controlsHint')}</p>
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <a
               href={ROM_URL}
               download="musclog.gbc"
-              className="inline-flex items-center gap-2 rounded-full border border-[#00FFA3]/40 bg-[#00FFA3]/10 px-6 py-2 text-sm font-bold text-[#00FFA3] transition-transform hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2 rounded-full border border-accent-bright/40 bg-accent-bright/10 px-6 py-2 text-sm font-bold text-accent-bright transition-transform hover:-translate-y-0.5"
             >
               {t('downloadRom')}
             </a>
             <a
               href={MANUAL_URL}
               download="musclog-manual.pdf"
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-2 text-sm font-bold text-white transition-transform hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2 rounded-full border border-ink/20 bg-ink/5 px-6 py-2 text-sm font-bold text-text-primary transition-transform hover:-translate-y-0.5"
             >
               {t('downloadManual')}
             </a>
@@ -538,7 +538,7 @@ function PadButton({ button, label, onPress, disabled, className, children }: Bu
       aria-label={label}
       disabled={disabled}
       {...handlers}
-      className={`absolute flex items-center justify-center bg-white/10 text-sm text-white transition-colors active:bg-[#00FFA3]/40 ${className ?? ''}`}
+      className={`absolute flex items-center justify-center bg-ink/10 text-sm text-text-primary transition-colors active:bg-accent-bright/40 ${className ?? ''}`}
     >
       {children}
     </button>
@@ -553,7 +553,7 @@ function RoundButton({ button, label, onPress, disabled, children }: ButtonProps
       aria-label={label}
       disabled={disabled}
       {...handlers}
-      className="flex h-14 w-14 items-center justify-center rounded-full border border-white/15 bg-[#00FFA3]/20 text-lg font-bold text-white transition-colors active:bg-[#00FFA3]/50"
+      className="flex h-14 w-14 items-center justify-center rounded-full border border-ink/15 bg-accent-bright/20 text-lg font-bold text-text-primary transition-colors active:bg-accent-bright/50"
     >
       {children}
     </button>
@@ -568,7 +568,7 @@ function PillButton({ button, label, onPress, disabled, children }: ButtonProps)
       aria-label={label}
       disabled={disabled}
       {...handlers}
-      className="rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider text-white transition-colors active:bg-[#00FFA3]/40"
+      className="rounded-full border border-ink/15 bg-ink/10 px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider text-text-primary transition-colors active:bg-accent-bright/40"
     >
       {children}
     </button>

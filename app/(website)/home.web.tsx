@@ -28,31 +28,39 @@ import {
 import {
   BODY_TEXT,
   BODY_TEXT_SOFT,
+  brand,
   BRAND_GREEN,
   BRAND_GREEN_BRIGHT,
+  brandBright,
+  HEADING_TEXT,
+  hue,
+  ink,
+  ON_BRAND,
+  scrim,
 } from '@/components/website/websiteColors';
 import { SoftwareApplicationJsonLd } from '@/components/website/WebsiteStructuredData';
 import { DownloadModal } from '@/components/website/WebsiteWrapper';
+import { THEME_IDS, type ThemeId } from '@/constants/settings';
+import { useThemeId } from '@/hooks/useTheme';
+import { THEME_DEFINITIONS } from '@/theme.registry';
 import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
 
 const STATIC_IMAGE = (filename: string) => withExpoBaseUrl(`/images/${filename}`);
 const PHONE_SCREENSHOT = (filename: string) => STATIC_IMAGE(`phone/${filename}`);
-const HERO_APP_SCREENSHOT = STATIC_IMAGE('app-screenshot.png');
 const HERO_AVATAR = STATIC_IMAGE('user-avatar.jpg');
 const THEME_SCREENSHOT = (themeId: ThemeShowcaseId) => STATIC_IMAGE(`themes/${themeId}.webp`);
 
-// Accents mirror `brandPrimary` in theme.registry.js; the labels themselves come from the
-// same `settings.theme.options` strings the in-app picker uses.
-const THEME_SHOWCASE = [
-  { accent: '#29a577', id: 'kinetic-depth' },
-  { accent: '#0e7a54', id: 'kinetic-light' },
-  { accent: '#e85d9e', id: 'kinetic-shock' },
-  { accent: '#f5c842', id: 'kinetic-volt' },
-  { accent: '#c2185b', id: 'kinetic-blush' },
-  { accent: '#f97316', id: 'kinetic-varia' },
-] as const;
+/**
+ * The gallery shows every palette side by side, so — unlike the rest of the page —
+ * its accents are read from the registry rather than from the active theme. The
+ * labels come from the same `settings.theme.options` strings the in-app picker uses.
+ */
+const THEME_SHOWCASE = THEME_IDS.map((id) => ({
+  accent: THEME_DEFINITIONS[id].palette.brandPrimary,
+  id,
+}));
 
-type ThemeShowcaseId = (typeof THEME_SHOWCASE)[number]['id'];
+type ThemeShowcaseId = ThemeId;
 
 export function CTA() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.cta' });
@@ -62,26 +70,25 @@ export function CTA() {
       <div
         className="pointer-events-none absolute left-1/2 top-1/2 h-[440px] w-[720px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[140px]"
         style={{
-          background:
-            'radial-gradient(circle, rgba(0,255,163,0.12) 0%, rgba(34,197,94,0.08) 34%, rgba(0,0,0,0) 72%)',
+          background: `radial-gradient(circle, ${brandBright(0.12)} 0%, ${brand(0.08)} 34%, ${scrim(0)} 72%)`,
         }}
         aria-hidden="true"
       />
       <div className="container relative z-10 mx-auto">
         <div
-          className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-r p-10 md:p-16"
+          className="relative overflow-hidden rounded-3xl border border-ink/10 bg-gradient-to-r p-10 md:p-16"
           style={{
             backgroundImage: `linear-gradient(90deg, #0f766ecc 0%, #0891b2dd 42%, ${BRAND_GREEN}ee 100%)`,
           }}
         >
           {/* Background Glow */}
-          <div className="from-background/20 absolute inset-0 bg-gradient-to-t to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-bg-primary/20 to-transparent" />
 
           <div className="relative z-10 mx-auto max-w-2xl space-y-6 text-center">
-            <h2 className="text-balance text-3xl font-extrabold text-white md:text-4xl lg:text-5xl">
+            <h2 className="text-balance text-3xl font-extrabold text-text-primary md:text-4xl lg:text-5xl">
               {t('title')}
             </h2>
-            <p className="text-balance text-lg font-medium text-white/90">{t('description')}</p>
+            <p className="text-balance text-lg font-medium text-ink/90">{t('description')}</p>
             <div className="flex flex-wrap justify-center gap-4">
               <DownloadModal variant="white">
                 <Download className="h-4 w-4" />
@@ -91,7 +98,7 @@ export function CTA() {
                 href="https://github.com/blopa/musclog-app"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/40 bg-black/15 px-4 py-3 font-semibold text-white transition-colors hover:border-white hover:text-white"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-ink/40 bg-ink/5 px-4 py-3 font-semibold text-text-primary transition-colors hover:border-ink/70 hover:text-text-primary"
               >
                 <Code2 className="h-4 w-4" />
                 {t('sourceCode')}
@@ -156,14 +163,13 @@ export function FeatureGrid() {
       <div
         className="pointer-events-none absolute left-1/2 top-[54%] h-[640px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[150px]"
         style={{
-          background:
-            'radial-gradient(circle, rgba(0,255,163,0.15) 0%, rgba(34,197,94,0.11) 32%, rgba(0,0,0,0) 74%)',
+          background: `radial-gradient(circle, ${brandBright(0.15)} 0%, ${brand(0.11)} 32%, ${scrim(0)} 74%)`,
         }}
         aria-hidden="true"
       />
       <div className="container relative z-10 mx-auto px-4">
         <div className="mb-12 text-center md:mb-16">
-          <h2 className="mb-4 text-balance text-3xl font-extrabold text-white md:text-4xl">
+          <h2 className="mb-4 text-balance text-3xl font-extrabold text-text-primary md:text-4xl">
             {t('title')}
           </h2>
           <p
@@ -178,21 +184,21 @@ export function FeatureGrid() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="group rounded-2xl border p-6 transition-colors hover:border-white/20"
+              className="group rounded-2xl border p-6 transition-colors hover:border-ink/20"
               style={{
-                borderColor: 'rgba(255, 255, 255, 0.1)',
-                backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                borderColor: ink(0.1),
+                backgroundColor: ink(0.03),
                 backdropFilter: 'blur(8px)',
               }}
             >
               <div
-                className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-colors group-hover:bg-white/10"
-                style={{ backgroundColor: 'rgba(34, 197, 94, 0.12)' }}
+                className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl transition-colors group-hover:bg-ink/10"
+                style={{ backgroundColor: brand(0.12) }}
               >
                 <feature.icon className="h-6 w-6" color={BRAND_GREEN_BRIGHT} />
               </div>
-              <h3 className="mb-2 text-lg font-bold text-white">{feature.title}</h3>
-              <p className="text-sm leading-relaxed" style={{ color: '#9CA3AF' }}>
+              <h3 className="mb-2 text-lg font-bold text-text-primary">{feature.title}</h3>
+              <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
                 {feature.description}
               </p>
             </div>
@@ -206,27 +212,34 @@ export function FeatureGrid() {
 export function Features() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.features' });
 
+  // `linkClass` restates `iconColor` as a class because the "view more" link is
+  // an expo-router `Link` — a React Native component, whose `style` goes through
+  // RNW's colour parser and is dropped when it holds a `var()`. Plain DOM nodes
+  // on this page take the inline form.
   const features = [
     {
       icon: Dumbbell,
       iconColor: BRAND_GREEN_BRIGHT,
-      iconBg: 'rgba(34, 197, 94, 0.13)',
+      linkClass: 'text-accent-bright',
+      iconBg: brand(0.13),
       title: t('strengthTracking.title'),
       description: t('strengthTracking.description'),
       link: { text: t('strengthTracking.link'), href: '#features' },
     },
     {
       icon: Shield,
-      iconColor: '#38BDF8',
-      iconBg: 'rgba(56, 189, 248, 0.12)',
+      iconColor: hue('info'),
+      linkClass: 'text-status-info',
+      iconBg: hue('info', 0.12),
       title: t('privacyFirst.title'),
       description: t('privacyFirst.description'),
       link: { text: t('privacyFirst.link'), href: '/privacy' },
     },
     {
       icon: Code2,
-      iconColor: '#A855F7',
-      iconBg: 'rgba(168, 85, 247, 0.12)',
+      iconColor: hue('purple'),
+      linkClass: 'text-status-purple',
+      iconBg: hue('purple', 0.12),
       title: t('openSource.title'),
       description: t('openSource.description'),
       link: {
@@ -243,7 +256,7 @@ export function Features() {
       <div className="container relative z-10 mx-auto px-4">
         {/* Section Header */}
         <div className="mb-12 text-center md:mb-16">
-          <h2 className="mb-4 text-balance text-3xl font-extrabold text-white md:text-4xl">
+          <h2 className="mb-4 text-balance text-3xl font-extrabold text-text-primary md:text-4xl">
             {t('title')}
           </h2>
           <p
@@ -259,8 +272,8 @@ export function Features() {
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="bg-black/32 space-y-4 rounded-2xl border p-7 transition-colors hover:border-white/20"
-              style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}
+              className="space-y-4 rounded-2xl border bg-bg-card p-7 transition-colors hover:border-ink/20"
+              style={{ borderColor: ink(0.1) }}
             >
               <div
                 className="flex h-14 w-14 items-center justify-center rounded-xl"
@@ -268,7 +281,7 @@ export function Features() {
               >
                 <feature.icon className="h-7 w-7" color={feature.iconColor} />
               </div>
-              <h3 className="text-xl font-bold text-white">{feature.title}</h3>
+              <h3 className="text-xl font-bold text-text-primary">{feature.title}</h3>
               <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT }}>
                 {feature.description}
               </p>
@@ -286,8 +299,7 @@ export function Features() {
               ) : (
                 <Link
                   href={feature.link.href}
-                  className="inline-flex items-center gap-1 text-sm font-semibold hover:underline"
-                  style={{ color: feature.iconColor }}
+                  className={`inline-flex items-center gap-1 text-sm font-semibold hover:underline ${feature.linkClass}`}
                 >
                   {feature.link.text}
                   <ArrowRight className="h-4 w-4" />
@@ -420,8 +432,7 @@ export function ScreenshotShowcase() {
       <div
         className="pointer-events-none absolute left-1/2 top-[50%] h-[520px] w-[980px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[160px]"
         style={{
-          background:
-            'radial-gradient(circle, rgba(0,255,163,0.14) 0%, rgba(34,197,94,0.10) 34%, rgba(0,0,0,0) 74%)',
+          background: `radial-gradient(circle, ${brandBright(0.14)} 0%, ${brand(0.1)} 34%, ${scrim(0)} 74%)`,
         }}
         aria-hidden="true"
       />
@@ -442,7 +453,7 @@ export function ScreenshotShowcase() {
             >
               {t('eyebrow')}
             </p>
-            <h2 className="text-balance text-3xl font-extrabold text-white md:text-4xl">
+            <h2 className="text-balance text-3xl font-extrabold text-text-primary md:text-4xl">
               {t('title')}
             </h2>
             <p
@@ -453,12 +464,12 @@ export function ScreenshotShowcase() {
             </p>
           </div>
 
-          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white/80 backdrop-blur-sm">
+          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-ink/10 bg-ink/5 px-4 py-2 text-sm font-semibold text-ink/80 backdrop-blur-sm">
             <span
               className="h-2 w-2 rounded-full"
               style={{
                 backgroundColor: BRAND_GREEN_BRIGHT,
-                boxShadow: '0 0 14px rgba(0,255,163,0.8)',
+                boxShadow: `0 0 14px ${brandBright(0.8)}`,
               }}
             />
             {t('hint')}
@@ -466,11 +477,11 @@ export function ScreenshotShowcase() {
         </div>
 
         <div
-          className="relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-[linear-gradient(180deg,rgba(6,14,12,0.95)_0%,rgba(4,10,9,0.92)_100%)] p-4 shadow-[0_32px_90px_rgba(0,0,0,0.48)] md:p-6"
+          className="relative overflow-hidden rounded-[2.5rem] border border-ink/10 bg-[linear-gradient(180deg,rgb(var(--c-bg-primary)/0.95)_0%,rgb(var(--c-bg-card)/0.92)_100%)] p-4 shadow-[0_24px_72px_rgb(var(--c-scrim-base)/0.16)] md:p-6"
           style={{ backdropFilter: 'blur(16px)' }}
         >
-          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-[#050c0a] to-transparent" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-[#050c0a] to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-bg-primary to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-bg-primary to-transparent" />
 
           <div
             className="relative overflow-hidden py-2"
@@ -497,13 +508,12 @@ export function ScreenshotShowcase() {
                       className="group flex w-[180px] shrink-0 flex-col text-left sm:w-[200px] md:w-[220px]"
                     >
                       <div
-                        className="rounded-[2rem] border border-white/10 bg-black/35 p-2 shadow-[0_18px_48px_rgba(0,0,0,0.34)] transition-transform duration-300 group-hover:-translate-y-1 group-hover:border-white/20"
+                        className="rounded-[2rem] border border-ink/10 bg-bg-card p-2 shadow-[0_18px_48px_rgb(var(--c-scrim-base)/0.34)] transition-transform duration-300 group-hover:-translate-y-1 group-hover:border-ink/20"
                         style={{
-                          boxShadow:
-                            '0 18px 48px rgba(0,0,0,0.34), 0 0 0 1px rgba(255,255,255,0.02)',
+                          boxShadow: `0 14px 36px ${scrim(0.18)}, 0 0 0 1px ${ink(0.02)}`,
                         }}
                       >
-                        <div className="overflow-hidden rounded-[1.5rem] bg-[#04110b]">
+                        <div className="overflow-hidden rounded-[1.5rem] bg-bg-primary">
                           <img
                             src={slide.src}
                             alt={slide.alt}
@@ -514,8 +524,10 @@ export function ScreenshotShowcase() {
                       </div>
 
                       <div className="px-1 pt-3">
-                        <p className="text-sm font-bold text-white">{slide.title}</p>
-                        <p className="mt-1 text-xs leading-5 text-slate-400">{slide.description}</p>
+                        <p className="text-sm font-bold text-text-primary">{slide.title}</p>
+                        <p className="mt-1 text-xs leading-5 text-text-tertiary">
+                          {slide.description}
+                        </p>
                       </div>
                     </button>
                   ))}
@@ -529,7 +541,7 @@ export function ScreenshotShowcase() {
       {activeModalIndex !== null && isMobileModal && typeof document !== 'undefined'
         ? createPortal(
             <div
-              className="fixed inset-0 z-[220] flex items-center justify-center bg-black/90 p-3 backdrop-blur-md"
+              className="fixed inset-0 z-[220] flex items-center justify-center bg-scrim-base/90 p-3 backdrop-blur-md"
               onClick={() => setActiveModalIndex(null)}
             >
               <div
@@ -543,7 +555,7 @@ export function ScreenshotShowcase() {
                   type="button"
                   onClick={() => setActiveModalIndex(null)}
                   aria-label={t('close')}
-                  className="absolute right-3 top-3 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-black/60 text-white shadow-[0_12px_30px_rgba(0,0,0,0.35)]"
+                  className="absolute right-3 top-3 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-ink/10 bg-scrim-base/60 text-text-primary shadow-[0_12px_30px_rgb(var(--c-scrim-base)/0.35)]"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -562,17 +574,17 @@ export function ScreenshotShowcase() {
       {activeModalIndex !== null && !isMobileModal && typeof document !== 'undefined'
         ? createPortal(
             <div
-              className="fixed inset-0 z-[220] flex items-center justify-center bg-black/70 p-4 backdrop-blur-md"
+              className="fixed inset-0 z-[220] flex items-center justify-center bg-scrim-base/70 p-4 backdrop-blur-md"
               onClick={() => setActiveModalIndex(null)}
             >
               <div
                 role="dialog"
                 aria-modal="true"
                 aria-label={t('modalAriaLabel')}
-                className="relative flex max-h-[calc(100dvh-2rem)] w-full max-w-4xl flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(8,16,14,0.98)_0%,rgba(5,10,9,0.96)_100%)] shadow-[0_30px_90px_rgba(0,0,0,0.6)]"
+                className="relative flex max-h-[calc(100dvh-2rem)] w-full max-w-4xl flex-col overflow-hidden rounded-[2rem] border border-ink/10 bg-[linear-gradient(180deg,rgb(var(--c-bg-primary)/0.98)_0%,rgb(var(--c-bg-card)/0.96)_100%)] shadow-[0_30px_90px_rgb(var(--c-scrim-base)/0.6)]"
                 onClick={(event) => event.stopPropagation()}
               >
-                <div className="flex items-start justify-between gap-4 border-b border-white/10 p-4 md:p-5">
+                <div className="flex items-start justify-between gap-4 border-b border-ink/10 p-4 md:p-5">
                   <div className="space-y-1">
                     <p
                       className="text-xs font-bold uppercase tracking-[0.3em]"
@@ -580,10 +592,10 @@ export function ScreenshotShowcase() {
                     >
                       {t('modalEyebrow')}
                     </p>
-                    <h3 className="text-xl font-extrabold text-white md:text-2xl">
+                    <h3 className="text-xl font-extrabold text-text-primary md:text-2xl">
                       {slides[activeModalIndex].title}
                     </h3>
-                    <p className="max-w-2xl text-sm leading-6 text-slate-400">
+                    <p className="max-w-2xl text-sm leading-6 text-text-tertiary">
                       {slides[activeModalIndex].description}
                     </p>
                   </div>
@@ -592,14 +604,14 @@ export function ScreenshotShowcase() {
                     type="button"
                     onClick={() => setActiveModalIndex(null)}
                     aria-label={t('close')}
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:border-white/20 hover:bg-white/10"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-ink/10 bg-ink/5 text-text-primary transition-colors hover:border-ink/20 hover:bg-ink/10"
                   >
                     <X className="h-4 w-4" />
                   </button>
                 </div>
 
                 <div className="grid min-h-0 flex-1 gap-0 overflow-y-auto lg:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)] lg:overflow-hidden">
-                  <div className="relative flex min-h-0 flex-col bg-black/30 p-4 md:p-6">
+                  <div className="relative flex min-h-0 flex-col bg-bg-card p-4 md:p-6">
                     <div className="flex items-center justify-between pb-4">
                       <button
                         type="button"
@@ -611,12 +623,12 @@ export function ScreenshotShowcase() {
                           )
                         }
                         aria-label={t('previous')}
-                        className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:border-white/20 hover:bg-white/10"
+                        className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/10 bg-ink/5 text-text-primary transition-colors hover:border-ink/20 hover:bg-ink/10"
                       >
                         <ArrowRight className="h-4 w-4 rotate-180" />
                       </button>
 
-                      <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white/70">
+                      <div className="rounded-full border border-ink/10 bg-ink/5 px-3 py-1 text-xs font-semibold text-ink/70">
                         {activeModalIndex + 1} / {slides.length}
                       </div>
 
@@ -628,13 +640,13 @@ export function ScreenshotShowcase() {
                           )
                         }
                         aria-label={t('next')}
-                        className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-colors hover:border-white/20 hover:bg-white/10"
+                        className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/10 bg-ink/5 text-text-primary transition-colors hover:border-ink/20 hover:bg-ink/10"
                       >
                         <ArrowRight className="h-4 w-4" />
                       </button>
                     </div>
 
-                    <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#04110b] shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
+                    <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden rounded-[1.75rem] border border-ink/10 bg-bg-primary shadow-[0_20px_60px_rgb(var(--c-scrim-base)/0.45)]">
                       <img
                         src={slides[activeModalIndex].src}
                         alt={slides[activeModalIndex].alt}
@@ -643,7 +655,7 @@ export function ScreenshotShowcase() {
                     </div>
                   </div>
 
-                  <div className="border-t border-white/10 bg-white/[0.03] p-4 md:border-l md:border-t-0 md:p-6 lg:overflow-y-auto">
+                  <div className="border-t border-ink/10 bg-ink/[0.03] p-4 md:border-l md:border-t-0 md:p-6 lg:overflow-y-auto">
                     <div className="space-y-4">
                       <div>
                         <p
@@ -654,11 +666,11 @@ export function ScreenshotShowcase() {
                         </p>
                       </div>
 
-                      <div className="rounded-[1.25rem] border border-white/10 bg-black/20 p-4">
-                        <p className="text-sm font-semibold text-white">
+                      <div className="rounded-[1.25rem] border border-ink/10 bg-bg-card p-4">
+                        <p className="text-sm font-semibold text-text-primary">
                           {slides[activeModalIndex].title}
                         </p>
-                        <p className="mt-2 text-sm leading-6 text-slate-400">
+                        <p className="mt-2 text-sm leading-6 text-text-tertiary">
                           {slides[activeModalIndex].description}
                         </p>
                       </div>
@@ -675,10 +687,8 @@ export function ScreenshotShowcase() {
                               aria-label={`${t('openSlide')} ${slide.title}`}
                               className="overflow-hidden rounded-xl border transition-all"
                               style={{
-                                borderColor: isActive
-                                  ? BRAND_GREEN_BRIGHT
-                                  : 'rgba(255,255,255,0.08)',
-                                boxShadow: isActive ? '0 0 0 1px rgba(0,255,163,0.24)' : 'none',
+                                borderColor: isActive ? BRAND_GREEN_BRIGHT : ink(0.08),
+                                boxShadow: isActive ? `0 0 0 1px ${brandBright(0.24)}` : 'none',
                               }}
                             >
                               <img
@@ -714,7 +724,7 @@ export function Themes() {
       <SectionBackground variant="dots" />
       <div className="container relative z-10 mx-auto px-4">
         <div className="mb-10 text-center md:mb-14">
-          <h2 className="mb-4 text-balance text-3xl font-extrabold text-white md:text-4xl">
+          <h2 className="mb-4 text-balance text-3xl font-extrabold text-text-primary md:text-4xl">
             {t('website.themes.title')}
           </h2>
           <p
@@ -737,8 +747,8 @@ export function Themes() {
                 aria-pressed={isActive}
                 className="flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors"
                 style={{
-                  backgroundColor: isActive ? `${theme.accent}1f` : 'rgba(255,255,255,0.03)',
-                  borderColor: isActive ? theme.accent : 'rgba(255,255,255,0.1)',
+                  backgroundColor: isActive ? `${theme.accent}1f` : ink(0.03),
+                  borderColor: isActive ? theme.accent : ink(0.1),
                   color: isActive ? theme.accent : BODY_TEXT,
                 }}
               >
@@ -778,7 +788,7 @@ export function Themes() {
               >
                 {t(`settings.theme.options.${activeTheme.id}.label`)}
               </p>
-              <p className="mt-3 text-lg leading-relaxed text-white md:text-xl">
+              <p className="mt-3 text-lg leading-relaxed text-text-primary md:text-xl">
                 {t(`settings.theme.options.${activeTheme.id}.description`)}
               </p>
             </div>
@@ -799,7 +809,7 @@ export function Themes() {
                     aria-label={t(`settings.theme.options.${theme.id}.label`)}
                     className="overflow-hidden rounded-xl border transition-all"
                     style={{
-                      borderColor: isActive ? theme.accent : 'rgba(255,255,255,0.08)',
+                      borderColor: isActive ? theme.accent : ink(0.08),
                     }}
                   >
                     <img
@@ -823,8 +833,8 @@ export function Testimonial() {
 
   return (
     <section className="relative overflow-hidden py-16 md:py-20">
-      <DotPattern className="text-primary/50" />
-      <div className="from-background/50 to-background/50 absolute inset-0 bg-gradient-to-b via-transparent" />
+      <DotPattern className="text-accent-primary/50" />
+      <div className="absolute inset-0 bg-gradient-to-b from-bg-primary/50 via-transparent to-bg-primary/50" />
       <div className="container relative z-10 mx-auto px-4">
         <div className="mx-auto max-w-3xl space-y-8 text-center">
           {/* Quote Icon */}
@@ -833,7 +843,7 @@ export function Testimonial() {
           </div>
 
           {/* Quote Text */}
-          <blockquote className="text-balance text-2xl font-bold leading-relaxed text-white md:text-3xl lg:text-4xl">
+          <blockquote className="text-balance text-2xl font-bold leading-relaxed text-text-primary md:text-3xl lg:text-4xl">
             {t('quote')}
           </blockquote>
 
@@ -849,7 +859,7 @@ export function Testimonial() {
               />
             </div>
             <div>
-              <p className="font-bold text-white">{t('author')}</p>
+              <p className="font-bold text-text-primary">{t('author')}</p>
               <p className="text-sm" style={{ color: BODY_TEXT_SOFT }}>
                 {t('role')}
               </p>
@@ -890,10 +900,10 @@ export function Stats() {
   return (
     <section
       className="relative overflow-hidden border-y py-20 md:py-24"
-      style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+      style={{ borderColor: ink(0.08) }}
     >
-      <DotPattern className="text-primary/40" />
-      <div className="from-background/80 to-background/80 absolute inset-0 bg-gradient-to-r via-transparent" />
+      <DotPattern className="text-accent-primary/40" />
+      <div className="absolute inset-0 bg-gradient-to-r from-bg-primary/80 via-transparent to-bg-primary/80" />
       <div className="container relative z-10 mx-auto px-4">
         <div className="grid grid-cols-2 gap-8 md:gap-12 lg:grid-cols-4">
           {stats.map((stat) => (
@@ -904,8 +914,8 @@ export function Stats() {
               >
                 {stat.value}
               </div>
-              <div className="mb-1 font-bold text-white">{stat.label}</div>
-              <div className="text-sm" style={{ color: '#D1D5DB' }}>
+              <div className="mb-1 font-bold text-text-primary">{stat.label}</div>
+              <div className="text-sm" style={{ color: BODY_TEXT }}>
                 {stat.description}
               </div>
             </div>
@@ -943,23 +953,22 @@ export function HowItWorks() {
   return (
     <section className="relative overflow-hidden py-20 md:py-24">
       <SectionBackground variant="grid" />
-      <div className="from-background to-background absolute inset-0 bg-gradient-to-b via-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-b from-bg-primary via-transparent to-bg-primary" />
       <div
         className="pointer-events-none absolute left-1/2 top-[48%] h-[420px] w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[140px]"
         style={{
-          background:
-            'radial-gradient(circle, rgba(0,255,163,0.10) 0%, rgba(34,197,94,0.07) 34%, rgba(0,0,0,0) 72%)',
+          background: `radial-gradient(circle, ${brandBright(0.1)} 0%, ${brand(0.07)} 34%, ${scrim(0)} 72%)`,
         }}
         aria-hidden="true"
       />
       <div className="container relative z-10 mx-auto px-4">
         <div className="mb-12 text-center md:mb-16">
-          <h2 className="mb-4 text-balance text-3xl font-extrabold text-white md:text-4xl">
+          <h2 className="mb-4 text-balance text-3xl font-extrabold text-text-primary md:text-4xl">
             {t('title')}
           </h2>
           <p
             className="mx-auto max-w-xl text-balance text-base md:text-lg"
-            style={{ color: '#D1D5DB' }}
+            style={{ color: BODY_TEXT }}
           >
             {t('description')}
           </p>
@@ -973,8 +982,7 @@ export function HowItWorks() {
                 <div
                   className="absolute left-[62%] top-12 hidden h-px w-[76%] md:block"
                   style={{
-                    background:
-                      'linear-gradient(90deg, rgba(34,197,94,0.24) 0%, rgba(209,213,219,0.18) 100%)',
+                    background: `linear-gradient(90deg, ${brand(0.24)} 0%, ${ink(0.18)} 100%)`,
                   }}
                 />
               ) : null}
@@ -984,22 +992,22 @@ export function HowItWorks() {
                   <div
                     className="flex h-24 w-24 items-center justify-center rounded-full border"
                     style={{
-                      backgroundColor: 'rgba(34, 197, 94, 0.12)',
-                      borderColor: 'rgba(255,255,255,0.08)',
-                      boxShadow: '0 0 0 10px rgba(34,197,94,0.03), 0 0 40px rgba(0,255,163,0.12)',
+                      backgroundColor: brand(0.12),
+                      borderColor: ink(0.08),
+                      boxShadow: `0 0 0 10px ${brand(0.03)}, 0 0 40px ${brandBright(0.12)}`,
                     }}
                   >
                     <item.icon className="h-10 w-10" color={BRAND_GREEN_BRIGHT} />
                   </div>
                   <span
                     className="absolute right-0 top-0 flex h-8 w-8 -translate-y-1/4 translate-x-1/4 items-center justify-center rounded-full text-[11px] font-bold"
-                    style={{ backgroundColor: BRAND_GREEN_BRIGHT, color: '#000000' }}
+                    style={{ backgroundColor: BRAND_GREEN_BRIGHT, color: ON_BRAND }}
                   >
                     {item.step}
                   </span>
                 </div>
-                <h3 className="mb-3 text-xl font-bold text-white">{item.title}</h3>
-                <p className="max-w-xs leading-relaxed" style={{ color: '#9CA3AF' }}>
+                <h3 className="mb-3 text-xl font-bold text-text-primary">{item.title}</h3>
+                <p className="max-w-xs leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
                   {item.description}
                 </p>
               </div>
@@ -1012,6 +1020,7 @@ export function HowItWorks() {
 }
 
 export function Hero() {
+  const themeId = useThemeId();
   const { t } = useTranslation(undefined, { keyPrefix: 'website.hero' });
   return (
     <section className="relative overflow-hidden pb-16 pt-24 md:pb-20 md:pt-32">
@@ -1024,16 +1033,16 @@ export function Hero() {
             <div className="flex flex-wrap gap-3">
               <span
                 className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold"
-                style={{ backgroundColor: BRAND_GREEN, color: '#ffffff' }}
+                style={{ backgroundColor: BRAND_GREEN, color: HEADING_TEXT }}
               >
-                <span className="text-white">★</span> {t('badge1')}
+                <span className="text-text-primary">★</span> {t('badge1')}
               </span>
               <span
                 className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold"
                 style={{
-                  borderColor: 'rgba(255,255,255,0.1)',
+                  borderColor: ink(0.1),
                   color: BODY_TEXT,
-                  backgroundColor: 'rgba(255,255,255,0.04)',
+                  backgroundColor: ink(0.04),
                 }}
               >
                 <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
@@ -1044,7 +1053,7 @@ export function Hero() {
             </div>
 
             {/* Heading */}
-            <h1 className="text-balance text-4xl font-extrabold leading-tight text-white md:text-6xl lg:text-[4.6rem]">
+            <h1 className="text-balance text-4xl font-extrabold leading-tight text-text-primary md:text-6xl lg:text-[4.6rem]">
               {t('title1')}
               <br />
               <span style={{ color: BRAND_GREEN_BRIGHT }}>{t('title2')}</span>
@@ -1063,8 +1072,8 @@ export function Hero() {
               href="https://github.com/blopa/musclog-app"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm font-semibold transition-colors hover:text-white"
-              style={{ color: '#D1D5DB' }}
+              className="inline-flex items-center gap-2 text-sm font-semibold transition-colors hover:text-text-primary"
+              style={{ color: BODY_TEXT }}
             >
               <Code2 className="h-4 w-4" />
               {t('github')}
@@ -1077,8 +1086,7 @@ export function Hero() {
               <div
                 className="absolute inset-0 rounded-full blur-[110px]"
                 style={{
-                  background:
-                    'radial-gradient(circle, rgba(0,255,163,0.16) 0%, rgba(34,197,94,0.11) 38%, rgba(0,0,0,0) 74%)',
+                  background: `radial-gradient(circle, ${brandBright(0.16)} 0%, ${brand(0.11)} 38%, ${scrim(0)} 74%)`,
                   transform: 'translate(6%, 10%) scale(1.12)',
                 }}
                 aria-hidden="true"
@@ -1086,15 +1094,15 @@ export function Hero() {
               <div className="flex justify-center">
                 {/* Phone Frame */}
                 <div
-                  className="relative w-[280px] rounded-[2.5rem] border-2 bg-black/40 p-2 shadow-2xl md:w-[320px]"
+                  className="relative w-[280px] rounded-[2.5rem] border-2 bg-scrim-base/40 p-2 shadow-2xl md:w-[320px]"
                   style={{
-                    borderColor: 'rgba(255,255,255,0.65)',
-                    boxShadow: '0 0 0 1px rgba(34,197,94,0.22), 0 30px 80px rgba(0,0,0,0.55)',
+                    borderColor: ink(0.65),
+                    boxShadow: `0 0 0 1px ${brand(0.22)}, 0 30px 80px ${scrim(0.55)}`,
                   }}
                 >
                   <div className="overflow-hidden rounded-[2rem]">
                     <img
-                      src={HERO_APP_SCREENSHOT}
+                      src={THEME_SCREENSHOT(themeId)}
                       alt="Musclog app screenshot"
                       width={320}
                       height={640}
@@ -1108,13 +1116,13 @@ export function Hero() {
               <div className="mt-6 flex justify-center">
                 <Link
                   href="/app"
-                  className="inline-flex min-w-44 items-center justify-center gap-2 rounded-full border border-[#00ffa34d] bg-[#071813] px-5 py-3 text-sm font-bold text-white shadow-[0_12px_30px_rgba(0,0,0,0.22)] transition-all duration-200 hover:-translate-y-0.5"
+                  className="inline-flex min-w-44 items-center justify-center gap-2 rounded-full border border-accent-bright/30 bg-bg-primary px-5 py-3 text-sm font-bold text-text-primary shadow-[0_12px_30px_rgb(var(--c-scrim-base)/0.22)] transition-all duration-200 hover:-translate-y-0.5"
                 >
                   <span
                     className="h-2 w-2 rounded-full"
                     style={{
                       backgroundColor: BRAND_GREEN_BRIGHT,
-                      boxShadow: '0 0 14px rgba(0,255,163,0.8)',
+                      boxShadow: `0 0 14px ${brandBright(0.8)}`,
                     }}
                   />
                   <span>{t('demoButton')}</span>

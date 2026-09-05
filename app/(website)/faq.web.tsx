@@ -12,7 +12,15 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
-import { BODY_TEXT_SOFT, BRAND_GREEN_BRIGHT, MUTED } from '@/components/website/websiteColors';
+import {
+  BODY_TEXT_SOFT,
+  BRAND_GREEN_BRIGHT,
+  brandBright,
+  HEADING_TEXT,
+  hue,
+  ink,
+  MUTED,
+} from '@/components/website/websiteColors';
 import { FaqPageJsonLd, type FaqPageJsonLdItem } from '@/components/website/WebsiteStructuredData';
 
 // ---------------------------------------------------------------------------
@@ -51,27 +59,27 @@ interface FaqCategory {
 
 const CATEGORY_VISUAL_CONFIG = {
   general: {
-    bgColor: 'rgba(0,255,163,0.06)',
-    borderColor: 'rgba(0,255,163,0.25)',
+    bgColor: brandBright(0.06),
+    borderColor: brandBright(0.25),
     color: BRAND_GREEN_BRIGHT,
     icon: HelpCircle,
   },
   nutrition: {
-    bgColor: 'rgba(56,189,248,0.06)',
-    borderColor: 'rgba(56,189,248,0.25)',
-    color: '#38BDF8',
+    bgColor: hue('info', 0.06),
+    borderColor: hue('info', 0.25),
+    color: hue('info'),
     icon: Salad,
   },
   workout: {
-    bgColor: 'rgba(167,139,250,0.06)',
-    borderColor: 'rgba(167,139,250,0.25)',
-    color: '#A78BFA',
+    bgColor: hue('purple', 0.06),
+    borderColor: hue('purple', 0.25),
+    color: hue('purple'),
     icon: Dumbbell,
   },
   methodology: {
-    bgColor: 'rgba(245,158,11,0.06)',
-    borderColor: 'rgba(245,158,11,0.25)',
-    color: '#F59E0B',
+    bgColor: hue('amber', 0.06),
+    borderColor: hue('amber', 0.25),
+    color: hue('amber'),
     icon: FlaskConical,
   },
 } as const;
@@ -90,12 +98,12 @@ function CitationChip({ label, url }: Citation) {
       rel="noopener noreferrer"
       className="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-all hover:scale-[1.02]"
       style={{
-        backgroundColor: 'rgba(56,189,248,0.06)',
-        borderColor: 'rgba(56,189,248,0.3)',
-        color: '#38BDF8',
+        backgroundColor: hue('info', 0.06),
+        borderColor: hue('info', 0.3),
+        color: hue('info'),
       }}
     >
-      <BookOpen size={11} color="#38BDF8" />
+      <BookOpen size={11} color={hue('info')} />
       {label}
     </a>
   );
@@ -106,8 +114,8 @@ function FormulaBlock({ formula, caption }: { formula: string; caption?: string 
     <div
       className="my-4 overflow-x-auto rounded-xl border px-5 py-3"
       style={{
-        backgroundColor: 'rgba(0,255,163,0.04)',
-        borderColor: 'rgba(0,255,163,0.2)',
+        backgroundColor: brandBright(0.04),
+        borderColor: brandBright(0.2),
       }}
     >
       <code className="block font-mono text-sm tracking-wide" style={{ color: BRAND_GREEN_BRIGHT }}>
@@ -124,17 +132,14 @@ function FormulaBlock({ formula, caption }: { formula: string; caption?: string 
 
 function DataTable({ head, rows }: { head: string[]; rows: string[][] }) {
   return (
-    <div
-      className="my-4 overflow-x-auto rounded-xl border"
-      style={{ borderColor: 'rgba(255,255,255,0.08)' }}
-    >
+    <div className="my-4 overflow-x-auto rounded-xl border" style={{ borderColor: ink(0.08) }}>
       <table className="w-full min-w-[520px] text-sm">
         <thead>
-          <tr style={{ backgroundColor: 'rgba(255,255,255,0.04)' }}>
+          <tr style={{ backgroundColor: ink(0.04) }}>
             {head.map((h) => (
               <th
                 key={h}
-                className="px-4 py-3 text-left font-semibold text-white first:rounded-tl-xl last:rounded-tr-xl"
+                className="px-4 py-3 text-left font-semibold text-text-primary first:rounded-tl-xl last:rounded-tr-xl"
               >
                 {h}
               </th>
@@ -143,12 +148,12 @@ function DataTable({ head, rows }: { head: string[]; rows: string[][] }) {
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={i} className="border-t" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+            <tr key={i} className="border-t" style={{ borderColor: ink(0.06) }}>
               {row.map((cell, j) => (
                 <td
                   key={j}
                   className="px-4 py-3"
-                  style={{ color: j === 0 ? '#E5E7EB' : BODY_TEXT_SOFT }}
+                  style={{ color: j === 0 ? HEADING_TEXT : BODY_TEXT_SOFT }}
                 >
                   {cell}
                 </td>
@@ -178,8 +183,8 @@ function AccordionItem({
     <div
       className="overflow-hidden rounded-2xl border transition-all"
       style={{
-        backgroundColor: isOpen ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.015)',
-        borderColor: isOpen ? `${accentColor}33` : 'rgba(255,255,255,0.08)',
+        backgroundColor: isOpen ? ink(0.03) : ink(0.015),
+        borderColor: isOpen ? `${accentColor}33` : ink(0.08),
       }}
     >
       <button
@@ -188,7 +193,7 @@ function AccordionItem({
         onClick={onToggle}
         aria-expanded={isOpen}
       >
-        <span className="text-base font-semibold text-white">{item.question}</span>
+        <span className="text-base font-semibold text-text-primary">{item.question}</span>
         <span
           className={`shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
         >
@@ -198,7 +203,7 @@ function AccordionItem({
 
       {isOpen ? (
         <div className="px-6 pb-6">
-          <div className="mb-4 border-t" style={{ borderColor: 'rgba(255,255,255,0.06)' }} />
+          <div className="mb-4 border-t" style={{ borderColor: ink(0.06) }} />
 
           <p className="mb-3 text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
             {item.answer}
@@ -292,18 +297,18 @@ export default function Faq() {
     <>
       <FaqPageJsonLd items={jsonLdItems} />
       <main className="relative overflow-hidden pb-24 pt-24">
-        <DotPattern className="text-primary/20" />
-        <div className="from-background/60 to-background/60 absolute inset-0 bg-gradient-to-b via-transparent" />
+        <DotPattern className="text-accent-primary/20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-bg-primary/60 via-transparent to-bg-primary/60" />
 
         {/* Ambient glows */}
         <div
           className="absolute left-1/4 top-32 h-96 w-96 rounded-full blur-[120px]"
-          style={{ backgroundColor: 'rgba(0,255,163,0.07)' }}
+          style={{ backgroundColor: brandBright(0.07) }}
           aria-hidden="true"
         />
         <div
           className="absolute bottom-32 right-1/4 h-80 w-80 rounded-full blur-[100px]"
-          style={{ backgroundColor: 'rgba(56,189,248,0.07)' }}
+          style={{ backgroundColor: hue('info', 0.07) }}
           aria-hidden="true"
         />
 
@@ -313,15 +318,15 @@ export default function Faq() {
             <div
               className="mb-4 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-widest"
               style={{
-                backgroundColor: 'rgba(0,255,163,0.06)',
-                borderColor: 'rgba(0,255,163,0.25)',
+                backgroundColor: brandBright(0.06),
+                borderColor: brandBright(0.25),
                 color: BRAND_GREEN_BRIGHT,
               }}
             >
               <FlaskConical size={12} color={BRAND_GREEN_BRIGHT} />
               {t('badge')}
             </div>
-            <h1 className="mb-4 text-4xl font-bold text-white md:text-5xl">
+            <h1 className="mb-4 text-4xl font-bold text-text-primary md:text-5xl">
               {t('titlePrefix')}{' '}
               <span style={{ color: BRAND_GREEN_BRIGHT }}>{t('titleHighlight')}</span>
             </h1>
@@ -346,7 +351,7 @@ export default function Faq() {
                   className="inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-sm font-semibold transition-all"
                   style={{
                     backgroundColor: isActive ? cat.bgColor : 'transparent',
-                    borderColor: isActive ? cat.borderColor : 'rgba(255,255,255,0.1)',
+                    borderColor: isActive ? cat.borderColor : ink(0.1),
                     color: isActive ? cat.color : BODY_TEXT_SOFT,
                   }}
                 >
@@ -380,7 +385,7 @@ export default function Faq() {
               );
             })()}
             <div>
-              <h2 className="font-semibold text-white">{activeCategory.label}</h2>
+              <h2 className="font-semibold text-text-primary">{activeCategory.label}</h2>
               <p className="text-xs" style={{ color: MUTED }}>
                 {t('questionsCount', { count: activeCategory.items.length })}
               </p>
@@ -407,8 +412,8 @@ export default function Faq() {
           <div
             className="mt-14 rounded-2xl border p-6 text-center"
             style={{
-              backgroundColor: 'rgba(255,255,255,0.02)',
-              borderColor: 'rgba(255,255,255,0.08)',
+              backgroundColor: ink(0.02),
+              borderColor: ink(0.08),
             }}
           >
             <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>

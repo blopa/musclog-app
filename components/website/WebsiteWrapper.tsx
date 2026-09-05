@@ -15,6 +15,14 @@ export function LanguagePicker() {
   return null;
 }
 
+export function ThemePicker() {
+  return null;
+}
+
+export function ThemeOptions() {
+  return null;
+}
+
 export function MobileMenu() {
   return null;
 }

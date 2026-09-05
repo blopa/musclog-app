@@ -1,5 +1,5 @@
 import { Link } from 'expo-router';
-import { Check, ChevronDown, Download, Dumbbell, Menu, X } from 'lucide-react-native';
+import { Download, Dumbbell, Menu, X } from 'lucide-react-native';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
@@ -7,19 +7,23 @@ import { useTranslation } from 'react-i18next';
 import { computePopoverTop } from '@/components/website/popoverPlacement';
 import { StoreButtons } from '@/components/website/StoreButtons';
 import { SectionBackground } from '@/components/website/WebsiteBackgrounds';
-import { BODY_TEXT, BODY_TEXT_SOFT, BRAND_GREEN } from '@/components/website/websiteColors';
-import i18n from '@/lang/lang';
+import {
+  BODY_TEXT,
+  BODY_TEXT_SOFT,
+  brand,
+  BRAND_GREEN,
+  HEADING_TEXT,
+  ink,
+  ON_BRAND,
+  scrim,
+  surface,
+  surfaceCard,
+} from '@/components/website/websiteColors';
+import { WebsitePreferences } from '@/components/website/WebsitePreferences';
 import packageJson from '@/package.json';
 import { resetAnalyticsConsent } from '@/utils/websiteAnalytics';
 
-const CARD_BORDER = 'rgba(255, 255, 255, 0.12)';
-
-const languages = [
-  { code: 'en-us', label: 'English', flag: '🇬🇧' },
-  { code: 'es-es', label: 'Español', flag: '🇪🇸' },
-  { code: 'nl-nl', label: 'Nederlands', flag: '🇳🇱' },
-  { code: 'pt-br', label: 'Português', flag: '🇧🇷' },
-];
+const CARD_BORDER = ink(0.12);
 
 interface DownloadModalProps {
   children: ReactNode;
@@ -89,8 +93,8 @@ export function DownloadModal({
 
   const buttonClasses = {
     default: 'hover:opacity-90',
-    outline: 'border border-white/30 text-white hover:bg-white/10',
-    white: 'hover:bg-white/90',
+    outline: 'border border-ink/30 text-text-primary hover:bg-ink/10',
+    white: 'hover:opacity-90',
   };
   const popoverClasses = {
     default: 'right-0',
@@ -119,12 +123,12 @@ export function DownloadModal({
   > = {
     default: {
       backgroundColor: BRAND_GREEN,
-      color: '#000000',
+      color: ON_BRAND,
     },
     outline: {},
     white: {
-      backgroundColor: '#FFFFFF',
-      color: '#000000',
+      backgroundColor: HEADING_TEXT,
+      color: surface(),
     },
   };
 
@@ -145,8 +149,9 @@ export function DownloadModal({
         ? createPortal(
             <div
               ref={popoverContentRef}
-              className={`fixed z-[160] mt-3 w-[min(calc(100vw-2rem),24rem)] rounded-2xl border bg-[rgba(7,13,12,0.96)] p-4 shadow-2xl backdrop-blur-xl ${popoverClasses[variant]}`}
+              className={`fixed z-[160] mt-3 w-[min(calc(100vw-2rem),24rem)] rounded-2xl border p-4 shadow-2xl backdrop-blur-xl ${popoverClasses[variant]}`}
               style={{
+                backgroundColor: surface(0.96),
                 borderColor: CARD_BORDER,
                 top: popoverTop,
                 left: centeredLeft,
@@ -156,7 +161,7 @@ export function DownloadModal({
             >
               <div className="mb-4 flex items-start justify-between gap-4">
                 <div>
-                  <h3 id="download-modal-title" className="text-base font-bold text-white">
+                  <h3 id="download-modal-title" className="text-base font-bold text-text-primary">
                     {t('title')}
                   </h3>
                   <p className="mt-1 text-sm" style={{ color: BODY_TEXT }}>
@@ -166,7 +171,7 @@ export function DownloadModal({
                 <button
                   type="button"
                   aria-label={t('close')}
-                  className="text-muted-foreground hover:text-foreground text-xl leading-none"
+                  className="text-xl leading-none text-text-tertiary hover:text-text-primary"
                   onClick={() => setIsOpen(false)}
                 >
                   ×
@@ -177,125 +182,6 @@ export function DownloadModal({
             document.body
           )
         : null}
-    </div>
-  );
-}
-
-export function LanguagePicker() {
-  const { t } = useTranslation(undefined, { keyPrefix: 'website.navigation' });
-  const locale = i18n.resolvedLanguage ?? i18n.language;
-  const [isOpen, setIsOpen] = useState(false);
-  const pickerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-      }
-    };
-
-    const handlePointerDown = (event: MouseEvent) => {
-      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('mousedown', handlePointerDown);
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('mousedown', handlePointerDown);
-    };
-  }, [isOpen]);
-
-  const handleLanguageChange = (newLocale: string) => {
-    i18n.changeLanguage(newLocale).catch((err) => {
-      console.warn('[LanguagePicker] Failed to change language:', err);
-    });
-    setIsOpen(false);
-  };
-
-  const currentLanguage = languages.find((language) => language.code === locale);
-  const currentLanguageLabel = currentLanguage?.label ?? t('language');
-
-  return (
-    <div className="relative inline-flex" ref={pickerRef}>
-      <button
-        type="button"
-        aria-label={t('language')}
-        aria-expanded={isOpen}
-        aria-haspopup="menu"
-        title={currentLanguageLabel}
-        onClick={() => setIsOpen((current) => !current)}
-        className="inline-flex items-center gap-2 rounded-full border px-3 py-2 text-sm transition-all duration-150 hover:border-white/20 hover:bg-white/10"
-        style={{
-          color: '#F3F4F6',
-          borderColor: isOpen ? 'rgba(34, 197, 94, 0.4)' : 'rgba(255,255,255,0.08)',
-          backgroundColor: isOpen ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)',
-          boxShadow: isOpen ? '0 0 0 1px rgba(34,197,94,0.18)' : 'none',
-        }}
-      >
-        <span className="text-base leading-none">{currentLanguage?.flag ?? '🌐'}</span>
-        <span className="hidden lg:inline" style={{ color: BODY_TEXT_SOFT }}>
-          {t('language')}
-        </span>
-        <span className="max-w-[7.5rem] truncate font-medium">{currentLanguageLabel}</span>
-        <ChevronDown
-          className={`h-4 w-4 transition-transform duration-150 ${isOpen ? 'rotate-180' : ''}`}
-          color={BODY_TEXT_SOFT}
-        />
-      </button>
-
-      {isOpen ? (
-        <div
-          role="menu"
-          aria-label={t('language')}
-          className="absolute right-0 top-full z-[170] mt-3 min-w-[220px] overflow-hidden rounded-2xl border shadow-2xl backdrop-blur-xl"
-          style={{
-            borderColor: 'rgba(255,255,255,0.1)',
-            background: 'linear-gradient(180deg, rgba(10,18,16,0.98) 0%, rgba(6,12,11,0.96) 100%)',
-            boxShadow:
-              '0 24px 70px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.03), 0 0 30px rgba(34,197,94,0.08)',
-          }}
-        >
-          <div
-            className="border-b px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.22em]"
-            style={{ color: BODY_TEXT_SOFT, borderColor: 'rgba(255,255,255,0.08)' }}
-          >
-            {t('language')}
-          </div>
-
-          <div className="p-2">
-            {languages.map((language) => {
-              const isSelected = language.code === locale;
-
-              return (
-                <button
-                  key={language.code}
-                  type="button"
-                  role="menuitemradio"
-                  aria-checked={isSelected}
-                  onClick={() => handleLanguageChange(language.code)}
-                  className="hover:bg-white/6 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors"
-                  style={{
-                    backgroundColor: isSelected ? 'rgba(34,197,94,0.14)' : 'transparent',
-                    color: isSelected ? '#F9FAFB' : BODY_TEXT,
-                  }}
-                >
-                  <span className="text-lg leading-none">{language.flag}</span>
-                  <span className="flex-1 text-sm font-medium">{language.label}</span>
-                  {isSelected ? <Check className="h-4 w-4" color="#00FFA3" /> : null}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      ) : null}
     </div>
   );
 }
@@ -363,7 +249,7 @@ export function MobileMenu() {
     { text: t('github'), href: 'https://github.com/blopa/musclog-app' },
   ];
   const linkClasses =
-    'rounded-xl px-4 py-3 text-base font-semibold transition-colors hover:bg-white/10';
+    'rounded-xl px-4 py-3 text-base font-semibold transition-colors hover:bg-ink/10';
 
   return (
     <>
@@ -374,16 +260,16 @@ export function MobileMenu() {
         aria-expanded={isOpen}
         aria-controls={MOBILE_MENU_ID}
         onClick={() => setIsOpen((current) => !current)}
-        className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition-colors hover:border-white/20 hover:bg-white/10 lg:hidden"
+        className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border transition-colors hover:border-ink/20 hover:bg-ink/10 lg:hidden"
         style={{
-          borderColor: isOpen ? 'rgba(34, 197, 94, 0.4)' : 'rgba(255,255,255,0.08)',
-          backgroundColor: isOpen ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)',
+          borderColor: isOpen ? brand(0.4) : ink(0.08),
+          backgroundColor: isOpen ? ink(0.08) : ink(0.04),
         }}
       >
         {isOpen ? (
-          <X className="h-5 w-5" color="#F3F4F6" />
+          <X className="h-5 w-5 text-text-primary" />
         ) : (
-          <Menu className="h-5 w-5" color="#F3F4F6" />
+          <Menu className="h-5 w-5 text-text-primary" />
         )}
       </button>
 
@@ -392,7 +278,8 @@ export function MobileMenu() {
             <div className="fixed inset-0 top-16 z-[140] lg:hidden">
               <div
                 aria-hidden="true"
-                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+                className="absolute inset-0 backdrop-blur-sm"
+                style={{ backgroundColor: scrim(0.6) }}
                 onClick={() => setIsOpen(false)}
               />
 
@@ -402,9 +289,8 @@ export function MobileMenu() {
                 tabIndex={-1}
                 className="absolute inset-x-0 top-0 max-h-full overflow-y-auto border-b shadow-2xl backdrop-blur-xl"
                 style={{
-                  borderColor: 'rgba(255,255,255,0.08)',
-                  background:
-                    'linear-gradient(180deg, rgba(10,18,16,0.98) 0%, rgba(6,12,11,0.97) 100%)',
+                  borderColor: ink(0.08),
+                  background: `linear-gradient(180deg, ${surface(0.98)} 0%, ${surfaceCard(0.97)} 100%)`,
                 }}
               >
                 <nav
@@ -419,8 +305,7 @@ export function MobileMenu() {
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={() => setIsOpen(false)}
-                        className={linkClasses}
-                        style={{ color: '#F3F4F6' }}
+                        className={`${linkClasses} text-text-primary`}
                       >
                         {link.text}
                       </a>
@@ -429,8 +314,7 @@ export function MobileMenu() {
                         key={link.text}
                         href={link.href}
                         onPress={() => setIsOpen(false)}
-                        className={linkClasses}
-                        style={{ color: '#F3F4F6' }}
+                        className={`${linkClasses} text-text-primary`}
                       >
                         {link.text}
                       </Link>
@@ -440,7 +324,7 @@ export function MobileMenu() {
 
                 <div
                   className="container mx-auto border-t px-4 py-5"
-                  style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+                  style={{ borderColor: ink(0.08) }}
                 >
                   <p
                     className="mb-3 text-[11px] font-semibold uppercase tracking-[0.22em]"
@@ -465,7 +349,7 @@ export function Header() {
   return (
     <header
       className="fixed left-0 right-0 top-0 z-50 border-b backdrop-blur-md"
-      style={{ backgroundColor: 'rgba(4, 10, 9, 0.86)', borderColor: 'rgba(255,255,255,0.08)' }}
+      style={{ backgroundColor: surface(0.86), borderColor: ink(0.08) }}
     >
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex shrink-0 items-center gap-2">
@@ -473,10 +357,12 @@ export function Header() {
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
             style={{ backgroundColor: BRAND_GREEN }}
           >
-            <Dumbbell className="h-5 w-5 text-black" />
+            <Dumbbell className="h-5 w-5 text-text-on-accent" />
           </div>
           <div className="flex flex-col leading-tight">
-            <span className="whitespace-nowrap text-base font-bold text-white">{t('appName')}</span>
+            <span className="whitespace-nowrap text-base font-bold text-text-primary">
+              {t('appName')}
+            </span>
             <span className="whitespace-nowrap text-xs" style={{ color: BODY_TEXT_SOFT }}>
               {t('appTagline')}
             </span>
@@ -486,51 +372,47 @@ export function Header() {
         <nav className="hidden items-center gap-6 lg:flex">
           <Link
             href="/blog"
-            className="text-sm transition-colors hover:text-[#22C55E]"
-            style={{ color: '#F3F4F6' }}
+            className="text-sm text-text-primary transition-colors hover:text-accent-primary"
           >
             {t('blog')}
           </Link>
           <Link
             href="/calculator"
-            className="text-sm transition-colors hover:text-[#22C55E]"
-            style={{ color: '#F3F4F6' }}
+            className="text-sm text-text-primary transition-colors hover:text-accent-primary"
           >
             {t('calculator')}
           </Link>
           <Link
             href="/exercises"
-            className="text-sm transition-colors hover:text-[#22C55E]"
-            style={{ color: '#F3F4F6' }}
+            className="text-sm text-text-primary transition-colors hover:text-accent-primary"
           >
             {t('exercises')}
           </Link>
           <Link
             href="/progress"
-            className="text-sm transition-colors hover:text-[#22C55E]"
-            style={{ color: '#F3F4F6' }}
+            className="text-sm text-text-primary transition-colors hover:text-accent-primary"
           >
             {t('progress')}
           </Link>
           <DownloadModal
             variant="default"
             className="shrink-0 whitespace-nowrap px-5 py-2.5 text-sm font-bold transition-transform hover:scale-[1.01]"
-            style={{ backgroundColor: BRAND_GREEN, color: '#000000' }}
+            style={{ backgroundColor: BRAND_GREEN, color: ON_BRAND }}
           >
             {t('download')}
           </DownloadModal>
-          <LanguagePicker />
+          <WebsitePreferences />
         </nav>
 
         <div className="flex items-center gap-2 lg:hidden">
           <DownloadModal
             variant="default"
-            className="hidden min-h-11 shrink-0 whitespace-nowrap px-4 py-2 text-sm font-bold shadow-[0_10px_30px_rgba(34,197,94,0.18)] [@media(min-width:550px)]:inline-flex"
+            className="hidden min-h-11 shrink-0 whitespace-nowrap px-4 py-2 text-sm font-bold shadow-[0_10px_30px_rgb(var(--c-accent-primary)/0.18)] [@media(min-width:550px)]:inline-flex"
           >
             <Download className="h-4 w-4" />
             <span>{t('download')}</span>
           </DownloadModal>
-          <LanguagePicker />
+          <WebsitePreferences />
           <MobileMenu />
         </div>
       </div>
@@ -557,10 +439,7 @@ export function Footer() {
   ];
 
   return (
-    <footer
-      className="relative overflow-hidden border-t py-8"
-      style={{ borderColor: 'rgba(255,255,255,0.08)' }}
-    >
+    <footer className="relative overflow-hidden border-t py-8" style={{ borderColor: ink(0.08) }}>
       <SectionBackground variant="grid" />
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
@@ -569,10 +448,10 @@ export function Footer() {
               className="flex h-8 w-8 items-center justify-center rounded-lg"
               style={{ backgroundColor: BRAND_GREEN }}
             >
-              <Dumbbell className="h-5 w-5 text-black" />
+              <Dumbbell className="h-5 w-5 text-text-on-accent" />
             </div>
             <div className="flex flex-col leading-tight">
-              <span className="font-bold text-white">{navT('appName')}</span>
+              <span className="font-bold text-text-primary">{navT('appName')}</span>
               <span className="text-xs" style={{ color: BODY_TEXT_SOFT }}>
                 {navT('appTagline')}
               </span>
@@ -587,8 +466,7 @@ export function Footer() {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm transition-colors hover:text-[#22C55E]"
-                  style={{ color: BODY_TEXT_SOFT }}
+                  className="text-sm text-text-tertiary transition-colors hover:text-accent-primary"
                 >
                   {link.text}
                 </a>
@@ -596,8 +474,7 @@ export function Footer() {
                 <Link
                   key={link.text}
                   href={link.href}
-                  className="text-sm transition-colors hover:text-[#22C55E]"
-                  style={{ color: BODY_TEXT_SOFT }}
+                  className="text-sm text-text-tertiary transition-colors hover:text-accent-primary"
                 >
                   {link.text}
                 </Link>
@@ -605,7 +482,7 @@ export function Footer() {
             )}
             <button
               onClick={resetAnalyticsConsent}
-              className="col-span-2 cursor-pointer text-sm transition-colors hover:text-[#22C55E] sm:col-span-1"
+              className="col-span-2 cursor-pointer text-sm transition-colors hover:text-accent-primary sm:col-span-1"
               style={{ color: BODY_TEXT_SOFT }}
             >
               {consentT('cookieSettings')}
@@ -617,7 +494,7 @@ export function Footer() {
               href="https://youtube.com/@musclog"
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-colors hover:text-[#22C55E]"
+              className="transition-colors hover:text-accent-primary"
               style={{ color: BODY_TEXT_SOFT }}
               aria-label="YouTube"
             >
@@ -629,7 +506,7 @@ export function Footer() {
               href="https://instagram.com/musclog.app"
               target="_blank"
               rel="noopener noreferrer"
-              className="transition-colors hover:text-[#22C55E]"
+              className="transition-colors hover:text-accent-primary"
               style={{ color: BODY_TEXT_SOFT }}
               aria-label="Instagram"
             >
@@ -640,8 +517,8 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-border mt-8 border-t pt-6 text-center">
-          <p className="text-sm" style={{ color: 'rgba(209, 213, 219, 0.62)' }}>
+        <div className="mt-8 border-t border-border-default pt-6 text-center">
+          <p className="text-sm" style={{ color: BODY_TEXT_SOFT }}>
             {`© ${new Date().getFullYear()} Musclog. ${t('copyright')} ${t('latestBuild', { version: packageJson.version })}`}
           </p>
         </div>
@@ -652,7 +529,7 @@ export function Footer() {
 
 export function WebsiteWrapper({ children }: { children: ReactNode }) {
   return (
-    <div className="bg-background text-foreground min-h-screen">
+    <div className="min-h-screen bg-bg-primary text-text-secondary">
       <Header />
       {children}
       <Footer />

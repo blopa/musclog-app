@@ -4,6 +4,7 @@ import { ReactNode } from 'react';
 import { LanguageInitializer } from '@/components/LanguageInitializer';
 import { AnalyticsConsent } from '@/components/website/AnalyticsConsent';
 import { SettingsProvider } from '@/context/SettingsContext';
+import { ThemeProvider } from '@/context/ThemeContext';
 
 const queryClient = new QueryClient();
 
@@ -11,9 +12,11 @@ export function WebsiteProviders({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <SettingsProvider>
-        <LanguageInitializer />
-        {children}
-        <AnalyticsConsent />
+        <ThemeProvider>
+          <LanguageInitializer />
+          {children}
+          <AnalyticsConsent />
+        </ThemeProvider>
       </SettingsProvider>
     </QueryClientProvider>
   );

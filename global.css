@@ -3,35 +3,36 @@
 @tailwind utilities;
 
 /* Remove input outline on web for focused inputs */
-input:focus, textarea:focus {
-	outline: none;
+input:focus,
+textarea:focus {
+  outline: none;
 }
 
 /* Web: center app in a phone-sized frame on desktop (see app/+html.tsx shell) */
 html,
 body {
-	height: 100%;
+  height: 100%;
 }
 
 /* Website routes: disable the phone-frame flex layout so native browser scroll works */
 html.hide-desktop-wrapper,
 html.hide-desktop-wrapper body {
-	height: auto !important;
-	overflow: auto !important;
+  height: auto !important;
+  overflow: auto !important;
 }
 
 html.hide-desktop-wrapper body.expo-web-body {
-	display: block !important;
-	min-height: 100dvh !important;
-	overflow-x: hidden !important;
-	overflow-y: auto !important;
+  display: block !important;
+  min-height: 100dvh !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
 }
 
 html.hide-desktop-wrapper .expo-web-root,
 html.hide-desktop-wrapper .expo-web-app-shell {
-	height: auto !important;
-	min-height: 100dvh !important;
-	overflow: visible !important;
+  height: auto !important;
+  min-height: 100dvh !important;
+  overflow: visible !important;
 }
 
 /*
@@ -40,58 +41,58 @@ html.hide-desktop-wrapper .expo-web-app-shell {
  * Host: none !important (also enforced in useLayoutEffect). Direct portaled root opts back in.
  */
 .expo-web-app-shell #expo-web-modal-shell-host {
-	pointer-events: none !important;
+  pointer-events: none !important;
 }
 
 /* Scope to host only — restores hits for the whole portaled RN subtree (not only direct child). */
 .expo-web-app-shell #expo-web-modal-shell-host * {
-	pointer-events: auto !important;
+  pointer-events: auto !important;
 }
 
 /* Default: full-bleed (phones, tablets, Chrome device toolbar — narrow viewports). */
 .expo-web-body {
-	margin: 0;
-	min-height: 100%;
-	min-height: 100dvh;
-	display: flex;
-	justify-content: center;
-	align-items: stretch;
-	background-color: #000;
+  margin: 0;
+  min-height: 100%;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  background-color: rgb(var(--c-bg-primary));
 }
 
 .expo-web-root {
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-	width: 100%;
-	min-height: 100%;
-	min-height: 100dvh;
-	position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100%;
+  min-height: 100dvh;
+  position: relative;
 }
 
 .expo-web-phone-frame {
-	display: none;
+  display: none;
 }
 
 .expo-web-app-shell {
-	box-sizing: border-box;
-	width: 100%;
-	min-height: 100%;
-	min-height: 100dvh;
-	overflow: hidden;
-	display: flex;
-	flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100%;
+  min-height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .expo-web-app-shell > * {
-	flex: 1;
-	min-height: 0;
-	width: 100%;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
 }
 
 /* Desktop landing panel — hidden on mobile */
 .expo-web-landing {
-	display: none;
+  display: none;
 }
 
 /*
@@ -100,34 +101,36 @@ html.hide-desktop-wrapper .expo-web-app-shell {
  * Keep 1024 in sync with WEB_DESKTOP_PHONE_FRAME_MIN_WIDTH in utils/webPhoneFrame.ts.
  */
 @media (min-width: 1024px) {
-	.hide-desktop-wrapper .expo-web-body {
-		gap: 0 !important;
-		align-items: stretch !important;
-		background-color: #091310 !important;
-		background-image: none !important;
-	}
+  .hide-desktop-wrapper .expo-web-body {
+    gap: 0 !important;
+    align-items: stretch !important;
+    background-color: rgb(var(--c-bg-primary)) !important;
+    background-image: none !important;
+  }
 
-	.hide-desktop-wrapper .expo-web-root {
-		width: 100% !important;
-		min-height: 100dvh !important;
-		height: auto !important;
-		transform: none !important;
-		margin: 0 !important;
-	}
+  .hide-desktop-wrapper .expo-web-root {
+    width: 100% !important;
+    min-height: 100dvh !important;
+    height: auto !important;
+    transform: none !important;
+    margin: 0 !important;
+  }
 
-	.expo-web-body {
-		gap: 52px;
-		align-items: center;
-		background-color: #0a0a0a;
-		background-image: radial-gradient(
-			circle at 1px 1px,
-			rgb(255 255 255 / 0.055) 1px,
-			transparent 0
-		);
-		background-size: 24px 24px;
-	}
+  /* The desktop chrome around the phone frame carries the landing panel's copy,
+     which is themed ink — so its ground has to be the themed page, not a scrim. */
+  .expo-web-body {
+    gap: 52px;
+    align-items: center;
+    background-color: rgb(var(--c-bg-primary));
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      rgb(var(--c-ink-DEFAULT) / 0.055) 1px,
+      transparent 0
+    );
+    background-size: 24px 24px;
+  }
 
-	/*
+  /*
 	 * PNG phone-wrapper.png is 1438×2976; screen hole insets from connected alpha=0 region.
 	 * Natural size: 920px tall × 445px wide (920 × 1438/2976 ≈ 444.5px).
 	 * A <head> script sets --phone-scale = min(vh*0.9/920, 1) so the entire frame+app
@@ -137,198 +140,242 @@ html.hide-desktop-wrapper .expo-web-app-shell {
 	 * landing panel. Negative margins collapse the phantom layout space that
 	 * transform: scale() leaves behind, so flex centering stays correct.
 	 */
-	.expo-web-root {
-		flex: none;
-		width: 445px;
-		height: 920px;
-		min-height: 0;
-		max-height: none;
-		overflow: hidden;
-		transform: scale(var(--phone-scale, 1));
-		transform-origin: top left;
-		margin-bottom: calc((var(--phone-scale, 1) - 1) * 920px);
-		margin-right: calc((var(--phone-scale, 1) - 1) * 445px);
-	}
+  .expo-web-root {
+    flex: none;
+    width: 445px;
+    height: 920px;
+    min-height: 0;
+    max-height: none;
+    overflow: hidden;
+    transform: scale(var(--phone-scale, 1));
+    transform-origin: top left;
+    margin-bottom: calc((var(--phone-scale, 1) - 1) * 920px);
+    margin-right: calc((var(--phone-scale, 1) - 1) * 445px);
+  }
 
-	.expo-web-phone-frame {
-		display: block;
-		position: absolute;
-		inset: 0;
-		z-index: 2;
-		width: 100%;
-		height: 100%;
-		object-fit: fill;
-		pointer-events: none;
-		border: 0;
-	}
+  .expo-web-phone-frame {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    pointer-events: none;
+    border: 0;
+  }
 
-	.expo-web-app-shell {
-		position: absolute;
-		z-index: 1;
-		left: 7.4409%;
-		top: 2.9906%;
-		right: 6.3282%;
-		bottom: 3.125%;
-		width: auto;
-		height: auto;
-		min-height: 0;
-		max-height: none;
-		/* Higher pixel density - fit more content in same space */
-		zoom: 0.85;
-	}
+  .expo-web-app-shell {
+    position: absolute;
+    z-index: 1;
+    left: 7.4409%;
+    top: 2.9906%;
+    right: 6.3282%;
+    bottom: 3.125%;
+    width: auto;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    /* Higher pixel density - fit more content in same space */
+    zoom: 0.85;
+  }
 
-	.expo-web-landing {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		gap: 28px;
-		width: 268px;
-		flex-shrink: 0;
-		padding: 60px 0;
-		animation: expo-landing-in 0.5s ease both;
-	}
+  .expo-web-landing {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 28px;
+    width: 268px;
+    flex-shrink: 0;
+    padding: 60px 0;
+    animation: expo-landing-in 0.5s ease both;
+  }
 
-	@keyframes expo-landing-in {
-		from { opacity: 0; transform: translateX(-18px); }
-		to   { opacity: 1; transform: none; }
-	}
+  @keyframes expo-landing-in {
+    from {
+      opacity: 0;
+      transform: translateX(-18px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 
-	.expo-web-landing-brand {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		color: #34d399;
-		text-decoration: none;
-		transition: opacity 0.15s ease;
-	}
+  .expo-web-landing-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: rgb(var(--c-accent-bright));
+    text-decoration: none;
+    transition: opacity 0.15s ease;
+  }
 
-	.expo-web-landing-brand:hover {
-		opacity: 0.8;
-	}
+  .expo-web-landing-brand:hover {
+    opacity: 0.8;
+  }
 
-	.expo-web-landing-name {
-		font-family: system-ui, -apple-system, sans-serif;
-		font-size: 30px;
-		font-weight: 700;
-		letter-spacing: -0.5px;
-		color: #fff;
-	}
+  .expo-web-landing-name {
+    font-family:
+      system-ui,
+      -apple-system,
+      sans-serif;
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: rgb(var(--c-text-primary));
+  }
 
-	.expo-web-landing-tagline {
-		margin: 0;
-		font-family: system-ui, -apple-system, sans-serif;
-		font-size: 14.5px;
-		line-height: 1.65;
-		color: rgba(255, 255, 255, 0.45);
-	}
+  .expo-web-landing-tagline {
+    margin: 0;
+    font-family:
+      system-ui,
+      -apple-system,
+      sans-serif;
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: rgb(var(--c-text-tertiary));
+  }
 
-	.expo-web-landing-features {
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
-	}
+  .expo-web-landing-features {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
 
-	.expo-web-landing-feature {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		font-family: system-ui, -apple-system, sans-serif;
-		font-size: 13.5px;
-		color: rgba(255, 255, 255, 0.72);
-	}
+  .expo-web-landing-feature {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family:
+      system-ui,
+      -apple-system,
+      sans-serif;
+    font-size: 13.5px;
+    color: rgb(var(--c-text-secondary));
+  }
 
-	.expo-web-landing-feature svg {
-		color: #34d399;
-		flex-shrink: 0;
-	}
+  .expo-web-landing-feature svg {
+    color: rgb(var(--c-accent-bright));
+    flex-shrink: 0;
+  }
 
-	.expo-web-landing-cta {
-		display: flex;
-		align-items: center;
-		gap: 7px;
-		font-family: system-ui, -apple-system, sans-serif;
-		font-size: 13px;
-		color: rgba(255, 255, 255, 0.32);
-		font-style: italic;
-		animation: expo-landing-cta-nudge 2.8s ease-in-out infinite;
-	}
+  .expo-web-landing-cta {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-family:
+      system-ui,
+      -apple-system,
+      sans-serif;
+    font-size: 13px;
+    color: rgb(var(--c-text-tertiary));
+    font-style: italic;
+    animation: expo-landing-cta-nudge 2.8s ease-in-out infinite;
+  }
 
-	@keyframes expo-landing-cta-nudge {
-		0%, 100% { opacity: 0.4; transform: translateX(0); }
-		50%       { opacity: 0.65; transform: translateX(5px); }
-	}
+  @keyframes expo-landing-cta-nudge {
+    0%,
+    100% {
+      opacity: 0.4;
+      transform: translateX(0);
+    }
+    50% {
+      opacity: 0.65;
+      transform: translateX(5px);
+    }
+  }
 
-	.expo-web-landing-platforms {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		font-family: system-ui, -apple-system, sans-serif;
-		font-size: 12px;
-		letter-spacing: 0.4px;
-		color: rgba(255, 255, 255, 0.22);
-	}
+  .expo-web-landing-platforms {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family:
+      system-ui,
+      -apple-system,
+      sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.4px;
+    color: rgb(var(--c-ink-DEFAULT) / 0.32);
+  }
 
-	.expo-web-landing-qrcode {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 12px;
-		margin-top: 28px;
-		padding: 20px;
-		border-radius: 16px;
-		background: rgba(255, 255, 255, 0.03);
-		border: 1px solid rgba(255, 255, 255, 0.08);
-	}
+  .expo-web-landing-qrcode {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 28px;
+    padding: 20px;
+    border-radius: 16px;
+    background: rgb(var(--c-ink-DEFAULT) / 0.04);
+    border: 1px solid rgb(var(--c-ink-DEFAULT) / 0.1);
+  }
 
-	.expo-web-landing-qrcode-title {
-		font-family: system-ui, -apple-system, sans-serif;
-		font-size: 14px;
-		font-weight: 600;
-		color: rgba(255, 255, 255, 0.6);
-		text-align: center;
-		letter-spacing: 0.2px;
-	}
+  .expo-web-landing-qrcode-title {
+    font-family:
+      system-ui,
+      -apple-system,
+      sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgb(var(--c-text-secondary));
+    text-align: center;
+    letter-spacing: 0.2px;
+  }
 
-	.expo-web-landing-qrcode-image {
-		width: 120px;
-		height: 120px;
-		border-radius: 12px;
-		background: white;
-		padding: 12px;
-	}
+  .expo-web-landing-qrcode-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    background: white;
+    padding: 12px;
+  }
 
-	.expo-web-landing-qrcode-text {
-		font-family: system-ui, -apple-system, sans-serif;
-		font-size: 13px;
-		color: rgba(255, 255, 255, 0.5);
-		text-align: center;
-	}
+  .expo-web-landing-qrcode-text {
+    font-family:
+      system-ui,
+      -apple-system,
+      sans-serif;
+    font-size: 13px;
+    color: rgb(var(--c-text-tertiary));
+    text-align: center;
+  }
 }
 
 /* Server-rendered Markdown on /blog/[...slug]. Raw HTML is disabled by the parser. */
 .blog-prose {
-	color: #d1d5db;
-	font-size: 1.0625rem;
-	line-height: 1.8;
+  color: rgb(var(--c-text-secondary));
+  font-size: 1.0625rem;
+  line-height: 1.8;
 }
 
-.blog-prose > :first-child { margin-top: 0; }
-.blog-prose > :last-child { margin-bottom: 0; }
+.blog-prose > :first-child {
+  margin-top: 0;
+}
+.blog-prose > :last-child {
+  margin-bottom: 0;
+}
 
 .blog-prose h1,
 .blog-prose h2,
 .blog-prose h3,
 .blog-prose h4 {
-	margin: 2.25em 0 0.75em;
-	color: #fff;
-	font-weight: 750;
-	line-height: 1.25;
-	letter-spacing: -0.02em;
+  margin: 2.25em 0 0.75em;
+  color: rgb(var(--c-text-primary));
+  font-weight: 750;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
 }
 
-.blog-prose h2 { font-size: 1.75rem; }
-.blog-prose h3 { font-size: 1.4rem; }
-.blog-prose h4 { font-size: 1.15rem; }
+.blog-prose h2 {
+  font-size: 1.75rem;
+}
+.blog-prose h3 {
+  font-size: 1.4rem;
+}
+.blog-prose h4 {
+  font-size: 1.15rem;
+}
 
 .blog-prose p,
 .blog-prose ul,
@@ -337,112 +384,132 @@ html.hide-desktop-wrapper .expo-web-app-shell {
 .blog-prose pre,
 .blog-prose table,
 .blog-prose hr {
-	margin: 1.4em 0;
+  margin: 1.4em 0;
 }
 
 .blog-prose ul,
-.blog-prose ol { padding-left: 1.6em; }
-.blog-prose ul { list-style: disc; }
-.blog-prose ol { list-style: decimal; }
-.blog-prose li + li { margin-top: 0.4em; }
+.blog-prose ol {
+  padding-left: 1.6em;
+}
+.blog-prose ul {
+  list-style: disc;
+}
+.blog-prose ol {
+  list-style: decimal;
+}
+.blog-prose li + li {
+  margin-top: 0.4em;
+}
 
 .blog-prose a {
-	color: #6ee7b7;
-	font-weight: 600;
-	text-decoration: underline;
-	text-decoration-color: rgb(52 211 153 / 45%);
-	text-underline-offset: 0.2em;
+  color: rgb(var(--c-accent-bright));
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: rgb(var(--c-accent-bright) / 45%);
+  text-underline-offset: 0.2em;
 }
 
 .blog-prose a:hover {
-	color: #a7f3d0;
-	text-decoration-color: currentColor;
+  color: rgb(var(--c-accent-pale));
+  text-decoration-color: currentColor;
 }
 
-.blog-prose strong { color: #f9fafb; }
+.blog-prose strong {
+  color: rgb(var(--c-text-primary));
+}
 
 .blog-prose blockquote {
-	border-left: 4px solid #22c55e;
-	border-radius: 0 0.75rem 0.75rem 0;
-	background: rgb(34 197 94 / 8%);
-	padding: 0.85rem 1.25rem;
-	color: #d1fae5;
+  border-left: 4px solid rgb(var(--c-accent-primary));
+  border-radius: 0 0.75rem 0.75rem 0;
+  background: rgb(var(--c-accent-primary) / 8%);
+  padding: 0.85rem 1.25rem;
+  color: rgb(var(--c-text-primary));
 }
 
-.blog-prose blockquote > :first-child { margin-top: 0; }
-.blog-prose blockquote > :last-child { margin-bottom: 0; }
+.blog-prose blockquote > :first-child {
+  margin-top: 0;
+}
+.blog-prose blockquote > :last-child {
+  margin-bottom: 0;
+}
 
 .blog-prose :not(pre) > code {
-	border: 1px solid rgb(255 255 255 / 10%);
-	border-radius: 0.4rem;
-	background: rgb(255 255 255 / 7%);
-	padding: 0.12em 0.38em;
-	color: #a7f3d0;
-	font-size: 0.88em;
+  border: 1px solid rgb(var(--c-ink-DEFAULT) / 10%);
+  border-radius: 0.4rem;
+  background: rgb(var(--c-ink-DEFAULT) / 7%);
+  padding: 0.12em 0.38em;
+  color: rgb(var(--c-text-accent));
+  font-size: 0.88em;
 }
 
 .blog-prose pre {
-	overflow-x: auto;
-	border: 1px solid rgb(255 255 255 / 11%);
-	border-radius: 1rem;
-	background: #07110e;
-	padding: 1.25rem;
-	box-shadow: 0 18px 50px rgb(0 0 0 / 22%);
-	font-size: 0.9rem;
-	line-height: 1.65;
-	tab-size: 2;
+  overflow-x: auto;
+  border: 1px solid rgb(var(--c-ink-DEFAULT) / 11%);
+  border-radius: 1rem;
+  background: rgb(var(--c-bg-card));
+  padding: 1.25rem;
+  box-shadow: 0 18px 50px rgb(var(--c-scrim-base) / 22%);
+  font-size: 0.9rem;
+  line-height: 1.65;
+  tab-size: 2;
 }
 
 .blog-prose pre code {
-	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
 }
 
 .blog-prose table {
-	display: block;
-	width: 100%;
-	overflow-x: auto;
-	border-collapse: collapse;
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
 }
 
 .blog-prose th,
 .blog-prose td {
-	border: 1px solid rgb(255 255 255 / 12%);
-	padding: 0.7rem 0.9rem;
-	text-align: left;
+  border: 1px solid rgb(var(--c-ink-DEFAULT) / 12%);
+  padding: 0.7rem 0.9rem;
+  text-align: left;
 }
 
 .blog-prose th {
-	background: rgb(34 197 94 / 10%);
-	color: #ecfdf5;
+  background: rgb(var(--c-accent-primary) / 10%);
+  color: rgb(var(--c-text-primary));
 }
 
-.blog-prose tr:nth-child(even) { background: rgb(255 255 255 / 3%); }
+.blog-prose tr:nth-child(even) {
+  background: rgb(var(--c-ink-DEFAULT) / 3%);
+}
 
 /* Height is capped as well as width so a portrait screenshot (phone captures are roughly 1:2)
    does not take over the column the way a landscape one at the same width would. */
 .blog-prose img {
-	display: block;
-	max-width: 100%;
-	max-height: min(80vh, 40rem);
-	width: auto;
-	height: auto;
-	margin: 1.75rem auto;
-	border-radius: 1rem;
+  display: block;
+  max-width: 100%;
+  max-height: min(80vh, 40rem);
+  width: auto;
+  height: auto;
+  margin: 1.75rem auto;
+  border-radius: 1rem;
 }
 
 .blog-prose hr {
-	border: 0;
-	border-top: 1px solid rgb(255 255 255 / 12%);
+  border: 0;
+  border-top: 1px solid rgb(var(--c-ink-DEFAULT) / 12%);
 }
 
 .blog-prose .hljs-comment,
-.blog-prose .hljs-quote { color: #7d8b86; }
+.blog-prose .hljs-quote {
+  color: rgb(var(--c-text-tertiary));
+}
 
 .blog-prose .hljs-keyword,
 .blog-prose .hljs-selector-tag,
 .blog-prose .hljs-literal,
 .blog-prose .hljs-section,
-.blog-prose .hljs-link { color: #ff7ab2; }
+.blog-prose .hljs-link {
+  color: rgb(var(--c-status-pink));
+}
 
 .blog-prose .hljs-string,
 .blog-prose .hljs-title,
@@ -454,17 +521,25 @@ html.hide-desktop-wrapper .expo-web-app-shell {
 .blog-prose .hljs-addition,
 .blog-prose .hljs-variable,
 .blog-prose .hljs-template-tag,
-.blog-prose .hljs-template-variable { color: #a7f3d0; }
+.blog-prose .hljs-template-variable {
+  color: rgb(var(--c-accent-pale));
+}
 
 .blog-prose .hljs-number,
 .blog-prose .hljs-meta,
 .blog-prose .hljs-built_in,
 .blog-prose .hljs-builtin-name,
-.blog-prose .hljs-params { color: #c4b5fd; }
+.blog-prose .hljs-params {
+  color: rgb(var(--c-status-purple));
+}
 
 .blog-prose .hljs-function,
-.blog-prose .hljs-title.function_ { color: #67e8f9; }
-.blog-prose .hljs-deletion { color: #fca5a5; }
+.blog-prose .hljs-title.function_ {
+  color: rgb(var(--c-status-info));
+}
+.blog-prose .hljs-deletion {
+  color: rgb(var(--c-status-error));
+}
 
 /*
  * Share buttons at the end of a blog post (BlogPostShare.tsx). The glyphs inherit this `color`
@@ -474,18 +549,18 @@ html.hide-desktop-wrapper .expo-web-app-shell {
  * property the component sets inline.
  */
 .blog-share-button {
-	color: #9ca3af;
+  color: rgb(var(--c-text-tertiary));
 }
 
 .blog-share-button:hover,
 .blog-share-button:focus-visible {
-	transform: translateY(-2px);
-	border-color: var(--share-color);
-	background-color: rgb(255 255 255 / 10%);
-	color: var(--share-color);
+  transform: translateY(-2px);
+  border-color: var(--share-color);
+  background-color: rgb(var(--c-ink-DEFAULT) / 10%);
+  color: var(--share-color);
 }
 
 .blog-share-button:focus-visible {
-	outline: 2px solid var(--share-color);
-	outline-offset: 2px;
+  outline: 2px solid var(--share-color);
+  outline-offset: 2px;
 }

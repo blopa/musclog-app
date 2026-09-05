@@ -77,6 +77,7 @@ This repository serves two distinct purposes that share the same Expo Router pro
 - When working on website files, treat them as a standard React web app, not a React Native app.
 - Website layout is in `app/(website)/_layout.web.tsx`; it wraps pages with the nav/footer chrome.
 - **Below `lg`, the primary navigation lives in the header's burger menu (`MobileMenu` in `WebsiteWrapper.web.tsx`), not in the footer.** The footer previously carried a `md:hidden` pill cluster duplicating the nav; that copy is gone, and adding a primary destination is now one edit to `MobileMenu`'s `menuLinks`. The footer keeps only secondary and legal links (privacy, terms, contact, license, cookie settings), which it shows at every width. Three constraints on the panel: it is **portalled to `<body>`** because the header's `backdrop-blur-md` makes it a containing block for `fixed` descendants, so a full-viewport backdrop rendered inside the header would be clipped to the header; it therefore carries its **own `lg:hidden`** (the header cluster's does not reach it) plus a `matchMedia('(min-width: 1024px)')` listener, without which growing past the breakpoint would leave the body scroll locked by an invisible panel; and it closes on the backdrop and Escape rather than a document-level `pointerdown` listener, so the store/QR popovers it contains — themselves portalled to `<body>`, and thus "outside" the panel — do not tear it down when clicked. Focus moves into the panel on open and back to the trigger on close, since the portal puts it last in tab order.
+- **Website preferences**: `WebsitePreferences.tsx` owns the single compact header control for language and theme on desktop and mobile. Keep the styled radio choices (language flags, theme swatches, and checkmarks) in Language/Theme tabs inside its portalled, viewport-constrained panel; theme changes update both the browser mirror and app settings. Do not add separate picker pills or duplicate theme options in the burger menu.
 - **Popover vertical placement has one implementation: `computePopoverTop` in `components/website/popoverPlacement.ts`.** `DownloadModal` and `StoreButtons`' QR popover both anchor under a trigger and must flip above it when the space below cannot hold them; the QR popover lacked the flip and rendered off-screen once the burger menu placed it low in the panel. Height is measured after the first render, so the helper returns a downward position while `popoverHeight` is 0 and settles on the second pass — do not "fix" that by measuring during render. Horizontal placement stays per-component (the two want different anchoring).
 
 **When making changes:**
@@ -173,6 +174,10 @@ This repository serves two distinct purposes that share the same Expo Router pro
   variants. `theme.registry.js` is the canonical catalogue: it owns every theme ID, mode and
   primitive palette; `ThemeId`, semantic token trees, CSS/native variables, and `THEMES` are derived
   from it. Add a palette there rather than editing parallel maps, and run `npm run check-palette`.
+  **A new app theme is not complete until it is also available on the public website and in the
+  Game Boy game.** Keep the same theme identity and palette intent across all three surfaces, add
+  the website's theme showcase asset/coverage, and run `npm run gb:gen-themes` to regenerate the
+  Game Boy palette tables; never ship a theme on only one or two of them.
   A theme carries no component-level presentation flags: anything a component would branch on is
   expressed as palette values instead (a theme wanting a flat summary card sets its gradient stops
   flat). `ThemeProvider` resolves the preference once, and every `useTheme*` hook selects from that

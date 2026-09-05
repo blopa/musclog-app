@@ -325,7 +325,9 @@
       "blog": "Blog",
       "menu": "Menu",
       "openMenu": "Abrir menu",
-      "closeMenu": "Fechar menu"
+      "closeMenu": "Fechar menu",
+      "preferences": "Preferências",
+      "theme": "Tema"
     },
     "blog": {
       "eyebrow": "Direto da oficina",

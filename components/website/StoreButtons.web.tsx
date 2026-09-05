@@ -56,14 +56,14 @@ interface StoreButtonProps {
 
 function StoreButton({ logo, title, storeName, onClick, href, onLinkClick }: StoreButtonProps) {
   const className =
-    'inline-flex min-w-[175px] items-center gap-3 rounded-xl border border-white/30 bg-black/85 px-4 py-2.5 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.03)] transition-colors hover:border-white/50';
+    'inline-flex min-w-[175px] items-center gap-3 rounded-xl border border-ink/15 bg-bg-card px-4 py-2.5 text-text-primary shadow-[0_0_0_1px_rgb(var(--c-ink-DEFAULT)/0.03)] transition-colors hover:border-ink/35';
 
   const content = (
     <>
       <span className="shrink-0">{logo}</span>
       <span className="flex flex-col items-start">
-        <span className="text-[11px] leading-none text-gray-200">{title}</span>
-        <span className="text-lg font-bold leading-tight text-white">{storeName}</span>
+        <span className="text-[11px] leading-none text-text-secondary">{title}</span>
+        <span className="text-lg font-bold leading-tight text-text-primary">{storeName}</span>
       </span>
     </>
   );
@@ -140,18 +140,18 @@ function QRCodeCard({
   }, [alt, href]);
 
   return (
-    <div className="flex flex-1 flex-col items-center rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-      <span className="mb-3 text-sm font-semibold text-white">{label}</span>
+    <div className="flex flex-1 flex-col items-center rounded-2xl border border-ink/10 bg-ink/[0.03] p-4">
+      <span className="mb-3 text-sm font-semibold text-text-primary">{label}</span>
       <div
         ref={qrCodeRef}
-        className="rounded-xl bg-white p-2 shadow-[0_10px_30px_rgba(0,0,0,0.3)]"
+        className="rounded-xl bg-text-always-white p-2 shadow-[0_10px_30px_rgb(var(--c-scrim-base)/0.3)]"
         aria-hidden="true"
       />
       <a
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-3 text-sm font-medium text-[#A7F3D0] transition-colors hover:text-white"
+        className="mt-3 text-sm font-medium text-accent-pale transition-colors hover:text-text-primary"
         onClick={onLinkClick}
       >
         {label}
@@ -254,7 +254,7 @@ export function StoreButtons() {
           aria-label={t('qrButton')}
           aria-expanded={isQrOpen}
           aria-haspopup="dialog"
-          className="inline-flex h-[58px] w-[58px] items-center justify-center rounded-xl border border-white/30 bg-black/85 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.03)] transition-colors hover:border-white/50"
+          className="inline-flex h-[58px] w-[58px] items-center justify-center rounded-xl border border-ink/15 bg-bg-card text-text-primary shadow-[0_0_0_1px_rgb(var(--c-ink-DEFAULT)/0.03)] transition-colors hover:border-ink/35"
           onClick={() => setIsQrOpen((current) => !current)}
         >
           <QRCodeIcon />
@@ -266,7 +266,7 @@ export function StoreButtons() {
                 ref={qrPopoverRef}
                 role="dialog"
                 aria-labelledby="store-qr-popover-title"
-                className="border-white/12 fixed z-[170] max-h-[calc(100vh-2rem)] w-[min(calc(100vw-2rem),30rem)] overflow-y-auto rounded-3xl border bg-[rgba(7,13,12,0.97)] p-5 shadow-2xl backdrop-blur-xl"
+                className="border-ink/12 fixed z-[170] max-h-[calc(100vh-2rem)] w-[min(calc(100vw-2rem),30rem)] overflow-y-auto rounded-3xl border bg-bg-primary/[0.97] p-5 shadow-2xl backdrop-blur-xl"
                 style={{
                   top: qrPopoverTop,
                   left: qrPopoverLeft,
@@ -274,15 +274,18 @@ export function StoreButtons() {
               >
                 <div className="mb-4 flex items-start justify-between gap-4">
                   <div>
-                    <h3 id="store-qr-popover-title" className="text-base font-bold text-white">
+                    <h3
+                      id="store-qr-popover-title"
+                      className="text-base font-bold text-text-primary"
+                    >
                       {t('qrTitle')}
                     </h3>
-                    <p className="mt-1 text-sm text-gray-300">{t('qrDescription')}</p>
+                    <p className="mt-1 text-sm text-text-secondary">{t('qrDescription')}</p>
                   </div>
                   <button
                     type="button"
                     aria-label={t('close')}
-                    className="text-xl leading-none text-gray-400 transition-colors hover:text-white"
+                    className="text-xl leading-none text-text-tertiary transition-colors hover:text-text-primary"
                     onClick={() => setIsQrOpen(false)}
                   >
                     ×

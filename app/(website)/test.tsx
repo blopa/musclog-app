@@ -4,6 +4,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { MultipleLinesChart } from '@/components/charts/MultipleLinesChart';
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
+import { BODY_TEXT_SOFT, hue } from '@/components/website/websiteColors';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { isProduction } from '@/utils/app';
 import { analyzeRecordedReps } from '@/utils/repAnalysis';
@@ -214,9 +215,9 @@ function smoothChartRows(rows: ChartRow[], desiredWindowSize: number | null): Ch
 }
 
 const AXIS_CONFIG: { key: AxisKey; label: string; color: string }[] = [
-  { key: 'accX', label: 'AccX', color: '#94a3b8' },
-  { key: 'accY', label: 'AccY', color: '#facc15' },
-  { key: 'accZ', label: 'AccZ', color: '#f59e0b' },
+  { key: 'accX', label: 'AccX', color: BODY_TEXT_SOFT },
+  { key: 'accY', label: 'AccY', color: hue('amber') },
+  { key: 'accZ', label: 'AccZ', color: hue('amber') },
 ];
 
 export default function Test() {
@@ -349,7 +350,7 @@ export default function Test() {
   let chartBody: React.ReactNode;
   if (displayRows.length > 1 && visibleAxisCount > 0 && extents != null) {
     chartBody = (
-      <div className="rounded-[1.75rem] border border-white/10 bg-[#050b08] p-3 md:p-4">
+      <div className="rounded-[1.75rem] border border-ink/10 bg-bg-primary p-3 md:p-4">
         <MultipleLinesChart
           title={undefined}
           subtitle={undefined}
@@ -360,7 +361,7 @@ export default function Test() {
           yDomain={[extents.min, extents.max]}
           yAxisLabels={yAxisLabels}
           showGridLines
-          gridLineColor="rgba(255,255,255,0.12)"
+          gridLineColor="${ink(0.12)}"
           lineWidth={3}
           marginTop={0}
           marginBottom={0}
@@ -371,13 +372,13 @@ export default function Test() {
     );
   } else if (displayRows.length > 1) {
     chartBody = (
-      <div className="flex min-h-[360px] items-center justify-center rounded-[1.75rem] border border-white/10 bg-[#050b08] px-6 text-center text-sm text-white/45">
+      <div className="flex min-h-[360px] items-center justify-center rounded-[1.75rem] border border-ink/10 bg-bg-primary px-6 text-center text-sm text-ink/45">
         Turn on at least one axis to render the chart.
       </div>
     );
   } else {
     chartBody = (
-      <div className="flex min-h-[360px] items-center justify-center rounded-[1.75rem] border border-white/10 bg-[#050b08] px-6 text-center text-sm text-white/45">
+      <div className="flex min-h-[360px] items-center justify-center rounded-[1.75rem] border border-ink/10 bg-bg-primary px-6 text-center text-sm text-ink/45">
         Load a JSON file with at least two samples to render the chart.
       </div>
     );
@@ -385,20 +386,20 @@ export default function Test() {
 
   return (
     <>
-      <main className="relative min-h-screen overflow-hidden bg-[#06110b] px-4 py-8 text-white">
-        <DotPattern className="text-emerald-400/10" />
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.22),transparent_42%),radial-gradient(circle_at_bottom_right,rgba(245,158,11,0.08),transparent_30%)]" />
+      <main className="relative min-h-screen overflow-hidden bg-bg-primary px-4 py-8 text-text-primary">
+        <DotPattern className="text-accent-bright/10" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgb(var(--c-accent-bright)/0.22),transparent_42%),radial-gradient(circle_at_bottom_right,rgb(var(--c-status-amber)/0.08),transparent_30%)]" />
 
         <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-6">
-          <section className="rounded-[2rem] border border-emerald-500/15 bg-gradient-to-b from-[#0d2418] to-[#08140f] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.45)] md:p-8">
+          <section className="rounded-[2rem] border border-accent-primary/15 bg-gradient-to-b from-bg-overlay to-bg-card p-5 shadow-[0_24px_80px_rgb(var(--c-scrim-base)/0.45)] md:p-8">
             <div className="mb-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-300/80">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent-bright/80">
                 Debug viewer
               </p>
-              <h1 className="mt-2 text-3xl font-black tracking-tight text-white md:text-4xl">
+              <h1 className="mt-2 text-3xl font-black tracking-tight text-text-primary md:text-4xl">
                 Upload a local JSON file and inspect the acceleration chart
               </h1>
-              <p className="mt-3 max-w-3xl text-sm leading-6 text-white/60 md:text-base">
+              <p className="mt-3 max-w-3xl text-sm leading-6 text-ink/60 md:text-base">
                 Drop in a file with a `samples` array from the sensor debug export, and the page
                 will render the three acceleration axes as a chart similar to the mobile test
                 screen.
@@ -408,7 +409,9 @@ export default function Test() {
             <div
               className={[
                 'group rounded-[1.75rem] border border-dashed p-5 transition-colors md:p-6',
-                isDragging ? 'border-emerald-300 bg-emerald-400/10' : 'border-white/10 bg-black/20',
+                isDragging
+                  ? 'border-accent-bright bg-accent-bright/10'
+                  : 'border-ink/10 bg-bg-card',
               ].join(' ')}
               onDragEnter={(event) => {
                 event.preventDefault();
@@ -434,12 +437,12 @@ export default function Test() {
 
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div className="space-y-2">
-                  <p className="text-sm font-semibold text-white">Load debug JSON</p>
-                  <p className="max-w-2xl text-sm leading-6 text-white/55">
+                  <p className="text-sm font-semibold text-text-primary">Load debug JSON</p>
+                  <p className="max-w-2xl text-sm leading-6 text-ink/55">
                     Click to browse, or drag a local file here. The uploader accepts either the full
                     `DebugData` object or a plain array of samples.
                   </p>
-                  <p className="text-xs text-white/45">Locale aware labels: {locale}</p>
+                  <p className="text-xs text-ink/45">Locale aware labels: {locale}</p>
                 </div>
 
                 <div className="flex flex-wrap gap-3">
@@ -449,8 +452,8 @@ export default function Test() {
                     className={[
                       'inline-flex items-center justify-center rounded-xl border px-4 py-3 text-sm font-bold transition-colors',
                       smoothingLevel > 0
-                        ? 'border-emerald-300 bg-emerald-400/15 text-emerald-200 hover:bg-emerald-400/20'
-                        : 'border-white/15 bg-white/5 text-white hover:bg-white/10',
+                        ? 'border-accent-bright bg-accent-bright/15 text-accent-pale hover:bg-accent-bright/20'
+                        : 'border-ink/15 bg-ink/5 text-text-primary hover:bg-ink/10',
                     ].join(' ')}
                     title="Savitzky-Golay smoothing keeps the shape of peaks better than a simple moving average."
                   >
@@ -459,24 +462,24 @@ export default function Test() {
                   <button
                     type="button"
                     onClick={openPicker}
-                    className="inline-flex items-center justify-center rounded-xl bg-emerald-400 px-4 py-3 text-sm font-bold text-black transition-transform hover:-translate-y-0.5 hover:bg-emerald-300"
+                    className="inline-flex items-center justify-center rounded-xl bg-accent-bright px-4 py-3 text-sm font-bold text-text-on-accent transition-transform hover:-translate-y-0.5 hover:bg-accent-bright"
                   >
                     Choose JSON file
                   </button>
                 </div>
               </div>
 
-              <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4">
+              <div className="mt-5 rounded-2xl border border-ink/10 bg-ink/5 p-4">
                 <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                   <div>
-                    <p className="text-sm font-semibold text-white">Smoothing strength</p>
-                    <p className="text-xs text-white/45">
+                    <p className="text-sm font-semibold text-text-primary">Smoothing strength</p>
+                    <p className="text-xs text-ink/45">
                       {currentSmoothingLabel === 'Raw'
                         ? 'No smoothing applied'
                         : `Savitzky-Golay window: ${getSmoothingPreset(smoothingLevel).windowSize}`}
                     </p>
                   </div>
-                  <p className="text-xs font-medium uppercase tracking-[0.18em] text-emerald-200/70">
+                  <p className="text-xs font-medium uppercase tracking-[0.18em] text-accent-pale/70">
                     {currentSmoothingLabel}
                   </p>
                 </div>
@@ -490,11 +493,11 @@ export default function Test() {
                   onChange={(event) =>
                     setSmoothingLevel(Number(event.target.value) as SmoothingLevel)
                   }
-                  className="mt-4 w-full accent-emerald-400"
+                  className="mt-4 w-full accent-accent-bright"
                   aria-label="Smoothing strength"
                 />
 
-                <div className="mt-3 grid grid-cols-5 gap-2 text-[11px] uppercase tracking-[0.16em] text-white/35">
+                <div className="mt-3 grid grid-cols-5 gap-2 text-[11px] uppercase tracking-[0.16em] text-ink/35">
                   {SMOOTHING_PRESETS.map((preset) => (
                     <button
                       key={preset.level}
@@ -503,8 +506,8 @@ export default function Test() {
                       className={[
                         'rounded-lg px-2 py-2 text-center transition-colors',
                         smoothingLevel === preset.level
-                          ? 'bg-emerald-400/15 text-emerald-100'
-                          : 'bg-black/20 hover:bg-white/10',
+                          ? 'bg-accent-bright/15 text-accent-pale'
+                          : 'bg-bg-card hover:bg-ink/10',
                       ].join(' ')}
                     >
                       {preset.label}
@@ -514,29 +517,31 @@ export default function Test() {
               </div>
 
               <div className="mt-4 grid gap-3 md:grid-cols-3">
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs uppercase tracking-[0.2em] text-white/40">File</p>
-                  <p className="mt-2 break-all text-sm font-semibold text-white">{fileLabel}</p>
+                <div className="rounded-2xl border border-ink/10 bg-ink/5 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-ink/40">File</p>
+                  <p className="mt-2 break-all text-sm font-semibold text-text-primary">
+                    {fileLabel}
+                  </p>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs uppercase tracking-[0.2em] text-white/40">Samples</p>
-                  <p className="mt-2 text-sm font-semibold text-white">
+                <div className="rounded-2xl border border-ink/10 bg-ink/5 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-ink/40">Samples</p>
+                  <p className="mt-2 text-sm font-semibold text-text-primary">
                     {formatInteger(sampleCount)}
                   </p>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs uppercase tracking-[0.2em] text-white/40">Duration</p>
-                  <p className="mt-2 text-sm font-semibold text-white">
+                <div className="rounded-2xl border border-ink/10 bg-ink/5 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-ink/40">Duration</p>
+                  <p className="mt-2 text-sm font-semibold text-text-primary">
                     {formatRoundedDecimal(sampleCount > 1 ? durationSeconds : 0, 1)} s
                   </p>
                 </div>
               </div>
 
-              <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4">
+              <div className="mt-4 rounded-2xl border border-ink/10 bg-ink/5 p-4">
                 <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
                   <div>
-                    <p className="text-sm font-semibold text-white">Visible axes</p>
-                    <p className="text-xs text-white/45">
+                    <p className="text-sm font-semibold text-text-primary">Visible axes</p>
+                    <p className="text-xs text-ink/45">
                       {visibleAxisCount === 0
                         ? 'Turn at least one axis on to render the chart.'
                         : `${visibleAxisCount} axis${visibleAxisCount === 1 ? '' : 'es'} visible`}
@@ -558,8 +563,8 @@ export default function Test() {
                           className={[
                             'inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm font-semibold transition-colors',
                             isVisible
-                              ? 'border-white/15 bg-black/20 text-white'
-                              : 'border-white/10 bg-transparent text-white/40 hover:bg-white/5',
+                              ? 'border-ink/15 bg-bg-card text-text-primary'
+                              : 'border-ink/10 bg-transparent text-ink/40 hover:bg-ink/5',
                           ].join(' ')}
                         >
                           <span
@@ -575,24 +580,24 @@ export default function Test() {
               </div>
 
               {errorMessage != null ? (
-                <div className="mt-4 rounded-2xl border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-100">
+                <div className="mt-4 rounded-2xl border border-status-error/20 bg-status-error/10 px-4 py-3 text-sm text-status-error">
                   {errorMessage}
                 </div>
               ) : null}
             </div>
           </section>
 
-          <section className="rounded-[2rem] border border-emerald-500/15 bg-[#07120e]/95 p-4 shadow-[0_24px_80px_rgba(0,0,0,0.35)] md:p-6">
+          <section className="rounded-[2rem] border border-accent-primary/15 bg-bg-primary/95 p-4 shadow-[0_24px_80px_rgb(var(--c-scrim-base)/0.35)] md:p-6">
             <div className="mb-5 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
               <div>
-                <h2 className="text-2xl font-black text-white">Raw acceleration</h2>
-                <p className="mt-1 text-sm text-white/55">
+                <h2 className="text-2xl font-black text-text-primary">Raw acceleration</h2>
+                <p className="mt-1 text-sm text-ink/55">
                   The chart below plots `AccX`, `AccY`, and `AccZ` over the sample timeline.
                   {smoothingLevel > 0 ? ' Savitzky-Golay smoothing is enabled.' : ''}
                 </p>
               </div>
               {startedAt != null && stoppedAt != null ? (
-                <p className="text-xs text-white/45">
+                <p className="text-xs text-ink/45">
                   {startedAt.toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'medium' })} -
                   {stoppedAt.toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'medium' })}
                 </p>
@@ -603,25 +608,23 @@ export default function Test() {
 
             {fileState?.analysis != null ? (
               <div className="mt-4 grid gap-3 md:grid-cols-3">
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs uppercase tracking-[0.2em] text-white/40">Rep count</p>
-                  <p className="mt-2 text-sm font-semibold text-white">
+                <div className="rounded-2xl border border-ink/10 bg-ink/5 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-ink/40">Rep count</p>
+                  <p className="mt-2 text-sm font-semibold text-text-primary">
                     {formatInteger(fileState.analysis.repCount)}
                   </p>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs uppercase tracking-[0.2em] text-white/40">
-                    Analysis samples
-                  </p>
-                  <p className="mt-2 text-sm font-semibold text-white">
+                <div className="rounded-2xl border border-ink/10 bg-ink/5 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-ink/40">Analysis samples</p>
+                  <p className="mt-2 text-sm font-semibold text-text-primary">
                     {formatInteger(fileState.analysis.sampleCount)}
                   </p>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs uppercase tracking-[0.2em] text-white/40">
+                <div className="rounded-2xl border border-ink/10 bg-ink/5 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-ink/40">
                     Analysis duration
                   </p>
-                  <p className="mt-2 text-sm font-semibold text-white">
+                  <p className="mt-2 text-sm font-semibold text-text-primary">
                     {formatRoundedDecimal(fileState.analysis.durationMs / 1000, 1)} s
                   </p>
                 </div>

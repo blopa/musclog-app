@@ -5,7 +5,14 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FloatingShapes, GridPattern } from '@/components/website/WebsiteBackgrounds';
-import { BODY_TEXT_SOFT, BRAND_GREEN_BRIGHT, MUTED } from '@/components/website/websiteColors';
+import {
+  BODY_TEXT_SOFT,
+  BRAND_GREEN_BRIGHT,
+  brandBright,
+  hue,
+  ink,
+  MUTED,
+} from '@/components/website/websiteColors';
 
 interface FormState {
   email: string;
@@ -52,23 +59,23 @@ export default function Contact() {
   return (
     <>
       <main className="relative overflow-hidden pb-20 pt-28">
-        <GridPattern className="text-primary/50" />
+        <GridPattern className="text-accent-primary/50" />
         <FloatingShapes />
 
         <div
           className="absolute left-1/4 top-40 h-72 w-72 rounded-full blur-[100px]"
-          style={{ backgroundColor: 'rgba(0,255,163,0.10)' }}
+          style={{ backgroundColor: brandBright(0.1) }}
         />
         <div
           className="absolute bottom-20 right-1/4 h-64 w-64 rounded-full blur-[80px]"
-          style={{ backgroundColor: 'rgba(6,182,212,0.10)' }}
+          style={{ backgroundColor: hue('info', 0.1) }}
         />
-        <div className="from-background/30 to-background/30 absolute inset-0 bg-gradient-to-b via-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-bg-primary/30 via-transparent to-bg-primary/30" />
 
         <div className="container relative z-10 mx-auto max-w-5xl px-4">
           {/* Title */}
           <div className="mb-12 text-center">
-            <h1 className="mb-4 text-4xl font-bold text-white md:text-5xl">
+            <h1 className="mb-4 text-4xl font-bold text-text-primary md:text-5xl">
               {t('titleStart')}{' '}
               <span style={{ color: BRAND_GREEN_BRIGHT }}>{t('titleHighlight')}</span>
             </h1>
@@ -83,14 +90,14 @@ export default function Contact() {
             <div
               className="rounded-2xl border p-6 md:p-8"
               style={{
-                backgroundColor: 'rgba(255,255,255,0.03)',
-                borderColor: 'rgba(255,255,255,0.1)',
+                backgroundColor: ink(0.03),
+                borderColor: ink(0.1),
               }}
             >
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-white" htmlFor="name">
+                    <label className="text-sm font-medium text-text-primary" htmlFor="name">
                       {t('form.fullName')}
                     </label>
                     <input
@@ -102,15 +109,15 @@ export default function Contact() {
                         setForm({ ...form, name: (e.target as HTMLInputElement).value })
                       }
                       required
-                      className="w-full rounded-lg border px-3 py-2.5 text-sm text-white transition-colors placeholder:text-gray-500 focus:outline-none focus:ring-2"
+                      className="w-full rounded-lg border px-3 py-2.5 text-sm text-text-primary transition-colors placeholder:text-text-tertiary focus:outline-none focus:ring-2"
                       style={{
-                        backgroundColor: 'rgba(255,255,255,0.05)',
-                        borderColor: 'rgba(255,255,255,0.12)',
+                        backgroundColor: ink(0.05),
+                        borderColor: ink(0.12),
                       }}
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-sm font-medium text-white" htmlFor="email">
+                    <label className="text-sm font-medium text-text-primary" htmlFor="email">
                       {t('form.email')}
                     </label>
                     <input
@@ -122,17 +129,17 @@ export default function Contact() {
                         setForm({ ...form, email: (e.target as HTMLInputElement).value })
                       }
                       required
-                      className="w-full rounded-lg border px-3 py-2.5 text-sm text-white transition-colors placeholder:text-gray-500 focus:outline-none focus:ring-2"
+                      className="w-full rounded-lg border px-3 py-2.5 text-sm text-text-primary transition-colors placeholder:text-text-tertiary focus:outline-none focus:ring-2"
                       style={{
-                        backgroundColor: 'rgba(255,255,255,0.05)',
-                        borderColor: 'rgba(255,255,255,0.12)',
+                        backgroundColor: ink(0.05),
+                        borderColor: ink(0.12),
                       }}
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-white" htmlFor="subject">
+                  <label className="text-sm font-medium text-text-primary" htmlFor="subject">
                     {t('form.subject')}
                   </label>
                   <input
@@ -144,16 +151,16 @@ export default function Contact() {
                       setForm({ ...form, subject: (e.target as HTMLInputElement).value })
                     }
                     required
-                    className="w-full rounded-lg border px-3 py-2.5 text-sm text-white transition-colors placeholder:text-gray-500 focus:outline-none focus:ring-2"
+                    className="w-full rounded-lg border px-3 py-2.5 text-sm text-text-primary transition-colors placeholder:text-text-tertiary focus:outline-none focus:ring-2"
                     style={{
-                      backgroundColor: 'rgba(255,255,255,0.05)',
-                      borderColor: 'rgba(255,255,255,0.12)',
+                      backgroundColor: ink(0.05),
+                      borderColor: ink(0.12),
                     }}
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-white" htmlFor="message">
+                  <label className="text-sm font-medium text-text-primary" htmlFor="message">
                     {t('form.message')}
                   </label>
                   <textarea
@@ -165,10 +172,10 @@ export default function Contact() {
                       setForm({ ...form, message: (e.target as HTMLTextAreaElement).value })
                     }
                     required
-                    className="w-full resize-none rounded-lg border px-3 py-2.5 text-sm text-white transition-colors placeholder:text-gray-500 focus:outline-none focus:ring-2"
+                    className="w-full resize-none rounded-lg border px-3 py-2.5 text-sm text-text-primary transition-colors placeholder:text-text-tertiary focus:outline-none focus:ring-2"
                     style={{
-                      backgroundColor: 'rgba(255,255,255,0.05)',
-                      borderColor: 'rgba(255,255,255,0.12)',
+                      backgroundColor: ink(0.05),
+                      borderColor: ink(0.12),
                     }}
                   />
                 </div>
@@ -176,7 +183,7 @@ export default function Contact() {
                 {!submitted ? (
                   <button
                     type="submit"
-                    className="flex w-full items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 active:opacity-80"
+                    className="flex w-full items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold text-text-primary transition-opacity hover:opacity-90 active:opacity-80"
                     style={{ background: 'linear-gradient(to right, #4f46e5, #10b981)' }}
                   >
                     <Send className="h-4 w-4" color="white" />
@@ -186,7 +193,7 @@ export default function Contact() {
                   <div className="space-y-4">
                     <a
                       href={mailtoUrl}
-                      className="flex w-full items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90 active:opacity-80"
+                      className="flex w-full items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold text-text-primary transition-opacity hover:opacity-90 active:opacity-80"
                       style={{ background: 'linear-gradient(to right, #4f46e5, #10b981)' }}
                     >
                       <Mail className="h-4 w-4" color="white" />
@@ -198,7 +205,7 @@ export default function Contact() {
                         setSubmitted(false);
                         setForm({ email: '', message: '', name: '', subject: '' });
                       }}
-                      className="w-full text-center text-sm underline underline-offset-4 transition-colors hover:text-white"
+                      className="w-full text-center text-sm underline underline-offset-4 transition-colors hover:text-text-primary"
                       style={{ color: MUTED }}
                     >
                       {t('form.startOver')}
@@ -217,25 +224,27 @@ export default function Contact() {
               <div
                 className="rounded-2xl border p-6"
                 style={{
-                  backgroundColor: 'rgba(255,255,255,0.03)',
-                  borderColor: 'rgba(255,255,255,0.1)',
+                  backgroundColor: ink(0.03),
+                  borderColor: ink(0.1),
                 }}
               >
-                <h2 className="mb-5 text-lg font-semibold text-white">{t('connect.title')}</h2>
+                <h2 className="mb-5 text-lg font-semibold text-text-primary">
+                  {t('connect.title')}
+                </h2>
                 <div className="space-y-5">
                   {connectLinks.map(({ description, href, icon: Icon, title }) => (
                     <a key={title} href={href} className="group flex items-start gap-4">
                       <div
                         className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border transition-colors"
                         style={{
-                          backgroundColor: 'rgba(255,255,255,0.04)',
-                          borderColor: 'rgba(255,255,255,0.1)',
+                          backgroundColor: ink(0.04),
+                          borderColor: ink(0.1),
                         }}
                       >
                         <Icon className="h-4 w-4" color={MUTED} />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-white">{title}</p>
+                        <p className="text-sm font-medium text-text-primary">{title}</p>
                         <p className="mt-0.5 text-xs leading-relaxed" style={{ color: MUTED }}>
                           {description}
                         </p>
@@ -244,10 +253,7 @@ export default function Contact() {
                   ))}
                 </div>
 
-                <div
-                  className="mt-6 border-t pt-5"
-                  style={{ borderColor: 'rgba(255,255,255,0.08)' }}
-                >
+                <div className="mt-6 border-t pt-5" style={{ borderColor: ink(0.08) }}>
                   <p
                     className="mb-3 text-xs font-semibold uppercase tracking-widest"
                     style={{ color: MUTED }}
@@ -258,10 +264,10 @@ export default function Contact() {
                     <a
                       href="#"
                       aria-label="YouTube"
-                      className="hover:border-primary/40 flex h-9 w-9 items-center justify-center rounded-lg border transition-colors hover:text-white"
+                      className="hover:border-primary/40 flex h-9 w-9 items-center justify-center rounded-lg border transition-colors hover:text-text-primary"
                       style={{
-                        backgroundColor: 'rgba(255,255,255,0.04)',
-                        borderColor: 'rgba(255,255,255,0.1)',
+                        backgroundColor: ink(0.04),
+                        borderColor: ink(0.1),
                         color: MUTED,
                       }}
                     >
@@ -272,10 +278,10 @@ export default function Contact() {
                     <a
                       href="#"
                       aria-label="X (Twitter)"
-                      className="hover:border-primary/40 flex h-9 w-9 items-center justify-center rounded-lg border transition-colors hover:text-white"
+                      className="hover:border-primary/40 flex h-9 w-9 items-center justify-center rounded-lg border transition-colors hover:text-text-primary"
                       style={{
-                        backgroundColor: 'rgba(255,255,255,0.04)',
-                        borderColor: 'rgba(255,255,255,0.1)',
+                        backgroundColor: ink(0.04),
+                        borderColor: ink(0.1),
                         color: MUTED,
                       }}
                     >
@@ -291,15 +297,15 @@ export default function Contact() {
               <div
                 className="flex items-start gap-4 rounded-2xl border p-5"
                 style={{
-                  backgroundColor: 'rgba(0,255,163,0.04)',
-                  borderColor: 'rgba(0,255,163,0.2)',
+                  backgroundColor: brandBright(0.04),
+                  borderColor: brandBright(0.2),
                 }}
               >
                 <div
                   className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border"
                   style={{
-                    backgroundColor: 'rgba(0,255,163,0.10)',
-                    borderColor: 'rgba(0,255,163,0.2)',
+                    backgroundColor: brandBright(0.1),
+                    borderColor: brandBright(0.2),
                   }}
                 >
                   <Shield className="h-4 w-4" color={BRAND_GREEN_BRIGHT} />

@@ -7,8 +7,9 @@ import { createElement, type ReactNode } from 'react';
 
 import { ThemeProvider, ThemeScope } from '@/context/ThemeContext';
 import { useSettings } from '@/hooks/useSettings';
-import { useTheme, useThemeId, useThemeMode } from '@/hooks/useTheme';
+import { useTheme, useThemeId, useThemeMode, useThemePreference } from '@/hooks/useTheme';
 import { themeCssVariables } from '@/theme.tokens';
+import { setMirroredThemePreference } from '@/utils/themeMirror';
 
 let mockSystemColorScheme: 'dark' | 'light' = 'dark';
 
@@ -58,7 +59,41 @@ describe('theme context', () => {
     expect(result.current.id).toBe('kinetic-shock');
     expect(result.current.mode).toBe('dark');
     expect(result.current.theme.colors.accent.primary).toBe('#e85d9e');
-    expect(mockUseSettings).toHaveBeenCalledTimes(1);
+
+    // The provider is the only consumer of the settings row: reading three theme
+    // hooks must cost no more reads than reading one. The mirror is already warm
+    // from the render above, so neither pass carries its extra commit render.
+    mockUseSettings.mockClear();
+    renderHook(readTheme, { wrapper });
+    const withThreeHooks = mockUseSettings.mock.calls.length;
+
+    mockUseSettings.mockClear();
+    renderHook(() => useThemeId(), { wrapper });
+
+    expect(mockUseSettings).toHaveBeenCalledTimes(withThreeHooks);
+  });
+
+  it('falls back to the mirrored preference while the settings row is unreadable', () => {
+    // The marketing site never onboards, so `markDbReady()` is never called and
+    // `isLoading` stays true forever. See `utils/themeMirror`.
+    mockUseSettings.mockReturnValue({ isLoading: true, theme: 'system' });
+    setMirroredThemePreference('kinetic-volt');
+
+    const { result } = renderHook(() => ({ ...readTheme(), preference: useThemePreference() }), {
+      wrapper,
+    });
+
+    expect(result.current.id).toBe('kinetic-volt');
+    expect(result.current.preference).toBe('kinetic-volt');
+  });
+
+  it('lets the settings row win once it becomes readable', () => {
+    setMirroredThemePreference('kinetic-volt');
+    mockUseSettings.mockReturnValue({ isLoading: false, theme: 'kinetic-blush' });
+
+    const { result } = renderHook(readTheme, { wrapper });
+
+    expect(result.current.id).toBe('kinetic-blush');
   });
 
   it('follows the system preference and republishes the matching web variables', () => {
@@ -90,13 +125,16 @@ describe('theme context', () => {
     expect(result.current.theme.colors.background.primary).toBe('#091310');
   });
 
-  it('removes root-level web overrides when the provider unmounts', () => {
+  it('leaves the root-level web variables in place when the provider unmounts', () => {
     const { unmount } = renderHook(readTheme, { wrapper });
-    expect(document.documentElement.style.getPropertyValue('--c-bg-primary')).not.toBe('');
+    const published = document.documentElement.style.getPropertyValue('--c-bg-primary');
+    expect(published).not.toBe('');
 
     unmount();
 
-    expect(document.documentElement.style.getPropertyValue('--c-bg-primary')).toBe('');
+    // Removing them would drop the page back to the Tailwind defaults mid-session,
+    // which on web means every unthemed surface flashes the light palette.
+    expect(document.documentElement.style.getPropertyValue('--c-bg-primary')).toBe(published);
     expect(mockColorSchemeSet).toHaveBeenLastCalledWith('system');
   });
 });

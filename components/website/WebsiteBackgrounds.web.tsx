@@ -1,3 +1,5 @@
+import { brand, brandBright, scrim } from './websiteColors';
+
 export function GridPattern({ className = '' }: { className?: string }) {
   return (
     <svg
@@ -39,7 +41,7 @@ export function DotPattern({ className = '' }: { className?: string }) {
 function HeroHexWatermark() {
   return (
     <svg
-      className="text-emerald-400/12 absolute left-[-64px] top-[210px] h-[260px] w-[260px]"
+      className="text-accent-bright/12 absolute left-[-64px] top-[210px] h-[260px] w-[260px]"
       viewBox="0 0 220 220"
       fill="none"
       aria-hidden="true"
@@ -65,7 +67,7 @@ export function FloatingShapes({ className = '' }: { className?: string }) {
       aria-hidden="true"
     >
       <svg
-        className="text-primary/10 absolute -right-20 -top-20 h-96 w-96"
+        className="absolute -right-20 -top-20 h-96 w-96 text-accent-primary/10"
         viewBox="0 0 200 200"
         fill="none"
       >
@@ -75,7 +77,7 @@ export function FloatingShapes({ className = '' }: { className?: string }) {
       </svg>
 
       <svg
-        className="text-primary/10 absolute -left-10 top-1/3 h-64 w-64"
+        className="absolute -left-10 top-1/3 h-64 w-64 text-accent-primary/10"
         viewBox="0 0 100 100"
         fill="none"
       >
@@ -92,7 +94,7 @@ export function FloatingShapes({ className = '' }: { className?: string }) {
       </svg>
 
       <svg
-        className="text-primary/10 absolute bottom-0 right-1/4 h-80 w-80"
+        className="absolute bottom-0 right-1/4 h-80 w-80 text-accent-primary/10"
         viewBox="0 0 100 100"
         fill="none"
       >
@@ -115,25 +117,24 @@ export function FloatingShapes({ className = '' }: { className?: string }) {
 export function HeroBackground() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-      <GridPattern className="text-emerald-400/10" />
-      <DotPattern className="text-emerald-400/20 opacity-75" />
+      <GridPattern className="text-accent-bright/10" />
+      <DotPattern className="text-accent-bright/20 opacity-75" />
       <HeroHexWatermark />
 
-      <div className="from-background to-background absolute inset-0 bg-gradient-to-b via-transparent" />
-      <div className="from-background to-background/50 absolute inset-0 bg-gradient-to-r via-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-b from-bg-primary via-transparent to-bg-primary" />
+      <div className="absolute inset-0 bg-gradient-to-r from-bg-primary via-transparent to-bg-primary/50" />
 
       <div
         className="absolute right-[14%] top-12 h-[520px] w-[520px] rounded-full blur-[150px]"
-        style={{ backgroundColor: 'rgba(0, 255, 163, 0.14)' }}
+        style={{ backgroundColor: brandBright(0.14) }}
       />
       <div
         className="absolute bottom-[-40px] left-1/2 h-[240px] w-[70%] -translate-x-1/2 rounded-full blur-[120px]"
         style={{
-          background:
-            'radial-gradient(circle, rgba(34,197,94,0.16) 0%, rgba(34,197,94,0.08) 35%, rgba(0,0,0,0) 72%)',
+          background: `radial-gradient(circle, ${brand(0.16)} 0%, ${brand(0.08)} 35%, ${scrim(0)} 72%)`,
         }}
       />
-      <div className="absolute bottom-0 left-1/4 h-64 w-64 rounded-full bg-cyan-500/10 blur-[100px]" />
+      <div className="absolute bottom-0 left-1/4 h-64 w-64 rounded-full bg-status-info/10 blur-[100px]" />
 
       <FloatingShapes />
 
@@ -150,22 +151,21 @@ export function HeroBackground() {
 export function SectionBackground({ variant = 'dots' }: { variant?: 'dots' | 'grid' | 'minimal' }) {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-      {variant === 'dots' ? <DotPattern className="text-emerald-400/25" /> : null}
+      {variant === 'dots' ? <DotPattern className="text-accent-bright/25" /> : null}
       {variant === 'grid' ? (
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage:
-              'linear-gradient(rgba(34, 197, 94, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(34, 197, 94, 0.15) 1px, transparent 1px)',
+            backgroundImage: `linear-gradient(${brand(0.15)} 1px, transparent 1px), linear-gradient(90deg, ${brand(0.15)} 1px, transparent 1px)`,
             backgroundSize: '40px 40px',
             backgroundPosition: 'center center',
           }}
         />
       ) : null}
 
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-emerald-400/[0.03] to-transparent" />
-      <div className="from-background absolute inset-x-0 top-0 h-16 bg-gradient-to-b to-transparent" />
-      <div className="from-background absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-accent-bright/[0.03] to-transparent" />
+      <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-bg-primary to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-bg-primary to-transparent" />
     </div>
   );
 }

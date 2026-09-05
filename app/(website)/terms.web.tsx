@@ -2,7 +2,13 @@ import { AlertTriangle, FileText, Mail, Scale } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { DotPattern } from '@/components/website/WebsiteBackgrounds';
-import { BODY_TEXT_SOFT, BRAND_GREEN_BRIGHT, MUTED } from '@/components/website/websiteColors';
+import {
+  BODY_TEXT_SOFT,
+  brand,
+  BRAND_GREEN_BRIGHT,
+  ink,
+  MUTED,
+} from '@/components/website/websiteColors';
 
 export default function Terms() {
   const { t } = useTranslation(undefined, { keyPrefix: 'website.terms' });
@@ -50,9 +56,9 @@ export default function Terms() {
           <ul className="space-y-2 text-sm" style={{ color: BODY_TEXT_SOFT }}>
             {definitionItems.map(({ term, def }) => (
               <li key={term} className="flex gap-2">
-                <span className="mt-0.5 text-white">›</span>
+                <span className="mt-0.5 text-text-primary">›</span>
                 <span>
-                  <strong className="text-white">{term}:</strong> {def}
+                  <strong className="text-text-primary">{term}:</strong> {def}
                 </span>
               </li>
             ))}
@@ -144,13 +150,13 @@ export default function Terms() {
   return (
     <>
       <main className="relative overflow-hidden pb-20 pt-24">
-        <DotPattern className="text-primary/30" />
-        <div className="from-background/50 to-background/50 absolute inset-0 bg-gradient-to-b via-transparent" />
+        <DotPattern className="text-accent-primary/30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-bg-primary/50 via-transparent to-bg-primary/50" />
 
         <div className="container relative z-10 mx-auto max-w-5xl px-4">
           {/* Title */}
           <div className="mb-10 text-center">
-            <h1 className="mb-3 text-4xl font-bold text-white md:text-5xl">
+            <h1 className="mb-3 text-4xl font-bold text-text-primary md:text-5xl">
               {t('titleStart')} <span style={{ color: BRAND_GREEN_BRIGHT }}>{t('conditions')}</span>
             </h1>
             <p className="text-sm" style={{ color: MUTED }}>
@@ -165,21 +171,21 @@ export default function Terms() {
                 key={title}
                 className="flex flex-col items-center gap-3 rounded-xl border p-5 text-center"
                 style={{
-                  borderColor: 'rgba(255,255,255,0.1)',
-                  backgroundColor: 'rgba(255,255,255,0.03)',
+                  borderColor: ink(0.1),
+                  backgroundColor: ink(0.03),
                 }}
               >
                 <div
                   className="flex h-10 w-10 items-center justify-center rounded-full border"
                   style={{
-                    backgroundColor: 'rgba(34,197,94,0.1)',
-                    borderColor: 'rgba(34,197,94,0.2)',
+                    backgroundColor: brand(0.1),
+                    borderColor: brand(0.2),
                   }}
                 >
                   <Icon className="h-5 w-5" color={BRAND_GREEN_BRIGHT} />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-white">{title}</p>
+                  <p className="text-sm font-semibold text-text-primary">{title}</p>
                   <p className="mt-0.5 text-xs" style={{ color: MUTED }}>
                     {description}
                   </p>
@@ -209,13 +215,13 @@ export default function Terms() {
           <div
             className="mt-14 rounded-xl border p-6"
             style={{
-              borderColor: 'rgba(255,255,255,0.1)',
-              backgroundColor: 'rgba(255,255,255,0.03)',
+              borderColor: ink(0.1),
+              backgroundColor: ink(0.03),
             }}
           >
             <div className="mb-2 flex items-center gap-2">
               <Mail className="h-5 w-5" color={BRAND_GREEN_BRIGHT} />
-              <h3 className="font-semibold text-white">{t('contact.title')}</h3>
+              <h3 className="font-semibold text-text-primary">{t('contact.title')}</h3>
             </div>
             <p className="text-sm leading-relaxed" style={{ color: BODY_TEXT_SOFT }}>
               {t('contact.content')}{' '}

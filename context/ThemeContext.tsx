@@ -1,17 +1,32 @@
 import { colorScheme, vars } from 'nativewind';
-import { createContext, type ReactNode, useContext, useEffect, useMemo } from 'react';
+import {
+  createContext,
+  type ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useSyncExternalStore,
+} from 'react';
 import { Platform, useColorScheme, View } from 'react-native';
 
-import type { ThemeId } from '@/constants/settings';
+import type { ThemeId, ThemeOption } from '@/constants/settings';
 import { useSettings } from '@/hooks/useSettings';
 import { type Theme, THEMES } from '@/theme';
 import { themeCssVariables, themeNativeCssVariables } from '@/theme.tokens';
+import {
+  getServerThemeMirror,
+  getThemeMirror,
+  recordResolvedTheme,
+  subscribeToThemeMirror,
+} from '@/utils/themeMirror';
 import { getThemeMode, resolveThemeId } from '@/utils/themeSelection';
 
 type ThemeContextValue = {
   theme: Theme;
   themeId: ThemeId;
   themeMode: 'dark' | 'light';
+  /** The stored choice, not the resolved palette — `system` stays visible as itself. */
+  themePreference: ThemeOption;
 };
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
@@ -30,19 +45,38 @@ const THEME_VARIABLES = Object.fromEntries(
   ])
 ) as Record<ThemeId, ReturnType<typeof vars>>;
 
-function valueForTheme(themeId: ThemeId): ThemeContextValue {
+function valueForTheme(themeId: ThemeId, themePreference: ThemeOption): ThemeContextValue {
   return {
     theme: THEMES[themeId],
     themeId,
     themeMode: getThemeMode(themeId),
+    themePreference,
   };
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const { theme: themePreference } = useSettings();
+  const { isLoading, theme: storedPreference } = useSettings();
+  const mirror = useSyncExternalStore(subscribeToThemeMirror, getThemeMirror, getServerThemeMirror);
   const systemColorScheme = useColorScheme();
+
+  // `isLoading` stays true wherever the settings table is unreadable — the
+  // marketing site, where nobody has onboarded, and the first frames everywhere
+  // else. The mirror carries the preference through both. See `utils/themeMirror`.
+  const themePreference = isLoading && mirror ? mirror.preference : storedPreference;
   const themeId = resolveThemeId(themePreference, systemColorScheme);
-  const value = useMemo(() => valueForTheme(themeId), [themeId]);
+  const value = useMemo(() => valueForTheme(themeId, themePreference), [themeId, themePreference]);
+
+  useEffect(() => {
+    // While the settings table is unreadable the mirror *is* the preference, so
+    // there is nothing authoritative to write back. Writing anyway would clobber
+    // the visitor's choice with the `system` default during hydration, when
+    // `useSyncExternalStore` is still serving the (empty) server snapshot.
+    if (isLoading && !mirror) {
+      return;
+    }
+
+    recordResolvedTheme(themePreference, themeId);
+  }, [isLoading, mirror, themeId, themePreference]);
 
   useEffect(() => {
     colorScheme.set(
@@ -63,11 +97,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       document.documentElement.style.setProperty(name, String(variableValue));
     }
 
-    return () => {
-      for (const name of Object.keys(variables)) {
-        document.documentElement.style.removeProperty(name);
-      }
-    };
+    // Leaving the variables on :root when this provider unmounts is deliberate:
+    // removing them would drop the page back to the Tailwind defaults mid-session.
   }, [themeId]);
 
   return (
@@ -93,7 +124,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
  * the `:root` variables `ThemeProvider` publishes, which are the app's theme.
  */
 export function ThemeScope({ children, themeId }: { children: ReactNode; themeId: ThemeId }) {
-  const value = useMemo(() => valueForTheme(themeId), [themeId]);
+  const value = useMemo(() => valueForTheme(themeId, themeId), [themeId]);
   return (
     <ThemeContext.Provider value={value}>
       <View style={[{ flex: 1 }, THEME_VARIABLES[themeId]]}>{children}</View>
