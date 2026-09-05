@@ -174,6 +174,10 @@ This repository serves two distinct purposes that share the same Expo Router pro
   variants. `theme.registry.js` is the canonical catalogue: it owns every theme ID, mode and
   primitive palette; `ThemeId`, semantic token trees, CSS/native variables, and `THEMES` are derived
   from it. Add a palette there rather than editing parallel maps, and run `npm run check-palette`.
+  **A new app theme is not complete until it is also available on the public website and in the
+  Game Boy game.** Keep the same theme identity and palette intent across all three surfaces, add
+  the website's theme showcase asset/coverage, and run `npm run gb:gen-themes` to regenerate the
+  Game Boy palette tables; never ship a theme on only one or two of them.
   A theme carries no component-level presentation flags: anything a component would branch on is
   expressed as palette values instead (a theme wanting a flat summary card sets its gradient stops
   flat). `ThemeProvider` resolves the preference once, and every `useTheme*` hook selects from that
