@@ -1,0 +1,133 @@
+{
+  "currentPage": 1,
+  "posts": [
+    {
+      "category": "engineering",
+      "date": "2026-09-03",
+      "excerpt": "Musclog already had a theme file. Then I added five selectable palettes and discovered that colors, NativeWind variables, system mode, camera overlays, and component decisions were all separate systems pretending to be one.",
+      "slug": "2026/09/adding-light-mode-exposed-my-fake-theme-system",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "NativeWind",
+        "TypeScript",
+        "Design Systems"
+      ],
+      "title": "Adding light mode exposed my fake theme system"
+    },
+    {
+      "category": "engineering",
+      "date": "2026-08-24",
+      "excerpt": "A shutter stall that only existed in release builds, survived eight versions and four wrong root causes, and turned out to be one background thread shared by every Expo module in the app.",
+      "slug": "2026/08/my-camera-took-25-seconds-to-take-a-photo",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "Android",
+        "CameraX",
+        "Kotlin",
+        "Performance",
+        "Debugging"
+      ],
+      "title": "My camera took 25 seconds to take a photo"
+    },
+    {
+      "category": "retro",
+      "date": "2026-08-17",
+      "excerpt": "I logged a few weeks of food on a 1998 cartridge and then realised it was stuck in there for life. So the Game Boy now beams its save into my phone as a stream of fountain-coded QR codes — no cable, no network, no handshake.",
+      "slug": "2026/08/breaking-my-data-out-of-a-game-boy-cartridge",
+      "tags": [
+        "Game Boy",
+        "GBDK",
+        "C",
+        "QR Codes",
+        "Retro",
+        "Homebrew",
+        "Optical Transfer"
+      ],
+      "title": "Breaking my data out of a Game Boy cartridge"
+    },
+    {
+      "category": "web-development",
+      "date": "2026-08-09",
+      "excerpt": "The page you are reading is a statically exported Expo Router route. Here is how generateStaticParams turns a folder of Markdown into HTML — and the three-hunk patch to expo-router I needed to make catch-all routes work at all.",
+      "slug": "2026/08/this-blog-was-built-using-expo",
+      "tags": [
+        "Expo",
+        "Expo Router",
+        "Static Site",
+        "React Native",
+        "TypeScript"
+      ],
+      "title": "This blog was built using Expo"
+    },
+    {
+      "category": "engineering",
+      "date": "2026-08-06",
+      "excerpt": "I saw a repo that sends files between two devices using only a screen and a camera, and I could not stop thinking about it. So I built it into Musclog — here is how fountain-coded QR streams actually work.",
+      "slug": "2026/08/using-decimen-optical-transfer-foss-to-transfer-data-between-devices",
+      "tags": [
+        "Open Source",
+        "QR Codes",
+        "Privacy",
+        "React Native",
+        "TypeScript"
+      ],
+      "title": "Using Decimen Optical Transfer FOSS to transfer data between devices"
+    },
+    {
+      "category": "retro",
+      "date": "2026-08-01",
+      "excerpt": "I put Musclog on a 1998 cartridge — 517 foods in ROM, macro goals packed into 23 bytes of battery-backed SRAM, charts drawn with background tiles, and 291 free bytes in the one bank that cannot be paged out.",
+      "slug": "2026/08/creating-a-calorie-tracker-for-the-game-boy-color",
+      "tags": [
+        "Game Boy",
+        "GBDK",
+        "C",
+        "Retro",
+        "Homebrew",
+        "Nutrition",
+        "WasmBoy"
+      ],
+      "title": "Creating a calorie tracker for the Game Boy Color"
+    },
+    {
+      "category": "machine-learning",
+      "date": "2026-07-14",
+      "excerpt": "A €20 sensor, a RandomForest, and Claude writing the ML code because I have no idea what spectral entropy means.",
+      "slug": "2026/08/i-trained-my-own-model-to-get-rep-insights",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "Machine Learning",
+        "Python",
+        "BLE",
+        "Bluetooth",
+        "Fitness",
+        "3D Printing",
+        "Tinkercad",
+        "WitMotion"
+      ],
+      "title": "I trained my own model to get rep insights"
+    },
+    {
+      "category": "product-updates",
+      "date": "2026-03-19",
+      "excerpt": "Musclog started in 2024 as an app I built for myself. Version 2 is a full rewrite — new UI layer, one database instead of two, and a much clearer answer to the question of where your data lives.",
+      "slug": "2026/03/musclog-version-2-is-out",
+      "tags": [
+        "Release",
+        "React Native",
+        "Rewrite",
+        "Privacy",
+        "TypeScript"
+      ],
+      "title": "Musclog version 2 is out!"
+    }
+  ],
+  "totalPages": 1,
+  "totalPosts": 8
+}
