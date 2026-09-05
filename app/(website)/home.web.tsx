@@ -477,7 +477,7 @@ export function ScreenshotShowcase() {
         </div>
 
         <div
-          className="relative overflow-hidden rounded-[2.5rem] border border-ink/10 bg-[linear-gradient(180deg,rgb(var(--c-bg-primary)/0.95)_0%,rgb(var(--c-bg-card)/0.92)_100%)] p-4 shadow-[0_32px_90px_rgb(var(--c-scrim-base)/0.48)] md:p-6"
+          className="relative overflow-hidden rounded-[2.5rem] border border-ink/10 bg-[linear-gradient(180deg,rgb(var(--c-bg-primary)/0.95)_0%,rgb(var(--c-bg-card)/0.92)_100%)] p-4 shadow-[0_24px_72px_rgb(var(--c-scrim-base)/0.16)] md:p-6"
           style={{ backdropFilter: 'blur(16px)' }}
         >
           <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-bg-primary to-transparent" />
@@ -510,7 +510,7 @@ export function ScreenshotShowcase() {
                       <div
                         className="rounded-[2rem] border border-ink/10 bg-bg-card p-2 shadow-[0_18px_48px_rgb(var(--c-scrim-base)/0.34)] transition-transform duration-300 group-hover:-translate-y-1 group-hover:border-ink/20"
                         style={{
-                          boxShadow: `0 18px 48px ${scrim(0.34)}, 0 0 0 1px ${ink(0.02)}`,
+                          boxShadow: `0 14px 36px ${scrim(0.18)}, 0 0 0 1px ${ink(0.02)}`,
                         }}
                       >
                         <div className="overflow-hidden rounded-[1.5rem] bg-bg-primary">
