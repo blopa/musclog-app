@@ -1199,7 +1199,7 @@ export function DataLogModal({
   };
 
   const renderItem = (item: DataLogDisplayItem) => (
-    <GenericCard key={item.id} variant="card" isPressable onPress={() => handleItemPress(item)}>
+    <GenericCard key={item.id} variant="flat" isPressable onPress={() => handleItemPress(item)}>
       <View className="flex-row items-center px-4 py-3">
         <View className="flex-1 flex-row items-center gap-4">
           <View
@@ -1423,7 +1423,7 @@ export function DataLogModal({
                   className="rounded-lg border p-4"
                   style={{
                     backgroundColor: theme.colors.background.card,
-                    borderColor: theme.colors.background.white5,
+                    borderColor: theme.colors.background.ink5,
                   }}
                 >
                   <View className="flex-row items-center gap-4">

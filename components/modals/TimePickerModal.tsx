@@ -188,10 +188,10 @@ export function TimePickerModal({
 
   const accentColor = theme.colors.accent.primary;
   const cardBg = theme.colors.background.card;
-  const highlightBg = theme.colors.background.white12;
+  const highlightBg = theme.colors.background.ink12;
   const textPrimary = theme.colors.text.primary;
   const textMuted = theme.colors.text.secondary;
-  const toggleBg = theme.colors.background.gray800;
+  const toggleBg = theme.colors.background.raised;
 
   return (
     <FullScreenModal
@@ -358,7 +358,7 @@ export function TimePickerModal({
                     >
                       <Text
                         style={{
-                          color: theme.colors.text.onColorful,
+                          color: theme.colors.text.alwaysWhite,
                           fontSize: 15,
                           fontWeight: '700',
                         }}

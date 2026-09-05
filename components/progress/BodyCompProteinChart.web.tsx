@@ -34,7 +34,7 @@ export function BodyCompProteinChart({ allData, units }: BodyCompProteinChartPro
             >
               <Text
                 className={`text-xs font-bold ${
-                  aggregation === agg ? 'text-white' : 'text-text-tertiary'
+                  aggregation === agg ? 'text-text-on-accent' : 'text-text-tertiary'
                 }`}
               >
                 {t(`common.time.${agg}`)}
@@ -87,7 +87,7 @@ export function BodyCompProteinChart({ allData, units }: BodyCompProteinChartPro
           >
             <Text
               className={`text-xs font-bold ${
-                aggregation === agg ? 'text-white' : 'text-text-tertiary'
+                aggregation === agg ? 'text-text-on-accent' : 'text-text-tertiary'
               }`}
             >
               {t(`common.time.${agg}`)}

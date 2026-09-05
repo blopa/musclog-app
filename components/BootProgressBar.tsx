@@ -1,9 +1,9 @@
 import { Text, View } from 'react-native';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
 
+import { useBootColors } from '@/hooks/useBootColors';
 import { useBootProgressDisplay } from '@/hooks/useBootProgressDisplay';
 import i18n from '@/lang/lang';
-import { colors } from '@/theme.tokens';
 
 // Static launch-time inset (no SafeAreaProvider wraps the splash), used to lift
 // the bar clear of the Android navigation bar / iOS home indicator.
@@ -18,6 +18,7 @@ const BOTTOM_INSET = initialWindowMetrics?.insets.bottom ?? 0;
  * before the database layer loads.
  */
 export function BootProgressBar() {
+  const colors = useBootColors();
   const { active, ratio: rawRatio } = useBootProgressDisplay();
 
   if (!active) {
@@ -46,7 +47,7 @@ export function BootProgressBar() {
         <Text
           style={{
             marginBottom: 12,
-            color: colors.gray500,
+            color: colors.textTertiary,
             fontSize: 13,
             textAlign: 'center',
           }}
@@ -59,7 +60,7 @@ export function BootProgressBar() {
             height: 6,
             borderRadius: 999,
             overflow: 'hidden',
-            backgroundColor: colors.darkViridian,
+            backgroundColor: colors.surfaceAccent,
           }}
         >
           <View
@@ -67,14 +68,14 @@ export function BootProgressBar() {
               width: `${ratio * 100}%`,
               height: '100%',
               borderRadius: 999,
-              backgroundColor: colors.jade,
+              backgroundColor: colors.brandVivid,
             }}
           />
         </View>
         <Text
           style={{
             marginTop: 8,
-            color: colors.gray500,
+            color: colors.textTertiary,
             fontSize: 12,
             fontWeight: '600',
           }}

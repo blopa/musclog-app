@@ -343,6 +343,8 @@ const featureChapters = [
     heading: 'SETTINGS',
     body:
       'Update your profile, macro goals, and unit system whenever your journey changes. ' +
+      'The Theme row recolours the whole cartridge with the same themes the phone app ' +
+      'offers - press left or right to try them; the screen changes as you go. ' +
       'Share Data turns the whole cartridge save into QR codes that the Musclog phone or ' +
       'web app can scan and replace its database with after confirmation. You can also ' +
       'press B while sharing to choose Continue or Stop Sharing. Toggle sound effects and ' +

@@ -106,12 +106,6 @@
     "common": {
       "kcal": "kcal"
     },
-    "aiCamera": {
-      "estimated": "Geschat",
-      "modes": {
-        "mealPhoto": "AI Maaltijd"
-      }
-    },
     "createMeal": {
       "estimated": "Geschat",
       "totalNutrition": "Totale voedingswaarde"

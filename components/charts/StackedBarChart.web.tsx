@@ -74,7 +74,7 @@ export function StackedBarChart({
   const DEFAULT_COLORS = [
     theme.colors.status.info,
     theme.colors.status.error,
-    theme.colors.status.yellow,
+    theme.colors.status.amber,
     theme.colors.accent.primary,
   ];
   const chartId = useId();
@@ -244,7 +244,7 @@ export function StackedBarChart({
               borderRadius: theme.borderRadius.xs,
               paddingHorizontal: theme.spacing.padding.sm,
               paddingVertical: theme.spacing.padding['1half'],
-              boxShadow: `0 2px 4px ${theme.colors.background.black15}`,
+              boxShadow: `0 2px 4px ${theme.colors.background.scrim15}`,
               zIndex: 100,
               alignItems: 'center',
               justifyContent: 'center',

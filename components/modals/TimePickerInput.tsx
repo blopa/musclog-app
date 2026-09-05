@@ -80,7 +80,7 @@ export function TimePickerInput({
   const showClearCta = Boolean(showClearButton && !unset && onClear);
   const pressableSurfaceClasses = embedded
     ? 'rounded-lg bg-transparent'
-    : `rounded-lg border border-white/10 bg-bg-cardDark`;
+    : `rounded-lg border border-ink/10 bg-bg-cardDark`;
 
   const rowClasses = embedded
     ? 'min-w-0 w-full flex-row items-center overflow-hidden p-0'

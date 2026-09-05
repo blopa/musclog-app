@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import {
   ChevronRight,
   Dumbbell,
@@ -6,13 +5,10 @@ import {
   Heart,
   Languages,
   Leaf,
-  Moon,
   RefreshCw,
   Ruler,
   Scale,
   Search,
-  Settings,
-  Sun,
 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,10 +28,6 @@ import i18n, { AVAILABLE_LANGUAGES, EN_US, languageLabels } from '@/lang/lang';
 
 import { FullScreenModal } from './FullScreenModal';
 
-type ThemeOption = 'system' | 'light' | 'dark';
-
-const HAS_THEMES = false; // TODO: remove this once we have option to pick dark or light theme
-
 type BasicSettingsModalProps = {
   visible: boolean;
   onClose: () => void;
@@ -48,12 +40,10 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
 
   // Use debounced settings for instant UI updates
   const {
-    theme: themeValue,
     units,
     connectHealthData: debouncedConnectHealthData,
     readHealthData: debouncedReadHealthData,
     writeHealthData: debouncedWriteHealthData,
-    handleThemeChange,
     foodSearchSource,
     language,
     handleUnitsChange,
@@ -74,40 +64,6 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
       flushAllPendingChanges();
     }
   }, [visible, flushAllPendingChanges]);
-
-  // TODO: actually implement light theme OR remove/hide this option
-  const themeOptions = [
-    {
-      value: 'system',
-      label: t('settings.basicSettings.themeSystem'),
-      icon: (
-        <Settings
-          size={theme.iconSize.md}
-          color={themeValue === 'system' ? theme.colors.accent.primary : theme.colors.text.tertiary}
-        />
-      ),
-    },
-    {
-      value: 'light',
-      label: t('settings.basicSettings.themeLight'),
-      icon: (
-        <Sun
-          size={theme.iconSize.md}
-          color={themeValue === 'light' ? theme.colors.accent.primary : theme.colors.text.tertiary}
-        />
-      ),
-    },
-    {
-      value: 'dark',
-      label: t('settings.basicSettings.themeDark'),
-      icon: (
-        <Moon
-          size={theme.iconSize.md}
-          color={themeValue === 'dark' ? theme.colors.accent.primary : theme.colors.text.tertiary}
-        />
-      ),
-    },
-  ];
 
   const hasUsdaApiKey = !!process.env.EXPO_PUBLIC_USDA_API_KEY;
 
@@ -137,7 +93,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
           {
             icon: Leaf,
             iconColor: theme.colors.status.success,
-            iconBgColor: theme.colors.status.emerald10,
+            iconBgColor: theme.colors.status.brandVivid10,
             title: t('settings.basicSettings.foodSearchUSDA'),
             description: t('settings.basicSettings.foodSearchUSDADescription'),
             onPress: () => handleFoodSearchSourceChange('usda'),
@@ -241,34 +197,6 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.basicSettings.title')}>
       <View className="gap-8 py-6">
-        {/* Appearance Section */}
-        {HAS_THEMES ? (
-          <View>
-            <Text className="mb-3 px-5 text-lg font-bold tracking-tight text-text-primary">
-              {t('settings.basicSettings.appearance')}
-            </Text>
-            <View
-              style={{
-                backgroundColor: theme.colors.background.card,
-                borderRadius: theme.borderRadius.lg,
-                marginHorizontal: theme.spacing.padding.base,
-                padding: theme.spacing.padding.base,
-                borderWidth: theme.borderWidth.thin,
-                borderColor: theme.colors.border.light,
-              }}
-            >
-              <Text className="mb-3 text-sm font-medium text-text-secondary">
-                {t('settings.basicSettings.appTheme')}
-              </Text>
-              <SegmentedControl
-                options={themeOptions}
-                value={themeValue}
-                onValueChange={(val) => handleThemeChange(val as ThemeOption)}
-              />
-            </View>
-          </View>
-        ) : null}
-
         {/* Units Section */}
         <View
           style={{
@@ -347,14 +275,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
           <ToggleInput
             items={healthSettingsItems}
             header={
-              <LinearGradient
-                colors={[
-                  theme.colors.status.purple40,
-                  theme.colors.accent.secondary10,
-                  'transparent',
-                ]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
+              <View
                 className="border-b p-4"
                 style={{
                   borderBottomColor: theme.colors.border.light,
@@ -363,7 +284,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
                 <View className="mb-2 flex-row items-center gap-3">
                   <View
                     className="h-10 w-10 items-center justify-center rounded-full"
-                    style={{ backgroundColor: theme.colors.background.white }}
+                    style={{ backgroundColor: theme.colors.background.alwaysWhite }}
                   >
                     <Heart
                       size={theme.iconSize.xl}
@@ -380,7 +301,7 @@ export function BasicSettingsModal({ visible, onClose }: BasicSettingsModalProps
                     </Text>
                   </View>
                 </View>
-              </LinearGradient>
+              </View>
             }
           />
 

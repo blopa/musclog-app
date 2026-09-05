@@ -315,7 +315,7 @@ export default function BodyMetricsHistoryModal({
           note,
           icon: index === 0 ? Calendar : Calendar,
           iconColor: index === 0 ? theme.colors.text.primary : theme.colors.text.secondary,
-          iconBg: index === 0 ? theme.colors.status.indigo600 : theme.colors.border.light,
+          iconBg: index === 0 ? theme.colors.status.indigo : theme.colors.border.light,
           opacity: index === metrics.length - 1 ? 0.7 : 1,
         });
       });
@@ -327,7 +327,7 @@ export default function BodyMetricsHistoryModal({
       t,
       dateFnsLocale,
       theme.colors.border.light,
-      theme.colors.status.indigo600,
+      theme.colors.status.indigo,
       theme.colors.text.primary,
       theme.colors.text.secondary,
       getDisplayValue,
@@ -523,7 +523,7 @@ export default function BodyMetricsHistoryModal({
           {/* Current Metric Card */}
           <View className="mb-6">
             {isLoading ? (
-              <GenericCard variant="card" size="default">
+              <GenericCard variant="flat">
                 <View className="p-5">
                   <View className="mb-6 flex-row items-center justify-between">
                     <View className="flex-1 gap-2">
@@ -535,7 +535,7 @@ export default function BodyMetricsHistoryModal({
                     </View>
                     <View
                       className="flex-row gap-1 rounded-lg p-1"
-                      style={{ backgroundColor: theme.colors.background.gray800Opacity50 }}
+                      style={{ backgroundColor: theme.colors.background.raised50 }}
                     >
                       <SkeletonLoader
                         width={theme.size['12']}
@@ -563,7 +563,7 @@ export default function BodyMetricsHistoryModal({
                 </View>
               </GenericCard>
             ) : currentMetric ? (
-              <GenericCard variant="card" size="default">
+              <GenericCard variant="flat">
                 <View className="p-5">
                   <View className="mb-6 flex-row items-center justify-between">
                     <View>
@@ -583,11 +583,11 @@ export default function BodyMetricsHistoryModal({
                     </View>
                     <View
                       className="flex-row rounded-lg p-1"
-                      style={{ backgroundColor: theme.colors.background.gray800Opacity50 }}
+                      style={{ backgroundColor: theme.colors.background.raised50 }}
                     >
                       <Pressable
                         onPress={() => setSelectedPeriod('30D')}
-                        className={`rounded-md px-3 py-1 ${selectedPeriod === '30D' ? '' : ''}`}
+                        className="rounded-md px-3 py-1"
                         style={
                           selectedPeriod === '30D'
                             ? {
@@ -606,7 +606,7 @@ export default function BodyMetricsHistoryModal({
                       </Pressable>
                       <Pressable
                         onPress={() => setSelectedPeriod('3M')}
-                        className={`rounded-md px-3 py-1 ${selectedPeriod === '3M' ? '' : ''}`}
+                        className="rounded-md px-3 py-1"
                         style={
                           selectedPeriod === '3M'
                             ? {
@@ -625,7 +625,7 @@ export default function BodyMetricsHistoryModal({
                       </Pressable>
                       <Pressable
                         onPress={() => setSelectedPeriod('6M')}
-                        className={`rounded-md px-3 py-1 ${selectedPeriod === '6M' ? '' : ''}`}
+                        className="rounded-md px-3 py-1"
                         style={
                           selectedPeriod === '6M'
                             ? {
@@ -644,7 +644,7 @@ export default function BodyMetricsHistoryModal({
                       </Pressable>
                       <Pressable
                         onPress={() => setSelectedPeriod('1Y')}
-                        className={`rounded-md px-3 py-1 ${selectedPeriod === '1Y' ? '' : ''}`}
+                        className="rounded-md px-3 py-1"
                         style={
                           selectedPeriod === '1Y'
                             ? {
@@ -679,7 +679,7 @@ export default function BodyMetricsHistoryModal({
                 </View>
               </GenericCard>
             ) : (
-              <GenericCard variant="card" size="default">
+              <GenericCard variant="flat">
                 <View className="p-5">
                   <Text className="text-center text-text-secondary">
                     {t('bodyMetrics.noDataAvailable')}
@@ -727,7 +727,7 @@ export default function BodyMetricsHistoryModal({
                 {/* Skeleton loaders for history entries */}
                 {[1, 2, 3, 4, 5].map((i) => (
                   <View key={i} className="mb-3">
-                    <GenericCard variant="card" size="default">
+                    <GenericCard variant="flat">
                       <View className="flex-row items-center justify-between p-5">
                         <View className="flex-1 flex-row items-center gap-4">
                           <SkeletonLoader

@@ -336,7 +336,7 @@ export default function AddUserMetricEntryModal({
               className="h-14 w-14 items-center justify-center rounded-full"
               style={{
                 backgroundColor: theme.colors.background.cardElevated,
-                borderColor: theme.colors.background.white10,
+                borderColor: theme.colors.background.ink10,
                 borderWidth: theme.borderWidth.thin,
               }}
             >
@@ -354,7 +354,7 @@ export default function AddUserMetricEntryModal({
               className="h-14 w-14 items-center justify-center rounded-full"
               style={{
                 backgroundColor: theme.colors.background.cardElevated,
-                borderColor: theme.colors.background.white10,
+                borderColor: theme.colors.background.ink10,
                 borderWidth: theme.borderWidth.thin,
               }}
             >
@@ -390,7 +390,7 @@ export default function AddUserMetricEntryModal({
           className="mb-6"
           style={{
             height: theme.borderWidth.thin,
-            backgroundColor: theme.colors.background.white5,
+            backgroundColor: theme.colors.background.ink5,
           }}
         />
 
@@ -463,7 +463,7 @@ export default function AddUserMetricEntryModal({
             />
 
             {/* Metric Entry Group - Input, Date, and Time */}
-            <GenericCard variant="card" size="default">
+            <GenericCard variant="flat">
               <View style={{ overflow: 'hidden' }}>
                 {/* Measure content height on first render */}
                 <View

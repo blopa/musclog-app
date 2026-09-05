@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { X } from 'lucide-react-native';
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import {
@@ -15,6 +14,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { computeKeyboardSheetLift } from '@/components/keyboardSheetLift';
+import { sheetSurfaceColor } from '@/components/sheetSurfaceColor';
 import { SurfaceColorProvider } from '@/context/SurfaceColorContext';
 import { useTheme } from '@/hooks/useTheme';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
@@ -55,7 +55,7 @@ export function BottomPopUp({
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   /** Published to descendants so content can fade out to the real surface behind it. */
-  const sheetSurfaceColor = theme.colors.background.cardElevated;
+  const sheetSurfaceColorValue = sheetSurfaceColor(theme);
   /**
    * Android: `Modal` + edge-to-edge often reports `insets.bottom === 0` while the sheet is still laid out
    * to the physical screen bottom behind the system nav bar. Padding inside ScrollView does not move the
@@ -218,7 +218,7 @@ export function BottomPopUp({
   const webBackdropStyle = useWebModalLayerStyle({ variant: 'fullscreen' });
 
   return (
-    <SurfaceColorProvider color={sheetSurfaceColor}>
+    <SurfaceColorProvider color={sheetSurfaceColorValue}>
       <Modal
         visible={visible}
         transparent
@@ -236,7 +236,7 @@ export function BottomPopUp({
             <View
               style={[
                 { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
-                { backgroundColor: theme.colors.overlay.black60 },
+                { backgroundColor: theme.colors.overlay.scrim60 },
               ]}
             />
           </TouchableWithoutFeedback>
@@ -256,7 +256,7 @@ export function BottomPopUp({
               style={[
                 {
                   transform: [{ translateY: slideAnim }],
-                  backgroundColor: sheetSurfaceColor,
+                  backgroundColor: sheetSurfaceColorValue,
                   overflow: 'hidden',
                   borderTopLeftRadius: theme.borderRadius['3xl'],
                   borderTopRightRadius: theme.borderRadius['3xl'],
@@ -268,16 +268,7 @@ export function BottomPopUp({
               ]}
             >
               {/* Header */}
-              <LinearGradient
-                colors={[
-                  theme.colors.status.purple40,
-                  theme.colors.accent.secondary10,
-                  'transparent',
-                ]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                className="border-b border-border-dark"
-              >
+              <View className="border-b border-border-dark">
                 <View className="flex-row items-center justify-between p-6">
                   <View className="flex-1 flex-row items-center gap-3">
                     {headerIcon ? <View>{headerIcon}</View> : null}
@@ -298,7 +289,7 @@ export function BottomPopUp({
                     </Pressable>
                   ) : null}
                 </View>
-              </LinearGradient>
+              </View>
 
               {/* Content */}
               {renderContent()}

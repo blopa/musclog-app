@@ -26,7 +26,7 @@ export function ProgressChartSection({
   return (
     <>
       <View ref={captureRef} collapsable={false}>
-        <GenericCard variant="card">
+        <GenericCard variant="flat">
           <View style={{ padding: 16 }}>
             <View className="mb-4 flex-row items-center justify-between">
               <View className="flex-1">

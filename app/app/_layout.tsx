@@ -54,7 +54,7 @@ const queryClient = new QueryClient({
 
 // Inner component that has access to theme context
 function AppContent() {
-  const { theme, isDark } = useThemeContext();
+  const { theme, themeMode } = useThemeContext();
 
   // On web, run the pre-migration backup check before <Migrations> mounts so
   // that JS-level data transformations in Migrations.tsx cannot run first.
@@ -100,7 +100,9 @@ function AppContent() {
   return (
     <>
       <DocumentTitle />
-      {Platform.OS !== 'web' ? <SystemBars style={isDark ? 'light' : 'dark'} /> : null}
+      {Platform.OS !== 'web' ? (
+        <SystemBars style={themeMode === 'dark' ? 'light' : 'dark'} />
+      ) : null}
       <LanguageInitializer />
       <Stack
         screenOptions={{

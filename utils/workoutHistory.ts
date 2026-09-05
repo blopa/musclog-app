@@ -113,8 +113,8 @@ export function getWorkoutIcon(theme: Theme, workoutName: string): IconData {
   if (nameLower.includes('run') || nameLower.includes('cardio')) {
     return {
       icon: Activity,
-      iconBgColor: theme.colors.status.emerald,
-      iconBgOpacity: theme.colors.status.emerald10,
+      iconBgColor: theme.colors.status.brandVivid,
+      iconBgOpacity: theme.colors.status.brandVivid10,
     };
   }
 
@@ -128,7 +128,7 @@ export function getWorkoutIcon(theme: Theme, workoutName: string): IconData {
 
   return {
     icon: Dumbbell,
-    iconBgColor: theme.colors.status.indigo600,
+    iconBgColor: theme.colors.status.indigo,
     iconBgOpacity: theme.colors.status.indigo10,
   };
 }

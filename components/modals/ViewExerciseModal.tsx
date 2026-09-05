@@ -416,7 +416,7 @@ export default function ViewExerciseModal({
 
   const workoutsWithTheme = workouts.map((w) => ({
     ...w,
-    iconGradient: [theme.colors.status.indigo600, theme.colors.status.indigo600] as const,
+    iconGradient: [theme.colors.status.indigo, theme.colors.status.indigo] as const,
   }));
 
   const oneRepMaxTrendSummary = () => {
@@ -454,7 +454,7 @@ export default function ViewExerciseModal({
       headerRight={
         <MenuButton
           size="lg"
-          color={theme.colors.text.white}
+          color={theme.colors.text.primary}
           onPress={() => setIsMenuVisible(true)}
           className="h-10 w-10"
         />
@@ -505,7 +505,10 @@ export default function ViewExerciseModal({
                 width="auto"
                 style={{ alignSelf: 'flex-start' }}
               />
-              <Text className="mb-6 text-4xl font-bold" style={{ color: theme.colors.text.white }}>
+              <Text
+                className="mb-6 text-4xl font-bold"
+                style={{ color: theme.colors.text.primary }}
+              >
                 {displayName}
               </Text>
               <View className="mb-6 flex-row flex-wrap gap-3">
@@ -525,45 +528,45 @@ export default function ViewExerciseModal({
                 >
                   <Text
                     className="text-xs font-medium uppercase tracking-wide"
-                    style={{ color: theme.colors.overlay.white80 }}
+                    style={{ color: theme.colors.overlay.ink80 }}
                   >
                     {t('exercises.viewExercise.primaryMuscle')}
                   </Text>
-                  <Text className="font-bold" style={{ color: theme.colors.text.white }}>
+                  <Text className="font-bold" style={{ color: theme.colors.text.primary }}>
                     {primaryMuscle}
                   </Text>
                 </LinearGradient>
                 <View
                   className="flex-row items-center gap-2 rounded-full border px-4 py-2"
                   style={{
-                    backgroundColor: theme.colors.background.darkGreenVariant,
-                    borderColor: theme.colors.background.gray700,
+                    backgroundColor: theme.colors.background.notificationCard,
+                    borderColor: theme.colors.background.hairline,
                   }}
                 >
                   <Text
                     className="text-xs font-medium uppercase tracking-wide"
-                    style={{ color: theme.colors.overlay.white80 }}
+                    style={{ color: theme.colors.overlay.ink80 }}
                   >
                     {t('exercises.viewExercise.equipment')}
                   </Text>
-                  <Text className="font-bold" style={{ color: theme.colors.text.white }}>
+                  <Text className="font-bold" style={{ color: theme.colors.text.primary }}>
                     {equipment}
                   </Text>
                 </View>
                 <View
                   className="flex-row items-center gap-2 rounded-full border px-4 py-2"
                   style={{
-                    backgroundColor: theme.colors.background.darkGreenVariant,
-                    borderColor: theme.colors.background.gray700,
+                    backgroundColor: theme.colors.background.notificationCard,
+                    borderColor: theme.colors.background.hairline,
                   }}
                 >
                   <Text
                     className="text-xs font-medium uppercase tracking-wide"
-                    style={{ color: theme.colors.overlay.white80 }}
+                    style={{ color: theme.colors.overlay.ink80 }}
                   >
                     {t('exercises.viewExercise.mechanic')}
                   </Text>
-                  <Text className="font-bold" style={{ color: theme.colors.text.white }}>
+                  <Text className="font-bold" style={{ color: theme.colors.text.primary }}>
                     {mechanic}
                   </Text>
                 </View>
@@ -572,7 +575,7 @@ export default function ViewExerciseModal({
           </View>
 
           <View className="px-4 py-6" style={{ flexDirection: 'row', gap: theme.spacing.gap.base }}>
-            <GenericCard variant="default" size="sm">
+            <GenericCard variant="flat" fill>
               <View className="p-6">
                 <Text
                   className="mb-2 text-xs font-medium uppercase tracking-wide"
@@ -597,7 +600,7 @@ export default function ViewExerciseModal({
                 </View>
               </View>
             </GenericCard>
-            <GenericCard variant="default" size="sm">
+            <GenericCard variant="flat" fill>
               <View className="p-6">
                 <Text
                   className="mb-2 text-xs font-medium uppercase tracking-wide"
@@ -623,10 +626,10 @@ export default function ViewExerciseModal({
           </View>
 
           <View className="px-4 pb-2">
-            <Text className="mb-4 text-2xl font-bold" style={{ color: theme.colors.text.white }}>
+            <Text className="mb-4 text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
               {t('exercises.viewExercise.oneRepMaxTrend')}
             </Text>
-            <GenericCard variant="default" size="default">
+            <GenericCard variant="flat">
               <View className="p-4">
                 {hasOneRepMaxTrend ? (
                   <View>
@@ -663,7 +666,7 @@ export default function ViewExerciseModal({
 
           <View className="px-4 py-4">
             <View className="mb-4 flex-row items-center justify-between">
-              <Text className="text-2xl font-bold" style={{ color: theme.colors.text.white }}>
+              <Text className="text-2xl font-bold" style={{ color: theme.colors.text.primary }}>
                 {t('exercises.viewExercise.workoutsUsingThis')}
               </Text>
               <View
@@ -696,7 +699,7 @@ export default function ViewExerciseModal({
                     >
                       <workout.icon
                         size={theme.iconSize['3xl']}
-                        color={theme.colors.text.white}
+                        color={theme.colors.text.primary}
                         fill="none"
                       />
                     </LinearGradient>

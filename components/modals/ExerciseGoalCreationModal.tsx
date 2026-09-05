@@ -319,7 +319,7 @@ export default function ExerciseGoalCreationModal({
         icon: Icon,
         iconBgColor:
           exerciseType === 'bodyweight'
-            ? theme.colors.background.white5
+            ? theme.colors.background.ink5
             : theme.colors.accent.primary10,
         iconColor:
           exerciseType === 'bodyweight' ? theme.colors.text.secondary : theme.colors.accent.primary,
@@ -662,7 +662,7 @@ export default function ExerciseGoalCreationModal({
           resizeMode="cover"
         />
         <LinearGradient
-          colors={['transparent', 'rgba(0,0,0,0.85)']}
+          colors={['transparent', theme.colors.overlay.backdrop]}
           style={{
             position: 'absolute',
             left: 0,

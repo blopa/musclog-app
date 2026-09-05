@@ -56,13 +56,13 @@ export function ActivityRingsChart({
     () => [
       {
         progress: 0.8,
-        color: theme.colors.status.emeraldLight,
+        color: theme.colors.status.brandBright,
         label: t('home.activityRings.move'),
         value: '80%',
       },
       {
         progress: 0.65,
-        color: theme.colors.status.teal400,
+        color: theme.colors.status.brandPale,
         label: t('home.activityRings.steps'),
         value: '65%',
       },

@@ -83,13 +83,13 @@ const getGroupColors = (theme: Theme) => {
     theme.colors.status.amber,
     theme.colors.status.warning,
     theme.colors.status.error,
-    theme.colors.status.pink500,
-    theme.colors.status.rose600,
-    theme.colors.status.emerald,
-    theme.colors.status.yellow,
-    theme.colors.status.teal400,
-    theme.colors.status.violet500,
-    theme.colors.status.purple400,
+    theme.colors.status.pink,
+    theme.colors.status.rose,
+    theme.colors.status.brandVivid,
+    theme.colors.status.amber,
+    theme.colors.status.brandPale,
+    theme.colors.status.purple,
+    theme.colors.status.purpleLight,
   ] as const;
 };
 

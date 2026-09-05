@@ -97,7 +97,7 @@ export function ToggleInput(props: TogglableSettingsProps) {
                     false: theme.colors.background.overlay,
                     true: theme.colors.accent.primary,
                   }}
-                  thumbColor={theme.colors.background.white}
+                  thumbColor={theme.colors.background.alwaysWhite}
                 />
               </View>
             )}

@@ -5,11 +5,6 @@
     "basicSettings": {
       "title": "Basic Settings",
       "subtitle": "Profile, units, and preferences",
-      "appearance": "Appearance",
-      "appTheme": "App Theme",
-      "themeSystem": "System",
-      "themeLight": "Light",
-      "themeDark": "Dark",
       "localization": "Localization",
       "language": "Language",
       "languageSubtitle": "Pick preferred language",
@@ -409,6 +404,42 @@
         "weekly_streak": {
           "label": "Weekly Streak",
           "description": "Workouts this week and your tracking streak"
+        }
+      }
+    },
+    "theme": {
+      "sectionTitle": "Appearance",
+      "sectionSubtitle": "Choose how Musclog looks. System follows your device setting.",
+      "popupTitle": "Appearance",
+      "popupSubtitle": "Select a theme",
+      "options": {
+        "system": {
+          "label": "System",
+          "description": "Follow your device setting"
+        },
+        "kinetic-depth": {
+          "label": "Kinetic Depth",
+          "description": "Deep surfaces with emerald accents"
+        },
+        "kinetic-light": {
+          "label": "Kinetic Light",
+          "description": "Bright surfaces with emerald accents"
+        },
+        "kinetic-shock": {
+          "label": "Kinetic Shock",
+          "description": "Deep rose surfaces with pink accents"
+        },
+        "kinetic-volt": {
+          "label": "Kinetic Volt",
+          "description": "Warm dark surfaces with electric yellow accents"
+        },
+        "kinetic-blush": {
+          "label": "Kinetic Blush",
+          "description": "Soft pink surfaces with a raspberry accent"
+        },
+        "kinetic-varia": {
+          "label": "Kinetic Varia",
+          "description": "Deep violet surfaces with an orange visor accent"
         }
       }
     }

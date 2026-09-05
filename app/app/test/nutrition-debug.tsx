@@ -141,7 +141,7 @@ function BulkTrackFoodModal({ visible, food, onClose, onTracked }: BulkTrackModa
     >
       <View className="gap-6 p-4">
         {/* Picked food summary */}
-        <GenericCard variant="default">
+        <GenericCard variant="flat">
           <View className="flex-row items-center gap-3 p-4">
             <View className="h-10 w-10 items-center justify-center rounded-lg bg-bg-card">
               <Utensils size={theme.iconSize.md} color={theme.colors.accent.primary} />
@@ -174,12 +174,12 @@ function BulkTrackFoodModal({ visible, food, onClose, onTracked }: BulkTrackModa
             variant="default"
           />
           {dayCount > 366 ? (
-            <Text className="text-status-error text-xs font-medium">
+            <Text className="text-xs font-medium text-status-error">
               Range too large ({dayCount} days). Max 366.
             </Text>
           ) : null}
           {dayCount === 0 ? (
-            <Text className="text-status-error text-xs font-medium">
+            <Text className="text-xs font-medium text-status-error">
               End date must be on or after the start date.
             </Text>
           ) : null}
@@ -281,7 +281,7 @@ export default function NutritionDebugScreen() {
           </Text>
         </View>
 
-        <GenericCard variant="default">
+        <GenericCard variant="flat">
           <View className="gap-3 p-4">
             <View className="flex-row items-center gap-3">
               <View className="h-10 w-10 items-center justify-center rounded-lg bg-bg-card">

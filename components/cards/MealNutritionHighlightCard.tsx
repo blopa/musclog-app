@@ -62,13 +62,8 @@ export function MealNutritionHighlightCard({
 
   return (
     <>
-      <GenericCard variant="highlighted" backgroundVariant="gradient">
+      <GenericCard variant="flat">
         <View className="relative">
-          <View
-            className="absolute -right-10 -top-10 h-32 w-32 rounded-full opacity-20 blur-3xl"
-            style={{ backgroundColor: theme.colors.accent.primary }}
-          />
-
           {showInfoButton ? (
             <Pressable
               onPress={() => setIngredientsModalVisible(true)}
@@ -79,7 +74,7 @@ export function MealNutritionHighlightCard({
             </Pressable>
           ) : null}
 
-          <View className="relative z-10 px-4 py-4">
+          <View className="px-4 py-4">
             {header}
 
             {caption ? (
@@ -95,7 +90,7 @@ export function MealNutritionHighlightCard({
               <View
                 className="flex-1 flex-col items-center rounded-lg p-2"
                 style={{
-                  backgroundColor: theme.colors.background.white5,
+                  backgroundColor: theme.colors.background.ink5,
                   alignItems: 'center',
                 }}
               >
@@ -122,7 +117,7 @@ export function MealNutritionHighlightCard({
               <View
                 className="flex-1 flex-col items-center rounded-lg p-2"
                 style={{
-                  backgroundColor: theme.colors.background.white5,
+                  backgroundColor: theme.colors.background.ink5,
                   alignItems: 'center',
                 }}
               >
@@ -149,7 +144,7 @@ export function MealNutritionHighlightCard({
               <View
                 className="flex-1 flex-col items-center rounded-lg p-2"
                 style={{
-                  backgroundColor: theme.colors.background.white5,
+                  backgroundColor: theme.colors.background.ink5,
                   alignItems: 'center',
                 }}
               >
@@ -176,7 +171,7 @@ export function MealNutritionHighlightCard({
               <View
                 className="flex-1 flex-col items-center rounded-lg p-2"
                 style={{
-                  backgroundColor: theme.colors.background.white5,
+                  backgroundColor: theme.colors.background.ink5,
                   alignItems: 'center',
                 }}
               >

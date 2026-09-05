@@ -31,12 +31,12 @@ export function ChatWorkoutCard({
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
   return (
-    <GenericCard variant="card" size="sm">
+    <GenericCard variant="flat">
       {/* Hero Image Section */}
       <View className="relative h-32">
         <Image source={image} className="h-full w-full" resizeMode="cover" />
         <LinearGradient
-          colors={['transparent', theme.colors.background.black80]}
+          colors={['transparent', theme.colors.background.scrim80]}
           style={{
             position: 'absolute',
             top: 0,
@@ -46,7 +46,7 @@ export function ChatWorkoutCard({
           }}
         />
         <View className="absolute bottom-3 left-4">
-          <Text className="mb-1 text-lg font-bold text-white">{title}</Text>
+          <Text className="mb-1 text-lg font-bold text-text-primary">{title}</Text>
           <Text className="text-sm font-medium" style={{ color: theme.colors.accent.primary }}>
             {duration} • {level}
           </Text>
@@ -77,10 +77,10 @@ export function ChatWorkoutCard({
           style={{ backgroundColor: theme.colors.accent.primary }}
           onPress={onStartWorkout}
         >
-          <Text className="font-bold" style={{ color: theme.colors.text.black }}>
+          <Text className="font-bold" style={{ color: theme.colors.text.onAccent }}>
             {t('startWorkout.label')}
           </Text>
-          <ArrowRight size={theme.iconSize.md} color={theme.colors.text.black} />
+          <ArrowRight size={theme.iconSize.md} color={theme.colors.text.onAccent} />
         </Pressable>
       </View>
     </GenericCard>

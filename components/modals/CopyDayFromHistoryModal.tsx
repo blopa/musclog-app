@@ -130,10 +130,10 @@ export function CopyDayFromHistoryModal({
         key={day.dayKey}
         className="flex-row items-center justify-between rounded-xl border px-4 py-3"
         style={{
-          borderColor: isSelected ? theme.colors.accent.primary : theme.colors.background.white10,
+          borderColor: isSelected ? theme.colors.accent.primary : theme.colors.background.ink10,
           backgroundColor: isSelected
             ? theme.colors.accent.primary10
-            : theme.colors.background.white5,
+            : theme.colors.background.ink5,
         }}
         onPress={() => chooseSourceDate(localDateFromDayKey(day.dayKey))}
       >
@@ -170,7 +170,7 @@ export function CopyDayFromHistoryModal({
         <View
           className="h-5 w-5 items-center justify-center rounded-md border"
           style={{
-            borderColor: isSelected ? theme.colors.accent.primary : theme.colors.background.white20,
+            borderColor: isSelected ? theme.colors.accent.primary : theme.colors.background.ink20,
             backgroundColor: isSelected ? theme.colors.accent.primary10 : 'transparent',
           }}
         >

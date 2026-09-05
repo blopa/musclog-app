@@ -25,7 +25,7 @@ export function SettingsCard({
   const theme = useTheme();
   return (
     <View style={{ marginBottom: theme.spacing.padding.sm }}>
-      <GenericCard variant="default" size="sm" isPressable={true} onPress={onPress}>
+      <GenericCard variant="flat" isPressable={true} onPress={onPress}>
         <View
           style={{
             flexDirection: 'row',

@@ -126,7 +126,7 @@ export function BottomPopUpMenu({
                 key={index}
                 style={
                   index < items.length - 1
-                    ? { borderBottomWidth: 1, borderBottomColor: theme.colors.background.white10 }
+                    ? { borderBottomWidth: 1, borderBottomColor: theme.colors.background.ink10 }
                     : undefined
                 }
               >

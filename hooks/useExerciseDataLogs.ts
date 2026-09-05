@@ -172,16 +172,16 @@ export function useExerciseDataLogs({
     () => ({
       chest: { color: theme.colors.status.error, bg: theme.colors.status.error10 },
       back: { color: theme.colors.status.info, bg: theme.colors.status.info10 },
-      shoulders: { color: theme.colors.status.violet500, bg: theme.colors.status.purple10 },
-      biceps: { color: theme.colors.status.pink500, bg: theme.colors.rose.brand10 },
+      shoulders: { color: theme.colors.status.purple, bg: theme.colors.status.purple10 },
+      biceps: { color: theme.colors.status.pink, bg: theme.colors.rose.brand10 },
       triceps: { color: theme.colors.status.warning, bg: theme.colors.status.warning10 },
       quads: { color: theme.colors.accent.primary, bg: theme.colors.accent.primary10 },
-      hamstrings: { color: theme.colors.accent.tertiary, bg: theme.colors.status.emerald10 },
+      hamstrings: { color: theme.colors.accent.tertiary, bg: theme.colors.status.brandVivid10 },
       glutes: { color: theme.colors.status.purple, bg: theme.colors.status.purple10 },
-      abs: { color: theme.colors.status.yellow, bg: theme.colors.status.yellow10 },
+      abs: { color: theme.colors.status.amber, bg: theme.colors.status.amber10 },
       full_body: { color: theme.colors.status.indigo, bg: theme.colors.status.indigo10 },
       cardio: { color: theme.colors.accent.tertiary, bg: theme.colors.status.info10 },
-      default: { color: theme.colors.text.muted, bg: theme.colors.status.gray10 },
+      default: { color: theme.colors.text.muted, bg: theme.colors.status.neutralWash },
     }),
     [theme]
   );

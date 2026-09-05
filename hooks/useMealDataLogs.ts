@@ -208,8 +208,8 @@ export function useMealDataLogs({
   const iconColors = useMemo(
     () => ({
       restaurant: {
-        color: theme.colors.status.emeraldLight,
-        bg: theme.colors.status.emerald400_10,
+        color: theme.colors.status.brandBright,
+        bg: theme.colors.status.brandBright10,
       },
       'local-dining': { color: theme.colors.status.indigo, bg: theme.colors.status.indigo10 },
       fastfood: { color: theme.colors.status.warning, bg: theme.colors.status.warning10 },

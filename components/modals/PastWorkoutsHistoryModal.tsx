@@ -65,7 +65,7 @@ function SearchAndFilterHeader({
           className="h-11 w-11 items-center justify-center border"
           style={{
             backgroundColor: theme.colors.background.card,
-            borderColor: theme.colors.background.white5,
+            borderColor: theme.colors.background.ink5,
             borderRadius: theme.borderRadius.md,
             marginTop: theme.spacing.margin.sm,
           }}
@@ -97,7 +97,7 @@ function WorkoutHistorySkeleton() {
               className="rounded-lg border p-4"
               style={{
                 backgroundColor: theme.colors.background.card,
-                borderColor: theme.colors.background.white5,
+                borderColor: theme.colors.background.ink5,
               }}
             >
               <View className="flex-col gap-4">
@@ -126,7 +126,7 @@ function WorkoutHistorySkeleton() {
                     <View
                       key={statIndex}
                       className="flex-1 gap-2 rounded-lg p-2"
-                      style={{ backgroundColor: theme.colors.background.white5 }}
+                      style={{ backgroundColor: theme.colors.background.ink5 }}
                     >
                       <SkeletonLoader
                         width="60%"
@@ -197,7 +197,7 @@ function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler)
         opacity,
       }}
     >
-      <GenericCard variant="card" isPressable={true} onPress={onPress}>
+      <GenericCard variant="flat" isPressable={true} onPress={onPress}>
         <View className="flex-col gap-4 p-4">
           <View className="flex-row items-start justify-between">
             <View className="flex-row items-center gap-3">
@@ -233,15 +233,15 @@ function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler)
               <View
                 className="flex-row items-center gap-1 rounded px-2 py-0.5"
                 style={{
-                  backgroundColor: theme.colors.status.emerald400_10,
+                  backgroundColor: theme.colors.status.brandBright10,
                 }}
               >
-                <Trophy size={theme.iconSize.xs} color={theme.colors.status.emeraldLight} />
+                <Trophy size={theme.iconSize.xs} color={theme.colors.status.brandBright} />
                 <Text
                   style={{
                     fontSize: theme.typography.fontSize.xxs,
                     fontWeight: theme.typography.fontWeight.bold,
-                    color: theme.colors.status.emeraldLight,
+                    color: theme.colors.status.brandBright,
                     textTransform: 'uppercase',
                     letterSpacing: theme.typography.letterSpacing.wider,
                   }}
@@ -264,7 +264,7 @@ function WorkoutCard({ workout, opacity, onPress }: WorkoutCardPropsWithHandler)
                 key={statIndex}
                 className="flex-1 rounded-lg p-2"
                 style={{
-                  backgroundColor: theme.colors.background.white5,
+                  backgroundColor: theme.colors.background.ink5,
                 }}
               >
                 <Text

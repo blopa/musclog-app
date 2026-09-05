@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { Dumbbell, Sparkles } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -85,37 +84,22 @@ export function GenerateWorkoutWithAiModal({ visible, onClose }: Props) {
       title={t('workouts.aiGeneration.title')}
       subtitle={t('workouts.aiGeneration.subtitle')}
       closable={!isGenerating}
-      withGradient
       footer={footer}
       scrollable
     >
       <View className="items-center px-4 pb-6 pt-8">
-        <LinearGradient
-          colors={theme.colors.gradients.progress}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
+        <View
           style={{
             width: 96,
             height: 96,
             borderRadius: 48,
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden',
+            backgroundColor: theme.colors.accent.primary10,
           }}
         >
-          <View
-            style={{
-              width: 80,
-              height: 80,
-              borderRadius: 40,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: 'rgba(255,255,255,0.1)',
-            }}
-          >
-            <Sparkles size={theme.iconSize['4xl']} color={theme.colors.text.primary} />
-          </View>
-        </LinearGradient>
+          <Sparkles size={theme.iconSize['4xl']} color={theme.colors.accent.primary} />
+        </View>
       </View>
       <View className="px-4 pb-6">
         <TextInput

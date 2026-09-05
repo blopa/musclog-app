@@ -1,51 +1,18 @@
-import { ColorSchemeName, useColorScheme } from 'react-native';
+import type { ThemeId } from '@/constants/settings';
+import { useThemeContext } from '@/context/ThemeContext';
+import type { Theme } from '@/theme';
 
-import type { ThemeOption } from '@/constants/settings';
-// only place that it's ok to import from theme
-import { darkTheme, lightTheme, type Theme } from '@/theme';
-
-import { useSettings } from './useSettings';
-
-/**
- * Custom hook to get the active theme based on user preference and system settings
- * @returns The active theme object (dark or light)
- */
+/** Return the active palette, including any enclosing scoped override. */
 export function useTheme(): Theme {
-  // Get user's stored theme preference
-  const { theme: themePreference } = useSettings();
-
-  // Get system color scheme
-  const systemColorScheme = useColorScheme();
-
-  // Determine the effective theme
-  const effectiveTheme = getEffectiveTheme(themePreference, systemColorScheme);
-
-  return effectiveTheme === 'dark' ? darkTheme : lightTheme;
+  return useThemeContext().theme;
 }
 
-/**
- * Hook to get the current theme mode ('dark' or 'light')
- * @returns 'dark' | 'light'
- */
+/** Return the active palette's binary display mode for system UI integrations. */
 export function useThemeMode(): 'dark' | 'light' {
-  const { theme: themePreference } = useSettings();
-  const systemColorScheme = useColorScheme();
-
-  return getEffectiveTheme(themePreference, systemColorScheme);
+  return useThemeContext().themeMode;
 }
 
-/**
- * Determine the effective theme based on preference and system settings
- */
-function getEffectiveTheme(
-  preference: ThemeOption,
-  systemColorScheme: ColorSchemeName
-): 'dark' | 'light' {
-  if (preference === 'system') {
-    // Follow system preference
-    return systemColorScheme === 'light' ? 'light' : 'dark';
-  }
-
-  // Use explicit preference
-  return preference === 'light' ? 'light' : 'dark';
+/** Return the active named palette identity. */
+export function useThemeId(): ThemeId {
+  return useThemeContext().themeId;
 }

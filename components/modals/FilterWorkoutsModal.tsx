@@ -64,8 +64,8 @@ export function FilterWorkoutsModal({
         label: t('workouts.filterWorkouts.workoutTypes.cardio'),
         description: t('workouts.filterWorkouts.workoutTypes.cardioDescription'),
         icon: LucideFootprints,
-        iconBgColor: theme.colors.status.emerald10,
-        iconColor: theme.colors.status.emerald,
+        iconBgColor: theme.colors.status.brandVivid10,
+        iconColor: theme.colors.status.brandVivid,
       },
       {
         id: 'flexibility',
@@ -78,8 +78,8 @@ export function FilterWorkoutsModal({
     ],
     [
       t,
-      theme.colors.status.emerald,
-      theme.colors.status.emerald10,
+      theme.colors.status.brandVivid,
+      theme.colors.status.brandVivid10,
       theme.colors.status.indigo,
       theme.colors.status.indigo10,
       theme.colors.status.purple,
@@ -197,7 +197,7 @@ export function FilterWorkoutsModal({
               icon={
                 <View
                   style={{
-                    backgroundColor: theme.colors.background.black20,
+                    backgroundColor: theme.colors.background.scrim20,
                     borderRadius: theme.borderRadius.sm,
                     paddingHorizontal: theme.spacing.padding.sm,
                     paddingVertical: theme.spacing.padding.xsHalf,
@@ -210,7 +210,7 @@ export function FilterWorkoutsModal({
                     style={{
                       fontSize: theme.typography.fontSize.sm,
                       fontWeight: theme.typography.fontWeight.extrabold,
-                      color: theme.colors.text.white,
+                      color: theme.colors.text.primary,
                     }}
                   >
                     {activeFilterCount}
@@ -281,7 +281,9 @@ export function FilterWorkoutsModal({
                 >
                   <Text
                     className={`text-sm ${
-                      isSelected ? 'font-bold text-black' : 'font-semibold text-text-secondary'
+                      isSelected
+                        ? 'font-bold text-text-on-accent'
+                        : 'font-semibold text-text-secondary'
                     }`}
                   >
                     {muscle.label}
@@ -289,7 +291,7 @@ export function FilterWorkoutsModal({
                   {isSelected ? (
                     <Check
                       size={theme.iconSize.xs}
-                      color={theme.colors.text.black}
+                      color={theme.colors.text.onAccent}
                       strokeWidth={theme.strokeWidth.thick}
                     />
                   ) : null}
@@ -350,7 +352,7 @@ export function FilterWorkoutsModal({
               onChange={setDuration}
               variant="solid"
               solidColor={theme.colors.accent.primary}
-              trackColor={theme.colors.background.white10}
+              trackColor={theme.colors.background.ink10}
               thumbColor={theme.colors.accent.primary}
             />
             <View

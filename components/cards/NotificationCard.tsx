@@ -56,7 +56,7 @@ export function NotificationCard({
               className="leading-relaxed"
               style={{
                 fontSize: theme.typography.fontSize.base,
-                color: theme.colors.text.gray300,
+                color: theme.colors.text.secondary,
               }}
             >
               {description}
@@ -75,12 +75,12 @@ export function NotificationCard({
                 width="auto"
                 onPress={onActionPress}
               />
-              <Text className="text-sm" style={{ color: theme.colors.text.gray500 }}>
+              <Text className="text-sm" style={{ color: theme.colors.text.tertiary }}>
                 {time}
               </Text>
             </>
           ) : (
-            <Text className="text-sm" style={{ color: theme.colors.text.gray500 }}>
+            <Text className="text-sm" style={{ color: theme.colors.text.tertiary }}>
               {time}
             </Text>
           )}
@@ -90,7 +90,7 @@ export function NotificationCard({
   );
 
   return (
-    <GenericCard variant="highlighted">
+    <GenericCard variant="flat">
       <View className="p-5">{content}</View>
     </GenericCard>
   );

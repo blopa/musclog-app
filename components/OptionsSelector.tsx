@@ -123,7 +123,7 @@ const OptionItem = memo(
               {isSelected ? (
                 <Check
                   size={theme.iconSize.xs}
-                  color={theme.colors.text.black}
+                  color={theme.colors.text.onAccent}
                   strokeWidth={theme.strokeWidth.thick}
                 />
               ) : null}

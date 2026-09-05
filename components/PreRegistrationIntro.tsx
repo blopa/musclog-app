@@ -31,8 +31,8 @@ export default function PreRegistrationIntro() {
         <LinearGradient
           colors={[
             theme.colors.status.indigo30,
-            theme.colors.status.emerald400_10,
-            theme.colors.status.emerald30,
+            theme.colors.status.brandBright10,
+            theme.colors.status.brandVivid30,
           ]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -57,7 +57,7 @@ export default function PreRegistrationIntro() {
           className="absolute inset-0 rounded-full border"
           style={{
             borderWidth: theme.borderWidth.medium,
-            borderColor: theme.colors.background.white10,
+            borderColor: theme.colors.background.ink10,
             transform: [{ scale: 1.1 }],
           }}
         />
@@ -65,7 +65,7 @@ export default function PreRegistrationIntro() {
           className="absolute inset-0 rounded-full border"
           style={{
             borderWidth: theme.borderWidth.medium,
-            borderColor: theme.colors.background.white5,
+            borderColor: theme.colors.background.ink5,
             transform: [{ scale: 1.25 }],
           }}
         />
@@ -76,8 +76,8 @@ export default function PreRegistrationIntro() {
           style={{
             width: innerCircleSize,
             height: innerCircleSize,
-            backgroundColor: theme.colors.background.white5,
-            borderColor: theme.colors.background.white10,
+            backgroundColor: theme.colors.background.ink5,
+            borderColor: theme.colors.background.ink10,
             ...theme.shadows.lg,
             shadowColor: theme.colors.status.indigo,
             shadowOpacity: theme.shadowOpacity.mediumHeavy,
@@ -101,8 +101,8 @@ export default function PreRegistrationIntro() {
             >
               <Defs>
                 <SvgLinearGradient id="userGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <Stop offset="0%" stopColor={theme.colors.text.white} />
-                  <Stop offset="50%" stopColor={theme.colors.status.emeraldLight} />
+                  <Stop offset="0%" stopColor={theme.colors.text.primary} />
+                  <Stop offset="50%" stopColor={theme.colors.status.brandBright} />
                   <Stop offset="100%" stopColor={theme.colors.status.indigoLight} />
                 </SvgLinearGradient>
               </Defs>
@@ -138,7 +138,7 @@ export default function PreRegistrationIntro() {
               width: theme.size['14'],
               height: theme.size['14'],
               ...theme.shadows.lg,
-              shadowColor: theme.colors.status.emeraldLight,
+              shadowColor: theme.colors.status.brandBright,
               shadowOpacity: theme.shadowOpacity.light,
             }}
           >
@@ -156,7 +156,7 @@ export default function PreRegistrationIntro() {
             >
               <TrendingUp
                 size={theme.iconSize['2xl']}
-                color={theme.colors.text.white}
+                color={theme.colors.text.primary}
                 strokeWidth={theme.strokeWidth.medium}
               />
             </LinearGradient>
@@ -170,13 +170,13 @@ export default function PreRegistrationIntro() {
               left: -theme.size['8'],
               width: theme.size['10'],
               height: theme.size['10'],
-              backgroundColor: theme.colors.background.white10,
-              borderColor: theme.colors.background.white10,
+              backgroundColor: theme.colors.background.ink10,
+              borderColor: theme.colors.background.ink10,
             }}
           >
             <Dumbbell
               size={theme.iconSize.xl}
-              color={theme.colors.status.emeraldLight}
+              color={theme.colors.status.brandBright}
               strokeWidth={theme.strokeWidth.medium}
             />
           </View>

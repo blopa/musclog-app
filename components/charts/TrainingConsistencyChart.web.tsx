@@ -44,7 +44,7 @@ export function TrainingConsistencyChart({
 }: import('./TrainingConsistencyChart').TrainingConsistencyChartProps) {
   const theme = useTheme();
 
-  const DEFAULT_NEON = theme.colors.status.emeraldLight;
+  const DEFAULT_NEON = theme.colors.status.brandBright;
   const DEFAULT_BORDER = theme.colors.border.dark;
   const accentColorResolved = accentColor ?? DEFAULT_NEON;
   const chartId = useId();
@@ -82,7 +82,7 @@ export function TrainingConsistencyChart({
             borderRadius: theme.borderRadius.xs,
             paddingHorizontal: theme.spacing.padding.sm,
             paddingVertical: theme.spacing.padding.xs,
-            boxShadow: `0 2px 4px ${theme.colors.background.black15}`,
+            boxShadow: `0 2px 4px ${theme.colors.background.scrim15}`,
             zIndex: 100,
             alignItems: 'center',
             justifyContent: 'center',

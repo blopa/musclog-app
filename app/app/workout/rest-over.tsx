@@ -203,7 +203,7 @@ export default function RestOverScreen() {
       <Animated.View
         className="absolute bottom-[-10%] left-[-20%] h-[50%] w-[90%] rounded-full blur-3xl"
         style={{
-          backgroundColor: theme.colors.status.emerald20,
+          backgroundColor: theme.colors.status.brandVivid20,
         }}
       />
 

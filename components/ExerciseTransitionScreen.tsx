@@ -103,7 +103,7 @@ export function ExerciseTransitionScreen({
         {/* Next Exercise Card */}
         {nextExercise ? (
           <GenericCard
-            variant="card"
+            variant="flat"
             containerStyle={{ marginTop: theme.spacing.margin.base, overflow: 'hidden' as const }}
           >
             <View className="relative aspect-[4/3] w-full overflow-hidden bg-gray-200 dark:bg-gray-800">
@@ -114,8 +114,8 @@ export function ExerciseTransitionScreen({
               />
               <LinearGradient
                 colors={[
-                  theme.colors.background.black90,
-                  theme.colors.background.black40,
+                  theme.colors.background.scrim90,
+                  theme.colors.background.scrim40,
                   'transparent',
                 ]}
                 locations={[0, 0.5, 1]}
@@ -125,9 +125,9 @@ export function ExerciseTransitionScreen({
               />
               <View className="absolute bottom-0 left-0 right-0 flex flex-col items-start gap-1 p-5">
                 <Text
-                  className="text-2xl font-bold leading-tight text-white"
+                  className="text-2xl font-bold leading-tight text-text-always-white"
                   style={{
-                    textShadowColor: theme.colors.overlay.black90,
+                    textShadowColor: theme.colors.overlay.scrim90,
                     textShadowOffset: { width: 0, height: 1 },
                     textShadowRadius: 3,
                   }}
@@ -138,7 +138,7 @@ export function ExerciseTransitionScreen({
                   className="text-sm font-semibold uppercase tracking-wide"
                   style={{
                     color: theme.colors.accent.primary,
-                    textShadowColor: theme.colors.overlay.black60,
+                    textShadowColor: theme.colors.overlay.scrim60,
                     textShadowOffset: { width: 0, height: 1 },
                     textShadowRadius: 2,
                   }}

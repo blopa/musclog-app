@@ -50,8 +50,8 @@ export function MealEstimationScreen({
   const { formatInteger } = useFormatAppNumber();
 
   const macroColors = {
-    protein: theme.colors.status.emerald10,
-    proteinProgress: theme.colors.status.emerald30,
+    protein: theme.colors.status.brandVivid10,
+    proteinProgress: theme.colors.status.brandVivid30,
     carbs: theme.colors.status.amber,
     carbsProgress: theme.colors.status.amber10,
     fat: theme.colors.status.warning,
@@ -64,15 +64,6 @@ export function MealEstimationScreen({
         {/* Meal Image */}
         <View className="relative">
           <Image source={{ uri: mealImage }} className="h-64 w-full" resizeMode="cover" />
-          {/* AI Estimated Badge */}
-          <View
-            className="absolute left-4 top-4 rounded-full px-3 py-1.5"
-            style={{ backgroundColor: theme.colors.accent.primary }}
-          >
-            <Text className="text-xs font-semibold uppercase text-white">
-              {t('nutrition.aiCamera.modes.mealPhoto')} {t('nutrition.aiCamera.estimated')}
-            </Text>
-          </View>
         </View>
 
         <View className="p-4">
@@ -125,7 +116,7 @@ export function MealEstimationScreen({
             </Text>
 
             {identifiedItems.map((item) => (
-              <GenericCard key={item.id} variant="card" containerStyle={{ marginBottom: 12 }}>
+              <GenericCard key={item.id} variant="flat" containerStyle={{ marginBottom: 12 }}>
                 <View className="flex-row items-center p-3">
                   {/* Item Image */}
                   <View

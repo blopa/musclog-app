@@ -1,3 +1,5 @@
+import { THEME_DEFINITIONS, THEME_IDS as REGISTRY_THEME_IDS } from '@/theme.registry';
+
 /**
  * Setting type for units preference (stored in WatermelonDB settings table).
  * value: '0' = metric, '1' = imperial.
@@ -6,7 +8,7 @@ export const UNITS_SETTING_TYPE = 'unit_system';
 
 /**
  * Setting type for theme preference (stored in WatermelonDB settings table).
- * value: 'system' | 'light' | 'dark'.
+ * value: 'system' | one of THEME_IDS.
  */
 export const THEME_SETTING_TYPE = 'theme';
 
@@ -369,7 +371,10 @@ export type NavItemKey = (typeof NAV_ITEM_KEYS)[number];
 export type NavItemKeyList = readonly NavItemKey[] & { length: (typeof NAV_ITEM_KEYS)['length'] };
 
 export type Units = 'metric' | 'imperial';
-export type ThemeOption = 'system' | 'light' | 'dark';
+export type ThemeId = keyof typeof THEME_DEFINITIONS;
+export const THEME_IDS = REGISTRY_THEME_IDS as readonly ThemeId[];
+// Reading and normalizing the stored value lives in `utils/themeSelection`.
+export type ThemeOption = 'system' | ThemeId;
 export type ProgressionMode = 'reps_first' | 'weight_first';
 export type FoodSearchSource = 'both' | 'openfood' | 'usda' | 'musclog' | 'none';
 export type FoodSource = 'user' | 'usda' | 'ai' | 'openfood' | 'foundation' | 'musclog';

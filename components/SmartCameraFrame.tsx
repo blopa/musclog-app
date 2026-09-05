@@ -89,7 +89,7 @@ function BarcodeGlyph() {
         <View
           // Fixed decorative pattern — bars have no identity beyond their position.
           key={index}
-          style={{ backgroundColor: theme.colors.text.white, flexGrow: barWidth, flexShrink: 1 }}
+          style={{ backgroundColor: theme.colors.text.primary, flexGrow: barWidth, flexShrink: 1 }}
         />
       ))}
     </View>
@@ -110,7 +110,7 @@ type FrameScrimProps = {
 function FrameScrim({ overscan }: FrameScrimProps) {
   const theme = useTheme();
   const scrimStyle: ViewStyle = {
-    backgroundColor: theme.colors.background.black40,
+    backgroundColor: theme.colors.background.scrim40,
     position: 'absolute',
   };
 
@@ -245,7 +245,7 @@ export function SmartCameraFrame({ isCapturing = false, variant }: SmartCameraFr
       style={{
         ...getFrameSizeStyle(variant, isSmallScreen, screenHeight, theme),
         borderWidth: theme.borderWidth.thin,
-        borderColor: theme.colors.background.white20,
+        borderColor: theme.colors.background.ink20,
         overflow: 'visible',
       }}
     >
@@ -279,7 +279,7 @@ export function SmartCameraFrame({ isCapturing = false, variant }: SmartCameraFr
         <View pointerEvents="none" className="absolute inset-0 items-center justify-center">
           <ActivityIndicator
             size="large"
-            color={theme.colors.text.white}
+            color={theme.colors.text.primary}
             style={{ transform: [{ scale: 1.6 }] }}
           />
         </View>

@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { X } from 'lucide-react-native';
 import { createElement, ReactNode, useCallback, useState } from 'react';
@@ -81,6 +80,8 @@ type MenuItemProps = {
 };
 
 function MenuItem({ icon, label, onPress, isLoading }: MenuItemProps) {
+  const theme = useTheme();
+
   return (
     <Pressable
       className="active:bg-bg-card-elevated flex-row items-center gap-4 rounded-2xl bg-bg-overlay p-4"
@@ -91,7 +92,7 @@ function MenuItem({ icon, label, onPress, isLoading }: MenuItemProps) {
         {icon}
       </View>
       <Text className="flex-1 text-lg font-semibold text-text-primary">{label}</Text>
-      {isLoading ? <ActivityIndicator size="small" color="#10B981" /> : null}
+      {isLoading ? <ActivityIndicator size="small" color={theme.colors.accent.primary} /> : null}
     </Pressable>
   );
 }
@@ -188,7 +189,7 @@ export function UserMenuModal({
       {/* Backdrop */}
       <Pressable
         className="flex-1"
-        style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}
+        style={[{ backgroundColor: theme.colors.overlay.scrim60 }, webBackdropStyle]}
         onPress={onClose}
       >
         <SafeAreaView
@@ -202,17 +203,8 @@ export function UserMenuModal({
         >
           {/* Modal Content */}
           <View className="overflow-hidden rounded-b-3xl border-b border-border-dark bg-bg-card">
-            {/* Gradient Header */}
-            <LinearGradient
-              colors={[
-                theme.colors.status.purple40,
-                theme.colors.accent.secondary10,
-                'transparent',
-              ]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              className="border-b border-border-dark"
-            >
+            {/* Header */}
+            <View className="border-b border-border-dark">
               <View className="flex-row items-center justify-between p-6">
                 <View className="flex-row items-center gap-4">
                   <View
@@ -261,7 +253,7 @@ export function UserMenuModal({
                   <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
                 </Pressable>
               </View>
-            </LinearGradient>
+            </View>
 
             {/* Menu Items */}
             <View className="gap-3 p-6">
@@ -287,7 +279,7 @@ export function UserMenuModal({
                     {t('userMenu.debugPage')}
                   </Text>
                   {loadingItem === 'debug' ? (
-                    <ActivityIndicator size="small" color="#10B981" />
+                    <ActivityIndicator size="small" color={theme.colors.accent.primary} />
                   ) : null}
                 </Pressable>
               ) : null}

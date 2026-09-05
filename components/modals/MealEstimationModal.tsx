@@ -125,11 +125,11 @@ export function MealEstimationModal({
           onPress={handleRetake}
           className="flex-row items-center gap-2 rounded-lg px-3 py-2"
           style={{
-            backgroundColor: theme.colors.background.white10,
+            backgroundColor: theme.colors.background.ink10,
           }}
         >
-          <Camera size={16} color="white" />
-          <Text className="text-sm font-medium text-white">
+          <Camera size={16} color={theme.colors.text.primary} />
+          <Text className="text-sm font-medium text-text-primary">
             {t('nutrition.mealEstimation.retake')}
           </Text>
         </TouchableOpacity>

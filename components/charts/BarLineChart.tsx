@@ -98,7 +98,7 @@ export function BarLineChart({
   }, [chartId, registerChart, unregisterChart]);
 
   const barColorResolved = barColor ?? theme.colors.accent.primary;
-  const lineColorResolved = lineColor ?? theme.colors.background.white;
+  const lineColorResolved = lineColor ?? theme.colors.text.primary;
 
   if (data.length === 0) {
     return null;
@@ -137,7 +137,7 @@ export function BarLineChart({
     paddingHorizontal: theme.spacing.padding.sm,
     justifyContent: 'center' as const,
     alignItems: 'center' as const,
-    shadowColor: theme.colors.text.black,
+    shadowColor: theme.colors.text.onAccent,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
     shadowRadius: 4,

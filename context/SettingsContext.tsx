@@ -77,6 +77,7 @@ import Setting from '@/database/models/Setting';
 import { SettingsService } from '@/database/services/SettingsService';
 import { DEFAULT_LANG } from '@/lang/lang';
 import { effectiveUseMusclogGateway } from '@/utils/musclogGatewayAvailability';
+import { normalizeThemeOption } from '@/utils/themeSelection';
 import { getDefaultUnits, getHeightUnit, getWeightUnit } from '@/utils/units';
 
 type SettingsState = {
@@ -237,7 +238,7 @@ function getNumber(map: Map<string, string>, type: string, defaultVal = 0): numb
 
 function deriveStateFromMap(map: Map<string, string>): SettingsState {
   const rawTheme = getString(map, THEME_SETTING_TYPE);
-  const theme: ThemeOption = rawTheme === 'light' || rawTheme === 'dark' ? rawTheme : 'system';
+  const theme = normalizeThemeOption(rawTheme);
 
   const rawUnits = getString(map, UNITS_SETTING_TYPE);
   let units: Units;

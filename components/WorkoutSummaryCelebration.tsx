@@ -128,7 +128,7 @@ export function WorkoutSummaryCelebration({
             style={{
               height: theme.size['48'],
               width: theme.size['48'],
-              backgroundColor: theme.colors.status.emerald20,
+              backgroundColor: theme.colors.status.brandVivid20,
               borderRadius: theme.size['48'] / 2,
               transform: [{ translateX: -theme.size['24'] }, { translateY: -theme.size['24'] }],
               opacity: glowAnim2,
@@ -144,6 +144,7 @@ export function WorkoutSummaryCelebration({
             volume={volume}
             personalRecords={personalRecords}
             caloriesBurned={caloriesBurned}
+            containerStyle={{ marginBottom: theme.spacing.margin['2xl'] }}
           />
 
           {/* Goal Progress Nudge */}
@@ -152,7 +153,7 @@ export function WorkoutSummaryCelebration({
               {goalProgress.map((item, index) => {
                 const progress = Math.min(100, Math.round((item.current / item.target) * 100));
                 return (
-                  <GenericCard key={index} variant="card">
+                  <GenericCard key={index} variant="flat">
                     <View className="p-4">
                       <View className="mb-3 flex-row items-center gap-3">
                         <View

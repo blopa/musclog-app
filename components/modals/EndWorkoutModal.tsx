@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { Flag, Save, Trash2, X } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -76,7 +75,7 @@ export function EndWorkoutModal({
       {/* Backdrop */}
       <Pressable
         className="flex-1 items-center justify-center p-4"
-        style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}
+        style={[{ backgroundColor: theme.colors.overlay.scrim60 }, webBackdropStyle]}
         onPress={isBusy ? undefined : onClose}
       >
         {/* Modal Content */}
@@ -95,27 +94,14 @@ export function EndWorkoutModal({
               width: '100%',
             }}
           >
-            <LinearGradient
-              colors={[
-                theme.colors.background.cardElevated,
-                theme.colors.background.card,
-                theme.colors.background.secondaryDark,
-              ]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
+            <View
               style={{
+                backgroundColor: theme.colors.background.cardElevated,
                 borderRadius: theme.borderRadius['3xl'],
               }}
             >
-              {/* Gradient Header */}
-              <LinearGradient
-                colors={[
-                  theme.colors.status.purple40,
-                  theme.colors.accent.secondary10,
-                  'transparent',
-                ]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
+              {/* Header */}
+              <View
                 style={{
                   borderBottomWidth: theme.borderWidth.thin,
                   borderBottomColor: theme.colors.border.dark,
@@ -142,7 +128,7 @@ export function EndWorkoutModal({
                     <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
                   </Pressable>
                 </View>
-              </LinearGradient>
+              </View>
 
               {/* Content */}
               <View className="p-6">
@@ -202,7 +188,7 @@ export function EndWorkoutModal({
                   disabled={isSaving || isDiscarding}
                 />
               </View>
-            </LinearGradient>
+            </View>
           </Animated.View>
         </Pressable>
       </Pressable>

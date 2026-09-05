@@ -287,8 +287,8 @@ export default function CycleScreen() {
                       className="flex-row items-center justify-center gap-2 rounded-2xl px-4 py-4"
                       style={{ backgroundColor: theme.colors.rose.brand }}
                     >
-                      <CircleDot size={20} color={theme.colors.text.white} />
-                      <Text className="font-bold text-white">
+                      <CircleDot size={20} color={theme.colors.text.alwaysWhite} />
+                      <Text className="font-bold text-text-always-white">
                         {t('cycle.actions.periodStarted')}
                       </Text>
                     </TouchableOpacity>
@@ -323,13 +323,13 @@ export default function CycleScreen() {
                   onPress={() => setIsLogModalVisible(true)}
                   className="h-10 w-10 items-center justify-center rounded-full bg-accent-primary"
                 >
-                  <Plus size={24} color={theme.colors.text.black} />
+                  <Plus size={24} color={theme.colors.text.onAccent} />
                 </Pressable>
               </View>
 
               {/* Next Period Prediction */}
               {cycle ? (
-                <View className="mb-4 rounded-2xl border-2 border-white/5 bg-bg-overlay p-5">
+                <View className="mb-4 rounded-2xl border-2 border-ink/5 bg-bg-overlay p-5">
                   <View className="mb-4 flex-row items-center gap-4">
                     <View className="h-10 w-10 items-center justify-center rounded-xl bg-bg-navActive">
                       <Calendar size={20} color={theme.colors.accent.primary} />
@@ -377,7 +377,7 @@ export default function CycleScreen() {
                   {dailyMetrics.map((metric) => (
                     <View
                       key={metric.id}
-                      className="flex-row items-center justify-between rounded-2xl border-2 border-white/5 bg-bg-card p-5"
+                      className="flex-row items-center justify-between rounded-2xl border-2 border-ink/5 bg-bg-card p-5"
                     >
                       <View className="flex-1">
                         <Text className="mb-1 text-xs font-bold uppercase tracking-widest text-text-tertiary">

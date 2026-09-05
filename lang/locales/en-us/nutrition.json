@@ -106,12 +106,6 @@
     "common": {
       "kcal": "kcal"
     },
-    "aiCamera": {
-      "estimated": "Estimated",
-      "modes": {
-        "mealPhoto": "AI Meal"
-      }
-    },
     "createMeal": {
       "estimated": "Estimated",
       "totalNutrition": "Total Nutrition"

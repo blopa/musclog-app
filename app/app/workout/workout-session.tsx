@@ -151,7 +151,7 @@ function BlankWorkoutStats({
   return (
     <View
       className="mt-10 flex-row justify-around rounded-xl border border-border-default bg-bg-card py-4"
-      style={{ borderColor: theme.colors.background.white5 }}
+      style={{ borderColor: theme.colors.background.ink5 }}
     >
       <View className="items-center">
         <Clock size={theme.iconSize.md} color={theme.colors.text.secondary} />
@@ -1023,7 +1023,7 @@ export default function WorkoutSessionScreen() {
             </Text>
             <Button
               label={t('freeTraining.addFirstExercise')}
-              icon={<Plus size={theme.iconSize.lg} color={theme.colors.text.white} />}
+              icon={<Plus size={theme.iconSize.lg} color={theme.colors.text.primary} />}
               size="md"
               width="full"
               variant="gradientCta"
@@ -1249,7 +1249,7 @@ export default function WorkoutSessionScreen() {
             </Text>
             <View className="mb-2 flex-row flex-wrap items-center gap-3">
               <View className="rounded-full bg-accent-primary px-4 py-1.5">
-                <Text className="text-sm font-bold text-text-black">
+                <Text className="text-sm font-bold text-text-on-accent">
                   {t('workoutSession.setOf', {
                     current: currentSetData.setNumber,
                     total: currentSetData.totalSetsInExercise,
@@ -1266,7 +1266,7 @@ export default function WorkoutSessionScreen() {
             {currentSetData.notes ? (
               <Pressable
                 className="mt-3 rounded-lg p-3"
-                style={{ backgroundColor: theme.colors.background.white5 }}
+                style={{ backgroundColor: theme.colors.background.ink5 }}
                 onPress={() => setIsNotesExpanded(!isNotesExpanded)}
               >
                 <Text

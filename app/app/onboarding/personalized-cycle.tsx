@@ -77,7 +77,7 @@ export default function PersonalizedCycleScreen() {
           <View className="px-6 pt-6">
             <Text
               className="mb-1 text-3xl font-black tracking-tight"
-              style={{ color: theme.colors.text.white }}
+              style={{ color: theme.colors.text.primary }}
             >
               {t('onboarding.personalizedCycle.title')}
             </Text>
@@ -91,7 +91,10 @@ export default function PersonalizedCycleScreen() {
               {t('onboarding.personalizedCycle.subtitle')}
             </Text>
 
-            <Text className="mb-4 text-lg font-semibold" style={{ color: theme.colors.text.white }}>
+            <Text
+              className="mb-4 text-lg font-semibold"
+              style={{ color: theme.colors.text.primary }}
+            >
               {t('onboarding.personalizedCycle.question')}
             </Text>
 
@@ -164,7 +167,7 @@ export default function PersonalizedCycleScreen() {
                         backgroundColor: isSelected ? theme.colors.accent.primary : 'transparent',
                       }}
                     >
-                      {isSelected ? <Check size={14} color={theme.colors.text.white} /> : null}
+                      {isSelected ? <Check size={14} color={theme.colors.text.primary} /> : null}
                     </View>
                   </Pressable>
                 );

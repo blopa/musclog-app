@@ -77,7 +77,7 @@ export function isBodyweightExercise(equipmentType?: EquipmentType | string): bo
 export function getExerciseIconConfig(theme: Theme, isBodyweight: boolean): ExerciseIconConfig {
   return {
     icon: isBodyweight ? User : Dumbbell,
-    iconBgColor: isBodyweight ? theme.colors.background.white5 : theme.colors.accent.primary10,
+    iconBgColor: isBodyweight ? theme.colors.background.ink5 : theme.colors.accent.primary10,
     iconColor: isBodyweight ? theme.colors.text.secondary : theme.colors.accent.primary,
   };
 }

@@ -238,7 +238,6 @@ export default function NotesScreen() {
                 title={t('emptyStates.notes.title')}
                 description={t('emptyStates.notes.description')}
                 buttonLabel={t('emptyStates.notes.buttonLabel')}
-                iconGradient={true}
                 buttonVariant="gradientCta"
                 onButtonPress={() => setIsCreateVisible(true)}
               />

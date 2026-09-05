@@ -38,7 +38,7 @@ export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
               }`}
             >
               <Text
-                className={`text-xs font-bold ${aggregation === agg ? 'text-white' : 'text-text-tertiary'}`}
+                className={`text-xs font-bold ${aggregation === agg ? 'text-text-on-accent' : 'text-text-tertiary'}`}
               >
                 {t(`common.time.${agg}`)}
               </Text>
@@ -83,7 +83,7 @@ export function MacroMuscleChart({ allData, units }: MacroMuscleChartProps) {
             }`}
           >
             <Text
-              className={`text-xs font-bold ${aggregation === agg ? 'text-white' : 'text-text-tertiary'}`}
+              className={`text-xs font-bold ${aggregation === agg ? 'text-text-on-accent' : 'text-text-tertiary'}`}
             >
               {t(`common.time.${agg}`)}
             </Text>

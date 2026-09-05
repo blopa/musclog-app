@@ -1,10 +1,15 @@
-import { MessageSquareText, Search } from 'lucide-react-native';
+import { MessageSquareText } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 
 import { CameraView, type CameraViewRef } from '@/components/CameraView';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
+import {
+  SmartCameraPlaceholder,
+  SmartCameraRoundButton,
+  SmartCameraTextSearchButton,
+} from '@/components/SmartCameraActions';
 import type { CameraMode } from '@/constants/camera';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { type MealType } from '@/database/models';
@@ -81,10 +86,10 @@ const getContextButtonOpacity = (
 const getContextIconColor = (
   cameraMode: CameraMode,
   aiContext: { description: string; tags: string[] } | null,
-  colors: { gray500: string; accent: string; primary: string }
+  colors: { tertiary: string; accent: string; primary: string }
 ): string => {
   if (cameraMode === 'barcode-scan') {
-    return colors.gray500;
+    return colors.tertiary;
   }
 
   if (aiContext) {
@@ -93,6 +98,61 @@ const getContextIconColor = (
 
   return colors.primary;
 };
+
+type BottomRightControlProps = {
+  aiContext: { description: string; tags: string[] } | null;
+  cameraMode: CameraMode;
+  hideCameraModePicker: boolean;
+  isAiEnabled: boolean;
+  onContextPress: () => void;
+  onTextSearchPress: () => void;
+  showTextSearch: boolean;
+};
+
+/**
+ * The slot to the right of the shutter. A component rather than a value built in
+ * the modal body, so its `useTheme()` resolves inside the viewfinder's `ThemeScope`.
+ */
+function BottomRightControl({
+  aiContext,
+  cameraMode,
+  hideCameraModePicker,
+  isAiEnabled,
+  onContextPress,
+  onTextSearchPress,
+  showTextSearch,
+}: BottomRightControlProps) {
+  const theme = useTheme();
+
+  if (showTextSearch) {
+    return <SmartCameraTextSearchButton onPress={onTextSearchPress} />;
+  }
+
+  if (isAiEnabled && cameraMode !== 'barcode-scan') {
+    return (
+      <SmartCameraRoundButton
+        size="md"
+        onPress={onContextPress}
+        opacity={getContextButtonOpacity(
+          hideCameraModePicker,
+          cameraMode,
+          theme.colors.opacity.strong
+        )}
+      >
+        <MessageSquareText
+          size={theme.iconSize.lg}
+          color={getContextIconColor(cameraMode, aiContext, {
+            tertiary: theme.colors.text.tertiary,
+            accent: theme.colors.text.accent,
+            primary: theme.colors.text.primary,
+          })}
+        />
+      </SmartCameraRoundButton>
+    );
+  }
+
+  return <View className="h-12 w-12" />;
+}
 
 type CameraModalProps = {
   visible: boolean;
@@ -137,7 +197,6 @@ export default function SmartCameraModal({
   permissionGranted,
   onRequestPermission,
 }: CameraModalProps) {
-  const theme = useTheme();
   const { t, i18n } = useTranslation();
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
   const { formatRoundedDecimal } = useFormatAppNumber();
@@ -567,49 +626,17 @@ export default function SmartCameraModal({
     barcode.handleBarcodeTextSearchSubmit(value);
   }, [barcode, barcodeTextSearchValue]);
 
-  let bottomRightControl = <View className="h-12 w-12" />;
-
-  if (shouldShowBarcodeTextSearch) {
-    bottomRightControl = (
-      <Pressable
-        onPress={() => setIsBarcodeTextSearchModalVisible(true)}
-        className="h-12 w-12 items-center justify-center rounded-full"
-        style={{
-          backgroundColor: theme.colors.background.darkGray50,
-          borderWidth: theme.borderWidth.thin,
-          borderColor: theme.colors.background.white10,
-        }}
-      >
-        <Search size={theme.iconSize.lg} color={theme.colors.text.primary} />
-      </Pressable>
-    );
-  } else if (isAiEnabled && cameraMode !== 'barcode-scan') {
-    bottomRightControl = (
-      <Pressable
-        onPress={() => setIsContextModalVisible(true)}
-        className="h-12 w-12 items-center justify-center rounded-full"
-        style={{
-          backgroundColor: theme.colors.background.darkGray50,
-          borderWidth: theme.borderWidth.thin,
-          borderColor: theme.colors.background.white10,
-          opacity: getContextButtonOpacity(
-            hideCameraModePicker,
-            cameraMode,
-            theme.colors.opacity.strong
-          ),
-        }}
-      >
-        <MessageSquareText
-          size={theme.iconSize.lg}
-          color={getContextIconColor(cameraMode, aiContext, {
-            gray500: theme.colors.text.gray500,
-            accent: theme.colors.text.accent,
-            primary: theme.colors.text.primary,
-          })}
-        />
-      </Pressable>
-    );
-  }
+  const bottomRightControl = (
+    <BottomRightControl
+      aiContext={aiContext}
+      cameraMode={cameraMode}
+      hideCameraModePicker={hideCameraModePicker}
+      isAiEnabled={isAiEnabled}
+      onContextPress={() => setIsContextModalVisible(true)}
+      onTextSearchPress={() => setIsBarcodeTextSearchModalVisible(true)}
+      showTextSearch={shouldShowBarcodeTextSearch}
+    />
+  );
 
   if (!visible) {
     return null;
@@ -646,7 +673,7 @@ export default function SmartCameraModal({
               }}
             />
           ) : (
-            <View style={{ flex: 1, backgroundColor: theme.colors.background.darkGreenSolid }} />
+            <SmartCameraPlaceholder />
           )
         }
         isLoading={barcode.isSearchingBarcode || isProcessingAi}

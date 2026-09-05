@@ -363,7 +363,7 @@ export function PastWorkoutsHistoryFilterMenu({
               onChange={setMinDuration}
               variant="solid"
               solidColor={theme.colors.accent.primary}
-              trackColor={theme.colors.background.white10}
+              trackColor={theme.colors.background.ink10}
               thumbColor={theme.colors.accent.primary}
             />
           </View>

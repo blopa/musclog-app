@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { Star, Trophy } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { Animated, View } from 'react-native';
@@ -66,10 +65,10 @@ export function WorkoutSummaryTrophy() {
       }}
     >
       <View
-        className="relative z-10 h-32 w-32 items-center justify-center rounded-full border"
+        className="h-32 w-32 items-center justify-center rounded-full border"
         style={{
           backgroundColor: theme.colors.status.indigo10,
-          borderColor: theme.colors.background.white5,
+          borderColor: theme.colors.background.ink5,
           shadowColor: theme.colors.accent.primary,
           shadowOffset: theme.shadowOffset.zero,
           shadowOpacity: theme.shadowOpacity.light,
@@ -77,17 +76,6 @@ export function WorkoutSummaryTrophy() {
           elevation: theme.elevation['3xl'],
         }}
       >
-        <LinearGradient
-          colors={[theme.colors.status.indigo10, theme.colors.status.emerald10]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={{
-            position: 'absolute',
-            inset: 0,
-            borderRadius: 128,
-            overflow: 'hidden',
-          }}
-        />
         <Trophy
           size={theme.size['16']}
           color={theme.colors.accent.primary}

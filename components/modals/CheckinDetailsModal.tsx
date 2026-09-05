@@ -206,11 +206,11 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
   const displayTargetWeight = kgToDisplay(checkin.targetWeight, units);
   const displayTrend = kgToDisplay(Math.abs(targetWeightDelta), units);
   const trendColor =
-    targetWeightDelta <= 0 ? theme.colors.status.emerald : theme.colors.status.warning;
+    targetWeightDelta <= 0 ? theme.colors.status.brandVivid : theme.colors.status.warning;
   const weightUnitKey = getWeightUnitI18nKey(units);
   let statusColor = theme.colors.status.warning;
   if (status === 'onTrack') {
-    statusColor = theme.colors.status.emerald;
+    statusColor = theme.colors.status.brandVivid;
   } else if (status === 'ahead') {
     statusColor = theme.colors.status.info;
   }
@@ -257,13 +257,13 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
             }}
           >
             <Text
-              className="text-center text-2xl font-black uppercase leading-7 tracking-tighter text-white"
+              className="text-center text-2xl font-black uppercase leading-7 tracking-tighter text-text-primary"
               style={{ fontSize: 28 }}
             >
               {status ? t(`nutrition.checkin.${status}`).replace(' ', '\n') : '---'}
             </Text>
           </View>
-          <Text className="mt-8 text-3xl font-black text-white">
+          <Text className="mt-8 text-3xl font-black text-text-primary">
             {status ? t(`nutrition.checkin.headline.${status}`) : '---'}
           </Text>
           <Text
@@ -299,24 +299,24 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
 
         {/* Weight Trend Card */}
         <GenericCard
-          variant="card"
+          variant="flat"
           containerStyle={{
             padding: 20,
             marginBottom: 32,
-            backgroundColor: theme.colors.background.darkGray,
+            backgroundColor: theme.colors.background.neutralWash,
             borderColor: theme.colors.border.accent,
           }}
         >
           <View className="flex-row justify-between">
             <View>
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+              <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
                 {t('nutrition.checkin.weightTrend')}
               </Text>
               <View className="mt-1 flex-row items-baseline">
-                <Text className="text-3xl font-black text-white">
+                <Text className="text-3xl font-black text-text-primary">
                   {formatDecimal(displayActualWeight, 1)}
                 </Text>
-                <Text className="ml-1 text-base font-bold text-gray-400">
+                <Text className="ml-1 text-base font-bold text-text-tertiary">
                   {t(weightUnitKey, { value: '' })}
                 </Text>
                 <View
@@ -332,12 +332,12 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
               </View>
             </View>
             <View className="items-end">
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+              <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
                 {t('nutrition.checkin.target')}
               </Text>
-              <Text className="mt-1 text-xl font-bold text-white">
+              <Text className="mt-1 text-xl font-bold text-text-primary">
                 {formatDecimal(displayTargetWeight, 1)}
-                <Text className="text-sm font-medium text-gray-400">
+                <Text className="text-sm font-medium text-text-tertiary">
                   {' '}
                   {t(weightUnitKey, { value: '' })}
                 </Text>
@@ -348,7 +348,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
           <BarChart
             data={dailyWeights.map((y: number, i: number): BarChartDataPoint => ({ x: i, y }))}
             height={100}
-            barColor={theme.colors.status.emerald}
+            barColor={theme.colors.status.brandVivid}
             innerPadding={0.3}
             xAxisLabels={dailyWeights.map((_w: number, i: number) => {
               const dayInstant = localCalendarDayPlusDays(
@@ -370,7 +370,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
 
         {/* Weekly Breakdown */}
         <View className="mb-4 flex-row items-center justify-between">
-          <Text className="text-2xl font-black text-white">
+          <Text className="text-2xl font-black text-text-primary">
             {t('nutrition.checkin.weeklyBreakdown')}
           </Text>
           <View
@@ -390,15 +390,15 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
         </View>
 
         <GenericCard
-          variant="card"
+          variant="flat"
           containerStyle={{
             padding: 20,
             marginBottom: 24,
-            backgroundColor: theme.colors.background.darkGray,
+            backgroundColor: theme.colors.background.neutralWash,
             borderColor: theme.colors.border.accent,
           }}
         >
-          <Text className="text-base font-medium leading-relaxed text-gray-300">
+          <Text className="text-base font-medium leading-relaxed text-text-secondary">
             {t('nutrition.checkin.summaryIntro', {
               target: formatInteger(currentGoal?.totalCalories ?? 0),
             })}
@@ -420,7 +420,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
             <Text
               style={{
                 color:
-                  workoutsCount > 0 ? theme.colors.status.emerald : theme.colors.status.warning,
+                  workoutsCount > 0 ? theme.colors.status.brandVivid : theme.colors.status.warning,
               }}
             >
               {' '}
@@ -440,15 +440,15 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+              <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
                 {t('nutrition.checkin.avgIntake')}
               </Text>
               <Text
-                className="mt-1 text-xl font-black text-white"
+                className="mt-1 text-xl font-black text-text-primary"
                 style={intuitiveEatingMode ? blurFilter(4) : undefined}
               >
                 {intuitiveEatingMode ? '0' : formatInteger(avgCalories)}{' '}
-                <Text className="text-xs font-medium text-gray-500">{t('common.kcal')}</Text>
+                <Text className="text-xs font-medium text-text-tertiary">{t('common.kcal')}</Text>
               </Text>
             </View>
             <View
@@ -459,12 +459,12 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+              <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
                 {t('nutrition.checkin.consistency')}
               </Text>
-              <Text className="mt-1 text-xl font-black text-white">
+              <Text className="mt-1 text-xl font-black text-text-primary">
                 {consistency}%{' '}
-                <Text className="text-xs font-medium text-gray-500">
+                <Text className="text-xs font-medium text-text-tertiary">
                   {t('nutrition.checkin.rate')}
                 </Text>
               </Text>
@@ -480,13 +480,13 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+              <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
                 {t('nutrition.checkin.avgBodyFat')}
               </Text>
-              <Text className="mt-1 text-xl font-black text-white">
+              <Text className="mt-1 text-xl font-black text-text-primary">
                 {avgBodyFat != null ? formatDecimal(avgBodyFat, 1) : '--'}%
               </Text>
-              <Text className="mt-1 text-[10px] font-medium text-gray-500">
+              <Text className="mt-1 text-[10px] font-medium text-text-tertiary">
                 {checkin.targetBodyFat != null
                   ? t('nutrition.checkin.targetShort', {
                       value: formatDecimal(checkin.targetBodyFat, 1),
@@ -502,10 +502,10 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                 backgroundColor: theme.colors.background.primary,
               }}
             >
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
+              <Text className="text-[10px] font-bold uppercase tracking-widest text-text-tertiary">
                 {t('nutrition.checkin.activeMinutes')}
               </Text>
-              <Text className="mt-1 text-xl font-black text-white">
+              <Text className="mt-1 text-xl font-black text-text-primary">
                 {formatInteger(activeMinutes)}
               </Text>
               {activeMinutesTrend !== null ? (
@@ -514,7 +514,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
                   style={{
                     color:
                       activeMinutesTrend >= 0
-                        ? theme.colors.status.emerald
+                        ? theme.colors.status.brandVivid
                         : theme.colors.status.warning,
                   }}
                 >

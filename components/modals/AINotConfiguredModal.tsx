@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { Bot, KeyRound, Sparkles, Wand2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
@@ -52,7 +51,6 @@ export function AINotConfiguredModal({
       onClose={onClose}
       title={t('ai.notConfiguredModal.title')}
       subtitle={t('ai.notConfiguredModal.subtitle')}
-      withGradient
       scrollable={false}
       footer={footer}
     >
@@ -60,10 +58,7 @@ export function AINotConfiguredModal({
         <View pointerEvents="none" style={{ height: theme.spacing.padding['3xl'] }} />
         <View className="mb-6 items-center">
           <View className="relative">
-            <LinearGradient
-              colors={[theme.colors.status.purple40, theme.colors.accent.secondary10]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
+            <View
               style={{
                 width: 110,
                 height: 110,
@@ -71,16 +66,17 @@ export function AINotConfiguredModal({
                 alignItems: 'center',
                 justifyContent: 'center',
                 overflow: 'hidden',
+                backgroundColor: theme.colors.accent.primary10,
                 borderWidth: theme.borderWidth.thin,
                 borderColor: theme.colors.border.light,
               }}
             >
               <Bot
                 size={theme.iconSize['3xl']}
-                color={theme.colors.text.primary}
+                color={theme.colors.accent.primary}
                 strokeWidth={1.5}
               />
-            </LinearGradient>
+            </View>
             <View
               className="absolute -bottom-1 -right-1 h-10 w-10 items-center justify-center rounded-full border-2 bg-bg-card shadow-sm"
               style={{ borderColor: theme.colors.background.primary }}

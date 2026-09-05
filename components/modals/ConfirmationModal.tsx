@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, Text, View } from 'react-native';
@@ -86,11 +85,8 @@ export function ConfirmationModal({
           }}
           onPress={(e) => e.stopPropagation()}
         >
-          {/* Gradient Header */}
-          <LinearGradient
-            colors={[theme.colors.status.purple40, theme.colors.accent.secondary10, 'transparent']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
+          {/* Header */}
+          <View
             style={{
               borderBottomWidth: theme.borderWidth.thin,
               borderBottomColor: theme.colors.border.dark,
@@ -109,7 +105,7 @@ export function ConfirmationModal({
                 {title}
               </Text>
             </View>
-          </LinearGradient>
+          </View>
 
           {/* Content */}
           <View

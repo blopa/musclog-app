@@ -28,7 +28,7 @@ export function WorkoutStatCard({ title, value, unit, onPress, isAdjusted }: Wor
   };
 
   return (
-    <GenericCard variant="default" size="sm" isPressable={true} onPress={onPress}>
+    <GenericCard variant="flat" fill isPressable={true} onPress={onPress}>
       <View className="items-center p-3">
         <Text className="mb-1 text-xs font-medium text-text-secondary">{title}</Text>
         {renderValue()}

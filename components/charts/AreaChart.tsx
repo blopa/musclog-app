@@ -270,7 +270,7 @@ export function AreaChart({
                         <Scatter
                           points={toPointsArray([peakPixel])}
                           radius={PEAK_MARKER_R}
-                          color={theme.colors.text.white}
+                          color={theme.colors.text.primary}
                           style="fill"
                         />
                       ) : null;
@@ -303,7 +303,7 @@ export function AreaChart({
               borderRadius: theme.borderRadius.xs,
               paddingHorizontal: theme.spacing.padding.sm,
               paddingVertical: theme.spacing.padding.sm,
-              shadowColor: theme.colors.text.black,
+              shadowColor: theme.colors.shadow,
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.15,
               shadowRadius: 4,
@@ -340,11 +340,11 @@ export function AreaChart({
               top: 0,
               width: PEAK_LABEL_WIDTH,
               height: PEAK_LABEL_HEIGHT,
-              backgroundColor: theme.colors.text.white,
+              backgroundColor: theme.colors.text.primary,
               borderRadius: theme.borderRadius.xs,
               alignItems: 'center',
               justifyContent: 'center',
-              shadowColor: theme.colors.text.black,
+              shadowColor: theme.colors.shadow,
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: 0.15,
               shadowRadius: 4,

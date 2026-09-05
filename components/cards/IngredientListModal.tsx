@@ -52,7 +52,7 @@ export function IngredientListModal({
           <View
             key={`${ingredient.name}-${index}`}
             className="flex-row items-center justify-between rounded-lg px-3 py-2.5"
-            style={{ backgroundColor: theme.colors.background.white5 }}
+            style={{ backgroundColor: theme.colors.background.ink5 }}
           >
             <View className="flex-1 pr-3">
               <Text

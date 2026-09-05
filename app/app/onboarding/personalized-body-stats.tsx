@@ -209,7 +209,7 @@ export default function PersonalizedBodyStatsScreen() {
             <View>
               <Text
                 className="mb-1 text-3xl font-black tracking-tight"
-                style={{ color: theme.colors.text.white }}
+                style={{ color: theme.colors.text.primary }}
               >
                 {t('onboarding.quickBodyStats.title')}
               </Text>
@@ -287,7 +287,7 @@ export default function PersonalizedBodyStatsScreen() {
               />
               <Text
                 style={{
-                  color: theme.colors.text.gray500,
+                  color: theme.colors.text.tertiary,
                   fontSize: theme.typography.fontSize.xs,
                 }}
               >
@@ -305,7 +305,7 @@ export default function PersonalizedBodyStatsScreen() {
               </Text>
               <Text
                 style={{
-                  color: theme.colors.text.gray500,
+                  color: theme.colors.text.tertiary,
                   fontSize: theme.typography.fontSize.xs,
                 }}
               >

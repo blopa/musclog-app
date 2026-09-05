@@ -34,7 +34,7 @@ export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: Workout
           <LineChart
             data={workoutVolumeHistory.map((p) => ({ x: p.date, y: p.volume }))}
             height={200}
-            lineColor={theme.colors.status.violet500}
+            lineColor={theme.colors.status.purple}
             areaColor={theme.colors.status.purple10}
             xDomain={[
               workoutVolumeHistory[0].date,
@@ -62,7 +62,7 @@ export function WorkoutCharts({ workoutVolumeHistory, muscleGroupSets }: Workout
           <BarChart
             data={muscleGroupSets.map((m, i) => ({ x: i, y: m.sets }))}
             height={200}
-            barColor={theme.colors.status.pink500}
+            barColor={theme.colors.status.pink}
             xAxisLabels={getXAxisLabels(
               muscleGroupSets.map((m, i) => ({ x: i })),
               (x) => t(getMuscleGroupTranslationKey(muscleGroupSets[x].muscleGroup))

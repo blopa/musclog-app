@@ -21,7 +21,7 @@ export function MoodSelectorCard({ value, onChange, variant = 'default' }: MoodS
   const { t } = useTranslation();
 
   return (
-    <GenericCard variant="card" size="default">
+    <GenericCard variant="flat">
       <View className="p-4">
         <View className="mb-6 flex-row items-start justify-between gap-2">
           <View className="flex-1 flex-row items-start gap-3" style={{ minWidth: 0 }}>

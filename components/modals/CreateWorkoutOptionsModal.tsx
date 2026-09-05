@@ -35,7 +35,6 @@ export function CreateWorkoutOptionsModal({
       onClose={onClose}
       title={t('workouts.createWorkoutOptionsModal.header')}
       scrollable={true}
-      withGradient={false}
     >
       {/* Background Glows */}
       <View style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
@@ -79,7 +78,7 @@ export function CreateWorkoutOptionsModal({
             style={{
               fontSize: theme.typography.fontSize['3xl'],
               fontWeight: theme.typography.fontWeight.extrabold,
-              color: theme.colors.text.white,
+              color: theme.colors.text.primary,
               lineHeight: theme.typography.fontSize['3xl'] * 1.2,
             }}
           >
@@ -100,7 +99,6 @@ export function CreateWorkoutOptionsModal({
         <View style={{ gap: theme.spacing.gap.base }}>
           {onStartFreeTraining ? (
             <NewWorkoutCard
-              variant="default"
               icon={<Dumbbell size={theme.iconSize.xl} color={theme.colors.accent.primary} />}
               title={t('freeTraining.startFreeTraining')}
               subtitle={t('freeTraining.startFreeTrainingSubtitle')}
@@ -109,8 +107,7 @@ export function CreateWorkoutOptionsModal({
           ) : null}
           {isAiEnabled ? (
             <NewWorkoutCard
-              variant="popular"
-              icon={<Sparkles size={theme.iconSize.lg} color={theme.colors.text.white} />}
+              icon={<Sparkles size={theme.iconSize.lg} color={theme.colors.text.primary} />}
               title={t('workouts.createWorkoutOptions.generateWithAi')}
               subtitle={t('workouts.createWorkoutOptions.generateWithAiSubtitle')}
               onPress={onGenerateWithAi}
@@ -118,16 +115,14 @@ export function CreateWorkoutOptionsModal({
           ) : null}
 
           <NewWorkoutCard
-            variant="default"
-            icon={<PlusCircle size={theme.iconSize.xl} color={theme.colors.text.gray300} />}
+            icon={<PlusCircle size={theme.iconSize.xl} color={theme.colors.text.secondary} />}
             title={t('workouts.createWorkoutOptions.createFromEmptyTemplate')}
             subtitle={t('workouts.createWorkoutOptions.createFromEmptyTemplateSubtitle')}
             onPress={onCreateEmptyTemplate}
           />
 
           <NewWorkoutCard
-            variant="default"
-            icon={<Library size={theme.iconSize.xl} color={theme.colors.text.gray300} />}
+            icon={<Library size={theme.iconSize.xl} color={theme.colors.text.secondary} />}
             title={t('workouts.createWorkoutOptions.browseTemplates')}
             subtitle={t('workouts.createWorkoutOptions.browseTemplatesSubtitle')}
             onPress={onBrowseTemplates}

@@ -225,11 +225,11 @@ export function TrackSavedForLaterFoodMealModal({
                     borderColor:
                       splitPercentage === preset
                         ? theme.colors.accent.primary
-                        : theme.colors.background.white10,
+                        : theme.colors.background.ink10,
                     backgroundColor:
                       splitPercentage === preset
                         ? theme.colors.accent.primary10
-                        : theme.colors.background.white5,
+                        : theme.colors.background.ink5,
                   }}
                   onPress={() => handlePresetPress(preset)}
                 >

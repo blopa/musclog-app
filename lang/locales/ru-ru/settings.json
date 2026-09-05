@@ -5,11 +5,6 @@
     "basicSettings": {
       "title": "Основные настройки",
       "subtitle": "Профиль, единицы измерения и предпочтения",
-      "appearance": "Внешний вид",
-      "appTheme": "Тема приложения",
-      "themeSystem": "Системная",
-      "themeLight": "Светлая",
-      "themeDark": "Тёмная",
       "localization": "Локализация",
       "language": "Язык",
       "languageSubtitle": "Выберите предпочитаемый язык",
@@ -409,6 +404,42 @@
         "weekly_streak": {
           "label": "Недельная серия",
           "description": "Тренировки на этой неделе и ваша серия отслеживания"
+        }
+      }
+    },
+    "theme": {
+      "sectionTitle": "Оформление",
+      "sectionSubtitle": "Выберите, как выглядит Musclog. «Системная» следует настройке устройства.",
+      "popupTitle": "Оформление",
+      "popupSubtitle": "Выберите тему",
+      "options": {
+        "system": {
+          "label": "Системная",
+          "description": "Следовать настройке устройства"
+        },
+        "kinetic-depth": {
+          "label": "Kinetic Depth",
+          "description": "Глубокие тона с изумрудными акцентами"
+        },
+        "kinetic-light": {
+          "label": "Kinetic Light",
+          "description": "Светлые тона с изумрудными акцентами"
+        },
+        "kinetic-shock": {
+          "label": "Kinetic Shock",
+          "description": "Глубокие розовые тона с яркими акцентами"
+        },
+        "kinetic-volt": {
+          "label": "Kinetic Volt",
+          "description": "Тёплые тёмные тона с электрически-жёлтыми акцентами"
+        },
+        "kinetic-blush": {
+          "label": "Kinetic Blush",
+          "description": "Нежно-розовые тона с малиновыми акцентами"
+        },
+        "kinetic-varia": {
+          "label": "Kinetic Varia",
+          "description": "Глубокие фиолетовые тона с оранжевыми акцентами"
         }
       }
     }

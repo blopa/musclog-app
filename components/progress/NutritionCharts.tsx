@@ -154,7 +154,7 @@ export function NutritionCharts({ nutritionHistory, weightHistory, units }: Nutr
           } ${isTransitioning ? 'opacity-50' : ''}`}
         >
           <Text
-            className={`text-[10px] font-bold ${view === v ? 'text-white' : 'text-text-tertiary'}`}
+            className={`text-[10px] font-bold ${view === v ? 'text-text-on-accent' : 'text-text-tertiary'}`}
           >
             {t(`progress.nutritionView.${v}`)}
           </Text>

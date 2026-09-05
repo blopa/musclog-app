@@ -200,10 +200,20 @@ describe('SettingsService', () => {
 
       expect(await SettingsService.getThemePreference()).toBe('system');
 
-      await SettingsService.setTheme('dark');
+      await SettingsService.setTheme('kinetic-volt');
 
-      expect(valuesFor(rows, THEME_SETTING_TYPE)).toEqual(['dark']);
-      expect(await SettingsService.getThemePreference()).toBe('dark');
+      expect(valuesFor(rows, THEME_SETTING_TYPE)).toEqual(['kinetic-volt']);
+      expect(await SettingsService.getThemePreference()).toBe('kinetic-volt');
+    });
+
+    it('maps legacy dark and light preferences to their named Kinetic themes', async () => {
+      installSettingsTable([{ type: THEME_SETTING_TYPE, value: 'dark', updatedAt: 1 }]);
+
+      expect(await SettingsService.getThemePreference()).toBe('kinetic-depth');
+
+      installSettingsTable([{ type: THEME_SETTING_TYPE, value: 'light', updatedAt: 1 }]);
+
+      expect(await SettingsService.getThemePreference()).toBe('kinetic-light');
     });
 
     it('returns null for the last water prompt day when unset or unparseable', async () => {

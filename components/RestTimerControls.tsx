@@ -20,7 +20,7 @@ export function RestTimerControls({ onMinus5s, onSkipRest, onPlus5s }: RestTimer
     <View className="w-full max-w-sm flex-row items-center justify-center gap-4">
       <Pressable
         className="active:bg-bg-card-elevated h-12 items-center justify-center rounded-xl border bg-bg-overlay/80 active:scale-95"
-        style={{ minWidth: theme.size['18'], borderColor: theme.colors.overlay.white5 }}
+        style={{ minWidth: theme.size['18'], borderColor: theme.colors.overlay.ink5 }}
         onPress={onMinus5s}
       >
         <Text className="text-sm font-bold text-text-primary">{t('restTimer.minus5s')}</Text>
@@ -37,7 +37,7 @@ export function RestTimerControls({ onMinus5s, onSkipRest, onPlus5s }: RestTimer
 
       <Pressable
         className="active:bg-bg-card-elevated h-12 items-center justify-center rounded-xl border bg-bg-overlay/80 active:scale-95"
-        style={{ minWidth: theme.size['18'], borderColor: theme.colors.overlay.white5 }}
+        style={{ minWidth: theme.size['18'], borderColor: theme.colors.overlay.ink5 }}
         onPress={onPlus5s}
       >
         <Text className="text-sm font-bold text-text-primary">{t('restTimer.plus5s')}</Text>

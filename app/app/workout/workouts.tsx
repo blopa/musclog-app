@@ -305,7 +305,7 @@ export default function WorkoutsScreen() {
               <View className="z-10 bg-bg-primary">
                 <View
                   className="flex-row items-center gap-4 rounded-xl border bg-bg-card p-4 shadow-sm"
-                  style={{ borderColor: theme.colors.background.white5 }}
+                  style={{ borderColor: theme.colors.background.ink5 }}
                 >
                   <View className="h-10 w-10 items-center justify-center rounded-full bg-accent-primary/10">
                     <Repeat size={theme.iconSize.md} color={theme.colors.accent.primary} />

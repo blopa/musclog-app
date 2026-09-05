@@ -29,7 +29,8 @@
 
 Musclog is a cross-platform mobile fitness application built with React Native and Expo. It combines workout logging, nutrition tracking, menstrual cycle awareness, and AI-powered coaching into a single, cohesive experience — all stored locally with WatermelonDB.
 
-> **Note:** Currently only dark theme is available.
+> **Note:** Kinetic Depth, Kinetic Light, Kinetic Shock, and Kinetic Volt are available under Settings →
+> Interface → Appearance. Choose one directly or let System follow your device's light/dark mode.
 
 ## Read the [blog post](https://pablo.gg/en/blog/coding/musclog-leveraging-my-reactjs-experience-to-build-a-react-native-app/) about how this app came to be.
 

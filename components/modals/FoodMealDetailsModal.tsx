@@ -168,7 +168,7 @@ export function FoodMealDetailsModal({ visible, onClose, entry }: FoodMealDetail
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ padding: theme.spacing.padding.base, paddingBottom: 40 }}
       >
-        <GenericCard variant="highlighted" backgroundVariant="gradient">
+        <GenericCard variant="raised">
           <View className="p-5">
             <Text className="mb-5 text-2xl font-bold text-text-primary">{displayName}</Text>
 

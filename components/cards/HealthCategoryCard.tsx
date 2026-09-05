@@ -21,7 +21,7 @@ export function HealthCategoryCard({
   const theme = useTheme();
   return (
     <View className="flex-1 basis-[48%]">
-      <GenericCard variant="card" size="sm">
+      <GenericCard variant="flat" fill>
         <View className="flex-row items-center gap-3 p-3">
           <View className="rounded-lg p-2" style={{ backgroundColor }}>
             <Icon
@@ -30,7 +30,7 @@ export function HealthCategoryCard({
               strokeWidth={theme.strokeWidth.medium}
             />
           </View>
-          <Text className="text-sm font-medium text-white">{label}</Text>
+          <Text className="text-sm font-medium text-text-primary">{label}</Text>
         </View>
       </GenericCard>
     </View>

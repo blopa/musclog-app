@@ -15,7 +15,7 @@ export const DailySummaryEmptyState: FC<DailySummaryEmptyStateProps> = ({ onSetG
   const { t } = useTranslation();
 
   return (
-    <GenericCard variant="default" size="lg" backgroundVariant="colorful-gradient">
+    <GenericCard variant="hero">
       <View className="relative z-10 flex h-full flex-col gap-4 p-5">
         {/* Header */}
         <View className="flex-row items-center justify-between">
@@ -23,7 +23,7 @@ export const DailySummaryEmptyState: FC<DailySummaryEmptyStateProps> = ({ onSetG
             className="font-medium uppercase tracking-wider"
             style={{
               fontSize: theme.typography.fontSize.xs,
-              color: theme.colors.overlay.white70,
+              color: theme.colors.colorfulCard.ink70,
             }}
           >
             {t('dailySummaryCard.dailySummary')}
@@ -34,7 +34,7 @@ export const DailySummaryEmptyState: FC<DailySummaryEmptyStateProps> = ({ onSetG
         <View className="flex flex-1 flex-col items-center justify-center gap-4 py-1">
           <Text
             className="text-center text-sm font-medium"
-            style={{ color: theme.colors.overlay.white70 }}
+            style={{ color: theme.colors.colorfulCard.ink70 }}
           >
             {t('dailySummaryCard.setGoalsToTrack')}
           </Text>

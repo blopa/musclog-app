@@ -124,13 +124,13 @@ const getConversationContextIcon = (
 ): { Icon: typeof Zap | typeof Dumbbell | typeof UtensilsCrossed; color: string } => {
   switch (conversationContext) {
     case 'general':
-      return { Icon: Zap, color: theme.colors.background.gray700 };
+      return { Icon: Zap, color: theme.colors.background.hairline };
     case 'exercise':
       return { Icon: Dumbbell, color: theme.colors.status.info };
     case 'nutrition':
       return { Icon: UtensilsCrossed, color: theme.colors.accent.primary };
     default:
-      return { Icon: Zap, color: theme.colors.background.gray700 };
+      return { Icon: Zap, color: theme.colors.background.hairline };
   }
 };
 
@@ -144,7 +144,7 @@ const renderMessageText = (props: any, theme: Theme) => {
         lineHeight: theme.typography.lineHeight.normal * theme.typography.fontSize.sm,
         color:
           props.currentMessage?.user._id === 1
-            ? theme.colors.text.black
+            ? theme.colors.text.onAccent
             : theme.colors.text.primary,
       }}
     >
@@ -331,7 +331,7 @@ const renderBubble = (
           >
             <Text
               style={{
-                color: theme.colors.text.black,
+                color: theme.colors.text.onAccent,
                 fontSize: theme.typography.fontSize.sm,
                 fontWeight: '600',
               }}
@@ -443,7 +443,7 @@ const renderSend = (
         ) : (
           <SendIcon
             size={theme.iconSize.lg}
-            color={isDisabled ? theme.colors.text.tertiary : theme.colors.text.black}
+            color={isDisabled ? theme.colors.text.tertiary : theme.colors.text.onAccent}
           />
         )}
       </Pressable>
@@ -579,9 +579,9 @@ const renderInputToolbar = (
             <Pressable
               onPress={onRemoveImage}
               className="absolute -right-2 -top-2 rounded-full p-1 shadow-sm"
-              style={{ backgroundColor: theme.colors.background.gray700 }}
+              style={{ backgroundColor: theme.colors.background.hairline }}
             >
-              <X size={12} color={theme.colors.text.white} />
+              <X size={12} color={theme.colors.text.primary} />
             </Pressable>
           </View>
         </View>
@@ -1198,7 +1198,7 @@ export function CoachModal({
         onPress={() => {
           setIsMenuVisible(true);
         }}
-        className="h-10 w-10 active:bg-white/5"
+        className="h-10 w-10 active:bg-ink/5"
       />
     ),
     []

@@ -32,7 +32,7 @@ export const GoogleGeminiIllustration = () => {
           <LinearGradient
             colors={[
               theme.colors.accent.primary, // primary
-              theme.colors.status.emerald, // emerald-500
+              theme.colors.status.brandVivid, // emerald-500
               theme.colors.accent.tertiary, // teal
             ]}
             start={{ x: 0, y: 0 }}
@@ -46,7 +46,7 @@ export const GoogleGeminiIllustration = () => {
         </View>
         {/* Main card */}
         <View
-          className="relative flex-1 rounded-2xl border border-white/5 bg-bg-cardDark"
+          className="relative flex-1 rounded-2xl border border-ink/5 bg-bg-cardDark"
           style={{ overflow: 'hidden' }}
         >
           {/* Background image */}
@@ -78,9 +78,9 @@ export const GoogleGeminiIllustration = () => {
           >
             {/* Single pill container */}
             <View
-              className="flex-row items-center gap-3 rounded-full border border-white/20 px-4 py-2.5"
+              className="flex-row items-center gap-3 rounded-full border border-ink/20 px-4 py-2.5"
               style={{
-                backgroundColor: theme.colors.background.white10,
+                backgroundColor: theme.colors.background.ink10,
                 ...theme.shadows.lg,
               }}
             >
@@ -99,15 +99,15 @@ export const GoogleGeminiIllustration = () => {
               {/* Sparkles icon - directly in pill, no background */}
               <Sparkles
                 size={theme.iconSize.lg}
-                color={theme.colors.status.emeraldLight} // #29e08e - primary from HTML
-                fill={theme.colors.status.emeraldLight}
+                color={theme.colors.status.brandBright} // #29e08e - primary from HTML
+                fill={theme.colors.status.brandBright}
               />
               {/* Zap icon - green circle with glow shadow */}
               <View
                 className="rounded-full p-1.5"
                 style={{
-                  backgroundColor: theme.colors.status.emeraldLight, // #29e08e - primary from HTML
-                  shadowColor: theme.colors.status.emeraldLight,
+                  backgroundColor: theme.colors.status.brandBright, // #29e08e - primary from HTML
+                  shadowColor: theme.colors.status.brandBright,
                   shadowOffset: theme.shadowOffset.zero,
                   shadowOpacity: theme.colors.opacity.subtle,
                   shadowRadius: theme.shadows.radius15.shadowRadius,

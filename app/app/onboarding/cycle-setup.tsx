@@ -137,7 +137,7 @@ export default function CycleSetup() {
       <ScrollView className="flex-1 px-6 pt-8" showsVerticalScrollIndicator={false}>
         <Text
           className="mb-2 text-3xl font-bold tracking-tight"
-          style={{ color: theme.colors.text.white }}
+          style={{ color: theme.colors.text.primary }}
         >
           {t('onboarding.cycleSetup.title')}
         </Text>

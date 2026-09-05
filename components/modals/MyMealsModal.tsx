@@ -547,7 +547,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
               <Text
                 className="mt-4 font-medium"
                 style={{
-                  color: theme.colors.text.gray500,
+                  color: theme.colors.text.tertiary,
                   fontSize: theme.typography.fontSize.sm,
                 }}
               >
@@ -568,7 +568,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
               <Text
                 className="text-center font-medium"
                 style={{
-                  color: theme.colors.text.gray500,
+                  color: theme.colors.text.tertiary,
                   fontSize: theme.typography.fontSize.sm,
                 }}
               >
@@ -667,7 +667,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
             items={[
               {
                 icon: Utensils,
-                iconColor: theme.colors.text.black,
+                iconColor: theme.colors.text.onAccent,
                 iconBgColor: theme.colors.accent.primary,
                 title: t('food.actions.track'),
                 description: t('meals.logMeal'),

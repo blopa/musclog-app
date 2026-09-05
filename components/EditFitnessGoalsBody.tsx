@@ -65,7 +65,7 @@ export function EditFitnessGoalsBody({ initialData, onFormChange }: EditFitnessG
       description: t('editFitnessDetails.activityLevelDescriptions.sedentary'),
       icon: Coffee,
       iconColor: theme.colors.text.tertiary,
-      iconBgColor: theme.colors.background.white5,
+      iconBgColor: theme.colors.background.ink5,
     },
     {
       level: 2,
@@ -160,7 +160,7 @@ export function EditFitnessGoalsBody({ initialData, onFormChange }: EditFitnessG
       label: t('editFitnessDetails.experienceLabels.beginner'),
       description: t('editFitnessDetails.experienceDescriptions.beginner'),
       icon: Dumbbell,
-      iconBgColor: theme.colors.background.white5,
+      iconBgColor: theme.colors.background.ink5,
       iconColor: theme.colors.text.tertiary,
     },
     {

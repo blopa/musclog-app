@@ -198,12 +198,12 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
                 key={level}
                 onPress={() => setFlow(level)}
                 className={`flex-row items-center rounded-xl border-2 px-4 py-3 ${
-                  flow === level ? 'bg-accent-primary10 border-accent-primary' : 'border-white/10'
+                  flow === level ? 'bg-accent-primary10 border-accent-primary' : 'border-ink/10'
                 }`}
               >
                 <View
                   className={`mr-3 h-6 w-6 items-center justify-center rounded-full border-2 ${
-                    flow === level ? 'border-accent-primary' : 'border-white/20'
+                    flow === level ? 'border-accent-primary' : 'border-ink/20'
                   }`}
                 >
                   {flow === level ? (
@@ -237,7 +237,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
                 className={`rounded-full border-2 px-3 py-2 ${
                   symptoms.includes(option.value)
                     ? 'bg-accent-primary10 border-accent-primary'
-                    : 'border-white/10'
+                    : 'border-ink/10'
                 }`}
               >
                 <Text
@@ -267,7 +267,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
                 className={`rounded-full border-2 px-3 py-2 ${
                   symptoms.includes(option.value)
                     ? 'bg-accent-primary10 border-accent-primary'
-                    : 'border-white/10'
+                    : 'border-ink/10'
                 }`}
               >
                 <Text

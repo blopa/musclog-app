@@ -21,15 +21,15 @@ export function PageIndicators({ totalPages, currentPage }: PageIndicatorsProps)
               isActive
                 ? {
                     width: theme.size['8'],
-                    backgroundColor: theme.colors.status.emeraldLight,
-                    shadowColor: theme.colors.status.emeraldLight,
+                    backgroundColor: theme.colors.status.brandBright,
+                    shadowColor: theme.colors.status.brandBright,
                     shadowOffset: theme.shadowOffset.zero,
                     shadowOpacity: theme.shadowOpacity.medium50,
                     shadowRadius: theme.shadowRadius.lg,
                     elevation: theme.elevation.lg,
                   }
                 : {
-                    backgroundColor: theme.colors.background.white10,
+                    backgroundColor: theme.colors.background.ink10,
                   }
             }
           />

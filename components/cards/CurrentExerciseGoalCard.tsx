@@ -333,7 +333,7 @@ export function CurrentExerciseGoalCard({
 
   return (
     <View className="mb-4">
-      <GenericCard variant="card">
+      <GenericCard variant="flat">
         {goal.goalType === '1rm' ? render1RMGoal() : renderConsistencyGoal()}
 
         <BottomPopUpMenu

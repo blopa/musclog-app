@@ -46,7 +46,7 @@ export default function SnackbarTestScreen() {
           <Pressable
             onPress={() => router.back()}
             className="absolute left-0 -ml-2 rounded-full p-2"
-            style={{ backgroundColor: theme.colors.overlay.white5 }}
+            style={{ backgroundColor: theme.colors.overlay.ink5 }}
           >
             <ChevronLeft size={theme.iconSize.xl} color={theme.colors.text.primary} />
           </Pressable>

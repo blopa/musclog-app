@@ -16,7 +16,6 @@
     "kg": "kg",
     "lbs": "lbs",
     "percent": "%",
-    "dynamic": "Dinámico",
     "dynamicNote": "Calculado automáticamente para hoy según la configuración de tu objetivo"
   }
 }

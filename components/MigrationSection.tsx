@@ -35,11 +35,11 @@ export const MigrationSection = () => {
         >
           <Database
             size={theme.iconSize.md}
-            color={checkingOldDatabase ? theme.colors.text.tertiary : theme.colors.text.black}
+            color={checkingOldDatabase ? theme.colors.text.tertiary : theme.colors.text.onAccent}
           />
           <Text
             className={`text-sm font-bold ${
-              checkingOldDatabase ? 'text-text-tertiary' : 'text-text-black'
+              checkingOldDatabase ? 'text-text-tertiary' : 'text-text-on-accent'
             }`}
           >
             {t('settings.migration.checkMigrationData')}
@@ -55,10 +55,10 @@ export const MigrationSection = () => {
         >
           <Download
             size={theme.iconSize.md}
-            color={migrating ? theme.colors.text.tertiary : theme.colors.text.black}
+            color={migrating ? theme.colors.text.tertiary : theme.colors.text.onAccent}
           />
           <Text
-            className={`text-sm font-bold ${migrating ? 'text-text-tertiary' : 'text-text-black'}`}
+            className={`text-sm font-bold ${migrating ? 'text-text-tertiary' : 'text-text-on-accent'}`}
           >
             {migrating ? t('settings.migration.migrating') : t('settings.migration.importData')}
           </Text>
@@ -148,8 +148,8 @@ export const MigrationSection = () => {
         <View
           className={`rounded-lg border p-3 ${
             migrationResult.success
-              ? 'border-status-success bg-bg-success'
-              : 'border-status-error bg-bg-error'
+              ? 'bg-bg-success border-status-success'
+              : 'bg-bg-error border-status-error'
           }`}
         >
           <Text
@@ -164,49 +164,49 @@ export const MigrationSection = () => {
 
           {migrationResult.success ? (
             <View>
-              <Text className="text-status-success text-sm">
+              <Text className="text-sm text-status-success">
                 • {t('settings.migration.summaryItems.fitnessGoals')}:{' '}
                 {migrationResult.details.fitnessGoalsMigrated} {t('settings.migration.migrated')}
               </Text>
-              <Text className="text-status-success text-sm">
+              <Text className="text-sm text-status-success">
                 • {t('settings.migration.summaryItems.userMetrics')}:{' '}
                 {migrationResult.details.userMetricsMigrated} {t('settings.migration.migrated')}
               </Text>
-              <Text className="text-status-success text-sm">
+              <Text className="text-sm text-status-success">
                 • {t('settings.migration.summaryItems.users')}:{' '}
                 {migrationResult.details.usersMigrated} {t('settings.migration.migrated')}
               </Text>
-              <Text className="text-status-success text-sm">
+              <Text className="text-sm text-status-success">
                 • {t('settings.migration.summaryItems.foods')}:{' '}
                 {migrationResult.details.foodsMigrated} {t('settings.migration.migrated')}
               </Text>
-              <Text className="text-status-success text-sm">
+              <Text className="text-sm text-status-success">
                 • {t('settings.migration.summaryItems.nutritionLogs')}:{' '}
                 {migrationResult.details.nutritionLogsMigrated} {t('settings.migration.migrated')}
               </Text>
-              <Text className="text-status-success text-sm">
+              <Text className="text-sm text-status-success">
                 • {t('settings.migration.summaryItems.exercises')}:{' '}
                 {migrationResult.details.exercisesMigrated} {t('settings.migration.migrated')}
               </Text>
-              <Text className="text-status-success text-sm">
+              <Text className="text-sm text-status-success">
                 • {t('settings.migration.summaryItems.workouts')}:{' '}
                 {migrationResult.details.workoutsMigrated} {t('settings.migration.migrated')}
               </Text>
-              <Text className="text-status-success text-sm">
+              <Text className="text-sm text-status-success">
                 • {t('settings.migration.summaryItems.workoutLogs')}:{' '}
                 {migrationResult.details.workoutLogsMigrated} {t('settings.migration.migrated')}
               </Text>
-              <Text className="text-status-success text-sm">
+              <Text className="text-sm text-status-success">
                 • {t('settings.migration.summaryItems.templateSets')}:{' '}
                 {migrationResult.details.templateSetsMigrated} {t('settings.migration.migrated')}
               </Text>
-              <Text className="text-status-success text-sm">
+              <Text className="text-sm text-status-success">
                 • {t('settings.migration.summaryItems.logSets')}:{' '}
                 {migrationResult.details.logSetsMigrated} {t('settings.migration.migrated')}
               </Text>
             </View>
           ) : (
-            <Text className="text-status-error text-sm">
+            <Text className="text-sm text-status-error">
               {t('settings.migration.error', { error: migrationResult.error })}
             </Text>
           )}

@@ -3,7 +3,6 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import type {
   NutritionLogHistoryDays,
   ProgressionMode,
-  ThemeOption,
   WorkoutHistoryDays,
 } from '@/constants/settings';
 import { SettingsService } from '@/database/services/SettingsService';
@@ -52,7 +51,6 @@ export function useDebouncedSettings(debounceMs = 200) {
     if (!initialized.current && !actualSettings.isLoading) {
       initialized.current = true;
       const keys: (keyof typeof actualSettings)[] = [
-        'theme',
         'connectHealthData',
         'readHealthData',
         'writeHealthData',
@@ -170,7 +168,6 @@ export function useDebouncedSettings(debounceMs = 200) {
   );
 
   // --- Specific handlers ---
-  const handleThemeChange = createSettingHandler<ThemeOption>('theme', SettingsService.setTheme);
   const handleConnectHealthDataChange = createSettingHandler(
     'connectHealthData',
     SettingsService.setConnectHealthData
@@ -392,9 +389,6 @@ export function useDebouncedSettings(debounceMs = 200) {
 
       try {
         switch (settingKey) {
-          case 'theme':
-            await SettingsService.setTheme(value as ThemeOption);
-            break;
           case 'connectHealthData':
             await SettingsService.setConnectHealthData(value as boolean);
             break;
@@ -545,7 +539,6 @@ export function useDebouncedSettings(debounceMs = 200) {
 
   return {
     // Optimistic (local) values
-    theme: (localSettings.theme as ThemeOption) || actualSettings.theme,
     connectHealthData:
       (localSettings.connectHealthData as boolean) ?? actualSettings.connectHealthData,
     readHealthData: (localSettings.readHealthData as boolean) ?? actualSettings.readHealthData,
@@ -630,13 +623,11 @@ export function useDebouncedSettings(debounceMs = 200) {
       (localSettings.workoutHistoryDays as WorkoutHistoryDays) ?? actualSettings.workoutHistoryDays,
 
     // Confirmed DB values
-    actualTheme: actualSettings.theme,
     actualConnectHealthData: actualSettings.connectHealthData,
     actualReadHealthData: actualSettings.readHealthData,
     actualWriteHealthData: actualSettings.writeHealthData,
 
     // Handlers
-    handleThemeChange,
     handleConnectHealthDataChange,
     handleReadHealthDataChange,
     handleWriteHealthDataChange,

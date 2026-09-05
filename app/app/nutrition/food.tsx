@@ -1510,7 +1510,7 @@ export default function FoodScreen() {
                 {/* Calories Card Skeleton */}
                 <View
                   className="rounded-lg border bg-bg-card p-5"
-                  style={{ borderColor: theme.colors.background.white5 }}
+                  style={{ borderColor: theme.colors.background.ink5 }}
                 >
                   <View className="mb-4 flex-row items-center justify-between">
                     <View className="gap-2">
@@ -1548,7 +1548,7 @@ export default function FoodScreen() {
                   <View
                     key={i}
                     className="flex-row items-center justify-between rounded-lg border bg-bg-card p-4"
-                    style={{ borderColor: theme.colors.background.white5 }}
+                    style={{ borderColor: theme.colors.background.ink5 }}
                   >
                     <View className="flex-row items-center gap-3">
                       <SkeletonLoader
@@ -1599,11 +1599,11 @@ export default function FoodScreen() {
                   {nutritionGoal?.isDynamic ? (
                     <View
                       className="mb-1 self-start rounded-full px-2 py-0.5"
-                      style={{ backgroundColor: theme.colors.status.emerald20 }}
+                      style={{ backgroundColor: theme.colors.status.brandVivid20 }}
                     >
                       <Text
                         className="text-xs font-semibold"
-                        style={{ color: theme.colors.status.emeraldLight }}
+                        style={{ color: theme.colors.status.brandBright }}
                       >
                         {t('nutritionGoals.dynamicBadge')}
                       </Text>

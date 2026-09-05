@@ -196,6 +196,11 @@
         }
       }
     },
+    "themes": {
+      "title": "Seis temas, um app",
+      "description": "Escolha a paleta que combina com o seu treino. Todas as telas seguem ela, incluindo gráficos, câmera e a barra de abas.",
+      "footnote": "Troque quando quiser nas Configurações. O Musclog também segue o modo claro ou escuro do seu aparelho, se você preferir não escolher."
+    },
     "features": {
       "title": "Construído para Performance e Privacidade",
       "description": "Sem telemetria, sem rastreamento, sem assinatura. Apenas um motor poderoso para sua jornada de fitness.",

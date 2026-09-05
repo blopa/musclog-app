@@ -30,7 +30,7 @@ export default function DashedButton({
         onPressOut={() => setIsPressed(false)}
         className="w-full items-center justify-center gap-4 rounded-xl border-2 border-dashed"
         style={{
-          borderColor: theme.colors.border.gray600,
+          borderColor: theme.colors.border.subtle,
           padding: theme.spacing.padding.sm,
           paddingVertical: theme.spacing.padding.lg,
           backgroundColor: isPressed

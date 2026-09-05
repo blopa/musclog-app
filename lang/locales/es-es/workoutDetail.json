@@ -23,6 +23,7 @@
     "totalTimeMinutes": "Tiempo Total (minutos)",
     "addSet": "Añadir Nueva Serie",
     "setLabel": "Serie {{index}}",
+    "prBadge": "PR",
     "remove": "Eliminar",
     "rir": "RIR (Reps en Reserva)",
     "syncToHealthConnect": "Sincronizar con Health Connect",

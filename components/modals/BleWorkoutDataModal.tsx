@@ -213,7 +213,7 @@ export function BleWorkoutDataModal({ visible, onClose }: BleWorkoutDataModalPro
             </View>
           ) : (
             files.map((file) => (
-              <GenericCard key={file.uri} variant="default">
+              <GenericCard key={file.uri} variant="flat">
                 <View className="p-4">
                   <View className="mb-3">
                     <Text className="font-semibold text-text-primary" numberOfLines={1}>

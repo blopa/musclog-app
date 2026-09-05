@@ -38,7 +38,7 @@ export function SelectedExerciseCard({
   const detailsText = [translatedCategory, translatedType].filter(Boolean).join(' • ');
 
   return (
-    <GenericCard backgroundVariant="gradient" variant="default">
+    <GenericCard variant="flat">
       <View className="flex-row items-center gap-4 p-4">
         {/* Icon Container */}
         <View

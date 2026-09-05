@@ -74,8 +74,8 @@ export function FilterTabs({
               className={`text-sm font-medium ${isActive ? 'font-semibold' : ''}`}
               style={{
                 color: isActive
-                  ? theme.colors.text.black
-                  : (inactiveTextColor ?? theme.colors.text.gray300),
+                  ? theme.colors.text.onAccent
+                  : (inactiveTextColor ?? theme.colors.text.secondary),
               }}
             >
               {tab.label}
@@ -83,7 +83,7 @@ export function FilterTabs({
             {isActive && withCheckmark ? (
               <Check
                 size={theme.iconSize.sm}
-                color={theme.colors.text.black}
+                color={theme.colors.text.onAccent}
                 style={{ marginLeft: theme.spacing.margin['1half'] }}
               />
             ) : null}

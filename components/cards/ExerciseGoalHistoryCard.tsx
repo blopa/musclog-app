@@ -67,7 +67,7 @@ export function ExerciseGoalHistoryCard({ goal, isLast = false }: ExerciseGoalHi
           </View>
         </View>
 
-        <GenericCard variant="card">
+        <GenericCard variant="flat">
           <View className="p-3">
             <Text className="text-base font-bold text-text-primary">
               {goal.exerciseNameSnapshot || t('exerciseGoals.goalTypes.consistency')}

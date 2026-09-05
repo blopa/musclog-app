@@ -91,7 +91,7 @@ export function AiCustomPromptsModal({ visible, onClose }: AiCustomPromptsModalP
         ) : (
           <View className="gap-4">
             {prompts.map((prompt) => (
-              <GenericCard key={prompt.id} variant="card">
+              <GenericCard key={prompt.id} variant="flat">
                 <View className="p-4">
                   <View className="flex-row items-center justify-between">
                     <Text className="flex-1 text-lg font-bold text-text-primary" numberOfLines={1}>

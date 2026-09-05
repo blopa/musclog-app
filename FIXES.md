@@ -65,12 +65,12 @@ later attempts were immediate.
 ### Cause
 
 Expo Modules Core runs default `AsyncFunction`/`Coroutine` work on one modules queue.
-`expo-secure-store` 57.0.1 performed cold Android Keystore and SharedPreferences work directly on
+`expo-secure-store` 57.0.3 performed cold Android Keystore and SharedPreferences work directly on
 that queue, blocking unrelated native operations such as the image picker and crop activity.
 
 ### Fix
 
-- `patches/expo-secure-store+57.0.1.patch` moves SecureStore operations to a dedicated serial
+- `patches/expo-secure-store+57.0.3.patch` moves SecureStore operations to a dedicated serial
   `Dispatchers.IO` lane.
 - `package.json` keeps `expo.autolinking.android.buildFromSource: ["expo-secure-store"]`; SDK 57
   otherwise uses the prebuilt AAR and ignores the Kotlin patch.
@@ -154,9 +154,9 @@ Accepted false positives must explain that the host closes first.
 
 ## Expo Router blog route patch
 
-Expo Router 57.0.13 misparses platform extensions on catch-all names such as
+Expo Router 57.0.18 misparses platform extensions on catch-all names such as
 `[...slug].web.tsx`, leaves the extension in loader context keys, and uses the wrong development
-loader path for route groups. `patches/expo-router+57.0.13.patch` fixes all three behaviors and
+loader path for route groups. `patches/expo-router+57.0.18.patch` fixes all three behaviors and
 `utils/__tests__/expoRouterLoaderPatch.test.ts` pins them.
 
 Keep blog indexes inside their route directory (`blog/index.web.tsx`) when the index and catch-all

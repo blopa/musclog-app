@@ -117,7 +117,7 @@ export function CurrentGoalsCard({
   ];
 
   return (
-    <GenericCard variant="card">
+    <GenericCard variant="flat">
       <View className="relative p-5">
         {/* Daily Target */}
         <View className="mb-6">
@@ -139,7 +139,7 @@ export function CurrentGoalsCard({
             <Text
               className="mt-1"
               style={{
-                color: theme.colors.status.emeraldLight,
+                color: theme.colors.status.brandBright,
                 fontSize: theme.typography.fontSize.xs,
               }}
             >
@@ -222,7 +222,7 @@ export function CurrentGoalsCard({
         goal.bmi != null ? (
           <View
             className="mt-4 flex-row flex-wrap gap-4 rounded-lg p-3"
-            style={{ backgroundColor: theme.colors.background.darkGreen50 }}
+            style={{ backgroundColor: theme.colors.background.brandWash }}
           >
             {targetWeightDisplay != null ? (
               <View className="min-w-[45%] flex-1 flex-row items-center gap-3">
@@ -303,28 +303,8 @@ export function CurrentGoalsCard({
           </View>
         ) : null}
 
-        {/* Top-right: Dynamic badge + Eating Phase Badge + Menu Button — rendered last to win touch priority */}
+        {/* Top-right: Eating Phase Badge + Menu Button — rendered last to win touch priority */}
         <View className="absolute right-0 top-0 flex-row items-center gap-1 p-3">
-          {goal.isDynamic ? (
-            <View
-              className="rounded-full border px-2"
-              style={{
-                borderColor: theme.colors.status.emerald,
-                backgroundColor: theme.colors.status.emerald10,
-                paddingVertical: 2,
-              }}
-            >
-              <Text
-                className="font-bold uppercase"
-                style={{
-                  color: theme.colors.status.emeraldLight,
-                  fontSize: theme.typography.fontSize.xxs,
-                }}
-              >
-                {t('currentGoalsCard.dynamic')}
-              </Text>
-            </View>
-          ) : null}
           <EatingPhaseBadge phase={goal.phase} variant="default" showBorder={false} />
           {hasMenu ? <MenuButton size="sm" onPress={() => setMenuVisible(true)} /> : null}
         </View>

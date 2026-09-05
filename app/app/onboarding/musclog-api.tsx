@@ -25,8 +25,8 @@ const FEATURES = [
     icon: TrendingUp,
     titleKey: 'onboarding.musclogApi.features.insights.title',
     descKey: 'onboarding.musclogApi.features.insights.desc',
-    colorKey: 'emerald20' as const,
-    iconColorKey: 'emeraldLight' as const,
+    colorKey: 'brandVivid20' as const,
+    iconColorKey: 'brandBright' as const,
   },
   {
     icon: Sparkles,
@@ -99,25 +99,16 @@ export default function MusclogApiScreen() {
                 <View className="flex-row items-center gap-2">
                   <Text
                     className="text-2xl font-black tracking-tight"
-                    style={{ color: theme.colors.text.white }}
+                    style={{ color: theme.colors.text.primary }}
                   >
                     {t('onboarding.musclogApi.title')}
                   </Text>
-                  <View
-                    style={{
-                      backgroundColor: theme.colors.status.emerald20,
-                      borderRadius: theme.borderRadius.sm,
-                      paddingHorizontal: 8,
-                      paddingVertical: 2,
-                    }}
+                  <Text
+                    className="text-sm font-semibold"
+                    style={{ color: theme.colors.status.brandBright }}
                   >
-                    <Text
-                      className="text-xs font-bold"
-                      style={{ color: theme.colors.status.emeraldLight }}
-                    >
-                      {t('onboarding.musclogApi.freeBadge')}
-                    </Text>
-                  </View>
+                    {t('onboarding.musclogApi.freeBadge')}
+                  </Text>
                 </View>
                 <Text
                   className="mt-1"

@@ -60,9 +60,14 @@ battery so dates and logs can survive emulator or flash-cart restarts.
   timer, and saved workout history.
 - The 100 exercises marked `isPopular: true` in the app's current exercise
   catalogue are compiled into ROM, grouped by 8 muscle groups.
-- Settings let players update profile fields, macro goals, and units; share the
-  entire cartridge database with the Android, iOS, or web app; and reset all
-  saved data.
+- Settings let players update profile fields, macro goals, and units; pick a
+  colour theme; share the entire cartridge database with the Android, iOS, or web
+  app; and reset all saved data.
+- The `THEME` row at the top of Settings carries the same six themes as the phone
+  app (DEPTH, LIGHT, SHOCK, VOLT, BLUSH, VARIA). Each is reduced from the app's
+  registry to the four CGB background palettes the text UI draws from, applies as
+  soon as it is selected, and persists in battery-backed SRAM across a NEW GAME
+  erase.
 - `SHARE DATA` displays an endless fountain-coded QR stream containing the whole
   save as a compact, versioned JSON export. A phone or computer running Musclog
   can scan, verify, preview, and import it as a full database replacement. The
@@ -138,6 +143,7 @@ npm run gb:prepare-bg    # Regenerate gameboy/assets/gb_background.png (4-color 
 npm run gb:gen-foods     # Regenerate ROM food tables from data/*.json
 npm run gb:gen-exercises # Regenerate the ROM table from popular exercisesData.json rows
 npm run gb:gen-music     # Reduce assets/*.mid to APU data (src/generated/music_data.{c,h})
+npm run gb:gen-themes    # Reduce theme.registry.js to CGB palettes (src/generated/themes.{c,h})
 npm run gb:build         # Build the .gbc ROM
 npm run gb:copy-rom      # Copy the ROM into app + website emulator assets
 npm run gb:manual        # Generate the PDF instruction manual (musclog-manual.pdf)
@@ -148,9 +154,10 @@ the repo root and mirrors a copy into `public/images/musclog-manual.pdf`, which 
 website's Game Boy page (`/gameboy`) links for download. Rerun it whenever the manual
 copy or the `gameboy/screenshots/` captures it embeds change.
 
-The generated food, exercise, and music C files are committed so normal ROM
-builds do not depend on the JSON seed data or the `.mid` assets. Regenerate them
-only when the source datasets or MIDI files change. `gb:gen-music` prints the
+The generated food, exercise, music, and theme C files are committed so normal ROM
+builds do not depend on the JSON seed data, the `.mid` assets, or the app's theme
+registry. Regenerate them only when the source datasets, MIDI files, or themes
+change. `gb:gen-music` prints the
 loop it found (or reports that it fell back to looping the whole song). The music
 converter is split under `gameboy/tools/music/`; run
 `node --test gameboy/tools/music/*.test.mjs` after changing its parser or
@@ -206,15 +213,19 @@ Important source modules:
   that silences stalled music channels during screen transitions and heavy tile
   loading — it watches a stall counter reset by `audio_music_update()` each frame,
   and kills channels 2/3/4 after 2 frames without a sequencer tick.
+- `src/ui/ui_theme.c` owns the selected colour theme: it loads and persists the
+  choice in its own SRAM store and uploads that theme's four background palettes
+  from the generated `src/generated/themes.c` table.
 - `src/ui/ui_text.c` owns the 20x18 text UI renderer, palettes, menus, value
   screens, confirmations, bars, date/datetime pickers, and the explicit UI input
   wrapper that advances the soundtrack and plays the SFX blip after fresh button
   presses.
 - `src/data/profile.c` stores the packed profile and macro targets in SRAM bank 0;
   `src/data/sram_layout.h` names shared bank-0 subregions so profile, metrics, RTC seed
-  hints, and audio settings cannot drift into each other.
+  hints, audio settings, and the theme choice cannot drift into each other.
 - `src/app/game_data.c` owns the full gameplay-data erase sequence used by both Reset
-  Data and title-screen New Game. Audio settings intentionally survive that erase.
+  Data and title-screen New Game. Audio settings and the theme choice intentionally
+  survive that erase.
 - `src/data/rtc.c` reads and writes the MBC3 RTC and provides calendar helpers.
 - `src/app/home_screen.c` renders the macro dashboard and top-level navigation.
 - `src/app/progress.c` aggregates the food log, workout log, and weight metrics over
@@ -247,7 +258,7 @@ The ROM is linked as a 256 KB CGB-only MBC3 cartridge:
 - `-Wm-ya4`: four 8 KB SRAM banks
 - `-Wm-yo16`: sixteen 16 KB ROM banks
 - Header title: `MUSCLOG`
-- Header product/manufacturer code: `MLOG`; ROM revision: `1`
+- Header product/manufacturer code: `MLOG`; ROM revision: `2`
 
 ROM banks are used deliberately:
 
@@ -270,8 +281,9 @@ ROM banks are used deliberately:
 SRAM stores are separate and checksummed:
 
 - Bank 0 stores the profile at the start of SRAM and body-weight metrics from
-  offset `0x40`. The audio SFX/soundtrack on-off flags sit at `0x38-0x39`, in the
-  free part of the profile-reserved region, and survive a NEW GAME erase.
+  offset `0x40`. The audio SFX/soundtrack on-off flags sit at `0x38-0x39` and the
+  selected colour theme at `0x3A-0x3B`, in the free part of the profile-reserved
+  region, and survive a NEW GAME erase.
 - Bank 1 stores food log records: day number, food index, and grams.
 - Bank 2 stores workout records with summary data plus every logged set.
 - Bank 3 stores custom foods in fixed tombstoned slots through offset `0x0A2F`.
@@ -318,7 +330,12 @@ pre-fill the hour and minute without touching the save format.
 ## Development Notes
 
 - Keep generated tables in sync with their source data by using
-  `npm run gb:gen-foods`, `npm run gb:gen-exercises`, and `npm run gb:gen-music`.
+  `npm run gb:gen-foods`, `npm run gb:gen-exercises`, `npm run gb:gen-music`, and
+  `npm run gb:gen-themes`.
+- `src/generated/themes.c` is derived from the app's `theme.registry.js`, in registry
+  order: the stored SRAM value is a theme's index, so appending a theme is safe while
+  reordering silently repoints an existing cartridge at a different one. Re-run
+  `npm run gb:gen-themes` after adding or recolouring an app theme.
 - The Game Boy exercise generator reads the current `data/exercisesData.json`,
   includes only rows whose `isPopular` value is exactly `true`, preserves their
   source catalogue order, and assigns compact cartridge IDs from 1 to 100. A

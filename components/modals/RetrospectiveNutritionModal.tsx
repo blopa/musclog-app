@@ -124,8 +124,8 @@ export function RetrospectiveNutritionModal({
           />
 
           {/* Example */}
-          <View className="mb-6 rounded-lg bg-blue-500/10 p-4">
-            <Text className="mb-2 text-xs font-semibold text-blue-500">
+          <View className="mb-6 rounded-lg bg-status-info/10 p-4">
+            <Text className="mb-2 text-xs font-semibold text-status-info">
               {t('nutrition.example')}
             </Text>
             <Text className="text-xs text-text-secondary">
@@ -148,13 +148,16 @@ export function RetrospectiveNutritionModal({
         >
           {isProcessing ? (
             <View className="flex-row items-center justify-center gap-2">
-              <ActivityIndicator color={theme.colors.text.black} size="small" />
-              <Text className="font-semibold" style={{ color: theme.colors.text.black }}>
+              <ActivityIndicator color={theme.colors.text.onAccent} size="small" />
+              <Text className="font-semibold" style={{ color: theme.colors.text.onAccent }}>
                 {t('nutrition.processing')}
               </Text>
             </View>
           ) : (
-            <Text className="text-center font-semibold" style={{ color: theme.colors.text.black }}>
+            <Text
+              className="text-center font-semibold"
+              style={{ color: theme.colors.text.onAccent }}
+            >
               {t('nutrition.analyze')}
             </Text>
           )}

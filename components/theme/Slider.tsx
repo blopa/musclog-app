@@ -72,7 +72,7 @@ export function Slider({
       {variant === 'gradient' ? (
         <View
           className="absolute left-0.5 right-0.5 h-1.5 rounded-full"
-          style={{ backgroundColor: trackColor || theme.colors.background.white10 }}
+          style={{ backgroundColor: trackColor || theme.colors.background.ink10 }}
         />
       ) : null}
 
@@ -105,9 +105,9 @@ export function Slider({
           variant === 'solid' ? solidColor || theme.colors.accent.primary : 'transparent'
         }
         maximumTrackTintColor={
-          variant === 'solid' ? trackColor || theme.colors.background.white10 : 'transparent'
+          variant === 'solid' ? trackColor || theme.colors.background.ink10 : 'transparent'
         }
-        thumbTintColor={thumbColor || theme.colors.background.white}
+        thumbTintColor={thumbColor || theme.colors.background.alwaysWhite}
         step={step}
       />
     </View>

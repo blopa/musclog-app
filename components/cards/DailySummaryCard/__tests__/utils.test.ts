@@ -15,8 +15,9 @@ import type { Theme } from '@/theme';
 
 const theme = {
   colors: {
-    status: { emeraldLight: '#emerald', red400: '#red' },
-    text: { primary: '#text' },
+    status: { brandBright: '#emerald', errorLight: '#red' },
+    text: { alwaysWhite: '#always-white', primary: '#text' },
+    colorfulCard: { ink: '#card-ink' },
   },
 } as unknown as Theme;
 
@@ -95,8 +96,8 @@ describe('getProgressBarColor', () => {
     expect(getProgressBarColor('exceeded', theme)).toBe('#red');
   });
 
-  it('falls back to the neutral text colour while the goal is still open', () => {
-    expect(getProgressBarColor('not-reached', theme)).toBe('#text');
+  it('uses theme-aware card ink while the goal is still open', () => {
+    expect(getProgressBarColor('not-reached', theme)).toBe('#card-ink');
   });
 });
 

@@ -76,7 +76,7 @@ export default function PersonalizedPreferencesScreen() {
             {/* Title */}
             <Text
               className="mb-1 text-3xl font-black tracking-tight"
-              style={{ color: theme.colors.text.white }}
+              style={{ color: theme.colors.text.primary }}
             >
               {t('onboarding.quickPreferences.title')}
             </Text>
@@ -217,7 +217,7 @@ export default function PersonalizedPreferencesScreen() {
                         backgroundColor: isSelected ? theme.colors.accent.primary : 'transparent',
                       }}
                     >
-                      {isSelected ? <Check size={14} color={theme.colors.text.white} /> : null}
+                      {isSelected ? <Check size={14} color={theme.colors.text.primary} /> : null}
                     </View>
                   </Pressable>
                 );

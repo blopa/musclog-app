@@ -67,6 +67,7 @@ function getNow() {
 // ---------------------------------------------------------------------------
 
 function LiveDot() {
+  const theme = useTheme();
   const opacity = useState(() => new Animated.Value(1))[0];
 
   useEffect(() => {
@@ -88,7 +89,7 @@ function LiveDot() {
         width: 8,
         height: 8,
         borderRadius: 4,
-        backgroundColor: '#00FFA3',
+        backgroundColor: theme.colors.status.brandBright,
         opacity,
       }}
     />
@@ -103,10 +104,10 @@ function RateStat({ label, value }: { label: string; value: string }) {
       style={{
         backgroundColor: theme.colors.background.card,
         borderWidth: 1,
-        borderColor: theme.colors.background.white5,
+        borderColor: theme.colors.background.ink5,
       }}
     >
-      <Text className="text-base font-bold text-white">{value}</Text>
+      <Text className="text-base font-bold text-text-primary">{value}</Text>
       <Text
         className="mt-0.5 text-[10px] font-semibold uppercase tracking-wider"
         style={{ color: theme.colors.text.secondary }}
@@ -133,7 +134,7 @@ function PhaseCard({
     earlySlеep: { color: theme.colors.status.info, bg: theme.colors.status.info10 },
     nadir: { color: theme.colors.status.indigo, bg: theme.colors.status.indigo10 },
     morning: { color: theme.colors.status.amber, bg: theme.colors.status.amber10 },
-    midday: { color: theme.colors.status.emeraldLight, bg: theme.colors.status.emerald10 },
+    midday: { color: theme.colors.status.brandBright, bg: theme.colors.status.brandVivid10 },
     peak: { color: theme.colors.status.warning, bg: theme.colors.status.warning10 },
     evening: { color: theme.colors.status.purple, bg: theme.colors.status.purple10 },
   };
@@ -148,7 +149,7 @@ function PhaseCard({
       style={{
         backgroundColor: isActive ? bg : theme.colors.background.card,
         borderWidth: 1,
-        borderColor: isActive ? color + '55' : theme.colors.background.white5,
+        borderColor: isActive ? color + '55' : theme.colors.background.ink5,
       }}
     >
       <View className="flex-row items-start gap-3 p-4">
@@ -160,7 +161,7 @@ function PhaseCard({
           <View className="mb-1 flex-row items-center justify-between">
             <View className="flex-row items-center gap-2">
               {isActive ? <LiveDot /> : null}
-              <Text className="text-sm font-bold text-white">
+              <Text className="text-sm font-bold text-text-primary">
                 {t(`progress.circadianPhase.${blockKey}`)}
               </Text>
             </View>
@@ -179,7 +180,7 @@ function PhaseCard({
           {/* Description */}
           <Text
             className="text-xs leading-relaxed"
-            style={{ color: isActive ? '#D1D5DB' : theme.colors.text.secondary }}
+            style={{ color: isActive ? theme.colors.text.primary : theme.colors.text.secondary }}
           >
             {t(`progress.circadianModal.phaseDesc.${blockKey}`)}
           </Text>
@@ -250,7 +251,7 @@ export function CircadianScienceModal({ visible, onClose, tdee }: Props) {
           </View>
 
           <Text
-            className="mt-2 font-bold tracking-tight text-white"
+            className="mt-2 font-bold tracking-tight text-text-primary"
             style={{ fontSize: 52, lineHeight: 56 }}
           >
             {formatInteger(Math.floor(burned))}
@@ -296,7 +297,7 @@ export function CircadianScienceModal({ visible, onClose, tdee }: Props) {
             style={{
               backgroundColor: theme.colors.background.card,
               borderWidth: 1,
-              borderColor: theme.colors.background.white5,
+              borderColor: theme.colors.background.ink5,
             }}
           >
             <Text

@@ -142,7 +142,6 @@ export function WorkoutLibraryContent({
               ? t('workouts.noSearchResultsButtonLabel')
               : t('emptyStates.workouts.buttonLabel')
           }
-          iconGradient={!hasSearchQuery}
           buttonVariant={hasSearchQuery ? undefined : 'gradientCta'}
           onButtonPress={hasSearchQuery ? onClearSearch : onCreateWorkout}
         />

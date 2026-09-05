@@ -33,7 +33,7 @@ const mockUseSettings = useSettings as jest.Mock;
 const baseSettings = {
   isLoading: false,
   showDailyMoodPrompt: false,
-  theme: 'light',
+  showWeightPrediction: false,
   useOcrBeforeAi: false,
   useOnDeviceAi: false,
 };
@@ -106,11 +106,11 @@ describe('useDebouncedSettings', () => {
     act(() => result.current.handleShowDailyMoodPromptChange(true));
     expect(result.current.hasPendingChanges).toBe(true);
 
-    setSettings({ theme: 'dark' });
+    setSettings({ showWeightPrediction: true });
     act(() => rerender());
 
     expect(result.current.showDailyMoodPrompt).toBe(true);
-    expect(result.current.theme).toBe('dark');
+    expect(result.current.showWeightPrediction).toBe(true);
   });
 
   it('lets the database win again once the pending write has settled', async () => {
@@ -130,18 +130,18 @@ describe('useDebouncedSettings', () => {
   it('writes a pending change immediately on flush and does not write it twice', async () => {
     const { result } = renderHook(() => useDebouncedSettings());
 
-    act(() => result.current.handleThemeChange('dark'));
+    act(() => result.current.handleShowDailyMoodPromptChange(true));
 
     await act(async () => {
       await result.current.flushAllPendingChanges();
     });
 
-    expect(SettingsService.setTheme).toHaveBeenCalledTimes(1);
-    expect(SettingsService.setTheme).toHaveBeenCalledWith('dark');
+    expect(SettingsService.setShowDailyMoodPrompt).toHaveBeenCalledTimes(1);
+    expect(SettingsService.setShowDailyMoodPrompt).toHaveBeenCalledWith(true);
     expect(result.current.hasPendingChanges).toBe(false);
 
     await runDebounce();
-    expect(SettingsService.setTheme).toHaveBeenCalledTimes(1);
+    expect(SettingsService.setShowDailyMoodPrompt).toHaveBeenCalledTimes(1);
   });
 
   // On-device AI can only work with locally-extracted text, so enabling it force-enables OCR.
@@ -174,27 +174,29 @@ describe('useDebouncedSettings', () => {
   it('cancels pending timers on cleanup so no write escapes after teardown', async () => {
     const { result } = renderHook(() => useDebouncedSettings());
 
-    act(() => result.current.handleThemeChange('dark'));
+    act(() => result.current.handleShowDailyMoodPromptChange(true));
     act(() => result.current.cleanup());
 
     await runDebounce();
 
-    expect(SettingsService.setTheme).not.toHaveBeenCalled();
+    expect(SettingsService.setShowDailyMoodPrompt).not.toHaveBeenCalled();
   });
 
   it('reports a save failure without throwing and clears the pending flag', async () => {
     const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
-    (SettingsService.setTheme as jest.Mock).mockRejectedValueOnce(new Error('write failed'));
+    (SettingsService.setShowDailyMoodPrompt as jest.Mock).mockRejectedValueOnce(
+      new Error('write failed')
+    );
 
     const { result } = renderHook(() => useDebouncedSettings());
 
-    act(() => result.current.handleThemeChange('dark'));
+    act(() => result.current.handleShowDailyMoodPromptChange(true));
     await runDebounce();
 
     expect(consoleError).toHaveBeenCalled();
     expect(result.current.hasPendingChanges).toBe(false);
     // The optimistic value stays on screen until the next DB emission corrects it.
-    expect(result.current.theme).toBe('dark');
+    expect(result.current.showDailyMoodPrompt).toBe(true);
     consoleError.mockRestore();
   });
 });

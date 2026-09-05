@@ -1,19 +1,24 @@
-const { themeColors } = require('./theme.tokens'); // Plain JS tokens — Tailwind/Node cannot load theme.ts (TS + RN/DB imports)
+// Plain JS tokens — Tailwind/Node cannot load theme.ts (TS + RN/DB imports)
+const plugin = require('tailwindcss/plugin');
+
+const { createTailwindColors, darkCssVariables, lightCssVariables } = require('./theme.tokens');
 
 /**
  * Tailwind Configuration for NativeWind
  *
- * NOTE: NativeWind compiles styles at build time, so Tailwind classes cannot
- * dynamically switch between themes. For dynamic theme support:
+ * NativeWind compiles styles at build time, so a Tailwind class cannot pick among
+ * named palettes on its own. Every themed colour below therefore resolves to a
+ * CSS custom property. These base rules supply the Kinetic Light/Depth defaults;
+ * `ThemeProvider` overrides the variables with the selected named palette at
+ * runtime and uses NativeWind's binary scheme only for `dark:` variants.
  *
- * 1. Use inline styles with the theme object from useThemeContext():
- *    const { theme } = useThemeContext();
- *    <View style={{ backgroundColor: theme.colors.background.primary }} />
+ * So both of these follow the active theme, and either is fine to use:
  *
- * 2. Or use Tailwind classes for static elements:
- *    <View className="bg-bg-primary" />
+ *   <View className="bg-bg-card" />
+ *   <View style={{ backgroundColor: theme.colors.background.card }} />   // useTheme()
  *
- * This config uses dark theme colors for Tailwind classes as the default.
+ * Colours outside this map (status hues, gradients, washes) are only available
+ * through `useTheme()`/`useThemeContext()`.
  */
 
 /** @type {import('tailwindcss').Config} */
@@ -32,48 +37,17 @@ module.exports = {
           to: { transform: 'rotate(360deg)' },
         },
       },
-      colors: {
-        // Background colors
-        bg: {
-          primary: themeColors.background.primary,
-          secondary: themeColors.background.secondary,
-          tertiary: themeColors.background.tertiary,
-          card: themeColors.background.card,
-          cardElevated: themeColors.background.cardElevated,
-          cardDark: themeColors.background.secondaryDark,
-          navBar: themeColors.background.secondary,
-          navActive: themeColors.background.secondaryDark,
-          screen: themeColors.background.primary,
-          overlay: themeColors.background.overlay,
-          filterTab: themeColors.background.filterTab,
-        },
-        // Text colors
-        text: {
-          primary: themeColors.text.primary,
-          secondary: themeColors.text.secondary,
-          tertiary: themeColors.text.tertiary,
-          muted: themeColors.text.muted,
-          accent: themeColors.text.accent,
-          accentLight: themeColors.text.accentLight,
-          black: themeColors.text.black,
-          'on-colorful': themeColors.text.onColorful,
-        },
-        // Accent colors
-        accent: {
-          primary: themeColors.accent.primary,
-          secondary: themeColors.accent.secondary,
-          tertiary: themeColors.accent.tertiary,
-        },
-        // Border colors
-        border: {
-          default: themeColors.border.default,
-          light: themeColors.border.light,
-          dark: themeColors.border.dark,
-          accent: themeColors.border.accent,
-          dashed: themeColors.border.dashed,
-        },
-      },
+      colors: createTailwindColors(),
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(({ addBase }) => {
+      addBase({
+        ':root': lightCssVariables,
+        // `darkMode: 'class'` above makes this the dark set; NativeWind resolves
+        // it from the runtime colour scheme rather than from a DOM class on native.
+        '.dark:root': darkCssVariables,
+      });
+    }),
+  ],
 };

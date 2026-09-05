@@ -1000,8 +1000,8 @@ export function NutritionGoalsBody({
           <View
             className="rounded-xl border p-4"
             style={{
-              borderColor: theme.colors.border.emerald,
-              backgroundColor: theme.colors.status.emerald10,
+              borderColor: theme.colors.border.brand,
+              backgroundColor: theme.colors.status.brandVivid10,
             }}
           >
             <Text className="text-sm text-text-secondary">
@@ -1017,7 +1017,7 @@ export function NutritionGoalsBody({
           <View
             className="relative mb-6 overflow-hidden rounded-2xl border p-6"
             style={{
-              borderColor: theme.colors.border.emerald,
+              borderColor: theme.colors.border.brand,
               backgroundColor: theme.colors.background.cardElevated,
             }}
           >
@@ -1039,7 +1039,7 @@ export function NutritionGoalsBody({
                     }
                   }}
                   className="h-10 w-10 items-center justify-center rounded-full active:opacity-70"
-                  style={{ backgroundColor: theme.colors.background.white10 }}
+                  style={{ backgroundColor: theme.colors.background.ink10 }}
                   hitSlop={12}
                   disabled={isDynamic}
                 >
@@ -1090,7 +1090,7 @@ export function NutritionGoalsBody({
                     }
                   }}
                   className="h-10 w-10 items-center justify-center rounded-full active:opacity-70"
-                  style={{ backgroundColor: theme.colors.background.white10 }}
+                  style={{ backgroundColor: theme.colors.background.ink10 }}
                   hitSlop={12}
                   disabled={isDynamic}
                 >
@@ -1110,7 +1110,7 @@ export function NutritionGoalsBody({
                         color:
                           effectiveCalories < effectiveTdeeEstimate
                             ? theme.colors.status.error
-                            : theme.colors.status.emeraldLight,
+                            : theme.colors.status.brandBright,
                       }}
                     >
                       {effectiveCalories < effectiveTdeeEstimate
@@ -1162,21 +1162,21 @@ export function NutritionGoalsBody({
 
         {/* Goal Start Date (only shown in create mode) */}
         {showGoalStartDate ? (
-          <View className="flex-row items-center justify-between gap-3 overflow-hidden rounded-xl border border-emerald-900/20 bg-bg-card p-4">
+          <View className="flex-row items-center justify-between gap-3 overflow-hidden rounded-xl border border-border-accent bg-bg-card p-4">
             <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-2">
               {showIcons ? (
                 <View
                   className="h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: theme.colors.status.emerald20 }}
+                  style={{ backgroundColor: theme.colors.status.brandVivid20 }}
                 >
-                  <Calendar size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
+                  <Calendar size={theme.iconSize.sm} color={theme.colors.status.brandBright} />
                 </View>
               ) : null}
               <View className="min-w-0 flex-1">
-                <Text className="font-semibold text-white">
+                <Text className="font-semibold text-text-primary">
                   {t('nutritionGoals.goalStartDate')}
                 </Text>
-                <Text className="text-xs text-gray-500" numberOfLines={1}>
+                <Text className="text-xs text-text-tertiary" numberOfLines={1}>
                   {t('nutritionGoals.goalStartDateSublabel')}
                 </Text>
               </View>
@@ -1582,24 +1582,24 @@ export function NutritionGoalsBody({
               borderColor:
                 isDynamic && targetDate === null
                   ? theme.colors.status.error
-                  : theme.colors.border.emerald,
+                  : theme.colors.border.brand,
             }}
           >
             <View className="min-w-0 flex-1 flex-row items-center gap-3 pr-2">
               {showIcons ? (
                 <View
                   className="h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: theme.colors.status.emerald20 }}
+                  style={{ backgroundColor: theme.colors.status.brandVivid20 }}
                 >
-                  <Calendar size={theme.iconSize.sm} color={theme.colors.status.emeraldLight} />
+                  <Calendar size={theme.iconSize.sm} color={theme.colors.status.brandBright} />
                 </View>
               ) : null}
               <View className="min-w-0 flex-1">
-                <Text className="font-semibold text-white">
+                <Text className="font-semibold text-text-primary">
                   {t('nutritionGoals.targetDate')}
                   {isDynamic ? <Text style={{ color: theme.colors.status.error }}> *</Text> : null}
                 </Text>
-                <Text className="text-xs text-gray-500" numberOfLines={1}>
+                <Text className="text-xs text-text-tertiary" numberOfLines={1}>
                   {t('nutritionGoals.targetDateSublabel')}
                 </Text>
               </View>
@@ -1643,7 +1643,7 @@ export function NutritionGoalsBody({
         {showSaveButton ? (
           <View
             className="mt-8 border-t pt-6"
-            style={{ borderTopColor: theme.colors.background.white5 }}
+            style={{ borderTopColor: theme.colors.background.ink5 }}
           >
             {isDynamic && !isDynamicValid ? (
               <Text

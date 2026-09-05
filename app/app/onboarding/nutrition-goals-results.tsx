@@ -30,6 +30,7 @@ import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
+import { addOpacityToHex } from '@/theme';
 import { localDayKeyPlusCalendarDays, localDayStartMs } from '@/utils/calendarDate';
 import {
   fiberFromCalories,
@@ -445,35 +446,21 @@ export default function NutritionGoalsResults() {
           {/* Header */}
           <View className="mb-8 items-center text-center">
             {aiGenerated ? (
-              <View
-                className="mb-3 flex-row items-center gap-1.5 rounded-full px-3 py-1"
-                style={{ backgroundColor: theme.colors.accent.primary10 }}
-              >
+              <View className="mb-3 flex-row items-center gap-1.5">
                 <MaterialIcons name="auto-awesome" size={14} color={theme.colors.accent.primary} />
                 <Text
-                  className="text-xs font-bold uppercase tracking-wider"
-                  style={{
-                    color: theme.colors.accent.primary,
-                    fontSize: theme.typography.fontSize.xs,
-                    fontWeight: theme.typography.fontWeight.bold,
-                  }}
+                  className="text-xs font-semibold"
+                  style={{ color: theme.colors.accent.primary }}
                 >
                   {t('nutritionGoals.results.aiCalculationComplete')}
                 </Text>
               </View>
             ) : (
-              <View
-                className="mb-3 flex-row items-center gap-1.5 rounded-full px-3 py-1"
-                style={{ backgroundColor: theme.colors.status.indigo10 }}
-              >
+              <View className="mb-3 flex-row items-center gap-1.5">
                 <MaterialIcons name="tune" size={14} color={theme.colors.status.indigoLight} />
                 <Text
-                  className="text-xs font-bold uppercase tracking-wider"
-                  style={{
-                    color: theme.colors.status.indigoLight,
-                    fontSize: theme.typography.fontSize.xs,
-                    fontWeight: theme.typography.fontWeight.bold,
-                  }}
+                  className="text-xs font-semibold"
+                  style={{ color: theme.colors.status.indigoLight }}
                 >
                   {t('nutritionGoals.results.manualPlanBadge')}
                 </Text>
@@ -542,16 +529,16 @@ export default function NutritionGoalsResults() {
               <MaterialIcons
                 name="bolt"
                 size={96}
-                color={theme.colors.text.white}
+                color={theme.colors.text.alwaysWhite}
                 style={{ opacity: 0.2 }}
               />
             </View>
 
             <View className="relative z-10">
               <Text
-                className="mb-1 text-sm font-semibold uppercase tracking-widest text-white/80"
+                className="mb-1 text-sm font-semibold uppercase tracking-widest"
                 style={{
-                  color: `${theme.colors.text.white}CC`,
+                  color: addOpacityToHex(theme.colors.text.alwaysWhite, 0.8),
                   fontSize: theme.typography.fontSize.sm,
                   fontWeight: theme.typography.fontWeight.semibold,
                   letterSpacing: 2,
@@ -562,9 +549,9 @@ export default function NutritionGoalsResults() {
 
               <View className="flex-row items-baseline gap-2">
                 <Text
-                  className="text-5xl font-black text-white"
+                  className="text-5xl font-black"
                   style={{
-                    color: theme.colors.text.white,
+                    color: theme.colors.text.alwaysWhite,
                     fontSize: theme.typography.fontSize['5xl'],
                     fontWeight: theme.typography.fontWeight.black,
                   }}
@@ -572,9 +559,9 @@ export default function NutritionGoalsResults() {
                   {formattedCalories}
                 </Text>
                 <Text
-                  className="text-xl font-bold text-white/90"
+                  className="text-xl font-bold"
                   style={{
-                    color: `${theme.colors.text.white}E6`,
+                    color: addOpacityToHex(theme.colors.text.alwaysWhite, 0.9),
                     fontSize: theme.typography.fontSize.xl,
                     fontWeight: theme.typography.fontWeight.bold,
                   }}
@@ -588,7 +575,7 @@ export default function NutritionGoalsResults() {
                   <Text
                     className="text-sm font-medium"
                     style={{
-                      color: `${theme.colors.text.white}B3`,
+                      color: addOpacityToHex(theme.colors.text.alwaysWhite, 0.7),
                       fontSize: theme.typography.fontSize.sm,
                       fontWeight: theme.typography.fontWeight.medium,
                     }}
@@ -600,7 +587,7 @@ export default function NutritionGoalsResults() {
                   <Text
                     className="mt-1 text-xs"
                     style={{
-                      color: `${theme.colors.text.white}80`,
+                      color: addOpacityToHex(theme.colors.text.alwaysWhite, 0.5),
                       fontSize: theme.typography.fontSize.xxs,
                       fontWeight: theme.typography.fontWeight.normal,
                     }}
@@ -616,7 +603,7 @@ export default function NutritionGoalsResults() {
                   <Text
                     className="text-sm font-medium"
                     style={{
-                      color: `${theme.colors.text.white}E6`,
+                      color: addOpacityToHex(theme.colors.text.alwaysWhite, 0.9),
                       fontSize: theme.typography.fontSize.sm,
                       fontWeight: theme.typography.fontWeight.medium,
                     }}
@@ -636,16 +623,16 @@ export default function NutritionGoalsResults() {
                 <View
                   className="mt-4 flex-row items-center justify-between border-t pt-4"
                   style={{
-                    borderTopColor: `${theme.colors.text.white}1A`,
+                    borderTopColor: addOpacityToHex(theme.colors.text.alwaysWhite, 0.1),
                     borderTopWidth: 1,
                     marginTop: theme.spacing.margin.md,
                     paddingTop: theme.spacing.padding.md,
                   }}
                 >
                   <Text
-                    className="text-xs font-medium text-white/70"
+                    className="text-xs font-medium"
                     style={{
-                      color: `${theme.colors.text.white}B3`,
+                      color: addOpacityToHex(theme.colors.text.alwaysWhite, 0.7),
                       fontSize: theme.typography.fontSize.xxs,
                       fontWeight: theme.typography.fontWeight.medium,
                     }}
@@ -661,8 +648,7 @@ export default function NutritionGoalsResults() {
           <View className="mb-8 w-full flex-row gap-3">
             {/* Protein */}
             <GenericCard
-              variant="default"
-              size="sm"
+              variant="flat"
               containerStyle={{
                 flex: 1,
                 alignItems: 'center',
@@ -682,7 +668,7 @@ export default function NutritionGoalsResults() {
                 {t('nutritionGoals.results.protein')}
               </Text>
               <Text
-                className="text-center text-lg font-bold leading-tight text-white"
+                className="text-center text-lg font-bold leading-tight text-text-primary"
                 style={{
                   color: theme.colors.text.primary,
                   fontSize: theme.typography.fontSize.lg,
@@ -692,7 +678,7 @@ export default function NutritionGoalsResults() {
                 {t('common.weightFormatG', { value: formatInteger(displayData?.protein ?? 0) })}
               </Text>
               <Text
-                className="text-center text-[11px] font-medium text-slate-500"
+                className="text-center text-[11px] font-medium text-text-tertiary"
                 style={{
                   color: theme.colors.text.tertiary,
                   fontSize: theme.typography.fontSize.xs,
@@ -705,8 +691,7 @@ export default function NutritionGoalsResults() {
 
             {/* Carbs */}
             <GenericCard
-              variant="default"
-              size="sm"
+              variant="flat"
               containerStyle={{
                 flex: 1,
                 alignItems: 'center',
@@ -726,7 +711,7 @@ export default function NutritionGoalsResults() {
                 {t('nutritionGoals.results.carbs')}
               </Text>
               <Text
-                className="text-center text-lg font-bold leading-tight text-white"
+                className="text-center text-lg font-bold leading-tight text-text-primary"
                 style={{
                   color: theme.colors.text.primary,
                   fontSize: theme.typography.fontSize.lg,
@@ -736,7 +721,7 @@ export default function NutritionGoalsResults() {
                 {t('common.weightFormatG', { value: formatInteger(displayData?.carbs ?? 0) })}
               </Text>
               <Text
-                className="text-center text-[11px] font-medium text-slate-500"
+                className="text-center text-[11px] font-medium text-text-tertiary"
                 style={{
                   color: theme.colors.text.tertiary,
                   fontSize: theme.typography.fontSize.xxs,
@@ -749,8 +734,7 @@ export default function NutritionGoalsResults() {
 
             {/* Fats */}
             <GenericCard
-              variant="default"
-              size="sm"
+              variant="flat"
               containerStyle={{
                 flex: 1,
                 alignItems: 'center',
@@ -760,7 +744,7 @@ export default function NutritionGoalsResults() {
               <Text
                 className="mb-1 text-center text-[10px] font-bold uppercase tracking-tighter text-pink-400"
                 style={{
-                  color: theme.colors.status.pink500,
+                  color: theme.colors.status.pink,
                   fontSize: theme.typography.fontSize.xxs,
                   fontWeight: theme.typography.fontWeight.bold,
                   letterSpacing: -0.5,
@@ -770,7 +754,7 @@ export default function NutritionGoalsResults() {
                 {t('nutritionGoals.results.fats')}
               </Text>
               <Text
-                className="text-center text-lg font-bold leading-tight text-white"
+                className="text-center text-lg font-bold leading-tight text-text-primary"
                 style={{
                   color: theme.colors.text.primary,
                   fontSize: theme.typography.fontSize.lg,
@@ -780,7 +764,7 @@ export default function NutritionGoalsResults() {
                 {t('common.weightFormatG', { value: formatInteger(displayData?.fats ?? 0) })}
               </Text>
               <Text
-                className="text-center text-[11px] font-medium text-slate-500"
+                className="text-center text-[11px] font-medium text-text-tertiary"
                 style={{
                   color: theme.colors.text.tertiary,
                   fontSize: theme.typography.fontSize.xs,
@@ -849,7 +833,7 @@ export default function NutritionGoalsResults() {
                   <View
                     style={{
                       width: `${displayData.fatsPct ?? 0}%`,
-                      backgroundColor: theme.colors.status.pink500,
+                      backgroundColor: theme.colors.status.pink,
                       minWidth: displayData.fatsPct ? 4 : 0,
                     }}
                   />
@@ -878,7 +862,7 @@ export default function NutritionGoalsResults() {
                   <Text
                     className="text-[10px] font-medium"
                     style={{
-                      color: theme.colors.status.pink500,
+                      color: theme.colors.status.pink,
                       fontSize: theme.typography.fontSize.xxs,
                       fontWeight: theme.typography.fontWeight.medium,
                     }}
@@ -889,7 +873,7 @@ export default function NutritionGoalsResults() {
               </View>
 
               <GenericCard
-                variant="default"
+                variant="flat"
                 containerStyle={{
                   width: '100%',
                   marginBottom: theme.spacing.margin.lg,
@@ -940,7 +924,7 @@ export default function NutritionGoalsResults() {
           {/* 90-Day Projection Card (only for AI-generated plans) */}
           {displayData?.hasProjection ? (
             <GenericCard
-              variant="default"
+              variant="flat"
               containerStyle={{
                 width: '100%',
                 borderWidth: 1,
@@ -959,7 +943,7 @@ export default function NutritionGoalsResults() {
                   color={theme.colors.accent.primary}
                 />
                 <Text
-                  className="text-sm font-bold text-white"
+                  className="text-sm font-bold text-text-primary"
                   style={{
                     color: theme.colors.text.primary,
                     fontSize: theme.typography.fontSize.sm,
@@ -975,7 +959,7 @@ export default function NutritionGoalsResults() {
               {isMaintenance ? (
                 <View className="flex-col items-center justify-center py-2">
                   <Text
-                    className="mb-2 text-base font-semibold text-white"
+                    className="mb-2 text-base font-semibold text-text-primary"
                     style={{
                       color: theme.colors.text.primary,
                       fontSize: theme.typography.fontSize.base,
@@ -986,7 +970,7 @@ export default function NutritionGoalsResults() {
                     {t('nutritionGoals.results.projectionMaintenanceTitle')}
                   </Text>
                   <Text
-                    className="max-w-[280px] text-center text-sm leading-relaxed text-slate-400"
+                    className="max-w-[280px] text-center text-sm leading-relaxed text-text-tertiary"
                     style={{
                       color: theme.colors.text.secondary,
                       fontSize: theme.typography.fontSize.sm,
@@ -1006,7 +990,7 @@ export default function NutritionGoalsResults() {
                 <>
                   <View className="flex-col items-center justify-center py-1">
                     <Text
-                      className="mb-1 text-xs font-medium text-slate-400"
+                      className="mb-1 text-xs font-medium text-text-tertiary"
                       style={{
                         color: theme.colors.text.secondary,
                         fontSize: theme.typography.fontSize.xxs,
@@ -1018,7 +1002,7 @@ export default function NutritionGoalsResults() {
                     </Text>
                     <View className="flex-row items-baseline">
                       <Text
-                        className="mr-2 text-4xl font-black tracking-tight text-white"
+                        className="mr-2 text-4xl font-black tracking-tight text-text-primary"
                         style={{
                           color: theme.colors.text.primary,
                           fontSize: theme.typography.fontSize['4xl'],
@@ -1040,7 +1024,7 @@ export default function NutritionGoalsResults() {
                       </Text>
                     </View>
                     <Text
-                      className="max-w-[200px] text-center text-[11px] text-slate-500"
+                      className="max-w-[200px] text-center text-[11px] text-text-tertiary"
                       style={{
                         color: theme.colors.text.tertiary,
                         fontSize: theme.typography.fontSize.xxs,
@@ -1161,7 +1145,7 @@ export default function NutritionGoalsResults() {
           width="full"
           size="md"
           icon={() => (
-            <MaterialIcons name="arrow-forward" size={20} color={theme.colors.text.white} />
+            <MaterialIcons name="arrow-forward" size={20} color={theme.colors.text.primary} />
           )}
           iconPosition="right"
           onPress={handleAccept}

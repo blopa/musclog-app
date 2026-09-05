@@ -194,7 +194,7 @@ export function TimePickerModal({
               className="font-semibold uppercase tracking-widest"
               style={{
                 fontSize: theme.typography.fontSize.xxs,
-                color: addOpacityToHex(theme.colors.text.white, 0.4),
+                color: addOpacityToHex(theme.colors.text.primary, 0.4),
                 letterSpacing: 2,
               }}
             >
@@ -209,10 +209,10 @@ export function TimePickerModal({
         <View className="items-center gap-2">
           <View className="flex-row items-end">
             <Text
-              className="font-bold tracking-tight text-white"
+              className="font-bold tracking-tight text-text-primary"
               style={{
                 fontSize: theme.typography.fontSize['8xl'],
-                textShadowColor: theme.colors.background.black30,
+                textShadowColor: theme.colors.background.scrim30,
                 textShadowOffset: { width: 0, height: 2 },
                 textShadowRadius: 8,
                 lineHeight: theme.typography.fontSize['8xl'] * 1.05,
@@ -234,7 +234,7 @@ export function TimePickerModal({
             className="font-semibold uppercase"
             style={{
               fontSize: theme.typography.fontSize.xxs,
-              color: addOpacityToHex(theme.colors.text.white, 0.4),
+              color: addOpacityToHex(theme.colors.text.primary, 0.4),
               letterSpacing: 2,
             }}
           >
@@ -245,7 +245,7 @@ export function TimePickerModal({
         {/* Picker card */}
         <View
           className="w-full max-w-sm rounded-3xl px-5 py-5"
-          style={{ backgroundColor: theme.colors.background.white5 }}
+          style={{ backgroundColor: theme.colors.background.ink5 }}
         >
           {/* Column labels */}
           <View className="mb-3 flex-row justify-around">
@@ -253,7 +253,7 @@ export function TimePickerModal({
               className="font-semibold uppercase"
               style={{
                 fontSize: theme.typography.fontSize.xxs,
-                color: addOpacityToHex(theme.colors.text.white, 0.4),
+                color: addOpacityToHex(theme.colors.text.primary, 0.4),
                 letterSpacing: 2,
               }}
             >
@@ -263,7 +263,7 @@ export function TimePickerModal({
               className="font-semibold uppercase"
               style={{
                 fontSize: theme.typography.fontSize.xxs,
-                color: addOpacityToHex(theme.colors.text.white, 0.4),
+                color: addOpacityToHex(theme.colors.text.primary, 0.4),
                 letterSpacing: 2,
               }}
             >
@@ -279,7 +279,7 @@ export function TimePickerModal({
               style={{
                 top: PICKER_VIEW_HEIGHT / 2 - ITEM_HEIGHT / 2,
                 height: ITEM_HEIGHT,
-                backgroundColor: theme.colors.background.white10,
+                backgroundColor: theme.colors.background.ink10,
               }}
               pointerEvents="none"
             />
@@ -314,7 +314,7 @@ export function TimePickerModal({
                     >
                       <Text
                         style={{
-                          color: addOpacityToHex(theme.colors.text.white, opacity),
+                          color: addOpacityToHex(theme.colors.text.primary, opacity),
                           fontSize: isSelected ? 36 : 24,
                           fontWeight: isSelected ? '700' : '400',
                         }}
@@ -370,7 +370,7 @@ export function TimePickerModal({
                     >
                       <Text
                         style={{
-                          color: addOpacityToHex(theme.colors.text.white, opacity),
+                          color: addOpacityToHex(theme.colors.text.primary, opacity),
                           fontSize: isSelected ? 36 : 24,
                           fontWeight: isSelected ? '700' : '400',
                         }}
@@ -387,7 +387,7 @@ export function TimePickerModal({
           {/* AM / PM toggle */}
           <View
             className="mt-5 flex-row overflow-hidden rounded-full p-1"
-            style={{ backgroundColor: theme.colors.background.white10 }}
+            style={{ backgroundColor: theme.colors.background.ink10 }}
           >
             <Pressable
               onPress={() => handleAmPmToggle(false)}
@@ -398,7 +398,7 @@ export function TimePickerModal({
                 style={{
                   color: !isPm
                     ? theme.colors.background.primary
-                    : addOpacityToHex(theme.colors.text.white, 0.5),
+                    : addOpacityToHex(theme.colors.text.primary, 0.5),
                   fontSize: theme.typography.fontSize.sm,
                   fontWeight: '700',
                 }}
@@ -415,7 +415,7 @@ export function TimePickerModal({
                 style={{
                   color: isPm
                     ? theme.colors.background.primary
-                    : addOpacityToHex(theme.colors.text.white, 0.5),
+                    : addOpacityToHex(theme.colors.text.primary, 0.5),
                   fontSize: theme.typography.fontSize.sm,
                   fontWeight: '700',
                 }}

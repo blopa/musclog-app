@@ -23,6 +23,7 @@
     "totalTimeMinutes": "Общее время (минуты)",
     "addSet": "Добавить новый подход",
     "setLabel": "Подход {{index}}",
+    "prBadge": "PR",
     "remove": "Удалить",
     "rir": "RIR (повторения в запасе)",
     "syncToHealthConnect": "Синхронизировать с Health Connect",

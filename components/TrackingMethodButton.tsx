@@ -10,7 +10,6 @@ type TrackingMethodButtonProps = {
   description: string;
   iconBgColor?: string;
   iconGradient?: readonly [string, string, ...string[]];
-  badge?: string;
   highlighted?: boolean;
   onPress: () => void;
 };
@@ -21,7 +20,6 @@ export function TrackingMethodButton({
   description,
   iconBgColor,
   iconGradient,
-  badge,
   highlighted = false,
   onPress,
 }: TrackingMethodButtonProps) {
@@ -41,7 +39,7 @@ export function TrackingMethodButton({
         ...theme.shadows.md,
       }}
     >
-      <Icon size={theme.iconSize.lg} color={theme.colors.text.white} />
+      <Icon size={theme.iconSize.lg} color={theme.colors.text.primary} />
     </LinearGradient>
   ) : (
     <View
@@ -67,22 +65,7 @@ export function TrackingMethodButton({
     >
       {IconContainer}
       <View className="flex-1">
-        <View className="flex-row items-center gap-2">
-          <Text className="text-lg font-bold text-text-primary">{title}</Text>
-          {badge ? (
-            <View
-              className="rounded-full px-2 py-0.5"
-              style={{ backgroundColor: theme.colors.accent.primary }}
-            >
-              <Text
-                className="font-extrabold uppercase text-text-black"
-                style={{ fontSize: theme.typography.fontSize.xs }}
-              >
-                {badge}
-              </Text>
-            </View>
-          ) : null}
-        </View>
+        <Text className="text-lg font-bold text-text-primary">{title}</Text>
         <Text className="mt-0.5 text-xs text-text-secondary">{description}</Text>
       </View>
       {highlighted ? (

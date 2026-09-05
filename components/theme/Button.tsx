@@ -97,197 +97,131 @@ const widthClasses = {
 
 const getGradientColors = (
   theme: Theme,
-  isDisabled: boolean,
-  isGradientCtaVariant: boolean,
-  isRedVariant: boolean,
-  isSecondaryGradientVariant: boolean,
-  isSecondaryVariant: boolean
+  variant: ThemeButtonVariant,
+  isDisabled: boolean
 ): readonly [string, string, ...string[]] => {
   if (isDisabled) {
-    return [theme.colors.background.white10, theme.colors.background.white10] as const;
+    return [theme.colors.background.ink10, theme.colors.background.ink10] as const;
   }
 
-  if (isGradientCtaVariant) {
-    return theme.colors.gradients.cta;
+  switch (variant) {
+    case 'gradientCta':
+      return theme.colors.gradients.cta;
+    case 'discard':
+      return [theme.colors.rose.brand, theme.colors.rose.brand] as const;
+    case 'secondaryGradient':
+      return theme.colors.gradients.button;
+    case 'secondary':
+      return [theme.colors.background.overlay, theme.colors.background.overlay] as const;
+    default:
+      return theme.colors.gradients.accent;
   }
-
-  if (isRedVariant) {
-    return [theme.colors.rose.brand, theme.colors.rose.brand] as const;
-  }
-
-  if (isSecondaryGradientVariant) {
-    return theme.colors.gradients.button;
-  }
-
-  if (isSecondaryVariant) {
-    return [theme.colors.background.overlay, theme.colors.background.overlay] as const;
-  }
-
-  return theme.colors.gradients.accent;
 };
 
-const getTextColor = (
-  theme: Theme,
-  isDisabled: boolean,
-  isOutlineVariant: boolean,
-  isDashedVariant: boolean,
-  isSecondaryVariant: boolean
-): string => {
+const getTextColor = (theme: Theme, variant: ThemeButtonVariant, isDisabled: boolean): string => {
   if (isDisabled) {
     return theme.colors.text.primary30;
   }
 
-  if (isOutlineVariant) {
-    return theme.colors.text.gray300;
+  switch (variant) {
+    case 'outline':
+    case 'dashed':
+      return theme.colors.text.secondary;
+    // `secondaryGradient` fills with `gradients.button`, which is a SURFACE gradient
+    // rather than a colourful one, so its label is on-surface ink like `secondary`.
+    case 'secondary':
+    case 'secondaryGradient':
+      return theme.colors.text.primary;
+    default:
+      break;
   }
 
-  if (isDashedVariant) {
-    return theme.colors.text.secondary;
-  }
-
-  if (isSecondaryVariant) {
-    return theme.colors.text.primary;
-  }
-
-  return theme.colors.text.onColorful;
+  return theme.colors.text.alwaysWhite;
 };
 
-const getIconColor = (
-  theme: Theme,
-  isDisabled: boolean,
-  isOutlineVariant: boolean,
-  isDashedVariant: boolean,
-  isSecondaryVariant: boolean
-): string => {
+const getIconColor = (theme: Theme, variant: ThemeButtonVariant, isDisabled: boolean): string => {
   if (isDisabled) {
     return theme.colors.text.primary30;
   }
 
-  if (isOutlineVariant) {
-    return theme.colors.text.gray300;
+  switch (variant) {
+    case 'outline':
+    case 'dashed':
+      return theme.colors.text.secondary;
+    case 'secondary':
+      return theme.colors.accent.secondary;
+    case 'secondaryGradient':
+      return theme.colors.text.primary;
+    default:
+      break;
   }
 
-  if (isDashedVariant) {
-    return theme.colors.text.secondary;
-  }
-
-  if (isSecondaryVariant) {
-    return theme.colors.accent.secondary;
-  }
-
-  return theme.colors.text.onColorful;
+  return theme.colors.text.alwaysWhite;
 };
 
 const getShadowStyle = (
   theme: Theme,
+  variant: ThemeButtonVariant,
   configShadow: object,
-  isDisabled: boolean,
-  isOutlineVariant: boolean,
-  isSecondaryVariant: boolean,
-  isSecondaryGradientVariant: boolean,
-  isDashedVariant: boolean,
-  isGradientCtaVariant: boolean,
-  isRedVariant: boolean
+  isDisabled: boolean
 ) => {
-  if (
-    isDisabled ||
-    isOutlineVariant ||
-    isSecondaryVariant ||
-    isSecondaryGradientVariant ||
-    isDashedVariant
-  ) {
-    return theme.shadows.none;
-  }
-
-  if (isGradientCtaVariant) {
-    return theme.shadows.none;
-  }
-
-  if (isRedVariant) {
-    return theme.shadows.roseGlow;
-  }
-
-  return configShadow;
-};
-
-const getButtonTextClassName = (
-  isDisabled: boolean,
-  isOutlineVariant: boolean,
-  isDashedVariant: boolean,
-  isSecondaryVariant: boolean
-): string => {
   if (isDisabled) {
-    return 'text-white/30';
+    return theme.shadows.none;
   }
 
-  if (isOutlineVariant) {
-    return 'text-gray-300';
+  switch (variant) {
+    case 'outline':
+    case 'secondary':
+    case 'secondaryGradient':
+    case 'dashed':
+    case 'gradientCta':
+      return theme.shadows.none;
+    case 'discard':
+      return theme.shadows.roseGlow;
+    default:
+      return configShadow;
   }
-
-  if (isDashedVariant) {
-    return 'text-text-secondary';
-  }
-
-  if (isSecondaryVariant) {
-    return 'text-text-primary';
-  }
-
-  return 'text-text-on-colorful';
 };
 
 const getOutlineBackgroundColor = (
   theme: Theme,
-  isOutlineVariant: boolean,
+  variant: ThemeButtonVariant,
   isDisabled: boolean,
   isPressed: boolean
 ): string | undefined => {
-  if (isOutlineVariant && !isDisabled && isPressed) {
-    return theme.colors.background.white5;
+  if (variant !== 'outline' || isDisabled) {
+    return undefined;
   }
-  if (isOutlineVariant && !isDisabled) {
-    return 'transparent';
-  }
-  return undefined;
+
+  return isPressed ? theme.colors.background.ink5 : 'transparent';
 };
 
-const getBorderWidth = (
-  theme: Theme,
-  isOutlineVariant: boolean,
-  isSecondaryVariant: boolean,
-  isSecondaryGradientVariant: boolean,
-  isDashedVariant: boolean
-): number => {
-  if (isOutlineVariant || isSecondaryVariant || isSecondaryGradientVariant || isDashedVariant) {
-    return isOutlineVariant || isDashedVariant ? theme.borderWidth.medium : theme.borderWidth.thin;
+const getBorderWidth = (theme: Theme, variant: ThemeButtonVariant): number => {
+  switch (variant) {
+    case 'outline':
+    case 'dashed':
+      return theme.borderWidth.medium;
+    case 'secondary':
+    case 'secondaryGradient':
+      return theme.borderWidth.thin;
+    default:
+      return theme.borderWidth.none;
   }
-
-  return theme.borderWidth.none;
 };
 
-const getBorderColor = (
-  theme: Theme,
-  isOutlineVariant: boolean,
-  isDashedVariant: boolean,
-  isSecondaryGradientVariant: boolean,
-  isSecondaryVariant: boolean
-): string => {
-  if (isOutlineVariant) {
-    return theme.colors.background.white10;
+const getBorderColor = (theme: Theme, variant: ThemeButtonVariant): string => {
+  switch (variant) {
+    case 'outline':
+      return theme.colors.background.ink10;
+    case 'dashed':
+      return theme.colors.border.dashed;
+    case 'secondaryGradient':
+      return theme.colors.border.brand;
+    case 'secondary':
+      return theme.colors.border.default;
+    default:
+      return 'transparent';
   }
-
-  if (isDashedVariant) {
-    return theme.colors.border.dashed;
-  }
-
-  if (isSecondaryGradientVariant) {
-    return theme.colors.border.emerald;
-  }
-
-  if (isSecondaryVariant) {
-    return theme.colors.border.default;
-  }
-
-  return 'transparent';
 };
 
 export function Button({
@@ -311,8 +245,8 @@ export function Button({
   const widthClass = widthClasses[width];
   const [isPressed, setIsPressed] = useState(false);
 
-  // Determine colors and styles based on variant and disabled state
-  const isRedVariant = variant === 'discard';
+  // Read once for the JSX below; every colour/metric resolver dispatches on
+  // `variant` itself rather than taking a parallel list of booleans.
   const isOutlineVariant = variant === 'outline';
   const isSecondaryVariant = variant === 'secondary';
   const isSecondaryGradientVariant = variant === 'secondaryGradient';
@@ -320,42 +254,10 @@ export function Button({
   const isGradientCtaVariant = variant === 'gradientCta';
   const isDisabled = disabled || loading;
 
-  const gradientColors = getGradientColors(
-    theme,
-    isDisabled,
-    isGradientCtaVariant,
-    isRedVariant,
-    isSecondaryGradientVariant,
-    isSecondaryVariant
-  );
-
-  const textColor = getTextColor(
-    theme,
-    isDisabled,
-    isOutlineVariant,
-    isDashedVariant,
-    isSecondaryVariant
-  );
-
-  const iconColor = getIconColor(
-    theme,
-    isDisabled,
-    isOutlineVariant,
-    isDashedVariant,
-    isSecondaryVariant
-  );
-
-  const shadow = getShadowStyle(
-    theme,
-    config.shadow,
-    isDisabled,
-    isOutlineVariant,
-    isSecondaryVariant,
-    isSecondaryGradientVariant,
-    isDashedVariant,
-    isGradientCtaVariant,
-    isRedVariant
-  );
+  const gradientColors = getGradientColors(theme, variant, isDisabled);
+  const textColor = getTextColor(theme, variant, isDisabled);
+  const iconColor = getIconColor(theme, variant, isDisabled);
+  const shadow = getShadowStyle(theme, variant, config.shadow, isDisabled);
 
   const finalIconColor = customIconColor || iconColor;
   const iconSize = iconBgColor ? theme.iconSize.sm : config.iconSize;
@@ -414,7 +316,7 @@ export function Button({
   }
 
   const accessoryTextStyle: TextStyle = {
-    color: isOutlineVariant ? theme.colors.text.gray500 : textColor,
+    color: isOutlineVariant ? theme.colors.text.tertiary : textColor,
     fontSize: Math.max(theme.typography.fontSize.sm, config.fontSize - 6),
     fontWeight: theme.typography.fontWeight.semibold,
     letterSpacing: theme.typography.letterSpacing.normal,
@@ -423,7 +325,7 @@ export function Button({
 
   const textElement = (
     <Text
-      className={`tracking-wide ${getButtonTextClassName(isDisabled, isOutlineVariant, isDashedVariant, isSecondaryVariant)}`}
+      className="tracking-wide"
       style={{
         fontSize: config.fontSize,
         fontWeight: config.fontWeight,
@@ -489,12 +391,7 @@ export function Button({
     </View>
   );
 
-  const outlineBackgroundColor = getOutlineBackgroundColor(
-    theme,
-    isOutlineVariant,
-    isDisabled,
-    isPressed
-  );
+  const outlineBackgroundColor = getOutlineBackgroundColor(theme, variant, isDisabled, isPressed);
 
   // Determine border style for dashed variant
   const borderStyle = isDashedVariant ? 'dashed' : 'solid';
@@ -508,21 +405,9 @@ export function Button({
     ...shadow,
     opacity: isDisabled ? theme.colors.opacity.full : undefined,
     backgroundColor: outlineBackgroundColor,
-    borderWidth: getBorderWidth(
-      theme,
-      isOutlineVariant,
-      isSecondaryVariant,
-      isSecondaryGradientVariant,
-      isDashedVariant
-    ),
+    borderWidth: getBorderWidth(theme, variant),
     borderStyle: borderStyle as 'solid' | 'dashed',
-    borderColor: getBorderColor(
-      theme,
-      isOutlineVariant,
-      isDashedVariant,
-      isSecondaryGradientVariant,
-      isSecondaryVariant
-    ),
+    borderColor: getBorderColor(theme, variant),
     overflow: 'hidden' as const,
     // Prevent stretching in flex containers
     alignSelf: 'flex-start' as const,
@@ -565,11 +450,11 @@ export function Button({
             <LinearGradient
               colors={gradientColors}
               start={{
-                x: isSecondaryGradientVariant || isGradientCtaVariant ? 0 : 0,
-                y: isSecondaryGradientVariant ? 0 : 0,
+                x: 0,
+                y: 0,
               }}
               end={{
-                x: isSecondaryGradientVariant || isGradientCtaVariant ? 1 : 1,
+                x: 1,
                 y: isSecondaryGradientVariant ? 1 : 0,
               }}
               style={{
@@ -630,11 +515,11 @@ export function Button({
           <LinearGradient
             colors={gradientColors}
             start={{
-              x: isSecondaryGradientVariant || isGradientCtaVariant ? 0 : 0,
-              y: isSecondaryGradientVariant ? 0 : 0,
+              x: 0,
+              y: 0,
             }}
             end={{
-              x: isSecondaryGradientVariant || isGradientCtaVariant ? 1 : 1,
+              x: 1,
               y: isSecondaryGradientVariant ? 1 : 0,
             }}
             style={{
@@ -658,7 +543,7 @@ export function Button({
                 left: 0,
                 right: 0,
                 bottom: 0,
-                backgroundColor: theme.colors.background.black10,
+                backgroundColor: theme.colors.background.scrim10,
                 borderRadius: config.borderRadius,
               }}
             />

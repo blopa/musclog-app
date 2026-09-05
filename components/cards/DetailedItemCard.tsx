@@ -23,7 +23,7 @@ type DetailedItemCardProps = {
 export function DetailedItemCard({ item, onPress, ctaLabel, description }: DetailedItemCardProps) {
   const theme = useTheme();
   return (
-    <GenericCard variant="highlighted" isPressable={true} onPress={onPress} size="sm">
+    <GenericCard variant="flat" isPressable={true} onPress={onPress}>
       <View className="flex-row items-center gap-4 p-4">
         {/* Media */}
         <View className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-bg-overlay">
@@ -37,7 +37,7 @@ export function DetailedItemCard({ item, onPress, ctaLabel, description }: Detai
             <Image source={item.media} className="h-full w-full" resizeMode="cover" />
           )}
           <LinearGradient
-            colors={['transparent', theme.colors.overlay.black60]}
+            colors={['transparent', theme.colors.overlay.scrim60]}
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 1 }}
             style={{
@@ -61,27 +61,27 @@ export function DetailedItemCard({ item, onPress, ctaLabel, description }: Detai
           <View className="mt-1 flex-row items-center gap-3">
             <View className="flex-row items-center gap-1">
               <item.itemOne.icon size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-              <Text className="text-sm" style={{ color: theme.colors.overlay.white60 }}>
+              <Text className="text-sm" style={{ color: theme.colors.overlay.ink60 }}>
                 {item.itemOne.value}
               </Text>
             </View>
             <View
               className="h-1 w-1 rounded-full"
-              style={{ backgroundColor: theme.colors.overlay.white20 }}
+              style={{ backgroundColor: theme.colors.overlay.ink20 }}
             />
             <View className="flex-row items-center gap-1">
               <item.itemTwo.icon size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-              <Text className="text-sm" style={{ color: theme.colors.overlay.white60 }}>
+              <Text className="text-sm" style={{ color: theme.colors.overlay.ink60 }}>
                 {item.itemTwo.value}
               </Text>
             </View>
             <View
               className="h-1 w-1 rounded-full"
-              style={{ backgroundColor: theme.colors.overlay.white20 }}
+              style={{ backgroundColor: theme.colors.overlay.ink20 }}
             />
             <View className="flex-row items-center gap-1">
               <item.itemThree.icon size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-              <Text className="text-sm font-medium" style={{ color: theme.colors.overlay.white80 }}>
+              <Text className="text-sm font-medium" style={{ color: theme.colors.overlay.ink80 }}>
                 {item.itemThree.value}
               </Text>
             </View>

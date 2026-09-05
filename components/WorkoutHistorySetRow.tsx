@@ -25,7 +25,7 @@ export function SetRow({ set, isPreview = false, weightUnitSuffix }: SetRowProps
   const isCurrent = set.isCurrent;
   const isSkipped = set.isSkipped ?? false;
   const isHighlighted = isCurrent && !isSkipped;
-  const setNumberColor = isHighlighted ? theme.colors.text.black : theme.colors.text.secondary;
+  const setNumberColor = isHighlighted ? theme.colors.text.onAccent : theme.colors.text.secondary;
   const textDecoration = isSkipped ? ('line-through' as const) : ('none' as const);
   let valueColor = theme.colors.text.secondary;
   if (isSkipped) {

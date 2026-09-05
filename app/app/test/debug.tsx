@@ -787,11 +787,13 @@ export default function DebugTestScreen() {
             >
               <Database
                 size={theme.iconSize.lg}
-                color={checkingOldDatabase ? theme.colors.text.tertiary : theme.colors.text.black}
+                color={
+                  checkingOldDatabase ? theme.colors.text.tertiary : theme.colors.text.onAccent
+                }
               />
               <Text
                 className={`font-bold ${
-                  checkingOldDatabase ? 'text-text-tertiary' : 'text-text-black'
+                  checkingOldDatabase ? 'text-text-tertiary' : 'text-text-on-accent'
                 }`}
               >
                 {checkingOldDatabase ? 'Checking...' : 'Check Old Database'}
@@ -889,8 +891,8 @@ export default function DebugTestScreen() {
               className="flex-row items-center justify-center gap-2 rounded-lg bg-accent-primary p-4"
               onPress={addExercise}
             >
-              <Plus size={theme.iconSize.lg} color={theme.colors.text.black} />
-              <Text className="font-bold text-text-black">Add Exercise</Text>
+              <Plus size={theme.iconSize.lg} color={theme.colors.text.onAccent} />
+              <Text className="font-bold text-text-on-accent">Add Exercise</Text>
             </Pressable>
           </View>
 

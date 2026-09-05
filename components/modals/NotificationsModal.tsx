@@ -42,7 +42,7 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
               className="leading-relaxed"
               style={{
                 fontSize: theme.typography.fontSize.base,
-                color: theme.colors.text.gray300,
+                color: theme.colors.text.secondary,
               }}
             >
               {t('notifications.types.workoutReminder.description', {
@@ -70,7 +70,7 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
               className="leading-relaxed"
               style={{
                 fontSize: theme.typography.fontSize.base,
-                color: theme.colors.text.gray300,
+                color: theme.colors.text.secondary,
               }}
             >
               {t('notifications.types.workoutCompleted.description', {
@@ -92,7 +92,7 @@ export function NotificationsModal({ visible, onClose, onClearAll }: Notificatio
               className="leading-relaxed"
               style={{
                 fontSize: theme.typography.fontSize.base,
-                color: theme.colors.text.gray300,
+                color: theme.colors.text.secondary,
               }}
             >
               {t('notifications.types.kudosReceived.description', {

@@ -166,7 +166,6 @@
       "importData": "Gegevens importeren",
       "importOptically": "Gegevens importeren vanaf een andere telefoon",
       "storedLocally": "Alle gegevens lokaal opgeslagen op uw apparaat",
-      "recommended": "Aanbevolen",
       "personalizedSetup": "Gepersonaliseerde Installatie",
       "personalizedSetupSteps": "8 stappen",
       "personalizedSetupSubtitle": "Krijg nauwkeurige TDEE, macro's en gepersonaliseerde aanbevelingen",
@@ -214,7 +213,7 @@
     },
     "musclogApi": {
       "title": "Musclog AI",
-      "freeBadge": "GRATIS",
+      "freeBadge": "Gratis",
       "subtitle": "Verbeter je fitnesstraject met AI-gestuurde inzichten.",
       "features": {
         "coach": {

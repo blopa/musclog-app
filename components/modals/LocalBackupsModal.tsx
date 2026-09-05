@@ -190,7 +190,7 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
       iconColor: canExport ? theme.colors.text.primary : theme.colors.text.tertiary,
       iconBgColor: canExport
         ? theme.colors.background.iconDarker
-        : theme.colors.background.darkGray,
+        : theme.colors.background.neutralWash,
       title: t('settings.advancedSettings.localBackups.export'),
       description: canExport ? '' : t('settings.advancedSettings.localBackups.exportDisabled'),
       onPress: canExport ? handleExport : () => {},
@@ -246,7 +246,7 @@ export function LocalBackupsModal({ visible, onClose }: LocalBackupsModalProps) 
             {backups.map((backup) => (
               <GenericCard
                 key={backup.uri}
-                variant="card"
+                variant="flat"
                 isPressable
                 onPress={() => handleItemPress(backup)}
               >

@@ -143,7 +143,7 @@ export function PortionSizesPickerModal({
           : usage || t('food.foodDetails.privateServing'),
         icon: IconComponent || (() => null as any),
         iconBgColor: theme.colors.accent.primary,
-        iconColor: theme.colors.text.black,
+        iconColor: theme.colors.text.onAccent,
       };
     });
   }, [
@@ -152,7 +152,7 @@ export function PortionSizesPickerModal({
     t,
     formatInteger,
     theme.colors.accent.primary,
-    theme.colors.text.black,
+    theme.colors.text.onAccent,
   ]);
 
   useEffect(() => {

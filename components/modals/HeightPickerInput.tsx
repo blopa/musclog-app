@@ -51,7 +51,7 @@ export function HeightPickerInput({
       ) : null}
       <Pressable
         accessibilityRole="button"
-        className="rounded-lg border border-white/10 bg-bg-card"
+        className="rounded-lg border border-ink/10 bg-bg-card"
         onPress={onPress}
         disabled={disabled}
       >

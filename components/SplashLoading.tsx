@@ -1,11 +1,11 @@
 import { ActivityIndicator, Image, Text, View } from 'react-native';
 
 import { BootProgressBar } from '@/components/BootProgressBar';
+import { useBootColors } from '@/hooks/useBootColors';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
-// theme.tokens (not theme.ts) so this stays importable before the database layer loads.
-import { colors } from '@/theme.tokens';
 
 export function SplashLoading() {
+  const colors = useBootColors();
   // Boot migrations/seeding can run for minutes on first launch; keep the
   // screen on so the device doesn't sleep and interrupt the work.
   useKeepScreenAwake('splash-loading');
@@ -17,7 +17,7 @@ export function SplashLoading() {
       <Text className="mt-1.5 text-xs uppercase tracking-widest text-text-muted">
         Lift, Log, Repeat
       </Text>
-      <ActivityIndicator size="small" color={colors.jade} className="mt-12" />
+      <ActivityIndicator size="small" color={colors.brandVivid} className="mt-12" />
       <BootProgressBar />
     </View>
   );

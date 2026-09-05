@@ -28,7 +28,7 @@ export function WorkoutSummaryStatRow({
   const theme = useTheme();
   return (
     <View
-      className={`flex-row items-center justify-between ${showDivider ? 'border-b border-white/5 pb-4' : ''}`}
+      className={`flex-row items-center justify-between ${showDivider ? 'border-b border-ink/5 pb-4' : ''}`}
     >
       <View className="flex-row items-center gap-3">
         <View className="rounded-lg p-2" style={{ backgroundColor: iconBgColor }}>

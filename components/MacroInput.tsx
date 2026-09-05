@@ -75,12 +75,12 @@ export function MacroInput({
 
   return (
     <View
-      className="overflow-hidden rounded-xl border border-white/10 bg-bg-card"
+      className="overflow-hidden rounded-xl border border-ink/10 bg-bg-card"
       style={
         {
           width: size === 'half' ? '47%' : '100%',
           padding: config.padding,
-          borderColor: isFocused ? borderColor : theme.colors.background.white10,
+          borderColor: isFocused ? borderColor : theme.colors.background.ink10,
           shadowColor: highlightColor,
           shadowOffset: theme.shadowOffset.zero,
           shadowOpacity: theme.shadowOpacity.veryLight,

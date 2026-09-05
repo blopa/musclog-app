@@ -43,7 +43,7 @@ const createMockExerciseInWorkout = (
   label: 'Push Up',
   description: '3 sets × 10 reps',
   icon: User,
-  iconBgColor: theme.colors.background.white5,
+  iconBgColor: theme.colors.background.ink5,
   iconColor: theme.colors.text.secondary,
   groupId: 'group-1',
   sets: 3,
@@ -61,7 +61,7 @@ const createMockSelectorOption = (
   label: 'Push Up',
   description: '3 sets × 10 reps',
   icon: User,
-  iconBgColor: theme.colors.background.white5,
+  iconBgColor: theme.colors.background.ink5,
   iconColor: theme.colors.text.secondary,
   groupId: 'group-1',
   ...overrides,
@@ -127,7 +127,7 @@ describe('utils/workout', () => {
       it('should return User icon and correct colors for bodyweight exercises', () => {
         const config = getExerciseIconConfig(theme, true);
         expect(config.icon).toBe(User);
-        expect(config.iconBgColor).toBe(theme.colors.background.white5);
+        expect(config.iconBgColor).toBe(theme.colors.background.ink5);
         expect(config.iconColor).toBe(theme.colors.text.secondary);
       });
 
@@ -679,7 +679,7 @@ describe('utils/workout', () => {
           label: 'Bench Press',
           description: '4 sets × 8 reps',
           icon: User,
-          iconBgColor: theme.colors.background.white5,
+          iconBgColor: theme.colors.background.ink5,
           iconColor: theme.colors.text.secondary,
           groupId: 'group-1',
         });

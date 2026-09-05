@@ -318,7 +318,7 @@ export function CreateEditPlanModal({
                       >
                         <Icon
                           size={theme.iconSize.md}
-                          color={selected ? theme.colors.text.white : theme.colors.text.secondary}
+                          color={selected ? theme.colors.text.primary : theme.colors.text.secondary}
                         />
                       </Pressable>
                     );
@@ -411,7 +411,7 @@ export function CreateEditPlanModal({
                         onToggleDay={(day) => toggleMemberDay(member.templateId, day)}
                       />
                       {member.weekDays.length === 0 ? (
-                        <Text className="text-status-warning text-xs">
+                        <Text className="text-xs text-status-warning">
                           {t('workouts.plans.unscheduled')}
                         </Text>
                       ) : null}

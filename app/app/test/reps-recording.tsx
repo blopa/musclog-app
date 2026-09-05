@@ -588,7 +588,7 @@ export default function RepsRecordingScreen() {
         </View>
 
         {/* BLE Sensor */}
-        <GenericCard variant="default">
+        <GenericCard variant="flat">
           <View className="gap-3 p-4">
             <View className="flex-row items-center gap-3">
               <View className="h-10 w-10 items-center justify-center rounded-lg bg-bg-card">
@@ -664,7 +664,7 @@ export default function RepsRecordingScreen() {
         </GenericCard>
 
         {/* Exercise + Controls */}
-        <GenericCard variant="default">
+        <GenericCard variant="flat">
           <View className="gap-3 p-4">
             <Text className="font-semibold text-text-primary">Exercise</Text>
             <Text
@@ -722,8 +722,8 @@ export default function RepsRecordingScreen() {
                 icon={
                   <Circle
                     size={theme.iconSize.sm}
-                    color={theme.colors.text.white}
-                    fill={theme.colors.text.white}
+                    color={theme.colors.text.primary}
+                    fill={theme.colors.text.primary}
                   />
                 }
                 onPress={() => void handleStop()}
@@ -758,7 +758,7 @@ export default function RepsRecordingScreen() {
         </GenericCard>
 
         {/* Camera */}
-        <GenericCard variant="default">
+        <GenericCard variant="flat">
           <View className="gap-3 p-4">
             <View className="flex-row items-center justify-between">
               <Text className="font-semibold text-text-primary">Camera</Text>
@@ -836,7 +836,7 @@ export default function RepsRecordingScreen() {
         </GenericCard>
 
         {/* This Session */}
-        <GenericCard variant="default">
+        <GenericCard variant="flat">
           <View className="gap-2 p-4">
             <View className="flex-row items-center justify-between">
               <Text className="font-semibold text-text-primary">

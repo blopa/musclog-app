@@ -179,12 +179,12 @@ export function ExerciseGoalDetailModal({
     return (
       <View className="gap-5">
         {/* Stats Grid */}
-        <GenericCard variant="card">
+        <GenericCard variant="flat">
           <View className="p-4">
             <View className="mb-4 flex-row flex-wrap gap-3">
               <View
                 className="min-w-[45%] flex-1 rounded-xl p-3"
-                style={{ backgroundColor: theme.colors.background.white5 }}
+                style={{ backgroundColor: theme.colors.background.ink5 }}
               >
                 <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
                   {t('exerciseGoals.card.target')}
@@ -196,7 +196,7 @@ export function ExerciseGoalDetailModal({
 
               <View
                 className="min-w-[45%] flex-1 rounded-xl p-3"
-                style={{ backgroundColor: theme.colors.background.white5 }}
+                style={{ backgroundColor: theme.colors.background.ink5 }}
               >
                 <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
                   {t('exerciseGoals.card.currentEstimate')}
@@ -210,7 +210,7 @@ export function ExerciseGoalDetailModal({
 
               <View
                 className="min-w-[45%] flex-1 rounded-xl p-3"
-                style={{ backgroundColor: theme.colors.background.white5 }}
+                style={{ backgroundColor: theme.colors.background.ink5 }}
               >
                 <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
                   {t('exerciseGoals.detail.progress')}
@@ -222,7 +222,7 @@ export function ExerciseGoalDetailModal({
 
               <View
                 className="min-w-[45%] flex-1 rounded-xl p-3"
-                style={{ backgroundColor: theme.colors.background.white5 }}
+                style={{ backgroundColor: theme.colors.background.ink5 }}
               >
                 <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
                   {t('exerciseGoals.detail.baseline')}
@@ -255,7 +255,7 @@ export function ExerciseGoalDetailModal({
 
         {/* Chart */}
         {chartData.length > 0 ? (
-          <GenericCard variant="card">
+          <GenericCard variant="flat">
             <View className="p-4">
               <Text className="mb-4 text-sm font-bold text-text-primary">
                 {t('exerciseGoals.detail.progressChart')}
@@ -295,7 +295,7 @@ export function ExerciseGoalDetailModal({
 
         {/* Meta info */}
         {goal.targetDate || goal.notes ? (
-          <GenericCard variant="card">
+          <GenericCard variant="flat">
             <View className="gap-3 p-4">
               {goal.targetDate ? (
                 <View className="flex-row justify-between">
@@ -329,12 +329,12 @@ export function ExerciseGoalDetailModal({
   const renderConsistencyContent = () => {
     return (
       <View className="gap-5">
-        <GenericCard variant="card">
+        <GenericCard variant="flat">
           <View className="p-4">
             <View className="mb-4 flex-row flex-wrap gap-3">
               <View
                 className="min-w-[45%] flex-1 rounded-xl p-3"
-                style={{ backgroundColor: theme.colors.background.white5 }}
+                style={{ backgroundColor: theme.colors.background.ink5 }}
               >
                 <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
                   {t('exerciseGoals.creation.sessionsPerWeek')}
@@ -346,7 +346,7 @@ export function ExerciseGoalDetailModal({
 
               <View
                 className="min-w-[45%] flex-1 rounded-xl p-3"
-                style={{ backgroundColor: theme.colors.background.white5 }}
+                style={{ backgroundColor: theme.colors.background.ink5 }}
               >
                 <Text className="text-[10px] font-bold uppercase tracking-wider text-text-tertiary">
                   {t('exerciseGoals.card.sessionsThisWeek', {
@@ -361,7 +361,7 @@ export function ExerciseGoalDetailModal({
         </GenericCard>
 
         {goal.targetDate || goal.notes ? (
-          <GenericCard variant="card">
+          <GenericCard variant="flat">
             <View className="gap-3 p-4">
               {goal.targetDate ? (
                 <View className="flex-row justify-between">

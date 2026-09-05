@@ -1,8 +1,8 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { X } from 'lucide-react-native';
 import { ReactNode } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { sheetSurfaceColor } from '@/components/sheetSurfaceColor';
 import { Modal } from '@/components/theme/Modal';
 import { useTheme } from '@/hooks/useTheme';
 import { useWebModalLayerStyle } from '@/utils/webPhoneFrame';
@@ -43,26 +43,19 @@ export function CenteredModal({
       {/* Root fills the screen; backdrop tap is a sibling behind the sheet so ScrollView inside the sheet can scroll on native (Pressable ancestors steal pan gestures). */}
       <View
         className="flex-1"
-        style={[{ backgroundColor: theme.colors.overlay.black60 }, webBackdropStyle]}
+        style={[{ backgroundColor: theme.colors.overlay.scrim60 }, webBackdropStyle]}
       >
         <Pressable style={StyleSheet.absoluteFill} onPress={isLoading ? undefined : onClose} />
         <View className="flex-1 items-center justify-center p-4" pointerEvents="box-none">
           <View
             className="w-full overflow-hidden rounded-xl border border-border-dark"
             style={{
-              backgroundColor: theme.colors.background.cardElevated,
+              backgroundColor: sheetSurfaceColor(theme),
               maxWidth: maxWidth || theme.size['384'],
             }}
           >
-            {/* Gradient Header */}
-            <LinearGradient
-              colors={[
-                theme.colors.status.purple40,
-                theme.colors.accent.secondary10,
-                'transparent',
-              ]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
+            {/* Header */}
+            <View
               style={{
                 borderBottomWidth: theme.borderWidth.thin,
                 borderBottomColor: theme.colors.border.dark,
@@ -83,7 +76,7 @@ export function CenteredModal({
                   <X size={theme.iconSize.sm} color={theme.colors.text.secondary} />
                 </Pressable>
               </View>
-            </LinearGradient>
+            </View>
 
             {/* Content */}
             <View className="p-6">{children}</View>

@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { CheckCircle, Flag, Plus } from 'lucide-react-native';
 import { createElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -91,9 +90,9 @@ export function FreeSessionExerciseCompleteModal({
   const displayVolumeStr =
     displayVolume % 1 === 0 ? formatInteger(displayVolume) : formatDecimal(displayVolume, 1);
 
-  const emerald = theme.colors.status.emerald;
+  const emerald = theme.colors.status.brandVivid;
   const indigo = theme.colors.status.indigo;
-  const emerald20 = theme.colors.status.emerald20;
+  const emerald20 = theme.colors.status.brandVivid20;
   const borderDark = theme.colors.border.dark;
   const textMuted = theme.colors.text.muted;
 
@@ -119,7 +118,7 @@ export function FreeSessionExerciseCompleteModal({
         </View>
 
         <View className="flex-1 items-center justify-center">
-          {/* Success icon: gradient ring + inner gradient circle with check */}
+          {/* Success icon: dual-color ring + solid brand-fill circle with check */}
           <View className="mb-8 items-center justify-center">
             <View
               className="absolute rounded-full"
@@ -140,6 +139,9 @@ export function FreeSessionExerciseCompleteModal({
                 height: SUCCESS_ICON_SIZE - INNER_ICON_OFFSET * 2,
                 borderRadius: theme.borderRadius.full,
                 overflow: 'hidden',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: theme.colors.accent.primary,
                 shadowColor: emerald,
                 shadowOffset: { width: 0, height: 0 },
                 shadowOpacity: 0.2,
@@ -147,27 +149,13 @@ export function FreeSessionExerciseCompleteModal({
                 elevation: 4,
               }}
             >
-              <LinearGradient
-                colors={theme.colors.gradients.cta}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 96,
-                  overflow: 'hidden',
-                }}
-              >
-                <CheckCircle size={48} color={theme.colors.text.white} strokeWidth={2.5} />
-              </LinearGradient>
+              <CheckCircle size={48} color={theme.colors.text.onAccent} strokeWidth={2.5} />
             </View>
           </View>
 
           <View className="mb-10 items-center gap-2">
             <Text
-              className="text-center font-bold tracking-tight text-white"
+              className="text-center font-bold tracking-tight text-text-primary"
               style={{ fontSize: theme.typography.fontSize['3xl'] }}
             >
               {t('freeTraining.exerciseComplete.title')}
@@ -182,8 +170,7 @@ export function FreeSessionExerciseCompleteModal({
 
           {/* Exercise summary card */}
           <GenericCard
-            variant="card"
-            size="lg"
+            variant="flat"
             containerStyle={{ marginBottom: theme.spacing.margin['2xl'] }}
           >
             <View
@@ -214,7 +201,7 @@ export function FreeSessionExerciseCompleteModal({
               </View>
               <View className="min-w-0 flex-1">
                 <Text
-                  className="truncate font-bold text-white"
+                  className="truncate font-bold text-text-primary"
                   numberOfLines={1}
                   style={{ fontSize: theme.typography.fontSize.xl }}
                 >
@@ -243,7 +230,7 @@ export function FreeSessionExerciseCompleteModal({
                     {t('freeTraining.exerciseComplete.totalVolume')}
                   </Text>
                   <Text
-                    className="font-bold tracking-tight text-white"
+                    className="font-bold tracking-tight text-text-primary"
                     style={{ fontSize: theme.typography.fontSize['2xl'] }}
                   >
                     {displayVolumeStr}{' '}
@@ -266,7 +253,7 @@ export function FreeSessionExerciseCompleteModal({
           <View className="w-full gap-3">
             <Button
               label={t('freeTraining.exerciseComplete.addNextExercise')}
-              icon={<Plus size={theme.iconSize.lg} color={theme.colors.text.white} />}
+              icon={<Plus size={theme.iconSize.lg} color={theme.colors.text.primary} />}
               size="md"
               width="full"
               variant="gradientCta"

@@ -82,7 +82,7 @@ export function BarLineChart({
   }, [chartId, registerChart, unregisterChart]);
 
   const barColorResolved = barColor ?? theme.colors.accent.primary;
-  const lineColorResolved = lineColor ?? theme.colors.background.white;
+  const lineColorResolved = lineColor ?? theme.colors.text.primary;
 
   if (data.length === 0) {
     return null;
@@ -351,7 +351,7 @@ export function BarLineChart({
                   paddingHorizontal: theme.spacing.padding.sm,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  boxShadow: `0 2px 4px ${theme.colors.background.black15}`,
+                  boxShadow: `0 2px 4px ${theme.colors.background.scrim15}`,
                 }}
               >
                 <Text
@@ -373,7 +373,7 @@ export function BarLineChart({
                   paddingHorizontal: theme.spacing.padding.sm,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  boxShadow: `0 2px 4px ${theme.colors.background.black20}`,
+                  boxShadow: `0 2px 4px ${theme.colors.background.scrim20}`,
                 }}
               >
                 <Text

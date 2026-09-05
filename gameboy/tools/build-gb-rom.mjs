@@ -197,7 +197,7 @@ assertGeneratedBackgroundFits(join(generatedDir, 'gb_background.h'));
 //                  Japanese / non-Japanese destination flag (0x14A); -Wm-yj sets it
 //                  to 0x01 (non-Japanese), the closest the hardware encodes for HOL.
 //    The post-link header patch also sets the mask-ROM version/revision byte (0x14C)
-//    to 1, making this CGB-MLOG-HOL-1, then recalculates both cartridge checksums.
+//    to 2, making this CGB-MLOG-HOL-2, then recalculates both cartridge checksums.
 //    GBDK has no dedicated Game Boy flags for the game code or revision, while its
 //    arbitrary -yp byte patches are deprecated.
 //    -Wl-m emits gameboy/build/musclog.map so the build can catch bank overflows.

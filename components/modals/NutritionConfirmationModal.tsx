@@ -174,7 +174,7 @@ export function NutritionConfirmationModal({
             opacity: isLoading || entries.length === 0 ? 0.5 : 1,
           }}
         >
-          <Text className="text-center font-semibold" style={{ color: theme.colors.text.black }}>
+          <Text className="text-center font-semibold" style={{ color: theme.colors.text.onAccent }}>
             {t('nutrition.confirmAndSave')}
           </Text>
         </Pressable>

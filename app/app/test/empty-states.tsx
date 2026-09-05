@@ -19,14 +19,14 @@ export default function EmptyStatesTestScreen() {
       <View className="flex-row items-center justify-between bg-bg-primary/90 px-4 pb-2 pt-4">
         <Pressable
           className="h-10 w-10 shrink-0 items-center justify-center rounded-full"
-          style={{ backgroundColor: theme.colors.background.white10 }}
+          style={{ backgroundColor: theme.colors.background.ink10 }}
         >
           <ArrowLeft size={theme.iconSize.xl} color={theme.colors.text.primary} />
         </Pressable>
         <Text className="flex-1 text-center text-lg font-bold leading-tight tracking-tight text-text-primary">
           System Specs
         </Text>
-        <Pressable className="h-10 w-10 items-center justify-center rounded-full active:bg-white/10">
+        <Pressable className="h-10 w-10 items-center justify-center rounded-full active:bg-ink/10">
           <Settings size={theme.iconSize.lg} color={theme.colors.accent.primary} />
         </Pressable>
       </View>
@@ -55,7 +55,6 @@ export default function EmptyStatesTestScreen() {
               title="No Workouts Yet"
               description="Your fitness journey starts with your first rep. Plan your routine and track your progress here."
               buttonLabel="Create Your First Workout"
-              iconGradient={true}
               buttonVariant="gradientCta"
               onButtonPress={() => console.log('Create workout')}
             />
@@ -76,7 +75,7 @@ export default function EmptyStatesTestScreen() {
             {/* Workout Card Skeleton */}
             <View
               className="flex-col gap-4 rounded-lg border bg-bg-card p-4"
-              style={{ borderColor: theme.colors.background.white5 }}
+              style={{ borderColor: theme.colors.background.ink5 }}
             >
               <View className="flex-row items-center gap-3">
                 <SkeletonLoader
@@ -106,7 +105,7 @@ export default function EmptyStatesTestScreen() {
             {/* Food Item Skeleton */}
             <View
               className="flex-row items-center justify-between rounded-lg border bg-bg-card p-4"
-              style={{ borderColor: theme.colors.background.white5 }}
+              style={{ borderColor: theme.colors.background.ink5 }}
             >
               <View className="flex-row items-center gap-3">
                 <SkeletonLoader

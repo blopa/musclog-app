@@ -219,7 +219,7 @@ export function DailySummaryCard({
       : [];
 
   return (
-    <GenericCard variant="default" size="lg" backgroundVariant="colorful-gradient">
+    <GenericCard variant="hero">
       <View
         onLayout={(e) => {
           const w = e.nativeEvent.layout.width;
@@ -251,8 +251,11 @@ export function DailySummaryCard({
               <View className="flex-row items-center justify-between">
                 <View className="flex-row items-start gap-1">
                   <Text
-                    className="text-5xl font-extrabold tracking-tighter text-text-on-colorful"
-                    style={intuitiveMode ? blurFilter(8) : undefined}
+                    className="text-5xl font-extrabold tracking-tighter"
+                    style={{
+                      color: theme.colors.colorfulCard.ink,
+                      ...(intuitiveMode ? blurFilter(8) : {}),
+                    }}
                   >
                     {intuitiveMode ? '00' : formatInteger(Math.round(calories.consumed))}
                   </Text>
@@ -262,7 +265,7 @@ export function DailySummaryCard({
                       className="font-bold uppercase"
                       style={{
                         fontSize: theme.typography.fontSize.sm,
-                        color: theme.colors.overlay.onColorful70,
+                        color: theme.colors.colorfulCard.ink70,
                         marginTop: theme.spacing.margin.md,
                       }}
                     >
@@ -272,7 +275,7 @@ export function DailySummaryCard({
                       className="font-bold uppercase"
                       style={{
                         fontSize: theme.typography.fontSize.xs,
-                        color: theme.colors.overlay.onColorful70,
+                        color: theme.colors.colorfulCard.ink70,
                       }}
                     >
                       {t('dailySummaryCard.kcal')}
@@ -296,13 +299,13 @@ export function DailySummaryCard({
                     <View className="flex-row items-center gap-1">
                       <Text
                         className="text-xs font-bold"
-                        style={{ color: theme.colors.overlay.onColorful90, ...blurFilter(5) }}
+                        style={{ color: theme.colors.colorfulCard.ink90, ...blurFilter(5) }}
                       >
                         {'00'}
                       </Text>
                       <Text
                         className="text-xs font-bold"
-                        style={{ color: theme.colors.overlay.onColorful90 }}
+                        style={{ color: theme.colors.colorfulCard.ink90 }}
                       >
                         {t('dailySummaryCard.remaining')}
                       </Text>
@@ -310,7 +313,7 @@ export function DailySummaryCard({
                   ) : (
                     <Text
                       className="text-xs font-bold"
-                      style={{ color: theme.colors.overlay.onColorful90 }}
+                      style={{ color: theme.colors.colorfulCard.ink90 }}
                     >
                       {calories.remaining >= 0
                         ? `${formatInteger(Math.round(calories.remaining))} ${t('dailySummaryCard.remaining')}`
@@ -330,7 +333,7 @@ export function DailySummaryCard({
                 </View>
                 <View
                   className="h-1.5 overflow-hidden rounded-full"
-                  style={{ backgroundColor: theme.colors.overlay.black60 }}
+                  style={{ backgroundColor: theme.colors.colorfulCard.track }}
                 >
                   <View
                     className="h-full rounded-full"
@@ -338,13 +341,13 @@ export function DailySummaryCard({
                       width: intuitiveMode ? '0%' : `${Math.min(calorieProgress, 100)}%`,
                       backgroundColor: showColoredIndicators
                         ? getProgressBarColor(calorieStatus, theme)
-                        : theme.colors.text.onColorful,
+                        : theme.colors.colorfulCard.ink,
                     }}
                   />
                 </View>
                 <Text
                   className="text-left text-xs"
-                  style={{ color: theme.colors.overlay.onColorful70 }}
+                  style={{ color: theme.colors.colorfulCard.ink70 }}
                 >
                   {intuitiveMode ? '' : `${formatInteger(Math.round(calorieProgress))}%`}
                 </Text>
@@ -362,7 +365,7 @@ export function DailySummaryCard({
                         numberOfLines={1}
                         style={{
                           fontSize: theme.typography.fontSize.xxs,
-                          color: theme.colors.overlay.onColorful70,
+                          color: theme.colors.colorfulCard.ink70,
                           flexShrink: 1,
                         }}
                       >
@@ -389,7 +392,7 @@ export function DailySummaryCard({
                             style={{
                               color: showColoredIndicators
                                 ? getProgressBarColor(macro.status, theme)
-                                : theme.colors.text.onColorful,
+                                : theme.colors.colorfulCard.ink,
                               ...(intuitiveMode ? blurFilter(4) : {}),
                             }}
                           >
@@ -400,7 +403,7 @@ export function DailySummaryCard({
                             style={{
                               color: showColoredIndicators
                                 ? getProgressBarColor(macro.status, theme)
-                                : theme.colors.text.onColorful,
+                                : theme.colors.colorfulCard.ink,
                             }}
                           >
                             {`/${t('common.weightFormatG', { value: formatInteger(Math.round(macro.goal)) })}`}
@@ -410,7 +413,7 @@ export function DailySummaryCard({
                     </View>
                     <View
                       className="h-1 overflow-hidden rounded-full"
-                      style={{ backgroundColor: theme.colors.overlay.black60 }}
+                      style={{ backgroundColor: theme.colors.colorfulCard.track }}
                     >
                       <View
                         className="h-full rounded-full"
@@ -418,13 +421,13 @@ export function DailySummaryCard({
                           width: intuitiveMode ? '0%' : `${Math.min(macro.progress, 100)}%`,
                           backgroundColor: showColoredIndicators
                             ? getProgressBarColor(macro.status, theme)
-                            : theme.colors.overlay.onColorful90,
+                            : theme.colors.colorfulCard.ink90,
                         }}
                       />
                     </View>
                     <Text
                       className="text-left text-xs"
-                      style={{ color: theme.colors.overlay.onColorful70 }}
+                      style={{ color: theme.colors.colorfulCard.ink70 }}
                     >
                       {intuitiveMode ? '' : `${formatInteger(Math.round(macro.progress))}%`}
                     </Text>
@@ -439,7 +442,7 @@ export function DailySummaryCard({
                 className="flex-row items-center justify-start pt-2"
                 style={{
                   borderTopWidth: 1,
-                  borderTopColor: theme.colors.overlay.white30,
+                  borderTopColor: theme.colors.colorfulCard.ink30,
                   marginTop: theme.spacing.margin.xs,
                 }}
               >
@@ -447,7 +450,7 @@ export function DailySummaryCard({
                   className="font-medium"
                   style={{
                     fontSize: theme.typography.fontSize.xxs,
-                    color: theme.colors.overlay.white70,
+                    color: theme.colors.colorfulCard.ink70,
                   }}
                 >
                   {t('dailySummaryCard.alcoholLabel')}
@@ -456,7 +459,7 @@ export function DailySummaryCard({
                   className="ml-1.5 font-semibold"
                   style={{
                     fontSize: theme.typography.fontSize.xxs,
-                    color: theme.colors.text.onColorful,
+                    color: theme.colors.colorfulCard.ink,
                     ...(intuitiveMode ? blurFilter(4) : {}),
                   }}
                 >
@@ -478,7 +481,7 @@ export function DailySummaryCard({
                   className="font-bold uppercase tracking-wider"
                   style={{
                     fontSize: theme.typography.fontSize.xs,
-                    color: theme.colors.text.onColorful,
+                    color: theme.colors.colorfulCard.ink,
                   }}
                 >
                   {t('dailySummaryCard.weeklyAvg')}
@@ -489,8 +492,11 @@ export function DailySummaryCard({
               {/* Average calorie number */}
               <View className="flex-row items-end gap-2">
                 <Text
-                  className="text-5xl font-extrabold tracking-tighter text-text-on-colorful"
-                  style={intuitiveMode ? blurFilter(8) : undefined}
+                  className="text-5xl font-extrabold tracking-tighter"
+                  style={{
+                    color: theme.colors.colorfulCard.ink,
+                    ...(intuitiveMode ? blurFilter(8) : {}),
+                  }}
                 >
                   {intuitiveMode ? '00' : formatInteger(Math.round(weeklyAverages!.calories))}
                 </Text>
@@ -498,7 +504,7 @@ export function DailySummaryCard({
                   className="mb-1.5 font-bold uppercase"
                   style={{
                     fontSize: theme.typography.fontSize.lg,
-                    color: theme.colors.overlay.onColorful70,
+                    color: theme.colors.colorfulCard.ink70,
                   }}
                 >
                   {t('dailySummaryCard.kcal')}
@@ -509,7 +515,7 @@ export function DailySummaryCard({
               {weeklyMacroItems.length > 0 ? (
                 <View
                   className="flex-row justify-around rounded-2xl px-2 py-3"
-                  style={{ backgroundColor: theme.colors.background.black30 }}
+                  style={{ backgroundColor: theme.colors.background.scrim30 }}
                 >
                   {weeklyMacroItems.map((macro) => (
                     <View key={macro.label} className="items-center gap-1">
@@ -517,16 +523,17 @@ export function DailySummaryCard({
                         className="font-bold uppercase"
                         style={{
                           fontSize: theme.typography.fontSize.xxs,
-                          color: theme.colors.overlay.onColorful70,
+                          color: theme.colors.colorfulCard.ink70,
                         }}
                       >
                         {macro.label}
                       </Text>
                       <View className="flex-row items-baseline">
                         <Text
-                          className="font-bold text-text-on-colorful"
+                          className="font-bold"
                           style={{
                             fontSize: theme.typography.fontSize.xl,
+                            color: theme.colors.colorfulCard.ink,
                             ...(intuitiveMode ? blurFilter(4) : {}),
                           }}
                         >
@@ -536,7 +543,7 @@ export function DailySummaryCard({
                           className="font-normal"
                           style={{
                             fontSize: theme.typography.fontSize.sm,
-                            color: theme.colors.overlay.onColorful70,
+                            color: theme.colors.colorfulCard.ink70,
                           }}
                         >
                           g
@@ -560,7 +567,7 @@ export function DailySummaryCard({
                   width: currentPage === i ? 16 : 6,
                   height: 5,
                   borderRadius: 3,
-                  backgroundColor: theme.colors.text.onColorful,
+                  backgroundColor: theme.colors.colorfulCard.ink,
                   opacity: currentPage === i ? 1 : 0.4,
                 }}
               />

@@ -164,7 +164,7 @@ export const StepperInput: FC<StepperInputProps> = ({
           className="h-14 min-w-[56px] flex-shrink-0 items-center justify-center rounded-xl active:scale-95"
           style={{
             backgroundColor: isPortion
-              ? theme.colors.background.greenBlob
+              ? theme.colors.background.brandBlob
               : theme.colors.background.card,
           }}
           onPress={() => {
@@ -183,7 +183,7 @@ export const StepperInput: FC<StepperInputProps> = ({
         >
           <Minus
             size={theme.iconSize.lg}
-            color={isPortion ? theme.colors.text.onColorful : theme.colors.accent.primary}
+            color={isPortion ? theme.colors.text.alwaysWhite : theme.colors.accent.primary}
           />
         </Pressable>
         {editing ? (
@@ -269,7 +269,7 @@ export const StepperInput: FC<StepperInputProps> = ({
         >
           <Plus
             size={theme.iconSize.lg}
-            color={isPortion ? theme.colors.text.onColorful : theme.colors.accent.primary}
+            color={isPortion ? theme.colors.text.alwaysWhite : theme.colors.accent.primary}
           />
         </Pressable>
       </View>

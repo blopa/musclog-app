@@ -10,6 +10,7 @@
 #include <string.h>
 
 #include "input.h"
+#include "ui_theme.h"
 
 #define SCREEN_COLS 20u
 #define SCREEN_ROWS 18u
@@ -32,29 +33,6 @@ void ui_input_update(InputState *input) {
         audio_play_sfx();
     }
 }
-
-static const palette_color_t ui_palettes[16] = {
-    /* Normal: Musclog green surface with off-white text. */
-    RGB8(0x0d, 0x4a, 0x2d),
-    RGB8(0x09, 0x13, 0x10),
-    RGB8(0x95, 0xc7, 0xa8),
-    RGB8(0xf8, 0xff, 0xfa),
-    /* Header: dark-green strip with off-white text. */
-    RGB8(0x06, 0x2e, 0x1b),
-    RGB8(0x0d, 0x4a, 0x2d),
-    RGB8(0x95, 0xc7, 0xa8),
-    RGB8(0xf8, 0xff, 0xfa),
-    /* Selected: lime fill with dark text. */
-    RGB8(0xb8, 0xe9, 0x6a),
-    RGB8(0x95, 0xc7, 0xa8),
-    RGB8(0x1f, 0x4f, 0x35),
-    RGB8(0x09, 0x13, 0x10),
-    /* Panel: pale card with dark text. */
-    RGB8(0xf1, 0xff, 0xd7),
-    RGB8(0xb8, 0xe9, 0x6a),
-    RGB8(0x95, 0xc7, 0xa8),
-    RGB8(0x09, 0x13, 0x10),
-};
 
 static uint16_t cell_index(uint8_t x, uint8_t y) {
     return (uint16_t)((uint16_t)y * SCREEN_COLS + x);
@@ -123,7 +101,7 @@ void ui_init_text(void) {
 
     DISPLAY_OFF;
     LCDC_REG &= (uint8_t)(~LCDCF_BG8000);
-    set_bkg_palette(0u, 4u, ui_palettes);
+    ui_theme_apply();
 
     /*
      * The splash uses CGB background palette 1 for the green field and palette 0

@@ -5,11 +5,6 @@
     "basicSettings": {
       "title": "Configurações Básicas",
       "subtitle": "Perfil, unidades e preferências",
-      "appearance": "Aparência",
-      "appTheme": "Tema do App",
-      "themeSystem": "Sistema",
-      "themeLight": "Claro",
-      "themeDark": "Escuro",
       "localization": "Localização",
       "language": "Idioma",
       "languageSubtitle": "Escolha o idioma preferido",
@@ -409,6 +404,42 @@
         "weekly_streak": {
           "label": "Sequência semanal",
           "description": "Treinos desta semana e sua sequência de registro"
+        }
+      }
+    },
+    "theme": {
+      "sectionTitle": "Aparência",
+      "sectionSubtitle": "Escolha como o Musclog aparece. «Sistema» segue a configuração do seu dispositivo.",
+      "popupTitle": "Aparência",
+      "popupSubtitle": "Selecione um tema",
+      "options": {
+        "system": {
+          "label": "Sistema",
+          "description": "Seguir a configuração do dispositivo"
+        },
+        "kinetic-depth": {
+          "label": "Kinetic Depth",
+          "description": "Superfícies profundas com detalhes esmeralda"
+        },
+        "kinetic-light": {
+          "label": "Kinetic Light",
+          "description": "Superfícies claras com detalhes esmeralda"
+        },
+        "kinetic-shock": {
+          "label": "Kinetic Shock",
+          "description": "Superfícies rosadas profundas com detalhes em rosa"
+        },
+        "kinetic-volt": {
+          "label": "Kinetic Volt",
+          "description": "Superfícies escuras e quentes com detalhes em amarelo elétrico"
+        },
+        "kinetic-blush": {
+          "label": "Kinetic Blush",
+          "description": "Superfícies rosa suave com detalhes em framboesa"
+        },
+        "kinetic-varia": {
+          "label": "Kinetic Varia",
+          "description": "Superfícies violeta profundo com detalhes em laranja"
         }
       }
     }

@@ -91,7 +91,7 @@ export default function PersonalizedGoalsScreen() {
           <View className="px-6 pt-6">
             <Text
               className="mb-1 text-3xl font-black tracking-tight"
-              style={{ color: theme.colors.text.white }}
+              style={{ color: theme.colors.text.primary }}
             >
               {t('onboarding.quickGoals.title')}
             </Text>
@@ -166,7 +166,7 @@ export default function PersonalizedGoalsScreen() {
                           justifyContent: 'center',
                         }}
                       >
-                        {isSelected ? <Check size={12} color={theme.colors.text.white} /> : null}
+                        {isSelected ? <Check size={12} color={theme.colors.text.primary} /> : null}
                       </View>
                     </Pressable>
                   );

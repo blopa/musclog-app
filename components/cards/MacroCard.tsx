@@ -58,7 +58,7 @@ export function MacroCard({
   const displayName = getResponsiveName();
 
   return (
-    <GenericCard variant="default" size="sm">
+    <GenericCard variant="flat" fill>
       <View className="p-4">
         <View className="mb-1 flex-row items-baseline gap-1">
           <Text className="text-sm text-text-secondary">{displayName}</Text>
@@ -88,7 +88,7 @@ export function MacroCard({
 
         <View
           className="h-1.5 overflow-hidden rounded-full"
-          style={{ backgroundColor: theme.colors.background.gray800Opacity50 }}
+          style={{ backgroundColor: theme.colors.background.raised50 }}
         >
           <View
             className="h-full rounded-full"

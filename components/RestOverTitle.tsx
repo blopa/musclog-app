@@ -11,7 +11,7 @@ export function RestOverTitle() {
   return (
     <View className="mx-auto max-w-xs gap-3">
       <View className="flex-row flex-wrap items-center justify-center">
-        <Text className="text-4xl font-extrabold leading-tight tracking-tight text-white">
+        <Text className="text-4xl font-extrabold leading-tight tracking-tight text-text-primary">
           {t('restOver.restTimeIs')}{' '}
         </Text>
         <GradientText
@@ -25,9 +25,7 @@ export function RestOverTitle() {
           {t('restOver.over')}
         </GradientText>
       </View>
-      <Text className="text-center text-lg font-medium text-white/70">
-        {t('restOver.timeToGo')}
-      </Text>
+      <Text className="text-center text-lg font-medium text-ink/70">{t('restOver.timeToGo')}</Text>
     </View>
   );
 }

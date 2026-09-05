@@ -63,6 +63,9 @@
 #define STR_OFF "OFF"
 #define STR_OPT_BACK_HINT "B=BACK" /* hint; matches the A=YES B=NO style */
 
+/* ── Settings: colour theme (labels come from the generated theme table) ─── */
+#define STR_THEME "THEME"
+
 /* ── Home SELECT menu ──────────────────────────────────────────────────── */
 #define STR_MENU "MENU"
 #define STR_SETTINGS "SETTINGS"

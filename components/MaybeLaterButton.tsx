@@ -15,7 +15,7 @@ export function MaybeLaterButton({ onPress, text, fullWidth = true }: MaybeLater
       className={`${fullWidth ? 'w-full' : ''} items-center py-2 active:opacity-70`}
       onPress={onPress}
     >
-      <Text className="text-sm font-medium" style={{ color: theme.colors.text.gray500 }}>
+      <Text className="text-sm font-medium" style={{ color: theme.colors.text.tertiary }}>
         {text}
       </Text>
     </Pressable>

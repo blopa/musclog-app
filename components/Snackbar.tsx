@@ -98,13 +98,13 @@ export function Snackbar({ snackbar, onDismiss }: SnackbarProps) {
           {isSuccess ? (
             <CheckCircle size={theme.iconSize.xl} color={theme.colors.background.snackbarSuccess} />
           ) : (
-            <AlertTriangle size={theme.iconSize.lg} color={theme.colors.text.white} />
+            <AlertTriangle size={theme.iconSize.lg} color={theme.colors.text.primary} />
           )}
         </View>
 
         {/* Content */}
         <View className="min-w-0 flex-1">
-          <Text className="font-semibold" style={{ color: theme.colors.text.white }}>
+          <Text className="font-semibold" style={{ color: theme.colors.text.primary }}>
             {snackbar.message}
           </Text>
           {snackbar.subtitle ? (
@@ -125,7 +125,7 @@ export function Snackbar({ snackbar, onDismiss }: SnackbarProps) {
                 opacity: 0.82,
               }}
             >
-              <Text className="text-sm font-medium" style={{ color: theme.colors.text.white }}>
+              <Text className="text-sm font-medium" style={{ color: theme.colors.text.primary }}>
                 {snackbar.secondaryAction}
               </Text>
             </Pressable>

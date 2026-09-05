@@ -20,7 +20,7 @@ export function CopyDayPromptCard({ onPress }: CopyDayPromptCardProps) {
   const { t } = useTranslation();
 
   return (
-    <GenericCard variant="card">
+    <GenericCard variant="flat">
       <View className="flex-col items-center gap-4 p-6">
         <View
           className="h-16 w-16 items-center justify-center rounded-full"

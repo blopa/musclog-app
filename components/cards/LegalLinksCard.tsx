@@ -94,7 +94,7 @@ export function LegalLinksCard({ containerStyle }: LegalLinksCardProps) {
 
   return (
     <View style={{ marginBottom: theme.spacing.padding.sm, width: '100%', ...containerStyle }}>
-      <GenericCard variant="default" size="sm" containerStyle={{ width: '100%' }}>
+      <GenericCard variant="flat">
         <View
           style={{
             width: '100%',

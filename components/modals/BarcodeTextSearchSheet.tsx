@@ -35,7 +35,7 @@ export function BarcodeTextSearchSheet({
       headerIcon={
         <View
           className="h-10 w-10 items-center justify-center rounded-xl"
-          style={{ backgroundColor: theme.colors.background.darkGraySolid }}
+          style={{ backgroundColor: theme.colors.background.primary }}
         >
           <ScanBarcode size={theme.iconSize.xl} color={theme.colors.text.primary} />
         </View>
@@ -48,8 +48,8 @@ export function BarcodeTextSearchSheet({
         <View
           className="mb-6 w-full rounded-lg border px-4 py-3"
           style={{
-            backgroundColor: theme.colors.background.darkGraySolid,
-            borderColor: theme.colors.background.white10,
+            backgroundColor: theme.colors.background.primary,
+            borderColor: theme.colors.background.ink10,
           }}
         >
           <RNTextInput
@@ -59,7 +59,7 @@ export function BarcodeTextSearchSheet({
               color: theme.colors.text.primary,
             }}
             placeholder={t('food.aiCamera.barcodeTextSearchPlaceholder')}
-            placeholderTextColor={theme.colors.background.white20}
+            placeholderTextColor={theme.colors.background.ink20}
             value={sanitizedValue}
             onChangeText={(text) => onChangeText(text.replace(/\D/g, ''))}
             autoCapitalize="none"
@@ -83,10 +83,10 @@ export function BarcodeTextSearchSheet({
             style={StyleSheet.absoluteFill}
           />
           <View className="flex-row items-center justify-center gap-2">
-            <Text className="text-sm font-bold text-white">
+            <Text className="text-sm font-bold text-text-primary">
               {t('food.aiCamera.barcodeTextSearchSubmit')}
             </Text>
-            <Search size={theme.iconSize.md} color={theme.colors.text.white} />
+            <Search size={theme.iconSize.md} color={theme.colors.text.primary} />
           </View>
         </Pressable>
       </View>

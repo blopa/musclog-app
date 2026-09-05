@@ -58,7 +58,7 @@ function ScoreCard({ label, score }: { label: string; score: NutritionQualitySco
       style={{
         backgroundColor: theme.colors.background.cardElevated,
         borderWidth: theme.borderWidth.thin,
-        borderColor: theme.colors.background.white5,
+        borderColor: theme.colors.background.ink5,
       }}
     >
       <Text className="mb-4 text-xs font-bold uppercase tracking-wider text-text-secondary">
@@ -102,12 +102,12 @@ function NovaRow({ group, description }: { group: number; description: string })
       style={{
         backgroundColor: theme.colors.background.cardElevated,
         borderWidth: theme.borderWidth.thin,
-        borderColor: theme.colors.background.white5,
+        borderColor: theme.colors.background.ink5,
       }}
     >
       <View
         className="h-10 w-10 items-center justify-center rounded-xl"
-        style={{ backgroundColor: 'rgba(255,255,255,0.07)' }}
+        style={{ backgroundColor: theme.colors.background.ink5 }}
       >
         <Layers size={18} color={theme.colors.text.secondary} />
       </View>
@@ -156,12 +156,12 @@ function LabelsRow({ activeLabels }: { activeLabels: typeof LABEL_KEYS }) {
       style={{
         backgroundColor: theme.colors.background.cardElevated,
         borderWidth: theme.borderWidth.thin,
-        borderColor: theme.colors.background.white5,
+        borderColor: theme.colors.background.ink5,
       }}
     >
       <View
         className="h-10 w-10 items-center justify-center rounded-xl"
-        style={{ backgroundColor: 'rgba(255,255,255,0.07)' }}
+        style={{ backgroundColor: theme.colors.background.ink5 }}
       >
         <Tag size={18} color={theme.colors.text.secondary} />
       </View>
@@ -182,10 +182,13 @@ function LabelsRow({ activeLabels }: { activeLabels: typeof LABEL_KEYS }) {
             className="rounded-full px-3 py-1"
             style={{
               borderWidth: theme.borderWidth.thin,
-              borderColor: theme.colors.status.emerald,
+              borderColor: theme.colors.status.brandVivid,
             }}
           >
-            <Text className="text-sm font-semibold" style={{ color: theme.colors.status.emerald }}>
+            <Text
+              className="text-sm font-semibold"
+              style={{ color: theme.colors.status.brandVivid }}
+            >
               {t(translationKey)}
             </Text>
           </View>
