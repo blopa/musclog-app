@@ -43,7 +43,10 @@ describe('loki incremental IndexedDB saves', () => {
     db.loadJSONObject({ name: 'test.db', collections: [rawCollection('workouts', docs)] });
 
     const savedKeys: string[] = [];
-    const idbStore = { delete: () => {}, put: (record: { key: string }) => savedKeys.push(record.key) };
+    const idbStore = {
+      delete: () => {},
+      put: (record: { key: string }) => savedKeys.push(record.key),
+    };
     const adapter = new IncrementalIDBAdapter();
 
     // Two saves: the first is the one that used to throw, the second is the one that used to
