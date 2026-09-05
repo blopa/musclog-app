@@ -1,5 +1,5 @@
 /** @jest-environment jsdom */
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { createElement } from 'react';
 
 import { WebsitePreferences } from '@/components/website/WebsitePreferences';
@@ -14,7 +14,14 @@ jest.mock('react-i18next', () => ({
     i18n: { resolvedLanguage: 'en-US', changeLanguage: mockChangeLanguage },
   }),
 }));
-jest.mock('lucide-react-native', () => ({ SlidersHorizontal: () => null, X: () => null }));
+jest.mock('lucide-react-native', () => ({
+  SlidersHorizontal: () => null,
+  X: () => null,
+  Check: () => null,
+  Globe: () => null,
+  Monitor: () => null,
+  Palette: () => null,
+}));
 jest.mock('@/hooks/useTheme', () => ({ useThemePreference: () => 'system' }));
 jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: { setTheme: jest.fn().mockResolvedValue(undefined) },
@@ -45,29 +52,53 @@ const openPreferences = () => {
 };
 
 describe('website preferences', () => {
-  it('opens both labeled selectors from one button and normalizes regional locale casing', () => {
+  it('opens styled language choices with flags and the current locale selected', () => {
     const trigger = openPreferences();
     expect(trigger.getAttribute('aria-expanded')).toBe('true');
-    const language = screen.getByRole('combobox', {
-      name: 'website.navigation.language',
-    }) as HTMLSelectElement;
-    expect(language.value).toBe('en-us');
-    expect(document.activeElement).toBe(language);
-    const theme = screen.getByRole('combobox', {
-      name: 'website.navigation.theme',
-    }) as HTMLSelectElement;
-    expect(Array.from(theme.options, (option) => option.value)).toEqual(['system', ...THEME_IDS]);
+    expect(screen.queryByRole('combobox')).toBeNull();
+    const group = screen.getByRole('radiogroup', { name: 'website.navigation.language' });
+    expect(within(group).getAllByRole('radio')).toHaveLength(4);
+    expect((screen.getByRole('radio', { name: 'English' }) as HTMLInputElement).checked).toBe(true);
+    expect(group.textContent).toContain('🇬🇧');
+    expect(group.textContent).toContain('🇪🇸');
+    expect(group.textContent).toContain('🇳🇱');
+    expect(group.textContent).toContain('🇧🇷');
+    expect(document.activeElement).toBe(
+      screen.getByRole('tab', { name: 'website.navigation.language' })
+    );
   });
 
-  it('applies language and theme changes while keeping both settings available', () => {
+  it('offers the complete theme catalogue and supports keyboard tab navigation', () => {
     openPreferences();
-    fireEvent.change(screen.getByRole('combobox', { name: 'website.navigation.language' }), {
-      target: { value: 'nl-nl' },
+    fireEvent.keyDown(screen.getByRole('tab', { name: 'website.navigation.language' }), {
+      key: 'ArrowRight',
     });
+    const themeTab = screen.getByRole('tab', { name: 'website.navigation.theme' });
+    expect(document.activeElement).toBe(themeTab);
+    expect(themeTab.getAttribute('aria-selected')).toBe('true');
+    expect(screen.getAllByRole('radio').map((radio) => (radio as HTMLInputElement).value)).toEqual([
+      'system',
+      ...THEME_IDS,
+    ]);
+    expect(
+      (
+        screen.getByRole('radio', {
+          name: 'settings.theme.options.system.label',
+        }) as HTMLInputElement
+      ).checked
+    ).toBe(true);
+    fireEvent.keyDown(themeTab, { key: 'Home' });
+    expect(screen.getByRole('radiogroup', { name: 'website.navigation.language' })).toBeTruthy();
+  });
+
+  it('applies language and theme choices without closing the preferences panel', () => {
+    openPreferences();
+    fireEvent.click(screen.getByRole('radio', { name: 'Nederlands' }));
     expect(mockChangeLanguage).toHaveBeenCalledWith('nl-nl');
-    fireEvent.change(screen.getByRole('combobox', { name: 'website.navigation.theme' }), {
-      target: { value: THEME_IDS[0] },
-    });
+    fireEvent.click(screen.getByRole('tab', { name: 'website.navigation.theme' }));
+    fireEvent.click(
+      screen.getByRole('radio', { name: `settings.theme.options.${THEME_IDS[0]}.label` })
+    );
     expect(setMirroredThemePreference).toHaveBeenCalledWith(THEME_IDS[0]);
     expect(SettingsService.setTheme).toHaveBeenCalledWith(THEME_IDS[0]);
     expect(screen.getByRole('dialog')).toBeTruthy();
