@@ -3,6 +3,7 @@ import { Q } from '@nozbe/watermelondb';
 import { database } from '@/database/database-instance';
 import Meal from '@/database/models/Meal';
 import MealFood from '@/database/models/MealFood';
+import NutritionLog from '@/database/models/NutritionLog';
 import { handleError } from '@/utils/handleError';
 
 import { REPAIR_DESCRIPTORS, retryAfterRepair } from './DatabaseRepairService';
@@ -458,9 +459,53 @@ export class MealService {
    * Get meal suggestions based on recent foods
    */
   static async getMealSuggestions(limit: number = 5): Promise<Meal[]> {
-    // TODO: Implement more sophisticated meal suggestion logic (e.g. based on recent foods, preferences)
-    return await this.getAllMeals()
-      .then((meals) => meals.filter((meal) => !meal.isFavorite))
-      .then((meals) => meals.slice(0, limit));
+    const candidateMeals = await this.getAllMeals().then((meals) =>
+      meals.filter((meal) => !meal.isFavorite)
+    );
+
+    if (candidateMeals.length === 0) {
+      return [];
+    }
+
+    const sixtyDaysAgoMs = Date.now() - 60 * 24 * 60 * 60 * 1000;
+
+    const logs = await database
+      .get<NutritionLog>('nutrition_logs')
+      .query(
+        Q.where('deleted_at', Q.eq(null)),
+        Q.where('group_id', Q.notEq(null)),
+        Q.where('date', Q.gte(sixtyDaysAgoMs))
+      )
+      .fetch();
+
+    // To avoid counting each food item within a meal as a separate occurrence,
+    // we group logs by a combination of groupId and date (the exact timestamp).
+    const uniqueMealLogs = new Set<string>();
+    const mealFrequencies = new Map<string, number>();
+
+    for (const log of logs) {
+      if (!log.groupId) continue;
+
+      const logIdentifier = `${log.groupId}-${log.date}`;
+      if (!uniqueMealLogs.has(logIdentifier)) {
+        uniqueMealLogs.add(logIdentifier);
+        const count = mealFrequencies.get(log.groupId) || 0;
+        mealFrequencies.set(log.groupId, count + 1);
+      }
+    }
+
+    // Sort by frequency (descending), fallback to creation date (descending)
+    candidateMeals.sort((a, b) => {
+      const countA = mealFrequencies.get(a.id) || 0;
+      const countB = mealFrequencies.get(b.id) || 0;
+
+      if (countA !== countB) {
+        return countB - countA;
+      }
+
+      return b.createdAt - a.createdAt;
+    });
+
+    return candidateMeals.slice(0, limit);
   }
 }
