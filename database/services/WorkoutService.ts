@@ -873,20 +873,42 @@ export class WorkoutService {
 
         // Resolve every fallible lookup before preparing any model changes. A missing or
         // cross-workout id therefore aborts without leaving a model in prepared state.
+
+        const fetchedSetsToDelete = deletionIds.length > 0
+          ? await logSetsCollection.query(Q.where('id', Q.oneOf(deletionIds))).fetch()
+          : [];
+
+        const deletedSetById = new Map<string, WorkoutLogSet>();
+        fetchedSetsToDelete.forEach(set => deletedSetById.set(set.id, set));
+
         for (const deletedId of deletionIds) {
-          const setToDelete = await logSetsCollection.find(deletedId);
+          const setToDelete = deletedSetById.get(deletedId);
+          if (!setToDelete) {
+            throw new Error(`Workout set not found`);
+          }
           if (!logExerciseIds.has(setToDelete.logExerciseId)) {
             throw new Error(`Workout set ${deletedId} does not belong to workout ${workoutLogId}`);
           }
           setsToDelete.push(setToDelete);
         }
 
+        const updateIds = updates.filter(u => !u.isNew).map(u => u.setId);
+        const fetchedSetsToUpdate = updateIds.length > 0
+          ? await logSetsCollection.query(Q.where('id', Q.oneOf(updateIds))).fetch()
+          : [];
+
+        const updatedSetById = new Map<string, WorkoutLogSet>();
+        fetchedSetsToUpdate.forEach(set => updatedSetById.set(set.id, set));
+
         for (const update of updates) {
           if (update.isNew) {
             continue;
           }
 
-          const setModel = await logSetsCollection.find(update.setId);
+          const setModel = updatedSetById.get(update.setId);
+          if (!setModel) {
+            throw new Error(`Workout set not found`);
+          }
           if (!logExerciseIds.has(setModel.logExerciseId)) {
             throw new Error(
               `Workout set ${update.setId} does not belong to workout ${workoutLogId}`
