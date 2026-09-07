@@ -1438,31 +1438,50 @@ export class NutritionService {
       foodId?: string;
     },
   >(ingredients: T[]): Promise<T[]> {
-    return Promise.all(
-      ingredients.map(async (ingredient) => {
-        if (!ingredient.foodId) {
-          return ingredient;
-        }
-        try {
-          const food = await database.get<Food>('foods').find(ingredient.foodId);
-          const scale = ingredient.grams / 100;
-          return {
-            ...ingredient,
-            kcal: roundToDecimalPlaces((food.calories ?? 0) * scale),
-            protein: roundToDecimalPlaces((food.protein ?? 0) * scale),
-            carbs: roundToDecimalPlaces((food.carbs ?? 0) * scale),
-            fat: roundToDecimalPlaces((food.fat ?? 0) * scale),
-            fiber: roundToDecimalPlaces((food.fiber ?? 0) * scale),
-          };
-        } catch (error) {
-          handleError(error, 'NutritionService.normalizeAiMealIngredients');
-          // Food not found — fall back to LLM values and strip the invalid foodId
-          // so callers create a custom food instead of linking a missing record.
-          const { foodId: _, ...rest } = ingredient;
-          return rest as T;
-        }
-      })
+    const validFoodIds = Array.from(
+      new Set(ingredients.map((i) => i.foodId).filter((id): id is string => Boolean(id)))
     );
+
+    const foodMap = new Map<string, Food>();
+
+    if (validFoodIds.length > 0) {
+      try {
+        const fetchedFoods = await database
+          .get<Food>('foods')
+          .query(Q.where('id', Q.oneOf(validFoodIds)))
+          .fetch();
+        for (const food of fetchedFoods) {
+          foodMap.set(food.id, food);
+        }
+      } catch (error) {
+        handleError(error, 'NutritionService.normalizeAiMealIngredients_batchFetch');
+      }
+    }
+
+    return ingredients.map((ingredient) => {
+      if (!ingredient.foodId) {
+        return ingredient;
+      }
+
+      const food = foodMap.get(ingredient.foodId);
+
+      if (!food) {
+        // Food not found — fall back to LLM values and strip the invalid foodId
+        // so callers create a custom food instead of linking a missing record.
+        const { foodId: _, ...rest } = ingredient;
+        return rest as T;
+      }
+
+      const scale = ingredient.grams / 100;
+      return {
+        ...ingredient,
+        kcal: roundToDecimalPlaces((food.calories ?? 0) * scale),
+        protein: roundToDecimalPlaces((food.protein ?? 0) * scale),
+        carbs: roundToDecimalPlaces((food.carbs ?? 0) * scale),
+        fat: roundToDecimalPlaces((food.fat ?? 0) * scale),
+        fiber: roundToDecimalPlaces((food.fiber ?? 0) * scale),
+      };
+    });
   }
 
   /**
