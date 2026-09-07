@@ -968,21 +968,28 @@ export class NutritionService {
 
     const foodIds = [...mostRecentLogByFoodId.keys()].slice(0, limit);
 
+    const foods = await database
+      .get<Food>('foods')
+      .query(Q.where('id', Q.oneOf(foodIds)))
+      .fetch();
+
+    const foodMap = new Map<string, Food>();
+    for (const food of foods) {
+      if (!food.deletedAt) {
+        foodMap.set(food.id, food);
+      }
+    }
+
     const settled = await Promise.all(
       foodIds.map(async (foodId) => {
-        try {
-          const food = await database.get<Food>('foods').find(foodId);
-          if (food.deletedAt) {
-            return null;
-          }
-
-          const log = mostRecentLogByFoodId.get(foodId)!;
-          const lastGramWeight = await log.getGramWeight();
-          return { food, lastGramWeight };
-        } catch {
-          // Food might have been deleted, skip
+        const food = foodMap.get(foodId);
+        if (!food) {
           return null;
         }
+
+        const log = mostRecentLogByFoodId.get(foodId)!;
+        const lastGramWeight = await log.getGramWeight();
+        return { food, lastGramWeight };
       })
     );
 
