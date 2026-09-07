@@ -1084,31 +1084,59 @@ export class WorkoutService {
 
         const now = Date.now();
 
+        const orderedIds = orderedLogExercises.map((e) => e.id);
+
+        // Fetch all log exercises in one batch
+        const logExercises = await logExercisesCollection
+          .query(Q.where('id', Q.oneOf(orderedIds)))
+          .fetch();
+        const logExercisesMap = new Map<string, WorkoutLogExercise>(
+          logExercises.map((ex) => [ex.id, ex])
+        );
+
         // Update WorkoutLogExercise orders
         for (let i = 0; i < orderedLogExercises.length; i++) {
           const { id, groupId } = orderedLogExercises[i];
-          const logEx = await logExercisesCollection.find(id);
-          preparedUpdates.push(
-            logEx.prepareUpdate((record) => {
-              record.exerciseOrder = i + 1;
-              record.groupId = groupId;
-              record.updatedAt = now;
-            })
-          );
+          const logEx = logExercisesMap.get(id);
+          if (logEx) {
+            preparedUpdates.push(
+              logEx.prepareUpdate((record) => {
+                record.exerciseOrder = i + 1;
+                record.groupId = groupId;
+                record.updatedAt = now;
+              })
+            );
+          }
+        }
+
+        // Fetch all related sets in one batch
+        const allSets = await logSetsCollection
+          .query(
+            Q.where('log_exercise_id', Q.oneOf(orderedIds)),
+            Q.where('deleted_at', Q.eq(null))
+          )
+          .fetch();
+
+        // Group sets by log_exercise_id and sort them locally by set_order
+        const setsByLogExId = new Map<string, WorkoutLogSet[]>();
+        for (const set of allSets) {
+          const exId = set.logExerciseId;
+          if (!setsByLogExId.has(exId)) {
+            setsByLogExId.set(exId, []);
+          }
+          setsByLogExId.get(exId)!.push(set);
+        }
+
+        // Ensure sets are ordered by their original set_order asc
+        for (const sets of setsByLogExId.values()) {
+          sets.sort((a, b) => a.setOrder - b.setOrder);
         }
 
         // Update all WorkoutLogSet orders to match the new exercise order
         // assigning them sequentially
         let currentSetOrder = 1;
         for (const { id } of orderedLogExercises) {
-          const sets = await logSetsCollection
-            .query(
-              Q.where('log_exercise_id', id),
-              Q.where('deleted_at', Q.eq(null)),
-              Q.sortBy('set_order', Q.asc)
-            )
-            .fetch();
-
+          const sets = setsByLogExId.get(id) || [];
           for (const set of sets) {
             preparedUpdates.push(
               set.prepareUpdate((record) => {
