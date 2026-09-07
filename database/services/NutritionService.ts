@@ -1118,15 +1118,21 @@ export class NutritionService {
       .slice(0, limit);
 
     const results: { food: Food; count: number }[] = [];
+    const foodIds = sortedFoods.map(([foodId]) => foodId);
 
-    for (const [foodId, count] of sortedFoods) {
-      try {
-        const food = await database.get<Food>('foods').find(foodId);
-        if (!food.deletedAt) {
+    if (foodIds.length > 0) {
+      const foods = await database
+        .get<Food>('foods')
+        .query(Q.where('id', Q.oneOf(foodIds)))
+        .fetch();
+
+      const foodsMap = new Map(foods.map((food) => [food.id, food]));
+
+      for (const [foodId, count] of sortedFoods) {
+        const food = foodsMap.get(foodId);
+        if (food && !food.deletedAt) {
           results.push({ food, count });
         }
-      } catch (error) {
-        // Food might have been deleted, skip
       }
     }
 
@@ -1157,15 +1163,21 @@ export class NutritionService {
       .slice(0, limit);
 
     const results: { food: Food; count: number }[] = [];
+    const foodIds = sortedFoods.map(([foodId]) => foodId);
 
-    for (const [foodId, count] of sortedFoods) {
-      try {
-        const food = await database.get<Food>('foods').find(foodId);
-        if (!food.deletedAt) {
+    if (foodIds.length > 0) {
+      const foods = await database
+        .get<Food>('foods')
+        .query(Q.where('id', Q.oneOf(foodIds)))
+        .fetch();
+
+      const foodsMap = new Map(foods.map((food) => [food.id, food]));
+
+      for (const [foodId, count] of sortedFoods) {
+        const food = foodsMap.get(foodId);
+        if (food && !food.deletedAt) {
           results.push({ food, count });
         }
-      } catch (error) {
-        // Food might have been deleted, skip
       }
     }
 
