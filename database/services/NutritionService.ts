@@ -1470,11 +1470,35 @@ export class NutritionService {
     const logs = await database.write(async () => {
       const createdLogs: NutritionLog[] = [];
 
+      // Pre-fetch all referenced foods in a single batch query to avoid N+1 queries.
+      const foodIdsToFetch = [
+        ...new Set(
+          ingredients
+            .map((i) => i.foodId)
+            .filter((id): id is string => id !== undefined && id !== null)
+        ),
+      ];
+
+      const foodsMap = new Map<string, Food>();
+      if (foodIdsToFetch.length > 0) {
+        const foods = await database
+          .get<Food>('foods')
+          .query(Q.where('id', Q.oneOf(foodIdsToFetch)))
+          .fetch();
+        for (const food of foods) {
+          foodsMap.set(food.id, food);
+        }
+      }
+
       for (const ingredient of ingredients) {
         // If foodId is provided, find the food and create a log snapshot
         if (ingredient.foodId) {
           try {
-            const food = await database.get<Food>('foods').find(ingredient.foodId);
+            const food = foodsMap.get(ingredient.foodId);
+            if (!food) {
+              throw new Error(`Food not found with ID ${ingredient.foodId}`);
+            }
+
             const encrypted = await encryptNutritionLogSnapshot({
               loggedFoodName: food.name ?? ingredient.name,
               loggedCalories: food.calories ?? 0,
