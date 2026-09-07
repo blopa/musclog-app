@@ -881,18 +881,34 @@ export class WorkoutService {
           setsToDelete.push(setToDelete);
         }
 
-        for (const update of updates) {
-          if (update.isNew) {
-            continue;
+        const updateSetIds = updates.filter((u) => !u.isNew).map((u) => u.setId);
+
+        if (updateSetIds.length > 0) {
+          const fetchedSets = await logSetsCollection
+            .query(Q.where('id', Q.oneOf(updateSetIds)))
+            .fetch();
+
+          const fetchedSetMap = new Map<string, WorkoutLogSet>();
+          for (const set of fetchedSets) {
+            fetchedSetMap.set(set.id, set);
           }
 
-          const setModel = await logSetsCollection.find(update.setId);
-          if (!logExerciseIds.has(setModel.logExerciseId)) {
-            throw new Error(
-              `Workout set ${update.setId} does not belong to workout ${workoutLogId}`
-            );
+          for (const update of updates) {
+            if (update.isNew) {
+              continue;
+            }
+
+            const setModel = fetchedSetMap.get(update.setId);
+            if (!setModel) {
+              throw new Error(`Record ${update.setId} not found`); // Matches WatermelonDB find() missing record standard
+            }
+            if (!logExerciseIds.has(setModel.logExerciseId)) {
+              throw new Error(
+                `Workout set ${update.setId} does not belong to workout ${workoutLogId}`
+              );
+            }
+            existingSetById.set(update.setId, setModel);
           }
-          existingSetById.set(update.setId, setModel);
         }
 
         const now = Date.now();
