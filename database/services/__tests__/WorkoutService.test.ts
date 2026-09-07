@@ -902,7 +902,10 @@ describe('WorkoutService', () => {
         if (setId === firstSet.id) {
           return firstSet;
         }
-        throw new Error('set not found');
+        throw new Error(`Record ${setId} not found`);
+      });
+      const setFetch = jest.fn(async () => {
+        return [firstSet];
       });
       const workoutLog = createMockWorkoutLog({ id: 'workout-1', deletedAt: null });
       const logExercise = createMockWorkoutLogExercise({
@@ -918,7 +921,7 @@ describe('WorkoutService', () => {
           return collection({ fetch: jest.fn().mockResolvedValue([logExercise]) }) as never;
         }
         if (table === 'workout_log_sets') {
-          return collection({ find: setFind }) as never;
+          return collection({ find: setFind, fetch: setFetch }) as never;
         }
         return collection() as never;
       });
@@ -928,7 +931,7 @@ describe('WorkoutService', () => {
           { setId: 'set-1', reps: 10 },
           { setId: 'missing-set', reps: 12 },
         ])
-      ).rejects.toThrow('set not found');
+      ).rejects.toThrow('Failed to update workout sets: Record missing-set not found');
 
       expect(firstSet.prepareUpdate).not.toHaveBeenCalled();
       expect(mockDatabase.batch).not.toHaveBeenCalled();
