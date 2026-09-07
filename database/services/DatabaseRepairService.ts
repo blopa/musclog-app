@@ -251,16 +251,22 @@ async function cascadeMarkDeleted(
   childSpecs: ChildSpec[],
   collectByTable?: Map<string, string[]>
 ): Promise<void> {
+  if (records.length === 0) {
+    return;
+  }
+
+  const recordIds = records.map((r) => r.id);
+
+  for (const spec of childSpecs) {
+    const children = await database
+      .get<Model>(spec.table)
+      .query(Q.where(spec.fkColumn, Q.oneOf(recordIds)), Q.where('deleted_at', Q.eq(null)))
+      .fetch();
+
+    await cascadeMarkDeleted(writer, children, spec.children ?? [], collectByTable);
+  }
+
   for (const record of records) {
-    for (const spec of childSpecs) {
-      const children = await database
-        .get<Model>(spec.table)
-        .query(Q.where(spec.fkColumn, record.id), Q.where('deleted_at', Q.eq(null)))
-        .fetch();
-
-      await cascadeMarkDeleted(writer, children, spec.children ?? [], collectByTable);
-    }
-
     if (collectByTable) {
       const table = (record.constructor as typeof Model).table;
       const arr = collectByTable.get(table);
