@@ -248,7 +248,9 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
       const lowerFilter = activeFilter.toLowerCase();
       filtered = filtered.filter((meal) => {
         if (lowerFilter === 'high-protein') {
-          return meal.tags.some((tag) => tag.toLowerCase().includes('high protein')); // TODO: shouldn't this use translation?
+          return meal.tags.some((tag) =>
+            tag.toLowerCase().includes(t('meals.tags.highProtein').toLowerCase())
+          );
         }
 
         return meal.tags.some((tag) => tag.toLowerCase().includes(lowerFilter));
@@ -256,7 +258,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
     }
 
     return filtered;
-  }, [mealCardsData, activeFilter, searchQuery]);
+  }, [mealCardsData, activeFilter, searchQuery, t]);
 
   // Handlers for AddMealModal options
   const handleCreateMeal = () => {
