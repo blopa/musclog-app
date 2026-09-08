@@ -8,6 +8,8 @@ jest.mock('@nozbe/watermelondb', () => ({
   Q: {
     where: jest.fn((field: string, condition: unknown) => ({ field, condition })),
     eq: jest.fn((value: unknown) => ({ kind: 'eq', value })),
+    notEq: jest.fn((value: unknown) => ({ kind: 'notEq', value })),
+    gte: jest.fn((value: unknown) => ({ kind: 'gte', value })),
     like: jest.fn((value: unknown) => ({ kind: 'like', value })),
     sortBy: jest.fn((field: string, direction: string) => ({ kind: 'sortBy', field, direction })),
     skip: jest.fn((count: number) => ({ kind: 'skip', count })),
@@ -77,6 +79,7 @@ function makeCollection(prefix: string, options: { find?: unknown; rows?: unknow
 type Wired = {
   meals: ReturnType<typeof makeCollection>;
   mealFoods: ReturnType<typeof makeCollection>;
+  nutritionLogs: ReturnType<typeof makeCollection>;
 };
 
 function wire(
@@ -85,6 +88,7 @@ function wire(
     mealRows?: unknown[];
     mealFoodFind?: unknown;
     mealFoodRows?: unknown[];
+    nutritionLogRows?: unknown[];
   } = {}
 ): Wired {
   const meals = makeCollection('meal', { find: options.mealFind, rows: options.mealRows });
@@ -92,11 +96,17 @@ function wire(
     find: options.mealFoodFind,
     rows: options.mealFoodRows,
   });
+  const nutritionLogs = makeCollection('nutrition-log', {
+    rows: options.nutritionLogRows,
+  });
 
-  mockDatabase.get.mockImplementation(((table: string) =>
-    table === 'meals' ? meals : mealFoods) as any);
+  mockDatabase.get.mockImplementation(((table: string) => {
+    if (table === 'meals') return meals;
+    if (table === 'nutrition_logs') return nutritionLogs;
+    return mealFoods;
+  }) as any);
 
-  return { meals, mealFoods };
+  return { meals, mealFoods, nutritionLogs };
 }
 
 /** A stored meal; `foods` is what `meal.mealFoods.fetch()` resolves to. */
@@ -318,19 +328,27 @@ describe('MealService', () => {
       );
     });
 
-    it('suggests non-favourite meals only, capped at the limit', async () => {
+    it('suggests non-favourite meals only, capped at the limit and sorted by usage frequency then creation date', async () => {
       wire({
         mealRows: [
           stubMeal({ id: 'a', isFavorite: true }),
-          stubMeal({ id: 'b' }),
-          stubMeal({ id: 'c' }),
-          stubMeal({ id: 'd' }),
+          stubMeal({ id: 'b', createdAt: 100 }), // No logs, newest fallback
+          stubMeal({ id: 'c', createdAt: 10 }),  // Most logged
+          stubMeal({ id: 'd', createdAt: 50 }),  // Logged once
+          stubMeal({ id: 'e', createdAt: 0 }),   // No logs, oldest fallback
+        ],
+        nutritionLogRows: [
+          { groupId: 'c', date: 1000 },
+          { groupId: 'c', date: 1000 }, // same date/time should be grouped as one usage
+          { groupId: 'c', date: 2000 }, // another usage
+          { groupId: 'd', date: 3000 }, // one usage
         ],
       });
 
-      const suggestions = await MealService.getMealSuggestions(2);
+      // c should be first (2 uses), d second (1 use), b third (0 uses, newest), e fourth (0 uses, oldest)
+      const suggestions = await MealService.getMealSuggestions(3);
 
-      expect(suggestions.map((m) => m.id)).toEqual(['b', 'c']);
+      expect(suggestions.map((m) => m.id)).toEqual(['c', 'd', 'b']);
     });
   });
 

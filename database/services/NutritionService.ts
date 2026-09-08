@@ -968,21 +968,28 @@ export class NutritionService {
 
     const foodIds = [...mostRecentLogByFoodId.keys()].slice(0, limit);
 
+    const foods = await database
+      .get<Food>('foods')
+      .query(Q.where('id', Q.oneOf(foodIds)))
+      .fetch();
+
+    const foodMap = new Map<string, Food>();
+    for (const food of foods) {
+      if (!food.deletedAt) {
+        foodMap.set(food.id, food);
+      }
+    }
+
     const settled = await Promise.all(
       foodIds.map(async (foodId) => {
-        try {
-          const food = await database.get<Food>('foods').find(foodId);
-          if (food.deletedAt) {
-            return null;
-          }
-
-          const log = mostRecentLogByFoodId.get(foodId)!;
-          const lastGramWeight = await log.getGramWeight();
-          return { food, lastGramWeight };
-        } catch {
-          // Food might have been deleted, skip
+        const food = foodMap.get(foodId);
+        if (!food) {
           return null;
         }
+
+        const log = mostRecentLogByFoodId.get(foodId)!;
+        const lastGramWeight = await log.getGramWeight();
+        return { food, lastGramWeight };
       })
     );
 
@@ -1111,15 +1118,21 @@ export class NutritionService {
       .slice(0, limit);
 
     const results: { food: Food; count: number }[] = [];
+    const foodIds = sortedFoods.map(([foodId]) => foodId);
 
-    for (const [foodId, count] of sortedFoods) {
-      try {
-        const food = await database.get<Food>('foods').find(foodId);
-        if (!food.deletedAt) {
+    if (foodIds.length > 0) {
+      const foods = await database
+        .get<Food>('foods')
+        .query(Q.where('id', Q.oneOf(foodIds)))
+        .fetch();
+
+      const foodsMap = new Map(foods.map((food) => [food.id, food]));
+
+      for (const [foodId, count] of sortedFoods) {
+        const food = foodsMap.get(foodId);
+        if (food && !food.deletedAt) {
           results.push({ food, count });
         }
-      } catch (error) {
-        // Food might have been deleted, skip
       }
     }
 
@@ -1150,15 +1163,21 @@ export class NutritionService {
       .slice(0, limit);
 
     const results: { food: Food; count: number }[] = [];
+    const foodIds = sortedFoods.map(([foodId]) => foodId);
 
-    for (const [foodId, count] of sortedFoods) {
-      try {
-        const food = await database.get<Food>('foods').find(foodId);
-        if (!food.deletedAt) {
+    if (foodIds.length > 0) {
+      const foods = await database
+        .get<Food>('foods')
+        .query(Q.where('id', Q.oneOf(foodIds)))
+        .fetch();
+
+      const foodsMap = new Map(foods.map((food) => [food.id, food]));
+
+      for (const [foodId, count] of sortedFoods) {
+        const food = foodsMap.get(foodId);
+        if (food && !food.deletedAt) {
           results.push({ food, count });
         }
-      } catch (error) {
-        // Food might have been deleted, skip
       }
     }
 
@@ -1419,31 +1438,50 @@ export class NutritionService {
       foodId?: string;
     },
   >(ingredients: T[]): Promise<T[]> {
-    return Promise.all(
-      ingredients.map(async (ingredient) => {
-        if (!ingredient.foodId) {
-          return ingredient;
-        }
-        try {
-          const food = await database.get<Food>('foods').find(ingredient.foodId);
-          const scale = ingredient.grams / 100;
-          return {
-            ...ingredient,
-            kcal: roundToDecimalPlaces((food.calories ?? 0) * scale),
-            protein: roundToDecimalPlaces((food.protein ?? 0) * scale),
-            carbs: roundToDecimalPlaces((food.carbs ?? 0) * scale),
-            fat: roundToDecimalPlaces((food.fat ?? 0) * scale),
-            fiber: roundToDecimalPlaces((food.fiber ?? 0) * scale),
-          };
-        } catch (error) {
-          handleError(error, 'NutritionService.normalizeAiMealIngredients');
-          // Food not found — fall back to LLM values and strip the invalid foodId
-          // so callers create a custom food instead of linking a missing record.
-          const { foodId: _, ...rest } = ingredient;
-          return rest as T;
-        }
-      })
+    const validFoodIds = Array.from(
+      new Set(ingredients.map((i) => i.foodId).filter((id): id is string => Boolean(id)))
     );
+
+    const foodMap = new Map<string, Food>();
+
+    if (validFoodIds.length > 0) {
+      try {
+        const fetchedFoods = await database
+          .get<Food>('foods')
+          .query(Q.where('id', Q.oneOf(validFoodIds)))
+          .fetch();
+        for (const food of fetchedFoods) {
+          foodMap.set(food.id, food);
+        }
+      } catch (error) {
+        handleError(error, 'NutritionService.normalizeAiMealIngredients_batchFetch');
+      }
+    }
+
+    return ingredients.map((ingredient) => {
+      if (!ingredient.foodId) {
+        return ingredient;
+      }
+
+      const food = foodMap.get(ingredient.foodId);
+
+      if (!food) {
+        // Food not found — fall back to LLM values and strip the invalid foodId
+        // so callers create a custom food instead of linking a missing record.
+        const { foodId: _, ...rest } = ingredient;
+        return rest as T;
+      }
+
+      const scale = ingredient.grams / 100;
+      return {
+        ...ingredient,
+        kcal: roundToDecimalPlaces((food.calories ?? 0) * scale),
+        protein: roundToDecimalPlaces((food.protein ?? 0) * scale),
+        carbs: roundToDecimalPlaces((food.carbs ?? 0) * scale),
+        fat: roundToDecimalPlaces((food.fat ?? 0) * scale),
+        fiber: roundToDecimalPlaces((food.fiber ?? 0) * scale),
+      };
+    });
   }
 
   /**
@@ -1470,11 +1508,35 @@ export class NutritionService {
     const logs = await database.write(async () => {
       const createdLogs: NutritionLog[] = [];
 
+      // Pre-fetch all referenced foods in a single batch query to avoid N+1 queries.
+      const foodIdsToFetch = [
+        ...new Set(
+          ingredients
+            .map((i) => i.foodId)
+            .filter((id): id is string => id !== undefined && id !== null)
+        ),
+      ];
+
+      const foodsMap = new Map<string, Food>();
+      if (foodIdsToFetch.length > 0) {
+        const foods = await database
+          .get<Food>('foods')
+          .query(Q.where('id', Q.oneOf(foodIdsToFetch)))
+          .fetch();
+        for (const food of foods) {
+          foodsMap.set(food.id, food);
+        }
+      }
+
       for (const ingredient of ingredients) {
         // If foodId is provided, find the food and create a log snapshot
         if (ingredient.foodId) {
           try {
-            const food = await database.get<Food>('foods').find(ingredient.foodId);
+            const food = foodsMap.get(ingredient.foodId);
+            if (!food) {
+              throw new Error(`Food not found with ID ${ingredient.foodId}`);
+            }
+
             const encrypted = await encryptNutritionLogSnapshot({
               loggedFoodName: food.name ?? ingredient.name,
               loggedCalories: food.calories ?? 0,

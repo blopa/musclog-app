@@ -4,10 +4,26 @@ import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity } from 'react-native';
 
 import { IdentifiedItem, MealEstimationScreen } from '@/components/MealEstimationScreen';
+import type { MealType } from '@/database/models/NutritionLog';
+import { NutritionService } from '@/database/services';
 import { useTheme } from '@/hooks/useTheme';
 
 import { ConfirmationModal } from './ConfirmationModal';
+import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
+
+const inferMealTypeFromTime = (date: Date): MealType => {
+  const hour = date.getHours();
+  if (hour >= 5 && hour < 11) {return 'breakfast';}
+  if (hour >= 11 && hour < 15) {return 'lunch';}
+  if (hour >= 15 && hour < 22) {return 'dinner';}
+  return 'snack';
+};
+
+const parseAmount = (amountStr: string): number => {
+  const match = amountStr.match(/[\d.]+/);
+  return match ? parseFloat(match[0]) : 0;
+};
 
 type MealEstimationModalProps = {
   visible: boolean;
@@ -35,6 +51,9 @@ export function MealEstimationModal({
   const [identifiedItems, setIdentifiedItems] = useState<IdentifiedItem[]>(
     aiEstimationData?.identifiedItems || []
   );
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedMealType, setSelectedMealType] = useState<MealType>(inferMealTypeFromTime(new Date()));
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   // Default estimation data for demo purposes
   const defaultEstimationData = {
@@ -108,11 +127,23 @@ export function MealEstimationModal({
     }
   };
 
-  const handleConfirmAndLog = () => {
-    // TODO: Implement meal logging functionality
-    // In a real app, this would save the meal to your nutrition log
-    console.log('Success', 'Meal logged successfully!');
-    onClose();
+  const handleConfirmAndLog = async () => {
+    try {
+      await NutritionService.logCustomMeal(
+        {
+          name: t('nutrition.mealEstimation.title'),
+          calories: estimationData.totalCalories,
+          protein: parseAmount(estimationData.protein.amount),
+          carbs: parseAmount(estimationData.carbs.amount),
+          fat: parseAmount(estimationData.fat.amount),
+        },
+        selectedDate,
+        selectedMealType
+      );
+      onClose();
+    } catch (error) {
+      console.error('Error logging estimated meal:', error);
+    }
   };
 
   return (
@@ -148,6 +179,20 @@ export function MealEstimationModal({
         onEditItem={handleEditItem}
         onDeleteItem={handleDeleteItem}
         onConfirmAndLog={handleConfirmAndLog}
+        selectedDate={selectedDate}
+        onDateChange={setSelectedDate}
+        selectedMealType={selectedMealType}
+        onMealTypeChange={setSelectedMealType}
+        onShowDatePicker={() => setShowDatePicker(true)}
+      />
+      <DatePickerModal
+        visible={showDatePicker}
+        onClose={() => setShowDatePicker(false)}
+        selectedDate={selectedDate}
+        onDateSelect={(date) => {
+          setSelectedDate(date);
+          setShowDatePicker(false);
+        }}
       />
       <ConfirmationModal
         visible={!!itemToDeleteId}
