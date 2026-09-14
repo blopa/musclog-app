@@ -1,6 +1,7 @@
 import { type Model, Q } from '@nozbe/watermelondb';
 import convert, { type Unit } from 'convert';
 
+import { REPAIR_DESCRIPTORS } from '@/constants/database';
 import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
@@ -37,7 +38,7 @@ import {
   getNextSetInEffectiveOrder,
 } from '@/utils/workoutSupersetOrder';
 
-import { DatabaseRepairService, REPAIR_DESCRIPTORS } from './DatabaseRepairService';
+import { DatabaseRepairService } from './DatabaseRepairService';
 import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
 import { UserService } from './UserService';

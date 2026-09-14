@@ -29,9 +29,12 @@ jest.mock('@/database/database-instance', () => ({
 
 jest.mock('@/utils/handleError', () => ({ handleError: jest.fn() }));
 
+jest.mock('@/constants/database', () => ({
+  REPAIR_DESCRIPTORS: { meals: 'meals' },
+}));
+
 jest.mock('@/database/services/DatabaseRepairService', () => ({
   DatabaseRepairService: {},
-  REPAIR_DESCRIPTORS: { meals: 'meals' },
   retryAfterRepair: jest.fn().mockResolvedValue(undefined),
 }));
 

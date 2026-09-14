@@ -1,11 +1,7 @@
 import { Model, Q } from '@nozbe/watermelondb';
 import { Platform } from 'react-native';
 
-import {
-  type ChildSpec,
-  REPAIR_DESCRIPTORS,
-  type TableGroupDescriptor,
-} from '@/constants/database';
+import { type ChildSpec, type TableGroupDescriptor } from '@/constants/database';
 import { database } from '@/database/database-instance';
 // All raw reads here go through WatermelonDB's own connection: opening a
 // second SQLite library on the file and closing it would unlink the live WAL
@@ -14,9 +10,6 @@ import { database } from '@/database/database-instance';
 import { rawQueryViaWatermelon } from '@/database/wmdbRaw';
 import { deleteBleDataPointsFiles } from '@/utils/bleWorkoutDataStorage';
 import { handleError } from '@/utils/handleError';
-
-export type { ChildSpec, TableGroupDescriptor }; // TODO: is this necessary?
-export { REPAIR_DESCRIPTORS }; // TODO: is this necessary?
 
 // ---------------------------------------------------------------------------
 // Types
