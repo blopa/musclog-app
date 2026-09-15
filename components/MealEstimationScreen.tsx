@@ -1,13 +1,62 @@
-import { Edit2, Plus, Trash2 } from 'lucide-react-native';
+import { type TFunction } from 'i18next';
+import { Apple, Coffee, Edit2, HelpCircle,Moon, Plus, Trash2 , Utensils } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
+import type { MealType } from '@/database/models/NutritionLog';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 
 import { GenericCard } from './cards/GenericCard';
 import { MacroCard } from './cards/MacroCard';
+import { DatePickerInput } from './modals/DatePickerInput';
+import { OptionsSelector, type SelectorOption } from './OptionsSelector';
 import { Button } from './theme/Button';
+
+type Theme = ReturnType<typeof useTheme>;
+
+export const getMealTypeOptions = (theme: Theme, t: TFunction): SelectorOption<MealType>[] => [
+  {
+    id: 'breakfast',
+    label: t('food.meals.breakfast'),
+    description: t('food.meals.descriptions.breakfast'),
+    icon: Coffee,
+    iconBgColor: theme.colors.status.warning10,
+    iconColor: theme.colors.status.warning,
+  },
+  {
+    id: 'lunch',
+    label: t('food.meals.lunch'),
+    description: t('food.meals.descriptions.lunch'),
+    icon: Utensils,
+    iconBgColor: theme.colors.status.brandVivid || theme.colors.status.info10 || theme.colors.status.info10,
+    iconColor: theme.colors.status.brandVivid || theme.colors.status.info,
+  },
+  {
+    id: 'dinner',
+    label: t('food.meals.dinner'),
+    description: t('food.meals.descriptions.dinner'),
+    icon: Moon,
+    iconBgColor: theme.colors.status.brandVivid10 || theme.colors.status.info10,
+    iconColor: theme.colors.status.brandVivid || theme.colors.status.info,
+  },
+  {
+    id: 'snack',
+    label: t('food.meals.snack'),
+    description: t('food.meals.descriptions.snack'),
+    icon: Apple,
+    iconBgColor: theme.colors.status.success20,
+    iconColor: theme.colors.status.success,
+  },
+  {
+    id: 'other',
+    label: t('food.meals.other'),
+    description: t('food.meals.descriptions.other'),
+    icon: HelpCircle,
+    iconBgColor: theme.colors.background.ink10,
+    iconColor: theme.colors.text.secondary,
+  },
+];
 
 export type IdentifiedItem = {
   id: string;
@@ -29,6 +78,11 @@ type MealEstimationScreenProps = {
   onEditItem: (item: IdentifiedItem) => void;
   onDeleteItem: (itemId: string) => void;
   onConfirmAndLog: () => void;
+  selectedDate: Date;
+  onDateChange: (date: Date) => void;
+  selectedMealType: MealType;
+  onMealTypeChange: (mealType: MealType) => void;
+  onShowDatePicker: () => void;
 };
 
 // TODO: remove mocks, check designs and use this
@@ -44,14 +98,19 @@ export function MealEstimationScreen({
   onEditItem,
   onDeleteItem,
   onConfirmAndLog,
+  selectedDate,
+  selectedMealType,
+  onMealTypeChange,
+  onShowDatePicker,
 }: MealEstimationScreenProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const { formatInteger } = useFormatAppNumber();
 
+  const mealTypeOptions = getMealTypeOptions(theme, t);
   const macroColors = {
-    protein: theme.colors.status.brandVivid10,
-    proteinProgress: theme.colors.status.brandVivid30,
+    protein: theme.colors.status.brandVivid || theme.colors.status.info10,
+    proteinProgress: theme.colors.status.brandVivid || theme.colors.status.info20,
     carbs: theme.colors.status.amber,
     carbsProgress: theme.colors.status.amber10,
     fat: theme.colors.status.warning,
@@ -193,6 +252,27 @@ export function MealEstimationScreen({
           </View>
         </View>
       </ScrollView>
+
+      {/* Meal Context Selectors */}
+      <View className="px-4 pt-4">
+        <View className="mb-4">
+          <DatePickerInput
+            label={t('food.quickTrackMeal.date')}
+            selectedDate={selectedDate}
+            onPress={onShowDatePicker}
+            variant="default"
+          />
+        </View>
+
+        <View className="mb-4">
+          <OptionsSelector<MealType>
+            title={t('food.quickTrackMeal.mealType')}
+            options={mealTypeOptions}
+            selectedId={selectedMealType}
+            onSelect={onMealTypeChange}
+          />
+        </View>
+      </View>
 
       {/* Bottom Action Button */}
       <View

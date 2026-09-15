@@ -1,14 +1,6 @@
 // Export generic database repair infrastructure
-export type {
-  ChildSpec,
-  DatabaseRepairResult,
-  TableGroupDescriptor,
-} from './DatabaseRepairService';
-export {
-  DatabaseRepairService,
-  REPAIR_DESCRIPTORS,
-  retryAfterRepair,
-} from './DatabaseRepairService';
+export type { DatabaseRepairResult } from './DatabaseRepairService';
+export { DatabaseRepairService, retryAfterRepair } from './DatabaseRepairService';
 
 // Export all nutrition tracking services
 export { FoodMealTrackingActionService } from './FoodMealTrackingActionService';

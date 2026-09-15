@@ -23,3 +23,4 @@ jest.mock('@/database/adapter', () => ({
     schema: jest.requireActual('@/database/schema').schema,
   },
 }));
+jest.mock('expo-crypto', () => ({ randomUUID: () => '12345678-1234-4234-a234-123456789012' }));

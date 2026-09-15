@@ -29,9 +29,12 @@ jest.mock('@/utils/widgetEvents', () => ({
   widgetEvents: { emitNutritionWidgetUpdate: jest.fn() },
 }));
 
+jest.mock('@/constants/database', () => ({
+  REPAIR_DESCRIPTORS: { savedForLater: 'savedForLater' },
+}));
+
 jest.mock('@/database/services/DatabaseRepairService', () => ({
   DatabaseRepairService: {},
-  REPAIR_DESCRIPTORS: { savedForLater: 'savedForLater' },
   retryAfterRepair: jest.fn().mockResolvedValue(undefined),
 }));
 
