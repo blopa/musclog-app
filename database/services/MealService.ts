@@ -1,12 +1,13 @@
 import { Q } from '@nozbe/watermelondb';
 
+import { REPAIR_DESCRIPTORS } from '@/constants/database';
 import { database } from '@/database/database-instance';
 import Meal from '@/database/models/Meal';
 import MealFood from '@/database/models/MealFood';
 import NutritionLog from '@/database/models/NutritionLog';
 import { handleError } from '@/utils/handleError';
 
-import { REPAIR_DESCRIPTORS, retryAfterRepair } from './DatabaseRepairService';
+import { retryAfterRepair } from './DatabaseRepairService';
 
 export class MealService {
   private static validateMealFoodItems(

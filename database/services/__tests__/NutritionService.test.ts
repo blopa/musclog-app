@@ -57,9 +57,12 @@ jest.mock('@/database/nutritionDayCoverage', () => ({
   loggedOrFastedDayKeys: jest.fn(),
 }));
 
+jest.mock('@/constants/database', () => ({
+  REPAIR_DESCRIPTORS: { nutritionLogs: 'nutritionLogs' },
+}));
+
 jest.mock('@/database/services/DatabaseRepairService', () => ({
   DatabaseRepairService: {},
-  REPAIR_DESCRIPTORS: { nutritionLogs: 'nutritionLogs' },
   retryAfterRepair: jest.fn().mockResolvedValue(null),
 }));
 

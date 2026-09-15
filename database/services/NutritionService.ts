@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import { differenceInCalendarDays } from 'date-fns';
 import { Platform } from 'react-native';
 
+import { REPAIR_DESCRIPTORS } from '@/constants/database';
 import { database } from '@/database';
 import { dayRangeClauses } from '@/database/dayKeyQuery';
 import {
@@ -31,11 +32,7 @@ import { handleError } from '@/utils/handleError';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { widgetEvents } from '@/utils/widgetEvents';
 
-import {
-  DatabaseRepairService,
-  REPAIR_DESCRIPTORS,
-  retryAfterRepair,
-} from './DatabaseRepairService';
+import { DatabaseRepairService, retryAfterRepair } from './DatabaseRepairService';
 
 function triggerWidgetUpdate(): void {
   widgetEvents.emitNutritionWidgetUpdate();
