@@ -32,3 +32,4 @@ jest.mock('@/database/adapter', () => ({
 
 // `expo-localization` is stubbed by the manual mock in `__mocks__/`, which Jest applies
 // automatically to both the node and jsdom projects.
+jest.mock('expo-crypto', () => ({ randomUUID: () => '12345678-1234-4234-a234-123456789012' }));
