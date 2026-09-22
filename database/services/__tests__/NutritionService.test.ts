@@ -1,4 +1,4 @@
-import { database } from '@/database';
+import { database } from '@/database/database-instance';
 import type NutritionLog from '@/database/models/NutritionLog';
 import { NutritionService } from '@/database/services/NutritionService';
 import {
@@ -13,6 +13,7 @@ jest.mock('@nozbe/watermelondb', () => ({
     where: jest.fn((field: string, condition: unknown) => ({ field, condition })),
     eq: jest.fn((value: unknown) => value),
     gte: jest.fn((value: unknown) => ({ kind: 'gte', value })),
+    oneOf: jest.fn((values: unknown[]) => ({ kind: 'oneOf', values })),
     lt: jest.fn((value: unknown) => ({ kind: 'lt', value })),
     sortBy: jest.fn((field: string, direction: string) => ({ kind: 'sortBy', field, direction })),
     skip: jest.fn((count: number) => ({ kind: 'skip', count })),
@@ -22,7 +23,10 @@ jest.mock('@nozbe/watermelondb', () => ({
   },
 }));
 
-jest.mock('@/database', () => ({
+// `@/database` merely re-exports this module, so mocking only that would leave
+// `queryByIds` (and every model) holding the real instance and, through it, the native
+// adapter.
+jest.mock('@/database/database-instance', () => ({
   database: {
     get: jest.fn(),
     write: jest.fn(async (callback: () => Promise<void>) => callback()),
@@ -364,5 +368,106 @@ describe('NutritionService.getRecentLoggedDays', () => {
     withLogs([]);
 
     expect(await NutritionService.getRecentLoggedDays()).toEqual([]);
+  });
+});
+
+describe('NutritionService.normalizeAiMealIngredients', () => {
+  /** A `foods` collection that counts how it was reached. */
+  function wireFoods(rows: Record<string, unknown>[]) {
+    const fetch = jest.fn().mockResolvedValue(rows);
+    const query = jest.fn(() => ({ fetch }));
+    const find = jest.fn(async (id: string) => {
+      const row = rows.find((food) => food.id === id);
+      if (!row) {
+        throw new Error(`Record ${id} not found`);
+      }
+
+      return row;
+    });
+
+    mockDatabase.get.mockReturnValue({ find, query } as any);
+    return { find, query };
+  }
+
+  const ingredient = (foodId: string | undefined, grams = 100) => ({
+    kcal: 0,
+    protein: 0,
+    carbs: 0,
+    fat: 0,
+    fiber: 0,
+    grams,
+    ...(foodId ? { foodId } : {}),
+  });
+
+  const storedFood = (id: string) => ({
+    id,
+    calories: 100,
+    protein: 10,
+    carbs: 20,
+    fat: 5,
+    fiber: 2,
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('resolves every ingredient with a single batched query, never a find() per row', async () => {
+    const rows = Array.from({ length: 50 }, (_, index) => storedFood(`food-${index}`));
+    const { find, query } = wireFoods(rows);
+
+    const result = await NutritionService.normalizeAiMealIngredients(
+      rows.map((food) => ingredient(food.id))
+    );
+
+    expect(query).toHaveBeenCalledTimes(1);
+    expect(find).not.toHaveBeenCalled();
+    expect(result).toHaveLength(50);
+    // Scaled from the stored per-100g values, not the zeroes the LLM sent.
+    expect(result[0]).toMatchObject({ kcal: 100, protein: 10, carbs: 20, fat: 5, fiber: 2 });
+  });
+
+  it('collapses duplicate food ids into one set of query parameters', async () => {
+    const { query } = wireFoods([storedFood('food-1')]);
+
+    await NutritionService.normalizeAiMealIngredients([
+      ingredient('food-1'),
+      ingredient('food-1'),
+      ingredient('food-1'),
+    ]);
+
+    expect(JSON.stringify(query.mock.calls[0])).toContain('"values":["food-1"]');
+  });
+
+  it('strips the foodId of a genuinely missing food while leaving its neighbours linked', async () => {
+    wireFoods([storedFood('food-known')]);
+
+    const [known, missing] = await NutritionService.normalizeAiMealIngredients([
+      ingredient('food-known'),
+      ingredient('food-gone'),
+    ]);
+
+    expect(known).toMatchObject({ foodId: 'food-known', kcal: 100 });
+    expect(missing).not.toHaveProperty('foodId');
+  });
+
+  it('rejects when the lookup fails instead of silently unlinking every ingredient', async () => {
+    // A swallowed failure would leave the map empty, strip every foodId, and log a
+    // foundation-food meal at the zero macros the LLM deliberately sent.
+    const fetch = jest.fn().mockRejectedValue(new Error('db unavailable'));
+    mockDatabase.get.mockReturnValue({ query: jest.fn(() => ({ fetch })) } as any);
+
+    await expect(
+      NutritionService.normalizeAiMealIngredients([ingredient('food-1'), ingredient('food-2')])
+    ).rejects.toThrow('db unavailable');
+  });
+
+  it('issues no query when no ingredient references a stored food', async () => {
+    const { query } = wireFoods([]);
+
+    const result = await NutritionService.normalizeAiMealIngredients([ingredient(undefined)]);
+
+    expect(query).not.toHaveBeenCalled();
+    expect(result).toEqual([ingredient(undefined)]);
   });
 });

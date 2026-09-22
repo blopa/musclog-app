@@ -9,6 +9,7 @@ import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import { prepareSoftDelete } from '@/database/prepareSoftDelete';
+import { fetchByIds, fetchMapByIds } from '@/database/queryByIds';
 import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanRepository';
 import {
   toWorkoutLogSetSnapshot,
@@ -874,56 +875,30 @@ export class WorkoutService {
 
         // Resolve every fallible lookup before preparing any model changes. A missing or
         // cross-workout id therefore aborts without leaving a model in prepared state.
-        if (deletionIds.length > 0) {
-          const fetchedSets = await logSetsCollection
-            .query(Q.where('id', Q.oneOf(deletionIds)))
-            .fetch();
+        const updateSetIds = updates.filter((u) => !u.isNew).map((u) => u.setId);
+        const setById = await fetchMapByIds<WorkoutLogSet>('workout_log_sets', 'id', [
+          ...deletionIds,
+          ...updateSetIds,
+        ]);
 
-          const fetchedSetMap = new Map<string, WorkoutLogSet>();
-          for (const set of fetchedSets) {
-            fetchedSetMap.set(set.id, set);
+        const requireSetInWorkout = (setId: string): WorkoutLogSet => {
+          const set = setById.get(setId);
+          if (!set) {
+            throw new Error(`Workout set ${setId} not found`);
+          }
+          if (!logExerciseIds.has(set.logExerciseId)) {
+            throw new Error(`Workout set ${setId} does not belong to workout ${workoutLogId}`);
           }
 
-          for (const deletedId of deletionIds) {
-            const setToDelete = fetchedSetMap.get(deletedId);
-            if (!setToDelete) {
-              throw new Error(`Record ${deletedId} not found`); // Matches WatermelonDB find() missing record standard
-            }
-            if (!logExerciseIds.has(setToDelete.logExerciseId)) {
-              throw new Error(`Workout set ${deletedId} does not belong to workout ${workoutLogId}`);
-            }
-            setsToDelete.push(setToDelete);
-          }
+          return set;
+        };
+
+        for (const deletedId of deletionIds) {
+          setsToDelete.push(requireSetInWorkout(deletedId));
         }
 
-        const updateSetIds = updates.filter((u) => !u.isNew).map((u) => u.setId);
-
-        if (updateSetIds.length > 0) {
-          const fetchedSets = await logSetsCollection
-            .query(Q.where('id', Q.oneOf(updateSetIds)))
-            .fetch();
-
-          const fetchedSetMap = new Map<string, WorkoutLogSet>();
-          for (const set of fetchedSets) {
-            fetchedSetMap.set(set.id, set);
-          }
-
-          for (const update of updates) {
-            if (update.isNew) {
-              continue;
-            }
-
-            const setModel = fetchedSetMap.get(update.setId);
-            if (!setModel) {
-              throw new Error(`Record ${update.setId} not found`); // Matches WatermelonDB find() missing record standard
-            }
-            if (!logExerciseIds.has(setModel.logExerciseId)) {
-              throw new Error(
-                `Workout set ${update.setId} does not belong to workout ${workoutLogId}`
-              );
-            }
-            existingSetById.set(update.setId, setModel);
-          }
+        for (const setId of updateSetIds) {
+          existingSetById.set(setId, requireSetInWorkout(setId));
         }
 
         const now = Date.now();
@@ -1108,54 +1083,57 @@ export class WorkoutService {
       }
 
       await database.write(async () => {
-        const logExercisesCollection = database.get<WorkoutLogExercise>('workout_log_exercises');
-        const logSetsCollection = database.get<WorkoutLogSet>('workout_log_sets');
-
         const preparedUpdates: (WorkoutLogExercise | WorkoutLogSet)[] = [];
 
         const now = Date.now();
 
         const orderedIds = orderedLogExercises.map((e) => e.id);
 
-        // Fetch all log exercises in one batch
-        const logExercises = await logExercisesCollection
-          .query(Q.where('id', Q.oneOf(orderedIds)))
-          .fetch();
-        const logExercisesMap = new Map<string, WorkoutLogExercise>(
-          logExercises.map((ex) => [ex.id, ex])
+        // Resolve every lookup before preparing any change: a caller naming an unknown
+        // exercise must abort, not silently reorder the remaining ones and renumber their
+        // sets against a list nobody asked for — and not leave half the list in prepared
+        // state either, which is why the whole order is resolved before the first update.
+        const logExercisesMap = await fetchMapByIds<WorkoutLogExercise>(
+          'workout_log_exercises',
+          'id',
+          orderedIds
         );
+        const resolvedOrder = orderedLogExercises.map(({ id, groupId }) => {
+          const logEx = logExercisesMap.get(id);
+          if (!logEx) {
+            throw new Error(`Workout log exercise ${id} not found`);
+          }
+
+          return { groupId, logEx };
+        });
 
         // Update WorkoutLogExercise orders
-        for (let i = 0; i < orderedLogExercises.length; i++) {
-          const { id, groupId } = orderedLogExercises[i];
-          const logEx = logExercisesMap.get(id);
-          if (logEx) {
-            preparedUpdates.push(
-              logEx.prepareUpdate((record) => {
-                record.exerciseOrder = i + 1;
-                record.groupId = groupId;
-                record.updatedAt = now;
-              })
-            );
-          }
-        }
+        resolvedOrder.forEach(({ groupId, logEx }, index) => {
+          preparedUpdates.push(
+            logEx.prepareUpdate((record) => {
+              record.exerciseOrder = index + 1;
+              record.groupId = groupId;
+              record.updatedAt = now;
+            })
+          );
+        });
 
-        // Fetch all related sets in one batch
-        const allSets = await logSetsCollection
-          .query(
-            Q.where('log_exercise_id', Q.oneOf(orderedIds)),
-            Q.where('deleted_at', Q.eq(null))
-          )
-          .fetch();
+        // Fetch all related sets in one batch, then group and sort them in memory.
+        const allSets = await fetchByIds<WorkoutLogSet>(
+          'workout_log_sets',
+          'log_exercise_id',
+          orderedIds,
+          Q.where('deleted_at', Q.eq(null))
+        );
 
-        // Group sets by log_exercise_id and sort them locally by set_order
         const setsByLogExId = new Map<string, WorkoutLogSet[]>();
         for (const set of allSets) {
-          const exId = set.logExerciseId;
-          if (!setsByLogExId.has(exId)) {
-            setsByLogExId.set(exId, []);
+          const sets = setsByLogExId.get(set.logExerciseId);
+          if (sets) {
+            sets.push(set);
+          } else {
+            setsByLogExId.set(set.logExerciseId, [set]);
           }
-          setsByLogExId.get(exId)!.push(set);
         }
 
         // Ensure sets are ordered by their original set_order asc

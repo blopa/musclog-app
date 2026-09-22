@@ -8,8 +8,8 @@ jest.mock('@nozbe/watermelondb', () => ({
   Q: {
     where: jest.fn((field: string, condition: unknown) => ({ field, condition })),
     eq: jest.fn((value: unknown) => ({ kind: 'eq', value })),
-    notEq: jest.fn((value: unknown) => ({ kind: 'notEq', value })),
     gte: jest.fn((value: unknown) => ({ kind: 'gte', value })),
+    oneOf: jest.fn((values: unknown[]) => ({ kind: 'oneOf', values })),
     like: jest.fn((value: unknown) => ({ kind: 'like', value })),
     sortBy: jest.fn((field: string, direction: string) => ({ kind: 'sortBy', field, direction })),
     skip: jest.fn((count: number) => ({ kind: 'skip', count })),
@@ -331,27 +331,55 @@ describe('MealService', () => {
       );
     });
 
-    it('suggests non-favourite meals only, capped at the limit and sorted by usage frequency then creation date', async () => {
+    it('orders non-favourite meals by how often they were logged, then newest first', async () => {
+      // Logs link back to a saved meal by `logged_meal_name` — never by `group_id`, which
+      // is a per-log-instance UUID. A fixture keyed on meal ids would pass against a
+      // frequency map that can never match anything in production.
       wire({
         mealRows: [
-          stubMeal({ id: 'a', isFavorite: true }),
-          stubMeal({ id: 'b', createdAt: 100 }), // No logs, newest fallback
-          stubMeal({ id: 'c', createdAt: 10 }),  // Most logged
-          stubMeal({ id: 'd', createdAt: 50 }),  // Logged once
-          stubMeal({ id: 'e', createdAt: 0 }),   // No logs, oldest fallback
+          stubMeal({ id: 'a', name: 'Favourite', isFavorite: true }),
+          stubMeal({ id: 'b', name: 'Never logged, newest', createdAt: 100 }),
+          stubMeal({ id: 'c', name: 'Logged twice', createdAt: 10 }),
+          stubMeal({ id: 'd', name: 'Logged once', createdAt: 50 }),
+          stubMeal({ id: 'e', name: 'Never logged, oldest', createdAt: 0 }),
         ],
         nutritionLogRows: [
-          { groupId: 'c', date: 1000 },
-          { groupId: 'c', date: 1000 }, // same date/time should be grouped as one usage
-          { groupId: 'c', date: 2000 }, // another usage
-          { groupId: 'd', date: 3000 }, // one usage
+          // One meal logged twice; the first occurrence spans two ingredient rows that
+          // share a group id and must count once.
+          { id: 'l1', loggedMealName: 'Logged twice', groupId: 'g1', date: 1000 },
+          { id: 'l2', loggedMealName: 'Logged twice', groupId: 'g1', date: 1000 },
+          { id: 'l3', loggedMealName: 'Logged twice', groupId: 'g2', date: 2000 },
+          // A single-food log carries no group id and still counts as one occurrence.
+          { id: 'l4', loggedMealName: 'Logged once', date: 3000 },
         ],
       });
 
-      // c should be first (2 uses), d second (1 use), b third (0 uses, newest), e fourth (0 uses, oldest)
       const suggestions = await MealService.getMealSuggestions(3);
 
       expect(suggestions.map((m) => m.id)).toEqual(['c', 'd', 'b']);
+    });
+
+    it('looks logs up by meal name, not by meal id', async () => {
+      const { nutritionLogs } = wire({
+        mealRows: [stubMeal({ id: 'a', name: 'Chicken bowl' })],
+        nutritionLogRows: [],
+      });
+
+      await MealService.getMealSuggestions(5);
+
+      const clauses = nutritionLogs.query.mock.calls[0] ?? [];
+      expect(JSON.stringify(clauses)).toContain('logged_meal_name');
+      expect(JSON.stringify(clauses)).toContain('Chicken bowl');
+      expect(JSON.stringify(clauses)).not.toContain('group_id');
+    });
+
+    it('does not query at all when every meal is a favourite', async () => {
+      const { nutritionLogs } = wire({
+        mealRows: [stubMeal({ id: 'a', isFavorite: true })],
+      });
+
+      await expect(MealService.getMealSuggestions(5)).resolves.toEqual([]);
+      expect(nutritionLogs.query).not.toHaveBeenCalled();
     });
   });
 

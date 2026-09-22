@@ -2,7 +2,9 @@ import { Q } from '@nozbe/watermelondb';
 
 import { database } from '@/database';
 import Food from '@/database/models/Food';
-import { FoodService, MealService, NutritionService } from '@/database/services';
+import { FoodService } from '@/database/services/FoodService';
+import { MealService } from '@/database/services/MealService';
+import { NutritionService } from '@/database/services/NutritionService';
 
 import { localCalendarDayDate, withCurrentTimeOnDay } from './calendarDate';
 import { aiIngredientMacrosPer100g, totalCarbsForFoodSource } from './carbsConvention';

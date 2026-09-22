@@ -15,7 +15,9 @@ import { database } from '@/database';
 import type { MealType } from '@/database/models';
 import Food from '@/database/models/Food';
 import Meal from '@/database/models/Meal';
-import { FoodService, MealService, NutritionService } from '@/database/services';
+import { FoodService } from '@/database/services/FoodService';
+import { MealService } from '@/database/services/MealService';
+import { NutritionService } from '@/database/services/NutritionService';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
@@ -44,7 +46,7 @@ import { ShareOpticalSendModal } from './ShareOpticalSendModal';
 type MealCardData = {
   id: string;
   title: string;
-  tags: string[];
+  tags: MealTag[];
   calories: number;
   macros: {
     protein: string;
@@ -54,21 +56,38 @@ type MealCardData = {
   image: any;
 };
 
+/**
+ * A derived meal tag. The `id` is the stable identity filters and translations key off;
+ * `label` is display-only. Filtering on the label would compare an English filter id
+ * against a translated string and silently match nothing outside `en-US`.
+ */
+type MealTag = { id: MealTagId; label: string };
+
+type MealTagId = 'breakfast' | 'dinner' | 'high-protein' | 'keto' | 'lunch' | 'vegetarian';
+
+const MEAL_TAG_LABEL_KEYS: Record<MealTagId, string> = {
+  breakfast: 'meals.tags.breakfast',
+  dinner: 'meals.tags.dinner',
+  'high-protein': 'meals.tags.highProtein',
+  keto: 'meals.tags.ketoFriendly',
+  lunch: 'meals.tags.lunch',
+  vegetarian: 'meals.tags.vegetarian',
+};
+
 const deriveTags = (
   nutrients: { protein: number; carbs: number; fat: number },
   name: string,
   description?: string
-): string[] => {
-  const tags: string[] = [];
+): MealTag[] => {
+  const ids: MealTagId[] = [];
 
-  // Check for high protein
   if (nutrients.protein >= 40) {
-    tags.push(i18n.t('meals.tags.highProtein'));
+    ids.push('high-protein');
   }
 
-  // Check for keto friendly (low carbs)
+  // Keto friendly (low carbs)
   if (nutrients.carbs < 20) {
-    tags.push(i18n.t('meals.tags.ketoFriendly'));
+    ids.push('keto');
   }
 
   // Check for vegetarian keywords
@@ -77,7 +96,7 @@ const deriveTags = (
     fullText.includes('vegetarian') ||
     (fullText.includes('egg') && !fullText.includes('chicken') && !fullText.includes('salmon'))
   ) {
-    tags.push(i18n.t('meals.tags.vegetarian'));
+    ids.push('vegetarian');
   }
 
   // Infer meal type from name
@@ -87,14 +106,14 @@ const deriveTags = (
     lowerName.includes('oatmeal') ||
     lowerName.includes('toast')
   ) {
-    tags.push(i18n.t('meals.tags.breakfast'));
+    ids.push('breakfast');
   } else if (lowerName.includes('lunch') || lowerName.includes('bowl')) {
-    tags.push(i18n.t('meals.tags.lunch'));
+    ids.push('lunch');
   } else if (lowerName.includes('dinner') || lowerName.includes('salad')) {
-    tags.push(i18n.t('meals.tags.dinner'));
+    ids.push('dinner');
   }
 
-  return tags;
+  return ids.map((id) => ({ id, label: i18n.t(MEAL_TAG_LABEL_KEYS[id]) }));
 };
 
 type MyMealsModalProps = {
@@ -120,7 +139,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
     { id: 'high-protein', label: t('meals.filters.highProtein') },
     { id: 'breakfast', label: t('meals.filters.breakfast') },
     { id: 'lunch', label: t('meals.filters.lunch') },
-  ];
+  ] satisfies { id: 'all' | MealTagId; label: string }[];
   const [addMealModalVisible, setAddMealModalVisible] = useState(false);
   const [createMealModalVisible, setCreateMealModalVisible] = useState(false);
   const [dynamicMealCreatorVisible, setDynamicMealCreatorVisible] = useState(false);
@@ -238,27 +257,18 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
       filtered = filtered.filter((meal) => {
         return (
           meal.title.toLowerCase().includes(query) ||
-          meal.tags.some((tag) => tag.toLowerCase().includes(query))
+          meal.tags.some((tag) => tag.label.toLowerCase().includes(query))
         );
       });
     }
 
     // Apply category filter
     if (activeFilter !== 'all') {
-      const lowerFilter = activeFilter.toLowerCase();
-      filtered = filtered.filter((meal) => {
-        if (lowerFilter === 'high-protein') {
-          return meal.tags.some((tag) =>
-            tag.toLowerCase().includes(t('meals.tags.highProtein').toLowerCase())
-          );
-        }
-
-        return meal.tags.some((tag) => tag.toLowerCase().includes(lowerFilter));
-      });
+      filtered = filtered.filter((meal) => meal.tags.some((tag) => tag.id === activeFilter));
     }
 
     return filtered;
-  }, [mealCardsData, activeFilter, searchQuery, t]);
+  }, [mealCardsData, activeFilter, searchQuery]);
 
   // Handlers for AddMealModal options
   const handleCreateMeal = () => {
@@ -583,7 +593,7 @@ export default function MyMealsModal({ visible, onClose, initialMealType }: MyMe
                 <MealItemCard
                   key={meal.id}
                   title={meal.title}
-                  tags={meal.tags}
+                  tags={meal.tags.map((tag) => tag.label)}
                   calories={meal.calories}
                   macros={meal.macros}
                   image={meal.image}

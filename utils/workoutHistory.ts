@@ -8,7 +8,7 @@ import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
-import { WorkoutAnalytics } from '@/database/services';
+import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
 import i18n from '@/lang/lang';
 import { type Theme } from '@/theme';
 

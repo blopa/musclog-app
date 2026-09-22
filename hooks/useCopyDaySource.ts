@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import type Food from '@/database/models/Food';
-import { NutritionService } from '@/database/services';
+import { NutritionService } from '@/database/services/NutritionService';
 import { utcDayKeyFromLocalDate } from '@/utils/calendarDate';
 import { buildCopyDaySections, type CopyDaySection } from '@/utils/copyDaySelection';
 import { handleError } from '@/utils/handleError';

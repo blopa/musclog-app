@@ -1,4 +1,5 @@
-import { UserMetricService, UserService } from '@/database/services';
+import { UserMetricService } from '@/database/services/UserMetricService';
+import { UserService } from '@/database/services/UserService';
 import { localDayClosedRangeMaxMs } from '@/utils/calendarDate';
 import { resolveDailyMacros } from '@/utils/dynamicNutritionTarget';
 import { getHistoricalNutritionParams } from '@/utils/historicalNutritionParams';
@@ -9,15 +10,21 @@ import {
   getMinCalories,
 } from '@/utils/nutritionCalculator';
 
-jest.mock('@/database/services', () => ({
+jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
     getDisableMinimumCalories: jest.fn(() => Promise.resolve(false)),
     // Defaults to false, matching SettingsService's own default.
     getUseBfForCalculations: jest.fn(() => Promise.resolve(false)),
   },
+}));
+
+jest.mock('@/database/services/UserService', () => ({
   UserService: {
     getCurrentUser: jest.fn(),
   },
+}));
+
+jest.mock('@/database/services/UserMetricService', () => ({
   UserMetricService: {
     getLatestOnOrBefore: jest.fn(),
   },

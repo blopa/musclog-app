@@ -9,8 +9,10 @@ import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
-import { SettingsService, UserMetricService, WorkoutService } from '@/database/services';
+import { SettingsService } from '@/database/services/SettingsService';
+import { UserMetricService } from '@/database/services/UserMetricService';
 import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
+import { WorkoutService } from '@/database/services/WorkoutService';
 import { computeIntraSessionAdjustment } from '@/utils/setAdjustment';
 import { isPerformedWorkoutSet, isResolvedWorkoutSet } from '@/utils/workoutSetCompletion';
 import {

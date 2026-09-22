@@ -1,3 +1,4 @@
+import { randomUUID } from 'expo-crypto';
 import { File } from 'expo-file-system';
 import { copyAsync } from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
@@ -41,7 +42,6 @@ import {
 } from '@/utils/bleWorkoutDataStorage';
 import { toFileUri } from '@/utils/file';
 import { showSnackbar } from '@/utils/snackbarService';
-import { generateUUID } from '@/utils/uuid';
 
 // Isolated component — useExercises re-renders don't affect the parent screen
 function ExercisePickerModal({
@@ -327,7 +327,7 @@ export default function RepsRecordingScreen() {
     }
 
     try {
-      const tempFile = createBleWorkoutTrackingTempFile(generateUUID());
+      const tempFile = createBleWorkoutTrackingTempFile(randomUUID());
       tempFileRef.current = tempFile;
       sampleCountRef.current = 0;
       // Capture device + exercise at start — save doesn't depend on live state
@@ -490,8 +490,8 @@ export default function RepsRecordingScreen() {
         return;
       }
 
-      const sessionId = generateUUID();
-      const workoutLogId = generateUUID();
+      const sessionId = randomUUID();
+      const workoutLogId = randomUUID();
 
       const savedJsonUri = await saveBleWorkoutFile({
         version: 1,

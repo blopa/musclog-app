@@ -9,11 +9,11 @@ import { Button } from '@/components/theme/Button';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { EatingPhase } from '@/database/models';
 import type NutritionCheckin from '@/database/models/NutritionCheckin';
-import { NutritionGoalService } from '@/database/services';
 import {
   CheckinMetrics,
   NutritionCheckinService,
 } from '@/database/services/NutritionCheckinService';
+import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';

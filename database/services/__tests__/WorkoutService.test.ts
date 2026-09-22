@@ -902,7 +902,7 @@ describe('WorkoutService', () => {
         if (setId === firstSet.id) {
           return firstSet;
         }
-        throw new Error(`Record ${setId} not found`);
+        throw new Error(`Workout set ${setId} not found`);
       });
       const setFetch = jest.fn(async () => {
         return [firstSet];
@@ -931,7 +931,7 @@ describe('WorkoutService', () => {
           { setId: 'set-1', reps: 10 },
           { setId: 'missing-set', reps: 12 },
         ])
-      ).rejects.toThrow('Failed to update workout sets: Record missing-set not found');
+      ).rejects.toThrow('Failed to update workout sets: Workout set missing-set not found');
 
       expect(firstSet.prepareUpdate).not.toHaveBeenCalled();
       expect(mockDatabase.batch).not.toHaveBeenCalled();
@@ -966,13 +966,80 @@ describe('WorkoutService', () => {
 
       await expect(
         WorkoutService.updateWorkoutSets('workout-1', [], ['set-1', 'missing-set'])
-      ).rejects.toThrow('Failed to update workout sets: Record missing-set not found');
+      ).rejects.toThrow('Failed to update workout sets: Workout set missing-set not found');
 
-      // One batched lookup for both ids, not one `find` per deletion.
+      // One batched lookup covering deletions and updates together, not one `find` each.
       expect(setsCollection.query).toHaveBeenCalledTimes(1);
       expect(setsCollection.find).not.toHaveBeenCalled();
       expect(existingSet.prepareUpdate).not.toHaveBeenCalled();
       expect(mockDatabase.batch).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('reorderWorkoutLogExercises', () => {
+    it('aborts on an unknown exercise id rather than renumbering the survivors', async () => {
+      // Silently skipping a missing id used to leave the remaining exercises reordered and
+      // their sets renumbered against a list the caller never asked for.
+      const known = { id: 'log-exercise-1', prepareUpdate: jest.fn() };
+      const exercisesCollection = collection({ fetch: jest.fn().mockResolvedValue([known]) });
+
+      mockDatabase.get.mockImplementation((table: string) => {
+        if (table === 'workout_logs') {
+          return collection({
+            find: jest.fn().mockResolvedValue(createMockWorkoutLog({ id: 'workout-1' })),
+          }) as never;
+        }
+        if (table === 'workout_log_exercises') {
+          return exercisesCollection as never;
+        }
+        return collection() as never;
+      });
+
+      await expect(
+        WorkoutService.reorderWorkoutLogExercises('workout-1', [
+          { id: 'log-exercise-1' },
+          { id: 'log-exercise-gone' },
+        ])
+      ).rejects.toThrow('Workout log exercise log-exercise-gone not found');
+
+      expect(known.prepareUpdate).not.toHaveBeenCalled();
+      expect(mockDatabase.batch).not.toHaveBeenCalled();
+    });
+
+    it('fetches the exercises and their sets in one query each, not one per exercise', async () => {
+      const ordered = ['log-exercise-1', 'log-exercise-2', 'log-exercise-3'];
+      const rows = ordered.map((id) => ({ id, prepareUpdate: jest.fn().mockReturnValue({ id }) }));
+      const exercisesCollection = collection({ fetch: jest.fn().mockResolvedValue(rows) });
+      const setsCollection = collection({
+        fetch: jest.fn().mockResolvedValue([
+          { id: 'set-2', logExerciseId: 'log-exercise-1', setOrder: 2, prepareUpdate: jest.fn() },
+          { id: 'set-1', logExerciseId: 'log-exercise-1', setOrder: 1, prepareUpdate: jest.fn() },
+        ]),
+      });
+
+      mockDatabase.get.mockImplementation((table: string) => {
+        if (table === 'workout_logs') {
+          return collection({
+            find: jest.fn().mockResolvedValue(createMockWorkoutLog({ id: 'workout-1' })),
+          }) as never;
+        }
+        if (table === 'workout_log_exercises') {
+          return exercisesCollection as never;
+        }
+        if (table === 'workout_log_sets') {
+          return setsCollection as never;
+        }
+        return collection() as never;
+      });
+
+      await WorkoutService.reorderWorkoutLogExercises(
+        'workout-1',
+        ordered.map((id) => ({ id }))
+      );
+
+      expect(exercisesCollection.query).toHaveBeenCalledTimes(1);
+      expect(setsCollection.query).toHaveBeenCalledTimes(1);
+      expect(exercisesCollection.find).not.toHaveBeenCalled();
     });
   });
 

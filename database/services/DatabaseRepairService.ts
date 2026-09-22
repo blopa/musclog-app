@@ -7,6 +7,7 @@ import { database } from '@/database/database-instance';
 // second SQLite library on the file and closing it would unlink the live WAL
 // (see wmdbRaw.ts). Corruption errors are per-statement, so the connection
 // itself remains usable for these queries.
+import { fetchByIds } from '@/database/queryByIds';
 import { rawQueryViaWatermelon } from '@/database/wmdbRaw';
 import { deleteBleDataPointsFiles } from '@/utils/bleWorkoutDataStorage';
 import { handleError } from '@/utils/handleError';
@@ -251,10 +252,12 @@ async function cascadeMarkDeleted(
   const recordIds = records.map((r) => r.id);
 
   for (const spec of childSpecs) {
-    const children = await database
-      .get<Model>(spec.table)
-      .query(Q.where(spec.fkColumn, Q.oneOf(recordIds)), Q.where('deleted_at', Q.eq(null)))
-      .fetch();
+    const children = await fetchByIds<Model>(
+      spec.table,
+      spec.fkColumn,
+      recordIds,
+      Q.where('deleted_at', Q.eq(null))
+    );
 
     await cascadeMarkDeleted(writer, children, spec.children ?? [], collectByTable);
   }

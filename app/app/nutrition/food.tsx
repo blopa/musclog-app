@@ -66,15 +66,15 @@ import { useSmartCamera } from '@/context/SmartCameraContext';
 import { useSnackbar } from '@/context/SnackbarContext';
 import Food from '@/database/models/Food';
 import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
+import { ChatService } from '@/database/services/ChatService';
+import { MealService } from '@/database/services/MealService';
+import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import {
-  ChatService,
-  MealService,
-  NutritionGoalService,
   NutritionService,
-  SavedForLaterService,
   scaleMealNutritionLogsToTotalGrams,
-  SettingsService,
-} from '@/database/services';
+} from '@/database/services/NutritionService';
+import { SavedForLaterService } from '@/database/services/SavedForLaterService';
+import { SettingsService } from '@/database/services/SettingsService';
 import { nutritionDayShareKey } from '@/database/share/buildNutritionDayShare';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';

@@ -13,17 +13,17 @@ import { markDbReady } from '@/database/dbReady';
 import Food from '@/database/models/Food';
 import FoodFoodPortion from '@/database/models/FoodFoodPortion';
 import Setting from '@/database/models/Setting';
+import { AppExerciseCatalogueService } from '@/database/services/AppExerciseCatalogueService';
+import { ChatService } from '@/database/services/ChatService';
+import { FoodPortionService } from '@/database/services/FoodPortionService';
+import { FoodService } from '@/database/services/FoodService';
 import {
-  ChatService,
-  FoodPortionService,
-  FoodService,
   type MigrationProgressInfo,
   MigrationService,
   type MigrationStepKey,
-  MuscleService,
-  SettingsService,
-} from '@/database/services';
-import { AppExerciseCatalogueService } from '@/database/services/AppExerciseCatalogueService';
+} from '@/database/services/MigrationService';
+import { MuscleService } from '@/database/services/MuscleService';
+import { SettingsService } from '@/database/services/SettingsService';
 import i18n, { AVAILABLE_LANGUAGES, EN_US } from '@/lang/lang';
 import { getEncryptionKey } from '@/utils/encryption';
 import { parseFoundationFoodSeed } from '@/utils/foundationFoodSeed';

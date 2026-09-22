@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { DEFAULT_BATCH_SIZE } from '@/constants/database';
 import { database } from '@/database';
 import Food from '@/database/models/Food';
-import { FoodService } from '@/database/services';
+import { FoodService } from '@/database/services/FoodService';
 import { handleError } from '@/utils/handleError';
 
 // Hook parameters

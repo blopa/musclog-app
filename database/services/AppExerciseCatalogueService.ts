@@ -9,12 +9,10 @@ import Exercise, {
 } from '@/database/models/Exercise';
 import ExerciseMuscle from '@/database/models/ExerciseMuscle';
 import Muscle from '@/database/models/Muscle';
+import { fetchByIds, MAX_BATCH_OPERATIONS } from '@/database/queryByIds';
 import { appExerciseId, buildExerciseCloudUrl } from '@/utils/exerciseImage';
 
 import { MuscleService } from './MuscleService';
-
-const MAX_BATCH_OPERATIONS = 500;
-const MAX_QUERY_IDS = 300;
 
 /**
  * The fields the catalogue owns on an exercise row — the single definition of the
@@ -52,26 +50,8 @@ export interface AppExerciseCatalogueSyncReport {
   conflicts: string[];
 }
 
-function chunked<T>(items: T[], size: number): T[][] {
-  const chunks: T[][] = [];
-  for (let index = 0; index < items.length; index += size) {
-    chunks.push(items.slice(index, index + size));
-  }
-  return chunks;
-}
-
 async function fetchExerciseMuscles(exerciseIds: string[]): Promise<ExerciseMuscle[]> {
-  const links: ExerciseMuscle[] = [];
-  for (const ids of chunked(exerciseIds, MAX_QUERY_IDS)) {
-    links.push(
-      ...(await database
-        .get<ExerciseMuscle>('exercise_muscles')
-        .query(Q.where('exercise_id', Q.oneOf(ids)))
-        .fetch())
-    );
-  }
-
-  return links;
+  return fetchByIds<ExerciseMuscle>('exercise_muscles', 'exercise_id', exerciseIds);
 }
 
 function desiredLinkIds(

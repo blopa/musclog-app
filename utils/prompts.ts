@@ -6,18 +6,16 @@ import type { Units } from '@/constants/settings';
 import { User } from '@/database/models';
 import Food from '@/database/models/Food';
 import WorkoutLog from '@/database/models/WorkoutLog';
-import {
-  AiCustomPromptService,
-  ExerciseService,
-  FoodService,
-  NutritionGoalService,
-  NutritionService,
-  SettingsService,
-  UserMetricService,
-  UserService,
-  WorkoutService,
-  WorkoutTemplateService,
-} from '@/database/services';
+import { AiCustomPromptService } from '@/database/services/AiCustomPromptService';
+import { ExerciseService } from '@/database/services/ExerciseService';
+import { FoodService } from '@/database/services/FoodService';
+import { NutritionGoalService } from '@/database/services/NutritionGoalService';
+import { NutritionService } from '@/database/services/NutritionService';
+import { SettingsService } from '@/database/services/SettingsService';
+import { UserMetricService } from '@/database/services/UserMetricService';
+import { UserService } from '@/database/services/UserService';
+import { WorkoutService } from '@/database/services/WorkoutService';
+import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 import i18n, { DEFAULT_LANG } from '@/lang/lang';
 
 import {

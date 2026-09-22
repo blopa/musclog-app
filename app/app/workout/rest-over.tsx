@@ -16,7 +16,7 @@ import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
 import { WorkoutTimeTracker } from '@/components/WorkoutTimeTracker';
 import { database } from '@/database';
 import WorkoutLog from '@/database/models/WorkoutLog';
-import { WorkoutService } from '@/database/services';
+import { WorkoutService } from '@/database/services/WorkoutService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useSettings } from '@/hooks/useSettings';

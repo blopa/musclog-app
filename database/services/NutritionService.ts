@@ -3,7 +3,7 @@ import { differenceInCalendarDays } from 'date-fns';
 import { Platform } from 'react-native';
 
 import { REPAIR_DESCRIPTORS } from '@/constants/database';
-import { database } from '@/database';
+import { database } from '@/database/database-instance';
 import { dayRangeClauses } from '@/database/dayKeyQuery';
 import {
   decryptNumber,
@@ -13,6 +13,7 @@ import {
 import Food from '@/database/models/Food';
 import NutritionLog, { MealType } from '@/database/models/NutritionLog';
 import { getNutritionDayCoverage, loggedOrFastedDayKeys } from '@/database/nutritionDayCoverage';
+import { fetchMapByIds } from '@/database/queryByIds';
 import { MealService } from '@/database/services/MealService';
 import i18n from '@/lang/lang';
 import { writeNutritionLogToHealthConnect } from '@/services/healthConnectNutrition';
@@ -33,6 +34,15 @@ import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { widgetEvents } from '@/utils/widgetEvents';
 
 import { DatabaseRepairService, retryAfterRepair } from './DatabaseRepairService';
+
+/**
+ * The live (non-soft-deleted) foods for `foodIds`, keyed by id. Soft deletion is filtered
+ * in SQL rather than after the fetch, so a caller can never forget the `deletedAt` check,
+ * and the lookup is chunked so a large id list cannot blow SQLite's parameter limit.
+ */
+function fetchLiveFoodsByIds(foodIds: readonly string[]): Promise<Map<string, Food>> {
+  return fetchMapByIds<Food>('foods', 'id', foodIds, Q.where('deleted_at', Q.eq(null)));
+}
 
 function triggerWidgetUpdate(): void {
   widgetEvents.emitNutritionWidgetUpdate();
@@ -965,17 +975,7 @@ export class NutritionService {
 
     const foodIds = [...mostRecentLogByFoodId.keys()].slice(0, limit);
 
-    const foods = await database
-      .get<Food>('foods')
-      .query(Q.where('id', Q.oneOf(foodIds)))
-      .fetch();
-
-    const foodMap = new Map<string, Food>();
-    for (const food of foods) {
-      if (!food.deletedAt) {
-        foodMap.set(food.id, food);
-      }
-    }
+    const foodMap = await fetchLiveFoodsByIds(foodIds);
 
     const settled = await Promise.all(
       foodIds.map(async (foodId) => {
@@ -1114,22 +1114,13 @@ export class NutritionService {
       .sort((a, b) => b[1] - a[1])
       .slice(0, limit);
 
+    const foodsMap = await fetchLiveFoodsByIds(sortedFoods.map(([foodId]) => foodId));
+
     const results: { food: Food; count: number }[] = [];
-    const foodIds = sortedFoods.map(([foodId]) => foodId);
-
-    if (foodIds.length > 0) {
-      const foods = await database
-        .get<Food>('foods')
-        .query(Q.where('id', Q.oneOf(foodIds)))
-        .fetch();
-
-      const foodsMap = new Map(foods.map((food) => [food.id, food]));
-
-      for (const [foodId, count] of sortedFoods) {
-        const food = foodsMap.get(foodId);
-        if (food && !food.deletedAt) {
-          results.push({ food, count });
-        }
+    for (const [foodId, count] of sortedFoods) {
+      const food = foodsMap.get(foodId);
+      if (food) {
+        results.push({ food, count });
       }
     }
 
@@ -1159,22 +1150,13 @@ export class NutritionService {
       .sort((a, b) => b[1] - a[1])
       .slice(0, limit);
 
+    const foodsMap = await fetchLiveFoodsByIds(sortedFoods.map(([foodId]) => foodId));
+
     const results: { food: Food; count: number }[] = [];
-    const foodIds = sortedFoods.map(([foodId]) => foodId);
-
-    if (foodIds.length > 0) {
-      const foods = await database
-        .get<Food>('foods')
-        .query(Q.where('id', Q.oneOf(foodIds)))
-        .fetch();
-
-      const foodsMap = new Map(foods.map((food) => [food.id, food]));
-
-      for (const [foodId, count] of sortedFoods) {
-        const food = foodsMap.get(foodId);
-        if (food && !food.deletedAt) {
-          results.push({ food, count });
-        }
+    for (const [foodId, count] of sortedFoods) {
+      const food = foodsMap.get(foodId);
+      if (food) {
+        results.push({ food, count });
       }
     }
 
@@ -1435,25 +1417,13 @@ export class NutritionService {
       foodId?: string;
     },
   >(ingredients: T[]): Promise<T[]> {
-    const validFoodIds = Array.from(
-      new Set(ingredients.map((i) => i.foodId).filter((id): id is string => Boolean(id)))
+    // Deliberately unguarded: a failed lookup must reject rather than leave `foodMap`
+    // empty, which would strip every ingredient's foodId at once. Foundation-food matches
+    // arrive with zero macros and rely on this lookup for real values, so silently
+    // treating them all as "missing" would log the whole meal at 0 kcal.
+    const foodMap = await fetchLiveFoodsByIds(
+      ingredients.map((ingredient) => ingredient.foodId).filter((id): id is string => Boolean(id))
     );
-
-    const foodMap = new Map<string, Food>();
-
-    if (validFoodIds.length > 0) {
-      try {
-        const fetchedFoods = await database
-          .get<Food>('foods')
-          .query(Q.where('id', Q.oneOf(validFoodIds)))
-          .fetch();
-        for (const food of fetchedFoods) {
-          foodMap.set(food.id, food);
-        }
-      } catch (error) {
-        handleError(error, 'NutritionService.normalizeAiMealIngredients_batchFetch');
-      }
-    }
 
     return ingredients.map((ingredient) => {
       if (!ingredient.foodId) {
@@ -1505,71 +1475,47 @@ export class NutritionService {
     const logs = await database.write(async () => {
       const createdLogs: NutritionLog[] = [];
 
-      // Pre-fetch all referenced foods in a single batch query to avoid N+1 queries.
-      const foodIdsToFetch = [
-        ...new Set(
-          ingredients
-            .map((i) => i.foodId)
-            .filter((id): id is string => id !== undefined && id !== null)
-        ),
-      ];
-
-      const foodsMap = new Map<string, Food>();
-      if (foodIdsToFetch.length > 0) {
-        const foods = await database
-          .get<Food>('foods')
-          .query(Q.where('id', Q.oneOf(foodIdsToFetch)))
-          .fetch();
-        for (const food of foods) {
-          foodsMap.set(food.id, food);
-        }
-      }
+      // Pre-fetch every referenced food in one batched query to avoid N+1 lookups.
+      const foodsMap = await fetchLiveFoodsByIds(
+        ingredients.map((ingredient) => ingredient.foodId).filter((id): id is string => Boolean(id))
+      );
 
       for (const ingredient of ingredients) {
-        // If foodId is provided, find the food and create a log snapshot
-        if (ingredient.foodId) {
-          try {
-            const food = foodsMap.get(ingredient.foodId);
-            if (!food) {
-              throw new Error(`Food not found with ID ${ingredient.foodId}`);
-            }
+        // A known food logs a snapshot of the stored record; anything else falls through
+        // to the custom-food path below.
+        const food = ingredient.foodId ? foodsMap.get(ingredient.foodId) : undefined;
+        if (food) {
+          const encrypted = await encryptNutritionLogSnapshot({
+            loggedFoodName: food.name ?? ingredient.name,
+            loggedCalories: food.calories ?? 0,
+            loggedProtein: food.protein ?? 0,
+            loggedCarbs: food.carbs ?? 0,
+            loggedFat: food.fat ?? 0,
+            loggedFiber: food.fiber ?? 0,
+            loggedMicros: food.micros,
+          });
 
-            const encrypted = await encryptNutritionLogSnapshot({
-              loggedFoodName: food.name ?? ingredient.name,
-              loggedCalories: food.calories ?? 0,
-              loggedProtein: food.protein ?? 0,
-              loggedCarbs: food.carbs ?? 0,
-              loggedFat: food.fat ?? 0,
-              loggedFiber: food.fiber ?? 0,
-              loggedMicros: food.micros,
-            });
-
-            const log = await database.get<NutritionLog>('nutrition_logs').create((record) => {
-              record.foodId = food.id;
-              record.date = consumed.timestamp;
-              record.timezone = consumed.timezone;
-              record.type = mealType;
-              record.amount = ingredient.grams;
-              record.loggedFoodNameRaw = encrypted.loggedFoodName;
-              record.loggedCaloriesRaw = encrypted.loggedCalories;
-              record.loggedProteinRaw = encrypted.loggedProtein;
-              record.loggedCarbsRaw = encrypted.loggedCarbs;
-              record.loggedFatRaw = encrypted.loggedFat;
-              record.loggedFiberRaw = encrypted.loggedFiber;
-              record.loggedMicrosRaw = encrypted.loggedMicrosJson;
-              record.snapshotBasis = food.resolvedNutritionBasis;
-              record.groupId = options?.groupId;
-              record.loggedMealName = options?.loggedMealName;
-              record.createdAt = now;
-              record.updatedAt = now;
-            });
-            createdLogs.push(log);
-            continue;
-          } catch (error) {
-            console.warn(
-              `[NutritionService] Could not find food with ID ${ingredient.foodId}, falling back to custom food creation.`
-            );
-          }
+          const log = await database.get<NutritionLog>('nutrition_logs').create((record) => {
+            record.foodId = food.id;
+            record.date = consumed.timestamp;
+            record.timezone = consumed.timezone;
+            record.type = mealType;
+            record.amount = ingredient.grams;
+            record.loggedFoodNameRaw = encrypted.loggedFoodName;
+            record.loggedCaloriesRaw = encrypted.loggedCalories;
+            record.loggedProteinRaw = encrypted.loggedProtein;
+            record.loggedCarbsRaw = encrypted.loggedCarbs;
+            record.loggedFatRaw = encrypted.loggedFat;
+            record.loggedFiberRaw = encrypted.loggedFiber;
+            record.loggedMicrosRaw = encrypted.loggedMicrosJson;
+            record.snapshotBasis = food.resolvedNutritionBasis;
+            record.groupId = options?.groupId;
+            record.loggedMealName = options?.loggedMealName;
+            record.createdAt = now;
+            record.updatedAt = now;
+          });
+          createdLogs.push(log);
+          continue;
         }
 
         // Per-100g macros with carbs normalized from the LLM's net convention to canonical total.

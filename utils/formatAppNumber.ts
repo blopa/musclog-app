@@ -43,8 +43,15 @@ import { roundToDecimalPlaces } from './roundDecimal';
  * - i18n interpolation like `t('key', { minutes })` — if `minutes` must show locale digits, pass a
  *   pre-formatted string from `formatAppInteger` into the translation value.
  *
+ * **Never parse a number back out of a formatted string.** A component's numeric props carry
+ * numbers; formatting happens at the render boundary and is one-way. `MealEstimationModal`
+ * briefly took its macros as `{ amount: '42g' }` and recovered them with `/[\d.]+/` before
+ * logging them — which reads `"35,5 g"` as `35` in `de`/`pt-BR`, silently logging the wrong
+ * macros. `MealEstimationScreen` now takes `MacroEstimate { grams: number }` instead.
+ *
  * **Regression check** — Ripgrep for user-visible anti-patterns when touching UI numbers:
- * `\.toFixed\(` in `*.tsx` (excluding tests), or `` `${` `` + raw numeric variables in new `Text` nodes.
+ * `\.toFixed\(` in `*.tsx` (excluding tests), `` `${` `` + raw numeric variables in new `Text`
+ * nodes, or `parseFloat`/`match(/[\d.]+/)` applied to something that came out of a formatter.
  *
  * ---
  * ## Audit (2026) — decimal separator / locale for **display**

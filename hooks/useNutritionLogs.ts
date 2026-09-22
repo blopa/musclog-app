@@ -6,7 +6,7 @@ import { database } from '@/database';
 import { dayRangeClauses } from '@/database/dayKeyQuery';
 import Food from '@/database/models/Food';
 import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
-import { NutritionService } from '@/database/services';
+import { NutritionService } from '@/database/services/NutritionService';
 import { dayKeyRange, dayKeyRangeForLocalDate, utcDayKeyFromLocalDate } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 

@@ -12,7 +12,7 @@ import { TextInput } from '@/components/theme/TextInput';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { database } from '@/database';
 import WorkoutLog from '@/database/models/WorkoutLog';
-import { WorkoutTemplateService } from '@/database/services';
+import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 import { useExercises } from '@/hooks/useExercises';
 import { useTheme } from '@/hooks/useTheme';
 import {

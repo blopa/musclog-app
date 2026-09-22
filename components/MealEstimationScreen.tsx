@@ -1,8 +1,8 @@
-import { type TFunction } from 'i18next';
-import { Apple, Coffee, Edit2, HelpCircle,Moon, Plus, Trash2 , Utensils } from 'lucide-react-native';
+import { Edit2, Plus, Trash2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
+import { getMealTypeOptions } from '@/components/nutrition/mealTypeOptions';
 import type { MealType } from '@/database/models/NutritionLog';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
@@ -10,53 +10,10 @@ import { useTheme } from '@/hooks/useTheme';
 import { GenericCard } from './cards/GenericCard';
 import { MacroCard } from './cards/MacroCard';
 import { DatePickerInput } from './modals/DatePickerInput';
-import { OptionsSelector, type SelectorOption } from './OptionsSelector';
+import { OptionsSelector } from './OptionsSelector';
 import { Button } from './theme/Button';
 
-type Theme = ReturnType<typeof useTheme>;
-
-export const getMealTypeOptions = (theme: Theme, t: TFunction): SelectorOption<MealType>[] => [
-  {
-    id: 'breakfast',
-    label: t('food.meals.breakfast'),
-    description: t('food.meals.descriptions.breakfast'),
-    icon: Coffee,
-    iconBgColor: theme.colors.status.warning10,
-    iconColor: theme.colors.status.warning,
-  },
-  {
-    id: 'lunch',
-    label: t('food.meals.lunch'),
-    description: t('food.meals.descriptions.lunch'),
-    icon: Utensils,
-    iconBgColor: theme.colors.status.brandVivid || theme.colors.status.info10 || theme.colors.status.info10,
-    iconColor: theme.colors.status.brandVivid || theme.colors.status.info,
-  },
-  {
-    id: 'dinner',
-    label: t('food.meals.dinner'),
-    description: t('food.meals.descriptions.dinner'),
-    icon: Moon,
-    iconBgColor: theme.colors.status.brandVivid10 || theme.colors.status.info10,
-    iconColor: theme.colors.status.brandVivid || theme.colors.status.info,
-  },
-  {
-    id: 'snack',
-    label: t('food.meals.snack'),
-    description: t('food.meals.descriptions.snack'),
-    icon: Apple,
-    iconBgColor: theme.colors.status.success20,
-    iconColor: theme.colors.status.success,
-  },
-  {
-    id: 'other',
-    label: t('food.meals.other'),
-    description: t('food.meals.descriptions.other'),
-    icon: HelpCircle,
-    iconBgColor: theme.colors.background.ink10,
-    iconColor: theme.colors.text.secondary,
-  },
-];
+export type MacroEstimate = { grams: number; goal: number; percentage: number };
 
 export type IdentifiedItem = {
   id: string;
@@ -69,9 +26,11 @@ export type IdentifiedItem = {
 type MealEstimationScreenProps = {
   mealImage: string;
   totalCalories: number;
-  protein: { amount: string; goal: number; percentage: number };
-  carbs: { amount: string; goal: number; percentage: number };
-  fat: { amount: string; goal: number; percentage: number };
+  /** Macro amounts are grams — numbers, never pre-formatted strings, so that the display
+   *  locale can never be parsed back out of them. */
+  protein: MacroEstimate;
+  carbs: MacroEstimate;
+  fat: MacroEstimate;
   identifiedItems: IdentifiedItem[];
   onRetake: () => void;
   onAddItem: () => void;
@@ -79,7 +38,6 @@ type MealEstimationScreenProps = {
   onDeleteItem: (itemId: string) => void;
   onConfirmAndLog: () => void;
   selectedDate: Date;
-  onDateChange: (date: Date) => void;
   selectedMealType: MealType;
   onMealTypeChange: (mealType: MealType) => void;
   onShowDatePicker: () => void;
@@ -105,12 +63,13 @@ export function MealEstimationScreen({
 }: MealEstimationScreenProps) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { formatInteger } = useFormatAppNumber();
+  const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
+  const grams = (value: number) => `${formatRoundedDecimal(value, 1)}${t('common.units.g')}`;
 
   const mealTypeOptions = getMealTypeOptions(theme, t);
   const macroColors = {
-    protein: theme.colors.status.brandVivid || theme.colors.status.info10,
-    proteinProgress: theme.colors.status.brandVivid || theme.colors.status.info20,
+    protein: theme.colors.status.brandVivid10,
+    proteinProgress: theme.colors.status.brandVivid30,
     carbs: theme.colors.status.amber,
     carbsProgress: theme.colors.status.amber10,
     fat: theme.colors.status.warning,
@@ -144,7 +103,7 @@ export function MealEstimationScreen({
               <MacroCard
                 name={t('nutrition.macros.protein')}
                 percentage={protein.percentage}
-                amount={protein.amount}
+                amount={grams(protein.grams)}
                 goal={protein.goal}
                 color={macroColors.protein}
                 progressColor={macroColors.proteinProgress}
@@ -152,7 +111,7 @@ export function MealEstimationScreen({
               <MacroCard
                 name={t('nutrition.macros.carbs')}
                 percentage={carbs.percentage}
-                amount={carbs.amount}
+                amount={grams(carbs.grams)}
                 goal={carbs.goal}
                 color={macroColors.carbs}
                 progressColor={macroColors.carbsProgress}
@@ -160,7 +119,7 @@ export function MealEstimationScreen({
               <MacroCard
                 name={t('nutrition.macros.fat')}
                 percentage={fat.percentage}
-                amount={fat.amount}
+                amount={grams(fat.grams)}
                 goal={fat.goal}
                 color={macroColors.fat}
                 progressColor={macroColors.fatProgress}

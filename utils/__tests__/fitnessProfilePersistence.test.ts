@@ -1,4 +1,6 @@
-import { SettingsService, UserMetricService, UserService } from '@/database/services';
+import { SettingsService } from '@/database/services/SettingsService';
+import { UserMetricService } from '@/database/services/UserMetricService';
+import { UserService } from '@/database/services/UserService';
 import type { FitnessDetails } from '@/types/fitnessDetails';
 import {
   defaultAdultDobDisplayString,
@@ -11,14 +13,20 @@ import {
   persistFitnessDetails,
 } from '@/utils/fitnessProfilePersistence';
 
-jest.mock('@/database/services', () => ({
+jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: { setUnits: jest.fn() },
+}));
+
+jest.mock('@/database/services/UserMetricService', () => ({
   UserMetricService: {
     createMetric: jest.fn(),
     getLatest: jest.fn(),
     getMetricsHistory: jest.fn(),
     updateMetric: jest.fn(),
   },
+}));
+
+jest.mock('@/database/services/UserService', () => ({
   UserService: { getCurrentUser: jest.fn(), initializeUser: jest.fn() },
 }));
 

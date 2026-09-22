@@ -23,7 +23,8 @@ import {
   type LiftingExperience,
   type WeightGoal,
 } from '@/database/models/User';
-import { UserMetricService, UserService } from '@/database/services';
+import { UserMetricService } from '@/database/services/UserMetricService';
+import { UserService } from '@/database/services/UserService';
 import { getHealthBodyMetricsPrefill } from '@/hooks/useHealthBodyMetricsPrefill';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';

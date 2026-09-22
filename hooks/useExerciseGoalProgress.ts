@@ -4,14 +4,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import type ExerciseGoal from '@/database/models/ExerciseGoal';
-import {
-  ExerciseGoalService,
-  UserMetricService,
-  UserService,
-  WorkoutAnalytics,
-  WorkoutService,
-} from '@/database/services';
+import { ExerciseGoalService } from '@/database/services/ExerciseGoalService';
+import { UserMetricService } from '@/database/services/UserMetricService';
+import { UserService } from '@/database/services/UserService';
 import type { ProgressiveOverloadDataPoint } from '@/database/services/WorkoutAnalytics';
+import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
+import { WorkoutService } from '@/database/services/WorkoutService';
 import { projectGoal, type ProjectionResult } from '@/utils/exerciseGoalProjection';
 
 interface UseExerciseGoalProgressResult {

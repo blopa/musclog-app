@@ -1,7 +1,9 @@
 import { Content, Part } from '@google/genai';
 import OpenAI from 'openai';
 
-import { DebugDumpService, NutritionService, SettingsService } from '@/database/services';
+import { DebugDumpService } from '@/database/services/DebugDumpService';
+import { NutritionService } from '@/database/services/NutritionService';
+import { SettingsService } from '@/database/services/SettingsService';
 import i18n, { DEFAULT_LANG } from '@/lang/lang';
 import { isProduction } from '@/utils/app';
 

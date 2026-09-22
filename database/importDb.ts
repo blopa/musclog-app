@@ -34,8 +34,11 @@ import { findImportedCurrentUserSyncId } from './importCurrentUser';
 import { createPreRestoreBackup } from './preMigrationBackup';
 import { prepareLocalCreateFromRaw } from './prepareLocalCreateFromRaw';
 import { validateExportDump, type ValidationResult } from './schemaToZod';
-import { ExerciseService, FoodPortionService, MuscleService, SettingsService } from './services';
 import { AppExerciseCatalogueService } from './services/AppExerciseCatalogueService';
+import { ExerciseService } from './services/ExerciseService';
+import { FoodPortionService } from './services/FoodPortionService';
+import { MuscleService } from './services/MuscleService';
+import { SettingsService } from './services/SettingsService';
 import { normalizeWorkoutSetCompletionForImport } from './workoutSetImportNormalization';
 
 export type ExportDump = {

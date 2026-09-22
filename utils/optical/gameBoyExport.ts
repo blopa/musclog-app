@@ -1,3 +1,4 @@
+import { randomUUID } from 'expo-crypto';
 import { z } from 'zod';
 
 import { INCLUDE_FIBER_IN_CARBS_SETTING_TYPE, UNITS_SETTING_TYPE } from '@/constants/settings';
@@ -8,7 +9,6 @@ import {
   unmappedGameBoyExerciseId,
 } from '@/utils/optical/gameBoyExerciseMapping';
 import { getTimezoneAt } from '@/utils/timezone';
-import { generateUUID } from '@/utils/uuid';
 
 /**
  * Compact, sender-friendly database snapshot emitted by Musclog GB.
@@ -278,7 +278,7 @@ export function gameBoyExportToDatabaseDump(
   const { profile } = compact;
   const today = cartridgeDay(profile.todayDay);
   const now = today.eventTimestamp;
-  const userSyncId = generateUUID();
+  const userSyncId = randomUUID();
   const foods = compact.foods.map(
     ([index, name, calories, proteinDg, fatDg, carbsDg, fiberDg]) => ({
       id: `gb-f-${index}`,

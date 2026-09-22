@@ -5,9 +5,13 @@ import { database } from '@/database/database-instance';
 import Meal from '@/database/models/Meal';
 import MealFood from '@/database/models/MealFood';
 import NutritionLog from '@/database/models/NutritionLog';
+import { fetchByIds } from '@/database/queryByIds';
 import { handleError } from '@/utils/handleError';
 
 import { retryAfterRepair } from './DatabaseRepairService';
+
+/** How far back a logged meal still counts toward its suggestion ranking. */
+const MEAL_SUGGESTION_LOOKBACK_MS = 60 * 24 * 60 * 60 * 1000;
 
 export class MealService {
   private static validateMealFoodItems(
@@ -457,56 +461,49 @@ export class MealService {
   }
 
   /**
-   * Get meal suggestions based on recent foods
+   * Non-favourite meals ordered by how often they have recently been logged, falling back
+   * to newest-first for meals with no logged history.
+   *
+   * The only link a nutrition log keeps back to a saved meal is `logged_meal_name`, which
+   * every "log this saved meal" path stamps from `meal.name` (`schema.ts` reserves
+   * `group_id` for this too, but no writer sets it to a meal id — it is a per-log-instance
+   * UUID, so counting by it would match nothing). Matching on the name therefore means a
+   * renamed meal loses its history and drops to the newest-first tail, which is acceptable
+   * for a suggestion ordering. The lookback boundary is a plain instant rather than a
+   * calendar-day key for the same reason: an approximate edge cannot change a ranking.
    */
   static async getMealSuggestions(limit: number = 5): Promise<Meal[]> {
-    const candidateMeals = await this.getAllMeals().then((meals) =>
-      meals.filter((meal) => !meal.isFavorite)
-    );
-
+    const candidateMeals = (await this.getAllMeals()).filter((meal) => !meal.isFavorite);
     if (candidateMeals.length === 0) {
       return [];
     }
 
-    const sixtyDaysAgoMs = Date.now() - 60 * 24 * 60 * 60 * 1000;
+    const logs = await fetchByIds<NutritionLog>(
+      'nutrition_logs',
+      'logged_meal_name',
+      candidateMeals.map((meal) => meal.name).filter((name): name is string => Boolean(name)),
+      Q.where('deleted_at', Q.eq(null)),
+      Q.where('date', Q.gte(Date.now() - MEAL_SUGGESTION_LOOKBACK_MS))
+    );
 
-    const logs = await database
-      .get<NutritionLog>('nutrition_logs')
-      .query(
-        Q.where('deleted_at', Q.eq(null)),
-        Q.where('group_id', Q.notEq(null)),
-        Q.where('date', Q.gte(sixtyDaysAgoMs))
-      )
-      .fetch();
-
-    // To avoid counting each food item within a meal as a separate occurrence,
-    // we group logs by a combination of groupId and date (the exact timestamp).
-    const uniqueMealLogs = new Set<string>();
-    const mealFrequencies = new Map<string, number>();
-
+    // A multi-ingredient meal writes one log per ingredient, all sharing a group id (or,
+    // for a single-food meal, one log). Count distinct occurrences, not rows.
+    const occurrencesByMealName = new Map<string, Set<string>>();
     for (const log of logs) {
-      if (!log.groupId) continue;
-
-      const logIdentifier = `${log.groupId}-${log.date}`;
-      if (!uniqueMealLogs.has(logIdentifier)) {
-        uniqueMealLogs.add(logIdentifier);
-        const count = mealFrequencies.get(log.groupId) || 0;
-        mealFrequencies.set(log.groupId, count + 1);
+      if (!log.loggedMealName) {
+        continue;
       }
+
+      const occurrences = occurrencesByMealName.get(log.loggedMealName) ?? new Set<string>();
+      occurrences.add(log.groupId ?? `log:${log.id}`);
+      occurrencesByMealName.set(log.loggedMealName, occurrences);
     }
 
-    // Sort by frequency (descending), fallback to creation date (descending)
-    candidateMeals.sort((a, b) => {
-      const countA = mealFrequencies.get(a.id) || 0;
-      const countB = mealFrequencies.get(b.id) || 0;
+    const timesLogged = (meal: Meal): number =>
+      meal.name ? (occurrencesByMealName.get(meal.name)?.size ?? 0) : 0;
 
-      if (countA !== countB) {
-        return countB - countA;
-      }
-
-      return b.createdAt - a.createdAt;
-    });
-
-    return candidateMeals.slice(0, limit);
+    return [...candidateMeals]
+      .sort((a, b) => timesLogged(b) - timesLogged(a) || b.createdAt - a.createdAt)
+      .slice(0, limit);
   }
 }

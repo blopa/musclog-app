@@ -10,7 +10,7 @@ import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { type MuscleGroup } from '@/database/models';
-import { ExerciseService } from '@/database/services';
+import { ExerciseService } from '@/database/services/ExerciseService';
 import { useTheme } from '@/hooks/useTheme';
 import { saveExerciseImage } from '@/utils/file';
 import { pickAndCropImageFromGallery } from '@/utils/galleryImagePicker';
