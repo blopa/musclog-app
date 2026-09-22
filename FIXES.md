@@ -171,11 +171,13 @@ the real server tests.
 
 ## NativeWind box-shadow parser crash
 
-In `react-native-css-interop` 0.2.6, `parseDeclaration` falls through from a fully parsed literal
-`box-shadow` into `aspect-ratio` and reads a missing `ratio`. Native export crashes with a misleading
-`parseAspectRatio` stack; web can remain fine. `patches/react-native-css-interop+0.2.6.patch` adds the
-missing return and `utils/__tests__/nativewindBoxShadowPatch.test.ts` pins it. Remove it only after
-the installed upstream version contains the equivalent fix.
+In `react-native-css-interop` 0.2.6, `parseDeclaration` fell through from a fully parsed literal
+`box-shadow` into `aspect-ratio` and read a missing `ratio`. Native export crashed with a misleading
+`parseAspectRatio` stack; web could remain fine. This was carried as
+`patches/react-native-css-interop+0.2.6.patch` until **0.2.7 shipped the equivalent fix upstream**
+(`return parseBoxShadow(...)`), at which point the patch was removed. The behavioral test
+`utils/__tests__/nativewindBoxShadowPatch.test.ts` still pins it against the installed package, so
+a downgrade below 0.2.7 fails the suite rather than silently reintroducing the crash.
 
 ## Health Connect duplicate classes
 
