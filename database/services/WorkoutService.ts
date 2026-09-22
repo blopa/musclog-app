@@ -874,12 +874,26 @@ export class WorkoutService {
 
         // Resolve every fallible lookup before preparing any model changes. A missing or
         // cross-workout id therefore aborts without leaving a model in prepared state.
-        for (const deletedId of deletionIds) {
-          const setToDelete = await logSetsCollection.find(deletedId);
-          if (!logExerciseIds.has(setToDelete.logExerciseId)) {
-            throw new Error(`Workout set ${deletedId} does not belong to workout ${workoutLogId}`);
+        if (deletionIds.length > 0) {
+          const fetchedSets = await logSetsCollection
+            .query(Q.where('id', Q.oneOf(deletionIds)))
+            .fetch();
+
+          const fetchedSetMap = new Map<string, WorkoutLogSet>();
+          for (const set of fetchedSets) {
+            fetchedSetMap.set(set.id, set);
           }
-          setsToDelete.push(setToDelete);
+
+          for (const deletedId of deletionIds) {
+            const setToDelete = fetchedSetMap.get(deletedId);
+            if (!setToDelete) {
+              throw new Error(`Record ${deletedId} not found`); // Matches WatermelonDB find() missing record standard
+            }
+            if (!logExerciseIds.has(setToDelete.logExerciseId)) {
+              throw new Error(`Workout set ${deletedId} does not belong to workout ${workoutLogId}`);
+            }
+            setsToDelete.push(setToDelete);
+          }
         }
 
         const updateSetIds = updates.filter((u) => !u.isNew).map((u) => u.setId);

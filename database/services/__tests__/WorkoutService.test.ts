@@ -936,6 +936,44 @@ describe('WorkoutService', () => {
       expect(firstSet.prepareUpdate).not.toHaveBeenCalled();
       expect(mockDatabase.batch).not.toHaveBeenCalled();
     });
+
+    it('resolves deletions with one query, and a missing id leaves no partial edit', async () => {
+      const existingSet = {
+        id: 'set-1',
+        logExerciseId: 'log-exercise-1',
+        prepareUpdate: jest.fn(),
+      };
+      const setFetch = jest.fn(async () => [existingSet]);
+      const workoutLog = createMockWorkoutLog({ id: 'workout-1', deletedAt: null });
+      const logExercise = createMockWorkoutLogExercise({
+        id: 'log-exercise-1',
+        workoutLogId: workoutLog.id,
+      });
+      const setsCollection = collection({ fetch: setFetch });
+
+      mockDatabase.get.mockImplementation((table: string) => {
+        if (table === 'workout_logs') {
+          return collection({ find: jest.fn().mockResolvedValue(workoutLog) }) as never;
+        }
+        if (table === 'workout_log_exercises') {
+          return collection({ fetch: jest.fn().mockResolvedValue([logExercise]) }) as never;
+        }
+        if (table === 'workout_log_sets') {
+          return setsCollection as never;
+        }
+        return collection() as never;
+      });
+
+      await expect(
+        WorkoutService.updateWorkoutSets('workout-1', [], ['set-1', 'missing-set'])
+      ).rejects.toThrow('Failed to update workout sets: Record missing-set not found');
+
+      // One batched lookup for both ids, not one `find` per deletion.
+      expect(setsCollection.query).toHaveBeenCalledTimes(1);
+      expect(setsCollection.find).not.toHaveBeenCalled();
+      expect(existingSet.prepareUpdate).not.toHaveBeenCalled();
+      expect(mockDatabase.batch).not.toHaveBeenCalled();
+    });
   });
 
   describe('getWorkoutWithDetails', () => {
