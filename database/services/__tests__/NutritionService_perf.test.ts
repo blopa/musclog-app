@@ -5,7 +5,10 @@ import NutritionLog from '@/database/models/NutritionLog';
 import { Q } from '@nozbe/watermelondb';
 import { writeNutritionLogToHealthConnect } from '@/services/healthConnectNutrition';
 
-jest.mock('@/database', () => {
+// Mock the database at its source module: `@/database` merely re-exports it, so mocking
+// only that leaves every other importer (MealService, FastedDayRepository, ...) pulling in
+// the real instance and, through it, the native adapter.
+jest.mock('@/database/database-instance', () => {
   const mockCreate = jest.fn((callback) => {
     const record = { id: 'test-log-id' };
     callback(record);
@@ -48,6 +51,10 @@ jest.mock('@/database', () => {
     }
   };
 });
+
+jest.mock('@/database', () => ({
+  database: jest.requireMock('@/database/database-instance').database,
+}));
 
 jest.mock('@nozbe/watermelondb', () => ({
   Q: {
