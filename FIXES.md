@@ -198,6 +198,16 @@ leaves it unmet; npm 10 wants a nested `typescript@5.9.3`, so `npm ci` fails wit
 every profile to resolve an exact version whose major matches `engines`, `.nvmrc`, and the GitHub
 workflows — bump them together.
 
+## EAS builder rejects `eas.json` after an `eas-cli` bump
+
+The builder reads `eas.json` with the `eas-cli` baked into its own image, not the one in our
+`devDependencies`, and that image trails npm by days. Raising `cli.version` to the freshly released
+`>= 24.7.0` failed every iOS build with `You are on eas-cli@24.6.0 which does not satisfy the CLI
+version constraint` / `Failed to read the build profile production from eas.json`, before any
+native step ran. `cli.version` is therefore a major-only floor (`>= N.0.0`) that only moves when
+`eas.json` starts using a feature that needs it; `utils/__tests__/easNodeVersion.test.ts` enforces
+the shape.
+
 ## Android release optimization
 
 `app.json` enables both `enableMinifyInReleaseBuilds` and

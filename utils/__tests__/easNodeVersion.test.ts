@@ -34,6 +34,13 @@ describe('Node version pin', () => {
     }
   });
 
+  // The builder reads eas.json with the eas-cli in its own image, which trails npm by
+  // days; a floor copied from the freshly bumped devDependency fails every build.
+  it('keeps the eas-cli constraint a major-only floor', () => {
+    const { cli } = readJson<{ cli: { version: string } }>('eas.json');
+    expect(cli.version).toMatch(/^>= \d+\.0\.0$/);
+  });
+
   it('uses the same Node major in .nvmrc and GitHub workflows', () => {
     expect(major(fs.readFileSync(path.join(PROJECT_ROOT, '.nvmrc'), 'utf8').trim())).toBe(
       engineMajor
