@@ -1,10 +1,14 @@
 {
   "cli": {
-    "version": ">= 16.0.0",
+    "version": ">= 24.7.0",
     "appVersionSource": "local"
   },
   "build": {
+    "base": {
+      "node": "26.10.0"
+    },
     "development": {
+      "extends": "base",
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
@@ -15,6 +19,7 @@
       }
     },
     "development:device": {
+      "extends": "base",
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
@@ -25,6 +30,7 @@
       }
     },
     "preview": {
+      "extends": "base",
       "distribution": "internal",
       "ios": {
         "simulator": false
@@ -34,6 +40,7 @@
       }
     },
     "production": {
+      "extends": "base",
       "android": {
         "applicationArchivePath": "android/app/build/outputs/bundle/release/app-release.aab"
       },

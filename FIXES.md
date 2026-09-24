@@ -186,6 +186,18 @@ module in `expo.modules.healthconnect`, causing release `mergeDex` duplicate-cla
 `react-native-health-connect` already includes the required config plugin and Android manifest
 entries, so the standalone package adds nothing.
 
+## EAS `npm ci` lockfile rejection
+
+EAS builds ignore `.nvmrc` and `engines`; a profile without a `node` field runs on the image default
+(Node 22 / npm 10). The lockfile is written by npm 11 on Node 26, and the two npm majors disagree
+about optional peers that the root cannot satisfy: `eas-cli` pins `@expo/config@55`, whose
+`@expo/require-utils` declares an optional `typescript@^5` peer against our `typescript ~6`. npm 11
+leaves it unmet; npm 10 wants a nested `typescript@5.9.3`, so `npm ci` fails with
+`Missing: typescript@5.9.3 from lock file`. `eas.json` therefore pins an exact Node 26 release in a
+`base` profile that every other profile extends. `utils/__tests__/easNodeVersion.test.ts` requires
+every profile to resolve an exact version whose major matches `engines`, `.nvmrc`, and the GitHub
+workflows — bump them together.
+
 ## Android release optimization
 
 `app.json` enables both `enableMinifyInReleaseBuilds` and
