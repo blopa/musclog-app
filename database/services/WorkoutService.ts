@@ -78,6 +78,17 @@ export type WorkoutSetUpdate =
       exerciseId?: never;
     });
 
+/**
+ * Starting a workout while another one is still open. This is an expected user-state refusal,
+ * not a failure: callers should point the user at the open session rather than report it.
+ */
+export class ActiveWorkoutExistsError extends Error {
+  constructor() {
+    super('There is already an active workout. Please complete it first.');
+    this.name = 'ActiveWorkoutExistsError';
+  }
+}
+
 export class WorkoutService {
   private static async retryAfterWorkoutRepair<T>(
     error: unknown,
@@ -142,7 +153,7 @@ export class WorkoutService {
 
         if (activeWorkout) {
           if (!activeWorkout.deletedAt && !activeWorkout.completedAt) {
-            throw new Error('There is already an active workout. Please complete it first.');
+            throw new ActiveWorkoutExistsError();
           }
 
           // Workout was completed or deleted, clear it from storage
@@ -157,6 +168,10 @@ export class WorkoutService {
 
       return workoutLog;
     } catch (error) {
+      if (error instanceof ActiveWorkoutExistsError) {
+        throw error;
+      }
+
       if (!repairAttempted) {
         const repaired = await this.retryAfterWorkoutRepair(error, () =>
           this.startWorkoutFromTemplateInternal(templateId, planId, true)
@@ -193,16 +208,20 @@ export class WorkoutService {
     try {
       const activeWorkoutLogId = await getActiveWorkoutLogId();
       if (activeWorkoutLogId) {
+        // Only the lookup is guarded, as in startWorkoutFromTemplateInternal: a throw inside this
+        // try would be swallowed by its own catch and silently start a second workout.
+        let activeWorkout: null | WorkoutLog = null;
         try {
-          const activeWorkout = await database
-            .get<WorkoutLog>('workout_logs')
-            .find(activeWorkoutLogId);
+          activeWorkout = await database.get<WorkoutLog>('workout_logs').find(activeWorkoutLogId);
+        } catch {
+          await clearActiveWorkoutLogId();
+        }
+
+        if (activeWorkout) {
           if (!activeWorkout.deletedAt && !activeWorkout.completedAt) {
-            throw new Error('There is already an active workout. Please complete it first.');
-          } else {
-            await clearActiveWorkoutLogId();
+            throw new ActiveWorkoutExistsError();
           }
-        } catch (error) {
+
           await clearActiveWorkoutLogId();
         }
       }
@@ -229,6 +248,10 @@ export class WorkoutService {
       await setActiveWorkoutLogId(workoutLog.id);
       return workoutLog;
     } catch (error) {
+      if (error instanceof ActiveWorkoutExistsError) {
+        throw error;
+      }
+
       if (!repairAttempted) {
         const repaired = await this.retryAfterWorkoutRepair(error, () =>
           this.startFreeWorkoutInternal(workoutName, externalId, true)

@@ -229,7 +229,8 @@
       "discardConfirmTitle": "¿Descartar Entrenamiento?",
       "discardConfirmMessage": "Esto eliminará permanentemente tu entrenamiento en curso y todas las series registradas.",
       "discardConfirm": "Descartar",
-      "discardCancel": "Mantenerlo"
+      "discardCancel": "Mantenerlo",
+      "alreadyActive": "Ya tienes un entrenamiento en curso. Reanúdalo o descártalo primero."
     },
     "unnamed": "Sin nombre"
   }

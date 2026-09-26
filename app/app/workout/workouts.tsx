@@ -30,7 +30,7 @@ import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { database, WorkoutLog, WorkoutTemplate } from '@/database';
 import { WorkoutPlanService } from '@/database/services/WorkoutPlanService';
-import { WorkoutService } from '@/database/services/WorkoutService';
+import { ActiveWorkoutExistsError, WorkoutService } from '@/database/services/WorkoutService';
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
@@ -135,6 +135,13 @@ export default function WorkoutsScreen() {
   const { showSnackbar } = useSnackbar();
   const { shareText } = useNativeShareText();
 
+  // Starting while a session is still open is refused by the service. That is the user's state,
+  // not a failure: explain it and surface the resume banner instead of reporting it to Sentry.
+  const handleActiveWorkoutExists = useCallback(() => {
+    showSnackbar('error', t('workouts.interruptedSession.alreadyActive'));
+    WorkoutService.getActiveWorkout().then(setInterruptedWorkoutLog);
+  }, [showSnackbar, t]);
+
   const handleConfirmDeleteWorkout = useCallback(async () => {
     if (!selectedWorkoutId) {
       return;
@@ -181,12 +188,17 @@ export default function WorkoutsScreen() {
         setIsWorkoutOverviewVisible(true);
         triggerConfetti(ConfettiActivity.FIRST_WORKOUT_CREATED);
       } catch (err) {
+        if (err instanceof ActiveWorkoutExistsError) {
+          handleActiveWorkoutExists();
+          return;
+        }
+
         handleError(err, 'workouts.handleStartWorkout', {
           snackbarMessage: t('errors.somethingWentWrong'),
         });
       }
     },
-    [t, triggerConfetti]
+    [handleActiveWorkoutExists, t, triggerConfetti]
   );
 
   // `planId` is the section the workout was tapped in. It is carried on `menuPlanId` rather than
@@ -460,6 +472,12 @@ export default function WorkoutsScreen() {
             setIsCreateOptionsVisible(false);
             router.navigate(`/app/workout/workout-session?workoutLogId=${workoutLog.id}`);
           } catch (err) {
+            if (err instanceof ActiveWorkoutExistsError) {
+              setIsCreateOptionsVisible(false);
+              handleActiveWorkoutExists();
+              return;
+            }
+
             console.error('Error starting free workout:', err);
             showSnackbar('error', err instanceof Error ? err.message : t('common.error'));
           }

@@ -2,8 +2,12 @@ import { Q } from '@nozbe/watermelondb';
 
 import { database } from '@/database/database-instance';
 import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
-import { WorkoutService } from '@/database/services/WorkoutService';
-import { getActiveWorkoutLogId } from '@/utils/activeWorkoutStorage';
+import { ActiveWorkoutExistsError, WorkoutService } from '@/database/services/WorkoutService';
+import {
+  clearActiveWorkoutLogId,
+  getActiveWorkoutLogId,
+  setActiveWorkoutLogId,
+} from '@/utils/activeWorkoutStorage';
 
 import {
   createMockExercise,
@@ -228,9 +232,15 @@ describe('WorkoutService', () => {
           }) as any
       );
 
-      await expect(WorkoutService.startWorkoutFromTemplate('template-1')).rejects.toThrow(
+      const attempt = WorkoutService.startWorkoutFromTemplate('template-1');
+      // Rethrown as its own type, unwrapped, so the screen can explain the refusal instead of
+      // reporting it to Sentry as "Failed to start workout".
+      await expect(attempt).rejects.toBeInstanceOf(ActiveWorkoutExistsError);
+      await expect(attempt).rejects.toThrow(
         'There is already an active workout. Please complete it first.'
       );
+      expect(mockTemplate.startWorkout).not.toHaveBeenCalled();
+      expect(clearActiveWorkoutLogId).not.toHaveBeenCalled();
     });
 
     it('should handle template not found error', async () => {
@@ -301,6 +311,60 @@ describe('WorkoutService', () => {
       await expect(WorkoutService.startWorkoutFromTemplate('template-1')).rejects.toThrow(
         'Failed to start workout: Unknown error'
       );
+    });
+  });
+
+  describe('startFreeWorkout', () => {
+    it('refuses while another workout is still open, keeping it active', async () => {
+      const activeWorkout = createMockWorkoutLog({
+        id: 'workout-active',
+        completedAt: null,
+        deletedAt: null,
+      });
+      mockGetActiveWorkoutLogId.mockResolvedValue('workout-active');
+      mockDatabase.get.mockReturnValue(
+        collection({ find: jest.fn().mockResolvedValue(activeWorkout) }) as any
+      );
+
+      // The guard used to sit inside the lookup's try, so its own catch swallowed it, cleared
+      // the open session's id and started a second workout on top of it.
+      await expect(WorkoutService.startFreeWorkout('Free')).rejects.toBeInstanceOf(
+        ActiveWorkoutExistsError
+      );
+      expect(clearActiveWorkoutLogId).not.toHaveBeenCalled();
+      expect(mockDatabase.write).not.toHaveBeenCalled();
+      expect(setActiveWorkoutLogId).not.toHaveBeenCalled();
+    });
+
+    it('starts when the stored active workout was already completed', async () => {
+      const finished = createMockWorkoutLog({
+        id: 'workout-done',
+        completedAt: Date.now(),
+        deletedAt: null,
+      });
+      const created = createMockWorkoutLog({ id: 'workout-new' });
+      mockGetActiveWorkoutLogId.mockResolvedValue('workout-done');
+      mockDatabase.get.mockReturnValue({
+        ...collection({ find: jest.fn().mockResolvedValue(finished) }),
+        create: jest.fn().mockResolvedValue(created),
+      } as any);
+
+      await expect(WorkoutService.startFreeWorkout('Free')).resolves.toBe(created);
+      expect(clearActiveWorkoutLogId).toHaveBeenCalled();
+      expect(setActiveWorkoutLogId).toHaveBeenCalledWith('workout-new');
+    });
+
+    it('starts when the stored active workout no longer exists', async () => {
+      const created = createMockWorkoutLog({ id: 'workout-new' });
+      mockGetActiveWorkoutLogId.mockResolvedValue('workout-gone');
+      mockDatabase.get.mockReturnValue({
+        ...collection({ find: jest.fn().mockRejectedValue(new Error('not found')) }),
+        create: jest.fn().mockResolvedValue(created),
+      } as any);
+
+      await expect(WorkoutService.startFreeWorkout('Free')).resolves.toBe(created);
+      expect(clearActiveWorkoutLogId).toHaveBeenCalled();
+      expect(setActiveWorkoutLogId).toHaveBeenCalledWith('workout-new');
     });
   });
 

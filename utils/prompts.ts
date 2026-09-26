@@ -1237,7 +1237,7 @@ export const getFoundationFoodsPrompt = async (): Promise<string> => {
     return [
       'You MUST prioritize matching ingredients to the "foundation foods" provided in the list below.',
       'If an ingredient matches a foundation food, return its exact "foodId" from the list and the estimated "grams". When "foodId" is provided, you still need to provide the name, but you can omit or provide 0 for kcal, protein, carbs, fat and fiber as they will be fetched from the database using the "foodId".',
-      'If no foundation food is a good match, return the ingredient with its full macronutrients (kcal, protein, carbs, fat, fiber, grams) and leave "foodId" null or omit it.',
+      'If no foundation food is a good match, return the ingredient with its full macronutrients (kcal, protein, carbs, fat, fiber, grams) and omit "foodId" entirely.',
       'Foundation Foods List (macros per 100g):',
       '```json',
       JSON.stringify(foodList, null, 2),

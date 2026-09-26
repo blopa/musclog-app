@@ -229,7 +229,8 @@
       "discardConfirmTitle": "Descartar Treino?",
       "discardConfirmMessage": "Isso vai apagar permanentemente seu treino em andamento e todas as séries registradas.",
       "discardConfirm": "Descartar",
-      "discardCancel": "Manter"
+      "discardCancel": "Manter",
+      "alreadyActive": "Você já tem um treino em andamento. Retome ou descarte-o primeiro."
     },
     "unnamed": "Sem nome"
   }

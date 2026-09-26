@@ -255,3 +255,59 @@ When upgrading Expo or a patched dependency:
 3. Keep or update the regression test before rebuilding.
 4. Verify the platform and build type where the bug originally appeared; several incidents were
    release-only or native-only.
+
+## Starting a workout while one is already open
+
+### Symptom
+
+Sentry reported `Failed to start workout: There is already an active workout` (2.12.0+304). The
+user saw only a generic "Something went wrong" snackbar.
+
+### Cause
+
+The guard in `WorkoutService.startWorkoutFromTemplate` worked as designed. The screen passed its
+refusal to `handleError` like any other failure, so it went to Sentry with no explanation for the
+user. `startFreeWorkout` had the opposite bug: its guard threw inside the `try` around the
+active-workout lookup, so its own `catch` swallowed the throw, cleared the open session's id and
+started a second workout on top of it. This also affected `processParsedWorkouts` (AI workout
+import), which calls `startFreeWorkout`.
+
+### Permanent rules
+
+- Both start paths throw `ActiveWorkoutExistsError` (exported from `WorkoutService.ts`). They
+  rethrow it without wrapping and skip the database-repair retry.
+- Guard only the lookup. The "still open" check must stay outside that `try`.
+- Callers treat the error as user state rather than a failure. `workouts.tsx` shows
+  `workouts.interruptedSession.alreadyActive`, refreshes the resume/discard banner and does not
+  report the error to Sentry.
+
+## Sentry events without a call site (`Record foods#null not found`)
+
+### Symptom
+
+Sentry reported `Diagnostic error: Record foods#null not found` (2.12.0+304). The event carried
+only WatermelonDB frames, and nothing in it showed which feature made the lookup.
+
+### Cause
+
+Two separate problems:
+
+- `Collection.find` rejects a non-string id earlier with a different message ("Invalid record ID"),
+  so this `find` received the **string** `"null"`. Model setters cannot produce that string,
+  because WatermelonDB's sanitizer turns `null` into `''` or `null`. The value came from outside a
+  model. The most likely source is an LLM `foodId`: the foundation-foods prompt told the model to
+  "leave `foodId` null", and models sometimes return that as text. Thinking-mode `trackMeal`
+  treated any truthy `foodId` as a confirmed match. Such an ingredient skipped macro estimation
+  and was logged at 0 kcal once `normalizeAiMealIngredients` stripped the bad id.
+- The exact caller could not be found because `handleError` and `captureBootException` sent their
+  `context` in the Sentry hint's `data` field. Sentry never serializes that field onto the event,
+  so every handled error arrived without saying where it came from.
+
+### Permanent rules
+
+- Report context through `captureContext` (`tags.context`, plus `extra` for structured data), never
+  through a hint's `data`. `utils/__tests__/handleError.test.ts` checks this.
+- Treat an LLM `foodId` as a claim that the database must confirm. `trackMealWithThinking` runs
+  claimed ids through `normalizeAiMealIngredients` before splitting known from unknown ingredients,
+  and sends unconfirmed ones to estimation. `utils/__tests__/coachAITrackMealThinking.test.ts`
+  checks this. The prompt now says to omit `foodId` rather than leave it null.

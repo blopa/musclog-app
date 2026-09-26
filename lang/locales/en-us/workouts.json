@@ -229,7 +229,8 @@
       "discardConfirmTitle": "Discard Workout?",
       "discardConfirmMessage": "This will permanently delete your in-progress workout and all logged sets.",
       "discardConfirm": "Discard",
-      "discardCancel": "Keep It"
+      "discardCancel": "Keep It",
+      "alreadyActive": "You already have a workout in progress. Resume or discard it first."
     },
     "unnamed": "Unnamed"
   }

@@ -1386,33 +1386,41 @@ async function trackMealWithThinking(
   const resultMeals: TrackedMeal[] = [];
 
   for (const meal of recipeResponse.meals) {
-    const matchedIngredients = meal.ingredients.filter((i) => i.foodId);
-    const newIngredients = meal.ingredients.filter((i) => !i.foodId);
+    const claimedStubs: TrackMealIngredient[] = meal.ingredients
+      .filter((i) => i.foodId)
+      .map((i) => ({
+        name: i.name,
+        grams: i.grams,
+        foodId: i.foodId,
+        kcal: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        fiber: 0,
+      }));
 
-    const matchedStubs: TrackMealIngredient[] = matchedIngredients.map((i) => ({
-      name: i.name,
-      grams: i.grams,
-      foodId: i.foodId,
-      kcal: 0,
-      protein: 0,
-      carbs: 0,
-      fat: 0,
-      fiber: 0,
-    }));
+    // A claimed foodId only counts once the database confirms it: the model sometimes
+    // sends the string "null" or an invented id, and treating those as matches would
+    // skip estimation and log the ingredient at 0 kcal.
+    const normalizedClaimed = await NutritionService.normalizeAiMealIngredients(claimedStubs);
+    const matched = normalizedClaimed.filter((i) => i.foodId);
+    const newIngredients = [
+      ...meal.ingredients.filter((i) => !i.foodId),
+      ...normalizedClaimed.filter((i) => !i.foodId).map((i) => ({ name: i.name, grams: i.grams })),
+    ];
 
-    let fullIngredients: TrackMealIngredient[] = matchedStubs;
+    let fullIngredients: TrackMealIngredient[] = matched;
 
     if (newIngredients.length > 0) {
-      const normalizedMatched = await NutritionService.normalizeAiMealIngredients(matchedStubs);
       const estimated = await estimateMissingIngredients(
         config,
         newIngredients,
-        normalizedMatched,
+        matched,
         meal.mealName
       );
 
       fullIngredients = [
-        ...matchedStubs,
+        ...matched,
         ...(estimated?.ingredients ??
           newIngredients.map((i) => ({
             name: i.name,

@@ -25,7 +25,8 @@ export async function handleError(
   } = options;
 
   if (sendToSentry) {
-    await captureException(error, { data: { context } });
+    // A hint's `data` is never serialized onto the event, so the context must travel as a tag.
+    await captureException(error, { captureContext: { tags: { context } } });
   }
 
   if (!isProduction()) {
