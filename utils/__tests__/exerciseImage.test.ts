@@ -133,9 +133,7 @@ describe('exercise image cache web stub', () => {
   });
 
   it('purges nothing on web, where there is no on-disk cache', () => {
-    const { purgeRetiredExerciseImageCache } = jest.requireActual(
-      '@/utils/exerciseImageCache.web'
-    );
+    const { purgeRetiredExerciseImageCache } = jest.requireActual('@/utils/exerciseImageCache.web');
     expect(purgeRetiredExerciseImageCache()).toBe(0);
   });
 });
