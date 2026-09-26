@@ -85,6 +85,15 @@ export function isAiCreditsError(error: any): boolean {
   return false;
 }
 
+/**
+ * A rate limit or exhausted quota is the provider refusing the request, not a Musclog bug: it is
+ * reported to the user (see `AiCreditsError`) but must not reach Sentry, where every busy hour on a
+ * shared key or the gateway's daily cap filed an unactionable `429 status code (no body)` event.
+ */
+function reportAiError(error: unknown, context: string): void {
+  handleError(error, context, { sendToSentry: !isAiCreditsError(error) });
+}
+
 const RETRYABLE_LLM_STATUSES = new Set([429, 503, 529]);
 const LLM_RETRY_DELAYS_MS = [1000, 2000, 4000] as const;
 
@@ -713,7 +722,7 @@ async function sendViaOpenAI(
     console.error('[coachAI] sendViaOpenAI error:', error);
 
     // Log detailed error for debugging but don't expose internals to user
-    handleError(error, 'coachAI.sendViaOpenAI');
+    reportAiError(error, 'coachAI.sendViaOpenAI');
 
     if (isAiCreditsError(error)) {
       throw config.provider === 'gateway'
@@ -781,7 +790,7 @@ async function sendViaOnDevice(
       sumMsg: raw?.slice(0, 120) ?? '',
     };
   } catch (error) {
-    handleError(error, 'coachAI.sendViaOnDevice');
+    reportAiError(error, 'coachAI.sendViaOnDevice');
     return {
       msg4User: i18n.t('errors.aiProcessingError'),
       sumMsg: i18n.t('errors.aiProcessingErrorTitle'),
@@ -1025,7 +1034,7 @@ async function generateStructured<T>(
 
       return result;
     } catch (error) {
-      handleError(error, `coachAI.generateStructured[${schemaName}]`);
+      reportAiError(error, `coachAI.generateStructured[${schemaName}]`);
       await logLlmDebugEvent({
         provider: 'on-device',
         direction: 'response',
@@ -1498,7 +1507,7 @@ export async function trackMeal(
       'trackMeal'
     );
   } catch (error) {
-    handleError(error, 'coachAI.trackMeal');
+    reportAiError(error, 'coachAI.trackMeal');
     return null;
   }
 }
@@ -1621,7 +1630,7 @@ export async function generateMealPlan(
     );
     return parsed ?? null;
   } catch (error) {
-    handleError(error, 'coachAI.generateMealPlan');
+    reportAiError(error, 'coachAI.generateMealPlan');
     return null;
   }
 }
@@ -1660,7 +1669,7 @@ export async function generateWorkoutPlan(
     );
     return parsed ?? null;
   } catch (error) {
-    handleError(error, 'coachAI.generateWorkoutPlan');
+    reportAiError(error, 'coachAI.generateWorkoutPlan');
     return null;
   }
 }
@@ -1884,7 +1893,7 @@ export async function estimateNutritionFromPhoto(
 
     return parsed ?? null;
   } catch (error) {
-    handleError(error, 'coachAI.estimateNutritionFromPhoto');
+    reportAiError(error, 'coachAI.estimateNutritionFromPhoto');
     return null;
   }
 }

@@ -281,6 +281,29 @@ import), which calls `startFreeWorkout`.
   `workouts.interruptedSession.alreadyActive`, refreshes the resume/discard banner and does not
   report the error to Sentry.
 
+## AI rate limits reported as bugs (`429 status code (no body)`)
+
+### Symptom
+
+Sentry reported `Error: 429 status code (no body)` (2.12.0+304): an OpenAI SDK `RateLimitError`,
+marked handled. The user saw the "AI credits exhausted" / "try again later" message, which was the
+correct outcome.
+
+### Cause
+
+Not a bug in the app. The provider (the user's own OpenAI-compatible key or the Musclog gateway's
+daily cap) refused the request. `withLlmRetry` had already retried it three times with backoff.
+Every AI `catch` in `utils/coachAI.ts` called `handleError`, which reports to Sentry by default,
+before it checked `isAiCreditsError`. So an expected refusal was reported to Sentry as if it were a
+failure in the app.
+
+### Permanent rules
+
+- AI catch sites in `coachAI.ts` report through `reportAiError`. This helper passes
+  `sendToSentry: !isAiCreditsError(error)`, so rate limits and quota or billing errors stay out of
+  Sentry, and every other AI failure is still reported. Do not call `handleError` directly from a
+  new AI catch site. `utils/__tests__/coachAIErrorReporting.test.ts` checks this.
+
 ## Sentry events without a call site (`Record foods#null not found`)
 
 ### Symptom
