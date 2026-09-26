@@ -55,6 +55,14 @@ cannot change because historic IDs and Game Boy save indices depend on it. Regen
 English, and localized catalogues with the scripts documented in `AGENTS.md`; never hand-edit
 generated JSON.
 
+In 2.12.0 the cutover's final step, `purgeRetiredExerciseImageCache()`, was added to
+`utils/exerciseImageCache.ts` but not to its `.web.ts` stub, so on web it resolved to `undefined`
+and threw `purgeRetiredExerciseImageCache is not a function` right after the migration's writer had
+committed. The data cutover itself completed, and the next boot found no retired rows and never
+reached the call, so each web user reported it once. The stub now exports a no-op, and
+`utils/__tests__/exerciseImage.test.ts` fails if the stub lacks any function the native module
+exports.
+
 ## Android cold-boot gallery stall
 
 ### Symptom
