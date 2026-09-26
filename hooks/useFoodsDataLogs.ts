@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Food from '@/database/models/Food';
-import { FoodService } from '@/database/services';
+import { FoodService } from '@/database/services/FoodService';
 
 import { BATCH_SIZE } from './paginationConstants';
 import { useDateFnsLocale } from './useDateFnsLocale';

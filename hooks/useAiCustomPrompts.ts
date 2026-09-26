@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { database } from '@/database';
 import AiCustomPrompt, { type AiCustomPromptContext } from '@/database/models/AiCustomPrompt';
-import { AiCustomPromptService } from '@/database/services';
+import { AiCustomPromptService } from '@/database/services/AiCustomPromptService';
 
 export interface UseAiCustomPromptsParams {
   activeOnly?: boolean;

@@ -120,7 +120,9 @@
       "identifiedItems": "Identified Items",
       "addItem": "Add Item",
       "confirmAndLog": "Confirm & Log Meal",
-      "retake": "Retake"
+      "retake": "Retake",
+      "logged": "Meal logged",
+      "logError": "Could not log this meal. Please try again."
     },
     "index": {
       "handleSaveCustomFood": "Custom food saved successfully."

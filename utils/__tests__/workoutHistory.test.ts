@@ -1,7 +1,7 @@
 import { Activity, Dumbbell, Square } from 'lucide-react-native';
 
 import { database } from '@/database';
-import { WorkoutAnalytics } from '@/database/services';
+import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
 import { darkTheme as theme } from '@/theme';
 import { localDayKeyPlusCalendarDaysFromNow } from '@/utils/calendarDate';
 import type {
@@ -29,7 +29,7 @@ import {
 // strip `tableSchema`, which `@/theme` pulls in transitively.)
 jest.mock('@/database', () => ({ database: { get: jest.fn() } }));
 
-jest.mock('@/database/services', () => ({
+jest.mock('@/database/services/WorkoutAnalytics', () => ({
   WorkoutAnalytics: { detectPersonalRecords: jest.fn() },
 }));
 

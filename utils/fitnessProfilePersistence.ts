@@ -1,6 +1,8 @@
 import { subYears } from 'date-fns';
 
-import { SettingsService, UserMetricService, UserService } from '@/database/services';
+import { SettingsService } from '@/database/services/SettingsService';
+import { UserMetricService } from '@/database/services/UserMetricService';
+import { UserService } from '@/database/services/UserService';
 import { DEFAULT_LANG } from '@/lang/lang';
 import type { FitnessDetails } from '@/types/fitnessDetails';
 

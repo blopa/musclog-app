@@ -39,8 +39,10 @@ import type { DecryptedNutritionLogSnapshot, MealType, MicrosData } from '@/data
 import Food from '@/database/models/Food';
 import FoodPortion from '@/database/models/FoodPortion';
 import Meal from '@/database/models/Meal';
-import { FoodPortionService, FoodService, MealService } from '@/database/services';
 import type { FoodMealTrackingActionTarget } from '@/database/services/FoodMealTrackingActionService';
+import { FoodPortionService } from '@/database/services/FoodPortionService';
+import { FoodService } from '@/database/services/FoodService';
+import { MealService } from '@/database/services/MealService';
 import { useAlternateBarcodeSource } from '@/hooks/useAlternateBarcodeSource';
 import { useFoodEditForm } from '@/hooks/useFoodEditForm';
 import { useFoodMealTrackingActions } from '@/hooks/useFoodMealTrackingActions';

@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { DEFAULT_BATCH_SIZE } from '@/constants/database';
 import Food from '@/database/models/Food';
 import FoodPortion from '@/database/models/FoodPortion';
-import { FoodPortionService } from '@/database/services';
+import { FoodPortionService } from '@/database/services/FoodPortionService';
 
 // Utility functions for working with portions
 export const FoodPortionUtils = {

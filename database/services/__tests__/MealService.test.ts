@@ -8,6 +8,8 @@ jest.mock('@nozbe/watermelondb', () => ({
   Q: {
     where: jest.fn((field: string, condition: unknown) => ({ field, condition })),
     eq: jest.fn((value: unknown) => ({ kind: 'eq', value })),
+    gte: jest.fn((value: unknown) => ({ kind: 'gte', value })),
+    oneOf: jest.fn((values: unknown[]) => ({ kind: 'oneOf', values })),
     like: jest.fn((value: unknown) => ({ kind: 'like', value })),
     sortBy: jest.fn((field: string, direction: string) => ({ kind: 'sortBy', field, direction })),
     skip: jest.fn((count: number) => ({ kind: 'skip', count })),
@@ -29,9 +31,12 @@ jest.mock('@/database/database-instance', () => ({
 
 jest.mock('@/utils/handleError', () => ({ handleError: jest.fn() }));
 
+jest.mock('@/constants/database', () => ({
+  REPAIR_DESCRIPTORS: { meals: 'meals' },
+}));
+
 jest.mock('@/database/services/DatabaseRepairService', () => ({
   DatabaseRepairService: {},
-  REPAIR_DESCRIPTORS: { meals: 'meals' },
   retryAfterRepair: jest.fn().mockResolvedValue(undefined),
 }));
 
@@ -77,6 +82,7 @@ function makeCollection(prefix: string, options: { find?: unknown; rows?: unknow
 type Wired = {
   meals: ReturnType<typeof makeCollection>;
   mealFoods: ReturnType<typeof makeCollection>;
+  nutritionLogs: ReturnType<typeof makeCollection>;
 };
 
 function wire(
@@ -85,6 +91,7 @@ function wire(
     mealRows?: unknown[];
     mealFoodFind?: unknown;
     mealFoodRows?: unknown[];
+    nutritionLogRows?: unknown[];
   } = {}
 ): Wired {
   const meals = makeCollection('meal', { find: options.mealFind, rows: options.mealRows });
@@ -92,11 +99,17 @@ function wire(
     find: options.mealFoodFind,
     rows: options.mealFoodRows,
   });
+  const nutritionLogs = makeCollection('nutrition-log', {
+    rows: options.nutritionLogRows,
+  });
 
-  mockDatabase.get.mockImplementation(((table: string) =>
-    table === 'meals' ? meals : mealFoods) as any);
+  mockDatabase.get.mockImplementation(((table: string) => {
+    if (table === 'meals') return meals;
+    if (table === 'nutrition_logs') return nutritionLogs;
+    return mealFoods;
+  }) as any);
 
-  return { meals, mealFoods };
+  return { meals, mealFoods, nutritionLogs };
 }
 
 /** A stored meal; `foods` is what `meal.mealFoods.fetch()` resolves to. */
@@ -318,19 +331,55 @@ describe('MealService', () => {
       );
     });
 
-    it('suggests non-favourite meals only, capped at the limit', async () => {
+    it('orders non-favourite meals by how often they were logged, then newest first', async () => {
+      // Logs link back to a saved meal by `logged_meal_name` — never by `group_id`, which
+      // is a per-log-instance UUID. A fixture keyed on meal ids would pass against a
+      // frequency map that can never match anything in production.
       wire({
         mealRows: [
-          stubMeal({ id: 'a', isFavorite: true }),
-          stubMeal({ id: 'b' }),
-          stubMeal({ id: 'c' }),
-          stubMeal({ id: 'd' }),
+          stubMeal({ id: 'a', name: 'Favourite', isFavorite: true }),
+          stubMeal({ id: 'b', name: 'Never logged, newest', createdAt: 100 }),
+          stubMeal({ id: 'c', name: 'Logged twice', createdAt: 10 }),
+          stubMeal({ id: 'd', name: 'Logged once', createdAt: 50 }),
+          stubMeal({ id: 'e', name: 'Never logged, oldest', createdAt: 0 }),
+        ],
+        nutritionLogRows: [
+          // One meal logged twice; the first occurrence spans two ingredient rows that
+          // share a group id and must count once.
+          { id: 'l1', loggedMealName: 'Logged twice', groupId: 'g1', date: 1000 },
+          { id: 'l2', loggedMealName: 'Logged twice', groupId: 'g1', date: 1000 },
+          { id: 'l3', loggedMealName: 'Logged twice', groupId: 'g2', date: 2000 },
+          // A single-food log carries no group id and still counts as one occurrence.
+          { id: 'l4', loggedMealName: 'Logged once', date: 3000 },
         ],
       });
 
-      const suggestions = await MealService.getMealSuggestions(2);
+      const suggestions = await MealService.getMealSuggestions(3);
 
-      expect(suggestions.map((m) => m.id)).toEqual(['b', 'c']);
+      expect(suggestions.map((m) => m.id)).toEqual(['c', 'd', 'b']);
+    });
+
+    it('looks logs up by meal name, not by meal id', async () => {
+      const { nutritionLogs } = wire({
+        mealRows: [stubMeal({ id: 'a', name: 'Chicken bowl' })],
+        nutritionLogRows: [],
+      });
+
+      await MealService.getMealSuggestions(5);
+
+      const clauses = nutritionLogs.query.mock.calls[0] ?? [];
+      expect(JSON.stringify(clauses)).toContain('logged_meal_name');
+      expect(JSON.stringify(clauses)).toContain('Chicken bowl');
+      expect(JSON.stringify(clauses)).not.toContain('group_id');
+    });
+
+    it('does not query at all when every meal is a favourite', async () => {
+      const { nutritionLogs } = wire({
+        mealRows: [stubMeal({ id: 'a', isFavorite: true })],
+      });
+
+      await expect(MealService.getMealSuggestions(5)).resolves.toEqual([]);
+      expect(nutritionLogs.query).not.toHaveBeenCalled();
     });
   });
 

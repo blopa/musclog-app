@@ -6,7 +6,8 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { Subject } from 'rxjs';
 
 import { database } from '@/database';
-import { ExerciseGoalService, WorkoutService } from '@/database/services';
+import { ExerciseGoalService } from '@/database/services/ExerciseGoalService';
+import { WorkoutService } from '@/database/services/WorkoutService';
 import { useWeeklyWorkoutProgress } from '@/hooks/useWeeklyWorkoutProgress';
 import { handleError } from '@/utils/handleError';
 
@@ -22,8 +23,11 @@ jest.mock('@/database', () => ({
   database: { get: jest.fn() },
 }));
 
-jest.mock('@/database/services', () => ({
+jest.mock('@/database/services/ExerciseGoalService', () => ({
   ExerciseGoalService: { getActiveConsistencyGoal: jest.fn() },
+}));
+
+jest.mock('@/database/services/WorkoutService', () => ({
   WorkoutService: { getRollingWeeklyCompletedWorkoutCount: jest.fn() },
 }));
 

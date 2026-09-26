@@ -1,5 +1,7 @@
 import type { Units } from '@/constants/settings';
-import { NutritionService, SettingsService, WorkoutService } from '@/database/services';
+import { NutritionService } from '@/database/services/NutritionService';
+import { SettingsService } from '@/database/services/SettingsService';
+import { WorkoutService } from '@/database/services/WorkoutService';
 import {
   localCalendarDayPlusDays,
   localDayClosedRangeMaxMs,

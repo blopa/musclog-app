@@ -26,8 +26,8 @@ import {
   LIFE_STAGE_WARNING_KEYS,
   type PeriodLogMode,
 } from '@/constants/cycle';
-import { UserMetricService } from '@/database/services';
 import { MenstrualService } from '@/database/services/MenstrualService';
+import { UserMetricService } from '@/database/services/UserMetricService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 import { useTheme } from '@/hooks/useTheme';

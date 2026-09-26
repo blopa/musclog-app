@@ -46,7 +46,7 @@ import { ToggleInput } from '@/components/theme/ToggleInput';
 import type { MealType } from '@/database/models';
 import Food from '@/database/models/Food';
 import FoodPortion from '@/database/models/FoodPortion';
-import { FoodService } from '@/database/services';
+import { FoodService } from '@/database/services/FoodService';
 import { useFoodPortions } from '@/hooks/useFoodPortions';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';

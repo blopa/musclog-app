@@ -2,8 +2,12 @@ import { Q } from '@nozbe/watermelondb';
 
 import { database } from '@/database/database-instance';
 import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
-import { WorkoutService } from '@/database/services/WorkoutService';
-import { getActiveWorkoutLogId } from '@/utils/activeWorkoutStorage';
+import { ActiveWorkoutExistsError, WorkoutService } from '@/database/services/WorkoutService';
+import {
+  clearActiveWorkoutLogId,
+  getActiveWorkoutLogId,
+  setActiveWorkoutLogId,
+} from '@/utils/activeWorkoutStorage';
 
 import {
   createMockExercise,
@@ -228,9 +232,15 @@ describe('WorkoutService', () => {
           }) as any
       );
 
-      await expect(WorkoutService.startWorkoutFromTemplate('template-1')).rejects.toThrow(
+      const attempt = WorkoutService.startWorkoutFromTemplate('template-1');
+      // Rethrown as its own type, unwrapped, so the screen can explain the refusal instead of
+      // reporting it to Sentry as "Failed to start workout".
+      await expect(attempt).rejects.toBeInstanceOf(ActiveWorkoutExistsError);
+      await expect(attempt).rejects.toThrow(
         'There is already an active workout. Please complete it first.'
       );
+      expect(mockTemplate.startWorkout).not.toHaveBeenCalled();
+      expect(clearActiveWorkoutLogId).not.toHaveBeenCalled();
     });
 
     it('should handle template not found error', async () => {
@@ -301,6 +311,60 @@ describe('WorkoutService', () => {
       await expect(WorkoutService.startWorkoutFromTemplate('template-1')).rejects.toThrow(
         'Failed to start workout: Unknown error'
       );
+    });
+  });
+
+  describe('startFreeWorkout', () => {
+    it('refuses while another workout is still open, keeping it active', async () => {
+      const activeWorkout = createMockWorkoutLog({
+        id: 'workout-active',
+        completedAt: null,
+        deletedAt: null,
+      });
+      mockGetActiveWorkoutLogId.mockResolvedValue('workout-active');
+      mockDatabase.get.mockReturnValue(
+        collection({ find: jest.fn().mockResolvedValue(activeWorkout) }) as any
+      );
+
+      // The guard used to sit inside the lookup's try, so its own catch swallowed it, cleared
+      // the open session's id and started a second workout on top of it.
+      await expect(WorkoutService.startFreeWorkout('Free')).rejects.toBeInstanceOf(
+        ActiveWorkoutExistsError
+      );
+      expect(clearActiveWorkoutLogId).not.toHaveBeenCalled();
+      expect(mockDatabase.write).not.toHaveBeenCalled();
+      expect(setActiveWorkoutLogId).not.toHaveBeenCalled();
+    });
+
+    it('starts when the stored active workout was already completed', async () => {
+      const finished = createMockWorkoutLog({
+        id: 'workout-done',
+        completedAt: Date.now(),
+        deletedAt: null,
+      });
+      const created = createMockWorkoutLog({ id: 'workout-new' });
+      mockGetActiveWorkoutLogId.mockResolvedValue('workout-done');
+      mockDatabase.get.mockReturnValue({
+        ...collection({ find: jest.fn().mockResolvedValue(finished) }),
+        create: jest.fn().mockResolvedValue(created),
+      } as any);
+
+      await expect(WorkoutService.startFreeWorkout('Free')).resolves.toBe(created);
+      expect(clearActiveWorkoutLogId).toHaveBeenCalled();
+      expect(setActiveWorkoutLogId).toHaveBeenCalledWith('workout-new');
+    });
+
+    it('starts when the stored active workout no longer exists', async () => {
+      const created = createMockWorkoutLog({ id: 'workout-new' });
+      mockGetActiveWorkoutLogId.mockResolvedValue('workout-gone');
+      mockDatabase.get.mockReturnValue({
+        ...collection({ find: jest.fn().mockRejectedValue(new Error('not found')) }),
+        create: jest.fn().mockResolvedValue(created),
+      } as any);
+
+      await expect(WorkoutService.startFreeWorkout('Free')).resolves.toBe(created);
+      expect(clearActiveWorkoutLogId).toHaveBeenCalled();
+      expect(setActiveWorkoutLogId).toHaveBeenCalledWith('workout-new');
     });
   });
 
@@ -902,7 +966,10 @@ describe('WorkoutService', () => {
         if (setId === firstSet.id) {
           return firstSet;
         }
-        throw new Error('set not found');
+        throw new Error(`Workout set ${setId} not found`);
+      });
+      const setFetch = jest.fn(async () => {
+        return [firstSet];
       });
       const workoutLog = createMockWorkoutLog({ id: 'workout-1', deletedAt: null });
       const logExercise = createMockWorkoutLogExercise({
@@ -918,7 +985,7 @@ describe('WorkoutService', () => {
           return collection({ fetch: jest.fn().mockResolvedValue([logExercise]) }) as never;
         }
         if (table === 'workout_log_sets') {
-          return collection({ find: setFind }) as never;
+          return collection({ find: setFind, fetch: setFetch }) as never;
         }
         return collection() as never;
       });
@@ -928,10 +995,115 @@ describe('WorkoutService', () => {
           { setId: 'set-1', reps: 10 },
           { setId: 'missing-set', reps: 12 },
         ])
-      ).rejects.toThrow('set not found');
+      ).rejects.toThrow('Failed to update workout sets: Workout set missing-set not found');
 
       expect(firstSet.prepareUpdate).not.toHaveBeenCalled();
       expect(mockDatabase.batch).not.toHaveBeenCalled();
+    });
+
+    it('resolves deletions with one query, and a missing id leaves no partial edit', async () => {
+      const existingSet = {
+        id: 'set-1',
+        logExerciseId: 'log-exercise-1',
+        prepareUpdate: jest.fn(),
+      };
+      const setFetch = jest.fn(async () => [existingSet]);
+      const workoutLog = createMockWorkoutLog({ id: 'workout-1', deletedAt: null });
+      const logExercise = createMockWorkoutLogExercise({
+        id: 'log-exercise-1',
+        workoutLogId: workoutLog.id,
+      });
+      const setsCollection = collection({ fetch: setFetch });
+
+      mockDatabase.get.mockImplementation((table: string) => {
+        if (table === 'workout_logs') {
+          return collection({ find: jest.fn().mockResolvedValue(workoutLog) }) as never;
+        }
+        if (table === 'workout_log_exercises') {
+          return collection({ fetch: jest.fn().mockResolvedValue([logExercise]) }) as never;
+        }
+        if (table === 'workout_log_sets') {
+          return setsCollection as never;
+        }
+        return collection() as never;
+      });
+
+      await expect(
+        WorkoutService.updateWorkoutSets('workout-1', [], ['set-1', 'missing-set'])
+      ).rejects.toThrow('Failed to update workout sets: Workout set missing-set not found');
+
+      // One batched lookup covering deletions and updates together, not one `find` each.
+      expect(setsCollection.query).toHaveBeenCalledTimes(1);
+      expect(setsCollection.find).not.toHaveBeenCalled();
+      expect(existingSet.prepareUpdate).not.toHaveBeenCalled();
+      expect(mockDatabase.batch).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('reorderWorkoutLogExercises', () => {
+    it('aborts on an unknown exercise id rather than renumbering the survivors', async () => {
+      // Silently skipping a missing id used to leave the remaining exercises reordered and
+      // their sets renumbered against a list the caller never asked for.
+      const known = { id: 'log-exercise-1', prepareUpdate: jest.fn() };
+      const exercisesCollection = collection({ fetch: jest.fn().mockResolvedValue([known]) });
+
+      mockDatabase.get.mockImplementation((table: string) => {
+        if (table === 'workout_logs') {
+          return collection({
+            find: jest.fn().mockResolvedValue(createMockWorkoutLog({ id: 'workout-1' })),
+          }) as never;
+        }
+        if (table === 'workout_log_exercises') {
+          return exercisesCollection as never;
+        }
+        return collection() as never;
+      });
+
+      await expect(
+        WorkoutService.reorderWorkoutLogExercises('workout-1', [
+          { id: 'log-exercise-1' },
+          { id: 'log-exercise-gone' },
+        ])
+      ).rejects.toThrow('Workout log exercise log-exercise-gone not found');
+
+      expect(known.prepareUpdate).not.toHaveBeenCalled();
+      expect(mockDatabase.batch).not.toHaveBeenCalled();
+    });
+
+    it('fetches the exercises and their sets in one query each, not one per exercise', async () => {
+      const ordered = ['log-exercise-1', 'log-exercise-2', 'log-exercise-3'];
+      const rows = ordered.map((id) => ({ id, prepareUpdate: jest.fn().mockReturnValue({ id }) }));
+      const exercisesCollection = collection({ fetch: jest.fn().mockResolvedValue(rows) });
+      const setsCollection = collection({
+        fetch: jest.fn().mockResolvedValue([
+          { id: 'set-2', logExerciseId: 'log-exercise-1', setOrder: 2, prepareUpdate: jest.fn() },
+          { id: 'set-1', logExerciseId: 'log-exercise-1', setOrder: 1, prepareUpdate: jest.fn() },
+        ]),
+      });
+
+      mockDatabase.get.mockImplementation((table: string) => {
+        if (table === 'workout_logs') {
+          return collection({
+            find: jest.fn().mockResolvedValue(createMockWorkoutLog({ id: 'workout-1' })),
+          }) as never;
+        }
+        if (table === 'workout_log_exercises') {
+          return exercisesCollection as never;
+        }
+        if (table === 'workout_log_sets') {
+          return setsCollection as never;
+        }
+        return collection() as never;
+      });
+
+      await WorkoutService.reorderWorkoutLogExercises(
+        'workout-1',
+        ordered.map((id) => ({ id }))
+      );
+
+      expect(exercisesCollection.query).toHaveBeenCalledTimes(1);
+      expect(setsCollection.query).toHaveBeenCalledTimes(1);
+      expect(exercisesCollection.find).not.toHaveBeenCalled();
     });
   });
 

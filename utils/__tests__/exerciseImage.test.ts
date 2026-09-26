@@ -8,9 +8,9 @@ import {
   buildExerciseCloudUrl,
   buildExerciseImagePath,
   buildLegacyExerciseCloudUrl,
+  exerciseImageCacheKey,
   exerciseSlugFromId,
 } from '@/utils/exerciseImage';
-import { exerciseImageCacheKey } from '@/utils/exerciseImageCache';
 import { withExpoBaseUrl } from '@/utils/withExpoBaseUrl';
 
 jest.mock('expo-file-system', () => ({
@@ -115,5 +115,25 @@ describe('exercise catalogue rendering architecture', () => {
     expect(source).toContain('href="https://github.com/yuhonas/free-exercise-db"');
     expect(websiteCopy.website.exercises.sourceCreditSuffix).toContain('public-domain project');
     expect(source).not.toMatch(/exercise\$\{.*exerciseIndex.*\}\.png/);
+  });
+});
+
+describe('exercise image cache web stub', () => {
+  // Shared code imports this module unconditionally, so on web every native export the stub
+  // lacks resolves to `undefined` and throws only when called — the retired-image purge in
+  // LegacyExerciseCatalogueMigration shipped exactly that way.
+  it('exports every function the native module exports', () => {
+    const nativeModule = jest.requireActual('@/utils/exerciseImageCache');
+    const webModule = jest.requireActual('@/utils/exerciseImageCache.web');
+
+    const missing = Object.keys(nativeModule).filter(
+      (name) => typeof nativeModule[name] === 'function' && typeof webModule[name] !== 'function'
+    );
+    expect(missing).toEqual([]);
+  });
+
+  it('purges nothing on web, where there is no on-disk cache', () => {
+    const { purgeRetiredExerciseImageCache } = jest.requireActual('@/utils/exerciseImageCache.web');
+    expect(purgeRetiredExerciseImageCache()).toBe(0);
   });
 });

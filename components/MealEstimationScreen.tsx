@@ -2,12 +2,18 @@ import { Edit2, Plus, Trash2 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
+import { getMealTypeOptions } from '@/components/nutrition/mealTypeOptions';
+import type { MealType } from '@/database/models/NutritionLog';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 
 import { GenericCard } from './cards/GenericCard';
 import { MacroCard } from './cards/MacroCard';
+import { DatePickerInput } from './modals/DatePickerInput';
+import { OptionsSelector } from './OptionsSelector';
 import { Button } from './theme/Button';
+
+export type MacroEstimate = { grams: number; goal: number; percentage: number };
 
 export type IdentifiedItem = {
   id: string;
@@ -20,15 +26,21 @@ export type IdentifiedItem = {
 type MealEstimationScreenProps = {
   mealImage: string;
   totalCalories: number;
-  protein: { amount: string; goal: number; percentage: number };
-  carbs: { amount: string; goal: number; percentage: number };
-  fat: { amount: string; goal: number; percentage: number };
+  /** Macro amounts are grams — numbers, never pre-formatted strings, so that the display
+   *  locale can never be parsed back out of them. */
+  protein: MacroEstimate;
+  carbs: MacroEstimate;
+  fat: MacroEstimate;
   identifiedItems: IdentifiedItem[];
   onRetake: () => void;
   onAddItem: () => void;
   onEditItem: (item: IdentifiedItem) => void;
   onDeleteItem: (itemId: string) => void;
   onConfirmAndLog: () => void;
+  selectedDate: Date;
+  selectedMealType: MealType;
+  onMealTypeChange: (mealType: MealType) => void;
+  onShowDatePicker: () => void;
 };
 
 // TODO: remove mocks, check designs and use this
@@ -44,11 +56,17 @@ export function MealEstimationScreen({
   onEditItem,
   onDeleteItem,
   onConfirmAndLog,
+  selectedDate,
+  selectedMealType,
+  onMealTypeChange,
+  onShowDatePicker,
 }: MealEstimationScreenProps) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { formatInteger } = useFormatAppNumber();
+  const { formatInteger, formatRoundedDecimal } = useFormatAppNumber();
+  const grams = (value: number) => `${formatRoundedDecimal(value, 1)}${t('common.units.g')}`;
 
+  const mealTypeOptions = getMealTypeOptions(theme, t);
   const macroColors = {
     protein: theme.colors.status.brandVivid10,
     proteinProgress: theme.colors.status.brandVivid30,
@@ -85,7 +103,7 @@ export function MealEstimationScreen({
               <MacroCard
                 name={t('nutrition.macros.protein')}
                 percentage={protein.percentage}
-                amount={protein.amount}
+                amount={grams(protein.grams)}
                 goal={protein.goal}
                 color={macroColors.protein}
                 progressColor={macroColors.proteinProgress}
@@ -93,7 +111,7 @@ export function MealEstimationScreen({
               <MacroCard
                 name={t('nutrition.macros.carbs')}
                 percentage={carbs.percentage}
-                amount={carbs.amount}
+                amount={grams(carbs.grams)}
                 goal={carbs.goal}
                 color={macroColors.carbs}
                 progressColor={macroColors.carbsProgress}
@@ -101,7 +119,7 @@ export function MealEstimationScreen({
               <MacroCard
                 name={t('nutrition.macros.fat')}
                 percentage={fat.percentage}
-                amount={fat.amount}
+                amount={grams(fat.grams)}
                 goal={fat.goal}
                 color={macroColors.fat}
                 progressColor={macroColors.fatProgress}
@@ -193,6 +211,27 @@ export function MealEstimationScreen({
           </View>
         </View>
       </ScrollView>
+
+      {/* Meal Context Selectors */}
+      <View className="px-4 pt-4">
+        <View className="mb-4">
+          <DatePickerInput
+            label={t('food.quickTrackMeal.date')}
+            selectedDate={selectedDate}
+            onPress={onShowDatePicker}
+            variant="default"
+          />
+        </View>
+
+        <View className="mb-4">
+          <OptionsSelector<MealType>
+            title={t('food.quickTrackMeal.mealType')}
+            options={mealTypeOptions}
+            selectedId={selectedMealType}
+            onSelect={onMealTypeChange}
+          />
+        </View>
+      </View>
 
       {/* Bottom Action Button */}
       <View

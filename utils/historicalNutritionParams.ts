@@ -1,4 +1,5 @@
-import { NutritionService, UserMetricService } from '@/database/services';
+import { NutritionService } from '@/database/services/NutritionService';
+import { UserMetricService } from '@/database/services/UserMetricService';
 
 import {
   bucketPointsByUtcWeek,

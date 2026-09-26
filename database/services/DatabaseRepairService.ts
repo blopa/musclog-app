@@ -1,22 +1,16 @@
 import { Model, Q } from '@nozbe/watermelondb';
 import { Platform } from 'react-native';
 
-import {
-  type ChildSpec,
-  REPAIR_DESCRIPTORS,
-  type TableGroupDescriptor,
-} from '@/constants/database';
+import { type ChildSpec, type TableGroupDescriptor } from '@/constants/database';
 import { database } from '@/database/database-instance';
 // All raw reads here go through WatermelonDB's own connection: opening a
 // second SQLite library on the file and closing it would unlink the live WAL
 // (see wmdbRaw.ts). Corruption errors are per-statement, so the connection
 // itself remains usable for these queries.
+import { fetchByIds } from '@/database/queryByIds';
 import { rawQueryViaWatermelon } from '@/database/wmdbRaw';
 import { deleteBleDataPointsFiles } from '@/utils/bleWorkoutDataStorage';
 import { handleError } from '@/utils/handleError';
-
-export type { ChildSpec, TableGroupDescriptor }; // TODO: is this necessary?
-export { REPAIR_DESCRIPTORS }; // TODO: is this necessary?
 
 // ---------------------------------------------------------------------------
 // Types
@@ -89,6 +83,10 @@ function buildResolutionChains(descriptor: TableGroupDescriptor): Map<string, Lo
 // ---------------------------------------------------------------------------
 // SQLite helpers
 // ---------------------------------------------------------------------------
+
+function escapeId(identifier: string): string {
+  return `"${identifier.replace(/"/g, '""')}"`;
+}
 
 function isLikelyCorruptionError(error: unknown): boolean {
   const message = formatUnknownError(error);
@@ -205,7 +203,7 @@ async function resolveRootIdsFromIssues(
 
     for (const step of chain) {
       const result = await querySingleValue(
-        `SELECT ${step.selectCol} FROM ${step.table} WHERE ${step.whereCol} = ? LIMIT 1`,
+        `SELECT ${escapeId(step.selectCol)} FROM ${escapeId(step.table)} WHERE ${escapeId(step.whereCol)} = ? LIMIT 1`,
         [currentValue]
       );
 
@@ -228,7 +226,7 @@ async function resolveRootIdsFromIssues(
 async function reindexTables(tableNames: readonly string[]): Promise<boolean> {
   try {
     await database.adapter.unsafeExecute({
-      sqls: tableNames.map((table) => [`REINDEX "${table}"`, []]),
+      sqls: tableNames.map((table) => [`REINDEX ${escapeId(table)}`, []]),
     });
     return true;
   } catch (error) {
@@ -247,16 +245,24 @@ async function cascadeMarkDeleted(
   childSpecs: ChildSpec[],
   collectByTable?: Map<string, string[]>
 ): Promise<void> {
+  if (records.length === 0) {
+    return;
+  }
+
+  const recordIds = records.map((r) => r.id);
+
+  for (const spec of childSpecs) {
+    const children = await fetchByIds<Model>(
+      spec.table,
+      spec.fkColumn,
+      recordIds,
+      Q.where('deleted_at', Q.eq(null))
+    );
+
+    await cascadeMarkDeleted(writer, children, spec.children ?? [], collectByTable);
+  }
+
   for (const record of records) {
-    for (const spec of childSpecs) {
-      const children = await database
-        .get<Model>(spec.table)
-        .query(Q.where(spec.fkColumn, record.id), Q.where('deleted_at', Q.eq(null)))
-        .fetch();
-
-      await cascadeMarkDeleted(writer, children, spec.children ?? [], collectByTable);
-    }
-
     if (collectByTable) {
       const table = (record.constructor as typeof Model).table;
       const arr = collectByTable.get(table);

@@ -53,6 +53,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Create custom foods manually with full nutrition values
 - Flexible serving sizes (grams, ounces, standard portions)
 - Save meal templates for quick reuse
+- Meal suggestions surface your non-favourite saved meals ordered by how often you have logged them in the last 60 days, newest-first for meals you have not logged yet
 - Scale meal portions up or down while maintaining macro ratios
 - Log meals retroactively for past dates
 - Move, copy, combine, or group meal entries

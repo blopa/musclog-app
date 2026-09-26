@@ -1,4 +1,4 @@
-import { UserMetricService } from '@/database/services';
+import { UserMetricService } from '@/database/services/UserMetricService';
 import { fetchHealthBodyMetrics } from '@/services/healthBodyMetricsPrefill';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { cmToDisplay, kgToDisplay } from '@/utils/unitConversion';

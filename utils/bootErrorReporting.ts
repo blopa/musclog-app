@@ -26,10 +26,7 @@ async function captureBootExceptionWhenDbReady(
     await waitForDbReady().catch(() => {});
 
     await captureException(error, {
-      data: {
-        context,
-        ...data,
-      },
+      captureContext: { tags: { context }, extra: data },
     });
   } catch (sentryError) {
     console.warn('[bootErrorReporting] Failed to capture boot exception', sentryError);

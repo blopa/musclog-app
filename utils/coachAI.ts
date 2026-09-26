@@ -1,7 +1,9 @@
 import { Content, Part } from '@google/genai';
 import OpenAI from 'openai';
 
-import { DebugDumpService, NutritionService, SettingsService } from '@/database/services';
+import { DebugDumpService } from '@/database/services/DebugDumpService';
+import { NutritionService } from '@/database/services/NutritionService';
+import { SettingsService } from '@/database/services/SettingsService';
 import i18n, { DEFAULT_LANG } from '@/lang/lang';
 import { isProduction } from '@/utils/app';
 
@@ -81,6 +83,15 @@ export function isAiCreditsError(error: any): boolean {
   }
 
   return false;
+}
+
+/**
+ * A rate limit or exhausted quota is the provider refusing the request, not a Musclog bug: it is
+ * reported to the user (see `AiCreditsError`) but must not reach Sentry, where every busy hour on a
+ * shared key or the gateway's daily cap filed an unactionable `429 status code (no body)` event.
+ */
+function reportAiError(error: unknown, context: string): void {
+  handleError(error, context, { sendToSentry: !isAiCreditsError(error) });
 }
 
 const RETRYABLE_LLM_STATUSES = new Set([429, 503, 529]);
@@ -711,7 +722,7 @@ async function sendViaOpenAI(
     console.error('[coachAI] sendViaOpenAI error:', error);
 
     // Log detailed error for debugging but don't expose internals to user
-    handleError(error, 'coachAI.sendViaOpenAI');
+    reportAiError(error, 'coachAI.sendViaOpenAI');
 
     if (isAiCreditsError(error)) {
       throw config.provider === 'gateway'
@@ -779,7 +790,7 @@ async function sendViaOnDevice(
       sumMsg: raw?.slice(0, 120) ?? '',
     };
   } catch (error) {
-    handleError(error, 'coachAI.sendViaOnDevice');
+    reportAiError(error, 'coachAI.sendViaOnDevice');
     return {
       msg4User: i18n.t('errors.aiProcessingError'),
       sumMsg: i18n.t('errors.aiProcessingErrorTitle'),
@@ -1023,7 +1034,7 @@ async function generateStructured<T>(
 
       return result;
     } catch (error) {
-      handleError(error, `coachAI.generateStructured[${schemaName}]`);
+      reportAiError(error, `coachAI.generateStructured[${schemaName}]`);
       await logLlmDebugEvent({
         provider: 'on-device',
         direction: 'response',
@@ -1384,33 +1395,41 @@ async function trackMealWithThinking(
   const resultMeals: TrackedMeal[] = [];
 
   for (const meal of recipeResponse.meals) {
-    const matchedIngredients = meal.ingredients.filter((i) => i.foodId);
-    const newIngredients = meal.ingredients.filter((i) => !i.foodId);
+    const claimedStubs: TrackMealIngredient[] = meal.ingredients
+      .filter((i) => i.foodId)
+      .map((i) => ({
+        name: i.name,
+        grams: i.grams,
+        foodId: i.foodId,
+        kcal: 0,
+        protein: 0,
+        carbs: 0,
+        fat: 0,
+        fiber: 0,
+      }));
 
-    const matchedStubs: TrackMealIngredient[] = matchedIngredients.map((i) => ({
-      name: i.name,
-      grams: i.grams,
-      foodId: i.foodId,
-      kcal: 0,
-      protein: 0,
-      carbs: 0,
-      fat: 0,
-      fiber: 0,
-    }));
+    // A claimed foodId only counts once the database confirms it: the model sometimes
+    // sends the string "null" or an invented id, and treating those as matches would
+    // skip estimation and log the ingredient at 0 kcal.
+    const normalizedClaimed = await NutritionService.normalizeAiMealIngredients(claimedStubs);
+    const matched = normalizedClaimed.filter((i) => i.foodId);
+    const newIngredients = [
+      ...meal.ingredients.filter((i) => !i.foodId),
+      ...normalizedClaimed.filter((i) => !i.foodId).map((i) => ({ name: i.name, grams: i.grams })),
+    ];
 
-    let fullIngredients: TrackMealIngredient[] = matchedStubs;
+    let fullIngredients: TrackMealIngredient[] = matched;
 
     if (newIngredients.length > 0) {
-      const normalizedMatched = await NutritionService.normalizeAiMealIngredients(matchedStubs);
       const estimated = await estimateMissingIngredients(
         config,
         newIngredients,
-        normalizedMatched,
+        matched,
         meal.mealName
       );
 
       fullIngredients = [
-        ...matchedStubs,
+        ...matched,
         ...(estimated?.ingredients ??
           newIngredients.map((i) => ({
             name: i.name,
@@ -1488,7 +1507,7 @@ export async function trackMeal(
       'trackMeal'
     );
   } catch (error) {
-    handleError(error, 'coachAI.trackMeal');
+    reportAiError(error, 'coachAI.trackMeal');
     return null;
   }
 }
@@ -1611,7 +1630,7 @@ export async function generateMealPlan(
     );
     return parsed ?? null;
   } catch (error) {
-    handleError(error, 'coachAI.generateMealPlan');
+    reportAiError(error, 'coachAI.generateMealPlan');
     return null;
   }
 }
@@ -1650,7 +1669,7 @@ export async function generateWorkoutPlan(
     );
     return parsed ?? null;
   } catch (error) {
-    handleError(error, 'coachAI.generateWorkoutPlan');
+    reportAiError(error, 'coachAI.generateWorkoutPlan');
     return null;
   }
 }
@@ -1874,7 +1893,7 @@ export async function estimateNutritionFromPhoto(
 
     return parsed ?? null;
   } catch (error) {
-    handleError(error, 'coachAI.estimateNutritionFromPhoto');
+    reportAiError(error, 'coachAI.estimateNutritionFromPhoto');
     return null;
   }
 }

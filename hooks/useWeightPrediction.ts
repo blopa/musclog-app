@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import { WorkoutLogRepository } from '@/database/repositories/WorkoutLogRepository';
-import { NutritionService, UserMetricService } from '@/database/services';
+import { NutritionService } from '@/database/services/NutritionService';
+import { UserMetricService } from '@/database/services/UserMetricService';
 import {
   localDayKeyPlusCalendarDays,
   localDayStartMs,
