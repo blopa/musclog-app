@@ -7,7 +7,13 @@
     },
     "actions": {
       "startWorkout": "Iniciar\nTreino",
-      "trackFood": "Registrar\nAlimento"
+      "trackFood": "Track\nFood",
+      "scanBarcode": "Scan\nBarcode",
+      "aiPhoto": "AI\nPhoto",
+      "logWeight": "Log\nWeight",
+      "myMeals": "My\nMeals",
+      "addNote": "Add\nNote",
+      "logCardio": "Log\nCardio"
     },
     "sections": {
       "recentWorkouts": "Treinos Recentes",

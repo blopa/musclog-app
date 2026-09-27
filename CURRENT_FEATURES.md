@@ -9,7 +9,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Daily summary card with calorie intake vs. goal and macro breakdown
 - Weekly streak card showing consecutive days of nutrition logging (current & best streak)
 - Time-based personalized greetings (Good Morning / Afternoon / Evening)
-- Quick-access buttons to start a workout or log food
+- Quick-access configurable actions (e.g. Scan Barcode, AI Photo, Log Weight, My Meals) to personalize your home screen
 - Recent foods and recent workouts previews
 - Android home screen widgets: Nutrition Progress + Smart Camera
 

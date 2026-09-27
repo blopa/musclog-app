@@ -391,6 +391,13 @@
       "generateChartPayload": "Grafiekgegevens genereren",
       "generateChartPayloadSubtitle": "Signaal- en herhalingsannotatiegegevens opnemen voor grafiekweergave na elke set"
     },
+    "homeActions": {
+      "sectionTitle": "Home Actions",
+      "sectionSubtitle": "Choose which quick actions appear on your home screen.",
+      "popupTitle": "Home Actions",
+      "popupSubtitle": "Select up to 4 actions",
+      "editActions": "Edit Actions"
+    },
     "homeSummaryCard": {
       "sectionTitle": "Startscherm-overzichtskaart",
       "sectionSubtitle": "Kies welke kaart bovenaan je startscherm verschijnt.",
