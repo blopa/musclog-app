@@ -29,6 +29,12 @@
       "focus": "Focus",
       "cycle": "Cyclus",
       "checkin": "Controles"
+    },
+    "energyBalance": "Verbrand {{burned}} · Gegeten {{eaten}} · {{balance}} kcal {{direction}}",
+    "energyDirection": {
+      "deficit": "eronder",
+      "surplus": "erboven",
+      "even": "gelijk"
     }
   }
 }

@@ -29,6 +29,12 @@
       "focus": "Фокус",
       "cycle": "Цикл",
       "checkin": "Отметки"
+    },
+    "energyBalance": "Сожжено {{burned}} · Съедено {{eaten}} · на {{balance}} ккал {{direction}}",
+    "energyDirection": {
+      "deficit": "ниже нормы",
+      "surplus": "выше нормы",
+      "even": "в норме"
     }
   }
 }

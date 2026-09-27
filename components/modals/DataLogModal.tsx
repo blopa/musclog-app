@@ -1857,10 +1857,17 @@ export function WorkoutTemplateDataModal({ visible, onClose }: WorkoutTemplateDa
 type UserMetricDataModalProps = {
   visible: boolean;
   onClose: () => void;
+  initialSearchQuery?: string;
 };
 
-export function UserMetricDataModal({ visible, onClose }: UserMetricDataModalProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+export function UserMetricDataModal({ visible, onClose, initialSearchQuery }: UserMetricDataModalProps) {
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery || '');
+
+  useEffect(() => {
+    if (visible) {
+      setSearchQuery(initialSearchQuery || '');
+    }
+  }, [visible, initialSearchQuery]);
   const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore, refresh } = useUserMetricDataLogs(
     {
       visible,

@@ -237,6 +237,12 @@ export const SHOW_DAILY_WATER_PROMPT_SETTING_TYPE = 'show_daily_water_prompt';
 export const SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE = 'show_daily_supplement_prompt';
 
 /**
+ * Setting type for showing the steps and energy balance line on the home screen.
+ * value: 'true' | 'false'.
+ */
+export const SHOW_HOME_STEPS_SETTING_TYPE = 'show_home_steps';
+
+/**
  * Stores the local-day start timestamp for the last answered home water prompt.
  * value: stringified local midnight timestamp in ms.
  */
@@ -410,4 +416,5 @@ export type UseSettingsResult = {
   nutritionLogHistoryDays: NutritionLogHistoryDays;
   workoutHistoryDays: WorkoutHistoryDays;
   homeSummaryCard: HomeSummaryCard;
+  showHomeSteps: boolean;
 };

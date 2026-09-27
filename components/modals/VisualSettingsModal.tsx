@@ -24,6 +24,7 @@ import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
 import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/OptionsMultiSelector';
 import { PickerButton } from '@/components/theme/PickerButton';
+import { ToggleInput } from '@/components/theme/ToggleInput';
 import {
   type HomeSummaryCard,
   NAV_ITEM_KEYS,
@@ -96,7 +97,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   const { rawSlots, isCycleActive, setNavSlot } = useNavigationItems();
   // The stored preference, not the resolved mode: 'system' has to stay selectable
   // and visible as itself.
-  const { theme: themePreference } = useSettings();
+  const { theme: themePreference, showHomeSteps } = useSettings();
 
   const [themePopupVisible, setThemePopupVisible] = useState(false);
   const [activeSlot, setActiveSlot] = useState<SlotNumber | null>(null);
@@ -272,6 +273,19 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             label={t(`settings.homeSummaryCard.options.${homeSummaryCard}.label`)}
             onPress={() => setHomeCardPopupVisible(true)}
           />
+          <View className="mt-4">
+            <ToggleInput
+              items={[
+                {
+                  key: 'show_home_steps',
+                  label: t('settings.homeSummaryCard.showHomeSteps.title'),
+                  subtitle: t('settings.homeSummaryCard.showHomeSteps.description'),
+                  value: showHomeSteps,
+                  onValueChange: (v: boolean) => SettingsService.setShowHomeSteps(v),
+                },
+              ]}
+            />
+          </View>
         </View>
       </View>
       <BottomPopUp

@@ -405,6 +405,10 @@
           "label": "Wekelijkse reeks",
           "description": "Trainingen deze week en je bijhoudreeks"
         }
+      },
+      "showHomeSteps": {
+        "title": "Toon stappen",
+        "description": "Toon uw dagelijkse stappentelling en energiebalans op het startscherm."
       }
     },
     "theme": {

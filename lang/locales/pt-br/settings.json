@@ -405,6 +405,10 @@
           "label": "Sequência semanal",
           "description": "Treinos desta semana e sua sequência de registro"
         }
+      },
+      "showHomeSteps": {
+        "title": "Mostrar passos",
+        "description": "Mostre sua contagem diária de passos e saldo de energia na tela inicial."
       }
     },
     "theme": {

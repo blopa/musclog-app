@@ -70,6 +70,7 @@ import {
   WORKOUT_INSIGHTS_SETTING_TYPE,
   type WorkoutHistoryDays,
   WRITE_HEALTH_DATA_SETTING_TYPE,
+  SHOW_HOME_STEPS_SETTING_TYPE,
 } from '@/constants/settings';
 import { database } from '@/database';
 import { waitForDbReady } from '@/database/dbReady';
@@ -137,6 +138,7 @@ type SettingsState = {
   nutritionLogHistoryDays: NutritionLogHistoryDays;
   workoutHistoryDays: WorkoutHistoryDays;
   homeSummaryCard: HomeSummaryCard;
+  showHomeSteps: boolean;
   isLoading: boolean;
 };
 
@@ -197,6 +199,7 @@ const DEFAULT_STATE: SettingsState = {
   nutritionLogHistoryDays: 'none',
   workoutHistoryDays: 'none',
   homeSummaryCard: 'daily_summary',
+  showHomeSteps: true,
   isLoading: true,
 };
 
@@ -329,6 +332,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     nutritionLogHistoryDays: (rawNutritionLogHistoryDays as NutritionLogHistoryDays) || 'none',
     workoutHistoryDays: (rawWorkoutHistoryDays as WorkoutHistoryDays) || 'none',
     homeSummaryCard,
+    showHomeSteps: getBoolean(map, SHOW_HOME_STEPS_SETTING_TYPE, true),
     isLoading: false,
   };
 }
@@ -388,6 +392,7 @@ export type SettingsContextType = UseSettingsResult & {
   advancedDataManagement: boolean;
   bleGenerateChartPayload: boolean;
   homeSummaryCard: HomeSummaryCard;
+  showHomeSteps: boolean;
 };
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
