@@ -92,7 +92,8 @@ import { Button } from '@/components/theme/Button';
 import { useSmartCamera } from '@/context/SmartCameraContext';
 import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
-import { EnrichedWorkoutLogSet, ExerciseService, WorkoutService } from '@/database/services';
+import { ExerciseService } from '@/database/services/ExerciseService';
+import { type EnrichedWorkoutLogSet, WorkoutService } from '@/database/services/WorkoutService';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useMenstrualCycle } from '@/hooks/useMenstrualCycle';
 

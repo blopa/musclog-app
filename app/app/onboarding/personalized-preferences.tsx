@@ -15,7 +15,7 @@ import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { TextInput } from '@/components/theme/TextInput';
 import { PERSONALIZED_SETUP_DATA } from '@/constants/misc';
 import { type Gender } from '@/database/models/User';
-import { SettingsService } from '@/database/services';
+import { SettingsService } from '@/database/services/SettingsService';
 import { useTheme } from '@/hooks/useTheme';
 import { setCurrentOnboardingStep } from '@/utils/onboardingService';
 

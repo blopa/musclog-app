@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Meal from '@/database/models/Meal';
-import { MealService } from '@/database/services';
+import { MealService } from '@/database/services/MealService';
 import { handleError } from '@/utils/handleError';
 
 export type Ingredient = {

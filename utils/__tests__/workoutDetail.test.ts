@@ -1,7 +1,8 @@
 import { enUS } from 'date-fns/locale';
 import type { TFunction } from 'i18next';
 
-import { WorkoutAnalytics, WorkoutService } from '@/database/services';
+import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
+import { WorkoutService } from '@/database/services/WorkoutService';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import { darkTheme as theme } from '@/theme';
 import { transformWorkoutToDetailData } from '@/utils/workoutDetail';
@@ -9,8 +10,11 @@ import { transformWorkoutToDetailData } from '@/utils/workoutDetail';
 // `@/utils/workoutHistory` (imported for `getWorkoutIcon`) reaches the database instance.
 jest.mock('@/database', () => ({ database: { get: jest.fn() } }));
 
-jest.mock('@/database/services', () => ({
+jest.mock('@/database/services/WorkoutAnalytics', () => ({
   WorkoutAnalytics: { detectPersonalRecords: jest.fn() },
+}));
+
+jest.mock('@/database/services/WorkoutService', () => ({
   WorkoutService: { getWorkoutLogsByTemplate: jest.fn() },
 }));
 

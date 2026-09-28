@@ -4,12 +4,12 @@
 
 import { act, renderHook, waitFor } from '@testing-library/react';
 
-import { NutritionService } from '@/database/services';
+import { NutritionService } from '@/database/services/NutritionService';
 import { useCopyDaySource } from '@/hooks/useCopyDaySource';
 import { utcDayKeyFromLocalDate } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 
-jest.mock('@/database/services', () => ({
+jest.mock('@/database/services/NutritionService', () => ({
   NutritionService: {
     getNutritionLogsForDate: jest.fn(),
     getRecentLoggedDays: jest.fn(),

@@ -13,16 +13,14 @@ import {
 } from '@/context/ConfettiInteractionsContext';
 import { runDatabaseBootSequence, stopDatabaseBootProgress } from '@/database/dbBootCoordinator';
 import { waitForDbReady } from '@/database/dbReady';
-import {
-  ExerciseGoalService,
-  FoodPortionService,
-  MealService,
-  NutritionGoalService,
-  NutritionService,
-  WorkoutService,
-} from '@/database/services';
+import { ExerciseGoalService } from '@/database/services/ExerciseGoalService';
+import { FoodPortionService } from '@/database/services/FoodPortionService';
+import { MealService } from '@/database/services/MealService';
 import { MenstrualBackfillService } from '@/database/services/MenstrualBackfillService';
+import { NutritionGoalService } from '@/database/services/NutritionGoalService';
+import { NutritionService } from '@/database/services/NutritionService';
 import { SettingsService } from '@/database/services/SettingsService';
+import { WorkoutService } from '@/database/services/WorkoutService';
 import i18n from '@/lang/lang';
 import { healthDataSyncService } from '@/services/healthDataSync';
 import { NotificationService } from '@/services/NotificationService';

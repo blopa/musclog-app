@@ -2,7 +2,9 @@ import { differenceInCalendarDays } from 'date-fns';
 
 import type { EatingPhase, Gender, LiftingExperience } from '@/database/models';
 import type NutritionGoal from '@/database/models/NutritionGoal';
-import { SettingsService, UserMetricService, UserService } from '@/database/services';
+import { SettingsService } from '@/database/services/SettingsService';
+import { UserMetricService } from '@/database/services/UserMetricService';
+import { UserService } from '@/database/services/UserService';
 
 import { localDayClosedRangeMaxMs, localDayStartMs } from './calendarDate';
 import { getHistoricalNutritionParams } from './historicalNutritionParams';

@@ -120,7 +120,9 @@
       "identifiedItems": "Artículos Identificados",
       "addItem": "Añadir Artículo",
       "confirmAndLog": "Confirmar y Registrar Comida",
-      "retake": "Volver a tomar"
+      "retake": "Volver a tomar",
+      "logged": "Comida registrada",
+      "logError": "No se pudo registrar esta comida. Inténtalo de nuevo."
     },
     "index": {
       "handleSaveCustomFood": "Alimento personalizado guardado con éxito."

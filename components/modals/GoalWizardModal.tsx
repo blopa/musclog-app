@@ -17,7 +17,7 @@ import { type NutritionGoals } from '@/components/NutritionGoalsBody';
 import { Button } from '@/components/theme/Button';
 import { StepperInlineInput } from '@/components/theme/StepperInlineInput';
 import { type EatingPhase } from '@/database/models';
-import { UserMetricService } from '@/database/services';
+import { UserMetricService } from '@/database/services/UserMetricService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';

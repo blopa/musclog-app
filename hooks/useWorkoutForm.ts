@@ -9,7 +9,7 @@ import { useSnackbar } from '@/context/SnackbarContext';
 import { database } from '@/database';
 import Exercise from '@/database/models/Exercise';
 import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanRepository';
-import { WorkoutTemplateService } from '@/database/services';
+import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { handleError } from '@/utils/handleError';
 import {

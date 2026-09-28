@@ -12,7 +12,7 @@ import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { MealType, SavedForLaterGroup, SavedForLaterItem } from '@/database/models';
-import { SavedForLaterService } from '@/database/services';
+import { SavedForLaterService } from '@/database/services/SavedForLaterService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { formatLocalCalendarDayIso, localCalendarDayDateFromDayKeyMs } from '@/utils/calendarDate';

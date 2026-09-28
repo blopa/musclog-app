@@ -35,7 +35,7 @@ import {
   CALORIES_FOR_PROTEIN,
 } from '@/constants/nutrition';
 import { type EatingPhase } from '@/database/models';
-import { UserMetricService } from '@/database/services';
+import { UserMetricService } from '@/database/services/UserMetricService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';

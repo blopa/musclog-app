@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
-import { WorkoutTemplateService } from '@/database/services';
+import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 
 import { BATCH_SIZE } from './paginationConstants';
 import { useDateFnsLocale } from './useDateFnsLocale';

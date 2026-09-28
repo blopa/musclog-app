@@ -1,7 +1,10 @@
-// react-native-css-interop 0.2.6's `parseDeclaration` falls through from `case "box-shadow"`
-// into `case "aspect-ratio"`, so any fully-parsed box-shadow is handed to `parseAspectRatio`,
-// which reads `value.ratio[0]` off a box-shadow array and throws. This pins the missing
-// `return` added by patches/react-native-css-interop+0.2.6.patch until it lands upstream.
+// react-native-css-interop 0.2.6's `parseDeclaration` fell through from `case "box-shadow"`
+// into `case "aspect-ratio"`, so any fully-parsed box-shadow was handed to `parseAspectRatio`,
+// which reads `value.ratio[0]` off a box-shadow array and throws. 0.2.7 fixed it upstream
+// (`return parseBoxShadow(...)`), retiring patches/react-native-css-interop+0.2.6.patch.
+//
+// These cases still run against the installed package, so a downgrade below 0.2.7 fails here
+// instead of silently reintroducing the crash.
 //
 // The crash only reaches a native build: it happens in Metro's CSS-to-RN transform, so
 // `expo export:embed` dies while `expo export -p web` (PostCSS) is unaffected.
@@ -11,7 +14,7 @@ const { cssToReactNativeRuntime } = require('react-native-css-interop/dist/css-t
 
 const compile = (css: string) => cssToReactNativeRuntime(Buffer.from(css), {});
 
-describe('react-native-css-interop box-shadow fallthrough patch', () => {
+describe('react-native-css-interop box-shadow fallthrough', () => {
   it('compiles a literal box-shadow without falling through to aspect-ratio', () => {
     // The exact declaration from `.blog-prose pre` in global.css that broke the Android build.
     expect(() => compile('.a { box-shadow: 0 18px 50px rgb(0 0 0 / 22%); }')).not.toThrow();

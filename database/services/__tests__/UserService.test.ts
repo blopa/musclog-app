@@ -1,7 +1,8 @@
+import { randomUUID } from 'expo-crypto';
+
 import { database } from '@/database/database-instance';
 import { UserProfileUpdate } from '@/database/models/User';
 import { UserService } from '@/database/services/UserService';
-import { generateUUID } from '@/utils/uuid';
 
 import { createMockUser } from './helpers';
 
@@ -40,12 +41,12 @@ jest.mock('../../database-instance', () => {
   };
 });
 
-jest.mock('../../../utils/uuid', () => ({
-  generateUUID: jest.fn(() => 'generated-uuid-123'),
+jest.mock('expo-crypto', () => ({
+  randomUUID: jest.fn(() => 'generated-uuid-123'),
 }));
 
 const mockDatabase = database as jest.Mocked<typeof database>;
-const mockGenerateUUID = generateUUID as jest.MockedFunction<typeof generateUUID>;
+const mockGenerateUUID = randomUUID as jest.MockedFunction<typeof randomUUID>;
 
 describe('UserService', () => {
   beforeEach(() => {

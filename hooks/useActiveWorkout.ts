@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import Exercise from '@/database/models/Exercise';
-import { WorkoutService } from '@/database/services';
 import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
+import { WorkoutService } from '@/database/services/WorkoutService';
 import { handleError } from '@/utils/handleError';
 import { isPlannedWorkoutSet } from '@/utils/workoutSetCompletion';
 import {

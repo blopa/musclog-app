@@ -19,13 +19,6 @@ const { URL } = require('url');
 
 const PORT = 8090;
 
-const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-  'Access-Control-Allow-Headers': '*',
-  'Access-Control-Max-Age': '86400',
-};
-
 // Headers that must not be forwarded to the upstream server
 const HOP_BY_HOP = new Set([
   'connection',
@@ -38,10 +31,24 @@ const HOP_BY_HOP = new Set([
   'upgrade',
 ]);
 
+function getCorsHeaders(req) {
+  const origin = req.headers.origin;
+  // Allow localhost (http/https, 127.0.0.1, any port)
+  const isLocalhost = origin && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+  const allowOrigin = isLocalhost ? origin : 'http://localhost:8081';
+
+  return {
+    'Access-Control-Allow-Origin': allowOrigin,
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+    'Access-Control-Allow-Headers': '*',
+    'Access-Control-Max-Age': '86400',
+  };
+}
+
 const server = http.createServer((req, res) => {
   // Preflight
   if (req.method === 'OPTIONS') {
-    res.writeHead(204, CORS_HEADERS);
+    res.writeHead(204, getCorsHeaders(req));
     res.end();
     return;
   }
@@ -50,7 +57,7 @@ const server = http.createServer((req, res) => {
   const targetUrl = reqUrl.searchParams.get('url');
 
   if (!targetUrl) {
-    res.writeHead(400, { 'Content-Type': 'text/plain', ...CORS_HEADERS });
+    res.writeHead(400, { 'Content-Type': 'text/plain', ...getCorsHeaders(req) });
     res.end('Missing ?url= query parameter');
     return;
   }
@@ -59,7 +66,7 @@ const server = http.createServer((req, res) => {
   try {
     target = new URL(targetUrl);
   } catch {
-    res.writeHead(400, { 'Content-Type': 'text/plain', ...CORS_HEADERS });
+    res.writeHead(400, { 'Content-Type': 'text/plain', ...getCorsHeaders(req) });
     res.end(`Invalid target URL: ${targetUrl}`);
     return;
   }
@@ -142,7 +149,7 @@ const server = http.createServer((req, res) => {
             responseHeaders[key] = value;
           }
         }
-        Object.assign(responseHeaders, CORS_HEADERS);
+        Object.assign(responseHeaders, getCorsHeaders(req));
 
         res.writeHead(proxyRes.statusCode, responseHeaders);
         res.end(resBody);
@@ -152,7 +159,7 @@ const server = http.createServer((req, res) => {
     proxyReq.on('error', (err) => {
       console.error(`✗ Proxy error for ${targetUrl}:`, err.message);
       if (!res.headersSent) {
-        res.writeHead(502, { 'Content-Type': 'text/plain', ...CORS_HEADERS });
+        res.writeHead(502, { 'Content-Type': 'text/plain', ...getCorsHeaders(req) });
       }
       res.end(`Proxy error: ${err.message}`);
     });

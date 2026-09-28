@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import NutritionLog from '@/database/models/NutritionLog';
-import { NutritionService } from '@/database/services';
+import { NutritionService } from '@/database/services/NutritionService';
 import { localDayStartFromUtcMs } from '@/utils/calendarDate';
 
 import { BATCH_SIZE } from './paginationConstants';

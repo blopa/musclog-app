@@ -11,7 +11,7 @@ import Animated, {
 import { scheduleOnRN } from 'react-native-worklets';
 
 import { Button } from '@/components/theme/Button';
-import { UserMetricService } from '@/database/services';
+import { UserMetricService } from '@/database/services/UserMetricService';
 import { usePendingSupplements } from '@/hooks/usePendingSupplements';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';

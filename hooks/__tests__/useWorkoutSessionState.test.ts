@@ -6,7 +6,9 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { of } from 'rxjs';
 
 import { database } from '@/database';
-import { SettingsService, UserMetricService, WorkoutService } from '@/database/services';
+import { SettingsService } from '@/database/services/SettingsService';
+import { UserMetricService } from '@/database/services/UserMetricService';
+import { WorkoutService } from '@/database/services/WorkoutService';
 import { useWorkoutSessionState } from '@/hooks/useWorkoutSessionState';
 
 // Mock dependencies
@@ -16,13 +18,19 @@ jest.mock('@/database', () => ({
   },
 }));
 
-jest.mock('@/database/services', () => ({
+jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
     getProgressionMode: jest.fn(),
   },
+}));
+
+jest.mock('@/database/services/UserMetricService', () => ({
   UserMetricService: {
     getUserBodyWeightKgForVolume: jest.fn(),
   },
+}));
+
+jest.mock('@/database/services/WorkoutService', () => ({
   WorkoutService: {
     buildEnrichedSetsFromRecords: jest.fn(),
   },

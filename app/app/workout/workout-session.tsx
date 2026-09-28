@@ -1,4 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
+import { randomUUID } from 'expo-crypto';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { TFunction } from 'i18next';
@@ -96,7 +97,6 @@ import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { handleError } from '@/utils/handleError';
 import { displayToKg, kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
-import { generateUUID } from '@/utils/uuid';
 import { formatDuration } from '@/utils/workout';
 import { isResolvedWorkoutSet } from '@/utils/workoutSetCompletion';
 
@@ -629,7 +629,7 @@ export default function WorkoutSessionScreen() {
 
     try {
       clearTrackingTempFile();
-      const tempFile = createBleWorkoutTrackingTempFile(generateUUID());
+      const tempFile = createBleWorkoutTrackingTempFile(randomUUID());
       trackingTempFileRef.current = tempFile;
       trackingSampleCountRef.current = 0;
       pendingRawBleFileUriRef.current = null;

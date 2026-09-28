@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DEFAULT_BATCH_SIZE } from '@/constants/database';
 import { database } from '@/database';
 import NutritionGoal from '@/database/models/NutritionGoal';
-import { NutritionGoalService } from '@/database/services';
+import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import {
   localCalendarDayDate,
   localDayClosedRangeMaxMs,

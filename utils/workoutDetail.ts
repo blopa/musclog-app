@@ -9,8 +9,9 @@ import type { Units } from '@/constants/settings';
 import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
-import { EnrichedWorkoutLogSet, WorkoutAnalytics, WorkoutService } from '@/database/services';
 import { UserMetricService } from '@/database/services/UserMetricService';
+import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
+import { type EnrichedWorkoutLogSet, WorkoutService } from '@/database/services/WorkoutService';
 import { type Theme } from '@/theme';
 
 import { getXAxisLabels, XAxisLabel } from './chartUtils';

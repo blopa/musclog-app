@@ -5,7 +5,7 @@ import { DEFAULT_BATCH_SIZE } from '@/constants/database';
 import { database } from '@/database';
 import Meal from '@/database/models/Meal';
 import MealFood from '@/database/models/MealFood';
-import { MealService } from '@/database/services';
+import { MealService } from '@/database/services/MealService';
 import { handleError } from '@/utils/handleError';
 
 // Hook parameters

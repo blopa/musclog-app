@@ -28,14 +28,12 @@ import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import WorkoutTemplateExercise from '@/database/models/WorkoutTemplateExercise';
 import WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
-import {
-  ExerciseService,
-  FoodPortionService,
-  MealService,
-  SettingsService,
-  UserService,
-} from '@/database/services';
 import { AppExerciseCatalogueService } from '@/database/services/AppExerciseCatalogueService';
+import { ExerciseService } from '@/database/services/ExerciseService';
+import { FoodPortionService } from '@/database/services/FoodPortionService';
+import { MealService } from '@/database/services/MealService';
+import { SettingsService } from '@/database/services/SettingsService';
+import { UserService } from '@/database/services/UserService';
 import { consumedDateTimeOnDay, localDayStartMs, MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { calculateWorkoutVolume } from '@/utils/workoutCalculator';

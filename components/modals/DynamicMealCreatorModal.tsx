@@ -11,7 +11,7 @@ import { StepperInput } from '@/components/theme/StepperInput';
 import { TextInput } from '@/components/theme/TextInput';
 import { useSnackbar } from '@/context/SnackbarContext';
 import Food from '@/database/models/Food';
-import { MealService } from '@/database/services';
+import { MealService } from '@/database/services/MealService';
 import { syncMealPortionFromForm } from '@/database/services/syncMealPortionFromForm';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';

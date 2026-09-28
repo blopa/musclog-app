@@ -9,7 +9,7 @@ import Exercise, {
   type ExerciseSource,
   type MuscleGroup,
 } from '@/database/models/Exercise';
-import { ExerciseService } from '@/database/services';
+import { ExerciseService } from '@/database/services/ExerciseService';
 
 import { BATCH_SIZE } from './paginationConstants';
 import { useDateFnsLocale } from './useDateFnsLocale';

@@ -2,12 +2,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 
 import { waitForDbReady } from '@/database/dbReady';
-import {
-  ChatService,
-  NutritionService,
-  SettingsService,
-  WorkoutService,
-} from '@/database/services';
+import { ChatService } from '@/database/services/ChatService';
+import { NutritionService } from '@/database/services/NutritionService';
+import { SettingsService } from '@/database/services/SettingsService';
+import { WorkoutService } from '@/database/services/WorkoutService';
 import i18n from '@/lang/lang';
 import AiService from '@/services/AiService';
 

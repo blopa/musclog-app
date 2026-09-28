@@ -120,7 +120,9 @@
       "identifiedItems": "Geïdentificeerde items",
       "addItem": "Item toevoegen",
       "confirmAndLog": "Maaltijd bevestigen & loggen",
-      "retake": "Opnieuw maken"
+      "retake": "Opnieuw maken",
+      "logged": "Maaltijd gelogd",
+      "logError": "Kon deze maaltijd niet loggen. Probeer het opnieuw."
     },
     "index": {
       "handleSaveCustomFood": "Aangepast item succesvol opgeslagen."

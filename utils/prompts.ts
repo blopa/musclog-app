@@ -6,18 +6,16 @@ import type { Units } from '@/constants/settings';
 import { User } from '@/database/models';
 import Food from '@/database/models/Food';
 import WorkoutLog from '@/database/models/WorkoutLog';
-import {
-  AiCustomPromptService,
-  ExerciseService,
-  FoodService,
-  NutritionGoalService,
-  NutritionService,
-  SettingsService,
-  UserMetricService,
-  UserService,
-  WorkoutService,
-  WorkoutTemplateService,
-} from '@/database/services';
+import { AiCustomPromptService } from '@/database/services/AiCustomPromptService';
+import { ExerciseService } from '@/database/services/ExerciseService';
+import { FoodService } from '@/database/services/FoodService';
+import { NutritionGoalService } from '@/database/services/NutritionGoalService';
+import { NutritionService } from '@/database/services/NutritionService';
+import { SettingsService } from '@/database/services/SettingsService';
+import { UserMetricService } from '@/database/services/UserMetricService';
+import { UserService } from '@/database/services/UserService';
+import { WorkoutService } from '@/database/services/WorkoutService';
+import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 import i18n, { DEFAULT_LANG } from '@/lang/lang';
 
 import {
@@ -1239,7 +1237,7 @@ export const getFoundationFoodsPrompt = async (): Promise<string> => {
     return [
       'You MUST prioritize matching ingredients to the "foundation foods" provided in the list below.',
       'If an ingredient matches a foundation food, return its exact "foodId" from the list and the estimated "grams". When "foodId" is provided, you still need to provide the name, but you can omit or provide 0 for kcal, protein, carbs, fat and fiber as they will be fetched from the database using the "foodId".',
-      'If no foundation food is a good match, return the ingredient with its full macronutrients (kcal, protein, carbs, fat, fiber, grams) and leave "foodId" null or omit it.',
+      'If no foundation food is a good match, return the ingredient with its full macronutrients (kcal, protein, carbs, fat, fiber, grams) and omit "foodId" entirely.',
       'Foundation Foods List (macros per 100g):',
       '```json',
       JSON.stringify(foodList, null, 2),

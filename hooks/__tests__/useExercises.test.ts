@@ -4,7 +4,7 @@
 
 import { act, renderHook, waitFor } from '@testing-library/react';
 
-import { ExerciseService } from '@/database/services';
+import { ExerciseService } from '@/database/services/ExerciseService';
 import { useExercises } from '@/hooks/useExercises';
 
 jest.mock('@nozbe/watermelondb', () => ({ Q: {} }));
@@ -13,7 +13,7 @@ jest.mock('@/database', () => ({
   database: { get: jest.fn() },
 }));
 
-jest.mock('@/database/services', () => ({
+jest.mock('@/database/services/ExerciseService', () => ({
   ExerciseService: {
     getAllExercises: jest.fn(),
     getExercisesPaginatedFiltered: jest.fn(),

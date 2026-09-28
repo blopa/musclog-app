@@ -2,6 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import convert from 'convert';
 import { Platform } from 'react-native';
 
+import { REPAIR_DESCRIPTORS } from '@/constants/database';
 import { database } from '@/database/database-instance';
 import { dayRangeClauses } from '@/database/dayKeyQuery';
 import { encryptUserMetricFields } from '@/database/encryptionHelpers';
@@ -16,7 +17,7 @@ import {
 import { handleError } from '@/utils/handleError';
 import { ianaZoneToTimezoneAt, isTimezoneOffset } from '@/utils/timezone';
 
-import { REPAIR_DESCRIPTORS, retryAfterRepair } from './DatabaseRepairService';
+import { retryAfterRepair } from './DatabaseRepairService';
 
 // A record's UTC-normalized day key K relates to its stored instant `date` by
 // K ∈ (date − MAX_KEY_BELOW_DATE_MS, date + TIMEZONE_QUERY_BUFFER_MS] for offsets in

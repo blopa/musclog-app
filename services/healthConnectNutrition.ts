@@ -32,7 +32,7 @@ import Food from '@/database/models/Food';
 import FoodFoodPortion from '@/database/models/FoodFoodPortion';
 import NutritionLog, { type MealType } from '@/database/models/NutritionLog';
 import Setting from '@/database/models/Setting';
-import { FoodPortionService } from '@/database/services';
+import { FoodPortionService } from '@/database/services/FoodPortionService';
 import { handleError } from '@/utils/handleError';
 import { getTimezoneAt, offsetMinutesToTimezone } from '@/utils/timezone';
 

@@ -1,11 +1,4 @@
-import {
-  type ChildSpec,
-  REPAIR_DESCRIPTORS,
-  type TableGroupDescriptor,
-} from '@/constants/database';
-
-export type { ChildSpec, TableGroupDescriptor }; // TODO: is this necessary?
-export { REPAIR_DESCRIPTORS }; // TODO: is this necessary?
+import { type TableGroupDescriptor } from '@/constants/database';
 
 type IntegrityIssue = {
   table: string;

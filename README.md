@@ -202,7 +202,7 @@ musclog/
 
 ### Prerequisites
 
-- Node.js (LTS)
+- Node.js
 - npm or yarn
 - [Expo CLI](https://docs.expo.dev/get-started/installation/)
 - For Android: Android Studio + emulator or physical device

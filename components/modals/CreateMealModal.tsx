@@ -1,16 +1,5 @@
 import type { TFunction } from 'i18next';
-import {
-  Apple,
-  Camera,
-  Check,
-  CheckCircle2,
-  Coffee,
-  Moon,
-  MoreHorizontal,
-  Plus,
-  Trash2,
-  Utensils,
-} from 'lucide-react-native';
+import { Apple, Camera, Check, CheckCircle2, Plus, Trash2 } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Image, Pressable, Switch, Text, View } from 'react-native';
@@ -18,7 +7,8 @@ import { ActivityIndicator, Image, Pressable, Switch, Text, View } from 'react-n
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { FoodNutritionSectionCard } from '@/components/cards/FoodNutritionSectionCard';
 import { FilterTabs } from '@/components/FilterTabs';
-import { OptionsSelector, type SelectorOption } from '@/components/OptionsSelector';
+import { getMealTypeOptions } from '@/components/nutrition/mealTypeOptions';
+import { OptionsSelector } from '@/components/OptionsSelector';
 import { ServingSizeSelector } from '@/components/ServingSizeSelector';
 import { Button } from '@/components/theme/Button';
 import { MenuButton } from '@/components/theme/MenuButton';
@@ -28,7 +18,8 @@ import { useSnackbar } from '@/context/SnackbarContext';
 import type { MealType } from '@/database/models';
 import Food from '@/database/models/Food';
 import Meal from '@/database/models/Meal';
-import { MealService, NutritionService } from '@/database/services';
+import { MealService } from '@/database/services/MealService';
+import { NutritionService } from '@/database/services/NutritionService';
 import { syncMealPortionFromForm } from '@/database/services/syncMealPortionFromForm';
 import {
   createIngredientLocalId,
@@ -38,7 +29,6 @@ import {
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
-import type { Theme } from '@/theme';
 import { blurFilter } from '@/utils/blurFilter';
 import { localCalendarDayDate, withCurrentTimeOnDay } from '@/utils/calendarDate';
 import { deleteMealImage, saveMealImage } from '@/utils/file';
@@ -51,49 +41,6 @@ import { ConfirmationModal } from './ConfirmationModal';
 import { DatePickerInput } from './DatePickerInput';
 import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
-
-const getMealTypeOptions = (theme: Theme, t: TFunction): SelectorOption<MealType>[] => [
-  {
-    id: 'breakfast',
-    label: t('food.meals.breakfast'),
-    description: t('food.meals.descriptions.breakfast'),
-    icon: Coffee,
-    iconBgColor: theme.colors.status.warning10,
-    iconColor: theme.colors.status.warning,
-  },
-  {
-    id: 'lunch',
-    label: t('food.meals.lunch'),
-    description: t('food.meals.descriptions.lunch'),
-    icon: Utensils,
-    iconBgColor: theme.colors.status.info10,
-    iconColor: theme.colors.status.info,
-  },
-  {
-    id: 'dinner',
-    label: t('food.meals.dinner'),
-    description: t('food.meals.descriptions.dinner'),
-    icon: Moon,
-    iconBgColor: theme.colors.status.purple10,
-    iconColor: theme.colors.status.purple,
-  },
-  {
-    id: 'snack',
-    label: t('food.meals.snacks'),
-    description: t('food.meals.descriptions.snack'),
-    icon: Apple,
-    iconBgColor: theme.colors.status.success20,
-    iconColor: theme.colors.status.success,
-  },
-  {
-    id: 'other',
-    label: t('food.meals.other'),
-    description: t('food.meals.descriptions.other'),
-    icon: MoreHorizontal,
-    iconBgColor: theme.colors.status.neutralWash,
-    iconColor: theme.colors.text.secondary,
-  },
-];
 
 type CreateMealModalProps = {
   visible: boolean;

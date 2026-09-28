@@ -37,7 +37,7 @@ import { isStaticExport } from '@/constants/platform';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { type CameraMode, useSmartCamera } from '@/context/SmartCameraContext';
 import { type MealType } from '@/database/models';
-import { NutritionGoalService } from '@/database/services';
+import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';

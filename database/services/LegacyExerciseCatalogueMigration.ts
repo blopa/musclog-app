@@ -7,14 +7,13 @@ import ExerciseMuscle from '@/database/models/ExerciseMuscle';
 import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutTemplateExercise from '@/database/models/WorkoutTemplateExercise';
 import { createPreExerciseCatalogueBackup } from '@/database/preMigrationBackup';
+import { chunked, fetchByIds, MAX_BATCH_OPERATIONS } from '@/database/queryByIds';
 import { APP_EXERCISE_ID_PREFIX, buildLegacyExerciseCloudUrl } from '@/utils/exerciseImage';
 import { purgeRetiredExerciseImageCache } from '@/utils/exerciseImageCache';
 
 import { AppExerciseCatalogueService } from './AppExerciseCatalogueService';
 
 const RETIRED_EXERCISE_CLONE_ID_PREFIX = 'lx-';
-const MAX_BATCH_OPERATIONS = 500;
-const MAX_QUERY_IDS = 300;
 
 export interface LegacyCatalogueMigrationReport {
   cloned: number;
@@ -24,30 +23,15 @@ export interface LegacyCatalogueMigrationReport {
 
 type RepointableRow = Model & { exerciseId?: null | string; updatedAt: number };
 
-function chunked<T>(items: T[], size: number): T[][] {
-  const chunks: T[][] = [];
-  for (let index = 0; index < items.length; index += size) {
-    chunks.push(items.slice(index, index + size));
-  }
-  return chunks;
-}
-
 function isRetiredCatalogueExercise(exercise: Exercise): boolean {
   return exercise.source === 'app' && !exercise.id.startsWith(APP_EXERCISE_ID_PREFIX);
 }
 
-async function fetchByExerciseIds<T>(table: string, exerciseIds: string[]): Promise<T[]> {
-  const results: T[] = [];
-  for (const ids of chunked(exerciseIds, MAX_QUERY_IDS)) {
-    results.push(
-      ...((await database
-        .get(table)
-        .query(Q.where('exercise_id', Q.oneOf(ids)))
-        .fetch()) as T[])
-    );
-  }
-
-  return results;
+async function fetchByExerciseIds<T extends Model>(
+  table: string,
+  exerciseIds: string[]
+): Promise<T[]> {
+  return fetchByIds<T>(table, 'exercise_id', exerciseIds);
 }
 
 function cloneIdFor(legacyId: string): string {

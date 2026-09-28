@@ -9,7 +9,7 @@ import {
   FLOW_LEVELS,
   PHYSICAL_SYMPTOM_KEYS,
 } from '@/constants/cycle';
-import { UserMetricService } from '@/database/services';
+import { UserMetricService } from '@/database/services/UserMetricService';
 import {
   getLocalCalendarYear,
   localCalendarDayDate,

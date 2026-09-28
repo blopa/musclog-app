@@ -1,6 +1,7 @@
 import { type Model, Q } from '@nozbe/watermelondb';
 import convert, { type Unit } from 'convert';
 
+import { REPAIR_DESCRIPTORS } from '@/constants/database';
 import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
@@ -8,6 +9,7 @@ import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import { prepareSoftDelete } from '@/database/prepareSoftDelete';
+import { fetchByIds, fetchMapByIds } from '@/database/queryByIds';
 import { WorkoutPlanRepository } from '@/database/repositories/WorkoutPlanRepository';
 import {
   toWorkoutLogSetSnapshot,
@@ -37,7 +39,7 @@ import {
   getNextSetInEffectiveOrder,
 } from '@/utils/workoutSupersetOrder';
 
-import { DatabaseRepairService, REPAIR_DESCRIPTORS } from './DatabaseRepairService';
+import { DatabaseRepairService } from './DatabaseRepairService';
 import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
 import { UserService } from './UserService';
@@ -75,6 +77,17 @@ export type WorkoutSetUpdate =
       isNew?: false;
       exerciseId?: never;
     });
+
+/**
+ * Starting a workout while another one is still open. This is an expected user-state refusal,
+ * not a failure: callers should point the user at the open session rather than report it.
+ */
+export class ActiveWorkoutExistsError extends Error {
+  constructor() {
+    super('There is already an active workout. Please complete it first.');
+    this.name = 'ActiveWorkoutExistsError';
+  }
+}
 
 export class WorkoutService {
   private static async retryAfterWorkoutRepair<T>(
@@ -140,7 +153,7 @@ export class WorkoutService {
 
         if (activeWorkout) {
           if (!activeWorkout.deletedAt && !activeWorkout.completedAt) {
-            throw new Error('There is already an active workout. Please complete it first.');
+            throw new ActiveWorkoutExistsError();
           }
 
           // Workout was completed or deleted, clear it from storage
@@ -155,6 +168,10 @@ export class WorkoutService {
 
       return workoutLog;
     } catch (error) {
+      if (error instanceof ActiveWorkoutExistsError) {
+        throw error;
+      }
+
       if (!repairAttempted) {
         const repaired = await this.retryAfterWorkoutRepair(error, () =>
           this.startWorkoutFromTemplateInternal(templateId, planId, true)
@@ -191,16 +208,20 @@ export class WorkoutService {
     try {
       const activeWorkoutLogId = await getActiveWorkoutLogId();
       if (activeWorkoutLogId) {
+        // Only the lookup is guarded, as in startWorkoutFromTemplateInternal: a throw inside this
+        // try would be swallowed by its own catch and silently start a second workout.
+        let activeWorkout: null | WorkoutLog = null;
         try {
-          const activeWorkout = await database
-            .get<WorkoutLog>('workout_logs')
-            .find(activeWorkoutLogId);
+          activeWorkout = await database.get<WorkoutLog>('workout_logs').find(activeWorkoutLogId);
+        } catch {
+          await clearActiveWorkoutLogId();
+        }
+
+        if (activeWorkout) {
           if (!activeWorkout.deletedAt && !activeWorkout.completedAt) {
-            throw new Error('There is already an active workout. Please complete it first.');
-          } else {
-            await clearActiveWorkoutLogId();
+            throw new ActiveWorkoutExistsError();
           }
-        } catch (error) {
+
           await clearActiveWorkoutLogId();
         }
       }
@@ -227,6 +248,10 @@ export class WorkoutService {
       await setActiveWorkoutLogId(workoutLog.id);
       return workoutLog;
     } catch (error) {
+      if (error instanceof ActiveWorkoutExistsError) {
+        throw error;
+      }
+
       if (!repairAttempted) {
         const repaired = await this.retryAfterWorkoutRepair(error, () =>
           this.startFreeWorkoutInternal(workoutName, externalId, true)
@@ -873,26 +898,30 @@ export class WorkoutService {
 
         // Resolve every fallible lookup before preparing any model changes. A missing or
         // cross-workout id therefore aborts without leaving a model in prepared state.
-        for (const deletedId of deletionIds) {
-          const setToDelete = await logSetsCollection.find(deletedId);
-          if (!logExerciseIds.has(setToDelete.logExerciseId)) {
-            throw new Error(`Workout set ${deletedId} does not belong to workout ${workoutLogId}`);
+        const updateSetIds = updates.filter((u) => !u.isNew).map((u) => u.setId);
+        const setById = await fetchMapByIds<WorkoutLogSet>('workout_log_sets', 'id', [
+          ...deletionIds,
+          ...updateSetIds,
+        ]);
+
+        const requireSetInWorkout = (setId: string): WorkoutLogSet => {
+          const set = setById.get(setId);
+          if (!set) {
+            throw new Error(`Workout set ${setId} not found`);
           }
-          setsToDelete.push(setToDelete);
+          if (!logExerciseIds.has(set.logExerciseId)) {
+            throw new Error(`Workout set ${setId} does not belong to workout ${workoutLogId}`);
+          }
+
+          return set;
+        };
+
+        for (const deletedId of deletionIds) {
+          setsToDelete.push(requireSetInWorkout(deletedId));
         }
 
-        for (const update of updates) {
-          if (update.isNew) {
-            continue;
-          }
-
-          const setModel = await logSetsCollection.find(update.setId);
-          if (!logExerciseIds.has(setModel.logExerciseId)) {
-            throw new Error(
-              `Workout set ${update.setId} does not belong to workout ${workoutLogId}`
-            );
-          }
-          existingSetById.set(update.setId, setModel);
+        for (const setId of updateSetIds) {
+          existingSetById.set(setId, requireSetInWorkout(setId));
         }
 
         const now = Date.now();
@@ -1077,38 +1106,69 @@ export class WorkoutService {
       }
 
       await database.write(async () => {
-        const logExercisesCollection = database.get<WorkoutLogExercise>('workout_log_exercises');
-        const logSetsCollection = database.get<WorkoutLogSet>('workout_log_sets');
-
         const preparedUpdates: (WorkoutLogExercise | WorkoutLogSet)[] = [];
 
         const now = Date.now();
 
+        const orderedIds = orderedLogExercises.map((e) => e.id);
+
+        // Resolve every lookup before preparing any change: a caller naming an unknown
+        // exercise must abort, not silently reorder the remaining ones and renumber their
+        // sets against a list nobody asked for — and not leave half the list in prepared
+        // state either, which is why the whole order is resolved before the first update.
+        const logExercisesMap = await fetchMapByIds<WorkoutLogExercise>(
+          'workout_log_exercises',
+          'id',
+          orderedIds
+        );
+        const resolvedOrder = orderedLogExercises.map(({ id, groupId }) => {
+          const logEx = logExercisesMap.get(id);
+          if (!logEx) {
+            throw new Error(`Workout log exercise ${id} not found`);
+          }
+
+          return { groupId, logEx };
+        });
+
         // Update WorkoutLogExercise orders
-        for (let i = 0; i < orderedLogExercises.length; i++) {
-          const { id, groupId } = orderedLogExercises[i];
-          const logEx = await logExercisesCollection.find(id);
+        resolvedOrder.forEach(({ groupId, logEx }, index) => {
           preparedUpdates.push(
             logEx.prepareUpdate((record) => {
-              record.exerciseOrder = i + 1;
+              record.exerciseOrder = index + 1;
               record.groupId = groupId;
               record.updatedAt = now;
             })
           );
+        });
+
+        // Fetch all related sets in one batch, then group and sort them in memory.
+        const allSets = await fetchByIds<WorkoutLogSet>(
+          'workout_log_sets',
+          'log_exercise_id',
+          orderedIds,
+          Q.where('deleted_at', Q.eq(null))
+        );
+
+        const setsByLogExId = new Map<string, WorkoutLogSet[]>();
+        for (const set of allSets) {
+          const sets = setsByLogExId.get(set.logExerciseId);
+          if (sets) {
+            sets.push(set);
+          } else {
+            setsByLogExId.set(set.logExerciseId, [set]);
+          }
+        }
+
+        // Ensure sets are ordered by their original set_order asc
+        for (const sets of setsByLogExId.values()) {
+          sets.sort((a, b) => a.setOrder - b.setOrder);
         }
 
         // Update all WorkoutLogSet orders to match the new exercise order
         // assigning them sequentially
         let currentSetOrder = 1;
         for (const { id } of orderedLogExercises) {
-          const sets = await logSetsCollection
-            .query(
-              Q.where('log_exercise_id', id),
-              Q.where('deleted_at', Q.eq(null)),
-              Q.sortBy('set_order', Q.asc)
-            )
-            .fetch();
-
+          const sets = setsByLogExId.get(id) || [];
           for (const set of sets) {
             preparedUpdates.push(
               set.prepareUpdate((record) => {

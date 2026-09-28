@@ -1,4 +1,6 @@
-import { ExerciseService, WorkoutAnalytics, WorkoutService } from '@/database/services';
+import { ExerciseService } from '@/database/services/ExerciseService';
+import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
+import { WorkoutService } from '@/database/services/WorkoutService';
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 import {
   buildWorkoutCompletedSummaryForLLM,
@@ -9,10 +11,19 @@ import {
 
 jest.mock('lucide-react-native', () => ({ Dumbbell: jest.fn() }));
 
-jest.mock('@/database/services', () => ({
+jest.mock('@/database/services/ChatService', () => ({
   ChatService: { saveMessage: jest.fn() },
+}));
+
+jest.mock('@/database/services/ExerciseService', () => ({
   ExerciseService: { getAllExercises: jest.fn() },
+}));
+
+jest.mock('@/database/services/WorkoutAnalytics', () => ({
   WorkoutAnalytics: { getProgressiveOverloadData: jest.fn() },
+}));
+
+jest.mock('@/database/services/WorkoutService', () => ({
   WorkoutService: {
     completeWorkout: jest.fn(),
     getWorkoutWithDetails: jest.fn(),

@@ -1,6 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import { endOfDay } from 'date-fns';
 
+import { REPAIR_DESCRIPTORS } from '@/constants/database';
 import { database } from '@/database';
 import NutritionGoal, { type EatingPhase } from '@/database/models/NutritionGoal';
 import type UserMetric from '@/database/models/UserMetric';
@@ -18,7 +19,7 @@ import { getCurrentTimezone, getTimezoneAt } from '@/utils/timezone';
 import { storedHeightToCm, storedWeightToKg } from '@/utils/unitConversion';
 import { widgetEvents } from '@/utils/widgetEvents';
 
-import { REPAIR_DESCRIPTORS, retryAfterRepair } from './DatabaseRepairService';
+import { retryAfterRepair } from './DatabaseRepairService';
 import { NutritionCheckinService } from './NutritionCheckinService';
 import { SettingsService } from './SettingsService';
 import { UserService } from './UserService';

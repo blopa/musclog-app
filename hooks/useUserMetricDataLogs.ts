@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { Units } from '@/constants/settings';
 import UserMetric, { type UserMetricType } from '@/database/models/UserMetric';
-import { UserMetricService } from '@/database/services';
+import { UserMetricService } from '@/database/services/UserMetricService';
 import { metricDisplayUnit, metricValueToDisplay, storedWeightToKg } from '@/utils/unitConversion';
 
 import { BATCH_SIZE } from './paginationConstants';

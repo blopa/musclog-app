@@ -5,19 +5,17 @@ import { isStaticExport } from '@/constants/platform';
 import { startDbDurabilityMonitoring } from '@/database/dbDurability';
 import { isDbReady, markDbReady, markDbReadyFailed, waitForDbReady } from '@/database/dbReady';
 import { waitForPreMigrationBackup } from '@/database/preMigrationBackup';
-import {
-  ExerciseService,
-  FoodPortionService,
-  FoodService,
-  NutritionGoalService,
-  NutritionService,
-  SettingsService,
-  TimezoneMigrationService,
-  UserMetricService,
-  WorkoutService,
-} from '@/database/services';
 import { AppExerciseCatalogueService } from '@/database/services/AppExerciseCatalogueService';
+import { ExerciseService } from '@/database/services/ExerciseService';
+import { FoodPortionService } from '@/database/services/FoodPortionService';
+import { FoodService } from '@/database/services/FoodService';
 import { LegacyExerciseCatalogueMigration } from '@/database/services/LegacyExerciseCatalogueMigration';
+import { NutritionGoalService } from '@/database/services/NutritionGoalService';
+import { NutritionService } from '@/database/services/NutritionService';
+import { SettingsService } from '@/database/services/SettingsService';
+import { TimezoneMigrationService } from '@/database/services/TimezoneMigrationService';
+import { UserMetricService } from '@/database/services/UserMetricService';
+import { WorkoutService } from '@/database/services/WorkoutService';
 import { WorkoutSetStatusMigration } from '@/database/services/WorkoutSetStatusMigration';
 import { captureBootException } from '@/utils/bootErrorReporting';
 import {

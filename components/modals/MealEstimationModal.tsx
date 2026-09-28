@@ -3,11 +3,39 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity } from 'react-native';
 
-import { IdentifiedItem, MealEstimationScreen } from '@/components/MealEstimationScreen';
+import {
+  type IdentifiedItem,
+  type MacroEstimate,
+  MealEstimationScreen,
+} from '@/components/MealEstimationScreen';
+import { useSnackbar } from '@/context/SnackbarContext';
+import type { MealType } from '@/database/models/NutritionLog';
+import { NutritionService } from '@/database/services/NutritionService';
+import { useSubModalVisibility } from '@/hooks/useSubModalVisibility';
 import { useTheme } from '@/hooks/useTheme';
+import { totalCarbsForFoodSource } from '@/utils/carbsConvention';
+import { handleError } from '@/utils/handleError';
 
 import { ConfirmationModal } from './ConfirmationModal';
+import { DatePickerModal } from './DatePickerModal';
 import { FullScreenModal } from './FullScreenModal';
+
+const inferMealTypeFromTime = (date: Date): MealType => {
+  const hour = date.getHours();
+  if (hour >= 5 && hour < 11) {
+    return 'breakfast';
+  }
+
+  if (hour >= 11 && hour < 15) {
+    return 'lunch';
+  }
+
+  if (hour >= 15 && hour < 22) {
+    return 'dinner';
+  }
+
+  return 'snack';
+};
 
 type MealEstimationModalProps = {
   visible: boolean;
@@ -16,9 +44,9 @@ type MealEstimationModalProps = {
   // In a real app, these would come from your AI service
   aiEstimationData?: {
     totalCalories: number;
-    protein: { amount: string; goal: number; percentage: number };
-    carbs: { amount: string; goal: number; percentage: number };
-    fat: { amount: string; goal: number; percentage: number };
+    protein: MacroEstimate;
+    carbs: MacroEstimate;
+    fat: MacroEstimate;
     identifiedItems: IdentifiedItem[];
   };
 };
@@ -32,16 +60,22 @@ export function MealEstimationModal({
 }: MealEstimationModalProps) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { showSnackbar } = useSnackbar();
   const [identifiedItems, setIdentifiedItems] = useState<IdentifiedItem[]>(
     aiEstimationData?.identifiedItems || []
   );
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedMealType, setSelectedMealType] = useState<MealType>(() =>
+    inferMealTypeFromTime(new Date())
+  );
+  const [showDatePicker, setShowDatePicker] = useSubModalVisibility(visible);
 
   // Default estimation data for demo purposes
   const defaultEstimationData = {
     totalCalories: 675,
-    protein: { amount: '42g', goal: 150, percentage: 28 },
-    carbs: { amount: '68g', goal: 200, percentage: 45 },
-    fat: { amount: '24g', goal: 65, percentage: 27 },
+    protein: { grams: 42, goal: 150, percentage: 28 },
+    carbs: { grams: 68, goal: 200, percentage: 45 },
+    fat: { grams: 24, goal: 65, percentage: 27 },
     identifiedItems: [
       {
         id: '1',
@@ -108,11 +142,29 @@ export function MealEstimationModal({
     }
   };
 
-  const handleConfirmAndLog = () => {
-    // TODO: Implement meal logging functionality
-    // In a real app, this would save the meal to your nutrition log
-    console.log('Success', 'Meal logged successfully!');
-    onClose();
+  const handleConfirmAndLog = async () => {
+    try {
+      await NutritionService.logCustomMeal(
+        {
+          name: t('nutrition.mealEstimation.title'),
+          calories: estimationData.totalCalories,
+          protein: estimationData.protein.grams,
+          // The estimate comes from the LLM, whose prompt uses the net-carbs convention.
+          carbs: totalCarbsForFoodSource('ai', {
+            carbs: estimationData.carbs.grams,
+            fiber: 0,
+          }),
+          fat: estimationData.fat.grams,
+        },
+        selectedDate,
+        selectedMealType
+      );
+      showSnackbar('success', t('nutrition.mealEstimation.logged'));
+      onClose();
+    } catch (error) {
+      handleError(error, 'MealEstimationModal.handleConfirmAndLog');
+      showSnackbar('error', t('nutrition.mealEstimation.logError'));
+    }
   };
 
   return (
@@ -148,6 +200,19 @@ export function MealEstimationModal({
         onEditItem={handleEditItem}
         onDeleteItem={handleDeleteItem}
         onConfirmAndLog={handleConfirmAndLog}
+        selectedDate={selectedDate}
+        selectedMealType={selectedMealType}
+        onMealTypeChange={setSelectedMealType}
+        onShowDatePicker={() => setShowDatePicker(true)}
+      />
+      <DatePickerModal
+        visible={showDatePicker}
+        onClose={() => setShowDatePicker(false)}
+        selectedDate={selectedDate}
+        onDateSelect={(date) => {
+          setSelectedDate(date);
+          setShowDatePicker(false);
+        }}
       />
       <ConfirmationModal
         visible={!!itemToDeleteId}

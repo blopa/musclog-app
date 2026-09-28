@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { type MealType } from '@/database/models';
 import NutritionLog from '@/database/models/NutritionLog';
-import { NutritionService } from '@/database/services';
+import { NutritionService } from '@/database/services/NutritionService';
 import {
   localCalendarDayDate,
   localCalendarDayDateFromDayKeyMs,

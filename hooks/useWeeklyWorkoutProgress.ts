@@ -4,7 +4,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { database } from '@/database';
 import type ExerciseGoal from '@/database/models/ExerciseGoal';
 import type WorkoutLog from '@/database/models/WorkoutLog';
-import { ExerciseGoalService, WorkoutService } from '@/database/services';
+import { ExerciseGoalService } from '@/database/services/ExerciseGoalService';
+import { WorkoutService } from '@/database/services/WorkoutService';
 import { handleError } from '@/utils/handleError';
 
 type WeeklyWorkoutProgress = {

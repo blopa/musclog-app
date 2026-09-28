@@ -3,6 +3,7 @@ import convert from 'convert';
 import { Dumbbell, type LucideIcon, User } from 'lucide-react-native';
 import type { ComponentType } from 'react';
 
+import { REPAIR_DESCRIPTORS } from '@/constants/database';
 import { DEFAULT_WORKOUT_TYPE } from '@/constants/workoutTypes';
 import type { RawWorkoutTemplate, RawWorkoutTemplateExercise } from '@/data/workoutTemplates';
 import { database } from '@/database/database-instance';
@@ -24,11 +25,7 @@ import { getWeightUnit } from '@/utils/units';
 import { indexToDayName, WEEKDAY_NAMES } from '@/utils/weekdays';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
-import {
-  DatabaseRepairService,
-  REPAIR_DESCRIPTORS,
-  retryAfterRepair,
-} from './DatabaseRepairService';
+import { DatabaseRepairService, retryAfterRepair } from './DatabaseRepairService';
 import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
 import { UserService } from './UserService';

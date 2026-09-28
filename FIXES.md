@@ -55,6 +55,14 @@ cannot change because historic IDs and Game Boy save indices depend on it. Regen
 English, and localized catalogues with the scripts documented in `AGENTS.md`; never hand-edit
 generated JSON.
 
+In 2.12.0 the cutover's final step, `purgeRetiredExerciseImageCache()`, was added to
+`utils/exerciseImageCache.ts` but not to its `.web.ts` stub, so on web it resolved to `undefined`
+and threw `purgeRetiredExerciseImageCache is not a function` right after the migration's writer had
+committed. The data cutover itself completed, and the next boot found no retired rows and never
+reached the call, so each web user reported it once. The stub now exports a no-op, and
+`utils/__tests__/exerciseImage.test.ts` fails if the stub lacks any function the native module
+exports.
+
 ## Android cold-boot gallery stall
 
 ### Symptom
@@ -171,11 +179,13 @@ the real server tests.
 
 ## NativeWind box-shadow parser crash
 
-In `react-native-css-interop` 0.2.6, `parseDeclaration` falls through from a fully parsed literal
-`box-shadow` into `aspect-ratio` and reads a missing `ratio`. Native export crashes with a misleading
-`parseAspectRatio` stack; web can remain fine. `patches/react-native-css-interop+0.2.6.patch` adds the
-missing return and `utils/__tests__/nativewindBoxShadowPatch.test.ts` pins it. Remove it only after
-the installed upstream version contains the equivalent fix.
+In `react-native-css-interop` 0.2.6, `parseDeclaration` fell through from a fully parsed literal
+`box-shadow` into `aspect-ratio` and read a missing `ratio`. Native export crashed with a misleading
+`parseAspectRatio` stack; web could remain fine. This was carried as
+`patches/react-native-css-interop+0.2.6.patch` until **0.2.7 shipped the equivalent fix upstream**
+(`return parseBoxShadow(...)`), at which point the patch was removed. The behavioral test
+`utils/__tests__/nativewindBoxShadowPatch.test.ts` still pins it against the installed package, so
+a downgrade below 0.2.7 fails the suite rather than silently reintroducing the crash.
 
 ## Health Connect duplicate classes
 
@@ -183,6 +193,28 @@ Do not install `expo-health-connect` beside `react-native-health-connect` 4.x. B
 module in `expo.modules.healthconnect`, causing release `mergeDex` duplicate-class failures.
 `react-native-health-connect` already includes the required config plugin and Android manifest
 entries, so the standalone package adds nothing.
+
+## EAS `npm ci` lockfile rejection
+
+EAS builds ignore `.nvmrc` and `engines`; a profile without a `node` field runs on the image default
+(Node 22 / npm 10). The lockfile is written by npm 11 on Node 26, and the two npm majors disagree
+about optional peers that the root cannot satisfy: `eas-cli` pins `@expo/config@55`, whose
+`@expo/require-utils` declares an optional `typescript@^5` peer against our `typescript ~6`. npm 11
+leaves it unmet; npm 10 wants a nested `typescript@5.9.3`, so `npm ci` fails with
+`Missing: typescript@5.9.3 from lock file`. `eas.json` therefore pins an exact Node 26 release in a
+`base` profile that every other profile extends. `utils/__tests__/easNodeVersion.test.ts` requires
+every profile to resolve an exact version whose major matches `engines`, `.nvmrc`, and the GitHub
+workflows — bump them together.
+
+## EAS builder rejects `eas.json` after an `eas-cli` bump
+
+The builder reads `eas.json` with the `eas-cli` baked into its own image, not the one in our
+`devDependencies`, and that image trails npm by days. Raising `cli.version` to the freshly released
+`>= 24.7.0` failed every iOS build with `You are on eas-cli@24.6.0 which does not satisfy the CLI
+version constraint` / `Failed to read the build profile production from eas.json`, before any
+native step ran. `cli.version` is therefore a major-only floor (`>= N.0.0`) that only moves when
+`eas.json` starts using a feature that needs it; `utils/__tests__/easNodeVersion.test.ts` enforces
+the shape.
 
 ## Android release optimization
 
@@ -231,3 +263,82 @@ When upgrading Expo or a patched dependency:
 3. Keep or update the regression test before rebuilding.
 4. Verify the platform and build type where the bug originally appeared; several incidents were
    release-only or native-only.
+
+## Starting a workout while one is already open
+
+### Symptom
+
+Sentry reported `Failed to start workout: There is already an active workout` (2.12.0+304). The
+user saw only a generic "Something went wrong" snackbar.
+
+### Cause
+
+The guard in `WorkoutService.startWorkoutFromTemplate` worked as designed. The screen passed its
+refusal to `handleError` like any other failure, so it went to Sentry with no explanation for the
+user. `startFreeWorkout` had the opposite bug: its guard threw inside the `try` around the
+active-workout lookup, so its own `catch` swallowed the throw, cleared the open session's id and
+started a second workout on top of it. This also affected `processParsedWorkouts` (AI workout
+import), which calls `startFreeWorkout`.
+
+### Permanent rules
+
+- Both start paths throw `ActiveWorkoutExistsError` (exported from `WorkoutService.ts`). They
+  rethrow it without wrapping and skip the database-repair retry.
+- Guard only the lookup. The "still open" check must stay outside that `try`.
+- Callers treat the error as user state rather than a failure. `workouts.tsx` shows
+  `workouts.interruptedSession.alreadyActive`, refreshes the resume/discard banner and does not
+  report the error to Sentry.
+
+## AI rate limits reported as bugs (`429 status code (no body)`)
+
+### Symptom
+
+Sentry reported `Error: 429 status code (no body)` (2.12.0+304): an OpenAI SDK `RateLimitError`,
+marked handled. The user saw the "AI credits exhausted" / "try again later" message, which was the
+correct outcome.
+
+### Cause
+
+Not a bug in the app. The provider (the user's own OpenAI-compatible key or the Musclog gateway's
+daily cap) refused the request. `withLlmRetry` had already retried it three times with backoff.
+Every AI `catch` in `utils/coachAI.ts` called `handleError`, which reports to Sentry by default,
+before it checked `isAiCreditsError`. So an expected refusal was reported to Sentry as if it were a
+failure in the app.
+
+### Permanent rules
+
+- AI catch sites in `coachAI.ts` report through `reportAiError`. This helper passes
+  `sendToSentry: !isAiCreditsError(error)`, so rate limits and quota or billing errors stay out of
+  Sentry, and every other AI failure is still reported. Do not call `handleError` directly from a
+  new AI catch site. `utils/__tests__/coachAIErrorReporting.test.ts` checks this.
+
+## Sentry events without a call site (`Record foods#null not found`)
+
+### Symptom
+
+Sentry reported `Diagnostic error: Record foods#null not found` (2.12.0+304). The event carried
+only WatermelonDB frames, and nothing in it showed which feature made the lookup.
+
+### Cause
+
+Two separate problems:
+
+- `Collection.find` rejects a non-string id earlier with a different message ("Invalid record ID"),
+  so this `find` received the **string** `"null"`. Model setters cannot produce that string,
+  because WatermelonDB's sanitizer turns `null` into `''` or `null`. The value came from outside a
+  model. The most likely source is an LLM `foodId`: the foundation-foods prompt told the model to
+  "leave `foodId` null", and models sometimes return that as text. Thinking-mode `trackMeal`
+  treated any truthy `foodId` as a confirmed match. Such an ingredient skipped macro estimation
+  and was logged at 0 kcal once `normalizeAiMealIngredients` stripped the bad id.
+- The exact caller could not be found because `handleError` and `captureBootException` sent their
+  `context` in the Sentry hint's `data` field. Sentry never serializes that field onto the event,
+  so every handled error arrived without saying where it came from.
+
+### Permanent rules
+
+- Report context through `captureContext` (`tags.context`, plus `extra` for structured data), never
+  through a hint's `data`. `utils/__tests__/handleError.test.ts` checks this.
+- Treat an LLM `foodId` as a claim that the database must confirm. `trackMealWithThinking` runs
+  claimed ids through `normalizeAiMealIngredients` before splitting known from unknown ingredients,
+  and sends unconfirmed ones to estimation. `utils/__tests__/coachAITrackMealThinking.test.ts`
+  checks this. The prompt now says to omit `foodId` rather than leave it null.

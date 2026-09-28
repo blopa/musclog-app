@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import NutritionGoal, { type EatingPhase } from '@/database/models/NutritionGoal';
-import { NutritionGoalService } from '@/database/services';
+import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { normalizeNutritionGoalTargetWeight } from '@/utils/nutritionGoalHelpers';
 
 import { BATCH_SIZE } from './paginationConstants';

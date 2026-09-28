@@ -11,7 +11,7 @@ import { MenuButton } from '@/components/theme/MenuButton';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import { Supplement } from '@/database';
-import { SupplementService } from '@/database/services';
+import { SupplementService } from '@/database/services/SupplementService';
 import { useTheme } from '@/hooks/useTheme';
 import { showSnackbar } from '@/utils/snackbarService';
 

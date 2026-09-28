@@ -1,6 +1,7 @@
 import { Q } from '@nozbe/watermelondb';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import convert from 'convert';
+import { randomUUID } from 'expo-crypto';
 import { openDatabaseSync, type SQLiteDatabase } from 'expo-sqlite';
 
 import { ENCRYPTION_KEY } from '@/constants/database';
@@ -487,7 +488,7 @@ export class MigrationService {
             newUser.liftingExperience = this.mapLiftingExperience(oldUser.liftingExperience); // Map text to enum
             newUser.avatarIcon = undefined; // Not present in old schema
             newUser.avatarColor = undefined; // Not present in old schema
-            newUser.syncId = this.generateUUID(); // Generate new sync ID
+            newUser.syncId = randomUUID(); // Generate new sync ID
             newUser.externalAccountId = undefined; // Not present in old schema
             newUser.externalAccountProvider = undefined; // Not present in old schema
             newUser.createdAt = this.convertTimestamp(oldUser.createdAt);
@@ -1779,17 +1780,6 @@ export class MigrationService {
     }
 
     return 'beginner'; // Default fallback
-  }
-
-  /**
-   * Generate a simple UUID for sync ID
-   */
-  private generateUUID(): string {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      const r = (Math.random() * 16) | 0;
-      const v = c === 'x' ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
   }
 
   /**

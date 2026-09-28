@@ -57,7 +57,9 @@ import {
 } from '@/constants/chat';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { useUnreadChat } from '@/context/UnreadChatContext';
-import { ChatService, MuscleService, WorkoutService } from '@/database/services';
+import { ChatService } from '@/database/services/ChatService';
+import { MuscleService } from '@/database/services/MuscleService';
+import { WorkoutService } from '@/database/services/WorkoutService';
 import { AI_COACH_AVATAR, type ExtendedIMessage, useChatMessages } from '@/hooks/useChatMessages';
 import { useDebouncedSettings } from '@/hooks/useDebouncedSettings';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';

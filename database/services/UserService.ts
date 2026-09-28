@@ -1,4 +1,5 @@
 import { Q } from '@nozbe/watermelondb';
+import { randomUUID } from 'expo-crypto';
 
 import { database } from '@/database/database-instance';
 import User, {
@@ -15,7 +16,6 @@ import {
   getCurrentUserSyncId,
   setCurrentUserSyncId,
 } from '@/utils/currentUserStorage';
-import { generateUUID } from '@/utils/uuid';
 
 export class UserService {
   /**
@@ -96,7 +96,7 @@ export class UserService {
     }
 
     const now = Date.now();
-    const syncId = generateUUID(); // Generate UUID for cloud sync
+    const syncId = randomUUID(); // Generate UUID for cloud sync
 
     const user = await database.write(async () => {
       return await database.get<User>('users').create((u) => {
@@ -145,7 +145,7 @@ export class UserService {
     }
 
     // Generate and save sync_id
-    const syncId = generateUUID();
+    const syncId = randomUUID();
 
     await database.write(async () => {
       await user.update((u) => {

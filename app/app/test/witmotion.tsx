@@ -14,7 +14,7 @@ import Svg, { Line as SvgLine, Polyline, Rect as SvgRect, Text as SvgText } from
 
 import { MasterLayout } from '@/components/MasterLayout';
 import { Button } from '@/components/theme/Button';
-import { SettingsService } from '@/database/services';
+import { SettingsService } from '@/database/services/SettingsService';
 import type { WitMotionVector3 } from '@/modules/witmotion-ble';
 import { useWitMotion, witMotionClient } from '@/modules/witmotion-ble';
 import type {

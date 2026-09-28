@@ -5,12 +5,15 @@ const mockGetMetricsHistory = jest.fn();
 const mockGetRangeNutrients = jest.fn();
 const mockGetNutritionLogsForDateRange = jest.fn();
 
-// Mock the whole services barrel: this both supplies the services under test and prevents the
-// barrel's other members (DatabaseRepairService → adapter → @sentry/react-native) from loading.
-jest.mock('../../database/services', () => ({
+// Mocked per module: reaching the real ones pulls in the adapter and, through it,
+// @sentry/react-native.
+jest.mock('@/database/services/UserMetricService', () => ({
   UserMetricService: {
     getMetricsHistory: (...args: unknown[]) => mockGetMetricsHistory(...args),
   },
+}));
+
+jest.mock('@/database/services/NutritionService', () => ({
   NutritionService: {
     getRangeNutrients: (...args: unknown[]) => mockGetRangeNutrients(...args),
     getNutritionLogsForDateRange: (...args: unknown[]) => mockGetNutritionLogsForDateRange(...args),

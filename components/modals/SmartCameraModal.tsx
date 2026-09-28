@@ -1,3 +1,4 @@
+import { randomUUID } from 'expo-crypto';
 import { MessageSquareText } from 'lucide-react-native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,7 +14,7 @@ import {
 import type { CameraMode } from '@/constants/camera';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { type MealType } from '@/database/models';
-import { NutritionService } from '@/database/services';
+import { NutritionService } from '@/database/services/NutritionService';
 import { useBarcodeScanner } from '@/hooks/useBarcodeScanner';
 import {
   AI_PHOTO_QUALITY,
@@ -38,7 +39,6 @@ import {
 import { copyImageToDocumentDirectory, readFileAsStringAsync } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 import { showSnackbar } from '@/utils/snackbarService';
-import { generateUUID } from '@/utils/uuid';
 
 import { AddFoodModal } from './AddFoodModal';
 import { AINutritionTrackingContextModal } from './AINutritionTrackingContextModal';
@@ -586,7 +586,7 @@ export default function SmartCameraModal({
           portionGrams,
           isSingleFood
             ? { loggedMealName: selectedMealForLogging.name }
-            : { groupId: generateUUID(), loggedMealName: selectedMealForLogging.name }
+            : { groupId: randomUUID(), loggedMealName: selectedMealForLogging.name }
         );
 
         showSnackbar('success', t('food.aiCamera.mealLoggedSuccess'));

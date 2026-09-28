@@ -33,7 +33,7 @@ import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { ProgressIndicator } from '@/components/theme/ProgressIndicator';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { type Gender } from '@/database/models';
-import { UserService } from '@/database/services';
+import { UserService } from '@/database/services/UserService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useSyncTracking } from '@/hooks/useSyncTracking';

@@ -32,3 +32,14 @@ jest.mock('@/database/adapter', () => ({
 
 // `expo-localization` is stubbed by the manual mock in `__mocks__/`, which Jest applies
 // automatically to both the node and jsdom projects.
+jest.mock('expo-crypto', () => {
+  let counter = 0;
+  // Distinct per call: tests that generate several ids (chat groups, sync ids, optical
+  // payloads) must not silently collide on a constant.
+  return {
+    randomUUID: () => {
+      counter += 1;
+      return `00000000-0000-4000-a000-${String(counter).padStart(12, '0')}`;
+    },
+  };
+});

@@ -1,17 +1,25 @@
-import { NutritionService, SettingsService, WorkoutService } from '@/database/services';
+import { NutritionService } from '@/database/services/NutritionService';
+import { SettingsService } from '@/database/services/SettingsService';
+import { WorkoutService } from '@/database/services/WorkoutService';
 import {
   getNutritionLogHistoryPrompt,
   getWorkoutLogHistoryPrompt,
 } from '@/utils/coachPromptHistory';
 import { differenceInCalendarDays, startOfDay } from 'date-fns';
 
-jest.mock('@/database/services', () => ({
+jest.mock('@/database/services/NutritionService', () => ({
   NutritionService: { getNutritionLogsForDateRange: jest.fn() },
+}));
+
+jest.mock('@/database/services/SettingsService', () => ({
   SettingsService: {
     getNutritionLogHistoryDays: jest.fn(),
     getUnits: jest.fn(),
     getWorkoutHistoryDays: jest.fn(),
   },
+}));
+
+jest.mock('@/database/services/WorkoutService', () => ({
   WorkoutService: { getWorkoutHistory: jest.fn(), getWorkoutWithDetails: jest.fn() },
 }));
 

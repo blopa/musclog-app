@@ -9,12 +9,10 @@ import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
 import { WorkoutSummaryCelebration } from '@/components/WorkoutSummaryCelebration';
 import { useUnreadChat } from '@/context/UnreadChatContext';
 import type { WorkoutCompletedPayload } from '@/database/models/ChatMessage';
-import {
-  ChatService,
-  ExerciseGoalService,
-  WorkoutAnalytics,
-  WorkoutService,
-} from '@/database/services';
+import { ChatService } from '@/database/services/ChatService';
+import { ExerciseGoalService } from '@/database/services/ExerciseGoalService';
+import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
+import { WorkoutService } from '@/database/services/WorkoutService';
 import { useKeepScreenAwake } from '@/hooks/useKeepScreenAwake';
 import { useNativeShareText } from '@/hooks/useNativeShareText';
 import { useSettings } from '@/hooks/useSettings';

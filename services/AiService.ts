@@ -1,5 +1,5 @@
 import { GEMINI_MODELS } from '@/constants/ai';
-import { SettingsService } from '@/database/services';
+import { SettingsService } from '@/database/services/SettingsService';
 import { GatewayService } from '@/services/GatewayService';
 import type { CoachAIConfig } from '@/utils/coachAI';
 import { handleError } from '@/utils/handleError';

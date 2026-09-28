@@ -8,7 +8,7 @@ import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/Op
 import type { SelectorOption } from '@/components/theme/OptionsMultiSelector/utils';
 import { TextInput } from '@/components/theme/TextInput';
 import FoodPortion from '@/database/models/FoodPortion';
-import { FoodPortionService } from '@/database/services';
+import { FoodPortionService } from '@/database/services/FoodPortionService';
 import { useFoodPortions } from '@/hooks/useFoodPortions';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';

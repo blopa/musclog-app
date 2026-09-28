@@ -1,11 +1,9 @@
 import { Dumbbell } from 'lucide-react-native';
 
-import {
-  ChatService,
-  ExerciseService,
-  WorkoutAnalytics,
-  WorkoutService,
-} from '@/database/services';
+import { ChatService } from '@/database/services/ChatService';
+import { ExerciseService } from '@/database/services/ExerciseService';
+import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
+import { WorkoutService } from '@/database/services/WorkoutService';
 import {
   type ExerciseInWorkout,
   type PlanTemplateInput,

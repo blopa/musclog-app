@@ -2,7 +2,8 @@ import { Q } from '@nozbe/watermelondb';
 import { differenceInCalendarDays } from 'date-fns';
 import { Platform } from 'react-native';
 
-import { database } from '@/database';
+import { REPAIR_DESCRIPTORS } from '@/constants/database';
+import { database } from '@/database/database-instance';
 import { dayRangeClauses } from '@/database/dayKeyQuery';
 import {
   decryptNumber,
@@ -12,6 +13,7 @@ import {
 import Food from '@/database/models/Food';
 import NutritionLog, { MealType } from '@/database/models/NutritionLog';
 import { getNutritionDayCoverage, loggedOrFastedDayKeys } from '@/database/nutritionDayCoverage';
+import { fetchMapByIds } from '@/database/queryByIds';
 import { MealService } from '@/database/services/MealService';
 import i18n from '@/lang/lang';
 import { writeNutritionLogToHealthConnect } from '@/services/healthConnectNutrition';
@@ -31,11 +33,16 @@ import { handleError } from '@/utils/handleError';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
 import { widgetEvents } from '@/utils/widgetEvents';
 
-import {
-  DatabaseRepairService,
-  REPAIR_DESCRIPTORS,
-  retryAfterRepair,
-} from './DatabaseRepairService';
+import { DatabaseRepairService, retryAfterRepair } from './DatabaseRepairService';
+
+/**
+ * The live (non-soft-deleted) foods for `foodIds`, keyed by id. Soft deletion is filtered
+ * in SQL rather than after the fetch, so a caller can never forget the `deletedAt` check,
+ * and the lookup is chunked so a large id list cannot blow SQLite's parameter limit.
+ */
+function fetchLiveFoodsByIds(foodIds: readonly string[]): Promise<Map<string, Food>> {
+  return fetchMapByIds<Food>('foods', 'id', foodIds, Q.where('deleted_at', Q.eq(null)));
+}
 
 function triggerWidgetUpdate(): void {
   widgetEvents.emitNutritionWidgetUpdate();
@@ -968,21 +975,18 @@ export class NutritionService {
 
     const foodIds = [...mostRecentLogByFoodId.keys()].slice(0, limit);
 
+    const foodMap = await fetchLiveFoodsByIds(foodIds);
+
     const settled = await Promise.all(
       foodIds.map(async (foodId) => {
-        try {
-          const food = await database.get<Food>('foods').find(foodId);
-          if (food.deletedAt) {
-            return null;
-          }
-
-          const log = mostRecentLogByFoodId.get(foodId)!;
-          const lastGramWeight = await log.getGramWeight();
-          return { food, lastGramWeight };
-        } catch {
-          // Food might have been deleted, skip
+        const food = foodMap.get(foodId);
+        if (!food) {
           return null;
         }
+
+        const log = mostRecentLogByFoodId.get(foodId)!;
+        const lastGramWeight = await log.getGramWeight();
+        return { food, lastGramWeight };
       })
     );
 
@@ -1110,16 +1114,13 @@ export class NutritionService {
       .sort((a, b) => b[1] - a[1])
       .slice(0, limit);
 
-    const results: { food: Food; count: number }[] = [];
+    const foodsMap = await fetchLiveFoodsByIds(sortedFoods.map(([foodId]) => foodId));
 
+    const results: { food: Food; count: number }[] = [];
     for (const [foodId, count] of sortedFoods) {
-      try {
-        const food = await database.get<Food>('foods').find(foodId);
-        if (!food.deletedAt) {
-          results.push({ food, count });
-        }
-      } catch (error) {
-        // Food might have been deleted, skip
+      const food = foodsMap.get(foodId);
+      if (food) {
+        results.push({ food, count });
       }
     }
 
@@ -1149,16 +1150,13 @@ export class NutritionService {
       .sort((a, b) => b[1] - a[1])
       .slice(0, limit);
 
-    const results: { food: Food; count: number }[] = [];
+    const foodsMap = await fetchLiveFoodsByIds(sortedFoods.map(([foodId]) => foodId));
 
+    const results: { food: Food; count: number }[] = [];
     for (const [foodId, count] of sortedFoods) {
-      try {
-        const food = await database.get<Food>('foods').find(foodId);
-        if (!food.deletedAt) {
-          results.push({ food, count });
-        }
-      } catch (error) {
-        // Food might have been deleted, skip
+      const food = foodsMap.get(foodId);
+      if (food) {
+        results.push({ food, count });
       }
     }
 
@@ -1419,31 +1417,38 @@ export class NutritionService {
       foodId?: string;
     },
   >(ingredients: T[]): Promise<T[]> {
-    return Promise.all(
-      ingredients.map(async (ingredient) => {
-        if (!ingredient.foodId) {
-          return ingredient;
-        }
-        try {
-          const food = await database.get<Food>('foods').find(ingredient.foodId);
-          const scale = ingredient.grams / 100;
-          return {
-            ...ingredient,
-            kcal: roundToDecimalPlaces((food.calories ?? 0) * scale),
-            protein: roundToDecimalPlaces((food.protein ?? 0) * scale),
-            carbs: roundToDecimalPlaces((food.carbs ?? 0) * scale),
-            fat: roundToDecimalPlaces((food.fat ?? 0) * scale),
-            fiber: roundToDecimalPlaces((food.fiber ?? 0) * scale),
-          };
-        } catch (error) {
-          handleError(error, 'NutritionService.normalizeAiMealIngredients');
-          // Food not found — fall back to LLM values and strip the invalid foodId
-          // so callers create a custom food instead of linking a missing record.
-          const { foodId: _, ...rest } = ingredient;
-          return rest as T;
-        }
-      })
+    // Deliberately unguarded: a failed lookup must reject rather than leave `foodMap`
+    // empty, which would strip every ingredient's foodId at once. Foundation-food matches
+    // arrive with zero macros and rely on this lookup for real values, so silently
+    // treating them all as "missing" would log the whole meal at 0 kcal.
+    const foodMap = await fetchLiveFoodsByIds(
+      ingredients.map((ingredient) => ingredient.foodId).filter((id): id is string => Boolean(id))
     );
+
+    return ingredients.map((ingredient) => {
+      if (!ingredient.foodId) {
+        return ingredient;
+      }
+
+      const food = foodMap.get(ingredient.foodId);
+
+      if (!food) {
+        // Food not found — fall back to LLM values and strip the invalid foodId
+        // so callers create a custom food instead of linking a missing record.
+        const { foodId: _, ...rest } = ingredient;
+        return rest as T;
+      }
+
+      const scale = ingredient.grams / 100;
+      return {
+        ...ingredient,
+        kcal: roundToDecimalPlaces((food.calories ?? 0) * scale),
+        protein: roundToDecimalPlaces((food.protein ?? 0) * scale),
+        carbs: roundToDecimalPlaces((food.carbs ?? 0) * scale),
+        fat: roundToDecimalPlaces((food.fat ?? 0) * scale),
+        fiber: roundToDecimalPlaces((food.fiber ?? 0) * scale),
+      };
+    });
   }
 
   /**
@@ -1470,47 +1475,47 @@ export class NutritionService {
     const logs = await database.write(async () => {
       const createdLogs: NutritionLog[] = [];
 
-      for (const ingredient of ingredients) {
-        // If foodId is provided, find the food and create a log snapshot
-        if (ingredient.foodId) {
-          try {
-            const food = await database.get<Food>('foods').find(ingredient.foodId);
-            const encrypted = await encryptNutritionLogSnapshot({
-              loggedFoodName: food.name ?? ingredient.name,
-              loggedCalories: food.calories ?? 0,
-              loggedProtein: food.protein ?? 0,
-              loggedCarbs: food.carbs ?? 0,
-              loggedFat: food.fat ?? 0,
-              loggedFiber: food.fiber ?? 0,
-              loggedMicros: food.micros,
-            });
+      // Pre-fetch every referenced food in one batched query to avoid N+1 lookups.
+      const foodsMap = await fetchLiveFoodsByIds(
+        ingredients.map((ingredient) => ingredient.foodId).filter((id): id is string => Boolean(id))
+      );
 
-            const log = await database.get<NutritionLog>('nutrition_logs').create((record) => {
-              record.foodId = food.id;
-              record.date = consumed.timestamp;
-              record.timezone = consumed.timezone;
-              record.type = mealType;
-              record.amount = ingredient.grams;
-              record.loggedFoodNameRaw = encrypted.loggedFoodName;
-              record.loggedCaloriesRaw = encrypted.loggedCalories;
-              record.loggedProteinRaw = encrypted.loggedProtein;
-              record.loggedCarbsRaw = encrypted.loggedCarbs;
-              record.loggedFatRaw = encrypted.loggedFat;
-              record.loggedFiberRaw = encrypted.loggedFiber;
-              record.loggedMicrosRaw = encrypted.loggedMicrosJson;
-              record.snapshotBasis = food.resolvedNutritionBasis;
-              record.groupId = options?.groupId;
-              record.loggedMealName = options?.loggedMealName;
-              record.createdAt = now;
-              record.updatedAt = now;
-            });
-            createdLogs.push(log);
-            continue;
-          } catch (error) {
-            console.warn(
-              `[NutritionService] Could not find food with ID ${ingredient.foodId}, falling back to custom food creation.`
-            );
-          }
+      for (const ingredient of ingredients) {
+        // A known food logs a snapshot of the stored record; anything else falls through
+        // to the custom-food path below.
+        const food = ingredient.foodId ? foodsMap.get(ingredient.foodId) : undefined;
+        if (food) {
+          const encrypted = await encryptNutritionLogSnapshot({
+            loggedFoodName: food.name ?? ingredient.name,
+            loggedCalories: food.calories ?? 0,
+            loggedProtein: food.protein ?? 0,
+            loggedCarbs: food.carbs ?? 0,
+            loggedFat: food.fat ?? 0,
+            loggedFiber: food.fiber ?? 0,
+            loggedMicros: food.micros,
+          });
+
+          const log = await database.get<NutritionLog>('nutrition_logs').create((record) => {
+            record.foodId = food.id;
+            record.date = consumed.timestamp;
+            record.timezone = consumed.timezone;
+            record.type = mealType;
+            record.amount = ingredient.grams;
+            record.loggedFoodNameRaw = encrypted.loggedFoodName;
+            record.loggedCaloriesRaw = encrypted.loggedCalories;
+            record.loggedProteinRaw = encrypted.loggedProtein;
+            record.loggedCarbsRaw = encrypted.loggedCarbs;
+            record.loggedFatRaw = encrypted.loggedFat;
+            record.loggedFiberRaw = encrypted.loggedFiber;
+            record.loggedMicrosRaw = encrypted.loggedMicrosJson;
+            record.snapshotBasis = food.resolvedNutritionBasis;
+            record.groupId = options?.groupId;
+            record.loggedMealName = options?.loggedMealName;
+            record.createdAt = now;
+            record.updatedAt = now;
+          });
+          createdLogs.push(log);
+          continue;
         }
 
         // Per-100g macros with carbs normalized from the LLM's net convention to canonical total.

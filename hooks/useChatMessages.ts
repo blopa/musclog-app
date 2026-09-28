@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { randomUUID } from 'expo-crypto';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IMessage } from 'react-native-gifted-chat';
@@ -28,15 +29,13 @@ import ChatMessage, {
   type TrackMealPayload,
   type WorkoutPlanPayload,
 } from '@/database/models/ChatMessage';
-import {
-  AiCustomPromptService,
-  ChatService,
-  NutritionGoalService,
-  NutritionService,
-  SettingsService,
-  UserMetricService,
-  UserService,
-} from '@/database/services';
+import { AiCustomPromptService } from '@/database/services/AiCustomPromptService';
+import { ChatService } from '@/database/services/ChatService';
+import { NutritionGoalService } from '@/database/services/NutritionGoalService';
+import { NutritionService } from '@/database/services/NutritionService';
+import { SettingsService } from '@/database/services/SettingsService';
+import { UserMetricService } from '@/database/services/UserMetricService';
+import { UserService } from '@/database/services/UserService';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import AiService from '@/services/AiService';
 import {
@@ -63,7 +62,6 @@ import { handleError } from '@/utils/handleError';
 import { processMealPlanResponse } from '@/utils/nutritionAI';
 import { calculateNutritionPlan, eatingPhaseToWeightGoal } from '@/utils/nutritionCalculator';
 import { roundToDecimalPlaces } from '@/utils/roundDecimal';
-import { generateUUID } from '@/utils/uuid';
 import { buildWorkoutCompletedSummaryForLLM, processWorkoutPlanResponse } from '@/utils/workoutAI';
 
 // Local avatar image for Loggy
@@ -956,7 +954,7 @@ export function useChatMessages(
         );
       } else {
         await NutritionService.logCustomMealsBatch(scaledIngredients, date, logMealType, {
-          groupId: generateUUID(),
+          groupId: randomUUID(),
           loggedMealName: mealName,
           imageUrl: savedImageUri,
         });

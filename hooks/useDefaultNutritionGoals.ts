@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { NutritionGoals } from '@/components/NutritionGoalsBody';
 import { EatingPhase, FitnessGoal, Gender, LiftingExperience } from '@/database/models';
-import { UserMetricService } from '@/database/services';
+import { UserMetricService } from '@/database/services/UserMetricService';
 import { useSettings } from '@/hooks/useSettings';
 import {
   calculateNutritionPlan,

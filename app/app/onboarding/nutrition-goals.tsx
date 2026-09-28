@@ -11,11 +11,9 @@ import { NutritionGoals, NutritionGoalsBody } from '@/components/NutritionGoalsB
 import { Button } from '@/components/theme/Button';
 import { TEMP_NUTRITION_PLAN } from '@/constants/misc';
 import { EatingPhase } from '@/database/models';
-import {
-  NutritionCheckinService,
-  NutritionGoalService,
-  UserMetricService,
-} from '@/database/services';
+import { NutritionCheckinService } from '@/database/services/NutritionCheckinService';
+import { NutritionGoalService } from '@/database/services/NutritionGoalService';
+import { UserMetricService } from '@/database/services/UserMetricService';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useSettings } from '@/hooks/useSettings';

@@ -12,7 +12,7 @@ import { LineChart } from '@/components/charts/LineChart';
 import { Button } from '@/components/theme/Button';
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
-import { UserMetricService } from '@/database/services';
+import { UserMetricService } from '@/database/services/UserMetricService';
 import { useDateFnsLocale } from '@/hooks/useDateFnsLocale';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';

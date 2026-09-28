@@ -15,19 +15,17 @@ import { TextInput } from '@/components/theme/TextInput';
 import type { Units } from '@/constants/settings';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { database } from '@/database';
-import {
-  ChatService,
-  ExerciseService,
-  FoodPortionService,
-  FoodService,
-  MealService,
-  NutritionCheckinService,
-  NutritionGoalService,
-  NutritionService,
-  UserMetricService,
-  WorkoutService,
-  WorkoutTemplateService,
-} from '@/database/services';
+import { ChatService } from '@/database/services/ChatService';
+import { ExerciseService } from '@/database/services/ExerciseService';
+import { FoodPortionService } from '@/database/services/FoodPortionService';
+import { FoodService } from '@/database/services/FoodService';
+import { MealService } from '@/database/services/MealService';
+import { NutritionCheckinService } from '@/database/services/NutritionCheckinService';
+import { NutritionGoalService } from '@/database/services/NutritionGoalService';
+import { NutritionService } from '@/database/services/NutritionService';
+import { UserMetricService } from '@/database/services/UserMetricService';
+import { WorkoutService } from '@/database/services/WorkoutService';
+import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 import { useChatMessageDataLogs } from '@/hooks/useChatMessageDataLogs';
 import { useExerciseDataLogs } from '@/hooks/useExerciseDataLogs';
 import { useFoodDataLogs } from '@/hooks/useFoodDataLogs';

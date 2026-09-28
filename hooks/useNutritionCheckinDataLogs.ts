@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type NutritionCheckin from '@/database/models/NutritionCheckin';
-import { NutritionCheckinService } from '@/database/services';
+import { NutritionCheckinService } from '@/database/services/NutritionCheckinService';
 
 import { BATCH_SIZE } from './paginationConstants';
 import { useDateFnsLocale } from './useDateFnsLocale';

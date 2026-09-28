@@ -90,6 +90,8 @@ assert patch_binary_data(archive).patched_commands == 0
     expect(source('plugins/withIosSimulatorBuildFix.js')).toContain(
       "system('python3', '-B', script_path)"
     );
-    expect(source('ios/Podfile')).toContain("system('python3', '-B', script_path)");
+    // expect(source('ios/Podfile')).toContain("system('python3', '-B', script_path)");
+    // ios/Podfile is not asserted: the plugin only injects the block when prebuild runs on an
+    // Apple Silicon Mac, so a committed Podfile from any other host rightly lacks it.
   });
 });

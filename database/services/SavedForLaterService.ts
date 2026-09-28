@@ -1,5 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 
+import { REPAIR_DESCRIPTORS } from '@/constants/database';
 import { database } from '@/database';
 import { encryptOptionalString } from '@/database/encryptionHelpers';
 import NutritionLog, { MealType } from '@/database/models/NutritionLog';
@@ -9,7 +10,7 @@ import { consumedDateTimeOnDay } from '@/utils/calendarDate';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { widgetEvents } from '@/utils/widgetEvents';
 
-import { REPAIR_DESCRIPTORS, retryAfterRepair } from './DatabaseRepairService';
+import { retryAfterRepair } from './DatabaseRepairService';
 
 function triggerWidgetUpdate(): void {
   widgetEvents.emitNutritionWidgetUpdate();

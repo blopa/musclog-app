@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { DEFAULT_BATCH_SIZE } from '@/constants/database';
 import { WorkoutTemplateRepository } from '@/database';
-import { WorkoutTemplateService } from '@/database/services';
+import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 
 export type WorkoutTemplateWithMetadata = {
   id: string;

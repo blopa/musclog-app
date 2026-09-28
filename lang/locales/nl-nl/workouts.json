@@ -229,7 +229,8 @@
       "discardConfirmTitle": "Workout weggooien?",
       "discardConfirmMessage": "Dit zal je workout in uitvoering en alle gelogde sets permanent verwijderen.",
       "discardConfirm": "Weggooien",
-      "discardCancel": "Behouden"
+      "discardCancel": "Behouden",
+      "alreadyActive": "Je hebt al een training bezig. Hervat of verwijder die eerst."
     },
     "unnamed": "Naamloos"
   }

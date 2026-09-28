@@ -50,3 +50,23 @@ export function buildLegacyExerciseImagePath(exerciseNumber: number): string {
 export function buildLegacyExerciseCloudUrl(exerciseNumber: number): string {
   return `https://musclog.app${buildLegacyExerciseImagePath(exerciseNumber)}`;
 }
+
+/**
+ * Flattens an exercise image URL into a single cache filename.
+ *
+ * Catalogue photos live at `.../exercises/<slug>/<frame>.webp`, so the bare filename is
+ * `0.webp` for every exercise in the catalogue — keying the cache on it (as this module
+ * did while images were `exercise<N>.png`) would collapse all 873 exercises onto one
+ * cached file and show a single photo everywhere. Keep enough of the path to stay unique.
+ */
+export function exerciseImageCacheKey(cloudUrl: string): null | string {
+  const withoutQuery = cloudUrl.split(/[?#]/)[0];
+  const segments = withoutQuery.split('/').filter(Boolean);
+  const relevant = segments.slice(-2);
+
+  if (relevant.length === 0 || !relevant[relevant.length - 1]) {
+    return null;
+  }
+
+  return relevant.join('__').replace(/[^A-Za-z0-9._-]/g, '_');
+}

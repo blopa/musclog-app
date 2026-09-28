@@ -4,19 +4,17 @@ import type { DataLogModalVariant } from '@/components/modals/DataLogModal';
 import type { Units } from '@/constants/settings';
 import type { EquipmentType, MealType, MechanicType } from '@/database/models';
 import type UserMetric from '@/database/models/UserMetric';
-import {
-  ChatService,
-  ExerciseService,
-  FoodPortionService,
-  FoodService,
-  MealService,
-  NutritionCheckinService,
-  NutritionGoalService,
-  NutritionService,
-  UserMetricService,
-  WorkoutService,
-  WorkoutTemplateService,
-} from '@/database/services';
+import { ChatService } from '@/database/services/ChatService';
+import { ExerciseService } from '@/database/services/ExerciseService';
+import { FoodPortionService } from '@/database/services/FoodPortionService';
+import { FoodService } from '@/database/services/FoodService';
+import { MealService } from '@/database/services/MealService';
+import { NutritionCheckinService } from '@/database/services/NutritionCheckinService';
+import { NutritionGoalService } from '@/database/services/NutritionGoalService';
+import { NutritionService } from '@/database/services/NutritionService';
+import { UserMetricService } from '@/database/services/UserMetricService';
+import { WorkoutService } from '@/database/services/WorkoutService';
+import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
 import { localDayStartFromUtcMs } from '@/utils/calendarDate';
 import { getCurrentTimezone, isTimezoneOffset } from '@/utils/timezone';
 import {
