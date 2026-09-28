@@ -216,6 +216,18 @@ native step ran. `cli.version` is therefore a major-only floor (`>= N.0.0`) that
 `eas.json` starts using a feature that needs it; `utils/__tests__/easNodeVersion.test.ts` enforces
 the shape.
 
+## Local Android builds fail on JDK 25
+
+After a Fedora update left JDK 25 as the only installed Java, every local Android build failed in
+Gradle with `Error resolving plugin [id: 'com.facebook.react.settings'] > 25.0.4.1` — the message is
+just the Java version string, because Gradle 8.13 (pinned by `plugins/withGradleVersion`) cannot run
+on Java 25. Android Studio's bundled JBR is also 25, so it is no fallback. Android builds need JDK
+17 or 21. `scripts/run-eas-local-android-build.sh` keeps a `JAVA_HOME` that is already 17/21,
+otherwise picks one from `~/.jdks/jdk-17*`/`jdk-21*` or `/usr/lib/jvm`, and exits with an install
+hint when there is none. The EAS working copy also has no `local.properties`, so the script defaults
+`ANDROID_HOME` to `~/Android/Sdk` (Android Studio's location) when it is unset — otherwise Gradle
+stops with `SDK location not found` right after the JDK check passes. Revisit when Gradle moves to 9.1+, which supports Java 25.
+
 ## Android release optimization
 
 `app.json` enables both `enableMinifyInReleaseBuilds` and
