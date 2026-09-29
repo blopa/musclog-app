@@ -11,7 +11,7 @@ import {
 } from 'lucide-react-native';
 
 import { ActionButtonTone } from '@/components/ActionButton';
-import { HomeActionKey } from '@/constants/homeActions';
+import { DEFAULT_HOME_ACTIONS, HomeActionKey, MIN_HOME_ACTIONS } from '@/constants/homeActions';
 
 export type HomeActionConfig = {
   labelKey: string;
@@ -83,6 +83,14 @@ export function isHomeActionAvailable(
     return false; // Hidden until plan 08 ships
   }
 
+  // The app has no weight-entry UI to send this anywhere: the only way to record a weight
+  // is Profile -> Edit Fitness Details, a seven-field form. The action shipped wired to the
+  // Day Summary goals menu, which is not what its label promises, so it stays hidden until
+  // it has a destination of its own.
+  if (key === 'log_weight') {
+    return false;
+  }
+
   return true;
 }
 
@@ -104,6 +112,36 @@ export function homeActionListLabel(label: string): string {
  * after the provider was removed, a camera action on web) is dropped, so the list never
  * advertises a button the home screen would filter out anyway.
  */
+/**
+ * Drop chosen actions this device cannot offer, then top up to `MIN_HOME_ACTIONS` from the
+ * ones it can.
+ *
+ * A stored selection outlives its own availability: the AI provider gets removed, the same
+ * database is opened on web where the camera actions do not exist, or an action is retired
+ * from the catalogue entirely (`log_weight`, until it has somewhere to go). Filtering alone
+ * would leave the home row below its floor and the picker showing fewer chosen rows than
+ * its counter claims, so the gap is filled rather than left.
+ */
+export function reconcileHomeActions(
+  selected: readonly HomeActionKey[],
+  available: readonly HomeActionKey[]
+): HomeActionKey[] {
+  const kept = selected.filter((key) => available.includes(key));
+  // Same-reference-means-unchanged, as `toggleHomeAction` does, so a caller can tell a
+  // reconciliation that needs persisting from one that does not.
+  if (kept.length >= MIN_HOME_ACTIONS) {
+    return kept.length === selected.length ? (selected as HomeActionKey[]) : kept;
+  }
+
+  // Defaults first, so a topped-up row looks like a fresh install rather than whatever
+  // happens to sort earliest in the catalogue.
+  const topUp = [...new Set([...DEFAULT_HOME_ACTIONS, ...available])].filter(
+    (key) => available.includes(key) && !kept.includes(key)
+  );
+
+  return [...kept, ...topUp].slice(0, MIN_HOME_ACTIONS);
+}
+
 export function orderHomeActionRows(
   selected: readonly HomeActionKey[],
   available: readonly HomeActionKey[]

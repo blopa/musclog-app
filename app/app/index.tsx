@@ -16,7 +16,11 @@ import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { DailySummaryBottomMenu } from '@/components/DailySummaryBottomMenu';
 import { DailyHomeFooter } from '@/components/home/DailyHomeFooter';
 import { DailyHomeSummary } from '@/components/home/DailyHomeSummary';
-import { HOME_ACTIONS, isHomeActionAvailable } from '@/components/home/homeActions';
+import {
+  HOME_ACTIONS,
+  isHomeActionAvailable,
+  reconcileHomeActions,
+} from '@/components/home/homeActions';
 import { WeeklyHomeSummary } from '@/components/home/WeeklyHomeSummary';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AddFoodModal } from '@/components/modals/AddFoodModal';
@@ -36,7 +40,7 @@ import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import DashedButton from '@/components/theme/DashedButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '@/components/WorkoutFoodEmptyState';
-import { HomeActionKey } from '@/constants/homeActions';
+import { HOME_ACTION_KEYS, HomeActionKey } from '@/constants/homeActions';
 import { isStaticExport } from '@/constants/platform';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { type CameraMode, useSmartCamera } from '@/context/SmartCameraContext';
@@ -266,7 +270,7 @@ export default function HomeScreen() {
         setIsAddFoodVisible(false);
         openCamera({ mode: 'ai-meal-photo' });
       },
-      log_weight: () => setIsDailySummaryMenuVisible(true),
+      log_weight: () => {}, // TODO: no weight-entry UI to open yet; gated off in isHomeActionAvailable
       my_meals: () => setIsMyMealsVisible(true),
       add_note: () => router.navigate('/app/notes'),
       log_cardio: () => {}, // TODO
@@ -274,10 +278,13 @@ export default function HomeScreen() {
     [router, openCamera]
   );
 
+  // Reconciled, not just filtered: a stored action this device cannot offer would otherwise
+  // leave the row short, so the gap is topped up rather than rendered as a hole.
   const availableHomeActions = useMemo(() => {
-    return homeActions.filter((key) =>
+    const available = HOME_ACTION_KEYS.filter((key) =>
       isHomeActionAvailable(key, { isAiConfigured, platform: Platform.OS })
     );
+    return reconcileHomeActions(homeActions, available);
   }, [homeActions, isAiConfigured]);
 
   // Memoize modal action handlers

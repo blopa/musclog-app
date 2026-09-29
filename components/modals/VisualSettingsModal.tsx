@@ -15,7 +15,7 @@ import {
   Wine,
   Zap,
 } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Text, View } from 'react-native';
 
@@ -25,6 +25,7 @@ import {
   HOME_ACTIONS,
   homeActionListLabel,
   isHomeActionAvailable,
+  reconcileHomeActions,
 } from '@/components/home/homeActions';
 import { HomeActionsPicker } from '@/components/home/HomeActionsPicker';
 import { NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
@@ -115,6 +116,14 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   const [homeActionsPopupVisible, setHomeActionsPopupVisible] = useState(false);
   const [selectedHomeActions, setSelectedHomeActions] = useState<HomeActionKey[]>([]);
 
+  const availableHomeActions = useMemo(
+    () =>
+      HOME_ACTION_KEYS.filter((key) =>
+        isHomeActionAvailable(key, { isAiConfigured, platform: Platform.OS })
+      ),
+    [isAiConfigured]
+  );
+
   useEffect(() => {
     if (!visible) {
       return;
@@ -124,9 +133,17 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     });
     SettingsService.getHomeSummaryCard().then(setHomeSummaryCard);
     SettingsService.getHomeActions().then((raw) => {
-      setSelectedHomeActions(parseHomeActions(raw));
+      // Persisted, not just displayed: the home screen reconciles the same way, so leaving
+      // the stored value stale would let the picker and the home row disagree until the
+      // user happened to tap something.
+      const stored = parseHomeActions(raw);
+      const reconciled = reconcileHomeActions(stored, availableHomeActions);
+      setSelectedHomeActions(reconciled);
+      if (reconciled !== stored) {
+        void SettingsService.setHomeActions(reconciled);
+      }
     });
-  }, [visible]);
+  }, [visible, availableHomeActions]);
 
   const handleThemeChange = async (option: ThemeOption) => {
     setThemePopupVisible(false);
@@ -166,17 +183,14 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     await SettingsService.setHomeActions(keys);
   };
 
-  const availableHomeActions = HOME_ACTION_KEYS.filter((key) =>
-    isHomeActionAvailable(key, { isAiConfigured, platform: Platform.OS })
-  );
-
   /** The settings row names the chosen actions, so the sheet is only needed to change them. */
   const homeActionsSummary = (): string => {
-    const chosen = selectedHomeActions.filter((key) => availableHomeActions.includes(key));
-    if (chosen.length === 0) {
+    if (selectedHomeActions.length === 0) {
       return t('settings.homeActions.editActions');
     }
-    return chosen.map((key) => homeActionListLabel(t(HOME_ACTIONS[key].labelKey))).join(', ');
+    return selectedHomeActions
+      .map((key) => homeActionListLabel(t(HOME_ACTIONS[key].labelKey)))
+      .join(', ');
   };
 
   const currentSlots = rawSlots;
