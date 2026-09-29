@@ -223,6 +223,12 @@ and its uppercase label under it. The component reads no theme of its own; the c
 `StatStripPalette` so the same row works on a plain card and on the hero gradient. Do not draw a
 second variant of this row.
 
+On the hero gradient that palette's fill is `colorfulCard.panel`, the one translucent surface that
+sits on the gradient itself. It washes away from the card's ink — towards the scrim under light
+ink, towards white under dark ink — so an inset panel can never read worse than the bare card
+underneath it. Do not substitute a fixed scrim: `background.scrim30` darkened the four dark-ink
+themes into a grey slab and dropped their supporting ink under AA.
+
 Use the existing `FullScreenModal`, `CenteredModal`, `BottomPopUp`, and platform variants. A modal
 that opens another modal must follow the presenter rules in `FIXES.md`; visual nesting and React
 tree ownership are separate concerns. Modal headers sit on the modal's own surface — none of the

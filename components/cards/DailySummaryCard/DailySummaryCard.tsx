@@ -527,7 +527,7 @@ export function DailySummaryCard({
                   valueStyle: intuitiveMode ? blurFilter(4) : undefined,
                 }))}
                 palette={{
-                  background: theme.colors.background.scrim30,
+                  background: theme.colors.colorfulCard.panel,
                   border: theme.colors.colorfulCard.ink30,
                   label: theme.colors.colorfulCard.ink70,
                   unit: theme.colors.colorfulCard.ink70,
