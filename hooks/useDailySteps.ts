@@ -14,10 +14,13 @@ import { localDayHalfOpenRange } from '@/utils/calendarDate';
  * in-place `prepareUpdate` on a record that is already in the result set. A plain
  * `observe()` only emits when records enter or leave that set, so the home screen
  * would show the day's first reading and then never move.
+ *
+ * `null` means "no reading" — before the first emission, on web, and on a device that has
+ * not granted the Steps permission. The one consumer draws nothing in all three cases, so
+ * there is deliberately no separate loading flag to distinguish them.
  */
-export function useDailySteps(date: Date) {
+export function useDailySteps(date: Date): null | number {
   const [steps, setSteps] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
@@ -42,7 +45,6 @@ export function useDailySteps(date: Date) {
         const publish = (value: number | null) => {
           if (active && emission === latestEmission) {
             setSteps(value);
-            setIsLoading(false);
           }
         };
 
@@ -67,5 +69,5 @@ export function useDailySteps(date: Date) {
     };
   }, [date]);
 
-  return { steps, isLoading };
+  return steps;
 }

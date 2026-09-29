@@ -67,7 +67,20 @@ describe('buildDailyStatCells', () => {
       energyBalance: balance({ direction: 'surplus' }),
     });
 
-    expect(cells.find((cell) => cell.key === 'balance')?.labelKey).toBe('surplus');
+    expect(cells.find((cell) => cell.key === 'balance')?.labelKey).toBe('home.dailyStats.surplus');
+  });
+
+  // Whole keys, not suffixes the renderer completes: a `t(`home.dailyStats.${suffix}`)`
+  // at the call site is invisible to a grep and to the translation checker.
+  it('names every label as a complete translation key', () => {
+    const cells = buildDailyStatCells({ steps: 8241, energyBalance: balance() });
+
+    expect(cells.map((cell) => cell.labelKey)).toEqual([
+      'home.dailyStats.steps',
+      'home.dailyStats.burned',
+      'home.dailyStats.eaten',
+      'home.dailyStats.deficit',
+    ]);
   });
 
   // Three numbers in one row, all in kcal: labelling only the last one read as though the

@@ -5,12 +5,18 @@ import { DailySummaryEmptyState } from '@/components/cards/DailySummaryCard/Dail
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
-import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
+import type { DailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
 import { useNutritionLogs } from '@/hooks/useNutritionLogs';
 import { useTheme } from '@/hooks/useTheme';
 
 type DailyHomeSummaryProps = {
   date: Date;
+  /**
+   * Today's nutrition, subscribed once by the home screen and passed down. The card and
+   * the stat strip below it both need it, and `useDailyNutritionSummary` is two live
+   * queries — so it has one owner rather than one per consumer.
+   */
+  summary: DailyNutritionSummary;
   intuitiveEatingMode: boolean;
   nutritionDisplay: string;
   onOpenMenu: () => void;
@@ -19,6 +25,7 @@ type DailyHomeSummaryProps = {
 
 export function DailyHomeSummary({
   date,
+  summary,
   intuitiveEatingMode,
   nutritionDisplay,
   onOpenMenu,
@@ -31,7 +38,7 @@ export function DailyHomeSummary({
     secondaryNutrients: dailySecondaryNutrients,
     nutritionGoal,
     isLoading: isLoadingNutritionSummary,
-  } = useDailyNutritionSummary({ date });
+  } = summary;
 
   const weeklyRange = useMemo(() => {
     const end = new Date(date);

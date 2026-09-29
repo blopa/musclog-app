@@ -2,11 +2,7 @@ import { Q } from '@nozbe/watermelondb';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 
 import { GEMINI_MODELS } from '@/constants/ai';
-import {
-  DEFAULT_HOME_ACTIONS,
-  type HomeActionKey,
-  parseHomeActions,
-} from '@/constants/homeActions';
+import { type HomeActionKey, parseHomeActions } from '@/constants/homeActions';
 import { isStaticExport } from '@/constants/platform';
 import {
   ADVANCED_DATA_MANAGEMENT_SETTING_TYPE,
@@ -144,10 +140,35 @@ type SettingsState = {
   nutritionLogHistoryDays: NutritionLogHistoryDays;
   workoutHistoryDays: WorkoutHistoryDays;
   homeSummaryCard: HomeSummaryCard;
-  homeActions: HomeActionKey[];
+  /**
+   * The raw stored setting, NOT the parsed array.
+   *
+   * Every field of `SettingsState` has to be a primitive: the observer below only commits
+   * a new state object when `prev[k] !== next[k]`, so a field that is freshly allocated on
+   * every derivation makes that check permanently true and re-renders every
+   * `useSettings()` consumer on any settings write. `homeActions` is parsed out of this
+   * once, in a `useMemo` on the context value.
+   */
+  homeActionsRaw: string;
   showHomeSteps: boolean;
   isLoading: boolean;
 };
+
+/**
+ * Compile-time guard for the rule above: adding a non-primitive field to `SettingsState`
+ * is a build error, not a silent app-wide re-render.
+ *
+ * `homeActions: HomeActionKey[]` shipped here once. `parseHomeActions` allocates a fresh
+ * array per call, so `prev[k] !== next[k]` was permanently true and every settings write
+ * anywhere in the app produced a new context value for all ~85 `useSettings()` consumers.
+ * Nothing failed; it just re-rendered forever. Derived, non-primitive values belong in a
+ * `useMemo` on the context value instead.
+ */
+type NonPrimitiveFields<T> = {
+  [K in keyof T]-?: T[K] extends boolean | number | string ? never : K;
+}[keyof T];
+const _settingsStateIsFlat: NonPrimitiveFields<SettingsState> extends never ? true : never = true;
+void _settingsStateIsFlat;
 
 const DEFAULT_STATE: SettingsState = {
   language: DEFAULT_LANG,
@@ -206,7 +227,7 @@ const DEFAULT_STATE: SettingsState = {
   nutritionLogHistoryDays: 'none',
   workoutHistoryDays: 'none',
   homeSummaryCard: 'daily_summary',
-  homeActions: [...DEFAULT_HOME_ACTIONS],
+  homeActionsRaw: '',
   showHomeSteps: true,
   isLoading: true,
 };
@@ -340,7 +361,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     nutritionLogHistoryDays: (rawNutritionLogHistoryDays as NutritionLogHistoryDays) || 'none',
     workoutHistoryDays: (rawWorkoutHistoryDays as WorkoutHistoryDays) || 'none',
     homeSummaryCard,
-    homeActions: parseHomeActions(map.get(HOME_ACTIONS_SETTING_TYPE)),
+    homeActionsRaw: map.get(HOME_ACTIONS_SETTING_TYPE) ?? '',
     showHomeSteps: getBoolean(map, SHOW_HOME_STEPS_SETTING_TYPE, true),
     isLoading: false,
   };
@@ -401,7 +422,7 @@ export type SettingsContextType = UseSettingsResult & {
   advancedDataManagement: boolean;
   bleGenerateChartPayload: boolean;
   homeSummaryCard: HomeSummaryCard;
-  homeActions: HomeActionKey[];
+  homeActions: readonly HomeActionKey[];
   showHomeSteps: boolean;
 };
 
@@ -551,19 +572,25 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     decryptedApiKeys.openAiApiKey,
   ]);
 
-  const value = useMemo(
-    () => ({
-      ...state,
+  // Parsed here rather than in `deriveStateFromMap`, so the array is allocated once per
+  // actual change instead of once per settings emission — see `homeActionsRaw`.
+  const homeActions = useMemo(() => parseHomeActions(state.homeActionsRaw), [state.homeActionsRaw]);
+
+  const value = useMemo(() => {
+    const { homeActionsRaw: _homeActionsRaw, ...publicState } = state;
+
+    return {
+      ...publicState,
       googleGeminiApiKey: decryptedApiKeys.googleGeminiApiKey,
       openAiApiKey: decryptedApiKeys.openAiApiKey,
       localLlmApiKey: decryptedApiKeys.localLlmApiKey,
+      homeActions,
       isAiConfigured,
       isAiMealPhotoEnabled,
       weightUnit: getWeightUnit(state.units),
       heightUnit: getHeightUnit(state.units),
-    }),
-    [state, decryptedApiKeys, isAiConfigured, isAiMealPhotoEnabled]
-  );
+    };
+  }, [state, decryptedApiKeys, homeActions, isAiConfigured, isAiMealPhotoEnabled]);
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;
 }

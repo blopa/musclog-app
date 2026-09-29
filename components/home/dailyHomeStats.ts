@@ -9,12 +9,23 @@ export type StatTone = 'neutral' | 'good' | 'caution';
 
 export type DailyStatCell = {
   key: 'steps' | 'burned' | 'eaten' | 'balance';
-  /** Suffix under `home.dailyStats.` — the cell's label. */
-  labelKey: string;
+  /**
+   * The cell's label, as a whole translation key rather than a suffix the renderer
+   * completes. A `t(`home.dailyStats.${suffix}`)` at the call site means no grep for
+   * `home.dailyStats.deficit` finds anything — including the translation checker's, and
+   * including a human's during a rename.
+   */
+  labelKey: `home.dailyStats.${string}`;
   value: number;
   tone: StatTone;
   /** Every energy cell states its unit; the step count is not in kcal. */
   showsUnit: boolean;
+};
+
+const DIRECTION_LABEL_KEY: Record<EnergyDirection, DailyStatCell['labelKey']> = {
+  deficit: 'home.dailyStats.deficit',
+  surplus: 'home.dailyStats.surplus',
+  even: 'home.dailyStats.even',
 };
 
 const DIRECTION_TONE: Record<EnergyDirection, StatTone> = {
@@ -43,7 +54,7 @@ export function buildDailyStatCells({
   if (steps !== null) {
     cells.push({
       key: 'steps',
-      labelKey: 'steps',
+      labelKey: 'home.dailyStats.steps',
       value: steps,
       tone: 'neutral',
       showsUnit: false,
@@ -54,21 +65,21 @@ export function buildDailyStatCells({
     cells.push(
       {
         key: 'burned',
-        labelKey: 'burned',
+        labelKey: 'home.dailyStats.burned',
         value: energyBalance.burned,
         tone: 'neutral',
         showsUnit: true,
       },
       {
         key: 'eaten',
-        labelKey: 'eaten',
+        labelKey: 'home.dailyStats.eaten',
         value: energyBalance.eaten,
         tone: 'neutral',
         showsUnit: true,
       },
       {
         key: 'balance',
-        labelKey: energyBalance.direction,
+        labelKey: DIRECTION_LABEL_KEY[energyBalance.direction],
         value: energyBalance.balance,
         tone: DIRECTION_TONE[energyBalance.direction],
         showsUnit: true,

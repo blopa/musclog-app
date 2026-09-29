@@ -14,7 +14,7 @@ import { useSettings } from '@/hooks/useSettings';
  * derivation one too, so `Platform.OS` stops being a parameter every caller has to
  * remember to pass.
  */
-export function useAvailableHomeActions(): HomeActionKey[] {
+export function useAvailableHomeActions(): readonly HomeActionKey[] {
   const { isAiConfigured } = useSettings();
 
   return useMemo(() => {

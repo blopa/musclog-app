@@ -5,7 +5,6 @@ import { createElement, useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next';
 import { AppState, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { ActionButton } from '@/components/ActionButton';
 import { DetailedItemCard } from '@/components/cards/DetailedItemCard';
 import { FoodItemCard } from '@/components/cards/FoodItemCard';
 import { HomeMoodPrompt } from '@/components/cards/HomeMoodPrompt';
@@ -16,12 +15,11 @@ import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { DailySummaryBottomMenu } from '@/components/DailySummaryBottomMenu';
 import { DailyHomeFooter } from '@/components/home/DailyHomeFooter';
 import { DailyHomeSummary } from '@/components/home/DailyHomeSummary';
-import { HOME_ACTIONS, reconcileHomeActions } from '@/components/home/homeActions';
+import { HomeActionsRow } from '@/components/home/HomeActionsRow';
 import { WeeklyHomeSummary } from '@/components/home/WeeklyHomeSummary';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AddFoodModal } from '@/components/modals/AddFoodModal';
 import CreateCustomFoodModal from '@/components/modals/CreateCustomFoodModal';
-import { UserMetricDataModal } from '@/components/modals/DataLogModal';
 import { FoodMealDetailsModal } from '@/components/modals/FoodMealDetailsModal';
 import { FoodSearchModal } from '@/components/modals/FoodSearchModal';
 import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
@@ -36,18 +34,14 @@ import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import DashedButton from '@/components/theme/DashedButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '@/components/WorkoutFoodEmptyState';
-import { HOME_ACTIONS_PER_ROW, HomeActionKey } from '@/constants/homeActions';
+import { HomeActionKey } from '@/constants/homeActions';
 import { isStaticExport } from '@/constants/platform';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { type CameraMode, useSmartCamera } from '@/context/SmartCameraContext';
 import { type MealType } from '@/database/models';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
-import { useAvailableHomeActions } from '@/hooks/useAvailableHomeActions';
-import { useCircadianBurn } from '@/hooks/useCircadianBurn';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
-import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
-import { useDailySteps } from '@/hooks/useDailySteps';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useEmpiricalTDEE } from '@/hooks/useEmpiricalTDEE';
 import { useNutritionLogs } from '@/hooks/useNutritionLogs';
@@ -60,7 +54,6 @@ import { refreshDailyStepsIfStale } from '@/services/dailyStepsRefresh';
 import { isProduction } from '@/utils/app';
 import { getAvatarDisplayProps } from '@/utils/avatarUtils';
 import { isSameLocalCalendarDay, localCalendarDayDate } from '@/utils/calendarDate';
-import { computeEnergyBalance } from '@/utils/energyBalance';
 import { runEntryOnboardingRedirect } from '@/utils/entryOnboardingRedirect';
 import { handleError } from '@/utils/handleError';
 import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
@@ -100,7 +93,6 @@ export default function HomeScreen() {
   const router = useRouter();
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
   const { defaults: nutritionGoalsDefaults, planData } = useDefaultNutritionGoals();
-  const { goal: currentNutritionGoal } = useCurrentNutritionGoal();
   const { tdee: currentTdee } = useEmpiricalTDEE({
     fallbackValue: planData?.tdee ?? nutritionGoalsDefaults.totalCalories,
   });
@@ -120,23 +112,14 @@ export default function HomeScreen() {
   const navigationState = useRootNavigationState();
 
   const [today, setToday] = useState(() => localCalendarDayDate(new Date()));
-  const { steps: dailySteps } = useDailySteps(today);
-  const { calories: dailyCalories } = useDailyNutritionSummary({ date: today });
 
-  const [showUserMetricModal, setShowUserMetricModal] = useState(false);
-  const availableHomeActions = useAvailableHomeActions();
-
-  // Burned so far today, not the whole day's TDEE: under a "Burned" label the full-day
-  // figure reads as energy already spent, which at 8am it is not.
-  const { burned: burnedSoFar } = useCircadianBurn(currentTdee);
-
-  const energyBalance =
-    !intuitiveEatingMode && currentNutritionGoal
-      ? computeEnergyBalance({
-          burnedKcal: Math.round(burnedSoFar),
-          consumedKcal: dailyCalories.consumed,
-        })
-      : null;
+  // The single owner of today's nutrition on this screen: the summary card renders it and
+  // the stat strip needs the calories out of it. `useDailyNutritionSummary` is two live
+  // queries with their own decryption, so subscribing per consumer ran the whole thing
+  // twice for one calendar day. The weekly-streak card needs none of it, hence the gate.
+  const needsDailyNutrition = homeSummaryCard !== 'weekly_streak' || showHomeSteps;
+  const dailySummary = useDailyNutritionSummary({ date: today, visible: needsDailyNutrition });
+  const currentNutritionGoal = dailySummary.nutritionGoal;
 
   useEffect(() => {
     if (isStaticExport) {
@@ -261,13 +244,6 @@ export default function HomeScreen() {
       add_note: () => router.navigate('/app/notes'),
     }),
     [router, openCamera]
-  );
-
-  // Reconciled, not just filtered: a stored action this device cannot offer would otherwise
-  // leave the row short, so the gap is topped up rather than rendered as a hole.
-  const visibleHomeActions = useMemo(
-    () => reconcileHomeActions(homeActions, availableHomeActions),
-    [homeActions, availableHomeActions]
   );
 
   // Memoize modal action handlers
@@ -499,6 +475,7 @@ export default function HomeScreen() {
           ) : (
             <DailyHomeSummary
               date={today}
+              summary={dailySummary}
               intuitiveEatingMode={intuitiveEatingMode}
               nutritionDisplay={nutritionDisplay}
               onOpenMenu={() => setIsDailySummaryMenuVisible(true)}
@@ -507,9 +484,13 @@ export default function HomeScreen() {
           )}
           {showHomeSteps ? (
             <DailyHomeFooter
-              steps={dailySteps}
-              onStepsPress={() => setShowUserMetricModal(true)}
-              energyBalance={energyBalance}
+              date={today}
+              tdee={currentTdee}
+              // `null` withholds the energy half of the strip: there is no goal to balance
+              // against in intuitive-eating mode, or before one has been set.
+              consumedKcal={
+                intuitiveEatingMode || !currentNutritionGoal ? null : dailySummary.calories.consumed
+              }
             />
           ) : null}
         </View>
@@ -528,26 +509,7 @@ export default function HomeScreen() {
         </View>
 
         {/* Action Buttons */}
-        {/*
-          The grid is HOME_ACTIONS_PER_ROW wide, and this is the only place that knows it:
-          `ActionButton` fills whatever box it is given rather than carrying a basis of its
-          own, so it stays usable in a layout that is not this one.
-        */}
-        <View className="mx-4 mb-8 flex-row flex-wrap justify-between gap-y-4">
-          {visibleHomeActions.map((key) => {
-            const config = HOME_ACTIONS[key];
-            return (
-              <View key={key} style={{ flexBasis: `${100 / HOME_ACTIONS_PER_ROW - 2}%` }}>
-                <ActionButton
-                  tone={config.tone}
-                  label={t(config.labelKey)}
-                  icon={config.icon}
-                  onPress={homeActionHandlers[key]}
-                />
-              </View>
-            );
-          })}
-        </View>
+        <HomeActionsRow selected={homeActions} onActionPress={(key) => homeActionHandlers[key]()} />
         <View className="mx-4 mb-8">
           <View className="mb-4 flex-row items-center justify-between">
             <Text className="text-2xl font-bold text-text-primary">
@@ -771,13 +733,6 @@ export default function HomeScreen() {
         onCreateCustomFoodPress={handleCreateCustomFoodPress}
         onTrackCustomMealPress={handleTrackCustomMealPress}
         isAiEnabled={isAiConfigured}
-      />
-
-      {/* Metric history, opened from the steps stat */}
-      <UserMetricDataModal
-        visible={showUserMetricModal}
-        onClose={() => setShowUserMetricModal(false)}
-        metricType="daily_steps"
       />
 
       {/* Nutrition Goals Modal */}

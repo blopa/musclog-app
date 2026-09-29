@@ -97,12 +97,13 @@ export function homeActionListLabel(label: string): string {
 export function reconcileHomeActions(
   selected: readonly HomeActionKey[],
   available: readonly HomeActionKey[]
-): HomeActionKey[] {
+): readonly HomeActionKey[] {
   const kept = selected.filter((key) => available.includes(key));
   // Same-reference-means-unchanged, as `toggleHomeAction` does, so a caller can tell a
-  // reconciliation that needs persisting from one that does not.
+  // reconciliation that needs persisting from one that does not. The return stays
+  // `readonly` precisely so that returning the caller's own array needs no cast.
   if (kept.length >= MIN_HOME_ACTIONS) {
-    return kept.length === selected.length ? (selected as HomeActionKey[]) : kept;
+    return kept.length === selected.length ? selected : kept;
   }
 
   // Defaults first, so a topped-up row looks like a fresh install rather than whatever
@@ -124,7 +125,7 @@ export function reconcileHomeActions(
 export function orderHomeActionRows(
   selected: readonly HomeActionKey[],
   available: readonly HomeActionKey[]
-): HomeActionKey[] {
+): readonly HomeActionKey[] {
   return [
     ...selected.filter((key) => available.includes(key)),
     ...available.filter((key) => !selected.includes(key)),

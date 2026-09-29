@@ -14,7 +14,14 @@ export interface UseDailyNutritionSummaryParams {
 /**
  * Consolidates daily nutrition data fetching and computes calories/macros
  * with consistent Math.round rounding for both home and food screens.
+ *
+ * This is two live queries (the active goal plus the day's logs, each with its own
+ * decryption), so a screen subscribes ONCE and passes `DailyNutritionSummary` down. The
+ * home screen briefly called it both at the route level and inside `DailyHomeSummary`,
+ * which ran the whole thing twice for one calendar day.
  */
+export type DailyNutritionSummary = ReturnType<typeof useDailyNutritionSummary>;
+
 export function useDailyNutritionSummary({
   date,
   enableReactivity,

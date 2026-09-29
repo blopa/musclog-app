@@ -74,8 +74,7 @@ describe('useDailySteps', () => {
 
     mocks.emit([]);
 
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-    expect(result.current.steps).toBeNull();
+    await waitFor(() => expect(result.current).toBeNull());
   });
 
   it('returns steps when a record is found', async () => {
@@ -84,7 +83,7 @@ describe('useDailySteps', () => {
 
     mocks.emit([record(5000)]);
 
-    await waitFor(() => expect(result.current.steps).toBe(5000));
+    await waitFor(() => expect(result.current).toBe(5000));
   });
 
   // The sync upserts one `daily_steps` row per day, so every update after the first is
@@ -103,10 +102,10 @@ describe('useDailySteps', () => {
     const { result } = renderHook(() => useDailySteps(new Date('2023-10-10')));
 
     mocks.emit([record(5000)]);
-    await waitFor(() => expect(result.current.steps).toBe(5000));
+    await waitFor(() => expect(result.current).toBe(5000));
 
     mocks.emit([record(8200)]);
-    await waitFor(() => expect(result.current.steps).toBe(8200));
+    await waitFor(() => expect(result.current).toBe(8200));
   });
 
   it('excludes soft-deleted metrics from the query', () => {
@@ -131,12 +130,12 @@ describe('useDailySteps', () => {
     mocks.emit([stale]);
     mocks.emit([record(8200)]);
 
-    await waitFor(() => expect(result.current.steps).toBe(8200));
+    await waitFor(() => expect(result.current).toBe(8200));
 
     releaseStale({ value: 1 });
     await Promise.resolve();
 
-    expect(result.current.steps).toBe(8200);
+    expect(result.current).toBe(8200);
   });
 
   it('prefers the most recently written row when duplicates survive', async () => {
@@ -145,7 +144,7 @@ describe('useDailySteps', () => {
 
     mocks.emit([record(3000, 10), record(9100, 99), record(4000, 50)]);
 
-    await waitFor(() => expect(result.current.steps).toBe(9100));
+    await waitFor(() => expect(result.current).toBe(9100));
   });
 
   it('unsubscribes on unmount', () => {

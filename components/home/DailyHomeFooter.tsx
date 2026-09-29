@@ -1,17 +1,30 @@
 import MaterialIcons from '@react-native-vector-icons/material-icons/static';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { UserMetricDataModal } from '@/components/modals/DataLogModal';
 import { StatStrip, type StatStripItem } from '@/components/StatStrip';
+import { useCircadianBurn } from '@/hooks/useCircadianBurn';
+import { useDailySteps } from '@/hooks/useDailySteps';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
-import type { EnergyBalance } from '@/utils/energyBalance';
+import { computeEnergyBalance } from '@/utils/energyBalance';
 
 import { buildDailyStatCells, type StatTone } from './dailyHomeStats';
 
 type DailyHomeFooterProps = {
-  steps: null | number;
-  onStepsPress: () => void;
-  energyBalance: EnergyBalance | null;
+  date: Date;
+  /** The user's whole-day expenditure. Split across the day here — see `useCircadianBurn`. */
+  tdee: number;
+  /**
+   * Energy eaten today, or `null` when the user tracks no calorie goal (intuitive-eating
+   * mode, or no goal set), in which case the energy half of the strip is not shown.
+   *
+   * Passed in rather than read here: the home screen already subscribes to today's
+   * nutrition for the summary card, and a second `useDailyNutritionSummary` would run the
+   * day's log query and its per-log decryption twice for one integer.
+   */
+  consumedKcal: null | number;
 };
 
 /**
@@ -22,11 +35,30 @@ type DailyHomeFooterProps = {
  * · 2781 kcal under") so the numbers line up in a scannable row and the day's verdict
  * can carry its meaning in color. `buildDailyStatCells` owns which cells appear and
  * which one is tinted; `StatStrip` draws them.
+ *
+ * Everything the strip shows is derived here rather than on the home screen, including
+ * the metric history the step count opens — the screen supplies only the two facts it
+ * already holds (the day and the user's TDEE) plus the calories it already subscribes to.
  */
-export function DailyHomeFooter({ energyBalance, onStepsPress, steps }: DailyHomeFooterProps) {
+export function DailyHomeFooter({ consumedKcal, date, tdee }: DailyHomeFooterProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
+
+  const [isMetricHistoryVisible, setIsMetricHistoryVisible] = useState(false);
+
+  const steps = useDailySteps(date);
+  // Burned so far today, not the whole day's TDEE: under a "Burned" label the full-day
+  // figure reads as energy already spent, which at 8am it is not.
+  const { burned: burnedSoFar } = useCircadianBurn(tdee);
+
+  const energyBalance =
+    consumedKcal === null
+      ? null
+      : computeEnergyBalance({
+          burnedKcal: Math.round(burnedSoFar),
+          consumedKcal,
+        });
 
   const cells = buildDailyStatCells({ energyBalance, steps });
 
@@ -37,7 +69,7 @@ export function DailyHomeFooter({ energyBalance, onStepsPress, steps }: DailyHom
   };
 
   const items: StatStripItem[] = cells.map((cell) => {
-    const label = t(`home.dailyStats.${cell.labelKey}`);
+    const label = t(cell.labelKey);
     const value = formatInteger(cell.value);
 
     // Steps is the one cell that goes anywhere, and this component already knows that —
@@ -60,21 +92,30 @@ export function DailyHomeFooter({ energyBalance, onStepsPress, steps }: DailyHom
           style={{ marginRight: 3 }}
         />
       ) : undefined,
-      onPress: isSteps ? onStepsPress : undefined,
+      onPress: isSteps ? () => setIsMetricHistoryVisible(true) : undefined,
       accessibilityLabel: isSteps ? `${label}: ${value}` : undefined,
     };
   });
 
   return (
-    <StatStrip
-      className="mt-3"
-      items={items}
-      palette={{
-        background: theme.colors.background.card,
-        border: theme.colors.border.light,
-        label: theme.colors.text.tertiary,
-        unit: theme.colors.text.tertiary,
-      }}
-    />
+    <>
+      <StatStrip
+        className="mt-3"
+        items={items}
+        palette={{
+          background: theme.colors.background.card,
+          border: theme.colors.border.light,
+          label: theme.colors.text.tertiary,
+          unit: theme.colors.text.tertiary,
+        }}
+      />
+
+      {/* Metric history, opened from the steps stat. */}
+      <UserMetricDataModal
+        visible={isMetricHistoryVisible}
+        onClose={() => setIsMetricHistoryVisible(false)}
+        metricType="daily_steps"
+      />
+    </>
   );
 }
