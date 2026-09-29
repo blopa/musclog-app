@@ -100,7 +100,13 @@ const GOALS_MANAGEMENT_TAB = {
 
 type GoalsManagementTab = (typeof GOALS_MANAGEMENT_TAB)[keyof typeof GOALS_MANAGEMENT_TAB];
 
+/** How stale today's step count may get before a foreground resume re-reads it. */
+const STEPS_REFRESH_INTERVAL_MS = 15 * 60 * 1000;
+
 let lastStepsSyncMs = 0;
+
+/** Seeds the metric log modal's search when it is opened from the steps stat. */
+const STEPS_METRIC_SEARCH_QUERY = 'daily_steps';
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -132,7 +138,6 @@ export default function HomeScreen() {
   const { calories: dailyCalories } = useDailyNutritionSummary({ date: today });
 
   const [showUserMetricModal, setShowUserMetricModal] = useState(false);
-  const [stepsSearchQuery, setStepsSearchQuery] = useState('');
 
   const energyBalance =
     !intuitiveEatingMode && currentNutritionGoal
@@ -157,10 +162,13 @@ export default function HomeScreen() {
         syncToday();
 
         const now = Date.now();
-        if (now - lastStepsSyncMs > 15 * 60 * 1000) {
+        if (now - lastStepsSyncMs > STEPS_REFRESH_INTERVAL_MS) {
           lastStepsSyncMs = now;
           const { start, nextStart } = localDayHalfOpenRange(new Date());
-          syncDailySteps({ startTime: start, endTime: nextStart });
+          // Fire-and-forget, but never unhandled: this throws on a device that has not
+          // granted the Steps permission, and a declined permission is not an error
+          // worth surfacing — the same policy AppBoot's health sync uses.
+          void syncDailySteps({ startTime: start, endTime: nextStart }).catch(() => undefined);
         }
 
         // Drain pending widget action set by redirectSystemPath when Android
@@ -525,10 +533,7 @@ export default function HomeScreen() {
           {showHomeSteps ? (
             <DailyHomeFooter
               steps={dailySteps}
-              onStepsPress={() => {
-                setStepsSearchQuery('daily_steps');
-                setShowUserMetricModal(true);
-              }}
+              onStepsPress={() => setShowUserMetricModal(true)}
               energyBalance={energyBalance}
             />
           ) : null}
@@ -791,7 +796,7 @@ export default function HomeScreen() {
       <UserMetricDataModal
         visible={showUserMetricModal}
         onClose={() => setShowUserMetricModal(false)}
-        initialSearchQuery={stepsSearchQuery}
+        initialSearchQuery={STEPS_METRIC_SEARCH_QUERY}
       />
 
       <NutritionGoalsModal

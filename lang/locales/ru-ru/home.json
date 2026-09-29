@@ -36,11 +36,14 @@
       "cycle": "Цикл",
       "checkin": "Отметки"
     },
-    "energyBalance": "Сожжено {{burned}} · Съедено {{eaten}} · на {{balance}} ккал {{direction}}",
-    "energyDirection": {
-      "deficit": "ниже нормы",
-      "surplus": "выше нормы",
-      "even": "в норме"
+    "dailyStats": {
+      "steps": "Шаги",
+      "burned": "Сожжено",
+      "eaten": "Съедено",
+      "deficit": "Дефицит",
+      "surplus": "Профицит",
+      "even": "Баланс",
+      "kcal": "ккал"
     }
   }
 }

@@ -14,3 +14,11 @@ export async function sendOnDeviceMessage(
 ): Promise<string> {
   return '';
 }
+
+export async function sendOnDeviceStructured<T>(
+  _messages: OnDeviceMessage[],
+  _systemPrompt: string,
+  _schema: object
+): Promise<T | null> {
+  return null;
+}

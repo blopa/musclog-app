@@ -25,3 +25,10 @@ export async function syncFitnessMetrics(
 ): Promise<FitnessSyncCounts> {
   return { totalRead: 0, written: 0, updated: 0, deleted: 0, skipped: 0 };
 }
+
+export async function syncDailySteps(_timeRange: {
+  startTime: number;
+  endTime: number;
+}): Promise<Pick<FitnessSyncCounts, 'totalRead' | 'written' | 'updated'>> {
+  return { totalRead: 0, written: 0, updated: 0 };
+}

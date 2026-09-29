@@ -15,3 +15,5 @@ export function addNotificationResponseReceivedListener(
 export const handleNotificationResponse = async (response: NotificationResponse) => {
   return;
 };
+
+export function setupNotificationConfig() {}

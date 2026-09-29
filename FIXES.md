@@ -480,3 +480,36 @@ Two separate problems:
   claimed ids through `normalizeAiMealIngredients` before splitting known from unknown ingredients,
   and sends unconfirmed ones to estimation. `utils/__tests__/coachAITrackMealThinking.test.ts`
   checks this. The prompt now says to omit `foodId` rather than leave it null.
+
+## `syncDailySteps is not a function` on web and iOS
+
+### Symptom
+
+v2.12.2's home screen threw `TypeError: _servicesHealthConnectFitness.syncDailySteps is not a
+function` on web as soon as the app came to the foreground. iOS was broken the same way. Android
+was fine, and neither `npm run typecheck` nor ESLint said anything.
+
+### Cause
+
+`services/healthConnectFitness` is a platform-variant module: Metro picks `.ts`, `.web.ts` or
+`.ios.ts` per platform, and every import site names a symbol without knowing which file it will
+land in. The daily-steps feature added `syncDailySteps` to the Android file only — the web stub
+never gained it, and the iOS file had the function but forgot the `export` keyword. TypeScript
+type-checks the base module regardless of which variant ships, so a symbol missing from a sibling
+is not a type error anywhere; it is a runtime `TypeError` on exactly one platform.
+
+The same gap existed in `utils/onDeviceAi.web.ts` (`sendOnDeviceStructured`, reachable from
+`coachAI.ts` whenever a restored backup carries an `on-device` provider setting) and
+`utils/notifications.web.ts` (`setupNotificationConfig`).
+
+### Permanent rules
+
+- A platform sibling may export **more** than the base module, never less. A web-only helper such
+  as `restoreReloadTarget` is legitimate; a missing stub is a crash.
+- `utils/__tests__/platformModuleParity.test.ts` enforces this across `constants/`, `database/`,
+  `hooks/`, `services/` and `utils/`. It compares named **value** exports only — types are erased
+  at runtime and cannot produce this failure. A deliberate asymmetry goes in its `ALLOWED_OMISSIONS`
+  table **with its reason** (today: `preMigrationBackup`'s two native-only filesystem functions), so
+  a new one cannot be introduced silently.
+- Route and component files are out of scope: their contract is the default export, and their named
+  exports are file-local helpers.

@@ -36,11 +36,14 @@
       "cycle": "Ciclo",
       "checkin": "Check-ins"
     },
-    "energyBalance": "Queimado {{burned}} · Comido {{eaten}} · {{balance}} kcal {{direction}}",
-    "energyDirection": {
-      "deficit": "abaixo",
-      "surplus": "acima",
-      "even": "igual"
+    "dailyStats": {
+      "steps": "Passos",
+      "burned": "Queimado",
+      "eaten": "Consumido",
+      "deficit": "Déficit",
+      "surplus": "Superávit",
+      "even": "Equilíbrio",
+      "kcal": "kcal"
     }
   }
 }
