@@ -393,10 +393,14 @@
     },
     "homeActions": {
       "sectionTitle": "Home Actions",
-      "sectionSubtitle": "Choose which quick actions appear on your home screen.",
+      "sectionSubtitle": "Choose the quick action buttons on your home screen.",
       "popupTitle": "Home Actions",
-      "popupSubtitle": "Select up to 4 actions",
-      "editActions": "Edit Actions"
+      "popupSubtitle": "Pick 2 to 4 actions",
+      "editActions": "Edit Actions",
+      "chosenCount": "{{chosen}}/{{max}}",
+      "hintOrder": "They appear in the order you pick them.",
+      "hintAtMin": "Keep at least {{min}} on your home screen.",
+      "hintAtMax": "That's the maximum — remove one to add another."
     },
     "homeSummaryCard": {
       "sectionTitle": "Home Summary Card",

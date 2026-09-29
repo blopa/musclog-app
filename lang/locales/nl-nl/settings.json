@@ -392,11 +392,15 @@
       "generateChartPayloadSubtitle": "Signaal- en herhalingsannotatiegegevens opnemen voor grafiekweergave na elke set"
     },
     "homeActions": {
-      "sectionTitle": "Home Actions",
-      "sectionSubtitle": "Choose which quick actions appear on your home screen.",
-      "popupTitle": "Home Actions",
-      "popupSubtitle": "Select up to 4 actions",
-      "editActions": "Edit Actions"
+      "sectionTitle": "Startacties",
+      "sectionSubtitle": "Kies de snelle actieknoppen op je startscherm.",
+      "popupTitle": "Startacties",
+      "popupSubtitle": "Kies 2 tot 4 acties",
+      "editActions": "Acties bewerken",
+      "chosenCount": "{{chosen}}/{{max}}",
+      "hintOrder": "Ze verschijnen in de volgorde waarin je ze kiest.",
+      "hintAtMin": "Houd er minstens {{min}} op je startscherm.",
+      "hintAtMax": "Dit is het maximum — verwijder er een om een andere toe te voegen."
     },
     "homeSummaryCard": {
       "sectionTitle": "Startscherm-overzichtskaart",

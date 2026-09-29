@@ -20,7 +20,11 @@ export function PickerButton({ label, icon, onPress }: TestPickerButtonProps) {
       <View className="h-14 flex-row items-center justify-between px-4">
         <View className="min-w-0 flex-1 flex-row items-center gap-3">
           {icon}
-          <Text className="font-medium text-text-primary">{label}</Text>
+          {/* The home-actions row names every chosen action, so a long label ellipsizes
+              rather than wrapping out of the fixed-height row. */}
+          <Text className="flex-1 font-medium text-text-primary" numberOfLines={1}>
+            {label}
+          </Text>
         </View>
         <View className="shrink-0 justify-center pl-2">
           <ChevronDown size={theme.iconSize.lg} color={theme.colors.text.tertiary} />

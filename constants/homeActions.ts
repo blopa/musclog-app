@@ -11,8 +11,16 @@ export const HOME_ACTION_KEYS = [
 
 export type HomeActionKey = (typeof HOME_ACTION_KEYS)[number];
 
-/** The home screen shows at most this many quick actions. */
+/** The home screen grid is two per row, so it fills exactly at this many quick actions. */
 export const MAX_HOME_ACTIONS = 4;
+
+/**
+ * ...and a home screen with a single action looks broken, so the picker refuses to go
+ * below this. Both bounds live here rather than in the picker because `parseHomeActions`
+ * is what a stored value predating them (or hand-edited, or written by an older build)
+ * has to survive.
+ */
+export const MIN_HOME_ACTIONS = 2;
 
 export const DEFAULT_HOME_ACTIONS: readonly HomeActionKey[] = ['start_workout', 'track_food'];
 
@@ -34,7 +42,7 @@ export function parseHomeActions(raw: string | null | undefined): HomeActionKey[
 
     const uniqueActions = Array.from(new Set(validActions));
 
-    if (uniqueActions.length === 0) {
+    if (uniqueActions.length < MIN_HOME_ACTIONS) {
       return [...DEFAULT_HOME_ACTIONS];
     }
 
@@ -42,4 +50,32 @@ export function parseHomeActions(raw: string | null | undefined): HomeActionKey[
   } catch (_e) {
     return [...DEFAULT_HOME_ACTIONS];
   }
+}
+
+/**
+ * Add or remove one action, honouring both bounds.
+ *
+ * Selection order IS display order — a newly picked action lands at the end of the home
+ * row — which is why this appends rather than restoring the canonical position. Removing
+ * and re-picking is therefore how the user moves an action to the back.
+ *
+ * Returns the SAME array reference when a bound refuses the change, so a caller can tell
+ * a no-op from a real edit without re-deriving the rule.
+ */
+export function toggleHomeAction(
+  selected: readonly HomeActionKey[],
+  key: HomeActionKey
+): HomeActionKey[] {
+  if (selected.includes(key)) {
+    if (selected.length <= MIN_HOME_ACTIONS) {
+      return selected as HomeActionKey[];
+    }
+    return selected.filter((k) => k !== key);
+  }
+
+  if (selected.length >= MAX_HOME_ACTIONS) {
+    return selected as HomeActionKey[];
+  }
+
+  return [...selected, key];
 }

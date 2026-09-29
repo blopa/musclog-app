@@ -392,11 +392,15 @@
       "generateChartPayloadSubtitle": "Включить данные сигнала и аннотации повторений для отображения на графике после каждого подхода"
     },
     "homeActions": {
-      "sectionTitle": "Home Actions",
-      "sectionSubtitle": "Choose which quick actions appear on your home screen.",
-      "popupTitle": "Home Actions",
-      "popupSubtitle": "Select up to 4 actions",
-      "editActions": "Edit Actions"
+      "sectionTitle": "Действия на главной",
+      "sectionSubtitle": "Выберите кнопки быстрых действий на главном экране.",
+      "popupTitle": "Действия на главной",
+      "popupSubtitle": "Выберите от 2 до 4 действий",
+      "editActions": "Изменить действия",
+      "chosenCount": "{{chosen}}/{{max}}",
+      "hintOrder": "Они появятся в том порядке, в котором вы их выберете.",
+      "hintAtMin": "Оставьте не менее {{min}} на главном экране.",
+      "hintAtMax": "Это максимум — уберите одно, чтобы добавить другое."
     },
     "homeSummaryCard": {
       "sectionTitle": "Карточка сводки на главном экране",

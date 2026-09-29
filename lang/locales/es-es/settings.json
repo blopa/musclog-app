@@ -392,11 +392,15 @@
       "generateChartPayloadSubtitle": "Incluir datos de señal y anotaciones de repeticiones para mostrar en el gráfico después de cada serie"
     },
     "homeActions": {
-      "sectionTitle": "Home Actions",
-      "sectionSubtitle": "Choose which quick actions appear on your home screen.",
-      "popupTitle": "Home Actions",
-      "popupSubtitle": "Select up to 4 actions",
-      "editActions": "Edit Actions"
+      "sectionTitle": "Acciones de inicio",
+      "sectionSubtitle": "Elige los botones de acción rápida de tu pantalla de inicio.",
+      "popupTitle": "Acciones de inicio",
+      "popupSubtitle": "Elige de 2 a 4 acciones",
+      "editActions": "Editar acciones",
+      "chosenCount": "{{chosen}}/{{max}}",
+      "hintOrder": "Aparecerán en el orden en que las elijas.",
+      "hintAtMin": "Mantén al menos {{min}} en tu pantalla de inicio.",
+      "hintAtMax": "Es el máximo: quita una para añadir otra."
     },
     "homeSummaryCard": {
       "sectionTitle": "Tarjeta de resumen de inicio",

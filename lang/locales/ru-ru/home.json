@@ -7,13 +7,13 @@
     },
     "actions": {
       "startWorkout": "Начать\nтренировку",
-      "trackFood": "Track\nFood",
-      "scanBarcode": "Scan\nBarcode",
-      "aiPhoto": "AI\nPhoto",
-      "logWeight": "Log\nWeight",
-      "myMeals": "My\nMeals",
-      "addNote": "Add\nNote",
-      "logCardio": "Log\nCardio"
+      "trackFood": "Записать\nеду",
+      "scanBarcode": "Сканировать\nштрихкод",
+      "aiPhoto": "Фото\nИИ",
+      "logWeight": "Записать\nвес",
+      "myMeals": "Мои\nблюда",
+      "addNote": "Добавить\nзаметку",
+      "logCardio": "Записать\nкардио"
     },
     "sections": {
       "recentWorkouts": "Последние тренировки",

@@ -21,17 +21,17 @@ import { Platform, Text, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
-import { HOME_ACTIONS, isHomeActionAvailable } from '@/components/home/homeActions';
+import {
+  HOME_ACTIONS,
+  homeActionListLabel,
+  isHomeActionAvailable,
+} from '@/components/home/homeActions';
+import { HomeActionsPicker } from '@/components/home/HomeActionsPicker';
 import { NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
 import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/OptionsMultiSelector';
 import { PickerButton } from '@/components/theme/PickerButton';
 import { ToggleInput } from '@/components/theme/ToggleInput';
-import {
-  HOME_ACTION_KEYS,
-  type HomeActionKey,
-  MAX_HOME_ACTIONS,
-  parseHomeActions,
-} from '@/constants/homeActions';
+import { HOME_ACTION_KEYS, type HomeActionKey, parseHomeActions } from '@/constants/homeActions';
 import {
   type HomeSummaryCard,
   NAV_ITEM_KEYS,
@@ -156,13 +156,27 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     return t('settings.nutritionDisplay.selected', { count: selectedMacros.length });
   };
 
+  // `HomeActionsPicker` hands back a value the bounds already accepted, and returns the
+  // same array when they refused, so a rejected tap never reaches the settings row.
   const handleHomeActionsChange = async (keys: HomeActionKey[]) => {
-    if (keys.length === 0) {
+    if (keys === selectedHomeActions) {
       return;
     }
-    const maxItems = keys.slice(0, MAX_HOME_ACTIONS);
-    setSelectedHomeActions(maxItems);
-    await SettingsService.setHomeActions(maxItems);
+    setSelectedHomeActions(keys);
+    await SettingsService.setHomeActions(keys);
+  };
+
+  const availableHomeActions = HOME_ACTION_KEYS.filter((key) =>
+    isHomeActionAvailable(key, { isAiConfigured, platform: Platform.OS })
+  );
+
+  /** The settings row names the chosen actions, so the sheet is only needed to change them. */
+  const homeActionsSummary = (): string => {
+    const chosen = selectedHomeActions.filter((key) => availableHomeActions.includes(key));
+    if (chosen.length === 0) {
+      return t('settings.homeActions.editActions');
+    }
+    return chosen.map((key) => homeActionListLabel(t(HOME_ACTIONS[key].labelKey))).join(', ');
   };
 
   const currentSlots = rawSlots;
@@ -236,7 +250,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
           </Text>
           <PickerButton
             icon={<LayoutGrid size={theme.iconSize.md} color={theme.colors.accent.primary} />}
-            label={t('settings.homeActions.editActions')}
+            label={homeActionsSummary()}
             onPress={() => setHomeActionsPopupVisible(true)}
           />
         </View>
@@ -333,39 +347,10 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
         title={t('settings.homeActions.popupTitle')}
         subtitle={t('settings.homeActions.popupSubtitle')}
       >
-        <OptionsMultiSelector
-          title=""
-          hasGroups={false}
-          isEditable={true}
-          hideCheckboxes={true}
-          options={selectedHomeActions
-            .map((key) => ({
-              id: key,
-              label: t(HOME_ACTIONS[key].labelKey),
-              description: '',
-              icon: HOME_ACTIONS[key].icon,
-              iconColor: theme.colors.accent.primary,
-              iconBgColor: theme.colors.background.iconDark,
-            }))
-            .concat(
-              HOME_ACTION_KEYS.filter(
-                (k) =>
-                  !selectedHomeActions.includes(k) &&
-                  isHomeActionAvailable(k, { isAiConfigured, platform: Platform.OS })
-              ).map((key) => ({
-                id: key,
-                label: t(HOME_ACTIONS[key].labelKey),
-                description: '',
-                icon: HOME_ACTIONS[key].icon,
-                iconColor: theme.colors.accent.primary,
-                iconBgColor: theme.colors.background.iconDark,
-              }))
-            )}
-          selectedIds={selectedHomeActions}
-          onChange={(ids) => handleHomeActionsChange(ids as HomeActionKey[])}
-          onOrderChange={(reordered) =>
-            handleHomeActionsChange(reordered.map((r) => r.id as HomeActionKey))
-          }
+        <HomeActionsPicker
+          selected={selectedHomeActions}
+          available={availableHomeActions}
+          onChange={handleHomeActionsChange}
         />
       </BottomPopUp>
       <BottomPopUp

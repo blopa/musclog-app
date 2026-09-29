@@ -7,13 +7,13 @@
     },
     "actions": {
       "startWorkout": "Start\nWorkout",
-      "trackFood": "Track\nFood",
-      "scanBarcode": "Scan\nBarcode",
-      "aiPhoto": "AI\nPhoto",
-      "logWeight": "Log\nWeight",
-      "myMeals": "My\nMeals",
-      "addNote": "Add\nNote",
-      "logCardio": "Log\nCardio"
+      "trackFood": "Eten\nLoggen",
+      "scanBarcode": "Barcode\nScannen",
+      "aiPhoto": "AI-\nFoto",
+      "logWeight": "Gewicht\nLoggen",
+      "myMeals": "Mijn\nMaaltijden",
+      "addNote": "Notitie\nToevoegen",
+      "logCardio": "Cardio\nLoggen"
     },
     "sections": {
       "recentWorkouts": "Recente workouts",

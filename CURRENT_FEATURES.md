@@ -10,7 +10,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Daily steps and energy balance line displaying current activity (calories burned vs eaten)
 - Weekly streak card showing consecutive days of nutrition logging (current & best streak)
 - Time-based personalized greetings (Good Morning / Afternoon / Evening)
-- Quick-access action row, configurable in Interface settings: pick and reorder up to four of Start Workout, Track Food, Scan Barcode, AI Photo, Log Weight, My Meals and Add Note
+- Quick-access action row, configurable in Interface settings: pick two to four of Start Workout, Track Food, Scan Barcode, AI Photo, Log Weight, My Meals and Add Note, and they appear in the order you pick them
 - Recent foods and recent workouts previews
 - Android home screen widgets: Nutrition Progress + Smart Camera
 
