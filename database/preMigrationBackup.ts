@@ -35,7 +35,7 @@ async function reportBackupError(error: unknown, context: string): Promise<void>
   }
 }
 
-export function getWebBackupContent(_hash: string): string | null {
+export async function getWebBackupContent(_hash: string): Promise<null | string> {
   return null;
 }
 

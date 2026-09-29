@@ -3,9 +3,10 @@
  *
  * On web the LokiJS adapter has no migrationEvents hooks, so we detect a version
  * bump by comparing a localStorage version marker against CURRENT_DATABASE_VERSION.
- * When a bump is found we dump the full database, store the content in localStorage
- * under a SHA-256 hash key, and keep a small metadata index so LocalBackupsModal can
- * list, export, restore, and delete entries.
+ * When a bump is found we dump the full database, store the content under a SHA-256
+ * hash key in `webBackupPayloadStore` (IndexedDB — localStorage is far too small for a
+ * database dump), and keep a small metadata index in localStorage so LocalBackupsModal
+ * can list, export, restore, and delete entries.
  *
  * LokiJS schema migrations only create new empty collections — they never modify
  * existing rows — so a dump taken at any point during startup captures the correct
@@ -15,17 +16,21 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { CURRENT_DATABASE_VERSION } from '@/constants/database';
-import { WEB_BACKUP_DATA_PREFIX } from '@/constants/exportImport';
+import { WEB_BACKUP_DB_VERSION_KEY, WEB_BACKUP_INDEX_KEY } from '@/constants/exportImport';
 import { isStaticExport } from '@/constants/platform';
 import { handleError } from '@/utils/handleError';
 
 import { dumpDatabase } from './exportDb';
 import type { BackupFileMeta } from './preMigrationBackup';
+import {
+  deleteWebBackupPayload,
+  hasWebBackupPayload,
+  readWebBackupPayload,
+  writeWebBackupPayload,
+} from './webBackupPayloadStore';
 
 export type { BackupFileMeta };
 
-const WEB_BACKUPS_KEY = 'musclog_pre_migration_backups_v1';
-const WEB_LAST_VERSION_KEY = 'musclog_last_db_version';
 const MAX_BACKUPS = 3;
 
 // ─── Hash ──────────────────────────────────────────────────────────────────
@@ -43,20 +48,16 @@ async function computeHash(content: string): Promise<string> {
 
 // ─── Content access ────────────────────────────────────────────────────────
 
-/** Read raw backup JSON from localStorage by hash (used by file.web.ts). */
-export function getWebBackupContent(hash: string): string | null {
-  try {
-    return localStorage.getItem(`${WEB_BACKUP_DATA_PREFIX}${hash}`);
-  } catch {
-    return null;
-  }
+/** Read raw backup JSON by hash (used by file.web.ts). */
+export async function getWebBackupContent(hash: string): Promise<null | string> {
+  return readWebBackupPayload(hash);
 }
 
 // ─── Metadata index ────────────────────────────────────────────────────────
 
 export async function getStoredBackups(): Promise<BackupFileMeta[]> {
   try {
-    const raw = localStorage.getItem(WEB_BACKUPS_KEY);
+    const raw = localStorage.getItem(WEB_BACKUP_INDEX_KEY);
     if (!raw) {
       return [];
     }
@@ -79,13 +80,13 @@ export async function getStoredBackups(): Promise<BackupFileMeta[]> {
 }
 
 function saveBackupIndex(backups: BackupFileMeta[]): void {
-  localStorage.setItem(WEB_BACKUPS_KEY, JSON.stringify(backups));
+  localStorage.setItem(WEB_BACKUP_INDEX_KEY, JSON.stringify(backups));
 }
 
 // ─── Pruning ───────────────────────────────────────────────────────────────
 
-function backupContentKey(uri: string): string {
-  return `${WEB_BACKUP_DATA_PREFIX}${uri.replace('web-backup://', '')}`;
+function backupPayloadKey(uri: string): string {
+  return uri.replace('web-backup://', '');
 }
 
 function isQuotaExceededError(error: unknown): boolean {
@@ -95,7 +96,7 @@ function isQuotaExceededError(error: unknown): boolean {
   );
 }
 
-function commitBackupIndex(backups: BackupFileMeta[]): void {
+async function commitBackupIndex(backups: BackupFileMeta[]): Promise<void> {
   const keep = backups.slice(0, MAX_BACKUPS);
   const remove = backups.slice(MAX_BACKUPS);
 
@@ -103,26 +104,25 @@ function commitBackupIndex(backups: BackupFileMeta[]): void {
   // still has its content. Removed payloads become harmless orphans, never broken links.
   saveBackupIndex(keep);
   for (const backup of remove) {
-    localStorage.removeItem(backupContentKey(backup.uri));
+    await deleteWebBackupPayload(backupPayloadKey(backup.uri));
   }
 }
 
-function storeBackupContentWithRecovery(
+async function storeBackupContentWithRecovery(
   uri: string,
   content: string,
   existing: BackupFileMeta[]
-): BackupFileMeta[] {
+): Promise<BackupFileMeta[]> {
   let retained = existing.filter((backup) => backup.uri !== uri);
-  const existingPayload = localStorage.getItem(backupContentKey(uri));
 
-  // The URI is content-addressed. A present matching key already contains this dump,
+  // The URI is content-addressed. A present matching payload already contains this dump,
   // so only its metadata needs to be refreshed.
-  if (existingPayload !== null) {
+  if (await hasWebBackupPayload(backupPayloadKey(uri))) {
     return retained;
   }
 
   try {
-    localStorage.setItem(backupContentKey(uri), content);
+    await writeWebBackupPayload(backupPayloadKey(uri), content);
     return retained;
   } catch (error) {
     if (!isQuotaExceededError(error)) {
@@ -148,10 +148,10 @@ function storeBackupContentWithRecovery(
     const victim = retained[victimIndex];
     retained = retained.filter((_, index) => index !== victimIndex);
     saveBackupIndex(retained);
-    localStorage.removeItem(backupContentKey(victim.uri));
+    await deleteWebBackupPayload(backupPayloadKey(victim.uri));
 
     try {
-      localStorage.setItem(backupContentKey(uri), content);
+      await writeWebBackupPayload(backupPayloadKey(uri), content);
       return retained;
     } catch (error) {
       if (!isQuotaExceededError(error)) {
@@ -168,7 +168,7 @@ function storeBackupContentWithRecovery(
 export async function deleteBackup(uri: string): Promise<void> {
   const backups = await getStoredBackups();
   const next = backups.filter((b) => b.uri !== uri);
-  localStorage.removeItem(backupContentKey(uri));
+  await deleteWebBackupPayload(backupPayloadKey(uri));
   saveBackupIndex(next);
 }
 
@@ -184,16 +184,16 @@ async function executeLiveBackup(reason: BackupFileMeta['reason']): Promise<stri
   const uri = `web-backup://${hash}`;
   const createdAt = new Date().toISOString();
   const existing = await getStoredBackups();
-  const hadExistingPayload = localStorage.getItem(backupContentKey(uri)) !== null;
-  const retained = storeBackupContentWithRecovery(uri, jsonString, existing);
+  const hadExistingPayload = await hasWebBackupPayload(backupPayloadKey(uri));
+  const retained = await storeBackupContentWithRecovery(uri, jsonString, existing);
   try {
-    commitBackupIndex([
+    await commitBackupIndex([
       { uri, createdAt, fromVersion: null, toVersion: null, reason },
       ...retained,
     ]);
   } catch (error) {
     if (!hadExistingPayload) {
-      localStorage.removeItem(backupContentKey(uri));
+      await deleteWebBackupPayload(backupPayloadKey(uri));
     }
     throw error;
   }
@@ -249,7 +249,7 @@ export async function runWebPreMigrationBackupIfNeeded(): Promise<void> {
 
   let storedVersion: number | null = null;
   try {
-    const raw = localStorage.getItem(WEB_LAST_VERSION_KEY);
+    const raw = localStorage.getItem(WEB_BACKUP_DB_VERSION_KEY);
     storedVersion = raw !== null ? Number(raw) : null;
   } catch {
     // localStorage not accessible (e.g. private browsing with strict settings)
@@ -258,7 +258,7 @@ export async function runWebPreMigrationBackupIfNeeded(): Promise<void> {
 
   // Fresh install — no existing data to back up, just record the version.
   if (storedVersion === null) {
-    localStorage.setItem(WEB_LAST_VERSION_KEY, String(CURRENT_DATABASE_VERSION));
+    localStorage.setItem(WEB_BACKUP_DB_VERSION_KEY, String(CURRENT_DATABASE_VERSION));
     return;
   }
 
@@ -280,10 +280,10 @@ export async function runWebPreMigrationBackupIfNeeded(): Promise<void> {
 
     const existing = await getStoredBackups();
     const uri = `web-backup://${hash}`;
-    const hadExistingPayload = localStorage.getItem(backupContentKey(uri)) !== null;
-    const retained = storeBackupContentWithRecovery(uri, jsonString, existing);
+    const hadExistingPayload = await hasWebBackupPayload(backupPayloadKey(uri));
+    const retained = await storeBackupContentWithRecovery(uri, jsonString, existing);
     try {
-      commitBackupIndex([
+      await commitBackupIndex([
         {
           uri,
           createdAt,
@@ -295,7 +295,7 @@ export async function runWebPreMigrationBackupIfNeeded(): Promise<void> {
       ]);
     } catch (error) {
       if (!hadExistingPayload) {
-        localStorage.removeItem(backupContentKey(uri));
+        await deleteWebBackupPayload(backupPayloadKey(uri));
       }
       throw error;
     }
@@ -308,7 +308,7 @@ export async function runWebPreMigrationBackupIfNeeded(): Promise<void> {
     // Always advance the stored version so the backup doesn't run again on
     // the next launch even if the dump above failed.
     try {
-      localStorage.setItem(WEB_LAST_VERSION_KEY, String(CURRENT_DATABASE_VERSION));
+      localStorage.setItem(WEB_BACKUP_DB_VERSION_KEY, String(CURRENT_DATABASE_VERSION));
     } catch {
       // best-effort
     }

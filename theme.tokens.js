@@ -49,6 +49,25 @@ function mixHex(baseHex, tintHex, ratio) {
 /** Pure white, for the handful of surfaces that are white in every theme. */
 const ALWAYS_WHITE = '#ffffff';
 
+/** WCAG relative luminance of an opaque hex colour. */
+function relativeLuminance(hexColor) {
+  const hex = hexColor.replace('#', '');
+  const channel = (offset) => {
+    const value = parseInt(hex.substring(offset, offset + 2), 16) / 255;
+    return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+  };
+
+  return 0.2126 * channel(0) + 0.7152 * channel(2) + 0.0722 * channel(4);
+}
+
+/** WCAG contrast ratio between two opaque hex colours. */
+function contrastRatio(hexA, hexB) {
+  const a = relativeLuminance(hexA);
+  const b = relativeLuminance(hexB);
+
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+}
+
 /**
  * Expand a palette into the full flat colour set: the primaries plus every
  * translucent wash, scrim and tinted surface derived from them.
@@ -127,6 +146,20 @@ function createColors(palette) {
     colorfulCardTrack: palette.colorfulCardUsesSurfaceInk
       ? addOpacityToHex(colorfulCardInk, 0.25)
       : addOpacityToHex(palette.scrimBase, 0.6),
+    // An inset panel on the colourful card — the stat strip behind the weekly
+    // averages. It washes AWAY from the card's own ink: towards the scrim under
+    // light ink, towards white under dark ink, so it can only ever raise the
+    // contrast the bare gradient already offers. The fixed 30% scrim this
+    // replaced darkened every theme alike, which read as a muddy grey slab on
+    // the four themes whose card ink is dark and dropped their supporting ink
+    // below AA — Kinetic Volt's `ink70` landed at 2.81:1 against its own panel.
+    // The alphas differ because the two directions are not symmetric: a scrim
+    // reads much heavier than a white wash of the same strength.
+    colorfulCardPanel:
+      contrastRatio(colorfulCardInk, ALWAYS_WHITE) >=
+      contrastRatio(colorfulCardInk, palette.scrimBase)
+        ? addOpacityToHex(ALWAYS_WHITE, 0.45)
+        : addOpacityToHex(palette.scrimBase, 0.18),
     // Darker shades of an accent, for the outline on a solid accent-filled button.
     // Mixed towards the scrim (dark in every theme) so the outline stays darker
     // than its fill even when the surfaces invert.
@@ -299,6 +332,7 @@ function createThemeColors(colors) {
       ink30: colors.colorfulCardInkAlpha30,
       ink70: colors.colorfulCardInkAlpha70,
       ink90: colors.colorfulCardInkAlpha90,
+      panel: colors.colorfulCardPanel,
       track: colors.colorfulCardTrack,
     },
 

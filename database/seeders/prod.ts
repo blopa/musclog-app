@@ -8,6 +8,7 @@ import {
   CONFETTI_INTERACTIONS_KEY,
 } from '@/context/ConfettiInteractionsContext';
 import usdaFoundationFoodsData from '@/data/usda_foundation_foods.json';
+import { clearAppAsyncStorage } from '@/database/asyncStorageReset';
 import { database } from '@/database/database-instance';
 import { markDbReady } from '@/database/dbReady';
 import Food from '@/database/models/Food';
@@ -40,17 +41,13 @@ export interface SeedProductionDataOptions {
   }) => void;
 }
 const clearAsyncStorage = async () => {
-  const existingEncryptionKey = await AsyncStorage.getItem(ENCRYPTION_KEY);
-
   try {
-    await AsyncStorage.clear();
+    // Keeps the encryption key and, on web, the stored recovery points: a reseed is
+    // exactly the moment a user needs a backup to restore from.
+    await clearAppAsyncStorage([ENCRYPTION_KEY]);
     console.log('AsyncStorage has been cleared successfully.');
   } catch (error) {
     console.error('Error clearing AsyncStorage:', error);
-  }
-
-  if (existingEncryptionKey) {
-    await AsyncStorage.setItem(ENCRYPTION_KEY, existingEncryptionKey);
   }
 };
 

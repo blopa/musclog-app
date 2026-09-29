@@ -1,11 +1,10 @@
 import * as ExpoLinking from 'expo-linking';
 import { usePathname, useRootNavigationState, useRouter } from 'expo-router';
 import { Bell, Clock, Flame, Plus, Trophy } from 'lucide-react-native';
-import { createElement, useCallback, useEffect, useState } from 'react';
+import { createElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppState, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 
-import { ActionButton } from '@/components/ActionButton';
 import { DetailedItemCard } from '@/components/cards/DetailedItemCard';
 import { FoodItemCard } from '@/components/cards/FoodItemCard';
 import { HomeMoodPrompt } from '@/components/cards/HomeMoodPrompt';
@@ -14,7 +13,9 @@ import { HomeWaterPrompt } from '@/components/cards/HomeWaterPrompt';
 import { useCoach } from '@/components/CoachContext';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { DailySummaryBottomMenu } from '@/components/DailySummaryBottomMenu';
+import { DailyHomeFooter } from '@/components/home/DailyHomeFooter';
 import { DailyHomeSummary } from '@/components/home/DailyHomeSummary';
+import { HomeActionsRow } from '@/components/home/HomeActionsRow';
 import { WeeklyHomeSummary } from '@/components/home/WeeklyHomeSummary';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AddFoodModal } from '@/components/modals/AddFoodModal';
@@ -33,13 +34,14 @@ import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import DashedButton from '@/components/theme/DashedButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '@/components/WorkoutFoodEmptyState';
+import { HomeActionKey } from '@/constants/homeActions';
 import { isStaticExport } from '@/constants/platform';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { type CameraMode, useSmartCamera } from '@/context/SmartCameraContext';
 import { type MealType } from '@/database/models';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
-import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
+import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useEmpiricalTDEE } from '@/hooks/useEmpiricalTDEE';
 import { useNutritionLogs } from '@/hooks/useNutritionLogs';
@@ -48,6 +50,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useUser } from '@/hooks/useUser';
 import { useWorkoutHistory } from '@/hooks/useWorkoutHistory';
 import packageJson from '@/package.json';
+import { refreshDailyStepsIfStale } from '@/services/dailyStepsRefresh';
 import { isProduction } from '@/utils/app';
 import { getAvatarDisplayProps } from '@/utils/avatarUtils';
 import { isSameLocalCalendarDay, localCalendarDayDate } from '@/utils/calendarDate';
@@ -90,11 +93,17 @@ export default function HomeScreen() {
   const router = useRouter();
   const { user: dbUser, isLoading: isLoadingUser } = useUser();
   const { defaults: nutritionGoalsDefaults, planData } = useDefaultNutritionGoals();
-  const { goal: currentNutritionGoal } = useCurrentNutritionGoal();
   const { tdee: currentTdee } = useEmpiricalTDEE({
     fallbackValue: planData?.tdee ?? nutritionGoalsDefaults.totalCalories,
   });
-  const { isAiConfigured, intuitiveEatingMode, nutritionDisplay, homeSummaryCard } = useSettings();
+  const {
+    isAiConfigured,
+    intuitiveEatingMode,
+    nutritionDisplay,
+    homeSummaryCard,
+    homeActions,
+    showHomeSteps,
+  } = useSettings();
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
@@ -103,6 +112,14 @@ export default function HomeScreen() {
   const navigationState = useRootNavigationState();
 
   const [today, setToday] = useState(() => localCalendarDayDate(new Date()));
+
+  // The single owner of today's nutrition on this screen: the summary card renders it and
+  // the stat strip needs the calories out of it. `useDailyNutritionSummary` is two live
+  // queries with their own decryption, so subscribing per consumer ran the whole thing
+  // twice for one calendar day. The weekly-streak card needs none of it, hence the gate.
+  const needsDailyNutrition = homeSummaryCard !== 'weekly_streak' || showHomeSteps;
+  const dailySummary = useDailyNutritionSummary({ date: today, visible: needsDailyNutrition });
+  const currentNutritionGoal = dailySummary.nutritionGoal;
 
   useEffect(() => {
     if (isStaticExport) {
@@ -120,6 +137,8 @@ export default function HomeScreen() {
     const appSub = AppState.addEventListener('change', (next) => {
       if (next === 'active') {
         syncToday();
+        void refreshDailyStepsIfStale();
+
         // Drain pending widget action set by redirectSystemPath when Android
         // recreates the activity while the JS process is still alive (the
         // cold-start useEffect won't re-run because its deps haven't changed).
@@ -214,6 +233,18 @@ export default function HomeScreen() {
   const handleOpenFitnessGoalsManagement = useCallback(() => {
     handleOpenGoalsManagement(GOALS_MANAGEMENT_TAB.FITNESS);
   }, [handleOpenGoalsManagement]);
+
+  const homeActionHandlers: Record<HomeActionKey, () => void> = useMemo(
+    () => ({
+      start_workout: () => router.navigate('/app/workout/workouts'),
+      track_food: () => setIsAddFoodVisible(true),
+      scan_barcode: () => openCamera({ mode: 'barcode-scan', showBarcodeTextSearch: true }),
+      ai_photo: () => openCamera({ mode: 'ai-meal-photo' }),
+      my_meals: () => setIsMyMealsVisible(true),
+      add_note: () => router.navigate('/app/notes'),
+    }),
+    [router, openCamera]
+  );
 
   // Memoize modal action handlers
   const handleMealTypeSelect = useCallback((mealType: MealType) => {
@@ -444,12 +475,24 @@ export default function HomeScreen() {
           ) : (
             <DailyHomeSummary
               date={today}
+              summary={dailySummary}
               intuitiveEatingMode={intuitiveEatingMode}
               nutritionDisplay={nutritionDisplay}
               onOpenMenu={() => setIsDailySummaryMenuVisible(true)}
               onSetGoals={() => setIsNutritionGoalsVisible(true)}
             />
           )}
+          {showHomeSteps ? (
+            <DailyHomeFooter
+              date={today}
+              tdee={currentTdee}
+              // `null` withholds the energy half of the strip: there is no goal to balance
+              // against in intuitive-eating mode, or before one has been set.
+              consumedKcal={
+                intuitiveEatingMode || !currentNutritionGoal ? null : dailySummary.calories.consumed
+              }
+            />
+          ) : null}
         </View>
 
         {/* Home prompts */}
@@ -466,18 +509,7 @@ export default function HomeScreen() {
         </View>
 
         {/* Action Buttons */}
-        <View className="mx-4 mb-8 flex-row gap-4">
-          <ActionButton
-            variant="workout"
-            label={t('home.actions.startWorkout')}
-            onPress={() => router.navigate('/app/workout/workouts')}
-          />
-          <ActionButton
-            variant="food"
-            label={t('home.actions.trackFood')}
-            onPress={() => setIsAddFoodVisible(true)}
-          />
-        </View>
+        <HomeActionsRow selected={homeActions} onActionPress={(key) => homeActionHandlers[key]()} />
         <View className="mx-4 mb-8">
           <View className="mb-4 flex-row items-center justify-between">
             <Text className="text-2xl font-bold text-text-primary">

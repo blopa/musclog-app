@@ -1,4 +1,6 @@
-import { contrast } from '@/theme.audit';
+import chroma from 'chroma-js';
+
+import { contrast, MIN_SEAM } from '@/theme.audit';
 import { darkTheme, lightTheme, THEMES } from '@/theme';
 
 const kineticShockTheme = THEMES['kinetic-shock'];
@@ -52,5 +54,45 @@ describe('Daily Summary card theme', () => {
           contrast(stop, kineticVoltTheme.colors.colorfulCard.ink70) >= 4.5
       )
     ).toBe(true);
+  });
+});
+
+/**
+ * The inset panel behind the card's weekly-average stat strip. It is the one
+ * translucent surface that sits ON the gradient, so its only real constraint is
+ * that it must not make the ink above it harder to read than the bare card does.
+ */
+describe('Daily Summary card panel', () => {
+  /** Composite the panel's rgba wash over an opaque gradient stop. */
+  const flatten = (wash: string, stop: string) => {
+    const washed = chroma(wash);
+
+    return chroma.mix(chroma(stop), washed.alpha(1), washed.alpha(), 'rgb').hex();
+  };
+
+  const themeEntries = Object.entries(THEMES);
+
+  it.each(themeEntries)('%s washes away from its own card ink', (_id, theme) => {
+    const { ink, ink70, panel } = theme.colors.colorfulCard;
+
+    for (const stop of theme.colors.gradients.colorfulCard) {
+      const panelOnStop = flatten(panel, stop);
+
+      // Strictly better, never worse: a fixed 30% scrim used to sit here and cost
+      // the dark-ink themes more than half their contrast (Kinetic Volt: 6.37:1
+      // bare, 3.59:1 through the scrim).
+      expect(contrast(panelOnStop, ink)).toBeGreaterThanOrEqual(contrast(stop, ink));
+      expect(contrast(panelOnStop, ink70)).toBeGreaterThanOrEqual(contrast(stop, ink70));
+    }
+  });
+
+  it.each(themeEntries)('%s keeps the panel visible against the gradient', (_id, theme) => {
+    const { panel } = theme.colors.colorfulCard;
+
+    for (const stop of theme.colors.gradients.colorfulCard) {
+      // Kinetic Light collapses its gradient to the flat card surface, so this is
+      // the seam that decides whether the strip reads as an inset at all.
+      expect(contrast(flatten(panel, stop), stop)).toBeGreaterThanOrEqual(MIN_SEAM);
+    }
   });
 });

@@ -237,6 +237,12 @@ export const SHOW_DAILY_WATER_PROMPT_SETTING_TYPE = 'show_daily_water_prompt';
 export const SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE = 'show_daily_supplement_prompt';
 
 /**
+ * Setting type for showing the steps and energy balance line on the home screen.
+ * value: 'true' | 'false'.
+ */
+export const SHOW_HOME_STEPS_SETTING_TYPE = 'show_home_steps';
+
+/**
  * Stores the local-day start timestamp for the last answered home water prompt.
  * value: stringified local midnight timestamp in ms.
  */
@@ -335,6 +341,13 @@ export const WORKOUT_HISTORY_DAYS_SETTING_TYPE = 'workout_history_days';
  */
 export const HOME_SUMMARY_CARD_SETTING_TYPE = 'home_summary_card';
 
+/**
+ * Setting type for which quick actions the home screen shows.
+ * value: JSON array of `HomeActionKey`, at most `MAX_HOME_ACTIONS` entries.
+ * Parse it with `parseHomeActions` from `@/constants/homeActions`.
+ */
+export const HOME_ACTIONS_SETTING_TYPE = 'home_actions';
+
 export const USE_MUSCLOG_FREE_TIER_SETTING_TYPE = 'use_musclog_free_tier';
 export const MUSCLOG_GATEWAY_ANONYMOUS_ID_SETTING_TYPE = 'musclog_gateway_anonymous_id';
 export const DUMP_LLM_REQUESTS_SETTING_TYPE = 'dump_llm_requests';
@@ -410,4 +423,5 @@ export type UseSettingsResult = {
   nutritionLogHistoryDays: NutritionLogHistoryDays;
   workoutHistoryDays: WorkoutHistoryDays;
   homeSummaryCard: HomeSummaryCard;
+  showHomeSteps: boolean;
 };

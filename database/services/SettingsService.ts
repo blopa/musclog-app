@@ -1,5 +1,6 @@
 import { Q } from '@nozbe/watermelondb';
 
+import { type HomeActionKey, MAX_HOME_ACTIONS } from '@/constants/homeActions';
 import {
   ADVANCED_DATA_MANAGEMENT_SETTING_TYPE,
   ALWAYS_ALLOW_FOOD_EDITING_SETTING_TYPE,
@@ -19,6 +20,7 @@ import {
   type FoodSearchSource,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
+  HOME_ACTIONS_SETTING_TYPE,
   HOME_SUMMARY_CARD_SETTING_TYPE,
   type HomeSummaryCard,
   INCLUDE_FIBER_IN_CARBS_SETTING_TYPE,
@@ -54,6 +56,7 @@ import {
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
   SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE,
   SHOW_DAILY_WATER_PROMPT_SETTING_TYPE,
+  SHOW_HOME_STEPS_SETTING_TYPE,
   SHOW_WEIGHT_PREDICTION_SETTING_TYPE,
   THEME_SETTING_TYPE,
   type ThemeOption,
@@ -813,6 +816,28 @@ export class SettingsService {
    */
   static async setHomeSummaryCard(card: HomeSummaryCard) {
     await SettingsService.setStringSetting(HOME_SUMMARY_CARD_SETTING_TYPE, card);
+  }
+
+  /**
+   * Get the raw home quick-actions setting. Callers run it through
+   * `parseHomeActions`, which owns the validation and the default.
+   */
+  static async getHomeActions(): Promise<string> {
+    return await SettingsService.getStringSetting(HOME_ACTIONS_SETTING_TYPE, '');
+  }
+
+  /**
+   * Upsert which quick actions the home screen shows, in display order.
+   */
+  static async setHomeActions(keys: readonly HomeActionKey[]) {
+    await SettingsService.setStringSetting(
+      HOME_ACTIONS_SETTING_TYPE,
+      JSON.stringify(keys.slice(0, MAX_HOME_ACTIONS))
+    );
+  }
+
+  static async setShowHomeSteps(value: boolean) {
+    await SettingsService.setBooleanSetting(SHOW_HOME_STEPS_SETTING_TYPE, value);
   }
 
   /**

@@ -30,6 +30,7 @@
       "nutrition": "Nutrición",
       "exercise": "Ejercicio",
       "other": "Otro",
+      "daily_steps": "Pasos",
       "descriptions": {
         "weight": "Sigue tu peso corporal a lo largo del tiempo",
         "body_fat": "Porcentaje de masa grasa corporal",
@@ -53,7 +54,8 @@
         "ffmi": "Índice de masa libre de grasa",
         "nutrition": "Registro diario de ingesta de nutrición",
         "exercise": "Registro de actividad física y ejercicio",
-        "other": "Otras mediciones de métricas corporales"
+        "other": "Otras mediciones de métricas corporales",
+        "daily_steps": "Pasos registrados por tu teléfono o reloj"
       }
     },
     "current": {

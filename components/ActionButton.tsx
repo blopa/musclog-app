@@ -1,44 +1,55 @@
-import { Dumbbell, UtensilsCrossed } from 'lucide-react-native';
+import { LucideIcon } from 'lucide-react-native';
 import { Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 
-type ActionButtonVariant = 'workout' | 'food';
+/**
+ * There are two styles here, not four. `workout`/`food` and `accent`/`neutral` were
+ * byte-identical pairs — a union that doubled without gaining any expressive power, and
+ * four blocks to keep in step on every palette change instead of two.
+ */
+export type ActionButtonTone = 'accent' | 'muted';
+
+type ToneStyle = {
+  bgColor: string;
+  iconBgColor: string;
+  iconColor: string;
+  textColor: string;
+  backgroundIconColor: string;
+};
 
 type ActionButtonProps = {
-  variant: ActionButtonVariant;
+  tone: ActionButtonTone;
   label: string;
+  icon: LucideIcon;
   onPress?: () => void;
 };
 
-export function ActionButton({ variant, label, onPress }: ActionButtonProps) {
+export function ActionButton({ tone, label, icon: Icon, onPress }: ActionButtonProps) {
   const theme = useTheme();
 
-  const variantConfig = {
-    workout: {
+  const toneConfig: Record<ActionButtonTone, ToneStyle> = {
+    accent: {
       bgColor: theme.colors.accent.primary,
       iconBgColor: theme.colors.background.workoutIcon,
-      icon: Dumbbell,
       iconColor: theme.colors.background.primary,
       textColor: 'text-bg-primary',
       backgroundIconColor: theme.colors.background.primary,
     },
-    food: {
+    muted: {
       bgColor: theme.colors.background.overlay,
       iconBgColor: theme.colors.background.iconDarker,
-      icon: UtensilsCrossed,
       iconColor: theme.colors.text.primary,
       textColor: 'text-text-primary',
       backgroundIconColor: theme.colors.text.muted,
     },
   };
 
-  const config = variantConfig[variant];
-  const Icon = config.icon;
+  const config = toneConfig[tone];
 
   return (
     <Pressable
-      className={`relative flex-1 justify-between overflow-hidden rounded-3xl p-6`}
+      className="relative w-full justify-between overflow-hidden rounded-3xl p-6"
       style={{
         minHeight: theme.size['180'],
         backgroundColor: config.bgColor,

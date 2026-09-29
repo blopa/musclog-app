@@ -7,7 +7,11 @@
     },
     "actions": {
       "startWorkout": "Начать\nтренировку",
-      "trackFood": "Записать\nпитание"
+      "trackFood": "Записать\nеду",
+      "scanBarcode": "Сканировать\nштрихкод",
+      "aiPhoto": "Фото\nИИ",
+      "myMeals": "Мои\nблюда",
+      "addNote": "Добавить\nзаметку"
     },
     "sections": {
       "recentWorkouts": "Последние тренировки",
@@ -29,6 +33,15 @@
       "focus": "Фокус",
       "cycle": "Цикл",
       "checkin": "Отметки"
+    },
+    "dailyStats": {
+      "steps": "Шаги",
+      "burned": "Сожжено к этому моменту",
+      "eaten": "Съедено",
+      "deficit": "Дефицит",
+      "surplus": "Профицит",
+      "even": "Баланс",
+      "kcal": "ккал"
     }
   }
 }

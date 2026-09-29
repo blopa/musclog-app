@@ -391,6 +391,17 @@
       "generateChartPayload": "Generate Chart Data",
       "generateChartPayloadSubtitle": "Include signal and rep annotation data for chart display after each set"
     },
+    "homeActions": {
+      "sectionTitle": "Home Actions",
+      "sectionSubtitle": "Choose the quick action buttons on your home screen.",
+      "popupTitle": "Home Actions",
+      "popupSubtitle": "Pick {{min}} to {{max}} actions",
+      "editActions": "Edit Actions",
+      "chosenCount": "{{chosen}}/{{max}}",
+      "hintOrder": "They appear in the order you pick them.",
+      "hintAtMin": "Keep at least {{min}} on your home screen.",
+      "hintAtMax": "That's the maximum — remove one to add another."
+    },
     "homeSummaryCard": {
       "sectionTitle": "Home Summary Card",
       "sectionSubtitle": "Choose which card appears at the top of your home screen.",
@@ -405,6 +416,12 @@
           "label": "Weekly Streak",
           "description": "Workouts this week and your tracking streak"
         }
+      }
+    },
+    "homeDailyStats": {
+      "showHomeSteps": {
+        "title": "Show steps",
+        "description": "Show your daily step count and energy balance on the home screen."
       }
     },
     "theme": {

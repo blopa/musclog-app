@@ -15,15 +15,28 @@ import {
   Wine,
   Zap,
 } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import {
+  HOME_ACTIONS,
+  homeActionListLabel,
+  reconcileHomeActions,
+} from '@/components/home/homeActions';
+import { HomeActionsPicker } from '@/components/home/HomeActionsPicker';
 import { NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
 import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/OptionsMultiSelector';
 import { PickerButton } from '@/components/theme/PickerButton';
+import { ToggleInput } from '@/components/theme/ToggleInput';
+import {
+  type HomeActionKey,
+  MAX_HOME_ACTIONS,
+  MIN_HOME_ACTIONS,
+  parseHomeActions,
+} from '@/constants/homeActions';
 import {
   type HomeSummaryCard,
   NAV_ITEM_KEYS,
@@ -32,6 +45,7 @@ import {
   type ThemeOption,
 } from '@/constants/settings';
 import SettingsService from '@/database/services/SettingsService';
+import { useAvailableHomeActions } from '@/hooks/useAvailableHomeActions';
 import { isNavItemAvailable, useNavigationItems } from '@/hooks/useNavigationItems';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -96,7 +110,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   const { rawSlots, isCycleActive, setNavSlot } = useNavigationItems();
   // The stored preference, not the resolved mode: 'system' has to stay selectable
   // and visible as itself.
-  const { theme: themePreference } = useSettings();
+  const { theme: themePreference, showHomeSteps } = useSettings();
 
   const [themePopupVisible, setThemePopupVisible] = useState(false);
   const [activeSlot, setActiveSlot] = useState<SlotNumber | null>(null);
@@ -104,6 +118,19 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   const [selectedMacros, setSelectedMacros] = useState<MacroKey[]>([...MACRO_KEYS]);
   const [homeCardPopupVisible, setHomeCardPopupVisible] = useState(false);
   const [homeSummaryCard, setHomeSummaryCard] = useState<HomeSummaryCard>('daily_summary');
+  const [homeActionsPopupVisible, setHomeActionsPopupVisible] = useState(false);
+  const [selectedHomeActions, setSelectedHomeActions] = useState<readonly HomeActionKey[]>([]);
+
+  const availableHomeActions = useAvailableHomeActions();
+  // Read through a ref so the load effect stays keyed on `visible` alone. This form state
+  // is a snapshot, not a subscription: with `availableHomeActions` in the deps, a settings
+  // change that flipped AI configuration while the sheet was open re-read from disk over
+  // the user's in-progress selection — and re-persisted it. Same rule as `usePlanDraft`.
+  const availableHomeActionsRef = useRef(availableHomeActions);
+  // Declared before the load effect, so the ref is current by the time that one runs.
+  useEffect(() => {
+    availableHomeActionsRef.current = availableHomeActions;
+  }, [availableHomeActions]);
 
   useEffect(() => {
     if (!visible) {
@@ -113,6 +140,17 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
       setSelectedMacros(binaryToSelected(binary));
     });
     SettingsService.getHomeSummaryCard().then(setHomeSummaryCard);
+    SettingsService.getHomeActions().then((raw) => {
+      // Persisted, not just displayed: the home screen reconciles the same way, so leaving
+      // the stored value stale would let the picker and the home row disagree until the
+      // user happened to tap something.
+      const stored = parseHomeActions(raw);
+      const reconciled = reconcileHomeActions(stored, availableHomeActionsRef.current);
+      setSelectedHomeActions(reconciled);
+      if (reconciled !== stored) {
+        void SettingsService.setHomeActions(reconciled);
+      }
+    });
   }, [visible]);
 
   const handleThemeChange = async (option: ThemeOption) => {
@@ -141,6 +179,26 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
       return t('settings.nutritionDisplay.allSelected');
     }
     return t('settings.nutritionDisplay.selected', { count: selectedMacros.length });
+  };
+
+  // `HomeActionsPicker` hands back a value the bounds already accepted, and returns the
+  // same array when they refused, so a rejected tap never reaches the settings row.
+  const handleHomeActionsChange = async (keys: readonly HomeActionKey[]) => {
+    if (keys === selectedHomeActions) {
+      return;
+    }
+    setSelectedHomeActions(keys);
+    await SettingsService.setHomeActions(keys);
+  };
+
+  /** The settings row names the chosen actions, so the sheet is only needed to change them. */
+  const homeActionsSummary = (): string => {
+    if (selectedHomeActions.length === 0) {
+      return t('settings.homeActions.editActions');
+    }
+    return selectedHomeActions
+      .map((key) => homeActionListLabel(t(HOME_ACTIONS[key].labelKey)))
+      .join(', ');
   };
 
   const currentSlots = rawSlots;
@@ -201,6 +259,24 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.visualSettings.title')}>
       <View className="gap-2 py-6">
+        <View
+          style={{
+            marginHorizontal: theme.spacing.padding.base,
+          }}
+        >
+          <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
+            {t('settings.homeActions.sectionTitle')}
+          </Text>
+          <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+            {t('settings.homeActions.sectionSubtitle')}
+          </Text>
+          <PickerButton
+            icon={<LayoutGrid size={theme.iconSize.md} color={theme.colors.accent.primary} />}
+            label={homeActionsSummary()}
+            onPress={() => setHomeActionsPopupVisible(true)}
+          />
+        </View>
+
         <View
           style={{
             marginHorizontal: theme.spacing.padding.base,
@@ -272,8 +348,36 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             label={t(`settings.homeSummaryCard.options.${homeSummaryCard}.label`)}
             onPress={() => setHomeCardPopupVisible(true)}
           />
+          <View className="mt-4">
+            <ToggleInput
+              items={[
+                {
+                  key: 'show_home_steps',
+                  label: t('settings.homeDailyStats.showHomeSteps.title'),
+                  subtitle: t('settings.homeDailyStats.showHomeSteps.description'),
+                  value: showHomeSteps,
+                  onValueChange: (v: boolean) => void SettingsService.setShowHomeSteps(v),
+                },
+              ]}
+            />
+          </View>
         </View>
       </View>
+      <BottomPopUp
+        visible={homeActionsPopupVisible}
+        onClose={() => setHomeActionsPopupVisible(false)}
+        title={t('settings.homeActions.popupTitle')}
+        subtitle={t('settings.homeActions.popupSubtitle', {
+          min: MIN_HOME_ACTIONS,
+          max: MAX_HOME_ACTIONS,
+        })}
+      >
+        <HomeActionsPicker
+          selected={selectedHomeActions}
+          available={availableHomeActions}
+          onChange={handleHomeActionsChange}
+        />
+      </BottomPopUp>
       <BottomPopUp
         visible={macrosPopupVisible}
         onClose={() => setMacrosPopupVisible(false)}

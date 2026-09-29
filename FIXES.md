@@ -63,6 +63,68 @@ reached the call, so each web user reported it once. The stub now exports a no-o
 `utils/__tests__/exerciseImage.test.ts` fails if the stub lacks any function the native module
 exports.
 
+## Importing an Android backup on web (quota error, then back to onboarding)
+
+### Symptom
+
+Importing a real Android export into the web build restored the data and showed the dashboard, then
+the app dropped the user back into onboarding. Every boot afterwards logged
+`Web backup quota exceeded while preserving the latest recovery point` from
+`createPreExerciseCatalogueBackup`, so `LegacyExerciseCatalogueMigration` never ran.
+
+### Cause
+
+Three separate problems. The first two came from `localStorage` being treated as general-purpose
+storage on web; the third survived them and reproduced the same symptom on its own.
+
+1. **Web recovery points were stored in `localStorage`.** They are full database dumps. An origin
+   gets ~5 MB, counted in UTF-16 code units, so the ceiling is around 2.5M characters — less than
+   one ordinary user's export (the reported one was 3.7 MB of JSON). `createPreExerciseCatalogueBackup()`
+   could therefore never succeed once a database held real data, and because a failed backup
+   deliberately aborts the catalogue cutover, the migration failed on every boot and reported to
+   Sentry each time.
+2. **`restoreDatabase()` cleared AsyncStorage first and restored it last.** On web `AsyncStorage`
+   _is_ `window.localStorage` and `clear()` is `localStorage.clear()` — a whole-origin wipe. Three
+   consequences: the import deleted every stored recovery point before creating its own; the
+   pre-restore backup, taken after the wipe, embedded an empty `_async_storage_`, so restoring it
+   produced an un-onboarded, un-seeded app; and for the whole restore — a full dump, a database
+   reset, thousands of inserts and the 873-entry catalogue sync — `onboardingCompleted`,
+   `seeding_complete` and `currentUserSyncId` were absent. Any failure in that window left a fully
+   populated database with no `seeding_complete`, and the next boot's `seedProductionData()` reset
+   the database, wiped AsyncStorage and sent the user to onboarding.
+3. **`reloadApp()` on web reloaded the URL the restore was started from.** With both fixes above in
+   place the same report came back: the data imported, the dashboard rendered, and the tab then
+   landed on the onboarding screen. `app/app/onboarding/landing.tsx` offers file import and optical
+   receive, so a first-time restore runs at `/app/onboarding/landing`, and
+   `window.location.reload()` re-requests exactly that URL — on top of a fully restored,
+   already-onboarded database. `reloadApp()` called `router.replace('/app')` first, but expo-router
+   commits that `history.replaceState` on a later tick, so the reload was issued against the old URL
+   while React had already rendered the dashboard; that flash is what made it look like a
+   redirect _away_ from a working app. Native never had the bug: `DevSettings.reload()` and
+   `reloadAppAsync()` restart at the entry route, which sends an onboarded user to `/app`. The
+   giveaway in the report's console log was `✅ All database tables verified` plus
+   `Production data seeding already completed, skipping` — both only ever logged by the onboarding
+   landing screen, so that screen had mounted again after the reload.
+
+### Permanent rules
+
+- Web recovery-point payloads live in IndexedDB via `database/webBackupPayloadStore.ts`; only the
+  small metadata index stays in localStorage. Reads still fall back to the old
+  `musclog_backup_data_*` keys, and deletes clear both, so an upgrade keeps existing backups.
+- No wipe path calls `AsyncStorage.clear()`. `database/asyncStorageReset.ts` owns both
+  `clearAppAsyncStorage(preserved)` and `replaceAppAsyncStorage(pairs, preserved)`, and both skip
+  the web recovery-point keys (`isWebBackupStorageKey`). `clearAllAppData()` is the one deliberate
+  exception — clearing everything is what it is for.
+- `restoreDatabase()` swaps AsyncStorage over only after the database is populated, and writes the
+  restored pairs _before_ pruning stale keys, so a key the snapshot also carries is overwritten in
+  place and never momentarily absent.
+- Web restores decide where to land through `restoreReloadTarget(pathname)` in `utils/app.web.ts`,
+  never through a `router` navigation raced against `window.location`. An onboarding path is
+  `location.replace`d to `/app` (via `withExpoBaseUrl`, and `replace` so the back button cannot
+  return to onboarding); every other surface reloads in place, which the website progress page
+  (`app/(website)/progress.web.tsx`) depends on — it imports a dump only to draw its own charts and
+  must not navigate a visitor into the app. Pinned by `utils/__tests__/appWebReload.test.ts`.
+
 ## Android cold-boot gallery stall
 
 ### Symptom
@@ -216,6 +278,18 @@ native step ran. `cli.version` is therefore a major-only floor (`>= N.0.0`) that
 `eas.json` starts using a feature that needs it; `utils/__tests__/easNodeVersion.test.ts` enforces
 the shape.
 
+## Local Android builds fail on JDK 25
+
+After a Fedora update left JDK 25 as the only installed Java, every local Android build failed in
+Gradle with `Error resolving plugin [id: 'com.facebook.react.settings'] > 25.0.4.1` — the message is
+just the Java version string, because Gradle 8.13 (pinned by `plugins/withGradleVersion`) cannot run
+on Java 25. Android Studio's bundled JBR is also 25, so it is no fallback. Android builds need JDK
+17 or 21. `scripts/run-eas-local-android-build.sh` keeps a `JAVA_HOME` that is already 17/21,
+otherwise picks one from `~/.jdks/jdk-17*`/`jdk-21*` or `/usr/lib/jvm`, and exits with an install
+hint when there is none. The EAS working copy also has no `local.properties`, so the script defaults
+`ANDROID_HOME` to `~/Android/Sdk` (Android Studio's location) when it is unset — otherwise Gradle
+stops with `SDK location not found` right after the JDK check passes. Revisit when Gradle moves to 9.1+, which supports Java 25.
+
 ## Android release optimization
 
 `app.json` enables both `enableMinifyInReleaseBuilds` and
@@ -254,6 +328,38 @@ that should remain pinned:
 - `DevSettings.reload()` is development-only; `reloadApp()` must keep its separate production path,
   and post-restore UI must always offer an explicit restart action.
 
+## Home screen crashed after a database import (`useMemo is not defined`)
+
+### Symptom
+
+On a dev web build, importing an exported JSON backup from the landing screen appeared to fail: the
+restore ran to completion, `reloadApp()` navigated to `/app`, and the home screen then died in the
+error boundary with `ReferenceError: useMemo is not defined`. The import had actually succeeded — the
+data was in IndexedDB — but the only screen that could show it never rendered. The landing screen was
+the sole entry point reached beforehand, so nothing had rendered the home screen earlier to reveal
+that it was already broken for every user, imported data or not.
+
+### Cause
+
+The configurable-home-actions branch was merged with the feature only half present. `app/app/index.tsx`
+gained two `useMemo` calls without the matching `react` import, `VisualSettingsModal.tsx` called
+`isHomeActionAvailable` without importing it, and the entire persistence chain behind
+`useSettings().homeActions` was absent: no `HOME_ACTIONS_SETTING_TYPE`, no
+`SettingsService.getHomeActions`/`setHomeActions`, no `homeActions` field on the settings context.
+
+`npm run lint:eslint` does not catch any of it. The TypeScript parser is configured without
+`no-undef`, so an undefined identifier is not a lint error — `tsc` is the only check that sees it, and
+these four faults were sitting on `dev` as plain `TS2304`/`TS2339` errors. CI does run
+`npm run typecheck` on pull requests, so the merge landed red rather than the check being missing.
+
+### Permanent rules
+
+- `npm run lint:eslint` passing says nothing about undefined identifiers. Run `npm run typecheck`
+  (or `npm run lint:all`) before merging, and treat a red `typecheck` on a merge as a blocker.
+- A feature whose UI is compiler-enforced through `Record<Key, …>` tables can still be missing its
+  entire settings/persistence half with no type error at the call sites that matter. See the home
+  actions rule in `AGENTS.md` for the four edits that chain is.
+
 ## Removing workarounds
 
 When upgrading Expo or a patched dependency:
@@ -289,6 +395,30 @@ import), which calls `startFreeWorkout`.
   `workouts.interruptedSession.alreadyActive`, refreshes the resume/discard banner and does not
   report the error to Sentry.
 
+## Restoring a backup during boot migrations
+
+### Symptom
+
+Sentry reported `Cannot call database.adapter.underlyingAdapter while the database is being reset`
+from `runDatabaseBootSequence` → a boot migration's query (2.12.0, handled).
+
+### Cause
+
+The DB-ready gate only covers the reset inside `seedProductionData()`. Once seeding marks the DB
+ready, the boot migration chain starts, and on a fresh install it takes seconds (the 873-entry
+catalogue sync plus the legacy catalogue migration). The onboarding landing screen offers file
+import and optical receive as soon as seeding finishes, so `restoreDatabase` could call
+`unsafeResetDatabase()` while a migration was still querying.
+
+### Permanent rules
+
+- `dbBootCoordinator.ts` registers the migration chain with `trackBootMigrations`, and every
+  destructive reset (`restoreDatabase`, `clearAllAppData`) awaits `waitForBootMigrations()` from
+  `database/dbReady.ts` first. A new `unsafeResetDatabase()` call site outside seeding needs the
+  same wait.
+- Track only the migration chain, never the wait for readiness, so a boot that never becomes
+  ready cannot block a restore. `waitForBootMigrations()` never rejects.
+
 ## AI rate limits reported as bugs (`429 status code (no body)`)
 
 ### Symptom
@@ -311,6 +441,14 @@ failure in the app.
   `sendToSentry: !isAiCreditsError(error)`, so rate limits and quota or billing errors stay out of
   Sentry, and every other AI failure is still reported. Do not call `handleError` directly from a
   new AI catch site. `utils/__tests__/coachAIErrorReporting.test.ts` checks this.
+- Dropped connections are excluded the same way (2.12.2+306: `Connection error.` caused by
+  `fetch failed: java.io.IOException: unexpected end of stream on https://gateway.ai.cloudflare.com/...`
+  in `coachAI.generateMealPlan`). The OpenAI SDK retries connection failures twice on its own
+  (`maxRetries` defaults to 2), so one that surfaces is the device's network, not the app.
+  `reportAiError` also skips Sentry when `isAiConnectionError(error)` is true: an OpenAI
+  `APIConnectionError` (including its timeout subclass), or a raw `fetch failed: …` or
+  `Network request failed` error from the Gemini path. The user still sees the feature's error message, and
+  their text is restored so they can retry.
 
 ## Sentry events without a call site (`Record foods#null not found`)
 
@@ -342,3 +480,36 @@ Two separate problems:
   claimed ids through `normalizeAiMealIngredients` before splitting known from unknown ingredients,
   and sends unconfirmed ones to estimation. `utils/__tests__/coachAITrackMealThinking.test.ts`
   checks this. The prompt now says to omit `foodId` rather than leave it null.
+
+## `syncDailySteps is not a function` on web and iOS
+
+### Symptom
+
+v2.12.2's home screen threw `TypeError: _servicesHealthConnectFitness.syncDailySteps is not a
+function` on web as soon as the app came to the foreground. iOS was broken the same way. Android
+was fine, and neither `npm run typecheck` nor ESLint said anything.
+
+### Cause
+
+`services/healthConnectFitness` is a platform-variant module: Metro picks `.ts`, `.web.ts` or
+`.ios.ts` per platform, and every import site names a symbol without knowing which file it will
+land in. The daily-steps feature added `syncDailySteps` to the Android file only — the web stub
+never gained it, and the iOS file had the function but forgot the `export` keyword. TypeScript
+type-checks the base module regardless of which variant ships, so a symbol missing from a sibling
+is not a type error anywhere; it is a runtime `TypeError` on exactly one platform.
+
+The same gap existed in `utils/onDeviceAi.web.ts` (`sendOnDeviceStructured`, reachable from
+`coachAI.ts` whenever a restored backup carries an `on-device` provider setting) and
+`utils/notifications.web.ts` (`setupNotificationConfig`).
+
+### Permanent rules
+
+- A platform sibling may export **more** than the base module, never less. A web-only helper such
+  as `restoreReloadTarget` is legitimate; a missing stub is a crash.
+- `utils/__tests__/platformModuleParity.test.ts` enforces this across `constants/`, `database/`,
+  `hooks/`, `services/` and `utils/`. It compares named **value** exports only — types are erased
+  at runtime and cannot produce this failure. A deliberate asymmetry goes in its `ALLOWED_OMISSIONS`
+  table **with its reason** (today: `preMigrationBackup`'s two native-only filesystem functions), so
+  a new one cannot be introduced silently.
+- Route and component files are out of scope: their contract is the default export, and their named
+  exports are file-local helpers.

@@ -9,6 +9,7 @@ import { Platform } from 'react-native';
 
 import { DATABASE_NAME, ENCRYPTION_KEY } from '@/constants/database';
 import { database } from '@/database/database-instance';
+import { waitForBootMigrations } from '@/database/dbReady';
 import { reloadApp } from '@/utils/app';
 import { deleteStoredEncryptionKey } from '@/utils/encryptionKeyStorage';
 
@@ -45,6 +46,7 @@ async function deleteDirectoryContents(
 }
 
 export async function clearAllAppData(): Promise<void> {
+  await waitForBootMigrations();
   await database.write(async () => {
     await database.unsafeResetDatabase();
   });

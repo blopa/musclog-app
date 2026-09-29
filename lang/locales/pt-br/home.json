@@ -7,7 +7,11 @@
     },
     "actions": {
       "startWorkout": "Iniciar\nTreino",
-      "trackFood": "Registrar\nAlimento"
+      "trackFood": "Registrar\nComida",
+      "scanBarcode": "Escanear\nCódigo",
+      "aiPhoto": "Foto\nIA",
+      "myMeals": "Minhas\nRefeições",
+      "addNote": "Adicionar\nNota"
     },
     "sections": {
       "recentWorkouts": "Treinos Recentes",
@@ -29,6 +33,15 @@
       "focus": "Foco",
       "cycle": "Ciclo",
       "checkin": "Check-ins"
+    },
+    "dailyStats": {
+      "steps": "Passos",
+      "burned": "Queimado até agora",
+      "eaten": "Consumido",
+      "deficit": "Déficit",
+      "surplus": "Superávit",
+      "even": "Equilíbrio",
+      "kcal": "kcal"
     }
   }
 }

@@ -391,6 +391,17 @@
       "generateChartPayload": "Grafiekgegevens genereren",
       "generateChartPayloadSubtitle": "Signaal- en herhalingsannotatiegegevens opnemen voor grafiekweergave na elke set"
     },
+    "homeActions": {
+      "sectionTitle": "Startacties",
+      "sectionSubtitle": "Kies de snelle actieknoppen op je startscherm.",
+      "popupTitle": "Startacties",
+      "popupSubtitle": "Kies {{min}} tot {{max}} acties",
+      "editActions": "Acties bewerken",
+      "chosenCount": "{{chosen}}/{{max}}",
+      "hintOrder": "Ze verschijnen in de volgorde waarin je ze kiest.",
+      "hintAtMin": "Houd er minstens {{min}} op je startscherm.",
+      "hintAtMax": "Dit is het maximum — verwijder er een om een andere toe te voegen."
+    },
     "homeSummaryCard": {
       "sectionTitle": "Startscherm-overzichtskaart",
       "sectionSubtitle": "Kies welke kaart bovenaan je startscherm verschijnt.",
@@ -405,6 +416,12 @@
           "label": "Wekelijkse reeks",
           "description": "Trainingen deze week en je bijhoudreeks"
         }
+      }
+    },
+    "homeDailyStats": {
+      "showHomeSteps": {
+        "title": "Toon stappen",
+        "description": "Toon uw dagelijkse stappentelling en energiebalans op het startscherm."
       }
     },
     "theme": {

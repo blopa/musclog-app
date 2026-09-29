@@ -1,4 +1,6 @@
-import { trackMeal } from '../coachAI';
+import OpenAI from 'openai';
+
+import { isAiConnectionError, trackMeal } from '../coachAI';
 import { handleError } from '../handleError';
 
 const mockSendOnDeviceStructured = jest.fn();
@@ -60,6 +62,33 @@ describe('coachAI error reporting', () => {
     for (const [, , options] of mockHandleError.mock.calls) {
       expect(options).toEqual({ sendToSentry: false });
     }
+  });
+
+  it.each([
+    ['an OpenAI SDK connection error', new OpenAI.APIConnectionError({ message: undefined })],
+    ['an OpenAI SDK connection timeout', new OpenAI.APIConnectionTimeoutError()],
+    [
+      'a raw expo/fetch failure',
+      new Error(
+        'fetch failed: java.io.IOException: unexpected end of stream on https://gateway.ai.cloudflare.com/...'
+      ),
+    ],
+    ['a raw React Native fetch failure', new TypeError('Network request failed')],
+  ])('does not send %s to Sentry', async (_label, error) => {
+    mockSendOnDeviceStructured.mockRejectedValueOnce(error);
+
+    const result = await trackMeal({ provider: 'on-device' } as never, 'rice');
+
+    expect(result).toBeNull();
+    expect(mockHandleError).toHaveBeenCalled();
+    for (const [, , options] of mockHandleError.mock.calls) {
+      expect(options).toEqual({ sendToSentry: false });
+    }
+  });
+
+  it('does not classify HTTP errors as connection errors', () => {
+    expect(isAiConnectionError(statusError(500, 'internal error'))).toBe(false);
+    expect(isAiConnectionError(new Error('Something about a fetch failed later'))).toBe(false);
   });
 
   it('still sends a genuine failure to Sentry', async () => {

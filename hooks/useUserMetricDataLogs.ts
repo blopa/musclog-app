@@ -32,6 +32,7 @@ export type UserMetricDataDayGroup = {
 
 const ICON_BY_TYPE: Partial<Record<UserMetricType, string>> = {
   weight: 'monitor-weight',
+  daily_steps: 'directions-walk',
   body_fat: 'percent',
   height: 'straighten',
   bmi: 'trending-up',
@@ -191,6 +192,16 @@ export interface UseUserMetricDataLogsParams {
   visible?: boolean;
   batchSize?: number;
   searchQuery?: string;
+  /**
+   * Restrict the list to one metric type.
+   *
+   * Structural, not textual: this is pushed into the WatermelonDB query, where
+   * `getMetricsHistory` already supports it. The steps stat previously "filtered" by
+   * seeding `searchQuery` with the raw type name `daily_steps`, which was matched against
+   * the *translated* label — so it matched nothing in every locale and the modal opened
+   * empty. `searchQuery` stays what the user types.
+   */
+  metricType?: UserMetricType;
 }
 
 export interface UseUserMetricDataLogsResult {
@@ -206,6 +217,7 @@ export function useUserMetricDataLogs({
   visible = true,
   batchSize = BATCH_SIZE,
   searchQuery = '',
+  metricType,
 }: UseUserMetricDataLogsParams = {}): UseUserMetricDataLogsResult {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -246,7 +258,12 @@ export function useUserMetricDataLogs({
     setOffset(0);
 
     try {
-      const metrics = await UserMetricService.getMetricsHistory(undefined, undefined, batchSize, 0);
+      const metrics = await UserMetricService.getMetricsHistory(
+        metricType,
+        undefined,
+        batchSize,
+        0
+      );
       const decryptedList = await Promise.all(metrics.map((m) => m.getDecrypted()));
       const results = metrics.map((metric, i) => ({
         item: metricToDisplayItem(metric, decryptedList[i], t, iconColors, units),
@@ -263,7 +280,7 @@ export function useUserMetricDataLogs({
     } finally {
       setIsLoading(false);
     }
-  }, [visible, batchSize, t, iconColors, dateFnsLocale, units]);
+  }, [visible, batchSize, metricType, t, iconColors, dateFnsLocale, units]);
 
   const loadMore = useCallback(async () => {
     if (!visible || isLoadingMore || !hasMore) {
@@ -274,7 +291,7 @@ export function useUserMetricDataLogs({
 
     try {
       const metrics = await UserMetricService.getMetricsHistory(
-        undefined,
+        metricType,
         undefined,
         batchSize,
         offset
@@ -300,7 +317,18 @@ export function useUserMetricDataLogs({
     } finally {
       setIsLoadingMore(false);
     }
-  }, [visible, isLoadingMore, hasMore, offset, batchSize, t, iconColors, dateFnsLocale, units]);
+  }, [
+    visible,
+    isLoadingMore,
+    hasMore,
+    offset,
+    batchSize,
+    metricType,
+    t,
+    iconColors,
+    dateFnsLocale,
+    units,
+  ]);
 
   const refresh = useCallback(async () => {
     if (isLoading) {

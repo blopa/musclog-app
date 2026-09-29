@@ -7,7 +7,11 @@
     },
     "actions": {
       "startWorkout": "Start\nWorkout",
-      "trackFood": "Eten\nloggen"
+      "trackFood": "Eten\nLoggen",
+      "scanBarcode": "Barcode\nScannen",
+      "aiPhoto": "AI-\nFoto",
+      "myMeals": "Mijn\nMaaltijden",
+      "addNote": "Notitie\nToevoegen"
     },
     "sections": {
       "recentWorkouts": "Recente workouts",
@@ -29,6 +33,15 @@
       "focus": "Focus",
       "cycle": "Cyclus",
       "checkin": "Controles"
+    },
+    "dailyStats": {
+      "steps": "Stappen",
+      "burned": "Tot nu toe verbrand",
+      "eaten": "Gegeten",
+      "deficit": "Tekort",
+      "surplus": "Overschot",
+      "even": "In balans",
+      "kcal": "kcal"
     }
   }
 }

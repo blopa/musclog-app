@@ -3,64 +3,16 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, ScrollView, Text, View } from 'react-native';
 
-import { BLOCK_DURATION, BLOCK_FRACTIONS, type BlockKey } from '@/constants/circadian';
+import { BLOCK_FRACTIONS, type BlockKey } from '@/constants/circadian';
+import { useCircadianBurn } from '@/hooks/useCircadianBurn';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
-import { localDayStartMs } from '@/utils/calendarDate';
+import { circadianInstantRate } from '@/utils/circadianBurn';
 
 import { FullScreenModal } from './FullScreenModal';
 
-const CIRCADIAN_SEGMENTS = [
-  { start: 0, end: 180, blockKey: 'earlySlеep' as BlockKey },
-  { start: 180, end: 420, blockKey: 'nadir' as BlockKey },
-  { start: 420, end: 660, blockKey: 'morning' as BlockKey },
-  { start: 660, end: 900, blockKey: 'midday' as BlockKey },
-  { start: 900, end: 1140, blockKey: 'peak' as BlockKey },
-  { start: 1140, end: 1380, blockKey: 'evening' as BlockKey },
-  { start: 1380, end: 1440, blockKey: 'earlySlеep' as BlockKey },
-] as const;
-
 // Canonical display order for the 6 blocks (no midnight split).
 const BLOCK_ORDER: BlockKey[] = ['earlySlеep', 'nadir', 'morning', 'midday', 'peak', 'evening'];
-
-function getCircadianCaloriesBurned(tdee: number, minutesSinceMidnight: number): number {
-  let burned = 0;
-  for (const seg of CIRCADIAN_SEGMENTS) {
-    if (minutesSinceMidnight <= seg.start) {
-      break;
-    }
-
-    const rate = BLOCK_FRACTIONS[seg.blockKey] / BLOCK_DURATION;
-    const elapsed = Math.min(minutesSinceMidnight, seg.end) - seg.start;
-    burned += elapsed * rate * tdee;
-  }
-
-  return burned; // keep fractional for live display
-}
-
-function getCurrentBlockKey(minutesSinceMidnight: number): BlockKey {
-  for (const seg of CIRCADIAN_SEGMENTS) {
-    if (minutesSinceMidnight < seg.end) {
-      return seg.blockKey;
-    }
-  }
-
-  return CIRCADIAN_SEGMENTS[CIRCADIAN_SEGMENTS.length - 1].blockKey;
-}
-
-function getInstantRate(tdee: number, blockKey: BlockKey) {
-  const ratePerMin = (BLOCK_FRACTIONS[blockKey] / BLOCK_DURATION) * tdee;
-
-  return {
-    perHour: ratePerMin * 60,
-    perMinute: ratePerMin,
-    perSecond: ratePerMin / 60,
-  };
-}
-
-function getNow() {
-  return (Date.now() - localDayStartMs(new Date())) / 60_000;
-}
 
 // ---------------------------------------------------------------------------
 // Sub-components
@@ -205,20 +157,12 @@ export function CircadianScienceModal({ visible, onClose, tdee }: Props) {
   const theme = useTheme();
   const { formatInteger, formatDecimal } = useFormatAppNumber();
 
-  const [minutesSinceMidnight, setMinutesSinceMidnight] = useState(getNow);
-
-  // Update every second while modal is visible.
-  useEffect(() => {
-    if (!visible) {
-      return;
-    }
-    const id = setInterval(() => setMinutesSinceMidnight(getNow()), 1_000);
-    return () => clearInterval(id);
-  }, [visible]);
-
-  const burned = getCircadianCaloriesBurned(tdee, minutesSinceMidnight);
-  const currentBlockKey = getCurrentBlockKey(minutesSinceMidnight);
-  const { perHour, perMinute, perSecond } = getInstantRate(tdee, currentBlockKey);
+  // Per-second, since the hero is a live counter, and only while the modal is up.
+  const { blockKey: currentBlockKey, burned } = useCircadianBurn(tdee, {
+    enabled: visible,
+    tickMs: 1_000,
+  });
+  const { perHour, perMinute, perSecond } = circadianInstantRate(tdee, currentBlockKey);
 
   return (
     <FullScreenModal

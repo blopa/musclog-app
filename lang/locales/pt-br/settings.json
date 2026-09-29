@@ -391,6 +391,17 @@
       "generateChartPayload": "Gerar dados de gráfico",
       "generateChartPayloadSubtitle": "Incluir dados de sinal e anotações de repetições para exibição no gráfico após cada série"
     },
+    "homeActions": {
+      "sectionTitle": "Ações da tela inicial",
+      "sectionSubtitle": "Escolha os botões de ação rápida da sua tela inicial.",
+      "popupTitle": "Ações da tela inicial",
+      "popupSubtitle": "Escolha de {{min}} a {{max}} ações",
+      "editActions": "Editar ações",
+      "chosenCount": "{{chosen}}/{{max}}",
+      "hintOrder": "Elas aparecem na ordem em que você escolher.",
+      "hintAtMin": "Mantenha pelo menos {{min}} na sua tela inicial.",
+      "hintAtMax": "Esse é o máximo — remova uma para adicionar outra."
+    },
     "homeSummaryCard": {
       "sectionTitle": "Cartão de resumo inicial",
       "sectionSubtitle": "Escolha qual cartão aparece no topo da sua tela inicial.",
@@ -405,6 +416,12 @@
           "label": "Sequência semanal",
           "description": "Treinos desta semana e sua sequência de registro"
         }
+      }
+    },
+    "homeDailyStats": {
+      "showHomeSteps": {
+        "title": "Mostrar passos",
+        "description": "Mostre sua contagem diária de passos e saldo de energia na tela inicial."
       }
     },
     "theme": {

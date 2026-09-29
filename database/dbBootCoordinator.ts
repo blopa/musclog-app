@@ -3,7 +3,13 @@ import { Platform } from 'react-native';
 
 import { isStaticExport } from '@/constants/platform';
 import { startDbDurabilityMonitoring } from '@/database/dbDurability';
-import { isDbReady, markDbReady, markDbReadyFailed, waitForDbReady } from '@/database/dbReady';
+import {
+  isDbReady,
+  markDbReady,
+  markDbReadyFailed,
+  trackBootMigrations,
+  waitForDbReady,
+} from '@/database/dbReady';
 import { waitForPreMigrationBackup } from '@/database/preMigrationBackup';
 import { AppExerciseCatalogueService } from '@/database/services/AppExerciseCatalogueService';
 import { ExerciseService } from '@/database/services/ExerciseService';
@@ -279,6 +285,16 @@ async function runBootMigration(m: BootMigration): Promise<void> {
   }
 }
 
+async function runBootMigrations(migrations: BootMigration[], cancelled: Cancelled): Promise<void> {
+  for (const m of migrations) {
+    if (cancelled()) {
+      return;
+    }
+
+    await runBootMigration(m);
+  }
+}
+
 export async function runDatabaseBootSequence(cancelled: Cancelled): Promise<void> {
   if (isStaticExport) {
     markDbReady();
@@ -324,13 +340,9 @@ export async function runDatabaseBootSequence(cancelled: Cancelled): Promise<voi
     // (last-write-wins on stale reads). The array order already encodes these
     // dependencies, so sequencing is sufficient. `runBootMigration` swallows its
     // own errors, so one failure does not stop the rest of the chain.
-    for (const m of migrations) {
-      if (cancelled()) {
-        return;
-      }
-
-      await runBootMigration(m);
-    }
+    // Tracked so a restore or clear-data reset waits for the chain instead of
+    // resetting the database under a migration that is still querying it.
+    await trackBootMigrations(runBootMigrations(migrations, cancelled));
 
     if (!cancelled()) {
       finishBootProgress();

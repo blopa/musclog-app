@@ -1,59 +1,16 @@
 import MaterialIcons from '@react-native-vector-icons/material-icons/static';
 import { Info } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { CircadianScienceModal } from '@/components/modals/CircadianScienceModal';
-import { BLOCK_DURATION, BLOCK_FRACTIONS } from '@/constants/circadian';
+import { useCircadianBurn } from '@/hooks/useCircadianBurn';
 import { useEmpiricalTDEE } from '@/hooks/useEmpiricalTDEE';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
-import { localDayStartMs } from '@/utils/calendarDate';
 
 import { GenericCard } from './GenericCard';
-
-// Segments in minutes-since-midnight order.
-// `rate` = fraction of TDEE burned per minute within this segment.
-const CIRCADIAN_SEGMENTS = [
-  { start: 0, end: 180, rate: BLOCK_FRACTIONS.earlySlеep / BLOCK_DURATION, blockKey: 'earlySlеep' },
-  { start: 180, end: 420, rate: BLOCK_FRACTIONS.nadir / BLOCK_DURATION, blockKey: 'nadir' },
-  { start: 420, end: 660, rate: BLOCK_FRACTIONS.morning / BLOCK_DURATION, blockKey: 'morning' },
-  { start: 660, end: 900, rate: BLOCK_FRACTIONS.midday / BLOCK_DURATION, blockKey: 'midday' },
-  { start: 900, end: 1140, rate: BLOCK_FRACTIONS.peak / BLOCK_DURATION, blockKey: 'peak' },
-  { start: 1140, end: 1380, rate: BLOCK_FRACTIONS.evening / BLOCK_DURATION, blockKey: 'evening' },
-  {
-    start: 1380,
-    end: 1440,
-    rate: BLOCK_FRACTIONS.earlySlеep / BLOCK_DURATION,
-    blockKey: 'earlySlеep',
-  },
-] as const;
-
-function getCircadianCaloriesBurned(tdee: number, minutesSinceMidnight: number): number {
-  let burned = 0;
-  for (const seg of CIRCADIAN_SEGMENTS) {
-    if (minutesSinceMidnight <= seg.start) {
-      break;
-    }
-    const elapsed = Math.min(minutesSinceMidnight, seg.end) - seg.start;
-    burned += elapsed * seg.rate * tdee;
-  }
-  return Math.round(burned);
-}
-
-function getCurrentBlockKey(minutesSinceMidnight: number): string {
-  for (const seg of CIRCADIAN_SEGMENTS) {
-    if (minutesSinceMidnight < seg.end) {
-      return seg.blockKey;
-    }
-  }
-  return CIRCADIAN_SEGMENTS[CIRCADIAN_SEGMENTS.length - 1].blockKey;
-}
-
-function getMinutesSinceMidnight(): number {
-  return (Date.now() - localDayStartMs(new Date())) / 60_000;
-}
 
 export function CaloriesBurnedCard() {
   const { t } = useTranslation();
@@ -61,19 +18,10 @@ export function CaloriesBurnedCard() {
   const { formatInteger } = useFormatAppNumber();
   const { tdee } = useEmpiricalTDEE();
 
-  const [minutesSinceMidnight, setMinutesSinceMidnight] = useState(getMinutesSinceMidnight);
   const [modalVisible, setModalVisible] = useState(false);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setMinutesSinceMidnight(getMinutesSinceMidnight());
-    }, 60_000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const caloriesBurned = getCircadianCaloriesBurned(tdee, minutesSinceMidnight);
-  const dayProgress = Math.min(minutesSinceMidnight / 1440, 1);
-  const currentBlockKey = getCurrentBlockKey(minutesSinceMidnight);
+  const { blockKey: currentBlockKey, burned, dayProgress } = useCircadianBurn(tdee);
+  const caloriesBurned = Math.round(burned);
 
   return (
     <>
