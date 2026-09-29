@@ -301,6 +301,30 @@ import), which calls `startFreeWorkout`.
   `workouts.interruptedSession.alreadyActive`, refreshes the resume/discard banner and does not
   report the error to Sentry.
 
+## Restoring a backup during boot migrations
+
+### Symptom
+
+Sentry reported `Cannot call database.adapter.underlyingAdapter while the database is being reset`
+from `runDatabaseBootSequence` → a boot migration's query (2.12.0, handled).
+
+### Cause
+
+The DB-ready gate only covers the reset inside `seedProductionData()`. Once seeding marks the DB
+ready, the boot migration chain starts, and on a fresh install it takes seconds (the 873-entry
+catalogue sync plus the legacy catalogue migration). The onboarding landing screen offers file
+import and optical receive as soon as seeding finishes, so `restoreDatabase` could call
+`unsafeResetDatabase()` while a migration was still querying.
+
+### Permanent rules
+
+- `dbBootCoordinator.ts` registers the migration chain with `trackBootMigrations`, and every
+  destructive reset (`restoreDatabase`, `clearAllAppData`) awaits `waitForBootMigrations()` from
+  `database/dbReady.ts` first. A new `unsafeResetDatabase()` call site outside seeding needs the
+  same wait.
+- Track only the migration chain, never the wait for readiness, so a boot that never becomes
+  ready cannot block a restore. `waitForBootMigrations()` never rejects.
+
 ## AI rate limits reported as bugs (`429 status code (no body)`)
 
 ### Symptom

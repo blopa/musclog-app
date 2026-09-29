@@ -21,6 +21,7 @@ import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
 import { database } from './database-instance';
 import { updateNutritionLogCountBaseline } from './dbDurability';
+import { waitForBootMigrations } from './dbReady';
 import {
   decryptNutritionLogSnapshotRow,
   encryptNutritionLogSnapshot,
@@ -398,6 +399,10 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
       })
     );
   }
+
+  // A restore offered right after onboarding seeding would otherwise reset the
+  // database under a boot migration that is still querying it.
+  await waitForBootMigrations();
 
   // Phase 1.5: Create a pre-restore backup of the current database.
   await createPreRestoreBackup();

@@ -67,3 +67,34 @@ export const isDbReady = (): boolean => _isReady;
 
 /** Last terminal boot error, if DB readiness failed before the app could open. */
 export const getDbReadyError = (): unknown => _readyError;
+
+/**
+ * Boot-migration drain
+ *
+ * The boot migration chain in `dbBootCoordinator.ts` starts the moment the DB is
+ * marked ready and can run for several seconds on a fresh install (the bundled
+ * exercise catalogue sync). The onboarding landing screen offers "import a backup"
+ * as soon as seeding finishes, so a restore could call `unsafeResetDatabase()`
+ * while a migration was mid-query and throw the same reset-race error. Every
+ * destructive reset awaits `waitForBootMigrations()` first.
+ *
+ * Only the migration chain is tracked — never the wait for readiness — so a boot
+ * that never becomes ready cannot block a restore forever.
+ */
+let _bootMigrations: Promise<void> | null = null;
+
+/** Registers the running boot migration chain; returns the chain unchanged. */
+export const trackBootMigrations = (chain: Promise<void>): Promise<void> => {
+  const settled: Promise<void> = chain
+    .catch(() => {})
+    .finally(() => {
+      if (_bootMigrations === settled) {
+        _bootMigrations = null;
+      }
+    });
+  _bootMigrations = settled;
+  return chain;
+};
+
+/** Resolves once no boot migration is running. Never rejects. */
+export const waitForBootMigrations = (): Promise<void> => _bootMigrations ?? Promise.resolve();

@@ -129,3 +129,41 @@ describe('dbReady gate', () => {
     expect(unhandled).not.toHaveBeenCalled();
   });
 });
+
+describe('boot-migration drain', () => {
+  it('resolves immediately when no boot migration chain is running', async () => {
+    const { waitForBootMigrations } = loadDbReady();
+
+    await expect(waitForBootMigrations()).resolves.toBeUndefined();
+  });
+
+  it('holds a destructive reset until the running chain settles', async () => {
+    // Regression: a backup imported from the onboarding landing screen reset the DB while
+    // the catalogue sync was still querying it ("...while the database is being reset").
+    const { trackBootMigrations, waitForBootMigrations } = loadDbReady();
+    let finishChain!: () => void;
+    void trackBootMigrations(
+      new Promise<void>((resolve) => {
+        finishChain = resolve;
+      })
+    );
+    const drained = jest.fn();
+    void waitForBootMigrations().then(drained);
+
+    await Promise.resolve();
+    expect(drained).not.toHaveBeenCalled();
+
+    finishChain();
+    await waitForBootMigrations();
+
+    expect(drained).toHaveBeenCalled();
+  });
+
+  it('never rejects, even when the tracked chain does', async () => {
+    const { trackBootMigrations, waitForBootMigrations } = loadDbReady();
+    const failure = new Error('migration chain crashed');
+
+    await expect(trackBootMigrations(Promise.reject(failure))).rejects.toBe(failure);
+    await expect(waitForBootMigrations()).resolves.toBeUndefined();
+  });
+});
