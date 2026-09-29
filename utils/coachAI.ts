@@ -86,12 +86,32 @@ export function isAiCreditsError(error: any): boolean {
 }
 
 /**
+ * The request never got a response: the device dropped the connection (flaky mobile data, a
+ * backgrounded app, `unexpected end of stream` from OkHttp). The OpenAI SDK has already retried
+ * these twice (`maxRetries` defaults to 2) by the time one surfaces, so it is the user's network,
+ * not a Musclog bug. Covers the OpenAI SDK's wrapper (and its timeout subclass) plus the raw fetch
+ * failures the Gemini SDK lets through: expo/fetch's `fetch failed: …` and RN's
+ * `Network request failed`.
+ */
+export function isAiConnectionError(error: unknown): boolean {
+  if (error instanceof OpenAI.APIConnectionError) {
+    return true;
+  }
+
+  const message = String((error as any)?.message ?? '').toLowerCase();
+  return message.startsWith('fetch failed:') || message === 'network request failed';
+}
+
+/**
  * A rate limit or exhausted quota is the provider refusing the request, not a Musclog bug: it is
  * reported to the user (see `AiCreditsError`) but must not reach Sentry, where every busy hour on a
  * shared key or the gateway's daily cap filed an unactionable `429 status code (no body)` event.
+ * A dropped connection (`isAiConnectionError`) is likewise the user's network, not ours.
  */
 function reportAiError(error: unknown, context: string): void {
-  handleError(error, context, { sendToSentry: !isAiCreditsError(error) });
+  handleError(error, context, {
+    sendToSentry: !isAiCreditsError(error) && !isAiConnectionError(error),
+  });
 }
 
 const RETRYABLE_LLM_STATUSES = new Set([429, 503, 529]);
