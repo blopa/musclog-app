@@ -231,6 +231,7 @@ This repository serves two distinct purposes that share the same Expo Router pro
 
 - **Android**: Use namespace imports for image manipulation: `import * as ImageManipulator from 'expo-image-manipulator'`.
 - **Web**: Target a mobile viewport (390x844) for correct layout rendering. Web-specific overrides use `.web.tsx` file extensions.
+- **`reloadApp()` on web is a URL decision, not a navigation**: `window.location.reload()` re-requests the URL the tab is on, so a restore started from the onboarding landing screen reloads straight back into onboarding on top of an already-onboarded database. `restoreReloadTarget(pathname)` (`utils/app.web.ts`) owns that choice — an onboarding path is `location.replace`d to `/app`, everything else reloads in place, which `app/(website)/progress.web.tsx` relies on. Do not "fix" a landing problem by calling `router.replace` before the reload: expo-router commits its `history.replaceState` on a later tick, so the reload still uses the old URL and the only visible effect is a dashboard flash before the wrong page loads. See `FIXES.md`.
 - **Widgets**: Android/iOS home screen widgets live in `widgets/` (e.g., `NutritionWidget`, `SmartCameraWidget`).
 
 ### Feature Highlights

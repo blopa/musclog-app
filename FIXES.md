@@ -74,7 +74,8 @@ the app dropped the user back into onboarding. Every boot afterwards logged
 
 ### Cause
 
-Two separate problems, both from `localStorage` being treated as general-purpose storage on web.
+Three separate problems. The first two came from `localStorage` being treated as general-purpose
+storage on web; the third survived them and reproduced the same symptom on its own.
 
 1. **Web recovery points were stored in `localStorage`.** They are full database dumps. An origin
    gets ~5 MB, counted in UTF-16 code units, so the ceiling is around 2.5M characters — less than
@@ -91,6 +92,19 @@ Two separate problems, both from `localStorage` being treated as general-purpose
    `seeding_complete` and `currentUserSyncId` were absent. Any failure in that window left a fully
    populated database with no `seeding_complete`, and the next boot's `seedProductionData()` reset
    the database, wiped AsyncStorage and sent the user to onboarding.
+3. **`reloadApp()` on web reloaded the URL the restore was started from.** With both fixes above in
+   place the same report came back: the data imported, the dashboard rendered, and the tab then
+   landed on the onboarding screen. `app/app/onboarding/landing.tsx` offers file import and optical
+   receive, so a first-time restore runs at `/app/onboarding/landing`, and
+   `window.location.reload()` re-requests exactly that URL — on top of a fully restored,
+   already-onboarded database. `reloadApp()` called `router.replace('/app')` first, but expo-router
+   commits that `history.replaceState` on a later tick, so the reload was issued against the old URL
+   while React had already rendered the dashboard; that flash is what made it look like a
+   redirect _away_ from a working app. Native never had the bug: `DevSettings.reload()` and
+   `reloadAppAsync()` restart at the entry route, which sends an onboarded user to `/app`. The
+   giveaway in the report's console log was `✅ All database tables verified` plus
+   `Production data seeding already completed, skipping` — both only ever logged by the onboarding
+   landing screen, so that screen had mounted again after the reload.
 
 ### Permanent rules
 
@@ -104,6 +118,12 @@ Two separate problems, both from `localStorage` being treated as general-purpose
 - `restoreDatabase()` swaps AsyncStorage over only after the database is populated, and writes the
   restored pairs _before_ pruning stale keys, so a key the snapshot also carries is overwritten in
   place and never momentarily absent.
+- Web restores decide where to land through `restoreReloadTarget(pathname)` in `utils/app.web.ts`,
+  never through a `router` navigation raced against `window.location`. An onboarding path is
+  `location.replace`d to `/app` (via `withExpoBaseUrl`, and `replace` so the back button cannot
+  return to onboarding); every other surface reloads in place, which the website progress page
+  (`app/(website)/progress.web.tsx`) depends on — it imports a dump only to draw its own charts and
+  must not navigate a visitor into the app. Pinned by `utils/__tests__/appWebReload.test.ts`.
 
 ## Android cold-boot gallery stall
 
