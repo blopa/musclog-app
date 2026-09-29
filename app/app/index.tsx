@@ -15,6 +15,7 @@ import { useCoach } from '@/components/CoachContext';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { DailySummaryBottomMenu } from '@/components/DailySummaryBottomMenu';
 import { DailyHomeSummary } from '@/components/home/DailyHomeSummary';
+import { HOME_ACTIONS, isHomeActionAvailable } from '@/components/home/homeActions';
 import { WeeklyHomeSummary } from '@/components/home/WeeklyHomeSummary';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AddFoodModal } from '@/components/modals/AddFoodModal';
@@ -33,6 +34,7 @@ import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import DashedButton from '@/components/theme/DashedButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '@/components/WorkoutFoodEmptyState';
+import { HomeActionKey } from '@/constants/homeActions';
 import { isStaticExport } from '@/constants/platform';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { type CameraMode, useSmartCamera } from '@/context/SmartCameraContext';
@@ -94,7 +96,7 @@ export default function HomeScreen() {
   const { tdee: currentTdee } = useEmpiricalTDEE({
     fallbackValue: planData?.tdee ?? nutritionGoalsDefaults.totalCalories,
   });
-  const { isAiConfigured, intuitiveEatingMode, nutritionDisplay, homeSummaryCard } = useSettings();
+  const { isAiConfigured, intuitiveEatingMode, nutritionDisplay, homeSummaryCard, homeActions } = useSettings();
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
@@ -214,6 +216,32 @@ export default function HomeScreen() {
   const handleOpenFitnessGoalsManagement = useCallback(() => {
     handleOpenGoalsManagement(GOALS_MANAGEMENT_TAB.FITNESS);
   }, [handleOpenGoalsManagement]);
+
+  const homeActionHandlers: Record<HomeActionKey, () => void> = useMemo(
+    () => ({
+      start_workout: () => router.navigate('/app/workout/workouts'),
+      track_food: () => setIsAddFoodVisible(true),
+      scan_barcode: () => {
+        setIsAddFoodVisible(false);
+        openCamera({ mode: 'barcode-scan', showBarcodeTextSearch: true });
+      },
+      ai_photo: () => {
+        setIsAddFoodVisible(false);
+        openCamera({ mode: 'ai-meal-photo' });
+      },
+      log_weight: () => setIsDailySummaryMenuVisible(true),
+      my_meals: () => setIsMyMealsVisible(true),
+      add_note: () => router.navigate('/app/notes'),
+      log_cardio: () => {}, // TODO
+    }),
+    [router, openCamera]
+  );
+
+  const availableHomeActions = useMemo(() => {
+    return homeActions.filter((key) =>
+      isHomeActionAvailable(key, { isAiConfigured, platform: Platform.OS })
+    );
+  }, [homeActions, isAiConfigured]);
 
   // Memoize modal action handlers
   const handleMealTypeSelect = useCallback((mealType: MealType) => {
@@ -466,17 +494,19 @@ export default function HomeScreen() {
         </View>
 
         {/* Action Buttons */}
-        <View className="mx-4 mb-8 flex-row gap-4">
-          <ActionButton
-            variant="workout"
-            label={t('home.actions.startWorkout')}
-            onPress={() => router.navigate('/app/workout/workouts')}
-          />
-          <ActionButton
-            variant="food"
-            label={t('home.actions.trackFood')}
-            onPress={() => setIsAddFoodVisible(true)}
-          />
+        <View className="mx-4 mb-8 flex-row flex-wrap justify-between gap-y-4">
+          {availableHomeActions.map((key) => {
+            const config = HOME_ACTIONS[key];
+            return (
+              <ActionButton
+                key={key}
+                tone={config.tone}
+                label={t(config.labelKey)}
+                icon={config.icon}
+                onPress={homeActionHandlers[key]}
+              />
+            );
+          })}
         </View>
         <View className="mx-4 mb-8">
           <View className="mb-4 flex-row items-center justify-between">

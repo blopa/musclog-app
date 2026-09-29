@@ -391,6 +391,13 @@
       "generateChartPayload": "Генерировать данные графика",
       "generateChartPayloadSubtitle": "Включить данные сигнала и аннотации повторений для отображения на графике после каждого подхода"
     },
+    "homeActions": {
+      "sectionTitle": "Home Actions",
+      "sectionSubtitle": "Choose which quick actions appear on your home screen.",
+      "popupTitle": "Home Actions",
+      "popupSubtitle": "Select up to 4 actions",
+      "editActions": "Edit Actions"
+    },
     "homeSummaryCard": {
       "sectionTitle": "Карточка сводки на главном экране",
       "sectionSubtitle": "Выберите, какая карточка отображается вверху главного экрана.",

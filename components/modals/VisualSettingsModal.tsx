@@ -17,13 +17,15 @@ import {
 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { Platform,Text, View  } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
+import { HOME_ACTIONS } from '@/components/home/homeActions';
 import { NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
 import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/OptionsMultiSelector';
 import { PickerButton } from '@/components/theme/PickerButton';
+import { HOME_ACTION_KEYS, type HomeActionKey, parseHomeActions } from '@/constants/homeActions';
 import {
   type HomeSummaryCard,
   NAV_ITEM_KEYS,
@@ -96,7 +98,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   const { rawSlots, isCycleActive, setNavSlot } = useNavigationItems();
   // The stored preference, not the resolved mode: 'system' has to stay selectable
   // and visible as itself.
-  const { theme: themePreference } = useSettings();
+  const { theme: themePreference, isAiConfigured } = useSettings();
 
   const [themePopupVisible, setThemePopupVisible] = useState(false);
   const [activeSlot, setActiveSlot] = useState<SlotNumber | null>(null);
@@ -104,6 +106,8 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   const [selectedMacros, setSelectedMacros] = useState<MacroKey[]>([...MACRO_KEYS]);
   const [homeCardPopupVisible, setHomeCardPopupVisible] = useState(false);
   const [homeSummaryCard, setHomeSummaryCard] = useState<HomeSummaryCard>('daily_summary');
+  const [homeActionsPopupVisible, setHomeActionsPopupVisible] = useState(false);
+  const [selectedHomeActions, setSelectedHomeActions] = useState<HomeActionKey[]>([]);
 
   useEffect(() => {
     if (!visible) {
@@ -113,6 +117,9 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
       setSelectedMacros(binaryToSelected(binary));
     });
     SettingsService.getHomeSummaryCard().then(setHomeSummaryCard);
+    SettingsService.getHomeActions().then((raw) => {
+      setSelectedHomeActions(parseHomeActions(raw));
+    });
   }, [visible]);
 
   const handleThemeChange = async (option: ThemeOption) => {
@@ -141,6 +148,15 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
       return t('settings.nutritionDisplay.allSelected');
     }
     return t('settings.nutritionDisplay.selected', { count: selectedMacros.length });
+  };
+
+  const handleHomeActionsChange = async (keys: HomeActionKey[]) => {
+    if (keys.length === 0) {
+      return;
+    }
+    const maxItems = keys.slice(0, 4);
+    setSelectedHomeActions(maxItems);
+    await SettingsService.setHomeActions(maxItems);
   };
 
   const currentSlots = rawSlots;
@@ -201,6 +217,24 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   return (
     <FullScreenModal visible={visible} onClose={onClose} title={t('settings.visualSettings.title')}>
       <View className="gap-2 py-6">
+        <View
+          style={{
+            marginHorizontal: theme.spacing.padding.base,
+          }}
+        >
+          <Text className="mb-2 px-1 text-lg font-bold tracking-tight text-text-primary">
+            {t('settings.homeActions.sectionTitle')}
+          </Text>
+          <Text className="mb-6 px-1 text-sm" style={{ color: theme.colors.text.secondary }}>
+            {t('settings.homeActions.sectionSubtitle')}
+          </Text>
+          <PickerButton
+            icon={<LayoutGrid size={theme.iconSize.md} color={theme.colors.accent.primary} />}
+            label={t('settings.homeActions.editActions')}
+            onPress={() => setHomeActionsPopupVisible(true)}
+          />
+        </View>
+
         <View
           style={{
             marginHorizontal: theme.spacing.padding.base,
@@ -274,6 +308,41 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
           />
         </View>
       </View>
+      <BottomPopUp
+        visible={homeActionsPopupVisible}
+        onClose={() => setHomeActionsPopupVisible(false)}
+        title={t('settings.homeActions.popupTitle')}
+        subtitle={t('settings.homeActions.popupSubtitle')}
+      >
+        <OptionsMultiSelector
+          title=""
+          hasGroups={false}
+          isEditable={true}
+          hideCheckboxes={true}
+          options={selectedHomeActions.map((key) => ({
+            id: key,
+            label: t(HOME_ACTIONS[key].labelKey),
+            description: '',
+            icon: HOME_ACTIONS[key].icon,
+            iconColor: theme.colors.accent.primary,
+            iconBgColor: theme.colors.background.iconDark,
+          })).concat(
+            HOME_ACTION_KEYS
+              .filter(k => !selectedHomeActions.includes(k) && isHomeActionAvailable(k, { isAiConfigured, platform: Platform.OS }))
+              .map(key => ({
+                id: key,
+                label: t(HOME_ACTIONS[key].labelKey),
+                description: '',
+                icon: HOME_ACTIONS[key].icon,
+                iconColor: theme.colors.accent.primary,
+                iconBgColor: theme.colors.background.iconDark,
+              }))
+          )}
+          selectedIds={selectedHomeActions}
+          onChange={(ids) => handleHomeActionsChange(ids as HomeActionKey[])}
+          onOrderChange={(reordered) => handleHomeActionsChange(reordered.map(r => r.id as HomeActionKey))}
+        />
+      </BottomPopUp>
       <BottomPopUp
         visible={macrosPopupVisible}
         onClose={() => setMacrosPopupVisible(false)}

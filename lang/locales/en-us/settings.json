@@ -391,6 +391,13 @@
       "generateChartPayload": "Generate Chart Data",
       "generateChartPayloadSubtitle": "Include signal and rep annotation data for chart display after each set"
     },
+    "homeActions": {
+      "sectionTitle": "Home Actions",
+      "sectionSubtitle": "Choose which quick actions appear on your home screen.",
+      "popupTitle": "Home Actions",
+      "popupSubtitle": "Select up to 4 actions",
+      "editActions": "Edit Actions"
+    },
     "homeSummaryCard": {
       "sectionTitle": "Home Summary Card",
       "sectionSubtitle": "Choose which card appears at the top of your home screen.",

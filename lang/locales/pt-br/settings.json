@@ -391,6 +391,13 @@
       "generateChartPayload": "Gerar dados de gráfico",
       "generateChartPayloadSubtitle": "Incluir dados de sinal e anotações de repetições para exibição no gráfico após cada série"
     },
+    "homeActions": {
+      "sectionTitle": "Home Actions",
+      "sectionSubtitle": "Choose which quick actions appear on your home screen.",
+      "popupTitle": "Home Actions",
+      "popupSubtitle": "Select up to 4 actions",
+      "editActions": "Edit Actions"
+    },
     "homeSummaryCard": {
       "sectionTitle": "Cartão de resumo inicial",
       "sectionSubtitle": "Escolha qual cartão aparece no topo da sua tela inicial.",

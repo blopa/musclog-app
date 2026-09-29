@@ -1,24 +1,24 @@
-import { Dumbbell, UtensilsCrossed } from 'lucide-react-native';
+import { LucideIcon } from 'lucide-react-native';
 import { Pressable, Text, View } from 'react-native';
 
 import { useTheme } from '@/hooks/useTheme';
 
-type ActionButtonVariant = 'workout' | 'food';
+export type ActionButtonTone = 'workout' | 'food' | 'neutral' | 'accent';
 
 type ActionButtonProps = {
-  variant: ActionButtonVariant;
+  tone: ActionButtonTone;
   label: string;
+  icon: LucideIcon;
   onPress?: () => void;
 };
 
-export function ActionButton({ variant, label, onPress }: ActionButtonProps) {
+export function ActionButton({ tone, label, icon: Icon, onPress }: ActionButtonProps) {
   const theme = useTheme();
 
   const variantConfig = {
     workout: {
       bgColor: theme.colors.accent.primary,
       iconBgColor: theme.colors.background.workoutIcon,
-      icon: Dumbbell,
       iconColor: theme.colors.background.primary,
       textColor: 'text-bg-primary',
       backgroundIconColor: theme.colors.background.primary,
@@ -26,20 +26,33 @@ export function ActionButton({ variant, label, onPress }: ActionButtonProps) {
     food: {
       bgColor: theme.colors.background.overlay,
       iconBgColor: theme.colors.background.iconDarker,
-      icon: UtensilsCrossed,
       iconColor: theme.colors.text.primary,
       textColor: 'text-text-primary',
       backgroundIconColor: theme.colors.text.muted,
     },
+    neutral: {
+      bgColor: theme.colors.background.overlay,
+      iconBgColor: theme.colors.background.iconDarker,
+      iconColor: theme.colors.text.primary,
+      textColor: 'text-text-primary',
+      backgroundIconColor: theme.colors.text.muted,
+    },
+    accent: {
+      bgColor: theme.colors.accent.primary,
+      iconBgColor: theme.colors.background.workoutIcon,
+      iconColor: theme.colors.background.primary,
+      textColor: 'text-bg-primary',
+      backgroundIconColor: theme.colors.background.primary,
+    },
   };
 
-  const config = variantConfig[variant];
-  const Icon = config.icon;
+  const config = variantConfig[tone];
 
   return (
     <Pressable
-      className={`relative flex-1 justify-between overflow-hidden rounded-3xl p-6`}
+      className={`relative justify-between overflow-hidden rounded-3xl p-6`}
       style={{
+        flexBasis: '48%',
         minHeight: theme.size['180'],
         backgroundColor: config.bgColor,
       }}

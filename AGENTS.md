@@ -186,6 +186,7 @@ This repository serves two distinct purposes that share the same Expo Router pro
   context value. A surface that must pin a palette (currently the camera viewfinder) wraps it in
   `ThemeScope` and everything inside keeps using the ordinary `useTheme()` — do not create another
   forced-theme context and do not read `darkTheme`/`lightTheme` from a React component.
+- **Home actions are table-driven**: Similar to navigation destinations, add a key to `HOME_ACTION_KEYS` in `constants/homeActions.ts`, then the compiler asks for the rest (the UI config in `components/home/homeActions.ts` and handlers in `app/app/index.tsx`).
 - **Navigation destinations are table-driven — adding one is a data edit, not a new JSX branch**: `NAV_ITEM_KEYS` (`constants/settings.ts`) is the ordered, canonical list and `NavItemKey` is **derived** from it (`(typeof NAV_ITEM_KEYS)[number]`), so the type and the enumeration can never drift. Everything else hangs off that:
   - `NAV_DESTINATIONS` (`components/navigation/navDestinations.ts`) holds each destination's icon, bottom-bar `labelKey`, account-menu `menuLabelKey` and `route` — the facts **all three** listing surfaces need. A destination picks its icon and route exactly once.
   - `NAV_SLOTS` (`components/NavigationMenu.tsx`) holds only bottom-bar routing modifiers (`activePath` when it must be broader than the route, `alsoActiveFor`/`replace`/`prefetch`/`navigateWhenActive`); every slot renders through the one `NavSlotButton`.
