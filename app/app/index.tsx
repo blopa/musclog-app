@@ -46,6 +46,7 @@ import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { type CameraMode, useSmartCamera } from '@/context/SmartCameraContext';
 import { type MealType } from '@/database/models';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
+import { useCircadianBurn } from '@/hooks/useCircadianBurn';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
 import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
@@ -139,9 +140,16 @@ export default function HomeScreen() {
 
   const [showUserMetricModal, setShowUserMetricModal] = useState(false);
 
+  // Burned so far today, not the whole day's TDEE: under a "Burned" label the full-day
+  // figure reads as energy already spent, which at 8am it is not.
+  const { burned: burnedSoFar } = useCircadianBurn(currentTdee);
+
   const energyBalance =
     !intuitiveEatingMode && currentNutritionGoal
-      ? computeEnergyBalance({ tdee: currentTdee, consumedKcal: dailyCalories.consumed })
+      ? computeEnergyBalance({
+          burnedKcal: Math.round(burnedSoFar),
+          consumedKcal: dailyCalories.consumed,
+        })
       : null;
 
   useEffect(() => {

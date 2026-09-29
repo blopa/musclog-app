@@ -7,7 +7,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 ## Dashboard & Home Screen
 
 - Daily summary card with calorie intake vs. goal and macro breakdown
-- Daily stat strip under the summary card: today's step count (tap to open the metric log) plus calories burned, eaten, and the resulting deficit or surplus, tinted by direction
+- Daily stat strip under the summary card: today's step count (tap to open the metric log) plus calories burned so far today (TDEE spread across the day by the circadian model, so it reflects the current hour rather than the whole day), eaten, and the resulting deficit or surplus, tinted by direction
 - Weekly streak card showing consecutive days of nutrition logging (current & best streak)
 - Time-based personalized greetings (Good Morning / Afternoon / Evening)
 - Quick-access action row, configurable in Interface settings: pick two to four of Start Workout, Track Food, Scan Barcode, AI Photo, My Meals and Add Note, and they appear in the order you pick them

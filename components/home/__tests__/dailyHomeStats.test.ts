@@ -1,4 +1,6 @@
-import { buildDailyStatCells, type EnergyBalance } from '../dailyHomeStats';
+import type { EnergyBalance } from '@/utils/energyBalance';
+
+import { buildDailyStatCells } from '../dailyHomeStats';
 
 const balance = (over: Partial<EnergyBalance> = {}): EnergyBalance => ({
   burned: 2500,
