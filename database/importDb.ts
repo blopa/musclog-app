@@ -19,6 +19,7 @@ import { parseDatabaseExportJson } from '@/utils/optical/gameBoyExport';
 import { normalizeTimezoneToOffset } from '@/utils/timezone';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
 
+import { replaceAppAsyncStorage } from './asyncStorageReset';
 import { database } from './database-instance';
 import { updateNutritionLogCountBaseline } from './dbDurability';
 import { waitForBootMigrations } from './dbReady';
@@ -197,18 +198,11 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
   const dbData: ExportDump = validationResult.data as ExportDump;
   const importBleDevices = isSameExportPlatform(dbData._exportPlatform, getExportPlatform());
 
-  // Only clear AsyncStorage if the imported data contains async storage data
+  // AsyncStorage is swapped over at the very end, once the database is populated
+  // (see the `replaceAppAsyncStorage` call below). Wiping it up front left the app
+  // looking un-onboarded and un-seeded for the whole restore, and made the pre-restore
+  // backup capture an empty AsyncStorage.
   const asyncStorageData = dbData._async_storage_;
-  if (asyncStorageData && typeof asyncStorageData === 'object') {
-    // Preserve all device-specific/session keys before wiping AsyncStorage
-    const excludedKeysList = [...ASYNC_STORAGE_EXCLUDED_KEYS];
-    const preservedPairs = await AsyncStorage.multiGet(excludedKeysList);
-    await AsyncStorage.clear();
-    const toRestore = preservedPairs.filter(([, v]) => v != null) as [string, string][];
-    if (toRestore.length > 0) {
-      await AsyncStorage.multiSet(toRestore);
-    }
-  }
 
   // Capture the current unit_system value before wiping the database.
   // Backups from Android users who never explicitly changed units won't include a
@@ -473,9 +467,7 @@ export async function restoreDatabase(dump: string, decryptionPhrase?: string): 
     )
       .filter(([, value]) => value != null)
       .map(([key, value]) => [key, value as string]);
-    if (pairs.length > 0) {
-      await AsyncStorage.multiSet(pairs);
-    }
+    await replaceAppAsyncStorage(pairs, ASYNC_STORAGE_EXCLUDED_KEYS);
   } else {
     // Compact and older exports have no app metadata. Mark their complete profile as
     // onboarded and select the imported user instead of retaining a stale local user ID.

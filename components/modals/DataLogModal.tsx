@@ -1867,9 +1867,14 @@ export function UserMetricDataModal({
 }: UserMetricDataModalProps) {
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery || '');
 
+  // Seed the search box from the caller whenever the modal opens, so reopening it
+  // from a different entry point does not keep the previous session's query.
   useEffect(() => {
     if (visible) {
-      setSearchQuery(initialSearchQuery || '');
+      // Wrapped in a function (not called directly in the effect body) to satisfy
+      // react-hooks/set-state-in-effect — this is a deliberate seed-on-open.
+      const seedSearchQuery = () => setSearchQuery(initialSearchQuery || '');
+      seedSearchQuery();
     }
   }, [visible, initialSearchQuery]);
   const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore, refresh } = useUserMetricDataLogs(

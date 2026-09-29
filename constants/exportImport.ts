@@ -10,6 +10,24 @@ export const ASYNC_STORAGE_EXCLUDED_KEYS = new Set([ENCRYPTION_KEY, TEMP_NUTRITI
 
 export const WEB_BACKUP_DATA_PREFIX = 'musclog_backup_data_';
 
+/**
+ * Web recovery-point bookkeeping. On web `AsyncStorage` is `window.localStorage`, so these
+ * live in the same namespace as ordinary app state even though they are not app state — they
+ * are the backups the user restores *from*. Every wipe path must skip them, or restoring a
+ * backup deletes the safety net it just created (see `database/asyncStorageReset.ts`).
+ */
+export const WEB_BACKUP_INDEX_KEY = 'musclog_pre_migration_backups_v1';
+export const WEB_BACKUP_DB_VERSION_KEY = 'musclog_last_db_version';
+
+/** True for any key that stores a web recovery point or its bookkeeping. */
+export function isWebBackupStorageKey(key: string): boolean {
+  return (
+    key === WEB_BACKUP_INDEX_KEY ||
+    key === WEB_BACKUP_DB_VERSION_KEY ||
+    key.startsWith(WEB_BACKUP_DATA_PREFIX)
+  );
+}
+
 /** AsyncStorage key prefixes that must not be included in the backup. */
 export const ASYNC_STORAGE_EXCLUDED_PREFIXES = [WEB_BACKUP_DATA_PREFIX];
 

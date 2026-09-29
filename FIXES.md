@@ -63,6 +63,48 @@ reached the call, so each web user reported it once. The stub now exports a no-o
 `utils/__tests__/exerciseImage.test.ts` fails if the stub lacks any function the native module
 exports.
 
+## Importing an Android backup on web (quota error, then back to onboarding)
+
+### Symptom
+
+Importing a real Android export into the web build restored the data and showed the dashboard, then
+the app dropped the user back into onboarding. Every boot afterwards logged
+`Web backup quota exceeded while preserving the latest recovery point` from
+`createPreExerciseCatalogueBackup`, so `LegacyExerciseCatalogueMigration` never ran.
+
+### Cause
+
+Two separate problems, both from `localStorage` being treated as general-purpose storage on web.
+
+1. **Web recovery points were stored in `localStorage`.** They are full database dumps. An origin
+   gets ~5 MB, counted in UTF-16 code units, so the ceiling is around 2.5M characters — less than
+   one ordinary user's export (the reported one was 3.7 MB of JSON). `createPreExerciseCatalogueBackup()`
+   could therefore never succeed once a database held real data, and because a failed backup
+   deliberately aborts the catalogue cutover, the migration failed on every boot and reported to
+   Sentry each time.
+2. **`restoreDatabase()` cleared AsyncStorage first and restored it last.** On web `AsyncStorage`
+   _is_ `window.localStorage` and `clear()` is `localStorage.clear()` — a whole-origin wipe. Three
+   consequences: the import deleted every stored recovery point before creating its own; the
+   pre-restore backup, taken after the wipe, embedded an empty `_async_storage_`, so restoring it
+   produced an un-onboarded, un-seeded app; and for the whole restore — a full dump, a database
+   reset, thousands of inserts and the 873-entry catalogue sync — `onboardingCompleted`,
+   `seeding_complete` and `currentUserSyncId` were absent. Any failure in that window left a fully
+   populated database with no `seeding_complete`, and the next boot's `seedProductionData()` reset
+   the database, wiped AsyncStorage and sent the user to onboarding.
+
+### Permanent rules
+
+- Web recovery-point payloads live in IndexedDB via `database/webBackupPayloadStore.ts`; only the
+  small metadata index stays in localStorage. Reads still fall back to the old
+  `musclog_backup_data_*` keys, and deletes clear both, so an upgrade keeps existing backups.
+- No wipe path calls `AsyncStorage.clear()`. `database/asyncStorageReset.ts` owns both
+  `clearAppAsyncStorage(preserved)` and `replaceAppAsyncStorage(pairs, preserved)`, and both skip
+  the web recovery-point keys (`isWebBackupStorageKey`). `clearAllAppData()` is the one deliberate
+  exception — clearing everything is what it is for.
+- `restoreDatabase()` swaps AsyncStorage over only after the database is populated, and writes the
+  restored pairs _before_ pruning stale keys, so a key the snapshot also carries is overwritten in
+  place and never momentarily absent.
+
 ## Android cold-boot gallery stall
 
 ### Symptom

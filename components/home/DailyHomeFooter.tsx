@@ -27,11 +27,12 @@ export function DailyHomeFooter({ steps, onStepsPress, energyBalance }: DailyHom
 
   return (
     <View className="mt-3 flex-row flex-wrap items-center gap-x-2 gap-y-1">
-      {steps !== null ? <Pressable
+      {steps !== null ? (
+        <Pressable
           onPress={onStepsPress}
           className="flex-row items-center rounded-full px-2 py-1"
           style={{ backgroundColor: theme.colors.background.card }}
-      >
+        >
           <MaterialIcons
             name="directions-walk"
             size={14}
@@ -41,16 +42,19 @@ export function DailyHomeFooter({ steps, onStepsPress, energyBalance }: DailyHom
           <Text className="text-xs font-medium" style={{ color: theme.colors.text.primary }}>
             {formatInteger(steps)}
           </Text>
-        </Pressable> : null}
+        </Pressable>
+      ) : null}
 
-      {energyBalance ? <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
+      {energyBalance ? (
+        <Text className="text-xs" style={{ color: theme.colors.text.secondary }}>
           {t('home.energyBalance', {
             burned: formatInteger(energyBalance.burned),
             eaten: formatInteger(energyBalance.eaten),
             balance: formatInteger(energyBalance.balance),
             direction: t(`home.energyDirection.${energyBalance.direction}`),
           })}
-        </Text> : null}
+        </Text>
+      ) : null}
     </View>
   );
 }

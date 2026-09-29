@@ -1,4 +1,3 @@
-import { WEB_BACKUP_DATA_PREFIX } from '@/constants/exportImport';
 import {
   createPreExerciseCatalogueBackup,
   getStoredBackups,
@@ -8,13 +7,31 @@ jest.mock('@/constants/platform', () => ({ isStaticExport: false }));
 jest.mock('@/database/exportDb', () => ({ dumpDatabase: jest.fn(async () => '{"data":true}') }));
 jest.mock('@/utils/handleError', () => ({ handleError: jest.fn() }));
 
+// Payloads live in IndexedDB (localStorage cannot hold a database dump); the fake store
+// keeps the quota behaviour the recovery loop is written against.
+const mockPayloads = new Map<string, string>();
+let mockFailNewPayloadWhile: () => boolean = () => false;
+
+jest.mock('@/database/webBackupPayloadStore', () => ({
+  deleteWebBackupPayload: jest.fn(async (key: string) => {
+    mockPayloads.delete(key);
+  }),
+  hasWebBackupPayload: jest.fn(async (key: string) => mockPayloads.has(key)),
+  readWebBackupPayload: jest.fn(async (key: string) => mockPayloads.get(key) ?? null),
+  writeWebBackupPayload: jest.fn(async (key: string, content: string) => {
+    if (key === MOCK_NEW_HASH && mockFailNewPayloadWhile()) {
+      throw new DOMException('quota full', 'QuotaExceededError');
+    }
+    mockPayloads.set(key, content);
+  }),
+}));
+
 const INDEX_KEY = 'musclog_pre_migration_backups_v1';
-const NEW_HASH = '0102';
-const NEW_KEY = `${WEB_BACKUP_DATA_PREFIX}${NEW_HASH}`;
+const MOCK_NEW_HASH = '0102';
+const NEW_HASH = MOCK_NEW_HASH;
 
 class QuotaStorage {
   readonly values = new Map<string, string>();
-  failNewBackupWhile: () => boolean = () => false;
 
   getItem(key: string): string | null {
     return this.values.get(key) ?? null;
@@ -25,9 +42,6 @@ class QuotaStorage {
   }
 
   setItem(key: string, value: string): void {
-    if (key === NEW_KEY && this.failNewBackupWhile()) {
-      throw new DOMException('quota full', 'QuotaExceededError');
-    }
     this.values.set(key, value);
   }
 }
@@ -55,7 +69,8 @@ describe('web safety backup quota recovery', () => {
 
   beforeEach(() => {
     storage.values.clear();
-    storage.failNewBackupWhile = () => false;
+    mockPayloads.clear();
+    mockFailNewPayloadWhile = () => false;
     jest
       .mocked(globalThis.crypto.subtle.digest)
       .mockResolvedValue(new Uint8Array([1, 2]).buffer as ArrayBuffer);
@@ -70,15 +85,15 @@ describe('web safety backup quota recovery', () => {
     const newest = meta('newest', '2026-08-12T12:00:00.000Z');
     const oldest = meta('oldest', '2026-08-11T12:00:00.000Z');
     storage.values.set(INDEX_KEY, JSON.stringify([newest, oldest]));
-    storage.values.set(`${WEB_BACKUP_DATA_PREFIX}newest`, 'newest-data');
-    storage.values.set(`${WEB_BACKUP_DATA_PREFIX}oldest`, 'oldest-data');
-    storage.failNewBackupWhile = () => storage.values.has(`${WEB_BACKUP_DATA_PREFIX}oldest`);
+    mockPayloads.set('newest', 'newest-data');
+    mockPayloads.set('oldest', 'oldest-data');
+    mockFailNewPayloadWhile = () => mockPayloads.has('oldest');
 
     await expect(createPreExerciseCatalogueBackup()).resolves.toBe(`web-backup://${NEW_HASH}`);
 
-    expect(storage.values.get(`${WEB_BACKUP_DATA_PREFIX}newest`)).toBe('newest-data');
-    expect(storage.values.has(`${WEB_BACKUP_DATA_PREFIX}oldest`)).toBe(false);
-    expect(storage.values.get(NEW_KEY)).toBe('{"data":true}');
+    expect(mockPayloads.get('newest')).toBe('newest-data');
+    expect(mockPayloads.has('oldest')).toBe(false);
+    expect(mockPayloads.get(NEW_HASH)).toBe('{"data":true}');
     expect((await getStoredBackups()).map((backup) => backup.uri)).toEqual([
       `web-backup://${NEW_HASH}`,
       'web-backup://newest',
@@ -88,15 +103,15 @@ describe('web safety backup quota recovery', () => {
   it('refuses the required replacement when only the protected recovery point remains', async () => {
     const newest = meta('newest', '2026-08-12T12:00:00.000Z');
     storage.values.set(INDEX_KEY, JSON.stringify([newest]));
-    storage.values.set(`${WEB_BACKUP_DATA_PREFIX}newest`, 'newest-data');
-    storage.failNewBackupWhile = () => true;
+    mockPayloads.set('newest', 'newest-data');
+    mockFailNewPayloadWhile = () => true;
 
     await expect(createPreExerciseCatalogueBackup()).rejects.toThrow(
       'preserving the latest recovery point'
     );
 
-    expect(storage.values.get(`${WEB_BACKUP_DATA_PREFIX}newest`)).toBe('newest-data');
-    expect(storage.values.has(NEW_KEY)).toBe(false);
+    expect(mockPayloads.get('newest')).toBe('newest-data');
+    expect(mockPayloads.has(NEW_HASH)).toBe(false);
     expect(await getStoredBackups()).toEqual([newest]);
   });
 });

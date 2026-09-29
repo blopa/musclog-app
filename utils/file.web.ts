@@ -21,7 +21,7 @@ export async function downloadFile(uri: string, fileName?: string): Promise<void
   if (uri.startsWith('web-backup://')) {
     const { getWebBackupContent, getStoredBackups } = await import('@/database/preMigrationBackup');
     const hash = uri.replace('web-backup://', '');
-    const content = getWebBackupContent(hash);
+    const content = await getWebBackupContent(hash);
     if (!content) {
       throw new Error(`[WebBackup] Backup not found: ${hash}`);
     }
@@ -234,7 +234,7 @@ export async function openCropperAsync(options: OpenCropperOptions): Promise<{
 export async function readFileAsStringAsync(fileUri: string, options: { encoding?: string } = {}) {
   if (fileUri.startsWith('web-backup://')) {
     const hash = fileUri.replace('web-backup://', '');
-    const content = getWebBackupContent(hash);
+    const content = await getWebBackupContent(hash);
     if (!content) {
       throw new Error(`[WebBackup] Backup not found: ${hash}`);
     }
