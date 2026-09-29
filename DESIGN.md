@@ -217,6 +217,12 @@ Do not introduce a third style, a per-card radius, or a gradient card fill outsi
 `GenericCard` call covers the case, and a hand-rolled surface should be migrated to it rather than
 copied.
 
+A row of small figures read side by side — today's energy under the home card, the weekly-average
+macros inside it — is always `components/StatStrip.tsx`: hairline-divided cells, the number first
+and its uppercase label under it. The component reads no theme of its own; the caller passes a
+`StatStripPalette` so the same row works on a plain card and on the hero gradient. Do not draw a
+second variant of this row.
+
 Use the existing `FullScreenModal`, `CenteredModal`, `BottomPopUp`, and platform variants. A modal
 that opens another modal must follow the presenter rules in `FIXES.md`; visual nesting and React
 tree ownership are separate concerns. Modal headers sit on the modal's own surface — none of the

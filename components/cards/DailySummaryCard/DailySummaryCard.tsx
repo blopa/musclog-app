@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ScrollView, Text, useWindowDimensions, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
+import { StatStrip } from '@/components/StatStrip';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { blurFilter } from '@/utils/blurFilter';
@@ -511,48 +512,27 @@ export function DailySummaryCard({
                 </Text>
               </View>
 
-              {/* Macros pill */}
-              {weeklyMacroItems.length > 0 ? (
-                <View
-                  className="flex-row justify-around rounded-2xl px-2 py-3"
-                  style={{ backgroundColor: theme.colors.background.scrim30 }}
-                >
-                  {weeklyMacroItems.map((macro) => (
-                    <View key={macro.label} className="items-center gap-1">
-                      <Text
-                        className="font-bold uppercase"
-                        style={{
-                          fontSize: theme.typography.fontSize.xxs,
-                          color: theme.colors.colorfulCard.ink70,
-                        }}
-                      >
-                        {macro.label}
-                      </Text>
-                      <View className="flex-row items-baseline">
-                        <Text
-                          className="font-bold"
-                          style={{
-                            fontSize: theme.typography.fontSize.xl,
-                            color: theme.colors.colorfulCard.ink,
-                            ...(intuitiveMode ? blurFilter(4) : {}),
-                          }}
-                        >
-                          {intuitiveMode ? '0' : formatDecimal(macro.value, 1)}
-                        </Text>
-                        <Text
-                          className="font-normal"
-                          style={{
-                            fontSize: theme.typography.fontSize.sm,
-                            color: theme.colors.colorfulCard.ink70,
-                          }}
-                        >
-                          g
-                        </Text>
-                      </View>
-                    </View>
-                  ))}
-                </View>
-              ) : null}
+              {/*
+                The same strip the home screen's energy row uses, so the two reads of
+                "a handful of numbers to scan across" look identical; only the palette
+                differs, because this one sits on the hero gradient.
+              */}
+              <StatStrip
+                items={weeklyMacroItems.map((macro) => ({
+                  key: macro.label,
+                  value: intuitiveMode ? '0' : formatDecimal(macro.value, 1),
+                  unit: 'g',
+                  label: macro.label,
+                  valueColor: theme.colors.colorfulCard.ink,
+                  valueStyle: intuitiveMode ? blurFilter(4) : undefined,
+                }))}
+                palette={{
+                  background: theme.colors.background.scrim30,
+                  border: theme.colors.colorfulCard.ink30,
+                  label: theme.colors.colorfulCard.ink70,
+                  unit: theme.colors.colorfulCard.ink70,
+                }}
+              />
             </View>
           ) : null}
         </ScrollView>

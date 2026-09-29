@@ -1,12 +1,12 @@
 import MaterialIcons from '@react-native-vector-icons/material-icons/static';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
 
+import { StatStrip, type StatStripItem } from '@/components/StatStrip';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import type { EnergyBalance } from '@/utils/energyBalance';
 
-import { buildDailyStatCells, type DailyStatCell, type StatTone } from './dailyHomeStats';
+import { buildDailyStatCells, type StatTone } from './dailyHomeStats';
 
 type DailyHomeFooterProps = {
   steps: null | number;
@@ -21,18 +21,14 @@ type DailyHomeFooterProps = {
  * It renders as discrete labelled cells rather than a sentence ("Burned 2781 · Eaten 0
  * · 2781 kcal under") so the numbers line up in a scannable row and the day's verdict
  * can carry its meaning in color. `buildDailyStatCells` owns which cells appear and
- * which one is tinted; this component only draws them.
+ * which one is tinted; `StatStrip` draws them.
  */
-export function DailyHomeFooter({ steps, onStepsPress, energyBalance }: DailyHomeFooterProps) {
+export function DailyHomeFooter({ energyBalance, onStepsPress, steps }: DailyHomeFooterProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
 
-  const cells = buildDailyStatCells({ steps, energyBalance });
-
-  if (cells.length === 0) {
-    return null;
-  }
+  const cells = buildDailyStatCells({ energyBalance, steps });
 
   const toneColor: Record<StatTone, string> = {
     neutral: theme.colors.text.primary,
@@ -40,86 +36,45 @@ export function DailyHomeFooter({ steps, onStepsPress, energyBalance }: DailyHom
     caution: theme.colors.status.warning,
   };
 
-  const renderCell = (cell: DailyStatCell) => {
-    const body = (
-      <View className="flex-1 items-center justify-center px-1 py-2.5">
-        <View className="flex-row items-center">
-          {cell.key === 'steps' ? (
-            <MaterialIcons
-              name="directions-walk"
-              size={13}
-              color={theme.colors.accent.primary}
-              style={{ marginRight: 3 }}
-            />
-          ) : null}
-          <Text
-            className="text-[15px] font-semibold"
-            style={{ color: toneColor[cell.tone] }}
-            numberOfLines={1}
-          >
-            {formatInteger(cell.value)}
-          </Text>
-          {cell.showsUnit ? (
-            <Text
-              className="ml-1 text-[10px] font-medium"
-              style={{ color: theme.colors.text.tertiary }}
-            >
-              {t('home.dailyStats.kcal')}
-            </Text>
-          ) : null}
-        </View>
-        {/*
-          Two lines, because "Burned so far" and its translations do not fit a quarter of
-          the row on one. The number stays on the first line in every cell either way, so
-          the row still reads across.
-        */}
-        <Text
-          className="mt-1 text-center text-[10px] font-semibold uppercase"
-          style={{ color: theme.colors.text.tertiary, letterSpacing: 0.7 }}
-          numberOfLines={2}
-        >
-          {t(`home.dailyStats.${cell.labelKey}`)}
-        </Text>
-      </View>
-    );
+  const items: StatStripItem[] = cells.map((cell) => {
+    const label = t(`home.dailyStats.${cell.labelKey}`);
+    const value = formatInteger(cell.value);
 
     // Steps is the one cell that goes anywhere, and this component already knows that —
-    // it draws the walking icon two lines up. A generic `interactive` flag on the cell
-    // said "some cell might be tappable" while the handler below was still hardcoded to
-    // steps, so it carried none of the information it looked like it carried.
-    if (cell.key !== 'steps') {
-      return body;
-    }
+    // it draws the walking icon on the same line. A generic `interactive` flag on the
+    // cell said "some cell might be tappable" while the handler here was still hardcoded
+    // to steps, so it carried none of the information it looked like it carried.
+    const isSteps = cell.key === 'steps';
 
-    return (
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={`${t(`home.dailyStats.${cell.labelKey}`)}: ${formatInteger(cell.value)}`}
-        className="flex-1 flex-row"
-        onPress={onStepsPress}
-      >
-        {body}
-      </Pressable>
-    );
-  };
+    return {
+      key: cell.key,
+      value,
+      unit: cell.showsUnit ? t('home.dailyStats.kcal') : undefined,
+      label,
+      valueColor: toneColor[cell.tone],
+      icon: isSteps ? (
+        <MaterialIcons
+          color={theme.colors.accent.primary}
+          name="directions-walk"
+          size={13}
+          style={{ marginRight: 3 }}
+        />
+      ) : undefined,
+      onPress: isSteps ? onStepsPress : undefined,
+      accessibilityLabel: isSteps ? `${label}: ${value}` : undefined,
+    };
+  });
 
   return (
-    <View
-      className="mt-3 flex-row items-stretch overflow-hidden rounded-2xl"
-      style={{
-        backgroundColor: theme.colors.background.card,
-        borderColor: theme.colors.border.light,
-        borderWidth: 1,
+    <StatStrip
+      className="mt-3"
+      items={items}
+      palette={{
+        background: theme.colors.background.card,
+        border: theme.colors.border.light,
+        label: theme.colors.text.tertiary,
+        unit: theme.colors.text.tertiary,
       }}
-    >
-      {cells.map((cell, index) => (
-        <View key={cell.key} className="flex-1 flex-row items-stretch">
-          {index > 0 ? (
-            <View className="my-2.5 w-px" style={{ backgroundColor: theme.colors.border.light }} />
-          ) : null}
-          {renderCell(cell)}
-        </View>
-      ))}
-    </View>
+    />
   );
 }
