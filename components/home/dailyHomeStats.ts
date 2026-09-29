@@ -13,7 +13,7 @@ export type DailyStatCell = {
   labelKey: string;
   value: number;
   tone: StatTone;
-  /** Only the balance cell states its unit; the rest sit under a kcal card. */
+  /** Every energy cell states its unit; the step count is not in kcal. */
   showsUnit: boolean;
   interactive: boolean;
 };
@@ -59,7 +59,7 @@ export function buildDailyStatCells({
         labelKey: 'burned',
         value: energyBalance.burned,
         tone: 'neutral',
-        showsUnit: false,
+        showsUnit: true,
         interactive: false,
       },
       {
@@ -67,7 +67,7 @@ export function buildDailyStatCells({
         labelKey: 'eaten',
         value: energyBalance.eaten,
         tone: 'neutral',
-        showsUnit: false,
+        showsUnit: true,
         interactive: false,
       },
       {

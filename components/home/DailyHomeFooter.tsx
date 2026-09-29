@@ -68,10 +68,15 @@ export function DailyHomeFooter({ steps, onStepsPress, energyBalance }: DailyHom
             </Text>
           ) : null}
         </View>
+        {/*
+          Two lines, because "Burned so far" and its translations do not fit a quarter of
+          the row on one. The number stays on the first line in every cell either way, so
+          the row still reads across.
+        */}
         <Text
-          className="mt-1 text-[10px] font-semibold uppercase"
+          className="mt-1 text-center text-[10px] font-semibold uppercase"
           style={{ color: theme.colors.text.tertiary, letterSpacing: 0.7 }}
-          numberOfLines={1}
+          numberOfLines={2}
         >
           {t(`home.dailyStats.${cell.labelKey}`)}
         </Text>

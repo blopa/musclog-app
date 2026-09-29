@@ -72,11 +72,23 @@ describe('buildDailyStatCells', () => {
     expect(cells.find((cell) => cell.key === 'balance')?.labelKey).toBe('surplus');
   });
 
-  // Only the conclusion states its unit; the rest sit directly under a kcal card.
-  it('states the unit on the balance cell only', () => {
+  // Three numbers in one row, all in kcal: labelling only the last one read as though the
+  // other two were in some other unit.
+  it('states the unit on every energy cell', () => {
     const cells = buildDailyStatCells({ steps: 8241, energyBalance: balance() });
 
-    expect(cells.filter((cell) => cell.showsUnit).map((cell) => cell.key)).toEqual(['balance']);
+    expect(cells.filter((cell) => cell.showsUnit).map((cell) => cell.key)).toEqual([
+      'burned',
+      'eaten',
+      'balance',
+    ]);
+  });
+
+  // Steps are the one cell that is not an energy figure.
+  it('leaves the step count without a unit', () => {
+    const cells = buildDailyStatCells({ steps: 8241, energyBalance: balance() });
+
+    expect(cells.find((cell) => cell.key === 'steps')?.showsUnit).toBe(false);
   });
 
   it('makes only the steps cell interactive', () => {

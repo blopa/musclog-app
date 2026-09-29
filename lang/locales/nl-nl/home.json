@@ -38,7 +38,7 @@
     },
     "dailyStats": {
       "steps": "Stappen",
-      "burned": "Verbrand",
+      "burned": "Tot nu toe verbrand",
       "eaten": "Gegeten",
       "deficit": "Tekort",
       "surplus": "Overschot",

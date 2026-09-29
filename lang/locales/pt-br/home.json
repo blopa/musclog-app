@@ -38,7 +38,7 @@
     },
     "dailyStats": {
       "steps": "Passos",
-      "burned": "Queimado",
+      "burned": "Queimado até agora",
       "eaten": "Consumido",
       "deficit": "Déficit",
       "surplus": "Superávit",

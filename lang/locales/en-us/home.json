@@ -38,7 +38,7 @@
     },
     "dailyStats": {
       "steps": "Steps",
-      "burned": "Burned",
+      "burned": "Burned so far",
       "eaten": "Eaten",
       "deficit": "Deficit",
       "surplus": "Surplus",
