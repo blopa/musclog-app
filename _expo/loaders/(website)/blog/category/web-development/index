@@ -1,0 +1,22 @@
+{
+  "category": "web-development",
+  "currentPage": 1,
+  "posts": [
+    {
+      "category": "web-development",
+      "date": "2026-08-09",
+      "excerpt": "The page you are reading is a statically exported Expo Router route. Here is how generateStaticParams turns a folder of Markdown into HTML — and the three-hunk patch to expo-router I needed to make catch-all routes work at all.",
+      "slug": "2026/08/this-blog-was-built-using-expo",
+      "tags": [
+        "Expo",
+        "Expo Router",
+        "Static Site",
+        "React Native",
+        "TypeScript"
+      ],
+      "title": "This blog was built using Expo"
+    }
+  ],
+  "totalPages": 1,
+  "totalPosts": 1
+}

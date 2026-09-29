@@ -1,0 +1,54 @@
+{
+  "category": "engineering",
+  "currentPage": 1,
+  "posts": [
+    {
+      "category": "engineering",
+      "date": "2026-09-03",
+      "excerpt": "Musclog already had a theme file. Then I added five selectable palettes and discovered that colors, NativeWind variables, system mode, camera overlays, and component decisions were all separate systems pretending to be one.",
+      "slug": "2026/09/adding-light-mode-exposed-my-fake-theme-system",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "NativeWind",
+        "TypeScript",
+        "Design Systems"
+      ],
+      "title": "Adding light mode exposed my fake theme system"
+    },
+    {
+      "category": "engineering",
+      "date": "2026-08-24",
+      "excerpt": "A shutter stall that only existed in release builds, survived eight versions and four wrong root causes, and turned out to be one background thread shared by every Expo module in the app.",
+      "slug": "2026/08/my-camera-took-25-seconds-to-take-a-photo",
+      "tags": [
+        "Musclog",
+        "React Native",
+        "Expo",
+        "Android",
+        "CameraX",
+        "Kotlin",
+        "Performance",
+        "Debugging"
+      ],
+      "title": "My camera took 25 seconds to take a photo"
+    },
+    {
+      "category": "engineering",
+      "date": "2026-08-06",
+      "excerpt": "I saw a repo that sends files between two devices using only a screen and a camera, and I could not stop thinking about it. So I built it into Musclog — here is how fountain-coded QR streams actually work.",
+      "slug": "2026/08/using-decimen-optical-transfer-foss-to-transfer-data-between-devices",
+      "tags": [
+        "Open Source",
+        "QR Codes",
+        "Privacy",
+        "React Native",
+        "TypeScript"
+      ],
+      "title": "Using Decimen Optical Transfer FOSS to transfer data between devices"
+    }
+  ],
+  "totalPages": 1,
+  "totalPosts": 3
+}
