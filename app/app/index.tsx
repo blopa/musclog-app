@@ -14,12 +14,14 @@ import { HomeWaterPrompt } from '@/components/cards/HomeWaterPrompt';
 import { useCoach } from '@/components/CoachContext';
 import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { DailySummaryBottomMenu } from '@/components/DailySummaryBottomMenu';
+import { DailyHomeFooter } from '@/components/home/DailyHomeFooter';
 import { DailyHomeSummary } from '@/components/home/DailyHomeSummary';
 import { HOME_ACTIONS, isHomeActionAvailable } from '@/components/home/homeActions';
 import { WeeklyHomeSummary } from '@/components/home/WeeklyHomeSummary';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AddFoodModal } from '@/components/modals/AddFoodModal';
 import CreateCustomFoodModal from '@/components/modals/CreateCustomFoodModal';
+import { UserMetricDataModal } from '@/components/modals/DataLogModal';
 import { FoodMealDetailsModal } from '@/components/modals/FoodMealDetailsModal';
 import { FoodSearchModal } from '@/components/modals/FoodSearchModal';
 import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
@@ -42,6 +44,8 @@ import { type MealType } from '@/database/models';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
+import { useDailyNutritionSummary } from '@/hooks/useDailyNutritionSummary';
+import { useDailySteps } from '@/hooks/useDailySteps';
 import { useDefaultNutritionGoals } from '@/hooks/useDefaultNutritionGoals';
 import { useEmpiricalTDEE } from '@/hooks/useEmpiricalTDEE';
 import { useNutritionLogs } from '@/hooks/useNutritionLogs';
@@ -50,9 +54,15 @@ import { useTheme } from '@/hooks/useTheme';
 import { useUser } from '@/hooks/useUser';
 import { useWorkoutHistory } from '@/hooks/useWorkoutHistory';
 import packageJson from '@/package.json';
+import { syncDailySteps } from '@/services/healthConnectFitness';
 import { isProduction } from '@/utils/app';
 import { getAvatarDisplayProps } from '@/utils/avatarUtils';
-import { isSameLocalCalendarDay, localCalendarDayDate } from '@/utils/calendarDate';
+import {
+  isSameLocalCalendarDay,
+  localCalendarDayDate,
+  localDayHalfOpenRange,
+} from '@/utils/calendarDate';
+import { computeEnergyBalance } from '@/utils/energyBalance';
 import { runEntryOnboardingRedirect } from '@/utils/entryOnboardingRedirect';
 import { handleError } from '@/utils/handleError';
 import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
@@ -86,6 +96,8 @@ const GOALS_MANAGEMENT_TAB = {
 
 type GoalsManagementTab = (typeof GOALS_MANAGEMENT_TAB)[keyof typeof GOALS_MANAGEMENT_TAB];
 
+let lastStepsSyncMs = 0;
+
 export default function HomeScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -96,7 +108,14 @@ export default function HomeScreen() {
   const { tdee: currentTdee } = useEmpiricalTDEE({
     fallbackValue: planData?.tdee ?? nutritionGoalsDefaults.totalCalories,
   });
-  const { isAiConfigured, intuitiveEatingMode, nutritionDisplay, homeSummaryCard, homeActions } = useSettings();
+  const {
+    isAiConfigured,
+    intuitiveEatingMode,
+    nutritionDisplay,
+    homeSummaryCard,
+    homeActions,
+    showHomeSteps,
+  } = useSettings();
   const { openCamera } = useSmartCamera();
   const { openCoach } = useCoach();
   const { triggerConfetti, showConfetti } = useConfettiTrigger();
@@ -105,6 +124,16 @@ export default function HomeScreen() {
   const navigationState = useRootNavigationState();
 
   const [today, setToday] = useState(() => localCalendarDayDate(new Date()));
+  const { steps: dailySteps } = useDailySteps(today);
+  const { calories: dailyCalories } = useDailyNutritionSummary({ date: today });
+
+  const [showUserMetricModal, setShowUserMetricModal] = useState(false);
+  const [stepsSearchQuery, setStepsSearchQuery] = useState('');
+
+  const energyBalance =
+    !intuitiveEatingMode && currentNutritionGoal
+      ? computeEnergyBalance({ tdee: currentTdee, consumedKcal: dailyCalories.consumed })
+      : null;
 
   useEffect(() => {
     if (isStaticExport) {
@@ -122,6 +151,14 @@ export default function HomeScreen() {
     const appSub = AppState.addEventListener('change', (next) => {
       if (next === 'active') {
         syncToday();
+
+        const now = Date.now();
+        if (now - lastStepsSyncMs > 15 * 60 * 1000) {
+          lastStepsSyncMs = now;
+          const { start, nextStart } = localDayHalfOpenRange(new Date());
+          syncDailySteps({ startTime: start, endTime: nextStart });
+        }
+
         // Drain pending widget action set by redirectSystemPath when Android
         // recreates the activity while the JS process is still alive (the
         // cold-start useEffect won't re-run because its deps haven't changed).
@@ -478,6 +515,16 @@ export default function HomeScreen() {
               onSetGoals={() => setIsNutritionGoalsVisible(true)}
             />
           )}
+          {showHomeSteps ? (
+            <DailyHomeFooter
+              steps={dailySteps}
+              onStepsPress={() => {
+                setStepsSearchQuery('daily_steps');
+                setShowUserMetricModal(true);
+              }}
+              energyBalance={energyBalance}
+            />
+          ) : null}
         </View>
 
         {/* Home prompts */}
@@ -734,6 +781,12 @@ export default function HomeScreen() {
       />
 
       {/* Nutrition Goals Modal */}
+      <UserMetricDataModal
+        visible={showUserMetricModal}
+        onClose={() => setShowUserMetricModal(false)}
+        initialSearchQuery={stepsSearchQuery}
+      />
+
       <NutritionGoalsModal
         visible={isNutritionGoalsVisible}
         onClose={handleCloseNutritionGoals}

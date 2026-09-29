@@ -32,6 +32,7 @@ export type UserMetricDataDayGroup = {
 
 const ICON_BY_TYPE: Partial<Record<UserMetricType, string>> = {
   weight: 'monitor-weight',
+  daily_steps: 'directions-walk',
   body_fat: 'percent',
   height: 'straighten',
   bmi: 'trending-up',

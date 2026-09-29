@@ -17,7 +17,7 @@ import {
 } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform,Text, View  } from 'react-native';
+import { Platform, Text, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
@@ -25,6 +25,7 @@ import { HOME_ACTIONS } from '@/components/home/homeActions';
 import { NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
 import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/OptionsMultiSelector';
 import { PickerButton } from '@/components/theme/PickerButton';
+import { ToggleInput } from '@/components/theme/ToggleInput';
 import { HOME_ACTION_KEYS, type HomeActionKey, parseHomeActions } from '@/constants/homeActions';
 import {
   type HomeSummaryCard,
@@ -98,7 +99,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   const { rawSlots, isCycleActive, setNavSlot } = useNavigationItems();
   // The stored preference, not the resolved mode: 'system' has to stay selectable
   // and visible as itself.
-  const { theme: themePreference, isAiConfigured } = useSettings();
+  const { theme: themePreference, isAiConfigured, showHomeSteps } = useSettings();
 
   const [themePopupVisible, setThemePopupVisible] = useState(false);
   const [activeSlot, setActiveSlot] = useState<SlotNumber | null>(null);
@@ -306,6 +307,19 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
             label={t(`settings.homeSummaryCard.options.${homeSummaryCard}.label`)}
             onPress={() => setHomeCardPopupVisible(true)}
           />
+          <View className="mt-4">
+            <ToggleInput
+              items={[
+                {
+                  key: 'show_home_steps',
+                  label: t('settings.homeSummaryCard.showHomeSteps.title'),
+                  subtitle: t('settings.homeSummaryCard.showHomeSteps.description'),
+                  value: showHomeSteps,
+                  onValueChange: (v: boolean) => SettingsService.setShowHomeSteps(v),
+                },
+              ]}
+            />
+          </View>
         </View>
       </View>
       <BottomPopUp
@@ -319,17 +333,21 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
           hasGroups={false}
           isEditable={true}
           hideCheckboxes={true}
-          options={selectedHomeActions.map((key) => ({
-            id: key,
-            label: t(HOME_ACTIONS[key].labelKey),
-            description: '',
-            icon: HOME_ACTIONS[key].icon,
-            iconColor: theme.colors.accent.primary,
-            iconBgColor: theme.colors.background.iconDark,
-          })).concat(
-            HOME_ACTION_KEYS
-              .filter(k => !selectedHomeActions.includes(k) && isHomeActionAvailable(k, { isAiConfigured, platform: Platform.OS }))
-              .map(key => ({
+          options={selectedHomeActions
+            .map((key) => ({
+              id: key,
+              label: t(HOME_ACTIONS[key].labelKey),
+              description: '',
+              icon: HOME_ACTIONS[key].icon,
+              iconColor: theme.colors.accent.primary,
+              iconBgColor: theme.colors.background.iconDark,
+            }))
+            .concat(
+              HOME_ACTION_KEYS.filter(
+                (k) =>
+                  !selectedHomeActions.includes(k) &&
+                  isHomeActionAvailable(k, { isAiConfigured, platform: Platform.OS })
+              ).map((key) => ({
                 id: key,
                 label: t(HOME_ACTIONS[key].labelKey),
                 description: '',
@@ -337,10 +355,12 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
                 iconColor: theme.colors.accent.primary,
                 iconBgColor: theme.colors.background.iconDark,
               }))
-          )}
+            )}
           selectedIds={selectedHomeActions}
           onChange={(ids) => handleHomeActionsChange(ids as HomeActionKey[])}
-          onOrderChange={(reordered) => handleHomeActionsChange(reordered.map(r => r.id as HomeActionKey))}
+          onOrderChange={(reordered) =>
+            handleHomeActionsChange(reordered.map((r) => r.id as HomeActionKey))
+          }
         />
       </BottomPopUp>
       <BottomPopUp

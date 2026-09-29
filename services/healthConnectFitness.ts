@@ -272,7 +272,7 @@ export async function syncFitnessMetrics(
  * Reads Steps records from Health Connect, aggregates by local calendar day,
  * and upserts one `daily_steps` UserMetric per day.
  */
-async function syncDailySteps(timeRange: {
+export async function syncDailySteps(timeRange: {
   startTime: number;
   endTime: number;
 }): Promise<Pick<FitnessSyncCounts, 'totalRead' | 'written' | 'updated'>> {

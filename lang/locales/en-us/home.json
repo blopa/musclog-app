@@ -35,6 +35,12 @@
       "focus": "Focus",
       "cycle": "Cycle",
       "checkin": "Check-ins"
+    },
+    "energyBalance": "Burned {{burned}} · Eaten {{eaten}} · {{balance}} kcal {{direction}}",
+    "energyDirection": {
+      "deficit": "under",
+      "surplus": "over",
+      "even": "even"
     }
   }
 }

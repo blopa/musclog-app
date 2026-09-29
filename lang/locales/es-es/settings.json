@@ -412,6 +412,10 @@
           "label": "Racha semanal",
           "description": "Entrenamientos de esta semana y tu racha de registro"
         }
+      },
+      "showHomeSteps": {
+        "title": "Mostrar pasos",
+        "description": "Muestra tu recuento de pasos diarios y tu balance de energía en la pantalla de inicio."
       }
     },
     "theme": {

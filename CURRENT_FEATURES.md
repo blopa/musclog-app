@@ -7,6 +7,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 ## Dashboard & Home Screen
 
 - Daily summary card with calorie intake vs. goal and macro breakdown
+- Daily steps and energy balance line displaying current activity (calories burned vs eaten)
 - Weekly streak card showing consecutive days of nutrition logging (current & best streak)
 - Time-based personalized greetings (Good Morning / Afternoon / Evening)
 - Quick-access configurable actions (e.g. Scan Barcode, AI Photo, Log Weight, My Meals) to personalize your home screen

@@ -54,6 +54,7 @@ import {
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
   SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE,
   SHOW_DAILY_WATER_PROMPT_SETTING_TYPE,
+  SHOW_HOME_STEPS_SETTING_TYPE,
   SHOW_WEIGHT_PREDICTION_SETTING_TYPE,
   THEME_SETTING_TYPE,
   type ThemeOption,
@@ -813,6 +814,10 @@ export class SettingsService {
    */
   static async setHomeSummaryCard(card: HomeSummaryCard) {
     await SettingsService.setStringSetting(HOME_SUMMARY_CARD_SETTING_TYPE, card);
+  }
+
+  static async setShowHomeSteps(value: boolean) {
+    await SettingsService.setBooleanSetting(SHOW_HOME_STEPS_SETTING_TYPE, value);
   }
 
   /**

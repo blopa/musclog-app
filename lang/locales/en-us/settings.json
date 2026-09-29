@@ -412,6 +412,10 @@
           "label": "Weekly Streak",
           "description": "Workouts this week and your tracking streak"
         }
+      },
+      "showHomeSteps": {
+        "title": "Show steps",
+        "description": "Show your daily step count and energy balance on the home screen."
       }
     },
     "theme": {

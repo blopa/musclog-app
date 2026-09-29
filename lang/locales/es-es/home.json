@@ -35,6 +35,12 @@
       "focus": "Enfoque",
       "cycle": "Ciclo",
       "checkin": "Revisiones"
+    },
+    "energyBalance": "Quemado {{burned}} · Comido {{eaten}} · {{balance}} kcal {{direction}}",
+    "energyDirection": {
+      "deficit": "por debajo",
+      "surplus": "por encima",
+      "even": "equilibrado"
     }
   }
 }
