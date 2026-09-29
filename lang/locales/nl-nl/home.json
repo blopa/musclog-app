@@ -10,10 +10,8 @@
       "trackFood": "Eten\nLoggen",
       "scanBarcode": "Barcode\nScannen",
       "aiPhoto": "AI-\nFoto",
-      "logWeight": "Gewicht\nLoggen",
       "myMeals": "Mijn\nMaaltijden",
-      "addNote": "Notitie\nToevoegen",
-      "logCardio": "Cardio\nLoggen"
+      "addNote": "Notitie\nToevoegen"
     },
     "sections": {
       "recentWorkouts": "Recente workouts",

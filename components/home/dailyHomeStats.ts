@@ -15,7 +15,6 @@ export type DailyStatCell = {
   tone: StatTone;
   /** Every energy cell states its unit; the step count is not in kcal. */
   showsUnit: boolean;
-  interactive: boolean;
 };
 
 const DIRECTION_TONE: Record<EnergyDirection, StatTone> = {
@@ -48,7 +47,6 @@ export function buildDailyStatCells({
       value: steps,
       tone: 'neutral',
       showsUnit: false,
-      interactive: true,
     });
   }
 
@@ -60,7 +58,6 @@ export function buildDailyStatCells({
         value: energyBalance.burned,
         tone: 'neutral',
         showsUnit: true,
-        interactive: false,
       },
       {
         key: 'eaten',
@@ -68,7 +65,6 @@ export function buildDailyStatCells({
         value: energyBalance.eaten,
         tone: 'neutral',
         showsUnit: true,
-        interactive: false,
       },
       {
         key: 'balance',
@@ -76,7 +72,6 @@ export function buildDailyStatCells({
         value: energyBalance.balance,
         tone: DIRECTION_TONE[energyBalance.direction],
         showsUnit: true,
-        interactive: false,
       }
     );
   }

@@ -10,10 +10,8 @@
       "trackFood": "Записать\nеду",
       "scanBarcode": "Сканировать\nштрихкод",
       "aiPhoto": "Фото\nИИ",
-      "logWeight": "Записать\nвес",
       "myMeals": "Мои\nблюда",
-      "addNote": "Добавить\nзаметку",
-      "logCardio": "Записать\nкардио"
+      "addNote": "Добавить\nзаметку"
     },
     "sections": {
       "recentWorkouts": "Последние тренировки",

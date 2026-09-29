@@ -3,16 +3,15 @@ export const HOME_ACTION_KEYS = [
   'track_food',
   'scan_barcode',
   'ai_photo',
-  'log_weight',
   'my_meals',
   'add_note',
-  'log_cardio',
 ] as const;
 
 export type HomeActionKey = (typeof HOME_ACTION_KEYS)[number];
 
 /** The home screen grid is two per row, so it fills exactly at this many quick actions. */
-export const MAX_HOME_ACTIONS = 4;
+export const HOME_ACTIONS_PER_ROW = 2;
+export const MAX_HOME_ACTIONS = HOME_ACTIONS_PER_ROW * 2;
 
 /**
  * ...and a home screen with a single action looks broken, so the picker refuses to go
@@ -20,34 +19,33 @@ export const MAX_HOME_ACTIONS = 4;
  * is what a stored value predating them (or hand-edited, or written by an older build)
  * has to survive.
  */
-export const MIN_HOME_ACTIONS = 2;
+export const MIN_HOME_ACTIONS = HOME_ACTIONS_PER_ROW;
 
 export const DEFAULT_HOME_ACTIONS: readonly HomeActionKey[] = ['start_workout', 'track_food'];
 
-export function parseHomeActions(raw: string | null | undefined): HomeActionKey[] {
+function isHomeActionKey(value: unknown): value is HomeActionKey {
+  return typeof value === 'string' && (HOME_ACTION_KEYS as readonly string[]).includes(value);
+}
+
+export function parseHomeActions(raw: null | string | undefined): HomeActionKey[] {
   if (!raw) {
     return [...DEFAULT_HOME_ACTIONS];
   }
 
   try {
-    const parsed = JSON.parse(raw);
+    const parsed: unknown = JSON.parse(raw);
     if (!Array.isArray(parsed)) {
       return [...DEFAULT_HOME_ACTIONS];
     }
 
-    const validActions = parsed.filter(
-      (key: any): key is HomeActionKey =>
-        typeof key === 'string' && HOME_ACTION_KEYS.includes(key as HomeActionKey)
-    );
-
-    const uniqueActions = Array.from(new Set(validActions));
+    const uniqueActions = Array.from(new Set(parsed.filter(isHomeActionKey)));
 
     if (uniqueActions.length < MIN_HOME_ACTIONS) {
       return [...DEFAULT_HOME_ACTIONS];
     }
 
     return uniqueActions.slice(0, MAX_HOME_ACTIONS);
-  } catch (_e) {
+  } catch {
     return [...DEFAULT_HOME_ACTIONS];
   }
 }
@@ -65,16 +63,16 @@ export function parseHomeActions(raw: string | null | undefined): HomeActionKey[
 export function toggleHomeAction(
   selected: readonly HomeActionKey[],
   key: HomeActionKey
-): HomeActionKey[] {
+): readonly HomeActionKey[] {
   if (selected.includes(key)) {
     if (selected.length <= MIN_HOME_ACTIONS) {
-      return selected as HomeActionKey[];
+      return selected;
     }
     return selected.filter((k) => k !== key);
   }
 
   if (selected.length >= MAX_HOME_ACTIONS) {
-    return selected as HomeActionKey[];
+    return selected;
   }
 
   return [...selected, key];

@@ -28,7 +28,13 @@ export function isWebBackupStorageKey(key: string): boolean {
   );
 }
 
-/** AsyncStorage key prefixes that must not be included in the backup. */
+/**
+ * AsyncStorage key prefixes that must not be included in the backup.
+ *
+ * `captureAsyncStorageDump` uses `isWebBackupStorageKey` instead, which also covers the
+ * index and the version marker; this list stays only for callers that genuinely need the
+ * prefix itself.
+ */
 export const ASYNC_STORAGE_EXCLUDED_PREFIXES = [WEB_BACKUP_DATA_PREFIX];
 
 /** Table names in dependency order for restore (parents before children). */

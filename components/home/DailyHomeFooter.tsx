@@ -83,7 +83,11 @@ export function DailyHomeFooter({ steps, onStepsPress, energyBalance }: DailyHom
       </View>
     );
 
-    if (!cell.interactive) {
+    // Steps is the one cell that goes anywhere, and this component already knows that —
+    // it draws the walking icon two lines up. A generic `interactive` flag on the cell
+    // said "some cell might be tappable" while the handler below was still hardcoded to
+    // steps, so it carried none of the information it looked like it carried.
+    if (cell.key !== 'steps') {
       return body;
     }
 

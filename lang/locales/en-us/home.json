@@ -10,10 +10,8 @@
       "trackFood": "Track\nFood",
       "scanBarcode": "Scan\nBarcode",
       "aiPhoto": "AI\nPhoto",
-      "logWeight": "Log\nWeight",
       "myMeals": "My\nMeals",
-      "addNote": "Add\nNote",
-      "logCardio": "Log\nCardio"
+      "addNote": "Add\nNote"
     },
     "sections": {
       "recentWorkouts": "Recent Workouts",

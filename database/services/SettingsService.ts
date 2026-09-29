@@ -829,7 +829,7 @@ export class SettingsService {
   /**
    * Upsert which quick actions the home screen shows, in display order.
    */
-  static async setHomeActions(keys: HomeActionKey[]) {
+  static async setHomeActions(keys: readonly HomeActionKey[]) {
     await SettingsService.setStringSetting(
       HOME_ACTIONS_SETTING_TYPE,
       JSON.stringify(keys.slice(0, MAX_HOME_ACTIONS))

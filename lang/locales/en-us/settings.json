@@ -395,7 +395,7 @@
       "sectionTitle": "Home Actions",
       "sectionSubtitle": "Choose the quick action buttons on your home screen.",
       "popupTitle": "Home Actions",
-      "popupSubtitle": "Pick 2 to 4 actions",
+      "popupSubtitle": "Pick {{min}} to {{max}} actions",
       "editActions": "Edit Actions",
       "chosenCount": "{{chosen}}/{{max}}",
       "hintOrder": "They appear in the order you pick them.",
@@ -416,7 +416,9 @@
           "label": "Weekly Streak",
           "description": "Workouts this week and your tracking streak"
         }
-      },
+      }
+    },
+    "homeDailyStats": {
       "showHomeSteps": {
         "title": "Show steps",
         "description": "Show your daily step count and energy balance on the home screen."

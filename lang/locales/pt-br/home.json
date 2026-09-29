@@ -10,10 +10,8 @@
       "trackFood": "Registrar\nComida",
       "scanBarcode": "Escanear\nCódigo",
       "aiPhoto": "Foto\nIA",
-      "logWeight": "Registrar\nPeso",
       "myMeals": "Minhas\nRefeições",
-      "addNote": "Adicionar\nNota",
-      "logCardio": "Registrar\nCardio"
+      "addNote": "Adicionar\nNota"
     },
     "sections": {
       "recentWorkouts": "Treinos Recentes",

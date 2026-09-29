@@ -71,15 +71,24 @@ function runTransaction<T>(
         const transaction = db.transaction(IDB_STORE, mode);
         const request = operation(transaction.objectStore(IDB_STORE));
 
+        // Every terminal path closes the connection. Closing only on success leaked a
+        // handle per failure — and the quota-exceeded abort is exactly the failure this
+        // module exists to survive and then retries against, so the leak compounded until
+        // a future IDB_VERSION bump would hang on `onblocked`.
+        const settle = (finish: () => void) => {
+          db.close();
+          finish();
+        };
+
         // The quota error surfaces on the transaction, not the request, when the write
         // itself is what exceeds the origin's budget — so both paths have to reject.
-        request.onerror = () => reject(request.error ?? new Error('Web backup store failed'));
+        request.onerror = () =>
+          settle(() => reject(request.error ?? new Error('Web backup store failed')));
         transaction.onabort = () =>
-          reject(transaction.error ?? new Error('Web backup store transaction aborted'));
-        transaction.oncomplete = () => {
-          db.close();
-          resolve(request.result);
-        };
+          settle(() =>
+            reject(transaction.error ?? new Error('Web backup store transaction aborted'))
+          );
+        transaction.oncomplete = () => settle(() => resolve(request.result));
       })
   );
 }

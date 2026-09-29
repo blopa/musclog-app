@@ -30,6 +30,7 @@
       "nutrition": "Nutrition",
       "exercise": "Exercise",
       "other": "Other",
+      "daily_steps": "Steps",
       "descriptions": {
         "weight": "Track your body weight over time",
         "body_fat": "Percentage of body fat mass",
@@ -53,7 +54,8 @@
         "ffmi": "Fat-free mass index",
         "nutrition": "Daily nutrition intake log",
         "exercise": "Physical activity and exercise log",
-        "other": "Other body metric measurements"
+        "other": "Other body metric measurements",
+        "daily_steps": "Steps recorded by your phone or watch"
       }
     },
     "current": {

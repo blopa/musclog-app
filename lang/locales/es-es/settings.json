@@ -395,7 +395,7 @@
       "sectionTitle": "Acciones de inicio",
       "sectionSubtitle": "Elige los botones de acción rápida de tu pantalla de inicio.",
       "popupTitle": "Acciones de inicio",
-      "popupSubtitle": "Elige de 2 a 4 acciones",
+      "popupSubtitle": "Elige entre {{min}} y {{max}} acciones",
       "editActions": "Editar acciones",
       "chosenCount": "{{chosen}}/{{max}}",
       "hintOrder": "Aparecerán en el orden en que las elijas.",
@@ -416,7 +416,9 @@
           "label": "Racha semanal",
           "description": "Entrenamientos de esta semana y tu racha de registro"
         }
-      },
+      }
+    },
+    "homeDailyStats": {
       "showHomeSteps": {
         "title": "Mostrar pasos",
         "description": "Muestra tu recuento de pasos diarios y tu balance de energía en la pantalla de inicio."

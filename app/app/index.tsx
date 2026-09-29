@@ -16,11 +16,7 @@ import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { DailySummaryBottomMenu } from '@/components/DailySummaryBottomMenu';
 import { DailyHomeFooter } from '@/components/home/DailyHomeFooter';
 import { DailyHomeSummary } from '@/components/home/DailyHomeSummary';
-import {
-  HOME_ACTIONS,
-  isHomeActionAvailable,
-  reconcileHomeActions,
-} from '@/components/home/homeActions';
+import { HOME_ACTIONS, reconcileHomeActions } from '@/components/home/homeActions';
 import { WeeklyHomeSummary } from '@/components/home/WeeklyHomeSummary';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AddFoodModal } from '@/components/modals/AddFoodModal';
@@ -40,12 +36,13 @@ import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import DashedButton from '@/components/theme/DashedButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { WorkoutFoodEmptyState } from '@/components/WorkoutFoodEmptyState';
-import { HOME_ACTION_KEYS, HomeActionKey } from '@/constants/homeActions';
+import { HOME_ACTIONS_PER_ROW, HomeActionKey } from '@/constants/homeActions';
 import { isStaticExport } from '@/constants/platform';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { type CameraMode, useSmartCamera } from '@/context/SmartCameraContext';
 import { type MealType } from '@/database/models';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
+import { useAvailableHomeActions } from '@/hooks/useAvailableHomeActions';
 import { useCircadianBurn } from '@/hooks/useCircadianBurn';
 import { useConfettiTrigger } from '@/hooks/useConfettiTrigger';
 import { useCurrentNutritionGoal } from '@/hooks/useCurrentNutritionGoal';
@@ -59,14 +56,10 @@ import { useTheme } from '@/hooks/useTheme';
 import { useUser } from '@/hooks/useUser';
 import { useWorkoutHistory } from '@/hooks/useWorkoutHistory';
 import packageJson from '@/package.json';
-import { syncDailySteps } from '@/services/healthConnectFitness';
+import { refreshDailyStepsIfStale } from '@/services/dailyStepsRefresh';
 import { isProduction } from '@/utils/app';
 import { getAvatarDisplayProps } from '@/utils/avatarUtils';
-import {
-  isSameLocalCalendarDay,
-  localCalendarDayDate,
-  localDayHalfOpenRange,
-} from '@/utils/calendarDate';
+import { isSameLocalCalendarDay, localCalendarDayDate } from '@/utils/calendarDate';
 import { computeEnergyBalance } from '@/utils/energyBalance';
 import { runEntryOnboardingRedirect } from '@/utils/entryOnboardingRedirect';
 import { handleError } from '@/utils/handleError';
@@ -101,14 +94,6 @@ const GOALS_MANAGEMENT_TAB = {
 
 type GoalsManagementTab = (typeof GOALS_MANAGEMENT_TAB)[keyof typeof GOALS_MANAGEMENT_TAB];
 
-/** How stale today's step count may get before a foreground resume re-reads it. */
-const STEPS_REFRESH_INTERVAL_MS = 15 * 60 * 1000;
-
-let lastStepsSyncMs = 0;
-
-/** Seeds the metric log modal's search when it is opened from the steps stat. */
-const STEPS_METRIC_SEARCH_QUERY = 'daily_steps';
-
 export default function HomeScreen() {
   const theme = useTheme();
   const { t } = useTranslation();
@@ -139,6 +124,7 @@ export default function HomeScreen() {
   const { calories: dailyCalories } = useDailyNutritionSummary({ date: today });
 
   const [showUserMetricModal, setShowUserMetricModal] = useState(false);
+  const availableHomeActions = useAvailableHomeActions();
 
   // Burned so far today, not the whole day's TDEE: under a "Burned" label the full-day
   // figure reads as energy already spent, which at 8am it is not.
@@ -168,16 +154,7 @@ export default function HomeScreen() {
     const appSub = AppState.addEventListener('change', (next) => {
       if (next === 'active') {
         syncToday();
-
-        const now = Date.now();
-        if (now - lastStepsSyncMs > STEPS_REFRESH_INTERVAL_MS) {
-          lastStepsSyncMs = now;
-          const { start, nextStart } = localDayHalfOpenRange(new Date());
-          // Fire-and-forget, but never unhandled: this throws on a device that has not
-          // granted the Steps permission, and a declined permission is not an error
-          // worth surfacing — the same policy AppBoot's health sync uses.
-          void syncDailySteps({ startTime: start, endTime: nextStart }).catch(() => undefined);
-        }
+        void refreshDailyStepsIfStale();
 
         // Drain pending widget action set by redirectSystemPath when Android
         // recreates the activity while the JS process is still alive (the
@@ -278,30 +255,20 @@ export default function HomeScreen() {
     () => ({
       start_workout: () => router.navigate('/app/workout/workouts'),
       track_food: () => setIsAddFoodVisible(true),
-      scan_barcode: () => {
-        setIsAddFoodVisible(false);
-        openCamera({ mode: 'barcode-scan', showBarcodeTextSearch: true });
-      },
-      ai_photo: () => {
-        setIsAddFoodVisible(false);
-        openCamera({ mode: 'ai-meal-photo' });
-      },
-      log_weight: () => {}, // TODO: no weight-entry UI to open yet; gated off in isHomeActionAvailable
+      scan_barcode: () => openCamera({ mode: 'barcode-scan', showBarcodeTextSearch: true }),
+      ai_photo: () => openCamera({ mode: 'ai-meal-photo' }),
       my_meals: () => setIsMyMealsVisible(true),
       add_note: () => router.navigate('/app/notes'),
-      log_cardio: () => {}, // TODO
     }),
     [router, openCamera]
   );
 
   // Reconciled, not just filtered: a stored action this device cannot offer would otherwise
   // leave the row short, so the gap is topped up rather than rendered as a hole.
-  const availableHomeActions = useMemo(() => {
-    const available = HOME_ACTION_KEYS.filter((key) =>
-      isHomeActionAvailable(key, { isAiConfigured, platform: Platform.OS })
-    );
-    return reconcileHomeActions(homeActions, available);
-  }, [homeActions, isAiConfigured]);
+  const visibleHomeActions = useMemo(
+    () => reconcileHomeActions(homeActions, availableHomeActions),
+    [homeActions, availableHomeActions]
+  );
 
   // Memoize modal action handlers
   const handleMealTypeSelect = useCallback((mealType: MealType) => {
@@ -561,17 +528,23 @@ export default function HomeScreen() {
         </View>
 
         {/* Action Buttons */}
+        {/*
+          The grid is HOME_ACTIONS_PER_ROW wide, and this is the only place that knows it:
+          `ActionButton` fills whatever box it is given rather than carrying a basis of its
+          own, so it stays usable in a layout that is not this one.
+        */}
         <View className="mx-4 mb-8 flex-row flex-wrap justify-between gap-y-4">
-          {availableHomeActions.map((key) => {
+          {visibleHomeActions.map((key) => {
             const config = HOME_ACTIONS[key];
             return (
-              <ActionButton
-                key={key}
-                tone={config.tone}
-                label={t(config.labelKey)}
-                icon={config.icon}
-                onPress={homeActionHandlers[key]}
-              />
+              <View key={key} style={{ flexBasis: `${100 / HOME_ACTIONS_PER_ROW - 2}%` }}>
+                <ActionButton
+                  tone={config.tone}
+                  label={t(config.labelKey)}
+                  icon={config.icon}
+                  onPress={homeActionHandlers[key]}
+                />
+              </View>
             );
           })}
         </View>
@@ -800,13 +773,14 @@ export default function HomeScreen() {
         isAiEnabled={isAiConfigured}
       />
 
-      {/* Nutrition Goals Modal */}
+      {/* Metric history, opened from the steps stat */}
       <UserMetricDataModal
         visible={showUserMetricModal}
         onClose={() => setShowUserMetricModal(false)}
-        initialSearchQuery={STEPS_METRIC_SEARCH_QUERY}
+        metricType="daily_steps"
       />
 
+      {/* Nutrition Goals Modal */}
       <NutritionGoalsModal
         visible={isNutritionGoalsVisible}
         onClose={handleCloseNutritionGoals}

@@ -15,6 +15,7 @@ import { TextInput } from '@/components/theme/TextInput';
 import type { Units } from '@/constants/settings';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { database } from '@/database';
+import type { UserMetricType } from '@/database/models/UserMetric';
 import { ChatService } from '@/database/services/ChatService';
 import { ExerciseService } from '@/database/services/ExerciseService';
 import { FoodPortionService } from '@/database/services/FoodPortionService';
@@ -1857,31 +1858,23 @@ export function WorkoutTemplateDataModal({ visible, onClose }: WorkoutTemplateDa
 type UserMetricDataModalProps = {
   visible: boolean;
   onClose: () => void;
-  initialSearchQuery?: string;
+  /**
+   * Restrict the list to one metric type — a structural filter on the query, not a seed
+   * for the search box. `searchQuery` stays what the user types, so there is no state to
+   * push in from the caller and no seed-on-open effect to write.
+   */
+  metricType?: UserMetricType;
 };
 
-export function UserMetricDataModal({
-  visible,
-  onClose,
-  initialSearchQuery,
-}: UserMetricDataModalProps) {
-  const [searchQuery, setSearchQuery] = useState(initialSearchQuery || '');
+export function UserMetricDataModal({ visible, onClose, metricType }: UserMetricDataModalProps) {
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // Seed the search box from the caller whenever the modal opens, so reopening it
-  // from a different entry point does not keep the previous session's query.
-  useEffect(() => {
-    if (visible) {
-      // Wrapped in a function (not called directly in the effect body) to satisfy
-      // react-hooks/set-state-in-effect — this is a deliberate seed-on-open.
-      const seedSearchQuery = () => setSearchQuery(initialSearchQuery || '');
-      seedSearchQuery();
-    }
-  }, [visible, initialSearchQuery]);
   const { dayGroups, isLoading, isLoadingMore, hasMore, loadMore, refresh } = useUserMetricDataLogs(
     {
       visible,
       batchSize: 20,
       searchQuery,
+      metricType,
     }
   );
 

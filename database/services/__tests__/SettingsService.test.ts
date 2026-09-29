@@ -299,7 +299,7 @@ describe('SettingsService', () => {
         'track_food',
         'scan_barcode',
         'ai_photo',
-        'log_weight',
+        'my_meals',
       ]);
 
       expect(parseHomeActions(await SettingsService.getHomeActions())).toHaveLength(

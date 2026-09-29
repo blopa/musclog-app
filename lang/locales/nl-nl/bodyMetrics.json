@@ -30,6 +30,7 @@
       "nutrition": "Voeding",
       "exercise": "Oefening",
       "other": "Overig",
+      "daily_steps": "Stappen",
       "descriptions": {
         "weight": "Houd je lichaamsgewicht bij over de tijd",
         "body_fat": "Percentage lichaamsvetmassa",
@@ -53,7 +54,8 @@
         "ffmi": "Fat-Free Mass Index",
         "nutrition": "Dagelijks voedingslogboek",
         "exercise": "Logboek voor fysieke activiteit en oefening",
-        "other": "Andere lichaamsmetingen"
+        "other": "Andere lichaamsmetingen",
+        "daily_steps": "Stappen geregistreerd door je telefoon of horloge"
       }
     },
     "current": {

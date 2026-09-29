@@ -395,7 +395,7 @@
       "sectionTitle": "Startacties",
       "sectionSubtitle": "Kies de snelle actieknoppen op je startscherm.",
       "popupTitle": "Startacties",
-      "popupSubtitle": "Kies 2 tot 4 acties",
+      "popupSubtitle": "Kies {{min}} tot {{max}} acties",
       "editActions": "Acties bewerken",
       "chosenCount": "{{chosen}}/{{max}}",
       "hintOrder": "Ze verschijnen in de volgorde waarin je ze kiest.",
@@ -416,7 +416,9 @@
           "label": "Wekelijkse reeks",
           "description": "Trainingen deze week en je bijhoudreeks"
         }
-      },
+      }
+    },
+    "homeDailyStats": {
       "showHomeSteps": {
         "title": "Toon stappen",
         "description": "Toon uw dagelijkse stappentelling en energiebalans op het startscherm."

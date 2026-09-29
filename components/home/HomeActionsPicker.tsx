@@ -18,10 +18,10 @@ import { useTheme } from '@/hooks/useTheme';
 
 type HomeActionsPickerProps = {
   /** The chosen actions, in the order they appear on the home screen. */
-  selected: HomeActionKey[];
-  /** Every action this device can offer, already filtered by `isHomeActionAvailable`. */
-  available: HomeActionKey[];
-  onChange: (next: HomeActionKey[]) => void;
+  selected: readonly HomeActionKey[];
+  /** Every action this device can offer — see `useAvailableHomeActions`. */
+  available: readonly HomeActionKey[];
+  onChange: (next: readonly HomeActionKey[]) => void;
 };
 
 /**

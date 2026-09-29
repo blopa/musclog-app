@@ -27,9 +27,7 @@ describe('buildDailyStatCells', () => {
   it('renders the steps cell alone when there is no calorie goal', () => {
     const cells = buildDailyStatCells({ steps: 8241, energyBalance: null });
 
-    expect(cells).toEqual([
-      expect.objectContaining({ key: 'steps', value: 8241, interactive: true }),
-    ]);
+    expect(cells).toEqual([expect.objectContaining({ key: 'steps', value: 8241 })]);
   });
 
   it('orders steps ahead of the energy cells when both are present', () => {
@@ -89,12 +87,6 @@ describe('buildDailyStatCells', () => {
     const cells = buildDailyStatCells({ steps: 8241, energyBalance: balance() });
 
     expect(cells.find((cell) => cell.key === 'steps')?.showsUnit).toBe(false);
-  });
-
-  it('makes only the steps cell interactive', () => {
-    const cells = buildDailyStatCells({ steps: 8241, energyBalance: balance() });
-
-    expect(cells.filter((cell) => cell.interactive).map((cell) => cell.key)).toEqual(['steps']);
   });
 
   it('keeps a zero step count as a rendered cell', () => {

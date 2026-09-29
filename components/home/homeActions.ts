@@ -2,97 +2,78 @@ import {
   BookOpen,
   Camera,
   Dumbbell,
-  Flame,
   LucideIcon,
   NotebookPen,
   ScanLine,
   UtensilsCrossed,
-  Weight,
 } from 'lucide-react-native';
 
 import { ActionButtonTone } from '@/components/ActionButton';
 import { DEFAULT_HOME_ACTIONS, HomeActionKey, MIN_HOME_ACTIONS } from '@/constants/homeActions';
 
+/** What an action needs to know about this device to say whether it can be offered. */
+export type HomeActionContext = {
+  isAiConfigured: boolean;
+  isWeb: boolean;
+};
+
 export type HomeActionConfig = {
   labelKey: string;
   icon: LucideIcon;
   tone: ActionButtonTone;
+  /**
+   * Whether this device can offer the action at all.
+   *
+   * Declared per entry rather than in an `if` chain so the compiler demands a decision for
+   * every new key: a `Record<HomeActionKey, …>` with a required field cannot silently
+   * default a newcomer to "always available" the way a fallthrough `return true` did.
+   */
+  isAvailable: (context: HomeActionContext) => boolean;
 };
+
+const ALWAYS = () => true;
 
 export const HOME_ACTIONS: Record<HomeActionKey, HomeActionConfig> = {
   start_workout: {
     labelKey: 'home.actions.startWorkout',
     icon: Dumbbell,
-    tone: 'workout',
+    tone: 'accent',
+    isAvailable: ALWAYS,
   },
   track_food: {
     labelKey: 'home.actions.trackFood',
     icon: UtensilsCrossed,
-    tone: 'food',
+    tone: 'muted',
+    isAvailable: ALWAYS,
   },
   scan_barcode: {
     labelKey: 'home.actions.scanBarcode',
     icon: ScanLine,
-    tone: 'neutral',
+    tone: 'muted',
+    // There is no camera to scan with on web.
+    isAvailable: ({ isWeb }) => !isWeb,
   },
   ai_photo: {
     labelKey: 'home.actions.aiPhoto',
     icon: Camera,
     tone: 'accent',
-  },
-  log_weight: {
-    labelKey: 'home.actions.logWeight',
-    icon: Weight,
-    tone: 'neutral',
+    // Gated on the provider per the AI-affordance rule: an action inside a menu or a grid
+    // must not advertise AI, because tapping it would dead-end.
+    isAvailable: ({ isAiConfigured, isWeb }) => isAiConfigured && !isWeb,
   },
   my_meals: {
     labelKey: 'home.actions.myMeals',
     icon: BookOpen,
-    tone: 'neutral',
+    tone: 'muted',
+    isAvailable: ALWAYS,
   },
   add_note: {
     labelKey: 'home.actions.addNote',
     icon: NotebookPen,
-    tone: 'neutral',
-  },
-  log_cardio: {
-    labelKey: 'home.actions.logCardio',
-    icon: Flame,
-    tone: 'accent',
+    tone: 'muted',
+    isAvailable: ALWAYS,
   },
 };
-
-type IsHomeActionAvailableOptions = {
-  isAiConfigured: boolean;
-  platform: 'ios' | 'android' | 'web' | string;
-};
-
-export function isHomeActionAvailable(
-  key: HomeActionKey,
-  { isAiConfigured, platform }: IsHomeActionAvailableOptions
-): boolean {
-  if (key === 'ai_photo') {
-    return isAiConfigured && platform !== 'web';
-  }
-
-  if (key === 'scan_barcode') {
-    return platform !== 'web';
-  }
-
-  if (key === 'log_cardio') {
-    return false; // Hidden until plan 08 ships
-  }
-
-  // The app has no weight-entry UI to send this anywhere: the only way to record a weight
-  // is Profile -> Edit Fitness Details, a seven-field form. The action shipped wired to the
-  // Day Summary goals menu, which is not what its label promises, so it stays hidden until
-  // it has a destination of its own.
-  if (key === 'log_weight') {
-    return false;
-  }
-
-  return true;
-}
 
 /**
  * The home tile's label is deliberately two lines ("Track\nFood") so it fits the square
@@ -104,23 +85,14 @@ export function homeActionListLabel(label: string): string {
 }
 
 /**
- * Order the picker's rows: chosen actions first, in the order they were picked, then the
- * rest in the catalogue's own order.
- *
- * The chosen block therefore reads exactly as the home row does, which is what makes the
- * position badges meaningful. A stored action this device cannot offer (an AI action
- * after the provider was removed, a camera action on web) is dropped, so the list never
- * advertises a button the home screen would filter out anyway.
- */
-/**
  * Drop chosen actions this device cannot offer, then top up to `MIN_HOME_ACTIONS` from the
  * ones it can.
  *
  * A stored selection outlives its own availability: the AI provider gets removed, the same
  * database is opened on web where the camera actions do not exist, or an action is retired
- * from the catalogue entirely (`log_weight`, until it has somewhere to go). Filtering alone
- * would leave the home row below its floor and the picker showing fewer chosen rows than
- * its counter claims, so the gap is filled rather than left.
+ * from the catalogue entirely. Filtering alone would leave the home row below its floor and
+ * the picker showing fewer chosen rows than its counter claims, so the gap is filled rather
+ * than left.
  */
 export function reconcileHomeActions(
   selected: readonly HomeActionKey[],
@@ -142,6 +114,13 @@ export function reconcileHomeActions(
   return [...kept, ...topUp].slice(0, MIN_HOME_ACTIONS);
 }
 
+/**
+ * Order the picker's rows: chosen actions first, in the order they were picked, then the
+ * rest in the catalogue's own order.
+ *
+ * The chosen block therefore reads exactly as the home row does, which is what makes the
+ * position badges meaningful.
+ */
 export function orderHomeActionRows(
   selected: readonly HomeActionKey[],
   available: readonly HomeActionKey[]

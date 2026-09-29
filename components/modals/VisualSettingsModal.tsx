@@ -15,16 +15,15 @@ import {
   Wine,
   Zap,
 } from 'lucide-react-native';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import {
   HOME_ACTIONS,
   homeActionListLabel,
-  isHomeActionAvailable,
   reconcileHomeActions,
 } from '@/components/home/homeActions';
 import { HomeActionsPicker } from '@/components/home/HomeActionsPicker';
@@ -32,7 +31,12 @@ import { NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
 import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/OptionsMultiSelector';
 import { PickerButton } from '@/components/theme/PickerButton';
 import { ToggleInput } from '@/components/theme/ToggleInput';
-import { HOME_ACTION_KEYS, type HomeActionKey, parseHomeActions } from '@/constants/homeActions';
+import {
+  type HomeActionKey,
+  MAX_HOME_ACTIONS,
+  MIN_HOME_ACTIONS,
+  parseHomeActions,
+} from '@/constants/homeActions';
 import {
   type HomeSummaryCard,
   NAV_ITEM_KEYS,
@@ -41,6 +45,7 @@ import {
   type ThemeOption,
 } from '@/constants/settings';
 import SettingsService from '@/database/services/SettingsService';
+import { useAvailableHomeActions } from '@/hooks/useAvailableHomeActions';
 import { isNavItemAvailable, useNavigationItems } from '@/hooks/useNavigationItems';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -105,7 +110,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   const { rawSlots, isCycleActive, setNavSlot } = useNavigationItems();
   // The stored preference, not the resolved mode: 'system' has to stay selectable
   // and visible as itself.
-  const { theme: themePreference, isAiConfigured, showHomeSteps } = useSettings();
+  const { theme: themePreference, showHomeSteps } = useSettings();
 
   const [themePopupVisible, setThemePopupVisible] = useState(false);
   const [activeSlot, setActiveSlot] = useState<SlotNumber | null>(null);
@@ -114,15 +119,18 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
   const [homeCardPopupVisible, setHomeCardPopupVisible] = useState(false);
   const [homeSummaryCard, setHomeSummaryCard] = useState<HomeSummaryCard>('daily_summary');
   const [homeActionsPopupVisible, setHomeActionsPopupVisible] = useState(false);
-  const [selectedHomeActions, setSelectedHomeActions] = useState<HomeActionKey[]>([]);
+  const [selectedHomeActions, setSelectedHomeActions] = useState<readonly HomeActionKey[]>([]);
 
-  const availableHomeActions = useMemo(
-    () =>
-      HOME_ACTION_KEYS.filter((key) =>
-        isHomeActionAvailable(key, { isAiConfigured, platform: Platform.OS })
-      ),
-    [isAiConfigured]
-  );
+  const availableHomeActions = useAvailableHomeActions();
+  // Read through a ref so the load effect stays keyed on `visible` alone. This form state
+  // is a snapshot, not a subscription: with `availableHomeActions` in the deps, a settings
+  // change that flipped AI configuration while the sheet was open re-read from disk over
+  // the user's in-progress selection — and re-persisted it. Same rule as `usePlanDraft`.
+  const availableHomeActionsRef = useRef(availableHomeActions);
+  // Declared before the load effect, so the ref is current by the time that one runs.
+  useEffect(() => {
+    availableHomeActionsRef.current = availableHomeActions;
+  }, [availableHomeActions]);
 
   useEffect(() => {
     if (!visible) {
@@ -137,13 +145,13 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
       // the stored value stale would let the picker and the home row disagree until the
       // user happened to tap something.
       const stored = parseHomeActions(raw);
-      const reconciled = reconcileHomeActions(stored, availableHomeActions);
+      const reconciled = reconcileHomeActions(stored, availableHomeActionsRef.current);
       setSelectedHomeActions(reconciled);
       if (reconciled !== stored) {
         void SettingsService.setHomeActions(reconciled);
       }
     });
-  }, [visible, availableHomeActions]);
+  }, [visible]);
 
   const handleThemeChange = async (option: ThemeOption) => {
     setThemePopupVisible(false);
@@ -175,7 +183,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
 
   // `HomeActionsPicker` hands back a value the bounds already accepted, and returns the
   // same array when they refused, so a rejected tap never reaches the settings row.
-  const handleHomeActionsChange = async (keys: HomeActionKey[]) => {
+  const handleHomeActionsChange = async (keys: readonly HomeActionKey[]) => {
     if (keys === selectedHomeActions) {
       return;
     }
@@ -345,10 +353,10 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
               items={[
                 {
                   key: 'show_home_steps',
-                  label: t('settings.homeSummaryCard.showHomeSteps.title'),
-                  subtitle: t('settings.homeSummaryCard.showHomeSteps.description'),
+                  label: t('settings.homeDailyStats.showHomeSteps.title'),
+                  subtitle: t('settings.homeDailyStats.showHomeSteps.description'),
                   value: showHomeSteps,
-                  onValueChange: (v: boolean) => SettingsService.setShowHomeSteps(v),
+                  onValueChange: (v: boolean) => void SettingsService.setShowHomeSteps(v),
                 },
               ]}
             />
@@ -359,7 +367,10 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
         visible={homeActionsPopupVisible}
         onClose={() => setHomeActionsPopupVisible(false)}
         title={t('settings.homeActions.popupTitle')}
-        subtitle={t('settings.homeActions.popupSubtitle')}
+        subtitle={t('settings.homeActions.popupSubtitle', {
+          min: MIN_HOME_ACTIONS,
+          max: MAX_HOME_ACTIONS,
+        })}
       >
         <HomeActionsPicker
           selected={selectedHomeActions}

@@ -1,10 +1,11 @@
 import {
   HOME_ACTIONS,
   homeActionListLabel,
-  isHomeActionAvailable,
   orderHomeActionRows,
   reconcileHomeActions,
 } from '../homeActions';
+
+import type { HomeActionContext } from '../homeActions';
 
 import {
   DEFAULT_HOME_ACTIONS,
@@ -19,6 +20,9 @@ describe('HOME_ACTIONS', () => {
       expect(HOME_ACTIONS[key]).toBeDefined();
       expect(HOME_ACTIONS[key].labelKey).toMatch(/^home\.actions\./);
       expect(HOME_ACTIONS[key].icon).toBeDefined();
+      // Declared per entry, never a fallthrough default: this is what stops a new key
+      // being silently offered on every device because nobody decided about it.
+      expect(typeof HOME_ACTIONS[key].isAvailable).toBe('function');
     }
 
     expect(Object.keys(HOME_ACTIONS).sort()).toEqual([...HOME_ACTION_KEYS].sort());
@@ -44,7 +48,7 @@ describe('homeActionListLabel', () => {
 });
 
 describe('orderHomeActionRows', () => {
-  const available: HomeActionKey[] = ['start_workout', 'track_food', 'log_weight', 'add_note'];
+  const available: HomeActionKey[] = ['start_workout', 'track_food', 'my_meals', 'add_note'];
 
   // The chosen block has to read exactly as the home row does, or the position badges
   // are pointing at an order the user cannot see.
@@ -53,7 +57,7 @@ describe('orderHomeActionRows', () => {
       'add_note',
       'start_workout',
       'track_food',
-      'log_weight',
+      'my_meals',
     ]);
   });
 
@@ -61,54 +65,59 @@ describe('orderHomeActionRows', () => {
     expect(orderHomeActionRows(['ai_photo', 'track_food'], available)).toEqual([
       'track_food',
       'start_workout',
-      'log_weight',
+      'my_meals',
       'add_note',
     ]);
   });
 
   it('never repeats or invents a row', () => {
-    const rows = orderHomeActionRows(['log_weight', 'start_workout'], available);
+    const rows = orderHomeActionRows(['my_meals', 'start_workout'], available);
 
     expect(new Set(rows).size).toBe(rows.length);
     expect([...rows].sort()).toEqual([...available].sort());
   });
 });
 
-describe('isHomeActionAvailable', () => {
-  const android = { isAiConfigured: true, platform: 'android' };
+describe('HOME_ACTIONS[key].isAvailable', () => {
+  const native = { isAiConfigured: true, isWeb: false };
+  const isAvailable = (key: HomeActionKey, context: HomeActionContext) =>
+    HOME_ACTIONS[key].isAvailable(context);
 
   // Per the AI-affordance gating rule: an action inside a sheet must not advertise an
   // LLM feature the user has no provider for, because tapping it would dead-end.
   it('hides the AI photo action when no provider is configured', () => {
-    expect(isHomeActionAvailable('ai_photo', android)).toBe(true);
-    expect(isHomeActionAvailable('ai_photo', { ...android, isAiConfigured: false })).toBe(false);
+    expect(isAvailable('ai_photo', native)).toBe(true);
+    expect(isAvailable('ai_photo', { ...native, isAiConfigured: false })).toBe(false);
   });
 
   it('hides the camera-backed actions on web regardless of AI config', () => {
-    expect(isHomeActionAvailable('ai_photo', { ...android, platform: 'web' })).toBe(false);
-    expect(isHomeActionAvailable('scan_barcode', { ...android, platform: 'web' })).toBe(false);
-    expect(isHomeActionAvailable('scan_barcode', android)).toBe(true);
-  });
-
-  it('keeps the unshipped cardio action hidden everywhere', () => {
-    expect(isHomeActionAvailable('log_cardio', android)).toBe(false);
-    expect(isHomeActionAvailable('log_cardio', { ...android, platform: 'ios' })).toBe(false);
-  });
-
-  // It shipped opening the Day Summary goals menu because the app has no weight-entry UI
-  // to open. It stays hidden until it has a destination that matches its label.
-  it('keeps the weight action hidden until it has somewhere to go', () => {
-    expect(isHomeActionAvailable('log_weight', android)).toBe(false);
-    expect(isHomeActionAvailable('log_weight', { ...android, platform: 'web' })).toBe(false);
+    expect(isAvailable('ai_photo', { ...native, isWeb: true })).toBe(false);
+    expect(isAvailable('scan_barcode', { ...native, isWeb: true })).toBe(false);
+    expect(isAvailable('scan_barcode', native)).toBe(true);
   });
 
   // The home screen renders whatever survives this filter, so a key with no gate of its
-  // own must fail open rather than silently emptying the action row.
+  // own must stay available rather than silently emptying the action row.
   it('allows every ungated action on a configured native device', () => {
-    const gated: HomeActionKey[] = ['ai_photo', 'scan_barcode', 'log_cardio', 'log_weight'];
+    const gated: HomeActionKey[] = ['ai_photo', 'scan_barcode'];
 
     for (const key of HOME_ACTION_KEYS.filter((k) => !gated.includes(k))) {
-      expect(isHomeActionAvailable(key, android)).toBe(true);
+      expect(isAvailable(key, native)).toBe(true);
+    }
+  });
+
+  // Every catalogue entry must be reachable on some device. An action that can never be
+  // offered is dead config, a dead handler and a dead translation in every locale — which
+  // is what `log_weight` and `log_cardio` were before they were removed.
+  it('has no permanently unavailable action', () => {
+    for (const key of HOME_ACTION_KEYS) {
+      const reachable = [
+        { isAiConfigured: true, isWeb: false },
+        { isAiConfigured: false, isWeb: false },
+        { isAiConfigured: true, isWeb: true },
+      ].some((context) => isAvailable(key, context));
+
+      expect(reachable).toBe(true);
     }
   });
 });
@@ -123,16 +132,16 @@ describe('reconcileHomeActions', () => {
   });
 
   it('drops an action this device no longer offers', () => {
-    expect(reconcileHomeActions(['track_food', 'log_weight', 'add_note'], available)).toEqual([
+    expect(reconcileHomeActions(['track_food', 'scan_barcode', 'add_note'], available)).toEqual([
       'track_food',
       'add_note',
     ]);
   });
 
-  // Retiring `log_weight` left anyone who had picked it below the floor, and a home row
-  // with one tile in it reads as a bug rather than a preference.
+  // Opening the same database on web left anyone who had picked the camera actions below
+  // the floor, and a home row with one tile in it reads as a bug rather than a preference.
   it('tops a short selection back up to the floor', () => {
-    const reconciled = reconcileHomeActions(['add_note', 'log_weight'], available);
+    const reconciled = reconcileHomeActions(['add_note', 'scan_barcode'], available);
 
     expect(reconciled).toHaveLength(MIN_HOME_ACTIONS);
     expect(reconciled[0]).toBe('add_note');
@@ -140,7 +149,7 @@ describe('reconcileHomeActions', () => {
   });
 
   it('prefers the defaults when topping up, so the row looks like a fresh install', () => {
-    expect(reconcileHomeActions(['log_weight', 'log_cardio'], available)).toEqual([
+    expect(reconcileHomeActions(['scan_barcode', 'ai_photo'], available)).toEqual([
       ...DEFAULT_HOME_ACTIONS,
     ]);
   });
@@ -148,7 +157,7 @@ describe('reconcileHomeActions', () => {
   it('tops up from whatever is offered when the defaults are not', () => {
     const narrow: HomeActionKey[] = ['my_meals', 'add_note'];
 
-    expect(reconcileHomeActions(['log_weight'], narrow)).toEqual(narrow);
+    expect(reconcileHomeActions(['scan_barcode'], narrow)).toEqual(narrow);
   });
 
   it('never repeats an action or exceeds the floor while topping up', () => {
