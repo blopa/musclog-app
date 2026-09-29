@@ -1860,7 +1860,11 @@ type UserMetricDataModalProps = {
   initialSearchQuery?: string;
 };
 
-export function UserMetricDataModal({ visible, onClose, initialSearchQuery }: UserMetricDataModalProps) {
+export function UserMetricDataModal({
+  visible,
+  onClose,
+  initialSearchQuery,
+}: UserMetricDataModalProps) {
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery || '');
 
   useEffect(() => {

@@ -21,12 +21,17 @@ import { Platform, Text, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
-import { HOME_ACTIONS } from '@/components/home/homeActions';
+import { HOME_ACTIONS, isHomeActionAvailable } from '@/components/home/homeActions';
 import { NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
 import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/OptionsMultiSelector';
 import { PickerButton } from '@/components/theme/PickerButton';
 import { ToggleInput } from '@/components/theme/ToggleInput';
-import { HOME_ACTION_KEYS, type HomeActionKey, parseHomeActions } from '@/constants/homeActions';
+import {
+  HOME_ACTION_KEYS,
+  type HomeActionKey,
+  MAX_HOME_ACTIONS,
+  parseHomeActions,
+} from '@/constants/homeActions';
 import {
   type HomeSummaryCard,
   NAV_ITEM_KEYS,
@@ -155,7 +160,7 @@ export function VisualSettingsModal({ visible, onClose }: VisualSettingsModalPro
     if (keys.length === 0) {
       return;
     }
-    const maxItems = keys.slice(0, 4);
+    const maxItems = keys.slice(0, MAX_HOME_ACTIONS);
     setSelectedHomeActions(maxItems);
     await SettingsService.setHomeActions(maxItems);
   };

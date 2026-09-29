@@ -1,5 +1,7 @@
+import { DEFAULT_HOME_ACTIONS, MAX_HOME_ACTIONS, parseHomeActions } from '@/constants/homeActions';
 import {
   ENABLE_FASTED_DAY_SETTING_TYPE,
+  HOME_ACTIONS_SETTING_TYPE,
   NAV_SLOT_1_SETTING_TYPE,
   NAV_SLOT_2_SETTING_TYPE,
   NAV_SLOT_3_SETTING_TYPE,
@@ -265,6 +267,53 @@ describe('SettingsService', () => {
       expect(mockDatabase.write).toHaveBeenCalledTimes(1);
       expect(valuesFor(rows, NAV_SLOT_1_SETTING_TYPE)).toEqual(['food']);
       expect(valuesFor(rows, NAV_SLOT_2_SETTING_TYPE)).toEqual(['workouts']);
+    });
+  });
+
+  // The home screen reads these through `useSettings().homeActions`, and the visual
+  // settings picker reads the raw column back through `parseHomeActions`. Both halves
+  // of that round trip shipped missing once, so pin the pair rather than either side.
+  describe('home actions', () => {
+    it('stores the chosen actions as a JSON array in display order', async () => {
+      const rows = installSettingsTable();
+
+      await SettingsService.setHomeActions(['track_food', 'start_workout', 'add_note']);
+
+      expect(valuesFor(rows, HOME_ACTIONS_SETTING_TYPE)).toEqual([
+        '["track_food","start_workout","add_note"]',
+      ]);
+      expect(parseHomeActions(await SettingsService.getHomeActions())).toEqual([
+        'track_food',
+        'start_workout',
+        'add_note',
+      ]);
+    });
+
+    // The home screen only has room for four, so the clamp belongs on the write path
+    // too — not just in the picker that happens to call it today.
+    it('clamps a longer selection to the home screen capacity', async () => {
+      installSettingsTable();
+
+      await SettingsService.setHomeActions([
+        'start_workout',
+        'track_food',
+        'scan_barcode',
+        'ai_photo',
+        'log_weight',
+      ]);
+
+      expect(parseHomeActions(await SettingsService.getHomeActions())).toHaveLength(
+        MAX_HOME_ACTIONS
+      );
+    });
+
+    // An unset row must read back as the shared default, not as an empty action row.
+    it('returns a value the parser resolves to the default when unset', async () => {
+      installSettingsTable();
+
+      expect(parseHomeActions(await SettingsService.getHomeActions())).toEqual([
+        ...DEFAULT_HOME_ACTIONS,
+      ]);
     });
   });
 

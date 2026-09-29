@@ -11,31 +11,35 @@ export const HOME_ACTION_KEYS = [
 
 export type HomeActionKey = (typeof HOME_ACTION_KEYS)[number];
 
-const DEFAULT_HOME_ACTIONS: HomeActionKey[] = ['start_workout', 'track_food'];
+/** The home screen shows at most this many quick actions. */
+export const MAX_HOME_ACTIONS = 4;
+
+export const DEFAULT_HOME_ACTIONS: readonly HomeActionKey[] = ['start_workout', 'track_food'];
 
 export function parseHomeActions(raw: string | null | undefined): HomeActionKey[] {
   if (!raw) {
-    return DEFAULT_HOME_ACTIONS;
+    return [...DEFAULT_HOME_ACTIONS];
   }
 
   try {
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) {
-      return DEFAULT_HOME_ACTIONS;
+      return [...DEFAULT_HOME_ACTIONS];
     }
 
-    const validActions = parsed.filter((key: any): key is HomeActionKey =>
-      typeof key === 'string' && HOME_ACTION_KEYS.includes(key as HomeActionKey)
+    const validActions = parsed.filter(
+      (key: any): key is HomeActionKey =>
+        typeof key === 'string' && HOME_ACTION_KEYS.includes(key as HomeActionKey)
     );
 
     const uniqueActions = Array.from(new Set(validActions));
 
     if (uniqueActions.length === 0) {
-      return DEFAULT_HOME_ACTIONS;
+      return [...DEFAULT_HOME_ACTIONS];
     }
 
-    return uniqueActions.slice(0, 4);
+    return uniqueActions.slice(0, MAX_HOME_ACTIONS);
   } catch (_e) {
-    return DEFAULT_HOME_ACTIONS;
+    return [...DEFAULT_HOME_ACTIONS];
   }
 }

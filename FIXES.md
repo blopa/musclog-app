@@ -266,6 +266,38 @@ that should remain pinned:
 - `DevSettings.reload()` is development-only; `reloadApp()` must keep its separate production path,
   and post-restore UI must always offer an explicit restart action.
 
+## Home screen crashed after a database import (`useMemo is not defined`)
+
+### Symptom
+
+On a dev web build, importing an exported JSON backup from the landing screen appeared to fail: the
+restore ran to completion, `reloadApp()` navigated to `/app`, and the home screen then died in the
+error boundary with `ReferenceError: useMemo is not defined`. The import had actually succeeded — the
+data was in IndexedDB — but the only screen that could show it never rendered. The landing screen was
+the sole entry point reached beforehand, so nothing had rendered the home screen earlier to reveal
+that it was already broken for every user, imported data or not.
+
+### Cause
+
+The configurable-home-actions branch was merged with the feature only half present. `app/app/index.tsx`
+gained two `useMemo` calls without the matching `react` import, `VisualSettingsModal.tsx` called
+`isHomeActionAvailable` without importing it, and the entire persistence chain behind
+`useSettings().homeActions` was absent: no `HOME_ACTIONS_SETTING_TYPE`, no
+`SettingsService.getHomeActions`/`setHomeActions`, no `homeActions` field on the settings context.
+
+`npm run lint:eslint` does not catch any of it. The TypeScript parser is configured without
+`no-undef`, so an undefined identifier is not a lint error — `tsc` is the only check that sees it, and
+these four faults were sitting on `dev` as plain `TS2304`/`TS2339` errors. CI does run
+`npm run typecheck` on pull requests, so the merge landed red rather than the check being missing.
+
+### Permanent rules
+
+- `npm run lint:eslint` passing says nothing about undefined identifiers. Run `npm run typecheck`
+  (or `npm run lint:all`) before merging, and treat a red `typecheck` on a merge as a blocker.
+- A feature whose UI is compiler-enforced through `Record<Key, …>` tables can still be missing its
+  entire settings/persistence half with no type error at the call sites that matter. See the home
+  actions rule in `AGENTS.md` for the four edits that chain is.
+
 ## Removing workarounds
 
 When upgrading Expo or a patched dependency:

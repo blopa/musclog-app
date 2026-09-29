@@ -2,6 +2,11 @@ import { Q } from '@nozbe/watermelondb';
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react';
 
 import { GEMINI_MODELS } from '@/constants/ai';
+import {
+  DEFAULT_HOME_ACTIONS,
+  type HomeActionKey,
+  parseHomeActions,
+} from '@/constants/homeActions';
 import { isStaticExport } from '@/constants/platform';
 import {
   ADVANCED_DATA_MANAGEMENT_SETTING_TYPE,
@@ -22,6 +27,7 @@ import {
   type FoodSearchSource,
   GOOGLE_GEMINI_API_KEY_SETTING_TYPE,
   GOOGLE_GEMINI_MODEL_SETTING_TYPE,
+  HOME_ACTIONS_SETTING_TYPE,
   HOME_SUMMARY_CARD_SETTING_TYPE,
   type HomeSummaryCard,
   INCLUDE_FIBER_IN_CARBS_SETTING_TYPE,
@@ -55,6 +61,7 @@ import {
   SHOW_DAILY_MOOD_PROMPT_SETTING_TYPE,
   SHOW_DAILY_SUPPLEMENT_PROMPT_SETTING_TYPE,
   SHOW_DAILY_WATER_PROMPT_SETTING_TYPE,
+  SHOW_HOME_STEPS_SETTING_TYPE,
   SHOW_WEIGHT_PREDICTION_SETTING_TYPE,
   THEME_SETTING_TYPE,
   type ThemeOption,
@@ -70,7 +77,6 @@ import {
   WORKOUT_INSIGHTS_SETTING_TYPE,
   type WorkoutHistoryDays,
   WRITE_HEALTH_DATA_SETTING_TYPE,
-  SHOW_HOME_STEPS_SETTING_TYPE,
 } from '@/constants/settings';
 import { database } from '@/database';
 import { waitForDbReady } from '@/database/dbReady';
@@ -138,6 +144,7 @@ type SettingsState = {
   nutritionLogHistoryDays: NutritionLogHistoryDays;
   workoutHistoryDays: WorkoutHistoryDays;
   homeSummaryCard: HomeSummaryCard;
+  homeActions: HomeActionKey[];
   showHomeSteps: boolean;
   isLoading: boolean;
 };
@@ -199,6 +206,7 @@ const DEFAULT_STATE: SettingsState = {
   nutritionLogHistoryDays: 'none',
   workoutHistoryDays: 'none',
   homeSummaryCard: 'daily_summary',
+  homeActions: [...DEFAULT_HOME_ACTIONS],
   showHomeSteps: true,
   isLoading: true,
 };
@@ -332,6 +340,7 @@ function deriveStateFromMap(map: Map<string, string>): SettingsState {
     nutritionLogHistoryDays: (rawNutritionLogHistoryDays as NutritionLogHistoryDays) || 'none',
     workoutHistoryDays: (rawWorkoutHistoryDays as WorkoutHistoryDays) || 'none',
     homeSummaryCard,
+    homeActions: parseHomeActions(map.get(HOME_ACTIONS_SETTING_TYPE)),
     showHomeSteps: getBoolean(map, SHOW_HOME_STEPS_SETTING_TYPE, true),
     isLoading: false,
   };
@@ -392,6 +401,7 @@ export type SettingsContextType = UseSettingsResult & {
   advancedDataManagement: boolean;
   bleGenerateChartPayload: boolean;
   homeSummaryCard: HomeSummaryCard;
+  homeActions: HomeActionKey[];
   showHomeSteps: boolean;
 };
 

@@ -1,4 +1,9 @@
-import { HOME_ACTION_KEYS, parseHomeActions } from '../homeActions';
+import {
+  DEFAULT_HOME_ACTIONS,
+  HOME_ACTION_KEYS,
+  MAX_HOME_ACTIONS,
+  parseHomeActions,
+} from '../homeActions';
 
 describe('homeActions', () => {
   describe('HOME_ACTION_KEYS', () => {
@@ -58,6 +63,21 @@ describe('homeActions', () => {
           '["start_workout", "track_food", "scan_barcode", "ai_photo", "log_weight"]'
         )
       ).toEqual(['start_workout', 'track_food', 'scan_barcode', 'ai_photo']);
+    });
+
+    it('clamps to MAX_HOME_ACTIONS rather than a hardcoded count', () => {
+      expect(parseHomeActions(JSON.stringify(HOME_ACTION_KEYS))).toHaveLength(MAX_HOME_ACTIONS);
+    });
+
+    // Every default branch must hand back a fresh array: the picker stores the result in
+    // React state and reorders it in place, which would otherwise mutate the constant
+    // that `SettingsProvider` seeds its own state from.
+    it('never returns the shared DEFAULT_HOME_ACTIONS array itself', () => {
+      const first = parseHomeActions(null);
+      first.push('log_weight');
+
+      expect(parseHomeActions(null)).toEqual([...DEFAULT_HOME_ACTIONS]);
+      expect(DEFAULT_HOME_ACTIONS).toHaveLength(2);
     });
   });
 });

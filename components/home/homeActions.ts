@@ -6,7 +6,7 @@ import {
   NotebookPen,
   ScanLine,
   UtensilsCrossed,
-  Weight
+  Weight,
 } from 'lucide-react-native';
 
 import { ActionButtonTone } from '@/components/ActionButton';
