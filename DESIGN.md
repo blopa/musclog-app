@@ -192,7 +192,22 @@ clipped by the parent; see `FIXES.md`.
 
 Use the shared components under `components/theme/` before adding a local button or input style.
 Every pressable should cover its visible surface and provide feedback through state, haptics where
-appropriate, or both.
+appropriate, or both. Pick by what the control is, not by how it looks today:
+
+| Control                                                                 | Component                                                                  |
+| ----------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Labeled action (primary, secondary, outline, destructive)               | `Button`                                                                   |
+| Text-only secondary action ("Show all", "Edit goal", a quiet "Discard") | `TextButton` (`tone`: `accent` / `danger` / `muted`)                       |
+| Icon-only action (steppers, prev/next, back, more, remove ×)            | `IconButton` (`filled` / `elevated` / `ghost`; `media` over a photo)       |
+| One choice among several, or a compact action pill                      | `Chip` (`outline` for choices, `solid` for actions and the weekday picker) |
+| A row that opens something (history entry, sheet action, rule summary)  | `ListRow` (`card` / `filled`)                                              |
+| Two or three mutually exclusive views                                   | `SegmentedControl` (`pill` when it sits inline beside other content)       |
+| A number the user types, kept as their own text                         | `NumericTextField` (`hero` / `field` / `cell`)                             |
+| A number the control owns (portion, plate weight)                       | `StepperInput` / `StepperInlineInput`                                      |
+
+A raw `Pressable` is right only for a composite surface that is itself the control — a card, a table
+cell, a thumbnail — never for something one of these already draws. `components/__tests__/themeControls.test.ts`
+lists the screens that have been moved onto them.
 
 ### Cards and modals
 
@@ -238,6 +253,9 @@ pattern across eight files and added nothing over the surface color.
 ### Inputs
 
 - Numeric controls use the shared steppers/pickers and locale-aware parsing.
+- A centered input never gets a native `placeholder`: on Android it put the caret at the far edge
+  of an empty field on first focus. `NumericTextField` draws its placeholder as an overlay and hides
+  it while focused; reuse it rather than re-centering a raw `TextInput`.
 - Store metric values and convert only at the display/input boundary.
 - Keep units next to values and use the unit helpers; never hardcode `kg`, `lb`, `g`, or `oz`.
 - Error text should explain how to recover, not just state that input is invalid.

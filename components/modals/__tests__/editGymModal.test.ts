@@ -21,7 +21,7 @@ let mockPicker: any = null;
 const mockButtons = new Map<string, any>();
 let mockAccountUnits: 'metric' | 'imperial' = 'metric';
 
-jest.mock('lucide-react-native', () => ({ Plus: () => null, X: () => null }));
+jest.mock('lucide-react-native', () => ({ Minus: () => null, Plus: () => null, X: () => null }));
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string, options?: any) => (options?.unit ? `${key}|${options.unit}` : key),
@@ -34,6 +34,8 @@ jest.mock('@/components/theme/StepperInput', () => ({
   },
 }));
 jest.mock('@/components/theme/TextInput', () => ({ TextInput: () => null }));
+jest.mock('@/components/theme/IconButton', () => ({ IconButton: () => null }));
+jest.mock('@/components/theme/Chip', () => ({ Chip: () => null }));
 jest.mock('@/components/theme/Button', () => ({
   Button: (props: any) => {
     mockButtons.set(props.label, props);

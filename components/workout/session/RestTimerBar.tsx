@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
+import { Chip } from '@/components/theme/Chip';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
@@ -18,28 +19,6 @@ export function useClockFormat() {
     const rest = formatInteger(seconds % 60, { useGrouping: false, minimumIntegerDigits: 2 });
     return `${minutes}:${rest}`;
   };
-}
-
-function RestPill({
-  label,
-  onPress,
-  accent,
-}: {
-  label: string;
-  onPress: () => void;
-  accent?: boolean;
-}) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      onPress={onPress}
-      className={`min-h-11 justify-center rounded-full px-4 ${accent ? 'bg-accent-primary' : 'bg-bg-overlay'}`}
-    >
-      <Text className={`text-sm font-bold ${accent ? 'text-text-on-accent' : 'text-text-primary'}`}>
-        {label}
-      </Text>
-    </Pressable>
-  );
 }
 
 /**
@@ -123,7 +102,9 @@ export function RestTimerBar({
           )}
         </Pressable>
         {expanded ? null : (
-          <RestPill
+          <Chip
+            variant="solid"
+            role="button"
             label={t(resting ? 'trainingFlow.skipRest' : 'trainingFlow.startRest')}
             onPress={resting ? onStop : onStart}
           />
@@ -140,12 +121,34 @@ export function RestTimerBar({
           <View className="flex-row flex-wrap justify-center gap-2">
             {resting ? (
               <>
-                <RestPill label={t('trainingFlow.minus15')} onPress={() => onAdjust(-15)} />
-                <RestPill label={t('trainingFlow.addRest')} onPress={() => onAdjust(30)} />
-                <RestPill label={t('trainingFlow.skipRest')} onPress={onStop} accent />
+                <Chip
+                  variant="solid"
+                  role="button"
+                  label={t('trainingFlow.minus15')}
+                  onPress={() => onAdjust(-15)}
+                />
+                <Chip
+                  variant="solid"
+                  role="button"
+                  label={t('trainingFlow.addRest')}
+                  onPress={() => onAdjust(30)}
+                />
+                <Chip
+                  variant="solid"
+                  role="button"
+                  label={t('trainingFlow.skipRest')}
+                  onPress={onStop}
+                  selected
+                />
               </>
             ) : (
-              <RestPill label={t('trainingFlow.startRest')} onPress={onStart} accent />
+              <Chip
+                variant="solid"
+                role="button"
+                label={t('trainingFlow.startRest')}
+                onPress={onStart}
+                selected
+              />
             )}
           </View>
         </View>

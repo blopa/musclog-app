@@ -1,10 +1,11 @@
 import { Plus, X } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { Button } from '@/components/theme/Button';
+import { IconButton } from '@/components/theme/IconButton';
 import { TextInput } from '@/components/theme/TextInput';
 import { useSnackbar } from '@/context/SnackbarContext';
 import {
@@ -119,17 +120,16 @@ export function ExerciseAliasesSection({ exerciseId }: ExerciseAliasesSectionPro
                   <Text className="font-medium" style={{ color: theme.colors.text.primary }}>
                     {row.alias}
                   </Text>
-                  <Pressable
+                  <IconButton
+                    icon={X}
+                    size="sm"
+                    variant="ghost"
+                    color={theme.colors.text.secondary}
                     onPress={() => handleRemove(row)}
-                    hitSlop={8}
-                    accessibilityRole="button"
                     accessibilityLabel={t('exercises.viewExercise.aliasRemove', {
                       alias: row.alias,
                     })}
-                    className="h-7 w-7 items-center justify-center rounded-full"
-                  >
-                    <X size={theme.iconSize.sm} color={theme.colors.text.secondary} />
-                  </Pressable>
+                  />
                 </View>
               ))}
             </View>

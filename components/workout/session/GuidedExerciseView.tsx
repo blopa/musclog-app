@@ -10,9 +10,12 @@ import {
   RotateCcw,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { ImageBackground, Pressable, Text, TextInput, View } from 'react-native';
+import { ImageBackground, Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
+import { IconButton } from '@/components/theme/IconButton';
+import { ListRow } from '@/components/theme/ListRow';
+import { NumericTextField } from '@/components/theme/NumericTextField';
 import type { Units } from '@/constants/settings';
 import type Exercise from '@/database/models/Exercise';
 import { useExerciseImageSource } from '@/hooks/useExerciseImageSource';
@@ -71,20 +74,15 @@ function StepperField({
   const theme = useTheme();
   const { t } = useTranslation();
   const digits = stepFractionDigits(step);
+  const wholeNumbers = Number.isInteger(step) && digits === 0;
   const button = (direction: -1 | 1) => (
-    <Pressable
-      accessibilityRole="button"
+    <IconButton
+      icon={direction > 0 ? Plus : Minus}
       accessibilityLabel={`${label} ${direction > 0 ? '+' : '−'}`}
+      size="lg"
       disabled={!editable}
       onPress={() => onChange(stepInput(value, direction * step, locale, digits))}
-      className="h-12 w-12 items-center justify-center rounded-full bg-bg-overlay"
-    >
-      {direction > 0 ? (
-        <Plus size={theme.iconSize.md} color={theme.colors.text.primary} />
-      ) : (
-        <Minus size={theme.iconSize.md} color={theme.colors.text.primary} />
-      )}
-    </Pressable>
+    />
   );
   return (
     <View className="flex-1 items-center gap-2 rounded-2xl border border-border-light bg-bg-card p-3">
@@ -97,24 +95,16 @@ function StepperField({
           <Calculator size={theme.iconSize.xs} color={theme.colors.accent.primary} />
         ) : null}
       </View>
-      <TextInput
+      <NumericTextField
+        size="hero"
         accessibilityLabel={label}
         accessibilityHint={adjusted ? t('trainingFlow.adjustedHint') : undefined}
         testID={testID}
         value={value}
         editable={editable}
         onChangeText={onChange}
-        keyboardType={step % 1 === 0 && digits === 0 ? 'number-pad' : 'decimal-pad'}
-        inputMode="decimal"
-        selectTextOnFocus
-        style={{
-          width: '100%',
-          minHeight: 64,
-          color: adjusted ? theme.colors.accent.primary : theme.colors.text.primary,
-          fontSize: theme.typography.fontSize['5xl'],
-          fontWeight: '700',
-          textAlign: 'center',
-        }}
+        integer={wholeNumbers}
+        marked={!!adjusted}
       />
       <View className="flex-row gap-3">
         {button(-1)}
@@ -237,36 +227,24 @@ export function GuidedExerciseView({
       <View className="gap-4 pt-3">
         {exerciseCount > 1 ? (
           <View className="flex-row items-center justify-between">
-            <Pressable
-              accessibilityRole="button"
+            <IconButton
+              icon={ChevronLeft}
               accessibilityLabel={t('trainingFlow.previousExercise')}
               disabled={!onPreviousExercise}
               onPress={onPreviousExercise}
-              className="h-11 w-11 items-center justify-center rounded-full bg-bg-overlay"
-            >
-              <ChevronLeft
-                size={theme.iconSize.md}
-                color={onPreviousExercise ? theme.colors.text.primary : theme.colors.text.tertiary}
-              />
-            </Pressable>
+            />
             <Text className="text-sm font-semibold text-text-secondary">
               {t('trainingFlow.exerciseOf', {
                 current: formatInteger(exerciseIndex + 1),
                 total: formatInteger(exerciseCount),
               })}
             </Text>
-            <Pressable
-              accessibilityRole="button"
+            <IconButton
+              icon={ChevronRight}
               accessibilityLabel={t('trainingFlow.nextExercise')}
               disabled={!onNextExercise}
               onPress={onNextExercise}
-              className="h-11 w-11 items-center justify-center rounded-full bg-bg-overlay"
-            >
-              <ChevronRight
-                size={theme.iconSize.md}
-                color={onNextExercise ? theme.colors.text.primary : theme.colors.text.tertiary}
-              />
-            </Pressable>
+            />
           </View>
         ) : null}
 
@@ -322,23 +300,19 @@ export function GuidedExerciseView({
           canSwap={block.doneCount < block.rows.length}
         />
 
-        <Pressable
-          accessibilityRole="button"
+        <ListRow
+          icon={Gauge}
+          iconColor={theme.colors.text.secondary}
+          title={t('trainingFlow.details')}
           onPress={onDetails}
-          className="min-h-12 flex-row items-center justify-between rounded-xl bg-bg-overlay px-4"
-        >
-          <View className="flex-row items-center gap-2">
-            <Gauge size={theme.iconSize.md} color={theme.colors.text.secondary} />
-            <Text className="text-base font-medium text-text-primary">
-              {t('trainingFlow.details')}
+          trailing={
+            <Text className="text-sm text-text-secondary">
+              {values.rir?.trim()
+                ? t('trainingFlow.rir', { value: values.rir })
+                : t('trainingFlow.unrated')}
             </Text>
-          </View>
-          <Text className="text-sm text-text-secondary">
-            {values.rir?.trim()
-              ? t('trainingFlow.rir', { value: values.rir })
-              : t('trainingFlow.unrated')}
-          </Text>
-        </Pressable>
+          }
+        />
 
         {nextLabel ? (
           <Text className="text-center text-sm text-text-tertiary">

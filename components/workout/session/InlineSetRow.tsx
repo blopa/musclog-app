@@ -1,8 +1,9 @@
 import { Check, SkipForward } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { Pressable, Text, useWindowDimensions, View } from 'react-native';
 
+import { NumericTextField } from '@/components/theme/NumericTextField';
 import type { Units } from '@/constants/settings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
@@ -106,30 +107,19 @@ export function InlineSetRow({
   }
 
   const input = (field: 'weight' | 'reps', label: string, width: number) => (
-    <TextInput
+    <NumericTextField
+      size="cell"
+      width={width}
       accessibilityLabel={`${setName}, ${label}`}
       accessibilityHint={marked(field) ? t('trainingFlow.adjustedHint') : undefined}
       testID={`set-${set.id}-${field}`}
       value={skipped ? '' : (values[field] ?? '')}
       placeholder={skipped ? '–' : undefined}
-      placeholderTextColor={theme.colors.text.tertiary}
       editable={editable}
       onChangeText={(text) => onEdit({ ...values, [field]: text })}
-      keyboardType={field === 'reps' ? 'number-pad' : 'decimal-pad'}
-      inputMode={field === 'reps' ? 'numeric' : 'decimal'}
-      selectTextOnFocus
-      style={{
-        width,
-        height: 44,
-        borderRadius: theme.borderRadius.md,
-        backgroundColor: done ? 'transparent' : theme.colors.background.cardElevated,
-        color: marked(field) ? theme.colors.accent.primary : theme.colors.text.primary,
-        borderBottomWidth: marked(field) ? 2 : 0,
-        borderBottomColor: theme.colors.accent.primary,
-        fontSize: theme.typography.fontSize.lg,
-        fontWeight: '700',
-        textAlign: 'center',
-      }}
+      integer={field === 'reps'}
+      marked={marked(field)}
+      surface={!done}
     />
   );
 

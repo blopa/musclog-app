@@ -1,9 +1,10 @@
 import { PencilLine, Trophy } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import PastWorkoutDetailModal from '@/components/modals/PastWorkoutDetailModal';
+import { TextButton } from '@/components/theme/TextButton';
 import { type PersonalRecord, WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
 import {
   type TemplateRecommendation,
@@ -89,16 +90,12 @@ export function WorkoutSummaryProgression({ logId }: { logId: string }) {
           <WorkoutRecommendationList recommendations={recommendations} />
         </View>
       ) : null}
-      <Pressable
-        accessibilityRole="button"
+      <TextButton
+        icon={PencilLine}
+        align="center"
+        label={t('trainingFlow.editPerformed')}
         onPress={() => setEdit(true)}
-        className="min-h-11 flex-row items-center justify-center gap-2"
-      >
-        <PencilLine size={theme.iconSize.sm} color={theme.colors.accent.primary} />
-        <Text className="text-sm font-semibold text-accent-primary">
-          {t('trainingFlow.editPerformed')}
-        </Text>
-      </Pressable>
+      />
       {edit ? (
         <PastWorkoutDetailModal
           visible

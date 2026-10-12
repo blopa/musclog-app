@@ -1,7 +1,7 @@
 import { Share2, X } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Modal, Pressable, StyleSheet, View } from 'react-native';
+import { Image, Modal, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
@@ -12,6 +12,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { IconButton } from '@/components/theme/IconButton';
 import { useSnackbar } from '@/context/SnackbarContext';
 import { shareImage } from '@/utils/shareImage';
 
@@ -214,27 +215,21 @@ export function ZoomableImageModal({ visible, onClose, uri }: ZoomableImageModal
         </GestureDetector>
 
         <View style={[styles.controls, { top: insets.top + 12 }]} pointerEvents="box-none">
-          <Pressable
+          <IconButton
+            icon={X}
+            variant="media"
             onPress={handleClose}
-            accessibilityRole="button"
             accessibilityLabel={t('imageViewer.close')}
-            style={styles.control}
-            hitSlop={8}
             testID="image-viewer-close"
-          >
-            <X size={22} color="#fff" />
-          </Pressable>
-          <Pressable
+          />
+          <IconButton
+            icon={Share2}
+            variant="media"
             onPress={handleShare}
             disabled={isSharing}
-            accessibilityRole="button"
             accessibilityLabel={t('imageViewer.save')}
-            style={[styles.control, isSharing ? styles.controlDisabled : null]}
-            hitSlop={8}
             testID="image-viewer-save"
-          >
-            <Share2 size={20} color="#fff" />
-          </Pressable>
+          />
         </View>
       </GestureHandlerRootView>
     </Modal>
@@ -255,13 +250,4 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  control: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.55)',
-  },
-  controlDisabled: { opacity: 0.5 },
 });

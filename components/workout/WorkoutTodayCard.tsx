@@ -2,9 +2,11 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import { CheckCircle2, Dumbbell, Play, Sparkles, Warehouse } from 'lucide-react-native';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
+import { ListRow } from '@/components/theme/ListRow';
+import { TextButton } from '@/components/theme/TextButton';
 import type WorkoutLog from '@/database/models/WorkoutLog';
 import {
   type TodayWorkout,
@@ -146,15 +148,12 @@ export function WorkoutTodayCard({
           onPress={resume}
         />
         {onDiscard ? (
-          <Pressable
-            accessibilityRole="button"
+          <TextButton
+            tone="danger"
+            align="center"
+            label={t('endWorkout.finishAndDiscard')}
             onPress={onDiscard}
-            className="min-h-11 items-center justify-center"
-          >
-            <Text className="text-sm font-semibold text-status-error">
-              {t('endWorkout.finishAndDiscard')}
-            </Text>
-          </Pressable>
+          />
         ) : null}
       </View>
     );
@@ -217,17 +216,12 @@ export function WorkoutTodayCard({
         </View>
       ) : null}
       {others.map((row) => (
-        <Pressable
+        <ListRow
           key={`${row.planId ?? 'standalone'}-${row.template.id}`}
-          accessibilityRole="button"
+          title={row.template.name}
           onPress={() => open(row)}
-          className="min-h-12 flex-row items-center justify-between rounded-xl bg-bg-overlay px-4"
-        >
-          <Text className="text-base font-medium text-text-primary" numberOfLines={1}>
-            {row.template.name}
-          </Text>
-          <Play size={theme.iconSize.sm} color={theme.colors.accent.primary} />
-        </Pressable>
+          trailing={<Play size={theme.iconSize.sm} color={theme.colors.accent.primary} />}
+        />
       ))}
       {finished.map((row) => (
         <View

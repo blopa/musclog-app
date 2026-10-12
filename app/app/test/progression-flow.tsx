@@ -1,8 +1,9 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { MasterLayout } from '@/components/MasterLayout';
+import { Button } from '@/components/theme/Button';
 import { seedProgressionFlow } from '@/database/seeders/progressionFlow';
 
 export default function ProgressionFlowFixtureScreen() {
@@ -14,11 +15,11 @@ export default function ProgressionFlowFixtureScreen() {
     <MasterLayout showNavigationMenu={false}>
       <View className="gap-4 p-6">
         <Text className="text-text-primary">Development progression fixtures</Text>
-        <Pressable
+        <Button
           testID="seed-progression"
-          accessibilityRole="button"
+          label={busy ? 'Preparing fixtures…' : 'Seed progression and review'}
           disabled={busy}
-          className="min-h-12 justify-center rounded-xl bg-accent-primary p-3"
+          width="full"
           onPress={async () => {
             setBusy(true);
             try {
@@ -32,9 +33,7 @@ export default function ProgressionFlowFixtureScreen() {
               setBusy(false);
             }
           }}
-        >
-          <Text>{busy ? 'Preparing fixtures…' : 'Seed progression and review'}</Text>
-        </Pressable>
+        />
         {error ? <Text accessibilityRole="alert">{error}</Text> : null}
       </View>
     </MasterLayout>

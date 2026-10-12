@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
+import { Chip } from '@/components/theme/Chip';
 import { useTheme } from '@/hooks/useTheme';
 import type { WeightUnitOverride } from '@/utils/unitConversion';
 
@@ -46,29 +47,13 @@ export function WeightUnitOverridePicker({
         {UNIT_CHOICES.map((unit) => {
           const selected = value === unit;
           return (
-            <Pressable
+            <Chip
               key={unit ?? 'default'}
-              onPress={() => onChange(unit)}
+              selected={selected}
               disabled={disabled}
-              accessibilityRole="radio"
-              accessibilityState={{ selected }}
-              className="rounded-full border px-4 py-2"
-              style={{
-                backgroundColor: selected
-                  ? theme.colors.accent.primary20
-                  : theme.colors.background.card,
-                borderColor: selected ? theme.colors.accent.primary : theme.colors.border.light,
-              }}
-            >
-              <Text
-                className="font-medium"
-                style={{
-                  color: selected ? theme.colors.accent.primary : theme.colors.text.primary,
-                }}
-              >
-                {choiceLabel(unit)}
-              </Text>
-            </Pressable>
+              onPress={() => onChange(unit)}
+              label={choiceLabel(unit)}
+            />
           );
         })}
       </View>

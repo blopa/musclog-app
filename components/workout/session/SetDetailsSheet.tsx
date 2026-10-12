@@ -1,10 +1,10 @@
 import { SkipForward } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Text, TextInput, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { Button } from '@/components/theme/Button';
-import { useTheme } from '@/hooks/useTheme';
+import { NumericTextField } from '@/components/theme/NumericTextField';
 import type { SessionDraft } from '@/hooks/useWorkoutSessionController';
 
 /**
@@ -31,29 +31,16 @@ export function SetDetailsSheet({
   onClose: () => void;
 }) {
   const { t } = useTranslation();
-  const theme = useTheme();
   const field = (key: 'rir' | 'rpe' | 'partials', label: string, hint?: string) => (
     <View className="min-w-24 flex-1 gap-1">
       <Text className="text-xs font-semibold uppercase text-text-secondary">{label}</Text>
-      <TextInput
+      <NumericTextField
         accessibilityLabel={label}
         value={draft[key] ?? ''}
         editable={editable}
         onChangeText={(text) => onChange({ ...draft, [key]: text })}
-        keyboardType="decimal-pad"
-        inputMode="decimal"
-        selectTextOnFocus
+        integer={key === 'partials'}
         placeholder="–"
-        placeholderTextColor={theme.colors.text.tertiary}
-        style={{
-          minHeight: 56,
-          borderRadius: theme.borderRadius.md,
-          backgroundColor: theme.colors.background.cardElevated,
-          color: theme.colors.text.primary,
-          fontSize: theme.typography.fontSize.xl,
-          fontWeight: '700',
-          textAlign: 'center',
-        }}
       />
       {hint ? <Text className="text-xs text-text-tertiary">{hint}</Text> : null}
     </View>

@@ -1,21 +1,19 @@
 import {
   Calculator,
-  ChevronRight,
   ClipboardList,
   Dumbbell,
-  type LucideIcon,
   PencilLine,
   Undo2,
   Warehouse,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
+import { ListRow } from '@/components/theme/ListRow';
 import { useAdjustmentMessage } from '@/components/workout/useAdjustmentMessage';
 import type { Units } from '@/constants/settings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
-import { useTheme } from '@/hooks/useTheme';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { parseSessionProgressionState, type ProgressionRule } from '@/utils/progressionRules';
 import { isStartAdjustment, type SetAdjustment } from '@/utils/setAdjustment';
@@ -24,37 +22,6 @@ import { getWeightUnitI18nKey } from '@/utils/units';
 
 import { GuidanceBadgeLine } from './GuidanceSummary';
 import { type GuidanceState, PROGRESSION_METHOD_KEYS } from './sessionModel';
-
-function ActionRow({
-  icon: Icon,
-  label,
-  hint,
-  onPress,
-  testID,
-}: {
-  icon: LucideIcon;
-  label: string;
-  hint?: string;
-  onPress: () => void;
-  testID?: string;
-}) {
-  const theme = useTheme();
-  return (
-    <Pressable
-      accessibilityRole="button"
-      onPress={onPress}
-      testID={testID}
-      className="min-h-14 flex-row items-center gap-3 rounded-xl bg-bg-overlay px-4 py-3"
-    >
-      <Icon size={theme.iconSize.md} color={theme.colors.accent.primary} />
-      <View className="min-w-0 flex-1">
-        <Text className="text-base font-semibold text-text-primary">{label}</Text>
-        {hint ? <Text className="text-xs text-text-secondary">{hint}</Text> : null}
-      </View>
-      <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
-    </Pressable>
-  );
-}
 
 /**
  * "Why?" for an exercise's targets: the method, the reason in one sentence, the numbers the
@@ -195,39 +162,35 @@ export function ProgressionWhySheet({
 
         <View className="gap-2">
           {canRevert ? (
-            <ActionRow
+            <ListRow
               icon={Undo2}
-              label={t('workoutSession.adjustment.usePlan')}
-              hint={t('progression.usePlanHint')}
+              title={t('workoutSession.adjustment.usePlan')}
+              subtitle={t('progression.usePlanHint')}
               onPress={onRevert}
               testID="why-use-plan"
             />
           ) : null}
           {state === 'attention' ? (
-            <ActionRow
-              icon={PencilLine}
-              label={t('progression.editTarget')}
-              onPress={onEditTarget}
-            />
+            <ListRow icon={PencilLine} title={t('progression.editTarget')} onPress={onEditTarget} />
           ) : null}
           {isBarLoaded ? (
-            <ActionRow
+            <ListRow
               icon={Calculator}
-              label={t('workoutSettings.plateCalculator.title')}
+              title={t('workoutSettings.plateCalculator.title')}
               onPress={onPlates}
             />
           ) : null}
-          <ActionRow
+          <ListRow
             icon={state === 'attention' ? Warehouse : Dumbbell}
-            label={t('progression.editGym')}
-            hint={t('progression.editGymHint')}
+            title={t('progression.editGym')}
+            subtitle={t('progression.editGymHint')}
             onPress={onEditGym}
           />
           {canEditPlan ? (
-            <ActionRow
+            <ListRow
               icon={ClipboardList}
-              label={t('progression.editPlan')}
-              hint={t('progression.editPlanHint')}
+              title={t('progression.editPlan')}
+              subtitle={t('progression.editPlanHint')}
               onPress={onEditPlan}
             />
           ) : null}

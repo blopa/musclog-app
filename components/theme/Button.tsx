@@ -36,6 +36,7 @@ type ThemeButtonProps = {
   loading?: boolean;
   className?: string;
   style?: ViewStyle;
+  testID?: string;
 };
 
 const getSizeConfig = (theme: Theme) => {
@@ -238,6 +239,7 @@ export function Button({
   disabled = false,
   loading = false,
   style,
+  testID,
 }: ThemeButtonProps) {
   const theme = useTheme();
   const sizeConfig = getSizeConfig(theme);
@@ -420,7 +422,13 @@ export function Button({
   // If disabled, render as a View to avoid any interaction issues
   if (isDisabled) {
     return (
-      <View className={`${widthClass}`} style={buttonStyle}>
+      <View
+        className={`${widthClass}`}
+        style={buttonStyle}
+        accessibilityRole="button"
+        accessibilityState={{ disabled: true }}
+        testID={testID}
+      >
         {isOutlineVariant || isSecondaryVariant || isDashedVariant ? (
           <View
             style={{
@@ -478,6 +486,8 @@ export function Button({
 
   return (
     <Pressable
+      accessibilityRole="button"
+      testID={testID}
       className={`${widthClass} active:scale-[0.98]`}
       style={buttonStyle}
       onPress={onPress}

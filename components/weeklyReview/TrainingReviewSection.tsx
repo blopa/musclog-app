@@ -9,10 +9,11 @@ import {
 } from 'lucide-react-native';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { StatStrip } from '@/components/StatStrip';
 import { Button } from '@/components/theme/Button';
+import { TextButton } from '@/components/theme/TextButton';
 import { WorkoutRecommendationList } from '@/components/workout/WorkoutRecommendationList';
 import type { WeeklyReviewService } from '@/database/services/WeeklyReviewService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -178,20 +179,15 @@ export function TrainingReviewSection({
             </View>
           ))}
           {recordRows.length > VISIBLE_RECORDS ? (
-            <Pressable
-              accessibilityRole="button"
+            <TextButton
               accessibilityState={{ expanded: showAllRecords }}
               onPress={() => setShowAllRecords(!showAllRecords)}
-              className="min-h-11 justify-center"
-            >
-              <Text className="text-sm font-semibold text-accent-primary">
-                {showAllRecords
+              label={
+                showAllRecords
                   ? t('weeklyReview.showFewer')
-                  : t('weeklyReview.showAll', {
-                      count: formatInteger(recordRows.length),
-                    })}
-              </Text>
-            </Pressable>
+                  : t('weeklyReview.showAll', { count: formatInteger(recordRows.length) })
+              }
+            />
           ) : null}
         </View>
       ) : null}
@@ -224,23 +220,13 @@ export function TrainingReviewSection({
           </View>
           {training.targets.length ? (
             <>
-              <Pressable
-                accessibilityRole="button"
+              <TextButton
                 accessibilityState={{ expanded: showTargets }}
                 onPress={() => setShowTargets(!showTargets)}
-                className="min-h-11 flex-row items-center justify-between"
-              >
-                <Text className="text-sm font-semibold text-accent-primary">
-                  {t('weeklyReview.upcomingTargets', {
-                    count: training.targets.length,
-                  })}
-                </Text>
-                {showTargets ? (
-                  <ChevronUp size={theme.iconSize.sm} color={theme.colors.accent.primary} />
-                ) : (
-                  <ChevronDown size={theme.iconSize.sm} color={theme.colors.accent.primary} />
-                )}
-              </Pressable>
+                icon={showTargets ? ChevronUp : ChevronDown}
+                iconPosition="right"
+                label={t('weeklyReview.upcomingTargets', { count: training.targets.length })}
+              />
               {showTargets ? (
                 <WorkoutRecommendationList recommendations={training.targets} />
               ) : null}

@@ -12,13 +12,14 @@ import {
 } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Text, TextInput, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
 import { FilterTabs } from '@/components/FilterTabs';
 import { OptionsSelector, SelectorOption } from '@/components/OptionsSelector';
 import { Button } from '@/components/theme/Button';
+import { Chip } from '@/components/theme/Chip';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import Exercise from '@/database/models/Exercise';
 import {
@@ -557,32 +558,12 @@ export function ReplaceExerciseModal({
                     {INJURY_EXPIRY_OPTIONS.map((option) => {
                       const selected = injuryExpiry === option;
                       return (
-                        <Pressable
+                        <Chip
                           key={option}
+                          selected={selected}
                           onPress={() => setInjuryExpiry(option)}
-                          accessibilityRole="radio"
-                          accessibilityState={{ selected }}
-                          className="rounded-full border px-4 py-2"
-                          style={{
-                            backgroundColor: selected
-                              ? theme.colors.accent.primary20
-                              : theme.colors.background.card,
-                            borderColor: selected
-                              ? theme.colors.accent.primary
-                              : theme.colors.border.light,
-                          }}
-                        >
-                          <Text
-                            className="font-medium"
-                            style={{
-                              color: selected
-                                ? theme.colors.accent.primary
-                                : theme.colors.text.primary,
-                            }}
-                          >
-                            {t(`workoutSettings.restrictions.expiry.${option}`)}
-                          </Text>
-                        </Pressable>
+                          label={t(`workoutSettings.restrictions.expiry.${option}`)}
+                        />
                       );
                     })}
                   </View>

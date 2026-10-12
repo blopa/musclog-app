@@ -1,8 +1,8 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { CheckCircle2, ChevronLeft, ChevronRight, Circle } from 'lucide-react-native';
+import { CheckCircle2, ChevronLeft, Circle } from 'lucide-react-native';
 import { type ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
@@ -12,6 +12,9 @@ import { CheckinDetailsModal } from '@/components/modals/CheckinDetailsModal';
 import CreateWorkoutModal from '@/components/modals/CreateWorkoutModal';
 import { NutritionGoalsModal } from '@/components/modals/NutritionGoalsModal';
 import { Button } from '@/components/theme/Button';
+import { Chip } from '@/components/theme/Chip';
+import { ListRow } from '@/components/theme/ListRow';
+import { TextButton } from '@/components/theme/TextButton';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import {
@@ -306,20 +309,17 @@ export default function CheckinListScreen() {
             ) : null}
           </View>
           {selectedReview || requestedDay ? (
-            <Pressable
-              accessibilityRole="button"
+            <Chip
+              variant="solid"
+              role="button"
+              icon={ChevronLeft}
+              label={t('weeklyReview.latest')}
               onPress={() => {
                 setSelectedReview(undefined);
                 setRequestedDay(undefined);
                 clear();
               }}
-              className="min-h-11 flex-row items-center gap-1 self-start rounded-full bg-bg-overlay px-4"
-            >
-              <ChevronLeft size={theme.iconSize.sm} color={theme.colors.text.primary} />
-              <Text className="text-sm font-semibold text-text-primary">
-                {t('weeklyReview.latest')}
-              </Text>
-            </Pressable>
+            />
           ) : null}
           {!data && !loadError ? <ActivityIndicator color={theme.colors.accent.primary} /> : null}
           {error || loadError ? (
@@ -390,21 +390,16 @@ export default function CheckinListScreen() {
                 <Text className="text-sm text-text-secondary">{t('weeklyReview.weekday')}</Text>
                 <View className="flex-row flex-wrap gap-2">
                   {Array.from({ length: 7 }, (_, offset) => (offset + 1) % 7).map((day) => (
-                    <Pressable
+                    <Chip
                       key={day}
-                      accessibilityRole="radio"
-                      accessibilityState={{ checked: data.weekday === day }}
+                      variant="solid"
+                      role="radio"
+                      selected={data.weekday === day}
                       onPress={() => changeWeekday(day)}
-                      className={`min-h-11 min-w-11 items-center justify-center rounded-full px-3 ${data.weekday === day ? 'bg-accent-primary' : 'bg-bg-overlay'}`}
-                    >
-                      <Text
-                        className={`text-sm font-semibold ${data.weekday === day ? 'text-text-on-accent' : 'text-text-primary'}`}
-                      >
-                        {new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(
-                          new Date(2024, 0, 7 + day)
-                        )}
-                      </Text>
-                    </Pressable>
+                      label={new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(
+                        new Date(2024, 0, 7 + day)
+                      )}
+                    />
                   ))}
                 </View>
                 <ToggleInput
@@ -425,57 +420,40 @@ export default function CheckinListScreen() {
                     {t('weeklyReview.history')}
                   </Text>
                   {data.reviews.map((review) => (
-                    <Pressable
+                    <ListRow
                       key={review.id}
-                      accessibilityRole="button"
+                      variant="card"
+                      title={t('weeklyReview.period', {
+                        start: formatDate(review.periodStart),
+                        end: formatDate(review.periodEnd - 1),
+                      })}
+                      subtitle={t(historyLabelKey(review.nutritionDecision))}
                       onPress={() => {
                         clear();
                         setSelectedReview(review.id);
                       }}
-                      className="min-h-14 flex-row items-center gap-3 rounded-xl border border-border-light bg-bg-card px-4 py-3"
-                    >
-                      <View className="min-w-0 flex-1">
-                        <Text className="font-semibold text-text-primary">
-                          {t('weeklyReview.period', {
-                            start: formatDate(review.periodStart),
-                            end: formatDate(review.periodEnd - 1),
-                          })}
-                        </Text>
-                        <Text className="text-sm text-text-secondary">
-                          {t(historyLabelKey(review.nutritionDecision))}
-                        </Text>
-                      </View>
-                      <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
-                    </Pressable>
+                    />
                   ))}
                   {(showAllHistory ? legacy : legacy.slice(0, LEGACY_HISTORY_PREVIEW)).map(
                     (review) => (
-                      <Pressable
+                      <ListRow
                         key={review.id}
-                        accessibilityRole="button"
+                        variant="card"
+                        title={`${t('weeklyReview.legacy')} · ${formatDate(review.checkinDate)}`}
                         onPress={() => setLegacyId(review.id)}
-                        className="min-h-14 flex-row items-center gap-3 rounded-xl border border-border-light bg-bg-card px-4 py-3"
-                      >
-                        <Text className="flex-1 text-text-primary">
-                          {t('weeklyReview.legacy')} · {formatDate(review.checkinDate)}
-                        </Text>
-                        <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
-                      </Pressable>
+                      />
                     )
                   )}
                   {legacy.length > LEGACY_HISTORY_PREVIEW ? (
-                    <Pressable
-                      accessibilityRole="button"
+                    <TextButton
                       accessibilityState={{ expanded: showAllHistory }}
                       onPress={() => setShowAllHistory(!showAllHistory)}
-                      className="min-h-11 justify-center"
-                    >
-                      <Text className="text-sm font-semibold text-accent-primary">
-                        {showAllHistory
+                      label={
+                        showAllHistory
                           ? t('weeklyReview.showFewer')
-                          : t('weeklyReview.showAll', { count: formatInteger(legacy.length) })}
-                      </Text>
-                    </Pressable>
+                          : t('weeklyReview.showAll', { count: formatInteger(legacy.length) })
+                      }
+                    />
                   ) : null}
                 </View>
               ) : null}

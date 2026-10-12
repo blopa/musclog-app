@@ -1,11 +1,12 @@
 import { Dumbbell, Plus } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
 import { Button } from '@/components/theme/Button';
 import { StepperInput } from '@/components/theme/StepperInput';
+import { TextButton } from '@/components/theme/TextButton';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import {
   DEFAULT_REST_SECONDS,
@@ -285,15 +286,12 @@ export function WorkoutSettingsModal({ visible, onClose }: WorkoutSettingsModalP
             onPress={() => openEditor(null)}
           />
           {activeGym ? (
-            <Pressable
-              onPress={() => void GymService.setActiveGym(null)}
-              accessibilityRole="button"
-              className="items-center py-1"
-            >
-              <Text className="text-sm font-medium" style={{ color: theme.colors.text.secondary }}>
-                {t('workoutSettings.gyms.noGym')}
-              </Text>
-            </Pressable>
+            <TextButton
+              tone="muted"
+              align="center"
+              label={t('workoutSettings.gyms.noGym')}
+              onPress={() => void GymService.setActiveGym(null).catch(() => {})}
+            />
           ) : null}
         </View>
 

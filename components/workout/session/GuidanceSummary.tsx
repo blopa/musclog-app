@@ -2,6 +2,7 @@ import { ChevronRight } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
+import { TextButton } from '@/components/theme/TextButton';
 import { useAdjustmentMessage } from '@/components/workout/useAdjustmentMessage';
 import type { Units } from '@/constants/settings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -108,16 +109,11 @@ export function GuidanceSummary({
         </Text>
       ) : null}
       {canRevert ? (
-        <Pressable
-          accessibilityRole="button"
+        <TextButton
+          label={t('workoutSession.adjustment.usePlan')}
           onPress={onRevert}
-          className="min-h-11 justify-center self-start"
           testID="set-adjustment-revert"
-        >
-          <Text className="text-sm font-bold text-accent-primary">
-            {t('workoutSession.adjustment.usePlan')}
-          </Text>
-        </Pressable>
+        />
       ) : null}
     </View>
   );

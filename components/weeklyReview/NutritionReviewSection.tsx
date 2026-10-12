@@ -7,10 +7,11 @@ import {
   UtensilsCrossed,
 } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { StatStrip } from '@/components/StatStrip';
 import { Button } from '@/components/theme/Button';
+import { TextButton } from '@/components/theme/TextButton';
 import { nutritionTargetMode } from '@/database/services/NutritionTargetService';
 import {
   MIN_WEEKLY_FOOD_DAYS,
@@ -341,30 +342,17 @@ export function NutritionReviewSection({
             {t('weeklyReview.largeChangeTitle')}
           </Text>
           <Text className="text-sm text-text-secondary">{t('weeklyReview.largeChangeBody')}</Text>
-          <Pressable
-            accessibilityRole="button"
+          <TextButton
             // The week under review, not today: that is the log this warning asks to check.
             onPress={() => onLogFood(data.period.start)}
-            className="min-h-11 justify-center self-start"
-          >
-            <Text className="text-sm font-bold text-accent-primary">
-              {t('weeklyReview.reviewFoodLog')}
-            </Text>
-          </Pressable>
+            label={t('weeklyReview.reviewFoodLog')}
+          />
         </View>
       ) : null}
 
       {decision}
 
-      <Pressable
-        accessibilityRole="button"
-        onPress={onEditGoal}
-        className="min-h-11 items-center justify-center"
-      >
-        <Text className="text-sm font-semibold text-accent-primary">
-          {t('weeklyReview.editGoal')}
-        </Text>
-      </Pressable>
+      <TextButton label={t('weeklyReview.editGoal')} onPress={onEditGoal} align="center" />
     </View>
   );
 }

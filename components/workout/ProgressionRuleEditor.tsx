@@ -1,11 +1,13 @@
 import type { TFunction } from 'i18next';
-import { Check, ChevronRight, TrendingUp } from 'lucide-react-native';
+import { Check, TrendingUp } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { BottomPopUp } from '@/components/BottomPopUp';
 import { Button } from '@/components/theme/Button';
+import { ListRow } from '@/components/theme/ListRow';
 import { StepperInlineInput } from '@/components/theme/StepperInlineInput';
+import { TextButton } from '@/components/theme/TextButton';
 import type { Units } from '@/constants/settings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
@@ -207,15 +209,10 @@ export function ProgressionRuleFields({
         );
       })}
       {value?.type === 'percentage' && value.trainingMaxKg != null ? (
-        <Pressable
-          accessibilityRole="button"
-          className="min-h-11 justify-center"
+        <TextButton
+          label={t('progression.resetTm')}
           onPress={() => onChange(resetTrainingMax(value))}
-        >
-          <Text className="text-sm font-semibold text-accent-primary">
-            {t('progression.resetTm')}
-          </Text>
-        </Pressable>
+        />
       ) : null}
       <Text className="pt-1 text-xs text-text-tertiary">{t('progression.editorHint')}</Text>
     </View>
@@ -231,26 +228,15 @@ export function ProgressionRuleRow({
   onPress: () => void;
 }) {
   const { t } = useTranslation();
-  const theme = useTheme();
   const { formatInteger } = useFormatAppNumber();
   return (
-    <Pressable
-      accessibilityRole="button"
+    <ListRow
+      icon={TrendingUp}
+      overline={t('progression.method')}
+      title={progressionRuleSummary(t, value, (n) => formatInteger(n, { useGrouping: false }))}
       onPress={onPress}
-      className="min-h-14 flex-row items-center gap-3 rounded-xl border border-border-light bg-bg-overlay px-4"
       testID="progression-rule-editor"
-    >
-      <TrendingUp size={theme.iconSize.md} color={theme.colors.accent.primary} />
-      <View className="min-w-0 flex-1">
-        <Text className="text-xs font-semibold uppercase text-text-secondary">
-          {t('progression.method')}
-        </Text>
-        <Text className="text-base font-semibold text-text-primary" numberOfLines={1}>
-          {progressionRuleSummary(t, value, (n) => formatInteger(n, { useGrouping: false }))}
-        </Text>
-      </View>
-      <ChevronRight size={theme.iconSize.md} color={theme.colors.text.tertiary} />
-    </Pressable>
+    />
   );
 }
 

@@ -1,7 +1,8 @@
 import { Flame, MoreHorizontal, NotebookPen, Repeat } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Image, Pressable, ScrollView, Text } from 'react-native';
+import { Image, ScrollView } from 'react-native';
 
+import { Chip } from '@/components/theme/Chip';
 import type Exercise from '@/database/models/Exercise';
 import { useExerciseImageSource } from '@/hooks/useExerciseImageSource';
 import { useTheme } from '@/hooks/useTheme';
@@ -62,7 +63,6 @@ export function ExerciseActionChips({
   canSwap: boolean;
 }) {
   const { t } = useTranslation();
-  const theme = useTheme();
   const chips: {
     action: SessionExerciseAction;
     label: string;
@@ -91,24 +91,15 @@ export function ExerciseActionChips({
       {chips.map(({ action, label, icon: Icon, enabled }) => {
         const isDisabled = disabled || !enabled;
         return (
-          <Pressable
+          <Chip
             key={action}
-            accessibilityRole="button"
-            accessibilityState={{ disabled: isDisabled }}
+            variant="solid"
+            role="button"
+            icon={Icon}
+            label={label}
             disabled={isDisabled}
             onPress={() => onAction(action)}
-            className="min-h-11 flex-row items-center gap-1.5 rounded-full bg-bg-overlay px-3"
-          >
-            <Icon
-              size={theme.iconSize.sm}
-              color={isDisabled ? theme.colors.text.tertiary : theme.colors.text.secondary}
-            />
-            <Text
-              className={`text-sm font-medium ${isDisabled ? 'text-text-tertiary' : 'text-text-primary'}`}
-            >
-              {label}
-            </Text>
-          </Pressable>
+          />
         );
       })}
     </ScrollView>

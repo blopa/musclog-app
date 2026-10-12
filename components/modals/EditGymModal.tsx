@@ -1,9 +1,11 @@
-import { Plus, X } from 'lucide-react-native';
+import { Minus, Plus, X } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
+import { Chip } from '@/components/theme/Chip';
+import { IconButton } from '@/components/theme/IconButton';
 import { StepperInput } from '@/components/theme/StepperInput';
 import { TextInput } from '@/components/theme/TextInput';
 import { WeightUnitOverridePicker } from '@/components/workout/WeightUnitOverridePicker';
@@ -278,53 +280,47 @@ export function EditGymModal({ visible, onClose, gym, isFirstGym = false }: Edit
                 {showKg(plate.weightKg)} {unit}
               </Text>
               <View className="flex-row items-center gap-3">
-                <Pressable
+                <IconButton
+                  icon={Minus}
+                  size="sm"
+                  variant="elevated"
                   onPress={() => setPlateCount(plate.weightKg, Math.max(0, plate.count - 2))}
-                  accessibilityRole="button"
                   accessibilityLabel={t('workoutSettings.editGym.fewerPlates', {
                     weight: showKg(plate.weightKg),
                     unit,
                   })}
-                  className="h-9 w-9 items-center justify-center rounded-full"
-                  style={{ backgroundColor: theme.colors.background.cardElevated }}
-                >
-                  <Text className="text-xl" style={{ color: theme.colors.text.primary }}>
-                    −
-                  </Text>
-                </Pressable>
+                />
                 <Text
                   className="min-w-[2.5rem] text-center text-lg"
                   style={{ color: theme.colors.text.primary }}
                 >
                   {plate.count}
                 </Text>
-                <Pressable
+                <IconButton
+                  icon={Plus}
+                  size="sm"
+                  variant="elevated"
                   onPress={() => setPlateCount(plate.weightKg, plate.count + 2)}
-                  accessibilityRole="button"
                   accessibilityLabel={t('workoutSettings.editGym.morePlates', {
                     weight: showKg(plate.weightKg),
                     unit,
                   })}
-                  className="h-9 w-9 items-center justify-center rounded-full"
-                  style={{ backgroundColor: theme.colors.background.cardElevated }}
-                >
-                  <Plus size={theme.iconSize.md} color={theme.colors.text.primary} />
-                </Pressable>
-                <Pressable
+                />
+                <IconButton
+                  icon={X}
+                  size="sm"
+                  variant="ghost"
+                  color={theme.colors.text.secondary}
                   onPress={() =>
                     setPlates((current) =>
                       current.filter((item) => item.weightKg !== plate.weightKg)
                     )
                   }
-                  accessibilityRole="button"
                   accessibilityLabel={t('workoutSettings.editGym.removePlate', {
                     weight: showKg(plate.weightKg),
                     unit,
                   })}
-                  className="h-9 w-9 items-center justify-center"
-                >
-                  <X size={theme.iconSize.md} color={theme.colors.text.secondary} />
-                </Pressable>
+                />
               </View>
             </View>
           ))}
@@ -367,28 +363,13 @@ export function EditGymModal({ visible, onClose, gym, isFirstGym = false }: Edit
             {EQUIPMENT_TYPES.map((type) => {
               const selected = equipment.includes(type);
               return (
-                <Pressable
+                <Chip
                   key={type}
+                  role="checkbox"
+                  selected={selected}
                   onPress={() => toggleEquipment(type)}
-                  accessibilityRole="checkbox"
-                  accessibilityState={{ checked: selected }}
-                  className="rounded-full border px-4 py-2"
-                  style={{
-                    backgroundColor: selected
-                      ? theme.colors.accent.primary20
-                      : theme.colors.background.card,
-                    borderColor: selected ? theme.colors.accent.primary : theme.colors.border.light,
-                  }}
-                >
-                  <Text
-                    className="font-medium"
-                    style={{
-                      color: selected ? theme.colors.accent.primary : theme.colors.text.primary,
-                    }}
-                  >
-                    {t(`exercises.equipmentTypes.${type}`)}
-                  </Text>
-                </Pressable>
+                  label={t(`exercises.equipmentTypes.${type}`)}
+                />
               );
             })}
           </View>

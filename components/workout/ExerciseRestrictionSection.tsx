@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { GenericCard } from '@/components/cards/GenericCard';
+import { Chip } from '@/components/theme/Chip';
 import {
   ExerciseRestrictionService,
   MAX_EXERCISE_RESTRICTIONS,
@@ -61,24 +62,7 @@ export function ExerciseRestrictionSection({ exerciseId }: ExerciseRestrictionSe
   };
 
   const chip = (selected: boolean, label: string, onPress: () => void, key: string) => (
-    <Pressable
-      key={key}
-      onPress={onPress}
-      accessibilityRole="radio"
-      accessibilityState={{ selected }}
-      className="rounded-full border px-4 py-2"
-      style={{
-        backgroundColor: selected ? theme.colors.accent.primary20 : theme.colors.background.card,
-        borderColor: selected ? theme.colors.accent.primary : theme.colors.border.light,
-      }}
-    >
-      <Text
-        className="font-medium"
-        style={{ color: selected ? theme.colors.accent.primary : theme.colors.text.primary }}
-      >
-        {label}
-      </Text>
-    </Pressable>
+    <Chip key={key} selected={selected} onPress={onPress} label={label} />
   );
 
   return (

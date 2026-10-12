@@ -52,6 +52,7 @@ jest.mock('@/context/SnackbarContext', () => ({
   useSnackbar: () => ({ showSnackbar: jest.fn() }),
 }));
 jest.mock('@/utils/shareImage', () => ({ shareImage: jest.fn() }));
+jest.mock('@/components/theme/IconButton', () => ({ IconButton: 'IconButton' }));
 function stage(node: any): any {
   if (!node) return null;
   if (node.props?.onLayout) return node;
