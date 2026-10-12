@@ -32,6 +32,7 @@ import { resolveDailyMacros } from './dynamicNutritionTarget';
 import { formatAppInteger } from './formatAppNumber';
 import { formatDisplayWeightKg } from './formatDisplayWeight';
 import { wrapUserContent } from './promptSanitizer';
+import { roundToDecimalPlaces } from './roundDecimal';
 import { kgToDisplay, storedWeightToKg } from './unitConversion';
 import { getWeightUnit } from './units';
 import { buildWorkoutPlanExerciseSection } from './workoutPlanPrompt';
@@ -528,7 +529,11 @@ function buildWorkoutSummaryFromDetails(
         name,
         sets: data.sets.map((set) => ({
           reps: set.reps,
-          weight: set.weight,
+          // The prompt tells the model weights are in the user's unit, so convert the stored kg.
+          weight:
+            units !== undefined && set.weight != null
+              ? roundToDecimalPlaces(kgToDisplay(set.weight, units), 1)
+              : set.weight,
           partials: set.partials ?? 0,
           repsInReserve: set.repsInReserve ?? 0,
         })),
@@ -1176,6 +1181,7 @@ export const getParsePastWorkoutsPrompt = async (
   return [
     await getBaseSystemPrompt(language),
     "Parse past workouts from the user's text description. Try to match exercise names to the provided list.",
+    'Report every set weight in kilograms: convert from pounds (lbs) when the text uses them.',
     `If too long, only parse the first 20 workouts. Available exercises: ${exerciseNames.join(', ')}`,
     sanitizedUserMessage,
   ].join('\n');
@@ -1674,7 +1680,7 @@ export const getParsePastWorkoutsFunctions = ():
                           type: 'object',
                           properties: {
                             reps: { type: 'number' },
-                            weight: { type: 'number' },
+                            weight: { type: 'number', description: 'Weight in kilograms' },
                           },
                           required: ['reps', 'weight'],
                         },

@@ -3,6 +3,7 @@ import { Dumbbell } from 'lucide-react-native';
 import { ChatService } from '@/database/services/ChatService';
 import { ExerciseService } from '@/database/services/ExerciseService';
 import { ExerciseSuggestionService } from '@/database/services/ExerciseSuggestionService';
+import { SettingsService } from '@/database/services/SettingsService';
 import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
 import { WorkoutService } from '@/database/services/WorkoutService';
 import {
@@ -19,6 +20,8 @@ import type {
 } from './coachAI';
 import { findExerciseByName } from './exerciseSearch';
 import { isExerciseSuggestible, rankSubstitutes } from './exerciseSubstitution';
+import { roundToDecimalPlaces } from './roundDecimal';
+import { kgToDisplay } from './unitConversion';
 import { isWorkingSet } from './workoutSetCompletion';
 
 /**
@@ -234,6 +237,9 @@ export async function buildWorkoutCompletedSummaryForLLM(
   }
 ): Promise<string> {
   const unit = options.weightUnit ?? 'kg';
+  // Set weights are stored in kg; the LLM is told they are in the user's unit, so convert them.
+  const units = await SettingsService.getUnits();
+  const toDisplay = (kg: number) => roundToDecimalPlaces(kgToDisplay(kg, units), 1);
   const format = options.format ?? 'json';
   try {
     const { workoutLog, sets, exercises } =
@@ -249,7 +255,7 @@ export async function buildWorkoutCompletedSummaryForLLM(
       if (!byExercise.has(name)) {
         byExercise.set(name, []);
       }
-      byExercise.get(name)!.push({ reps: set.reps ?? 0, weight: set.weight ?? 0 });
+      byExercise.get(name)!.push({ reps: set.reps ?? 0, weight: toDisplay(set.weight ?? 0) });
     }
 
     if (format === 'json') {

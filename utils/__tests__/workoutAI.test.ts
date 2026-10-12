@@ -1,6 +1,7 @@
 import { ExerciseService } from '@/database/services/ExerciseService';
 import { ExerciseSuggestionService } from '@/database/services/ExerciseSuggestionService';
 import { isExerciseSuggestible, type SubstitutionContext } from '@/utils/exerciseSubstitution';
+import { SettingsService } from '@/database/services/SettingsService';
 import { WorkoutAnalytics } from '@/database/services/WorkoutAnalytics';
 import { WorkoutService } from '@/database/services/WorkoutService';
 import { WorkoutTemplateService } from '@/database/services/WorkoutTemplateService';
@@ -25,6 +26,10 @@ jest.mock('@/database/services/ExerciseSuggestionService', () => ({
   ExerciseSuggestionService: {
     getSuggestibleExercises: jest.fn(),
   },
+}));
+
+jest.mock('@/database/services/SettingsService', () => ({
+  SettingsService: { getUnits: jest.fn() },
 }));
 
 jest.mock('@/database/services/WorkoutAnalytics', () => ({
@@ -322,6 +327,7 @@ describe('processParsedWorkouts', () => {
 describe('completed workout AI summaries', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    (SettingsService.getUnits as jest.Mock).mockResolvedValue('metric');
     mockWorkoutService.getWorkoutWithDetails.mockResolvedValue({
       workoutLog: {
         workoutName: 'Push Day',
@@ -367,5 +373,21 @@ describe('completed workout AI summaries', () => {
         sets: [{ reps: 8, weight: 80, partials: 0, repsInReserve: 0 }],
       },
     ]);
+  });
+
+  it('sends set weights in the displayed unit, not the stored kilograms', async () => {
+    (SettingsService.getUnits as jest.Mock).mockResolvedValue('imperial');
+
+    const summary = await buildWorkoutCompletedSummaryForLLM('workout-1', {
+      volumeStr: '1763.7 lbs',
+      durationStr: '60 min',
+      personalRecords: 0,
+      weightUnit: 'lbs',
+      format: 'json',
+    });
+
+    // 80 kg is 176.4 lb
+    expect(summary).toContain('"weight": 176.4');
+    expect(summary).not.toContain('"weight": 80');
   });
 });

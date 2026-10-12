@@ -233,8 +233,9 @@ export default function CreateCustomFoodModal({
           // Use the first selected portion as the default serving size
           const selectedPortion = portions.find((p) => selectedPortionIds.includes(p.id));
           if (selectedPortion?.gramWeight != null) {
+            // gramWeight is already metric; the portion's name ("oz", "cup") is a label, not a
+            // unit, and passing it on makes createCustomFood convert grams as if they were ounces.
             servingAmount = selectedPortion.gramWeight;
-            servingUnit = selectedPortion.name.toLowerCase();
           }
         }
 
