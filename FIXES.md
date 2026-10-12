@@ -224,10 +224,12 @@ Accepted false positives must explain that the host closes first.
 
 ## Expo Router blog route patch
 
-Expo Router 57.0.18 misparses platform extensions on catch-all names such as
-`[...slug].web.tsx`, leaves the extension in loader context keys, and uses the wrong development
-loader path for route groups. `patches/expo-router+57.0.18.patch` fixes all three behaviors and
-`utils/__tests__/expoRouterLoaderPatch.test.ts` pins them.
+Expo Router 57.0.18 misparsed platform extensions on catch-all names such as
+`[...slug].web.tsx`, left the extension in loader context keys, and used the wrong development
+loader path for route groups. 57.0.26 fixed the first two upstream; only the development loader
+path remains patched, in `patches/expo-router+57.0.26.patch`. The old 57.0.18 patch failed
+`patch-package` in CI (`npm ci` postinstall) once the dependency moved to 57.0.26.
+`utils/__tests__/expoRouterLoaderPatch.test.ts` pins all three behaviors.
 
 Keep blog indexes inside their route directory (`blog/index.web.tsx`) when the index and catch-all
 both use loaders; a `blog.web.tsx` file collides with the `blog/` loader directory during export.

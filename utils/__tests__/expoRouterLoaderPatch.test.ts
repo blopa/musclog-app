@@ -1,5 +1,5 @@
-// Expo Router data loaders are alpha in SDK 57. This pins the regressions fixed by
-// patches/expo-router+57.0.18.patch until the fixes are available upstream.
+// Expo Router data loaders are alpha in SDK 57. This pins the platform-extension behavior fixed
+// upstream in 57.0.26 and the development loader-path fix in patches/expo-router+57.0.26.patch.
 const { getLoaderModulePath } = require('expo-router/build/loaders/utils') as {
   getLoaderModulePath: (routePath: string) => string;
 };
