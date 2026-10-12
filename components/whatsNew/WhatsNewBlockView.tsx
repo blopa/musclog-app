@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 
@@ -41,83 +42,15 @@ export function WhatsNewBlockView({ block, choices, onAction, disabled }: Props)
         </View>
       );
     }
-    case 'choice': {
-      const value = choices.values[block.setting];
-      const unavailable = disabled || !!choices.saving[block.setting];
+    case 'choice':
       return (
-        <View className="gap-3">
-          {value === undefined ? (
-            <View className="gap-2">
-              <Text accessibilityRole="header" className="text-base font-bold text-text-primary">
-                {t(block.titleKey)}
-              </Text>
-              {choices.errors[block.setting] ? (
-                <>
-                  <Text accessibilityRole="alert" className="text-sm text-text-secondary">
-                    {t('whatsNew.loadFailed')}
-                  </Text>
-                  <TextButton label={t('whatsNew.retry')} onPress={choices.refresh} />
-                </>
-              ) : (
-                <ActivityIndicator color={theme.colors.accent.primary} />
-              )}
-            </View>
-          ) : block.options ? (
-            <>
-              {description ? (
-                <Text className="text-sm text-text-secondary">{description}</Text>
-              ) : null}
-              <OptionsSelector
-                title={t(block.titleKey)}
-                selectedId={String(value)}
-                disabled={unavailable}
-                onSelect={(next) => void choices.write(block.setting, next)}
-                options={block.options.map((option) => ({
-                  id: option.value,
-                  label: t(option.labelKey),
-                  description: option.descriptionKey ? t(option.descriptionKey) : '',
-                  icon: whatsNewIcons[option.icon ?? 'settings'],
-                  iconColor: theme.colors.accent.primary,
-                  iconBgColor: theme.colors.accent.primary20,
-                }))}
-              />
-            </>
-          ) : typeof value === 'boolean' ? (
-            <ToggleInput
-              items={[
-                {
-                  key: block.setting,
-                  label: t(block.titleKey),
-                  subtitle: description,
-                  value,
-                  disabled: unavailable,
-                  onValueChange: (next) => void choices.write(block.setting, next),
-                },
-              ]}
-            />
-          ) : (
-            <>
-              <Text accessibilityRole="header" className="text-base font-bold text-text-primary">
-                {t(block.titleKey)}
-              </Text>
-              {description ? (
-                <Text className="text-sm text-text-secondary">{description}</Text>
-              ) : null}
-              <WeekdayChoiceChips
-                value={Number(value)}
-                disabled={unavailable}
-                onChange={(next) => void choices.write(block.setting, next)}
-              />
-            </>
-          )}
-          {value !== undefined && choices.errors[block.setting] ? (
-            <Text accessibilityRole="alert" className="text-sm text-status-error">
-              {t('whatsNew.saveFailed')}
-            </Text>
-          ) : null}
-        </View>
+        <ChoiceBlock
+          block={block}
+          choices={choices}
+          description={description}
+          disabled={disabled}
+        />
       );
-    }
     case 'featureList':
       return (
         <View className="gap-3">
@@ -174,4 +107,107 @@ export function WhatsNewBlockView({ block, choices, onAction, disabled }: Props)
       return exhaustive;
     }
   }
+}
+
+type ChoiceBlockProps = {
+  block: Extract<WhatsNewBlock, { type: 'choice' }>;
+  choices: Props['choices'];
+  description: string | undefined;
+  disabled?: boolean;
+};
+
+/** One setting question. Each state returns early so no ternary has to nest. */
+function ChoiceBlock({ block, choices, description, disabled }: ChoiceBlockProps) {
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const value = choices.values[block.setting];
+  const unavailable = disabled || !!choices.saving[block.setting];
+  const failed = choices.errors[block.setting];
+  const heading = (
+    <Text accessibilityRole="header" className="text-base font-bold text-text-primary">
+      {t(block.titleKey)}
+    </Text>
+  );
+  const note = description ? (
+    <Text className="text-sm text-text-secondary">{description}</Text>
+  ) : null;
+
+  if (value === undefined) {
+    return (
+      <View className="gap-2">
+        {heading}
+        {failed ? (
+          <>
+            <Text accessibilityRole="alert" className="text-sm text-text-secondary">
+              {t('whatsNew.loadFailed')}
+            </Text>
+            <TextButton label={t('whatsNew.retry')} onPress={choices.refresh} />
+          </>
+        ) : (
+          <ActivityIndicator color={theme.colors.accent.primary} />
+        )}
+      </View>
+    );
+  }
+
+  let control: ReactNode;
+  if (block.options) {
+    control = (
+      <>
+        {note}
+        <OptionsSelector
+          title={t(block.titleKey)}
+          selectedId={String(value)}
+          disabled={unavailable}
+          onSelect={(next) => void choices.write(block.setting, next)}
+          options={block.options.map((option) => ({
+            id: option.value,
+            label: t(option.labelKey),
+            description: option.descriptionKey ? t(option.descriptionKey) : '',
+            icon: whatsNewIcons[option.icon ?? 'settings'],
+            iconColor: theme.colors.accent.primary,
+            iconBgColor: theme.colors.accent.primary20,
+          }))}
+        />
+      </>
+    );
+  } else if (typeof value === 'boolean') {
+    control = (
+      <ToggleInput
+        items={[
+          {
+            key: block.setting,
+            label: t(block.titleKey),
+            subtitle: description,
+            value,
+            disabled: unavailable,
+            onValueChange: (next) => void choices.write(block.setting, next),
+          },
+        ]}
+      />
+    );
+  } else {
+    control = (
+      <>
+        {heading}
+        {note}
+        <WeekdayChoiceChips
+          value={Number(value)}
+          disabled={unavailable}
+          onChange={(next) => void choices.write(block.setting, next)}
+        />
+      </>
+    );
+  }
+
+  return (
+    <View className="gap-3">
+      {control}
+      {failed ? (
+        <Text accessibilityRole="alert" className="text-sm text-status-error">
+          {t('whatsNew.saveFailed')}
+        </Text>
+      ) : null}
+    </View>
+  );
 }

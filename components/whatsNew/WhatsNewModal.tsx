@@ -36,6 +36,24 @@ function unhandledModalAction(action: never): never {
   throw new Error(`Missing What's new modal: ${action}`);
 }
 
+/** The one modal an action block opened, rendered inside the tour so iOS can present it. */
+function renderActionModal(
+  action: WhatsNewModalAction | null,
+  visible: boolean,
+  onClose: () => void
+) {
+  switch (action) {
+    case null:
+      return null;
+    case 'openWorkoutSettings':
+      return <WorkoutSettingsModal visible={visible} onClose={onClose} />;
+    case 'openCardioLog':
+      return <LogCardioModal visible={visible} onClose={onClose} />;
+    default:
+      return unhandledModalAction(action);
+  }
+}
+
 export function WhatsNewModal({ visible, flow, mode, onDismiss, onNavigate }: Props) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -92,6 +110,17 @@ export function WhatsNewModal({ visible, flow, mode, onDismiss, onNavigate }: Pr
     }
   };
   const page = flow.pages[pageIndex - 1];
+  const pageBlocks = page
+    ? page.blocks.map((block) => (
+        <WhatsNewBlockView
+          key={`${page.key}:${block.id}`}
+          block={block}
+          choices={choices}
+          onAction={action}
+          disabled={busy}
+        />
+      ))
+    : null;
 
   return (
     <FullScreenModal
@@ -132,17 +161,9 @@ export function WhatsNewModal({ visible, flow, mode, onDismiss, onNavigate }: Pr
               <Text className="text-sm text-text-secondary">{t('whatsNew.intro.truncated')}</Text>
             ) : null}
           </View>
-        ) : page ? (
-          page.blocks.map((block) => (
-            <WhatsNewBlockView
-              key={`${page.key}:${block.id}`}
-              block={block}
-              choices={choices}
-              onAction={action}
-              disabled={busy}
-            />
-          ))
-        ) : null}
+        ) : (
+          pageBlocks
+        )}
       </ScrollView>
       <View className="gap-4 border-t border-border-light bg-bg-primary px-4 py-4">
         {closeFailed ? (
@@ -177,13 +198,7 @@ export function WhatsNewModal({ visible, flow, mode, onDismiss, onNavigate }: Pr
           <TextButton label={t('whatsNew.skip')} disabled={busy} onPress={() => void dismiss()} />
         ) : null}
       </View>
-      {activeAction === 'openWorkoutSettings' ? (
-        <WorkoutSettingsModal visible={visible} onClose={() => setActiveAction(null)} />
-      ) : activeAction === 'openCardioLog' ? (
-        <LogCardioModal visible={visible} onClose={() => setActiveAction(null)} />
-      ) : activeAction === null ? null : (
-        unhandledModalAction(activeAction)
-      )}
+      {renderActionModal(activeAction, visible, () => setActiveAction(null))}
     </FullScreenModal>
   );
 }

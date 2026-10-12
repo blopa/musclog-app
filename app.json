@@ -148,7 +148,7 @@
       "@react-native-vector-icons/material-icons"
     ],
     "orientation": "default",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/theme-icons/icon-bg-kinetic-depth.png",
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "backgroundColor": "#091310",
@@ -168,7 +168,7 @@
       "package": "com.werules.logger",
       "versionCode": 309,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/theme-icons/icon-bg-kinetic-depth.png",
         "backgroundColor": "#0c1a13"
       },
       "permissions": [
