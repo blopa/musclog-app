@@ -204,9 +204,12 @@ appropriate, or both. Pick by what the control is, not by how it looks today:
 | Two or three mutually exclusive views                                   | `SegmentedControl` (`pill` when it sits inline beside other content)       |
 | A number the user types, kept as their own text                         | `NumericTextField` (`hero` / `field` / `cell`)                             |
 | A number the control owns (portion, plate weight)                       | `StepperInput` / `StepperInlineInput`                                      |
+| A search box or any labeled text field                                  | `TextInput` (`label=""` + a `Search` icon for search); never a raw input   |
 
 A raw `Pressable` is right only for a composite surface that is itself the control — a card, a table
-cell, a thumbnail — never for something one of these already draws. `components/__tests__/themeControls.test.ts`
+cell (the set table's number, previous and check cells), a thumbnail, a radio card that hosts its own
+fields (`ProgressionRuleEditor`), a row whose whole surface toggles a panel (`RestTimerBar`,
+`GuidanceSummary`) — never for something one of these already draws. `components/__tests__/themeControls.test.ts`
 lists the screens that have been moved onto them.
 
 ### Cards and modals

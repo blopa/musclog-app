@@ -12,7 +12,7 @@ import {
 } from 'lucide-react-native';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
@@ -20,6 +20,7 @@ import { FilterTabs } from '@/components/FilterTabs';
 import { OptionsSelector, SelectorOption } from '@/components/OptionsSelector';
 import { Button } from '@/components/theme/Button';
 import { Chip } from '@/components/theme/Chip';
+import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
 import Exercise from '@/database/models/Exercise';
 import {
@@ -413,33 +414,18 @@ export function ReplaceExerciseModal({
         <View style={{ flex: 1 }}>
           {/* Sticky: Search and Filters */}
           <View className="gap-3" style={{ paddingBottom: theme.spacing.padding.sm }}>
-            <View className="relative">
-              <View
-                className="absolute inset-y-0 left-0 z-10 items-center justify-center pl-4"
-                style={{ pointerEvents: 'none' }}
-              >
+            <TextInput
+              label=""
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder={t('replaceExercise.searchPlaceholder')}
+              icon={
                 <Search
                   size={theme.iconSize.lg}
-                  color={searchQuery ? theme.colors.accent.primary : theme.colors.text.secondary}
+                  color={searchQuery ? theme.colors.accent.primary : theme.colors.text.tertiary}
                 />
-              </View>
-              <TextInput
-                placeholder={t('replaceExercise.searchPlaceholder')}
-                placeholderTextColor={theme.colors.text.secondary}
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                className="w-full rounded-xl pl-12 pr-4"
-                style={{
-                  backgroundColor: theme.colors.background.secondaryDark,
-                  borderWidth: searchQuery ? theme.borderWidth.medium : 0,
-                  borderColor: searchQuery ? theme.colors.accent.primary : 'transparent',
-                  color: theme.colors.text.primary,
-                  fontSize: theme.typography.fontSize.base,
-                  borderRadius: theme.borderRadius.xl,
-                  paddingVertical: theme.spacing.padding.md,
-                }}
-              />
-            </View>
+              }
+            />
 
             <FilterTabs
               tabs={tabs}

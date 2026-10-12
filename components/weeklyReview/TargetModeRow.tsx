@@ -1,10 +1,10 @@
 import { useRouter } from 'expo-router';
-import { ChevronRight, Target } from 'lucide-react-native';
+import { Target } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Pressable, Text } from 'react-native';
+import { View } from 'react-native';
 
+import { Chip } from '@/components/theme/Chip';
 import type { NutritionTargetMode } from '@/database/models/NutritionGoal';
-import { useTheme } from '@/hooks/useTheme';
 
 export const TARGET_MODE_KEYS = {
   manual: 'weeklyReview.modes.manual',
@@ -25,7 +25,6 @@ export function TargetModeRow({
   effectiveFrom?: number;
 }) {
   const { t, i18n } = useTranslation();
-  const theme = useTheme();
   const router = useRouter();
   const since = effectiveFrom
     ? t('weeklyReview.effective', {
@@ -35,18 +34,18 @@ export function TargetModeRow({
         }).format(effectiveFrom),
       })
     : null;
+  const label = t(TARGET_MODE_KEYS[mode]);
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={`${t(TARGET_MODE_KEYS[mode])}${since ? `, ${since}` : ''}, ${t('weeklyReview.title')}`}
-      onPress={() => router.push('/app/nutrition/checkin-list')}
-      className="min-h-11 flex-row items-center gap-2 self-start rounded-full bg-bg-overlay px-3"
-      testID="weekly-review-entry"
-    >
-      <Target size={theme.iconSize.sm} color={theme.colors.accent.primary} />
-      <Text className="text-sm font-semibold text-text-primary">{t(TARGET_MODE_KEYS[mode])}</Text>
-      {since ? <Text className="text-sm text-text-secondary">· {since}</Text> : null}
-      <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
-    </Pressable>
+    <View className="self-start">
+      <Chip
+        variant="solid"
+        role="button"
+        icon={Target}
+        label={since ? `${label} · ${since}` : label}
+        accessibilityLabel={`${label}${since ? `, ${since}` : ''}, ${t('weeklyReview.title')}`}
+        onPress={() => router.push('/app/nutrition/checkin-list')}
+        testID="weekly-review-entry"
+      />
+    </View>
   );
 }
