@@ -34,7 +34,7 @@ export function WorkoutTodayCard({
   onPreview?: (templateId: string, planId?: string) => void;
   onDiscard?: () => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const router = useRouter();
   const { formatInteger } = useFormatAppNumber();
@@ -92,17 +92,16 @@ export function WorkoutTodayCard({
   const resume = () =>
     active && router.push(`/app/workout/workout-session?workoutLogId=${active.log.id}`);
 
+  // Context, not controls: plain muted text, because pills read as buttons that did nothing.
   const context = activeOnly ? null : (
-    <View className="flex-row flex-wrap gap-2">
-      <View className="flex-row items-center gap-1.5 rounded-full bg-bg-overlay px-3 py-1.5">
-        <Warehouse size={theme.iconSize.xs} color={theme.colors.text.secondary} />
-        <Text className="text-xs font-medium text-text-secondary">
-          {gym?.name ?? t('trainingFlow.noGym')}
-        </Text>
+    <View className="flex-row flex-wrap items-center gap-x-4 gap-y-1">
+      <View className="flex-row items-center gap-1.5">
+        <Warehouse size={theme.iconSize.xs} color={theme.colors.text.tertiary} />
+        <Text className="text-xs text-text-tertiary">{gym?.name ?? t('trainingFlow.noGym')}</Text>
       </View>
-      <View className="flex-row items-center gap-1.5 rounded-full bg-bg-overlay px-3 py-1.5">
-        <Sparkles size={theme.iconSize.xs} color={theme.colors.text.secondary} />
-        <Text className="text-xs font-medium text-text-secondary">
+      <View className="flex-row items-center gap-1.5">
+        <Sparkles size={theme.iconSize.xs} color={theme.colors.text.tertiary} />
+        <Text className="text-xs text-text-tertiary">
           {t(automatic ? 'trainingFlow.guidanceOn' : 'trainingFlow.guidanceOff')}
         </Text>
       </View>
@@ -161,6 +160,23 @@ export function WorkoutTodayCard({
     );
   }
 
+  const subtitleFor = (row: TodayWorkout) => {
+    if (row.lastCompletedAt != null) {
+      return t('trainingFlow.rotationNext', {
+        date: new Intl.DateTimeFormat(i18n.resolvedLanguage ?? i18n.language, {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric',
+        }).format(row.lastCompletedAt),
+      });
+    }
+    if (row.planName) {
+      return t(row.scheduled ? 'trainingFlow.scheduledIn' : 'trainingFlow.nextIn', {
+        plan: row.planName,
+      });
+    }
+    return t('trainingFlow.scheduledToday');
+  };
   const [primary, ...others] = upcoming.filter((row) => !row.completedToday);
   const finished = upcoming.filter((row) => row.completedToday);
   return (
@@ -186,12 +202,8 @@ export function WorkoutTodayCard({
               <Text className="text-lg font-bold text-text-primary" numberOfLines={2}>
                 {primary.template.name}
               </Text>
-              <Text className="text-sm text-text-secondary" numberOfLines={1}>
-                {primary.planName
-                  ? t(primary.scheduled ? 'trainingFlow.scheduledIn' : 'trainingFlow.nextIn', {
-                      plan: primary.planName,
-                    })
-                  : t('trainingFlow.scheduledToday')}
+              <Text className="text-sm text-text-secondary" numberOfLines={2}>
+                {subtitleFor(primary)}
               </Text>
             </View>
           </View>

@@ -17,8 +17,10 @@ import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
+import { kgToDisplay } from '@/utils/unitConversion';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
+import { isLargeCalorieChange, nutritionReason } from './nutritionReason';
 import { ReviewSectionHeader } from './TrainingReviewSection';
 
 type Overview = Awaited<ReturnType<typeof WeeklyReviewService.overview>>;
@@ -103,12 +105,26 @@ export function NutritionReviewSection({
       value
     );
 
-  let reason = t('weeklyReview.baselineReason');
-  if (!recommendation?.canApply) {
-    reason = t('weeklyReview.collectData');
-  } else if (recommendation.usedEmpiricalData) {
-    reason = t('weeklyReview.empiricalReason');
+  const weightUnit = t(getWeightUnitI18nKey(units));
+  const why = nutritionReason(recommendation);
+  let reason: string;
+  if ('trendChangeKg' in why) {
+    reason = t(why.key, {
+      expenditure: formatInteger(why.expenditure),
+      change: `${new Intl.NumberFormat(locale, {
+        signDisplay: 'exceptZero',
+        maximumFractionDigits: 1,
+      }).format(kgToDisplay(why.trendChangeKg, units))} ${weightUnit}`,
+    });
+  } else if ('expenditure' in why) {
+    reason = t(why.key, { expenditure: formatInteger(why.expenditure) });
+  } else {
+    reason = t(why.key);
   }
+  const largeChange =
+    !decided &&
+    !!recommendation?.canApply &&
+    isLargeCalorieChange(data.current.totalCalories, recommendation.targets.totalCalories);
 
   let decision;
   if (decided) {
@@ -293,6 +309,24 @@ export function NutritionReviewSection({
         <Info size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
         <Text className="flex-1 text-sm text-text-secondary">{reason}</Text>
       </View>
+
+      {largeChange ? (
+        <View className="gap-1 rounded-xl bg-status-warning10 p-3" testID="review-large-change">
+          <Text className="text-sm font-semibold text-text-primary">
+            {t('weeklyReview.largeChangeTitle')}
+          </Text>
+          <Text className="text-sm text-text-secondary">{t('weeklyReview.largeChangeBody')}</Text>
+          <Pressable
+            accessibilityRole="button"
+            onPress={onLogFood}
+            className="min-h-11 justify-center self-start"
+          >
+            <Text className="text-sm font-bold text-accent-primary">
+              {t('weeklyReview.reviewFoodLog')}
+            </Text>
+          </Pressable>
+        </View>
+      ) : null}
 
       {decision}
 

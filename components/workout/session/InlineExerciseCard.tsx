@@ -39,6 +39,7 @@ export function InlineExerciseCard({
   onEdit,
   onComplete,
   onSkip,
+  showHint = false,
 }: {
   block: SessionBlock;
   exercise: Exercise;
@@ -57,6 +58,8 @@ export function InlineExerciseCard({
   onEdit: (setId: string, draft: SessionDraft) => void;
   onComplete: (setId: string) => void;
   onSkip: (setId: string) => void;
+  /** The table hint is shown once per workout (on the first card), not under every exercise. */
+  showHint?: boolean;
 }) {
   const { t } = useTranslation();
   const { formatInteger } = useFormatAppNumber();
@@ -64,7 +67,7 @@ export function InlineExerciseCard({
   const allDone = block.doneCount === block.rows.length;
   return (
     <View
-      className={`gap-4 rounded-2xl border bg-bg-card p-4 ${isCurrent ? 'border-accent-primary' : 'border-border-light'}`}
+      className={`gap-3 rounded-2xl border bg-bg-card p-4 ${isCurrent ? 'border-accent-primary' : 'border-border-light'}`}
       testID={`exercise-card-${block.logExerciseId}`}
     >
       <View className="flex-row items-center gap-3">
@@ -100,6 +103,7 @@ export function InlineExerciseCard({
         units={units}
         onWhy={onWhy}
         onRevert={onRevert}
+        flat
       />
 
       {notes.length ? (
@@ -135,7 +139,11 @@ export function InlineExerciseCard({
             onSkip={() => onSkip(row.set.id)}
           />
         ))}
-        <Text className="px-1 pt-1 text-xs text-text-tertiary">{t('trainingFlow.setTapHint')}</Text>
+        {showHint ? (
+          <Text className="px-1 pt-1 text-xs text-text-tertiary">
+            {t('trainingFlow.setTapHint')}
+          </Text>
+        ) : null}
       </View>
     </View>
   );

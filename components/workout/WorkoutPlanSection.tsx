@@ -13,6 +13,7 @@ interface WorkoutPlanSectionProps {
   onToggle: () => void;
   onPlanMenu: () => void;
   onStartWorkout: (templateId: string, planId: string) => Promise<void>;
+  onPreviewWorkout: (templateId: string, planId: string) => void;
   onWorkoutMenu: (templateId: string, workoutName: string, planId: string) => void;
 }
 
@@ -22,6 +23,7 @@ export function WorkoutPlanSection({
   onToggle,
   onPlanMenu,
   onStartWorkout,
+  onPreviewWorkout,
   onWorkoutMenu,
 }: WorkoutPlanSectionProps) {
   const { t } = useTranslation();
@@ -77,6 +79,7 @@ export function WorkoutPlanSection({
                 icon={template.icon}
                 variant="standard"
                 onStart={() => onStartWorkout(template.id, section.plan.id)}
+                onPress={() => onPreviewWorkout(template.id, section.plan.id)}
                 onMore={() => onWorkoutMenu(template.id, template.name, section.plan.id)}
               />
             </View>

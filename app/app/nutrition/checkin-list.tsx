@@ -27,6 +27,7 @@ import {
 } from '@/database/services/NutritionTargetService';
 import { SettingsService } from '@/database/services/SettingsService';
 import { WeeklyReviewService } from '@/database/services/WeeklyReviewService';
+import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
 import { useWeeklyReviewStatus } from '@/hooks/useWeeklyReviewStatus';
 import { NotificationService } from '@/services/NotificationService';
@@ -34,6 +35,9 @@ import { getDecimalSeparator, parseLocalizedDecimalString } from '@/utils/locali
 import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
 
 type Overview = Awaited<ReturnType<typeof WeeklyReviewService.overview>>;
+
+/** Old check-ins shown before "Show all": the history should not bury everything above it. */
+const LEGACY_HISTORY_PREVIEW = 4;
 
 const historyLabelKey = (decision?: string | null) => {
   if (decision === 'apply') {
@@ -45,6 +49,7 @@ const historyLabelKey = (decision?: string | null) => {
 export default function CheckinListScreen() {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
+  const { formatInteger } = useFormatAppNumber();
   const router = useRouter();
   const params = useLocalSearchParams<{
     reviewId?: string;
@@ -66,6 +71,7 @@ export default function CheckinListScreen() {
   const [goalEditor, setGoalEditor] = useState(false);
   const [ruleEditor, setRuleEditor] = useState(false);
   const [reminder, setReminder] = useState(false);
+  const [showAllHistory, setShowAllHistory] = useState(false);
   useEffect(() => {
     SettingsService.getNotificationsWeeklyReview().then(setReminder);
   }, []);
@@ -82,7 +88,7 @@ export default function CheckinListScreen() {
             ? new Date(Number(requestedDay))
             : undefined
         ),
-        NutritionCheckinService.getHistory(30),
+        NutritionCheckinService.getPastHistory(30),
       ]);
       setLoadError(false);
       setData(next);
@@ -359,7 +365,7 @@ export default function CheckinListScreen() {
                       <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
                     </Pressable>
                   ))}
-                  {legacy.map((review) => (
+                  {(showAllHistory ? legacy : legacy.slice(0, LEGACY_HISTORY_PREVIEW)).map((review) => (
                     <Pressable
                       key={review.id}
                       accessibilityRole="button"
@@ -372,6 +378,20 @@ export default function CheckinListScreen() {
                       <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
                     </Pressable>
                   ))}
+                  {legacy.length > LEGACY_HISTORY_PREVIEW ? (
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityState={{ expanded: showAllHistory }}
+                      onPress={() => setShowAllHistory(!showAllHistory)}
+                      className="min-h-11 justify-center"
+                    >
+                      <Text className="text-sm font-semibold text-accent-primary">
+                        {showAllHistory
+                          ? t('weeklyReview.showFewer')
+                          : t('weeklyReview.showAll', { count: formatInteger(legacy.length) })}
+                      </Text>
+                    </Pressable>
+                  ) : null}
                 </View>
               ) : null}
             </>

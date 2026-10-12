@@ -20,7 +20,6 @@ import { GenerateWorkoutWithAiModal } from '@/components/modals/GenerateWorkoutW
 import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
 import { LogCardioModal } from '@/components/modals/LogCardioModal';
 import { WorkoutSessionHistoryModal } from '@/components/modals/WorkoutSessionHistoryModal';
-import WorkoutSessionOverviewModal from '@/components/modals/WorkoutSessionOverviewModal';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { TextInput } from '@/components/theme/TextInput';
 import { WeeklyReviewCard } from '@/components/WeeklyReviewCard';
@@ -94,10 +93,8 @@ export default function WorkoutsScreen() {
   const [selectedWorkoutId, setSelectedWorkoutId] = useState<string>('');
   const [isCreateOptionsVisible, setIsCreateOptionsVisible] = useState(false);
   const [isCreateWorkoutModalVisible, setIsCreateWorkoutModalVisible] = useState(false);
-  const [isWorkoutOverviewVisible, setIsWorkoutOverviewVisible] = useState(false);
   const [isGoalsManagementModalVisible, setIsGoalsManagementModalVisible] = useState(false);
   const [isLogCardioVisible, setIsLogCardioVisible] = useState(false);
-  const [selectedWorkoutLogId, setSelectedWorkoutLogId] = useState<string>('');
   const [editingTemplateId, setEditingTemplateId] = useState<string | undefined>(undefined);
   const [isBrowseTemplatesVisible, setIsBrowseTemplatesVisible] = useState(false);
   const [isGenerateWithAiModalVisible, setIsGenerateWithAiModalVisible] = useState(false);
@@ -129,11 +126,6 @@ export default function WorkoutsScreen() {
       WorkoutService.getActiveWorkout().then(setInterruptedWorkoutLog);
     }, [])
   );
-
-  const handleOverviewModalClose = useCallback(() => {
-    setIsWorkoutOverviewVisible(false);
-    WorkoutService.getActiveWorkout().then(setInterruptedWorkoutLog);
-  }, []);
 
   const { showSnackbar } = useSnackbar();
   const { shareText } = useNativeShareText();
@@ -182,13 +174,14 @@ export default function WorkoutsScreen() {
   const { plans, memberships, isLoading: isLoadingPlans } = useWorkoutPlans();
   const isLoadingScreen = isLoading || isLoadingPlans;
 
-  // Helper function to start a workout and show overview modal
+  // "Start Workout" means start: the session opens straight away, as in Hevy or Strong. It used
+  // to create the session and then show an overview with a second "Start Workout" button — two
+  // taps, and an "In progress" sheet that looked like a preview. Previewing is the card's own job.
   const handleStartWorkout = useCallback(
     async (templateId: string, planId?: string) => {
       try {
         const workoutLog = await WorkoutService.startWorkoutFromTemplate(templateId, planId);
-        setSelectedWorkoutLogId(workoutLog.id);
-        setIsWorkoutOverviewVisible(true);
+        router.navigate(`/app/workout/workout-session?workoutLogId=${workoutLog.id}`);
         triggerConfetti(ConfettiActivity.FIRST_WORKOUT_CREATED);
       } catch (err) {
         if (err instanceof ActiveWorkoutExistsError) {
@@ -201,7 +194,7 @@ export default function WorkoutsScreen() {
         });
       }
     },
-    [handleActiveWorkoutExists, t, triggerConfetti]
+    [handleActiveWorkoutExists, router, t, triggerConfetti]
   );
 
   // `planId` is the section the workout was tapped in. It is carried on `menuPlanId` rather than
@@ -350,6 +343,7 @@ export default function WorkoutsScreen() {
               }}
               onOpenWorkoutMenu={openWorkoutMenu}
               onStartWorkout={handleStartWorkout}
+              onPreviewWorkout={handlePreviewWorkout}
               onToggleAccordion={toggleAccordion}
             />
           </View>
@@ -722,47 +716,6 @@ export default function WorkoutsScreen() {
         tab="fitness"
       />
 
-      {/* Workout Session Overview Modal */}
-      <WorkoutSessionOverviewModal
-        visible={isWorkoutOverviewVisible}
-        onClose={handleOverviewModalClose}
-        workoutLogId={selectedWorkoutLogId}
-        onStartWorkout={() => {
-          setIsWorkoutOverviewVisible(false);
-          router.navigate(`/app/workout/workout-session?workoutLogId=${selectedWorkoutLogId}`);
-        }}
-        onResumeSession={() => {
-          setIsWorkoutOverviewVisible(false);
-          router.navigate(`/app/workout/workout-session?workoutLogId=${selectedWorkoutLogId}`);
-        }}
-        onSelectExercise={(exerciseId) => {
-          setIsWorkoutOverviewVisible(false);
-          // Navigate to workout session with selected exercise
-          router.navigate(
-            `/app/workout/workout-session?workoutLogId=${selectedWorkoutLogId}&exerciseId=${exerciseId}`
-          );
-        }}
-        onCancelWorkout={async () => {
-          setIsWorkoutOverviewVisible(false);
-          // Cancel the workout and navigate back
-          if (selectedWorkoutLogId) {
-            try {
-              // Clear active workout and delete the workout log
-              await clearActiveWorkoutLogId();
-              await WorkoutService.deleteWorkoutLog(selectedWorkoutLogId);
-            } catch (err) {
-              console.error('Error canceling workout:', err);
-              handleError(err, 'workouts.cancelWorkout');
-              showSnackbar('error', t('errors.somethingWentWrong'));
-            }
-          }
-        }}
-        onFinishWorkout={() => {
-          setIsWorkoutOverviewVisible(false);
-          // Navigate to workout summary
-          router.navigate(`/app/workout/workout-summary?workoutLogId=${selectedWorkoutLogId}`);
-        }}
-      />
 
       {/* Workout Preview Modal */}
       <WorkoutSessionHistoryModal

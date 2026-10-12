@@ -127,6 +127,9 @@ export const FoodItemCard = memo(function FoodItemCard({
   const f = fat ?? 0;
   const g = gramsToDisplay(portion ?? 0, units);
   const massUnit = getMassUnitLabel(units);
+  // Macros are grams in both unit systems (see AGENTS.md); only the serving weight converts.
+  // Labelling them with `massUnit` printed "62oz Protein" for a chicken breast on imperial.
+  const macroUnit = t('common.units.g');
 
   const handleImageError = () => {
     setImageError(true);
@@ -193,7 +196,7 @@ export const FoodItemCard = memo(function FoodItemCard({
                 value={p}
                 label={t('food.macros.protein')}
                 shortLabel={t('food.macros.proteinShort')}
-                unit={massUnit}
+                unit={macroUnit}
                 intuitiveMode={intuitiveMode}
               />
               <MacroItem
@@ -201,7 +204,7 @@ export const FoodItemCard = memo(function FoodItemCard({
                 value={c}
                 label={t('food.macros.carbs')}
                 shortLabel={t('food.macros.carbsShort')}
-                unit={massUnit}
+                unit={macroUnit}
                 intuitiveMode={intuitiveMode}
               />
               <MacroItem
@@ -209,7 +212,7 @@ export const FoodItemCard = memo(function FoodItemCard({
                 value={f}
                 label={t('food.macros.fat')}
                 shortLabel={t('food.macros.fatShort')}
-                unit={massUnit}
+                unit={macroUnit}
                 intuitiveMode={intuitiveMode}
               />
             </View>

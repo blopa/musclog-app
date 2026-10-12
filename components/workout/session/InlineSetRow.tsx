@@ -12,10 +12,15 @@ import { adjustedFields } from '@/utils/setAdjustment';
 import { isPerformedWorkoutSet } from '@/utils/workoutSetCompletion';
 
 import type { SessionSetRowModel } from './sessionModel';
+import { draftFromPrevious } from './setDraft';
 import { SetDetailsSheet } from './SetDetailsSheet';
 
-/** Column widths shared by the header and every row, so they always line up. */
-export const SET_TABLE_COLUMNS = { set: 36, check: 48 } as const;
+/**
+ * Column widths shared by the header and every row, so they always line up. The inputs are kept
+ * just wide enough for "102.5" / "12" so "Last time" — the column lifters read before every set —
+ * is not truncated on a 390pt phone.
+ */
+export const SET_TABLE_COLUMNS = { set: 32, weight: 66, reps: 50, check: 48 } as const;
 
 export function SetTableHeader({ weightUnit }: { weightUnit: string }) {
   const { t } = useTranslation();
@@ -26,10 +31,10 @@ export function SetTableHeader({ weightUnit }: { weightUnit: string }) {
         {t('trainingFlow.columns.set')}
       </Text>
       <Text className={`${label} flex-1`}>{t('trainingFlow.columns.previous')}</Text>
-      <Text className={label} style={{ width: 72, textAlign: 'center' }}>
+      <Text className={label} style={{ width: SET_TABLE_COLUMNS.weight, textAlign: 'center' }}>
         {weightUnit}
       </Text>
-      <Text className={label} style={{ width: 56, textAlign: 'center' }}>
+      <Text className={label} style={{ width: SET_TABLE_COLUMNS.reps, textAlign: 'center' }}>
         {t('trainingFlow.columns.reps')}
       </Text>
       <View style={{ width: SET_TABLE_COLUMNS.check }} />
@@ -139,13 +144,29 @@ export function InlineSetRow({
           </Text>
         ) : null}
       </Pressable>
-      <Text className="flex-1 text-sm text-text-secondary" numberOfLines={1}>
-        {previous
-          ? `${formatDisplayWeightKg(locale, units, previous.weightKg)} × ${formatInteger(previous.reps, { useGrouping: false })}`
-          : '–'}
-      </Text>
-      {input('weight', t('workoutSession.weight'), 72)}
-      {input('reps', t('workoutSession.reps'), 56)}
+      {previous && editable ? (
+        // Like Hevy's PREVIOUS column: one tap repeats last time's numbers for this set.
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`${setName}, ${t('trainingFlow.usePrevious')}`}
+          onPress={() => onEdit(draftFromPrevious(values, previous, units, locale))}
+          className="min-w-0 flex-1 justify-center"
+          style={{ minHeight: 44 }}
+          testID={`set-${set.id}-previous`}
+        >
+          <Text className="text-sm text-text-secondary" numberOfLines={1}>
+            {`${formatDisplayWeightKg(locale, units, previous.weightKg)} × ${formatInteger(previous.reps, { useGrouping: false })}`}
+          </Text>
+        </Pressable>
+      ) : (
+        <Text className="min-w-0 flex-1 text-sm text-text-secondary" numberOfLines={1}>
+          {previous
+            ? `${formatDisplayWeightKg(locale, units, previous.weightKg)} × ${formatInteger(previous.reps, { useGrouping: false })}`
+            : '–'}
+        </Text>
+      )}
+      {input('weight', t('workoutSession.weight'), SET_TABLE_COLUMNS.weight)}
+      {input('reps', t('workoutSession.reps'), SET_TABLE_COLUMNS.reps)}
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={done ? t('trainingFlow.reopen') : t('trainingFlow.complete')}

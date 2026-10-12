@@ -17,14 +17,14 @@ import { useTheme } from '@/hooks/useTheme';
 import { useWorkoutSessionController } from '@/hooks/useWorkoutSessionController';
 import { weightInputStep } from '@/utils/loadIncrement';
 import { warmupOfferFor, type WarmupSetPrescription } from '@/utils/warmupSets';
-import { isResolvedWorkoutSet } from '@/utils/workoutSetCompletion';
+import { isPerformedWorkoutSet, isResolvedWorkoutSet } from '@/utils/workoutSetCompletion';
 import {
   getFirstUnloggedInEffectiveOrder,
   getNextSetInEffectiveOrder,
 } from '@/utils/workoutSupersetOrder';
 
 import type { SessionExerciseAction } from './session/ExerciseHeader';
-import { GuidedExerciseView } from './session/GuidedExerciseView';
+import { GuidedCompleteButton, GuidedExerciseView } from './session/GuidedExerciseView';
 import { InlineExerciseCard } from './session/InlineExerciseCard';
 import { RestTimerBar } from './session/RestTimerBar';
 import { buildSessionBlocks, guidanceStateFor, type SessionBlock } from './session/sessionModel';
@@ -216,6 +216,7 @@ export function WorkoutTrainingView({
     ) : null;
 
   let body: ReactNode;
+  let pinnedAction: ReactNode = null;
   if (controller.view === 'guided' && currentBlock) {
     const exercise = exerciseById.get(currentBlock.exerciseId);
     const row =
@@ -264,13 +265,22 @@ export function WorkoutTrainingView({
           onAction={(kind) => action(currentBlock, kind)}
           onEdit={(draft) => controller.edit(row.set.id, draft)}
           onDetails={() => setDetailsSetId(row.set.id)}
-          onComplete={() => complete(row.set.id)}
         />
       ) : null;
+    pinnedAction = body ? (
+      <View className="bg-bg-primary px-4 pb-2 pt-2">
+        <GuidedCompleteButton
+          setId={row.set.id}
+          done={isPerformedWorkoutSet(row.set)}
+          busy={controller.busy}
+          onPress={() => complete(row.set.id)}
+        />
+      </View>
+    ) : null;
   } else {
     body = (
       <View className="gap-4">
-        {blocks.map((block) => {
+        {blocks.map((block, index) => {
           const exercise = exerciseById.get(block.exerciseId);
           if (!exercise) {
             return null;
@@ -300,6 +310,7 @@ export function WorkoutTrainingView({
                 onEdit={controller.edit}
                 onComplete={complete}
                 onSkip={skip}
+                showHint={index === 0}
               />
             </View>
           );
@@ -344,6 +355,7 @@ export function WorkoutTrainingView({
         {errorText}
         {finishButton}
       </KeyboardAwareScrollView>
+      {pinnedAction}
       <RestTimerBar
         remaining={controller.restSeconds}
         total={controller.restTotal}

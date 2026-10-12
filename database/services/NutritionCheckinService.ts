@@ -98,6 +98,22 @@ export class NutritionCheckinService {
   }
 
   /**
+   * Check-ins that have already happened, newest first. Milestone goals pre-create check-ins for
+   * future dates, which a "history" list must not show as previous ones.
+   */
+  static async getPastHistory(limit: number, now: number = Date.now()): Promise<NutritionCheckin[]> {
+    return database
+      .get<NutritionCheckin>('nutrition_checkins')
+      .query(
+        Q.where('deleted_at', Q.eq(null)),
+        Q.where('checkin_date', Q.lte(now)),
+        Q.sortBy('checkin_date', Q.desc),
+        Q.take(limit)
+      )
+      .fetch();
+  }
+
+  /**
    * Compute metrics for a check-in based on logs from the 7 days ending on checkinDate.
    */
   static async getCheckinMetrics(checkin: NutritionCheckin): Promise<CheckinMetrics> {

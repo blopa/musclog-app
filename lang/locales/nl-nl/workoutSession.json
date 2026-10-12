@@ -208,7 +208,7 @@
     "warmupShort": "W",
     "removeWarmups": "Opwarmsets verwijderen",
     "blockProgress": "{{done}}/{{total}}",
-    "setTapHint": "Tik op een setnummer voor inspanning, gedeeltelijke herhalingen of om de set over te slaan.",
+    "setTapHint": "Tik op ‘Vorige keer’ om die te herhalen, of op een setnummer voor inspanning, gedeeltelijke herhalingen of om de set over te slaan.",
     "previousExercise": "Vorige oefening",
     "nextExercise": "Volgende oefening",
     "exerciseOf": "Oefening {{current}} van {{total}}",
@@ -228,7 +228,9 @@
     "doneToday": "{{name}} · vandaag gedaan",
     "lastTimeList": "Vorige keer: {{sets}}",
     "newRecord": "Nieuw record: {{type}}",
-    "adjustedHint": "Berekend door je progressie. Typ om het voor deze training te wijzigen."
+    "adjustedHint": "Berekend door je progressie. Typ om het voor deze training te wijzigen.",
+    "usePrevious": "Vorige keer herhalen",
+    "rotationNext": "Langst niet getraind · laatst op {{date}}"
   },
   "weeklyReview": {
     "title": "Weekoverzicht",
@@ -244,9 +246,9 @@
     "acknowledge": "Training als bekeken markeren",
     "noWorkout": "Kies een training of roterend schema bij Trainingen.",
     "prTypes": {
-      "weight": "Gewicht",
-      "reps": "Herhalingen",
-      "volume": "Volume"
+      "weight": "Zwaarste gewicht",
+      "reps": "Meeste herhalingen",
+      "volume": "Meeste volume"
     },
     "nutrition": "Voeding",
     "modes": {
@@ -308,6 +310,14 @@
     "editShort": "Aanpassen",
     "settings": "Review-instellingen",
     "trainingOnly": "Training bekeken",
-    "periodHint": "De zeven volledige dagen vóór je reviewdag"
+    "periodHint": "De zeven volledige dagen vóór je reviewdag",
+    "showAll": "Alles tonen ({{count}})",
+    "showFewer": "Minder tonen",
+    "reasonEmpirical": "Volgens je logboek verbruik je ongeveer {{expenditure}} kcal per dag, en je trendgewicht veranderde deze week met {{change}}. Met deze doelen blijf je op schema voor je doel.",
+    "reasonEmpiricalNoTrend": "Volgens je logboek verbruik je ongeveer {{expenditure}} kcal per dag. Met deze doelen blijf je op schema voor je doel.",
+    "reasonBaseline": "Geschat op basis van je profiel, nog niet van je logboek: ongeveer {{expenditure}} kcal per dag. Blijf voeding en gewicht loggen om het persoonlijk te maken.",
+    "largeChangeTitle": "Dat is een grote verandering",
+    "largeChangeBody": "Grote schommelingen komen meestal door maaltijden die niet gelogd zijn of een paar ongebruikelijke wegingen. Controleer het voedingslogboek van deze week voordat je toepast.",
+    "reviewFoodLog": "Voedingslogboek bekijken"
   }
 }

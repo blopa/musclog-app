@@ -30,6 +30,23 @@ export function draftFromSet(
   };
 }
 
+/**
+ * Copies last time's weight and reps into a set's inputs (tapping the "Last time" cell), keeping
+ * whatever effort and partials the user already entered for this set.
+ */
+export function draftFromPrevious(
+  current: SessionDraft,
+  previous: { weightKg: number; reps: number },
+  units: Units,
+  locale: string
+): SessionDraft {
+  return {
+    ...current,
+    weight: formatInput(displayWeightKgNumeric(previous.weightKg, units), locale, 2),
+    reps: String(previous.reps),
+  };
+}
+
 /** The values a completion saves, converted back to kilograms. */
 export function valuesFromDraft(
   draft: SessionDraft,

@@ -150,7 +150,6 @@ export function GuidedExerciseView({
   onAction,
   onEdit,
   onDetails,
-  onComplete,
 }: {
   block: SessionBlock;
   exercise: Exercise;
@@ -175,7 +174,6 @@ export function GuidedExerciseView({
   onAction: (action: SessionExerciseAction) => void;
   onEdit: (draft: SessionDraft) => void;
   onDetails: () => void;
-  onComplete: () => void;
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -350,35 +348,54 @@ export function GuidedExerciseView({
           </Text>
         </Pressable>
 
-        {done ? (
-          <Button
-            label={t('trainingFlow.reopen')}
-            icon={RotateCcw}
-            variant="outline"
-            size="lg"
-            width="full"
-            disabled={busy}
-            onPress={onComplete}
-          />
-        ) : (
-          <View testID={`set-${set.id}-complete`}>
-            <Button
-              label={t('trainingFlow.complete')}
-              icon={CheckCircle}
-              variant="gradientCta"
-              size="lg"
-              width="full"
-              disabled={busy}
-              onPress={onComplete}
-            />
-          </View>
-        )}
         {nextLabel ? (
           <Text className="text-center text-sm text-text-tertiary">
             {t('trainingFlow.upNext', { next: nextLabel })}
           </Text>
         ) : null}
       </View>
+    </View>
+  );
+}
+
+/**
+ * Complete (or reopen) the Guided set. It is pinned above the rest bar by `WorkoutTrainingView`
+ * rather than placed at the end of the scroll: under the hero, steppers and guidance it sat below
+ * the fold on a 390×844 phone, so the one action taken on every set needed a scroll first.
+ */
+export function GuidedCompleteButton({
+  setId,
+  done,
+  busy,
+  onPress,
+}: {
+  setId: string;
+  done: boolean;
+  busy: boolean;
+  onPress: () => void;
+}) {
+  const { t } = useTranslation();
+  return done ? (
+    <Button
+      label={t('trainingFlow.reopen')}
+      icon={RotateCcw}
+      variant="outline"
+      size="lg"
+      width="full"
+      disabled={busy}
+      onPress={onPress}
+    />
+  ) : (
+    <View testID={`set-${setId}-complete`}>
+      <Button
+        label={t('trainingFlow.complete')}
+        icon={CheckCircle}
+        variant="gradientCta"
+        size="lg"
+        width="full"
+        disabled={busy}
+        onPress={onPress}
+      />
     </View>
   );
 }

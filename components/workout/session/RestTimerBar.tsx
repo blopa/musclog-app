@@ -126,7 +126,6 @@ export function RestTimerBar({
           <RestPill
             label={t(resting ? 'trainingFlow.skipRest' : 'trainingFlow.startRest')}
             onPress={resting ? onStop : onStart}
-            accent={!resting}
           />
         )}
       </View>

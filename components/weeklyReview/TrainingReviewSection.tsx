@@ -20,9 +20,13 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { kgToDisplay } from '@/utils/unitConversion';
+import { summarizeWeeklyRecords } from '@/utils/weeklyRecords';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
 type Overview = Awaited<ReturnType<typeof WeeklyReviewService.overview>>;
+
+/** Records shown before "Show all": enough to celebrate, few enough to reach the next section. */
+const VISIBLE_RECORDS = 3;
 
 const PR_TYPE_KEYS = {
   weight: 'weeklyReview.prTypes.weight',
@@ -84,8 +88,10 @@ export function TrainingReviewSection({
   const { units } = useSettings();
   const { formatInteger } = useFormatAppNumber();
   const [showTargets, setShowTargets] = useState(false);
+  const [showAllRecords, setShowAllRecords] = useState(false);
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const { training } = data;
+  const recordRows = summarizeWeeklyRecords(training.records);
   const reviewed = !!training.reviewedAt;
   const weightUnit = t(getWeightUnitI18nKey(units));
   const weekday = (value: number) =>
@@ -147,14 +153,14 @@ export function TrainingReviewSection({
         <Text className="text-sm text-text-secondary">{t('weeklyReview.noWorkoutsThisWeek')}</Text>
       )}
 
-      {training.records.length ? (
+      {recordRows.length ? (
         <View className="gap-2">
           <Text className="text-xs font-bold uppercase tracking-wider text-text-secondary">
             {t('weeklyReview.records')}
           </Text>
-          {training.records.map((record, index) => (
+          {(showAllRecords ? recordRows : recordRows.slice(0, VISIBLE_RECORDS)).map((record) => (
             <View
-              key={`${record.exerciseId}-${record.type}-${index}`}
+              key={record.exerciseId}
               className="flex-row items-center gap-3 rounded-xl bg-bg-overlay px-3 py-2.5"
             >
               <Trophy size={theme.iconSize.md} color={theme.colors.accent.primary} />
@@ -163,12 +169,30 @@ export function TrainingReviewSection({
                   {record.exerciseName}
                 </Text>
                 <Text className="text-xs text-text-secondary">
-                  {t(PR_TYPE_KEYS[record.type])} ·{' '}
-                  {`${formatDisplayWeightKg(locale, units, record.newRecord.weight)} ${weightUnit} × ${formatInteger(record.newRecord.reps)}`}
+                  {record.types.map((type) => t(PR_TYPE_KEYS[type])).join(' · ')}
                 </Text>
               </View>
+              <Text className="text-sm font-semibold text-text-primary">
+                {`${formatDisplayWeightKg(locale, units, record.best.weight)} ${weightUnit} × ${formatInteger(record.best.reps)}`}
+              </Text>
             </View>
           ))}
+          {recordRows.length > VISIBLE_RECORDS ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ expanded: showAllRecords }}
+              onPress={() => setShowAllRecords(!showAllRecords)}
+              className="min-h-11 justify-center"
+            >
+              <Text className="text-sm font-semibold text-accent-primary">
+                {showAllRecords
+                  ? t('weeklyReview.showFewer')
+                  : t('weeklyReview.showAll', {
+                      count: formatInteger(recordRows.length),
+                    })}
+              </Text>
+            </Pressable>
+          ) : null}
         </View>
       ) : null}
 

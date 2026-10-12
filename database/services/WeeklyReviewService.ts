@@ -44,6 +44,13 @@ export type WeeklyNutritionRecommendation = {
   foodDays: number;
   weightDays: number;
   canApply: boolean;
+  /**
+   * The daily expenditure the recommendation was built on, and how far trend weight moved over the
+   * reviewed week (kg). They let the screen say WHY the targets changed instead of a generic line.
+   * Optional because snapshots saved before they existed still have to load.
+   */
+  expenditure?: number;
+  trendChangeKg?: number;
 };
 
 export class WeeklyReviewService {
@@ -137,13 +144,16 @@ export class WeeklyReviewService {
           .map((point) => point.date)
       ).size;
       const foodDays = new Set(logs.map((log) => utcNormalizedDayKey(log.date, log.timezone))).size;
-      trendWeight =
-        trendWeightAtOrBefore(calculateTrendWeightSeries(points), utcDayKeyFromLocalDate(lastDay))
-          ?.value ?? null;
+      const series = calculateTrendWeightSeries(points);
+      trendWeight = trendWeightAtOrBefore(series, utcDayKeyFromLocalDate(lastDay))?.value ?? null;
+      const weekStartTrend = trendWeightAtOrBefore(series, startKey - 1)?.value ?? null;
       if (proposed && current) {
         nutrition = {
           targets: proposed,
           usedEmpiricalData: proposed.usedEmpiricalData,
+          expenditure: proposed.tdee,
+          trendChangeKg:
+            trendWeight != null && weekStartTrend != null ? trendWeight - weekStartTrend : undefined,
           foodDays,
           weightDays,
           canApply:

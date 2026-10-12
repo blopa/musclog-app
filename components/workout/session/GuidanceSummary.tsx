@@ -59,6 +59,7 @@ export function GuidanceSummary({
   units,
   onWhy,
   onRevert,
+  flat = false,
 }: {
   state: GuidanceState;
   rule: ProgressionRule | null;
@@ -66,6 +67,8 @@ export function GuidanceSummary({
   units: Units;
   onWhy: () => void;
   onRevert?: () => void;
+  /** Inside an exercise card already: no second box, so the card does not nest a card. */
+  flat?: boolean;
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -76,7 +79,9 @@ export function GuidanceSummary({
   }
   const canRevert = !!onRevert && !!adjustment && isStartAdjustment(adjustment);
   return (
-    <View className="gap-2 rounded-xl border border-border-light bg-bg-secondary p-3">
+    <View
+      className={flat ? 'gap-1' : 'gap-2 rounded-xl border border-border-light bg-bg-secondary p-3'}
+    >
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`${t(GUIDANCE_STATE_KEYS[state])}, ${t('trainingFlow.actions.guidance')}`}

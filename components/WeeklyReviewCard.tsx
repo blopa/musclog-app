@@ -57,25 +57,31 @@ export function WeeklyReviewCard({ compact = false }: { compact?: boolean }) {
           color={ready ? theme.colors.text.onAccent : theme.colors.text.secondary}
         />
       </View>
-      <View className="min-w-0 flex-1">
-        <View className="flex-row flex-wrap items-center gap-x-2">
-          <Text className={`font-bold text-text-primary ${compact ? 'text-sm' : 'text-base'}`}>
-            {t('weeklyReview.title')}
-          </Text>
-          <View className="flex-row items-center gap-1">
-            {ready ? <View className="h-2 w-2 rounded-full bg-accent-primary" /> : null}
+      <View className="min-w-0 flex-1 gap-1">
+        <Text className={`font-bold text-text-primary ${compact ? 'text-sm' : 'text-base'}`}>
+          {t('weeklyReview.title')}
+        </Text>
+        {/* Status as its own pill on the second line: beside the title it ran into it, and in
+            compact mode the week it refers to was not shown at all. */}
+        <View className="flex-row flex-wrap items-center" style={{ gap: 6 }}>
+          <View
+            className={`flex-row items-center rounded-full px-2 py-0.5 ${ready ? 'bg-accent-primary' : 'bg-bg-overlay'}`}
+            style={{ gap: 4 }}
+          >
             <Text
-              className={`text-xs font-semibold ${ready ? 'text-accent-primary' : 'text-text-secondary'}`}
+              className={`text-xs font-semibold ${ready ? 'text-text-on-accent' : 'text-text-secondary'}`}
             >
               {statusLabel}
             </Text>
           </View>
+          {detail ? (
+            <Text className="text-xs text-text-secondary" numberOfLines={1}>
+              {detail}
+            </Text>
+          ) : null}
         </View>
-        {detail && !compact ? (
-          <Text className="mt-0.5 text-sm text-text-secondary">{detail}</Text>
-        ) : null}
         {!compact && ready ? (
-          <Text className="mt-0.5 text-xs text-text-tertiary">{t('weeklyReview.cardHint')}</Text>
+          <Text className="text-xs text-text-tertiary">{t('weeklyReview.cardHint')}</Text>
         ) : null}
       </View>
       <ChevronRight size={theme.iconSize.md} color={theme.colors.text.tertiary} />

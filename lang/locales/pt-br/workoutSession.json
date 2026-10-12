@@ -208,7 +208,7 @@
     "warmupShort": "A",
     "removeWarmups": "Remover aquecimento",
     "blockProgress": "{{done}}/{{total}}",
-    "setTapHint": "Toque no número de uma série para esforço, repetições parciais ou para pulá-la.",
+    "setTapHint": "Toque em “Última vez” para repeti-la, ou no número de uma série para esforço, repetições parciais ou para pulá-la.",
     "previousExercise": "Exercício anterior",
     "nextExercise": "Próximo exercício",
     "exerciseOf": "Exercício {{current}} de {{total}}",
@@ -228,7 +228,9 @@
     "doneToday": "{{name}} · feito hoje",
     "lastTimeList": "Última vez: {{sets}}",
     "newRecord": "Novo recorde de {{type}}",
-    "adjustedHint": "Calculado pela sua progressão. Digite para alterar nesta sessão."
+    "adjustedHint": "Calculado pela sua progressão. Digite para alterar nesta sessão.",
+    "usePrevious": "Repetir a última vez",
+    "rotationNext": "O que você está há mais tempo sem treinar · última vez em {{date}}"
   },
   "weeklyReview": {
     "title": "Revisão semanal",
@@ -244,9 +246,9 @@
     "acknowledge": "Marcar treino como revisado",
     "noWorkout": "Escolha um treino ou plano rotativo em Treinos.",
     "prTypes": {
-      "weight": "Peso",
-      "reps": "Repetições",
-      "volume": "Volume"
+      "weight": "Maior carga",
+      "reps": "Mais repetições",
+      "volume": "Maior volume"
     },
     "nutrition": "Nutrição",
     "modes": {
@@ -308,6 +310,14 @@
     "editShort": "Editar",
     "settings": "Configurações da revisão",
     "trainingOnly": "Treino revisado",
-    "periodHint": "Os sete dias completos antes do seu dia de revisão"
+    "periodHint": "Os sete dias completos antes do seu dia de revisão",
+    "showAll": "Ver tudo ({{count}})",
+    "showFewer": "Ver menos",
+    "reasonEmpirical": "Pelos seus registros, você gasta cerca de {{expenditure}} kcal por dia, e seu peso de tendência mudou {{change}} nesta semana. Estas metas mantêm você no ritmo do seu objetivo.",
+    "reasonEmpiricalNoTrend": "Pelos seus registros, você gasta cerca de {{expenditure}} kcal por dia. Estas metas mantêm você no ritmo do seu objetivo.",
+    "reasonBaseline": "Estimado pelo seu perfil, ainda não pelos seus registros: cerca de {{expenditure}} kcal por dia. Continue registrando comida e peso para personalizar.",
+    "largeChangeTitle": "É uma mudança grande",
+    "largeChangeBody": "Grandes variações costumam vir de refeições não registradas ou de algumas pesagens fora do comum. Confira o registro de alimentos desta semana antes de aplicar.",
+    "reviewFoodLog": "Revisar registro de alimentos"
   }
 }

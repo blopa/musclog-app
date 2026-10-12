@@ -208,7 +208,7 @@
     "warmupShort": "W",
     "removeWarmups": "Remove warm-ups",
     "blockProgress": "{{done}}/{{total}}",
-    "setTapHint": "Tap a set number for effort, partial reps or to skip it.",
+    "setTapHint": "Tap “Last time” to repeat it, or a set number for effort, partial reps or to skip it.",
     "previousExercise": "Previous exercise",
     "nextExercise": "Next exercise",
     "exerciseOf": "Exercise {{current}} of {{total}}",
@@ -228,7 +228,9 @@
     "doneToday": "{{name}} · done today",
     "lastTimeList": "Last time: {{sets}}",
     "newRecord": "New {{type}} record",
-    "adjustedHint": "Calculated by your progression. Type to change it for this session."
+    "adjustedHint": "Calculated by your progression. Type to change it for this session.",
+    "usePrevious": "Repeat last time",
+    "rotationNext": "Longest since you trained it · last done {{date}}"
   },
   "weeklyReview": {
     "title": "Weekly Review",
@@ -244,9 +246,9 @@
     "acknowledge": "Mark training reviewed",
     "noWorkout": "Choose a workout or rotating plan in Workouts.",
     "prTypes": {
-      "weight": "Weight",
-      "reps": "Reps",
-      "volume": "Volume"
+      "weight": "Heaviest weight",
+      "reps": "Most reps",
+      "volume": "Most volume"
     },
     "nutrition": "Nutrition",
     "modes": {
@@ -308,6 +310,14 @@
     "editShort": "Edit",
     "settings": "Review settings",
     "trainingOnly": "Training reviewed",
-    "periodHint": "The seven completed days before your review day"
+    "periodHint": "The seven completed days before your review day",
+    "showAll": "Show all ({{count}})",
+    "showFewer": "Show fewer",
+    "reasonEmpirical": "From your logs, you burn about {{expenditure}} kcal a day, and your trend weight changed {{change}} this week. These targets keep you on pace for your goal.",
+    "reasonEmpiricalNoTrend": "From your logs, you burn about {{expenditure}} kcal a day. These targets keep you on pace for your goal.",
+    "reasonBaseline": "Estimated from your profile, not yet from your logs: about {{expenditure}} kcal a day. Keep logging food and weight to personalize it.",
+    "largeChangeTitle": "That’s a big change",
+    "largeChangeBody": "Big swings usually come from meals that weren’t logged or a few unusual weigh-ins. Check this week’s food log before applying.",
+    "reviewFoodLog": "Review food log"
   }
 }

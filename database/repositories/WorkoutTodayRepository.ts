@@ -7,6 +7,7 @@ import type WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import { WorkoutPlanService } from '@/database/services/WorkoutPlanService';
 import { localDayStartMs } from '@/utils/calendarDate';
 import { jsDayToWeekdayIndex } from '@/utils/weekdays';
+import { pickRotationSuggestion, ROTATION_LOOKBACK_DAYS } from '@/utils/workoutRotationSuggestion';
 import { resolveWorkoutSchedules } from '@/utils/workoutScheduleOwnership';
 
 export type TodayWorkout = {
@@ -17,6 +18,11 @@ export type TodayWorkout = {
   scheduled: boolean;
   /** Already trained today, so the card shows it as done instead of as a to-do. */
   completedToday: boolean;
+  /**
+   * Set when nothing is scheduled and no rotating plan exists: the recently trained workout rested
+   * longest (`pickRotationSuggestion`), with when it was last done as the stated reason.
+   */
+  lastCompletedAt?: number;
 };
 
 export class WorkoutTodayRepository {
@@ -96,6 +102,39 @@ export class WorkoutTodayRepository {
           };
         })
     );
-    return rotating.filter((row): row is NonNullable<typeof row> => row !== null);
+    const fromPlans = rotating.filter((row): row is NonNullable<typeof row> => row !== null);
+    if (fromPlans.length) {
+      return fromPlans;
+    }
+    return WorkoutTodayRepository.fromHistory(templates, completedToday, date);
+  }
+
+  /** No schedule and no rotating plan: what was done today, else the next workout of the user's de-facto split. */
+  private static async fromHistory(
+    templates: WorkoutTemplate[],
+    completedToday: WorkoutLog[],
+    date: Date
+  ): Promise<TodayWorkout[]> {
+    const byId = new Map(templates.map((template) => [template.id, template]));
+    const doneToday = [...new Set(completedToday.map((log) => log.templateId))].flatMap((id) => {
+      const template = id ? byId.get(id) : undefined;
+      return template ? [{ template, scheduled: false, completedToday: true }] : [];
+    });
+    if (doneToday.length) {
+      return doneToday;
+    }
+    const todayStart = localDayStartMs(date);
+    const recent = await database
+      .get<WorkoutLog>('workout_logs')
+      .query(
+        Q.where('completed_at', Q.gte(todayStart - ROTATION_LOOKBACK_DAYS * 24 * 60 * 60 * 1000)),
+        Q.where('deleted_at', Q.eq(null))
+      )
+      .fetch();
+    const pick = pickRotationSuggestion(recent, new Set(byId.keys()), todayStart);
+    const template = pick ? byId.get(pick.templateId) : undefined;
+    return template && pick
+      ? [{ template, scheduled: false, completedToday: false, lastCompletedAt: pick.lastCompletedAt }]
+      : [];
   }
 }

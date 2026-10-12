@@ -1,6 +1,6 @@
 import { Flame, MoreHorizontal, NotebookPen, Repeat } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Image, Pressable, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, Text } from 'react-native';
 
 import type Exercise from '@/database/models/Exercise';
 import { useExerciseImageSource } from '@/hooks/useExerciseImageSource';
@@ -78,7 +78,14 @@ export function ExerciseActionChips({
     { action: 'more', label: t('trainingFlow.actions.more'), icon: MoreHorizontal, enabled: true },
   ];
   return (
-    <View className="flex-row flex-wrap gap-2">
+    // One row that scrolls sideways rather than wrapping: wrapped, "More" fell onto a second line
+    // and the four chips took more height than the set they sit above.
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={{ gap: 8 }}
+      style={{ flexGrow: 0 }}
+    >
       {chips.map(({ action, label, icon: Icon, enabled }) => {
         const isDisabled = disabled || !enabled;
         return (
@@ -102,6 +109,6 @@ export function ExerciseActionChips({
           </Pressable>
         );
       })}
-    </View>
+    </ScrollView>
   );
 }

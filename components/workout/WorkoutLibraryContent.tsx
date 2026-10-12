@@ -38,6 +38,7 @@ interface WorkoutLibraryContentProps {
   onOpenPlanMenu: (planId: string) => void;
   onOpenWorkoutMenu: (templateId: string, workoutName: string, planId?: string) => void;
   onStartWorkout: (templateId: string, planId?: string) => Promise<void>;
+  onPreviewWorkout: (templateId: string, planId?: string) => void;
   onToggleAccordion: (id: string) => void;
 }
 
@@ -56,6 +57,7 @@ export function WorkoutLibraryContent({
   onOpenPlanMenu,
   onOpenWorkoutMenu,
   onStartWorkout,
+  onPreviewWorkout,
   onToggleAccordion,
 }: WorkoutLibraryContentProps) {
   const { t } = useTranslation();
@@ -173,6 +175,7 @@ export function WorkoutLibraryContent({
                   icon={template.icon}
                   variant={featured ? undefined : 'standard'}
                   onStart={() => onStartWorkout(template.id, plan?.id)}
+                  onPress={() => onPreviewWorkout(template.id, plan?.id)}
                   // TODO: check why can't archive featured workout
                   onArchive={featured ? undefined : () => onArchiveWorkout(template.id)}
                   onMore={() => onOpenWorkoutMenu(template.id, template.name, plan?.id)}
@@ -197,6 +200,7 @@ export function WorkoutLibraryContent({
             onToggle={() => onToggleAccordion(section.plan.id)}
             onPlanMenu={() => onOpenPlanMenu(section.plan.id)}
             onStartWorkout={(templateId, planId) => onStartWorkout(templateId, planId)}
+            onPreviewWorkout={onPreviewWorkout}
             onWorkoutMenu={onOpenWorkoutMenu}
           />
         ))}
@@ -220,6 +224,7 @@ export function WorkoutLibraryContent({
                   icon={template.icon}
                   variant="standard"
                   onStart={() => onStartWorkout(template.id)}
+                  onPress={() => onPreviewWorkout(template.id)}
                   onMore={() => onOpenWorkoutMenu(template.id, template.name)}
                 />
               ))}

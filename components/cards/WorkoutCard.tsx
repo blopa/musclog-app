@@ -18,6 +18,8 @@ type FeaturedWorkoutCardProps = {
   duration?: string;
   icon?: string;
   onStart?: () => void;
+  /** Tapping the card body previews the workout (targets, last time) without starting it. */
+  onPress?: () => void;
   onMore?: () => void;
   onArchive?: () => void;
   variant?: 'featured' | 'standard';
@@ -31,6 +33,7 @@ export function WorkoutCard({
   duration,
   icon,
   onStart,
+  onPress,
   onMore,
   onArchive,
   variant = 'featured',
@@ -73,7 +76,7 @@ export function WorkoutCard({
   const formattedLastCompleted = formatLastCompleted();
 
   return (
-    <GenericCard variant="flat">
+    <GenericCard variant="flat" isPressable={!!onPress} onPress={onPress}>
       <View className="p-5">
         <View className="mb-4 flex-row items-start justify-between">
           <View className="flex-1">
