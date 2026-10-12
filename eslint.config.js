@@ -19,6 +19,8 @@ module.exports = defineConfig([
       '**/*.spec.ts',
       '**/*.spec.tsx',
       'gameboy/**',
+      '.claude/**',
+      '.agents/**',
       'training-data/.venv/**',
       'training-data/output/**',
       'utils/repCountingModel/*.js',
