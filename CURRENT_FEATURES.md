@@ -179,6 +179,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 
 ## Profile & Settings
 
+- What's new: replay the newest release tour from Settings, including choices that save real preferences. The card appears when this app version has a published announcement.
 - Help & feedback: report a bug or request a feature (opens the matching GitHub issue form with the app version, platform and language pre-filled) or email support (version and device added to the message). Nothing about you or your data is included
 - Set name, email, gender, date of birth, and avatar
 - Fitness profile: weight, height, body fat %, goal type, activity level, experience level
@@ -200,6 +201,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 
 ## Onboarding
 
+- Returning users get a short, skippable post-update tour on home, merging missed announcements into at most six pages plus an intro. Fresh installs skip it; restored backups retain their seen version (older backups without one may show the tour again). The first announcement is prepared for 2.13.0 and stays gated until that release. It introduces Guided/Inline views, progression preferences, rest controls, gyms and plates, Weekly Review, plans, cardio, swaps, restrictions and warm-ups.
 - Quick or detailed guided setup flow
 - Restore a full profile either from a JSON backup or directly from another device via optical QR transfer on the first screen
 - Personalized nutrition goal calculation based on age, weight, height, activity level, and weight goal

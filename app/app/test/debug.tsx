@@ -10,6 +10,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { MasterLayout } from '@/components/MasterLayout';
 import { MigrationSection } from '@/components/MigrationSection';
 import { Button } from '@/components/theme/Button';
+import { WhatsNewDebugSection } from '@/components/whatsNew/WhatsNewDebugSection';
 import { CONVERSATION_CONTEXTS, type ConversationContext } from '@/constants/chat';
 import { ENCRYPTION_KEY } from '@/constants/database';
 import { UNITS_SETTING_TYPE } from '@/constants/settings';
@@ -861,6 +862,7 @@ export default function DebugTestScreen() {
 
           {/* Migration Section */}
           <MigrationSection />
+          <WhatsNewDebugSection />
 
           {/* Form */}
           <View className="gap-4 rounded-xl border border-border-accent bg-bg-overlay p-4">

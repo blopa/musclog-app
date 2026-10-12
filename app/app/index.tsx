@@ -35,6 +35,7 @@ import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import DashedButton from '@/components/theme/DashedButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
 import { WeeklyReviewCard } from '@/components/WeeklyReviewCard';
+import { WhatsNewAutoPrompt } from '@/components/whatsNew/WhatsNewAutoPrompt';
 import { WorkoutTodayCard } from '@/components/workout/WorkoutTodayCard';
 import { WorkoutFoodEmptyState } from '@/components/WorkoutFoodEmptyState';
 import { HomeActionKey } from '@/constants/homeActions';
@@ -91,6 +92,7 @@ const GOALS_MANAGEMENT_TAB = {
 type GoalsManagementTab = (typeof GOALS_MANAGEMENT_TAB)[keyof typeof GOALS_MANAGEMENT_TAB];
 
 export default function HomeScreen() {
+  const [widgetCameraLaunch] = useState(() => global.__PENDING_WIDGET_ACTION === 'open-camera');
   const theme = useTheme();
   const { t } = useTranslation();
   const router = useRouter();
@@ -381,6 +383,7 @@ export default function HomeScreen() {
 
   return (
     <MasterLayout>
+      <WhatsNewAutoPrompt suppressed={widgetCameraLaunch} />
       {showConfetti ? <ConfettiOverlay /> : null}
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}

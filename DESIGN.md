@@ -212,6 +212,11 @@ fields (`ProgressionRuleEditor`), a row whose whole surface toggles a panel (`Re
 `GuidanceSummary`) — never for something one of these already draws. `components/__tests__/themeControls.test.ts`
 lists the screens that have been moved onto them.
 
+Radio controls (`OptionsSelector` and `Chip`) expose `aria-checked` explicitly as well as native
+accessibility state; React Native Web does not translate `accessibilityState.checked` by itself.
+Switches need an accessible label. The shared `WeekdayChoiceChips` uses abbreviated day labels
+visually and full weekday names for assistive technology.
+
 ### Cards and modals
 
 Cards should have one job: a concise heading, one primary value or action, and supporting detail.

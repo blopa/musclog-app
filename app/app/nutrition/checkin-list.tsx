@@ -17,6 +17,7 @@ import { ListRow } from '@/components/theme/ListRow';
 import { TextButton } from '@/components/theme/TextButton';
 import { TextInput } from '@/components/theme/TextInput';
 import { ToggleInput } from '@/components/theme/ToggleInput';
+import { WeekdayChoiceChips } from '@/components/WeekdayChoiceChips';
 import {
   MACRO_FIELDS,
   MACRO_LABEL_KEYS,
@@ -388,20 +389,7 @@ export default function CheckinListScreen() {
                   {t('weeklyReview.settings')}
                 </Text>
                 <Text className="text-sm text-text-secondary">{t('weeklyReview.weekday')}</Text>
-                <View className="flex-row flex-wrap gap-2">
-                  {Array.from({ length: 7 }, (_, offset) => (offset + 1) % 7).map((day) => (
-                    <Chip
-                      key={day}
-                      variant="solid"
-                      role="radio"
-                      selected={data.weekday === day}
-                      onPress={() => changeWeekday(day)}
-                      label={new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(
-                        new Date(2024, 0, 7 + day)
-                      )}
-                    />
-                  ))}
-                </View>
+                <WeekdayChoiceChips value={data.weekday} onChange={changeWeekday} />
                 <ToggleInput
                   items={[
                     {

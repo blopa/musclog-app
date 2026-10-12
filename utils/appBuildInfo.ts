@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
-import packageJson from '@/package.json';
+import { getAppVersion } from '@/utils/appVersion';
 
 import type { AppBuildInfo } from './appVersionLabel';
 
@@ -12,7 +12,7 @@ import type { AppBuildInfo } from './appVersionLabel';
  */
 export function getAppBuildInfo(): AppBuildInfo {
   return {
-    appVersion: packageJson.version,
+    appVersion: getAppVersion(),
     buildNumber:
       Constants.expoConfig?.ios?.buildNumber ?? Constants.expoConfig?.android?.versionCode ?? null,
     platform: Platform.OS,

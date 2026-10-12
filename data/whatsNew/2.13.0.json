@@ -1,0 +1,215 @@
+{
+  "version": "2.13.0",
+  "pages": [
+    {
+      "id": "view",
+      "blocks": [
+        {
+          "id": "view",
+          "type": "info",
+          "icon": "layout",
+          "titleKey": "whatsNew.releases.v2_13_0.view.title",
+          "descriptionKey": "whatsNew.releases.v2_13_0.view.description"
+        },
+        {
+          "id": "workoutView",
+          "type": "choice",
+          "setting": "workoutView",
+          "titleKey": "whatsNew.releases.v2_13_0.workoutView.title",
+          "descriptionKey": "whatsNew.releases.v2_13_0.workoutView.description",
+          "options": [
+            {
+              "value": "guided",
+              "labelKey": "whatsNew.releases.v2_13_0.workoutView.guided.label",
+              "descriptionKey": "whatsNew.releases.v2_13_0.workoutView.guided.description",
+              "icon": "layout"
+            },
+            {
+              "value": "inline",
+              "labelKey": "whatsNew.releases.v2_13_0.workoutView.inline.label",
+              "descriptionKey": "whatsNew.releases.v2_13_0.workoutView.inline.description",
+              "icon": "list"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "targets",
+      "blocks": [
+        {
+          "id": "targets",
+          "type": "info",
+          "icon": "target",
+          "titleKey": "whatsNew.releases.v2_13_0.targets.title",
+          "descriptionKey": "whatsNew.releases.v2_13_0.targets.description"
+        },
+        {
+          "id": "workoutAutonomy",
+          "type": "choice",
+          "setting": "workoutAutonomy",
+          "titleKey": "whatsNew.releases.v2_13_0.workoutAutonomy.title",
+          "descriptionKey": "whatsNew.releases.v2_13_0.workoutAutonomy.description",
+          "options": [
+            {
+              "value": "suggest",
+              "labelKey": "whatsNew.releases.v2_13_0.workoutAutonomy.suggest.label",
+              "descriptionKey": "whatsNew.releases.v2_13_0.workoutAutonomy.suggest.description",
+              "icon": "sparkles"
+            },
+            {
+              "value": "manual",
+              "labelKey": "whatsNew.releases.v2_13_0.workoutAutonomy.manual.label",
+              "descriptionKey": "whatsNew.releases.v2_13_0.workoutAutonomy.manual.description",
+              "icon": "list"
+            }
+          ]
+        },
+        {
+          "id": "progressionMode",
+          "type": "choice",
+          "setting": "progressionMode",
+          "titleKey": "whatsNew.releases.v2_13_0.progressionMode.title",
+          "descriptionKey": "whatsNew.releases.v2_13_0.progressionMode.description",
+          "options": [
+            {
+              "value": "reps_first",
+              "labelKey": "whatsNew.releases.v2_13_0.progressionMode.reps_first.label",
+              "descriptionKey": "whatsNew.releases.v2_13_0.progressionMode.reps_first.description",
+              "icon": "trendingUp"
+            },
+            {
+              "value": "weight_first",
+              "labelKey": "whatsNew.releases.v2_13_0.progressionMode.weight_first.label",
+              "descriptionKey": "whatsNew.releases.v2_13_0.progressionMode.weight_first.description",
+              "icon": "dumbbell"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rest",
+      "blocks": [
+        {
+          "id": "rest",
+          "type": "info",
+          "icon": "timer",
+          "titleKey": "whatsNew.releases.v2_13_0.rest.title",
+          "descriptionKey": "whatsNew.releases.v2_13_0.rest.description"
+        },
+        {
+          "id": "autoStartRestTimer",
+          "type": "choice",
+          "setting": "autoStartRestTimer",
+          "titleKey": "whatsNew.releases.v2_13_0.autoStartRestTimer.title",
+          "descriptionKey": "whatsNew.releases.v2_13_0.autoStartRestTimer.description"
+        },
+        {
+          "id": "restTimerHaptics",
+          "type": "choice",
+          "setting": "restTimerHaptics",
+          "titleKey": "whatsNew.releases.v2_13_0.restTimerHaptics.title",
+          "descriptionKey": "whatsNew.releases.v2_13_0.restTimerHaptics.description"
+        },
+        {
+          "id": "openSettings",
+          "type": "action",
+          "action": "openWorkoutSettings",
+          "labelKey": "whatsNew.releases.v2_13_0.openSettings",
+          "icon": "settings"
+        }
+      ]
+    },
+    {
+      "id": "gyms",
+      "blocks": [
+        {
+          "id": "gyms",
+          "type": "info",
+          "icon": "dumbbell",
+          "titleKey": "whatsNew.releases.v2_13_0.gyms.title",
+          "descriptionKey": "whatsNew.releases.v2_13_0.gyms.description"
+        },
+        {
+          "id": "setupGym",
+          "type": "action",
+          "action": "openWorkoutSettings",
+          "labelKey": "whatsNew.releases.v2_13_0.setupGym",
+          "icon": "settings"
+        }
+      ]
+    },
+    {
+      "id": "review",
+      "blocks": [
+        {
+          "id": "review",
+          "type": "info",
+          "icon": "calendar",
+          "titleKey": "whatsNew.releases.v2_13_0.review.title",
+          "descriptionKey": "whatsNew.releases.v2_13_0.review.description"
+        },
+        {
+          "id": "reviewWeekday",
+          "type": "choice",
+          "setting": "reviewWeekday",
+          "titleKey": "whatsNew.releases.v2_13_0.reviewWeekday.title",
+          "descriptionKey": "whatsNew.releases.v2_13_0.reviewWeekday.description"
+        },
+        {
+          "id": "openReview",
+          "type": "action",
+          "action": "openWeeklyReview",
+          "labelKey": "whatsNew.releases.v2_13_0.openReview",
+          "icon": "calendar"
+        }
+      ]
+    },
+    {
+      "id": "also",
+      "blocks": [
+        {
+          "id": "features",
+          "type": "featureList",
+          "titleKey": "whatsNew.releases.v2_13_0.also.title",
+          "items": [
+            {
+              "id": "plans",
+              "icon": "calendar",
+              "labelKey": "whatsNew.releases.v2_13_0.also.plans.label",
+              "descriptionKey": "whatsNew.releases.v2_13_0.also.plans.description",
+              "action": "openWorkouts"
+            },
+            {
+              "id": "cardio",
+              "icon": "heart",
+              "labelKey": "whatsNew.releases.v2_13_0.also.cardio.label",
+              "descriptionKey": "whatsNew.releases.v2_13_0.also.cardio.description",
+              "action": "openCardioLog"
+            },
+            {
+              "id": "swaps",
+              "icon": "shuffle",
+              "labelKey": "whatsNew.releases.v2_13_0.also.swaps.label",
+              "descriptionKey": "whatsNew.releases.v2_13_0.also.swaps.description"
+            },
+            {
+              "id": "restrictions",
+              "icon": "shield",
+              "labelKey": "whatsNew.releases.v2_13_0.also.restrictions.label",
+              "descriptionKey": "whatsNew.releases.v2_13_0.also.restrictions.description",
+              "action": "openWorkoutSettings"
+            },
+            {
+              "id": "warmups",
+              "icon": "flame",
+              "labelKey": "whatsNew.releases.v2_13_0.also.warmups.label",
+              "descriptionKey": "whatsNew.releases.v2_13_0.also.warmups.description"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

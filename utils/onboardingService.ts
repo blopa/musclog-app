@@ -12,6 +12,9 @@ import {
   CONFETTI_INTERACTIONS_KEY,
   ConfettiActivity,
 } from '@/context/ConfettiInteractionsContext';
+import { getAppVersion } from '@/utils/appVersion';
+import { getWhatsNewSeenThrough, whatsNewSeenEntry } from '@/utils/whatsNew/storage';
+import { nextSeenThrough } from '@/utils/whatsNew/version';
 
 export interface OnboardingStatus {
   completed: boolean;
@@ -52,11 +55,15 @@ export const getOnboardingVersion = async (): Promise<string | null> => {
  * Mark onboarding as completed with the specified version
  */
 export const setOnboardingCompleted = async (
-  version: string = CURRENT_ONBOARDING_VERSION
+  version: string = CURRENT_ONBOARDING_VERSION,
+  { markAnnouncementsSeen = true }: { markAnnouncementsSeen?: boolean } = {}
 ): Promise<void> => {
   await AsyncStorage.multiSet([
     [ONBOARDING_COMPLETED, 'true'],
     [ONBOARDING_VERSION, version],
+    ...(markAnnouncementsSeen
+      ? [whatsNewSeenEntry(nextSeenThrough(await getWhatsNewSeenThrough(), getAppVersion()))]
+      : []),
   ]);
 
   await AsyncStorage.multiRemove([ONBOARDING_CURRENT_STEP, TEMP_NUTRITION_PLAN]);

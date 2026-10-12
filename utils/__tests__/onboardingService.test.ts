@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
+import { WHATS_NEW_SEEN_THROUGH_KEY } from '@/constants/whatsNew';
+import { getAppVersion } from '@/utils/appVersion';
 import {
   CURRENT_ONBOARDING_VERSION,
   ONBOARDING_COMPLETED,
@@ -239,12 +241,29 @@ describe('utils/onboardingService', () => {
   });
 
   describe('setOnboardingCompleted', () => {
+    it('preserves restored records and does not create one for a legacy import', async () => {
+      await setOnboardingCompleted(undefined, { markAnnouncementsSeen: false });
+      expect(mockAsyncStorage.multiSet).toHaveBeenLastCalledWith([
+        [ONBOARDING_COMPLETED, 'true'], [ONBOARDING_VERSION, CURRENT_ONBOARDING_VERSION],
+      ]);
+      mockAsyncStorage.getItem.mockImplementation(async (key: string) => key === WHATS_NEW_SEEN_THROUGH_KEY ? '9.0.0' : null);
+      await setOnboardingCompleted(undefined, { markAnnouncementsSeen: false });
+      expect(mockAsyncStorage.multiSet).toHaveBeenLastCalledWith([
+        [ONBOARDING_COMPLETED, 'true'], [ONBOARDING_VERSION, CURRENT_ONBOARDING_VERSION],
+      ]);
+      await setOnboardingCompleted();
+      expect(mockAsyncStorage.multiSet).toHaveBeenLastCalledWith([
+        [ONBOARDING_COMPLETED, 'true'], [ONBOARDING_VERSION, CURRENT_ONBOARDING_VERSION],
+        [WHATS_NEW_SEEN_THROUGH_KEY, '9.0.0'],
+      ]);
+    });
     it('should set onboarding as completed with default version', async () => {
       await setOnboardingCompleted();
 
       expect(mockAsyncStorage.multiSet).toHaveBeenCalledWith([
         [ONBOARDING_COMPLETED, 'true'],
         [ONBOARDING_VERSION, CURRENT_ONBOARDING_VERSION],
+        [WHATS_NEW_SEEN_THROUGH_KEY, getAppVersion()],
       ]);
     });
 
@@ -255,6 +274,7 @@ describe('utils/onboardingService', () => {
       expect(mockAsyncStorage.multiSet).toHaveBeenCalledWith([
         [ONBOARDING_COMPLETED, 'true'],
         [ONBOARDING_VERSION, customVersion],
+        [WHATS_NEW_SEEN_THROUGH_KEY, getAppVersion()],
       ]);
     });
 
@@ -264,7 +284,7 @@ describe('utils/onboardingService', () => {
 
       expect(mockAsyncStorage.multiSet).toHaveBeenCalledTimes(1);
       const callArgs = mockAsyncStorage.multiSet.mock.calls[0][0];
-      expect(callArgs).toHaveLength(2);
+      expect(callArgs).toHaveLength(3);
       expect(callArgs[0]).toEqual([ONBOARDING_COMPLETED, 'true']);
       expect(callArgs[1]).toEqual([ONBOARDING_VERSION, version]);
     });

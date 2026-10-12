@@ -30,6 +30,7 @@ const CONFIG = {
     '../components/**/*.ts',
     '../types/**/*.ts',
     '../services/**/*.ts',
+    '../data/whatsNew/*.json',
   ],
   ignorePatterns: [
     '**/node_modules/**',
@@ -140,6 +141,30 @@ class TranslationScanner {
     try {
       const content = fs.readFileSync(filePath, 'utf8');
       const fileKeys = new Set();
+      if (filePath.endsWith('.json')) {
+        const visit = (value) => {
+          if (!value || typeof value !== 'object') {
+            return;
+          }
+          for (const [property, child] of Object.entries(value)) {
+            if (property.endsWith('Key') && typeof child === 'string') {
+              fileKeys.add(child);
+              if (!this.existingKeys.has(child)) {
+                const locations = this.missingKeyLocations.get(child) ?? [];
+                locations.push({
+                  file: filePath,
+                  line: content.slice(0, content.indexOf(JSON.stringify(child))).split('\n').length,
+                });
+                this.missingKeyLocations.set(child, locations);
+              }
+            } else {
+              visit(child);
+            }
+          }
+        };
+        visit(JSON.parse(content));
+        return fileKeys;
+      }
       const sourceFile = ts.createSourceFile(
         filePath,
         content,

@@ -1,0 +1,131 @@
+{
+  "whatsNew": {
+    "title": "Novedades",
+    "intro": {
+      "title": "Musclog a tu medida",
+      "description": "Algunas cosas han cambiado. Echa un vistazo y elige lo que mejor te funcione. Los cambios se guardan al tocar; puedes volver a este recorrido desde Ajustes.",
+      "truncated": "Este recorrido incluye solo las novedades más recientes."
+    },
+    "next": "Siguiente",
+    "back": "Atrás",
+    "done": "Listo",
+    "skip": "Omitir por ahora",
+    "pageOf": "Página {{current}} de {{total}}",
+    "saveFailed": "No se pudo guardar la opción. Inténtalo de nuevo.",
+    "loadFailed": "No se pudo cargar esta opción.",
+    "dismissFailed": "No se pudo guardar tu progreso. Inténtalo de nuevo.",
+    "retry": "Reintentar",
+    "settingsCard": {
+      "title": "Novedades",
+      "subtitle": "Revisa las últimas funciones y preferencias"
+    },
+    "debug": {
+      "title": "Novedades",
+      "record": "Visto hasta: {{version}}",
+      "none": "Sin registro",
+      "clear": "Borrar registro (simular actualización)",
+      "set": "Establecer versión vista",
+      "preview": "Ver versión {{version}}",
+      "invalid": "Introduce una versión como 2.13.0.",
+      "version": "Versión (x.y.z)"
+    },
+    "releases": {
+      "v2_13_0": {
+        "view": {
+          "title": "Tu entrenamiento, tu vista",
+          "description": "La vista guiada te ayuda a centrarte en una serie a la vez. Si prefieres verlo todo, la vista en lista sigue disponible."
+        },
+        "workoutView": {
+          "title": "Elige la vista del entrenamiento",
+          "description": "Puedes cambiarla después en los ajustes visuales.",
+          "guided": {
+            "label": "Guiada",
+            "description": "Céntrate en la serie actual con controles más grandes."
+          },
+          "inline": {
+            "label": "En lista",
+            "description": "Ve y edita todas tus series en una lista."
+          }
+        },
+        "targets": {
+          "title": "Una ayuda para tu próxima serie",
+          "description": "Musclog puede sugerir objetivos iniciales según tu historial y ajustar las próximas series mientras registras. Los valores ajustados se marcan y siempre puedes editarlos."
+        },
+        "workoutAutonomy": {
+          "title": "Objetivos iniciales",
+          "description": "Elige cómo influye tu historial en el próximo entrenamiento.",
+          "suggest": {
+            "label": "Sugerir objetivos",
+            "description": "Usar sugerencias de progresión al iniciar un entrenamiento."
+          },
+          "manual": {
+            "label": "Mantener mi plan",
+            "description": "Empezar con los objetivos guardados en mi entrenamiento."
+          }
+        },
+        "progressionMode": {
+          "title": "Preferencia de progresión",
+          "description": "Cuando cambien los objetivos, ¿qué debe priorizar Musclog?",
+          "reps_first": {
+            "label": "Repeticiones primero",
+            "description": "Aumentar las repeticiones antes de añadir peso."
+          },
+          "weight_first": {
+            "label": "Peso primero",
+            "description": "Priorizar el peso al ajustar los objetivos."
+          }
+        },
+        "rest": {
+          "title": "Descansa sin mirar el reloj",
+          "description": "El temporizador de descanso puede empezar automáticamente tras una serie. Elige si también quieres que vibre."
+        },
+        "autoStartRestTimer": {
+          "title": "Iniciar descanso automáticamente",
+          "description": "Iniciar el temporizador al completar una serie."
+        },
+        "restTimerHaptics": {
+          "title": "Vibraciones del temporizador",
+          "description": "Usar respuesta háptica en el temporizador de descanso."
+        },
+        "openSettings": "Abrir ajustes del entrenamiento",
+        "gyms": {
+          "title": "Objetivos que encajan con tu gimnasio",
+          "description": "Añade el equipamiento, el peso de la barra y los discos disponibles. Musclog puede usarlos para sugerir cargas posibles y calcular los discos."
+        },
+        "setupGym": "Configurar gimnasios y discos",
+        "review": {
+          "title": "Un momento semanal para reflexionar",
+          "description": "La revisión semanal reúne nutrición y entrenamiento, con sugerencias que tú decides si aplicar."
+        },
+        "reviewWeekday": {
+          "title": "Tu día de revisión",
+          "description": "Elige un día que encaje con tu rutina. Tus preferencias de recordatorios se mantienen."
+        },
+        "openReview": "Abrir revisión semanal",
+        "also": {
+          "title": "También es nuevo",
+          "plans": {
+            "label": "Planes de entrenamiento",
+            "description": "Organiza entrenamientos en planes semanales o rotativos."
+          },
+          "cardio": {
+            "label": "Registro de cardio",
+            "description": "Registra sesiones de cardio junto a tus entrenamientos de fuerza."
+          },
+          "swaps": {
+            "label": "Cambios de ejercicio",
+            "description": "Cambia un ejercicio durante el entrenamiento sin modificar el plan original."
+          },
+          "restrictions": {
+            "label": "Restricciones de ejercicios",
+            "description": "Guarda ejercicios que evitar y lesiones temporales en los ajustes del entrenamiento."
+          },
+          "warmups": {
+            "label": "Series de calentamiento",
+            "description": "Separa los calentamientos de tus series de trabajo."
+          }
+        }
+      }
+    }
+  }
+}

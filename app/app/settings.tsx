@@ -8,6 +8,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { HelpAndFeedbackCard } from '@/components/cards/HelpAndFeedbackCard';
 import { LegalLinksCard } from '@/components/cards/LegalLinksCard';
 import { SettingsCard } from '@/components/cards/SettingsCard';
+import { WhatsNewCard } from '@/components/cards/WhatsNewCard';
 import { MasterLayout } from '@/components/MasterLayout';
 import { AdvancedSettingsModal } from '@/components/modals/AdvancedSettingsModal';
 import { AISettingsModal } from '@/components/modals/AISettingsModal';
@@ -277,6 +278,7 @@ export default function SettingsScreen() {
             }
           />
 
+          <WhatsNewCard />
           <HelpAndFeedbackCard />
 
           <LegalLinksCard />
