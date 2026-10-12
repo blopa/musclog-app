@@ -24,6 +24,8 @@ export default class WorkoutLogExercise extends Model {
   @field('group_id') groupId?: string;
   @field('replaced_exercise_id') replacedExerciseId?: string;
   @field('substitution_reason') substitutionReason?: string;
+  /** Split replacements keep the original block's place in superset rounds. */
+  @field('superset_slot_id') supersetSlotId?: string;
   /** The rule this session ran under plus its carried state (`utils/progressionRules.ts`). */
   @field('progression_json') progressionJson?: string;
   @field('created_at') declare createdAt: number;

@@ -47,7 +47,7 @@ export function InlineExerciseCard({
   units: Units;
   isCurrent: boolean;
   currentSetId?: string;
-  drafts: Record<string, SessionDraft>;
+  drafts: Record<string, Partial<SessionDraft>>;
   valuesFor: (setId: string) => SessionDraft;
   notes: string[];
   warmup: 'add' | 'remove' | null;
@@ -121,7 +121,7 @@ export function InlineExerciseCard({
         </Pressable>
       ) : null}
 
-      <ExerciseActionChips warmup={warmup} onAction={onAction} disabled={busy} />
+      <ExerciseActionChips warmup={warmup} onAction={onAction} disabled={busy} canSwap={!allDone} />
 
       <View className="gap-1.5">
         <SetTableHeader weightUnit={t(getWeightUnitI18nKey(units))} />

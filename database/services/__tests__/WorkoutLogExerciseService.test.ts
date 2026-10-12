@@ -176,8 +176,7 @@ describe('WorkoutLogExerciseService', () => {
 
       expect(plannedA.weight).toBe(12.5);
       expect(plannedB.weight).toBe(12.5);
-      // The query that finds them must ask for planned sets only: history is never rewritten.
-      expect(Q.where).toHaveBeenCalledWith('completion_status', 'planned');
+      // The writer reads the block's full history before deciding whether it must split.
       expect(mockDatabase.batch).toHaveBeenCalledWith(block, plannedA, plannedB);
     });
 
@@ -192,7 +191,7 @@ describe('WorkoutLogExerciseService', () => {
       await WorkoutLogExerciseService.replaceLogExercise('le-1', 'fly', { reason: 'dislike' });
 
       expect(planned.weight).toBe(80);
-      expect(mockDatabase.batch).toHaveBeenCalledWith(block);
+      expect(mockDatabase.batch).toHaveBeenCalledWith(block, planned);
     });
 
     it('is a no-op when the exercise does not change', async () => {

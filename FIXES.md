@@ -546,3 +546,32 @@ The web summary split its duration label with `/\s*(m|min|minutes?)/` — unanch
 ## Large-text Playwright profile skewed every sheet
 
 The progression spec emulated 1.3× text with `document.documentElement.style.zoom`. react-native-web sizes sheets from JS window dimensions, which CSS zoom does not change, so every `BottomPopUp` rendered 1.3× too tall and wide and its footer left the viewport — a failure no device can produce. The `phone-large-text` project now uses the layout that text size really yields: a 318×689 viewport at `deviceScaleFactor: 1.3`.
+
+
+## Progression and Weekly Review: state ownership regressions
+
+Goal editors changed mode/macros without closing dated weekly periods, which continued to outrank
+edited goals. All mode changes now use `NutritionGoalService.updateGoal`; goal and period writes
+share one rollback-safe batch, preserving earlier days. Empirical expenditure formerly divided the
+whole weight change by food-logging coverage. Intake is now bounded to the weight-anchor interval,
+and the calculator divides intake by coverage days and tissue energy by elapsed anchor days.
+
+Add/Swap used a separate history reader that treated unrecorded RIR as zero. Both now use the same
+completed-history projection as preview/start. AI substitutions look up the chosen movement's load,
+not the rejected movement's. A swap after logging splits pending sets into a new block; performed
+sets keep their movement and rule, and the original prescription's working-set count prevents a
+partial block from being interpreted as complete. Split replacements retain an explicit superset slot
+(v33), so the movement change does not reorder rounds or change rest boundaries. Swap is disabled
+when no planned sets remain. Session and overview actions identify log blocks,
+so two instances of the same exercise remain independent. BLE files retain their captured owner
+set, movement and device, and cannot be attached to a different Inline row.
+
+Use the plan clears only pending weight/rep overrides, preserving effort and persisting the result.
+Weekly Review refreshes evidence when focused after logging, and never offers completed-only
+candidates as Next up. Optional subjective ratings and notes are available on the summary; failed
+saves retain the form. Narrow session rows place Last time below the inputs rather than truncating
+it. Photo gestures clamp the fitted image, rather than its letterboxed container.
+
+Regression coverage includes Loki integration tests for goal transitions and historical movement
+identity, controller restart/undo tests, focus/recording-owner tests, gesture-bound tests, and browser
+checks of complete previous values, edited-draft undo and summary feedback across four layouts.

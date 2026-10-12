@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Bluetooth } from 'lucide-react-native';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Text, View } from 'react-native';
 
@@ -62,16 +62,31 @@ export default function WorkoutSessionScreen() {
   const params = useLocalSearchParams<{
     workoutLogId?: string;
     exerciseId?: string;
+    logExerciseId?: string;
     showFeedback?: string;
   }>();
   useKeepScreenAwake('workout-session');
   const session = useActiveWorkout(params.workoutLogId);
-  const { workoutLog, sets, exercises, logExercises, refresh } = session;
+  const { workoutLog, sets, exercises, logExercises, refresh, setCurrentLogExercise } = session;
   const { autoStartRestTimer, defaultRestSeconds, bleGenerateChartPayload } = useSettings();
   const { gym } = useActiveGym();
   const { unitsFor, get } = useExerciseUserSettings();
-  const [selectedExercise, setSelectedExercise] = useState<string | undefined>(params.exerciseId);
-  const [actionExercise, setActionExercise] = useState<string | undefined>();
+  const [selectedLogExerciseId, setSelectedLogExerciseId] = useState<string | undefined>(
+    params.logExerciseId
+  );
+  const [actionLogExerciseId, setActionLogExerciseId] = useState<string | undefined>();
+  const initialSelectionApplied = useRef(false);
+  useEffect(() => {
+    if (initialSelectionApplied.current || !sets.length) {
+      return;
+    }
+    initialSelectionApplied.current = true;
+    const id =
+      params.logExerciseId ??
+      sets.find((set) => set.exerciseId === params.exerciseId)?.logExerciseId;
+    setSelectedLogExerciseId(id);
+    setCurrentLogExercise(id ?? null);
+  }, [sets, params.exerciseId, params.logExerciseId, setCurrentLogExercise]);
   const [panel, setPanel] = useState<SessionPanel>(null);
   const [actionSaving, setActionSaving] = useState(false);
   const controller = useWorkoutSessionController(workoutLog?.id, sets, {
@@ -84,8 +99,9 @@ export default function WorkoutSessionScreen() {
 
   // The exercise an action (notes, swap, why, plates) is about: the one whose button was tapped.
   const actionSet =
-    sets.find((set) => set.exerciseId === actionExercise && set.completionStatus === 'planned') ??
-    sets.find((set) => set.exerciseId === actionExercise);
+    sets.find(
+      (set) => set.logExerciseId === actionLogExerciseId && set.completionStatus === 'planned'
+    ) ?? sets.find((set) => set.logExerciseId === actionLogExerciseId);
   const actionExerciseModel = exercises.find((exercise) => exercise.id === actionSet?.exerciseId);
   const context: CurrentSetData | null =
     actionSet && actionExerciseModel
@@ -110,7 +126,12 @@ export default function WorkoutSessionScreen() {
     workoutLogId: workoutLog?.id,
     workoutLog,
     currentSetData: session.currentSetData,
-    reps: session.currentSetData?.set.reps ?? 0,
+    reps:
+      Number(
+        controller.drafts[session.currentSetData?.set.id ?? '']?.reps ??
+          session.currentSetData?.set.reps ??
+          0
+      ) || 0,
     bleGenerateChartPayload,
   });
 
@@ -135,9 +156,11 @@ export default function WorkoutSessionScreen() {
   }, [workoutLog?.id, workoutLog?.completedAt, workoutLog?.startedAt]);
   useEffect(() => {
     if (workoutLog?.completedAt) {
-      router.replace(`/app/workout/workout-summary?workoutLogId=${workoutLog.id}`);
+      router.replace(
+        `/app/workout/workout-summary?workoutLogId=${workoutLog.id}${params.showFeedback === '1' ? '&showSessionFeedback=1' : ''}`
+      );
     }
-  }, [workoutLog?.completedAt, workoutLog?.id, router]);
+  }, [workoutLog?.completedAt, workoutLog?.id, params.showFeedback, router]);
 
   const close = () => setPanel(null);
   const finish = async () => {
@@ -153,21 +176,21 @@ export default function WorkoutSessionScreen() {
     }
   };
   const selectExercise = (id: string | undefined) => {
-    setSelectedExercise(id);
-    session.setCurrentExercise(id ?? null);
+    setSelectedLogExerciseId(id);
+    setCurrentLogExercise(id ?? null);
   };
-  const onAction = (exerciseId: string, action: TrainingViewAction) => {
-    setActionExercise(exerciseId);
+  const onAction = (logExerciseId: string, action: TrainingViewAction) => {
+    setActionLogExerciseId(logExerciseId);
     if (controller.view === 'guided') {
-      selectExercise(exerciseId);
+      selectExercise(logExerciseId);
     }
     setPanel(action === 'warmup' ? null : action);
   };
   const onWarmups = async (
-    exerciseId: string,
+    logExerciseId: string,
     warmups: readonly WarmupSetPrescription[] | 'remove'
   ) => {
-    const block = sets.find((set) => set.exerciseId === exerciseId);
+    const block = sets.find((set) => set.logExerciseId === logExerciseId);
     if (!block || actionSaving) {
       return;
     }
@@ -197,7 +220,7 @@ export default function WorkoutSessionScreen() {
       selectExercise(undefined);
     },
     complete: async (id: string, values: Parameters<typeof controller.complete>[1]) => {
-      await ble.finishSetRecording();
+      await ble.finishSetRecording(id, values.reps);
       await controller.complete(id, values);
       ble.attachRecordingToSet(id, values.reps);
       selectExercise(undefined);
@@ -226,6 +249,7 @@ export default function WorkoutSessionScreen() {
           currentExerciseId={context?.exercise.id}
           onReplace={async (exercise, outcome) => {
             await actions.replaceExercise(exercise, outcome);
+            selectExercise(undefined);
             close();
           }}
         />
@@ -323,7 +347,7 @@ export default function WorkoutSessionScreen() {
             onEditGym={() => setPanel('settings')}
             onEditPlan={() => setPanel('editor')}
             onEditTarget={() => {
-              selectExercise(context.exercise.id);
+              selectExercise(context.set.logExerciseId);
               close();
             }}
           />
@@ -365,7 +389,7 @@ export default function WorkoutSessionScreen() {
         sets={sets}
         exercises={exercises}
         controller={viewController}
-        selectedExercise={selectedExercise}
+        selectedLogExerciseId={selectedLogExerciseId}
         onSelect={selectExercise}
         onAction={onAction}
         onWarmups={onWarmups}

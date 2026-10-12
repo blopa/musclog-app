@@ -273,7 +273,13 @@ describe('bleWorkoutDataStorage', () => {
       appendBleWorkoutSamplesToNdjsonFile(samplesFile, [sample(1), sample(2), sample(3)]);
 
       const uri = await saveBleWorkoutFile({
-        ...metadata({ sampleCount: 3, reps: 8, userHeightCm: 180, userWeightKg: 80 }),
+        ...metadata({
+          sampleCount: 3,
+          reps: 8,
+          setId: 'owner-set',
+          userHeightCm: 180,
+          userWeightKg: 80,
+        }),
         samplesFile,
       });
 
@@ -281,6 +287,7 @@ describe('bleWorkoutDataStorage', () => {
       expect(isBleWorkoutFile(parsed)).toBe(true);
       expect(parsed.samples.map((s: BleWorkoutSample) => s.timestamp)).toEqual([1, 2, 3]);
       expect(parsed.reps).toBe(8);
+      expect(parsed.setId).toBe('owner-set');
       expect(parsed.userHeightCm).toBe(180);
       expect(parsed.userWeightKg).toBe(80);
     });

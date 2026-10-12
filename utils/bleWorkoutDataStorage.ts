@@ -23,6 +23,8 @@ export interface BleWorkoutSample {
 export interface BleWorkoutFile {
   version: 1;
   workoutLogId: string;
+  /** Recording owner; absent from older files. */
+  setId?: string;
   exerciseName: string;
   muscleGroup: string;
   equipmentType: string;
@@ -100,6 +102,9 @@ function buildMetadataHeader(data: Omit<BleWorkoutFile, 'samples'>): string {
 
   if (data.reps != null) {
     lines.push(`  "reps": ${data.reps},`);
+  }
+  if (data.setId) {
+    lines.push(`  "setId": ${JSON.stringify(data.setId)},`);
   }
 
   lines.push(

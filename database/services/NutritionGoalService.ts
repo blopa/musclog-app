@@ -1,4 +1,4 @@
-import { Q } from '@nozbe/watermelondb';
+import { type Model, Q } from '@nozbe/watermelondb';
 import { endOfDay } from 'date-fns';
 
 import { REPAIR_DESCRIPTORS } from '@/constants/database';
@@ -8,6 +8,7 @@ import NutritionGoal, {
   type EatingPhase,
   type NutritionTargetMode,
 } from '@/database/models/NutritionGoal';
+import type NutritionTargetPeriod from '@/database/models/NutritionTargetPeriod';
 import type UserMetric from '@/database/models/UserMetric';
 import { localDayKeyPlusCalendarDays, localDayStartFromUtcMs } from '@/utils/calendarDate';
 import {
@@ -25,7 +26,11 @@ import { widgetEvents } from '@/utils/widgetEvents';
 
 import { retryAfterRepair } from './DatabaseRepairService';
 import { NutritionCheckinService } from './NutritionCheckinService';
-import { NutritionTargetService } from './NutritionTargetService';
+import {
+  nutritionTargetMode,
+  NutritionTargetService,
+  storedNutritionTargets,
+} from './NutritionTargetService';
 import { SettingsService } from './SettingsService';
 import { UserService } from './UserService';
 
@@ -277,73 +282,82 @@ export class NutritionGoalService {
         throw new Error('Cannot update deleted goal');
       }
 
+      const previousMode = nutritionTargetMode(goal);
+      const legacyMode = updates.isDynamic ? 'daily' : 'manual';
+      const mode =
+        updates.targetMode ?? (updates.isDynamic === undefined ? previousMode : legacyMode);
       assertValidDynamicGoal({
-        isDynamic: updates.isDynamic ?? goal.isDynamic,
+        isDynamic: mode === 'daily' && (updates.isDynamic ?? goal.isDynamic),
         targetWeight:
           updates.targetWeight !== undefined
             ? normalizeNutritionGoalTargetWeight(updates.targetWeight)
             : normalizeNutritionGoalTargetWeight(goal.targetWeight),
-        targetDate:
-          updates.targetDate !== undefined ? (updates.targetDate ?? null) : goal.targetDate,
+        targetDate: updates.targetDate !== undefined ? updates.targetDate : goal.targetDate,
       });
-
-      await goal.update((record) => {
-        if (updates.totalCalories !== undefined) {
-          record.totalCalories = updates.totalCalories;
+      const now = Date.now();
+      const from = localDayStartFromUtcMs(now);
+      const targetKeys = ['totalCalories', 'protein', 'carbs', 'fats', 'fiber'] as const;
+      const changesTargets =
+        mode !== previousMode ||
+        (mode === 'weekly' && targetKeys.some((key) => updates[key] !== undefined));
+      const baseline = changesTargets ? await NutritionTargetService.resolve(goal) : goal;
+      const targets = storedNutritionTargets(baseline);
+      for (const key of targetKeys) {
+        if (updates[key] !== undefined) {
+          targets[key] = updates[key];
         }
-
-        if (updates.protein !== undefined) {
-          record.protein = updates.protein;
+      }
+      if (changesTargets || targetKeys.some((key) => updates[key] !== undefined)) {
+        NutritionTargetService.validateTargets(targets);
+      }
+      const periods = changesTargets
+        ? await database
+            .get<NutritionTargetPeriod>('nutrition_target_periods')
+            .query(Q.where('nutrition_goal_id', id), Q.where('deleted_at', Q.eq(null)))
+            .fetch()
+        : [];
+      await commitPrepared(database, [goal, ...periods], () => {
+        const operations: Model[] = periods
+          .filter((row) => row.effectiveUntil == null || row.effectiveUntil > from)
+          .map((row) =>
+            row.prepareUpdate((record) => {
+              record.effectiveUntil = Math.max(from, record.effectiveFrom);
+              record.updatedAt = now;
+            })
+          );
+        if (changesTargets && mode === 'weekly') {
+          operations.push(NutritionTargetService.preparePeriod(id, targets, from, now));
         }
-
-        if (updates.carbs !== undefined) {
-          record.carbs = updates.carbs;
-        }
-
-        if (updates.fats !== undefined) {
-          record.fats = updates.fats;
-        }
-
-        if (updates.fiber !== undefined) {
-          record.fiber = updates.fiber;
-        }
-
-        if (updates.eatingPhase !== undefined) {
-          record.eatingPhase = updates.eatingPhase;
-        }
-
-        if (updates.targetWeight !== undefined) {
-          record.targetWeight = normalizeNutritionGoalTargetWeight(updates.targetWeight) ?? 0;
-        }
-
-        if (updates.targetBodyFat !== undefined) {
-          record.targetBodyFat = updates.targetBodyFat;
-        }
-
-        if (updates.targetBMI !== undefined) {
-          record.targetBmi = updates.targetBMI;
-        }
-
-        if (updates.targetFFMI !== undefined) {
-          record.targetFfmi = updates.targetFFMI;
-        }
-
-        if (updates.targetDate !== undefined) {
-          record.targetDate = updates.targetDate ?? null;
-        }
-
-        if (updates.timezone !== undefined) {
-          record.timezone = updates.timezone;
-        }
-
-        if (updates.isDynamic !== undefined) {
-          record.isDynamic = updates.isDynamic;
-        }
-        if (updates.targetMode !== undefined) {
-          record.targetMode = updates.targetMode;
-        }
-
-        record.updatedAt = Date.now();
+        operations.push(
+          goal.prepareUpdate((record) => {
+            Object.assign(record, targets);
+            if (updates.eatingPhase !== undefined) {
+              record.eatingPhase = updates.eatingPhase;
+            }
+            if (updates.targetWeight !== undefined) {
+              record.targetWeight = normalizeNutritionGoalTargetWeight(updates.targetWeight) ?? 0;
+            }
+            if (updates.targetBodyFat !== undefined) {
+              record.targetBodyFat = updates.targetBodyFat;
+            }
+            if (updates.targetBMI !== undefined) {
+              record.targetBmi = updates.targetBMI;
+            }
+            if (updates.targetFFMI !== undefined) {
+              record.targetFfmi = updates.targetFFMI;
+            }
+            if (updates.targetDate !== undefined) {
+              record.targetDate = updates.targetDate ?? null;
+            }
+            if (updates.timezone !== undefined) {
+              record.timezone = updates.timezone;
+            }
+            record.targetMode = mode;
+            record.isDynamic = mode === 'daily';
+            record.updatedAt = now;
+          })
+        );
+        return operations;
       });
 
       triggerWidgetUpdate();

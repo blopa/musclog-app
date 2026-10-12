@@ -31,6 +31,7 @@ import migrationV29 from '@/database/migrations/2026/10/migration-v29';
 import migrationV30 from '@/database/migrations/2026/10/migration-v30';
 import migrationV31 from '@/database/migrations/2026/10/migration-v31';
 import migrationV32 from '@/database/migrations/2026/10/migration-v32';
+import migrationV33 from '@/database/migrations/2026/10/migration-v33';
 
 export const migrations = schemaMigrations({
   migrations: [
@@ -149,5 +150,7 @@ export const migrations = schemaMigrations({
     // Version 31: Progression rules as data (progression_json on template and log exercises).
     migrationV31,
     migrationV32,
+    // Preserve a superset's exercise slot when a partially logged block is split by a swap.
+    migrationV33,
   ],
 });

@@ -141,3 +141,66 @@ it('undoes a start adjustment through the controller and refreshes the session',
   expect(refresh).toHaveBeenCalled();
   hook.unmount();
 });
+
+it('undo clears affected unfinished drafts from memory and storage, leaving other blocks alone', async () => {
+  const rows = [
+    { ...set, logExerciseId: 'bench', id: 'pending' },
+    { ...set, logExerciseId: 'bench', id: 'performed', completionStatus: 'performed' },
+    { ...set, logExerciseId: 'squat', id: 'other' },
+  ];
+  const hook = renderHook(() => useWorkoutSessionController('log', rows, options));
+  await waitFor(() => expect(hook.result.current.busy).toBe(false));
+  act(() => {
+    for (const row of rows) hook.result.current.edit(row.id, { weight: '72', reps: '9' });
+  });
+  await act(() => hook.result.current.revert('bench'));
+  expect(hook.result.current.drafts.pending).toBeUndefined();
+  expect(hook.result.current.drafts.performed.weight).toBe('72');
+  expect(hook.result.current.drafts.other.weight).toBe('72');
+  await waitFor(async () =>
+    expect(JSON.parse((await AsyncStorage.getItem('workout_drafts_log'))!)).not.toHaveProperty(
+      'pending'
+    )
+  );
+  hook.unmount();
+  const restart = renderHook(() => useWorkoutSessionController('log', rows, options));
+  await waitFor(() => expect(restart.result.current.busy).toBe(false));
+  expect(restart.result.current.drafts.pending).toBeUndefined();
+  expect(restart.result.current.drafts.other.weight).toBe('72');
+  restart.unmount();
+});
+it('a failed undo preserves drafts for retry', async () => {
+  const hook = renderHook(() =>
+    useWorkoutSessionController('log', [{ ...set, logExerciseId: 'bench' }], options)
+  );
+  await waitFor(() => expect(hook.result.current.busy).toBe(false));
+  act(() => hook.result.current.edit('s1', { weight: '72', reps: '9' }));
+  jest
+    .mocked(WorkoutProgressionService.revertStartAdjustment)
+    .mockRejectedValueOnce(new Error('disk full'));
+  await act(async () => {
+    await expect(hook.result.current.revert('bench')).rejects.toThrow('disk full');
+  });
+  expect(hook.result.current.drafts.s1.weight).toBe('72');
+  hook.unmount();
+});
+
+it('undo retains effort and partials while removing weight and reps overrides', async () => {
+  const hook = renderHook(() =>
+    useWorkoutSessionController('log', [{ ...set, logExerciseId: 'bench' }], options)
+  );
+  await waitFor(() => expect(hook.result.current.busy).toBe(false));
+  act(() =>
+    hook.result.current.edit('s1', { weight: '72', reps: '9', rir: '2', rpe: '8', partials: '1' })
+  );
+  await act(() => hook.result.current.revert('bench'));
+  expect(hook.result.current.drafts.s1).toEqual({ rir: '2', rpe: '8', partials: '1' });
+  await waitFor(async () =>
+    expect(JSON.parse((await AsyncStorage.getItem('workout_drafts_log'))!).s1).toEqual({
+      rir: '2',
+      rpe: '8',
+      partials: '1',
+    })
+  );
+  hook.unmount();
+});

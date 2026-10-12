@@ -46,7 +46,7 @@ export function WorkoutTrainingView({
   sets,
   exercises,
   controller,
-  selectedExercise,
+  selectedLogExerciseId,
   onSelect,
   onAction,
   onWarmups,
@@ -57,10 +57,10 @@ export function WorkoutTrainingView({
   sets: EnrichedWorkoutLogSet[];
   exercises: Exercise[];
   controller: Controller;
-  selectedExercise?: string;
+  selectedLogExerciseId?: string;
   onSelect: (id: string) => void;
-  onAction: (exerciseId: string, action: TrainingViewAction) => void;
-  onWarmups: (exerciseId: string, warmups: readonly WarmupSetPrescription[] | 'remove') => void;
+  onAction: (logExerciseId: string, action: TrainingViewAction) => void;
+  onWarmups: (logExerciseId: string, warmups: readonly WarmupSetPrescription[] | 'remove') => void;
   onAddExercise: () => void;
   onFinish: () => void;
   children?: ReactNode;
@@ -84,14 +84,14 @@ export function WorkoutTrainingView({
   const next = getFirstUnloggedInEffectiveOrder(sets);
   const allResolved = sets.length > 0 && sets.every(isResolvedWorkoutSet);
   const currentBlock =
-    blocks.find((block) => block.exerciseId === selectedExercise) ??
+    blocks.find((block) => block.logExerciseId === selectedLogExerciseId) ??
     blocks.find((block) => block.logExerciseId === next?.logExerciseId) ??
     blocks[0];
 
   const isCurrentBlock = (block: SessionBlock) => block === currentBlock && !allResolved;
   const valuesFor = (setId: string) => {
     const set = sets.find((row) => row.id === setId)!;
-    return controller.drafts[setId] ?? draftFromSet(set, unitsFor(set.exerciseId), locale);
+    return { ...draftFromSet(set, unitsFor(set.exerciseId), locale), ...controller.drafts[setId] };
   };
   const complete = (setId: string) => {
     const set = sets.find((row) => row.id === setId);
@@ -105,7 +105,8 @@ export function WorkoutTrainingView({
           valuesFor(setId),
           unitsFor(set.exerciseId),
           locale,
-          !!controller.drafts[setId]
+          controller.drafts[setId]?.weight !== undefined ||
+            controller.drafts[setId]?.reps !== undefined
         )
       )
       .catch(() => {});
@@ -137,10 +138,10 @@ export function WorkoutTrainingView({
         equipmentType: exerciseById.get(block.exerciseId)?.equipmentType,
         units: unitsFor(block.exerciseId),
       });
-      onWarmups(block.exerciseId, offer.toAdd.length ? offer.toAdd : 'remove');
+      onWarmups(block.logExerciseId, offer.toAdd.length ? offer.toAdd : 'remove');
       return;
     }
-    onAction(block.exerciseId, kind);
+    onAction(block.logExerciseId, kind);
   };
   const notesFor = (block: SessionBlock) => {
     const notes: string[] = [];
@@ -230,7 +231,7 @@ export function WorkoutTrainingView({
     const upcomingRow = upcomingBlock?.rows.find((candidate) => candidate.set.id === upcoming?.id);
     const units = unitsFor(currentBlock.exerciseId);
     body =
-      exercise && !(allResolved && !selectedExercise) ? (
+      exercise && !(allResolved && !selectedLogExerciseId) ? (
         <GuidedExerciseView
           block={currentBlock}
           exercise={exercise}
@@ -256,11 +257,13 @@ export function WorkoutTrainingView({
                 }`
               : undefined
           }
-          onPreviousExercise={index > 0 ? () => onSelect(blocks[index - 1].exerciseId) : undefined}
-          onNextExercise={
-            index < blocks.length - 1 ? () => onSelect(blocks[index + 1].exerciseId) : undefined
+          onPreviousExercise={
+            index > 0 ? () => onSelect(blocks[index - 1].logExerciseId) : undefined
           }
-          onWhy={() => onAction(currentBlock.exerciseId, 'guidance')}
+          onNextExercise={
+            index < blocks.length - 1 ? () => onSelect(blocks[index + 1].logExerciseId) : undefined
+          }
+          onWhy={() => onAction(currentBlock.logExerciseId, 'guidance')}
           onRevert={() => void controller.revert(currentBlock.logExerciseId).catch(() => {})}
           onAction={(kind) => action(currentBlock, kind)}
           onEdit={(draft) => controller.edit(row.set.id, draft)}
@@ -304,7 +307,7 @@ export function WorkoutTrainingView({
                 notes={notesFor(block)}
                 warmup={warmupFor(block)}
                 busy={controller.busy}
-                onWhy={() => onAction(block.exerciseId, 'guidance')}
+                onWhy={() => onAction(block.logExerciseId, 'guidance')}
                 onRevert={() => void controller.revert(block.logExerciseId).catch(() => {})}
                 onAction={(kind) => action(block, kind)}
                 onEdit={controller.edit}

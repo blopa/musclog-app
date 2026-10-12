@@ -1,13 +1,11 @@
-import { type Model, Q } from '@nozbe/watermelondb';
+import { Q } from '@nozbe/watermelondb';
 
-import { commitPrepared } from '@/database/commitPrepared';
 import { database } from '@/database/database-instance';
 import type NutritionGoal from '@/database/models/NutritionGoal';
 import type { NutritionTargetMode } from '@/database/models/NutritionGoal';
 import type NutritionTargetPeriod from '@/database/models/NutritionTargetPeriod';
 import { localDayStartMs } from '@/utils/calendarDate';
 import { resolveDailyMacros, type ResolvedMacros } from '@/utils/dynamicNutritionTarget';
-import { widgetEvents } from '@/utils/widgetEvents';
 
 export type NutritionTargets = Pick<
   ResolvedMacros,
@@ -115,47 +113,5 @@ export class NutritionTargetService {
     ) {
       throw new Error('Invalid nutrition targets');
     }
-  }
-
-  static async switchMode(goalId: string, mode: NutritionTargetMode): Promise<void> {
-    const goal = await database.get<NutritionGoal>('nutrition_goals').find(goalId);
-    const baseline = await this.resolve(goal);
-    await database.write(async () => {
-      if (nutritionTargetMode(goal) === mode) {
-        return;
-      }
-      const now = Date.now();
-      const existing = await database
-        .get<NutritionTargetPeriod>('nutrition_target_periods')
-        .query(Q.where('nutrition_goal_id', goalId), Q.where('deleted_at', Q.eq(null)))
-        .fetch();
-      const from = localDayStartMs(new Date(now));
-      this.validateTargets(baseline);
-      await commitPrepared(database, [goal, ...existing], () => {
-        const operations: Model[] = existing
-          .filter((row) => row.effectiveUntil == null || row.effectiveUntil > from)
-          .map((row) =>
-            row.prepareUpdate((record) => {
-              record.effectiveUntil = Math.max(from, record.effectiveFrom);
-              record.updatedAt = now;
-            })
-          );
-        if (mode === 'weekly') {
-          operations.push(this.preparePeriod(goalId, baseline, from, now));
-        }
-        operations.push(
-          goal.prepareUpdate((record) => {
-            record.targetMode = mode;
-            record.isDynamic = mode === 'daily';
-            record.updatedAt = now;
-            if (mode === 'manual') {
-              Object.assign(record, storedNutritionTargets(baseline));
-            }
-          })
-        );
-        return operations;
-      });
-    });
-    widgetEvents.emitNutritionWidgetUpdate();
   }
 }

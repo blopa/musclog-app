@@ -6,6 +6,7 @@ import { ActivityIndicator, View } from 'react-native';
 
 import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
+import { WorkoutSessionFeedback } from '@/components/workout/WorkoutSessionFeedback';
 import { WorkoutSummaryProgression } from '@/components/workout/WorkoutSummaryProgression';
 import { WorkoutSummaryCelebration } from '@/components/WorkoutSummaryCelebration';
 import { useUnreadChat } from '@/context/UnreadChatContext';
@@ -32,7 +33,7 @@ export default function WorkoutSummaryScreen() {
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const router = useRouter();
-  const params = useLocalSearchParams<{ workoutLogId?: string }>();
+  const params = useLocalSearchParams<{ workoutLogId?: string; showSessionFeedback?: string }>();
   const workoutLogId = params.workoutLogId;
   const { setUnreadCount } = useUnreadChat();
   const { units } = useSettings();
@@ -305,6 +306,12 @@ export default function WorkoutSummaryScreen() {
         goalProgress={goalProgress}
       >
         {workoutLogId ? <WorkoutSummaryProgression logId={workoutLogId} /> : null}
+        {workoutLogId ? (
+          <WorkoutSessionFeedback
+            logId={workoutLogId}
+            initiallyOpen={params.showSessionFeedback === '1'}
+          />
+        ) : null}
       </WorkoutSummaryCelebration>
       {showConfetti ? <ConfettiOverlay /> : null}
     </>

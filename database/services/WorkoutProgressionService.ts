@@ -44,6 +44,28 @@ export type TemplateRecommendation = ExerciseRecommendation & {
 };
 
 export class WorkoutProgressionService {
+  /** Add/Swap use the same completed history and projection as previews and session starts. */
+  static async projectAdHocExercise(exercise: Exercise): Promise<ExerciseRecommendation | null> {
+    const [history, context] = await Promise.all([this.history(exercise.id), this.context()]);
+    if (!history[0]?.sets.length) {
+      return null;
+    }
+    return projectExerciseProgression({
+      planned: history[0].sets.map((set, index) => ({
+        id: String(index),
+        weight: set.weightKg,
+        reps: set.reps,
+      })),
+      history,
+      rule: null,
+      step: loadStepFor(exercise.equipmentType, context.gym, context.unitsFor(exercise.id)),
+      automatic: context.automatic,
+      progressionMode: context.mode,
+      isCompound: exercise.mechanicType === 'compound',
+      isBodyweight: exercise.equipmentType === 'bodyweight',
+    });
+  }
+
   static async projectTemplate(templateId: string): Promise<TemplateRecommendation[]> {
     const rows = await database
       .get<WorkoutTemplateExercise>('workout_template_exercises')
@@ -198,6 +220,7 @@ export class WorkoutProgressionService {
               set.prepareUpdate((record) => {
                 record.prescriptionJson = serializeSetPrescription({
                   established: true,
+                  workingSetCount: planned.length,
                   plan,
                   recommendation: change?.adjustment.now ?? plan,
                   explanation: change?.adjustment,
@@ -318,7 +341,16 @@ export class WorkoutProgressionService {
             rirRecorded: set.rirRecorded,
             prescribedIndex: working.indexOf(set),
           })),
-          allPrescribedSetsPerformed: working.length > 0 && working.every(isPerformedWorkoutSet),
+          allPrescribedSetsPerformed:
+            working.length > 0 &&
+            working.every(isPerformedWorkoutSet) &&
+            working.length >=
+              Math.max(
+                ...working.map(
+                  (set) =>
+                    parseSetPrescription(set.prescriptionJson)?.workingSetCount ?? working.length
+                )
+              ),
           rule: parseProgressionRule(row.progressionJson),
           state: parseSessionProgressionState(row.progressionJson),
         };

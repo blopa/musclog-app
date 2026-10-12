@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import enFeedback from '../lang/locales/en-us/sessionFeedback.json';
+import nlFeedback from '../lang/locales/nl-nl/sessionFeedback.json';
 import en from '../lang/locales/en-us/workoutSession.json';
 import nl from '../lang/locales/nl-nl/workoutSession.json';
 import enEnd from '../lang/locales/en-us/endWorkout.json';
@@ -24,6 +26,12 @@ test('logs, switches views, restores timer and drafts, undoes targets, reviews i
   await page.getByTestId('seed-progression').click();
   await expect(page.getByTestId('session-rest-timer')).toBeVisible({ timeout: 120000 });
   const sessionURL = page.url();
+  const previous = page.locator('[data-testid$="-previous"]');
+  await expect(previous).toHaveCount(3);
+  await expect(previous.first()).toContainText('60 × 12');
+  expect(await previous.first().evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(
+    true
+  );
   const weights = page.locator('input[data-testid$="-weight"]');
   await expect(weights).toHaveCount(3);
   await weights.first().fill(comma ? '62,5' : '62.5');
@@ -46,8 +54,10 @@ test('logs, switches views, restores timer and drafts, undoes targets, reviews i
   await expect(page.getByTestId('session-rest-timer')).toContainText(copy.trainingFlow.rest);
   await expect(weights.nth(1)).toHaveValue(comma ? '63,5' : '63.5');
   await page.getByTestId('set-adjustment-revert').first().click();
+  await expect(weights.nth(1)).toHaveValue('60');
   await expect(weights.nth(2)).toHaveValue('60');
   await page.reload();
+  await expect(weights.nth(1)).toHaveValue('60');
   await expect(weights.nth(2)).toHaveValue('60');
   await page.goto(`${app}/nutrition/checkin-list`);
   await expect(page.getByTestId('review-training')).toBeVisible();
@@ -89,11 +99,19 @@ test('logs, switches views, restores timer and drafts, undoes targets, reviews i
   await expect(
     page.getByRole('button', { name: copy.trainingFlow.reopen, exact: true })
   ).toHaveCount(3);
+  await expect(
+    page.getByRole('button', { name: copy.trainingFlow.actions.swap, exact: true })
+  ).toBeDisabled();
   await page.getByRole('button', { name: copy.trainingFlow.finish, exact: true }).click();
   await page
     .getByRole('button', { name: (comma ? nlEnd : enEnd).endWorkout.finishAndSave, exact: true })
     .click();
   await expect(page.getByText(copy.trainingFlow.nextTime, { exact: true })).toBeVisible();
+  const feedback = (comma ? nlFeedback : enFeedback).sessionFeedback;
+  await page.getByRole('button', { name: feedback.title, exact: true }).click();
+  await page.getByPlaceholder(feedback.notesPlaceholder).fill('Good session');
+  await page.getByRole('button', { name: feedback.submit, exact: true }).click();
+  await expect(page.getByPlaceholder(feedback.notesPlaceholder)).toHaveCount(0);
   expect(errors).toEqual([]);
   await page.screenshot({ path: `/tmp/musclog-${testInfo.project.name}.png`, fullPage: true });
 });

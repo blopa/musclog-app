@@ -189,6 +189,23 @@ describe('processWorkoutPlanResponse', () => {
       expect(exercisesInCreatedPlan()).toEqual(['db-bench', 'squat']);
     });
 
+    it('loads a substituted movement from its own strength history', async () => {
+      suggestionContext = {
+        restrictions: [{ exerciseId: 'bench', kind: 'injury', expiresAt: null }],
+        gym: null,
+      };
+      mockWorkoutAnalytics.getProgressiveOverloadData.mockImplementation(
+        async (id) => [{ estimated1RM: id === 'bench' ? 150 : 25 }] as any
+      );
+      const plan = planWith('bench');
+      plan.workoutPlan[0].exercises[0].oneRepMaxPercentage = 80;
+      await processWorkoutPlanResponse(plan);
+      expect(mockWorkoutAnalytics.getProgressiveOverloadData).toHaveBeenCalledWith('db-bench');
+      expect(
+        mockWorkoutTemplateService.createPlanWithTemplates.mock.calls[0][1][0].template.exercises[0]
+      ).toMatchObject({ id: 'db-bench', weight: 20 });
+    });
+
     it('swaps an exercise whose equipment the gym does not have', async () => {
       suggestionContext = {
         restrictions: [],

@@ -165,7 +165,7 @@ export default function RestTimerScreen() {
     }
 
     router.replace(
-      `/app/workout/workout-session?workoutLogId=${workoutLogId}&exerciseId=${nextSet.exercise.id}`
+      `/app/workout/workout-session?workoutLogId=${workoutLogId}&logExerciseId=${nextSet.set.logExerciseId}`
     );
   }, [completedSet, nextSet, router, workoutLogId]);
 
@@ -513,7 +513,7 @@ export default function RestTimerScreen() {
             if (workoutLog) {
               await WorkoutService.completeWorkout(workoutLog.id);
               router.replace(
-                `/app/workout/workout-session?workoutLogId=${workoutLog.id}&showFeedback=1`
+                `/app/workout/workout-summary?workoutLogId=${workoutLog.id}&showSessionFeedback=1`
               );
             }
           }}
@@ -543,10 +543,10 @@ export default function RestTimerScreen() {
             setIsWorkoutOverviewModalVisible(false);
             router.replace(`/app/workout/workout-session?workoutLogId=${workoutLogId}`);
           }}
-          onSelectExercise={(exerciseId) => {
+          onSelectExercise={(logExerciseId) => {
             setIsWorkoutOverviewModalVisible(false);
             router.replace(
-              `/app/workout/workout-session?workoutLogId=${workoutLogId}&exerciseId=${exerciseId}`
+              `/app/workout/workout-session?workoutLogId=${workoutLogId}&logExerciseId=${logExerciseId}`
             );
           }}
           onCancelWorkout={() => {
@@ -559,7 +559,7 @@ export default function RestTimerScreen() {
               try {
                 await WorkoutService.completeWorkout(workoutLog.id);
                 router.replace(
-                  `/app/workout/workout-session?workoutLogId=${workoutLog.id}&showFeedback=1`
+                  `/app/workout/workout-summary?workoutLogId=${workoutLog.id}&showSessionFeedback=1`
                 );
               } catch (err) {
                 handleError(err, 'rest-timer.onFinishWorkout');

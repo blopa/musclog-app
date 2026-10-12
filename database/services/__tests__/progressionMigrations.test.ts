@@ -1,6 +1,7 @@
 import { schema } from '@/database/schema';
 import migration31 from '@/database/migrations/2026/10/migration-v31';
 import migration32 from '@/database/migrations/2026/10/migration-v32';
+import migration33 from '@/database/migrations/2026/10/migration-v33';
 import { RESTORE_ORDER } from '@/constants/exportImport';
 import { CURRENT_DATABASE_VERSION } from '@/constants/database';
 
@@ -20,7 +21,7 @@ it('keeps v31 purely additive and includes all new optional columns in the schem
   expect(schema.tables.nutrition_goals.columns.target_mode.isOptional).toBe(true);
 });
 it('uses identical target/review table definitions for native migration and Loki schema with restore dependencies', () => {
-  expect(CURRENT_DATABASE_VERSION).toBe(32);
+  expect(CURRENT_DATABASE_VERSION).toBe(33);
   for (const step of migration32.steps.filter((step) => step.type === 'create_table')) {
     expect(schema.tables[step.schema.name]).toEqual(step.schema);
     expect(RESTORE_ORDER).toContain(step.schema.name);
@@ -44,6 +45,7 @@ function schemaBeforeProgression() {
           'target_mode',
           'prescription_json',
           'rir_recorded',
+          'superset_slot_id',
         ])
           delete columns[column];
         return [name, { ...table, columns }];
@@ -51,7 +53,7 @@ function schemaBeforeProgression() {
   );
   return { ...schema, version: 30, tables };
 }
-it('migrates existing SQLite records through v31 and v32 without changing legacy values', () => {
+it('migrates existing SQLite records through v31, v32 and v33 without changing legacy values', () => {
   const { DatabaseSync } = require('node:sqlite');
   const {
     encodeSchema,
@@ -63,7 +65,19 @@ it('migrates existing SQLite records through v31 and v32 without changing legacy
     sqlite.exec(
       `INSERT INTO workout_log_sets (id, weight, reps, reps_in_reserve, completion_status) VALUES ('existing', 60, 10, 0, 'performed'); INSERT INTO nutrition_goals (id, total_calories, is_dynamic) VALUES ('legacy', 2100, 1);`
     );
-    sqlite.exec(encodeMigrationSteps([...migration31.steps, ...migration32.steps]));
+    sqlite.exec(
+      "INSERT INTO workout_log_exercises (id, workout_log_id, exercise_id, exercise_order, group_id) VALUES ('block', 'workout', 'bench', 1, 'superset')"
+    );
+    sqlite.exec(
+      encodeMigrationSteps([...migration31.steps, ...migration32.steps, ...migration33.steps])
+    );
+    expect({
+      ...sqlite
+        .prepare(
+          'SELECT exercise_id, group_id, superset_slot_id FROM workout_log_exercises WHERE id = ?'
+        )
+        .get('block'),
+    }).toEqual({ exercise_id: 'bench', group_id: 'superset', superset_slot_id: null });
     const set = sqlite
       .prepare(
         'SELECT weight, reps, reps_in_reserve, rir_recorded, prescription_json FROM workout_log_sets WHERE id = ?'
@@ -86,7 +100,7 @@ it('migrates existing SQLite records through v31 and v32 without changing legacy
     sqlite.close();
   }
 });
-it('migrates a persisted Loki v30 database through both additive migrations', async () => {
+it('migrates a persisted Loki v30 database through all additive migrations', async () => {
   const { Database } = require('@nozbe/watermelondb');
   const LokiAdapter = require('@nozbe/watermelondb/adapters/lokijs').default;
   const memory = new (require('lokijs').LokiMemoryAdapter)();

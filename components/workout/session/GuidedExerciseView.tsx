@@ -155,7 +155,7 @@ export function GuidedExerciseView({
   exercise: Exercise;
   row: SessionSetRowModel;
   /** The user's typed values, when there are any; `values` falls back to the set's own. */
-  draft?: SessionDraft;
+  draft?: Partial<SessionDraft>;
   values: SessionDraft;
   state: GuidanceState;
   units: Units;
@@ -183,9 +183,8 @@ export function GuidedExerciseView({
   const { set, workingNumber, prescription } = row;
   const done = isPerformedWorkoutSet(set);
   const appAdjusted = adjustedFields(set.adjustment);
-  const untouched = !done && !draft;
-  const weightAdjusted = untouched && appAdjusted.weight;
-  const repsAdjusted = untouched && appAdjusted.reps;
+  const weightAdjusted = !done && draft?.weight === undefined && appAdjusted.weight;
+  const repsAdjusted = !done && draft?.reps === undefined && appAdjusted.reps;
   const isLastWorkingSet = workingNumber != null && workingNumber === block.workingCount;
   const previous = prescription?.previous;
   const weightUnit = t(getWeightUnitI18nKey(units));
@@ -328,7 +327,12 @@ export function GuidedExerciseView({
           onRevert={onRevert}
         />
 
-        <ExerciseActionChips warmup={warmup} onAction={onAction} disabled={busy} />
+        <ExerciseActionChips
+          warmup={warmup}
+          onAction={onAction}
+          disabled={busy}
+          canSwap={block.doneCount < block.rows.length}
+        />
 
         <Pressable
           accessibilityRole="button"

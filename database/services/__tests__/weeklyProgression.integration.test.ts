@@ -1,3 +1,9 @@
+import {
+  getEffectiveOrder,
+  getRoundIndexWithinGroup,
+  getNextSetInEffectiveOrder,
+  isNextInSameSupersetRound,
+} from '@/utils/workoutSupersetOrder';
 import { database } from '@/database/database-instance';
 import NutritionGoal from '@/database/models/NutritionGoal';
 import NutritionTargetPeriod from '@/database/models/NutritionTargetPeriod';
@@ -263,10 +269,10 @@ it('rejects missing evidence and invalid edits without completing a review', asy
 it('preserves daily behavior and captures its current resolved targets on mode switch', async () => {
   const g = await goal('daily');
   expect((await NutritionTargetService.resolve(g)).totalCalories).toBe(2400);
-  await NutritionTargetService.switchMode(g.id, 'weekly');
+  await NutritionGoalService.updateGoal(g.id, { targetMode: 'weekly' });
   expect(g.isDynamic).toBe(false);
   expect((await NutritionTargetService.resolve(g)).totalCalories).toBe(2400);
-  await NutritionTargetService.switchMode(g.id, 'manual');
+  await NutritionGoalService.updateGoal(g.id, { targetMode: 'manual' });
   expect((await NutritionTargetService.resolve(g)).totalCalories).toBe(2400);
 });
 it('retains older approvals after leaving weekly mode and after goal changes', async () => {
@@ -278,7 +284,7 @@ it('retains older approvals after leaving weekly mode and after goal changes', a
     decision: 'keep',
     accepted: targets,
   });
-  await NutritionTargetService.switchMode(g.id, 'daily');
+  await NutritionGoalService.updateGoal(g.id, { targetMode: 'daily' });
   expect(
     (await NutritionTargetService.resolve(g, new Date(localDayKeyPlusCalendarDays(today(), -1))))
       .totalCalories
@@ -604,18 +610,62 @@ it('copies rules through template and session duplication while resetting perfor
   const sets = await blocks[0].sets.fetch();
   expect(sets.every((s) => s.completionStatus === 'planned' && s.rirRecorded === false)).toBe(true);
 });
-it('swaps a session exercise without changing its template or performed numbers', async () => {
+it('splits a swap after logging, preserving performed movement identity and its rule', async () => {
   const w = await workout();
   const replacement = await workout();
+  await database.write(() =>
+    database.batch(
+      w.block.prepareUpdate((r) => {
+        r.groupId = 'superset';
+      }),
+      replacement.block.prepareUpdate((r) => {
+        r.workoutLogId = w.log.id;
+        r.groupId = 'superset';
+        r.exerciseOrder = 2;
+      }),
+      ...replacement.sets.map((row) =>
+        row.prepareUpdate((r) => {
+          r.setOrder += 3;
+        })
+      )
+    )
+  );
   await WorkoutProgressionService.applyStartProgression(w.log.id);
   await WorkoutSessionService.saveSet(w.log.id, w.sets[0].id, 'performed', { weight: 65, reps: 8 });
-  await WorkoutLogExerciseService.replaceLogExercise(w.block.id, replacement.ex.id, {
-    reason: 'equipment_unavailable',
-    plannedWeightKg: 20,
-  });
+  const replacementId = await WorkoutLogExerciseService.replaceLogExercise(
+    w.block.id,
+    replacement.ex.id,
+    {
+      reason: 'equipment_unavailable',
+      plannedWeightKg: 20,
+    }
+  );
   expect(w.te.exerciseId).toBe(w.ex.id);
   expect(w.te.progressionJson).toBeTruthy();
-  expect(w.block.progressionJson).toBeNull();
+  expect(w.block.exerciseId).toBe(w.ex.id);
+  expect(w.block.progressionJson).toBeTruthy();
+  expect(w.sets[0].logExerciseId).toBe(w.block.id);
+  expect(w.sets[1].logExerciseId).toBe(replacementId);
+  const replacementBlock = await database
+    .get<WorkoutLogExercise>('workout_log_exercises')
+    .find(replacementId);
+  expect(replacementBlock.exerciseId).toBe(replacement.ex.id);
+  expect(replacementBlock.replacedExerciseId).toBe(w.ex.id);
+  expect(replacementBlock.progressionJson).toBeNull();
+  expect(replacementBlock.supersetSlotId).toBe(w.block.id);
+  const details = await WorkoutService.getWorkoutWithDetails(w.log.id);
+  const ordered = getEffectiveOrder(details.sets);
+  expect(ordered.map((row) => row.id)).toEqual(
+    w.sets.flatMap((row, index) => [row.id, replacement.sets[index].id])
+  );
+  expect(getRoundIndexWithinGroup(ordered[2], details.sets)).toBe(1);
+  expect(getNextSetInEffectiveOrder(details.sets, w.sets[0].setOrder)?.id).toBe(
+    replacement.sets[0].id
+  );
+  expect(isNextInSameSupersetRound(ordered[0], ordered[1], details.sets)).toBe(true);
+  expect(isNextInSameSupersetRound(ordered[1], ordered[2], details.sets)).toBe(false);
+  expect(details.sets.find((set) => set.id === w.sets[0].id)?.exerciseId).toBe(w.ex.id);
+  expect(details.sets.find((set) => set.id === w.sets[1].id)?.exerciseId).toBe(replacement.ex.id);
   expect(w.sets[0].weight).toBe(65);
   expect(w.sets[1].weight).toBe(20);
   expect(w.sets[1].prescriptionJson).toBeNull();
@@ -840,4 +890,89 @@ it('counts a week as reviewable only when it holds activity', async () => {
   expect(await weekHadActivity(period.start, period.end)).toBe(true);
   // A workout finished after the week ended belongs to the next review, not this one.
   expect(await weekHadActivity(period.end, period.end + 1)).toBe(false);
+});
+
+it.each(['manual', 'daily'] as const)(
+  'goal editors leave weekly periods when switching to %s',
+  async (mode) => {
+    const g = await goal();
+    await NutritionGoalService.updateGoal(g.id, { targetMode: mode });
+    expect((await NutritionTargetService.resolve(g)).mode).toBe(mode);
+    expect(
+      (await NutritionTargetService.resolve(g, new Date(localDayKeyPlusCalendarDays(today(), -1))))
+        .mode
+    ).toBe('weekly');
+    expect(g.isDynamic).toBe(mode === 'daily');
+  }
+);
+it('weekly macro edits replace current periods without rewriting earlier days', async () => {
+  const g = await goal();
+  await NutritionGoalService.updateGoal(g.id, { totalCalories: 2300, protein: 160 });
+  expect(await NutritionTargetService.resolve(g)).toMatchObject({
+    mode: 'weekly',
+    totalCalories: 2300,
+    protein: 160,
+  });
+  expect(
+    await NutritionTargetService.resolve(g, new Date(localDayKeyPlusCalendarDays(today(), -1)))
+  ).toMatchObject({ mode: 'weekly', totalCalories: 2100, protein: 140 });
+});
+it('legacy isDynamic edits use the same period transition as explicit mode edits', async () => {
+  const g = await goal();
+  await NutritionGoalService.updateGoal(g.id, { isDynamic: false });
+  expect((await NutritionTargetService.resolve(g)).mode).toBe('manual');
+});
+it('a failed goal edit keeps cached goal and periods intact and can be retried', async () => {
+  const g = await goal();
+  const failure = jest
+    .spyOn(database.adapter, 'batch')
+    .mockRejectedValueOnce(new Error('disk full'));
+  await expect(NutritionGoalService.updateGoal(g.id, { targetMode: 'manual' })).rejects.toThrow(
+    'disk full'
+  );
+  failure.mockRestore();
+  expect((await NutritionTargetService.resolve(g)).mode).toBe('weekly');
+  await NutritionGoalService.updateGoal(g.id, { targetMode: 'manual' });
+  expect((await NutritionTargetService.resolve(g)).mode).toBe('manual');
+});
+it('does not offer a completed-only candidate as Next up', async () => {
+  const w = await workout();
+  const candidates = jest
+    .spyOn(WorkoutTodayRepository, 'upcoming')
+    .mockResolvedValue([
+      { template: w.template, completedToday: true } as Awaited<
+        ReturnType<typeof WorkoutTodayRepository.upcoming>
+      >[number],
+    ]);
+  try {
+    expect((await WeeklyReviewService.overview()).training.next).toBeUndefined();
+  } finally {
+    candidates.mockRestore();
+  }
+});
+
+it('a split partial block cannot trigger a full-success linear load increase', async () => {
+  const w = await workout(
+    serializeProgressionRule({
+      type: 'linear',
+      reps: 5,
+      failuresBeforeDeload: 3,
+      deloadPercent: 10,
+    })!
+  );
+  const replacement = await workout();
+  await WorkoutProgressionService.applyStartProgression(w.log.id);
+  await WorkoutSessionService.saveSet(w.log.id, w.sets[0].id, 'performed', { weight: 60, reps: 5 });
+  await WorkoutLogExerciseService.replaceLogExercise(w.block.id, replacement.ex.id, {
+    reason: 'pain',
+    plannedWeightKg: 20,
+  });
+  await database.write(() =>
+    w.log.update((record) => {
+      record.completedAt = Date.now();
+    })
+  );
+  const projection = await WorkoutProgressionService.projectTemplate(w.template.id);
+  expect(projection[0].previous?.allPrescribedSetsPerformed).toBe(false);
+  expect(projection[0].sets[0].weight).toBe(60);
 });

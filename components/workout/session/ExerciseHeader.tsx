@@ -53,11 +53,13 @@ export function ExerciseActionChips({
   warmup,
   onAction,
   disabled,
+  canSwap,
 }: {
   /** What the warm-up chip does now: add a ramp, remove planned warm-ups, or nothing to offer. */
   warmup: 'add' | 'remove' | null;
   onAction: (action: SessionExerciseAction) => void;
   disabled?: boolean;
+  canSwap: boolean;
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -73,7 +75,7 @@ export function ExerciseActionChips({
       icon: Flame,
       enabled: warmup != null,
     },
-    { action: 'swap', label: t('trainingFlow.actions.swap'), icon: Repeat, enabled: true },
+    { action: 'swap', label: t('trainingFlow.actions.swap'), icon: Repeat, enabled: canSwap },
     { action: 'notes', label: t('trainingFlow.actions.notes'), icon: NotebookPen, enabled: true },
     { action: 'more', label: t('trainingFlow.actions.more'), icon: MoreHorizontal, enabled: true },
   ];

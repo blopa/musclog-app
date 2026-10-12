@@ -11,8 +11,6 @@ import { database } from '@/database/database-instance';
 import Exercise from '@/database/models/Exercise';
 import Schedule from '@/database/models/Schedule';
 import WorkoutLog from '@/database/models/WorkoutLog';
-import WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
-import WorkoutLogSet from '@/database/models/WorkoutLogSet';
 import type WorkoutPlan from '@/database/models/WorkoutPlan';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import WorkoutTemplateExercise from '@/database/models/WorkoutTemplateExercise';
@@ -22,25 +20,22 @@ import i18n from '@/lang/lang';
 import { getTheme } from '@/theme';
 import { appExerciseId } from '@/utils/exerciseImage';
 import { handleError } from '@/utils/handleError';
-import { loadStepFor } from '@/utils/loadIncrement';
 import {
   parseProgressionRule,
   type ProgressionRule,
   serializeProgressionRule,
 } from '@/utils/progressionRules';
-import { computeStartTarget } from '@/utils/setProgression';
 import { roundWeightForUnits } from '@/utils/unitConversion';
 import { indexToDayName, WEEKDAY_NAMES } from '@/utils/weekdays';
 import { parseWorkoutInsightsType } from '@/utils/workoutInsightsType';
-import { WARMUP_SET_TYPE } from '@/utils/workoutSetCompletion';
 
 import { DatabaseRepairService, retryAfterRepair } from './DatabaseRepairService';
 import { ExerciseUserSettingsService } from './ExerciseUserSettingsService';
 import { GymService } from './GymService';
-import { SettingsService } from './SettingsService';
 import { UserMetricService } from './UserMetricService';
 import { UserService } from './UserService';
 import { type CreateWorkoutPlanData, WorkoutPlanService } from './WorkoutPlanService';
+import { WorkoutProgressionService } from './WorkoutProgressionService';
 
 /**
  * Exercise data for workout template creation/editing.
@@ -884,46 +879,9 @@ export class WorkoutTemplateService {
 
     // 1. Try to get from history with Smart Double Progression
     try {
-      const logExercises = await database
-        .get<WorkoutLogExercise>('workout_log_exercises')
-        .query(
-          Q.where('exercise_id', exerciseId),
-          Q.where('deleted_at', Q.eq(null)),
-          Q.sortBy('created_at', Q.desc),
-          Q.take(1)
-        )
-        .fetch();
-
-      if (logExercises.length > 0) {
-        const lastSets = await database
-          .get<WorkoutLogSet>('workout_log_sets')
-          .query(
-            Q.where('log_exercise_id', logExercises[0].id),
-            Q.where('deleted_at', Q.eq(null)),
-            Q.where('completion_status', 'performed'),
-            // The next target comes from the last WORKING sets; a warm-up is light on purpose and
-            // `lastSets[0]` would otherwise be one.
-            Q.where('set_type', Q.notEq(WARMUP_SET_TYPE)),
-            Q.sortBy('set_order', Q.asc)
-          )
-          .fetch();
-
-        if (lastSets.length > 0) {
-          const mode = await SettingsService.getProgressionMode();
-
-          const avgRir =
-            lastSets.reduce((sum, s) => sum + (s.repsInReserve ?? 0), 0) / lastSets.length;
-          const lastWeight = lastSets[0].weight;
-          const lastReps = lastSets[0].reps;
-
-          const { weightKg, reps } = computeStartTarget({
-            last: { weightKg: lastWeight, reps: lastReps, averageRepsInReserve: avgRir },
-            progressionMode: mode,
-            isCompound: exercise.mechanicType === 'compound',
-            ...loadStepFor(exercise.equipmentType, gym, units),
-          });
-          return { weightKg, reps };
-        }
+      const projection = await WorkoutProgressionService.projectAdHocExercise(exercise);
+      if (projection?.sets[0]) {
+        return { weightKg: projection.sets[0].weight, reps: projection.sets[0].reps };
       }
     } catch (err) {
       console.warn('Failed to fetch suggested weight from history:', err);

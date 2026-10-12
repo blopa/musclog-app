@@ -33,7 +33,7 @@ export function useWorkoutSessionController(
   options: { autoRest: boolean; defaultRest: number; refresh: () => Promise<void> | void }
 ) {
   const [view, setView] = useState<'inline' | 'guided'>('guided');
-  const [drafts, setDrafts] = useState<Record<string, SessionDraft>>({});
+  const [drafts, setDrafts] = useState<Record<string, Partial<SessionDraft>>>({});
   const [restEnd, setRestEnd] = useState<number | null>(null);
   // Length of the rest that is running, for the progress bar. Not persisted: after a restart the
   // time still left stands in for it.
@@ -91,7 +91,7 @@ export function useWorkoutSessionController(
       subscription.remove();
     };
   }, []);
-  const persist = (next: Record<string, SessionDraft>) => {
+  const persist = (next: Record<string, Partial<SessionDraft>>) => {
     if (key) {
       writeQueue.current = writeQueue.current
         .catch(() => {})
@@ -194,6 +194,31 @@ export function useWorkoutSessionController(
   const revert = async (logExerciseId: string) =>
     run(async () => {
       await WorkoutProgressionService.revertStartAdjustment(logExerciseId);
+      const affected = new Set(
+        sets
+          .filter(
+            (set) => set.logExerciseId === logExerciseId && set.completionStatus === 'planned'
+          )
+          .map((set) => set.id)
+      );
+      setDrafts((previous) => {
+        const next = { ...previous };
+        for (const id of affected) {
+          if (!next[id]) {
+            continue;
+          }
+          const effort = { ...next[id] };
+          delete effort.weight;
+          delete effort.reps;
+          if (Object.keys(effort).length) {
+            next[id] = effort;
+          } else {
+            delete next[id];
+          }
+        }
+        persist(next);
+        return next;
+      });
     });
   const finish = async () =>
     run(async () => {

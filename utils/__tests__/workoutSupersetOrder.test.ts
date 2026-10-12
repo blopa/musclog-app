@@ -24,6 +24,17 @@ function set(
 
 describe('workoutSupersetOrder', () => {
   describe('getEffectiveOrder', () => {
+    it('keeps repeated movements in independent block slots', () => {
+      const sets = [
+        set(1, 'bench', 'g', { logExerciseId: 'first' }),
+        set(2, 'bench', 'g', { logExerciseId: 'first' }),
+        set(3, 'bench', 'g', { logExerciseId: 'second' }),
+        set(4, 'bench', 'g', { logExerciseId: 'second' }),
+      ];
+      expect(getEffectiveOrder(sets).map((row) => row.setOrder)).toEqual([1, 3, 2, 4]);
+      expect(getRoundIndexWithinGroup(sets[2], sets)).toBe(0);
+    });
+
     it('returns empty array for empty input', () => {
       expect(getEffectiveOrder([])).toEqual([]);
     });

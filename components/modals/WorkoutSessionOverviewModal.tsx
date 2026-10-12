@@ -329,17 +329,17 @@ export default function WorkoutSessionOverviewModal({
     // Group sets by exercise
     const exerciseGroups = new Map<string, EnrichedWorkoutLogSet[]>();
     sets.forEach((set) => {
-      const exerciseId = set.exerciseId ?? '';
-      if (!exerciseGroups.has(exerciseId)) {
-        exerciseGroups.set(exerciseId, []);
+      const blockId = set.logExerciseId;
+      if (!exerciseGroups.has(blockId)) {
+        exerciseGroups.set(blockId, []);
       }
-      exerciseGroups.get(exerciseId)!.push(set);
+      exerciseGroups.get(blockId)!.push(set);
     });
 
     // Transform to UI format
     const exerciseList: ExerciseUIData[] = [];
-    exerciseGroups.forEach((exerciseSets, exerciseId) => {
-      const exercise = dbExercises.find((ex) => ex.id === exerciseId);
+    exerciseGroups.forEach((exerciseSets, blockId) => {
+      const exercise = dbExercises.find((ex) => ex.id === exerciseSets[0].exerciseId);
       if (!exercise) {
         return;
       }
@@ -361,7 +361,7 @@ export default function WorkoutSessionOverviewModal({
       }
 
       exerciseList.push({
-        id: exercise.id,
+        id: blockId,
         name: exercise.name ?? '',
         imageUrl: exercise.imageUrl || '',
         status,
@@ -370,7 +370,7 @@ export default function WorkoutSessionOverviewModal({
       });
     });
 
-    const orderedIds = logExercises.map((le) => le.exerciseId);
+    const orderedIds = logExercises.map((le) => le.id);
     return exerciseList.sort(
       (a, b) =>
         (orderedIds.indexOf(a.id) + 1 || Infinity) - (orderedIds.indexOf(b.id) + 1 || Infinity)

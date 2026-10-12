@@ -40,7 +40,7 @@ export type WorkoutProgress = {
 
 export function useActiveWorkout(workoutLogId?: string) {
   const [resolvedLogId, setResolvedLogId] = useState<string | null | undefined>(undefined);
-  const [targetExerciseId, setTargetExerciseId] = useState<string | null>(null);
+  const [targetLogExerciseId, setTargetLogExerciseId] = useState<string | null>(null);
   const [noActiveError, setNoActiveError] = useState<string | null>(null);
 
   const effectiveLogId = workoutLogId ?? resolvedLogId ?? undefined;
@@ -51,8 +51,6 @@ export function useActiveWorkout(workoutLogId?: string) {
     sets,
     exercises,
     logExercises,
-    currentSet: sessionCurrentSet,
-    nextSet: sessionNextSet,
     previousSet: sessionPreviousSet,
     progress: sessionProgress,
     isLoading: sessionLoading,
@@ -99,10 +97,11 @@ export function useActiveWorkout(workoutLogId?: string) {
     const effectiveOrder = getEffectiveOrder(sets);
     let currentSet: EnrichedWorkoutLogSet | null = null;
 
-    if (targetExerciseId) {
+    if (targetLogExerciseId) {
       currentSet =
-        effectiveOrder.find((s) => s.exerciseId === targetExerciseId && isPlannedWorkoutSet(s)) ??
-        null;
+        effectiveOrder.find(
+          (s) => s.logExerciseId === targetLogExerciseId && isPlannedWorkoutSet(s)
+        ) ?? null;
     }
     if (!currentSet) {
       currentSet = getFirstUnloggedInEffectiveOrder(sets);
@@ -121,7 +120,7 @@ export function useActiveWorkout(workoutLogId?: string) {
 
     const exerciseGroups = new Map<string, EnrichedWorkoutLogSet[]>();
     sets.forEach((s) => {
-      const eid = s.exerciseId ?? '';
+      const eid = s.logExerciseId;
       if (!exerciseGroups.has(eid)) {
         exerciseGroups.set(eid, []);
       }
@@ -131,14 +130,14 @@ export function useActiveWorkout(workoutLogId?: string) {
       exerciseSets.sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0));
     });
 
-    const currentExerciseSets = exerciseGroups.get(currentSet.exerciseId ?? '') ?? [];
+    const currentExerciseSets = exerciseGroups.get(currentSet.logExerciseId) ?? [];
     const setNumber = currentExerciseSets.findIndex((s) => s.id === currentSet!.id) + 1 || 1;
     const totalSetsInExercise = currentExerciseSets.length;
 
-    const exerciseOrder = [...new Set(effectiveOrder.map((s) => s.exerciseId).filter(Boolean))];
+    const exerciseOrder = [...new Set(effectiveOrder.map((s) => s.logExerciseId).filter(Boolean))];
     const exerciseNumber =
-      exerciseOrder.indexOf(currentSet.exerciseId ?? '') >= 0
-        ? exerciseOrder.indexOf(currentSet.exerciseId ?? '') + 1
+      exerciseOrder.indexOf(currentSet.logExerciseId) >= 0
+        ? exerciseOrder.indexOf(currentSet.logExerciseId) + 1
         : 1;
 
     let nextSetData: CurrentSetData['nextSet'] | undefined;
@@ -160,7 +159,7 @@ export function useActiveWorkout(workoutLogId?: string) {
       previousSet: sessionPreviousSet ?? undefined,
       nextSet: nextSetData,
     };
-  }, [sets, exercises, targetExerciseId, sessionPreviousSet]);
+  }, [sets, exercises, targetLogExerciseId, sessionPreviousSet]);
 
   const progress: WorkoutProgress = useMemo(
     () => ({
@@ -178,12 +177,12 @@ export function useActiveWorkout(workoutLogId?: string) {
     [currentSetData]
   );
   const isWorkoutComplete = useCallback(() => progress.isComplete, [progress.isComplete]);
-  const setCurrentExercise = useCallback((exerciseId: string | null) => {
-    setTargetExerciseId(exerciseId);
+  const setCurrentLogExercise = useCallback((logExerciseId: string | null) => {
+    setTargetLogExerciseId(logExerciseId);
   }, []);
-  const getExerciseSets = useCallback(
-    (exerciseId: string): EnrichedWorkoutLogSet[] =>
-      sets.filter((s) => s.exerciseId === exerciseId),
+  const getLogExerciseSets = useCallback(
+    (logExerciseId: string): EnrichedWorkoutLogSet[] =>
+      sets.filter((s) => s.logExerciseId === logExerciseId),
     [sets]
   );
 
@@ -199,8 +198,8 @@ export function useActiveWorkout(workoutLogId?: string) {
     getCurrentSet,
     getNextSet,
     isWorkoutComplete,
-    getExerciseSets,
-    setCurrentExercise,
+    getLogExerciseSets,
+    setCurrentLogExercise,
     refresh,
   };
 }

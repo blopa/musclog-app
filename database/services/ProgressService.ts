@@ -802,6 +802,7 @@ export class ProgressService {
     const empiricalTdee = calculateTDEE({
       totalCalories: empiricalCalories,
       totalDays: empiricalTdeeDays,
+      weightChangeDays: empiricalDays,
       initialWeight,
       finalWeight,
       initialFatPercentage: initialFat,

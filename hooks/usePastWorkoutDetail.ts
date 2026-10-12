@@ -124,6 +124,7 @@ export function usePastWorkoutDetail({ visible, workoutId }: UsePastWorkoutDetai
           const leMap = logExs.map((le) => ({
             id: le.id,
             exerciseId: le.exerciseId,
+            supersetSlotId: le.supersetSlotId,
             groupId: le.groupId,
             notes: le.notes,
           }));

@@ -19,6 +19,20 @@ import {
 import { localDayHalfOpenRange, MS_PER_SOLAR_DAY } from '@/utils/calendarDate';
 import { handleError } from '@/utils/handleError';
 
+type RecordingOwner = {
+  setId: string;
+  workoutLogId: string;
+  exerciseName: string;
+  muscleGroup: string;
+  equipmentType: string;
+  mechanicType: string;
+  setNumber: number;
+  reps: number;
+  deviceId: string;
+  deviceDisplayName: string;
+};
+type SavedSetRecording = { setId: string; uri: string; reps: number };
+
 type SessionBleTrackingInput = {
   workoutLogId: string | undefined;
   workoutLog: WorkoutLog | null | undefined;
@@ -55,7 +69,9 @@ export function useSessionBleTracking({
   const trackingStartedAtRef = useRef<number | null>(null);
   const unsubscribeBatchRef = useRef<(() => void) | null>(null);
   const hasAttemptedAutoConnect = useRef(false);
-  const pendingRawBleFileUriRef = useRef<string | null>(null);
+  const ownerRef = useRef<RecordingOwner | null>(null);
+  const pendingRecordingRef = useRef<SavedSetRecording | null>(null);
+  const savingRef = useRef(false);
   // Initialize to current state so remounts while connected don't re-show the snackbar.
   const wasConnectedRef = useRef(wit.isConnected);
 
@@ -107,75 +123,141 @@ export function useSessionBleTracking({
     unsubscribeBatchRef.current = null;
     trackingSampleCountRef.current = 0;
     trackingStartedAtRef.current = null;
-    pendingRawBleFileUriRef.current = null;
+    pendingRecordingRef.current = null;
+    ownerRef.current = null;
     clearTrackingTempFile();
   }, [clearTrackingTempFile]);
 
   // Stop tracking and save the collected data to a local JSON file.
-  const stopTrackingAndSave = useCallback(async () => {
-    if (!isTrackingRef.current) {
-      return;
-    }
+  const stopTrackingAndSave = useCallback(
+    async (logged?: { setId: string; reps: number }) => {
+      if (!isTrackingRef.current) {
+        return;
+      }
 
-    const sampleCount = trackingSampleCountRef.current;
-    const tempFile = trackingTempFileRef.current;
-    const startedAt = trackingStartedAtRef.current;
+      const sampleCount = trackingSampleCountRef.current;
+      const tempFile = trackingTempFileRef.current;
+      const startedAt = trackingStartedAtRef.current;
+      const owner = ownerRef.current;
+      ownerRef.current = null;
 
-    setIsTracking(false);
-    isTrackingRef.current = false;
-    unsubscribeBatchRef.current?.();
-    unsubscribeBatchRef.current = null;
-    trackingSampleCountRef.current = 0;
-    trackingStartedAtRef.current = null;
+      setIsTracking(false);
+      isTrackingRef.current = false;
+      unsubscribeBatchRef.current?.();
+      unsubscribeBatchRef.current = null;
+      trackingSampleCountRef.current = 0;
+      trackingStartedAtRef.current = null;
 
-    if (sampleCount === 0 || !tempFile || !currentSetData || !workoutLog || !wit.connectedDevice) {
-      clearTrackingTempFile();
+      if (sampleCount === 0 || !tempFile || !owner) {
+        clearTrackingTempFile();
+        return;
+      }
+
+      savingRef.current = true;
+      try {
+        const stoppedAt = new Date();
+        let recordedReps = owner.reps;
+        if (currentSetData?.set.id === owner.setId) {
+          recordedReps = reps;
+        }
+        if (logged?.setId === owner.setId) {
+          recordedReps = logged.reps;
+        }
+
+        // Collect user biometrics to enrich the recording.
+        let userHeightCm: number | undefined;
+        let userAgeYears: number | undefined;
+        let userGender: string | undefined;
+        let userWeightKg: number | undefined;
+
+        try {
+          const [heightMetric, user, weightMetric] = await Promise.all([
+            UserMetricService.getLatest('height'),
+            UserService.getCurrentUser(),
+            UserMetricService.getLatest('weight'),
+          ]);
+
+          if (heightMetric) {
+            const { value } = await heightMetric.getDecrypted();
+            userHeightCm = value;
+          }
+
+          if (user?.dateOfBirth) {
+            const ageMsAtStop = stoppedAt.getTime() - user.dateOfBirth;
+            userAgeYears = Math.floor(ageMsAtStop / (365.25 * MS_PER_SOLAR_DAY));
+          }
+
+          if (user?.gender) {
+            userGender = user.gender;
+          }
+
+          if (weightMetric) {
+            const { start, nextStart } = localDayHalfOpenRange(stoppedAt);
+            if (weightMetric.date >= start && weightMetric.date < nextStart) {
+              const { value } = await weightMetric.getDecrypted();
+              userWeightKg = value;
+            }
+          }
+        } catch {
+          // Non-fatal — biometrics are best-effort enrichment.
+        }
+
+        const bleFileUri = await saveBleWorkoutFile({
+          version: 1,
+          workoutLogId: owner.workoutLogId,
+          setId: owner.setId,
+          exerciseName: owner.exerciseName,
+          muscleGroup: owner.muscleGroup,
+          equipmentType: owner.equipmentType,
+          mechanicType: owner.mechanicType,
+          setNumber: owner.setNumber,
+          reps: recordedReps,
+          deviceId: owner.deviceId,
+          deviceDisplayName: owner.deviceDisplayName,
+          startedAt: new Date(startedAt ?? Date.now()).toISOString(),
+          stoppedAt: stoppedAt.toISOString(),
+          sampleCount,
+          userHeightCm,
+          userAgeYears,
+          userGender,
+          userWeightKg,
+          samplesFile: tempFile,
+        });
+        trackingTempFileRef.current = null;
+
+        if (bleGenerateChartPayload && sampleCount >= 20) {
+          pendingRecordingRef.current = { setId: owner.setId, uri: bleFileUri, reps: recordedReps };
+        }
+
+        showSnackbar('success', t('workoutSession.trackingSaved', { count: sampleCount }));
+      } catch (err) {
+        handleError(err, 'workout-session.stopTrackingAndSave');
+      } finally {
+        savingRef.current = false;
+      }
+    },
+    [bleGenerateChartPayload, clearTrackingTempFile, currentSetData, reps, showSnackbar, t]
+  );
+
+  const startTracking = useCallback(() => {
+    if (
+      isTrackingRef.current ||
+      savingRef.current ||
+      !currentSetData ||
+      !workoutLog ||
+      !wit.connectedDevice
+    ) {
       return;
     }
 
     try {
-      const stoppedAt = new Date();
-
-      // Collect user biometrics to enrich the recording.
-      let userHeightCm: number | undefined;
-      let userAgeYears: number | undefined;
-      let userGender: string | undefined;
-      let userWeightKg: number | undefined;
-
-      try {
-        const [heightMetric, user, weightMetric] = await Promise.all([
-          UserMetricService.getLatest('height'),
-          UserService.getCurrentUser(),
-          UserMetricService.getLatest('weight'),
-        ]);
-
-        if (heightMetric) {
-          const { value } = await heightMetric.getDecrypted();
-          userHeightCm = value;
-        }
-
-        if (user?.dateOfBirth) {
-          const ageMsAtStop = stoppedAt.getTime() - user.dateOfBirth;
-          userAgeYears = Math.floor(ageMsAtStop / (365.25 * MS_PER_SOLAR_DAY));
-        }
-
-        if (user?.gender) {
-          userGender = user.gender;
-        }
-
-        if (weightMetric) {
-          const { start, nextStart } = localDayHalfOpenRange(stoppedAt);
-          if (weightMetric.date >= start && weightMetric.date < nextStart) {
-            const { value } = await weightMetric.getDecrypted();
-            userWeightKg = value;
-          }
-        }
-      } catch {
-        // Non-fatal — biometrics are best-effort enrichment.
-      }
-
-      const bleFileUri = await saveBleWorkoutFile({
-        version: 1,
+      clearTrackingTempFile();
+      const tempFile = createBleWorkoutTrackingTempFile(randomUUID());
+      trackingTempFileRef.current = tempFile;
+      trackingSampleCountRef.current = 0;
+      pendingRecordingRef.current = null;
+      ownerRef.current = {
+        setId: currentSetData.set.id,
         workoutLogId: workoutLog.id,
         exerciseName: currentSetData.exercise.name ?? '',
         muscleGroup: currentSetData.exercise.muscleGroup ?? '',
@@ -185,47 +267,7 @@ export function useSessionBleTracking({
         reps,
         deviceId: wit.connectedDevice.id,
         deviceDisplayName: wit.connectedDevice.name,
-        startedAt: new Date(startedAt ?? Date.now()).toISOString(),
-        stoppedAt: stoppedAt.toISOString(),
-        sampleCount,
-        userHeightCm,
-        userAgeYears,
-        userGender,
-        userWeightKg,
-        samplesFile: tempFile,
-      });
-      trackingTempFileRef.current = null;
-
-      if (bleGenerateChartPayload && sampleCount >= 20) {
-        pendingRawBleFileUriRef.current = bleFileUri;
-      }
-
-      showSnackbar('success', t('workoutSession.trackingSaved', { count: sampleCount }));
-    } catch (err) {
-      handleError(err, 'workout-session.stopTrackingAndSave');
-    }
-  }, [
-    bleGenerateChartPayload,
-    clearTrackingTempFile,
-    currentSetData,
-    workoutLog,
-    reps,
-    wit.connectedDevice,
-    showSnackbar,
-    t,
-  ]);
-
-  const startTracking = useCallback(() => {
-    if (isTrackingRef.current) {
-      return;
-    }
-
-    try {
-      clearTrackingTempFile();
-      const tempFile = createBleWorkoutTrackingTempFile(randomUUID());
-      trackingTempFileRef.current = tempFile;
-      trackingSampleCountRef.current = 0;
-      pendingRawBleFileUriRef.current = null;
+      };
       trackingStartedAtRef.current = Date.now();
       setIsTracking(true);
       isTrackingRef.current = true;
@@ -255,7 +297,7 @@ export function useSessionBleTracking({
     } catch (err) {
       handleError(err, 'workout-session.handleStartTracking');
     }
-  }, [clearTrackingTempFile]);
+  }, [clearTrackingTempFile, currentSetData, workoutLog, reps, wit.connectedDevice]);
 
   /** The "Stop tracking" button: saves the recording with the button's own spinner up. */
   const stopTrackingFromButton = async () => {
@@ -268,18 +310,24 @@ export function useSessionBleTracking({
   };
 
   /** Logging a set ends its recording first, so the samples are saved against that set. */
-  const finishSetRecording = async () => {
+  const finishSetRecording = async (setId?: string, loggedReps?: number) => {
     if (isTrackingRef.current) {
-      await stopTrackingAndSave();
+      await stopTrackingAndSave(
+        setId && loggedReps !== undefined ? { setId, reps: loggedReps } : undefined
+      );
     }
+    return pendingRecordingRef.current;
   };
 
   /** Once the set is logged, turns its saved recording into chart data on the set (best effort). */
   const attachRecordingToSet = (setId: string, loggedReps: number) => {
-    const rawBleFileUri = pendingRawBleFileUriRef.current;
-    pendingRawBleFileUriRef.current = null;
-    if (bleGenerateChartPayload && rawBleFileUri && loggedReps > 0) {
-      void compressRawToDataPoints(rawBleFileUri, setId, loggedReps).catch(() => {});
+    const recording = pendingRecordingRef.current;
+    if (!recording || recording.setId !== setId) {
+      return;
+    }
+    pendingRecordingRef.current = null;
+    if (bleGenerateChartPayload && loggedReps > 0) {
+      void compressRawToDataPoints(recording.uri, recording.setId, loggedReps).catch(() => {});
     }
   };
 

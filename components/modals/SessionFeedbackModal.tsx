@@ -14,6 +14,7 @@ import { MAX_NOTE_LENGTH } from '@/utils/noteText';
 type SessionFeedbackModalProps = {
   visible: boolean;
   onClose: () => void;
+  error?: string;
   onSubmit?: (data: {
     difficulty: number;
     exhaustion: number;
@@ -85,7 +86,12 @@ function RatingSlider({ label, value, onChange, leftLabel, rightLabel }: RatingS
   );
 }
 
-export function SessionFeedbackModal({ visible, onClose, onSubmit }: SessionFeedbackModalProps) {
+export function SessionFeedbackModal({
+  visible,
+  onClose,
+  onSubmit,
+  error,
+}: SessionFeedbackModalProps) {
   const theme = useTheme();
   const { t } = useTranslation();
   const [difficulty, setDifficulty] = useState(7);
@@ -106,7 +112,7 @@ export function SessionFeedbackModal({ visible, onClose, onSubmit }: SessionFeed
     try {
       await (onSubmit?.({ difficulty, exhaustion, enjoyment, notes: notes.trim() || undefined }) ??
         Promise.resolve());
-      // Don't call onClose — parent navigates (router.replace), so the screen unmounts and the modal goes with it; closing first would cause a flash.
+      // The owner closes on success and keeps the form open with its error on failure.
     } finally {
       setIsSubmitting(false);
     }
@@ -163,6 +169,11 @@ export function SessionFeedbackModal({ visible, onClose, onSubmit }: SessionFeed
         }}
       >
         <View className="gap-8">
+          {error ? (
+            <Text accessibilityRole="alert" className="text-status-error">
+              {error}
+            </Text>
+          ) : null}
           {/* Rating Sliders */}
           <RatingSlider
             label={t('sessionFeedback.difficulty')}

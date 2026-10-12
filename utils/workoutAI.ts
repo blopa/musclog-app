@@ -141,7 +141,7 @@ export async function processWorkoutPlanResponse(response: GenerateWorkoutPlanRe
 
         let weight = 0;
         if (aiExercise.oneRepMaxPercentage > 0 && matchedExercise.equipmentType !== 'bodyweight') {
-          const dataPoints = await WorkoutAnalytics.getProgressiveOverloadData(exerciseId);
+          const dataPoints = await WorkoutAnalytics.getProgressiveOverloadData(matchedExercise.id);
           if (dataPoints.length > 0) {
             const max1RM = Math.max(...dataPoints.map((dp) => dp.estimated1RM));
             weight = Math.round((max1RM * aiExercise.oneRepMaxPercentage) / 100);

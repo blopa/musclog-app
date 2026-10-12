@@ -11,7 +11,14 @@ export interface SetLike extends WorkoutSetCompletionState {
   setOrder: number;
   groupId?: string | null;
   exerciseId?: string | null;
+  logExerciseId?: string;
+  supersetSlotId?: string;
   id?: string;
+}
+
+/** Catalogue identity can repeat or change mid-session; rounds belong to the original block slot. */
+function exerciseSlotId(set: SetLike): string {
+  return set.supersetSlotId ?? set.logExerciseId ?? set.exerciseId ?? '';
 }
 
 function isUnlogged(set: SetLike): boolean {
@@ -84,7 +91,7 @@ export function getEffectiveOrder<T extends SetLike>(sets: T[]): T[] {
     // Group: order exercises by min set_order, then round-major
     const byExercise = new Map<string, T[]>();
     block.sets.forEach((s) => {
-      const eid = s.exerciseId ?? '';
+      const eid = exerciseSlotId(s);
       if (!byExercise.has(eid)) {
         byExercise.set(eid, []);
       }
@@ -154,7 +161,7 @@ export function getRoundIndexWithinGroup<T extends SetLike>(set: T, sets: T[]): 
   const groupSets = sets.filter((s) => s.groupId === gid);
   const byExercise = new Map<string, T[]>();
   groupSets.forEach((s) => {
-    const eid = s.exerciseId ?? '';
+    const eid = exerciseSlotId(s);
     if (!byExercise.has(eid)) {
       byExercise.set(eid, []);
     }
@@ -163,7 +170,7 @@ export function getRoundIndexWithinGroup<T extends SetLike>(set: T, sets: T[]): 
   byExercise.forEach((exerciseSets) => {
     exerciseSets.sort((a, b) => (a.setOrder ?? 0) - (b.setOrder ?? 0));
   });
-  const exerciseSets = byExercise.get(set.exerciseId ?? '') ?? [];
+  const exerciseSets = byExercise.get(exerciseSlotId(set)) ?? [];
   const pos = exerciseSets.findIndex((s) => (s.setOrder ?? 0) === (set.setOrder ?? 0));
   return pos >= 0 ? pos : 0;
 }

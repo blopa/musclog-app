@@ -278,7 +278,7 @@ export default function RestOverScreen() {
               try {
                 await WorkoutService.completeWorkout(workoutLogId);
                 router.replace(
-                  `/app/workout/workout-session?workoutLogId=${workoutLogId}&showFeedback=1`
+                  `/app/workout/workout-summary?workoutLogId=${workoutLogId}&showSessionFeedback=1`
                 );
               } catch (err) {
                 handleError(err, 'rest-over.onFinishAndSave');
@@ -312,10 +312,10 @@ export default function RestOverScreen() {
             setIsWorkoutOverviewModalVisible(false);
             router.replace(`/app/workout/workout-session?workoutLogId=${workoutLogId}`);
           }}
-          onSelectExercise={(exerciseId) => {
+          onSelectExercise={(logExerciseId) => {
             setIsWorkoutOverviewModalVisible(false);
             router.replace(
-              `/app/workout/workout-session?workoutLogId=${workoutLogId}&exerciseId=${exerciseId}`
+              `/app/workout/workout-session?workoutLogId=${workoutLogId}&logExerciseId=${logExerciseId}`
             );
           }}
           onCancelWorkout={() => {
@@ -328,7 +328,7 @@ export default function RestOverScreen() {
               try {
                 await WorkoutService.completeWorkout(workoutLogId);
                 router.replace(
-                  `/app/workout/workout-session?workoutLogId=${workoutLogId}&showFeedback=1`
+                  `/app/workout/workout-summary?workoutLogId=${workoutLogId}&showSessionFeedback=1`
                 );
               } catch (err) {
                 handleError(err, 'rest-over.onFinishWorkout');

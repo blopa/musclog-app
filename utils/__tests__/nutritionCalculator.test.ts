@@ -3367,3 +3367,13 @@ describe('calculateTDEE for male 180cm 85kg 39yo', () => {
     expect(tdeeKatchMcArdle).toBe(2478);
   });
 });
+
+it('averages intake over coverage days and tissue energy over elapsed weight days', () => {
+  const anchors = { initialWeight: 83, finalWeight: 80.86, weightChangeDays: 30 };
+  const sparse = calculateTDEE({ ...anchors, totalCalories: 14000, totalDays: 7 });
+  const complete = calculateTDEE({ ...anchors, totalCalories: 60000, totalDays: 30 });
+  expect(sparse).toBe(complete);
+  expect(sparse).toBeLessThan(
+    calculateTDEE({ ...anchors, weightChangeDays: 7, totalCalories: 14000, totalDays: 7 })
+  );
+});

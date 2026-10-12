@@ -1,5 +1,6 @@
 import { type Model, Q } from '@nozbe/watermelondb';
 
+import { commitPrepared } from '@/database/commitPrepared';
 import { database } from '@/database/database-instance';
 import type WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import type WorkoutLogSet from '@/database/models/WorkoutLogSet';
@@ -8,6 +9,7 @@ import { prepareSoftDelete } from '@/database/prepareSoftDelete';
 import { fetchByIds, MAX_BATCH_OPERATIONS } from '@/database/queryByIds';
 import type { SubstitutionReason } from '@/utils/exerciseSubstitution';
 import { normalizeNote } from '@/utils/noteText';
+import { parseSetPrescription, serializeSetPrescription } from '@/utils/setPrescription';
 import { isPlannedWorkoutSet, isWarmupSet, WARMUP_SET_TYPE } from '@/utils/workoutSetCompletion';
 
 /**
@@ -22,54 +24,117 @@ export class WorkoutLogExerciseService {
    *
    * The block remembers what it replaced and why (`replaced_exercise_id`, `substitution_reason`).
    * When a block is swapped twice, `replaced_exercise_id` keeps the ORIGINAL exercise, since that
-   * is what the plan called for. Sets already performed or skipped keep their numbers — they are
-   * history. Sets still planned get `plannedWeightKg` instead of the old exercise's load: a planned
+   * is what the plan called for. Sets already performed or skipped keep their original block and movement identity.
+   * A swap after logging splits off a new block for pending sets, in the same batch. Sets still planned get `plannedWeightKg` instead of the old exercise's load: a planned
    * 80 kg bench is not an 80 kg dumbbell fly.
    */
   static async replaceLogExercise(
     logExerciseId: string,
     newExerciseId: string,
     options: { reason: SubstitutionReason; plannedWeightKg?: number }
-  ): Promise<void> {
-    await database.write(async () => {
-      const logExercise = await database
-        .get<WorkoutLogExercise>('workout_log_exercises')
-        .find(logExerciseId);
-      if (logExercise.exerciseId === newExerciseId) {
-        return;
+  ): Promise<string> {
+    return database.write(async () => {
+      const collection = database.get<WorkoutLogExercise>('workout_log_exercises');
+      const original = await collection.find(logExerciseId);
+      if (original.exerciseId === newExerciseId) {
+        return original.id;
       }
-
-      const plannedSets =
-        options.plannedWeightKg === undefined
-          ? []
-          : await database
-              .get<WorkoutLogSet>('workout_log_sets')
-              .query(
-                Q.where('log_exercise_id', logExerciseId),
-                Q.where('deleted_at', Q.eq(null)),
-                Q.where('completion_status', 'planned')
-              )
-              .fetch();
-
+      const sets = await database
+        .get<WorkoutLogSet>('workout_log_sets')
+        .query(Q.where('log_exercise_id', logExerciseId), Q.where('deleted_at', Q.eq(null)))
+        .fetch();
+      const planned = sets.filter(isPlannedWorkoutSet);
+      const hasHistory = sets.some((set) => !isPlannedWorkoutSet(set));
+      if (hasHistory && !planned.length) {
+        return original.id;
+      }
+      const siblings = hasHistory
+        ? await collection
+            .query(
+              Q.where('workout_log_id', original.workoutLogId),
+              Q.where('deleted_at', Q.eq(null)),
+              Q.where('exercise_order', Q.gt(original.exerciseOrder))
+            )
+            .fetch()
+        : [];
       const now = Date.now();
-      const plannedWeightKg = options.plannedWeightKg;
-      await database.batch(
-        logExercise.prepareUpdate((record) => {
-          record.replacedExerciseId = record.replacedExerciseId ?? record.exerciseId;
-          record.substitutionReason = options.reason;
+      let replacementId = original.id;
+      await commitPrepared(database, [original, ...sets, ...siblings], () => {
+        const operations: Model[] = [];
+        const replace = (record: WorkoutLogExercise) => {
           record.exerciseId = newExerciseId;
+          record.replacedExerciseId = original.replacedExerciseId ?? original.exerciseId;
+          record.substitutionReason = options.reason;
           record.progressionJson = undefined;
           record.updatedAt = now;
-        }),
-        ...plannedSets.map((set) =>
-          set.prepareUpdate((record) => {
-            record.weight = Math.max(0, plannedWeightKg ?? record.weight);
-            record.prescriptionJson = undefined;
-            record.adjustmentJson = undefined;
-            record.updatedAt = now;
-          })
-        )
-      );
+        };
+        if (hasHistory) {
+          const workingSetCount = sets.filter((set) => !isWarmupSet(set)).length;
+          for (const set of sets.filter((row) => !isPlannedWorkoutSet(row) && !isWarmupSet(row))) {
+            const prescription = parseSetPrescription(set.prescriptionJson);
+            if ((prescription?.workingSetCount ?? 0) >= workingSetCount) {
+              continue;
+            }
+            operations.push(
+              set.prepareUpdate((record) => {
+                record.prescriptionJson = serializeSetPrescription({
+                  ...(prescription ?? {
+                    established: true,
+                    plan: { weightKg: set.weight, reps: set.reps },
+                    recommendation: { weightKg: set.weight, reps: set.reps },
+                  }),
+                  workingSetCount,
+                });
+                record.updatedAt = now;
+              })
+            );
+          }
+          const replacement = collection.prepareCreate((record) => {
+            record.workoutLogId = original.workoutLogId;
+            record.templateExerciseId = original.templateExerciseId;
+            record.exerciseOrder = original.exerciseOrder + 1;
+            record.groupId = original.groupId;
+            record.supersetSlotId = original.supersetSlotId ?? original.id;
+            record.notes = original.notes;
+            record.createdAt = now;
+            replace(record);
+          });
+          replacementId = replacement.id;
+          operations.push(
+            replacement,
+            ...siblings.map((row) =>
+              row.prepareUpdate((record) => {
+                record.exerciseOrder = row.exerciseOrder + 1;
+                record.updatedAt = now;
+              })
+            )
+          );
+        } else {
+          // Capture the original ID before prepareUpdate mutates the cached model.
+          const replacedId = original.replacedExerciseId ?? original.exerciseId;
+          operations.push(
+            original.prepareUpdate((record) => {
+              replace(record);
+              record.replacedExerciseId = replacedId;
+            })
+          );
+        }
+        operations.push(
+          ...planned.map((set) =>
+            set.prepareUpdate((record) => {
+              record.logExerciseId = replacementId;
+              if (options.plannedWeightKg !== undefined) {
+                record.weight = Math.max(0, options.plannedWeightKg);
+              }
+              record.prescriptionJson = undefined;
+              record.adjustmentJson = undefined;
+              record.updatedAt = now;
+            })
+          )
+        );
+        return operations;
+      });
+      return replacementId;
     });
   }
 

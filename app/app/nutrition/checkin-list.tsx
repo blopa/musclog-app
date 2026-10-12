@@ -1,6 +1,6 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { CheckCircle2, ChevronLeft, ChevronRight, Circle } from 'lucide-react-native';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
@@ -19,22 +19,16 @@ import {
   NutritionReviewSection,
 } from '@/components/weeklyReview/NutritionReviewSection';
 import { TrainingReviewSection } from '@/components/weeklyReview/TrainingReviewSection';
-import { NutritionCheckinService } from '@/database/services/NutritionCheckinService';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
-import {
-  type NutritionTargets,
-  NutritionTargetService,
-} from '@/database/services/NutritionTargetService';
+import { type NutritionTargets } from '@/database/services/NutritionTargetService';
 import { SettingsService } from '@/database/services/SettingsService';
 import { WeeklyReviewService } from '@/database/services/WeeklyReviewService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
 import { useTheme } from '@/hooks/useTheme';
-import { useWeeklyReviewStatus } from '@/hooks/useWeeklyReviewStatus';
+import { useWeeklyReviewOverview } from '@/hooks/useWeeklyReviewOverview';
 import { NotificationService } from '@/services/NotificationService';
 import { getDecimalSeparator, parseLocalizedDecimalString } from '@/utils/localizedDecimalInput';
 import { nutritionGoalsToInput, nutritionGoalToInitialValues } from '@/utils/nutritionGoals';
-
-type Overview = Awaited<ReturnType<typeof WeeklyReviewService.overview>>;
 
 /** Old check-ins shown before "Show all": the history should not bury everything above it. */
 const LEGACY_HISTORY_PREVIEW = 4;
@@ -56,15 +50,13 @@ export default function CheckinListScreen() {
     checkinId?: string;
     reviewDay?: string;
   }>();
-  const status = useWeeklyReviewStatus();
   const [selectedReview, setSelectedReview] = useState<string | undefined>(params.reviewId);
   const [requestedDay, setRequestedDay] = useState(params.reviewDay);
   const [legacyId, setLegacyId] = useState<string | null>(params.checkinId ?? null);
-  const [legacy, setLegacy] = useState<
-    Awaited<ReturnType<typeof NutritionCheckinService.getHistory>>
-  >([]);
-  const [data, setData] = useState<Overview | null>(null);
-  const [loadError, setLoadError] = useState(false);
+  const { data, legacy, loadError, reload, clear } = useWeeklyReviewOverview(
+    selectedReview,
+    requestedDay
+  );
   const [error, setError] = useState(false);
   const [busy, setBusy] = useState(false);
   const [editor, setEditor] = useState(false);
@@ -79,31 +71,11 @@ export default function CheckinListScreen() {
   const locale = i18n.resolvedLanguage ?? i18n.language;
   const formatDate = (value: number) =>
     new Intl.DateTimeFormat(locale, { month: 'short', day: 'numeric' }).format(value);
-  const reload = useCallback(async () => {
-    try {
-      const [next, old] = await Promise.all([
-        WeeklyReviewService.overview(
-          selectedReview,
-          requestedDay && Number.isFinite(Number(requestedDay))
-            ? new Date(Number(requestedDay))
-            : undefined
-        ),
-        NutritionCheckinService.getPastHistory(30),
-      ]);
-      setLoadError(false);
-      setData(next);
-      setLegacy(old);
-    } catch {
-      setLoadError(true);
-    }
-  }, [selectedReview, requestedDay]);
-  useEffect(() => {
-    void Promise.resolve().then(reload);
-  }, [reload, status?.reviewed, status?.next]);
   const decide = async (decision: 'apply' | 'keep', edited?: NutritionTargets) => {
     if (!data || busy) {
       return;
     }
+
     setBusy(true);
     setError(false);
     try {
@@ -116,6 +88,7 @@ export default function CheckinListScreen() {
         accepted:
           decision === 'apply' ? (edited ?? data.nutrition?.targets) : (data.current ?? undefined),
       });
+
       setEditor(false);
       await reload();
     } catch {
@@ -124,6 +97,7 @@ export default function CheckinListScreen() {
       setBusy(false);
     }
   };
+
   const reviewTraining = async () => {
     if (!data || busy) {
       return;
@@ -143,6 +117,7 @@ export default function CheckinListScreen() {
       setBusy(false);
     }
   };
+
   const switchWeekly = async () => {
     if (!data?.goal || busy) {
       return;
@@ -150,7 +125,7 @@ export default function CheckinListScreen() {
     setBusy(true);
     setError(false);
     try {
-      await NutritionTargetService.switchMode(data.goal.id, 'weekly');
+      await NutritionGoalService.updateGoal(data.goal.id, { targetMode: 'weekly' });
       await reload();
     } catch {
       setError(true);
@@ -158,6 +133,7 @@ export default function CheckinListScreen() {
       setBusy(false);
     }
   };
+
   const changeWeekday = async (day: number) => {
     setError(false);
     try {
@@ -168,6 +144,7 @@ export default function CheckinListScreen() {
       setError(true);
     }
   };
+
   const toggleReminder = async (value: boolean) => {
     setReminder(value);
     try {
@@ -178,6 +155,7 @@ export default function CheckinListScreen() {
       setError(true);
     }
   };
+
   const openEditor = () => {
     if (!data?.nutrition) {
       return;
@@ -194,6 +172,7 @@ export default function CheckinListScreen() {
     );
     setEditor(true);
   };
+
   const editedTargets = () =>
     Object.fromEntries(
       MACRO_FIELDS.map((field) => [
@@ -201,10 +180,12 @@ export default function CheckinListScreen() {
         parseLocalizedDecimalString(draft[field] ?? '', getDecimalSeparator(locale)),
       ])
     ) as NutritionTargets;
+
   const progressDone = [
     !!data?.training.reviewedAt,
     !data || data.intuitive || !data.goal || !!data.review?.nutritionReviewedAt,
   ];
+
   return (
     <MasterLayout>
       <KeyboardAwareScrollView
@@ -233,7 +214,7 @@ export default function CheckinListScreen() {
               onPress={() => {
                 setSelectedReview(undefined);
                 setRequestedDay(undefined);
-                setData(null);
+                clear();
               }}
               className="min-h-11 flex-row items-center gap-1 self-start rounded-full bg-bg-overlay px-4"
             >
@@ -346,7 +327,7 @@ export default function CheckinListScreen() {
                       key={review.id}
                       accessibilityRole="button"
                       onPress={() => {
-                        setData(null);
+                        clear();
                         setSelectedReview(review.id);
                       }}
                       className="min-h-14 flex-row items-center gap-3 rounded-xl border border-border-light bg-bg-card px-4 py-3"

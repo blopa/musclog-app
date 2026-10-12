@@ -49,6 +49,7 @@ import { WorkoutAnalytics } from './WorkoutAnalytics';
 import { WorkoutProgressionService } from './WorkoutProgressionService';
 
 export type EnrichedWorkoutLogSet = WorkoutLogSetSnapshot & {
+  supersetSlotId?: string;
   progressionJson?: string;
   exerciseId: string;
   groupId?: string;
@@ -720,6 +721,7 @@ export class WorkoutService {
     logExercises: {
       id: string;
       exerciseId: string;
+      supersetSlotId?: string;
       groupId?: string;
       notes?: string;
       progressionJson?: string;
@@ -728,12 +730,19 @@ export class WorkoutService {
   ): EnrichedWorkoutLogSet[] {
     const logExerciseMap = new Map<
       string,
-      { exerciseId: string; groupId?: string; notes?: string; progressionJson?: string }
+      {
+        exerciseId: string;
+        supersetSlotId?: string;
+        groupId?: string;
+        notes?: string;
+        progressionJson?: string;
+      }
     >();
 
     logExercises.forEach((le) => {
       logExerciseMap.set(le.id, {
         exerciseId: le.exerciseId,
+        supersetSlotId: le.supersetSlotId,
         groupId: le.groupId,
         notes: le.notes,
         progressionJson: le.progressionJson,
@@ -748,6 +757,7 @@ export class WorkoutService {
         ...snapshot,
         isSkipped: snapshot.completionStatus === 'skipped',
         exerciseId: logExercise?.exerciseId ?? '',
+        supersetSlotId: logExercise?.supersetSlotId,
         groupId: logExercise?.groupId,
         notes: logExercise?.notes,
         progressionJson: logExercise?.progressionJson,
@@ -816,6 +826,7 @@ export class WorkoutService {
         logExercises.map((le) => ({
           id: le.id,
           exerciseId: le.exerciseId,
+          supersetSlotId: le.supersetSlotId,
           groupId: le.groupId,
           notes: le.notes,
           // The session's rule copy: without it every refresh after a set read the exercise as

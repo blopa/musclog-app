@@ -1,5 +1,5 @@
 import { Share2, X } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Modal, Pressable, StyleSheet, View } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -18,6 +18,7 @@ import { shareImage } from '@/utils/shareImage';
 import {
   clampTranslation,
   doubleTapTargetScale,
+  fitContain,
   isAtRest,
   MIN_SCALE,
   shouldDismissOnSwipe,
@@ -46,6 +47,8 @@ export function ZoomableImageModal({ visible, onClose, uri }: ZoomableImageModal
 
   const viewportW = useSharedValue(1);
   const viewportH = useSharedValue(1);
+  const imageW = useSharedValue(0);
+  const imageH = useSharedValue(0);
   const scale = useSharedValue(MIN_SCALE);
   const tx = useSharedValue(0);
   const ty = useSharedValue(0);
@@ -54,11 +57,34 @@ export function ZoomableImageModal({ visible, onClose, uri }: ZoomableImageModal
   const savedTy = useSharedValue(0);
   const dismissProgress = useSharedValue(0);
 
+  useEffect(() => {
+    scale.set(MIN_SCALE);
+    tx.set(0);
+    ty.set(0);
+    dismissProgress.set(0);
+    imageW.set(0);
+    imageH.set(0);
+    let live = true;
+    Image.getSize(
+      uri,
+      (width, height) => {
+        if (live) {
+          imageW.set(width);
+          imageH.set(height);
+        }
+      },
+      () => {}
+    );
+    return () => {
+      live = false;
+    };
+  }, [uri, scale, tx, ty, dismissProgress, imageW, imageH]);
+
   const reset = () => {
-    scale.value = MIN_SCALE;
-    tx.value = 0;
-    ty.value = 0;
-    dismissProgress.value = 0;
+    scale.set(MIN_SCALE);
+    tx.set(0);
+    ty.set(0);
+    dismissProgress.set(0);
   };
 
   const handleClose = () => {
@@ -79,9 +105,9 @@ export function ZoomableImageModal({ visible, onClose, uri }: ZoomableImageModal
 
   const pinch = Gesture.Pinch()
     .onStart(() => {
-      savedScale.value = scale.value;
-      savedTx.value = tx.value;
-      savedTy.value = ty.value;
+      savedScale.set(scale.value);
+      savedTx.set(tx.value);
+      savedTy.set(ty.value);
     })
     .onUpdate((event) => {
       const viewport = { width: viewportW.value, height: viewportH.value };
@@ -90,42 +116,42 @@ export function ZoomableImageModal({ visible, onClose, uri }: ZoomableImageModal
         savedScale.value * event.scale,
         { x: event.focalX - viewport.width / 2, y: event.focalY - viewport.height / 2 },
         viewport,
-        viewport
+        fitContain({ width: imageW.value, height: imageH.value }, viewport)
       );
-      scale.value = next.scale;
-      tx.value = next.translation.x;
-      ty.value = next.translation.y;
+      scale.set(next.scale);
+      tx.set(next.translation.x);
+      ty.set(next.translation.y);
     })
     .onEnd(() => {
       if (isAtRest(scale.value)) {
-        scale.value = withSpring(MIN_SCALE, SPRING);
-        tx.value = withSpring(0, SPRING);
-        ty.value = withSpring(0, SPRING);
+        scale.set(withSpring(MIN_SCALE, SPRING));
+        tx.set(withSpring(0, SPRING));
+        ty.set(withSpring(0, SPRING));
       }
     });
 
   const pan = Gesture.Pan()
     .maxPointers(1)
     .onStart(() => {
-      savedTx.value = tx.value;
-      savedTy.value = ty.value;
+      savedTx.set(tx.value);
+      savedTy.set(ty.value);
     })
     .onUpdate((event) => {
       const viewport = { width: viewportW.value, height: viewportH.value };
       if (isAtRest(scale.value)) {
         // Fitted: a downward drag is the start of "swipe to close", sideways drags do nothing.
-        ty.value = Math.max(0, event.translationY);
-        dismissProgress.value = Math.min(1, ty.value / 400);
+        ty.set(Math.max(0, event.translationY));
+        dismissProgress.set(Math.min(1, ty.value / 400));
         return;
       }
       const next = clampTranslation(
         { x: savedTx.value + event.translationX, y: savedTy.value + event.translationY },
         scale.value,
         viewport,
-        viewport
+        fitContain({ width: imageW.value, height: imageH.value }, viewport)
       );
-      tx.value = next.x;
-      ty.value = next.y;
+      tx.set(next.x);
+      ty.set(next.y);
     })
     .onEnd((event) => {
       if (shouldDismissOnSwipe(event.translationY, scale.value)) {
@@ -133,8 +159,8 @@ export function ZoomableImageModal({ visible, onClose, uri }: ZoomableImageModal
         return;
       }
       if (isAtRest(scale.value)) {
-        ty.value = withSpring(0, SPRING);
-        dismissProgress.value = withTiming(0);
+        ty.set(withSpring(0, SPRING));
+        dismissProgress.set(withTiming(0));
       }
     });
 
@@ -147,11 +173,11 @@ export function ZoomableImageModal({ visible, onClose, uri }: ZoomableImageModal
         doubleTapTargetScale(scale.value),
         { x: event.x - viewport.width / 2, y: event.y - viewport.height / 2 },
         viewport,
-        viewport
+        fitContain({ width: imageW.value, height: imageH.value }, viewport)
       );
-      scale.value = withTiming(next.scale, { duration: 200 });
-      tx.value = withTiming(next.translation.x, { duration: 200 });
-      ty.value = withTiming(next.translation.y, { duration: 200 });
+      scale.set(withTiming(next.scale, { duration: 200 }));
+      tx.set(withTiming(next.translation.x, { duration: 200 }));
+      ty.set(withTiming(next.translation.y, { duration: 200 }));
     });
 
   const gesture = Gesture.Exclusive(doubleTap, Gesture.Simultaneous(pinch, pan));
@@ -176,8 +202,9 @@ export function ZoomableImageModal({ visible, onClose, uri }: ZoomableImageModal
           <Animated.View
             style={styles.stage}
             onLayout={(event) => {
-              viewportW.value = event.nativeEvent.layout.width;
-              viewportH.value = event.nativeEvent.layout.height;
+              viewportW.set(event.nativeEvent.layout.width);
+              viewportH.set(event.nativeEvent.layout.height);
+              reset();
             }}
           >
             <Animated.View style={[styles.imageBox, imageStyle]}>

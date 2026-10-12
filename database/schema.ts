@@ -205,6 +205,7 @@ export const schema = appSchema({
         // Set when this block was swapped mid-session: what the template/plan called for, and why.
         { name: 'replaced_exercise_id', type: 'string', isOptional: true },
         { name: 'substitution_reason', type: 'string', isOptional: true },
+        { name: 'superset_slot_id', type: 'string', isOptional: true },
         // The rule this session ran under, copied at start, plus its carried state.
         { name: 'progression_json', type: 'string', isOptional: true },
         { name: 'created_at', type: 'number' },

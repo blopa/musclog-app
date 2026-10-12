@@ -177,6 +177,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
           const leMap = logExs.map((le) => ({
             id: le.id,
             exerciseId: le.exerciseId,
+            supersetSlotId: le.supersetSlotId,
             groupId: le.groupId,
             notes: le.notes,
             progressionJson: le.progressionJson,
@@ -208,7 +209,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
                 lastSet &&
                 isWorkingSet(lastSet) &&
                 !isWarmupSet(currentActive) &&
-                lastSet.exerciseId === currentActive.exerciseId
+                lastSet.logExerciseId === currentActive.logExerciseId
               ) {
                 // Adjust current set based on lastSet
                 const exercise = exerciseList.find((e) => e.id === lastSet.exerciseId);

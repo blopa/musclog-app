@@ -40,6 +40,8 @@ export interface NutritionCalculatorInput {
   historicalTotalCalories?: number;
   /** (Optional) Number of days in the tracking period */
   historicalTotalDays?: number;
+  /** Elapsed days between weight anchors; defaults to intake days for legacy callers. */
+  historicalWeightChangeDays?: number;
   /** (Optional) User's starting weight (kg) at the beginning of the period */
   historicalInitialWeightKg?: number;
   /** (Optional) User's ending weight (kg) at the end of the period */
@@ -782,6 +784,7 @@ export function calculateBMR(
 export interface TDEEParams {
   totalCalories?: number;
   totalDays?: number;
+  weightChangeDays?: number;
   initialWeight?: number;
   finalWeight?: number;
   initialFatPercentage?: number;
@@ -810,6 +813,7 @@ export const calculateTDEE = (params: TDEEParams): number => {
   const {
     totalCalories,
     totalDays,
+    weightChangeDays = totalDays,
     initialWeight,
     finalWeight,
     initialFatPercentage,
@@ -827,6 +831,8 @@ export const calculateTDEE = (params: TDEEParams): number => {
   if (
     totalDays !== undefined &&
     totalDays > 0 &&
+    weightChangeDays !== undefined &&
+    weightChangeDays > 0 &&
     totalCalories !== undefined &&
     initialWeight !== undefined &&
     finalWeight !== undefined
@@ -870,10 +876,10 @@ export const calculateTDEE = (params: TDEEParams): number => {
         ? fatDifference * CALORIES_BUILD_KG_FAT
         : fatDifference * CALORIES_STORED_KG_FAT;
 
-    // TDEE = (Energy In - Energy Stored/Expended on Tissue) / Days
+    // Average intake and tissue-energy change have separate intervals when logging is sparse.
     // If tissue is lost, fatCalories/leanCalories are negative, effectively ADDING
     // the liberated energy back into the TDEE pool, which is physiologically accurate.
-    const averageTdee = (totalCalories - (fatCalories + leanCalories)) / totalDays;
+    const averageTdee = totalCalories / totalDays - (fatCalories + leanCalories) / weightChangeDays;
 
     // 1.1 TDEE Drift Correction
     // Since body weight/composition changes during the period, the averageTdee represents the
@@ -1558,6 +1564,7 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     // Empirical tracking fields
     historicalTotalCalories,
     historicalTotalDays,
+    historicalWeightChangeDays,
     historicalInitialWeightKg,
     historicalFinalWeightKg,
     historicalInitialFatPercent,
@@ -1580,6 +1587,7 @@ export function calculateNutritionPlan(input: NutritionCalculatorInput): Nutriti
     liftingExperience: input.liftingExperience,
     totalCalories: historicalTotalCalories,
     totalDays: historicalTotalDays,
+    weightChangeDays: historicalWeightChangeDays,
     initialWeight: historicalInitialWeightKg,
     finalWeight: historicalFinalWeightKg,
     initialFatPercentage: historicalInitialFatPercent,
