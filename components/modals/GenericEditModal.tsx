@@ -453,7 +453,7 @@ export function GenericEditModal({
     return (
       <FullScreenModal visible={visible} onClose={onClose} title={title}>
         <View className="flex-1 items-center justify-center p-6">
-          <Text className="text-status-error50 text-center text-base">{loadError}</Text>
+          <Text className="text-center text-base text-status-error/50">{loadError}</Text>
           <Button
             label={t('common.close')}
             variant="outline"

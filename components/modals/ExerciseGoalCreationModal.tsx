@@ -599,7 +599,7 @@ export default function ExerciseGoalCreationModal({
           />
 
           {projection?.projectedWeeks ? (
-            <View className="bg-accent-primary10 mt-4 rounded-xl p-4">
+            <View className="mt-4 rounded-xl bg-accent-primary/10 p-4">
               <Text className="text-sm font-bold text-accent-primary">
                 {t('exerciseGoals.creation.projectionPreview', {
                   weeks: Math.ceil(projection.projectedWeeks),

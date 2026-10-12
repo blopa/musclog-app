@@ -12,8 +12,8 @@ import { adjustedFields } from '@/utils/setAdjustment';
 import { isPerformedWorkoutSet } from '@/utils/workoutSetCompletion';
 
 import type { SessionSetRowModel } from './sessionModel';
-import { draftFromPrevious } from './setDraft';
 import { SetDetailsSheet } from './SetDetailsSheet';
+import { draftFromPrevious } from './setDraft';
 
 /**
  * Column widths shared by the header and every row, so they always line up. The inputs are kept
@@ -88,7 +88,7 @@ export function InlineSetRow({
 
   let surface = 'border-transparent';
   if (done) {
-    surface = 'border-transparent bg-accent-primary10';
+    surface = 'border-transparent bg-accent-primary/10';
   } else if (isCurrent) {
     surface = 'border-accent-primary bg-bg-secondary';
   }

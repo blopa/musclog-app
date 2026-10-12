@@ -85,7 +85,7 @@ export function ExerciseGoalDetailModal({
   const renderProjectionStatus = () => {
     if (projection?.status === 'achieved') {
       return (
-        <View className="bg-status-success10 rounded-xl p-4">
+        <View className="rounded-xl bg-status-success/10 p-4">
           <Text className="text-center font-bold" style={{ color: theme.colors.status.success }}>
             {projection.achievedDate
               ? t('exerciseGoals.card.achieved', {
@@ -103,7 +103,7 @@ export function ExerciseGoalDetailModal({
 
     if (projection?.status === 'ready_to_achieve') {
       return (
-        <View className="bg-accent-primary10 rounded-xl p-4">
+        <View className="rounded-xl bg-accent-primary/10 p-4">
           <Text
             className="text-center text-sm font-medium"
             style={{ color: theme.colors.accent.primary }}
@@ -116,7 +116,7 @@ export function ExerciseGoalDetailModal({
 
     if (projection?.status === 'stalling') {
       return (
-        <View className="bg-status-warning10 rounded-xl p-4">
+        <View className="rounded-xl bg-status-warning/10 p-4">
           <Text
             className="text-center text-sm font-medium"
             style={{ color: theme.colors.status.warning }}
@@ -129,7 +129,7 @@ export function ExerciseGoalDetailModal({
 
     if (projection?.status === 'declining') {
       return (
-        <View className="bg-status-error10 rounded-xl p-4">
+        <View className="rounded-xl bg-status-error/10 p-4">
           <Text
             className="text-center text-sm font-medium"
             style={{ color: theme.colors.status.error }}
@@ -158,7 +158,7 @@ export function ExerciseGoalDetailModal({
 
     if (projection?.projectedWeeks && projection?.projectedDate) {
       return (
-        <View className="bg-accent-primary10 rounded-xl p-4">
+        <View className="rounded-xl bg-accent-primary/10 p-4">
           <Text className="text-sm font-bold text-accent-primary">
             {t('exerciseGoals.card.projectedDate', {
               weeks: Math.ceil(projection.projectedWeeks),

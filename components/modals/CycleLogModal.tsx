@@ -198,7 +198,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
                 key={level}
                 onPress={() => setFlow(level)}
                 className={`flex-row items-center rounded-xl border-2 px-4 py-3 ${
-                  flow === level ? 'bg-accent-primary10 border-accent-primary' : 'border-ink/10'
+                  flow === level ? 'border-accent-primary bg-accent-primary/10' : 'border-ink/10'
                 }`}
               >
                 <View
@@ -236,7 +236,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
                 onPress={() => toggleSymptom(option.value)}
                 className={`rounded-full border-2 px-3 py-2 ${
                   symptoms.includes(option.value)
-                    ? 'bg-accent-primary10 border-accent-primary'
+                    ? 'border-accent-primary bg-accent-primary/10'
                     : 'border-ink/10'
                 }`}
               >
@@ -266,7 +266,7 @@ export function CycleLogModal({ visible, onClose, initialDate }: CycleLogModalPr
                 onPress={() => toggleSymptom(option.value)}
                 className={`rounded-full border-2 px-3 py-2 ${
                   symptoms.includes(option.value)
-                    ? 'bg-accent-primary10 border-accent-primary'
+                    ? 'border-accent-primary bg-accent-primary/10'
                     : 'border-ink/10'
                 }`}
               >

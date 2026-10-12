@@ -10,6 +10,14 @@ import { getWeightUnitI18nKey } from '@/utils/units';
 import { GuidanceBadgeLine } from './session/GuidanceSummary';
 import { useAdjustmentMessage } from './useAdjustmentMessage';
 
+/** What to say when nothing changed: the rule, missing history, or holding last time's targets. */
+function fallbackHintKey(row: TemplateRecommendation) {
+  if (row.rule) {
+    return 'progression.followRule';
+  }
+  return row.status === 'learning' ? 'progression.learningHint' : 'progression.holdHint';
+}
+
 function RecommendationRow({ row }: { row: TemplateRecommendation }) {
   const { t } = useTranslation();
   const { unitsFor } = useExerciseUserSettings();
@@ -17,8 +25,11 @@ function RecommendationRow({ row }: { row: TemplateRecommendation }) {
   const units = unitsFor(row.exercise.id);
   const message = useAdjustmentMessage(row.changes[0]?.adjustment, units);
   const changed = new Set(row.changes.map((change) => change.setId));
+  const weightUnit = t(getWeightUnitI18nKey(units));
+  // "160 lb × 10", the order the explanation sentence uses. A single unit after all the chips read
+  // as "160 × 10 lb" — the unit attached to the reps.
   const load = (weightKg: number, reps: number) =>
-    `${formatDisplayWeightKg(locale, units, weightKg)} × ${formatInteger(reps, { useGrouping: false })}`;
+    `${formatDisplayWeightKg(locale, units, weightKg)} ${weightUnit} × ${formatInteger(reps, { useGrouping: false })}`;
   const previous = row.sets
     .map((_, index) => row.previous?.sets.find((set, i) => (set.prescribedIndex ?? i) === index))
     .filter((set): set is NonNullable<typeof set> => set != null);
@@ -35,7 +46,7 @@ function RecommendationRow({ row }: { row: TemplateRecommendation }) {
         {row.sets.map((set) => (
           <View
             key={set.id}
-            className={`rounded-lg px-2.5 py-1.5 ${changed.has(set.id) ? 'bg-accent-primary10' : 'bg-bg-overlay'}`}
+            className={`rounded-lg px-2.5 py-1.5 ${changed.has(set.id) ? 'bg-accent-primary/10' : 'bg-bg-overlay'}`}
           >
             <Text
               className={`text-sm font-semibold ${changed.has(set.id) ? 'text-accent-primary' : 'text-text-primary'}`}
@@ -44,7 +55,6 @@ function RecommendationRow({ row }: { row: TemplateRecommendation }) {
             </Text>
           </View>
         ))}
-        <Text className="text-xs text-text-tertiary">{t(getWeightUnitI18nKey(units))}</Text>
       </View>
       {previous.length ? (
         <Text className="text-xs text-text-secondary" numberOfLines={2}>
@@ -54,7 +64,7 @@ function RecommendationRow({ row }: { row: TemplateRecommendation }) {
         </Text>
       ) : null}
       <Text className="text-sm leading-5 text-text-secondary">
-        {message ?? t(row.rule ? 'progression.followRule' : 'progression.learningHint')}
+        {message ?? t(fallbackHintKey(row))}
       </Text>
     </View>
   );

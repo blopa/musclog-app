@@ -112,7 +112,7 @@ export function WorkoutTodayCard({
     const fraction = active.total ? active.done / active.total : 0;
     return (
       <View
-        className="bg-accent-primary10 gap-3 rounded-2xl border border-accent-primary p-4"
+        className="gap-3 rounded-2xl border border-accent-primary bg-accent-primary/10 p-4"
         testID="workout-today"
       >
         <View className="flex-row items-center gap-2">
@@ -195,7 +195,7 @@ export function WorkoutTodayCard({
       {primary ? (
         <View className="gap-3">
           <View className="flex-row items-center gap-3">
-            <View className="bg-accent-primary10 h-11 w-11 items-center justify-center rounded-xl">
+            <View className="h-11 w-11 items-center justify-center rounded-xl bg-accent-primary/10">
               <Dumbbell size={theme.iconSize.md} color={theme.colors.accent.primary} />
             </View>
             <View className="min-w-0 flex-1">
@@ -232,7 +232,7 @@ export function WorkoutTodayCard({
       {finished.map((row) => (
         <View
           key={`done-${row.template.id}`}
-          className="bg-accent-primary10 min-h-12 flex-row items-center gap-2 rounded-xl px-4"
+          className="min-h-12 flex-row items-center gap-2 rounded-xl bg-accent-primary/10 px-4"
         >
           <CheckCircle2 size={theme.iconSize.md} color={theme.colors.accent.primary} />
           <Text className="flex-1 text-base font-medium text-text-primary" numberOfLines={1}>

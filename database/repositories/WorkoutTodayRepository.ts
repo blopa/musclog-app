@@ -134,7 +134,14 @@ export class WorkoutTodayRepository {
     const pick = pickRotationSuggestion(recent, new Set(byId.keys()), todayStart);
     const template = pick ? byId.get(pick.templateId) : undefined;
     return template && pick
-      ? [{ template, scheduled: false, completedToday: false, lastCompletedAt: pick.lastCompletedAt }]
+      ? [
+          {
+            template,
+            scheduled: false,
+            completedToday: false,
+            lastCompletedAt: pick.lastCompletedAt,
+          },
+        ]
       : [];
   }
 }

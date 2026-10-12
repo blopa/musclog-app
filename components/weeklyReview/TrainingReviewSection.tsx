@@ -20,8 +20,8 @@ import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { formatDisplayWeightKg } from '@/utils/formatDisplayWeight';
 import { kgToDisplay } from '@/utils/unitConversion';
-import { summarizeWeeklyRecords } from '@/utils/weeklyRecords';
 import { getWeightUnitI18nKey } from '@/utils/units';
+import { summarizeWeeklyRecords } from '@/utils/weeklyRecords';
 
 type Overview = Awaited<ReturnType<typeof WeeklyReviewService.overview>>;
 
@@ -48,7 +48,7 @@ export function ReviewSectionHeader({
   const theme = useTheme();
   return (
     <View className="flex-row items-center gap-3">
-      <View className="bg-accent-primary10 h-10 w-10 items-center justify-center rounded-xl">
+      <View className="h-10 w-10 items-center justify-center rounded-xl bg-accent-primary/10">
         <Icon size={theme.iconSize.md} color={theme.colors.accent.primary} />
       </View>
       <Text className="flex-1 text-xl font-bold text-text-primary">{title}</Text>

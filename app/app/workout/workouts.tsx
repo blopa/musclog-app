@@ -716,7 +716,6 @@ export default function WorkoutsScreen() {
         tab="fitness"
       />
 
-
       {/* Workout Preview Modal */}
       <WorkoutSessionHistoryModal
         visible={isPreviewModalVisible && !!previewTemplate ? !isLoadingPreview : false}

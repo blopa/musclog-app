@@ -155,7 +155,8 @@
       "percentage": "Every set at a percentage of a training max that goes up after each successful session."
     },
     "repsShort": "{{reps}} reps",
-    "tmEstimated": "The training max is estimated from your last session until you set one."
+    "tmEstimated": "The training max is estimated from your last session until you set one.",
+    "holdHint": "Same targets as last time. Beat them, or match them with reps to spare, and they go up next time."
   },
   "trainingFlow": {
     "inline": "Inline",

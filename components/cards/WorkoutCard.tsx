@@ -1,6 +1,6 @@
 import { Archive, Clock, Dumbbell } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import { StartWorkoutButton } from '@/components/StartWorkoutButton';
 import { Button } from '@/components/theme/Button';
@@ -76,9 +76,18 @@ export function WorkoutCard({
   const formattedLastCompleted = formatLastCompleted();
 
   return (
-    <GenericCard variant="flat" isPressable={!!onPress} onPress={onPress}>
+    <GenericCard variant="flat">
       <View className="p-5">
-        <View className="mb-4 flex-row items-start justify-between">
+        {/* Only the heading previews: a pressable card wrapping the Start button let one tap
+            fire both on web, opening the preview on top of the session it had just started. */}
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={onPress ? t('workouts.previewWorkout', { name }) : undefined}
+          disabled={!onPress}
+          onPress={onPress}
+          className="mb-4 flex-row items-start justify-between"
+          testID="workout-card-preview"
+        >
           <View className="flex-1">
             {formattedLastCompleted ? (
               <View className="mb-3 inline-flex flex-row items-center gap-1.5 self-start rounded-full bg-accent-primary/20 px-3 py-1">
@@ -100,7 +109,7 @@ export function WorkoutCard({
           >
             <IconComponent size={theme.iconSize.lg} color={theme.colors.text.secondary} />
           </View>
-        </View>
+        </Pressable>
 
         {variant === 'featured' ? (
           <View className="flex-row gap-3">

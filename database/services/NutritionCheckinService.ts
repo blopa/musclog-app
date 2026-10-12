@@ -101,7 +101,10 @@ export class NutritionCheckinService {
    * Check-ins that have already happened, newest first. Milestone goals pre-create check-ins for
    * future dates, which a "history" list must not show as previous ones.
    */
-  static async getPastHistory(limit: number, now: number = Date.now()): Promise<NutritionCheckin[]> {
+  static async getPastHistory(
+    limit: number,
+    now: number = Date.now()
+  ): Promise<NutritionCheckin[]> {
     return database
       .get<NutritionCheckin>('nutrition_checkins')
       .query(

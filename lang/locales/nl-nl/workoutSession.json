@@ -155,7 +155,8 @@
       "percentage": "Elke set op een percentage van een trainingsmax dat stijgt na elke geslaagde training."
     },
     "repsShort": "{{reps}} herh.",
-    "tmEstimated": "Het trainingsmax wordt geschat uit je vorige training tot je er zelf een instelt."
+    "tmEstimated": "Het trainingsmax wordt geschat uit je vorige training tot je er zelf een instelt.",
+    "holdHint": "Dezelfde doelen als vorige keer. Verbeter ze, of haal ze met herhalingen over, en ze gaan de volgende keer omhoog."
   },
   "trainingFlow": {
     "inline": "Overzicht",

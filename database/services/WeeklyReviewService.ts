@@ -153,7 +153,9 @@ export class WeeklyReviewService {
           usedEmpiricalData: proposed.usedEmpiricalData,
           expenditure: proposed.tdee,
           trendChangeKg:
-            trendWeight != null && weekStartTrend != null ? trendWeight - weekStartTrend : undefined,
+            trendWeight != null && weekStartTrend != null
+              ? trendWeight - weekStartTrend
+              : undefined,
           foodDays,
           weightDays,
           canApply:

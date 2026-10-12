@@ -155,7 +155,8 @@
       "percentage": "Cada série a uma porcentagem de um máximo de treino que sobe após cada sessão bem-sucedida."
     },
     "repsShort": "{{reps}} reps",
-    "tmEstimated": "O máximo de treino é estimado pela sua última sessão até você definir um."
+    "tmEstimated": "O máximo de treino é estimado pela sua última sessão até você definir um.",
+    "holdHint": "As mesmas metas da última vez. Supere-as, ou alcance-as com repetições sobrando, e elas sobem na próxima vez."
   },
   "trainingFlow": {
     "inline": "Em linha",

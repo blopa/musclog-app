@@ -12,10 +12,10 @@ import { isStartAdjustment, type SetAdjustment } from '@/utils/setAdjustment';
 import { GUIDANCE_STATE_KEYS, type GuidanceState, PROGRESSION_METHOD_KEYS } from './sessionModel';
 
 const BADGE_CLASSES: Record<GuidanceState, { surface: string; text: string }> = {
-  rule: { surface: 'bg-accent-primary10', text: 'text-accent-primary' },
-  suggested: { surface: 'bg-accent-primary10', text: 'text-accent-primary' },
+  rule: { surface: 'bg-accent-primary/10', text: 'text-accent-primary' },
+  suggested: { surface: 'bg-accent-primary/10', text: 'text-accent-primary' },
   learning: { surface: 'bg-bg-overlay', text: 'text-text-secondary' },
-  attention: { surface: 'bg-status-warning10', text: 'text-status-warning' },
+  attention: { surface: 'bg-status-warning/10', text: 'text-status-warning' },
 };
 
 /** "Your rule · Double progression · 8–12" — the source of the targets, as one line. */
@@ -73,9 +73,14 @@ export function GuidanceSummary({
   const { t } = useTranslation();
   const theme = useTheme();
   const message = useAdjustmentMessage(adjustment, units);
+  // Without an adjustment to explain, say only what is true of the state: "log a workout to build
+  // history" on an exercise that has history (a Suggested one whose set was just performed, which
+  // clears its adjustment) contradicted the "Last time" printed right beside it.
   let hint = message;
-  if (!hint) {
-    hint = t(rule ? 'progression.followRule' : 'progression.learningHint');
+  if (!hint && rule) {
+    hint = t('progression.followRule');
+  } else if (!hint && state === 'learning') {
+    hint = t('progression.learningHint');
   }
   const canRevert = !!onRevert && !!adjustment && isStartAdjustment(adjustment);
   return (
@@ -97,9 +102,11 @@ export function GuidanceSummary({
           <ChevronRight size={theme.iconSize.sm} color={theme.colors.accent.primary} />
         </View>
       </Pressable>
-      <Text className="text-sm leading-5 text-text-secondary" testID="set-adjustment-notice">
-        {hint}
-      </Text>
+      {hint ? (
+        <Text className="text-sm leading-5 text-text-secondary" testID="set-adjustment-notice">
+          {hint}
+        </Text>
+      ) : null}
       {canRevert ? (
         <Pressable
           accessibilityRole="button"

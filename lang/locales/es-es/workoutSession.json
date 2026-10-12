@@ -155,7 +155,8 @@
       "percentage": "Cada serie a un porcentaje de un máximo de entrenamiento que sube tras cada sesión completada."
     },
     "repsShort": "{{reps}} reps",
-    "tmEstimated": "El máximo de entrenamiento se estima con tu última sesión hasta que fijes uno."
+    "tmEstimated": "El máximo de entrenamiento se estima con tu última sesión hasta que fijes uno.",
+    "holdHint": "Los mismos objetivos que la última vez. Supéralos, o iguálalos con repeticiones de sobra, y subirán la próxima vez."
   },
   "trainingFlow": {
     "inline": "En línea",

@@ -258,7 +258,7 @@ export default function CheckinListScreen() {
                 {[t('weeklyReview.training'), t('weeklyReview.nutrition')].map((label, index) => (
                   <View
                     key={label}
-                    className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-full py-2 ${progressDone[index] ? 'bg-accent-primary10' : 'bg-bg-overlay'}`}
+                    className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-full py-2 ${progressDone[index] ? 'bg-accent-primary/10' : 'bg-bg-overlay'}`}
                   >
                     {progressDone[index] ? (
                       <CheckCircle2 size={theme.iconSize.sm} color={theme.colors.accent.primary} />
@@ -365,19 +365,21 @@ export default function CheckinListScreen() {
                       <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
                     </Pressable>
                   ))}
-                  {(showAllHistory ? legacy : legacy.slice(0, LEGACY_HISTORY_PREVIEW)).map((review) => (
-                    <Pressable
-                      key={review.id}
-                      accessibilityRole="button"
-                      onPress={() => setLegacyId(review.id)}
-                      className="min-h-14 flex-row items-center gap-3 rounded-xl border border-border-light bg-bg-card px-4 py-3"
-                    >
-                      <Text className="flex-1 text-text-primary">
-                        {t('weeklyReview.legacy')} · {formatDate(review.checkinDate)}
-                      </Text>
-                      <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
-                    </Pressable>
-                  ))}
+                  {(showAllHistory ? legacy : legacy.slice(0, LEGACY_HISTORY_PREVIEW)).map(
+                    (review) => (
+                      <Pressable
+                        key={review.id}
+                        accessibilityRole="button"
+                        onPress={() => setLegacyId(review.id)}
+                        className="min-h-14 flex-row items-center gap-3 rounded-xl border border-border-light bg-bg-card px-4 py-3"
+                      >
+                        <Text className="flex-1 text-text-primary">
+                          {t('weeklyReview.legacy')} · {formatDate(review.checkinDate)}
+                        </Text>
+                        <ChevronRight size={theme.iconSize.sm} color={theme.colors.text.tertiary} />
+                      </Pressable>
+                    )
+                  )}
                   {legacy.length > LEGACY_HISTORY_PREVIEW ? (
                     <Pressable
                       accessibilityRole="button"

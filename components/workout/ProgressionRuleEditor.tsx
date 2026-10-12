@@ -178,7 +178,7 @@ export function ProgressionRuleFields({
         return (
           <View
             key={type}
-            className={`overflow-hidden rounded-xl border ${isSelected ? 'bg-accent-primary10 border-accent-primary' : 'border-border-light bg-bg-card'}`}
+            className={`overflow-hidden rounded-xl border ${isSelected ? 'border-accent-primary bg-accent-primary/10' : 'border-border-light bg-bg-card'}`}
           >
             <Pressable
               accessibilityRole="radio"

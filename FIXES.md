@@ -249,6 +249,19 @@ In `react-native-css-interop` 0.2.6, `parseDeclaration` fell through from a full
 `utils/__tests__/nativewindBoxShadowPatch.test.ts` still pins it against the installed package, so
 a downgrade below 0.2.7 fails the suite rather than silently reintroducing the crash.
 
+## Invisible alpha-tinted backgrounds
+
+`theme.tokens.js` gives JavaScript 10%-opacity colours such as `accent.primary10` and
+`status.warning10`, but the Tailwind palette only contains the base colours. A class spelled
+`bg-accent-primary10` compiles to nothing: no build error, no type error, a transparent
+background. About thirty such classes shipped (done set rows, guidance badges, the ready Weekly
+Review card, goal and cycle modals). Use Tailwind's opacity modifier, `bg-accent-primary/10`.
+`utils/__tests__/tailwindAlphaClasses.test.ts` fails the suite on the broken spelling.
+
+A long-running web dev server can also serve a stale stylesheet that lacks classes added since it
+started (seen with `px-3.5` and `gap-x-2`), which looks like the same bug. Restart it with
+`--clear` before chasing a missing utility.
+
 ## Health Connect duplicate classes
 
 Do not install `expo-health-connect` beside `react-native-health-connect` 4.x. Both register an Expo

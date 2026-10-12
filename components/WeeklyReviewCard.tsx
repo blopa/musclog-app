@@ -46,7 +46,7 @@ export function WeeklyReviewCard({ compact = false }: { compact?: boolean }) {
       accessibilityRole="button"
       accessibilityLabel={`${t('weeklyReview.title')}, ${statusLabel}`}
       onPress={() => router.push('/app/nutrition/checkin-list')}
-      className={`flex-row items-center gap-3 rounded-2xl border ${ready ? 'bg-accent-primary10 border-accent-primary' : 'border-border-light bg-bg-card'} ${compact ? 'min-h-14 px-3 py-2' : 'p-4'}`}
+      className={`flex-row items-center gap-3 rounded-2xl border ${ready ? 'border-accent-primary bg-accent-primary/10' : 'border-border-light bg-bg-card'} ${compact ? 'min-h-14 px-3 py-2' : 'p-4'}`}
       testID="weekly-review-entry"
     >
       <View

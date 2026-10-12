@@ -99,7 +99,7 @@ export function IconPicker({ value, onSelect, label }: IconPickerProps) {
                   {...(Platform.OS === 'android' && { unstable_pressDelay: 130 })}
                   className={`h-14 w-14 items-center justify-center rounded-lg border ${
                     isSelected
-                      ? 'bg-accent-primary10 border-accent-primary'
+                      ? 'border-accent-primary bg-accent-primary/10'
                       : 'border-border-default bg-bg-card'
                   } active:opacity-70`}
                   style={{

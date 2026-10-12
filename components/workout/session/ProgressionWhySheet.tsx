@@ -152,8 +152,10 @@ export function ProgressionWhySheet({
   let lead = message;
   if (state === 'attention') {
     lead = t('progression.attentionHint');
+  } else if (!lead && rule) {
+    lead = t('progression.followRule');
   } else if (!lead) {
-    lead = t(rule ? 'progression.followRule' : 'progression.learningHint');
+    lead = t(state === 'learning' ? 'progression.learningHint' : 'progression.holdHint');
   }
 
   return (

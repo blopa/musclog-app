@@ -232,6 +232,7 @@
       "discardCancel": "Behouden",
       "alreadyActive": "Je hebt al een training bezig. Hervat of verwijder die eerst."
     },
-    "unnamed": "Naamloos"
+    "unnamed": "Naamloos",
+    "previewWorkout": "Voorbeeld van {{name}}"
   }
 }

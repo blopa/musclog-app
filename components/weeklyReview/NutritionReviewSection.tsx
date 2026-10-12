@@ -130,7 +130,7 @@ export function NutritionReviewSection({
   if (decided) {
     const applied = data.review?.nutritionDecision === 'apply';
     decision = (
-      <View className="bg-accent-primary10 flex-row items-start gap-3 rounded-xl p-3">
+      <View className="flex-row items-start gap-3 rounded-xl bg-accent-primary/10 p-3">
         <CalendarCheck size={theme.iconSize.md} color={theme.colors.accent.primary} />
         <View className="min-w-0 flex-1 gap-0.5">
           <Text className="text-base font-bold text-text-primary">
@@ -311,7 +311,7 @@ export function NutritionReviewSection({
       </View>
 
       {largeChange ? (
-        <View className="gap-1 rounded-xl bg-status-warning10 p-3" testID="review-large-change">
+        <View className="gap-1 rounded-xl bg-status-warning/10 p-3" testID="review-large-change">
           <Text className="text-sm font-semibold text-text-primary">
             {t('weeklyReview.largeChangeTitle')}
           </Text>
