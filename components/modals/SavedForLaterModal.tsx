@@ -11,6 +11,8 @@ import { TrackSavedForLaterFoodMealModal } from '@/components/modals/TrackSavedF
 import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { Q } from '@nozbe/watermelondb';
+import { database } from '@/database';
 import { MealType, SavedForLaterGroup, SavedForLaterItem } from '@/database/models';
 import { SavedForLaterService } from '@/database/services/SavedForLaterService';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -61,12 +63,29 @@ export function SavedForLaterModal({
     setIsLoading(true);
     try {
       const allGroups = await SavedForLaterService.getAllGroups();
+
+      const groupIds = allGroups.map((g) => g.id);
+
+      const allItems = await database
+        .get<SavedForLaterItem>('saved_for_later_items')
+        .query(Q.where('group_id', Q.oneOf(groupIds)))
+        .fetch();
+
+      const itemsByGroup = new Map<string, SavedForLaterItem[]>();
+      for (const item of allItems) {
+        const list = itemsByGroup.get(item.groupId) || [];
+        list.push(item);
+        itemsByGroup.set(item.groupId, list);
+      }
+
       const resolvedGroups = await Promise.all(
         allGroups.map(async (group) => {
-          const items: SavedForLaterItem[] = await group.items.fetch();
+          const items = itemsByGroup.get(group.id) || [];
           const nutrients = { calories: 0, protein: 0, carbs: 0, fat: 0 };
-          for (const item of items) {
-            const itemNutrients = await item.getNutrients();
+
+          const itemsNutrients = await Promise.all(items.map((item) => item.getNutrients()));
+
+          for (const itemNutrients of itemsNutrients) {
             nutrients.calories += itemNutrients.calories;
             nutrients.protein += itemNutrients.protein;
             nutrients.carbs += itemNutrients.carbs;
