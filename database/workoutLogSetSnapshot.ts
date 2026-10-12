@@ -19,6 +19,8 @@ export type WorkoutLogSetSnapshot = {
   setOrder: number;
   /** Raw JSON of a start adjustment; read it through `parseStartAdjustment`. */
   adjustmentJson?: string;
+  prescriptionJson?: string;
+  rirRecorded?: boolean;
   createdAt: number;
   updatedAt: number;
   deletedAt?: number;
@@ -72,6 +74,9 @@ export function toWorkoutLogSetSnapshot(set: WorkoutLogSet): WorkoutLogSetSnapsh
       typeof raw.adjustment_json === 'string'
         ? raw.adjustment_json
         : (set.adjustmentJson ?? undefined),
+    prescriptionJson:
+      typeof raw.prescription_json === 'string' ? raw.prescription_json : set.prescriptionJson,
+    rirRecorded: typeof raw.rir_recorded === 'boolean' ? raw.rir_recorded : set.rirRecorded,
     createdAt: numberValue(raw.created_at, set.createdAt, 0),
     updatedAt: numberValue(raw.updated_at, set.updatedAt, 0),
     deletedAt: optionalNumberValue(raw, 'deleted_at', set.deletedAt),

@@ -7,6 +7,7 @@ import { kgToDisplay } from '@/utils/unitConversion';
 jest.mock('@nozbe/watermelondb', () => ({
   Q: {
     where: jest.fn((field: string, condition: any) => ({ field, condition })),
+    on: jest.fn((table: string, clauses: unknown) => ({ table, clauses })),
     eq: jest.fn((value: any) => value),
     notEq: jest.fn((value: any) => value),
     gte: jest.fn((value: any) => value),
@@ -167,8 +168,8 @@ describe('WorkoutProgressionService', () => {
 
     /** Last session: `weight` kg for 8 reps, the given reps in reserve on every working set. */
     const lastSession = (weight: number, repsInReserve: number) => [
-      { weight, reps: 8, repsInReserve, setOrder: 1 },
-      { weight, reps: 8, repsInReserve, setOrder: 2 },
+      { weight, reps: 8, repsInReserve, setOrder: 1, completionStatus: 'performed' },
+      { weight, reps: 8, repsInReserve, setOrder: 2, completionStatus: 'performed' },
     ];
 
     beforeEach(() => {

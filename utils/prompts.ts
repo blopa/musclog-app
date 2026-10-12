@@ -12,6 +12,7 @@ import { ExerciseSuggestionService } from '@/database/services/ExerciseSuggestio
 import { FoodService } from '@/database/services/FoodService';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { NutritionService } from '@/database/services/NutritionService';
+import { NutritionTargetService } from '@/database/services/NutritionTargetService';
 import { SettingsService } from '@/database/services/SettingsService';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import { UserService } from '@/database/services/UserService';
@@ -28,7 +29,6 @@ import {
   parseLocalCalendarDate,
 } from './calendarDate';
 import { getNutritionLogHistoryPrompt, getWorkoutLogHistoryPrompt } from './coachPromptHistory';
-import { resolveDailyMacros } from './dynamicNutritionTarget';
 import { formatAppInteger } from './formatAppNumber';
 import { formatDisplayWeightKg } from './formatDisplayWeight';
 import { wrapUserContent } from './promptSanitizer';
@@ -875,7 +875,8 @@ export const getMealCritiquePrompt = async (
 
   let nutritionGoalInfo = '';
   if (nutritionGoal) {
-    const macros = (await resolveDailyMacros(nutritionGoal, new Date())) ?? nutritionGoal;
+    const macros =
+      (await NutritionTargetService.resolve(nutritionGoal, new Date())) ?? nutritionGoal;
     nutritionGoalInfo = [
       'Daily nutrition targets:',
       `- Calories: ${formatAppInteger(language, Math.round(macros.totalCalories))} kcal`,

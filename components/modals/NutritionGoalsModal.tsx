@@ -39,6 +39,7 @@ function buildNutritionGoalsFromInitialValues(
     targetDate: initialGoals.targetDate ?? null,
     goalStartDate: initialGoals.goalStartDate ?? null,
     isDynamic: initialGoals.isDynamic ?? false,
+    targetMode: initialGoals.targetMode,
   };
 }
 

@@ -6,6 +6,7 @@ import { ActivityIndicator, View } from 'react-native';
 
 import ConfettiOverlay from '@/components/ConfettiOverlay';
 import { ErrorStateCard } from '@/components/theme/ErrorStateCard';
+import { WorkoutSummaryProgression } from '@/components/workout/WorkoutSummaryProgression';
 import { WorkoutSummaryCelebration } from '@/components/WorkoutSummaryCelebration';
 import { useUnreadChat } from '@/context/UnreadChatContext';
 import type { WorkoutCompletedPayload } from '@/database/models/ChatMessage';
@@ -302,7 +303,9 @@ export default function WorkoutSummaryScreen() {
         personalRecords={personalRecords}
         caloriesBurned={caloriesBurned}
         goalProgress={goalProgress}
-      />
+      >
+        {workoutLogId ? <WorkoutSummaryProgression logId={workoutLogId} /> : null}
+      </WorkoutSummaryCelebration>
       {showConfetti ? <ConfettiOverlay /> : null}
     </>
   );

@@ -74,6 +74,7 @@ import { StepperInlineInput } from './theme/StepperInlineInput';
 const CALORIES_STEP = 12;
 
 export type NutritionGoals = {
+  targetMode?: import('@/database/models/NutritionGoal').NutritionTargetMode;
   totalCalories: number;
   protein: number;
   carbs: number;
@@ -316,7 +317,10 @@ export function NutritionGoalsBody({
   );
   const [isTargetDatePickerVisible, setIsTargetDatePickerVisible] = useState(false);
   const [isGoalStartDatePickerVisible, setIsGoalStartDatePickerVisible] = useState(false);
-  const [isDynamic, setIsDynamic] = useState(initialGoals.isDynamic ?? false);
+  const [targetMode, setTargetMode] = useState(
+    initialGoals.targetMode ?? (initialGoals.isDynamic ? 'daily' : 'manual')
+  );
+  const isDynamic = targetMode === 'daily';
   const [dynamicPreview, setDynamicPreview] = useState<ResolvedMacros | null>(null);
   const [isResolvingDynamicPreview, setIsResolvingDynamicPreview] = useState(false);
   const [userHeightM, setUserHeightM] = useState<number | null>(null);
@@ -411,7 +415,7 @@ export function NutritionGoalsBody({
       setTargetFFMI(initialGoals.targetFFMI ?? null);
       setTargetDate(initialGoals.targetDate ?? null);
       setGoalStartDate(initialGoals.goalStartDate ?? defaultGoalStartDate);
-      setIsDynamic(initialGoals.isDynamic ?? false);
+      setTargetMode(initialGoals.targetMode ?? (initialGoals.isDynamic ? 'daily' : 'manual'));
       setDynamicPreview(null);
       setIsResolvingDynamicPreview(false);
       didAutofillDynamicTargetWeight.current = false;
@@ -436,6 +440,7 @@ export function NutritionGoalsBody({
     initialGoals.fiber,
     initialGoals.goalStartDate,
     initialGoals.isDynamic,
+    initialGoals.targetMode,
     initialGoals.protein,
     initialGoals.targetBMI,
     initialGoals.targetBodyFat,
@@ -887,6 +892,7 @@ export function NutritionGoalsBody({
         targetDate,
         goalStartDate,
         isDynamic,
+        targetMode,
       });
     }
   }, [
@@ -903,6 +909,7 @@ export function NutritionGoalsBody({
     targetDate,
     goalStartDate,
     isDynamic,
+    targetMode,
     onFormChange,
     units,
   ]);
@@ -922,6 +929,7 @@ export function NutritionGoalsBody({
       targetDate,
       goalStartDate,
       isDynamic,
+      targetMode,
     } as NutritionGoals);
   }, [
     effectiveCalories,
@@ -932,6 +940,7 @@ export function NutritionGoalsBody({
     eatingPhase,
     goalStartDate,
     isDynamic,
+    targetMode,
     onSave,
     targetBMI,
     targetBodyFat,
@@ -988,10 +997,13 @@ export function NutritionGoalsBody({
           <SegmentedControl
             options={[
               { label: t('nutritionGoals.manual'), value: 'manual' },
-              { label: t('nutritionGoals.dynamic'), value: 'dynamic' },
+              { label: t('weeklyReview.modes.daily'), value: 'daily' },
+              { label: t('weeklyReview.modes.weekly'), value: 'weekly' },
             ]}
-            value={isDynamic ? 'dynamic' : 'manual'}
-            onValueChange={(val) => setIsDynamic(val === 'dynamic')}
+            value={targetMode}
+            onValueChange={(val) =>
+              setTargetMode(val === 'weekly' ? 'weekly' : val === 'daily' ? 'daily' : 'manual')
+            }
           />
         </View>
 

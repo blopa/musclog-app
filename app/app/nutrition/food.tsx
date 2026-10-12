@@ -61,6 +61,7 @@ import { Button } from '@/components/theme/Button';
 import { EmptyStateCard } from '@/components/theme/EmptyStateCard';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { WeeklyReviewCard } from '@/components/WeeklyReviewCard';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { useSmartCamera } from '@/context/SmartCameraContext';
 import { useSnackbar } from '@/context/SnackbarContext';
@@ -1567,6 +1568,8 @@ export default function FoodScreen() {
               </>
             ) : null}
 
+            <WeeklyReviewCard compact />
+
             {/* Empty State */}
             {!isScreenLoading && hasNoFood ? (
               <EmptyStateCard
@@ -1595,6 +1598,14 @@ export default function FoodScreen() {
             {!isScreenLoading && showTrackedDayContent && !isFastedDayView ? (
               <AnimatedContent key="tracking" style={{ gap: theme.spacing.gap['xl'] }}>
                 <>
+                  {resolvedMacros ? (
+                    <Text className="text-sm text-text-secondary">
+                      {t(`weeklyReview.modes.${resolvedMacros.mode}`)}
+                      {resolvedMacros.effectiveFrom
+                        ? ` · ${t('weeklyReview.effective', { date: new Intl.DateTimeFormat(appLocale, { dateStyle: 'medium' }).format(resolvedMacros.effectiveFrom) })}`
+                        : ''}
+                    </Text>
+                  ) : null}
                   {/* Daily Summary Card */}
                   {nutritionGoal?.isDynamic ? (
                     <View

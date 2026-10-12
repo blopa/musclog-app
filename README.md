@@ -66,6 +66,8 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 - Group workouts into named weekly or rotating plans, with multi-plan membership and an Unplanned section
 - Browse built-in workout programs, including a five-session cable superset split
 - Schedule workouts on a weekly basis with reminders
+- Log directly in Inline or Guided views with shared inputs, one-tap completion, and persistent rest timers
+- Set per-exercise progression rules, see explained upcoming targets, and undo changes to unfinished sets
 - View lifting volume stats and progression over time
 - Browse 873 built-in exercises with localized names and instructions, muscle-group categorization, and two-frame technique photos
 - **Superset support**: Group exercises with a shared group ID for superset tracking
@@ -90,7 +92,7 @@ Musclog is a cross-platform mobile fitness application built with React Native a
 - **Retrospective Logging**: Log meals for past dates
 - **Fasting Days**: Optionally mark a no-food day as an intentional fast so it counts as a real 0-calorie day in your TDEE, averages, and streaks — while forgotten (unflagged) empty days are skipped
 - **Empirical TDEE**: Calorie needs estimated from logged intake and smoothed trend-weight changes
-- **Weekly Progress Check-ins**: Automated weekly check-ins that use trend weight alongside caloric adherence and activity levels. Get status updates (On Track, Ahead, Behind) and readjust goals based on real-world progress.
+- **Weekly Review**: Review training and nutrition from Home, Workouts, or Food. Apply explained calorie/macronutrient targets beginning tomorrow, keep current targets, or edit the recommendation. Approved targets stay stable between reviews; Manual and Daily automatic modes remain available.
 
 ### 🌙 Menstrual Cycle Tracking
 

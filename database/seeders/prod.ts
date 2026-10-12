@@ -347,6 +347,7 @@ async function runSeedProductionData(options?: SeedProductionDataOptions): Promi
     // even when the user intended metric.
     const defaultUnits = getDefaultUnits();
     await SettingsService.setUnits(defaultUnits);
+    await SettingsService.setWorkoutView('inline');
 
     // Default the manual-entry carbs convention from units: imperial users read US labels
     // (Total Carbohydrate includes fiber) → include fiber; metric users read EU labels

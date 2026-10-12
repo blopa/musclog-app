@@ -11,6 +11,7 @@ import { NAV_DESTINATIONS } from '@/components/navigation/navDestinations';
 import type { NavItemKey } from '@/constants/settings';
 import { isNavItemAvailable, useNavigationItems } from '@/hooks/useNavigationItems';
 import { useTheme } from '@/hooks/useTheme';
+import { useWeeklyReviewStatus } from '@/hooks/useWeeklyReviewStatus';
 import { addOpacityToHex } from '@/theme';
 
 type NavigationMenuProps = {
@@ -24,15 +25,27 @@ type NavSlotButtonProps = {
   active: boolean;
   onPress: () => void;
   onPressIn?: () => void;
+  badge?: boolean;
+  accessibilityLabel?: string;
 };
 
 /**
  * One tab in the bottom bar. Every destination — the fixed Home tab, each customisable slot —
  * renders through this, so active colouring and stroke weights are defined once.
  */
-function NavSlotButton({ icon, label, active, onPress, onPressIn }: NavSlotButtonProps) {
+function NavSlotButton({
+  icon,
+  label,
+  active,
+  onPress,
+  onPressIn,
+  badge,
+  accessibilityLabel,
+}: NavSlotButtonProps) {
   return (
     <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel ?? label}
       className="flex-1 items-center justify-center gap-1"
       onPress={onPress}
       onPressIn={onPressIn}
@@ -41,6 +54,12 @@ function NavSlotButton({ icon, label, active, onPress, onPressIn }: NavSlotButto
         className={`h-10 w-16 items-center justify-center rounded-lg ${active ? 'bg-bg-navActive' : ''}`}
       >
         {icon}
+        {badge ? (
+          <View
+            className="absolute right-2 top-1 h-2 w-2 rounded-full bg-accent-primary"
+            accessible={false}
+          />
+        ) : null}
       </View>
       <Text className={`text-xs font-medium ${active ? 'text-text-accent' : 'text-text-tertiary'}`}>
         {label}
@@ -98,6 +117,7 @@ export const NavigationMenu = memo(function NavigationMenu({
   const router = useRouter();
   const pathname = usePathname();
   const { rawSlots, isCycleActive } = useNavigationItems();
+  const weeklyReview = useWeeklyReviewStatus();
   const { 1: navSlot1, 2: navSlot2, 3: navSlot3 } = rawSlots;
   const { width: screenWidth } = useWindowDimensions();
   const isSmallScreen = screenWidth < 350;
@@ -160,6 +180,8 @@ export const NavigationMenu = memo(function NavigationMenu({
           key={slotKey}
           active={active}
           label={t(NAV_DESTINATIONS[slotKey].labelKey)}
+          accessibilityLabel={`${t(NAV_DESTINATIONS[slotKey].labelKey)}${slotKey === 'checkin' && weeklyReview?.ready ? ` · ${t('weeklyReview.ready')}` : ''}`}
+          badge={Boolean(slotKey === 'checkin' && weeklyReview?.ready)}
           onPress={() => {
             if (!active || slot.navigateWhenActive) {
               go();
@@ -183,7 +205,7 @@ export const NavigationMenu = memo(function NavigationMenu({
         />
       );
     },
-    [isPathActive, isCycleActive, onCoachPress, router, t, theme]
+    [isPathActive, isCycleActive, onCoachPress, router, t, theme, weeklyReview?.ready]
   );
 
   const homeActive = isPathActive('/');

@@ -33,6 +33,7 @@ import Note from './models/Note';
 import NutritionCheckin from './models/NutritionCheckin';
 import NutritionGoal from './models/NutritionGoal';
 import NutritionLog from './models/NutritionLog';
+import NutritionTargetPeriod from './models/NutritionTargetPeriod';
 import PeriodLog from './models/PeriodLog';
 import SavedForLaterGroup from './models/SavedForLaterGroup';
 import SavedForLaterItem from './models/SavedForLaterItem';
@@ -42,6 +43,7 @@ import Supplement from './models/Supplement';
 import User from './models/User';
 import UserMetric from './models/UserMetric';
 import UserMetricsNote from './models/UserMetricsNote';
+import WeeklyReview from './models/WeeklyReview';
 import WorkoutLog from './models/WorkoutLog';
 import WorkoutLogExercise from './models/WorkoutLogExercise';
 import WorkoutLogSet from './models/WorkoutLogSet';
@@ -84,6 +86,8 @@ export const database = new Database({
     WorkoutLogExercise,
     WorkoutLogSet,
     NutritionGoal,
+    NutritionTargetPeriod,
+    WeeklyReview,
     NutritionCheckin,
     Food,
     FoodPortion,

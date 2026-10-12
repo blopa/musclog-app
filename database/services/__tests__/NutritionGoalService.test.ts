@@ -131,10 +131,10 @@ describe('NutritionGoalService', () => {
         extend: jest.fn().mockReturnThis(),
       };
 
-      const mockCreate = jest.fn().mockResolvedValue(createMockNutritionGoal(mockGoalInput));
+      const mockCreate = jest.fn().mockReturnValue(createMockNutritionGoal(mockGoalInput));
       const mockCollection = {
         query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
+        prepareCreate: mockCreate,
       };
 
       mockDatabase.get.mockReturnValue(mockCollection as any);
@@ -171,7 +171,7 @@ describe('NutritionGoalService', () => {
       const now = Date.now();
       const mockCurrentGoal = createMockNutritionGoal({
         effectiveUntil: null,
-        update: jest.fn((callback) => {
+        prepareUpdate: jest.fn((callback) => {
           callback({ effectiveUntil: now, updatedAt: now });
           return Promise.resolve();
         }),
@@ -182,10 +182,10 @@ describe('NutritionGoalService', () => {
         extend: jest.fn().mockReturnThis(),
       };
 
-      const mockCreate = jest.fn().mockResolvedValue(createMockNutritionGoal(mockGoalInput));
+      const mockCreate = jest.fn().mockReturnValue(createMockNutritionGoal(mockGoalInput));
       const mockCollection = {
         query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
+        prepareCreate: mockCreate,
       };
 
       mockDatabase.get.mockReturnValue(mockCollection as any);
@@ -196,8 +196,8 @@ describe('NutritionGoalService', () => {
 
       await NutritionGoalService.saveGoals(mockGoalInput);
 
-      expect(mockCurrentGoal.update).toHaveBeenCalled();
-      const updateCall = mockCurrentGoal.update.mock.calls[0][0];
+      expect(mockCurrentGoal.prepareUpdate).toHaveBeenCalled();
+      const updateCall = mockCurrentGoal.prepareUpdate.mock.calls[0][0];
       const mockUpdated = {} as any;
       updateCall(mockUpdated);
       expect(mockUpdated.effectiveUntil).toBeGreaterThan(0);
@@ -210,10 +210,10 @@ describe('NutritionGoalService', () => {
         extend: jest.fn().mockReturnThis(),
       };
 
-      const mockCreate = jest.fn().mockResolvedValue(createMockNutritionGoal(mockGoalInput));
+      const mockCreate = jest.fn().mockReturnValue(createMockNutritionGoal(mockGoalInput));
       const mockCollection = {
         query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
+        prepareCreate: mockCreate,
       };
 
       mockDatabase.get.mockReturnValue(mockCollection as any);
@@ -241,10 +241,10 @@ describe('NutritionGoalService', () => {
         extend: jest.fn().mockReturnThis(),
       };
 
-      const mockCreate = jest.fn().mockResolvedValue(createMockNutritionGoal());
+      const mockCreate = jest.fn().mockReturnValue(createMockNutritionGoal());
       const mockCollection = {
         query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
+        prepareCreate: mockCreate,
       };
 
       mockDatabase.get.mockReturnValue(mockCollection as any);
@@ -272,10 +272,10 @@ describe('NutritionGoalService', () => {
         extend: jest.fn().mockReturnThis(),
       };
 
-      const mockCreate = jest.fn().mockResolvedValue(createMockNutritionGoal());
+      const mockCreate = jest.fn().mockReturnValue(createMockNutritionGoal());
       const mockCollection = {
         query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
+        prepareCreate: mockCreate,
       };
 
       mockDatabase.get.mockReturnValue(mockCollection as any);
@@ -300,15 +300,23 @@ describe('NutritionGoalService', () => {
         createdAt: startDate - 7 * 24 * 60 * 60 * 1000,
         effectiveUntil: null,
       });
+      existingGoal.prepareUpdate = jest.fn((build) => {
+        build(existingGoal);
+        return existingGoal;
+      });
       const mockFetch = jest.fn().mockResolvedValue([existingGoal]);
       const mockQuery = {
         fetch: mockFetch,
         extend: jest.fn().mockReturnThis(),
       };
-      const mockCreate = jest.fn().mockResolvedValue(createMockNutritionGoal({ isDynamic: true }));
+      const mockCreate = jest.fn((build) => {
+        const row = {} as any;
+        build(row);
+        return row;
+      });
       const mockCollection = {
         query: jest.fn().mockReturnValue(mockQuery),
-        create: mockCreate,
+        prepareCreate: mockCreate,
       };
 
       mockDatabase.get.mockReturnValue(mockCollection as any);

@@ -1,18 +1,9 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useFocusEffect } from 'expo-router/react-navigation';
-import {
-  Footprints,
-  Layers3,
-  Pencil,
-  Plus,
-  Repeat,
-  Search,
-  Target,
-  Trash2,
-} from 'lucide-react-native';
+import { Footprints, Layers3, Pencil, Plus, Search, Target, Trash2 } from 'lucide-react-native';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 import { BottomPopUpMenu } from '@/components/BottomPopUpMenu';
@@ -30,11 +21,12 @@ import GoalsManagementModal from '@/components/modals/GoalsManagementModal';
 import { LogCardioModal } from '@/components/modals/LogCardioModal';
 import { WorkoutSessionHistoryModal } from '@/components/modals/WorkoutSessionHistoryModal';
 import WorkoutSessionOverviewModal from '@/components/modals/WorkoutSessionOverviewModal';
-import { Button } from '@/components/theme/Button';
 import { MenuButton } from '@/components/theme/MenuButton';
 import { TextInput } from '@/components/theme/TextInput';
+import { WeeklyReviewCard } from '@/components/WeeklyReviewCard';
 import { usePlanAssignment } from '@/components/workout/usePlanAssignment';
 import { WorkoutLibraryContent } from '@/components/workout/WorkoutLibraryContent';
+import { WorkoutTodayCard } from '@/components/workout/WorkoutTodayCard';
 import { WorkoutDetailsMenu } from '@/components/WorkoutDetailsMenu';
 import { ConfettiActivity } from '@/context/ConfettiInteractionsContext';
 import { useSnackbar } from '@/context/SnackbarContext';
@@ -304,6 +296,13 @@ export default function WorkoutsScreen() {
             </View>
             {/* Add spacing below header */}
             <View style={{ height: theme.spacing.gap.lg }} />
+            <View className="mb-4 gap-3">
+              <WorkoutTodayCard
+                onDiscard={() => setIsDiscardInterruptedConfirmVisible(true)}
+                onPreview={(templateId, planId) => setPreviewTarget({ templateId, planId })}
+              />
+              <WeeklyReviewCard compact />
+            </View>
             {/* Filter Tabs */}
             <FilterTabs
               tabs={FILTER_TABS}
@@ -325,56 +324,6 @@ export default function WorkoutsScreen() {
 
           {/* Workouts List */}
           <View className="mx-4 mb-8 gap-4">
-            {/* Interrupted Session Banner */}
-            {interruptedWorkoutLog ? (
-              <View className="z-10 bg-bg-primary">
-                <View
-                  className="flex-row items-center gap-4 rounded-xl border bg-bg-card p-4 shadow-sm"
-                  style={{ borderColor: theme.colors.background.ink5 }}
-                >
-                  <View className="h-10 w-10 items-center justify-center rounded-full bg-accent-primary/10">
-                    <Repeat size={theme.iconSize.md} color={theme.colors.accent.primary} />
-                  </View>
-                  <View className="flex-1">
-                    <View className="flex-row items-center justify-between">
-                      <Text
-                        className="flex-1 text-base font-bold text-text-primary"
-                        numberOfLines={1}
-                      >
-                        {interruptedWorkoutLog.workoutName ?? t('freeTraining.title')}
-                      </Text>
-                      <View className="ml-2 rounded-full bg-accent-primary/10 px-2 py-0.5">
-                        <Text className="text-[10px] font-bold uppercase tracking-wider text-text-accent">
-                          {t('workout.inProgress')}
-                        </Text>
-                      </View>
-                    </View>
-                    <Text className="text-xs text-text-secondary" numberOfLines={1}>
-                      {t('workouts.interruptedSession.description')}
-                    </Text>
-                    <View className="mt-3 flex-row gap-2">
-                      <Button
-                        label={t('workouts.interruptedSession.resume')}
-                        size="xs"
-                        width="flex-1"
-                        variant="gradientCta"
-                        onPress={() => {
-                          setSelectedWorkoutLogId(interruptedWorkoutLog.id);
-                          setIsWorkoutOverviewVisible(true);
-                        }}
-                      />
-                      <Button
-                        label={t('workouts.interruptedSession.discard')}
-                        size="xs"
-                        variant="secondary"
-                        onPress={() => setIsDiscardInterruptedConfirmVisible(true)}
-                      />
-                    </View>
-                  </View>
-                </View>
-              </View>
-            ) : null}
-
             <WorkoutLibraryContent
               activeFilter={activeFilter}
               error={error}

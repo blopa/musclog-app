@@ -1,256 +1,329 @@
 import { type Model, Q } from '@nozbe/watermelondb';
 
+import { commitPrepared } from '@/database/commitPrepared';
 import { database } from '@/database/database-instance';
 import type Exercise from '@/database/models/Exercise';
 import type WorkoutLogExercise from '@/database/models/WorkoutLogExercise';
 import type WorkoutLogSet from '@/database/models/WorkoutLogSet';
-import { fetchByIds, fetchMapByIds, MAX_BATCH_OPERATIONS } from '@/database/queryByIds';
+import type WorkoutTemplateExercise from '@/database/models/WorkoutTemplateExercise';
+import type WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
+import { fetchByIds, fetchMapByIds } from '@/database/queryByIds';
+import { isBarLoadedEquipment } from '@/utils/gym';
 import { loadStepFor } from '@/utils/loadIncrement';
+import { platesPerSide } from '@/utils/plateCalculator';
+import {
+  type ExerciseRecommendation,
+  projectExerciseProgression,
+} from '@/utils/progressionProjection';
+import {
+  type HistorySession,
+  parseProgressionRule,
+  parseSessionProgressionState,
+  PROGRESSION_HISTORY_SESSIONS,
+  serializeSessionProgression,
+} from '@/utils/progressionRules';
 import {
   parseStartAdjustment,
   revertTargetFor,
   serializeStartAdjustment,
 } from '@/utils/setAdjustment';
+import { parseSetPrescription, serializeSetPrescription } from '@/utils/setPrescription';
 import {
-  computeStartTarget,
-  type LastWorkingSession,
-  planStartChanges,
-} from '@/utils/setProgression';
-import { isPlannedWorkoutSet, isWarmupSet, WARMUP_SET_TYPE } from '@/utils/workoutSetCompletion';
+  isPerformedWorkoutSet,
+  isPlannedWorkoutSet,
+  isWarmupSet,
+} from '@/utils/workoutSetCompletion';
 
 import { ExerciseUserSettingsService } from './ExerciseUserSettingsService';
 import { GymService } from './GymService';
 import { SettingsService } from './SettingsService';
 
-/** Exercises whose targets are not a load and reps to progress. */
-const NON_PROGRESSING_MECHANICS: readonly string[] = ['cardio', 'mobility', 'stretching'];
+export type TemplateRecommendation = ExerciseRecommendation & {
+  templateExerciseId: string;
+  exercise: Exercise;
+};
 
-/**
- * Start-of-workout progression: the numbers a freshly started workout begins at, and undoing them.
- * The arithmetic is pure (`computeStartTarget`, `planStartChanges`); this owns the reads and the
- * one writer around it.
- */
 export class WorkoutProgressionService {
-  /**
-   * Starts each exercise of a freshly created workout from how its last session went, when the
-   * user's autonomy setting is `suggest`: more load, more reps, a deload, or a repeat — each
-   * recorded on the set (`adjustment_json`) so the session can say what it did and offer to undo it.
-   *
-   * The sets it rewrites are read and written in ONE writer. History (the previous sessions) is
-   * read before it, in parallel: this write cannot change another workout's sets, so there is no
-   * check to repeat, and holding the write lock across one query per exercise would block every
-   * other write in the app for the length of them. A workout that has already begun (any set
-   * performed or skipped) or that was already progressed is left alone, so this is safe to call
-   * twice. Returns how many sets were rewritten.
-   */
-  static async applyStartProgression(workoutLogId: string): Promise<number> {
-    if ((await SettingsService.getWorkoutAutonomy()) !== 'suggest') {
-      return 0;
-    }
+  static async projectTemplate(templateId: string): Promise<TemplateRecommendation[]> {
+    const rows = await database
+      .get<WorkoutTemplateExercise>('workout_template_exercises')
+      .query(
+        Q.where('template_id', templateId),
+        Q.where('deleted_at', Q.eq(null)),
+        Q.sortBy('exercise_order', Q.asc)
+      )
+      .fetch();
+    const sets = await fetchByIds<WorkoutTemplateSet>(
+      'workout_template_sets',
+      'template_exercise_id',
+      rows.map((row) => row.id),
+      Q.where('deleted_at', Q.eq(null))
+    );
+    const context = await this.context();
+    const exercises = await fetchMapByIds<Exercise>(
+      'exercises',
+      'id',
+      rows.map((row) => row.exerciseId)
+    );
+    return (
+      await Promise.all(
+        rows.map(async (row) => {
+          const exercise = exercises.get(row.exerciseId);
+          if (!exercise) {
+            return null;
+          }
+          const history = await this.history(
+            row.exerciseId,
+            undefined,
+            parseProgressionRule(row.progressionJson) ? row.id : undefined
+          );
+          const planned = sets
+            .filter((set) => set.templateExerciseId === row.id && !isWarmupSet(set))
+            .sort((a, b) => a.setOrder - b.setOrder)
+            .map((set) => ({ id: set.id, weight: set.targetWeight, reps: set.targetReps }));
+          const projection = projectExerciseProgression({
+            planned,
+            history,
+            rule: parseProgressionRule(row.progressionJson),
+            step: loadStepFor(exercise.equipmentType, context.gym, context.unitsFor(exercise.id)),
+            automatic: context.automatic,
+            progressionMode: context.mode,
+            isCompound: exercise.mechanicType === 'compound',
+            isBodyweight: exercise.equipmentType === 'bodyweight',
+          });
+          if (
+            context.gym &&
+            isBarLoadedEquipment(exercise.equipmentType) &&
+            projection.sets.some((set) => {
+              const load = platesPerSide(set.weight, context.gym!);
+              return load.belowBar || load.remainderKg > 0.05;
+            })
+          ) {
+            projection.status = 'attention';
+          }
+          return { ...projection, templateExerciseId: row.id, exercise };
+        })
+      )
+    ).filter((row): row is TemplateRecommendation => row !== null);
+  }
 
-    const gymRead = GymService.getActiveGym().catch(() => null);
-    const [progressionMode, gym, unitsFor, lastByExercise] = await Promise.all([
+  private static async context() {
+    const [autonomy, mode, gym] = await Promise.all([
+      SettingsService.getWorkoutAutonomy(),
       SettingsService.getProgressionMode(),
-      gymRead,
-      gymRead.then((activeGym) => ExerciseUserSettingsService.getWeightUnitsResolver(activeGym)),
-      WorkoutProgressionService.getLastWorkingSessions(workoutLogId),
+      GymService.getActiveGym().catch(() => null),
     ]);
-    if (lastByExercise.size === 0) {
+    return {
+      automatic: autonomy === 'suggest',
+      mode,
+      gym,
+      unitsFor: await ExerciseUserSettingsService.getWeightUnitsResolver(gym),
+    };
+  }
+
+  static async applyStartProgression(workoutLogId: string): Promise<number> {
+    const logExercises = await this.liveLogExercises(workoutLogId);
+    const context = await this.context();
+    if (
+      !context.automatic &&
+      !logExercises.some((row) => parseProgressionRule(row.progressionJson))
+    ) {
       return 0;
     }
-
-    return await database.write(async () => {
-      const logExercises = await WorkoutProgressionService.liveLogExercises(workoutLogId);
-      if (logExercises.length === 0) {
-        return 0;
-      }
-
+    const histories = await Promise.all(
+      logExercises.map((row) =>
+        this.history(
+          row.exerciseId,
+          workoutLogId,
+          parseProgressionRule(row.progressionJson) ? row.templateExerciseId : undefined
+        )
+      )
+    );
+    if (
+      !histories.some((history) => history.length) &&
+      !logExercises.some((row) => parseProgressionRule(row.progressionJson))
+    ) {
+      return 0;
+    }
+    const exercises = await fetchMapByIds<Exercise>(
+      'exercises',
+      'id',
+      logExercises.map((row) => row.exerciseId)
+    );
+    return database.write(async () => {
       const sets = await fetchByIds<WorkoutLogSet>(
         'workout_log_sets',
         'log_exercise_id',
-        logExercises.map((exercise) => exercise.id),
+        logExercises.map((row) => row.id),
         Q.where('deleted_at', Q.eq(null))
       );
-      if (sets.some((set) => !isPlannedWorkoutSet(set) || set.adjustmentJson)) {
+      if (
+        sets.some(
+          (set) =>
+            !isPlannedWorkoutSet(set) ||
+            set.adjustmentJson ||
+            parseSetPrescription(set.prescriptionJson)?.established
+        )
+      ) {
         return 0;
       }
-
-      const exercises = await fetchMapByIds<Exercise>(
-        'exercises',
-        'id',
-        logExercises.map((exercise) => exercise.exerciseId)
-      );
-
-      const now = Date.now();
       const operations: Model[] = [];
-      for (const logExercise of logExercises) {
-        const exercise = exercises.get(logExercise.exerciseId);
-        const last = lastByExercise.get(logExercise.exerciseId);
-        if (!exercise || !last || NON_PROGRESSING_MECHANICS.includes(exercise.mechanicType)) {
-          continue;
+      let changed = 0;
+      await commitPrepared(database, [...sets, ...logExercises], () => {
+        for (const [index, row] of logExercises.entries()) {
+          const exercise = exercises.get(row.exerciseId);
+          if (!exercise || ['cardio', 'mobility', 'stretching'].includes(exercise.mechanicType)) {
+            continue;
+          }
+          const planned = sets
+            .filter((set) => set.logExerciseId === row.id && !isWarmupSet(set))
+            .sort((a, b) => a.setOrder - b.setOrder);
+          const rule = parseProgressionRule(row.progressionJson);
+          const projection = projectExerciseProgression({
+            planned: planned.map((set) => ({ id: set.id, weight: set.weight, reps: set.reps })),
+            history: histories[index],
+            rule,
+            step: loadStepFor(exercise.equipmentType, context.gym, context.unitsFor(exercise.id)),
+            automatic: context.automatic,
+            progressionMode: context.mode,
+            isCompound: exercise.mechanicType === 'compound',
+            isBodyweight: exercise.equipmentType === 'bodyweight',
+          });
+          const changes = new Map(projection.changes.map((change) => [change.setId, change]));
+          changed += changes.size;
+          for (const [setIndex, set] of planned.entries()) {
+            const change = changes.get(set.id);
+            const plan = { weightKg: set.weight, reps: set.reps };
+            operations.push(
+              set.prepareUpdate((record) => {
+                record.prescriptionJson = serializeSetPrescription({
+                  established: true,
+                  plan,
+                  recommendation: change?.adjustment.now ?? plan,
+                  explanation: change?.adjustment,
+                  previous: histories[index][0]?.sets.find(
+                    (entry, i) => (entry.prescribedIndex ?? i) === setIndex
+                  ),
+                });
+                if (change) {
+                  record.weight = change.weightKg;
+                  record.reps = change.reps;
+                  record.adjustmentJson = serializeStartAdjustment(change.adjustment);
+                }
+                record.updatedAt = Date.now();
+              })
+            );
+          }
+          if (rule && projection.state) {
+            operations.push(
+              row.prepareUpdate((record) => {
+                record.progressionJson = serializeSessionProgression(rule, projection.state);
+                record.updatedAt = Date.now();
+              })
+            );
+          }
         }
-
-        const planned = sets
-          .filter((set) => set.logExerciseId === logExercise.id && !isWarmupSet(set))
-          .sort((a, b) => a.setOrder - b.setOrder);
-        if (planned.length === 0) {
-          continue;
-        }
-
-        const target = computeStartTarget({
-          last,
-          // Added load on a bodyweight move is not where its progression lives: reps are.
-          progressionMode:
-            exercise.equipmentType === 'bodyweight' && last.weightKg === 0
-              ? 'reps_first'
-              : progressionMode,
-          isCompound: exercise.mechanicType === 'compound',
-          ...loadStepFor(exercise.equipmentType, gym, unitsFor(exercise.id)),
-        });
-
-        const byId = new Map(planned.map((set) => [set.id, set]));
-        for (const change of planStartChanges(
-          planned.map((set) => ({ id: set.id, weight: set.weight, reps: set.reps })),
-          target,
-          last
-        )) {
-          operations.push(
-            byId.get(change.setId)!.prepareUpdate((record) => {
-              record.weight = change.weightKg;
-              record.reps = change.reps;
-              record.adjustmentJson = serializeStartAdjustment(change.adjustment);
-              record.updatedAt = now;
-            })
-          );
-        }
-      }
-
-      for (let start = 0; start < operations.length; start += MAX_BATCH_OPERATIONS) {
-        await database.batch(...operations.slice(start, start + MAX_BATCH_OPERATIONS));
-      }
-      return operations.length;
+        return operations;
+      });
+      return changed;
     });
   }
 
-  /**
-   * Undoes a start adjustment for an exercise: each planned set that carries one goes back to the
-   * other number the user could have started with (`revertTargetFor` — what they did last time, or,
-   * for a "repeat", the plan's own), and the explanation is cleared. Returns how many sets changed.
-   */
   static async revertStartAdjustment(logExerciseId: string): Promise<number> {
-    return await database.write(async () => {
+    return database.write(async () => {
       const sets = await database
         .get<WorkoutLogSet>('workout_log_sets')
         .query(Q.where('log_exercise_id', logExerciseId), Q.where('deleted_at', Q.eq(null)))
         .fetch();
-
-      const now = Date.now();
       const operations: Model[] = [];
-      for (const set of sets) {
-        const adjustment = isPlannedWorkoutSet(set)
-          ? parseStartAdjustment(set.adjustmentJson)
-          : null;
-        if (!adjustment) {
-          continue;
+      await commitPrepared(database, sets, () => {
+        for (const set of sets) {
+          if (!isPlannedWorkoutSet(set)) {
+            continue;
+          }
+          const prescription = parseSetPrescription(set.prescriptionJson);
+          const adjustment = parseStartAdjustment(set.adjustmentJson);
+          if (!prescription && !adjustment) {
+            continue;
+          }
+          const target = prescription?.plan ?? revertTargetFor(adjustment!);
+          operations.push(
+            set.prepareUpdate((record) => {
+              record.weight = target.weightKg;
+              record.reps = target.reps;
+              record.adjustmentJson = undefined;
+              record.prescriptionJson = serializeSetPrescription({
+                ...(prescription ?? {
+                  plan: adjustment!.plan,
+                  recommendation: adjustment!.now,
+                  explanation: adjustment!,
+                }),
+                established: true,
+                override: 'plan',
+              });
+              record.updatedAt = Date.now();
+            })
+          );
         }
-        const { weightKg, reps } = revertTargetFor(adjustment);
-        operations.push(
-          set.prepareUpdate((record) => {
-            record.weight = weightKg;
-            record.reps = reps;
-            record.adjustmentJson = undefined;
-            record.updatedAt = now;
-          })
-        );
-      }
-
-      if (operations.length > 0) {
-        await database.batch(...operations);
-      }
+        return operations;
+      });
       return operations.length;
     });
   }
 
-  private static liveLogExercises(workoutLogId: string): Promise<WorkoutLogExercise[]> {
+  private static liveLogExercises(id: string): Promise<WorkoutLogExercise[]> {
     return database
       .get<WorkoutLogExercise>('workout_log_exercises')
-      .query(Q.where('workout_log_id', workoutLogId), Q.where('deleted_at', Q.eq(null)))
+      .query(Q.where('workout_log_id', id), Q.where('deleted_at', Q.eq(null)))
       .fetch();
   }
 
-  /** The last working session of every exercise in this workout, read in parallel. */
-  private static async getLastWorkingSessions(
-    workoutLogId: string
-  ): Promise<Map<string, LastWorkingSession>> {
-    const exerciseIds = [
-      ...new Set(
-        (await WorkoutProgressionService.liveLogExercises(workoutLogId)).map(
-          (logExercise) => logExercise.exerciseId
-        )
-      ),
-    ];
-    const sessions = await Promise.all(
-      exerciseIds.map(async (exerciseId) => {
-        const last = await WorkoutProgressionService.getLastWorkingSession(
-          exerciseId,
-          workoutLogId
-        );
-        return [exerciseId, last] as const;
-      })
-    );
-
-    const byExercise = new Map<string, LastWorkingSession>();
-    for (const [exerciseId, last] of sessions) {
-      if (last) {
-        byExercise.set(exerciseId, last);
-      }
-    }
-    return byExercise;
-  }
-
-  /**
-   * The first working set and the average reps in reserve of an exercise's most recent session,
-   * leaving out the workout being started. A session that only warmed up has no working sets and is
-   * passed over for the one before it.
-   */
-  private static async getLastWorkingSession(
+  private static async history(
     exerciseId: string,
-    excludeWorkoutLogId: string
-  ): Promise<LastWorkingSession | null> {
+    excludeId?: string,
+    templateExerciseId?: string
+  ): Promise<HistorySession[]> {
     const recent = await database
       .get<WorkoutLogExercise>('workout_log_exercises')
       .query(
         Q.where('exercise_id', exerciseId),
         Q.where('deleted_at', Q.eq(null)),
-        Q.where('workout_log_id', Q.notEq(excludeWorkoutLogId)),
+        ...(excludeId ? [Q.where('workout_log_id', Q.notEq(excludeId))] : []),
+        ...(templateExerciseId ? [Q.where('template_exercise_id', templateExerciseId)] : []),
+        Q.on('workout_logs', [
+          Q.where('completed_at', Q.notEq(null)),
+          Q.where('deleted_at', Q.eq(null)),
+        ]),
         Q.sortBy('created_at', Q.desc),
-        Q.take(5)
+        Q.take(PROGRESSION_HISTORY_SESSIONS)
       )
       .fetch();
-
-    for (const logExercise of recent) {
-      const working = await database
-        .get<WorkoutLogSet>('workout_log_sets')
-        .query(
-          Q.where('log_exercise_id', logExercise.id),
-          Q.where('deleted_at', Q.eq(null)),
-          Q.where('completion_status', 'performed'),
-          Q.where('set_type', Q.notEq(WARMUP_SET_TYPE)),
-          Q.sortBy('set_order', Q.asc)
-        )
-        .fetch();
-      if (working.length === 0) {
-        continue;
-      }
-
-      return {
-        weightKg: working[0].weight,
-        reps: working[0].reps,
-        averageRepsInReserve:
-          working.reduce((sum, set) => sum + (set.repsInReserve ?? 0), 0) / working.length,
-      };
-    }
-
-    return null;
+    const sessions = await Promise.all(
+      recent.map(async (row) => {
+        const working = (
+          await database
+            .get<WorkoutLogSet>('workout_log_sets')
+            .query(
+              Q.where('log_exercise_id', row.id),
+              Q.where('deleted_at', Q.eq(null)),
+              Q.sortBy('set_order', Q.asc)
+            )
+            .fetch()
+        ).filter((set) => !isWarmupSet(set));
+        return {
+          sets: working.filter(isPerformedWorkoutSet).map((set) => ({
+            weightKg: set.weight,
+            reps: set.reps,
+            repsInReserve: set.repsInReserve,
+            rirRecorded: set.rirRecorded,
+            prescribedIndex: working.indexOf(set),
+          })),
+          allPrescribedSetsPerformed: working.length > 0 && working.every(isPerformedWorkoutSet),
+          rule: parseProgressionRule(row.progressionJson),
+          state: parseSessionProgressionState(row.progressionJson),
+        };
+      })
+    );
+    return sessions.filter((session) => session.sets.length > 0);
   }
 }

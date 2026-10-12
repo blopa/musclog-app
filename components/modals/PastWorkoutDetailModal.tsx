@@ -220,6 +220,7 @@ type SetRowProps = {
 };
 
 function SetRow({ set }: SetRowProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const textDecorationLine = set.isSkipped ? ('line-through' as const) : ('none' as const);
   const valueColor = set.isSkipped ? theme.colors.text.tertiary : theme.colors.text.primary;
@@ -267,7 +268,7 @@ function SetRow({ set }: SetRowProps) {
       </View>
       <View className="flex-1 items-center py-3">
         <Text className="text-sm" style={{ color: valueColor, textDecorationLine }}>
-          {set.repsInReserve}
+          {set.rirRecorded === false ? t('trainingFlow.unrated') : set.repsInReserve}
         </Text>
       </View>
     </View>
@@ -892,7 +893,8 @@ export default function PastWorkoutDetailModal({
                 weight: displayToKg(s.weight, editingUnits),
                 partials: s.partialReps,
                 restTimeAfter: s.rest,
-                repsInReserve: s.repsInReserve,
+                repsInReserve: s.rirRecorded === false ? undefined : s.repsInReserve,
+                rirRecorded: s.rirRecorded,
                 setOrder: idx, // Consecutive order: 0, 1, 2, 3, ...
               };
 
@@ -928,6 +930,7 @@ export default function PastWorkoutDetailModal({
               partialReps: s.partials ?? 0,
               rest: s.restTimeAfter ?? 0,
               repsInReserve: s.repsInReserve ?? 0,
+              rirRecorded: s.rirRecorded,
             }))}
         />
       ) : null}

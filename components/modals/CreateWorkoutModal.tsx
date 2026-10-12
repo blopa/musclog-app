@@ -10,9 +10,11 @@ import { OptionsMultiSelector } from '@/components/theme/OptionsMultiSelector/Op
 import { SegmentedControl } from '@/components/theme/SegmentedControl';
 import { TextInput } from '@/components/theme/TextInput';
 import { WeekdayPicker } from '@/components/theme/WeekdayPicker';
+import { ProgressionRuleEditor } from '@/components/workout/ProgressionRuleEditor';
 import { usePlanAssignment } from '@/components/workout/usePlanAssignment';
 import type { WorkoutType } from '@/constants/workoutTypes';
 import { WORKOUT_TYPES } from '@/constants/workoutTypes';
+import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { useWorkoutForm } from '@/hooks/useWorkoutForm';
@@ -35,6 +37,7 @@ export default function CreateWorkoutModal({
   templateId,
 }: CreateWorkoutModalProps) {
   const theme = useTheme();
+  const { unitsFor } = useExerciseUserSettings();
   const { t } = useTranslation();
   const { isAiConfigured } = useSettings();
 
@@ -62,6 +65,8 @@ export default function CreateWorkoutModal({
     isSaving,
     selectedExercises,
     exercises,
+    exerciseMetadata,
+    setExerciseMetadata,
     isEditMode,
     setWorkoutTitle,
     setDescription,
@@ -525,6 +530,24 @@ export default function CreateWorkoutModal({
                   isEditable={true}
                 />
                 <View style={{ marginTop: theme.spacing.margin.md }}>
+                  {exercises.map((exercise) => (
+                    <ProgressionRuleEditor
+                      key={exercise.id}
+                      exerciseName={exercise.label}
+                      units={unitsFor(exercise.id)}
+                      value={exerciseMetadata.get(exercise.id)?.progression}
+                      onChange={(progression) =>
+                        setExerciseMetadata((previous) => {
+                          const next = new Map(previous);
+                          const existing = next.get(exercise.id);
+                          if (existing) {
+                            next.set(exercise.id, { ...existing, progression });
+                          }
+                          return next;
+                        })
+                      }
+                    />
+                  ))}
                   <DashedButton
                     label={t('workouts.addExercise.title')}
                     onPress={() => setAddExerciseVisible(true)}

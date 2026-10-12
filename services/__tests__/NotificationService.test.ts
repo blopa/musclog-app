@@ -42,6 +42,10 @@ jest.mock('react-native', () => ({
   },
 }));
 
+jest.mock('@/database/services/NutritionGoalService', () => ({
+  NutritionGoalService: { getCurrent: jest.fn().mockResolvedValue(null) },
+}));
+
 jest.mock('@/database', () => ({
   database: { get: jest.fn() },
 }));
@@ -172,5 +176,53 @@ describe('NotificationService.scheduleWorkoutReminders', () => {
     expect(mockGetResolvedSchedules).toHaveBeenCalledTimes(1);
     expect(mockDatabase.get).toHaveBeenCalledWith('workout_templates');
     expect(mockDatabase.get).not.toHaveBeenCalledWith('schedules');
+  });
+});
+
+describe('weekly review reminders', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date(2026, 9, 12, 7));
+    Object.assign(mockSettingsService, {
+      getNotificationsWeeklyReview: jest.fn(async () => true),
+      getReviewWeekday: jest.fn(async () => 1),
+      getIntuitiveEatingMode: jest.fn(async () => false),
+    });
+    mockSettingsService.getNotifications.mockResolvedValue(true);
+    mockNotifications.getAllScheduledNotificationsAsync.mockResolvedValue([]);
+    installTables({ weekly_reviews: [] });
+  });
+  afterEach(() => jest.useRealTimers());
+  it('schedules one reminder and skips resubmission for an existing identifier', async () => {
+    await NotificationService.scheduleWeeklyReviewNotification();
+    const request = mockNotifications.scheduleNotificationAsync.mock.calls[0][0];
+    expect(request.content?.data).toMatchObject({
+      type: 'weekly-review',
+      reviewDay: expect.any(Number),
+    });
+    mockNotifications.getAllScheduledNotificationsAsync.mockResolvedValue([
+      { identifier: request.identifier, content: request.content },
+    ] as any);
+    await NotificationService.scheduleWeeklyReviewNotification();
+    expect(mockNotifications.scheduleNotificationAsync).toHaveBeenCalledTimes(1);
+  });
+  it('does not send an immediate duplicate when this morning has passed', async () => {
+    jest.setSystemTime(new Date(2026, 9, 12, 12));
+    await NotificationService.scheduleWeeklyReviewNotification();
+    const trigger = mockNotifications.scheduleNotificationAsync.mock.calls[0][0].trigger as any;
+    expect(trigger.date.getDate()).toBe(19);
+    expect(trigger.date.getHours()).toBe(8);
+  });
+  it('respects opt-out and cancels only weekly reminders', async () => {
+    mockSettingsService.getNotificationsWeeklyReview.mockResolvedValue(false);
+    mockNotifications.getAllScheduledNotificationsAsync.mockResolvedValue([
+      { identifier: 'review', content: { data: { type: 'weekly-review' } } },
+      { identifier: 'other', content: { data: { type: 'rest-timer' } } },
+    ] as any);
+    await NotificationService.scheduleWeeklyReviewNotification();
+    expect(mockNotifications.cancelScheduledNotificationAsync).toHaveBeenCalledWith('review');
+    expect(mockNotifications.cancelScheduledNotificationAsync).not.toHaveBeenCalledWith('other');
+    expect(mockNotifications.scheduleNotificationAsync).not.toHaveBeenCalled();
   });
 });

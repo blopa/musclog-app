@@ -1,7 +1,7 @@
 import { UserMetricService } from '@/database/services/UserMetricService';
 import { UserService } from '@/database/services/UserService';
 import { localDayClosedRangeMaxMs } from '@/utils/calendarDate';
-import { resolveDailyMacros } from '@/utils/dynamicNutritionTarget';
+import { resolveWeeklyRecommendation, resolveDailyMacros } from '@/utils/dynamicNutritionTarget';
 import { getHistoricalNutritionParams } from '@/utils/historicalNutritionParams';
 import {
   calculateMacros,
@@ -346,4 +346,36 @@ describe('resolveDailyMacros', () => {
       })
     );
   });
+});
+
+it('weekly recommendations include available expenditure history even with an explicit weight/date goal', async () => {
+  jest.mocked(UserService.getCurrentUser).mockResolvedValue({
+    gender: 'male',
+    getAge: () => 30,
+    activityLevel: 2,
+    fitnessGoal: 'general',
+    liftingExperience: 'intermediate',
+  } as any);
+  jest
+    .mocked(UserMetricService.getLatestOnOrBefore)
+    .mockResolvedValue({ getDecrypted: async () => ({ value: 80, unit: 'kg' }) } as any);
+  const historical = {
+    historicalTotalCalories: 69000,
+    historicalTotalDays: 30,
+    historicalInitialWeightKg: 82,
+    historicalFinalWeightKg: 80,
+  };
+  jest.mocked(getHistoricalNutritionParams).mockClear().mockResolvedValue(historical);
+  jest
+    .mocked(calculateNutritionPlan)
+    .mockClear()
+    .mockReturnValue({ targetCalories: 2200, tdee: 2500, bmr: 1700 } as any);
+  await resolveWeeklyRecommendation(
+    { eatingPhase: 'cut', targetWeight: 75, targetDate: new Date(2026, 8, 1).getTime() } as any,
+    new Date(2026, 2, 1)
+  );
+  expect(getHistoricalNutritionParams).toHaveBeenCalledWith(
+    expect.objectContaining({ excludeUnloggedDays: true })
+  );
+  expect(calculateNutritionPlan).toHaveBeenCalledWith(expect.objectContaining(historical));
 });

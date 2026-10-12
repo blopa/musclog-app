@@ -24,6 +24,8 @@ export default class WorkoutLogExercise extends Model {
   @field('group_id') groupId?: string;
   @field('replaced_exercise_id') replacedExerciseId?: string;
   @field('substitution_reason') substitutionReason?: string;
+  /** The rule this session ran under plus its carried state (`utils/progressionRules.ts`). */
+  @field('progression_json') progressionJson?: string;
   @field('created_at') declare createdAt: number;
   @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;

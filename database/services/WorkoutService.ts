@@ -24,6 +24,7 @@ import {
 import { deleteBleDataPointsFiles } from '@/utils/bleWorkoutDataStorage';
 import { handleError } from '@/utils/handleError';
 import { parseStartAdjustment, type SetAdjustment } from '@/utils/setAdjustment';
+import { parseSetPrescription } from '@/utils/setPrescription';
 import { getCurrentTimezone } from '@/utils/timezone';
 import { jsDayToWeekdayIndex } from '@/utils/weekdays';
 import { getRollingWeeklyWorkoutRange } from '@/utils/weeklyWorkoutProgress';
@@ -48,6 +49,7 @@ import { WorkoutAnalytics } from './WorkoutAnalytics';
 import { WorkoutProgressionService } from './WorkoutProgressionService';
 
 export type EnrichedWorkoutLogSet = WorkoutLogSetSnapshot & {
+  progressionJson?: string;
   exerciseId: string;
   groupId?: string;
   notes?: string;
@@ -63,6 +65,7 @@ type WorkoutSetUpdateFields = {
   partials?: number;
   restTimeAfter?: number;
   repsInReserve?: number;
+  rirRecorded?: boolean;
   difficultyLevel?: number | null;
   completionStatus?: WorkoutSetCompletionStatus;
   setType?: string;
@@ -714,12 +717,18 @@ export class WorkoutService {
    * Shared by getWorkoutWithDetails and reactive observable pipelines.
    */
   static buildEnrichedSetsFromRecords(
-    logExercises: { id: string; exerciseId: string; groupId?: string; notes?: string }[],
+    logExercises: {
+      id: string;
+      exerciseId: string;
+      groupId?: string;
+      notes?: string;
+      progressionJson?: string;
+    }[],
     rawSets: WorkoutLogSet[]
   ): EnrichedWorkoutLogSet[] {
     const logExerciseMap = new Map<
       string,
-      { exerciseId: string; groupId?: string; notes?: string }
+      { exerciseId: string; groupId?: string; notes?: string; progressionJson?: string }
     >();
 
     logExercises.forEach((le) => {
@@ -727,6 +736,7 @@ export class WorkoutService {
         exerciseId: le.exerciseId,
         groupId: le.groupId,
         notes: le.notes,
+        progressionJson: le.progressionJson,
       });
     });
 
@@ -740,10 +750,13 @@ export class WorkoutService {
         exerciseId: logExercise?.exerciseId ?? '',
         groupId: logExercise?.groupId,
         notes: logExercise?.notes,
+        progressionJson: logExercise?.progressionJson,
         // Only a set still to be done carries its start explanation; once performed it is history.
         adjustment:
-          (isPlannedWorkoutSet(snapshot) ? parseStartAdjustment(snapshot.adjustmentJson) : null) ??
-          undefined,
+          (isPlannedWorkoutSet(snapshot)
+            ? (parseSetPrescription(snapshot.prescriptionJson)?.intraAdjustment ??
+              parseStartAdjustment(snapshot.adjustmentJson))
+            : null) ?? undefined,
       };
     });
   }
@@ -988,6 +1001,7 @@ export class WorkoutService {
                 record.partials = update.partials ?? 0;
                 record.restTimeAfter = update.restTimeAfter ?? 0;
                 record.repsInReserve = update.repsInReserve ?? 0;
+                record.rirRecorded = update.rirRecorded ?? update.repsInReserve != null;
                 record.difficultyLevel = update.difficultyLevel ?? undefined;
                 record.completionStatus = update.completionStatus ?? 'performed';
                 record.setType = update.setType ?? 'normal';
@@ -1020,6 +1034,7 @@ export class WorkoutService {
 
               if (update.repsInReserve !== undefined) {
                 record.repsInReserve = update.repsInReserve;
+                record.rirRecorded = update.rirRecorded ?? true;
               }
 
               if (update.difficultyLevel !== undefined) {
@@ -1361,7 +1376,20 @@ export class WorkoutService {
         .fetch();
 
       // Create new workout log with "(Copy)" suffix
-      const newLog = await database.get<WorkoutLog>('workout_logs').create((log) => {
+      const operations: Model[] = [];
+      const setsByExercise = await Promise.all(
+        originalLogExercises.map((row) =>
+          database
+            .get<WorkoutLogSet>('workout_log_sets')
+            .query(
+              Q.where('log_exercise_id', row.id),
+              Q.where('deleted_at', Q.eq(null)),
+              Q.sortBy('set_order', Q.asc)
+            )
+            .fetch()
+        )
+      );
+      const newLog = database.get<WorkoutLog>('workout_logs').prepareCreate((log) => {
         log.templateId = originalLog.templateId;
         log.workoutName = `${originalLog.workoutName} (Copy)`;
         log.type = originalLog.type;
@@ -1376,48 +1404,48 @@ export class WorkoutService {
         log.updatedAt = now;
       });
 
+      operations.push(newLog);
       // Copy all log exercises and their sets
       for (const originalLogExercise of originalLogExercises) {
-        const newLogExercise = await database
+        const newLogExercise = database
           .get<WorkoutLogExercise>('workout_log_exercises')
-          .create((le) => {
+          .prepareCreate((le) => {
             le.workoutLogId = newLog.id;
             le.exerciseId = originalLogExercise.exerciseId;
             le.exerciseOrder = originalLogExercise.exerciseOrder;
             le.groupId = originalLogExercise.groupId;
             le.notes = originalLogExercise.notes;
+            le.templateExerciseId = originalLogExercise.templateExerciseId;
+            le.progressionJson = originalLogExercise.progressionJson;
             le.createdAt = now;
             le.updatedAt = now;
           });
 
-        // Get and copy all sets for this log exercise
-        const originalSets = await database
-          .get<WorkoutLogSet>('workout_log_sets')
-          .query(
-            Q.where('log_exercise_id', originalLogExercise.id),
-            Q.where('deleted_at', Q.eq(null)),
-            Q.sortBy('set_order', Q.asc)
-          )
-          .fetch();
+        operations.push(newLogExercise);
+        const originalSets = setsByExercise[originalLogExercises.indexOf(originalLogExercise)];
 
         for (const originalSet of originalSets) {
-          await database.get<WorkoutLogSet>('workout_log_sets').create((set) => {
-            set.logExerciseId = newLogExercise.id;
-            set.setOrder = originalSet.setOrder;
-            set.reps = 0; // Reset actual values
-            set.weight = 0;
-            set.partials = 0;
-            set.restTimeAfter = originalSet.restTimeAfter;
-            set.repsInReserve = 0;
-            set.difficultyLevel = undefined;
-            set.completionStatus = 'planned';
-            set.setType = originalSet.setType ?? 'normal';
-            set.createdAt = now;
-            set.updatedAt = now;
-          });
+          operations.push(
+            database.get<WorkoutLogSet>('workout_log_sets').prepareCreate((set) => {
+              set.logExerciseId = newLogExercise.id;
+              set.setOrder = originalSet.setOrder;
+              set.reps = originalSet.reps;
+              set.weight = originalSet.weight;
+              set.partials = 0;
+              set.restTimeAfter = originalSet.restTimeAfter;
+              set.repsInReserve = 0;
+              set.rirRecorded = false;
+              set.difficultyLevel = undefined;
+              set.completionStatus = 'planned';
+              set.setType = originalSet.setType ?? 'normal';
+              set.createdAt = now;
+              set.updatedAt = now;
+            })
+          );
         }
       }
 
+      await database.batch(...operations);
       return newLog;
     });
   }

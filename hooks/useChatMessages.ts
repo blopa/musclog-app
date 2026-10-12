@@ -33,6 +33,7 @@ import { AiCustomPromptService } from '@/database/services/AiCustomPromptService
 import { ChatService } from '@/database/services/ChatService';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { NutritionService } from '@/database/services/NutritionService';
+import { NutritionTargetService } from '@/database/services/NutritionTargetService';
 import { SettingsService } from '@/database/services/SettingsService';
 import { UserMetricService } from '@/database/services/UserMetricService';
 import { UserService } from '@/database/services/UserService';
@@ -57,7 +58,6 @@ import {
   trackMeal,
   type TrackMealIngredient,
 } from '@/utils/coachAI';
-import { resolveDailyMacros } from '@/utils/dynamicNutritionTarget';
 import { saveBase64ImageToFile } from '@/utils/file';
 import { handleError } from '@/utils/handleError';
 import { processMealPlanResponse } from '@/utils/nutritionAI';
@@ -571,9 +571,7 @@ export function useChatMessages(
           let macroTargets;
           const currentGoal = await NutritionGoalService.getCurrent();
           if (currentGoal) {
-            const resolved = currentGoal.isDynamic
-              ? await resolveDailyMacros(currentGoal, new Date())
-              : null;
+            const resolved = await NutritionTargetService.resolve(currentGoal, new Date());
 
             macroTargets = {
               calories: resolved?.totalCalories ?? currentGoal.totalCalories,

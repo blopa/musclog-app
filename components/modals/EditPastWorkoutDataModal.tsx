@@ -22,6 +22,7 @@ type SetItem = {
   partialReps: number;
   rest: number;
   repsInReserve: number;
+  rirRecorded?: boolean;
   isPR?: boolean;
 };
 
@@ -181,9 +182,13 @@ function SetCard({
 
           <View className="mt-4">
             <NewNumericalInput
-              label={t('workoutDetail.rir')}
+              label={
+                item.rirRecorded === false
+                  ? `${t('workoutDetail.rir')} · ${t('trainingFlow.unrated')}`
+                  : t('workoutDetail.rir')
+              }
               value={item.repsInReserve}
-              onChange={(v) => onChange(item.id, { repsInReserve: v })}
+              onChange={(v) => onChange(item.id, { repsInReserve: v, rirRecorded: true })}
               min={0}
               step={1}
               variant="compact"
@@ -251,6 +256,7 @@ export default function EditPastWorkoutDataModal({
             partialReps: 0,
             rest: 0,
             repsInReserve: 0,
+            rirRecorded: false,
           };
       return [...s, next];
     });

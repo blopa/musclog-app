@@ -17,7 +17,8 @@ import {
 import { storedWeightToKg } from './unitConversion';
 
 export const HISTORICAL_NUTRITION_LOOKBACK_DAYS = 30;
-const MIN_DAYS_WITH_NUTRITION = 7;
+export const MIN_DAYS_WITH_NUTRITION = 7;
+export const MIN_WEIGHT_ENTRIES = 2;
 
 function average(values: number[]): number {
   if (values.length === 0) {
@@ -59,6 +60,7 @@ export async function getHistoricalNutritionParams(options: {
   lookbackDays?: number;
   /** Minimum distinct days with nutrition logs required. Defaults to 7. */
   minNutritionDays?: number;
+  excludeUnloggedDays?: boolean;
 }): Promise<HistoricalNutritionParams | null> {
   const {
     asOfDate = new Date(),
@@ -105,7 +107,9 @@ export async function getHistoricalNutritionParams(options: {
   // effectiveDayCount (days that had food plus flagged fasted days), so a forgotten log no
   // longer deflates TDEE while an intentional fast still lowers it as a real 0-kcal day;
   // with the feature off it is undefined and the legacy window applies.
-  const historicalTotalDays = rangeNutrients.effectiveDayCount ?? lookbackDays;
+  const historicalTotalDays =
+    rangeNutrients.effectiveDayCount ??
+    (options.excludeUnloggedDays ? distinctDaysWithNutrition : lookbackDays);
 
   const weightWithDecrypted = await Promise.all(
     weightMetrics.map(async (m) => {
@@ -120,7 +124,7 @@ export async function getHistoricalNutritionParams(options: {
 
   // Normalize by the calendar day each record was experienced in (its own timezone), not by raw
   // stored instant. The trend utility handles sorting and same-day averaging.
-  if (weightWithDecrypted.length < 2) {
+  if (weightWithDecrypted.length < MIN_WEIGHT_ENTRIES) {
     return null;
   }
 

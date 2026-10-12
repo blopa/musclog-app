@@ -195,6 +195,7 @@ export class WorkoutAnalytics {
                 .get<WorkoutLog>('workout_logs')
                 .query(
                   Q.where('completed_at', Q.notEq(null)),
+                  Q.where('started_at', Q.lt(workoutLog.startedAt)),
                   Q.where('id', Q.oneOf(uniqueWorkoutIds))
                 )
                 .fetch()

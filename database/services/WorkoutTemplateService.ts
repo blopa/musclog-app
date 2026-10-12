@@ -23,6 +23,11 @@ import { getTheme } from '@/theme';
 import { appExerciseId } from '@/utils/exerciseImage';
 import { handleError } from '@/utils/handleError';
 import { loadStepFor } from '@/utils/loadIncrement';
+import {
+  parseProgressionRule,
+  type ProgressionRule,
+  serializeProgressionRule,
+} from '@/utils/progressionRules';
 import { computeStartTarget } from '@/utils/setProgression';
 import { roundWeightForUnits } from '@/utils/unitConversion';
 import { indexToDayName, WEEKDAY_NAMES } from '@/utils/weekdays';
@@ -55,6 +60,8 @@ export type ExerciseInWorkout = Pick<Exercise, 'id'> & {
   isBodyweight: boolean;
   restTimeAfter?: number;
   setType?: string;
+  /** The exercise's progression rule; null/undefined keeps the automatic progression. */
+  progression?: ProgressionRule | null;
 };
 
 export interface SaveTemplateData {
@@ -237,6 +244,7 @@ export class WorkoutTemplateService {
         isBodyweight,
         restTimeAfter: firstSet?.restTimeAfter,
         setType: exerciseSets[0]?.setType ?? 'normal',
+        progression: parseProgressionRule(templateExercise.progressionJson),
       });
     }
 
@@ -261,42 +269,86 @@ export class WorkoutTemplateService {
   private static prepareTemplateExerciseGraph(
     templateId: string,
     exercises: ExerciseInWorkout[],
-    now: number
+    now: number,
+    existingExercises: WorkoutTemplateExercise[] = [],
+    existingSets: WorkoutTemplateSet[] = []
   ): Model[] {
     const exerciseCollection = database.get<WorkoutTemplateExercise>('workout_template_exercises');
     const setCollection = database.get<WorkoutTemplateSet>('workout_template_sets');
     const records: Model[] = [];
     let setOrder = 0;
+    const retained = new Set<string>();
 
     exercises.forEach((exercise, exerciseIndex) => {
-      const templateExercise = exerciseCollection.prepareCreate((te) => {
+      const existing = existingExercises.find(
+        (te) => te.exerciseId === exercise.id && !retained.has(te.id)
+      );
+      if (existing) {
+        retained.add(existing.id);
+      }
+      const updateExercise = (te: WorkoutTemplateExercise) => {
         te.templateId = templateId;
         te.exerciseId = exercise.id;
         te.notes = exercise.notes;
         te.exerciseOrder = exerciseIndex + 1;
         te.groupId = exercise.groupId;
-        te.createdAt = now;
+        const previousRule = parseProgressionRule(existing?.progressionJson);
+        const nextRule = exercise.progression;
+        const resets =
+          previousRule?.type !== nextRule?.type ||
+          (previousRule?.type === 'percentage' &&
+            nextRule?.type === 'percentage' &&
+            previousRule.trainingMaxKg !== nextRule.trainingMaxKg);
+        te.progressionJson = serializeProgressionRule(
+          nextRule
+            ? { ...nextRule, resetAt: nextRule.resetAt ?? (resets ? now : previousRule?.resetAt) }
+            : null
+        );
+        if (!existing) {
+          te.createdAt = now;
+        }
         te.updatedAt = now;
-      });
+      };
+      const templateExercise = existing
+        ? existing.prepareUpdate(updateExercise)
+        : exerciseCollection.prepareCreate(updateExercise);
       records.push(templateExercise);
 
       for (let setNumber = 1; setNumber <= exercise.sets; setNumber++) {
         setOrder++;
         const currentSetOrder = setOrder;
-        records.push(
-          setCollection.prepareCreate((ts) => {
-            ts.templateExerciseId = templateExercise.id;
-            ts.targetReps = exercise.reps;
-            ts.targetWeight = exercise.isBodyweight ? 0 : exercise.weight;
-            ts.restTimeAfter = exercise.restTimeAfter ?? 60;
-            ts.setOrder = currentSetOrder;
-            ts.setType = exercise.setType ?? 'normal';
+        const oldSet = existingSets
+          .filter((s) => s.templateExerciseId === templateExercise.id)
+          .sort((a, b) => a.setOrder - b.setOrder)[setNumber - 1];
+        const updateSet = (ts: WorkoutTemplateSet) => {
+          ts.templateExerciseId = templateExercise.id;
+          ts.targetReps = exercise.reps;
+          ts.targetWeight = exercise.isBodyweight ? 0 : exercise.weight;
+          ts.restTimeAfter = exercise.restTimeAfter ?? 60;
+          ts.setOrder = currentSetOrder;
+          ts.setType = exercise.setType ?? 'normal';
+          if (!oldSet) {
             ts.createdAt = now;
-            ts.updatedAt = now;
-          })
+          }
+          ts.updatedAt = now;
+        };
+        records.push(
+          oldSet ? oldSet.prepareUpdate(updateSet) : setCollection.prepareCreate(updateSet)
         );
       }
     });
+
+    const touched = new Set(records.map((record) => record.id));
+    for (const record of [...existingSets, ...existingExercises]) {
+      if (!touched.has(record.id)) {
+        records.push(
+          record.prepareUpdate((draft) => {
+            draft.deletedAt = now;
+            draft.updatedAt = now;
+          })
+        );
+      }
+    }
 
     return records;
   }
@@ -444,10 +496,14 @@ export class WorkoutTemplateService {
           t.weekDaysJson = undefined;
           t.updatedAt = now;
         }),
-        ...existingSets.map(softDelete),
-        ...existingExercises.map(softDelete),
         ...existingSchedules.map(softDelete),
-        ...this.prepareTemplateExerciseGraph(templateId, data.exercises, now),
+        ...this.prepareTemplateExerciseGraph(
+          templateId,
+          data.exercises,
+          now,
+          existingExercises,
+          existingSets
+        ),
         ...membershipRecords,
         ...(activePlanIds.length === 0
           ? this.prepareSchedules(templateId, data.selectedDays, now)
@@ -1055,6 +1111,7 @@ export class WorkoutTemplateService {
           weight: suggestedWeight,
           isBodyweight,
           restTimeAfter: exerciseData.restTimeAfter,
+          progression: parseProgressionRule(JSON.stringify(exerciseData.progression)),
         });
       }
 
@@ -1155,6 +1212,7 @@ export class WorkoutTemplateService {
           newTe.notes = te.notes;
           newTe.exerciseOrder = te.exerciseOrder;
           newTe.groupId = te.groupId;
+          newTe.progressionJson = te.progressionJson;
           newTe.createdAt = now;
           newTe.updatedAt = now;
         });

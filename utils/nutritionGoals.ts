@@ -20,6 +20,7 @@ export function nutritionGoalToInitialValues(goal: NutritionGoal): NutritionGoal
     targetDate: goal.targetDate ?? null,
     goalStartDate: goal.createdAt,
     isDynamic: goal.isDynamic ?? false,
+    targetMode: goal.targetMode ?? (goal.isDynamic ? 'daily' : 'manual'),
   };
 }
 
@@ -37,5 +38,6 @@ export function nutritionGoalsToInput(goals: NutritionGoals) {
     targetFFMI: goals.targetFFMI ?? null,
     targetDate: goals.targetDate ?? null,
     isDynamic: goals.isDynamic ?? false,
+    targetMode: goals.targetMode,
   };
 }

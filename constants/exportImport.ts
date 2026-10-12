@@ -73,6 +73,8 @@ export const RESTORE_ORDER: string[] = [
 
   // Goal and tracking tables
   'nutrition_goals',
+  'weekly_reviews',
+  'nutrition_target_periods',
   'nutrition_checkins',
   'exercise_goals',
   'menstrual_cycles',

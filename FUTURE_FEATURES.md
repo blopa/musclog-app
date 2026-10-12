@@ -32,7 +32,7 @@ collects.
 
 - Coaching modes: **Coached**, **Collaborative**, and **Manual**, so users understand whether the
   app or the user owns target changes.
-- Explained weekly target updates based on the existing check-in and dynamic-target logic.
+- Extend Weekly Review with richer expenditure visualization and longitudinal decision comparisons.
 - Rate-of-change goals expressed as percentage of body weight per week, with a projected date and
   warnings for aggressive choices.
 - Planned maintenance phases, diet breaks, calorie cycling, and weekly calorie budgets.
@@ -83,7 +83,7 @@ collects.
 
 - An **adaptive** autonomy level: today the app only suggests (and explains) where a workout starts;
   adaptive would also update the plan's own prescriptions within bounds the user sets.
-- Progression for pyramids, back-off sets and drop sets. Start-of-workout progression rewrites only
+- Extend explicit progression rules to pyramids and drop sets; top-set back-offs already ship. Automatic progression rewrites only
   blocks of straight sets, because one number from last time cannot say how to move each of them.
 - An explained **push hard / normal / back off** readiness verdict combining sleep, recent training
   load, and mood. A numeric score should be secondary to the reasons.

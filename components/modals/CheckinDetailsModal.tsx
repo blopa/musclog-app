@@ -91,6 +91,7 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
       targetFFMI: currentGoal.targetFfmi,
       targetDate: currentGoal.targetDate ?? null,
       isDynamic: currentGoal.isDynamic,
+      targetMode: currentGoal.targetMode ?? (currentGoal.isDynamic ? 'daily' : 'manual'),
     };
   }, [currentGoal, computedDefaults]);
 
@@ -120,8 +121,6 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
     if (!checkin || !metrics) {
       return;
     }
-    // Mark check-in as reviewed first
-    await NutritionCheckinService.update(checkin.id, { status: metrics.status });
     setIsNutritionGoalsModalVisible(true);
   };
 
@@ -139,21 +138,28 @@ export function CheckinDetailsModal({ checkinId, visible, onClose }: CheckinModa
     }
 
     try {
-      const newGoal = await NutritionGoalService.saveGoals({
-        totalCalories: goals.totalCalories,
-        protein: goals.protein,
-        carbs: goals.carbs,
-        fats: goals.fats,
-        fiber: goals.fiber,
-        eatingPhase: goals.eatingPhase,
-        targetWeight: goals.targetWeight ?? undefined,
-        targetBodyFat: goals.targetBodyFat ?? undefined,
-        targetBMI: goals.targetBMI ?? undefined,
-        targetFFMI: goals.targetFFMI ?? undefined,
-        targetDate: goals.targetDate ?? null,
-        isDynamic: goals.isDynamic ?? false,
-      });
+      const newGoal = await NutritionGoalService.saveGoals(
+        {
+          totalCalories: goals.totalCalories,
+          protein: goals.protein,
+          carbs: goals.carbs,
+          fats: goals.fats,
+          fiber: goals.fiber,
+          eatingPhase: goals.eatingPhase,
+          targetWeight: goals.targetWeight ?? undefined,
+          targetBodyFat: goals.targetBodyFat ?? undefined,
+          targetBMI: goals.targetBMI ?? undefined,
+          targetFFMI: goals.targetFFMI ?? undefined,
+          targetDate: goals.targetDate ?? null,
+          isDynamic: goals.isDynamic ?? false,
+          targetMode: goals.targetMode,
+        },
+        false
+      );
       await NutritionGoalService.regenerateCheckins(newGoal.id);
+      if (checkin && metrics) {
+        await NutritionCheckinService.update(checkin.id, { status: metrics.status });
+      }
       triggerConfetti(ConfettiActivity.FIRST_MANUAL_NUTRITION_GOAL);
       onClose();
     } catch (e) {

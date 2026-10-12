@@ -4,6 +4,7 @@ import { database } from '@/database/database-instance';
 import { dayRangeClauses } from '@/database/dayKeyQuery';
 import type NutritionCheckin from '@/database/models/NutritionCheckin';
 import type { CheckinStatus } from '@/database/models/NutritionCheckin';
+import type NutritionGoal from '@/database/models/NutritionGoal';
 import type NutritionLog from '@/database/models/NutritionLog';
 import type UserMetric from '@/database/models/UserMetric';
 import type WorkoutLog from '@/database/models/WorkoutLog';
@@ -263,7 +264,18 @@ export class NutritionCheckinService {
     let status: 'ahead' | 'onTrack' | 'behind';
     if (Math.abs(targetWeightDelta) <= threshold) {
       status = 'onTrack';
-    } else if (targetWeightDelta < 0) {
+    } else if (
+      targetWeightDelta *
+        ((
+          await database
+            .get<NutritionGoal>('nutrition_goals')
+            .find(checkin.nutritionGoalId)
+            .catch(() => null)
+        )?.eatingPhase === 'bulk'
+          ? -1
+          : 1) <
+      0
+    ) {
       status = 'ahead';
     } else {
       status = 'behind';
@@ -414,7 +426,7 @@ export class NutritionCheckinService {
    * Soft-delete all check-ins belonging to a given nutrition goal.
    * Called when a goal is superseded so its check-ins don't linger as dead data.
    */
-  static async deleteByGoalId(goalId: string): Promise<void> {
+  static async deleteByGoalId(goalId: string, pendingOnly = false): Promise<void> {
     await database.write(async (writer) => {
       const checkins = await database
         .get<NutritionCheckin>('nutrition_checkins')
@@ -422,6 +434,9 @@ export class NutritionCheckinService {
         .fetch();
 
       for (const checkin of checkins) {
+        if (pendingOnly && checkin.status !== 'pending') {
+          continue;
+        }
         await writer.callWriter(() => checkin.markAsDeleted());
       }
     });

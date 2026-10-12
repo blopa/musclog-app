@@ -8,11 +8,13 @@ import {
   TrendingUp,
   Trophy,
 } from 'lucide-react-native';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useTheme } from '@/hooks/useTheme';
 
 type WorkoutSummaryCelebrationProps = {
+  children?: ReactNode;
   onGoHome: () => void;
   onShareSummary?: () => void;
   onGetFeedback?: () => void;
@@ -97,6 +99,7 @@ function StatRow({
 }
 
 export function WorkoutSummaryCelebration({
+  children,
   onGoHome,
   onShareSummary,
   onGetFeedback,
@@ -315,6 +318,7 @@ export function WorkoutSummaryCelebration({
       <div style={{ flex: 1 }} />
 
       {/* Get Feedback Button */}
+      {children}
       {onGetFeedback ? (
         <button
           onClick={onGetFeedback}

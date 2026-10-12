@@ -16,7 +16,9 @@ import { WorkoutService } from '@/database/services/WorkoutService';
 import { useActiveGym } from '@/hooks/useActiveGym';
 import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { loadStepFor } from '@/utils/loadIncrement';
+import { parseProgressionRule } from '@/utils/progressionRules';
 import { computeIntraSessionAdjustment } from '@/utils/setAdjustment';
+import { parseSetPrescription } from '@/utils/setPrescription';
 import {
   isPerformedWorkoutSet,
   isResolvedWorkoutSet,
@@ -41,6 +43,9 @@ const WORKOUT_LOG_SET_COLUMNS = [
   'set_order',
   'deleted_at',
   'rep_data_json',
+  'adjustment_json',
+  'prescription_json',
+  'rir_recorded',
 ] as const;
 
 export type WorkoutSessionProgress = {
@@ -124,7 +129,12 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
       );
 
     const logObs = logQuery.observe().pipe(map((rows) => (rows.length > 0 ? rows[0] : null)));
-    const logExercisesObs = logExercisesQuery.observe();
+    const logExercisesObs = logExercisesQuery.observeWithColumns([
+      'exercise_id',
+      'progression_json',
+      'group_id',
+      'notes',
+    ]);
     const setsObs = logExercisesObs.pipe(
       switchMap((les) => {
         const ids = les.map((le) => le.id);
@@ -169,21 +179,33 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
             exerciseId: le.exerciseId,
             groupId: le.groupId,
             notes: le.notes,
+            progressionJson: le.progressionJson,
           }));
 
           let enrichedSets = WorkoutService.buildEnrichedSetsFromRecords(leMap, rawSets);
 
           // Intra-session RIR adjustment
           const currentActive = getFirstUnloggedInEffectiveOrder(enrichedSets);
-          if (currentActive) {
+          if (currentActive && !parseSetPrescription(currentActive.prescriptionJson)?.established) {
             const effectiveOrder = getEffectiveOrder(enrichedSets);
             const currentIdx = effectiveOrder.findIndex((s) => s.id === currentActive.id);
             if (currentIdx > 0) {
-              const lastSet = effectiveOrder[currentIdx - 1];
+              const rule = parseProgressionRule(currentActive.progressionJson);
+              const previousWorking = effectiveOrder
+                .slice(0, currentIdx)
+                .filter(
+                  (set) =>
+                    set.logExerciseId === currentActive.logExerciseId &&
+                    isPerformedWorkoutSet(set) &&
+                    isWorkingSet(set)
+                );
+              const lastSet =
+                rule?.type === 'top_set_backoff' ? previousWorking[0] : previousWorking.at(-1);
               // Re-target a WORKING set from the working set before it. A warm-up is deliberately
               // light: using it as "the previous set" would drag the next set's load down, and a
               // planned warm-up has no target reps in reserve to hold in the first place.
               if (
+                lastSet &&
                 isWorkingSet(lastSet) &&
                 !isWarmupSet(currentActive) &&
                 lastSet.exerciseId === currentActive.exerciseId
@@ -193,6 +215,8 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
                 const equipmentType = exercise?.equipmentType;
                 const { weight, reps, adjustment } = computeIntraSessionAdjustment({
                   previousSet: lastSet,
+                  rule,
+                  previousIsTopSet: rule?.type === 'top_set_backoff',
                   plannedSet: currentActive,
                   progressionMode,
                   isBodyweight: !!equipmentType?.toLowerCase().includes('bodyweight'),
@@ -225,7 +249,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
             if (currentIdx > 0) {
               for (let i = currentIdx - 1; i >= 0; i--) {
                 const s = effectiveOrder[i];
-                if (isPerformedWorkoutSet(s)) {
+                if (isPerformedWorkoutSet(s) && s.logExerciseId === current.logExerciseId) {
                   prev = {
                     weight: s.weight ?? 0,
                     reps: s.reps ?? 0,
@@ -301,11 +325,11 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
     return () => subscription.unsubscribe();
   }, [bodyWeightKg, gym, progressionMode, unitsFor, workoutLogId]);
 
-  const refresh = useCallback(() => {
+  const refresh = useCallback(async () => {
     if (!workoutLogId) {
       return;
     }
-    WorkoutService.getWorkoutWithDetails(workoutLogId).then(
+    await WorkoutService.getWorkoutWithDetails(workoutLogId).then(
       ({ workoutLog: log, sets: s, exercises: ex, logExercises: le }) => {
         setWorkoutLog(log);
         setLogExercises(le);
@@ -323,7 +347,7 @@ export function useWorkoutSessionState(workoutLogId: string | undefined) {
           if (currentIdx > 0) {
             for (let i = currentIdx - 1; i >= 0; i--) {
               const set = effectiveOrder[i];
-              if (isPerformedWorkoutSet(set)) {
+              if (isPerformedWorkoutSet(set) && set.logExerciseId === current.logExerciseId) {
                 prev = {
                   weight: set.weight ?? 0,
                   reps: set.reps ?? 0,

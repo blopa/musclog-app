@@ -29,6 +29,8 @@ import migrationV27 from '@/database/migrations/2026/10/migration-v27';
 import migrationV28 from '@/database/migrations/2026/10/migration-v28';
 import migrationV29 from '@/database/migrations/2026/10/migration-v29';
 import migrationV30 from '@/database/migrations/2026/10/migration-v30';
+import migrationV31 from '@/database/migrations/2026/10/migration-v31';
+import migrationV32 from '@/database/migrations/2026/10/migration-v32';
 
 export const migrations = schemaMigrations({
   migrations: [
@@ -143,5 +145,9 @@ export const migrations = schemaMigrations({
     // Version 30: Per-exercise preferences (exercise_user_settings: weight unit + note) and the
     // session note / distance / activity columns on workout_logs.
     migrationV30,
+
+    // Version 31: Progression rules as data (progression_json on template and log exercises).
+    migrationV31,
+    migrationV32,
   ],
 });

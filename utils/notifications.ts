@@ -42,7 +42,21 @@ export async function handleNotificationResponse(response: Notifications.Notific
       break;
 
     case 'nutrition-checkin':
-      router.navigate('/app/nutrition/checkin-list');
+      router.navigate(
+        data['checkinId']
+          ? `/app/nutrition/checkin-list?checkinId=${encodeURIComponent(String(data['checkinId']))}`
+          : '/app/nutrition/checkin-list'
+      );
+      break;
+
+    case 'weekly-review':
+      router.navigate(
+        data['reviewId']
+          ? `/app/nutrition/checkin-list?reviewId=${encodeURIComponent(String(data['reviewId']))}`
+          : data['reviewDay']
+            ? `/app/nutrition/checkin-list?reviewDay=${encodeURIComponent(String(data['reviewDay']))}`
+            : '/app/nutrition/checkin-list'
+      );
       break;
 
     case 'active-workout':

@@ -2,7 +2,7 @@ import type { WidgetTaskHandlerProps } from 'react-native-android-widget';
 
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
 import { NutritionService } from '@/database/services/NutritionService';
-import { resolveDailyMacros } from '@/utils/dynamicNutritionTarget';
+import { NutritionTargetService } from '@/database/services/NutritionTargetService';
 
 import { NutritionWidget } from './NutritionWidget';
 import { SmartCameraWidget } from './SmartCameraWidget';
@@ -26,7 +26,7 @@ export async function widgetTaskHandler(props: WidgetTaskHandlerProps) {
           NutritionGoalService.getGoalForDate(today),
         ]);
 
-        const macros = goal ? ((await resolveDailyMacros(goal, today)) ?? goal) : null;
+        const macros = goal ? ((await NutritionTargetService.resolve(goal, today)) ?? goal) : null;
 
         props.renderWidget(
           NutritionWidget({

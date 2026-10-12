@@ -32,7 +32,7 @@ import {
  * Set data for workout detail display.
  * Extends WorkoutLogSet model fields with UI-specific formatting and display properties.
  */
-export type WorkoutSet = Pick<WorkoutLogSet, 'reps' | 'repsInReserve'> & {
+export type WorkoutSet = Pick<WorkoutLogSet, 'reps' | 'repsInReserve' | 'rirRecorded'> & {
   setNumber: number;
   weight: string; // Formatted weight string
   partial: string; // Formatted partial reps count
@@ -301,6 +301,7 @@ export async function transformWorkoutToDetailData(
         reps: set.reps ?? 0,
         partial: (set.partials ?? 0) > 0 ? (set.partials ?? 0).toString() : '-',
         repsInReserve: set.repsInReserve ?? 0,
+        rirRecorded: set.rirRecorded,
         isHighlighted,
         isSkipped,
       };

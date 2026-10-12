@@ -5,7 +5,6 @@ import {
   PlusCircle,
   Repeat2,
   Search,
-  TriangleAlert,
   User,
 } from 'lucide-react-native';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -20,9 +19,11 @@ import { Button } from '@/components/theme/Button';
 import { StepperInlineInput } from '@/components/theme/StepperInlineInput';
 import { TextInput } from '@/components/theme/TextInput';
 import { describeExerciseRow } from '@/components/workout/describeExerciseRow';
+import { ProgressionRuleEditor } from '@/components/workout/ProgressionRuleEditor';
 import { type EquipmentType, type MechanicType, type MuscleGroup } from '@/database/models';
 import { useExerciseRestrictions } from '@/hooks/useExerciseRestrictions';
 import { useExercises } from '@/hooks/useExercises';
+import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { useSettings } from '@/hooks/useSettings';
 import { useTheme } from '@/hooks/useTheme';
 import { type AddExerciseData } from '@/hooks/useWorkoutForm';
@@ -31,6 +32,7 @@ import {
   getMuscleGroupTranslationKey,
 } from '@/utils/exerciseTranslation';
 import { getDecimalSeparator, parseLocalizedDecimalString } from '@/utils/localizedDecimalInput';
+import type { ProgressionRule } from '@/utils/progressionRules';
 import { getWeightUnitI18nKey } from '@/utils/units';
 
 import { FullScreenModal } from './FullScreenModal';
@@ -117,6 +119,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
   const theme = useTheme();
   const { t, i18n } = useTranslation();
   const { units } = useSettings();
+  const { unitsFor } = useExerciseUserSettings();
   const decimalSeparator = useMemo(
     () => getDecimalSeparator(i18n.resolvedLanguage ?? i18n.language),
     [i18n.resolvedLanguage, i18n.language]
@@ -138,6 +141,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
   const [setType, setSetType] = useState<SetType>('normal');
   const [isSetTypePickerVisible, setIsSetTypePickerVisible] = useState(false);
   const [notes, setNotes] = useState('');
+  const [progression, setProgression] = useState<ProgressionRule | null>(null);
 
   const {
     exercises: allExercises,
@@ -242,6 +246,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
         setSetType('normal');
         setIsSetTypePickerVisible(false);
         setNotes('');
+        setProgression(null);
       };
 
       reset();
@@ -471,6 +476,7 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
       restTimeAfter: parseInt(restTime, 10) || 60,
       setType,
       notes: notes.trim() || undefined,
+      progression,
     });
     onClose();
   };
@@ -696,6 +702,11 @@ export function AddExerciseModal({ visible, onClose, onAddExercise }: AddExercis
         />
 
         {/* Notes Section */}
+        <ProgressionRuleEditor
+          value={progression}
+          onChange={setProgression}
+          units={unitsFor(selectedExerciseId ?? undefined)}
+        />
         <View className="mt-6">
           <TextInput
             label={t('workouts.addExercise.notes')}

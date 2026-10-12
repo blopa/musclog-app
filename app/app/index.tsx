@@ -34,6 +34,8 @@ import ShowMoreButton from '@/components/ShowMoreButton';
 import { AnimatedContent } from '@/components/theme/AnimatedContent';
 import DashedButton from '@/components/theme/DashedButton';
 import { SkeletonLoader } from '@/components/theme/SkeletonLoader';
+import { WeeklyReviewCard } from '@/components/WeeklyReviewCard';
+import { WorkoutTodayCard } from '@/components/workout/WorkoutTodayCard';
 import { WorkoutFoodEmptyState } from '@/components/WorkoutFoodEmptyState';
 import { HomeActionKey } from '@/constants/homeActions';
 import { isStaticExport } from '@/constants/platform';
@@ -468,6 +470,9 @@ export default function HomeScreen() {
           </View>
         </View>
 
+        <View className="mx-4 mb-4">
+          <WorkoutTodayCard activeOnly />
+        </View>
         {/* Daily Summary Card */}
         <View className="mb-6 px-4">
           {homeSummaryCard === 'weekly_streak' ? (
@@ -513,6 +518,9 @@ export default function HomeScreen() {
 
         {/* Action Buttons */}
         <HomeActionsRow selected={homeActions} onActionPress={(key) => homeActionHandlers[key]()} />
+        <View className="mx-4 mb-6">
+          <WeeklyReviewCard />
+        </View>
         <View className="mx-4 mb-8">
           <View className="mb-4 flex-row items-center justify-between">
             <Text className="text-2xl font-bold text-text-primary">

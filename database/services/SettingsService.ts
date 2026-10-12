@@ -970,6 +970,35 @@ export class SettingsService {
 
   // --- Private helpers ---
 
+  static async getWorkoutView(): Promise<'inline' | 'guided'> {
+    const value = await this.getStringSetting('workout_view', 'guided');
+    return value === 'inline' ? 'inline' : 'guided';
+  }
+
+  static async setWorkoutView(value: 'inline' | 'guided'): Promise<void> {
+    await this.setStringSetting('workout_view', value);
+  }
+
+  static async getReviewWeekday(): Promise<number> {
+    const value = Number(await this.getStringSetting('review_weekday', '1'));
+    return Number.isInteger(value) && value >= 0 && value <= 6 ? value : 1;
+  }
+
+  static async getNotificationsWeeklyReview(): Promise<boolean> {
+    return this.getBooleanSetting('notifications_weekly_review', false);
+  }
+
+  static async setNotificationsWeeklyReview(value: boolean): Promise<void> {
+    await this.setBooleanSetting('notifications_weekly_review', value);
+  }
+
+  static async setReviewWeekday(value: number): Promise<void> {
+    if (!Number.isInteger(value) || value < 0 || value > 6) {
+      throw new Error('Invalid weekday');
+    }
+    await this.setStringSetting('review_weekday', String(value));
+  }
+
   private static async getStringSetting(type: string, defaultValue: string): Promise<string> {
     const settings = await database
       .get<Setting>('settings')

@@ -5,6 +5,7 @@ const fetchQueues: Record<string, unknown[][]> = {};
 jest.mock('@/database/database-instance', () => ({
   database: {
     get: (table: string) => ({
+      find: async () => ({ eatingPhase: 'cut' }),
       query: () => ({
         fetch: async () => fetchQueues[table]?.shift() ?? [],
       }),

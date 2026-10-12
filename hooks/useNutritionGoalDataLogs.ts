@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import NutritionGoal, { type EatingPhase } from '@/database/models/NutritionGoal';
 import { NutritionGoalService } from '@/database/services/NutritionGoalService';
+import { NutritionTargetService } from '@/database/services/NutritionTargetService';
 import { normalizeNutritionGoalTargetWeight } from '@/utils/nutritionGoalHelpers';
 
 import { BATCH_SIZE } from './paginationConstants';
@@ -59,24 +60,28 @@ function getPhaseLabel(phase: EatingPhase, t: TFunction): string {
   return translated;
 }
 
-function goalToDisplayItem(
+async function goalToDisplayItem(
   goal: NutritionGoal,
   t: TFunction,
   iconColors: { color: string; bg: string },
   locale: Locale
-): NutritionGoalDisplayItem {
+): Promise<NutritionGoalDisplayItem> {
+  const resolved = await NutritionTargetService.resolve(
+    goal,
+    goal.effectiveUntil == null ? new Date() : new Date(goal.createdAt)
+  );
   const phaseLabel = getPhaseLabel(goal.eatingPhase, t);
   const dateLabel = format(new Date(goal.createdAt), 'MMM d, yyyy', { locale });
   return {
     id: goal.id,
-    name: `${goal.isDynamic ? `${t('nutritionGoals.dynamicBadge')} • ` : ''}${phaseLabel} • ${dateLabel}`,
+    name: `${resolved.mode === 'weekly' ? `${t('weeklyReview.modes.weekly')} • ` : resolved.isDynamic ? `${t('nutritionGoals.dynamicBadge')} • ` : ''}${phaseLabel} • ${dateLabel}`,
     icon: ICON,
     iconColor: iconColors.color,
     iconBgColor: iconColors.bg,
-    goalCalories: goal.isDynamic ? undefined : Math.round(goal.totalCalories),
+    goalCalories: Math.round(resolved.totalCalories),
     goalEatingPhase: phaseLabel,
     goalTargetWeight: normalizeNutritionGoalTargetWeight(goal.targetWeight),
-    isDynamic: goal.isDynamic,
+    isDynamic: resolved.isDynamic,
   };
 }
 
@@ -202,10 +207,12 @@ export function useNutritionGoalDataLogs({
 
     try {
       const goals = await NutritionGoalService.getGoalsHistory(batchSize, 0);
-      const results = goals.map((goal) => ({
-        item: goalToDisplayItem(goal, t, iconColors, dateFnsLocale),
-        dateTimestamp: goal.createdAt,
-      }));
+      const results = await Promise.all(
+        goals.map(async (goal) => ({
+          item: await goalToDisplayItem(goal, t, iconColors, dateFnsLocale),
+          dateTimestamp: goal.createdAt,
+        }))
+      );
       const groups = groupGoalsByDate(results, t, dateFnsLocale);
       setDayGroups(groups);
       setHasMore(goals.length === batchSize);
@@ -234,10 +241,12 @@ export function useNutritionGoalDataLogs({
         return;
       }
 
-      const results = goals.map((goal) => ({
-        item: goalToDisplayItem(goal, t, iconColors, dateFnsLocale),
-        dateTimestamp: goal.createdAt,
-      }));
+      const results = await Promise.all(
+        goals.map(async (goal) => ({
+          item: await goalToDisplayItem(goal, t, iconColors, dateFnsLocale),
+          dateTimestamp: goal.createdAt,
+        }))
+      );
 
       setDayGroups((prev) => mergeIntoDayGroups(prev, results, t, dateFnsLocale));
       setHasMore(goals.length === batchSize);

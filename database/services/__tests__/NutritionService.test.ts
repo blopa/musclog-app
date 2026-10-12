@@ -321,18 +321,23 @@ describe('NutritionService.getRecentLoggedDays', () => {
   });
 
   it('buckets an instant by each log stored timezone rather than the device timezone', async () => {
-    const instant = Date.UTC(2026, 7, 2, 0, 30);
-    withLogs([
-      mockLog({ id: 'east', date: instant, timezone: '+02:00', calories: 100 }),
-      mockLog({ id: 'west', date: instant, timezone: '-02:00', calories: 200 }),
-    ]);
+    jest.useFakeTimers({ now: Date.UTC(2026, 7, 3) });
+    try {
+      const instant = Date.UTC(2026, 7, 2, 0, 30);
+      withLogs([
+        mockLog({ id: 'east', date: instant, timezone: '+02:00', calories: 100 }),
+        mockLog({ id: 'west', date: instant, timezone: '-02:00', calories: 200 }),
+      ]);
 
-    const days = await NutritionService.getRecentLoggedDays();
+      const days = await NutritionService.getRecentLoggedDays();
 
-    expect(days).toEqual([
-      { dayKey: Date.UTC(2026, 7, 2), itemCount: 1, calories: 100 },
-      { dayKey: Date.UTC(2026, 7, 1), itemCount: 1, calories: 200 },
-    ]);
+      expect(days).toEqual([
+        { dayKey: Date.UTC(2026, 7, 2), itemCount: 1, calories: 100 },
+        { dayKey: Date.UTC(2026, 7, 1), itemCount: 1, calories: 200 },
+      ]);
+    } finally {
+      jest.useRealTimers();
+    }
   });
 
   it('respects the limit', async () => {

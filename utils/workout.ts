@@ -10,6 +10,7 @@ import i18n, { DEFAULT_LANG } from '@/lang/lang';
 import { Theme } from '@/theme';
 
 import { formatAppDecimal, formatAppInteger } from './formatAppNumber';
+import type { ProgressionRule } from './progressionRules';
 import { kgToDisplay } from './unitConversion';
 import { getWeightUnit } from './units';
 import { dayNameToIndex } from './weekdays';
@@ -163,6 +164,8 @@ export interface ExerciseMetadata {
   groupId?: string;
   setType?: string;
   notes?: string;
+  /** The exercise's progression rule; absent keeps the automatic progression. */
+  progression?: ProgressionRule | null;
 }
 
 export interface CreateExerciseOptionParams {
@@ -225,6 +228,7 @@ export function extractExerciseMetadata(exercise: ExerciseInWorkout): ExerciseMe
     groupId: exercise.groupId,
     setType: exercise.setType,
     notes: exercise.notes,
+    progression: exercise.progression,
   };
 }
 
@@ -292,6 +296,7 @@ export function exercisesToWorkoutFormat(
       isBodyweight: meta.isBodyweight,
       restTimeAfter: meta.restTimeAfter,
       setType: meta.setType,
+      progression: meta.progression,
     };
   });
 }

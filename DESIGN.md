@@ -281,3 +281,11 @@ belongs in both the desktop nav bar and the burger menu.
 - Works in all themes: check Kinetic Light, Kinetic Shock, Kinetic Volt and Kinetic Blush, and confirm nothing
   relies on a literal `text-white` or an emerald-only accent.
 - Loading, empty, error, disabled, and offline states are designed—not left to defaults.
+
+## Everyday progression and Weekly Review
+
+Keep plan, targets, previous performance, editable actual values, source labels, explanation and undo together. Inline cards and Guided presentation use the same controller; switching changes presentation only. Completing a set saves immediately, while effort/partials live in an optional sheet. Keep the rest timer visible during editing and browsing. Finish Workout is explicit even when every set is resolved. Keep Guidance, Warm-up, Swap, Notes and More labeled. Lasting changes use the explicitly labeled workout editor.
+
+Home shows a compact permanent Weekly Review card below actions, with active-workout Resume more prominent. Workouts begins with Today before the library. Food keeps review access in empty/fasting states as well as the target summary. Preserve the default navigation slots; the optional checkin slot retains its key and carries a due indicator.
+
+Weekly Review has independent Training and Nutrition sections. Show current/recommended calories and net-carb macros, coverage and trend context before Apply tomorrow / Keep / Edit. Opening or canceling a sheet never acknowledges a review. Training acknowledgement never gates progression. Respect themes, exercise units, local decimal separators, safe areas and keyboard clearance.

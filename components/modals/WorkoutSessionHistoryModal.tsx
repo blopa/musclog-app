@@ -4,12 +4,17 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 
 import { Button } from '@/components/theme/Button';
+import { WorkoutRecommendationList } from '@/components/workout/WorkoutRecommendationList';
 import { ExerciseData, ExerciseItem } from '@/components/WorkoutHistoryExerciseItem';
 import Exercise from '@/database/models/Exercise';
 import WorkoutLog from '@/database/models/WorkoutLog';
 import WorkoutTemplate from '@/database/models/WorkoutTemplate';
 import WorkoutTemplateSet from '@/database/models/WorkoutTemplateSet';
 import { UserMetricService } from '@/database/services/UserMetricService';
+import {
+  type TemplateRecommendation,
+  WorkoutProgressionService,
+} from '@/database/services/WorkoutProgressionService';
 import type { EnrichedWorkoutLogSet } from '@/database/services/WorkoutService';
 import { useExerciseUserSettings } from '@/hooks/useExerciseUserSettings';
 import { useFormatAppNumber } from '@/hooks/useFormatAppNumber';
@@ -82,6 +87,26 @@ export function WorkoutSessionHistoryModal({
   const [isSharing, setIsSharing] = useState(false);
 
   const [bodyWeightKg, setBodyWeightKg] = useState(0);
+  const [recommendations, setRecommendations] = useState<TemplateRecommendation[]>([]);
+  useEffect(() => {
+    let live = true;
+    if (visible && isPreview && workoutTemplate) {
+      WorkoutProgressionService.projectTemplate(workoutTemplate.id)
+        .then((rows) => {
+          if (live) {
+            setRecommendations(rows);
+          }
+        })
+        .catch(() => {
+          if (live) {
+            setRecommendations([]);
+          }
+        });
+    }
+    return () => {
+      live = false;
+    };
+  }, [visible, isPreview, workoutTemplate]);
   useEffect(() => {
     void UserMetricService.getUserBodyWeightKgForVolume().then(setBodyWeightKg);
   }, []);
@@ -434,6 +459,7 @@ export function WorkoutSessionHistoryModal({
       footer={footerContent}
     >
       <View className="gap-6 px-4 pb-8 pt-4">
+        {isPreview ? <WorkoutRecommendationList recommendations={recommendations} /> : null}
         {/* Workout Summary */}
         <View className="gap-2">
           <View className="flex-row items-center justify-between">
@@ -497,7 +523,7 @@ export function WorkoutSessionHistoryModal({
 
         {/* Exercises List */}
         <View className="flex-col gap-3">
-          {exerciseDataList.length > 0 ? (
+          {!isPreview && exerciseDataList.length > 0 ? (
             exerciseDataList.map((exercise, index) => (
               <ExerciseItem
                 key={exercise.id}
@@ -507,9 +533,9 @@ export function WorkoutSessionHistoryModal({
                 isPreview={isPreview}
               />
             ))
-          ) : (
+          ) : !isPreview ? (
             <Text className="text-text-secondary">{t('workoutHistory.noExercisesYet')}</Text>
-          )}
+          ) : null}
         </View>
         {/* Bottom spacing */}
         <View className="h-8" />

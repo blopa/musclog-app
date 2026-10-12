@@ -119,7 +119,8 @@ type DynamicGoalLike = {
 
 async function resolveDynamicGoalLike(
   goal: DynamicGoalLike,
-  date: Date
+  date: Date,
+  weekly = false
 ): Promise<ResolvedMacros | null> {
   const asOfDayMs = localDayStartMs(date);
   const asOfMetricMaxMs = localDayClosedRangeMaxMs(date);
@@ -139,9 +140,13 @@ async function resolveDynamicGoalLike(
     UserMetricService.getLatestOnOrBefore('weight', asOfMetricMaxMs),
     UserMetricService.getLatestOnOrBefore('height', asOfMetricMaxMs),
     UserMetricService.getLatestOnOrBefore('body_fat', asOfMetricMaxMs),
-    hasExplicitTrajectoryTarget
+    hasExplicitTrajectoryTarget && !weekly
       ? Promise.resolve(null)
-      : getHistoricalNutritionParams({ asOfDate: date, useWeeklyFatAverages: true }),
+      : getHistoricalNutritionParams({
+          asOfDate: date,
+          useWeeklyFatAverages: true,
+          excludeUnloggedDays: weekly,
+        }),
     SettingsService.getDisableMinimumCalories(),
     SettingsService.getUseBfForCalculations(),
   ]);
@@ -250,6 +255,13 @@ export async function resolveDynamicGoalPreview(
  * If the goal has a target weight and target date in the future, daily calories are adjusted to
  * follow that trajectory while still respecting the chosen eating phase and calorie safety floor.
  */
+export async function resolveWeeklyRecommendation(
+  goal: NutritionGoal,
+  date: Date
+): Promise<ResolvedMacros | null> {
+  return resolveDynamicGoalLike(goal, date, true);
+}
+
 export async function resolveDailyMacros(
   goal: NutritionGoal,
   date: Date

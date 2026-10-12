@@ -2,10 +2,13 @@ import { appSchema, tableSchema } from '@nozbe/watermelondb';
 
 import { CURRENT_DATABASE_VERSION } from '@/constants/database';
 
+import { weeklyReviewTables } from './weeklyReviewSchema';
+
 export const schema = appSchema({
   // when updating database schema, also update export version in exportImport.ts
   version: CURRENT_DATABASE_VERSION,
   tables: [
+    ...weeklyReviewTables.map(tableSchema),
     // 1. Master List of Exercises
     tableSchema({
       name: 'exercises',
@@ -139,6 +142,8 @@ export const schema = appSchema({
         { name: 'notes', type: 'string', isOptional: true },
         { name: 'exercise_order', type: 'number' },
         { name: 'group_id', type: 'string', isOptional: true, isIndexed: true },
+        // The exercise's progression rule (utils/progressionRules.ts); null = automatic.
+        { name: 'progression_json', type: 'string', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -200,6 +205,8 @@ export const schema = appSchema({
         // Set when this block was swapped mid-session: what the template/plan called for, and why.
         { name: 'replaced_exercise_id', type: 'string', isOptional: true },
         { name: 'substitution_reason', type: 'string', isOptional: true },
+        // The rule this session ran under, copied at start, plus its carried state.
+        { name: 'progression_json', type: 'string', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -230,6 +237,8 @@ export const schema = appSchema({
         // deload or repeat of last time): a StartSetAdjustment, parsed by `parseStartAdjustment`.
         // Cleared the moment the user edits or performs the set — their number is then theirs.
         { name: 'adjustment_json', type: 'string', isOptional: true },
+        { name: 'prescription_json', type: 'string', isOptional: true },
+        { name: 'rir_recorded', type: 'boolean', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },
@@ -571,6 +580,7 @@ export const schema = appSchema({
         { name: 'timezone', type: 'string', isOptional: true },
         { name: 'effective_until', type: 'number', isOptional: true },
         { name: 'is_dynamic', type: 'boolean', isOptional: true },
+        { name: 'target_mode', type: 'string', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
         { name: 'deleted_at', type: 'number', isOptional: true },

@@ -58,11 +58,14 @@ export class WorkoutLogExerciseService {
           record.replacedExerciseId = record.replacedExerciseId ?? record.exerciseId;
           record.substitutionReason = options.reason;
           record.exerciseId = newExerciseId;
+          record.progressionJson = undefined;
           record.updatedAt = now;
         }),
         ...plannedSets.map((set) =>
           set.prepareUpdate((record) => {
             record.weight = Math.max(0, plannedWeightKg ?? record.weight);
+            record.prescriptionJson = undefined;
+            record.adjustmentJson = undefined;
             record.updatedAt = now;
           })
         )
@@ -192,6 +195,7 @@ export class WorkoutLogExerciseService {
             record.partials = 0;
             record.restTimeAfter = options.restTimeAfter ?? anchorRestTimeAfter;
             record.repsInReserve = 0;
+            record.rirRecorded = false;
             record.completionStatus = 'planned';
             record.setType = WARMUP_SET_TYPE;
             record.setOrder = anchorOrder + index;

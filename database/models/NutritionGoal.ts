@@ -4,6 +4,7 @@ import { children, field, writer } from '@nozbe/watermelondb/decorators';
 import type NutritionCheckin from './NutritionCheckin';
 
 export type EatingPhase = 'cut' | 'maintain' | 'bulk';
+export type NutritionTargetMode = 'manual' | 'daily' | 'weekly';
 
 export default class NutritionGoal extends Model {
   static table = 'nutrition_goals';
@@ -26,6 +27,7 @@ export default class NutritionGoal extends Model {
   @field('timezone') timezone?: string;
   @field('effective_until') effectiveUntil?: number | null;
   @field('is_dynamic') declare isDynamic: boolean;
+  @field('target_mode') targetMode?: NutritionTargetMode;
   @field('created_at') declare createdAt: number;
   @field('updated_at') declare updatedAt: number;
   @field('deleted_at') deletedAt?: number;

@@ -12,6 +12,7 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Time-based personalized greetings (Good Morning / Afternoon / Evening)
 - Quick-access action row, configurable in Interface settings: pick two to four of Start Workout, Track Food, Scan Barcode, AI Photo, My Meals and Add Note, and they appear in the order you pick them
 - Recent foods and recent workouts previews
+- Permanent Weekly Review entry below Home actions, plus a prominent Resume card while a workout is active
 - Android home screen widgets: Nutrition Progress + Smart Camera
 
 ---
@@ -31,7 +32,10 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Superset / exercise grouping via shared group ID
 - Rest timer with a configurable default rest, optional auto-start (or a "Start rest" button), a large countdown that scales with the screen, a distinct "Get ready" state for the last ten seconds that is spoken as well as coloured, a haptic countdown, and the next set's load shown prominently
 - Smart warm-up sets: one tap adds a 40 / 60 / 80% ramp before an exercise's first working set, snapped to weights your gym can actually load. Warm-ups are marked "W" in history and are excluded from volume, personal records, estimated 1RM, progression, goals and the figures the AI coach sees (calories and Health Connect still count them)
-- Workouts started from a template progress each exercise from how its last session went — more load, more reps, a deload, or a repeat of last time — with a one-sentence reason on the set and a one-tap way back ("Keep last time's"). Choose Manual in Workout Settings to copy the plan exactly
+- Inline and Guided workout views share direct numeric entry, one-tap set completion/reopening, optional effort details, persistent rest timers, superset order, and explicit Finish Workout. New installs use Inline; existing users keep Guided until switching. Pending inputs survive switching and restart.
+- Per-exercise Automatic, Double progression, Linear, Top set + back-offs, and Percentage of training max rules. Explicit rules work with automatic suggestions disabled; warm-ups, skipped sets, and missing effort are handled separately.
+- Read-only upcoming targets in previews, Next time in summaries, and Weekly Review. Targets show their source and reason; Use the plan’s restores unfinished prescriptions, with persistent session overrides. Template edits preserve exercise identity and active-session rule snapshots.
+- Today in Workouts shows Resume, scheduled workouts, or the next rotating-plan workout alongside gym and guidance settings
 - Per-exercise preferences in the exercise view: a weight unit for just that exercise (kg or lb, whatever the account uses) and a note that is pinned above the set in every workout. In a session, notes can also be written for this workout only (optionally copied onto the workout template) and a note can be added when you finish a workout
 - Log a walk or run in a few taps from the workouts menu or the Home quick action: activity, distance, duration, when it ended, an optional treadmill flag and an optional calorie figure from your watch. It shows pace and estimated calories live, appears in history with distance and pace, and is written to Health Connect / Apple Health as a walk or run with its distance
 - Real-time session stats: elapsed time, calories burned, total volume
@@ -83,8 +87,9 @@ The source of truth for user-facing features that ship today, grouped by area.
 - Support for multiple goals with easy switching
 - Empirical TDEE calculation derived from actual logged intake and smoothed trend-weight endpoints
 - Auto-calculated goal templates based on activity level, weight goal, and experience
-- Weekly nutrition check-ins: "On Track / Ahead / Behind" status based on trend weight, with raw seven-day weigh-in bars
-- Dynamic goal recalculation based on real-world progress trends
+- Weekly Review is reachable from Home, Workouts, and Food. Training acknowledgement and nutrition decisions are independent; workout progression never waits for a review. Review history retains legacy check-ins and decisions across goal changes.
+- Manual, Daily automatic, and Weekly review target modes. Existing daily goals retain their behavior; new guided setup defaults to Weekly review. Approved calories and net-carb macros begin tomorrow and stay stable until replaced, with historical target periods.
+- Weekly nutrition decisions show current/recommended targets, trend weight and logged-day coverage, with Apply tomorrow, Keep, and a focused recommendation editor. Missing evidence keeps targets while more data is collected. Optional review weekday and reminder. Legacy comparisons account for gain/loss goals.
 
 ---
 

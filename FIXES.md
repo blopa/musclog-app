@@ -513,3 +513,9 @@ The same gap existed in `utils/onDeviceAi.web.ts` (`sendOnDeviceStructured`, rea
   a new one cannot be introduced silently.
 - Route and component files are out of scope: their contract is the default export, and their named
   exports are file-local helpers.
+
+## Review writes, prepared model cache, and session prescriptions
+
+WatermelonDB `prepareUpdate` changes the model cache before the adapter commits a batch. A rejected weekly approval could therefore appear reviewed in memory despite no stored decision. `commitPrepared` snapshots existing raw records/prepared state and restores them on failure; the review and target-period changes use one batch and remain retryable. The same boundary protects set completion and mode switching. Legacy Readjust now acknowledges only after the goal write succeeds, retaining reviewed check-ins across goal changes.
+
+Explicit rule history uses stable template-exercise identity, preventing one routine from borrowing another routine’s carried state for the same movement. Skipped sets preserve their prescribed positions and prevent full-session success. Each session freezes its rule/TM and prescription metadata. Missing new RIR has an explicit false flag, avoiding automatic guidance based on a placeholder zero. Switching to/from weekly nutrition closes target intervals rather than changing the meaning of earlier approved dates.

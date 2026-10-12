@@ -492,3 +492,9 @@ zxing-cpp read 18/18 at 2–12 ms, including the densest 2.6 px/module case.
 The wasm is copied into `public/` by `scripts/sync-web-wasm.js` and loaded from the app's own origin.
 There is intentionally no CDN fallback because offline transfer must not depend on or notify a third
 party.
+
+## Integrating progression and weekly reviews
+
+The everyday loop is plan → train → understand changes → review the week. MacroFactor’s [inline logging and nearby timers](https://macrofactor.com/wp-content/uploads/2026/01/Workouts-Quick-Start-Guide.pdf), [contextual progression explanations](https://help.macrofactorapp.com/en/articles/391-what-does-the-smart-progression-wand-mean), and [declinable weekly nutrition decisions](https://help.macrofactorapp.com/en/articles/247-introduction-to-check-ins-and-coaching-modules) inform presentation. They do not supply Musclog’s algorithms. Musclog retains deterministic local calculations and optional AI.
+
+Workout progression runs immediately at session start and between applicable sets, with read-only future projections after training. Weekly training acknowledgement summarizes it and never approves or delays it. Nutrition targets can instead use weekly approval: dated stable targets start tomorrow, keeping a clear historical record. The weekly recommendation includes available expenditure history before solving the existing goal trajectory; the daily resolver preserves its legacy trajectory branch. Formula baselines and empirical estimates are labeled separately, with existing evidence thresholds rather than invented confidence scores. Periodization, watches, social features and reproducing proprietary algorithms remain outside this implementation.

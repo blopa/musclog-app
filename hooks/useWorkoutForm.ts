@@ -37,6 +37,7 @@ export interface UseWorkoutFormParams {
 }
 
 export interface AddExerciseData {
+  progression?: import('@/utils/progressionRules').ProgressionRule | null;
   exerciseId: string;
   sets: number;
   reps: number;
@@ -162,6 +163,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
             groupId: undefined,
             setType: exerciseData.setType ?? 'normal',
             notes: exerciseData.notes,
+            progression: exerciseData.progression,
           });
           return updated;
         });
@@ -319,6 +321,7 @@ export function useWorkoutForm({ templateId, onSaveSuccess }: UseWorkoutFormPara
     setFocusedField,
     setSelectedExercises,
     setExercises,
+    setExerciseMetadata,
 
     // Handlers
     toggleDay,

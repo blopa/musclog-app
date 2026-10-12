@@ -86,6 +86,8 @@ export default class WorkoutTemplate extends Model {
         le.notes = templateExercise.notes;
         le.exerciseOrder = templateExercise.exerciseOrder;
         le.groupId = templateExercise.groupId;
+        // The session's own copy: a later edit of the workout must not rewrite what this one ran.
+        le.progressionJson = templateExercise.progressionJson;
         le.createdAt = now;
         le.updatedAt = now;
       });
@@ -120,6 +122,7 @@ export default class WorkoutTemplate extends Model {
         ls.partials = 0;
         ls.restTimeAfter = templateSet.restTimeAfter ?? 0;
         ls.repsInReserve = 0;
+        ls.rirRecorded = false;
         ls.difficultyLevel = undefined;
         ls.completionStatus = 'planned';
         ls.setType = templateSet.setType ?? 'normal';

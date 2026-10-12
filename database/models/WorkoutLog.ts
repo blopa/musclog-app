@@ -167,6 +167,7 @@ export default class WorkoutLog extends Model {
       }
       if (data.repsInReserve !== undefined) {
         updatedSet.repsInReserve = data.repsInReserve;
+        updatedSet.rirRecorded = true;
       }
       if (data.difficultyLevel !== undefined) {
         assertValidWorkoutSetDifficultyLevel(data.difficultyLevel);
@@ -227,6 +228,7 @@ export default class WorkoutLog extends Model {
       logSet.partials = partials ?? 0;
       logSet.restTimeAfter = 0;
       logSet.repsInReserve = 0;
+      logSet.rirRecorded = false;
       logSet.difficultyLevel = undefined;
       logSet.completionStatus = 'planned';
       logSet.setType = 'normal';
@@ -288,6 +290,7 @@ export default class WorkoutLog extends Model {
         logSet.partials = 0;
         logSet.restTimeAfter = 60;
         logSet.repsInReserve = 0;
+        logSet.rirRecorded = false;
         logSet.difficultyLevel = undefined;
         logSet.completionStatus = 'planned';
         logSet.setType = 'normal';

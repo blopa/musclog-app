@@ -122,10 +122,11 @@ export default function NutritionGoalsScreen() {
         targetFFMI: goal.targetFfmi,
         targetDate: goal.targetDate ?? null,
         isDynamic: goal.isDynamic,
+        targetMode: goal.targetMode ?? (goal.isDynamic ? 'daily' : 'manual'),
       };
     }
 
-    return computedDefaults;
+    return { ...computedDefaults, targetMode: 'weekly' as const };
   }, [goal, storedPlanGoals, computedDefaults]);
 
   const handleSave = useCallback(
@@ -149,6 +150,7 @@ export default function NutritionGoalsScreen() {
           targetFFMI: goals.targetFFMI ?? undefined,
           targetDate: goals.targetDate ?? null,
           isDynamic: goals.isDynamic ?? false,
+          targetMode: goals.targetMode,
         });
 
         // Generate new check-ins for the new goal
@@ -156,7 +158,7 @@ export default function NutritionGoalsScreen() {
         const heightMetric = await UserMetricService.getLatest('height');
         const bodyFatMetric = await UserMetricService.getLatest('body_fat');
 
-        if (userMetric && heightMetric) {
+        if (goals.targetMode !== 'weekly' && userMetric && heightMetric) {
           const userDecrypted = await userMetric.getDecrypted();
           const heightDecrypted = await heightMetric.getDecrypted();
           const bodyFatDecrypted = bodyFatMetric ? await bodyFatMetric.getDecrypted() : null;

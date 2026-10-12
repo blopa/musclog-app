@@ -10,6 +10,7 @@ export interface LastWorkingSession {
   reps: number;
   /** Average reps in reserve across ALL its working sets. */
   averageRepsInReserve: number;
+  rirRecorded?: boolean;
 }
 
 export interface StartTargetInput {
@@ -58,6 +59,9 @@ export function computeStartTarget({
   roundLoad,
 }: StartTargetInput): StartTarget {
   const averageRir = last.averageRepsInReserve;
+  if (last.rirRecorded === false) {
+    return { weightKg: last.weightKg, reps: last.reps, kind: 'repeat' };
+  }
 
   if (averageRir >= TOO_EASY_REPS_IN_RESERVE) {
     if (progressionMode === 'weight_first') {

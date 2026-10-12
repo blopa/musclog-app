@@ -62,6 +62,9 @@ export function SegmentedControl({
         return (
           <Pressable
             key={option.value}
+            accessibilityRole="button"
+            accessibilityLabel={option.label}
+            accessibilityState={{ selected: isSelected }}
             className={`flex-1 justify-center self-stretch ${variant !== 'gradient' && isSelected ? 'bg-bg-card' : ''}`}
             style={{ borderRadius: segmentBorderRadius }}
             onPress={() => onValueChange(option.value)}

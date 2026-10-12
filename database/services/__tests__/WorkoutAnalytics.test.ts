@@ -20,6 +20,7 @@ jest.mock('@nozbe/watermelondb', () => ({
     notEq: jest.fn((value: any) => ({ op: 'notEq', value })),
     gte: jest.fn((value: any) => ({ op: 'gte', value })),
     lte: jest.fn((value: any) => ({ op: 'lte', value })),
+    lt: jest.fn((value: any) => ({ op: 'lt', value })),
     oneOf: jest.fn((values: any[]) => ({ op: 'oneOf', values })),
     sortBy: jest.fn((field: string, direction: any) => ({ sortByField: field, direction })),
     take: jest.fn((count: number) => ({ takeCount: count })),
@@ -215,6 +216,8 @@ function matchesClause(raw: Record<string, unknown>, clause: any): boolean {
       return (actual as number) >= condition.value;
     case 'lte':
       return (actual as number) <= condition.value;
+    case 'lt':
+      return (actual as number) < condition.value;
     case 'oneOf':
       return condition.values.includes(actual);
     default:
